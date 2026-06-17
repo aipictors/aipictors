@@ -9,15 +9,27 @@ export type SupportRankingItemWithUser = {
   freePtAmount: number
   premiumPtAmount: number
   transferCount: number
+  isAnonymous?: boolean
   iconUrl?: string | null
   userName?: string | null
   userLogin?: string | null
 }
 
+const ANONYMOUS_SUPPORT_USER_ID = "__anonymous__"
+
 export async function enrichSupportRankingItems<T extends SupportRankingItemWithUser>(
   items: T[],
 ): Promise<T[]> {
-  const uniqueUserIds = Array.from(new Set(items.map((item) => item.userId)))
+  const uniqueUserIds = Array.from(
+    new Set(
+      items
+        .filter(
+          (item) =>
+            item.isAnonymous !== true && item.userId !== ANONYMOUS_SUPPORT_USER_ID,
+        )
+        .map((item) => item.userId),
+    ),
+  )
 
   const users = await Promise.all(
     uniqueUserIds.map(async (userId) => {
@@ -38,6 +50,16 @@ export async function enrichSupportRankingItems<T extends SupportRankingItemWith
   const userMap = new Map(users)
 
   return items.map((item) => {
+    if (item.isAnonymous === true || item.userId === ANONYMOUS_SUPPORT_USER_ID) {
+      return {
+        ...item,
+        userId: ANONYMOUS_SUPPORT_USER_ID,
+        iconUrl: null,
+        userName: "匿名",
+        userLogin: null,
+      }
+    }
+
     const user = userMap.get(item.userId)
 
     return {

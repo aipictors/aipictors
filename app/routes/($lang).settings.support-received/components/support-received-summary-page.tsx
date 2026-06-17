@@ -82,9 +82,6 @@ export function SupportReceivedSummaryPage() {
   const authContext = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState("transfers")
-  const [commentFilter, setCommentFilter] = useState<"all" | "supported">(
-    "all",
-  )
   const [supportSummary, setSupportSummary] =
     useState<SupportSummaryResponse["data"]>(null)
   const [coinSummary, setCoinSummary] = useState<CoinSummaryResponse["data"]>(
@@ -97,7 +94,7 @@ export function SupportReceivedSummaryPage() {
       variables: {
         offset: 0,
         limit: 50,
-        onlySupportAttached: commentFilter === "supported",
+        onlySupportAttached: true,
       },
       fetchPolicy: "cache-and-network",
     })
@@ -194,7 +191,7 @@ export function SupportReceivedSummaryPage() {
             )}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           <CoinHelpDialog triggerLabel={t("推し・pt とは", "About support and pt")} />
           <Button asChild variant="outline" size="sm">
             <Link to="/help?tab=coins">
@@ -317,31 +314,11 @@ export function SupportReceivedSummaryPage() {
 
         <TabsContent value="comments">
           <Card>
-            <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <MessageCircle className="h-4 w-4 text-muted-foreground" />
                 {t("受け取ったコメント一覧", "Received comments")}
               </CardTitle>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={commentFilter === "all" ? "default" : "outline"}
-                  onClick={() => setCommentFilter("all")}
-                >
-                  {t("すべて", "All")}
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={
-                    commentFilter === "supported" ? "default" : "outline"
-                  }
-                  onClick={() => setCommentFilter("supported")}
-                >
-                  {t("ポイント付与あり", "With support")}
-                </Button>
-              </div>
             </CardHeader>
             <CardContent className="space-y-3">
               {isLoadingReceivedComments ? (
@@ -350,15 +327,10 @@ export function SupportReceivedSummaryPage() {
                 </p>
               ) : receivedComments.length === 0 ? (
                 <p className="text-muted-foreground text-sm">
-                  {commentFilter === "supported"
-                    ? t(
-                        "ポイント付きで受け取ったコメントはまだありません。",
-                        "No support-attached comments yet.",
-                      )
-                    : t(
-                        "まだ受け取ったコメントはありません。",
-                        "No received comments yet.",
-                      )}
+                  {t(
+                    "ポイント付きで受け取ったコメントはまだありません。",
+                    "No support-attached comments yet.",
+                  )}
                 </p>
               ) : (
                 receivedComments.map((comment) => (
@@ -387,6 +359,19 @@ export function SupportReceivedSummaryPage() {
                           )}
                         </div>
 
+                        {comment.work?.smallThumbnailImageURL && (
+                          <Link
+                            to={`/posts/${comment.work.id}`}
+                            className="group block w-fit overflow-hidden rounded-md border"
+                          >
+                            <img
+                              src={comment.work.smallThumbnailImageURL}
+                              alt={comment.work.title || "work thumbnail"}
+                              className="h-20 w-20 object-cover transition-opacity group-hover:opacity-90"
+                            />
+                          </Link>
+                        )}
+
                         {comment.text.length > 0 ? (
                           <p className="whitespace-pre-wrap text-sm leading-6">
                             {comment.text}
@@ -395,6 +380,22 @@ export function SupportReceivedSummaryPage() {
                           <p className="text-muted-foreground text-sm">
                             {t("スタンプコメント", "Sticker comment")}
                           </p>
+                        )}
+
+                        {comment.sticker?.imageUrl && (
+                          <div className="flex items-center gap-2">
+                            <img
+                              src={comment.sticker.imageUrl}
+                              alt={comment.sticker.title || "sticker"}
+                              className="h-14 w-14 rounded-md object-cover"
+                            />
+                            {comment.sticker.title ? (
+                              <span className="text-muted-foreground text-xs">
+                                {t("スタンプ：", "Sticker: ")}
+                                {comment.sticker.title}
+                              </span>
+                            ) : null}
+                          </div>
                         )}
 
                         {comment.support && (
@@ -479,6 +480,12 @@ const receivedWorkCommentsQuery = graphql(
       }
       work {
         id
+        title
+        smallThumbnailImageURL
+      }
+      sticker {
+        id
+        imageUrl
         title
       }
       support {

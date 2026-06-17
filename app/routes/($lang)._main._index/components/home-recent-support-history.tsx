@@ -21,6 +21,7 @@ type SupportHistoryItem = {
   coinType: "FREE" | "PREMIUM"
   coinAmount: number
   ptAmount: number
+  isAnonymous: boolean
   createdAt: number
 }
 
@@ -34,8 +35,10 @@ type SupportHistoryResponse = {
 const toUserPath = (user: SupportUserSummary) =>
   `/users/${user.login ?? user.id}`
 
-const toUserLabel = (user: SupportUserSummary) =>
-  user.name ?? user.login ?? user.id
+const toUserLabel = (
+  user: SupportUserSummary,
+  fallback = "",
+) => user.name ?? user.login ?? user.id ?? fallback
 
 export function HomeRecentSupportHistory() {
   const t = useTranslation()
@@ -93,26 +96,39 @@ export function HomeRecentSupportHistory() {
                 className="grid max-w-[28rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 text-[10px]"
               >
                 <div className="min-w-0 flex items-center gap-1 truncate">
-                  <Link
-                    to={toUserPath(item.senderUser)}
-                    className="shrink-0 transition-opacity hover:opacity-70"
-                    title={toUserLabel(item.senderUser)}
-                  >
-                    <Avatar className="size-4">
-                      <AvatarImage
-                        src={withIconUrlFallback(item.senderUser.iconUrl)}
-                        alt={toUserLabel(item.senderUser)}
-                      />
-                      <AvatarFallback />
-                    </Avatar>
-                  </Link>
-                  <Link
-                    to={toUserPath(item.senderUser)}
-                    className="truncate transition-opacity hover:opacity-70 text-muted-foreground"
-                    title={toUserLabel(item.senderUser)}
-                  >
-                    {toUserLabel(item.senderUser)}
-                  </Link>
+                  {item.isAnonymous ? (
+                    <>
+                      <Avatar className="size-4">
+                        <AvatarFallback />
+                      </Avatar>
+                      <span className="truncate text-muted-foreground">
+                        {t("匿名", "Anonymous")}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to={toUserPath(item.senderUser)}
+                        className="shrink-0 transition-opacity hover:opacity-70"
+                        title={toUserLabel(item.senderUser)}
+                      >
+                        <Avatar className="size-4">
+                          <AvatarImage
+                            src={withIconUrlFallback(item.senderUser.iconUrl)}
+                            alt={toUserLabel(item.senderUser)}
+                          />
+                          <AvatarFallback />
+                        </Avatar>
+                      </Link>
+                      <Link
+                        to={toUserPath(item.senderUser)}
+                        className="truncate transition-opacity hover:opacity-70 text-muted-foreground"
+                        title={toUserLabel(item.senderUser)}
+                      >
+                        {toUserLabel(item.senderUser)}
+                      </Link>
+                    </>
+                  )}
                   <span className="shrink-0 text-muted-foreground">→</span>
                   <Link
                     to={toUserPath(item.recipientUser)}

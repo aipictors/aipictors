@@ -7,6 +7,10 @@
 import { Link } from "@remix-run/react"
 import { Trophy } from "lucide-react"
 import { useEffect, useState } from "react"
+import {
+  FreeSupportCoinIcon,
+  PremiumSupportCoinIcon,
+} from "~/components/support-coin-icons"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -38,6 +42,12 @@ type ApiResponse = {
 }
 
 const formatNumber = (v: number) => v.toLocaleString()
+const PREMIUM_COIN_PT_MULTIPLIER = 10
+
+const toPremiumCoinAmount = (row: SupportRankingItem) =>
+  Math.max(0, Math.floor(row.premiumPtAmount / PREMIUM_COIN_PT_MULTIPLIER))
+
+const toFreeCoinAmount = (row: SupportRankingItem) => Math.max(0, row.freePtAmount)
 
 const PREVIEW_LIMIT = 5
 
@@ -97,18 +107,35 @@ export function HomeSupportRankingSection() {
     return null
   }
 
-  const renderBreakdown = (row: SupportRankingItem) => (
-    <div className="mt-1 flex flex-wrap gap-1">
-      <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-        {formatNumber(row.freePtAmount)} pt
-        {t("（フリー）", " (Free)")}
-      </span>
-      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
-        {formatNumber(row.premiumPtAmount)} pt
-        {t("（プレミアム）", " (Premium)")}
-      </span>
-    </div>
-  )
+  const renderCoinBreakdown = (row: SupportRankingItem) => {
+    const premiumCoinAmount = toPremiumCoinAmount(row)
+    const freeCoinAmount = toFreeCoinAmount(row)
+
+    return (
+      <div className="mt-1 space-y-1 text-[11px]">
+        <p className="text-muted-foreground">{t("累計pt", "Cumulative pt")}</p>
+        <p className="font-bold text-sm">{formatNumber(row.ptAmount)}</p>
+        <div className="flex items-center justify-end gap-1 text-amber-700 dark:text-amber-400">
+          <PremiumSupportCoinIcon className="h-4 w-4" />
+          <span>
+            {t(
+              `${formatNumber(premiumCoinAmount)}コイン`,
+              `${formatNumber(premiumCoinAmount)} coins`,
+            )}
+          </span>
+        </div>
+        <div className="flex items-center justify-end gap-1 text-muted-foreground">
+          <FreeSupportCoinIcon className="h-4 w-4" />
+          <span>
+            {t(
+              `${formatNumber(freeCoinAmount)}コイン`,
+              `${formatNumber(freeCoinAmount)} coins`,
+            )}
+          </span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-3">
@@ -181,16 +208,8 @@ export function HomeSupportRankingSection() {
                       <p className="truncate font-semibold text-sm">
                         {row.userName || row.userLogin || row.userId}
                       </p>
-                      <p className="text-muted-foreground text-xs">
-                        {formatNumber(row.coinAmount)} coins
-                      </p>
-                      {renderBreakdown(row)}
                     </div>
-                    <div className="shrink-0 text-right">
-                      <p className="font-bold text-amber-500 text-sm">
-                        {formatNumber(row.ptAmount)} pt
-                      </p>
-                    </div>
+                    <div className="shrink-0 text-right">{renderCoinBreakdown(row)}</div>
                   </Link>
                 ))
               )}
@@ -239,16 +258,8 @@ export function HomeSupportRankingSection() {
                       <p className="truncate font-semibold text-sm">
                         {row.userName || row.userLogin || row.userId}
                       </p>
-                      <p className="text-muted-foreground text-xs">
-                        {formatNumber(row.coinAmount)} coins
-                      </p>
-                      {renderBreakdown(row)}
                     </div>
-                    <div className="shrink-0 text-right">
-                      <p className="font-bold text-sky-500 text-sm">
-                        {formatNumber(row.ptAmount)} pt
-                      </p>
-                    </div>
+                    <div className="shrink-0 text-right">{renderCoinBreakdown(row)}</div>
                   </Link>
                 ))
               )}

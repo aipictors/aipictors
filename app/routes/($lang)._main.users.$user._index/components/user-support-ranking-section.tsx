@@ -1,6 +1,10 @@
 import { Link } from "@remix-run/react"
 import { Trophy } from "lucide-react"
 import { useEffect, useState } from "react"
+import {
+  FreeSupportCoinIcon,
+  PremiumSupportCoinIcon,
+} from "~/components/support-coin-icons"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -14,8 +18,10 @@ type SupportRankingItem = {
   freePtAmount: number
   premiumPtAmount: number
   transferCount: number
+  isAnonymous?: boolean
   iconUrl?: string | null
   userName?: string | null
+  userLogin?: string | null
 }
 
 type ApiResponse = {
@@ -31,6 +37,10 @@ type ApiResponse = {
 }
 
 const formatNumber = (value: number) => value.toLocaleString()
+const PREMIUM_COIN_PT_MULTIPLIER = 10
+const toPremiumCoinAmount = (row: SupportRankingItem) =>
+  Math.max(0, Math.floor(row.premiumPtAmount / PREMIUM_COIN_PT_MULTIPLIER))
+const toFreeCoinAmount = (row: SupportRankingItem) => Math.max(0, row.freePtAmount)
 
 export function UserSupportRankingSection(props: {
   targetUserId: string
@@ -110,10 +120,9 @@ export function UserSupportRankingSection(props: {
           </p>
         ) : (
           items.map((row) => (
-            <Link
+            <div
               key={`${row.rank}-${row.userId}`}
-              to={`/users/${row.userLogin ?? row.userId}`}
-              className="flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/30"
+              className="flex items-center gap-3 rounded-lg border px-3 py-2"
             >
               <SupportRankAvatar
                 rank={row.rank}
@@ -122,29 +131,32 @@ export function UserSupportRankingSection(props: {
                 size="sm"
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-sm">
-                  {row.userName || row.userLogin || row.userId}
-                </p>
-                <p className="text-muted-foreground text-xs">
-                  {formatNumber(row.coinAmount)} coin / {row.transferCount}
-                  {t(" 回", " transfers")}
-                </p>
-                <div className="mt-1 flex flex-wrap gap-1">
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-                    {formatNumber(row.freePtAmount)} pt
-                    {t("（フリー）", " (Free)")}
-                  </span>
-                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
-                    {formatNumber(row.premiumPtAmount)} pt
-                    {t("（プレミアム）", " (Premium)")}
-                  </span>
+                {row.isAnonymous || !row.userLogin ? (
+                  <p className="truncate font-semibold text-sm">
+                    {row.userName || t("匿名", "Anonymous")}
+                  </p>
+                ) : (
+                  <Link
+                    to={`/users/${row.userLogin}`}
+                    className="truncate font-semibold text-sm transition-opacity hover:opacity-70"
+                  >
+                    {row.userName || row.userLogin}
+                  </Link>
+                )}
+              </div>
+              <div className="shrink-0 text-right space-y-1 text-[11px]">
+                <p className="text-muted-foreground">{t("累計pt", "Cumulative pt")}</p>
+                <p className="font-bold text-sm">{formatNumber(row.ptAmount)}</p>
+                <div className="flex items-center justify-end gap-1 text-amber-700 dark:text-amber-400">
+                  <PremiumSupportCoinIcon className="h-4 w-4" />
+                  <span>{t(`${formatNumber(toPremiumCoinAmount(row))}コイン`, `${formatNumber(toPremiumCoinAmount(row))} coins`)}</span>
+                </div>
+                <div className="flex items-center justify-end gap-1 text-muted-foreground">
+                  <FreeSupportCoinIcon className="h-4 w-4" />
+                  <span>{t(`${formatNumber(toFreeCoinAmount(row))}コイン`, `${formatNumber(toFreeCoinAmount(row))} coins`)}</span>
                 </div>
               </div>
-              <div className="shrink-0 text-right">
-                <p className="text-sky-500 text-xs">{t("累計pt", "Cumulative pt")}</p>
-                <p className="font-bold text-sm">{formatNumber(row.ptAmount)} pt</p>
-              </div>
-            </Link>
+            </div>
           ))
         )}
 

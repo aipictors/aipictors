@@ -15,6 +15,7 @@ import {
 } from "~/components/support-coin-icons"
 import { SupportSuccessDialog } from "~/components/support-success-dialog"
 import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -29,7 +30,6 @@ import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
-import { consumeSupportSuccessDialogOpportunity } from "~/utils/support-success-dialog"
 
 type Props = {
   targetUserId: string
@@ -160,6 +160,7 @@ export function SupportButton({
   const [customFreeCoinAmount, setCustomFreeCoinAmount] = useState<string>("0")
   const [customPremiumCoinAmount, setCustomPremiumCoinAmount] =
     useState<string>("0")
+  const [isAnonymous, setIsAnonymous] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [showCoinPurchase, setShowCoinPurchase] = useState(false)
   const [isSuccessOpen, setIsSuccessOpen] = useState(false)
@@ -296,6 +297,7 @@ export function SupportButton({
     const premium = free === 0 && currentPremiumCoinBalance > 0 ? 1 : 0
     setCustomFreeCoinAmount(String(free))
     setCustomPremiumCoinAmount(String(premium))
+    setIsAnonymous(false)
   }, [
     isOpen,
     currentFreeCoinBalance,
@@ -339,6 +341,7 @@ export function SupportButton({
               recipientUserId: targetUserId,
               coinType: "FREE",
               amount: breakdown.freeCoinsUsed,
+              isAnonymous,
               source: `profile-support:${requestId}:FREE`,
             }),
           }),
@@ -354,6 +357,7 @@ export function SupportButton({
               recipientUserId: targetUserId,
               coinType: "PREMIUM",
               amount: breakdown.premiumCoinsUsed,
+              isAnonymous,
               source: `profile-support:${requestId}:PREMIUM`,
             }),
           }),
@@ -391,14 +395,13 @@ export function SupportButton({
         Math.max(0, current - breakdown.premiumCoinsUsed),
       )
 
-      if (consumeSupportSuccessDialogOpportunity(targetUserId)) {
-        setSuccessThankYouMessage(resolvedThankYouMessage)
-        setSuccessTotalPt(breakdown.totalPt)
-        setIsSuccessOpen(true)
-      }
+      setSuccessThankYouMessage(resolvedThankYouMessage)
+      setSuccessTotalPt(breakdown.totalPt)
+      setIsSuccessOpen(true)
       setIsOpen(false)
       setSupportMode("default")
       setCoinAmount("10")
+      setIsAnonymous(false)
       onSuccess?.()
     } catch (e) {
       if (e instanceof Error) {
@@ -755,6 +758,18 @@ export function SupportButton({
                 </div>
               </div>
             )}
+
+            <div className="flex items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2">
+              <Checkbox
+                id="support-anonymous"
+                checked={isAnonymous}
+                onCheckedChange={(checked) => setIsAnonymous(checked === true)}
+                disabled={isLoading}
+              />
+              <Label htmlFor="support-anonymous" className="cursor-pointer text-sm">
+                {t("匿名で推す", "Support anonymously")}
+              </Label>
+            </div>
 
             {/* 残高不足時の警告 */}
             {!canSupport &&

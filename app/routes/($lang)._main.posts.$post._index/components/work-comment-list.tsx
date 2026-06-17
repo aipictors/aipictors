@@ -46,7 +46,6 @@ import {
   recordRecentStickerId,
   sortStickersByRecent,
 } from "~/utils/sticker-recent"
-import { consumeSupportSuccessDialogOpportunity } from "~/utils/support-success-dialog"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -203,6 +202,7 @@ export function WorkCommentList(props: Props) {
   const [isSupportOpen, setIsSupportOpen] = useState(false)
   const [supportFreeCoinAmount, setSupportFreeCoinAmount] = useState("0")
   const [supportPremiumCoinAmount, setSupportPremiumCoinAmount] = useState("0")
+  const [supportIsAnonymous, setSupportIsAnonymous] = useState(false)
   const [coinBalances, setCoinBalances] = useState({
     freeBalance: 0,
     premiumBalance: 0,
@@ -642,6 +642,7 @@ export function WorkCommentList(props: Props) {
               supportFreeCoinAmount: confirmedSupportDraft?.freeCoinAmount ?? 0,
               supportPremiumCoinAmount:
                 confirmedSupportDraft?.premiumCoinAmount ?? 0,
+              supportIsAnonymous,
               // TODO: Add isSensitive to GraphQL schema
               // isSensitive: isSensitive ?? false,
             },
@@ -662,6 +663,7 @@ export function WorkCommentList(props: Props) {
         setIsSupportOpen(false)
         setSupportFreeCoinAmount("0")
         setSupportPremiumCoinAmount("0")
+        setSupportIsAnonymous(false)
 
         if (confirmedSupportDraft) {
           setCoinBalances((current) => ({
@@ -675,12 +677,10 @@ export function WorkCommentList(props: Props) {
             ),
           }))
 
-          if (consumeSupportSuccessDialogOpportunity(props.workOwnerId)) {
-            setSupportSuccessState({
-              message: res.data.createWorkComment.supportThankYouMessage,
-              totalPt: confirmedSupportDraft.totalPt,
-            })
-          }
+          setSupportSuccessState({
+            message: res.data.createWorkComment.supportThankYouMessage,
+            totalPt: confirmedSupportDraft.totalPt,
+          })
         }
 
         setNewComments([
@@ -1092,6 +1092,19 @@ export function WorkCommentList(props: Props) {
                     )}
                   </span>
                 )}
+              </div>
+              <div className="mt-3 flex items-center gap-2 text-xs text-rose-800 dark:text-rose-100">
+                <Checkbox
+                  id="support-anonymous-checkbox"
+                  checked={supportIsAnonymous}
+                  onCheckedChange={(checked: boolean) =>
+                    setSupportIsAnonymous(checked === true)
+                  }
+                  disabled={!authContext.isLoggedIn}
+                />
+                <label htmlFor="support-anonymous-checkbox" className="cursor-pointer">
+                  {t("匿名で推す", "Support anonymously")}
+                </label>
               </div>
             </div>
           )}

@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from "@remix-run/reac
 import { CoinIcon } from "~/components/coin-icon"
 import { CoinHelpDialog } from "~/components/coin-help-dialog"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import { AmazonExchangeCodesPanel } from "~/components/amazon-exchange-codes-panel"
 import {
   Dialog,
   DialogContent,
@@ -707,6 +708,8 @@ export function PointsSettingsForm() {
         premiumBalance={summary?.premiumBalance ?? 0}
         exchangeablePremiumBalance={summary?.exchangeablePremiumBalance ?? 0}
       />
+
+      <AmazonExchangeCodesPanel />
 
       <div className="space-y-3 rounded-xl border p-4">
         <p className="font-semibold text-lg">

@@ -1,6 +1,10 @@
 import { json } from "@remix-run/cloudflare"
 import { Link, useLoaderData, useParams } from "@remix-run/react"
 import { Trophy } from "lucide-react"
+import {
+  FreeSupportCoinIcon,
+  PremiumSupportCoinIcon,
+} from "~/components/support-coin-icons"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -21,34 +25,61 @@ type SupportRankingItem = {
   freePtAmount: number
   premiumPtAmount: number
   transferCount: number
+  isAnonymous?: boolean
   iconUrl?: string | null
   userName?: string | null
   userLogin?: string | null
 }
 
-function PtBreakdown(props: {
+const PREMIUM_COIN_PT_MULTIPLIER = 10
+
+function CoinBreakdown(props: {
+  ptAmount: number
   freePtAmount: number
   premiumPtAmount: number
   align?: "left" | "right"
 }) {
   const t = useTranslation()
+  const premiumCoinAmount = Math.max(
+    0,
+    Math.floor(props.premiumPtAmount / PREMIUM_COIN_PT_MULTIPLIER),
+  )
+  const freeCoinAmount = Math.max(0, props.freePtAmount)
 
   return (
     <div
-      className={`flex flex-wrap gap-1 ${props.align === "right" ? "justify-end" : "justify-start"}`}
+      className={`space-y-1 text-[11px] ${
+        props.align === "right" ? "text-right" : "text-left"
+      }`}
     >
-      <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-        {t(
-          `${props.freePtAmount.toLocaleString()} pt（フリー）`,
-          `${props.freePtAmount.toLocaleString()} pt (Free)`,
-        )}
-      </span>
-      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
-        {t(
-          `${props.premiumPtAmount.toLocaleString()} pt（プレミアム）`,
-          `${props.premiumPtAmount.toLocaleString()} pt (Premium)`,
-        )}
-      </span>
+      <p className="text-muted-foreground">{t("累計pt", "Cumulative pt")}</p>
+      <p className="font-bold text-base">{props.ptAmount.toLocaleString()}</p>
+      <div
+        className={`flex items-center gap-1 text-amber-700 dark:text-amber-400 ${
+          props.align === "right" ? "justify-end" : "justify-start"
+        }`}
+      >
+        <PremiumSupportCoinIcon className="h-4 w-4" />
+        <span>
+          {t(
+            `${premiumCoinAmount.toLocaleString()}コイン`,
+            `${premiumCoinAmount.toLocaleString()} coins`,
+          )}
+        </span>
+      </div>
+      <div
+        className={`flex items-center gap-1 text-muted-foreground ${
+          props.align === "right" ? "justify-end" : "justify-start"
+        }`}
+      >
+        <FreeSupportCoinIcon className="h-4 w-4" />
+        <span>
+          {t(
+            `${freeCoinAmount.toLocaleString()}コイン`,
+            `${freeCoinAmount.toLocaleString()} coins`,
+          )}
+        </span>
+      </div>
     </div>
   )
 }
@@ -183,11 +214,10 @@ export default function UserSupports () {
             </p>
           ) : (
             items.map((row) => (
-              <Link
-                key={`${row.rank}-${row.userId}`}
-                to={`/users/${row.userLogin ?? row.userId}`}
-                className="flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors hover:bg-muted/30"
-              >
+                <div
+                  key={`${row.rank}-${row.userId}`}
+                  className="flex items-center gap-3 rounded-xl border px-4 py-3"
+                >
                 <SupportRankAvatar
                   rank={row.rank}
                   iconUrl={row.iconUrl}
@@ -195,31 +225,37 @@ export default function UserSupports () {
                   size="md"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">
-                    {row.userName || row.userLogin || row.userId}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    @{row.userLogin ?? row.userId}
-                  </p>
+                    {row.isAnonymous || !row.userLogin ? (
+                      <p className="truncate font-semibold">
+                        {row.userName || t("匿名", "Anonymous")}
+                      </p>
+                    ) : (
+                      <>
+                        <Link
+                          to={`/users/${row.userLogin}`}
+                          className="truncate font-semibold transition-opacity hover:opacity-70"
+                        >
+                          {row.userName || row.userLogin}
+                        </Link>
+                        <p className="text-muted-foreground text-xs">
+                          @{row.userLogin}
+                        </p>
+                      </>
+                    )}
                   <p className="text-muted-foreground text-sm">
                     {row.coinAmount.toLocaleString()} coin / {row.transferCount}
                     {t(" 回の支援", " transfers")}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold text-sky-500 text-lg">
-                    {t("累計pt", "Cumulative pt")}
-                  </p>
-                  <p className="font-bold text-lg">
-                    {row.ptAmount.toLocaleString()} pt
-                  </p>
-                  <PtBreakdown
+                <div className="shrink-0 text-right">
+                  <CoinBreakdown
+                    ptAmount={row.ptAmount}
                     freePtAmount={row.freePtAmount}
                     premiumPtAmount={row.premiumPtAmount}
                     align="right"
                   />
                 </div>
-              </Link>
+              </div>
             ))
           )}
         </CardContent>

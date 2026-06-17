@@ -9,6 +9,7 @@ type RecentReceivedTransfer = {
   coinType: "FREE" | "PREMIUM"
   coinAmount: number
   ptAmount: number
+  isAnonymous: boolean
   createdAt: number
 }
 
@@ -19,12 +20,21 @@ type UserSummary = {
   iconUrl: string | null
 }
 
+const ANONYMOUS_SUPPORT_USER_ID = "__anonymous__"
+
 async function enrichRecentTransfers(
   items: RecentReceivedTransfer[],
 ): Promise<RecentReceivedTransfer[]> {
   const uniqueUserIds = Array.from(
     new Set(
-      items.flatMap((item) => [item.senderUser.id, item.recipientUser.id]),
+      items.flatMap((item) => {
+        const senderIds =
+          item.isAnonymous || item.senderUser.id === ANONYMOUS_SUPPORT_USER_ID
+            ? []
+            : [item.senderUser.id]
+
+        return [...senderIds, item.recipientUser.id]
+      }),
     ),
   )
 
@@ -50,6 +60,10 @@ async function enrichRecentTransfers(
     ...item,
     senderUser: {
       ...item.senderUser,
+      id:
+        item.isAnonymous || item.senderUser.id === ANONYMOUS_SUPPORT_USER_ID
+          ? ANONYMOUS_SUPPORT_USER_ID
+          : item.senderUser.id,
       login: userMap.get(item.senderUser.id)?.login ?? item.senderUser.login,
       name: userMap.get(item.senderUser.id)?.name ?? item.senderUser.name,
       iconUrl:

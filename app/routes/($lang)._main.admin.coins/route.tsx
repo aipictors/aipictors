@@ -1,9 +1,10 @@
 import { gql, useMutation, useQuery } from "@apollo/client/index"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
+import { getAuth, getIdToken } from "firebase/auth"
 import { Coins, Loader2Icon, Shield } from "lucide-react"
 import { Link } from "@remix-run/react"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
@@ -81,6 +82,7 @@ const adminCoinOperationHistoriesQuery = gql`
 type OperationType = "GRANT" | "REDUCE"
 type TargetScope = "ALL" | "PLAN" | "USER_IDS"
 type PlanType = "FREE" | "TWO_DAYS" | "LITE" | "STANDARD" | "PREMIUM"
+type ExchangeStatusFilter = "PENDING" | "APPROVED" | "REFLECTED"
 
 type AdminCoinOperationHistory = {
   id: string
@@ -98,6 +100,23 @@ type AdminCoinOperationHistory = {
   freeReducedTotal: number
   premiumReducedTotal: number
   expiresAt: number | null
+}
+
+type AmazonExchangeAdminRequest = {
+  id: string
+  userId: string
+  packageId: string
+  coinAmount: number
+  amazonPointYen: number
+  status: "PENDING" | "APPROVED"
+  amazonGiftCode: string | null
+  appliedAt: number
+  approvedAt: number | null
+}
+
+type AmazonExchangeAdminListData = {
+  requests: AmazonExchangeAdminRequest[]
+  totalCount: number
 }
 
 const planOptions: Array<{ value: PlanType; label: string }> = [
@@ -197,6 +216,17 @@ export default function AdminCoinsPage() {
   const [expiresAtInput, setExpiresAtInput] = useState("")
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [lastResult, setLastResult] = useState<any>(null)
+  const [exchangeListData, setExchangeListData] =
+    useState<AmazonExchangeAdminListData | null>(null)
+  const [isLoadingExchangeList, setIsLoadingExchangeList] = useState(false)
+  const [exchangeStatusFilter, setExchangeStatusFilter] =
+    useState<ExchangeStatusFilter>("PENDING")
+  const [giftCodeByRequestId, setGiftCodeByRequestId] = useState<
+    Record<string, string>
+  >({})
+  const [approvingRequestId, setApprovingRequestId] = useState<string | null>(
+    null,
+  )
 
   const { data: viewerData, loading: viewerLoading } = useQuery(viewerQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -225,6 +255,158 @@ export default function AdminCoinsPage() {
   const parsedUserIds = parseUserIdsText(userIdsText)
   const histories = (historyData?.adminCoinOperationHistories ?? []) as AdminCoinOperationHistory[]
   const historyCount = historyData?.adminCoinOperationHistoriesCount ?? 0
+
+  const withAuthHeader = async () => {
+    const currentUser = getAuth().currentUser
+    if (!currentUser) {
+      throw new Error("ログインが必要です。")
+    }
+
+    const idToken = await getIdToken(currentUser)
+
+    return {
+      authorization: `Bearer ${idToken}`,
+      "content-type": "application/json",
+    }
+  }
+
+  const loadExchangeList = async () => {
+    try {
+      setIsLoadingExchangeList(true)
+      const headers = await withAuthHeader()
+
+      const [pendingResponse, approvedResponse] = await Promise.all([
+        fetch(`/api/admin/amazon-exchange?status=PENDING&limit=100`, {
+          method: "GET",
+          headers,
+        }),
+        fetch(`/api/admin/amazon-exchange?status=APPROVED&limit=100`, {
+          method: "GET",
+          headers,
+        }),
+      ])
+
+      const [pendingJson, approvedJson] = (await Promise.all([
+        pendingResponse.json(),
+        approvedResponse.json(),
+      ])) as Array<{
+        error: string | null
+        data?: AmazonExchangeAdminListData
+      }>
+
+      if (
+        !pendingResponse.ok ||
+        !approvedResponse.ok ||
+        pendingJson.error ||
+        approvedJson.error
+      ) {
+        throw new Error(
+          pendingJson.error ?? approvedJson.error ?? "交換申請一覧の取得に失敗しました。",
+        )
+      }
+
+      const pendingRequests = pendingJson.data?.requests ?? []
+      const approvedRequests = approvedJson.data?.requests ?? []
+      const mergedRequests = [...pendingRequests, ...approvedRequests].sort(
+        (a, b) => (b.appliedAt ?? 0) - (a.appliedAt ?? 0),
+      )
+
+      setExchangeListData({
+        requests: mergedRequests,
+        totalCount:
+          (pendingJson.data?.totalCount ?? pendingRequests.length) +
+          (approvedJson.data?.totalCount ?? approvedRequests.length),
+      })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "交換申請一覧の取得に失敗しました。"
+      toast.error(message)
+    } finally {
+      setIsLoadingExchangeList(false)
+    }
+  }
+
+  const handleApproveExchangeRequest = async (requestId: string) => {
+    const giftCode = (giftCodeByRequestId[requestId] ?? "").trim()
+    if (!giftCode) {
+      toast.error("Amazonギフトコードを入力してください。")
+      return
+    }
+
+    try {
+      setApprovingRequestId(requestId)
+      const headers = await withAuthHeader()
+      const response = await fetch("/api/admin/amazon-exchange", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          requestId,
+          amazonGiftCode: giftCode,
+        }),
+      })
+
+      const json = (await response.json()) as {
+        error: string | null
+        data?: { notificationSent?: boolean }
+      }
+
+      if (!response.ok || json.error) {
+        throw new Error(json.error ?? "コード反映に失敗しました。")
+      }
+
+      setGiftCodeByRequestId((current) => ({
+        ...current,
+        [requestId]: "",
+      }))
+
+      toast.success(
+        json.data?.notificationSent === false
+          ? "コード反映を完了しました。通知作成は確認できませんでした。"
+          : "コード反映と承認を完了しました。",
+      )
+
+      await loadExchangeList()
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "コード反映に失敗しました。"
+      toast.error(message)
+    } finally {
+      setApprovingRequestId(null)
+    }
+  }
+
+  useEffect(() => {
+    if (!hasPermission) {
+      return
+    }
+
+    void loadExchangeList()
+  }, [hasPermission])
+
+  const exchangeRequests = exchangeListData?.requests ?? []
+  const pendingExchangeRequests = exchangeRequests.filter(
+    (request) => request.status === "PENDING",
+  )
+  const approvedExchangeRequests = exchangeRequests.filter(
+    (request) => request.status === "APPROVED",
+  )
+  const reflectedExchangeRequests = approvedExchangeRequests.filter(
+    (request) => (request.amazonGiftCode?.trim().length ?? 0) > 0,
+  )
+
+  const displayedExchangeRequests = exchangeRequests.filter((request) => {
+    if (exchangeStatusFilter === "PENDING") {
+      return request.status === "PENDING"
+    }
+
+    if (exchangeStatusFilter === "APPROVED") {
+      return request.status === "APPROVED"
+    }
+
+    return (request.amazonGiftCode?.trim().length ?? 0) > 0
+  })
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -611,6 +793,142 @@ export default function AdminCoinsPage() {
           </Card>
         </div>
       </div>
+
+      <Card className="mt-6 rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
+        <CardHeader>
+          <CardTitle className="text-lg">Amazonギフト交換申請</CardTitle>
+          <CardDescription className="text-slate-400">
+            未承認・承認済み・コード反映済みの申請を管理できます。
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant={exchangeStatusFilter === "PENDING" ? "default" : "outline"}
+              onClick={() => setExchangeStatusFilter("PENDING")}
+              className={exchangeStatusFilter === "PENDING" ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400" : "border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"}
+            >
+              未承認 ({pendingExchangeRequests.length})
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={exchangeStatusFilter === "APPROVED" ? "default" : "outline"}
+              onClick={() => setExchangeStatusFilter("APPROVED")}
+              className={exchangeStatusFilter === "APPROVED" ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400" : "border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"}
+            >
+              承認 ({approvedExchangeRequests.length})
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={exchangeStatusFilter === "REFLECTED" ? "default" : "outline"}
+              onClick={() => setExchangeStatusFilter("REFLECTED")}
+              className={exchangeStatusFilter === "REFLECTED" ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400" : "border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"}
+            >
+              コード反映 ({reflectedExchangeRequests.length})
+            </Button>
+
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => void loadExchangeList()}
+              disabled={isLoadingExchangeList}
+              className="ml-auto border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
+            >
+              {isLoadingExchangeList ? "更新中..." : "一覧を更新"}
+            </Button>
+          </div>
+
+          {isLoadingExchangeList ? (
+            <p className="text-sm text-slate-400">申請一覧を読み込み中...</p>
+          ) : displayedExchangeRequests.length === 0 ? (
+            <p className="text-sm text-slate-400">該当する申請はありません。</p>
+          ) : (
+            <div className="space-y-3">
+              {displayedExchangeRequests.map((request) => {
+                const isPending = request.status === "PENDING"
+                const currentGiftCode = giftCodeByRequestId[request.id] ?? ""
+
+                return (
+                  <div
+                    key={request.id}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-white">
+                          ¥{request.amazonPointYen.toLocaleString()} 分 / {request.coinAmount.toLocaleString()} コイン
+                        </p>
+                        <p className="mt-1 text-xs text-slate-400">
+                          申請ID: {request.id}
+                        </p>
+                        <p className="text-xs text-slate-400">ユーザID: {request.userId}</p>
+                        <p className="text-xs text-slate-400">
+                          申請日時: {jstDateTimeFormatter.format(new Date(request.appliedAt * 1000))}
+                        </p>
+                        {request.approvedAt ? (
+                          <p className="text-xs text-slate-400">
+                            承認日時: {jstDateTimeFormatter.format(new Date(request.approvedAt * 1000))}
+                          </p>
+                        ) : null}
+                      </div>
+
+                      <span
+                        className={
+                          isPending
+                            ? "rounded-full bg-yellow-500/20 px-2 py-0.5 text-xs text-yellow-300"
+                            : "rounded-full bg-emerald-500/20 px-2 py-0.5 text-xs text-emerald-300"
+                        }
+                      >
+                        {isPending ? "未承認" : "承認"}
+                      </span>
+                    </div>
+
+                    {(request.amazonGiftCode?.trim().length ?? 0) > 0 ? (
+                      <div className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-500/10 p-3">
+                        <p className="text-xs text-slate-300">反映済みコード</p>
+                        <p className="select-all break-all font-mono text-sm text-white">
+                          {request.amazonGiftCode}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    {isPending ? (
+                      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                        <Input
+                          value={currentGiftCode}
+                          onChange={(event) =>
+                            setGiftCodeByRequestId((current) => ({
+                              ...current,
+                              [request.id]: event.target.value,
+                            }))
+                          }
+                          placeholder="Amazonギフトコード"
+                          className="border-white/10 bg-white/5 font-mono text-slate-100"
+                        />
+                        <Button
+                          type="button"
+                          onClick={() => void handleApproveExchangeRequest(request.id)}
+                          disabled={approvingRequestId === request.id}
+                          className="bg-cyan-500 text-slate-950 hover:bg-cyan-400"
+                        >
+                          {approvingRequestId === request.id
+                            ? "反映中..."
+                            : "コードを反映して承認"}
+                        </Button>
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </AdminPageShell>
   )
 }

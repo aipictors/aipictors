@@ -22,6 +22,7 @@ import {
   ResponsivePhotoWorksAlbum,
   PhotoAlbumWorkFragment,
 } from "~/components/responsive-photo-works-album"
+import { AmazonExchangeCodesPanel } from "~/components/amazon-exchange-codes-panel"
 import { SupportRankingSection } from "~/routes/($lang).settings.points/components/support-ranking-section"
 
 type MyEventsPreviewQueryData = {
@@ -294,6 +295,17 @@ export function DashboardHomeContents () {
 
         <div className="w-full">
           <SupportRankingSection />
+        </div>
+
+        <div className="w-full">
+          <DashboardHomeContentContainer
+            title={t("Amazon交換コード", "Amazon exchange codes")}
+          >
+            <AmazonExchangeCodesPanel
+              className="space-y-3 rounded-md"
+              maxItems={3}
+            />
+          </DashboardHomeContentContainer>
         </div>
 
         <div className="w-full">
