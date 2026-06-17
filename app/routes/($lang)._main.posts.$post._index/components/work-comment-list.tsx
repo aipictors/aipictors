@@ -926,6 +926,7 @@ export function WorkCommentList(props: Props) {
                 <div className="min-w-0 flex-1">
                   <AutoResizeTextarea
                     autoResize
+                    minHeight="46px"
                     onChange={(event) => {
                       setComment(event.target.value)
                     }}
