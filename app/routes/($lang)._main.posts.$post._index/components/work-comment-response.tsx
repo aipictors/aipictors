@@ -95,6 +95,24 @@ export function WorkCommentResponse(props: Props) {
     setTargetLanguage((navigator.language ?? "en").split("-")[0] ?? "en")
   }, [])
 
+  React.useEffect(() => {
+    if (typeof window === "undefined" || props.isMine) {
+      return
+    }
+
+    const replyDraftStorageKey =
+      `aipictors:reply-comment-draft:${props.targetCommentId}`
+
+    try {
+      const stored = window.localStorage.getItem(replyDraftStorageKey)
+      if (stored && stored.trim().length > 0) {
+        setOpenReplyInput(true)
+      }
+    } catch {
+      // localStorage が使えない場合は自動オープンしない。
+    }
+  }, [props.targetCommentId, props.isMine])
+
   const isProbablyJapanese = (text: string) =>
     /[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF]/.test(text)
 

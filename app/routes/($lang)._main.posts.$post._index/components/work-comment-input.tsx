@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Loader2Icon, StampIcon } from "lucide-react"
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect, useRef } from "react"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
@@ -42,6 +42,58 @@ export function ReplyCommentInput (props: Props) {
   const [comment, setComment] = useState("")
 
   const [isSensitive, setIsSensitive] = useState(false)
+
+  const replyDraftStorageKey = `aipictors:reply-comment-draft:${props.targetCommentId}`
+  const skipNextDraftPersistRef = useRef(true)
+
+  const clearReplyDraft = () => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    try {
+      window.localStorage.removeItem(replyDraftStorageKey)
+    } catch {
+      // localStorage が使えなくても返信送信自体は継続する。
+    }
+  }
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    skipNextDraftPersistRef.current = true
+
+    try {
+      const stored = window.localStorage.getItem(replyDraftStorageKey)
+      setComment(stored ?? "")
+    } catch {
+      setComment("")
+    }
+  }, [replyDraftStorageKey])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    if (skipNextDraftPersistRef.current) {
+      skipNextDraftPersistRef.current = false
+      return
+    }
+
+    try {
+      if (comment.trim().length === 0) {
+        window.localStorage.removeItem(replyDraftStorageKey)
+        return
+      }
+
+      window.localStorage.setItem(replyDraftStorageKey, comment)
+    } catch {
+      // localStorage が使えなくても入力・送信自体は継続する。
+    }
+  }, [comment, replyDraftStorageKey])
 
   const sendComment = async (
     text: string,
@@ -124,6 +176,7 @@ export function ReplyCommentInput (props: Props) {
             onChange={(event) => {
               setComment(event.target.value)
             }}
+            value={comment}
             placeholder={t("コメントする", "Add a comment")}
             disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
           />
@@ -139,6 +192,7 @@ export function ReplyCommentInput (props: Props) {
           </div>
           {isCreatingReplyComment ? (
             <Button onClick={() => {}}>
+          clearReplyDraft()
               <Loader2Icon className={"w-16 animate-spin"} />
             </Button>
           ) : (
