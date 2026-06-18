@@ -1,6 +1,8 @@
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { GradientBorderButton } from "~/components/button/gradient-border-button"
+import { CoinIcon } from "~/components/coin-icon"
 import { LoginDialogButton } from "~/components/login-dialog-button"
+import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -18,6 +20,7 @@ import {
 import { Label } from "~/components/ui/label"
 import { Switch } from "~/components/ui/switch"
 import { AuthContext } from "~/contexts/auth-context"
+import { Link } from "@remix-run/react"
 import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "~/routes/($lang).generation._index/components/submission-view/generation-terms-button"
@@ -36,10 +39,16 @@ type Props = {
   isCoinSummaryLoading: boolean
   requestCoinCost: number
   ownedCoinCount: number
+  freeCoinBalance: number
+  premiumCoinBalance: number
   termsText: string
   availableImageGenerationMaxTasksCount: number
   onCreateTask: () => void
   onSignTerms: () => void
+}
+
+const formatCoinAmount = (value: number) => {
+  return value.toLocaleString()
 }
 
 /**
@@ -115,6 +124,26 @@ export function GenerationSubmitOperationParts (props: Props) {
 
   return (
     <>
+      {authContext.isLoggedIn && (
+        <div className="flex items-center gap-2 px-1 text-[11px] leading-none text-muted-foreground">
+          <Link
+            to="/settings/points"
+            className="shrink-0 rounded-full border border-border/60 bg-background/95 px-3 py-2 text-[11px] font-medium text-foreground/80 shadow-sm"
+          >
+            詳細
+          </Link>
+          <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/60 bg-background/95 px-3 py-2 shadow-sm">
+            <CoinIcon className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">{formatCoinAmount(props.freeCoinBalance)}</span>
+          </div>
+          <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/60 bg-background/95 px-3 py-2 shadow-sm">
+            <PremiumCoinIcon className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">
+              {formatCoinAmount(props.premiumCoinBalance)}
+            </span>
+          </div>
+        </div>
+      )}
       <div className="flex items-center">
         <div className="flex items-center md:hidden">
           <DropdownMenu>

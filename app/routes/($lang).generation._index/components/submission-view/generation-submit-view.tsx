@@ -1,5 +1,4 @@
 import { AppFixedContent } from "~/components/app/app-fixed-content"
-import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { getAuth } from "firebase/auth"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
@@ -11,7 +10,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean, useMediaQuery } from "usehooks-ts"
 import { VerificationDialog } from "~/components/verification-dialog"
-import { Link, useNavigate, useSearchParams } from "@remix-run/react"
+import { useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -867,6 +866,29 @@ export function GenerationSubmissionView (props: Props) {
     }
   }, [authContext.isLoggedIn])
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    const onResultArrived = () => {
+      loadCoinSummary().catch((error) => {
+        if (error instanceof Error) {
+          logWarn({
+            source: "GenerationSubmit",
+            message: "Failed to refresh coin summary after result update",
+            details: { message: error.message },
+          })
+        }
+      })
+    }
+
+    window.addEventListener("generation:result-arrived", onResultArrived)
+    return () => {
+      window.removeEventListener("generation:result-arrived", onResultArrived)
+    }
+  }, [authContext.isLoggedIn])
+
   // 移動: createTaskCore をコンポーネント内に配置（スコープ修正）
   const createTaskCore = async (
     taskCount: number,
@@ -1122,29 +1144,6 @@ export function GenerationSubmissionView (props: Props) {
 
   return (
     <>
-      {authContext.isLoggedIn && coinSummary !== null && (
-        <div className="mb-3 rounded-xl border bg-background/95 p-3 text-sm shadow-sm">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <div>
-              <span className="text-muted-foreground">フリーコイン </span>
-              <span className="font-semibold">{formatCoinAmount(coinSummary.freeBalance)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <PremiumCoinIcon className="h-4 w-4" />
-              <span className="text-muted-foreground">プレミアムコイン </span>
-              <span className="font-semibold">
-                {formatCoinAmount(coinSummary.premiumBalance)}
-              </span>
-            </div>
-            <Link
-              to="/settings/points"
-              className="text-sm text-sky-600 underline underline-offset-2"
-            >
-              履歴
-            </Link>
-          </div>
-        </div>
-      )}
       <AppFixedContent position="bottom">
         <div className="space-y-2">
           <GenerationSubmitOperationParts
@@ -1162,6 +1161,8 @@ export function GenerationSubmissionView (props: Props) {
             isCoinSummaryLoading={isCoinSummaryLoading}
             requestCoinCost={requestCoinCost}
             ownedCoinCount={ownedCoinCount}
+            freeCoinBalance={coinSummary?.freeBalance ?? 0}
+            premiumCoinBalance={coinSummary?.premiumBalance ?? 0}
             termsText={props.termsText}
             availableImageGenerationMaxTasksCount={
               remainingImageGenerationTasksCount

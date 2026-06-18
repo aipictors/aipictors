@@ -257,7 +257,11 @@ export function GenerationCoinHistoryTab () {
     }
 
     window.addEventListener("generation:task-requested", handler)
-    return () => window.removeEventListener("generation:task-requested", handler)
+    window.addEventListener("generation:result-arrived", handler)
+    return () => {
+      window.removeEventListener("generation:task-requested", handler)
+      window.removeEventListener("generation:result-arrived", handler)
+    }
   }, [])
 
   return (

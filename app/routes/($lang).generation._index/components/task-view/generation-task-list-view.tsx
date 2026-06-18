@@ -113,6 +113,7 @@ export function GenerationTaskListView (props: Props) {
     null,
   )
   const autoRefreshBaselineTasksCountRef = useRef<number>(0)
+  const previousResultCountRef = useRef<number | null>(null)
   const isAutoRefreshingRef = useRef(false)
   const autoRefreshRequestedAtRef = useRef<number>(0)
 
@@ -242,14 +243,26 @@ export function GenerationTaskListView (props: Props) {
 
   const refreshAndMaybeStop = useCallback(async () => {
     const taskResult = await taskRefetch()
-    await resultRefetch()
+    const resultResult = await resultRefetch()
 
     const latestTasksCount =
       taskResult.data?.viewer?.imageGenerationTasks?.length ?? 0
+    const latestResultsCount =
+      resultResult.data?.viewer?.imageGenerationResults?.length ?? 0
     const inProgressCount =
       queryData.userStatus?.inProgressImageGenerationTasksCount ?? 0
     const reservedCount =
       queryData.userStatus?.inProgressImageGenerationReservedTasksCount ?? 0
+
+    const previousResultCount = previousResultCountRef.current
+    if (
+      previousResultCount !== null &&
+      latestResultsCount > previousResultCount &&
+      typeof window !== "undefined"
+    ) {
+      window.dispatchEvent(new CustomEvent("generation:result-arrived"))
+    }
+    previousResultCountRef.current = latestResultsCount
 
     if (
       latestTasksCount === 0 &&
@@ -317,6 +330,11 @@ export function GenerationTaskListView (props: Props) {
       window.removeEventListener("generation:task-requested", onRequested)
     }
   }, [startAutoRefresh])
+
+  useEffect(() => {
+    previousResultCountRef.current =
+      results?.viewer?.imageGenerationResults?.length ?? 0
+  }, [results?.viewer?.imageGenerationResults?.length])
 
   useEffect(() => {
     return () => {

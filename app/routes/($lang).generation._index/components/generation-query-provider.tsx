@@ -114,6 +114,20 @@ export function GenerationQueryProvider (props: Props) {
   }, [isTimeout, refetch])
 
   useEffect(() => {
+    // 生成結果が増えたときにも、残り枚数や進行中数を再取得する
+    const onResultArrived = () => {
+      scheduleStatusRefetchBurst()
+    }
+    if (typeof window !== "undefined") {
+      window.addEventListener("generation:result-arrived", onResultArrived)
+      return () => {
+        window.removeEventListener("generation:result-arrived", onResultArrived)
+      }
+    }
+    return
+  }, [isTimeout, refetch])
+
+  useEffect(() => {
     // 生成中/予約中の間だけ定期的にステータスを更新する
     const time = setInterval(() => {
       if (isTimeout) {
