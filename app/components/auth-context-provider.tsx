@@ -53,6 +53,19 @@ export function AuthContextProvider (props: Props): React.ReactNode {
   useEffect(() => {
     if (typeof document === "undefined") return
 
+    let isAuthStateResolved = false
+
+    // onAuthStateChanged が返ってこないケース向けのフェイルセーフ。
+    // モバイルブラウザで稀に初期化が止まる場合でも、永久ローディングを避ける。
+    const initialAuthTimeout = setTimeout(() => {
+      if (isAuthStateResolved) return
+
+      debugLog.auth("AuthContextProvider: auth init timeout fallback")
+      setCurrentUser(null)
+      setClaims(null)
+      setLoadingState(false)
+    }, 8000)
+
     // モバイル端末の検出
     const isMobile =
       typeof navigator !== "undefined" &&
@@ -70,6 +83,9 @@ export function AuthContextProvider (props: Props): React.ReactNode {
     })
 
     const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
+      isAuthStateResolved = true
+      clearTimeout(initialAuthTimeout)
+
       debugLog.auth("AuthStateChanged:", {
         hasUser: !!user,
         userId: user?.uid,
@@ -215,7 +231,10 @@ export function AuthContextProvider (props: Props): React.ReactNode {
         })
     })
 
-    return () => unsubscribe()
+    return () => {
+      clearTimeout(initialAuthTimeout)
+      unsubscribe()
+    }
   }, [])
 
   // 読み込み中

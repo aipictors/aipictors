@@ -23,16 +23,32 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const startCoord = useRef({ x: 0, y: 0 })
   const prevTranslate = useRef({ x: 0, y: 0 })
   const lastTap = useRef(0)
+  const dragMovedRef = useRef(false)
+  const dragStartedRef = useRef(false)
 
   const openPreview = () => {
     setIsOpen(true)
     setTranslate({ x: 0, y: 0 })
     setScale(1)
+    setIsDragging(false)
+    dragMovedRef.current = false
+    dragStartedRef.current = false
+    startCoord.current = { x: 0, y: 0 }
+    prevTranslate.current = { x: 0, y: 0 }
     setShowKeyboardHint(true)
     props.setCurrentIndex(props.imageURLs.indexOf(props.thumbnailUrl))
   }
 
-  const closePreview = () => setIsOpen(false)
+  const closePreview = () => {
+    setIsOpen(false)
+    setScale(1)
+    setTranslate({ x: 0, y: 0 })
+    setIsDragging(false)
+    dragMovedRef.current = false
+    dragStartedRef.current = false
+    startCoord.current = { x: 0, y: 0 }
+    prevTranslate.current = { x: 0, y: 0 }
+  }
 
   const handleKeyDown = (e: KeyboardEvent) => {
     // Windows のブラウザ戻る/進む（Alt+←/Alt+→）はブラウザ側に任せる
@@ -134,11 +150,14 @@ export function ImagesPreview(props: Props): React.ReactNode {
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    dragMovedRef.current = false
     if (scale !== 1) {
+      dragStartedRef.current = true
       setIsDragging(true)
       startCoord.current = { x: e.clientX, y: e.clientY }
       prevTranslate.current = { ...translate }
     } else {
+      dragStartedRef.current = false
       startCoord.current = { x: e.clientX, y: e.clientY }
       prevTranslate.current = { ...translate }
     }
@@ -147,6 +166,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const handleMouseUp: React.MouseEventHandler<HTMLImageElement> = (e) => {
     if (isDragging) {
       setIsDragging(false)
+      dragStartedRef.current = false
     } else {
       const deltaX = e.clientX - startCoord.current.x
       const swipeDistance = Math.abs(deltaX)
@@ -171,6 +191,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
     if (isDragging && imgRef.current) {
       const deltaX = e.clientX - startCoord.current.x
       const deltaY = e.clientY - startCoord.current.y
+      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+        dragMovedRef.current = true
+      }
       setTranslate({
         x: prevTranslate.current.x + deltaX,
         y: prevTranslate.current.y + deltaY,
@@ -179,6 +202,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
   }
 
   const handleTouchStart: React.TouchEventHandler<HTMLImageElement> = (e) => {
+    dragMovedRef.current = false
     if (scale !== 1) {
       setIsDragging(true) // ドラッグ開始
     }
@@ -192,6 +216,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
     if (isDragging) {
       const deltaX = e.touches[0].clientX - startCoord.current.x
       const deltaY = e.touches[0].clientY - startCoord.current.y
+      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+        dragMovedRef.current = true
+      }
       setTranslate({
         x: prevTranslate.current.x + deltaX,
         y: prevTranslate.current.y + deltaY,
@@ -289,8 +316,52 @@ export function ImagesPreview(props: Props): React.ReactNode {
     }
   }, [isOpen])
 
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!isDragging) {
+        return
+      }
+
+      const deltaX = e.clientX - startCoord.current.x
+      const deltaY = e.clientY - startCoord.current.y
+
+      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+        dragMovedRef.current = true
+      }
+
+      setTranslate({
+        x: prevTranslate.current.x + deltaX,
+        y: prevTranslate.current.y + deltaY,
+      })
+    }
+
+    const handleGlobalMouseUp = () => {
+      if (isDragging) {
+        setIsDragging(false)
+      }
+    }
+
+    window.addEventListener("mousemove", handleGlobalMouseMove)
+    window.addEventListener("mouseup", handleGlobalMouseUp)
+
+    return () => {
+      window.removeEventListener("mousemove", handleGlobalMouseMove)
+      window.removeEventListener("mouseup", handleGlobalMouseUp)
+    }
+  }, [isOpen, isDragging])
+
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
+      if (isDragging || dragMovedRef.current || dragStartedRef.current) {
+        setIsDragging(false)
+        dragMovedRef.current = false
+        dragStartedRef.current = false
+        return
+      }
       closePreview()
     }
   }
@@ -314,6 +385,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
   }
 
   const handleMainTouchStart: React.TouchEventHandler<HTMLImageElement> = (e) => {
+    dragMovedRef.current = false
     startCoord.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
@@ -322,6 +394,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
   }
 
   const handleMainMouseDown = (e: React.MouseEvent) => {
+    dragMovedRef.current = false
     startCoord.current = { x: e.clientX, y: e.clientY }
     prevTranslate.current = { ...translate }
   }

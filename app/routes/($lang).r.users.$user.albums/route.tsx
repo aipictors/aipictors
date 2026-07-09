@@ -31,6 +31,8 @@ export async function loader(props: LoaderFunctionArgs) {
       limit: 32,
       where: {
         ownerUserId: userIdResp.data.user.id,
+        ratings: ["R18", "R18G"],
+        isSensitive: true,
         needInspected: false,
       },
     },

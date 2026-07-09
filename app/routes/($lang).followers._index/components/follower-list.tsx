@@ -23,9 +23,11 @@ import {
 } from "~/components/ui/select"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
+import { useLocation } from "@remix-run/react"
 
 export function FollowerList () {
   const [searchParams, setSearchParams] = useSearchParams()
+  const location = useLocation()
 
   // URL パラメータから取得
   const mode = searchParams.get("mode") || "default"
@@ -47,6 +49,16 @@ export function FollowerList () {
 
   const authContext = useContext(AuthContext)
 
+  const isSensitivePage = /(^|\/)r(\/|$)/.test(location.pathname)
+
+  const followersWorksWhere = isSensitivePage
+    ? {
+        ratings: ["R18", "R18G"] as const,
+      }
+    : {
+        ratings: ["G", "R15"] as const,
+      }
+
   const { data, refetch } = useSuspenseQuery(userQuery, {
     skip:
       authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
@@ -56,7 +68,7 @@ export function FollowerList () {
       followersLimit: perPage,
       followersWorksOffset: 0,
       followersWorksLimit: 8,
-      followersWorksWhere: {},
+      followersWorksWhere,
       followersWhere: {
         orderBy: orderBy,
         sort: sort,
