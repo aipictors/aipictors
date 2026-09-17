@@ -668,6 +668,13 @@ export function HelpArticle () {
                             "Comments are not allowed.",
                           )}
                         </li>
+                        <li>
+                          •{" "}
+                          {t(
+                            "フォローはできず、すでにフォロー中の場合は解除されます。",
+                            "Following is not allowed, and existing follows are removed.",
+                          )}
+                        </li>
                       </ul>
                       <p className="mt-2">
                         {t(
@@ -691,8 +698,15 @@ export function HelpArticle () {
                         <li>
                           •{" "}
                           {t(
-                            "ミュートしている側のみ作品一覧に、ミュートした相手の作品が表示されません。",
-                            "Only the muting user will not see the muted user's works in lists.",
+                            "ミュートしている側のみ、作品一覧やタイムラインでミュートした相手の作品が表示されにくくなります。",
+                            "Only the muting user will see fewer works from muted users in lists and timelines.",
+                          )}
+                        </li>
+                        <li>
+                          •{" "}
+                          {t(
+                            "コメント・新着コメント・スタンプ一覧でも、ミュートした相手の表示が抑制されます。",
+                            "Muted users are also suppressed in comments, new comments, and stamp lists.",
                           )}
                         </li>
                         <li>
@@ -705,8 +719,8 @@ export function HelpArticle () {
                       </ul>
                       <p className="mt-2">
                         {t(
-                          "※ 作品は通常どおり投稿・表示されます。※ いいねやコメントの制限もありません。",
-                          "* Works are posted and shown as usual. * There are no restrictions on likes or comments.",
+                          "※ ミュートは表示制御機能です。相手側の投稿や操作そのものを制限する機能ではありません。",
+                          "* Mute is a visibility control. It does not restrict what the muted user can post or do.",
                         )}
                       </p>
                     </div>
