@@ -32,6 +32,7 @@ type Props = {
  */
 export function ReplyCommentInput (props: Props) {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
+  const rootRef = useRef<HTMLDivElement | null>(null)
 
   const t = useTranslation()
 
@@ -94,6 +95,21 @@ export function ReplyCommentInput (props: Props) {
       // localStorage が使えなくても入力・送信自体は継続する。
     }
   }, [comment, replyDraftStorageKey])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    // On mobile, ensure the reply input is visible above fixed bottom UI.
+    const timer = window.setTimeout(() => {
+      rootRef.current?.scrollIntoView({ block: "end", behavior: "smooth" })
+    }, 80)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [])
 
   const sendComment = async (
     text: string,
@@ -163,7 +179,7 @@ export function ReplyCommentInput (props: Props) {
 
   return (
     <>
-      <div className="space-y-2 pl-16">
+      <div ref={rootRef} className="space-y-2 pb-24 pl-16 md:pb-0">
         <div className="flex w-full items-center space-x-4">
           <UserAvatarWithFrame
             alt={authContext.displayName ?? ""}
