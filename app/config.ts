@@ -787,6 +787,14 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Read the terms of use for Aipictors",
     isIndex: true,
   },
+  R18_TERMS: {
+    title: "R18コンテンツ利用規約",
+    enTitle: "R18 Content Terms",
+    description: "R18およびR18Gコンテンツ投稿時の追加ルール",
+    enDescription:
+      "Additional rules for posting R18 and R18G content on Aipictors",
+    isIndex: true,
+  },
   GENERATION_TERMS: {
     title: "生成機能の利用規約",
     enTitle: "Generation Terms of Use",

@@ -3,6 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
+import { Link } from "@remix-run/react"
 import text from "~/assets/terms.md?raw"
 import enText from "~/assets/terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
@@ -74,6 +75,31 @@ export default function Terms () {
               "These terms are originally written in Japanese. While translations may be provided for reference, only the original Japanese text is legally binding.",
             )}
           </CardDescription>
+        </CardContent>
+      </Card>
+
+      <Card className="border-pink-200 bg-pink-50 dark:border-pink-800 dark:bg-pink-950">
+        <CardHeader>
+          <CardTitle className="text-lg text-pink-800 dark:text-pink-200">
+            {t("R18コンテンツをご利用の方へ", "For Users of R18 Content")}
+          </CardTitle>
+          <CardDescription className="text-pink-700 dark:text-pink-300">
+            {t(
+              "R18 / R18G作品の投稿・公開には専用の追加ルールがあります。必ずR18専用利用規約をご確認ください。",
+              "Posting and publishing R18 / R18G works requires additional rules. Please review the R18-specific terms.",
+            )}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link
+            to="/terms/r18"
+            className="font-medium text-pink-700 text-sm underline underline-offset-4 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+          >
+            {t(
+              "R18コンテンツ利用規約（投稿ガイドライン）を見る",
+              "View R18 Content Terms (Posting Guidelines)",
+            )}
+          </Link>
         </CardContent>
       </Card>
 
