@@ -101,9 +101,25 @@ export function ReplyCommentInput (props: Props) {
       return
     }
 
-    // On mobile, ensure the reply input is visible above fixed bottom UI.
+    // Keep current viewport position for most replies, and only assist when the
+    // editor opens near the page bottom where fixed UI may overlap it.
     const timer = window.setTimeout(() => {
-      rootRef.current?.scrollIntoView({ block: "end", behavior: "smooth" })
+      const rootElement = rootRef.current
+      if (!rootElement) {
+        return
+      }
+
+      const rect = rootElement.getBoundingClientRect()
+      const viewportHeight = window.innerHeight
+      const isNearViewportBottom = rect.bottom > viewportHeight - 24
+      const pageBottomDistance =
+        document.documentElement.scrollHeight -
+        (window.scrollY + viewportHeight)
+      const isNearPageBottom = pageBottomDistance < 220
+
+      if (isNearViewportBottom && isNearPageBottom) {
+        rootElement.scrollIntoView({ block: "end", behavior: "smooth" })
+      }
     }, 80)
 
     return () => {
@@ -131,6 +147,7 @@ export function ReplyCommentInput (props: Props) {
 
         setComment("")
         setIsSensitive(false)
+        clearReplyDraft()
 
         props.onReplyCompleted(
           commentRes.data?.createResponseComment.id ?? "",
@@ -208,7 +225,6 @@ export function ReplyCommentInput (props: Props) {
           </div>
           {isCreatingReplyComment ? (
             <Button onClick={() => {}}>
-          clearReplyDraft()
               <Loader2Icon className={"w-16 animate-spin"} />
             </Button>
           ) : (

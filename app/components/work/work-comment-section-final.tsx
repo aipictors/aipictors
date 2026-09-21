@@ -114,6 +114,8 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
   const [showMutedIds, setShowMutedIds] = useState<string[]>([])
   const [openReplyIds, setOpenReplyIds] = useState<string[]>([])
   const [latestOpenedReplyId, setLatestOpenedReplyId] = useState<string | null>(null)
+  const [latestOpenedReplyShouldScroll, setLatestOpenedReplyShouldScroll] =
+    useState(false)
   const [newComments, setNewComments] = useState<Comment[]>([])
   const [newReplies, setNewReplies] = useState<
     Array<NonNullable<Comment["responses"]>[number] & { parentId: string }>
@@ -256,15 +258,20 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
   }
 
   // 返信の切り替え
-  const toggleReply = (commentId: string) => {
+  const toggleReply = (
+    commentId: string,
+    shouldScrollToInput: boolean,
+  ) => {
     if (openReplyIds.includes(commentId)) {
       setOpenReplyIds(openReplyIds.filter((id) => id !== commentId))
       setLatestOpenedReplyId((currentId) => {
         return currentId === commentId ? null : currentId
       })
+      setLatestOpenedReplyShouldScroll(false)
     } else {
       setOpenReplyIds([...openReplyIds, commentId])
       setLatestOpenedReplyId(commentId)
+      setLatestOpenedReplyShouldScroll(shouldScrollToInput)
     }
   }
 
@@ -273,17 +280,19 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
       return
     }
 
-    const scrollToReplyInput = () => {
+    const focusReplyInput = () => {
       const replyElement = replyInputRefs.current[latestOpenedReplyId]
       if (!replyElement) {
         return
       }
 
-      replyElement.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "nearest",
-      })
+      if (latestOpenedReplyShouldScroll) {
+        replyElement.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "nearest",
+        })
+      }
 
       const textarea = replyElement.querySelector("textarea")
       if (textarea instanceof HTMLTextAreaElement) {
@@ -292,13 +301,15 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
     }
 
     const frameId = window.requestAnimationFrame(() => {
-      window.setTimeout(scrollToReplyInput, 80)
+      window.setTimeout(focusReplyInput, 80)
     })
 
     return () => {
       window.cancelAnimationFrame(frameId)
     }
-  }, [latestOpenedReplyId, openReplyIds])
+  }, [latestOpenedReplyId, latestOpenedReplyShouldScroll, openReplyIds])
+
+  const allComments = [...props.comments, ...newComments]
 
   // センシティブコメント表示の切り替え
   const toggleSensitiveComment = (commentId: string) => {
@@ -526,7 +537,12 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toggleReply(comment.id)}
+                  onClick={() =>
+                    toggleReply(
+                      comment.id,
+                      allComments[allComments.length - 1]?.id === comment.id,
+                    )
+                  }
                   className="flex items-center space-x-1 text-xs"
                 >
                   <Reply className="size-4" />
@@ -589,8 +605,6 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
       </div>
     )
   }
-
-  const allComments = [...props.comments, ...newComments]
 
   return (
     <Card className="w-full">
