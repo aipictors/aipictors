@@ -1037,6 +1037,7 @@ export function TagWorkSection(props: Props) {
           works={displayedWorks}
           isShowProfile={true}
           onSelect={isDialogMode ? openWork : undefined}
+          priorityCount={4}
         />
       )}
 

@@ -14,6 +14,8 @@ type Props = {
   hasReferenceButton?: boolean
   onSelect?: (index: string) => void
   shouldMaskSensitiveWorks?: boolean
+  /** 先頭から何件の画像を優先して読み込むか（LCP 対策） */
+  priorityCount?: number
 }
 
 const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
@@ -38,7 +40,7 @@ export function HomeCroppedWorks (props: Props) {
             (work, index, self) =>
               self.findIndex((w) => w.id === work.id) === index,
           )
-          .map((work) => (
+          .map((work, index) => (
             <div className="flex flex-col space-y-2" key={work.id}>
               <Link to={`/posts/${work.id}`} className="group relative">
                 <CroppedWorkSquare
@@ -100,7 +102,7 @@ export function HomeCroppedWorks (props: Props) {
             (work, index, self) =>
               self.findIndex((w) => w.id === work.id) === index,
           )
-          .map((work) => (
+          .map((work, index) => (
             <div key={work.id} className="relative w-full">
               {props.onSelect ? (
                 <button

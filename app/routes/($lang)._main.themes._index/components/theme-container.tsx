@@ -365,7 +365,11 @@ export function ThemeContainer (props: Props) {
           </Carousel>
           {works && works.length > 0 && (
             <div className="mt-4">
-              <ResponsivePhotoWorksAlbum works={works} isShowProfile={true} />
+              <ResponsivePhotoWorksAlbum
+                works={works}
+                isShowProfile={true}
+                priorityCount={4}
+              />
             </div>
           )}
           <div className="h-8" />

@@ -46,7 +46,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
   if (props.compactWhenFew && props.works.length <= 4) {
     return (
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-        {props.works.map((workItem, _index) => {
+        {props.works.map((workItem, index) => {
           return (
             <div
               key={workItem.id.toString()}
@@ -220,11 +220,9 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         fetchPriority={
                           photo.context._priority === true ? "high" : undefined
                         }
-                        loading={
-                          photo.context._priority === true
-                            ? "eager"
-                            : (imageProps.loading as "lazy" | "eager")
-                        }
+                        // PC 用の一覧はモバイルでは非表示（display: none）なので eager にしない
+                        // （eager だとモバイルで見えない画像を優先して読み込んでしまう）
+                        loading={imageProps.loading as "lazy" | "eager"}
                         className="h-full w-full"
                         shouldMaskSensitive={
                           props.shouldMaskSensitiveWorks === true &&
@@ -254,11 +252,9 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                       fetchPriority={
                         photo.context._priority === true ? "high" : undefined
                       }
-                      loading={
-                        photo.context._priority === true
-                          ? "eager"
-                          : (imageProps.loading as "lazy" | "eager")
-                      }
+                      // PC 用の一覧はモバイルでは非表示（display: none）なので eager にしない
+                      // （eager だとモバイルで見えない画像を優先して読み込んでしまう）
+                      loading={imageProps.loading as "lazy" | "eager"}
                       className="h-full w-full overflow-hidden rounded"
                       shouldMaskSensitive={
                         props.shouldMaskSensitiveWorks === true &&
@@ -404,6 +400,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
       <div className="block md:hidden">
         <HomeCroppedWorks
           works={props.works}
+          priorityCount={props.priorityCount}
           isShowProfile={true}
           hasReferenceButton={false}
           onSelect={props.onSelect}
