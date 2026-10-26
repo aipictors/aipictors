@@ -43,7 +43,8 @@ const toUserLabel = (
 export function HomeRecentSupportHistory() {
   const t = useTranslation()
   const [items, setItems] = useState<SupportHistoryItem[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  // SSR 時から読み込み中として領域を確保し、取得後のレイアウトシフトを防ぐ
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const load = async () => {
@@ -73,10 +74,6 @@ export function HomeRecentSupportHistory() {
     void load()
   }, [])
 
-  if (isLoading) {
-    return null
-  }
-
   // データがない場合でも、常にコンテナは表示する
   return (
     <div className="space-y-1">
@@ -88,7 +85,14 @@ export function HomeRecentSupportHistory() {
           </p>
         </div>
 
-        {items.length > 0 ? (
+        {isLoading ? (
+          // 履歴 3 件分の高さを確保する
+          <div className="space-y-0.5" aria-hidden="true">
+            <div className="h-4" />
+            <div className="h-4" />
+            <div className="h-4" />
+          </div>
+        ) : items.length > 0 ? (
           <div className="space-y-0.5">
             {items.slice(0, 3).map((item, index) => (
               <div

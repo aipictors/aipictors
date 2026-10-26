@@ -43,7 +43,15 @@ export function HomeFooter(): React.ReactNode {
                 to={createLink("/")}
                 className="inline-flex items-center gap-x-2"
               >
-                <img src="/icon.svg" alt="Aipictors" className="h-8 w-auto" />
+                <img
+                  src="/icon.svg"
+                  alt=""
+                  className="h-8 w-auto"
+                  width={41}
+                  height={32}
+                  loading="lazy"
+                  decoding="async"
+                />
                 <span className="font-bold text-lg">Aipictors</span>
               </Link>
               <p className="text-muted-foreground text-sm">

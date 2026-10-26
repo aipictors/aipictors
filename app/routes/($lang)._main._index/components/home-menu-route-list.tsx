@@ -313,8 +313,12 @@ export function HomeMenuRouteList({
             >
               <img
                 src="/apple/download.svg"
-                alt={t("download", "download")}
-                className="h-8"
+                alt={t("App Store からダウンロード", "Download on the App Store")}
+                className="h-8 w-auto"
+                width={109}
+                height={40}
+                loading="lazy"
+                decoding="async"
               />
             </Link>
             <Link
@@ -324,8 +328,12 @@ export function HomeMenuRouteList({
             >
               <img
                 src="/google/download.png"
-                alt={t("download", "download")}
-                className="h-10"
+                alt={t("Google Play で手に入れよう", "Get it on Google Play")}
+                className="h-10 w-auto"
+                width={646}
+                height={250}
+                loading="lazy"
+                decoding="async"
               />
             </Link>
           </div>
