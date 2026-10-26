@@ -46,7 +46,7 @@ export function GenerationView(props: Props) {
    */
   if (!useMediaQuery("(min-width: 768px)")) {
     return (
-      <div className="flex flex-col space-y-2 pb-16">
+      <div className="flex flex-col space-y-2 pb-44">
         <GenerationAnnouncementBanner />
         <main className="flex flex-col gap-2 overflow-hidden pb-4 md:flex-row">
           <div className="flex flex-col gap-y-2">

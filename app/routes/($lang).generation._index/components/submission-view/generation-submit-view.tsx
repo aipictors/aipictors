@@ -1,4 +1,6 @@
 import { AppFixedContent } from "~/components/app/app-fixed-content"
+import { cn } from "~/lib/utils"
+import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/use-is-editing-text-field"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
@@ -78,6 +80,10 @@ const ViewerTokenQuery = graphql(
 
 type Props = {
   termsText: string
+  /**
+   * スマホで生成ボタンの上に出すプロンプト欄
+   */
+  composer?: React.ReactNode
 }
 
 type CoinSummaryResponse = {
@@ -120,6 +126,8 @@ export function GenerationSubmissionView (props: Props) {
   const navigate = useNavigate()
 
   const isDesktop = useMediaQuery("(min-width: 768px)")
+
+  const isEditingTextField = useIsEditingTextField()
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
   const [coinSummary, setCoinSummary] = useState<CoinSummaryResponse["data"]>(null)
@@ -1154,8 +1162,18 @@ export function GenerationSubmissionView (props: Props) {
 
   return (
     <>
-      <AppFixedContent position="bottom">
+      <AppFixedContent
+        position="bottom"
+        className={cn(
+          props.composer &&
+            "pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]",
+          !isDesktop && isEditingTextField && "hidden",
+        )}
+      >
         <div className="space-y-2">
+          {props.composer && (
+            <div className="empty:hidden md:hidden">{props.composer}</div>
+          )}
           <GenerationSubmitOperationParts
             isCreatingTask={isCreatingTask || isSigningTerms}
             inProgressImageGenerationTasksCount={

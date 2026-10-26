@@ -3,6 +3,7 @@ import { cn } from "~/lib/utils"
 type Props = Readonly<{
   position: "top" | "bottom" | "left" | "right"
   children: React.ReactNode
+  className?: string
 }>
 
 /**
@@ -23,6 +24,7 @@ export function AppFixedContent (props: Props): React.ReactNode {
           "top-0 right-0 pt-[env(safe-area-inset-top)]":
             props.position === "right",
         },
+        props.className,
       )}
     >
       {props.children}
