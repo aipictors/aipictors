@@ -464,6 +464,14 @@ export function Layout(props: Props): React.ReactNode {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        <script
+          // デプロイで古いチャンクが無くなったときに一度だけ再読み込みする
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.addEventListener('vite:preloadError',function(e){try{if(sessionStorage.getItem('aipictors-chunk-reload'))return;sessionStorage.setItem('aipictors-chunk-reload','1');e.preventDefault();location.reload()}catch(_){}});window.addEventListener('load',function(){setTimeout(function(){try{sessionStorage.removeItem('aipictors-chunk-reload')}catch(_){}},10000)})",
+          }}
+        />
         <link rel="canonical" href={alternateLocaleUrls.canonical} />
         <link rel="alternate" hrefLang="ja" href={alternateLocaleUrls.ja} />
         <link rel="alternate" hrefLang="en" href={alternateLocaleUrls.en} />

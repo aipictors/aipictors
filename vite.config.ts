@@ -70,9 +70,11 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        entryFileNames: "assets/[name].js",
-        chunkFileNames: "assets/[name].js",
-        assetFileNames: "assets/[name].[ext]",
+        // ハッシュ付きのファイル名にして、/assets/* を長期キャッシュ（immutable）できるようにする。
+        // デプロイ直後に古いページが消えたチャンクを読みに行った場合は、root.tsx の vite:preloadError で再読み込みする。
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash].[ext]",
       },
     },
   },
