@@ -25,6 +25,10 @@ type Props = {
   hasReferenceButton?: boolean
   onSelect?: (workId: string) => void
   shouldMaskSensitive?: boolean
+  /** 最初に表示される画像（LCP 候補）なら true */
+  isPriority?: boolean
+  /** 作品タイトル（画像の代替テキストに使う） */
+  title?: string
   /** 親要素がリンクやボタンの場合は true（a 要素の入れ子はハイドレーションエラーになるため） */
   isInsideInteractive?: boolean
 }
@@ -129,9 +133,10 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
     <>
       <OptimizedImage
         src={props.imageUrl}
-        alt=""
+        alt={props.title ?? ""}
         key={props.imageUrl}
-        loading="lazy"
+        loading={props.isPriority ? "eager" : "lazy"}
+        fetchPriority={props.isPriority ? "high" : undefined}
         width={props.imageWidth}
         height={props.imageHeight}
         style={cropStyle}

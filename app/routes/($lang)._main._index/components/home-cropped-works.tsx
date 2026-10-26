@@ -42,6 +42,8 @@ export function HomeCroppedWorks (props: Props) {
             <div className="flex flex-col space-y-2" key={work.id}>
               <Link to={`/posts/${work.id}`} className="group relative">
                 <CroppedWorkSquare
+                  isPriority={index < (props.priorityCount ?? 0)}
+                  title={work.title}
                   isInsideInteractive={true}
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
@@ -107,6 +109,8 @@ export function HomeCroppedWorks (props: Props) {
                   className="group relative w-full overflow-hidden border-none bg-transparent p-0"
                 >
                   <CroppedWorkSquare
+                    isPriority={index < (props.priorityCount ?? 0)}
+                    title={work.title}
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}
                     thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
@@ -140,6 +144,8 @@ export function HomeCroppedWorks (props: Props) {
               ) : (
                 <Link to={`/posts/${work.id}`} className="relative block">
                   <CroppedWorkSquare
+                    isPriority={index < (props.priorityCount ?? 0)}
+                    title={work.title}
                     isInsideInteractive={true}
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}

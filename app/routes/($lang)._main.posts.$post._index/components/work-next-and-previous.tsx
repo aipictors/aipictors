@@ -78,6 +78,7 @@ export function WorkNextAndPrevious (props: Props) {
         {props.work.nextWork && (
           <div className="w-full">
             <CroppedWorkSquare
+              title={props.work.nextWork.title}
               workId={props.work.nextWork.id}
               imageUrl={props.work.nextWork.smallThumbnailImageURL}
               imageWidth={props.work.nextWork.smallThumbnailImageWidth}
@@ -94,6 +95,7 @@ export function WorkNextAndPrevious (props: Props) {
 
         <div className="w-full opacity-50">
           <CroppedWorkSquare
+            title={props.work.title}
             workId={props.work.id}
             imageUrl={props.work.smallThumbnailImageURL}
             imageWidth={props.work.smallThumbnailImageWidth}
@@ -105,6 +107,7 @@ export function WorkNextAndPrevious (props: Props) {
         {props.work.previousWork && (
           <div className="w-full">
             <CroppedWorkSquare
+              title={props.work.previousWork.title}
               workId={props.work.previousWork.id}
               imageUrl={props.work.previousWork.smallThumbnailImageURL}
               imageWidth={props.work.previousWork.smallThumbnailImageWidth}

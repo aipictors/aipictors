@@ -248,6 +248,7 @@ function SquareAlbumWorkGrid(props: {
           className="group relative overflow-hidden rounded-xl bg-card shadow-sm transition-shadow duration-200 hover:shadow-md"
         >
           <CroppedWorkSquare
+            title={work.title}
             workId={work.id}
             subWorksCount={work.subWorksCount}
             commentsCount={work.commentsCount}

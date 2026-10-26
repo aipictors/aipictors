@@ -31,6 +31,7 @@ export function WorkRelatedList (props: Props) {
         items={props.works.map((work) => (
           <div key={work.id} className="relative">
             <CroppedWorkSquare
+              title={work.title}
               workId={work.id}
               subWorksCount={work.subWorksCount}
               imageUrl={work.smallThumbnailImageURL}

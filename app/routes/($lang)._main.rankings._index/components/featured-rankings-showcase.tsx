@@ -184,7 +184,10 @@ function FeaturedRankingBlock(props: {
 
             <div className="flex min-w-0 items-center gap-2">
               <Avatar className="size-7 border border-white shadow-sm dark:border-zinc-800 sm:size-8">
-                <AvatarImage src={primaryItem.userIconUrl ?? undefined} />
+                <AvatarImage
+                  src={primaryItem.userIconUrl ?? undefined}
+                  alt={primaryItem.userName}
+                />
                 <AvatarFallback>
                   {primaryItem.userName.slice(0, 1) || "?"}
                 </AvatarFallback>

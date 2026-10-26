@@ -64,6 +64,7 @@ export function EventAwardSensitiveWorkList (props: Props) {
               <div key={index.toString()} className="flex flex-col space-y-2">
                 <div className="relative">
                   <CroppedWorkSquare
+                    title={work.title}
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}
                     subWorksCount={work.subWorksCount}

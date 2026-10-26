@@ -88,6 +88,7 @@ export function HomeSensitiveAwardWorkSection (props: Props) {
                     work.work?.smallThumbnailImageWidth &&
                     work.work?.smallThumbnailImageHeight && (
                       <CroppedWorkSquare
+                        title={work.work.title}
                         workId={work.work.id}
                         imageUrl={work.work.smallThumbnailImageURL}
                         subWorksCount={work.work.subWorksCount}

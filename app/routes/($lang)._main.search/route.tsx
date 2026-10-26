@@ -488,6 +488,7 @@ export default function SearchRoute() {
                       <article key={work.id} className="min-w-0">
                         <div className="group relative">
                           <CroppedWorkSquare
+                            title={work.title}
                             workId={work.id}
                             imageUrl={work.smallThumbnailImageURL}
                             thumbnailImagePosition={

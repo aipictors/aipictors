@@ -385,6 +385,7 @@ function ReportedWorkGroupCard(props: {
           {work?.smallThumbnailImageURL ? (
             <div className="size-28 shrink-0 overflow-hidden rounded-2xl border border-white/10">
               <CroppedWorkSquare
+                title={work.title}
                 workId={work.id}
                 subWorksCount={work.subWorksCount}
                 imageUrl={work.smallThumbnailImageURL}

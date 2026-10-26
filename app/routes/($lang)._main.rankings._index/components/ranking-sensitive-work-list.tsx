@@ -51,6 +51,7 @@ export function RankingSensitiveWorkList (props: Props) {
               <>
                 <div className="relative">
                   <CroppedWorkSquare
+                    title={workItem.work.title}
                     workId={workItem.work.id}
                     subWorksCount={workItem.work.subWorksCount}
                     imageUrl={workItem.work.smallThumbnailImageURL}

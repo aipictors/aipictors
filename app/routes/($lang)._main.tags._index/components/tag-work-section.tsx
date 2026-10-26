@@ -869,6 +869,7 @@ export function TagWorkSection(props: Props) {
             <div className="rounded-md border-2 border-white">
               {firstWork && (
                 <CroppedWorkSquare
+                  title={firstWork.title}
                   workId={firstWork.id}
                   imageUrl={firstWork.smallThumbnailImageURL}
                   thumbnailImagePosition={firstWork.thumbnailImagePosition ?? 0}

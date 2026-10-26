@@ -111,6 +111,7 @@ function RankingWorkCard(props: {
           <div className="space-y-3">
             <div className="relative overflow-hidden rounded-[24px] bg-muted/30">
               <CroppedWorkSquare
+                title={workItem.work.title}
                 workId={workItem.work.id}
                 subWorksCount={workItem.work.subWorksCount}
                 imageUrl={workItem.work.smallThumbnailImageURL}

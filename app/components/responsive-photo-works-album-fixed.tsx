@@ -43,6 +43,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
             >
               <div className="relative">
                 <CroppedWorkSquare
+                  title={workItem.title}
                   workId={workItem.id}
                   subWorksCount={workItem.subWorksCount}
                   commentsCount={workItem.commentsCount}

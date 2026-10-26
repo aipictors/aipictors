@@ -44,6 +44,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
             >
               <div className="relative">
                 <CroppedWorkSquare
+                  title={workItem.title}
                   workId={workItem.id}
                   subWorksCount={workItem.subWorksCount}
                   commentsCount={workItem.commentsCount}
@@ -324,6 +325,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
         <div key={work.id} className="flex flex-col space-y-2">
           <div className="relative">
             <CroppedWorkSquare
+              title={work.title}
               workId={work.id}
               imageUrl={work.smallThumbnailImageURL}
               thumbnailImagePosition={work.thumbnailImagePosition ?? 0}

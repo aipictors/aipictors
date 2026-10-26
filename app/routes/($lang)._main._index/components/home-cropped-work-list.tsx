@@ -36,6 +36,7 @@ export function HomeCroppedWorkList(props: Props) {
           .map((work) => {
             const renderContent = (isInsideInteractive: boolean) => (
               <CroppedWorkSquare
+                title={work.title}
                 isInsideInteractive={isInsideInteractive}
                 workId={work.id}
                 imageUrl={work.smallThumbnailImageURL}
@@ -105,6 +106,7 @@ export function HomeCroppedWorkList(props: Props) {
                 className="relative overflow-hidden"
               >
                 <CroppedWorkSquare
+                  title={work.title}
                   isInsideInteractive={true}
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}

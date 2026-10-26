@@ -379,6 +379,7 @@ export function NewCommentsPageContent (props: Props) {
                   {/* 作品サムネイル */}
                   {comment.work?.smallThumbnailImageURL && (
                     <CroppedWorkSquare
+                      title={comment.work.title}
                       workId={comment.work.id}
                       imageUrl={comment.work.smallThumbnailImageURL}
                       size="sm"

@@ -54,6 +54,8 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
             >
               <div className="relative">
                 <CroppedWorkSquare
+                  isPriority={index < (props.priorityCount ?? 0)}
+                  title={workItem.title}
                   workId={workItem.id}
                   subWorksCount={workItem.subWorksCount}
                   commentsCount={workItem.commentsCount}

@@ -21,10 +21,12 @@ Avatar.displayName = AvatarPrimitive.Root.displayName
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
+>(({ className, alt = "", ...props }, ref) => (
+  // alt 未指定のアイコンは名前と並べて表示されるので装飾画像として扱う
   <AvatarPrimitive.Image
     ref={ref}
     className={cn("aspect-square h-full w-full", className)}
+    alt={alt}
     {...props}
   />
 ))

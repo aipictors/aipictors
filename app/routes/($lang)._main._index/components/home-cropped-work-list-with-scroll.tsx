@@ -25,6 +25,7 @@ export function HomeCroppedWorkListWithScroll (props: Props) {
           <div key={work.id} className="flex flex-col space-y-2">
             <div className="relative">
               <CroppedWorkSquare
+                title={work.title}
                 workId={work.id}
                 subWorksCount={work.subWorksCount}
                 imageUrl={work.smallThumbnailImageURL}

@@ -91,6 +91,7 @@ export function EventAwardWorkList (props: Props) {
                   >
                     <div className="relative">
                       <CroppedWorkSquare
+                        title={work.title}
                         workId={work.id}
                         imageUrl={work.smallThumbnailImageURL}
                         subWorksCount={work.subWorksCount}
