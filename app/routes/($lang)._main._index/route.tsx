@@ -23,6 +23,7 @@ import {
   Plus,
 } from "lucide-react"
 import {
+  lazy,
   Suspense,
   useContext,
   useEffect,
@@ -55,8 +56,6 @@ import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
-import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
-import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
 import {
   HomeAwardWorkSection,
   type HomeWorkAwardFragment,
@@ -118,6 +117,19 @@ import {
   isImportantReleaseVisible,
 } from "~/utils/micro-cms-release"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
+
+// フォロー新着・お気に入りタグ新着タブは表示したときにだけ読み込む
+const FollowUserFeedContents = lazy(() =>
+  import(
+    "~/routes/($lang)._main._index/components/follow-user-feed-contents"
+  ).then((mod) => ({ default: mod.FollowUserFeedContents })),
+)
+
+const FollowTagsFeedContents = lazy(() =>
+  import(
+    "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
+  ).then((mod) => ({ default: mod.FollowTagsFeedContents })),
+)
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
