@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo } from "react"
 import { useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { WorksRenderer } from "./works-renderer"
 import { WorksLoading } from "./works-loading"
@@ -33,6 +34,7 @@ interface Props {
 export function WorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) {
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -46,12 +48,12 @@ export function WorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) {
   }, [currentPage, rest.page, rest.setPage])
 
   const where = useMemo(
-    () => makeWhere(rest, anchorAt, ["G", "R15"]),
-    [rest, anchorAt],
+    () => makeWhere(rest, anchorAt, viewerRatings.normalRatings),
+    [rest, anchorAt, viewerRatings.normalRatings],
   )
 
   const { data, loading } = useQuery(WorksQuery, {
-    skip: authLoading,
+    skip: authLoading || !viewerRatings.isReady,
     variables: {
       offset: currentPage * PER_PAGE,
       limit: PER_PAGE,

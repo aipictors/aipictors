@@ -4,6 +4,7 @@ import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
   HomeNovelsWorkListItemFragment,
@@ -82,7 +83,12 @@ type Props = {
 export function HomePaginationWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
+  const viewerRatings = useViewerRatings()
+
+  // SSR の初期作品は未ログイン状態で取得し CDN にキャッシュされているため、
+  // ミュート・ブロック・R15表示設定が反映されていない。ログイン中は使わない。
   const canUseInitialWorks =
+    !appContext.isLoggedIn &&
     props.page === 0 &&
     props.workType === null &&
     props.isPromptPublic === null &&
@@ -101,7 +107,8 @@ export function HomePaginationWorksSection(props: Props) {
   )
 
   const { data: worksResp } = useQuery(WorksQuery, {
-    skip: appContext.isLoading || canUseInitialWorks,
+    skip:
+      appContext.isLoading || canUseInitialWorks || !viewerRatings.isReady,
     errorPolicy: "all",
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-first",
@@ -109,7 +116,7 @@ export function HomePaginationWorksSection(props: Props) {
       offset: props.page * perPageCount,
       limit: perPageCount,
       where: {
-        ratings: ["G", "R15"],
+        ratings: viewerRatings.normalRatings,
         ...(props.workType !== null && {
           workType: props.workType,
         }),

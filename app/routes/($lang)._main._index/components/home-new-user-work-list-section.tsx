@@ -3,6 +3,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
   HomeNovelsWorkListItemFragment,
@@ -33,12 +34,13 @@ type Props = {
  */
 export function HomeNewUsersWorkListSection(props: Props) {
   const appContext = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
-    skip: appContext.isLoading,
+    skip: appContext.isLoading || !viewerRatings.isReady,
     variables: {
       where: {
-        ratings: ["G", "R15"],
+        ratings: viewerRatings.normalRatings,
         isNowCreatedAt: true,
       },
     },

@@ -6,6 +6,7 @@ import { graphql } from "gql.tada"
 import { useContext, useEffect, useMemo } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { AuthContext } from "~/contexts/auth-context"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import {
@@ -32,6 +33,7 @@ interface Props {
 export function NewUsersWorksPaginationMode({ anchorAt, ...rest }: Props) {
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -47,13 +49,13 @@ export function NewUsersWorksPaginationMode({ anchorAt, ...rest }: Props) {
 
   /* where 句生成 -------------------- */
   const where = useMemo(
-    () => makeWhere(rest, anchorAt, ["G", "R15"]),
-    [rest, anchorAt],
+    () => makeWhere(rest, anchorAt, viewerRatings.normalRatings),
+    [rest, anchorAt, viewerRatings.normalRatings],
   )
 
   /* クエリ実行 ---------------------- */
   const { data, loading } = useQuery(NewUserWorksQuery, {
-    skip: authLoading,
+    skip: authLoading || !viewerRatings.isReady,
     variables: {
       offset: currentPage * PER_PAGE,
       limit: PER_PAGE,

@@ -8,6 +8,7 @@ import {
 } from "react"
 import { useApolloClient, useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { useScrollRestoration } from "../hooks/use-scroll-restoration"
 import { usePagedInfinite } from "../hooks/use-paged-infinite"
@@ -41,10 +42,11 @@ export function WorksInfiniteMode ({ anchorAt, ...rest }: Props) {
   const client = useApolloClient()
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   const where = useMemo(
-    () => makeWhere(rest, anchorAt, ["G", "R15"]),
-    [rest, anchorAt],
+    () => makeWhere(rest, anchorAt, viewerRatings.normalRatings),
+    [rest, anchorAt, viewerRatings.normalRatings],
   )
   const keyForStore = useMemo(() => JSON.stringify(where), [where])
 
@@ -66,7 +68,7 @@ export function WorksInfiniteMode ({ anchorAt, ...rest }: Props) {
     fetchMore,
     loading: loadingFirst,
   } = useQuery(WorksQuery, {
-    skip: authLoading,
+    skip: authLoading || !viewerRatings.isReady,
     variables: {
       offset: 0,
       limit: PER_PAGE,

@@ -8,6 +8,7 @@ import {
 } from "react"
 import { useApolloClient, useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { WorksQuery } from "~/routes/($lang)._main._index/components/works-pagination-mode"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
@@ -44,10 +45,11 @@ export function SensitiveWorksInfiniteMode ({ anchorAt, ...rest }: Props) {
   const client = useApolloClient()
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   const where = useMemo(
-    () => makeWhere(rest, anchorAt, ["R18", "R18G"]),
-    [rest, anchorAt],
+    () => makeWhere(rest, anchorAt, viewerRatings.sensitiveRatings),
+    [rest, anchorAt, viewerRatings.sensitiveRatings],
   )
   const keyForStore = useMemo(() => JSON.stringify(where), [where])
 
@@ -69,7 +71,7 @@ export function SensitiveWorksInfiniteMode ({ anchorAt, ...rest }: Props) {
     fetchMore,
     loading: loadingFirst,
   } = useQuery(WorksQuery, {
-    skip: authLoading,
+    skip: authLoading || !viewerRatings.isReady,
     variables: {
       offset: 0,
       limit: PER_PAGE,

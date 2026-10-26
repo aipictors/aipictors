@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo } from "react"
 import { useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
@@ -41,6 +42,7 @@ export function SensitiveWorksPaginationMode ({
 }: Props) {
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -54,12 +56,12 @@ export function SensitiveWorksPaginationMode ({
   }, [currentPage, rest.page, rest.setPage])
 
   const where = useMemo(
-    () => makeWhere(rest, anchorAt, ["R18", "R18G"]),
-    [rest, anchorAt],
+    () => makeWhere(rest, anchorAt, viewerRatings.sensitiveRatings),
+    [rest, anchorAt, viewerRatings.sensitiveRatings],
   )
 
   const { data, loading } = useQuery(WorksQuery, {
-    skip: authLoading,
+    skip: authLoading || !viewerRatings.isReady,
     variables: {
       offset: currentPage * PER_PAGE,
       limit: PER_PAGE,

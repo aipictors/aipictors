@@ -12,6 +12,7 @@ if (import.meta.env.DEV) {
 
 import {
   ApolloClient,
+  ApolloLink,
   createHttpLink,
   InMemoryCache,
   type NormalizedCacheObject,
@@ -22,6 +23,10 @@ import { getApps } from "firebase/app"
 import { getAuth, getIdToken } from "firebase/auth"
 import { config } from "~/config"
 import { typePolicies } from "~/lib/type-policies"
+import {
+  evictViewerFilteredLists,
+  isViewerFilterMutation,
+} from "~/lib/viewer-filter-cache"
 
 const httpLink = createHttpLink({
   uri: config.graphql.endpoint,
@@ -87,9 +92,25 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
 
 const cache = new InMemoryCache({ typePolicies })
 
+/**
+ * ミュート・ブロック・表示設定の変更後に作品一覧のキャッシュを破棄する
+ */
+const viewerFilterLink = new ApolloLink((operation, forward) => {
+  if (!isViewerFilterMutation(operation.query)) {
+    return forward(operation)
+  }
+
+  return forward(operation).map((result) => {
+    if (!result.errors || result.errors.length === 0) {
+      evictViewerFilteredLists(cache)
+    }
+    return result
+  })
+})
+
 export const apolloClient: ApolloClient<NormalizedCacheObject> =
   new ApolloClient({
     ssrMode: false,
-    link: errorLink.concat(authLink).concat(httpLink),
+    link: errorLink.concat(viewerFilterLink).concat(authLink).concat(httpLink),
     cache,
   })

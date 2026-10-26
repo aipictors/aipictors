@@ -12,6 +12,7 @@ import {
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { AuthContext } from "~/contexts/auth-context"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { MessageCircleIcon, Loader2Icon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
@@ -92,6 +93,7 @@ export function FollowUserFeedContents (props: Props) {
    =========================================================== */
 function PaginationMode(props: Props) {
   const authContext = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
   const navigate = useNavigate()
   const t = useTranslation()
   const [prevDataKey, setPrevDataKey] = useState<string>("")
@@ -106,7 +108,10 @@ function PaginationMode(props: Props) {
   const { data, loading, refetch } = useQuery(
     isTimelineView ? feedQuery : feedWorkListQuery,
     {
-      skip: authContext.isLoading || authContext.isNotLoggedIn,
+      skip:
+        authContext.isLoading ||
+        authContext.isNotLoggedIn ||
+        !viewerRatings.isReady,
       variables: {
         offset: offset,
         limit: PER_PAGE,
@@ -115,7 +120,7 @@ function PaginationMode(props: Props) {
           type: "FOLLOW_USER",
         },
         feedPostsWhere: {
-          ratings: ["G", "R15"],
+          ratings: viewerRatings.normalRatings,
         },
       },
       fetchPolicy: "cache-and-network",
@@ -137,7 +142,7 @@ function PaginationMode(props: Props) {
         type: "FOLLOW_USER",
       },
       feedPostsWhere: {
-        ratings: ["G", "R15"],
+        ratings: viewerRatings.normalRatings,
       },
     })
   }
@@ -246,6 +251,7 @@ function PaginationMode(props: Props) {
 function InfiniteMode(props: Props) {
   const client = useApolloClient()
   const authContext = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
   const navigate = useNavigate()
   const t = useTranslation()
 
@@ -263,7 +269,7 @@ function InfiniteMode(props: Props) {
     [authContext.userId],
   )
   const feedPostsWhere = {
-    ratings: ["G", "R15"] as Array<"G" | "R15" | "R18" | "R18G">,
+    ratings: viewerRatings.normalRatings,
   }
 
   // クエリ引数一式 (キャッシュキー生成にも使う)
@@ -274,7 +280,7 @@ function InfiniteMode(props: Props) {
       feedWhere,
       feedPostsWhere,
     }),
-    [feedWhere],
+    [feedWhere, viewerRatings.normalRatings],
   )
 
   // ─── 初期ページをキャッシュから生成 ──────────────────
@@ -306,7 +312,10 @@ function InfiniteMode(props: Props) {
     fetchMore,
     loading: loadingFirst,
   } = useQuery(QUERY, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip:
+      authContext.isLoading ||
+      authContext.isNotLoggedIn ||
+      !viewerRatings.isReady,
     variables: queryVars,
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
@@ -321,7 +330,7 @@ function InfiniteMode(props: Props) {
         uid: authContext.userId,
         ratings: feedPostsWhere.ratings.join("-"),
       }),
-    [isTimelineView, authContext.userId],
+    [isTimelineView, authContext.userId, viewerRatings.normalRatings],
   )
   const { pages, appendPage, appendPages, replaceFirstPage, flat } =
     usePagedInfinite<PostItem>(initialPages, keyForStore)

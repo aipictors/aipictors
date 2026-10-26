@@ -32,6 +32,7 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
 import { AuthContext } from "~/contexts/auth-context"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -409,6 +410,7 @@ function PaginationMode({
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }) {
   const auth = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
   const _t = useTranslation()
   const [prevDataKey, setPrevDataKey] = useState<string>("")
 
@@ -416,12 +418,13 @@ function PaginationMode({
   const { data, loading, refetch } = useQuery(
     isTimelineView ? feedQuery : feedWorkListQuery,
     {
-      skip: auth.isLoading || auth.isNotLoggedIn,
+      skip:
+        auth.isLoading || auth.isNotLoggedIn || !viewerRatings.isReady,
       variables: {
         limit: PER_PAGE,
         offset,
         feedWhere: { userId: auth.userId ?? "-1", type: "FOLLOW_TAG" },
-        feedPostsWhere: { ratings: ["G", "R15"] },
+        feedPostsWhere: { ratings: viewerRatings.normalRatings },
       },
       fetchPolicy: "cache-and-network",
       errorPolicy: "ignore",
@@ -495,6 +498,7 @@ function InfiniteMode({
 }) {
   const client = useApolloClient()
   const auth = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [_prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
@@ -503,7 +507,7 @@ function InfiniteMode({
     [auth.userId],
   )
   const feedPostsWhere = {
-    ratings: ["G", "R15"] as Array<"G" | "R15" | "R18" | "R18G">,
+    ratings: viewerRatings.normalRatings,
   }
   const queryVars = { limit: PER_PAGE, offset: 0, feedWhere, feedPostsWhere }
   const QUERY = isTimelineView ? feedQuery : feedWorkListQuery
@@ -529,7 +533,8 @@ function InfiniteMode({
     fetchMore,
     loading: loadingFirst,
   } = useQuery(QUERY, {
-    skip: auth.isLoading || auth.isNotLoggedIn,
+    skip:
+      auth.isLoading || auth.isNotLoggedIn || !viewerRatings.isReady,
     variables: queryVars,
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
