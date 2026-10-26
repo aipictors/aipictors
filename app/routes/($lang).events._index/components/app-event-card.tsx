@@ -73,6 +73,8 @@ export function AppEventCard(props: Props) {
                 className="m-auto h-24 max-w-auto rounded-lg object-cover"
                 src={appEvent.thumbnailImageUrl}
                 alt=""
+                loading="lazy"
+                decoding="async"
               />
               <div
                 className={`absolute top-0 left-0 rounded-br-lg px-2 py-1 font-bold text-white text-xs ${

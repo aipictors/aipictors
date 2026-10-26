@@ -5,7 +5,6 @@ import {
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react"
@@ -228,10 +227,12 @@ const buildVisiblePages = (currentPage: number, hasNextPage: boolean) => {
 function FeaturedEventRotator(props: { events: EventCardItem[] }) {
   const t = useTranslation()
 
-  const shuffledEvents = useMemo(
-    () => shuffleEvents(props.events),
-    [props.events],
-  )
+  // SSR とハイドレーションで同じ表示にするため、並べ替えはマウント後に行う
+  const [shuffledEvents, setShuffledEvents] = useState(props.events)
+
+  useEffect(() => {
+    setShuffledEvents(shuffleEvents(props.events))
+  }, [props.events])
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const swipeStartXRef = useRef<number | null>(null)
