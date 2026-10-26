@@ -13,6 +13,10 @@ type Props = {
   taskDetails: React.ReactNode
   workContentPreview: React.ReactNode
   submissionView: React.ReactNode
+  /**
+   * スマホでいちばん上に出すプロンプト入力
+   */
+  mobilePromptEditor: React.ReactNode
 }
 
 /**
@@ -28,17 +32,11 @@ export function GenerationMainView (props: Props) {
    */
   if (!useMediaQuery("(min-width: 768px)")) {
     return (
-      <div className="flex flex-1 flex-col gap-2 overflow-hidden lg:flex-row">
-        <div className="lg:min-w-64 xl:min-w-80">{props.config}</div>
-        <div className="flex flex-col gap-4 md:flex-row lg:min-w-64 lg:flex-col xl:min-w-96">
-          {props.settingLanguageUsedForPromptView}
-          <div className="flex-1 overflow-hidden">{props.promptEditor}</div>
-          <div className="min-w-80 flex-1 overflow-hidden">
-            {props.negativePromptEditor}
-          </div>
-          <div className="gap-y-4 pb-4 md:px-4">
-            <Separator />
-          </div>
+      <div className="flex flex-col gap-4">
+        {props.mobilePromptEditor}
+        <div>{props.config}</div>
+        <div className="pb-4">
+          <Separator />
         </div>
       </div>
     )

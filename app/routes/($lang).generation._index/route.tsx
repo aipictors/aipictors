@@ -10,6 +10,8 @@ import { GenerationSettingsColumn } from "~/routes/($lang).generation._index/com
 import { GenerationUserModelFromUrl } from "~/routes/($lang).generation._index/components/generation-user-model-from-url"
 import { GenerationView } from "~/routes/($lang).generation._index/components/generation-view/generation-view"
 import { GenerationNegativePromptView } from "~/routes/($lang).generation._index/components/negative-prompt-view/generation-negative-prompt-view"
+import { GenerationMobilePromptCard } from "~/routes/($lang).generation._index/components/prompt-view/generation-mobile-prompt-card"
+import { GenerationMobilePromptComposer } from "~/routes/($lang).generation._index/components/prompt-view/generation-mobile-prompt-composer"
 import { GenerationPromptView } from "~/routes/($lang).generation._index/components/prompt-view/generation-prompt-view"
 import { GenerationSubmissionView } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-view"
 import { GenerationCommunicationView } from "~/routes/($lang).generation._index/components/task-view/generation-communication-view"
@@ -95,17 +97,23 @@ export default function GenerationPage() {
         }
         header={
           <GenerationHeaderView
-            submission={<GenerationSubmissionView termsText={text} />}
+            submission={
+              <GenerationSubmissionView
+                termsText={text}
+                composer={<GenerationMobilePromptComposer />}
+              />
+            }
           />
         }
         main={
           <GenerationMainView
-            config={<GenerationConfigView />}
+            config={<GenerationConfigView isStacked />}
             settingLanguageUsedForPromptView={
               <SettingLanguageUsedForPromptView />
             }
             promptEditor={<GenerationPromptView />}
             negativePromptEditor={<GenerationNegativePromptView />}
+            mobilePromptEditor={<GenerationMobilePromptCard />}
             taskContentPreview={<GenerationTaskContentPreview />}
             taskDetails={<GenerationTaskDetailsView />}
             workContentPreview={<GenerationWorkContentPreview />}
