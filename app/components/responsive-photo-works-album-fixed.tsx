@@ -12,7 +12,7 @@ import { Badge } from "~/components/ui/badge"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
 import { StickerButtonFragment } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
+import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {

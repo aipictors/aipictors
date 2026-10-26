@@ -24,6 +24,7 @@ import { CommentReportDialog } from "~/routes/($lang)._main.posts.$post._index/c
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
+import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
@@ -492,49 +493,6 @@ export function WorkComment(props: Props) {
   )
 }
 
-export const WorkCommentFragment = graphql(
-  `fragment WorkComment on CommentNode @_unmask  {
-    id
-    createdAt
-    text
-    supportThankYouMessage
-    support {
-      freeCoinAmount
-      premiumCoinAmount
-      totalPt
-    }
-    likesCount
-    isWorkOwnerLiked
-    isLiked
-    user {
-      id
-      name
-      login
-      iconUrl
-      avatarFrame {
-        id
-        frameType
-        backgroundStyle
-        overlayImageUrl
-        borderPadding
-      }
-      nanoid
-    }
-    sticker {
-      id
-      imageUrl
-      title
-      isDownloaded
-      likesCount
-      usesCount
-      downloadsCount
-      accessType
-    }
-    isMuted
-    isSensitive
-  }`,
-)
-
 const deleteCommentMutation = graphql(
   `mutation DeleteComment($input: DeleteCommentInput!) {
     deleteComment(input: $input) {
@@ -542,3 +500,5 @@ const deleteCommentMutation = graphql(
     }
   }`,
 )
+
+export { WorkCommentFragment }
