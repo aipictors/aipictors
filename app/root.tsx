@@ -19,7 +19,6 @@ import {
   useRouteError,
   useRouteLoaderData,
 } from "@remix-run/react"
-import { init } from "@sentry/browser"
 import { lazy, Suspense, useEffect, useRef, useState } from "react"
 import { PhotoProvider } from "react-photo-view"
 import { AppAnalytics } from "~/components/app/app-analytics"
@@ -34,6 +33,7 @@ import { cn } from "~/lib/utils"
 import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
+import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
 import {
   buildAlternateLocaleUrls,
   getPathLocale,
@@ -91,14 +91,21 @@ const initializeBrowserSentry = () => {
     return
   }
 
-  init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
-    environment: import.meta.env.VITE_SENTRY_ENVIRONMENT,
-    tracesSampleRate: 0.001,
-    enabled: import.meta.env.PROD,
-  })
-
   hasInitializedBrowserSentry = true
+
+  // Sentry は初期表示に不要なので、読み込み完了後のアイドル時に読み込む
+  runAfterLoadIdle(() => {
+    import("@sentry/browser")
+      .then(({ init }) => {
+        init({
+          dsn: import.meta.env.VITE_SENTRY_DSN,
+          environment: import.meta.env.VITE_SENTRY_ENVIRONMENT,
+          tracesSampleRate: 0.001,
+          enabled: import.meta.env.PROD,
+        })
+      })
+      .catch(() => {})
+  })
 }
 
 const getMaintenanceStatus = async (): Promise<RootLoaderData> => {

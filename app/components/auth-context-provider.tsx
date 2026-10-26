@@ -2,12 +2,6 @@ import { AuthContext } from "~/contexts/auth-context"
 import { config } from "~/config"
 import { debugLog } from "~/utils/debug-logger"
 import {
-  getAnalytics,
-  logEvent,
-  setUserId,
-  setUserProperties,
-} from "firebase/analytics"
-import {
   type ParsedToken,
   type User,
   getAuth,
@@ -15,6 +9,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth"
 import { useEffect, useState } from "react"
+import { withFirebaseAnalytics } from "~/utils/run-after-load-idle"
 
 type Props = {
   children: React.ReactNode
@@ -103,38 +98,13 @@ export function AuthContextProvider (props: Props): React.ReactNode {
         return
       }
 
-      // Analytics は遅延で設定（モバイル端末のパフォーマンス最適化）
-      if (typeof requestIdleCallback !== "undefined") {
-        requestIdleCallback(
-          () => {
-            try {
-              if (typeof window !== "undefined") {
-                setUserId(getAnalytics(), user?.uid ?? null)
-                logEvent(getAnalytics(), config.logEvent.login, {
-                  method: user.providerId,
-                })
-              }
-            } catch (error) {
-              console.warn("Analytics error:", error)
-            }
-          },
-          { timeout: 5000 }, // 5秒でタイムアウト
-        )
-      } else {
-        // requestIdleCallbackが使用できない場合は即座にバックグラウンドで実行
-        setTimeout(() => {
-          try {
-            if (typeof window !== "undefined") {
-              setUserId(getAnalytics(), user?.uid ?? null)
-              logEvent(getAnalytics(), config.logEvent.login, {
-                method: user.providerId,
-              })
-            }
-          } catch (error) {
-            console.warn("Analytics error:", error)
-          }
-        }, 100)
-      }
+      // Analytics は読み込み完了後のアイドル時に設定（モバイル端末のパフォーマンス最適化）
+      withFirebaseAnalytics(({ getAnalytics, logEvent, setUserId }) => {
+        setUserId(getAnalytics(), user?.uid ?? null)
+        logEvent(getAnalytics(), config.logEvent.login, {
+          method: user.providerId,
+        })
+      })
 
       // トークン取得を並行して実行し、UIの表示を優先（モバイル最適化）
       const isMobileDevice =
@@ -174,38 +144,13 @@ export function AuthContextProvider (props: Props): React.ReactNode {
           debugLog.auth("Token details updated successfully")
 
           // Analytics のユーザープロパティ設定も遅延実行（モバイル最適化）
-          if (typeof requestIdleCallback !== "undefined") {
-            requestIdleCallback(
-              () => {
-                try {
-                  if (typeof window !== "undefined") {
-                    setUserProperties(getAnalytics(), {
-                      display_name: user.displayName,
-                      provider_id: user.providerId,
-                      username: tokenResult.claims.username,
-                    })
-                  }
-                } catch (error) {
-                  console.warn("Analytics user properties error:", error)
-                }
-              },
-              { timeout: 5000 }, // 5秒でタイムアウト
-            )
-          } else {
-            setTimeout(() => {
-              try {
-                if (typeof window !== "undefined") {
-                  setUserProperties(getAnalytics(), {
-                    display_name: user.displayName,
-                    provider_id: user.providerId,
-                    username: tokenResult.claims.username,
-                  })
-                }
-              } catch (error) {
-                console.warn("Analytics user properties error:", error)
-              }
-            }, 200)
-          }
+          withFirebaseAnalytics(({ getAnalytics, setUserProperties }) => {
+            setUserProperties(getAnalytics(), {
+              display_name: user.displayName,
+              provider_id: user.providerId,
+              username: tokenResult.claims.username,
+            })
+          })
         })
         .catch((error) => {
           debugLog.auth("Token details fetch failed (using basic info):", {

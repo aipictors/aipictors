@@ -3,10 +3,12 @@ import { AutoLoginProvider } from "~/components/auto-login-provider"
 import { config } from "~/config"
 import { ApolloProvider } from "@apollo/client/index"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { initializeAnalytics } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { getMessaging, onMessage, getToken } from "firebase/messaging"
 import { apolloClient } from "~/lib/client"
+import {
+  runAfterLoadIdle,
+  withFirebaseAnalytics,
+} from "~/utils/run-after-load-idle"
 
 type Props = {
   children: React.ReactNode
@@ -24,18 +26,17 @@ function initializeFirebaseIfNeeded() {
     if (getApps().length === 0) {
       initializeApp(config.firebaseConfig)
 
-      // Analyticsは遅延初期化
-      requestIdleCallback(() => {
-        try {
-          initializeAnalytics(getApp())
-        } catch (error) {
-          console.warn("Analytics initialization failed:", error)
-        }
+      // Analyticsは読み込み完了後のアイドル時に初期化
+      withFirebaseAnalytics(({ initializeAnalytics }) => {
+        initializeAnalytics(getApp())
       })
 
-      // Messagingは遅延初期化
-      requestIdleCallback(() => {
+      // Messagingは読み込み完了後のアイドル時に初期化
+      runAfterLoadIdle(async () => {
         try {
+          const { getMessaging, onMessage, getToken } = await import(
+            "firebase/messaging"
+          )
           const messaging = getMessaging(getApp())
           onMessage(messaging, (payload) => {
             getToken(messaging, {
