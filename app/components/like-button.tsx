@@ -227,6 +227,8 @@ export function LikeButton(props: Props): React.ReactNode {
         )}
         triggerChildren={
           <div
+            role="button"
+            aria-label={t("いいね", "Like")}
             className={cn(
               props.isParticle && "like-button",
               "relative flex cursor-pointer items-center justify-center rounded-md",
@@ -304,6 +306,8 @@ export function LikeButton(props: Props): React.ReactNode {
       }}
       onClick={handleOnClick}
       type="button"
+      aria-label={t("いいね", "Like")}
+      aria-pressed={isLiked}
     >
       <div
         className={cn(

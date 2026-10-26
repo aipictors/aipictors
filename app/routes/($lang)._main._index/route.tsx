@@ -1251,7 +1251,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                         value={workType ? workType : ""}
                         onValueChange={handleWorkTypeChange}
                       >
-                        <SelectTrigger className="h-8 w-full min-w-0 font-medium text-xs">
+                        <SelectTrigger
+                          className="h-8 w-full min-w-0 font-medium text-xs"
+                          aria-label={t("種類", "Type")}
+                        >
                           <SelectValue
                             placeholder={
                               workType
@@ -1298,7 +1301,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                         }
                         onValueChange={handlePromptChange}
                       >
-                        <SelectTrigger className="h-8 w-full min-w-0 font-medium text-xs">
+                        <SelectTrigger
+                          className="h-8 w-full min-w-0 font-medium text-xs"
+                          aria-label={t("プロンプト", "Prompt")}
+                        >
                           <SelectValue
                             placeholder={
                               isPromptPublic === null
@@ -1333,7 +1339,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                         value={sortType ? sortType : ""}
                         onValueChange={handleSortTypeChange}
                       >
-                        <SelectTrigger className="h-8 w-full min-w-0 font-medium text-xs">
+                        <SelectTrigger
+                          className="h-8 w-full min-w-0 font-medium text-xs"
+                          aria-label={t("並び順", "Sort")}
+                        >
                           <ArrowDownWideNarrow className="h-3.5 w-3.5" />
                           <SelectValue
                             placeholder={
@@ -1370,7 +1379,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                           value={timeRange}
                           onValueChange={handleTimeRangeChange}
                         >
-                          <SelectTrigger className="h-8 w-full font-medium text-xs sm:w-auto sm:min-w-[130px]">
+                          <SelectTrigger
+                            className="h-8 w-full font-medium text-xs sm:w-auto sm:min-w-[130px]"
+                            aria-label={t("期間", "Period")}
+                          >
                             <SelectValue
                               placeholder={
                                 timeRange === "ALL"

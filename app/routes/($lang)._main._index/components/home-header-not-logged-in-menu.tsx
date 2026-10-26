@@ -101,7 +101,11 @@ export const HomeHeaderNotLoggedInMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"ghost"} size={"icon"}>
+        <Button
+          variant={"ghost"}
+          size={"icon"}
+          aria-label={t("その他のメニュー", "More")}
+        >
           <EllipsisVerticalIcon className="w-16" />
         </Button>
       </DropdownMenuTrigger>

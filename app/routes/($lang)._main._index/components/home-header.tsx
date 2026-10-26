@@ -406,6 +406,7 @@ function HomeHeader(props: Props) {
             <Button
               variant="ghost"
               size="icon"
+              aria-label={t("メニュー", "Menu")}
               className={
                 props.showPcSheetMenu
                   ? undefined // PC版でも表示（Buttonのinline-flexを潰さない）
@@ -437,6 +438,7 @@ function HomeHeader(props: Props) {
             onClick={onToggleSearchForm}
             variant="ghost"
             size="icon"
+            aria-label={t("検索", "Search")}
           >
             <Search className="m-auto w-auto" />
           </Button>
@@ -457,7 +459,7 @@ function HomeHeader(props: Props) {
                 <img
                   src="/icon.svg"
                   className="size-8 shrink-0 rounded-full"
-                  alt="Avatar"
+                  alt=""
                   width={40}
                   height={40}
                 />
@@ -485,7 +487,7 @@ function HomeHeader(props: Props) {
                 <img
                   src="/icon.svg"
                   className="size-8 shrink-0 rounded-full"
-                  alt="Avatar"
+                  alt=""
                   width={40}
                   height={40}
                 />
@@ -529,6 +531,7 @@ function HomeHeader(props: Props) {
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8"
+                  aria-label={t("検索", "Search")}
                 >
                   <Search className="h-4 w-4" />
                 </Button>
@@ -545,6 +548,7 @@ function HomeHeader(props: Props) {
               onClick={onToggleSearchForm}
               variant="ghost"
               size="icon"
+              aria-label={t("検索を閉じる", "Close search")}
             >
               <MoveLeft className="w-8" />
             </Button>
@@ -596,7 +600,11 @@ function HomeHeader(props: Props) {
               <HomeHeaderR18Button />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t("生成・投稿", "Generate / Post")}
+                  >
                     <Plus />
                   </Button>
                 </DropdownMenuTrigger>
@@ -682,6 +690,7 @@ function HomeHeader(props: Props) {
             onClick={onSearch}
             variant="ghost"
             size="icon"
+            aria-label={t("検索", "Search")}
           >
             <Search className="w-16" />
           </Button>

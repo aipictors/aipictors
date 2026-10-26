@@ -695,6 +695,7 @@ export default function FollowingLayout() {
         >
           <Input
             name="q"
+            aria-label={t("イベントを検索", "Search events")}
             defaultValue={data.filters.keyword}
             placeholder={t(
               "イベント名・主催者ユーザ名・説明・タグで検索",
@@ -703,6 +704,7 @@ export default function FollowingLayout() {
           />
           <select
             name="status"
+            aria-label={t("開催状態", "Status")}
             defaultValue={data.filters.status}
             className="h-10 rounded-md border bg-background px-3 py-2 text-sm"
           >
@@ -713,6 +715,7 @@ export default function FollowingLayout() {
           </select>
           <select
             name="ranking"
+            aria-label={t("ランキング条件", "Ranking type")}
             defaultValue={data.filters.ranking}
             className="h-10 rounded-md border bg-background px-3 py-2 text-sm"
           >
@@ -726,6 +729,7 @@ export default function FollowingLayout() {
           </select>
           <select
             name="sort"
+            aria-label={t("並び順", "Sort")}
             defaultValue={data.filters.sort}
             className="h-10 rounded-md border bg-background px-3 py-2 text-sm"
           >

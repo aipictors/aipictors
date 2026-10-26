@@ -930,6 +930,7 @@ export function TagWorkSection(props: Props) {
             <Switch
               onClick={() => props.setHasPrompt(props.hasPrompt === 1 ? 0 : 1)}
               checked={props.hasPrompt === 1}
+              aria-label={t("プロンプト有", "With Prompts")}
             />
             <span className="text-sm">{t("プロンプト有", "With Prompts")}</span>
           </div>
@@ -971,6 +972,7 @@ export function TagWorkSection(props: Props) {
           <Switch
             onClick={() => props.setHasPrompt(props.hasPrompt === 1 ? 0 : 1)}
             checked={props.hasPrompt === 1}
+            aria-label={t("プロンプト有", "With Prompts")}
           />
           <span className="text-sm">{t("プロンプト有", "With Prompts")}</span>
         </div>

@@ -232,6 +232,7 @@ export function HomeHeaderR18Button() {
           variant="outline"
           onClick={handleR18ButtonClick}
           className="flex items-center gap-1 whitespace-nowrap rounded-r-none border border-gray-300 px-2 md:px-3"
+          aria-label={isCurrentlyR18 ? "R18" : "全年齢"}
         >
           {isCurrentlyR18 ? (
             <>
@@ -253,6 +254,7 @@ export function HomeHeaderR18Button() {
               variant="outline"
               size="icon"
               className="rounded-l-none border border-gray-300 border-l-0"
+              aria-label="対象年齢の表示設定"
             >
               <ChevronDown className="h-3 w-3" />
             </Button>

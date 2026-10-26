@@ -18,8 +18,22 @@ type Props = {
 /**
  * SNSアイコンリンク
  */
+/**
+ * アイコンだけのリンクに付ける名前（アクセシビリティ）
+ */
+const toDefaultAriaLabel = (url: string): string => {
+  if (url.includes("twitter") || url.includes("x.com")) return "X"
+  if (url.includes("instagram")) return "Instagram"
+  if (url.includes("facebook")) return "Facebook"
+  if (url.includes("github")) return "GitHub"
+  if (url.includes("discord")) return "Discord"
+  if (url.includes("mailto")) return "Mail"
+  return url
+}
+
 export function SnsIconLink(props: Props): React.ReactNode {
   const variant = props.variant ?? "default"
+  const ariaLabel = props.ariaLabel ?? toDefaultAriaLabel(props.url)
   const iconClassName = variant === "plain" ? "size-6" : "size-5"
 
   const icon = () => {
@@ -69,7 +83,7 @@ export function SnsIconLink(props: Props): React.ReactNode {
         to={props.url}
         target="_blank"
         rel="noreferrer"
-        aria-label={props.ariaLabel}
+        aria-label={ariaLabel}
         title={props.ariaLabel}
       >
         {icon()}
@@ -92,7 +106,7 @@ export function SnsIconLink(props: Props): React.ReactNode {
         to={props.url}
         target="_blank"
         rel="noreferrer"
-        aria-label={props.ariaLabel}
+        aria-label={ariaLabel}
         title={props.ariaLabel}
       >
         {icon()}

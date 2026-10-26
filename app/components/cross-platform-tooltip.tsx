@@ -19,7 +19,7 @@ export function CrossPlatformTooltip (props: Props): React.ReactNode {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <HelpCircleIcon className="w-4" />
+        <HelpCircleIcon className="w-4" role="button" aria-label="ヘルプ" />
       </PopoverTrigger>
       <PopoverContent className="whitespace-pre-wrap font-size-md">
         {props.text}
