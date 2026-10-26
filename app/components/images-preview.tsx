@@ -20,11 +20,19 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const [isDragging, setIsDragging] = useState(false)
   const [showKeyboardHint, setShowKeyboardHint] = useState(true)
   const imgRef = useRef<HTMLImageElement>(null)
+  const mainImgRef = useRef<HTMLImageElement>(null)
+  // 画像の読み込みが終わるまで表示領域を確保し、読み込み後のレイアウトシフトを防ぐ
+  const [isMainImageLoaded, setIsMainImageLoaded] = useState(false)
   const startCoord = useRef({ x: 0, y: 0 })
   const prevTranslate = useRef({ x: 0, y: 0 })
   const lastTap = useRef(0)
   const dragMovedRef = useRef(false)
   const dragStartedRef = useRef(false)
+
+  useEffect(() => {
+    // SSR した画像はハイドレーション前に読み込み済みのことがある
+    setIsMainImageLoaded(mainImgRef.current?.complete === true)
+  }, [props.thumbnailUrl])
 
   const openPreview = () => {
     setIsOpen(true)
@@ -521,15 +529,22 @@ export function ImagesPreview(props: Props): React.ReactNode {
     <>
       <div className="flex flex-col space-y-4">
         <div className="relative">
-          <div className="m-auto flex h-full max-h-[64vh] w-full cursor-pointer justify-center overflow-hidden rounded-2xl bg-zinc-100 object-contain dark:bg-zinc-900">
+          <div
+            className="m-auto flex h-full max-h-[64vh] w-full cursor-pointer justify-center overflow-hidden rounded-2xl bg-zinc-100 object-contain dark:bg-zinc-900"
+            style={isMainImageLoaded ? undefined : { minHeight: "64vh" }}
+          >
             <div className="inline-block overflow-hidden text-center">
               <img
+                ref={mainImgRef}
                 className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain md:max-h-[72vh] dark:bg-zinc-900"
                 draggable={false}
                 key={props.thumbnailUrl}
                 alt="thumbnail"
                 src={props.thumbnailUrl}
-                loading="lazy"
+                // 作品ページの LCP 画像なので優先して読み込む
+                fetchPriority="high"
+                onLoad={() => setIsMainImageLoaded(true)}
+                onError={() => setIsMainImageLoaded(true)}
                 onTouchStart={handleMainTouchStart}
                 onMouseUp={handleMainMouseUp}
                 onMouseDown={handleMainMouseDown}
