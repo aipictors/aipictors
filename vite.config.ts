@@ -75,6 +75,9 @@ export default defineConfig({
         entryFileNames: "assets/[name]-[hash].js",
         chunkFileNames: "assets/[name]-[hash].js",
         assetFileNames: "assets/[name]-[hash].[ext]",
+        // 細かいチャンクが数百個に分かれると、ページを開いたときの modulepreload が多すぎて
+        // 回線が遅い端末で表示が遅れる。小さいチャンクはまとめる。
+        experimentalMinChunkSize: 120_000,
       },
     },
   },
