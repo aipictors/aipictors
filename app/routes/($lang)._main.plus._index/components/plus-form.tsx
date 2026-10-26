@@ -68,6 +68,12 @@ async function parseActionResponse<T>(response: Response): Promise<{
 export function PlusForm () {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCancelScheduled, setIsCancelScheduled] = useState(false)
+  // 更新の支払いに失敗して未払いのままの契約（プリペイドカードの残高不足など）
+  const [unpaidInvoice, setUnpaidInvoice] = useState<{
+    passType: string
+    amount: number
+    hostedInvoiceUrl: string
+  } | null>(null)
   const [cancelCompletionMode, setCancelCompletionMode] = useState<null | "requested" | "already_canceled">(null)
   const [isPlanChangeDialogOpen, setIsPlanChangeDialogOpen] = useState(false)
   const [isPlanChangePreviewLoading, setIsPlanChangePreviewLoading] = useState(false)
@@ -357,6 +363,29 @@ export function PlusForm () {
     : ""
 
   useEffect(() => {
+    const loadUnpaidInvoice = async () => {
+      try {
+        const headers = await withAuthHeader()
+        const response = await fetch("/api/stripe/subscription-unpaid", {
+          method: "POST",
+          headers,
+        })
+        const { ok, json } = await parseActionResponse<{
+          error: string | null
+          data: { passType: string; amount: number; hostedInvoiceUrl: string } | null
+        }>(response)
+        if (ok && !json?.error && json?.data?.hostedInvoiceUrl) {
+          setUnpaidInvoice(json.data)
+        }
+      } catch {
+        // 取得できなくても通常の表示を続ける
+      }
+    }
+
+    loadUnpaidInvoice()
+  }, [])
+
+  useEffect(() => {
     const loadCancellationStatus = async () => {
       if (!currentPass) {
         return
@@ -614,6 +643,31 @@ export function PlusForm () {
             />
           )}
         </>
+      ) : unpaidInvoice ? (
+        <Card className="border-amber-500">
+          <CardHeader>
+            <CardTitle>{"プランの更新のお支払いが完了していません"}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3 text-sm">
+            <p>
+              {`${toPassName(unpaidInvoice.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS")}（${unpaidInvoice.amount.toLocaleString()}円）の更新のお支払いができなかったため、プランが一時停止しています。`}
+            </p>
+            <p>
+              {"下のボタンからお支払いいただくと、すぐにプランが再開されます。カードの残高不足の場合は、別のカードを入力してお支払いいただけます。"}
+            </p>
+            <p className="text-xs opacity-70">
+              {"新しくプランに申し込むと二重の契約になってしまうため、先にこちらからお支払いください。"}
+            </p>
+            <Button
+              className="w-full font-bold"
+              onClick={() => {
+                window.location.href = unpaidInvoice.hostedInvoiceUrl
+              }}
+            >
+              {"お支払いを完了する"}
+            </Button>
+          </CardContent>
+        </Card>
       ) : (
         <PlusAbout showUpgradePlansOnly={true} />
       )}
