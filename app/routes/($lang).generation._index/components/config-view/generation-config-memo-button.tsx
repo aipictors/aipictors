@@ -14,7 +14,7 @@ export function GenerationConfigMemoButton (props: Props) {
       title="生成情報にメモをつけて保存、復元することができます。"
       className="flex w-16 flex-col gap-y-2"
     >
-      <Button onClick={props.onClick} variant={"secondary"}>
+      <Button aria-label="メモ" onClick={props.onClick} variant={"secondary"}>
         <StickyNote className="w-4" />
       </Button>
     </div>

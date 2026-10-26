@@ -71,7 +71,7 @@ export function GenerationPromptView() {
       <DialogTrigger asChild>
         <div>
           <div className="block">
-            <Button size={"icon"} variant={"ghost"} onClick={setTrue}>
+            <Button aria-label={t("プロンプトの一覧", "Prompt list")} size={"icon"} variant={"ghost"} onClick={setTrue}>
               <BookTextIcon />
             </Button>
           </div>

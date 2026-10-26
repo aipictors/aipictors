@@ -33,6 +33,7 @@ export function GenerationAdvertisementView () {
     <div className="relative block bg-white sm:hidden">
       {/* 閉じるボタン */}
       <Button
+        aria-label={t("閉じる", "Close")}
         onClick={handleClose}
         variant="ghost"
         size="icon"

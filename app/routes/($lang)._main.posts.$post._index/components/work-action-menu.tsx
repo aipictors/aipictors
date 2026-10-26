@@ -104,7 +104,11 @@ export function WorkActionMenu (props: Props) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button size={"icon"} variant="secondary">
+        <Button
+          size={"icon"}
+          variant="secondary"
+          aria-label={t("その他のメニュー", "More")}
+        >
           <MoreHorizontal />
         </Button>
       </PopoverTrigger>

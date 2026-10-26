@@ -142,6 +142,7 @@ export function ConfigModelButton(props: Props) {
       </Button>
       {!props.isHideSearchButton && (
         <Button
+          aria-label={t("モデルの詳細", "Model details")}
           disabled={props.isDisabled}
           onClick={props.onSearchClick}
           className="absolute top-1 right-1 size-8 rounded-full border-2"

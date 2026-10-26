@@ -51,6 +51,7 @@ export function GenerationConfigSeed (props: Props) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
+                  aria-label={t("ランダムなシード", "Random seed")}
                   size={"icon"}
                   variant={props.value === -1 ? "default" : "secondary"}
                   disabled={props.value === -1}

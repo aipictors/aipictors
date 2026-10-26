@@ -149,6 +149,7 @@ export function GenerationSubmitOperationParts (props: Props) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
+                aria-label={t("生成の設定", "Generation settings")}
                 className="mr-2 block md:hidden"
                 size={"icon"}
                 variant={"ghost"}

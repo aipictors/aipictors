@@ -34,7 +34,11 @@ export function SharePopover(props: Props) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button size="icon" variant="secondary">
+        <Button
+          size="icon"
+          variant="secondary"
+          aria-label={t("共有", "Share")}
+        >
           <Share2 />
         </Button>
       </PopoverTrigger>

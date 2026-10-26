@@ -350,6 +350,7 @@ export function WorkComment(props: Props) {
             <Link
               className="group block w-32 overflow-hidden"
               to={`/stickers/${props.stickerId}`}
+              aria-label={t("スタンプ", "Sticker")}
             >
               <img
                 className="w-32 py-2 transition-transform duration-300 group-hover:scale-105"

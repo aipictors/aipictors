@@ -56,6 +56,8 @@ export function WorkImageThumbnailCarousel ({
                   className={frameClassName}
                   onClick={() => onSelectImage(imageURL)}
                   onKeyUp={(event) => handleKeyPress(imageURL, event)}
+                  aria-label={`${index + 1} / ${allImageURLs.length}`}
+                  aria-pressed={isSelected}
                 >
                   <img
                     className="h-full w-full object-contain"

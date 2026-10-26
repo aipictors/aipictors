@@ -93,7 +93,7 @@ export function GenerationNegativePromptView() {
           <>
             {resetAction}
             <DialogTrigger asChild>
-              <Button size={"icon"} variant={"ghost"} onClick={setTrue}>
+              <Button aria-label={t("ネガティブプロンプトの一覧", "Negative prompt list")} size={"icon"} variant={"ghost"} onClick={setTrue}>
                 <BookTextIcon />
               </Button>
             </DialogTrigger>
