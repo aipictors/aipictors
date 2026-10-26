@@ -1,9 +1,15 @@
 import { fetchPublic } from "~/utils/fetch-public"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+import { parseCompletedAt } from "~/routes/($lang).generation._index/utils/to-generation-image-file-names"
 
 interface FileObject {
   name: string
   data: Uint8Array
+  extension: "png" | "webp" | "jpg"
+  /**
+   * 生成日時（UNIX秒）。img要素のdata-completed-atから取得する
+   */
+  completedAt: number | null
 }
 
 function getImageExtensionFromMimeType(
@@ -102,6 +108,8 @@ export async function createImageFiles(props: Props) {
       files.push({
         name: `${imageId}.${extension}`,
         data: new Uint8Array(arrayBuffer),
+        extension,
+        completedAt: parseCompletedAt(imageElement.dataset.completedAt),
       })
     }
 

@@ -423,6 +423,7 @@ export function GenerationTaskEditableCard (props: Props) {
             }
             data-original={normalizedImageUrl}
             data-original-raw={originalImageUrl}
+            data-completed-at={props.task.completedAt ?? undefined}
             data-generative-raw={
               context.config.taskListThumbnailType === "light"
                 ? originalThumbnailUrl
@@ -501,6 +502,7 @@ export const EditableGenerationResultCardFragment = graphql(
     status
     imageUrl
     thumbnailUrl
+    completedAt
     estimatedSeconds
     rating
     prompt
@@ -538,6 +540,7 @@ export const EditableGenerationResultCardTaskFragment = graphql(
     status
     imageUrl
     thumbnailUrl
+    completedAt
     estimatedSeconds
     rating
     prompt
