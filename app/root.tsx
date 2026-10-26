@@ -1,5 +1,4 @@
 import "react-photo-view/dist/react-photo-view.css"
-import "@fontsource-variable/m-plus-2"
 
 import {
   json,
@@ -219,7 +218,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export const links: LinksFunction = () => {
   return [
     // tailwind.cssのロード
-    { rel: "stylesheet", href: styles, crossOrigin: "anonymous" },
+    { rel: "stylesheet", href: styles },
   ]
 }
 
