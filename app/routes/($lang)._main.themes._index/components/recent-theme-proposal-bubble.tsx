@@ -22,12 +22,18 @@ const FADE_DURATION = 320
 
 export function RecentThemeProposalBubble(props: Props) {
   const t = useTranslation()
-  const [activeIndex, setActiveIndex] = useState(() =>
-    props.proposals.length > 0
-      ? Math.floor(Math.random() * props.proposals.length)
-      : 0,
-  )
+  // SSR とハイドレーションで同じ表示にするため最初は先頭を表示し、
+  // マウント後にランダムな提案に切り替える
+  const [activeIndex, setActiveIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
+
+  useEffect(() => {
+    if (props.proposals.length <= 1) {
+      return
+    }
+
+    setActiveIndex(Math.floor(Math.random() * props.proposals.length))
+  }, [props.proposals.length])
 
   useEffect(() => {
     if (props.proposals.length === 0) {
