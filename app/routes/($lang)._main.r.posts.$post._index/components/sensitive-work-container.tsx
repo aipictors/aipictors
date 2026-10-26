@@ -171,6 +171,7 @@ export function SensitiveWorkContainer (props: Props) {
                     smallThumbnailImageHeight:
                       relatedWork.smallThumbnailImageHeight,
                     id: relatedWork.id,
+                    title: relatedWork.title,
                     userId: relatedWork.userId,
                     isLiked: relatedWork.isLiked,
                     subWorksCount: relatedWork.subWorksCount,

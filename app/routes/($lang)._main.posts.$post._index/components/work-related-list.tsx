@@ -14,6 +14,7 @@ type Props = {
     smallThumbnailImageWidth: number
     smallThumbnailImageHeight: number
     id: string
+    title?: string
     userId: string
     isLiked: boolean
     subWorksCount: number

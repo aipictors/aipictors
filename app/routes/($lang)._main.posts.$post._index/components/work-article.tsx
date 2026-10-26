@@ -679,6 +679,7 @@ export const workArticleFragment = graphql(
       works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
         id
         userId
+        title
         largeThumbnailImageURL
         largeThumbnailImageWidth
         largeThumbnailImageHeight
@@ -732,6 +733,7 @@ export const workArticleFragment = graphql(
     }
     nextWork {
       id
+      title
       smallThumbnailImageURL
       smallThumbnailImageWidth
       smallThumbnailImageHeight
@@ -739,6 +741,7 @@ export const workArticleFragment = graphql(
     }
     previousWork {
       id
+      title
       smallThumbnailImageURL
       smallThumbnailImageWidth
       smallThumbnailImageHeight
@@ -870,6 +873,7 @@ export const sensitiveWorkArticleFragment = graphql(
       works(offset: 0, limit: 16, where: { ratings: [R18, R18G] }) {
         id
         userId
+        title
         largeThumbnailImageURL
         largeThumbnailImageWidth
         largeThumbnailImageHeight
@@ -923,6 +927,7 @@ export const sensitiveWorkArticleFragment = graphql(
     }
     nextWork {
       id
+      title
       smallThumbnailImageURL
       smallThumbnailImageWidth
       smallThumbnailImageHeight
@@ -930,6 +935,7 @@ export const sensitiveWorkArticleFragment = graphql(
     }
     previousWork {
       id
+      title
       smallThumbnailImageURL
       smallThumbnailImageWidth
       smallThumbnailImageHeight
