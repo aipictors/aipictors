@@ -1,4 +1,3 @@
-import Hls from "hls.js"
 import { Loader2, Play } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { Button } from "~/components/ui/button"
@@ -153,24 +152,34 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
       return
     }
 
-    if (!Hls.isSupported()) {
-      video.src = hlsUrl
-      void video.play().catch(() => {})
-      return
-    }
+    let cancelled = false
+    let hls: import("hls.js").default | null = null
 
-    const hls = new Hls({
-      autoStartLoad: true,
-      enableWorker: true,
-    })
+    // hls.js は大きいので、再生を開始したときにだけ読み込む
+    import("hls.js").then(({ default: Hls }) => {
+      if (cancelled) return
 
-    hls.loadSource(hlsUrl)
-    hls.attachMedia(video)
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      void video.play().catch(() => {})
+      if (!Hls.isSupported()) {
+        video.src = hlsUrl
+        void video.play().catch(() => {})
+        return
+      }
+
+      hls = new Hls({
+        autoStartLoad: true,
+        enableWorker: true,
+      })
+
+      hls.loadSource(hlsUrl)
+      hls.attachMedia(video)
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        void video.play().catch(() => {})
+      })
     })
 
     return () => {
+      cancelled = true
+      if (hls === null) return
       hls.destroy()
       video.removeAttribute("src")
       video.load()

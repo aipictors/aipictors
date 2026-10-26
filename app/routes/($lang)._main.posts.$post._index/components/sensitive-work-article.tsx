@@ -20,7 +20,7 @@ import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/compone
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
-import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
+import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/lazy-work-markdown-view"
 import { WorkSensitiveArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-sensitive-article-tags"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
 import { getWeeklyRankingPeriod } from "~/utils/get-weeks-in-month"

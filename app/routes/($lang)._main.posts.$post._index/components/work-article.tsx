@@ -21,7 +21,7 @@ import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$p
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
-import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
+import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/lazy-work-markdown-view"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
 import { getWeeklyRankingPeriod } from "~/utils/get-weeks-in-month"
 import { toDateTimeText } from "~/utils/to-date-time-text"
