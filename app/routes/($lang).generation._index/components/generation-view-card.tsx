@@ -17,9 +17,9 @@ export function GenerationViewCard (props: Props) {
   return (
     <>
       <div className="block md:hidden">
-        <div className="flex justify-between px-0 pt-1 pb-1 md:px-4">
+        <div className="flex min-h-8 items-center justify-between px-0 pt-1 pb-1 md:px-4">
           <div className="flex items-center">
-            <span className="font-bold">{props.title}</span>
+            <span className="font-semibold text-sm">{props.title}</span>
           </div>
           <div className="flex items-center space-x-2">
             {props.action}
@@ -34,9 +34,9 @@ export function GenerationViewCard (props: Props) {
         {props.children}
       </div>
       <Card className="hidden h-full w-full max-w-none flex-col overflow-hidden md:flex">
-        <div className="flex justify-between px-4 pt-2 pb-2">
+        <div className="flex min-h-11 items-center justify-between px-4 pt-2 pb-1">
           <div className="flex items-center">
-            <span className="font-bold">{props.title}</span>
+            <span className="font-semibold text-sm">{props.title}</span>
           </div>
           <div className="flex items-center space-x-2">
             {props.action}

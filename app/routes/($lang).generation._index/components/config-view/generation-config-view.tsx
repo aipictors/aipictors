@@ -1,3 +1,6 @@
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { useContext, useEffect, useState } from "react"
 import {
   Accordion,
   AccordionContent,
@@ -7,14 +10,14 @@ import {
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { config } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
+import { toGenerationModelType } from "~/lib/user-models/generation"
 import { GenerationConfigClipSkip } from "~/routes/($lang).generation._index/components/config-view/generation-config-clip-skip"
 import { GenerationConfigCount } from "~/routes/($lang).generation._index/components/config-view/generation-config-count"
-import { GenerationConfigLoraModels } from "~/routes/($lang).generation._index/components/config-view/generation-config-lora-models"
 import { GenerationConfigMemoButton } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-button"
 import { GenerationConfigMemoSettingDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-setting-dialog"
-import { GenerationConfigModels } from "~/routes/($lang).generation._index/components/config-view/generation-config-models"
 import { GenerationConfigReferenceImage } from "~/routes/($lang).generation._index/components/config-view/generation-config-reference-image"
+import { GenerationConfigResetConfirmDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-reset-confirm-dialog"
 import { GenerationConfigSampler } from "~/routes/($lang).generation._index/components/config-view/generation-config-sampler"
 import { GenerationConfigScale } from "~/routes/($lang).generation._index/components/config-view/generation-config-scale"
 import { GenerationConfigSeed } from "~/routes/($lang).generation._index/components/config-view/generation-config-seed"
@@ -22,19 +25,14 @@ import { GenerationConfigSize } from "~/routes/($lang).generation._index/compone
 import { GenerationConfigStep } from "~/routes/($lang).generation._index/components/config-view/generation-config-step"
 import { GenerationConfigUpscale } from "~/routes/($lang).generation._index/components/config-view/generation-config-upscale"
 import { GenerationConfigVae } from "~/routes/($lang).generation._index/components/config-view/generation-config-vae"
+import { GenerationLoraSection } from "~/routes/($lang).generation._index/components/config-view/generation-lora-section"
+import { GenerationModelLibraryProvider } from "~/routes/($lang).generation._index/components/config-view/generation-model-library-provider"
+import { GenerationModelSection } from "~/routes/($lang).generation._index/components/config-view/generation-model-section"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
-import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useEffect, useState } from "react"
-import { useContext } from "react"
-import { useTranslation } from "~/hooks/use-translation"
-import { GenerationConfigResetConfirmDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-reset-confirm-dialog"
-import { SelectedUserCheckpointCard } from "~/routes/($lang).generation._index/components/config-view/selected-user-checkpoint"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
-import { toGenerationModelType } from "~/lib/user-models/generation"
 
 /**
  * エディタの設定
@@ -135,44 +133,13 @@ export function GenerationConfigView(props: Props) {
 
   const configBody = (
     <>
-      {userModelSelection.checkpoint && (
-        <SelectedUserCheckpointCard
-          checkpoint={userModelSelection.checkpoint}
-          onClear={() => userModelSelection.clearCheckpoint()}
-        />
-      )}
-      <GenerationConfigModels
-        hideSelection={userModelSelection.checkpoint !== null}
-        models={context.imageModels}
-        favoritedModelIds={context.config.favoriteModelIds}
-        currentModelId={context.config.modelId}
-        currentModelIds={context.config.modelIds}
-        onSelectModelId={(id: string, type: string, prompt: string) => {
-          // 公式モデルを選んだらみんなのモデルの選択は外す
-          if (userModelSelection.checkpoint) {
-            userModelSelection.clearCheckpoint({ restore: false })
-          }
-          if (context.config.isUseRecommendedPrompt) {
-            if (prompt === "") {
-              context.updateModelIdAndPrompt(
-                id,
-                type,
-                config.generationFeature.defaultPromptValue,
-              )
-            } else {
-              context.updateModelIdAndPrompt(id, type, prompt)
-            }
-          } else {
-            context.updateModelId(id, type)
-          }
-        }}
+      <GenerationModelSection
         onClickSearchModelWorks={(id: string, name: string) => {
           context.updateSearchWorksModelIdAndName(id, name)
           send({ type: "OPEN_WORKS_FROM_MODEL" })
         }}
       />
-      <Separator />
-      <GenerationConfigLoraModels />
+      <GenerationLoraSection />
       <Separator />
       <GenerationConfigCount
         remainingImageGenerationTasksCount={remainingImageGenerationTasksCount}
@@ -195,10 +162,12 @@ export function GenerationConfigView(props: Props) {
       <Separator />
       <Accordion type="single" collapsible>
         <AccordionItem value="setting">
-          <AccordionTrigger>
+          <AccordionTrigger className="py-2 hover:no-underline">
             <div className="text-left">
-              <p>{t("詳細設定", "Detailed settings")}</p>
-              <p className="text-sm opacity-40">
+              <p className="font-semibold text-sm">
+                {t("詳細設定", "Detailed settings")}
+              </p>
+              <p className="mt-0.5 font-normal text-muted-foreground text-xs">
                 Scale:{context.config.scale}, Steps:{context.config.steps},
                 Sampler:{context.config.sampler}, Vae:{context.config.vae}
               </p>
@@ -232,49 +201,61 @@ export function GenerationConfigView(props: Props) {
   )
 
   return (
-    <GenerationViewCard
-      title={t("モデル", "Model")}
-      tooltip={t(
-        "イラストに使用するモデルです、絵柄を変更できます。",
-        "The model used for the illustration, you can change the design.",
-      )}
-    >
-      {props.isStacked ? (
-        <div className="flex flex-col gap-y-4 px-0 md:px-4">{configBody}</div>
-      ) : (
-        <ScrollArea type="always">
-          <div className={"flex max-h-[100vh] flex-col gap-y-4 px-0 md:px-4"}>
+    <GenerationModelLibraryProvider>
+      <GenerationViewCard
+        title={t("生成設定", "Settings")}
+        tooltip={t(
+          "モデルで絵柄が変わります。「モデルを管理」から自分のモデルのアップロードや整理ができます。",
+          'The model changes the style. Use "Manage" to upload and organize your own models.',
+        )}
+      >
+        {props.isStacked ? (
+          <div className="flex flex-col gap-y-5 px-0 pb-1 md:px-4">
             {configBody}
           </div>
-        </ScrollArea>
-      )}
-      <div className="bottom-0 bg-card p-4 lg:sticky">
-        <div className="flex gap-x-2">
-          <GenerationConfigMemoButton
-            onClick={() => {
-              setShowMemoSetting(true)
-            }}
-          />
-          <GenerationConfigMemoSettingDialog
-            memos={
-              memos?.viewer?.currentImageGenerationMemos.map((memo) => ({
-                ...memo,
-                model: {
-                  ...memo.model,
-                  recommendedPrompt: "",
-                },
-              })) ?? []
-            }
-            refetch={refetch}
-            onClose={() => {
-              setShowMemoSetting(false)
-            }}
-            isOpen={showMemoSetting}
-          />
-          <GenerationConfigResetConfirmDialog onReset={context.reset} />
+        ) : (
+          <ScrollArea
+            type="always"
+            // Radix の table 表示だと横長の行で幅が広がるため block にする
+            className="[&_[data-radix-scroll-area-viewport]>div]:!block"
+          >
+            <div
+              className={
+                "flex max-h-[100vh] flex-col gap-y-5 pr-3 pl-0 md:px-4"
+              }
+            >
+              {configBody}
+            </div>
+          </ScrollArea>
+        )}
+        <div className="bottom-0 border-t bg-card px-4 py-3 lg:sticky">
+          <div className="flex gap-x-2">
+            <GenerationConfigMemoButton
+              onClick={() => {
+                setShowMemoSetting(true)
+              }}
+            />
+            <GenerationConfigMemoSettingDialog
+              memos={
+                memos?.viewer?.currentImageGenerationMemos.map((memo) => ({
+                  ...memo,
+                  model: {
+                    ...memo.model,
+                    recommendedPrompt: "",
+                  },
+                })) ?? []
+              }
+              refetch={refetch}
+              onClose={() => {
+                setShowMemoSetting(false)
+              }}
+              isOpen={showMemoSetting}
+            />
+            <GenerationConfigResetConfirmDialog onReset={context.reset} />
+          </div>
         </div>
-      </div>
-    </GenerationViewCard>
+      </GenerationViewCard>
+    </GenerationModelLibraryProvider>
   )
 }
 

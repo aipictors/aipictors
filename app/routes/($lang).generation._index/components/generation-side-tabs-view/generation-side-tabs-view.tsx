@@ -3,6 +3,12 @@ import { useTranslation } from "~/hooks/use-translation"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
+const tabsListClassName =
+  "h-auto w-full justify-start gap-4 whitespace-nowrap rounded-none border-b bg-transparent p-0 px-1"
+
+const tabsTriggerClassName =
+  "-mb-px flex-none rounded-none border-transparent border-b-2 px-0.5 pt-1.5 pb-2 text-muted-foreground data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+
 /**
  * サイドコンテンツ切替タブ
  */
@@ -22,13 +28,13 @@ export function GenerationSideTabsView () {
       {state === "HISTORY_LIST_FULL" || state === "WORK_LIST_FULL" ? (
         <Tabs value={state.toString()} defaultValue={"HISTORY_LIST_FULL"}>
           <div className="w-full overflow-x-auto">
-            <TabsList className="justify-start gap-1 whitespace-nowrap">
+            <TabsList className={tabsListClassName}>
               <TabsTrigger
                 onClick={() => {
                   send({ type: "CHANGE_FULL_HISTORY_LIST" })
                   context.updateSearchWorksModelIdAndName(null, null)
                 }}
-                className="flex-none"
+                className={tabsTriggerClassName}
                 value="HISTORY_LIST_FULL"
               >
                 {t("履歴", "History")}
@@ -38,7 +44,7 @@ export function GenerationSideTabsView () {
                   send({ type: "CHANGE_FULL_WORK_LIST" })
                   context.updateSearchWorksModelIdAndName(null, null)
                 }}
-                className="flex-none"
+                className={tabsTriggerClassName}
                 value="WORK_LIST_FULL"
               >
                 {t("検索", "Search")}
@@ -49,12 +55,12 @@ export function GenerationSideTabsView () {
       ) : (
         <Tabs value={state.toString()} defaultValue={"PROMPT_VIEW"}>
           <div className="w-full overflow-x-auto">
-            <TabsList className="justify-start gap-1 whitespace-nowrap">
+            <TabsList className={tabsListClassName}>
               <TabsTrigger
                 onClick={() => {
                   send({ type: "CLOSE" })
                 }}
-                className="flex-none"
+                className={tabsTriggerClassName}
                 value="PROMPT_VIEW"
               >
                 {t("履歴", "History")}
@@ -63,7 +69,7 @@ export function GenerationSideTabsView () {
                 onClick={() => {
                   send({ type: "OPEN_WORKS_FROM_MODEL" })
                 }}
-                className="flex-none"
+                className={tabsTriggerClassName}
                 value="WORKS_FROM_MODEL"
               >
                 {t("作品検索", "Search posts")}
@@ -72,7 +78,7 @@ export function GenerationSideTabsView () {
                 onClick={() => {
                   send({ type: "OPEN_COMMUNICATION" })
                 }}
-                className="flex-none"
+                className={tabsTriggerClassName}
                 value="COMMUNICATION"
               >
                 {t("ご意見", "Feedback")}
@@ -81,7 +87,7 @@ export function GenerationSideTabsView () {
                 onClick={() => {
                   send({ type: "OPEN_LINKS" })
                 }}
-                className="flex-none"
+                className={tabsTriggerClassName}
                 value="LINKS"
               >
                 {t("アンケート", "Survey")}
@@ -90,7 +96,7 @@ export function GenerationSideTabsView () {
                 onClick={() => {
                   send({ type: "OPEN_LOGS" })
                 }}
-                className="flex-none"
+                className={tabsTriggerClassName}
                 value="LOGS"
               >
                 {t("ログ", "Logs")}
@@ -99,10 +105,10 @@ export function GenerationSideTabsView () {
                 onClick={() => {
                   send({ type: "OPEN_COIN_HISTORY" })
                 }}
-                className="flex-none"
+                className={tabsTriggerClassName}
                 value="COIN_HISTORY"
               >
-                {t("履歴", "History")}
+                {t("コイン履歴", "Coin history")}
               </TabsTrigger>
             </TabsList>
           </div>

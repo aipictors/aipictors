@@ -15,26 +15,47 @@ type Props = {
   onSearchClick(): void
 }
 
+/**
+ * モデルの生成に必要なコイン数
+ */
+export const modelCoinCost = (name: string | undefined): number => {
+  if (name === "Gemini 2.5" || name === "GeminiNanoBanana") {
+    return 50
+  }
+  if (name === "Gemini 3.1" || name === "GeminiNanoBanana2") {
+    return 100
+  }
+  return 10
+}
+
+/**
+ * 待ち人数なしで始まるモデル
+ */
+export const isNoQueueModel = (name: string | undefined, type?: string) => {
+  return (
+    type === "FLUX" ||
+    type === "SD5" ||
+    Boolean(name?.toLowerCase().includes("gemini"))
+  )
+}
+
+/**
+ * LITE 以上でだけ使えるモデル
+ */
+export const isLiteOnlyModel = (name: string | undefined) => {
+  return (
+    name === "Gemini 2.5" ||
+    name === "GeminiNanoBanana" ||
+    name === "Gemini 3.1" ||
+    name === "GeminiNanoBanana2"
+  )
+}
+
 export function ConfigModelButton(props: Props) {
   const t = useTranslation()
-  const isNoQueueModel =
-    props.type === "FLUX" ||
-    props.type === "SD5" ||
-    props.name?.toLowerCase().includes("gemini")
+  const isNoQueue = isNoQueueModel(props.name, props.type)
 
-  const getCoinCost = () => {
-    if (props.name === "Gemini 2.5" || props.name === "GeminiNanoBanana") {
-      return 50
-    }
-
-    if (props.name === "Gemini 3.1" || props.name === "GeminiNanoBanana2") {
-      return 100
-    }
-
-    return 10
-  }
-
-  const coinCost = getCoinCost()
+  const coinCost = modelCoinCost(props.name)
 
   return (
     <div className="relative">
@@ -92,7 +113,10 @@ export function ConfigModelButton(props: Props) {
                     props.name === "GeminiNanoBanana" ||
                     props.name === "Gemini 3.1" ||
                     props.name === "GeminiNanoBanana2") && (
-                    <Badge className="text-xs opacity-50" variant={"destructive"}>
+                    <Badge
+                      className="text-xs opacity-50"
+                      variant={"destructive"}
+                    >
                       {t("LITE以上限定", "LITE or above only")}
                     </Badge>
                   )}
@@ -105,13 +129,13 @@ export function ConfigModelButton(props: Props) {
                       {props.type || "GEMINI"}
                     </Badge>
                   )}
-                  {isNoQueueModel && (
+                  {isNoQueue && (
                     <Badge className="text-xs" variant={"outline"}>
                       {t("待ち人数なし", "No queue")}
                     </Badge>
                   )}
                 </div>
-                {isNoQueueModel && (
+                {isNoQueue && (
                   <p className="text-left text-muted-foreground text-xs">
                     {t(
                       "Gemini/Fluxは待ち人数なしで開始されます",
