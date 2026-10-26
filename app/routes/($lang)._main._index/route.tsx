@@ -1249,7 +1249,12 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                                   })
                                 : t("種類", "Type")
                             }
-                          />
+                          >
+                            {/* SSR 時も選択中の値を表示し、ハイドレーション後のレイアウトシフトを防ぐ */}
+                            {workType
+                              ? toWorkTypeText({ type: workType, lang: location })
+                              : t("種類", "Type")}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="ALL">
@@ -1290,7 +1295,13 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                                   ? t("あり", "Yes")
                                   : t("なし", "No")
                             }
-                          />
+                          >
+                            {isPromptPublic === null
+                              ? t("プロンプト", "Prompt")
+                              : isPromptPublic
+                                ? t("あり", "Yes")
+                                : t("なし", "No")}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="ALL">
@@ -1316,7 +1327,13 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                             placeholder={
                               sortType ? sortType : t("最新", "Latest")
                             }
-                          />
+                          >
+                            {sortType === "LIKES_COUNT"
+                              ? t("人気", "Popular")
+                              : sortType === "COMMENTS_COUNT"
+                                ? t("コメント", "Comments")
+                                : t("最新", "Latest")}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="DATE_CREATED">
@@ -1348,7 +1365,15 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                                   ? t("全期間", "All time")
                                   : timeRange
                               }
-                            />
+                            >
+                              {timeRange === "TODAY"
+                                ? t("本日", "Today")
+                                : timeRange === "YESTERDAY"
+                                  ? t("昨日", "Yesterday")
+                                  : timeRange === "WEEK"
+                                    ? t("週間", "Week")
+                                    : t("全期間", "All time")}
+                            </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="ALL">
