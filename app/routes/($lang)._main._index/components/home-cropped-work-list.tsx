@@ -34,8 +34,9 @@ export function HomeCroppedWorkList(props: Props) {
               self.findIndex((w) => w.id === work.id) === index,
           )
           .map((work) => {
-            const content = (
+            const renderContent = (isInsideInteractive: boolean) => (
               <CroppedWorkSquare
+                isInsideInteractive={isInsideInteractive}
                 workId={work.id}
                 imageUrl={work.smallThumbnailImageURL}
                 videoUrl={work.url}
@@ -62,14 +63,14 @@ export function HomeCroppedWorkList(props: Props) {
                     onClick={() => props.onSelect?.(work.id)}
                     className="group relative w-full overflow-hidden rounded-md border-none bg-transparent p-0"
                   >
-                    <div className="w-full">{content}</div>
+                    <div className="w-full">{renderContent(false)}</div>
                   </button>
                 ) : (
                   <Link
                     to={`/posts/${work.id}`}
                     className="group relative block w-full overflow-hidden rounded-md"
                   >
-                    <div className="w-full">{content}</div>
+                    <div className="w-full">{renderContent(true)}</div>
                   </Link>
                 )}
                 <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
@@ -104,6 +105,7 @@ export function HomeCroppedWorkList(props: Props) {
                 className="relative overflow-hidden"
               >
                 <CroppedWorkSquare
+                  isInsideInteractive={true}
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
                   videoUrl={work.url}

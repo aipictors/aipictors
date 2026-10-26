@@ -25,6 +25,8 @@ type Props = {
   hasReferenceButton?: boolean
   onSelect?: (workId: string) => void
   shouldMaskSensitive?: boolean
+  /** 親要素がリンクやボタンの場合は true（a 要素の入れ子はハイドレーションエラーになるため） */
+  isInsideInteractive?: boolean
 }
 
 /**
@@ -153,7 +155,11 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
         <div className="w-full pb-[100%]" />
         <div className="absolute inset-0">
           <div className="relative block h-full w-full shrink-0 overflow-hidden rounded">
-            {props.onSelect ? (
+            {props.isInsideInteractive ? (
+              <div className="block h-full w-full transition-all duration-300 ease-in-out">
+                {mediaContent}
+              </div>
+            ) : props.onSelect ? (
               <button
                 type="button"
                 onClick={() => props.onSelect?.(props.workId)}
@@ -239,12 +245,18 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
         sizeClass,
       )}
     >
-      <Link
-        to={`/posts/${props.workId}`}
-        className="block h-full w-full transition-all duration-300 ease-in-out"
-      >
-        {mediaContent}
-      </Link>
+      {props.isInsideInteractive ? (
+        <div className="block h-full w-full transition-all duration-300 ease-in-out">
+          {mediaContent}
+        </div>
+      ) : (
+        <Link
+          to={`/posts/${props.workId}`}
+          className="block h-full w-full transition-all duration-300 ease-in-out"
+        >
+          {mediaContent}
+        </Link>
+      )}
 
       {props.ranking && (
         <div

@@ -42,6 +42,7 @@ export function HomeCroppedWorks (props: Props) {
             <div className="flex flex-col space-y-2" key={work.id}>
               <Link to={`/posts/${work.id}`} className="group relative">
                 <CroppedWorkSquare
+                  isInsideInteractive={true}
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
                   thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
@@ -139,6 +140,7 @@ export function HomeCroppedWorks (props: Props) {
               ) : (
                 <Link to={`/posts/${work.id}`} className="relative block">
                   <CroppedWorkSquare
+                    isInsideInteractive={true}
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}
                     thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
