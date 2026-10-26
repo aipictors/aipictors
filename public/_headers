@@ -1,31 +1,39 @@
+# Cloudflare Workers Static Assets のヘッダー設定
+# 注意: 複数のルールに一致するとヘッダーが結合される。
+# 以前は「/*」の no-store が /assets/* にも結合され、
+# 「no-store, ..., max-age=31536000, immutable」という矛盾したヘッダーになっていた（キャッシュされず、圧縮もされない）。
+# そのため全体向けの「/*」ルールは置かず、ファイルごとに指定する。
+
 # ハッシュ付きアセットファイル（Viteが生成）- 長期キャッシュ
 /assets/*
-  Cache-Control: max-age=31536000, immutable
+  Cache-Control: public, max-age=31536000, immutable
 
-# その他の静的ファイル - 短期キャッシュ
-/*
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
+# 画像などの静的ファイル - 1日キャッシュ（内容を差し替えるときはファイル名を変える）
+/images/*
+  Cache-Control: public, max-age=86400
+/apple/*
+  Cache-Control: public, max-age=86400
+/google/*
+  Cache-Control: public, max-age=86400
+/avatar-frames/*
+  Cache-Control: public, max-age=86400
+/opengraph-image.jpg
+  Cache-Control: public, max-age=86400
+/icon.svg
+  Cache-Control: public, max-age=86400
 
-# Service Workerは短期キャッシュ
+# NSFW 判定モデル（大きいので長めにキャッシュ）
+/nsfw_model/*
+  Cache-Control: public, max-age=604800
+
+# Service Worker は常に最新を取得
 /firebase-messaging-sw.js
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: no-cache
 
-# アイコンファイル
+# アイコン・マニフェストは短期キャッシュ
 /favicon.ico
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, max-age=3600
 /icon.png
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
-
-# マニフェストファイル  
+  Cache-Control: public, max-age=3600
 /manifest.json
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, max-age=3600
