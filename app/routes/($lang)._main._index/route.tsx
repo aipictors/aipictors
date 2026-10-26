@@ -46,7 +46,7 @@ import {
 import { Separator } from "~/components/ui/separator"
 import { Skeleton } from "~/components/ui/skeleton"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
-import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
+import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useLocale } from "~/hooks/use-locale"

@@ -28,7 +28,7 @@ import {
 } from "~/components/responsive-photo-works-album"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
-import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
+import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
