@@ -4,6 +4,7 @@ import { ArrowLeftIcon, ShieldCheckIcon } from "lucide-react"
 import { ClientOnly } from "remix-utils/client-only"
 import { Button } from "~/components/ui/button"
 import { config, META } from "~/config"
+import { UserModelImportCallout } from "~/routes/($lang)._main.models.upload/components/user-model-import-callout"
 import { UserModelUploadForm } from "~/routes/($lang)._main.models.upload/components/user-model-upload-form"
 import { createMeta } from "~/utils/create-meta"
 
@@ -49,6 +50,10 @@ export default function UserModelUploadPage() {
             <li>実在の人物を再現するモデルはアップロードできません</li>
             <li>年齢区分は内容に合わせて正しく設定してください</li>
             <li>
+              URL
+              から取り込んだモデルには、元のモデルへのリンクと作者が表示されます
+            </li>
+            <li>
               ルールに違反したモデルは、運営の判断で非公開・削除することがあります
             </li>
           </ul>
@@ -62,7 +67,12 @@ export default function UserModelUploadPage() {
         </section>
       </div>
       <ClientOnly fallback={<div className="min-h-[60vh]" />}>
-        {() => <UserModelUploadForm />}
+        {() => (
+          <>
+            <UserModelImportCallout />
+            <UserModelUploadForm />
+          </>
+        )}
       </ClientOnly>
     </div>
   )

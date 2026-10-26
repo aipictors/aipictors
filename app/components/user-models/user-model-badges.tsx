@@ -69,6 +69,10 @@ export function UserModelRatingBadge(props: RatingProps) {
 
 type StatusProps = {
   status: UserModel["status"]
+  /**
+   * URL から取り込み中（UPLOADING のときの表示を変える）
+   */
+  isImporting?: boolean
   className?: string
 }
 
@@ -102,7 +106,9 @@ export function UserModelStatusBadge(props: StatusProps) {
             "bg-destructive",
         )}
       />
-      {statusLabels[props.status]}
+      {props.status === "UPLOADING" && props.isImporting
+        ? "取り込み中"
+        : statusLabels[props.status]}
     </span>
   )
 }

@@ -5,6 +5,7 @@ import {
   ArrowLeftIcon,
   CalendarIcon,
   CopyIcon,
+  ExternalLinkIcon,
   FlagIcon,
   HardDriveIcon,
   ImageOffIcon,
@@ -40,6 +41,10 @@ import {
   splitTriggerWords,
   toUserLoraName,
 } from "~/lib/user-models/generation"
+import {
+  licenseNoteText,
+  unsupportedBaseNoteText,
+} from "~/lib/user-models/import-utils"
 import type { UserModel } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 import { toDateText } from "~/utils/to-date-text"
@@ -56,6 +61,66 @@ const copyText = async (text: string, label: string) => {
   } catch {
     toast("コピーできませんでした")
   }
+}
+
+const sourceSiteName = (url: string): string => {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "")
+    return /^civitai\./.test(host) ? "Civitai" : host
+  } catch {
+    return url
+  }
+}
+
+/**
+ * URL から取り込んだモデルの出典（元のモデル・作者）とライセンス・系統の注意書き
+ */
+function UserModelSource(props: { model: UserModel }) {
+  const { model } = props
+  const licenseNote = licenseNoteText(model.sourceLicenseAllowsOtherServices)
+  const baseNote = unsupportedBaseNoteText(
+    model.baseModel,
+    model.sourceBaseModel,
+  )
+  if (!model.sourceUrl && !baseNote) return null
+  return (
+    <div className="space-y-2 rounded-xl border bg-muted/30 px-3.5 py-3 text-xs leading-relaxed">
+      {model.sourceUrl && (
+        <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1">
+          <dt className="text-muted-foreground">元のモデル</dt>
+          <dd>
+            <a
+              href={model.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+            >
+              {sourceSiteName(model.sourceUrl)} で見る
+              <ExternalLinkIcon className="size-3" />
+            </a>
+          </dd>
+          {model.sourceCreator && (
+            <>
+              <dt className="text-muted-foreground">作者</dt>
+              <dd className="truncate font-medium">{model.sourceCreator}</dd>
+            </>
+          )}
+        </dl>
+      )}
+      {licenseNote && (
+        <p className="flex gap-1.5 text-amber-700 dark:text-amber-400">
+          <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0" />
+          {licenseNote}
+        </p>
+      )}
+      {baseNote && (
+        <p className="flex gap-1.5 text-amber-700 dark:text-amber-400">
+          <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0" />
+          {baseNote}
+        </p>
+      )}
+    </div>
+  )
 }
 
 function StatItem(props: {
@@ -156,7 +221,13 @@ export function UserModelDetail(props: Props) {
         >
           <AlertTriangleIcon className="mt-0.5 size-4 shrink-0" />
           <div>
-            {model.status === "UPLOADING" && (
+            {model.status === "UPLOADING" && model.importStatus && (
+              <p>
+                {model.sourceUrl ? sourceSiteName(model.sourceUrl) : "URL"}{" "}
+                から取り込み中です。完了すると生成に使えるようになります（大きなモデルは少し時間がかかります）
+              </p>
+            )}
+            {model.status === "UPLOADING" && !model.importStatus && (
               <p>
                 アップロードが完了していません。
                 <Link to="/models/upload" className="font-medium underline">
@@ -251,6 +322,7 @@ export function UserModelDetail(props: Props) {
               size="md"
               linked
             />
+            <UserModelSource model={model} />
           </div>
 
           <div className="grid grid-cols-3 gap-2">
@@ -341,7 +413,9 @@ export function UserModelDetail(props: Props) {
             <div className="flex items-center justify-between p-4">
               <dt className="text-muted-foreground text-xs">ベースモデル</dt>
               <dd className="font-semibold">
-                {baseModelLabel(model.baseModel)}
+                {model.baseModel === "OTHER" && model.sourceBaseModel
+                  ? `その他（${model.sourceBaseModel}）`
+                  : baseModelLabel(model.baseModel)}
               </dd>
             </div>
             <div className="flex items-center justify-between p-4">

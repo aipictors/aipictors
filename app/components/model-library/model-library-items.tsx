@@ -145,14 +145,16 @@ function ItemMenu(props: {
               : "生成に使う"}
           </DropdownMenuItem>
         )}
-        {item.isOwn && item.userModel?.status === "UPLOADING" && (
-          <DropdownMenuItem asChild>
-            <Link to="/models/upload" {...linkProps}>
-              <UploadIcon className="mr-2 size-4" />
-              アップロードを再開
-            </Link>
-          </DropdownMenuItem>
-        )}
+        {item.isOwn &&
+          item.userModel?.status === "UPLOADING" &&
+          !item.userModel.importStatus && (
+            <DropdownMenuItem asChild>
+              <Link to="/models/upload" {...linkProps}>
+                <UploadIcon className="mr-2 size-4" />
+                アップロードを再開
+              </Link>
+            </DropdownMenuItem>
+          )}
         {item.isOwn && (
           <DropdownMenuItem onSelect={() => actions.onEdit(item)}>
             <PencilIcon className="mr-2 size-4" />
@@ -297,6 +299,7 @@ export function ModelLibraryGridItem(props: ItemProps) {
             item.userModel.status !== "READY" && (
               <UserModelStatusBadge
                 status={item.userModel.status}
+                isImporting={Boolean(item.userModel.importStatus)}
                 className="mt-1.5"
               />
             )}
@@ -364,6 +367,7 @@ export function ModelLibraryListItem(props: ItemProps) {
             item.userModel.status !== "READY" && (
               <UserModelStatusBadge
                 status={item.userModel.status}
+                isImporting={Boolean(item.userModel.importStatus)}
                 className="mt-1"
               />
             )}

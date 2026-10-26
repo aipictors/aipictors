@@ -4,12 +4,16 @@ import type {
   ReportUserModelResult,
   StartUploadInput,
   StartUploadResult,
+  StartUserModelImportResult,
   UploadedPart,
   UserModel,
   UserModelEditableFields,
+  UserModelImportPreview,
+  UserModelImportStatus,
   UserModelListParams,
   UserModelListResult,
   UserModelModerationAction,
+  UserModelRating,
   UserModelReportReason,
   UserModelReportsResult,
 } from "~/lib/user-models/types"
@@ -242,6 +246,51 @@ export const completeUserModelUpload = async (
 export const abortUserModelUpload = async (modelId: string): Promise<void> => {
   await request<{ id: string }>(
     `/api/user-models/uploads/${encodeURIComponent(modelId)}/abort`,
+    { method: "POST", auth: "required", body: JSON.stringify({}) },
+  )
+}
+
+/**
+ * URL（Civitai）のモデルの内容を確認する（まだ登録しない）
+ */
+export const previewUserModelImport = async (
+  url: string,
+): Promise<UserModelImportPreview> => {
+  return request<UserModelImportPreview>("/api/user-models/imports/preview", {
+    method: "POST",
+    auth: "required",
+    body: JSON.stringify({ url }),
+  })
+}
+
+/**
+ * URL からの取り込みを始める（転送はサーバー側で続くのでページを閉じてもよい）
+ */
+export const startUserModelImport = async (input: {
+  url: string
+  name?: string
+  rating?: UserModelRating
+}): Promise<StartUserModelImportResult> => {
+  const data = await request<StartUserModelImportResult>(
+    "/api/user-models/imports",
+    { method: "POST", auth: "required", body: JSON.stringify(input) },
+  )
+  return { ...data, model: data.model ? normalizeUserModel(data.model) : null }
+}
+
+export const fetchUserModelImportStatus = async (
+  modelId: string,
+): Promise<UserModelImportStatus> => {
+  const data = await request<UserModelImportStatus>(
+    `/api/user-models/imports/${encodeURIComponent(modelId)}`,
+    { method: "GET", auth: "required" },
+  )
+  return { ...data, model: data.model ? normalizeUserModel(data.model) : null }
+}
+
+export const cancelUserModelImport = async (modelId: string): Promise<void> => {
+  await request<{ modelId: string }>(
+    `/api/user-models/imports/${encodeURIComponent(modelId)}/cancel`,
     { method: "POST", auth: "required", body: JSON.stringify({}) },
   )
 }

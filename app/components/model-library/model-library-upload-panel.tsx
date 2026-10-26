@@ -1,16 +1,19 @@
 import { Link } from "@remix-run/react"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   AlertCircleIcon,
   CheckCircle2Icon,
   ChevronDownIcon,
   FileBoxIcon,
+  LinkIcon,
   PauseIcon,
   PlayIcon,
   RotateCwIcon,
   XIcon,
 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "~/components/ui/button"
+import { userModelsQueryKeys } from "~/components/user-models/use-user-models"
 import { formatBytes, formatDuration } from "~/lib/user-models/generation"
 import {
   cancelUserModelUpload,
@@ -30,7 +33,7 @@ const statusText = (job: UploadJob): string => {
     case "hashing":
       return `ファイルを確認中 ${Math.floor(uploadJobPercent(job))}%`
     case "starting":
-      return "準備中…"
+      return job.source === "url" ? "Civitai を確認中…" : "準備中…"
     case "uploading": {
       const progress = job.progress
       if (!progress) return "送信中…"
@@ -44,7 +47,19 @@ const statusText = (job: UploadJob): string => {
       return job.message ?? "一時停止中"
     case "completing":
       return "仕上げ中…"
+    case "importing": {
+      const progress = job.importProgress
+      if (!progress || progress.state === "QUEUED") {
+        return "取り込みの準備中…（ページを閉じても続きます）"
+      }
+      return `取り込み中 ${Math.floor(uploadJobPercent(job))}%（ページを閉じても続きます）`
+    }
     case "done":
+      if (job.source === "url") {
+        return job.deduplicated
+          ? "保存済みのファイルだったので、すぐ使えます"
+          : "取り込みが完了しました"
+      }
       return job.deduplicated ? "登録済みのファイルでした" : "完了"
     case "error":
       return job.message ?? "アップロードできませんでした"
@@ -69,7 +84,11 @@ function JobRow(props: { job: UploadJob; modelHrefTarget?: string }) {
             : "bg-sky-500/10 text-sky-600 dark:text-sky-400",
         )}
       >
-        <FileBoxIcon className="size-4" />
+        {job.source === "url" ? (
+          <LinkIcon className="size-4" />
+        ) : (
+          <FileBoxIcon className="size-4" />
+        )}
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium text-sm" title={job.fileName}>
@@ -92,6 +111,15 @@ function JobRow(props: { job: UploadJob; modelHrefTarget?: string }) {
             className="mt-1 inline-block font-medium text-primary text-xs hover:underline"
           >
             プランを見る
+          </Link>
+        )}
+        {job.status === "done" && job.modelId && (
+          <Link
+            to={`/models/u/${job.modelId}`}
+            target={props.modelHrefTarget}
+            className="mt-1 inline-block font-medium text-primary text-xs hover:underline"
+          >
+            モデルページを見る
           </Link>
         )}
         {job.status !== "done" && !isError && (
@@ -125,7 +153,7 @@ function JobRow(props: { job: UploadJob; modelHrefTarget?: string }) {
         {isError && job.isLimitExceeded && (
           <AlertCircleIcon className="mr-1 size-4 text-destructive" />
         )}
-        {job.status === "uploading" && (
+        {job.status === "uploading" && job.source === "file" && (
           <Button
             size="icon"
             variant="ghost"
@@ -184,16 +212,38 @@ type Props = {
 export function ModelLibraryUploadPanel(props: Props) {
   const jobs = useUserModelUploads()
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const queryClient = useQueryClient()
+  const signatureRef = useRef("")
+  const finishedCount = jobs.filter((job) => job.status === "done").length
+  // 取り込みが始まった・終わった（再読み込み後に復元したものを含む）ときにマイモデルを更新する
+  const signature = jobs
+    .filter(
+      (job) => job.status === "done" || (job.source === "url" && job.modelId),
+    )
+    .map((job) => `${job.modelId}:${job.status}`)
+    .join(",")
+
+  useEffect(() => {
+    if (signature && signature !== signatureRef.current) {
+      queryClient.invalidateQueries({ queryKey: userModelsQueryKeys.all })
+    }
+    signatureRef.current = signature
+  }, [signature, queryClient])
 
   if (jobs.length === 0) return null
 
   const activeCount = jobs.filter((job) =>
     isActiveUploadStatus(job.status),
   ).length
-  const doneCount = jobs.filter((job) => job.status === "done").length
+  const importingCount = jobs.filter(
+    (job) => job.source === "url" && isActiveUploadStatus(job.status),
+  ).length
+  const doneCount = finishedCount
   const title =
     activeCount > 0
-      ? `${activeCount} 件をアップロード中`
+      ? importingCount === activeCount
+        ? `${activeCount} 件を取り込み中`
+        : `${activeCount} 件をアップロード中`
       : jobs.some((job) => job.status === "paused")
         ? "一時停止中のアップロードがあります"
         : jobs.some((job) => job.status === "error")

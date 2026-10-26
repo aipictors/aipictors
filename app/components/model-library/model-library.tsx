@@ -1,8 +1,10 @@
 import { useNavigate } from "@remix-run/react"
 import {
   ClockIcon,
+  FileUpIcon,
   FolderIcon,
   LayoutGridIcon,
+  LinkIcon,
   ListIcon,
   Loader2Icon,
   PlusIcon,
@@ -16,6 +18,7 @@ import {
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { LoginDialogButton } from "~/components/login-dialog-button"
+import { ModelLibraryImportDialog } from "~/components/model-library/model-library-import-dialog"
 import {
   canUseLibraryItem,
   libraryItemHref,
@@ -48,6 +51,12 @@ import {
 } from "~/components/model-library/model-library-utils"
 import { Button } from "~/components/ui/button"
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -62,6 +71,7 @@ import { UserModelDeleteDialog } from "~/components/user-models/user-model-delet
 import { UserModelEditDialog } from "~/components/user-models/user-model-edit-dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { USER_MODEL_BASE_MODELS } from "~/lib/user-models/constants"
+import { extractDroppedUrl } from "~/lib/user-models/import-utils"
 import type { UserModel, UserModelKind } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 
@@ -232,6 +242,8 @@ export function ModelLibrary(props: ModelLibraryProps) {
   const [viewMode, setViewMode] = useModelLibraryViewMode()
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [isDragging, setIsDragging] = useState(false)
+  // URL から追加するダイアログ（null で閉じる。文字列はドロップされた URL）
+  const [importUrl, setImportUrl] = useState<string | null>(null)
   const [editing, setEditing] = useState<UserModel | null>(null)
   const [deleting, setDeleting] = useState<UserModel | null>(null)
   const [recentVersion, setRecentVersion] = useState(0)
@@ -481,6 +493,16 @@ export function ModelLibrary(props: ModelLibraryProps) {
     fileInputRef.current?.click()
   }
 
+  const openImportDialog = (url = "") => {
+    if (!canStartUpload()) return
+    setImportUrl(url)
+  }
+
+  // ファイルか URL（リンクやアドレスバーからのドラッグ）を受け付ける
+  const isAcceptedDrag = (event: React.DragEvent) =>
+    event.dataTransfer.types.includes("Files") ||
+    event.dataTransfer.types.includes("text/uri-list")
+
   useEffect(() => {
     if (!props.startWithUpload) return
     if (authContext.isLoading) return
@@ -491,30 +513,35 @@ export function ModelLibrary(props: ModelLibraryProps) {
   }, [props.startWithUpload, authContext.isLoading, mine.isLoading])
 
   const onDragEnter = (event: React.DragEvent) => {
-    if (!event.dataTransfer.types.includes("Files")) return
+    if (!isAcceptedDrag(event)) return
     event.preventDefault()
     dragDepthRef.current += 1
     setIsDragging(true)
   }
 
   const onDragLeave = (event: React.DragEvent) => {
-    if (!event.dataTransfer.types.includes("Files")) return
+    if (!isAcceptedDrag(event)) return
     dragDepthRef.current = Math.max(0, dragDepthRef.current - 1)
     if (dragDepthRef.current === 0) setIsDragging(false)
   }
 
   const onDragOver = (event: React.DragEvent) => {
-    if (!event.dataTransfer.types.includes("Files")) return
+    if (!isAcceptedDrag(event)) return
     event.preventDefault()
     event.dataTransfer.dropEffect = "copy"
   }
 
   const onDrop = (event: React.DragEvent) => {
-    if (!event.dataTransfer.types.includes("Files")) return
+    if (!isAcceptedDrag(event)) return
     event.preventDefault()
     dragDepthRef.current = 0
     setIsDragging(false)
-    addFiles([...event.dataTransfer.files])
+    if (event.dataTransfer.files.length > 0) {
+      addFiles([...event.dataTransfer.files])
+      return
+    }
+    const url = extractDroppedUrl(event.dataTransfer)
+    if (url) openImportDialog(url)
   }
 
   const currentSection =
@@ -531,14 +558,29 @@ export function ModelLibrary(props: ModelLibraryProps) {
     return null
   }
 
+  const uploadMenuItems = (
+    <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuItem onSelect={openFilePicker}>
+        <FileUpIcon className="mr-2 size-4" />
+        ファイルを選ぶ
+      </DropdownMenuItem>
+      <DropdownMenuItem onSelect={() => openImportDialog()}>
+        <LinkIcon className="mr-2 size-4" />
+        URL から追加
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  )
+
   const uploadButton = (
-    <Button
-      onClick={openFilePicker}
-      className="h-9 shrink-0 gap-1.5 rounded-full px-4"
-    >
-      <PlusIcon className="size-4" />
-      <span>アップロード</span>
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="h-9 shrink-0 gap-1.5 rounded-full px-4">
+          <PlusIcon className="size-4" />
+          <span>アップロード</span>
+        </Button>
+      </DropdownMenuTrigger>
+      {uploadMenuItems}
+    </DropdownMenu>
   )
 
   const renderContent = () => {
@@ -594,20 +636,30 @@ export function ModelLibrary(props: ModelLibraryProps) {
       }
       if (section === "mine") {
         return (
-          <button
-            type="button"
-            onClick={openFilePicker}
-            className="flex w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-14 text-center transition-colors hover:border-primary/50 hover:bg-primary/5"
-          >
+          <div className="flex w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-14 text-center">
             <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
               <UploadCloudIcon className="size-7" />
             </span>
             <span className="font-semibold">まだモデルがありません</span>
             <span className="mt-1.5 max-w-sm text-muted-foreground text-sm leading-relaxed">
-              .safetensors
-              ファイルをここにドラッグするか、クリックして選んでください。種類やベースモデルはファイルから自動で入ります。
+              .safetensors ファイルか Civitai のモデルページの URL
+              をここにドラッグしてください。種類やベースモデルは自動で入ります。
             </span>
-          </button>
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              <Button onClick={openFilePicker} className="rounded-full">
+                <FileUpIcon className="mr-1.5 size-4" />
+                ファイルを選ぶ
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => openImportDialog()}
+                className="rounded-full"
+              >
+                <LinkIcon className="mr-1.5 size-4" />
+                URL から追加
+              </Button>
+            </div>
+          </div>
         )
       }
       if (section === "favorites") {
@@ -793,14 +845,18 @@ export function ModelLibrary(props: ModelLibraryProps) {
               )}
             </div>
             <div className="hidden sm:block">{uploadButton}</div>
-            <Button
-              size="icon"
-              onClick={openFilePicker}
-              className="size-10 shrink-0 rounded-full sm:hidden"
-              aria-label="アップロード"
-            >
-              <PlusIcon className="size-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon"
+                  className="size-10 shrink-0 rounded-full sm:hidden"
+                  aria-label="アップロード"
+                >
+                  <PlusIcon className="size-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              {uploadMenuItems}
+            </DropdownMenu>
           </div>
           <div className="flex items-center gap-2">
             <div className="-mx-3 flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto px-3 md:mx-0 md:px-0">
@@ -954,7 +1010,7 @@ export function ModelLibrary(props: ModelLibraryProps) {
           <UploadCloudIcon className="mb-3 size-10 text-primary" />
           <p className="font-semibold text-primary">ドロップしてアップロード</p>
           <p className="mt-1 text-muted-foreground text-sm">
-            .safetensors（LoRA・チェックポイント）
+            .safetensors（LoRA・チェックポイント）または Civitai の URL
           </p>
         </div>
       )}
@@ -962,6 +1018,17 @@ export function ModelLibrary(props: ModelLibraryProps) {
       <ModelLibraryUploadPanel
         isInDialog={isDialog}
         className={cn("absolute right-4 bottom-4", props.footer && "bottom-20")}
+      />
+
+      <ModelLibraryImportDialog
+        isOpen={importUrl !== null}
+        initialUrl={importUrl}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setImportUrl(null)
+        }}
+        onStarted={() => changeSection("mine")}
+        onImported={() => mine.refetch()}
+        linkTarget={linkTarget}
       />
 
       <ModelLibraryUploadDialog
