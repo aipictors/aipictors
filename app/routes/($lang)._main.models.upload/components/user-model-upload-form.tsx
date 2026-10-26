@@ -37,6 +37,10 @@ import {
   USER_MODEL_PART_SIZE,
 } from "~/lib/user-models/constants"
 import { formatBytes, formatDuration } from "~/lib/user-models/generation"
+import {
+  readResumeCache,
+  writeResumeCache,
+} from "~/lib/user-models/resume-cache"
 import type {
   UploadedPart,
   UserModel,
@@ -72,34 +76,6 @@ type HashState =
   | { type: "hashing"; hashedBytes: number }
   | { type: "done"; sha256: string }
   | { type: "error"; message: string }
-
-type ResumeCache = {
-  modelId: string
-  parts: UploadedPart[]
-}
-
-const resumeKey = (sha256: string) => `aipictors.user-model-upload.${sha256}`
-
-const readResumeCache = (sha256: string): ResumeCache | null => {
-  try {
-    const text = localStorage.getItem(resumeKey(sha256))
-    return text ? (JSON.parse(text) as ResumeCache) : null
-  } catch {
-    return null
-  }
-}
-
-const writeResumeCache = (sha256: string, cache: ResumeCache | null) => {
-  try {
-    if (cache === null) {
-      localStorage.removeItem(resumeKey(sha256))
-    } else {
-      localStorage.setItem(resumeKey(sha256), JSON.stringify(cache))
-    }
-  } catch {
-    // 保存できなくても API の uploadedParts で再開できる
-  }
-}
 
 const emptyFields: UserModelEditableFields = {
   name: "",

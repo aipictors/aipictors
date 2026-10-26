@@ -73,7 +73,7 @@ export function UserModelLimitCard(props: Props) {
               variant="outline"
               className="rounded-full"
             >
-              <Link to="/settings/models">自分のモデルを整理</Link>
+              <Link to="/models/library?section=mine">自分のモデルを整理</Link>
             </Button>
           </div>
         </div>

@@ -110,9 +110,9 @@ export default function ModelsPage() {
           </div>
           <div className="flex gap-2">
             <Button asChild variant="outline" className="rounded-full">
-              <Link to="/settings/models">
+              <Link to="/models/library">
                 <FolderCogIcon className="mr-1.5 size-4" />
-                自分のモデル
+                モデルライブラリ
               </Link>
             </Button>
             <Button asChild className="rounded-full">

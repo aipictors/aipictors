@@ -454,7 +454,7 @@ export function UserModelDetail(props: Props) {
             model={model}
             isOpen={isDeleteOpen}
             onOpenChange={setIsDeleteOpen}
-            onDeleted={() => navigate("/settings/models")}
+            onDeleted={() => navigate("/models/library?section=mine")}
           />
         </>
       )}

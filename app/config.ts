@@ -755,6 +755,14 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Upload your LoRA or checkpoint and share it for generation",
     isIndex: false,
   },
+  MODEL_LIBRARY: {
+    title: "モデルライブラリ",
+    enTitle: "Model library",
+    description:
+      "公式モデル・みんなのモデル・自分のモデルをまとめて探して、アップロードや整理ができます",
+    enDescription: "Find, upload and organize models for image generation",
+    isIndex: false,
+  },
   SETTINGS_USER_MODELS: {
     title: "自分のモデル",
     enTitle: "My models",

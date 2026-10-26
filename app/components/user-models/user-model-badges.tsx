@@ -66,3 +66,43 @@ export function UserModelRatingBadge(props: RatingProps) {
     </span>
   )
 }
+
+type StatusProps = {
+  status: UserModel["status"]
+  className?: string
+}
+
+const statusLabels: Record<UserModel["status"], string> = {
+  READY: "公開中",
+  UPLOADING: "アップロード未完了",
+  DISABLED: "無効",
+  DELETED: "削除済み",
+}
+
+export function UserModelStatusBadge(props: StatusProps) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium text-[11px]",
+        props.status === "READY" &&
+          "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+        props.status === "UPLOADING" &&
+          "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+        (props.status === "DISABLED" || props.status === "DELETED") &&
+          "bg-destructive/10 text-destructive",
+        props.className,
+      )}
+    >
+      <span
+        className={cn(
+          "size-1.5 rounded-full",
+          props.status === "READY" && "bg-emerald-500",
+          props.status === "UPLOADING" && "bg-amber-500",
+          (props.status === "DISABLED" || props.status === "DELETED") &&
+            "bg-destructive",
+        )}
+      />
+      {statusLabels[props.status]}
+    </span>
+  )
+}

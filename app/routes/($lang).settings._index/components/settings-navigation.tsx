@@ -109,7 +109,10 @@ export function SettingsNavigation() {
           </div>
         </div>
       </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/models"} icon={BoxesIcon}>
+      <SettingNavigationButton
+        href={"/models/library?section=mine"}
+        icon={BoxesIcon}
+      >
         <div className="flex w-full items-center justify-between">
           {t("自分のモデル", "My models")}
           <div className="ml-auto text-right md:hidden">
