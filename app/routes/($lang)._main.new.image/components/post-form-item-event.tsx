@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import type { Tag } from "~/components/tag/tag-input"
 import { Card, CardContent } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
-import { getJstDate } from "~/utils/jst-date"
+import { toJstWallClockUnixSeconds } from "~/utils/jst-date"
 
 type Props = {
   eventName: string | null
@@ -20,13 +20,16 @@ type Props = {
   isAttending?: boolean
 }
 
+/**
+ * イベントの開催期間は日本時間の壁時計をUTCとして扱ったUNIX秒なのでUTCの各要素で表示する
+ */
 const formatEventDateTime = (unixSeconds: number) => {
   const date = new Date(unixSeconds * 1000)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  const hours = String(date.getHours()).padStart(2, "0")
-  const minutes = String(date.getMinutes()).padStart(2, "0")
+  const year = date.getUTCFullYear()
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
+  const day = String(date.getUTCDate()).padStart(2, "0")
+  const hours = String(date.getUTCHours()).padStart(2, "0")
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0")
   return `${year}/${month}/${day} ${hours}:${minutes}`
 }
 
@@ -34,12 +37,11 @@ const formatEventDateTime = (unixSeconds: number) => {
  * イベント入力
  */
 export function PostFormItemEvent(props: Props) {
-  const now = getJstDate(new Date())
   const checkboxId = `attend-checkbox-${props.slug ?? props.eventTag ?? "event"}`
   const thumbnailSrc = props.thumbnailImageUrl || "/images/opepnepe.png"
 
   const publishAtUnixSeconds =
-    props.publishAtUnixSeconds ?? Math.floor(now.getTime() / 1000)
+    props.publishAtUnixSeconds ?? toJstWallClockUnixSeconds()
   const isBeforeStart = publishAtUnixSeconds < props.startAt
   const isEnded = publishAtUnixSeconds > props.endAt
   const isSelectable = !isBeforeStart && !isEnded

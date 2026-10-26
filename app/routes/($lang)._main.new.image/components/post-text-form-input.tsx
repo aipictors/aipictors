@@ -27,6 +27,10 @@ import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/comp
 import type { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
 import type { PostTextFormInputAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-input-action"
 import type { PostTextFormInputState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-input-state"
+import {
+  jstDateTimeToWallClockUnixSeconds,
+  toJstWallClockUnixSeconds,
+} from "~/utils/jst-date"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -76,18 +80,19 @@ const intersectRatings = (
   next: IntrospectionEnum<"Rating">[],
 ) => current.filter((rating) => next.includes(rating))
 
+/**
+ * イベントの開催期間（日本時間の壁時計をUTCとして扱ったUNIX秒）と比較するための公開日時
+ */
 const toReservationUnixSeconds = (date: string | null, time: string | null) => {
   if (!date) {
-    return Math.floor(Date.now() / 1000)
+    return toJstWallClockUnixSeconds()
   }
 
   const normalizedTime = time && time.length > 0 ? time : "00:00"
-  const reservation = new Date(`${date}T${normalizedTime}:00+09:00`)
-  if (Number.isNaN(reservation.getTime())) {
-    return Math.floor(Date.now() / 1000)
-  }
-
-  return Math.floor(reservation.getTime() / 1000)
+  return (
+    jstDateTimeToWallClockUnixSeconds(date, normalizedTime) ??
+    toJstWallClockUnixSeconds()
+  )
 }
 
 export function PostTextFormInput(props: Props) {

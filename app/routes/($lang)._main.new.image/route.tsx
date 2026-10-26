@@ -54,7 +54,11 @@ import {
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
-import { getJstDate } from "~/utils/jst-date"
+import {
+  getJstDate,
+  jstDateTimeToWallClockUnixSeconds,
+  toJstWallClockUnixSeconds,
+} from "~/utils/jst-date"
 import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
@@ -1223,16 +1227,15 @@ export default function NewImage() {
     )
 
     if (selectedEventTags.size > 0) {
+      // イベントの開催期間は日本時間の壁時計をUTCとして扱ったUNIX秒で返却されるため合わせる
       const publishAtUnixSeconds =
-        inputState.reservationDate !== null &&
+        (inputState.reservationDate !== null &&
         inputState.reservationTime !== null
-          ? Math.floor(
-              (new Date(
-                `${inputState.reservationDate}T${inputState.reservationTime}`,
-              ).getTime() +
-                3600000 * 9) / 1000,
+          ? jstDateTimeToWallClockUnixSeconds(
+              inputState.reservationDate,
+              inputState.reservationTime,
             )
-          : Math.floor(getJstDate(new Date()).getTime() / 1000)
+          : null) ?? toJstWallClockUnixSeconds()
 
       const selectedEvents = events.filter(
         (event) => event.tag && selectedEventTags.has(event.tag),
