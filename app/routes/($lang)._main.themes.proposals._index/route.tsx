@@ -32,6 +32,10 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import {
+  canEditThemeProposalNote,
+  ThemeProposalNoteEditDialog,
+} from "~/routes/($lang)._main.themes.proposals._index/components/theme-proposal-note-edit-dialog"
 
 type ThemeProposal = {
   id: string
@@ -781,6 +785,18 @@ export function ThemeProposalsPageContent(
                       </div>
 
                       <div className="flex flex-wrap items-center justify-end gap-2">
+                        {canEditThemeProposalNote(
+                          proposal,
+                          authContext.userId,
+                        ) && (
+                          <ThemeProposalNoteEditDialog
+                            proposalId={proposal.id}
+                            note={proposal.note}
+                            onUpdated={() => {
+                              void refetch()
+                            }}
+                          />
+                        )}
                         {proposal.canCancel && (
                           <AlertDialog
                             open={pendingCancelId === proposal.id}
