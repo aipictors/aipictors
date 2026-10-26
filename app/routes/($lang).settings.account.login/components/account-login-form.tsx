@@ -52,6 +52,8 @@ export function AccountLoginForm () {
         },
       })
       setUserId("")
+      // トークンに保持している login を新しいユーザIDに更新する
+      await appContext.refresh()
       toast(t("ユーザIDを変更しました", "User ID updated successfully"))
     } catch (error) {
       if (error instanceof Error && isApolloError(error)) {

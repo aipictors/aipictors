@@ -31,7 +31,6 @@ import {
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
 import { useQuery } from "@apollo/client/index"
-import { getAuth, getIdToken } from "firebase/auth"
 import { useContext, useEffect, useState } from "react"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
 import { useTheme } from "~/components/theme-provider"
@@ -250,12 +249,14 @@ export function UserNavigationMenuContent (props: Props) {
     const fallbackIconUrl = authContext.avatarPhotoURL || ""
     const fallbackDisplayName = authContext.displayName || ""
     const fallbackLogin = authContext.login || ""
+    // トークンの login はユーザID変更後も古いままになるため、リンクには不変の数値IDを使う
+    const fallbackUserPath = `/users/${authContext.userId ?? fallbackLogin}`
 
     return (
       <div className={userNavigationStyles.container}>
         <div className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800">
           <Link
-            to={getSensitiveLink(`/users/${fallbackLogin}`)}
+            to={getSensitiveLink(fallbackUserPath)}
             className="absolute bottom-[-24px] left-3"
           >
             <UserAvatarWithFrame
@@ -288,9 +289,9 @@ export function UserNavigationMenuContent (props: Props) {
         </div>
 
         <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
-          {fallbackLogin && (
+          {(authContext.userId || fallbackLogin) && (
             <MenuItemLink
-              href={getSensitiveLink(`/users/${fallbackLogin}`)}
+              href={getSensitiveLink(fallbackUserPath)}
               icon={<UserCircleIcon className={userNavigationStyles.menuIcon} />}
               label={t("マイページ", "My page")}
             />
@@ -337,12 +338,14 @@ export function UserNavigationMenuContent (props: Props) {
     const fallbackIconUrl = authContext.avatarPhotoURL || ""
     const fallbackDisplayName = authContext.displayName || ""
     const fallbackLogin = authContext.login || ""
+    // トークンの login はユーザID変更後も古いままになるため、リンクには不変の数値IDを使う
+    const fallbackUserPath = `/users/${authContext.userId ?? fallbackLogin}`
 
     return (
       <div className={userNavigationStyles.container}>
         <div className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800">
           <Link
-            to={getSensitiveLink(`/users/${fallbackLogin}`)}
+            to={getSensitiveLink(fallbackUserPath)}
             className="absolute bottom-[-24px] left-3"
           >
             <UserAvatarWithFrame
@@ -601,7 +604,7 @@ export function UserNavigationMenuContent (props: Props) {
 
       <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
         <MenuItemLink
-          href={getSensitiveLink(`/users/${authContext.login}`)}
+          href={getSensitiveLink(`/users/${data.viewer.user.login}`)}
           icon={<UserCircleIcon className={userNavigationStyles.menuIcon} />}
           label={t("マイページ", "My page")}
         />

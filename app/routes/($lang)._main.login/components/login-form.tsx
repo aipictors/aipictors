@@ -40,8 +40,8 @@ export function LoginForm() {
 
     handledEmailTokenRef.current = emailToken
 
-    let isCancelled = false
-
+    // メール認証トークンは一度しか使えないため、再レンダリング（t や navigate の
+    // 再生成）で effect が破棄されても処理結果を捨てずにログインまで完了させる
     loginWithEmailTokenMutation({
       variables: {
         input: {
@@ -50,10 +50,6 @@ export function LoginForm() {
       },
     })
       .then(async (result) => {
-        if (isCancelled) {
-          return
-        }
-
         const loginResult = result.data?.loginWithEmailToken ?? null
 
         if (loginResult === null) {
@@ -85,10 +81,6 @@ export function LoginForm() {
         )
       })
       .catch((error) => {
-        if (isCancelled) {
-          return
-        }
-
         console.error(
           t(
             "メール認証によるログインに失敗しました:",
@@ -105,10 +97,6 @@ export function LoginForm() {
               ),
         )
       })
-
-    return () => {
-      isCancelled = true
-    }
   }, [emailToken, loginWithEmailTokenMutation, navigate, t])
 
   useEffect(() => {
@@ -118,15 +106,9 @@ export function LoginForm() {
 
     handledCustomTokenRef.current = token
 
-    let isCancelled = false
-
     const auth = getAuth()
     signInWithCustomToken(auth, token)
       .then(() => {
-        if (isCancelled) {
-          return
-        }
-
         const nextParams = new URLSearchParams(window.location.search)
         nextParams.delete("token")
 
@@ -144,10 +126,6 @@ export function LoginForm() {
         )
       })
       .catch((error) => {
-        if (isCancelled) {
-          return
-        }
-
         console.error(
           t(
             "カスタムトークンによるログインに失敗しました:",
@@ -156,10 +134,6 @@ export function LoginForm() {
           error,
         )
       })
-
-    return () => {
-      isCancelled = true
-    }
   }, [isNew, navigate, t, token])
 
   if (ref && ref === "verification") {
