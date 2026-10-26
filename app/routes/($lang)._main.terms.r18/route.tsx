@@ -9,7 +9,7 @@ import enText from "~/assets/r18-terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
-import { createMeta } from "~/utils/metadata"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = ({ data }) => {
   return createMeta(META.R18_TERMS, data?.meta)
