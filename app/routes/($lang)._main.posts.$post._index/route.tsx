@@ -119,7 +119,7 @@ export const meta: MetaFunction = (props) => {
     work.work.imageURL ||
     config.defaultOgpImageUrl
 
-  return createMeta(
+  const metaTags = createMeta(
     META.POSTS,
     {
       title: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
@@ -143,6 +143,27 @@ export const meta: MetaFunction = (props) => {
     },
     props.params.lang,
   )
+
+  // 作品ページの LCP はメイン画像なので、HTML の解析を待たずに読み込みを始める
+  const shouldPreloadMainImage =
+    work.work.type === "WORK" &&
+    work.work.imageURL.length > 0 &&
+    (work.work.rating === "G" || work.work.rating === "R15")
+
+  if (!shouldPreloadMainImage) {
+    return metaTags
+  }
+
+  return [
+    ...metaTags,
+    {
+      tagName: "link",
+      rel: "preload",
+      as: "image",
+      href: work.work.imageURL,
+      fetchPriority: "high",
+    },
+  ]
 }
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => ({

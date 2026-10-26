@@ -53,6 +53,8 @@ export function UserHomeHeader(props: Props) {
               className="block h-full w-full max-w-full scale-125 object-cover object-center blur-[64px] transition-opacity duration-500"
               src={user.headerImageUrl}
               alt=""
+              // 上の背景画像（LCP）と同じ URL なので、優先して読み込ませる
+              fetchPriority="high"
             />
           </div>
         </div>
