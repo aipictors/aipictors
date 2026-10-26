@@ -78,6 +78,11 @@ const quickActions = [
     title: "作品通報一覧",
     subtitle: "通報理由と対象作品を確認",
   },
+  {
+    href: "/admin/user-models",
+    title: "モデル通報",
+    subtitle: "通報されたみんなのモデルを確認・非公開",
+  },
 ] as const
 
 const operationCards = [

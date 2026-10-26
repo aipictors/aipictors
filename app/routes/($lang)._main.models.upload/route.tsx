@@ -1,6 +1,6 @@
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
-import { ArrowLeftIcon } from "lucide-react"
+import { ArrowLeftIcon, ShieldCheckIcon } from "lucide-react"
 import { ClientOnly } from "remix-utils/client-only"
 import { Button } from "~/components/ui/button"
 import { config, META } from "~/config"
@@ -37,6 +37,29 @@ export default function UserModelUploadPage() {
           LoRA やチェックポイントを公開すると、みんなが Aipictors
           の生成機で使えるようになります。
         </p>
+        <section className="mt-3 rounded-xl border bg-muted/40 p-4 text-sm">
+          <h2 className="mb-2 flex items-center gap-1.5 font-semibold">
+            <ShieldCheckIcon className="size-4" />
+            アップロードのルール
+          </h2>
+          <ul className="list-disc space-y-1 pl-5 text-muted-foreground leading-relaxed">
+            <li>
+              自分が権利を持っている（再配布が許可されている）モデルのみアップロードできます
+            </li>
+            <li>実在の人物を再現するモデルはアップロードできません</li>
+            <li>年齢区分は内容に合わせて正しく設定してください</li>
+            <li>
+              ルールに違反したモデルは、運営の判断で非公開・削除することがあります
+            </li>
+          </ul>
+          <p className="mt-2 text-muted-foreground text-xs">
+            詳しくは
+            <Link to="/terms" className="mx-0.5 text-primary underline">
+              利用規約
+            </Link>
+            をご確認ください。
+          </p>
+        </section>
       </div>
       <ClientOnly fallback={<div className="min-h-[60vh]" />}>
         {() => <UserModelUploadForm />}

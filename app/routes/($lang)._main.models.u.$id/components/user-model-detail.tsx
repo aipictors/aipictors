@@ -5,6 +5,7 @@ import {
   ArrowLeftIcon,
   CalendarIcon,
   CopyIcon,
+  FlagIcon,
   HardDriveIcon,
   ImageOffIcon,
   Loader2Icon,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
+import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Button } from "~/components/ui/button"
 import {
   userModelsQueryKeys,
@@ -28,6 +30,7 @@ import {
 } from "~/components/user-models/user-model-badges"
 import { UserModelDeleteDialog } from "~/components/user-models/user-model-delete-dialog"
 import { UserModelEditDialog } from "~/components/user-models/user-model-edit-dialog"
+import { UserModelReportDialog } from "~/components/user-models/user-model-report-dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { baseModelLabel, ratingLabel } from "~/lib/user-models/constants"
 import {
@@ -85,6 +88,7 @@ export function UserModelDetail(props: Props) {
   const [activeImage, setActiveImage] = useState<string | null>(null)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [isReportOpen, setIsReportOpen] = useState(false)
 
   if (!model) {
     if (query.isLoading) {
@@ -162,7 +166,7 @@ export function UserModelDetail(props: Props) {
             )}
             {model.status === "DISABLED" && (
               <p>
-                ファイルの検証に失敗したため、このモデルは無効になっています。ファイルを確認して再度アップロードしてください。
+                このモデルは現在無効になっています。ファイルの検証に失敗したか、利用規約に沿わない内容として非公開になった可能性があります。
               </p>
             )}
           </div>
@@ -391,8 +395,47 @@ export function UserModelDetail(props: Props) {
               </Button>
             </div>
           )}
+
+          {!isOwner && (
+            <div className="flex justify-end">
+              {authContext.isLoggedIn ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground"
+                  onClick={() => setIsReportOpen(true)}
+                >
+                  <FlagIcon className="mr-1 size-3.5" />
+                  通報
+                </Button>
+              ) : (
+                <LoginDialogButton
+                  description="モデルを通報するにはログインしてください"
+                  triggerChildren={
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground"
+                      disabled={authContext.isLoading}
+                    >
+                      <FlagIcon className="mr-1 size-3.5" />
+                      通報
+                    </Button>
+                  }
+                />
+              )}
+            </div>
+          )}
         </aside>
       </div>
+
+      {!isOwner && authContext.isLoggedIn && (
+        <UserModelReportDialog
+          model={model}
+          isOpen={isReportOpen}
+          onOpenChange={setIsReportOpen}
+        />
+      )}
 
       {isOwner && (
         <>

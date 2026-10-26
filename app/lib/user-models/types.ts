@@ -100,3 +100,37 @@ export type StartUploadResult = {
   deduplicated: boolean
   uploadedParts?: UploadedPart[]
 }
+
+export type UserModelReportReason =
+  | "COPYRIGHT"
+  | "REAL_PERSON"
+  | "ILLEGAL"
+  | "WRONG_RATING"
+  | "BROKEN"
+  | "SPAM"
+  | "OTHER"
+
+export type ReportUserModelResult = {
+  id: string
+  reported: boolean
+  openReports: number
+  autoHidden: boolean
+}
+
+export type UserModelReportSummary = {
+  model: UserModel
+  status: UserModelStatus
+  disabledReason: string | null
+  reportCount: number
+  reasons: UserModelReportReason[]
+  /**
+   * unix 秒
+   */
+  lastReportedAt: number | null
+}
+
+export type UserModelReportsResult = {
+  reports: UserModelReportSummary[]
+}
+
+export type UserModelModerationAction = "disable" | "enable"

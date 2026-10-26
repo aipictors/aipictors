@@ -1,6 +1,7 @@
 import { getAuth, getIdToken } from "firebase/auth"
 import type {
   MyUserModelsResult,
+  ReportUserModelResult,
   StartUploadInput,
   StartUploadResult,
   UploadedPart,
@@ -8,6 +9,9 @@ import type {
   UserModelEditableFields,
   UserModelListParams,
   UserModelListResult,
+  UserModelModerationAction,
+  UserModelReportReason,
+  UserModelReportsResult,
 } from "~/lib/user-models/types"
 
 export class UserModelsApiError extends Error {
@@ -240,6 +244,56 @@ export const abortUserModelUpload = async (modelId: string): Promise<void> => {
     `/api/user-models/uploads/${encodeURIComponent(modelId)}/abort`,
     { method: "POST", auth: "required", body: JSON.stringify({}) },
   )
+}
+
+export const reportUserModel = async (
+  id: string,
+  input: { reason: UserModelReportReason; detail?: string },
+): Promise<ReportUserModelResult> => {
+  return request<ReportUserModelResult>(
+    `/api/user-models/${encodeURIComponent(id)}/report`,
+    { method: "POST", auth: "required", body: JSON.stringify(input) },
+  )
+}
+
+/**
+ * 通報されたモデルの一覧（モデレーターのみ）
+ */
+export const fetchUserModelReports = async (params: {
+  offset?: number
+  limit?: number
+}): Promise<UserModelReportsResult> => {
+  const search = new URLSearchParams()
+  search.set("offset", String(params.offset ?? 0))
+  search.set("limit", String(params.limit ?? 50))
+  const data = await request<UserModelReportsResult>(
+    `/api/admin/user-models?${search.toString()}`,
+    { method: "GET", auth: "required" },
+  )
+  return {
+    reports: (data?.reports ?? []).map((report) => ({
+      ...report,
+      model: normalizeUserModel(report.model),
+      reportCount: Number(report.reportCount ?? 0),
+      reasons: Array.isArray(report.reasons) ? report.reasons : [],
+    })),
+  }
+}
+
+/**
+ * モデルの非公開・公開戻し（モデレーターのみ）
+ */
+export const moderateUserModel = async (input: {
+  modelId: string
+  action: UserModelModerationAction
+  reason?: string
+}): Promise<UserModel> => {
+  const data = await request<UserModel>("/api/admin/user-models", {
+    method: "POST",
+    auth: "required",
+    body: JSON.stringify(input),
+  })
+  return normalizeUserModel(data)
 }
 
 /**

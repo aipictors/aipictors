@@ -11,6 +11,7 @@ import {
   ShieldAlert,
   Search,
   Shield,
+  Boxes,
   Users,
 } from "lucide-react"
 import { gql, useQuery } from "@apollo/client/index"
@@ -77,6 +78,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "作品通報一覧",
     description: "通報理由と対象作品を確認",
     icon: ShieldAlert,
+  },
+  {
+    href: "/admin/user-models",
+    title: "モデル通報",
+    description: "通報されたみんなのモデルを確認・非公開",
+    icon: Boxes,
   },
 ] as const
 

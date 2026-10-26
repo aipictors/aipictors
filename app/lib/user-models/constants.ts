@@ -2,6 +2,7 @@ import type {
   UserModelBaseModel,
   UserModelKind,
   UserModelRating,
+  UserModelReportReason,
 } from "~/lib/user-models/types"
 
 export const USER_MODEL_BASE_MODELS: {
@@ -78,4 +79,24 @@ export const kindLabel = (value: string): string => {
 
 export const ratingLabel = (value: string): string => {
   return USER_MODEL_RATINGS.find((item) => item.value === value)?.label ?? value
+}
+
+export const USER_MODEL_REPORT_REASONS: {
+  value: UserModelReportReason
+  label: string
+}[] = [
+  { value: "COPYRIGHT", label: "権利侵害・無断転載" },
+  { value: "REAL_PERSON", label: "実在の人物を再現している" },
+  { value: "ILLEGAL", label: "違法・有害な内容" },
+  { value: "WRONG_RATING", label: "年齢区分が正しくない" },
+  { value: "BROKEN", label: "壊れている・生成に使えない" },
+  { value: "SPAM", label: "スパム・宣伝" },
+  { value: "OTHER", label: "その他" },
+]
+
+export const reportReasonLabel = (value: string): string => {
+  return (
+    USER_MODEL_REPORT_REASONS.find((item) => item.value === value)?.label ??
+    value
+  )
 }
