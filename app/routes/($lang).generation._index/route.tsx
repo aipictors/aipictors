@@ -6,6 +6,8 @@ import { GenerationSideTabsView } from "~/routes/($lang).generation._index/compo
 import { GenerationAsideView } from "~/routes/($lang).generation._index/components/generation-view/generation-aside-view"
 import { GenerationHeaderView } from "~/routes/($lang).generation._index/components/generation-view/generation-header-view"
 import { GenerationMainView } from "~/routes/($lang).generation._index/components/generation-view/generation-main-view"
+import { GenerationSettingsColumn } from "~/routes/($lang).generation._index/components/generation-view/generation-settings-column"
+import { GenerationUserModelFromUrl } from "~/routes/($lang).generation._index/components/generation-user-model-from-url"
 import { GenerationView } from "~/routes/($lang).generation._index/components/generation-view/generation-view"
 import { GenerationNegativePromptView } from "~/routes/($lang).generation._index/components/negative-prompt-view/generation-negative-prompt-view"
 import { GenerationPromptView } from "~/routes/($lang).generation._index/components/prompt-view/generation-prompt-view"
@@ -35,7 +37,7 @@ import { useContext } from "react"
 /**
  * 画像生成
  */
-export default function GenerationPage () {
+export default function GenerationPage() {
   const authContext = useContext(AuthContext)
   const [rating, setRating] = useState(-1)
 
@@ -77,58 +79,72 @@ export default function GenerationPage () {
   }, [])
 
   return (
-    <GenerationView
-      header={
-        <GenerationHeaderView
-          submission={<GenerationSubmissionView termsText={text} />}
-        />
-      }
-      main={
-        <GenerationMainView
-          config={<GenerationConfigView />}
-          settingLanguageUsedForPromptView={
-            <SettingLanguageUsedForPromptView />
-          }
-          promptEditor={<GenerationPromptView />}
-          negativePromptEditor={<GenerationNegativePromptView />}
-          taskContentPreview={<GenerationTaskContentPreview />}
-          taskDetails={<GenerationTaskDetailsView />}
-          workContentPreview={<GenerationWorkContentPreview />}
-          submissionView={
-            <GenerationHeaderView
-              submission={<GenerationSubmissionView termsText={text} />}
-            />
-          }
-        />
-      }
-      asideHeader={<GenerationSideTabsView />}
-      aside={
-        <GenerationAsideView
-          advertisement={<GenerationAdvertisementView />}
-          taskList={
-            <GenerationTaskListView
-              rating={rating}
-              protect={protect}
-              isEditMode={isEditMode}
-              isPreviewMode={isPreviewMode}
-              setRating={setRating}
-              setProtect={setProtect}
-              toggleEditMode={toggleEditMode}
-              togglePreviewMode={togglePreviewMode}
-              currentUserToken={context.config.currentUserToken ?? ""}
-            />
-          }
-          taskDetails={<GenerationTaskDetailsView />}
-          workListFromModel={<GenerationWorkListModelView />}
-          communication={<GenerationCommunicationView />}
-          links={<GenerationLinksView />}
-          logs={<GenerationLogsTab />}
-          coinHistory={<GenerationCoinHistoryTab />}
-        />
-      }
-      menu={<GenerationConfigView />}
-      footer={<GenerationFormFooter />}
-    />
+    <>
+      <GenerationUserModelFromUrl />
+      <GenerationView
+        settings={
+          <GenerationSettingsColumn
+            settingLanguageUsedForPromptView={
+              <SettingLanguageUsedForPromptView />
+            }
+            promptEditor={<GenerationPromptView />}
+            negativePromptEditor={<GenerationNegativePromptView />}
+            config={<GenerationConfigView isStacked />}
+            submission={<GenerationSubmissionView termsText={text} />}
+          />
+        }
+        header={
+          <GenerationHeaderView
+            submission={<GenerationSubmissionView termsText={text} />}
+          />
+        }
+        main={
+          <GenerationMainView
+            config={<GenerationConfigView />}
+            settingLanguageUsedForPromptView={
+              <SettingLanguageUsedForPromptView />
+            }
+            promptEditor={<GenerationPromptView />}
+            negativePromptEditor={<GenerationNegativePromptView />}
+            taskContentPreview={<GenerationTaskContentPreview />}
+            taskDetails={<GenerationTaskDetailsView />}
+            workContentPreview={<GenerationWorkContentPreview />}
+            submissionView={
+              <GenerationHeaderView
+                submission={<GenerationSubmissionView termsText={text} />}
+              />
+            }
+          />
+        }
+        asideHeader={<GenerationSideTabsView />}
+        aside={
+          <GenerationAsideView
+            advertisement={<GenerationAdvertisementView />}
+            taskList={
+              <GenerationTaskListView
+                rating={rating}
+                protect={protect}
+                isEditMode={isEditMode}
+                isPreviewMode={isPreviewMode}
+                setRating={setRating}
+                setProtect={setProtect}
+                toggleEditMode={toggleEditMode}
+                togglePreviewMode={togglePreviewMode}
+                currentUserToken={context.config.currentUserToken ?? ""}
+              />
+            }
+            taskDetails={<GenerationTaskDetailsView />}
+            workListFromModel={<GenerationWorkListModelView />}
+            communication={<GenerationCommunicationView />}
+            links={<GenerationLinksView />}
+            logs={<GenerationLogsTab />}
+            coinHistory={<GenerationCoinHistoryTab />}
+          />
+        }
+        menu={<GenerationConfigView />}
+        footer={<GenerationFormFooter />}
+      />
+    </>
   )
 }
 

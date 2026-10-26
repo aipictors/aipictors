@@ -17,6 +17,10 @@ type Props = {
   currentModelIds: string[]
   onSelectModelId(id: string, type: string, prompt: string): void
   onClickSearchModelWorks(id: string, name: string): void
+  /**
+   * みんなのモデルを選択中は公式モデルの選択表示を消す
+   */
+  hideSelection?: boolean
 }
 
 interface Model {
@@ -125,7 +129,9 @@ export function GenerationConfigModels (props: Props) {
                 <ConfigModelButton
                   imageURL={model?.thumbnailImageURL ?? ""}
                   name={trimString(model?.displayName ?? "")}
-                  isSelected={model?.id === props.currentModelId}
+                  isSelected={
+                    !props.hideSelection && model?.id === props.currentModelId
+                  }
                   onClick={() => {
                     if (model) {
                       props.onSelectModelId(
@@ -144,7 +150,7 @@ export function GenerationConfigModels (props: Props) {
                     }
                   }}
                 />
-                {model?.id === props.currentModelId && (
+                {!props.hideSelection && model?.id === props.currentModelId && (
                   <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
                     <CheckIcon className="p-1 text-white dark:text-black" />
                   </div>
@@ -170,7 +176,9 @@ export function GenerationConfigModels (props: Props) {
                 <ConfigModelButton
                   imageURL={model?.thumbnailImageURL ?? ""}
                   name={trimString(model?.displayName ?? "")}
-                  isSelected={model?.id === props.currentModelId}
+                  isSelected={
+                    !props.hideSelection && model?.id === props.currentModelId
+                  }
                   onClick={() => {
                     if (model) {
                       props.onSelectModelId(
@@ -189,7 +197,7 @@ export function GenerationConfigModels (props: Props) {
                     }
                   }}
                 />
-                {model?.id === props.currentModelId && (
+                {!props.hideSelection && model?.id === props.currentModelId && (
                   <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
                     <CheckIcon className={"p-1 text-white dark:text-black"} />
                   </div>

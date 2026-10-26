@@ -1,10 +1,10 @@
 import { AppFixedContent } from "~/components/app/app-fixed-content"
-import { getAuth } from "firebase/auth"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
+import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -112,6 +112,8 @@ const normalizeCoinSummary = (
 
 export function GenerationSubmissionView (props: Props) {
   const context = useGenerationContext()
+
+  const userModelSelection = useUserModelSelection()
 
   const queryData = useGenerationQuery()
 
@@ -653,11 +655,19 @@ export function GenerationSubmissionView (props: Props) {
       return
     }
 
+    // みんなのモデル（チェックポイント）を選択中なら user/<id>.safetensors で生成する
+    const requestModelName =
+      userModelSelection.checkpointModelName ?? model.name
+
     // 生成リクエストしたい回数分生成リクエストを行う
     // もし通常の連続生成を超過したら予約生成に切り替える
     try {
       if (
-        checkSameBeforeRequestAndToast(model.name, generationType, "") === true
+        checkSameBeforeRequestAndToast(
+          requestModelName,
+          generationType,
+          "",
+        ) === true
       ) {
         logWarn({
           source: "GenerationSubmit",
@@ -708,14 +718,14 @@ export function GenerationSubmissionView (props: Props) {
         })
         await createTaskCore(
           context.config.generationCount,
-          model.name,
+          requestModelName,
           generationType,
           i2iFileUrl,
         )
       } else {
         await createTaskCore(
           context.config.generationCount,
-          model.name,
+          requestModelName,
           generationType,
           "",
         )

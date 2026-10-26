@@ -4,6 +4,7 @@ import {
   ActivityIcon,
   AwardIcon,
   BookImageIcon,
+  BoxesIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronUpIcon,
@@ -214,6 +215,14 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         onClick={closeHeaderMenu}
       >
         {t("ランキング", "Ranking")}
+      </SidebarNavigationButton>
+
+      <SidebarNavigationButton
+        href="/models"
+        icon={BoxesIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("モデル", "Models")}
       </SidebarNavigationButton>
 
       <SidebarNavigationButton

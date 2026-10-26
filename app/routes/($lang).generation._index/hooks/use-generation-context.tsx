@@ -560,9 +560,13 @@ export function useGenerationContext () {
    * LoRAモデルを追加する
    * @param modelName
    */
-  const changeLoraConfig = (modelName: string, triggerWord?: string) => {
+  const changeLoraConfig = (
+    modelName: string,
+    triggerWord?: string,
+    weight?: number,
+  ) => {
     const value = configAction
-      .changeLoraModel(modelName, triggerWord)
+      .changeLoraModel(modelName, triggerWord, weight)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }

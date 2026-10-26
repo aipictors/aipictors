@@ -4,6 +4,7 @@ import {
   ArrowLeftIcon,
   BellIcon,
   BookmarkXIcon,
+  BoxesIcon,
   ChevronRight,
   CoinsIcon,
   Gift,
@@ -103,6 +104,14 @@ export function SettingsNavigation() {
       <SettingNavigationButton href={"/settings/sticker"} icon={StickerIcon}>
         <div className="flex w-full items-center justify-between">
           {t("スタンプ", "Stickers")}
+          <div className="ml-auto text-right md:hidden">
+            <ChevronRight />
+          </div>
+        </div>
+      </SettingNavigationButton>
+      <SettingNavigationButton href={"/settings/models"} icon={BoxesIcon}>
+        <div className="flex w-full items-center justify-between">
+          {t("自分のモデル", "My models")}
           <div className="ml-auto text-right md:hidden">
             <ChevronRight />
           </div>

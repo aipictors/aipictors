@@ -17,7 +17,21 @@ type Props = {
   asideHeader: React.ReactNode
   menu: React.ReactNode
   footer: React.ReactNode
+  /**
+   * PC の左カラム（プロンプトと設定をまとめたもの）。
+   * 指定すると PC では「左: 設定 / 右: 結果」の2カラムで表示する（プレビューは右カラム）
+   */
+  settings?: React.ReactNode
 }
+
+/**
+ * メイン領域にプレビューや詳細を出す状態（2カラムでは右カラムに表示する）
+ */
+const mainPreviewStates = [
+  "HISTORY_PREVIEW",
+  "HISTORY_VIEW_ON_MAIN_AND_HEADER",
+  "WORK_PREVIEW",
+]
 
 /**
  * 画像生成画面
@@ -59,6 +73,42 @@ export function GenerationView(props: Props) {
               {props.asideHeader}
               {props.aside}
             </ResizablePanel>
+          </ResizablePanelGroup>
+        </main>
+        {props.footer}
+      </div>
+    )
+  }
+
+  if (props.settings) {
+    const isMainPreview = mainPreviewStates.includes(String(state))
+    return (
+      <div className="flex flex-col space-y-2 md:h-[calc(100vh-72px)]">
+        <GenerationAnnouncementBanner />
+        <main className="flex h-full min-h-0 flex-col gap-4 overflow-hidden md:flex-row">
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanelWithMemory
+              id="generation-settings-column"
+              className="flex min-w-[360px] flex-col"
+            >
+              <Suspense fallback={<AppLoadingPage />}>{props.settings}</Suspense>
+            </ResizablePanelWithMemory>
+            <ResizableHandle withHandle className="mr-3 ml-3" />
+            <ResizablePanelWithMemory
+              id="generation-results-column"
+              className="flex flex-col gap-y-2 lg:min-w-80"
+            >
+              <Suspense fallback={<AppLoadingPage />}>
+                {isMainPreview ? (
+                  props.main
+                ) : (
+                  <>
+                    {props.asideHeader}
+                    {props.aside}
+                  </>
+                )}
+              </Suspense>
+            </ResizablePanelWithMemory>
           </ResizablePanelGroup>
         </main>
         {props.footer}

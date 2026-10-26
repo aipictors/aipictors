@@ -8,7 +8,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { LoraImageModelList } from "~/routes/($lang).generation._index/components/config-view/lora-image-model-list"
+import { UserModelPickerPanel } from "~/routes/($lang).generation._index/components/config-view/user-model-picker-panel"
+import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 import type { ImageLoraModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import type { FragmentOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
@@ -27,6 +30,8 @@ export function LoraModelListDialogButton (props: Props) {
   const { value, setTrue, setFalse } = useBoolean()
 
   const t = useTranslation()
+
+  const userModelSelection = useUserModelSelection()
 
   return (
     <Dialog
@@ -61,19 +66,38 @@ export function LoraModelListDialogButton (props: Props) {
             </p>
           </DialogDescription>
         </DialogHeader>
-        <LoraImageModelList
-          models={props.models.map((model) => ({
-            ...model,
-            genre: model.genre || t("その他", "Other"),
-            // TODO: 型解決
-            triggerWord:
-              typeof model.triggerWord === "string"
-                ? model.triggerWord
-                : undefined,
-          }))}
-          selectedModelNames={props.selectedModelNames}
-          onSelect={props.onSelect}
-        />
+        <Tabs defaultValue="official" className="min-w-0">
+          <TabsList className="mb-3 w-full sm:w-auto">
+            <TabsTrigger value="official" className="flex-1 px-4 sm:flex-none">
+              {t("公式 LoRA", "Official")}
+            </TabsTrigger>
+            <TabsTrigger value="community" className="flex-1 px-4 sm:flex-none">
+              {t("みんなのモデル", "Community")}
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="official">
+            <LoraImageModelList
+              models={props.models.map((model) => ({
+                ...model,
+                genre: model.genre || t("その他", "Other"),
+                // TODO: 型解決
+                triggerWord:
+                  typeof model.triggerWord === "string"
+                    ? model.triggerWord
+                    : undefined,
+              }))}
+              selectedModelNames={props.selectedModelNames}
+              onSelect={props.onSelect}
+            />
+          </TabsContent>
+          <TabsContent value="community">
+            <UserModelPickerPanel
+              kind="LORA"
+              selectedIds={userModelSelection.selectedLoraIds}
+              onSelect={userModelSelection.toggleLora}
+            />
+          </TabsContent>
+        </Tabs>
         <DialogFooter>
           <Button className="w-full" onClick={setFalse}>
             {t("完了", "Done")}

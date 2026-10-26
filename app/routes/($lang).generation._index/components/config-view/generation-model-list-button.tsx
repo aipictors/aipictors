@@ -8,7 +8,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { ImageModelsList } from "~/routes/($lang).generation._index/components/config-view/generation-image-model-list"
+import { UserModelPickerPanel } from "~/routes/($lang).generation._index/components/config-view/user-model-picker-panel"
+import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 import type { ImageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
@@ -33,6 +36,7 @@ export function GenerationModelListButton (props: Props) {
   const context = useGenerationContext()
   const { value, setTrue, setFalse } = useBoolean()
   const t = useTranslation()
+  const userModelSelection = useUserModelSelection()
 
   const onSelectModel = (id: string, type: string, prompt: string) => {
     props.onSelect(id, type, prompt)
@@ -107,35 +111,66 @@ export function GenerationModelListButton (props: Props) {
             )}
           </DialogDescription>
         </DialogHeader>
-        <div className="items-top flex space-x-2">
-          <Checkbox
-            onCheckedChange={(value: boolean) => {
-              context.changeUseRecommendedPrompt(value)
-            }}
-            checked={context.config.isUseRecommendedPrompt}
-            id="use-recommended-prompt"
-          />
-          <div className="grid gap-1.5 leading-none">
-            <label
-              htmlFor="use-recommended-prompt"
-              className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {t(
-                "モデルの推奨プロンプトを設定する",
-                "Set the recommended prompt for the model",
-              )}
-            </label>
-          </div>
-        </div>
-        <ImageModelsList
-          isInitFavorited={props.isInitFavorited}
-          models={props.models}
-          favoritedModelIds={props.favoritedModelIds}
-          selectedModelId={props.selectedModelId}
-          onSelect={onSelectModel}
-          onChangeFavoritedModel={onChangeRatingModel}
-          onSearchClick={props.onSearchClick}
-        />
+        <Tabs
+          defaultValue={userModelSelection.checkpoint ? "community" : "official"}
+          className="min-w-0"
+        >
+          <TabsList className="mb-3 w-full sm:w-auto">
+            <TabsTrigger value="official" className="flex-1 px-4 sm:flex-none">
+              {t("公式モデル", "Official")}
+            </TabsTrigger>
+            <TabsTrigger value="community" className="flex-1 px-4 sm:flex-none">
+              {t("みんなのモデル", "Community")}
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="official" className="space-y-3">
+            <div className="items-top flex space-x-2">
+              <Checkbox
+                onCheckedChange={(value: boolean) => {
+                  context.changeUseRecommendedPrompt(value)
+                }}
+                checked={context.config.isUseRecommendedPrompt}
+                id="use-recommended-prompt"
+              />
+              <div className="grid gap-1.5 leading-none">
+                <label
+                  htmlFor="use-recommended-prompt"
+                  className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  {t(
+                    "モデルの推奨プロンプトを設定する",
+                    "Set the recommended prompt for the model",
+                  )}
+                </label>
+              </div>
+            </div>
+            <ImageModelsList
+              isInitFavorited={props.isInitFavorited}
+              models={props.models}
+              favoritedModelIds={props.favoritedModelIds}
+              selectedModelId={
+                userModelSelection.checkpoint ? null : props.selectedModelId
+              }
+              onSelect={onSelectModel}
+              onChangeFavoritedModel={onChangeRatingModel}
+              onSearchClick={props.onSearchClick}
+            />
+          </TabsContent>
+          <TabsContent value="community">
+            <UserModelPickerPanel
+              kind="CHECKPOINT"
+              selectedIds={
+                userModelSelection.checkpoint
+                  ? [userModelSelection.checkpoint.id]
+                  : []
+              }
+              onSelect={(model) => {
+                userModelSelection.selectCheckpoint(model)
+                setFalse()
+              }}
+            />
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   )

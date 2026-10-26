@@ -8,9 +8,6 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
 import { config } from "~/config"
-import { Link } from "@remix-run/react"
-import { Button } from "~/components/ui/button"
-import { Sparkles } from "lucide-react"
 import { GenerationConfigClipSkip } from "~/routes/($lang).generation._index/components/config-view/generation-config-clip-skip"
 import { GenerationConfigCount } from "~/routes/($lang).generation._index/components/config-view/generation-config-count"
 import { GenerationConfigLoraModels } from "~/routes/($lang).generation._index/components/config-view/generation-config-lora-models"
@@ -35,13 +32,23 @@ import { useEffect, useState } from "react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { GenerationConfigResetConfirmDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-reset-confirm-dialog"
+import { SelectedUserCheckpointCard } from "~/routes/($lang).generation._index/components/config-view/selected-user-checkpoint"
+import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
+import { toGenerationModelType } from "~/lib/user-models/generation"
 
 /**
  * エディタの設定
  * ローカルストレージにより設定内容が保存されて、復元されるのでサーバレンダリングと
  * クライアントレンダリングの不一致を解決するため遅延インポートで本コンポーネントを読み込むこと
  */
-export function GenerationConfigView () {
+type Props = {
+  /**
+   * 2カラムの左列に縦積みするとき（内部スクロールをなくす）
+   */
+  isStacked?: boolean
+}
+
+export function GenerationConfigView(props: Props) {
   const context = useGenerationContext()
 
   const queryData = useGenerationQuery()
@@ -51,6 +58,8 @@ export function GenerationConfigView () {
   const authContext = useContext(AuthContext)
 
   const [showMemoSetting, setShowMemoSetting] = useState(false)
+
+  const userModelSelection = useUserModelSelection()
 
   /**
    * 選択中のモデル
@@ -73,7 +82,9 @@ export function GenerationConfigView () {
    * モデルの種類
    * SD1など
    */
-  const configModelType = currentModel?.type ?? "SD1"
+  const configModelType = userModelSelection.checkpoint
+    ? toGenerationModelType(userModelSelection.checkpoint.baseModel)
+    : (currentModel?.type ?? "SD1")
 
   /**
    * メモ一覧
@@ -122,6 +133,104 @@ export function GenerationConfigView () {
 
   const t = useTranslation()
 
+  const configBody = (
+    <>
+      {userModelSelection.checkpoint && (
+        <SelectedUserCheckpointCard
+          checkpoint={userModelSelection.checkpoint}
+          onClear={() => userModelSelection.clearCheckpoint()}
+        />
+      )}
+      <GenerationConfigModels
+        hideSelection={userModelSelection.checkpoint !== null}
+        models={context.imageModels}
+        favoritedModelIds={context.config.favoriteModelIds}
+        currentModelId={context.config.modelId}
+        currentModelIds={context.config.modelIds}
+        onSelectModelId={(id: string, type: string, prompt: string) => {
+          // 公式モデルを選んだらみんなのモデルの選択は外す
+          if (userModelSelection.checkpoint) {
+            userModelSelection.clearCheckpoint({ restore: false })
+          }
+          if (context.config.isUseRecommendedPrompt) {
+            if (prompt === "") {
+              context.updateModelIdAndPrompt(
+                id,
+                type,
+                config.generationFeature.defaultPromptValue,
+              )
+            } else {
+              context.updateModelIdAndPrompt(id, type, prompt)
+            }
+          } else {
+            context.updateModelId(id, type)
+          }
+        }}
+        onClickSearchModelWorks={(id: string, name: string) => {
+          context.updateSearchWorksModelIdAndName(id, name)
+          send({ type: "OPEN_WORKS_FROM_MODEL" })
+        }}
+      />
+      <Separator />
+      <GenerationConfigLoraModels />
+      <Separator />
+      <GenerationConfigCount
+        remainingImageGenerationTasksCount={remainingImageGenerationTasksCount}
+        setGenerationCount={context.changeGenerationCount}
+        generationCount={context.config.generationCount}
+      />
+      <GenerationConfigSize
+        modelType={configModelType}
+        value={context.config.sizeType}
+        onChange={context.updateSizeType}
+      />
+      <GenerationConfigUpscale />
+      <Separator />
+      <GenerationConfigReferenceImage />
+      <Separator />
+      <GenerationConfigSeed
+        value={context.config.seed}
+        onChange={context.updateSeed}
+      />
+      <Separator />
+      <Accordion type="single" collapsible>
+        <AccordionItem value="setting">
+          <AccordionTrigger>
+            <div className="text-left">
+              <p>{t("詳細設定", "Detailed settings")}</p>
+              <p className="text-sm opacity-40">
+                Scale:{context.config.scale}, Steps:{context.config.steps},
+                Sampler:{context.config.sampler}, Vae:{context.config.vae}
+              </p>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="space-y-2">
+            <GenerationConfigScale
+              value={context.config.scale}
+              onChange={context.updateScale}
+            />
+            <GenerationConfigStep
+              value={context.config.steps}
+              onChange={context.updateSteps}
+            />
+            <GenerationConfigSampler
+              value={context.config.sampler}
+              onChange={context.updateSampler}
+            />
+            <GenerationConfigClipSkip
+              value={context.config.clipSkip}
+              onChange={context.updateClipSkip}
+            />
+            <GenerationConfigVae
+              value={context.config.vae ?? ""}
+              onChange={context.updateVae}
+            />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </>
+  )
+
   return (
     <GenerationViewCard
       title={t("モデル", "Model")}
@@ -130,94 +239,15 @@ export function GenerationConfigView () {
         "The model used for the illustration, you can change the design.",
       )}
     >
-      <ScrollArea type="always">
-        <div className={"flex max-h-[100vh] flex-col gap-y-4 px-0 md:px-4"}>
-          <GenerationConfigModels
-            models={context.imageModels}
-            favoritedModelIds={context.config.favoriteModelIds}
-            currentModelId={context.config.modelId}
-            currentModelIds={context.config.modelIds}
-            onSelectModelId={(id: string, type: string, prompt: string) => {
-              if (context.config.isUseRecommendedPrompt) {
-                if (prompt === "") {
-                  context.updateModelIdAndPrompt(
-                    id,
-                    type,
-                    config.generationFeature.defaultPromptValue,
-                  )
-                } else {
-                  context.updateModelIdAndPrompt(id, type, prompt)
-                }
-              } else {
-                context.updateModelId(id, type)
-              }
-            }}
-            onClickSearchModelWorks={(id: string, name: string) => {
-              context.updateSearchWorksModelIdAndName(id, name)
-              send({ type: "OPEN_WORKS_FROM_MODEL" })
-            }}
-          />
-          <Separator />
-          <GenerationConfigLoraModels />
-          <Separator />
-          <GenerationConfigCount
-            remainingImageGenerationTasksCount={
-              remainingImageGenerationTasksCount
-            }
-            setGenerationCount={context.changeGenerationCount}
-            generationCount={context.config.generationCount}
-          />
-          <GenerationConfigSize
-            modelType={configModelType}
-            value={context.config.sizeType}
-            onChange={context.updateSizeType}
-          />
-          <GenerationConfigUpscale />
-          <Separator />
-          <GenerationConfigReferenceImage />
-          <Separator />
-          <GenerationConfigSeed
-            value={context.config.seed}
-            onChange={context.updateSeed}
-          />
-          <Separator />
-          <Accordion type="single" collapsible>
-            <AccordionItem value="setting">
-              <AccordionTrigger>
-                <div className="text-left">
-                  <p>{t("詳細設定", "Detailed settings")}</p>
-                  <p className="text-sm opacity-40">
-                    Scale:{context.config.scale}, Steps:{context.config.steps},
-                    Sampler:{context.config.sampler}, Vae:{context.config.vae}
-                  </p>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="space-y-2">
-                <GenerationConfigScale
-                  value={context.config.scale}
-                  onChange={context.updateScale}
-                />
-                <GenerationConfigStep
-                  value={context.config.steps}
-                  onChange={context.updateSteps}
-                />
-                <GenerationConfigSampler
-                  value={context.config.sampler}
-                  onChange={context.updateSampler}
-                />
-                <GenerationConfigClipSkip
-                  value={context.config.clipSkip}
-                  onChange={context.updateClipSkip}
-                />
-                <GenerationConfigVae
-                  value={context.config.vae ?? ""}
-                  onChange={context.updateVae}
-                />
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      </ScrollArea>
+      {props.isStacked ? (
+        <div className="flex flex-col gap-y-4 px-0 md:px-4">{configBody}</div>
+      ) : (
+        <ScrollArea type="always">
+          <div className={"flex max-h-[100vh] flex-col gap-y-4 px-0 md:px-4"}>
+            {configBody}
+          </div>
+        </ScrollArea>
+      )}
       <div className="bottom-0 bg-card p-4 lg:sticky">
         <div className="flex gap-x-2">
           <GenerationConfigMemoButton
