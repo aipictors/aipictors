@@ -6,7 +6,7 @@ export type ViewerPreferenceRating = "G" | "R15" | "R18" | "R18G"
  * 通常モード（全年齢側）の一覧で表示するレーティング
  * - 未ログイン: 従来通り G と R15
  * - ログイン済み: 「(通常モード時)R15作品を表示する」がOFF（G）なら G のみ
- *   設定行が存在しないユーザは設定画面上OFFとして表示されるため G 扱いにする
+ *   設定を一度も保存していないユーザ（null）は、これまでの表示を変えないよう G と R15 にする
  * @param props
  */
 export function toNormalModeRatings(props: {
@@ -17,7 +17,7 @@ export function toNormalModeRatings(props: {
     return ["G", "R15"]
   }
 
-  if (props.preferenceRating === null || props.preferenceRating === "G") {
+  if (props.preferenceRating === "G") {
     return ["G"]
   }
 

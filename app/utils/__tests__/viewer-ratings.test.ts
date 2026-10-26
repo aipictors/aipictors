@@ -17,10 +17,10 @@ describe("toNormalModeRatings", () => {
     ).toEqual(["G"])
   })
 
-  test("設定が存在しないログインユーザは G のみ", () => {
+  test("設定を保存していないログインユーザはこれまで通り G と R15", () => {
     expect(
       toNormalModeRatings({ isLoggedIn: true, preferenceRating: null }),
-    ).toEqual(["G"])
+    ).toEqual(["G", "R15"])
   })
 
   test("R15表示ON・R18切り替え表示中は G と R15", () => {
