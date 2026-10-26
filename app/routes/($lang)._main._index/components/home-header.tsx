@@ -32,9 +32,7 @@ import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
-import { HomeNotificationsMenu } from "~/routes/($lang)._main._index/components/home-notifications-menu"
 import { HomeHeaderR18Button } from "~/routes/($lang)._main._index/components/home-header-r18-button"
-import { FastUserNavigationMenu } from "~/routes/($lang)._main._index/components/fast-user-navigation-menu"
 import { debugLog } from "~/utils/debug-logger"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
 import {
@@ -53,6 +51,23 @@ const HomeMenuRouteList = lazy(() =>
       default: module.HomeMenuRouteList,
     }),
   ),
+)
+
+// ログイン時だけ表示するメニューは、表示するときに読み込む
+const HomeNotificationsMenu = lazy(() =>
+  import(
+    "~/routes/($lang)._main._index/components/home-notifications-menu"
+  ).then((module) => ({
+    default: module.HomeNotificationsMenu,
+  })),
+)
+
+const FastUserNavigationMenu = lazy(() =>
+  import(
+    "~/routes/($lang)._main._index/components/fast-user-navigation-menu"
+  ).then((module) => ({
+    default: module.FastUserNavigationMenu,
+  })),
 )
 
 type Props = {
