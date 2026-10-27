@@ -12,6 +12,7 @@ import { InProgressGenerationCard } from "~/routes/($lang).generation._index/com
 import { GenerationTaskZoomUpButton } from "~/routes/($lang).generation._index/components/generation-task-zoom-up-button"
 import { GenerationTaskRatingButton } from "~/routes/($lang).generation._index/components/generation-task-rating-button"
 import { GenerationTaskDeleteButton } from "~/routes/($lang).generation._index/components/generation-task-delete-button"
+import { GenerationTaskDownloadButton } from "~/routes/($lang).generation._index/components/generation-task-download-button"
 import {
   GenerationResultProtectButtonFragment,
   GenerationResultProtectButtonTaskFragment,
@@ -390,7 +391,7 @@ export function GenerationTaskEditableCard (props: Props) {
 
   return (
     <div
-      className="relative grid h-full overflow-hidden rounded bg-card p-0"
+      className="group relative grid h-full overflow-hidden rounded bg-card p-0"
       onMouseEnter={() => {
         setIsHovered(true)
       }}
@@ -443,6 +444,14 @@ export function GenerationTaskEditableCard (props: Props) {
           <Skeleton className="h-[120px] w-[240px] rounded-xl" />
         )}
       </SelectableCardButton>
+      {/* ダウンロードボタン（PC はカーソルを乗せたとき、スマホは常に表示） */}
+      {props.task.imageUrl && (
+        <GenerationTaskDownloadButton
+          taskNanoid={props.taskNanoid}
+          imageUrl={normalizedImageUrl}
+          className="md:opacity-0 md:group-hover:opacity-100"
+        />
+      )}
       {/* 拡大ボタン */}
       {isHovered && props.task.imageUrl && props.task.thumbnailUrl && (
         <GenerationTaskZoomUpButton
