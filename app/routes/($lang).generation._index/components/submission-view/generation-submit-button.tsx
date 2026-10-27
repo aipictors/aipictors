@@ -73,7 +73,7 @@ export function GenerationSubmitButton(props: Props) {
               <span className="min-w-0 truncate font-semibold text-[15px] md:text-lg">
                 {props.buttonActionCaption}
               </span>
-              <span className="flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-1.5 py-0.5 text-xs tabular-nums sm:px-2 md:text-sm">
+              <span className="flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-1.5 py-0.5 text-xs tabular-nums max-[359px]:hidden sm:px-2 md:text-sm">
                 <CoinIcon className="size-3.5 shrink-0 md:size-4" />
                 <span>{formatCoinAmount(props.requestCoinCost)}</span>
                 {/* スマホは残高を上の行に出しているので、使う枚数だけにして文言の幅を空ける */}
