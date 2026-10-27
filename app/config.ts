@@ -808,16 +808,18 @@ export const META: { [key: string]: MetaData } = {
   GENERATION_ABOUT: {
     title: "生成機能について",
     enTitle: "About Generation Feature",
-    description: "Generate anything from illustrations to realistic images!",
+    description:
+      "AipictorsのAI画像生成は毎日10枚まで無料。イラストからリアル系まで、みんなのモデルやLoRAで本格生成できます。無料は1回2枚、ライト・スタンダード・プレミアムプランなら1回のクリックで4枚、1日最大200枚まで生成できます。",
     enDescription:
-      "Explore Aipictors' generation feature, from illustrations to realistic imagery!",
+      "Generate AI images on Aipictors for free — 10 images a day, from illustrations to realistic styles. Plans give 4 images per click and up to 200 images a day.",
     image: "{{url}}",
     isIndex: true,
   },
   GENERATION_PLANS: {
     title: "生成機能のプラン",
     enTitle: "Generation Plans",
-    description: "Introducing the plans for the generation feature",
+    description:
+      "Aipictorsの画像生成のプラン。ライト月額480円・スタンダード月額1,980円・プレミアム月額3,980円で、1回のクリックで4枚、1日最大200枚まで生成できます。",
     enDescription:
       "Discover the available plans for Aipictors' generation feature",
     isIndex: true,
@@ -879,11 +881,13 @@ export const META: { [key: string]: MetaData } = {
     isIndex: false,
   },
   PLUS: {
-    title: "サブスクリプション",
-    enTitle: "Subscription",
-    description: "Manage and update your subscription",
-    enDescription: "Manage and view your Aipictors subscription details",
-    isIndex: false,
+    title: "料金プラン（Aipictors+）",
+    enTitle: "Plans (Aipictors+)",
+    description:
+      "Aipictors+の料金プラン。ライト月額480円・スタンダード月額1,980円・プレミアム月額3,980円。1回のクリックで4枚生成、毎日のフリーコインで1日最大200枚、広告の非表示、画像から生成、高速生成モードなど。いつでも解約できます。",
+    enDescription:
+      "Aipictors+ plans: Lite ¥480, Standard ¥1,980, Premium ¥3,980 per month. 4 images per click, up to 200 images a day, ad-free, image to image and more. Cancel anytime.",
+    isIndex: true,
   },
   NEW_IMAGE: {
     title: "画像投稿",
