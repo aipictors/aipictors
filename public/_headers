@@ -26,6 +26,11 @@
 /nsfw_model/*
   Cache-Control: public, max-age=604800
 
+# 生成画面のタグ候補の辞書（中身を変えるときはファイル名を変える）
+/generation/*
+  Cache-Control: public, max-age=604800
+  Content-Type: text/plain; charset=utf-8
+
 # Service Worker は常に最新を取得
 /firebase-messaging-sw.js
   Cache-Control: no-cache

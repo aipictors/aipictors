@@ -12,6 +12,7 @@ import { GenerationView } from "~/routes/($lang).generation._index/components/ge
 import { GenerationNegativePromptView } from "~/routes/($lang).generation._index/components/negative-prompt-view/generation-negative-prompt-view"
 import { GenerationMobilePromptCard } from "~/routes/($lang).generation._index/components/prompt-view/generation-mobile-prompt-card"
 import { GenerationMobilePromptComposer } from "~/routes/($lang).generation._index/components/prompt-view/generation-mobile-prompt-composer"
+import { GenerationPromptComposer } from "~/routes/($lang).generation._index/components/prompt-view/generation-prompt-composer"
 import { GenerationPromptView } from "~/routes/($lang).generation._index/components/prompt-view/generation-prompt-view"
 import { GenerationSubmissionView } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-view"
 import { GenerationCommunicationView } from "~/routes/($lang).generation._index/components/task-view/generation-communication-view"
@@ -82,10 +83,7 @@ export default function GenerationPage() {
       <GenerationView
         settings={
           <GenerationSettingsColumn
-            settingLanguageUsedForPromptView={
-              <SettingLanguageUsedForPromptView />
-            }
-            promptEditor={<GenerationPromptView />}
+            promptEditor={<GenerationPromptComposer />}
             negativePromptEditor={<GenerationNegativePromptView />}
             config={<GenerationConfigView isStacked />}
             submission={<GenerationSubmissionView termsText={text} />}

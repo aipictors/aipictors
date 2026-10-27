@@ -10,10 +10,10 @@ import {
   DrawerTrigger,
 } from "~/components/ui/drawer"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { Textarea } from "~/components/ui/textarea"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { PromptKeywordsDialogButton } from "~/routes/($lang).generation._index/components/prompt-view/prompt-keywords-dialog-button"
+import { PromptTagTextarea } from "~/routes/($lang).generation._index/components/prompt-view/prompt-tag-textarea"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useIsMobilePromptCardVisible } from "~/routes/($lang).generation._index/hooks/use-mobile-prompt-card-visibility"
 import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
@@ -145,33 +145,34 @@ export function GenerationMobilePromptComposer() {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <Textarea
-            ref={textareaRef}
-            aria-label={
-              isNegative
-                ? t("ネガティブプロンプト", "Negative prompt")
-                : t("プロンプト", "Prompt")
-            }
-            className="min-h-32 flex-1 resize-none font-mono text-base leading-6"
-            placeholder={
-              isNegative
-                ? t("例: EasyNegative", "e.g. EasyNegative")
-                : isJapanese
-                  ? t(
-                      "例: 桜の下で笑う女の子、やわらかい光",
-                      "e.g. A girl smiling under cherry blossoms",
-                    )
-                  : t(
-                      "例: 1girl, smile, cherry blossoms, masterpiece",
-                      "e.g. 1girl, smile, cherry blossoms, masterpiece",
-                    )
-            }
-            value={value}
-            onChange={(event) => {
-              onChange(event.target.value)
-            }}
-            maxLength={20000}
-          />
+          <div className="flex min-h-32 flex-1 flex-col [&>div]:flex-1 [&_textarea]:flex-1">
+            <PromptTagTextarea
+              ref={textareaRef}
+              variant="chips"
+              aria-label={
+                isNegative
+                  ? t("ネガティブプロンプト", "Negative prompt")
+                  : t("プロンプト", "Prompt")
+              }
+              className="min-h-32 flex-1 resize-none font-mono text-base leading-6"
+              placeholder={
+                isNegative
+                  ? t("例: EasyNegative", "e.g. EasyNegative")
+                  : isJapanese
+                    ? t(
+                        "例: 桜の下で笑う女の子、やわらかい光",
+                        "e.g. A girl smiling under cherry blossoms",
+                      )
+                    : t(
+                        "例: 1girl, smile, cherry blossoms, masterpiece",
+                        "e.g. 1girl, smile, cherry blossoms, masterpiece",
+                      )
+              }
+              value={value}
+              onValueChange={onChange}
+              maxLength={20000}
+            />
+          </div>
           <div className="flex items-center justify-between gap-2">
             {isNegative || !isJapanese ? (
               <PromptKeywordsDialogButton type={tab}>

@@ -2,10 +2,10 @@ import { BookTextIcon, RotateCcwIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 import { Button } from "~/components/ui/button"
 import { Dialog, DialogTrigger } from "~/components/ui/dialog"
-import { Textarea } from "~/components/ui/textarea"
 import { useTranslation } from "~/hooks/use-translation"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { NegativePromptsDialogContent } from "~/routes/($lang).generation._index/components/negative-prompt-view/negative-prompts-dialog-content"
+import { PromptTagTextarea } from "~/routes/($lang).generation._index/components/prompt-view/prompt-tag-textarea"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
 
@@ -93,7 +93,15 @@ export function GenerationNegativePromptView() {
           <>
             {resetAction}
             <DialogTrigger asChild>
-              <Button aria-label={t("ネガティブプロンプトの一覧", "Negative prompt list")} size={"icon"} variant={"ghost"} onClick={setTrue}>
+              <Button
+                aria-label={t(
+                  "ネガティブプロンプトの一覧",
+                  "Negative prompt list",
+                )}
+                size={"icon"}
+                variant={"ghost"}
+                onClick={setTrue}
+              >
                 <BookTextIcon />
               </Button>
             </DialogTrigger>
@@ -101,15 +109,15 @@ export function GenerationNegativePromptView() {
         }
       >
         <div className="relative flex h-full flex-col gap-y-2 pb-2 md:px-4 md:pb-4">
-          <Textarea
-            className="h-full min-h-32 resize-none font-mono md:min-h-16"
-            placeholder={t("EasyNegativeなど", "EasyNegative, etc.")}
-            value={context.config.negativePromptText}
-            onChange={(event) => {
-              context.updateNegativePrompt(event.target.value)
-            }}
-            maxLength={20000}
-          />
+          <div className="h-full [&>div]:h-full">
+            <PromptTagTextarea
+              className="h-full min-h-32 resize-none font-mono md:min-h-16"
+              placeholder={t("EasyNegativeなど", "EasyNegative, etc.")}
+              value={context.config.negativePromptText}
+              onValueChange={context.updateNegativePrompt}
+              maxLength={20000}
+            />
+          </div>
 
           {/* モバイルは下部に大きめ導線も出す */}
           <DialogTrigger asChild>

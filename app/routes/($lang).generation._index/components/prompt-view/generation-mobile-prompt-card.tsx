@@ -1,6 +1,5 @@
 import { BookTextIcon, ChevronRightIcon, RotateCcwIcon } from "lucide-react"
 import { useId, useRef, useState } from "react"
-import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Button } from "~/components/ui/button"
 import {
@@ -12,6 +11,7 @@ import { Switch } from "~/components/ui/switch"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { PromptKeywordsDialogButton } from "~/routes/($lang).generation._index/components/prompt-view/prompt-keywords-dialog-button"
+import { PromptTagTextarea } from "~/routes/($lang).generation._index/components/prompt-view/prompt-tag-textarea"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useObserveMobilePromptCard } from "~/routes/($lang).generation._index/hooks/use-mobile-prompt-card-visibility"
 import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
@@ -75,31 +75,33 @@ export function GenerationMobilePromptCard() {
           />
         </div>
       </div>
-      <AutoResizeTextarea
-        ref={promptRef}
-        id={promptId}
-        className="mt-2 max-h-[40vh] overflow-y-auto font-mono text-base leading-6"
-        placeholder={
-          isJapanese
-            ? t(
-                "例: 桜の下で笑う女の子、やわらかい光",
-                "e.g. A girl smiling under cherry blossoms",
-              )
-            : t(
-                "例: 1girl, smile, cherry blossoms, masterpiece",
-                "e.g. 1girl, smile, cherry blossoms, masterpiece",
-              )
-        }
-        value={context.config.promptText}
-        onChange={(event) => {
-          context.updatePrompt(event.target.value)
-        }}
-        onBlur={() => {
-          context.initPromptWithLoraModel()
-        }}
-        maxLength={20000}
-        minHeight="7rem"
-      />
+      <div className="mt-2">
+        <PromptTagTextarea
+          ref={promptRef}
+          id={promptId}
+          variant="chips"
+          autoResize
+          className="max-h-[40vh] overflow-y-auto font-mono text-base leading-6"
+          placeholder={
+            isJapanese
+              ? t(
+                  "例: 桜の下で笑う女の子、やわらかい光",
+                  "e.g. A girl smiling under cherry blossoms",
+                )
+              : t(
+                  "例: 1girl, smile, cherry blossoms, masterpiece",
+                  "e.g. 1girl, smile, cherry blossoms, masterpiece",
+                )
+          }
+          value={context.config.promptText}
+          onValueChange={context.updatePrompt}
+          onBlur={() => {
+            context.initPromptWithLoraModel()
+          }}
+          maxLength={20000}
+          minHeight="7rem"
+        />
+      </div>
       <div className="mt-2 flex items-center justify-between gap-2">
         {isJapanese ? (
           <span />
@@ -157,15 +159,15 @@ export function GenerationMobilePromptCard() {
               "Things you don't want in the image. The default helps quality.",
             )}
           </p>
-          <AutoResizeTextarea
+          <PromptTagTextarea
             id={negativePromptId}
+            variant="chips"
+            autoResize
             aria-label={t("ネガティブプロンプト", "Negative prompt")}
             className="max-h-[30vh] overflow-y-auto font-mono text-base leading-6"
             placeholder={t("例: EasyNegative", "e.g. EasyNegative")}
             value={context.config.negativePromptText}
-            onChange={(event) => {
-              context.updateNegativePrompt(event.target.value)
-            }}
+            onValueChange={context.updateNegativePrompt}
             maxLength={20000}
             minHeight="4.5rem"
           />
