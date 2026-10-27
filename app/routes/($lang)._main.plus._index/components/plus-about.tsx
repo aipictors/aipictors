@@ -10,6 +10,8 @@ type Props = {
   showUpgradePlansOnly?: boolean
   hideSubmitButton?: boolean
   treatAsNoCurrentPass?: boolean
+  showFreePlan?: boolean
+  isLoggedOut?: boolean
 }
 
 export function PlusAbout (props: Props) {
@@ -56,6 +58,8 @@ export function PlusAbout (props: Props) {
       showUpgradePlansOnly={props.showUpgradePlansOnly}
       hideSubmitButton={props.hideSubmitButton}
       treatAsNoCurrentPass={props.treatAsNoCurrentPass}
+      showFreePlan={props.showFreePlan}
+      isLoggedOut={props.isLoggedOut}
       onSelect={onSelect}
       isLoading={isLoading}
     />

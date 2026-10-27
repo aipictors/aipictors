@@ -16,6 +16,7 @@ import { cn } from "~/lib/utils"
 import { toDateText } from "~/utils/to-date-text"
 import { PassBenefitList } from "~/routes/($lang)._main.plus._index/components/pass-benefit-list"
 import { PassImageGenerationBenefitList } from "~/routes/($lang)._main.plus._index/components/pass-image-generation-benefit-list"
+import { planCtaClassName } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-about"
 import { toPassName } from "~/routes/($lang)._main.plus._index/utils/to-pass-name"
 import { useSuspenseQuery } from "@apollo/client/index"
@@ -348,7 +349,7 @@ export function PlusForm () {
   }
 
   if (data.viewer === null) {
-    return null
+    return <PlusAbout showUpgradePlansOnly={true} showFreePlan={true} />
   }
 
   const currentPass = data.viewer.currentPass
@@ -526,12 +527,15 @@ export function PlusForm () {
           )}
           <div
             className={cn(
-              "justify-between gap-x-4 space-y-4 md:space-y-0",
+              "justify-between gap-x-6 space-y-4 rounded-3xl border bg-gradient-to-br from-violet-500/10 via-transparent to-sky-500/10 p-5 md:space-y-0 md:p-6",
               currentPass && "flex flex-col md:flex-row",
             )}
           >
             <div className="flex-1 space-y-4">
-              <p>{`現在、あなたは「${currentPassName}」をご利用中です。`}</p>
+              <p className="inline-flex rounded-full bg-gradient-to-r from-violet-600 to-sky-500 px-3 py-1 font-bold text-white text-xs">
+                {"ご利用中のプラン"}
+              </p>
+              <p className="font-bold text-lg">{`現在、あなたは「${currentPassName}」をご利用中です。`}</p>
               <div>
                 <div className="flex">
                   <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm dark:bg-gray-700 dark:text-gray-200">
@@ -588,7 +592,7 @@ export function PlusForm () {
                 )}
                 {!isCancelScheduled && currentPass.type === "LITE" && (
                   <Button
-                    className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
+                    className={planCtaClassName}
                     onClick={() => openPlanChangeDialog("STANDARD", currentPass.type)}
                     disabled={isSubmitting}
                   >
@@ -597,7 +601,7 @@ export function PlusForm () {
                 )}
                 {!isCancelScheduled && currentPass.type === "LITE" && (
                   <Button
-                    className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
+                    className={planCtaClassName}
                     onClick={() => openPlanChangeDialog("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
@@ -606,7 +610,7 @@ export function PlusForm () {
                 )}
                 {!isCancelScheduled && currentPass.type === "STANDARD" && (
                   <Button
-                    className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
+                    className={planCtaClassName}
                     onClick={() => openPlanChangeDialog("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
@@ -636,6 +640,13 @@ export function PlusForm () {
               </CardContent>
             </Card>
           </div>
+          {(isCancelScheduled || currentPass.type !== "PREMIUM") && (
+            <p className="mt-8 mb-1 font-bold">
+              {isCancelScheduled
+                ? "プランを選び直す"
+                : "上位のプランにすると、もっと生成できます"}
+            </p>
+          )}
           {(isCancelScheduled || currentPass.type !== "PREMIUM") && (
             <PlusAbout
               showUpgradePlansOnly={!isCancelScheduled}
@@ -669,7 +680,7 @@ export function PlusForm () {
           </CardContent>
         </Card>
       ) : (
-        <PlusAbout showUpgradePlansOnly={true} />
+        <PlusAbout showUpgradePlansOnly={true} showFreePlan={true} />
       )}
     </>
   )

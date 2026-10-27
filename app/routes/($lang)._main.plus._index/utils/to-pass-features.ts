@@ -1,43 +1,49 @@
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { config } from "~/config"
+import { getPlanSpec } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 
-export function toPassFeatures(passType: IntrospectionEnum<"PassType">) {
+/**
+ * プランの画像生成の特典
+ */
+export function toPassFeatures(
+  passType: IntrospectionEnum<"PassType"> | "FREE",
+) {
+  if (passType === "FREE") {
+    const spec = getPlanSpec("FREE")
+    return [
+      `1回の生成で${spec.imagesPerRequest}枚`,
+      `毎日${spec.dailyFreeCoins}フリーコイン（1日${spec.dailyImages}枚まで）`,
+      "みんなのモデルで生成",
+      `LoRA ${spec.loraModels}個まで`,
+      `モデル登録 ${spec.modelSlots}個まで`,
+    ]
+  }
+
   if (passType === "LITE") {
+    const spec = getPlanSpec("LITE")
     return [
-      "初回アクセス時に500フリーコイン付与",
-      "通常生成 10コイン / 枚",
-      "Gemini Nano Banana 50コイン / 枚",
-      "画像から生成機能",
+      `1回の生成で${spec.imagesPerRequest}枚`,
+      `毎日${spec.dailyFreeCoins}フリーコイン（1日${spec.dailyImages}枚まで）`,
+      "画像から生成（img2img・部分修正）",
+      "Gemini Nano Banana",
+      `LoRA ${spec.loraModels}個まで`,
+      `お気に入り履歴 ${spec.favoriteHistories}件`,
+      `モデル登録 ${spec.modelSlots}個まで`,
     ]
   }
 
-  if (passType === "STANDARD") {
+  if (passType === "STANDARD" || passType === "PREMIUM") {
+    const spec = getPlanSpec(passType)
     return [
-      "初回アクセス時に1000フリーコイン付与",
-      "通常生成 10コイン / 枚",
-      "Gemini Nano Banana 50コイン / 枚",
-      "Gemini Nano Banana 2 100コイン / 枚",
-      `同時に${config.passFeature.imageGenerationTasksCount.standard}枚の生成`,
-      `${config.passFeature.imageGenerationLoraModelsCount.standard}つのLoRAモデル`,
-      `${config.passFeature.imageGenerationHistoriesCount.standard}件のお気に入り履歴`,
+      `1回の生成で${spec.imagesPerRequest}枚`,
+      `毎日${spec.dailyFreeCoins}フリーコイン（1日${spec.dailyImages}枚まで）`,
+      `同時に${spec.concurrentTasks}件まで生成`,
       "高速生成モード⚡️",
       "予約生成機能",
-      "画像から生成機能",
-    ]
-  }
-
-  if (passType === "PREMIUM") {
-    return [
-      "初回アクセス時に2000フリーコイン付与",
-      "通常生成 10コイン / 枚",
-      "Gemini Nano Banana 50コイン / 枚",
-      "Gemini Nano Banana 2 100コイン / 枚",
-      `同時に${config.passFeature.imageGenerationTasksCount.premium}枚の生成`,
-      `${config.passFeature.imageGenerationLoraModelsCount.premium}つのLoRAモデル`,
-      `${config.passFeature.imageGenerationHistoriesCount.premium}件のお気に入り履歴`,
-      "高速生成モード⚡️",
-      "予約生成機能",
-      "画像から生成機能",
+      "画像から生成（img2img・部分修正）",
+      "Gemini Nano Banana / Nano Banana 2",
+      `LoRA ${spec.loraModels}個まで`,
+      `お気に入り履歴 ${spec.favoriteHistories}件`,
+      `モデル登録 ${spec.modelSlots}個まで`,
     ]
   }
 
