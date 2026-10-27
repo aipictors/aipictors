@@ -33,6 +33,7 @@ import { cn } from "~/lib/utils"
 import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
+import { setRenderNow } from "~/utils/render-now"
 import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { serializeJsonLd } from "~/utils/serialize-json-ld"
@@ -55,12 +56,16 @@ const MAINTENANCE_STATUS_QUERY = `query MaintenanceStatus {
 type RootLoaderData = {
   isMaintenance: boolean
   maintenanceMessage: string | null
+  /** サーバーで描画した時刻（経過時間の表示を hydration で食い違わせないため） */
+  renderedAt?: number
 }
 
 const defaultRootLoaderData: RootLoaderData = {
   isMaintenance: false,
   maintenanceMessage: null,
 }
+
+let isHydrated = false
 
 let hasInitializedBrowserSentry = false
 
@@ -246,7 +251,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     })
   }
 
-  return json<RootLoaderData>(maintenanceStatus)
+  return json<RootLoaderData>({ ...maintenanceStatus, renderedAt: Date.now() })
 }
 
 /**
@@ -320,6 +325,15 @@ type Props = Readonly<{
  */
 export function Layout(props: Props): React.ReactNode {
   const loaderData = useRootLoaderData()
+
+  // 引き継ぎ（hydration）が終わるまでは、サーバーが描画した時刻で経過時間を出す
+  if (!isHydrated && typeof loaderData.renderedAt === "number") {
+    setRenderNow(loaderData.renderedAt)
+  }
+  useEffect(() => {
+    isHydrated = true
+    setRenderNow(null)
+  }, [])
   const location = useLocation()
   const navigate = useNavigate()
   const [_key, setKey] = useState(

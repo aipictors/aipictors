@@ -55,7 +55,7 @@ export function HomeMenuRouteList({
   const [isExtraMenuOpen, setIsExtraMenuOpen] = useState(false)
 
   const sensitivePath =
-    typeof window !== "undefined" ? /\/r($|\/)/.test(location.pathname) : false
+    /\/r($|\/)/.test(location.pathname)
 
   const isSensitive = sensitivePath
 

@@ -53,7 +53,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
     viewerData.viewer.isModerator
 
   const sensitivePath =
-    typeof window !== "undefined" ? /\/r($|\/)/.test(location.pathname) : false
+    /\/r($|\/)/.test(location.pathname)
   const isSensitive = sensitivePath
   const title = propTitle ?? "Aipictors"
 

@@ -5,6 +5,8 @@ import {
   differenceInMonths,
   format,
 } from "date-fns"
+import { getRenderNow } from "~/utils/render-now"
+import { toJstDisplayDate } from "~/utils/to-jst-display-date"
 
 /**
  * 経過した時間を表す文字列を返す (Returns the elapsed time string)
@@ -13,9 +15,9 @@ import {
 export const toElapsedTimeEnText: (createdAt: number) => string = (
   createdAt: number,
 ): string => {
-  const dateLeft = new Date()
+  const dateLeft = toJstDisplayDate(getRenderNow())
 
-  const dateRight = new Date(createdAt * 1000)
+  const dateRight = toJstDisplayDate(createdAt * 1000)
 
   const months = differenceInMonths(dateLeft, dateRight)
 

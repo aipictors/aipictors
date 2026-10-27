@@ -6,15 +6,17 @@ import {
   differenceInSeconds,
   format,
 } from "date-fns"
+import { getRenderNow } from "~/utils/render-now"
+import { toJstDisplayDate } from "~/utils/to-jst-display-date"
 
 /**
  * 経過時間のテキストを返す
  * @param createdAt
  */
 export function toElapsedTimeText(createdAt: number): string {
-  const dateLeft = new Date()
+  const dateLeft = toJstDisplayDate(getRenderNow())
 
-  const dateRight = new Date(createdAt * 1000)
+  const dateRight = toJstDisplayDate(createdAt * 1000)
 
   const months = differenceInMonths(dateLeft, dateRight)
 

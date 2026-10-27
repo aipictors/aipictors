@@ -1,6 +1,11 @@
 import { Button } from "~/components/ui/button"
 import { RiRestartLine } from "@remixicon/react"
-import { type AuthProvider, getAuth, signInWithPopup } from "firebase/auth"
+import {
+  type AuthProvider,
+  browserPopupRedirectResolver,
+  getAuth,
+  signInWithPopup,
+} from "firebase/auth"
 import type { ReactElement } from "react"
 import { toast } from "sonner"
 import { graphql } from "gql.tada"
@@ -18,7 +23,7 @@ type Props = {
  * ソーシャルログインボタン
  * Googleでログインするなど
  */
-export function SocialLoginButton (props: Props): React.ReactNode {
+export function SocialLoginButton(props: Props): React.ReactNode {
   const [isInitializedUserProfile] = useMutation(
     isInitializedUserProfileMutation,
   )
@@ -29,7 +34,11 @@ export function SocialLoginButton (props: Props): React.ReactNode {
     if (props.disabled) return
 
     try {
-      await signInWithPopup(getAuth(), props.provider)
+      await signInWithPopup(
+        getAuth(),
+        props.provider,
+        browserPopupRedirectResolver,
+      )
 
       // ユーザ設定有無チェック
       const isInitializedUserProfileRet = await isInitializedUserProfile()

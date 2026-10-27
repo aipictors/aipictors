@@ -2,6 +2,7 @@ import { gql, useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { isApolloError } from "@apollo/client/errors"
 import { graphql } from "gql.tada"
 import {
+  browserPopupRedirectResolver,
   GoogleAuthProvider,
   TwitterAuthProvider,
   getAuth,
@@ -101,7 +102,11 @@ export function SNSConnectSection() {
     try {
       setIsLinking(true)
       const auth = getAuth()
-      const result = await signInWithPopup(auth, providerConfig.provider)
+      const result = await signInWithPopup(
+        auth,
+        providerConfig.provider,
+        browserPopupRedirectResolver,
+      )
 
       if (result.user.uid) {
         await linkMutation({

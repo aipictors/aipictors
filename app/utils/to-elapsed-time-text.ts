@@ -5,6 +5,8 @@ import {
   differenceInMonths,
   format,
 } from "date-fns"
+import { getRenderNow } from "~/utils/render-now"
+import { toJstDisplayDate } from "~/utils/to-jst-display-date"
 
 /**
  * 指定された日時を指定された分単位で丸める
@@ -26,9 +28,12 @@ export const toElapsedTimeText: (createdAt: number) => string = (
   createdAt: number,
 ): string => {
   const roundToMinutesUnit = 3
-  const now = roundToNearestMinutes(new Date(), roundToMinutesUnit)
+  const now = roundToNearestMinutes(
+    toJstDisplayDate(getRenderNow()),
+    roundToMinutesUnit,
+  )
   const targetDate = roundToNearestMinutes(
-    new Date(createdAt * 1000),
+    toJstDisplayDate(createdAt * 1000),
     roundToMinutesUnit,
   ) // 対象時刻を丸める
 

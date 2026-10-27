@@ -4,6 +4,11 @@ import { config } from "~/config"
 import { ApolloProvider } from "@apollo/client/index"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { getApp, getApps, initializeApp } from "firebase/app"
+import {
+  browserLocalPersistence,
+  indexedDBLocalPersistence,
+  initializeAuth,
+} from "firebase/auth"
 import { apolloClient } from "~/lib/client"
 import {
   runAfterLoadIdle,
@@ -24,7 +29,13 @@ function initializeFirebaseIfNeeded() {
 
   try {
     if (getApps().length === 0) {
-      initializeApp(config.firebaseConfig)
+      const app = initializeApp(config.firebaseConfig)
+
+      // getAuth() はポップアップ用の iframe（iframe.js・gapi で約 130KB）を最初に読み込むので、
+      // ログイン状態の保存先だけ指定して初期化し、ポップアップは使うときに読み込む（social-login-button）
+      initializeAuth(app, {
+        persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+      })
 
       // Analyticsは読み込み完了後のアイドル時に初期化
       withFirebaseAnalytics(({ initializeAnalytics }) => {
@@ -66,7 +77,7 @@ function initializeFirebaseIfNeeded() {
   }
 }
 
-export function ContextProviders (props: Props): React.ReactNode {
+export function ContextProviders(props: Props): React.ReactNode {
   // Firebase初期化を遅延実行
   if (typeof document !== "undefined") {
     initializeFirebaseIfNeeded()

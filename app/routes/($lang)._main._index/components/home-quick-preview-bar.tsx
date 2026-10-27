@@ -13,6 +13,7 @@ import type {
   MicroCmsApiReleaseResponse,
 } from "~/types/micro-cms-release-response"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toJstDisplayDate } from "~/utils/to-jst-display-date"
 
 type Props = {
   events: HomePreviewEvent[]
@@ -20,16 +21,17 @@ type Props = {
   releaseList: MicroCmsApiReleaseResponse
 }
 
+// イベントの日時は「日本時間の壁時計を UTC として扱った秒」なので UTC の値で取り出す
+// （サーバーとブラウザで同じ文字にする）
 const formatEventDate = (unixTime: number) => {
   const date = new Date(unixTime * 1000)
-  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
-  const month = String(japanTime.getMonth() + 1).padStart(2, "0")
-  const day = String(japanTime.getDate()).padStart(2, "0")
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
+  const day = String(date.getUTCDate()).padStart(2, "0")
   return `${month}.${day}`
 }
 
 const formatReleaseDate = (timestamp: number) => {
-  const date = new Date(timestamp)
+  const date = toJstDisplayDate(timestamp)
   const month = String(date.getMonth() + 1).padStart(2, "0")
   const day = String(date.getDate()).padStart(2, "0")
   return `${month}.${day}`
@@ -77,7 +79,9 @@ export function HomeQuickPreviewBar(props: Props) {
           <div
             className={cn(
               "transition-all duration-500 ease-out",
-              isVisible ? "opacity-100 translate-y-0" : "opacity-20 translate-y-1",
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-20 translate-y-1",
             )}
           >
             <Link
@@ -161,8 +165,13 @@ export function HomeQuickPreviewBar(props: Props) {
               className="mt-1.5 block rounded-md px-1 py-0.5 transition-colors hover:bg-muted/40"
             >
               <div className="flex items-center gap-2">
-                <ReleaseTagBadge tag={firstRelease.tag} className="px-1.5 py-0 text-[10px]" />
-                <span className="line-clamp-1 flex-1 text-sm">{firstRelease.title}</span>
+                <ReleaseTagBadge
+                  tag={firstRelease.tag}
+                  className="px-1.5 py-0 text-[10px]"
+                />
+                <span className="line-clamp-1 flex-1 text-sm">
+                  {firstRelease.title}
+                </span>
               </div>
               <div className="mt-0.5 text-[11px] text-muted-foreground">
                 {formatReleaseDate(firstRelease.createdAt)}

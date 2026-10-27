@@ -15,11 +15,13 @@ const formatReleaseDateTime = (release: MicroCmsApiRelease) => {
     return null
   }
 
-  const date = new Date(publishedAtMs)
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  const hour = String(date.getHours()).padStart(2, "0")
-  const minute = String(date.getMinutes()).padStart(2, "0")
+  // サーバー（UTC）とブラウザで同じ文字になるよう、日本時間に固定してから UTC の値で取り出す
+  // （食い違うと hydration が失敗してページ全体を作り直し、表示が遅くなる）
+  const date = new Date(publishedAtMs + 9 * 60 * 60 * 1000)
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
+  const day = String(date.getUTCDate()).padStart(2, "0")
+  const hour = String(date.getUTCHours()).padStart(2, "0")
+  const minute = String(date.getUTCMinutes()).padStart(2, "0")
 
   return `${month}.${day} ${hour}:${minute}`
 }
