@@ -1,4 +1,3 @@
-import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { GenerationWorkLinkButton } from "~/routes/($lang).generation._index/components/generation-work-link-button"
 import { useState } from "react"
@@ -9,7 +8,6 @@ import { GenerationUpdateSettingConfirmDialog } from "~/routes/($lang).generatio
 
 type Props = {
   work: FragmentOf<typeof GenerationWorkCardFragment>
-  isPreviewByHover: boolean
 }
 
 /**
@@ -20,23 +18,14 @@ export function GenerationWorkCard (props: Props) {
 
   const context = useGenerationContext()
 
-  const { send } = GenerationConfigContext.useActorRef()
 
   return (
     <div
       className="relative grid h-full overflow-hidden rounded bg-card p-0"
       onMouseEnter={() => {
-        if (props.isPreviewByHover) {
-          context.updatePreviewImageURL(props.work.largeThumbnailImageURL)
-          send({ type: "OPEN_WORK_PREVIEW" })
-        }
         setIsHovered(true)
       }}
       onMouseLeave={() => {
-        if (props.isPreviewByHover) {
-          context.updatePreviewImageURL(null)
-          send({ type: "CLOSE" })
-        }
         setIsHovered(false)
       }}
     >

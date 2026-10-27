@@ -6,10 +6,8 @@ import { GenerationImageDownloadButton } from "~/routes/($lang).generation._inde
 import { GenerationImagePostButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-upload-button"
 import { GenerationTaskActionDropdownMenu } from "~/routes/($lang).generation._index/components/task-view/generation-task-action-dropdown-menu"
 import { GenerationTaskCountSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-count-select"
-import { GenerationTaskPreviewModeButton } from "~/routes/($lang).generation._index/components/task-view/generation-task-preview-mode-button"
 import { GenerationTaskRatingSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-rating-select"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
-import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -22,12 +20,10 @@ type Props = {
   protect: number
   thumbnailSize: number
   thumbnailType: TaskListThumbnailType
-  taskContentPositionType: TaskContentPositionType
   selectedTaskIds: string[]
   hidedTaskIds: string[]
   isEditMode: boolean
   showCountInput?: boolean
-  previewMode?: boolean
   showHistoryExpandButton?: boolean
   viewCount?: number
   onChangeRating(rating: number): void
@@ -35,11 +31,9 @@ type Props = {
   onChangeViewCount(count: number): void
   onChangeThumbnailType(type: TaskListThumbnailType): void
   setThumbnailSize(size: number): void
-  onChangeTaskContentPositionType(size: TaskContentPositionType): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
   setHidedTaskIds(selectedTaskIds: string[]): void
   onToggleEditMode(): void
-  onTogglePreviewMode(): void
   onSelectAll(): void
   onCancelAll(): void
   onRefresh?(): void
@@ -148,14 +142,6 @@ export function GenerationTaskListActions (props: Props) {
               onChange={props.onChangeRating}
             />
           )}
-          {state !== "HISTORY_LIST_FULL" && (
-            <div className="hidden md:block">
-              <GenerationTaskPreviewModeButton
-                onTogglePreviewMode={props.onTogglePreviewMode}
-                defaultChecked={props.previewMode}
-              />
-            </div>
-          )}
           {props.showCountInput && props.viewCount && (
             <GenerationTaskCountSelect
               value={props.viewCount}
@@ -199,7 +185,7 @@ export function GenerationTaskListActions (props: Props) {
           </Button>
         )}
       </div>
-      <div className="flex items-center space-x-2 px-2 pb-2 md:px-4 xl:px-4">
+      <div className="flex items-center gap-2 px-2 pb-3 md:px-4 xl:px-4">
         {/* 削除 */}
         <GenerationTasksDeleteButton
           disabled={false}
@@ -233,24 +219,22 @@ export function GenerationTaskListActions (props: Props) {
         />
         <GenerationTaskActionDropdownMenu
           thumbnailType={props.thumbnailType}
-          taskContentPositionType={props.taskContentPositionType}
           onChangeThumbnailType={props.onChangeThumbnailType}
-          onChangeTaskContentPositionType={
-            props.onChangeTaskContentPositionType
-          }
           onSelectAll={props.onSelectAll}
           onCancelAll={props.onCancelAll}
         />
+        {/* サムネイルサイズ */}
+        <Slider
+          className="color-pink ml-auto w-28 shrink-0"
+          aria-label={t("サムネイルサイズ", "Thumbnail size")}
+          title={t("サムネイルサイズ", "Thumbnail size")}
+          min={1}
+          max={9}
+          step={1}
+          value={[props.thumbnailSize]}
+          onValueChange={(value) => props.setThumbnailSize(value[0])}
+        />
       </div>
-      <Slider
-        className="color-pink ml-2 w-32 px-2 pb-4"
-        aria-label="slider-ex-2"
-        min={1}
-        max={9}
-        step={1}
-        value={[props.thumbnailSize]}
-        onValueChange={(value) => props.setThumbnailSize(value[0])}
-      />
     </>
   )
 }

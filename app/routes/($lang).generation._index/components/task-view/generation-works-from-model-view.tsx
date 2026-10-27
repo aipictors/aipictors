@@ -19,8 +19,6 @@ export function GenerationWorkListModelView () {
 
   const context = useGenerationContext()
 
-  const [isPreviewMode, togglePreviewMode] = useState(false)
-
   const [word, setWord] = useState("")
 
   const [sortType, setSortType] =
@@ -67,13 +65,6 @@ export function GenerationWorkListModelView () {
   }
 
   /**
-   * プレビューモードを切り替える
-   */
-  const onTogglePreviewMode = () => {
-    togglePreviewMode((value) => !value)
-  }
-
-  /**
    * サムネイルサイズを変更する
    * @param value
    * @returns
@@ -92,7 +83,6 @@ export function GenerationWorkListModelView () {
         showHistoryExpandButton={true}
         thumbnailSize={thumbnailSize()}
         setThumbnailSize={updateThumbnailSize}
-        onTogglePreviewMode={onTogglePreviewMode}
         onChangeSortType={setSortType}
         onChangeWord={setWord}
       />
@@ -101,7 +91,6 @@ export function GenerationWorkListModelView () {
         works={worksResp?.works ?? []}
         onCancel={onCancel}
         thumbnailSize={thumbnailSize()}
-        isPreviewByHover={isPreviewMode}
       />
     </GenerationViewCard>
   )

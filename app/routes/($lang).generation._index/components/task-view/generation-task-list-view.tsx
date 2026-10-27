@@ -20,12 +20,10 @@ type Props = {
   rating: number
   protect: number
   isEditMode: boolean
-  isPreviewMode: boolean
   currentUserToken: string
   setRating: (rating: number) => void
   setProtect: (protect: number) => void
   toggleEditMode: (value: boolean) => void
-  togglePreviewMode: (value: boolean) => void
 }
 
 /**
@@ -39,8 +37,7 @@ export function GenerationTaskListView (props: Props) {
     return snap.value
   })
 
-  const [showTaskPositionType, changeShowTaskPositionType] =
-    useState<TaskContentPositionType>("right")
+  const showTaskPositionType: TaskContentPositionType = "right"
 
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
@@ -176,13 +173,6 @@ export function GenerationTaskListView (props: Props) {
       setSelectedTaskIds([])
     }
     props.toggleEditMode(!props.isEditMode)
-  }
-
-  /**
-   * プレビューモードを切り替える
-   */
-  const onTogglePreviewMode = () => {
-    props.togglePreviewMode(!props.isPreviewMode)
   }
 
   /**
@@ -354,9 +344,7 @@ export function GenerationTaskListView (props: Props) {
         }
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
-        previewMode={props.isPreviewMode}
         isEditMode={props.isEditMode}
-        taskContentPositionType={showTaskPositionType}
         onChangeThumbnailType={changeThumbnailType}
         onChangeRating={onChangeRating}
         onChangeProtect={onChangeProtect}
@@ -364,9 +352,7 @@ export function GenerationTaskListView (props: Props) {
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
-        onTogglePreviewMode={onTogglePreviewMode}
         onChangeViewCount={() => {}}
-        onChangeTaskContentPositionType={changeShowTaskPositionType}
         onSelectAll={onSelectAllTasks}
         onCancelAll={onCancelAllTasks}
         onRefresh={onRefresh}
@@ -378,7 +364,6 @@ export function GenerationTaskListView (props: Props) {
           rating={props.rating}
           protect={props.protect}
           isEditMode={props.isEditMode}
-          isPreviewMode={props.isPreviewMode}
           selectedTaskIds={selectedTaskIds}
           results={results.viewer?.imageGenerationResults ?? []}
           tasks={tasks.viewer?.imageGenerationTasks ?? []}

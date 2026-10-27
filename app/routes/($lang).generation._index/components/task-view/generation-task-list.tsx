@@ -28,7 +28,6 @@ type Props = {
   rating: number
   protect: number
   isEditMode: boolean
-  isPreviewMode: boolean
   selectedTaskIds: string[]
   thumbnailSize: number
   taskContentPositionType: TaskContentPositionType
@@ -243,7 +242,6 @@ export function GenerationTaskList(props: Props) {
               taskIds={taskIdList}
               taskContentPositionType={props.taskContentPositionType}
               isEditMode={props.isEditMode}
-              isPreviewByHover={props.isPreviewMode}
               isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
               sizeType={props.thumbnailSize}
               isDialog={state === "HISTORY_LIST_FULL"}
