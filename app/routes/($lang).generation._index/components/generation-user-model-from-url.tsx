@@ -1,5 +1,5 @@
 import { useSearchParams } from "@remix-run/react"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useUserModel } from "~/components/user-models/use-user-models"
 import { config } from "~/config"
@@ -35,7 +35,19 @@ export function GenerationUserModelFromUrl() {
     removeParams(["userModel"])
   }, [error])
 
+  /**
+   * 画面を開いた直後は、設定の初期化（resetForInit など）が同じタイミングで走り、
+   * 先に選んだモデルを古い設定で上書きしてしまう。初期化が終わってから選ぶ
+   */
+  const [isReady, setIsReady] = useState(false)
+
   useEffect(() => {
+    const timer = setTimeout(() => setIsReady(true), 0)
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    if (!isReady) return
     if (!model || !userModelId || appliedRef.current === userModelId) return
     if (context.imageModels.length === 0) return
     appliedRef.current = userModelId
@@ -54,9 +66,10 @@ export function GenerationUserModelFromUrl() {
       toast(`LoRA「${model.name}」を追加しました`, { position: "top-center" })
     }
     removeParams(["userModel"])
-  }, [model, context.imageModels.length])
+  }, [isReady, model, context.imageModels.length])
 
   useEffect(() => {
+    if (!isReady) return
     if (!officialModelId && !officialLoraName) return
     if (context.imageModels.length === 0) return
     const key = `${officialModelId}:${officialLoraName}`
@@ -115,7 +128,7 @@ export function GenerationUserModelFromUrl() {
       }
     }
     removeParams(["model", "lora"])
-  }, [officialModelId, officialLoraName, context.imageModels.length])
+  }, [isReady, officialModelId, officialLoraName, context.imageModels.length])
 
   return null
 }
