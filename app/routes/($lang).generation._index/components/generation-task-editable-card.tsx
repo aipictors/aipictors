@@ -231,7 +231,8 @@ export function GenerationTaskEditableCard (props: Props) {
         await createTask({
           variables: {
             input: {
-              count: 1,
+              // 失敗した依頼と同じ枚数で作り直す
+              count: "count" in props.task ? (props.task.count ?? 1) : 1,
               model: modelName,
               vae: props.task.vae ?? "",
               prompt: props.task.prompt,

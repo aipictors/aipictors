@@ -6,6 +6,7 @@ import { config } from "~/config"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
+import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect, useRef, useState } from "react"
@@ -132,6 +133,8 @@ export function GenerationSubmissionView (props: Props) {
   const context = useGenerationContext()
 
   const userModelSelection = useUserModelSelection()
+
+  const imagesPerRequestState = useImagesPerRequest()
 
   const queryData = useGenerationQuery()
 
@@ -853,35 +856,9 @@ export function GenerationSubmissionView (props: Props) {
   })()
 
   /**
-   * 1 回の生成で作る枚数（サーバーの決め方と同じ）
-   * 無料 2 枚・ライト以上 4 枚。高解像度・画像から生成・ControlNet・Flux・Gemini は 1 枚
+   * 1 回の生成で作る枚数（上限はサーバーと同じ決まり。利用者が 1〜上限で選べる）
    */
-  const imagesPerRequest = (() => {
-    const selectedModel = context.imageModels.find((model) => {
-      return model.id === context.config.modelId
-    })
-    const modelKey = (
-      selectedModel?.name ??
-      selectedModel?.id ??
-      context.config.modelId ??
-      ""
-    ).toLowerCase()
-    if (
-      modelKey.startsWith("flux") ||
-      modelKey.includes("gemini") ||
-      context.config.modelType === "GEMINI" ||
-      context.config.modelType === "SD5" ||
-      context.config.modelType === "FLUX"
-    ) {
-      return 1
-    }
-    if (selectedGenerationType !== "TEXT_TO_IMAGE") return 1
-    if (context.config.upscaleSize !== null && context.config.upscaleSize > 1) {
-      return 1
-    }
-    if (context.config.controlNetImageBase64 !== null) return 1
-    return isLiteOrStandardOrPremium ? 4 : 2
-  })()
+  const imagesPerRequest = imagesPerRequestState.count
 
   const requestCoinCost =
     selectedModelCoinCost *
@@ -1136,7 +1113,8 @@ export function GenerationSubmissionView (props: Props) {
           return createTask({
             variables: {
               input: {
-                count: 1,
+                // 1 回で作る枚数（サーバー側で上限に収める）
+                count: imagesPerRequest,
                 model: modelName,
                 vae: context.config.vae ?? "",
                 prompt: promptsTexts[i],

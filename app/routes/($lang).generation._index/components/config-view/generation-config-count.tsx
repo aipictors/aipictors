@@ -37,7 +37,7 @@ export function GenerationConfigCount (props: Props) {
       <div className="gap-x-2">
         <div className="flex items-center gap-x-2">
           <span className="text-nowrap font-bold">
-            {t("生成枚数（予約生成）", "Generation count (reserve generation)")}
+            {t("続けて生成する回数（予約生成）", "Repeat count (reserved generation)")}
           </span>
           <CrossPlatformTooltip
             text={
@@ -47,7 +47,7 @@ export function GenerationConfigCount (props: Props) {
                     "You can increase the number of images generated at once with a subscription STANDARD or higher.",
                   )
                 : t(
-                    "同時生成枚数以上を指定した場合は、予約生成となり順次生成が行われていきます。",
+                    "同じ設定で何回続けて生成するかです。同時に進められる数を超えた分は予約生成となり、順番に生成されます。",
                     "If you specify more than the number of images generated at the same time, it will be reserved generation and will be generated sequentially.",
                   )
             }

@@ -21,9 +21,8 @@ import { GenerationConfigResetConfirmDialog } from "~/routes/($lang).generation.
 import { GenerationConfigSampler } from "~/routes/($lang).generation._index/components/config-view/generation-config-sampler"
 import { GenerationConfigScale } from "~/routes/($lang).generation._index/components/config-view/generation-config-scale"
 import { GenerationConfigSeed } from "~/routes/($lang).generation._index/components/config-view/generation-config-seed"
-import { GenerationConfigSize } from "~/routes/($lang).generation._index/components/config-view/generation-config-size"
+import { GenerationConfigOutput } from "~/routes/($lang).generation._index/components/config-view/generation-config-output"
 import { GenerationConfigStep } from "~/routes/($lang).generation._index/components/config-view/generation-config-step"
-import { GenerationConfigUpscale } from "~/routes/($lang).generation._index/components/config-view/generation-config-upscale"
 import { GenerationConfigVae } from "~/routes/($lang).generation._index/components/config-view/generation-config-vae"
 import { GenerationLoraSection } from "~/routes/($lang).generation._index/components/config-view/generation-lora-section"
 import { GenerationModelLibraryProvider } from "~/routes/($lang).generation._index/components/config-view/generation-model-library-provider"
@@ -141,17 +140,12 @@ export function GenerationConfigView(props: Props) {
       />
       <GenerationLoraSection />
       <Separator />
+      <GenerationConfigOutput modelType={configModelType} />
       <GenerationConfigCount
         remainingImageGenerationTasksCount={remainingImageGenerationTasksCount}
         setGenerationCount={context.changeGenerationCount}
         generationCount={context.config.generationCount}
       />
-      <GenerationConfigSize
-        modelType={configModelType}
-        value={context.config.sizeType}
-        onChange={context.updateSizeType}
-      />
-      <GenerationConfigUpscale />
       <Separator />
       <GenerationConfigReferenceImage />
       <Separator />
