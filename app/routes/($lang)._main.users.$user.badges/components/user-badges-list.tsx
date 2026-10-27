@@ -1,11 +1,11 @@
 import { type FragmentOf, graphql } from "gql.tada"
-import { Card, CardHeader, CardContent, CardTitle } from "~/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 
 type Props = {
   badges: FragmentOf<typeof UserBadgeListItemFragment>[]
 }
 
-export function UserBadgesList (props: Props) {
+export function UserBadgesList(props: Props) {
   return (
     <div className="flex flex-wrap gap-4">
       {props.badges.map((badge) => (

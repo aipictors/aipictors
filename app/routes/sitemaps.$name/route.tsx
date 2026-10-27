@@ -2,6 +2,7 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import {
   fetchSitemapAiModels,
   fetchSitemapTagNames,
+  fetchSitemapUsers,
   fetchUserModelsForSitemap,
   fetchWorksOfDay,
   isValidSitemapDate,
@@ -55,7 +56,8 @@ const ONE_DAY = 24 * ONE_HOUR
  * - /sitemaps/pages.xml 固定ページ
  * - /sitemaps/tags.xml 人気のタグ
  * - /sitemaps/models.xml 公式モデル・みんなのモデル
- * - /sitemaps/works-YYYY-MM-DD.xml その日（JST）に投稿された作品
+ * - /sitemaps/users.xml 作品のあるユーザーのページ（最近投稿した人・ランキング上位）
+ * - /sitemaps/works-YYYY-MM-DD.xml その日（JST）に投稿された作品と、投稿した人のユーザーページ
  */
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
   const name = params.name ?? ""
@@ -122,6 +124,22 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
     })
   }
 
+  if (name === "users.xml") {
+    return withEdgeCache(request, waitUntil, async () => {
+      const users = await fetchSitemapUsers()
+      return xmlResponse(
+        toUrlSetXml(
+          users.map((user) => ({
+            loc: `${SITE_URL}/users/${encodeURIComponent(user.login)}`,
+            changefreq: "weekly" as const,
+            priority: Math.min(0.4 + Math.log10(user.worksCount + 1) / 10, 0.7),
+          })),
+        ),
+        ONE_DAY / 2,
+      )
+    })
+  }
+
   const worksMatch = name.match(/^works-(\d{4}-\d{2}-\d{2})\.xml$/)
   if (worksMatch && isValidSitemapDate(worksMatch[1])) {
     const date = worksMatch[1]
@@ -131,16 +149,29 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
       jstDayStartSeconds(date) >= jstDayStartSeconds(today) - ONE_DAY
     return withEdgeCache(request, waitUntil, async () => {
       const works = await fetchWorksOfDay(date)
+      // その日に投稿した人のユーザーページも載せる（全期間の日付をたどれば、作品のある人は全員入る）
+      const userLogins = [
+        ...new Set(
+          works
+            .map((work) => work.user?.login)
+            .filter((login): login is string => Boolean(login)),
+        ),
+      ]
       return xmlResponse(
-        toUrlSetXml(
-          works.map((work) => ({
+        toUrlSetXml([
+          ...works.map((work) => ({
             loc: `${SITE_URL}/posts/${work.id}`,
             lastmod: new Date(work.createdAt * 1000).toISOString(),
             images: work.largeThumbnailImageURL
               ? [{ loc: work.largeThumbnailImageURL, title: work.title }]
               : undefined,
           })),
-        ),
+          ...userLogins.map((login) => ({
+            loc: `${SITE_URL}/users/${encodeURIComponent(login)}`,
+            changefreq: "weekly" as const,
+            priority: 0.5,
+          })),
+        ]),
         isRecent ? ONE_HOUR : ONE_DAY * 7,
       )
     })

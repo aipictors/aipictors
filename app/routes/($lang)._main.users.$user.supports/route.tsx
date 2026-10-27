@@ -1,5 +1,7 @@
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
 import { Link, useLoaderData, useParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { Trophy } from "lucide-react"
 import {
   FreeSupportCoinIcon,
@@ -8,14 +10,12 @@ import {
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { getServerEnvValue } from "~/lib/server/env.server"
-import { ParamsError } from "~/errors/params-error"
-import { loaderClient } from "~/lib/loader-client"
-import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { graphql } from "gql.tada"
 import { config } from "~/config"
+import { ParamsError } from "~/errors/params-error"
 import { useTranslation } from "~/hooks/use-translation"
+import { loaderClient } from "~/lib/loader-client"
+import { getServerEnvValue } from "~/lib/server/env.server"
+import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
 
 type SupportRankingItem = {
   rank: number
@@ -162,7 +162,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function UserSupports () {
+export default function UserSupports() {
   const t = useTranslation()
   const params = useParams()
 
@@ -199,7 +199,9 @@ export default function UserSupports () {
             </div>
             <div className="flex gap-2">
               <Button asChild variant="outline" size="sm">
-                <Link to={`/users/${params.user}`}>{t("プロフィールへ戻る", "Back to profile")}</Link>
+                <Link to={`/users/${params.user}`}>
+                  {t("プロフィールへ戻る", "Back to profile")}
+                </Link>
               </Button>
             </div>
           </div>
@@ -214,10 +216,10 @@ export default function UserSupports () {
             </p>
           ) : (
             items.map((row) => (
-                <div
-                  key={`${row.rank}-${row.userId}`}
-                  className="flex items-center gap-3 rounded-xl border px-4 py-3"
-                >
+              <div
+                key={`${row.rank}-${row.userId}`}
+                className="flex items-center gap-3 rounded-xl border px-4 py-3"
+              >
                 <SupportRankAvatar
                   rank={row.rank}
                   iconUrl={row.iconUrl}
@@ -225,23 +227,23 @@ export default function UserSupports () {
                   size="md"
                 />
                 <div className="min-w-0 flex-1">
-                    {row.isAnonymous || !row.userLogin ? (
-                      <p className="truncate font-semibold">
-                        {row.userName || t("匿名", "Anonymous")}
+                  {row.isAnonymous || !row.userLogin ? (
+                    <p className="truncate font-semibold">
+                      {row.userName || t("匿名", "Anonymous")}
+                    </p>
+                  ) : (
+                    <>
+                      <Link
+                        to={`/users/${row.userLogin}`}
+                        className="truncate font-semibold transition-opacity hover:opacity-70"
+                      >
+                        {row.userName || row.userLogin}
+                      </Link>
+                      <p className="text-muted-foreground text-xs">
+                        @{row.userLogin}
                       </p>
-                    ) : (
-                      <>
-                        <Link
-                          to={`/users/${row.userLogin}`}
-                          className="truncate font-semibold transition-opacity hover:opacity-70"
-                        >
-                          {row.userName || row.userLogin}
-                        </Link>
-                        <p className="text-muted-foreground text-xs">
-                          @{row.userLogin}
-                        </p>
-                      </>
-                    )}
+                    </>
+                  )}
                   <p className="text-muted-foreground text-sm">
                     {row.coinAmount.toLocaleString()} coin / {row.transferCount}
                     {t(" 回の支援", " transfers")}

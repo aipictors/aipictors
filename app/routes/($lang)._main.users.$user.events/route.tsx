@@ -5,6 +5,7 @@ import { Card, CardContent } from "~/components/ui/card"
 import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
+import { createUserTabMeta } from "~/routes/($lang)._main.users.$user/user-tab-meta"
 import {
   AppEventCard,
   type EventCardItem,
@@ -112,3 +113,5 @@ const userEventsQuery = graphql(
     }
   }`,
 )
+
+export const meta = createUserTabMeta("イベント", "Events")

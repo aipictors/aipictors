@@ -1,17 +1,17 @@
+import { useQuery } from "@apollo/client/index"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useLoaderData, useParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { useContext } from "react"
+import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { createUserTabMeta } from "~/routes/($lang)._main.users.$user/user-tab-meta"
 import {
   UserStickerList,
   UserStickersItemFragment,
 } from "~/routes/($lang)._main.users.$user.stickers/components/user-sticker-list"
-import { config } from "~/config"
-import { AuthContext } from "~/contexts/auth-context"
-import { useContext } from "react"
-import { useQuery } from "@apollo/client/index"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -61,7 +61,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function UserPosts () {
+export default function UserPosts() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -108,3 +108,5 @@ const userStickersQuery = graphql(
   }`,
   [UserStickersItemFragment],
 )
+
+export const meta = createUserTabMeta("スタンプ", "Stickers")

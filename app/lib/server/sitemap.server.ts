@@ -43,7 +43,8 @@ export function toUrlSetXml(urls: SitemapUrl[]): string {
     .map((url) => {
       const parts = [`<loc>${escapeXml(url.loc)}</loc>`]
       if (url.lastmod) parts.push(`<lastmod>${url.lastmod}</lastmod>`)
-      if (url.changefreq) parts.push(`<changefreq>${url.changefreq}</changefreq>`)
+      if (url.changefreq)
+        parts.push(`<changefreq>${url.changefreq}</changefreq>`)
       if (url.priority !== undefined) {
         parts.push(`<priority>${url.priority.toFixed(1)}</priority>`)
       }
@@ -94,6 +95,9 @@ export function xmlResponse(xml: string, maxAgeSeconds: number): Response {
   })
 }
 
+/** 2: 作品のサイトマップに投稿者のユーザーページを追加 */
+const SITEMAP_CACHE_VERSION = "2"
+
 /**
  * Workers のキャッシュ（caches.default）を使ってレスポンスを使い回す
  */
@@ -109,7 +113,10 @@ export async function withEdgeCache(
   if (!cacheStorage || !import.meta.env.PROD) {
     return create()
   }
-  const cacheKey = new Request(new URL(request.url).toString(), {
+  // 中身の形を変えたら版を上げる（古い形のキャッシュを使わないように）
+  const keyUrl = new URL(request.url)
+  keyUrl.searchParams.set("__v", SITEMAP_CACHE_VERSION)
+  const cacheKey = new Request(keyUrl.toString(), {
     method: "GET",
   })
   const cached = await cacheStorage.match(cacheKey)
@@ -183,6 +190,7 @@ type SitemapWork = {
   title: string
   createdAt: number
   largeThumbnailImageURL: string
+  user: { login: string } | null
 }
 
 const dayWorksQuery = `query SitemapDayWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
@@ -191,6 +199,9 @@ const dayWorksQuery = `query SitemapDayWorks($offset: Int!, $limit: Int!, $where
     title
     createdAt
     largeThumbnailImageURL
+    user {
+      login
+    }
   }
 }`
 
@@ -278,10 +289,10 @@ export async function fetchSitemapTagNames(): Promise<string[]> {
       recommendedTagsQuery,
       { limit: 5000, where: { isSensitive: false } },
     ),
-    graphqlRequest<{ hotTags: { name: string }[]; homeTags: { name: string }[] }>(
-      hotTagsQuery,
-      {},
-    ),
+    graphqlRequest<{
+      hotTags: { name: string }[]
+      homeTags: { name: string }[]
+    }>(hotTagsQuery, {}),
   ])
   const names = [
     ...(hot?.hotTags ?? []).map((tag) => tag.name),
@@ -323,4 +334,72 @@ export async function fetchUserModelsForSitemap(context: unknown) {
     if (!page.hasMore || page.models.length === 0) break
   }
   return models
+}
+
+const newPostedUsersQuery = `query SitemapNewPostedUsers($offset: Int!, $limit: Int!) {
+  newPostedUsers(offset: $offset, limit: $limit) {
+    login
+    worksCount
+  }
+}`
+
+const userRankingsQuery = `query SitemapUserRankings($offset: Int!, $limit: Int!, $where: UserRankingsWhereInput) {
+  userRankings(offset: $offset, limit: $limit, where: $where) {
+    user {
+      login
+      worksCount
+    }
+  }
+}`
+
+type SitemapUser = { login: string; worksCount: number }
+
+/**
+ * サイトマップに載せるユーザー（作品のある人）
+ * - 最近投稿した人（新しい順に最大 2,000 人）
+ * - ユーザーランキングの上位（いいね数・作品数・平均いいね・順位の各並びで最大 512 人）
+ */
+export async function fetchSitemapUsers(): Promise<SitemapUser[]> {
+  const requests: Array<() => Promise<SitemapUser[]>> = []
+  for (let offset = 0; offset < 2000; offset += PAGE_SIZE) {
+    requests.push(async () => {
+      const data = await graphqlRequest<{ newPostedUsers: SitemapUser[] }>(
+        newPostedUsersQuery,
+        { offset, limit: PAGE_SIZE },
+      )
+      return data?.newPostedUsers ?? []
+    })
+  }
+  for (const orderBy of ["LIKES_COUNT", "WORKS_COUNT", "AVG_LIKES", "RANK"]) {
+    for (let offset = 0; offset < 512; offset += PAGE_SIZE) {
+      requests.push(async () => {
+        const data = await graphqlRequest<{
+          userRankings: { user: SitemapUser | null }[]
+        }>(userRankingsQuery, {
+          offset,
+          limit: PAGE_SIZE,
+          where: { orderBy, sort: orderBy === "RANK" ? "ASC" : "DESC" },
+        })
+        return (data?.userRankings ?? [])
+          .map((item) => item.user)
+          .filter((user): user is SitemapUser => user !== null)
+      })
+    }
+  }
+
+  // API に負荷をかけすぎないよう 8 件ずつ
+  const users = new Map<string, SitemapUser>()
+  for (let index = 0; index < requests.length; index += 8) {
+    const pages = await Promise.all(
+      requests.slice(index, index + 8).map((request) => request()),
+    )
+    for (const page of pages) {
+      for (const user of page) {
+        if (user.login && user.worksCount > 0 && !users.has(user.login)) {
+          users.set(user.login, user)
+        }
+      }
+    }
+  }
+  return [...users.values()]
 }

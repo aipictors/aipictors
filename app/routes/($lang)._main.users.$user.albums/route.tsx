@@ -1,17 +1,18 @@
-import { loaderClient } from "~/lib/loader-client"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams, useRevalidator } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { PlusIcon } from "lucide-react"
 import { useContext } from "react"
+import { Button } from "~/components/ui/button"
+import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { loaderClient } from "~/lib/loader-client"
+import { createUserTabMeta } from "~/routes/($lang)._main.users.$user/user-tab-meta"
 import {
   UserAlbumList,
   UserAlbumListItemFragment,
 } from "~/routes/($lang)._main.users.$user.albums/components/user-album-list"
-import { config } from "~/config"
-import { AuthContext } from "~/contexts/auth-context"
 import { CreateAlbumDialog } from "~/routes/($lang).my._index/components/create-album-dialog"
-import { Button } from "~/components/ui/button"
-import { PlusIcon } from "lucide-react"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -52,14 +53,17 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function UserAlbums () {
+export default function UserAlbums() {
   const authContext = useContext(AuthContext)
   const params = useParams()
   const revalidator = useRevalidator()
   const data = useLoaderData<typeof loader>()
 
-  const ownerLogin = params.user ? decodeURIComponent(params.user) : data.ownerLogin
-  const isOwnAlbumsPage = authContext.isLoggedIn && authContext.login === ownerLogin
+  const ownerLogin = params.user
+    ? decodeURIComponent(params.user)
+    : data.ownerLogin
+  const isOwnAlbumsPage =
+    authContext.isLoggedIn && authContext.login === ownerLogin
 
   const albums = data.albums
 
@@ -104,3 +108,5 @@ const userIdQuery = graphql(
     }
   }`,
 )
+
+export const meta = createUserTabMeta("シリーズ", "Series")

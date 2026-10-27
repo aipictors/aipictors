@@ -1,8 +1,9 @@
-import { loaderClient } from "~/lib/loader-client"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config } from "~/config"
+import { loaderClient } from "~/lib/loader-client"
+import { createUserTabMeta } from "~/routes/($lang)._main.users.$user/user-tab-meta"
 import {
   UserBadgeListItemFragment,
   UserBadgesList,
@@ -44,7 +45,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function UserBadges () {
+export default function UserBadges() {
   const data = useLoaderData<typeof loader>()
 
   if (data.badges === null) {
@@ -74,3 +75,5 @@ const userIdQuery = graphql(
     }
   }`,
 )
+
+export const meta = createUserTabMeta("バッジ", "Badges")

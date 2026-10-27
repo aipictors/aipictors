@@ -44,7 +44,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import { Separator } from "~/components/ui/separator"
 import { Skeleton } from "~/components/ui/skeleton"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
@@ -60,10 +59,6 @@ import {
   HomeAwardWorkSection,
   type HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import {
-  HomeAwardWorksFragment,
-  HomeAwardWorksSection,
-} from "~/routes/($lang)._main._index/components/home-award-works"
 import {
   HomeDeferredSection,
   HomeWorkSectionPlaceholder,
@@ -816,13 +811,9 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     updateQueryParams(newSearchParams)
   }
 
-  const shouldLoadHomeSidebarQueries =
-    currentTab === "home" && typeof window !== "undefined"
-
-  const awardDateParts = data.awardDateText.split("/")
-  const awardYear = Number(awardDateParts[0] ?? "0")
-  const awardMonth = Number(awardDateParts[1] ?? "0")
-  const awardDay = Number(awardDateParts[2] ?? "0")
+  // 表示を引き継いだ（hydration）あとに取りに行く。typeof window で分けると、
+  // サーバーは何も出さずブラウザは読み込み中の枠を出すので食い違い（React #418）、ページ全体が作り直しになっていた
+  const shouldLoadHomeSidebarQueries = currentTab === "home" && isMounted
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {
     skip: !shouldLoadHomeSidebarQueries,
@@ -846,12 +837,6 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     {
       skip: !shouldLoadHomeSidebarQueries,
       fetchPolicy: "cache-first",
-      variables: {
-        awardDay,
-        awardMonth,
-        awardYear,
-        awardWorksLimit: config.query.homeWorkCount.award,
-      },
     },
   )
 
@@ -880,13 +865,6 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
       ? homeSidebarData.newComments
       : data.newComments
   ) as FragmentOf<typeof HomeNewCommentsFragment>[]
-  const sidebarWorkAwards = (
-    Array.isArray(homeSidebarData?.workAwards)
-      ? homeSidebarData.workAwards
-      : data.workAwards
-  ) as FragmentOf<
-    typeof HomeAwardWorksFragment | typeof HomeWorkAwardFragment
-  >[]
 
   // スクロール位置復元しない
   useScrollRestoration(isMounted)
@@ -957,7 +935,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     <>
       {/* ページの見出し（画面には出さず、検索エンジンと読み上げのために置く） */}
       <h1 className="sr-only">
-        {t("Aipictors（AIピクターズ）- AIイラスト・AI画像の投稿・生成サイト", "Aipictors - AI illustration & image posting and generation site")}
+        {t(
+          "Aipictors（AIピクターズ）- AIイラスト・AI画像の投稿・生成サイト",
+          "Aipictors - AI illustration & image posting and generation site",
+        )}
       </h1>
       {data.importantRelease && (
         <HomeImportantReleaseBanner release={data.importantRelease} />
@@ -1001,7 +982,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             )}
           </Suspense>
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-            <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_262px)]">
+            <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_278px)]">
               <HomeQuickPreviewBar
                 events={data.eventPreviews}
                 featuredReleases={data.featuredReleaseList}
@@ -1022,25 +1003,28 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                   }
                 />
               </HomeDeferredSection>
-              <HomeDeferredSection
-                fallback={
-                  <HomeWorkSectionPlaceholder
-                    title={t(
-                      "作品を選んで無料生成",
-                      "Generate from featured works",
-                    )}
-                  />
-                }
-              >
-                <HomeWorksGeneratedSection
-                  works={[]}
-                  dateText={data.awardDateText}
-                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                  onWorksLoaded={(works) =>
-                    updateHomeSectionWorks("generated", works)
+              {/* ログインしている人だけ（未ログインでは中身が取れず、見出しだけ出ていた） */}
+              {authContext.isLoggedIn && (
+                <HomeDeferredSection
+                  fallback={
+                    <HomeWorkSectionPlaceholder
+                      title={t(
+                        "作品を選んで無料生成",
+                        "Generate from featured works",
+                      )}
+                    />
                   }
-                />
-              </HomeDeferredSection>
+                >
+                  <HomeWorksGeneratedSection
+                    works={[]}
+                    dateText={data.awardDateText}
+                    onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                    onWorksLoaded={(works) =>
+                      updateHomeSectionWorks("generated", works)
+                    }
+                  />
+                </HomeDeferredSection>
+              )}
               <HomeDeferredSection
                 fallback={
                   <HomeWorkSectionPlaceholder
@@ -1075,7 +1059,6 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                   onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                 />
               </HomeDeferredSection>
-              <HomeSupportRankingSection />
               <HomeDeferredSection
                 fallback={
                   <HomeWorkSectionPlaceholder
@@ -1100,12 +1083,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 title={t("人気タグ", "Popular Tags")}
                 tags={data.recommendedTags}
               />
+              <HomeSupportRankingSection />
             </div>
-            <Separator
-              orientation="vertical"
-              className="hidden h-[100vh] w-[1px] md:block"
-            />
-            <div className="flex w-full max-w-80 flex-col space-y-4">
+            {/* 右カラム（スクロールしても見えるように固定） */}
+            <aside className="flex w-full flex-col space-y-4 md:sticky md:top-20 md:w-[262px] md:max-w-[262px] md:shrink-0 md:self-start">
               <div className="flex w-full flex-col space-y-4">
                 {!isSubscriptionUser &&
                   advertisements &&
@@ -1151,8 +1132,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 )}
                 {isHomeSidebarLoading &&
                   sidebarNewPostedUsers.length === 0 &&
-                  sidebarNewComments.length === 0 &&
-                  sidebarWorkAwards.length === 0 && (
+                  sidebarNewComments.length === 0 && (
                     <div className="space-y-3">
                       <Skeleton className="h-6 w-32" />
                       <Skeleton className="h-12 w-full" />
@@ -1167,30 +1147,29 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 {sidebarNewComments.length > 0 && (
                   <HomeNewCommentsSection comments={sidebarNewComments} />
                 )}
-                {sidebarWorkAwards.length > 0 && (
-                  <HomeAwardWorksSection works={sidebarWorkAwards} />
-                )}
               </div>
-            </div>
+            </aside>
           </div>
         </TabsContent>
         {/* ---------------------- タブ: 新着・人気 ---------------------- */}
         <TabsContent value="new" className="flex flex-col space-y-4">
           {/* 新着 or 人気 or 新規ユーザの切り替えボタン */}
-          <div className="flex flex-wrap gap-2">
+          <div className="inline-flex w-fit flex-wrap gap-0.5 rounded-full border bg-muted/40 p-0.5">
             <Button
-              variant={workView === "new" ? "default" : "outline"}
+              variant="ghost"
               onClick={() => handleWorkViewChange("new")}
+              data-active={workView === "new"}
               size="sm"
-              className="font-medium shadow-sm transition-shadow hover:shadow"
+              className="h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
             >
               {t("新着", "New")}
             </Button>
             <Button
-              variant={workView === "popular" ? "default" : "outline"}
+              variant="ghost"
               onClick={() => handleWorkViewChange("popular")}
+              data-active={workView === "popular"}
               size="sm"
-              className="font-medium shadow-sm transition-shadow hover:shadow"
+              className="h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
             >
               <div className="flex items-center space-x-1.5">
                 <span>{t("人気", "Popular")}</span>
@@ -1203,10 +1182,11 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               </div>
             </Button>
             <Button
-              variant={workView === "new-user" ? "default" : "outline"}
+              variant="ghost"
               onClick={() => handleWorkViewChange("new-user")}
+              data-active={workView === "new-user"}
               size="sm"
-              className="font-medium shadow-sm transition-shadow hover:shadow"
+              className="h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
             >
               <div className="flex items-center space-x-1.5">
                 <span className="hidden sm:inline">
@@ -1273,7 +1253,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                           >
                             {/* SSR 時も選択中の値を表示し、ハイドレーション後のレイアウトシフトを防ぐ */}
                             {workType
-                              ? toWorkTypeText({ type: workType, lang: location })
+                              ? toWorkTypeText({
+                                  type: workType,
+                                  lang: location,
+                                })
                               : t("種類", "Type")}
                           </SelectValue>
                         </SelectTrigger>
@@ -2029,24 +2012,7 @@ const query = graphql(
 )
 
 const homeSidebarQuery = graphql(
-  `query HomeSidebarQuery(
-    $awardYear: Int!
-    $awardMonth: Int!
-    $awardDay: Int!
-    $awardWorksLimit: Int!
-  ) {
-    workAwards(
-      offset: 0
-      limit: $awardWorksLimit
-      where: {
-        year: $awardYear
-        month: $awardMonth
-        day: $awardDay
-        isSensitive: false
-      }
-    ) {
-      ...HomeAwardWorks
-    }
+  `query HomeSidebarQuery {
     newPostedUsers: newPostedUsers(
       offset: 0
       limit: 8
@@ -2065,7 +2031,7 @@ const homeSidebarQuery = graphql(
       ...HomeNewComments
     }
   }`,
-  [HomeAwardWorksFragment, HomeNewPostedUsersFragment, HomeNewCommentsFragment],
+  [HomeNewPostedUsersFragment, HomeNewCommentsFragment],
 )
 
 const viewerCurrentPassQuery = graphql(`

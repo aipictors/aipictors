@@ -1,14 +1,14 @@
+import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { StickerCard } from "~/routes/($lang)._main.stickers._index/components/sticker-card"
-import { Link } from "@remix-run/react"
 
 type Props = {
   stickers: FragmentOf<typeof UserStickersItemFragment>[]
   page: number
 }
 
-export function UserStickerList (props: Props) {
+export function UserStickerList(props: Props) {
   const _t = useTranslation()
 
   return (

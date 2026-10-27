@@ -18,6 +18,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       { loc: `${SITE_URL}/sitemaps/pages.xml` },
       { loc: `${SITE_URL}/sitemaps/tags.xml` },
       { loc: `${SITE_URL}/sitemaps/models.xml` },
+      { loc: `${SITE_URL}/sitemaps/users.xml` },
       ...dates.map((date) => ({
         loc: `${SITE_URL}/sitemaps/works-${date}.xml`,
       })),
