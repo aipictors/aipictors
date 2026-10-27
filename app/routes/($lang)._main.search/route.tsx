@@ -21,6 +21,11 @@ import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import { cn } from "~/lib/utils"
+import {
+  getSearchDb,
+  searchWorkIdsByText,
+} from "~/lib/server/work-text-search.server"
+import { TEXT_SEARCH_COUNT_LIMIT } from "~/lib/work-text-search-constants"
 import { buildSearchPath } from "~/utils/search-route"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -29,6 +34,8 @@ type SearchStyleFilter = "all" | "ILLUSTRATION" | "REAL"
 type SearchPromptFilter = "all" | "with" | "without"
 
 const RESULTS_LIMIT = 30
+/** タイトル・説明の検索で開けるページの上限（0 始まり） */
+const TEXT_SEARCH_MAX_PAGE = 29
 const SIDEBAR_RANKING_LIMIT = 7
 
 const normalizeTagQuery = (value?: string | null) => {
@@ -209,7 +216,60 @@ export async function loader(props: LoaderFunctionArgs) {
         : Promise.resolve(null),
     ])
 
-  const works = worksResp?.data?.tagWorks ?? []
+  // タイトル・説明の部分一致（D1 の検索用データベース）
+  const searchDb = getSearchDb(props.context)
+  const requestedMode = url.searchParams.get("mode")
+  const textResult =
+    searchQuery && searchDb
+      ? await searchWorkIdsByText({
+          db: searchDb,
+          query: searchQuery,
+          rating,
+          offset:
+            requestedMode === "text"
+              ? Math.min(currentPage, TEXT_SEARCH_MAX_PAGE) * RESULTS_LIMIT
+              : 0,
+          limit: RESULTS_LIMIT,
+        }).catch((error) => {
+          console.error("text search failed", error)
+          return null
+        })
+      : null
+  const tagWorksCount =
+    worksCountResp?.data?.worksCount ??
+    worksCountResp?.data?.tagWorksCount ??
+    0
+  // 指定がなければ、タグの作品がないときだけタイトル・説明の結果を出す
+  const mode: "tag" | "text" =
+    textResult === null
+      ? "tag"
+      : requestedMode === "text" ||
+          (requestedMode !== "tag" && tagWorksCount === 0 && textResult.count > 0)
+        ? "text"
+        : "tag"
+
+  const textWorks =
+    mode === "text" && textResult && textResult.ids.length > 0
+      ? await loaderClient
+          .query({
+            query: searchTextWorksQuery,
+            variables: {
+              offset: 0,
+              limit: textResult.ids.length,
+              where: { ids: textResult.ids, ratings: [rating] },
+            },
+          })
+          .then((resp) => {
+            const byId = new Map(resp.data.works.map((work) => [work.id, work]))
+            return textResult.ids
+              .map((id) => byId.get(id))
+              .filter((work) => work !== undefined)
+          })
+          .catch(() => [])
+      : []
+
+  const works =
+    mode === "text" ? textWorks : (worksResp?.data?.tagWorks ?? [])
   const relatedTagCounts = new Map<string, number>()
   for (const work of works) {
     for (const name of new Set(work.tagNames ?? [])) {
@@ -242,10 +302,10 @@ export async function loader(props: LoaderFunctionArgs) {
     rankingWorks: rankingResp.data?.works ?? [],
     searchQuery,
     works,
-    worksCount:
-      worksCountResp?.data?.worksCount ??
-      worksCountResp?.data?.tagWorksCount ??
-      0,
+    mode,
+    tagWorksCount,
+    textWorksCount: textResult?.count ?? null,
+    worksCount: mode === "text" ? (textResult?.count ?? 0) : tagWorksCount,
   }
 }
 
@@ -311,9 +371,18 @@ export default function SearchRoute() {
   const basePath = location.pathname.startsWith("/r/") ? "/r/search" : "/search"
 
   const buildFilterParams = (
-    next?: Partial<typeof data.filters> & { page?: number },
+    next?: Partial<typeof data.filters> & {
+      page?: number
+      mode?: "tag" | "text" | null
+    },
   ) => {
     const params = new URLSearchParams()
+    const mode = next?.mode === undefined ? data.mode : next.mode
+    if (mode === "text") {
+      params.set("mode", "text")
+    } else if (mode === "tag" && next?.mode === "tag") {
+      params.set("mode", "tag")
+    }
     const rating = next?.rating ?? data.filters.rating
     const style = next?.style ?? data.filters.style
     const prompt = next?.prompt ?? data.filters.prompt
@@ -341,10 +410,18 @@ export default function SearchRoute() {
 
   const navigateToSearch = (
     tagName?: string | null,
-    next?: Partial<typeof data.filters> & { page?: number },
+    next?: Partial<typeof data.filters> & {
+      page?: number
+      mode?: "tag" | "text" | null
+    },
   ) => {
     const normalizedQuery = normalizeTagQuery(tagName)
-    const nextParams = buildFilterParams(next)
+    // 新しい言葉で検索するときは、タグ・タイトルのどちらを出すか自動で決める
+    const nextParams = buildFilterParams(
+      normalizedQuery !== data.searchQuery && next?.mode === undefined
+        ? { ...next, mode: null }
+        : next,
+    )
 
     executeSearchWithRateLimit(() => {
       navigate(buildSearchPath(normalizedQuery, nextParams, { basePath }))
@@ -387,7 +464,7 @@ export default function SearchRoute() {
             <Input
               value={searchText}
               onChange={(event) => setSearchText(event.target.value)}
-              placeholder={t("タグ名を入力", "Enter tag name")}
+              placeholder={t("タグ・タイトル・説明で検索", "Search tags, titles and descriptions")}
               className="h-12 border-0 text-base shadow-none focus-visible:ring-0"
             />
             <Button
@@ -408,12 +485,18 @@ export default function SearchRoute() {
                 <h1 className="break-words font-bold text-2xl leading-tight md:text-3xl">
                   {data.searchQuery
                     ? `#${data.searchQuery}`
-                    : t("タグ検索", "Tag Search")}
+                    : t("作品検索", "Search")}
                 </h1>
                 <p className="mt-3 text-muted-foreground text-sm md:text-base">
                   {data.searchQuery
                     ? t(
-                        `${data.worksCount.toLocaleString()}件の作品`,
+                        data.mode === "text"
+                          ? `タイトル・説明に「${data.searchQuery}」を含む作品 ${
+                              data.worksCount >= TEXT_SEARCH_COUNT_LIMIT
+                                ? `${TEXT_SEARCH_COUNT_LIMIT.toLocaleString()}件以上`
+                                : `${data.worksCount.toLocaleString()}件`
+                            }`
+                          : `タグ「${data.searchQuery}」の作品 ${data.worksCount.toLocaleString()}件`,
                         `${data.worksCount.toLocaleString()} works`,
                       )
                     : t(
@@ -450,8 +533,57 @@ export default function SearchRoute() {
               )}
             </div>
 
+            {data.searchQuery && data.textWorksCount !== null && (
+              <div
+                role="tablist"
+                aria-label={t("検索の種類", "Search type")}
+                className="mb-5 flex gap-1 rounded-full bg-muted p-1 sm:inline-flex"
+              >
+                {(
+                  [
+                    [
+                      "tag",
+                      t("タグが一致", "Tag"),
+                      data.tagWorksCount.toLocaleString(),
+                    ],
+                    [
+                      "text",
+                      t("タイトル・説明に含む", "Title & description"),
+                      data.textWorksCount >= TEXT_SEARCH_COUNT_LIMIT
+                        ? `${TEXT_SEARCH_COUNT_LIMIT.toLocaleString()}+`
+                        : data.textWorksCount.toLocaleString(),
+                    ],
+                  ] as const
+                ).map(([mode, label, count]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    role="tab"
+                    aria-selected={data.mode === mode}
+                    onClick={() => navigateToSearch(data.searchQuery, { mode })}
+                    className={cn(
+                      "flex-1 whitespace-nowrap rounded-full px-4 py-2 font-medium text-sm transition-colors sm:flex-none",
+                      data.mode === mode
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {label}
+                    <span className="ml-1.5 text-muted-foreground text-xs tabular-nums">
+                      {count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="mb-6 flex flex-col gap-5 md:mb-8">
-              <div className="flex flex-wrap items-center gap-6 pb-1">
+              <div
+                className={cn(
+                  "flex flex-wrap items-center gap-6 pb-1",
+                  data.mode === "text" && "hidden",
+                )}
+              >
                 {(
                   [
                     ["all", t("すべて", "All")],
@@ -493,7 +625,12 @@ export default function SearchRoute() {
                   ))}
                 </div>
 
-                <div className="order-2 flex flex-wrap gap-0 md:order-1">
+                <div
+                  className={cn(
+                    "order-2 flex flex-wrap gap-0 md:order-1",
+                    data.mode === "text" && "invisible",
+                  )}
+                >
                   {(
                     [
                       ["all", t("すべて", "All")],
@@ -605,7 +742,14 @@ export default function SearchRoute() {
                   {data.worksCount > RESULTS_LIMIT && (
                     <div className="mt-10 flex justify-center">
                       <ResponsivePagination
-                        maxCount={data.worksCount}
+                        maxCount={
+                          data.mode === "text"
+                            ? Math.min(
+                                data.worksCount,
+                                (TEXT_SEARCH_MAX_PAGE + 1) * RESULTS_LIMIT,
+                              )
+                            : data.worksCount
+                        }
                         perPage={RESULTS_LIMIT}
                         currentPage={data.currentPage}
                         onPageChange={(page) => {
@@ -727,11 +871,11 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   const searchQuery = props.data?.searchQuery ?? ""
 
   const title = searchQuery
-    ? `#${searchQuery} の作品検索 - Aipictors`
-    : "タグ検索 - Aipictors"
+    ? `「${searchQuery}」の検索結果 - Aipictors`
+    : "作品検索（タグ・タイトル・説明） - Aipictors"
   const description = searchQuery
     ? `#${searchQuery} のタグで投稿された作品を一覧表示します。`
-    : "タグで作品を検索できます。人気タグやランキングもあわせて確認できます。"
+    : "AIイラストをタグ・タイトル・説明から検索できます。人気のタグやランキングもあわせて確認できます。"
 
   return [
     { title },
@@ -761,6 +905,16 @@ const rankingWorksQuery = graphql(
 const searchTagWorksQuery = graphql(
   `query SearchTagWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     tagWorks(offset: $offset, limit: $limit, where: $where) {
+      ...PhotoAlbumWork
+      tagNames
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+const searchTextWorksQuery = graphql(
+  `query SearchTextWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
       tagNames
     }

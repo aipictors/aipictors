@@ -18,3 +18,10 @@ AIPICTORS_API_BASE_URL = "https://backend.aipictors.com"
 
 [observability]
 enabled = true
+
+# 作品のタイトル・説明の部分一致検索（app/lib/server/work-text-search.server.ts）
+# 中身は aipic サーバーの cron（scripts/search-index/sync-works.sh）で MySQL から同期する
+[[d1_databases]]
+binding = "SEARCH_DB"
+database_name = "aipictors-search"
+database_id = "eb97a2cf-7dab-4202-b7c7-a2b87089758d"

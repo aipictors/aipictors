@@ -1,171 +1,118 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
-import { loaderClient } from "~/lib/loader-client"
 import { graphql } from "gql.tada"
-import { TagsHeader } from "~/routes/($lang)._main.tags._index/components/tags-header"
-import { TrendingTagsSection } from "~/routes/($lang)._main.tags._index/components/trending-tags-section"
-import { TagCategoriesSection } from "~/routes/($lang)._main.tags._index/components/tag-categories-section"
-import { TagCloudSection } from "~/routes/($lang)._main.tags._index/components/tag-cloud-section"
-import { PopularTagsSection } from "~/routes/($lang)._main.tags._index/components/popular-tags-section"
-import { TagSearchSection } from "~/routes/($lang)._main.tags._index/components/tag-search-section-new"
-import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import type { RecommendedTag } from "~/routes/($lang)._main.tags._index/types/tag"
-import type { MetaFunction } from "@remix-run/cloudflare"
 import { config, META } from "~/config"
+import { loaderClient } from "~/lib/loader-client"
+import { TagsIndexView } from "~/routes/($lang)._main.tags._index/components/tags-index-view"
 import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const isSensitive = url.pathname.includes("/r/tags")
-  const searchTerm = url.searchParams.get("search")
 
-  // 各セクション用に異なるタグセットを取得
-  const [trendingResult, cloudResult, categoriesResult, popularResult] =
-    await Promise.all([
-      // トレンドタグ用
-      loaderClient.query({
-        query: tagsQuery,
-        variables: {
-          limit: 12,
-          where: { isSensitive },
-        },
-      }),
-      // タグクラウド用
-      loaderClient.query({
-        query: tagsQuery,
-        variables: {
-          limit: 12,
-          where: { isSensitive },
-        },
-      }),
-      // カテゴリ別タグ用
-      loaderClient.query({
-        query: tagsQuery,
-        variables: {
-          limit: 20,
-          where: { isSensitive },
-        },
-      }),
-      // 人気タグ用
-      loaderClient.query({
-        query: tagsQuery,
-        variables: {
-          limit: 15,
-          where: { isSensitive },
-        },
-      }),
-    ])
+  const [hotResp, popularResp] = await Promise.all([
+    loaderClient.query({ query: hotTagsQuery, variables: {} }),
+    loaderClient.query({
+      query: popularTagsQuery,
+      variables: { limit: 48, where: { isSensitive } },
+    }),
+  ])
 
-  // 検索結果がある場合は作品データも取得
-  let searchWorks = null
-  if (searchTerm) {
-    const searchResult = await loaderClient.query({
-      query: searchWorksQuery,
-      variables: {
-        offset: 0,
-        limit: 32,
-        where: {
-          search: searchTerm,
-          ...(isSensitive && {
-            ratings: ["R18", "R18G"],
-            isSensitive: true,
-          }),
-        },
-      },
-    })
-    searchWorks = searchResult.data.works
-  }
+  const hotTags = (
+    isSensitive ? hotResp.data.hotSensitiveTags : hotResp.data.hotTags
+  )
+    .map((tag) => ({
+      name: tag.name,
+      worksCount: tag.worksCount,
+      thumbnailUrl: tag.firstWork?.smallThumbnailImageURL ?? null,
+    }))
+    .slice(0, 12)
 
-  return json({
-    trendingTags: trendingResult.data.recommendedTags,
-    cloudTags: cloudResult.data.recommendedTags,
-    categoryTags: categoriesResult.data.recommendedTags,
-    popularTags: popularResult.data.recommendedTags,
-    searchWorks,
-    searchTerm,
-    isSensitive,
-  })
+  const hotNames = new Set(hotTags.map((tag) => tag.name))
+  const popularTags = popularResp.data.recommendedTags
+    .filter((tag) => !hotNames.has(tag.tagName))
+    .map((tag) => ({ name: tag.tagName, thumbnailUrl: tag.thumbnailUrl }))
+
+  const usedNames = new Set([
+    ...hotNames,
+    ...popularTags.map((tag) => tag.name),
+  ])
+  const commonTags = isSensitive
+    ? []
+    : hotResp.data.homeTags
+        .map((tag) => tag.name)
+        .filter((name) => !usedNames.has(name))
+
+  return { isSensitive, hotTags, popularTags, commonTags }
 }
 
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": "public, max-age=0, s-maxage=300, stale-while-revalidate=600",
+})
+
 export const meta: MetaFunction<typeof loader> = (props) => {
-  const lang = props.params.lang ?? "ja"
   const isSensitive = props.data?.isSensitive ?? false
-  const pageUrl = `${config.siteURL}/${lang}${isSensitive ? "/r/tags" : "/tags"}`
-
-  const title = props.params.lang === "en" ? "Tags" : "タグ一覧"
-
-  const description =
-    props.params.lang === "en"
-      ? "Explore trending and popular tags to discover AI artworks."
-      : "トレンド・人気タグからAIイラストの作品を探せます。"
-
-  const thumbnailUrl =
-    props.data?.trendingTags?.[0]?.thumbnailUrl ||
-    props.data?.popularTags?.[0]?.thumbnailUrl ||
-    ""
-
+  const sample = [
+    ...(props.data?.hotTags ?? []).map((tag) => tag.name),
+    ...(props.data?.popularTags ?? []).map((tag) => tag.name),
+  ]
+    .slice(0, 6)
+    .join("・")
   return createMeta(
-    META.TAGS,
+    { ...META.TAGS, isIndex: !isSensitive },
     {
-      title,
-      enTitle: title,
-      description,
-      enDescription: description,
-      url: thumbnailUrl,
-      pageUrl,
+      title: isSensitive ? "センシティブなタグ一覧" : "タグ一覧・人気のタグ",
+      enTitle: isSensitive ? "Sensitive tags" : "Tags",
+      description: `AIイラストを人気のタグ・いま増えているタグから探せます。${
+        sample ? `${sample}など、` : ""
+      }タグごとにAIイラスト・AI画像の一覧を見られます。`,
+      enDescription:
+        "Browse AI illustrations by popular and trending tags on Aipictors.",
+      url:
+        props.data?.hotTags?.[0]?.thumbnailUrl ??
+        props.data?.popularTags?.[0]?.thumbnailUrl ??
+        config.defaultOgpImageUrl,
     },
     props.params.lang,
   )
 }
 
-export default function Tags () {
+export default function Tags() {
   const data = useLoaderData<typeof loader>()
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto space-y-12 px-4 py-8">
-        {/* ヘッダーセクション */}
-        <TagsHeader />
-
-        {/* 検索セクション */}
-        <TagSearchSection
-          isSensitive={data.isSensitive}
-          searchWorks={data.searchWorks}
-          searchTerm={data.searchTerm}
-        />
-
-        {/* トレンドタグセクション */}
-        <TrendingTagsSection tags={data.trendingTags as RecommendedTag[]} />
-
-        {/* タグクラウドセクション */}
-        <TagCloudSection tags={data.cloudTags as RecommendedTag[]} />
-
-        {/* カテゴリ別タグセクション */}
-        <TagCategoriesSection tags={data.categoryTags as RecommendedTag[]} />
-
-        {/* 人気タグセクション */}
-        <PopularTagsSection tags={data.popularTags as RecommendedTag[]} />
-      </div>
-    </div>
-  )
+  return <TagsIndexView {...data} />
 }
 
-const tagsQuery = graphql(`
-  query TagsPage($limit: Int!, $where: RecommendedTagsWhereInput!) {
+const hotTagsQuery = graphql(`
+  query TagsIndexHotTags {
+    hotTags {
+      name
+      worksCount
+      firstWork {
+        smallThumbnailImageURL
+      }
+    }
+    hotSensitiveTags {
+      name
+      worksCount
+      firstWork {
+        smallThumbnailImageURL
+      }
+    }
+    homeTags {
+      name
+    }
+  }
+`)
+
+const popularTagsQuery = graphql(`
+  query TagsIndexPopularTags($limit: Int!, $where: RecommendedTagsWhereInput!) {
     recommendedTags(limit: $limit, where: $where) {
       tagName
       thumbnailUrl
     }
   }
 `)
-
-const searchWorksQuery = graphql(
-  `
-  query SearchWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PhotoAlbumWork
-    }
-  }
-`,
-  [PhotoAlbumWorkFragment],
-)
