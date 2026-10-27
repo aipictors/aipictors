@@ -16,6 +16,10 @@ type Props = {
   shouldMaskSensitiveWorks?: boolean
   /** 先頭から何件の画像を優先して読み込むか（LCP 対策） */
   priorityCount?: number
+  /**
+   * スマホ用の一覧だけを出す（親が md:hidden のとき。PC 用の一覧は見えないのに DOM・画像の読み込み・hydration の負担になる）
+   */
+  isMobileOnly?: boolean
 }
 
 const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
@@ -25,7 +29,7 @@ const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
 /**
  * クロップ済み作品一覧
  */
-export function HomeCroppedWorks (props: Props) {
+export function HomeCroppedWorks(props: Props) {
   const t = useTranslation()
 
   if (!props.works || props.works.length === 0) {
@@ -34,68 +38,70 @@ export function HomeCroppedWorks (props: Props) {
 
   return (
     <>
-      <section className="hidden grid-cols-2 gap-4 md:grid md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-        {props.works
-          .filter(
-            (work, index, self) =>
-              self.findIndex((w) => w.id === work.id) === index,
-          )
-          .map((work, index) => (
-            <div className="flex flex-col space-y-2" key={work.id}>
-              <Link to={`/posts/${work.id}`} className="group relative">
-                <CroppedWorkSquare
-                  isPriority={index < (props.priorityCount ?? 0)}
-                  title={work.title}
-                  isInsideInteractive={true}
-                  workId={work.id}
-                  imageUrl={work.smallThumbnailImageURL}
-                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                  size="lg"
-                  imageWidth={work.smallThumbnailImageWidth}
-                  imageHeight={work.smallThumbnailImageHeight}
-                  subWorksCount={work.subWorksCount}
-                  commentsCount={work.commentsCount}
-                  isPromptPublic={work.promptAccessType === "PUBLIC"}
-                  hasVideoUrl={Boolean(work.url)}
-                  isGeneration={work.isGeneration}
-                  hasReferenceButton={props.hasReferenceButton}
-                  shouldMaskSensitive={
-                    props.shouldMaskSensitiveWorks === true &&
-                    isSensitiveWork(work)
-                  }
-                />
-                <div className="absolute right-2 bottom-2 z-10">
-                  <LikeButton
-                    size={56}
-                    targetWorkId={work.id}
-                    targetWorkOwnerUserId={work.user?.id ?? ""}
-                    defaultLiked={work.isLiked}
-                    defaultLikedCount={0}
-                    isBackgroundNone={true}
-                    strokeWidth={2}
-                    isParticle={true}
+      {!props.isMobileOnly && (
+        <section className="hidden grid-cols-2 gap-4 md:grid md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {props.works
+            .filter(
+              (work, index, self) =>
+                self.findIndex((w) => w.id === work.id) === index,
+            )
+            .map((work, index) => (
+              <div className="flex flex-col space-y-2" key={work.id}>
+                <Link to={`/posts/${work.id}`} className="group relative">
+                  <CroppedWorkSquare
+                    isPriority={index < (props.priorityCount ?? 0)}
+                    title={work.title}
+                    isInsideInteractive={true}
+                    workId={work.id}
+                    imageUrl={work.smallThumbnailImageURL}
+                    thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                    size="lg"
+                    imageWidth={work.smallThumbnailImageWidth}
+                    imageHeight={work.smallThumbnailImageHeight}
+                    subWorksCount={work.subWorksCount}
+                    commentsCount={work.commentsCount}
+                    isPromptPublic={work.promptAccessType === "PUBLIC"}
+                    hasVideoUrl={Boolean(work.url)}
+                    isGeneration={work.isGeneration}
+                    hasReferenceButton={props.hasReferenceButton}
+                    shouldMaskSensitive={
+                      props.shouldMaskSensitiveWorks === true &&
+                      isSensitiveWork(work)
+                    }
                   />
-                </div>
-              </Link>
-              <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                {t(
-                  work.title,
-                  work.enTitle.length > 0 ? work.enTitle : work.title,
+                  <div className="absolute right-2 bottom-2 z-10">
+                    <LikeButton
+                      size={56}
+                      targetWorkId={work.id}
+                      targetWorkOwnerUserId={work.user?.id ?? ""}
+                      defaultLiked={work.isLiked}
+                      defaultLikedCount={0}
+                      isBackgroundNone={true}
+                      strokeWidth={2}
+                      isParticle={true}
+                    />
+                  </div>
+                </Link>
+                <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
+                  {t(
+                    work.title,
+                    work.enTitle.length > 0 ? work.enTitle : work.title,
+                  )}
+                </p>
+                {work.user && (
+                  <UserNameBadge
+                    userId={work.user.id}
+                    frame={work.user.avatarFrame}
+                    userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                    name={work.user.name}
+                    width={"lg"}
+                    likesCount={work.likesCount}
+                  />
                 )}
-              </p>
-              {work.user && (
-                <UserNameBadge
-                  userId={work.user.id}
-                  frame={work.user.avatarFrame}
-                  userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-                  name={work.user.name}
-                  width={"lg"}
-                  likesCount={work.likesCount}
-                />
-              )}
-            </div>
-          ))}
-      </section>
+              </div>
+            ))}
+        </section>
+      )}
       <section className="safari-work-grid grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {props.works
           .filter(

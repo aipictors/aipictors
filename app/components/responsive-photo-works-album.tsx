@@ -355,6 +355,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
         <HomeCroppedWorks
           works={props.works}
           priorityCount={props.priorityCount}
+          isMobileOnly={true}
           isShowProfile={true}
           hasReferenceButton={false}
           onSelect={props.onSelect}
