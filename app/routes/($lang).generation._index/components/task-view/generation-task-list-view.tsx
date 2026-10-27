@@ -227,13 +227,15 @@ export function GenerationTaskListView (props: Props) {
    * 履歴一覧を更新する
    */
   const onRefresh = async () => {
-    await taskRefetch()
-    await resultRefetch()
+    await Promise.all([taskRefetch(), resultRefetch()])
   }
 
   const refreshAndMaybeStop = useCallback(async () => {
-    const taskResult = await taskRefetch()
-    const resultResult = await resultRefetch()
+    // 生成中の一覧と結果の一覧は同時に取る（順番に取ると待ち時間が倍になる）
+    const [taskResult, resultResult] = await Promise.all([
+      taskRefetch(),
+      resultRefetch(),
+    ])
 
     const latestTasksCount =
       taskResult.data?.viewer?.imageGenerationTasks?.length ?? 0
@@ -298,12 +300,13 @@ export function GenerationTaskListView (props: Props) {
         }, 2000)
       }
 
-      // 以降は5秒間隔で最新一覧を追い続ける（生成中/予約中がなくなったら停止）
+      // 以降は一定間隔で最新一覧を追い続ける（生成中/予約中がなくなったら停止）。
+      // 生成の完了は途中経過の確認（generation:task-completed）ですぐ分かるので、ここは保険の間隔
       autoRefreshTimerRef.current = setInterval(() => {
         if (!isAutoRefreshingRef.current) return
         refreshAndMaybeStop()
-      }, 5000)
-    }, 1000)
+      }, 4000)
+    }, 300)
   }, [
     refreshAndMaybeStop,
     stopAutoRefresh,
@@ -320,6 +323,26 @@ export function GenerationTaskListView (props: Props) {
       window.removeEventListener("generation:task-requested", onRequested)
     }
   }, [startAutoRefresh])
+
+  useEffect(() => {
+    // GPU での生成が終わったら、保存が終わるころに一覧を取り直す
+    if (typeof window === "undefined") return
+    const timers: ReturnType<typeof setTimeout>[] = []
+    const onCompleted = () => {
+      for (const delay of [800, 2500, 5000]) {
+        timers.push(
+          setTimeout(() => {
+            refreshAndMaybeStop()
+          }, delay),
+        )
+      }
+    }
+    window.addEventListener("generation:task-completed", onCompleted)
+    return () => {
+      window.removeEventListener("generation:task-completed", onCompleted)
+      for (const timer of timers) clearTimeout(timer)
+    }
+  }, [refreshAndMaybeStop])
 
   useEffect(() => {
     previousResultCountRef.current =

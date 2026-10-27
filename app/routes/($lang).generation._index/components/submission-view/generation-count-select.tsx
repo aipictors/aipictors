@@ -23,16 +23,15 @@ export function GenerationCountSelect (props: Props) {
       }}
     >
       <SelectTrigger className="mr-2 w-24">
-        <SelectValue placeholder={"枚数"} />
+        <SelectValue placeholder={"回数"} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>{"枚数変更"}</SelectLabel>
+          <SelectLabel>{"生成回数"}</SelectLabel>
           <SelectItem value="1">{"1"}</SelectItem>
-          {props.pass === "STANDARD" ||
-            (props.pass === "PREMIUM" && (
-              <SelectItem value="2">{"2"}</SelectItem>
-            ))}
+          {(props.pass === "STANDARD" || props.pass === "PREMIUM") && (
+            <SelectItem value="2">{"2"}</SelectItem>
+          )}
           {props.pass === "PREMIUM" && <SelectItem value="3">{"3"}</SelectItem>}
         </SelectGroup>
       </SelectContent>

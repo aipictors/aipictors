@@ -318,6 +318,8 @@ export function GenerationTaskEditableCard (props: Props) {
         imageGenerationWaitCount={
           data.userStatus?.imageGenerationWaitCount ?? 0
         }
+        taskNanoid={props.taskNanoid}
+        imageCount={"count" in props.task ? (props.task.count ?? 1) : 1}
       />
     )
   }
@@ -527,6 +529,7 @@ export const EditableGenerationResultCardTaskFragment = graphql(
   `fragment EditableGenerationResultCardTask on ImageGenerationTaskNode @_unmask {
     id
     nanoid
+    count
     status
     imageUrl
     thumbnailUrl

@@ -505,7 +505,7 @@ export function GenerationSubmissionView (props: Props) {
         message: "Blocked: multi-count requires STANDARD+",
         details: { count: context.config.generationCount },
       })
-      toast("STANDARD以上のプランで2枚以上を同時指定可能です。")
+      toast("STANDARD以上のプランで生成回数をまとめて指定できます。")
       return
     }
 
@@ -835,16 +835,50 @@ export function GenerationSubmissionView (props: Props) {
       return imageEditGenerationCoinCost
     }
 
+    // 高解像度は 1 枚 3 倍（GPU 時間が約 3 倍かかるため）
     const multiplier =
       context.config.upscaleSize !== null && context.config.upscaleSize > 1
-        ? 2
+        ? 3
         : 1
 
     return standardImageGenerationCoinCost * multiplier
   })()
 
+  /**
+   * 1 回の生成で作る枚数（サーバーの決め方と同じ）
+   * 無料 2 枚・ライト以上 4 枚。高解像度・画像から生成・ControlNet・Flux・Gemini は 1 枚
+   */
+  const imagesPerRequest = (() => {
+    const selectedModel = context.imageModels.find((model) => {
+      return model.id === context.config.modelId
+    })
+    const modelKey = (
+      selectedModel?.name ??
+      selectedModel?.id ??
+      context.config.modelId ??
+      ""
+    ).toLowerCase()
+    if (
+      modelKey.startsWith("flux") ||
+      modelKey.includes("gemini") ||
+      context.config.modelType === "GEMINI" ||
+      context.config.modelType === "SD5" ||
+      context.config.modelType === "FLUX"
+    ) {
+      return 1
+    }
+    if (selectedGenerationType !== "TEXT_TO_IMAGE") return 1
+    if (context.config.upscaleSize !== null && context.config.upscaleSize > 1) {
+      return 1
+    }
+    if (context.config.controlNetImageBase64 !== null) return 1
+    return isLiteOrStandardOrPremium ? 4 : 2
+  })()
+
   const requestCoinCost =
-    selectedModelCoinCost * Math.max(1, context.config.generationCount)
+    selectedModelCoinCost *
+    imagesPerRequest *
+    Math.max(1, context.config.generationCount)
 
   const isCoinSummaryLoading = authContext.isLoggedIn && coinSummary === null
   const ownedCoinCount = coinSummary?.totalBalance ?? 0
@@ -1188,6 +1222,7 @@ export function GenerationSubmissionView (props: Props) {
             }
             isCoinSummaryLoading={isCoinSummaryLoading}
             requestCoinCost={requestCoinCost}
+            imagesPerRequest={imagesPerRequest}
             ownedCoinCount={ownedCoinCount}
             freeCoinBalance={coinSummary?.freeBalance ?? 0}
             premiumCoinBalance={coinSummary?.premiumBalance ?? 0}

@@ -31,6 +31,8 @@ import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
+  /** 1 回の生成で作る枚数 */
+  imagesPerRequest?: number
   isCreatingTask: boolean
   inProgressImageGenerationTasksCount: number
   inProgressImageGenerationReservedTasksCount: number
@@ -122,6 +124,20 @@ export function GenerationSubmitOperationParts (props: Props) {
     props.inProgressImageGenerationTasksCount +
     props.inProgressImageGenerationReservedTasksCount
 
+  /**
+   * 1 回の生成で使う「通常 1 枚分」の数（高解像度は 3 枚分）
+   */
+  const requestImageUnits =
+    (props.imagesPerRequest ?? 1) * (context.config.upscaleSize === 2 ? 3 : 1)
+
+  /**
+   * ボタンの文言に 1 回で作る枚数を添える（例: 生成 ×4枚）
+   */
+  const withImageCount = (label: string) => {
+    const count = props.imagesPerRequest ?? 1
+    return count > 1 ? t(`${label} ×${count}枚`, `${label} ×${count}`) : label
+  }
+
   return (
     <>
       {authContext.isLoggedIn && (
@@ -172,7 +188,7 @@ export function GenerationSubmitOperationParts (props: Props) {
                   onChange={context.changeGenerationCount}
                   count={context.config.generationCount}
                 />
-                {t("枚", "pieces")}
+                {t("回", "times")}
                 <Button
                   className="mr-2"
                   size={"icon"}
@@ -190,7 +206,7 @@ export function GenerationSubmitOperationParts (props: Props) {
               onChange={context.changeGenerationCount}
               count={context.config.generationCount}
             />
-            <div className="mr-2">{t("枚", "pieces")}</div>
+            <div className="mr-2">{t("回", "times")}</div>
           </div>
         </div>
         {/* 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示 */}
@@ -214,7 +230,7 @@ export function GenerationSubmitOperationParts (props: Props) {
                   htmlFor="extras-mode"
                   className="block text-center text-xs"
                 >
-                  {t("2枚消費", "Consumes 2 pieces")}
+                  {t("1枚・コイン3倍", "1 image, 3x coins")}
                 </Label>
               </div>
             </div>
@@ -279,18 +295,20 @@ export function GenerationSubmitOperationParts (props: Props) {
               isCoinSummaryLoading={props.isCoinSummaryLoading}
               requestCoinCost={props.requestCoinCost}
               ownedCoinCount={props.ownedCoinCount}
-              buttonActionCaption={getSubmitButtonLabel(
-                !!context.config.i2iImageBase64,
-                context.config.promptText,
-                context.config.seed,
-                generatingCount,
+              buttonActionCaption={withImageCount(
+                getSubmitButtonLabel(
+                  !!context.config.i2iImageBase64,
+                  context.config.promptText,
+                  context.config.seed,
+                  generatingCount,
+                ),
               )}
             />
           )}
         {/* サブスク案内ダイアログありver（最後の1枚の生成時に案内する） */}
         {!isCurrentPremiumPlan() &&
           props.remainingImageGenerationTasksCount >
-            (context.config.upscaleSize === 2 ? 2 : 1) &&
+            requestImageUnits &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
               onClick={async () => {
@@ -301,18 +319,20 @@ export function GenerationSubmitOperationParts (props: Props) {
                   isCoinSummaryLoading={props.isCoinSummaryLoading}
               requestCoinCost={props.requestCoinCost}
               ownedCoinCount={props.ownedCoinCount}
-              buttonActionCaption={getSubmitButtonLabel(
-                !!context.config.i2iImageBase64,
-                context.config.promptText,
-                context.config.seed,
-                generatingCount,
+              buttonActionCaption={withImageCount(
+                getSubmitButtonLabel(
+                  !!context.config.i2iImageBase64,
+                  context.config.promptText,
+                  context.config.seed,
+                  generatingCount,
+                ),
               )}
             />
           )}
         {/* 通常の生成ボタン */}
         {!isCurrentPremiumPlan() &&
           props.remainingImageGenerationTasksCount <=
-            (context.config.upscaleSize === 2 ? 2 : 1) &&
+            requestImageUnits &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <Dialog>
               <DialogTrigger asChild>
@@ -338,7 +358,7 @@ export function GenerationSubmitOperationParts (props: Props) {
                         htmlFor="extras-mode"
                         className="block text-center text-xs"
                       >
-                        {t("2枚消費", "Consumes 2 pieces")}
+                        {t("1枚・コイン3倍", "1 image, 3x coins")}
                       </Label>
                     </div>
                   </div>
@@ -351,11 +371,13 @@ export function GenerationSubmitOperationParts (props: Props) {
                     isCoinSummaryLoading={props.isCoinSummaryLoading}
                     requestCoinCost={props.requestCoinCost}
                     ownedCoinCount={props.ownedCoinCount}
-                    buttonActionCaption={getSubmitButtonLabel(
-                      !!context.config.i2iImageBase64,
-                      context.config.promptText,
-                      context.config.seed,
-                      generatingCount,
+                    buttonActionCaption={withImageCount(
+                      getSubmitButtonLabel(
+                        !!context.config.i2iImageBase64,
+                        context.config.promptText,
+                        context.config.seed,
+                        generatingCount,
+                      ),
                     )}
                   />
                 </div>
