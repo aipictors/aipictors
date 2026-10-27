@@ -37,6 +37,18 @@ const geminiNanoBanana2CoinCost = 100
 const fluxSchnellCoinCost = 30
 const fluxProCoinCost = 50
 
+/**
+ * 生成画面のほかの部品に知らせるイベント（一覧の更新・送信中の仮カードなど）
+ */
+const dispatchGenerationEvent = (name: string, detail?: unknown) => {
+  if (typeof window === "undefined") return
+  try {
+    window.dispatchEvent(new CustomEvent(name, { detail }))
+  } catch {
+    // noop
+  }
+}
+
 const formatCoinAmount = (value: number) => {
   return value.toLocaleString()
 }
@@ -177,7 +189,6 @@ export function GenerationSubmissionView (props: Props) {
     createImageGenerationTaskMutation,
     {
       refetchQueries: [viewerCurrentPassQuery],
-      awaitRefetchQueries: true,
       onCompleted() {
         logInfo({
           source: "GenerationSubmit",
@@ -201,7 +212,6 @@ export function GenerationSubmissionView (props: Props) {
 
   const [createFluxTask] = useMutation(createFluxImageGenerationTaskMutation, {
     refetchQueries: [viewerCurrentPassQuery],
-    awaitRefetchQueries: true,
     onCompleted() {
       logInfo({
         source: "GenerationSubmit",
@@ -230,7 +240,6 @@ export function GenerationSubmissionView (props: Props) {
     }
   }>(createGeminiImageGenerationTaskMutation, {
     refetchQueries: [viewerCurrentPassQuery],
-    awaitRefetchQueries: true,
     onCompleted(data) {
       if (data?.createGeminiImageGenerationTask) {
         logInfo({
@@ -265,7 +274,6 @@ export function GenerationSubmissionView (props: Props) {
     createImageGenerationTaskReservedMutation,
     {
       refetchQueries: [viewerCurrentPassQuery],
-      awaitRefetchQueries: true,
       onCompleted() {
         logInfo({
           source: "GenerationSubmit",
@@ -1018,7 +1026,7 @@ export function GenerationSubmissionView (props: Props) {
           message: "Create reserved task",
           details: { index: i },
         })
-        createReservedTask({
+        return createReservedTask({
           variables: {
             input: {
               count: 1,
@@ -1058,7 +1066,7 @@ export function GenerationSubmissionView (props: Props) {
             message: "Create FLUX task",
             details: { index: i, promptLength: promptsTexts[i]?.length ?? 0 },
           })
-          createFluxTask({
+          return createFluxTask({
             variables: {
               input: {
                 count: 1,
@@ -1097,7 +1105,7 @@ export function GenerationSubmissionView (props: Props) {
               size: convertToGeminiImageSize(context.config.sizeType),
             },
           })
-          createGeminiTask({
+          return createGeminiTask({
             variables: {
               input: {
                 prompt: promptsTexts[i],
@@ -1125,7 +1133,7 @@ export function GenerationSubmissionView (props: Props) {
               hasI2i: i2iFileUrl !== "",
             },
           })
-          createTask({
+          return createTask({
             variables: {
               input: {
                 count: 1,
@@ -1164,17 +1172,28 @@ export function GenerationSubmissionView (props: Props) {
         }
       }
     })
-    // タスクの作成後も呼び出す必要がある
-    toast("タスク作成をリクエストしました", { position: "top-center" })
-    if (typeof window !== "undefined") {
-      try {
-        window.dispatchEvent(new CustomEvent("generation:task-requested"))
-      } catch {
-        // noop
-      }
-    }
+    // 送信中の仮カードを一覧に出す（サーバーの応答を待たずに反応を返す）
+    const requestKey = `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    const sendingCount = promises.filter((promise) => promise !== undefined)
+      .length
+    dispatchGenerationEvent("generation:task-sending", {
+      key: requestKey,
+      count: sendingCount,
+    })
+    dispatchGenerationEvent("generation:task-requested")
     logInfo({ source: "GenerationSubmit", message: "Requested task creations" })
-    await Promise.all(promises)
+    const results = await Promise.all(promises)
+    const createdCount = results.filter((result) => {
+      return result !== undefined && !result.errors && result.data
+    }).length
+    dispatchGenerationEvent("generation:task-sent", {
+      key: requestKey,
+      count: createdCount,
+    })
+    if (createdCount > 0) {
+      // 作成が終わった時点でもう一度一覧と残り枚数を取り直す
+      dispatchGenerationEvent("generation:task-requested")
+    }
     await loadCoinSummary().catch((error) => {
       if (error instanceof Error) {
         logWarn({

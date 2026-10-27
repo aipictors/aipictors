@@ -16,11 +16,13 @@ import {
   GenerationResultCardTaskFragment,
   GenerationTaskCard,
 } from "~/routes/($lang).generation._index/components/generation-task-card"
+import { PendingGenerationCard } from "~/routes/($lang).generation._index/components/pending-generation-card"
 import { PlanUpgradePrompt } from "~/routes/($lang).generation._index/components/plan-upgrade-prompt"
 import { MobilePullToRefresh } from "~/routes/($lang).generation._index/components/task-view/mobile-pull-to-refresh"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
+import { usePendingGenerationRequests } from "~/routes/($lang).generation._index/hooks/use-pending-generation-requests"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import { getMaxPagesByPlan } from "~/routes/($lang).generation._index/utils/get-max-pages-by-plan"
 
@@ -61,6 +63,28 @@ export function GenerationTaskList(props: Props) {
   })
 
   const tasks = props.tasks
+
+  /**
+   * 生成ボタンを押した直後の「送信中」の仮カード（1ページ目だけに出す）
+   */
+  const pendingRequests = usePendingGenerationRequests(
+    (tasks ?? []).filter((task) => {
+      return (
+        !task.imageUrl &&
+        (task.status === "PENDING" || task.status === "IN_PROGRESS")
+      )
+    }).length,
+  )
+
+  const pendingCards =
+    props.currentPage === 0
+      ? pendingRequests.flatMap((request) => {
+          return Array.from({ length: request.count }, (_, index) => ({
+            key: `${request.key}-${index}`,
+            isSent: request.isSent,
+          }))
+        })
+      : []
 
   if (tasks === undefined) {
     return null
@@ -234,6 +258,9 @@ export function GenerationTaskList(props: Props) {
         "grid-cols-10": props.thumbnailSize === 10,
       })}
     >
+      {pendingCards.map((card) => (
+        <PendingGenerationCard key={card.key} isSent={card.isSent} />
+      ))}
       {combinedTasks.map((task) => (
         <ErrorBoundary key={task.id} fallback={<ErrorResultCard />}>
           <Suspense fallback={<FallbackTaskCard />}>
