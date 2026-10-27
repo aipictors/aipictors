@@ -108,9 +108,10 @@ export function WorkMarkdownView (props: Props) {
           </div>
         </div>
       </div>
+      {/* 本文中の挿絵は長辺 400px までで表示し、クリックで原寸（保存は長辺 1600px）を開く */}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: 画像のクリックだけを拾う（キーボードでは各画像を開かない） */}
       <div
-        className="mt-4 rounded-lg bg-white p-4 dark:bg-zinc-900 [&_img]:h-auto [&_img]:max-w-full [&_img]:cursor-zoom-in"
+        className="mt-4 rounded-lg bg-white p-4 dark:bg-zinc-900 [&_img]:h-auto [&_img]:max-h-[400px] [&_img]:w-auto [&_img]:max-w-[min(400px,100%)] [&_img]:cursor-zoom-in [&_img]:object-contain"
         onClick={onClickContent}
       >
         <EditorContent editor={editor} />
@@ -118,7 +119,7 @@ export function WorkMarkdownView (props: Props) {
       {props.html && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: 画像のクリックだけを拾う
         <div
-          className="[&_img]:cursor-zoom-in"
+          className="[&_img]:h-auto [&_img]:max-h-[400px] [&_img]:w-auto [&_img]:max-w-[min(400px,100%)] [&_img]:cursor-zoom-in [&_img]:object-contain"
           onClick={onClickContent}
           // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
           dangerouslySetInnerHTML={{
