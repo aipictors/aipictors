@@ -19,19 +19,15 @@ type Props = {
   footer: React.ReactNode
   /**
    * PC の左カラム（プロンプトと設定をまとめたもの）。
-   * 指定すると PC では「左: 設定 / 右: 結果」の2カラムで表示する（プレビューは右カラム）
+   * 指定すると PC では「左: 設定 / 右: 結果」の2カラムで表示する（履歴詳細は右カラム）
    */
   settings?: React.ReactNode
 }
 
 /**
- * メイン領域にプレビューや詳細を出す状態（2カラムでは右カラムに表示する）
+ * メイン領域に履歴詳細を出す状態（2カラムでは右カラムに表示する）
  */
-const mainPreviewStates = [
-  "HISTORY_PREVIEW",
-  "HISTORY_VIEW_ON_MAIN_AND_HEADER",
-  "WORK_PREVIEW",
-]
+const mainPreviewStates = ["HISTORY_VIEW_ON_MAIN_AND_HEADER"]
 
 /**
  * 画像生成画面

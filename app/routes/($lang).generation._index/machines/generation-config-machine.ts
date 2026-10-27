@@ -39,12 +39,6 @@ export const generationConfigMachine = createMachine({
             return props.event.value
           }),
         },
-        OPEN_HISTORY_PREVIEW: {
-          target: "HISTORY_PREVIEW",
-          actions: assign((props) => {
-            return props.event.value
-          }),
-        },
         OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_VIEW_ON_MAIN_AND_HEADER",
         OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
         OPEN_FULL_HISTORY_LIST: "HISTORY_LIST_FULL",
@@ -53,28 +47,6 @@ export const generationConfigMachine = createMachine({
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
         OPEN_COIN_HISTORY: "COIN_HISTORY",
-      },
-    },
-
-    HISTORY_PREVIEW: {
-      description: "履歴プレビュー",
-
-      on: {
-        CLOSE: "PROMPT_VIEW",
-        OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_VIEW_ON_MAIN_AND_HEADER",
-        OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
-        OPEN_WORK_PREVIEW: "WORK_PREVIEW",
-        OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
-        OPEN_COMMUNICATION: "COMMUNICATION",
-        OPEN_LINKS: "LINKS",
-        OPEN_LOGS: "LOGS",
-        OPEN_COIN_HISTORY: "COIN_HISTORY",
-
-        UPDATE_CONFIG: {
-          actions: assign((props) => {
-            return props.event.value
-          }),
-        },
       },
     },
 
@@ -143,29 +115,12 @@ export const generationConfigMachine = createMachine({
       on: {
         CLOSE: "PROMPT_VIEW",
         CLOSE_PREVIEW: "PROMPT_VIEW",
-        OPEN_WORK_PREVIEW: "WORK_PREVIEW",
         OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
         OPEN_COIN_HISTORY: "COIN_HISTORY",
 
-        UPDATE_CONFIG: {
-          actions: assign((props) => {
-            return props.event.value
-          }),
-        },
-      },
-    },
-
-    WORK_PREVIEW: {
-      on: {
-        CLOSE: "WORKS_FROM_MODEL",
-        OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
-        OPEN_COMMUNICATION: "COMMUNICATION",
-        OPEN_LINKS: "LINKS",
-        OPEN_LOGS: "LOGS",
-        OPEN_COIN_HISTORY: "COIN_HISTORY",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -217,7 +172,6 @@ export const generationConfigMachine = createMachine({
       on: {
         CLOSE: "PROMPT_VIEW",
         CLOSE_PREVIEW: "PROMPT_VIEW",
-        OPEN_WORK_PREVIEW: "WORK_PREVIEW",
         OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
@@ -237,7 +191,6 @@ export const generationConfigMachine = createMachine({
       on: {
         CLOSE: "PROMPT_VIEW",
         CLOSE_PREVIEW: "PROMPT_VIEW",
-        OPEN_WORK_PREVIEW: "WORK_PREVIEW",
         OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
@@ -278,7 +231,6 @@ export const generationConfigMachine = createMachine({
         on: {
           CLOSE: "PROMPT_VIEW",
           CLOSE_PREVIEW: "PROMPT_VIEW",
-          OPEN_WORK_PREVIEW: "WORK_PREVIEW",
           OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
           OPEN_COMMUNICATION: "COMMUNICATION",
           OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",

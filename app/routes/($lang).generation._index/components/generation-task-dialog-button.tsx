@@ -63,7 +63,6 @@ export function GenerationTaskDialogButton (props: Props) {
           task={props.task}
           optionButtonSize={props.sizeType}
           isSelectDisabled={true}
-          isPreviewByHover={false}
           rating={props.task.rating ?? 0}
           isProtected={props.task.isProtected ?? false}
           onClick={onClickTask}

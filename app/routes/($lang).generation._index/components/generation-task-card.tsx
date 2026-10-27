@@ -24,7 +24,6 @@ type Props = {
   sizeType: number
   taskContentPositionType?: TaskContentPositionType
   isDialog: boolean
-  isPreviewByHover: boolean
   userToken: string
   onClick?(): void
   onCancel?(): void
@@ -44,7 +43,6 @@ export function GenerationTaskCard (props: Props) {
           onClick={() =>
             props.onSelectTask(props.task.nanoid ?? "", props.task.status ?? "")
           }
-          isPreviewByHover={props.isPreviewByHover}
           taskId={props.task.id ?? ""}
           isSelected={props.selectedTaskIds.includes(props.task.nanoid ?? "")}
           isSelectDisabled={false}
@@ -63,7 +61,6 @@ export function GenerationTaskCard (props: Props) {
           task={props.task}
           taskIds={props.taskIds}
           taskContentPositionType={props.taskContentPositionType}
-          isPreviewByHover={props.isPreviewByHover}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}
           selectedTaskIds={props.selectedTaskIds}
           sizeType={props.sizeType}

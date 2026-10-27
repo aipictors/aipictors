@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -22,8 +21,6 @@ import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   thumbnailType: TaskListThumbnailType
-  taskContentPositionType: TaskContentPositionType
-  onChangeTaskContentPositionType(type: TaskContentPositionType): void
   onChangeThumbnailType(type: TaskListThumbnailType): void
   onSelectAll(): void
   onCancelAll(): void
@@ -111,39 +108,6 @@ export function GenerationTaskActionDropdownMenu (props: Props) {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-        <div className="hidden md:block">
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              {t("履歴詳細の表示場所", "History Detail Position")}
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuLabel>
-                  {t("場所変更", "Change Position")}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem
-                  checked={props.taskContentPositionType === "left"}
-                  onCheckedChange={props.onChangeTaskContentPositionType.bind(
-                    null,
-                    "left",
-                  )}
-                >
-                  {t("左", "Left")}
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={props.taskContentPositionType === "right"}
-                  onCheckedChange={props.onChangeTaskContentPositionType.bind(
-                    null,
-                    "right",
-                  )}
-                >
-                  {t("右", "Right")}
-                </DropdownMenuCheckboxItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        </div>
         {isEnabledReservedGeneration() && (
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>

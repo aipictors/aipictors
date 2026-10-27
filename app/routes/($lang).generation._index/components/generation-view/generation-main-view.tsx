@@ -9,9 +9,7 @@ type Props = {
   promptEditor: React.ReactNode
   settingLanguageUsedForPromptView: React.ReactNode
   negativePromptEditor: React.ReactNode
-  taskContentPreview: React.ReactNode
   taskDetails: React.ReactNode
-  workContentPreview: React.ReactNode
   submissionView: React.ReactNode
   /**
    * スマホでいちばん上に出すプロンプト入力
@@ -40,20 +38,6 @@ export function GenerationMainView (props: Props) {
         </div>
       </div>
     )
-  }
-
-  /**
-   * 作品プレビューモード
-   */
-  if (state === "WORK_PREVIEW") {
-    return props.workContentPreview
-  }
-
-  /**
-   * 履歴プレビューモード
-   */
-  if (state === "HISTORY_PREVIEW") {
-    return props.taskContentPreview
   }
 
   /**

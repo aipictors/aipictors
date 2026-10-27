@@ -5,10 +5,8 @@ import { GenerationTasksDeleteButton } from "~/routes/($lang).generation._index/
 import { GenerationImageDownloadButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-download-button"
 import { GenerationTaskActionDropdownMenu } from "~/routes/($lang).generation._index/components/task-view/generation-task-action-dropdown-menu"
 import { GenerationTaskCountSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-count-select"
-import { GenerationTaskPreviewModeButton } from "~/routes/($lang).generation._index/components/task-view/generation-task-preview-mode-button"
 import { GenerationTaskRatingSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-rating-select"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
-import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -21,12 +19,10 @@ type Props = {
   protect: number
   thumbnailSize: number
   thumbnailType: TaskListThumbnailType
-  taskContentPositionType: TaskContentPositionType
   selectedTaskIds: string[]
   hidedTaskIds: string[]
   isEditMode: boolean
   showCountInput?: boolean
-  previewMode?: boolean
   showHistoryExpandButton?: boolean
   viewCount?: number
   onChangeRating(rating: number): void
@@ -34,11 +30,9 @@ type Props = {
   onChangeViewCount(count: number): void
   onChangeThumbnailType(type: TaskListThumbnailType): void
   setThumbnailSize(size: number): void
-  onChangeTaskContentPositionType(size: TaskContentPositionType): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
   setHidedTaskIds(selectedTaskIds: string[]): void
   onToggleEditMode(): void
-  onTogglePreviewMode(): void
   onSelectAll(): void
   onCancelAll(): void
   onRefresh?(): void
@@ -147,14 +141,6 @@ export function GenerationDemoTaskListActions (props: Props) {
               onChange={props.onChangeRating}
             />
           )}
-          {state !== "HISTORY_LIST_FULL" && (
-            <div className="hidden md:block">
-              <GenerationTaskPreviewModeButton
-                onTogglePreviewMode={props.onTogglePreviewMode}
-                defaultChecked={props.previewMode}
-              />
-            </div>
-          )}
           {props.showCountInput && props.viewCount && (
             <GenerationTaskCountSelect
               value={props.viewCount}
@@ -222,11 +208,7 @@ export function GenerationDemoTaskListActions (props: Props) {
         />
         <GenerationTaskActionDropdownMenu
           thumbnailType={props.thumbnailType}
-          taskContentPositionType={props.taskContentPositionType}
           onChangeThumbnailType={props.onChangeThumbnailType}
-          onChangeTaskContentPositionType={
-            props.onChangeTaskContentPositionType
-          }
           onSelectAll={props.onSelectAll}
           onCancelAll={props.onCancelAll}
         />

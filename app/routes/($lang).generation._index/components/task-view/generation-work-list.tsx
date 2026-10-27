@@ -16,7 +16,6 @@ type Props = {
   onCancel?(): void
   thumbnailSize: number
   works: FragmentOf<typeof GenerationWorkListItemFragment>[]
-  isPreviewByHover: boolean
 }
 
 /**
@@ -54,7 +53,6 @@ export function GenerationWorkList (props: Props) {
                   <Suspense fallback={<FallbackTaskCard />}>
                     <GenerationWorkCard
                       work={work}
-                      isPreviewByHover={props.isPreviewByHover}
                     />
                   </Suspense>
                 </ErrorBoundary>
