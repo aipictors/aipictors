@@ -1,4 +1,5 @@
 import { TableRow, TableCell } from "~/components/ui/table"
+import { Checkbox } from "~/components/ui/checkbox"
 import { Loader2Icon, PencilIcon } from "lucide-react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
@@ -14,6 +15,10 @@ import { toRatingText } from "~/utils/work/to-rating-text"
 
 type Props = {
   work: FragmentOf<typeof WorksListTableRowFragment>
+  /** まとめて削除の選択中 */
+  isSelectable?: boolean
+  isSelected?: boolean
+  onToggleSelect?: (workId: string) => void
 }
 
 /**
@@ -87,6 +92,15 @@ export function WorksListTableRow (props: Props) {
             transition: "opacity 1s ease-out",
           }}
         >
+          {props.isSelectable && (
+            <TableCell className="w-10">
+              <Checkbox
+                checked={props.isSelected === true}
+                onCheckedChange={() => props.onToggleSelect?.(props.work.id)}
+                aria-label={`「${props.work.title}」を選択`}
+              />
+            </TableCell>
+          )}
           <TableCell className="font-medium">
             {new Date(props.work.createdAt * 1000).getTime() > Date.now() ? (
               <div className="w-32 overflow-hidden text-ellipsis">

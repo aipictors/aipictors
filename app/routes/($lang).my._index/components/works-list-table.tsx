@@ -8,6 +8,7 @@ import {
 import { WorksListColumn } from "~/routes/($lang).my._index/components/works-list-column"
 import type { SortType } from "~/types/sort-type"
 import { ScrollArea } from "~/components/ui/scroll-area"
+import { Checkbox } from "~/components/ui/checkbox"
 import {
   WorksListTableRow,
   WorksListTableRowFragment,
@@ -30,6 +31,10 @@ type Props = {
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
   onClickIsPromotionSortButton: () => void
+  isSelectable?: boolean
+  selectedIds?: string[]
+  onToggleSelect?: (workId: string) => void
+  onToggleSelectAll?: () => void
 }
 
 /**
@@ -44,6 +49,20 @@ export function WorksListTable (props: Props) {
         <Table className="w-full">
           <TableHeader>
             <TableRow>
+              {props.isSelectable && (
+                <TableHead className="w-10">
+                  <Checkbox
+                    checked={
+                      props.works.length > 0 &&
+                      props.works.every((work) =>
+                        props.selectedIds?.includes(work.id),
+                      )
+                    }
+                    onCheckedChange={() => props.onToggleSelectAll?.()}
+                    aria-label={t("すべて選択", "Select all")}
+                  />
+                </TableHead>
+              )}
               <TableHead>
                 <WorksListColumn
                   label={t("タイトル", "Title")}
@@ -141,7 +160,13 @@ export function WorksListTable (props: Props) {
           </TableHeader>
           <TableBody>
             {props.works.map((work, _index) => (
-              <WorksListTableRow work={work} key={work.id} />
+              <WorksListTableRow
+                work={work}
+                key={work.id}
+                isSelectable={props.isSelectable}
+                isSelected={props.selectedIds?.includes(work.id)}
+                onToggleSelect={props.onToggleSelect}
+              />
             ))}
           </TableBody>
         </Table>

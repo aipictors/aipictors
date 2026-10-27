@@ -1,4 +1,5 @@
 import { Badge } from "~/components/ui/badge"
+import { Checkbox } from "~/components/ui/checkbox"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
 import type { SortType } from "~/types/sort-type"
 import {
@@ -28,6 +29,9 @@ import { DeleteConfirmTrashDialog } from "~/routes/($lang).my._index/components/
 import { CroppedMyWorkSquare } from "~/routes/($lang).my._index/components/cropped-my-work-square"
 
 type Props = {
+  isSelectable?: boolean
+  selectedIds?: string[]
+  onToggleSelect?: (workId: string) => void
   works: FragmentOf<typeof MobileWorkListItemFragment>[]
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
@@ -102,6 +106,14 @@ export function WorksSpList (props: Props) {
           // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
           <div key={index} className="flex flex-col">
             <div className="flex space-x-4 border-b pt-2 pb-2">
+              {props.isSelectable && (
+                <Checkbox
+                  className="mt-1 size-5 shrink-0"
+                  checked={props.selectedIds?.includes(work.id) === true}
+                  onCheckedChange={() => props.onToggleSelect?.(work.id)}
+                  aria-label={`「${work.title}」を選択`}
+                />
+              )}
               <Link to={postUrl(work)}>
                 <CroppedMyWorkSquare
                   workId={work.id}
