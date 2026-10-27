@@ -306,6 +306,10 @@ export default function Index() {
 
   return (
     <>
+      {/* ページの見出し（画面には出さず、検索エンジンと読み上げのために置く） */}
+      <h1 className="sr-only">
+        {t("Aipictors のセンシティブ（R18）AIイラスト一覧", "Sensitive (R18) AI illustrations on Aipictors")}
+      </h1>
       <Tabs
         value={currentTab}
         onValueChange={handleTabChange}

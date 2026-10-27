@@ -953,6 +953,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
   return (
     <>
+      {/* ページの見出し（画面には出さず、検索エンジンと読み上げのために置く） */}
+      <h1 className="sr-only">
+        {t("Aipictors（AIピクターズ）- AIイラスト・AI画像の投稿・生成サイト", "Aipictors - AI illustration & image posting and generation site")}
+      </h1>
       {data.importantRelease && (
         <HomeImportantReleaseBanner release={data.importantRelease} />
       )}

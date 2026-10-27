@@ -2,8 +2,8 @@ import { Link, useNavigate } from "@remix-run/react"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   AlertTriangleIcon,
-  ArrowLeftIcon,
   CalendarIcon,
+  ChevronRightIcon,
   CopyIcon,
   ExternalLinkIcon,
   FlagIcon,
@@ -24,6 +24,7 @@ import {
   useUserModel,
 } from "~/components/user-models/use-user-models"
 import { UserModelAuthor } from "~/components/user-models/user-model-author"
+import { UserModelCard } from "~/components/user-models/user-model-card"
 import {
   UserModelBaseBadge,
   UserModelKindBadge,
@@ -33,7 +34,11 @@ import { UserModelDeleteDialog } from "~/components/user-models/user-model-delet
 import { UserModelEditDialog } from "~/components/user-models/user-model-edit-dialog"
 import { UserModelReportDialog } from "~/components/user-models/user-model-report-dialog"
 import { AuthContext } from "~/contexts/auth-context"
-import { baseModelLabel, ratingLabel } from "~/lib/user-models/constants"
+import {
+  baseModelLabel,
+  kindLabel,
+  ratingLabel,
+} from "~/lib/user-models/constants"
 import {
   formatBytes,
   formatCount,
@@ -52,6 +57,8 @@ import { toDateText } from "~/utils/to-date-text"
 type Props = {
   id: string
   initialModel: UserModel | null
+  /** 同じ系統・種類のモデル（サーバーで取得） */
+  relatedModels?: UserModel[]
 }
 
 const copyText = async (text: string, label: string) => {
@@ -196,19 +203,20 @@ export function UserModelDetail(props: Props) {
 
   return (
     <div className="mx-auto w-full max-w-(--breakpoint-xl) px-3 py-4 md:px-6 md:py-6">
-      <div className="mb-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="-ml-2 text-muted-foreground"
-          onClick={() =>
-            window.history.length > 1 ? navigate(-1) : navigate("/models")
-          }
-        >
-          <ArrowLeftIcon className="mr-1 size-4" />
-          戻る
-        </Button>
-      </div>
+      <nav
+        aria-label="パンくずリスト"
+        className="mb-4 flex items-center gap-1 overflow-x-auto whitespace-nowrap text-muted-foreground text-xs"
+      >
+        <Link to="/" className="hover:text-foreground">
+          ホーム
+        </Link>
+        <ChevronRightIcon className="size-3 shrink-0" />
+        <Link to="/models" className="hover:text-foreground">
+          モデル
+        </Link>
+        <ChevronRightIcon className="size-3 shrink-0" />
+        <span className="truncate text-foreground">{model.name}</span>
+      </nav>
 
       {model.status !== "READY" && (
         <div
@@ -258,7 +266,8 @@ export function UserModelDetail(props: Props) {
                 />
                 <img
                   src={mainImage}
-                  alt={model.name}
+                  alt={`${model.name}のサンプル画像`}
+                  fetchPriority="high"
                   className="relative max-h-full max-w-full object-contain"
                 />
               </>
@@ -283,7 +292,7 @@ export function UserModelDetail(props: Props) {
                 >
                   <img
                     src={url}
-                    alt=""
+                    alt={`${model.name}のサンプル画像`}
                     className="size-full object-cover"
                     loading="lazy"
                   />
@@ -502,6 +511,55 @@ export function UserModelDetail(props: Props) {
           )}
         </aside>
       </div>
+
+      <section
+        aria-labelledby="model-about-heading"
+        className="mt-10 rounded-2xl border bg-muted/30 p-5 md:p-7"
+      >
+        <h2 id="model-about-heading" className="mb-2 font-bold text-lg">
+          {model.name}について
+        </h2>
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          {`${model.name}は${
+            model.baseModel === "OTHER" && model.sourceBaseModel
+              ? model.sourceBaseModel
+              : baseModelLabel(model.baseModel)
+          }向けの${kindLabel(model.kind)}です。`}
+          {triggerWords.length > 0 &&
+            `トリガーワード「${triggerWords.slice(0, 5).join("」「")}」をプロンプトに入れて使います。`}
+          {model.kind === "LORA" && `推奨ウェイトは${weight}です。`}
+          {`Aipictors の画像生成で「このモデルで生成」を押すとそのまま使えます${
+            model.useCount > 0
+              ? `（これまでに${formatCount(model.useCount)}回使われています）`
+              : ""
+          }。`}
+          {model.sourceUrl &&
+            `元のモデルは${sourceSiteName(model.sourceUrl)}で公開されています${
+              model.sourceCreator ? `（作者: ${model.sourceCreator}）` : ""
+            }。`}
+        </p>
+      </section>
+
+      {(props.relatedModels?.length ?? 0) > 0 && (
+        <section aria-labelledby="related-models-heading" className="mt-10">
+          <div className="mb-4 flex items-end justify-between gap-3">
+            <h2 id="related-models-heading" className="font-bold text-lg">
+              {baseModelLabel(model.baseModel)}の{kindLabel(model.kind)}をもっと見る
+            </h2>
+            <Link
+              to={`/models?kind=${model.kind}&base=${model.baseModel}`}
+              className="shrink-0 text-primary text-sm hover:underline"
+            >
+              すべて見る
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
+            {props.relatedModels?.map((related) => (
+              <UserModelCard key={related.id} model={related} blurSensitive />
+            ))}
+          </div>
+        </section>
+      )}
 
       {!isOwner && authContext.isLoggedIn && (
         <UserModelReportDialog

@@ -11,11 +11,14 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
-import { config, META } from "~/config"
+import { META } from "~/config"
 import { FolderCogIcon, SparklesIcon, UploadIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { ClientOnly } from "remix-utils/client-only"
+import { UserModelCard } from "~/components/user-models/user-model-card"
+import { fetchPublicUserModels } from "~/lib/server/user-models.server"
+import { normalizeUserModel } from "~/lib/user-models/client"
 import {
   type UserModelBrowserFilters,
   UserModelBrowser,
@@ -30,22 +33,27 @@ import type {
 /**
  * モデルの一覧
  */
-export async function loader(_props: LoaderFunctionArgs) {
-  const resp = await loaderClient.query({
-    query: imageModelsQuery,
-    variables: {
-      limit: 64,
-      offset: 0,
-    },
-  })
+export async function loader(props: LoaderFunctionArgs) {
+  const [resp, userModels] = await Promise.all([
+    loaderClient.query({
+      query: imageModelsQuery,
+      variables: {
+        limit: 64,
+        offset: 0,
+      },
+    }),
+    // みんなのモデルの最初のページ（サーバーで描画して検索エンジンにも見えるようにする）
+    fetchPublicUserModels(props.context, { sort: "popular", limit: 24 }),
+  ])
 
   return {
     imageModels: resp.data.imageModels,
+    userModels: userModels.models.map(normalizeUserModel),
   }
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneDay,
+  "Cache-Control": "public, max-age=0, s-maxage=300, stale-while-revalidate=600",
 })
 
 export const meta: MetaFunction = (props) => {
@@ -101,7 +109,9 @@ export default function ModelsPage() {
               <SparklesIcon className="size-3.5" />
               みんなのモデルで生成できるようになりました
             </p>
-            <h1 className="font-bold text-2xl tracking-tight md:text-3xl">モデル</h1>
+            <h1 className="font-bold text-2xl tracking-tight md:text-3xl">
+              モデル（LoRA・チェックポイント）
+            </h1>
             <p className="max-w-xl text-muted-foreground text-sm leading-relaxed">
               {
                 "みんながアップロードした LoRA・チェックポイントを、そのまま画像生成に使えます。気に入ったモデルを開いて「このモデルで生成」を押すだけ。"
@@ -146,7 +156,15 @@ export default function ModelsPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="community">
-          <ClientOnly fallback={<div className="min-h-96" />}>
+          <ClientOnly
+            fallback={
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                {data.userModels.map((model) => (
+                  <UserModelCard key={model.id} model={model} blurSensitive />
+                ))}
+              </div>
+            }
+          >
             {() => (
               <UserModelBrowser
                 initialFilters={parseFilters(searchParams)}

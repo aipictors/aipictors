@@ -236,7 +236,7 @@ export default function Work () {
     url: pageUrl,
     image: config.defaultSensitiveOgpImageUrl,
     dateCreated: data.work.createdAt
-      ? new Date(data.work.createdAt).toISOString()
+      ? new Date(data.work.createdAt * 1000).toISOString()
       : undefined,
     inLanguage: lang,
     keywords: data.work.tagNames?.length

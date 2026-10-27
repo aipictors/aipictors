@@ -119,25 +119,52 @@ export const meta: MetaFunction = (props) => {
     work.work.imageURL ||
     config.defaultOgpImageUrl
 
+  // 説明がない・短い作品は、タグ・モデルから説明文を作る（同じ説明文のページが大量にできないように）
+  const tagText = (work.work.tagNames ?? []).slice(0, 6)
+  const styleLabelJa =
+    work.work.style === "REAL"
+      ? "AIフォト"
+      : work.work.type === "VIDEO"
+        ? "AI動画"
+        : work.work.type === "NOVEL" || work.work.type === "COLUMN"
+          ? "AI小説"
+          : "AIイラスト"
+  const generatedDescriptionJa = `${work.work.title}${
+    work.work.user ? `（${work.work.user.name}）` : ""
+  }の${styleLabelJa}です。${
+    tagText.length > 0 ? `タグ: ${tagText.join("、")}。` : ""
+  }${work.work.model ? `モデル: ${work.work.model}。` : ""}${
+    work.work.promptAccessType === "PUBLIC" && work.work.prompt
+      ? "プロンプトも公開されています。"
+      : ""
+  }`
+  const generatedDescriptionEn = `${
+    work.work.enTitle || work.work.title
+  }${work.work.user ? ` by ${work.work.user.name}` : ""} on Aipictors.${
+    tagText.length > 0 ? ` Tags: ${tagText.join(", ")}.` : ""
+  }${work.work.model ? ` Model: ${work.work.model}.` : ""}`
+  const ownDescriptionJa = (work.work.description ?? "").trim()
+  const ownDescriptionEn = (
+    work.work.enDescription ||
+    work.work.description ||
+    ""
+  ).trim()
+  const descriptionJa =
+    ownDescriptionJa.length >= 40
+      ? ownDescriptionJa
+      : `${ownDescriptionJa ? `${ownDescriptionJa} ` : ""}${generatedDescriptionJa}`
+  const descriptionEn =
+    ownDescriptionEn.length >= 60
+      ? ownDescriptionEn
+      : `${ownDescriptionEn ? `${ownDescriptionEn} ` : ""}${generatedDescriptionEn}`
+
   const metaTags = createMeta(
     META.POSTS,
     {
       title: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
       enTitle: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
-      description:
-        props.params.lang === "en"
-          ? work.work.enDescription ||
-            work.work.description ||
-            "Aipictors work page"
-          : work.work.description ||
-            "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
-      enDescription:
-        props.params.lang === "en"
-          ? work.work.enDescription ||
-            work.work.description ||
-            "Aipictors work page"
-          : work.work.description ||
-            "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
+      description: props.params.lang === "en" ? descriptionEn : descriptionJa,
+      enDescription: descriptionEn,
       url: metaImageUrl,
       pageUrl,
     },
@@ -243,27 +270,67 @@ export default function Work () {
     ],
   }
 
+  // createdAt は unix 秒
+  const createdAtIso = data.work.createdAt
+    ? new Date(data.work.createdAt * 1000).toISOString()
+    : undefined
+  const author = data.work.user?.name
+    ? {
+        "@type": "Person" as const,
+        name: data.work.user.name,
+        url: userUrl,
+      }
+    : undefined
+
   const artwork: WithContext<VisualArtwork> = {
     "@context": "https://schema.org",
     "@type": "VisualArtwork",
     name: title,
     description: description || undefined,
     url: pageUrl,
-    image: imageUrl || undefined,
-    dateCreated: data.work.createdAt
-      ? new Date(data.work.createdAt).toISOString()
+    image: imageUrl
+      ? {
+          "@type": "ImageObject",
+          contentUrl: imageUrl,
+          thumbnailUrl: data.work.largeThumbnailImageURL || undefined,
+          creator: author,
+          creditText: data.work.user?.name,
+          copyrightNotice: data.work.user?.name
+            ? `© ${data.work.user.name}`
+            : undefined,
+          acquireLicensePage: `${baseUrl}/terms`,
+        }
       : undefined,
+    thumbnailUrl: data.work.largeThumbnailImageURL || undefined,
+    artMedium: data.work.style === "REAL" ? "AI generated photo" : "AI generated image",
+    artform: "Digital art",
+    dateCreated: createdAtIso,
+    datePublished: createdAtIso,
+    contentRating: data.work.rating ?? undefined,
+    creditText: data.work.user?.name,
+    interactionStatistic: [
+      {
+        "@type": "InteractionCounter",
+        interactionType: { "@type": "LikeAction" },
+        userInteractionCount: data.work.likesCount,
+      },
+      {
+        "@type": "InteractionCounter",
+        interactionType: { "@type": "WatchAction" },
+        userInteractionCount: data.work.viewsCount,
+      },
+      {
+        "@type": "InteractionCounter",
+        interactionType: { "@type": "CommentAction" },
+        userInteractionCount: data.work.commentsCount,
+      },
+    ],
     inLanguage: lang,
     keywords: data.work.tagNames?.length
       ? data.work.tagNames.join(", ")
       : undefined,
-    author: data.work.user?.name
-      ? {
-          "@type": "Person",
-          name: data.work.user.name,
-          url: userUrl,
-        }
-      : undefined,
+    author,
+    creator: author,
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": pageUrl,
