@@ -224,12 +224,15 @@ export function GenerationSubmitOperationParts(props: Props) {
                 id="extras-mode"
               />
               <div className="text-center leading-3">
-                <Label htmlFor="extras-mode" className="block text-center">
+                <Label
+                  htmlFor="extras-mode"
+                  className="block whitespace-nowrap text-center text-xs sm:text-sm"
+                >
                   {t("高解像度", "High Resolution")}
                 </Label>
                 <Label
                   htmlFor="extras-mode"
-                  className="block text-center text-xs"
+                  className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
                 >
                   {t("1枚・コイン3倍", "1 image, 3x coins")}
                 </Label>
@@ -353,13 +356,13 @@ export function GenerationSubmitOperationParts(props: Props) {
                     <div className="text-center leading-3">
                       <Label
                         htmlFor="extras-mode"
-                        className="block text-center"
+                        className="block whitespace-nowrap text-center text-xs sm:text-sm"
                       >
                         {t("高解像度", "High Resolution")}
                       </Label>
                       <Label
                         htmlFor="extras-mode"
-                        className="block text-center text-xs"
+                        className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
                       >
                         {t("1枚・コイン3倍", "1 image, 3x coins")}
                       </Label>
