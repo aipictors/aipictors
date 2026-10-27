@@ -70,7 +70,7 @@ export function TextEditorUploaderDialog (props: Props) {
         canvas.height = height
         ctx.drawImage(img, 0, 0, width, height)
 
-        const resizedBase64 = canvas.toDataURL("image/jpeg")
+        const resizedBase64 = canvas.toDataURL("image/jpeg", 0.9)
         resolve(resizedBase64)
       }
 
@@ -88,7 +88,8 @@ export function TextEditorUploaderDialog (props: Props) {
       return
     }
 
-    const resizedImage = await resizeImage(file, 400)
+    // 挿絵はクリックで原寸表示できるので、大きめ（長辺 1600px）で保存する
+    const resizedImage = await resizeImage(file, 1600)
     if (resizedImage) {
       setImageBase64(resizedImage)
     } else {

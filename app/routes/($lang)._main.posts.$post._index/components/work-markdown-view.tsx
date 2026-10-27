@@ -110,7 +110,7 @@ export function WorkMarkdownView (props: Props) {
       </div>
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: 画像のクリックだけを拾う（キーボードでは各画像を開かない） */}
       <div
-        className="mt-4 rounded-lg bg-white p-4 dark:bg-zinc-900 [&_img]:cursor-zoom-in"
+        className="mt-4 rounded-lg bg-white p-4 dark:bg-zinc-900 [&_img]:h-auto [&_img]:max-w-full [&_img]:cursor-zoom-in"
         onClick={onClickContent}
       >
         <EditorContent editor={editor} />
