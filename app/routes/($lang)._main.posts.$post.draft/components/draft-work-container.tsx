@@ -3,7 +3,7 @@ import {
   sensitiveWorkArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
-import { useContext } from "react"
+import { useContext, useMemo } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { useMutation, useQuery } from "@apollo/client/index"
@@ -69,8 +69,14 @@ export function DraftWorkContainer (props: Props) {
 
   const tags = work?.tagNames ?? []
 
-  const randomTag =
-    tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
+  // 描画のたびに選び直すと「おすすめ」一覧の取得がやり直しになり、ページが大きくずれるので作品ごとに 1 回だけ選ぶ
+  const tagsKey = tags.join("\n")
+  // biome-ignore lint/correctness/useExhaustiveDependencies: tagsKey で中身の変化を見ている
+  const randomTag = useMemo(
+    () =>
+      tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null,
+    [work?.id, tagsKey],
+  )
 
   const _navigate = useNavigate()
 

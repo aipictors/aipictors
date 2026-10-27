@@ -28,7 +28,9 @@ export function useInfiniteScroll(
           }
         })
       },
-      { rootMargin: "300px" },
+      // 画面の下に来る少し前（約 2 画面分）から読み始める。
+      // 末尾に着いてから読み込むと、フッターが見えている状態で一覧が足されてページがずれる（CLS）
+      { rootMargin: "0px 0px 2000px 0px" },
     )
 
     ob.observe(el)

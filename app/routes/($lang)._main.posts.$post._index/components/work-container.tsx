@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useContext } from "react"
+import { useContext, useMemo } from "react"
 import { Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { AuthContext } from "~/contexts/auth-context"
@@ -122,8 +122,17 @@ export function WorkContainer(props: Props) {
 
   const tags = work?.tagNames ?? []
 
-  const randomTag =
-    tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : "女の子"
+  // 描画のたびに選び直すと「おすすめ」一覧の取得がやり直しになり、一覧が消えて出直す（ページが大きくずれる）ので、
+  // 作品ごとに 1 回だけ選ぶ
+  const tagsKey = tags.join("\n")
+  // biome-ignore lint/correctness/useExhaustiveDependencies: tagsKey で中身の変化を見ている
+  const randomTag = useMemo(
+    () =>
+      tags.length > 0
+        ? tags[Math.floor(Math.random() * tags.length)]
+        : "女の子",
+    [work?.id, tagsKey],
+  )
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 

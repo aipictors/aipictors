@@ -353,14 +353,27 @@ export function WorkComment(props: Props) {
               aria-label={t("スタンプ", "Sticker")}
             >
               <img
-                className="w-32 py-2 transition-transform duration-300 group-hover:scale-105"
+                className="aspect-square w-32 object-contain py-2 transition-transform duration-300 group-hover:scale-105"
                 alt=""
                 src={props.stickerImageURL}
+                // スタンプは正方形。大きさを先に決めておき、読み込み後にコメント欄が伸びて下がずれないようにする
+                width={128}
+                height={128}
+                loading="lazy"
+                decoding="async"
               />
             </Link>
           )}
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
-            <img className="w-32 py-2" alt="" src={props.stickerImageURL} />
+            <img
+              className="aspect-square w-32 object-contain py-2"
+              alt=""
+              src={props.stickerImageURL}
+              width={128}
+              height={128}
+              loading="lazy"
+              decoding="async"
+            />
           )}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-xs opacity-50">
@@ -442,9 +455,7 @@ export function WorkComment(props: Props) {
                   onClick={() => setOpenReplyInput(!openReplyInput)}
                 >
                   <Reply className="size-3" />
-                  {openReplyInput
-                    ? t("閉じる", "Close")
-                    : t("返信", "Reply")}
+                  {openReplyInput ? t("閉じる", "Close") : t("返信", "Reply")}
                 </Button>
               </>
             )}
