@@ -5,24 +5,17 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
-import { useContext, useState, lazy, Suspense } from "react"
+import { useContext, useState } from "react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useQuery } from "@apollo/client/index"
 import { viewerBasicUserQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
 import { debugLog } from "~/utils/debug-logger"
-import {
-  userNavigationStyles,
-  getSkeletonClass,
-  getMenuSkeletonClass,
-} from "~/routes/($lang)._main._index/components/user-navigation-styles"
 
-// 詳細なメニューコンテンツを遅延読み込み
-const UserNavigationMenuContent = lazy(
-  () =>
-    import(
-      "~/routes/($lang)._main._index/components/user-navigation-menu-content"
-    ),
-)
+import UserNavigationMenuContent, {
+  prefetchUserNavigationMenu,
+} from "~/routes/($lang)._main._index/components/user-navigation-menu-content"
+import { useApolloClient } from "@apollo/client/index"
+import { useEffect } from "react"
 
 type Props = {
   onLogout(): void
@@ -32,7 +25,7 @@ type Props = {
  * ファストローディング用のシンプルなユーザーナビゲーションメニュー
  * 認証情報から最低限のUIを表示し、詳細情報は遅延読み込み
  */
-export function FastUserNavigationMenu (props: Props) {
+export function FastUserNavigationMenu(props: Props) {
   const authContext = useContext(AuthContext)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -53,6 +46,20 @@ export function FastUserNavigationMenu (props: Props) {
     },
     notifyOnNetworkStatusChange: false, // ネットワーク状態変更通知を無効化（パフォーマンス向上）
   })
+
+  const client = useApolloClient()
+
+  // メニューの中身（ユーザー情報・設定）を先に取っておき、開いたときにすぐ出す
+  useEffect(() => {
+    if (!authContext.isLoggedIn) return
+    const run = () => prefetchUserNavigationMenu(client)
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(run, { timeout: 3000 })
+      return () => window.cancelIdleCallback(id)
+    }
+    const timer = setTimeout(run, 1500)
+    return () => clearTimeout(timer)
+  }, [authContext.isLoggedIn, client])
 
   // 認証情報から最低限の表示
   const iconUrl =
@@ -100,7 +107,13 @@ export function FastUserNavigationMenu (props: Props) {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <button type="button" className="rounded-full">
+        <button
+          type="button"
+          className="rounded-full"
+          aria-label="メニュー"
+          onPointerEnter={() => prefetchUserNavigationMenu(client)}
+          onFocus={() => prefetchUserNavigationMenu(client)}
+        >
           <UserAvatarWithFrame
             alt={displayName || "User"}
             frame={avatarFrame}
@@ -110,93 +123,7 @@ export function FastUserNavigationMenu (props: Props) {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {/* UserNavigationMenuContentが自分でローディング状態を管理 */}
-        <Suspense
-          fallback={
-            <div className={userNavigationStyles.container}>
-              <div className="space-y-3 p-4">
-                {/* ユーザー情報セクション */}
-                <div className="space-y-2">
-                  <div
-                    className={getSkeletonClass(
-                      userNavigationStyles.skeleton.userName,
-                    )}
-                  />
-                  <div
-                    className={getSkeletonClass(
-                      userNavigationStyles.skeleton.userLogin,
-                    )}
-                  />
-                </div>
-
-                {/* フォロー・フォロワー情報 */}
-                <div className="flex justify-between">
-                  <div className="flex flex-col items-center text-center">
-                    <div
-                      className={`${getSkeletonClass(
-                        userNavigationStyles.skeleton.followCount,
-                      )} mx-auto`}
-                    />
-                    <div
-                      className={`${getSkeletonClass("h-4 w-12")} mx-auto`}
-                    />
-                  </div>
-                  <div className="flex flex-col items-center text-center">
-                    <div
-                      className={`${getSkeletonClass(
-                        userNavigationStyles.skeleton.followCount,
-                      )} mx-auto`}
-                    />
-                    <div
-                      className={`${getSkeletonClass("h-4 w-16")} mx-auto`}
-                    />
-                  </div>
-                </div>
-
-                {/* メニュー項目スケルトン（12項目） */}
-                <div className="space-y-1">
-                  {Array.from({ length: 12 }).map((_, index) => {
-                    const menuTypes = [
-                      "myPage",
-                      "dashboard",
-                      "myPosts",
-                      "support",
-                      "account",
-                      "contact",
-                      "plus",
-                      "settings",
-                      "theme",
-                      "language",
-                      "logout",
-                      "extra",
-                    ] as const
-                    const menuType = menuTypes[index] || "myPage"
-
-                    return (
-                      <div
-                        key={`skeleton-menu-${menuType}`}
-                        className={userNavigationStyles.menuItem}
-                      >
-                        <div
-                          className={getSkeletonClass(
-                            userNavigationStyles.skeleton.menuIcon,
-                          )}
-                        />
-                        <div
-                          className={getMenuSkeletonClass(
-                            menuType === "extra" ? "myPage" : menuType,
-                          )}
-                        />
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <UserNavigationMenuContent onLogout={props.onLogout} />
-        </Suspense>
+        <UserNavigationMenuContent onLogout={props.onLogout} />
       </DropdownMenuContent>
     </DropdownMenu>
   )

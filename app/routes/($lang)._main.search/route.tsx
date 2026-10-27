@@ -181,7 +181,7 @@ export async function loader(props: LoaderFunctionArgs) {
           query: searchQuery,
           rating,
           offset:
-            requestedMode === "text"
+            requestedMode !== "tag"
               ? Math.min(currentPage, TEXT_SEARCH_MAX_PAGE) * RESULTS_LIMIT
               : 0,
           limit: RESULTS_LIMIT,
@@ -211,7 +211,7 @@ export async function loader(props: LoaderFunctionArgs) {
   }
   // タイトル・説明のタブを開いているときは、作品の取得も先に始めておく
   const eagerTextWorksPromise =
-    requestedMode === "text"
+    requestedMode !== "tag"
       ? textResultPromise.then((result) => fetchTextWorks(result?.ids ?? []))
       : null
 
@@ -265,14 +265,16 @@ export async function loader(props: LoaderFunctionArgs) {
     worksCountResp?.data?.worksCount ??
     worksCountResp?.data?.tagWorksCount ??
     0
-  // 指定がなければ、タグの作品がないときだけタイトル・説明の結果を出す
+  // 指定がなければキーワードの部分一致（タイトル・説明・タグ）を出す。
+  // 部分一致で 1 件もなく、タグの完全一致だけあるときはタグの結果を出す
   const mode: "tag" | "text" =
     textResult === null
       ? "tag"
-      : requestedMode === "text" ||
-          (requestedMode !== "tag" && tagWorksCount === 0 && textResult.count > 0)
-        ? "text"
-        : "tag"
+      : requestedMode === "tag"
+        ? "tag"
+        : requestedMode === "text" || textResult.count > 0 || tagWorksCount === 0
+          ? "text"
+          : "tag"
 
   const textWorks =
     mode !== "text"
@@ -393,7 +395,8 @@ export default function SearchRoute() {
     const mode = next?.mode === undefined ? data.mode : next.mode
     if (mode === "text") {
       params.set("mode", "text")
-    } else if (mode === "tag" && next?.mode === "tag") {
+    } else if (mode === "tag") {
+      // 指定がないとキーワードの部分一致になるので、タグの一致は明示する
       params.set("mode", "tag")
     }
     const rating = next?.rating ?? data.filters.rating
@@ -513,7 +516,7 @@ export default function SearchRoute() {
                         `${data.worksCount.toLocaleString()} works`,
                       )
                     : t(
-                        "タグ名を入力するか、人気のタグから選んでください",
+                        "キーワードを入力するか、人気のタグから選んでください",
                         "Enter a tag name or pick a popular tag",
                       )}
                 </p>
@@ -555,16 +558,16 @@ export default function SearchRoute() {
                 {(
                   [
                     [
-                      "tag",
-                      t("タグが一致", "Tag"),
-                      data.tagWorksCount.toLocaleString(),
-                    ],
-                    [
                       "text",
-                      t("タイトル・説明に含む", "Title & description"),
+                      t("キーワードを含む", "Contains keyword"),
                       data.textWorksCount >= TEXT_SEARCH_COUNT_LIMIT
                         ? `${TEXT_SEARCH_COUNT_LIMIT.toLocaleString()}+`
                         : data.textWorksCount.toLocaleString(),
+                    ],
+                    [
+                      "tag",
+                      t("タグが一致", "Exact tag"),
+                      data.tagWorksCount.toLocaleString(),
                     ],
                   ] as const
                 ).map(([mode, label, count]) => (

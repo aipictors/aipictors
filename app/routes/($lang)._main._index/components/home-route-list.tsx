@@ -1,37 +1,21 @@
 import { gql, useLazyQuery } from "@apollo/client/index"
 import { Link, useLocation, useNavigate, useNavigation } from "@remix-run/react"
 import {
-  ActivityIcon,
-  AwardIcon,
-  BookImageIcon,
-  BoxesIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronUpIcon,
-  HelpCircleIcon,
-  HomeIcon,
-  Image,
-  ImageIcon,
-  LibraryBigIcon,
-  LightbulbIcon,
   Loader2Icon,
   MenuIcon,
-  RocketIcon,
-  SearchIcon,
-  Shield,
-  StampIcon,
-  StarIcon,
-  TagIcon,
 } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { SidebarNavigationButton } from "~/components/sidebar-navigation-button"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
-import { Separator } from "~/components/ui/separator"
 import { cn } from "~/lib/utils"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { getHomeNavigationSections } from "~/routes/($lang)._main._index/components/home-navigation-sections"
 
 type Props = {
   title?: string
@@ -76,8 +60,6 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   const getSensitiveLink = (path: string) =>
     /^\/r($|\s)/.test(path) ? "" : sensitivePath ? `/r${path}` : path
 
-  const createLink = (path: string) =>
-    isSensitive && !["/about", "/terms"].includes(path) ? `/r${path}` : path
 
   const closeHeaderMenu = () => onClickMenuItem?.()
 
@@ -165,204 +147,73 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         )}
       </div>
 
-      {/* Navigation Items */}
-      <SidebarNavigationButton
-        href={isSensitive ? "/r?tab=home" : "/home"}
-        icon={HomeIcon}
-      >
-        {t("ホーム", "Home")}
-        {isSensitive && " - R18"}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href={createLink("/search")}
-        icon={SearchIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("検索", "Search")}
-      </SidebarNavigationButton>
-
-      {/* R18モード時の全年齢戻るボタン */}
-      {/* {isSensitive && (
-        <SidebarNavigationButton
-          href={"/"}
-          icon={RefreshCcwIcon}
-          className="border-2 border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100 dark:border-orange-700 dark:bg-orange-950 dark:text-orange-300 dark:hover:bg-orange-900"
-        >
-          {t("全年齢に戻る", "Back to All Ages")}
-        </SidebarNavigationButton>
-      )} */}
-
-      <SidebarNavigationButton
-        href={createLink("/themes")}
-        icon={LightbulbIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("お題", "Themes")}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href={createLink("/tags")}
-        icon={TagIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("タグ", "Tags")}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href={createLink("/rankings")}
-        icon={AwardIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("ランキング", "Ranking")}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href="/models"
-        icon={BoxesIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("モデル", "Models")}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href={createLink("/albums")}
-        icon={LibraryBigIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("シリーズ", "Series")}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href={createLink("/follow-user-works")}
-        icon={Image}
-        onClick={closeHeaderMenu}
-      >
-        {t("フォロー新着", "Followed new posts")}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href={createLink("/stickers")}
-        icon={StampIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("スタンプ広場", "Stickers")}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href={createLink("/events")}
-        icon={StarIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("イベント", "Events")}
-      </SidebarNavigationButton>
-
-      {!isSensitive && isModerator && (
-        <SidebarNavigationButton
-          href="/admin"
-          icon={Shield}
-          onClick={closeHeaderMenu}
-        >
-          {t("管理", "Admin")}
-        </SidebarNavigationButton>
+      {/* Navigation Items（PC のサイドバーとスマホのメニューで共通の項目） */}
+      {getHomeNavigationSections({ isSensitive, isModerator: !!isModerator }).map(
+        (section) => {
+          const isOpen = !section.isCollapsible || isExtraMenuOpen
+          return (
+            <div key={section.key} className="space-y-0.5">
+              {section.title &&
+                (sidebarState === "expanded" ? (
+                  section.isCollapsible ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsExtraMenuOpen((prev) => !prev)}
+                      className="flex w-full items-center justify-between px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground/80 tracking-wide transition-colors hover:text-foreground"
+                      aria-expanded={isExtraMenuOpen}
+                    >
+                      <span>{t(...section.title)}</span>
+                      {isExtraMenuOpen ? (
+                        <ChevronUpIcon className="size-3.5" />
+                      ) : (
+                        <ChevronDownIcon className="size-3.5" />
+                      )}
+                    </button>
+                  ) : (
+                    <p className="px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground/80 tracking-wide">
+                      {t(...section.title)}
+                    </p>
+                  )
+                ) : (
+                  <div className="mx-3 my-2 border-t" />
+                ))}
+              {(isOpen || sidebarState !== "expanded") &&
+                section.items.map((item) =>
+                  item.isExternal ? (
+                    <Link
+                      key={item.key}
+                      className={cn(
+                        "flex items-center rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:bg-muted/20 hover:text-foreground",
+                        sidebarState === "expanded"
+                          ? "justify-start"
+                          : "justify-center",
+                      )}
+                      to={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <item.icon className="size-5 shrink-0" />
+                      {sidebarState === "expanded" && (
+                        <span className="ml-3">{t(...item.label)}</span>
+                      )}
+                    </Link>
+                  ) : (
+                    <SidebarNavigationButton
+                      key={item.key}
+                      href={item.href}
+                      icon={item.icon}
+                      onClick={closeHeaderMenu}
+                    >
+                      {t(...item.label)}
+                    </SidebarNavigationButton>
+                  ),
+                )}
+            </div>
+          )
+        },
       )}
 
-      <SidebarNavigationButton
-        href={createLink("/releases")}
-        icon={RocketIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("お知らせ", "Update Information")}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href={createLink("/help")}
-        icon={HelpCircleIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("使い方ガイド", "User Guide")}
-      </SidebarNavigationButton>
-
-      {/* Separator */}
-      {sidebarState === "expanded" && (
-        <div className="px-3 py-1">
-          <Separator />
-        </div>
-      )}
-
-      {/* Categories */}
-      <SidebarNavigationButton
-        href={createLink("/posts/2d")}
-        icon={ImageIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("イラスト", "Illust")}
-      </SidebarNavigationButton>
-
-      <SidebarNavigationButton
-        href={createLink("/posts/3d")}
-        icon={BookImageIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("フォト", "Photo")}
-      </SidebarNavigationButton>
-
-      {sidebarState === "expanded" && (
-        <div className="px-3">
-          <button
-            type="button"
-            onClick={() => setIsExtraMenuOpen((prev) => !prev)}
-            className="flex w-full items-center justify-between rounded-md py-1 text-left text-muted-foreground text-xs transition-colors hover:text-foreground"
-            aria-expanded={isExtraMenuOpen}
-          >
-            <span>
-              {isExtraMenuOpen
-                ? t("閉じる", "Show less")
-                : t("もっと見る", "Show menu more")}
-            </span>
-            {isExtraMenuOpen ? (
-              <ChevronUpIcon className="size-3.5" />
-            ) : (
-              <ChevronDownIcon className="size-3.5" />
-            )}
-          </button>
-        </div>
-      )}
-
-      {isExtraMenuOpen && sidebarState === "expanded" && (
-        <div className="space-y-1">
-          <Link
-            className={cn(
-              "flex items-center rounded-md px-3 py-2 text-muted-foreground text-xs transition-colors hover:bg-muted/20 hover:text-foreground",
-            )}
-            to={createLink("/roadmap")}
-            onClick={closeHeaderMenu}
-          >
-            <RocketIcon className="size-5 shrink-0" />
-            <span className="ml-3">{t("ロードマップ", "Roadmap")}</span>
-          </Link>
-
-          <Link
-            className={cn(
-              "flex items-center rounded-md px-3 py-2 text-muted-foreground text-xs transition-colors hover:bg-muted/20 hover:text-foreground",
-            )}
-            to="https://status.aipictors.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={closeHeaderMenu}
-          >
-            <ActivityIcon className="size-5 shrink-0" />
-            <span className="ml-3">{t("稼働状況", "Status")}</span>
-          </Link>
-        </div>
-      )}
-
-      {/* Separator (auth) */}
-      {authContext.isNotLoading && sidebarState === "expanded" && (
-        <div className="px-3 py-1">
-          <Separator />
-        </div>
-      )}
+      <div className="pb-2" />
 
       {/* Footer */}
       {sidebarState === "expanded" && (
@@ -408,22 +259,18 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
               <SnsIconLink url="https://github.com/aipictors" />
             </div>
 
-            <Link className="text-xs opacity-80" to="/about">
-              {t("概要", "About")}
-            </Link>
-            <Link className="text-xs opacity-80" to="/pictor-chan">
-              {t("ぴくたーちゃん", "Contact")}
-            </Link>
-            <Link className="text-xs opacity-80" to="/contact">
-              {t("お問い合わせ", "Contact")}
-            </Link>
-            <Link className="text-xs opacity-80" to="/terms">
-              {t("利用規約", "Terms")}
-            </Link>
-            <Link className="text-xs opacity-80" to="/privacy">
-              {t("プライバシーポリシー", "Privacy Policy")}
-            </Link>
-            <p className="text-xs opacity-80">©2026 Aipictors Co.,Ltd.</p>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-muted-foreground text-xs">
+              <Link className="hover:text-foreground" to="/contact">
+                {t("お問い合わせ", "Contact")}
+              </Link>
+              <Link className="hover:text-foreground" to="/terms">
+                {t("利用規約", "Terms")}
+              </Link>
+              <Link className="hover:text-foreground" to="/privacy">
+                {t("プライバシーポリシー", "Privacy Policy")}
+              </Link>
+            </div>
+            <p className="text-muted-foreground text-xs">©2026 Aipictors Co.,Ltd.</p>
           </div>
         </footer>
       )}

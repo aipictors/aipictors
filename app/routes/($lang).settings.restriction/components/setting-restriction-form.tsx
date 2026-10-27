@@ -99,6 +99,13 @@ export function SettingRestrictionForm () {
     setIsBlur(isBlurDefault)
   }, [userSetting])
 
+  const [showHeaderRatingToggle, setShowHeaderRatingToggle] =
+    React.useState(true)
+
+  React.useEffect(() => {
+    setShowHeaderRatingToggle(localStorage.getItem("hideR18Button") !== "true")
+  }, [])
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col space-y-4">
@@ -119,8 +126,8 @@ export function SettingRestrictionForm () {
         <div className="flex w-full items-center justify-between">
           <Label htmlFor="show-sensitive-toggle">
             {t(
-              "R18切り替えボタン（対象年齢変更ボタン）を表示する",
-              "Display sensitive mode toggle in the menu",
+              "R18作品を見られるようにする（18歳以上）",
+              "Allow R18 content (18+)",
             )}
           </Label>
           <Switch
@@ -150,6 +157,27 @@ export function SettingRestrictionForm () {
             checked={showR18GInSensitiveMode}
             id="show-r18g"
             disabled={!showSensitiveModeToggle} // センシティブモードが有効でないと無効化
+          />
+        </div>
+        <div className="flex w-full items-center justify-between">
+          <Label htmlFor="show-header-rating-toggle">
+            {t(
+              "ヘッダーに「全年齢／R18」の切り替えを表示する",
+              'Show the "All ages / R18" switch in the header',
+            )}
+          </Label>
+          <Switch
+            onCheckedChange={(checked) => {
+              // この端末だけの設定（ブラウザに保存）
+              if (checked) {
+                localStorage.removeItem("hideR18Button")
+              } else {
+                localStorage.setItem("hideR18Button", "true")
+              }
+              setShowHeaderRatingToggle(checked)
+            }}
+            checked={showHeaderRatingToggle}
+            id="show-header-rating-toggle"
           />
         </div>
       </div>

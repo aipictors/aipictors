@@ -30,7 +30,7 @@ import {
   getViewerRequestHeaders,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
-import { useQuery } from "@apollo/client/index"
+import { type ApolloClient, useQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
 import { useTheme } from "~/components/theme-provider"
@@ -41,31 +41,35 @@ import { buildLocalePath } from "~/utils/locale-path"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { graphql } from "gql.tada"
-import {
-  userNavigationStyles,
-  getSkeletonClass,
-  getMenuSkeletonClass,
-} from "./user-navigation-styles"
+import { userNavigationStyles } from "./user-navigation-styles"
 
 type Props = {
   onLogout(): void
 }
 
 /**
+ * 最後に取れたコイン残高（メニューを開き直したときにすぐ出す）
+ */
+const lastCoinBalance: { free: number | null; premium: number | null } = {
+  free: null,
+  premium: null,
+}
+
+/**
  * ヘッダーのナビゲーションメニューの内容部分（アイコン部分を除く）
  * HomeUserNavigationMenuから分離された最新の実装
  */
-export function UserNavigationMenuContent (props: Props) {
+export function UserNavigationMenuContent(props: Props) {
   const authContext = useContext(AuthContext)
-  const [freeCoinBalance, setFreeCoinBalance] = useState<number | null>(null)
-  const [premiumCoinBalance, setPremiumCoinBalance] = useState<number | null>(null)
+  // 前に開いたときの残高をすぐ出し、裏で取り直す
+  const [freeCoinBalance, setFreeCoinBalance] = useState<number | null>(
+    lastCoinBalance.free,
+  )
+  const [premiumCoinBalance, setPremiumCoinBalance] = useState<number | null>(
+    lastCoinBalance.premium,
+  )
 
-  const {
-    data,
-    refetch,
-    error: viewerError,
-    loading: viewerLoading,
-  } = useQuery(viewerUserQuery, {
+  const { data, error: viewerError } = useQuery(viewerUserQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     errorPolicy: "all",
     fetchPolicy: "cache-and-network", // キャッシュがある場合は即座に表示、バックグラウンドで更新
@@ -93,12 +97,6 @@ export function UserNavigationMenuContent (props: Props) {
       networkError: viewerError.networkError,
     })
   }, [viewerError])
-
-  useEffect(() => {
-    if (authContext.login) {
-      refetch()
-    }
-  }, [authContext.login, refetch])
 
   useEffect(() => {
     const loadCoinSummary = async () => {
@@ -132,11 +130,12 @@ export function UserNavigationMenuContent (props: Props) {
           throw new Error(json.error ?? "Failed to load coins")
         }
 
-        setFreeCoinBalance(json.data?.freeBalance ?? 0)
-        setPremiumCoinBalance(json.data?.premiumBalance ?? 0)
+        lastCoinBalance.free = json.data?.freeBalance ?? 0
+        lastCoinBalance.premium = json.data?.premiumBalance ?? 0
+        setFreeCoinBalance(lastCoinBalance.free)
+        setPremiumCoinBalance(lastCoinBalance.premium)
       } catch {
-        setFreeCoinBalance(null)
-        setPremiumCoinBalance(null)
+        // 取れなかったときは前の値のまま
       }
     }
 
@@ -242,277 +241,13 @@ export function UserNavigationMenuContent (props: Props) {
     return null
   }
 
-  // 通信失敗時に「永遠に読み込み中」に見えるのを防ぐ
-  // - dataが取れないがエラーが発生している場合は、認証情報だけで最低限のメニューを表示する
-  // - これにより、メニューがスケルトンで固まって見える状態を回避する
-  if (!data?.viewer?.user && viewerError) {
-    const fallbackIconUrl = authContext.avatarPhotoURL || ""
-    const fallbackDisplayName = authContext.displayName || ""
-    const fallbackLogin = authContext.login || ""
-    // トークンの login はユーザID変更後も古いままになるため、リンクには不変の数値IDを使う
-    const fallbackUserPath = `/users/${authContext.userId ?? fallbackLogin}`
-
-    return (
-      <div className={userNavigationStyles.container}>
-        <div className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800">
-          <Link
-            to={getSensitiveLink(fallbackUserPath)}
-            className="absolute bottom-[-24px] left-3"
-          >
-            <UserAvatarWithFrame
-              alt={fallbackDisplayName || "User"}
-              frame={null}
-              frameClassName="border-2 border-white"
-              sizeClassName="h-12 w-12 cursor-pointer"
-              src={withIconUrlFallback(fallbackIconUrl)}
-            />
-          </Link>
-        </div>
-
-        <div className="px-2 pb-2">
-          <h3 className={userNavigationStyles.userName}>
-            {fallbackDisplayName || t("ユーザー", "User")}
-          </h3>
-          {fallbackLogin ? (
-            <p className={userNavigationStyles.userLogin}>@{fallbackLogin}</p>
-          ) : (
-            <p className={userNavigationStyles.userLogin}>
-              {t("読み込みに失敗しました", "Failed to load")}
-            </p>
-          )}
-          <p className="mt-1 text-muted-foreground text-xs">
-            {t(
-              "ユーザー情報の取得に失敗しました。通信状況を確認してください。",
-              "Failed to fetch user info. Please check your connection.",
-            )}
-          </p>
-        </div>
-
-        <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
-          {(authContext.userId || fallbackLogin) && (
-            <MenuItemLink
-              href={getSensitiveLink(fallbackUserPath)}
-              icon={<UserCircleIcon className={userNavigationStyles.menuIcon} />}
-              label={t("マイページ", "My page")}
-            />
-          )}
-          <MenuItemLink
-            href={getSensitiveLink("/my")}
-            icon={<SquareKanbanIcon className={userNavigationStyles.menuIcon} />}
-            label={t("ダッシュボード", "Dashboard")}
-          />
-          <MenuItemLink
-            href={getSensitiveLink("/settings")}
-            icon={<SettingsIcon className={userNavigationStyles.menuIcon} />}
-            label={t("設定", "Settings")}
-          />
-          <DropdownMenuItem
-            onClick={() => refetch()}
-            className={userNavigationStyles.menuItem}
-            disabled={viewerLoading}
-          >
-            <span
-              className={`${userNavigationStyles.menuText} ${userNavigationStyles.menuItemText}`}
-            >
-              {t("再読み込み", "Retry")}
-            </span>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={props.onLogout}
-            className={userNavigationStyles.menuItem}
-          >
-            <LogOutIcon className={userNavigationStyles.menuIcon} />
-            <span
-              className={`${userNavigationStyles.menuText} ${userNavigationStyles.menuItemText}`}
-            >
-              {t("ログアウト", "Logout")}
-            </span>
-          </DropdownMenuItem>
-        </ScrollArea>
-      </div>
-    )
-  }
-
-  // データが読み込み中の場合は認証情報を使用してスケルトンを表示
-  if (!data?.viewer?.user) {
-    const fallbackIconUrl = authContext.avatarPhotoURL || ""
-    const fallbackDisplayName = authContext.displayName || ""
-    const fallbackLogin = authContext.login || ""
-    // トークンの login はユーザID変更後も古いままになるため、リンクには不変の数値IDを使う
-    const fallbackUserPath = `/users/${authContext.userId ?? fallbackLogin}`
-
-    return (
-      <div className={userNavigationStyles.container}>
-        <div className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800">
-          <Link
-            to={getSensitiveLink(fallbackUserPath)}
-            className="absolute bottom-[-24px] left-3"
-          >
-            <UserAvatarWithFrame
-              alt={fallbackDisplayName || "User"}
-              frame={null}
-              frameClassName="border-2 border-white"
-              sizeClassName="h-12 w-12 cursor-pointer"
-              src={withIconUrlFallback(fallbackIconUrl)}
-            />
-          </Link>
-        </div>
-
-        {/* ユーザー情報セクション（スケルトン）*/}
-        <div className="px-2 pb-2">
-          {/* ユーザー名部分 - フォールバック名があれば表示、なければスケルトン */}
-          {fallbackDisplayName ? (
-            <h3 className={userNavigationStyles.userName}>
-              {fallbackDisplayName}
-            </h3>
-          ) : (
-            <div
-              className={getSkeletonClass(
-                userNavigationStyles.skeleton.userName,
-              )}
-            />
-          )}
-          {/* ログイン名部分 - フォールバックログイン名があれば表示、なければスケルトン */}
-          {fallbackLogin ? (
-            <p className={userNavigationStyles.userLogin}>@{fallbackLogin}</p>
-          ) : (
-            <div
-              className={`mt-1 ${getSkeletonClass(userNavigationStyles.skeleton.userLogin)}`}
-            />
-          )}
-
-          {/* フォロー・フォロワー情報（スケルトン） */}
-          <div className="mt-3 flex items-center gap-x-4">
-            <div className="text-center">
-              {/* 数字部分 */}
-              <div
-                className={getSkeletonClass(
-                  userNavigationStyles.skeleton.followCount,
-                )}
-              />
-              {/* ラベル部分は実際のテキストを表示 */}
-              <div className={`mt-1 ${userNavigationStyles.followLabel}`}>
-                {t("フォロー中", "Following")}
-              </div>
-            </div>
-            <div className="text-center">
-              {/* 数字部分 */}
-              <div
-                className={getSkeletonClass(
-                  userNavigationStyles.skeleton.followCount,
-                )}
-              />
-              {/* ラベル部分は実際のテキストを表示 */}
-              <div className={`mt-1 ${userNavigationStyles.followLabel}`}>
-                {t("フォロワー", "Followers")}
-              </div>
-            </div>
-          </div>
-          <div className="mt-5">
-            <div className="flex items-center gap-2">
-              <CoinIcon className="h-5 w-5 shrink-0" />
-              <div
-                className={getSkeletonClass(
-                  userNavigationStyles.skeleton.followCount,
-                )}
-              />
-              <div className={userNavigationStyles.followLabel}>
-                {t("フリーコイン", "Free Coins")}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
-          {/* スケルトンメニュー項目（実際の項目数に合わせる） */}
-          {/* マイページ */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("myPage")} />
-          </div>
-          {/* ダッシュボード */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("dashboard")} />
-          </div>
-          {/* 自分の作品 */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("myPosts")} />
-          </div>
-          {/* 支援管理（条件付きで表示されるが、スケルトンでは表示しておく） */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("support")} />
-          </div>
-          {/* アカウント */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("account")} />
-          </div>
-          {/* お問い合わせ */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("contact")} />
-          </div>
-          {/* Aipictors+ */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("plus")} />
-          </div>
-          {/* 設定 */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("settings")} />
-          </div>
-          {/* テーマ */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("theme")} />
-          </div>
-          {/* 言語 */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("language")} />
-          </div>
-          {/* SensitiveToggle（条件付きで表示されるが、スケルトンでは表示しておく） */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("settings")} />
-          </div>
-          {/* ログアウト */}
-          <div className={userNavigationStyles.menuItem}>
-            <div
-              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
-            />
-            <div className={getMenuSkeletonClass("logout")} />
-          </div>
-        </ScrollArea>
-      </div>
-    )
-  }
+  // ユーザー情報を待たずにメニューを出す（取れるまではログイン時の情報で表示する）
+  const viewerLogin = data?.viewer?.user?.login ?? authContext.login ?? ""
+  // トークンの login はユーザID変更後も古いままになるため、取れるまでは不変の数値IDを使う
+  const myPagePath = data?.viewer?.user?.login
+    ? `/users/${data.viewer.user.login}`
+    : `/users/${authContext.userId ?? viewerLogin}`
+  const isViewerLoading = !data?.viewer?.user && !viewerError
 
   return (
     <div className={userNavigationStyles.container}>
@@ -527,7 +262,7 @@ export function UserNavigationMenuContent (props: Props) {
         }}
       >
         <Link
-          to={getSensitiveLink(`/users/${data?.viewer?.user?.login}`)}
+          to={getSensitiveLink(myPagePath)}
           className="absolute bottom-[-24px] left-3"
         >
           <UserAvatarWithFrame
@@ -535,7 +270,9 @@ export function UserNavigationMenuContent (props: Props) {
             frame={avatarFrame}
             frameClassName="border-2 border-white"
             sizeClassName="h-12 w-12 cursor-pointer"
-            src={withIconUrlFallback(iconUrl)}
+            src={withIconUrlFallback(
+              iconUrl || authContext.avatarPhotoURL || "",
+            )}
           />
         </Link>
       </div>
@@ -547,16 +284,14 @@ export function UserNavigationMenuContent (props: Props) {
         <h3 className={userNavigationStyles.userName}>
           {data?.viewer?.user?.name || authContext.displayName}
         </h3>
-        <p className={userNavigationStyles.userLogin}>
-          @{data?.viewer?.user?.login || authContext.login}
-        </p>
+        <p className={userNavigationStyles.userLogin}>@{viewerLogin}</p>
         {/* フォロー・フォロワー情報 */}
         <div className="mt-3 flex items-center gap-x-4">
           {" "}
           {/* gap を削減 */}
           <div className="text-center">
             <div className={userNavigationStyles.followCount}>
-              {followCount}
+              {isViewerLoading ? "–" : followCount}
             </div>
             <Link
               to={getSensitiveLink("/following")}
@@ -567,7 +302,7 @@ export function UserNavigationMenuContent (props: Props) {
           </div>
           <div className="text-center">
             <div className={userNavigationStyles.followCount}>
-              {followerCount}
+              {isViewerLoading ? "–" : followerCount}
             </div>
             <Link
               to={getSensitiveLink("/followers")}
@@ -604,7 +339,7 @@ export function UserNavigationMenuContent (props: Props) {
 
       <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
         <MenuItemLink
-          href={getSensitiveLink(`/users/${data.viewer.user.login}`)}
+          href={getSensitiveLink(myPagePath)}
           icon={<UserCircleIcon className={userNavigationStyles.menuIcon} />}
           label={t("マイページ", "My page")}
         />
@@ -797,6 +532,22 @@ const viewerUserQuery = graphql(
     }
   }`,
 )
+
+let prefetchedAt = 0
+
+/**
+ * メニューの中身で使う情報を先に取っておく（ヘッダー表示後の空き時間・カーソルを乗せたとき）
+ */
+export function prefetchUserNavigationMenu(client: ApolloClient<object>) {
+  // 1 分以内に取ったものはそのまま使う
+  if (Date.now() - prefetchedAt < 60_000) return
+  prefetchedAt = Date.now()
+  for (const query of [viewerUserQuery, userSettingQuery, viewerTokenQuery]) {
+    client.query({ query, fetchPolicy: "cache-first" }).catch(() => {
+      prefetchedAt = 0
+    })
+  }
+}
 
 // default exportとして追加
 export default UserNavigationMenuContent

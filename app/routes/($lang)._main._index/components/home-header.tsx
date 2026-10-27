@@ -6,7 +6,16 @@ import {
   useSearchParams,
 } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Loader2Icon, MenuIcon, MoveLeft, Plus, Search, X } from "lucide-react"
+import {
+  ImagePlusIcon,
+  Loader2Icon,
+  MenuIcon,
+  MoveLeft,
+  Plus,
+  Search,
+  WandSparklesIcon,
+  X,
+} from "lucide-react"
 import { lazy, Suspense, useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
@@ -24,7 +33,6 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { Separator } from "~/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
@@ -32,7 +40,7 @@ import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
-import { HomeHeaderR18Button } from "~/routes/($lang)._main._index/components/home-header-r18-button"
+import { HomeHeaderContentToggle } from "~/routes/($lang)._main._index/components/home-header-content-toggle"
 import { debugLog } from "~/utils/debug-logger"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
 import {
@@ -518,16 +526,21 @@ function HomeHeader(props: Props) {
       </div>
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
         <div className="hidden w-full items-center space-x-2 md:flex">
-          <div className="flex w-full items-center justify-end font-semibold">
-            <div className="relative ml-auto flex w-full min-w-0 max-w-[400px] flex-col rounded-xl border border-border bg-input lg:max-w-[540px]">
+          <div className="flex w-full items-center justify-end">
+            <div className="relative ml-auto flex w-full min-w-0 max-w-[420px] flex-col lg:max-w-[560px]">
+              <Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3.5 size-4 text-muted-foreground" />
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
                 onKeyDown={onEnterKey}
                 onCompositionStart={onCompStart}
                 onCompositionEnd={onCompEnd}
-                placeholder={t("タグ名を入力", "Enter tag name")}
-                className="pr-20"
+                placeholder={t(
+                  "キーワード・タグで作品を検索",
+                  "Search works by keyword or tag",
+                )}
+                aria-label={t("作品を検索", "Search works")}
+                className="h-10 rounded-full border-transparent bg-muted pr-10 pl-10 shadow-none transition-colors focus-visible:border-border focus-visible:bg-background"
               />
               <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">
                 {searchText && (
@@ -541,20 +554,9 @@ function HomeHeader(props: Props) {
                     <X className="h-4 w-4" />
                   </Button>
                 )}
-                <Button
-                  onClick={onSearch}
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  aria-label={t("検索", "Search")}
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
               </div>
             </div>
           </div>
-          <Separator orientation="vertical" />
-          {/* <R18ModeIndicator /> */}
         </div>
         {isSearchFormOpen ? (
           <div className="flex w-full space-x-2 md:hidden">
@@ -574,8 +576,9 @@ function HomeHeader(props: Props) {
                 onKeyDown={onEnterKey}
                 onCompositionStart={onCompStart}
                 onCompositionEnd={onCompEnd}
-                placeholder={t("タグ名を入力", "Enter tag name")}
-                className="w-full pr-10"
+                placeholder={t("キーワード・タグで検索", "Search")}
+                aria-label={t("作品を検索", "Search works")}
+                className="h-10 w-full rounded-full border-transparent bg-muted pr-10 pl-4 shadow-none"
               />
               <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">
                 {searchText && (
@@ -594,45 +597,59 @@ function HomeHeader(props: Props) {
           </div>
         ) : (
           <>
-            <div className="hidden space-x-2 md:flex">
-              {/* R18ボタン - 生成・投稿ボタンと同じエリアに配置 */}
-              <HomeHeaderR18Button />
-              <Button
-                variant="secondary"
-                onClick={() => handleNavigate("/generation")}
-              >
-                {t("生成", "Generate")}
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => handleNavigate("/new/image")}
-              >
-                {t("投稿", "Post")}
-              </Button>
+            <div className="hidden items-center gap-2 md:flex">
+              <HomeHeaderContentToggle />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="h-9 gap-1.5 rounded-full px-4">
+                    <Plus className="size-4" />
+                    {t("作成", "Create")}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem
+                    className="gap-2 py-2"
+                    onClick={() => handleNavigate("/generation")}
+                  >
+                    <WandSparklesIcon className="size-4" />
+                    {t("画像を生成", "Generate")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="gap-2 py-2"
+                    onClick={() => handleNavigate("/new/image")}
+                  >
+                    <ImagePlusIcon className="size-4" />
+                    {t("作品を投稿", "Post a work")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            <div className="flex space-x-2 md:hidden">
-              {/* R18ボタン - モバイル版 */}
-              <HomeHeaderR18Button />
+            <div className="flex items-center gap-1 md:hidden">
+              <HomeHeaderContentToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    aria-label={t("生成・投稿", "Generate / Post")}
+                    aria-label={t("作成", "Create")}
                   >
                     <Plus />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent align="end" className="w-44">
                   <DropdownMenuItem
+                    className="gap-2 py-2"
                     onClick={() => handleNavigate("/generation")}
                   >
-                    {t("生成", "Generate")}
+                    <WandSparklesIcon className="size-4" />
+                    {t("画像を生成", "Generate")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
+                    className="gap-2 py-2"
                     onClick={() => handleNavigate("/new/image")}
                   >
-                    {t("投稿", "Post")}
+                    <ImagePlusIcon className="size-4" />
+                    {t("作品を投稿", "Post a work")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -692,7 +709,7 @@ function HomeHeader(props: Props) {
             </div>
           ) : (
             // 未ログイン時のUI
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 md:ml-1">
               <HomeHeaderNotLoggedInMenu />
               <LoginDialogButton />
             </div>
