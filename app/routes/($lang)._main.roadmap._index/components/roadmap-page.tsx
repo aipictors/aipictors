@@ -384,7 +384,7 @@ export function RoadmapPage () {
           className="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-20"
           style={{
             backgroundImage:
-              "url('https://assets.aipictors.com/Aipictors_01.webp')",
+              "url('https://assets.aipictors.com/Aipictors_01_640.webp')",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/80 to-purple-600/80" />

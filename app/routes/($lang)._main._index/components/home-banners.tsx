@@ -49,12 +49,12 @@ export function HomeBanners (props: Props) {
     },
     {
       href: "/generation",
-      src: "https://assets.aipictors.com/Aipictors_01.webp",
+      src: "https://assets.aipictors.com/Aipictors_01_640.webp",
       title: "Aipictors Logo",
     },
     {
       href: "https://docs.google.com/forms/d/e/1FAIpQLSfyDAMllfLp8PyKJFEFhm8K7bQnSm0Nc066opKcoSp130_gkg/viewform?usp=pp_url",
-      src: "https://assets.aipictors.com/home_banner_03.webp",
+      src: "https://assets.aipictors.com/home_banner_03_1200.webp",
       blank: true,
     },
   ]

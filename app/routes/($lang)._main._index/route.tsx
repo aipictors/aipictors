@@ -1138,7 +1138,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 {!isSubscriptionUser && (
                   <Link to="/generation">
                     <img
-                      src="https://assets.aipictors.com/Aipictors_01.webp"
+                      src="https://assets.aipictors.com/Aipictors_01_640.webp"
                       alt="Aipictors Logo"
                       loading="lazy"
                       decoding="async"
