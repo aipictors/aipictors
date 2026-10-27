@@ -19,8 +19,10 @@ const DEFERRED_REL = "aipictors-deferred-modulepreload"
  */
 export const toDeferredModuleScript = (source: string): string => {
   const json = JSON.stringify(source).replaceAll("<", "\\u003c")
-  // 裏のタブでは requestAnimationFrame が動かないので、見えていないときは待たない
-  return `await new Promise(function(r){if(document.visibilityState==="hidden"){r();return}var d=false;function f(){if(!d){d=true;r()}}requestAnimationFrame(function(){setTimeout(f,0)});setTimeout(f,1000)});
+  // 最初の描画を待つ（first-contentful-paint か、2 フレーム描画されたとき。中身が画像や文字でないページもあるため）。
+  // 裏のタブでは描画されないので待たない。万一描画が来なくても 5 秒で始める
+  // （以前は 1 秒で始めていたが、計測環境では描画より先に JS の読み込みが始まっていた）
+  return `await new Promise(function(r){if(document.visibilityState==="hidden"){r();return}var d=false;function f(){if(!d){d=true;setTimeout(r,0)}}try{new PerformanceObserver(function(l){if(l.getEntriesByName("first-contentful-paint").length>0)f()}).observe({type:"paint",buffered:true})}catch(e){}requestAnimationFrame(function(){requestAnimationFrame(f)});setTimeout(f,5000)});
 document.querySelectorAll('link[rel="${DEFERRED_REL}"]').forEach(function(l){l.rel="modulepreload"});
 const source = ${json}.replace(/(from\\s*|import\\s*\\(\\s*)"\\//g, "$1\\"" + location.origin + "/");
 await import(URL.createObjectURL(new Blob([source], { type: "text/javascript" })));`
