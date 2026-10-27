@@ -101,7 +101,13 @@ export function findPromptToken(text: string, cursor: number): PromptToken {
  * 検索用に揃える（小文字・空白は _・括弧のエスケープを外す）
  */
 export function normalizeTagQuery(text: string) {
-  return text.trim().toLowerCase().replace(/\\/g, "").replace(/\s+/g, "_")
+  // 全角英数（IME がオンのまま打ったとき）も半角にそろえる
+  return text
+    .normalize("NFKC")
+    .trim()
+    .toLowerCase()
+    .replace(/\\/g, "")
+    .replace(/\s+/g, "_")
 }
 
 /**
@@ -114,10 +120,12 @@ export function searchPromptTags(
   limit = 8,
 ): PromptTagSuggestion[] {
   const q = normalizeTagQuery(query)
-  // 英数字を含まない（日本語の文章など）・短すぎるときは出さない
-  if (q.length < 2 || !/[a-z0-9]/.test(q) || !/^[\x20-\x7e]+$/.test(q)) {
+  // 英数字を含まない（日本語の文章など）ときは出さない
+  if (q.length < 1 || !/[a-z0-9]/.test(q) || !/^[\x20-\x7e]+$/.test(q)) {
     return []
   }
+  // 1 文字目はタグ名の先頭が一致するものだけ（途中の単語や別名まで探すと関係ないものが出る）
+  const isFirstLetter = q.length === 1
   // 重みの書き方（例: tag:1.2）を書いている途中なら出さない
   if (/:[\d.]*$/.test(q)) return []
 
@@ -136,6 +144,7 @@ export function searchPromptTags(
       prefixMatches.push({ ...tag, matchedAlias: null })
       continue
     }
+    if (isFirstLetter) continue
     if (wordMatches.length < limit && isWordPrefixMatch(tag.name, q)) {
       wordMatches.push({ ...tag, matchedAlias: null })
       continue

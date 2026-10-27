@@ -43,6 +43,9 @@ export function GenerationConfigOutput(props: Props) {
     if (context.config.controlNetImageBase64 !== null) {
       return t("ControlNet使用時は1枚ずつ", "ControlNet: 1 image")
     }
+    if (context.config.seed !== -1) {
+      return t("Seed指定時は1枚ずつ", "Fixed seed: 1 image")
+    }
     if (context.config.i2iImageBase64) {
       return t("画像から生成は1枚ずつ", "Image to image: 1 image")
     }

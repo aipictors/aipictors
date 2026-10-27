@@ -68,8 +68,18 @@ describe("searchPromptTags", () => {
     expect(tag.matchedAlias).toBe("sole_female")
   })
 
-  test("日本語や短すぎる入力では出さない", () => {
-    expect(searchPromptTags(tags, "t")).toEqual([])
+  test("1 文字目から先頭一致で出す", () => {
+    expect(searchPromptTags(tags, "t").map((tag) => tag.name)).toEqual([
+      "test_tube",
+      "test_plugsuit_(evangelion)",
+    ])
+  })
+
+  test("全角英字（IME オン）でも出す", () => {
+    expect(searchPromptTags(tags, "ｔｅｓｔ")[0].name).toBe("test_tube")
+  })
+
+  test("日本語の入力では出さない", () => {
     expect(searchPromptTags(tags, "女の子")).toEqual([])
   })
 })

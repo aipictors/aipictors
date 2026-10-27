@@ -14,6 +14,7 @@ const base = {
   generationType: "TEXT_TO_IMAGE",
   upscaleSize: null,
   hasControlNet: false,
+  isSeedFixed: false,
   isPaidPlan: true,
 }
 
@@ -30,6 +31,7 @@ describe("getMaxImagesPerRequest", () => {
     ).toBe(1)
     expect(getMaxImagesPerRequest({ ...base, hasControlNet: true })).toBe(1)
     expect(getMaxImagesPerRequest({ ...base, modelType: "FLUX" })).toBe(1)
+    expect(getMaxImagesPerRequest({ ...base, isSeedFixed: true })).toBe(1)
   })
 })
 

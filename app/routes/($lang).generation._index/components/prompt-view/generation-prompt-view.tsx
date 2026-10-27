@@ -7,6 +7,7 @@ import { Textarea } from "~/components/ui/textarea"
 import { useTranslation } from "~/hooks/use-translation"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { PromptCategoriesDialogContent } from "~/routes/($lang).generation._index/components/prompt-view/prompt-categories-dialog-content"
+import { PromptTagTextarea } from "~/routes/($lang).generation._index/components/prompt-view/prompt-tag-textarea"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
 /**
@@ -71,7 +72,12 @@ export function GenerationPromptView() {
       <DialogTrigger asChild>
         <div>
           <div className="block">
-            <Button aria-label={t("プロンプトの一覧", "Prompt list")} size={"icon"} variant={"ghost"} onClick={setTrue}>
+            <Button
+              aria-label={t("プロンプトの一覧", "Prompt list")}
+              size={"icon"}
+              variant={"ghost"}
+              onClick={setTrue}
+            >
               <BookTextIcon />
             </Button>
           </div>
@@ -105,21 +111,21 @@ export function GenerationPromptView() {
             action={cardAction}
           >
             <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">
-              <Textarea
-                className="hidden h-full min-h-48 resize-none font-mono md:block md:min-h-16"
-                placeholder={t(
-                  "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece",
-                  "Please enter the elements you want to generate in keywords",
-                )}
-                value={context.config.promptText}
-                onChange={(event) => {
-                  context.updatePrompt(event.target.value)
-                }}
-                onBlur={() => {
-                  context.initPromptWithLoraModel()
-                }}
-                maxLength={20000}
-              />
+              <div className="hidden h-full md:block [&>div]:h-full">
+                <PromptTagTextarea
+                  className="h-full min-h-48 resize-none font-mono md:min-h-16"
+                  placeholder={t(
+                    "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece",
+                    "Please enter the elements you want to generate in keywords",
+                  )}
+                  value={context.config.promptText}
+                  onValueChange={context.updatePrompt}
+                  onBlur={() => {
+                    context.initPromptWithLoraModel()
+                  }}
+                  maxLength={20000}
+                />
+              </div>
               <AutoResizeTextarea
                 className="block h-full min-h-48 resize-none font-mono md:hidden md:min-h-16"
                 placeholder={t(

@@ -34,6 +34,7 @@ export function useImagesPerRequest() {
     generationType,
     upscaleSize: context.config.upscaleSize,
     hasControlNet: context.config.controlNetImageBase64 !== null,
+    isSeedFixed: context.config.seed !== -1,
     isPaidPlan,
   })
 
