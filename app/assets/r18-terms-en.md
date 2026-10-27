@@ -1,5 +1,3 @@
-# R18 Content Terms
-
 Last updated: October 27, 2026
 
 These terms apply in addition to the [Terms of Service](/terms) when you view, post or generate R-18 / R-18G works on Aipictors. Where they overlap, the stricter rule applies. The Japanese version is authoritative.
