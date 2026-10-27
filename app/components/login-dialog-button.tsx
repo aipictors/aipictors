@@ -1,3 +1,6 @@
+import { Slot } from "@radix-ui/react-slot"
+import { LoaderIcon } from "lucide-react"
+import { useState } from "react"
 import { LoginDialogContent } from "~/components/login-dialog-content"
 import { Button } from "~/components/ui/button"
 import {
@@ -8,9 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
-import { cn } from "~/lib/utils"
-import { LoaderIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   label?: string
@@ -30,29 +32,51 @@ type Props = {
 
 /**
  * ログイン
+ * ダイアログは最初に押されたときに作る（一覧のいいねボタンなど、1 ページに数十個並ぶと
+ * 未ログインの表示でダイアログの部品が数十組できて、表示後の処理が重くなっていた）
  */
-export function LoginDialogButton (props: Props): React.ReactNode {
+export function LoginDialogButton(props: Props): React.ReactNode {
   const t = useTranslation()
+  const [isOpen, setIsOpen] = useState(false)
+  const [hasOpened, setHasOpened] = useState(false)
+
+  const trigger = props.triggerChildren ? (
+    props.triggerChildren
+  ) : (
+    <Button
+      variant={props.variant}
+      disabled={props.isLoading}
+      className={cn(props.isWidthFull ? "w-full" : "")}
+    >
+      {props.label ? props.label : t("ログイン", "Login")}
+      {props.isLoading && (
+        <span className="ml-2 animate-spin">
+          <LoaderIcon />
+        </span>
+      )}
+    </Button>
+  )
+
+  if (!hasOpened) {
+    return (
+      <Slot
+        onClick={(event: React.MouseEvent) => {
+          if (props.isLoading) return
+          event.preventDefault()
+          event.stopPropagation()
+          setHasOpened(true)
+          setIsOpen(true)
+        }}
+      >
+        {trigger}
+      </Slot>
+    )
+  }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger disabled={props.isLoading} asChild>
-        {props.triggerChildren ? (
-          props.triggerChildren
-        ) : (
-          <Button
-            variant={props.variant}
-            disabled={props.isLoading}
-            className={cn(props.isWidthFull ? "w-full" : "")}
-          >
-            {props.label ? props.label : t("ログイン", "Login")}
-            {props.isLoading && (
-              <span className="ml-2 animate-spin">
-                <LoaderIcon />
-              </span>
-            )}
-          </Button>
-        )}
+        {trigger}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

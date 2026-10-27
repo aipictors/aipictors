@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { cn } from "~/lib/utils"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 
@@ -40,14 +39,12 @@ export function UserAvatarWithFrame(props: Props) {
 
   if (props.frame === null || props.frame === undefined) {
     return (
-      <Avatar className={props.sizeClassName}>
-        <AvatarImage
-          alt={props.alt}
-          src={props.src ?? undefined}
-          className={props.imageClassName}
-        />
-        <AvatarFallback />
-      </Avatar>
+      <PlainAvatar
+        className={props.sizeClassName}
+        src={props.src}
+        alt={props.alt}
+        imageClassName={props.imageClassName}
+      />
     )
   }
 
@@ -80,14 +77,45 @@ export function UserAvatarWithFrame(props: Props) {
           src={props.frame.overlayImageUrl}
         />
       )}
-      <Avatar className="relative z-[2] h-full w-full border border-background/40 bg-background shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.32)]">
-        <AvatarImage
-          alt={props.alt}
-          src={props.src ?? undefined}
-          className={props.imageClassName}
-        />
-        <AvatarFallback />
-      </Avatar>
+      <PlainAvatar
+        className="relative z-[2] h-full w-full border border-background/40 bg-background shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.32)]"
+        src={props.src}
+        alt={props.alt}
+        imageClassName={props.imageClassName}
+      />
     </div>
+  )
+}
+
+/**
+ * アイコン画像（ふつうの img）
+ * 一覧で数十個並ぶので、Radix の Avatar（画像ごとに読み込み確認の処理が走り、サーバーの HTML には画像が出ない）は使わない
+ */
+function PlainAvatar(props: {
+  className?: string
+  src?: string | null
+  alt?: string
+  imageClassName?: string
+}) {
+  return (
+    <span
+      className={cn(
+        "relative flex size-10 shrink-0 overflow-hidden rounded-full bg-muted",
+        props.className,
+      )}
+    >
+      {props.src && (
+        <img
+          src={props.src}
+          alt={props.alt ?? ""}
+          className={cn(
+            "aspect-square h-full w-full object-cover",
+            props.imageClassName,
+          )}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+    </span>
   )
 }
