@@ -33,53 +33,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const tab = url.searchParams.get("tab")
 
-  const dailyThemesResp = await loaderClient.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 31,
-      where: { year, month },
-    },
-  })
-
-  const [dailyTheme = null] = dailyThemesResp.data.dailyThemes
-
-  if (dailyTheme === null) {
-    throw new Response("Not found", { status: 404 })
-  }
-
-  const targetThemesResp = await loaderClient.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 1,
-      where: { year, month, day },
-    },
-  })
-
-  const monthlyThemes = await loaderClient.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 31,
-      where: { year, month },
-    },
-  })
-
-  const worksResp = await loaderClient.query({
-    query: themeWorksAndCountQuery,
-    variables: {
-      offset: page * 64,
-      limit: 64,
-      where: {
-        subjectId: Number(targetThemesResp.data.dailyThemes[0].id),
-        ratings: ["R18", "R18G"],
-        orderBy: "DATE_CREATED",
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
   // 7日前後の日付から7日前のお題を取得する
   const sevenDaysAgo = new Date(Number(year), Number(month) - 1, Number(day))
 
@@ -107,35 +60,81 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const endDate = jstEndDate.toISOString().split("T")[0]
 
-  const afterSevenDayThemesResp = await loaderClient.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 7,
-      where: { startDate, endDate },
-    },
-  })
-
-  const dailyBeforeThemes = await loaderClient.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 14,
-      where: {
-        startDate: formatDate(sevenDaysAgo),
-        endDate: formatDate(sevenDaysAfter),
-        orderBy: "DATE_STARTED",
-        sort: "ASC",
+  // お題の取得は互いに依存しないので並行して取る（以前は 7 回を 1 つずつ待っていた）
+  const [
+    dailyThemesResp,
+    targetThemesResp,
+    afterSevenDayThemesResp,
+    dailyBeforeThemes,
+    todayThemesResp,
+  ] = await Promise.all([
+    loaderClient.query({
+      query: dailyThemesQuery,
+      variables: {
+        offset: 0,
+        limit: 31,
+        where: { year, month },
       },
-    },
-  })
+    }),
+    loaderClient.query({
+      query: dailyThemesQuery,
+      variables: {
+        offset: 0,
+        limit: 1,
+        where: { year, month, day },
+      },
+    }),
+    loaderClient.query({
+      query: dailyThemesQuery,
+      variables: {
+        offset: 0,
+        limit: 7,
+        where: { startDate, endDate },
+      },
+    }),
+    loaderClient.query({
+      query: dailyThemesQuery,
+      variables: {
+        offset: 0,
+        limit: 14,
+        where: {
+          startDate: formatDate(sevenDaysAgo),
+          endDate: formatDate(sevenDaysAfter),
+          orderBy: "DATE_STARTED",
+          sort: "ASC",
+        },
+      },
+    }),
+    loaderClient.query({
+      query: dailyThemesQuery,
+      variables: {
+        offset: 0,
+        limit: 32,
+        where: { year: todayYear, month: todayMonth, day: todayDay },
+      },
+    }),
+  ])
 
-  const todayThemesResp = await loaderClient.query({
-    query: dailyThemesQuery,
+  const [dailyTheme = null] = dailyThemesResp.data.dailyThemes
+
+  if (dailyTheme === null) {
+    throw new Response("Not found", { status: 404 })
+  }
+
+  // 月のお題一覧（dailyThemesResp と同じ条件）
+  const monthlyThemes = dailyThemesResp
+
+  const worksResp = await loaderClient.query({
+    query: themeWorksAndCountQuery,
     variables: {
-      offset: 0,
-      limit: 32,
-      where: { year: todayYear, month: todayMonth, day: todayDay },
+      offset: page * 64,
+      limit: 64,
+      where: {
+        subjectId: Number(targetThemesResp.data.dailyThemes[0].id),
+        ratings: ["R18", "R18G"],
+        orderBy: "DATE_CREATED",
+        isNowCreatedAt: true,
+      },
     },
   })
 
@@ -163,7 +162,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SensitiveDayThemePage () {
+export default function SensitiveDayThemePage() {
   const data = useLoaderData<typeof loader>()
 
   console.log(data.tab !== "list" ? "calender" : "list")

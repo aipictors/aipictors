@@ -1,4 +1,6 @@
 import type React from "react"
+import { getJstDate } from "~/utils/jst-date"
+import { getRenderNow } from "~/utils/render-now"
 import { useContext, useEffect, useState } from "react"
 import { Link, useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
@@ -46,11 +48,13 @@ type Props = {
   themeId: number | null
 }
 
-export function SensitiveThemeContainer (props: Props) {
+export function SensitiveThemeContainer(props: Props) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
-  const today = new Date()
+  // 日付は日本時間で、hydration 中はサーバーが描画した時刻で判定する（サーバーは UTC のため、
+  // その場の時刻だと「今日のお題」がずれて React がページ全体を作り直していた）
+  const today = getJstDate(new Date(getRenderNow()))
   const authContext = useContext(AuthContext)
 
   const [tab, setTab] = useState(
@@ -298,7 +302,7 @@ export function SensitiveThemeContainer (props: Props) {
                       name={theme.title}
                       isDisabled={
                         new Date(theme.year, theme.month - 1, theme.day) >
-                        new Date()
+                        getJstDate(new Date(getRenderNow()))
                       }
                       title={`${theme.year}/${theme.month}/${theme.day}`}
                       border={isToday(theme.year, theme.month, theme.day)}

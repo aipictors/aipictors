@@ -25,7 +25,7 @@ import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/ho
 import { SensitiveWorkContainer } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
 import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
 
-export function HydrateFallback () {
+export function HydrateFallback() {
   return <AppLoadingPage />
 }
 
@@ -40,12 +40,45 @@ export async function loader(props: LoaderFunctionArgs) {
   //   return redirectResponse
   // }
 
-  const workResp = await loaderClient.query({
-    query: workQuery,
-    variables: {
-      id: props.params.post,
-    },
-  })
+  const now = getJstDate(new Date())
+
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+  // 作品・コメント・新着コメント・受賞作品は互いに依存しないので並行して取る（以前は 1 つずつ待っていた）
+  const [workResp, workCommentsResp, newComments, awardWorks] =
+    await Promise.all([
+      loaderClient.query({
+        query: workQuery,
+        variables: {
+          id: props.params.post,
+        },
+      }),
+      loaderClient.query({
+        query: workCommentsQuery,
+        variables: {
+          workId: props.params.post,
+        },
+      }),
+      loaderClient.query({
+        query: newCommentsQuery,
+        variables: {
+          workId: props.params.post,
+        },
+      }),
+      loaderClient.query({
+        query: homeAwardWorksQuery,
+        variables: {
+          offset: 0,
+          limit: 4,
+          where: {
+            isSensitive: true,
+            year: yesterday.getFullYear(),
+            month: yesterday.getMonth() + 1,
+            day: yesterday.getDate(),
+          },
+        },
+      }),
+    ])
 
   if (workResp.data.work === null) {
     throw new Response(null, { status: 404 })
@@ -67,41 +100,9 @@ export async function loader(props: LoaderFunctionArgs) {
     return redirect(`/posts/${props.params.post}`)
   }
 
-  const workCommentsResp = await loaderClient.query({
-    query: workCommentsQuery,
-    variables: {
-      workId: props.params.post,
-    },
-  })
-
   if (workCommentsResp.data.work === null) {
     throw new Response(null, { status: 404 })
   }
-
-  const newComments = await loaderClient.query({
-    query: newCommentsQuery,
-    variables: {
-      workId: props.params.post,
-    },
-  })
-
-  const now = getJstDate(new Date())
-
-  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-
-  const awardWorks = await loaderClient.query({
-    query: homeAwardWorksQuery,
-    variables: {
-      offset: 0,
-      limit: 4,
-      where: {
-        isSensitive: true,
-        year: yesterday.getFullYear(),
-        month: yesterday.getMonth() + 1,
-        day: yesterday.getDate(),
-      },
-    },
-  })
 
   return {
     post: props.params.post,
@@ -162,7 +163,7 @@ export const meta: MetaFunction = (props) => {
   )
 }
 
-export default function Work () {
+export default function Work() {
   const params = useParams()
 
   if (params.post === undefined) {

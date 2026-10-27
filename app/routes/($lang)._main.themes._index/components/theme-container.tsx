@@ -1,4 +1,6 @@
 import type React from "react"
+import { getJstDate } from "~/utils/jst-date"
+import { getRenderNow } from "~/utils/render-now"
 import { useContext, useEffect, useState } from "react"
 import { Link, useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
@@ -58,14 +60,16 @@ type Props = {
   themeId: number | null
 }
 
-export function ThemeContainer (props: Props) {
+export function ThemeContainer(props: Props) {
   const navigate = useNavigate()
 
   const [searchParams] = useSearchParams()
 
   const updateQueryParams = useUpdateQueryParams()
 
-  const today = new Date()
+  // 日付は日本時間で、hydration 中はサーバーが描画した時刻で判定する（サーバーは UTC のため、
+  // その場の時刻だと「今日のお題」がずれて React がページ全体を作り直していた）
+  const today = getJstDate(new Date(getRenderNow()))
 
   const authContext = useContext(AuthContext)
 
@@ -195,13 +199,17 @@ export function ThemeContainer (props: Props) {
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="secondary" size="sm">
-            <Link to="/themes/proposals">{t("お題提案一覧", "Theme proposals")}</Link>
+            <Link to="/themes/proposals">
+              {t("お題提案一覧", "Theme proposals")}
+            </Link>
           </Button>
           <RecentThemeProposalBubble proposals={recentThemeProposals} />
         </div>
         {!authContext.isNotLoggedIn && (
           <Button asChild size="sm">
-            <Link to="/themes/proposals/new">{t("お題を提案する", "Submit a proposal")}</Link>
+            <Link to="/themes/proposals/new">
+              {t("お題を提案する", "Submit a proposal")}
+            </Link>
           </Button>
         )}
       </div>
@@ -352,7 +360,7 @@ export function ThemeContainer (props: Props) {
                       name={theme.title}
                       isDisabled={
                         new Date(theme.year, theme.month - 1, theme.day) >
-                        new Date()
+                        getJstDate(new Date(getRenderNow()))
                       }
                       title={`${theme.year}/${theme.month}/${theme.day}`}
                       border={isToday(theme.year, theme.month, theme.day)}

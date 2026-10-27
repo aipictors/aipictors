@@ -32,7 +32,8 @@ export function buildSearchPath(
   }
 
   const query = params.toString()
-  return query ? `${basePath}/?${query}` : basePath
+  // /search/?… は配信側で /search?… へ 302 され、1 往復ぶん遅くなるので末尾の / を付けない
+  return query ? `${basePath}?${query}` : basePath
 }
 
 export function getSearchTermFromPathname(pathname: string): string | null {

@@ -177,8 +177,7 @@ export function TagPageView(props: Props) {
         "@type": "ListItem",
         position: query.page * TAG_PAGE_SIZE + index + 1,
         url: `${homeUrl}/posts/${work.id}`,
-        name:
-          locale === "en" && work.enTitle ? work.enTitle : work.title,
+        name: locale === "en" && work.enTitle ? work.enTitle : work.title,
         image: work.largeThumbnailImageURL || work.smallThumbnailImageURL,
       })),
     },
@@ -231,6 +230,10 @@ export function TagPageView(props: Props) {
             src={cover.smallThumbnailImageURL}
             alt=""
             aria-hidden
+            // 画面で一番大きい画像（LCP）になるので、一覧の画像より先に読み込む
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
             className="pointer-events-none absolute inset-0 size-full scale-110 object-cover opacity-25 blur-2xl"
           />
         )}
@@ -475,15 +478,32 @@ export function TagPageView(props: Props) {
               )}
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <Button asChild variant="outline" size="sm" className="rounded-full">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+              >
                 <Link to="/tags">{t("タグ一覧", "All tags")}</Link>
               </Button>
-              <Button asChild variant="outline" size="sm" className="rounded-full">
-                <Link to={`/search?tag=${encodeURIComponent(props.tag)}`}>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+              >
+                <Link
+                  to={`/search?age_limit=&tag=${encodeURIComponent(props.tag)}`}
+                >
                   {t("このタグで詳しく検索", "Advanced search")}
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="sm" className="rounded-full">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+              >
                 <Link to="/generation">
                   {t("AIで画像を生成する", "Generate images")}
                 </Link>
