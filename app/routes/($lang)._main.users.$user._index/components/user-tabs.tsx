@@ -1,98 +1,104 @@
-import { useQuery } from "@apollo/client/index"
-import { useLocation, useNavigate } from "@remix-run/react"
+import { Link, useLocation } from "@remix-run/react"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
-import { useLocale } from "~/hooks/use-locale"
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { useUserActiveTab } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-active-tab"
-import { useUserTabLabels } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-tab-label"
-import { handleUserTabNavigation } from "~/routes/($lang)._main.users.$user._index/utils/handle-user-tab-navigation"
-import { makeNavigateCallback } from "~/utils/make-navigate-callback"
 
 type Props = {
   user: FragmentOf<typeof UserTabsFragment>
+  /** 公開しているモデル・LoRA の数 */
+  modelsCount?: number
 }
 
+/**
+ * ユーザーページの切り替え（作品の種類・シリーズ・モデルなど）
+ * 検索エンジンがたどれるように、ボタンではなくリンクにする
+ */
 export function UserTabs(props: Props) {
   const user = readFragment(UserTabsFragment, props.user)
-
+  const t = useTranslation()
   const location = useLocation()
 
-  const locale = useLocale()
+  const base = `/users/${encodeURIComponent(user.login)}`
 
-  // 実際のユーザー作品数を確認するクエリ
-  const { data: worksCountData } = useQuery(UserWorksCountQuery, {
-    variables: {
-      userId: user.id,
+  const items: Array<{ path: string; label: string; show: boolean }> = [
+    { path: "", label: t("ポートフォリオ", "Portfolio"), show: true },
+    { path: "/posts", label: t("画像", "Images"), show: user.hasImageWorks },
+    { path: "/novels", label: t("小説", "Novels"), show: user.hasNovelWorks },
+    {
+      path: "/notes",
+      label: t("コラム", "Columns"),
+      show: user.hasColumnWorks,
     },
-  })
+    { path: "/videos", label: t("動画", "Videos"), show: user.hasVideoWorks },
+    {
+      path: "/models",
+      label: t("モデル", "Models"),
+      show: (props.modelsCount ?? 0) > 0,
+    },
+    { path: "/albums", label: t("シリーズ", "Series"), show: user.hasAlbums },
+    {
+      path: "/events",
+      label: t("イベント", "Events"),
+      show: user.hasUserEvents,
+    },
+    {
+      path: "/collections",
+      label: t("コレクション", "Collections"),
+      show: user.hasFolders,
+    },
+    {
+      path: "/stickers",
+      label: t("スタンプ", "Stickers"),
+      show: user.hasPublicStickers,
+    },
+    { path: "/badges", label: t("バッジ", "Badges"), show: user.hasBadges },
+  ]
 
-  const getActiveTab = useUserActiveTab({
-    url: location.pathname,
-    lang: locale,
-  })
-
-  // 実際の作品数でタブの表示判定を行う
-  const actualImageWorksCount = worksCountData?.imageWorksCount ?? 0
-  const actualNovelWorksCount = worksCountData?.novelWorksCount ?? 0
-  const actualVideoWorksCount = worksCountData?.videoWorksCount ?? 0
-  const actualColumnWorksCount = worksCountData?.columnWorksCount ?? 0
-
-  const tabLabels = useUserTabLabels({
-    hasImageWorks: user.hasImageWorks || actualImageWorksCount > 0,
-    hasNovelWorks: user.hasNovelWorks || actualNovelWorksCount > 0,
-    hasVideoWorks: user.hasVideoWorks || actualVideoWorksCount > 0,
-    hasColumnWorks: user.hasColumnWorks || actualColumnWorksCount > 0,
-    hasFolders: user.hasFolders,
-    hasAlbums: user.hasAlbums,
-    hasUserEvents: user.hasUserEvents,
-    hasPublicStickers: user.hasPublicStickers,
-    hasBadges: user.hasBadges,
-    lang: locale,
-  })
-
-  const activeTab = getActiveTab()
-
-  const navigate = useNavigate()
-  const onNavigateCallback = makeNavigateCallback(navigate, {
-    preventScrollReset: true,
-  })
-
-  const isPrimaryTab = (label: string) => {
-    // タブラベルはロケールによって変わるため、簡易的に代表文字列で判定
-    return label === "画像" || /^images?$/i.test(label)
-  }
+  // /en/users/xxx/posts なども同じに扱う
+  const current = location.pathname
+    .replace(/^\/(en|ja)(?=\/)/, "")
+    .replace(/\/$/, "")
+  const active =
+    items
+      .filter((item) => item.path !== "")
+      .find((item) => current.endsWith(item.path))?.path ?? ""
 
   return (
-    <div className="border-border/40 border-b">
-      <div className="flex w-full gap-6 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden">
-        {tabLabels.map((label) => (
-          <button
-            key={label}
-            type="button"
-            onClick={() => {
-              handleUserTabNavigation({
-                type: label,
-                userId: user.login,
-                lang: locale,
-                onNavigateCallback,
-              })
-            }}
-            className={cn(
-              "relative shrink-0 whitespace-nowrap px-1 py-3 font-medium text-sm transition-colors",
-              label === activeTab && "text-foreground",
-              label !== activeTab &&
-                (isPrimaryTab(label)
-                  ? "text-foreground/80 hover:text-foreground"
-                  : "text-muted-foreground hover:text-foreground"),
-              label === activeTab &&
-                "after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary",
-            )}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-    </div>
+    <nav
+      aria-label={t("ユーザーページの項目", "Profile sections")}
+      className="border-b"
+    >
+      <ul className="flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {items
+          .filter((item) => item.show)
+          .map((item) => {
+            const isActive = item.path === active
+            return (
+              <li key={item.path || "portfolio"} className="shrink-0">
+                <Link
+                  to={`${base}${item.path}`}
+                  prefetch="intent"
+                  preventScrollReset
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "relative inline-flex px-3 py-3 font-medium text-sm transition-colors",
+                    isActive
+                      ? "text-foreground after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {item.label}
+                  {item.path === "/models" && (
+                    <span className="ml-1 text-muted-foreground text-xs tabular-nums">
+                      {props.modelsCount}
+                    </span>
+                  )}
+                </Link>
+              </li>
+            )
+          })}
+      </ul>
+    </nav>
   )
 }
 
@@ -109,14 +115,5 @@ export const UserTabsFragment = graphql(`
     hasUserEvents
     hasPublicStickers
     hasBadges
-  }
-`)
-
-export const UserWorksCountQuery = graphql(`
-  query UserWorksCount($userId: ID!) {
-    imageWorksCount: worksCount(where: { userId: $userId, workType: WORK, ratings: [G, R15] })
-    novelWorksCount: worksCount(where: { userId: $userId, workType: NOVEL, ratings: [G, R15] })
-    videoWorksCount: worksCount(where: { userId: $userId, workType: VIDEO, ratings: [G, R15] })
-    columnWorksCount: worksCount(where: { userId: $userId, workType: COLUMN, ratings: [G, R15] })
   }
 `)

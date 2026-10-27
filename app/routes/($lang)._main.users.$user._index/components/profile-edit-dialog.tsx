@@ -1,3 +1,4 @@
+import { useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -7,7 +8,6 @@ import {
 } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { SettingProfileForm } from "~/routes/($lang).settings.profile/components/setting-profile-form"
-import { useState } from "react"
 
 type Props = {
   triggerChildren: React.ReactNode
@@ -16,7 +16,7 @@ type Props = {
 /**
  * プロフィール編集ダイアログ
  */
-export function ProfileEditDialog (props: Props) {
+export function ProfileEditDialog(props: Props) {
   const [open, setOpen] = useState(false)
 
   return (

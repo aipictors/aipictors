@@ -1,12 +1,12 @@
+import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   ResponsiveStickersList,
   StickerListItemFragment,
 } from "~/components/responsive-stickers-list"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useContext } from "react"
 
 type Props = {
   page: number
@@ -14,7 +14,7 @@ type Props = {
   userId: string
 }
 
-export function UserStickersContents (props: Props) {
+export function UserStickersContents(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: stickersResp, refetch } = useSuspenseQuery(stickersQuery, {

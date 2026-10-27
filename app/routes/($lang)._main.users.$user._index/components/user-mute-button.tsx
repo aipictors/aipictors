@@ -1,8 +1,8 @@
-import { Button, type ButtonProps } from "~/components/ui/button"
 import { useApolloClient, useMutation } from "@apollo/client/index"
-import { toast } from "sonner"
 import { graphql } from "gql.tada"
 import { LoaderIcon } from "lucide-react"
+import { toast } from "sonner"
+import { Button, type ButtonProps } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation" // useTranslation フックをインポート
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
   onChange?: (nextValue: boolean) => void
 } & Pick<ButtonProps, "variant">
 
-export function UserMuteButton (props: Props) {
+export function UserMuteButton(props: Props) {
   const t = useTranslation() // useTranslation フックを使う
   const apolloClient = useApolloClient()
   const [mute, { loading: isMuteLoading }] = useMutation(muteUserMutation)

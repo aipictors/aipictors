@@ -276,6 +276,8 @@ export async function fetchPublicUserModels(
     baseModel?: string | null
     q?: string | null
     ratings?: string[]
+    /** このユーザーが登録したモデルだけ */
+    userId?: string | null
     offset?: number
     limit?: number
   },
@@ -289,6 +291,7 @@ export async function fetchPublicUserModels(
   if (params.kind) search.set("kind", params.kind)
   if (params.baseModel) search.set("baseModel", params.baseModel)
   if (params.q) search.set("q", params.q)
+  if (params.userId) search.set("userId", params.userId)
   search.set("ratings", (params.ratings ?? ["G", "R15"]).join(","))
   search.set("offset", String(params.offset ?? 0))
   search.set("limit", String(Math.min(Math.max(params.limit ?? 24, 1), 60)))

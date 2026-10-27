@@ -14,6 +14,7 @@ const allowedParams = [
   "baseModel",
   "sort",
   "ratings",
+  "userId",
   "offset",
   "limit",
 ] as const

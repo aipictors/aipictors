@@ -40,7 +40,8 @@ const formatNumber = (value: number) => value.toLocaleString()
 const PREMIUM_COIN_PT_MULTIPLIER = 10
 const toPremiumCoinAmount = (row: SupportRankingItem) =>
   Math.max(0, Math.floor(row.premiumPtAmount / PREMIUM_COIN_PT_MULTIPLIER))
-const toFreeCoinAmount = (row: SupportRankingItem) => Math.max(0, row.freePtAmount)
+const toFreeCoinAmount = (row: SupportRankingItem) =>
+  Math.max(0, row.freePtAmount)
 
 export function UserSupportRankingSection(props: {
   targetUserId: string
@@ -102,7 +103,10 @@ export function UserSupportRankingSection(props: {
       <CardContent className="space-y-2">
         {isLoading ? (
           [0, 1, 2].map((index) => (
-            <div key={index} className="flex items-center gap-3 rounded-lg border px-3 py-2 animate-pulse">
+            <div
+              key={index}
+              className="flex items-center gap-3 rounded-lg border px-3 py-2 animate-pulse"
+            >
               <div className="h-10 w-10 rounded-full bg-muted" />
               <div className="flex-1 space-y-1">
                 <div className="h-3 w-24 rounded bg-muted" />
@@ -145,22 +149,41 @@ export function UserSupportRankingSection(props: {
                 )}
               </div>
               <div className="shrink-0 text-right space-y-1 text-[11px]">
-                <p className="text-muted-foreground">{t("累計pt", "Cumulative pt")}</p>
-                <p className="font-bold text-sm">{formatNumber(row.ptAmount)}</p>
+                <p className="text-muted-foreground">
+                  {t("累計pt", "Cumulative pt")}
+                </p>
+                <p className="font-bold text-sm">
+                  {formatNumber(row.ptAmount)}
+                </p>
                 <div className="flex items-center justify-end gap-1 text-amber-700 dark:text-amber-400">
                   <PremiumSupportCoinIcon className="h-4 w-4" />
-                  <span>{t(`${formatNumber(toPremiumCoinAmount(row))}コイン`, `${formatNumber(toPremiumCoinAmount(row))} coins`)}</span>
+                  <span>
+                    {t(
+                      `${formatNumber(toPremiumCoinAmount(row))}コイン`,
+                      `${formatNumber(toPremiumCoinAmount(row))} coins`,
+                    )}
+                  </span>
                 </div>
                 <div className="flex items-center justify-end gap-1 text-muted-foreground">
                   <FreeSupportCoinIcon className="h-4 w-4" />
-                  <span>{t(`${formatNumber(toFreeCoinAmount(row))}コイン`, `${formatNumber(toFreeCoinAmount(row))} coins`)}</span>
+                  <span>
+                    {t(
+                      `${formatNumber(toFreeCoinAmount(row))}コイン`,
+                      `${formatNumber(toFreeCoinAmount(row))} coins`,
+                    )}
+                  </span>
                 </div>
               </div>
             </div>
           ))
         )}
 
-        <Button asChild variant="ghost" size="sm" className="mt-1 w-full text-muted-foreground text-sm">
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="mt-1 w-full text-muted-foreground text-sm"
+        >
           <Link to={`/users/${props.targetUserLogin}/supports`}>
             {t("もっと見る", "See more")}
           </Link>

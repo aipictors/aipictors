@@ -1,7 +1,5 @@
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import type React from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   user: FragmentOf<typeof UserHomeHeaderFragment>
@@ -9,58 +7,29 @@ type Props = {
 }
 
 /**
- * マイページのヘッダー
+ * ユーザーページの上部（ヘッダー画像＋プロフィール）
+ * ヘッダー画像は本文と同じ幅で、高さを抑える（以前は PC で画面の 1/3 を使っていた）。
+ * 画像は 1 枚だけ読み込む（以前は背景とぼかし用に同じ画像を 2 回描いていた）
  */
 export function UserHomeHeader(props: Props) {
   const user = readFragment(UserHomeHeaderFragment, props.user)
 
-  // ヘッダー画像がない場合
-  if (user.headerImageUrl === null) {
-    return (
-      <div className="relative">
-        <div className="relative h-20 overflow-hidden md:h-40">
-          <div className="relative m-auto">
-            <Avatar className="size-6">
-              <AvatarImage
-                className="pointer-events-none absolute top-0 left-0 h-full w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
-                src={withIconUrlFallback(user.iconUrl)}
-                alt=""
-              />
-              <AvatarFallback />
-            </Avatar>
-          </div>
-        </div>
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-2 pb-3 md:px-8 md:pt-4 md:pb-6">
-          {props.userIconView}
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="relative">
-      <div className="relative h-[140px] md:min-h-[320px]">
-        <div
-          className="pointer-events-none absolute top-0 left-0 z-10 z-standard flex h-full w-full items-center justify-center"
-          style={{
-            background: "center / cover no-repeat",
-            backgroundImage: `url(${user.headerImageUrl})`,
-          }}
-        />
-        <div className="relative m-auto">
-          <div className="pointer-events-none absolute top-0 left-0 h-full w-full max-w-full overflow-hidden">
-            <img
-              className="block h-full w-full max-w-full scale-125 object-cover object-center blur-[64px] transition-opacity duration-500"
-              src={user.headerImageUrl}
-              alt=""
-              // 上の背景画像（LCP）と同じ URL なので、優先して読み込ませる
-              fetchPriority="high"
-            />
-          </div>
-        </div>
+    <div className="mx-auto w-full max-w-6xl px-0 md:px-8 md:pt-4">
+      <div className="relative aspect-[3/1] max-h-64 w-full overflow-hidden bg-gradient-to-br from-sky-200 via-violet-200 to-pink-200 md:rounded-2xl dark:from-sky-950 dark:via-violet-950 dark:to-pink-950">
+        {user.headerImageUrl && (
+          <img
+            src={user.headerImageUrl}
+            alt=""
+            className="absolute inset-0 size-full object-cover"
+            width={1200}
+            height={400}
+            fetchPriority="high"
+            decoding="async"
+          />
+        )}
       </div>
-
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-3 pb-4 md:px-8 md:pt-6 md:pb-8">
+      <div className="relative z-10 px-4 pt-3 pb-2 md:px-6">
         {props.userIconView}
       </div>
     </div>

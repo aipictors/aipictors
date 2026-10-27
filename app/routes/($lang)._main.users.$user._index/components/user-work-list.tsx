@@ -1,13 +1,13 @@
+import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
 import { Switch } from "~/components/ui/switch"
 import { WorkCard } from "~/routes/($lang)._main.posts._index/components/work-card"
-import { Link } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
   works: FragmentOf<typeof UserWorkListItemFragment>[]
 }
 
-export function UserWorkList (props: Props) {
+export function UserWorkList(props: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2">

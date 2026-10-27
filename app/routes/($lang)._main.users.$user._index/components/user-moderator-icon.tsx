@@ -1,14 +1,14 @@
 import {
   Popover,
-  PopoverTrigger,
   PopoverContent,
+  PopoverTrigger,
 } from "~/components/ui/popover"
 
 type Props = {
   isModerator: boolean
 }
 
-export function UserModeratorIcon (props: Props) {
+export function UserModeratorIcon(props: Props) {
   const iconUrl = () => {
     if (props.isModerator) {
       return "https://assets.aipictors.com/aipictors_blue_mark.webp"

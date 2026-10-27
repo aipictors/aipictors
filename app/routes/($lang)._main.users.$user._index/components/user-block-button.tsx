@@ -1,10 +1,10 @@
-import { Button, type ButtonProps } from "~/components/ui/button"
 import { useApolloClient, useMutation } from "@apollo/client/index"
-import { toast } from "sonner"
-import { useState } from "react"
-import { LoaderIcon } from "lucide-react"
-import { useTranslation } from "~/hooks/use-translation"
 import { graphql } from "gql.tada"
+import { LoaderIcon } from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
+import { Button, type ButtonProps } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   id: string
@@ -12,7 +12,7 @@ type Props = {
   onChange?: (nextValue: boolean) => void
 } & Pick<ButtonProps, "variant">
 
-export function UserBlockButton (props: Props) {
+export function UserBlockButton(props: Props) {
   const t = useTranslation()
   const apolloClient = useApolloClient()
   const [block, { loading: isBlockLoading }] = useMutation(blockUserMutation)

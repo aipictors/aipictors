@@ -5,8 +5,8 @@ import { SupportButton } from "~/components/support-button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
-import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import { cn } from "~/lib/utils"
+import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 
 type UserProfileInfoProps = {
   userId: string

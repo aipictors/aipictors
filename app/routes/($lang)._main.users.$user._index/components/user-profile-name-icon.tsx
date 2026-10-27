@@ -3,9 +3,9 @@ import { PenLine } from "lucide-react"
 import { useContext } from "react"
 import { FollowButton } from "~/components/button/follow-button"
 import { OmissionNumber } from "~/components/omission-number"
-import { SupportButton } from "~/components/support-button"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { SnsIconLink } from "~/components/sns-icon"
+import { SupportButton } from "~/components/support-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
@@ -26,29 +26,19 @@ type Props = {
 }
 
 /**
- * ヘッダーのアイコンと名前の部分
+ * プロフィール（アイコン・名前・操作・数字・自己紹介）
+ * スマホとパソコンで同じ要素を 1 つずつだけ出して、並びだけ変える
+ * （以前は両方の分を出して片方を隠していたので、見出し h1 も 2 つあった）
  */
 export function UserProfileNameIcon(props: Props) {
   const user = readFragment(UserProfileIconFragment, props.user)
-
-  const r18WorksCount = props.r18WorksCount ?? 0
-  const r18WorksCountText = r18WorksCount >= 100 ? "99+" : String(r18WorksCount)
-  const shouldShowR18Toggle = r18WorksCount > 0
-  const r18Label = `R18（${r18WorksCountText}）`
-
   const t = useTranslation()
-
   const authContext = useContext(AuthContext)
   const { balance } = useCoinBalance()
   const hasViewerSession = hasViewerRequestSession()
 
+  const r18WorksCount = props.r18WorksCount ?? 0
   const isMyPage = authContext.userId === user.id
-
-  const isFollowee = Boolean(user.isFollowee)
-
-  const isMuted = Boolean(user.isMuted)
-
-  const isBlocked = Boolean(user.isBlocked)
   const canShowSupportButton =
     !isMyPage &&
     (!authContext.isLoading || hasViewerSession) &&
@@ -61,254 +51,157 @@ export function UserProfileNameIcon(props: Props) {
       : (user.biography ?? ""),
   ).trim()
 
-  type ExternalLink = {
-    key: "github" | "mail" | "twitter" | "instagram"
-    url: string
-    label: string
-  }
-
-  const isNotNull = <T,>(value: T | null): value is T => value !== null
-
-  const externalLinks: ExternalLink[] = [
-    user.githubAccountId
-      ? {
-          key: "github" as const,
-          url: `https://www.github.com/${user.githubAccountId}`,
-          label: t("GitHub", "GitHub"),
-        }
-      : null,
-    user.mailAddress
-      ? {
-          key: "mail" as const,
-          url: `mailto:${user.mailAddress}`,
-          label: t("メール", "Mail"),
-        }
-      : null,
+  const externalLinks = [
     user.twitterAccountId
       ? {
-          key: "twitter" as const,
-          url: `https://twitter.com/${user.twitterAccountId}`,
-          label: t("X", "X"),
+          key: "twitter",
+          url: `https://x.com/${user.twitterAccountId}`,
+          label: "X",
         }
       : null,
     user.instagramAccountId
       ? {
-          key: "instagram" as const,
+          key: "instagram",
           url: `https://www.instagram.com/${user.instagramAccountId}`,
-          label: t("Instagram", "Instagram"),
+          label: "Instagram",
         }
       : null,
-  ].filter(isNotNull)
+    user.githubAccountId
+      ? {
+          key: "github",
+          url: `https://github.com/${user.githubAccountId}`,
+          label: "GitHub",
+        }
+      : null,
+    user.mailAddress
+      ? {
+          key: "mail",
+          url: `mailto:${user.mailAddress}`,
+          label: t("メール", "Mail"),
+        }
+      : null,
+  ].filter(
+    (link): link is { key: string; url: string; label: string } =>
+      link !== null,
+  )
 
-  const hasExternalLinks = externalLinks.length > 0
+  const stats = [
+    { label: t("フォロワー", "Followers"), value: user.followersCount },
+    { label: t("いいね", "Likes"), value: user.receivedLikesCount },
+    { label: t("閲覧", "Views"), value: user.receivedViewsCount },
+    { label: t("入賞", "Awards"), value: user.awardsCount },
+  ]
 
   return (
-    <div className="relative">
-      <div className="-top-5 md:-top-10 absolute left-0">
-        <UserProfileAvatar
-          alt={user.name}
-          frame={user.avatarFrame}
-          src={withIconUrlFallback(user.iconUrl)}
-          size={"auto"}
-        />
-      </div>
-
-      <div className="min-w-0 pl-24 md:pl-40">
-        {/* Mobile header (avoid truncation + reduce clutter) */}
-        <div className="space-y-2 md:hidden">
-          <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="break-words font-bold text-xl leading-tight">
-                {user.name.length > 0 ? user.name : t("名無し", "None")}
+    <div className="space-y-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="flex min-w-0 items-end gap-4">
+          <div className="-mt-12 md:-mt-16 shrink-0 rounded-full bg-background p-1">
+            <UserProfileAvatar
+              alt={user.name}
+              frame={user.avatarFrame}
+              src={withIconUrlFallback(user.iconUrl)}
+              size="auto"
+            />
+          </div>
+          <div className="min-w-0 pb-1">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <h1 className="break-words font-bold text-xl leading-tight md:text-2xl">
+                {user.name.length > 0 ? user.name : t("名無し", "No name")}
               </h1>
               <UserSubscriptionIcon passType={user.pass?.type} />
               <UserModeratorIcon isModerator={user.isModerator} />
-              {shouldShowR18Toggle && (
-                <SensitiveToggle
-                  variant="compact"
-                  label={r18Label}
-                  className="h-6 border-red-200/40 bg-background/30 px-2 text-red-500 text-xs shadow-none dark:border-red-700/40"
-                  showStatus={false}
-                />
-              )}
             </div>
             <p className="break-all text-muted-foreground text-sm">
               @{user.login}
             </p>
           </div>
-
-          <div className="flex items-center justify-end gap-2">
-            <UserActionShare login={user.login} name={user.name} />
-            <UserActionOther
-              id={user.id}
-              isMuted={isMuted}
-              isBlocked={isBlocked}
-            />
-          </div>
         </div>
 
-        {/* Desktop header */}
-        <div className="hidden items-start justify-between gap-3 md:flex">
-          <div className="min-w-0 space-y-1">
-            <div className="flex min-w-0 items-center gap-2 md:flex-wrap md:gap-x-2 md:gap-y-1">
-              <h1 className="truncate font-bold text-xl md:text-2xl">
-                {user.name.length > 0 ? user.name : t("名無し", "None")}
-              </h1>
-              <UserSubscriptionIcon passType={user.pass?.type} />
-              <UserModeratorIcon isModerator={user.isModerator} />
-              {shouldShowR18Toggle && (
-                <SensitiveToggle
-                  variant="compact"
-                  label={r18Label}
-                  className="h-6 border-red-200/40 bg-background/30 px-2 text-red-500 text-xs shadow-none md:h-7 md:px-3 md:text-sm dark:border-red-700/40"
-                  showStatus={false}
-                />
-              )}
-            </div>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <p className="text-muted-foreground text-sm">
-                @
-                {user.login.length > 16
-                  ? `${user.login.slice(0, 16)}...`
-                  : user.login}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-2">
-            {isMyPage && (
-              <ProfileEditDialog
-                triggerChildren={
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-9 w-9 rounded-full text-muted-foreground"
-                    aria-label={t("プロフィールを編集", "Edit profile")}
-                    title={t("プロフィールを編集", "Edit profile")}
-                  >
-                    <PenLine className="size-4" />
-                  </Button>
-                }
-              />
-            )}
-            <UserActionShare login={user.login} name={user.name} />
-            {!isMyPage && (
-              <FollowButton
-                targetUserId={user.id}
-                isFollow={isFollowee}
-                triggerChildren={
-                  <Button className="font-bold">
-                    {t("フォロー", "Follow")}
-                  </Button>
-                }
-                unFollowTriggerChildren={
-                  <Button variant={"secondary"}>
-                    {t("フォロー中", "Following")}
-                  </Button>
-                }
-              />
-            )}
-            {canShowSupportButton && (
-              <SupportButton
-                targetUserId={user.id}
-                targetUserName={user.name}
-                targetUserIconUrl={user.iconUrl}
-                freeCoinBalance={balance?.freeCoinsBalance ?? 0}
-                premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
-                triggerClassName="rounded-full font-bold"
-              />
-            )}
-            <UserActionOther
-              id={user.id}
-              isMuted={isMuted}
-              isBlocked={isBlocked}
+        <div className="flex flex-wrap items-center gap-2 md:shrink-0 md:justify-end">
+          {isMyPage ? (
+            <ProfileEditDialog
+              triggerChildren={
+                <Button
+                  variant="secondary"
+                  className="flex-1 gap-1.5 rounded-full md:flex-none"
+                >
+                  <PenLine className="size-4" />
+                  {t("プロフィールを編集", "Edit profile")}
+                </Button>
+              }
             />
-          </div>
+          ) : (
+            <FollowButton
+              targetUserId={user.id}
+              isFollow={Boolean(user.isFollowee)}
+              triggerChildren={
+                <Button className="flex-1 rounded-full px-6 font-bold md:flex-none">
+                  {t("フォロー", "Follow")}
+                </Button>
+              }
+              unFollowTriggerChildren={
+                <Button
+                  variant="secondary"
+                  className="flex-1 rounded-full px-6 md:flex-none"
+                >
+                  {t("フォロー中", "Following")}
+                </Button>
+              }
+            />
+          )}
+          {canShowSupportButton && (
+            <SupportButton
+              targetUserId={user.id}
+              targetUserName={user.name}
+              targetUserIconUrl={user.iconUrl}
+              freeCoinBalance={balance?.freeCoinsBalance ?? 0}
+              premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
+              triggerClassName="rounded-full font-bold"
+            />
+          )}
+          <UserActionShare login={user.login} name={user.name} />
+          <UserActionOther
+            id={user.id}
+            isMuted={Boolean(user.isMuted)}
+            isBlocked={Boolean(user.isBlocked)}
+          />
         </div>
+      </div>
 
-        {/* Mobile: stats, then primary actions (full width), then biography + sns */}
-        <div className="-ml-24 mt-3 w-[calc(100%+6rem)] space-y-3 md:hidden">
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-semibold text-lg">
-                <OmissionNumber number={user.followersCount} />
-              </span>
-              <span className="text-[11px] text-muted-foreground">
-                {t("フォロワー", "Followers")}
-              </span>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <dl className="flex flex-wrap gap-x-6 gap-y-2">
+          {stats.map((stat) => (
+            <div
+              key={stat.label}
+              className="flex flex-row-reverse items-baseline justify-end gap-1.5"
+            >
+              <dt className="text-muted-foreground text-xs">{stat.label}</dt>
+              <dd className="font-bold text-base tabular-nums">
+                <OmissionNumber number={stat.value} />
+              </dd>
             </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-semibold text-lg">
-                <OmissionNumber number={user.receivedViewsCount} />
-              </span>
-              <span className="text-[11px] text-muted-foreground">
-                {t("閲覧", "Views")}
-              </span>
-            </div>
-            <div className="flex items-baseline gap-1.5 text-foreground/80">
-              <span className="font-semibold text-lg">
-                <OmissionNumber number={user.receivedLikesCount} />
-              </span>
-              <span className="text-[11px] text-muted-foreground/80">
-                {t("いいね", "Likes")}
-              </span>
-            </div>
-            <div className="flex items-baseline gap-1.5 text-foreground/80">
-              <span className="font-semibold text-lg">
-                <OmissionNumber number={user.awardsCount} />
-              </span>
-              <span className="text-[11px] text-muted-foreground/80">
-                {t("入賞", "Awards")}
-              </span>
-            </div>
-          </div>
+          ))}
+        </dl>
+        {r18WorksCount > 0 && (
+          <SensitiveToggle
+            variant="compact"
+            label={`R18（${r18WorksCount >= 100 ? "99+" : r18WorksCount}）`}
+            className="h-6 border-red-200/40 bg-background/30 px-2 text-red-500 text-xs shadow-none dark:border-red-700/40"
+            showStatus={false}
+          />
+        )}
+      </div>
 
-          <div className="space-y-2">
-            {isMyPage && (
-              <ProfileEditDialog
-                triggerChildren={
-                  <Button className="w-full font-bold" variant="secondary">
-                    {t("プロフィールを編集", "Edit profile")}
-                  </Button>
-                }
-              />
-            )}
-            {!isMyPage && (
-              <FollowButton
-                targetUserId={user.id}
-                isFollow={isFollowee}
-                triggerChildren={
-                  <Button className="w-full rounded-full font-bold">
-                    {t("フォロー", "Follow")}
-                  </Button>
-                }
-                unFollowTriggerChildren={
-                  <Button className="w-full rounded-full" variant={"secondary"}>
-                    {t("フォロー中", "Following")}
-                  </Button>
-                }
-              />
-            )}
-            {canShowSupportButton && (
-              <SupportButton
-                targetUserId={user.id}
-                targetUserName={user.name}
-                targetUserIconUrl={user.iconUrl}
-                freeCoinBalance={balance?.freeCoinsBalance ?? 0}
-                premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
-                triggerClassName="w-full rounded-full font-bold"
-              />
-            )}
-          </div>
-
+      {(biographyText.length > 0 || externalLinks.length > 0) && (
+        <div className="space-y-2">
           {biographyText.length > 0 && (
-            <p className="text-sm leading-relaxed">
+            <p className="max-w-3xl whitespace-pre-wrap break-words text-sm leading-relaxed">
               <UserBiography text={biographyText} />
             </p>
           )}
-
-          {hasExternalLinks && (
-            <div className="flex w-full flex-wrap items-center gap-2 pt-1 text-muted-foreground">
+          {externalLinks.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
               {externalLinks.map((link) => (
                 <SnsIconLink
                   key={link.key}
@@ -320,57 +213,7 @@ export function UserProfileNameIcon(props: Props) {
             </div>
           )}
         </div>
-
-        {hasExternalLinks && (
-          <div className="mt-2 hidden flex-wrap items-center gap-3 text-muted-foreground md:flex">
-            <div className="flex items-center gap-3">
-              {externalLinks.map((link) => (
-                <SnsIconLink
-                  key={link.key}
-                  url={link.url}
-                  ariaLabel={link.label}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Stats (supplemental) */}
-        <div className="mt-4 hidden flex-wrap items-center gap-x-6 gap-y-2 md:flex">
-          <div className="flex items-baseline gap-1.5 md:gap-2">
-            <span className="font-semibold text-lg md:text-base">
-              <OmissionNumber number={user.followersCount} />
-            </span>
-            <span className="text-[11px] text-muted-foreground md:text-xs">
-              {t("フォロワー", "Followers")}
-            </span>
-          </div>
-          <div className="flex items-baseline gap-1.5 text-foreground/80 md:gap-2">
-            <span className="font-semibold text-lg md:text-base">
-              <OmissionNumber number={user.receivedLikesCount} />
-            </span>
-            <span className="text-[11px] text-muted-foreground/80 md:text-xs">
-              {t("いいね", "Likes")}
-            </span>
-          </div>
-          <div className="flex items-baseline gap-1.5 md:gap-2">
-            <span className="font-semibold text-lg md:text-base">
-              <OmissionNumber number={user.receivedViewsCount} />
-            </span>
-            <span className="text-[11px] text-muted-foreground md:text-xs">
-              {t("閲覧", "Views")}
-            </span>
-          </div>
-          <div className="flex items-baseline gap-1.5 text-foreground/80 md:gap-2">
-            <span className="font-semibold text-lg md:text-base">
-              <OmissionNumber number={user.awardsCount} />
-            </span>
-            <span className="text-[11px] text-muted-foreground/80 md:text-xs">
-              {t("入賞", "Awards")}
-            </span>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   )
 }

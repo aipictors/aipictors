@@ -1,12 +1,13 @@
-import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData, useParams } from "@remix-run/react"
+import { Link, useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { useContext } from "react"
+import { UserModelCard } from "~/components/user-models/user-model-card"
 import { config } from "~/config"
-import { AuthContext } from "~/contexts/auth-context"
 import { ParamsError } from "~/errors/params-error"
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
+import { fetchPublicUserModels } from "~/lib/server/user-models.server"
+import { normalizeUserModel } from "~/lib/user-models/client"
 import {
   HomeNovelsWorkListItemFragment,
   HomeNovelsWorksSection,
@@ -51,6 +52,12 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  const userModelsPromise = fetchPublicUserModels(props.context, {
+    userId: userIdResp.data.user.id,
+    sort: "popular",
+    limit: 8,
+  })
+
   const userResp = await loaderClient.query({
     query: combinedUserAndWorksQuery,
     variables: {
@@ -87,7 +94,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  const userModels = await userModelsPromise
+
   return {
+    userModels: userModels.models.map(normalizeUserModel),
     works: userResp.data.works,
     user: userResp.data.user,
     userId: userIdResp.data.user.id,
@@ -104,7 +114,7 @@ export const headers: HeadersFunction = () => ({
 export default function UserLayout() {
   const params = useParams<"user">()
 
-  const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
   if (params.user === undefined) {
     throw new ParamsError()
@@ -114,70 +124,6 @@ export default function UserLayout() {
 
   const isDataReady = data !== null && data.user !== null
 
-  const userId = data?.userId ?? ""
-
-  // 人気画像作品
-  const { data: workRes } = useQuery(worksQuery, {
-    skip: authContext.isLoading || !isDataReady,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        userId: userId,
-        ratings: ["G", "R15"],
-        orderBy: "LIKES_COUNT",
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  // 人気小説作品
-  const { data: novelWorkRes } = useQuery(worksQuery, {
-    skip: authContext.isLoading || !isDataReady,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        userId: userId,
-        workType: "NOVEL",
-        ratings: ["G", "R15"],
-        orderBy: "LIKES_COUNT",
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  // 人気コラム作品
-  const { data: columnWorkRes } = useQuery(worksQuery, {
-    skip: authContext.isLoading || !isDataReady,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        userId: userId,
-        workType: "COLUMN",
-        ratings: ["G", "R15"],
-        orderBy: "LIKES_COUNT",
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const { data: videoWorkRes } = useQuery(worksQuery, {
-    skip: authContext.isLoading || !isDataReady,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        userId: userId,
-        workType: "VIDEO",
-        ratings: ["G", "R15"],
-        orderBy: "LIKES_COUNT",
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
   if (!isDataReady) {
     return null
   }
@@ -186,27 +132,41 @@ export default function UserLayout() {
     return null
   }
 
-  const works = workRes?.works ?? data.works
-
-  const novelWorks = novelWorkRes?.works || data.novelWorks
-
-  const columnWorks = columnWorkRes?.works || data.columnWorks
-
-  const videoWorks = videoWorkRes?.works || data.videoWorks
+  // 作品はサーバーで取得したものを使う（以前は表示後にブラウザで 4 種類とも取り直していた）
+  const works = data.works
+  const novelWorks = data.novelWorks
+  const columnWorks = data.columnWorks
+  const videoWorks = data.videoWorks
 
   return (
-    <div className="flex w-full flex-col justify-center">
-      <div className="mx-auto w-full max-w-6xl space-y-6 px-4 md:px-8">
+    <div className="flex w-full flex-col justify-center pb-10">
+      <div className="w-full space-y-8">
         <UserAboutCard user={data.user} />
-        <UserSupportRankingSection
-          targetUserId={data.user.id}
-          targetUserLogin={decodeURIComponent(params.user)}
-        />
         <UserPickupContents
           userPickupWorks={data.user.featuredWorks ?? []}
           userNewWorks={data.user.works ?? []}
           userId={data.user.id}
         />
+        {data.userModels.length > 0 && (
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold text-lg">
+                {t("公開しているモデル・LoRA", "Models & LoRAs")}
+              </h2>
+              <Link
+                to={`/users/${encodeURIComponent(params.user)}/models`}
+                className="text-muted-foreground text-sm hover:text-foreground"
+              >
+                {t("すべて見る", "See all")}
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {data.userModels.slice(0, 4).map((model) => (
+                <UserModelCard key={model.id} model={model} blurSensitive />
+              ))}
+            </div>
+          </section>
+        )}
         <div className="space-y-6">
           {works.length !== 0 && (
             <HomeWorkSection
@@ -230,6 +190,10 @@ export default function UserLayout() {
             />
           )}
         </div>
+        <UserSupportRankingSection
+          targetUserId={data.user.id}
+          targetUserLogin={decodeURIComponent(params.user)}
+        />
       </div>
     </div>
   )
@@ -276,20 +240,5 @@ const combinedUserAndWorksQuery = graphql(
     HomeVideosWorkListItemFragment,
     UserAboutCardFragment,
     UserPickupFragment,
-  ],
-)
-
-const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...HomeWork,
-      ...HomeNovelsWorkListItem
-      ...HomeVideosWorkListItem
-    }
-  }`,
-  [
-    HomeWorkFragment,
-    HomeNovelsWorkListItemFragment,
-    HomeVideosWorkListItemFragment,
   ],
 )
