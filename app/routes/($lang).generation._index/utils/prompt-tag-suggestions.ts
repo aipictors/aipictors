@@ -164,7 +164,7 @@ export function searchPromptTags(
  * 候補の先頭に出したくない性的なタグ
  */
 const EXPLICIT_TAG_PATTERN =
-  /(^|_)(sex|penis|testicle|testicles|vagina|pussy|clitoris|nipples?|areolae?|anus|anal|cum|cumdrip|ejaculation|erection|fellatio|cunnilingus|paizuri|masturbation|orgasm|rape|bondage|bdsm|nude|naked|topless|bottomless|pubic|genitals?|futanari|condom|dildo|vibrator|tentacle_sex|ahegao|lactation|bukkake|gangbang|handjob|footjob|blowjob|creampie|nsfw|hentai|uncensored|censored|mosaic_censoring|bar_censor|testicle_sucking|ballsack|cameltoe|spread_legs|spread_pussy)(_|$)/
+  /(^|_)(sex|penis|testicle|testicles|vagina|pussy|clitoris|nipples?|areolae?|anus|anal|cum|cumdrip|ejaculation|erection|fellatio|cunnilingus|paizuri|masturbation|orgasm|rape|bondage|bdsm|nude|naked|topless|bottomless|pubic|genitals?|futanari|condom|dildo|vibrator|tentacle_sex|ahegao|lactation|bukkake|gangbang|handjob|footjob|blowjob|creampie|nsfw|hentai|uncensored|censored|mosaic_censoring|bar_censor|testicle_sucking|ballsack|cameltoe|spread_legs|spread_pussy|loli|lolicon|shota|shotacon|toddler|child_on_child)(_|$)/
 
 function isWordPrefixMatch(name: string, q: string) {
   let index = name.indexOf(q, 1)
