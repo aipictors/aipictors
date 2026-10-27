@@ -5,7 +5,6 @@ import { GenerationTasksDeleteButton } from "~/routes/($lang).generation._index/
 import { GenerationImageDownloadButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-download-button"
 import { GenerationTaskActionDropdownMenu } from "~/routes/($lang).generation._index/components/task-view/generation-task-action-dropdown-menu"
 import { GenerationTaskCountSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-count-select"
-import { GenerationTaskPreviewModeButton } from "~/routes/($lang).generation._index/components/task-view/generation-task-preview-mode-button"
 import { GenerationTaskRatingSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-rating-select"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
@@ -26,7 +25,6 @@ type Props = {
   hidedTaskIds: string[]
   isEditMode: boolean
   showCountInput?: boolean
-  previewMode?: boolean
   showHistoryExpandButton?: boolean
   viewCount?: number
   onChangeRating(rating: number): void
@@ -38,7 +36,6 @@ type Props = {
   setSelectedTaskIds(selectedTaskIds: string[]): void
   setHidedTaskIds(selectedTaskIds: string[]): void
   onToggleEditMode(): void
-  onTogglePreviewMode(): void
   onSelectAll(): void
   onCancelAll(): void
   onRefresh?(): void
@@ -146,14 +143,6 @@ export function GenerationDemoTaskListActions (props: Props) {
               defaultValue={props.rating}
               onChange={props.onChangeRating}
             />
-          )}
-          {state !== "HISTORY_LIST_FULL" && (
-            <div className="hidden md:block">
-              <GenerationTaskPreviewModeButton
-                onTogglePreviewMode={props.onTogglePreviewMode}
-                defaultChecked={props.previewMode}
-              />
-            </div>
           )}
           {props.showCountInput && props.viewCount && (
             <GenerationTaskCountSelect

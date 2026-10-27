@@ -15,7 +15,6 @@ type Props = {
   sizeType: number
   taskIds?: string[]
   taskContentPositionType?: TaskContentPositionType
-  isPreviewByHover: boolean
   userToken: string
   onRestore?(taskId: string): void
   onCancel?(): void
@@ -50,7 +49,6 @@ export function GenerationTaskButton (props: Props) {
       <GenerationTaskEditableCard
         taskNanoid={props.task.nanoid}
         taskId={props.task.id}
-        isPreviewByHover={props.isPreviewByHover}
         estimatedSeconds={props.task.estimatedSeconds ?? 0}
         userToken={props.userToken}
         optionButtonSize={props.sizeType}

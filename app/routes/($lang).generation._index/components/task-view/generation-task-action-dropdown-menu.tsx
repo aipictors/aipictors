@@ -129,7 +129,7 @@ export function GenerationTaskActionDropdownMenu (props: Props) {
                     "left",
                   )}
                 >
-                  {t("左", "Left")}
+                  {t("中央", "Center")}
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem
                   checked={props.taskContentPositionType === "right"}

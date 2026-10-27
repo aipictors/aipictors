@@ -11,10 +11,8 @@ import { GenerationNegativePromptView } from "~/routes/($lang).generation._index
 import { GenerationPromptView } from "~/routes/($lang).generation._index/components/prompt-view/generation-prompt-view"
 import { GenerationSubmissionView } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-view"
 import { GenerationCommunicationView } from "~/routes/($lang).generation._index/components/task-view/generation-communication-view"
-import { GenerationTaskContentPreview } from "~/routes/($lang).generation._index/components/task-view/generation-task-content-preview"
 import { GenerationTaskDetailsView } from "~/routes/($lang).generation._index/components/task-view/generation-task-details-view"
 import { GenerationTaskListView } from "~/routes/($lang).generation._index/components/task-view/generation-task-list-view"
-import { GenerationWorkContentPreview } from "~/routes/($lang).generation._index/components/task-view/generation-work-content-preview"
 import { GenerationWorkListModelView } from "~/routes/($lang).generation._index/components/task-view/generation-works-from-model-view"
 import { useQuery } from "@apollo/client/index"
 import { useEffect, useState } from "react"
@@ -42,8 +40,6 @@ export default function GenerationPage () {
   const [protect, setProtect] = useState(-1)
 
   const [isEditMode, toggleEditMode] = useState(false)
-
-  const [isPreviewMode, togglePreviewMode] = useState(false)
 
   const { data: token } = useQuery(ViewerTokenQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -91,9 +87,7 @@ export default function GenerationPage () {
           }
           promptEditor={<GenerationPromptView />}
           negativePromptEditor={<GenerationNegativePromptView />}
-          taskContentPreview={<GenerationTaskContentPreview />}
           taskDetails={<GenerationTaskDetailsView />}
-          workContentPreview={<GenerationWorkContentPreview />}
           submissionView={
             <GenerationHeaderView
               submission={<GenerationSubmissionView termsText={text} />}
@@ -110,11 +104,9 @@ export default function GenerationPage () {
               rating={rating}
               protect={protect}
               isEditMode={isEditMode}
-              isPreviewMode={isPreviewMode}
               setRating={setRating}
               setProtect={setProtect}
               toggleEditMode={toggleEditMode}
-              togglePreviewMode={togglePreviewMode}
               currentUserToken={context.config.currentUserToken ?? ""}
             />
           }

@@ -8,7 +8,6 @@ type Props = {
   onCancel?(): void
   onClick?(): void
   isCanceling?: boolean
-  isPreviewByHover?: boolean
   taskId: string
   setIsHovered: (isHovered: boolean) => void
 }

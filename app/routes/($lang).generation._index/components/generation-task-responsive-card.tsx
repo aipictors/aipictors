@@ -24,7 +24,6 @@ type Props = {
   sizeType: number
   taskContentPositionType?: TaskContentPositionType
   isDialog: boolean
-  isPreviewByHover: boolean
   userToken: string
   onClick?(): void
   onCancel?(): void
@@ -77,7 +76,6 @@ export function GenerationTaskResponsiveCard (props: Props) {
               task={props.task}
               userToken={props.userToken}
               taskIds={props.taskIds}
-              isPreviewByHover={props.isPreviewByHover}
               sizeType={props.sizeType}
               taskContentPositionType={props.taskContentPositionType}
               onRestore={props.onRestore}

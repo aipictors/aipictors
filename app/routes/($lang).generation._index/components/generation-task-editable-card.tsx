@@ -7,7 +7,6 @@ import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use
 import { useMutation } from "@apollo/client/index"
 import { useState } from "react"
 import { toast } from "sonner"
-import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { ReservedGenerationCard } from "~/routes/($lang).generation._index/components/reserved-generation-card"
 import { InProgressGenerationCard } from "~/routes/($lang).generation._index/components/in-progress-generation-card"
 import { GenerationTaskZoomUpButton } from "~/routes/($lang).generation._index/components/generation-task-zoom-up-button"
@@ -50,7 +49,6 @@ type Props = {
   task:
     | FragmentOf<typeof EditableGenerationResultCardFragment>
     | FragmentOf<typeof EditableGenerationResultCardTaskFragment>
-  isPreviewByHover?: boolean
   userToken: string
   onClick?(): void
   onCancel?(): void
@@ -117,7 +115,6 @@ export function GenerationTaskEditableCard (props: Props) {
     }
   }
 
-  const { send } = GenerationConfigContext.useActorRef()
 
   /**
    * 生成タスクを削除する
@@ -299,7 +296,6 @@ export function GenerationTaskEditableCard (props: Props) {
         onCancel={() => onCancelReservedTask(props.task.nanoid)}
         isCanceling={isCanceling}
         taskId={props.taskId}
-        isPreviewByHover={props.isPreviewByHover}
         setIsHovered={setIsHovered}
       />
     )
@@ -394,15 +390,9 @@ export function GenerationTaskEditableCard (props: Props) {
     <div
       className="relative grid h-full overflow-hidden rounded bg-card p-0"
       onMouseEnter={() => {
-        if (props.isPreviewByHover) {
-          context.updatePreviewTaskId(props.task.id)
-          send({ type: "OPEN_HISTORY_PREVIEW" })
-        }
         setIsHovered(true)
       }}
       onMouseLeave={() => {
-        context.updatePreviewTaskId(null)
-        send({ type: "CLOSE" })
         setIsHovered(false)
       }}
     >

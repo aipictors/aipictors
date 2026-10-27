@@ -102,7 +102,7 @@ export function GenerationSideTabsView () {
                 className="flex-none"
                 value="COIN_HISTORY"
               >
-                {t("履歴", "History")}
+                {t("コイン履歴", "Coin history")}
               </TabsTrigger>
             </TabsList>
           </div>

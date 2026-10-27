@@ -4,6 +4,19 @@ import { GenerationConfigRestoration } from "~/routes/($lang).generation._index/
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
 import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
+import { generationConfigMachine } from "~/routes/($lang).generation._index/machines/generation-config-machine"
+import { restoreGenerationSnapshot } from "~/routes/($lang).generation._index/utils/restore-generation-snapshot"
+
+/**
+ * 保存済みの画面状態を読み込む
+ */
+function readPersistedSnapshot() {
+  if (typeof document === "undefined") return undefined
+  return restoreGenerationSnapshot(
+    localStorage.getItem("generation.state"),
+    Object.keys(generationConfigMachine.config.states ?? {}),
+  )
+}
 
 type Props = {
   children: React.ReactNode
@@ -16,12 +29,7 @@ type Props = {
 export function GenerationConfigProvider (props: Props) {
   const modelType = config.generationFeature.defaultImageModelType
 
-  const stateText =
-    typeof document !== "undefined"
-      ? localStorage.getItem("generation.state")
-      : null
-
-  const snapshot = stateText ? JSON.parse(stateText) : undefined
+  const snapshot = readPersistedSnapshot()
 
   return (
     <GenerationConfigContext.Provider

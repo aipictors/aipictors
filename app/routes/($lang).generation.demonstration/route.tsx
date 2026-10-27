@@ -4,9 +4,7 @@ import { GenerationAsideView } from "~/routes/($lang).generation._index/componen
 import { GenerationHeaderView } from "~/routes/($lang).generation._index/components/generation-view/generation-header-view"
 import { GenerationMainView } from "~/routes/($lang).generation._index/components/generation-view/generation-main-view"
 import { GenerationCommunicationView } from "~/routes/($lang).generation._index/components/task-view/generation-communication-view"
-import { GenerationTaskContentPreview } from "~/routes/($lang).generation._index/components/task-view/generation-task-content-preview"
 import { GenerationTaskDetailsView } from "~/routes/($lang).generation._index/components/task-view/generation-task-details-view"
-import { GenerationWorkContentPreview } from "~/routes/($lang).generation._index/components/task-view/generation-work-content-preview"
 import { GenerationWorkListModelView } from "~/routes/($lang).generation._index/components/task-view/generation-works-from-model-view"
 import { useQuery } from "@apollo/client/index"
 import { useEffect, useState } from "react"
@@ -35,8 +33,6 @@ export default function GenerationDemonstrationPage () {
   const [protect, setProtect] = useState(-1)
 
   const [isEditMode, toggleEditMode] = useState(false)
-
-  const [isPreviewMode, togglePreviewMode] = useState(false)
 
   const { data: token } = useQuery(ViewerTokenQuery)
 
@@ -81,9 +77,7 @@ export default function GenerationDemonstrationPage () {
             settingLanguageUsedForPromptView={null}
             promptEditor={<GenerationDemoPromptView />}
             negativePromptEditor={<GenerationDemoNegativePromptView />}
-            taskContentPreview={<GenerationTaskContentPreview />}
             taskDetails={<GenerationTaskDetailsView />}
-            workContentPreview={<GenerationWorkContentPreview />}
             submissionView={
               <GenerationHeaderView
                 submission={<GenerationDemoSubmissionView termsText={text} />}
@@ -100,11 +94,9 @@ export default function GenerationDemonstrationPage () {
                 rating={rating}
                 protect={protect}
                 isEditMode={isEditMode}
-                isPreviewMode={isPreviewMode}
                 setRating={setRating}
                 setProtect={setProtect}
                 toggleEditMode={toggleEditMode}
-                togglePreviewMode={togglePreviewMode}
                 currentUserToken={context.config.currentUserToken ?? ""}
               />
             }
