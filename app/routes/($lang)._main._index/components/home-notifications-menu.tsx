@@ -47,7 +47,7 @@ type Props = {
 /**
  * ヘッダーのお知らせメニュー
  */
-export function HomeNotificationsMenu (props: Props) {
+export function HomeNotificationsMenu(props: Props) {
   const authContext = useContext(AuthContext)
 
   // "MESSAGE" タブを追加
@@ -163,16 +163,16 @@ export function HomeNotificationsMenu (props: Props) {
           size="icon"
           variant="ghost"
           aria-label="通知"
-          className="relative"
+          className="relative shrink-0 rounded-full"
           onClick={
             props.isExistedNewNotification
               ? () => props.setIsExistedNewNotificationState(false)
               : undefined
           }
         >
-          <BellIcon className="w-16" />
+          <BellIcon className="size-5" />
           {props.isExistedNewNotification && (
-            <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
+            <div className="absolute top-1.5 right-1.5 size-2 rounded-full bg-red-500 ring-2 ring-background" />
           )}
         </Button>
       </DropdownMenuTrigger>
@@ -273,7 +273,7 @@ function IconWithDot({
     <div className="relative">
       {icon}
       {showDot && (
-        <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
+        <div className="absolute top-1.5 right-1.5 size-2 rounded-full bg-red-500 ring-2 ring-background" />
       )}
     </div>
   )

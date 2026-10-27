@@ -526,9 +526,10 @@ function HomeHeader(props: Props) {
         </div>
       </div>
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-        <div className="hidden w-full items-center space-x-2 md:flex">
-          <div className="flex w-full items-center justify-end">
-            <div className="relative ml-auto flex w-full min-w-0 max-w-[420px] flex-col lg:max-w-[560px]">
+        {/* 検索バーは YouTube のように空いている幅の真ん中に置く */}
+        <div className="hidden min-w-0 flex-1 items-center justify-center px-2 md:flex lg:px-6">
+          <div className="flex w-full min-w-0 max-w-[640px] items-center">
+            <div className="relative flex w-full min-w-0 flex-col">
               <Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3.5 size-4 text-muted-foreground" />
               <Input
                 value={searchText}
@@ -598,7 +599,7 @@ function HomeHeader(props: Props) {
           </div>
         ) : (
           <>
-            <div className="hidden items-center gap-2 md:flex">
+            <div className="hidden shrink-0 items-center gap-2 md:flex">
               <HomeHeaderContentToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -625,7 +626,7 @@ function HomeHeader(props: Props) {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex items-center gap-1 md:hidden">
+            <div className="flex shrink-0 items-center gap-1 md:hidden">
               <HomeHeaderContentToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -683,7 +684,7 @@ function HomeHeader(props: Props) {
             </div>
           ) : authContext.isLoggedIn ? (
             // ログイン時のUI（Suspenseでスムーズなローディング）
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1.5">
               <Suspense
                 fallback={
                   <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
