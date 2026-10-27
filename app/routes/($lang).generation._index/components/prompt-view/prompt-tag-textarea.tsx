@@ -12,6 +12,10 @@ import { Textarea } from "~/components/ui/textarea"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
+  hasKana,
+  kanaToRomaji,
+} from "~/routes/($lang).generation._index/utils/kana-to-romaji"
+import {
   applyPromptTag,
   findPromptToken,
   formatTagCount,
@@ -37,9 +41,25 @@ type Props = Omit<
   /** Ctrl / ⌘ + Enter */
   onSubmitShortcut?(): void
   suggestionsClassName?: string
+  /**
+   * かなだけの単語をローマ字に読み替えて候補を出す（日本語入力がオンのまま英語のタグを打ったとき用）
+   * 日本語の文章で入力するモードでは false にする
+   */
+  allowsKanaQuery?: boolean
 }
 
 export const TAG_SUGGESTIONS_STORAGE_KEY = "generation.tagSuggestions"
+
+/**
+ * 候補を探す文字（かなだけの単語はローマ字に読み替える。例: 「すみ」「ｓみ」→ sumi / smi）
+ */
+const toSearchQuery = (query: string, allowsKanaQuery: boolean) => {
+  const text = query.normalize("NFKC")
+  if (!allowsKanaQuery || !hasKana(text)) return text
+  // 漢字が入っていれば日本語の文章とみなす
+  if (/[\u4e00-\u9fff]/.test(text)) return text
+  return kanaToRomaji(text)
+}
 
 /**
  * タグの種類ごとの件数バッジの色（一般は件数が多いほど濃く）
@@ -68,6 +88,7 @@ export const PromptTagTextarea = forwardRef<HTMLTextAreaElement, Props>(
       minHeight,
       onSubmitShortcut,
       suggestionsClassName,
+      allowsKanaQuery = true,
       onKeyDown,
       onBlur,
       onFocus,
@@ -124,8 +145,12 @@ export const PromptTagTextarea = forwardRef<HTMLTextAreaElement, Props>(
     const suggestions = useMemo(() => {
       if (!isEnabled || dictionary === null || token === null) return []
       if (token.query === dismissedQuery) return []
-      return searchPromptTags(dictionary, token.query, 8)
-    }, [isEnabled, dictionary, token, dismissedQuery])
+      return searchPromptTags(
+        dictionary,
+        toSearchQuery(token.query, allowsKanaQuery),
+        8,
+      )
+    }, [isEnabled, dictionary, token, dismissedQuery, allowsKanaQuery])
 
     const isOpen = isFocused && suggestions.length > 0
 
@@ -217,7 +242,12 @@ export const PromptTagTextarea = forwardRef<HTMLTextAreaElement, Props>(
         onFocus?.(event)
       },
       onBlur: (event: React.FocusEvent<HTMLTextAreaElement>) => {
-        setIsFocused(false)
+        // スマホは候補をタップした瞬間に入力欄のフォーカスが外れるので、少し待ってから閉じる
+        setTimeout(() => {
+          if (document.activeElement !== textareaRef.current) {
+            setIsFocused(false)
+          }
+        }, 200)
         onBlur?.(event)
       },
     }

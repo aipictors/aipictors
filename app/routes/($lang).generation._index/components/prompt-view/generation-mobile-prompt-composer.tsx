@@ -170,6 +170,7 @@ export function GenerationMobilePromptComposer() {
               }
               value={value}
               onValueChange={onChange}
+              allowsKanaQuery={isNegative || !isJapanese}
               maxLength={20000}
             />
           </div>

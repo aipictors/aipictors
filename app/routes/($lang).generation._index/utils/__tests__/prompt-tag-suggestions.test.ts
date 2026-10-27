@@ -7,6 +7,7 @@ import {
   parsePromptTagDictionary,
   searchPromptTags,
 } from "~/routes/($lang).generation._index/utils/prompt-tag-suggestions"
+import { kanaToRomaji } from "~/routes/($lang).generation._index/utils/kana-to-romaji"
 
 const tags = parsePromptTagDictionary(
   [
@@ -123,5 +124,14 @@ describe("format", () => {
     expect(formatTagCount(8780)).toBe("8.78k")
     expect(formatTagCount(644)).toBe("644")
     expect(formatTagCount(6008644)).toBe("6.01M")
+  })
+})
+
+describe("kanaToRomaji", () => {
+  test("日本語入力のまま打ったかなを英字に戻す", () => {
+    expect(kanaToRomaji("すみ")).toBe("sumi")
+    expect(kanaToRomaji("ｓみ".normalize("NFKC"))).toBe("smi")
+    expect(kanaToRomaji("てすと")).toBe("tesuto")
+    expect(kanaToRomaji("しょっと")).toBe("shotto")
   })
 })

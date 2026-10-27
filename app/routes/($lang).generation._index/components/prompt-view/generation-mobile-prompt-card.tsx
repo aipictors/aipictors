@@ -95,6 +95,7 @@ export function GenerationMobilePromptCard() {
           }
           value={context.config.promptText}
           onValueChange={context.updatePrompt}
+          allowsKanaQuery={!isJapanese}
           onBlur={() => {
             context.initPromptWithLoraModel()
           }}

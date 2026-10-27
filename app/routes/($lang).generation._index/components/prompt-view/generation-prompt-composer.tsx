@@ -88,6 +88,7 @@ export function GenerationPromptComposer() {
       aria-label={t("プロンプト", "Prompt")}
       value={context.config.promptText}
       onValueChange={context.updatePrompt}
+      allowsKanaQuery={!isJapanese}
       onBlur={onBlur}
       onSubmitShortcut={requestGenerationSubmit}
       autoResize
@@ -278,6 +279,7 @@ export function GenerationPromptComposer() {
               aria-label={t("プロンプト", "Prompt")}
               value={context.config.promptText}
               onValueChange={context.updatePrompt}
+              allowsKanaQuery={!isJapanese}
               onSubmitShortcut={() => {
                 setIsExpanded(false)
                 requestGenerationSubmit()

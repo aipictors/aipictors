@@ -42,10 +42,17 @@ export function useGenerationContext () {
     return 2
   }
 
-  const configAction = new GenerationConfigAction(configContext, {
-    maxTasksCount: maxTasksCount(),
-    availableLoraModelsCount: availableLoraModelsCount(),
-  })
+  /**
+   * 設定の変更はいつも最新の設定を元にする
+   * （描画時点の設定を使うと、同じタイミングの別の変更を古い値で上書きしてしまう。
+   * 例: 「このモデルで生成」でモデルを選んだ直後に、初期化が元のモデルに戻していた）
+   */
+  const getConfigAction = () => {
+    return new GenerationConfigAction(actor.getSnapshot().context, {
+      maxTasksCount: maxTasksCount(),
+      availableLoraModelsCount: availableLoraModelsCount(),
+    })
+  }
 
   const updateSettings = (
     modelId: string,
@@ -64,7 +71,7 @@ export function useGenerationContext () {
     controlNetModule: string | null,
     controlNetModel: string | null,
   ) => {
-    const value = configAction
+    const value = getConfigAction()
       .updatePrompt(promptText ?? "")
       .updateSteps(steps)
       .updateModelId(modelId, modelType)
@@ -97,7 +104,7 @@ export function useGenerationContext () {
    * @param text
    */
   const updatePrompt = (text: string) => {
-    const value = configAction.updatePrompt(text).getState()
+    const value = getConfigAction().updatePrompt(text).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -106,7 +113,7 @@ export function useGenerationContext () {
    * @param text
    */
   const updateNegativePrompt = (text: string) => {
-    const value = configAction.updateNegativePrompt(text).getState()
+    const value = getConfigAction().updateNegativePrompt(text).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -117,7 +124,7 @@ export function useGenerationContext () {
     prompt: string,
     negativePrompt: string,
   ) => {
-    const value = configAction
+    const value = getConfigAction()
       .updatePrompt(prompt)
       .updateNegativePrompt(negativePrompt)
       .getState()
@@ -129,7 +136,7 @@ export function useGenerationContext () {
    * @param text
    */
   const updateSampler = (text: string) => {
-    const value = configAction.updateSampler(text).getState()
+    const value = getConfigAction().updateSampler(text).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -138,7 +145,7 @@ export function useGenerationContext () {
    * @param step
    */
   const updateSteps = (step: number) => {
-    const value = configAction.updateSteps(step).getState()
+    const value = getConfigAction().updateSteps(step).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -147,7 +154,7 @@ export function useGenerationContext () {
    * @param scale
    */
   const updateScale = (scale: number) => {
-    const value = configAction.updateScale(scale).getState()
+    const value = getConfigAction().updateScale(scale).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -156,7 +163,7 @@ export function useGenerationContext () {
    * @param sizeType
    */
   const updateSizeType = (sizeType: string) => {
-    const value = configAction.updateSizeType(sizeType).getState()
+    const value = getConfigAction().updateSizeType(sizeType).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -165,7 +172,7 @@ export function useGenerationContext () {
    * @param vae
    */
   const updateVae = (vae: string | null) => {
-    const value = configAction.updateVae(vae).getState()
+    const value = getConfigAction().updateVae(vae).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -174,7 +181,7 @@ export function useGenerationContext () {
    * @param seed
    */
   const updateSeed = (seed: number) => {
-    const value = configAction.updateSeed(seed).getState()
+    const value = getConfigAction().updateSeed(seed).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -183,7 +190,7 @@ export function useGenerationContext () {
    * @param modelId
    */
   const updateModelId = (modelId: string, modelType: string) => {
-    const value = configAction.updateModelId(modelId, modelType).getState()
+    const value = getConfigAction().updateModelId(modelId, modelType).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -195,7 +202,7 @@ export function useGenerationContext () {
     modelId: string | null,
     modelName: string | null,
   ) => {
-    const value = configAction
+    const value = getConfigAction()
       .updateSearchWorksModelId(modelId)
       .updateSearchWorksModelNme(modelName)
       .getState()
@@ -211,7 +218,7 @@ export function useGenerationContext () {
     modelType: string,
     promptText: string,
   ) => {
-    const value = configAction
+    const value = getConfigAction()
       .updateModelIdAndPrompt(modelId, modelType, promptText)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
@@ -222,7 +229,7 @@ export function useGenerationContext () {
    * @param clipSkip
    */
   const updateClipSkip = (clipSkip: number) => {
-    const value = configAction.updateClipSkip(clipSkip).getState()
+    const value = getConfigAction().updateClipSkip(clipSkip).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -232,7 +239,7 @@ export function useGenerationContext () {
    * @param modelValue
    */
   const updateLoraModel = (modelName: string, modelValue: number) => {
-    const value = configAction
+    const value = getConfigAction()
       .updateLoraModelValue(modelName, modelValue)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
@@ -243,7 +250,7 @@ export function useGenerationContext () {
    * @param modelIds お気に入りモデルIDの一覧
    */
   const updateFavoriteModelIds = (modelIds: number[]) => {
-    const value = configAction.updateFavoriteModelIds(modelIds).getState()
+    const value = getConfigAction().updateFavoriteModelIds(modelIds).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -252,7 +259,7 @@ export function useGenerationContext () {
    * @param taskId タスクID
    */
   const updatePreviewTaskId = (taskId: string | null) => {
-    const value = configAction.updatePreviewTask(taskId).getState()
+    const value = getConfigAction().updatePreviewTask(taskId).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -261,7 +268,7 @@ export function useGenerationContext () {
    * @param taskId タスクID
    */
   const updatePreviewImageURL = (url: string | null) => {
-    const value = configAction.updatePreviewImageURL(url).getState()
+    const value = getConfigAction().updatePreviewImageURL(url).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -271,7 +278,7 @@ export function useGenerationContext () {
    * @param taskIds
    */
   const updateViewTask = (taskId: string | null, taskIds: string[]) => {
-    const value = configAction
+    const value = getConfigAction()
       .updateViewTaskIds(taskIds)
       .updateViewTaskId(taskId)
       .getState()
@@ -284,7 +291,7 @@ export function useGenerationContext () {
    * @param taskIds
    */
   const updateViewTaskId = (taskId: string | null) => {
-    const value = configAction.updateViewTaskId(taskId).getState()
+    const value = getConfigAction().updateViewTaskId(taskId).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -293,7 +300,7 @@ export function useGenerationContext () {
    * @param thumbnailSize
    */
   const updateThumbnailSizeInPromptView = (thumbnailSize: number) => {
-    const value = configAction
+    const value = getConfigAction()
       .updateThumbnailSizeInPromptView(thumbnailSize)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
@@ -304,7 +311,7 @@ export function useGenerationContext () {
    * @param thumbnailSize
    */
   const updateThumbnailSizeInHistoryListFull = (thumbnailSize: number) => {
-    const value = configAction
+    const value = getConfigAction()
       .updateThumbnailSizeInHistoryListFull(thumbnailSize)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
@@ -314,7 +321,7 @@ export function useGenerationContext () {
    * プロンプトの値をLoRAモデルの値を考慮したうえで初期化する
    */
   const initPromptWithLoraModel = () => {
-    const value = configAction.initPromptWithLoraModelValue().getState()
+    const value = getConfigAction().initPromptWithLoraModelValue().getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -323,7 +330,7 @@ export function useGenerationContext () {
    * @param isUseRecommendedPrompt
    */
   const changeUseRecommendedPrompt = (isUseRecommendedPrompt: boolean) => {
-    const value = configAction
+    const value = getConfigAction()
       .changeUseRecommendedPrompt(isUseRecommendedPrompt)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
@@ -334,7 +341,7 @@ export function useGenerationContext () {
    * @param i2iDenoisingStrengthSize
    */
   const changeI2iDenoisingStrengthSize = (i2iDenoisingStrengthSize: number) => {
-    const value = configAction
+    const value = getConfigAction()
       .changeI2iDenoisingStrengthSize(i2iDenoisingStrengthSize)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
@@ -345,7 +352,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetImageBase64 = (item: string) => {
-    const value = configAction.changeControlNetImageBase64(item).getState()
+    const value = getConfigAction().changeControlNetImageBase64(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -354,7 +361,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetMaskImageBase64 = (item: string) => {
-    const value = configAction.changeControlNetMaskImageBase64(item).getState()
+    const value = getConfigAction().changeControlNetMaskImageBase64(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -363,7 +370,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetControlMode = (item: string | null) => {
-    const value = configAction.changeControlNetControlMode(item).getState()
+    const value = getConfigAction().changeControlNetControlMode(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -372,7 +379,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetEnabled = (item: boolean) => {
-    const value = configAction.changeControlNetEnabled(item).getState()
+    const value = getConfigAction().changeControlNetEnabled(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -381,7 +388,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeCurrentUserToken = (token: string) => {
-    const value = configAction.updateCurrentUserToken(token).getState()
+    const value = getConfigAction().updateCurrentUserToken(token).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -390,7 +397,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetGuidanceEnd = (item: number) => {
-    const value = configAction.changeControlNetGuidanceEnd(item).getState()
+    const value = getConfigAction().changeControlNetGuidanceEnd(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -399,7 +406,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetGuidanceStart = (item: number) => {
-    const value = configAction.changeControlNetGuidanceStart(item).getState()
+    const value = getConfigAction().changeControlNetGuidanceStart(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -408,7 +415,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetPixelPerfect = (item: boolean) => {
-    const value = configAction.changeControlNetPixelPerfect(item).getState()
+    const value = getConfigAction().changeControlNetPixelPerfect(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -417,7 +424,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetProcessorRes = (item: number) => {
-    const value = configAction.changeControlNetProcessorRes(item).getState()
+    const value = getConfigAction().changeControlNetProcessorRes(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -426,7 +433,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetResizeMode = (item: string) => {
-    const value = configAction.changeControlNetResizeMode(item).getState()
+    const value = getConfigAction().changeControlNetResizeMode(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -435,7 +442,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeLanguageUsedForPrompt = (item: string | null) => {
-    const value = configAction.changeLanguageUsedForPrompt(item).getState()
+    const value = getConfigAction().changeLanguageUsedForPrompt(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -444,7 +451,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetThresholdA = (item: number) => {
-    const value = configAction.changeControlNetThresholdA(item).getState()
+    const value = getConfigAction().changeControlNetThresholdA(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -453,7 +460,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetThresholdB = (item: number) => {
-    const value = configAction.changeControlNetThresholdB(item).getState()
+    const value = getConfigAction().changeControlNetThresholdB(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -462,7 +469,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetWeight = (item: number) => {
-    const value = configAction.changeControlNetWeight(item).getState()
+    const value = getConfigAction().changeControlNetWeight(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -471,12 +478,12 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetModule = (item: string) => {
-    const value = configAction.changeControlNetModule(item).getState()
+    const value = getConfigAction().changeControlNetModule(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   const resetImageInputSetting = () => {
-    const value = configAction
+    const value = getConfigAction()
       .changeControlNetModule(null)
       .changeControlNetModel(null)
       .changeI2iImageBase64("")
@@ -495,7 +502,7 @@ export function useGenerationContext () {
     module: string | null,
     weight: number | null,
   ) => {
-    const value = configAction
+    const value = getConfigAction()
       .changeControlNetModel(model)
       .changeControlNetModule(module)
       .changeControlNetWeight(weight)
@@ -510,7 +517,7 @@ export function useGenerationContext () {
     mask: string | null,
     weight: number | null,
   ) => {
-    const value = configAction
+    const value = getConfigAction()
       .changeControlNetModel(model)
       .changeControlNetModule(module)
       .changeControlNetImageBase64(image)
@@ -525,7 +532,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetModel = (item: string) => {
-    const value = configAction.changeControlNetModel(item).getState()
+    const value = getConfigAction().changeControlNetModel(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -534,7 +541,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetSaveDetectedMap = (item: boolean) => {
-    const value = configAction.changeControlNetSaveDetectedMap(item).getState()
+    const value = getConfigAction().changeControlNetSaveDetectedMap(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -543,7 +550,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetHrOption = (item: string) => {
-    const value = configAction.changeControlNetHrOption(item).getState()
+    const value = getConfigAction().changeControlNetHrOption(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -552,7 +559,7 @@ export function useGenerationContext () {
    * @param value
    */
   const changeGenerationCount = (item: number) => {
-    const value = configAction.changeGenerationCount(item).getState()
+    const value = getConfigAction().changeGenerationCount(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -565,7 +572,7 @@ export function useGenerationContext () {
     triggerWord?: string,
     weight?: number,
   ) => {
-    const value = configAction
+    const value = getConfigAction()
       .changeLoraModel(modelName, triggerWord, weight)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
@@ -576,7 +583,7 @@ export function useGenerationContext () {
    * @param i2iImageBase64
    */
   const changeUpscaleSize = (size: number | null) => {
-    const value = configAction.changeUpscaleSize(size).getState()
+    const value = getConfigAction().changeUpscaleSize(size).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -585,7 +592,7 @@ export function useGenerationContext () {
    * @param i2iImageBase64
    */
   const changeI2iImageBase64 = (i2iImageBase64: string) => {
-    const value = configAction.changeI2iImageBase64(i2iImageBase64).getState()
+    const value = getConfigAction().changeI2iImageBase64(i2iImageBase64).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -594,7 +601,7 @@ export function useGenerationContext () {
    * @param
    */
   const changeTaskListThumbnailType = (type: string) => {
-    const value = configAction.changeTaskListThumbnailType(type).getState()
+    const value = getConfigAction().changeTaskListThumbnailType(type).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -603,7 +610,7 @@ export function useGenerationContext () {
    * @param
    */
   const changePage = (page: number) => {
-    const value = configAction.changePage(page).getState()
+    const value = getConfigAction().changePage(page).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -611,7 +618,7 @@ export function useGenerationContext () {
    * データリセット
    */
   const reset = () => {
-    const value = configAction.reset().getState()
+    const value = getConfigAction().reset().getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -619,7 +626,7 @@ export function useGenerationContext () {
    * 初期化向けデータリセット（画面リロード時に実行する）
    */
   const resetForInit = () => {
-    const value = configAction.resetForInit().getState()
+    const value = getConfigAction().resetForInit().getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
