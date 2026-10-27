@@ -7,6 +7,8 @@ type Props = {
   user: FragmentOf<typeof UserTabsFragment>
   /** 公開しているモデル・LoRA の数 */
   modelsCount?: number
+  /** 種類ごとの作品数（hasImageWorks などが実際と合わないことがあるため） */
+  worksCounts?: { image: number; novel: number; video: number; column: number }
 }
 
 /**
@@ -22,14 +24,14 @@ export function UserTabs(props: Props) {
 
   const items: Array<{ path: string; label: string; show: boolean }> = [
     { path: "", label: t("ポートフォリオ", "Portfolio"), show: true },
-    { path: "/posts", label: t("画像", "Images"), show: user.hasImageWorks },
-    { path: "/novels", label: t("小説", "Novels"), show: user.hasNovelWorks },
+    { path: "/posts", label: t("画像", "Images"), show: user.hasImageWorks || (props.worksCounts?.image ?? 0) > 0 },
+    { path: "/novels", label: t("小説", "Novels"), show: user.hasNovelWorks || (props.worksCounts?.novel ?? 0) > 0 },
     {
       path: "/notes",
       label: t("コラム", "Columns"),
-      show: user.hasColumnWorks,
+      show: user.hasColumnWorks || (props.worksCounts?.column ?? 0) > 0,
     },
-    { path: "/videos", label: t("動画", "Videos"), show: user.hasVideoWorks },
+    { path: "/videos", label: t("動画", "Videos"), show: user.hasVideoWorks || (props.worksCounts?.video ?? 0) > 0 },
     {
       path: "/models",
       label: t("モデル", "Models"),

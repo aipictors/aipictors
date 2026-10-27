@@ -77,7 +77,10 @@ import {
   HomeNewPostedUsersFragment,
   HomeNewUsersSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-section"
-import { HomeNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import {
+  HomeNewUsersWorksFragment,
+  HomeNewUsersWorksSection,
+} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
@@ -98,7 +101,10 @@ import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/compone
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import type { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksTagSection } from "~/routes/($lang)._main._index/components/home-works-tag-section"
-import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import {
+  HomePromotionWorkFragment,
+  HomeWorksUsersRecommendedSection,
+} from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { PER_IMG } from "~/routes/($lang)._main._index/utils/works-utils"
 import type {
   MicroCmsApiRelease,
@@ -379,6 +385,9 @@ export async function loader(props: LoaderFunctionArgs) {
       day: now.getDate(),
       month: now.getMonth() + 1,
       year: now.getFullYear(),
+      // 最初に見える一覧と右カラムはサーバーで取ってHTMLに入れる（以前は表示後にログイン確認を待ってから取得していた）
+      promotionLimit: config.query.homeWorkCount.promotion,
+      newUserWorksLimit: config.query.homeWorkCount.newUser,
     },
   })
 
@@ -997,21 +1006,18 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 featuredReleases={data.featuredReleaseList}
                 releaseList={data.releaseList}
               />
-              <HomeDeferredSection
-                fallback={
-                  <HomeWorkSectionPlaceholder
-                    title={t("ユーザからの推薦", "Recommended by users")}
-                  />
+              {/* サーバーで取った一覧をすぐ出す（スクロールやログイン確認を待たない） */}
+              <HomeWorksUsersRecommendedSection
+                works={
+                  data.promotionWorks as FragmentOf<
+                    typeof HomePromotionWorkFragment
+                  >[]
                 }
-              >
-                <HomeWorksUsersRecommendedSection
-                  works={[]}
-                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                  onWorksLoaded={(works) =>
-                    updateHomeSectionWorks("recommended", works)
-                  }
-                />
-              </HomeDeferredSection>
+                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                onWorksLoaded={(works) =>
+                  updateHomeSectionWorks("recommended", works)
+                }
+              />
               {/* ログインしている人だけ（未ログインでは中身が取れず、見出しだけ出ていた） */}
               {authContext.isLoggedIn && (
                 <HomeDeferredSection
@@ -1034,25 +1040,17 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                   />
                 </HomeDeferredSection>
               )}
-              <HomeDeferredSection
-                fallback={
-                  <HomeWorkSectionPlaceholder
-                    title={t(
-                      "新規クリエイターの初投稿作品",
-                      "New creators' first works",
-                    )}
-                    variant="cropped"
-                  />
+              <HomeNewUsersWorksSection
+                works={
+                  data.newUserWorks as FragmentOf<
+                    typeof HomeNewUsersWorksFragment
+                  >[]
                 }
-              >
-                <HomeNewUsersWorksSection
-                  works={[]}
-                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                  onWorksLoaded={(works) =>
-                    updateHomeSectionWorks("newUsers", works)
-                  }
-                />
-              </HomeDeferredSection>
+                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                onWorksLoaded={(works) =>
+                  updateHomeSectionWorks("newUsers", works)
+                }
+              />
               <HomeDeferredSection
                 fallback={
                   <HomeWorkSectionPlaceholder
@@ -1974,7 +1972,33 @@ const query = graphql(
     $year: Int!
     $month: Int!
     $day: Int!
+    $promotionLimit: Int!
+    $newUserWorksLimit: Int!
   ) {
+    promotionWorks: works(
+      offset: 0
+      limit: $promotionLimit
+      where: { isRecommended: true, sort: DESC, ratings: [G, R15] }
+    ) {
+      ...HomePromotionWork
+    }
+    newUserWorks(
+      offset: 0
+      limit: $newUserWorksLimit
+      where: { ratings: [G], isNowCreatedAt: true }
+    ) {
+      ...HomeNewUsersWorks
+    }
+    newPostedUsers(offset: 0, limit: 8) {
+      ...HomeNewPostedUsers
+    }
+    newComments(
+      offset: 0
+      limit: 8
+      where: { isSensitive: false, isTextOnly: true, ratings: [G, R15] }
+    ) {
+      ...HomeNewComments
+    }
     dailyTheme(year: $year, month: $month, day: $day) {
       id
       title
@@ -2020,7 +2044,14 @@ const query = graphql(
       userName
     }
   }`,
-  [HomeTagListItemFragment, HomeTagFragment],
+  [
+    HomeTagListItemFragment,
+    HomeTagFragment,
+    HomePromotionWorkFragment,
+    HomeNewUsersWorksFragment,
+    HomeNewPostedUsersFragment,
+    HomeNewCommentsFragment,
+  ],
 )
 
 const homeSidebarQuery = graphql(

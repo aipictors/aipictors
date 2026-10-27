@@ -65,6 +65,13 @@ export async function loader(props: LoaderFunctionArgs) {
   return {
     user: result.data.user,
     r18WorksCount: r18WorksCountResult.data.r18WorksCount,
+    // hasImageWorks などが作品があっても false のことがあるので、件数でもタブを出す
+    worksCounts: {
+      image: r18WorksCountResult.data.imageWorksCount,
+      novel: r18WorksCountResult.data.novelWorksCount,
+      video: r18WorksCountResult.data.videoWorksCount,
+      column: r18WorksCountResult.data.columnWorksCount,
+    },
     modelsCount: userModels.models.length,
   }
 }
@@ -152,7 +159,11 @@ export default function UserLayout() {
         }
       />
       <div className="mx-auto w-full max-w-6xl space-y-4 px-4 md:px-8">
-        <UserTabs user={user} modelsCount={data.modelsCount} />
+        <UserTabs
+          user={user}
+          modelsCount={data.modelsCount}
+          worksCounts={data.worksCounts}
+        />
         <Outlet />
       </div>
     </div>
@@ -244,5 +255,9 @@ const UserQuery = graphql(
 const UserR18WorksCountQuery = graphql(
   `query UserR18WorksCount($userId: ID!) {
     r18WorksCount: worksCount(where: { userId: $userId, ratings: [R18, R18G], isSensitive: true })
+    imageWorksCount: worksCount(where: { userId: $userId, workType: WORK, ratings: [G, R15] })
+    novelWorksCount: worksCount(where: { userId: $userId, workType: NOVEL, ratings: [G, R15] })
+    videoWorksCount: worksCount(where: { userId: $userId, workType: VIDEO, ratings: [G, R15] })
+    columnWorksCount: worksCount(where: { userId: $userId, workType: COLUMN, ratings: [G, R15] })
   }`,
 )
