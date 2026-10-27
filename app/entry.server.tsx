@@ -105,7 +105,10 @@ export default async function handleRequest(
   const cacheTtlSeconds = cacheControl
     ? parseCacheControlMaxAgeSeconds(cacheControl)
     : null
+  // ページのキャッシュは入口（functions/[[path]].ts → app/lib/edge-page-cache.ts）で loader より前に行う。
+  // ここでのキャッシュは loader の後なので API・DB の負荷を減らせず、二重になるため使わない
   const canUseEdgeHtmlCache =
+    false &&
     import.meta.env.PROD &&
     loaderStatusCode === 200 &&
     cacheTtlSeconds !== null &&

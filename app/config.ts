@@ -112,30 +112,32 @@ type AppConfig = {
  * 設定
  */
 export const config: AppConfig = {
+  // ブラウザには保存させず（max-age=0）、Cloudflare の拠点でだけ s-maxage の間キャッシュする（app/lib/edge-page-cache.ts）。
+  // サーバー側の描画はログイン状態に依存しないので、URL ごとに使い回せる
   cacheControl: {
     get home(): string {
       return "public, max-age=0, s-maxage=60, stale-while-revalidate=300"
     },
     get short(): string {
-      return "no-store, no-cache, must-revalidate, max-age=0"
+      return "public, max-age=0, s-maxage=30, stale-while-revalidate=300"
     },
     get tenSeconds(): string {
-      return "no-store, no-cache, must-revalidate, max-age=0"
+      return "public, max-age=0, s-maxage=10, stale-while-revalidate=60"
     },
     get oneMinute(): string {
-      return "no-store, no-cache, must-revalidate, max-age=0"
+      return "public, max-age=0, s-maxage=60, stale-while-revalidate=300"
     },
     get oneHour(): string {
-      return "no-store, no-cache, must-revalidate, max-age=0"
+      return "public, max-age=0, s-maxage=120, stale-while-revalidate=900"
     },
     get oneDay(): string {
-      return "no-store, no-cache, must-revalidate, max-age=0"
+      return "public, max-age=0, s-maxage=600, stale-while-revalidate=3600"
     },
     get oneWeek(): string {
-      return "no-store, no-cache, must-revalidate, max-age=0"
+      return "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
     },
     get oneMonth(): string {
-      return "no-store, no-cache, must-revalidate, max-age=0"
+      return "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
     },
   },
   fcm: {
