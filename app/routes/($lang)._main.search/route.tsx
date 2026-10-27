@@ -171,6 +171,50 @@ export async function loader(props: LoaderFunctionArgs) {
     prompt,
   })
 
+  // タイトル・説明の部分一致（D1 の検索用データベース）。GraphQL の取得と並行して進める
+  const searchDb = getSearchDb(props.context)
+  const requestedMode = url.searchParams.get("mode")
+  const textResultPromise =
+    searchQuery && searchDb
+      ? searchWorkIdsByText({
+          db: searchDb,
+          query: searchQuery,
+          rating,
+          offset:
+            requestedMode === "text"
+              ? Math.min(currentPage, TEXT_SEARCH_MAX_PAGE) * RESULTS_LIMIT
+              : 0,
+          limit: RESULTS_LIMIT,
+        }).catch((error) => {
+          console.error("text search failed", error)
+          return null
+        })
+      : Promise.resolve(null)
+  const fetchTextWorks = async (ids: string[]) => {
+    if (ids.length === 0) return []
+    try {
+      const resp = await loaderClient.query({
+        query: searchTextWorksQuery,
+        variables: {
+          offset: 0,
+          limit: ids.length,
+          where: { ids, ratings: [rating] },
+        },
+      })
+      const byId = new Map(resp.data.works.map((work) => [work.id, work]))
+      return ids
+        .map((id) => byId.get(id))
+        .filter((work) => work !== undefined)
+    } catch {
+      return []
+    }
+  }
+  // タイトル・説明のタブを開いているときは、作品の取得も先に始めておく
+  const eagerTextWorksPromise =
+    requestedMode === "text"
+      ? textResultPromise.then((result) => fetchTextWorks(result?.ids ?? []))
+      : null
+
   const [popularTagsResp, rankingResp, worksResp, worksCountResp] =
     await Promise.all([
       loaderClient.query({
@@ -216,25 +260,7 @@ export async function loader(props: LoaderFunctionArgs) {
         : Promise.resolve(null),
     ])
 
-  // タイトル・説明の部分一致（D1 の検索用データベース）
-  const searchDb = getSearchDb(props.context)
-  const requestedMode = url.searchParams.get("mode")
-  const textResult =
-    searchQuery && searchDb
-      ? await searchWorkIdsByText({
-          db: searchDb,
-          query: searchQuery,
-          rating,
-          offset:
-            requestedMode === "text"
-              ? Math.min(currentPage, TEXT_SEARCH_MAX_PAGE) * RESULTS_LIMIT
-              : 0,
-          limit: RESULTS_LIMIT,
-        }).catch((error) => {
-          console.error("text search failed", error)
-          return null
-        })
-      : null
+  const textResult = await textResultPromise
   const tagWorksCount =
     worksCountResp?.data?.worksCount ??
     worksCountResp?.data?.tagWorksCount ??
@@ -249,24 +275,11 @@ export async function loader(props: LoaderFunctionArgs) {
         : "tag"
 
   const textWorks =
-    mode === "text" && textResult && textResult.ids.length > 0
-      ? await loaderClient
-          .query({
-            query: searchTextWorksQuery,
-            variables: {
-              offset: 0,
-              limit: textResult.ids.length,
-              where: { ids: textResult.ids, ratings: [rating] },
-            },
-          })
-          .then((resp) => {
-            const byId = new Map(resp.data.works.map((work) => [work.id, work]))
-            return textResult.ids
-              .map((id) => byId.get(id))
-              .filter((work) => work !== undefined)
-          })
-          .catch(() => [])
-      : []
+    mode !== "text"
+      ? []
+      : eagerTextWorksPromise
+        ? await eagerTextWorksPromise
+        : await fetchTextWorks(textResult?.ids ?? [])
 
   const works =
     mode === "text" ? textWorks : (worksResp?.data?.tagWorks ?? [])
