@@ -52,13 +52,22 @@ import {
 } from "~/lib/user-models/import-utils"
 import type { UserModel } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
-import { toDateText } from "~/utils/to-date-text"
 
 type Props = {
   id: string
   initialModel: UserModel | null
   /** 同じ系統・種類のモデル（サーバーで取得） */
   relatedModels?: UserModel[]
+}
+
+/**
+ * 公開日（日本時間の「MM月dd日」）。サーバー（UTC）とブラウザで同じ文字列になるよう時差を固定で足す
+ */
+const toJstMonthDayText = (unixSeconds: number) => {
+  const date = new Date((unixSeconds + 9 * 60 * 60) * 1000)
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
+  const day = String(date.getUTCDate()).padStart(2, "0")
+  return `${month}月${day}日`
 }
 
 const copyText = async (text: string, label: string) => {
@@ -348,11 +357,7 @@ export function UserModelDetail(props: Props) {
             <StatItem
               icon={<CalendarIcon className="size-3" />}
               label="公開日"
-              value={
-                model.createdAt
-                  ? toDateText(model.createdAt).replace(/^\d{4}年/, "")
-                  : "-"
-              }
+              value={model.createdAt ? toJstMonthDayText(model.createdAt) : "-"}
             />
           </div>
 
