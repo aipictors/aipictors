@@ -78,12 +78,25 @@ export const getPathLocale = (pathname: string): SupportedLocale => {
   return parseLocalePath(pathname).locale
 }
 
+/**
+ * canonical に残すクエリ（並び替え・絞り込み・トラッキング用のクエリは外して、
+ * 同じ内容の URL を 1 つにまとめる）。ページ番号だけは別の内容なので残す。
+ */
+export const toCanonicalSearch = (search: string) => {
+  const params = new URLSearchParams(search)
+  const page = Number.parseInt(params.get("page") ?? "", 10)
+  if (Number.isFinite(page) && page > 0) {
+    return `?page=${page}`
+  }
+  return ""
+}
+
 export const buildAlternateLocaleUrls = (
   pathname: string,
   siteUrl: string,
   search = "",
 ) => {
-  const normalizedSearch = search ?? ""
+  const normalizedSearch = toCanonicalSearch(search ?? "")
   const jaPath = buildLocalePath("ja", pathname)
   const enPath = buildLocalePath("en", pathname)
 

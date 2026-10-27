@@ -40,24 +40,31 @@ export function createMeta(
     ? replacePlaceholders(metaImage)
     : metaImage
 
+  // 改行や連続した空白は検索結果のスニペットで崩れるので 1 つの空白にまとめる
+  const normalizeText = (text: string) => text.replace(/\s+/g, " ").trim()
+  const enDescriptionText = normalizeText(
+    replacePlaceholders(metaEnDescription || metadata.descriptionEN),
+  )
+  const jaDescriptionText = normalizeText(
+    replacePlaceholders(metaDescription || ""),
+  )
+
   const description =
     lang === "en"
-      ? replacePlaceholders(
-          metaEnDescription && metaEnDescription.length > 155
-            ? `${metaEnDescription.substring(0, 152)}...`
-            : metaEnDescription || metadata.descriptionEN,
-        )
-      : replacePlaceholders(
-          metaDescription.length > 155
-            ? `${metaDescription.substring(0, 152)}...`
-            : metaDescription || "",
-        )
+      ? enDescriptionText.length > 155
+        ? `${enDescriptionText.substring(0, 152)}...`
+        : enDescriptionText
+      : jaDescriptionText.length > 155
+        ? `${jaDescriptionText.substring(0, 152)}...`
+        : jaDescriptionText
 
   const metaTags = [
     { title: title },
     {
       name: "robots",
-      content: metaIndex ? "index, follow" : "noindex, nofollow",
+      content: metaIndex
+        ? "index, follow, max-image-preview:large"
+        : "noindex, nofollow",
     },
     { name: "description", content: description },
     { name: "twitter:title", content: title },
@@ -80,16 +87,8 @@ export function createMeta(
       content: lang === "en" ? "ja_JP" : "en_US",
     },
     { property: "og:type", content: isTop ? "website" : "article" },
-    {
-      property: "og:url",
-      content: replacePlaceholders(dynamicData?.pageUrl || config.siteURL),
-    },
+    // og:url は root の Layout で canonical と同じ URL を出力する
   ]
-
-  if (dynamicData?.pageUrl) {
-    // canonical は Remix の meta ではなく links で定義するのが基本。
-    // 型安全性を優先し、ここでは meta のみ返す。
-  }
 
   return metaTags
 }

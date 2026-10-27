@@ -1,3 +1,4 @@
+import { serializeJsonLd } from "~/utils/serialize-json-ld"
 import type { Thing, WithContext } from "schema-dts"
 
 type Props = Readonly<{
@@ -9,7 +10,7 @@ export function AppJsonLdScript (props: Props): React.ReactNode {
     <script
       type="application/ld+json"
       // biome-ignore lint/security/noDangerouslySetInnerHtml: structured data
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(props.jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(props.jsonLd) }}
     />
   )
 }

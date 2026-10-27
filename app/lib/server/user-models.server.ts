@@ -7,6 +7,7 @@ import {
   verifyViewerFromGraphQL,
 } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
+import type { UserModel } from "~/lib/user-models/types"
 
 type RouteContext =
   | LoaderFunctionArgs["context"]
@@ -260,5 +261,59 @@ export async function readJsonBodyWithUserId(
     return { ...(body as Record<string, unknown>), userId }
   } catch {
     return null
+  }
+}
+
+/**
+ * サーバー（loader）からみんなのモデルの一覧を取得する（未ログイン扱い・公開中のモデルのみ）
+ * 失敗したときは空の一覧を返す（SSR の表示やサイトマップのため。ブラウザ側で再取得される）
+ */
+export async function fetchPublicUserModels(
+  context: RouteContext,
+  params: {
+    sort?: "popular" | "new"
+    kind?: string | null
+    baseModel?: string | null
+    q?: string | null
+    ratings?: string[]
+    offset?: number
+    limit?: number
+  },
+): Promise<{ models: UserModel[]; hasMore: boolean }> {
+  const target = resolveApiTarget(context)
+  if ("error" in target) {
+    return { models: [], hasMore: false }
+  }
+  const search = new URLSearchParams()
+  search.set("sort", params.sort ?? "popular")
+  if (params.kind) search.set("kind", params.kind)
+  if (params.baseModel) search.set("baseModel", params.baseModel)
+  if (params.q) search.set("q", params.q)
+  search.set("ratings", (params.ratings ?? ["G", "R15"]).join(","))
+  search.set("offset", String(params.offset ?? 0))
+  search.set("limit", String(Math.min(Math.max(params.limit ?? 24, 1), 60)))
+  try {
+    const response = await fetch(
+      `${target.apiBaseUrl}/internal/user-models?${search.toString()}`,
+      { headers: target.headers },
+    )
+    if (!response.ok) {
+      return { models: [], hasMore: false }
+    }
+    const json = (await response.json()) as {
+      data?: {
+        models?: UserModel[]
+        hasMore?: boolean
+      } | null
+    }
+    const models = (json.data?.models ?? []).filter(
+      (model) => model.status === "READY",
+    )
+    return {
+      models,
+      hasMore: json.data?.hasMore ?? false,
+    }
+  } catch {
+    return { models: [], hasMore: false }
   }
 }

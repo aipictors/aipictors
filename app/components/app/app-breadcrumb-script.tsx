@@ -1,3 +1,4 @@
+import { serializeJsonLd } from "~/utils/serialize-json-ld"
 import type { BreadcrumbList, WithContext } from "schema-dts"
 
 type Props = Readonly<{
@@ -9,7 +10,7 @@ export function AppBreadcrumbScript (props: Props): React.ReactNode {
     <script
       type="application/ld+json"
       // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(props.breadcrumb) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(props.breadcrumb) }}
     />
   )
 }

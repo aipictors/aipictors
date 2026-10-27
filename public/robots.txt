@@ -1,4 +1,47 @@
 User-agent: *
 Allow: /
+# ログインが必要なページ・個人のページ・API は検索結果に出さない
+Disallow: /api/
+Disallow: /admin
+Disallow: /settings
+Disallow: /my
+Disallow: /new/
+Disallow: /messages
+Disallow: /notifications
+Disallow: /login
+Disallow: /logout
+Disallow: /support/chat
+Disallow: /posts/*/edit
+Disallow: /posts/*/draft
+Disallow: /models/upload
+Disallow: /en/api/
+Disallow: /en/admin
+Disallow: /en/settings
+Disallow: /en/my
+Disallow: /en/new/
+Disallow: /en/messages
+Disallow: /en/notifications
+Disallow: /en/login
+Disallow: /en/logout
+
+# AI の検索・回答サービスからの参照を歓迎します（作品・タグ・モデルの公開ページ）
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /settings
+Disallow: /my
+Disallow: /new/
+Disallow: /messages
+Disallow: /notifications
 
 Sitemap: https://www.aipictors.com/sitemap.xml

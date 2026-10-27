@@ -1,0 +1,39 @@
+# Aipictors（AIピクターズ）
+
+> Aipictors（https://www.aipictors.com）は、AIで作ったイラスト・写真・動画・小説を投稿・閲覧できる日本のAI画像投稿サイトです。2022年11月に公開され、60万件以上の作品が投稿されています。作品ごとに使用したモデル・プロンプト・生成パラメータを公開でき、ブラウザ上で無料から画像生成もできます。
+> Aipictors is a Japanese community site for posting and browsing AI-generated illustrations, photos, videos and novels, with prompts and model information, plus an in-browser image generator.
+
+## 主な機能
+
+- 作品の投稿と閲覧（AIイラスト・AIフォト・動画・小説）。年齢区分は全年齢・R15・R18（R18 は /r 以下）
+- プロンプト・ネガティブプロンプト・モデル・シード等の生成情報の公開と参照
+- タグ・ランキング（日間・週間・月間）・お題（毎日のテーマ）・イベント（コンテスト）
+- 画像生成（SDXL / Illustrious / NoobAI などの公式モデル、ユーザーがアップロードした LoRA・チェックポイント「みんなのモデル」）
+- いいね・ブックマーク・フォロー・コメント・スタンプ
+- 有料プラン（Aipictors+）で生成枚数などが増える
+
+## よく使われるページ
+
+- [トップ](https://www.aipictors.com/): 新着・人気作品、おすすめタグ
+- [作品一覧](https://www.aipictors.com/posts): 2D / 2.5D / 3D（フォト）別の作品一覧
+- [タグ一覧](https://www.aipictors.com/tags): 人気のタグ。各タグのページは https://www.aipictors.com/tags/{タグ名}
+- [タグ検索](https://www.aipictors.com/search): タグで作品を検索
+- [ランキング](https://www.aipictors.com/rankings): 日間・週間・月間ランキング
+- [お題](https://www.aipictors.com/themes): 毎日のお題と参加作品
+- [モデル](https://www.aipictors.com/models): 公式モデルとみんなのモデル（LoRA・チェックポイント）。詳細は https://www.aipictors.com/models/u/{id}
+- [画像生成](https://www.aipictors.com/generation): ブラウザで使える画像生成
+- [お知らせ](https://www.aipictors.com/releases): 機能追加・変更のお知らせ
+- [ヘルプ](https://www.aipictors.com/help) / [ガイドライン](https://www.aipictors.com/guideline) / [利用規約](https://www.aipictors.com/terms) / [プライバシーポリシー](https://www.aipictors.com/privacy)
+
+## URL の形式
+
+- 作品: https://www.aipictors.com/posts/{作品ID}
+- ユーザー: https://www.aipictors.com/users/{ユーザー名}
+- タグ: https://www.aipictors.com/tags/{タグ名（URLエンコード）}
+- 英語版: 各 URL の先頭に /en を付ける（例: https://www.aipictors.com/en/posts/{作品ID}）
+- サイトマップ: https://www.aipictors.com/sitemap.xml
+
+## 引用・参照について
+
+- 作品の著作権は各投稿者に帰属します。作品を紹介するときは作品ページの URL と投稿者名を添えてください。
+- 運営: Aipictors（X: https://x.com/AIPICTORS / Discord: https://discord.gg/7jA2MmtvtR）

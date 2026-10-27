@@ -37,6 +37,8 @@ import {
   buildAlternateLocaleUrls,
   getPathLocale,
 } from "~/utils/locale-path"
+import { serializeJsonLd } from "~/utils/serialize-json-ld"
+import { createSiteJsonLd } from "~/utils/site-json-ld"
 
 // パフォーマンス監視コンポーネントを遅延読み込み
 const PerformanceMonitor = lazy(() =>
@@ -479,6 +481,16 @@ export function Layout(props: Props): React.ReactNode {
           }}
         />
         <link rel="canonical" href={alternateLocaleUrls.canonical} />
+        <meta property="og:url" content={alternateLocaleUrls.canonical} />
+        {(location.pathname === "/" || location.pathname === "/en") && (
+          <script
+            type="application/ld+json"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の構造化データ
+            dangerouslySetInnerHTML={{
+              __html: serializeJsonLd(createSiteJsonLd(htmlLang)),
+            }}
+          />
+        )}
         <link rel="alternate" hrefLang="ja" href={alternateLocaleUrls.ja} />
         <link rel="alternate" hrefLang="en" href={alternateLocaleUrls.en} />
         <link

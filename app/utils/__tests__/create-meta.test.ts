@@ -27,7 +27,7 @@ describe("createMeta", () => {
     })
     expect(metaTags).toContainEqual({
       name: "robots",
-      content: "index, follow",
+      content: "index, follow, max-image-preview:large",
     })
   })
 
