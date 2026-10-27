@@ -1,355 +1,115 @@
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { Link, useLocation } from "@remix-run/react"
+import {
+  BellIcon,
+  BookmarkIcon,
+  CalendarDaysIcon,
+  EyeIcon,
+  FolderIcon,
+  HeartIcon,
+  HistoryIcon,
+  HomeIcon,
+  ImageIcon,
+  LibraryIcon,
+  ThumbsUpIcon,
+} from "lucide-react"
+import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
-import { useContext, useEffect } from "react"
-import { useLocation, useNavigate } from "@remix-run/react"
-import React from "react"
-import { Button } from "~/components/ui/button"
-import { cn } from "~/lib/utils"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = Readonly<{
   outlet: React.ReactNode
 }>
 
+type NavItem = {
+  to: string
+  ja: string
+  en: string
+  icon: React.ComponentType<{ className?: string }>
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { to: "/my", ja: "ホーム", en: "Home", icon: HomeIcon },
+  { to: "/my/posts", ja: "作品", en: "Posts", icon: ImageIcon },
+  { to: "/my/albums", ja: "シリーズ", en: "Albums", icon: LibraryIcon },
+  { to: "/my/folders", ja: "コレクション", en: "Folders", icon: FolderIcon },
+  {
+    to: "/my/bookmarks",
+    ja: "ブックマーク",
+    en: "Bookmarks",
+    icon: BookmarkIcon,
+  },
+  { to: "/my/likes", ja: "いいね", en: "Likes", icon: HeartIcon },
+  { to: "/my/recommended", ja: "推薦", en: "Recommended", icon: ThumbsUpIcon },
+  { to: "/my/views", ja: "閲覧履歴", en: "Views", icon: EyeIcon },
+  { to: "/my/events", ja: "イベント", en: "Events", icon: CalendarDaysIcon },
+  { to: "/my/histories", ja: "操作履歴", en: "History", icon: HistoryIcon },
+  {
+    to: "/my/reports",
+    ja: "運営からのお知らせ",
+    en: "Reports",
+    icon: BellIcon,
+  },
+]
+
 /**
- * ダッシュボードコンテンツ
+ * いま開いているマイページの項目（/my は完全一致、それ以外は前方一致。/en などの言語付きも同じ）
  */
-export function MyContents (props: Props) {
+const isActive = (pathname: string, to: string) => {
+  const path = pathname.replace(/^\/(en|ja)(?=\/|$)/, "") || "/"
+  if (to === "/my") return path === "/my" || path === "/my/"
+  return path === to || path.startsWith(`${to}/`)
+}
+
+/**
+ * マイページの枠（項目の切り替え）
+ * スマホでもパソコンでも同じ 1 行の切り替えにして、横にスクロールできるようにする
+ */
+export function MyContents(props: Props) {
   const authContext = useContext(AuthContext)
-
   const location = useLocation()
-
   const t = useTranslation()
-
-  const type = (path: string) => {
-    if (path.includes("events")) {
-      return "EVENTS"
-    }
-    if (path.includes("posts")) {
-      return "POSTS"
-    }
-    if (path.includes("histories")) {
-      return "HISTORIES"
-    }
-    if (path.includes("albums")) {
-      return "ALBUMS"
-    }
-    if (path.includes("folders")) {
-      return "FOLDERS"
-    }
-    if (path.includes("bookmarks")) {
-      return "BOOKMARKS"
-    }
-    if (path.includes("recommended")) {
-      return "RECOMMENDED"
-    }
-    if (path.includes("likes")) {
-      return "LIKES"
-    }
-    if (path.includes("views")) {
-      return "VIEWS"
-    }
-    if (path.includes("reports")) {
-      return "REPORTS"
-    }
-    return "HOME"
-  }
-
-  const [myContentType, setMyContentType] = React.useState(
-    type(location.pathname),
-  )
-
-  useEffect(() => {
-    setMyContentType(type(location.pathname))
-  }, [location.pathname])
 
   if (
     authContext.isLoading ||
     authContext.isNotLoggedIn ||
-    authContext.userId === undefined ||
     !authContext.userId
   ) {
     return null
   }
 
-  const navigate = useNavigate()
-
   return (
-    <>
-      <div
-        className="m-auto flex w-full flex-col space-y-2"
-        style={{
-          margin: "0 auto",
-        }}
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
+      <nav
+        aria-label={t("マイページの項目", "My page sections")}
+        className="-mx-2 sticky top-16 z-20 border-b bg-background/90 px-2 backdrop-blur supports-[backdrop-filter]:bg-background/70"
       >
-        <div className="hidden md:block">
-          <Tabs className="mt-2" value={myContentType} defaultValue={"HOME"}>
-            <TabsList>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("HOME")
-                  navigate("/my")
-                }}
-                className="w-full"
-                value="HOME"
-              >
-                {t("ホーム", "Home")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("EVENTS")
-                  navigate("/my/events")
-                }}
-                className="w-full"
-                value="EVENTS"
-              >
-                {t("イベント", "Events")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("POSTS")
-                  navigate("/my/posts")
-                }}
-                className="w-full"
-                value="POSTS"
-              >
-                {t("作品", "Posts")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("HISTORIES")
-                  navigate("/my/histories")
-                }}
-                className="w-full"
-                value="HISTORIES"
-              >
-                {t("操作履歴", "History")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("ALBUMS")
-                  navigate("/my/albums")
-                }}
-                className="w-full"
-                value="ALBUMS"
-              >
-                {t("シリーズ", "Albums")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("FOLDERS")
-                  navigate("/my/folders")
-                }}
-                className="w-full"
-                value="FOLDERS"
-              >
-                {t("コレクション", "Folders")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("RECOMMENDED")
-                  navigate("/my/recommended")
-                }}
-                className="w-full"
-                value="RECOMMENDED"
-              >
-                {t("推薦", "Recommended")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("BOOKMARKS")
-                  navigate("/my/bookmarks")
-                }}
-                className="w-full"
-                value="BOOKMARKS"
-              >
-                {t("ブックマーク", "Bookmarks")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("LIKES")
-                  navigate("/my/likes")
-                }}
-                className="w-full"
-                value="LIKES"
-              >
-                {t("いいね", "Likes")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("VIEWS")
-                  navigate("/my/views")
-                }}
-                className="w-full"
-                value="VIEWS"
-              >
-                {t("閲覧履歴", "Views")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => {
-                  setMyContentType("REPORTS")
-                  navigate("/my/reports")
-                }}
-                className="w-full"
-                value="REPORTS"
-              >
-                {t("運営からのお知らせ", "Reports")}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-        <div className="block md:hidden">
-          <div className="grid grid-cols-3 gap-2">
-            <Button
-              onClick={() => {
-                setMyContentType("HOME")
-                navigate("/my")
-              }}
-              value="HOME"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "HOME" && "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("ホーム", "Home")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("EVENTS")
-                navigate("/my/events")
-              }}
-              value="EVENTS"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "EVENTS" && "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("イベント", "Events")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("POSTS")
-                navigate("/my/posts")
-              }}
-              value="POSTS"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "POSTS" && "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("作品", "Posts")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("HISTORIES")
-                navigate("/my/histories")
-              }}
-              value="HISTORIES"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "HISTORIES" &&
-                  "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("操作履歴", "History")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("ALBUMS")
-                navigate("/my/albums")
-              }}
-              value="ALBUMS"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "ALBUMS" && "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("シリーズ", "Albums")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("FOLDERS")
-                navigate("/my/folders")
-              }}
-              value="FOLDERS"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "FOLDERS" && "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("コレクション", "Folders")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("RECOMMENDED")
-                navigate("/my/recommended")
-              }}
-              value="RECOMMENDED"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "RECOMMENDED" &&
-                  "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("推薦", "Recommended")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("BOOKMARKS")
-                navigate("/my/bookmarks")
-              }}
-              value="BOOKMARKS"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "BOOKMARKS" && "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("ブックマーク", "Bookmarks")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("LIKES")
-                navigate("/my/likes")
-              }}
-              value="LIKES"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "LIKES" && "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("いいね", "Likes")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("VIEWS")
-                navigate("/my/views")
-              }}
-              value="VIEWS"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "VIEWS" && "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("閲覧履歴", "Views")}
-            </Button>
-            <Button
-              onClick={() => {
-                setMyContentType("REPORTS")
-                navigate("/my/reports")
-              }}
-              value="REPORTS"
-              variant={"secondary"}
-              className={cn(
-                myContentType === "REPORTS" && "bg-gray-200 dark:bg-zinc-900",
-              )}
-            >
-              {t("運営お知らせ", "Reports")}
-            </Button>
-          </div>
-        </div>
-
-        {props.outlet}
-      </div>
-    </>
+        <ul className="flex gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {NAV_ITEMS.map((item) => {
+            const active = isActive(location.pathname, item.to)
+            const Icon = item.icon
+            return (
+              <li key={item.to} className="shrink-0">
+                <Link
+                  to={item.to}
+                  prefetch="intent"
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 font-medium text-sm transition-colors",
+                    active
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  <Icon className="size-4" />
+                  {t(item.ja, item.en)}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </nav>
+      {props.outlet}
+    </div>
   )
 }
