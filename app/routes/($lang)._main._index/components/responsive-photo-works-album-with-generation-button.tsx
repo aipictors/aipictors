@@ -1,7 +1,4 @@
 import type { FragmentOf } from "gql.tada"
-import { RowsPhotoAlbum } from "react-photo-album"
-import SSR from "react-photo-album/ssr"
-import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { Heart, Images, MessageCircle } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
@@ -82,98 +79,75 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
     )
   }
 
+  const targetRowHeight =
+    props.targetRowHeight !== undefined
+      ? props.targetRowHeight
+      : props.direction === "rows"
+        ? 160
+        : 220
+
   return (
     <>
       <div className="hidden md:block">
-        <SSR breakpoints={[300, 600, 900, 1200]}>
-          <RowsPhotoAlbum
-            photos={props.works.map((work) => ({
-              key: work.id,
-              id: work.id.toString(),
-              src:
-                props.size === "large"
-                  ? work.largeThumbnailImageURL
-                  : work.smallThumbnailImageURL,
-              width:
-                props.size === "large"
-                  ? work.largeThumbnailImageWidth
-                  : work.smallThumbnailImageWidth,
-              height:
-                props.size === "large"
-                  ? work.largeThumbnailImageHeight
-                  : work.smallThumbnailImageHeight,
-              context: work,
-            }))}
-            targetRowHeight={
-              props.targetRowHeight !== undefined
-                ? props.targetRowHeight
-                : props.direction === "rows"
-                  ? 160
-                  : 220
-            }
-            sizes={{
-              size: "calc(100vw - 240px)",
-              sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
-            }}
-            componentsProps={{
-              image: { loading: "lazy" },
-            }}
-            render={{
-              image: (imageProps, { photo }) => (
-                <div className="relative h-full w-full overflow-hidden rounded">
+        {/* 行の高さを揃えるレイアウトを CSS だけで行う（ResponsivePhotoWorksAlbum と同じ方式） */}
+        <div className="flex flex-wrap gap-x-2 gap-y-4 after:block after:grow-[1000000] after:content-['']">
+          {props.works.map((work) => {
+            const isLarge = props.size === "large"
+            const imageUrl = isLarge
+              ? work.largeThumbnailImageURL
+              : work.smallThumbnailImageURL
+            const width =
+              (isLarge
+                ? work.largeThumbnailImageWidth
+                : work.smallThumbnailImageWidth) || 1
+            const height =
+              (isLarge
+                ? work.largeThumbnailImageHeight
+                : work.smallThumbnailImageHeight) || 1
+            const ratio = Math.min(Math.max(width / height, 0.5), 2.4)
+            const image = (
+              <OptimizedImage
+                src={imageUrl}
+                alt={work.title}
+                className="h-full w-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+                width={width}
+                height={height}
+                loading="lazy"
+              />
+            )
+            return (
+              <div
+                key={work.id}
+                className="relative min-w-0"
+                style={{
+                  flexGrow: ratio * 100,
+                  flexBasis: `${Math.round(ratio * targetRowHeight)}px`,
+                }}
+              >
+                <div
+                  className="relative w-full overflow-hidden rounded-md bg-muted"
+                  style={{ aspectRatio: `${ratio}` }}
+                >
                   {props.onSelect ? (
                     <button
                       type="button"
-                      className="block h-full w-full cursor-pointer overflow-hidden rounded"
-                      onClick={() => props.onSelect?.(photo.id)}
-                      aria-label={`Open ${photo.context.title}`}
+                      className="absolute inset-0 block h-full w-full cursor-pointer overflow-hidden"
+                      onClick={() => props.onSelect?.(work.id.toString())}
+                      aria-label={`Open ${work.title}`}
                     >
-                      <OptimizedImage
-                        src={imageProps.src}
-                        alt={photo.context.title}
-                        className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-                        width={
-                          typeof imageProps.width === "string"
-                            ? Number.parseInt(imageProps.width)
-                            : imageProps.width
-                        }
-                        height={
-                          typeof imageProps.height === "string"
-                            ? Number.parseInt(imageProps.height)
-                            : imageProps.height
-                        }
-                        loading={imageProps.loading as "lazy" | "eager"}
-                      />
+                      {image}
                     </button>
                   ) : (
                     <Link
-                      className="block h-full w-full overflow-hidden rounded"
-                      to={`/posts/${photo.context.id}`}
+                      className="absolute inset-0 block h-full w-full overflow-hidden"
+                      to={`/posts/${work.id}`}
                     >
-                      <OptimizedImage
-                        src={imageProps.src}
-                        alt={photo.context.title}
-                        className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-                        width={
-                          typeof imageProps.width === "string"
-                            ? Number.parseInt(imageProps.width)
-                            : imageProps.width
-                        }
-                        height={
-                          typeof imageProps.height === "string"
-                            ? Number.parseInt(imageProps.height)
-                            : imageProps.height
-                        }
-                        loading={imageProps.loading as "lazy" | "eager"}
-                      />
+                      {image}
                     </Link>
                   )}
                   {/* biome-ignore lint/a11y/useKeyWithClickEvents: overlay is not an actionable control; LikeButton handles keyboard/mouse interaction */}
                   <div
-                    className={cn(
-                      "absolute right-0 z-10",
-                      props.isShowProfile ? "bottom-28" : "bottom-0",
-                    )}
+                    className="absolute right-0 bottom-0 z-10"
                     onClick={(e) => {
                       e.stopPropagation()
                       e.preventDefault()
@@ -181,120 +155,111 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                   >
                     <LikeButton
                       size={56}
-                      targetWorkId={photo.context.id}
-                      targetWorkOwnerUserId={photo.context.user?.id ?? ""}
-                      defaultLiked={photo.context.isLiked}
+                      targetWorkId={work.id}
+                      targetWorkOwnerUserId={work.user?.id ?? ""}
+                      defaultLiked={work.isLiked}
                       defaultLikedCount={0}
                       isBackgroundNone={true}
                       strokeWidth={2}
-                      likedCount={photo.context.likesCount}
+                      likedCount={work.likesCount}
                     />
                   </div>
-                  {photo.context.subWorksCount > 0 && (
+                  {work.subWorksCount > 0 && (
                     <Badge
                       variant="secondary"
                       className={cn(
-                        "absolute top-1 right-1 z-10 flex items-center",
+                        "pointer-events-none absolute top-1 right-1 z-10 flex items-center",
                         chipClassName,
                       )}
                     >
                       <Images className="size-3 text-muted-foreground" />
                       <span className="font-semibold text-xs leading-none">
-                        {photo.context.subWorksCount + 1}
+                        {work.subWorksCount + 1}
                       </span>
                     </Badge>
                   )}
-                  {photo.context.commentsCount > 0 && (
+                  {work.commentsCount > 0 && (
                     <Badge
                       variant="secondary"
                       className={cn(
-                        "absolute top-1 left-1 z-10 flex items-center",
+                        "pointer-events-none absolute top-1 left-1 z-10 flex items-center",
                         chipClassName,
                       )}
                     >
                       <MessageCircle className="size-3 text-muted-foreground" />
                       <span className="font-semibold text-xs leading-none">
-                        {photo.context.commentsCount}
+                        {work.commentsCount}
                       </span>
                     </Badge>
                   )}
                   {/* プロンプト公開・動画バッジ */}
-                  <div className="absolute bottom-32 left-1 z-10">
+                  <div className="pointer-events-none absolute bottom-2 left-1 z-10">
                     <WorkMediaBadge
                       isPromptPublic={
-                        (photo.context.promptAccessType === "PUBLIC" &&
-                          photo.context.prompt !== "") ||
-                        photo.context.isGeneration
+                        (work.promptAccessType === "PUBLIC" &&
+                          work.prompt !== "") ||
+                        work.isGeneration
                       }
-                      hasVideoUrl={Boolean(photo.context.url)}
-                      isGeneration={photo.context.isGeneration}
+                      hasVideoUrl={Boolean(work.url)}
+                      isGeneration={work.isGeneration}
                       hasReferenceButton={true}
                       size="md"
                     />
                   </div>
-                  {props.isShowProfile && (
-                    <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
-                      {props.onSelect ? (
-                        <button
-                          type="button"
-                          className="w-48 cursor-pointer font-bold"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            props.onSelect?.(photo.context.id.toString())
-                          }}
-                          aria-label={`Open ${photo.context.title}`}
-                        >
-                          <p className="overflow-hidden text-ellipsis text-nowrap text-left text-sm">
-                            {photo.context.title}
-                          </p>
-                        </button>
-                      ) : (
-                        <Link
-                          className="w-48 font-bold"
-                          to={`/posts/${photo.context.id}`}
-                        >
-                          <p className="overflow-hidden text-ellipsis text-nowrap text-left text-sm">
-                            {photo.context.title}
-                          </p>
-                        </Link>
-                      )}
-
-                      <div className="flex items-center justify-between">
-                        <Link to={`/users/${photo.context.user?.id}`}>
-                          <div className="flex items-center space-x-2">
-                            <UserAvatarWithFrame
-                              alt={photo.context.user?.name ?? ""}
-                              frame={photo.context.user?.avatarFrame}
-                              isAnimated={false}
-                              sizeClassName="size-6"
-                              src={withIconUrlFallback(
-                                photo.context.user?.iconUrl,
-                              )}
-                            />
-                            <span className="truncate text-sm">
-                              {photo.context.user?.name}
-                            </span>
-                          </div>
-                        </Link>
-                        <div className="absolute right-0 ml-auto flex items-center space-x-1 rounded-md bg-card p-1">
-                          <Heart className="size-3 fill-gray-400 text-gray-400" />
-                          <span className="text-xs">
-                            {photo.context.likesCount}
+                </div>
+                {props.isShowProfile && (
+                  <div className="mt-1.5 flex min-w-0 flex-col gap-1">
+                    {props.onSelect ? (
+                      <button
+                        type="button"
+                        className="min-w-0 cursor-pointer text-left font-bold"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          props.onSelect?.(work.id.toString())
+                        }}
+                        aria-label={`Open ${work.title}`}
+                      >
+                        <p className="truncate text-sm">{work.title}</p>
+                      </button>
+                    ) : (
+                      <Link
+                        className="min-w-0 font-bold hover:underline"
+                        to={`/posts/${work.id}`}
+                      >
+                        <p className="truncate text-sm">{work.title}</p>
+                      </Link>
+                    )}
+                    <div className="flex min-w-0 items-center justify-between gap-2">
+                      <Link className="min-w-0" to={`/users/${work.user?.id}`}>
+                        <div className="flex min-w-0 items-center gap-1.5">
+                          <UserAvatarWithFrame
+                            alt={work.user?.name ?? ""}
+                            frame={work.user?.avatarFrame}
+                            isAnimated={false}
+                            sizeClassName="size-5"
+                            src={withIconUrlFallback(work.user?.iconUrl)}
+                          />
+                          <span className="truncate text-muted-foreground text-xs">
+                            {work.user?.name}
                           </span>
                         </div>
-                      </div>
-
-                      {/* 参照生成ボタンを追加 */}
-                      <div className="mt-2 w-full">
-                        <ReferenceGenerationButton workId={photo.context.id} />
+                      </Link>
+                      <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                        <Heart className="size-3 fill-current" />
+                        <span className="text-xs tabular-nums">
+                          {work.likesCount}
+                        </span>
                       </div>
                     </div>
-                  )}
-                </div>
-              ),
-            }}
-          />
-        </SSR>
+                    <div className="mt-1 w-full">
+                      <ReferenceGenerationButton workId={work.id} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
       <div className="block md:hidden">
         <HomeCroppedWorksWithGenerationButton
