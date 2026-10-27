@@ -6,7 +6,7 @@ import type {
 import { redirect } from "@remix-run/cloudflare"
 import { Link, useLoaderData, useLocation, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Heart, SearchIcon } from "lucide-react"
+import { ChevronRightIcon, Heart, SearchIcon } from "lucide-react"
 import { type FormEvent, useEffect, useState } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
@@ -169,7 +169,7 @@ export async function loader(props: LoaderFunctionArgs) {
       loaderClient.query({
         query: popularTagsQuery,
         variables: {
-          limit: 10,
+          limit: searchQuery ? 12 : 40,
           where: { isSensitive: isSensitiveMode },
         },
       }),
@@ -209,7 +209,24 @@ export async function loader(props: LoaderFunctionArgs) {
         : Promise.resolve(null),
     ])
 
+  const works = worksResp?.data?.tagWorks ?? []
+  const relatedTagCounts = new Map<string, number>()
+  for (const work of works) {
+    for (const name of new Set(work.tagNames ?? [])) {
+      const trimmed = name.trim()
+      if (!trimmed || trimmed.toLowerCase() === searchQuery?.toLowerCase()) {
+        continue
+      }
+      relatedTagCounts.set(trimmed, (relatedTagCounts.get(trimmed) ?? 0) + 1)
+    }
+  }
+  const relatedTags = Array.from(relatedTagCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 16)
+    .map(([name]) => name)
+
   return {
+    relatedTags,
     filters: {
       prompt,
       rating,
@@ -224,7 +241,7 @@ export async function loader(props: LoaderFunctionArgs) {
       })) ?? [],
     rankingWorks: rankingResp.data?.works ?? [],
     searchQuery,
-    works: worksResp?.data?.tagWorks ?? [],
+    works,
     worksCount:
       worksCountResp?.data?.worksCount ??
       worksCountResp?.data?.tagWorksCount ??
@@ -388,22 +405,49 @@ export default function SearchRoute() {
           <main className="min-w-0">
             <div className="mb-7 pb-4 md:pb-5">
               <div>
-                <h1 className="font-bold text-3xl leading-none md:text-4xl">
+                <h1 className="break-words font-bold text-2xl leading-tight md:text-3xl">
                   {data.searchQuery
                     ? `#${data.searchQuery}`
                     : t("タグ検索", "Tag Search")}
                 </h1>
-                <p className="mt-4 font-semibold text-xl md:text-2xl">
-                  <span className="text-foreground/80">
-                    {data.searchQuery
-                      ? t(`${data.worksCount}件`, `${data.worksCount} works`)
-                      : t(
-                          "検索したいタグを入力してください",
-                          "Enter a tag to start searching",
-                        )}
-                  </span>
+                <p className="mt-3 text-muted-foreground text-sm md:text-base">
+                  {data.searchQuery
+                    ? t(
+                        `${data.worksCount.toLocaleString()}件の作品`,
+                        `${data.worksCount.toLocaleString()} works`,
+                      )
+                    : t(
+                        "タグ名を入力するか、人気のタグから選んでください",
+                        "Enter a tag name or pick a popular tag",
+                      )}
                 </p>
+                {data.searchQuery && (
+                  <Link
+                    to={`/tags/${encodeURIComponent(data.searchQuery)}`}
+                    className="mt-3 inline-flex items-center gap-1 rounded-full border px-3.5 py-1.5 font-medium text-sm transition-colors hover:bg-muted"
+                  >
+                    {t(
+                      `#${data.searchQuery} のタグページを見る`,
+                      `Open the #${data.searchQuery} tag page`,
+                    )}
+                    <ChevronRightIcon className="size-4" />
+                  </Link>
+                )}
               </div>
+              {data.relatedTags.length > 0 && (
+                <div className="-mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+                  {data.relatedTags.map((tagName) => (
+                    <button
+                      key={tagName}
+                      type="button"
+                      onClick={() => navigateToSearch(tagName)}
+                      className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full border bg-background px-3 text-muted-foreground text-sm transition-colors hover:border-foreground/40 hover:text-foreground"
+                    >
+                      #{tagName}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="mb-6 flex flex-col gap-5 md:mb-8">
@@ -483,7 +527,7 @@ export default function SearchRoute() {
             {hasResults ? (
               data.works.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-7 md:gap-x-5 md:gap-y-8 lg:grid-cols-4 xl:grid-cols-5">
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 md:gap-x-4 lg:grid-cols-4 2xl:grid-cols-5">
                     {data.works.map((work) => (
                       <article key={work.id} className="min-w-0">
                         <div className="group relative">
@@ -521,16 +565,16 @@ export default function SearchRoute() {
                           </div>
                         </div>
 
-                        <div className="mt-3 flex items-start justify-between gap-3">
+                        <div className="mt-2 flex items-start justify-between gap-2">
                           <Link
                             to={`/posts/${work.id}`}
-                            className="line-clamp-2 flex-1 font-bold text-[clamp(1.25rem,2vw,1.6rem)] leading-snug hover:underline md:text-lg"
+                            className="line-clamp-2 flex-1 font-semibold text-sm leading-snug hover:underline"
                           >
                             {work.title}
                           </Link>
 
-                          <div className="flex shrink-0 items-center gap-1 text-muted-foreground text-sm">
-                            <Heart className="size-4" />
+                          <div className="flex shrink-0 items-center gap-1 text-muted-foreground text-xs">
+                            <Heart className="size-3.5" />
                             <span>{work.likesCount}</span>
                           </div>
                         </div>
@@ -540,7 +584,7 @@ export default function SearchRoute() {
                             to={`/users/${work.user.id}`}
                             className="mt-2 flex items-center gap-2"
                           >
-                            <Avatar className="size-9">
+                            <Avatar className="size-6">
                               <AvatarImage
                                 src={withIconUrlFallback(work.user.iconUrl)}
                                 alt={work.user.name}
@@ -549,7 +593,7 @@ export default function SearchRoute() {
                                 {work.user.name.slice(0, 1)}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="truncate text-base md:text-lg">
+                            <span className="truncate text-muted-foreground text-xs md:text-sm">
                               {work.user.name}
                             </span>
                           </Link>
@@ -583,40 +627,45 @@ export default function SearchRoute() {
                 </div>
               )
             ) : (
-              <div className="rounded-md border bg-muted/20 px-6 py-16 text-center">
-                <p className="text-lg text-muted-foreground">
-                  {t(
-                    "検索したいタグを入力してください",
-                    "Enter a tag to start searching",
-                  )}
-                </p>
-              </div>
+              <section className="rounded-2xl border bg-muted/20 p-5 md:p-7">
+                <h2 className="mb-4 font-bold text-lg">
+                  {t("人気のタグ", "Popular tags")}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {data.popularTags.map((tag) => (
+                    <Link
+                      key={tag.name}
+                      to={`/tags/${encodeURIComponent(tag.name)}`}
+                      className="inline-flex h-9 items-center rounded-full border bg-background px-4 font-medium text-sm transition-colors hover:border-foreground/40"
+                    >
+                      #{tag.name}
+                    </Link>
+                  ))}
+                </div>
+              </section>
             )}
           </main>
 
           <aside className="hidden space-y-10 xl:block">
             <section>
-              <h2 className="mb-6 font-bold text-3xl">
+              <h2 className="mb-4 font-bold text-lg">
                 {t("人気のイラストタグ", "Popular Illustration Tags")}
               </h2>
-              <div className="space-y-4 text-xl leading-relaxed">
+              <div className="flex flex-wrap gap-2">
                 {data.popularTags.map((tag) => (
-                  <button
+                  <Link
                     key={tag.name}
-                    type="button"
-                    className="block text-left font-semibold transition-colors hover:text-primary"
-                    onClick={() => {
-                      navigateToSearch(tag.name)
-                    }}
+                    to={`/tags/${encodeURIComponent(tag.name)}`}
+                    className="inline-flex h-8 items-center rounded-full border px-3 font-medium text-sm transition-colors hover:border-foreground/40"
                   >
                     #{tag.name}
-                  </button>
+                  </Link>
                 ))}
               </div>
             </section>
 
             <section>
-              <h2 className="mb-6 font-bold text-3xl">
+              <h2 className="mb-4 font-bold text-lg">
                 {t("人気ランキング", "Popular Ranking")}
               </h2>
               <div className="space-y-4">
@@ -626,22 +675,23 @@ export default function SearchRoute() {
                     to={`/posts/${work.id}`}
                     className="flex items-start gap-3"
                   >
-                    <div className="flex size-12 shrink-0 items-center justify-center bg-orange-400 font-bold text-2xl text-black">
+                    <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-orange-400 font-bold text-black text-sm">
                       {index + 1}
                     </div>
 
                     <img
                       src={work.smallThumbnailImageURL}
                       alt={work.title}
-                      className="size-[72px] shrink-0 object-cover"
+                      loading="lazy"
+                      className="size-14 shrink-0 rounded-md object-cover"
                     />
 
                     <div className="min-w-0">
-                      <p className="line-clamp-2 font-semibold text-lg leading-snug">
+                      <p className="line-clamp-2 font-semibold text-sm leading-snug">
                         {work.title}
                       </p>
-                      <div className="mt-2 flex items-center gap-2 text-base text-muted-foreground">
-                        <Avatar className="size-7">
+                      <div className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
+                        <Avatar className="size-5">
                           <AvatarImage
                             src={withIconUrlFallback(work.user?.iconUrl)}
                             alt={work.user?.name ?? ""}
@@ -712,6 +762,7 @@ const searchTagWorksQuery = graphql(
   `query SearchTagWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     tagWorks(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
+      tagNames
     }
   }`,
   [PhotoAlbumWorkFragment],
