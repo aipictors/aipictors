@@ -267,6 +267,8 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 
 export const links: LinksFunction = () => {
   return [
+    // 作品画像の置き場所へ先に接続しておく（最初の画像＝LCP の読み込み開始が早くなる）
+    { rel: "preconnect", href: "https://files.aipictors.com" },
     // tailwind.cssのロード
     { rel: "stylesheet", href: styles },
   ]
