@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { getServerEnvValue } from "~/lib/server/env.server"
+import { getSdEndpoints } from "~/lib/server/sd-endpoints.server"
 
 /**
  * 生成中のタスクの途中経過（進み具合・プレビュー画像）
@@ -10,11 +10,6 @@ import { getServerEnvValue } from "~/lib/server/env.server"
  * nanoid は推測できない値なので、知っている人（依頼した本人）だけが見られる。
  */
 
-const DEFAULT_ENDPOINTS = [
-  "https://cvrtxex5q98ebz-8000.proxy.runpod.net",
-  "https://8qohsj3lbw0fj4-8000.proxy.runpod.net",
-  "https://1ggt33c8h6hzdv-8000.proxy.runpod.net",
-]
 
 type SdProgress = {
   active?: boolean
@@ -73,12 +68,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   }
   const previewId = Number.parseInt(url.searchParams.get("preview") ?? "-1", 10)
 
-  const endpoints = (
-    getServerEnvValue(context, "SD_PROGRESS_ENDPOINTS")
-      ?.split(",")
-      .map((value) => value.trim().replace(/\/+$/, ""))
-      .filter(Boolean) ?? DEFAULT_ENDPOINTS
-  ).slice(0, 8)
+  const endpoints = getSdEndpoints(context)
 
   const results = await Promise.all(
     endpoints.map((endpoint) =>

@@ -21,6 +21,7 @@ import { Label } from "~/components/ui/label"
 import { Switch } from "~/components/ui/switch"
 import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
+import { GenerationServerStatusBadge } from "~/routes/($lang).generation._index/components/submission-view/generation-server-status-badge"
 import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "~/routes/($lang).generation._index/components/submission-view/generation-terms-button"
@@ -139,6 +140,11 @@ export function GenerationSubmitOperationParts(props: Props) {
 
   return (
     <>
+      {!authContext.isLoggedIn && (
+        <div className="flex items-center justify-end px-1">
+          <GenerationServerStatusBadge />
+        </div>
+      )}
       {authContext.isLoggedIn && (
         <div className="flex items-center gap-2 px-1 text-[11px] leading-none text-muted-foreground">
           <Link
@@ -159,6 +165,7 @@ export function GenerationSubmitOperationParts(props: Props) {
               {formatCoinAmount(props.premiumCoinBalance)}
             </span>
           </div>
+          <GenerationServerStatusBadge className="ml-auto" />
         </div>
       )}
       <div className="flex min-w-0 items-center">
