@@ -21,6 +21,7 @@ import {
   Navigation,
   PlaySquare,
   Plus,
+  SlidersHorizontal,
 } from "lucide-react"
 import {
   lazy,
@@ -535,7 +536,15 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     getInitialIsPagination(),
   )
 
-  const [isFilterUiOpen, setIsFilterUiOpen] = useState(true)
+  // 絞り込み中の数（0 なら絞り込み欄は閉じておき、作品をすぐ見られるようにする）
+  const activeFilterCount = [
+    workType !== null,
+    isPromptPublic !== null,
+    sortType !== null && sortType !== "DATE_CREATED",
+    isOneWorkPerUser,
+    timeRange !== "ALL",
+  ].filter(Boolean).length
+  const [isFilterUiOpen, setIsFilterUiOpen] = useState(activeFilterCount > 0)
 
   // 作品遷移モード（ダイアログ / 直接リンク）
   const [isDialogMode, setIsDialogMode] = useState(false)
@@ -1154,82 +1163,85 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
         {/* ---------------------- タブ: 新着・人気 ---------------------- */}
         <TabsContent value="new" className="flex flex-col space-y-4">
           {/* 新着 or 人気 or 新規ユーザの切り替えボタン */}
-          <div className="inline-flex w-fit flex-wrap gap-0.5 rounded-full border bg-muted/40 p-0.5">
-            <Button
-              variant="ghost"
-              onClick={() => handleWorkViewChange("new")}
-              data-active={workView === "new"}
-              size="sm"
-              className="h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
-            >
-              {t("新着", "New")}
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => handleWorkViewChange("popular")}
-              data-active={workView === "popular"}
-              size="sm"
-              className="h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
-            >
-              <div className="flex items-center space-x-1.5">
-                <span>{t("人気", "Popular")}</span>
-                <CrossPlatformTooltip
-                  text={t(
-                    "最近投稿された人気作品が表示されます",
-                    "Recently popular works",
-                  )}
-                />
-              </div>
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => handleWorkViewChange("new-user")}
-              data-active={workView === "new-user"}
-              size="sm"
-              className="h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
-            >
-              <div className="flex items-center space-x-1.5">
-                <span className="hidden sm:inline">
-                  {t("新規ユーザ", "New Users")}
-                </span>
-                <span className="inline sm:hidden">{t("新規", "New")}</span>
-                <CrossPlatformTooltip
-                  text={t(
-                    "新規登録されたユーザの作品一覧です",
-                    "List of works by newly registered users",
-                  )}
-                />
-              </div>
-            </Button>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="inline-flex w-fit flex-wrap gap-0.5 rounded-full border bg-muted/40 p-0.5">
+              <Button
+                variant="ghost"
+                onClick={() => handleWorkViewChange("new")}
+                data-active={workView === "new"}
+                size="sm"
+                className="h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+              >
+                {t("新着", "New")}
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => handleWorkViewChange("popular")}
+                data-active={workView === "popular"}
+                size="sm"
+                className="h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+              >
+                <div className="flex items-center space-x-1.5">
+                  <span>{t("人気", "Popular")}</span>
+                  <CrossPlatformTooltip
+                    text={t(
+                      "最近投稿された人気作品が表示されます",
+                      "Recently popular works",
+                    )}
+                  />
+                </div>
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => handleWorkViewChange("new-user")}
+                data-active={workView === "new-user"}
+                size="sm"
+                className="h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+              >
+                <div className="flex items-center space-x-1.5">
+                  <span className="hidden sm:inline">
+                    {t("新規ユーザ", "New Users")}
+                  </span>
+                  <span className="inline sm:hidden">{t("新規", "New")}</span>
+                  <CrossPlatformTooltip
+                    text={t(
+                      "新規登録されたユーザの作品一覧です",
+                      "List of works by newly registered users",
+                    )}
+                  />
+                </div>
+              </Button>
+            </div>
+            {workView === "new" && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1.5 rounded-full px-3"
+                onClick={() => setIsFilterUiOpen((v) => !v)}
+                aria-expanded={isFilterUiOpen}
+              >
+                <SlidersHorizontal className="size-4" />
+                {t("絞り込み", "Filters")}
+                {activeFilterCount > 0 && (
+                  <span className="rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground tabular-nums">
+                    {activeFilterCount}
+                  </span>
+                )}
+                {isFilterUiOpen ? (
+                  <Minus className="size-3.5" />
+                ) : (
+                  <Plus className="size-3.5" />
+                )}
+              </Button>
+            )}
           </div>
-
           {workView === "new" && (
             <div className="space-y-4">
               {/* 絞り込み用のセレクト群 - レスポンシブレイアウト */}
-              <div className="rounded-lg bg-muted/30 p-2">
-                <div className="flex items-center justify-end">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => setIsFilterUiOpen((v) => !v)}
-                    aria-label={
-                      isFilterUiOpen
-                        ? t("絞り込みを閉じる", "Close filters")
-                        : t("絞り込みを開く", "Open filters")
-                    }
-                  >
-                    {isFilterUiOpen ? (
-                      <Minus className="h-4 w-4" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-
+              <div className="space-y-2">
                 {isFilterUiOpen && (
-                  <div className="space-y-2">
+                  <div className="space-y-2 rounded-2xl border bg-muted/30 p-3">
                     {/* フィルター行1: 種類、プロンプト、ソート */}
                     <div className="grid grid-cols-3 gap-2">
                       {/* 種類 */}

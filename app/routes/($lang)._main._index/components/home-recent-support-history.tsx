@@ -74,99 +74,63 @@ export function HomeRecentSupportHistory() {
     void load()
   }, [])
 
-  // データがない場合でも、常にコンテナは表示する
+  // 1 行（高さ固定）で横に並べる。以前は 3 行の枠だった
   return (
-    <div className="space-y-1">
-      {/* 最新の推し履歴 */}
-      <div className="rounded border bg-card px-2 py-1">
-        <div className="mb-0.5 flex items-center justify-between gap-1">
-          <p className="text-[11px] font-normal text-muted-foreground">
-            {t("最新の推し", "Latest support")}
-          </p>
-        </div>
-
-        {isLoading ? (
-          // 履歴 3 件分の高さを確保する
-          <div className="space-y-0.5" aria-hidden="true">
-            <div className="h-4" />
-            <div className="h-4" />
-            <div className="h-4" />
-          </div>
-        ) : items.length > 0 ? (
-          <div className="space-y-0.5">
-            {items.slice(0, 3).map((item, index) => (
-              <div
-                key={`${item.createdAt}-${item.senderUser.id}-${index}`}
-                className="grid max-w-[28rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 text-[10px]"
-              >
-                <div className="min-w-0 flex items-center gap-1 truncate">
-                  {item.isAnonymous ? (
-                    <>
-                      <Avatar className="size-4">
-                        <AvatarFallback />
-                      </Avatar>
-                      <span className="truncate text-muted-foreground">
-                        {t("匿名", "Anonymous")}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        to={toUserPath(item.senderUser)}
-                        className="shrink-0 transition-opacity hover:opacity-70"
-                        title={toUserLabel(item.senderUser)}
-                      >
-                        <Avatar className="size-4">
-                          <AvatarImage
-                            src={withIconUrlFallback(item.senderUser.iconUrl)}
-                            alt={toUserLabel(item.senderUser)}
-                          />
-                          <AvatarFallback />
-                        </Avatar>
-                      </Link>
-                      <Link
-                        to={toUserPath(item.senderUser)}
-                        className="truncate transition-opacity hover:opacity-70 text-muted-foreground"
-                        title={toUserLabel(item.senderUser)}
-                      >
-                        {toUserLabel(item.senderUser)}
-                      </Link>
-                    </>
-                  )}
-                  <span className="shrink-0 text-muted-foreground">→</span>
-                  <Link
-                    to={toUserPath(item.recipientUser)}
-                    className="shrink-0 transition-opacity hover:opacity-70"
-                    title={toUserLabel(item.recipientUser)}
-                  >
-                    <Avatar className="size-4">
-                      <AvatarImage
-                        src={withIconUrlFallback(item.recipientUser.iconUrl)}
-                        alt={toUserLabel(item.recipientUser)}
-                      />
-                      <AvatarFallback />
-                    </Avatar>
-                  </Link>
-                  <Link
-                    to={toUserPath(item.recipientUser)}
-                    className="truncate transition-opacity hover:opacity-70 text-muted-foreground"
-                    title={toUserLabel(item.recipientUser)}
-                  >
-                    {toUserLabel(item.recipientUser)}
-                  </Link>
-                </div>
-
-                <span className="font-medium text-foreground whitespace-nowrap text-right">
-                  {item.ptAmount.toLocaleString()}pt
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-[10px] text-muted-foreground py-0.5">
+    <div className="flex h-8 items-center gap-2 overflow-hidden text-xs">
+      <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 font-medium text-[11px] text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+        {t("最新の推し", "Latest support")}
+      </span>
+      <div className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {!isLoading && items.length === 0 && (
+          <span className="text-muted-foreground">
             {t("推し履歴なし", "No support history")}
-          </p>
+          </span>
         )}
+        {items.slice(0, 6).map((item, index) => (
+          <span
+            key={`${item.createdAt}-${item.senderUser.id}-${index}`}
+            className="inline-flex shrink-0 items-center gap-1 text-muted-foreground"
+          >
+            {item.isAnonymous ? (
+              <span>{t("匿名", "Anonymous")}</span>
+            ) : (
+              <Link
+                to={toUserPath(item.senderUser)}
+                className="inline-flex items-center gap-1 hover:text-foreground"
+              >
+                <Avatar className="size-4">
+                  <AvatarImage
+                    src={withIconUrlFallback(item.senderUser.iconUrl)}
+                    alt=""
+                  />
+                  <AvatarFallback />
+                </Avatar>
+                <span className="max-w-24 truncate">
+                  {toUserLabel(item.senderUser)}
+                </span>
+              </Link>
+            )}
+            <span aria-hidden="true">→</span>
+            <Link
+              to={toUserPath(item.recipientUser)}
+              className="inline-flex items-center gap-1 hover:text-foreground"
+            >
+              <Avatar className="size-4">
+                <AvatarImage
+                  src={withIconUrlFallback(item.recipientUser.iconUrl)}
+                  alt=""
+                />
+                <AvatarFallback />
+              </Avatar>
+              <span className="max-w-24 truncate">
+                {toUserLabel(item.recipientUser)}
+              </span>
+            </Link>
+            <span className="font-medium text-foreground tabular-nums">
+              {item.ptAmount.toLocaleString()}pt
+            </span>
+          </span>
+        ))}
       </div>
     </div>
   )
