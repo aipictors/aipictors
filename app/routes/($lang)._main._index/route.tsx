@@ -355,6 +355,8 @@ export async function loader(props: LoaderFunctionArgs) {
           isNowCreatedAt: true,
           orderBy: "DATE_CREATED",
           ratings: ["G", "R15"],
+          // 「公開（新着無）」の作品は新着一覧に出さない
+          accessTypes: ["PUBLIC"],
         },
       },
     })

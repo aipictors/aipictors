@@ -18,7 +18,11 @@ import {
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
 import { Button } from "~/components/ui/button"
+import { Label } from "~/components/ui/label"
+import { Switch } from "~/components/ui/switch"
+import { useLocalStorage } from "usehooks-ts"
 import { useTranslation } from "~/hooks/use-translation"
+import { PREMIUM_COIN_CONFIRM_STORAGE_KEY } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
 import { AmazonExchangeSection } from "~/routes/($lang).settings.points/components/amazon-exchange-section"
 import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
 import { SupportRankingSection } from "~/routes/($lang).settings.points/components/support-ranking-section"
@@ -150,6 +154,10 @@ const normalizeSummaryData = (
 
 export function PointsSettingsForm() {
   const t = useTranslation()
+  const [isPremiumCoinConfirmEnabled, setIsPremiumCoinConfirmEnabled] =
+    useLocalStorage(PREMIUM_COIN_CONFIRM_STORAGE_KEY, true, {
+      initializeWithValue: false,
+    })
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
   const location = useLocation()
@@ -663,6 +671,19 @@ export function PointsSettingsForm() {
                   "View Specified Commercial Transaction Act",
                 )}
               </Link>
+            </div>
+            <div className="mt-4 flex items-center gap-2">
+              <Switch
+                id="premium-coin-confirm"
+                checked={isPremiumCoinConfirmEnabled}
+                onCheckedChange={setIsPremiumCoinConfirmEnabled}
+              />
+              <Label htmlFor="premium-coin-confirm" className="text-sm">
+                {t(
+                  "生成でプレミアムコインを使う前に確認する",
+                  "Ask before using premium coins for generation",
+                )}
+              </Label>
             </div>
             {premiumExpiringLots.length > 0 && (
               <div className="mt-3 space-y-1">

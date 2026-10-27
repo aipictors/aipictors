@@ -95,6 +95,8 @@ export function HomePaginationSensitiveWorksSection (props: Props) {
       limit: perPageCount,
       where: {
         ratings: ["R18", "R18G"],
+        // 「公開（新着無）」の作品は新着一覧に出さない
+        accessTypes: ["PUBLIC"],
         ...(props.workType !== null && {
           workType: props.workType,
         }),

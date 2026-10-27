@@ -4,6 +4,11 @@ import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
+import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
+import {
+  estimatePremiumCoinUse,
+  PREMIUM_COIN_CONFIRM_STORAGE_KEY,
+} from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
@@ -11,7 +16,7 @@ import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
-import { useBoolean, useMediaQuery } from "usehooks-ts"
+import { useBoolean, useLocalStorage, useMediaQuery } from "usehooks-ts"
 import { VerificationDialog } from "~/components/verification-dialog"
 import { useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
@@ -143,6 +148,30 @@ export function GenerationSubmissionView (props: Props) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const isEditingTextField = useIsEditingTextField()
+
+  const [isPremiumCoinConfirmEnabled, setIsPremiumCoinConfirmEnabled] =
+    useLocalStorage(PREMIUM_COIN_CONFIRM_STORAGE_KEY, true)
+
+  // プレミアムコインを使う前の確認（開いている間は使う見込みの枚数を持つ）
+  const [premiumCoinConfirmAmount, setPremiumCoinConfirmAmount] = useState<
+    number | null
+  >(null)
+  const premiumCoinConfirmResolveRef = useRef<
+    ((isConfirmed: boolean) => void) | null
+  >(null)
+
+  const settlePremiumCoinConfirm = (isConfirmed: boolean) => {
+    premiumCoinConfirmResolveRef.current?.(isConfirmed)
+    premiumCoinConfirmResolveRef.current = null
+    setPremiumCoinConfirmAmount(null)
+  }
+
+  const confirmPremiumCoinUse = (amount: number) => {
+    return new Promise<boolean>((resolve) => {
+      premiumCoinConfirmResolveRef.current = resolve
+      setPremiumCoinConfirmAmount(amount)
+    })
+  }
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
   const [coinSummary, setCoinSummary] = useState<CoinSummaryResponse["data"]>(null)
@@ -677,6 +706,26 @@ export function GenerationSubmissionView (props: Props) {
     // みんなのモデル（チェックポイント）を選択中なら user/<id>.safetensors で生成する
     const requestModelName =
       userModelSelection.checkpointModelName ?? model.name
+
+    // フリーコインが足りずプレミアムコインを使うときは確認する
+    if (isPremiumCoinConfirmEnabled && coinSummary !== null) {
+      const premiumCoinUse = estimatePremiumCoinUse({
+        requestCoinCost,
+        freeBalance: coinSummary.freeBalance,
+        premiumBalance: coinSummary.premiumBalance,
+      })
+      if (premiumCoinUse > 0) {
+        const isConfirmed = await confirmPremiumCoinUse(premiumCoinUse)
+        if (!isConfirmed) {
+          logInfo({
+            source: "GenerationSubmit",
+            message: "Cancelled: premium coin confirmation",
+            details: { premiumCoinUse },
+          })
+          return
+        }
+      }
+    }
 
     // 生成リクエストしたい回数分生成リクエストを行う
     // もし通常の連続生成を超過したら予約生成に切り替える
@@ -1232,6 +1281,15 @@ export function GenerationSubmissionView (props: Props) {
           />
         </div>
       </AppFixedContent>
+      <GenerationPremiumCoinConfirmDialog
+        key={premiumCoinConfirmAmount === null ? "closed" : "open"}
+        premiumCoinAmount={premiumCoinConfirmAmount}
+        onConfirm={({ isNeverAskAgain }) => {
+          if (isNeverAskAgain) setIsPremiumCoinConfirmEnabled(false)
+          settlePremiumCoinConfirm(true)
+        }}
+        onCancel={() => settlePremiumCoinConfirm(false)}
+      />
       {subscription === undefined && !isExistedPreviousPass && (
         <VerificationDialog
           verificationResult={verificationResult}

@@ -139,10 +139,11 @@ export function WorkMarkdownView (props: Props) {
             if (event.key === "Escape") setZoomedImageUrl(null)
           }}
         >
+          {/* 小さく保存された挿絵（10/27 以前は長辺 400px）も画面いっぱいまで広げる */}
           <img
             src={zoomedImageUrl}
             alt=""
-            className="max-h-full max-w-full object-contain"
+            className="h-full w-full object-contain"
           />
           <button
             type="button"
