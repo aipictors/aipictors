@@ -20,6 +20,8 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationAboutCountSection } from "~/routes/($lang)._main.generation.about/components/generation-about-count-section"
+import { GenerationAboutPlanSection } from "~/routes/($lang)._main.generation.about/components/generation-about-plan-section"
 
 /**
  * 画像生成についての説明
@@ -71,6 +73,7 @@ export function GenerationAboutPage () {
           <br className="md:hidden" />
           {t("1日10枚無料！", "10 Free Images per Day!")}
         </p>
+        <GenerationAboutCountSection />
         <Link to="/generation">
           <img
             className="auto"
@@ -199,6 +202,7 @@ export function GenerationAboutPage () {
             </Carousel>
           </div>
         </section>
+        <GenerationAboutPlanSection />
         <Separator />
         <p className="text-center font-bold text-xl">
           {t("よくあるご質問", "Frequently Asked Questions")}
@@ -209,7 +213,13 @@ export function GenerationAboutPage () {
               {t("料金プランが知りたい", "Want to Know the Pricing Plans?")}
             </AccordionTrigger>
             <AccordionContent>
-              <Link to={"/generation/plans"}>
+              <p>
+                {t(
+                  "無料でも毎日100フリーコイン（通常生成10枚分）が届きます。ライト（月額480円）・スタンダード（月額1,980円）・プレミアム（月額3,980円）に加入すると、1回の生成で4枚、1日最大200枚まで生成できます。",
+                  "Free users get 100 coins (10 images) daily. Lite (¥480), Standard (¥1,980) and Premium (¥3,980) give 4 images per request and up to 200 images a day.",
+                )}
+              </p>
+              <Link to={"/plus"} className="underline">
                 {t("料金プランの詳細はこちら", "Details on Pricing Plans Here")}
               </Link>
             </AccordionContent>

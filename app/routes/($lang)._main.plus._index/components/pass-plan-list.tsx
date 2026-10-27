@@ -1,6 +1,6 @@
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { cn } from "~/lib/utils"
 import { PassPlanDescription } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
-import { toPassFeatures } from "~/routes/($lang)._main.plus._index/utils/to-pass-features"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 
@@ -9,11 +9,21 @@ type Props = {
   showUpgradePlansOnly?: boolean
   hideSubmitButton?: boolean
   treatAsNoCurrentPass?: boolean
+  /**
+   * 無料プランのカードも並べる（加入中のプランがないときだけ表示）
+   */
+  showFreePlan?: boolean
+  /**
+   * 未ログイン（登録ボタンをログインに置き換える）
+   */
+  isLoggedOut?: boolean
   onSelect(passType: IntrospectionEnum<"PassType">): Promise<void>
 }
 
 export function PassPlanList (props: Props) {
-  const { data } = useQuery(viewerCurrentPassQuery, {})
+  const { data } = useQuery(viewerCurrentPassQuery, {
+    skip: props.isLoggedOut === true,
+  })
 
   // if (data.viewer === null) {
   //   return null
@@ -54,51 +64,68 @@ export function PassPlanList (props: Props) {
 
   const effectiveCurrentPass = props.treatAsNoCurrentPass ? null : currentPass
 
+  const isFreePlanVisible =
+    props.showFreePlan === true && effectiveCurrentPass === null
+
+  const isVisible = (passType: "LITE" | "STANDARD" | "PREMIUM") =>
+    !props.showUpgradePlansOnly ||
+    isUpgradeOrEqualPlan(effectiveCurrentPass?.type, passType)
+
+  const visibleCount =
+    (isFreePlanVisible ? 1 : 0) +
+    (["LITE", "STANDARD", "PREMIUM"] as const).filter(isVisible).length
+
   return (
-    <div className="flex flex-col space-y-2 lg:flex-row lg:space-x-2 lg:space-y-0">
-      {(!props.showUpgradePlansOnly ||
-        isUpgradeOrEqualPlan(effectiveCurrentPass?.type, "LITE")) && (
-        <div className="flex-1">
+    <div className="@container">
+      <div
+        className={cn(
+          "grid grid-cols-1 gap-4 pt-3",
+          visibleCount === 1 && "max-w-md",
+          visibleCount >= 2 && "@xl:grid-cols-2",
+          visibleCount === 3 && "@3xl:grid-cols-3",
+          visibleCount >= 4 && "@4xl:grid-cols-4",
+        )}
+      >
+        {isFreePlanVisible && (
           <PassPlanDescription
-            title="ライト"
-            price={480}
-            features={toPassFeatures("LITE")}
+            plan="FREE"
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
+            onClick={async () => {}}
+          />
+        )}
+        {isVisible("LITE") && (
+          <PassPlanDescription
+            plan="LITE"
+            isLoading={props.isLoading}
+            isHide={props.hideSubmitButton === true}
+            isLoggedOut={props.isLoggedOut}
             isCurrent={effectiveCurrentPass?.type === "LITE"}
             onClick={() => props.onSelect("LITE")}
           />
-        </div>
-      )}
-      {(!props.showUpgradePlansOnly ||
-        isUpgradeOrEqualPlan(effectiveCurrentPass?.type, "STANDARD")) && (
-        <div className="flex-1">
+        )}
+        {isVisible("STANDARD") && (
           <PassPlanDescription
             isPrimary
-            title="スタンダード"
-            price={1980}
-            features={toPassFeatures("STANDARD")}
+            plan="STANDARD"
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
+            isLoggedOut={props.isLoggedOut}
             isCurrent={effectiveCurrentPass?.type === "STANDARD"}
             onClick={() => props.onSelect("STANDARD")}
           />
-        </div>
-      )}
-      {(!props.showUpgradePlansOnly ||
-        isUpgradeOrEqualPlan(effectiveCurrentPass?.type, "PREMIUM")) && (
-        <div className="flex-1">
+        )}
+        {isVisible("PREMIUM") && (
           <PassPlanDescription
-            title="プレミアム"
-            price={3980}
-            features={toPassFeatures("PREMIUM")}
+            plan="PREMIUM"
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
+            isLoggedOut={props.isLoggedOut}
             isCurrent={effectiveCurrentPass?.type === "PREMIUM"}
             onClick={() => props.onSelect("PREMIUM")}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

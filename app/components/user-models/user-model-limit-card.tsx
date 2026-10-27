@@ -53,10 +53,7 @@ export function UserModelLimitCard(props: Props) {
             上限に達しています。不要なモデルを削除するか、プランを変更すると追加できます。
           </p>
           <p className="text-muted-foreground text-xs">
-            無料 {USER_MODEL_PLAN_LIMITS.FREE} / LITE{" "}
-            {USER_MODEL_PLAN_LIMITS.LITE} / STANDARD{" "}
-            {USER_MODEL_PLAN_LIMITS.STANDARD} / PREMIUM{" "}
-            {USER_MODEL_PLAN_LIMITS.PREMIUM}
+            {`登録できる数：無料 ${USER_MODEL_PLAN_LIMITS.FREE}個・ライト ${USER_MODEL_PLAN_LIMITS.LITE}個・スタンダード ${USER_MODEL_PLAN_LIMITS.STANDARD}個・プレミアム ${USER_MODEL_PLAN_LIMITS.PREMIUM}個`}
           </p>
           <div className="flex gap-2">
             {canUpgrade && (
