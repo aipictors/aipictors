@@ -327,9 +327,6 @@ export default function Index() {
             value={currentTab}
             onChange={setCurrentTab}
           />
-          <Button variant="secondary" size="sm" onClick={() => navigate("/")}>
-            全年齢
-          </Button>
         </div>
 
         {/* ---------- HOME ---------- */}

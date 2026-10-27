@@ -59,7 +59,7 @@ export function HomeMenuRouteList({
 
   const isSensitive = sensitivePath
 
-  const title = isSensitive ? "Aipictors R18" : (propTitle ?? "Aipictors")
+  const title = propTitle ?? "Aipictors"
 
   const getSensitiveLink = (path: string) =>
     /^\/r($|\s)/.test(path) ? "" : sensitivePath ? `/r${path}` : path

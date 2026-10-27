@@ -239,7 +239,8 @@ function HomeHeader(props: Props) {
     setPendingSearchData(null)
   }
 
-  const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors")
+  // 全年齢か R18 かはヘッダーの切り替えで分かるので、タイトルは変えない
+  const title = props.title ?? "Aipictors"
 
   const isGenerationPage = location.pathname.includes("/generation")
 
