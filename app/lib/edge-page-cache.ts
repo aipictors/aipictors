@@ -26,6 +26,14 @@ const PUBLIC_DATA_PATH =
 const DEFAULT_DATA_TTL_SECONDS = 30
 const DEFAULT_SWR_SECONDS = 300
 
+/**
+ * 古いものを返して裏で作り直す期間の下限。
+ * キャッシュは拠点ごとなので、アクセスの少ない拠点（海外や検索エンジン・計測ツール）では
+ * 数分で切れてしまい、そのたびに API から作り直して 2〜3 秒かかっていた。
+ * 古いものを返すのはその拠点で久しぶりの 1 回だけで、直後に作り直す
+ */
+const MIN_SWR_SECONDS = 60 * 60 * 6
+
 const parseCacheControl = (value: string | null) => {
   const lower = (value ?? "").toLowerCase()
   const num = (name: string) => {
@@ -87,14 +95,17 @@ export const createEdgePageCache = (version: string) => {
     }
     const cc = parseCacheControl(response.headers.get("Cache-Control"))
     if (cc.sMaxAge !== null && cc.sMaxAge > 0 && !cc.isPrivate) {
-      return { ttl: cc.sMaxAge, swr: cc.swr ?? DEFAULT_SWR_SECONDS }
+      return {
+        ttl: cc.sMaxAge,
+        swr: Math.max(cc.swr ?? DEFAULT_SWR_SECONDS, MIN_SWR_SECONDS),
+      }
     }
     if (
       url.searchParams.has("_data") &&
       !response.headers.get("Cache-Control") &&
       PUBLIC_DATA_PATH.test(url.pathname)
     ) {
-      return { ttl: DEFAULT_DATA_TTL_SECONDS, swr: DEFAULT_SWR_SECONDS }
+      return { ttl: DEFAULT_DATA_TTL_SECONDS, swr: MIN_SWR_SECONDS }
     }
     return null
   }
