@@ -36,7 +36,7 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
 }
 
 export default function R18TermsPage() {
-  const { t } = useTranslation()
+  const t = useTranslation()
 
   return (
     <div className="space-y-6">

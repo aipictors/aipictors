@@ -6,6 +6,12 @@ const remix = createPagesFunctionHandler({
   build,
 })
 
+/**
+ * メンテナンス状態のキャッシュの場所（app/root.tsx の loader も同じものを読む）
+ */
+const MAINTENANCE_CACHE_URL =
+  "https://www.aipictors.com/__cache/maintenance-status-web"
+
 const MAINTENANCE_STATUS_QUERY = `query MaintenanceStatus {
   maintenanceStatus {
     isMaintenanceModeWeb
@@ -183,15 +189,12 @@ type MaintenanceStatusDebug = {
 
 const getMaintenanceStatus = async (
   ctx: Parameters<PagesFunction>[0],
-  options?: { debug?: boolean },
+  options?: { debug?: boolean; skipCache?: boolean },
 ): Promise<MaintenanceStatusPayload & { debug?: MaintenanceStatusDebug }> => {
   // キャッシュ（短時間）でGraphQLへの負荷を下げる
   // NOTE: Cache API の put はTTLが効かず永続化しやすいので、payload内のcachedAtで期限判定する。
   const cacheTtlMs = 30_000
-  const cacheKey = new Request(
-    "https://edge-cache.aipictors.invalid/maintenance-status-web",
-    { method: "GET" },
-  )
+  const cacheKey = new Request(MAINTENANCE_CACHE_URL, { method: "GET" })
   let staleFallback: { isMaintenance: boolean; message: string | null } | null =
     null
 
@@ -204,7 +207,9 @@ const getMaintenanceStatus = async (
     : undefined
 
   try {
-    const cached = await caches.default.match(cacheKey)
+    const cached = options?.skipCache
+      ? undefined
+      : await caches.default.match(cacheKey)
     if (cached) {
       try {
         const data = (await cached.json()) as {
@@ -242,6 +247,18 @@ const getMaintenanceStatus = async (
     }
   } catch {
     // ignore cache access error
+  }
+
+  // 期限切れのキャッシュがあれば、それを返して裏で取り直す
+  // （取り直しを待つと、API が遅いときに全ページの表示が遅れる）
+  if (staleFallback && !options?.debug) {
+    ctx.waitUntil(
+      getMaintenanceStatus(ctx, { skipCache: true }).catch(() => undefined),
+    )
+    return {
+      isMaintenance: staleFallback.isMaintenance,
+      message: staleFallback.message,
+    }
   }
 
   const endpoint = getGraphqlEndpoint(ctx)
@@ -333,7 +350,8 @@ const getMaintenanceStatus = async (
             status: 200,
             headers: {
               "Content-Type": "application/json",
-              "Cache-Control": "no-store",
+              // no-store だと Cache API に保存されず、毎回 API に問い合わせていた
+              "Cache-Control": "public, max-age=86400",
             },
           }),
         ),

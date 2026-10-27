@@ -8,6 +8,7 @@ import {
 } from "@remix-run/cloudflare"
 import {
   isRouteErrorResponse,
+  type ShouldRevalidateFunction,
   Links,
   Meta,
   Outlet,
@@ -33,10 +34,7 @@ import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
 import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
-import {
-  buildAlternateLocaleUrls,
-  getPathLocale,
-} from "~/utils/locale-path"
+import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { serializeJsonLd } from "~/utils/serialize-json-ld"
 import { createSiteJsonLd } from "~/utils/site-json-ld"
 
@@ -119,6 +117,40 @@ const getMaintenanceStatus = async (): Promise<RootLoaderData> => {
     return {
       isMaintenance: maintenanceStatusCache.isMaintenance,
       maintenanceMessage: maintenanceStatusCache.maintenanceMessage,
+    }
+  }
+
+  // 入口（functions/[[path]].ts）が Cloudflare の拠点ごとに保存したメンテナンス状態を使う。
+  // ここでも毎回 API に聞くと、API への要求の約 4 割を占めていた
+  const sharedCache =
+    typeof caches !== "undefined"
+      ? (caches as unknown as { default?: Cache }).default
+      : undefined
+  if (sharedCache) {
+    try {
+      const cached = await sharedCache.match(
+        new Request("https://www.aipictors.com/__cache/maintenance-status-web"),
+      )
+      if (cached) {
+        const data = (await cached.json()) as {
+          isMaintenance: boolean
+          message: string | null
+          cachedAt?: number
+        }
+        if (
+          typeof data.cachedAt === "number" &&
+          Date.now() - data.cachedAt < 10 * 60_000
+        ) {
+          const value = {
+            isMaintenance: data.isMaintenance,
+            maintenanceMessage: data.message,
+          }
+          maintenanceStatusCache = { ...value, cachedAt: Date.now() }
+          return value
+        }
+      }
+    } catch {
+      // キャッシュが読めなければ API に聞く
     }
   }
 
@@ -215,6 +247,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
 
   return json<RootLoaderData>(maintenanceStatus)
+}
+
+/**
+ * メンテナンス状態はページを移動するたびに取り直さない（読み込み直したときと、フォーム送信のあとだけ）
+ */
+export const shouldRevalidate: ShouldRevalidateFunction = ({
+  formMethod,
+  defaultShouldRevalidate,
+}) => {
+  if (formMethod && formMethod !== "GET") return defaultShouldRevalidate
+  return false
 }
 
 export const links: LinksFunction = () => {

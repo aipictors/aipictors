@@ -15,7 +15,6 @@ import UserNavigationMenuContent, {
   prefetchUserNavigationMenu,
 } from "~/routes/($lang)._main._index/components/user-navigation-menu-content"
 import { useApolloClient } from "@apollo/client/index"
-import { useEffect } from "react"
 
 type Props = {
   onLogout(): void
@@ -49,17 +48,8 @@ export function FastUserNavigationMenu(props: Props) {
 
   const client = useApolloClient()
 
-  // メニューの中身（ユーザー情報・設定）を先に取っておき、開いたときにすぐ出す
-  useEffect(() => {
-    if (!authContext.isLoggedIn) return
-    const run = () => prefetchUserNavigationMenu(client)
-    if (typeof window.requestIdleCallback === "function") {
-      const id = window.requestIdleCallback(run, { timeout: 3000 })
-      return () => window.cancelIdleCallback(id)
-    }
-    const timer = setTimeout(run, 1500)
-    return () => clearTimeout(timer)
-  }, [authContext.isLoggedIn, client])
+  // メニューの中身（ユーザー情報・設定）はアイコンにカーソルを乗せた・触れたときに先に取っておく
+  // （全ページで読み込み後に取りに行くと API の負荷になるため）
 
   // 認証情報から最低限の表示
   const iconUrl =
@@ -112,6 +102,7 @@ export function FastUserNavigationMenu(props: Props) {
           className="rounded-full"
           aria-label="メニュー"
           onPointerEnter={() => prefetchUserNavigationMenu(client)}
+          onPointerDown={() => prefetchUserNavigationMenu(client)}
           onFocus={() => prefetchUserNavigationMenu(client)}
         >
           <UserAvatarWithFrame
