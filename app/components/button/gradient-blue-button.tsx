@@ -27,9 +27,12 @@ export function GradientBlueButton (props: Props): React.ReactNode {
       )}
     >
       <div
-        className={cn("flex h-8 flex-1 justify-center rounded-md py-2", {
-          "bg-white": !props.isNoBackground,
-        })}
+        className={cn(
+          "flex h-full min-w-0 flex-1 items-center justify-center rounded-md",
+          {
+            "bg-white": !props.isNoBackground,
+          },
+        )}
         style={{ WebkitTextStrokeColor: "#fff" }}
       >
         {props.children}

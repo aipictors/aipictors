@@ -59,7 +59,7 @@ const formatCoinAmount = (value: number) => {
  * @param prompts
  * @param seed
  */
-export function getSubmitButtonLabel (
+export function getSubmitButtonLabel(
   isSetI2iImage: boolean,
   prompts: string,
   seed: number,
@@ -90,7 +90,7 @@ export function getSubmitButtonLabel (
 /**
  * 生成実行に関わる操作UI
  */
-export function GenerationSubmitOperationParts (props: Props) {
+export function GenerationSubmitOperationParts(props: Props) {
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)
@@ -112,8 +112,7 @@ export function GenerationSubmitOperationParts (props: Props) {
 
   const onPlusButtonClick = () => {
     if (
-      context.config.generationCount >=
-      props.remainingImageGenerationTasksCount
+      context.config.generationCount >= props.remainingImageGenerationTasksCount
     ) {
       return
     }
@@ -150,7 +149,9 @@ export function GenerationSubmitOperationParts (props: Props) {
           </Link>
           <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/60 bg-background/95 px-3 py-2 shadow-sm">
             <CoinIcon className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">{formatCoinAmount(props.freeCoinBalance)}</span>
+            <span className="truncate">
+              {formatCoinAmount(props.freeCoinBalance)}
+            </span>
           </div>
           <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/60 bg-background/95 px-3 py-2 shadow-sm">
             <PremiumCoinIcon className="h-3.5 w-3.5 shrink-0" />
@@ -160,8 +161,8 @@ export function GenerationSubmitOperationParts (props: Props) {
           </div>
         </div>
       )}
-      <div className="flex items-center">
-        <div className="flex items-center md:hidden">
+      <div className="flex min-w-0 items-center">
+        <div className="flex shrink-0 items-center md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -212,7 +213,7 @@ export function GenerationSubmitOperationParts (props: Props) {
         {/* 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示 */}
         {(!authContext.isLoggedIn || context.user === null) && (
           <>
-            <div className="mr-2 flex w-56 items-center space-x-2 md:w-48">
+            <div className="mr-2 flex shrink-0 items-center gap-1.5">
               <Switch
                 onClick={() => {
                   context.changeUpscaleSize(
@@ -234,54 +235,58 @@ export function GenerationSubmitOperationParts (props: Props) {
                 </Label>
               </div>
             </div>
-            <LoginDialogButton
-              label={t("生成", "Generate")}
-              isLoading={
-                authContext.isLoading ||
-                (authContext.isLoggedIn && context.user === null)
-              }
-              isWidthFull={true}
-              triggerChildren={
-                <GradientBlueButton
-                  onClick={() => {}}
-                  className="w-full text-balance"
-                  isNoBackground={true}
-                >
-                  <div className="flex items-center">
-                    {t("生成", "Generate")}
-                    {(authContext.isLoading ||
-                      (authContext.isLoggedIn && context.user === null)) && (
-                      <span className="ml-2 animate-spin">
-                        <Loader2Icon />
-                      </span>
-                    )}
-                  </div>
-                </GradientBlueButton>
-              }
-            />
+            <div data-generation-submit className="contents">
+              <LoginDialogButton
+                label={t("生成", "Generate")}
+                isLoading={
+                  authContext.isLoading ||
+                  (authContext.isLoggedIn && context.user === null)
+                }
+                isWidthFull={true}
+                triggerChildren={
+                  <GradientBlueButton
+                    onClick={() => {}}
+                    className="w-full text-balance"
+                    isNoBackground={true}
+                  >
+                    <div className="flex items-center">
+                      {t("生成", "Generate")}
+                      {(authContext.isLoading ||
+                        (authContext.isLoggedIn && context.user === null)) && (
+                        <span className="ml-2 animate-spin">
+                          <Loader2Icon />
+                        </span>
+                      )}
+                    </div>
+                  </GradientBlueButton>
+                }
+              />
+            </div>
           </>
         )}
         {/* 規約確認開始ボタン */}
         {authContext.isLoggedIn &&
           context.user !== null &&
           context.user?.hasSignedImageGenerationTerms !== true && (
-            <GenerationTermsButton
-              termsMarkdownText={props.termsText}
-              isLoading={props.isCreatingTask}
-              onSubmit={props.onSignTerms}
-              triggerChildren={
-                <GradientBorderButton
-                  disabled={props.isCreatingTask}
-                  onClick={() => {}}
-                  className="w-full text-balance"
-                  isNoBackground={true}
-                >
-                  {props.isCreatingTask
-                    ? t("処理中..", "Processing..")
-                    : t("生成", "Generate")}
-                </GradientBorderButton>
-              }
-            />
+            <div data-generation-submit className="contents">
+              <GenerationTermsButton
+                termsMarkdownText={props.termsText}
+                isLoading={props.isCreatingTask}
+                onSubmit={props.onSignTerms}
+                triggerChildren={
+                  <GradientBorderButton
+                    disabled={props.isCreatingTask}
+                    onClick={() => {}}
+                    className="w-full text-balance"
+                    isNoBackground={true}
+                  >
+                    {props.isCreatingTask
+                      ? t("処理中..", "Processing..")
+                      : t("生成", "Generate")}
+                  </GradientBorderButton>
+                }
+              />
+            </div>
           )}
         {/* プレミアムの場合はサブスク案内ダイアログなしver */}
         {isCurrentPremiumPlan() &&
@@ -307,8 +312,7 @@ export function GenerationSubmitOperationParts (props: Props) {
           )}
         {/* サブスク案内ダイアログありver（最後の1枚の生成時に案内する） */}
         {!isCurrentPremiumPlan() &&
-          props.remainingImageGenerationTasksCount >
-            requestImageUnits &&
+          props.remainingImageGenerationTasksCount > requestImageUnits &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
               onClick={async () => {
@@ -316,7 +320,7 @@ export function GenerationSubmitOperationParts (props: Props) {
               }}
               isLoading={props.isCreatingTask}
               isDisabled={context.config.isDisabled}
-                  isCoinSummaryLoading={props.isCoinSummaryLoading}
+              isCoinSummaryLoading={props.isCoinSummaryLoading}
               requestCoinCost={props.requestCoinCost}
               ownedCoinCount={props.ownedCoinCount}
               buttonActionCaption={withImageCount(
@@ -331,13 +335,12 @@ export function GenerationSubmitOperationParts (props: Props) {
           )}
         {/* 通常の生成ボタン */}
         {!isCurrentPremiumPlan() &&
-          props.remainingImageGenerationTasksCount <=
-            requestImageUnits &&
+          props.remainingImageGenerationTasksCount <= requestImageUnits &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <Dialog>
               <DialogTrigger asChild>
-                <div className="flex w-full items-center space-x-4">
-                  <div className="flex w-48 items-center md:w-40">
+                <div className="flex w-full min-w-0 items-center gap-3">
+                  <div className="flex shrink-0 items-center gap-1.5">
                     <Switch
                       onClick={() => {
                         context.changeUpscaleSize(
