@@ -78,6 +78,19 @@ export default defineConfig({
         // 細かいチャンクが数百個に分かれると、ページを開いたときの modulepreload が多すぎて
         // 回線が遅い端末で表示が遅れる。小さいチャンクはまとめる。
         experimentalMinChunkSize: 120_000,
+        // どのページでも使う土台のライブラリ（React・Remix・Apollo など）は 1 つのファイルにまとめる。
+        // 細かく分かれていると、モバイルの計測で最初の表示が大きく遅れる。
+        // React と Apollo を別のファイルに分けると、読み込み順で Apollo が React を見つけられず壊れるので、必ず同じファイルにする
+        manualChunks(id) {
+          if (
+            /node_modules\/(react|react-dom|scheduler|@remix-run|react-router|react-router-dom|turbo-stream|cookie|set-cookie-parser|@apollo|graphql|@wry|optimism|zen-observable|zen-observable-ts|ts-invariant|symbol-observable|@graphql-typed-document-node|rehackt|hoist-non-react-statics|tslib|@tanstack|use-sync-external-store)\//.test(
+              id,
+            )
+          ) {
+            return "vendor"
+          }
+          return undefined
+        },
       },
     },
   },
