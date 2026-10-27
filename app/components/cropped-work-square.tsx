@@ -31,6 +31,8 @@ type Props = {
   title?: string
   /** 親要素がリンクやボタンの場合は true（a 要素の入れ子はハイドレーションエラーになるため） */
   isInsideInteractive?: boolean
+  /** この条件の画面幅でだけ画像を読み込む（OptimizedImage の media） */
+  media?: string
 }
 
 /**
@@ -137,6 +139,7 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
         key={props.imageUrl}
         loading={props.isPriority ? "eager" : "lazy"}
         fetchPriority={props.isPriority ? "high" : undefined}
+        media={props.media}
         width={props.imageWidth}
         height={props.imageHeight}
         style={cropStyle}

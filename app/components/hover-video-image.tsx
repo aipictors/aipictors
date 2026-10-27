@@ -18,6 +18,8 @@ type Props = {
   loading?: "lazy" | "eager"
   isAutoPlay?: boolean
   shouldMaskSensitive?: boolean
+  /** この条件の画面幅でだけ画像を読み込む（OptimizedImage の media） */
+  media?: string
 }
 
 /**
@@ -36,6 +38,7 @@ export function HoverVideoImage(props: Props): React.ReactNode {
         height={props.height}
         fetchPriority={props.fetchPriority}
         loading={props.loading}
+        media={props.media}
         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
         style={{
           // Safari対応：画像表示を強制

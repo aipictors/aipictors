@@ -1,11 +1,11 @@
-import { LikeButton } from "~/components/like-button"
 import { Link } from "@remix-run/react"
-import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { useTranslation } from "~/hooks/use-translation"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import type { FragmentOf } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { LikeButton } from "~/components/like-button"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { useTranslation } from "~/hooks/use-translation"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -118,6 +118,9 @@ export function HomeCroppedWorks(props: Props) {
                 >
                   <CroppedWorkSquare
                     isPriority={index < (props.priorityCount ?? 0)}
+                    media={
+                      props.isMobileOnly ? "(max-width: 767.98px)" : undefined
+                    }
                     title={work.title}
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}
@@ -153,6 +156,9 @@ export function HomeCroppedWorks(props: Props) {
                 <Link to={`/posts/${work.id}`} className="relative block">
                   <CroppedWorkSquare
                     isPriority={index < (props.priorityCount ?? 0)}
+                    media={
+                      props.isMobileOnly ? "(max-width: 767.98px)" : undefined
+                    }
                     title={work.title}
                     isInsideInteractive={true}
                     workId={work.id}

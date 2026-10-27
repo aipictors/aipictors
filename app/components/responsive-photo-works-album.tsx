@@ -1,11 +1,11 @@
-import { type FragmentOf, graphql } from "gql.tada"
 import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, Images, MessageCircle } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { HoverVideoImage } from "~/components/hover-video-image"
 import { LikeButton } from "~/components/like-button"
-import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { Badge } from "~/components/ui/badge"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { WorkMediaBadge } from "~/components/work-media-badge"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
@@ -208,8 +208,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         width={width}
                         height={height}
                         fetchPriority={isPriority ? "high" : undefined}
-                        // PC 用の一覧はモバイルでは非表示（display: none）なので eager にしない
-                        loading="lazy"
+                        // PC 用の一覧はスマホでは非表示（display: none）。media でスマホでは読み込まないので、
+                        // 先頭の作品は PC で優先して読み込める
+                        loading={isPriority ? "eager" : "lazy"}
+                        media="(min-width: 768px)"
                         className="h-full w-full"
                         shouldMaskSensitive={
                           props.shouldMaskSensitiveWorks === true &&
@@ -229,7 +231,8 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                       width={width}
                       height={height}
                       fetchPriority={isPriority ? "high" : undefined}
-                      loading="lazy"
+                      loading={isPriority ? "eager" : "lazy"}
+                      media="(min-width: 768px)"
                       className="absolute inset-0 block h-full w-full overflow-hidden"
                       shouldMaskSensitive={
                         props.shouldMaskSensitiveWorks === true &&
