@@ -44,7 +44,7 @@ export function TagButton (props: Props) {
 
       <div className="relative z-10">
         {props.title && (
-          <div className="mb-1 font-semibold text-white text-xs opacity-90">
+          <div className="mb-1 font-semibold text-white text-xs">
             {props.title}
           </div>
         )}

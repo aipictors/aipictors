@@ -28,6 +28,8 @@ type Props = {
   targetRowHeight?: number
   isShowProfile?: boolean
   autoPlayVideoPreview?: boolean
+  /** 先頭から何件の画像を優先して読み込むか（画面の最初に見える一覧で使う） */
+  priorityCount?: number
   onSelect?: (index: string) => void
 }
 
@@ -75,6 +77,7 @@ export function HomeRecommendedWorkList(props: Props) {
           isShowProfile={props.isShowProfile}
           autoPlayVideoPreview={props.autoPlayVideoPreview}
           compactWhenFew={true}
+          priorityCount={props.priorityCount}
           onSelect={props.onSelect}
         />
       )}

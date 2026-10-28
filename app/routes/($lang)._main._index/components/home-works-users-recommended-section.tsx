@@ -59,6 +59,8 @@ export function HomeWorksUsersRecommendedSection (props: Props) {
           isCropped={false}
           isShowProfile={true}
           autoPlayVideoPreview={true}
+          // ホームで最初に見える画像（スマホの LCP）。lazy のままだと読み込みが後回しになっていた
+          priorityCount={2}
           onSelect={props.onSelect}
         />
       )}

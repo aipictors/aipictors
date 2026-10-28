@@ -950,7 +950,8 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
   }
 
   return (
-    <>
+    // ページの本文（読み上げソフトが本文の位置を見つけられるように main で囲む）
+    <main className="space-y-4">
       {/* ページの見出し（画面には出さず、検索エンジンと読み上げのために置く） */}
       <h1 className="sr-only">
         {t(
@@ -1938,7 +1939,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
           isLoadingMore={isLoadingMore}
         />
       )}
-    </>
+    </main>
   )
 }
 

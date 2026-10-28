@@ -32,6 +32,7 @@ export function HomeAwardWorksSection (props: Props) {
             >
               <div className="flex h-full items-center space-x-2">
                 <CroppedWorkSquare
+                  title={work.work?.title}
                   workId={work.work?.id ?? ""}
                   imageUrl={work.work?.smallThumbnailImageURL ?? ""}
                   thumbnailImagePosition={

@@ -132,7 +132,7 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
       "flex h-7 items-center rounded-full px-2 font-medium text-xs transition-colors md:px-3",
       isActive
         ? "bg-background text-foreground shadow-sm"
-        : "text-muted-foreground hover:text-foreground",
+        : "text-foreground/70 hover:text-foreground",
     )
 
   return (

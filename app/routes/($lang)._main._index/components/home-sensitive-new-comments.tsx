@@ -101,6 +101,7 @@ export const HomeNewCommentsFragment = graphql(
     }
     work {
       id
+      title
       smallThumbnailImageURL
       smallThumbnailImageHeight
       smallThumbnailImageWidth

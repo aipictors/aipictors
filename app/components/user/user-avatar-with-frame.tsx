@@ -114,6 +114,9 @@ function PlainAvatar(props: {
           )}
           loading="lazy"
           decoding="async"
+          // アイコンは小さく表示するだけなので後回しにする（画面内にあると優先度が上がり、
+          // 元画像が 70KB 近いものもあって、作品の画像と回線を取り合っていた）
+          fetchPriority="low"
         />
       )}
     </span>

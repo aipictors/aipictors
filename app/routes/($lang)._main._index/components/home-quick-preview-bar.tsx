@@ -5,7 +5,6 @@ import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { ReleaseTagBadge } from "~/components/release-tag-badge"
 import { useTranslation } from "~/hooks/use-translation"
-import { cn } from "~/lib/utils"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { useRotatingHomeEvents } from "~/routes/($lang)._main._index/components/use-rotating-home-events"
 import type {
@@ -39,10 +38,10 @@ const formatReleaseDate = (timestamp: number) => {
 
 export function HomeQuickPreviewBar(props: Props) {
   const t = useTranslation()
-  const { currentIndex, isVisible } = useRotatingHomeEvents(props.events)
+  const { currentIndex } = useRotatingHomeEvents(props.events, { fadeMs: 0 })
   const rotatingReleases = useRotatingHomeEvents(props.featuredReleases, {
     intervalMs: 3600,
-    fadeMs: 240,
+    fadeMs: 0,
   })
 
   const firstEvent = props.events[currentIndex]
@@ -76,13 +75,10 @@ export function HomeQuickPreviewBar(props: Props) {
         </div>
 
         {firstEvent ? (
+          // 切り替えは下から少しずらして出すだけにする（薄くフェードさせると、途中の薄い文字が読みにくかった）
           <div
-            className={cn(
-              "transition-all duration-500 ease-out",
-              isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-20 translate-y-1",
-            )}
+            key={currentIndex}
+            className="motion-safe:slide-in-from-bottom-1 motion-safe:animate-in motion-safe:duration-300"
           >
             <Link
               to={`/events/${firstEvent.slug}`}
@@ -153,12 +149,8 @@ export function HomeQuickPreviewBar(props: Props) {
 
         {firstRelease ? (
           <div
-            className={cn(
-              "transition-all duration-500 ease-out",
-              rotatingReleases.isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-20 translate-y-1",
-            )}
+            key={rotatingReleases.currentIndex}
+            className="motion-safe:slide-in-from-bottom-1 motion-safe:animate-in motion-safe:duration-300"
           >
             <Link
               to={`/releases/${firstRelease.id}`}

@@ -4,12 +4,17 @@
  * - 4位以降: グレー丸バッジ（白数字）をアバター左下に表示
  */
 
+import firstFrameUrl from "~/assets/rank-frames/1st-frame.webp"
+import secondFrameUrl from "~/assets/rank-frames/2st-frame.webp"
+import thirdFrameUrl from "~/assets/rank-frames/3st-frame.webp"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
+// 表示は最大 80px なので、168px の WebP にしてアプリ内に置く
+// （元の PNG は 330px・35〜50KB で、キャッシュ期限も付いていなかった）
 const RANK_FRAME_URLS: Record<1 | 2 | 3, string> = {
-  1: "https://assets.aipictors.com/1st-frame.png",
-  2: "https://assets.aipictors.com/2st-frame.png",
-  3: "https://assets.aipictors.com/3st-frame.png",
+  1: firstFrameUrl,
+  2: secondFrameUrl,
+  3: thirdFrameUrl,
 }
 
 type Size = "sm" | "md" | "lg"
@@ -69,7 +74,7 @@ export function SupportRankAvatar({
             alt={`${rank}位フレーム`}
             width={px}
             height={px}
-            loading="eager"
+            loading="lazy"
             decoding="async"
             className="pointer-events-none absolute inset-0 h-full w-full object-contain"
           />

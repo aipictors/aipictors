@@ -22,7 +22,10 @@ export const toDeferredModuleScript = (source: string): string => {
   // 最初の描画を待つ（first-contentful-paint か、2 フレーム描画されたとき。中身が画像や文字でないページもあるため）。
   // 裏のタブでは描画されないので待たない。万一描画が来なくても 5 秒で始める
   // （以前は 1 秒で始めていたが、計測環境では描画より先に JS の読み込みが始まっていた）
+  // そのあと、優先して読む画像（fetchpriority="high"、ページで最初に大きく見える作品）が読み終わるのも待つ。
+  // JS と回線を取り合うと、いちばん大きい画像（LCP）の表示が遅れるため。こちらは最大 1.5 秒で打ち切る
   return `await new Promise(function(r){if(document.visibilityState==="hidden"){r();return}var d=false;function f(){if(!d){d=true;setTimeout(r,0)}}try{new PerformanceObserver(function(l){if(l.getEntriesByName("first-contentful-paint").length>0)f()}).observe({type:"paint",buffered:true})}catch(e){}requestAnimationFrame(function(){requestAnimationFrame(f)});setTimeout(f,5000)});
+await Promise.race([Promise.all(Array.prototype.map.call(document.querySelectorAll('img[fetchpriority="high"]'),function(i){return i.complete?0:new Promise(function(r){i.addEventListener("load",r,{once:true});i.addEventListener("error",r,{once:true})})})),new Promise(function(r){setTimeout(r,1500)})]);
 document.querySelectorAll('link[rel="${DEFERRED_REL}"]').forEach(function(l){l.rel="modulepreload"});
 const source = ${json}.replace(/(from\\s*|import\\s*\\(\\s*|import\\s+)"\\//g, "$1\\"" + location.origin + "/");
 await import(URL.createObjectURL(new Blob([source], { type: "text/javascript" })));`
