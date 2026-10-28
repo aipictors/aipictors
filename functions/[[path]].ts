@@ -600,10 +600,20 @@ export const onRequest: PagesFunction = async (ctx) => {
     return Promise.race([request, timeoutPromise])
   }
 
+  // Remix の入口は env.ASSETS があると、すべてのリクエストを先に ASSETS へ問い合わせる。
+  // 静的ファイルは Worker より前に配信されるので不要。ASSETS は critical CSS の読み込みにだけ使う
+  const { ASSETS: assets, ...envWithoutAssets } = ctx.env as Record<
+    string,
+    unknown
+  > & { ASSETS?: { fetch: typeof fetch } }
+  const remixContext = Object.assign(Object.create(ctx), {
+    env: envWithoutAssets,
+  }) as typeof ctx
+
   const renderWithRetry = async (): Promise<Response> => {
     for (let attempt = 0; attempt < maxRetry; attempt++) {
       try {
-        const res = await executeWithTimeout(remix(ctx))
+        const res = await executeWithTimeout(remix(remixContext))
 
         // IMPORTANT:
         // Do not consume the body (e.g. res.text()), otherwise binary responses
@@ -695,8 +705,11 @@ export const onRequest: PagesFunction = async (ctx) => {
 
   // hydration の開始は最初の描画のあとにする（app/lib/defer-hydration.ts）
   // 最初の描画に要る CSS だけを HTML に入れる（app/lib/critical-css.ts）
-  // （ASSETS のバインディングを付けると Remix の入口がすべてのリクエストを先に ASSETS へ問い合わせるので、URL で取る）
-  const fetchAsset = (path: string) => fetch(new URL(path, requestUrl.origin))
+  // （同じホストへの fetch は Worker 自身に戻ってこないので、ASSETS のバインディングで取る）
+  const fetchAsset = (path: string) =>
+    assets
+      ? assets.fetch(new URL(path, requestUrl.origin).toString())
+      : fetch(new URL(path, requestUrl.origin))
   const render = async () =>
     inlineCriticalCss(deferHydration(await renderWithRetry()), fetchAsset)
   if (!ADMIN_HOSTNAMES.has(requestUrl.hostname)) {

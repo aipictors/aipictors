@@ -1,7 +1,7 @@
 name = "aipictors"
 compatibility_date = "2024-11-11"
 main = "./build/worker/index.js"
-assets = { directory = "./build/client" }
+assets = { directory = "./build/client", binding = "ASSETS" }
 
 # Worker 実行時の ctx.env に渡す環境変数（ローカル起動を含む）
 [vars]
