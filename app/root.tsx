@@ -32,6 +32,7 @@ import { config } from "~/config"
 import { cn } from "~/lib/utils"
 import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
 import { setRenderNow } from "~/utils/render-now"
 import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
@@ -58,6 +59,8 @@ type RootLoaderData = {
   maintenanceMessage: string | null
   /** サーバーで描画した時刻（経過時間の表示を hydration で食い違わせないため） */
   renderedAt?: number
+  /** スマホ用・PC 用のどちらの一覧を描画するか（app/hooks/use-layout-variant.ts） */
+  layoutHint?: LayoutHint
 }
 
 const defaultRootLoaderData: RootLoaderData = {
@@ -251,7 +254,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     })
   }
 
-  return json<RootLoaderData>({ ...maintenanceStatus, renderedAt: Date.now() })
+  return json<RootLoaderData>({
+    ...maintenanceStatus,
+    renderedAt: Date.now(),
+    layoutHint: getLayoutHint(request),
+  })
 }
 
 /**

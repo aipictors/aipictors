@@ -8,6 +8,8 @@
  * - デプロイごとにキーを変える（古い HTML が古いファイルを読み込まないように）
  */
 
+import { getLayoutHint } from "~/utils/layout-hint"
+
 type Ctx = {
   request: Request
   waitUntil(promise: Promise<unknown>): void
@@ -81,7 +83,8 @@ export const createEdgePageCache = (version: string) => {
     const key = new URL(url.toString())
     key.hostname = "www.aipictors.com"
     key.protocol = "https:"
-    key.pathname = `/__edge/${version}/${getLocale(request)}${url.pathname}`
+    // 端末の種類で描画する一覧が違う（app/utils/layout-hint.ts）
+    key.pathname = `/__edge/${version}/${getLocale(request)}/${getLayoutHint(request)}${url.pathname}`
     key.searchParams.sort()
     return new Request(key.toString(), { method: "GET" })
   }

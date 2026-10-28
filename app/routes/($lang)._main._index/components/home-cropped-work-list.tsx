@@ -3,6 +3,7 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -20,6 +21,7 @@ type Props = {
  */
 export function HomeCroppedWorkList(props: Props) {
   const t = useTranslation()
+  const { showDesktop, showMobile } = useLayoutVariant()
 
   if (!props.works || props.works.length === 0) {
     return null
@@ -27,87 +29,18 @@ export function HomeCroppedWorkList(props: Props) {
 
   return (
     <>
-      <section className="hidden grid-cols-2 gap-3 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-        {props.works
-          .filter(
-            (work, index, self) =>
-              self.findIndex((w) => w.id === work.id) === index,
-          )
-          .map((work) => {
-            const renderContent = (isInsideInteractive: boolean) => (
-              <CroppedWorkSquare
-                title={work.title}
-                isInsideInteractive={isInsideInteractive}
-                workId={work.id}
-                imageUrl={work.smallThumbnailImageURL}
-                videoUrl={work.url}
-                streamUid={work.streamUid}
-                isAutoPlay={props.autoPlayVideoPreview}
-                thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                size="lg"
-                imageWidth={work.smallThumbnailImageWidth}
-                imageHeight={work.smallThumbnailImageHeight}
-                subWorksCount={work.subWorksCount}
-                commentsCount={work.commentsCount}
-                isPromptPublic={false}
-                hasVideoUrl={Boolean(work.url || work.streamUid)}
-                isGeneration={false}
-                hasReferenceButton={false}
-              />
+      {showDesktop && (
+        <section className="hidden grid-cols-2 gap-3 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+          {props.works
+            .filter(
+              (work, index, self) =>
+                self.findIndex((w) => w.id === work.id) === index,
             )
-
-            return (
-              <div className="flex min-w-0 flex-col space-y-2" key={work.id}>
-                {props.onSelect ? (
-                  <button
-                    type="button"
-                    onClick={() => props.onSelect?.(work.id)}
-                    className="group relative w-full overflow-hidden rounded-md border-none bg-transparent p-0"
-                  >
-                    <div className="w-full">{renderContent(false)}</div>
-                  </button>
-                ) : (
-                  <Link
-                    to={`/posts/${work.id}`}
-                    className="group relative block w-full overflow-hidden rounded-md"
-                  >
-                    <div className="w-full">{renderContent(true)}</div>
-                  </Link>
-                )}
-                <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                  {t(
-                    work.title,
-                    work.enTitle.length > 0 ? work.enTitle : work.title,
-                  )}
-                </p>
-                {work.user && (
-                  <UserNameBadge
-                    userId={work.user.id}
-                    userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-                    name={work.user.name}
-                    width={"sm"}
-                    likesCount={work.likesCount}
-                  />
-                )}
-              </div>
-            )
-          })}
-      </section>
-      <section className="grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-        {props.works
-          .filter(
-            (work, index, self) =>
-              self.findIndex((w) => w.id === work.id) === index,
-          )
-          .map((work) => (
-            <div key={work.id} className="relative">
-              <Link
-                to={`/posts/${work.id}`}
-                className="relative overflow-hidden"
-              >
+            .map((work) => {
+              const renderContent = (isInsideInteractive: boolean) => (
                 <CroppedWorkSquare
                   title={work.title}
-                  isInsideInteractive={true}
+                  isInsideInteractive={isInsideInteractive}
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
                   videoUrl={work.url}
@@ -124,24 +57,97 @@ export function HomeCroppedWorkList(props: Props) {
                   isGeneration={false}
                   hasReferenceButton={false}
                 />
-              </Link>
-              {work.user && props.isShowProfile && (
-                <>
+              )
+
+              return (
+                <div className="flex min-w-0 flex-col space-y-2" key={work.id}>
+                  {props.onSelect ? (
+                    <button
+                      type="button"
+                      onClick={() => props.onSelect?.(work.id)}
+                      className="group relative w-full overflow-hidden rounded-md border-none bg-transparent p-0"
+                    >
+                      <div className="w-full">{renderContent(false)}</div>
+                    </button>
+                  ) : (
+                    <Link
+                      to={`/posts/${work.id}`}
+                      className="group relative block w-full overflow-hidden rounded-md"
+                    >
+                      <div className="w-full">{renderContent(true)}</div>
+                    </Link>
+                  )}
                   <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                    {work.title}
+                    {t(
+                      work.title,
+                      work.enTitle.length > 0 ? work.enTitle : work.title,
+                    )}
                   </p>
-                  <UserNameBadge
-                    userId={work.user.id}
-                    userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-                    name={work.user.name}
-                    width={"sm"}
-                    likesCount={work.likesCount}
+                  {work.user && (
+                    <UserNameBadge
+                      userId={work.user.id}
+                      userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                      name={work.user.name}
+                      width={"sm"}
+                      likesCount={work.likesCount}
+                    />
+                  )}
+                </div>
+              )
+            })}
+        </section>
+      )}
+      {showMobile && (
+        <section className="grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {props.works
+            .filter(
+              (work, index, self) =>
+                self.findIndex((w) => w.id === work.id) === index,
+            )
+            .map((work) => (
+              <div key={work.id} className="relative">
+                <Link
+                  to={`/posts/${work.id}`}
+                  className="relative overflow-hidden"
+                >
+                  <CroppedWorkSquare
+                    title={work.title}
+                    isInsideInteractive={true}
+                    workId={work.id}
+                    imageUrl={work.smallThumbnailImageURL}
+                    videoUrl={work.url}
+                    streamUid={work.streamUid}
+                    isAutoPlay={props.autoPlayVideoPreview}
+                    thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                    size="lg"
+                    imageWidth={work.smallThumbnailImageWidth}
+                    imageHeight={work.smallThumbnailImageHeight}
+                    subWorksCount={work.subWorksCount}
+                    commentsCount={work.commentsCount}
+                    isPromptPublic={false}
+                    hasVideoUrl={Boolean(work.url || work.streamUid)}
+                    isGeneration={false}
+                    hasReferenceButton={false}
                   />
-                </>
-              )}
-            </div>
-          ))}
-      </section>
+                </Link>
+                {work.user && props.isShowProfile && (
+                  <>
+                    <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
+                      {work.title}
+                    </p>
+                    <UserNameBadge
+                      userId={work.user.id}
+                      userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                      name={work.user.name}
+                      width={"sm"}
+                      likesCount={work.likesCount}
+                    />
+                  </>
+                )}
+              </div>
+            ))}
+        </section>
+      )}
     </>
   )
 }

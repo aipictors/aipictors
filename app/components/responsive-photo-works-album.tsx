@@ -7,6 +7,7 @@ import { LikeButton } from "~/components/like-button"
 import { Badge } from "~/components/ui/badge"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { WorkMediaBadge } from "~/components/work-media-badge"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
 import { StickerButtonFragment } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
@@ -37,6 +38,7 @@ const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
  * レスポンシブ対応の作品一覧
  */
 export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
+  const { showDesktop, showMobile } = useLayoutVariant()
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
@@ -153,51 +155,74 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
 
   return (
     <>
-      <div className="hidden md:block">
-        {/*
+      {showDesktop && (
+        <div className="hidden md:block">
+          {/*
           行の高さを揃えて並べる（justified）レイアウトを CSS だけで行う。
           各作品の flex-grow / flex-basis を縦横比に比例させると、同じ行の作品は同じ高さになる。
           以前は react-photo-album の SSR で画面幅ごとに 4 回分の一覧を HTML に出力していたため、
           HTML が大きく（タグページで約 1MB）、ハイドレーションも重くなっていた。
         */}
-        <div className="flex flex-wrap gap-x-2 gap-y-4 after:block after:grow-[1000000] after:content-['']">
-          {props.works.map((work, index) => {
-            const isLarge = props.size === "large"
-            const imageUrl = isLarge
-              ? work.largeThumbnailImageURL
-              : work.smallThumbnailImageURL
-            const width =
-              (isLarge
-                ? work.largeThumbnailImageWidth
-                : work.smallThumbnailImageWidth) || 1
-            const height =
-              (isLarge
-                ? work.largeThumbnailImageHeight
-                : work.smallThumbnailImageHeight) || 1
-            // 極端に縦長・横長の画像で行が崩れないよう縦横比を制限する
-            const ratio = Math.min(Math.max(width / height, 0.5), 2.4)
-            const isPriority =
-              props.priorityCount !== undefined && index < props.priorityCount
-            return (
-              <div
-                key={work.id}
-                className="relative min-w-0"
-                style={{
-                  flexGrow: ratio * 100,
-                  flexBasis: `${Math.round(ratio * targetRowHeight)}px`,
-                }}
-              >
+          <div className="flex flex-wrap gap-x-2 gap-y-4 after:block after:grow-[1000000] after:content-['']">
+            {props.works.map((work, index) => {
+              const isLarge = props.size === "large"
+              const imageUrl = isLarge
+                ? work.largeThumbnailImageURL
+                : work.smallThumbnailImageURL
+              const width =
+                (isLarge
+                  ? work.largeThumbnailImageWidth
+                  : work.smallThumbnailImageWidth) || 1
+              const height =
+                (isLarge
+                  ? work.largeThumbnailImageHeight
+                  : work.smallThumbnailImageHeight) || 1
+              // 極端に縦長・横長の画像で行が崩れないよう縦横比を制限する
+              const ratio = Math.min(Math.max(width / height, 0.5), 2.4)
+              const isPriority =
+                props.priorityCount !== undefined && index < props.priorityCount
+              return (
                 <div
-                  className="relative w-full overflow-hidden rounded-md bg-muted"
-                  style={{ aspectRatio: `${ratio}` }}
+                  key={work.id}
+                  className="relative min-w-0"
+                  style={{
+                    flexGrow: ratio * 100,
+                    flexBasis: `${Math.round(ratio * targetRowHeight)}px`,
+                  }}
                 >
-                  {props.onSelect ? (
-                    <button
-                      type="button"
-                      className="absolute inset-0 block h-full w-full cursor-pointer overflow-hidden"
-                      onClick={() => props.onSelect?.(work.id.toString())}
-                      aria-label={`Open ${work.title}`}
-                    >
+                  <div
+                    className="relative w-full overflow-hidden rounded-md bg-muted"
+                    style={{ aspectRatio: `${ratio}` }}
+                  >
+                    {props.onSelect ? (
+                      <button
+                        type="button"
+                        className="absolute inset-0 block h-full w-full cursor-pointer overflow-hidden"
+                        onClick={() => props.onSelect?.(work.id.toString())}
+                        aria-label={`Open ${work.title}`}
+                      >
+                        <HoverVideoImage
+                          workId={work.id}
+                          imageUrl={imageUrl}
+                          videoUrl={work.url}
+                          streamUid={work.streamUid}
+                          isAutoPlay={props.autoPlayVideoPreview}
+                          alt={work.title}
+                          width={width}
+                          height={height}
+                          fetchPriority={isPriority ? "high" : undefined}
+                          // PC 用の一覧はスマホでは非表示（display: none）。media でスマホでは読み込まないので、
+                          // 先頭の作品は PC で優先して読み込める
+                          loading={isPriority ? "eager" : "lazy"}
+                          media="(min-width: 768px)"
+                          className="h-full w-full"
+                          shouldMaskSensitive={
+                            props.shouldMaskSensitiveWorks === true &&
+                            isSensitiveWork(work)
+                          }
+                        />
+                      </button>
+                    ) : (
                       <HoverVideoImage
                         workId={work.id}
                         imageUrl={imageUrl}
@@ -205,166 +230,147 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         streamUid={work.streamUid}
                         isAutoPlay={props.autoPlayVideoPreview}
                         alt={work.title}
+                        to={`/posts/${work.id}`}
                         width={width}
                         height={height}
                         fetchPriority={isPriority ? "high" : undefined}
-                        // PC 用の一覧はスマホでは非表示（display: none）。media でスマホでは読み込まないので、
-                        // 先頭の作品は PC で優先して読み込める
                         loading={isPriority ? "eager" : "lazy"}
                         media="(min-width: 768px)"
-                        className="h-full w-full"
+                        className="absolute inset-0 block h-full w-full overflow-hidden"
                         shouldMaskSensitive={
                           props.shouldMaskSensitiveWorks === true &&
                           isSensitiveWork(work)
                         }
                       />
-                    </button>
-                  ) : (
-                    <HoverVideoImage
-                      workId={work.id}
-                      imageUrl={imageUrl}
-                      videoUrl={work.url}
-                      streamUid={work.streamUid}
-                      isAutoPlay={props.autoPlayVideoPreview}
-                      alt={work.title}
-                      to={`/posts/${work.id}`}
-                      width={width}
-                      height={height}
-                      fetchPriority={isPriority ? "high" : undefined}
-                      loading={isPriority ? "eager" : "lazy"}
-                      media="(min-width: 768px)"
-                      className="absolute inset-0 block h-full w-full overflow-hidden"
-                      shouldMaskSensitive={
-                        props.shouldMaskSensitiveWorks === true &&
-                        isSensitiveWork(work)
-                      }
-                    />
-                  )}
-                  {/* biome-ignore lint/a11y/useKeyWithClickEvents: overlay is not an actionable control; LikeButton handles keyboard/mouse interaction */}
-                  <div
-                    className="absolute right-0 bottom-0 z-10"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      e.preventDefault()
-                    }}
-                  >
-                    <LikeButton
-                      size={56}
-                      targetWorkId={work.id}
-                      targetWorkOwnerUserId={work.user?.id ?? ""}
-                      defaultLiked={work.isLiked}
-                      defaultLikedCount={0}
-                      isBackgroundNone={true}
-                      strokeWidth={2}
-                      likedCount={work.likesCount}
-                    />
-                  </div>
-                  {work.subWorksCount > 0 && (
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "pointer-events-none absolute top-1 right-1 z-10 flex items-center",
-                        chipClassName,
-                      )}
-                    >
-                      <Images className="size-3 text-muted-foreground" />
-                      <span className="font-semibold text-xs leading-none">
-                        {work.subWorksCount + 1}
-                      </span>
-                    </Badge>
-                  )}
-                  {work.commentsCount > 0 && (
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "pointer-events-none absolute top-1 left-1 z-10 flex items-center",
-                        chipClassName,
-                      )}
-                    >
-                      <MessageCircle className="size-3 text-muted-foreground" />
-                      <span className="font-semibold text-xs leading-none">
-                        {work.commentsCount}
-                      </span>
-                    </Badge>
-                  )}
-                  {/* プロンプト公開・動画バッジ */}
-                  <div className="pointer-events-none absolute bottom-2 left-1 z-10">
-                    <WorkMediaBadge
-                      isPromptPublic={work.promptAccessType === "PUBLIC"}
-                      hasVideoUrl={Boolean(work.url)}
-                      isGeneration={work.isGeneration}
-                      hasReferenceButton={false}
-                      size="md"
-                    />
-                  </div>
-                </div>
-                {props.isShowProfile && (
-                  <div className="mt-1.5 flex min-w-0 flex-col gap-1">
-                    {props.onSelect ? (
-                      <button
-                        type="button"
-                        className="min-w-0 cursor-pointer text-left font-bold"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          props.onSelect?.(work.id.toString())
-                        }}
-                        aria-label={`Open ${work.title}`}
-                      >
-                        <p className="truncate text-sm">{work.title}</p>
-                      </button>
-                    ) : (
-                      <Link
-                        className="min-w-0 font-bold hover:underline"
-                        to={`/posts/${work.id}`}
-                      >
-                        <p className="truncate text-sm">{work.title}</p>
-                      </Link>
                     )}
-                    {work.user && (
-                      <div className="flex min-w-0 items-center justify-between gap-2">
-                        <Link
-                          className="min-w-0"
-                          to={`${props.userLinkPrefix || "/users"}/${work.user.id}`}
+                    {/* biome-ignore lint/a11y/useKeyWithClickEvents: overlay is not an actionable control; LikeButton handles keyboard/mouse interaction */}
+                    <div
+                      className="absolute right-0 bottom-0 z-10"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                      }}
+                    >
+                      <LikeButton
+                        size={56}
+                        targetWorkId={work.id}
+                        targetWorkOwnerUserId={work.user?.id ?? ""}
+                        defaultLiked={work.isLiked}
+                        defaultLikedCount={0}
+                        isBackgroundNone={true}
+                        strokeWidth={2}
+                        likedCount={work.likesCount}
+                      />
+                    </div>
+                    {work.subWorksCount > 0 && (
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "pointer-events-none absolute top-1 right-1 z-10 flex items-center",
+                          chipClassName,
+                        )}
+                      >
+                        <Images className="size-3 text-muted-foreground" />
+                        <span className="font-semibold text-xs leading-none">
+                          {work.subWorksCount + 1}
+                        </span>
+                      </Badge>
+                    )}
+                    {work.commentsCount > 0 && (
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "pointer-events-none absolute top-1 left-1 z-10 flex items-center",
+                          chipClassName,
+                        )}
+                      >
+                        <MessageCircle className="size-3 text-muted-foreground" />
+                        <span className="font-semibold text-xs leading-none">
+                          {work.commentsCount}
+                        </span>
+                      </Badge>
+                    )}
+                    {/* プロンプト公開・動画バッジ */}
+                    <div className="pointer-events-none absolute bottom-2 left-1 z-10">
+                      <WorkMediaBadge
+                        isPromptPublic={work.promptAccessType === "PUBLIC"}
+                        hasVideoUrl={Boolean(work.url)}
+                        isGeneration={work.isGeneration}
+                        hasReferenceButton={false}
+                        size="md"
+                      />
+                    </div>
+                  </div>
+                  {props.isShowProfile && (
+                    <div className="mt-1.5 flex min-w-0 flex-col gap-1">
+                      {props.onSelect ? (
+                        <button
+                          type="button"
+                          className="min-w-0 cursor-pointer text-left font-bold"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            props.onSelect?.(work.id.toString())
+                          }}
+                          aria-label={`Open ${work.title}`}
                         >
-                          <div className="flex min-w-0 items-center gap-1.5">
-                            <UserAvatarWithFrame
-                              alt={work.user.name}
-                              frame={work.user.avatarFrame}
-                              isAnimated={false}
-                              sizeClassName="size-5"
-                              src={withIconUrlFallback(work.user.iconUrl)}
-                            />
-                            <span className="truncate text-muted-foreground text-xs">
-                              {work.user.name}
+                          <p className="truncate text-sm">{work.title}</p>
+                        </button>
+                      ) : (
+                        <Link
+                          className="min-w-0 font-bold hover:underline"
+                          to={`/posts/${work.id}`}
+                        >
+                          <p className="truncate text-sm">{work.title}</p>
+                        </Link>
+                      )}
+                      {work.user && (
+                        <div className="flex min-w-0 items-center justify-between gap-2">
+                          <Link
+                            className="min-w-0"
+                            to={`${props.userLinkPrefix || "/users"}/${work.user.id}`}
+                          >
+                            <div className="flex min-w-0 items-center gap-1.5">
+                              <UserAvatarWithFrame
+                                alt={work.user.name}
+                                frame={work.user.avatarFrame}
+                                isAnimated={false}
+                                sizeClassName="size-5"
+                                src={withIconUrlFallback(work.user.iconUrl)}
+                              />
+                              <span className="truncate text-muted-foreground text-xs">
+                                {work.user.name}
+                              </span>
+                            </div>
+                          </Link>
+                          <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                            <Heart className="size-3 fill-current" />
+                            <span className="text-xs tabular-nums">
+                              {work.likesCount}
                             </span>
                           </div>
-                        </Link>
-                        <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
-                          <Heart className="size-3 fill-current" />
-                          <span className="text-xs tabular-nums">
-                            {work.likesCount}
-                          </span>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
-      </div>
-      <div className="block md:hidden">
-        <HomeCroppedWorks
-          works={props.works}
-          priorityCount={props.priorityCount}
-          isMobileOnly={true}
-          isShowProfile={true}
-          hasReferenceButton={false}
-          onSelect={props.onSelect}
-          shouldMaskSensitiveWorks={props.shouldMaskSensitiveWorks}
-        />
-      </div>
+      )}
+      {showMobile && (
+        <div className="block md:hidden">
+          <HomeCroppedWorks
+            works={props.works}
+            priorityCount={props.priorityCount}
+            isMobileOnly={true}
+            isShowProfile={true}
+            hasReferenceButton={false}
+            onSelect={props.onSelect}
+            shouldMaskSensitiveWorks={props.shouldMaskSensitiveWorks}
+          />
+        </div>
+      )}
     </>
   )
 }

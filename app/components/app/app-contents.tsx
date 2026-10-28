@@ -1,5 +1,6 @@
 import { AppAnnouncementBanner } from "~/components/app/app-announcement-banner"
 import { useSidebar } from "~/contexts/sidebar-context"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 
 type Props = Readonly<{
   outlet: React.ReactNode
@@ -13,6 +14,7 @@ type Props = Readonly<{
  */
 export function AppContents(props: Props): React.ReactNode {
   const { sidebarState } = useSidebar()
+  const { showDesktop } = useLayoutVariant()
 
   // サイドバーの状態に応じてマージンを調整
   const getContentMargin = () => {
@@ -31,7 +33,8 @@ export function AppContents(props: Props): React.ReactNode {
   return (
     <>
       <div className="flex min-w-0 overflow-x-hidden px-2">
-        <div className="hidden md:block">{props.aside && props.aside}</div>
+        {/* PC だけのサイドバー。スマホでは描画しない */}
+        <div className="hidden md:block">{showDesktop && props.aside}</div>
         <div className="pointer-events-none fixed inset-x-0 top-0 z-20 h-24 bg-linear-gradient-top-to-bottom" />
         <div className="absolute top-0">{props.header && props.header}</div>
         <div className="w-full min-w-0 pt-16">

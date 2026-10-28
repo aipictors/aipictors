@@ -3,6 +3,7 @@ import type { FragmentOf } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -31,6 +32,7 @@ const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
  */
 export function HomeCroppedWorks(props: Props) {
   const t = useTranslation()
+  const { showDesktop, showMobile } = useLayoutVariant()
 
   if (!props.works || props.works.length === 0) {
     return null
@@ -38,7 +40,7 @@ export function HomeCroppedWorks(props: Props) {
 
   return (
     <>
-      {!props.isMobileOnly && (
+      {!props.isMobileOnly && showDesktop && (
         <section className="hidden grid-cols-2 gap-4 md:grid md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {props.works
             .filter(
@@ -102,114 +104,116 @@ export function HomeCroppedWorks(props: Props) {
             ))}
         </section>
       )}
-      <section className="safari-work-grid grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-        {props.works
-          .filter(
-            (work, index, self) =>
-              self.findIndex((w) => w.id === work.id) === index,
-          )
-          .map((work, index) => (
-            <div key={work.id} className="relative w-full">
-              {props.onSelect ? (
-                <button
-                  type="button"
-                  onClick={() => props.onSelect?.(work.id)}
-                  className="group relative w-full overflow-hidden border-none bg-transparent p-0"
-                >
-                  <CroppedWorkSquare
-                    isPriority={index < (props.priorityCount ?? 0)}
-                    media={
-                      props.isMobileOnly ? "(max-width: 767.98px)" : undefined
-                    }
-                    title={work.title}
-                    workId={work.id}
-                    imageUrl={work.smallThumbnailImageURL}
-                    thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                    size="lg"
-                    imageWidth={work.smallThumbnailImageWidth}
-                    imageHeight={work.smallThumbnailImageHeight}
-                    subWorksCount={work.subWorksCount}
-                    commentsCount={work.commentsCount}
-                    isPromptPublic={work.promptAccessType === "PUBLIC"}
-                    hasVideoUrl={Boolean(work.url)}
-                    isGeneration={work.isGeneration}
-                    hasReferenceButton={props.hasReferenceButton}
-                    shouldMaskSensitive={
-                      props.shouldMaskSensitiveWorks === true &&
-                      isSensitiveWork(work)
-                    }
-                  />
-                  <div className="absolute right-2 bottom-2 z-10">
-                    <LikeButton
-                      size={56}
-                      targetWorkId={work.id}
-                      targetWorkOwnerUserId={work.user?.id ?? ""}
-                      defaultLiked={work.isLiked}
-                      defaultLikedCount={0}
-                      isBackgroundNone={true}
-                      strokeWidth={2}
-                      isParticle={true}
+      {showMobile && (
+        <section className="safari-work-grid grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {props.works
+            .filter(
+              (work, index, self) =>
+                self.findIndex((w) => w.id === work.id) === index,
+            )
+            .map((work, index) => (
+              <div key={work.id} className="relative w-full">
+                {props.onSelect ? (
+                  <button
+                    type="button"
+                    onClick={() => props.onSelect?.(work.id)}
+                    className="group relative w-full overflow-hidden border-none bg-transparent p-0"
+                  >
+                    <CroppedWorkSquare
+                      isPriority={index < (props.priorityCount ?? 0)}
+                      media={
+                        props.isMobileOnly ? "(max-width: 767.98px)" : undefined
+                      }
+                      title={work.title}
+                      workId={work.id}
+                      imageUrl={work.smallThumbnailImageURL}
+                      thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                      size="lg"
+                      imageWidth={work.smallThumbnailImageWidth}
+                      imageHeight={work.smallThumbnailImageHeight}
+                      subWorksCount={work.subWorksCount}
+                      commentsCount={work.commentsCount}
+                      isPromptPublic={work.promptAccessType === "PUBLIC"}
+                      hasVideoUrl={Boolean(work.url)}
+                      isGeneration={work.isGeneration}
+                      hasReferenceButton={props.hasReferenceButton}
+                      shouldMaskSensitive={
+                        props.shouldMaskSensitiveWorks === true &&
+                        isSensitiveWork(work)
+                      }
                     />
-                  </div>
-                </button>
-              ) : (
-                <Link to={`/posts/${work.id}`} className="relative block">
-                  <CroppedWorkSquare
-                    isPriority={index < (props.priorityCount ?? 0)}
-                    media={
-                      props.isMobileOnly ? "(max-width: 767.98px)" : undefined
-                    }
-                    title={work.title}
-                    isInsideInteractive={true}
-                    workId={work.id}
-                    imageUrl={work.smallThumbnailImageURL}
-                    thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                    size="lg"
-                    imageWidth={work.smallThumbnailImageWidth}
-                    imageHeight={work.smallThumbnailImageHeight}
-                    subWorksCount={work.subWorksCount}
-                    commentsCount={work.commentsCount}
-                    isPromptPublic={work.promptAccessType === "PUBLIC"}
-                    hasVideoUrl={Boolean(work.url)}
-                    isGeneration={work.isGeneration}
-                    hasReferenceButton={props.hasReferenceButton}
-                    shouldMaskSensitive={
-                      props.shouldMaskSensitiveWorks === true &&
-                      isSensitiveWork(work)
-                    }
-                  />
-                  <div className="absolute right-2 bottom-2 z-10">
-                    <LikeButton
-                      size={56}
-                      targetWorkId={work.id}
-                      targetWorkOwnerUserId={work.user?.id ?? ""}
-                      defaultLiked={work.isLiked}
-                      defaultLikedCount={0}
-                      isBackgroundNone={true}
-                      strokeWidth={2}
-                      isParticle={true}
+                    <div className="absolute right-2 bottom-2 z-10">
+                      <LikeButton
+                        size={56}
+                        targetWorkId={work.id}
+                        targetWorkOwnerUserId={work.user?.id ?? ""}
+                        defaultLiked={work.isLiked}
+                        defaultLikedCount={0}
+                        isBackgroundNone={true}
+                        strokeWidth={2}
+                        isParticle={true}
+                      />
+                    </div>
+                  </button>
+                ) : (
+                  <Link to={`/posts/${work.id}`} className="relative block">
+                    <CroppedWorkSquare
+                      isPriority={index < (props.priorityCount ?? 0)}
+                      media={
+                        props.isMobileOnly ? "(max-width: 767.98px)" : undefined
+                      }
+                      title={work.title}
+                      isInsideInteractive={true}
+                      workId={work.id}
+                      imageUrl={work.smallThumbnailImageURL}
+                      thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                      size="lg"
+                      imageWidth={work.smallThumbnailImageWidth}
+                      imageHeight={work.smallThumbnailImageHeight}
+                      subWorksCount={work.subWorksCount}
+                      commentsCount={work.commentsCount}
+                      isPromptPublic={work.promptAccessType === "PUBLIC"}
+                      hasVideoUrl={Boolean(work.url)}
+                      isGeneration={work.isGeneration}
+                      hasReferenceButton={props.hasReferenceButton}
+                      shouldMaskSensitive={
+                        props.shouldMaskSensitiveWorks === true &&
+                        isSensitiveWork(work)
+                      }
                     />
-                  </div>
-                </Link>
-              )}
-              {work.user && props.isShowProfile && (
-                <>
-                  <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                    {work.title}
-                  </p>
-                  <UserNameBadge
-                    userId={work.user.id}
-                    frame={work.user.avatarFrame}
-                    userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-                    name={work.user.name}
-                    width={"md"}
-                    likesCount={work.likesCount}
-                  />
-                </>
-              )}
-            </div>
-          ))}
-      </section>
+                    <div className="absolute right-2 bottom-2 z-10">
+                      <LikeButton
+                        size={56}
+                        targetWorkId={work.id}
+                        targetWorkOwnerUserId={work.user?.id ?? ""}
+                        defaultLiked={work.isLiked}
+                        defaultLikedCount={0}
+                        isBackgroundNone={true}
+                        strokeWidth={2}
+                        isParticle={true}
+                      />
+                    </div>
+                  </Link>
+                )}
+                {work.user && props.isShowProfile && (
+                  <>
+                    <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
+                      {work.title}
+                    </p>
+                    <UserNameBadge
+                      userId={work.user.id}
+                      frame={work.user.avatarFrame}
+                      userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                      name={work.user.name}
+                      width={"md"}
+                      likesCount={work.likesCount}
+                    />
+                  </>
+                )}
+              </div>
+            ))}
+        </section>
+      )}
     </>
   )
 }
