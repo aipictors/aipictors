@@ -35,7 +35,32 @@ export const getSearchDb = (context: unknown): D1Like | null => {
     : null
 }
 
-export async function searchWorkIdsByText(props: {
+/**
+ * D1 がまれに 40 秒以上応答しないことがあり、検索ページ全体が表示されなくなっていた。
+ * 待つのはこの時間までにして、間に合わなければ失敗扱いにする（呼び出し側はタイトル・説明の結果なしで表示する）
+ */
+const TEXT_SEARCH_TIMEOUT_MS = 3000
+
+export function searchWorkIdsByText(props: {
+  db: D1Like
+  query: string
+  rating: "G" | "R15" | "R18"
+  offset: number
+  limit: number
+}): Promise<{ ids: string[]; count: number }> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error("text search timed out")),
+      TEXT_SEARCH_TIMEOUT_MS,
+    )
+  })
+  return Promise.race([queryWorkIdsByText(props), timeout]).finally(() => {
+    clearTimeout(timer)
+  })
+}
+
+async function queryWorkIdsByText(props: {
   db: D1Like
   query: string
   rating: "G" | "R15" | "R18"
