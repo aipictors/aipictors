@@ -47,6 +47,13 @@ const parseCacheControl = (value: string | null) => {
   }
 }
 
+/**
+ * 投稿・更新した直後（cookie aip_fresh、10 分）は保存済みのものを使わずに作り直す。
+ * 作り直したものは保存するので、同じ拠点の他の人にもすぐ新しい内容が出る
+ */
+const wantsFresh = (request: Request) =>
+  /(?:^|;\s*)aip_fresh=1(?:;|$)/.test(request.headers.get("cookie") ?? "")
+
 const getLocale = (request: Request): "ja" | "en" => {
   const cookie = request.headers.get("cookie") ?? ""
   const match = cookie.match(/(?:^|;\s*)locale=(ja|en)/)
@@ -169,7 +176,9 @@ export const createEdgePageCache = (version: string) => {
 
     let cached: Response | undefined
     try {
-      cached = await caches.default.match(cacheKey)
+      cached = wantsFresh(ctx.request)
+        ? undefined
+        : await caches.default.match(cacheKey)
     } catch {
       cached = undefined
     }

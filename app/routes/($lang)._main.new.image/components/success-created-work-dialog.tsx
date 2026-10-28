@@ -51,6 +51,12 @@ export function SuccessCreatedWorkDialog (props: Props) {
   }
 
   useEffect(() => {
+    if (!props.isOpen || typeof document === "undefined") return
+    // 投稿・更新した直後の 10 分は拠点のキャッシュを使わずに最新の内容を表示する（app/lib/edge-page-cache.ts）
+    document.cookie = "aip_fresh=1; max-age=600; path=/; samesite=lax"
+  }, [props.isOpen])
+
+  useEffect(() => {
     // 一度だけ投稿作品URLをfetchする処理を追加
     const fetchWorkUrl = async () => {
       try {

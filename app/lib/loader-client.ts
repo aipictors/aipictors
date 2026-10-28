@@ -51,4 +51,10 @@ export const loaderClient: ApolloClient<NormalizedCacheObject> =
     ssrMode: false,
     link: authLink.concat(httpLink),
     cache: new InMemoryCache({}),
+    // Worker の isolate が生きている間ずっと前の結果を返していた（作品を更新しても数分〜10 分古いまま）。
+    // 使い回しはページ単位の拠点キャッシュ（app/lib/edge-page-cache.ts）で行う
+    defaultOptions: {
+      query: { fetchPolicy: "no-cache" },
+      watchQuery: { fetchPolicy: "no-cache" },
+    },
   })

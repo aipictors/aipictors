@@ -15,6 +15,7 @@ import { usePagedInfinite } from "../hooks/use-paged-infinite"
 import { makeWhere, getPerPage, chunkWorks } from "../utils/works-utils"
 import { WorksRenderer } from "./works-renderer"
 import { WorksLoading } from "./works-loading"
+import { WorksLoadError } from "./works-load-error"
 import type {
   WorkType,
   WorkOrderBy,
@@ -67,6 +68,8 @@ export function WorksInfiniteMode ({ anchorAt, ...rest }: Props) {
     data,
     fetchMore,
     loading: loadingFirst,
+    error,
+    refetch,
   } = useQuery(WorksQuery, {
     skip: authLoading || !viewerRatings.isReady,
     variables: {
@@ -77,7 +80,7 @@ export function WorksInfiniteMode ({ anchorAt, ...rest }: Props) {
     },
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-first",
-    errorPolicy: "ignore",
+    errorPolicy: "all",
   })
 
   const { pages, appendPage, appendPages, replaceFirstPage, flat } =
@@ -179,6 +182,10 @@ export function WorksInfiniteMode ({ anchorAt, ...rest }: Props) {
         loading={loadingFirst || isLoadingMore}
         hasWorks={flat.length > 0}
       />
+
+      {error && !loadingFirst && flat.length === 0 && (
+        <WorksLoadError onRetry={() => refetch()} />
+      )}
     </div>
   )
 }

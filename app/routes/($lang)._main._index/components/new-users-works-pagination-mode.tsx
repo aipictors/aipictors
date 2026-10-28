@@ -16,6 +16,7 @@ import {
 import type { ImageStyle, WorkOrderBy, WorkType } from "../types/works"
 import { HomeWorkFragment } from "./home-work-section"
 import { WorksLoading } from "./works-loading"
+import { WorksLoadError } from "./works-load-error"
 import { WorksRenderer } from "./works-renderer"
 
 interface Props {
@@ -54,7 +55,7 @@ export function NewUsersWorksPaginationMode({ anchorAt, ...rest }: Props) {
   )
 
   /* クエリ実行 ---------------------- */
-  const { data, loading } = useQuery(NewUserWorksQuery, {
+  const { data, loading, error, refetch } = useQuery(NewUserWorksQuery, {
     skip: authLoading || !viewerRatings.isReady,
     variables: {
       offset: currentPage * PER_PAGE,
@@ -63,7 +64,7 @@ export function NewUsersWorksPaginationMode({ anchorAt, ...rest }: Props) {
       where,
     },
     fetchPolicy: "no-cache",
-    errorPolicy: "ignore",
+    errorPolicy: "all",
   })
 
   const displayedWorks = data?.newUserWorks ?? []
@@ -77,6 +78,8 @@ export function NewUsersWorksPaginationMode({ anchorAt, ...rest }: Props) {
     <div className="space-y-4">
       {loading && !displayedWorks.length ? (
         <WorksLoading loading={loading} />
+      ) : error && !displayedWorks.length ? (
+        <WorksLoadError onRetry={() => refetch()} />
       ) : (
         <WorksRenderer
           workType={rest.workType}

@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { WorksRenderer } from "./works-renderer"
 import { WorksLoading } from "./works-loading"
+import { WorksLoadError } from "./works-load-error"
 import type { WorkType, WorkOrderBy, ImageStyle } from "../types/works"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
@@ -38,7 +39,7 @@ export function HotWorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) 
     }
   }, [currentPage, rest.page, rest.setPage])
 
-  const { data, loading } = useQuery(WorksQuery, {
+  const { data, loading, error, refetch } = useQuery(WorksQuery, {
     skip: authLoading,
     variables: {
       where: {
@@ -46,7 +47,7 @@ export function HotWorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) 
       },
     },
     fetchPolicy: "no-cache",
-    errorPolicy: "ignore",
+    errorPolicy: "all",
   })
 
   useEffect(() => {
@@ -63,6 +64,8 @@ export function HotWorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) 
     <div className="space-y-4">
       {loading && !displayedWorks.length ? (
         <WorksLoading loading={loading} />
+      ) : error && !displayedWorks.length ? (
+        <WorksLoadError onRetry={() => refetch()} />
       ) : (
         <WorksRenderer
           workType={rest.workType}
