@@ -38,10 +38,14 @@ const formatReleaseDate = (timestamp: number) => {
 
 export function HomeQuickPreviewBar(props: Props) {
   const t = useTranslation()
-  const { currentIndex } = useRotatingHomeEvents(props.events, { fadeMs: 0 })
+  const { currentIndex } = useRotatingHomeEvents(props.events, {
+    fadeMs: 0,
+    startAfterInteraction: true,
+  })
   const rotatingReleases = useRotatingHomeEvents(props.featuredReleases, {
     intervalMs: 3600,
     fadeMs: 0,
+    startAfterInteraction: true,
   })
 
   const firstEvent = props.events[currentIndex]

@@ -179,7 +179,7 @@ export function HomeSupportRankingSection() {
           {/* 推しランキング */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center justify-between text-base text-amber-500">
+              <CardTitle className="flex items-center justify-between text-amber-700 text-base dark:text-amber-400">
                 <span>{t("推しランキング", "Received ranking")}</span>
               </CardTitle>
             </CardHeader>
@@ -229,7 +229,7 @@ export function HomeSupportRankingSection() {
           {/* 貢献度ランキング */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-base text-sky-500">
+              <CardTitle className="text-base text-sky-700 dark:text-sky-400">
                 {t("貢献度ランキング", "Contribution ranking")}
               </CardTitle>
             </CardHeader>
