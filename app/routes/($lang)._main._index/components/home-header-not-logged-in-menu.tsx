@@ -104,6 +104,7 @@ export const HomeHeaderNotLoggedInMenu = () => {
         <Button
           variant={"ghost"}
           size={"icon"}
+          className="size-9 md:size-10"
           aria-label={t("その他のメニュー", "More")}
         >
           <EllipsisVerticalIcon className="w-16" />

@@ -16,6 +16,7 @@ import { cn } from "~/lib/utils"
 
 type Props = {
   label?: string
+  className?: string
   isWidthFull?: boolean
   triggerChildren?: React.ReactNode
   isLoading?: boolean
@@ -46,7 +47,7 @@ export function LoginDialogButton(props: Props): React.ReactNode {
     <Button
       variant={props.variant}
       disabled={props.isLoading}
-      className={cn(props.isWidthFull ? "w-full" : "")}
+      className={cn(props.isWidthFull ? "w-full" : "", props.className)}
     >
       {props.label ? props.label : t("ログイン", "Login")}
       {props.isLoading && (

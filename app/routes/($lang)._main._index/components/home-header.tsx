@@ -11,7 +11,6 @@ import {
   Loader2Icon,
   MenuIcon,
   MoveLeft,
-  Plus,
   Search,
   WandSparklesIcon,
   X,
@@ -25,12 +24,6 @@ import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
 import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
 import { Button } from "~/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu"
 import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
@@ -418,7 +411,7 @@ function HomeHeader(props: Props) {
     <AppHeader isSmallLeftPadding={isSpecialPage}>
       <div
         className={cn(
-          "flex min-w-0 items-center gap-x-2",
+          "flex min-w-0 items-center gap-x-0.5 md:gap-x-2",
           props.alwaysShowTitle ? "" : "lg:hidden",
         )}
       >
@@ -433,8 +426,8 @@ function HomeHeader(props: Props) {
               aria-label={t("メニュー", "Menu")}
               className={
                 props.showPcSheetMenu
-                  ? undefined // PC版でも表示（Buttonのinline-flexを潰さない）
-                  : "md:hidden" // PC版では非表示
+                  ? "size-9 md:size-10" // PC版でも表示（Buttonのinline-flexを潰さない）
+                  : "size-9 md:hidden" // PC版では非表示
               }
             >
               <MenuIcon className="size-5" />
@@ -458,7 +451,7 @@ function HomeHeader(props: Props) {
         {/* Mobile search toggle (avoid overlap by placing near menu) */}
         {!isSearchFormOpen && (
           <Button
-            className="md:hidden"
+            className="size-9 md:hidden"
             onClick={onToggleSearchForm}
             variant="ghost"
             size="icon"
@@ -525,7 +518,7 @@ function HomeHeader(props: Props) {
           )}
         </div>
       </div>
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-1 md:gap-2">
         {/* 検索バーは YouTube のように空いている幅の真ん中に置く */}
         <div className="hidden min-w-0 flex-1 items-center justify-center px-2 md:flex lg:px-6">
           <div className="flex w-full min-w-0 max-w-[640px] items-center">
@@ -599,62 +592,53 @@ function HomeHeader(props: Props) {
           </div>
         ) : (
           <>
+            {/* 生成と投稿は分けて並べる（「作成」の中にまとめると投稿の入口が見つけにくかった） */}
             <div className="hidden shrink-0 items-center gap-2 md:flex">
               <HomeHeaderContentToggle />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="h-9 gap-1.5 rounded-full px-4">
-                    <Plus className="size-4" />
-                    {t("作成", "Create")}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem
-                    className="gap-2 py-2"
-                    onClick={() => handleNavigate("/generation")}
-                  >
-                    <WandSparklesIcon className="size-4" />
-                    {t("画像を生成", "Generate")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="gap-2 py-2"
-                    onClick={() => handleNavigate("/new/image")}
-                  >
-                    <ImagePlusIcon className="size-4" />
-                    {t("作品を投稿", "Post a work")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="ghost"
+                  className="h-9 gap-1.5 rounded-full px-3.5 text-muted-foreground hover:text-foreground"
+                  onClick={() => handleNavigate("/generation")}
+                >
+                  <WandSparklesIcon className="size-4" />
+                  {t("生成", "Generate")}
+                </Button>
+                <Button
+                  // 未ログインのときはログインボタンを主役にする
+                  variant={authContext.isLoggedIn ? "default" : "secondary"}
+                  className="h-9 gap-1.5 rounded-full px-4 shadow-sm"
+                  onClick={() => handleNavigate("/new/image")}
+                >
+                  <ImagePlusIcon className="size-4" />
+                  {t("投稿", "Post")}
+                </Button>
+              </div>
             </div>
             <div className="flex shrink-0 items-center gap-1 md:hidden">
               <HomeHeaderContentToggle />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={t("作成", "Create")}
-                  >
-                    <Plus />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-44">
-                  <DropdownMenuItem
-                    className="gap-2 py-2"
-                    onClick={() => handleNavigate("/generation")}
-                  >
-                    <WandSparklesIcon className="size-4" />
-                    {t("画像を生成", "Generate")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="gap-2 py-2"
-                    onClick={() => handleNavigate("/new/image")}
-                  >
-                    <ImagePlusIcon className="size-4" />
-                    {t("作品を投稿", "Post a work")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* スマホは幅が足りないので、生成・投稿をアイコンで並べる */}
+              <div className="flex items-center rounded-full bg-muted p-0.5">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 rounded-full hover:bg-background"
+                  aria-label={t("画像を生成", "Generate")}
+                  title={t("画像を生成", "Generate")}
+                  onClick={() => handleNavigate("/generation")}
+                >
+                  <WandSparklesIcon className="size-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  className="size-8 rounded-full"
+                  aria-label={t("作品を投稿", "Post a work")}
+                  title={t("作品を投稿", "Post a work")}
+                  onClick={() => handleNavigate("/new/image")}
+                >
+                  <ImagePlusIcon className="size-4" />
+                </Button>
+              </div>
             </div>
           </>
         )}
@@ -711,9 +695,9 @@ function HomeHeader(props: Props) {
             </div>
           ) : (
             // 未ログイン時のUI
-            <div className="flex items-center gap-1 md:ml-1">
+            <div className="flex items-center gap-0.5 md:ml-1 md:gap-1">
               <HomeHeaderNotLoggedInMenu />
-              <LoginDialogButton />
+              <LoginDialogButton className="h-9 px-3 md:h-10 md:px-4" />
             </div>
           ))}
 

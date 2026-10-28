@@ -129,7 +129,7 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
 
   const segment = (isActive: boolean) =>
     cn(
-      "flex h-7 items-center rounded-full px-2.5 font-medium text-xs transition-colors md:px-3",
+      "flex h-7 items-center rounded-full px-2 font-medium text-xs transition-colors md:px-3",
       isActive
         ? "bg-background text-foreground shadow-sm"
         : "text-muted-foreground hover:text-foreground",
