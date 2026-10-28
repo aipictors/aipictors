@@ -1,0 +1,54 @@
+import { __test__ } from "./critical-css"
+
+const { parseCss, serialize, collectClasses, requiredClasses } = __test__
+
+const CSS = [
+  "@layer theme,base,components,utilities;",
+  "@layer base{*,:before{box-sizing:border-box}html{line-height:1.5}}",
+  "@layer utilities{.flex{display:flex}.hidden{display:none}",
+  ".md\\:grid{display:grid}",
+  "@media (min-width:48rem){.md\\:flex{display:flex}.md\\:block{display:block}}",
+  ".dark\\:bg-black:where([data-theme^=dark],[data-theme^=dark] *){background:#000}",
+  ".group:hover .group-hover\\:underline{text-decoration:underline}",
+  ".\\32xl\\:p-4{padding:1rem}",
+  '.content-\\[\\"a\\{b\\"\\]{content:"a{b"}}',
+  "@keyframes spin{to{transform:rotate(360deg)}}",
+  "@property --tw-x{syntax:\"*\";inherits:false}",
+].join("")
+
+test("HTML にあるクラスのルールと、クラスを含まないルールだけを残す", () => {
+  const html =
+    '<div class="flex md:flex dark:bg-black"><a class="group"><span class="group-hover:underline 2xl:p-4">x</span></a></div>'
+  const out = serialize(parseCss(CSS), collectClasses(html))
+  expect(out).toContain("@layer theme,base,components,utilities;")
+  expect(out).toContain("html{line-height:1.5}")
+  expect(out).toContain(".flex{display:flex}")
+  expect(out).toContain("@media (min-width:48rem){.md\\:flex{display:flex}}")
+  expect(out).toContain(".dark\\:bg-black")
+  expect(out).toContain(".group-hover\\:underline")
+  expect(out).toContain(".\\32xl\\:p-4")
+  expect(out).toContain("@keyframes spin")
+  expect(out).toContain("@property --tw-x")
+  expect(out).not.toContain(".hidden")
+  expect(out).not.toContain(".md\\:grid")
+  expect(out).not.toContain(".md\\:block")
+  expect(out).not.toContain("content-")
+})
+
+test("全部のクラスがあれば元の CSS に戻る", () => {
+  const all = { has: () => true } as unknown as Set<string>
+  expect(serialize(parseCss(CSS), all)).toBe(CSS)
+})
+
+test(":where() や属性セレクタの中のクラスは必須にしない", () => {
+  expect(requiredClasses(".a:not(.b) .c[data-x='.d']")).toEqual(["a", "c"])
+  expect(requiredClasses(".w-\\[calc\\(100\\%_-_2px\\)\\]")).toEqual([
+    "w-[calc(100%_-_2px)]",
+  ])
+})
+
+test("class 属性の実体参照を戻す", () => {
+  const classes = collectClasses('<p class="[&amp;_svg]:size-4 a"></p>')
+  expect(classes.has("[&_svg]:size-4")).toBe(true)
+  expect(classes.has("a")).toBe(true)
+})

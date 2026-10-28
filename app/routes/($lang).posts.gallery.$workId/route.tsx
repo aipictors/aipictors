@@ -593,6 +593,7 @@ function WorkDetailsPanel(props: {
             <div className="flex items-center gap-3">
               <Avatar className="size-12">
                 <AvatarImage
+                  resizeWidth={240}
                   src={withIconUrlFallback(work.user.iconUrl)}
                   alt={work.user.name}
                 />

@@ -5,6 +5,7 @@ import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thum
 import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
 import { cn } from "~/lib/utils"
+import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 
 type Props = {
   workId: string
@@ -33,6 +34,44 @@ type Props = {
   isInsideInteractive?: boolean
   /** この条件の画面幅でだけ画像を読み込む（OptimizedImage の media） */
   media?: string
+  /**
+   * size="auto" のときの正方形の表示幅（sizes の書式）。
+   * 省略時はスマホ 2 列・PC 240px 前後として扱う
+   */
+  displayWidth?: string
+}
+
+/** 正方形の表示幅（CSS） */
+const SQUARE_WIDTH: Record<Exclude<Props["size"], "auto">, number> = {
+  xs: 64,
+  sm: 80,
+  md: 128,
+  lg: 160,
+}
+
+/**
+ * 画像の sizes。正方形に切り抜くので、横長の画像は正方形より横にはみ出して表示される（幅 × 縦横比）
+ */
+function toSizes(props: Props): string {
+  const ratio = Math.max(1, props.imageWidth / Math.max(1, props.imageHeight))
+  // 各候補の最後の長さだけを倍にする（メディア条件の (min-width: 768px) はそのまま）
+  const scale = (value: string) =>
+    value
+      .split(",")
+      .map((entry) =>
+        entry.replace(
+          /(\d+(?:\.\d+)?)(px|vw)\s*$/,
+          (_, n: string, unit: string) =>
+            `${Math.round(Number(n) * ratio)}${unit}`,
+        ),
+      )
+      .join(",")
+  if (props.size !== "auto") {
+    return `${Math.round(SQUARE_WIDTH[props.size] * ratio)}px`
+  }
+  const base = scale(props.displayWidth ?? "(min-width: 768px) 240px, 48vw")
+  // 遅延読み込みの画像は、実際の表示幅から選ばせる（対応ブラウザのみ）
+  return props.isPriority ? base : `auto, ${base}`
 }
 
 /**
@@ -140,6 +179,11 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
         loading={props.isPriority ? "eager" : "lazy"}
         fetchPriority={props.isPriority ? "high" : undefined}
         media={props.media}
+        srcSet={toResizedImageSrcSet(props.imageUrl, {
+          minWidth: props.size === "auto" ? 160 : SQUARE_WIDTH[props.size],
+          maxWidth: props.imageWidth,
+        })}
+        sizes={toSizes(props)}
         width={props.imageWidth}
         height={props.imageHeight}
         style={cropStyle}

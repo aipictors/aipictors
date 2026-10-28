@@ -570,6 +570,13 @@ export function Layout(props: Props): React.ReactNode {
             <meta name="robots" content="noindex,nofollow,noarchive" />
           </>
         )}
+        <style
+          // 配信時に、このページで使う tailwind.css のルールが入る（app/lib/critical-css.ts）。
+          // hydration では中身を突き合わせないので、ブラウザ側は空のままでよい
+          data-critical-css=""
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: 配信時に埋めるための空の要素
+          dangerouslySetInnerHTML={{ __html: "" }}
+        />
         <Links />
       </head>
       <body

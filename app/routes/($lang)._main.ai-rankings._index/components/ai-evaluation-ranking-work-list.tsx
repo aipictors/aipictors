@@ -56,7 +56,11 @@ function RankingCommentPreview(props: {
       <div className="flex items-start gap-3">
         <Link to="/pictor-chan" className="shrink-0">
           <Avatar className="size-12 border border-white bg-white shadow-sm ring-4 ring-orange-100 dark:border-zinc-900 dark:bg-zinc-900 dark:ring-orange-950/40">
-            <AvatarImage src={PICTOR_CHAN_ICON_URL} alt="ぴくたーちゃん" />
+            <AvatarImage
+              resizeWidth={240}
+              src={PICTOR_CHAN_ICON_URL}
+              alt="ぴくたーちゃん"
+            />
             <AvatarFallback>ぴ</AvatarFallback>
           </Avatar>
         </Link>

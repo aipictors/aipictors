@@ -249,6 +249,7 @@ export function ThemeContainer(props: Props) {
         >
           <Avatar className="size-12">
             <AvatarImage
+              resizeWidth={240}
               src={props.targetThemes[0].proposer.iconUrl ?? ""}
               alt={props.targetThemes[0].proposer.name}
             />

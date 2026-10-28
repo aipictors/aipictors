@@ -18,6 +18,10 @@ type Props = {
    * 条件に合わないときは 1px の透明画像に差し替える
    */
   media?: string
+  /** 縮小版の候補（toResizedImageSrcSet） */
+  srcSet?: string
+  /** srcSet があるときの表示幅 */
+  sizes?: string
 }
 
 const BLANK_IMAGE =
@@ -34,6 +38,8 @@ const OptimizedImage = memo((props: Props) => {
   const image = (
     <img
       src={props.src}
+      srcSet={props.srcSet}
+      sizes={props.srcSet ? props.sizes : undefined}
       alt={props.alt}
       className={props.className}
       fetchPriority={props.fetchPriority}

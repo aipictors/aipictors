@@ -1,4 +1,5 @@
 import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages"
+import { inlineCriticalCss } from "../app/lib/critical-css"
 import { deferHydration } from "../app/lib/defer-hydration"
 import { createEdgePageCache } from "../app/lib/edge-page-cache"
 import { checkLocaleRedirect } from "../app/utils/check-locale-redirect"
@@ -693,7 +694,11 @@ export const onRequest: PagesFunction = async (ctx) => {
   }
 
   // hydration の開始は最初の描画のあとにする（app/lib/defer-hydration.ts）
-  const render = async () => deferHydration(await renderWithRetry())
+  // 最初の描画に要る CSS だけを HTML に入れる（app/lib/critical-css.ts）
+  // （ASSETS のバインディングを付けると Remix の入口がすべてのリクエストを先に ASSETS へ問い合わせるので、URL で取る）
+  const fetchAsset = (path: string) => fetch(new URL(path, requestUrl.origin))
+  const render = async () =>
+    inlineCriticalCss(deferHydration(await renderWithRetry()), fetchAsset)
   if (!ADMIN_HOSTNAMES.has(requestUrl.hostname)) {
     return edgePageCache.handle(ctx, render)
   }

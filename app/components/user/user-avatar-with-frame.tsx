@@ -1,4 +1,5 @@
 import { cn } from "~/lib/utils"
+import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 
 type Props = {
@@ -11,7 +12,18 @@ type Props = {
   sizeClassName: string
 }
 
+/**
+ * sizeClassName（size-10 など）から表示サイズ（px）を出す。sizes="auto" に対応しないブラウザ向け
+ */
+function toDisplaySize(sizeClassName: string): number {
+  const sizes = [
+    ...sizeClassName.matchAll(/(?:^|[\s:])(?:size|h|w)-(\d+)\b/g),
+  ].map((match) => Number(match[1]) * 4)
+  return sizes.length > 0 ? Math.max(...sizes) : 48
+}
+
 export function UserAvatarWithFrame(props: Props) {
+  const displaySize = toDisplaySize(props.sizeClassName)
   const padding = Math.max(0, props.frame?.borderPadding ?? 3)
   const frameType = props.frame?.frameType ?? "GRADIENT"
   const isAnimated = props.isAnimated ?? true
@@ -44,6 +56,7 @@ export function UserAvatarWithFrame(props: Props) {
         src={props.src}
         alt={props.alt}
         imageClassName={props.imageClassName}
+        displaySize={displaySize}
       />
     )
   }
@@ -82,6 +95,7 @@ export function UserAvatarWithFrame(props: Props) {
         src={props.src}
         alt={props.alt}
         imageClassName={props.imageClassName}
+        displaySize={displaySize}
       />
     </div>
   )
@@ -96,6 +110,7 @@ function PlainAvatar(props: {
   src?: string | null
   alt?: string
   imageClassName?: string
+  displaySize: number
 }) {
   return (
     <span
@@ -107,6 +122,12 @@ function PlainAvatar(props: {
       {props.src && (
         <img
           src={props.src}
+          // アイコンの元画像は 240px 前後なので、表示サイズに縮小した版を選ばせる
+          srcSet={toResizedImageSrcSet(props.src, {
+            minWidth: props.displaySize,
+            maxWidth: 240,
+          })}
+          sizes={`auto, ${props.displaySize}px`}
           alt={props.alt ?? ""}
           className={cn(
             "aspect-square h-full w-full object-cover",

@@ -132,6 +132,7 @@ export function RankingSensitiveUserListModern (props: Props) {
                   <div className="mb-4 flex flex-col items-center space-y-2">
                     <Avatar className="h-16 w-16 ring-2 ring-purple-200 ring-offset-2 transition-all duration-300 hover:ring-purple-400">
                       <AvatarImage
+                        resizeWidth={240}
                         src={withIconUrlFallback(user.user?.iconUrl ?? "")}
                         alt={user.user?.name ?? ""}
                       />

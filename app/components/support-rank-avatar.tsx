@@ -7,6 +7,7 @@
 import firstFrameUrl from "~/assets/rank-frames/1st-frame.webp"
 import secondFrameUrl from "~/assets/rank-frames/2st-frame.webp"
 import thirdFrameUrl from "~/assets/rank-frames/3st-frame.webp"
+import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 // 表示は最大 80px なので、168px の WebP にしてアプリ内に置く
@@ -60,6 +61,8 @@ export function SupportRankAvatar({
       <div className={`${SIZE_CLASS[size]} relative shrink-0`}>
         <img
           src={withIconUrlFallback(iconUrl)}
+          srcSet={toResizedImageSrcSet(iconUrl, { minWidth: px, maxWidth: 240 })}
+          sizes={`${px}px`}
           alt={name || `rank-${rank}`}
           width={px}
           height={px}
