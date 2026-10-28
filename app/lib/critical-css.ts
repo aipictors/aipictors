@@ -228,20 +228,24 @@ const collectClasses = (html: string): Set<string> => {
   return classes
 }
 
-const parsedCss = new Map<string, Promise<CssNode[] | null>>()
+let parsed: { href: string; nodes: CssNode[] } | null = null
 
-const STYLESHEET_LINK =
-  /<link rel="stylesheet" href="(\/assets\/tailwind-[\w-]+\.css)"\/?>/
+const STYLESHEET_LINK = /<link rel="stylesheet" href="(\/assets\/tailwind-[\w-]+\.css)"\/?>/
 
 /**
  * HTML に tailwind.css の必要な部分を入れる。できないときは元の HTML のまま返す
+ * @param source ビルドで出た tailwind.css（build/critical-css-source.json）
  */
 export const inlineCriticalCss = async (
   response: Response,
-  fetchAsset: (path: string) => Promise<Response>,
+  source: { href: string; css: string } | null,
 ): Promise<Response> => {
   const contentType = response.headers.get("Content-Type") ?? ""
-  if (response.status !== 200 || !contentType.includes("text/html")) {
+  if (
+    !source ||
+    response.status !== 200 ||
+    !contentType.includes("text/html")
+  ) {
     return response
   }
   const html = await response.text()
@@ -253,27 +257,20 @@ export const inlineCriticalCss = async (
     })
 
   const link = html.match(STYLESHEET_LINK)
-  if (!link || !html.includes(PLACEHOLDER)) return unchanged()
-
-  const href = link[1]
-  let nodesPromise = parsedCss.get(href)
-  if (!nodesPromise) {
-    nodesPromise = fetchAsset(href)
-      .then(async (res) => (res.ok ? parseCss(await res.text()) : null))
-      .catch(() => null)
-    parsedCss.set(href, nodesPromise)
-  }
-  const nodes = await nodesPromise
-  if (!nodes) {
-    parsedCss.delete(href)
+  // ビルドが違う（デプロイの切り替わり中など）ときは入れない
+  if (!link || link[1] !== source.href || !html.includes(PLACEHOLDER)) {
     return unchanged()
   }
 
-  const critical = serialize(nodes, collectClasses(html)).replaceAll(
+  if (parsed?.href !== source.href) {
+    parsed = { href: source.href, nodes: parseCss(source.css) }
+  }
+
+  const critical = serialize(parsed.nodes, collectClasses(html)).replaceAll(
     "</style",
     "<\\/style",
   )
-  const asyncLink = `<link rel="stylesheet" href="${href}" media="print" onload="this.media='all'"/>`
+  const asyncLink = `<link rel="stylesheet" href="${source.href}" media="print" onload="this.media='all'"/>`
   const output = html
     .replace(PLACEHOLDER, `<style data-critical-css="">${critical}</style>`)
     .replace(link[0], asyncLink)

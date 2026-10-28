@@ -6,6 +6,38 @@ import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 import { viteStaticCopy } from "vite-plugin-static-copy"
 import tailwindcss from "@tailwindcss/vite"
+import { mkdirSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import type { Plugin } from "vite"
+
+/**
+ * クライアントのビルドで出た tailwind.css の中身を build/critical-css-source.json に書き出す。
+ * 配信時にページで使うルールだけを HTML に入れるのに使う（app/lib/critical-css.ts・functions/[[path]].ts）
+ */
+const criticalCssSource = (): Plugin => ({
+  name: "aipictors-critical-css-source",
+  apply: "build",
+  writeBundle(options, bundle) {
+    if (!options.dir?.endsWith(join("build", "client"))) return
+    for (const file of Object.values(bundle)) {
+      if (
+        file.type === "asset" &&
+        /^assets\/tailwind-[\w-]+\.css$/.test(file.fileName)
+      ) {
+        const out = join(options.dir, "..", "critical-css-source.json")
+        mkdirSync(dirname(out), { recursive: true })
+        writeFileSync(
+          out,
+          JSON.stringify({
+            href: `/${file.fileName}`,
+            css: String(file.source),
+          }),
+        )
+        return
+      }
+    }
+  },
+})
 
 declare module "@remix-run/cloudflare" {
   interface Future {
@@ -43,6 +75,7 @@ export default defineConfig({
     }),
     tsconfigPaths(),
     tailwindcss(),
+    criticalCssSource(),
     viteStaticCopy({
       targets: [
         {
