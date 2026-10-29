@@ -6,7 +6,7 @@ type Props = {
 }
 
 /**
- * 公式アカウント（運営・モデレーター）の名前の横に出す青いチェック
+ * 公式アカウント（運営）の名前の横に出す青いチェック
  */
 export function OfficialBadge(props: Props) {
   return (

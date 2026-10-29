@@ -16,7 +16,6 @@ import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/com
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
 import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
 import { UserBiography } from "~/routes/($lang)._main.users.$user._index/components/user-biography"
-import { UserModeratorIcon } from "~/routes/($lang)._main.users.$user._index/components/user-moderator-icon"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user._index/components/user-profile-avatar"
 import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user._index/components/user-subscription-icon"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -112,7 +111,6 @@ export function UserProfileNameIcon(props: Props) {
               </h1>
               {user.isOfficial && <OfficialBadge className="size-5" />}
               <UserSubscriptionIcon passType={user.pass?.type} />
-              <UserModeratorIcon isModerator={user.isModerator} />
             </div>
             <p className="break-all text-muted-foreground text-sm">
               @{user.login}
