@@ -111,3 +111,16 @@ test("優先画像を Link ヘッダーの preload にする", async () => {
     '<https://files.aipictors.com/a>; rel=preload; as=image; fetchpriority=high; imagesrcset="https://files.aipictors.com/_w/160/a 160w, https://files.aipictors.com/_w/320/a 320w"; imagesizes="160px"; media="(max-width: 767px)"',
   )
 })
+
+test("deferStylesheets では CSS 本体を読まない rel にする", async () => {
+  const html =
+    '<html><head><style data-critical-css=""></style><link rel="stylesheet" href="/assets/tailwind-y.css"/></head><body><div class="a"></div></body></html>'
+  const response = await inlineCriticalCss(
+    new Response(html, { headers: { "Content-Type": "text/html" } }),
+    { href: "/assets/tailwind-y.css", css: ".a{color:red}" },
+    { deferStylesheets: true },
+  )
+  expect(await response.text()).toContain(
+    '<link rel="aipictors-deferred-stylesheet" href="/assets/tailwind-y.css"/>',
+  )
+})

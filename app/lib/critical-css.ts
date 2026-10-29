@@ -22,6 +22,9 @@ type CssNode = {
   children?: CssNode[]
 }
 
+/** hydration の開始まで読まない CSS の rel（app/lib/defer-hydration.ts と同じ） */
+export const DEFERRED_STYLESHEET_REL = "aipictors-deferred-stylesheet"
+
 const PLACEHOLDER = "<style data-critical-css=\"\"></style>"
 
 const unescapeCssIdent = (value: string): string =>
@@ -250,6 +253,14 @@ const STYLESHEET_LINKS = /<link rel="stylesheet" href="(\/assets\/[\w.-]+\.css)"
 export const inlineCriticalCss = async (
   response: Response,
   source: CriticalCssSource | null,
+  options: {
+    /**
+     * CSS 本体を hydration の開始まで読まない（app/lib/defer-hydration.ts が rel を戻す）。
+     * HTML に入れた分で見た目はそろっているので、本体を読んで画面全体のスタイルを計算し直す処理
+     * （スマホで 0.1〜0.2 秒）を表示直後にしなくてよい
+     */
+    deferStylesheets?: boolean
+  } = {},
 ): Promise<Response> => {
   const contentType = response.headers.get("Content-Type") ?? ""
   if (
@@ -309,7 +320,9 @@ export const inlineCriticalCss = async (
     const href = tag.match(/href="([^"]+)"/)?.[1]
     output = output.replace(
       tag,
-      `<link rel="stylesheet" href="${href}" media="print" onload="this.media='all'"/>`,
+      options.deferStylesheets
+        ? `<link rel="${DEFERRED_STYLESHEET_REL}" href="${href}"/>`
+        : `<link rel="stylesheet" href="${href}" media="print" onload="this.media='all'"/>`,
     )
   }
 

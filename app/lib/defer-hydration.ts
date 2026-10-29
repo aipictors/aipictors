@@ -50,6 +50,7 @@ export const toDeferredModuleScript = (
   // JS と回線を取り合うと、いちばん大きい画像（LCP）の表示が遅れるため。こちらは最大 1.5 秒で打ち切る
   return `await new Promise(function(r){if(document.visibilityState==="hidden"){r();return}var d=false;function f(){if(!d){d=true;setTimeout(r,0)}}try{new PerformanceObserver(function(l){if(l.getEntriesByName("first-contentful-paint").length>0)f()}).observe({type:"paint",buffered:true})}catch(e){}requestAnimationFrame(function(){requestAnimationFrame(f)});setTimeout(f,5000)});
 ${waitForInteraction}await Promise.race([Promise.all(Array.prototype.map.call(document.querySelectorAll('img[fetchpriority="high"]'),function(i){return i.complete?0:new Promise(function(r){i.addEventListener("load",r,{once:true});i.addEventListener("error",r,{once:true})})})),new Promise(function(r){setTimeout(r,1500)})]);
+document.querySelectorAll('link[rel="aipictors-deferred-stylesheet"]').forEach(function(l){l.rel="stylesheet"});
 document.querySelectorAll('link[rel="${DEFERRED_REL}"]').forEach(function(l){l.rel="modulepreload"});
 const source = ${json}.replace(/(from\\s*|import\\s*\\(\\s*|import\\s+)"\\//g, "$1\\"" + location.origin + "/");
 await import(URL.createObjectURL(new Blob([source], { type: "text/javascript" })));`
