@@ -1,5 +1,4 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { AuthContext } from "~/contexts/auth-context"
 import { loaderClient } from "~/lib/loader-client"
 import { config, META } from "~/config"
 import HomeHeader from "~/routes/($lang)._main._index/components/home-header"
@@ -12,7 +11,7 @@ import { SidebarProvider } from "~/components/sidebar-provider"
 import { isApolloError } from "@apollo/client/errors"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, useLoaderData } from "@remix-run/react"
-import { Suspense, useContext } from "react"
+import { Suspense } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
 
@@ -54,13 +53,9 @@ export default function GenerationLayout () {
 
   const data = useLoaderData<typeof loader>()
 
-  console.log("GenerationLayout data", data)
-
-  const authContext = useContext(AuthContext)
-
-  if (authContext.isLoading) {
-    return <AppLoadingPage />
-  }
+  // ログイン状態の確認（Firebase の初期化）を待たずに画面を出す。
+  // 以前は確認が終わるまで読み込み中の表示だけを出していて、生成画面が出るまで数秒かかっていた（LCP 5.8 秒）。
+  // ログインが必要な操作は、それぞれの部品がログイン状態を見て切り替える
 
   return (
     <SidebarProvider>

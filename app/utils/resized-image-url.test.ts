@@ -7,7 +7,7 @@ test("files.aipictors.com の画像は縮小版の URL にする", () => {
     "https://files.aipictors.com/_w/96/abc-123",
   )
   expect(toResizedImageUrl(URL, 5000)).toBe(
-    "https://files.aipictors.com/_w/640/abc-123",
+    "https://files.aipictors.com/_w/1280/abc-123",
   )
 })
 

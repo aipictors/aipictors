@@ -29,6 +29,8 @@ export function GenerationConfigResetConfirmDialog (props: Props) {
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <div
+          role="button"
+          tabIndex={0}
           className="flex w-full flex-col gap-y-2"
           onClick={() => setIsOpen(true)}
           onKeyUp={(e) => {

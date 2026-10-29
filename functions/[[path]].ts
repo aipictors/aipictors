@@ -715,7 +715,7 @@ export const onRequest: PagesFunction = async (ctx) => {
   // 最初の描画に要る CSS だけを HTML に入れる（app/lib/critical-css.ts）
   const render = async () =>
     inlineCriticalCss(
-      deferHydration(await renderWithRetry()),
+      deferHydration(await renderWithRetry(), requestUrl.pathname),
       criticalCssSource as CriticalCssSource,
     )
   if (!ADMIN_HOSTNAMES.has(requestUrl.hostname)) {

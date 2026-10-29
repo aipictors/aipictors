@@ -63,6 +63,7 @@ function LoraItem(props: ItemProps) {
       </div>
       <div className="mt-2 flex items-center gap-3 pr-1 pl-1">
         <Slider
+          aria-label="LoRAの強さ"
           aria-label={t("ウェイト", "Weight")}
           value={[props.value]}
           min={-1}

@@ -40,6 +40,7 @@ export function GenerationConfigSeed (props: Props) {
       <div className="flex gap-x-2">
         <Input
           type="number"
+          aria-label="シード値"
           value={props.value}
           className="flex-1"
           onChange={(event) => {

@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight, Keyboard, XIcon } from "lucide-react"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
+import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 import { Button } from "~/components/ui/button"
 
 type Props = {
@@ -541,6 +542,12 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 key={props.thumbnailUrl}
                 alt="thumbnail"
                 src={props.thumbnailUrl}
+                // 原寸の画像（数 MB のこともある）ではなく、画面に合う縮小版を選ばせる。
+                // 拡大表示やダウンロードは原寸のまま
+                srcSet={toResizedImageSrcSet(props.thumbnailUrl, {
+                  minWidth: 400,
+                })}
+                sizes="(min-width: 768px) 60vw, 100vw"
                 // 作品ページの LCP 画像なので優先して読み込む
                 fetchPriority="high"
                 onLoad={() => setIsMainImageLoaded(true)}

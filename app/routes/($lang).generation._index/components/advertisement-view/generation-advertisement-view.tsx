@@ -49,7 +49,7 @@ export function GenerationAdvertisementView () {
             "生成速度と生成枚数を上げるには、",
             "To increase generation speed and number of images, please register for ",
           )}
-          <span className="text-blue-500">Aipictors+</span>
+          <span className="text-blue-700 dark:text-blue-400">Aipictors+</span>
           {t("に登録してください。", " registration.")}
         </p>
       </Link>

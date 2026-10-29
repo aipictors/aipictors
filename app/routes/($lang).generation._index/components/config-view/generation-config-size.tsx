@@ -186,6 +186,7 @@ export function GenerationConfigSize (props: Props) {
                 </div>
               </div>
               <Slider
+                aria-label="サイズ"
                 value={[currentIndex]}
                 min={0}
                 max={Math.max(0, allSizeTypes.length - 1)}

@@ -30,6 +30,8 @@ export function GenerationSideTabsView () {
           <div className="w-full overflow-x-auto">
             <TabsList className={tabsListClassName}>
               <TabsTrigger
+                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
+                aria-controls={undefined}
                 onClick={() => {
                   send({ type: "CHANGE_FULL_HISTORY_LIST" })
                   context.updateSearchWorksModelIdAndName(null, null)
@@ -40,6 +42,8 @@ export function GenerationSideTabsView () {
                 {t("履歴", "History")}
               </TabsTrigger>
               <TabsTrigger
+                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
+                aria-controls={undefined}
                 onClick={() => {
                   send({ type: "CHANGE_FULL_WORK_LIST" })
                   context.updateSearchWorksModelIdAndName(null, null)
@@ -57,6 +61,8 @@ export function GenerationSideTabsView () {
           <div className="w-full overflow-x-auto">
             <TabsList className={tabsListClassName}>
               <TabsTrigger
+                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
+                aria-controls={undefined}
                 onClick={() => {
                   send({ type: "CLOSE" })
                 }}
@@ -66,6 +72,8 @@ export function GenerationSideTabsView () {
                 {t("履歴", "History")}
               </TabsTrigger>
               <TabsTrigger
+                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
+                aria-controls={undefined}
                 onClick={() => {
                   send({ type: "OPEN_WORKS_FROM_MODEL" })
                 }}
@@ -75,6 +83,8 @@ export function GenerationSideTabsView () {
                 {t("作品検索", "Search posts")}
               </TabsTrigger>
               <TabsTrigger
+                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
+                aria-controls={undefined}
                 onClick={() => {
                   send({ type: "OPEN_COMMUNICATION" })
                 }}
@@ -84,6 +94,8 @@ export function GenerationSideTabsView () {
                 {t("ご意見", "Feedback")}
               </TabsTrigger>
               <TabsTrigger
+                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
+                aria-controls={undefined}
                 onClick={() => {
                   send({ type: "OPEN_LINKS" })
                 }}
@@ -93,6 +105,8 @@ export function GenerationSideTabsView () {
                 {t("アンケート", "Survey")}
               </TabsTrigger>
               <TabsTrigger
+                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
+                aria-controls={undefined}
                 onClick={() => {
                   send({ type: "OPEN_LOGS" })
                 }}
@@ -102,6 +116,8 @@ export function GenerationSideTabsView () {
                 {t("ログ", "Logs")}
               </TabsTrigger>
               <TabsTrigger
+                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
+                aria-controls={undefined}
                 onClick={() => {
                   send({ type: "OPEN_COIN_HISTORY" })
                 }}

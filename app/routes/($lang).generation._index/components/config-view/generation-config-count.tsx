@@ -55,6 +55,7 @@ export function GenerationConfigCount (props: Props) {
         </div>
         <div className="flex items-center gap-x-2">
           <Slider
+            aria-label="生成枚数"
             disabled={!isStandardOrPremium}
             aria-label="slider-ex-2"
             defaultValue={[context.config.generationCount]}

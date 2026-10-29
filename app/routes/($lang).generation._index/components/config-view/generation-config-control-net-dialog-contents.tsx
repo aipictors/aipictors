@@ -227,6 +227,7 @@ export function GenerationConfigControlNetDialogContents (props: Props) {
 
           <div className="flex items-center gap-x-2">
             <Slider
+              aria-label="ControlNetの強さ"
               className="color-pink w-full"
               aria-label="slider-ex-2"
               min={0.1}
