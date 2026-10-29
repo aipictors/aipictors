@@ -6,6 +6,8 @@ import {
 // @ts-ignore - remix vite:build が書き出す（vite.config.ts の criticalCssSource）
 import criticalCssSource from "../build/critical-css-source.json"
 import {
+  CONTEXT_ONLY_HEADER,
+  CONTEXT_PATH_PREFIX,
   deferHydration,
   shouldWaitForInteraction,
 } from "../app/lib/defer-hydration"
@@ -141,6 +143,10 @@ const createMaintenanceHtml = (message: string | null): string => {
 }
 
 const ADMIN_HOSTNAMES = new Set(["admin.aipictors.com"])
+
+/** HTML から外したローダーのデータの Cache API のキー */
+const toContextCacheUrl = (token: string) =>
+  `https://www.aipictors.com/__cache/remix-context/${encodeURIComponent(token)}`
 
 /**
  * root の loader を通らないもの（API・サイトマップなどの resource route、ファイル）は対象外
@@ -420,6 +426,21 @@ export const onRequest: PagesFunction = async (ctx) => {
   ).IMAGE_RESIZE
   if (imageResize && new URL(ctx.request.url).pathname.startsWith("/_w/")) {
     return imageResize.fetch(ctx.request)
+  }
+
+  // HTML から外したローダーのデータ（app/lib/defer-hydration.ts）
+  const earlyUrl = new URL(ctx.request.url)
+  if (earlyUrl.pathname.startsWith(CONTEXT_PATH_PREFIX)) {
+    const cached = await caches.default.match(
+      new Request(toContextCacheUrl(earlyUrl.pathname.slice(CONTEXT_PATH_PREFIX.length))),
+    )
+    if (!cached) return new Response("Not Found", { status: 404 })
+    return new Response(cached.body, {
+      headers: {
+        "Content-Type": "text/javascript; charset=utf-8",
+        "Cache-Control": "private, max-age=3600",
+      },
+    })
   }
 
   const maxRetry = 5 // リトライ回数を増加
@@ -724,9 +745,49 @@ export const onRequest: PagesFunction = async (ctx) => {
 
   // hydration の開始は最初の描画のあとにする（app/lib/defer-hydration.ts）
   // 最初の描画に要る CSS だけを HTML に入れる（app/lib/critical-css.ts）
+  // キャッシュから消えていたローダーのデータを、その場で描画し直して返す
+  if (ctx.request.headers.get(CONTEXT_ONLY_HEADER) === "1") {
+    let script = ""
+    const transformed = deferHydration(
+      await renderWithRetry(),
+      requestUrl.pathname,
+      {
+        onContext: (value) => {
+          script = value
+        },
+      },
+    )
+    await transformed.text()
+    return new Response(script, {
+      headers: {
+        "Content-Type": "text/javascript; charset=utf-8",
+        "Cache-Control": "private, no-store",
+      },
+    })
+  }
+
+  const storeContext = (token: string, script: string) => {
+    ctx.waitUntil(
+      caches.default
+        .put(
+          new Request(toContextCacheUrl(token)),
+          new Response(script, {
+            headers: {
+              "Content-Type": "text/javascript; charset=utf-8",
+              // ページのキャッシュ（最大 1 日＋α）より長めに置く
+              "Cache-Control": "public, max-age=172800",
+            },
+          }),
+        )
+        .catch(() => undefined),
+    )
+  }
+
   const render = async () =>
     inlineCriticalCss(
-      deferHydration(await renderWithRetry(), requestUrl.pathname),
+      deferHydration(await renderWithRetry(), requestUrl.pathname, {
+        storeContext,
+      }),
       criticalCssSource as CriticalCssSource,
       { deferStylesheets: shouldWaitForInteraction(requestUrl.pathname) },
     )

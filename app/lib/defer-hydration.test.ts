@@ -13,3 +13,13 @@ test("待つときだけ操作待ちの処理が入る", () => {
   expect(toDeferredModuleScript("x", { waitForInteraction: true })).toContain("pointerdown")
   expect(toDeferredModuleScript("x")).not.toContain("pointerdown")
 })
+
+
+test("データを外したページは hydration の前にデータを読み込む", () => {
+  const script = toDeferredModuleScript("x", {
+    waitForInteraction: true,
+    contextToken: "abc",
+  })
+  expect(script).toContain('fetch("/__ctx/abc")')
+  expect(script.indexOf("/__ctx/abc")).toBeLessThan(script.indexOf("await import("))
+})

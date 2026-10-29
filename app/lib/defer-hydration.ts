@@ -30,9 +30,22 @@ export const shouldWaitForInteraction = (pathname: string): boolean =>
 /**
  * Remix の module script の中身を、描画を待ってから実行するものに変える
  */
+/** HTML から外したローダーのデータ（Remix の streamController へ渡す script）を置く場所 */
+export const CONTEXT_PATH_PREFIX = "/__ctx/"
+
+/** HTML から外したデータを、この場で取り直すときのヘッダー（functions/[[path]].ts） */
+export const CONTEXT_ONLY_HEADER = "x-aipictors-context-only"
+
+/**
+ * hydration の直前に、HTML から外したローダーのデータを読み込んで実行する。
+ * 配信のキャッシュから消えていたら、同じページをその場で描画し直してデータだけ受け取る
+ */
+const toContextLoader = (token: string): string =>
+  `await (async function(){var t=await fetch("${CONTEXT_PATH_PREFIX}${token}").then(function(r){return r.ok?r.text():null}).catch(function(){return null});if(t===null){t=await fetch(location.href,{headers:{"${CONTEXT_ONLY_HEADER}":"1"}}).then(function(r){return r.text()})}(0,eval)(t)})();\n`
+
 export const toDeferredModuleScript = (
   source: string,
-  options: { waitForInteraction?: boolean } = {},
+  options: { waitForInteraction?: boolean; contextToken?: string } = {},
 ): string => {
   const json = JSON.stringify(source).replaceAll("<", "\\u003c")
   // 閲覧ページでは、操作（タップ・クリック・キー入力・スクロール・マウス移動）があるか、
@@ -52,21 +65,66 @@ export const toDeferredModuleScript = (
 ${waitForInteraction}await Promise.race([Promise.all(Array.prototype.map.call(document.querySelectorAll('img[fetchpriority="high"]'),function(i){return i.complete?0:new Promise(function(r){i.addEventListener("load",r,{once:true});i.addEventListener("error",r,{once:true})})})),new Promise(function(r){setTimeout(r,1500)})]);
 document.querySelectorAll('link[rel="aipictors-deferred-stylesheet"]').forEach(function(l){l.rel="stylesheet"});
 document.querySelectorAll('link[rel="${DEFERRED_REL}"]').forEach(function(l){l.rel="modulepreload"});
-const source = ${json}.replace(/(from\\s*|import\\s*\\(\\s*|import\\s+)"\\//g, "$1\\"" + location.origin + "/");
+${options.contextToken ? toContextLoader(options.contextToken) : ""}const source = ${json}.replace(/(from\\s*|import\\s*\\(\\s*|import\\s+)"\\//g, "$1\\"" + location.origin + "/");
 await import(URL.createObjectURL(new Blob([source], { type: "text/javascript" })));`
 }
 
 export const deferHydration = (
   response: Response,
   pathname = "",
+  options: {
+    /**
+     * HTML から外したローダーのデータを保存する。渡したときだけ外す（閲覧ページのみ）。
+     * ローダーのデータ（圧縮後 20〜30KB）は hydration にしか使わないので、最初の HTML を小さくする
+     */
+    storeContext?: (token: string, script: string) => void
+    /** データだけを返す（キャッシュから消えていたときの取り直し） */
+    onContext?: (script: string) => void
+  } = {},
 ): Response => {
   const waitForInteraction = shouldWaitForInteraction(pathname)
   const contentType = response.headers.get("Content-Type") ?? ""
   if (!contentType.includes("text/html") || !response.body) return response
 
   let source = ""
+  const extract =
+    waitForInteraction && (options.storeContext || options.onContext)
+  const contextToken = extract ? crypto.randomUUID() : undefined
+  const contextScripts: string[] = []
+  let inlineSource = ""
 
   return new HTMLRewriter()
+    .on("script:not([type]):not([src])", {
+      text(chunk) {
+        if (!extract) return
+        inlineSource += chunk.text
+        if (!chunk.lastInTextNode) {
+          chunk.remove()
+          return
+        }
+        // 要素は残して中身だけ外す（hydration で React は script の中身を比べない）
+        // データを流し込む script（enqueue / close）だけを外す。stream を作る script は残す
+        if (
+          inlineSource
+            .trimStart()
+            .startsWith("window.__remixContext.streamController.")
+        ) {
+          contextScripts.push(inlineSource)
+          chunk.replace("")
+        } else {
+          chunk.replace(inlineSource, { html: true })
+        }
+        inlineSource = ""
+      },
+    })
+    .onDocument({
+      end() {
+        if (!extract || !contextToken) return
+        const script = contextScripts.join(";\n")
+        options.storeContext?.(contextToken, script)
+        options.onContext?.(script)
+      },
+    })
     .on('link[rel="modulepreload"]', {
       element(element) {
         element.setAttribute("rel", DEFERRED_REL)
@@ -80,7 +138,7 @@ export const deferHydration = (
           return
         }
         const replaced = source.includes("window.__remixRouteModules")
-          ? toDeferredModuleScript(source, { waitForInteraction })
+          ? toDeferredModuleScript(source, { waitForInteraction, contextToken })
           : source
         chunk.replace(replaced, { html: true })
         source = ""
