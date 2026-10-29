@@ -11,6 +11,20 @@ type Props = {
   currentIndex: number
   setCurrentIndex: (index: number) => void
   mode?: "dialog" | "page" // ダイアログモードかページモードかを指定
+  /** 表示中の画像の幅÷高さ。分かれば縮小版を表示する大きさに合わせて選ばせる */
+  aspectRatio?: number
+}
+
+/**
+ * メイン画像の sizes。縦長の画像は高さ（max-h-[64vh] / md:max-h-[72vh]）で幅が決まるので、
+ * 画面幅で選ぶと必要より大きい縮小版を読んでいた
+ */
+const toMainImageSizes = (aspectRatio: number | undefined) => {
+  if (!aspectRatio || !Number.isFinite(aspectRatio) || aspectRatio <= 0) {
+    return "(min-width: 768px) 60vw, 100vw"
+  }
+  const ratio = Math.round(aspectRatio * 1000) / 1000
+  return `(min-width: 768px) min(60vw, calc(72vh * ${ratio})), min(100vw, calc(64vh * ${ratio}))`
 }
 
 export function ImagesPreview(props: Props): React.ReactNode {
@@ -547,7 +561,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 srcSet={toResizedImageSrcSet(props.thumbnailUrl, {
                   minWidth: 400,
                 })}
-                sizes="(min-width: 768px) 60vw, 100vw"
+                sizes={toMainImageSizes(props.aspectRatio)}
                 // 作品ページの LCP 画像なので優先して読み込む
                 fetchPriority="high"
                 onLoad={() => setIsMainImageLoaded(true)}

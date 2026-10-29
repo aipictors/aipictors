@@ -224,37 +224,37 @@ export function AiEvaluationDisplay (props: Props) {
       case "female":
         return {
           type: "image",
-          value: "https://assets.aipictors.com/girl-icon_11zon.webp",
+          value: "/images/ai-avatars/girl-128.webp",
           bg: "from-pink-500 to-rose-500",
         }
       case "male":
         return {
           type: "image",
-          value: "https://assets.aipictors.com/man-icon_11zon.webp",
+          value: "/images/ai-avatars/man-128.webp",
           bg: "from-blue-500 to-indigo-500",
         }
       case "robot":
         return {
           type: "image",
-          value: "https://assets.aipictors.com/robot-icon_11zon.webp",
+          value: "/images/ai-avatars/robot-128.webp",
           bg: "from-gray-500 to-slate-500",
         }
       case "sage":
         return {
           type: "image",
-          value: "https://assets.aipictors.com/kenjin-icon_11zon.webp",
+          value: "/images/ai-avatars/sage-128.webp",
           bg: "from-purple-500 to-indigo-500",
         }
       case "pictor_chan":
         return {
           type: "image",
-          value: "https://assets.aipictors.com/pictorchanicon.webp",
+          value: "/images/ai-avatars/pictor-chan-128.webp",
           bg: "from-amber-500 to-orange-500",
         }
       default:
         return {
           type: "image",
-          value: "https://assets.aipictors.com/robot-icon_11zon.webp",
+          value: "/images/ai-avatars/robot-128.webp",
           bg: "from-blue-500 to-purple-600",
         }
     }
@@ -286,6 +286,10 @@ export function AiEvaluationDisplay (props: Props) {
                   src={avatarData.value}
                   alt={getPersonalityName(props.personality)}
                   className="h-full w-full object-cover"
+                  width={64}
+                  height={64}
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <span className="text-xl">{avatarData.value}</span>

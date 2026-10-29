@@ -171,26 +171,9 @@ export const meta: MetaFunction = (props) => {
     props.params.lang,
   )
 
-  // 作品ページの LCP はメイン画像なので、HTML の解析を待たずに読み込みを始める
-  const shouldPreloadMainImage =
-    work.work.type === "WORK" &&
-    work.work.imageURL.length > 0 &&
-    (work.work.rating === "G" || work.work.rating === "R15")
-
-  if (!shouldPreloadMainImage) {
-    return metaTags
-  }
-
-  return [
-    ...metaTags,
-    {
-      tagName: "link",
-      rel: "preload",
-      as: "image",
-      href: work.work.imageURL,
-      fetchPriority: "high",
-    },
-  ]
+  // メイン画像の先読みは、画面に合う縮小版を選べる Link ヘッダー（app/lib/image-preload-links.ts）で行う。
+  // ここで原寸の URL を preload すると、縮小版とは別に原寸も読んでいた
+  return metaTags
 }
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => ({

@@ -6,6 +6,7 @@ import {
   CarouselPrevious,
 } from "~/components/ui/carousel"
 import type React from "react"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Props = {
   allImageURLs: string[]
@@ -63,8 +64,10 @@ export function WorkImageThumbnailCarousel ({
                     className="h-full w-full object-contain"
                     alt=""
                     key={imageURL}
-                    src={imageURL}
+                    // 高さ 80px の小さな一覧なので縮小版にする（原寸は数百 KB のこともある）
+                    src={toResizedImageUrl(imageURL, 240)}
                     loading="lazy"
+                    decoding="async"
                   />
                 </button>
               </CarouselItem>

@@ -7,6 +7,8 @@ type Props = {
   subWorkImageURLs: string[]
   onSelectedImage?: (imageURL: string) => void
   mode?: "dialog" | "page"
+  /** メイン画像（workImageURL）の幅÷高さ */
+  workImageAspectRatio?: number
 }
 
 export function WorkImageView (props: Props) {
@@ -40,6 +42,11 @@ export function WorkImageView (props: Props) {
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
           mode={props.mode}
+          aspectRatio={
+            allImageURLs[currentIndex] === props.workImageURL
+              ? props.workImageAspectRatio
+              : undefined
+          }
         />
         <WorkImageThumbnailCarousel
           allImageURLs={allImageURLs}
@@ -60,6 +67,7 @@ export function WorkImageView (props: Props) {
           thumbnailUrl={props.workImageURL}
           imageURLs={[props.workImageURL]}
           mode={props.mode}
+          aspectRatio={props.workImageAspectRatio}
         />
       </div>
     )

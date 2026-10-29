@@ -246,6 +246,12 @@ export function SensitiveWorkArticle(props: Props) {
               return subWork.imageUrl ?? ""
             })}
           onSelectedImage={setSelectedImageUrl}
+          workImageAspectRatio={
+            props.work.largeThumbnailImageHeight > 0
+              ? props.work.largeThumbnailImageWidth /
+                props.work.largeThumbnailImageHeight
+              : undefined
+          }
         />
       )}
       {props.work.type === "VIDEO" && (
