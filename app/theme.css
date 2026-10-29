@@ -169,8 +169,11 @@ html {
 /**
  * いいねボタンのスプライトアニメーション用のベース64背景
  * アップロードされたスプライトシート画像を使用
+ * hydration のあと（app/root.tsx が html に aip-hydrated を付ける）から読む。
+ * いいねしていない状態では最初のコマ（透明）なので、表示直後に読む必要がなく、
+ * 最初の作品画像（LCP）と回線を取り合っていた
  */
-.like-base-64 {
+html.aip-hydrated .like-base-64 {
   background: url("https://assets.aipictors.com/liked-animation.webp") no-repeat;
 }
 

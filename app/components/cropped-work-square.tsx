@@ -28,6 +28,11 @@ type Props = {
   shouldMaskSensitive?: boolean
   /** 最初に表示される画像（LCP 候補）なら true */
   isPriority?: boolean
+  /**
+   * 優先する画像を決めている一覧の、それ以外の画像なら true（fetchpriority="low"）。
+   * 画面内の画像はブラウザが自動で優先度を上げるので、最初の画像（LCP）と回線を取り合っていた
+   */
+  isLowPriority?: boolean
   /** 作品タイトル（画像の代替テキストに使う） */
   title?: string
   /** 親要素がリンクやボタンの場合は true（a 要素の入れ子はハイドレーションエラーになるため） */
@@ -177,7 +182,9 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
         alt={props.title ?? ""}
         key={props.imageUrl}
         loading={props.isPriority ? "eager" : "lazy"}
-        fetchPriority={props.isPriority ? "high" : undefined}
+        fetchPriority={
+          props.isPriority ? "high" : props.isLowPriority ? "low" : undefined
+        }
         media={props.media}
         srcSet={toResizedImageSrcSet(props.imageUrl, {
           minWidth: props.size === "auto" ? 160 : SQUARE_WIDTH[props.size],

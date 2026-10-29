@@ -52,6 +52,10 @@ export function HomeCroppedWorks(props: Props) {
                 <Link to={`/posts/${work.id}`} className="group relative">
                   <CroppedWorkSquare
                     isPriority={index < (props.priorityCount ?? 0)}
+                    isLowPriority={
+                      props.priorityCount !== undefined &&
+                      index >= props.priorityCount
+                    }
                     title={work.title}
                     isInsideInteractive={true}
                     workId={work.id}
@@ -121,6 +125,10 @@ export function HomeCroppedWorks(props: Props) {
                   >
                     <CroppedWorkSquare
                       isPriority={index < (props.priorityCount ?? 0)}
+                      isLowPriority={
+                        props.priorityCount !== undefined &&
+                        index >= props.priorityCount
+                      }
                       media={
                         props.isMobileOnly ? "(max-width: 767.98px)" : undefined
                       }
@@ -159,6 +167,10 @@ export function HomeCroppedWorks(props: Props) {
                   <Link to={`/posts/${work.id}`} className="relative block">
                     <CroppedWorkSquare
                       isPriority={index < (props.priorityCount ?? 0)}
+                      isLowPriority={
+                        props.priorityCount !== undefined &&
+                        index >= props.priorityCount
+                      }
                       media={
                         props.isMobileOnly ? "(max-width: 767.98px)" : undefined
                       }

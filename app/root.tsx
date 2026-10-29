@@ -532,6 +532,11 @@ export function Layout(props: Props): React.ReactNode {
     initializeBrowserSentry()
   }, [])
 
+  // hydration のあとにだけ使う CSS の目印（app/theme.css の .like-base-64）
+  useEffect(() => {
+    document.documentElement.classList.add("aip-hydrated")
+  }, [])
+
   return (
     <html lang={htmlLang} suppressHydrationWarning>
       <head>

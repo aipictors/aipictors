@@ -54,6 +54,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
               <div className="relative">
                 <CroppedWorkSquare
                   isPriority={index < (props.priorityCount ?? 0)}
+                  isLowPriority={
+                    props.priorityCount !== undefined &&
+                    index >= props.priorityCount
+                  }
                   title={workItem.title}
                   workId={workItem.id}
                   subWorksCount={workItem.subWorksCount}
@@ -210,7 +214,13 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                           alt={work.title}
                           width={width}
                           height={height}
-                          fetchPriority={isPriority ? "high" : undefined}
+                          fetchPriority={
+                            isPriority
+                              ? "high"
+                              : props.priorityCount !== undefined
+                                ? "low"
+                                : undefined
+                          }
                           // PC 用の一覧はスマホでは非表示（display: none）。media でスマホでは読み込まないので、
                           // 先頭の作品は PC で優先して読み込める
                           loading={isPriority ? "eager" : "lazy"}
@@ -233,7 +243,13 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         to={`/posts/${work.id}`}
                         width={width}
                         height={height}
-                        fetchPriority={isPriority ? "high" : undefined}
+                        fetchPriority={
+                          isPriority
+                            ? "high"
+                            : props.priorityCount !== undefined
+                              ? "low"
+                              : undefined
+                        }
                         loading={isPriority ? "eager" : "lazy"}
                         media="(min-width: 768px)"
                         className="absolute inset-0 block h-full w-full overflow-hidden"
