@@ -127,8 +127,8 @@ export function WithdrawAccountForm() {
         </p>
         <p className="text-muted-foreground">
           {t(
-            "退会すると、アカウント情報は削除され、作品は非公開になります。スタンプ履歴は残りますが、どのユーザのものかは表示されなくなります。",
-            "Withdrawing removes your account information and makes your works private. Sticker history remains, but it will no longer show which user it belonged to.",
+            "退会すると、アカウント情報は削除され、作品は非公開になります。スタンプ履歴は残りますが、どのユーザのものかは表示されなくなります。加入中の有料プランは退会と同時に解約され、以降の請求は発生しません。",
+            "Withdrawing removes your account information and makes your works private. Sticker history remains, but it will no longer show which user it belonged to. Any paid plan is canceled at the same time, and you will not be charged again.",
           )}
         </p>
         <p className="text-muted-foreground">
