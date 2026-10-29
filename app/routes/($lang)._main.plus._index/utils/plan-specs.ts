@@ -11,7 +11,7 @@ export const PLAN_KEYS: PlanKey[] = ["FREE", "LITE", "STANDARD", "PREMIUM"]
  */
 export const GENERATION_COIN_COST = {
   standard: 10,
-  highResolution: 30,
+  highResolution: 20,
   imageToImage: 50,
   nanoBanana: 50,
   nanoBanana2: 100,

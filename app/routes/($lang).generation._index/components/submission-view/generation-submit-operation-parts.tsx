@@ -125,10 +125,10 @@ export function GenerationSubmitOperationParts(props: Props) {
     props.inProgressImageGenerationReservedTasksCount
 
   /**
-   * 1 回の生成で使う「通常 1 枚分」の数（高解像度は 3 枚分）
+   * 1 回の生成で使う「通常 1 枚分」の数（高解像度は 2 枚分）
    */
   const requestImageUnits =
-    (props.imagesPerRequest ?? 1) * (context.config.upscaleSize === 2 ? 3 : 1)
+    (props.imagesPerRequest ?? 1) * (context.config.upscaleSize === 2 ? 2 : 1)
 
   /**
    * ボタンの文言に 1 回で作る枚数を添える（例: 生成 ×4枚）
@@ -241,7 +241,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                   htmlFor="extras-mode"
                   className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
                 >
-                  {t("1枚・コイン3倍", "1 image, 3x coins")}
+                  {t("1枚・コイン2倍", "1 image, 2x coins")}
                 </Label>
               </div>
             </div>
@@ -371,7 +371,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                         htmlFor="extras-mode"
                         className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
                       >
-                        {t("1枚・コイン3倍", "1 image, 3x coins")}
+                        {t("1枚・コイン2倍", "1 image, 2x coins")}
                       </Label>
                     </div>
                   </div>

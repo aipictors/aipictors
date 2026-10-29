@@ -895,10 +895,10 @@ export function GenerationSubmissionView (props: Props) {
       return imageEditGenerationCoinCost
     }
 
-    // 高解像度は 1 枚 3 倍（GPU 時間が約 3 倍かかるため）
+    // 高解像度は 1 枚 2 倍（サーバーの lib/image-generation-coins.ts と同じ）
     const multiplier =
       context.config.upscaleSize !== null && context.config.upscaleSize > 1
-        ? 3
+        ? 2
         : 1
 
     return standardImageGenerationCoinCost * multiplier

@@ -200,7 +200,7 @@ export function GenerationConfigOutput(props: Props) {
               </span>
               <span className="text-muted-foreground text-xs tabular-nums">
                 {currentSize.width * 2}×{currentSize.height * 2}
-                <span className="ml-1">{t("・1枚 3倍", "· 1 img, 3x")}</span>
+                <span className="ml-1">{t("・1枚 2倍", "· 1 img, 2x")}</span>
               </span>
             </button>
           </div>
