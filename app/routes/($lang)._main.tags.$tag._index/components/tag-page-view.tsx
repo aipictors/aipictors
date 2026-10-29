@@ -29,6 +29,7 @@ import {
   toTagPageSearch,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
 import { getPathLocale } from "~/utils/locale-path"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type LoaderData = Awaited<ReturnType<typeof loader>>
@@ -227,12 +228,11 @@ export function TagPageView(props: Props) {
       <header className="relative overflow-hidden rounded-2xl border bg-card">
         {cover && (
           <img
-            src={cover.smallThumbnailImageURL}
+            // 強くぼかした背景なので、48px の縮小版で十分（元の画像だと、ただの飾りが一番大きい画像＝LCP として
+            // 一覧の画像より先に読まれていた。情報量の少ない画像はブラウザが LCP の対象から外す）
+            src={toResizedImageUrl(cover.smallThumbnailImageURL, 48)}
             alt=""
             aria-hidden
-            // 画面で一番大きい画像（LCP）になるので、一覧の画像より先に読み込む
-            fetchPriority="high"
-            loading="eager"
             decoding="async"
             className="pointer-events-none absolute inset-0 size-full scale-110 object-cover opacity-25 blur-2xl"
           />
