@@ -214,11 +214,12 @@ export function PointsSettingsForm() {
 
     return total + Math.abs(row.delta)
   }, 0)
-  const visibleExpiringLots = (summary?.expiringLots ?? []).filter(
-    (row) => row.coinType === "FREE",
-  )
-  const premiumExpiringLots = (summary?.expiringLots ?? []).filter(
-    (row) => row.coinType === "PREMIUM",
+  // フリー・プレミアムとも、失効する日時の早い順に並べる
+  // （プレミアムは期限が 3 か月と長く、いつ失効するのか分かりにくいという要望があった）
+  const visibleExpiringLots = [...(summary?.expiringLots ?? [])].sort(
+    (a, b) =>
+      a.expiresAt - b.expiresAt ||
+      (a.coinType === b.coinType ? 0 : a.coinType === "FREE" ? -1 : 1),
   )
   const hasMoreExpiringLots = visibleExpiringLots.length > 3
   const [isExpandedExpiringLots, setIsExpandedExpiringLots] = useState(false)
@@ -685,24 +686,6 @@ export function PointsSettingsForm() {
                 )}
               </Label>
             </div>
-            {premiumExpiringLots.length > 0 && (
-              <div className="mt-3 space-y-1">
-                <p className="font-semibold text-muted-foreground text-xs">
-                  {t("失効予定（プレミアム）", "Scheduled to expire (Premium)")}
-                </p>
-                {premiumExpiringLots.slice(0, 3).map((lot, i) => (
-                  <p
-                    key={`${lot.coinType}-${lot.expiresAt}-${i}`}
-                    className="text-muted-foreground text-xs"
-                  >
-                    {formatCoinAmount(lot.amount)}
-                    {t("コイン", "coins")} —{" "}
-                    {formatLedgerDateTime(lot.expiresAt)}
-                    {t("に失効", " expires")}
-                  </p>
-                ))}
-              </div>
-            )}
           </div>
           <div className="shrink-0">
             <PurchasePremiumCoinsDialog
@@ -812,8 +795,8 @@ export function PointsSettingsForm() {
         {displayedExpiringLots.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             {t(
-              "現在、失効予定のフリーコインはありません",
-              "No free coins are currently scheduled to expire",
+              "現在、失効予定のコインはありません",
+              "No coins are currently scheduled to expire",
             )}
           </p>
         ) : (
@@ -823,9 +806,21 @@ export function PointsSettingsForm() {
                 key={`${row.coinType}-${row.expiresAt}-${index}`}
                 className="flex items-center justify-between rounded-lg border p-3 text-sm"
               >
-                <span className="font-semibold">
-                  {formatCoinAmount(row.amount)}
-                  {t("コイン", "coins")}
+                <span className="flex items-center gap-2 font-semibold">
+                  {row.coinType === "PREMIUM" ? (
+                    <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+                  ) : (
+                    <CoinIcon className="h-4 w-4 shrink-0" />
+                  )}
+                  <span>
+                    {formatCoinAmount(row.amount)}
+                    {t("コイン", "coins")}
+                  </span>
+                  <span className="font-normal text-muted-foreground text-xs">
+                    {row.coinType === "PREMIUM"
+                      ? t("プレミアム", "Premium")
+                      : t("フリー", "Free")}
+                  </span>
                 </span>
                 <span className="text-muted-foreground">
                   {formatLedgerDateTime(row.expiresAt)}
