@@ -662,9 +662,11 @@ function HomeHeader(props: Props) {
         {!isSearchFormOpen &&
           (authContext.isLoading ? (
             // ログイン判定中のダミーUI（モバイル最適化済み）
+            // 閲覧ページは hydration を操作まで待つので、サーバーの HTML ではこの状態が長く続く。
+            // 点滅させると表示が終わらない扱いになり（Speed Index）、描画もし続けるので動かさない
             <div className="flex items-center gap-2">
-              <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
-              <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+              <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700" />
+              <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700" />
             </div>
           ) : authContext.isLoggedIn ? (
             // ログイン時のUI（Suspenseでスムーズなローディング）

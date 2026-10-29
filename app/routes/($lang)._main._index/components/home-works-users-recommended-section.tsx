@@ -55,7 +55,8 @@ export function HomeWorksUsersRecommendedSection (props: Props) {
           title={t("ユーザからの推薦", "Recommended by users")}
           works={workDisplayed}
           link="/home/recommended"
-          linkLabel={t("もっと見る", "More")}
+          // 「More」だけだとリンク先が分からない（Lighthouse の SEO「リンクにわかりやすいテキスト」）
+          linkLabel={t("もっと見る", "All recommended")}
           isCropped={false}
           isShowProfile={true}
           autoPlayVideoPreview={true}

@@ -24,6 +24,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react"
 import {
+  type CSSProperties,
   lazy,
   startTransition,
   Suspense,
@@ -475,6 +476,16 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 // カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
+/**
+ * 画面の外にある一覧は、近づくまでレイアウト・描画を省く（content-visibility: auto）。
+ * スマホではトップの要素の 4 割が最初の画面の外にあり、表示直後のレイアウトが長いタスクになっていた。
+ * 高さは描画するまでの仮の値（スマホでの実際の高さ。一度描画すると実際の高さを覚える）
+ */
+const offscreenSectionStyle = (estimatedHeight: number): CSSProperties => ({
+  contentVisibility: "auto",
+  containIntrinsicHeight: `auto ${estimatedHeight}px`,
+})
+
 function useScrollRestoration(isMounted: boolean) {
   useEffect(() => {
     if (isMounted) {
@@ -1078,80 +1089,95 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               />
               {/* ログインしている人だけ（未ログインでは中身が取れず、見出しだけ出ていた） */}
               {authContext.isLoggedIn && (
+                <div style={offscreenSectionStyle(1000)}>
+                  <HomeDeferredSection
+                    fallback={
+                      <HomeWorkSectionPlaceholder
+                        title={t(
+                          "作品を選んで無料生成",
+                          "Generate from featured works",
+                        )}
+                      />
+                    }
+                  >
+                    <HomeWorksGeneratedSection
+                      works={[]}
+                      dateText={data.awardDateText}
+                      onSelect={
+                        isDialogMode ? (idx) => openWork(idx) : undefined
+                      }
+                      onWorksLoaded={(works) =>
+                        updateHomeSectionWorks("generated", works)
+                      }
+                    />
+                  </HomeDeferredSection>
+                </div>
+              )}
+              <div style={offscreenSectionStyle(1400)}>
+                <HomeNewUsersWorksSection
+                  works={
+                    data.newUserWorks as FragmentOf<
+                      typeof HomeNewUsersWorksFragment
+                    >[]
+                  }
+                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                  onWorksLoaded={(works) =>
+                    updateHomeSectionWorks("newUsers", works)
+                  }
+                />
+              </div>
+              <div style={offscreenSectionStyle(1000)}>
                 <HomeDeferredSection
                   fallback={
                     <HomeWorkSectionPlaceholder
-                      title={t(
-                        "作品を選んで無料生成",
-                        "Generate from featured works",
-                      )}
+                      title={t("前日ランキング", "Previous Day Ranking")}
+                      variant="cropped"
                     />
                   }
                 >
-                  <HomeWorksGeneratedSection
+                  <HomeAwardWorkSection
+                    awardDateText={data.awardDateText}
+                    title={t("前日ランキング", "Previous Day Ranking")}
+                    awards={[]}
+                    onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                  />
+                </HomeDeferredSection>
+              </div>
+              <div style={offscreenSectionStyle(1000)}>
+                <HomeDeferredSection
+                  fallback={
+                    <HomeWorkSectionPlaceholder
+                      title={t("タグ作品", "Tag Works")}
+                      variant="cropped"
+                    />
+                  }
+                >
+                  <HomeWorksTagSection
+                    tag={data.firstTag}
                     works={[]}
-                    dateText={data.awardDateText}
+                    secondTag={data.secondTag}
+                    secondWorks={[]}
+                    isCropped={true}
                     onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                     onWorksLoaded={(works) =>
-                      updateHomeSectionWorks("generated", works)
+                      updateHomeSectionWorks("tags", works)
                     }
                   />
                 </HomeDeferredSection>
-              )}
-              <HomeNewUsersWorksSection
-                works={
-                  data.newUserWorks as FragmentOf<
-                    typeof HomeNewUsersWorksFragment
-                  >[]
-                }
-                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                onWorksLoaded={(works) =>
-                  updateHomeSectionWorks("newUsers", works)
-                }
-              />
-              <HomeDeferredSection
-                fallback={
-                  <HomeWorkSectionPlaceholder
-                    title={t("前日ランキング", "Previous Day Ranking")}
-                    variant="cropped"
-                  />
-                }
-              >
-                <HomeAwardWorkSection
-                  awardDateText={data.awardDateText}
-                  title={t("前日ランキング", "Previous Day Ranking")}
-                  awards={[]}
-                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+              </div>
+              <div style={offscreenSectionStyle(280)} className="space-y-4">
+                <HomeTagsSection
+                  title={t("人気タグ", "Popular Tags")}
+                  tags={data.recommendedTags}
                 />
-              </HomeDeferredSection>
-              <HomeDeferredSection
-                fallback={
-                  <HomeWorkSectionPlaceholder
-                    title={t("タグ作品", "Tag Works")}
-                    variant="cropped"
-                  />
-                }
-              >
-                <HomeWorksTagSection
-                  tag={data.firstTag}
-                  works={[]}
-                  secondTag={data.secondTag}
-                  secondWorks={[]}
-                  isCropped={true}
-                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                  onWorksLoaded={(works) =>
-                    updateHomeSectionWorks("tags", works)
-                  }
-                />
-              </HomeDeferredSection>
-              <HomeTagsSection
-                title={t("人気タグ", "Popular Tags")}
-                tags={data.recommendedTags}
-              />
-              <HomeSupportRankingSection />
+              </div>
+              {/* 表示する応援がないときは中身が空になる（空の枠で余白が増えないように隠す） */}
+              <div style={offscreenSectionStyle(1400)} className="empty:hidden">
+                <HomeSupportRankingSection />
+              </div>
             </div>
             {/* 右カラム（スクロールしても見えるように固定） */}
-            <aside className="flex w-full flex-col space-y-4 md:sticky md:top-20 md:w-[262px] md:max-w-[262px] md:shrink-0 md:self-start">
+            <aside className="flex w-full flex-col space-y-4 max-md:[contain-intrinsic-height:auto_1700px] max-md:[content-visibility:auto] md:sticky md:top-20 md:w-[262px] md:max-w-[262px] md:shrink-0 md:self-start">
               <div className="flex w-full flex-col space-y-4">
                 {!isSubscriptionUser &&
                   advertisements &&

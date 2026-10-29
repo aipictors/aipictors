@@ -34,7 +34,14 @@ export function HomeFooter(): React.ReactNode {
   }
 
   return (
-    <footer className={cn("border-t", "py-12 pb-28 md:pb-24")}>
+    <footer
+      className={cn(
+        "border-t",
+        "py-12 pb-28 md:pb-24",
+        // 画面の外にある間はレイアウト・描画を省く（高さは描画するまでの仮の値）
+        "[contain-intrinsic-height:auto_1000px] [content-visibility:auto]",
+      )}
+    >
       <div className="container max-w-none">
         <div className="grid grid-cols-2 gap-x-10 gap-y-10 md:grid-cols-6">
           <div className="col-span-2 md:col-span-1">

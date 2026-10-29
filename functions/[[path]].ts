@@ -227,6 +227,9 @@ type MaintenanceStatusDebug = {
   }
 }
 
+/** 拠点にメンテナンス状態がないときに、問い合わせを待つ最長の時間 */
+const MAINTENANCE_COLD_WAIT_MS = 200
+
 const getMaintenanceStatus = async (
   ctx: Parameters<PagesFunction>[0],
   options?: { debug?: boolean; skipCache?: boolean },
@@ -299,6 +302,21 @@ const getMaintenanceStatus = async (
       isMaintenance: staleFallback.isMaintenance,
       message: staleFallback.message,
     }
+  }
+
+  // この拠点にまだ何もないときは、問い合わせを少しだけ待ち、間に合わなければ通常どおり表示する（結果は裏で保存する）。
+  // API は日本にあるので、海外や久しぶりの拠点（検索エンジン・PageSpeed Insights など）では
+  // この問い合わせだけで 0.5〜1 秒かかり、ページのキャッシュがあってもその分遅れていた
+  if (!options?.debug && !options?.skipCache) {
+    const pending = getMaintenanceStatus(ctx, { skipCache: true })
+    ctx.waitUntil(pending.catch(() => undefined))
+    const result = await Promise.race([
+      pending.catch(() => null),
+      new Promise<null>((resolve) =>
+        setTimeout(() => resolve(null), MAINTENANCE_COLD_WAIT_MS),
+      ),
+    ])
+    return result ?? { isMaintenance: false, message: null }
   }
 
   const endpoint = getGraphqlEndpoint(ctx)
