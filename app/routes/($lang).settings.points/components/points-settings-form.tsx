@@ -221,6 +221,18 @@ export function PointsSettingsForm() {
       a.expiresAt - b.expiresAt ||
       (a.coinType === b.coinType ? 0 : a.coinType === "FREE" ? -1 : 1),
   )
+  // 応援で受け取ったプレミアムコインなど、失効日のないプレミアムコイン（失効予定の一覧には出ない）。
+  // 一覧は最大 50 件なので、50 件あるときは正確に出せないため表示しない
+  const nonExpiringPremiumCoins =
+    summary && visibleExpiringLots.length < 50
+      ? Math.max(
+          0,
+          (summary.premiumBalance ?? 0) -
+            visibleExpiringLots
+              .filter((row) => row.coinType === "PREMIUM")
+              .reduce((total, row) => total + row.amount, 0),
+        )
+      : 0
   const hasMoreExpiringLots = visibleExpiringLots.length > 3
   const [isExpandedExpiringLots, setIsExpandedExpiringLots] = useState(false)
   const displayedExpiringLots = isExpandedExpiringLots
@@ -792,7 +804,7 @@ export function PointsSettingsForm() {
         <p className="font-semibold text-lg">
           {t("失効予定コイン", "Coins scheduled to expire")}
         </p>
-        {displayedExpiringLots.length === 0 ? (
+        {displayedExpiringLots.length === 0 && nonExpiringPremiumCoins === 0 ? (
           <p className="text-muted-foreground text-sm">
             {t(
               "現在、失効予定のコインはありません",
@@ -838,6 +850,23 @@ export function PointsSettingsForm() {
                   `Show more (${formatCoinAmount(hiddenExpiringCoins)} coins)`,
                 )}
               </Button>
+            )}
+            {nonExpiringPremiumCoins > 0 && (
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-dashed p-3 text-sm">
+                <span className="flex items-center gap-2 font-semibold">
+                  <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+                  <span>
+                    {formatCoinAmount(nonExpiringPremiumCoins)}
+                    {t("コイン", "coins")}
+                  </span>
+                  <span className="font-normal text-muted-foreground text-xs">
+                    {t("プレミアム（応援で受け取った分など）", "Premium (received as support, etc.)")}
+                  </span>
+                </span>
+                <span className="shrink-0 text-muted-foreground">
+                  {t("失効しません", "No expiry")}
+                </span>
+              </div>
             )}
           </div>
         )}
