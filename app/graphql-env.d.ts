@@ -3870,7 +3870,7 @@ type PassNode implements Node {
   isExpired: Boolean!
   payment: PaymentNode
 
-  """支払い方法（APP_STORE: iOS アプリの App Store、STRIPE: ウェブ）"""
+  """支払い方法（APP_STORE: iOS アプリの App Store、GOOGLE_PLAY: Android アプリの Google Play、STRIPE: ウェブ）"""
   paymentProvider: String!
   periodEnd: Int!
   periodStart: Int!

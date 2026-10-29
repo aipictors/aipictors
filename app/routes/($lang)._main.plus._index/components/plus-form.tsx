@@ -358,8 +358,10 @@ export function PlusForm () {
 
   const currentPassName = currentPass ? toPassName(currentPass.type) : ""
 
-  // iOS アプリ（App Store）で買ったプランはウェブ（Stripe）では変更・解約できない
-  const isAppStorePass = currentPass?.paymentProvider === "APP_STORE"
+  // iOS アプリ（App Store）・Android アプリ（Google Play）で買ったプランはウェブ（Stripe）では変更・解約できない
+  const isGooglePlayPass = currentPass?.paymentProvider === "GOOGLE_PLAY"
+  const isAppStorePass =
+    currentPass?.paymentProvider === "APP_STORE" || isGooglePlayPass
   const nextPassName = planChangePreview
     ? toPassName(
       (planChangePreview.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS"),
@@ -562,12 +564,14 @@ export function PlusForm () {
               {isAppStorePass ? (
                 <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900 text-sm dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
                   <p className="font-bold">
-                    {"このプランは iPhone アプリ（App Store）でご購入いただいたものです"}
+                    {isGooglePlayPass
+                      ? "このプランは Android アプリ（Google Play）でご購入いただいたものです"
+                      : "このプランは iPhone アプリ（App Store）でご購入いただいたものです"}
                   </p>
                   <p className="mt-1 text-xs leading-5">
-                    {
-                      "プランの変更・解約は、iPhone の［設定］→［Apple ID］→［サブスクリプション］から行えます。お支払いは Apple が管理しているため、この画面からは変更・解約できません。"
-                    }
+                    {isGooglePlayPass
+                      ? "プランの変更・解約は、Google Play ストアアプリの［プロフィール］→［お支払いと定期購入］→［定期購入］から行えます。お支払いは Google が管理しているため、この画面からは変更・解約できません。"
+                      : "プランの変更・解約は、iPhone の［設定］→［Apple ID］→［サブスクリプション］から行えます。お支払いは Apple が管理しているため、この画面からは変更・解約できません。"}
                   </p>
                 </div>
               ) : (
