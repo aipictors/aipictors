@@ -748,6 +748,7 @@ export const workArticleFragment =
     login
     nanoid
     name
+    isOfficial
     receivedLikesCount
     receivedViewsCount
     awardsCount
@@ -848,6 +849,7 @@ export const WorkCommentFragment =
     id
     name
     login
+    isOfficial
     iconUrl
     avatarFrame {
       id

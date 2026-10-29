@@ -1,7 +1,7 @@
 import { gql, useMutation, useQuery } from "@apollo/client/index"
+import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, Loader2Icon, StampIcon } from "lucide-react"
-import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
@@ -29,7 +29,6 @@ import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
-import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import {
   StickerButton,
@@ -41,12 +40,13 @@ import {
   WorkCommentFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-response"
+import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
+import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import {
   readRecentStickerIds,
   recordRecentStickerId,
   sortStickersByRecent,
 } from "~/utils/sticker-recent"
-import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -74,6 +74,7 @@ type Comment = {
   user: {
     id: string
     name: string
+    isOfficial?: boolean
     iconUrl: string
     avatarFrame?: UserAvatarFramePresentation | null
   }
@@ -103,6 +104,7 @@ type ReplyComment = {
   user: {
     id: string
     name: string
+    isOfficial?: boolean
     iconUrl: string
     avatarFrame?: UserAvatarFramePresentation | null
   }
@@ -145,7 +147,10 @@ const calculateCommentSupportDraft = (
 ) => {
   if (!Number.isInteger(freeCoinAmount) || freeCoinAmount < 0) return null
   if (!Number.isInteger(premiumCoinAmount) || premiumCoinAmount < 0) return null
-  if (freeCoinAmount > freeCoinBalance || premiumCoinAmount > premiumCoinBalance) {
+  if (
+    freeCoinAmount > freeCoinBalance ||
+    premiumCoinAmount > premiumCoinBalance
+  ) {
     return null
   }
 
@@ -216,14 +221,16 @@ export function WorkCommentList(props: Props) {
     useState(false)
   const [isConfirmingPremiumPurchase, setIsConfirmingPremiumPurchase] =
     useState(false)
-  const [isPremiumPurchaseResultDialogOpen, setIsPremiumPurchaseResultDialogOpen] =
-    useState(false)
-  const [premiumPurchaseError, setPremiumPurchaseError] = useState<string | null>(
-    null,
-  )
-  const [confirmedPremiumCoins, setConfirmedPremiumCoins] = useState<number | null>(
-    null,
-  )
+  const [
+    isPremiumPurchaseResultDialogOpen,
+    setIsPremiumPurchaseResultDialogOpen,
+  ] = useState(false)
+  const [premiumPurchaseError, setPremiumPurchaseError] = useState<
+    string | null
+  >(null)
+  const [confirmedPremiumCoins, setConfirmedPremiumCoins] = useState<
+    number | null
+  >(null)
   const handledPremiumCheckoutSessionRef = useRef<string | null>(null)
 
   const [isSensitive, setIsSensitive] = useState(false)
@@ -836,7 +843,14 @@ export function WorkCommentList(props: Props) {
       return
     }
 
-    sendComment(inputComment, "-1", "", props.workId, userIcon, currentSupportDraft)
+    sendComment(
+      inputComment,
+      "-1",
+      "",
+      props.workId,
+      userIcon,
+      currentSupportDraft,
+    )
   }
 
   const showCommentsBeforeMore = showComments.slice(
@@ -933,7 +947,9 @@ export function WorkCommentList(props: Props) {
                     rows={1}
                     value={comment}
                     placeholder={t("コメントする", "Add a comment")}
-                    disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+                    disabled={
+                      !authContext.isLoggedIn || props.isWorkOwnerBlocked
+                    }
                     className="min-h-[46px] w-full rounded-2xl border-border/70 bg-background px-4 py-3"
                   />
                 </div>
@@ -946,7 +962,9 @@ export function WorkCommentList(props: Props) {
                   </Button>
                 ) : (
                   <Button
-                    disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+                    disabled={
+                      !authContext.isLoggedIn || props.isWorkOwnerBlocked
+                    }
                     variant="secondary"
                     onClick={onWorkComment}
                     className="h-[46px] min-h-[46px] rounded-2xl px-5 text-sm"
@@ -965,9 +983,7 @@ export function WorkCommentList(props: Props) {
                   <span>{t("推し付きコメント", "Support comment")}</span>
                 </div>
                 <div className="text-xs text-rose-700/80 dark:text-rose-200/80">
-                  {isLoadingCoinSummary
-                    ? t("読込中...", "Loading...")
-                    : ""}
+                  {isLoadingCoinSummary ? t("読込中...", "Loading...") : ""}
                 </div>
               </div>
               {!isLoadingCoinSummary && (
@@ -1009,7 +1025,10 @@ export function WorkCommentList(props: Props) {
                   />
                   <div className="space-y-1 pt-1">
                     {SUPPORT_COIN_STEP_AMOUNTS.map((amount) => (
-                      <div key={`free-${amount}`} className="grid grid-cols-2 gap-1.5">
+                      <div
+                        key={`free-${amount}`}
+                        className="grid grid-cols-2 gap-1.5"
+                      >
                         <Button
                           type="button"
                           variant="outline"
@@ -1019,7 +1038,9 @@ export function WorkCommentList(props: Props) {
                             !authContext.isLoggedIn ||
                             currentFreeSupportCoinAmount <= 0
                           }
-                          onClick={() => adjustSupportCoinAmount("FREE", -amount)}
+                          onClick={() =>
+                            adjustSupportCoinAmount("FREE", -amount)
+                          }
                         >
                           -{amount}
                         </Button>
@@ -1030,9 +1051,12 @@ export function WorkCommentList(props: Props) {
                           className="h-8"
                           disabled={
                             !authContext.isLoggedIn ||
-                            currentFreeSupportCoinAmount >= coinBalances.freeBalance
+                            currentFreeSupportCoinAmount >=
+                              coinBalances.freeBalance
                           }
-                          onClick={() => adjustSupportCoinAmount("FREE", amount)}
+                          onClick={() =>
+                            adjustSupportCoinAmount("FREE", amount)
+                          }
                         >
                           +{amount}
                         </Button>
@@ -1155,7 +1179,10 @@ export function WorkCommentList(props: Props) {
                   }
                   disabled={!authContext.isLoggedIn}
                 />
-                <label htmlFor="support-anonymous-checkbox" className="cursor-pointer">
+                <label
+                  htmlFor="support-anonymous-checkbox"
+                  className="cursor-pointer"
+                >
                   {t("匿名で推す", "Support anonymously")}
                 </label>
               </div>
@@ -1239,6 +1266,7 @@ export function WorkCommentList(props: Props) {
                   userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
                   userAvatarFrame={comment.user?.avatarFrame}
                   userName={comment.user?.name}
+                  userIsOfficial={comment.user?.isOfficial}
                   commentId={comment.id}
                   isLiked={
                     comment.isLiked && !canceledCommentIds.includes(comment.id)
@@ -1310,6 +1338,7 @@ export function WorkCommentList(props: Props) {
               isStickerDownloadable={comment.sticker?.isDownloaded}
               text={comment.text}
               userName={comment.user?.name}
+              userIsOfficial={comment.user?.isOfficial}
               commentId={comment.id}
               isLiked={
                 comment.isLiked && !canceledCommentIds.includes(comment.id)
@@ -1380,6 +1409,7 @@ export function WorkCommentList(props: Props) {
                   text={newReply.text}
                   iconUrl={withIconUrlFallback(userIcon)}
                   userName={newReply.user?.name}
+                  userIsOfficial={newReply.user?.isOfficial}
                   replyId={newReply.id}
                   targetCommentId={comment.id}
                   isLiked={
@@ -1447,6 +1477,7 @@ export function WorkCommentList(props: Props) {
                     onCreateCommentLike={() => onCreateCommentLike(reply.id)}
                     onDeleteCommentLike={() => onDeleteCommentLike(reply.id)}
                     userName={reply.user?.name}
+                    userIsOfficial={reply.user?.isOfficial}
                     replyId={reply.id}
                     targetCommentId={comment.id}
                     iconUrl={withIconUrlFallback(userIcon)}
@@ -1540,6 +1571,7 @@ export function WorkCommentList(props: Props) {
                   }
                   text={comment.text}
                   userName={comment.user?.name}
+                  userIsOfficial={comment.user?.isOfficial}
                   commentId={comment.id}
                   onDeleteComment={() => onDeleteComment(comment.id)}
                   isWorkOwnerBlocked={props.isWorkOwnerBlocked}
@@ -1615,6 +1647,7 @@ export function WorkCommentList(props: Props) {
                         onDeleteCommentLike(newReply.id)
                       }
                       userName={newReply.user?.name}
+                      userIsOfficial={newReply.user?.isOfficial}
                       replyId={newReply.id}
                       targetCommentId={comment.id}
                       onDeleteComment={() => {
@@ -1672,6 +1705,7 @@ export function WorkCommentList(props: Props) {
                         )}
                         userAvatarFrame={reply.user?.avatarFrame}
                         userName={reply.user?.name}
+                        userIsOfficial={reply.user?.isOfficial}
                         replyId={reply.id}
                         targetCommentId={comment.id}
                         iconUrl={withIconUrlFallback(userIcon)}
@@ -1792,7 +1826,10 @@ export function WorkCommentList(props: Props) {
           </DialogHeader>
           <DialogFooter>
             {premiumPurchaseError ? (
-              <Button variant="outline" onClick={() => window.location.reload()}>
+              <Button
+                variant="outline"
+                onClick={() => window.location.reload()}
+              >
                 {t("再読み込み", "Reload")}
               </Button>
             ) : null}

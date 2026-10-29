@@ -19,6 +19,7 @@ export const WorkCommentFragment = graphql(
       id
       name
       login
+      isOfficial
       iconUrl
       avatarFrame {
         id

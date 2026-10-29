@@ -5422,6 +5422,9 @@ type UserNode implements Node {
   """ミュートしている"""
   isMuted: Boolean!
 
+  """公式アカウント（運営・モデレーター）かどうか"""
+  isOfficial: Boolean!
+
   """作品投稿がBANされているかどうか"""
   isPostBanned: Boolean!
 

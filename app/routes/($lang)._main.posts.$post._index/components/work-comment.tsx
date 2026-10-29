@@ -13,6 +13,7 @@ import {
 import React from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
+import { OfficialBadge } from "~/components/official-badge"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
@@ -20,11 +21,11 @@ import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { CommentAppealDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-appeal-dialog"
-import { CommentReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-report-dialog"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
+import { CommentReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-report-dialog"
 import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
-import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
+import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
@@ -37,6 +38,7 @@ type Props = {
   userIconImageURL?: string
   userAvatarFrame?: UserAvatarFramePresentation | null
   userName?: string
+  userIsOfficial?: boolean
   text?: string
   createdAt: number
   commentId: string
@@ -266,6 +268,7 @@ export function WorkComment(props: Props) {
             <Link to={`/users/${props.userId}`}>
               <span>{props.userName}</span>
             </Link>
+            {props.userIsOfficial && <OfficialBadge />}
             {props.isMuted && (
               <div className="flex items-center space-x-1">
                 <EyeOff className="size-3 text-gray-400" />

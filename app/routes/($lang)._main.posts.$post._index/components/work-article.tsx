@@ -5,6 +5,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, ShieldAlert } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
+import { OfficialBadge } from "~/components/official-badge"
 import { ToggleContent } from "~/components/toggle-content"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
@@ -14,6 +15,7 @@ import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { AiEvaluationDisplay } from "~/routes/($lang)._main.posts.$post._index/components/ai-evaluation-display"
+import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/lazy-work-markdown-view"
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
@@ -21,7 +23,6 @@ import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$p
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
-import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/lazy-work-markdown-view"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
 import { getWeeklyRankingPeriod } from "~/utils/get-weeks-in-month"
 import { toDateTimeText } from "~/utils/to-date-time-text"
@@ -65,7 +66,9 @@ export function WorkArticle(props: Props) {
       return null
     }
 
-    const pathnamePrefix = ranking.isSensitive ? "/r/ai-rankings" : "/ai-rankings"
+    const pathnamePrefix = ranking.isSensitive
+      ? "/r/ai-rankings"
+      : "/ai-rankings"
 
     if (ranking.periodType === "daily") {
       return `${pathnamePrefix}/${ranking.dateText.replace(/-/g, "/")}`
@@ -452,35 +455,47 @@ export function WorkArticle(props: Props) {
               </Link>
             )}
             {props.work.aiDailyRanking && (
-              <Link to={toAiRankingPath(props.work.aiDailyRanking) ?? "/ai-rankings"}>
+              <Link
+                to={
+                  toAiRankingPath(props.work.aiDailyRanking) ?? "/ai-rankings"
+                }
+              >
                 <Badge
                   variant="secondary"
                   className="flex items-center space-x-2"
                 >
-                  {t("AIデイリー入賞", "AI Daily Rank")} {props.work.aiDailyRanking.rank}{" "}
-                  {t("位", "Rank")}
+                  {t("AIデイリー入賞", "AI Daily Rank")}{" "}
+                  {props.work.aiDailyRanking.rank} {t("位", "Rank")}
                 </Badge>
               </Link>
             )}
             {props.work.aiWeeklyRanking && (
-              <Link to={toAiRankingPath(props.work.aiWeeklyRanking) ?? "/ai-rankings"}>
+              <Link
+                to={
+                  toAiRankingPath(props.work.aiWeeklyRanking) ?? "/ai-rankings"
+                }
+              >
                 <Badge
                   variant="secondary"
                   className="flex items-center space-x-2"
                 >
-                  {t("AIウィークリー入賞", "AI Weekly Rank")} {props.work.aiWeeklyRanking.rank}{" "}
-                  {t("位", "Rank")}
+                  {t("AIウィークリー入賞", "AI Weekly Rank")}{" "}
+                  {props.work.aiWeeklyRanking.rank} {t("位", "Rank")}
                 </Badge>
               </Link>
             )}
             {props.work.aiMonthlyRanking && (
-              <Link to={toAiRankingPath(props.work.aiMonthlyRanking) ?? "/ai-rankings"}>
+              <Link
+                to={
+                  toAiRankingPath(props.work.aiMonthlyRanking) ?? "/ai-rankings"
+                }
+              >
                 <Badge
                   variant="secondary"
                   className="flex items-center space-x-2"
                 >
-                  {t("AIマンスリー入賞", "AI Monthly Rank")} {props.work.aiMonthlyRanking.rank}{" "}
-                  {t("位", "Rank")}
+                  {t("AIマンスリー入賞", "AI Monthly Rank")}{" "}
+                  {props.work.aiMonthlyRanking.rank} {t("位", "Rank")}
                 </Badge>
               </Link>
             )}
@@ -608,6 +623,7 @@ export function WorkArticle(props: Props) {
                 />
                 <span>{props.work.user.name}</span>
               </Link>
+              {props.work.user.isOfficial && <OfficialBadge />}
             </div>
           </div>
         )}
@@ -659,6 +675,7 @@ export const workArticleFragment = graphql(
       login
       nanoid
       name
+      isOfficial
       receivedLikesCount
       receivedViewsCount
       awardsCount
@@ -853,6 +870,7 @@ export const sensitiveWorkArticleFragment = graphql(
       login
       nanoid
       name
+      isOfficial
       receivedLikesCount
       receivedViewsCount
       awardsCount

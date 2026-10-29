@@ -3,6 +3,7 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { FollowButton } from "~/components/button/follow-button"
+import { OfficialBadge } from "~/components/official-badge"
 import { SupportButton } from "~/components/support-button"
 import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
@@ -16,6 +17,7 @@ type Props = {
   userId: string
   userLogin: string
   userName: string
+  userIsOfficial?: boolean
   userIconImageURL?: string
   avatarFrame?: UserAvatarFramePresentation | null
   userFollowersCount: number
@@ -60,8 +62,9 @@ export function WorkUser(props: Props) {
               sizeClassName="size-24"
               src={props.userIconImageURL}
             />
-            <p className="mt-2 text-center font-bold text-md">
+            <p className="mt-2 flex items-center justify-center gap-1 text-center font-bold text-md">
               {props.userName}
+              {props.userIsOfficial && <OfficialBadge />}
             </p>
           </Link>
         </h2>
@@ -70,11 +73,15 @@ export function WorkUser(props: Props) {
         <div className="m-auto mb-4 flex items-center space-x-4">
           <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userFollowersCount}`}</p>
-            <p className="text-sm text-muted-foreground">{t("フォロワー", "Followers")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("フォロワー", "Followers")}
+            </p>
           </div>
           <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userWorksCount}`}</p>
-            <p className="text-sm text-muted-foreground">{t("投稿", "Posts")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("投稿", "Posts")}
+            </p>
           </div>
         </div>
         <FollowButton targetUserId={props.userId} isFollow={isFollow} />

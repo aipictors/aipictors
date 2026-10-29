@@ -2,6 +2,7 @@ import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { PenLine } from "lucide-react"
 import { useContext } from "react"
 import { FollowButton } from "~/components/button/follow-button"
+import { OfficialBadge } from "~/components/official-badge"
 import { OmissionNumber } from "~/components/omission-number"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { SnsIconLink } from "~/components/sns-icon"
@@ -109,6 +110,7 @@ export function UserProfileNameIcon(props: Props) {
               <h1 className="break-words font-bold text-xl leading-tight md:text-2xl">
                 {user.name.length > 0 ? user.name : t("名無し", "No name")}
               </h1>
+              {user.isOfficial && <OfficialBadge className="size-5" />}
               <UserSubscriptionIcon passType={user.pass?.type} />
               <UserModeratorIcon isModerator={user.isModerator} />
             </div>
@@ -223,6 +225,7 @@ export const UserProfileIconFragment = graphql(
     id
     name
     isModerator
+    isOfficial
     login
     isFollowee
     isMuted
