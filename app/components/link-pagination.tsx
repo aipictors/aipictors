@@ -59,6 +59,7 @@ export function LinkPagination(props: Props) {
         <Link
           to={props.toHref(current - 1)}
           rel="prev"
+          aria-label={labels.prev}
           className={cn(itemClassName, "gap-1 hover:bg-muted")}
         >
           <ChevronLeftIcon className="size-4" />
@@ -104,6 +105,7 @@ export function LinkPagination(props: Props) {
         <Link
           to={props.toHref(current + 1)}
           rel="next"
+          aria-label={labels.next}
           className={cn(itemClassName, "gap-1 hover:bg-muted")}
         >
           <span className="hidden sm:inline">{labels.next}</span>

@@ -140,7 +140,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                 <div className="p-4">
                   <div className="flex flex-wrap justify-between">
                     <div className="flex md:block">
-                      <span className="block text-center text-sm opacity-50">
+                      <span className="block text-center text-sm text-muted-foreground">
                         Steps
                       </span>
                       <span className="block text-center text-lg">
@@ -148,7 +148,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                       </span>
                     </div>
                     <div className="flex md:block">
-                      <span className="block text-center text-sm opacity-50">
+                      <span className="block text-center text-sm text-muted-foreground">
                         Scale
                       </span>
                       <span className="block text-center text-lg">
@@ -156,7 +156,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                       </span>
                     </div>
                     <div className="flex md:block">
-                      <span className="block text-center text-sm opacity-50">
+                      <span className="block text-center text-sm text-muted-foreground">
                         Seed
                       </span>
                       <span className="block text-center text-lg">
@@ -164,7 +164,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                       </span>
                     </div>
                     <div className="flex md:block">
-                      <span className="block text-center text-sm opacity-50">
+                      <span className="block text-center text-sm text-muted-foreground">
                         Sampler
                       </span>
                       <span className="block text-center text-lg">
@@ -172,7 +172,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                       </span>
                     </div>
                     <div className="flex md:block">
-                      <span className="block text-center text-sm opacity-50">
+                      <span className="block text-center text-sm text-muted-foreground">
                         Strength
                       </span>
                       <span className="block text-center text-lg">
@@ -245,7 +245,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                     <p className="text-md">{"Stepsなど"}</p>
                     <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-center text-sm opacity-50">
+                        <span className="text-center text-sm text-muted-foreground">
                           Steps
                         </span>
                         <span className="text-center text-lg">
@@ -253,7 +253,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-center text-sm opacity-50">
+                        <span className="text-center text-sm text-muted-foreground">
                           Scale
                         </span>
                         <span className="text-center text-lg">
@@ -261,7 +261,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-center text-sm opacity-50">
+                        <span className="text-center text-sm text-muted-foreground">
                           Seed
                         </span>
                         <span className="text-center text-lg">
@@ -269,7 +269,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-center text-sm opacity-50">
+                        <span className="text-center text-sm text-muted-foreground">
                           Sampler
                         </span>
                         <span className="text-center text-lg">
@@ -277,7 +277,7 @@ export function WorkArticleGenerationParameters (props: Props) {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-center text-sm opacity-50">
+                        <span className="text-center text-sm text-muted-foreground">
                           Strength
                         </span>
                         <span className="text-center text-lg">

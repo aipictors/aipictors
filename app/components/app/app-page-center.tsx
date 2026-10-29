@@ -1,3 +1,4 @@
+import { useIsInsideMain } from "~/contexts/main-landmark-context"
 import { cn } from "~/lib/utils"
 
 type Props = Readonly<{
@@ -9,8 +10,9 @@ type Props = Readonly<{
  * デフォルトのページのレイアウト
  */
 export function AppPageCenter (props: Props): React.ReactNode {
+  const Tag = useIsInsideMain() ? "div" : "main"
   return (
-    <main className="flex w-full justify-center">
+    <Tag className="flex w-full justify-center">
       <div
         className={cn(
           "mx-auto w-full max-w-(--breakpoint-sm) items-start justify-center overflow-x-hidden",
@@ -21,6 +23,6 @@ export function AppPageCenter (props: Props): React.ReactNode {
       >
         {props.children}
       </div>
-    </main>
+    </Tag>
   )
 }

@@ -54,7 +54,7 @@ export function PlanPage () {
   }
 
   return (
-    <main className="container relative m-auto flex flex-col space-y-8">
+    <div className="container relative m-auto flex flex-col space-y-8">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -92,7 +92,7 @@ export function PlanPage () {
           )}
         </Link>
       </div>
-    </main>
+    </div>
   )
 }
 

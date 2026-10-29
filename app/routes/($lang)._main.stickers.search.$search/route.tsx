@@ -64,7 +64,7 @@ export default function Stickers () {
   }
 
   return (
-    <main className="flex flex-col space-y-8 pb-16">
+    <div className="flex flex-col space-y-8 pb-16">
       <StickerListHeader title={data.search} />
       <StickerSearchForm text={decodeURIComponent(data.search)} />
       {data.isEmpty ? (
@@ -72,7 +72,7 @@ export default function Stickers () {
       ) : (
         <StickerList stickers={data.stickers} />
       )}
-    </main>
+    </div>
   )
 }
 

@@ -29,7 +29,8 @@ html {
 }
 
 .bg-clear-bright-blue {
-  background-color: #0197fd;
+  /* 白文字とのコントラストを 4.5 以上にする（#0197fd は 3.06 だった） */
+  background-color: #0170c8;
 }
 
 @keyframes heart-beat {

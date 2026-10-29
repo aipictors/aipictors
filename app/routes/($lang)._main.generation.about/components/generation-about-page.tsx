@@ -46,7 +46,7 @@ export function GenerationAboutPage () {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <main className="container relative m-auto flex flex-col space-y-4 pt-8 md:space-y-8">
+      <div className="container relative m-auto flex flex-col space-y-4 pt-8 md:space-y-8">
         <p className="text-left font-bold text-2xl md:text-center md:text-4xl">
           {t("簡単、本格生成。", "Simple, Professional Generation.")}
         </p>
@@ -254,7 +254,7 @@ export function GenerationAboutPage () {
             )}
           </Link>
         </div>
-      </main>
+      </div>
     </>
   )
 }

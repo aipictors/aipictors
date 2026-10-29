@@ -376,7 +376,7 @@ export function WorkComment(props: Props) {
             />
           )}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-xs opacity-50">
+            <span className="text-xs text-muted-foreground">
               {toDateTimeText(props.createdAt, true)}
             </span>
             {props.isWorkOwnerLiked && (
@@ -406,6 +406,7 @@ export function WorkComment(props: Props) {
                   }
                   disabled={props.isDisabledCommentLike}
                   className={"h-7 gap-1 px-2 text-xs"}
+                  aria-label="いいね"
                 >
                   <ThumbsUpIcon
                     className={cn(
@@ -439,7 +440,13 @@ export function WorkComment(props: Props) {
                       title={props.stickerTitle ?? ""}
                       imageUrl={props.stickerImageURL}
                     >
-                      <ArrowDownToLine className="size-4" />
+                      <button
+                        type="button"
+                        aria-label="スタンプの詳細"
+                        className="inline-flex items-center"
+                      >
+                        <ArrowDownToLine className="size-4" />
+                      </button>
                     </StickerInfoDialog>
                   )}
                 <CommentReportDialog

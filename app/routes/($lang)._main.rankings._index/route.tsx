@@ -128,7 +128,8 @@ export async function loader(props: LoaderFunctionArgs) {
       }),
       loaderClient.query({
         query: aiEvaluationWorkRankingsQuery,
-        variables,
+        // AI ランキングはこのページでは上の見どころ（上位 5 件）にしか使わない
+        variables: { ...variables, limit: 5 },
       }),
     ])
 

@@ -31,7 +31,7 @@ export function WorkImageThumbnailCarousel ({
     <div className="flex flex-col">
       {allImageURLs.length > 1 && (
         <div className="rounded-none bg-zinc-100 text-center dark:bg-zinc-900">
-          <p className="m-auto text-center text-sm opacity-50">
+          <p className="m-auto text-center text-sm text-muted-foreground">
             {currentIndex + 1} / {allImageURLs.length}
           </p>
         </div>

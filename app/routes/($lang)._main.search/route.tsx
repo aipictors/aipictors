@@ -495,7 +495,7 @@ export default function SearchRoute() {
         </form>
 
         <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_280px] 2xl:grid-cols-[minmax(0,1fr)_300px]">
-          <main className="min-w-0">
+          <div className="min-w-0">
             <div className="mb-7 pb-4 md:pb-5">
               <div>
                 <h1 className="break-words font-bold text-2xl leading-tight md:text-3xl">
@@ -804,7 +804,7 @@ export default function SearchRoute() {
                 </div>
               </section>
             )}
-          </main>
+          </div>
 
           <aside className="hidden space-y-10 xl:block">
             <section>

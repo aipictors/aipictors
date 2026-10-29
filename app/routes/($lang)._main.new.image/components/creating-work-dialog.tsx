@@ -23,9 +23,9 @@ export function CreatingWorkDialog (props: Props) {
             </DialogTitle>
           </DialogHeader>
           {props.text ? (
-            <p className="text-center text-sm opacity-50">{props.text}</p>
+            <p className="text-center text-sm text-muted-foreground">{props.text}</p>
           ) : (
-            <p className="text-center text-sm opacity-50">アップロード中</p>
+            <p className="text-center text-sm text-muted-foreground">アップロード中</p>
           )}
           <Progress value={props.progress} className="w-[100%]" />
         </DialogContent>

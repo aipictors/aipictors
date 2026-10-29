@@ -28,7 +28,7 @@ export function TagActionOther (props: Props) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button size={"icon"} variant="secondary">
+        <Button size={"icon"} variant="secondary" aria-label="その他の操作">
           <EllipsisIcon className="h-4 w-4" />
         </Button>
       </PopoverTrigger>

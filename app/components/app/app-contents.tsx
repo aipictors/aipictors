@@ -1,4 +1,5 @@
 import { AppAnnouncementBanner } from "~/components/app/app-announcement-banner"
+import { MainLandmarkContext } from "~/contexts/main-landmark-context"
 import { useSidebar } from "~/contexts/sidebar-context"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 
@@ -41,9 +42,14 @@ export function AppContents(props: Props): React.ReactNode {
           <div className={`w-full ${getContentMargin()}`}>
             <AppAnnouncementBanner />
           </div>
-          <div className={`w-full space-y-4 pb-4 ${getContentMargin()}`}>
-            {props.outlet}
-          </div>
+          <main
+            id="main-content"
+            className={`w-full space-y-4 pb-4 ${getContentMargin()}`}
+          >
+            <MainLandmarkContext.Provider value={true}>
+              {props.outlet}
+            </MainLandmarkContext.Provider>
+          </main>
           {props.footer && (
             <div className={`w-full ${getContentMargin()}`}>{props.footer}</div>
           )}

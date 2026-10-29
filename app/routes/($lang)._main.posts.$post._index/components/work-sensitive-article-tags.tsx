@@ -40,6 +40,7 @@ export function WorkSensitiveArticleTags (props: Props) {
             onClick={() => {
               setIsOpenEdit(!isOpenEdit)
             }}
+            aria-label="タグを編集"
             className="size-8"
             size={"icon"}
             variant={"ghost"}

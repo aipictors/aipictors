@@ -101,7 +101,7 @@ export default function StickersPage () {
   const newStickers = data.stickers ?? stickers?.stickers
 
   return (
-    <main className="flex flex-col space-y-4">
+    <div className="flex flex-col space-y-4">
       <StickerListHeader />
       <StickerCreator />
       <StickerSearchForm />
@@ -117,7 +117,7 @@ export default function StickersPage () {
         <h2 className="font-bold text-lg">{t("使用順", "Recently Used")}</h2>
         <StickerList stickers={data.usedStickers} />
       </section>
-    </main>
+    </div>
   )
 }
 

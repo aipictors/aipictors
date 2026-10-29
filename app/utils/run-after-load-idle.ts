@@ -24,7 +24,7 @@ export function runAfterLoadIdle(callback: () => void, timeout = 5000): void {
 /**
  * 計測（gtag.js）を始める時間。ページを操作するか、読み込みが終わってからこの時間がたったら始める
  */
-const ANALYTICS_DELAY_MS = 6000
+const ANALYTICS_DELAY_MS = 15000
 
 let analyticsReady: Promise<void> | null = null
 

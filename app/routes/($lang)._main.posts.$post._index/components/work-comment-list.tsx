@@ -1188,6 +1188,7 @@ export function WorkCommentList(props: Props) {
                   variant="secondary"
                   size="icon"
                   className="h-11 w-11 rounded-2xl"
+                  aria-label={t("推す", "Support")}
                   onClick={() => {
                     if (!isSupportOpen) {
                       void reloadCoinSummary()
@@ -1203,6 +1204,7 @@ export function WorkCommentList(props: Props) {
                 variant="secondary"
                 size="icon"
                 className="h-11 w-11 rounded-2xl"
+                aria-label={t("スタンプを送る", "Send a sticker")}
                 onClick={onOpen}
               >
                 <StampIcon className="size-5" />

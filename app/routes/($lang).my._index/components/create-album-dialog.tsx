@@ -213,7 +213,7 @@ export function CreateAlbumDialog(props: Props) {
               <div className="space-y-1">
                 <div className="flex space-x-2">
                   <p className="font-bold text-sm">タイトル</p>
-                  <p className="text-sm opacity-50">*必須</p>
+                  <p className="text-sm text-muted-foreground">*必須</p>
                 </div>
                 <Input
                   placeholder="シリーズの名前"
@@ -228,7 +228,7 @@ export function CreateAlbumDialog(props: Props) {
               <div className="space-y-1">
                 <div className="flex space-x-2">
                   <p className="font-bold text-sm">リンク名(英数字のみ)</p>
-                  <p className="text-sm opacity-50">*必須</p>
+                  <p className="text-sm text-muted-foreground">*必須</p>
                 </div>
                 <Input
                   placeholder="URLに使用されるリンク名(/series/●●)"
@@ -245,7 +245,7 @@ export function CreateAlbumDialog(props: Props) {
               <div className="space-y-1">
                 <div className="flex space-x-2">
                   <p className="font-bold text-sm">説明</p>
-                  <p className="text-sm opacity-50">*必須</p>
+                  <p className="text-sm text-muted-foreground">*必須</p>
                 </div>
                 <AutoResizeTextarea
                   placeholder="シリーズの説明"
@@ -280,7 +280,7 @@ export function CreateAlbumDialog(props: Props) {
               <div className="space-y-1">
                 <div className="flex space-x-2">
                   <p className="font-bold text-sm">作品</p>
-                  <p className="text-sm opacity-50">*必須</p>
+                  <p className="text-sm text-muted-foreground">*必須</p>
                 </div>
                 <div className="rounded-xl border bg-muted/30 p-3">
                   <div className="flex items-start justify-between gap-3">

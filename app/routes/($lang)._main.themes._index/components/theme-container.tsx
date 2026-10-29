@@ -321,6 +321,7 @@ export function ThemeContainer(props: Props) {
             <div className="flex items-center space-x-2">
               <Input
                 type="date"
+                aria-label="日付"
                 value={date}
                 onChange={handleDateChange}
                 className="w-[200px]"

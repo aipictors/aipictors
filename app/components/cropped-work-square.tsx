@@ -222,6 +222,7 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
             ) : (
               <Link
                 to={`/posts/${props.workId}`}
+                aria-label={props.title ? undefined : "作品を見る"}
                 className="block h-full w-full transition-all duration-300 ease-in-out"
               >
                 {mediaContent}
@@ -304,6 +305,7 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
       ) : (
         <Link
           to={`/posts/${props.workId}`}
+          aria-label={props.title ? undefined : "作品を見る"}
           className="block h-full w-full transition-all duration-300 ease-in-out"
         >
           {mediaContent}

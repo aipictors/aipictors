@@ -167,7 +167,7 @@ export function SensitiveToggle ({
             "group relative overflow-hidden transition-all duration-300 ease-in-out",
             isR18Mode
               ? "border-0 bg-gradient-to-r from-red-500 via-pink-500 to-rose-500 text-white shadow-lg hover:scale-105 hover:shadow-xl"
-              : "border-2 border-red-200/60 bg-white/80 text-red-600 backdrop-blur-sm hover:border-red-300 hover:bg-red-50 dark:border-red-700/60 dark:bg-gray-800/80 dark:text-red-400 dark:hover:bg-red-950/50",
+              : "border-2 border-red-200/60 bg-white/80 text-red-700 backdrop-blur-sm hover:border-red-300 hover:bg-red-50 dark:border-red-700/60 dark:bg-gray-800/80 dark:text-red-400 dark:hover:bg-red-950/50",
             className,
           )}
         >

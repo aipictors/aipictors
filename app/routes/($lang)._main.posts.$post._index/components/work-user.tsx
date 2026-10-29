@@ -4,7 +4,7 @@ import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { FollowButton } from "~/components/button/follow-button"
 import { SupportButton } from "~/components/support-button"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
@@ -49,7 +49,7 @@ export function WorkUser(props: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="p-4">
+        <h2 className="p-4 font-semibold text-2xl leading-none tracking-tight">
           <Link
             to={`/users/${props.userLogin}`}
             className="flex flex-col items-center text-center"
@@ -64,17 +64,17 @@ export function WorkUser(props: Props) {
               {props.userName}
             </p>
           </Link>
-        </CardTitle>
+        </h2>
       </CardHeader>
       <CardContent className="flex w-full flex-col space-y-4">
         <div className="m-auto mb-4 flex items-center space-x-4">
           <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userFollowersCount}`}</p>
-            <p className="text-sm opacity-50">{t("フォロワー", "Followers")}</p>
+            <p className="text-sm text-muted-foreground">{t("フォロワー", "Followers")}</p>
           </div>
           <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userWorksCount}`}</p>
-            <p className="text-sm opacity-50">{t("投稿", "Posts")}</p>
+            <p className="text-sm text-muted-foreground">{t("投稿", "Posts")}</p>
           </div>
         </div>
         <FollowButton targetUserId={props.userId} isFollow={isFollow} />

@@ -29,7 +29,7 @@ const AvatarImage = React.forwardRef<
   // alt 未指定のアイコンは名前と並べて表示されるので装飾画像として扱う
   <AvatarPrimitive.Image
     ref={ref}
-    className={cn("aspect-square h-full w-full", className)}
+    className={cn("aspect-square h-full w-full object-cover", className)}
     alt={alt}
     // アイコンは小さく表示するので縮小版にする（元画像は 240px 前後・最大 70KB ほど）。
     // Radix は src を先に読み込んで確かめるので srcset ではなく src を差し替える

@@ -84,7 +84,7 @@ export function ConfigModelButton(props: Props) {
             {props.type && (
               <div className="flex flex-col space-y-2">
                 <div className="mt-4 flex items-center space-x-2">
-                  <Badge className="grid w-16 text-xs opacity-50">
+                  <Badge className="grid w-16 text-xs text-muted-foreground">
                     {props.type}
                   </Badge>
                   <Badge className="gap-1 text-xs opacity-80">
@@ -93,19 +93,19 @@ export function ConfigModelButton(props: Props) {
                     <span>{t("コイン", "coins")}</span>
                   </Badge>
                   {props.type === "FLUX" && (
-                    <Badge className="text-xs opacity-50">
+                    <Badge className="text-xs text-muted-foreground">
                       {t("STANDARD以上", "super fast generation")}
                     </Badge>
                   )}
                 </div>
                 <div className="flex space-x-2">
                   {props.name === "flux.1 schnell" && (
-                    <Badge className="text-xs opacity-50">
+                    <Badge className="text-xs text-muted-foreground">
                       {t("超高速生成", "super fast generation")}
                     </Badge>
                   )}
                   {props.name === "flux.1 pro" && (
-                    <Badge className="text-xs opacity-50">
+                    <Badge className="text-xs text-muted-foreground">
                       {t("高速生成", "super fast generation")}
                     </Badge>
                   )}
@@ -114,7 +114,7 @@ export function ConfigModelButton(props: Props) {
                     props.name === "Gemini 3.1" ||
                     props.name === "GeminiNanoBanana2") && (
                     <Badge
-                      className="text-xs opacity-50"
+                      className="text-xs text-muted-foreground"
                       variant={"destructive"}
                     >
                       {t("LITE以上限定", "LITE or above only")}
@@ -123,7 +123,7 @@ export function ConfigModelButton(props: Props) {
                   {(props.name?.toLowerCase().includes("gemini") ||
                     props.type === "SD5") && (
                     <Badge
-                      className="text-xs opacity-50"
+                      className="text-xs text-muted-foreground"
                       variant={"destructive"}
                     >
                       {props.type || "GEMINI"}

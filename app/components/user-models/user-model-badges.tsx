@@ -17,8 +17,8 @@ export function UserModelKindBadge(props: KindProps) {
       className={cn(
         "inline-flex items-center rounded-md px-1.5 py-0.5 font-bold text-[10px] uppercase leading-none tracking-wide",
         props.kind === "LORA"
-          ? "bg-violet-500 text-white"
-          : "bg-sky-500 text-white",
+          ? "bg-violet-700 text-white"
+          : "bg-sky-700 text-white",
         props.className,
       )}
     >

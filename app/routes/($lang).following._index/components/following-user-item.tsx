@@ -46,7 +46,7 @@ export function FollowingUserItem (props: Props) {
             isFollow={props.user.isFollowee}
           />
         </div>
-        <div className="text-sm opacity-50">
+        <div className="text-sm text-muted-foreground">
           {props.user.finalPostedAt &&
           props.user.finalPostedAt * 1000 <= Date.now()
             ? new Date(props.user.finalPostedAt * 1000).toLocaleString()

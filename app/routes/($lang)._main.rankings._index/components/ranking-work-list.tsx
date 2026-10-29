@@ -3,7 +3,7 @@ import { LikeButton } from "~/components/like-button"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
-import { useContext } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { useQuery } from "@apollo/client/index"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -109,7 +109,32 @@ export function RankingWorkList (props: Props) {
 
   const workAwards = awardWorks?.workAwards ?? works
   const featuredAwards = workAwards.slice(0, 3)
-  const standardAwards = workAwards.slice(3)
+
+  // 200 件を一度に描くと、スマホでは HTML が 1.8MB・要素 8,000 個を超えて表示が重かった。
+  // 最初は上位だけ描き、一覧の終わりが近づいたら続きを描く
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT)
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const standardAwards = workAwards.slice(3, 3 + visibleCount)
+  const hasMore = workAwards.length > 3 + visibleCount
+
+  useEffect(() => {
+    if (!hasMore) return
+    const target = sentinelRef.current
+    if (!target || !("IntersectionObserver" in window)) {
+      setVisibleCount(workAwards.length)
+      return
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisibleCount((count) => count + LOAD_MORE_COUNT)
+        }
+      },
+      { rootMargin: "800px 0px" },
+    )
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [hasMore, workAwards.length, visibleCount])
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 px-3 pb-8 sm:px-4 lg:px-0">
@@ -139,9 +164,16 @@ export function RankingWorkList (props: Props) {
           ))}
         </div>
       )}
+      {hasMore && <div ref={sentinelRef} className="h-px" aria-hidden />}
     </div>
   )
 }
+
+/** 最初に描く件数（上位 3 件のあと） */
+const INITIAL_VISIBLE_COUNT = 21
+
+/** 続きを描くときに増やす件数 */
+const LOAD_MORE_COUNT = 40
 
 export const WorkAwardListItemFragment = graphql(
   `fragment WorkAwardListItem on WorkAwardNode @_unmask {
@@ -161,7 +193,6 @@ export const WorkAwardListItemFragment = graphql(
         viewsCount
         createdAt
         rating
-        isTagEditable
         smallThumbnailImageURL
         smallThumbnailImageHeight
         smallThumbnailImageWidth
@@ -169,16 +200,10 @@ export const WorkAwardListItemFragment = graphql(
         largeThumbnailImageHeight
         largeThumbnailImageWidth
         type
-        prompt
-        negativePrompt
         isLiked
         thumbnailImagePosition
-        description
         url
         subWorksCount
-        tags {
-          name
-        }
         user {
           id
           name
