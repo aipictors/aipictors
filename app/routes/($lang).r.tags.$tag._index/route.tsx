@@ -20,6 +20,7 @@ import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import type { BreadcrumbList, ItemList, WithContext } from "schema-dts"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
+import { toListWorks } from "~/utils/to-list-works"
 
 const TEMPORARILY_PRIVATE_TAGS = new Set(["ロリ"])
 
@@ -85,7 +86,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {
     tag: decodedTag,
-    works: worksResp.data.tagWorks,
+    works: toListWorks(worksResp.data.tagWorks),
     worksCount: tagWorksCountResp.data.tagWorksCount,
     page: page,
     isSensitive: true,

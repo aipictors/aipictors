@@ -7,6 +7,7 @@ import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$d
 import { getJstDate } from "~/utils/jst-date"
 import { SensitiveThemeContainer } from "~/routes/($lang)._main.themes._index/components/sensitive-theme-container"
 import { config } from "~/config"
+import { toListWorks } from "~/utils/to-list-works"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -140,7 +141,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {
     dailyTheme,
-    worksResp,
+    worksResp: {
+      ...worksResp,
+      data: { ...worksResp.data, works: toListWorks(worksResp.data.works) },
+    },
     year,
     month,
     day,

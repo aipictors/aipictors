@@ -28,6 +28,7 @@ import {
 import { TEXT_SEARCH_COUNT_LIMIT } from "~/lib/work-text-search-constants"
 import { buildSearchPath } from "~/utils/search-route"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toListWorks } from "~/utils/to-list-works"
 
 type SearchRatingFilter = "G" | "R15" | "R18"
 type SearchStyleFilter = "all" | "ILLUSTRATION" | "REAL"
@@ -314,9 +315,9 @@ export async function loader(props: LoaderFunctionArgs) {
         name: tag.tagName,
         thumbnailUrl: tag.thumbnailUrl,
       })) ?? [],
-    rankingWorks: rankingResp.data?.works ?? [],
+    rankingWorks: toListWorks(rankingResp.data?.works),
     searchQuery,
-    works,
+    works: toListWorks(works),
     mode,
     tagWorksCount,
     textWorksCount: textResult?.count ?? null,

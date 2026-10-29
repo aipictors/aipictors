@@ -187,7 +187,7 @@ export function UserProfileNameIcon(props: Props) {
           <SensitiveToggle
             variant="compact"
             label={`R18（${r18WorksCount >= 100 ? "99+" : r18WorksCount}）`}
-            className="h-6 border-red-200/40 bg-background/30 px-2 text-red-500 text-xs shadow-none dark:border-red-700/40"
+            className="h-6 border-red-200/40 bg-background/30 px-2 text-red-700 text-xs shadow-none dark:border-red-700/40"
             showStatus={false}
           />
         )}

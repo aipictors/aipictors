@@ -16,6 +16,7 @@ import {
   toRatings,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
 import { createMeta } from "~/utils/create-meta"
+import { toListWorks } from "~/utils/to-list-works"
 
 type TagWork = NonNullable<
   Awaited<ReturnType<typeof fetchTagWorks>>
@@ -162,7 +163,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {
     tag: tagName,
-    works,
+    works: toListWorks(works),
     worksCount,
     query,
     isR18Fallback,
