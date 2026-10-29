@@ -55,7 +55,10 @@ export function checkLocaleRedirect(request: Request): LocaleRedirect | null {
     }
   }
 
-  if (locale === "ja" && getPathLocale(pathname) === "en") {
+  // 英語の URL も、言語切替で日本語を選んだとき（cookie）だけ日本語へ戻す。
+  // ブラウザ言語だけで戻すと、Accept-Language を送らない検索エンジンが英語版を読めず、
+  // 計測ツール（PageSpeed Insights）も /home→/en/home→/home と転送されていた
+  if (cookieLocale === "ja" && getPathLocale(pathname) === "en") {
     return {
       status: 302,
       headers: {
