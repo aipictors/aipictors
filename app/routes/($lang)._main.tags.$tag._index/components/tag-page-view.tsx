@@ -250,12 +250,12 @@ export function TagPageView(props: Props) {
                   )}
                 >
                   <img
-                    src={work.smallThumbnailImageURL}
+                    // PC だけで見える小さな表紙（112px 以下）。スマホで優先して読むと一覧の画像（LCP）が遅れるので優先しない
+                    src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                     alt={work.title}
                     width={work.smallThumbnailImageWidth}
                     height={work.smallThumbnailImageHeight}
                     className="size-full object-cover"
-                    fetchPriority={index === 0 ? "high" : undefined}
                   />
                 </Link>
               ))}
