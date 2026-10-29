@@ -1188,6 +1188,8 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                     <img
                       src="https://assets.aipictors.com/Aipictors_01_640.webp"
                       alt="Aipictors Logo"
+                      width={640}
+                      height={640}
                       loading="lazy"
                       decoding="async"
                       fetchPriority="low"

@@ -107,6 +107,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
           variant="ghost"
           size="icon"
           onClick={toggleSidebar}
+          aria-label={t("メニューの表示を切り替える", "Toggle menu")}
           className={sidebarState === "collapsed" ? "h-8 w-8" : "mr-2 h-8 w-8"}
         >
           <MenuIcon className="size-4" />
@@ -118,6 +119,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
             variant="ghost"
             size="icon"
             onClick={minimizeSidebar}
+            aria-label={t("メニューを閉じる", "Close menu")}
             className="ml-2 h-8 w-8"
           >
             <ChevronLeftIcon className="size-4" />
@@ -159,7 +161,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
                     <button
                       type="button"
                       onClick={() => setIsExtraMenuOpen((prev) => !prev)}
-                      className="flex w-full items-center justify-between px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground/80 tracking-wide transition-colors hover:text-foreground"
+                      className="flex w-full items-center justify-between px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide transition-colors hover:text-foreground"
                       aria-expanded={isExtraMenuOpen}
                     >
                       <span>{t(...section.title)}</span>
@@ -170,7 +172,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
                       )}
                     </button>
                   ) : (
-                    <p className="px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground/80 tracking-wide">
+                    <p className="px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide">
                       {t(...section.title)}
                     </p>
                   )

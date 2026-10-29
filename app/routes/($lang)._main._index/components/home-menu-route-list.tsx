@@ -102,7 +102,7 @@ export function HomeMenuRouteList({
                   <button
                     type="button"
                     onClick={() => setIsExtraMenuOpen((prev) => !prev)}
-                    className="flex w-full items-center justify-between px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground/80 tracking-wide"
+                    className="flex w-full items-center justify-between px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide"
                     aria-expanded={isExtraMenuOpen}
                   >
                     <span>{t(...section.title)}</span>
@@ -113,7 +113,7 @@ export function HomeMenuRouteList({
                     )}
                   </button>
                 ) : (
-                  <p className="px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground/80 tracking-wide">
+                  <p className="px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide">
                     {t(...section.title)}
                   </p>
                 ))}
