@@ -414,6 +414,14 @@ const getMaintenanceStatus = async (
 }
 
 export const onRequest: PagesFunction = async (ctx) => {
+  // 画像の縮小版は画像の Worker にそのまま渡す（app/utils/resized-image-url.ts）
+  const imageResize = (
+    ctx.env as unknown as { IMAGE_RESIZE?: { fetch: typeof fetch } }
+  ).IMAGE_RESIZE
+  if (imageResize && new URL(ctx.request.url).pathname.startsWith("/_w/")) {
+    return imageResize.fetch(ctx.request)
+  }
+
   const maxRetry = 5 // リトライ回数を増加
   const baseDelay = 300 // 基本遅延時間を若干増加
   const maxDelay = 8000 // 最大遅延時間を増加

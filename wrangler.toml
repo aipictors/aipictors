@@ -25,3 +25,9 @@ enabled = true
 binding = "SEARCH_DB"
 database_name = "aipictors-search"
 database_id = "eb97a2cf-7dab-4202-b7c7-a2b87089758d"
+
+# 画像の縮小版（/_w/<幅>/<キー>）を同じドメインから配る（aipictors-cron の image-resize-worker）。
+# 別ドメイン（files.aipictors.com）だと、最初の画像を読む前に接続を張り直す時間がかかっていた
+[[services]]
+binding = "IMAGE_RESIZE"
+service = "aipictors-image-resize"

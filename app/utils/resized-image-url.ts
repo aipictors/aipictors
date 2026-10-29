@@ -1,6 +1,6 @@
 /**
  * files.aipictors.com の画像を、表示サイズに縮小した版の URL にする。
- * 縮小は files.aipictors.com/_w/<幅>/<キー> の Worker（aipictors-cron の image-resize-worker）が行い、
+ * 縮小は /_w/<幅>/<キー> の Worker（aipictors-cron の image-resize-worker）が行い、
  * 縮小版は R2 とエッジにキャッシュされる。アニメーション画像などは Worker が元の画像をそのまま返す。
  */
 
@@ -34,7 +34,8 @@ export function toResizedImageUrl(
   if (!url) return undefined
   if (!isResizable(url)) return url
   const key = url.slice(RESIZABLE_ORIGIN.length)
-  return `${RESIZABLE_ORIGIN}_w/${pickWidth(width)}/${key}`
+  // ページと同じドメインから配る（functions/[[path]].ts が画像の Worker に渡す）
+  return `/_w/${pickWidth(width)}/${key}`
 }
 
 /**
