@@ -228,17 +228,26 @@ const collectClasses = (html: string): Set<string> => {
   return classes
 }
 
+export type CriticalCssSource = {
+  /** tailwind.css の URL と中身 */
+  href: string
+  css: string
+  /** 全部を HTML に入れる小さい CSS（URL → 中身） */
+  inline?: Record<string, string>
+}
+
 let parsed: { href: string; nodes: CssNode[] } | null = null
 
-const STYLESHEET_LINK = /<link rel="stylesheet" href="(\/assets\/tailwind-[\w-]+\.css)"\/?>/
+const STYLESHEET_LINKS = /<link rel="stylesheet" href="(\/assets\/[\w.-]+\.css)"\/?>/g
 
 /**
- * HTML に tailwind.css の必要な部分を入れる。できないときは元の HTML のまま返す
- * @param source ビルドで出た tailwind.css（build/critical-css-source.json）
+ * HTML に CSS を入れる。tailwind.css はページで使うルールだけ、小さい CSS は全部。
+ * できないときは元の HTML のまま返す
+ * @param source ビルドで出た CSS（build/critical-css-source.json）
  */
 export const inlineCriticalCss = async (
   response: Response,
-  source: { href: string; css: string } | null,
+  source: CriticalCssSource | null,
 ): Promise<Response> => {
   const contentType = response.headers.get("Content-Type") ?? ""
   if (
@@ -256,24 +265,47 @@ export const inlineCriticalCss = async (
       headers: response.headers,
     })
 
-  const link = html.match(STYLESHEET_LINK)
+  const head = html.slice(0, html.indexOf("</head>"))
+  const links = [...head.matchAll(STYLESHEET_LINKS)]
   // ビルドが違う（デプロイの切り替わり中など）ときは入れない
-  if (!link || link[1] !== source.href || !html.includes(PLACEHOLDER)) {
+  if (
+    !links.some((link) => link[1] === source.href) ||
+    !head.includes(PLACEHOLDER)
+  ) {
     return unchanged()
   }
 
   if (parsed?.href !== source.href) {
     parsed = { href: source.href, nodes: parseCss(source.css) }
   }
+  const classes = collectClasses(html)
 
-  const critical = serialize(parsed.nodes, collectClasses(html)).replaceAll(
-    "</style",
-    "<\\/style",
+  // <link> の順番どおりに並べる（カスケードの順番を変えない）。入れられない CSS があれば、その手前までにする
+  let critical = ""
+  const replaced: string[] = []
+  for (const link of links) {
+    const href = link[1]
+    if (href === source.href) {
+      critical += serialize(parsed.nodes, classes)
+    } else if (source.inline?.[href] !== undefined) {
+      critical += source.inline[href]
+    } else {
+      break
+    }
+    replaced.push(link[0])
+  }
+
+  let output = html.replace(
+    PLACEHOLDER,
+    `<style data-critical-css="">${critical.replaceAll("</style", "<\\/style")}</style>`,
   )
-  const asyncLink = `<link rel="stylesheet" href="${source.href}" media="print" onload="this.media='all'"/>`
-  const output = html
-    .replace(PLACEHOLDER, `<style data-critical-css="">${critical}</style>`)
-    .replace(link[0], asyncLink)
+  for (const tag of replaced) {
+    const href = tag.match(/href="([^"]+)"/)?.[1]
+    output = output.replace(
+      tag,
+      `<link rel="stylesheet" href="${href}" media="print" onload="this.media='all'"/>`,
+    )
+  }
 
   const headers = new Headers(response.headers)
   headers.delete("Content-Length")

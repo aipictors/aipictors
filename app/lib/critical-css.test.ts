@@ -1,4 +1,4 @@
-import { __test__ } from "./critical-css"
+import { __test__, inlineCriticalCss } from "./critical-css"
 
 const { parseCss, serialize, collectClasses, requiredClasses } = __test__
 
@@ -51,4 +51,46 @@ test("class 属性の実体参照を戻す", () => {
   const classes = collectClasses('<p class="[&amp;_svg]:size-4 a"></p>')
   expect(classes.has("[&_svg]:size-4")).toBe(true)
   expect(classes.has("a")).toBe(true)
+})
+
+test("<link> の順番で入れ、小さい CSS は全部入れる。入れた <link> は描画を止めない読み込みにする", async () => {
+  const html = [
+    '<html><head><style data-critical-css=""></style>',
+    '<link rel="stylesheet" href="/assets/root-a.css"/>',
+    '<link rel="stylesheet" href="/assets/tailwind-b.css"/>',
+    '<link rel="stylesheet" href="/assets/big-c.css"/>',
+    '<link rel="stylesheet" href="/assets/rows-d.css"/>',
+    '</head><body><div class="flex"></div></body></html>',
+  ].join("")
+  const response = await inlineCriticalCss(
+    new Response(html, { headers: { "Content-Type": "text/html" } }),
+    {
+      href: "/assets/tailwind-b.css",
+      css: ".flex{display:flex}.hidden{display:none}",
+      inline: { "/assets/root-a.css": "a{color:red}", "/assets/rows-d.css": "b{x:1}" },
+    },
+  )
+  const out = await response.text()
+  expect(out).toContain(
+    '<style data-critical-css="">a{color:red}.flex{display:flex}</style>',
+  )
+  expect(out).toContain(
+    `<link rel="stylesheet" href="/assets/root-a.css" media="print" onload="this.media='all'"/>`,
+  )
+  expect(out).toContain(
+    `<link rel="stylesheet" href="/assets/tailwind-b.css" media="print" onload="this.media='all'"/>`,
+  )
+  // 入れられない CSS から後ろはそのまま（順番を変えない）
+  expect(out).toContain('<link rel="stylesheet" href="/assets/big-c.css"/>')
+  expect(out).toContain('<link rel="stylesheet" href="/assets/rows-d.css"/>')
+})
+
+test("ビルドが違うときは何もしない", async () => {
+  const html =
+    '<html><head><style data-critical-css=""></style><link rel="stylesheet" href="/assets/tailwind-x.css"/></head><body></body></html>'
+  const response = await inlineCriticalCss(
+    new Response(html, { headers: { "Content-Type": "text/html" } }),
+    { href: "/assets/tailwind-y.css", css: "" },
+  )
+  expect(await response.text()).toBe(html)
 })

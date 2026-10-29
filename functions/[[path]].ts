@@ -1,5 +1,8 @@
 import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages"
-import { inlineCriticalCss } from "../app/lib/critical-css"
+import {
+  type CriticalCssSource,
+  inlineCriticalCss,
+} from "../app/lib/critical-css"
 // @ts-ignore - remix vite:build が書き出す（vite.config.ts の criticalCssSource）
 import criticalCssSource from "../build/critical-css-source.json"
 import { deferHydration } from "../app/lib/defer-hydration"
@@ -700,7 +703,7 @@ export const onRequest: PagesFunction = async (ctx) => {
   const render = async () =>
     inlineCriticalCss(
       deferHydration(await renderWithRetry()),
-      criticalCssSource as { href: string; css: string },
+      criticalCssSource as CriticalCssSource,
     )
   if (!ADMIN_HOSTNAMES.has(requestUrl.hostname)) {
     return edgePageCache.handle(ctx, render)

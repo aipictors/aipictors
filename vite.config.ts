@@ -11,31 +11,33 @@ import { dirname, join } from "node:path"
 import type { Plugin } from "vite"
 
 /**
- * クライアントのビルドで出た tailwind.css の中身を build/critical-css-source.json に書き出す。
- * 配信時にページで使うルールだけを HTML に入れるのに使う（app/lib/critical-css.ts・functions/[[path]].ts）
+ * クライアントのビルドで出た CSS を build/critical-css-source.json に書き出す。
+ * 配信時に、tailwind.css はページで使うルールだけ、小さい CSS は全部を HTML に入れるのに使う
+ * （app/lib/critical-css.ts・functions/[[path]].ts）
  */
 const criticalCssSource = (): Plugin => ({
   name: "aipictors-critical-css-source",
   apply: "build",
   writeBundle(options, bundle) {
     if (!options.dir?.endsWith(join("build", "client"))) return
+    let tailwind: { href: string; css: string } | null = null
+    const inline: Record<string, string> = {}
     for (const file of Object.values(bundle)) {
-      if (
-        file.type === "asset" &&
-        /^assets\/tailwind-[\w-]+\.css$/.test(file.fileName)
-      ) {
-        const out = join(options.dir, "..", "critical-css-source.json")
-        mkdirSync(dirname(out), { recursive: true })
-        writeFileSync(
-          out,
-          JSON.stringify({
-            href: `/${file.fileName}`,
-            css: String(file.source),
-          }),
-        )
-        return
+      if (file.type !== "asset" || !file.fileName.endsWith(".css")) continue
+      const href = `/${file.fileName}`
+      const css = String(file.source)
+      if (/^assets\/tailwind-[\w-]+\.css$/.test(file.fileName)) {
+        tailwind = { href, css }
+        continue
       }
+      // 小さくて、相対パスの url() を含まないものだけ（HTML に入れると相対パスの基準が変わる）
+      const hasRelativeUrl = /url\(\s*["']?(?![a-z]+:|\/)/i.test(css)
+      if (css.length <= 16 * 1024 && !hasRelativeUrl) inline[href] = css
     }
+    if (!tailwind) return
+    const out = join(options.dir, "..", "critical-css-source.json")
+    mkdirSync(dirname(out), { recursive: true })
+    writeFileSync(out, JSON.stringify({ ...tailwind, inline }))
   },
 })
 

@@ -25,6 +25,7 @@ import {
 } from "lucide-react"
 import {
   lazy,
+  startTransition,
   Suspense,
   useContext,
   useEffect,
@@ -631,7 +632,8 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
    */
   useEffect(() => {
     if (!isMounted) {
-      setIsMounted(true)
+      // hydration 中の Suspense より後に回す（急ぎの更新だと React error #421 で作り直しになる）
+      startTransition(() => setIsMounted(true))
     }
   }, [isMounted])
 

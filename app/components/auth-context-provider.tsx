@@ -8,7 +8,7 @@ import {
   getIdTokenResult,
   onAuthStateChanged,
 } from "firebase/auth"
-import { useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 import { withFirebaseAnalytics } from "~/utils/run-after-load-idle"
 
 type Props = {
@@ -45,6 +45,9 @@ export function AuthContextProvider (props: Props): React.ReactNode {
     }
   }
 
+  // ログイン状態の更新は startTransition で行う。
+  // ページの hydration が終わる前に急ぎの更新として届くと、まだ hydration 中の Suspense の中身を
+  // React が作り直してしまう（React error #421。回線や端末が遅いと起きていた）
   useEffect(() => {
     if (typeof document === "undefined") return
 
@@ -71,9 +74,11 @@ export function AuthContextProvider (props: Props): React.ReactNode {
       if (isAuthStateResolved) return
 
       debugLog.auth("AuthContextProvider: auth init timeout fallback")
-      setCurrentUser(null)
-      setClaims(null)
-      setLoadingState(false)
+      startTransition(() => {
+        setCurrentUser(null)
+        setClaims(null)
+        setLoadingState(false)
+      })
     }, 8000)
 
     // モバイル端末の検出
@@ -113,8 +118,10 @@ export function AuthContextProvider (props: Props): React.ReactNode {
           retryCount = 0
           clearTimers()
 
-          setClaims({ ...tokenResult.claims })
-          setLoadingState(false)
+          startTransition(() => {
+            setClaims({ ...tokenResult.claims })
+            setLoadingState(false)
+          })
           debugLog.auth("Token details updated successfully")
 
           // Analytics のユーザープロパティ設定も遅延実行（モバイル最適化）
@@ -178,9 +185,11 @@ export function AuthContextProvider (props: Props): React.ReactNode {
 
       // 未ログイン表示にするのは、実際にログアウトしている（user が null）ときだけ
       if (user === null) {
-        setCurrentUser(null)
-        setClaims(null)
-        setLoadingState(false)
+        startTransition(() => {
+          setCurrentUser(null)
+          setClaims(null)
+          setLoadingState(false)
+        })
         debugLog.auth("User logged out - state cleared")
         return
       }
@@ -196,9 +205,11 @@ export function AuthContextProvider (props: Props): React.ReactNode {
       // Firebase user だけでは API 認証に必要な ID token の有効性を保証できない。
       // logged-in 状態は getIdTokenResult が成功した後にだけ公開する。
       // 取得中は未ログインではなく読み込み中として扱う（ログインボタンを出さない）。
-      setCurrentUser(user)
-      setClaims(null)
-      setLoadingState(true)
+      startTransition(() => {
+        setCurrentUser(user)
+        setClaims(null)
+        setLoadingState(true)
+      })
 
       // 8秒たってもトークンが取れない（オフラインで期限切れなど）ときは、
       // 保存済みトークンの claims でログイン表示にして、裏で再試行を続ける。
@@ -211,8 +222,10 @@ export function AuthContextProvider (props: Props): React.ReactNode {
           hasCachedClaims: cachedClaims !== null,
         })
         if (cachedClaims === null) return
-        setClaims(cachedClaims)
-        setLoadingState(false)
+        startTransition(() => {
+          setClaims(cachedClaims)
+          setLoadingState(false)
+        })
       }, 8000)
 
       // モバイル軽量ログ
