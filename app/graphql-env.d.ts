@@ -3869,6 +3869,9 @@ type PassNode implements Node {
   isDisabled: Boolean!
   isExpired: Boolean!
   payment: PaymentNode
+
+  """支払い方法（APP_STORE: iOS アプリの App Store、STRIPE: ウェブ）"""
+  paymentProvider: String!
   periodEnd: Int!
   periodStart: Int!
   price: Int!

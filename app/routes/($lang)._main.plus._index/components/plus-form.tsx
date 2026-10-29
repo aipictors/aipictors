@@ -357,6 +357,9 @@ export function PlusForm () {
   const nextDateText = currentPass ? toDateText(currentPass.periodEnd) : ""
 
   const currentPassName = currentPass ? toPassName(currentPass.type) : ""
+
+  // iOS アプリ（App Store）で買ったプランはウェブ（Stripe）では変更・解約できない
+  const isAppStorePass = currentPass?.paymentProvider === "APP_STORE"
   const nextPassName = planChangePreview
     ? toPassName(
       (planChangePreview.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS"),
@@ -388,7 +391,7 @@ export function PlusForm () {
 
   useEffect(() => {
     const loadCancellationStatus = async () => {
-      if (!currentPass) {
+      if (!currentPass || isAppStorePass) {
         return
       }
 
@@ -539,11 +542,15 @@ export function PlusForm () {
               <div>
                 <div className="flex">
                   <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm dark:bg-gray-700 dark:text-gray-200">
-                    {isCancelScheduled ? "解約予定日" : "次回の請求日"}
+                    {isCancelScheduled
+                      ? "解約予定日"
+                      : isAppStorePass
+                        ? "次回の更新日"
+                        : "次回の請求日"}
                   </span>
                   <p>{nextDateText}</p>
                 </div>
-                {!isCancelScheduled && (
+                {!isCancelScheduled && !isAppStorePass && (
                   <div className="flex">
                     <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm dark:bg-gray-700 dark:text-gray-200">
                       {"次回の請求額"}
@@ -552,12 +559,25 @@ export function PlusForm () {
                   </div>
                 )}
               </div>
-              <p>
-                {
-                  "この画面からサブスクのキャンセルとプラン変更を行えます。"
-                }
-              </p>
-              {!isCancelScheduled && (
+              {isAppStorePass ? (
+                <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900 text-sm dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
+                  <p className="font-bold">
+                    {"このプランは iPhone アプリ（App Store）でご購入いただいたものです"}
+                  </p>
+                  <p className="mt-1 text-xs leading-5">
+                    {
+                      "プランの変更・解約は、iPhone の［設定］→［Apple ID］→［サブスクリプション］から行えます。お支払いは Apple が管理しているため、この画面からは変更・解約できません。"
+                    }
+                  </p>
+                </div>
+              ) : (
+                <p>
+                  {
+                    "この画面からサブスクのキャンセルとプラン変更を行えます。"
+                  }
+                </p>
+              )}
+              {!isCancelScheduled && !isAppStorePass && (
                 <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900 text-sm dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
                   <p className="font-bold">
                     {"解約後の確認について"}
@@ -569,6 +589,7 @@ export function PlusForm () {
                   </p>
                 </div>
               )}
+              {!isAppStorePass && (
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {isCancelScheduled ? (
                   /* 解約予約中 → 取り消しボタンを目立たせる */
@@ -618,6 +639,7 @@ export function PlusForm () {
                   </Button>
                 )}
               </div>
+              )}
             </div>
             <Card className="flex-1">
               <CardHeader>
@@ -640,14 +662,16 @@ export function PlusForm () {
               </CardContent>
             </Card>
           </div>
-          {(isCancelScheduled || currentPass.type !== "PREMIUM") && (
+          {!isAppStorePass &&
+            (isCancelScheduled || currentPass.type !== "PREMIUM") && (
             <p className="mt-8 mb-1 font-bold">
               {isCancelScheduled
                 ? "プランを選び直す"
                 : "上位のプランにすると、もっと生成できます"}
             </p>
           )}
-          {(isCancelScheduled || currentPass.type !== "PREMIUM") && (
+          {!isAppStorePass &&
+            (isCancelScheduled || currentPass.type !== "PREMIUM") && (
             <PlusAbout
               showUpgradePlansOnly={!isCancelScheduled}
               treatAsNoCurrentPass={isCancelScheduled}
@@ -695,6 +719,7 @@ const viewerCurrentPassQuery = graphql(
         type
         price
         periodEnd
+        paymentProvider
       }
     }
   }`,
