@@ -684,6 +684,19 @@ export const onRequest: PagesFunction = async (ctx) => {
   // ログイン状態に依存しないページは Cloudflare の拠点でキャッシュする（API・DB への問い合わせを減らす）
   // 言語によるリダイレクト（root の loader と同じ判定）を入口で返す。
   // Remix に渡すと他の loader の終わりを待つので、リダイレクトだけで 0.5〜1.7 秒かかっていた
+  // /.well-known/ のファイルは静的ファイル（public/.well-known）として Worker より前に返る。
+  // ここまで来たものは無いので 404 にする（ページの 404 処理ではトップへ 302 していて、
+  // AI エージェント向けの /.well-known/ard.json などを探すツールが HTML を受け取っていた）
+  if (requestUrl.pathname.startsWith("/.well-known/")) {
+    return new Response("Not Found", {
+      status: 404,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "public, max-age=3600",
+      },
+    })
+  }
+
   if (isLocaleRedirectTarget(ctx.request, requestUrl)) {
     const localeRedirect = checkLocaleRedirect(ctx.request)
     if (localeRedirect !== null) {

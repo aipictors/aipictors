@@ -252,6 +252,13 @@ const createBaseHomeLoaderData = (props: {
 })
 
 /**
+ * ホームではお知らせのタイトルだけ使うので、本文（Markdown 全文）は HTML に入れない
+ */
+function toReleaseSummary<T extends { description: string }>(release: T): T {
+  return { ...release, description: "" }
+}
+
+/**
  * ホームの一覧で使わない、作品の詳細画面用の項目（HomeWork フラグメントは詳細画面と共通で項目が多い）。
  * HTML に入るローダーのデータが大きいと、回線の遅いスマホで最初の画像の読み込みが遅れる
  */
@@ -364,7 +371,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const safeReleaseList =
     releaseList && Array.isArray(releaseList.contents)
-      ? releaseList
+      ? { ...releaseList, contents: releaseList.contents.map(toReleaseSummary) }
       : createEmptyReleaseList()
 
   const baseLoaderData = createBaseHomeLoaderData({
@@ -373,13 +380,13 @@ export async function loader(props: LoaderFunctionArgs) {
     secondTag: randomCategories[1],
     releaseList: safeReleaseList,
     featuredReleaseList: Array.isArray(featuredReleaseList)
-      ? featuredReleaseList
+      ? featuredReleaseList.map(toReleaseSummary)
       : [],
     importantRelease: isImportantReleaseVisible(
       latestImportantRelease,
       now.getTime(),
     )
-      ? latestImportantRelease
+      ? toReleaseSummary(latestImportantRelease)
       : null,
   })
 
