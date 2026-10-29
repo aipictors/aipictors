@@ -50,6 +50,8 @@ export function AppContents(props: Props): React.ReactNode {
               {props.outlet}
             </MainLandmarkContext.Provider>
           </main>
+          {/* PC では本文を読み終えるまで最初の描画を待つ目印（app/root.tsx の rel="expect"） */}
+          <div id="main-content-end" hidden />
           {props.footer && (
             <div className={`w-full ${getContentMargin()}`}>{props.footer}</div>
           )}

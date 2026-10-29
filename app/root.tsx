@@ -577,6 +577,11 @@ export function Layout(props: Props): React.ReactNode {
           // biome-ignore lint/security/noDangerouslySetInnerHtml: 配信時に埋めるための空の要素
           dangerouslySetInnerHTML={{ __html: "" }}
         />
+        {loaderData.layoutHint === "desktop" && (
+          // PC の一覧（行の高さをそろえる並べ方）は、HTML を途中まで読んだ時点で描画すると
+          // 後から届いた作品で前の行の幅が変わり、画面がずれていた（CLS）。本文の最後まで読んでから描画する
+          <link rel="expect" href="#main-content-end" blocking="render" />
+        )}
         <Links />
       </head>
       <body
