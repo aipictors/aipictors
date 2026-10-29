@@ -31,3 +31,8 @@ database_id = "eb97a2cf-7dab-4202-b7c7-a2b87089758d"
 [[services]]
 binding = "IMAGE_RESIZE"
 service = "aipictors-image-resize"
+
+# 一覧ページの HTML を全拠点で共有するキャッシュ（app/lib/edge-page-cache.ts）
+[[kv_namespaces]]
+binding = "PAGE_CACHE"
+id = "8d789ec6fbe94540a435a7936fa2e4bb"

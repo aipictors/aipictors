@@ -6,13 +6,84 @@
  * - 保存時間は各ページの Cache-Control の s-maxage（なければキャッシュしない。一部の一覧のデータは既定 30 秒）
  * - 期限切れでも stale-while-revalidate の間は古いものを返し、裏で作り直す
  * - デプロイごとにキーを変える（古い HTML が古いファイルを読み込まないように）
+ * - 数の限られた一覧のページ（isSharedPage）は全拠点共通の KV にも置く。
+ *   拠点のキャッシュは拠点ごとなので、海外や久しぶりの拠点では API から作り直して 2〜4 秒かかっていた
  */
 
 import { getLayoutHint } from "~/utils/layout-hint"
 
+type KvNamespace = {
+  getWithMetadata(
+    key: string,
+    options: { type: "text"; cacheTtl?: number },
+  ): Promise<{ value: string | null; metadata: unknown }>
+  put(
+    key: string,
+    value: string,
+    options?: { expirationTtl?: number; metadata?: unknown },
+  ): Promise<void>
+}
+
 type Ctx = {
   request: Request
+  env?: unknown
   waitUntil(promise: Promise<unknown>): void
+}
+
+/**
+ * 全拠点共通の KV に置く追加の内容（HTML から外したローダーのデータなど）
+ */
+export type SharedExtra = {
+  /** 描画し終えたあとに、一緒に置く内容を返す */
+  get: () => string | undefined
+  /** KV から返すときに、その拠点に戻す */
+  restore: (value: string) => void
+}
+
+/**
+ * 全拠点共通の KV にも置くページ。KV は書き込みが有料なので、数の限られた一覧（検索条件なし）だけにする
+ */
+const SHARED_PAGE_PATH =
+  /^\/(?:(?:ja|en)\/?)?(?:r\/?)?(?:$|home\/?$|rankings(?:\/[\w-]+)*\/?$|themes(?:\/[\w-]+)*\/?$|tags\/?$|posts\/(?:2d|3d|novel|column|video)\/?$)/
+
+export const isSharedPage = (url: URL) =>
+  !url.search && SHARED_PAGE_PATH.test(url.pathname)
+
+/** 同じページを KV に書き直す最短の間隔（秒） */
+const SHARED_WRITE_INTERVAL_SECONDS = 60 * 10
+
+type SharedMetadata = { s: number; t: number; w: number; v: number }
+
+const toSharedMetadata = (value: unknown): SharedMetadata | null => {
+  if (!value || typeof value !== "object") return null
+  const m = value as Partial<SharedMetadata>
+  if (
+    typeof m.s !== "number" ||
+    typeof m.t !== "number" ||
+    typeof m.w !== "number" ||
+    m.v !== 1
+  ) {
+    return null
+  }
+  return m as SharedMetadata
+}
+
+/** KV に置かない（拠点ごとに付け直される）ヘッダー */
+const SHARED_SKIP_HEADERS = new Set([
+  "content-length",
+  "content-encoding",
+  "transfer-encoding",
+  "connection",
+  "x-edge-stored-at",
+  "x-edge-ttl",
+  "x-edge-swr",
+  "x-edge-cache",
+  "cache-control",
+])
+
+const getSharedKv = (ctx: Ctx): KvNamespace | null => {
+  const env = ctx.env as { PAGE_CACHE?: KvNamespace } | undefined
+  return env?.PAGE_CACHE ?? null
 }
 
 /** キャッシュしないパス */
@@ -141,9 +212,10 @@ export const createEdgePageCache = (version: string) => {
     cacheKey: Request,
     response: Response,
     ttl: { ttl: number; swr: number },
+    storedAt = Date.now(),
   ) => {
     const headers = new Headers(response.headers)
-    headers.set("X-Edge-Stored-At", String(Date.now()))
+    headers.set("X-Edge-Stored-At", String(storedAt))
     headers.set("X-Edge-Ttl", String(ttl.ttl))
     headers.set("X-Edge-Swr", String(ttl.swr))
     // Cache API に残しておく時間（期限は X-Edge-Stored-At で判定する）
@@ -155,25 +227,92 @@ export const createEdgePageCache = (version: string) => {
   }
 
   /**
+   * 全拠点共通の KV から読む。中身は「1 行目にヘッダーと追加の内容の JSON、2 行目から本文」
+   */
+  const readShared = async (kv: KvNamespace, key: string) => {
+    const { value, metadata } = await kv.getWithMetadata(key, {
+      type: "text",
+      cacheTtl: 60,
+    })
+    const meta = toSharedMetadata(metadata)
+    if (value === null || meta === null) return null
+    const newline = value.indexOf("\n")
+    if (newline < 0) return null
+    const head = JSON.parse(value.slice(0, newline)) as {
+      h: [string, string][]
+      x?: string
+    }
+    return { meta, headers: head.h, extra: head.x, body: value.slice(newline + 1) }
+  }
+
+  const writeShared = async (
+    kv: KvNamespace,
+    key: string,
+    response: Response,
+    ttl: { ttl: number; swr: number },
+    extra: SharedExtra | undefined,
+  ) => {
+    const body = await response.text()
+    const headers: [string, string][] = []
+    response.headers.forEach((value, name) => {
+      if (!SHARED_SKIP_HEADERS.has(name.toLowerCase())) headers.push([name, value])
+    })
+    const metadata: SharedMetadata = { s: Date.now(), t: ttl.ttl, w: ttl.swr, v: 1 }
+    await kv.put(key, `${JSON.stringify({ h: headers, x: extra?.get() })}\n${body}`, {
+      expirationTtl: Math.max(ttl.ttl + ttl.swr, 60),
+      metadata,
+    })
+  }
+
+  /**
    * キャッシュを使ってページを返す。render はキャッシュがないときに実際に作る処理
    */
   const handle = async (
     ctx: Ctx,
     render: () => Promise<Response>,
+    sharedExtra?: SharedExtra,
   ): Promise<Response> => {
     const url = new URL(ctx.request.url)
     if (!isCacheableRequest(ctx.request, url)) {
       return render()
     }
     const cacheKey = toCacheKey(ctx.request, url)
+    const kv = isSharedPage(url) ? getSharedKv(ctx) : null
+    const sharedKey = cacheKey.url
+    /** KV にあるものの保存時刻（読んでいないときは undefined） */
+    let sharedStoredAt: number | null | undefined
+
+    const shouldWriteShared = async () => {
+      if (!kv) return false
+      if (sharedStoredAt === undefined) {
+        const shared = await readShared(kv, sharedKey).catch(() => null)
+        sharedStoredAt = shared?.meta.s ?? null
+      }
+      return (
+        sharedStoredAt === null ||
+        (Date.now() - sharedStoredAt) / 1000 >= SHARED_WRITE_INTERVAL_SECONDS
+      )
+    }
 
     const renderAndStore = async () => {
       const response = await render()
       const ttl = getTtl(url, response)
       if (ttl === null) return { response, stored: false }
+      const forShared = kv ? response.clone() : null
       ctx.waitUntil(
         store(cacheKey, response.clone(), ttl).catch(() => undefined),
       )
+      if (kv && forShared) {
+        ctx.waitUntil(
+          (async () => {
+            if (!(await shouldWriteShared())) {
+              await forShared.body?.cancel()
+              return
+            }
+            await writeShared(kv, sharedKey, forShared, ttl, sharedExtra)
+          })().catch(() => undefined),
+        )
+      }
       return { response, stored: true }
     }
 
@@ -199,6 +338,35 @@ export const createEdgePageCache = (version: string) => {
           // 古いものを返して裏で作り直す
           ctx.waitUntil(renderAndStore().catch(() => undefined))
           return forBrowser(cached, "STALE")
+        }
+      }
+    }
+
+    // この拠点にないときは全拠点共通の KV を見る
+    if (kv && !wantsFresh(ctx.request)) {
+      const shared = await readShared(kv, sharedKey).catch(() => null)
+      sharedStoredAt = shared?.meta.s ?? null
+      if (shared) {
+        const ageSeconds = (Date.now() - shared.meta.s) / 1000
+        if (ageSeconds >= 0 && ageSeconds < shared.meta.t + shared.meta.w) {
+          if (shared.extra !== undefined) sharedExtra?.restore(shared.extra)
+          const response = new Response(shared.body, {
+            status: 200,
+            headers: shared.headers,
+          })
+          ctx.waitUntil(
+            store(
+              cacheKey,
+              response.clone(),
+              { ttl: shared.meta.t, swr: shared.meta.w },
+              shared.meta.s,
+            ).catch(() => undefined),
+          )
+          if (ageSeconds >= shared.meta.t) {
+            ctx.waitUntil(renderAndStore().catch(() => undefined))
+            return forBrowser(response, "SHARED-STALE")
+          }
+          return forBrowser(response, "SHARED")
         }
       }
     }

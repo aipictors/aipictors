@@ -766,7 +766,9 @@ export const onRequest: PagesFunction = async (ctx) => {
     })
   }
 
+  let renderedContext: { token: string; script: string } | undefined
   const storeContext = (token: string, script: string) => {
+    renderedContext = { token, script }
     ctx.waitUntil(
       caches.default
         .put(
@@ -792,7 +794,16 @@ export const onRequest: PagesFunction = async (ctx) => {
       { deferStylesheets: shouldWaitForInteraction(requestUrl.pathname) },
     )
   if (!ADMIN_HOSTNAMES.has(requestUrl.hostname)) {
-    return edgePageCache.handle(ctx, render)
+    // 全拠点共通の KV にはローダーのデータも一緒に置き、返す拠点に戻す
+    return edgePageCache.handle(ctx, render, {
+      get: () => (renderedContext ? JSON.stringify(renderedContext) : undefined),
+      restore: (value) => {
+        const context = JSON.parse(value) as { token?: unknown; script?: unknown }
+        if (typeof context.token === "string" && typeof context.script === "string") {
+          storeContext(context.token, context.script)
+        }
+      },
+    })
   }
   return render()
 }
