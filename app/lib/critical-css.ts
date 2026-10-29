@@ -10,6 +10,8 @@
  * root.tsx が出す空の <style data-critical-css> に中身を入れ、<link> は属性だけ書き換える。
  */
 
+import { toImagePreloadLinks } from "./image-preload-links"
+
 type CssNode = {
   /** このルール・ブロックが要求するクラス（どれか 1 組がすべて HTML にあれば入れる）。null は常に入れる */
   classSets: string[][] | null
@@ -258,11 +260,15 @@ export const inlineCriticalCss = async (
     return response
   }
   const html = await response.text()
+  const headers = new Headers(response.headers)
+  headers.delete("Content-Length")
+  // 優先画像は HTML より先に読み始める（app/lib/image-preload-links.ts）
+  for (const link of toImagePreloadLinks(html)) headers.append("Link", link)
   const unchanged = () =>
     new Response(html, {
       status: response.status,
       statusText: response.statusText,
-      headers: response.headers,
+      headers,
     })
 
   const head = html.slice(0, html.indexOf("</head>"))
@@ -307,8 +313,6 @@ export const inlineCriticalCss = async (
     )
   }
 
-  const headers = new Headers(response.headers)
-  headers.delete("Content-Length")
   return new Response(output, {
     status: response.status,
     statusText: response.statusText,

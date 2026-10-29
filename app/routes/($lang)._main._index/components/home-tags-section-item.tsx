@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react"
+import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 
 type Props = {
   tagThumbnailUrl: string
@@ -12,6 +13,10 @@ export function HomeTagsSectionItem (props: Props) {
         <img
           className="h-[240px] w-[196px] bg-white object-cover object-center transition-transform duration-200 ease-in-out group-hover:scale-105"
           src={props.tagThumbnailUrl}
+          // 元画像（100KB 前後）を 196×240 の枠に切り抜いて出すので、縮小版を選ばせる。
+          // 横長の画像は高さに合わせて横にはみ出すので、幅は少し大きめ（240px）として選ぶ
+          srcSet={toResizedImageSrcSet(props.tagThumbnailUrl, { minWidth: 240 })}
+          sizes="240px"
           alt={props.tagName}
           width={196}
           height={240}

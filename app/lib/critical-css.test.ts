@@ -94,3 +94,20 @@ test("ビルドが違うときは何もしない", async () => {
   )
   expect(await response.text()).toBe(html)
 })
+
+test("優先画像を Link ヘッダーの preload にする", async () => {
+  const html = [
+    '<html><head><style data-critical-css=""></style></head><body>',
+    '<picture class="contents"><source media="not all and (max-width: 767px)" srcSet="data:image/gif;base64,R0"/>',
+    '<img src="https://files.aipictors.com/a" srcSet="https://files.aipictors.com/_w/160/a 160w, https://files.aipictors.com/_w/320/a 320w" sizes="160px" fetchPriority="high"/></picture>',
+    '<img src="https://files.aipictors.com/b" loading="lazy"/>',
+    "</body></html>",
+  ].join("")
+  const response = await inlineCriticalCss(
+    new Response(html, { headers: { "Content-Type": "text/html" } }),
+    { href: "/assets/tailwind-y.css", css: "" },
+  )
+  expect(response.headers.get("Link")).toBe(
+    '<https://files.aipictors.com/a>; rel=preload; as=image; fetchpriority=high; imagesrcset="https://files.aipictors.com/_w/160/a 160w, https://files.aipictors.com/_w/320/a 320w"; imagesizes="160px"; media="(max-width: 767px)"',
+  )
+})

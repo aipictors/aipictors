@@ -251,6 +251,51 @@ const createBaseHomeLoaderData = (props: {
   firstTagWorks: [] as FragmentOf<typeof HomeTagWorkFragment>[],
 })
 
+/**
+ * ホームの一覧で使わない、作品の詳細画面用の項目（HomeWork フラグメントは詳細画面と共通で項目が多い）。
+ * HTML に入るローダーのデータが大きいと、回線の遅いスマホで最初の画像の読み込みが遅れる
+ */
+const HOME_LIST_OMIT_WORK_KEYS = [
+  "likedUsers",
+  "prompt",
+  "negativePrompt",
+  "noise",
+  "seed",
+  "steps",
+  "sampler",
+  "scale",
+  "strength",
+  "vae",
+  "clipSkip",
+  "otherGenerationParams",
+  "pngInfo",
+  "style",
+  "ogpThumbnailImageUrl",
+  "relatedUrl",
+] as const
+
+const HOME_LIST_OMIT_USER_KEYS = [
+  "biography",
+  "enBiography",
+  "webFcmToken",
+  "headerImageUrl",
+  "promptonUser",
+] as const
+
+function toHomeListWorks<T>(works: T[] | null | undefined): T[] {
+  if (!Array.isArray(works)) return []
+  return works.map((work) => {
+    const copy = { ...(work as Record<string, unknown>) }
+    for (const key of HOME_LIST_OMIT_WORK_KEYS) delete copy[key]
+    if (copy.user && typeof copy.user === "object") {
+      const user = { ...(copy.user as Record<string, unknown>) }
+      for (const key of HOME_LIST_OMIT_USER_KEYS) delete user[key]
+      copy.user = user
+    }
+    return copy as T
+  })
+}
+
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const legacyTab = url.searchParams.get("tab")
@@ -405,6 +450,9 @@ export async function loader(props: LoaderFunctionArgs) {
     {
       ...baseLoaderData,
       ...(resultData ?? {}),
+      // 一覧に出すだけなので、詳細画面用の項目は HTML に入れない（作品のダイアログは開くときに取り直す）
+      promotionWorks: toHomeListWorks(resultData?.promotionWorks),
+      newUserWorks: toHomeListWorks(resultData?.newUserWorks),
       eventPreviews,
       hotTags: Array.isArray(resultData?.hotTags) ? resultData.hotTags : [],
       recommendedTags: Array.isArray(resultData?.recommendedTags)
