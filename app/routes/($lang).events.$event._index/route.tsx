@@ -706,7 +706,7 @@ export default function EventDetailPage() {
             <div className="grid grid-cols-2 gap-4">
               <EventFact
                 icon={<CalendarDays className="size-4" />}
-                label={t("開催期間（日本時間）", "Period (JST)")}
+                label={t("開催期間", "Period")}
               >
                 {formatEventMonthDayText(event.startAt)} 〜{" "}
                 {formatEventMonthDayText(event.endAt)}
