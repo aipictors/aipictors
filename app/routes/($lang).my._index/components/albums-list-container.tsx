@@ -59,9 +59,16 @@ export function AlbumsListContainer(props: Props) {
 
   return (
     <>
-      <div className="mb-2">
-        <WorksSeriesAddButton refetch={refetchAlbums} />
-      </div>
+      {albums.length === 0 && props.page === 0 && props.rating === null ? (
+        <WorksSeriesAddButton refetch={refetchAlbums} isEmpty />
+      ) : (
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="text-muted-foreground text-sm">
+            {`${props.albumsMaxCount}件のシリーズ`}
+          </p>
+          <WorksSeriesAddButton refetch={refetchAlbums} />
+        </div>
+      )}
       <AlbumsList
         albums={albums}
         refetch={refetchAlbums}

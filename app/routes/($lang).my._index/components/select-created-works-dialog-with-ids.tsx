@@ -20,9 +20,9 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { type FragmentOf, graphql } from "gql.tada"
 import {
-  CheckIcon,
   GripVerticalIcon,
   ImageIcon,
+  ImagesIcon,
   PlusIcon,
   XIcon,
 } from "lucide-react"
@@ -40,13 +40,11 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { AlbumWorkLimitUpgradeDialog } from "~/routes/($lang).my._index/components/album-work-limit-upgrade-dialog"
 import {
   type AlbumWorkLimitPassType,
-  FREE_ALBUM_WORKS_LIMIT,
   getAlbumWorksLimitUpgradeTarget,
-  LITE_ALBUM_WORKS_LIMIT,
-  STANDARD_ALBUM_WORKS_LIMIT,
 } from "~/utils/album-work-limit"
 
 type Props = {
@@ -62,6 +60,7 @@ type SortableItemProps = {
   selectedWorkIds: string[]
   setSelectedWorkIds: React.Dispatch<React.SetStateAction<string[]>>
   isInOtherAlbum: boolean
+  order: number
 }
 
 function SortableItem(props: SortableItemProps) {
@@ -89,18 +88,18 @@ function SortableItem(props: SortableItemProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 rounded-xl border bg-card p-3 shadow-sm"
+      className="flex items-center gap-3 rounded-xl border bg-card p-2 pr-1 shadow-sm"
     >
+      <span className="w-6 shrink-0 text-center font-semibold text-muted-foreground text-sm tabular-nums">
+        {props.order}
+      </span>
       <img
-        className="size-20 rounded-lg object-cover sm:size-24"
+        className="size-16 rounded-lg object-cover sm:size-20"
         src={props.work.smallThumbnailImageURL}
         alt=""
       />
       <div className="min-w-0 flex-1">
         <p className="line-clamp-2 font-medium text-sm">{props.work.title}</p>
-        <p className="mt-1 text-muted-foreground text-xs">
-          長押しまたはドラッグで並び替え
-        </p>
         {props.isInOtherAlbum && (
           <p className="mt-1 text-amber-600 text-xs">他シリーズにも登録済み</p>
         )}
@@ -291,47 +290,61 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     )
     .filter(Boolean) as FragmentOf<typeof DialogWorkFragment>[]
 
-  // ======== 未選択タブの描画 ========
+  // ======== 作品一覧タブの描画 ========
   const renderWorks = (
     worksToRender: FragmentOf<typeof DialogWorkFragment>[],
   ) => {
-    return worksToRender.map((work) => (
-      <div key={work.id}>
-        <div
-          role="button"
-          tabIndex={0}
-          className="relative m-2 size-24 cursor-pointer touch-manipulation rounded-md"
-          onClick={() => handleWorkClick(work)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault()
-              handleWorkClick(work)
-            }
-          }}
-          aria-pressed={props.selectedWorkIds.includes(work.id)}
-        >
-          <img
-            className="size-24 rounded-md object-cover"
-            src={work.smallThumbnailImageURL}
-            alt=""
-          />
-          <div className="absolute inset-x-0 bottom-0 bg-gray-800/70 px-1 py-0.5 text-white text-xs">
-            <span className="line-clamp-1">{work.title}</span>
-          </div>
-          {work.album && work.album.id !== props.currentAlbumId && (
-            <div className="absolute right-1 bottom-1 rounded bg-background/90 px-1 py-0.5 text-[10px] text-foreground shadow-sm">
-              {t("他シリーズ", "Other series")}
-            </div>
-          )}
-          {/* 選択済みだったらチェックアイコン */}
-          {props.selectedWorkIds.includes(work.id) && (
-            <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-              <CheckIcon className="p-1 text-white dark:text-black" />
-            </div>
-          )}
-        </div>
+    return (
+      <div className="grid grid-cols-3 gap-2 pb-2 sm:grid-cols-5 md:grid-cols-6">
+        {worksToRender.map((work) => {
+          const order = props.selectedWorkIds.indexOf(work.id)
+          const isSelected = order !== -1
+          const isInOtherAlbum =
+            Boolean(work.album) && work.album?.id !== props.currentAlbumId
+          return (
+            <button
+              key={work.id}
+              type="button"
+              className={cn(
+                "group relative aspect-square touch-manipulation overflow-hidden rounded-lg bg-muted text-left outline-none ring-offset-2 ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring",
+                isSelected && "ring-2 ring-primary",
+              )}
+              onClick={() => handleWorkClick(work)}
+              aria-pressed={isSelected}
+              aria-label={work.title}
+            >
+              <img
+                className={cn(
+                  "size-full object-cover transition",
+                  isSelected ? "opacity-80" : "group-hover:opacity-90",
+                )}
+                src={work.smallThumbnailImageURL}
+                alt=""
+                loading="lazy"
+              />
+              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 pt-4 pb-1 text-white text-xs">
+                <span className="line-clamp-1">{work.title}</span>
+              </span>
+              <span
+                className={cn(
+                  "absolute top-1.5 left-1.5 flex size-6 items-center justify-center rounded-full border-2 font-semibold text-xs shadow-sm",
+                  isSelected
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-white/90 bg-black/20",
+                )}
+              >
+                {isSelected ? order + 1 : null}
+              </span>
+              {isInOtherAlbum && (
+                <span className="absolute top-1.5 right-1.5 rounded bg-background/90 px-1 py-0.5 text-[10px] text-foreground shadow-sm">
+                  {t("他シリーズ", "Other series")}
+                </span>
+              )}
+            </button>
+          )
+        })}
       </div>
-    ))
+    )
   }
 
   // ========== ドラッグ＆ドロップ関連 (SELECTED タブ) ==========
@@ -394,8 +407,8 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
           items={props.selectedWorkIds} // 順番どおりに
           strategy={verticalListSortingStrategy}
         >
-          <div className="space-y-3 pb-2">
-            {sortedSelectedWorks.map((work) => {
+          <div className="space-y-2 pb-2">
+            {sortedSelectedWorks.map((work, index) => {
               const isInOtherAlbum =
                 Boolean(work.album) && work.album?.id !== props.currentAlbumId
 
@@ -406,6 +419,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                   selectedWorkIds={props.selectedWorkIds}
                   setSelectedWorkIds={props.setSelectedWorkIds}
                   isInOtherAlbum={isInOtherAlbum}
+                  order={index + 1}
                 />
               )
             })}
@@ -430,150 +444,157 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     )
   }
 
-  // もし未選択タブで作品が全くない場合 (かつ、タブもNO_SELECTED) の例
-  if (!works?.length && tab === "NO_SELECTED") {
-    return (
-      <div className="p-4">
-        <ImageIcon className="m-auto size-8 opacity-70" />
-        <p className="p-4 text-center text-sm">
-          {t("作品がありません。", "No works available.")}
-        </p>
-      </div>
-    )
+  const openPicker = () => {
+    setTab(props.selectedWorkIds.length > 0 ? "SELECTED" : "NO_SELECTED")
+    setIsOpen(true)
   }
+
+  // ダイアログの外（フォームの中）に出す、選んだ作品の一覧
+  const PREVIEW_COUNT = 11
+  const previewWorks = sortedSelectedWorks.slice(0, PREVIEW_COUNT)
+  const hiddenCount = props.selectedWorkIds.length - previewWorks.length
 
   return (
     <>
-      {/* 「すべて見る」リンク：選択中が7件を超えたら表示例 */}
-      {props.selectedWorkIds.length > 7 && (
+      {props.selectedWorkIds.length === 0 ? (
         <button
           type="button"
-          onClick={() => setIsOpen(true)}
-          className="m-2 w-full cursor-pointer bg-transparent p-0 text-right text-sm opacity-80"
+          onClick={openPicker}
+          className="flex w-full flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed px-4 py-8 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-muted/40 hover:text-foreground"
         >
-          {t(
-            `すべて見る(${props.selectedWorkIds.length})`,
-            `View All (${props.selectedWorkIds.length})`,
-          )}
+          <ImagesIcon className="size-7" />
+          <span className="font-medium text-foreground text-sm">
+            {t("作品を選ぶ", "Select works")}
+          </span>
+          <span className="text-xs">
+            {t(
+              "投稿済みの作品から、シリーズに入れる作品を選びます",
+              "Choose works from your posts",
+            )}
+          </span>
         </button>
-      )}
-
-      {/* ダイアログ外では先頭3件だけサムネ表示 */}
-      <div className="flex flex-wrap items-center">
-        {sortedSelectedWorks.slice(0, 3).map((work) => (
-          <div key={work.id} className="relative m-2 size-16 md:h-24 md:w-24">
-            <img
-              className="size-16 rounded-md object-cover md:h-24 md:w-24"
-              src={work.smallThumbnailImageURL}
-              alt=""
-            />
-            <div className="absolute inset-x-0 bottom-0 bg-gray-800/70 px-1 py-0.5 text-white text-xs">
-              <span className="line-clamp-1">{work.title}</span>
-            </div>
-            <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-              <CheckIcon className="p-1 text-white dark:text-black" />
-            </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6">
+            {previewWorks.map((work, index) => (
+              <div
+                key={work.id}
+                className="relative aspect-square overflow-hidden rounded-md bg-muted"
+              >
+                <img
+                  className="size-full object-cover"
+                  src={work.smallThumbnailImageURL}
+                  alt={work.title}
+                />
+                <span className="absolute top-1 left-1 flex size-5 items-center justify-center rounded-full bg-black/60 font-semibold text-[10px] text-white">
+                  {index + 1}
+                </span>
+              </div>
+            ))}
+            {hiddenCount > 0 && (
+              <button
+                type="button"
+                onClick={openPicker}
+                className="flex aspect-square items-center justify-center rounded-md bg-muted font-semibold text-muted-foreground text-sm hover:bg-muted/70"
+              >
+                +{hiddenCount}
+              </button>
+            )}
+            {hiddenCount <= 0 && (
+              <button
+                type="button"
+                onClick={openPicker}
+                className="flex aspect-square flex-col items-center justify-center gap-0.5 rounded-md border-2 border-dashed text-muted-foreground text-xs hover:border-primary/50 hover:text-foreground"
+                aria-label={t("作品を追加", "Add works")}
+              >
+                <PlusIcon className="size-5" />
+              </button>
+            )}
           </div>
-        ))}
-
-        {/* 「＋」ボタン */}
-        <div className="border-2 border-transparent p-1">
           <Button
-            onClick={() => setIsOpen(true)}
-            className="size-16 md:h-24 md:w-24"
-            size="icon"
+            type="button"
             variant="secondary"
+            size="sm"
+            className="w-full"
+            onClick={openPicker}
           >
-            <PlusIcon />
+            {t("作品の追加・並び替え", "Add or reorder works")}
           </Button>
         </div>
-      </div>
+      )}
 
       {/* ダイアログ */}
       <Dialog open={isOpen} onOpenChange={(opened) => setIsOpen(opened)}>
-        <DialogContent className="flex max-h-[90svh] w-[calc(100vw-1rem)] max-w-5xl flex-col overflow-hidden p-0 sm:w-full">
-          <DialogHeader className="shrink-0 px-4 pt-4 pr-12 sm:px-6 sm:pt-6">
-            <DialogTitle>{t("作品選択", "Select Works")}</DialogTitle>
+        <DialogContent className="flex max-h-[90svh] w-[calc(100vw-1rem)] max-w-4xl flex-col gap-0 overflow-hidden p-0 sm:w-full">
+          <DialogHeader className="shrink-0 space-y-3 border-b px-4 pt-4 pr-12 pb-3 text-left sm:px-6">
+            <DialogTitle>{t("作品を選ぶ", "Select works")}</DialogTitle>
+            <Tabs
+              value={tab}
+              onValueChange={(value) =>
+                setTab(value as "NO_SELECTED" | "SELECTED")
+              }
+            >
+              <TabsList className="grid w-full grid-cols-2 sm:w-80">
+                <TabsTrigger value="NO_SELECTED">
+                  {t("作品一覧", "All works")}
+                </TabsTrigger>
+                <TabsTrigger value="SELECTED">
+                  {t("選択中・並び順", "Selected")}
+                  <span className="ml-1.5 rounded-full bg-primary/10 px-1.5 text-primary text-xs tabular-nums">
+                    {props.selectedWorkIds.length}
+                  </span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </DialogHeader>
 
-          {props.limit && (
-            <div className="mx-4 rounded-xl border bg-muted/30 px-4 py-3 text-sm sm:mx-6">
-              <p className="font-medium">
-                {t(
-                  `このシリーズには最大${props.limit}作品まで追加できます。`,
-                  `You can add up to ${props.limit} works to this series.`,
-                )}
-              </p>
-              <p className="mt-1 text-muted-foreground text-xs">
-                {t(
-                  `無料で${FREE_ALBUM_WORKS_LIMIT}作品、ライト以上で${LITE_ALBUM_WORKS_LIMIT}作品、スタンダード以上で${STANDARD_ALBUM_WORKS_LIMIT}作品まで追加できます。`,
-                  `Free users can add ${FREE_ALBUM_WORKS_LIMIT}, Lite or above ${LITE_ALBUM_WORKS_LIMIT}, and Standard or above ${STANDARD_ALBUM_WORKS_LIMIT} works.`,
-                )}
-              </p>
-              {nextUpgrade && (
-                <button
-                  type="button"
-                  className="mt-2 text-left font-medium text-primary text-xs underline-offset-4 hover:underline"
-                  onClick={() => setIsUpgradeDialogOpen(true)}
-                >
-                  {t(
-                    `${nextUpgrade.passType === "LITE" ? "ライト" : "スタンダード"}で${nextUpgrade.limit}作品まで拡張`,
-                    `Upgrade to ${nextUpgrade.passType} for up to ${nextUpgrade.limit} works`,
-                  )}
-                </button>
-              )}
-            </div>
-          )}
-
-          <Tabs
-            className="shrink-0 px-4 pt-2 sm:px-6"
-            value={tab}
-            defaultValue="NO_SELECTED"
-          >
-            <TabsList>
-              <TabsTrigger
-                onClick={() => setTab("NO_SELECTED")}
-                className="w-full"
-                value="NO_SELECTED"
-              >
-                {t("未選択", "Not Selected")}
-              </TabsTrigger>
-              <TabsTrigger
-                onClick={() => setTab("SELECTED")}
-                className="w-full"
-                value="SELECTED"
-              >
-                {t("選択中", "Selected")}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <ScrollArea className="min-h-0 flex-1 overflow-y-auto px-4 sm:px-6">
-            {tab === "NO_SELECTED" && (
-              <div className="flex flex-wrap">{renderWorks(works)}</div>
-            )}
+          <ScrollArea className="min-h-0 flex-1 overflow-y-auto px-4 py-3 sm:px-6">
+            {tab === "NO_SELECTED" &&
+              (works.length > 0 ? (
+                <>
+                  <p className="mb-2 text-muted-foreground text-xs">
+                    {t(
+                      "タップした順番がシリーズの並び順になります。もう一度タップすると選択を外せます。",
+                      "Tap works in the order you want. Tap again to deselect.",
+                    )}
+                  </p>
+                  {renderWorks(works)}
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-2 py-12 text-center text-muted-foreground text-sm">
+                  <ImageIcon className="size-8 opacity-70" />
+                  {worksResult.loading
+                    ? t("読み込み中…", "Loading…")
+                    : t(
+                        "まだ投稿した作品がありません。作品を投稿してからシリーズを作れます。",
+                        "No works yet. Post works first to create a series.",
+                      )}
+                </div>
+              ))}
             {tab === "SELECTED" && (
               <>
-                <div className="mb-4 rounded-lg border bg-muted/30 p-3 text-muted-foreground text-sm">
+                <p className="mb-3 text-muted-foreground text-xs">
                   {t(
-                    "ドラッグ&ドロップで並び替えると、その順番がシリーズの設定順として保存されます。右上の×で選択解除できます。",
-                    "Drag and drop to save this order as the series order. Use the X button to remove works.",
+                    "右の持ち手をドラッグ（スマホは長押し）して並び替えると、その順番でシリーズに並びます。",
+                    "Drag the handle to reorder. This order is used in the series.",
                   )}
-                </div>
+                </p>
                 {sortedSelectedWorks.length > 0 ? (
                   renderSelectedWorksDnD()
                 ) : (
                   <div className="rounded-lg border border-dashed p-6 text-center text-muted-foreground text-sm">
-                    {t("作品を選択してください。", "Select works to continue.")}
+                    {t(
+                      "まだ選んでいません。「作品一覧」から選んでください。",
+                      "Nothing selected yet. Pick works from All works.",
+                    )}
                   </div>
                 )}
               </>
             )}
           </ScrollArea>
 
-          <div className="shrink-0 border-t px-4 py-4 sm:px-6">
-            {/* ページネーション */}
-            {tab === "NO_SELECTED" && (
+          <div className="shrink-0 space-y-3 border-t px-4 py-3 sm:px-6">
+            {tab === "NO_SELECTED" && worksMaxCount > 32 && (
               <ResponsivePagination
                 perPage={32}
                 maxCount={worksMaxCount}
@@ -581,7 +602,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                 onPageChange={(p: number) => setPage(p)}
               />
             )}
-            {tab === "SELECTED" && (
+            {tab === "SELECTED" && selectedWorksMaxCount > 32 && (
               <ResponsivePagination
                 perPage={32}
                 maxCount={selectedWorksMaxCount}
@@ -589,13 +610,38 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                 onPageChange={(p: number) => setSelectedPage(p)}
               />
             )}
-
-            <div className="mt-4 flex gap-2">
-              <Button onClick={() => setIsOpen(false)}>
-                {t("決定", "Confirm")}
-              </Button>
-              <Button variant="secondary" onClick={() => setIsOpen(false)}>
-                {t("キャンセル", "Cancel")}
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 text-sm">
+                <span className="font-semibold tabular-nums">
+                  {props.selectedWorkIds.length}
+                </span>
+                {props.limit !== undefined && (
+                  <span className="text-muted-foreground tabular-nums">
+                    {" "}
+                    / {props.limit}
+                  </span>
+                )}
+                <span className="text-muted-foreground">
+                  {t(" 作品を選択中", " selected")}
+                </span>
+                {nextUpgrade &&
+                  props.limit !== undefined &&
+                  props.selectedWorkIds.length >= props.limit && (
+                    <button
+                      type="button"
+                      className="ml-2 font-medium text-primary text-xs underline-offset-4 hover:underline"
+                      onClick={() => setIsUpgradeDialogOpen(true)}
+                    >
+                      {t("上限を増やす", "Raise the limit")}
+                    </button>
+                  )}
+              </div>
+              <Button
+                type="button"
+                className="shrink-0"
+                onClick={() => setIsOpen(false)}
+              >
+                {t("完了", "Done")}
               </Button>
             </div>
           </div>
