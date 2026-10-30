@@ -26,8 +26,8 @@ import {
 import {
   type CSSProperties,
   lazy,
-  startTransition,
   Suspense,
+  startTransition,
   useContext,
   useEffect,
   useId,
@@ -58,6 +58,7 @@ import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
+import { FollowFeedNotice } from "~/routes/($lang)._main._index/components/follow-feed-notice"
 import {
   HomeAwardWorkSection,
   type HomeWorkAwardFragment,
@@ -1277,6 +1278,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               </Button>
               <Button
                 variant="ghost"
+                aria-label={t("新規ユーザ", "New Users")}
                 onClick={() => handleWorkViewChange("new-user")}
                 data-active={workView === "new-user"}
                 size="sm"
@@ -1533,6 +1535,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                         <div className="flex rounded-md bg-muted/50 p-1">
                           <Button
                             variant="ghost"
+                            aria-label={t("フィード", "Feed")}
                             size="sm"
                             onClick={() => {
                               setInternalIsPagination(false)
@@ -1553,6 +1556,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                           </Button>
                           <Button
                             variant="ghost"
+                            aria-label={t("ページ", "Pages")}
                             size="sm"
                             onClick={() => {
                               setInternalIsPagination(true)
@@ -1660,6 +1664,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
                   <Button
                     variant="ghost"
+                    aria-label={t("リンク遷移", "Open page")}
                     size="sm"
                     onClick={() => setIsDialogMode(false)}
                     className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
@@ -1675,6 +1680,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                   </Button>
                   <Button
                     variant="ghost"
+                    aria-label={t("ダイアログ", "Dialog")}
                     size="sm"
                     onClick={() => setIsDialogMode(true)}
                     className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
@@ -1721,6 +1727,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
                   <Button
                     variant="ghost"
+                    aria-label={t("フィード", "Feed")}
                     size="sm"
                     onClick={() => {
                       setInternalIsPagination(false)
@@ -1741,6 +1748,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                   </Button>
                   <Button
                     variant="ghost"
+                    aria-label={t("ページ", "Pages")}
                     size="sm"
                     onClick={() => {
                       setInternalIsPagination(true)
@@ -1763,6 +1771,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
                   <Button
                     variant="ghost"
+                    aria-label={t("リンク遷移", "Open page")}
                     size="sm"
                     onClick={() => onChangeDialogMode(false)}
                     className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
@@ -1778,6 +1787,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                   </Button>
                   <Button
                     variant="ghost"
+                    aria-label={t("ダイアログ", "Dialog")}
                     size="sm"
                     onClick={() => onChangeDialogMode(true)}
                     className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
@@ -1821,6 +1831,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
               <Button
                 variant="ghost"
+                aria-label={t("フィード", "Feed")}
                 size="sm"
                 onClick={() => {
                   setInternalIsPagination(false)
@@ -1841,6 +1852,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               </Button>
               <Button
                 variant="ghost"
+                aria-label={t("ページ", "Pages")}
                 size="sm"
                 onClick={() => {
                   setInternalIsPagination(true)
@@ -1861,6 +1873,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
               <Button
                 variant="ghost"
+                aria-label={t("リンク遷移", "Open page")}
                 size="sm"
                 onClick={() => setIsDialogMode(false)}
                 className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
@@ -1876,6 +1889,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               </Button>
               <Button
                 variant="ghost"
+                aria-label={t("ダイアログ", "Dialog")}
                 size="sm"
                 onClick={() => setIsDialogMode(true)}
                 className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
@@ -1893,14 +1907,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
           </div>
 
           {/* コンテンツ */}
-          <Suspense
-            fallback={
-              <HomeNewWorksSkeleton
-                view="new"
-                isPagination={internalIsPagination}
-              />
-            }
-          >
+          <Suspense fallback={<FollowFeedNotice />}>
             <FollowUserFeedContents
               tab={currentTab}
               key={`follow-user-${followUserFeedPage}-${currentTab}`}
@@ -1920,6 +1927,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
               <Button
                 variant="ghost"
+                aria-label={t("フィード", "Feed")}
                 size="sm"
                 onClick={() => {
                   setInternalIsPagination(false)
@@ -1941,6 +1949,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
               <Button
                 variant="ghost"
+                aria-label={t("ページ", "Pages")}
                 size="sm"
                 onClick={() => {
                   setInternalIsPagination(true)
@@ -1961,6 +1970,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
               <Button
                 variant="ghost"
+                aria-label={t("リンク遷移", "Open page")}
                 size="sm"
                 onClick={() => onChangeDialogMode(false)}
                 className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
@@ -1976,6 +1986,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               </Button>
               <Button
                 variant="ghost"
+                aria-label={t("ダイアログ", "Dialog")}
                 size="sm"
                 onClick={() => onChangeDialogMode(true)}
                 className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${

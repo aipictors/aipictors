@@ -1,37 +1,40 @@
-import { useQuery, useApolloClient } from "@apollo/client/index"
-import { graphql, type FragmentOf } from "gql.tada"
+import { useApolloClient, useQuery } from "@apollo/client/index"
+import { Link, useNavigate } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Loader2Icon, MessageCircleIcon } from "lucide-react"
 import {
   Suspense,
+  useCallback,
   useContext,
-  useState,
   useEffect,
   useMemo,
-  useCallback,
   useRef,
+  useState,
 } from "react"
-import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { AuthContext } from "~/contexts/auth-context"
-import { useViewerRatings } from "~/hooks/use-viewer-ratings"
-import { MessageCircleIcon, Loader2Icon } from "lucide-react"
-import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
-import { Link, useNavigate } from "@remix-run/react"
-import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
+import { AuthContext } from "~/contexts/auth-context"
+import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { useTranslation } from "~/hooks/use-translation"
-import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
-import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
-import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
-import { ResponsivePagination } from "~/components/responsive-pagination"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { cn } from "~/lib/utils"
+import { FollowFeedNotice } from "~/routes/($lang)._main._index/components/follow-feed-notice"
+import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
+import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
+import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
+import {
+  CommentListItemFragment,
+  WorkCommentList,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   tab: string
@@ -61,7 +64,7 @@ function chunkPosts(arr: PostItem[], size: number): PostItem[][] {
   return res
 }
 
-export function FollowUserFeedContents (props: Props) {
+export function FollowUserFeedContents(props: Props) {
   const [internalIsPagination, setInternalIsPagination] = useState(
     props.isPagination ?? false,
   )
@@ -173,11 +176,7 @@ function PaginationMode(props: Props) {
   ])
 
   if (authContext.isLoading) {
-    return (
-      <div className="flex justify-center py-8">
-        <Loader2Icon className={"size-8 animate-spin text-border"} />
-      </div>
-    )
+    return <FollowFeedNotice />
   }
 
   if (
@@ -186,14 +185,9 @@ function PaginationMode(props: Props) {
     !authContext.userId
   ) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <p className="text-center">
-          {t(
-            "ログインすることでユーザやタグをフォローして、タイムラインで作品を楽しむことができます",
-            "You can enjoy works on the timeline by following users and tags by logging in",
-          )}
-        </p>
-      </div>
+      <FollowFeedNotice>
+        {t("ログインするとフォローできます", "Log in to follow users")}
+      </FollowFeedNotice>
     )
   }
 
@@ -418,22 +412,13 @@ function InfiniteMode(props: Props) {
 
   // ─── 早期 return (ログイン／空データ系) ──────────────
   if (authContext.isLoading) {
-    return (
-      <div className="flex justify-center py-8">
-        <Loader2Icon className="size-8 animate-spin text-border" />
-      </div>
-    )
+    return <FollowFeedNotice />
   }
   if (authContext.isNotLoggedIn || !authContext.userId) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <p className="text-center">
-          {t(
-            "ログインすることでユーザやタグをフォローして、タイムラインで作品を楽しむことができます",
-            "You can enjoy works on the timeline by following users and tags by logging in",
-          )}
-        </p>
-      </div>
+      <FollowFeedNotice>
+        {t("ログインするとフォローできます", "Log in to follow users")}
+      </FollowFeedNotice>
     )
   }
   if (flat.length === 0 && !loadingFirst) {
@@ -553,9 +538,7 @@ function FeedContent({
             {t("管理", "Manage")}
           </Button>
           <Button onClick={() => setIsTimelineView(!isTimelineView)}>
-            {isTimelineView
-              ? t("一覧表示", "List")
-              : t("カード表示", "Cards")}
+            {isTimelineView ? t("一覧表示", "List") : t("カード表示", "Cards")}
           </Button>
         </div>
       )}
