@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from "react"
-import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
@@ -332,70 +331,74 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
         className="group block"
         onClickCapture={onClickCapture}
       >
-        <div className="relative bg-black">
-          <div className="absolute inset-0 scale-110">
+        <div className="md:grid md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div className="relative aspect-[16/9] overflow-hidden bg-black">
             <img
               src={event.thumbnailImageUrl}
               alt=""
-              className="h-full w-full object-cover object-center opacity-60 blur-3xl"
+              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl"
               aria-hidden="true"
             />
-            <div className="absolute inset-0 bg-black/35" />
+            <img
+              src={event.thumbnailImageUrl}
+              alt={event.title}
+              className="relative h-full w-full object-contain transition duration-300 group-hover:scale-[1.02]"
+            />
           </div>
-          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-black/40" />
-          <div className="relative flex min-h-[220px] items-center justify-center px-4 py-4 md:min-h-[280px] md:px-6 md:py-6">
-            <div className="w-full max-w-[520px] overflow-hidden rounded-xl border border-white/15 bg-white/10 shadow-lg backdrop-blur-[2px]">
-              <img
-                src={event.thumbnailImageUrl}
-                alt={event.title}
-                className="h-44 w-full object-contain object-center md:h-56"
-              />
+          <div className="flex flex-col justify-center gap-3 p-4 md:p-6">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="font-semibold text-muted-foreground text-xs">
+                {t("注目のイベント", "Featured")}
+              </span>
+              <span
+                className={`rounded-full px-2.5 py-0.5 font-bold text-white text-xs ${
+                  event.status === "ONGOING" ? "bg-rose-600" : "bg-sky-700"
+                }`}
+              >
+                {event.status === "ONGOING"
+                  ? t("開催中", "Ongoing")
+                  : t("開催予定", "Upcoming")}
+              </span>
+              <span
+                className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${
+                  event.isOfficial
+                    ? "border bg-background"
+                    : "bg-violet-700 text-white"
+                }`}
+              >
+                {event.isOfficial
+                  ? t("公式イベント", "Official event")
+                  : t("ユーザー企画", "User event")}
+              </span>
             </div>
-          </div>
-          <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
-            <div className="max-w-3xl space-y-2 text-white">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className="border-transparent bg-white/90 text-black hover:bg-white/90">
-                  {event.status === "ONGOING"
-                    ? t("開催中", "Ongoing")
-                    : t("開催予定", "Upcoming")}
-                </Badge>
-                <Badge
-                  variant="secondary"
-                  className="bg-black/35 text-white backdrop-blur-sm"
-                >
-                  {event.isOfficial
-                    ? t("公式イベント", "Official event")
-                    : t("ユーザー企画", "User event")}
-                </Badge>
-              </div>
-              <div className="space-y-1">
-                <h2 className="font-bold text-xl leading-tight md:text-2xl">
-                  {event.title}
-                </h2>
-                <p className="line-clamp-1 text-sm text-white/80 md:text-base">
-                  {event.description
-                    .replace(/<[^>]*>/g, " ")
-                    .replace(/\s+/g, " ")
-                    .trim()}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs md:text-sm">
-                <span className="rounded-full bg-black/40 px-3 py-1 backdrop-blur-sm">
-                  {t("作品", "Entries")}: {event.entryCount}
+            <h2 className="line-clamp-2 font-bold text-xl leading-tight md:text-2xl">
+              {event.title}
+            </h2>
+            <p className="line-clamp-2 text-muted-foreground text-sm leading-relaxed md:line-clamp-3">
+              {event.description
+                .replace(/<[^>]*>/g, " ")
+                .replace(/\s+/g, " ")
+                .trim()}
+            </p>
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <span className="rounded-full bg-muted px-3 py-1">
+                {t("作品", "Entries")}{" "}
+                <span className="font-bold">{event.entryCount}</span>
+              </span>
+              {event.userName && (
+                <span className="truncate text-muted-foreground">
+                  {t("主催", "Host")}: {event.userName}
                 </span>
-                <span className="rounded-full bg-black/40 px-3 py-1 backdrop-blur-sm">
-                  {event.status === "ONGOING"
-                    ? t("公開中", "Live now")
-                    : t("まもなく開始", "Starts soon")}
-                </span>
-              </div>
+              )}
             </div>
+            <span className="font-semibold text-[#0077d9] text-sm group-hover:underline">
+              {t("詳しく見る・参加する →", "View & join →")}
+            </span>
           </div>
         </div>
       </Link>
       {shuffledEvents.length > 1 && (
-        <div className="flex items-center justify-center gap-2 bg-card px-4 py-3">
+        <div className="flex items-center justify-center gap-2 border-t bg-card px-4 py-2.5">
           <Button
             type="button"
             variant="outline"
