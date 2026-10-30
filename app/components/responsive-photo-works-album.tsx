@@ -12,6 +12,7 @@ import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
 import { StickerButtonFragment } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
 import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
+import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
@@ -185,6 +186,13 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
               const ratio = Math.min(Math.max(width / height, 0.5), 2.4)
               const isPriority =
                 props.priorityCount !== undefined && index < props.priorityCount
+              // 表示幅は flex-basis から少し伸びる程度なので、それに合う縮小版を読む
+              // （元のサムネイルは 600px 前後で、PC の一覧では倍近く大きかった）
+              const srcSet = toResizedImageSrcSet(imageUrl, {
+                minWidth: 160,
+                maxWidth: width > 1 ? width : undefined,
+              })
+              const sizes = `${Math.round(ratio * targetRowHeight * 1.4)}px`
               return (
                 <div
                   key={work.id}
@@ -225,6 +233,8 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                           // 先頭の作品は PC で優先して読み込める
                           loading={isPriority ? "eager" : "lazy"}
                           media="(min-width: 768px)"
+                          srcSet={srcSet}
+                          sizes={sizes}
                           className="h-full w-full"
                           shouldMaskSensitive={
                             props.shouldMaskSensitiveWorks === true &&
@@ -252,6 +262,8 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         }
                         loading={isPriority ? "eager" : "lazy"}
                         media="(min-width: 768px)"
+                        srcSet={srcSet}
+                        sizes={sizes}
                         className="absolute inset-0 block h-full w-full overflow-hidden"
                         shouldMaskSensitive={
                           props.shouldMaskSensitiveWorks === true &&

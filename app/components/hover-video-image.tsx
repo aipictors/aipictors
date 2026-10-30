@@ -20,6 +20,10 @@ type Props = {
   shouldMaskSensitive?: boolean
   /** この条件の画面幅でだけ画像を読み込む（OptimizedImage の media） */
   media?: string
+  /** 縮小版の候補（toResizedImageSrcSet） */
+  srcSet?: string
+  /** srcSet があるときの表示幅 */
+  sizes?: string
 }
 
 /**
@@ -39,6 +43,8 @@ export function HoverVideoImage(props: Props): React.ReactNode {
         fetchPriority={props.fetchPriority}
         loading={props.loading}
         media={props.media}
+        srcSet={props.srcSet}
+        sizes={props.sizes}
         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
         style={{
           // Safari対応：画像表示を強制
