@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react"
-import { CalendarDays, ImageIcon, Trophy, Users } from "lucide-react"
+import { CalendarDays, Clock, ImageIcon, Trophy, Users } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
 import { useEventDateTimeText } from "~/routes/($lang).events._index/hooks/use-event-date-time-text"
@@ -27,6 +27,10 @@ export type EventCardItem = {
 
 type Props = {
   appEvent: EventCardItem
+  /**
+   * compact: 終了したイベントなど向けの小さめ表示（スマホでは横並び）
+   */
+  variant?: "default" | "compact"
 }
 
 const DAY_MS = 1000 * 60 * 60 * 24
@@ -73,6 +77,9 @@ export function AppEventCard(props: Props) {
       ? t("開催予定", "Upcoming")
       : t("終了", "Ended")
 
+  // 締切が近い（残り3日以内）ものは目立たせる
+  const isClosingSoon = isOngoing && remainingDays <= 3
+
   const timingLabel = isOngoing
     ? remainingDays <= 1
       ? t("まもなく終了", "Ending soon")
@@ -86,6 +93,61 @@ export function AppEventCard(props: Props) {
           Math.max(1, daysUntilStart).toString(),
         )
       : null
+
+  if (props.variant === "compact") {
+    return (
+      <Link
+        className="group block h-full w-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        to={`/events/${appEvent.slug}`}
+      >
+        <article className="flex h-full gap-3 overflow-hidden rounded-xl border bg-card p-2 transition duration-200 group-hover:bg-accent/50 sm:flex-col sm:gap-0 sm:p-0 sm:group-hover:shadow-md">
+          <div className="relative aspect-[16/9] w-32 shrink-0 overflow-hidden rounded-lg bg-muted sm:w-full sm:rounded-none">
+            <img
+              className={`h-full w-full object-cover transition duration-300 group-hover:scale-[1.03] ${
+                isEnded ? "grayscale-[35%]" : ""
+              }`}
+              src={appEvent.thumbnailImageUrl}
+              alt={appEvent.title}
+              loading="lazy"
+              decoding="async"
+            />
+            {isEnded && (
+              <span className="absolute top-1.5 left-1.5 rounded-full bg-slate-700 px-2 py-0.5 font-bold text-[10px] text-white">
+                {statusLabel}
+              </span>
+            )}
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 sm:p-2.5">
+            <h3 className="line-clamp-2 font-bold text-sm leading-snug">
+              {appEvent.title}
+            </h3>
+            <div className="truncate text-muted-foreground text-xs">
+              {shortDate(startAt)} 〜 {shortDate(endAt)}
+            </div>
+            <div className="flex items-center gap-2.5 text-muted-foreground text-xs">
+              <span className="min-w-0 truncate">
+                {appEvent.userName ?? "Aipictors"}
+              </span>
+              <span
+                className="ml-auto flex shrink-0 items-center gap-1"
+                title={t("作品", "Entries")}
+              >
+                <ImageIcon className="size-3.5" aria-hidden="true" />
+                <span className="sr-only">{t("作品", "Entries")}</span>
+                {appEvent.entryCount}
+              </span>
+              {appEvent.rankingEnabled && (
+                <Trophy
+                  className="size-3.5 shrink-0 text-amber-600"
+                  aria-label={t("ランキングあり", "Ranking enabled")}
+                />
+              )}
+            </div>
+          </div>
+        </article>
+      </Link>
+    )
+  }
 
   return (
     <Link
@@ -140,7 +202,12 @@ export function AppEventCard(props: Props) {
             </span>
           </div>
           {timingLabel !== null && (
-            <span className="absolute right-2 bottom-2 rounded-full bg-black/75 px-2.5 py-0.5 font-semibold text-white text-xs backdrop-blur-sm">
+            <span
+              className={`absolute right-2 bottom-2 flex items-center gap-1 rounded-full px-2.5 py-0.5 font-semibold text-white text-xs shadow-sm ${
+                isClosingSoon ? "bg-amber-700" : "bg-black/75 backdrop-blur-sm"
+              }`}
+            >
+              <Clock className="size-3" aria-hidden="true" />
               {timingLabel}
             </span>
           )}
