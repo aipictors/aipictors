@@ -18,6 +18,7 @@ type Props = {
   userLogin: string
   userName: string
   userIsOfficial?: boolean
+  userIsModerator?: boolean
   userIconImageURL?: string
   avatarFrame?: UserAvatarFramePresentation | null
   userFollowersCount: number
@@ -64,7 +65,10 @@ export function WorkUser(props: Props) {
             />
             <p className="mt-2 flex items-center justify-center gap-1 text-center font-bold text-md">
               {props.userName}
-              {props.userIsOfficial && <OfficialBadge />}
+              <OfficialBadge
+                isOfficial={props.userIsOfficial}
+                isModerator={props.userIsModerator}
+              />
             </p>
           </Link>
         </h2>

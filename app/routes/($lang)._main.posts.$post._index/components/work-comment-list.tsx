@@ -75,6 +75,7 @@ type Comment = {
     id: string
     name: string
     isOfficial?: boolean
+    isModerator?: boolean
     iconUrl: string
     avatarFrame?: UserAvatarFramePresentation | null
   }
@@ -105,6 +106,7 @@ type ReplyComment = {
     id: string
     name: string
     isOfficial?: boolean
+    isModerator?: boolean
     iconUrl: string
     avatarFrame?: UserAvatarFramePresentation | null
   }
@@ -1267,6 +1269,7 @@ export function WorkCommentList(props: Props) {
                   userAvatarFrame={comment.user?.avatarFrame}
                   userName={comment.user?.name}
                   userIsOfficial={comment.user?.isOfficial}
+                  userIsModerator={comment.user?.isModerator}
                   commentId={comment.id}
                   isLiked={
                     comment.isLiked && !canceledCommentIds.includes(comment.id)
@@ -1339,6 +1342,7 @@ export function WorkCommentList(props: Props) {
               text={comment.text}
               userName={comment.user?.name}
               userIsOfficial={comment.user?.isOfficial}
+              userIsModerator={comment.user?.isModerator}
               commentId={comment.id}
               isLiked={
                 comment.isLiked && !canceledCommentIds.includes(comment.id)
@@ -1410,6 +1414,7 @@ export function WorkCommentList(props: Props) {
                   iconUrl={withIconUrlFallback(userIcon)}
                   userName={newReply.user?.name}
                   userIsOfficial={newReply.user?.isOfficial}
+                  userIsModerator={newReply.user?.isModerator}
                   replyId={newReply.id}
                   targetCommentId={comment.id}
                   isLiked={
@@ -1478,6 +1483,7 @@ export function WorkCommentList(props: Props) {
                     onDeleteCommentLike={() => onDeleteCommentLike(reply.id)}
                     userName={reply.user?.name}
                     userIsOfficial={reply.user?.isOfficial}
+                    userIsModerator={reply.user?.isModerator}
                     replyId={reply.id}
                     targetCommentId={comment.id}
                     iconUrl={withIconUrlFallback(userIcon)}
@@ -1572,6 +1578,7 @@ export function WorkCommentList(props: Props) {
                   text={comment.text}
                   userName={comment.user?.name}
                   userIsOfficial={comment.user?.isOfficial}
+                  userIsModerator={comment.user?.isModerator}
                   commentId={comment.id}
                   onDeleteComment={() => onDeleteComment(comment.id)}
                   isWorkOwnerBlocked={props.isWorkOwnerBlocked}
@@ -1648,6 +1655,7 @@ export function WorkCommentList(props: Props) {
                       }
                       userName={newReply.user?.name}
                       userIsOfficial={newReply.user?.isOfficial}
+                      userIsModerator={newReply.user?.isModerator}
                       replyId={newReply.id}
                       targetCommentId={comment.id}
                       onDeleteComment={() => {
@@ -1706,6 +1714,7 @@ export function WorkCommentList(props: Props) {
                         userAvatarFrame={reply.user?.avatarFrame}
                         userName={reply.user?.name}
                         userIsOfficial={reply.user?.isOfficial}
+                        userIsModerator={reply.user?.isModerator}
                         replyId={reply.id}
                         targetCommentId={comment.id}
                         iconUrl={withIconUrlFallback(userIcon)}

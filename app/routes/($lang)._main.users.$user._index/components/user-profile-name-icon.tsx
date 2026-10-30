@@ -109,7 +109,11 @@ export function UserProfileNameIcon(props: Props) {
               <h1 className="break-words font-bold text-xl leading-tight md:text-2xl">
                 {user.name.length > 0 ? user.name : t("名無し", "No name")}
               </h1>
-              {user.isOfficial && <OfficialBadge className="size-5" />}
+              <OfficialBadge
+                isOfficial={user.isOfficial}
+                isModerator={user.isModerator}
+                className="size-5"
+              />
               <UserSubscriptionIcon passType={user.pass?.type} />
             </div>
             <p className="break-all text-muted-foreground text-sm">

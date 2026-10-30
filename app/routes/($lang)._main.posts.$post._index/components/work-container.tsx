@@ -224,6 +224,7 @@ export function WorkContainer(props: Props) {
                   userLogin={work.user.login}
                   userName={work.user.name}
                   userIsOfficial={work.user.isOfficial}
+                  userIsModerator={work.user.isModerator}
                   userIconImageURL={withIconUrlFallback(work.user?.iconUrl)}
                   avatarFrame={work.user.avatarFrame}
                   userFollowersCount={work.user.followersCount}
@@ -242,6 +243,7 @@ export function WorkContainer(props: Props) {
                 userId={work.user.id}
                 userName={work.user.name}
                 userIsOfficial={work.user.isOfficial}
+                userIsModerator={work.user.isModerator}
                 userLogin={work.user.login}
                 userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                 avatarFrame={work.user.avatarFrame}

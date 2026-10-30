@@ -623,7 +623,10 @@ export function WorkArticle(props: Props) {
                 />
                 <span>{props.work.user.name}</span>
               </Link>
-              {props.work.user.isOfficial && <OfficialBadge />}
+              <OfficialBadge
+                isOfficial={props.work.user.isOfficial}
+                isModerator={props.work.user.isModerator}
+              />
             </div>
           </div>
         )}
@@ -676,6 +679,7 @@ export const workArticleFragment = graphql(
       nanoid
       name
       isOfficial
+      isModerator
       receivedLikesCount
       receivedViewsCount
       awardsCount
@@ -871,6 +875,7 @@ export const sensitiveWorkArticleFragment = graphql(
       nanoid
       name
       isOfficial
+      isModerator
       receivedLikesCount
       receivedViewsCount
       awardsCount

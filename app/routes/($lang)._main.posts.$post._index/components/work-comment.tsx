@@ -39,6 +39,7 @@ type Props = {
   userAvatarFrame?: UserAvatarFramePresentation | null
   userName?: string
   userIsOfficial?: boolean
+  userIsModerator?: boolean
   text?: string
   createdAt: number
   commentId: string
@@ -268,7 +269,10 @@ export function WorkComment(props: Props) {
             <Link to={`/users/${props.userId}`}>
               <span>{props.userName}</span>
             </Link>
-            {props.userIsOfficial && <OfficialBadge />}
+            <OfficialBadge
+              isOfficial={props.userIsOfficial}
+              isModerator={props.userIsModerator}
+            />
             {props.isMuted && (
               <div className="flex items-center space-x-1">
                 <EyeOff className="size-3 text-gray-400" />
