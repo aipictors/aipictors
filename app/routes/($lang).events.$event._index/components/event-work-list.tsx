@@ -1,16 +1,17 @@
-import { useQuery } from "@apollo/client/index"
-import { gql } from "@apollo/client/index"
+import { gql, useQuery } from "@apollo/client/index"
 import { useNavigate } from "@remix-run/react"
-import { useContext } from "react"
+import { graphql } from "gql.tada"
+import { ArrowDown, ArrowUp } from "lucide-react"
+import { type ReactNode, useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
-import { graphql } from "gql.tada"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { cn } from "~/lib/utils"
 import { EventWorksListSortableSetting } from "~/routes/($lang).events.$event._index/components/event-works-list-sortable-setting"
 import type { SortType } from "~/types/sort-type"
 
@@ -46,12 +47,17 @@ type Props = {
   onClickWorkTypeSortButton: () => void
   onClickIsPromotionSortButton: () => void
   revealSensitiveThumbnails?: boolean
+  /** "chips": よく使う並び順をボタンで並べる（押し直すと昇順/降順） */
+  sortVariant?: "dropdown" | "chips"
+  onChangeOrderBy?: (orderBy: IntrospectionEnum<"WorkOrderBy">) => void
+  /** 並び替えの右側に置く要素（モザイク切り替えなど） */
+  toolbarEnd?: ReactNode
 }
 
 /**
  * イベント作品一覧
  */
-export function EventWorkList (props: Props) {
+export function EventWorkList(props: Props) {
   const navigate = useNavigate()
   const t = useTranslation()
 
@@ -71,9 +77,10 @@ export function EventWorkList (props: Props) {
     },
   })
 
-  const works = props.eventSource === "OFFICIAL"
-    ? resp?.appEvent?.works ?? props.works
-    : resp?.userEvent?.works ?? props.works
+  const works =
+    props.eventSource === "OFFICIAL"
+      ? (resp?.appEvent?.works ?? props.works)
+      : (resp?.userEvent?.works ?? props.works)
 
   const allSortType = [
     "LIKES_COUNT",
@@ -84,9 +91,64 @@ export function EventWorkList (props: Props) {
     "NAME",
   ] as IntrospectionEnum<"WorkOrderBy">[]
 
+  const chipSortTypes: {
+    orderBy: IntrospectionEnum<"WorkOrderBy">
+    label: string
+  }[] = [
+    { orderBy: "DATE_CREATED", label: t("新着", "Newest") },
+    { orderBy: "LIKES_COUNT", label: t("いいね", "Likes") },
+    { orderBy: "BOOKMARKS_COUNT", label: t("ブックマーク", "Bookmarks") },
+    { orderBy: "VIEWS_COUNT", label: t("閲覧数", "Views") },
+    { orderBy: "COMMENTS_COUNT", label: t("コメント", "Comments") },
+  ]
+
   return (
-    <div className="space-y-6">
-      {!props.isHideSortableSetting && (
+    <div className="space-y-5">
+      {!props.isHideSortableSetting && props.sortVariant === "chips" && (
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+            {chipSortTypes.map((item) => {
+              const isActive = props.orderBy === item.orderBy
+              return (
+                <button
+                  key={item.orderBy}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => {
+                    if (isActive) {
+                      props.setSort(props.sort === "ASC" ? "DESC" : "ASC")
+                      return
+                    }
+                    props.onChangeOrderBy?.(item.orderBy)
+                  }}
+                  className={cn(
+                    "inline-flex shrink-0 items-center gap-1 rounded-full border px-3.5 py-1.5 font-medium text-sm transition-colors",
+                    isActive
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border bg-background text-foreground/80 hover:bg-muted",
+                  )}
+                >
+                  {item.label}
+                  {isActive &&
+                    (props.sort === "ASC" ? (
+                      <ArrowUp
+                        className="size-3.5"
+                        aria-label={t("昇順", "Ascending")}
+                      />
+                    ) : (
+                      <ArrowDown
+                        className="size-3.5"
+                        aria-label={t("降順", "Descending")}
+                      />
+                    ))}
+                </button>
+              )
+            })}
+          </div>
+          {props.toolbarEnd}
+        </div>
+      )}
+      {!props.isHideSortableSetting && props.sortVariant !== "chips" && (
         <div className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-background/70 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
           <div>
             <div className="font-medium text-foreground/75 text-xs tracking-wide uppercase">
@@ -140,7 +202,9 @@ export function EventWorkList (props: Props) {
               params.set("rating", props.rating)
             }
 
-            navigate(`/events/${props.slug}?${params.toString()}`)
+            // チップ表示のページでは作品一覧の先頭に戻す（ヘッダー画像まで戻らない）
+            const hash = props.sortVariant === "chips" ? "#event-works" : ""
+            navigate(`/events/${props.slug}?${params.toString()}${hash}`)
           }}
         />
       </div>

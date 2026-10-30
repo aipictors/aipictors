@@ -6,32 +6,37 @@ import type {
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react"
 import { format } from "date-fns"
 import { graphql } from "gql.tada"
-import { Share2 } from "lucide-react"
-import React, { useContext, useEffect } from "react"
+import {
+  CalendarDays,
+  ChevronDown,
+  Clock,
+  Copy,
+  ImageIcon,
+  Pencil,
+  PenLine,
+  Share2,
+  Trophy,
+} from "lucide-react"
+import React, { useContext, useEffect, useId } from "react"
 import { toast } from "sonner"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
-import { Checkbox } from "~/components/ui/checkbox"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { Label } from "~/components/ui/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip"
+import { Switch } from "~/components/ui/switch"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { usePersistentState } from "~/hooks/use-persistent-state"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
+import { cn } from "~/lib/utils"
 import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post._index/components/work-action-copy-url"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import {
@@ -45,6 +50,8 @@ import {
 import type { SortType } from "~/types/sort-type"
 import { createMeta } from "~/utils/create-meta"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+
+const DEFAULT_WORK_ORDER_BY: IntrospectionEnum<"WorkOrderBy"> = "DATE_CREATED"
 
 const DEFAULT_EVENT_WORK_RATINGS: IntrospectionEnum<"Rating">[] = [
   "G",
@@ -168,7 +175,9 @@ const normalizeUserEvent = (event: any): NormalizedEvent => ({
   awardWorks: event.awardWorks ?? [],
 })
 
-const getEventRatingBadgeText = (event: Pick<NormalizedEvent, "ratings" | "isSensitive">) => {
+const getEventRatingBadgeText = (
+  event: Pick<NormalizedEvent, "ratings" | "isSensitive">,
+) => {
   if (event.ratings && event.ratings.length > 0) {
     return event.ratings.join(", ")
   }
@@ -192,143 +201,10 @@ const getStatusBadgeClassName = (status: string) => {
   return "border-transparent bg-slate-500 text-white"
 }
 
-function EventStatCard(props: {
-  label: string
-  value: string
-  helper?: string
-}) {
-  return (
-    <div className="rounded-2xl border border-border/70 bg-background/95 px-4 py-4 shadow-sm backdrop-blur">
-      <div className="font-medium text-foreground/75 text-xs uppercase tracking-wide">
-        {props.label}
-      </div>
-      <div className="mt-2 font-bold text-2xl text-foreground leading-none md:text-3xl">
-        {props.value}
-      </div>
-      {props.helper && (
-        <div className="mt-2 text-foreground/70 text-xs">{props.helper}</div>
-      )}
-    </div>
-  )
-}
-
-function EventPeriodCard(props: {
-  startAt: number
-  endAt: number
-  t: ReturnType<typeof useTranslation>
-}) {
-  return (
-    <div className="rounded-2xl border border-border/70 bg-background/95 px-4 py-4 shadow-sm backdrop-blur">
-      <div className="font-medium text-foreground/75 text-xs uppercase tracking-wide">
-        {props.t("開催期間", "Event period")}
-      </div>
-      <div className="mt-2 flex items-center gap-2 font-bold text-2xl text-foreground leading-none md:text-3xl">
-        <span>{formatEventMonthDayText(props.startAt)}</span>
-        <span className="text-foreground/55">→</span>
-        <span>{formatEventMonthDayText(props.endAt)}</span>
-      </div>
-      <div className="mt-2 text-foreground/70 text-xs">
-        {props.t("日本時間", "Japan time (JST)")}
-      </div>
-    </div>
-  )
-}
-
-function EventHeroContent(props: {
-  appEvent: NormalizedEvent
-  statusText: string
-  statusDescription: string
-  t: ReturnType<typeof useTranslation>
-  className?: string
-  isOverlay?: boolean
-}) {
-  const eventTypeText =
-    props.appEvent.eventSource === "USER"
-      ? props.t("ユーザー企画", "User event")
-      : props.t("公式イベント", "Official event")
-
-  const heroHighlightText =
-    props.appEvent.status === "ONGOING"
-      ? props
-          .t("⏳ 残り{{count}}日", "⏳ {{count}} days left")
-          .replace("{{count}}", props.appEvent.remainingDays.toString())
-      : props.appEvent.status === "UPCOMING"
-        ? props.t("🗓 開催前", "🗓 Upcoming")
-        : props.t("✓ 終了済み", "✓ Ended")
-
-  const subtitleClassName = props.isOverlay
-    ? "text-sm text-white/80 md:text-base"
-    : "text-sm text-foreground/80 md:text-base"
-  const ratingBadgeText = getEventRatingBadgeText(props.appEvent)
-
-  return (
-    <div className={props.className}>
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge
-          className={`${getStatusBadgeClassName(props.appEvent.status)} ${props.isOverlay ? "backdrop-blur" : ""}`}
-        >
-          {props.statusText}
-        </Badge>
-        <Badge className="border-transparent bg-orange-100 font-semibold text-orange-700">
-          {heroHighlightText}
-        </Badge>
-        {ratingBadgeText && (
-          <Badge
-            variant="secondary"
-            className={
-              props.isOverlay
-                ? "bg-rose-50/90 text-rose-700 backdrop-blur"
-                : "bg-rose-50 text-rose-700"
-            }
-          >
-            {ratingBadgeText}
-          </Badge>
-        )}
-        <EventActionShare
-          slug={props.appEvent.slug}
-          title={props.appEvent.title}
-          announcementText={props.appEvent.announcementText}
-          isOverlay={props.isOverlay}
-        />
-      </div>
-
-      <div className="max-w-4xl space-y-3 text-foreground">
-        <h1 className="text-pretty font-bold text-3xl text-white leading-tight md:text-4xl xl:text-5xl">
-          {props.appEvent.title}
-        </h1>
-        <p className={subtitleClassName}>{eventTypeText}</p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)_minmax(0,1fr)]">
-        <EventPeriodCard
-          startAt={props.appEvent.startAt}
-          endAt={props.appEvent.endAt}
-          t={props.t}
-        />
-        <EventStatCard
-          label={props.t("参加作品数", "Entries")}
-          value={props.appEvent.worksCount.toString()}
-          helper={props.t("作品", "entries")}
-        />
-        <EventStatCard
-          label={props.t("ランキング方式", "Ranking")}
-          value={
-            props.appEvent.rankingEnabled
-              ? props.appEvent.rankingType
-              : props.t("なし", "None")
-          }
-          helper={props.statusDescription}
-        />
-      </div>
-    </div>
-  )
-}
-
 function EventActionShare(props: {
   slug: string
   title: string
   announcementText: string
-  isOverlay?: boolean
 }) {
   const t = useTranslation()
 
@@ -337,33 +213,26 @@ function EventActionShare(props: {
       ? `${window.location.origin}/events/${props.slug}`
       : `https://www.aipictors.com/events/${props.slug}`
 
+  const onCopyAnnouncement = async () => {
+    try {
+      await navigator.clipboard.writeText(props.announcementText)
+      toast(t("告知文をコピーしました", "Announcement text copied"))
+    } catch {
+      toast(
+        t("告知文のコピーに失敗しました", "Failed to copy announcement text"),
+      )
+    }
+  }
+
   return (
     <Popover>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <PopoverTrigger asChild>
-              <Button
-                size="icon"
-                variant={props.isOverlay ? "secondary" : "outline"}
-                className={
-                  props.isOverlay
-                    ? "bg-background/90 text-foreground backdrop-blur"
-                    : undefined
-                }
-                aria-label={t("イベントを共有", "Share event")}
-                title={t("イベントを共有", "Share event")}
-              >
-                <Share2 className="size-4" />
-              </Button>
-            </PopoverTrigger>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{t("イベントを共有", "Share event")}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <PopoverContent className="w-80">
+      <PopoverTrigger asChild>
+        <Button variant="outline" size="lg" className="gap-2">
+          <Share2 className="size-4" />
+          {t("共有", "Share")}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80" align="end">
         <div className="grid gap-4">
           <div className="space-y-2">
             <h4 className="font-medium leading-none">
@@ -380,6 +249,14 @@ function EventActionShare(props: {
               hashtags={["Aipictors"]}
               label={t("Xで告知する", "Announce on X")}
             />
+            <Button
+              variant="secondary"
+              className="w-full gap-2"
+              onClick={onCopyAnnouncement}
+            >
+              <Copy className="size-4" />
+              {t("告知文をコピー", "Copy announcement text")}
+            </Button>
           </div>
         </div>
       </PopoverContent>
@@ -387,14 +264,75 @@ function EventActionShare(props: {
   )
 }
 
-function EventMetaRow(props: { label: string; value: React.ReactNode }) {
+/**
+ * 長い説明は高さを抑えて「続きを読む」で開く
+ */
+function CollapsibleDescription(props: { html: string }) {
+  const t = useTranslation()
+  const ref = React.useRef<HTMLDivElement>(null)
+  const [isExpanded, setIsExpanded] = React.useState(false)
+  const [isOverflowing, setIsOverflowing] = React.useState(false)
+
+  useEffect(() => {
+    const element = ref.current
+    if (element === null) return
+    setIsOverflowing(element.scrollHeight > element.clientHeight + 8)
+  }, [props.html])
+
   return (
-    <div className="space-y-1 rounded-xl border bg-background px-4 py-3">
-      <div className="font-medium text-foreground/80 text-xs">
-        {props.label}
+    <div className="space-y-2">
+      <div className="relative">
+        <div
+          ref={ref}
+          className={cn(
+            "prose prose-sm dark:prose-invert max-w-none leading-7",
+            // HTML でない説明（改行区切りの文章）は改行をそのまま見せる
+            !/<[a-z][\s\S]*>/i.test(props.html) && "whitespace-pre-line",
+            !isExpanded && "max-h-56 overflow-hidden",
+          )}
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted event description HTML
+          dangerouslySetInnerHTML={{ __html: props.html }}
+        />
+        {!isExpanded && isOverflowing && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-card to-transparent" />
+        )}
       </div>
-      <div className="text-foreground text-sm leading-relaxed">
-        {props.value}
+      {isOverflowing && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="-ml-2 gap-1"
+          onClick={() => setIsExpanded(!isExpanded)}
+          aria-expanded={isExpanded}
+        >
+          {isExpanded ? t("閉じる", "Show less") : t("続きを読む", "Read more")}
+          <ChevronDown
+            className={cn(
+              "size-4 transition-transform",
+              isExpanded && "rotate-180",
+            )}
+          />
+        </Button>
+      )}
+    </div>
+  )
+}
+
+function EventFact(props: {
+  icon: React.ReactNode
+  label: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-foreground/70">
+        {props.icon}
+      </div>
+      <div className="min-w-0">
+        <div className="text-muted-foreground text-xs">{props.label}</div>
+        <div className="font-medium text-sm leading-relaxed">
+          {props.children}
+        </div>
       </div>
     </div>
   )
@@ -459,31 +397,11 @@ const formatEventDateTimeText = (
   )
 }
 
-const formatEventDateText = (
-  time: number,
-  t: ReturnType<typeof useTranslation>,
-) => {
-  const date = new Date(time * 1000)
-  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
-
-  return t(format(japanTime, "yyyy年MM月dd日"), format(japanTime, "yyyy/MM/dd"))
-}
-
 const formatEventMonthDayText = (time: number) => {
   const date = new Date(time * 1000)
   const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
 
   return format(japanTime, "MM/dd")
-}
-
-const formatEventTimeOnlyText = (
-  time: number,
-  t: ReturnType<typeof useTranslation>,
-) => {
-  const date = new Date(time * 1000)
-  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
-
-  return t(format(japanTime, "HH時mm分"), format(japanTime, "HH:mm"))
 }
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -501,7 +419,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const orderBy = urlParams.get("WorkOrderby")
     ? (urlParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">)
-    : "LIKES_COUNT"
+    : DEFAULT_WORK_ORDER_BY
 
   const sort = urlParams.get("worksOrderDeskAsc")
     ? (urlParams.get("worksOrderDeskAsc") as SortType)
@@ -567,471 +485,482 @@ export default function EventDetailPage() {
   const authContext = useContext(AuthContext)
   const data = useLoaderData<typeof loader>()
   const [searchParams, setSearchParams] = useSearchParams()
+  const event = data.appEvent
 
-  const [workType, setWorkType] =
-    React.useState<IntrospectionEnum<"WorkType"> | null>(
-      (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
-    )
-
-  const [workOrderBy, setWorkOrderBy] = React.useState<
-    IntrospectionEnum<"WorkOrderBy">
-  >(
+  // 並び順などは URL を正とする（ページを開いただけで URL を書き換えない）
+  const workType =
+    (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null
+  const workOrderBy =
     (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
-      "DATE_CREATED",
-  )
+    DEFAULT_WORK_ORDER_BY
+  const worksOrderDeskAsc =
+    (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC"
+  const rating =
+    (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null
 
-  const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
-    (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
-  )
-
-  const [rating, setRating] =
-    React.useState<IntrospectionEnum<"Rating"> | null>(
-      (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
+  const updateWorkParams = (next: Record<string, string | null>) => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev)
+        for (const [key, value] of Object.entries(next)) {
+          if (value === null) {
+            params.delete(key)
+          } else {
+            params.set(key, value)
+          }
+        }
+        // 条件を変えたら 1 ページ目から
+        params.set("page", "0")
+        return params
+      },
+      { preventScrollReset: true },
     )
+  }
+
+  const sortBy = (orderBy: IntrospectionEnum<"WorkOrderBy">) => () => {
+    updateWorkParams({
+      WorkOrderby: orderBy,
+      worksOrderDeskAsc:
+        workOrderBy === orderBy && worksOrderDeskAsc === "DESC"
+          ? "ASC"
+          : "DESC",
+    })
+  }
+
+  const revealSwitchId = useId()
 
   const [revealSensitiveThumbnails, setRevealSensitiveThumbnails] =
     usePersistentState<boolean>("event-sensitive-thumbnails-revealed", false)
 
-  useEffect(() => {
-    const params = new URLSearchParams()
-    params.set("page", String(data.page))
-    if (workType) params.set("workType", workType)
-    if (rating) params.set("rating", rating)
-    params.set("WorkOrderby", workOrderBy)
-    params.set("worksOrderDeskAsc", worksOrderDeskAsc)
-
-    setSearchParams(params)
-  }, [
-    data.page,
-    workType,
-    rating,
-    workOrderBy,
-    worksOrderDeskAsc,
-    setSearchParams,
-  ])
-
-  const onCopyAnnouncement = async () => {
-    try {
-      await navigator.clipboard.writeText(data.appEvent.announcementText)
-      toast(t("告知文をコピーしました", "Announcement text copied"))
-    } catch {
-      toast(
-        t("告知文のコピーに失敗しました", "Failed to copy announcement text"),
-      )
-    }
-  }
-
   const isOwner =
     authContext.userId !== null &&
     authContext.userId !== undefined &&
-    data.appEvent.userId === authContext.userId
+    event.userId === authContext.userId
+
+  const isEnded = event.status !== "ONGOING" && event.status !== "UPCOMING"
 
   const statusText =
-    data.appEvent.status === "ONGOING"
+    event.status === "ONGOING"
       ? t("開催中", "Ongoing")
-      : data.appEvent.status === "UPCOMING"
+      : event.status === "UPCOMING"
         ? t("開催予定", "Upcoming")
         : t("終了", "Ended")
 
-  const statusDescription =
-    data.appEvent.status === "ONGOING"
-      ? t("残り{{count}}日", "{{count}} days left").replace(
-          "{{count}}",
-          data.appEvent.remainingDays.toString(),
-        )
-      : data.appEvent.status === "UPCOMING"
-        ? t("開催開始前のイベントです", "This event has not started yet")
-        : t("終了済みイベントです", "This event has ended")
+  const eventTypeText =
+    event.eventSource === "USER"
+      ? t("ユーザー企画", "User event")
+      : t("公式イベント", "Official event")
+
+  const ratingBadgeText = getEventRatingBadgeText(event)
+
+  // R18/R18G を含みうるとき（対象年齢の指定外でも付いている作品がある）だけモザイク切り替えを出す
+  const canContainSensitiveWorks =
+    !event.ratings ||
+    event.ratings.length === 0 ||
+    event.ratings.some((r) => r === "R18" || r === "R18G") ||
+    event.works.some(
+      (work: { rating?: string | null; isSensitive?: boolean | null }) =>
+        work.isSensitive || work.rating === "R18" || work.rating === "R18G",
+    )
+
+  const heroImageUrl = event.headerImageUrl || event.thumbnailImageUrl
+
+  const postUrl = `/new/image?event=${event.slug}&tag=${encodeURIComponent(event.mainTag)}`
+
+  const countdown = (() => {
+    if (event.status === "ONGOING") {
+      return {
+        main:
+          event.remainingDays <= 0
+            ? t("本日まで", "Ends today")
+            : t("残り{{count}}日", "{{count}} days left").replace(
+                "{{count}}",
+                event.remainingDays.toString(),
+              ),
+        sub: t("{{date}} まで", "Until {{date}}").replace(
+          "{{date}}",
+          formatEventDateTimeText(event.endAt, t),
+        ),
+        isUrgent: event.remainingDays <= 3,
+      }
+    }
+    if (event.status === "UPCOMING") {
+      return {
+        main: t("開催前", "Upcoming"),
+        sub: t("{{date}} から", "From {{date}}").replace(
+          "{{date}}",
+          formatEventDateTimeText(event.startAt, t),
+        ),
+        isUrgent: false,
+      }
+    }
+    return {
+      main: t("終了しました", "This event has ended"),
+      sub: t("{{date}} に終了", "Ended {{date}}").replace(
+        "{{date}}",
+        formatEventDateTimeText(event.endAt, t),
+      ),
+      isUrgent: false,
+    }
+  })()
+
+  const hasRanking = event.rankingEnabled && event.awardWorks.length > 0
 
   return (
     <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 pb-8 md:px-6 xl:px-8">
-      {data.appEvent.headerImageUrl && (
-        <section className="relative overflow-hidden rounded-3xl border bg-card shadow-xs">
-          <img
-            className="h-[280px] w-full object-cover object-center md:h-[360px] lg:h-[420px] xl:h-[480px]"
-            src={data.appEvent.headerImageUrl}
-            alt={data.appEvent.title}
-          />
-          <div className="xl:absolute xl:inset-0 xl:bg-linear-to-t xl:from-black/75 xl:via-black/45 xl:to-black/20" />
-          <div className="border-t bg-slate-950 p-4 md:p-5 xl:hidden">
-            <EventHeroContent
-              appEvent={data.appEvent}
-              statusText={statusText}
-              statusDescription={statusDescription}
-              t={t}
-              className="mx-auto flex max-w-5xl flex-col gap-5"
-            />
+      {/* ヘッダー: 画像（文字入りの告知画像が多いので切らずに全体を見せる）＋ 要点と参加ボタン */}
+      <section className="overflow-hidden rounded-3xl border bg-card shadow-xs">
+        <div
+          className={cn(
+            "grid",
+            heroImageUrl && "lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,1fr)]",
+          )}
+        >
+          {heroImageUrl && (
+            <div className="relative aspect-video overflow-hidden bg-muted lg:aspect-auto lg:min-h-[400px]">
+              <img
+                src={heroImageUrl}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 size-full scale-110 object-cover opacity-60 blur-2xl"
+              />
+              <img
+                src={heroImageUrl}
+                alt={event.title}
+                className="relative size-full object-contain"
+                fetchPriority="high"
+              />
+            </div>
+          )}
+
+          <div className="flex flex-col gap-5 p-5 md:p-6">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className={getStatusBadgeClassName(event.status)}>
+                  {statusText}
+                </Badge>
+                <Badge variant="outline">{eventTypeText}</Badge>
+                {ratingBadgeText && (
+                  <Badge
+                    variant="secondary"
+                    className="bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+                  >
+                    {ratingBadgeText}
+                  </Badge>
+                )}
+              </div>
+              <h1 className="text-pretty font-bold text-2xl leading-tight md:text-3xl">
+                {event.title}
+              </h1>
+              {event.eventSource === "USER" && event.userId && (
+                <Link
+                  to={`/users/${event.userId}`}
+                  className="inline-flex items-center gap-2 text-sm hover:underline"
+                >
+                  <Avatar className="size-7 border">
+                    {event.userIconUrl && (
+                      <AvatarImage
+                        src={withIconUrlFallback(event.userIconUrl)}
+                        alt=""
+                      />
+                    )}
+                    <AvatarFallback>
+                      {(event.userName ?? event.userId)
+                        .slice(0, 1)
+                        .toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-muted-foreground">
+                    {t("主催", "Host")}
+                  </span>
+                  <span className="font-medium">
+                    {event.userName ?? event.userId}
+                  </span>
+                </Link>
+              )}
+            </div>
+
+            {/* 残り日数がいちばん大事なので大きく */}
+            <div
+              className={cn(
+                "rounded-2xl border px-4 py-3",
+                countdown.isUrgent
+                  ? "border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/40"
+                  : "bg-muted/40",
+              )}
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-2 font-bold text-xl",
+                  countdown.isUrgent && "text-amber-700 dark:text-amber-300",
+                )}
+              >
+                <Clock className="size-5" />
+                {countdown.main}
+              </div>
+              <div className="mt-1 text-muted-foreground text-sm">
+                {countdown.sub}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <EventFact
+                icon={<CalendarDays className="size-4" />}
+                label={t("開催期間（日本時間）", "Period (JST)")}
+              >
+                {formatEventMonthDayText(event.startAt)} 〜{" "}
+                {formatEventMonthDayText(event.endAt)}
+              </EventFact>
+              <EventFact
+                icon={<ImageIcon className="size-4" />}
+                label={t("参加作品", "Entries")}
+              >
+                {t("{{count}}作品", "{{count}} works").replace(
+                  "{{count}}",
+                  event.worksCount.toLocaleString(),
+                )}
+                {event.participantCount > 0 && (
+                  <span className="text-muted-foreground">
+                    {" "}
+                    /{" "}
+                    {t("{{count}}人", "{{count}} people").replace(
+                      "{{count}}",
+                      event.participantCount.toLocaleString(),
+                    )}
+                  </span>
+                )}
+              </EventFact>
+              {event.rankingEnabled && (
+                <EventFact
+                  icon={<Trophy className="size-4" />}
+                  label={t("ランキング", "Ranking")}
+                >
+                  {event.rankingType === "LIKES"
+                    ? t("いいね数で決定", "By likes")
+                    : event.rankingType}
+                </EventFact>
+              )}
+            </div>
+
+            {event.tags.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="text-muted-foreground text-xs">
+                  {t(
+                    "参加タグ（投稿時に付けてください）",
+                    "Entry tags (add when posting)",
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {event.tags.map((tag) => (
+                    <Link
+                      key={tag}
+                      to={`/tags/${encodeURIComponent(tag)}`}
+                      className="rounded-full bg-muted px-3 py-1 font-medium text-sm transition-colors hover:bg-muted/70"
+                    >
+                      #{tag}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-auto flex flex-wrap gap-2 pt-1">
+              {!isEnded && (
+                <Button asChild size="lg" className="flex-1 gap-2">
+                  <Link to={postUrl}>
+                    <PenLine className="size-4" />
+                    {t("このイベントに投稿する", "Post to this event")}
+                  </Link>
+                </Button>
+              )}
+              {isEnded && hasRanking && (
+                <Button asChild size="lg" className="flex-1 gap-2">
+                  <a href="#event-ranking">
+                    <Trophy className="size-4" />
+                    {t("結果を見る", "See results")}
+                  </a>
+                </Button>
+              )}
+              <EventActionShare
+                slug={event.slug}
+                title={event.title}
+                announcementText={event.announcementText}
+              />
+              {isOwner && event.eventSource === "USER" && (
+                <Button asChild size="lg" variant="outline" className="gap-2">
+                  <Link to={`/events/${event.slug}/edit`}>
+                    <Pencil className="size-4" />
+                    {t("編集", "Edit")}
+                  </Link>
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="absolute inset-x-0 bottom-0 hidden p-6 xl:block xl:p-8">
-            <EventHeroContent
-              appEvent={data.appEvent}
-              statusText={statusText}
-              statusDescription={statusDescription}
-              t={t}
-              isOverlay={true}
-              className="mx-auto flex max-w-4xl flex-col gap-5"
-            />
-          </div>
+        </div>
+      </section>
+
+      {/* 概要・参加方法: 一覧の前に置くが、長い文は畳む */}
+      {(event.description || event.participationGuide) && (
+        <section
+          className={cn(
+            "grid gap-4",
+            event.description &&
+              event.participationGuide &&
+              "lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,1fr)]",
+          )}
+        >
+          {event.description && (
+            <div className="space-y-3 rounded-3xl border bg-card p-5 md:p-6">
+              <h2 className="font-semibold text-lg">
+                {t("イベント概要", "About this event")}
+              </h2>
+              <CollapsibleDescription html={event.description} />
+            </div>
+          )}
+          {event.participationGuide && (
+            <div className="space-y-3 rounded-3xl border bg-card p-5 md:p-6">
+              <h2 className="font-semibold text-lg">
+                {t("参加方法", "How to join")}
+              </h2>
+              <LinkifiedTextBlock
+                text={event.participationGuide}
+                className="text-sm leading-7"
+                linkClassName="break-all font-medium text-sky-600 underline underline-offset-2 hover:text-sky-700"
+              />
+            </div>
+          )}
         </section>
       )}
 
-      <section className="space-y-4 rounded-3xl border bg-card/80 p-4 shadow-xs backdrop-blur-sm md:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="space-y-1">
-            <div className="font-medium text-foreground/80 text-sm">
-              {t("作品一覧", "Works")}
-            </div>
-            <h2 className="font-semibold text-2xl md:text-3xl">
-              {t("参加作品（{{count}}）", "Entries ({{count}})").replace(
-                "{{count}}",
-                data.appEvent.worksCount.toString(),
-              )}
-            </h2>
-          </div>
-          <label className="flex items-center gap-3 rounded-xl border bg-muted/20 px-4 py-3 text-sm">
-            <Checkbox
-              checked={revealSensitiveThumbnails}
-              onCheckedChange={(checked) =>
-                setRevealSensitiveThumbnails(checked === true)
-              }
-            />
-            <span className="leading-relaxed">
-              {t(
-                "R18/R18G作品のモザイクを外す（他のイベントでも保持）",
-                "Reveal R18/R18G thumbnails and keep this setting for other events",
-              )}
-            </span>
-          </label>
+      {hasRanking && (
+        <div
+          id="event-ranking"
+          className="scroll-mt-20 rounded-3xl border bg-card p-5 md:p-6"
+        >
+          <EventAwardWorkList
+            works={event.awardWorks}
+            slug={event.slug}
+            eventSource={event.eventSource}
+            revealSensitiveThumbnails={revealSensitiveThumbnails}
+          />
         </div>
-
-        <EventWorkList
-          works={data.appEvent.works}
-          maxCount={data.appEvent.worksCount}
-          page={data.page}
-          slug={data.appEvent.slug}
-          eventSource={data.appEvent.eventSource}
-          sort={worksOrderDeskAsc}
-          orderBy={workOrderBy}
-          workType={workType}
-          rating={rating}
-          sumWorksCount={data.appEvent.worksCount}
-          setWorkType={setWorkType}
-          setRating={setRating}
-          setSort={setWorksOrderDeskAsc}
-          onClickTitleSortButton={() => {
-            setWorkOrderBy("NAME")
-            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-          }}
-          onClickLikeSortButton={() => {
-            setWorkOrderBy("LIKES_COUNT")
-            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-          }}
-          onClickBookmarkSortButton={() => {
-            setWorkOrderBy("BOOKMARKS_COUNT")
-            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-          }}
-          onClickCommentSortButton={() => {
-            setWorkOrderBy("COMMENTS_COUNT")
-            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-          }}
-          onClickViewSortButton={() => {
-            setWorkOrderBy("VIEWS_COUNT")
-            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-          }}
-          onClickAccessTypeSortButton={() => {
-            setWorkOrderBy("ACCESS_TYPE")
-            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-          }}
-          onClickDateSortButton={() => {
-            setWorkOrderBy("DATE_CREATED")
-            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-          }}
-          onClickWorkTypeSortButton={() => {
-            setWorkOrderBy("WORK_TYPE")
-            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-          }}
-          onClickIsPromotionSortButton={() => {
-            setWorkOrderBy("IS_PROMOTION")
-            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-          }}
-          revealSensitiveThumbnails={revealSensitiveThumbnails}
-        />
-      </section>
-
-      {data.appEvent.rankingEnabled && data.appEvent.awardWorks.length > 0 && (
-        <EventAwardWorkList
-          works={data.appEvent.awardWorks}
-          slug={data.appEvent.slug}
-          eventSource={data.appEvent.eventSource}
-          revealSensitiveThumbnails={revealSensitiveThumbnails}
-        />
       )}
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-4">
-          <Card>
-            <CardHeader className="space-y-4 pb-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline">
-                      {data.appEvent.eventSource === "OFFICIAL"
-                        ? t("公式イベント", "Official Event")
-                        : t("ユーザー企画", "User Event")}
-                    </Badge>
-                    <Badge
-                      className={getStatusBadgeClassName(data.appEvent.status)}
-                    >
-                      {statusText}
-                    </Badge>
-                    {getEventRatingBadgeText(data.appEvent) && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-rose-50 text-rose-700"
-                      >
-                        {getEventRatingBadgeText(data.appEvent)}
-                      </Badge>
-                    )}
-                  </div>
-                  <div>
-                    <h2 className="font-semibold text-2xl leading-tight md:text-3xl">
-                      {t("イベント概要", "Event overview")}
-                    </h2>
-                    <p className="mt-3 font-semibold text-foreground text-lg leading-snug md:text-xl">
-                      {data.appEvent.title}
-                    </p>
-                    <p className="mt-2 text-foreground/90 text-sm leading-relaxed md:text-base">
-                      {statusDescription}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {data.appEvent.description && (
-                <div
-                  className="prose prose-sm dark:prose-invert max-w-none leading-7"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted event description HTML
-                  dangerouslySetInnerHTML={{
-                    __html: data.appEvent.description,
-                  }}
-                />
+      <section
+        id="event-works"
+        className="scroll-mt-20 space-y-4 rounded-3xl border bg-card p-4 md:p-6"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h2 className="font-semibold text-xl md:text-2xl">
+            {t("参加作品", "Entries")}
+            <span className="ml-2 font-normal text-base text-muted-foreground">
+              {t("{{count}}件", "{{count}}").replace(
+                "{{count}}",
+                event.worksCount.toLocaleString(),
               )}
-
-              <div className="space-y-3 rounded-xl border bg-muted/20 p-4">
-                <div className="font-medium text-sm">
-                  {t("参加アクション", "Actions")}
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild size="lg" className="w-full sm:w-auto">
-                    <Link
-                      to={`/new/image?event=${data.appEvent.slug}&tag=${encodeURIComponent(data.appEvent.mainTag)}`}
-                    >
-                      {t("このイベントに投稿する", "Post to this event")}
-                    </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    variant="secondary"
-                    className="w-full sm:w-auto"
-                  >
-                    <Link
-                      to={`/search?age_limit=&tag=${encodeURIComponent(data.appEvent.mainTag)}`}
-                    >
-                      {t("参加タグの作品を見る", "View works with this tag")}
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {data.appEvent.participationGuide && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">
-                  {t("参加方法", "How to join")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <LinkifiedTextBlock
-                  text={data.appEvent.participationGuide}
-                  className="text-sm leading-7 md:text-[15px]"
-                  linkClassName="break-all font-medium text-sky-600 underline underline-offset-2 hover:text-sky-700"
-                />
-              </CardContent>
-            </Card>
+            </span>
+          </h2>
+          {event.slug && (
+            <SensitiveToggle
+              variant="compact"
+              targetUrl={`/r/events/${event.slug}`}
+            />
           )}
-
-          <Card>
-            <CardHeader className="flex flex-col gap-3 pb-3 sm:flex-row sm:items-center sm:justify-between">
-              <CardTitle className="text-lg">
-                {t("告知用テキスト", "Announcement text")}
-              </CardTitle>
-              <Button
-                variant="secondary"
-                className="w-full sm:w-auto"
-                onClick={onCopyAnnouncement}
-              >
-                {t("告知文をコピー", "Copy announcement text")}
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <LinkifiedTextBlock
-                text={data.appEvent.announcementText}
-                className="rounded-xl border bg-muted/30 p-4 font-mono text-xs leading-6 md:text-sm"
-                linkClassName="break-all font-medium text-sky-600 underline underline-offset-2 hover:text-sky-700"
-              />
-            </CardContent>
-          </Card>
         </div>
 
-        <aside className="space-y-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">
-                {t("イベント情報", "Event info")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <EventMetaRow
-                label={t("イベント種別", "Event type")}
-                value={
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline">
-                      {data.appEvent.eventSource === "OFFICIAL"
-                        ? t("公式イベント", "Official Event")
-                        : t("ユーザー企画", "User Event")}
-                    </Badge>
-                    <Badge
-                      className={getStatusBadgeClassName(data.appEvent.status)}
-                    >
-                      {statusText}
-                    </Badge>
-                    {getEventRatingBadgeText(data.appEvent) && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-rose-50 text-rose-700"
-                      >
-                        {getEventRatingBadgeText(data.appEvent)}
-                      </Badge>
-                    )}
-                  </div>
-                }
-              />
-
-              {data.appEvent.eventSource === "USER" && data.appEvent.userId && (
-                <EventMetaRow
-                  label={t("主催者", "Host")}
-                  value={
-                    <div className="flex items-center gap-3">
-                      <Avatar className="size-10 border bg-muted/30">
-                        {data.appEvent.userIconUrl && (
-                          <AvatarImage
-                            src={withIconUrlFallback(data.appEvent.userIconUrl)}
-                            alt={data.appEvent.userName ?? data.appEvent.userId}
-                          />
-                        )}
-                        <AvatarFallback>
-                          {(data.appEvent.userName ?? data.appEvent.userId)
-                            ?.slice(0, 1)
-                            .toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <Link
-                        className="font-medium underline underline-offset-2"
-                        to={`/users/${data.appEvent.userId}`}
-                      >
-                        {data.appEvent.userName ?? data.appEvent.userId}
-                      </Link>
-                    </div>
-                  }
-                />
-              )}
-
-              <EventMetaRow
-                label={t("開催期間", "Event period")}
-                value={
-                  <div className="space-y-2">
-                    <div className="rounded-lg bg-muted/40 px-3 py-2">
-                      <div className="text-muted-foreground text-xs">
-                        {t("開始", "Starts")}
-                      </div>
-                      <div className="font-medium">
-                        {formatEventDateTimeText(data.appEvent.startAt, t)}
-                      </div>
-                    </div>
-                    <div className="rounded-lg bg-muted/40 px-3 py-2">
-                      <div className="text-muted-foreground text-xs">
-                        {t("終了", "Ends")}
-                      </div>
-                      <div className="font-medium">
-                        {formatEventDateTimeText(data.appEvent.endAt, t)}
-                      </div>
-                    </div>
-                  </div>
-                }
-              />
-
-              <EventMetaRow
-                label={t("タグ", "Tags")}
-                value={
-                  <div className="flex flex-wrap gap-2">
-                    {data.appEvent.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="bg-muted text-foreground"
-                      >
-                        #{tag}
-                      </Badge>
-                    ))}
-                  </div>
-                }
-              />
-
-              {data.appEvent.slug && (
-                <EventMetaRow
-                  label={t("表示切替", "Display toggle")}
-                  value={
-                    <SensitiveToggle
-                      variant="compact"
-                      targetUrl={`/r/events/${data.appEvent.slug}`}
-                    />
-                  }
-                />
-              )}
-            </CardContent>
-          </Card>
-
-          {isOwner && data.appEvent.eventSource === "USER" && (
-            <Card className="border-dashed">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">
-                  {t("管理", "Management")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-muted-foreground text-sm">
-                  {t(
-                    "主催者向けの設定変更はこちらから行えます。",
-                    "Organizer-only settings are available here.",
+        {event.works.length === 0 && data.page === 0 ? (
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed px-4 py-12 text-center">
+            <p className="text-muted-foreground text-sm">
+              {isEnded
+                ? t("参加作品はありませんでした", "There were no entries")
+                : t(
+                    "まだ参加作品がありません。最初の1作品を投稿してみませんか？",
+                    "No entries yet. Be the first to post!",
                   )}
-                </p>
-                <Button
-                  asChild
-                  variant="secondary"
-                  className="w-full justify-center"
-                >
-                  <Link to={`/events/${data.appEvent.slug}/edit`}>
-                    {t("イベントを編集", "Edit event")}
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </aside>
+            </p>
+            {!isEnded && (
+              <Button asChild>
+                <Link to={postUrl}>
+                  {t("このイベントに投稿する", "Post to this event")}
+                </Link>
+              </Button>
+            )}
+          </div>
+        ) : (
+          <EventWorkList
+            works={event.works}
+            maxCount={event.worksCount}
+            page={data.page}
+            slug={event.slug}
+            eventSource={event.eventSource}
+            sort={worksOrderDeskAsc}
+            orderBy={workOrderBy}
+            workType={workType}
+            rating={rating}
+            sumWorksCount={event.worksCount}
+            sortVariant="chips"
+            onChangeOrderBy={(orderBy) =>
+              updateWorkParams({
+                WorkOrderby: orderBy,
+                worksOrderDeskAsc: "DESC",
+              })
+            }
+            toolbarEnd={
+              canContainSensitiveWorks ? (
+                <div className="flex shrink-0 items-center gap-2">
+                  <Switch
+                    id={revealSwitchId}
+                    checked={revealSensitiveThumbnails}
+                    onCheckedChange={setRevealSensitiveThumbnails}
+                  />
+                  <Label
+                    htmlFor={revealSwitchId}
+                    className="cursor-pointer font-normal text-muted-foreground"
+                  >
+                    {t("R18のモザイクを外す", "Unblur R18")}
+                  </Label>
+                </div>
+              ) : undefined
+            }
+            setWorkType={(value) => updateWorkParams({ workType: value })}
+            setRating={(value) => updateWorkParams({ rating: value })}
+            setSort={(value) => updateWorkParams({ worksOrderDeskAsc: value })}
+            onClickTitleSortButton={sortBy("NAME")}
+            onClickLikeSortButton={sortBy("LIKES_COUNT")}
+            onClickBookmarkSortButton={sortBy("BOOKMARKS_COUNT")}
+            onClickCommentSortButton={sortBy("COMMENTS_COUNT")}
+            onClickViewSortButton={sortBy("VIEWS_COUNT")}
+            onClickAccessTypeSortButton={sortBy("ACCESS_TYPE")}
+            onClickDateSortButton={sortBy("DATE_CREATED")}
+            onClickWorkTypeSortButton={sortBy("WORK_TYPE")}
+            onClickIsPromotionSortButton={sortBy("IS_PROMOTION")}
+            revealSensitiveThumbnails={revealSensitiveThumbnails}
+          />
+        )}
       </section>
+
+      {/* 一覧を見終わったあとにも参加ボタン */}
+      {!isEnded && event.works.length > 0 && (
+        <section className="flex flex-col items-center gap-3 rounded-3xl border bg-card px-5 py-8 text-center">
+          <p className="font-semibold text-lg">
+            {t("あなたも参加してみませんか？", "Want to join in?")}
+          </p>
+          {event.mainTag && (
+            <p className="text-muted-foreground text-sm">
+              {t(
+                "投稿時にタグ「#{{tag}}」を付けると参加できます",
+                "Add the tag #{{tag}} when posting to join",
+              ).replace("{{tag}}", event.mainTag)}
+            </p>
+          )}
+          <Button asChild size="lg" className="gap-2">
+            <Link to={postUrl}>
+              <PenLine className="size-4" />
+              {t("このイベントに投稿する", "Post to this event")}
+            </Link>
+          </Button>
+        </section>
+      )}
     </div>
   )
 }
