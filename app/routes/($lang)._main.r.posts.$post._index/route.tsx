@@ -13,6 +13,9 @@ import {
 } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
+import { isRouteErrorResponse, useRouteError } from "@remix-run/react"
+import { OwnWorkNotFoundPage } from "~/components/work/own-work-not-found-page"
+import { AppErrorPage } from "~/components/app/app-error-page"
 import { type FragmentOf, graphql } from "gql.tada"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
@@ -24,6 +27,29 @@ import { getJstDate } from "~/utils/jst-date"
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
 import { SensitiveWorkContainer } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
 import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
+
+/**
+ * 予約投稿などで見つからないときは、持ち主なら下書き表示に移す
+ */
+export function ErrorBoundary () {
+  const error = useRouteError()
+  const params = useParams()
+
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return <OwnWorkNotFoundPage workId={params.post} />
+  }
+
+  if (isRouteErrorResponse(error)) {
+    return <AppErrorPage status={error.status} message={error.data} />
+  }
+
+  return (
+    <AppErrorPage
+      status={500}
+      message={error instanceof Error ? error.message : ""}
+    />
+  )
+}
 
 export function HydrateFallback() {
   return <AppLoadingPage />

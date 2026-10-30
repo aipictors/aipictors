@@ -21,7 +21,7 @@ export function GenerationConfigRestoration (props: Props) {
 
   const context = useGenerationContext()
 
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const ref = searchParams.get("ref")
 
@@ -32,6 +32,16 @@ export function GenerationConfigRestoration (props: Props) {
   const negativePromptText = searchParams.get("negativeprompts")
 
   const { send } = GenerationConfigContext.useActorRef()
+
+  /**
+   * 読み込んだパラメータを URL から外す
+   * 残しておくと、別のページから戻ったときや読み込み直したときに古い内容で上書きしてしまう
+   */
+  const removeParams = (names: string[]) => {
+    const next = new URLSearchParams(window.location.search)
+    for (const name of names) next.delete(name)
+    setSearchParams(next, { replace: true, preventScrollReset: true })
+  }
 
   const { data } = useSuspenseQuery(
     imageGenerationResultQuery,
@@ -75,11 +85,13 @@ export function GenerationConfigRestoration (props: Props) {
           null,
         )
         toast("タスクを復元しました。", { position: "top-center" })
+        removeParams(["ref", "work"])
         return
       }
     } catch (_error) {
       // captureException(error)
       toast("タスクの復元に失敗しました。")
+      removeParams(["ref"])
       return
     }
 
@@ -111,15 +123,17 @@ export function GenerationConfigRestoration (props: Props) {
             null,
           )
           toast("タスクを復元しました。", { position: "top-center" })
+          removeParams(["work"])
           return
         }
       }
     } catch (_error) {
       // captureException(error)
       toast("タスクの復元に失敗しました。")
+      removeParams(["work"])
       return
     }
-  }, [data?.imageGenerationResult.id])
+  }, [data?.imageGenerationResult.id, work?.work?.id])
 
   useEffect(() => {
     if (!promptText) return
@@ -134,6 +148,7 @@ export function GenerationConfigRestoration (props: Props) {
       // captureException(error)
       toast("プロンプトの復元に失敗しました。")
     }
+    removeParams(["prompts", "negativeprompts"])
   }, [promptText])
 
   useEffect(() => {
