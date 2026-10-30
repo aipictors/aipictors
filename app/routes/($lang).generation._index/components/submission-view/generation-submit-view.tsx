@@ -995,13 +995,14 @@ export function GenerationSubmissionView (props: Props) {
     const taskCounts = Array.from({ length: taskCount }, (_, i) => i)
 
     // シードを設定する、連続生成のときはSeedは連番にする
+    // 1 依頼で複数枚作るときは依頼の中で Seed+1, Seed+2… になるので、依頼ごとに枚数ぶんずらす
     const seeds: number[] = []
 
     taskCounts.map((i) => {
       if (context.config.seed === -1) {
         seeds.push(-1)
       } else {
-        seeds.push(context.config.seed + i)
+        seeds.push(context.config.seed + i * imagesPerRequest)
       }
     })
 

@@ -1,5 +1,8 @@
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useImagesPerRequestPreference } from "~/routes/($lang).generation._index/hooks/use-images-per-request"
+import {
+  useFixedSeedImagesPerRequestPreference,
+  useImagesPerRequestPreference,
+} from "~/routes/($lang).generation._index/hooks/use-images-per-request"
 import {
   getMaxImagesPerRequest,
   resolveImagesPerRequest,
@@ -11,7 +14,20 @@ import {
 export function useImagesPerRequest() {
   const context = useGenerationContext()
 
-  const [preference, setPreference] = useImagesPerRequestPreference()
+  const [normalPreference, setNormalPreference] =
+    useImagesPerRequestPreference()
+
+  const [fixedSeedPreference, setFixedSeedPreference] =
+    useFixedSeedImagesPerRequestPreference()
+
+  // Seed を指定しているときは別に覚えた枚数（既定 1 枚）を使う
+  const isSeedFixed = context.config.seed !== -1
+
+  const preference = isSeedFixed ? fixedSeedPreference : normalPreference
+
+  const setPreference = isSeedFixed
+    ? setFixedSeedPreference
+    : setNormalPreference
 
   const passType = context.currentPass?.type
   const isPaidPlan =
@@ -34,7 +50,6 @@ export function useImagesPerRequest() {
     generationType,
     upscaleSize: context.config.upscaleSize,
     hasControlNet: context.config.controlNetImageBase64 !== null,
-    isSeedFixed: context.config.seed !== -1,
     isPaidPlan,
   })
 

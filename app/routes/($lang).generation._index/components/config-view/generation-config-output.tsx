@@ -43,9 +43,6 @@ export function GenerationConfigOutput(props: Props) {
     if (context.config.controlNetImageBase64 !== null) {
       return t("ControlNet使用時は1枚ずつ", "ControlNet: 1 image")
     }
-    if (context.config.seed !== -1) {
-      return t("Seed指定時は1枚ずつ", "Fixed seed: 1 image")
-    }
     if (context.config.i2iImageBase64) {
       return t("画像から生成は1枚ずつ", "Image to image: 1 image")
     }
@@ -109,6 +106,14 @@ export function GenerationConfigOutput(props: Props) {
             )
           })}
         </div>
+        {context.config.seed !== -1 && images.count > 1 && (
+          <p className="text-muted-foreground text-xs">
+            {t(
+              `Seed ${context.config.seed}〜${context.config.seed + images.count - 1} で${images.count}枚作ります（1枚目は今のSeedと同じ絵）`,
+              `Makes ${images.count} images with seeds ${context.config.seed}-${context.config.seed + images.count - 1}`,
+            )}
+          </p>
+        )}
         {!images.isPaidPlan && (
           <p className="text-muted-foreground text-xs">
             {t("無料は2枚まで。", "Free plan: up to 2. ")}

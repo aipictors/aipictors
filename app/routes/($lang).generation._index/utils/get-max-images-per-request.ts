@@ -1,6 +1,7 @@
 /**
  * 1 回の生成で作れる枚数の上限（サーバーと同じ決まり）
- * 無料 2 枚・ライト以上 4 枚。高解像度・画像から生成・ControlNet・Seed 指定・FLUX・Gemini は 1 枚
+ * 無料 2 枚・ライト以上 4 枚。高解像度・画像から生成・ControlNet・FLUX・Gemini は 1 枚
+ * Seed を指定したときも 2 枚目以降は Seed+1, Seed+2… で作る（1 枚目は 1 枚で作ったときと同じ絵）
  */
 export const getMaxImagesPerRequest = (props: {
   modelKey: string
@@ -8,8 +9,6 @@ export const getMaxImagesPerRequest = (props: {
   generationType: string
   upscaleSize: number | null
   hasControlNet: boolean
-  /** Seed を指定している（-1 以外） */
-  isSeedFixed: boolean
   isPaidPlan: boolean
 }) => {
   const modelKey = props.modelKey.toLowerCase()
@@ -25,8 +24,6 @@ export const getMaxImagesPerRequest = (props: {
   if (props.generationType !== "TEXT_TO_IMAGE") return 1
   if (props.upscaleSize !== null && props.upscaleSize > 1) return 1
   if (props.hasControlNet) return 1
-  // Seed を決めて作るときは同じ絵を出したいので 1 枚ずつ
-  if (props.isSeedFixed) return 1
   return props.isPaidPlan ? 4 : 2
 }
 
