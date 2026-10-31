@@ -56,7 +56,7 @@ export function PlusHero() {
           </p>
           {isFirstMonthOffer && (
             <p className="ml-2 inline-flex items-center rounded-full bg-fuchsia-600 px-3 py-1 font-bold text-white text-xs">
-              {t("はじめての方は初月半額", "50% off your first month")}
+              {t("初月半額キャンペーン中", "50% off your first month")}
             </p>
           )}
           <h1 className="mt-4 font-extrabold text-3xl leading-tight tracking-tight md:text-5xl">

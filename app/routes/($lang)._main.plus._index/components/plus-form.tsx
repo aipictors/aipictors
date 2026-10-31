@@ -595,6 +595,22 @@ export function PlusForm () {
                     <p>{`${currentPass.price}円（税込）`}</p>
                   </div>
                 )}
+                {!isCancelScheduled && !isAppStorePass && (
+                  <div className="flex">
+                    <span className="mr-2 mb-2 rounded-full bg-fuchsia-100 px-3 py-1 font-semibold text-fuchsia-800 text-sm dark:bg-fuchsia-900/40 dark:text-fuchsia-200">
+                      {"継続ボーナス"}
+                    </span>
+                    <p className="text-sm">
+                      {`更新のたびに${
+                        currentPass.type === "PREMIUM"
+                          ? 600
+                          : currentPass.type === "STANDARD"
+                            ? 300
+                            : 100
+                      }プレミアムコイン（期限なし・直近30日に生成した方）`}
+                    </p>
+                  </div>
+                )}
               </div>
               {isAppStorePass ? (
                 <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900 text-sm dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">

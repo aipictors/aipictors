@@ -75,8 +75,8 @@ export function GenerationCoinShortageDialog (props: Props) {
 
   const isFree = props.passType === null
 
-  // 一度もプランに入ったことがない人は初月半額
-  const isFirstMonthOffer = isFree && !props.isExistedPreviousPass
+  // 今プランに入っていない人は初月半額（以前入っていた人も）
+  const isFirstMonthOffer = isFree
 
   const source = isFree
     ? props.isExistedPreviousPass
@@ -111,11 +111,11 @@ export function GenerationCoinShortageDialog (props: Props) {
               {isFree
                 ? props.isExistedPreviousPass
                   ? t(
-                      "おかえりなさい！プランに戻ると、1回4枚・1日最大200枚まで作れます。",
+                      "おかえりなさい！今なら初月半額でプランに戻れます。1回4枚・1日最大200枚まで作れます。",
                       "Welcome back! Rejoin a plan for 4 images per run and up to 200 a day.",
                     )
                   : t(
-                      "続けて作るなら、プランかコインの購入がおすすめです。プランなら1回で4枚まとめて生成できます。はじめての方は初月半額です。",
+                      "続けて作るなら、プランかコインの購入がおすすめです。プランなら1回で4枚まとめて生成できます。今なら初月半額です。",
                       "Keep creating with a plan or coins. Plans make 4 images per run, and your first month is 50% off.",
                     )
                 : t(

@@ -75,7 +75,7 @@ export function PassPlanDescription(props: Props) {
       {!isFree && isFirstMonthOffer && (
         <p className="mt-1 inline-flex w-fit items-center rounded-full bg-fuchsia-600/10 px-2 py-0.5 font-bold text-fuchsia-700 text-xs dark:text-fuchsia-300">
           {t(
-            `はじめての方は初月 ¥${toMoneyNumberText(toFirstMonthPrice(spec.price))}`,
+            `初月 ¥${toMoneyNumberText(toFirstMonthPrice(spec.price))}`,
             `First month ¥${toMoneyNumberText(toFirstMonthPrice(spec.price))} for new members`,
           )}
         </p>
