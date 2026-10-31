@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
-import { resizeImage } from "~/utils/resize-image"
+import { resizeThumbnail } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
@@ -492,9 +492,12 @@ export default function EditImage () {
         "https://",
       )
         ? null
-        : state.isThumbnailLandscape
-          ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
-          : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
+        : await resizeThumbnail(
+          formResult.output.thumbnailBase64,
+          400,
+          1200,
+          "webp",
+        )
 
       dispatch({ type: "SET_PROGRESS", payload: 20 })
 
@@ -502,9 +505,12 @@ export default function EditImage () {
         "https://",
       )
         ? null
-        : state.isThumbnailLandscape
-          ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
-          : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
+        : await resizeThumbnail(
+          formResult.output.thumbnailBase64,
+          600,
+          1600,
+          "webp",
+        )
 
       dispatch({ type: "SET_PROGRESS", payload: 30 })
 

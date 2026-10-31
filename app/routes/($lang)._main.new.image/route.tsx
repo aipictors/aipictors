@@ -59,7 +59,7 @@ import {
   jstDateTimeToWallClockUnixSeconds,
   toJstWallClockUnixSeconds,
 } from "~/utils/jst-date"
-import { resizeImage } from "~/utils/resize-image"
+import { resizeImage, resizeThumbnail } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadPublicVideo } from "~/utils/upload-public-video"
@@ -1307,15 +1307,21 @@ export default function NewImage() {
       try {
         dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-        const smallThumbnail = state.isThumbnailLandscape
-          ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
-          : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
+        const smallThumbnail = await resizeThumbnail(
+          formResult.output.thumbnailBase64,
+          400,
+          1200,
+          "webp",
+        )
 
         dispatch({ type: "SET_PROGRESS", payload: 20 })
 
-        const largeThumbnail = state.isThumbnailLandscape
-          ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
-          : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
+        const largeThumbnail = await resizeThumbnail(
+          formResult.output.thumbnailBase64,
+          600,
+          1600,
+          "webp",
+        )
 
         dispatch({ type: "SET_PROGRESS", payload: 30 })
 
@@ -1470,15 +1476,21 @@ export default function NewImage() {
         )
         dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-        const smallThumbnail = state.isThumbnailLandscape
-          ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
-          : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
+        const smallThumbnail = await resizeThumbnail(
+          formResult.output.thumbnailBase64,
+          400,
+          1200,
+          "webp",
+        )
 
         dispatch({ type: "SET_PROGRESS", payload: 20 })
 
-        const largeThumbnail = state.isThumbnailLandscape
-          ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
-          : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
+        const largeThumbnail = await resizeThumbnail(
+          formResult.output.thumbnailBase64,
+          600,
+          1600,
+          "webp",
+        )
 
         dispatch({ type: "SET_PROGRESS", payload: 30 })
 
