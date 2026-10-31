@@ -6,6 +6,8 @@ import type { TSortableItem } from "~/components/drag/sortable-item"
 import { SortableItems } from "~/components/drag/sortable-items"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
+import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
+import { captureVideoThumbnail } from "~/utils/capture-video-thumbnail"
 import { cn } from "~/lib/utils"
 import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
 import {
@@ -136,6 +138,9 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
       "video/mp4": [".mp4", ".MP4", ".Mp4"],
     },
     noClick: true,
+    onDropRejected: (fileRejections) => {
+      notifyRejectedFiles(fileRejections, t, maxSize)
+    },
     onDrop: (acceptedFiles) => {
       if (props.isOnlyMove) {
         return
@@ -181,19 +186,13 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
             props.setItems([])
             props.onChangeItems([])
 
-            const canvas = document.createElement("canvas")
-            canvas.width = video.videoWidth
-            canvas.height = video.videoHeight
-            const ctx = canvas.getContext("2d")
-
-            const time = video.duration / 2
-            video.currentTime = time
-            video.onseeked = () => {
-              ctx?.drawImage(video, 0, 0, canvas.width, canvas.height)
-              const thumbnailUrl = canvas.toDataURL()
-
-              updateThumbnail(thumbnailUrl)
-            }
+            void captureVideoThumbnail(video)
+              .then((thumbnailUrl) => {
+                updateThumbnail(thumbnailUrl)
+              })
+              .catch(() => {
+                toast(t("サムネイルの生成に失敗しました", "Failed to generate thumbnail"))
+              })
           }
         } else {
           if (

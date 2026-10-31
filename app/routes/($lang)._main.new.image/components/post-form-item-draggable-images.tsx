@@ -6,6 +6,7 @@ import type { TSortableItem } from "~/components/drag/sortable-item"
 import { SortableItems } from "~/components/drag/sortable-items"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
+import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
 import { cn } from "~/lib/utils"
 import { formatFileSize, MAX_IMAGE_FILE_SIZE_BYTES } from "~/utils/file-size"
 import {
@@ -306,6 +307,9 @@ export function PostFormItemDraggableImages(props: Props) {
       "image/bmp": [".bmp"],
     },
     noClick: true,
+    onDropRejected: (fileRejections) => {
+      notifyRejectedFiles(fileRejections, t, maxSize)
+    },
     onDrop: (acceptedFiles) => {
       void handleAcceptedFiles(acceptedFiles)
     },

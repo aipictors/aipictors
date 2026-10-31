@@ -13,6 +13,7 @@ import {
 } from "../app/lib/defer-hydration"
 import { createEdgePageCache } from "../app/lib/edge-page-cache"
 import { checkLocaleRedirect } from "../app/utils/check-locale-redirect"
+import { getLegacyRedirectPath } from "../app/utils/legacy-redirect"
 import {
   buildLocalePath,
   getPathLocale,
@@ -519,6 +520,12 @@ export const onRequest: PagesFunction = async (ctx) => {
         "Cache-Control": "private, max-age=3600",
       },
     })
+  }
+
+  // 旧サイトのプロフィール URL（/user?id=…）は今のプロフィールへ
+  const legacyPath = getLegacyRedirectPath(earlyUrl)
+  if (legacyPath) {
+    return Response.redirect(new URL(legacyPath, earlyUrl).toString(), 301)
   }
 
   const maxRetry = 5 // リトライ回数を増加

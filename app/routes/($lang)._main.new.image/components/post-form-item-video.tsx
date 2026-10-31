@@ -2,6 +2,8 @@ import { useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
+import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
+import { captureVideoThumbnail } from "~/utils/capture-video-thumbnail"
 import { cn } from "~/lib/utils"
 import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
 import {
@@ -78,6 +80,9 @@ export function PostFormItemVideo(props: Props) {
       "video/mp4": [".mp4", ".MP4", ".Mp4"],
     },
     noClick: true,
+    onDropRejected: (fileRejections) => {
+      notifyRejectedFiles(fileRejections, t, maxSize)
+    },
     onDrop: (acceptedFiles) => {
       acceptedFiles.forEach(async (file) => {
         if (file.type === "video/mp4") {
@@ -112,42 +117,14 @@ export function PostFormItemVideo(props: Props) {
 
             props.onVideoChange(file, Math.ceil(video.duration))
 
-            const canvas = document.createElement("canvas")
-            canvas.width = video.videoWidth
-            canvas.height = video.videoHeight
-            const ctx = canvas.getContext("2d")
-
-            if (!ctx) {
-              console.error("Canvas 2Dコンテキストの取得に失敗しました")
-              toast("サムネイルの生成に失敗しました")
-              return
-            }
-
-            const time = video.duration / 2
-            console.log("シークタイム設定:", time)
-            video.currentTime = time
-
-            video.onseeked = () => {
-              console.log("動画シーク完了、サムネイル生成開始")
-              try {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-                const thumbnailUrl = canvas.toDataURL() // サムネイルをDataURL形式で取得
-                console.log(
-                  "サムネイル生成完了:",
-                  `${thumbnailUrl.substring(0, 50)}...`,
-                )
-
+            void captureVideoThumbnail(video)
+              .then((thumbnailUrl) => {
                 updateThumbnail(thumbnailUrl)
-              } catch (error) {
+              })
+              .catch((error) => {
                 console.error("サムネイル生成エラー:", error)
                 toast("サムネイルの生成に失敗しました")
-              }
-            }
-
-            video.onerror = (error) => {
-              console.error("動画シークエラー:", error)
-              toast("動画の処理に失敗しました")
-            }
+              })
           }
 
           video.onerror = (error) => {
@@ -211,7 +188,9 @@ export function PostFormItemVideo(props: Props) {
               <p className="font-bold">{t("動画を選択", "Select Video")}</p>
             </div>
             <div className="m-4 flex flex-col text-white">
-              <p className="text-center text-sm">{"MP4"}</p>
+              <p className="text-center text-sm">
+                {t(`MP4・${maxSizeLabel}まで`, `MP4, up to ${maxSizeLabel}`)}
+              </p>
               <p className="text-center text-sm">
                 {t(
                   `${videoUploadLimits.maxDurationSeconds}秒まで`,

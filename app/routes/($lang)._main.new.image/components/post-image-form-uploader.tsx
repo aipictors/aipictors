@@ -20,6 +20,8 @@ import { toast } from "sonner"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { PaintCanvas } from "~/components/paint-canvas"
 import { useTranslation } from "~/hooks/use-translation"
+import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
+import { captureVideoThumbnail } from "~/utils/capture-video-thumbnail"
 import { consumeDroppedImageFiles } from "~/utils/dropped-image-files"
 import { formatFileSize, MAX_IMAGE_FILE_SIZE_BYTES, MAX_VIDEO_FILE_SIZE_BYTES } from "~/utils/file-size"
 import { getVideoUploadLimits, type VideoUploadPassType } from "~/utils/video-upload-limit"
@@ -260,7 +262,7 @@ export function PostImageFormUploader (props: Props) {
     }
 
     const video = document.createElement("video")
-    video.preload = "metadata"
+    video.preload = "auto"
     video.src = URL.createObjectURL(file)
 
     await new Promise<void>((resolve, reject) => {
@@ -277,23 +279,16 @@ export function PostImageFormUploader (props: Props) {
           return
         }
 
-        video.currentTime = video.duration / 2
+        void captureVideoThumbnail(video)
+          .then((thumbnailUrl) => {
+            applyCapturedVideo(thumbnailUrl)
+          })
+          .catch(() => {
+            reject(new Error(t("サムネイルの生成に失敗しました", "Failed to generate thumbnail")))
+          })
       }
 
-      video.onseeked = () => {
-        const canvas = document.createElement("canvas")
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
-        const ctx = canvas.getContext("2d")
-
-        if (!ctx) {
-          reject(new Error(t("サムネイルの生成に失敗しました", "Failed to generate thumbnail")))
-          return
-        }
-
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-        const thumbnailUrl = canvas.toDataURL()
-
+      const applyCapturedVideo = (thumbnailUrl: string) => {
         props.dispatch({ type: "SET_ITEMS", payload: [] })
         props.dispatch({ type: "SET_INDEX_LIST", payload: [] })
         props.dispatch({ type: "SET_THUMBNAIL_BASE64", payload: thumbnailUrl })
@@ -360,6 +355,9 @@ export function PostImageFormUploader (props: Props) {
     },
     multiple: true,
     noClick: true,
+    onDropRejected: (fileRejections) => {
+      notifyRejectedFiles(fileRejections, t, MAX_VIDEO_FILE_SIZE_BYTES)
+    },
     onDrop: (acceptedFiles) => {
       void handleMixedFiles(acceptedFiles)
     },
