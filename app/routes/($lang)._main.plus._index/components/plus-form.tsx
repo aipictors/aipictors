@@ -117,6 +117,29 @@ export function PlusForm () {
     }
   }
 
+  const onOpenBillingPortal = async () => {
+    setIsSubmitting(true)
+    try {
+      const headers = await withAuthHeader()
+      const response = await fetch("/api/stripe/billing-portal", {
+        method: "POST",
+        headers,
+      })
+      const { ok, json } = await parseActionResponse<{
+        error: string | null
+        data: { url: string } | null
+      }>(response)
+      if (ok && !json?.error && json?.data?.url) {
+        window.location.href = json.data.url
+        return
+      }
+      toast(json?.error ?? "お支払い方法の変更画面を開けませんでした。")
+    } catch {
+      toast("お支払い方法の変更画面を開けませんでした。")
+    }
+    setIsSubmitting(false)
+  }
+
   const onCancelCurrentSubscription = async () => {
     if (isCancelScheduled) {
       toast("すでに解約手続き済みです。次回更新日までは利用できます。")
@@ -628,7 +651,7 @@ export function PlusForm () {
               ) : (
                 <p>
                   {
-                    "この画面からサブスクのキャンセルとプラン変更を行えます。"
+                    "この画面からサブスクのキャンセル・プラン変更・お支払いカードの変更を行えます。"
                   }
                 </p>
               )}
@@ -705,6 +728,21 @@ export function PlusForm () {
                 )}
               </div>
               )}
+              {!isAppStorePass && (
+                <div className="space-y-1">
+                  <Button
+                    className="w-full"
+                    onClick={onOpenBillingPortal}
+                    disabled={isSubmitting}
+                    variant="secondary"
+                  >
+                    {"お支払いカードを変更する"}
+                  </Button>
+                  <p className="text-xs opacity-70">
+                    {"カードの有効期限が切れるときや、別のカードに変えたいときはこちら（Stripe の画面に移動します）。次回の請求から新しいカードが使われます。"}
+                  </p>
+                </div>
+              )}
             </div>
             <Card className="flex-1">
               <CardHeader>
@@ -765,6 +803,14 @@ export function PlusForm () {
               }}
             >
               {"お支払いを完了する"}
+            </Button>
+            <Button
+              className="w-full"
+              onClick={onOpenBillingPortal}
+              disabled={isSubmitting}
+              variant="outline"
+            >
+              {"今後のお支払いカードを変更する"}
             </Button>
           </CardContent>
         </Card>

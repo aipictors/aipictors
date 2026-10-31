@@ -71,6 +71,14 @@ export function PlusFaq () {
         "Credit card via Stripe. The plan renews monthly from the day you subscribe.",
       ),
     },
+    {
+      id: "card-update",
+      question: t("クレジットカードを変更・更新するには？", "How do I change my card?"),
+      answer: t(
+        "このページの「ご利用中のプラン」にある「お支払いカードを変更する」から、Stripe の画面で新しいカードを登録できます。次回の請求から新しいカードが使われます。",
+        "Use \"Change payment card\" in your current plan section on this page to register a new card on Stripe. It is used from the next billing.",
+      ),
+    },
   ]
 
   return (
