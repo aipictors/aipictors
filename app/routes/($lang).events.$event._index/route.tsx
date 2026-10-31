@@ -8,6 +8,7 @@ import { format } from "date-fns"
 import { graphql } from "gql.tada"
 import {
   CalendarDays,
+  Check,
   ChevronDown,
   Clock,
   Copy,
@@ -199,6 +200,38 @@ const getStatusBadgeClassName = (status: string) => {
   }
 
   return "border-transparent bg-slate-500 text-white"
+}
+
+/**
+ * 参加タグをコピーする（タグの表示はタグ検索に飛ぶので、付け忘れたときにコピーしづらかった）
+ */
+function EventTagCopyButton (props: { tag: string }) {
+  const t = useTranslation()
+
+  const [isCopied, setIsCopied] = React.useState(false)
+
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(props.tag)
+      setIsCopied(true)
+      toast(t(`「${props.tag}」をコピーしました`, `Copied "${props.tag}"`))
+      setTimeout(() => setIsCopied(false), 1500)
+    } catch {
+      toast(t("コピーに失敗しました", "Failed to copy"))
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onCopy}
+      aria-label={t(`「${props.tag}」をコピー`, `Copy "${props.tag}"`)}
+      title={t("タグをコピー", "Copy tag")}
+      className="flex size-8 items-center justify-center rounded-r-full text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
+    >
+      {isCopied ? <Check className="size-4" /> : <Copy className="size-4" />}
+    </button>
+  )
 }
 
 function EventActionShare(props: {
@@ -752,13 +785,18 @@ export default function EventDetailPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {event.tags.map((tag) => (
-                    <Link
+                    <div
                       key={tag}
-                      to={`/tags/${encodeURIComponent(tag)}`}
-                      className="rounded-full bg-muted px-3 py-1 font-medium text-sm transition-colors hover:bg-muted/70"
+                      className="flex items-center rounded-full bg-muted"
                     >
-                      #{tag}
-                    </Link>
+                      <Link
+                        to={`/tags/${encodeURIComponent(tag)}`}
+                        className="rounded-l-full py-1 pr-1 pl-3 font-medium text-sm transition-colors hover:bg-muted/70"
+                      >
+                        #{tag}
+                      </Link>
+                      <EventTagCopyButton tag={tag} />
+                    </div>
                   ))}
                 </div>
               </div>
