@@ -34,6 +34,7 @@ import type { HeadersFunction } from "@remix-run/cloudflare"
 import { GenerationLogsTab } from "~/routes/($lang).generation._index/components/generation-side-tabs-view/generation-logs-tab"
 import { GenerationCoinHistoryTab } from "~/routes/($lang).generation._index/components/generation-side-tabs-view/generation-coin-history-tab"
 import { useContext } from "react"
+import { GenerationSeoSection } from "~/routes/($lang).generation._index/components/generation-seo-section"
 
 /**
  * 画像生成
@@ -142,6 +143,7 @@ export default function GenerationPage() {
         menu={<GenerationConfigView />}
         footer={<GenerationFormFooter />}
       />
+      <GenerationSeoSection />
     </>
   )
 }

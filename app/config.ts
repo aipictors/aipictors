@@ -801,10 +801,12 @@ export const META: { [key: string]: MetaData } = {
     isIndex: true,
   },
   GENERATION: {
-    title: "生成",
-    enTitle: "Generation",
-    description: "Generate AI illustrations",
-    enDescription: "Generate AI illustrations",
+    title: "無料のAI画像生成・AIイラスト生成（日本語OK）",
+    enTitle: "Free AI Image Generator (AI art, anime & realistic)",
+    description:
+      "ブラウザだけで使える無料のAI画像生成。日本語のプロンプトからAIイラスト・アニメ絵・リアル系の画像を作れます。毎日10枚まで無料、SDXL・Illustrious・Pony などのモデルやLoRA、みんながアップロードしたモデルにも対応。できた画像はそのまま投稿できます。",
+    enDescription:
+      "Free AI image generator in your browser. Create anime illustrations and realistic images from prompts with SDXL, Illustrious, Pony models and LoRA. 10 free images a day, and post your results to the Aipictors community.",
     isIndex: true,
   },
   GENERATION_ABOUT: {

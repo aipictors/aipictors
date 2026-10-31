@@ -91,11 +91,26 @@ export const toCanonicalSearch = (search: string) => {
   return ""
 }
 
+/**
+ * 全年齢版と同じ内容の R18 のページ（canonical を全年齢版にまとめる）
+ * 画像生成は /r/generation でも同じ画面なので、検索の評価を /generation に集める
+ */
+const SENSITIVE_ALIAS_PATHS = new Set(["/generation"])
+
+const toCanonicalPath = (pathname: string) => {
+  const { locale, isSensitive, remainder } = parseLocalePath(pathname)
+  if (isSensitive && SENSITIVE_ALIAS_PATHS.has(remainder)) {
+    return buildLocalePath(locale, remainder === "/" ? "/" : remainder)
+  }
+  return normalizeLocalePath(pathname)
+}
+
 export const buildAlternateLocaleUrls = (
-  pathname: string,
+  rawPathname: string,
   siteUrl: string,
   search = "",
 ) => {
+  const pathname = toCanonicalPath(rawPathname)
   const normalizedSearch = toCanonicalSearch(search ?? "")
   const jaPath = buildLocalePath("ja", pathname)
   const enPath = buildLocalePath("en", pathname)

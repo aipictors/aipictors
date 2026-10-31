@@ -14,7 +14,8 @@ export default function PlusLayout () {
   // プランの一覧（/plus）は未ログインでも見られるようにする
   const isPlanListPage = /\/plus\/?$/.test(location.pathname)
 
-  if (authContext.isLoading) {
+  // プランの一覧はログイン状態の確認を待たずに出す（サーバーの描画で中身が空になり、検索エンジンに料金が伝わっていなかった）
+  if (authContext.isLoading && !isPlanListPage) {
     return <AppLoadingPage />
   }
 

@@ -47,9 +47,15 @@ export function GenerationAboutPage () {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="container relative m-auto flex flex-col space-y-4 pt-8 md:space-y-8">
-        <p className="text-left font-bold text-2xl md:text-center md:text-4xl">
+        <h1 className="text-left font-bold text-2xl md:text-center md:text-4xl">
           {t("簡単、本格生成。", "Simple, Professional Generation.")}
-        </p>
+          <span className="sr-only">
+            {t(
+              "Aipictors の無料AI画像生成について",
+              "About Aipictors' free AI image generator",
+            )}
+          </span>
+        </h1>
         <p className="text-left font-bold text-2xl md:text-center md:text-4xl">
           {t("高クオリティな作品を", "High-quality creations")}
           <br className="md:hidden" />
@@ -84,14 +90,14 @@ export function GenerationAboutPage () {
         <Separator />
         <div className="flex flex-col space-y-24">
           <section className="flex flex-col space-y-4">
-            <p className="text-left font-bold text-4xl">
+            <h2 className="text-left font-bold text-4xl">
               {t("投稿サイトと連動！", "Linked with the Posting Site!")}
               <br />
               {t(
                 "作品を検索して参照生成できる！",
                 "Search and Generate Referenced Creations!",
               )}
-            </p>
+            </h2>
             <div className="items-center md:flex md:space-x-4">
               <img
                 alt={t("search", "search")}
@@ -113,7 +119,7 @@ export function GenerationAboutPage () {
             </div>
           </section>
           <section className="flex flex-col space-y-4">
-            <p className="text-left font-bold text-4xl">
+            <h2 className="text-left font-bold text-4xl">
               {t(
                 "本格生成のための多様な設定が標準装備！",
                 "Comprehensive Settings for Advanced Generation!",
@@ -123,7 +129,7 @@ export function GenerationAboutPage () {
                 "高クオリティな画像を手軽に生成できる！",
                 "Generate High-Quality Images Easily!",
               )}
-            </p>
+            </h2>
             <div className="items-center md:flex md:space-x-4">
               <div className="flex flex-col space-y-4">
                 <p className="text-xl leading-snug">
@@ -145,14 +151,14 @@ export function GenerationAboutPage () {
             </div>
           </section>
           <section className="flex flex-col space-y-4">
-            <p className="text-left font-bold text-4xl">
+            <h2 className="text-left font-bold text-4xl">
               {t(
                 "多種多様なモデルが搭載済み！",
                 "A Wide Range of Models Available!",
               )}
               <br />
               {t("グラビアからアニメ系まで！", "From Gravure to Anime Styles!")}
-            </p>
+            </h2>
             <img
               alt={t("models", "models")}
               className="w-full"
@@ -161,12 +167,12 @@ export function GenerationAboutPage () {
           </section>
         </div>
         <section className="p-2">
-          <p className="text-left font-bold text-4xl">
+          <h2 className="text-left font-bold text-4xl">
             {t(
               "イラスト、リアル系まで生成できるジャンルは無限大！",
               "Generate Everything from Illustrations to Realistic Styles!",
             )}
-          </p>
+          </h2>
           <div className="rounded-md p-4">
             <Carousel className="m-auto">
               <CarouselContent>

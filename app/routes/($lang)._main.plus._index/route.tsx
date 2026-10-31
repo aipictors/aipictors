@@ -17,6 +17,43 @@ import { PlusForm } from "~/routes/($lang)._main.plus._index/components/plus-for
 import { PlusHero } from "~/routes/($lang)._main.plus._index/components/plus-hero"
 import { PlusNoteList } from "~/routes/($lang)._main.plus._index/components/plus-note-list"
 import { createMeta } from "~/utils/create-meta"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import type { Product, WithContext } from "schema-dts"
+
+/**
+ * 料金プランの構造化データ（検索結果やAIの回答で価格が正しく伝わるように）
+ */
+const plusJsonLd: WithContext<Product> = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "Aipictors+",
+  description:
+    "Aipictors のAI画像生成・投稿サイトの有料プラン。1回のクリックで4枚生成、毎日のフリーコインで1日最大200枚、広告の非表示、画像から生成など。",
+  brand: { "@type": "Brand", name: "Aipictors" },
+  url: `${config.siteURL}/plus`,
+  offers: [
+    { name: "ライト", price: 480 },
+    { name: "スタンダード", price: 1980 },
+    { name: "プレミアム", price: 3980 },
+  ].map((plan) => ({
+    "@type": "Offer" as const,
+    name: plan.name,
+    price: plan.price,
+    priceCurrency: "JPY",
+    availability: "https://schema.org/InStock" as const,
+    url: `${config.siteURL}/plus`,
+    priceSpecification: {
+      "@type": "UnitPriceSpecification" as const,
+      price: plan.price,
+      priceCurrency: "JPY",
+      referenceQuantity: {
+        "@type": "QuantitativeValue" as const,
+        value: 1,
+        unitCode: "MON",
+      },
+    },
+  })),
+}
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.PLUS, undefined, props.params.lang)
@@ -45,6 +82,7 @@ export default function Plus () {
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-12 pb-8 md:space-y-16">
+      <AppJsonLdScript jsonLd={plusJsonLd} />
       <PlusHero />
       <section id="plans" className="scroll-mt-24 space-y-4">
         <div className="space-y-1">
@@ -58,10 +96,10 @@ export default function Plus () {
             )}
           </p>
         </div>
-        {authContext.isNotLoggedIn ? (
-          <PlusAbout showFreePlan={true} isLoggedOut={true} />
-        ) : (
+        {authContext.isLoggedIn ? (
           <PlusForm />
+        ) : (
+          <PlusAbout showFreePlan={true} isLoggedOut={true} />
         )}
       </section>
       <PlusComparisonTable />

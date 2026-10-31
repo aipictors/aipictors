@@ -44,4 +44,15 @@ Disallow: /new/
 Disallow: /messages
 Disallow: /notifications
 
+# SEO 調査ツールのクローラー（検索からの流入には関係がなく、1 日に数万ページ読みに来てサーバーの負荷になっていた）
+User-agent: DataForSeoBot
+User-agent: DotBot
+User-agent: MJ12bot
+User-agent: Barkrowler
+User-agent: SemrushBot
+User-agent: AhrefsBot
+User-agent: BLEXBot
+User-agent: serpstatbot
+Disallow: /
+
 Sitemap: https://www.aipictors.com/sitemap.xml

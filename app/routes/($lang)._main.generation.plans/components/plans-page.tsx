@@ -76,6 +76,17 @@ export function PlanPage () {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+      <div className="space-y-1">
+        <h1 className="font-bold text-2xl">
+          {t("画像生成のプラン", "Image generation plans")}
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          {t(
+            "無料は毎日10枚まで。ライト月額480円・スタンダード月額1,980円・プレミアム月額3,980円は1回4枚、1日最大200枚まで生成できます。",
+            "Free: 10 images a day. Lite ¥480, Standard ¥1,980 and Premium ¥3,980 a month make 4 images per run, up to 200 a day.",
+          )}
+        </p>
+      </div>
       <PassPlanList
         showUpgradePlansOnly={false}
         hideSubmitButton={!authContext.userId}
