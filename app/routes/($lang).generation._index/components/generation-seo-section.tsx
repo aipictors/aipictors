@@ -1,4 +1,6 @@
 import { Link, useParams } from "@remix-run/react"
+import { ChevronDown } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
 import type {
   BreadcrumbList,
   FAQPage,
@@ -7,6 +9,7 @@ import type {
 } from "schema-dts"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
@@ -18,16 +21,53 @@ const HIDDEN_MODEL_PATTERN = /loli/i
 type FaqItem = { question: string; answer: string }
 
 /**
+ * 説明を開いているか閉じているかを覚えておくキー（"open" / "closed"）
+ */
+const COLLAPSE_STORAGE_KEY = "generation.seoSection.state"
+
+/**
  * 画像生成ページの下に出す説明（生成画面だけだと、何ができるページなのか検索エンジンに伝わらなかった）
  * - 画面の 1 枚目は今の生成画面のまま。スクロールした先に、できること・使い方・モデル・料金・よくある質問を置く
  * - WebApplication・FAQPage・BreadcrumbList の構造化データも出す
+ * - 見出しの横のボタンで折りたためる。ログインしている人は最初から閉じておき、開け閉めは端末に覚える
+ *   （閉じても中身は HTML に残すので検索エンジンには届く。サーバーで描く時点では開いている）
  */
-export function GenerationSeoSection () {
+export function GenerationSeoSection() {
   const t = useTranslation()
 
   const params = useParams()
 
   const context = useGenerationContext()
+
+  const authContext = useContext(AuthContext)
+
+  const [storedState, setStoredState] = useState<"open" | "closed" | null>(null)
+
+  useEffect(() => {
+    try {
+      const value = localStorage.getItem(COLLAPSE_STORAGE_KEY)
+      if (value === "open" || value === "closed") {
+        setStoredState(value)
+      }
+    } catch {
+      // localStorage が使えない場合は既定のまま
+    }
+  }, [])
+
+  const isCollapsed =
+    storedState !== null
+      ? storedState === "closed"
+      : !authContext.isLoading && authContext.isLoggedIn
+
+  const toggleCollapsed = () => {
+    const next = isCollapsed ? "open" : "closed"
+    setStoredState(next)
+    try {
+      localStorage.setItem(COLLAPSE_STORAGE_KEY, next)
+    } catch {
+      // 保存できなくても今の画面では切り替える
+    }
+  }
 
   const lang = params.lang === "en" ? "en" : "ja"
 
@@ -55,27 +95,24 @@ export function GenerationSeoSection () {
       ),
     },
     {
-      question: t("日本語で指示できますか？", "Can I write prompts in Japanese?"),
+      question: t(
+        "日本語で指示できますか？",
+        "Can I write prompts in Japanese?",
+      ),
       answer: t(
         "できます。プロンプト欄の「日本語で入力」をオンにすると、日本語の文章からプロンプトを作って生成します。キーワード一覧から選んで組み立てることもできます。",
         "Yes. Turn on Japanese input and your Japanese sentence is turned into a prompt. You can also build prompts by picking keywords.",
       ),
     },
     {
-      question: t(
-        "どんな絵柄が作れますか？",
-        "What styles can I make?",
-      ),
+      question: t("どんな絵柄が作れますか？", "What styles can I make?"),
       answer: t(
         "アニメ・イラスト系からリアル系、背景、動物まで、公式モデルとみんながアップロードしたモデル（LoRA・チェックポイント）から選べます。SDXL・Illustrious・Pony 系のモデルにも対応しています。",
         "Anime illustrations, realistic images, backgrounds and more. Choose from official models and community LoRA/checkpoints, including SDXL, Illustrious and Pony models.",
       ),
     },
     {
-      question: t(
-        "スマホでも使えますか？",
-        "Does it work on smartphones?",
-      ),
+      question: t("スマホでも使えますか？", "Does it work on smartphones?"),
       answer: t(
         "使えます。アプリのインストールは不要で、スマホ・PCのブラウザからそのまま生成できます。",
         "Yes. No app is needed; it works in mobile and desktop browsers.",
@@ -176,155 +213,180 @@ export function GenerationSeoSection () {
   return (
     <section
       aria-labelledby="generation-about-heading"
-      className="mx-auto mt-10 w-full max-w-4xl scroll-mt-24 space-y-8 border-t px-1 pt-8 pb-16 text-sm leading-relaxed"
+      className={`mx-auto w-full max-w-4xl scroll-mt-24 border-t px-1 text-sm leading-relaxed ${
+        isCollapsed ? "mt-4 pt-3 pb-6" : "mt-10 pt-8 pb-16"
+      }`}
     >
       <AppJsonLdScript jsonLd={[webApplication, faqPage, breadcrumb]} />
 
-      <div className="space-y-3">
-        <h1 id="generation-about-heading" className="font-bold text-xl">
-          {t(
-            "無料のAI画像生成・AIイラスト生成",
-            "Free AI image generator",
-          )}
+      <div className="flex items-center justify-between gap-3">
+        <h1
+          id="generation-about-heading"
+          className={`font-bold ${isCollapsed ? "text-muted-foreground text-sm" : "text-xl"}`}
+        >
+          {t("無料のAI画像生成・AIイラスト生成", "Free AI image generator")}
         </h1>
-        <p className="text-muted-foreground">
-          {t(
-            "Aipictors の画像生成は、ブラウザだけで使えるAI画像生成ツールです。日本語のプロンプトから、アニメ・イラスト系やリアル系の画像を作れます。毎日10枚まで無料で、作った画像はそのまま Aipictors に投稿してみんなに見てもらえます。",
-            "Aipictors Image Generator is an AI image generator that runs in your browser. Create anime illustrations and realistic images from prompts, 10 images a day for free, and share them with the Aipictors community.",
-          )}
-        </p>
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          aria-expanded={!isCollapsed}
+          aria-controls="generation-about-body"
+          className="flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-muted-foreground text-xs hover:bg-muted"
+        >
+          {isCollapsed
+            ? t("説明を開く", "Show details")
+            : t("折りたたむ", "Collapse")}
+          <ChevronDown
+            className={`size-4 transition-transform ${isCollapsed ? "" : "rotate-180"}`}
+          />
+        </button>
       </div>
 
-      <div className="space-y-3">
-        <h2 className="font-bold text-lg">
-          {t("できること", "What you can do")}
-        </h2>
-        <ul className="grid gap-2 md:grid-cols-2">
-          <li className="rounded-lg border p-3">
-            <span className="font-semibold">
-              {t("日本語でプロンプト", "Japanese prompts")}
-            </span>
-            <br />
-            {t(
-              "日本語の文章からプロンプトを作って生成できます。",
-              "Write in Japanese and we turn it into a prompt.",
-            )}
-          </li>
-          <li className="rounded-lg border p-3">
-            <span className="font-semibold">
-              {t("たくさんのモデルとLoRA", "Models and LoRA")}
-            </span>
-            <br />
-            {t(
-              "公式モデルに加えて、みんながアップロードしたモデルでも生成できます。",
-              "Use official models and models uploaded by the community.",
-            )}{" "}
-            <Link className="text-primary underline" to="/models">
-              {t("モデルを探す", "Browse models")}
-            </Link>
-          </li>
-          <li className="rounded-lg border p-3">
-            <span className="font-semibold">
-              {t("1回で最大4枚・高解像度", "Up to 4 per run, high resolution")}
-            </span>
-            <br />
-            {t(
-              "まとめて作って選べます。高解像度にも対応しています。",
-              "Make several at once and upscale your favorites.",
-            )}
-          </li>
-          <li className="rounded-lg border p-3">
-            <span className="font-semibold">
-              {t("作品を参考に生成・そのまま投稿", "Remix and post")}
-            </span>
-            <br />
-            {t(
-              "投稿作品のプロンプトを参考に作り、できた画像はそのまま投稿できます。",
-              "Start from prompts of posted works and post your results.",
-            )}{" "}
-            <Link className="text-primary underline" to="/search">
-              {t("作品を探す", "Find works")}
-            </Link>
-          </li>
-        </ul>
-      </div>
-
-      <div className="space-y-3">
-        <h2 className="font-bold text-lg">
-          {t("使い方（3ステップ）", "How to use (3 steps)")}
-        </h2>
-        <ol className="grid gap-2 md:grid-cols-3">
-          {steps.map((step, index) => (
-            <li key={step.title} className="rounded-lg border p-3">
-              <span className="font-semibold">
-                {index + 1}. {step.title}
-              </span>
-              <br />
-              {step.body}
-            </li>
-          ))}
-        </ol>
-      </div>
-
-      {models.length > 0 && (
+      <div
+        id="generation-about-body"
+        className={isCollapsed ? "hidden" : "mt-3 space-y-8"}
+      >
         <div className="space-y-3">
-          <h2 className="font-bold text-lg">
-            {t("生成に使えるモデル", "Models you can use")}
-          </h2>
-          <ul className="flex flex-wrap gap-2">
-            {models.map((model) => (
-              <li key={model.id}>
-                <Link
-                  className="inline-block rounded-full border px-3 py-1 hover:bg-muted"
-                  to={`/models/${encodeURIComponent(model.displayName)}`}
-                >
-                  {model.displayName}
-                </Link>
-              </li>
-            ))}
-          </ul>
           <p className="text-muted-foreground">
             {t(
-              "このほか、みんながアップロードした LoRA・チェックポイントも使えます。",
-              "Plus LoRA and checkpoints uploaded by the community.",
+              "Aipictors の画像生成は、ブラウザだけで使えるAI画像生成ツールです。日本語のプロンプトから、アニメ・イラスト系やリアル系の画像を作れます。毎日10枚まで無料で、作った画像はそのまま Aipictors に投稿してみんなに見てもらえます。",
+              "Aipictors Image Generator is an AI image generator that runs in your browser. Create anime illustrations and realistic images from prompts, 10 images a day for free, and share them with the Aipictors community.",
+            )}
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <h2 className="font-bold text-lg">
+            {t("できること", "What you can do")}
+          </h2>
+          <ul className="grid gap-2 md:grid-cols-2">
+            <li className="rounded-lg border p-3">
+              <span className="font-semibold">
+                {t("日本語でプロンプト", "Japanese prompts")}
+              </span>
+              <br />
+              {t(
+                "日本語の文章からプロンプトを作って生成できます。",
+                "Write in Japanese and we turn it into a prompt.",
+              )}
+            </li>
+            <li className="rounded-lg border p-3">
+              <span className="font-semibold">
+                {t("たくさんのモデルとLoRA", "Models and LoRA")}
+              </span>
+              <br />
+              {t(
+                "公式モデルに加えて、みんながアップロードしたモデルでも生成できます。",
+                "Use official models and models uploaded by the community.",
+              )}{" "}
+              <Link className="text-primary underline" to="/models">
+                {t("モデルを探す", "Browse models")}
+              </Link>
+            </li>
+            <li className="rounded-lg border p-3">
+              <span className="font-semibold">
+                {t(
+                  "1回で最大4枚・高解像度",
+                  "Up to 4 per run, high resolution",
+                )}
+              </span>
+              <br />
+              {t(
+                "まとめて作って選べます。高解像度にも対応しています。",
+                "Make several at once and upscale your favorites.",
+              )}
+            </li>
+            <li className="rounded-lg border p-3">
+              <span className="font-semibold">
+                {t("作品を参考に生成・そのまま投稿", "Remix and post")}
+              </span>
+              <br />
+              {t(
+                "投稿作品のプロンプトを参考に作り、できた画像はそのまま投稿できます。",
+                "Start from prompts of posted works and post your results.",
+              )}{" "}
+              <Link className="text-primary underline" to="/search">
+                {t("作品を探す", "Find works")}
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        <div className="space-y-3">
+          <h2 className="font-bold text-lg">
+            {t("使い方（3ステップ）", "How to use (3 steps)")}
+          </h2>
+          <ol className="grid gap-2 md:grid-cols-3">
+            {steps.map((step, index) => (
+              <li key={step.title} className="rounded-lg border p-3">
+                <span className="font-semibold">
+                  {index + 1}. {step.title}
+                </span>
+                <br />
+                {step.body}
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {models.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="font-bold text-lg">
+              {t("生成に使えるモデル", "Models you can use")}
+            </h2>
+            <ul className="flex flex-wrap gap-2">
+              {models.map((model) => (
+                <li key={model.id}>
+                  <Link
+                    className="inline-block rounded-full border px-3 py-1 hover:bg-muted"
+                    to={`/models/${encodeURIComponent(model.displayName)}`}
+                  >
+                    {model.displayName}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="text-muted-foreground">
+              {t(
+                "このほか、みんながアップロードした LoRA・チェックポイントも使えます。",
+                "Plus LoRA and checkpoints uploaded by the community.",
+              )}{" "}
+              <Link className="text-primary underline" to="/models">
+                {t("モデル一覧", "All models")}
+              </Link>
+            </p>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          <h2 className="font-bold text-lg">{t("料金", "Pricing")}</h2>
+          <p>
+            {t(
+              "無料：毎日10枚まで（1回2枚）。ライト月額480円（1日50枚）・スタンダード月額1,980円（1日100枚）・プレミアム月額3,980円（1日200枚）は1回4枚、広告の非表示や画像から生成なども使えます。今なら初月半額です。",
+              "Free: 10 images a day (2 per run). Lite ¥480 (50/day), Standard ¥1,980 (100/day) and Premium ¥3,980 (200/day) make 4 per run, with no ads and image-to-image. 50% off your first month.",
             )}{" "}
-            <Link className="text-primary underline" to="/models">
-              {t("モデル一覧", "All models")}
+            <Link className="text-primary underline" to="/generation/plans">
+              {t("プランを見る", "See plans")}
+            </Link>
+            {" ・ "}
+            <Link className="text-primary underline" to="/generation/about">
+              {t("生成機能について", "About the generator")}
             </Link>
           </p>
         </div>
-      )}
 
-      <div className="space-y-3">
-        <h2 className="font-bold text-lg">{t("料金", "Pricing")}</h2>
-        <p>
-          {t(
-            "無料：毎日10枚まで（1回2枚）。ライト月額480円（1日50枚）・スタンダード月額1,980円（1日100枚）・プレミアム月額3,980円（1日200枚）は1回4枚、広告の非表示や画像から生成なども使えます。今なら初月半額です。",
-            "Free: 10 images a day (2 per run). Lite ¥480 (50/day), Standard ¥1,980 (100/day) and Premium ¥3,980 (200/day) make 4 per run, with no ads and image-to-image. 50% off your first month.",
-          )}{" "}
-          <Link className="text-primary underline" to="/generation/plans">
-            {t("プランを見る", "See plans")}
-          </Link>
-          {" ・ "}
-          <Link className="text-primary underline" to="/generation/about">
-            {t("生成機能について", "About the generator")}
-          </Link>
-        </p>
-      </div>
-
-      <div className="space-y-3">
-        <h2 className="font-bold text-lg">
-          {t("よくある質問", "FAQ")}
-        </h2>
-        <div className="space-y-2">
-          {faqs.map((faq) => (
-            <details key={faq.question} className="rounded-lg border p-3">
-              <summary className="cursor-pointer font-semibold">
-                {faq.question}
-              </summary>
-              <p className="mt-2 text-muted-foreground">{faq.answer}</p>
-            </details>
-          ))}
+        <div className="space-y-3">
+          <h2 className="font-bold text-lg">{t("よくある質問", "FAQ")}</h2>
+          <div className="space-y-2">
+            {faqs.map((faq) => (
+              <details key={faq.question} className="rounded-lg border p-3">
+                <summary className="cursor-pointer font-semibold">
+                  {faq.question}
+                </summary>
+                <p className="mt-2 text-muted-foreground">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </div>
     </section>
