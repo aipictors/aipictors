@@ -437,7 +437,7 @@ export function WorkViewerDialog({
     <Dialog open onOpenChange={onClose}>
       <DialogContent
         onOpenAutoFocus={(e) => e.preventDefault()}
-        className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:top-[50%] md:h-[94vh] md:max-h-[94vh] md:w-[96vw] md:max-w-[1400px] md:rounded-xl md:border [&>button.absolute]:hidden"
+        className="top-0 left-0 flex h-[100dvh] max-h-[100dvh] w-screen max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:top-0 sm:translate-y-0 md:top-[50%] md:left-[50%] md:h-[94vh] md:translate-x-[-50%] md:translate-y-[-50%] md:max-h-[94vh] md:w-[96vw] md:max-w-[1400px] md:rounded-xl md:border [&>button.absolute]:hidden"
       >
         {/* 上のバー: 閉じる・作者・タイトル・何作品目か・作品ページへ */}
         <DialogHeader className="flex shrink-0 flex-row items-center gap-2 space-y-0 border-b px-2 py-2 text-left md:px-4">
