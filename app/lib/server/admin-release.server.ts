@@ -94,6 +94,8 @@ export async function createAdminReleaseAction({ request, context }: ActionFunct
       imageUrl?: string
       tag?: string
       isImportant?: boolean
+      /** 指定すると、そのお知らせを書き換える（Discord には通知しない） */
+      id?: string
     }
 
     try {
@@ -190,6 +192,31 @@ export async function createAdminReleaseAction({ request, context }: ActionFunct
 
     if (thumbnailUrl) {
       createContent.thumbnail_url = thumbnailUrl
+    }
+
+    // 既存のお知らせの書き換え
+    const updateId = payload.id?.trim() ?? ""
+    if (updateId.length > 0) {
+      if (!/^[A-Za-z0-9_-]+$/.test(updateId)) {
+        return toJsonResponse({ error: "お知らせの ID が不正です。", data: null }, 400)
+      }
+      await microCmsClient.update({
+        endpoint: "releases",
+        contentId: updateId,
+        content: createContent,
+      })
+      return toJsonResponse(
+        {
+          error: null,
+          data: {
+            id: updateId,
+            releaseUrl: `https://www.aipictors.com/releases/${updateId}`,
+            discordDelivered: false,
+            warning,
+          },
+        },
+        200,
+      )
     }
 
     const created = await microCmsClient.create<{
