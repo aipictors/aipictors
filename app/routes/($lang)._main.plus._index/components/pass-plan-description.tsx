@@ -10,6 +10,7 @@ import {
 } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import { toPassFeatures } from "~/routes/($lang)._main.plus._index/utils/to-pass-features"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
+import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
 
 type Props = {
   plan: PlanKey
@@ -43,6 +44,7 @@ export function PassPlanDescription(props: Props) {
   const spec = getPlanSpec(props.plan)
   const isFree = props.plan === "FREE"
   const isButtonVisible = props.isHide !== true
+  const isFirstMonthOffer = useFirstMonthOffer()
 
   return (
     <div
@@ -70,6 +72,14 @@ export function PassPlanDescription(props: Props) {
           {isFree ? "" : t("/月（税込）", "/mo (tax incl.)")}
         </span>
       </p>
+      {!isFree && isFirstMonthOffer && (
+        <p className="mt-1 inline-flex w-fit items-center rounded-full bg-fuchsia-600/10 px-2 py-0.5 font-bold text-fuchsia-700 text-xs dark:text-fuchsia-300">
+          {t(
+            `はじめての方は初月 ¥${toMoneyNumberText(toFirstMonthPrice(spec.price))}`,
+            `First month ¥${toMoneyNumberText(toFirstMonthPrice(spec.price))} for new members`,
+          )}
+        </p>
+      )}
       <div className="mt-4 grid grid-cols-2 gap-2">
         <div
           className={cn(

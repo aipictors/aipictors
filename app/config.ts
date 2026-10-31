@@ -888,7 +888,7 @@ export const META: { [key: string]: MetaData } = {
     title: "料金プラン（Aipictors+）",
     enTitle: "Plans (Aipictors+)",
     description:
-      "Aipictors+の料金プラン。ライト月額480円・スタンダード月額1,980円・プレミアム月額3,980円。1回のクリックで4枚生成、毎日のフリーコインで1日最大200枚、広告の非表示、画像から生成、高速生成モードなど。いつでも解約できます。",
+      "Aipictors+の料金プラン。ライト月額480円・スタンダード月額1,980円・プレミアム月額3,980円、はじめての方は初月半額。1回のクリックで4枚生成、1日最大200枚、広告の非表示、画像から生成など。いつでも解約できます。",
     enDescription:
       "Aipictors+ plans: Lite ¥480, Standard ¥1,980, Premium ¥3,980 per month. 4 images per click, up to 200 images a day, ad-free, image to image and more. Cancel anytime.",
     isIndex: true,

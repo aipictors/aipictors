@@ -5,6 +5,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { planCtaClassName } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import { getPlanSpec } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
+import { useFirstMonthOffer } from "~/hooks/use-first-month-offer"
 
 const sampleImages = [
   "https://assets.aipictors.com/ff478cc0-35ad-12f8-d945-2511b5a49bd8_11zon.webp",
@@ -20,6 +21,7 @@ export function PlusHero() {
   const t = useTranslation()
   const lite = getPlanSpec("LITE")
   const premium = getPlanSpec("PREMIUM")
+  const isFirstMonthOffer = useFirstMonthOffer()
 
   const points = [
     {
@@ -52,6 +54,11 @@ export function PlusHero() {
             <SparklesIcon className="size-3.5 text-violet-500" />
             {"Aipictors+"}
           </p>
+          {isFirstMonthOffer && (
+            <p className="ml-2 inline-flex items-center rounded-full bg-fuchsia-600 px-3 py-1 font-bold text-white text-xs">
+              {t("はじめての方は初月半額", "50% off your first month")}
+            </p>
+          )}
           <h1 className="mt-4 font-extrabold text-3xl leading-tight tracking-tight md:text-5xl">
             {t("1回のクリックで", "One click,")}
             <br />

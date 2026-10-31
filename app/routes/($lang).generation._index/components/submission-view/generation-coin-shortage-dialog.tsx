@@ -31,18 +31,21 @@ const PLANS = [
     type: "LITE",
     name: ["ライト", "Lite"],
     price: "¥480",
+    firstMonth: "¥240",
     perDay: 50,
   },
   {
     type: "STANDARD",
     name: ["スタンダード", "Standard"],
     price: "¥1,980",
+    firstMonth: "¥990",
     perDay: 100,
   },
   {
     type: "PREMIUM",
     name: ["プレミアム", "Premium"],
     price: "¥3,980",
+    firstMonth: "¥1,990",
     perDay: 200,
   },
 ] as const
@@ -71,6 +74,9 @@ export function GenerationCoinShortageDialog (props: Props) {
   const [isCoinDialogOpen, setIsCoinDialogOpen] = useState(false)
 
   const isFree = props.passType === null
+
+  // 一度もプランに入ったことがない人は初月半額
+  const isFirstMonthOffer = isFree && !props.isExistedPreviousPass
 
   const source = isFree
     ? props.isExistedPreviousPass
@@ -109,8 +115,8 @@ export function GenerationCoinShortageDialog (props: Props) {
                       "Welcome back! Rejoin a plan for 4 images per run and up to 200 a day.",
                     )
                   : t(
-                      "続けて作るなら、プランかコインの購入がおすすめです。プランなら1回で4枚まとめて生成できます。",
-                      "Keep creating with a plan or coins. Plans make 4 images per run.",
+                      "続けて作るなら、プランかコインの購入がおすすめです。プランなら1回で4枚まとめて生成できます。はじめての方は初月半額です。",
+                      "Keep creating with a plan or coins. Plans make 4 images per run, and your first month is 50% off.",
                     )
                 : t(
                     "上のプランにすると、毎日のコインが増えます。コインを買って続けることもできます。",
@@ -157,10 +163,26 @@ export function GenerationCoinShortageDialog (props: Props) {
                     </div>
                   </div>
                   <div className="text-right font-bold">
-                    {plan.price}
-                    <span className="font-normal text-muted-foreground text-xs">
-                      {t("/月", "/mo")}
-                    </span>
+                    {isFirstMonthOffer ? (
+                      <>
+                        <span className="text-fuchsia-600 dark:text-fuchsia-300">
+                          {plan.firstMonth}
+                        </span>
+                        <span className="font-normal text-muted-foreground text-xs">
+                          {t("/初月", "/1st mo")}
+                        </span>
+                        <div className="font-normal text-muted-foreground text-xs">
+                          {t(`2か月目から${plan.price}`, `then ${plan.price}`)}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {plan.price}
+                        <span className="font-normal text-muted-foreground text-xs">
+                          {t("/月", "/mo")}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </Link>
               ))}
