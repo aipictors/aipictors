@@ -56,7 +56,13 @@ export function HydrateFallback() {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  if (props.params.post === undefined) {
+  // 作品番号か UUID 以外（/posts/null など）は 404（そのまま問い合わせると API のエラーで 500 になっていた）
+  if (
+    props.params.post === undefined ||
+    !/^(\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.test(
+      props.params.post,
+    )
+  ) {
     throw new Response(null, { status: 404 })
   }
 
