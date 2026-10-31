@@ -5,14 +5,6 @@ import { LoginDialogButton } from "~/components/login-dialog-button"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Button } from "~/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -25,11 +17,11 @@ import { GenerationServerStatusBadge } from "~/routes/($lang).generation._index/
 import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "~/routes/($lang).generation._index/components/submission-view/generation-terms-button"
-import { SubscriptionDialogContent } from "~/routes/($lang).generation._index/components/submission-view/subscription-dialog-content"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {
   /** 1 回の生成で作る枚数 */
@@ -165,6 +157,21 @@ export function GenerationSubmitOperationParts(props: Props) {
               {formatCoinAmount(props.premiumCoinBalance)}
             </span>
           </div>
+          {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン） */}
+          {!context.currentPass?.type &&
+            !props.isCoinSummaryLoading &&
+            props.ownedCoinCount < 40 && (
+              <Link
+                to="/plus#plans"
+                onClick={() => trackGrowthEvent("lowcoin_click", "free")}
+                className="shrink-0 rounded-full bg-fuchsia-600 px-3 py-2 font-medium text-[11px] text-white shadow-sm"
+              >
+                {t(
+                  `あと${Math.floor(props.ownedCoinCount / 10)}枚・プランなら1日50枚〜`,
+                  `${Math.floor(props.ownedCoinCount / 10)} left · plans from 50/day`,
+                )}
+              </Link>
+            )}
           <GenerationServerStatusBadge className="ml-auto" />
         </div>
       )}
@@ -320,100 +327,56 @@ export function GenerationSubmitOperationParts(props: Props) {
               )}
             />
           )}
-        {/* サブスク案内ダイアログありver（最後の1枚の生成時に案内する） */}
+        {/* プレミアム以外（コインが足りないときは送る前にプラン・コイン購入の案内を出すので、ここでは案内しない） */}
         {!isCurrentPremiumPlan() &&
-          props.remainingImageGenerationTasksCount > requestImageUnits &&
           context.user?.hasSignedImageGenerationTerms === true && (
-            <GenerationSubmitButton
-              onClick={async () => {
-                await props.onCreateTask()
-              }}
-              isLoading={props.isCreatingTask}
-              isDisabled={context.config.isDisabled}
-              isCoinSummaryLoading={props.isCoinSummaryLoading}
-              requestCoinCost={props.requestCoinCost}
-              ownedCoinCount={props.ownedCoinCount}
-              buttonActionCaption={withImageCount(
-                getSubmitButtonLabel(
-                  !!context.config.i2iImageBase64,
-                  context.config.promptText,
-                  context.config.seed,
-                  generatingCount,
-                ),
-              )}
-            />
-          )}
-        {/* 通常の生成ボタン */}
-        {!isCurrentPremiumPlan() &&
-          props.remainingImageGenerationTasksCount <= requestImageUnits &&
-          context.user?.hasSignedImageGenerationTerms === true && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <div className="flex w-full min-w-0 items-center gap-3">
-                  <div className="flex shrink-0 items-center gap-1.5">
-                    <Switch
-                      onClick={() => {
-                        context.changeUpscaleSize(
-                          context.config.upscaleSize === 2 ? 1 : 2,
-                        )
-                      }}
-                      checked={context.config.upscaleSize === 2}
-                      id="extras-mode"
-                    />
-                    <div className="text-center leading-3">
-                      <Label
-                        htmlFor="extras-mode"
-                        className="block whitespace-nowrap text-center text-xs sm:text-sm"
-                      >
-                        {t("高解像度", "High Resolution")}
-                      </Label>
-                      <Label
-                        htmlFor="extras-mode"
-                        className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
-                      >
-                        {t("1枚・コイン2倍", "1 image, 2x coins")}
-                      </Label>
-                    </div>
-                  </div>
-                  <GenerationSubmitButton
-                    onClick={async () => {
-                      await props.onCreateTask()
-                    }}
-                    isLoading={props.isCreatingTask}
-                    isDisabled={context.config.isDisabled}
-                    isCoinSummaryLoading={props.isCoinSummaryLoading}
-                    requestCoinCost={props.requestCoinCost}
-                    ownedCoinCount={props.ownedCoinCount}
-                    buttonActionCaption={withImageCount(
-                      getSubmitButtonLabel(
-                        !!context.config.i2iImageBase64,
-                        context.config.promptText,
-                        context.config.seed,
-                        generatingCount,
-                      ),
-                    )}
-                  />
+            <div className="flex w-full min-w-0 items-center gap-3">
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Switch
+                  onClick={() => {
+                    context.changeUpscaleSize(
+                      context.config.upscaleSize === 2 ? 1 : 2,
+                    )
+                  }}
+                  checked={context.config.upscaleSize === 2}
+                  id="extras-mode"
+                />
+                <div className="text-center leading-3">
+                  <Label
+                    htmlFor="extras-mode"
+                    className="block whitespace-nowrap text-center text-xs sm:text-sm"
+                  >
+                    {t("高解像度", "High Resolution")}
+                  </Label>
+                  <Label
+                    htmlFor="extras-mode"
+                    className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
+                  >
+                    {t("1枚・コイン2倍", "1 image, 2x coins")}
+                  </Label>
                 </div>
-              </DialogTrigger>
-              <DialogContent className="min-w-[64vw]">
-                <DialogHeader>
-                  <DialogTitle>
-                    {t(
-                      "Aipictorsの生成機能をご利用いただき、ありがとうございます。",
-                      "Thank you for using Aipictors' generation feature.",
-                    )}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {t(
-                      "Aipictors+に加入すると初回付与コインや同時生成数などの特典を受けることができます。",
-                      "By subscribing to Aipictors+, you can get more initial coins and higher concurrent generation limits.",
-                    )}
-                  </DialogDescription>
-                </DialogHeader>
-                <SubscriptionDialogContent />
-              </DialogContent>
-            </Dialog>
+              </div>
+              <GenerationSubmitButton
+                onClick={async () => {
+                  await props.onCreateTask()
+                }}
+                isLoading={props.isCreatingTask}
+                isDisabled={context.config.isDisabled}
+                isCoinSummaryLoading={props.isCoinSummaryLoading}
+                requestCoinCost={props.requestCoinCost}
+                ownedCoinCount={props.ownedCoinCount}
+                buttonActionCaption={withImageCount(
+                  getSubmitButtonLabel(
+                    !!context.config.i2iImageBase64,
+                    context.config.promptText,
+                    context.config.seed,
+                    generatingCount,
+                  ),
+                )}
+              />
+            </div>
           )}
+
       </div>
     </>
   )

@@ -4,6 +4,7 @@ import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
+import { GenerationCoinShortageDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-coin-shortage-dialog"
 import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
 import {
   estimatePremiumCoinUse,
@@ -175,6 +176,9 @@ export function GenerationSubmissionView (props: Props) {
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
   const [coinSummary, setCoinSummary] = useState<CoinSummaryResponse["data"]>(null)
+
+  // コインが足りないときの案内（プラン・コイン購入）
+  const [isCoinShortageOpen, setIsCoinShortageOpen] = useState(false)
   const initialGrantToastShownRef = useRef(false)
 
   const loadCoinSummary = async () => {
@@ -233,6 +237,11 @@ export function GenerationSubmissionView (props: Props) {
           message: "createImageGenerationTask error",
           details: { name: error.name, message: error.message },
         })
+        // コインが足りないときはトーストではなく、プラン・コイン購入の案内を出す
+        if (error.message.includes("コイン残高が不足")) {
+          setIsCoinShortageOpen(true)
+          return
+        }
         if (isDesktop) {
           toast.error(error.message)
         } else {
@@ -707,6 +716,17 @@ export function GenerationSubmissionView (props: Props) {
     const requestModelName =
       userModelSelection.checkpointModelName ?? model.name
 
+    // コインが足りないときは、送る前にプラン・コイン購入の案内を出す
+    if (coinSummary !== null && coinSummary.totalBalance < requestCoinCost) {
+      logInfo({
+        source: "GenerationSubmit",
+        message: "Blocked: coin shortage",
+        details: { requestCoinCost, totalBalance: coinSummary.totalBalance },
+      })
+      setIsCoinShortageOpen(true)
+      return
+    }
+
     // フリーコインが足りずプレミアムコインを使うときは確認する
     if (isPremiumCoinConfirmEnabled && coinSummary !== null) {
       const premiumCoinUse = estimatePremiumCoinUse({
@@ -805,6 +825,10 @@ export function GenerationSubmissionView (props: Props) {
           message: "onCreateTask threw",
           details: { name: error.name, message: error.message },
         })
+        if (error.message.includes("コイン残高が不足")) {
+          setIsCoinShortageOpen(true)
+          return
+        }
         toast(error.message)
       }
     }
@@ -1282,6 +1306,18 @@ export function GenerationSubmissionView (props: Props) {
           />
         </div>
       </AppFixedContent>
+      <GenerationCoinShortageDialog
+        open={isCoinShortageOpen}
+        onOpenChange={setIsCoinShortageOpen}
+        passType={subscription ?? null}
+        isExistedPreviousPass={isExistedPreviousPass === true}
+        totalBalance={coinSummary?.totalBalance ?? 0}
+        affordableImages={
+          selectedModelCoinCost > 0
+            ? Math.floor((coinSummary?.totalBalance ?? 0) / selectedModelCoinCost)
+            : 0
+        }
+      />
       <GenerationPremiumCoinConfirmDialog
         key={premiumCoinConfirmAmount === null ? "closed" : "open"}
         premiumCoinAmount={premiumCoinConfirmAmount}

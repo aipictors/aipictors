@@ -23,6 +23,7 @@ import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 /**
  * Remix v3_singleFetch モードでは、action が Response を返しても
@@ -77,6 +78,8 @@ export function PlusForm () {
   } | null>(null)
   const [cancelCompletionMode, setCancelCompletionMode] = useState<null | "requested" | "already_canceled">(null)
   const [isPlanChangeDialogOpen, setIsPlanChangeDialogOpen] = useState(false)
+  // 解約の前に、安いプランへの変更を案内する（解約は加入 1 か月以内がいちばん多い）
+  const [isRetentionOpen, setIsRetentionOpen] = useState(false)
   const [isPlanChangePreviewLoading, setIsPlanChangePreviewLoading] = useState(false)
   const [planChangeRequest, setPlanChangeRequest] = useState<{
     passType: "LITE" | "STANDARD" | "PREMIUM"
@@ -437,6 +440,38 @@ export function PlusForm () {
 
   return (
     <>
+      <AlertDialog open={isRetentionOpen} onOpenChange={setIsRetentionOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{"解約する前に"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {
+                "ライト（月額480円）に変更すると、料金を抑えたまま、毎日500コイン（1日50枚）・1回4枚の生成・広告なしを続けられます。変更する前に、請求の内容を確認できます。"
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                trackGrowthEvent("retention_cancel", currentPass?.type ?? "")
+                onCancelCurrentSubscription()
+              }}
+            >
+              {"それでも解約する"}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                trackGrowthEvent("retention_lite", currentPass?.type ?? "")
+                if (currentPass) {
+                  openPlanChangeDialog("LITE", currentPass.type)
+                }
+              }}
+            >
+              {"ライトに変更する"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <AlertDialog
         open={isPlanChangeDialogOpen}
         onOpenChange={(open) => {
@@ -608,7 +643,17 @@ export function PlusForm () {
                   /* 通常時 → 解約ボタン */
                   <Button
                     className="w-full border-black text-black hover:bg-black/5 dark:border-white dark:bg-transparent dark:text-white dark:hover:bg-white/10"
-                    onClick={onCancelCurrentSubscription}
+                    onClick={() => {
+                      if (
+                        currentPass.type === "STANDARD" ||
+                        currentPass.type === "PREMIUM"
+                      ) {
+                        trackGrowthEvent("retention_view", currentPass.type)
+                        setIsRetentionOpen(true)
+                        return
+                      }
+                      onCancelCurrentSubscription()
+                    }}
                     disabled={isSubmitting}
                     variant="outline"
                   >
