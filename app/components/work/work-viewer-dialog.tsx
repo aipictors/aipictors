@@ -10,10 +10,9 @@ import {
 } from "~/components/ui/dialog"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react"
 import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentSectionEnhanced } from "~/components/work/work-comment-section-final"
-import { WorkCommentInputFixed } from "~/components/work/work-comment-input-fixed"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
@@ -102,6 +101,12 @@ export function WorkViewerDialog({
   }, [startWorkId])
 
   const thumbListRef = useRef<HTMLDivElement | null>(null)
+  const contentRef = useRef<HTMLDivElement | null>(null)
+
+  // 作品を切り替えたら本文を先頭から見せる
+  useEffect(() => {
+    contentRef.current?.scrollTo({ top: 0 })
+  }, [index])
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -245,21 +250,6 @@ export function WorkViewerDialog({
     return (data?.work as typeof work) ?? work
   }, [work, workDataCache, data])
 
-  // ────────── コメント送信後の処理 ──────────
-  const handleCommentAdded = useCallback(async () => {
-    if (!work) return
-
-    try {
-      // データを再取得してキャッシュを更新
-      const result = await refetch()
-      if (result.data?.work) {
-        setWorkDataCache((prev) => new Map(prev).set(work.id, result.data.work))
-      }
-    } catch (error) {
-      console.error("Failed to refetch comments:", error)
-    }
-  }, [refetch, work])
-
   // ────────── index が末尾なら自動ロード ──────────
   useEffect(() => {
     if (
@@ -298,12 +288,12 @@ export function WorkViewerDialog({
         return
       }
 
-      if (e.key === "ArrowUp") {
+      if (e.key === "ArrowUp" || e.key === "k") {
         e.preventDefault() // 背景のスクロールを防ぐ
         e.stopPropagation() // イベントの伝播を停止
         prev()
       }
-      if (e.key === "ArrowDown") {
+      if (e.key === "ArrowDown" || e.key === "j") {
         e.preventDefault() // 背景のスクロールを防ぐ
         e.stopPropagation() // イベントの伝播を停止
         next()
@@ -349,147 +339,10 @@ export function WorkViewerDialog({
     )
   }
 
-  // ───────────────── Render ─────────────────
-  return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="h-[96vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
-        <div className="flex h-[88vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
-          {/* 詳細パネル (Desktop + Mobile) */}
-          <aside
-            className="flex flex-col bg-background/80 backdrop-blur-sm"
-            style={{
-              width: "calc(100% - 5rem)",
-              minWidth: "calc(100% - 5rem)",
-              maxWidth: "calc(100% - 5rem)",
-            }}
-          >
-            <DialogHeader className="border-b p-4 pb-2">
-              {/* モバイル用ナビゲーション */}
-              <div className="flex items-center justify-between md:hidden">
-                <Button
-                  onClick={prev}
-                  variant="ghost"
-                  size="sm"
-                  disabled={index === 0}
-                  className="p-2"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-muted-foreground text-xs">
-                  {index + 1} / {works.length}
-                </span>
-                <Button
-                  onClick={next}
-                  variant="ghost"
-                  size="sm"
-                  disabled={index === works.length - 1}
-                  className="p-2"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={onClose}
-                  variant="ghost"
-                  size="sm"
-                  className="p-2"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              <DialogTitle className="truncate font-bold text-lg">
-                {/* タイトルはデスクトップのみ */}
-                <button
-                  type="button"
-                  className="hidden cursor-pointer bg-transparent p-0 text-left transition-colors hover:text-primary md:inline"
-                  onClick={() => {
-                    // Portal内でReact Routerが使用できないため、直接ナビゲーション
-                    if (typeof window !== "undefined") {
-                      window.location.href = `/posts/${currentWork.id}`
-                    }
-                  }}
-                >
-                  {currentWork.title}
-                </button>
-                {/* モバイル用簡潔タイトル */}
-                <span className="truncate md:hidden">{currentWork.title}</span>
-              </DialogTitle>
-              <div className="mt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (typeof window !== "undefined") {
-                      window.location.href = `/users/${currentWork.user?.login}`
-                    }
-                  }}
-                  className="flex cursor-pointer items-center space-x-2 bg-transparent p-0 text-left transition-colors hover:text-primary"
-                >
-                  <Avatar className="size-6">
-                    <AvatarImage
-                      src={withIconUrlFallback(currentWork.user?.iconUrl)}
-                    />
-                    <AvatarFallback />
-                  </Avatar>
-                  <span className="font-medium text-sm">
-                    {currentWork.user?.name}
-                  </span>
-                </button>
-              </div>
-            </DialogHeader>
-
-            {/* ローディング表示 */}
-            {isCurrentWorkLoading ? (
-              <div className="flex flex-1 items-center justify-center">
-                <div className="flex flex-col items-center space-y-2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-                  <span className="text-muted-foreground text-sm">
-                    {isDebouncing ? "待機中..." : "読み込み中..."}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-1 flex-col overflow-hidden">
-                {/* メインコンテンツエリア（スクロール可能） */}
-                <div className="flex-1 overflow-y-auto overscroll-y-contain p-4">
-                  <WorkArticle
-                    work={{
-                      ...currentWork,
-                      isBotGradingEnabled:
-                        (
-                          currentWork as unknown as {
-                            isBotGradingEnabled?: boolean
-                          }
-                        ).isBotGradingEnabled ?? false,
-                      isBotGradingPublic:
-                        (
-                          currentWork as unknown as {
-                            isBotGradingPublic?: boolean
-                          }
-                        ).isBotGradingPublic ?? false,
-                      botEvaluation: ((currentWork as any).botEvaluation ??
-                        null) as any,
-                      user: currentWork.user
-                        ? { ...currentWork.user, works: [] }
-                        : null,
-                      nextWork: null,
-                      previousWork: null,
-                    }}
-                    userSetting={undefined}
-                    mode={"dialog"}
-                  />
-                  {/* コメント一覧（コメントが有効な場合のみ） */}
-                  {currentWork.isCommentsEditable && (
-                    <div className="mt-6">
-                      <WorkCommentSectionEnhanced
-                        workId={currentWork.id}
-                        workOwnerIconImageURL={withIconUrlFallback(
-                          currentWork.user?.iconUrl,
-                        )}
-                        isWorkOwnerBlocked={
-                          (currentWork as { user?: { isBlocked?: boolean } })
-                            .user?.isBlocked ?? false
-                        }
-                        isFixedInput={true}
-                        comments={
+  // 作品を切り替えたら本文のスクロールを先頭に戻す
+  const commentsOf = (target: typeof currentWork) => {
+    const currentWork = target
+    return (
                           Array.isArray(
                             (currentWork as unknown as { comments?: unknown[] })
                               .comments,
@@ -573,127 +426,222 @@ export function WorkViewerDialog({
                                 responses: [],
                               }))
                             : []
-                        }
-                      />
-                    </div>
-                  )}
-                </div>
+    )
+  }
 
-                {/* 固定アクションエリア（コメント入力） */}
-                <div className="border-t bg-background/98 backdrop-blur-md">
-                  {/* 固定コメント入力欄 */}
-                  {currentWork.isCommentsEditable && (
-                    <WorkCommentInputFixed
-                      workId={currentWork.id}
-                      isWorkOwnerBlocked={
-                        (currentWork as { user?: { isBlocked?: boolean } }).user
-                          ?.isBlocked ?? false
-                      }
-                      commentsCount={
-                        Array.isArray(
-                          (currentWork as unknown as { comments?: unknown[] })
-                            .comments,
-                        )
-                          ? (currentWork as unknown as { comments: unknown[] })
-                              .comments.length
-                          : 0
-                      }
-                      onCommentAdded={handleCommentAdded}
-                    />
-                  )}
+  const hasPrev = index > 0
+  const hasNext = index < works.length - 1 || hasNextPage
+
+  // ───────────────── Render ─────────────────
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:top-[50%] md:h-[94vh] md:max-h-[94vh] md:w-[96vw] md:max-w-[1400px] md:rounded-xl md:border [&>button.absolute]:hidden"
+      >
+        {/* 上のバー: 閉じる・作者・タイトル・何作品目か・作品ページへ */}
+        <DialogHeader className="flex shrink-0 flex-row items-center gap-2 space-y-0 border-b px-2 py-2 text-left md:px-4">
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            size="icon"
+            aria-label="閉じる"
+            className="shrink-0"
+          >
+            <X className="size-5" />
+          </Button>
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.location.href = `/users/${currentWork.user?.login}`
+              }
+            }}
+            className="flex min-w-0 shrink-0 items-center gap-2 rounded-full bg-transparent py-1 pr-2 text-left transition-colors hover:bg-muted"
+          >
+            <Avatar className="size-8">
+              <AvatarImage
+                src={withIconUrlFallback(currentWork.user?.iconUrl)}
+              />
+              <AvatarFallback />
+            </Avatar>
+            <span className="hidden max-w-40 truncate font-medium text-sm sm:inline">
+              {currentWork.user?.name}
+            </span>
+          </button>
+          <DialogTitle className="min-w-0 flex-1 truncate font-bold text-base">
+            {currentWork.title}
+          </DialogTitle>
+          <span className="shrink-0 text-muted-foreground text-xs tabular-nums">
+            {index + 1} / {works.length}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="hidden shrink-0 gap-1 md:inline-flex"
+            onClick={() => {
+              // Portal内でReact Routerが使用できないため、直接ナビゲーション
+              if (typeof window !== "undefined") {
+                window.location.href = `/posts/${currentWork.id}`
+              }
+            }}
+          >
+            作品ページ
+            <ExternalLink className="size-3.5" />
+          </Button>
+        </DialogHeader>
+
+        <div className="relative flex min-h-0 flex-1">
+          {/* 本文（画像・説明・コメント） */}
+          <div
+            ref={contentRef}
+            className="min-w-0 flex-1 overflow-y-auto overscroll-y-contain"
+          >
+            {isCurrentWorkLoading ? (
+              <div className="flex h-full items-center justify-center p-4">
+                <div className="relative">
+                  <img
+                    src={work.smallThumbnailImageURL}
+                    alt={work.title}
+                    className="max-h-[60vh] max-w-full rounded-lg object-contain opacity-60 blur-[2px]"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="size-8 animate-spin rounded-full border-4 border-white/80 border-t-transparent" />
+                  </div>
                 </div>
               </div>
+            ) : (
+              <div className="mx-auto w-full max-w-5xl p-3 pb-24 md:px-16 md:py-6">
+                <WorkArticle
+                  work={{
+                    ...currentWork,
+                    isBotGradingEnabled:
+                      (
+                        currentWork as unknown as {
+                          isBotGradingEnabled?: boolean
+                        }
+                      ).isBotGradingEnabled ?? false,
+                    isBotGradingPublic:
+                      (
+                        currentWork as unknown as {
+                          isBotGradingPublic?: boolean
+                        }
+                      ).isBotGradingPublic ?? false,
+                    botEvaluation: ((currentWork as any).botEvaluation ??
+                      null) as any,
+                    user: currentWork.user
+                      ? { ...currentWork.user, works: [] }
+                      : null,
+                    nextWork: null,
+                    previousWork: null,
+                  }}
+                  userSetting={undefined}
+                  mode={"dialog"}
+                />
+                {/* コメント（入力欄も一覧の下に置き、画像の表示を狭めない） */}
+                {currentWork.isCommentsEditable && (
+                  <div className="mt-6">
+                    <WorkCommentSectionEnhanced
+                      key={currentWork.id}
+                      workId={currentWork.id}
+                      workOwnerIconImageURL={withIconUrlFallback(
+                        currentWork.user?.iconUrl,
+                      )}
+                      isWorkOwnerBlocked={
+                        (currentWork as { user?: { isBlocked?: boolean } })
+                          .user?.isBlocked ?? false
+                      }
+                      isFixedInput={false}
+                      comments={commentsOf(currentWork)}
+                    />
+                  </div>
+                )}
+              </div>
             )}
-          </aside>
+          </div>
 
-          {/* サムネイル列 - スマホでも常に表示（幅固定） */}
+          {/* PC: 前後の作品へ（本文の左右に重ねる） */}
+          <Button
+            variant="secondary"
+            size="icon"
+            aria-label="前の作品"
+            onClick={prev}
+            disabled={!hasPrev}
+            className="-translate-y-1/2 absolute top-1/2 left-3 z-10 hidden size-11 rounded-full shadow-md disabled:opacity-0 md:inline-flex"
+          >
+            <ChevronLeft className="size-6" />
+          </Button>
+          <Button
+            variant="secondary"
+            size="icon"
+            aria-label="次の作品"
+            onClick={next}
+            disabled={!hasNext}
+            className="-translate-y-1/2 absolute top-1/2 right-[7.5rem] z-10 hidden size-11 rounded-full shadow-md disabled:opacity-0 md:inline-flex"
+          >
+            <ChevronRight className="size-6" />
+          </Button>
+          <p className="pointer-events-none absolute bottom-3 left-3 z-10 hidden rounded-full bg-background/80 px-3 py-1 text-muted-foreground text-xs shadow-sm backdrop-blur md:block">
+            ↑ ↓（J / K）キーで前後の作品
+          </p>
+
+          {/* PC: 一覧の作品（右の列） */}
           <aside
             ref={thumbListRef}
-            className="ml-auto flex h-full flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm"
-            style={{
-              width: "5rem", // 固定幅
-              minWidth: "5rem", // 最小幅
-              maxWidth: "5rem", // 最大幅
-              scrollbarWidth: "thin",
-              display: "flex",
-              visibility: "visible",
-              opacity: 1,
-            }}
+            className="hidden w-28 shrink-0 flex-col gap-2 overflow-y-auto overscroll-y-contain border-l bg-muted/30 p-2 md:flex"
+            style={{ scrollbarWidth: "thin" }}
           >
             {works.map((w, i) => (
               <button
                 key={w.id}
                 type="button"
-                className={`relative m-1 rounded-md ring-offset-2 transition-all duration-200 focus:outline-none focus:ring-2 ${
+                aria-label={w.title}
+                aria-current={i === index}
+                className={`relative shrink-0 overflow-hidden rounded-lg transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                   i === index
-                    ? "bg-primary/10 ring ring-primary"
-                    : "hover:bg-background/20"
+                    ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                    : "opacity-70 hover:opacity-100"
                 }`}
                 onClick={() => setIndex(i)}
               >
                 <img
                   src={w.smallThumbnailImageURL}
-                  alt={w.title}
-                  className="h-16 w-full rounded-md object-cover"
+                  alt=""
+                  className="aspect-square w-full bg-muted object-cover"
                   draggable={false}
                   loading="lazy"
-                  onLoad={(e) => {
-                    // 画像読み込み完了時にサムネイル幅の安定化
-                    const img = e.target as HTMLImageElement
-                    img.style.opacity = "1"
-                  }}
-                  onError={(e) => {
-                    // エラー時もサイズを維持
-                    const img = e.target as HTMLImageElement
-                    img.style.opacity = "0.5"
-                  }}
-                  style={{
-                    width: "100%",
-                    height: "4rem",
-                    objectFit: "cover",
-                    opacity: 0,
-                    transition: "opacity 0.3s ease-in-out",
-                  }}
                 />
-                {/* キャッシュ済みインジケーター */}
-                {loadedWorkIds.has(w.id) && (
-                  <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-400 shadow-sm" />
-                )}
-                {/* デバウンス中インジケーター */}
-                {isDebouncing && i === index && (
-                  <div className="absolute top-1 left-1 h-2 w-2 animate-pulse rounded-full bg-yellow-400 shadow-sm" />
-                )}
               </button>
             ))}
-
-            {/* sentinel & spinner */}
             {isLoadingMore && (
               <div className="flex justify-center py-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+                <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
               </div>
             )}
             <div ref={sentinelRef} className="h-[2px] w-full" />
           </aside>
         </div>
-        {/* いいねボタンエリア - フル幅有効領域 */}
-        <div className="border-t bg-background/95 backdrop-blur-sm">
-          <div className="w-full">
+
+        {/* スマホ: 下のバー（前の作品・いいね・次の作品） */}
+        <div className="flex shrink-0 items-center gap-2 border-t bg-background/95 px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden">
+          <Button
+            variant="outline"
+            onClick={prev}
+            disabled={!hasPrev}
+            className="h-11 shrink-0 gap-1 px-3"
+            aria-label="前の作品"
+          >
+            <ChevronLeft className="size-5" />
+            前
+          </Button>
+          <div className="min-w-0 flex-1">
             <WorkActionContainer
               accessType={currentWork.accessType}
               workLikesCount={currentWork.likesCount}
               title={currentWork.title}
-              description={
-                (currentWork.description?.length ?? 0) > 100
-                  ? `${currentWork.description?.slice(0, 100)}...`
-                  : (currentWork.description ?? "")
-              }
+              description=""
               currentImageUrl={currentWork.imageURL}
-              imageUrls={[
-                currentWork.imageURL,
-                ...(currentWork.subWorks || []).map(
-                  (subWork) => subWork.imageUrl ?? "",
-                ),
-              ]}
+              imageUrls={[currentWork.imageURL]}
               targetWorkId={currentWork.id}
               bookmarkFolderId={null}
               defaultLiked={currentWork.isLiked}
@@ -707,6 +655,16 @@ export function WorkViewerDialog({
               mode="dialogLikeOnly"
             />
           </div>
+          <Button
+            variant="outline"
+            onClick={next}
+            disabled={!hasNext}
+            className="h-11 shrink-0 gap-1 px-3"
+            aria-label="次の作品"
+          >
+            次
+            <ChevronRight className="size-5" />
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

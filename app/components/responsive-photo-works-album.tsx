@@ -203,7 +203,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   }}
                 >
                   <div
-                    className="relative w-full overflow-hidden rounded-md bg-muted"
+                    className="relative w-full overflow-hidden rounded-lg bg-muted transition-shadow duration-200 hover:shadow-lg"
                     style={{ aspectRatio: `${ratio}` }}
                   >
                     {props.onSelect ? (

@@ -15,11 +15,7 @@ import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import {
   ArrowDownWideNarrow,
-  ExternalLink,
-  List,
   Minus,
-  Navigation,
-  PlaySquare,
   Plus,
   SlidersHorizontal,
 } from "lucide-react"
@@ -50,6 +46,7 @@ import {
 import { Skeleton } from "~/components/ui/skeleton"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
+import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useLocale } from "~/hooks/use-locale"
@@ -646,6 +643,13 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
       ...(data?.secondTagWorks ?? []),
     ] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
   })
+
+  const onChangePaginationMode = (isPagination: boolean) => {
+    setInternalIsPagination(isPagination)
+    const p = new URLSearchParams(searchParams)
+    p.set("isPagination", isPagination ? "true" : "false")
+    updateQueryParams(p)
+  }
 
   const onChangeDialogMode = (mode: boolean) => {
     setIsDialogMode(mode)
@@ -1298,12 +1302,21 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 </div>
               </Button>
             </div>
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <HomeViewModeToggles
+              isPagination={
+                workView === "new-user" ? undefined : internalIsPagination
+              }
+              onPaginationChange={onChangePaginationMode}
+              isDialogMode={isDialogMode}
+              onDialogModeChange={onChangeDialogMode}
+            />
             {workView === "new" && (
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 gap-1.5 rounded-full px-3"
+                className="h-8 gap-1 rounded-full px-2.5 sm:gap-1.5 sm:px-3"
                 onClick={() => setIsFilterUiOpen((v) => !v)}
                 aria-expanded={isFilterUiOpen}
               >
@@ -1321,6 +1334,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 )}
               </Button>
             )}
+            </div>
           </div>
           {workView === "new" && (
             <div className="space-y-4">
@@ -1530,85 +1544,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                         </div>
                       </div>
 
-                      {/* 右側: 表示方式切り替え */}
-                      <div className="flex flex-wrap gap-2 md:ml-auto">
-                        <div className="flex rounded-md bg-muted/50 p-1">
-                          <Button
-                            variant="ghost"
-                            aria-label={t("フィード", "Feed")}
-                            size="sm"
-                            onClick={() => {
-                              setInternalIsPagination(false)
-                              const p = new URLSearchParams(searchParams)
-                              p.set("isPagination", "false")
-                              updateQueryParams(p)
-                            }}
-                            className={`flex items-center space-x-1.5 rounded-md px-2 py-1 font-medium text-xs transition-all ${
-                              !internalIsPagination
-                                ? "bg-background text-foreground shadow-sm"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                            } `}
-                          >
-                            <List className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">
-                              {t("フィード", "Feed")}
-                            </span>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            aria-label={t("ページ", "Pages")}
-                            size="sm"
-                            onClick={() => {
-                              setInternalIsPagination(true)
-                              const p = new URLSearchParams(searchParams)
-                              p.set("isPagination", "true")
-                              updateQueryParams(p)
-                            }}
-                            className={`flex items-center space-x-1.5 rounded-md px-2 py-1 font-medium text-xs transition-all ${
-                              internalIsPagination
-                                ? "bg-background text-foreground shadow-sm"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                            } `}
-                          >
-                            <Navigation className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">
-                              {t("ページ", "Pages")}
-                            </span>
-                          </Button>
-                        </div>
-                        <div className="flex rounded-md bg-muted/50 p-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onChangeDialogMode(false)}
-                            className={`flex items-center space-x-1.5 rounded-md px-2 py-1 font-medium text-xs transition-all ${
-                              !isDialogMode
-                                ? "bg-background text-foreground shadow-sm"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                            } `}
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                            <span className="hidden lg:inline">
-                              {t("リンク遷移", "Open page")}
-                            </span>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onChangeDialogMode(true)}
-                            className={`flex items-center space-x-1.5 rounded-md px-2 py-1 font-medium text-xs transition-all ${
-                              isDialogMode
-                                ? "bg-background text-foreground shadow-sm"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                            } `}
-                          >
-                            <PlaySquare className="h-3.5 w-3.5" />
-                            <span className="hidden lg:inline">
-                              {t("ダイアログ", "Dialog")}
-                            </span>
-                          </Button>
-                        </div>
-                      </div>
+                      
                     </div>
                   </div>
                 )}
@@ -1659,43 +1595,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
           {workView === "popular" && (
             <div className="space-y-4">
-              {/* 表示方式切り替え */}
-              <div className="flex justify-end">
-                <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
-                  <Button
-                    variant="ghost"
-                    aria-label={t("リンク遷移", "Open page")}
-                    size="sm"
-                    onClick={() => setIsDialogMode(false)}
-                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                      !isDialogMode
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    } `}
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">
-                      {t("リンク遷移", "Open page")}
-                    </span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    aria-label={t("ダイアログ", "Dialog")}
-                    size="sm"
-                    onClick={() => setIsDialogMode(true)}
-                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                      isDialogMode
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    } `}
-                  >
-                    <PlaySquare className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">
-                      {t("ダイアログ", "Dialog")}
-                    </span>
-                  </Button>
-                </div>
-              </div>
+              
 
               <Suspense
                 fallback={
@@ -1722,87 +1622,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
           {workView === "new-user" && (
             <div className="space-y-4">
-              {/* 表示方式切り替え */}
-              <div className="flex flex-wrap justify-end gap-2">
-                <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
-                  <Button
-                    variant="ghost"
-                    aria-label={t("フィード", "Feed")}
-                    size="sm"
-                    onClick={() => {
-                      setInternalIsPagination(false)
-                      const p = new URLSearchParams(searchParams)
-                      p.set("isPagination", "false")
-                      updateQueryParams(p)
-                    }}
-                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                      !internalIsPagination
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
-                  >
-                    <List className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">
-                      {t("フィード", "Feed")}
-                    </span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    aria-label={t("ページ", "Pages")}
-                    size="sm"
-                    onClick={() => {
-                      setInternalIsPagination(true)
-                      const p = new URLSearchParams(searchParams)
-                      p.set("isPagination", "true")
-                      updateQueryParams(p)
-                    }}
-                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                      internalIsPagination
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
-                  >
-                    <Navigation className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">
-                      {t("ページ", "Pages")}
-                    </span>
-                  </Button>
-                </div>
-                <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
-                  <Button
-                    variant="ghost"
-                    aria-label={t("リンク遷移", "Open page")}
-                    size="sm"
-                    onClick={() => onChangeDialogMode(false)}
-                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                      !isDialogMode
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    } `}
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">
-                      {t("リンク遷移", "Open page")}
-                    </span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    aria-label={t("ダイアログ", "Dialog")}
-                    size="sm"
-                    onClick={() => onChangeDialogMode(true)}
-                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                      isDialogMode
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    } `}
-                  >
-                    <PlaySquare className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">
-                      {t("ダイアログ", "Dialog")}
-                    </span>
-                  </Button>
-                </div>
-              </div>
+              
 
               <Suspense
                 fallback={
@@ -1826,85 +1646,14 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
         </TabsContent>
         {/* ---------------------- タブ: フォロー中のユーザ ---------------------- */}
         <TabsContent value="follow-user" className="space-y-4">
-          {/* Feed / Pages 切り替えボタン */}
-          <div className="flex flex-wrap justify-end gap-2">
-            <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
-              <Button
-                variant="ghost"
-                aria-label={t("フィード", "Feed")}
-                size="sm"
-                onClick={() => {
-                  setInternalIsPagination(false)
-                  const p = new URLSearchParams(searchParams)
-                  p.set("isPagination", "false")
-                  updateQueryParams(p)
-                }}
-                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                  !internalIsPagination
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <List className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">
-                  {t("フィード", "Feed")}
-                </span>
-              </Button>
-              <Button
-                variant="ghost"
-                aria-label={t("ページ", "Pages")}
-                size="sm"
-                onClick={() => {
-                  setInternalIsPagination(true)
-                  const p = new URLSearchParams(searchParams)
-                  p.set("isPagination", "true")
-                  updateQueryParams(p)
-                }}
-                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                  internalIsPagination
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <Navigation className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
-              </Button>
-            </div>
-            <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
-              <Button
-                variant="ghost"
-                aria-label={t("リンク遷移", "Open page")}
-                size="sm"
-                onClick={() => setIsDialogMode(false)}
-                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                  !isDialogMode
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                } `}
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">
-                  {t("リンク遷移", "Open page")}
-                </span>
-              </Button>
-              <Button
-                variant="ghost"
-                aria-label={t("ダイアログ", "Dialog")}
-                size="sm"
-                onClick={() => setIsDialogMode(true)}
-                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                  isDialogMode
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                } `}
-              >
-                <PlaySquare className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">
-                  {t("ダイアログ", "Dialog")}
-                </span>
-              </Button>
-            </div>
-          </div>
+          {/* 表示の切り替え */}
+          <HomeViewModeToggles
+            className="justify-end"
+            isPagination={internalIsPagination}
+            onPaginationChange={onChangePaginationMode}
+            isDialogMode={isDialogMode}
+            onDialogModeChange={onChangeDialogMode}
+          />
 
           {/* コンテンツ */}
           <Suspense fallback={<FollowFeedNotice />}>
@@ -1922,86 +1671,14 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
         </TabsContent>
         {/* ---------------------- タブ: お気に入りタグ ---------------------- */}
         <TabsContent value="follow-tag" className="space-y-4">
-          {/* Feed / Pages 切り替えボタン */}
-          <div className="flex flex-wrap justify-end gap-2">
-            <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
-              <Button
-                variant="ghost"
-                aria-label={t("フィード", "Feed")}
-                size="sm"
-                onClick={() => {
-                  setInternalIsPagination(false)
-                  const p = new URLSearchParams(searchParams)
-                  p.set("isPagination", "false")
-                  updateQueryParams(p)
-                }}
-                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                  !internalIsPagination
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <List className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">
-                  {t("フィード", "Feed")}
-                </span>
-              </Button>
-
-              <Button
-                variant="ghost"
-                aria-label={t("ページ", "Pages")}
-                size="sm"
-                onClick={() => {
-                  setInternalIsPagination(true)
-                  const p = new URLSearchParams(searchParams)
-                  p.set("isPagination", "true")
-                  updateQueryParams(p)
-                }}
-                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                  internalIsPagination
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <Navigation className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
-              </Button>
-            </div>
-            <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
-              <Button
-                variant="ghost"
-                aria-label={t("リンク遷移", "Open page")}
-                size="sm"
-                onClick={() => onChangeDialogMode(false)}
-                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                  !isDialogMode
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                } `}
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">
-                  {t("リンク遷移", "Open page")}
-                </span>
-              </Button>
-              <Button
-                variant="ghost"
-                aria-label={t("ダイアログ", "Dialog")}
-                size="sm"
-                onClick={() => onChangeDialogMode(true)}
-                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                  isDialogMode
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                } `}
-              >
-                <PlaySquare className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">
-                  {t("ダイアログ", "Dialog")}
-                </span>
-              </Button>
-            </div>
-          </div>
+          {/* 表示の切り替え */}
+          <HomeViewModeToggles
+            className="justify-end"
+            isPagination={internalIsPagination}
+            onPaginationChange={onChangePaginationMode}
+            isDialogMode={isDialogMode}
+            onDialogModeChange={onChangeDialogMode}
+          />
 
           <Suspense
             fallback={

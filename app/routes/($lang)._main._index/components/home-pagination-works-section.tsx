@@ -186,8 +186,8 @@ export function HomePaginationWorksSection(props: Props) {
         />
       )}
 
-      <div className="h-8" />
-      <div className="fixed inset-x-0 bottom-0 z-10 flex justify-center border border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      {/* ページ送りは一覧の下に置く（画面下に固定すると作品に重なっていた） */}
+      <div className="flex justify-center border-t pt-4 pb-6">
         <ResponsivePagination
           perPage={perPageCount}
           maxCount={1000}

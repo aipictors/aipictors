@@ -109,7 +109,7 @@ export function HomeCroppedWorks(props: Props) {
         </section>
       )}
       {showMobile && (
-        <section className="safari-work-grid grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <section className="safari-work-grid grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 md:hidden">
           {props.works
             .filter(
               (work, index, self) =>
@@ -121,9 +121,10 @@ export function HomeCroppedWorks(props: Props) {
                   <button
                     type="button"
                     onClick={() => props.onSelect?.(work.id)}
-                    className="group relative w-full overflow-hidden border-none bg-transparent p-0"
+                    className="group relative block w-full overflow-hidden rounded-lg border-none bg-transparent p-0"
                   >
                     <CroppedWorkSquare
+                      isInsideInteractive={true}
                       isPriority={index < (props.priorityCount ?? 0)}
                       isLowPriority={
                         props.priorityCount !== undefined &&
@@ -136,7 +137,7 @@ export function HomeCroppedWorks(props: Props) {
                       workId={work.id}
                       imageUrl={work.smallThumbnailImageURL}
                       thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                      size="lg"
+                      size="auto"
                       imageWidth={work.smallThumbnailImageWidth}
                       imageHeight={work.smallThumbnailImageHeight}
                       subWorksCount={work.subWorksCount}
@@ -179,7 +180,7 @@ export function HomeCroppedWorks(props: Props) {
                       workId={work.id}
                       imageUrl={work.smallThumbnailImageURL}
                       thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                      size="lg"
+                      size="auto"
                       imageWidth={work.smallThumbnailImageWidth}
                       imageHeight={work.smallThumbnailImageHeight}
                       subWorksCount={work.subWorksCount}
@@ -209,7 +210,7 @@ export function HomeCroppedWorks(props: Props) {
                 )}
                 {work.user && props.isShowProfile && (
                   <>
-                    <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
+                    <p className="mt-1.5 overflow-hidden text-ellipsis text-nowrap font-bold text-sm">
                       {work.title}
                     </p>
                     <UserNameBadge
