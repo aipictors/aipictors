@@ -873,6 +873,15 @@
     "isHidden": false
   },
   {
+    "key": "themes-1500",
+    "category": "CREATE",
+    "series": "themes",
+    "tier": 7,
+    "icon": "lightbulb",
+    "threshold": 1500,
+    "isHidden": false
+  },
+  {
     "key": "themes-2000",
     "category": "CREATE",
     "series": "themes",
@@ -882,12 +891,30 @@
     "isHidden": false
   },
   {
+    "key": "themes-2500",
+    "category": "CREATE",
+    "series": "themes",
+    "tier": 7,
+    "icon": "lightbulb",
+    "threshold": 2500,
+    "isHidden": false
+  },
+  {
     "key": "themes-3000",
     "category": "CREATE",
     "series": "themes",
     "tier": 7,
     "icon": "lightbulb",
     "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "themes-3650",
+    "category": "CREATE",
+    "series": "themes",
+    "tier": 7,
+    "icon": "lightbulb",
+    "threshold": 3650,
     "isHidden": false
   },
   {
@@ -906,15 +933,6 @@
     "tier": 7,
     "icon": "lightbulb",
     "threshold": 10000,
-    "isHidden": false
-  },
-  {
-    "key": "themes-20000",
-    "category": "CREATE",
-    "series": "themes",
-    "tier": 7,
-    "icon": "lightbulb",
-    "threshold": 20000,
     "isHidden": false
   },
   {

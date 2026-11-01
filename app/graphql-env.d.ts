@@ -3087,6 +3087,9 @@ input ModerationReportsWhereInput {
 }
 
 type Mutation {
+  """投稿した作品と生成画像をつなぐ（生成履歴の「投稿済み」の印）"""
+  linkWorkToGenerations(generationNanoids: [String!]!, workId: ID!): Int!
+
   """実績を確かめる（今日のログインも記録）。まだ演出を見せていない達成を返す"""
   checkAchievements(
     """間隔をあけずに確かめる（投稿した直後など）"""
@@ -4178,7 +4181,27 @@ type PromptonUserNode implements Node {
   name: String
 }
 
+type PostedGenerationLink {
+  nanoid: String!
+  workId: ID!
+}
+
+type PostedGenerationWork {
+  prompt: String!
+  seed: String!
+  workId: ID!
+}
+
+"""生成履歴のどれが投稿済みか調べる材料"""
+type PostedGenerations {
+  links: [PostedGenerationLink!]!
+  works: [PostedGenerationWork!]!
+}
+
 type Query {
+  """生成履歴のどれが投稿済みか調べる材料（本人の作品だけ）"""
+  postedGenerations(nanoids: [String!]!, seeds: [String!]!): PostedGenerations!
+
   """自分の実績の表示設定"""
   achievementSettings: AchievementSettingsNode
 

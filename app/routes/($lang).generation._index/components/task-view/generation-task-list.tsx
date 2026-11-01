@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
@@ -25,6 +26,10 @@ import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { usePendingGenerationRequests } from "~/routes/($lang).generation._index/hooks/use-pending-generation-requests"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
+import {
+  toPostedWorkMap,
+  toSearchableSeeds,
+} from "~/routes/($lang).generation._index/utils/posted-generations"
 import { getMaxPagesByPlan } from "~/routes/($lang).generation._index/utils/get-max-pages-by-plan"
 
 type Props = {
@@ -246,6 +251,29 @@ export function GenerationTaskList(props: Props) {
     .filter((task) => task.status === "DONE" && task.nanoid)
     .map((task) => task.id)
 
+  // 投稿済みの印（印が出なくても生成には関係ないので、エラーは出さない）
+  const postedTargets = combinedTasks as readonly {
+    nanoid?: string | null
+    seed?: number | null
+    prompt?: string | null
+  }[]
+  const postedNanoids = postedTargets.flatMap((task) =>
+    task.nanoid ? [task.nanoid] : [],
+  )
+  const { data: postedData } = useQuery(PostedGenerationsQuery, {
+    skip: postedNanoids.length === 0,
+    errorPolicy: "ignore",
+    fetchPolicy: "cache-and-network",
+    variables: {
+      nanoids: postedNanoids,
+      seeds: toSearchableSeeds(postedTargets),
+    },
+  })
+  const postedWorks = toPostedWorkMap(
+    postedTargets,
+    postedData?.postedGenerations ?? null,
+  )
+
   const Grid = (
     <div
       className={cn("grid gap-2 pt-0 md:max-h-[calc(72vh-128px)]", {
@@ -284,6 +312,7 @@ export function GenerationTaskList(props: Props) {
               onRestore={onRestore}
               onSelectTask={onSelectTask}
               onDelete={onDelete}
+              postedWorkId={postedWorks.get(task.nanoid ?? "")}
             />
           </Suspense>
         </ErrorBoundary>
@@ -430,4 +459,20 @@ export const GenerationTaskListItemTaskFragment = graphql(
     ...GenerationResultCardTask
   }`,
   [GenerationResultCardTaskFragment],
+)
+
+const PostedGenerationsQuery = graphql(
+  `query PostedGenerations($nanoids: [String!]!, $seeds: [String!]!) {
+    postedGenerations(nanoids: $nanoids, seeds: $seeds) {
+      links {
+        nanoid
+        workId
+      }
+      works {
+        workId
+        seed
+        prompt
+      }
+    }
+  }`,
 )

@@ -915,6 +915,7 @@ export default function NewImage() {
         const items = fulfilled.map((entry, index) => ({
           id: index + 1,
           content: entry.base64,
+          generationNanoid: entry.result.nanoid,
         }))
 
         dispatch({
@@ -1025,6 +1026,7 @@ export default function NewImage() {
   }, [searchParams, viewer?.dailyThemes])
 
   const [createWork] = useMutation(CreateWorkMutation)
+  const [linkWorkToGenerations] = useMutation(LinkWorkToGenerationsMutation)
   const [checkWorkByImageHash] = useLazyQuery(WorkByImageHashQuery)
 
   /**
@@ -1465,6 +1467,19 @@ export default function NewImage() {
 
         if (work.data?.createWork === undefined) {
           throw new Error(t("作品の投稿に失敗しました", "Failed to post the work"))
+        }
+
+        // 生成履歴に「投稿済み」の印を付ける（失敗しても投稿には関係ない）
+        const generationNanoidsOfWork = state.items.flatMap((item) =>
+          item.generationNanoid ? [item.generationNanoid] : [],
+        )
+        if (generationNanoidsOfWork.length > 0) {
+          void linkWorkToGenerations({
+            variables: {
+              workId: work.data.createWork.id,
+              generationNanoids: generationNanoidsOfWork,
+            },
+          }).catch(() => {})
         }
 
         dispatch({
@@ -2124,6 +2139,7 @@ const ViewerQuery = graphql(
       }
       imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) @include(if: $withGenerationResults) {
         id
+        nanoid
         prompt
         negativePrompt
         seed
@@ -2249,6 +2265,12 @@ const SelectedUserEventQuery = graphql(
       startAt
       endAt
     }
+  }`,
+)
+
+const LinkWorkToGenerationsMutation = graphql(
+  `mutation LinkWorkToGenerations($workId: ID!, $generationNanoids: [String!]!) {
+    linkWorkToGenerations(workId: $workId, generationNanoids: $generationNanoids)
   }`,
 )
 

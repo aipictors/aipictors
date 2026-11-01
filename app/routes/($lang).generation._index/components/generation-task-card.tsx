@@ -10,6 +10,7 @@ import {
 } from "~/routes/($lang).generation._index/components/generation-task-responsive-card"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import { graphql, type FragmentOf } from "gql.tada"
+import { GenerationPostedBadge } from "~/routes/($lang).generation._index/components/generation-posted-badge"
 
 type Props = {
   task:
@@ -30,6 +31,8 @@ type Props = {
   onRestore?(taskId: string): void
   onSelectTask(taskNanoid: string, status: string): void
   onDelete?(taskId: string): void
+  /** 投稿済みならその作品の ID */
+  postedWorkId?: string | null
 }
 
 /**
@@ -37,7 +40,13 @@ type Props = {
  */
 export function GenerationTaskCard (props: Props) {
   return (
-    <>
+    <div className="relative">
+      {props.postedWorkId && (
+        <GenerationPostedBadge
+          workId={props.postedWorkId}
+          isCompact={props.sizeType < 6}
+        />
+      )}
       {props.isEditMode && (
         <GenerationTaskEditableCard
           onClick={() =>
@@ -73,7 +82,7 @@ export function GenerationTaskCard (props: Props) {
           onDelete={props.onDelete}
         />
       )}
-    </>
+    </div>
   )
 }
 

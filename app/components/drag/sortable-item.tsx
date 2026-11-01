@@ -11,6 +11,7 @@ export type TSortableItem = {
   content: string | null // 画像のURLなど
   isContentEdited?: boolean // コンテンツが編集されたかどうか
   fileName?: string | null // アップロードしたファイルの名前（並べ替えの目印。投稿には含めない）
+  generationNanoid?: string | null // 生成履歴から選んだ画像の nanoid（生成履歴の「投稿済み」の印に使う）
 }
 
 type Props = {
