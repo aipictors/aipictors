@@ -1,11 +1,12 @@
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { useContext } from "react"
+import { useContext, useRef, useState } from "react"
 import { FollowButton } from "~/components/button/follow-button"
 import { OfficialBadge } from "~/components/official-badge"
 import { SupportButton } from "~/components/support-button"
 import { Card, CardContent, CardHeader } from "~/components/ui/card"
+import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
@@ -44,6 +45,23 @@ export function WorkUser(props: Props) {
   })
 
   const isFollow = data?.user?.isFollowee ?? false
+
+  /** 最初に押す前のフォロー状態（フォロワー数は読み直さずに、ここからの差で合わせる） */
+  const initialIsFollowRef = useRef<boolean | null>(null)
+
+  const [followersCountDelta, setFollowersCountDelta] = useState(0)
+
+  const [isShowingSuggestions, setIsShowingSuggestions] = useState(false)
+
+  const onFollowChange = (nextIsFollow: boolean) => {
+    if (initialIsFollowRef.current === null) {
+      initialIsFollowRef.current = isFollow
+    }
+    setFollowersCountDelta(
+      Number(nextIsFollow) - Number(initialIsFollowRef.current),
+    )
+    setIsShowingSuggestions(nextIsFollow)
+  }
   const canShowSupportButton =
     (!appContext.isLoading || hasViewerSession) &&
     (!appContext.isNotLoggedIn || hasViewerSession) &&
@@ -76,7 +94,7 @@ export function WorkUser(props: Props) {
       <CardContent className="flex w-full flex-col space-y-4">
         <div className="m-auto mb-4 flex items-center space-x-4">
           <div className="flex items-center">
-            <p className="font-bold text-sm">{`${props.userFollowersCount}`}</p>
+            <p className="font-bold text-sm">{`${Math.max(0, props.userFollowersCount + followersCountDelta)}`}</p>
             <p className="text-sm text-muted-foreground">
               {t("フォロワー", "Followers")}
             </p>
@@ -88,7 +106,20 @@ export function WorkUser(props: Props) {
             </p>
           </div>
         </div>
-        <FollowButton targetUserId={props.userId} isFollow={isFollow} />
+        <FollowButton
+          targetUserId={props.userId}
+          targetUserName={props.userName}
+          isFollow={isFollow}
+          isFollower={data?.user?.isFollower ?? false}
+          onFollowChange={onFollowChange}
+        />
+        {isShowingSuggestions && (
+          <FollowSuggestions
+            userId={props.userId}
+            userName={props.userName}
+            onClose={() => setIsShowingSuggestions(false)}
+          />
+        )}
         {canShowSupportButton && (
           <SupportButton
             targetUserId={props.userId}
@@ -116,6 +147,7 @@ const userQuery = graphql(
     user(id: $id) {
       id
       isFollowee
+      isFollower
     }
   }`,
 )

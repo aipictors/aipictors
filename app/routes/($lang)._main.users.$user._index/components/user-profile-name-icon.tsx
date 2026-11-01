@@ -1,6 +1,6 @@
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
-import { PenLine } from "lucide-react"
-import { useContext } from "react"
+import { CheckIcon, PenLine } from "lucide-react"
+import { useContext, useState } from "react"
 import { FollowButton } from "~/components/button/follow-button"
 import { OfficialBadge } from "~/components/official-badge"
 import { OmissionNumber } from "~/components/omission-number"
@@ -8,6 +8,7 @@ import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { SnsIconLink } from "~/components/sns-icon"
 import { SupportButton } from "~/components/support-button"
 import { Button } from "~/components/ui/button"
+import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
@@ -85,8 +86,26 @@ export function UserProfileNameIcon(props: Props) {
       link !== null,
   )
 
+  /** 押したあとのフォロー状態（フォロワー数は読み直さずに差で合わせる） */
+  const [viewerIsFollow, setViewerIsFollow] = useState<boolean | null>(null)
+
+  const [isShowingSuggestions, setIsShowingSuggestions] = useState(false)
+
+  const followersCountDelta =
+    viewerIsFollow === null
+      ? 0
+      : Number(viewerIsFollow) - Number(Boolean(user.isFollowee))
+
+  const onFollowChange = (nextIsFollow: boolean) => {
+    setViewerIsFollow(nextIsFollow)
+    setIsShowingSuggestions(nextIsFollow)
+  }
+
   const stats = [
-    { label: t("フォロワー", "Followers"), value: user.followersCount },
+    {
+      label: t("フォロワー", "Followers"),
+      value: Math.max(0, user.followersCount + followersCountDelta),
+    },
     { label: t("いいね", "Likes"), value: user.receivedLikesCount },
     { label: t("閲覧", "Views"), value: user.receivedViewsCount },
     { label: t("入賞", "Awards"), value: user.awardsCount },
@@ -116,8 +135,13 @@ export function UserProfileNameIcon(props: Props) {
               />
               <UserSubscriptionIcon passType={user.pass?.type} />
             </div>
-            <p className="break-all text-muted-foreground text-sm">
-              @{user.login}
+            <p className="flex flex-wrap items-center gap-x-2 break-all text-muted-foreground text-sm">
+              <span>@{user.login}</span>
+              {!isMyPage && user.isFollower && (
+                <span className="rounded bg-muted px-1.5 py-0.5 text-xs">
+                  {t("フォローされています", "Follows you")}
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -138,18 +162,29 @@ export function UserProfileNameIcon(props: Props) {
           ) : (
             <FollowButton
               targetUserId={user.id}
+              targetUserName={user.name}
               isFollow={Boolean(user.isFollowee)}
+              isFollower={Boolean(user.isFollower)}
+              onFollowChange={onFollowChange}
               triggerChildren={
-                <Button className="flex-1 rounded-full px-6 font-bold md:flex-none">
-                  {t("フォロー", "Follow")}
+                <Button className="flex-1 rounded-full px-6 font-bold active:scale-95 md:flex-none">
+                  {user.isFollower
+                    ? t("フォローバック", "Follow back")
+                    : t("フォロー", "Follow")}
                 </Button>
               }
               unFollowTriggerChildren={
                 <Button
                   variant="secondary"
-                  className="flex-1 rounded-full px-6 md:flex-none"
+                  className="group flex-1 gap-1 rounded-full px-6 hover:bg-destructive/10 hover:text-destructive active:scale-95 md:flex-none"
                 >
-                  {t("フォロー中", "Following")}
+                  <CheckIcon className="size-4 group-hover:hidden" />
+                  <span className="group-hover:hidden">
+                    {t("フォロー中", "Following")}
+                  </span>
+                  <span className="hidden group-hover:inline">
+                    {t("フォロー解除", "Unfollow")}
+                  </span>
                 </Button>
               }
             />
@@ -197,6 +232,14 @@ export function UserProfileNameIcon(props: Props) {
         )}
       </div>
 
+      {isShowingSuggestions && (
+        <FollowSuggestions
+          userId={user.id}
+          userName={user.name}
+          onClose={() => setIsShowingSuggestions(false)}
+        />
+      )}
+
       {(biographyText.length > 0 || externalLinks.length > 0) && (
         <div className="space-y-2">
           {biographyText.length > 0 && (
@@ -230,6 +273,7 @@ export const UserProfileIconFragment = graphql(
     isOfficial
     login
     isFollowee
+    isFollower
     isMuted
     isBlocked
     biography

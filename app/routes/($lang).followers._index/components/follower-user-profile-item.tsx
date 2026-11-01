@@ -1,6 +1,6 @@
-import { FollowButton } from "~/components/button/follow-button"
 import { Link } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
+import { FollowButton } from "~/components/button/follow-button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -8,7 +8,7 @@ type Props = {
   user: FragmentOf<typeof FollowerListItemFragment>
 }
 
-export function FollowerUserProfileItem (props: Props) {
+export function FollowerUserProfileItem(props: Props) {
   const MAX_LENGTH = 40 // Set your desired最大文字数
 
   const truncateText = (text: string, maxLength: number) => {
@@ -43,6 +43,7 @@ export function FollowerUserProfileItem (props: Props) {
         <div className="mb-2">
           <FollowButton
             targetUserId={props.user.id}
+            isFollower={true}
             isFollow={props.user.isFollowee}
           />
         </div>
@@ -71,6 +72,7 @@ export function FollowerUserProfileItem (props: Props) {
         <div className="ml-auto w-40">
           <FollowButton
             targetUserId={props.user.id}
+            isFollower={true}
             isFollow={props.user.isFollowee}
           />
         </div>

@@ -1,49 +1,59 @@
 "use client"
 
-import { useMutation } from "@apollo/client/index"
+import { useApolloClient } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { CheckIcon } from "lucide-react"
 import {
   cloneElement,
   isValidElement,
+  useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react"
-import { AuthContext } from "~/contexts/auth-context"
-import { LoginDialogButton } from "~/components/login-dialog-button"
-import { cn } from "~/lib/utils"
-import { graphql } from "gql.tada"
-import { useTranslation } from "~/hooks/use-translation"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/components/ui/alert-dialog"
 import { toast } from "sonner"
+import { LoginDialogButton } from "~/components/login-dialog-button"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   targetUserId: string
   isFollow: boolean
+  /**
+   * 相手にフォローされている（ボタンを「フォローバック」にする）
+   */
+  isFollower?: boolean
+  /**
+   * 解除したときの案内に出す名前
+   */
+  targetUserName?: string
   className?: string
   triggerChildren?: React.ReactNode
   unFollowTriggerChildren?: React.ReactNode
+  /**
+   * 押した直後（サーバの返事を待たずに）呼ばれる
+   */
+  onFollowChange?: (isFollow: boolean) => void
 }
 
 function enhanceTriggerNode(
   node: React.ReactNode,
   props: {
-    disabled: boolean
-    onPress?: () => void
+    onPress: () => void
   },
 ) {
+  const onClick = (event: React.MouseEvent) => {
+    // カードのリンクの中に置いても、ページが移らないようにする
+    event.preventDefault()
+    event.stopPropagation()
+    props.onPress()
+  }
+
   if (!isValidElement(node)) {
     return (
-      <button type="button" disabled={props.disabled} onClick={props.onPress}>
+      <button type="button" onClick={onClick}>
         {node}
       </button>
     )
@@ -53,102 +63,219 @@ function enhanceTriggerNode(
     | ((event: React.MouseEvent) => void)
     | undefined
 
-  const onClick = props.onPress
-    ? (event: React.MouseEvent) => {
-        originalOnClick?.(event)
-        if (event.defaultPrevented) return
-        if (props.disabled) {
-          event.preventDefault()
-          event.stopPropagation()
-          return
-        }
-        props.onPress?.()
-      }
-    : originalOnClick
-
   return cloneElement(node, {
-    disabled: props.disabled,
-    onClick,
+    onClick: (event: React.MouseEvent) => {
+      originalOnClick?.(event)
+      if (event.defaultPrevented) return
+      onClick(event)
+    },
   })
 }
 
 /**
+ * フォローの状態を、押した瞬間に切り替える（サーバの返事は待たない）。
+ * 返事を待つ間に何度押されても、最後に押された状態になるまで 1 件ずつ送る。
+ * 失敗したときはサーバの状態に戻して知らせる
+ */
+function useOptimisticFollow(props: {
+  targetUserId: string
+  isFollow: boolean
+  onFollowChange?: (isFollow: boolean) => void
+}) {
+  const client = useApolloClient()
+
+  const t = useTranslation()
+
+  const [isFollow, setIsFollow] = useState(props.isFollow)
+
+  /** 押された状態 */
+  const desiredRef = useRef(props.isFollow)
+
+  /** サーバで確かめた状態 */
+  const confirmedRef = useRef(props.isFollow)
+
+  const isSendingRef = useRef(false)
+
+  const onFollowChangeRef = useRef(props.onFollowChange)
+  onFollowChangeRef.current = props.onFollowChange
+
+  // 送っている間は、親から渡された古い値で上書きしない
+  useEffect(() => {
+    if (isSendingRef.current) return
+    desiredRef.current = props.isFollow
+    confirmedRef.current = props.isFollow
+    setIsFollow(props.isFollow)
+  }, [props.isFollow])
+
+  const updateCache = useCallback(
+    (nextIsFollow: boolean) => {
+      const cacheId = client.cache.identify({
+        __typename: "UserNode",
+        id: props.targetUserId,
+      })
+      client.cache.modify({
+        id: cacheId,
+        fields: {
+          isFollowee: () => nextIsFollow,
+          followersCount: (count: number) =>
+            Math.max(0, count + (nextIsFollow ? 1 : -1)),
+        },
+      })
+    },
+    [client, props.targetUserId],
+  )
+
+  const send = useCallback(async () => {
+    if (isSendingRef.current) return
+    isSendingRef.current = true
+    try {
+      while (desiredRef.current !== confirmedRef.current) {
+        const nextIsFollow = desiredRef.current
+        const input = { userId: props.targetUserId }
+        const res = nextIsFollow
+          ? await client.mutate({
+              mutation: followUserMutation,
+              variables: { input },
+            })
+          : await client.mutate({
+              mutation: unfollowUserMutation,
+              variables: { input },
+            })
+        const serverIsFollow = nextIsFollow
+          ? (res.data?.followUser?.isFollowee ?? nextIsFollow)
+          : (res.data?.unfollowUser?.isFollowee ?? nextIsFollow)
+        if (serverIsFollow !== confirmedRef.current) {
+          updateCache(serverIsFollow)
+        }
+        confirmedRef.current = serverIsFollow
+        if (serverIsFollow !== nextIsFollow) {
+          // サーバが受け付けなかった（ブロック中など）
+          desiredRef.current = serverIsFollow
+          setIsFollow(serverIsFollow)
+          onFollowChangeRef.current?.(serverIsFollow)
+        }
+      }
+    } catch (error) {
+      console.error(error)
+      const failedToFollow = desiredRef.current
+      desiredRef.current = confirmedRef.current
+      setIsFollow(confirmedRef.current)
+      onFollowChangeRef.current?.(confirmedRef.current)
+      toast.error(
+        failedToFollow
+          ? t(
+              "フォローできませんでした。もう一度お試しください",
+              "Failed to follow. Please try again",
+            )
+          : t(
+              "フォローを解除できませんでした。もう一度お試しください",
+              "Failed to unfollow. Please try again",
+            ),
+      )
+    } finally {
+      isSendingRef.current = false
+    }
+  }, [client, props.targetUserId, t, updateCache])
+
+  const setFollow = useCallback(
+    (nextIsFollow: boolean) => {
+      desiredRef.current = nextIsFollow
+      setIsFollow(nextIsFollow)
+      onFollowChangeRef.current?.(nextIsFollow)
+      send()
+    },
+    [send],
+  )
+
+  return { isFollow, setFollow }
+}
+
+/**
  * フォロー
+ * 押すとすぐに切り替わる。解除は確認を出さず、すぐ解除して「元に戻す」を出す
  */
 export function FollowButton(props: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
 
-  const [isFollow, setIsFollow] = useState(props.isFollow)
-  const [isOpen, setIsOpen] = useState(false)
-  const [_isDeleted, _setIsDeleted] = useState(false)
-
   const t = useTranslation()
 
+  const { isFollow, setFollow } = useOptimisticFollow({
+    targetUserId: props.targetUserId,
+    isFollow: props.isFollow,
+    onFollowChange: props.onFollowChange,
+  })
+
+  /** 押してフォローしたときだけ、チェックを弾ませる */
+  const [isJustFollowed, setIsJustFollowed] = useState(false)
+
   useEffect(() => {
-    setIsFollow(props.isFollow)
-  }, [props.isFollow])
+    if (!isJustFollowed) return
+    const timer = setTimeout(() => setIsJustFollowed(false), 600)
+    return () => clearTimeout(timer)
+  }, [isJustFollowed])
 
-  const [follow, { loading: isFollowing }] = useMutation(followUserMutation)
-
-  const [unFollow, { loading: isUnFollowing }] =
-    useMutation(unfollowUserMutation)
-
-  const onFollow = async () => {
-    try {
-      const res = await follow({
-        variables: {
-          input: {
-            userId: props.targetUserId,
-          },
-        },
-      })
-      setIsFollow(res.data?.followUser?.isFollowee ?? false)
-      toast.success(t("フォローしました", "You have followed the user"))
-    } catch (e) {
-      console.error(e)
-      toast.error(t("フォローに失敗しました", "Failed to follow the user"))
-    }
+  const onFollow = () => {
+    setIsJustFollowed(true)
+    setFollow(true)
   }
 
-  const onUnFollow = async () => {
-    try {
-      const res = await unFollow({
-        variables: {
-          input: {
-            userId: props.targetUserId,
-          },
+  const onUnFollow = () => {
+    setFollow(false)
+    toast(
+      props.targetUserName
+        ? t(
+            `${props.targetUserName}さんのフォローを解除しました`,
+            `Unfollowed ${props.targetUserName}`,
+          )
+        : t("フォローを解除しました", "Unfollowed"),
+      {
+        id: `unfollow-${props.targetUserId}`,
+        action: {
+          label: t("元に戻す", "Undo"),
+          onClick: () => setFollow(true),
         },
-      })
-      setIsFollow(res.data?.unfollowUser?.isFollowee ?? false)
-      toast.success(
-        t("フォローを解除しました", "You have un followed the user"),
-      )
-      setIsOpen(false)
-    } catch (e) {
-      console.error(e)
-      toast.error(
-        t("フォロー解除に失敗しました", "Failed to un follow the user"),
-      )
-    }
+      },
+    )
   }
+
+  const followLabel = props.isFollower
+    ? t("フォローバック", "Follow back")
+    : t("フォローする", "Follow")
 
   const triggerNode = props.triggerChildren ?? (
     <button
       type="button"
-      onClick={() => {}}
-      className={`h-8 w-full rounded-full bg-clear-bright-blue p-1 font-bold text-white transition duration-500 hover:opacity-80 ${props.className}`}
+      className={cn(
+        "h-8 w-full rounded-full bg-clear-bright-blue p-1 font-bold text-white transition hover:opacity-80 active:scale-95",
+        props.className,
+      )}
     >
-      {t("フォローする", "Follow")}
+      {followLabel}
     </button>
   )
 
   const unFollowTriggerNode = props.unFollowTriggerChildren ?? (
     <button
       type="button"
-      onClick={() => {}}
-      className={`h-8 w-full rounded-full bg-gray-500 p-1 font-bold text-white opacity-50 transition duration-500 hover:opacity-30 ${props.className}`}
+      className={cn(
+        "group flex h-8 w-full items-center justify-center gap-1 rounded-full border border-border bg-secondary p-1 font-bold text-secondary-foreground transition hover:border-destructive/50 hover:bg-destructive/10 hover:text-destructive active:scale-95",
+        props.className,
+      )}
+      aria-label={t(
+        "フォロー中（押すと解除）",
+        "Following (click to unfollow)",
+      )}
     >
-      {t("フォロー中", "Following")}
+      <CheckIcon
+        className={cn(
+          "size-4 shrink-0 group-hover:hidden",
+          isJustFollowed && "animate-follow-pop",
+        )}
+      />
+      <span className="group-hover:hidden">{t("フォロー中", "Following")}</span>
+      <span className="hidden group-hover:inline">
+        {t("フォロー解除", "Unfollow")}
+      </span>
     </button>
   )
 
@@ -156,7 +283,7 @@ export function FollowButton(props: Props): React.ReactNode {
   if (authContext.isLoading || authContext.isNotLoggedIn) {
     return (
       <LoginDialogButton
-        label={t("フォローする", "Follow")}
+        label={followLabel}
         isLoading={authContext.isLoading || authContext.isLoggedIn}
         isWidthFull={true}
         description={t(
@@ -173,41 +300,9 @@ export function FollowButton(props: Props): React.ReactNode {
     return null
   }
 
-  return isFollow ? (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger asChild>
-        {enhanceTriggerNode(unFollowTriggerNode, {
-          disabled: isFollowing || isUnFollowing,
-        })}
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t("確認", "Confirm")}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t(
-              "本当にフォローを解除しますか？",
-              "Are you sure you want to unfollow?",
-            )}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => setIsOpen(false)}>
-            {t("キャンセル", "Cancel")}
-          </AlertDialogCancel>
-          <AlertDialogAction onClick={onUnFollow}>
-            {t("解除する", "Unfollow")}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  ) : (
-    <div className={cn(isFollowing || isUnFollowing ? "opacity-80" : "")}>
-      {enhanceTriggerNode(triggerNode, {
-        disabled: isFollowing || isUnFollowing,
-        onPress: onFollow,
-      })}
-    </div>
-  )
+  return isFollow
+    ? enhanceTriggerNode(unFollowTriggerNode, { onPress: onUnFollow })
+    : enhanceTriggerNode(triggerNode, { onPress: onFollow })
 }
 
 const followUserMutation = graphql(

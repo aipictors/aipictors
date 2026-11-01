@@ -1,17 +1,26 @@
+import { useQuery } from "@apollo/client/index"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, redirect } from "@remix-run/cloudflare"
-import { useLoaderData, Link } from "@remix-run/react"
-import { useState, useCallback, useMemo } from "react"
+import { Link, useLoaderData } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
 import {
-  Eye,
-  MessageCircle,
-  Download,
-  Copy,
   ChevronDown,
   ChevronUp,
+  Copy,
+  Download,
+  Eye,
+  MessageCircle,
   Share2,
 } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { FollowButton } from "~/components/button/follow-button"
+import { GalleryHeader } from "~/components/gallery-header"
+import { LikeButton } from "~/components/like-button"
+import { MasonryWorkGrid } from "~/components/masonry-work-grid"
 import { OptimizedImage } from "~/components/optimized-image"
+import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { GalleryTagList } from "~/components/tag/gallery-tag"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import {
@@ -19,29 +28,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { useTranslation } from "~/hooks/use-translation"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
-import { loaderClient } from "~/lib/loader-client"
-import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
-import { type FragmentOf, graphql } from "gql.tada"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
-import { useQuery } from "@apollo/client/index"
-import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
+import { useTranslation } from "~/hooks/use-translation"
+import { loaderClient } from "~/lib/loader-client"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
-import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { MasonryWorkGrid } from "~/components/masonry-work-grid"
-import { LikeButton } from "~/components/like-button"
-import { FollowButton } from "~/components/button/follow-button"
+import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
 import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post._index/components/work-action-copy-url"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
+import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { downloadImageFileAsPng } from "~/routes/($lang).generation._index/utils/download-image-file-as-png"
-import { GalleryHeader } from "~/components/gallery-header"
-import { GalleryTagList } from "~/components/tag/gallery-tag"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { createMeta } from "~/utils/create-meta"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
-export function HydrateFallback () {
+export function HydrateFallback() {
   return <AppLoadingPage />
 }
 
@@ -176,7 +176,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 /**
  * ギャラリーの作品詳細ページ
  */
-export default function GalleryWorkPage () {
+export default function GalleryWorkPage() {
   const data = useLoaderData<typeof loader>()
 
   // リダイレクトレスポンスの場合は何も表示しない
@@ -296,9 +296,7 @@ function WorkDetailContent(props: {
                             </h4>
                           </div>
                           <div className="grid gap-2">
-                            <CopyWorkUrlButton
-                              currentUrl={shareUrl}
-                            />
+                            <CopyWorkUrlButton currentUrl={shareUrl} />
                             <XIntent
                               text={`AIイラスト投稿サイトAipictorsに投稿された作品\n「${work.title}」\n\n${work.description ?? ""}`}
                               url={shareUrl}
@@ -614,6 +612,7 @@ function WorkDetailsPanel(props: {
 
             <FollowButton
               targetUserId={work.user.id}
+              targetUserName={work.user.name}
               isFollow={work.user.isFollowee}
               className="!w-auto flex h-10 items-center justify-center rounded-full px-6 py-2 font-medium transition-all duration-200 hover:scale-105"
             />

@@ -4280,6 +4280,11 @@ type Query {
   """スタンプ総数"""
   stickersCount(where: StickersWhereInput): Int!
 
+  """
+  このユーザをフォローしている人がよくフォローしている人（フォローした直後のおすすめ）。見る人がフォロー・ブロック・ミュートしている人は出さない
+  """
+  suggestedFollowUsers(limit: Int, userId: ID!): [UserNode!]!
+
   """タグ"""
   tag(name: String!): TagNode
 

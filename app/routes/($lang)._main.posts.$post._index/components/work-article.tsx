@@ -21,6 +21,7 @@ import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/c
 import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
+import { WorkAuthorFollowButton } from "~/routes/($lang)._main.posts.$post._index/components/work-author-follow-button"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
@@ -608,8 +609,8 @@ export function WorkArticle(props: Props) {
         {props.work.album && <WorkAlbumCard album={props.work.album} />}
 
         {props.work.user && (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center space-x-4">
               <Link
                 className="flex items-center space-x-2"
                 to={`/users/${props.work.user.login}`}
@@ -628,6 +629,10 @@ export function WorkArticle(props: Props) {
                 isModerator={props.work.user.isModerator}
               />
             </div>
+            <WorkAuthorFollowButton
+              userId={props.work.user.id}
+              userName={props.work.user.name}
+            />
           </div>
         )}
       </section>

@@ -33,6 +33,29 @@ html {
   background-color: #0170c8;
 }
 
+/* フォローした瞬間のチェック */
+@keyframes follow-pop {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-follow-pop {
+  animation: follow-pop 0.4s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-follow-pop {
+    animation: none;
+  }
+}
+
 @keyframes heart-beat {
   0% {
     transform: scale(1);

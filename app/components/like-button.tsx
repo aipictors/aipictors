@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { KeyCodes } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useFollowNudge } from "~/hooks/use-follow-nudge"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
@@ -34,6 +35,8 @@ export function LikeButton(props: Props): React.ReactNode {
   const location = useLocation()
 
   const authContext = useContext(AuthContext)
+
+  const nudgeFollow = useFollowNudge()
 
   const [createWorkLike, { loading: isCreateLoading }] = useMutation(
     createWorkLikeMutation,
@@ -167,6 +170,9 @@ export function LikeButton(props: Props): React.ReactNode {
             },
           },
         })
+        if (!props.isTargetUserBlocked) {
+          nudgeFollow(props.targetWorkOwnerUserId)
+        }
       } else {
         await deleteWorkLike({
           variables: {
