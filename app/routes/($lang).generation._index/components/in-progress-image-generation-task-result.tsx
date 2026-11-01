@@ -1,10 +1,4 @@
-import { Separator } from "~/components/ui/separator"
-import { Skeleton } from "~/components/ui/skeleton"
-import { GenerationMenuButton } from "~/routes/($lang).generation._index/components/generation-menu-button"
-import {
-  type GenerationSize,
-  parseGenerationSize,
-} from "~/routes/($lang).generation._index/types/generation-size"
+import { type FragmentOf, graphql } from "gql.tada"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -12,10 +6,16 @@ import {
   FileUp,
   Trash2,
 } from "lucide-react"
-import { CopyButton } from "./copy-button"
-import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { graphql, type FragmentOf } from "gql.tada"
+import { Separator } from "~/components/ui/separator"
+import { Skeleton } from "~/components/ui/skeleton"
+import { GenerationMenuButton } from "~/routes/($lang).generation._index/components/generation-menu-button"
+import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
+import {
+  type GenerationSize,
+  parseGenerationSize,
+} from "~/routes/($lang).generation._index/types/generation-size"
+import { CopyButton } from "./copy-button"
 
 type Props = {
   task:
@@ -27,7 +27,7 @@ type Props = {
 /**
  * 生成中の履歴詳細
  */
-export function InProgressImageGenerationTaskResult (props: Props) {
+export function InProgressImageGenerationTaskResult(props: Props) {
   if (props.task === undefined) return null
 
   const generationSize: GenerationSize = parseGenerationSize(
@@ -209,6 +209,7 @@ export const InProgressGenerationImageResultFragment = graphql(
     scale
     steps
     sampler
+    scheduler
     sizeType
     upscaleSize
     status
@@ -233,6 +234,7 @@ export const InProgressGenerationImageResultTaskFragment = graphql(
     scale
     steps
     sampler
+    scheduler
     sizeType
     upscaleSize
     status

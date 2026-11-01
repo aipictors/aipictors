@@ -24,16 +24,17 @@ import {
   useUserModel,
 } from "~/components/user-models/use-user-models"
 import { UserModelAuthor } from "~/components/user-models/user-model-author"
-import { UserModelCard } from "~/components/user-models/user-model-card"
 import {
   UserModelBaseBadge,
   UserModelKindBadge,
   UserModelRatingBadge,
 } from "~/components/user-models/user-model-badges"
+import { UserModelCard } from "~/components/user-models/user-model-card"
 import { UserModelDeleteDialog } from "~/components/user-models/user-model-delete-dialog"
 import { UserModelEditDialog } from "~/components/user-models/user-model-edit-dialog"
 import { UserModelReportDialog } from "~/components/user-models/user-model-report-dialog"
 import { AuthContext } from "~/contexts/auth-context"
+import { describeRecommendedSettings } from "~/lib/generation-sampler"
 import {
   baseModelLabel,
   kindLabel,
@@ -424,6 +425,19 @@ export function UserModelDetail(props: Props) {
                 <dd className="font-semibold tabular-nums">{weight}</dd>
               </div>
             )}
+            {model.recommendedSettings && (
+              <div className="space-y-1 p-4">
+                <dt className="text-muted-foreground text-xs">
+                  おすすめの生成設定
+                </dt>
+                <dd className="font-semibold">
+                  {describeRecommendedSettings(model.recommendedSettings)}
+                </dd>
+                <dd className="text-muted-foreground text-xs">
+                  生成画面でこのモデルを選び、詳細設定の「おすすめ設定を使う」で反映できます
+                </dd>
+              </div>
+            )}
             <div className="flex items-center justify-between p-4">
               <dt className="text-muted-foreground text-xs">ベースモデル</dt>
               <dd className="font-semibold">
@@ -549,7 +563,8 @@ export function UserModelDetail(props: Props) {
         <section aria-labelledby="related-models-heading" className="mt-10">
           <div className="mb-4 flex items-end justify-between gap-3">
             <h2 id="related-models-heading" className="font-bold text-lg">
-              {baseModelLabel(model.baseModel)}の{kindLabel(model.kind)}をもっと見る
+              {baseModelLabel(model.baseModel)}の{kindLabel(model.kind)}
+              をもっと見る
             </h2>
             <Link
               to={`/models?kind=${model.kind}&base=${model.baseModel}`}

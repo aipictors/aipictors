@@ -13,6 +13,7 @@ import {
 import { Slider } from "~/components/ui/slider"
 import { Textarea } from "~/components/ui/textarea"
 import { useModelImageUploader } from "~/components/user-models/use-image-uploader"
+import { UserModelRecommendedSettingsFields } from "~/components/user-models/user-model-recommended-settings-fields"
 import {
   USER_MODEL_BASE_MODELS,
   USER_MODEL_RATINGS,
@@ -259,6 +260,13 @@ export function UserModelMetadataFields(props: Props) {
             <span>1</span>
           </div>
         </div>
+      )}
+
+      {props.kind === "CHECKPOINT" && (
+        <UserModelRecommendedSettingsFields
+          value={value.recommendedSettings}
+          onChange={(next) => update({ recommendedSettings: next })}
+        />
       )}
 
       <div className="space-y-2">

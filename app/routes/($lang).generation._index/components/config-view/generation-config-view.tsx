@@ -11,17 +11,20 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { toGenerationSamplerOptionValue } from "~/lib/generation-sampler"
 import { toGenerationModelType } from "~/lib/user-models/generation"
 import { GenerationConfigClipSkip } from "~/routes/($lang).generation._index/components/config-view/generation-config-clip-skip"
 import { GenerationConfigCount } from "~/routes/($lang).generation._index/components/config-view/generation-config-count"
 import { GenerationConfigMemoButton } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-button"
 import { GenerationConfigMemoSettingDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-setting-dialog"
+import { GenerationConfigOutput } from "~/routes/($lang).generation._index/components/config-view/generation-config-output"
 import { GenerationConfigReferenceImage } from "~/routes/($lang).generation._index/components/config-view/generation-config-reference-image"
 import { GenerationConfigResetConfirmDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-reset-confirm-dialog"
 import { GenerationConfigSampler } from "~/routes/($lang).generation._index/components/config-view/generation-config-sampler"
+import { GenerationConfigSamplingPresets } from "~/routes/($lang).generation._index/components/config-view/generation-config-sampling-presets"
 import { GenerationConfigScale } from "~/routes/($lang).generation._index/components/config-view/generation-config-scale"
+import { GenerationConfigScheduler } from "~/routes/($lang).generation._index/components/config-view/generation-config-scheduler"
 import { GenerationConfigSeed } from "~/routes/($lang).generation._index/components/config-view/generation-config-seed"
-import { GenerationConfigOutput } from "~/routes/($lang).generation._index/components/config-view/generation-config-output"
 import { GenerationConfigStep } from "~/routes/($lang).generation._index/components/config-view/generation-config-step"
 import { GenerationConfigVae } from "~/routes/($lang).generation._index/components/config-view/generation-config-vae"
 import { GenerationLoraSection } from "~/routes/($lang).generation._index/components/config-view/generation-lora-section"
@@ -31,6 +34,7 @@ import { GenerationViewCard } from "~/routes/($lang).generation._index/component
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
+import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 
 /**
@@ -57,6 +61,8 @@ export function GenerationConfigView(props: Props) {
   const [showMemoSetting, setShowMemoSetting] = useState(false)
 
   const userModelSelection = useUserModelSelection()
+
+  const [scheduler, setScheduler] = useGenerationScheduler()
 
   /**
    * 選択中のモデル
@@ -159,15 +165,24 @@ export function GenerationConfigView(props: Props) {
           <AccordionTrigger className="py-2 hover:no-underline">
             <div className="text-left">
               <p className="font-semibold text-sm">
-                {t("詳細設定", "Detailed settings")}
+                {t("詳細設定（描き方・仕上がり）", "Detailed settings")}
               </p>
               <p className="mt-0.5 font-normal text-muted-foreground text-xs">
-                Scale:{context.config.scale}, Steps:{context.config.steps},
-                Sampler:{context.config.sampler}, Vae:{context.config.vae}
+                {[
+                  `CFG ${context.config.scale}`,
+                  `Steps ${context.config.steps}`,
+                  toGenerationSamplerOptionValue(context.config.sampler),
+                  scheduler ?? t("自動", "Auto"),
+                  context.config.vae ? `VAE ${context.config.vae}` : null,
+                ]
+                  .filter(Boolean)
+                  .join("・")}
               </p>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="space-y-2">
+          <AccordionContent className="space-y-5 pt-1">
+            <GenerationConfigSamplingPresets />
+            <Separator />
             <GenerationConfigScale
               value={context.config.scale}
               onChange={context.updateScale}
@@ -179,6 +194,10 @@ export function GenerationConfigView(props: Props) {
             <GenerationConfigSampler
               value={context.config.sampler}
               onChange={context.updateSampler}
+            />
+            <GenerationConfigScheduler
+              value={scheduler}
+              onChange={setScheduler}
             />
             <GenerationConfigClipSkip
               value={context.config.clipSkip}

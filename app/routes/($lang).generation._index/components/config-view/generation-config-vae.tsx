@@ -1,3 +1,4 @@
+import { AlertTriangleIcon } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -5,15 +6,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip"
 import { config } from "~/config"
-import { HelpCircleIcon, AlertTriangleIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationConfigFieldLabel } from "~/routes/($lang).generation._index/components/config-view/generation-config-field-label"
 
 type Props = {
   value: string
@@ -23,7 +18,7 @@ type Props = {
 /**
  * VAEの設定
  */
-export function GenerationConfigVae (props: Props) {
+export function GenerationConfigVae(props: Props) {
   const t = useTranslation()
 
   // VAEが「None」の場合の警告表示判定
@@ -31,24 +26,13 @@ export function GenerationConfigVae (props: Props) {
 
   return (
     <div className="flex flex-col gap-y-2">
-      <div className="flex gap-x-2">
-        <span className="font-bold text-sm">{"VAE"}</span>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircleIcon className="w-4" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>
-                {t(
-                  "出力される色や線を調整します。",
-                  "Adjusts the output colors and lines.",
-                )}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
+      <GenerationConfigFieldLabel
+        label={t("VAE（色・線の仕上げ）", "VAE")}
+        hint={t(
+          "色の鮮やかさや線の仕上がりを整えます。ふつうはモデルに合ったものが自動で入ります。",
+          "Adjusts colors and lines. A matching one is usually set automatically.",
+        )}
+      />
 
       {/* VAEが「None」の場合の警告メッセージ */}
       {isVaeNone && (

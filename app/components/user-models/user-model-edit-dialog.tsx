@@ -37,6 +37,7 @@ const toEditable = (model: UserModel): UserModelEditableFields => ({
   tags: model.tags,
   thumbnailUrl: model.thumbnailUrl,
   sampleImageUrls: model.sampleImageUrls,
+  recommendedSettings: model.recommendedSettings ?? null,
 })
 
 /**

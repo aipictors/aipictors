@@ -1,4 +1,8 @@
-import type { UserModel, UserModelBaseModel } from "~/lib/user-models/types"
+import type {
+  UserModel,
+  UserModelBaseModel,
+  UserModelRecommendedSettings,
+} from "~/lib/user-models/types"
 
 /**
  * 生成リクエストの model に入れるチェックポイント名
@@ -58,6 +62,10 @@ export type SelectedUserCheckpoint = {
    * 選択前の公式モデル（解除時に戻す）
    */
   officialModelId: string
+  /**
+   * 登録者が勧める生成設定（古い保存データには無い）
+   */
+  recommendedSettings?: UserModelRecommendedSettings | null
 }
 
 export const toSelectedUserCheckpoint = (

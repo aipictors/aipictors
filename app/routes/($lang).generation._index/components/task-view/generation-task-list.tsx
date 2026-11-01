@@ -22,6 +22,7 @@ import { MobilePullToRefresh } from "~/routes/($lang).generation._index/componen
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
+import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { usePendingGenerationRequests } from "~/routes/($lang).generation._index/hooks/use-pending-generation-requests"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import { getMaxPagesByPlan } from "~/routes/($lang).generation._index/utils/get-max-pages-by-plan"
@@ -51,6 +52,8 @@ type Props = {
  */
 export function GenerationTaskList(props: Props) {
   const context = useGenerationContext()
+
+  const [, setScheduler] = useGenerationScheduler()
 
   const queryData = useGenerationQuery()
 
@@ -131,6 +134,7 @@ export function GenerationTaskList(props: Props) {
       null,
       null,
     )
+    setScheduler(task.scheduler ?? null)
     toast("設定を復元しました")
   }
 

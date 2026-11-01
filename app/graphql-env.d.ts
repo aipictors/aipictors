@@ -1213,6 +1213,8 @@ input CreateImageGenerationTaskInput {
 
   """sampler"""
   sampler: String!
+  """Schedule type（Karras / Exponential / SGM Uniform / Simple / Normal / Beta）。未指定はサンプラーごとの既定"""
+  scheduler: String
 
   """scale"""
   scale: Int!
@@ -1301,6 +1303,8 @@ input CreateReservedImageGenerationTaskInput {
   negativePrompt: String!
   prompt: String!
   sampler: String!
+  """Schedule type（Karras / Exponential / SGM Uniform / Simple / Normal / Beta）。未指定はサンプラーごとの既定"""
+  scheduler: String
   scale: Int!
   seed: Float!
 
@@ -2169,6 +2173,8 @@ type ImageGenerationReservedTaskNode implements Node {
   negativePrompt: String!
   prompt: String!
   sampler: String!
+  """Schedule type。null はサンプラーごとの既定"""
+  scheduler: String
   scale: Int!
   seed: Float!
   sizeType: ImageGenerationSizeType!
@@ -2238,6 +2244,8 @@ type ImageGenerationResultNode implements Node {
   """お気に入り度"""
   rating: Int
   sampler: String!
+  """Schedule type。null はサンプラーごとの既定"""
+  scheduler: String
   scale: Int!
   seed: Float!
   sizeKind: ImageGenerationSizeKind!
@@ -2446,6 +2454,8 @@ type ImageGenerationTaskNode implements Node {
   """お気に入り度"""
   rating: Int
   sampler: String!
+  """Schedule type。null はサンプラーごとの既定"""
+  scheduler: String
   scale: Int!
   seed: Float!
   sizeKind: ImageGenerationSizeKind!

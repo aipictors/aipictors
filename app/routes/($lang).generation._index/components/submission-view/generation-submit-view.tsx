@@ -1,41 +1,41 @@
-import { AppFixedContent } from "~/components/app/app-fixed-content"
-import { cn } from "~/lib/utils"
-import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/use-is-editing-text-field"
-import { uploadPublicImage } from "~/utils/upload-public-image"
-import { config } from "~/config"
-import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
-import { GenerationCoinShortageDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-coin-shortage-dialog"
-import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
-import {
-  estimatePremiumCoinUse,
-  PREMIUM_COIN_CONFIRM_STORAGE_KEY,
-} from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
-import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
-import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
-import { useMutation, useSuspenseQuery } from "@apollo/client/index"
+import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
+import { useNavigate, useSearchParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean, useLocalStorage, useMediaQuery } from "usehooks-ts"
+import { AppFixedContent } from "~/components/app/app-fixed-content"
 import { VerificationDialog } from "~/components/verification-dialog"
-import { useNavigate, useSearchParams } from "@remix-run/react"
-import { useQuery } from "@apollo/client/index"
+import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { graphql } from "gql.tada"
-import type { GeminiImageSize } from "~/types/gemini-image-generation"
-// 追加: 診断ログ
-import {
-  logInfo,
-  logWarn,
-  logError,
-} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import { useIpAddress } from "~/hooks/use-ip-address"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { cn } from "~/lib/utils"
 import {
   getViewerRequestHeaders,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
+import { GenerationCoinShortageDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-coin-shortage-dialog"
+import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
+import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
+import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
+import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/use-is-editing-text-field"
+import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
+import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
+// 追加: 診断ログ
+import {
+  logError,
+  logInfo,
+  logWarn,
+} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
+import {
+  estimatePremiumCoinUse,
+  PREMIUM_COIN_CONFIRM_STORAGE_KEY,
+} from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
+import type { GeminiImageSize } from "~/types/gemini-image-generation"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
 const standardImageGenerationCoinCost = 10
 const imageEditGenerationCoinCost = 50
@@ -135,8 +135,10 @@ const normalizeCoinSummary = (
   }
 }
 
-export function GenerationSubmissionView (props: Props) {
+export function GenerationSubmissionView(props: Props) {
   const context = useGenerationContext()
+
+  const [scheduler] = useGenerationScheduler()
 
   const userModelSelection = useUserModelSelection()
 
@@ -175,7 +177,8 @@ export function GenerationSubmissionView (props: Props) {
   }
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
-  const [coinSummary, setCoinSummary] = useState<CoinSummaryResponse["data"]>(null)
+  const [coinSummary, setCoinSummary] =
+    useState<CoinSummaryResponse["data"]>(null)
 
   // コインが足りないときの案内（プラン・コイン購入）
   const [isCoinShortageOpen, setIsCoinShortageOpen] = useState(false)
@@ -380,6 +383,7 @@ export function GenerationSubmissionView (props: Props) {
       steps: context.config.steps,
       scale: context.config.scale,
       sampler: context.config.sampler,
+      scheduler: scheduler,
       clipSkip: context.config.clipSkip,
       sizeType: context.config
         .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
@@ -751,11 +755,8 @@ export function GenerationSubmissionView (props: Props) {
     // もし通常の連続生成を超過したら予約生成に切り替える
     try {
       if (
-        checkSameBeforeRequestAndToast(
-          requestModelName,
-          generationType,
-          "",
-        ) === true
+        checkSameBeforeRequestAndToast(requestModelName, generationType, "") ===
+        true
       ) {
         logWarn({
           source: "GenerationSubmit",
@@ -910,9 +911,7 @@ export function GenerationSubmissionView (props: Props) {
         normalizedModelKey.includes("gemini-3.1") ||
         normalizedModelKey.includes("gemininanobanana2")
 
-      return isGemini31
-        ? geminiNanoBanana2CoinCost
-        : geminiNanoBananaCoinCost
+      return isGemini31 ? geminiNanoBanana2CoinCost : geminiNanoBananaCoinCost
     }
 
     if (selectedGenerationType === "IMAGE_TO_IMAGE") {
@@ -1091,11 +1090,13 @@ export function GenerationSubmissionView (props: Props) {
               steps:
                 context.config.steps >
                   config.generationFeature.imageGenerationMaxSteps ||
-                context.config.steps < 9
+                context.config.steps <
+                  config.generationFeature.imageGenerationMinSteps
                   ? config.generationFeature.imageGenerationMaxSteps
                   : context.config.steps,
               scale: context.config.scale,
               sampler: context.config.sampler,
+              scheduler: scheduler,
               clipSkip: context.config.clipSkip,
               sizeType: context.config
                 .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
@@ -1110,124 +1111,127 @@ export function GenerationSubmissionView (props: Props) {
             },
           },
         })
-      } else {
-        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
-          logInfo({
-            source: "GenerationSubmit",
-            message: "Create FLUX task",
-            details: { index: i, promptLength: promptsTexts[i]?.length ?? 0 },
-          })
-          return createFluxTask({
-            variables: {
-              input: {
-                count: 1,
-                prompt: promptsTexts[i],
-                isPromptGenerationEnabled:
-                  context.config.languageUsedForPrompt === "jp",
-                negativePrompt: context.config.negativePromptText,
-                seed: seeds[i],
-                steps:
-                  context.config.steps >
-                    config.generationFeature.imageGenerationMaxSteps ||
-                  context.config.steps < 9
-                    ? config.generationFeature.imageGenerationMaxSteps
-                    : context.config.steps,
-                scale: context.config.scale,
-                sizeType: context.config
-                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-                modelName: modelName,
-              },
-            },
-          })
-        } else if (
-          modelName === "Gemini 2.5" ||
-          modelName === "Gemini 3.1" ||
-          context.config.modelType === "SD5" ||
-          context.config.modelType === "GEMINI"
-        ) {
-          // Geminiモデル、SD5タイプ、またはGEMINIタイプの場合はGeminiタスクとして作成
-          logInfo({
-            source: "GenerationSubmit",
-            message: "Create Gemini task",
-            details: {
-              index: i,
-              promptLength: promptsTexts[i]?.length ?? 0,
-              hasImageUrl: Boolean(i2iFileUrl),
-              size: convertToGeminiImageSize(context.config.sizeType),
-            },
-          })
-          return createGeminiTask({
-            variables: {
-              input: {
-                prompt: promptsTexts[i],
-                size: convertToGeminiImageSize(context.config.sizeType),
-                imageUrl: i2iFileUrl || null,
-                model:
-                  modelName?.toLowerCase().includes("3.1") ||
-                  modelName?.toLowerCase().includes("nanobanana2") ||
-                  modelName?.toLowerCase().includes("nano banana 2") ||
-                  modelName === "GeminiNanoBanana2" ||
-                  modelName === "gemini-3.1-flash-image-preview"
-                    ? "GEMINI_31_FLASH_IMAGE_PREVIEW"
-                    : "GEMINI_25_FLASH_IMAGE",
-              },
-            },
-          })
-        } else {
-          logInfo({
-            source: "GenerationSubmit",
-            message: "Create SD task",
-            details: {
-              index: i,
-              promptLength: promptsTexts[i]?.length ?? 0,
-              generationType,
-              hasI2i: i2iFileUrl !== "",
-            },
-          })
-          return createTask({
-            variables: {
-              input: {
-                // 1 回で作る枚数（サーバー側で上限に収める）
-                count: imagesPerRequest,
-                model: modelName,
-                vae: context.config.vae ?? "",
-                prompt: promptsTexts[i],
-                isPromptGenerationEnabled:
-                  context.config.languageUsedForPrompt === "jp",
-                negativePrompt: context.config.negativePromptText,
-                seed: seeds[i],
-                steps:
-                  context.config.steps >
-                    config.generationFeature.imageGenerationMaxSteps ||
-                  context.config.steps < 9
-                    ? config.generationFeature.imageGenerationMaxSteps
-                    : context.config.steps,
-                scale: context.config.scale,
-                sampler: context.config.sampler,
-                clipSkip: context.config.clipSkip,
-                sizeType: context.config
-                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-                type: generationType as IntrospectionEnum<"ImageGenerationType">,
-                t2tImageUrl: i2iFileUrl,
-                t2tDenoisingStrengthSize:
-                  context.config.i2iDenoisingStrengthSize.toString(),
-                controlNetImageUrl: controlNetImageUrl,
-                controlNetWeight: context.config.controlNetWeight
-                  ? Number(context.config.controlNetWeight)
-                  : null,
-                controlNetModel: context.config.controlNetModel,
-                controlNetModule: context.config.controlNetModule,
-                upscaleSize: context.config.upscaleSize,
-              },
-            },
-          })
-        }
       }
+      if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
+        logInfo({
+          source: "GenerationSubmit",
+          message: "Create FLUX task",
+          details: { index: i, promptLength: promptsTexts[i]?.length ?? 0 },
+        })
+        return createFluxTask({
+          variables: {
+            input: {
+              count: 1,
+              prompt: promptsTexts[i],
+              isPromptGenerationEnabled:
+                context.config.languageUsedForPrompt === "jp",
+              negativePrompt: context.config.negativePromptText,
+              seed: seeds[i],
+              steps:
+                context.config.steps >
+                  config.generationFeature.imageGenerationMaxSteps ||
+                context.config.steps <
+                  config.generationFeature.imageGenerationMinSteps
+                  ? config.generationFeature.imageGenerationMaxSteps
+                  : context.config.steps,
+              scale: context.config.scale,
+              sizeType: context.config
+                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+              modelName: modelName,
+            },
+          },
+        })
+      }
+      if (
+        modelName === "Gemini 2.5" ||
+        modelName === "Gemini 3.1" ||
+        context.config.modelType === "SD5" ||
+        context.config.modelType === "GEMINI"
+      ) {
+        // Geminiモデル、SD5タイプ、またはGEMINIタイプの場合はGeminiタスクとして作成
+        logInfo({
+          source: "GenerationSubmit",
+          message: "Create Gemini task",
+          details: {
+            index: i,
+            promptLength: promptsTexts[i]?.length ?? 0,
+            hasImageUrl: Boolean(i2iFileUrl),
+            size: convertToGeminiImageSize(context.config.sizeType),
+          },
+        })
+        return createGeminiTask({
+          variables: {
+            input: {
+              prompt: promptsTexts[i],
+              size: convertToGeminiImageSize(context.config.sizeType),
+              imageUrl: i2iFileUrl || null,
+              model:
+                modelName?.toLowerCase().includes("3.1") ||
+                modelName?.toLowerCase().includes("nanobanana2") ||
+                modelName?.toLowerCase().includes("nano banana 2") ||
+                modelName === "GeminiNanoBanana2" ||
+                modelName === "gemini-3.1-flash-image-preview"
+                  ? "GEMINI_31_FLASH_IMAGE_PREVIEW"
+                  : "GEMINI_25_FLASH_IMAGE",
+            },
+          },
+        })
+      }
+      logInfo({
+        source: "GenerationSubmit",
+        message: "Create SD task",
+        details: {
+          index: i,
+          promptLength: promptsTexts[i]?.length ?? 0,
+          generationType,
+          hasI2i: i2iFileUrl !== "",
+        },
+      })
+      return createTask({
+        variables: {
+          input: {
+            // 1 回で作る枚数（サーバー側で上限に収める）
+            count: imagesPerRequest,
+            model: modelName,
+            vae: context.config.vae ?? "",
+            prompt: promptsTexts[i],
+            isPromptGenerationEnabled:
+              context.config.languageUsedForPrompt === "jp",
+            negativePrompt: context.config.negativePromptText,
+            seed: seeds[i],
+            steps:
+              context.config.steps >
+                config.generationFeature.imageGenerationMaxSteps ||
+              context.config.steps <
+                config.generationFeature.imageGenerationMinSteps
+                ? config.generationFeature.imageGenerationMaxSteps
+                : context.config.steps,
+            scale: context.config.scale,
+            sampler: context.config.sampler,
+            scheduler: scheduler,
+            clipSkip: context.config.clipSkip,
+            sizeType: context.config
+              .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+            type: generationType as IntrospectionEnum<"ImageGenerationType">,
+            t2tImageUrl: i2iFileUrl,
+            t2tDenoisingStrengthSize:
+              context.config.i2iDenoisingStrengthSize.toString(),
+            controlNetImageUrl: controlNetImageUrl,
+            controlNetWeight: context.config.controlNetWeight
+              ? Number(context.config.controlNetWeight)
+              : null,
+            controlNetModel: context.config.controlNetModel,
+            controlNetModule: context.config.controlNetModule,
+            upscaleSize: context.config.upscaleSize,
+          },
+        },
+      })
     })
     // 送信中の仮カードを一覧に出す（サーバーの応答を待たずに反応を返す）
     const requestKey = `${Date.now()}-${Math.random().toString(36).slice(2)}`
-    const sendingCount = promises.filter((promise) => promise !== undefined)
-      .length
+    const sendingCount = promises.filter(
+      (promise) => promise !== undefined,
+    ).length
     dispatchGenerationEvent("generation:task-sending", {
       key: requestKey,
       count: sendingCount,
@@ -1314,7 +1318,9 @@ export function GenerationSubmissionView (props: Props) {
         totalBalance={coinSummary?.totalBalance ?? 0}
         affordableImages={
           selectedModelCoinCost > 0
-            ? Math.floor((coinSummary?.totalBalance ?? 0) / selectedModelCoinCost)
+            ? Math.floor(
+                (coinSummary?.totalBalance ?? 0) / selectedModelCoinCost,
+              )
             : 0
         }
       />

@@ -1,12 +1,6 @@
 import { Input } from "~/components/ui/input"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip"
-import { HelpCircleIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationConfigFieldLabel } from "~/routes/($lang).generation._index/components/config-view/generation-config-field-label"
 
 type Props = {
   value: number
@@ -16,36 +10,28 @@ type Props = {
 /**
  * ClipSkipの設定
  */
-export function GenerationConfigClipSkip (props: Props) {
+export function GenerationConfigClipSkip(props: Props) {
   const t = useTranslation()
 
   return (
     <div className="flex flex-col gap-y-2">
-      <div className="flex gap-x-2">
-        <span className="font-bold text-sm">{"ClipSkip"}</span>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircleIcon className="w-4" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>
-                {t(
-                  "絵柄の雰囲気が変わります",
-                  "The style of the image may change",
-                )}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
+      <GenerationConfigFieldLabel
+        label="Clip skip"
+        range="1-12"
+        hint={t(
+          "絵柄の雰囲気が少し変わります。アニメ系のモデルはふつう 2 です。",
+          "Slightly changes the style. Usually 2 for anime models.",
+        )}
+      />
       <Input
         type="number"
         value={props.value}
         min={1}
         max={12}
         onChange={(event) => {
-          props.onChange(Number(event.target.value))
+          const value = Number(event.target.value)
+          if (event.target.value === "" || Number.isNaN(value)) return
+          props.onChange(Math.min(12, Math.max(1, Math.round(value))))
         }}
       />
     </div>

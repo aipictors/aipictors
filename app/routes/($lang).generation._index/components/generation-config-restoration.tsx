@@ -1,12 +1,13 @@
-import { AuthContext } from "~/contexts/auth-context"
-import { config } from "~/config"
-import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 import { toast } from "sonner"
+import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 
 type Props = {
   children: React.ReactNode
@@ -16,10 +17,12 @@ type Props = {
  * URLからエディタの状態を復元する
  * @param props
  */
-export function GenerationConfigRestoration (props: Props) {
+export function GenerationConfigRestoration(props: Props) {
   const authContext = useContext(AuthContext)
 
   const context = useGenerationContext()
+
+  const [, setScheduler] = useGenerationScheduler()
 
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -84,6 +87,7 @@ export function GenerationConfigRestoration (props: Props) {
           null,
           null,
         )
+        setScheduler(task.scheduler ?? null)
         toast("タスクを復元しました。", { position: "top-center" })
         removeParams(["ref", "work"])
         return
@@ -122,6 +126,8 @@ export function GenerationConfigRestoration (props: Props) {
             null,
             null,
           )
+          // 作品には Schedule type が残っていないので自動に戻す
+          setScheduler(null)
           toast("タスクを復元しました。", { position: "top-center" })
           removeParams(["work"])
           return
@@ -164,6 +170,7 @@ export const imageGenerationResultQuery = graphql(
       id
       steps
       sampler
+      scheduler
       scale
       vae
       prompt

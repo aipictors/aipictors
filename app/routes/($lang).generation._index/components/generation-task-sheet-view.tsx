@@ -1,7 +1,8 @@
+import { useMutation } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { useCallback, useEffect, useState } from "react"
+import { toast } from "sonner"
 import { config, KeyCodes } from "~/config"
-import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 import {
   GenerationImageResultSheetContentFragment,
   GenerationImageResultSheetContentTaskFragment,
@@ -12,16 +13,16 @@ import {
   InProgressGenerationImageResultTaskFragment,
   InProgressImageGenerationTaskResult,
 } from "~/routes/($lang).generation._index/components/in-progress-image-generation-task-result"
+import { useCachedImageGenerationResult } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-result"
+import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import type { GenerationParameters } from "~/routes/($lang).generation._index/types/generation-parameters"
 import {
   type GenerationSize,
   parseGenerationSize,
 } from "~/routes/($lang).generation._index/types/generation-size"
-import { useMutation } from "@apollo/client/index"
-import { useCallback, useEffect, useState } from "react"
-import { toast } from "sonner"
-import { type FragmentOf, graphql } from "gql.tada"
-import { useCachedImageGenerationResult } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-result"
+import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 
 type Props = {
   task:
@@ -36,7 +37,7 @@ type Props = {
  * 生成情報をクリップボードにコピーする
  * @param generationParameters
  */
-export function copyGeneration (generationParameters: GenerationParameters) {
+export function copyGeneration(generationParameters: GenerationParameters) {
   const text = `${generationParameters.prompt}\nNegative prompt:${generationParameters.negativePrompt},\nSteps:${generationParameters.steps}, Size:${generationParameters.width}x${generationParameters.height}, Seed:${generationParameters.seed}, Model:${generationParameters.modelName}, Sampler:${generationParameters.sampler}, CFG scale:${generationParameters.scale}`
 
   navigator.clipboard
@@ -53,7 +54,7 @@ export function copyGeneration (generationParameters: GenerationParameters) {
  * URLをクリップボードにコピーする
  * @param generationParameters
  */
-export function copyUrl (taskId: string) {
+export function copyUrl(taskId: string) {
   const sitUrl = config.siteURL
   const text = `${sitUrl}/generation/tasks/${taskId}`
 
@@ -70,7 +71,7 @@ export function copyUrl (taskId: string) {
 /**
  * 履歴一覧の履歴シートの中に表示する履歴情報
  */
-export function GenerationTaskSheetView (props: Props) {
+export function GenerationTaskSheetView(props: Props) {
   const [mutation, { loading: isRatingLoading }] = useMutation(
     updateRatingImageGenerationResultMutation,
     {
@@ -106,6 +107,8 @@ export function GenerationTaskSheetView (props: Props) {
 
   const context = useGenerationContext()
 
+  const [, setScheduler] = useGenerationScheduler()
+
   const [rating, setRating] = useState(0)
 
   const [isProtected, setIsProtected] = useState(
@@ -133,6 +136,7 @@ export function GenerationTaskSheetView (props: Props) {
       null,
       null,
     )
+    setScheduler(props.task.scheduler ?? null)
     toast("設定を復元しました")
   }
 

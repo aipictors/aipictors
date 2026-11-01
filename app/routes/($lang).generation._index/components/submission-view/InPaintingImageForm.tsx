@@ -1,22 +1,23 @@
+import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Separator } from "~/components/ui/separator"
-import { uploadPublicImage } from "~/utils/upload-public-image"
 import { InPaintingSetting } from "~/routes/($lang).generation._index/components/submission-view/in-painting-setting"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
-import { useMutation } from "@apollo/client/index"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 import type { Props } from "./in-painting-image-form"
-import { graphql } from "gql.tada"
 
 /**
  * インペイント用のフォーム
  * @param count
  */
 
-export function InPaintingImageForm (props: Props) {
+export function InPaintingImageForm(props: Props) {
   if (
     props.taskId === "" ||
     props.token === "" ||
@@ -39,6 +40,8 @@ export function InPaintingImageForm (props: Props) {
   const [denoisingStrengthSize, setDenoisingStrengthSize] = useState("0.5")
 
   const context = useGenerationContext()
+
+  const [scheduler] = useGenerationScheduler()
 
   const onChangePrompt = (value: string) => {
     setPromptText(value)
@@ -109,6 +112,7 @@ export function InPaintingImageForm (props: Props) {
               context.config.languageUsedForPrompt === "jp",
             negativePrompt: "",
             sampler: props.configSampler,
+            scheduler: scheduler,
             seed: -1,
             steps: props.configSteps,
             scale: props.configScale,
@@ -191,6 +195,7 @@ export const InPaintingImageFormFragment = graphql(
     steps
     scale
     sampler
+    scheduler
     clipSkip
     imageUrl
     sizeType
@@ -219,6 +224,7 @@ export const InPaintingImageFormTaskFragment = graphql(
     steps
     scale
     sampler
+    scheduler
     clipSkip
     imageUrl
     sizeType

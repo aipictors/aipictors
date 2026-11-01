@@ -1,21 +1,16 @@
-import { Input } from "~/components/ui/input"
+import { MinusIcon, PlusIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip"
-import { HelpCircleIcon, MinusIcon, PlusIcon } from "lucide-react"
-import { useTranslation } from "~/hooks/use-translation"
+import { Input } from "~/components/ui/input"
 import { config } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
+import { GenerationConfigFieldLabel } from "~/routes/($lang).generation._index/components/config-view/generation-config-field-label"
 
 type Props = {
   value: number
   onChange(value: number): void
 }
 
-export function GenerationConfigStep (props: Props) {
+export function GenerationConfigStep(props: Props) {
   const t = useTranslation()
 
   const minSteps = config.generationFeature.imageGenerationMinSteps
@@ -63,27 +58,14 @@ export function GenerationConfigStep (props: Props) {
 
   return (
     <div className="flex flex-col gap-y-2">
-      <div className="flex items-center gap-x-2">
-        <span className="font-bold text-sm">{"Steps"}</span>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircleIcon className="w-4" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>
-                {t(
-                  "Steps値を大きくするほどイラストがより洗練されます。",
-                  "The higher the Steps value, the more refined the illustration becomes.",
-                )}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <span className="text-muted-foreground text-xs">
-          ({minSteps}-{maxSteps})
-        </span>
-      </div>
+      <GenerationConfigFieldLabel
+        label={t("Steps（描き込む回数）", "Steps")}
+        range={`${minSteps}-${maxSteps}`}
+        hint={t(
+          "多いほどていねいに描きますが、時間がかかります。ふつうは 20〜28、turbo・lightning 系のモデルは 4〜8 です。",
+          "More steps are more careful but slower. Usually 20–28; 4–8 for turbo / lightning models.",
+        )}
+      />
 
       {/* モバイル向けプラスマイナスボタン付きUI */}
       <div className="flex items-center gap-2">

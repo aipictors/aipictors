@@ -1,25 +1,25 @@
-import { SelectableCardButton } from "~/components/selectable-card-button"
-import { CoinIcon } from "~/components/coin-icon"
-import { Button } from "~/components/ui/button"
-import { Skeleton } from "~/components/ui/skeleton"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useMutation } from "@apollo/client/index"
+import { type FragmentOf, graphql, type IntrospectionEnum } from "gql.tada"
 import { useState } from "react"
 import { toast } from "sonner"
-import { ReservedGenerationCard } from "~/routes/($lang).generation._index/components/reserved-generation-card"
-import { InProgressGenerationCard } from "~/routes/($lang).generation._index/components/in-progress-generation-card"
-import { GenerationTaskZoomUpButton } from "~/routes/($lang).generation._index/components/generation-task-zoom-up-button"
-import { GenerationTaskRatingButton } from "~/routes/($lang).generation._index/components/generation-task-rating-button"
+import { CoinIcon } from "~/components/coin-icon"
+import { SelectableCardButton } from "~/components/selectable-card-button"
+import { Button } from "~/components/ui/button"
+import { Skeleton } from "~/components/ui/skeleton"
+import { cn } from "~/lib/utils"
 import { GenerationTaskDeleteButton } from "~/routes/($lang).generation._index/components/generation-task-delete-button"
 import { GenerationTaskDownloadButton } from "~/routes/($lang).generation._index/components/generation-task-download-button"
 import {
   GenerationResultProtectButtonFragment,
   GenerationResultProtectButtonTaskFragment,
 } from "~/routes/($lang).generation._index/components/generation-task-protected-button"
-import { graphql, type FragmentOf, type IntrospectionEnum } from "gql.tada"
+import { GenerationTaskRatingButton } from "~/routes/($lang).generation._index/components/generation-task-rating-button"
+import { GenerationTaskZoomUpButton } from "~/routes/($lang).generation._index/components/generation-task-zoom-up-button"
+import { InProgressGenerationCard } from "~/routes/($lang).generation._index/components/in-progress-generation-card"
+import { ReservedGenerationCard } from "~/routes/($lang).generation._index/components/reserved-generation-card"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
-import { cn } from "~/lib/utils"
 
 const convertToGeminiImageSize = (sizeType: string) => {
   switch (sizeType) {
@@ -59,7 +59,7 @@ type Props = {
 /**
  * 画像生成の編集可能な履歴
  */
-export function GenerationTaskEditableCard (props: Props) {
+export function GenerationTaskEditableCard(props: Props) {
   const context = useGenerationContext()
 
   const data = useGenerationQuery()
@@ -115,7 +115,6 @@ export function GenerationTaskEditableCard (props: Props) {
       }
     }
   }
-
 
   /**
    * 生成タスクを削除する
@@ -201,8 +200,8 @@ export function GenerationTaskEditableCard (props: Props) {
               seed: props.task.seed,
               steps: props.task.steps,
               scale: props.task.scale,
-              sizeType:
-                props.task.sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+              sizeType: props.task
+                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
               modelName,
               retryFromNanoid: props.taskNanoid,
             },
@@ -242,16 +241,15 @@ export function GenerationTaskEditableCard (props: Props) {
               scale: props.task.scale,
               sampler: props.task.sampler,
               clipSkip: props.task.clipSkip,
-              sizeType:
-                props.task.sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-              type:
-                props.task.generationType as IntrospectionEnum<"ImageGenerationType">,
+              sizeType: props.task
+                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+              type: props.task
+                .generationType as IntrospectionEnum<"ImageGenerationType">,
               t2tImageUrl: props.task.t2tImageUrl || null,
               t2tMaskImageUrl: props.task.t2tMaskImageUrl || null,
               t2tDenoisingStrengthSize:
                 props.task.t2tDenoisingStrengthSize || null,
-              t2tInpaintingFillSize:
-                props.task.t2tInpaintingFillSize || null,
+              t2tInpaintingFillSize: props.task.t2tInpaintingFillSize || null,
               controlNetWeight: props.task.controlNetWeight ?? null,
               controlNetModel: props.task.controlNetModel || null,
               controlNetModule: props.task.controlNetModule || null,
@@ -512,6 +510,7 @@ export const EditableGenerationResultCardFragment = graphql(
     scale
     steps
     sampler
+    scheduler
     seed
     clipSkip
     sizeType
@@ -551,6 +550,7 @@ export const EditableGenerationResultCardTaskFragment = graphql(
     scale
     steps
     sampler
+    scheduler
     seed
     clipSkip
     sizeType

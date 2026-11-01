@@ -64,6 +64,21 @@ export type UserModel = {
    * URL からの取り込みの状態（QUEUED / RUNNING / DONE / FAILED）。アップロードしたモデルは null
    */
   importStatus?: string | null
+  /**
+   * 登録者が勧める生成設定（未設定は null）
+   */
+  recommendedSettings?: UserModelRecommendedSettings | null
+}
+
+export type UserModelRecommendedSettings = {
+  sampler: string | null
+  /**
+   * Schedule type
+   */
+  scheduler: string | null
+  cfgScale: number | null
+  steps: number | null
+  clipSkip: number | null
 }
 
 export type UserModelSourceLicense = {
@@ -167,6 +182,10 @@ export type UserModelEditableFields = {
   tags: string[]
   thumbnailUrl: string | null
   sampleImageUrls: string[]
+  /**
+   * おすすめの生成設定（チェックポイントのみ入力）。null で消す
+   */
+  recommendedSettings?: UserModelRecommendedSettings | null
 }
 
 export type StartUploadInput = UserModelEditableFields & {

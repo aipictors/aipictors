@@ -56,6 +56,7 @@ export function useUserModelSelection() {
       baseModel: model.baseModel,
       thumbnailUrl: model.thumbnailUrl,
       officialModelId: context.config.modelId,
+      recommendedSettings: model.recommendedSettings ?? null,
       anchorModelId,
     })
     context.updateModelId(anchorModelId, modelType)

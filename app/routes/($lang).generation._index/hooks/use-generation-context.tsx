@@ -1,16 +1,16 @@
+import { useContext } from "react"
 import { config } from "~/config"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { GenerationQueryContext } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { GenerationConfigAction } from "~/routes/($lang).generation._index/machines/models/generation-config-action"
 import type { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
-import { useContext } from "react"
 
 /**
  * 状態機械ごとの、最後に送った設定
  */
 const latestConfigByActor = new WeakMap<object, GenerationConfigState>()
 
-export function useGenerationContext () {
+export function useGenerationContext() {
   const dataContext = useContext(GenerationQueryContext)
 
   const configContext = GenerationConfigContext.useSelector((state) => {
@@ -145,6 +145,28 @@ export function useGenerationContext () {
       .updateNegativePrompt(negativePrompt)
       .getState()
     sendConfig(value)
+  }
+
+  /**
+   * 描き方の設定（サンプラー・CFG・Steps・Clip skip）をまとめて変える。
+   * 指定しなかった項目はそのまま（プリセットやモデルのおすすめ設定に使う）
+   */
+  const updateSamplingSettings = (settings: {
+    sampler?: string | null
+    scale?: number | null
+    steps?: number | null
+    clipSkip?: number | null
+  }) => {
+    let action = getConfigAction()
+    if (settings.sampler) action = action.updateSampler(settings.sampler)
+    if (typeof settings.scale === "number")
+      action = action.updateScale(settings.scale)
+    if (typeof settings.steps === "number")
+      action = action.updateSteps(settings.steps)
+    if (typeof settings.clipSkip === "number") {
+      action = action.updateClipSkip(settings.clipSkip)
+    }
+    sendConfig(action.getState())
   }
 
   /**
@@ -377,7 +399,9 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetMaskImageBase64 = (item: string) => {
-    const value = getConfigAction().changeControlNetMaskImageBase64(item).getState()
+    const value = getConfigAction()
+      .changeControlNetMaskImageBase64(item)
+      .getState()
     sendConfig(value)
   }
 
@@ -422,7 +446,9 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetGuidanceStart = (item: number) => {
-    const value = getConfigAction().changeControlNetGuidanceStart(item).getState()
+    const value = getConfigAction()
+      .changeControlNetGuidanceStart(item)
+      .getState()
     sendConfig(value)
   }
 
@@ -431,7 +457,9 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetPixelPerfect = (item: boolean) => {
-    const value = getConfigAction().changeControlNetPixelPerfect(item).getState()
+    const value = getConfigAction()
+      .changeControlNetPixelPerfect(item)
+      .getState()
     sendConfig(value)
   }
 
@@ -440,7 +468,9 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetProcessorRes = (item: number) => {
-    const value = getConfigAction().changeControlNetProcessorRes(item).getState()
+    const value = getConfigAction()
+      .changeControlNetProcessorRes(item)
+      .getState()
     sendConfig(value)
   }
 
@@ -557,7 +587,9 @@ export function useGenerationContext () {
    * @param value
    */
   const changeControlNetSaveDetectedMap = (item: boolean) => {
-    const value = getConfigAction().changeControlNetSaveDetectedMap(item).getState()
+    const value = getConfigAction()
+      .changeControlNetSaveDetectedMap(item)
+      .getState()
     sendConfig(value)
   }
 
@@ -608,7 +640,9 @@ export function useGenerationContext () {
    * @param i2iImageBase64
    */
   const changeI2iImageBase64 = (i2iImageBase64: string) => {
-    const value = getConfigAction().changeI2iImageBase64(i2iImageBase64).getState()
+    const value = getConfigAction()
+      .changeI2iImageBase64(i2iImageBase64)
+      .getState()
     sendConfig(value)
   }
 
@@ -707,6 +741,7 @@ export function useGenerationContext () {
     updateNegativePrompt,
     updatePromptAndNegativePrompt,
     updateSampler,
+    updateSamplingSettings,
     updateSteps,
     updateScale,
     updateSizeType,

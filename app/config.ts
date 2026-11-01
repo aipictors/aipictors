@@ -234,7 +234,7 @@ export const config: AppConfig = {
      */
     defaultImageModelIds: ["1", "3", "19"],
     imageGenerationMaxSteps: 30,
-    imageGenerationMinSteps: 9,
+    imageGenerationMinSteps: 4,
     /**
      * デフォルトのモデルのID
      */
@@ -253,7 +253,7 @@ export const config: AppConfig = {
     defaultNegativePromptValue: "EasyNegative, bad_prompt_version2, badhandv4",
     defaultScaleValue: 7,
     defaultStepsValue: 20,
-    defaultSamplerValue: "DPM++ 2M Karras",
+    defaultSamplerValue: "DPM++ 2M",
     defaultClipSkipValue: 2,
     samplerValues: [
       "Euler a",

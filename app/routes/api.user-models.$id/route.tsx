@@ -19,6 +19,7 @@ const editableKeys = [
   "tags",
   "thumbnailUrl",
   "sampleImageUrls",
+  "recommendedSettings",
 ] as const
 
 function isValidId(id: string | undefined): id is string {

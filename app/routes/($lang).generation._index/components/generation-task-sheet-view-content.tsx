@@ -535,6 +535,7 @@ export const GenerationImageResultSheetContentFragment = graphql(
     steps
     scale
     sampler
+    scheduler
     clipSkip
     imageUrl
     sizeType
@@ -565,6 +566,7 @@ export const GenerationImageResultSheetContentTaskFragment = graphql(
     steps
     scale
     sampler
+    scheduler
     clipSkip
     imageUrl
     sizeType
