@@ -133,7 +133,15 @@ type PremiumConfirmResponse = {
   } | null
 }
 
-const SUPPORT_COIN_STEP_AMOUNTS = [100, 500, 1000] as const
+/**
+ * 推しコインのボタンで足す量。よく使われるのは 10〜100pt くらい（プレミアムは 1 枚 10pt）
+ * 以前は 100/500/1000 でスマホでは入力が面倒、桁を間違えて多く送ってしまうことがあった
+ */
+const SUPPORT_FREE_COIN_STEPS = [10, 20, 30, 50, 100] as const
+const SUPPORT_PREMIUM_COIN_STEPS = [1, 2, 3, 5, 10] as const
+
+/** これ以上の pt を送るときは確認する（桁の間違いを防ぐ） */
+const SUPPORT_CONFIRM_THRESHOLD_PT = 1000
 
 const parseClampedNonNegativeInt = (value: string, max: number) => {
   const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
@@ -690,6 +698,19 @@ export function WorkCommentList(props: Props) {
         }
       }
 
+      if (
+        supportDraft !== null &&
+        supportDraft.totalPt >= SUPPORT_CONFIRM_THRESHOLD_PT &&
+        !window.confirm(
+          t(
+            `${supportDraft.totalPt.toLocaleString()}pt（フリー ${supportDraft.freeCoinAmount.toLocaleString()}・プレミアム ${supportDraft.premiumCoinAmount.toLocaleString()}）を推しとして送ります。よろしいですか？`,
+            `Send ${supportDraft.totalPt.toLocaleString()}pt (free ${supportDraft.freeCoinAmount}, premium ${supportDraft.premiumCoinAmount})?`,
+          ),
+        )
+      ) {
+        return
+      }
+
       const confirmedSupportDraft = supportDraft
 
       if (targetWorkId !== undefined) {
@@ -1025,45 +1046,33 @@ export function WorkCommentList(props: Props) {
                     }
                     disabled={!authContext.isLoggedIn}
                   />
-                  <div className="space-y-1 pt-1">
-                    {SUPPORT_COIN_STEP_AMOUNTS.map((amount) => (
-                      <div
+                  <div className="grid grid-cols-3 gap-1.5 pt-1">
+                    {SUPPORT_FREE_COIN_STEPS.map((amount) => (
+                      <Button
                         key={`free-${amount}`}
-                        className="grid grid-cols-2 gap-1.5"
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9"
+                        disabled={
+                          !authContext.isLoggedIn ||
+                          currentFreeSupportCoinAmount >= coinBalances.freeBalance
+                        }
+                        onClick={() => adjustSupportCoinAmount("FREE", amount)}
                       >
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="h-8"
-                          disabled={
-                            !authContext.isLoggedIn ||
-                            currentFreeSupportCoinAmount <= 0
-                          }
-                          onClick={() =>
-                            adjustSupportCoinAmount("FREE", -amount)
-                          }
-                        >
-                          -{amount}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="h-8"
-                          disabled={
-                            !authContext.isLoggedIn ||
-                            currentFreeSupportCoinAmount >=
-                              coinBalances.freeBalance
-                          }
-                          onClick={() =>
-                            adjustSupportCoinAmount("FREE", amount)
-                          }
-                        >
-                          +{amount}
-                        </Button>
-                      </div>
+                        +{amount}
+                      </Button>
                     ))}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-9 text-muted-foreground"
+                      disabled={!authContext.isLoggedIn || currentFreeSupportCoinAmount <= 0}
+                      onClick={() => setSupportFreeCoinAmount("0")}
+                    >
+                      {t("リセット", "Reset")}
+                    </Button>
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -1095,46 +1104,37 @@ export function WorkCommentList(props: Props) {
                     }
                     disabled={!authContext.isLoggedIn}
                   />
-                  <div className="space-y-1 pt-1">
-                    {SUPPORT_COIN_STEP_AMOUNTS.map((amount) => (
-                      <div
+                  <div className="grid grid-cols-3 gap-1.5 pt-1">
+                    {SUPPORT_PREMIUM_COIN_STEPS.map((amount) => (
+                      <Button
                         key={`premium-${amount}`}
-                        className="grid grid-cols-2 gap-1.5"
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9"
+                        disabled={
+                          !authContext.isLoggedIn ||
+                          currentPremiumSupportCoinAmount >= coinBalances.premiumBalance
+                        }
+                        onClick={() => adjustSupportCoinAmount("PREMIUM", amount)}
                       >
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="h-8"
-                          disabled={
-                            !authContext.isLoggedIn ||
-                            currentPremiumSupportCoinAmount <= 0
-                          }
-                          onClick={() =>
-                            adjustSupportCoinAmount("PREMIUM", -amount)
-                          }
-                        >
-                          -{amount}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="h-8"
-                          disabled={
-                            !authContext.isLoggedIn ||
-                            currentPremiumSupportCoinAmount >=
-                              coinBalances.premiumBalance
-                          }
-                          onClick={() =>
-                            adjustSupportCoinAmount("PREMIUM", amount)
-                          }
-                        >
-                          +{amount}
-                        </Button>
-                      </div>
+                        +{amount}
+                      </Button>
                     ))}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-9 text-muted-foreground"
+                      disabled={!authContext.isLoggedIn || currentPremiumSupportCoinAmount <= 0}
+                      onClick={() => setSupportPremiumCoinAmount("0")}
+                    >
+                      {t("リセット", "Reset")}
+                    </Button>
                   </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t("プレミアム1枚 = 10pt", "1 premium coin = 10pt")}
+                  </p>
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
