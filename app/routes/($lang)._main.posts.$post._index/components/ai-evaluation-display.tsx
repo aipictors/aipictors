@@ -40,7 +40,7 @@ type Props = {
   isBotGradingPublic: boolean
   isOwner?: boolean
   workId: string
-  /** 評価がないときの状況（FAILED: 何度か試してもできなかった） */
+  /** 評価がないときの状況（FAILED: 何度か試してもできなかった / REFUSED: 内容を理由に評価しなかった） */
   status?: string | null
 }
 
@@ -191,7 +191,10 @@ export function AiEvaluationDisplay(props: Props) {
 
   // 作成中は結果が出るまで見に行く（再読み込みしなくても出るように）
   const isPending =
-    canView && props.evaluation === null && props.status !== "FAILED"
+    canView &&
+    props.evaluation === null &&
+    props.status !== "FAILED" &&
+    props.status !== "REFUSED"
   const { data: latest, refetch } = useQuery(aiEvaluationStatusQuery, {
     skip: !isPending || typeof window === "undefined",
     pollInterval: POLL_INTERVAL_MS,
@@ -240,6 +243,22 @@ export function AiEvaluationDisplay(props: Props) {
   }
 
   if (evaluation === null) {
+    if (status === "REFUSED") {
+      // 見ている人には出さず、作者にだけ伝える（やり直しはできない）
+      if (!props.isOwner) return null
+      return (
+        <div className="flex w-full max-w-2xl items-center gap-3 rounded-2xl border border-dashed p-4">
+          <EyeOff className="size-5 shrink-0 text-muted-foreground" />
+          <p className="text-muted-foreground text-sm">
+            {t(
+              "この作品はAI評価の対象外です",
+              "This work is not eligible for AI evaluation",
+            )}
+          </p>
+        </div>
+      )
+    }
+
     if (status === "FAILED") {
       // 見ている人には関係のない失敗なので、作者にだけ伝える
       if (!props.isOwner) return null
