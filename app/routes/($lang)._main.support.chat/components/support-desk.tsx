@@ -1,27 +1,25 @@
-import { Link } from "@remix-run/react"
+import { useQuery } from "@apollo/client/index"
+import { Link, useSearchParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import {
   BotIcon,
   CheckCircle2Icon,
   HeadsetIcon,
   Loader2Icon,
+  MailIcon,
+  MessagesSquareIcon,
   PlusIcon,
   SendIcon,
   ThumbsDownIcon,
   ThumbsUpIcon,
 } from "lucide-react"
 import { marked } from "marked"
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { cn } from "~/lib/utils"
+import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 
 type SupportMessage = {
   id: string
@@ -60,10 +58,13 @@ const QUICK_TOPICS = [
 
 const MAX_LENGTH = 4000
 
+/** AI で解決できないときの相談先（有人の窓口はないため） */
+const DISCORD_INVITE_URL = "https://discord.gg/hcQggQEYfn"
+
 const STATUS_LABEL: Record<SupportTicket["status"], string> = {
   ai: "AI が回答します",
-  waiting_staff: "スタッフの確認待ち",
-  staff_replied: "スタッフが返信しました",
+  waiting_staff: "AI が回答します",
+  staff_replied: "AI が回答します",
   resolved: "解決済み",
 }
 
@@ -71,7 +72,9 @@ const callSupportApi = async <T,>(
   op: string,
   body: Record<string, unknown>,
 ): Promise<T> => {
-  const headers = await getViewerRequestHeaders({ includeJsonContentType: true })
+  const headers = await getViewerRequestHeaders({
+    includeJsonContentType: true,
+  })
   const response = await fetch(`/api/support/${op}`, {
     method: "POST",
     headers,
@@ -112,7 +115,8 @@ const formatTime = (epoch: number): string => {
 }
 
 /**
- * お問い合わせ（AI がすぐ答え、必要ならスタッフが同じチャットで返事する）
+ * お問い合わせ（AI が答える。有人の窓口はないので、AI で解決できないものは Discord を案内する）
+ * 運営からのメッセージ（規約違反の連絡など）もここに出し、そのまま AI に質問できる
  */
 export function SupportDesk() {
   const authContext = useContext(AuthContext)
@@ -128,8 +132,21 @@ export function SupportDesk() {
   const ticket = thread?.ticket ?? null
   const messages = thread?.messages ?? []
   const isOpenTicket = ticket !== null && ticket.status !== "resolved"
-  const isStaffHandling =
-    ticket?.status === "waiting_staff" || ticket?.status === "staff_replied"
+  // 以前の「スタッフ対応中」のお問い合わせも、今は AI が答える
+  const isStaffHandling = false
+
+  const [searchParams] = useSearchParams()
+  const focusedLetterId = searchParams.get("letter")
+
+  // 運営からのメッセージ（本人宛て。登録時の自動メッセージは除く）
+  const { data: lettersData } = useQuery(supportLettersQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: { offset: 0, limit: 10 },
+  })
+  const letters = (lettersData?.viewer?.supportMessages ?? []).filter(
+    (message) =>
+      !message.isViewer && !message.text.startsWith("この度はご登録いただき"),
+  )
 
   const load = useCallback(async (ticketId?: string) => {
     try {
@@ -181,7 +198,11 @@ export function SupportDesk() {
         messages: SupportMessage[]
       }>("messages", {
         body,
-        ticketId: options?.newTicket ? undefined : isOpenTicket ? ticket?.id : undefined,
+        ticketId: options?.newTicket
+          ? undefined
+          : isOpenTicket
+            ? ticket?.id
+            : undefined,
         newTicket: options?.newTicket === true,
         escalate: options?.escalate === true,
         userName: authContext.displayName ?? undefined,
@@ -198,30 +219,11 @@ export function SupportDesk() {
       })
     } catch (error) {
       setText(body)
-      toast.error(
-        error instanceof Error ? error.message : "送信に失敗しました",
-      )
+      toast.error(error instanceof Error ? error.message : "送信に失敗しました")
     } finally {
       setPendingText(null)
       setIsSending(false)
       textareaRef.current?.focus()
-    }
-  }
-
-  const escalate = async () => {
-    if (!ticket) return
-    try {
-      const data = await callSupportApi<{
-        ticket: SupportTicket
-        messages: SupportMessage[]
-      }>("escalate", { ticketId: ticket.id })
-      setThread((prev) => ({
-        ticket: data.ticket,
-        messages: [...(prev?.messages ?? []), ...data.messages],
-        tickets: prev?.tickets,
-      }))
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "失敗しました")
     }
   }
 
@@ -257,13 +259,19 @@ export function SupportDesk() {
   }
 
   const startNew = () => {
-    setThread((prev) => ({ ticket: null, messages: [], tickets: prev?.tickets }))
+    setThread((prev) => ({
+      ticket: null,
+      messages: [],
+      tickets: prev?.tickets,
+    }))
     setText("")
     textareaRef.current?.focus()
   }
 
   const showWelcome = !isLoading && (!isOpenTicket || messages.length === 0)
-  const lastAiMessageId = [...messages].reverse().find((m) => m.role === "ai")?.id
+  const lastAiMessageId = [...messages]
+    .reverse()
+    .find((m) => m.role === "ai")?.id
 
   return (
     <div className="mx-auto flex h-[calc(100dvh-4rem)] w-full max-w-3xl flex-col md:h-[calc(100dvh-5rem)]">
@@ -277,7 +285,7 @@ export function SupportDesk() {
           <p className="truncate text-muted-foreground text-xs">
             {ticket && isOpenTicket
               ? STATUS_LABEL[ticket.status]
-              : "AI がすぐにお答えします。解決しないときはスタッフに引き継ぎます"}
+              : "AI がすぐにお答えします"}
           </p>
         </div>
         {ticket && (
@@ -290,6 +298,19 @@ export function SupportDesk() {
 
       {/* メッセージ */}
       <div className="flex-1 space-y-4 overflow-y-auto px-3 py-4 md:px-4">
+        {letters.length > 0 && (
+          <SupportLetters
+            letters={letters}
+            focusedLetterId={focusedLetterId}
+            disabled={isSending}
+            onAsk={(letter) =>
+              void send(
+                `運営からのメッセージ（${formatTime(letter.createdAt)}）について教えてください。\n「${letter.text.slice(0, 300)}」`,
+                { newTicket: !isOpenTicket },
+              )
+            }
+          />
+        )}
         {isLoading && (
           <div className="flex justify-center py-10 text-muted-foreground">
             <Loader2Icon className="size-5 animate-spin" />
@@ -301,9 +322,18 @@ export function SupportDesk() {
             <div className="rounded-xl border bg-muted/40 p-4 text-sm leading-relaxed">
               <p className="font-bold">こんにちは！Aipictors のサポートです</p>
               <p className="mt-1 text-muted-foreground">
-                あなたのプランやコイン、最近の生成の記録を確認しながらお答えします。返金やコインの付与、不具合の調査など、AI
-                で対応できないものはスタッフに引き継ぎ、このチャットでお返事します（Discord
-                に登録しなくても大丈夫です）。
+                あなたのプランやコイン、最近の生成の記録、運営からのメッセージを確認しながら
+                AI がお答えします。返金や不具合の調査など AI
+                で解決できないものは、
+                <a
+                  href={DISCORD_INVITE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mx-1 underline"
+                >
+                  Discord サーバー
+                </a>
+                でご相談ください。
               </p>
             </div>
             <div>
@@ -345,7 +375,6 @@ export function SupportDesk() {
               message={message}
               showFeedback={message.id === lastAiMessageId && !isStaffHandling}
               onFeedback={(helpful) => void sendFeedback(message, helpful)}
-              onEscalate={() => void escalate()}
             />
           ))}
 
@@ -378,16 +407,16 @@ export function SupportDesk() {
       <div className="border-t bg-background px-3 pt-2 pb-3 md:px-4">
         {isOpenTicket && messages.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
-            {!isStaffHandling && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => void escalate()}
+            <Button variant="secondary" size="sm" asChild>
+              <a
+                href={DISCORD_INVITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <HeadsetIcon className="mr-1 size-4" />
-                スタッフに相談する
-              </Button>
-            )}
+                <MessagesSquareIcon className="mr-1 size-4" />
+                Discord で相談する
+              </a>
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => void resolve()}>
               <CheckCircle2Icon className="mr-1 size-4" />
               解決した
@@ -401,9 +430,7 @@ export function SupportDesk() {
             rows={1}
             maxLength={MAX_LENGTH}
             placeholder={
-              isStaffHandling
-                ? "スタッフへの追加のメッセージ"
-                : "困っていることを書いてください（例: コインが減った、投稿できない）"
+              "困っていることを書いてください（例: コインが減った、運営からのメッセージの意味）"
             }
             onChange={(event) => {
               setText(event.target.value)
@@ -440,7 +467,8 @@ export function SupportDesk() {
           </Button>
         </div>
         <p className="mt-1 text-[11px] text-muted-foreground">
-          Enter で送信・Shift+Enter で改行。パスワードやカード番号は書かないでください
+          Enter で送信・Shift+Enter
+          で改行。パスワードやカード番号は書かないでください
         </p>
       </div>
     </div>
@@ -451,7 +479,6 @@ function MessageBubble(props: {
   message: SupportMessage
   showFeedback: boolean
   onFeedback: (helpful: boolean) => void
-  onEscalate: () => void
 }) {
   const { message } = props
 
@@ -496,8 +523,10 @@ function MessageBubble(props: {
       </div>
       <div className="min-w-0 max-w-[85%]">
         <p className="mb-1 font-medium text-muted-foreground text-xs">
-          {isStaff ? "スタッフ" : "AI サポート"}
-          <span className="ml-2 font-normal">{formatTime(message.createdAt)}</span>
+          {isStaff ? "運営" : "AI サポート"}
+          <span className="ml-2 font-normal">
+            {formatTime(message.createdAt)}
+          </span>
         </p>
         <div
           className={cn(
@@ -536,15 +565,17 @@ function MessageBubble(props: {
               <span>ありがとうございます！</span>
             ) : (
               <span>
-                ごめんなさい。
-                <button
-                  type="button"
+                ごめんなさい。詳しい状況（作品の
+                URL・日時・画面のメッセージ）を書くか、
+                <a
+                  href={DISCORD_INVITE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="underline"
-                  onClick={props.onEscalate}
                 >
-                  スタッフに相談する
-                </button>
-                か、詳しい状況を書いてください
+                  Discord で相談
+                </a>
+                してください
               </span>
             )}
           </div>
@@ -553,3 +584,81 @@ function MessageBubble(props: {
     </div>
   )
 }
+
+type SupportLetter = {
+  id: string
+  text: string
+  createdAt: number
+}
+
+/**
+ * 運営からのメッセージ（規約違反の連絡など）。押すとその内容について AI に質問できる
+ */
+function SupportLetters(props: {
+  letters: SupportLetter[]
+  focusedLetterId: string | null
+  disabled: boolean
+  onAsk: (letter: SupportLetter) => void
+}) {
+  const [isOpen, setIsOpen] = useState(props.focusedLetterId !== null)
+  const visible = isOpen ? props.letters : props.letters.slice(0, 1)
+  return (
+    <section className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
+      <div className="mb-2 flex items-center gap-2">
+        <MailIcon className="size-4 text-amber-600 dark:text-amber-300" />
+        <h2 className="font-bold text-sm">運営からのメッセージ</h2>
+        {props.letters.length > 1 && (
+          <button
+            type="button"
+            className="ml-auto text-muted-foreground text-xs underline"
+            onClick={() => setIsOpen((value) => !value)}
+          >
+            {isOpen ? "閉じる" : `すべて見る（${props.letters.length}件）`}
+          </button>
+        )}
+      </div>
+      <ul className="space-y-2">
+        {visible.map((letter) => (
+          <li
+            key={letter.id}
+            className={cn(
+              "rounded-lg bg-background p-2.5 text-sm",
+              letter.id === props.focusedLetterId && "ring-2 ring-amber-400",
+            )}
+          >
+            <p className="mb-1 text-muted-foreground text-xs">
+              {formatTime(letter.createdAt)}
+            </p>
+            <p className="whitespace-pre-wrap break-words leading-relaxed">
+              {letter.text}
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="mt-2 h-8 rounded-full"
+              disabled={props.disabled}
+              onClick={() => props.onAsk(letter)}
+            >
+              <BotIcon className="mr-1 size-4" />
+              このメッセージについて AI に聞く
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+const supportLettersQuery = graphql(
+  `query SupportLetters($offset: Int!, $limit: Int!) {
+    viewer {
+      id
+      supportMessages(offset: $offset, limit: $limit) {
+        id
+        text
+        createdAt
+        isViewer
+      }
+    }
+  }`,
+)

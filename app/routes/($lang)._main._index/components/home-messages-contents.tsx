@@ -55,7 +55,8 @@ export function HomeMessagesContents ({ onClick }: Props) {
       <div className="flex max-w-96 flex-col space-y-1 overflow-hidden p-1">
         {messages.map((message) => (
           <Link
-            to={"/support/chat"}
+            // 運営からのメッセージは、お問い合わせの画面で全文を出して AI に質問できる
+            to={`/support/chat?letter=${message.id}`}
             key={message.id.toString()}
             className="flex items-center space-x-2"
             onClick={onClick}
