@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { useLocation, useNavigate } from "@remix-run/react"
 import { graphql, type ResultOf } from "gql.tada"
 import { Share2Icon, XIcon } from "lucide-react"
@@ -11,6 +11,7 @@ import {
   useState,
 } from "react"
 import { AchievementBadge } from "~/components/achievements/achievement-badge"
+import { achievementSettingsQuery } from "~/components/achievements/achievement-settings-card"
 import {
   AchievementShareDialog,
   type AchievementShareTarget,
@@ -83,6 +84,17 @@ export function AchievementWatcher() {
 
   const isLoggedIn = !authContext.isLoading && authContext.isLoggedIn
 
+  // 「達成したときのお知らせを出さない」にしている人には出さない（見たことにだけする）
+  const { data: settingsData, loading: isSettingsLoading } = useQuery(
+    achievementSettingsQuery,
+    { skip: !isLoggedIn },
+  )
+  // 設定を読み終わるまでは確かめない（お知らせを出さない人に一瞬出さないため）
+  const isReady = isLoggedIn && !isSettingsLoading
+  const isNoticeOffRef = useRef(false)
+  isNoticeOffRef.current =
+    settingsData?.achievementSettings?.isUnlockNoticeOff === true
+
   const check = useCallback(
     async (force: boolean) => {
       if (!isLoggedIn || isCheckingRef.current) return
@@ -97,6 +109,13 @@ export function AchievementWatcher() {
         )
         if (fresh.length === 0) return
         for (const item of fresh) shownKeysRef.current.add(item.key)
+
+        if (isNoticeOffRef.current) {
+          void markSeen({
+            variables: { keys: fresh.map((item) => item.key) },
+          }).catch(() => undefined)
+          return
+        }
 
         if (result.isInitialSync && fresh.length >= BULK_THRESHOLD) {
           setBulk({
@@ -113,14 +132,14 @@ export function AchievementWatcher() {
         isCheckingRef.current = false
       }
     },
-    [checkAchievements, isLoggedIn],
+    [checkAchievements, isLoggedIn, markSeen],
   )
 
   const previousPathRef = useRef<string | null>(null)
 
   // 開いたとき・ページを移ったとき（投稿・生成の画面から移ったときはすぐ）
   useEffect(() => {
-    if (!isLoggedIn) return
+    if (!isReady) return
     const previous = previousPathRef.current
     previousPathRef.current = location.pathname
     const isAfterCreating =
@@ -131,7 +150,7 @@ export function AchievementWatcher() {
     }
     if (Date.now() - lastCheckedAtRef.current < ROUTE_CHECK_INTERVAL_MS) return
     void check(false)
-  }, [isLoggedIn, location.pathname, check])
+  }, [isReady, location.pathname, check])
 
   // タブに戻ったとき
   useEffect(() => {

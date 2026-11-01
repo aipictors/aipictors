@@ -13,6 +13,20 @@ enum AchievementCategory {
   SPECIAL
 }
 
+"""実績の表示設定"""
+type AchievementSettingsNode {
+  """プロフィール・実績ページで、他の人に実績を見せない"""
+  isHiddenOnProfile: Boolean!
+
+  """達成したときのお知らせ（画面のカード）を出さない"""
+  isUnlockNoticeOff: Boolean!
+}
+
+input UpdateAchievementSettingsInput {
+  isHiddenOnProfile: Boolean!
+  isUnlockNoticeOff: Boolean!
+}
+
 """実績を確かめた結果"""
 type AchievementCheckResultNode {
   """今回付与したコイン"""
@@ -3063,6 +3077,9 @@ type Mutation {
     force: Boolean
   ): AchievementCheckResultNode!
 
+  """実績の表示設定を変える"""
+  updateAchievementSettings(input: UpdateAchievementSettingsInput!): AchievementSettingsNode!
+
   """達成の演出を見せた（次からは出さない）"""
   markAchievementsSeen(keys: [String!]!): Boolean!
 
@@ -4143,6 +4160,9 @@ type PromptonUserNode implements Node {
 }
 
 type Query {
+  """自分の実績の表示設定"""
+  achievementSettings: AchievementSettingsNode
+
   """実績のまとめ（数・実績レベル・見せたい実績）。userId を省略すると自分"""
   achievementSummary(userId: ID): AchievementSummaryNode
 

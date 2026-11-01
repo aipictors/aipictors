@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { AchievementBadge } from "~/components/achievements/achievement-badge"
+import { AchievementSettingsCard } from "~/components/achievements/achievement-settings-card"
 import {
   AchievementShareDialog,
   type AchievementShareTarget,
@@ -97,6 +98,23 @@ export function AchievementsPage() {
     return (
       <div className="flex justify-center py-24">
         <Loader2Icon className="size-8 animate-spin text-border" />
+      </div>
+    )
+  }
+
+  // 本人が他の人に見せない設定にしている
+  if (!isViewer && !loading && summary === null) {
+    return (
+      <div className="mx-auto max-w-xl space-y-2 py-24 text-center">
+        <p className="font-bold text-lg">
+          {t(
+            "この人は実績を表示しない設定にしています",
+            "This user keeps their achievements private",
+          )}
+        </p>
+        <Link to="/achievements" className="text-sm underline">
+          {t("自分の実績を見る", "View my achievements")}
+        </Link>
       </div>
     )
   }
@@ -192,6 +210,8 @@ export function AchievementsPage() {
           </div>
         </Link>
       )}
+
+      {isViewer && <AchievementSettingsCard />}
 
       <AchievementDetailDialog
         achievement={selected}
