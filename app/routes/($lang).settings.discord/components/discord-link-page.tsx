@@ -58,8 +58,6 @@ type DiscordLink = {
   level: number | null
   unlockedCount: number | null
   isAchievementVisible: boolean
-  nickStatus: "ok" | "no_permission"
-  showNickname: boolean
   highlightKey: string | null
   celebrate: boolean
   expiryDm: boolean
@@ -75,7 +73,6 @@ type DiscordStatus = {
 }
 
 type SettingsPatch = {
-  showNickname?: boolean
   celebrate?: boolean
   expiryDm?: boolean
   highlightKey?: string | null
@@ -290,8 +287,8 @@ function DiscordUnlinkedView(props: {
       icon: SparklesIcon,
       title: t("レベルを自動で反映", "Level updates automatically"),
       body: t(
-        "レベルが上がると、名前の色と ✦Lv の表示も自動で変わります",
-        "When you level up, your name color and ✦Lv update on their own",
+        "レベルが上がると、バッジと名前の色が自動で変わります",
+        "When you level up, your badge and name color update on their own",
       ),
     },
     {
@@ -351,8 +348,6 @@ function DiscordUnlinkedView(props: {
           className="mt-4"
           name={props.name || t("あなた", "You")}
           iconUrl={props.iconUrl}
-          level={props.level}
-          showLevel={true}
           badgeUrl={toLevelBadgeUrl(props.level)}
           color={toDiscordTierColor(toLevelTier(props.level))}
         />
@@ -413,8 +408,8 @@ function DiscordUnlinkedView(props: {
           </p>
           <p>
             {t(
-              "レベルの表示のため、Aipictors サーバーでのニックネームに ✦Lv が付きます（設定でオフにできます）。",
-              "To show your level, ✦Lv is added to your nickname in the Aipictors server (you can turn this off).",
+              "ニックネームは変更しません。バッジは Aipictors のサーバーの中で表示されます。",
+              "Your nickname stays as it is. Badges appear inside the Aipictors server.",
             )}
           </p>
         </div>
@@ -502,15 +497,6 @@ function DiscordLinkedView(props: {
   }
 
   const switches = [
-    {
-      id: "showNickname" as const,
-      title: t("名前の横に ✦Lv を付ける", "Add ✦Lv next to my name"),
-      body: t(
-        "Aipictors サーバーでのニックネームに付けます。オフにすると元に戻します",
-        "Added to your nickname in the Aipictors server. Turning this off restores it",
-      ),
-      value: link.showNickname,
-    },
     {
       id: "celebrate" as const,
       title: t("達成をサーバーでお祝いする", "Celebrate unlocks in the server"),
@@ -605,15 +591,6 @@ function DiscordLinkedView(props: {
         </Notice>
       )}
 
-      {props.link.nickStatus === "no_permission" && link.showNickname && (
-        <Notice>
-          {t(
-            "お持ちのサーバーのロールの関係で、ボットからニックネームを変更できないため ✦Lv を付けられません。バッジは表示されます。",
-            "Your server roles don't let the bot change your nickname, so ✦Lv can't be added. Your badge still appears.",
-          )}
-        </Notice>
-      )}
-
       {props.link.syncError && (
         <Notice>
           {t(
@@ -639,8 +616,6 @@ function DiscordLinkedView(props: {
         <DiscordNamePreview
           name={discordName}
           iconUrl={props.iconUrl}
-          level={props.level}
-          showLevel={link.showNickname}
           badgeUrl={
             selected
               ? toAchievementRoleBadgeUrl(selected.key)
@@ -738,8 +713,8 @@ function DiscordLinkedView(props: {
               </AlertDialogTitle>
               <AlertDialogDescription>
                 {t(
-                  "サーバーのバッジと ✦Lv を外して、ニックネームを元に戻します。また連携できますが、連携ボーナスは 1 回だけです。",
-                  "Your badges and ✦Lv will be removed and your nickname restored. You can link again, but the bonus is one-time only.",
+                  "サーバーのバッジを外します。また連携できますが、連携ボーナスは 1 回だけです。",
+                  "Your badges will be removed. You can link again, but the bonus is one-time only.",
                 )}
               </AlertDialogDescription>
             </AlertDialogHeader>

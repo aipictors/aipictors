@@ -4,8 +4,6 @@ import { cn } from "~/lib/utils"
 type Props = {
   name: string
   iconUrl?: string | null
-  level: number
-  showLevel: boolean
   /** 名前の横のアイコン */
   badgeUrl: string
   /** 名前の色 */
@@ -43,7 +41,6 @@ export function DiscordNamePreview(props: Props) {
               style={{ color: props.color }}
             >
               {props.name}
-              {props.showLevel && ` ✦Lv.${props.level}`}
             </span>
             <img
               src={props.badgeUrl}

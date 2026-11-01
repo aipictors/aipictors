@@ -55,7 +55,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 type ActionBody = {
   intent?: string
-  showNickname?: boolean
   celebrate?: boolean
   expiryDm?: boolean
   highlightKey?: string | null
@@ -83,7 +82,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
     path === "settings"
       ? {
           userId,
-          showNickname: body.showNickname,
           celebrate: body.celebrate,
           expiryDm: body.expiryDm,
           highlightKey: body.highlightKey,
