@@ -28,12 +28,11 @@ import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSidebar } from "~/contexts/sidebar-context"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { HomeHeaderContentToggle } from "~/routes/($lang)._main._index/components/home-header-content-toggle"
+import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { debugLog } from "~/utils/debug-logger"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
 import {
@@ -76,6 +75,8 @@ type Props = {
   onToggleSideMenu?: () => void
   alwaysShowTitle?: boolean
   showPcSheetMenu?: boolean // PC版でもシートメニューを表示するかどうか
+  /** PC版のロゴはサイドバー側に固定で出す（ヘッダーのロゴは場所だけ取る） */
+  hasSidebarBrand?: boolean
 }
 
 function HomeHeader(props: Props) {
@@ -84,7 +85,6 @@ function HomeHeader(props: Props) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const authContext = useContext(AuthContext)
-  const { sidebarState } = useSidebar()
   const [searchText, setSearchText] = useState("")
   const [showSensitiveWarning, setShowSensitiveWarning] = useState(false)
   const [pendingSearchData, setPendingSearchData] = useState<{
@@ -465,7 +465,10 @@ function HomeHeader(props: Props) {
           {isSpecialPage && (
             <Button
               variant="ghost"
-              className="hidden shrink-0 items-center space-x-2 pl-4 md:flex"
+              className={cn(
+                "hidden shrink-0 items-center space-x-2 pl-4 md:flex",
+                props.hasSidebarBrand && "md:invisible",
+              )}
               onClick={() => handleNavigate("/")}
             >
               {navigation.state === "loading" ? (
@@ -473,34 +476,6 @@ function HomeHeader(props: Props) {
                   <Loader2Icon className="size-8 animate-spin" />
                 </div>
               ) : (
-                <img
-                  src="/icon.svg"
-                  className="size-8 shrink-0 rounded-full"
-                  alt=""
-                  width={40}
-                  height={40}
-                />
-              )}
-              <div className="flex items-center">
-                <span className="whitespace-nowrap font-bold text-xl">
-                  {title}
-                </span>
-              </div>
-            </Button>
-          )}
-          {/* サイドバーが最小化されている場合のみロゴを表示 */}
-          {!isSpecialPage && sidebarState === "minimal" && (
-            <Button
-              variant="ghost"
-              className="ml-10 hidden shrink-0 items-center gap-2 px-2 md:flex"
-              onClick={() => handleNavigate("/")}
-            >
-              {navigation.state === "loading" && (
-                <div className="flex size-8 items-center justify-center">
-                  <Loader2Icon className="size-8 animate-spin" />
-                </div>
-              )}
-              {navigation.state !== "loading" && (
                 <img
                   src="/icon.svg"
                   className="size-8 shrink-0 rounded-full"

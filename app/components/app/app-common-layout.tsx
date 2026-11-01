@@ -18,7 +18,13 @@ export function AppCommonLayout(props: Props): React.ReactNode {
       <AppContents
         outlet={props.outlet}
         aside={<HomeRouteList title={props.title} />}
-        header={<HomeHeader title={props.title} alwaysShowTitle={true} />}
+        header={
+          <HomeHeader
+            title={props.title}
+            alwaysShowTitle={true}
+            hasSidebarBrand={true}
+          />
+        }
         footer={<HomeFooter />}
       />
     </SidebarProvider>

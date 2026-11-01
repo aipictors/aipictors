@@ -19,6 +19,7 @@ import {
   type AchievementShareTarget,
 } from "~/components/achievements/achievement-share-dialog"
 import { CoinIcon } from "~/components/coin-icon"
+import { HorizontalScrollTrack } from "~/components/horizontal-scroll-track"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import {
   Dialog,
@@ -608,7 +609,7 @@ function AchievementSeriesList(props: {
                 {unlockedCount} / {items.length}
               </span>
             </div>
-            <ol className="-mx-1 relative flex snap-x gap-1 overflow-x-auto px-1 pt-1 pb-2">
+            <HorizontalScrollTrack className="-mx-1 relative flex gap-1 overflow-x-auto px-1 pt-1 pb-2">
               {items.map((item, index) => {
                 const isNext = props.isViewer && index === nextIndex
                 const ratio =
@@ -671,7 +672,7 @@ function AchievementSeriesList(props: {
                   </li>
                 )
               })}
-            </ol>
+            </HorizontalScrollTrack>
           </section>
         )
       })}

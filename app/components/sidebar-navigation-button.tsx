@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@remix-run/react"
-import type { LucideIcon } from "lucide-react"
 import clsx from "clsx"
+import type { LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
 import {
   Tooltip,
@@ -16,14 +16,28 @@ type Props = {
   children: ReactNode
   onClick?: () => void
   className?: string
+  /** 外部サイト（別タブで開く） */
+  isExternal?: boolean
 }
 
-export function SidebarNavigationButton ({
+/**
+ * メニューの 1 行。アイコンの位置は開閉で変えず（中心はロゴ横の三本線と揃う）、
+ * 閉じているときはホバーの背景がアイコンを中心にした正方形になる
+ */
+export function sidebarItemClassName(isExpanded: boolean) {
+  return clsx(
+    "ml-3 flex h-10 items-center rounded-lg px-2.5 font-medium text-sm transition-colors",
+    isExpanded ? "mr-1" : "w-10",
+  )
+}
+
+export function SidebarNavigationButton({
   href,
   icon: Icon,
   children,
   onClick,
   className,
+  isExternal,
 }: Props): React.ReactNode {
   const { pathname } = useLocation()
   const { sidebarState } = useSidebar()
@@ -38,19 +52,23 @@ export function SidebarNavigationButton ({
           <Link
             to={href}
             onClick={onClick}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+            aria-label={
+              sidebarState === "expanded" ? undefined : String(children)
+            }
+            aria-current={active ? "page" : undefined}
             className={clsx(
-              "flex items-center rounded-md px-3 py-2 font-medium text-sm transition-colors",
+              sidebarItemClassName(sidebarState === "expanded"),
               active
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted/20 hover:text-foreground",
-              // サイドバー状態に応じて配置を変更
-              sidebarState === "expanded" ? "justify-start" : "justify-center",
-              className, // カスタムクラス名を追加
+                ? "bg-primary/10 font-semibold text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              className,
             )}
           >
             <Icon className="size-5 shrink-0" />
             {sidebarState === "expanded" && (
-              <span className="ml-3">{children}</span>
+              <span className="ml-3 truncate">{children}</span>
             )}
           </Link>
         </TooltipTrigger>

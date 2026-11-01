@@ -1,5 +1,5 @@
 import { gql, useLazyQuery } from "@apollo/client/index"
-import { Link, useLocation, useNavigate, useNavigation } from "@remix-run/react"
+import { Link, useLocation, useNavigation } from "@remix-run/react"
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -8,13 +8,16 @@ import {
   MenuIcon,
 } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
-import { SidebarNavigationButton } from "~/components/sidebar-navigation-button"
+import {
+  SidebarNavigationButton,
+  sidebarItemClassName,
+} from "~/components/sidebar-navigation-button"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
-import { cn } from "~/lib/utils"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { getHomeNavigationSections } from "~/routes/($lang)._main._index/components/home-navigation-sections"
 
 type Props = {
@@ -34,7 +37,6 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   )
   const navigation = useNavigation()
   const location = useLocation()
-  const navigate = useNavigate()
   const t = useTranslation()
   const { sidebarState, toggleSidebar, minimizeSidebar } = useSidebar()
   const [isExtraMenuOpen, setIsExtraMenuOpen] = useState(false)
@@ -52,116 +54,79 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
     viewerData?.viewer?.id === authContext.userId &&
     viewerData.viewer.isModerator
 
-  const sensitivePath =
-    /\/r($|\/)/.test(location.pathname)
+  const sensitivePath = /\/r($|\/)/.test(location.pathname)
   const isSensitive = sensitivePath
   const title = propTitle ?? "Aipictors"
 
   const getSensitiveLink = (path: string) =>
     /^\/r($|\s)/.test(path) ? "" : sensitivePath ? `/r${path}` : path
 
-
   const closeHeaderMenu = () => onClickMenuItem?.()
 
-  // サイドバーの幅を状態に応じて決定
-  const sidebarWidth = () => {
-    switch (sidebarState) {
-      case "expanded":
-        return "w-[232px]"
-      case "collapsed":
-        return "w-20" // 80px（AppContentsと揃える）
-      case "minimal":
-        return "w-20"
-      default:
-        return "w-[232px]"
-    }
-  }
+  const isExpanded = sidebarState === "expanded"
 
-  // 最小化状態では三角ボタンのみ表示（absoluteで配置）
+  // ロゴと三本線は、メニューの開閉・最小化で動かない（どの状態でも同じ場所に固定）
+  const brand = (
+    <div className="fixed top-4 left-7 z-[61] hidden h-10 items-center gap-1 md:flex">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleSidebar}
+        aria-label={t("メニューの表示を切り替える", "Toggle menu")}
+        aria-expanded={isExpanded}
+        className="size-10 rounded-lg hover:bg-muted"
+      >
+        <MenuIcon className="size-5" />
+      </Button>
+      <Link
+        to={getSensitiveLink("/home")}
+        className="flex h-10 items-center gap-2 rounded-lg px-2 transition-colors hover:bg-muted"
+      >
+        {navigation.state === "loading" ? (
+          <Loader2Icon className="size-8 animate-spin" />
+        ) : (
+          <img
+            src="/icon.svg"
+            className="size-8 rounded-full"
+            alt=""
+            width={40}
+            height={40}
+          />
+        )}
+        <span className="whitespace-nowrap font-bold text-xl">{title}</span>
+      </Link>
+    </div>
+  )
+
+  // 最小化状態ではメニューを出さない（三本線で開く）
   if (sidebarState === "minimal") {
-    return (
-      <>
-        {/* 三角ボタンのみ絶対配置 - ヘッダーのロゴと被らないように左端に配置 */}
-        <div className="fixed top-4 left-2 z-[60] hidden md:block">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="h-8 w-8 bg-background/80 shadow-md backdrop-blur-sm"
-          >
-            <ChevronLeftIcon className="size-4 rotate-180" />
-          </Button>
-        </div>
-      </>
-    )
+    return brand
   }
 
   return (
-    <div
-      className={`fixed top-0 hidden h-screen flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200 sm:z-30 md:z-[60] md:flex lg:flex ${sidebarWidth()}`}
-    >
-      {/* Logo with Toggle Button */}
-      <div className="sticky top-[-16px] z-10 mb-4 flex items-center justify-start bg-background">
-        {/* 三本線ボタン（ロゴの左に表示） - PC版で常に表示 */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          aria-label={t("メニューの表示を切り替える", "Toggle menu")}
-          className={sidebarState === "collapsed" ? "h-8 w-8" : "mr-2 h-8 w-8"}
-        >
-          <MenuIcon className="size-4" />
-        </Button>
-
-        {/* 三角ボタン（省略状態の時のみ表示） - PC版で表示 */}
-        {sidebarState === "collapsed" && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={minimizeSidebar}
-            aria-label={t("メニューを閉じる", "Close menu")}
-            className="ml-2 h-8 w-8"
-          >
-            <ChevronLeftIcon className="size-4" />
-          </Button>
+    <>
+      {brand}
+      <div
+        className={cn(
+          "fixed top-16 bottom-0 hidden flex-col overflow-y-auto overflow-x-hidden bg-background px-2 pt-2 transition-[width] duration-200 [scrollbar-width:thin] sm:z-30 md:z-[60] md:flex",
+          isExpanded ? "w-[232px]" : "w-20",
         )}
-
-        {/* ロゴ（展開状態のみ表示） */}
-        {sidebarState === "expanded" && (
-          <Button
-            variant="ghost"
-            className="flex items-center space-x-2 p-0"
-            onClick={() => navigate(getSensitiveLink("/home"))}
-          >
-            {navigation.state === "loading" ? (
-              <Loader2Icon className="size-8 animate-spin" />
-            ) : (
-              <img
-                src="/icon.svg"
-                className="size-8 rounded-full"
-                alt="Avatar"
-                width={40}
-                height={40}
-              />
-            )}
-            <span className="font-bold text-xl">{title}</span>
-          </Button>
-        )}
-      </div>
-
-      {/* Navigation Items（PC のサイドバーとスマホのメニューで共通の項目） */}
-      {getHomeNavigationSections({ isSensitive, isModerator: !!isModerator }).map(
-        (section) => {
+      >
+        {/* Navigation Items（PC のサイドバーとスマホのメニューで共通の項目） */}
+        {getHomeNavigationSections({
+          isSensitive,
+          isModerator: !!isModerator,
+        }).map((section) => {
           const isOpen = !section.isCollapsible || isExtraMenuOpen
           return (
             <div key={section.key} className="space-y-0.5">
               {section.title &&
-                (sidebarState === "expanded" ? (
+                (isExpanded ? (
                   section.isCollapsible ? (
                     <button
                       type="button"
                       onClick={() => setIsExtraMenuOpen((prev) => !prev)}
-                      className="flex w-full items-center justify-between px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide transition-colors hover:text-foreground"
+                      className="mt-3 mr-1 ml-3 flex w-[calc(100%-1rem)] items-center justify-between rounded-lg px-2.5 py-1.5 font-semibold text-[11px] text-muted-foreground tracking-wide transition-colors hover:bg-muted hover:text-foreground"
                       aria-expanded={isExtraMenuOpen}
                     >
                       <span>{t(...section.title)}</span>
@@ -172,111 +137,118 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
                       )}
                     </button>
                   ) : (
-                    <p className="px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide">
+                    <p className="mt-3 ml-3 px-2.5 py-1.5 font-semibold text-[11px] text-muted-foreground tracking-wide">
                       {t(...section.title)}
                     </p>
                   )
                 ) : (
-                  <div className="mx-3 my-2 border-t" />
+                  <div className="my-2 ml-3 w-10 border-t" />
                 ))}
-              {(isOpen || sidebarState !== "expanded") &&
-                section.items.map((item) =>
-                  item.isExternal ? (
-                    <Link
-                      key={item.key}
-                      className={cn(
-                        "flex items-center rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:bg-muted/20 hover:text-foreground",
-                        sidebarState === "expanded"
-                          ? "justify-start"
-                          : "justify-center",
-                      )}
-                      to={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <item.icon className="size-5 shrink-0" />
-                      {sidebarState === "expanded" && (
-                        <span className="ml-3">{t(...item.label)}</span>
-                      )}
-                    </Link>
-                  ) : (
-                    <SidebarNavigationButton
-                      key={item.key}
-                      href={item.href}
-                      icon={item.icon}
-                      onClick={closeHeaderMenu}
-                    >
-                      {t(...item.label)}
-                    </SidebarNavigationButton>
-                  ),
-                )}
+              {(isOpen || !isExpanded) &&
+                section.items.map((item) => (
+                  <SidebarNavigationButton
+                    key={item.key}
+                    href={item.href}
+                    icon={item.icon}
+                    isExternal={item.isExternal}
+                    onClick={closeHeaderMenu}
+                  >
+                    {t(...item.label)}
+                  </SidebarNavigationButton>
+                ))}
             </div>
           )
-        },
-      )}
+        })}
 
-      <div className="pb-2" />
+        <div className="pb-2" />
 
-      {/* Footer */}
-      {sidebarState === "expanded" && (
-        <footer className="mt-auto">
-          <div className="flex flex-col space-y-2 p-2">
-            <div className="flex items-center space-x-2">
-              <Link
-                target="_blank"
-                rel="noopener noreferrer"
-                to="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636"
-              >
-                <img
-                  src="/apple/download.svg"
-                  alt={t("App Store からダウンロード", "Download on the App Store")}
-                  className="h-8 w-auto"
-                  width={109}
-                  height={40}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </Link>
-              <Link
-                target="_blank"
-                rel="noopener noreferrer"
-                to="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja"
-              >
-                <img
-                  src="/google/download.png"
-                  alt={t("Google Play で手に入れよう", "Get it on Google Play")}
-                  className="h-10 w-auto"
-                  width={646}
-                  height={250}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </Link>
-            </div>
-
-            {/* SNSアイコン */}
-            <div className="flex items-center gap-x-2">
-              <SnsIconLink url="https://x.com/AIPICTORS" />
-              <SnsIconLink url="https://discord.gg/7jA2MmtvtR" />
-              <SnsIconLink url="https://github.com/aipictors" />
-            </div>
-
-            <div className="flex flex-wrap gap-x-3 gap-y-1 text-muted-foreground text-xs">
-              <Link className="hover:text-foreground" to="/contact">
-                {t("お問い合わせ", "Contact")}
-              </Link>
-              <Link className="hover:text-foreground" to="/terms">
-                {t("利用規約", "Terms")}
-              </Link>
-              <Link className="hover:text-foreground" to="/privacy">
-                {t("プライバシーポリシー", "Privacy Policy")}
-              </Link>
-            </div>
-            <p className="text-muted-foreground text-xs">©2026 Aipictors Co.,Ltd.</p>
+        {/* 閉じているとき: メニューごと隠すボタン */}
+        {!isExpanded && (
+          <div className="mt-auto pb-3">
+            <button
+              type="button"
+              onClick={minimizeSidebar}
+              aria-label={t("メニューを閉じる", "Close menu")}
+              title={t("メニューを閉じる", "Close menu")}
+              className={cn(
+                sidebarItemClassName(false),
+                "text-muted-foreground hover:bg-muted hover:text-foreground",
+              )}
+            >
+              <ChevronLeftIcon className="size-5" />
+            </button>
           </div>
-        </footer>
-      )}
-    </div>
+        )}
+
+        {/* Footer */}
+        {isExpanded && (
+          <footer className="mt-auto">
+            <div className="ml-3 flex flex-col space-y-3 px-2.5 pt-3 pb-4">
+              <div className="flex items-center gap-2">
+                <Link
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  to="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636"
+                >
+                  <img
+                    src="/apple/download.svg"
+                    alt={t(
+                      "App Store からダウンロード",
+                      "Download on the App Store",
+                    )}
+                    className="h-8 w-auto"
+                    width={109}
+                    height={40}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </Link>
+                <Link
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  to="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja"
+                >
+                  <img
+                    src="/google/download.png"
+                    alt={t(
+                      "Google Play で手に入れよう",
+                      "Get it on Google Play",
+                    )}
+                    className="h-10 w-auto"
+                    width={646}
+                    height={250}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </Link>
+              </div>
+
+              {/* SNSアイコン */}
+              <div className="flex items-center gap-x-2">
+                <SnsIconLink url="https://x.com/AIPICTORS" />
+                <SnsIconLink url="https://discord.gg/7jA2MmtvtR" />
+                <SnsIconLink url="https://github.com/aipictors" />
+              </div>
+
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-muted-foreground text-xs">
+                <Link className="hover:text-foreground" to="/contact">
+                  {t("お問い合わせ", "Contact")}
+                </Link>
+                <Link className="hover:text-foreground" to="/terms">
+                  {t("利用規約", "Terms")}
+                </Link>
+                <Link className="hover:text-foreground" to="/privacy">
+                  {t("プライバシーポリシー", "Privacy Policy")}
+                </Link>
+              </div>
+              <p className="text-muted-foreground text-xs">
+                ©2026 Aipictors Co.,Ltd.
+              </p>
+            </div>
+          </footer>
+        )}
+      </div>
+    </>
   )
 }
 
