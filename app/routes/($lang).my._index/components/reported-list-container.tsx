@@ -65,12 +65,11 @@ export function ModerationReportsContainer(_props: Props) {
   )
 
   const groupOf = (report: (typeof reports)[number]): Tab => {
-    if (report.status === "DONE") return "DONE"
+    // 区分の変更など、運営が変更済みで直す必要がないものは「お知らせのみ」
+    if (!getModerationReportGuide(report.reportType).needsFix) return "INFO"
     if (report.status === "NO_NEED_ACTION") return "INFO"
-    // 未対応でも、区分の変更など直す必要がないものはお知らせに
-    return getModerationReportGuide(report.reportType).needsFix
-      ? "ACTION"
-      : "INFO"
+    if (report.status === "DONE") return "DONE"
+    return "ACTION"
   }
 
   const counts = {
