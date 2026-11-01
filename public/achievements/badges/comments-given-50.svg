@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img">
+  <defs>
+    <linearGradient id="mcommentsgiven50" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#fff6c4"/><stop offset="0.25" stop-color="#f6cc4a"/><stop offset="0.5" stop-color="#b07d0c"/><stop offset="0.75" stop-color="#ffe27a"/><stop offset="1" stop-color="#7a5300"/></linearGradient>
+    <linearGradient id="mdcommentsgiven50" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b07d0c"/><stop offset="1" stop-color="#7a5300"/></linearGradient>
+    <radialGradient id="fcommentsgiven50" cx="0.5" cy="0.38" r="0.7"><stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#166534"/></radialGradient>
+    <linearGradient id="gcommentsgiven50" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <filter id="scommentsgiven50" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.35"/></filter>
+    <clipPath id="ccommentsgiven50"><path d="M59.2 122 a68.8 68.8 0 1 0 137.6 0 a68.8 68.8 0 1 0 -137.6 0 Z"/></clipPath>
+  </defs>
+  
+  
+  <g>
+    <path d="M82 174 L62 244 L78 234 L90 250 L110 182 Z" fill="#166534" stroke="#5a3b00" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M174 174 L194 244 L178 234 L166 250 L146 182 Z" fill="#166534" stroke="#5a3b00" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+  <g filter="url(#scommentsgiven50)">
+    <path d="M42 122 a86 86 0 1 0 172 0 a86 86 0 1 0 -172 0 Z" fill="url(#mcommentsgiven50)" stroke="#5a3b00" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+  <path d="M50.599999999999994 122 a77.4 77.4 0 1 0 154.8 0 a77.4 77.4 0 1 0 -154.8 0 Z" fill="none" stroke="#5a3b00" stroke-opacity="0.55" stroke-width="2"/>
+  <path d="M50.599999999999994 122 a77.4 77.4 0 1 0 154.8 0 a77.4 77.4 0 1 0 -154.8 0 Z" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="1" transform="translate(0 1.5)"/>
+  <path d="M59.2 122 a68.8 68.8 0 1 0 137.6 0 a68.8 68.8 0 1 0 -137.6 0 Z" fill="url(#fcommentsgiven50)"/>
+  <g clip-path="url(#ccommentsgiven50)">
+    <g fill="#fff" opacity="0.08"><path d="M128 122 L124 2 L132 2 Z" transform="rotate(0 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(15 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(30 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(45 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(60 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(75 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(90 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(105 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(120 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(135 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(150 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(165 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(180 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(195 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(210 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(225 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(240 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(255 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(270 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(285 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(300 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(315 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(330 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(345 128 122)"/></g>
+    <ellipse cx="128" cy="82" rx="80" ry="46" fill="url(#gcommentsgiven50)" opacity="0.6"/>
+  </g>
+  <path d="M59.2 122 a68.8 68.8 0 1 0 137.6 0 a68.8 68.8 0 1 0 -137.6 0 Z" fill="none" stroke="#000" stroke-opacity="0.25" stroke-width="2"/>
+  <g transform="translate(86 68) scale(3.5)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#000" stroke-opacity="0.28" stroke-width="2.6" transform="translate(0 0.45)"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/><path d="M7.828 13.07A3 3 0 0 1 12 8.764a3 3 0 0 1 5.004 2.224 3 3 0 0 1-.832 2.083l-3.447 3.62a1 1 0 0 1-1.45-.001z"/></g>
+    <g stroke="#fff" stroke-width="2"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/><path d="M7.828 13.07A3 3 0 0 1 12 8.764a3 3 0 0 1 5.004 2.224 3 3 0 0 1-.832 2.083l-3.447 3.62a1 1 0 0 1-1.45-.001z"/></g>
+  </g>
+  <g>
+      <path d="M81 172 L93 185 L81 198 L99 198 L99 172 Z" fill="url(#mdcommentsgiven50)" stroke="#5a3b00" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M175 172 L163 185 L175 198 L157 198 L157 172 Z" fill="url(#mdcommentsgiven50)" stroke="#5a3b00" stroke-width="1.5" stroke-linejoin="round"/>
+      <rect x="93" y="166" width="70" height="34" rx="9" fill="url(#mcommentsgiven50)" stroke="#5a3b00" stroke-width="2.5"/>
+      <rect x="97" y="170" width="62" height="6" rx="3" fill="#fff" opacity="0.35"/>
+      <text x="128" y="193" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="26" letter-spacing="0.5" fill="#4a3000">50</text>
+      
+    </g>
+  
+  <path d="M186 43 Q187.62 50.38 195 52 Q187.62 53.62 186 61 Q184.38 53.62 177 52 Q184.38 50.38 186 43 Z" fill="#fff" opacity="0.95"/>
+</svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img">
+  <defs>
+    <linearGradient id="mlogindays150" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#fff6c4"/><stop offset="0.25" stop-color="#f6cc4a"/><stop offset="0.5" stop-color="#b07d0c"/><stop offset="0.75" stop-color="#ffe27a"/><stop offset="1" stop-color="#7a5300"/></linearGradient>
+    <linearGradient id="mdlogindays150" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b07d0c"/><stop offset="1" stop-color="#7a5300"/></linearGradient>
+    <radialGradient id="flogindays150" cx="0.5" cy="0.38" r="0.7"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#155e75"/></radialGradient>
+    <linearGradient id="glogindays150" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <filter id="slogindays150" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.35"/></filter>
+    <clipPath id="clogindays150"><path d="M128 51.6 C162.32 64.4 181.04 66 190.4 62.8 L190.4 126.8 C190.4 166.8 156.8 181.2 128 195.6 C99.2 181.2 65.6 166.8 65.6 126.8 L65.6 62.8 C74.96 66 93.68 64.4 128 51.6 Z"/></clipPath>
+  </defs>
+  
+  
+  <g>
+    <path d="M82 174 L62 244 L78 234 L90 250 L110 182 Z" fill="#155e75" stroke="#5a3b00" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M174 174 L194 244 L178 234 L166 250 L146 182 Z" fill="#155e75" stroke="#5a3b00" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+  <g filter="url(#slogindays150)">
+    <path d="M128 34 C170.9 50 194.3 52 206 48 L206 128 C206 178 164 196 128 214 C92 196 50 178 50 128 L50 48 C61.7 52 85.1 50 128 34 Z" fill="url(#mlogindays150)" stroke="#5a3b00" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+  <path d="M128 42.8 C166.61 57.2 187.67 59 198.2 55.4 L198.2 127.4 C198.2 172.4 160.4 188.6 128 204.8 C95.6 188.6 57.8 172.4 57.8 127.4 L57.8 55.4 C68.33 59 89.39 57.2 128 42.8 Z" fill="none" stroke="#5a3b00" stroke-opacity="0.55" stroke-width="2"/>
+  <path d="M128 42.8 C166.61 57.2 187.67 59 198.2 55.4 L198.2 127.4 C198.2 172.4 160.4 188.6 128 204.8 C95.6 188.6 57.8 172.4 57.8 127.4 L57.8 55.4 C68.33 59 89.39 57.2 128 42.8 Z" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="1" transform="translate(0 1.5)"/>
+  <path d="M128 51.6 C162.32 64.4 181.04 66 190.4 62.8 L190.4 126.8 C190.4 166.8 156.8 181.2 128 195.6 C99.2 181.2 65.6 166.8 65.6 126.8 L65.6 62.8 C74.96 66 93.68 64.4 128 51.6 Z" fill="url(#flogindays150)"/>
+  <g clip-path="url(#clogindays150)">
+    <g fill="#fff" opacity="0.08"><path d="M128 122 L124 2 L132 2 Z" transform="rotate(0 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(15 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(30 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(45 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(60 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(75 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(90 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(105 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(120 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(135 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(150 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(165 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(180 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(195 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(210 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(225 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(240 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(255 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(270 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(285 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(300 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(315 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(330 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(345 128 122)"/></g>
+    <ellipse cx="128" cy="82" rx="80" ry="46" fill="url(#glogindays150)" opacity="0.6"/>
+  </g>
+  <path d="M128 51.6 C162.32 64.4 181.04 66 190.4 62.8 L190.4 126.8 C190.4 166.8 156.8 181.2 128 195.6 C99.2 181.2 65.6 166.8 65.6 126.8 L65.6 62.8 C74.96 66 93.68 64.4 128 51.6 Z" fill="none" stroke="#000" stroke-opacity="0.25" stroke-width="2"/>
+  <g transform="translate(86 68) scale(3.5)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#000" stroke-opacity="0.28" stroke-width="2.6" transform="translate(0 0.45)"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></g>
+    <g stroke="#fff" stroke-width="2"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></g>
+  </g>
+  <g>
+      <path d="M73.5 172 L85.5 185 L73.5 198 L91.5 198 L91.5 172 Z" fill="url(#mdlogindays150)" stroke="#5a3b00" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M182.5 172 L170.5 185 L182.5 198 L164.5 198 L164.5 172 Z" fill="url(#mdlogindays150)" stroke="#5a3b00" stroke-width="1.5" stroke-linejoin="round"/>
+      <rect x="85.5" y="166" width="85" height="40" rx="9" fill="url(#mlogindays150)" stroke="#5a3b00" stroke-width="2.5"/>
+      <rect x="89.5" y="170" width="77" height="6" rx="3" fill="#fff" opacity="0.35"/>
+      <text x="128" y="193" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="26" letter-spacing="0.5" fill="#4a3000">150</text>
+      <text x="128" y="203" text-anchor="middle" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="800" font-size="8" letter-spacing="2" fill="#4a3000" opacity="0.85">DAYS</text>
+    </g>
+  
+  <path d="M186 43 Q187.62 50.38 195 52 Q187.62 53.62 186 61 Q184.38 53.62 177 52 Q184.38 50.38 186 43 Z" fill="#fff" opacity="0.95"/>
+</svg>
