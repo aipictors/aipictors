@@ -1512,114 +1512,6 @@
     "isHidden": false
   },
   {
-    "key": "support-pt-received-100",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 1,
-    "icon": "coins",
-    "threshold": 100,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-500",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 1,
-    "icon": "coins",
-    "threshold": 500,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-1000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 2,
-    "icon": "coins",
-    "threshold": 1000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-3000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 3,
-    "icon": "coins",
-    "threshold": 3000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-5000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 4,
-    "icon": "coins",
-    "threshold": 5000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-10000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 4,
-    "icon": "coins",
-    "threshold": 10000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-30000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 5,
-    "icon": "coins",
-    "threshold": 30000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-50000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 6,
-    "icon": "coins",
-    "threshold": 50000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-100000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 7,
-    "icon": "coins",
-    "threshold": 100000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-200000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 7,
-    "icon": "coins",
-    "threshold": 200000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-300000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 7,
-    "icon": "coins",
-    "threshold": 300000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-received-500000",
-    "category": "CREATE",
-    "series": "support-pt-received",
-    "tier": 7,
-    "icon": "coins",
-    "threshold": 500000,
-    "isHidden": false
-  },
-  {
     "key": "likes-given-1",
     "category": "COMMUNITY",
     "series": "likes-given",
@@ -2349,6 +2241,231 @@
     "isHidden": false
   },
   {
+    "key": "support-pt-sent-100",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 1,
+    "icon": "hand-coins",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-500",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 1,
+    "icon": "hand-coins",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-1000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 2,
+    "icon": "hand-coins",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-3000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 3,
+    "icon": "hand-coins",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-5000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 3,
+    "icon": "hand-coins",
+    "threshold": 5000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-10000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 4,
+    "icon": "hand-coins",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-30000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 5,
+    "icon": "hand-coins",
+    "threshold": 30000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-50000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 5,
+    "icon": "hand-coins",
+    "threshold": 50000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-100000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 6,
+    "icon": "hand-coins",
+    "threshold": 100000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-200000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 7,
+    "icon": "hand-coins",
+    "threshold": 200000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-300000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 7,
+    "icon": "hand-coins",
+    "threshold": 300000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-500000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 7,
+    "icon": "hand-coins",
+    "threshold": 500000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-sent-1000000",
+    "category": "COMMUNITY",
+    "series": "support-pt-sent",
+    "tier": 7,
+    "icon": "hand-coins",
+    "threshold": 1000000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-100",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 1,
+    "icon": "coins",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-500",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 1,
+    "icon": "coins",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-1000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 2,
+    "icon": "coins",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-3000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 3,
+    "icon": "coins",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-5000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 4,
+    "icon": "coins",
+    "threshold": 5000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-10000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 4,
+    "icon": "coins",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-30000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 5,
+    "icon": "coins",
+    "threshold": 30000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-50000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 6,
+    "icon": "coins",
+    "threshold": 50000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-100000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 7,
+    "icon": "coins",
+    "threshold": 100000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-200000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 7,
+    "icon": "coins",
+    "threshold": 200000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-300000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 7,
+    "icon": "coins",
+    "threshold": 300000,
+    "isHidden": false
+  },
+  {
+    "key": "support-pt-received-500000",
+    "category": "COMMUNITY",
+    "series": "support-pt-received",
+    "tier": 7,
+    "icon": "coins",
+    "threshold": 500000,
+    "isHidden": false
+  },
+  {
     "key": "bookmarks-given-1",
     "category": "COMMUNITY",
     "series": "bookmarks-given",
@@ -2535,123 +2652,6 @@
     "tier": 7,
     "icon": "smile",
     "threshold": 200000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-100",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 1,
-    "icon": "hand-coins",
-    "threshold": 100,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-500",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 1,
-    "icon": "hand-coins",
-    "threshold": 500,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-1000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 2,
-    "icon": "hand-coins",
-    "threshold": 1000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-3000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 3,
-    "icon": "hand-coins",
-    "threshold": 3000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-5000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 3,
-    "icon": "hand-coins",
-    "threshold": 5000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-10000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 4,
-    "icon": "hand-coins",
-    "threshold": 10000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-30000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 5,
-    "icon": "hand-coins",
-    "threshold": 30000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-50000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 5,
-    "icon": "hand-coins",
-    "threshold": 50000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-100000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 6,
-    "icon": "hand-coins",
-    "threshold": 100000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-200000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 7,
-    "icon": "hand-coins",
-    "threshold": 200000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-300000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 7,
-    "icon": "hand-coins",
-    "threshold": 300000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-500000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 7,
-    "icon": "hand-coins",
-    "threshold": 500000,
-    "isHidden": false
-  },
-  {
-    "key": "support-pt-sent-1000000",
-    "category": "COMMUNITY",
-    "series": "support-pt-sent",
-    "tier": 7,
-    "icon": "hand-coins",
-    "threshold": 1000000,
     "isHidden": false
   },
   {
