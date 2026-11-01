@@ -80,6 +80,8 @@ export function PlusForm () {
   const [isPlanChangeDialogOpen, setIsPlanChangeDialogOpen] = useState(false)
   // 解約の前に、安いプランへの変更を案内する（解約は加入 1 か月以内がいちばん多い）
   const [isRetentionOpen, setIsRetentionOpen] = useState(false)
+  const [cancelReason, setCancelReason] = useState<CancelReason | null>(null)
+  const [cancelReasonNote, setCancelReasonNote] = useState("")
   const [isPlanChangePreviewLoading, setIsPlanChangePreviewLoading] = useState(false)
   const [planChangeRequest, setPlanChangeRequest] = useState<{
     passType: "LITE" | "STANDARD" | "PREMIUM"
@@ -140,13 +142,14 @@ export function PlusForm () {
     setIsSubmitting(false)
   }
 
-  const onCancelCurrentSubscription = async () => {
+  const onCancelCurrentSubscription = async (reason?: CancelReason) => {
     if (isCancelScheduled) {
       toast("すでに解約手続き済みです。次回更新日までは利用できます。")
       return
     }
 
-    if (!window.confirm("現在のサブスクを解約します。よろしいですか？")) {
+    // 理由を選んだ画面から来たときは、その画面を確認とする
+    if (!reason && !window.confirm("現在のサブスクを解約します。よろしいですか？")) {
       return
     }
 
@@ -156,6 +159,10 @@ export function PlusForm () {
       const response = await fetch("/api/stripe/subscription-cancel", {
         method: "POST",
         headers,
+        body: JSON.stringify({
+          reason: reason ?? null,
+          reasonNote: reason === "other" ? cancelReasonNote : null,
+        }),
       })
 
       const { ok, json, isHtmlWrapped } = await parseActionResponse<{
@@ -464,34 +471,79 @@ export function PlusForm () {
   return (
     <>
       <AlertDialog open={isRetentionOpen} onOpenChange={setIsRetentionOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-h-[90dvh] overflow-y-auto">
           <AlertDialogHeader>
-            <AlertDialogTitle>{"解約する前に"}</AlertDialogTitle>
+            <AlertDialogTitle>{"解約する前に、理由を教えてください"}</AlertDialogTitle>
             <AlertDialogDescription>
               {
-                "ライト（月額480円）に変更すると、料金を抑えたまま、毎日500コイン（1日50枚）・1回4枚の生成・広告なしを続けられます。変更する前に、請求の内容を確認できます。"
+                "これからの改善に使わせていただきます。解約しても、今の期間の終わりまではそのまま使えます。"
               }
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                trackGrowthEvent("retention_cancel", currentPass?.type ?? "")
-                onCancelCurrentSubscription()
+          <div className="grid gap-1.5">
+            {CANCEL_REASON_OPTIONS.map((option) => (
+              <label
+                key={option.value}
+                className={cn(
+                  "flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition",
+                  cancelReason === option.value
+                    ? "border-sky-500 bg-sky-500/10"
+                    : "hover:bg-muted",
+                )}
+              >
+                <input
+                  type="radio"
+                  name="cancel-reason"
+                  value={option.value}
+                  checked={cancelReason === option.value}
+                  onChange={() => {
+                    setCancelReason(option.value)
+                    trackGrowthEvent("cancel_reason", option.value)
+                  }}
+                />
+                {option.label}
+              </label>
+            ))}
+            {cancelReason === "other" && (
+              <textarea
+                value={cancelReasonNote}
+                onChange={(event) => setCancelReasonNote(event.target.value)}
+                maxLength={500}
+                rows={3}
+                placeholder="よければ詳しく教えてください（任意）"
+                className="mt-1 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
+            )}
+          </div>
+          {cancelReason && currentPass && (
+            <RetentionSuggestion
+              reason={cancelReason}
+              passType={currentPass.type}
+              onDowngrade={() => {
+                trackGrowthEvent("retention_lite", currentPass.type)
+                setIsRetentionOpen(false)
+                openPlanChangeDialog("LITE", currentPass.type)
               }}
-            >
-              {"それでも解約する"}
-            </AlertDialogCancel>
+            />
+          )}
+          <AlertDialogFooter>
             <AlertDialogAction
               onClick={() => {
-                trackGrowthEvent("retention_lite", currentPass?.type ?? "")
-                if (currentPass) {
-                  openPlanChangeDialog("LITE", currentPass.type)
-                }
+                trackGrowthEvent("retention_keep", currentPass?.type ?? "")
               }}
             >
-              {"ライトに変更する"}
+              {"続ける"}
             </AlertDialogAction>
+            <AlertDialogCancel
+              disabled={cancelReason === null || isSubmitting}
+              onClick={() => {
+                if (!cancelReason) return
+                trackGrowthEvent("retention_cancel", currentPass?.type ?? "")
+                onCancelCurrentSubscription(cancelReason)
+              }}
+            >
+              {"解約する"}
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -683,15 +735,10 @@ export function PlusForm () {
                   <Button
                     className="w-full border-black text-black hover:bg-black/5 dark:border-white dark:bg-transparent dark:text-white dark:hover:bg-white/10"
                     onClick={() => {
-                      if (
-                        currentPass.type === "STANDARD" ||
-                        currentPass.type === "PREMIUM"
-                      ) {
-                        trackGrowthEvent("retention_view", currentPass.type)
-                        setIsRetentionOpen(true)
-                        return
-                      }
-                      onCancelCurrentSubscription()
+                      trackGrowthEvent("retention_view", currentPass.type)
+                      setCancelReason(null)
+                      setCancelReasonNote("")
+                      setIsRetentionOpen(true)
                     }}
                     disabled={isSubmitting}
                     variant="outline"
@@ -835,3 +882,85 @@ const viewerCurrentPassQuery = graphql(
     }
   }`,
 )
+
+type CancelReason =
+  | "not_using"
+  | "coins"
+  | "price"
+  | "quality"
+  | "slow"
+  | "one_month"
+  | "other_service"
+  | "other"
+
+/** aipictors-api の lib/retention.ts の CANCEL_REASONS と同じ */
+const CANCEL_REASON_OPTIONS: { value: CancelReason; label: string }[] = [
+  { value: "not_using", label: "あまり使わなかった" },
+  { value: "coins", label: "コインが足りなかった" },
+  { value: "price", label: "料金が高い" },
+  { value: "quality", label: "生成の品質・不具合が気になった" },
+  { value: "slow", label: "生成が遅い・待ち時間が長い" },
+  { value: "one_month", label: "1か月だけ使うつもりだった" },
+  { value: "other_service", label: "ほかのサービスに移る" },
+  { value: "other", label: "その他" },
+]
+
+/**
+ * 解約の理由に合わせた提案
+ */
+function RetentionSuggestion(props: {
+  reason: CancelReason
+  passType: string
+  onDowngrade: () => void
+}) {
+  const canDowngrade = props.passType === "STANDARD" || props.passType === "PREMIUM"
+
+  if ((props.reason === "price" || props.reason === "not_using") && canDowngrade) {
+    return (
+      <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-3 text-sm">
+        <p className="font-bold">{"ライト（月額480円）に変えるのはいかがですか？"}</p>
+        <p className="mt-1 text-muted-foreground text-xs">
+          {"毎日500コイン（1日50枚）・1回4枚の生成・広告なしを、料金を抑えたまま続けられます。変更前に請求の内容を確認できます。"}
+        </p>
+        <Button size="sm" className="mt-2" onClick={props.onDowngrade}>
+          {"ライトに変更する"}
+        </Button>
+      </div>
+    )
+  }
+
+  if (props.reason === "coins") {
+    return (
+      <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-3 text-sm">
+        <p className="font-bold">{"コインは上のプランにすると毎日の量が増えます"}</p>
+        <p className="mt-1 text-muted-foreground text-xs">
+          {"スタンダードは毎日1,000、プレミアムは毎日2,000コインです。続けると更新のたびに継続ボーナス（期限なし）も付きます。プランの変更はこのページの下からできます。"}
+        </p>
+      </div>
+    )
+  }
+
+  if (props.reason === "quality" || props.reason === "slow") {
+    return (
+      <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-3 text-sm">
+        <p className="font-bold">{"よければ状況を教えてください"}</p>
+        <p className="mt-1 text-muted-foreground text-xs">
+          {"失敗した生成はコインを使わずにやり直せます。直らないときは、お問い合わせから送っていただくとスタッフが確認します。"}
+        </p>
+        <a href="/support/chat" className="mt-2 inline-block text-sky-600 text-xs underline dark:text-sky-300">
+          {"お問い合わせを開く"}
+        </a>
+      </div>
+    )
+  }
+
+  if (props.reason === "one_month") {
+    return (
+      <div className="rounded-lg bg-muted p-3 text-muted-foreground text-xs">
+        {"解約しても期間の終わりまでは使えます。終わる少し前にメールでお知らせするので、続けたくなったらそこから取り消せます。"}
+      </div>
+    )
+  }
+
+  return null
+}

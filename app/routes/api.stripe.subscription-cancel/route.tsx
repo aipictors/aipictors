@@ -52,6 +52,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
     "AIPICTORS_API_CF_ACCESS_CLIENT_SECRET",
   )
 
+  // 解約の理由（任意）
+  const input = (await request.json().catch(() => ({}))) as {
+    reason?: unknown
+    reasonNote?: unknown
+  }
+
   if (!internalToken) {
     return toJsonResponse(
       { error: "AIPICTORS_API_INTERNAL_TOKEN is not configured", data: null },
@@ -77,6 +83,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
         body: JSON.stringify({
           userId: viewer.userId,
           userEmail: viewer.userEmail,
+          reason: typeof input.reason === "string" ? input.reason : null,
+          reasonNote:
+            typeof input.reasonNote === "string"
+              ? input.reasonNote.slice(0, 500)
+              : null,
         }),
       },
     )
