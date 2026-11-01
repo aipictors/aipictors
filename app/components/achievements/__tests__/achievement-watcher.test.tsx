@@ -32,7 +32,11 @@ let checkResult: { isInitialSync: boolean; unlocked: Unlocked[] } = {
 const checkCalls: { force: boolean }[] = []
 const seenCalls: string[][] = []
 
+// 本物のモジュールを残して一部だけ差し替える（mock.module はテストファイルをまたいで残るため）
+const apolloActual = await import("@apollo/client/index")
+
 mock.module("@apollo/client/index", () => ({
+  ...apolloActual,
   useQuery: () => ({ data: undefined, loading: false }),
   useMutation: (document: { definitions: { name?: { value: string } }[] }) => {
     const name = document.definitions[0]?.name?.value
@@ -57,7 +61,10 @@ mock.module("@apollo/client/index", () => ({
   },
 }))
 
+const remixActual = await import("@remix-run/react")
+
 mock.module("@remix-run/react", () => ({
+  ...remixActual,
   useLocation: () => ({ pathname: "/" }),
   useNavigate: () => () => undefined,
 }))

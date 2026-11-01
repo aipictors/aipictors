@@ -2,11 +2,18 @@ import { expect, mock, test } from "bun:test"
 import { renderToStaticMarkup } from "react-dom/server"
 import { WorkImageAnalysisRequestCard } from "../work-image-analysis-request-card"
 
+// 本物のモジュールを残して一部だけ差し替える（mock.module はテストファイルをまたいで残るため）
+const apolloActual = await import("@apollo/client/index")
+
 mock.module("@apollo/client/index", () => ({
+  ...apolloActual,
   useMutation: () => [async () => ({}), { loading: false }],
 }))
 
+const sonnerActual = await import("sonner")
+
 mock.module("sonner", () => ({
+  ...sonnerActual,
   toast: {
     success: () => undefined,
     error: () => undefined,
@@ -34,7 +41,9 @@ test("投稿者で再依頼可能な場合はボタンが有効で表示され�
 })
 
 test("cooldown 中は次回可能日時が表示されてボタンが無効になる", () => {
-  const availableAt = Math.floor(new Date("2026-06-03T10:00:00+09:00").getTime() / 1000)
+  const availableAt = Math.floor(
+    new Date("2026-06-03T10:00:00+09:00").getTime() / 1000,
+  )
 
   const html = renderToStaticMarkup(
     <WorkImageAnalysisRequestCard

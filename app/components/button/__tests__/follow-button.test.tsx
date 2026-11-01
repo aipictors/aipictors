@@ -28,7 +28,11 @@ const mutate = mock((args: MutateArgs) => {
 
 const modify = mock(() => true)
 
+// 本物のモジュールを残して一部だけ差し替える（mock.module はテストファイルをまたいで残るため）
+const apolloActual = await import("@apollo/client/index")
+
 mock.module("@apollo/client/index", () => ({
+  ...apolloActual,
   useApolloClient: () => ({
     mutate,
     cache: { identify: () => "UserNode:2", modify },
@@ -40,7 +44,12 @@ const toastDefault = Object.assign(
   mock(() => undefined),
   { error: toastError, success: () => undefined },
 )
-mock.module("sonner", () => ({ toast: toastDefault }))
+const sonnerActual = await import("sonner")
+
+mock.module("sonner", () => ({
+  ...sonnerActual,
+  toast: toastDefault,
+}))
 
 mock.module("~/hooks/use-translation", () => ({
   useTranslation: () => (jaText: string, _enText: string) => jaText,
