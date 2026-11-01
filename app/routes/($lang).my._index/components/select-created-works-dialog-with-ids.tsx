@@ -94,7 +94,7 @@ function SortableItem(props: SortableItemProps) {
         {props.order}
       </span>
       <img
-        className="size-16 rounded-lg object-cover sm:size-20"
+        className="size-16 shrink-0 rounded-lg bg-muted object-contain sm:size-20"
         src={props.work.smallThumbnailImageURL}
         alt=""
       />
@@ -313,9 +313,12 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
               aria-pressed={isSelected}
               aria-label={work.title}
             >
+              {/* iPhone の Safari では、ボタンの aspect-square に対して高さ 100% が効かず、
+                  画像が元の大きさで出て上の方だけが拡大して見えていた。
+                  絶対配置でマスに合わせ、選びやすいように全体を見せる（余白は背景色） */}
               <img
                 className={cn(
-                  "size-full object-cover transition",
+                  "absolute inset-0 h-full w-full object-contain transition",
                   isSelected ? "opacity-80" : "group-hover:opacity-90",
                 )}
                 src={work.smallThumbnailImageURL}
@@ -482,7 +485,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                 className="relative aspect-square overflow-hidden rounded-md bg-muted"
               >
                 <img
-                  className="size-full object-cover"
+                  className="absolute inset-0 h-full w-full object-contain"
                   src={work.smallThumbnailImageURL}
                   alt={work.title}
                 />
