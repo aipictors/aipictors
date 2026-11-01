@@ -36,7 +36,7 @@ export function ModerationFixBanner(props: Props) {
           {props.isTemporaryPrivate && (
             <p className="text-sm">
               この作品は今、<b>一時非公開</b>
-              です。直して「更新する」を押すと自動で公開に戻ります。
+              です。直して「更新」を押すと自動で公開に戻ります。
             </p>
           )}
           {props.reportMessage && (

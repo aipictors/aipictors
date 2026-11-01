@@ -15,7 +15,7 @@ export function PostFormItemFix(props: Props) {
       <CardContent className="space-y-2 p-4">
         <p className="font-bold text-sm">運営へのひとこと（任意）</p>
         <p className="text-muted-foreground text-xs">
-          「更新する」を押すと修正完了が自動で届きます。補足があれば書いてください
+          「更新」を押すと修正完了が自動で届きます。補足があれば書いてください
         </p>
         <Input
           onChange={(e) => {

@@ -94,7 +94,7 @@ export function ModerationReportsContainer(_props: Props) {
         </h1>
         <p className="text-muted-foreground text-sm">
           {t(
-            "規約に合わせて作品を変更したときや、直してほしいところがあるときにお知らせします。編集して「更新する」を押すと、完了報告は自動で届きます。",
+            "規約に合わせて作品を変更したときや、直してほしいところがあるときにお知らせします。編集して「更新」を押すと、完了報告は自動で届きます。",
             "We notify you when we change your work or need a fix. Saving your edit reports the fix automatically.",
           )}
         </p>
