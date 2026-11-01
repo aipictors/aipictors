@@ -20,6 +20,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader } from "~/components/ui/card"
+import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { useTranslation } from "~/hooks/use-translation"
@@ -192,16 +193,7 @@ function PaginationMode(props: Props) {
   }
 
   if (posts.length === 0 && !loading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <p className="text-center">
-          {t(
-            "まだデータがありません、ユーザやタグをフォローして最新の作品をキャッチアップしましょう！",
-            "No data yet, follow users and tags to catch up on the latest works!",
-          )}
-        </p>
-      </div>
-    )
+    return <FollowFeedEmpty />
   }
 
   return (
@@ -422,21 +414,13 @@ function InfiniteMode(props: Props) {
     )
   }
   if (flat.length === 0 && !loadingFirst) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <p className="text-center">
-          {t(
-            "まだデータがありません、ユーザやタグをフォローして最新の作品をキャッチアップしましょう！",
-            "No data yet, follow users and tags to catch up on the latest works!",
-          )}
-        </p>
-      </div>
-    )
+    return <FollowFeedEmpty />
   }
 
   // ─── 描画 ──────────────────────────────────────────
   return (
     <div className="space-y-8">
+      <FollowMoreCreatorsStrip />
       {pages.map(
         (pagePosts, idx) =>
           pagePosts.length > 0 && (
@@ -471,6 +455,96 @@ function InfiniteMode(props: Props) {
     </div>
   )
 }
+
+/* ===========================================================
+   まだ誰もフォローしていない・少ない人へのおすすめ
+   =========================================================== */
+
+/** これより少ない人には、フォロー新着の上にもおすすめを出す */
+const FEW_FOLLOWEES = 10
+
+/**
+ * フォロー新着が空のとき：説明だけでなく、その場でフォローできる人を出す
+ */
+function FollowFeedEmpty() {
+  const t = useTranslation()
+  return (
+    <div className="space-y-4 py-6">
+      <div className="space-y-1 text-center">
+        <p className="font-bold text-lg">
+          {t(
+            "フォローした人の新作がここに届きます",
+            "New works from people you follow will appear here",
+          )}
+        </p>
+        <p className="text-muted-foreground text-sm">
+          {t(
+            "まずは気になるクリエイターをフォローしてみましょう",
+            "Start by following creators you like",
+          )}
+        </p>
+      </div>
+      <FollowSuggestions
+        limit={12}
+        title={t("いま伸びているクリエイター", "Trending creators")}
+      />
+    </div>
+  )
+}
+
+/**
+ * フォローが少ない人には、新着の上におすすめを出す（閉じたら 7 日出さない）
+ */
+function FollowMoreCreatorsStrip() {
+  const t = useTranslation()
+  const authContext = useContext(AuthContext)
+  const storageKey = "follow_more_creators_closed_at"
+  const [isClosed, setIsClosed] = useState(true)
+
+  useEffect(() => {
+    try {
+      const closedAt = Number(localStorage.getItem(storageKey) ?? 0)
+      setIsClosed(Date.now() - closedAt < 7 * 24 * 60 * 60 * 1000)
+    } catch {
+      setIsClosed(false)
+    }
+  }, [])
+
+  const { data } = useQuery(viewerFollowCountQuery, {
+    skip: isClosed || !authContext.userId,
+    variables: { id: authContext.userId ?? "" },
+  })
+
+  const followCount = data?.user?.followCount
+
+  if (isClosed || followCount === undefined || followCount >= FEW_FOLLOWEES) {
+    return null
+  }
+
+  return (
+    <FollowSuggestions
+      title={t(
+        "フォローを増やすと、新着がもっと楽しくなります",
+        "Follow more creators to fill your feed",
+      )}
+      onClose={() => {
+        try {
+          localStorage.setItem(storageKey, String(Date.now()))
+        } catch {}
+        setIsClosed(true)
+      }}
+    />
+  )
+}
+
+const viewerFollowCountQuery = graphql(
+  `query ViewerFollowCount($id: ID!) {
+    user(id: $id) {
+      id
+      followCount
+    }
+  }`,
+)
 
 /* ===========================================================
    Shared Feed Content Component
@@ -749,7 +823,7 @@ const feedQuery = graphql(
         id
         work {
           ...PartialWorkFields
-          comments(offset: 0, limit: 128) {
+          comments(offset: 0, limit: 10) {
             ...Comment
           }
         }

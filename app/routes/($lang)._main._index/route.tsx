@@ -46,9 +46,9 @@ import {
 import { Skeleton } from "~/components/ui/skeleton"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
-import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useFollowFeedNewCount } from "~/hooks/use-follow-feed-new-count"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
@@ -96,6 +96,7 @@ import {
   HomeTagsSection,
 } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
@@ -506,7 +507,18 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
   const updateQueryParams = useUpdateQueryParams()
   const authContext = useContext(AuthContext)
 
+  /** フォロー新着を最後に見てから増えた作品の数（タブに出す） */
+  const followFeedNew = useFollowFeedNewCount()
+
+  const markFollowFeedAsSeen = followFeedNew.markAsSeen
+
   const currentTab = props.forcedTab ?? "new"
+
+  useEffect(() => {
+    if (currentTab === "follow-user") {
+      markFollowFeedAsSeen()
+    }
+  }, [currentTab, markFollowFeedAsSeen])
 
   // URLパラメータから初期値を取得する関数（SSR対応）
   const getInitialPageValue = () => {
@@ -1052,7 +1064,19 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 tabs={[
                   { label: "ホーム", value: "home" },
                   { label: "新着・人気", value: "new" },
-                  { label: "フォロー新着", value: "follow-user" },
+                  {
+                    label: "フォロー新着",
+                    value: "follow-user",
+                    badge:
+                      followFeedNew.count > 0 &&
+                      currentTab !== "follow-user" ? (
+                        <span className="fade-in-0 zoom-in-50 ml-1 inline-flex min-w-5 animate-in items-center justify-center rounded-full bg-clear-bright-blue px-1.5 align-middle font-bold text-[10px] text-white leading-5">
+                          {followFeedNew.count >= 100
+                            ? "99+"
+                            : followFeedNew.count}
+                        </span>
+                      ) : null,
+                  },
                   { label: "お気に入りタグ新着", value: "follow-tag" },
                 ]}
                 value={currentTab}
@@ -1303,37 +1327,37 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               </Button>
             </div>
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <HomeViewModeToggles
-              isPagination={
-                workView === "new-user" ? undefined : internalIsPagination
-              }
-              onPaginationChange={onChangePaginationMode}
-              isDialogMode={isDialogMode}
-              onDialogModeChange={onChangeDialogMode}
-            />
-            {workView === "new" && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 gap-1 rounded-full px-2.5 sm:gap-1.5 sm:px-3"
-                onClick={() => setIsFilterUiOpen((v) => !v)}
-                aria-expanded={isFilterUiOpen}
-              >
-                <SlidersHorizontal className="size-4" />
-                {t("絞り込み", "Filters")}
-                {activeFilterCount > 0 && (
-                  <span className="rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground tabular-nums">
-                    {activeFilterCount}
-                  </span>
-                )}
-                {isFilterUiOpen ? (
-                  <Minus className="size-3.5" />
-                ) : (
-                  <Plus className="size-3.5" />
-                )}
-              </Button>
-            )}
+              <HomeViewModeToggles
+                isPagination={
+                  workView === "new-user" ? undefined : internalIsPagination
+                }
+                onPaginationChange={onChangePaginationMode}
+                isDialogMode={isDialogMode}
+                onDialogModeChange={onChangeDialogMode}
+              />
+              {workView === "new" && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 gap-1 rounded-full px-2.5 sm:gap-1.5 sm:px-3"
+                  onClick={() => setIsFilterUiOpen((v) => !v)}
+                  aria-expanded={isFilterUiOpen}
+                >
+                  <SlidersHorizontal className="size-4" />
+                  {t("絞り込み", "Filters")}
+                  {activeFilterCount > 0 && (
+                    <span className="rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground tabular-nums">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                  {isFilterUiOpen ? (
+                    <Minus className="size-3.5" />
+                  ) : (
+                    <Plus className="size-3.5" />
+                  )}
+                </Button>
+              )}
             </div>
           </div>
           {workView === "new" && (
@@ -1543,8 +1567,6 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                           </label>
                         </div>
                       </div>
-
-                      
                     </div>
                   </div>
                 )}
@@ -1595,8 +1617,6 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
           {workView === "popular" && (
             <div className="space-y-4">
-              
-
               <Suspense
                 fallback={
                   <HomeNewWorksSkeleton
@@ -1622,8 +1642,6 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
           {workView === "new-user" && (
             <div className="space-y-4">
-              
-
               <Suspense
                 fallback={
                   <HomeNewWorksSkeleton

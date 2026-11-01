@@ -1,8 +1,12 @@
-import { useState, useRef, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export interface TabItem {
   label: string
   value: string
+  /**
+   * ラベルの横に出す小さな印（新着の数など）
+   */
+  badge?: React.ReactNode
 }
 
 interface AnimatedTabsProps {
@@ -12,7 +16,7 @@ interface AnimatedTabsProps {
   className?: string
 }
 
-export function AppAnimatedTabs ({
+export function AppAnimatedTabs({
   tabs,
   value,
   onChange,
@@ -76,6 +80,7 @@ export function AppAnimatedTabs ({
               }`}
             >
               {tab.label}
+              {tab.badge}
             </button>
           )
         })}

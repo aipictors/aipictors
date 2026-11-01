@@ -4121,6 +4121,11 @@ type Query {
   """フィード"""
   feed(where: FeedWhereInput!): FeedNode
 
+  """
+  フォロー新着で、指定した時刻（UNIX 秒）より後に投稿された作品の数（100 まで）。タブの新着表示に使う
+  """
+  followUserFeedNewWorksCount(ratings: [Rating!], since: Int!): Int!
+
   """フォルダ"""
   folder(id: ID, where: FolderWhereInput): FolderNode
 
@@ -4283,7 +4288,10 @@ type Query {
   """
   このユーザをフォローしている人がよくフォローしている人（フォローした直後のおすすめ）。見る人がフォロー・ブロック・ミュートしている人は出さない
   """
-  suggestedFollowUsers(limit: Int, userId: ID!): [UserNode!]!
+  suggestedFollowUsers(limit: Int, 
+    """省略すると、最近伸びているクリエイター"""
+    userId: ID
+  ): [UserNode!]!
 
   """タグ"""
   tag(name: String!): TagNode

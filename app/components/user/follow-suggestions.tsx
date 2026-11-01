@@ -12,10 +12,15 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   /**
-   * フォローしたユーザ（この人をフォローしている人がよくフォローしている人を出す）
+   * フォローしたユーザ（この人をフォローしている人がよくフォローしている人を出す）。
+   * 省略すると最近伸びているクリエイター
    */
-  userId: string
+  userId?: string
   userName?: string
+  /** 見出し（省略すると userName から作る） */
+  title?: string
+  /** 何人出すか（最大 12） */
+  limit?: number
   className?: string
   onClose?: () => void
 }
@@ -31,7 +36,7 @@ export function FollowSuggestions(props: Props) {
 
   const { data } = useQuery(suggestedFollowUsersQuery, {
     skip: authContext.isNotLoggedIn,
-    variables: { userId: props.userId, limit: 6 },
+    variables: { userId: props.userId ?? null, limit: props.limit ?? 6 },
     fetchPolicy: "cache-first",
   })
 
@@ -51,12 +56,14 @@ export function FollowSuggestions(props: Props) {
     >
       <div className="flex items-start justify-between gap-2">
         <p className="font-bold text-sm">
-          {props.userName
-            ? t(
-                `${props.userName}さんが好きな人はこちらもフォローしています`,
-                `People who follow ${props.userName} also follow`,
-              )
-            : t("こちらもおすすめ", "You might also like")}
+          {props.title
+            ? props.title
+            : props.userName
+              ? t(
+                  `${props.userName}さんが好きな人はこちらもフォローしています`,
+                  `People who follow ${props.userName} also follow`,
+                )
+              : t("こちらもおすすめ", "You might also like")}
         </p>
         {props.onClose && (
           <button
@@ -119,7 +126,7 @@ export function FollowSuggestions(props: Props) {
 }
 
 const suggestedFollowUsersQuery = graphql(
-  `query SuggestedFollowUsers($userId: ID!, $limit: Int) {
+  `query SuggestedFollowUsers($userId: ID, $limit: Int) {
     suggestedFollowUsers(userId: $userId, limit: $limit) {
       id
       login
