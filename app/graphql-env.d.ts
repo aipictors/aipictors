@@ -1,3 +1,106 @@
+"""実績の分類"""
+enum AchievementCategory {
+  """閲覧・交流"""
+  COMMUNITY
+
+  """創作"""
+  CREATE
+
+  """ログイン"""
+  LOGIN
+
+  """特別"""
+  SPECIAL
+}
+
+"""実績を確かめた結果"""
+type AchievementCheckResultNode {
+  """今回付与したコイン"""
+  grantedCoins: Int!
+
+  """はじめての確認で、これまでの分をまとめて達成した"""
+  isInitialSync: Boolean!
+  summary: AchievementSummaryNode
+
+  """まだ演出を見せていない達成（新しい順）"""
+  unlocked: [AchievementNode!]!
+}
+
+"""実績"""
+type AchievementNode {
+  category: AchievementCategory!
+
+  """達成の条件"""
+  description: String!
+
+  """達成の条件（英語）"""
+  enDescription: String!
+
+  """名前（英語）"""
+  enName: String!
+
+  """隠し実績"""
+  isHidden: Boolean!
+
+  """達成した"""
+  isUnlocked: Boolean!
+
+  """キー（バッジ画像のファイル名にもなる）"""
+  key: String!
+
+  """名前（隠し実績で未達成なら ???）"""
+  name: String!
+
+  """実績ポイント"""
+  points: Int!
+
+  """今の数（本人のときだけ）"""
+  progressCurrent: Int
+
+  """達成に必要な数（本人のときだけ）"""
+  progressTarget: Int
+
+  """達成した人の割合（0〜1）"""
+  rarity: Float
+
+  """もらえる（もらった）無料コイン"""
+  rewardCoins: Int!
+
+  """同じ種類の実績のまとまり"""
+  series: String!
+
+  """ランク（1 ブロンズ / 2 シルバー / 3 ゴールド / 4 プラチナ / 5 ダイヤモンド / 6 レジェンド）"""
+  tier: Int!
+
+  """達成した日時（UNIX 秒）"""
+  unlockedAt: Int
+}
+
+"""実績のまとめ"""
+type AchievementSummaryNode {
+  """今のレベルになったポイント"""
+  currentLevelPoints: Int!
+
+  """連続ログイン日数（本人のときだけ。他の人は 0）"""
+  currentStreak: Int!
+
+  """見せたい実績（ランクの高い順・新しい順に 6 つ）"""
+  featured: [AchievementNode!]!
+
+  """実績レベル"""
+  level: Int!
+  loginDays: Int!
+  longestStreak: Int!
+
+  """次のレベルになるポイント"""
+  nextLevelPoints: Int!
+
+  """実績ポイント"""
+  points: Int!
+  totalCount: Int!
+  unlockedCount: Int!
+}
+
 """投稿の公開設定"""
 enum AccessType {
   """下書き"""
@@ -2954,6 +3057,15 @@ input ModerationReportsWhereInput {
 }
 
 type Mutation {
+  """実績を確かめる（今日のログインも記録）。まだ演出を見せていない達成を返す"""
+  checkAchievements(
+    """間隔をあけずに確かめる（投稿した直後など）"""
+    force: Boolean
+  ): AchievementCheckResultNode!
+
+  """達成の演出を見せた（次からは出さない）"""
+  markAchievementsSeen(keys: [String!]!): Boolean!
+
   """コメント審査への異議申し立てを送信する"""
   appealCommentModeration(input: AppealCommentModerationInput!): Boolean!
 
@@ -4031,6 +4143,12 @@ type PromptonUserNode implements Node {
 }
 
 type Query {
+  """実績のまとめ（数・実績レベル・見せたい実績）。userId を省略すると自分"""
+  achievementSummary(userId: ID): AchievementSummaryNode
+
+  """実績の一覧（全実績と達成状況）。userId を省略すると自分（進み具合つき）"""
+  achievements(userId: ID): [AchievementNode!]!
+
   """コメント審査の管理一覧"""
   adminCommentModerationItems: [CommentModerationAdminItemNode!]!
 

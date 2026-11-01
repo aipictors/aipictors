@@ -1,6 +1,7 @@
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { CheckIcon, PenLine } from "lucide-react"
 import { useContext, useState } from "react"
+import { UserAchievementShowcase } from "~/components/achievements/user-achievement-showcase"
 import { FollowButton } from "~/components/button/follow-button"
 import { OfficialBadge } from "~/components/official-badge"
 import { OmissionNumber } from "~/components/omission-number"
@@ -222,6 +223,7 @@ export function UserProfileNameIcon(props: Props) {
             </div>
           ))}
         </dl>
+        <UserAchievementShowcase userId={user.id} />
         {r18WorksCount > 0 && (
           <SensitiveToggle
             variant="compact"

@@ -23,6 +23,7 @@ import {
   SunIcon,
   UserCircleIcon,
   UserIcon,
+  MedalIcon,
 } from "lucide-react"
 import { CoinIcon } from "~/components/coin-icon"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
@@ -347,6 +348,11 @@ export function UserNavigationMenuContent(props: Props) {
           href={getSensitiveLink("/my")}
           icon={<SquareKanbanIcon className={userNavigationStyles.menuIcon} />}
           label={t("ダッシュボード", "Dashboard")}
+        />
+        <MenuItemLink
+          href={getSensitiveLink("/achievements")}
+          icon={<MedalIcon className={userNavigationStyles.menuIcon} />}
+          label={t("実績", "Achievements")}
         />
         <MenuItemLink
           href={getSensitiveLink("/my/posts")}

@@ -16,6 +16,7 @@ import { toast } from "sonner"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { requestAchievementCheck } from "~/lib/achievements/achievement-ui"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -146,6 +147,7 @@ function useOptimisticFollow(props: {
           : (res.data?.unfollowUser?.isFollowee ?? nextIsFollow)
         if (serverIsFollow !== confirmedRef.current) {
           updateCache(serverIsFollow)
+          if (serverIsFollow) requestAchievementCheck()
         }
         confirmedRef.current = serverIsFollow
         if (serverIsFollow !== nextIsFollow) {

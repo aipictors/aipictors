@@ -8,6 +8,7 @@ import { KeyCodes } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFollowNudge } from "~/hooks/use-follow-nudge"
 import { useTranslation } from "~/hooks/use-translation"
+import { requestAchievementCheck } from "~/lib/achievements/achievement-ui"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -173,6 +174,7 @@ export function LikeButton(props: Props): React.ReactNode {
         if (!props.isTargetUserBlocked) {
           nudgeFollow(props.targetWorkOwnerUserId)
         }
+        requestAchievementCheck()
       } else {
         await deleteWorkLike({
           variables: {

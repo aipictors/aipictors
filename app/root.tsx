@@ -8,12 +8,12 @@ import {
 } from "@remix-run/cloudflare"
 import {
   isRouteErrorResponse,
-  type ShouldRevalidateFunction,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  type ShouldRevalidateFunction,
   useLocation,
   useNavigate,
   useRouteError,
@@ -32,11 +32,11 @@ import { config } from "~/config"
 import { cn } from "~/lib/utils"
 import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
-import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
+import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
+import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { setRenderNow } from "~/utils/render-now"
 import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
-import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { serializeJsonLd } from "~/utils/serialize-json-ld"
 import { createSiteJsonLd } from "~/utils/site-json-ld"
 
@@ -44,6 +44,13 @@ import { createSiteJsonLd } from "~/utils/site-json-ld"
 const PerformanceMonitor = lazy(() =>
   import("~/components/performance-monitor").then((mod) => ({
     default: mod.PerformanceMonitor,
+  })),
+)
+
+// 実績の達成の演出（ログインしている人だけ。画面を出してから読み込む）
+const AchievementWatcher = lazy(() =>
+  import("~/components/achievements/achievement-watcher").then((mod) => ({
+    default: mod.AchievementWatcher,
   })),
 )
 
@@ -681,6 +688,9 @@ export default function App(): React.ReactNode {
           </Suspense>
           <Suspense fallback={null}>
             <PerformanceMonitor />
+          </Suspense>
+          <Suspense fallback={null}>
+            <AchievementWatcher />
           </Suspense>
         </>
       )}

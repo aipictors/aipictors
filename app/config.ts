@@ -1061,6 +1061,15 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "View and manage your followers",
     isIndex: false,
   },
+  ACHIEVEMENTS: {
+    title: "実績",
+    enTitle: "Achievements",
+    description:
+      "投稿・いいね・ログインなどで達成できる実績とバッジ。達成するとフリーコインがもらえます",
+    enDescription:
+      "Achievements and badges for posting, liking and logging in. Earn free coins when you unlock them",
+    isIndex: false,
+  },
   FOLLOWINGS: {
     title: "フォロー中",
     enTitle: "Followings",

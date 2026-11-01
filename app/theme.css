@@ -883,3 +883,211 @@ html[data-theme="dark-violet"] {
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
+
+/* ================= 実績（アチーブメント） ================= */
+
+/* 詳細の大きなバッジ: マウスに合わせて傾く */
+.achievement-badge-interactive {
+  perspective: 600px;
+}
+.achievement-badge-interactive .achievement-badge-inner {
+  transform: rotateX(var(--badge-rx, 0deg)) rotateY(var(--badge-ry, 0deg));
+  transition: transform 0.15s ease-out;
+  transform-style: preserve-3d;
+}
+.achievement-badge-glare {
+  background: radial-gradient(
+    circle at var(--badge-gx, 30%) var(--badge-gy, 20%),
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0) 45%
+  );
+  mix-blend-mode: soft-light;
+}
+
+/* レジェンド: 虹色の光がゆっくり回る */
+.achievement-badge-holo {
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 77, 141, 0.35),
+    rgba(255, 209, 102, 0.35),
+    rgba(123, 241, 168, 0.35),
+    rgba(110, 203, 255, 0.35),
+    rgba(195, 155, 255, 0.35),
+    rgba(255, 77, 141, 0.35)
+  );
+  mix-blend-mode: color-dodge;
+  animation: achievement-spin 6s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes achievement-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 達成したときのバッジの登場（くるっと回って弾む） */
+@keyframes achievement-pop {
+  0% {
+    transform: scale(0.2) rotateY(-180deg);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.18) rotateY(15deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.95) rotateY(-6deg);
+  }
+  100% {
+    transform: scale(1) rotateY(0);
+  }
+}
+.animate-achievement-pop {
+  animation: achievement-pop 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 後ろの光の筋 */
+.achievement-rays {
+  background: repeating-conic-gradient(
+    from 0deg,
+    var(--achievement-glow, #ffd34d) 0deg 8deg,
+    transparent 8deg 24deg
+  );
+  mask-image: radial-gradient(circle, #000 20%, transparent 68%);
+  -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 68%);
+  animation: achievement-spin 10s linear infinite;
+  opacity: 0.55;
+}
+
+/* 光が横切る */
+@keyframes achievement-shine {
+  0% {
+    transform: translateX(-120%) skewX(-20deg);
+  }
+  60%,
+  100% {
+    transform: translateX(220%) skewX(-20deg);
+  }
+}
+.achievement-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  animation: achievement-shine 2.4s ease-in-out 0.6s 2;
+  pointer-events: none;
+}
+
+/* 紙吹雪 */
+@keyframes achievement-confetti {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--confetti-x), var(--confetti-y))
+      rotate(var(--confetti-r)) scale(0.6);
+    opacity: 0;
+  }
+}
+.achievement-confetti {
+  animation: achievement-confetti var(--confetti-d, 1.1s) cubic-bezier(0.15, 0.6, 0.4, 1)
+    forwards;
+}
+
+/* 通知カードの出入り */
+@keyframes achievement-toast-in {
+  0% {
+    transform: translateY(24px) scale(0.92);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes achievement-toast-out {
+  to {
+    transform: translateY(16px) scale(0.96);
+    opacity: 0;
+  }
+}
+.animate-achievement-toast-in {
+  animation: achievement-toast-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-achievement-toast-out {
+  animation: achievement-toast-out 0.3s ease-in both;
+}
+
+/* 自動で閉じるまでの残り時間 */
+@keyframes achievement-timer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+.achievement-timer {
+  transform-origin: left;
+  animation: achievement-timer var(--achievement-duration, 6s) linear forwards;
+}
+.achievement-toast:hover .achievement-timer {
+  animation-play-state: paused;
+}
+
+/* 一覧に順に出てくる */
+@keyframes achievement-cascade {
+  from {
+    transform: translateY(12px) scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+.animate-achievement-cascade {
+  animation: achievement-cascade 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* コインが増える */
+@keyframes achievement-coin {
+  0% {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-achievement-coin {
+  animation: achievement-coin 0.4s ease-out 0.5s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .achievement-badge-holo,
+  .achievement-rays,
+  .achievement-shine::after,
+  .achievement-confetti,
+  .animate-achievement-pop,
+  .animate-achievement-toast-in,
+  .animate-achievement-cascade,
+  .animate-achievement-coin {
+    animation: none !important;
+  }
+  .achievement-confetti {
+    display: none;
+  }
+  .achievement-badge-interactive .achievement-badge-inner {
+    transform: none;
+  }
+}
