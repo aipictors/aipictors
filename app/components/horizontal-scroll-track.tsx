@@ -12,6 +12,9 @@ type Props = {
 /** これより動かしたらドラッグとみなす（押しただけのクリックと区別する） */
 const DRAG_THRESHOLD_PX = 5
 
+/** 端からこれ以内なら端にいるとみなす（スナップで列の余白の分だけずれるため） */
+const END_MARGIN_PX = 8
+
 /**
  * 横に並ぶ列。スクロールバーが出ない環境でもマウスで動かせるように、
  * PC ではドラッグと左右のボタンでも動かせる（タッチはそのまま指で動かす）
@@ -33,9 +36,10 @@ export function HorizontalScrollTrack(props: Props) {
     const track = trackRef.current
     if (track === null) return
     const update = () => {
-      setCanScrollLeft(track.scrollLeft > 1)
+      setCanScrollLeft(track.scrollLeft > END_MARGIN_PX)
       setCanScrollRight(
-        track.scrollLeft + track.clientWidth < track.scrollWidth - 1,
+        track.scrollLeft + track.clientWidth <
+          track.scrollWidth - END_MARGIN_PX,
       )
     }
     update()
