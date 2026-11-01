@@ -71,7 +71,7 @@ export type AdminCoinHistoryResult = {
   expiringLots: AdminCoinHistoryLot[]
 }
 
-const getApiBaseUrl = (context: unknown) => {
+export const getApiBaseUrl = (context: unknown): string => {
   return (
     getServerEnvValue(context, "AIPICTORS_API_BASE_URL") ??
     "https://backend.aipictors.com"
@@ -90,7 +90,7 @@ const getRequiredInternalToken = (context: unknown) => {
   return token
 }
 
-const getInternalHeaders = (context: unknown) => {
+export const getInternalHeaders = (context: unknown): Record<string, string> => {
   const headers: Record<string, string> = {
     Authorization: `Bearer ${getRequiredInternalToken(context)}`,
     "Content-Type": "application/json",

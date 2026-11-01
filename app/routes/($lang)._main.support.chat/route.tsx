@@ -3,9 +3,8 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { AppPageCenter } from "~/components/app/app-page-center"
 import { config, META } from "~/config"
-import { SupportChatView } from "~/routes/($lang)._main.support.chat/components/dynamic-support-chat-view"
+import { SupportDesk } from "~/routes/($lang)._main.support.chat/components/support-desk"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -27,9 +26,5 @@ export const headers: HeadersFunction = () => ({
 })
 
 export default function SupportChat () {
-  return (
-    <AppPageCenter className="pt-0 pb-0">
-      <SupportChatView />
-    </AppPageCenter>
-  )
+  return <SupportDesk />
 }

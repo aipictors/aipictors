@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react"
 import {
+  Headset,
   Coins,
   GripVertical,
   History,
@@ -36,6 +37,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "ダッシュボード",
     description: "管理メニューの入口",
     icon: LayoutGrid,
+  },
+  {
+    href: "/admin/support",
+    title: "お問い合わせ",
+    description: "AI から引き継いだ相談に返事する",
+    icon: Headset,
   },
   {
     href: "/admin/comments",

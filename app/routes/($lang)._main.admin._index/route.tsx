@@ -39,6 +39,11 @@ export async function loader(_props: LoaderFunctionArgs) {
 
 const quickActions = [
   {
+    href: "/admin/support",
+    title: "お問い合わせ",
+    subtitle: "AI から引き継いだ相談に返事する",
+  },
+  {
     href: "/admin/comments",
     title: "コメント通報一覧",
     subtitle: "報告と異議申し立てを確認",

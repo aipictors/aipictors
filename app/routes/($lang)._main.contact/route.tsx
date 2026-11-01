@@ -71,8 +71,8 @@ export default function Contact () {
             </CardTitle>
             <CardDescription>
               {t(
-                "リアルタイムでサポートチームとチャットができます",
-                "Chat with our support team in real-time",
+                "AI があなたのプランやコインの状況を見てすぐにお答えします。解決しないときはスタッフが同じチャットでお返事します（Discord は不要です）",
+                "Our AI answers right away using your plan and coin status. If it can't help, our staff replies in the same chat (no Discord needed).",
               )}
             </CardDescription>
           </CardHeader>
@@ -85,8 +85,8 @@ export default function Contact () {
             </Link>
             <p className="mt-2 text-muted-foreground text-sm">
               {t(
-                "平均応答時間: 数分以内",
-                "Average response time: Within minutes",
+                "ログインが必要です",
+                "Login required",
               )}
             </p>
           </CardContent>
