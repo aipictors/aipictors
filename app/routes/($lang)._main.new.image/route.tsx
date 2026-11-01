@@ -996,6 +996,34 @@ export default function NewImage() {
     })
   }, [inputState.tags, searchParams])
 
+  // お題ページの「このお題で投稿する」から来たら、今日のお題に参加した状態にする
+  const appliedThemeParamRef = useRef(false)
+
+  useEffect(() => {
+    const themeParam = searchParams.get("theme")
+
+    if (!themeParam || appliedThemeParamRef.current) {
+      return
+    }
+
+    const todayText = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+
+    const theme = viewer?.dailyThemes?.find((item) => {
+      return item.id === themeParam && item.dateText === todayText
+    })
+
+    if (theme === undefined) {
+      return
+    }
+
+    appliedThemeParamRef.current = true
+
+    dispatchInput({
+      type: "SET_THEME_ID",
+      payload: { themeId: theme.id, themeTitle: theme.title },
+    })
+  }, [searchParams, viewer?.dailyThemes])
+
   const [createWork] = useMutation(CreateWorkMutation)
   const [checkWorkByImageHash] = useLazyQuery(WorkByImageHashQuery)
 

@@ -2,13 +2,17 @@ import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { Link, useSearchParams } from "@remix-run/react"
 import { addDays, format } from "date-fns"
 import { ja } from "date-fns/locale"
-import { ChevronDown, ChevronUp, Heart, Loader2Icon } from "lucide-react"
+import {
+  ArrowLeftIcon,
+  ChevronRightIcon,
+  Loader2Icon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
-import { AppPageHeader } from "~/components/app/app-page-header"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import {
@@ -18,56 +22,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/components/ui/alert-dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { cn } from "~/lib/utils"
 import {
-  canEditThemeProposalNote,
-  ThemeProposalNoteEditDialog,
-} from "~/routes/($lang)._main.themes.proposals._index/components/theme-proposal-note-edit-dialog"
+  getStatusLabel,
+  ThemeProposalCard,
+  type ThemeProposalCardItem,
+} from "~/routes/($lang)._main.themes.proposals._index/components/theme-proposal-card"
 
-type ThemeProposal = {
-  id: string
-  title: string
-  enTitle: string
-  promptName: string
-  inputTheme: string
-  targetDate: string
-  status: string
-  proposerUserId: string
-  proposerName: string
-  proposerIconUrl: string
-  allowOtherDate: boolean
-  note?: string | null
-  decisionComment?: string | null
-  createdAt: number
-  updatedAt: number
-  decidedAt?: number | null
-  adoptedSubjectId?: string | null
-  canCancel: boolean
-  likesCount: number
-  isLiked: boolean
-}
+type ThemeProposal = ThemeProposalCardItem
 
 type QueryData = {
   themeProposals: ThemeProposal[]
   themeProposalsCount: number
 }
 
+type StatusCountsData = {
+  pendingCount: number
+  adoptedCount: number
+}
+
 type ThemeProposalsQueryVariables = {
   offset: number
   limit: number
+  status?: string
   orderBy?: string
   proposerUserId?: string
   date?: string
@@ -81,13 +60,14 @@ type ProposalPeriod = "all" | "day" | "week" | "month"
 
 type ProposalSort = "date" | "likes"
 
+type ProposalStatusFilter = "all" | "PENDING" | "ADOPTED" | "REJECTED"
+
 type ThemeProposalsPageContentProps = {
   scope?: "all" | "mine"
 }
 
-const PICTOR_CHAN_ICON_URL =
-  "https://assets.aipictors.com/pictorchanicon.webp"
-const PAGE_SIZE = 12
+const PICTOR_CHAN_ICON_URL = "https://assets.aipictors.com/pictorchanicon.webp"
+const PAGE_SIZE = 24
 
 export default function ThemeProposalsPage() {
   return <ThemeProposalsPageContent scope="all" />
@@ -104,17 +84,20 @@ export function ThemeProposalsPageContent(
   )
   const [createThemeProposalLike] = useMutation(CreateThemeProposalLikeMutation)
   const [deleteThemeProposalLike] = useMutation(DeleteThemeProposalLikeMutation)
-  const [pendingCancelId, setPendingCancelId] = useState<string | null>(null)
-  const [pendingLikeId, setPendingLikeId] = useState<string | null>(null)
-  const [expandedProposalIds, setExpandedProposalIds] = useState<string[]>([])
+  const [pendingLikeIds, setPendingLikeIds] = useState<string[]>([])
   const isMinePage = props.scope === "mine"
-  const proposerUserId = isMinePage ? authContext.userId ?? undefined : undefined
+  const proposerUserId = isMinePage
+    ? (authContext.userId ?? undefined)
+    : undefined
   const shouldSkipMineQuery =
     isMinePage &&
-    (authContext.isLoading || authContext.isNotLoggedIn || authContext.userId === null)
+    (authContext.isLoading ||
+      authContext.isNotLoggedIn ||
+      authContext.userId === null)
 
   const period = getPeriod(searchParams.get("period"))
   const sort = getSort(searchParams.get("sort"))
+  const status = getStatusFilter(searchParams.get("status"))
   const currentPage = getPage(searchParams.get("page"))
   const dayValue = getDayValue(searchParams.get("day"))
   const weekValue = getWeekValue(searchParams.get("week"))
@@ -133,6 +116,7 @@ export function ThemeProposalsPageContent(
     variables: {
       offset: PAGE_SIZE * currentPage,
       limit: PAGE_SIZE,
+      ...(status !== "all" ? { status } : {}),
       ...(sort === "likes" ? { orderBy: "LIKES_COUNT" } : {}),
       proposerUserId,
       ...filterVariables,
@@ -140,6 +124,12 @@ export function ThemeProposalsPageContent(
     skip: shouldSkipMineQuery,
     fetchPolicy: "cache-and-network",
     notifyOnNetworkStatusChange: true,
+  })
+
+  const statusCounts = useQuery<StatusCountsData>(ThemeProposalStatusCountsQuery, {
+    variables: { proposerUserId },
+    skip: shouldSkipMineQuery,
+    fetchPolicy: "cache-and-network",
   })
 
   const myProposalPreview = useQuery<QueryData, ThemeProposalsQueryVariables>(
@@ -161,38 +151,29 @@ export function ThemeProposalsPageContent(
 
   const proposals = data?.themeProposals ?? []
   const totalCount = data?.themeProposalsCount ?? 0
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
-  const filterSummary = getFilterSummary(t, period, dayValue, weekValue, monthValue)
-  const sortSummary = getSortSummary(t, sort)
+  const pendingCount = statusCounts.data?.pendingCount ?? null
+  const adoptedCount = statusCounts.data?.adoptedCount ?? null
   const myPreviewItems = myProposalPreview.data?.themeProposals ?? []
   const myPreviewCount = myProposalPreview.data?.themeProposalsCount ?? 0
-  const pageTitle = isMinePage
-    ? t("あなたの提案一覧", "Your theme proposals")
-    : t("お題提案一覧", "Theme proposals")
-  const pageDescription = isMinePage
-    ? t(
-        "あなたが提案したお題の状況を、日付・週・月で絞り込みながら確認できます。",
-        "Review the status of the themes you submitted with day, week, and month filters.",
-      )
-    : t(
-        "提案者とぴくたーちゃんのやり取りを時系列で確認できます。日付・週・月ごとの絞り込みにも対応しています。",
-        "Review theme proposal conversations with Pictor-chan, with day, week, and month filters.",
-      )
+  const hasFilter = period !== "all" || sort !== "date" || status !== "all"
 
   const updateSearch = (
     update: (params: URLSearchParams) => void,
     options?: { resetPage?: boolean },
   ) => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev)
-      update(next)
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        update(next)
 
-      if (options?.resetPage ?? true) {
-        next.set("page", "0")
-      }
+        if (options?.resetPage ?? true) {
+          next.delete("page")
+        }
 
-      return next
-    })
+        return next
+      },
+      { preventScrollReset: true },
+    )
   }
 
   const onPeriodChange = (value: ProposalPeriod) => {
@@ -228,336 +209,348 @@ export function ThemeProposalsPageContent(
   }
 
   const onCancel = async (proposalId: string) => {
-    await cancelProposal({ variables: { proposalId } })
-    toast(t("提案を取り消しました", "Canceled the proposal"))
-    setPendingCancelId(null)
-    void refetch()
-  }
-
-  const onToggleLike = async (proposal: ThemeProposal) => {
-    setPendingLikeId(proposal.id)
-
     try {
-      if (proposal.isLiked) {
-        await deleteThemeProposalLike({ variables: { proposalId: proposal.id } })
-      } else {
-        await createThemeProposalLike({ variables: { proposalId: proposal.id } })
-      }
-
+      await cancelProposal({ variables: { proposalId } })
+      toast(t("提案を取り消しました", "Withdrew the proposal"))
       void refetch()
-    } finally {
-      setPendingLikeId(null)
+      void statusCounts.refetch()
+    } catch (error) {
+      toast.error(
+        error instanceof Error && error.message.length > 0
+          ? error.message
+          : t("取り消せませんでした", "Could not withdraw"),
+      )
     }
   }
 
-  const onToggleExpanded = (proposalId: string) => {
-    setExpandedProposalIds((current) => {
-      if (current.includes(proposalId)) {
-        return current.filter((id) => id !== proposalId)
-      }
+  // いいねは押した瞬間に表示を変え、失敗したら元に戻す
+  const onToggleLike = async (proposal: ThemeProposal) => {
+    if (pendingLikeIds.includes(proposal.id)) {
+      return
+    }
 
-      return [...current, proposalId]
-    })
+    setPendingLikeIds((ids) => [...ids, proposal.id])
+
+    const optimisticResponse = {
+      __typename: "ThemeProposalNode",
+      id: proposal.id,
+      isLiked: !proposal.isLiked,
+      likesCount: Math.max(0, proposal.likesCount + (proposal.isLiked ? -1 : 1)),
+    }
+
+    try {
+      if (proposal.isLiked) {
+        await deleteThemeProposalLike({
+          variables: { proposalId: proposal.id },
+          optimisticResponse: { deleteThemeProposalLike: optimisticResponse },
+        })
+      } else {
+        await createThemeProposalLike({
+          variables: { proposalId: proposal.id },
+          optimisticResponse: { createThemeProposalLike: optimisticResponse },
+        })
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error && error.message.length > 0
+          ? error.message
+          : t("いいねできませんでした", "Could not like"),
+      )
+    } finally {
+      setPendingLikeIds((ids) => ids.filter((id) => id !== proposal.id))
+    }
   }
+
+  const statusTabs: Array<{
+    value: ProposalStatusFilter
+    label: string
+    count: number | null
+  }> = [
+    { value: "all", label: t("すべて", "All"), count: null },
+    { value: "PENDING", label: t("受付中", "Open"), count: pendingCount },
+    { value: "ADOPTED", label: t("採用", "Adopted"), count: adoptedCount },
+    { value: "REJECTED", label: t("見送り", "Not selected"), count: null },
+  ]
 
   return (
     <div className="space-y-5 pb-24">
-      <AppPageHeader
-        title={pageTitle}
-        description={pageDescription}
-      />
-
-      {!isMinePage && (
-        <section className="rounded-[28px] border border-sky-200 bg-linear-to-br from-sky-50 via-white to-cyan-50 p-4 shadow-sm dark:border-sky-900 dark:from-sky-950/30 dark:via-zinc-950 dark:to-cyan-950/20">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="font-semibold text-base text-foreground dark:text-zinc-50">
-                  {t("あなたの提案", "Your proposals")}
-                </h2>
-                {authContext.isLoggedIn && (
-                  <Badge variant="secondary" className="rounded-full px-3 py-1">
-                    {t(`${myPreviewCount}件`, `${myPreviewCount} items`)}
-                  </Badge>
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground dark:text-zinc-300">
+      {isMinePage ? (
+        <div className="space-y-3">
+          <Link
+            to="/themes/proposals"
+            className="inline-flex items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
+          >
+            <ArrowLeftIcon className="size-4" />
+            {t("みんなの提案", "All proposals")}
+          </Link>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="font-bold text-2xl">
+                {t("あなたの提案", "Your proposals")}
+              </h1>
+              <p className="text-muted-foreground text-sm">
                 {t(
-                  "自分で送ったお題の進捗をここからすぐ確認できます。",
-                  "Quickly check the status of the themes you submitted.",
+                  "送ったお題の結果をここで確認できます。",
+                  "Check how your proposals are doing.",
                 )}
               </p>
             </div>
-
-            <div className="flex flex-wrap gap-2">
+            <Button asChild className="rounded-full">
+              <Link to="/themes/proposals/new">
+                <PlusIcon className="mr-1 size-4" />
+                {t("お題を提案する", "Propose a theme")}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <section className="relative isolate overflow-hidden rounded-3xl bg-linear-to-br from-amber-400 via-orange-400 to-rose-500 p-5 text-white shadow-sm md:p-7">
+          <div
+            aria-hidden="true"
+            className="-right-10 -bottom-16 -z-10 absolute size-64 rounded-full bg-white/20 blur-3xl"
+          />
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-4">
+              <Avatar className="hidden size-16 shrink-0 border-4 border-white/70 bg-white shadow-lg sm:block">
+                <AvatarImage src={PICTOR_CHAN_ICON_URL} alt="" />
+                <AvatarFallback>ぴ</AvatarFallback>
+              </Avatar>
+              <div className="space-y-1.5">
+                <h1 className="font-black text-2xl md:text-3xl">
+                  {t("お題の提案", "Theme proposals")}
+                </h1>
+                <p className="max-w-xl text-sm text-white/95 leading-relaxed">
+                  {t(
+                    "8日後以降のお題を誰でも提案できます。ぴくたーちゃんが毎日選んで、いいねが多い案ほど採用されやすくなります。採用されるとお題ページにあなたの名前が載ります。",
+                    "Anyone can propose themes from 8 days ahead. Pictor-chan picks daily, and more likes help. Adopted themes show your name on the theme page.",
+                  )}
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1 text-xs">
+                  {pendingCount !== null && (
+                    <span className="rounded-full bg-white/25 px-2.5 py-1 backdrop-blur">
+                      {t(
+                        `受付中 ${pendingCount}件`,
+                        `${pendingCount} open`,
+                      )}
+                    </span>
+                  )}
+                  {adoptedCount !== null && (
+                    <span className="rounded-full bg-white/25 px-2.5 py-1 backdrop-blur">
+                      {t(
+                        `これまでに ${adoptedCount}件が採用`,
+                        `${adoptedCount} adopted so far`,
+                      )}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row md:flex-col lg:flex-row">
+              <Button
+                asChild
+                size="lg"
+                className="h-12 rounded-full bg-white px-6 font-bold text-orange-600 shadow-lg hover:bg-white/90"
+              >
+                <Link to="/themes/proposals/new">
+                  <PlusIcon className="mr-1 size-5" />
+                  {t("お題を提案する", "Propose a theme")}
+                </Link>
+              </Button>
               {authContext.isLoggedIn && (
-                <Button asChild variant="secondary">
+                <Button
+                  asChild
+                  size="lg"
+                  variant="ghost"
+                  className="h-12 rounded-full border border-white/60 bg-white/10 px-5 text-white hover:bg-white/20 hover:text-white"
+                >
                   <Link to="/themes/proposals/mine">
-                    {t("あなたの提案一覧", "Your proposals")}
+                    {t("あなたの提案", "Your proposals")}
+                    {myPreviewCount > 0 && (
+                      <span className="ml-1.5 rounded-full bg-white/25 px-2 text-xs">
+                        {myPreviewCount}
+                      </span>
+                    )}
                   </Link>
                 </Button>
               )}
-              <Button asChild>
-                <Link to="/themes/proposals/new">
-                  {t("お題を提案する", "Submit a proposal")}
-                </Link>
-              </Button>
             </div>
-          </div>
-
-          <div className="mt-4">
-            {authContext.isLoading ? (
-              <div className="flex items-center gap-2 rounded-2xl border border-dashed border-sky-200 bg-white/80 px-4 py-6 text-sm text-muted-foreground dark:border-sky-900 dark:bg-zinc-950/60">
-                <Loader2Icon className="size-4 animate-spin" />
-                {t("あなたの提案を読み込み中です。", "Loading your proposals.")}
-              </div>
-            ) : authContext.isNotLoggedIn ? (
-              <div className="rounded-2xl border border-dashed border-sky-200 bg-white/80 px-4 py-6 text-sm text-muted-foreground dark:border-sky-900 dark:bg-zinc-950/60">
-                {t(
-                  "ログインすると、ここにあなたが提案したお題の一覧プレビューが表示されます。",
-                  "Sign in to see a preview of the themes you submitted here.",
-                )}
-              </div>
-            ) : myProposalPreview.loading && myPreviewItems.length === 0 ? (
-              <div className="flex items-center gap-2 rounded-2xl border border-dashed border-sky-200 bg-white/80 px-4 py-6 text-sm text-muted-foreground dark:border-sky-900 dark:bg-zinc-950/60">
-                <Loader2Icon className="size-4 animate-spin" />
-                {t("あなたの提案を読み込み中です。", "Loading your proposals.")}
-              </div>
-            ) : myPreviewItems.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-sky-200 bg-white/80 px-4 py-6 text-sm text-muted-foreground dark:border-sky-900 dark:bg-zinc-950/60">
-                {t(
-                  "まだお題の提案はありません。気になったテーマを送ってみましょう。",
-                  "You have not submitted any themes yet. Send one when you have an idea.",
-                )}
-              </div>
-            ) : (
-              <div className="grid gap-3 lg:grid-cols-3">
-                {myPreviewItems.map((proposal) => (
-                  <Link
-                    key={proposal.id}
-                    to="/themes/proposals/mine"
-                    className="rounded-2xl border border-sky-200 bg-white/90 p-4 shadow-sm transition hover:border-sky-300 hover:shadow-md dark:border-sky-900 dark:bg-zinc-950/70 dark:hover:border-sky-700"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <Badge className={getStatusBadgeClassName(proposal.status)}>
-                        {getStatusLabel(t, proposal.status)}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {proposal.targetDate.replaceAll("-", "/")}
-                      </span>
-                    </div>
-                    <p className="mt-3 line-clamp-2 font-semibold text-foreground dark:text-zinc-100">
-                      {proposal.inputTheme}
-                    </p>
-                    {proposal.note && proposal.note.length > 0 && (
-                      <p className="mt-2 line-clamp-2 text-sm text-muted-foreground dark:text-zinc-300">
-                        {t("備考", "Note")}: {proposal.note}
-                      </p>
-                    )}
-                    <p className="mt-2 text-sm text-muted-foreground dark:text-zinc-300">
-                      {getPictorPreviewMessage(t, proposal)}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            )}
           </div>
         </section>
       )}
 
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex-1 rounded-3xl border border-orange-200 bg-linear-to-br from-orange-50 via-white to-amber-50 p-4 shadow-sm dark:border-orange-900 dark:from-orange-950/30 dark:via-zinc-950 dark:to-amber-950/20">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div className="grid gap-3 sm:grid-cols-[160px_1fr_auto] sm:items-end">
-              <div className="space-y-1">
-                <p className="text-xs font-medium tracking-wide text-muted-foreground">
-                  {t("表示範囲", "Range")}
-                </p>
-                <Select value={period} onValueChange={(value) => onPeriodChange(value as ProposalPeriod)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("すべて", "All")}</SelectItem>
-                    <SelectItem value="day">{t("日付", "Day")}</SelectItem>
-                    <SelectItem value="week">{t("週", "Week")}</SelectItem>
-                    <SelectItem value="month">{t("月", "Month")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-xs font-medium tracking-wide text-muted-foreground">
-                  {t("絞り込み値", "Filter value")}
-                </p>
-
-                {period === "day" && (
-                  <Input
-                    type="date"
-                    value={dayValue ?? ""}
-                    onChange={(event) => {
-                      updateSearch((params) => {
-                        params.set("period", "day")
-                        if (event.target.value.length > 0) {
-                          params.set("day", event.target.value)
-                        } else {
-                          params.delete("day")
-                        }
-                        params.delete("week")
-                        params.delete("month")
-                      })
-                    }}
-                    className="max-w-sm"
-                  />
+      {!isMinePage && myPreviewItems.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <span className="shrink-0 font-medium text-muted-foreground text-xs">
+            {t("あなたの最近の提案", "Your recent")}
+          </span>
+          {myPreviewItems.map((proposal) => (
+            <Link
+              key={proposal.id}
+              to="/themes/proposals/mine"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border bg-card px-3 py-1 text-sm transition hover:border-foreground/30"
+            >
+              <span
+                className={cn(
+                  "size-2 rounded-full",
+                  proposal.status === "ADOPTED"
+                    ? "bg-emerald-500"
+                    : proposal.status === "PENDING"
+                      ? "bg-amber-400"
+                      : "bg-zinc-400",
                 )}
+              />
+              <span className="max-w-40 truncate">「{proposal.inputTheme}」</span>
+              <span className="text-muted-foreground text-xs">
+                {getStatusLabel(t, proposal.status)}
+              </span>
+            </Link>
+          ))}
+          <Link
+            to="/themes/proposals/mine"
+            className="inline-flex shrink-0 items-center text-muted-foreground text-xs hover:text-foreground"
+          >
+            {t("すべて", "All")}
+            <ChevronRightIcon className="size-3.5" />
+          </Link>
+        </div>
+      )}
 
-                {period === "week" && (
-                  <Input
-                    type="week"
-                    value={weekValue ?? ""}
-                    onChange={(event) => {
-                      updateSearch((params) => {
-                        params.set("period", "week")
-                        if (event.target.value.length > 0) {
-                          params.set("week", event.target.value)
-                        } else {
-                          params.delete("week")
-                        }
-                        params.delete("day")
-                        params.delete("month")
-                      })
-                    }}
-                    className="max-w-sm"
-                  />
-                )}
-
-                {period === "month" && (
-                  <Input
-                    type="month"
-                    value={monthValue ?? ""}
-                    onChange={(event) => {
-                      updateSearch((params) => {
-                        params.set("period", "month")
-                        if (event.target.value.length > 0) {
-                          params.set("month", event.target.value)
-                        } else {
-                          params.delete("month")
-                        }
-                        params.delete("day")
-                        params.delete("week")
-                      })
-                    }}
-                    className="max-w-sm"
-                  />
-                )}
-
-                {period === "all" && (
-                  <div className="flex h-10 items-center rounded-md border border-dashed border-orange-200 bg-white/70 px-3 text-sm text-muted-foreground dark:border-orange-900 dark:bg-zinc-950/60">
-                    {t("期間指定なし", "No date filter")}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-xs font-medium tracking-wide text-muted-foreground">
-                  {t("並び順", "Order")}
-                </p>
-                <Select
-                  value={sort}
-                  onValueChange={(value) => {
-                    updateSearch((params) => {
-                      if (value === "date") {
-                        params.delete("sort")
-                        return
-                      }
-
-                      params.set("sort", value)
-                    })
-                  }}
+      <div className="sticky top-14 z-10 -mx-1 md:top-16 flex flex-col gap-2 rounded-2xl border bg-background/90 p-2 shadow-xs backdrop-blur md:flex-row md:items-center md:justify-between">
+        <div className="flex gap-1 overflow-x-auto">
+          {statusTabs.map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              aria-pressed={status === tab.value}
+              onClick={() => {
+                updateSearch((params) => {
+                  if (tab.value === "all") {
+                    params.delete("status")
+                  } else {
+                    params.set("status", tab.value)
+                  }
+                })
+              }}
+              className={cn(
+                "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 font-medium text-sm transition",
+                status === tab.value
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              )}
+            >
+              {tab.label}
+              {tab.count !== null && (
+                <span
+                  className={cn(
+                    "rounded-full px-1.5 text-xs",
+                    status === tab.value ? "bg-background/20" : "bg-muted",
+                  )}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="date">{t("提案日時順", "By proposal time")}</SelectItem>
-                    <SelectItem value="likes">{t("いいね順", "By likes")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Button
-                variant="outline"
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex rounded-full bg-muted p-0.5 text-sm">
+            {(["date", "likes"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={sort === value}
                 onClick={() => {
                   updateSearch((params) => {
-                    params.delete("period")
-                    params.delete("day")
-                    params.delete("week")
-                    params.delete("month")
-                    params.delete("sort")
+                    if (value === "date") {
+                      params.delete("sort")
+                    } else {
+                      params.set("sort", value)
+                    }
                   })
                 }}
+                className={cn(
+                  "rounded-full px-3 py-1 transition",
+                  sort === value
+                    ? "bg-background font-semibold shadow-xs"
+                    : "text-muted-foreground",
+                )}
               >
-                {t("絞り込み解除", "Clear filter")}
-              </Button>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 text-sm">
-              <Badge variant="secondary" className="rounded-full px-3 py-1">
-                {filterSummary}
-              </Badge>
-              <Badge variant="secondary" className="rounded-full px-3 py-1">
-                {sortSummary}
-              </Badge>
-              <Badge variant="secondary" className="rounded-full px-3 py-1">
-                {t(`${totalCount}件`, `${totalCount} items`)}
-              </Badge>
-              {totalPages > 0 && (
-                <Badge variant="secondary" className="rounded-full px-3 py-1">
-                  {t(
-                    `${currentPage + 1}/${totalPages}ページ`,
-                    `Page ${currentPage + 1}/${totalPages}`,
-                  )}
-                </Badge>
-              )}
-            </div>
+                {value === "date" ? t("新着", "Newest") : t("いいね順", "Most liked")}
+              </button>
+            ))}
           </div>
-        </div>
-
-        <div className="flex shrink-0 flex-wrap justify-end gap-2">
-          {isMinePage ? (
-            <Button asChild variant="secondary">
-              <Link to="/themes/proposals">
-                {t("みんなの提案を見る", "Browse all proposals")}
-              </Link>
+          <Select
+            value={period}
+            onValueChange={(value) => onPeriodChange(value as ProposalPeriod)}
+          >
+            <SelectTrigger
+              className="h-8 w-28 rounded-full text-sm"
+              aria-label={t("期間", "Period")}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("全期間", "All time")}</SelectItem>
+              <SelectItem value="day">{t("日付で", "By day")}</SelectItem>
+              <SelectItem value="week">{t("週で", "By week")}</SelectItem>
+              <SelectItem value="month">{t("月で", "By month")}</SelectItem>
+            </SelectContent>
+          </Select>
+          {period !== "all" && (
+            <Input
+              type={period === "day" ? "date" : period}
+              aria-label={t("対象日", "Target date")}
+              value={
+                (period === "day"
+                  ? dayValue
+                  : period === "week"
+                    ? weekValue
+                    : monthValue) ?? ""
+              }
+              onChange={(event) => {
+                updateSearch((params) => {
+                  if (event.target.value.length > 0) {
+                    params.set(period, event.target.value)
+                  } else {
+                    params.delete(period)
+                  }
+                })
+              }}
+              className="h-8 w-40 rounded-full text-sm"
+            />
+          )}
+          {hasFilter && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 rounded-full px-2 text-muted-foreground"
+              onClick={() => {
+                updateSearch((params) => {
+                  params.delete("period")
+                  params.delete("day")
+                  params.delete("week")
+                  params.delete("month")
+                  params.delete("sort")
+                  params.delete("status")
+                })
+              }}
+            >
+              <XIcon className="mr-1 size-3.5" />
+              {t("解除", "Clear")}
             </Button>
-          ) : authContext.isLoggedIn ? (
-            <Button asChild variant="secondary">
-              <Link to="/themes/proposals/mine">
-                {t("あなたの提案", "Your proposals")}
-              </Link>
-            </Button>
-          ) : null}
-          <Button asChild>
-            <Link to="/themes/proposals/new">
-              {t("お題を提案する", "Submit a proposal")}
-            </Link>
-          </Button>
+          )}
         </div>
       </div>
 
-      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-950 dark:border-orange-800 dark:bg-orange-950/30 dark:text-orange-100">
-        <p className="font-medium dark:text-orange-100">
-          {t(
-            "採用判定ではぴくたーちゃんが内容に加えていいね数も参考にし、近い案ならいいねが多い案を優先します。",
-            "Pictor-chan also considers likes in addition to the proposal content, and will prefer the higher-liked option when ideas are similarly strong.",
-          )}
-        </p>
-        <p className="mt-1 text-xs text-orange-800 dark:text-orange-200/80">
-          {t(
-            "ログインしていれば保留中かどうかに関係なくいいねできます。公平性のため、自分の提案にはいいねできません。",
-            "If you are signed in, you can like proposals at any time. For fairness, you cannot like your own proposal.",
-          )}
-        </p>
+      <div className="flex items-center justify-between text-muted-foreground text-sm">
+        <span>
+          {getFilterSummary(t, period, dayValue, weekValue, monthValue)}
+          {" ・ "}
+          {t(`${totalCount}件`, `${totalCount} items`)}
+        </span>
+        {loading && proposals.length > 0 && (
+          <Loader2Icon className="size-4 animate-spin" />
+        )}
       </div>
 
       {isMinePage && authContext.isLoading ? (
@@ -566,373 +559,113 @@ export function ThemeProposalsPageContent(
           {t("読み込み中", "Loading")}
         </div>
       ) : isMinePage && authContext.isNotLoggedIn ? (
-        <div className="rounded-3xl border border-dashed border-orange-200 bg-white/80 px-6 py-14 text-center text-sm text-muted-foreground dark:border-orange-900 dark:bg-zinc-950/60">
-          <p className="font-medium text-foreground dark:text-zinc-100">
-            {t("あなたの提案を見るにはログインが必要です。", "You need to sign in to view your proposals.")}
-          </p>
-          <p className="mt-2">
-            {t(
-              "ログイン後、このページで自分の提案したお題だけをまとめて確認できます。",
-              "After signing in, this page will show only the themes you submitted.",
-            )}
-          </p>
-        </div>
+        <EmptyState
+          title={t(
+            "あなたの提案を見るにはログインが必要です",
+            "Sign in to see your proposals",
+          )}
+        />
       ) : loading && proposals.length === 0 ? (
-        <div className="flex items-center justify-center py-16 text-muted-foreground">
-          <Loader2Icon className="mr-2 animate-spin" />
-          {t("読み込み中", "Loading")}
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: 読み込み中の枠
+              key={index}
+              className="h-52 animate-pulse rounded-2xl border bg-muted/40"
+            />
+          ))}
         </div>
       ) : proposals.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-orange-200 bg-white/80 px-6 py-14 text-center text-sm text-muted-foreground dark:border-orange-900 dark:bg-zinc-950/60">
-          <p className="font-medium text-foreground dark:text-zinc-100">
-            {isMinePage
-              ? t("あなたの提案はまだありません。", "You have not submitted any proposals yet.")
-              : t("条件に合う提案はありません。", "No proposals match this filter.")}
-          </p>
-          <p className="mt-2">
-            {isMinePage
+        <EmptyState
+          title={
+            isMinePage
+              ? t("まだ提案していません", "No proposals yet")
+              : t("条件に合う提案はありません", "No proposals match")
+          }
+          description={
+            isMinePage
               ? t(
-                  "お題を提案すると、ここで自分の提案履歴を確認できます。",
-                  "Once you submit a theme, you will be able to review it here.",
+                  "思いついたお題を気軽に送ってみましょう。",
+                  "Send any theme idea you have.",
                 )
               : t(
-                  "別の日付や週・月に切り替えるか、絞り込みを解除してください。",
-                  "Try another day, week, or month, or clear the filter.",
-                )}
-          </p>
-        </div>
+                  "絞り込みを変えるか、最初の提案をしてみましょう。",
+                  "Change the filter, or be the first to propose.",
+                )
+          }
+        />
       ) : (
-        <div className="space-y-4">
-          {proposals.map((proposal) => {
-            const targetDate = new Date(`${proposal.targetDate}T00:00:00`)
-            const isOwnProposal = authContext.userId === proposal.proposerUserId
-            const canLikeProposal = authContext.isLoggedIn && !isOwnProposal
-            const isLikeBusy = pendingLikeId === proposal.id
-            const isExpanded = expandedProposalIds.includes(proposal.id)
-
-            return (
-              <article
-                key={proposal.id}
-                className="rounded-[28px] border border-orange-200 bg-linear-to-br from-white via-orange-50/75 to-amber-50/90 p-4 shadow-sm dark:border-orange-900 dark:from-zinc-950 dark:via-orange-950/20 dark:to-amber-950/20"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary" className="px-2.5 py-1 text-[11px]">
-                      {format(targetDate, "yyyy/MM/dd (EEE)", { locale: ja })}
-                    </Badge>
-                    <Badge className={getStatusBadgeClassName(proposal.status)}>
-                      {getStatusLabel(t, proposal.status)}
-                    </Badge>
-                    {proposal.allowOtherDate && (
-                      <Badge variant="outline" className="px-2.5 py-1 text-[11px]">
-                        {t("他の日でもOK", "Other dates OK")}
-                      </Badge>
-                    )}
-                    <span className="text-xs text-muted-foreground">
-                      {t("提案の会話ログ", "Proposal conversation")}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant={proposal.isLiked ? "default" : "outline"}
-                      size="sm"
-                      disabled={!canLikeProposal || isLikeBusy}
-                      onClick={() => {
-                        void onToggleLike(proposal)
-                      }}
-                      className="h-8 gap-1.5 rounded-full px-3"
-                      title={
-                        canLikeProposal
-                          ? proposal.isLiked
-                            ? t("いいね解除", "Unlike")
-                            : t("いいね", "Like")
-                          : isOwnProposal
-                            ? t("自分の提案にはいいねできません", "You cannot like your own proposal")
-                            : t("ログインするといいねできます", "Sign in to like proposals")
-                      }
-                    >
-                      {isLikeBusy ? (
-                        <Loader2Icon className="size-3.5 animate-spin" />
-                      ) : (
-                        <Heart className={proposal.isLiked ? "size-3.5 fill-current" : "size-3.5"} />
-                      )}
-                      <span className="text-[11px]">{proposal.likesCount}</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onToggleExpanded(proposal.id)}
-                      aria-label={
-                        isExpanded
-                          ? t("詳細を閉じる", "Collapse details")
-                          : t("詳細を開く", "Expand details")
-                      }
-                      className="size-8 rounded-full"
-                    >
-                      {isExpanded ? (
-                        <ChevronUp className="size-4" />
-                      ) : (
-                        <ChevronDown className="size-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="mt-4 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Link to={`/users/${proposal.proposerUserId}`} className="shrink-0">
-                      <Avatar className="size-11 border border-white shadow-sm dark:border-zinc-800">
-                        <AvatarImage
-                          src={withIconUrlFallback(proposal.proposerIconUrl)}
-                          alt={proposal.proposerName}
-                        />
-                        <AvatarFallback>
-                          {proposal.proposerName.slice(0, 1)}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Link>
-
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-1 flex items-center gap-2">
-                        <Link
-                          to={`/users/${proposal.proposerUserId}`}
-                          className="line-clamp-1 text-sm font-semibold text-foreground hover:underline dark:text-zinc-100"
-                        >
-                          {proposal.proposerName}
-                        </Link>
-                        <span className="text-xs text-muted-foreground">
-                          {t("提案者", "Proposer")}
-                        </span>
-                      </div>
-
-                      <div className="rounded-[22px] rounded-tl-md border border-sky-100 bg-sky-50 px-4 py-3 text-sm leading-6 text-sky-950 shadow-sm dark:border-sky-900/70 dark:bg-sky-950/30 dark:text-sky-50">
-                        <p className="font-medium">{t("このお題どうですか？", "How about this theme?")}</p>
-                        <p className="mt-2 text-base font-semibold text-slate-900 dark:text-white">
-                          「{proposal.inputTheme}」
-                        </p>
-                        {proposal.note && proposal.note.length > 0 && (
-                          <div className="mt-3 rounded-2xl border border-sky-200/80 bg-white/70 px-3 py-2 text-xs leading-5 text-slate-700 dark:border-sky-800 dark:bg-zinc-900/40 dark:text-zinc-200">
-                            <p className="font-medium">{t("備考", "Note")}</p>
-                            <p className="mt-1 whitespace-pre-wrap">{proposal.note}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Link to="/pictor-chan" className="shrink-0">
-                      <Avatar className="size-11 border border-white bg-white shadow-sm ring-4 ring-orange-100 dark:border-zinc-900 dark:bg-zinc-900 dark:ring-orange-950/40">
-                        <AvatarImage
-                          src={PICTOR_CHAN_ICON_URL}
-                          alt={t("ぴくたーちゃん", "Pictor-chan")}
-                        />
-                        <AvatarFallback>ぴ</AvatarFallback>
-                      </Avatar>
-                    </Link>
-
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-1 flex items-center gap-2">
-                        <Link
-                          to="/pictor-chan"
-                          className="text-sm font-semibold text-foreground hover:underline dark:text-zinc-100"
-                        >
-                          {t("ぴくたーちゃん", "Pictor-chan")}
-                        </Link>
-                        <span className="text-xs text-muted-foreground">
-                          {t("判定コメント", "Response")}
-                        </span>
-                      </div>
-
-                      <div className="rounded-[22px] rounded-tl-md border border-orange-200 bg-white/90 px-4 py-3 text-sm leading-6 text-slate-800 shadow-sm dark:border-orange-900 dark:bg-zinc-900/75 dark:text-zinc-100">
-                        <p>{getPictorPreviewMessage(t, proposal)}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {isExpanded && (
-                  <div className="mt-4 space-y-3 border-t border-orange-200/70 pt-4 dark:border-orange-900/70">
-                    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
-                      <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-sm dark:bg-zinc-900/70">
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground dark:text-zinc-400">
-                          <span>
-                            {t("送信", "Submitted")}: {formatUnixTime(proposal.createdAt)}
-                          </span>
-                          {proposal.decidedAt && (
-                            <span>
-                              {t("判定", "Decided")}: {formatUnixTime(proposal.decidedAt)}
-                            </span>
-                          )}
-                        </div>
-
-                        <p className="mt-3 text-sm font-semibold text-foreground dark:text-zinc-100">
-                          {proposal.title}
-                          {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
-                        </p>
-                        <p className="mt-1 text-sm text-muted-foreground dark:text-zinc-300">
-                          <span className="font-medium text-foreground dark:text-zinc-100">Prompt:</span>{" "}
-                          {proposal.promptName}
-                        </p>
-                        <p className="mt-1 text-sm text-muted-foreground dark:text-zinc-300">
-                          <span className="font-medium text-foreground dark:text-zinc-100">
-                            {t("他の日でもOK", "Other dates OK")}: 
-                          </span>
-                          {proposal.allowOtherDate ? t("はい", "Yes") : t("いいえ", "No")}
-                        </p>
-                      </div>
-
-                      <div className="flex flex-wrap items-center justify-end gap-2">
-                        {canEditThemeProposalNote(
-                          proposal,
-                          authContext.userId,
-                        ) && (
-                          <ThemeProposalNoteEditDialog
-                            proposalId={proposal.id}
-                            note={proposal.note}
-                            onUpdated={() => {
-                              void refetch()
-                            }}
-                          />
-                        )}
-                        {proposal.canCancel && (
-                          <AlertDialog
-                            open={pendingCancelId === proposal.id}
-                            onOpenChange={(open) => {
-                              setPendingCancelId(open ? proposal.id : null)
-                            }}
-                          >
-                            <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="sm">
-                                {t("取り消す", "Cancel")}
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  {t("提案を取り消しますか？", "Cancel this proposal?")}
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  {t(
-                                    "保留中の提案だけ取り消せます。",
-                                    "Only pending proposals can be canceled.",
-                                  )}
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>
-                                  {t("戻る", "Back")}
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => onCancel(proposal.id)}
-                                  disabled={isCanceling}
-                                >
-                                  {isCanceling ? t("処理中", "Working") : t("取り消す", "Cancel")}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
-
-                        {proposal.status === "ADOPTED" && proposal.adoptedSubjectId && (
-                          <Button asChild variant="secondary" size="sm">
-                            <Link
-                              to={`/themes/${proposal.targetDate.slice(0, 4)}/${Number(proposal.targetDate.slice(5, 7))}/${Number(proposal.targetDate.slice(8, 10))}`}
-                            >
-                              {t("採用されたお題を見る", "Open adopted theme")}
-                            </Link>
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </article>
-            )
-          })}
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {proposals.map((proposal) => (
+            <ThemeProposalCard
+              key={proposal.id}
+              proposal={proposal}
+              viewerUserId={authContext.userId ?? null}
+              isLoggedIn={authContext.isLoggedIn}
+              isCanceling={isCanceling}
+              onToggleLike={(item) => {
+                void onToggleLike(item)
+              }}
+              onCancel={onCancel}
+              onUpdated={() => {
+                void refetch()
+              }}
+            />
+          ))}
         </div>
       )}
 
       {totalCount > PAGE_SIZE && (
-        <div className="rounded-2xl border border-orange-200 bg-white/80 p-3 shadow-sm dark:border-orange-900 dark:bg-zinc-950/70">
-          <ResponsivePagination
-            perPage={PAGE_SIZE}
-            maxCount={totalCount}
-            currentPage={currentPage}
-            onPageChange={(page) => {
-              updateSearch(
-                (params) => {
-                  params.set("page", String(page))
-                },
-                { resetPage: false },
-              )
-            }}
-          />
-        </div>
+        <ResponsivePagination
+          perPage={PAGE_SIZE}
+          maxCount={totalCount}
+          currentPage={currentPage}
+          onPageChange={(page) => {
+            updateSearch(
+              (params) => {
+                params.set("page", String(page))
+              },
+              { resetPage: false },
+            )
+            window.scrollTo({ top: 0, behavior: "smooth" })
+          }}
+        />
       )}
     </div>
   )
 }
 
-function formatUnixTime(value: number) {
-  return format(new Date(value * 1000), "yyyy/MM/dd HH:mm")
+function EmptyState(props: { title: string; description?: string }) {
+  const t = useTranslation()
+
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed px-6 py-14 text-center">
+      <Avatar className="size-14">
+        <AvatarImage src={PICTOR_CHAN_ICON_URL} alt="" />
+        <AvatarFallback>ぴ</AvatarFallback>
+      </Avatar>
+      <p className="font-semibold">{props.title}</p>
+      {props.description && (
+        <p className="text-muted-foreground text-sm">{props.description}</p>
+      )}
+      <Button asChild className="rounded-full">
+        <Link to="/themes/proposals/new">
+          <PlusIcon className="mr-1 size-4" />
+          {t("お題を提案する", "Propose a theme")}
+        </Link>
+      </Button>
+    </div>
+  )
 }
 
-function getStatusLabel(
-  t: ReturnType<typeof useTranslation>,
-  status: string,
-) {
-  switch (status) {
+function getStatusFilter(value: string | null): ProposalStatusFilter {
+  switch (value) {
+    case "PENDING":
     case "ADOPTED":
-      return t("採用", "Adopted")
     case "REJECTED":
-      return t("不採用", "Rejected")
-    case "CANCELED":
-      return t("取り消し", "Canceled")
+      return value
     default:
-      return t("保留中", "Pending")
-  }
-}
-
-function getStatusBadgeClassName(status: string) {
-  switch (status) {
-    case "ADOPTED":
-      return "bg-emerald-600 text-white"
-    case "REJECTED":
-      return "bg-slate-600 text-white"
-    case "CANCELED":
-      return "bg-rose-600 text-white"
-    default:
-      return "bg-amber-500 text-white"
-  }
-}
-
-function getPictorPreviewMessage(
-  t: ReturnType<typeof useTranslation>,
-  proposal: ThemeProposal,
-) {
-  if (proposal.decisionComment && proposal.decisionComment.length > 0) {
-    return proposal.decisionComment
-  }
-
-  switch (proposal.status) {
-    case "ADOPTED":
-      return t(
-        `「${proposal.inputTheme}」を採用したよ。みんなの支持が集まった注目のお題だね。`,
-        `I picked "${proposal.inputTheme}". It gathered strong support from everyone.`,
-      )
-    case "REJECTED":
-      return t(
-        `今回は「${proposal.inputTheme}」は見送りになったよ。また素敵なお題を待ってるね。`,
-        `"${proposal.inputTheme}" was not selected this time, but I would love to see more ideas from you.`,
-      )
-    default:
-      return t(
-        `「${proposal.inputTheme}」はどうかな？ 内容に加えていいね数も参考にして、近い案ならいいねが多いほうを優先するよ。`,
-        `How about "${proposal.inputTheme}"? Besides the idea itself, I also look at likes and prefer the more-liked option when proposals are close.`,
-      )
+      return "all"
   }
 }
 
@@ -1105,21 +838,11 @@ function getFilterSummary(
   return t("全期間", "All periods")
 }
 
-function getSortSummary(
-  t: ReturnType<typeof useTranslation>,
-  sort: ProposalSort,
-) {
-  if (sort === "likes") {
-    return t("いいね順", "By likes")
-  }
-
-  return t("提案日時順", "By proposal time")
-}
-
 const ThemeProposalsQuery = gql`
   query ThemeProposals(
     $offset: Int!
     $limit: Int!
+    $status: String
     $orderBy: String
     $proposerUserId: ID
     $date: String
@@ -1131,6 +854,7 @@ const ThemeProposalsQuery = gql`
     themeProposals(
       offset: $offset
       limit: $limit
+      status: $status
       orderBy: $orderBy
       proposerUserId: $proposerUserId
       date: $date
@@ -1161,6 +885,7 @@ const ThemeProposalsQuery = gql`
       isLiked
     }
     themeProposalsCount(
+      status: $status
       proposerUserId: $proposerUserId
       date: $date
       year: $year
@@ -1197,5 +922,12 @@ const DeleteThemeProposalLikeMutation = gql`
       likesCount
       isLiked
     }
+  }
+`
+
+const ThemeProposalStatusCountsQuery = gql`
+  query ThemeProposalStatusCounts($proposerUserId: ID) {
+    pendingCount: themeProposalsCount(status: "PENDING", proposerUserId: $proposerUserId)
+    adoptedCount: themeProposalsCount(status: "ADOPTED", proposerUserId: $proposerUserId)
   }
 `

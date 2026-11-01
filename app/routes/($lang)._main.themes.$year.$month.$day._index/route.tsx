@@ -183,7 +183,7 @@ export default function SensitiveDayThemePage() {
         year={data.year}
         day={data.day}
         month={data.month}
-        defaultTab={data.tab !== "list" ? "calender" : "list"}
+        defaultTab={data.tab === "calender" ? "calender" : "list"}
         themeId={data.themeId}
       />
     </article>
@@ -199,6 +199,7 @@ const dailyThemesQuery = graphql(
     dailyThemes(offset: $offset, limit: $limit, where: $where) {
       id
       title
+      note
       dateText
       year
       month

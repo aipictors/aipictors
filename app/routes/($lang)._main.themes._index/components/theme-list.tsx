@@ -1,210 +1,235 @@
 import { Button } from "~/components/ui/button"
 import { createCalendarCells } from "~/routes/($lang)._main.themes._index/utils/create-calendar-cells"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, LockIcon } from "lucide-react"
 import { cn } from "~/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { useTranslation } from "~/hooks/use-translation"
+import { getJstDate } from "~/utils/jst-date"
+import { getRenderNow } from "~/utils/render-now"
 
 type Props = {
   year: number
   month: number
   dailyThemes: FragmentOf<typeof ThemeListItemFragment>[]
+  basePath?: string
+  isSensitive?: boolean
 }
 
 /**
- * お題カレンダーのセル一覧を作成する
+ * お題カレンダー
  */
-export function ThemeList (props: Props) {
-  const navigate = useNavigate()
+export function ThemeList(props: Props) {
+  const t = useTranslation()
+
+  const basePath = props.basePath ?? "/themes"
 
   // カレンダーセルを生成
   const cells = createCalendarCells(props.year, props.month)
 
-  const currentDateInJapan = getJSTDate()
+  const now = getJstDate(new Date(getRenderNow()))
 
-  const firstDayOfWeek = new Date(props.year, props.month - 1, 1).getDay() // 1日の曜日を取得
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-  const blocks = cells.map((day, index) => {
-    const theme = props.dailyThemes.find((dailyTheme) => {
-      return dailyTheme.day === day
-    })
+  // 7日後までのお題だけ見せる
+  const lastVisibleDay = new Date(
+    todayStart.getFullYear(),
+    todayStart.getMonth(),
+    todayStart.getDate() + 7,
+  )
 
-    const isToday =
-      props.year === currentDateInJapan.getFullYear() &&
-      props.month === currentDateInJapan.getMonth() + 1 &&
-      day === currentDateInJapan.getDate()
+  const firstDayOfWeek = new Date(props.year, props.month - 1, 1).getDay()
 
-    // 正しい曜日を算出
-    const dayOfWeek = day ? (day + firstDayOfWeek - 1) % 7 : null
+  const previousMonth =
+    props.month === 1
+      ? { year: props.year - 1, month: 12 }
+      : { year: props.year, month: props.month - 1 }
 
-    // 現在の日付と比較
-    const sevenDaysAfter = new Date(currentDateInJapan)
+  const nextMonth =
+    props.month === 12
+      ? { year: props.year + 1, month: 1 }
+      : { year: props.year, month: props.month + 1 }
 
-    sevenDaysAfter.setDate(currentDateInJapan.getDate() + 7)
-
-    const shouldHideTitle = day
-      ? new Date(props.year, props.month - 1, day) > sevenDaysAfter
-      : false
-
-    const isFuture = day
-      ? new Date(props.year, props.month - 1, day) > currentDateInJapan
-      : false
-
-    return {
-      id: `/${props.year}-${props.month}-${index}`,
-      day: day,
-      title: !shouldHideTitle ? (theme?.title ?? null) : null, // 7日後以降はお題内容を表示しない
-      isSunday: dayOfWeek === 0, // 日曜日
-      isSaturday: dayOfWeek === 6, // 土曜日
-      isToday: isToday,
-      isFuture: isFuture,
-      date: `${props.year}-${String(props.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
-      thumbnailUrl: isFuture
-        ? null
-        : (theme?.firstWork?.smallThumbnailImageURL ?? null),
-      proposerId: theme?.proposer?.id ?? null,
-      proposerName: theme?.proposer?.name ?? null,
-      proposerIconUrl: theme?.proposer?.iconUrl ?? null,
-    }
-  })
-
-  const onPreviousMonth = () => {
-    const previousMonth = props.month - 1
-    if (previousMonth < 1) {
-      navigate(`/themes/${props.year - 1}/${12}`)
-      return
-    }
-    navigate(`/themes/${props.year}/${previousMonth}`)
-  }
-
-  const onNextMonth = () => {
-    const nextMonth = props.month + 1
-    if (nextMonth > 12) {
-      navigate(`/themes/${props.year + 1}/${1}`)
-      return
-    }
-    navigate(`/themes/${props.year}/${nextMonth}`)
-  }
-
-  const handleCellClick = (date: string) => {
-    const year = Number(date.slice(0, 4))
-    const month = Number(date.slice(5, 7))
-    const day = Number(date.slice(8, 10))
-
-    // NaNなら何もしない
-    if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
-      return
-    }
-
-    navigate(`/themes/${year}/${month}/${day}?tab=list`)
-  }
+  const weekDays = [
+    t("日", "Sun"),
+    t("月", "Mon"),
+    t("火", "Tue"),
+    t("水", "Wed"),
+    t("木", "Thu"),
+    t("金", "Fri"),
+    t("土", "Sat"),
+  ]
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-center space-x-4">
-        <Button
-          variant={"secondary"}
-          aria-label="previous month"
-          onClick={onPreviousMonth}
-        >
-          <ChevronLeftIcon className="text-lg" />
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <Button asChild variant="ghost" size="icon" className="rounded-full">
+          <Link
+            to={`${basePath}/${previousMonth.year}/${previousMonth.month}?tab=calender`}
+            aria-label={t("前の月", "Previous month")}
+          >
+            <ChevronLeftIcon className="size-5" />
+          </Link>
         </Button>
-        <p className="text-sm leading-none">
-          {`${props.year}年${props.month}月`}
+        <p className="font-bold text-lg">
+          {t(
+            `${props.year}年${props.month}月`,
+            `${props.month}/${props.year}`,
+          )}
         </p>
-        <Button
-          variant={"secondary"}
-          aria-label="next month"
-          onClick={onNextMonth}
-        >
-          <ChevronRightIcon className="text-lg" />
+        <Button asChild variant="ghost" size="icon" className="rounded-full">
+          <Link
+            to={`${basePath}/${nextMonth.year}/${nextMonth.month}?tab=calender`}
+            aria-label={t("次の月", "Next month")}
+          >
+            <ChevronRightIcon className="size-5" />
+          </Link>
         </Button>
       </div>
-      <div className="overflow-x-auto">
-        <div className="grid grid-cols-7 gap-0 md:min-w-[768px] md:gap-4">
-          {["日", "月", "火", "水", "木", "金", "土"].map((day) => (
-            <div key={day} className="text-center font-bold">
-              {day}
-            </div>
-          ))}
-          {blocks.map((block) => (
+      <div className="grid grid-cols-7 gap-1 md:gap-2">
+        {weekDays.map((day, index) => (
+          <div
+            key={day}
+            className={cn("pb-1 text-center font-semibold text-xs", {
+              "text-rose-500": index === 0,
+              "text-sky-500": index === 6,
+              "text-muted-foreground": index !== 0 && index !== 6,
+            })}
+          >
+            {day}
+          </div>
+        ))}
+        {cells.map((day, index) => {
+          if (day === null) {
+            return <div key={`empty-${index}`} />
+          }
+
+          const date = new Date(props.year, props.month - 1, day)
+          const theme = props.dailyThemes.find((item) => item.day === day)
+          const isToday = date.getTime() === todayStart.getTime()
+          const isFuture = date > todayStart
+          const isHidden = date > lastVisibleDay
+          const dayOfWeek = (day + firstDayOfWeek - 1) % 7
+          const thumbnail =
+            !isFuture && !props.isSensitive
+              ? (theme?.firstWork?.smallThumbnailImageURL ?? null)
+              : null
+          const title = isHidden ? null : (theme?.title ?? null)
+
+          return (
             <div
-              key={block.id}
-              className={cn("relative", {
-                "border-green-500": block.isSaturday,
-                "border-red-500": block.isSunday,
-              })}
+              key={`${props.year}-${props.month}-${day}`}
+              className={cn(
+                "group relative aspect-[3/4] overflow-hidden rounded-lg border md:aspect-square md:rounded-xl",
+                isToday && "ring-2 ring-fuchsia-500 ring-offset-1 ring-offset-background",
+                thumbnail ? "border-transparent bg-zinc-900" : "bg-card",
+                isFuture && "border-dashed bg-muted/40",
+              )}
             >
-              <div
-                onClick={() => handleCellClick(block.date)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    handleCellClick(block.date)
-                  }
-                }}
-                className={cn(
-                  "relative flex h-24 cursor-pointer flex-col gap-y-2 border p-2 md:min-w-24",
-                  {
-                    "border-2 border-blue-500": block.isToday,
-                  },
-                )}
-              >
-                <div
-                  className={cn("absolute z-10 text-right font-bold text-xs", {
-                    "text-red-500": block.isSunday,
-                    "text-blue-500": block.isSaturday,
-                    "text-black": !block.isSunday && !block.isSaturday,
-                    "text-white": block.thumbnailUrl && !block.isFuture,
-                  })}
-                >
-                  {block.day}
-                </div>
-                {block.thumbnailUrl && !block.isFuture && (
+              {thumbnail && (
+                <>
                   <img
-                    src={block.thumbnailUrl}
+                    src={thumbnail}
                     alt=""
-                    className="absolute top-0 left-0 m-0 h-full w-full object-cover opacity-30 md:opacity-70"
+                    loading="lazy"
+                    className="absolute inset-0 size-full object-cover transition duration-300 group-hover:scale-105"
                   />
-                )}
-                {block.title && block.thumbnailUrl && !block.isFuture && (
-                  <>
-                    <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 w-14 transform text-wrap rounded-md p-2 text-center font-bold text-white text-xs md:w-24 md:text-md">
-                      {block.title}
-                    </div>
-                    <div className="absolute right-0 bottom-0 left-0 box-border flex h-24 flex-col justify-end bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-80 md:h-24 md:opacity-100" />
-                  </>
-                )}
-                {block.title && !block.thumbnailUrl && (
-                  <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 w-14 transform text-wrap rounded-md p-2 text-center font-bold text-xs md:w-24 md:text-md">
-                    {block.title}
+                  <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/20 to-black/30" />
+                </>
+              )}
+              {!isHidden && (
+                <Link
+                  to={`${basePath}/${props.year}/${props.month}/${day}?tab=list`}
+                  className="absolute inset-0 z-[1]"
+                  aria-label={
+                    title
+                      ? t(
+                          `${props.month}月${day}日のお題「${title}」`,
+                          `Theme for ${props.month}/${day}: ${title}`,
+                        )
+                      : t(`${props.month}月${day}日`, `${props.month}/${day}`)
+                  }
+                />
+              )}
+              <div className="pointer-events-none relative flex h-full flex-col justify-between p-1 md:p-2">
+                <div className="flex items-start justify-between">
+                  <span
+                    className={cn(
+                      "font-bold text-[11px] md:text-sm",
+                      thumbnail
+                        ? "text-white"
+                        : dayOfWeek === 0
+                          ? "text-rose-500"
+                          : dayOfWeek === 6
+                            ? "text-sky-500"
+                            : "text-foreground",
+                    )}
+                  >
+                    {day}
+                  </span>
+                  {isToday ? (
+                    <span className="hidden rounded-full bg-fuchsia-500 px-1.5 py-0.5 font-bold text-[10px] text-white md:inline">
+                      {t("今日", "Today")}
+                    </span>
+                  ) : isFuture && !isHidden ? (
+                    <LockIcon className="hidden size-3 text-muted-foreground md:block" />
+                  ) : null}
+                </div>
+                {title && (
+                  <div>
+                    <p
+                      className={cn(
+                        "line-clamp-3 break-all font-bold text-[10px] leading-tight md:line-clamp-2 md:text-sm",
+                        thumbnail ? "text-white drop-shadow" : "text-foreground",
+                      )}
+                    >
+                      {title}
+                    </p>
+                    {theme && !isFuture && (
+                      <p
+                        className={cn(
+                          "mt-0.5 hidden text-[10px] md:block",
+                          thumbnail ? "text-white/80" : "text-muted-foreground",
+                        )}
+                      >
+                        {t(`${theme.worksCount}作品`, `${theme.worksCount} works`)}
+                      </p>
+                    )}
                   </div>
                 )}
-              {block.proposerId && block.proposerId?.length !== 0 && (
-                <Link
-                  to={`/users/${block.proposerId}`}
-                    className="absolute right-0 bottom-0 left-0 z-10 flex items-center justify-center gap-1 bg-black bg-opacity-70 px-1 py-1 text-white"
-                >
-                    <Avatar className="size-4">
-                      <AvatarImage
-                        src={block.proposerIconUrl ?? ""}
-                        alt={block.proposerName ?? ""}
-                      />
-                      <AvatarFallback className="text-[8px]">
-                        {block.proposerName?.slice(0, 1)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="truncate text-[10px] md:text-xs">
-                      {block.proposerName}
-                      {"さん案"}
-                    </span>
-                  </Link>
-                )}
               </div>
+              {title && theme?.proposer && (
+                <Link
+                  to={`/users/${theme.proposer.id}`}
+                  title={t(
+                    `${theme.proposer.name}さんの提案`,
+                    `Proposed by ${theme.proposer.name}`,
+                  )}
+                  className="absolute top-1 right-1 z-[2] hidden md:block"
+                >
+                  <Avatar className="size-6 border-2 border-white shadow">
+                    <AvatarImage
+                      resizeWidth={64}
+                      src={theme.proposer.iconUrl ?? ""}
+                      alt={theme.proposer.name}
+                    />
+                    <AvatarFallback className="text-[9px]">
+                      {theme.proposer.name.slice(0, 1)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+              )}
             </div>
-          ))}
-        </div>
+          )
+        })}
       </div>
+      <p className="text-center text-muted-foreground text-xs">
+        {t(
+          "アイコンはそのお題を提案した人です。7日後までのお題が見られます。",
+          "Icons show who proposed the theme. Themes are visible up to 7 days ahead.",
+        )}
+      </p>
     </div>
   )
 }
@@ -213,6 +238,7 @@ export const ThemeListItemFragment = graphql(
   `fragment ThemeListItem on DailyThemeNode @_unmask {
     id
     title
+    note
     dateText
     year
     month
@@ -229,12 +255,3 @@ export const ThemeListItemFragment = graphql(
     }
   }`,
 )
-
-const getJSTDate = () => {
-  const date = new Date()
-  const utcOffset = date.getTimezoneOffset() * 60000 // 分単位のオフセットをミリ秒に変換
-  const jstOffset = 9 * 60 * 60 * 1000 // JSTはUTC+9
-  const jstDate = new Date(date.getTime() + utcOffset + jstOffset)
-
-  return jstDate
-}
