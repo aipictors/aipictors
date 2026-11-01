@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { AchievementBadge } from "~/components/achievements/achievement-badge"
+import { DiscordIcon } from "~/routes/($lang).settings.discord/components/discord-icon"
 import { AchievementSettingsCard } from "~/components/achievements/achievement-settings-card"
 import {
   AchievementShareDialog,
@@ -206,6 +207,29 @@ export function AchievementsPage() {
               {t(
                 "プランに加入している間は、達成でもらえるフリーコインがすべて2倍になります",
                 "While subscribed, every achievement gives twice the free coins",
+              )}
+            </p>
+          </div>
+        </Link>
+      )}
+
+      {isViewer && (
+        <Link
+          to="/settings/discord"
+          className="flex items-center gap-3 rounded-2xl border border-[#5865f2]/40 bg-gradient-to-r from-[#5865f2]/10 to-transparent p-4 transition-colors hover:bg-[#5865f2]/15"
+        >
+          <DiscordIcon className="size-8 shrink-0 text-[#5865f2]" />
+          <div className="min-w-0">
+            <p className="font-bold">
+              {t(
+                "Discord の名前の横にレベルや実績を表示",
+                "Show your level and achievements next to your Discord name",
+              )}
+            </p>
+            <p className="text-muted-foreground text-sm">
+              {t(
+                "連携すると自動で反映されます。はじめての連携でフリーコインのプレゼントも",
+                "Updates automatically once linked, plus free coins on your first link",
               )}
             </p>
           </div>

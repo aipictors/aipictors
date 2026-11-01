@@ -976,6 +976,13 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Manage your account settings",
     isIndex: false,
   },
+  SETTINGS_DISCORD: {
+    title: "Discord 連携",
+    enTitle: "Discord",
+    description: "Discord の名前の横に実績やレベルを表示できます",
+    enDescription: "Show your achievements and level next to your Discord name",
+    isIndex: false,
+  },
   SETTINGS_COINS: {
     title: "コイン",
     enTitle: "Coins",

@@ -10,6 +10,7 @@ import {
   Gift,
   ImageIcon,
   MedalIcon,
+  MessagesSquareIcon,
   PaletteIcon,
   Radio,
   StickerIcon,
@@ -139,6 +140,14 @@ export function SettingsNavigation() {
       <SettingNavigationButton href={"/settings/points"} icon={CoinsIcon}>
         <div className="flex w-full items-center justify-between">
           {t("コイン", "Coins")}
+          <div className="ml-auto text-right md:hidden">
+            <ChevronRight />
+          </div>
+        </div>
+      </SettingNavigationButton>
+      <SettingNavigationButton href={"/settings/discord"} icon={MessagesSquareIcon}>
+        <div className="flex w-full items-center justify-between">
+          {t("Discord 連携", "Discord")}
           <div className="ml-auto text-right md:hidden">
             <ChevronRight />
           </div>

@@ -27,6 +27,7 @@ import {
 } from "~/components/ui/dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import {
   getAchievementTier,
   onAchievementCheckRequested,
@@ -109,6 +110,9 @@ export function AchievementWatcher() {
         )
         if (fresh.length === 0) return
         for (const item of fresh) shownKeysRef.current.add(item.key)
+
+        // Discord の表示（レベル・お祝い）を次の反映で更新してもらう。連携していなければ何も起きない
+        void requestDiscordSync()
 
         if (isNoticeOffRef.current) {
           void markSeen({
@@ -569,6 +573,21 @@ function AchievementBulkDialog(props: {
       </DialogContent>
     </Dialog>
   )
+}
+
+const requestDiscordSync = async () => {
+  try {
+    const headers = await getViewerRequestHeaders({
+      includeJsonContentType: true,
+    })
+    await fetch("/api/discord/status", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ intent: "request-sync" }),
+    })
+  } catch {
+    // 5 分ごとの反映に任せる
+  }
 }
 
 const checkAchievementsMutation = graphql(
