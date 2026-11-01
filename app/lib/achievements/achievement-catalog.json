@@ -135,6 +135,42 @@
     "isHidden": false
   },
   {
+    "key": "works-15000",
+    "category": "CREATE",
+    "series": "works",
+    "tier": 7,
+    "icon": "paintbrush",
+    "threshold": 15000,
+    "isHidden": false
+  },
+  {
+    "key": "works-20000",
+    "category": "CREATE",
+    "series": "works",
+    "tier": 7,
+    "icon": "paintbrush",
+    "threshold": 20000,
+    "isHidden": false
+  },
+  {
+    "key": "works-30000",
+    "category": "CREATE",
+    "series": "works",
+    "tier": 7,
+    "icon": "paintbrush",
+    "threshold": 30000,
+    "isHidden": false
+  },
+  {
+    "key": "works-50000",
+    "category": "CREATE",
+    "series": "works",
+    "tier": 7,
+    "icon": "paintbrush",
+    "threshold": 50000,
+    "isHidden": false
+  },
+  {
     "key": "likes-received-1",
     "category": "CREATE",
     "series": "likes-received",
@@ -261,6 +297,42 @@
     "isHidden": false
   },
   {
+    "key": "likes-received-200000",
+    "category": "CREATE",
+    "series": "likes-received",
+    "tier": 7,
+    "icon": "heart",
+    "threshold": 200000,
+    "isHidden": false
+  },
+  {
+    "key": "likes-received-300000",
+    "category": "CREATE",
+    "series": "likes-received",
+    "tier": 7,
+    "icon": "heart",
+    "threshold": 300000,
+    "isHidden": false
+  },
+  {
+    "key": "likes-received-500000",
+    "category": "CREATE",
+    "series": "likes-received",
+    "tier": 7,
+    "icon": "heart",
+    "threshold": 500000,
+    "isHidden": false
+  },
+  {
+    "key": "likes-received-1000000",
+    "category": "CREATE",
+    "series": "likes-received",
+    "tier": 7,
+    "icon": "heart",
+    "threshold": 1000000,
+    "isHidden": false
+  },
+  {
     "key": "views-received-100",
     "category": "CREATE",
     "series": "views-received",
@@ -375,6 +447,51 @@
     "tier": 6,
     "icon": "eye",
     "threshold": 5000000,
+    "isHidden": false
+  },
+  {
+    "key": "views-received-10000000",
+    "category": "CREATE",
+    "series": "views-received",
+    "tier": 7,
+    "icon": "eye",
+    "threshold": 10000000,
+    "isHidden": false
+  },
+  {
+    "key": "views-received-20000000",
+    "category": "CREATE",
+    "series": "views-received",
+    "tier": 7,
+    "icon": "eye",
+    "threshold": 20000000,
+    "isHidden": false
+  },
+  {
+    "key": "views-received-30000000",
+    "category": "CREATE",
+    "series": "views-received",
+    "tier": 7,
+    "icon": "eye",
+    "threshold": 30000000,
+    "isHidden": false
+  },
+  {
+    "key": "views-received-50000000",
+    "category": "CREATE",
+    "series": "views-received",
+    "tier": 7,
+    "icon": "eye",
+    "threshold": 50000000,
+    "isHidden": false
+  },
+  {
+    "key": "views-received-100000000",
+    "category": "CREATE",
+    "series": "views-received",
+    "tier": 7,
+    "icon": "eye",
+    "threshold": 100000000,
     "isHidden": false
   },
   {
@@ -504,6 +621,15 @@
     "isHidden": false
   },
   {
+    "key": "followers-10000",
+    "category": "CREATE",
+    "series": "followers",
+    "tier": 7,
+    "icon": "users",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
     "key": "awards-1",
     "category": "CREATE",
     "series": "awards",
@@ -600,6 +726,51 @@
     "tier": 6,
     "icon": "trophy",
     "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "awards-5000",
+    "category": "CREATE",
+    "series": "awards",
+    "tier": 7,
+    "icon": "trophy",
+    "threshold": 5000,
+    "isHidden": false
+  },
+  {
+    "key": "awards-10000",
+    "category": "CREATE",
+    "series": "awards",
+    "tier": 7,
+    "icon": "trophy",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "awards-20000",
+    "category": "CREATE",
+    "series": "awards",
+    "tier": 7,
+    "icon": "trophy",
+    "threshold": 20000,
+    "isHidden": false
+  },
+  {
+    "key": "awards-30000",
+    "category": "CREATE",
+    "series": "awards",
+    "tier": 7,
+    "icon": "trophy",
+    "threshold": 30000,
+    "isHidden": false
+  },
+  {
+    "key": "awards-50000",
+    "category": "CREATE",
+    "series": "awards",
+    "tier": 7,
+    "icon": "trophy",
+    "threshold": 50000,
     "isHidden": false
   },
   {
@@ -702,6 +873,51 @@
     "isHidden": false
   },
   {
+    "key": "themes-2000",
+    "category": "CREATE",
+    "series": "themes",
+    "tier": 7,
+    "icon": "lightbulb",
+    "threshold": 2000,
+    "isHidden": false
+  },
+  {
+    "key": "themes-3000",
+    "category": "CREATE",
+    "series": "themes",
+    "tier": 7,
+    "icon": "lightbulb",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "themes-5000",
+    "category": "CREATE",
+    "series": "themes",
+    "tier": 7,
+    "icon": "lightbulb",
+    "threshold": 5000,
+    "isHidden": false
+  },
+  {
+    "key": "themes-10000",
+    "category": "CREATE",
+    "series": "themes",
+    "tier": 7,
+    "icon": "lightbulb",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "themes-20000",
+    "category": "CREATE",
+    "series": "themes",
+    "tier": 7,
+    "icon": "lightbulb",
+    "threshold": 20000,
+    "isHidden": false
+  },
+  {
     "key": "generations-1",
     "category": "CREATE",
     "series": "generations",
@@ -789,6 +1005,492 @@
     "tier": 6,
     "icon": "wand-sparkles",
     "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "generations-30000",
+    "category": "CREATE",
+    "series": "generations",
+    "tier": 7,
+    "icon": "wand-sparkles",
+    "threshold": 30000,
+    "isHidden": false
+  },
+  {
+    "key": "generations-50000",
+    "category": "CREATE",
+    "series": "generations",
+    "tier": 7,
+    "icon": "wand-sparkles",
+    "threshold": 50000,
+    "isHidden": false
+  },
+  {
+    "key": "generations-100000",
+    "category": "CREATE",
+    "series": "generations",
+    "tier": 7,
+    "icon": "wand-sparkles",
+    "threshold": 100000,
+    "isHidden": false
+  },
+  {
+    "key": "generations-200000",
+    "category": "CREATE",
+    "series": "generations",
+    "tier": 7,
+    "icon": "wand-sparkles",
+    "threshold": 200000,
+    "isHidden": false
+  },
+  {
+    "key": "generations-300000",
+    "category": "CREATE",
+    "series": "generations",
+    "tier": 7,
+    "icon": "wand-sparkles",
+    "threshold": 300000,
+    "isHidden": false
+  },
+  {
+    "key": "generations-500000",
+    "category": "CREATE",
+    "series": "generations",
+    "tier": 7,
+    "icon": "wand-sparkles",
+    "threshold": 500000,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-1",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 1,
+    "icon": "medal",
+    "threshold": 1,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-3",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 1,
+    "icon": "medal",
+    "threshold": 3,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-5",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 2,
+    "icon": "medal",
+    "threshold": 5,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-10",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 2,
+    "icon": "medal",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-30",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 3,
+    "icon": "medal",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-50",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 4,
+    "icon": "medal",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-100",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 4,
+    "icon": "medal",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-300",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 5,
+    "icon": "medal",
+    "threshold": 300,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-500",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 5,
+    "icon": "medal",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-1000",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 6,
+    "icon": "medal",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "first-places-2000",
+    "category": "CREATE",
+    "series": "first-places",
+    "tier": 7,
+    "icon": "medal",
+    "threshold": 2000,
+    "isHidden": false
+  },
+  {
+    "key": "novels-1",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 1,
+    "icon": "book-open",
+    "threshold": 1,
+    "isHidden": false
+  },
+  {
+    "key": "novels-3",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 1,
+    "icon": "book-open",
+    "threshold": 3,
+    "isHidden": false
+  },
+  {
+    "key": "novels-5",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 2,
+    "icon": "book-open",
+    "threshold": 5,
+    "isHidden": false
+  },
+  {
+    "key": "novels-10",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 3,
+    "icon": "book-open",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "novels-30",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 4,
+    "icon": "book-open",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "novels-50",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 4,
+    "icon": "book-open",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "novels-100",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 5,
+    "icon": "book-open",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "novels-300",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 6,
+    "icon": "book-open",
+    "threshold": 300,
+    "isHidden": false
+  },
+  {
+    "key": "novels-500",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 7,
+    "icon": "book-open",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "novels-1000",
+    "category": "CREATE",
+    "series": "novels",
+    "tier": 7,
+    "icon": "book-open",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "series-1",
+    "category": "CREATE",
+    "series": "series",
+    "tier": 1,
+    "icon": "library-big",
+    "threshold": 1,
+    "isHidden": false
+  },
+  {
+    "key": "series-3",
+    "category": "CREATE",
+    "series": "series",
+    "tier": 1,
+    "icon": "library-big",
+    "threshold": 3,
+    "isHidden": false
+  },
+  {
+    "key": "series-5",
+    "category": "CREATE",
+    "series": "series",
+    "tier": 2,
+    "icon": "library-big",
+    "threshold": 5,
+    "isHidden": false
+  },
+  {
+    "key": "series-10",
+    "category": "CREATE",
+    "series": "series",
+    "tier": 3,
+    "icon": "library-big",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "series-20",
+    "category": "CREATE",
+    "series": "series",
+    "tier": 4,
+    "icon": "library-big",
+    "threshold": 20,
+    "isHidden": false
+  },
+  {
+    "key": "series-30",
+    "category": "CREATE",
+    "series": "series",
+    "tier": 5,
+    "icon": "library-big",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "series-50",
+    "category": "CREATE",
+    "series": "series",
+    "tier": 6,
+    "icon": "library-big",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "series-100",
+    "category": "CREATE",
+    "series": "series",
+    "tier": 7,
+    "icon": "library-big",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-created-1",
+    "category": "CREATE",
+    "series": "stickers-created",
+    "tier": 1,
+    "icon": "sticker",
+    "threshold": 1,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-created-3",
+    "category": "CREATE",
+    "series": "stickers-created",
+    "tier": 1,
+    "icon": "sticker",
+    "threshold": 3,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-created-5",
+    "category": "CREATE",
+    "series": "stickers-created",
+    "tier": 2,
+    "icon": "sticker",
+    "threshold": 5,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-created-10",
+    "category": "CREATE",
+    "series": "stickers-created",
+    "tier": 3,
+    "icon": "sticker",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-created-30",
+    "category": "CREATE",
+    "series": "stickers-created",
+    "tier": 4,
+    "icon": "sticker",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-created-50",
+    "category": "CREATE",
+    "series": "stickers-created",
+    "tier": 4,
+    "icon": "sticker",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-created-100",
+    "category": "CREATE",
+    "series": "stickers-created",
+    "tier": 5,
+    "icon": "sticker",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-created-300",
+    "category": "CREATE",
+    "series": "stickers-created",
+    "tier": 6,
+    "icon": "sticker",
+    "threshold": 300,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-created-500",
+    "category": "CREATE",
+    "series": "stickers-created",
+    "tier": 7,
+    "icon": "sticker",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-1",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 1,
+    "icon": "bookmark-check",
+    "threshold": 1,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-10",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 1,
+    "icon": "bookmark-check",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-30",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 2,
+    "icon": "bookmark-check",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-100",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 3,
+    "icon": "bookmark-check",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-300",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 4,
+    "icon": "bookmark-check",
+    "threshold": 300,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-1000",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 4,
+    "icon": "bookmark-check",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-3000",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 5,
+    "icon": "bookmark-check",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-10000",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 6,
+    "icon": "bookmark-check",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-30000",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 7,
+    "icon": "bookmark-check",
+    "threshold": 30000,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-received-100000",
+    "category": "CREATE",
+    "series": "bookmarks-received",
+    "tier": 7,
+    "icon": "bookmark-check",
+    "threshold": 100000,
     "isHidden": false
   },
   {
@@ -900,6 +1602,33 @@
     "isHidden": false
   },
   {
+    "key": "likes-given-300000",
+    "category": "COMMUNITY",
+    "series": "likes-given",
+    "tier": 7,
+    "icon": "hand-heart",
+    "threshold": 300000,
+    "isHidden": false
+  },
+  {
+    "key": "likes-given-500000",
+    "category": "COMMUNITY",
+    "series": "likes-given",
+    "tier": 7,
+    "icon": "hand-heart",
+    "threshold": 500000,
+    "isHidden": false
+  },
+  {
+    "key": "likes-given-1000000",
+    "category": "COMMUNITY",
+    "series": "likes-given",
+    "tier": 7,
+    "icon": "hand-heart",
+    "threshold": 1000000,
+    "isHidden": false
+  },
+  {
     "key": "views-given-10",
     "category": "COMMUNITY",
     "series": "views-given",
@@ -999,6 +1728,33 @@
     "isHidden": false
   },
   {
+    "key": "views-given-300000",
+    "category": "COMMUNITY",
+    "series": "views-given",
+    "tier": 7,
+    "icon": "binoculars",
+    "threshold": 300000,
+    "isHidden": false
+  },
+  {
+    "key": "views-given-500000",
+    "category": "COMMUNITY",
+    "series": "views-given",
+    "tier": 7,
+    "icon": "binoculars",
+    "threshold": 500000,
+    "isHidden": false
+  },
+  {
+    "key": "views-given-1000000",
+    "category": "COMMUNITY",
+    "series": "views-given",
+    "tier": 7,
+    "icon": "binoculars",
+    "threshold": 1000000,
+    "isHidden": false
+  },
+  {
     "key": "comments-given-1",
     "category": "COMMUNITY",
     "series": "comments-given",
@@ -1089,6 +1845,60 @@
     "isHidden": false
   },
   {
+    "key": "comments-given-5000",
+    "category": "COMMUNITY",
+    "series": "comments-given",
+    "tier": 7,
+    "icon": "message-circle-heart",
+    "threshold": 5000,
+    "isHidden": false
+  },
+  {
+    "key": "comments-given-10000",
+    "category": "COMMUNITY",
+    "series": "comments-given",
+    "tier": 7,
+    "icon": "message-circle-heart",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "comments-given-30000",
+    "category": "COMMUNITY",
+    "series": "comments-given",
+    "tier": 7,
+    "icon": "message-circle-heart",
+    "threshold": 30000,
+    "isHidden": false
+  },
+  {
+    "key": "comments-given-50000",
+    "category": "COMMUNITY",
+    "series": "comments-given",
+    "tier": 7,
+    "icon": "message-circle-heart",
+    "threshold": 50000,
+    "isHidden": false
+  },
+  {
+    "key": "comments-given-100000",
+    "category": "COMMUNITY",
+    "series": "comments-given",
+    "tier": 7,
+    "icon": "message-circle-heart",
+    "threshold": 100000,
+    "isHidden": false
+  },
+  {
+    "key": "comments-given-200000",
+    "category": "COMMUNITY",
+    "series": "comments-given",
+    "tier": 7,
+    "icon": "message-circle-heart",
+    "threshold": 200000,
+    "isHidden": false
+  },
+  {
     "key": "following-1",
     "category": "COMMUNITY",
     "series": "following",
@@ -1176,6 +1986,429 @@
     "tier": 6,
     "icon": "user-plus",
     "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "following-2000",
+    "category": "COMMUNITY",
+    "series": "following",
+    "tier": 7,
+    "icon": "user-plus",
+    "threshold": 2000,
+    "isHidden": false
+  },
+  {
+    "key": "following-3000",
+    "category": "COMMUNITY",
+    "series": "following",
+    "tier": 7,
+    "icon": "user-plus",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "following-5000",
+    "category": "COMMUNITY",
+    "series": "following",
+    "tier": 7,
+    "icon": "user-plus",
+    "threshold": 5000,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-1",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 1,
+    "icon": "hand-coins",
+    "threshold": 1,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-5",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 1,
+    "icon": "hand-coins",
+    "threshold": 5,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-10",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 2,
+    "icon": "hand-coins",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-30",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 2,
+    "icon": "hand-coins",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-50",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 3,
+    "icon": "hand-coins",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-100",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 4,
+    "icon": "hand-coins",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-300",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 4,
+    "icon": "hand-coins",
+    "threshold": 300,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-500",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 5,
+    "icon": "hand-coins",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-1000",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 5,
+    "icon": "hand-coins",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-3000",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 6,
+    "icon": "hand-coins",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-5000",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 7,
+    "icon": "hand-coins",
+    "threshold": 5000,
+    "isHidden": false
+  },
+  {
+    "key": "supports-sent-10000",
+    "category": "COMMUNITY",
+    "series": "supports-sent",
+    "tier": 7,
+    "icon": "hand-coins",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-1",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 1,
+    "icon": "gift",
+    "threshold": 1,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-5",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 1,
+    "icon": "gift",
+    "threshold": 5,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-10",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 2,
+    "icon": "gift",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-30",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 3,
+    "icon": "gift",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-50",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 3,
+    "icon": "gift",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-100",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 4,
+    "icon": "gift",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-300",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 5,
+    "icon": "gift",
+    "threshold": 300,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-500",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 5,
+    "icon": "gift",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-1000",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 6,
+    "icon": "gift",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-3000",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 7,
+    "icon": "gift",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "supports-received-5000",
+    "category": "COMMUNITY",
+    "series": "supports-received",
+    "tier": 7,
+    "icon": "gift",
+    "threshold": 5000,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-given-1",
+    "category": "COMMUNITY",
+    "series": "bookmarks-given",
+    "tier": 1,
+    "icon": "bookmark-plus",
+    "threshold": 1,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-given-10",
+    "category": "COMMUNITY",
+    "series": "bookmarks-given",
+    "tier": 1,
+    "icon": "bookmark-plus",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-given-50",
+    "category": "COMMUNITY",
+    "series": "bookmarks-given",
+    "tier": 2,
+    "icon": "bookmark-plus",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-given-100",
+    "category": "COMMUNITY",
+    "series": "bookmarks-given",
+    "tier": 3,
+    "icon": "bookmark-plus",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-given-300",
+    "category": "COMMUNITY",
+    "series": "bookmarks-given",
+    "tier": 4,
+    "icon": "bookmark-plus",
+    "threshold": 300,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-given-1000",
+    "category": "COMMUNITY",
+    "series": "bookmarks-given",
+    "tier": 5,
+    "icon": "bookmark-plus",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-given-3000",
+    "category": "COMMUNITY",
+    "series": "bookmarks-given",
+    "tier": 6,
+    "icon": "bookmark-plus",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-given-10000",
+    "category": "COMMUNITY",
+    "series": "bookmarks-given",
+    "tier": 7,
+    "icon": "bookmark-plus",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "bookmarks-given-30000",
+    "category": "COMMUNITY",
+    "series": "bookmarks-given",
+    "tier": 7,
+    "icon": "bookmark-plus",
+    "threshold": 30000,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-1",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 1,
+    "icon": "smile",
+    "threshold": 1,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-10",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 1,
+    "icon": "smile",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-50",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 2,
+    "icon": "smile",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-100",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 3,
+    "icon": "smile",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-500",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 4,
+    "icon": "smile",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-1000",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 4,
+    "icon": "smile",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-5000",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 5,
+    "icon": "smile",
+    "threshold": 5000,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-10000",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 6,
+    "icon": "smile",
+    "threshold": 10000,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-30000",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 7,
+    "icon": "smile",
+    "threshold": 30000,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-50000",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 7,
+    "icon": "smile",
+    "threshold": 50000,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-100000",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 7,
+    "icon": "smile",
+    "threshold": 100000,
+    "isHidden": false
+  },
+  {
+    "key": "stickers-used-200000",
+    "category": "COMMUNITY",
+    "series": "stickers-used",
+    "tier": 7,
+    "icon": "smile",
+    "threshold": 200000,
     "isHidden": false
   },
   {
@@ -1314,6 +2547,42 @@
     "isHidden": false
   },
   {
+    "key": "login-days-2000",
+    "category": "LOGIN",
+    "series": "login-days",
+    "tier": 7,
+    "icon": "calendar-check",
+    "threshold": 2000,
+    "isHidden": false
+  },
+  {
+    "key": "login-days-2500",
+    "category": "LOGIN",
+    "series": "login-days",
+    "tier": 7,
+    "icon": "calendar-check",
+    "threshold": 2500,
+    "isHidden": false
+  },
+  {
+    "key": "login-days-3000",
+    "category": "LOGIN",
+    "series": "login-days",
+    "tier": 7,
+    "icon": "calendar-check",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "login-days-3650",
+    "category": "LOGIN",
+    "series": "login-days",
+    "tier": 7,
+    "icon": "calendar-check",
+    "threshold": 3650,
+    "isHidden": false
+  },
+  {
     "key": "login-streak-2",
     "category": "LOGIN",
     "series": "login-streak",
@@ -1440,6 +2709,60 @@
     "isHidden": false
   },
   {
+    "key": "login-streak-500",
+    "category": "LOGIN",
+    "series": "login-streak",
+    "tier": 7,
+    "icon": "flame",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "login-streak-730",
+    "category": "LOGIN",
+    "series": "login-streak",
+    "tier": 7,
+    "icon": "flame",
+    "threshold": 730,
+    "isHidden": false
+  },
+  {
+    "key": "login-streak-1000",
+    "category": "LOGIN",
+    "series": "login-streak",
+    "tier": 7,
+    "icon": "flame",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "login-streak-1500",
+    "category": "LOGIN",
+    "series": "login-streak",
+    "tier": 7,
+    "icon": "flame",
+    "threshold": 1500,
+    "isHidden": false
+  },
+  {
+    "key": "login-streak-2000",
+    "category": "LOGIN",
+    "series": "login-streak",
+    "tier": 7,
+    "icon": "flame",
+    "threshold": 2000,
+    "isHidden": false
+  },
+  {
+    "key": "login-streak-3000",
+    "category": "LOGIN",
+    "series": "login-streak",
+    "tier": 7,
+    "icon": "flame",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
     "key": "account-age-30",
     "category": "LOGIN",
     "series": "account-age",
@@ -1509,6 +2832,465 @@
     "tier": 6,
     "icon": "cake",
     "threshold": 1825,
+    "isHidden": false
+  },
+  {
+    "key": "account-age-2190",
+    "category": "LOGIN",
+    "series": "account-age",
+    "tier": 7,
+    "icon": "cake",
+    "threshold": 2190,
+    "isHidden": false
+  },
+  {
+    "key": "account-age-2555",
+    "category": "LOGIN",
+    "series": "account-age",
+    "tier": 7,
+    "icon": "cake",
+    "threshold": 2555,
+    "isHidden": false
+  },
+  {
+    "key": "account-age-2920",
+    "category": "LOGIN",
+    "series": "account-age",
+    "tier": 7,
+    "icon": "cake",
+    "threshold": 2920,
+    "isHidden": false
+  },
+  {
+    "key": "account-age-3650",
+    "category": "LOGIN",
+    "series": "account-age",
+    "tier": 7,
+    "icon": "cake",
+    "threshold": 3650,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-7",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 1,
+    "icon": "calendar-days",
+    "threshold": 7,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-14",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 1,
+    "icon": "calendar-days",
+    "threshold": 14,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-30",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 2,
+    "icon": "calendar-days",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-50",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 2,
+    "icon": "calendar-days",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-100",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 3,
+    "icon": "calendar-days",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-200",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 4,
+    "icon": "calendar-days",
+    "threshold": 200,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-365",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 4,
+    "icon": "calendar-days",
+    "threshold": 365,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-500",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 5,
+    "icon": "calendar-days",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-730",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 5,
+    "icon": "calendar-days",
+    "threshold": 730,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-1000",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 6,
+    "icon": "calendar-days",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-1500",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 7,
+    "icon": "calendar-days",
+    "threshold": 1500,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-2000",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 7,
+    "icon": "calendar-days",
+    "threshold": 2000,
+    "isHidden": false
+  },
+  {
+    "key": "post-days-3000",
+    "category": "MASTERY",
+    "series": "post-days",
+    "tier": 7,
+    "icon": "calendar-days",
+    "threshold": 3000,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-2",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 1,
+    "icon": "pen-tool",
+    "threshold": 2,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-3",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 1,
+    "icon": "pen-tool",
+    "threshold": 3,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-7",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 2,
+    "icon": "pen-tool",
+    "threshold": 7,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-14",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 3,
+    "icon": "pen-tool",
+    "threshold": 14,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-30",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 3,
+    "icon": "pen-tool",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-50",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 4,
+    "icon": "pen-tool",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-100",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 5,
+    "icon": "pen-tool",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-200",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 5,
+    "icon": "pen-tool",
+    "threshold": 200,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-365",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 6,
+    "icon": "pen-tool",
+    "threshold": 365,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-500",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 7,
+    "icon": "pen-tool",
+    "threshold": 500,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-730",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 7,
+    "icon": "pen-tool",
+    "threshold": 730,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-1000",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 7,
+    "icon": "pen-tool",
+    "threshold": 1000,
+    "isHidden": false
+  },
+  {
+    "key": "post-streak-1500",
+    "category": "MASTERY",
+    "series": "post-streak",
+    "tier": 7,
+    "icon": "pen-tool",
+    "threshold": 1500,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-10",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 1,
+    "icon": "medal",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-30",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 1,
+    "icon": "medal",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-50",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 2,
+    "icon": "medal",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-100",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 3,
+    "icon": "medal",
+    "threshold": 100,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-150",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 4,
+    "icon": "medal",
+    "threshold": 150,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-200",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 4,
+    "icon": "medal",
+    "threshold": 200,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-250",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 5,
+    "icon": "medal",
+    "threshold": 250,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-300",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 6,
+    "icon": "medal",
+    "threshold": 300,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-325",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 7,
+    "icon": "medal",
+    "threshold": 325,
+    "isHidden": false
+  },
+  {
+    "key": "achievements-unlocked-350",
+    "category": "MASTERY",
+    "series": "achievements-unlocked",
+    "tier": 7,
+    "icon": "medal",
+    "threshold": 350,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-5",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 1,
+    "icon": "trending-up",
+    "threshold": 5,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-10",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 1,
+    "icon": "trending-up",
+    "threshold": 10,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-15",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 2,
+    "icon": "trending-up",
+    "threshold": 15,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-20",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 3,
+    "icon": "trending-up",
+    "threshold": 20,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-30",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 4,
+    "icon": "trending-up",
+    "threshold": 30,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-40",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 4,
+    "icon": "trending-up",
+    "threshold": 40,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-50",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 5,
+    "icon": "trending-up",
+    "threshold": 50,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-60",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 6,
+    "icon": "trending-up",
+    "threshold": 60,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-70",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 7,
+    "icon": "trending-up",
+    "threshold": 70,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-75",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 7,
+    "icon": "trending-up",
+    "threshold": 75,
+    "isHidden": false
+  },
+  {
+    "key": "achievement-level-80",
+    "category": "MASTERY",
+    "series": "achievement-level",
+    "tier": 7,
+    "icon": "trending-up",
+    "threshold": 80,
     "isHidden": false
   },
   {
@@ -1607,6 +3389,78 @@
     "series": "special-christmas",
     "tier": 3,
     "icon": "tree-pine",
+    "threshold": null,
+    "isHidden": true
+  },
+  {
+    "key": "special-setsubun",
+    "category": "SPECIAL",
+    "series": "special-setsubun",
+    "tier": 3,
+    "icon": "shield",
+    "threshold": null,
+    "isHidden": true
+  },
+  {
+    "key": "special-cat-day",
+    "category": "SPECIAL",
+    "series": "special-cat-day",
+    "tier": 3,
+    "icon": "cat",
+    "threshold": null,
+    "isHidden": true
+  },
+  {
+    "key": "special-hinamatsuri",
+    "category": "SPECIAL",
+    "series": "special-hinamatsuri",
+    "tier": 3,
+    "icon": "flower",
+    "threshold": null,
+    "isHidden": true
+  },
+  {
+    "key": "special-april-fools",
+    "category": "SPECIAL",
+    "series": "special-april-fools",
+    "tier": 3,
+    "icon": "drama",
+    "threshold": null,
+    "isHidden": true
+  },
+  {
+    "key": "special-childrens-day",
+    "category": "SPECIAL",
+    "series": "special-childrens-day",
+    "tier": 3,
+    "icon": "wind",
+    "threshold": null,
+    "isHidden": true
+  },
+  {
+    "key": "special-obon",
+    "category": "SPECIAL",
+    "series": "special-obon",
+    "tier": 3,
+    "icon": "flame-kindling",
+    "threshold": null,
+    "isHidden": true
+  },
+  {
+    "key": "special-new-years-eve",
+    "category": "SPECIAL",
+    "series": "special-new-years-eve",
+    "tier": 3,
+    "icon": "bell",
+    "threshold": null,
+    "isHidden": true
+  },
+  {
+    "key": "special-repdigit-time",
+    "category": "SPECIAL",
+    "series": "special-repdigit-time",
+    "tier": 2,
+    "icon": "clock",
     "threshold": null,
     "isHidden": true
   }

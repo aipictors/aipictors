@@ -904,8 +904,8 @@ function AchievementsLoggedOut() {
       <h1 className="font-black text-3xl">{t("実績", "Achievements")}</h1>
       <p className="text-muted-foreground">
         {t(
-          "投稿・いいね・毎日のログインで、180 近いバッジを集めよう。達成するとフリーコインがもらえます。",
-          "Collect nearly 180 badges by posting, liking and visiting. Earn free coins for each one.",
+          "投稿・いいね・毎日のログインで、380 以上のバッジを集めよう。達成するとフリーコインがもらえます。",
+          "Collect over 380 badges by posting, liking and visiting. Earn free coins for each one.",
         )}
       </p>
       <div className="mx-auto max-w-xs">

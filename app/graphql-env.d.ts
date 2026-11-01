@@ -9,6 +9,9 @@ enum AchievementCategory {
   """ログイン"""
   LOGIN
 
+  """やり込み"""
+  MASTERY
+
   """特別"""
   SPECIAL
 }

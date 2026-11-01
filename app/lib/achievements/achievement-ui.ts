@@ -63,6 +63,15 @@ export const ACHIEVEMENT_TIERS: Record<number, AchievementTierInfo> = {
       "bg-gradient-to-r from-pink-500 via-yellow-400 via-50% to-violet-500 text-white shadow-pink-900/30",
     glow: "#ffd166",
   },
+  7: {
+    ja: "神話",
+    en: "Mythic",
+    textClassName:
+      "bg-gradient-to-r from-violet-500 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent",
+    chipClassName:
+      "bg-gradient-to-r from-indigo-950 via-violet-600 to-cyan-500 text-white shadow-violet-900/40",
+    glow: "#a78bfa",
+  },
 }
 
 export function getAchievementTier(tier: number): AchievementTierInfo {
@@ -90,6 +99,22 @@ export const ACHIEVEMENT_SERIES_LABELS: Record<
   "login-days": { ja: "ログインする", en: "Log in" },
   "login-streak": { ja: "毎日続けて来る", en: "Keep a streak" },
   "account-age": { ja: "Aipictors と過ごす", en: "Time with Aipictors" },
+  "first-places": { ja: "ランキングで1位になる", en: "Take 1st place" },
+  novels: { ja: "小説を投稿する", en: "Post novels" },
+  series: { ja: "シリーズを作る", en: "Create series" },
+  "stickers-created": { ja: "スタンプを作る", en: "Create stickers" },
+  "bookmarks-received": { ja: "ブックマークされる", en: "Get bookmarked" },
+  "post-days": { ja: "投稿した日を増やす", en: "Days you posted" },
+  "post-streak": { ja: "毎日投稿を続ける", en: "Daily posting streak" },
+  "achievements-unlocked": { ja: "実績を集める", en: "Collect achievements" },
+  "achievement-level": { ja: "実績レベルを上げる", en: "Raise your level" },
+  "supports-sent": { ja: "推し付きコメントを送る", en: "Send support" },
+  "supports-received": {
+    ja: "推し付きコメントをもらう",
+    en: "Receive support",
+  },
+  "bookmarks-given": { ja: "ブックマークする", en: "Bookmark works" },
+  "stickers-used": { ja: "スタンプを使う", en: "Use stickers" },
 }
 
 export const ACHIEVEMENT_CATEGORIES = [
@@ -97,6 +122,7 @@ export const ACHIEVEMENT_CATEGORIES = [
   { value: "CREATE", ja: "創作", en: "Create" },
   { value: "COMMUNITY", ja: "閲覧・交流", en: "Community" },
   { value: "LOGIN", ja: "ログイン", en: "Login" },
+  { value: "MASTERY", ja: "やり込み", en: "Mastery" },
   { value: "SPECIAL", ja: "特別", en: "Special" },
 ] as const
 

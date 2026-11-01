@@ -6,8 +6,8 @@
  * - 実績の一覧は app/lib/achievements/achievement-catalog.json（aipictors-system の
  *   scripts/export-achievement-catalog.ts で書き出す）
  * - 出力: public/achievements/badges/<key>.svg（と、隠し実績の hidden.svg）
- * - 形は分類（創作=六角形 / 交流=円 / ログイン=盾 / 特別=ロゼット）、
- *   枠の金属はランク（ブロンズ〜レジェンド）、中の色は種類ごと
+ * - 形は分類（創作=六角形 / 交流=円 / ログイン=盾 / やり込み=八角形 / 特別=ロゼット）、
+ *   枠の金属はランク（ブロンズ〜レジェンド・神話）、中の色は種類ごと
  * - --preview を付けると、全バッジを並べた PNG を書き出す（見た目の確認用）
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
@@ -15,9 +15,9 @@ import { dirname, resolve } from "node:path"
 
 type CatalogItem = {
   key: string
-  category: "CREATE" | "COMMUNITY" | "LOGIN" | "SPECIAL"
+  category: "CREATE" | "COMMUNITY" | "LOGIN" | "MASTERY" | "SPECIAL"
   series: string
-  tier: 1 | 2 | 3 | 4 | 5 | 6
+  tier: 1 | 2 | 3 | 4 | 5 | 6 | 7
   icon: string
   threshold: number | null
   isHidden: boolean
@@ -71,6 +71,12 @@ const METALS: Record<number, { stops: string[]; edge: string; text: string }> =
       edge: "#3b1a5c",
       text: "#2a0f47",
     },
+    // 神話: 夜空のオーロラ
+    7: {
+      stops: ["#f5d0fe", "#7c3aed", "#0f0a3c", "#22d3ee", "#c026d3"],
+      edge: "#0a0526",
+      text: "#ffffff",
+    },
   }
 
 /** 種類ごとの中の色（内側→外側） */
@@ -89,6 +95,27 @@ const SERIES_COLORS: Record<string, [string, string]> = {
   "login-days": ["#22d3ee", "#155e75"],
   "login-streak": ["#fb923c", "#9a3412"],
   "account-age": ["#f0abfc", "#86198f"],
+  "first-places": ["#fde047", "#a16207"],
+  novels: ["#d6b4a0", "#6b3f2a"],
+  series: ["#a5b4fc", "#3730a3"],
+  "stickers-created": ["#f0abfc", "#a21caf"],
+  "bookmarks-received": ["#fcd34d", "#92400e"],
+  "post-days": ["#86efac", "#166534"],
+  "post-streak": ["#fda4af", "#be123c"],
+  "achievements-unlocked": ["#fbbf24", "#78350f"],
+  "achievement-level": ["#c4b5fd", "#4c1d95"],
+  "supports-sent": ["#fdba74", "#c2410c"],
+  "supports-received": ["#f9a8d4", "#9d174d"],
+  "bookmarks-given": ["#5eead4", "#115e59"],
+  "stickers-used": ["#bef264", "#4d7c0f"],
+  "special-setsubun": ["#fca5a5", "#7f1d1d"],
+  "special-cat-day": ["#fcd34d", "#78350f"],
+  "special-hinamatsuri": ["#fbcfe8", "#be185d"],
+  "special-april-fools": ["#c4b5fd", "#5b21b6"],
+  "special-childrens-day": ["#7dd3fc", "#1d4ed8"],
+  "special-obon": ["#fdba74", "#7c2d12"],
+  "special-new-years-eve": ["#cbd5e1", "#1e293b"],
+  "special-repdigit-time": ["#67e8f9", "#155e75"],
   "special-profile-icon": ["#7dd3fc", "#0369a1"],
   "special-profile-biography": ["#6ee7b7", "#047857"],
   "special-plan-member": ["#c084fc", "#4c1d95"],
@@ -157,6 +184,8 @@ function shapePath(category: CatalogItem["category"], scale: number) {
   switch (category) {
     case "CREATE":
       return roundedPolygon(regularPoints(6, 92 * scale, -90), 14 * scale)
+    case "MASTERY":
+      return roundedPolygon(regularPoints(8, 92 * scale, -22.5), 12 * scale)
     case "COMMUNITY": {
       const r = 86 * scale
       return `M${CX - r} ${CY} a${r} ${r} 0 1 0 ${r * 2} 0 a${r} ${r} 0 1 0 ${-r * 2} 0 Z`
@@ -184,7 +213,10 @@ function shapePath(category: CatalogItem["category"], scale: number) {
       for (let i = 0; i < count; i++) {
         const radius = (i % 2 === 0 ? 92 : 84) * scale
         const angle = ((-90 + (360 / count) * i) * Math.PI) / 180
-        points.push([CX + radius * Math.cos(angle), CY + radius * Math.sin(angle)])
+        points.push([
+          CX + radius * Math.cos(angle),
+          CY + radius * Math.sin(angle),
+        ])
       }
       return roundedPolygon(points, 3 * scale)
     }
@@ -222,7 +254,10 @@ function laurel(fill: string, stroke: string) {
         const [x, y] = toPoint(deg, radius - 4 + offset * 9)
         const phi = side === -1 ? deg : 180 - deg
         // 茎に沿って、上に向かって少し外へ開く
-        const rotate = phi + (side === -1 ? 1 : -1) * (offset * 28) + 180 * (side === -1 ? 0 : 1)
+        const rotate =
+          phi +
+          (side === -1 ? 1 : -1) * (offset * 28) +
+          180 * (side === -1 ? 0 : 1)
         const size = 1 - i * 0.035
         leaves.push(
           `<ellipse cx="${round(x)}" cy="${round(y)}" rx="${round(5.5 * size)}" ry="${round(13 * size)}" transform="rotate(${round(rotate)} ${round(x)} ${round(y)})" fill="${fill}" stroke="${stroke}" stroke-width="1.4"/>`,
@@ -331,7 +366,7 @@ function renderBadge(item: CatalogItem, icon: IconNode) {
   const field = shapePath(item.category, 0.8)
   const label = formatThreshold(item)
   const hasLabel = label.value !== ""
-  const isLegend = item.tier === 6
+  const isLegend = item.tier >= 6
 
   const metalStops = metal.stops
     .map(
@@ -352,6 +387,11 @@ function renderBadge(item: CatalogItem, icon: IconNode) {
     sparkles.push(sparkle(CX + 74, CY + 30, 7, 0.9))
     sparkles.push(sparkle(CX - 40, CY - 86, 4.5, 0.8))
   }
+  if (item.tier >= 7) {
+    sparkles.push(sparkle(CX + 78, CY + 30, 7, 0.95))
+    sparkles.push(sparkle(CX - 40, CY - 92, 6, 0.9))
+    sparkles.push(sparkle(CX + 8, CY + 98, 5, 0.85))
+  }
   if (item.tier >= 6) {
     sparkles.push(sparkle(CX - 82, CY + 18, 8, 0.95))
     sparkles.push(sparkle(CX + 30, CY - 96, 5, 0.9))
@@ -367,7 +407,10 @@ function renderBadge(item: CatalogItem, icon: IconNode) {
   const iconY = hasLabel ? CY - iconSize / 2 - 12 : CY - iconSize / 2
   const iconScale = iconSize / 24
 
-  const plaqueWidth = Math.max(70, 28 + label.value.length * 17 + (label.unit ? 6 : 0))
+  const plaqueWidth = Math.max(
+    70,
+    28 + label.value.length * 17 + (label.unit ? 6 : 0),
+  )
   const plaqueY = CY + 48
 
   const plaque = hasLabel
@@ -390,7 +433,7 @@ function renderBadge(item: CatalogItem, icon: IconNode) {
     <filter id="${shadowId}" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.35"/></filter>
     <clipPath id="${clipId}"><path d="${field}"/></clipPath>
   </defs>
-  ${item.tier >= 5 ? rays(isLegend ? "#ffe08a" : metal.stops[1] ?? "#fff", isLegend ? 18 : 12) : ""}
+  ${item.tier >= 5 ? rays(isLegend ? "#ffe08a" : (metal.stops[1] ?? "#fff"), isLegend ? 18 : 12) : ""}
   ${item.tier >= 4 ? laurel(`url(#${metalId})`, metal.edge) : ""}
   ${item.tier >= 3 ? ribbonTails(colors, metal.edge) : ""}
   <g filter="url(#${shadowId})">
@@ -462,7 +505,10 @@ async function main() {
     const rows = Math.ceil(files.length / columns)
     const tiles = await Promise.all(
       files.map(async (file, index) => ({
-        input: await sharp(Buffer.from(file.svg)).resize(size, size).png().toBuffer(),
+        input: await sharp(Buffer.from(file.svg))
+          .resize(size, size)
+          .png()
+          .toBuffer(),
         left: (index % columns) * size,
         top: Math.floor(index / columns) * size,
       })),

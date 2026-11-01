@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img">
+  <defs>
+    <linearGradient id="mpostdays14" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#f3c08e"/><stop offset="0.25" stop-color="#c8814a"/><stop offset="0.5" stop-color="#8a5129"/><stop offset="0.75" stop-color="#d9925a"/><stop offset="1" stop-color="#6b3a1a"/></linearGradient>
+    <linearGradient id="mdpostdays14" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5129"/><stop offset="1" stop-color="#6b3a1a"/></linearGradient>
+    <radialGradient id="fpostdays14" cx="0.5" cy="0.38" r="0.7"><stop offset="0" stop-color="#86efac"/><stop offset="1" stop-color="#166534"/></radialGradient>
+    <linearGradient id="gpostdays14" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <filter id="spostdays14" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.35"/></filter>
+    <clipPath id="cpostdays14"><path d="M189.21 87.05 Q196 93.83 196 103.43 L196 140.57 Q196 150.17 189.21 156.95 L162.95 183.21 Q156.17 190 146.57 190 L109.43 190 Q99.83 190 93.05 183.21 L66.79 156.95 Q60 150.17 60 140.57 L60 103.43 Q60 93.83 66.79 87.05 L93.05 60.79 Q99.83 54 109.43 54 L146.57 54 Q156.17 54 162.95 60.79 Z"/></clipPath>
+  </defs>
+  
+  
+  
+  <g filter="url(#spostdays14)">
+    <path d="M204.51 78.31 Q213 86.79 213 98.79 L213 145.21 Q213 157.21 204.51 165.69 L171.69 198.51 Q163.21 207 151.21 207 L104.79 207 Q92.79 207 84.31 198.51 L51.49 165.69 Q43 157.21 43 145.21 L43 98.79 Q43 86.79 51.49 78.31 L84.31 45.49 Q92.79 37 104.79 37 L151.21 37 Q163.21 37 171.69 45.49 Z" fill="url(#mpostdays14)" stroke="#4a260f" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+  <path d="M196.86 82.68 Q204.5 90.31 204.5 101.11 L204.5 142.89 Q204.5 153.69 196.86 161.32 L167.32 190.86 Q159.69 198.5 148.89 198.5 L107.11 198.5 Q96.31 198.5 88.68 190.86 L59.14 161.32 Q51.5 153.69 51.5 142.89 L51.5 101.11 Q51.5 90.31 59.14 82.68 L88.68 53.14 Q96.31 45.5 107.11 45.5 L148.89 45.5 Q159.69 45.5 167.32 53.14 Z" fill="none" stroke="#4a260f" stroke-opacity="0.55" stroke-width="2"/>
+  <path d="M196.86 82.68 Q204.5 90.31 204.5 101.11 L204.5 142.89 Q204.5 153.69 196.86 161.32 L167.32 190.86 Q159.69 198.5 148.89 198.5 L107.11 198.5 Q96.31 198.5 88.68 190.86 L59.14 161.32 Q51.5 153.69 51.5 142.89 L51.5 101.11 Q51.5 90.31 59.14 82.68 L88.68 53.14 Q96.31 45.5 107.11 45.5 L148.89 45.5 Q159.69 45.5 167.32 53.14 Z" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="1" transform="translate(0 1.5)"/>
+  <path d="M189.21 87.05 Q196 93.83 196 103.43 L196 140.57 Q196 150.17 189.21 156.95 L162.95 183.21 Q156.17 190 146.57 190 L109.43 190 Q99.83 190 93.05 183.21 L66.79 156.95 Q60 150.17 60 140.57 L60 103.43 Q60 93.83 66.79 87.05 L93.05 60.79 Q99.83 54 109.43 54 L146.57 54 Q156.17 54 162.95 60.79 Z" fill="url(#fpostdays14)"/>
+  <g clip-path="url(#cpostdays14)">
+    <g fill="#fff" opacity="0.08"><path d="M128 122 L124 2 L132 2 Z" transform="rotate(0 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(15 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(30 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(45 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(60 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(75 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(90 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(105 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(120 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(135 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(150 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(165 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(180 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(195 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(210 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(225 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(240 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(255 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(270 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(285 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(300 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(315 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(330 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(345 128 122)"/></g>
+    <ellipse cx="128" cy="82" rx="80" ry="46" fill="url(#gpostdays14)" opacity="0.6"/>
+  </g>
+  <path d="M189.21 87.05 Q196 93.83 196 103.43 L196 140.57 Q196 150.17 189.21 156.95 L162.95 183.21 Q156.17 190 146.57 190 L109.43 190 Q99.83 190 93.05 183.21 L66.79 156.95 Q60 150.17 60 140.57 L60 103.43 Q60 93.83 66.79 87.05 L93.05 60.79 Q99.83 54 109.43 54 L146.57 54 Q156.17 54 162.95 60.79 Z" fill="none" stroke="#000" stroke-opacity="0.25" stroke-width="2"/>
+  <g transform="translate(86 68) scale(3.5)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#000" stroke-opacity="0.28" stroke-width="2.6" transform="translate(0 0.45)"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></g>
+    <g stroke="#fff" stroke-width="2"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></g>
+  </g>
+  <g>
+      <path d="M81 172 L93 185 L81 198 L99 198 L99 172 Z" fill="url(#mdpostdays14)" stroke="#4a260f" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M175 172 L163 185 L175 198 L157 198 L157 172 Z" fill="url(#mdpostdays14)" stroke="#4a260f" stroke-width="1.5" stroke-linejoin="round"/>
+      <rect x="93" y="166" width="70" height="34" rx="9" fill="url(#mpostdays14)" stroke="#4a260f" stroke-width="2.5"/>
+      <rect x="97" y="170" width="62" height="6" rx="3" fill="#fff" opacity="0.35"/>
+      <text x="128" y="193" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="26" letter-spacing="0.5" fill="#3b1d08">14</text>
+      
+    </g>
+  
+  
+</svg>
