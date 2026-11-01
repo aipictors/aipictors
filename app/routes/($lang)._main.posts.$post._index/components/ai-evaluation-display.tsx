@@ -171,6 +171,44 @@ function ScoreBar(props: { label: string; score: number }) {
   )
 }
 
+/** できなかったAI評価のやり直し（作者のみ） */
+function AiEvaluationRetryButton(props: {
+  workId: string
+  onRetried: () => void
+}) {
+  const t = useTranslation()
+  const [retry, { loading: isRetrying }] = useMutation(
+    retryWorkBotGradingMutation,
+  )
+  return (
+    <Button
+      variant="secondary"
+      size="sm"
+      disabled={isRetrying}
+      onClick={async () => {
+        try {
+          await retry({ variables: { workId: props.workId } })
+          props.onRetried()
+        } catch {
+          toast(
+            t(
+              "やり直しに失敗しました。時間をおいてお試しください",
+              "Could not retry. Please try again later.",
+            ),
+          )
+        }
+      }}
+    >
+      {isRetrying ? (
+        <Loader2 className="mr-1.5 size-4 animate-spin" />
+      ) : (
+        <RotateCcw className="mr-1.5 size-4" />
+      )}
+      {t("やり直す", "Retry")}
+    </Button>
+  )
+}
+
 /**
  * AI評価（総合点・作品へのコメント・項目ごとの点）
  */
@@ -203,9 +241,6 @@ export function AiEvaluationDisplay(props: Props) {
     variables: { id: props.workId },
   })
 
-  const [retry, { loading: isRetrying }] = useMutation(
-    retryWorkBotGradingMutation,
-  )
   const [isRetried, setIsRetried] = useState(false)
 
   if (!canView) {
@@ -279,32 +314,13 @@ export function AiEvaluationDisplay(props: Props) {
               )}
             </p>
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            disabled={isRetrying}
-            onClick={async () => {
-              try {
-                await retry({ variables: { workId: props.workId } })
-                setIsRetried(true)
-                await refetch()
-              } catch {
-                toast(
-                  t(
-                    "やり直しに失敗しました。時間をおいてお試しください",
-                    "Could not retry. Please try again later.",
-                  ),
-                )
-              }
+          <AiEvaluationRetryButton
+            workId={props.workId}
+            onRetried={() => {
+              setIsRetried(true)
+              void refetch()
             }}
-          >
-            {isRetrying ? (
-              <Loader2 className="mr-1.5 size-4 animate-spin" />
-            ) : (
-              <RotateCcw className="mr-1.5 size-4" />
-            )}
-            {t("やり直す", "Retry")}
-          </Button>
+          />
         </div>
       )
     }
