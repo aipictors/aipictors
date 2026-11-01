@@ -19,10 +19,22 @@ type AppConfig = {
   passFeature: {
     badge: Record<"free" | "lite" | "standard" | "premium", boolean>
     noAdvertisement: Record<"free" | "lite" | "standard" | "premium", boolean>
-    imageGenerationsCount: Record<"free" | "lite" | "standard" | "premium", number>
-    imageGenerationTasksCount: Record<"free" | "lite" | "standard" | "premium", number>
-    imageGenerationLoraModelsCount: Record<"free" | "lite" | "standard" | "premium", number>
-    imageGenerationHistoriesCount: Record<"free" | "lite" | "standard" | "premium", number>
+    imageGenerationsCount: Record<
+      "free" | "lite" | "standard" | "premium",
+      number
+    >
+    imageGenerationTasksCount: Record<
+      "free" | "lite" | "standard" | "premium",
+      number
+    >
+    imageGenerationLoraModelsCount: Record<
+      "free" | "lite" | "standard" | "premium",
+      number
+    >
+    imageGenerationHistoriesCount: Record<
+      "free" | "lite" | "standard" | "premium",
+      number
+    >
   }
   post: {
     maxImageCount: number
@@ -401,14 +413,12 @@ export const config: AppConfig = {
   uploader: {
     uploadImage: env.VITE_WORKERS_UPLOADER,
     uploadText: env.VITE_WORKERS_TEXT_UPLOADER,
-    uploadVideo:
-      (env.VITE_WORKERS_STREAM_UPLOADER ??
-        "/api/upload-stream-video") as string,
+    uploadVideo: (env.VITE_WORKERS_STREAM_UPLOADER ??
+      "/api/upload-stream-video") as string,
   },
   downloader: {
-    corsDownload:
-      (env.VITE_WORKERS_CORS_DOWNLOAD ??
-        "https://aipictors-cors-download.aipictors.workers.dev") as string,
+    corsDownload: (env.VITE_WORKERS_CORS_DOWNLOAD ??
+      "https://aipictors-cors-download.aipictors.workers.dev") as string,
   },
   /**
    * ワードプレスリンク
@@ -489,6 +499,15 @@ export const META: { [key: string]: MetaData } = {
       "Aipictors is a Japanese AI art community to post and browse AI illustrations, photos and videos with their prompts, and to generate images for free in the browser.",
     isIndex: true,
     isTop: true,
+  },
+  ARCHIVE: {
+    title: "過去の名作",
+    enTitle: "Past Masterpieces",
+    description:
+      "Aipictorsに投稿された過去のAIイラスト・AIフォトから、ぴくたーちゃんが毎日選び直して紹介します。年別・春夏秋冬・殿堂から探せます。",
+    enDescription:
+      "Pictor-chan picks past AI illustrations and photos from Aipictors every day. Browse by year, season, or the hall of fame.",
+    isIndex: true,
   },
   HOME_2D: {
     title: "イラスト一覧",
@@ -765,7 +784,8 @@ export const META: { [key: string]: MetaData } = {
   USER_MODEL_UPLOAD: {
     title: "モデルをアップロード",
     enTitle: "Upload a model",
-    description: "LoRA やチェックポイントをアップロードして、みんなで生成に使えます",
+    description:
+      "LoRA やチェックポイントをアップロードして、みんなで生成に使えます",
     enDescription: "Upload your LoRA or checkpoint and share it for generation",
     isIndex: false,
   },
@@ -1137,7 +1157,8 @@ export const META: { [key: string]: MetaData } = {
     title: "操作履歴",
     enTitle: "Action History",
     description: "You can check your posting and editing history",
-    enDescription: "View your posting, editing, and deletion history on Aipictors",
+    enDescription:
+      "View your posting, editing, and deletion history on Aipictors",
     isIndex: false,
   },
   MY_RECOMMENDED: {

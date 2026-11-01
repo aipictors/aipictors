@@ -134,6 +134,11 @@ export const ACHIEVEMENT_CATEGORIES = [
   { value: "SPECIAL", ja: "特別", en: "Special" },
 ] as const
 
+/**
+ * バッジ画像の版。ブラウザに 1 日キャッシュされるので、同じ名前の画像を描き直したら上げる
+ */
+const BADGE_IMAGE_VERSION = 2
+
 /** バッジ画像（隠し実績で未達成なら「?」） */
 export function toAchievementBadgeUrl(props: {
   key: string
@@ -141,9 +146,9 @@ export function toAchievementBadgeUrl(props: {
   isUnlocked: boolean
 }) {
   if (props.isHidden && !props.isUnlocked) {
-    return "/achievements/badges/hidden.svg"
+    return `/achievements/badges/hidden.svg?v=${BADGE_IMAGE_VERSION}`
   }
-  return `/achievements/badges/${props.key}.svg`
+  return `/achievements/badges/${props.key}.svg?v=${BADGE_IMAGE_VERSION}`
 }
 
 const CHECK_EVENT = "aipictors:achievement-check"

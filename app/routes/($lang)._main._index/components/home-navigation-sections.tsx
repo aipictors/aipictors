@@ -5,6 +5,7 @@ import {
   BoxesIcon,
   HeartIcon,
   HelpCircleIcon,
+  HistoryIcon,
   HomeIcon,
   ImageIcon,
   ImagePlusIcon,
@@ -67,6 +68,7 @@ export function getHomeNavigationSections(
         "/models",
         "/generation",
         "/new/image",
+        "/archive",
       ].includes(path)
     ) {
       return path
@@ -108,6 +110,12 @@ export function getHomeNavigationSections(
       key: "discover",
       title: ["見つける", "Discover"],
       items: [
+        {
+          key: "archive",
+          href: "/archive",
+          label: ["過去の名作", "Past Masterpieces"],
+          icon: HistoryIcon,
+        },
         {
           key: "themes",
           href: link("/themes"),
