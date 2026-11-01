@@ -16,6 +16,11 @@ import {
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
 import { GenerationCoinShortageDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-coin-shortage-dialog"
+import {
+  GenerationNoticeBanner,
+  GenerationNoticeDialog,
+  useGenerationNotice,
+} from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
 import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
@@ -35,6 +40,7 @@ import {
   PREMIUM_COIN_CONFIRM_STORAGE_KEY,
 } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
 import type { GeminiImageSize } from "~/types/gemini-image-generation"
+import { GENERATION_NOTICE_ACK_STORAGE_KEY } from "~/utils/generation-notice"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 
 const standardImageGenerationCoinCost = 10
@@ -173,6 +179,55 @@ export function GenerationSubmissionView(props: Props) {
     return new Promise<boolean>((resolve) => {
       premiumCoinConfirmResolveRef.current = resolve
       setPremiumCoinConfirmAmount(amount)
+    })
+  }
+
+  // メンテナンス中・不安定などのお知らせ（運営が KV に置く）
+  const generationNotice = useGenerationNotice()
+
+  const [generationNoticeAckId, setGenerationNoticeAckId] = useLocalStorage<
+    string | null
+  >(GENERATION_NOTICE_ACK_STORAGE_KEY, null)
+
+  const [generationNoticeDialogMode, setGenerationNoticeDialogMode] = useState<
+    "confirm" | "info" | null
+  >(null)
+  const generationNoticeResolveRef = useRef<
+    ((isConfirmed: boolean) => void) | null
+  >(null)
+
+  const settleGenerationNotice = (isConfirmed: boolean) => {
+    generationNoticeResolveRef.current?.(isConfirmed)
+    generationNoticeResolveRef.current = null
+    setGenerationNoticeDialogMode(null)
+  }
+
+  // 確認中にお知らせが取り下げられたら、そのまま送る
+  useEffect(() => {
+    if (generationNotice === null && generationNoticeDialogMode !== null) {
+      generationNoticeResolveRef.current?.(true)
+      generationNoticeResolveRef.current = null
+      setGenerationNoticeDialogMode(null)
+    }
+  }, [generationNotice, generationNoticeDialogMode])
+
+  /**
+   * 生成を送る前にお知らせを出す。送ってよければ true
+   * - メンテナンス中は送らない
+   * - それ以外は、同じお知らせを一度確認したら次からは出さない
+   */
+  const confirmGenerationNotice = () => {
+    const notice = generationNotice
+    if (notice === null) return Promise.resolve(true)
+    if (notice.kind !== "maintenance" && generationNoticeAckId === notice.id) {
+      return Promise.resolve(true)
+    }
+    return new Promise<boolean>((resolve) => {
+      generationNoticeResolveRef.current = (isConfirmed) => {
+        if (isConfirmed) setGenerationNoticeAckId(notice.id)
+        resolve(isConfirmed && notice.kind !== "maintenance")
+      }
+      setGenerationNoticeDialogMode("confirm")
     })
   }
 
@@ -469,6 +524,15 @@ export function GenerationSubmissionView(props: Props) {
         upscaleSize: context.config.upscaleSize,
       },
     })
+
+    if (!(await confirmGenerationNotice())) {
+      logInfo({
+        source: "GenerationSubmit",
+        message: "Cancelled: generation notice",
+        details: { kind: generationNotice?.kind ?? null },
+      })
+      return
+    }
 
     const isStandardOrPremium =
       context.currentPass?.type === "STANDARD" ||
@@ -1283,6 +1347,12 @@ export function GenerationSubmissionView(props: Props) {
           {props.composer && (
             <div className="empty:hidden md:hidden">{props.composer}</div>
           )}
+          {generationNotice !== null && (
+            <GenerationNoticeBanner
+              notice={generationNotice}
+              onOpen={() => setGenerationNoticeDialogMode("info")}
+            />
+          )}
           <GenerationSubmitOperationParts
             isCreatingTask={isCreatingTask || isSigningTerms}
             inProgressImageGenerationTasksCount={
@@ -1323,6 +1393,12 @@ export function GenerationSubmissionView(props: Props) {
               )
             : 0
         }
+      />
+      <GenerationNoticeDialog
+        notice={generationNoticeDialogMode === null ? null : generationNotice}
+        mode={generationNoticeDialogMode ?? "info"}
+        onProceed={() => settleGenerationNotice(true)}
+        onClose={() => settleGenerationNotice(false)}
       />
       <GenerationPremiumCoinConfirmDialog
         key={premiumCoinConfirmAmount === null ? "closed" : "open"}
