@@ -3087,6 +3087,9 @@ input ModerationReportsWhereInput {
 }
 
 type Mutation {
+  """できなかったAI評価をやり直す（作者のみ）"""
+  retryWorkBotGrading(workId: ID!): Boolean!
+
   """投稿した作品と生成画像をつなぐ（生成履歴の「投稿済み」の印）"""
   linkWorkToGenerations(generationNanoids: [String!]!, workId: ID!): Int!
 
@@ -6203,6 +6206,9 @@ type WorkEvaluationNode {
 
 """作品"""
 type WorkNode implements Node {
+  """AI評価の状況（DONE: 済み / PENDING: 作成中 / FAILED: 何度か試してもできなかった。AI評価を使っていなければ null）"""
+  botEvaluationStatus: String
+
   """閲覧権限の種類"""
   accessType: AccessType!
 

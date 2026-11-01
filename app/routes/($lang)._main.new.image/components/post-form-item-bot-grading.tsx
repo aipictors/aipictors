@@ -1,15 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Checkbox } from "~/components/ui/checkbox"
-import { Label } from "~/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select"
-import { useTranslation } from "~/hooks/use-translation"
 import { useId } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { Label } from "~/components/ui/label"
+import { Switch } from "~/components/ui/switch"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type BotPersonalityType = "female" | "male" | "robot" | "sage" | "pictor_chan"
 type BotGradingType = "COMMENT_ONLY" | "SCORE_ONLY" | "COMMENT_AND_SCORE"
@@ -31,15 +25,7 @@ type Props = {
 /**
  * AI評価設定フォーム
  */
-export function PostFormItemBotGrading (props: Props) {
-  console.log("=== PostFormItemBotGrading rendered ===")
-  console.log("Props:", {
-    isBotGradingPublic: props.isBotGradingPublic,
-    isBotGradingRankingEnabled: props.isBotGradingRankingEnabled,
-    isBotGradingEnabled: props.isBotGradingEnabled,
-    isEditMode: props.isEditMode,
-  })
-
+export function PostFormItemBotGrading(props: Props) {
   const t = useTranslation()
   const botPersonalityId = useId()
   const botGradingTypeId = useId()
@@ -81,188 +67,151 @@ export function PostFormItemBotGrading (props: Props) {
   ] as const
 
   const gradingTypeOptions = [
-    { value: "COMMENT_ONLY", label: t("コメントのみ", "Comment Only") },
-    { value: "SCORE_ONLY", label: t("採点のみ", "Score Only") },
     {
       value: "COMMENT_AND_SCORE",
-      label: t("コメントと採点両方", "Comment and Score"),
+      label: t("コメントと点数", "Comment + score"),
     },
+    { value: "COMMENT_ONLY", label: t("コメントだけ", "Comment only") },
+    { value: "SCORE_ONLY", label: t("点数だけ", "Score only") },
   ] as const
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <p className="font-bold text-sm">
-            {t("AI評価設定", "AI Grading Settings")}
-          </p>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center justify-between gap-3">
+          <Label
+            htmlFor={botGradingEnabledId}
+            className="flex min-w-0 flex-col gap-0.5"
+          >
+            <span className="font-bold text-sm">
+              {t("AI評価", "AI grading")}
+            </span>
+            <span className="font-normal text-muted-foreground text-xs leading-snug">
+              {t(
+                "AIが作品を見て、コメントと点数を付けます。投稿の数分後に作品ページに出ます",
+                "The AI reviews your work with a comment and scores. They appear on the work page a few minutes after posting.",
+              )}
+            </span>
+          </Label>
+          <Switch
+            id={botGradingEnabledId}
+            checked={props.isBotGradingEnabled}
+            onCheckedChange={props.onChangeBotGradingEnabled}
+          />
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* AI評価についての説明 */}
-        {!props.isEditMode && (
-          <div className="rounded-lg bg-blue-50 p-3 dark:bg-blue-950/20">
-            <p className="text-blue-800 text-sm dark:text-blue-200">
-              {t(
-                "AIが作品を自動で評価し、コメントや採点を行います。投稿後しばらくしてから評価が表示されます。",
-                "AI will automatically evaluate your work and provide comments or scores. The evaluation will be displayed some time after posting.",
-              )}
+      {props.isBotGradingEnabled && (
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <p id={botPersonalityId} className="font-medium text-sm">
+              {t("だれに評価してもらう？", "Who should review it?")}
             </p>
-          </div>
-        )}
-
-        {/* 編集画面では「AI評価を利用する」チェックボックスを非表示 */}
-        {!props.isEditMode && (
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id={botGradingEnabledId}
-              checked={props.isBotGradingEnabled}
-              onCheckedChange={(checked) =>
-                props.onChangeBotGradingEnabled(checked === true)
-              }
-            />
-            <Label
-              htmlFor={botGradingEnabledId}
-              className="flex items-center space-x-2"
+            <div
+              role="group"
+              aria-labelledby={botPersonalityId}
+              className="grid grid-cols-5 gap-1.5"
             >
-              <span>{t("AI評価を利用する", "Enable AI grading")}</span>
-            </Label>
+              {personalityOptions.map((option) => {
+                const isActive = props.botPersonality === option.value
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => props.onChangeBotPersonality(option.value)}
+                    className={cn(
+                      "flex min-w-0 flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors",
+                      isActive
+                        ? "border-primary bg-primary/10"
+                        : "hover:bg-muted",
+                    )}
+                  >
+                    <img
+                      src={option.icon}
+                      alt=""
+                      width={40}
+                      height={40}
+                      loading="lazy"
+                      className="size-10 rounded-full object-cover"
+                    />
+                    <span className="w-full break-all text-center text-[10px] leading-tight sm:text-[11px]">
+                      {option.label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
-        )}
 
-        {/* AI評価が有効な場合のみ表示される設定 */}
-        {props.isBotGradingEnabled && (
-          <div
-            className={`space-y-4 ${!props.isEditMode ? "border-muted border-l-2 pl-6" : ""}`}
-          >
-            {/* 編集画面では性格選択と採点タイプ選択を非表示 */}
-            {!props.isEditMode && (
-              <>
-                {/* AIの性格選択 */}
-                <div className="space-y-2">
-                  <Label htmlFor={botPersonalityId}>
-                    {t("AIの性格", "AI Personality")}
-                  </Label>
-                  <Select
-                    value={props.botPersonality}
-                    onValueChange={(value) =>
-                      props.onChangeBotPersonality(value as BotPersonalityType)
-                    }
-                  >
-                    <SelectTrigger id={botPersonalityId}>
-                      <SelectValue
-                        placeholder={t("性格を選択", "Select personality")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {personalityOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          <div className="flex items-center space-x-2">
-                            <img
-                              src={option.icon}
-                              alt={option.label}
-                              className="h-4 w-4 rounded-full object-cover"
-                            />
-                            <span>{option.label}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-muted-foreground text-sm">
-                    {t(
-                      "AIの評価スタイルを選択できます。",
-                      "You can choose the AI's evaluation style.",
+          <div className="space-y-2">
+            <p id={botGradingTypeId} className="font-medium text-sm">
+              {t("評価の内容", "What to include")}
+            </p>
+            <div
+              role="group"
+              aria-labelledby={botGradingTypeId}
+              className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1"
+            >
+              {gradingTypeOptions.map((option) => {
+                const isActive = props.botGradingType === option.value
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => props.onChangeBotGradingType(option.value)}
+                    className={cn(
+                      "rounded-md px-1 py-1.5 text-xs transition-colors",
+                      isActive
+                        ? "bg-background font-medium shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
                     )}
-                  </p>
-                </div>
-
-                {/* AI評価タイプ選択 */}
-                <div className="space-y-2">
-                  <Label htmlFor={botGradingTypeId}>
-                    {t("採点タイプ", "Grading Type")}
-                  </Label>
-                  <Select
-                    value={props.botGradingType}
-                    onValueChange={(value) =>
-                      props.onChangeBotGradingType(value as BotGradingType)
-                    }
                   >
-                    <SelectTrigger id={botGradingTypeId}>
-                      <SelectValue
-                        placeholder={t(
-                          "採点タイプを選択",
-                          "Select grading type",
-                        )}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {gradingTypeOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-muted-foreground text-sm">
-                    {t(
-                      "AIが提供する評価の形式を選択できます。",
-                      "You can choose the format of AI evaluation.",
-                    )}
-                  </p>
-                </div>
-              </>
-            )}
+                    {option.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
 
-            {/* 評価を公開するかどうか */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
+          <div className="space-y-3 border-t pt-3">
+            <div className="flex items-center justify-between gap-3">
+              <Label htmlFor={botGradingPublicId} className="font-normal">
+                {t("他の人にも見せる", "Show to others")}
+              </Label>
+              <Switch
                 id={botGradingPublicId}
                 checked={props.isBotGradingPublic}
-                onCheckedChange={(checked) =>
-                  props.onChangeBotGradingPublic(checked === true)
-                }
+                onCheckedChange={props.onChangeBotGradingPublic}
               />
-              <Label
-                htmlFor={botGradingPublicId}
-                className="flex items-center space-x-2"
-              >
-                <span>
-                  {t("AI評価を公開する", "Make AI evaluation public")}
-                </span>
-              </Label>
             </div>
-
-            {/* ランキングに参加するかどうか */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id={botGradingRankingId}
-                checked={props.isBotGradingRankingEnabled}
-                onCheckedChange={(checked) =>
-                  props.onChangeBotGradingRankingEnabled(checked === true)
-                }
-              />
+            <div className="flex items-center justify-between gap-3">
               <Label
                 htmlFor={botGradingRankingId}
-                className="flex items-center space-x-2"
+                className="flex min-w-0 flex-col gap-0.5 font-normal"
               >
                 <span>
                   {t(
                     "AI評価ランキングに参加する",
-                    "Participate in AI grading ranking",
+                    "Join the AI grading ranking",
+                  )}
+                </span>
+                <span className="text-muted-foreground text-xs leading-snug">
+                  {t(
+                    "入賞しても通常の入賞数には含まれません",
+                    "Placements here don't count toward regular awards",
                   )}
                 </span>
               </Label>
+              <Switch
+                id={botGradingRankingId}
+                checked={props.isBotGradingRankingEnabled}
+                onCheckedChange={props.onChangeBotGradingRankingEnabled}
+              />
             </div>
-            <p className="text-muted-foreground text-sm">
-              {t(
-                "AI評価ランキングの入賞回数は通常の入賞数には含まれません。",
-                "Placements in the AI evaluation ranking are not counted toward regular award totals.",
-              )}
-            </p>
           </div>
-        )}
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   )
 }

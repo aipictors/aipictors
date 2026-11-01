@@ -781,6 +781,7 @@ export const workArticleFragment =
   nanoid
   isBotGradingEnabled
   isBotGradingPublic
+  botEvaluationStatus
   botEvaluation {
     cutenessScore
     coolnessScore

@@ -574,6 +574,7 @@ export function SensitiveWorkArticle(props: Props) {
             isBotGradingEnabled={props.work.isBotGradingEnabled ?? false}
             evaluation={props.work.botEvaluation}
             personality={props.work.botEvaluation?.personality}
+            status={props.work.botEvaluationStatus}
             isVisible={true}
             isBotGradingPublic={props.work.isBotGradingPublic}
             isOwner={props.work.user?.id === appContext.userId}
@@ -796,6 +797,7 @@ export const workArticleFragment = graphql(
     imageAnalysisRequestReason
     imageAnalysisRequestAvailableAt
     imageAnalysisRemainingRequestsToday
+    botEvaluationStatus
     botEvaluation {
       cutenessScore
       coolnessScore
@@ -956,6 +958,7 @@ export const sensitiveWorkArticleFragment = graphql(
     isPromotion
     isBotGradingEnabled
     isBotGradingPublic
+    botEvaluationStatus
     botEvaluation {
       id
       cutenessScore

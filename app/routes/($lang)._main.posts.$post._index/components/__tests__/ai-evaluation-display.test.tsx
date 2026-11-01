@@ -1,5 +1,6 @@
-import { test, expect, beforeEach, mock } from "bun:test"
-import { render, fireEvent, waitFor } from "@testing-library/react"
+import { beforeEach, expect, mock, test } from "bun:test"
+import { MockedProvider } from "@apollo/client/testing/index"
+import { fireEvent, render, waitFor } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import { AiEvaluationDisplay } from "../ai-evaluation-display"
 
@@ -37,7 +38,14 @@ beforeEach(() => {
 })
 
 const renderWithRouter = (component: React.ReactElement) => {
-  return render(<MemoryRouter initialEntries={["/"]}>{component}</MemoryRouter>)
+  return render(
+    <MemoryRouter initialEntries={["/"]}>{component}</MemoryRouter>,
+    {
+      wrapper: ({ children }) => (
+        <MockedProvider mocks={[]}>{children}</MockedProvider>
+      ),
+    },
+  )
 }
 
 test("AI評価表示が正しくレンダリングされる", () => {

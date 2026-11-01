@@ -599,6 +599,7 @@ export function WorkArticle(props: Props) {
             isBotGradingEnabled={props.work.isBotGradingEnabled ?? false}
             evaluation={props.work.botEvaluation}
             personality={props.work.botEvaluation?.personality}
+            status={props.work.botEvaluationStatus}
             isVisible={true}
             isBotGradingPublic={props.work.isBotGradingPublic ?? false}
             isOwner={props.work.user?.id === appContext.userId}
@@ -831,6 +832,7 @@ export const workArticleFragment = graphql(
     nanoid
     isBotGradingEnabled
     isBotGradingPublic
+    botEvaluationStatus
     botEvaluation {
       cutenessScore
       coolnessScore
@@ -1010,6 +1012,7 @@ export const sensitiveWorkArticleFragment = graphql(
     isPromotion
     isBotGradingEnabled
     isBotGradingPublic
+    botEvaluationStatus
     botEvaluation {
       cutenessScore
       coolnessScore

@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client/index"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -6,13 +7,14 @@ import type {
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ShuffleIcon } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
 import { config, META } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import { cn } from "~/lib/utils"
@@ -114,7 +116,7 @@ export default function ArchivePage() {
     setShuffleCount(0)
   }, [searchParams.toString()])
 
-  const works = useMemo(
+  const shownWorks = useMemo(
     () =>
       shuffleWorks(
         data.works,
@@ -122,6 +124,29 @@ export default function ArchivePage() {
       ).slice(0, SHOW_COUNT),
     [data.works, data.dateText, searchParams.toString(), shuffleCount],
   )
+
+  // ページはログインなしで作って共有するので、いいね済みかは開いた人ごとに聞く
+  const authContext = useContext(AuthContext)
+  const { data: viewerLikes } = useQuery(archiveViewerLikesQuery, {
+    skip: !authContext.isLoggedIn || shownWorks.length === 0,
+    errorPolicy: "ignore",
+    variables: {
+      limit: shownWorks.length,
+      where: {
+        ids: shownWorks.map((work) => work.id),
+        ratings: ["G", "R15"],
+      },
+    },
+  })
+  const works = useMemo(() => {
+    const likedById = new Map(
+      viewerLikes?.works.map((work) => [work.id, work.isLiked]),
+    )
+    return shownWorks.map((work) => ({
+      ...work,
+      isLiked: likedById.get(work.id) ?? work.isLiked,
+    }))
+  }, [shownWorks, viewerLikes])
 
   const toUrl = (next: ArchivePeriod) => {
     const params = new URLSearchParams()
@@ -251,6 +276,15 @@ export default function ArchivePage() {
     </div>
   )
 }
+
+const archiveViewerLikesQuery = graphql(
+  `query ArchiveViewerLikes($limit: Int!, $where: WorksWhereInput!) {
+    works(offset: 0, limit: $limit, where: $where) {
+      id
+      isLiked
+    }
+  }`,
+)
 
 const archiveWorksQuery = graphql(
   `query ArchiveWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
