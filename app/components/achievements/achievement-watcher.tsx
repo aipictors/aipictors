@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client/index"
 import { useLocation, useNavigate } from "@remix-run/react"
 import { graphql, type ResultOf } from "gql.tada"
-import { XIcon } from "lucide-react"
+import { Share2Icon, XIcon } from "lucide-react"
 import {
   useCallback,
   useContext,
@@ -11,6 +11,10 @@ import {
   useState,
 } from "react"
 import { AchievementBadge } from "~/components/achievements/achievement-badge"
+import {
+  AchievementShareDialog,
+  type AchievementShareTarget,
+} from "~/components/achievements/achievement-share-dialog"
 import { CoinIcon } from "~/components/coin-icon"
 import { Button } from "~/components/ui/button"
 import {
@@ -59,6 +63,18 @@ export function AchievementWatcher() {
     items: UnlockedAchievement[]
     coins: number
   } | null>(null)
+
+  const [shareTarget, setShareTarget] = useState<AchievementShareTarget | null>(
+    null,
+  )
+
+  const openShare = useCallback(
+    (highlight: { key: string; name: string } | null) => {
+      if (!authContext.userId) return
+      setShareTarget({ userId: authContext.userId, highlight })
+    },
+    [authContext.userId],
+  )
 
   /** この画面で一度出したもの（同じものを二度出さない） */
   const shownKeysRef = useRef(new Set<string>())
@@ -163,6 +179,7 @@ export function AchievementWatcher() {
           achievement={current}
           remaining={queue.length - 1}
           onShown={onShown}
+          onShare={openShare}
           onDone={() => setQueue((items) => items.slice(1))}
         />
       )}
@@ -171,9 +188,17 @@ export function AchievementWatcher() {
           items={bulk.items}
           coins={bulk.coins}
           onShown={onShown}
+          onShare={() => {
+            setBulk(null)
+            openShare(null)
+          }}
           onClose={() => setBulk(null)}
         />
       )}
+      <AchievementShareDialog
+        target={shareTarget}
+        onClose={() => setShareTarget(null)}
+      />
     </>
   )
 }
@@ -240,6 +265,7 @@ function AchievementUnlockToast(props: {
   achievement: UnlockedAchievement
   remaining: number
   onShown: (keys: string[]) => void
+  onShare: (highlight: { key: string; name: string }) => void
   onDone: () => void
 }) {
   const t = useTranslation()
@@ -310,7 +336,7 @@ function AchievementUnlockToast(props: {
       >
         <button
           type="button"
-          className="achievement-shine relative flex w-full items-center gap-3 p-3 pr-9 text-left"
+          className="achievement-shine relative flex w-full items-center gap-3 p-3 pr-9 pb-9 text-left"
           onClick={() => {
             leave()
             navigate(`/achievements?highlight=${props.achievement.key}`)
@@ -377,6 +403,17 @@ function AchievementUnlockToast(props: {
         >
           <XIcon className="size-4" />
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            props.onShare({ key: props.achievement.key, name })
+            leave()
+          }}
+          className="absolute right-3 bottom-2.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 px-2.5 py-1 font-bold text-[11px] text-white shadow transition hover:brightness-110 active:scale-95"
+        >
+          <Share2Icon className="size-3" />
+          {t("シェア", "Share")}
+        </button>
         <div className="absolute inset-x-0 bottom-0 h-0.5 bg-muted">
           <div
             className="achievement-timer h-full"
@@ -396,6 +433,7 @@ function AchievementBulkDialog(props: {
   items: UnlockedAchievement[]
   coins: number
   onShown: (keys: string[]) => void
+  onShare: () => void
   onClose: () => void
 }) {
   const t = useTranslation()
@@ -483,6 +521,14 @@ function AchievementBulkDialog(props: {
             )}
           </p>
         )}
+        <button
+          type="button"
+          onClick={props.onShare}
+          className="achievement-shine relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-600 font-bold text-white shadow-lg shadow-pink-500/30 transition hover:brightness-110 active:scale-95"
+        >
+          <Share2Icon className="size-4" />
+          {t("実績カードをシェア", "Share my achievement card")}
+        </button>
         <div className="flex flex-col gap-2 sm:flex-row-reverse">
           <Button
             className="flex-1 rounded-full font-bold"

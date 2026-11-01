@@ -13,9 +13,12 @@ import {
 } from "lucide-react"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { AchievementBadge } from "~/components/achievements/achievement-badge"
+import {
+  AchievementShareDialog,
+  type AchievementShareTarget,
+} from "~/components/achievements/achievement-share-dialog"
 import { CoinIcon } from "~/components/coin-icon"
 import { LoginDialogButton } from "~/components/login-dialog-button"
-import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -68,6 +71,9 @@ export function AchievementsPage() {
   const [category, setCategory] = useState<CategoryValue>("ALL")
   const [isUnlockedOnly, setIsUnlockedOnly] = useState(false)
   const [selected, setSelected] = useState<Achievement | null>(null)
+  const [shareTarget, setShareTarget] = useState<AchievementShareTarget | null>(
+    null,
+  )
 
   const achievements = data?.achievements ?? []
   const summary = data?.achievementSummary ?? null
@@ -109,6 +115,11 @@ export function AchievementsPage() {
         ownerName={data?.owner?.name ?? null}
         onSelect={(key) =>
           setSelected(achievements.find((item) => item.key === key) ?? null)
+        }
+        onShare={
+          isViewer && authContext.userId
+            ? () => setShareTarget({ userId: authContext.userId ?? "" })
+            : undefined
         }
       />
 
@@ -185,8 +196,23 @@ export function AchievementsPage() {
       <AchievementDetailDialog
         achievement={selected}
         isViewer={isViewer}
-        ownerId={isViewer ? authContext.userId : userId}
+        onShare={
+          isViewer && authContext.userId
+            ? (item) => {
+                setSelected(null)
+                setShareTarget({
+                  userId: authContext.userId ?? "",
+                  highlight: { key: item.key, name: item.name },
+                })
+              }
+            : undefined
+        }
         onClose={() => setSelected(null)}
+      />
+
+      <AchievementShareDialog
+        target={shareTarget}
+        onClose={() => setShareTarget(null)}
       />
     </div>
   )
@@ -265,6 +291,8 @@ function AchievementHero(props: {
   isViewer: boolean
   ownerName: string | null
   onSelect: (key: string) => void
+  /** 自分のときだけ（シェアカード） */
+  onShare?: () => void
 }) {
   const t = useTranslation()
   const summary = props.summary
@@ -297,6 +325,16 @@ function AchievementHero(props: {
                 "Creating, cheering and visiting become badges",
               )}
             </p>
+            {props.onShare && (
+              <button
+                type="button"
+                onClick={props.onShare}
+                className="achievement-shine relative mt-2 inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-600 px-5 py-2.5 font-bold text-sm text-white shadow-lg shadow-pink-500/30 transition hover:scale-[1.03] hover:shadow-pink-500/50 active:scale-95"
+              >
+                <ShareIcon className="size-4" />
+                {t("実績カードをシェア", "Share my card")}
+              </button>
+            )}
           </div>
         </div>
 
@@ -669,7 +707,7 @@ function rarityLabel(rarity: number | null) {
 function AchievementDetailDialog(props: {
   achievement: Achievement | null
   isViewer: boolean
-  ownerId: string | null
+  onShare?: (achievement: Achievement) => void
   onClose: () => void
 }) {
   const t = useTranslation()
@@ -677,15 +715,6 @@ function AchievementDetailDialog(props: {
   const tier = item ? getAchievementTier(item.tier) : null
   const rarity = item ? formatRarity(item.rarity) : null
   const rarityName = item ? rarityLabel(item.rarity ?? null) : null
-
-  const shareUrl =
-    item && props.ownerId
-      ? `https://x.com/intent/post?text=${encodeURIComponent(
-          `Aipictorsで実績「${item.name}」を達成しました！ #Aipictors`,
-        )}&url=${encodeURIComponent(
-          `https://www.aipictors.com/achievements?user=${props.ownerId}&highlight=${item.key}`,
-        )}`
-      : null
 
   return (
     <Dialog
@@ -800,17 +829,15 @@ function AchievementDetailDialog(props: {
               </div>
             </div>
 
-            {item.isUnlocked && shareUrl && (
-              <Button
-                asChild
-                variant="secondary"
-                className="w-full rounded-full"
+            {item.isUnlocked && props.onShare && (
+              <button
+                type="button"
+                onClick={() => props.onShare?.(item)}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-600 font-bold text-white shadow-lg shadow-pink-500/30 transition hover:brightness-110 active:scale-95"
               >
-                <a href={shareUrl} target="_blank" rel="noopener noreferrer">
-                  <ShareIcon className="mr-2 size-4" />
-                  {t("X でシェア", "Share on X")}
-                </a>
-              </Button>
+                <ShareIcon className="size-4" />
+                {t("この実績をシェア", "Share this achievement")}
+              </button>
             )}
           </div>
         </DialogContent>

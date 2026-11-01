@@ -33,6 +33,7 @@ const checkCalls: { force: boolean }[] = []
 const seenCalls: string[][] = []
 
 mock.module("@apollo/client/index", () => ({
+  useQuery: () => ({ data: undefined, loading: false }),
   useMutation: (document: { definitions: { name?: { value: string } }[] }) => {
     const name = document.definitions[0]?.name?.value
     if (name === "CheckAchievements") {

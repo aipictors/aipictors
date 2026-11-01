@@ -223,7 +223,7 @@ export function UserProfileNameIcon(props: Props) {
             </div>
           ))}
         </dl>
-        <UserAchievementShowcase userId={user.id} />
+        <UserAchievementShowcase userId={user.id} isOwn={isMyPage} />
         {r18WorksCount > 0 && (
           <SensitiveToggle
             variant="compact"
