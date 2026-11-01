@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img">
+  <defs>
+    <linearGradient id="msupportptsent100" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#f3c08e"/><stop offset="0.25" stop-color="#c8814a"/><stop offset="0.5" stop-color="#8a5129"/><stop offset="0.75" stop-color="#d9925a"/><stop offset="1" stop-color="#6b3a1a"/></linearGradient>
+    <linearGradient id="mdsupportptsent100" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5129"/><stop offset="1" stop-color="#6b3a1a"/></linearGradient>
+    <radialGradient id="fsupportptsent100" cx="0.5" cy="0.38" r="0.7"><stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#881337"/></radialGradient>
+    <linearGradient id="gsupportptsent100" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <filter id="ssupportptsent100" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.35"/></filter>
+    <clipPath id="csupportptsent100"><path d="M59.2 122 a68.8 68.8 0 1 0 137.6 0 a68.8 68.8 0 1 0 -137.6 0 Z"/></clipPath>
+  </defs>
+  
+  
+  
+  <g filter="url(#ssupportptsent100)">
+    <path d="M42 122 a86 86 0 1 0 172 0 a86 86 0 1 0 -172 0 Z" fill="url(#msupportptsent100)" stroke="#4a260f" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+  <path d="M50.599999999999994 122 a77.4 77.4 0 1 0 154.8 0 a77.4 77.4 0 1 0 -154.8 0 Z" fill="none" stroke="#4a260f" stroke-opacity="0.55" stroke-width="2"/>
+  <path d="M50.599999999999994 122 a77.4 77.4 0 1 0 154.8 0 a77.4 77.4 0 1 0 -154.8 0 Z" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="1" transform="translate(0 1.5)"/>
+  <path d="M59.2 122 a68.8 68.8 0 1 0 137.6 0 a68.8 68.8 0 1 0 -137.6 0 Z" fill="url(#fsupportptsent100)"/>
+  <g clip-path="url(#csupportptsent100)">
+    <g fill="#fff" opacity="0.08"><path d="M128 122 L124 2 L132 2 Z" transform="rotate(0 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(15 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(30 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(45 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(60 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(75 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(90 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(105 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(120 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(135 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(150 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(165 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(180 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(195 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(210 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(225 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(240 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(255 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(270 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(285 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(300 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(315 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(330 128 122)"/><path d="M128 122 L124 2 L132 2 Z" transform="rotate(345 128 122)"/></g>
+    <ellipse cx="128" cy="82" rx="80" ry="46" fill="url(#gsupportptsent100)" opacity="0.6"/>
+  </g>
+  <path d="M59.2 122 a68.8 68.8 0 1 0 137.6 0 a68.8 68.8 0 1 0 -137.6 0 Z" fill="none" stroke="#000" stroke-opacity="0.25" stroke-width="2"/>
+  <g transform="translate(86 68) scale(3.5)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#000" stroke-opacity="0.28" stroke-width="2.6" transform="translate(0 0.45)"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></g>
+    <g stroke="#fff" stroke-width="2"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></g>
+  </g>
+  <g>
+      <path d="M76.5 172 L88.5 185 L76.5 198 L94.5 198 L94.5 172 Z" fill="url(#mdsupportptsent100)" stroke="#4a260f" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M179.5 172 L167.5 185 L179.5 198 L161.5 198 L161.5 172 Z" fill="url(#mdsupportptsent100)" stroke="#4a260f" stroke-width="1.5" stroke-linejoin="round"/>
+      <rect x="88.5" y="166" width="79" height="34" rx="9" fill="url(#msupportptsent100)" stroke="#4a260f" stroke-width="2.5"/>
+      <rect x="92.5" y="170" width="71" height="6" rx="3" fill="#fff" opacity="0.35"/>
+      <text x="128" y="193" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="26" letter-spacing="0.5" fill="#3b1d08">100</text>
+      
+    </g>
+  
+  
+</svg>

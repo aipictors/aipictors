@@ -17,6 +17,7 @@ import { GenerationConfigClipSkip } from "~/routes/($lang).generation._index/com
 import { GenerationConfigCount } from "~/routes/($lang).generation._index/components/config-view/generation-config-count"
 import { GenerationConfigMemoButton } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-button"
 import { GenerationConfigMemoSettingDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-setting-dialog"
+import { GenerationConfigModelRecommendation } from "~/routes/($lang).generation._index/components/config-view/generation-config-model-recommendation"
 import { GenerationConfigOutput } from "~/routes/($lang).generation._index/components/config-view/generation-config-output"
 import { GenerationConfigReferenceImage } from "~/routes/($lang).generation._index/components/config-view/generation-config-reference-image"
 import { GenerationConfigResetConfirmDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-reset-confirm-dialog"
@@ -145,6 +146,7 @@ export function GenerationConfigView(props: Props) {
         }}
       />
       <GenerationLoraSection />
+      <GenerationConfigModelRecommendation />
       <Separator />
       <GenerationConfigOutput modelType={configModelType} />
       <GenerationConfigCount

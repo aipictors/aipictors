@@ -63,6 +63,8 @@ type SupportSummaryResponse = {
     weeklyReceivedTransferCount: number
     weeklySentRank: number | null
     weeklyReceivedRank: number | null
+    cumulativeSentRank?: number | null
+    cumulativeReceivedRank?: number | null
     availableWeekStartDates: string[]
   } | null
 }
@@ -359,12 +361,12 @@ export function SupportRankingSection() {
           {
             label: t("累計貢献 pt", "Cumulative contribution pt"),
             value: summary?.cumulativeSentPt ?? 0,
-            rank: null as number | null,
+            rank: summary?.cumulativeSentRank ?? null,
           },
           {
             label: t("累計受取 pt", "Cumulative received pt"),
             value: summary?.cumulativeReceivedPt ?? 0,
-            rank: null as number | null,
+            rank: summary?.cumulativeReceivedRank ?? null,
           },
           {
             label: t("週間貢献 pt", "Weekly contribution pt"),

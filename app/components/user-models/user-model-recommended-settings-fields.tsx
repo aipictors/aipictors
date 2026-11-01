@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
+import { Textarea } from "~/components/ui/textarea"
 import {
   GENERATION_SAMPLER_OPTIONS,
   GENERATION_SCHEDULER_OPTIONS,
@@ -25,6 +26,8 @@ const EMPTY: UserModelRecommendedSettings = {
   cfgScale: null,
   steps: null,
   clipSkip: null,
+  qualityPrompt: null,
+  negativePrompt: null,
 }
 
 // Select は空文字を値にできないので「指定しない」はこの値で表す
@@ -89,7 +92,15 @@ export function UserModelRecommendedSettingsFields(props: Props) {
 
   const update = (patch: Partial<UserModelRecommendedSettings>) => {
     const next = { ...value, ...patch }
-    const isEmpty = Object.values(next).every((v) => v === null)
+    const isEmpty = [
+      next.sampler,
+      next.scheduler,
+      next.cfgScale,
+      next.steps,
+      next.clipSkip,
+      next.qualityPrompt,
+      next.negativePrompt,
+    ].every((v) => v === null || v === undefined || v === "")
     props.onChange(isEmpty ? null : next)
   }
 
@@ -176,6 +187,44 @@ export function UserModelRecommendedSettingsFields(props: Props) {
           onChange={(next) => update({ clipSkip: next })}
         />
       </div>
+      <div className="space-y-1.5">
+        <Label className="text-xs" htmlFor="recommended-quality-prompt">
+          品質プロンプト（生成時に先頭へ足します）
+        </Label>
+        <Textarea
+          id="recommended-quality-prompt"
+          rows={2}
+          maxLength={2000}
+          placeholder="例: masterpiece, best quality"
+          value={value.qualityPrompt ?? ""}
+          onChange={(event) =>
+            update({ qualityPrompt: event.target.value || null })
+          }
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-xs" htmlFor="recommended-negative-prompt">
+          ネガティブプロンプト
+        </Label>
+        <Textarea
+          id="recommended-negative-prompt"
+          rows={3}
+          maxLength={2000}
+          placeholder="例: lowres, bad anatomy, bad hands, watermark"
+          value={value.negativePrompt ?? ""}
+          onChange={(event) =>
+            update({ negativePrompt: event.target.value || null })
+          }
+        />
+      </div>
+      {value.source && (
+        <p className="text-muted-foreground text-xs leading-relaxed">
+          {value.source === "civitai"
+            ? "今の内容は Civitai の作例から自動で作りました。"
+            : "今の内容はベースモデルの定番を自動で入れました。"}
+          変更して保存すると、あなたのおすすめとして表示されます。
+        </p>
+      )}
     </div>
   )
 }

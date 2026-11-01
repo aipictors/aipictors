@@ -79,6 +79,19 @@ export type UserModelRecommendedSettings = {
   cfgScale: number | null
   steps: number | null
   clipSkip: number | null
+  /**
+   * プロンプトの先頭に足す品質タグ
+   */
+  qualityPrompt?: string | null
+  negativePrompt?: string | null
+  /**
+   * 自動で入れたもの（登録者が入れたものにはない）。civitai=作例から / base-model=ベースモデルの定番
+   */
+  source?: "civitai" | "base-model"
+  /**
+   * source=civitai のとき、集計した作例の数
+   */
+  sampleCount?: number
 }
 
 export type UserModelSourceLicense = {

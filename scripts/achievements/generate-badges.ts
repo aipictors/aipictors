@@ -108,6 +108,8 @@ const SERIES_COLORS: Record<string, [string, string]> = {
   "supports-received": ["#f9a8d4", "#9d174d"],
   "bookmarks-given": ["#5eead4", "#115e59"],
   "stickers-used": ["#bef264", "#4d7c0f"],
+  "support-pt-sent": ["#fb7185", "#881337"],
+  "support-pt-received": ["#fde68a", "#b45309"],
   "special-setsubun": ["#fca5a5", "#7f1d1d"],
   "special-cat-day": ["#fcd34d", "#78350f"],
   "special-hinamatsuri": ["#fbcfe8", "#be185d"],

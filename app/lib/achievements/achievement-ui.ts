@@ -115,6 +115,14 @@ export const ACHIEVEMENT_SERIES_LABELS: Record<
   },
   "bookmarks-given": { ja: "ブックマークする", en: "Bookmark works" },
   "stickers-used": { ja: "スタンプを使う", en: "Use stickers" },
+  "support-pt-sent": {
+    ja: "推しコインで貢献する",
+    en: "Contribute support coins",
+  },
+  "support-pt-received": {
+    ja: "推しコインを受け取る",
+    en: "Receive support coins",
+  },
 }
 
 export const ACHIEVEMENT_CATEGORIES = [

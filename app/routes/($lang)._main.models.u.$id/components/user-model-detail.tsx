@@ -433,8 +433,27 @@ export function UserModelDetail(props: Props) {
                 <dd className="font-semibold">
                   {describeRecommendedSettings(model.recommendedSettings)}
                 </dd>
+                {model.recommendedSettings.qualityPrompt && (
+                  <dd className="break-words text-xs">
+                    <span className="text-muted-foreground">品質: </span>
+                    {model.recommendedSettings.qualityPrompt}
+                  </dd>
+                )}
+                {model.recommendedSettings.negativePrompt && (
+                  <dd className="break-words text-xs">
+                    <span className="text-muted-foreground">ネガティブ: </span>
+                    {model.recommendedSettings.negativePrompt}
+                  </dd>
+                )}
+                {model.recommendedSettings.source && (
+                  <dd className="text-muted-foreground text-xs">
+                    {model.recommendedSettings.source === "civitai"
+                      ? "Civitai の作例の生成情報から自動で作成"
+                      : "ベースモデルの定番の設定（自動）"}
+                  </dd>
+                )}
                 <dd className="text-muted-foreground text-xs">
-                  生成画面でこのモデルを選び、詳細設定の「おすすめ設定を使う」で反映できます
+                  生成画面でこのモデルを選ぶと「おすすめ設定を使う」で反映できます
                 </dd>
               </div>
             )}
