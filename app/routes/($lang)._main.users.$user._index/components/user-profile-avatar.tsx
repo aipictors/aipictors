@@ -34,6 +34,7 @@ export function UserProfileAvatar({
     <UserAvatarWithFrame
       alt={alt}
       frame={frame}
+      isDecorationAnimated
       sizeClassName={cn(getSize(size))}
       src={src}
     />

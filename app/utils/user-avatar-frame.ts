@@ -54,3 +54,45 @@ export const toUserAvatarFramePassLabel = (
 
   return "FREE"
 }
+
+/** アイコンの外にはみ出す装飾（画像を重ねる） */
+export const USER_AVATAR_DECORATION_FRAME_TYPE = "DECORATION"
+
+export const isUserAvatarDecoration = (
+  frame: UserAvatarFramePresentation | null | undefined,
+) => {
+  return frame?.frameType === USER_AVATAR_DECORATION_FRAME_TYPE
+}
+
+/** 止まった絵（deco/x.webp）の URL から動く絵（deco/x.anim.webp）の URL を作る */
+export const toUserAvatarDecorationAnimatedUrl = (url: string) => {
+  return url.replace(/\.webp(?=$|\?)/, ".anim.webp")
+}
+
+export const USER_AVATAR_FRAME_CATEGORIES = [
+  { key: "all", ja: "すべて", en: "All" },
+  { key: "nature", ja: "自然", en: "Nature" },
+  { key: "cute", ja: "かわいい", en: "Cute" },
+  { key: "fantasy", ja: "ファンタジー", en: "Fantasy" },
+  { key: "element", ja: "炎・氷・宇宙", en: "Elements" },
+  { key: "cyber", ja: "サイバー", en: "Cyber" },
+  { key: "wa", ja: "和", en: "Japanese" },
+  { key: "creator", ja: "クリエイター", en: "Creator" },
+  { key: "basic", ja: "シンプル", en: "Simple" },
+] as const
+
+export type UserAvatarFrameCategory =
+  (typeof USER_AVATAR_FRAME_CATEGORIES)[number]["key"]
+
+const DECORATION_SLUG_PATTERN = /^deco-([a-z]+)-/
+
+/** 装飾の slug は deco-<分類>-<名前>。それ以外の枠はシンプルに入れる */
+export const toUserAvatarFrameCategory = (
+  slug: string,
+): UserAvatarFrameCategory => {
+  const key = slug.match(DECORATION_SLUG_PATTERN)?.[1]
+  return (
+    USER_AVATAR_FRAME_CATEGORIES.find((category) => category.key === key)
+      ?.key ?? "basic"
+  )
+}

@@ -1,12 +1,18 @@
 import { cn } from "~/lib/utils"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
-import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
+import {
+  isUserAvatarDecoration,
+  toUserAvatarDecorationAnimatedUrl,
+  type UserAvatarFramePresentation,
+} from "~/utils/user-avatar-frame"
 
 type Props = {
   alt: string
   src?: string | null
   frame?: UserAvatarFramePresentation | null
   isAnimated?: boolean
+  /** 装飾を動かす（画像が重いので、プロフィールや枠選びなど 1 つだけ大きく出すところで使う） */
+  isDecorationAnimated?: boolean
   frameClassName?: string
   imageClassName?: string
   sizeClassName: string
@@ -58,6 +64,44 @@ export function UserAvatarWithFrame(props: Props) {
         imageClassName={props.imageClassName}
         displaySize={displaySize}
       />
+    )
+  }
+
+  if (isUserAvatarDecoration(props.frame) && props.frame.overlayImageUrl) {
+    return (
+      <div
+        className={cn(
+          "relative inline-flex shrink-0 rounded-full",
+          props.sizeClassName,
+          props.frameClassName,
+        )}
+      >
+        <PlainAvatar
+          className="h-full w-full"
+          src={props.src}
+          alt={props.alt}
+          imageClassName={props.imageClassName}
+          displaySize={displaySize}
+        />
+        <picture>
+          {props.isDecorationAnimated && (
+            <source
+              media="(prefers-reduced-motion: no-preference)"
+              srcSet={toUserAvatarDecorationAnimatedUrl(
+                props.frame.overlayImageUrl,
+              )}
+            />
+          )}
+          <img
+            alt=""
+            aria-hidden
+            className="pointer-events-none absolute top-1/2 left-1/2 z-[1] h-[148.4%] w-[148.4%] max-w-none -translate-x-1/2 -translate-y-1/2"
+            decoding="async"
+            loading="lazy"
+            src={props.frame.overlayImageUrl}
+          />
+        </picture>
+      </div>
     )
   }
 

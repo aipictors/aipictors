@@ -8,6 +8,7 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { AvatarFramePicker } from "~/routes/($lang).settings.profile/components/avatar-frame-picker"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
@@ -19,10 +20,7 @@ import {
   SelectCreatedWorksDialog,
 } from "~/routes/($lang).my._index/components/select-created-works-dialog"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-import {
-  canUseUserAvatarFrame,
-  toUserAvatarFramePassLabel,
-} from "~/utils/user-avatar-frame"
+import { canUseUserAvatarFrame } from "~/utils/user-avatar-frame"
 
 /**
  * プロフィール設定フォーム
@@ -237,6 +235,7 @@ export function SettingProfileForm() {
               <UserAvatarWithFrame
                 alt={t("プロフィール画像", "Profile Image")}
                 frame={selectedAvatarFrame}
+                isDecorationAnimated
                 sizeClassName="size-32"
                 src={profileImageSrc}
               />
@@ -331,109 +330,13 @@ export function SettingProfileForm() {
                 </Link>
               </div>
             )}
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              <button
-                aria-pressed={isNoFrameSelected}
-                className={cn(
-                  "relative rounded-xl border p-3 text-left transition-all",
-                  isNoFrameSelected
-                    ? "border-primary bg-primary/5 ring-2 ring-primary/20 shadow-sm"
-                    : "hover:border-primary/40 hover:bg-muted/40",
-                )}
-                disabled={!canUseAvatarFrames}
-                onClick={() => setSelectedUserAvatarFrameId(null)}
-                type="button"
-              >
-                {isNoFrameSelected && (
-                  <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 font-medium text-[10px] text-primary-foreground">
-                    <Check className="size-3" />
-                    {t("選択中", "Selected")}
-                  </span>
-                )}
-                <div className="flex items-center gap-3">
-                  <UserAvatarWithFrame
-                    alt={t("枠なし", "No Frame")}
-                    sizeClassName="size-14"
-                    src={profileImageSrc}
-                  />
-                  <div>
-                    <p className="font-medium">{t("枠なし", "No Frame")}</p>
-                    <p className="text-muted-foreground text-xs">
-                      {t("通常のアイコン表示", "Show the normal avatar")}
-                    </p>
-                  </div>
-                </div>
-              </button>
-              {avatarFrames.map((frame) => {
-                const isAllowed = canUseUserAvatarFrame(
-                  currentPassType,
-                  frame.requiredPassType,
-                )
-                const isSelected = selectedUserAvatarFrameId === frame.id
-
-                return (
-                  <button
-                    key={frame.id}
-                    aria-pressed={isSelected}
-                    className={cn(
-                      "relative rounded-xl border p-3 text-left transition-all disabled:cursor-not-allowed disabled:opacity-50",
-                      isSelected
-                        ? "border-primary bg-primary/5 ring-2 ring-primary/20 shadow-sm"
-                        : "hover:border-primary/40 hover:bg-muted/40",
-                    )}
-                    disabled={!isAllowed}
-                    onClick={() => setSelectedUserAvatarFrameId(frame.id)}
-                    type="button"
-                  >
-                    {isSelected && (
-                      <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 font-medium text-[10px] text-primary-foreground">
-                        <Check className="size-3" />
-                        {t("選択中", "Selected")}
-                      </span>
-                    )}
-                    <div className="flex items-center gap-3">
-                      <UserAvatarWithFrame
-                        alt={frame.name}
-                        frame={frame}
-                        sizeClassName="size-14"
-                        src={profileImageSrc}
-                      />
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="truncate font-medium">{frame.name}</p>
-                          <span
-                            className={cn(
-                              "rounded px-2 py-0.5 text-[10px]",
-                              isSelected
-                                ? "bg-primary/10 text-primary"
-                                : "bg-secondary",
-                            )}
-                          >
-                            {toUserAvatarFramePassLabel(frame.requiredPassType)}+
-                          </span>
-                        </div>
-                        {frame.description && (
-                          <p className="line-clamp-2 text-muted-foreground text-xs">
-                            {frame.description}
-                          </p>
-                        )}
-                        <p className="mt-1 text-[11px] text-muted-foreground">
-                          {isAllowed
-                            ? t(
-                                "クリックでこの枠をプロフィールに適用します。",
-                                "Click to apply this frame to your profile.",
-                              )
-                            : t(
-                                "この枠は必要プラン未満のため選択できません。",
-                                "This frame requires a higher subscription plan.",
-                              )}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
+            <AvatarFramePicker
+              currentPassType={currentPassType}
+              frames={avatarFrames}
+              profileImageSrc={profileImageSrc}
+              selectedFrameId={selectedUserAvatarFrameId}
+              onSelect={setSelectedUserAvatarFrameId}
+            />
           </div>
         </div>
         <div className="flex flex-col justify-between space-y-2">
@@ -724,6 +627,7 @@ const profileAvatarFrameSettingsQuery = graphql(
     }
     userAvatarFrames {
       id
+      slug
       name
       description
       requiredPassType
