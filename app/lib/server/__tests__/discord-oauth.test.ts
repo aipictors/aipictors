@@ -37,7 +37,7 @@ describe("Discord 連携の state", () => {
     expect(url.searchParams.get("client_id")).toBe("1566508809940115497")
     expect(url.searchParams.get("code_challenge")).toBe("xyz")
     expect(url.searchParams.get("code_challenge_method")).toBe("S256")
-    expect(url.searchParams.get("scope")).toBe("identify role_connections.write")
+    expect(url.searchParams.get("scope")).toBe("identify")
     expect(url.searchParams.get("redirect_uri")).toBe("https://www.aipictors.com/api/discord/callback")
   })
 

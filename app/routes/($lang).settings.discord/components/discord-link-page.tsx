@@ -13,7 +13,6 @@ import {
   ShieldCheckIcon,
   SparklesIcon,
   TriangleAlertIcon,
-  UserRoundIcon,
 } from "lucide-react"
 import { useContext, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -66,7 +65,6 @@ type DiscordLink = {
   expiryDm: boolean
   syncedAt: number | null
   syncError: boolean
-  isProfileConnected: boolean
 }
 
 type DiscordStatus = {
@@ -315,14 +313,6 @@ function DiscordUnlinkedView(props: {
               "連携ボーナスは受け取り済みです",
               "You have already received the link bonus",
             ),
-    },
-    {
-      icon: UserRoundIcon,
-      title: t("プロフィールに表示", "Shown on your profile"),
-      body: t(
-        "Discord のプロフィールに Aipictors のレベルと実績数が載ります",
-        "Your Aipictors level and achievement count appear on your Discord profile",
-      ),
     },
     {
       icon: PartyPopperIcon,
@@ -618,8 +608,8 @@ function DiscordLinkedView(props: {
       {props.link.nickStatus === "no_permission" && link.showNickname && (
         <Notice>
           {t(
-            "サーバーの管理者のニックネームは Discord の仕組み上ボットから変更できないため、✦Lv は付けられません。バッジは表示されます。",
-            "Discord doesn't let bots change server admins' nicknames, so ✦Lv can't be added. Your badge still appears.",
+            "お持ちのサーバーのロールの関係で、ボットからニックネームを変更できないため ✦Lv を付けられません。バッジは表示されます。",
+            "Your server roles don't let the bot change your nickname, so ✦Lv can't be added. Your badge still appears.",
           )}
         </Notice>
       )}
@@ -733,15 +723,6 @@ function DiscordLinkedView(props: {
           </div>
         ))}
       </section>
-
-      {!props.link.isProfileConnected && (
-        <Notice>
-          {t(
-            "Discord のプロフィールへの表示が止まっています。解除してもう一度連携すると直ります。",
-            "Your Discord profile is no longer updating. Unlink and link again to fix it.",
-          )}
-        </Notice>
-      )}
 
       <div className="flex justify-end">
         <AlertDialog>

@@ -7,7 +7,7 @@
 
 /** Discord アプリ「Aipictors」（公開クライアントなので secret はなく PKCE で確かめる） */
 export const DISCORD_CLIENT_ID = "1566508809940115497"
-export const DISCORD_OAUTH_SCOPES = "identify role_connections.write"
+export const DISCORD_OAUTH_SCOPES = "identify"
 export const DISCORD_REDIRECT_URI =
   "https://www.aipictors.com/api/discord/callback"
 export const DISCORD_NONCE_COOKIE = "discord_oauth_nonce"
