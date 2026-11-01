@@ -630,7 +630,7 @@ export function PlusForm () {
                           : currentPass.type === "STANDARD"
                             ? 300
                             : 100
-                      }プレミアムコイン（期限なし・直近30日に生成した方）`}
+                      }プレミアムコイン（期限なし）`}
                     </p>
                   </div>
                 )}
