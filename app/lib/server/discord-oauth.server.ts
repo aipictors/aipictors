@@ -5,11 +5,13 @@
  * Cookie がないと、他人に連携用の URL を開かせて自分のアカウントに連携させることができてしまう
  */
 
-export const DISCORD_CLIENT_ID = "1306188881418391573"
+/** Discord アプリ「Aipictors」（公開クライアントなので secret はなく PKCE で確かめる） */
+export const DISCORD_CLIENT_ID = "1566508809940115497"
 export const DISCORD_OAUTH_SCOPES = "identify role_connections.write"
 export const DISCORD_REDIRECT_URI =
   "https://www.aipictors.com/api/discord/callback"
 export const DISCORD_NONCE_COOKIE = "discord_oauth_nonce"
+export const DISCORD_VERIFIER_COOKIE = "discord_oauth_verifier"
 
 const STATE_TTL_SECONDS = 10 * 60
 
@@ -73,13 +75,28 @@ export const verifyDiscordOAuthState = async (props: {
   return userId
 }
 
-export const toDiscordAuthorizeUrl = (state: string) => {
+/** PKCE の verifier と、認可画面に渡す challenge */
+export const createDiscordPkce = async () => {
+  const verifier = toBase64Url(crypto.getRandomValues(new Uint8Array(32)))
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(verifier),
+  )
+  return { verifier, challenge: toBase64Url(new Uint8Array(digest)) }
+}
+
+export const toDiscordAuthorizeUrl = (props: {
+  state: string
+  codeChallenge: string
+}) => {
   const params = new URLSearchParams({
     client_id: DISCORD_CLIENT_ID,
     response_type: "code",
     redirect_uri: DISCORD_REDIRECT_URI,
     scope: DISCORD_OAUTH_SCOPES,
-    state,
+    state: props.state,
+    code_challenge: props.codeChallenge,
+    code_challenge_method: "S256",
     prompt: "consent",
   })
   return `https://discord.com/oauth2/authorize?${params.toString()}`

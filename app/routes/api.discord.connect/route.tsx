@@ -2,18 +2,19 @@ import type { ActionFunctionArgs } from "@remix-run/cloudflare"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import {
   createDiscordOAuthState,
+  createDiscordPkce,
   DISCORD_NONCE_COOKIE,
+  DISCORD_VERIFIER_COOKIE,
   toDiscordAuthorizeUrl,
 } from "~/lib/server/discord-oauth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 
-const toJson = (body: unknown, status: number, headers?: HeadersInit) =>
+const toJson = (body: unknown, status: number) =>
   new Response(JSON.stringify(body), {
     status,
     headers: {
       "content-type": "application/json",
       "cache-control": "no-store",
-      ...headers,
     },
   })
 
@@ -46,7 +47,22 @@ export async function action({ request, context }: ActionFunctionArgs) {
     now: Math.floor(Date.now() / 1000),
   })
 
-  return toJson({ error: null, data: { url: toDiscordAuthorizeUrl(state) } }, 200, {
-    "set-cookie": `${DISCORD_NONCE_COOKIE}=${nonce}; Path=/api/discord; Max-Age=600; HttpOnly; Secure; SameSite=Lax`,
+  const pkce = await createDiscordPkce()
+  const cookieOptions = "Path=/api/discord; Max-Age=600; HttpOnly; Secure; SameSite=Lax"
+  const headers = new Headers({
+    "content-type": "application/json",
+    "cache-control": "no-store",
   })
+  headers.append("set-cookie", `${DISCORD_NONCE_COOKIE}=${nonce}; ${cookieOptions}`)
+  headers.append("set-cookie", `${DISCORD_VERIFIER_COOKIE}=${pkce.verifier}; ${cookieOptions}`)
+
+  return new Response(
+    JSON.stringify({
+      error: null,
+      data: {
+        url: toDiscordAuthorizeUrl({ state, codeChallenge: pkce.challenge }),
+      },
+    }),
+    { status: 200, headers },
+  )
 }

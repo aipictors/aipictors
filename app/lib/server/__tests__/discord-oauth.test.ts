@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import {
   createDiscordOAuthState,
+  createDiscordPkce,
   readCookie,
   toDiscordAuthorizeUrl,
   verifyDiscordOAuthState,
@@ -31,10 +32,20 @@ describe("Discord 連携の state", () => {
   })
 
   test("認可 URL に必要なものが入る", () => {
-    const url = new URL(toDiscordAuthorizeUrl("abc"))
+    const url = new URL(toDiscordAuthorizeUrl({ state: "abc", codeChallenge: "xyz" }))
     expect(url.searchParams.get("state")).toBe("abc")
+    expect(url.searchParams.get("client_id")).toBe("1566508809940115497")
+    expect(url.searchParams.get("code_challenge")).toBe("xyz")
+    expect(url.searchParams.get("code_challenge_method")).toBe("S256")
     expect(url.searchParams.get("scope")).toBe("identify role_connections.write")
     expect(url.searchParams.get("redirect_uri")).toBe("https://www.aipictors.com/api/discord/callback")
+  })
+
+  test("PKCE は RFC 7636 の例と同じ計算", async () => {
+    const pkce = await createDiscordPkce()
+    expect(pkce.verifier.length).toBeGreaterThanOrEqual(43)
+    expect(pkce.challenge).toMatch(/^[A-Za-z0-9_-]{43}$/)
+    expect(pkce.challenge).not.toBe(pkce.verifier)
   })
 
   test("Cookie を読む", () => {

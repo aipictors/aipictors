@@ -6,20 +6,25 @@ import {
 import {
   DISCORD_NONCE_COOKIE,
   DISCORD_REDIRECT_URI,
+  DISCORD_VERIFIER_COOKIE,
   readCookie,
   verifyDiscordOAuthState,
 } from "~/lib/server/discord-oauth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 
-const toSettings = (params: Record<string, string>) =>
-  new Response(null, {
-    status: 302,
-    headers: {
-      location: `/settings/discord?${new URLSearchParams(params).toString()}`,
-      "cache-control": "no-store",
-      "set-cookie": `${DISCORD_NONCE_COOKIE}=; Path=/api/discord; Max-Age=0; HttpOnly; Secure; SameSite=Lax`,
-    },
+const toSettings = (params: Record<string, string>) => {
+  const headers = new Headers({
+    location: `/settings/discord?${new URLSearchParams(params).toString()}`,
+    "cache-control": "no-store",
   })
+  for (const name of [DISCORD_NONCE_COOKIE, DISCORD_VERIFIER_COOKIE]) {
+    headers.append(
+      "set-cookie",
+      `${name}=; Path=/api/discord; Max-Age=0; HttpOnly; Secure; SameSite=Lax`,
+    )
+  }
+  return new Response(null, { status: 302, headers })
+}
 
 /**
  * Discord の認可画面から戻ってくるところ
@@ -38,13 +43,15 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     return toSettings({ result: "error" })
   }
 
+  const cookie = request.headers.get("cookie")
+  const codeVerifier = readCookie(cookie, DISCORD_VERIFIER_COOKIE)
   const userId = await verifyDiscordOAuthState({
     secret,
     state,
-    nonce: readCookie(request.headers.get("cookie"), DISCORD_NONCE_COOKIE),
+    nonce: readCookie(cookie, DISCORD_NONCE_COOKIE),
     now: Math.floor(Date.now() / 1000),
   })
-  if (userId === null) {
+  if (userId === null || codeVerifier === null) {
     return toSettings({ result: "expired" })
   }
 
@@ -58,6 +65,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
           userId,
           code,
           redirectUri: DISCORD_REDIRECT_URI,
+          codeVerifier,
         }),
       },
     )
