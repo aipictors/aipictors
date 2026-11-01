@@ -138,7 +138,7 @@ export function SettingsNavigation() {
       </SettingNavigationButton>
       <SettingNavigationButton href={"/settings/points"} icon={CoinsIcon}>
         <div className="flex w-full items-center justify-between">
-          {t("ポイント", "Points")}
+          {t("コイン", "Coins")}
           <div className="ml-auto text-right md:hidden">
             <ChevronRight />
           </div>

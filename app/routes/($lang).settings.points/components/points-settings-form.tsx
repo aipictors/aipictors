@@ -1,10 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Link, useLocation, useNavigate, useSearchParams } from "@remix-run/react"
-import { CoinIcon } from "~/components/coin-icon"
-import { CoinHelpDialog } from "~/components/coin-help-dialog"
-import { PremiumCoinIcon } from "~/components/premium-coin-icon"
-import { AmazonExchangeCodesPanel } from "~/components/amazon-exchange-codes-panel"
 import {
   Dialog,
   DialogContent,
@@ -15,54 +11,33 @@ import {
 } from "~/components/ui/dialog"
 import {
   getViewerRequestHeaders,
+  getViewerRequestSessionId,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
 import { Button } from "~/components/ui/button"
-import { Label } from "~/components/ui/label"
-import { Switch } from "~/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { useLocalStorage } from "usehooks-ts"
 import { useTranslation } from "~/hooks/use-translation"
 import { PREMIUM_COIN_CONFIRM_STORAGE_KEY } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
 import { AmazonExchangeSection } from "~/routes/($lang).settings.points/components/amazon-exchange-section"
-import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
-import { SupportRankingSection } from "~/routes/($lang).settings.points/components/support-ranking-section"
+import { CoinBalanceCard } from "~/routes/($lang).settings.points/components/coin-balance-card"
+import { CoinExpiryTab } from "~/routes/($lang).settings.points/components/coin-expiry-tab"
+import {
+  CoinHistoryTab,
+  LEDGER_PAGE_SIZE,
+} from "~/routes/($lang).settings.points/components/coin-history-tab"
+import { CoinSupportTab } from "~/routes/($lang).settings.points/components/coin-support-tab"
+import type { LedgerItem } from "~/routes/($lang).settings.points/utils/coin-ledger"
+import {
+  type CachedCoinSummary,
+  type ExpiringCoinLot,
+  readCoinSummaryCache,
+  writeCoinSummaryCache,
+} from "~/routes/($lang).settings.points/utils/coin-summary-cache"
 import { AuthContext } from "~/contexts/auth-context"
-
-const jstDateFormatter = new Intl.DateTimeFormat("ja-JP", {
-  timeZone: "Asia/Tokyo",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-})
-
-const jstDateTimeFormatter = new Intl.DateTimeFormat("ja-JP", {
-  timeZone: "Asia/Tokyo",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false,
-})
 
 const formatCoinAmount = (value: number) => {
   return value.toLocaleString()
-}
-
-type LedgerItem = {
-  id: number
-  coinType: "FREE" | "PREMIUM"
-  delta: number
-  kind: string
-  reason: string | null
-  source: string | null
-  createdAt: number
-}
-
-type ExpiringCoinLot = {
-  coinType: "FREE" | "PREMIUM"
-  amount: number
-  expiresAt: number
 }
 
 type SummaryResponse = {
@@ -116,6 +91,23 @@ const normalizeUnixTimestampSeconds = (value: unknown) => {
   return null
 }
 
+const normalizeLedger = (rows: unknown): LedgerItem[] => {
+  if (!Array.isArray(rows)) return []
+
+  return (rows as LedgerItem[])
+    .map((row) => {
+      const createdAt = normalizeUnixTimestampSeconds(row.createdAt)
+      if (createdAt === null) return null
+
+      return {
+        ...row,
+        createdAt,
+        delta: Number(row.delta),
+      }
+    })
+    .filter((row): row is LedgerItem => row !== null)
+}
+
 const normalizeSummaryData = (
   data: SummaryResponse["data"],
 ): SummaryResponse["data"] => {
@@ -123,19 +115,7 @@ const normalizeSummaryData = (
 
   return {
     ...data,
-    ledger: Array.isArray(data.ledger)
-      ? data.ledger
-          .map((row) => {
-            const createdAt = normalizeUnixTimestampSeconds(row.createdAt)
-            if (createdAt === null) return null
-
-            return {
-              ...row,
-              createdAt,
-            }
-          })
-          .filter((row): row is LedgerItem => row !== null)
-      : [],
+    ledger: normalizeLedger(data.ledger),
     expiringLots: Array.isArray(data.expiringLots)
       ? data.expiringLots
           .map((row) => {
@@ -152,6 +132,14 @@ const normalizeSummaryData = (
   }
 }
 
+const COIN_TABS = ["history", "expiry", "support", "exchange"] as const
+
+type CoinTab = (typeof COIN_TABS)[number]
+
+const toCoinTab = (value: string | null): CoinTab => {
+  return COIN_TABS.find((tab) => tab === value) ?? "history"
+}
+
 export function PointsSettingsForm() {
   const t = useTranslation()
   const [isPremiumCoinConfirmEnabled, setIsPremiumCoinConfirmEnabled] =
@@ -165,8 +153,18 @@ export function PointsSettingsForm() {
   const checkoutState = searchParams.get("checkout")
   const checkoutSessionId = searchParams.get("session_id")
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [summary, setSummary] = useState<SummaryResponse["data"]>(null)
+  const [activeTab, setActiveTab] = useState<CoinTab>(() =>
+    toCoinTab(searchParams.get("tab")),
+  )
+  // タブは開いたときに初めて読み込み、開いたものは切り替えても残す
+  const [visitedTabs, setVisitedTabs] = useState<ReadonlySet<CoinTab>>(
+    () => new Set([activeTab]),
+  )
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasLoadError, setHasLoadError] = useState(false)
+  const [balance, setBalance] = useState<CachedCoinSummary | null>(null)
+  const [ledger, setLedger] = useState<LedgerItem[] | null>(null)
+  const hasStartedLoadingRef = useRef(false)
   const [isPremiumPurchaseDialogOpen, setIsPremiumPurchaseDialogOpen] =
     useState(false)
   const [isConfirmingPremiumPurchase, setIsConfirmingPremiumPurchase] =
@@ -179,174 +177,6 @@ export function PointsSettingsForm() {
     null,
   )
 
-  // Free coin ledger for "today's breakdown"
-  const freeLedger = (summary?.ledger ?? []).filter(
-    (row) => row.coinType === "FREE",
-  )
-  // All ledger for history display
-  const visibleLedger = (summary?.ledger ?? [])
-    .slice()
-    .sort((a, b) => b.createdAt - a.createdAt)
-  const hasLedger = visibleLedger.length > 0
-  const todayJstKey = jstDateFormatter.format(new Date())
-  const todayLedger = freeLedger.filter(
-    (row) =>
-      jstDateFormatter.format(new Date(row.createdAt * 1000)) === todayJstKey,
-  )
-  const grantedCoins = todayLedger.reduce((total, row) => {
-    if (row.kind === "GRANT" || row.kind === "INITIAL_GRANT") {
-      return total + Math.max(row.delta, 0)
-    }
-
-    return total
-  }, 0)
-  const consumedCoins = todayLedger.reduce((total, row) => {
-    if (row.kind !== "CONSUME") {
-      return total
-    }
-
-    return total + Math.abs(row.delta)
-  }, 0)
-  const expiredCoins = todayLedger.reduce((total, row) => {
-    if (row.kind !== "EXPIRE") {
-      return total
-    }
-
-    return total + Math.abs(row.delta)
-  }, 0)
-  // フリー・プレミアムとも、失効する日時の早い順に並べる
-  // （プレミアムは期限が 3 か月と長く、いつ失効するのか分かりにくいという要望があった）
-  const visibleExpiringLots = [...(summary?.expiringLots ?? [])].sort(
-    (a, b) =>
-      a.expiresAt - b.expiresAt ||
-      (a.coinType === b.coinType ? 0 : a.coinType === "FREE" ? -1 : 1),
-  )
-  // 応援で受け取ったプレミアムコインなど、失効日のないプレミアムコイン（失効予定の一覧には出ない）。
-  // 一覧は最大 50 件なので、50 件あるときは正確に出せないため表示しない
-  const nonExpiringPremiumCoins =
-    summary && visibleExpiringLots.length < 50
-      ? Math.max(
-          0,
-          (summary.premiumBalance ?? 0) -
-            visibleExpiringLots
-              .filter((row) => row.coinType === "PREMIUM")
-              .reduce((total, row) => total + row.amount, 0),
-        )
-      : 0
-  const hasMoreExpiringLots = visibleExpiringLots.length > 3
-  const [isExpandedExpiringLots, setIsExpandedExpiringLots] = useState(false)
-  const displayedExpiringLots = isExpandedExpiringLots
-    ? visibleExpiringLots
-    : visibleExpiringLots.slice(0, 3)
-  const hiddenExpiringCoins = visibleExpiringLots
-    .slice(3)
-    .reduce((total, row) => total + row.amount, 0)
-
-  const formatLedgerDateTime = (createdAt: number) => {
-    return jstDateTimeFormatter
-      .format(new Date(createdAt * 1000))
-      .replace(/\//g, "/")
-  }
-
-  const getHistoryTitle = (row: LedgerItem) => {
-    const isAdminBulkAdjust = row.reason === "ADMIN_BULK_ADJUST"
-
-    if (row.coinType === "PREMIUM") {
-      if (row.kind === "CONSUME") {
-        return isAdminBulkAdjust
-          ? t("プレミアムコイン減少", "Premium coins reduced")
-          : t("プレミアムコインを使用", "Premium coins used")
-      }
-      if (row.kind === "EXPIRE")
-        return t("プレミアムコイン失効", "Premium coins expired")
-      return t("プレミアムコイン付与", "Premium coins granted")
-    }
-
-    if (row.kind === "CONSUME") {
-      return isAdminBulkAdjust
-        ? t("フリーコイン減少", "Free coins reduced")
-        : t("フリーコインを使用", "Free coins used")
-    }
-
-    if (row.kind === "EXPIRE") {
-      return t("フリーコイン失効", "Free coins expired")
-    }
-
-    return t("フリーコイン付与", "Free coins granted")
-  }
-
-  const getHistoryDetail = (row: LedgerItem) => {
-    const reason = row.reason ?? ""
-
-    if (reason === "image-generation:text_to_image") {
-      return t("通常生成", "Standard generation")
-    }
-
-    if (reason === "image-generation:image_to_image") {
-      return t("画像修正", "Image modification")
-    }
-
-    if (reason === "image-generation:inpainting") {
-      return t("画像修正", "Image modification")
-    }
-
-    if (reason === "image-generation:reserved:text_to_image") {
-      return t("通常生成（予約）", "Reserved standard generation")
-    }
-
-    if (reason === "image-generation:reserved:image_to_image") {
-      return t("画像修正（予約）", "Reserved image modification")
-    }
-
-    if (reason === "image-generation:reserved:inpainting") {
-      return t("画像修正（予約）", "Reserved image modification")
-    }
-
-    if (reason === "image-generation:flux") {
-      return t("FLUX生成", "FLUX generation")
-    }
-
-    if (reason === "image-generation:gemini-2.5-flash-image") {
-      return t("Gemini Nano Banana", "Gemini Nano Banana")
-    }
-
-    if (reason === "image-generation:gemini-3.1-flash-image-preview") {
-      return t("Gemini Nano Banana 2", "Gemini Nano Banana 2")
-    }
-
-    const dailyGrantMatch = reason.match(
-      /^(FREE|LITE|STANDARD|PREMIUM) daily generation coin grant$/,
-    )
-
-    if (dailyGrantMatch) {
-      return t(
-        `${dailyGrantMatch[1]}プランの毎日付与`,
-        `${dailyGrantMatch[1]} plan daily grant`,
-      )
-    }
-
-    const initialGrantMatch = reason.match(
-      /^(FREE|LITE|STANDARD|PREMIUM) initial generation coin grant$/,
-    )
-
-    if (initialGrantMatch) {
-      return t(
-        `${initialGrantMatch[1]}プランの初回付与`,
-        `${initialGrantMatch[1]} plan initial grant`,
-      )
-    }
-
-    if (reason === "Daily coin expiration") {
-      return t("当日24:00の期限切れ", "Expired at 24:00 on the grant day")
-    }
-
-    if (reason === "ADMIN_BULK_ADJUST") {
-      return t("管理者による一括コイン操作", "Bulk coin operation by moderator")
-    }
-
-    return reason || t("詳細なし", "No details")
-  }
-
   const withAuthHeader = async () => {
     try {
       return await getViewerRequestHeaders({ includeJsonContentType: true })
@@ -357,16 +187,16 @@ export function PointsSettingsForm() {
 
   const loadSummary = async () => {
     if (!hasViewerRequestSession()) {
-      setSummary(null)
       setIsLoading(false)
       return
     }
 
     try {
       setIsLoading(true)
+      setHasLoadError(false)
       const headers = await withAuthHeader()
       const response = await fetch(
-        "/api/coins/summary?includeLedger=1&includeExpiringLots=1",
+        `/api/coins/summary?includeLedger=1&includeExpiringLots=1&includeLedgerLimit=${LEDGER_PAGE_SIZE}`,
         {
           method: "GET",
           headers,
@@ -379,8 +209,19 @@ export function PointsSettingsForm() {
         throw new Error(json.error ?? "Failed to load points")
       }
 
-      setSummary(normalizeSummaryData(json.data))
+      const data = normalizeSummaryData(json.data)
+
+      if (data) {
+        setBalance(data)
+        setLedger(data.ledger)
+
+        const viewerId = getViewerRequestSessionId()
+        if (viewerId) {
+          writeCoinSummaryCache(viewerId, Math.floor(Date.now() / 1000), data)
+        }
+      }
     } catch (error) {
+      setHasLoadError(true)
       if (error instanceof Error) {
         toast(error.message)
       }
@@ -390,8 +231,36 @@ export function PointsSettingsForm() {
   }
 
   useEffect(() => {
+    if (hasStartedLoadingRef.current || !hasViewerRequestSession()) {
+      return
+    }
+    hasStartedLoadingRef.current = true
+
+    const viewerId = getViewerRequestSessionId()
+    if (viewerId) {
+      const cached = readCoinSummaryCache(viewerId, Math.floor(Date.now() / 1000))
+      if (cached) {
+        setBalance(cached)
+      }
+    }
+
     void loadSummary()
-  }, [])
+  }, [authContext.isLoading, authContext.isLoggedIn])
+
+  const handleTabChange = (value: string) => {
+    const tab = toCoinTab(value)
+    setActiveTab(tab)
+    setVisitedTabs((current) => new Set([...current, tab]))
+
+    // サーバーへの再読み込みが走らないよう、URL だけ書き換える
+    const url = new URL(window.location.href)
+    if (tab === "history") {
+      url.searchParams.delete("tab")
+    } else {
+      url.searchParams.set("tab", tab)
+    }
+    window.history.replaceState(window.history.state, "", url)
+  }
 
   useEffect(() => {
     if (checkoutState === "premium-cancel") {
@@ -598,331 +467,94 @@ export function PointsSettingsForm() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-col gap-3 rounded-xl border p-5 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-2">
-          <p className="font-semibold text-lg">
-            {t("コイン・pt・推しのガイド", "Coins, pt and support guide")}
-          </p>
-          <p className="text-muted-foreground text-sm leading-6">
-            {t(
-              "フリーコインとプレミアムコインの違い、pt の計算、推しランキングと貢献度ランキングの仕組みを確認できます。",
-              "Review the difference between free and premium coins, how pt is calculated, and how the support and contribution rankings work.",
-            )}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <CoinHelpDialog />
-          <Button asChild variant="outline" size="sm">
-            <Link to="/help?tab=coins">
-              {t("/help のガイドを見る", "Open the guide on /help")}
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {/* Free coin balance */}
-      <div className="rounded-xl border p-5">
-        <p className="flex items-center gap-2 font-semibold text-lg">
-          <CoinIcon className="h-5 w-5 shrink-0" />
-          <span>{t("現在使えるフリーコイン", "Free coins available now")}</span>
-        </p>
-        <p className="mt-3 font-bold text-4xl">
-          {isLoading ? "..." : formatCoinAmount(summary?.freeBalance ?? 0)}
-          <span className="ml-2 font-semibold text-xl">
-            {t("コイン", "coins")}
-          </span>
-        </p>
-        <p className="mt-3 text-muted-foreground text-sm leading-6">
-          {t(
-            "ユーザーへの応援もしくは、画像生成に使える無料コインです。付与されたコインは当日の24:00に失効します。",
-            "These free coins can be used for image generation. Granted coins expire at 24:00 on the same day.",
-          )}
-        </p>
-      </div>
-
-      {/* Premium coin balance */}
-      <div className="rounded-xl border p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="flex items-center gap-2 font-semibold text-lg">
-              <PremiumCoinIcon className="h-5 w-5 shrink-0" />
-              <span>{t("プレミアムコイン", "Premium Coins")}</span>
-            </p>
-            <p className="mt-3 font-bold text-4xl">
-              {isLoading
-                ? "..."
-                : formatCoinAmount(summary?.premiumBalance ?? 0)}
-              <span className="ml-2 font-semibold text-xl">
-                {t("コイン", "coins")}
-              </span>
-            </p>
-            <p className="mt-3 text-muted-foreground text-sm leading-6">
-              {t(
-                "購入したプレミアムコインです。生成時はフリーコインを優先して消費します。購入から3ヶ月で期限切れになります。",
-                "Purchased premium coins. Free coins are consumed first during generation. Coins expire 3 months after purchase.",
-              )}
-            </p>
-            <p className="mt-3 text-muted-foreground text-sm leading-6">
-              {t(
-                "プレミアムコインはユーザーを推すときにも使えます。フリーコインは 1コイン = 1pt、プレミアムコインは 1コイン = 10pt として、推しランキング・貢献度ランキングに反映されます。",
-                "Premium coins can also be used to support users. Free coins count as 1pt each and premium coins count as 10pt each in the support and contribution rankings.",
-              )}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-3 text-sm">
-              <Link className="underline underline-offset-4" to="/premium-coins/policy">
-                {t(
-                  "プレミアムコイン規約・ポリシーを見る",
-                  "View Premium Coin Policy",
-                )}
-              </Link>
-              <Link
-                className="underline underline-offset-4"
-                to="/specified-commercial-transaction-act"
-              >
-                {t(
-                  "特定商取引法に基づく表記を見る",
-                  "View Specified Commercial Transaction Act",
-                )}
-              </Link>
-            </div>
-            <div className="mt-4 flex items-center gap-2">
-              <Switch
-                id="premium-coin-confirm"
-                checked={isPremiumCoinConfirmEnabled}
-                onCheckedChange={setIsPremiumCoinConfirmEnabled}
-              />
-              <Label htmlFor="premium-coin-confirm" className="text-sm">
-                {t(
-                  "生成でプレミアムコインを使う前に確認する",
-                  "Ask before using premium coins for generation",
-                )}
-              </Label>
-            </div>
-          </div>
-          <div className="shrink-0">
-            <PurchasePremiumCoinsDialog
-              currentBalance={summary?.premiumBalance ?? 0}
-            />
-          </div>
-        </div>
-      </div>
-
-      <SupportRankingSection />
-
-      <div className="flex justify-end">
-        <Button asChild variant="outline">
-          <Link to="/settings/support-received">
-            {t(
-              "推された累計とAmazon交換を見る",
-              "View received support totals & Amazon exchange",
-            )}
-          </Link>
-        </Button>
-      </div>
-
-      <AmazonExchangeSection
-        premiumBalance={summary?.premiumBalance ?? 0}
-        exchangeablePremiumBalance={summary?.exchangeablePremiumBalance ?? 0}
+      <CoinBalanceCard
+        summary={balance}
+        isLoading={isLoading}
+        hasError={hasLoadError}
+        onRetry={() => void loadSummary()}
+        isPremiumCoinConfirmEnabled={isPremiumCoinConfirmEnabled}
+        onPremiumCoinConfirmChange={setIsPremiumCoinConfirmEnabled}
       />
 
-      <AmazonExchangeCodesPanel />
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <TabsList className="grid h-11 w-full grid-cols-4">
+          <TabsTrigger value="history" className="h-9 px-1">
+            {t("履歴", "History")}
+          </TabsTrigger>
+          <TabsTrigger value="expiry" className="h-9 px-1">
+            {t("有効期限", "Expiry")}
+          </TabsTrigger>
+          <TabsTrigger value="support" className="h-9 px-1">
+            {t("推し", "Support")}
+          </TabsTrigger>
+          <TabsTrigger value="exchange" className="h-9 px-1">
+            {t("ギフト券", "Gift cards")}
+          </TabsTrigger>
+        </TabsList>
 
-      <div className="space-y-3 rounded-xl border p-4">
-        <p className="font-semibold text-lg">
-          {t("今日の内訳", "Today's breakdown")}
-        </p>
-        <div className="grid gap-2 text-sm md:grid-cols-3">
-          <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-xs">
-              {t("今日もらったコイン", "Coins received today")}
-            </p>
-            <p className="font-semibold text-xl">
-              {formatCoinAmount(grantedCoins)}
-            </p>
-            <p className="mt-1 text-muted-foreground text-xs">
-              {t("本日付与された無料コイン", "Free coins granted today")}
-            </p>
-          </div>
-          <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-xs">
-              {t("今日使ったコイン", "Coins used today")}
-            </p>
-            <p className="font-semibold text-xl">
-              {formatCoinAmount(consumedCoins)}
-            </p>
-            <p className="mt-1 text-muted-foreground text-xs">
-              {t(
-                "画像生成などで使用済み",
-                "Used for image generation and related features",
-              )}
-            </p>
-          </div>
-          <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-xs">
-              {t("今日失効したコイン", "Coins expired today")}
-            </p>
-            <p className="font-semibold text-xl">
-              {formatCoinAmount(expiredCoins)}
-            </p>
-            <p className="mt-1 text-muted-foreground text-xs">
-              {t(
-                "24:00に期限切れになったコイン",
-                "Coins that expired at 24:00",
-              )}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-3 rounded-xl border p-4">
-        <p className="font-semibold text-lg">
-          {t("フリーコインの使い方", "How to use free coins")}
-        </p>
-        <p className="text-sm leading-6">
-          {t(
-            "画像生成を行うと、使用するモデルや機能に応じてフリーコインを消費します。",
-            "When you generate images, free coins are consumed depending on the model and feature you use.",
+        <TabsContent
+          value="history"
+          forceMount
+          className="mt-4 data-[state=inactive]:hidden"
+        >
+          <CoinHistoryTab
+            ledger={ledger}
+            isLoading={isLoading}
+            onRefresh={() => void loadSummary()}
+            normalizeLedger={normalizeLedger}
+          />
+        </TabsContent>
+        <TabsContent
+          value="expiry"
+          forceMount
+          className="mt-4 data-[state=inactive]:hidden"
+        >
+          {visitedTabs.has("expiry") && <CoinExpiryTab summary={balance} />}
+        </TabsContent>
+        <TabsContent
+          value="support"
+          forceMount
+          className="mt-4 data-[state=inactive]:hidden"
+        >
+          {visitedTabs.has("support") && <CoinSupportTab />}
+        </TabsContent>
+        <TabsContent
+          value="exchange"
+          forceMount
+          className="mt-4 data-[state=inactive]:hidden"
+        >
+          {visitedTabs.has("exchange") && (
+            <AmazonExchangeSection
+              premiumBalance={balance?.premiumBalance ?? 0}
+              exchangeablePremiumBalance={
+                balance?.exchangeablePremiumBalance ?? 0
+              }
+              lockedExchangePremiumBalance={
+                balance?.lockedExchangePremiumBalance ?? 0
+              }
+              isBalanceLoading={balance === null}
+              onApplied={() => void loadSummary()}
+            />
           )}
-        </p>
-        <p className="text-amber-600 text-sm dark:text-amber-400">
+        </TabsContent>
+      </Tabs>
+
+      <div className="flex flex-wrap gap-x-4 gap-y-1 border-t pt-4 text-muted-foreground text-xs">
+        <Link className="hover:underline" to="/help?tab=coins">
+          {t("コインのガイド", "Coin guide")}
+        </Link>
+        <Link className="hover:underline" to="/premium-coins/policy">
+          {t("プレミアムコイン規約・ポリシー", "Premium Coin Policy")}
+        </Link>
+        <Link
+          className="hover:underline"
+          to="/specified-commercial-transaction-act"
+        >
           {t(
-            "付与されたフリーコインは、付与日の24:00に失効します。",
-            "Granted free coins expire at 24:00 on the day they are granted.",
+            "特定商取引法に基づく表記",
+            "Specified Commercial Transaction Act",
           )}
-        </p>
-        {summary?.granted && (
-          <p className="text-emerald-600 text-sm">
-            {t(
-              `本日の付与コインとして ${formatCoinAmount(summary.grantedFreeCoins + summary.grantedPremiumCoins)} コインを付与済みです。本日24:00まで有効です。`,
-              `Your daily coin grant of ${formatCoinAmount(summary.grantedFreeCoins + summary.grantedPremiumCoins)} coins has been granted and is valid until 24:00 today.`,
-            )}
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-3 rounded-xl border p-4">
-        <p className="font-semibold text-lg">
-          {t("失効予定コイン", "Coins scheduled to expire")}
-        </p>
-        {displayedExpiringLots.length === 0 && nonExpiringPremiumCoins === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            {t(
-              "現在、失効予定のコインはありません",
-              "No coins are currently scheduled to expire",
-            )}
-          </p>
-        ) : (
-          <div className="space-y-2">
-            {displayedExpiringLots.map((row, index) => (
-              <div
-                key={`${row.coinType}-${row.expiresAt}-${index}`}
-                className="flex items-center justify-between rounded-lg border p-3 text-sm"
-              >
-                <span className="flex items-center gap-2 font-semibold">
-                  {row.coinType === "PREMIUM" ? (
-                    <PremiumCoinIcon className="h-4 w-4 shrink-0" />
-                  ) : (
-                    <CoinIcon className="h-4 w-4 shrink-0" />
-                  )}
-                  <span>
-                    {formatCoinAmount(row.amount)}
-                    {t("コイン", "coins")}
-                  </span>
-                  <span className="font-normal text-muted-foreground text-xs">
-                    {row.coinType === "PREMIUM"
-                      ? t("プレミアム", "Premium")
-                      : t("フリー", "Free")}
-                  </span>
-                </span>
-                <span className="text-muted-foreground">
-                  {formatLedgerDateTime(row.expiresAt)}
-                </span>
-              </div>
-            ))}
-            {hasMoreExpiringLots && !isExpandedExpiringLots && (
-              <Button
-                variant="outline"
-                onClick={() => setIsExpandedExpiringLots(true)}
-                className="w-full justify-center"
-              >
-                {t(
-                  `もっと見る（${formatCoinAmount(hiddenExpiringCoins)}コイン）`,
-                  `Show more (${formatCoinAmount(hiddenExpiringCoins)} coins)`,
-                )}
-              </Button>
-            )}
-            {nonExpiringPremiumCoins > 0 && (
-              <div className="flex items-center justify-between gap-3 rounded-lg border border-dashed p-3 text-sm">
-                <span className="flex items-center gap-2 font-semibold">
-                  <PremiumCoinIcon className="h-4 w-4 shrink-0" />
-                  <span>
-                    {formatCoinAmount(nonExpiringPremiumCoins)}
-                    {t("コイン", "coins")}
-                  </span>
-                  <span className="font-normal text-muted-foreground text-xs">
-                    {t("プレミアム（応援で受け取った分など）", "Premium (received as support, etc.)")}
-                  </span>
-                </span>
-                <span className="shrink-0 text-muted-foreground">
-                  {t("失効しません", "No expiry")}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-3 rounded-xl border p-4">
-        <div className="flex items-center justify-between">
-          <p className="font-semibold text-lg">
-            {t("利用履歴", "Usage history")}
-          </p>
-          <Button variant="outline" onClick={loadSummary} disabled={isLoading}>
-            {t("履歴を更新", "Refresh history")}
-          </Button>
-        </div>
-        {!hasLedger ? (
-          <p className="text-muted-foreground text-sm">
-            {t("履歴はありません", "No history")}
-          </p>
-        ) : (
-          <div className="space-y-2">
-            {visibleLedger.map((row) => (
-              <div key={row.id} className="rounded-lg border p-3 text-sm">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold">{getHistoryTitle(row)}</p>
-                      {row.coinType === "PREMIUM" && (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-700 text-xs dark:bg-amber-900/40 dark:text-amber-400">
-                          {t("プレミアム", "Premium")}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-muted-foreground text-xs">
-                      {getHistoryDetail(row)}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      {formatLedgerDateTime(row.createdAt)}
-                    </p>
-                  </div>
-                  <span
-                    className={
-                      row.delta >= 0
-                        ? "font-semibold text-emerald-600"
-                        : "font-semibold text-red-600"
-                    }
-                  >
-                    {row.delta > 0
-                      ? `+${formatCoinAmount(row.delta)}`
-                      : `-${formatCoinAmount(Math.abs(row.delta))}`}{" "}
-                    {t("コイン", "coins")}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        </Link>
       </div>
     </div>
   )

@@ -10,7 +10,7 @@ import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.SETTINGS_ACCOUNT, undefined, props.params.lang)
+  return createMeta(META.SETTINGS_COINS, undefined, props.params.lang)
 }
 
 export async function loader(_props: LoaderFunctionArgs) {
@@ -25,10 +25,13 @@ export default function SettingsPointsPage() {
   const t = useTranslation()
 
   return (
-    <div className="w-full space-y-4">
+    <div className="mx-auto w-full min-w-0 max-w-3xl space-y-4">
       <div className="block md:hidden">
         <SettingsHeader title={t("コイン", "Coins")} />
       </div>
+      <h1 className="hidden font-bold text-2xl md:block">
+        {t("コイン", "Coins")}
+      </h1>
       <PointsSettingsForm />
     </div>
   )

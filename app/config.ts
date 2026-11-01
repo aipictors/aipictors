@@ -976,6 +976,13 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Manage your account settings",
     isIndex: false,
   },
+  SETTINGS_COINS: {
+    title: "コイン",
+    enTitle: "Coins",
+    description: "コインの残高・履歴・有効期限を確認できます",
+    enDescription: "Check your coin balance, history and expiry",
+    isIndex: false,
+  },
   SETTINGS_NOTIFICATION: {
     title: "通知・いいね設定",
     enTitle: "Notification & Like Settings",

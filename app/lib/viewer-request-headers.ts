@@ -35,6 +35,11 @@ export const hasViewerRequestSession = () => {
   return getCurrentFirebaseUser() !== null || getDevLoginUserId() !== null
 }
 
+/** 今のログインを見分ける ID（端末に保存する値の持ち主の確認用） */
+export const getViewerRequestSessionId = () => {
+  return getCurrentFirebaseUser()?.uid ?? getDevLoginUserId()
+}
+
 export const getViewerRequestHeaders = async (props?: {
   includeJsonContentType?: boolean
 }) => {

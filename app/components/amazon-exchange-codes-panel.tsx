@@ -161,7 +161,7 @@ export function AmazonExchangeCodesPanel(props: Props) {
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
                   <p className="font-semibold">
-                    \\u00a5{request.amazonPointYen.toLocaleString()} ({request.coinAmount.toLocaleString()}
+                    ¥{request.amazonPointYen.toLocaleString()} ({request.coinAmount.toLocaleString()}
                     {t("コイン", " coins")})
                   </p>
                   <p className="text-muted-foreground text-xs">

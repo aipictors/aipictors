@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react"
-import { Minus, Plus } from "lucide-react"
+import { Check, Minus, Plus } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
@@ -14,6 +14,7 @@ import {
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import {
   BONUS_RATE,
@@ -52,7 +53,7 @@ const PACKAGE_OPTIONS: {
   },
 ]
 
-const ADJUSTMENT_STEPS = [100, 500, 1000] as const
+const ADJUSTMENT_STEP = 100
 
 const clampCoinAmount = (value: number) => {
   if (!Number.isFinite(value)) return MIN_CUSTOM_COINS
@@ -71,6 +72,7 @@ export function PurchasePremiumCoinsDialog(props: {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   hideTrigger?: boolean
+  triggerClassName?: string
   successPath?: string
   cancelPath?: string
 }) {
@@ -179,193 +181,146 @@ export function PurchasePremiumCoinsDialog(props: {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       {!props.hideTrigger && (
         <DialogTrigger asChild>
-          <Button variant="default">
-            {t("プレミアムコインを購入", "Buy Premium Coins")}
+          <Button variant="default" className={props.triggerClassName}>
+            {t("コインを購入", "Buy coins")}
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="max-h-[90svh] w-[calc(100vw-1rem)] max-w-xl overflow-y-auto px-4 py-4 sm:w-full sm:px-6 sm:py-6">
-        <DialogHeader>
+      <DialogContent className="w-[calc(100vw-1rem)] max-w-lg gap-0 p-0 sm:w-full">
+        <DialogHeader className="px-4 pt-4 pr-12 text-left sm:px-6 sm:pt-6">
           <DialogTitle>
-            {t("プレミアムコインを購入", "Buy Premium Coins")}
+            {t("プレミアムコインを購入", "Buy premium coins")}
           </DialogTitle>
+          <p className="flex items-center gap-1.5 text-muted-foreground text-sm tabular-nums">
+            {t("いまの保有", "You have")}
+            <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+            {props.currentBalance.toLocaleString()}
+          </p>
         </DialogHeader>
 
-        <div className="space-y-5 pb-2">
-          <div className="rounded-xl border bg-muted/30 p-4">
-            <p className="text-muted-foreground text-sm">
-              {t("現在の保有コイン", "Current balance")}
-            </p>
-            <div className="mt-3 flex items-center justify-between gap-3">
-              <div>
-                <p className="font-semibold text-lg">
-                  {t("プレミアムコイン", "Premium Coins")}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 font-bold text-2xl">
-                <PremiumCoinIcon className="h-6 w-6 shrink-0" />
-                <span>{props.currentBalance.toLocaleString()}</span>
-              </div>
-            </div>
-          </div>
+        <div className="space-y-4 px-4 py-4 sm:px-6">
+          <div
+            className="grid gap-2 sm:grid-cols-3"
+            role="radiogroup"
+            aria-label={t("購入する枚数", "Amount")}
+          >
+            {PACKAGE_OPTIONS.map((opt) => {
+              const isSelected = matchedPackage?.id === opt.id
 
-          <div className="space-y-3">
-            <Label>{t("テンプレートから選択", "Choose a template")}</Label>
-            <div className="grid gap-2 md:grid-cols-3">
-              {PACKAGE_OPTIONS.map((opt) => (
+              return (
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={isSelected}
                   key={opt.id}
                   onClick={() => handleSelectPackage(opt.id)}
-                  className={`rounded-2xl border px-5 py-4 text-left transition-colors ${
-                    matchedPackage?.id === opt.id
-                      ? "border-primary bg-primary/10 font-semibold"
-                      : "hover:bg-muted"
-                  }`}
-                >
-                  <div className="flex items-center gap-2 font-bold text-2xl">
-                    <PremiumCoinIcon className="h-5 w-5 shrink-0" />
-                    <span>{opt.coins.toLocaleString()}</span>
-                  </div>
-                  {opt.bonusCoins > 0 && (
-                    <p className="mt-2 font-semibold text-emerald-600 text-sm dark:text-emerald-400">
-                      +{opt.bonusCoins.toLocaleString()} {t("ボーナス", "Bonus")}
-                    </p>
+                  className={cn(
+                    "relative flex min-h-14 items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left transition-colors sm:flex-col sm:items-start sm:justify-start sm:gap-1",
+                    isSelected
+                      ? "border-primary bg-primary/5 ring-1 ring-primary"
+                      : "hover:bg-muted",
                   )}
-                  <p className="mt-2 font-semibold text-xl">
+                >
+                  <span className="min-w-0">
+                    <span className="flex items-center gap-1.5 font-bold text-lg tabular-nums">
+                      <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+                      {(opt.coins + opt.bonusCoins).toLocaleString()}
+                    </span>
+                    {opt.bonusCoins > 0 && (
+                      <span className="block text-emerald-600 text-xs dark:text-emerald-400">
+                        {t(
+                          `${opt.bonusCoins.toLocaleString()} 枚おまけ`,
+                          `${opt.bonusCoins.toLocaleString()} bonus`,
+                        )}
+                      </span>
+                    )}
+                  </span>
+                  <span className="shrink-0 font-semibold tabular-nums">
                     ¥{opt.priceYen.toLocaleString()}
-                  </p>
+                  </span>
+                  {isSelected && (
+                    <Check className="absolute top-2 right-2 hidden h-4 w-4 text-primary sm:block" />
+                  )}
                 </button>
-              ))}
-            </div>
+              )
+            })}
           </div>
 
-          <div className="space-y-4 rounded-2xl border p-5">
+          <div className="space-y-2">
             <Label htmlFor="custom-coins">
-              {t("任意の枚数を入力", "Enter a custom amount")}
+              {t("枚数を指定", "Custom amount")}
             </Label>
-            <div className="flex items-center gap-3">
-              <PremiumCoinIcon className="h-9 w-9 shrink-0" />
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-11 w-11 shrink-0"
+                onClick={() => handleAdjustment(-ADJUSTMENT_STEP)}
+                aria-label={t("100 枚減らす", "Remove 100 coins")}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
               <Input
                 id="custom-coins"
                 type="text"
                 inputMode="numeric"
                 value={coinAmount <= 0 ? "" : coinAmount.toString()}
                 onChange={(e) => handleAmountChange(e.target.value)}
-                className="h-24 rounded-2xl border-2 text-center font-bold text-4xl tracking-wide md:text-5xl"
-                aria-label={t(
-                  `購入枚数（最低${MIN_CUSTOM_COINS}枚）`,
-                  `Coins to purchase (min ${MIN_CUSTOM_COINS})`,
-                )}
+                className="h-11 text-center font-semibold text-lg tabular-nums"
               />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-11 w-11 shrink-0"
+                onClick={() => handleAdjustment(ADJUSTMENT_STEP)}
+                aria-label={t("100 枚増やす", "Add 100 coins")}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
-            <p className="text-center text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs leading-5">
               {t(
-                `100コイン = ¥${calcCustomPriceYen(100).toLocaleString()} / 最低${MIN_CUSTOM_COINS}コインから購入できます`,
-                `100 coins = ¥${calcCustomPriceYen(100).toLocaleString()} / Minimum ${MIN_CUSTOM_COINS} coins`,
+                `${MIN_CUSTOM_COINS} 枚から。100 枚あたり ¥${calcCustomPriceYen(100).toLocaleString()}、${BONUS_THRESHOLD.toLocaleString()} 枚以上で ${(BONUS_RATE * 100).toFixed(0)}% おまけ`,
+                `From ${MIN_CUSTOM_COINS} coins. ¥${calcCustomPriceYen(100).toLocaleString()} per 100, ${(BONUS_RATE * 100).toFixed(0)}% bonus from ${BONUS_THRESHOLD.toLocaleString()} coins`,
               )}
             </p>
-
-            <div className="grid grid-cols-3 gap-2">
-              {ADJUSTMENT_STEPS.map((step) => (
-                <Button
-                  key={`increase-${step}`}
-                  type="button"
-                  variant="outline"
-                  className="h-14 justify-center gap-2 rounded-xl text-base"
-                  onClick={() => handleAdjustment(step)}
-                >
-                  <Plus className="h-4 w-4" />
-                  <PremiumCoinIcon className="h-4 w-4 shrink-0" />
-                  {step.toLocaleString()}
-                </Button>
-              ))}
-              {ADJUSTMENT_STEPS.map((step) => (
-                <Button
-                  key={`decrease-${step}`}
-                  type="button"
-                  variant="outline"
-                  className="h-14 justify-center gap-2 rounded-xl text-base"
-                  onClick={() => handleAdjustment(-step)}
-                >
-                  <Minus className="h-4 w-4" />
-                  <PremiumCoinIcon className="h-4 w-4 shrink-0" />
-                  {step.toLocaleString()}
-                </Button>
-              ))}
-            </div>
           </div>
 
-          <div className="space-y-2 rounded-2xl border bg-muted/40 p-4 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">
-                {t("購入枚数", "Coins")}
-              </span>
-              <span className="font-semibold">
-                {derivedCoins.toLocaleString()}
-              </span>
+          <dl className="space-y-1.5 rounded-lg bg-muted/50 p-3 text-sm tabular-nums">
+            <div className="flex justify-between gap-3">
+              <dt className="text-muted-foreground">
+                {t("受け取る枚数", "You receive")}
+              </dt>
+              <dd className="font-semibold">
+                {derivedTotal.toLocaleString()}
+                {derivedBonus > 0 && (
+                  <span className="ml-1 font-normal text-emerald-600 text-xs dark:text-emerald-400">
+                    {t(
+                      `（おまけ ${derivedBonus.toLocaleString()}）`,
+                      ` (${derivedBonus.toLocaleString()} bonus)`,
+                    )}
+                  </span>
+                )}
+              </dd>
             </div>
-            {derivedBonus > 0 && (
-              <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
-                <span>{t("ボーナス", "Bonus")}</span>
-                <span className="font-semibold">
-                  +{derivedBonus.toLocaleString()}
-                </span>
-              </div>
-            )}
-            <div className="flex justify-between border-t pt-2">
-              <span className="font-semibold">
-                {t("合計枚数", "Total coins")}
-              </span>
-              <span className="font-bold">{derivedTotal.toLocaleString()}</span>
+            <div className="flex justify-between gap-3">
+              <dt className="text-muted-foreground">
+                {t("購入後の保有", "Balance after")}
+              </dt>
+              <dd>{(props.currentBalance + derivedTotal).toLocaleString()}</dd>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">
-                {t("価格", "Price")}
-              </span>
-              <span className="font-bold">
-                ¥{derivedPriceYen.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex justify-between border-t pt-2">
-              <span className="text-muted-foreground">
-                {t("購入後の保有枚数", "Balance after purchase")}
-              </span>
-              <span className="font-semibold">
-                {(props.currentBalance + derivedTotal).toLocaleString()}
-              </span>
-            </div>
-          </div>
+          </dl>
 
-          {coinAmount >= BONUS_THRESHOLD && (
-            <p className="text-center text-emerald-600 text-sm dark:text-emerald-400">
-              {t(
-                `${(BONUS_RATE * 100).toFixed(0)}%ボーナス（+${calcBonusCoins(coinAmount).toLocaleString()}枚）が付与されます`,
-                `${(BONUS_RATE * 100).toFixed(0)}% bonus (+${calcBonusCoins(coinAmount).toLocaleString()} coins) will be added`,
-              )}
-            </p>
-          )}
-
-          <p className="text-muted-foreground text-xs">
-            {t(
-              "購入から3ヶ月で期限切れになります。期限切れになったコインは使用できません。",
-              "Coins expire 3 months after purchase. Expired coins cannot be used.",
-            )}
-          </p>
-          <p className="text-muted-foreground text-xs">
-            {t(
-              "生成時はフリーコインから優先的に消費されます。",
-              "Free coins are consumed first during generation.",
-            )}
-          </p>
-          <div className="rounded-xl border border-dashed p-4 text-xs leading-6 text-muted-foreground">
+          <div className="space-y-1.5 text-muted-foreground text-xs leading-5">
             <p>
               {t(
-                "購入前に、プレミアムコインの有効期限、返金方針、前払式支払手段に関する表示をご確認ください。",
-                "Before purchasing, please review Premium Coin expiration, refund handling, and prepaid payment instrument disclosures.",
+                "購入から3か月で失効します。生成ではフリーコインから先に使います。購入前に、有効期限・返金方針・前払式支払手段に関する表示をご確認ください。",
+                "Coins expire 3 months after purchase. Free coins are used first for generation. Before purchasing, please review the expiration, refund handling and prepaid payment instrument disclosures.",
               )}
             </p>
-            <div className="mt-2 flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
               <Link className="underline underline-offset-4" to="/premium-coins/policy">
                 {t("プレミアムコイン規約・ポリシー", "Premium Coin Policy")}
               </Link>
@@ -380,15 +335,26 @@ export function PurchasePremiumCoinsDialog(props: {
               </Link>
             </div>
           </div>
+        </div>
 
+        {/* 長い画面でも購入ボタンを常に見せる */}
+        <div className="sticky bottom-0 border-t bg-background px-4 py-3 sm:px-6">
           <Button
-            className="w-full"
+            className="h-11 w-full text-base"
             onClick={handlePurchase}
             disabled={isLoading || !customCoinsValid}
           >
             {isLoading
               ? t("処理中...", "Processing...")
-              : t("Stripeで購入する", "Purchase via Stripe")}
+              : customCoinsValid
+                ? t(
+                    `¥${derivedPriceYen.toLocaleString()} を Stripe で支払う`,
+                    `Pay ¥${derivedPriceYen.toLocaleString()} with Stripe`,
+                  )
+                : t(
+                    `${MIN_CUSTOM_COINS} 枚から購入できます`,
+                    `Minimum ${MIN_CUSTOM_COINS} coins`,
+                  )}
           </Button>
         </div>
       </DialogContent>
