@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { ScrollArea } from "~/components/ui/scroll-area"
 import { userModelsQueryKeys } from "~/components/user-models/use-user-models"
 import { UserModelMetadataFields } from "~/components/user-models/user-model-metadata-fields"
 import { updateUserModel } from "~/lib/user-models/client"
@@ -92,16 +91,14 @@ export function UserModelEditDialog(props: Props) {
             ファイル以外の情報はいつでも変更できます
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="min-h-0 flex-1">
-          <div className="p-5">
-            <UserModelMetadataFields
-              kind={props.model.kind}
-              value={value}
-              onChange={setValue}
-              onUploadingChange={setIsUploadingImage}
-            />
-          </div>
-        </ScrollArea>
+        <div className="min-h-0 flex-1 overflow-y-auto p-5">
+          <UserModelMetadataFields
+            kind={props.model.kind}
+            value={value}
+            onChange={setValue}
+            onUploadingChange={setIsUploadingImage}
+          />
+        </div>
         <DialogFooter className="gap-2 border-t p-4">
           <Button variant="ghost" onClick={() => props.onOpenChange(false)}>
             キャンセル

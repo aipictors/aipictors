@@ -1,9 +1,13 @@
-import { PencilLineIcon, PlusIcon } from "lucide-react"
+import { ArrowDownAZIcon, PencilLineIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 import type { TSortableItem } from "~/components/drag/sortable-item"
 import { SortableItems } from "~/components/drag/sortable-items"
+import {
+  isSortedByFileName,
+  sortByFileName,
+} from "~/components/drag/sort-by-file-name"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -264,6 +268,7 @@ export function PostFormItemDraggableImages(props: Props) {
         props.items.push({
           id: props.items.length,
           content: webpDataUrl,
+          fileName: file.name,
         })
         props.onChangeItems([...props.items])
         updateThumbnail()
@@ -325,6 +330,9 @@ export function PostFormItemDraggableImages(props: Props) {
     disabled: props.isOnlyMove,
   })
 
+  const hasFileNames =
+    props.items.filter((item) => item.fileName).length >= 2
+
   return (
     <>
       <div
@@ -356,9 +364,30 @@ export function PostFormItemDraggableImages(props: Props) {
             )}
           </button>
         )}
+        {hasFileNames && (
+          <div className="flex justify-end px-2 pt-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={isSortedByFileName(props.items)}
+              onClick={() => {
+                const sorted = sortByFileName(props.items)
+                props.setItems(sorted)
+                props.setIndexList(sorted.map((item) => item.id))
+              }}
+            >
+              <ArrowDownAZIcon className="mr-1.5 size-4" />
+              {isSortedByFileName(props.items)
+                ? t("ファイル名順です", "Sorted by file name")
+                : t("ファイル名順に並べる", "Sort by file name")}
+            </Button>
+          </div>
+        )}
         <SortableItems
           items={props.items}
           isDeletable={!props.isOnlyMove}
+          isFileNameEditable={true}
           setItems={props.setItems}
           setIndexList={props.setIndexList}
           optionalButton={

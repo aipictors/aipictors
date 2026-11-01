@@ -194,6 +194,7 @@ export function PostImageFormUploader (props: Props) {
         nextItems.push({
           id: nextItems.length,
           content: webpDataUrl,
+          fileName: file.name,
         })
 
         // 逐次反映して「選択後に何も出ない」状態を避ける

@@ -178,6 +178,135 @@ export function UserModelMetadataFields(props: Props) {
         />
       </div>
 
+      <div className="space-y-2">
+        <FieldLabel
+          hint={`${value.sampleImageUrls.length}/${MAX_SAMPLE_IMAGES}`}
+        >
+          サムネイル・サンプル画像
+        </FieldLabel>
+        <p className="text-muted-foreground text-xs">
+          このモデルで生成した画像を載せると、使ってもらいやすくなります。★
+          を押した画像がサムネイルになります。
+        </p>
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
+          {value.thumbnailUrl &&
+            !value.sampleImageUrls.includes(value.thumbnailUrl) && (
+              <div className="relative aspect-[3/4] overflow-hidden rounded-lg border-2 border-primary">
+                <img
+                  src={value.thumbnailUrl}
+                  alt="サムネイル"
+                  className="size-full object-cover"
+                />
+                <span className="absolute top-1 left-1 rounded bg-primary px-1.5 py-0.5 font-bold text-[10px] text-primary-foreground">
+                  サムネイル
+                </span>
+                <button
+                  type="button"
+                  aria-label="サムネイルを削除"
+                  onClick={() => update({ thumbnailUrl: null })}
+                  className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white"
+                >
+                  <XIcon className="size-3" />
+                </button>
+              </div>
+            )}
+          {value.sampleImageUrls.map((url) => {
+            const isThumbnail = value.thumbnailUrl === url
+            return (
+              <div
+                key={url}
+                className={cn(
+                  "relative aspect-[3/4] overflow-hidden rounded-lg border-2",
+                  isThumbnail ? "border-primary" : "border-transparent",
+                )}
+              >
+                <img
+                  src={url}
+                  alt="サンプル"
+                  className="size-full object-cover"
+                />
+                <button
+                  type="button"
+                  aria-label="サムネイルにする"
+                  onClick={() => update({ thumbnailUrl: url })}
+                  className={cn(
+                    "absolute top-1 left-1 rounded-full p-1",
+                    isThumbnail
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-black/60 text-white",
+                  )}
+                >
+                  <StarIcon
+                    className={cn("size-3", isThumbnail && "fill-current")}
+                  />
+                </button>
+                <button
+                  type="button"
+                  aria-label="画像を削除"
+                  onClick={() =>
+                    props.onChange({
+                      ...value,
+                      sampleImageUrls: value.sampleImageUrls.filter(
+                        (item) => item !== url,
+                      ),
+                      thumbnailUrl: isThumbnail ? null : value.thumbnailUrl,
+                    })
+                  }
+                  className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white"
+                >
+                  <XIcon className="size-3" />
+                </button>
+              </div>
+            )
+          })}
+          {value.sampleImageUrls.length < MAX_SAMPLE_IMAGES && (
+            <button
+              type="button"
+              onClick={() => sampleInputRef.current?.click()}
+              disabled={!uploader.isReady}
+              className="flex aspect-[3/4] flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground disabled:opacity-50"
+            >
+              {uploadingCount > 0 ? (
+                <Loader2Icon className="size-6 animate-spin" />
+              ) : (
+                <ImagePlusIcon className="size-6" />
+              )}
+              <span className="text-xs">画像を追加</span>
+            </button>
+          )}
+        </div>
+        {!value.thumbnailUrl && value.sampleImageUrls.length === 0 && (
+          <button
+            type="button"
+            className="text-primary text-xs underline-offset-2 hover:underline"
+            onClick={() => thumbnailInputRef.current?.click()}
+          >
+            サムネイルだけを設定する
+          </button>
+        )}
+        <input
+          ref={sampleInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          multiple
+          hidden
+          onChange={(event) => {
+            onSelectSamples(event.target.files)
+            event.target.value = ""
+          }}
+        />
+        <input
+          ref={thumbnailInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          hidden
+          onChange={(event) => {
+            onSelectThumbnail(event.target.files)
+            event.target.value = ""
+          }}
+        />
+      </div>
+
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
           <FieldLabel required>ベースモデル</FieldLabel>
@@ -321,135 +450,6 @@ export function UserModelMetadataFields(props: Props) {
             disabled={value.tags.length >= MAX_TAGS}
           />
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <FieldLabel
-          hint={`${value.sampleImageUrls.length}/${MAX_SAMPLE_IMAGES}`}
-        >
-          サムネイル・サンプル画像
-        </FieldLabel>
-        <p className="text-muted-foreground text-xs">
-          このモデルで生成した画像を載せると、使ってもらいやすくなります。★
-          を押した画像がサムネイルになります。
-        </p>
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
-          {value.thumbnailUrl &&
-            !value.sampleImageUrls.includes(value.thumbnailUrl) && (
-              <div className="relative aspect-[3/4] overflow-hidden rounded-lg border-2 border-primary">
-                <img
-                  src={value.thumbnailUrl}
-                  alt="サムネイル"
-                  className="size-full object-cover"
-                />
-                <span className="absolute top-1 left-1 rounded bg-primary px-1.5 py-0.5 font-bold text-[10px] text-primary-foreground">
-                  サムネイル
-                </span>
-                <button
-                  type="button"
-                  aria-label="サムネイルを削除"
-                  onClick={() => update({ thumbnailUrl: null })}
-                  className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white"
-                >
-                  <XIcon className="size-3" />
-                </button>
-              </div>
-            )}
-          {value.sampleImageUrls.map((url) => {
-            const isThumbnail = value.thumbnailUrl === url
-            return (
-              <div
-                key={url}
-                className={cn(
-                  "relative aspect-[3/4] overflow-hidden rounded-lg border-2",
-                  isThumbnail ? "border-primary" : "border-transparent",
-                )}
-              >
-                <img
-                  src={url}
-                  alt="サンプル"
-                  className="size-full object-cover"
-                />
-                <button
-                  type="button"
-                  aria-label="サムネイルにする"
-                  onClick={() => update({ thumbnailUrl: url })}
-                  className={cn(
-                    "absolute top-1 left-1 rounded-full p-1",
-                    isThumbnail
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-black/60 text-white",
-                  )}
-                >
-                  <StarIcon
-                    className={cn("size-3", isThumbnail && "fill-current")}
-                  />
-                </button>
-                <button
-                  type="button"
-                  aria-label="画像を削除"
-                  onClick={() =>
-                    props.onChange({
-                      ...value,
-                      sampleImageUrls: value.sampleImageUrls.filter(
-                        (item) => item !== url,
-                      ),
-                      thumbnailUrl: isThumbnail ? null : value.thumbnailUrl,
-                    })
-                  }
-                  className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white"
-                >
-                  <XIcon className="size-3" />
-                </button>
-              </div>
-            )
-          })}
-          {value.sampleImageUrls.length < MAX_SAMPLE_IMAGES && (
-            <button
-              type="button"
-              onClick={() => sampleInputRef.current?.click()}
-              disabled={!uploader.isReady}
-              className="flex aspect-[3/4] flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground disabled:opacity-50"
-            >
-              {uploadingCount > 0 ? (
-                <Loader2Icon className="size-6 animate-spin" />
-              ) : (
-                <ImagePlusIcon className="size-6" />
-              )}
-              <span className="text-xs">画像を追加</span>
-            </button>
-          )}
-        </div>
-        {!value.thumbnailUrl && value.sampleImageUrls.length === 0 && (
-          <button
-            type="button"
-            className="text-primary text-xs underline-offset-2 hover:underline"
-            onClick={() => thumbnailInputRef.current?.click()}
-          >
-            サムネイルだけを設定する
-          </button>
-        )}
-        <input
-          ref={sampleInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          multiple
-          hidden
-          onChange={(event) => {
-            onSelectSamples(event.target.files)
-            event.target.value = ""
-          }}
-        />
-        <input
-          ref={thumbnailInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          hidden
-          onChange={(event) => {
-            onSelectThumbnail(event.target.files)
-            event.target.value = ""
-          }}
-        />
       </div>
     </div>
   )

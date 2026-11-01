@@ -1,24 +1,24 @@
 import {
+  closestCenter,
   DndContext,
   type DragEndEvent,
+  type DragOverEvent,
   DragOverlay,
   type DragStartEvent,
-  type DragOverEvent,
   PointerSensor,
   TouchSensor,
-  closestCenter,
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
 import {
-  SortableContext,
   arrayMove,
   rectSortingStrategy,
+  SortableContext,
 } from "@dnd-kit/sortable"
-import type { TSortableItem } from "~/components/drag/sortable-item"
 import type React from "react"
 import { useState } from "react"
 import { ImageItem } from "~/components/drag/image-item"
+import type { TSortableItem } from "~/components/drag/sortable-item"
 import { SortableItem } from "~/components/drag/sortable-item"
 
 type Props = {
@@ -26,6 +26,8 @@ type Props = {
   setItems: (items: TSortableItem[]) => void
   setIndexList: (value: number[]) => void
   isDeletable?: boolean
+  /** ファイル名を押して変えられるようにする */
+  isFileNameEditable?: boolean
   optionalButton?: React.ReactNode
   onClickOptionButton?: (id: number) => void
   dummyEnableDragItem?: React.ReactNode // アイテム一覧に並び替えできないダミーアイテム
@@ -34,7 +36,7 @@ type Props = {
 /**
  * 指定された要素をドラッグで並び替えできるようにする
  */
-export function SortableItems (props: Props): React.ReactNode {
+export function SortableItems(props: Props): React.ReactNode {
   const [activeItem, setActiveItem] = useState<TSortableItem>()
   const [isDragging, setIsDragging] = useState(false)
 
@@ -132,11 +134,25 @@ export function SortableItems (props: Props): React.ReactNode {
     >
       <SortableContext items={props.items} strategy={rectSortingStrategy}>
         <div className="flex w-full flex-wrap justify-center gap-4">
-          {props.items.map((item) => (
+          {props.items.map((item, index) => (
             <SortableItem
               key={item.id}
               className="touch-none" // タッチアクションを無効化
               item={item}
+              position={props.items.length > 1 ? index + 1 : undefined}
+              onRenameFile={
+                props.isFileNameEditable
+                  ? (fileName) => {
+                      props.setItems(
+                        props.items.map((current) =>
+                          current.id === item.id
+                            ? { ...current, fileName }
+                            : current,
+                        ),
+                      )
+                    }
+                  : undefined
+              }
               isDeletable={props.isDeletable}
               onDelete={deleteIndex}
               optionalButton={props.optionalButton}

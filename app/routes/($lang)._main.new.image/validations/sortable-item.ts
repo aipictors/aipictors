@@ -13,4 +13,8 @@ export const vSortableItem = object({
    * コンテンツが編集されたかどうか
    */
   isContentEdited: optional(boolean()),
+  /**
+   * アップロードしたファイルの名前（並べ替えの目印。投稿には含めない）
+   */
+  fileName: optional(nullable(string())),
 })
