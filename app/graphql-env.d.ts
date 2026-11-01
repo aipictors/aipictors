@@ -3032,6 +3032,9 @@ type ModerationReportNode implements Node {
 
   """作品"""
   work: WorkNode
+
+  """通知の種類（NEED_MOSAIC / COPYRIGHT_VIOLATION / INAPPROPRIATE_RATING など）"""
+  reportType: String
 }
 
 """対応ステータス"""
@@ -3076,6 +3079,9 @@ type Mutation {
     """間隔をあけずに確かめる（投稿した直後など）"""
     force: Boolean
   ): AchievementCheckResultNode!
+
+  """運営からの修正依頼に対応したと返す"""
+  respondModerationReport(id: ID!, message: String): Boolean!
 
   """実績の表示設定を変える"""
   updateAchievementSettings(input: UpdateAchievementSettingsInput!): AchievementSettingsNode!

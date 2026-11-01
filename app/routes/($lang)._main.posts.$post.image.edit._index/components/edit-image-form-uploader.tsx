@@ -1,28 +1,28 @@
+import type { Dispatch } from "react"
+import { toast } from "sonner"
 import FullScreenContainer from "~/components/full-screen-container"
+import { PaintCanvas } from "~/components/paint-canvas"
+import { Button } from "~/components/ui/button"
+import { config } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
+import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
+import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
+import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
+import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
+import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import {
   getExtractInfoFromBase64,
   getExtractInfoFromPNG,
 } from "~/utils/get-extract-info-from-png"
-import { config } from "~/config"
-import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
-import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
-import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
-import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
-import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
-import type { Dispatch } from "react"
-import { toast } from "sonner"
-import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
-import { Button } from "~/components/ui/button"
-import { PaintCanvas } from "~/components/paint-canvas"
-import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
   state: PostImageFormState
 }
 
-export function EditImageFormUploader (props: Props) {
+export function EditImageFormUploader(props: Props) {
   const t = useTranslation()
 
   const selectedFilesSizeText = () => {
@@ -98,8 +98,10 @@ export function EditImageFormUploader (props: Props) {
               </div>
             </div>
           )}
+          {/* 編集でも画像を 1 枚ずつ外したり、追加・差し替え・並べ替えたりできる
+              （以前は並べ替えだけで、1 枚だけ問題があるときに作品ごと消すしかなかった） */}
           <PostFormItemDraggableImages
-            isOnlyMove={true}
+            isOnlyMove={false}
             indexList={props.state.indexList}
             items={props.state.items ?? []}
             setItems={(items) => {

@@ -6,13 +6,13 @@ import type { TSortableItem } from "~/components/drag/sortable-item"
 import { SortableItems } from "~/components/drag/sortable-items"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
-import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
 import { cn } from "~/lib/utils"
 import { formatFileSize, MAX_IMAGE_FILE_SIZE_BYTES } from "~/utils/file-size"
 import {
   getExtractInfoFromPNG,
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
+import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
 
 type Props = {
   indexList: number[]
@@ -365,6 +365,8 @@ export function PostFormItemDraggableImages(props: Props) {
             <Button
               className="absolute bottom-2 left-2 size-6 md:h-8 md:w-8"
               size={"icon"}
+              title={t("モザイク・描き込みで直す", "Mosaic / draw")}
+              aria-label={t("モザイク・描き込みで直す", "Mosaic / draw")}
               onClick={() => {}}
             >
               <PencilLineIcon className="size-4 md:h-6 md:w-6" />

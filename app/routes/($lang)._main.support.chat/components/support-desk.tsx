@@ -607,6 +607,12 @@ function SupportLetters(props: {
       <div className="mb-2 flex items-center gap-2">
         <MailIcon className="size-4 text-amber-600 dark:text-amber-300" />
         <h2 className="font-bold text-sm">運営からのメッセージ</h2>
+        <Link
+          to="/my/reports"
+          className="text-sky-600 text-xs underline dark:text-sky-300"
+        >
+          作品へのお知らせ・修正依頼を見る
+        </Link>
         {props.letters.length > 1 && (
           <button
             type="button"

@@ -1,10 +1,16 @@
+import { useMutation, useQuery } from "@apollo/client/index"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { Link, useBeforeUnload, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { useCallback, useContext, useEffect, useReducer, useState } from "react"
+import { toast } from "sonner"
+import { safeParse } from "valibot"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { ModerationFixBanner } from "~/components/moderation/moderation-fix-banner"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
-import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
-import { resizeThumbnail } from "~/utils/resize-image"
-import { sha256 } from "~/utils/sha256"
-import { uploadPublicImage } from "~/utils/upload-public-image"
+import { useTranslation } from "~/hooks/use-translation"
+import { buildCorrectionMessage } from "~/lib/moderation/moderation-report-guide"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import {
   PostImageFormAiModelFragment,
@@ -17,17 +23,13 @@ import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/compo
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
-import { useQuery, useMutation } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useContext, useEffect, useReducer, useState, useCallback } from "react"
-import { toast } from "sonner"
-import { safeParse } from "valibot"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { Link, useBeforeUnload, useLoaderData } from "@remix-run/react"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditImageFormUploader } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/edit-image-form-uploader"
+import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
+import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { getJstDate } from "~/utils/jst-date"
-import { useTranslation } from "~/hooks/use-translation"
+import { resizeThumbnail } from "~/utils/resize-image"
+import { sha256 } from "~/utils/sha256"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -75,7 +77,7 @@ function getReservationDetails(createdAt: number) {
   }
 }
 
-export default function EditImage () {
+export default function EditImage() {
   const authContext = useContext(AuthContext)
 
   const t = useTranslation()
@@ -410,6 +412,12 @@ export default function EditImage () {
     thumbnailBase64: state.thumbnailBase64,
   })
 
+  /** 編集前の画像（修正完了の報告に、何枚消した・足したかを書くため） */
+  const originalImageUrls = [
+    work?.imageURL ?? "",
+    ...(work?.subWorks ?? []).map((subWork) => subWork.imageUrl ?? ""),
+  ].filter((url) => url !== "")
+
   const uploadImages = async () => {
     if (authContext.userId === null) {
       return []
@@ -455,14 +463,6 @@ export default function EditImage () {
     }
 
     if (
-      !inputState.correctionMessage &&
-      work?.moderatorReport?.status === "UNHANDLED"
-    ) {
-      toast("修正メッセージを入力してください")
-      return
-    }
-
-    if (
       inputState.reservationDate !== null &&
       inputState.reservationTime === null
     ) {
@@ -493,11 +493,11 @@ export default function EditImage () {
       )
         ? null
         : await resizeThumbnail(
-          formResult.output.thumbnailBase64,
-          400,
-          1200,
-          "webp",
-        )
+            formResult.output.thumbnailBase64,
+            400,
+            1200,
+            "webp",
+          )
 
       dispatch({ type: "SET_PROGRESS", payload: 20 })
 
@@ -506,11 +506,11 @@ export default function EditImage () {
       )
         ? null
         : await resizeThumbnail(
-          formResult.output.thumbnailBase64,
-          600,
-          1600,
-          "webp",
-        )
+            formResult.output.thumbnailBase64,
+            600,
+            1600,
+            "webp",
+          )
 
       dispatch({ type: "SET_PROGRESS", payload: 30 })
 
@@ -659,9 +659,20 @@ export default function EditImage () {
             : inputState.useGenerationParams
               ? ("PUBLIC" as const)
               : ("PRIVATE" as const),
+        // 修正依頼が来ている作品は、保存すると運営に修正完了が自動で届く（文は書かなくてよい）
         correctionMessage:
           work?.moderatorReport?.status === "UNHANDLED"
-            ? inputState.correctionMessage
+            ? buildCorrectionMessage({
+                userMessage: inputState.correctionMessage ?? "",
+                removedImageCount: originalImageUrls.filter(
+                  (url) => !imageUrls.includes(url),
+                ).length,
+                addedImageCount: imageUrls.filter(
+                  (url) => !originalImageUrls.includes(url),
+                ).length,
+                isRatingChanged:
+                  (work?.rating ?? null) !== inputState.ratingRestriction,
+              })
             : undefined,
         // AI評価設定を含める
         isBotGradingPublic: inputState.isBotGradingPublic,
@@ -768,6 +779,13 @@ export default function EditImage () {
   return work?.user !== null && work?.user.id === authContext.userId ? (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="space-y-4">
+        {work?.moderatorReport?.status === "UNHANDLED" && (
+          <ModerationFixBanner
+            reportType={work.moderatorReport.reportType ?? null}
+            reportMessage={work.moderatorReport.reportMessage ?? null}
+            isTemporaryPrivate={work.adminAccessType === "TEMPORARY_PRIVATE"}
+          />
+        )}
         <EditImageFormUploader state={state} dispatch={dispatch} />
         <PostImageFormInput
           imageInformation={state.pngInfo}
@@ -990,9 +1008,12 @@ const workQuery = graphql(
         id
         imageUrl
       }
+      adminAccessType
       moderatorReport {
+        id
         status
         reportMessage
+        reportType
       }
     }
   }`,

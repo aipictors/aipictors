@@ -1,8 +1,8 @@
-import { ImageItem } from "~/components/drag/image-item"
-import { Button } from "~/components/ui/button"
 import { useSortable } from "@dnd-kit/sortable"
 import { XIcon } from "lucide-react"
-import { useState, type HTMLAttributes } from "react"
+import { type HTMLAttributes, useState } from "react"
+import { ImageItem } from "~/components/drag/image-item"
+import { Button } from "~/components/ui/button"
 
 // ドラッグ可能なアイテムの型
 export type TSortableItem = {
@@ -54,6 +54,8 @@ export function SortableItem({ item, ...props }: Props): React.ReactNode {
         <Button
           className="absolute top-2 right-2 size-6 md:h-8 md:w-8"
           size={"icon"}
+          title="この画像を外す"
+          aria-label="この画像を外す"
           onClick={() => {
             if (props.onDelete) {
               props.onDelete(item.id)

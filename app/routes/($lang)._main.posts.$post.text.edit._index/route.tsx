@@ -1,23 +1,16 @@
-import { Button } from "~/components/ui/button"
-import { AuthContext } from "~/contexts/auth-context"
-import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
-import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
-import { resizeThumbnail } from "~/utils/resize-image"
-import { sha256 } from "~/utils/sha256"
-import { uploadPublicImage } from "~/utils/upload-public-image"
-import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
-import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
-import { useQuery, useMutation } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useContext, useEffect, useReducer, useState } from "react"
-import { toast } from "sonner"
-import { safeParse } from "valibot"
+import { useMutation, useQuery } from "@apollo/client/index"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useBeforeUnload, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import React, { useContext, useEffect, useReducer, useState } from "react"
+import { toast } from "sonner"
+import { safeParse } from "valibot"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
-import React from "react"
-import { EditTextFormUploader } from "~/routes/($lang)._main.posts.$post.text.edit._index/components/edit-text-form-uploader"
-import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
+import { ModerationFixBanner } from "~/components/moderation/moderation-fix-banner"
+import { Button } from "~/components/ui/button"
+import { AuthContext } from "~/contexts/auth-context"
+import { buildCorrectionMessage } from "~/lib/moderation/moderation-report-guide"
+import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import {
   PostTextFormAiModelFragment,
   PostTextFormAlbumFragment,
@@ -25,9 +18,17 @@ import {
   PostTextFormPassFragment,
   PostTextFormRecentlyUsedTagsFragment,
 } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
-import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
+import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
+import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
+import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
+import { EditTextFormUploader } from "~/routes/($lang)._main.posts.$post.text.edit._index/components/edit-text-form-uploader"
+import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
+import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { getJstDate } from "~/utils/jst-date"
+import { resizeThumbnail } from "~/utils/resize-image"
+import { sha256 } from "~/utils/sha256"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadTextFile } from "~/utils/upload-text-file"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -70,7 +71,7 @@ function getReservationDetails(createdAt: number) {
   }
 }
 
-export default function EditText () {
+export default function EditText() {
   const authContext = useContext(AuthContext)
 
   const data = useLoaderData<typeof loader>()
@@ -372,14 +373,6 @@ export default function EditText () {
     }
 
     if (
-      !inputState.correctionMessage &&
-      work?.moderatorReport?.status === "UNHANDLED"
-    ) {
-      toast("修正メッセージを入力してください")
-      return
-    }
-
-    if (
       inputState.reservationDate !== null &&
       inputState.reservationTime === null
     ) {
@@ -405,11 +398,11 @@ export default function EditText () {
       )
         ? null
         : await resizeThumbnail(
-          formResult.output.thumbnailBase64,
-          400,
-          1200,
-          "webp",
-        )
+            formResult.output.thumbnailBase64,
+            400,
+            1200,
+            "webp",
+          )
 
       dispatch({ type: "SET_PROGRESS", payload: 20 })
 
@@ -418,11 +411,11 @@ export default function EditText () {
       )
         ? null
         : await resizeThumbnail(
-          formResult.output.thumbnailBase64,
-          600,
-          1600,
-          "webp",
-        )
+            formResult.output.thumbnailBase64,
+            600,
+            1600,
+            "webp",
+          )
 
       dispatch({ type: "SET_PROGRESS", payload: 30 })
 
@@ -563,9 +556,15 @@ export default function EditText () {
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
+            // 修正依頼が来ている作品は、保存すると修正完了が自動で届く
             correctionMessage:
               work?.moderatorReport?.status === "UNHANDLED"
-                ? inputState.correctionMessage
+                ? buildCorrectionMessage({
+                    userMessage: inputState.correctionMessage ?? "",
+                    removedImageCount: 0,
+                    addedImageCount: 0,
+                    isRatingChanged: false,
+                  })
                 : undefined,
           },
         },
@@ -620,6 +619,13 @@ export default function EditText () {
   return work?.user !== null && work?.user.id === authContext.userId ? (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="space-y-4">
+        {work?.moderatorReport?.status === "UNHANDLED" && (
+          <ModerationFixBanner
+            reportType={work.moderatorReport.reportType ?? null}
+            reportMessage={work.moderatorReport.reportMessage ?? null}
+            isTemporaryPrivate={work.adminAccessType === "TEMPORARY_PRIVATE"}
+          />
+        )}
         <EditTextFormUploader state={state} dispatch={dispatch} />
         <PostTextFormInput
           imageInformation={state.pngInfo}
@@ -825,9 +831,12 @@ const workQuery = graphql(
         id
         imageUrl
       }
+      adminAccessType
       moderatorReport {
+        id
         status
         reportMessage
+        reportType
       }
     }
   }`,
