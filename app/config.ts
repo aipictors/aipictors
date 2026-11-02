@@ -782,15 +782,6 @@ export const META: { [key: string]: MetaData } = {
       "Recommended AI illustrations and images, popular tags and rankings on Aipictors.",
     isIndex: true,
   },
-  GUIDELINE: {
-    title: "ガイドライン",
-    enTitle: "Guidelines",
-    description:
-      "Aipictors を安心して使っていただくための投稿・利用のガイドラインです。",
-    enDescription:
-      "Posting and usage guidelines for using Aipictors with confidence.",
-    isIndex: true,
-  },
   USERS: {
     title: "{{title}}",
     enTitle: "{{enTitle}}",

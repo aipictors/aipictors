@@ -1,6 +1,5 @@
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { config, META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
 import { GuidelineArticle } from "~/routes/($lang)._main.guideline/components/guideline-article"
 import { createMeta } from "~/utils/create-meta"
 
