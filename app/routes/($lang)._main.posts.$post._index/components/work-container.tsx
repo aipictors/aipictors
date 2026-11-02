@@ -325,8 +325,13 @@ export function WorkContainer(props: Props) {
                       </div>
                     </div>
                   )}
-                {newComments.length > 0 && (
+                {newComments.length > 0 ? (
                   <HomeNewCommentsSection comments={newComments} />
+                ) : (
+                  // 届くまで場所を取っておく（下の告知が押し下げられないように）
+                  newCommentsData === undefined && (
+                    <div className="min-h-[560px]" />
+                  )
                 )}
                 {!isSubscriptionUser && (
                   <Link to="/generation">
