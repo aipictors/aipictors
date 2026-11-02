@@ -18,7 +18,7 @@ export const GENERATION_COIN_COST = {
 } as const
 
 /**
- * 毎日のフリーコインで作れる Gemini Nano Banana の枚数（aipictors-api の gemini-allowance と同じ。2026-12-01 から）
+ * 毎日のフリーコインで作れる Gemini Nano Banana の枚数（aipictors-api の gemini-allowance と同じ）
  * Nano Banana 2 はこの半分。超えた分はプレミアムコインで作れる
  */
 const GEMINI_DAILY_IMAGES = {
