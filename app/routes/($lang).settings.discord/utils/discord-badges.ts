@@ -40,6 +40,13 @@ const toLevelRole = (level: number) => {
 
 export const toLevelTier = (level: number) => toLevelRole(level).tier
 
+/** バッジに書いてある節目の数字（レベル 43 なら 40） */
+export const toLevelBadgeNumber = (level: number) => toLevelRole(level).level
+
+/** 次にバッジが変わるレベル。一番上まで来ていれば null */
+export const toNextLevelBadgeNumber = (level: number) =>
+  LEVEL_ROLE_TIERS.find((role) => role.level > level)?.level ?? null
+
 export const toLevelBadgeUrl = (level: number) =>
   `/discord/level/${toLevelRole(level).level}.png`
 
