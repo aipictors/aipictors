@@ -31,6 +31,7 @@ import {
 } from "~/components/ui/select"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-article-editor-dialog-fragment"
 import { AlbumWorkLimitUpgradeDialog } from "~/routes/($lang).my._index/components/album-work-limit-upgrade-dialog"
 import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
 import {
@@ -388,28 +389,6 @@ export function AlbumArticleEditorDialog(props: Props) {
     </Dialog>
   )
 }
-
-export const AlbumArticleEditorDialogFragment = graphql(
-  `fragment AlbumArticleEditorDialog on AlbumNode @_unmask {
-    id
-    title
-    description
-    user {
-      id
-      name
-      login
-      iconUrl
-      nanoid
-    }
-    createdAt
-    isSensitive
-    rating
-    thumbnailImageURL
-    slug
-    worksCount
-    workIds
-  }`,
-)
 
 const updateAlbumMutation = graphql(
   `mutation UpdateAlbum($input: UpdateAlbumInput!) {
