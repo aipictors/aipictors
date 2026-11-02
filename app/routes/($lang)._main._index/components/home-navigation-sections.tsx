@@ -138,18 +138,23 @@ export function getHomeNavigationSections(
           label: ["フォト", "Photo"],
           icon: BookImageIcon,
         },
-        {
-          key: "novels",
-          href: link("/novels"),
-          label: ["小説", "Novels"],
-          icon: BookOpenIcon,
-        },
-        {
-          key: "notes",
-          href: link("/notes"),
-          label: ["コラム", "Columns"],
-          icon: NewspaperIcon,
-        },
+        // /r のページがなく、押すと全年齢に移ってしまうので R18 では出さない
+        ...(options.isSensitive
+          ? []
+          : [
+              {
+                key: "novels",
+                href: "/novels",
+                label: ["小説", "Novels"] as [string, string],
+                icon: BookOpenIcon,
+              },
+              {
+                key: "notes",
+                href: "/notes",
+                label: ["コラム", "Columns"] as [string, string],
+                icon: NewspaperIcon,
+              },
+            ]),
       ],
     },
     {

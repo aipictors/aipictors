@@ -128,6 +128,7 @@ export default function SensitiveAwardsPage() {
     <>
       <div className="space-y-6 pb-8">
         <RankingHeader
+          isPageHeading
           year={year}
           month={month}
           day={day}

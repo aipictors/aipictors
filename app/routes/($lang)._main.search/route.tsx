@@ -928,7 +928,9 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
+    { property: "og:image", content: config.defaultOgpImageUrl },
     { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:image", content: config.defaultOgpImageUrl },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
     {
