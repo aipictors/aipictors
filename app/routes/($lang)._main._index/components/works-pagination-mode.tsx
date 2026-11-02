@@ -28,6 +28,8 @@ interface Props {
   style?: ImageStyle
   page?: number
   setPage?: (p: number) => void
+  /** ページを移るときの動き（省略時は ?page= だけの URL に移る） */
+  onPageChange?: (p: number) => void
   onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
@@ -76,6 +78,10 @@ export function WorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) {
   const displayedWorks = data?.works ?? []
 
   const handlePageChange = (page: number) => {
+    if (rest.onPageChange) {
+      rest.onPageChange(page)
+      return
+    }
     navigate(`?page=${page}`)
     rest.setPage?.(page)
   }

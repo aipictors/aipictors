@@ -527,6 +527,33 @@ export const META: { [key: string]: MetaData } = {
       "Browse the latest and most popular AI photos and 3D images, together with the models and prompts used.",
     isIndex: true,
   },
+  POSTS_2D: {
+    title: "2DのAIイラスト・アニメ調の人気作品",
+    enTitle: "2D AI Illustrations and Anime-Style Art",
+    description:
+      "アニメ調・イラスト調の2D AIイラストを、今週の人気作品やタグから探せます。公開されているプロンプトを参考に、自分でも無料で生成・投稿できます。",
+    enDescription:
+      "Find anime and illustration-style AI art by popularity or tag. Learn from shared prompts, then generate and post your own for free.",
+    isIndex: true,
+  },
+  POSTS_2_5D: {
+    title: "2.5D・セミリアルのAIイラスト",
+    enTitle: "2.5D and Semi-Real AI Art",
+    description:
+      "アニメと実写の中間の質感を持つ2.5D（セミリアル）のAIイラストを、今週の人気作品やタグから探せます。プロンプトを参考に自分でも無料で生成できます。",
+    enDescription:
+      "Find 2.5D, semi-real AI art between anime and photorealism. Browse popular works and tags, then generate your own for free.",
+    isIndex: true,
+  },
+  POSTS_3D: {
+    title: "3D・実写風のAI画像とAIフォト",
+    enTitle: "3D and Photorealistic AI Images",
+    description:
+      "写真のようなAIフォト、ポートレート、AIグラビア、3D調のAI画像を、今週の人気作品やタグから探せます。プロンプトを参考に自分でも無料で生成できます。",
+    enDescription:
+      "Find photo-like AI images, portraits and 3D-style works by popularity or tag. Learn from shared prompts and generate your own for free.",
+    isIndex: true,
+  },
   HOME_SENSITIVE: {
     title: "センシティブ一覧",
     enTitle: "Sensitive List",

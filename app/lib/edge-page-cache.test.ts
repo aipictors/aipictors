@@ -21,6 +21,8 @@ describe("isSharedPage", () => {
       "/themes/2026/10/29",
       "/tags",
       "/posts/2d",
+      "/posts/2.5d",
+      "/en/posts/3d",
       "/en/posts/novel",
     ]) {
       expect(shared(path)).toBe(true)

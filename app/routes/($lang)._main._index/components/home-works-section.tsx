@@ -15,6 +15,7 @@ interface Props {
   style?: ImageStyle
   page?: number
   setPage?: (p: number) => void
+  onPageChange?: (p: number) => void
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
   autoPlayVideoPreview?: boolean

@@ -1,36 +1,28 @@
-import { loaderClient } from "~/lib/loader-client"
-import {
-  HomeTagList,
-  HomeTagListItemFragment,
-} from "~/routes/($lang)._main._index/components/home-tag-list"
-import {
-  HomeWorkList,
-  HomeWorkListItemFragment,
-} from "~/routes/($lang)._main._index/components/home-work-list"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import type { ShouldRevalidateFunction } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import type { HeadersFunction } from "@remix-run/cloudflare"
-import { config } from "~/config"
+import { GenreWorksPage } from "~/components/genre-works/genre-works-page"
+import { loadGenreWorks } from "~/components/genre-works/genre-works-loader.server"
+import { config, META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
-export async function loader() {
-  const worksResp = await loaderClient.query({
-    query: LoaderWorksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {},
+export const meta: MetaFunction<typeof loader> = (props) => {
+  return createMeta(
+    {
+      ...META.POSTS_2_5D,
+      image: props.data?.heroWorks[0]?.largeThumbnailImageURL ?? undefined,
     },
-  })
+    undefined,
+    props.params.lang,
+  )
+}
 
-  const hotTagsResp = await loaderClient.query({
-    query: LoaderTagsQuery,
-    variables: {},
-  })
-
-  return {
-    works: worksResp.data.works,
-    hotTags: hotTagsResp.data.hotTags,
-  }
+export async function loader(_props: LoaderFunctionArgs) {
+  return loadGenreWorks("2.5d")
 }
 
 export const headers: HeadersFunction = () => ({
@@ -38,33 +30,20 @@ export const headers: HeadersFunction = () => ({
 })
 
 /**
- * セミリアルの作品一覧画面
+ * ページ送りなどでクエリだけが変わるときは読み直さない（この loader の内容はクエリで変わらない）
  */
-export default function Works25d () {
-  const data = useLoaderData<typeof loader>()
-
-  return (
-    <>
-      <HomeTagList hotTags={data.hotTags} />
-      <HomeWorkList works={data.works} />
-    </>
-  )
+export const shouldRevalidate: ShouldRevalidateFunction = (props) => {
+  if (props.currentUrl.pathname === props.nextUrl.pathname) {
+    return false
+  }
+  return props.defaultShouldRevalidate
 }
 
-const LoaderTagsQuery = graphql(
-  `query HotTags {
-    hotTags {
-      ...HomeTagListItem
-    }
-  }`,
-  [HomeTagListItemFragment],
-)
+/**
+ * 2.5D（セミリアル）の作品の入口
+ */
+export default function Posts25d() {
+  const data = useLoaderData<typeof loader>()
 
-const LoaderWorksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...HomeWorkListItem
-    }
-  }`,
-  [HomeWorkListItemFragment],
-)
+  return <GenreWorksPage genreKey="2.5d" data={data} />
+}
