@@ -28,3 +28,14 @@ describe("AppMarkdownコンポーネントのテスト", () => {
     expect(markdownContainer).toHaveClass("test-class")
   })
 })
+
+describe("AppMarkdown isDemotedHeading", () => {
+  it("本文の見出しを 1 段下げる", () => {
+    render(<AppMarkdown isDemotedHeading>{"# 見出し\n\n## 小見出し"}</AppMarkdown>)
+    expect(screen.queryByRole("heading", { level: 1 })).toBeNull()
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("見出し")
+    expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent(
+      "小見出し",
+    )
+  })
+})

@@ -24,6 +24,7 @@ export function PasswordLoginForm (props: Props): React.ReactNode {
   return (
     <div className="w-full space-y-2">
       <Input
+        className="h-11 text-base md:text-sm"
         disabled={props.isLoading}
         placeholder={t("ユーザID", "User ID")}
         value={username}
@@ -32,6 +33,7 @@ export function PasswordLoginForm (props: Props): React.ReactNode {
         }}
       />
       <Input
+        className="h-11 text-base md:text-sm"
         disabled={props.isLoading}
         placeholder={t("パスワード", "Password")}
         type={"password"}
@@ -40,7 +42,7 @@ export function PasswordLoginForm (props: Props): React.ReactNode {
           setPassword(event.target.value)
         }}
       />
-      <Button onClick={onLogin} className="w-full">
+      <Button onClick={onLogin} className="h-11 w-full">
         {props.isLoading ? (
           <Loader2Icon className="mr-2 size-4 animate-spin" />
         ) : (

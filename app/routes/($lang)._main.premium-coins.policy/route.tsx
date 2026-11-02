@@ -105,7 +105,9 @@ export default function PremiumCoinsPolicyPage() {
       </Card>
 
       <div className="prose prose-slate dark:prose-invert max-w-none">
-        <AppMarkdown>{t(policyMarkdownText, policyMarkdownEnText)}</AppMarkdown>
+        <AppMarkdown isDemotedHeading>
+          {t(policyMarkdownText, policyMarkdownEnText)}
+        </AppMarkdown>
       </div>
     </div>
   )

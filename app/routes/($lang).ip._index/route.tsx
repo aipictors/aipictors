@@ -13,6 +13,7 @@ import {
   WifiIcon,
   ShieldCheck,
 } from "lucide-react"
+import { PictorChanSays } from "~/components/pictor-chan-says"
 import { useTranslation } from "~/hooks/use-translation"
 import { config } from "~/config"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
@@ -36,6 +37,33 @@ type IpAddressInfo = {
 }
 
 /**
+ * /cdn-cgi/trace（ip=… や loc=… の行が並ぶテキスト）から、分かる範囲の情報を読む
+ */
+const fetchIpInfoFromCloudflare = async (): Promise<IpAddressInfo> => {
+  const response = await fetch("/cdn-cgi/trace")
+  if (!response.ok) {
+    throw new Error("Failed to fetch IP information")
+  }
+  const fields = new Map(
+    (await response.text()).split("\n").map((line) => {
+      const separator = line.indexOf("=")
+      return [line.slice(0, separator), line.slice(separator + 1)] as const
+    }),
+  )
+  const ip = fields.get("ip")
+  if (!ip) {
+    throw new Error("Failed to fetch IP information")
+  }
+  const countryCode = fields.get("loc")
+  return {
+    ip,
+    country: countryCode,
+    countryCode,
+    userAgent: navigator.userAgent,
+  }
+}
+
+/**
  * IPアドレス情報表示ページ
  */
 export default function Route () {
@@ -49,10 +77,11 @@ export default function Route () {
     setError(null)
 
     try {
-      // ipify API を使用してIPアドレス情報を取得
-      const response = await fetch("https://ipapi.co/json/")
-      if (!response.ok) {
-        throw new Error("Failed to fetch IP information")
+      // 外部サービスの回数制限（429）にかかりやすいので、失敗したら自サイトの Cloudflare に聞く
+      const response = await fetch("https://ipapi.co/json/").catch(() => null)
+      if (response === null || !response.ok) {
+        setIpInfo(await fetchIpInfoFromCloudflare())
+        return
       }
 
       const data = await response.json()
@@ -100,7 +129,7 @@ export default function Route () {
 
   if (error) {
     return (
-      <div className="container-shadcn-ui max-w-4xl space-y-8 px-8 py-8">
+      <div className="mx-auto w-full max-w-4xl space-y-8 px-4 py-8 md:px-8">
         <div className="space-y-4">
           <h1 className="font-bold text-3xl">
             {t("IPアドレス情報", "IP Address Information")}
@@ -108,7 +137,16 @@ export default function Route () {
           <Alert>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-          <Button onClick={fetchIpInfo} className="flex items-center gap-2">
+          <PictorChanSays>
+            {t(
+              "住所を調べに行ったのですが、道に迷ってしまいました…！もう一度試してみてください。",
+              "I went to look up the address and got lost! Please try again.",
+            )}
+          </PictorChanSays>
+          <Button
+            onClick={fetchIpInfo}
+            className="flex h-11 items-center gap-2"
+          >
             <RefreshCw className="h-4 w-4" />
             {t("再試行", "Retry")}
           </Button>
@@ -118,17 +156,16 @@ export default function Route () {
   }
 
   return (
-    <div className="container-shadcn-ui max-w-4xl space-y-8 px-8 py-8">
+    <div className="mx-auto w-full max-w-4xl space-y-8 px-4 py-8 md:px-8">
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <h1 className="font-bold text-3xl">
             {t("IPアドレス情報", "IP Address Information")}
           </h1>
           <Button
             onClick={fetchIpInfo}
             variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
+            className="flex h-11 shrink-0 items-center gap-2"
             disabled={isLoading}
           >
             <RefreshCw
@@ -146,7 +183,7 @@ export default function Route () {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 [&>*]:min-h-56">
         {/* 基本情報 */}
         <Card>
           <CardHeader>
@@ -157,18 +194,22 @@ export default function Route () {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">
+              <div className="flex flex-wrap items-center justify-between gap-x-2">
+                <span className="shrink-0 font-medium">
                   {t("IPアドレス", "IP Address")}
                 </span>
                 {isLoading ? (
                   <Skeleton className="h-6 w-32" />
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary">{ipInfo?.ip}</Badge>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Badge variant="secondary" className="min-w-0 break-all">
+                      {ipInfo?.ip}
+                    </Badge>
                     <Button
-                      size="sm"
+                      size="icon"
                       variant="ghost"
+                      className="size-11"
+                      aria-label={t("IPアドレスをコピー", "Copy IP address")}
                       onClick={() => ipInfo?.ip && copyToClipboard(ipInfo.ip)}
                     >
                       <Copy className="h-4 w-4" />
@@ -302,8 +343,10 @@ export default function Route () {
                   </span>
                   <div className="flex items-center gap-2">
                     <Button
-                      size="sm"
+                      size="icon"
                       variant="ghost"
+                      className="size-11"
+                      aria-label={t("ユーザーエージェントをコピー", "Copy user agent")}
                       onClick={() =>
                         ipInfo?.userAgent && copyToClipboard(ipInfo.userAgent)
                       }

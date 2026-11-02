@@ -14,6 +14,7 @@ import type {
 } from "~/types/micro-cms-release-response"
 import { useTranslation } from "~/hooks/use-translation"
 import { ChevronRight } from "lucide-react"
+import { PictorChanSays } from "~/components/pictor-chan-says"
 import {
   featuredReleaseTags,
   fetchReleaseList,
@@ -100,32 +101,41 @@ export default function Milestone () {
   }
 
   const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
+    // サーバーとブラウザで日付がずれないよう、日本時間で出す
+    const date = new Date(new Date(timestamp).getTime() + 9 * 60 * 60 * 1000)
+    const year = date.getUTCFullYear()
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0")
+    const day = String(date.getUTCDate()).padStart(2, "0")
     return `${year}-${month}-${day}`
   }
 
   return (
     <div className="container flex flex-col space-y-4">
       <div className="flex flex-col gap-3 border-b p-4 md:flex-row md:items-center md:justify-between">
-        <h2 className="text-lg">{t("最新リリース一覧", "Latest Releases")}</h2>
+        <h1 className="font-bold text-2xl">
+          {t("リリース情報", "Release Information")}
+        </h1>
         <form method="get" className="flex w-full gap-2 md:w-auto">
           <Input
             name="q"
             defaultValue={data.q}
             placeholder={t("お知らせ内容で検索", "Search announcements")}
-            className="w-full md:w-72"
+            aria-label={t("お知らせ内容で検索", "Search announcements")}
+            className="h-11 w-full text-base md:w-72 md:text-sm"
           />
           {data.selectedTag && <input type="hidden" name="tag" value={data.selectedTag} />}
-          <Button type="submit" variant="secondary">
+          <Button type="submit" variant="secondary" className="h-11">
             {t("検索", "Search")}
           </Button>
         </form>
       </div>
       <div className="flex flex-wrap gap-2 px-4">
-        <Button asChild variant={data.selectedTag === null ? "default" : "outline"} size="sm">
+        <Button
+          asChild
+          variant={data.selectedTag === null ? "default" : "outline"}
+          size="sm"
+          className="h-10"
+        >
           <Link to={buildTagSearch(null)}>{t("すべて", "All")}</Link>
         </Button>
         {data.tags.map((tag) => (
@@ -134,7 +144,7 @@ export default function Milestone () {
             asChild
             variant={data.selectedTag === tag ? "default" : "outline"}
             size="sm"
-            className="h-auto px-3 py-1.5"
+            className="h-10 px-3 py-1.5"
           >
             <Link to={buildTagSearch(tag)}>
               <ReleaseTagBadge tag={tag} />
@@ -146,26 +156,28 @@ export default function Milestone () {
         <Link
           to={`/releases/${release.id}`}
           key={release.createdAt}
-          className="group flex items-center justify-between gap-4 border-b px-4 py-3"
+          className="group flex items-center justify-between gap-4 border-b px-4 py-3 transition-colors hover:bg-accent/50"
         >
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <span>{formatDate(release.createdAt)}</span>
               <ReleaseTagBadge tag={release.tag} className="px-1.5 py-0 text-[10px]" />
             </div>
-            <p className="mt-1 line-clamp-1 font-semibold text-sm">
+            <p className="mt-1 line-clamp-2 font-semibold text-sm md:line-clamp-1">
               {release.title}
             </p>
           </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all group-hover:text-foreground motion-safe:group-hover:translate-x-0.5" />
         </Link>
       ))}
       {releases.length === 0 && (
-        <div className="rounded-lg border border-dashed px-4 py-10 text-center text-muted-foreground text-sm">
-          {t(
-            "条件に合うお知らせはありません。タグや検索語を変えてお試しください。",
-            "No announcements matched. Try a different tag or keyword.",
-          )}
+        <div className="flex justify-center rounded-lg border border-dashed px-4 py-10">
+          <PictorChanSays>
+            {t(
+              "条件に合うお知らせはありませんでした。タグや検索語を変えてみてくださいね！",
+              "No announcements matched. Try a different tag or keyword!",
+            )}
+          </PictorChanSays>
         </div>
       )}
       <div className="flex flex-col items-center justify-center gap-3 pb-2">
@@ -176,22 +188,30 @@ export default function Milestone () {
           )}
         </div>
         <div className="flex items-center justify-center gap-2">
-          <Button variant="secondary" asChild disabled={isFirstPage}>
-            <Link to={buildSearch(Math.max(1, data.page - 1))}>
+          {isFirstPage ? (
+            <Button variant="secondary" disabled className="h-11">
               {t("前へ", "Previous")}
-            </Link>
-          </Button>
-          <Button variant="secondary" asChild disabled={isLastPage}>
-            <Link to={buildSearch(Math.min(totalPages, data.page + 1))}>
+            </Button>
+          ) : (
+            <Button variant="secondary" asChild className="h-11">
+              <Link to={buildSearch(data.page - 1)}>{t("前へ", "Previous")}</Link>
+            </Button>
+          )}
+          {isLastPage ? (
+            <Button variant="secondary" disabled className="h-11">
               {t("次へ", "Next")}
-            </Link>
-          </Button>
+            </Button>
+          ) : (
+            <Button variant="secondary" asChild className="h-11">
+              <Link to={buildSearch(data.page + 1)}>{t("次へ", "Next")}</Link>
+            </Button>
+          )}
         </div>
       </div>
-      <div className="flex items-center justify-center space-x-4">
+      <div className="flex flex-wrap items-center justify-center gap-4 pb-4">
         <Link
           to="/roadmap"
-          className="rounded-md bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+          className="inline-flex min-h-11 items-center rounded-md border px-4 py-2 font-medium text-sm transition-colors hover:bg-accent"
         >
           {t("ロードマップを見る", "View Roadmap")}
         </Link>
@@ -199,7 +219,7 @@ export default function Milestone () {
           target="_blank"
           rel="noreferrer"
           to={"https://github.com/aipictors/aipictors/releases"}
-          className="text-blue-500 transition-colors hover:text-blue-600"
+          className="inline-flex min-h-11 items-center text-primary text-sm underline-offset-4 hover:underline"
         >
           {"GitHub Releases"}
         </Link>

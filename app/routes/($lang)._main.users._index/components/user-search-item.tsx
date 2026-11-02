@@ -55,9 +55,13 @@ export function UserSearchItem (props: Props) {
           >
             <div className="size-32 rounded-md">
               <img
-                className="size-32 object-cover"
+                className="size-32 rounded-md object-cover"
                 alt={work.title}
                 src={work.smallThumbnailImageURL}
+                width={128}
+                height={128}
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="absolute right-0 bottom-0">

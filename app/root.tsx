@@ -4,6 +4,7 @@ import {
   json,
   type LinksFunction,
   type LoaderFunctionArgs,
+  type MetaFunction,
   redirect,
 } from "@remix-run/cloudflare"
 import {
@@ -294,22 +295,48 @@ export const links: LinksFunction = () => {
   ]
 }
 
+/**
+ * ページが出せなかったときだけ、題名を付けて検索結果に載らないようにする
+ */
+export const meta: MetaFunction = ({ error, location }) => {
+  if (!error) return []
+  const isEn = getPathLocale(location.pathname) === "en"
+  const isNotFound = isRouteErrorResponse(error) && error.status === 404
+  const title = isNotFound
+    ? isEn
+      ? "Page not found"
+      : "ページが見つかりません"
+    : isEn
+      ? "Something went wrong"
+      : "うまく表示できませんでした"
+  return [
+    { title: `${title} - Aipictors` },
+    { name: "robots", content: "noindex" },
+  ]
+}
+
 export function ErrorBoundary(): React.ReactNode {
   const error = useRouteError()
 
   if (isRouteErrorResponse(error) && error.status === 404) {
-    return <AppNotFoundPage />
+    return <AppNotFoundPage standalone />
   }
 
   if (isRouteErrorResponse(error) && 400 < error.status) {
-    return <AppErrorPage status={error.status} message={error.data} />
+    return (
+      <AppErrorPage
+        standalone
+        status={error.status}
+        message={String(error.data)}
+      />
+    )
   }
 
   if (error instanceof Error) {
-    return <AppErrorPage status={500} message={error.message} />
+    return <AppErrorPage standalone status={500} message={error.message} />
   }
 
-  return <AppNotFoundPage />
+  return <AppNotFoundPage standalone />
 }
 
 function MaintenancePage(props: { message: string | null }): React.ReactNode {

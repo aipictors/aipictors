@@ -16,7 +16,7 @@ export function LineLoggedInButton (props: Props): React.ReactNode {
       type="button"
       disabled={props.disabled}
       className={
-        "flex h-full w-full items-center rounded-md bg-line-theme font-bold duration-200 hover:opacity-90"
+        "flex h-11 w-full items-center rounded-md bg-line-theme font-bold duration-200 hover:opacity-90"
       }
     >
       <div className="relative m-auto flex h-full w-full items-center justify-center">
@@ -24,6 +24,8 @@ export function LineLoggedInButton (props: Props): React.ReactNode {
           <img
             alt="line icon"
             className="size-8"
+            width={32}
+            height={32}
             src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/btn_base.png"
           />
         </div>

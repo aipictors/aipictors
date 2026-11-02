@@ -1,6 +1,8 @@
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import text from "~/assets/privacy-policy.md?raw"
 
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { PictorChanSays } from "~/components/pictor-chan-says"
 import {
   Card,
   CardContent,
@@ -9,7 +11,17 @@ import {
   CardTitle,
 } from "~/components/ui/card"
 import { ShieldCheckIcon, InfoIcon } from "lucide-react"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
+import { createMeta } from "~/utils/create-meta"
+
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.PRIVACY, undefined, props.params.lang)
+}
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneWeek,
+})
 
 export default function Privacy () {
   const t = useTranslation()
@@ -56,10 +68,19 @@ export default function Privacy () {
       <Card>
         <CardContent className="p-8">
           <div className="prose prose-slate dark:prose-invert max-w-none">
-            <AppMarkdown className="leading-relaxed">{text}</AppMarkdown>
+            <AppMarkdown className="leading-relaxed" isDemotedHeading>
+              {text}
+            </AppMarkdown>
           </div>
         </CardContent>
       </Card>
+
+      <PictorChanSays className="justify-center">
+        {t(
+          "大事なお話を読んでくださって、ありがとうございます！ひと休みに作品もどうぞ。",
+          "Thanks for reading this important page! Enjoy some works as a little break.",
+        )}
+      </PictorChanSays>
 
       {/* フッター情報 */}
       <div className="space-y-2 border-t pt-8 text-center">

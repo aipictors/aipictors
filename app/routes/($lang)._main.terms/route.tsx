@@ -7,6 +7,7 @@ import { Link } from "@remix-run/react"
 import text from "~/assets/terms.md?raw"
 import enText from "~/assets/terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { PictorChanSays } from "~/components/pictor-chan-says"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
@@ -107,12 +108,19 @@ export default function Terms () {
       <Card>
         <CardContent className="p-8">
           <div className="prose prose-slate dark:prose-invert max-w-none">
-            <AppMarkdown className="leading-relaxed">
+            <AppMarkdown className="leading-relaxed" isDemotedHeading>
               {t(text, enText)}
             </AppMarkdown>
           </div>
         </CardContent>
       </Card>
+
+      <PictorChanSays className="justify-center">
+        {t(
+          "最後まで読んでくださって、ありがとうございます！いっしょに楽しい場所にしていきましょう。",
+          "Thanks for reading to the end! Let's keep this a fun place together.",
+        )}
+      </PictorChanSays>
 
       {/* フッター情報 */}
       <div className="space-y-2 border-t pt-8 text-center">

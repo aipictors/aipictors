@@ -1,12 +1,12 @@
 import { Link } from "@remix-run/react"
 import {
   Loader2Icon,
-  PackageOpenIcon,
   SearchIcon,
   UploadIcon,
   XIcon,
 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
+import { PictorChanSays } from "~/components/pictor-chan-says"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import {
@@ -282,7 +282,7 @@ export function UserModelBrowser(props: Props) {
         </div>
       )}
 
-      {query.isLoading && (
+      {query.isPending && (
         <div className={gridClassName}>
           {skeletonKeys.map((key) => (
             <UserModelCardSkeleton key={key} />
@@ -290,21 +290,13 @@ export function UserModelBrowser(props: Props) {
         </div>
       )}
 
-      {!query.isLoading && !query.isError && models.length === 0 && (
+      {!query.isPending && !query.isError && models.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed py-16 text-center">
-          <PackageOpenIcon className="size-10 text-muted-foreground" />
-          <div>
-            <p className="font-semibold">
-              {hasActiveFilter
-                ? "条件に合うモデルが見つかりませんでした"
-                : "まだモデルがありません"}
-            </p>
-            <p className="mt-1 text-muted-foreground text-sm">
-              {hasActiveFilter
-                ? "キーワードやフィルタを変えてみてください"
-                : "最初のモデルをアップロードしてみませんか？"}
-            </p>
-          </div>
+          <PictorChanSays>
+            {hasActiveFilter
+              ? "条件に合うモデルが見つかりませんでした。キーワードやフィルタを変えてみてくださいね！"
+              : "まだモデルがありません。最初のモデルをアップロードしてみませんか？"}
+          </PictorChanSays>
           {!hasActiveFilter && (
             <Button asChild size="sm" className="rounded-full">
               <Link to="/models/upload">

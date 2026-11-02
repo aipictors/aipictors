@@ -33,6 +33,20 @@ html {
   background-color: #0170c8;
 }
 
+/* 500 ページのぴくたーちゃん（prefers-reduced-motion では動かさない） */
+@keyframes pictor-chan-wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-4deg);
+  }
+  75% {
+    transform: rotate(4deg);
+  }
+}
+
 /* フォローした瞬間のチェック */
 @keyframes follow-pop {
   0% {
