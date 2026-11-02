@@ -83,11 +83,11 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 
   const album = props.data.album
 
-  return createMeta(
+  const metaTags = createMeta(
     {
       ...META.ALBUMS,
-      // 作品のないシリーズは検索結果に出さない
-      isIndex: album.worksCount > 0,
+      // 作品のないシリーズと R18G のシリーズは検索結果に出さない
+      isIndex: album.worksCount > 0 && album.rating !== "R18G",
     },
     {
       ...toAlbumMetaText(album, props.data.page),
@@ -95,6 +95,11 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     },
     props.params.lang,
   )
+
+  // 成人向けのシリーズはセーフサーチで正しく扱われるようにする
+  return isAdultAlbum(album)
+    ? [...metaTags, { name: "rating", content: "adult" }]
+    : metaTags
 }
 
 export const headers: HeadersFunction = () => ({
