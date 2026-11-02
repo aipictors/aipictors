@@ -19,6 +19,7 @@ import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/compo
 import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
 import { UserBiography } from "~/routes/($lang)._main.users.$user._index/components/user-biography"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user._index/components/user-profile-avatar"
+import { UserProfileStatus } from "~/routes/($lang)._main.users.$user._index/components/user-profile-status"
 import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user._index/components/user-subscription-icon"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -209,6 +210,8 @@ export function UserProfileNameIcon(props: Props) {
         </div>
       </div>
 
+      <UserProfileStatus statusText={user.statusText} isOwn={isMyPage} />
+
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <dl className="flex flex-wrap gap-x-6 gap-y-2">
           {stats.map((stat) => (
@@ -280,6 +283,7 @@ export const UserProfileIconFragment = graphql(
     isBlocked
     biography
     enBiography
+    statusText
     receivedLikesCount
     receivedSensitiveLikesCount
     followersCount

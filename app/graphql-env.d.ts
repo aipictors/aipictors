@@ -3651,6 +3651,9 @@ type Mutation {
   """ユーザの設定を更新する"""
   updateUserSetting(input: UpdateUserSettingInput!): UserSettingNode!
 
+  """自分のステータスを変える"""
+  updateUserStatus(input: UpdateUserStatusInput!): UserStatusNode!
+
   """作品を更新する"""
   updateWork(input: UpdateWorkInput!): WorkNode!
 
@@ -4737,6 +4740,9 @@ type Query {
   """コインで買ったアイコン枠の ID"""
   viewerOwnedUserAvatarFrameIds: [ID!]!
 
+  """自分のステータス"""
+  viewerUserStatus: UserStatusNode
+
   """ホワイトリスト用のタグ"""
   whiteListTags(where: WhiteListTagsInput): [TagNode!]!
 
@@ -5508,6 +5514,14 @@ input UpdateUserSettingInput {
   supportThankYouMessage: String
 }
 
+input UpdateUserStatusInput {
+  """プロフィールに出す"""
+  isVisible: Boolean!
+
+  """空文字で消す"""
+  text: String!
+}
+
 input UpdateWorkInput {
   """生成情報の公開設定"""
   accessGenerationType: GenerationAccessType!
@@ -5945,6 +5959,9 @@ type UserNode implements Node {
   """サイトURL"""
   siteURL: String
 
+  """プロフィールに出すステータス（なし・非表示なら null）"""
+  statusText: String
+
   """スタンプ"""
   stickers(limit: Int!, offset: Int!): [StickerNode!]!
 
@@ -6089,6 +6106,12 @@ type UserSettingNode implements Node {
   useDisableGenerateTime: Int!
   user: UserNode!
   userId: ID!
+}
+
+"""自分のステータス（非表示にしているものも返す）"""
+type UserStatusNode {
+  isVisible: Boolean!
+  text: String!
 }
 
 input UserStickersWhereInput {
