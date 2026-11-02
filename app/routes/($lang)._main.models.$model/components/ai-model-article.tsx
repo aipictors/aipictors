@@ -10,7 +10,6 @@ import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSearchParams } from "@remix-run/react"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
-import { aiModelQuery } from "~/routes/($lang)._main.models.$model/route"
 
 type Props = {
   model: FragmentOf<typeof ModelItemFragment>
@@ -54,14 +53,22 @@ export function AiModelArticle(props: Props) {
   const works = isEmpty ? [] : (aiModel?.works ?? model.works)
 
   // URLパラメータの監視と更新
+  // ページを変えたときだけ書き換える（開いただけで書き換えると、ローダーを取り直して通信が 1 回増える）
   useEffect(() => {
-    if (isEmpty) return
+    if (isEmpty || page === props.page) return
     setSearchParams({
       page: String(page),
       prompt: props.hasPrompt ? "1" : "0",
       r15: props.isMoreRatings ? "1" : "0",
     })
-  }, [isEmpty, page, props.hasPrompt, props.isMoreRatings, setSearchParams])
+  }, [
+    isEmpty,
+    page,
+    props.page,
+    props.hasPrompt,
+    props.isMoreRatings,
+    setSearchParams,
+  ])
 
   if (isEmpty) {
     return (
@@ -88,6 +95,7 @@ export function AiModelArticle(props: Props) {
           targetRowHeight={240}
           size="small"
           isShowProfile={true}
+          priorityCount={4}
         />
         <div className="h-8" />
         <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
@@ -117,4 +125,14 @@ export const ModelItemFragment = graphql(
       }
   }`,
   [WorkListItemFragment],
+)
+
+// route.tsx と循環して読み込むと初期化の順番で例外になるので、ここに置く
+export const aiModelQuery = graphql(
+  `query AiModel($search: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    aiModel(where:{search: $search}) {
+      ...ModelItem
+    }
+  }`,
+  [ModelItemFragment],
 )

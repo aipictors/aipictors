@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
-import { useContext } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
@@ -41,7 +41,10 @@ function formatGeneratedAt(value: number | null | undefined) {
     return null
   }
 
-  return new Date(value * 1000).toLocaleString("ja-JP")
+  // サーバー（UTC）とブラウザで同じ文字になるよう、日本時間に固定する
+  return new Date(value * 1000).toLocaleString("ja-JP", {
+    timeZone: "Asia/Tokyo",
+  })
 }
 
 function RankingCommentPreview(props: {
@@ -208,7 +211,32 @@ export function AiEvaluationRankingWorkList(props: Props) {
 
   const rankings = data?.aiEvaluationWorkRankings ?? props.rankings
   const featuredRankings = rankings.slice(0, 3)
-  const standardRankings = rankings.slice(3)
+
+  // 200 件を一度に描くと要素が 8,900 個になって重いので、/rankings と同じく
+  // 最初は上位だけ描き、一覧の終わりが近づいたら続きを描く
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT)
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const standardRankings = rankings.slice(3, 3 + visibleCount)
+  const hasMore = rankings.length > 3 + visibleCount
+
+  useEffect(() => {
+    if (!hasMore) return
+    const target = sentinelRef.current
+    if (!target || !("IntersectionObserver" in window)) {
+      setVisibleCount(rankings.length)
+      return
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisibleCount((count) => count + LOAD_MORE_COUNT)
+        }
+      },
+      { rootMargin: "800px 0px" },
+    )
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [hasMore, rankings.length, visibleCount])
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 px-3 pb-8 sm:px-4 lg:px-0">
@@ -238,9 +266,16 @@ export function AiEvaluationRankingWorkList(props: Props) {
           ))}
         </div>
       )}
+      {hasMore && <div ref={sentinelRef} className="h-px" aria-hidden />}
     </div>
   )
 }
+
+/** 最初に描く件数（上位 3 件のあと） */
+const INITIAL_VISIBLE_COUNT = 21
+
+/** 続きを描くときに増やす件数 */
+const LOAD_MORE_COUNT = 40
 
 export const AiEvaluationRankingListItemFragment = graphql(
   `fragment AiEvaluationRankingListItem on AiEvaluationWorkRankingNode @_unmask {
@@ -254,33 +289,16 @@ export const AiEvaluationRankingListItemFragment = graphql(
     work {
       id
       title
-      accessType
-      adminAccessType
-      type
       likesCount
       commentsCount
-      bookmarksCount
       viewsCount
-      createdAt
-      rating
-      isTagEditable
       smallThumbnailImageURL
       smallThumbnailImageHeight
       smallThumbnailImageWidth
       largeThumbnailImageURL
-      largeThumbnailImageHeight
-      largeThumbnailImageWidth
-      type
-      prompt
-      negativePrompt
       isLiked
       thumbnailImagePosition
-      description
-      url
       subWorksCount
-      tags {
-        name
-      }
       user {
         id
         name

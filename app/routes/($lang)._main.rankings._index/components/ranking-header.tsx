@@ -22,6 +22,8 @@ import {
 } from "~/utils/get-weeks-in-month"
 
 type Props = {
+  /** 上の見どころがない日付別のページでは、この日付をページの見出し（h1）にする */
+  isPageHeading?: boolean
   year: number
   month: number
   day: number | null
@@ -44,6 +46,7 @@ export function RankingHeader(props: Props) {
   const day = props.day
   const weekIndex = props.weekIndex ?? 1
   const pathnamePrefix = props.pathnamePrefix ?? "/rankings"
+  const Heading = props.isPageHeading ? "h1" : "h2"
   const rankingFamily = props.rankingFamily ?? "standard"
   const showRankingFamilyToggle = props.showRankingFamilyToggle ?? true
   const defaultPathnamePrefix = props.defaultPathnamePrefix ?? "/rankings"
@@ -392,14 +395,21 @@ export function RankingHeader(props: Props) {
               <span>ランキングを探す</span>
             </div>
             <div>
-              <h2 className="font-semibold text-foreground text-lg sm:text-xl">
+              <Heading className="font-semibold text-foreground text-lg sm:text-xl">
+                {props.isPageHeading && (
+                  <span className="sr-only">
+                    {pathnamePrefix === "/ai-rankings"
+                      ? "AI評価ランキング "
+                      : "ランキング "}
+                  </span>
+                )}
                 {year}年{month.toString().padStart(2, "0")}月
                 {day
                   ? `${day.toString().padStart(2, "0")}日`
                   : weekIndex && viewType !== "マンスリー"
                     ? ` 第${weekIndex}週`
                     : ""}
-              </h2>
+              </Heading>
               <p className="text-muted-foreground text-sm">
                 通常 / AI / 推し、作品 / ユーザー、日間 / 週間 / 月間をコンパクトに切り替えられます。
               </p>

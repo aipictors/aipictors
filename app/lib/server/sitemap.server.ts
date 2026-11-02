@@ -212,6 +212,7 @@ const dayWorksQuery = `query SitemapDayWorks($offset: Int!, $limit: Int!, $where
 export async function fetchWorksOfDay(date: string): Promise<SitemapWork[]> {
   const dayStart = jstDayStartSeconds(date)
   const dayEnd = dayStart + 24 * 60 * 60
+  const now = Math.floor(Date.now() / 1000)
   const works = new Map<string, SitemapWork>()
 
   // beforeCreatedAt は 9 時間ずれて解釈されるので、その分を足して渡す
@@ -255,6 +256,8 @@ export async function fetchWorksOfDay(date: string): Promise<SitemapWork[]> {
             continue
           }
           if (work.createdAt >= dayEnd) continue
+          // 予約投稿は公開時刻まで 404 なので載せない（タイトルと画像も公開前に出てしまう）
+          if (work.createdAt > now) continue
           works.set(work.id, work)
           lastCreatedAt = Math.min(lastCreatedAt, work.createdAt)
         }

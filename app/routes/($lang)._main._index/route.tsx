@@ -495,6 +495,8 @@ function useScrollRestoration(isMounted: boolean) {
 
 type HomeIndexPageProps = {
   forcedTab?: HomeTab
+  /** /new-works として表示している（ページの見出しを変える） */
+  isNewWorksPage?: boolean
 }
 
 export function HomeIndexPage(props: HomeIndexPageProps = {}) {
@@ -1039,10 +1041,12 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     <div className="space-y-4">
       {/* ページの見出し（画面には出さず、検索エンジンと読み上げのために置く） */}
       <h1 className="sr-only">
-        {t(
-          "Aipictors（AIピクターズ）- AIイラスト・AI画像の投稿・生成サイト",
-          "Aipictors - AI illustration & image posting and generation site",
-        )}
+        {props.isNewWorksPage
+          ? t("新着のAIイラスト・AI画像", "New AI illustrations and images")
+          : t(
+              "Aipictors（AIピクターズ）- AIイラスト・AI画像の投稿・生成サイト",
+              "Aipictors - AI illustration & image posting and generation site",
+            )}
       </h1>
       {data.importantRelease && (
         <HomeImportantReleaseBanner release={data.importantRelease} />

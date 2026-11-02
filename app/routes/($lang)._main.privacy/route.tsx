@@ -1,3 +1,4 @@
+import type { MetaFunction } from "@remix-run/cloudflare"
 import text from "~/assets/privacy-policy.md?raw"
 
 import { AppMarkdown } from "~/components/app/app-markdown"
@@ -9,7 +10,13 @@ import {
   CardTitle,
 } from "~/components/ui/card"
 import { ShieldCheckIcon, InfoIcon } from "lucide-react"
+import { META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
+import { createMeta } from "~/utils/create-meta"
+
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.PRIVACY, undefined, props.params.lang)
+}
 
 export default function Privacy () {
   const t = useTranslation()
@@ -56,7 +63,9 @@ export default function Privacy () {
       <Card>
         <CardContent className="p-8">
           <div className="prose prose-slate dark:prose-invert max-w-none">
-            <AppMarkdown className="leading-relaxed">{text}</AppMarkdown>
+            <AppMarkdown className="leading-relaxed" demoteH1>
+              {text}
+            </AppMarkdown>
           </div>
         </CardContent>
       </Card>

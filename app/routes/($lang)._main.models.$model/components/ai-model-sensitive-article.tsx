@@ -10,7 +10,7 @@ import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSearchParams } from "@remix-run/react"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
-import { aiModelQuery } from "~/routes/($lang)._main.models.$model/route"
+import { aiModelQuery } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 
 type Props = {
   model: FragmentOf<typeof ModelSensitiveItemFragment>

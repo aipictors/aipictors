@@ -3,7 +3,12 @@ import { CalendarDays, Clock, ImageIcon, Trophy, Users } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
 import { useEventDateTimeText } from "~/routes/($lang).events._index/hooks/use-event-date-time-text"
-import { getJstDate } from "~/utils/jst-date"
+import { toJstWallClockUnixSeconds } from "~/utils/jst-date"
+import { getRenderNow } from "~/utils/render-now"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 export type EventCardItem = {
@@ -40,7 +45,9 @@ export function AppEventCard(props: Props) {
 
   const t = useTranslation()
 
-  const now = getJstDate(new Date())
+  // endAt / startAt は日本時間の壁時計を UTC として扱った値なので、いまも同じ形式にする。
+  // hydration が終わるまではサーバーの描画時刻を使う（ずれると日数が食い違う）
+  const nowMs = toJstWallClockUnixSeconds(new Date(getRenderNow())) * 1000
 
   const isOngoing = appEvent.status === "ONGOING"
 
@@ -50,12 +57,12 @@ export function AppEventCard(props: Props) {
 
   const remainingDays = Math.max(
     0,
-    Math.ceil((appEvent.endAt * 1000 - now.getTime()) / DAY_MS),
+    Math.ceil((appEvent.endAt * 1000 - nowMs) / DAY_MS),
   )
 
   const daysUntilStart = Math.max(
     0,
-    Math.ceil((appEvent.startAt * 1000 - now.getTime()) / DAY_MS),
+    Math.ceil((appEvent.startAt * 1000 - nowMs) / DAY_MS),
   )
 
   const startAt = useEventDateTimeText(appEvent.startAt)
@@ -106,7 +113,7 @@ export function AppEventCard(props: Props) {
               className={`h-full w-full object-cover transition duration-300 group-hover:scale-[1.03] ${
                 isEnded ? "grayscale-[35%]" : ""
               }`}
-              src={appEvent.thumbnailImageUrl}
+              src={toResizedImageUrl(appEvent.thumbnailImageUrl, 320)}
               alt={appEvent.title}
               loading="lazy"
               decoding="async"
@@ -161,7 +168,7 @@ export function AppEventCard(props: Props) {
       >
         <div className="relative aspect-[16/9] overflow-hidden bg-muted">
           <img
-            src={appEvent.thumbnailImageUrl}
+            src={toResizedImageUrl(appEvent.thumbnailImageUrl, 64)}
             alt=""
             aria-hidden="true"
             className="absolute inset-0 h-full w-full scale-110 object-cover opacity-50 blur-xl"
@@ -172,7 +179,11 @@ export function AppEventCard(props: Props) {
             className={`relative h-full w-full object-contain transition duration-300 group-hover:scale-[1.03] ${
               isEnded ? "grayscale-[35%]" : ""
             }`}
-            src={appEvent.thumbnailImageUrl}
+            src={toResizedImageUrl(appEvent.thumbnailImageUrl, 480)}
+            srcSet={toResizedImageSrcSet(appEvent.thumbnailImageUrl, {
+              minWidth: 320,
+            })}
+            sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
             alt={appEvent.title}
             loading="lazy"
             decoding="async"

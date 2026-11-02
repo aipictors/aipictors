@@ -8,12 +8,14 @@ import type {
 } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { type FragmentOf, graphql } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 import {
   AiModelArticle,
-  ModelItemFragment,
+  aiModelQuery,
 } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -128,8 +130,26 @@ export default function ModelPage () {
     throw new ParamsError()
   }
 
+  // ページを変えた URL は canonical が別なので、そのページの作品だけを載せる
+  const model = data.data as {
+    name: string
+    works?: { id: string; title: string }[] | null
+  }
+
   return (
     <>
+      <AppJsonLdScript
+        jsonLd={createCollectionJsonLd({
+          name: `${model.name}モデルで生成された作品一覧`,
+          path: `/models/${encodeURIComponent(model.name)}`,
+          lang: params.lang,
+          parents: [{ name: "AI画像生成モデル一覧", path: "/models" }],
+          items: (model.works ?? []).map((work) => ({
+            name: work.title,
+            path: `/posts/${work.id}`,
+          })),
+        })}
+      />
       <AiModelArticle
         model={data.data}
         isMoreRatings={data.isR15}
@@ -139,12 +159,3 @@ export default function ModelPage () {
     </>
   )
 }
-
-export const aiModelQuery = graphql(
-  `query AiModel($search: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    aiModel(where:{search: $search}) {
-      ...ModelItem
-    }
-  }`,
-  [ModelItemFragment],
-)

@@ -8,6 +8,11 @@ type Props = Readonly<{
   className?: string
   breaks?: boolean
   children: React.ReactNode
+  /**
+   * 本文の「# 見出し」を h2 として出す（見た目は h1 のまま）。
+   * ページの見出し（h1）が別にある規約などで、h1 が 1 ページに何個も並ばないようにする
+   */
+  demoteH1?: boolean
 }>
 
 export function AppMarkdown (props: Props): React.ReactNode {
@@ -15,9 +20,15 @@ export function AppMarkdown (props: Props): React.ReactNode {
     return <>{props.children}</>
   }
 
-  const html = marked(props.children, {
+  const rendered = marked(props.children, {
     breaks: props.breaks ?? false,
-  })
+  }) as string
+
+  const html = props.demoteH1
+    ? rendered
+        .replaceAll("<h1", '<h2 data-md-h1=""')
+        .replaceAll("</h1>", "</h2>")
+    : rendered
 
   return (
     <div
@@ -27,6 +38,7 @@ export function AppMarkdown (props: Props): React.ReactNode {
         "text-foreground leading-relaxed",
         // ヘッダーのスタイル
         "[&>h1]:mt-8 [&>h1]:mb-6 [&>h1]:border-b [&>h1]:pb-2 [&>h1]:font-bold [&>h1]:text-2xl [&>h1]:text-foreground",
+        "[&>h2[data-md-h1]]:mt-8 [&>h2[data-md-h1]]:mb-6 [&>h2[data-md-h1]]:border-b [&>h2[data-md-h1]]:pb-2 [&>h2[data-md-h1]]:font-bold [&>h2[data-md-h1]]:text-2xl",
         "[&>h2]:mt-6 [&>h2]:mb-4 [&>h2]:font-semibold [&>h2]:text-foreground [&>h2]:text-xl",
         "[&>h3]:mt-4 [&>h3]:mb-3 [&>h3]:font-medium [&>h3]:text-foreground [&>h3]:text-lg",
         // パラグラフとリストのスタイル

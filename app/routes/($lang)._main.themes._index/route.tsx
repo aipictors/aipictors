@@ -1,8 +1,10 @@
 import { loaderClient } from "~/lib/loader-client"
-import { type MetaFunction, useLoaderData } from "@remix-run/react"
+import { type MetaFunction, useLoaderData, useParams } from "@remix-run/react"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { graphql } from "gql.tada"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { config, META } from "~/config"
+import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
@@ -174,6 +176,7 @@ export const meta: MetaFunction = (props) => {
 
 export default function Themes() {
   const data = useLoaderData<typeof loader>()
+  const params = useParams()
 
   if (data === null) {
     return null
@@ -181,6 +184,19 @@ export default function Themes() {
 
   return (
     <>
+      <AppJsonLdScript
+        jsonLd={createCollectionJsonLd({
+          name: data.todayTheme?.title
+            ? `お題「${data.todayTheme.title}」の作品`
+            : "お題",
+          path: "/themes",
+          lang: params.lang,
+          items: (data.works ?? []).map((work) => ({
+            name: work.title,
+            path: `/posts/${work.id}`,
+          })),
+        })}
+      />
       <ThemeContainer
         dailyThemes={data.dailyThemes}
         todayTheme={data.todayTheme}

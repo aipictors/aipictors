@@ -22,7 +22,7 @@ const HYDRATE_IDLE_MS = 10000
  * 生成・投稿・設定などの操作が中心のページは、これまでどおりすぐ hydration する
  */
 const INTERACTION_HYDRATION_PATH =
-  /^(?:\/(?:ja|en))?(?:\/r)?(?:\/(?:home|rankings|search|themes(?:\/\d{4}\/\d{1,2}\/\d{1,2})?|posts\/[^/]+|stickers(?:\/\d+)?|tags\/[^/]+|users\/[^/]+))?\/?$/
+  /^(?:\/(?:ja|en))?(?:\/r)?(?:\/(?:home|new-works|rankings|ai-rankings|search|themes(?:\/\d{4}\/\d{1,2}\/\d{1,2})?|posts\/[^/]+|stickers(?:\/\d+)?|tags\/[^/]+|models\/(?!upload$|library$|u$)[^/]+|users\/[^/]+))?\/?$/
 
 export const shouldWaitForInteraction = (pathname: string): boolean =>
   INTERACTION_HYDRATION_PATH.test(pathname)

@@ -107,7 +107,7 @@ export default function Terms () {
       <Card>
         <CardContent className="p-8">
           <div className="prose prose-slate dark:prose-invert max-w-none">
-            <AppMarkdown className="leading-relaxed">
+            <AppMarkdown className="leading-relaxed" demoteH1>
               {t(text, enText)}
             </AppMarkdown>
           </div>

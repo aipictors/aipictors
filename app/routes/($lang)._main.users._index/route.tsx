@@ -1,12 +1,17 @@
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Suspense } from "react"
-import { config } from "~/config"
+import { config, META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 import { UserSearchList } from "~/routes/($lang)._main.users._index/components/user-search-list"
 import { useTranslation } from "~/hooks/use-translation"
 
 export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
+
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.USER_SEARCH, undefined, props.params.lang)
+}
 
 export default function UsersPage () {
   const t = useTranslation()

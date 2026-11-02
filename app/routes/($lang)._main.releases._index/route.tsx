@@ -9,6 +9,7 @@ import type {
 import { ReleaseTagBadge } from "~/components/release-tag-badge"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { toJstDisplayDate } from "~/utils/to-jst-display-date"
 import type {
   MicroCmsApiRelease,
 } from "~/types/micro-cms-release-response"
@@ -100,7 +101,7 @@ export default function Milestone () {
   }
 
   const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp)
+    const date = toJstDisplayDate(timestamp)
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, "0")
     const day = String(date.getDate()).padStart(2, "0")

@@ -539,6 +539,20 @@ export const meta: MetaFunction = () => {
       content:
         "和気あいAI4と連動したハロウィン特別企画。生成AIを使って素敵なハロウィン作品を投稿しよう！",
     },
+    {
+      property: "og:title",
+      content: "ハロウィン2025企画 - 和気あいAI4連動特別イベント",
+    },
+    {
+      property: "og:description",
+      content:
+        "和気あいAI4と連動したハロウィン特別企画。生成AIを使って素敵なハロウィン作品を投稿しよう！",
+    },
+    {
+      property: "og:image",
+      content: "https://assets.aipictors.com/cc52625d-887c-46f4-afbc-757b7655797f.webp",
+    },
+    { name: "twitter:card", content: "summary_large_image" },
   ]
 }
 
