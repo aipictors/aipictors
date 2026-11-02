@@ -889,10 +889,22 @@ export const META: { [key: string]: MetaData } = {
     isIndex: true,
   },
   STICKERS: {
-    title: "スタンプ",
-    enTitle: "Stickers",
-    description: "Check out the latest stickers on Aipictors",
-    enDescription: "View the latest stickers available on Aipictors",
+    title: "AIイラストスタンプ広場",
+    enTitle: "AI Illustration Sticker Square",
+    description:
+      "みんなが作ったAIイラストのスタンプを探して、作品のコメントで使えます。作成ツールや手元の画像からスタンプを作って公開することもできます。",
+    enDescription:
+      "Find AI illustration stickers made by everyone and use them in comments. You can also make and share your own.",
+    isIndex: true,
+  },
+  STICKER: {
+    title: "「{{title}}」のAIイラストスタンプ",
+    enTitle: '"{{title}}" AI illustration sticker',
+    description:
+      "{{user}} さんが作ったAIイラストのスタンプ「{{title}}」。マイスタンプに追加すると、作品のコメントで使えます。",
+    enDescription:
+      'The AI illustration sticker "{{title}}" by {{user}}. Add it to My Stickers to use it in comments.',
+    image: "{{image}}",
     isIndex: true,
   },
   SUPPORT_CHAT: {
@@ -916,7 +928,7 @@ export const META: { [key: string]: MetaData } = {
   NEW_IMAGE: {
     title: "画像投稿",
     enTitle: "New Image",
-    description: "You can post images",
+    description: "AIイラストや動画を投稿できます。",
     enDescription: "Post new images on Aipictors",
     isIndex: false,
   },
@@ -930,7 +942,7 @@ export const META: { [key: string]: MetaData } = {
   NEW_TEXT: {
     title: "小説・コラム投稿",
     enTitle: "New Text",
-    description: "You can post novels and columns",
+    description: "小説やコラムを投稿できます。",
     enDescription: "Post new novels and columns on Aipictors",
     isIndex: false,
   },

@@ -68,7 +68,7 @@ export function PostFormItemRating (props: Props) {
           onValueChange={(value) => {
             props.setRating(value as IntrospectionEnum<"Rating">)
           }}
-          className="space-y-2"
+          className="grid grid-cols-2 gap-2 md:grid-cols-4"
         >
           {ratingOptions.map((option, index) => {
             const isAllowed = allowedRatings.includes(
@@ -76,23 +76,22 @@ export function PostFormItemRating (props: Props) {
             )
 
             return (
-              <div
+              <label
                 key={option.value}
-                className={`flex items-center space-x-3 rounded-md p-1 ${!isAllowed ? "opacity-50" : ""}`}
+                htmlFor={optionIds[index]}
+                className={`flex items-start gap-2 rounded-xl border p-3 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5 ${isAllowed ? "cursor-pointer hover:bg-muted/60" : "cursor-not-allowed opacity-50"}`}
               >
                 <RadioGroupItem
+                  className="mt-0.5 shrink-0"
                   value={option.value}
                   id={optionIds[index]}
                   disabled={!isAllowed}
                 />
-                <label
-                  htmlFor={optionIds[index]}
-                  className={`flex-1 ${isAllowed ? "cursor-pointer" : "cursor-not-allowed"}`}
-                >
-                  <div className="font-medium">
+                <span className="min-w-0">
+                  <span className="block font-medium text-sm">
                     {t(option.labelJa, option.labelEn)}
-                  </div>
-                  <div className="text-gray-600 text-sm dark:text-gray-300">
+                  </span>
+                  <span className="block text-muted-foreground text-xs leading-5">
                     {t(option.descriptionJa, option.descriptionEn)}
                     {option.value === "R15" && (
                       <>
@@ -106,9 +105,9 @@ export function PostFormItemRating (props: Props) {
                         </Link>
                       </>
                     )}
-                  </div>
-                </label>
-              </div>
+                  </span>
+                </span>
+              </label>
             )
           })}
         </RadioGroup>

@@ -1,112 +1,72 @@
-import { AddStickerModal } from "~/routes/($lang)._main.stickers._index/components/add-sticker-modal"
-import { useBoolean } from "usehooks-ts"
-import { useTranslation } from "~/hooks/use-translation"
-import { graphql } from "gql.tada"
-import { StickerAccessTypeDialogFragment } from "~/routes/($lang).settings.sticker/components/my-stickers-list"
 import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-dialog"
+import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
-import { PlusIcon } from "lucide-react"
-import { useSuspenseQuery } from "@apollo/client/index"
-import { useContext, useState } from "react"
-import { AuthContext } from "~/contexts/auth-context"
+import { ImageUpIcon, Loader2Icon, WandSparklesIcon } from "lucide-react"
+import { lazy, Suspense, useState } from "react"
+
+// 作成ツールはとても大きく、フォントもたくさん読むので、開いたときに読み込む
+const StickerCreator = lazy(() =>
+  import("~/routes/($lang)._main.stickers._index/components/sticker-creator").then(
+    (module) => ({ default: module.StickerCreator }),
+  ),
+)
 
 type Props = {
   title?: string
 }
 
 export function StickerListHeader (props: Props) {
-  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
-
   const t = useTranslation()
 
-  const authContext = useContext(AuthContext)
-
-  const [stickerStatus, _setStickerStatue] = useState<
-    "PRIVATE_CREATED" | "DOWNLOADED" | "PUBLIC_CREATED"
-  >("DOWNLOADED")
-
-  const { data: stickersCount = null, refetch: reactStickers } =
-    useSuspenseQuery(viewerUserStickersCountQuery, {
-      skip: authContext.isLoading,
-      variables: {
-        orderBy: "DATE_CREATED",
-        where: {
-          savedTypes: [stickerStatus],
-        },
-      },
-    })
-
-  const [createdSortStickerPage, _setCreatedSortStickerPage] = useState(0)
-
-  const maxStickersPage = 120
-
-  const { data: stickers = null, refetch: reactStickersCount } =
-    useSuspenseQuery(viewerUserStickersQuery, {
-      skip: authContext.isLoading,
-      variables: {
-        limit: maxStickersPage,
-        offset: createdSortStickerPage * maxStickersPage,
-        orderBy: "DATE_CREATED",
-        where: {
-          savedTypes: [stickerStatus],
-        },
-      },
-    })
+  const [isCreatorOpen, setIsCreatorOpen] = useState(false)
 
   return (
-    <>
-      <section className="flex flex-col gap-y-2">
-        <h1 className="font-bold text-2xl">
-          {t("AIイラストスタンプ広場", "AI Illustration Stamp Square")}
-        </h1>
-        <AddStickerDialog
-          onAddedSicker={() => {
-            reactStickers()
-            reactStickersCount()
-          }}
-        >
-          <Button variant={"secondary"}>
-            {t("新規スタンプを作成する", "New Sticker")}
-            <PlusIcon className="w-8" />
-          </Button>
-        </AddStickerDialog>
-        {props.title && (
-          <h2 className="text-bold">
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div className="min-w-0 space-y-1">
+          <h1 className="font-bold text-xl md:text-2xl">
+            {props.title
+              ? t(
+                  `「${props.title}」のAIイラストスタンプ`,
+                  `AI illustration stickers for "${props.title}"`,
+                )
+              : t("AIイラストスタンプ広場", "AI Illustration Sticker Square")}
+          </h1>
+          <p className="text-muted-foreground text-sm">
             {t(
-              `「${props.title}」のAIイラストのスタンプ一覧`,
-              `AI illustration sticker list for "${props.title}"`,
+              "みんなが作ったスタンプをコメントで使えます。自分で作って公開することもできます。",
+              "Use stickers made by everyone in your comments, or make and share your own.",
             )}
-          </h2>
-        )}
-        <p className="text-sm">
-          {t(
-            "作ったスタンプを公開したり、みんなの作ったスタンプをダウンロードして使ってみましょう！",
-            "Let's share the stickers you've made, and try downloading and using the stickers made by everyone!",
-          )}
-        </p>
-      </section>
-      <AddStickerModal isOpen={isOpen} onClose={onClose} />
-    </>
+          </p>
+        </div>
+        <div className="grid shrink-0 grid-cols-2 gap-2 md:flex">
+          <Button
+            className="h-10 gap-1.5 rounded-full"
+            onClick={() => setIsCreatorOpen((value) => !value)}
+            aria-expanded={isCreatorOpen}
+          >
+            <WandSparklesIcon className="size-4" />
+            {t("ツールで作る", "Make with tool")}
+          </Button>
+          <AddStickerDialog>
+            <Button variant={"secondary"} className="h-10 gap-1.5 rounded-full">
+              <ImageUpIcon className="size-4" />
+              {t("画像から作る", "From an image")}
+            </Button>
+          </AddStickerDialog>
+        </div>
+      </div>
+      {isCreatorOpen && (
+        <Suspense
+          fallback={
+            <div className="flex h-40 items-center justify-center rounded-xl border">
+              <Loader2Icon className="size-6 animate-spin text-muted-foreground" />
+            </div>
+          }
+        >
+          <StickerCreator onClose={() => setIsCreatorOpen(false)} />
+        </Suspense>
+      )}
+    </section>
   )
 }
-
-const viewerUserStickersCountQuery = graphql(
-  `query ViewerUserStickersCount($where: UserStickersWhereInput) {
-    viewer {
-      id
-      userStickersCount(where: $where)
-    }
-  }`,
-)
-
-const viewerUserStickersQuery = graphql(
-  `query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy, $where: UserStickersWhereInput) {
-    viewer {
-      id
-      userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {
-        ...StickerAccessTypeDialog
-      }
-    }
-  }`,
-  [StickerAccessTypeDialogFragment],
-)

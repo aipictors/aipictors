@@ -26,6 +26,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
+import { PostFormSubmitBar } from "~/routes/($lang)._main.new.image/components/post-form-submit-bar"
 import {
   PostImageFormAiModelFragment,
   PostImageFormAlbumFragment,
@@ -1946,43 +1947,13 @@ export default function NewImage() {
     }
   }, [hasUserInput, t])
 
-  // 認証状態が読み込み中でない場合は、ページを表示する
-  const showPage = authContext.isNotLoading
-
-  if (!showPage) {
-    return (
-      <div className="m-auto w-full max-w-[1200px] space-y-4 bg-white pb-4 dark:bg-gray-900">
-        <p className="text-center font-bold text-gray-800 text-md dark:text-gray-200">
-          {t("認証状態を確認中です", "Checking authentication status...")}
-        </p>
-      </div>
-    )
-  }
-
   return (
-    <div className="m-auto w-full max-w-[1200px] space-y-4 bg-white pb-4 dark:bg-gray-900">
+    <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="max-w-[1200px] space-y-4">
-        {loading && authContext.isLoggedIn && (
-          <p className="text-center font-bold text-gray-800 text-md dark:text-gray-200">
-            {t(
-              "読み込み中です、完了まで操作しないようにご注意ください",
-              "Loading, please be patient",
-            )}
-          </p>
-        )}
-
-        {authContext.isNotLoggedIn && (
-          <p className="text-center font-bold text-gray-800 text-md dark:text-gray-200">
-            {t(
-              "ログインすると投稿できるようになります",
-              "Log in to post your work",
-            )}
-          </p>
-        )}
+        <PostFormHeader type="media" />
         <div className="relative">
-          <PostFormHeader type="media" />
           {state.isOpenLoadingAi && (
-            <div className="absolute top-12 right-2 z-10 flex items-center space-x-2 opacity-80">
+            <div className="absolute top-2 right-2 z-10 flex items-center space-x-2 rounded-full bg-black/70 px-3 py-1 text-xs">
               <Loader2Icon className="size-4 animate-spin text-white" />
               <p className="text-white">
                 {t(
@@ -2030,10 +2001,12 @@ export default function NewImage() {
           imageBase64={state.thumbnailBase64}
           token={currentViewer?.token}
           onContentGenerated={onContentGenerated}
+          isAdvancedCollapsed
         />
         <div className="flex justify-end">
           <Button
-            variant="outline"
+            variant="ghost"
+            size="sm"
             type="button"
             disabled={state.progress !== 0}
             onClick={() => {
@@ -2043,16 +2016,22 @@ export default function NewImage() {
             {t("入力を全てリセット", "Reset all inputs")}
           </Button>
         </div>
-        <div className="h-4" />
-        <Button
-          className="fixed bottom-0 left-0 z-30 ml-0 w-full rounded-none p-0 md:ml-[72px] md:pr-[72px] lg:ml-[224px] lg:pr-[224px] xl:left-auto xl:m-0 xl:max-w-[1200px] xl:pl-[8%]"
-          size={"lg"}
-          type="submit"
-          disabled={state.progress !== 0 || state.uploadedWorkId !== null}
-          onClick={onPost}
-        >
-          {t("投稿", "Post")}
-        </Button>
+        <PostFormSubmitBar
+          requirements={[
+            {
+              label: t("画像・動画", "Image / video"),
+              isDone: state.items.length > 0 || state.videoFile !== null,
+            },
+            {
+              label: t("タイトル", "Title"),
+              isDone: inputState.title.trim().length > 0,
+            },
+          ]}
+          isNotLoggedIn={authContext.isNotLoggedIn}
+          isLoading={authContext.isLoading || loading}
+          isDisabled={state.progress !== 0 || state.uploadedWorkId !== null}
+          onSubmit={onPost}
+        />
       </div>
       <SuccessCreatedWorkDialog
         isOpen={state.progress === 100}

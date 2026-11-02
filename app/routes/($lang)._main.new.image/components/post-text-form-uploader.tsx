@@ -74,7 +74,8 @@ export function PostTextFormUploader(props: Props) {
       <div className="rounded-md">
         <div
           className={cn(
-            "relative items-center rounded-b bg-zinc-800",
+            "relative items-center rounded-b",
+            props.state.items.length !== 0 && "bg-zinc-800",
             props.state.isHovered && "border-2 border-white border-dashed",
           )}
         >
@@ -89,7 +90,8 @@ export function PostTextFormUploader(props: Props) {
           <PostFormItemDraggableImages
             indexList={props.state.indexList}
             items={props.state.items ?? []}
-            submitText={"カバーを設定"}
+            submitText={"カバー画像を選ぶ"}
+            isThemedEmptyState
             setItems={(items) => {
               props.dispatch({ type: "SET_ITEMS", payload: items })
             }}
@@ -166,7 +168,7 @@ export function PostTextFormUploader(props: Props) {
             })
           }}
         >
-          {"生成画像"}
+          {"生成履歴から選ぶ"}
         </Button>
       </div>
       <ImageGenerationSelectorDialog

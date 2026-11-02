@@ -21,6 +21,8 @@ import {
 } from "~/components/ui/collapsible"
 
 type Props = {
+  /** タグ入力欄に初めて触れたときに候補を読み込む */
+  onTagInputFocus?: () => void
   tags: Tag[]
   whiteListTags: Tag[]
   recommendedTags: Tag[]
@@ -258,14 +260,14 @@ export function PostFormItemTags (props: Props) {
     <Card>
       <CardContent className="space-y-2 p-4">
         {/* ヘッダー部分：タグタイトルとタグ自動生成ボタン */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <p className="font-bold text-sm">
             {t(
               `タグ (${props.tags.length}/10)`,
               `Tags (${props.tags.length}/10)`,
             )}
           </p>
-          <div className="block items-center gap-2 md:flex">
+          <div className="flex flex-wrap items-center gap-2">
             <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
               <CollapsibleTrigger asChild>
                 <Button
@@ -309,7 +311,7 @@ export function PostFormItemTags (props: Props) {
           tags={props.tags}
           maxTags={10}
           maxLength={160}
-          className="sm:min-w-[450px]"
+          onFocus={props.onTagInputFocus}
           onTagAdd={handleTagAdd}
           onTagRemove={handleTagRemove}
           setTags={() => {}}
@@ -318,7 +320,7 @@ export function PostFormItemTags (props: Props) {
           placeholderWhenFull={t("タグは10個までです", "Up to 10 tags allowed")}
         />
         <div className="space-y-2 pt-2">
-          <p className="text-sm">
+          <p className="text-muted-foreground text-xs">
             {t(
               "プロンプト付きの画像を読み込むとおすすめタグが更新されます(Dall-Eなどは非対応)",
               "Recommended tags will be updated when an image with a prompt is loaded (not supported by Dall-E)",

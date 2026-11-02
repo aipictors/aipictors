@@ -264,7 +264,9 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
             <Autocomplete
               tags={tags}
               setTags={setTags}
-              autocompleteOptions={filteredAutocompleteOptions as Tag[]}
+              autocompleteOptions={(filteredAutocompleteOptions ?? []) as Tag[]}
+              query={inputValue}
+              onSelected={() => setInputValue("")}
               maxTags={maxTags}
               onTagAdd={onTagAdd}
               allowDuplicates={allowDuplicates ?? false}

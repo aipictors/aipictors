@@ -1,5 +1,4 @@
-import { Image, Film, FileText as TextIcon } from "lucide-react"
-import { Button } from "~/components/ui/button"
+import { FileText, Film, Image } from "lucide-react"
 import { cn } from "~/lib/utils"
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocation } from "@remix-run/react"
@@ -27,45 +26,52 @@ export function PostFormHeader (props: Props) {
     return path
   }
 
-  const handleMediaNavigation = () => {
-    window.location.href = getSensitiveLink("/new/image")
-  }
-
-  const handleTextNavigation = () => {
-    window.location.href = getSensitiveLink("/new/text")
-  }
-
-  const isMediaSelected =
-    props.type === "image" || props.type === "animation" || props.type === "media"
   const isTextSelected = props.type === "text"
 
+  const tabs = [
+    {
+      href: getSensitiveLink("/new/image"),
+      isSelected: !isTextSelected,
+      icon: (
+        <>
+          <Image className="size-4" />
+          <Film className="hidden size-4 md:block" />
+        </>
+      ),
+      label: t("イラスト・動画", "Illustration / Video"),
+    },
+    {
+      href: getSensitiveLink("/new/text"),
+      isSelected: isTextSelected,
+      icon: <FileText className="size-4" />,
+      label: t("小説・コラム", "Text / Column"),
+    },
+  ]
+
   return (
-    <div className="flex w-full items-center rounded-t bg-zinc-700 dark:bg-gray-700">
-      <Button
-        variant="secondary"
-        className={cn(
-          "flex w-full items-center justify-center gap-3 rounded-t rounded-r-none rounded-b-none bg-zinc-700 text-center text-white transition duration-300 hover:bg-zinc-700 dark:bg-gray-700 dark:hover:bg-gray-600",
-          isMediaSelected && "bg-zinc-500 dark:bg-gray-600",
-        )}
-        disabled={isMediaSelected}
-        onClick={handleMediaNavigation}
-      >
-        <Image className="hidden md:block" size={16} />
-        <Film className="hidden md:block" size={16} />
-        <div className="text-center">{t("イラスト・動画", "Illustration / Video")}</div>
-      </Button>
-      <Button
-        variant="secondary"
-        className={cn(
-          "flex w-full items-center space-x-4 rounded-t rounded-b-none rounded-l-none bg-zinc-700 text-center text-white transition duration-300 hover:bg-zinc-700 dark:bg-gray-700 dark:hover:bg-gray-600",
-          isTextSelected && "bg-zinc-500 dark:bg-gray-600",
-        )}
-        disabled={isTextSelected}
-        onClick={handleTextNavigation}
-      >
-        <TextIcon className="hidden md:block" size={16} />
-        <div className="text-center">{t("小説・コラム", "Text/Column")}</div>
-      </Button>
+    <div className="space-y-3">
+      <h1 className="font-bold text-xl md:text-2xl">
+        {t("作品を投稿", "Post your work")}
+      </h1>
+      {/* 入力中に別の種類へ移るときは確認を出したいので、普通のリンクで移動する */}
+      <nav className="grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
+        {tabs.map((tab) => (
+          <a
+            key={tab.href}
+            href={tab.href}
+            aria-current={tab.isSelected ? "page" : undefined}
+            className={cn(
+              "flex h-10 items-center justify-center gap-2 rounded-full font-medium text-sm transition-colors",
+              tab.isSelected
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {tab.icon}
+            {tab.label}
+          </a>
+        ))}
+      </nav>
     </div>
   )
 }

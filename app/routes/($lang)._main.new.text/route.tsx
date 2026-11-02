@@ -18,6 +18,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
+import { PostFormSubmitBar } from "~/routes/($lang)._main.new.image/components/post-form-submit-bar"
 import {
   PostTextFormAiModelFragment,
   PostTextFormAlbumFragment,
@@ -616,10 +617,8 @@ export default function NewText() {
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="space-y-4">
-        <div>
-          <PostFormHeader type="text" />
-          <PostTextFormUploader state={state} dispatch={dispatch} />
-        </div>
+        <PostFormHeader type="text" />
+        <PostTextFormUploader state={state} dispatch={dispatch} />
         <PostTextFormInput
           imageInformation={state.pngInfo}
           state={inputState}
@@ -631,16 +630,28 @@ export default function NewText() {
           aiModels={viewerData?.aiModels ?? []}
           events={events}
           needFix={false}
+          isAdvancedCollapsed
         />
-        <div className="h-4" />
-        <Button
-          className="fixed bottom-0 left-0 z-60 ml-0 w-full rounded-none p-0 md:ml-[72px] md:pr-[72px] lg:ml-[224px] lg:pr-[224px] xl:left-auto xl:m-0 xl:max-w-[1200px] xl:pl-[8%]"
-          size={"lg"}
-          type="submit"
-          onClick={onPost}
-        >
-          {t("投稿", "Post")}
-        </Button>
+        <PostFormSubmitBar
+          requirements={[
+            {
+              label: t("カバー画像", "Cover image"),
+              isDone: state.thumbnailBase64 !== null,
+            },
+            {
+              label: t("タイトル", "Title"),
+              isDone: inputState.title.trim().length > 0,
+            },
+            {
+              label: t("本文", "Body"),
+              isDone: inputState.md.trim().length > 0,
+            },
+          ]}
+          isNotLoggedIn={authContext.isNotLoggedIn}
+          isLoading={authContext.isLoading}
+          isDisabled={state.progress !== 0}
+          onSubmit={onPost}
+        />
       </div>
       <SuccessCreatedWorkDialog
         isOpen={state.progress === 100}

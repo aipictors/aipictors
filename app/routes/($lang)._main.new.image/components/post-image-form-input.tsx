@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client/index"
+import { useLazyQuery, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { type Dispatch, useEffect, useState } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -6,6 +6,7 @@ import type { InferInput } from "valibot"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳フックの使用
+import { PostFormAdvancedSection } from "~/routes/($lang)._main.new.image/components/post-form-advanced-section"
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
 import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
 import { PostFormItemBotGrading } from "~/routes/($lang)._main.new.image/components/post-form-item-bot-grading"
@@ -73,6 +74,8 @@ type Props = {
   aiModels: FragmentOf<typeof PostImageFormAiModelFragment>[]
   needFix: boolean
   isEditMode?: boolean
+  /** 新規投稿では、たまにしか使わない設定を畳む */
+  isAdvancedCollapsed?: boolean
   // AI自動生成関連のprops
   imageBase64?: string | null
   token?: string | undefined | null
@@ -132,11 +135,19 @@ export function PostImageFormInput(props: Props) {
   const reservationDate = props.state.reservationDate || jstDate
   const [isUserEventsVisible, setIsUserEventsVisible] = useState(false)
 
+  const [loadWhiteListTags, { data: whiteListTagsData }] = useLazyQuery(
+    whiteListTagsQuery,
+    {
+      variables: {
+        isSensitive:
+          props.state.ratingRestriction !== "R18" &&
+          props.state.ratingRestriction !== "R18G",
+      },
+    },
+  )
+
   const { data, loading } = useQuery(pageQuery, {
     variables: {
-      isSensitive:
-        props.state.ratingRestriction !== "R18" &&
-        props.state.ratingRestriction !== "R18G",
       prompts: !props.imageInformation?.params.prompt
         ? "girl"
         : props.imageInformation.params.prompt,
@@ -184,10 +195,10 @@ export function PostImageFormInput(props: Props) {
   }
 
   const tagOptions = () => {
-    if (data?.whiteListTags === undefined) {
+    if (whiteListTagsData?.whiteListTags === undefined) {
       return []
     }
-    const tags = data.whiteListTags.filter((tag) => {
+    const tags = whiteListTagsData.whiteListTags.filter((tag) => {
       return !props.state.tags.map((t) => t.text).includes(tag.name)
     })
     return tags.map((tag) => ({
@@ -334,15 +345,21 @@ export function PostImageFormInput(props: Props) {
         token={props.token ?? null}
         onContentGenerated={props.onContentGenerated || (() => {})}
       />
-      <PostFormItemEnglish
-        onChangeTitle={(title) => {
-          props.dispatch({ type: "SET_EN_TITLE", payload: title })
+      <PostFormItemTags
+        whiteListTags={tagOptions()}
+        onTagInputFocus={() => void loadWhiteListTags()}
+        tags={props.state.tags}
+        recommendedTags={recommendedTagOptions()}
+        recentlyUsedTags={recentlyUsedTags()}
+        onAddTag={(tag) => {
+          props.dispatch({ type: "ADD_TAG", payload: tag })
         }}
-        onChangeCaption={(caption) => {
-          props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
+        onRemoveTag={(tag) => {
+          props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
-        title={props.state.enTitle}
-        caption={props.state.enCaption}
+        imageBase64={props.imageBase64 ?? null}
+        token={props.token ?? null}
+        onTagsGenerated={props.onContentGenerated}
       />
       <PostFormItemRating
         rating={props.state.ratingRestriction}
@@ -358,72 +375,6 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
         }}
       />
-      <PostFormItemAlbum
-        album={props.state.albumId}
-        albums={albumOptions()}
-        setAlbumId={(albumId) => {
-          props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
-        }}
-      />
-      <div className="flex flex-col justify-between gap-4 md:flex-row">
-        <div className="flex-1">
-          <PostFormItemTaste
-            imageStyle={props.state.imageStyle}
-            setImageStyle={(imageStyle) => {
-              props.dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
-            }}
-          />
-        </div>
-        <div className="flex-1">
-          <PostFormItemModel
-            model={props.state.aiModelId}
-            models={aiModelOptions()}
-            setModel={(model) => {
-              props.dispatch({ type: "SET_AI_MODEL_ID", payload: model })
-            }}
-          />
-        </div>
-      </div>
-      {hasImageInfo && (
-        <div className="flex items-center">
-          <Checkbox
-            checked={props.state.useGenerationParams}
-            id="set-generation-check"
-            onCheckedChange={(checked) => {
-              props.dispatch({
-                type: "ENABLE_GENERATION_PARAMS_FEATURE",
-                payload: !props.state.useGenerationParams,
-              })
-
-              // localStorageに保存
-              if (typeof window !== "undefined") {
-                localStorage.setItem(
-                  "useGenerationParams",
-                  JSON.stringify(checked),
-                )
-              }
-            }}
-          />
-          <label
-            htmlFor="set-generation-check"
-            className="ml-2 font-medium text-sm"
-          >
-            {t("生成情報を公開する", "Publish generation info")}
-          </label>
-        </div>
-      )}
-
-      {props.state.imageInformation && (
-        <PostFormItemGenerationParams
-          pngInfo={props.state.imageInformation}
-          setPngInfo={(value) => {
-            props.dispatch({
-              type: "SET_IMAGE_INFORMATION",
-              payload: value,
-            })
-          }}
-        />
-      )}
       <PostFormItemDate
         date={props.state.reservationDate}
         time={props.state.reservationTime}
@@ -531,20 +482,88 @@ export function PostImageFormInput(props: Props) {
           )}
         </div>
       )}
-      <PostFormItemTags
-        whiteListTags={tagOptions()}
-        tags={props.state.tags}
-        recommendedTags={recommendedTagOptions()}
-        recentlyUsedTags={recentlyUsedTags()}
-        onAddTag={(tag) => {
-          props.dispatch({ type: "ADD_TAG", payload: tag })
+      <div className="flex flex-col justify-between gap-4 md:flex-row">
+        <div className="flex-1">
+          <PostFormItemTaste
+            imageStyle={props.state.imageStyle}
+            setImageStyle={(imageStyle) => {
+              props.dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
+            }}
+          />
+        </div>
+        <div className="flex-1">
+          <PostFormItemModel
+            model={props.state.aiModelId}
+            models={aiModelOptions()}
+            setModel={(model) => {
+              props.dispatch({ type: "SET_AI_MODEL_ID", payload: model })
+            }}
+          />
+        </div>
+      </div>
+      {hasImageInfo && (
+        <div className="flex items-center">
+          <Checkbox
+            checked={props.state.useGenerationParams}
+            id="set-generation-check"
+            onCheckedChange={(checked) => {
+              props.dispatch({
+                type: "ENABLE_GENERATION_PARAMS_FEATURE",
+                payload: !props.state.useGenerationParams,
+              })
+
+              // localStorageに保存
+              if (typeof window !== "undefined") {
+                localStorage.setItem(
+                  "useGenerationParams",
+                  JSON.stringify(checked),
+                )
+              }
+            }}
+          />
+          <label
+            htmlFor="set-generation-check"
+            className="ml-2 font-medium text-sm"
+          >
+            {t("生成情報を公開する", "Publish generation info")}
+          </label>
+        </div>
+      )}
+
+      {props.state.imageInformation && (
+        <PostFormItemGenerationParams
+          pngInfo={props.state.imageInformation}
+          setPngInfo={(value) => {
+            props.dispatch({
+              type: "SET_IMAGE_INFORMATION",
+              payload: value,
+            })
+          }}
+        />
+      )}
+      <PostFormAdvancedSection
+        isCollapsed={props.isAdvancedCollapsed}
+        summary={t(
+          "英語版・シリーズ・許可の設定・AI評価・関連リンクなど",
+          "English version, album, permissions, AI evaluation, related link and more",
+        )}
+      >
+      <PostFormItemEnglish
+        onChangeTitle={(title) => {
+          props.dispatch({ type: "SET_EN_TITLE", payload: title })
         }}
-        onRemoveTag={(tag) => {
-          props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
+        onChangeCaption={(caption) => {
+          props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
         }}
-        imageBase64={props.imageBase64 ?? null}
-        token={props.token ?? null}
-        onTagsGenerated={props.onContentGenerated}
+        title={props.state.enTitle}
+        caption={props.state.enCaption}
+      />
+      <PostFormItemAlbum
+        album={props.state.albumId}
+        albums={albumOptions()}
+        setAlbumId={(albumId) => {
+          props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
+        }}
       />
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}
@@ -633,6 +652,7 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "ENABLE_PROMOTION_FEATURE", payload: isAd })
         }}
       />
+      </PostFormAdvancedSection>
     </div>
   )
 }
@@ -651,15 +671,20 @@ export const PostImageFormRecentlyUsedTagsFragment = graphql(
   }`,
 )
 
-const pageQuery = graphql(
-  `query PageQuery(
-    $isSensitive: Boolean!
-    $prompts: String!
-  ) {
+// 候補は 2,000 件以上（100KB ほど）あるので、タグ入力欄に触れたときに読む
+const whiteListTagsQuery = graphql(
+  `query WhiteListTags($isSensitive: Boolean!) {
     whiteListTags(where: { isSensitive: $isSensitive }) {
       id
       name
     }
+  }`,
+)
+
+const pageQuery = graphql(
+  `query PageQuery(
+    $prompts: String!
+  ) {
     recommendedTagsFromPrompts(prompts: $prompts) {
       id
       name

@@ -528,7 +528,7 @@ const drawVerticalText = (props: {
   }
 }
 
-export function StickerCreator () {
+export function StickerCreator (props: { onClose?: () => void }) {
   const [activeCategory, setActiveCategory] =
     useState<StickerAssetCategory>("japanese")
   const [activeLayerId, setActiveLayerId] = useState<string | null>(null)
@@ -546,7 +546,7 @@ export function StickerCreator () {
   const [isRegisterPreparing, setIsRegisterPreparing] = useState(false)
   const [backgroundEnabled, setBackgroundEnabled] = useState(false)
   const [backgroundColor, setBackgroundColor] = useState("#ffffff")
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(props.onClose !== undefined)
   const [mobilePanel, setMobilePanel] = useState<
     "assets" | "layers" | "text" | "export"
   >("assets")
@@ -1350,7 +1350,7 @@ export function StickerCreator () {
             素材を追加してドラッグ・回転・拡大縮小ができます。
           </p>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+        <Button variant="ghost" size="sm" onClick={() => (props.onClose ? props.onClose() : setIsOpen(false))}>
           閉じる
         </Button>
       </div>

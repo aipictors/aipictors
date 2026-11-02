@@ -34,6 +34,8 @@ type Props = {
   onChangeIndexList?(indexList: number[]): void
   onInputFiles?: (files: FileList) => void
   submitText?: string
+  /** 空のときの枠をテーマの色で出す（暗い背景の上に置かないとき） */
+  isThemedEmptyState?: boolean
 }
 
 /**
@@ -338,7 +340,10 @@ export function PostFormItemDraggableImages(props: Props) {
       <div
         {...getRootProps()}
         className={cn(
-          "h-[100%] w-[100%] border-2 border-zinc-800",
+          "h-[100%] w-[100%] border-2",
+          props.isThemedEmptyState && props.items.length === 0
+            ? "rounded-2xl border-dashed bg-muted/40"
+            : "border-zinc-800",
           isHovered ? "border-2 border-clear-bright-blue" : "",
           props.items.length ? "" : "rounded-b",
         )}
@@ -428,7 +433,14 @@ export function PostFormItemDraggableImages(props: Props) {
           }
         />
         {!props.items.length && (
-          <div className="m-4 flex flex-col rounded-b text-white">
+          <div
+            className={cn(
+              "m-4 flex flex-col rounded-b",
+              props.isThemedEmptyState
+                ? "text-muted-foreground"
+                : "text-white",
+            )}
+          >
             <p className="text-center text-sm">{"JPEG、PNG、GIF、WEBP、BMP"}</p>
             <p className="text-center text-sm">
               {t(

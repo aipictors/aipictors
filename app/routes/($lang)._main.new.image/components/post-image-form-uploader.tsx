@@ -458,40 +458,27 @@ export function PostImageFormUploader (props: Props) {
         <div
           {...getRootProps()}
           className={cn(
-            "rounded-md border-2 border-dashed border-zinc-600 bg-zinc-800 p-8 text-center transition",
-            isDragActive && "border-sky-400 bg-zinc-800",
+            "rounded-2xl border-2 border-dashed bg-muted/40 p-5 text-center transition-colors md:p-8",
+            isDragActive && "border-primary bg-primary/5",
           )}
         >
           <input {...getInputProps()} />
           <div className="space-y-3">
-            <p className="font-semibold text-base text-white">
-              {t("イラストまたは動画", "Illustration or Video")}
+            <p className="font-bold text-base">
+              <span className="hidden md:inline">
+                {t("画像や動画をここにドロップ", "Drop images or a video here")}
+              </span>
+              <span className="md:hidden">
+                {t("画像や動画を選ぶ", "Choose images or a video")}
+              </span>
             </p>
-            <p className="text-sm text-zinc-300">
-              {t(
-                `画像は1枚${maxImageSizeLabel}以内で最大${config.post.maxImageCount}枚、動画はMP4で${maxVideoSizeLabel}以内・${videoUploadLimits.maxDurationSeconds}秒までです`,
-                `Images: up to ${config.post.maxImageCount} files, ${maxImageSizeLabel} each. Video: MP4, up to ${maxVideoSizeLabel}, ${videoUploadLimits.maxDurationSeconds} seconds max.`,
-              )}
-            </p>
-            <p className="text-xs text-zinc-400">
-              {t(
-                "動画投稿は無料ユーザは1日合計60秒まで、サブスク加入ユーザは1日合計180秒までです。",
-                "Video uploads are limited to 60 total seconds per day for free users and 180 total seconds per day for subscribers.",
-              )}
-            </p>
-            <p className="text-xs text-zinc-400">
-              {t(
-                "画像はクリップボードから貼り付け可能です。ドラッグ&ドロップはPC表示のみ対応しています。",
-                "Images can also be pasted from the clipboard. Drag and drop is available on desktop only.",
-              )}
-            </p>
-            <div className="flex flex-wrap justify-center gap-3 pt-3">
+            <div className="grid grid-cols-2 justify-center gap-3 sm:flex">
               <button
                 type="button"
                 onClick={openImagePicker}
-                className="flex min-w-40 flex-col items-center gap-3 rounded-xl border border-zinc-500 bg-zinc-700 px-5 py-4 text-white transition hover:bg-zinc-600"
+                className="flex flex-col items-center gap-2 rounded-xl border bg-background p-4 transition-colors hover:bg-muted sm:min-w-40"
               >
-                <div className="flex size-12 items-center justify-center rounded-full bg-sky-500/20 text-sky-300">
+                <div className="flex size-11 items-center justify-center rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-300">
                   <ImageIcon className="size-6" />
                 </div>
                 <span className="font-medium text-sm">
@@ -501,9 +488,9 @@ export function PostImageFormUploader (props: Props) {
               <button
                 type="button"
                 onClick={openVideoPicker}
-                className="flex min-w-40 flex-col items-center gap-3 rounded-xl border border-zinc-500 bg-zinc-700 px-5 py-4 text-white transition hover:bg-zinc-600"
+                className="flex flex-col items-center gap-2 rounded-xl border bg-background p-4 transition-colors hover:bg-muted sm:min-w-40"
               >
-                <div className="flex size-12 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+                <div className="flex size-11 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300">
                   <VideoIcon className="size-6" />
                 </div>
                 <span className="font-medium text-sm">
@@ -511,6 +498,12 @@ export function PostImageFormUploader (props: Props) {
                 </span>
               </button>
             </div>
+            <p className="text-muted-foreground text-xs leading-5">
+              {t(
+                `画像は1枚${maxImageSizeLabel}以内で最大${config.post.maxImageCount}枚、動画はMP4で${maxVideoSizeLabel}以内・${videoUploadLimits.maxDurationSeconds}秒まで。貼り付けもできます。`,
+                `Images: up to ${config.post.maxImageCount} files, ${maxImageSizeLabel} each. Video: MP4, up to ${maxVideoSizeLabel}, ${videoUploadLimits.maxDurationSeconds} seconds. Pasting works too.`,
+              )}
+            </p>
           </div>
         </div>
       )}
@@ -662,7 +655,7 @@ export function PostImageFormUploader (props: Props) {
                 })
               }}
             >
-              {t("生成画像", "Generated Images")}
+              {t("生成履歴から選ぶ", "Choose from generated images")}
             </Button>
           </>
         )}

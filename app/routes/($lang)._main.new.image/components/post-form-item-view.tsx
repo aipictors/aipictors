@@ -23,63 +23,26 @@ export function PostFormItemView (props: Props) {
           onValueChange={(value) => {
             props.setAccessType(value as IntrospectionEnum<"AccessType">)
           }}
-          className="flex flex-wrap space-x-0 md:space-x-4"
+          className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5"
         >
-          <div className="w-1/2 md:w-auto">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="PUBLIC" id="view-public" />
-              <label
-                htmlFor="view-public"
-                className="flex items-center space-x-2"
-              >
-                {t("公開", "Public")}
-              </label>
-            </div>
-          </div>
-          <div className="w-1/2 md:w-auto">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="PRIVATE" id="view-archive" />
-              <label
-                htmlFor="view-archive"
-                className="flex items-center space-x-2"
-              >
-                {t("非公開", "Private")}
-              </label>
-            </div>
-          </div>
-          <div className="w-1/2 md:w-auto">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="LIMITED" id="view-limited" />
-              <label
-                htmlFor="view-limited"
-                className="flex items-center space-x-2"
-              >
-                {t("限定公開", "Limited")}
-              </label>
-            </div>
-          </div>
-          <div className="w-1/2 md:w-auto">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="SILENT" id="view-silent" />
-              <label
-                htmlFor="view-silent"
-                className="flex items-center space-x-2"
-              >
-                {t("新着非公開", "Silent")}
-              </label>
-            </div>
-          </div>
-          <div className="w-1/2 md:w-auto">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="DRAFT" id="view-draft" />
-              <label
-                htmlFor="view-draft"
-                className="flex items-center space-x-2"
-              >
-                {t("下書き", "Draft")}
-              </label>
-            </div>
-          </div>
+          {(
+            [
+              { value: "PUBLIC", id: "view-public", label: t("公開", "Public") },
+              { value: "PRIVATE", id: "view-archive", label: t("非公開", "Private") },
+              { value: "LIMITED", id: "view-limited", label: t("限定公開", "Limited") },
+              { value: "SILENT", id: "view-silent", label: t("新着非公開", "Silent") },
+              { value: "DRAFT", id: "view-draft", label: t("下書き", "Draft") },
+            ] as const
+          ).map((option) => (
+            <label
+              key={option.value}
+              htmlFor={option.id}
+              className="flex cursor-pointer items-center gap-2 rounded-xl border p-3 text-sm transition-colors hover:bg-muted/60 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5"
+            >
+              <RadioGroupItem value={option.value} id={option.id} />
+              {option.label}
+            </label>
+          ))}
         </RadioGroup>
       </CardContent>
     </Card>

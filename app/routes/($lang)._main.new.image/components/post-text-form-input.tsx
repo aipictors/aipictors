@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client/index"
+import { useLazyQuery, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { type Dispatch, useEffect, useState } from "react"
@@ -6,6 +6,7 @@ import type { InferInput } from "valibot"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { PostFormAdvancedSection } from "~/routes/($lang)._main.new.image/components/post-form-advanced-section"
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
 import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
 import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
@@ -56,6 +57,8 @@ type Props = {
   }[]
   aiModels: FragmentOf<typeof PostTextFormAiModelFragment>[]
   needFix: boolean
+  /** 新規投稿では、たまにしか使わない設定を畳む */
+  isAdvancedCollapsed?: boolean
   mdUrl?: string
 }
 
@@ -101,11 +104,19 @@ export function PostTextFormInput(props: Props) {
   const reservationDate = props.state.reservationDate || jstDate
   const [isUserEventsVisible, setIsUserEventsVisible] = useState(false)
 
+  const [loadWhiteListTags, { data: whiteListTagsData }] = useLazyQuery(
+    whiteListTagsQuery,
+    {
+      variables: {
+        isSensitive:
+          props.state.ratingRestriction !== "R18" &&
+          props.state.ratingRestriction !== "R18G",
+      },
+    },
+  )
+
   const { data, loading } = useQuery(pageQuery, {
     variables: {
-      isSensitive:
-        props.state.ratingRestriction !== "R18" &&
-        props.state.ratingRestriction !== "R18G",
       prompts: !props.imageInformation?.params.prompt
         ? "girl"
         : props.imageInformation.params.prompt,
@@ -163,10 +174,10 @@ export function PostTextFormInput(props: Props) {
    * 選択可能なタグ
    */
   const tagOptions = () => {
-    if (data?.whiteListTags === undefined) {
+    if (whiteListTagsData?.whiteListTags === undefined) {
       return []
     }
-    const tags = data.whiteListTags.filter((tag) => {
+    const tags = whiteListTagsData.whiteListTags.filter((tag) => {
       return !props.state.tags.map((t) => t.text).includes(tag.name)
     })
     return tags.map((tag) => {
@@ -297,16 +308,6 @@ export function PostTextFormInput(props: Props) {
         }}
         caption={props.state.caption}
       />
-      <PostFormItemEnglish
-        onChangeTitle={(title) => {
-          props.dispatch({ type: "SET_EN_TITLE", payload: title })
-        }}
-        onChangeCaption={(caption) => {
-          props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
-        }}
-        title={props.state.enTitle}
-        caption={props.state.enCaption}
-      />
       <PostFormItemMd
         label="本文"
         onChange={(value) => {
@@ -314,6 +315,26 @@ export function PostTextFormInput(props: Props) {
         }}
         value={markdownContent}
       />
+      <PostFormItemType
+        type={props.state.type ?? "COLUMN"}
+        setType={(type) => {
+          props.dispatch({ type: "SET_TYPE", payload: type })
+        }}
+      />
+      <PostFormItemTags
+        whiteListTags={tagOptions()}
+        onTagInputFocus={() => void loadWhiteListTags()}
+        tags={props.state.tags}
+        recentlyUsedTags={recentlyTagOptions()}
+        recommendedTags={recommendedTagOptions()}
+        onAddTag={(tag) => {
+          props.dispatch({ type: "ADD_TAG", payload: tag })
+        }}
+        onRemoveTag={(tag) => {
+          props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
+        }}
+      />
+      {loading && <Loader2Icon className="size-4 animate-spin" />}
       <PostFormItemRating
         rating={props.state.ratingRestriction}
         allowedRatings={allowedRatings}
@@ -322,44 +343,12 @@ export function PostTextFormInput(props: Props) {
           props.dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
         }}
       />
-      <PostFormItemType
-        type={props.state.type ?? "COLUMN"}
-        setType={(type) => {
-          props.dispatch({ type: "SET_TYPE", payload: type })
-        }}
-      />
       <PostFormItemView
         accessType={props.state.accessType}
         setAccessType={(accessType) => {
           props.dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
         }}
       />
-      <PostFormItemAlbum
-        album={props.state.albumId}
-        albums={albumOptions()}
-        setAlbumId={(albumId) => {
-          props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
-        }}
-      />
-      <div className="flex flex-col justify-between gap-4 md:flex-row">
-        <div className="flex-1">
-          <PostFormItemTaste
-            imageStyle={props.state.imageStyle}
-            setImageStyle={(imageStyle) => {
-              props.dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
-            }}
-          />
-        </div>
-        <div className="flex-1">
-          <PostFormItemModel
-            model={props.state.aiModelId}
-            models={aiModelOptions()}
-            setModel={(model) => {
-              props.dispatch({ type: "SET_AI_MODEL_ID", payload: model })
-            }}
-          />
-        </div>
-      </div>
       <PostFormItemDate
         date={props.state.reservationDate}
         time={props.state.reservationTime}
@@ -471,19 +460,49 @@ export function PostTextFormInput(props: Props) {
           )}
         </div>
       )}
-      <PostFormItemTags
-        whiteListTags={tagOptions()}
-        tags={props.state.tags}
-        recentlyUsedTags={recentlyTagOptions()}
-        recommendedTags={recommendedTagOptions()}
-        onAddTag={(tag) => {
-          props.dispatch({ type: "ADD_TAG", payload: tag })
+      <div className="flex flex-col justify-between gap-4 md:flex-row">
+        <div className="flex-1">
+          <PostFormItemTaste
+            imageStyle={props.state.imageStyle}
+            setImageStyle={(imageStyle) => {
+              props.dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
+            }}
+          />
+        </div>
+        <div className="flex-1">
+          <PostFormItemModel
+            model={props.state.aiModelId}
+            models={aiModelOptions()}
+            setModel={(model) => {
+              props.dispatch({ type: "SET_AI_MODEL_ID", payload: model })
+            }}
+          />
+        </div>
+      </div>
+      <PostFormAdvancedSection
+        isCollapsed={props.isAdvancedCollapsed}
+        summary={t(
+          "英語版・シリーズ・許可の設定・関連リンクなど",
+          "English version, album, permissions, related link and more",
+        )}
+      >
+      <PostFormItemEnglish
+        onChangeTitle={(title) => {
+          props.dispatch({ type: "SET_EN_TITLE", payload: title })
         }}
-        onRemoveTag={(tag) => {
-          props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
+        onChangeCaption={(caption) => {
+          props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
+        }}
+        title={props.state.enTitle}
+        caption={props.state.enCaption}
+      />
+      <PostFormItemAlbum
+        album={props.state.albumId}
+        albums={albumOptions()}
+        setAlbumId={(albumId) => {
+          props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
         }}
       />
-      {loading && <Loader2Icon className="size-4 animate-spin" />}
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}
         onTagEditableChange={(value) => {
@@ -510,6 +529,7 @@ export function PostTextFormInput(props: Props) {
           props.dispatch({ type: "ENABLE_PROMOTION_FEATURE", payload: isAd })
         }}
       />
+      </PostFormAdvancedSection>
     </div>
   )
 }
@@ -528,15 +548,20 @@ export const PostTextFormRecentlyUsedTagsFragment = graphql(
   }`,
 )
 
-const pageQuery = graphql(
-  `query PageQuery(
-    $isSensitive: Boolean!
-    $prompts: String!
-  ) {
+// 候補は 2,000 件以上（100KB ほど）あるので、タグ入力欄に触れたときに読む
+const whiteListTagsQuery = graphql(
+  `query WhiteListTags($isSensitive: Boolean!) {
     whiteListTags(where: { isSensitive: $isSensitive }) {
       id
       name
     }
+  }`,
+)
+
+const pageQuery = graphql(
+  `query PageQuery(
+    $prompts: String!
+  ) {
     recommendedTagsFromPrompts(prompts: $prompts) {
       id
       name

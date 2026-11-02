@@ -268,11 +268,11 @@ export function PostFormItemTitleCaption (props: Props) {
     <Card>
       <CardContent className="space-y-4 p-4">
         {/* セクションタイトルと自動生成ボタン */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <p className="font-bold text-sm">
             {t("タイトル（必須）・キャプション", "Title (Required) & Caption")}
           </p>
-          <div className="items-center gap-2 md:flex">
+          <div className="flex flex-wrap items-center gap-2">
             <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
               <CollapsibleTrigger asChild>
                 <Button

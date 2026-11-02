@@ -42,7 +42,7 @@ type Props = {
 }
 
 const BUBBLE_CLASS_NAME =
-  "relative block w-max max-w-[calc(100vw-8rem)] rounded-3xl bg-popover px-3.5 py-2 text-left text-popover-foreground text-sm leading-snug shadow-lg ring-1 ring-border/60 md:max-w-md"
+  "relative block w-max max-w-[calc(100vw-8rem)] rounded-3xl bg-popover px-3.5 py-2 text-left text-popover-foreground text-sm leading-snug shadow-lg ring-1 ring-border/60 md:max-w-md [html[data-theme=dark]_&]:ring-foreground"
 
 /**
  * Discord のような、アイコンの横の吹き出し。ヘッダーとその下の境目を中心に置く
@@ -83,8 +83,8 @@ function BubblePosition(props: { children: React.ReactNode }) {
   return (
     <div className="-translate-y-1/2 absolute top-14 left-[calc(100%+0.25rem)] z-20 md:top-20 md:left-[calc(100%+0.5rem)]">
       {/* 吹き出しの丸 2 つ。大きい方は本体の下にもぐらせてつなげる */}
-      <span className="-bottom-3.5 absolute left-1 size-2 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
-      <span className="-bottom-1.5 absolute left-4 size-4 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
+      <span className="-bottom-3.5 absolute left-1 size-2 rounded-full bg-popover shadow-md ring-1 ring-border/60 [html[data-theme=dark]_&]:ring-foreground" />
+      <span className="-bottom-1.5 absolute left-4 size-4 rounded-full bg-popover shadow-md ring-1 ring-border/60 [html[data-theme=dark]_&]:ring-foreground" />
       {props.children}
     </div>
   )
