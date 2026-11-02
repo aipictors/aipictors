@@ -475,6 +475,7 @@ export function RankingCard({
   moreLabel,
   limit,
 }: RankingCardProps) {
+  const t = useTranslation()
   const displayItems = limit ? items.slice(0, limit) : items
   const formatBreakdown = (row: SupportRankingItem) => {
     const parts = []

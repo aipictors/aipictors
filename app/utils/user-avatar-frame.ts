@@ -96,3 +96,68 @@ export const toUserAvatarFrameCategory = (
       ?.key ?? "basic"
   )
 }
+
+export type UserAvatarFrameAccess = "AVAILABLE" | "NEEDS_PLAN" | "NEEDS_COINS"
+
+type UserAvatarFrameAccessContext = {
+  currentPassType: UserAvatarFramePassType
+  ownedFrameIds: string[]
+}
+
+type UserAvatarFrameSaleInfo = {
+  id: string
+  requiredPassType: string
+  priceCoins?: number | null
+}
+
+/**
+ * コインの枠（priceCoins あり）は買った人だけ、サブスクの枠はそのプラン以上の間だけ使える
+ */
+export const toUserAvatarFrameAccess = (
+  frame: UserAvatarFrameSaleInfo,
+  context: UserAvatarFrameAccessContext,
+): UserAvatarFrameAccess => {
+  if (typeof frame.priceCoins === "number") {
+    return context.ownedFrameIds.includes(frame.id)
+      ? "AVAILABLE"
+      : "NEEDS_COINS"
+  }
+  return canUseUserAvatarFrame(
+    context.currentPassType,
+    frame.requiredPassType as UserAvatarFramePassType,
+  )
+    ? "AVAILABLE"
+    : "NEEDS_PLAN"
+}
+
+export type UserAvatarFrameKindFilter =
+  | "ALL"
+  | "SUBSCRIPTION"
+  | "COIN"
+  | "OWNED"
+
+export const filterUserAvatarFrames = <
+  T extends UserAvatarFrameSaleInfo & { slug: string },
+>(
+  frames: T[],
+  filter: UserAvatarFrameAccessContext & {
+    kind: UserAvatarFrameKindFilter
+    category: UserAvatarFrameCategory
+  },
+) => {
+  return frames.filter((frame) => {
+    if (
+      filter.category !== "all" &&
+      toUserAvatarFrameCategory(frame.slug) !== filter.category
+    ) {
+      return false
+    }
+    const isCoinFrame = typeof frame.priceCoins === "number"
+    if (filter.kind === "SUBSCRIPTION") return !isCoinFrame
+    if (filter.kind === "COIN") return isCoinFrame
+    if (filter.kind === "OWNED") {
+      return toUserAvatarFrameAccess(frame, filter) === "AVAILABLE"
+    }
+    return true
+  })
+}

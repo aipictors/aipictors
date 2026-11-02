@@ -30,10 +30,7 @@ export function SettingsLoginPrompt() {
         </p>
       )}
       <div className="mx-auto max-w-xs">
-        <LoginDialogButton
-          label={t("ログイン", "Log in")}
-          isWidthFull={true}
-        />
+        <LoginDialogButton label={t("ログイン", "Log in")} isWidthFull={true} />
       </div>
       <p className="text-muted-foreground text-xs leading-5">
         {t(

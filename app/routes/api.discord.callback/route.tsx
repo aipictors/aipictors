@@ -9,7 +9,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const code = url.searchParams.get("code")
   const state = url.searchParams.get("state")
 
-  const params = url.searchParams.get("error")
+  const params: Record<string, string> = url.searchParams.get("error")
     ? { result: "canceled" }
     : code && state
       ? { code, state }

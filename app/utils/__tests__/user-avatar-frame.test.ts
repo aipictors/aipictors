@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test"
 import {
+  filterUserAvatarFrames,
   isUserAvatarDecoration,
   toUserAvatarDecorationAnimatedUrl,
+  toUserAvatarFrameAccess,
   toUserAvatarFrameCategory,
 } from "~/utils/user-avatar-frame"
 
@@ -25,5 +27,29 @@ describe("アイコンの装飾", () => {
     expect(isUserAvatarDecoration({ frameType: "DECORATION" })).toBe(true)
     expect(isUserAvatarDecoration({ frameType: "GRADIENT" })).toBe(false)
     expect(isUserAvatarDecoration(null)).toBe(false)
+  })
+})
+
+describe("サブスクの枠とコインの枠", () => {
+  const plan = { id: "1", slug: "deco-cute-a", requiredPassType: "LITE", priceCoins: null }
+  const coin = { id: "2", slug: "deco-wa-b", requiredPassType: "LITE", priceCoins: 500 }
+
+  test("サブスクの枠はプランの間だけ", () => {
+    expect(toUserAvatarFrameAccess(plan, { currentPassType: "LITE", ownedFrameIds: [] })).toBe("AVAILABLE")
+    expect(toUserAvatarFrameAccess(plan, { currentPassType: null, ownedFrameIds: [] })).toBe("NEEDS_PLAN")
+  })
+
+  test("コインの枠はプランがあっても買わないと使えず、買えばプランがなくても使える", () => {
+    expect(toUserAvatarFrameAccess(coin, { currentPassType: "PREMIUM", ownedFrameIds: [] })).toBe("NEEDS_COINS")
+    expect(toUserAvatarFrameAccess(coin, { currentPassType: null, ownedFrameIds: ["2"] })).toBe("AVAILABLE")
+  })
+
+  test("種類と分類で絞る", () => {
+    const base = { currentPassType: null, ownedFrameIds: ["2"], category: "all" as const }
+    const frames = [plan, coin]
+    expect(filterUserAvatarFrames(frames, { ...base, kind: "SUBSCRIPTION" })).toEqual([plan])
+    expect(filterUserAvatarFrames(frames, { ...base, kind: "COIN" })).toEqual([coin])
+    expect(filterUserAvatarFrames(frames, { ...base, kind: "OWNED" })).toEqual([coin])
+    expect(filterUserAvatarFrames(frames, { ...base, kind: "ALL", category: "wa" })).toEqual([coin])
   })
 })

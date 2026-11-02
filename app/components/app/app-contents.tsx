@@ -8,6 +8,8 @@ type Props = Readonly<{
   aside?: React.ReactNode
   header?: React.ReactNode
   footer?: React.ReactNode
+  /** overflow-x-hidden だと中の sticky が効かないので clip にする */
+  isStickyEnabled?: boolean
 }>
 
 /**
@@ -33,7 +35,9 @@ export function AppContents(props: Props): React.ReactNode {
 
   return (
     <>
-      <div className="flex min-w-0 overflow-x-hidden px-2">
+      <div
+        className={`flex min-w-0 px-2 ${props.isStickyEnabled ? "overflow-x-clip" : "overflow-x-hidden"}`}
+      >
         {/* PC だけのサイドバー。スマホでは描画しない */}
         <div className="hidden md:block">{showDesktop && props.aside}</div>
         <div className="pointer-events-none fixed inset-x-0 top-0 z-20 h-24 bg-linear-gradient-top-to-bottom" />

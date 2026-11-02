@@ -1,16 +1,14 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect } from "react"
-import { Button } from "~/components/ui/button"
 import React from "react"
-import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
 import { Switch } from "~/components/ui/switch"
-import { Label } from "~/components/ui/label"
-import { Separator } from "~/components/ui/separator"
 import { useTranslation } from "~/hooks/use-translation"
+import { SettingsSaveBar } from "~/routes/($lang).settings/components/settings-save-bar"
+import { SettingsSwitchRow } from "~/routes/($lang).settings/components/settings-section"
 
 /**
  * 表示するコンテンツの年齢設定制限フォーム
@@ -108,29 +106,29 @@ export function SettingRestrictionForm () {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col space-y-4">
-        <div className="flex w-full items-center justify-between">
-          <Label htmlFor="show-r15">
-            {t(
+      <div className="divide-y rounded-xl border px-4">
+        <SettingsSwitchRow
+            htmlFor="show-r15"
+            title={t(
               "(通常モード時)R15作品を表示する",
               "Display R15 content in normal mode",
             )}
-          </Label>
-          <Switch
+          >
+<Switch
             onCheckedChange={setShowR15InNormalMode}
             checked={showR15InNormalMode}
             id="show-r15"
             disabled={showSensitiveModeToggle} // センシティブモード時は無効化
           />
-        </div>
-        <div className="flex w-full items-center justify-between">
-          <Label htmlFor="show-sensitive-toggle">
-            {t(
+          </SettingsSwitchRow>
+<SettingsSwitchRow
+            htmlFor="show-sensitive-toggle"
+            title={t(
               "R18作品を見られるようにする（18歳以上）",
               "Allow R18 content (18+)",
             )}
-          </Label>
-          <Switch
+          >
+<Switch
             onCheckedChange={(checked) => {
               setShowSensitiveModeToggle(checked)
               if (checked) {
@@ -144,29 +142,29 @@ export function SettingRestrictionForm () {
             checked={showSensitiveModeToggle}
             id="show-sensitive-toggle"
           />
-        </div>
-        <div className="flex w-full items-center justify-between">
-          <Label htmlFor="show-r18g">
-            {t(
+          </SettingsSwitchRow>
+<SettingsSwitchRow
+            htmlFor="show-r18g"
+            title={t(
               "(センシティブモード時)R18G作品を表示する",
               "Display R18G content in sensitive mode",
             )}
-          </Label>
-          <Switch
+          >
+<Switch
             onCheckedChange={setShowR18GInSensitiveMode}
             checked={showR18GInSensitiveMode}
             id="show-r18g"
             disabled={!showSensitiveModeToggle} // センシティブモードが有効でないと無効化
           />
-        </div>
-        <div className="flex w-full items-center justify-between">
-          <Label htmlFor="show-header-rating-toggle">
-            {t(
+          </SettingsSwitchRow>
+<SettingsSwitchRow
+            htmlFor="show-header-rating-toggle"
+            title={t(
               "ヘッダーに「全年齢／R18」の切り替えを表示する",
               'Show the "All ages / R18" switch in the header',
             )}
-          </Label>
-          <Switch
+          >
+<Switch
             onCheckedChange={(checked) => {
               // この端末だけの設定（ブラウザに保存）
               if (checked) {
@@ -179,20 +177,12 @@ export function SettingRestrictionForm () {
             checked={showHeaderRatingToggle}
             id="show-header-rating-toggle"
           />
-        </div>
-      </div>
-      <Separator />
-      <Button
-        disabled={isUpdatingUserSetting}
-        onClick={onSave}
-        variant={"secondary"}
-      >
-        {isUpdatingUserSetting ? (
-          <Loader2Icon className="size-4 animate-spin" />
-        ) : (
-          <span>{t("保存", "Save")}</span>
-        )}
-      </Button>
+          </SettingsSwitchRow>
+</div>
+      <SettingsSaveBar
+        isSaving={isUpdatingUserSetting}
+        onSave={() => void onSave()}
+      />
     </div>
   )
 }

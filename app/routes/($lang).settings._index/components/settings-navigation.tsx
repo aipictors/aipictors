@@ -1,180 +1,119 @@
 import { useQuery } from "@apollo/client/index"
+import { Link, useLocation } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
-  ArrowLeftIcon,
   BellIcon,
   BookmarkXIcon,
   BoxesIcon,
   ChevronRight,
   CoinsIcon,
+  EyeIcon,
   Gift,
-  ImageIcon,
   MedalIcon,
   MessagesSquareIcon,
   PaletteIcon,
   Radio,
   StickerIcon,
+  TagIcon,
   UserIcon,
+  UserRoundCogIcon,
   UserXIcon,
 } from "lucide-react"
-import { useTranslation } from "~/hooks/use-translation" // useTranslation フックをインポート
-import { SettingNavigationButton } from "~/routes/($lang).settings._index/components/settings-navigation-button"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { findSettingsPageHref } from "~/routes/($lang).settings._index/utils/settings-pages"
 
+/**
+ * 設定のメニュー。スマホは押しやすい行、PC は今いる項目が分かる細いメニュー
+ */
 export function SettingsNavigation() {
   const { data } = useQuery(viewerIsAdvertiserQuery)
-  const t = useTranslation() // useTranslation フックを使う
+  const t = useTranslation()
+  const location = useLocation()
+  const activeHref = findSettingsPageHref(location.pathname)
+
+  const groups = [
+    {
+      title: t("アカウント", "Account"),
+      items: [
+        { href: "/settings/profile", icon: UserIcon, label: t("プロフィール", "Profile") },
+        { href: "/settings/account", icon: UserRoundCogIcon, label: t("アカウント設定", "Account Settings") },
+        { href: "/settings/discord", icon: MessagesSquareIcon, label: t("Discord 連携", "Discord") },
+      ],
+    },
+    {
+      title: t("コイン・サポート", "Coins & Support"),
+      items: [
+        { href: "/settings/points", icon: CoinsIcon, label: t("コイン", "Coins") },
+        { href: "/settings/request", icon: MedalIcon, label: t("サポートを受け取る", "Receive Support") },
+        { href: "/settings/support-received", icon: Gift, label: t("応援コイン受け取り", "Received Support Coins") },
+        ...(data?.viewer?.isAdvertiser
+          ? [{ href: "/settings/advertisements", icon: Radio, label: t("広告設定", "Advertisement Settings") }]
+          : []),
+      ],
+    },
+    {
+      title: t("表示・通知", "Display & Notifications"),
+      items: [
+        { href: "/settings/notification", icon: BellIcon, label: t("通知・いいね", "Notifications & Likes") },
+        { href: "/settings/restriction", icon: EyeIcon, label: t("表示コンテンツ", "Display Content") },
+        { href: "/settings/color", icon: PaletteIcon, label: t("カラーテーマ", "Color Theme") },
+      ],
+    },
+    {
+      title: t("フォロー・ミュート", "Follow & Mute"),
+      items: [
+        { href: "/settings/followed/tags", icon: TagIcon, label: t("フォロータグ", "Followed Tags") },
+        { href: "/settings/muted/users", icon: UserXIcon, label: t("ユーザミュート", "Muted Users") },
+        { href: "/settings/blocked/users", icon: UserXIcon, label: t("ユーザブロック", "Blocked Users") },
+        { href: "/settings/muted/tags", icon: BookmarkXIcon, label: t("タグミュート", "Muted Tags") },
+      ],
+    },
+    {
+      title: t("つくったもの", "Your Creations"),
+      items: [
+        { href: "/settings/sticker", icon: StickerIcon, label: t("スタンプ", "Stickers") },
+        { href: "/models/library?section=mine", icon: BoxesIcon, label: t("自分のモデル", "My Models") },
+      ],
+    },
+  ]
 
   return (
-    <div className="w-full space-y-1 md:w-auto md:max-w-48">
-      <SettingNavigationButton href={"/"} icon={ArrowLeftIcon}>
-        {t("もどる", "Back")}
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/notification"} icon={BellIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("通知・いいね", "Notifications & Likes")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
+    <nav
+      aria-label={t("設定", "Settings")}
+      className="w-full space-y-4 md:space-y-2"
+    >
+      {groups.map((group) => (
+        <div key={group.title}>
+          <p className="mb-1 px-1 font-medium text-muted-foreground text-xs md:px-2">
+            {group.title}
+          </p>
+          <ul className="divide-y overflow-hidden rounded-xl border md:divide-y-0 md:rounded-none md:border-0">
+            {group.items.map((item) => {
+              const isActive = activeHref === item.href
+              return (
+                <li key={item.href}>
+                  <Link
+                    to={item.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "flex min-h-12 items-center gap-3 px-3 text-sm transition-colors hover:bg-muted/60 md:min-h-8 md:rounded-md md:px-2",
+                      isActive && "md:bg-muted md:font-medium",
+                    )}
+                  >
+                    <item.icon className="size-4 shrink-0 text-muted-foreground" />
+                    <span className="min-w-0 flex-1 truncate">
+                      {item.label}
+                    </span>
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground md:hidden" />
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
         </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/restriction"} icon={ImageIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("表示コンテンツ", "Display Content")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/profile"} icon={ImageIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("プロフィール", "Profile")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/account"} icon={UserIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("アカウント設定", "Account Settings")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton
-        href={"/settings/followed/tags"}
-        icon={BookmarkXIcon}
-      >
-        <div className="flex w-full items-center justify-between">
-          {t("フォロータグ", "Followed Tags")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/muted/users"} icon={UserXIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("ユーザミュート", "Muted Users")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton
-        href={"/settings/blocked/users"}
-        icon={UserXIcon}
-      >
-        <div className="flex w-full items-center justify-between">
-          {t("ユーザブロック", "Blocked Users")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton
-        href={"/settings/muted/tags"}
-        icon={BookmarkXIcon}
-      >
-        <div className="flex w-full items-center justify-between">
-          {t("タグミュート", "Muted Tags")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/sticker"} icon={StickerIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("スタンプ", "Stickers")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton
-        href={"/models/library?section=mine"}
-        icon={BoxesIcon}
-      >
-        <div className="flex w-full items-center justify-between">
-          {t("自分のモデル", "My models")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/color"} icon={PaletteIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("カラーテーマ", "Color Theme")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/request"} icon={MedalIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("サポートを受け取る", "Receive Support")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/points"} icon={CoinsIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("コイン", "Coins")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton href={"/settings/discord"} icon={MessagesSquareIcon}>
-        <div className="flex w-full items-center justify-between">
-          {t("Discord 連携", "Discord")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton
-        href={"/settings/support-received"}
-        icon={Gift}
-      >
-        <div className="flex w-full items-center justify-between">
-          {t("応援コイン受け取り", "Received Support Coins")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      {data?.viewer?.isAdvertiser && (
-        <SettingNavigationButton href={"/settings/advertisements"} icon={Radio}>
-          <div className="flex w-full items-center justify-between">
-            {t("広告設定", "Advertisement Settings")}
-            <div className="ml-auto text-right md:hidden">
-              <ChevronRight />
-            </div>
-          </div>
-        </SettingNavigationButton>
-      )}
-    </div>
+      ))}
+    </nav>
   )
 }
 

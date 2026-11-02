@@ -737,6 +737,236 @@ const inkBrush = (t) => {
   <g filter="url(#ds)">${place(...polar(232, 138), -8 + wave(t) * 2, 1.05, seal)}</g></svg>`
 }
 
+
+/* ------------------------------------------------------------------ */
+/* コインの枠のために足した装飾                                         */
+/* ------------------------------------------------------------------ */
+
+/** 色だけ変えた別の枠を作る */
+const recolor = (draw, colors) => (t) => {
+  let svg = draw(t)
+  for (const [from, to] of Object.entries(colors)) {
+    svg = svg.replaceAll(from, to)
+  }
+  return svg
+}
+
+const fallenAngel = recolor(angel, {
+  '"#ffffff"': '"#3b3650"',
+  "#dfe8f7": "#14111f",
+  "#eef4ff": "#1e1a2e",
+  "#c6d3e8": "#6f648f",
+  "#fff8c9": "#ffb0c8",
+  "#ffcf4a": "#d0184f",
+  "#ffe9a0": "#a01040",
+  "#fff3b0": "#ff6f96",
+})
+
+const blueFlames = recolor(flames, {
+  "#ff4d0d": "#1442ff",
+  "#c70f00": "#2b0bb0",
+  "#ffc41f": "#4fdcff",
+  "#ff6a00": "#1d7dff",
+  "#fff3b0": "#e6fbff",
+  "#ffcf54": "#8fe6ff",
+  "#ffe27a": "#b8f2ff",
+})
+
+const silverCrown = recolor(crown, {
+  "#fff6b8": "#ffffff",
+  "#ffcb36": "#c9d3df",
+  "#b87a06": "#6d7a8a",
+  "#ffe37a": "#eef3f8",
+  "#6b4a00": "#39434f",
+  "#7a5200": "#4a5563",
+  "#cf1d48": "#2a4fb8",
+  "#6b0a2a": "#10245f",
+  "#fff6c0": "#e6f4ff",
+})
+
+const fox = (t) => {
+  const tilt = wave(t) * 3
+  const ear = (s) =>
+    `<g transform="translate(${C} ${C}) rotate(${f(s * (35 + tilt))}) translate(0 -${R}) scale(${s} 1)">
+      <path d="M-50 28C-44-30-26-84 8-116 26-74 44-30 50 28Z" fill="url(#foxO)" stroke="#7a3208" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M-24 22C-20-20-8-52 8-76 18-46 28-14 30 22Z" fill="#fff4e6"/>
+      <path d="M8-116C14-102 20-90 24-78 12-84 0-84-10-78-4-92 2-104 8-116Z" fill="#2a1408"/></g>`
+  const mask = `<path d="M0-34C24-34 34-14 30 8 26 26 12 36 0 38-12 36-26 26-30 8-34-14-24-34 0-34Z" fill="#fff" stroke="#b7b2a8" stroke-width="2"/>
+    <path d="M-30-22L-40-44-16-34ZM30-22L40-44 16-34Z" fill="#fff" stroke="#b7b2a8" stroke-width="2"/>
+    <path d="M-22-6C-16-14-8-14-4-6M22-6C16-14 8-14 4-6" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M-20-14L-6-22M20-14L6-22" stroke="#d8182c" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M-5 18L0 24 5 18Z" fill="#111"/><circle cy="-22" r="4" fill="#d8182c"/><path d="M-14 6L-24 10M14 6L24 10" stroke="#d8182c" stroke-width="2" stroke-linecap="round"/>`
+  const fires = [[254, 72, 0], [262, 96, 0.35], [254, 262, 0.6], [262, 288, 0.85]]
+    .map(([rr, d, ph]) => place(...polar(rr, d), 0, 1 + wave(t, ph) * 0.14, '<path d="M0 14C-12 6-10-8 0-18 10-8 12 6 0 14Z" fill="#7fe4ff" opacity=".9"/><path d="M0 12C-5 6-5-2 0-8 5-2 5 6 0 12Z" fill="#fff"/>', 'filter="url(#glow)"'))
+    .join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">${defs(
+    lg("foxO", ["#ff9d3d", "#e2610f"]) + lg("cord", ["#e8172f", "#8d0a1a", "#e8172f"], 1, 1),
+  )}<g filter="url(#ds)"><g mask="url(#behind)">${ear(-1)}${ear(1)}</g>
+    ${ring(224, 6, "url(#cord)")}${place(...polar(232, 142), -14 + wave(t) * 3, 1.15, mask)}
+  </g>${fires}</svg>`
+}
+
+const oni = (t) => {
+  const horn = (s) =>
+    `<g transform="translate(${C} ${C}) rotate(${f(s * 26)}) translate(0 -${R - 4}) scale(${s} 1)">
+      <path d="M-30 26C-26-30-12-66 10-98 22-60 30-20 30 26Z" fill="url(#oniH)" stroke="#5a2a00" stroke-width="3"/>
+      <path d="M-27 2C-8 8 12 8 30 2M-21-24C-6-18 8-18 25-24M-12-50C-3-46 6-46 17-50" stroke="#5a2a00" stroke-opacity=".6" stroke-width="3" fill="none"/></g>`
+  const stripes = Array.from({ length: 30 }, (_, i) => {
+    const d = (i * 360) / 30
+    return place(...polar(232, d), d + 12, 1, '<path d="M-5-14C-1-6 1 4-3 14L6 14C9 4 7-6 3-14Z" fill="#17120c"/>')
+  }).join("")
+  const heat = 0.6 + wave(t) * 0.25
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">${defs(
+    lg("oniH", ["#fff2b0", "#f1b12b", "#b5540c"]) + lg("tora", ["#ffd23f", "#f39a12"]),
+  )}<g filter="url(#ds)"><g mask="url(#behind)">${horn(-1)}${horn(1)}</g>${ring(232, 28, "url(#tora)")}${stripes}${ring(218, 3, "#17120c")}${ring(246, 3, "#17120c")}</g>
+  ${ring(250, 5, "#ff3b1f", `opacity="${f(heat)}" filter="url(#glow)"`)}</svg>`
+}
+
+const witch = (t) => {
+  const stars = [[244, 82, 1, 0], [250, 130, 0.8, 0.2], [244, 188, 1, 0.45], [250, 236, 0.8, 0.65], [244, 290, 1, 0.85]]
+  const sway = wave(t) * 2
+  const bats = [0, 0.5].map((ph) => {
+    const p = (t + ph) % 1
+    const [x, y] = polar(262, 90 + p * 180)
+    const flap = 0.55 + 0.45 * Math.abs(Math.cos(TAU * (t * 3 + ph)))
+    return place(x, y, 0, 0.62, `<g transform="scale(1 ${f(flap)})"><path d="M0 2C-8-8-22-10-34-2-26 0-24 8-22 10-16 4-10 6-4 10L0 6 4 10C10 6 16 4 22 10 24 8 26 0 34-2 22-10 8-8 0 2Z" fill="#16102a"/></g><circle r="5.5" cy="1" fill="#16102a"/>`)
+  }).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">${defs(
+    lg("hat", ["#5a2d9c", "#2a1158"]) + lg("gold", ["#fff0a8", "#d9a11f"]) + lg("wr", ["#7b42c9", "#2a1158", "#ff7a2f"], 1, 1),
+  )}<g filter="url(#ds)">${ring(226, 7, "url(#wr)")}
+    <g transform="translate(${C - 12} 44) rotate(${f(-11 + sway)})">
+      <path d="M-124 34C-74 8 74 8 124 34 74 58-74 58-124 34Z" fill="#2a1158" stroke="#16082f" stroke-width="3"/>
+      <path d="M-64 26C-46-34-18-70 8-98 22-110 42-106 58-92 32-92 34-62 40-40 48-12 58 8 64 26 24 38-24 38-64 26Z" fill="url(#hat)" stroke="#16082f" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M-64 26C-24 38 24 38 64 26L58 6C24 18-24 18-58 6Z" fill="#ff7a2f" stroke="#16082f" stroke-width="2"/>
+      <rect x="-15" y="4" width="30" height="26" rx="4" fill="none" stroke="url(#gold)" stroke-width="6"/>
+    </g></g>${bats}${twinkles(t, stars, "#ffd86b")}</svg>`
+}
+
+const santa = (t) => {
+  const pom = wave(t) * 6
+  const r = rng(91)
+  const snowfall = Array.from({ length: 12 }, (_, i) => {
+    const p = (t + i / 12) % 1
+    const x = 10 + r() * 492
+    const y = -30 + p * 572
+    if (Math.hypot(x - C, y - C) < 214) return ""
+    return `<circle cx="${f(x + Math.sin(TAU * (p + i / 7)) * 9)}" cy="${f(y)}" r="${f(2.5 + r() * 2.5)}" fill="#fff" stroke="#c9dcef" stroke-width=".6"/>`
+  }).join("")
+  const holly = '<path d="M0 0C-8-10-24-12-34-6-28-2-28 4-32 8-22 8-16 12-12 18-6 12-2 6 0 0ZM0 0C8-10 24-12 34-6 28-2 28 4 32 8 22 8 16 12 12 18 6 12 2 6 0 0Z" fill="#1f8a4c" stroke="#0d4d2a" stroke-width="1.5"/><circle cy="-3" cx="-7" r="7" fill="#e8172f"/><circle cy="-3" cx="7" r="7" fill="#e8172f"/><circle cy="7" r="7" fill="#e8172f"/>'
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">${defs(
+    lg("hat", ["#ff4b4b", "#b50d1c"]) + lg("sn", ["#ffffff", "#d7e6f5"]),
+  )}<g filter="url(#ds)">${ring(226, 14, "#e8172f", 'stroke-dasharray="24 24"')}${ring(226, 14, "#fff", 'stroke-dasharray="24 24" stroke-dashoffset="24"')}
+    ${place(...polar(232, 150), 0, 1.05, holly)}
+    <g transform="translate(${C - 20} 42) rotate(-13)">
+      <path d="M-98 34C-82-34-26-82 30-78 78-74 110-40 ${f(128 + pom)} 6 ${f(92 + pom)}-20 62-24 48-6 76 2 96 12 98 34 44 46-44 46-98 34Z" fill="url(#hat)" stroke="#7a0a14" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M-110 28C-112 12-98 6-90 8-56 22 56 22 96 8 108 6 118 14 114 30 110 48 96 50 88 48 50 60-50 60-90 48-100 50-108 44-110 28Z" fill="url(#sn)" stroke="#b9cbdd" stroke-width="2"/>
+      <circle cx="${f(130 + pom)}" cy="12" r="19" fill="url(#sn)" stroke="#b9cbdd" stroke-width="2"/>
+    </g></g>${snowfall}</svg>`
+}
+
+const headphones = (t) => {
+  const beat = 1 + wave(t * 2) * 0.05
+  const cup = (s) =>
+    `<g transform="translate(${C + s * 224} ${C + 8}) scale(${s} 1)">
+      <rect x="-20" y="-50" width="22" height="100" rx="11" fill="#20242e" stroke="#0c0e13" stroke-width="2"/>
+      <rect x="-2" y="-62" width="44" height="124" rx="20" fill="url(#cup)" stroke="#0c0e13" stroke-width="3"/>
+      <g transform="translate(20 0) scale(${f(beat)})"><circle r="23" fill="#10131b" stroke="#ff2f92" stroke-width="4"/><circle r="11" fill="url(#led)"/></g></g>`
+  const bars = (d, ph) =>
+    [0, 1, 2, 3].map((i) => {
+      const [x, y] = polar(262, d + i * 7)
+      const h = 12 + (wave(t * 2, ph + i * 0.21) + 1) * 12
+      return `<rect x="${f(x - 3)}" y="${f(y - h)}" width="6" height="${f(h)}" rx="3" fill="${i % 2 ? "#29d3ff" : "#ff2f92"}"/>`
+    }).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">${defs(
+    lg("cup", ["#4a5166", "#1b1f2a"]) + lg("band", ["#2b3040", "#6a7390", "#2b3040"], 1, 0) + rg("led", ["#ffffff", "#ff2f92"]),
+  )}<g filter="url(#ds)"><path d="${arc(242, 278, 442)}" fill="none" stroke="url(#band)" stroke-width="22" stroke-linecap="round"/><path d="${arc(242, 290, 430)}" fill="none" stroke="#ff2f92" stroke-width="3" stroke-dasharray="3 10" stroke-linecap="round"/>${cup(-1)}${cup(1)}</g>
+  <g filter="url(#glow)">${bars(122, 0)}${bars(212, 0.5)}</g></svg>`
+}
+
+const notes = (t) => {
+  const note = (fill) =>
+    `<path d="M6-34V8" stroke="${fill}" stroke-width="4"/><ellipse cx="-2" cy="10" rx="10" ry="7.5" fill="${fill}" transform="rotate(-20 -2 10)"/><path d="M6-34C16-30 24-24 22-10 20-18 14-22 6-22Z" fill="${fill}"/>`
+  const beam = (fill) =>
+    `<path d="M-14-26L18-34V6M-14-26V14" stroke="${fill}" stroke-width="4" fill="none"/><path d="M-14-26L18-34V-24L-14-16Z" fill="${fill}"/><ellipse cx="-22" cy="15" rx="9.5" ry="7" fill="${fill}" transform="rotate(-20 -22 15)"/><ellipse cx="10" cy="7" rx="9.5" ry="7" fill="${fill}" transform="rotate(-20 10 7)"/>`
+  const colors = ["#ff4d8d", "#29b6ff", "#ffb31f", "#7c5cff", "#2fd38f"]
+  const items = Array.from({ length: 10 }, (_, i) => {
+    const d = (i * 36 + t * 36) % 360
+    const body = i % 2 ? note(colors[i % 5]) : beam(colors[i % 5])
+    return place(...polar(240 + wave(t * 2, i / 10) * 8, d), wave(t, i / 10) * 14, 0.95, body, 'filter="url(#ds)"')
+  }).join("")
+  const staff = [-8, -4, 0, 4, 8].map((o) => ring(228 + o, 1.6, "#6f7bb5", 'opacity=".85"')).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">${defs()}${staff}${items}</svg>`
+}
+
+const rainbowClouds = (t) => {
+  const bands = ["#ff5a5a", "#ffa43a", "#ffe34d", "#4fd97a", "#3fb8ff", "#8a6bff"]
+    .map((c, i) => `<path d="${arc(258 - i * 8, 300, 420)}" fill="none" stroke="${c}" stroke-width="8.5"/>`)
+    .join("")
+  const cloud = (x, y, s, ph) =>
+    place(x + wave(t, ph) * 6, y, 0, s, '<path d="M-60 26C-78 22-78-2-58-6-60-30-26-40-14-22-6-46 34-44 36-16 58-22 74 -2 62 16 58 26 50 28 44 28Z" fill="url(#cl)" stroke="#c9d9ee" stroke-width="2.5"/>')
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">${defs(lg("cl", ["#ffffff", "#dbe8f7"]))}
+  <g mask="url(#behind)">${bands}</g><g filter="url(#ds)">${cloud(42, 190, 1.15, 0)}${cloud(470, 190, 1.15, 0.5)}${cloud(88, 452, 0.75, 0.25)}${cloud(424, 452, 0.75, 0.75)}</g>
+  ${twinkles(t, [[268, 345, 1.3, 0], [268, 15, 1.2, 0.35], [266, 330, 0.8, 0.7], [266, 30, 0.8, 0.55]], "#fff6b0")}</svg>`
+}
+
+const dragon = (t) => {
+  const start = 96
+  const span = 304
+  const toRadius = (k) => 238 + Math.sin(k * TAU * 3 - TAU * t) * 8
+  const pts = Array.from({ length: 121 }, (_, i) => {
+    const k = i / 120
+    return polar(toRadius(k), start + span * k)
+  })
+  const width = (k) => 7 + 25 * Math.sin(Math.min(1, k * 1.15) * Math.PI * 0.6)
+  const pass = (extra, color) =>
+    pts
+      .slice(0, -1)
+      .map(([x, y], i) => {
+        const [x2, y2] = pts[i + 1]
+        return `<path d="M${x} ${y}L${x2} ${y2}" stroke="${color}" stroke-width="${f(width(i / 120) + extra)}" stroke-linecap="round"/>`
+      })
+      .join("")
+  const belly = pts
+    .slice(0, -1)
+    .map((_, i) => {
+      const k = i / 120
+      const inner = (kk) => polar(toRadius(kk) - width(kk) * 0.26, start + span * kk)
+      const [x, y] = inner(k)
+      const [x2, y2] = inner((i + 1) / 120)
+      return `<path d="M${x} ${y}L${x2} ${y2}" stroke="#ffd96b" stroke-width="${f(width(k) * 0.4)}" stroke-linecap="round"/>`
+    })
+    .join("")
+  const body = pass(5, "#0a4630") + pass(0, "#1f9a58") + belly
+  const scales = pts.filter((_, i) => i % 3 === 0 && i > 6).map(([x, y], i) => {
+    const k = (i * 3) / 120
+    const a = Math.atan2(y - C, x - C)
+    return `<circle cx="${f(x + Math.cos(a) * width(k) * 0.2)}" cy="${f(y + Math.sin(a) * width(k) * 0.2)}" r="${f(width(k) * 0.14)}" fill="#8df0a8" opacity=".85"/>`
+  }).join("")
+  const spines = pts.filter((_, i) => i % 5 === 2 && i > 10 && i < 116).map(([x, y]) => {
+    const a = Math.atan2(y - C, x - C)
+    const deg = (a * 180) / Math.PI + 90
+    return place(x + Math.cos(a) * 15, y + Math.sin(a) * 15, deg, 1, '<path d="M-7 4L0-15 7 4Z" fill="#c1121f" stroke="#6b0810" stroke-width="1.2"/>')
+  }).join("")
+  const [hx, hy] = pts[120]
+  const headRot = (start + span) % 360
+  const head = `<g transform="translate(${hx} ${hy}) rotate(${headRot}) scale(1.5)">
+    <path d="M-20-14C-34-30-46-34-58-30-46-24-40-14-34-6Z" fill="#ffd23f" stroke="#7a4c00" stroke-width="1.5"/>
+    <path d="M-12-16C-24-36-32-44-46-46-36-34-30-20-26-8Z" fill="#fff0a8" stroke="#7a4c00" stroke-width="1.5"/>
+    <path d="M-30 12C-30-14-10-22 12-20 34-18 50-8 56 4 46 8 40 8 36 8 42 16 42 20 36 24 12 28-20 32-30 12Z" fill="url(#head)" stroke="#6b3a00" stroke-width="2"/>
+    <path d="M36 8C24 10 10 10-2 8M34 9L30 15M24 10L21 16M14 10L12 16" stroke="#fff" stroke-width="1.8" fill="none"/>
+    <circle cx="10" cy="-8" r="6" fill="#fff"/><circle cx="12" cy="-8" r="3.2" fill="#c1121f"/><circle cx="12.6" cy="-9" r="1" fill="#fff"/>
+    <circle cx="48" cy="1" r="1.8" fill="#6b3a00"/>
+    <path d="M50 6C66 14 ${f(70 + wave(t) * 6)} 28 ${f(58 + wave(t) * 6)} 40M46-2C68-14 ${f(82 + wave(t, 0.3) * 6)}-10 ${f(92 + wave(t, 0.3) * 6)} 2" stroke="#ffe27a" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M-28 12C-44 2-52 8-58 18-46 16-44 24-48 32-36 26-30 26-24 26Z" fill="#c1121f" stroke="#6b0810" stroke-width="1.5"/></g>`
+  const [px, py] = polar(246, start + span + 42 + wave(t) * 3)
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">${defs(
+    lg("head", ["#b8f07a", "#1f9a58"]) +
+      `<radialGradient id="orb" cx=".35" cy=".3"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#9fe6ff"/><stop offset="1" stop-color="#2b63e0"/></radialGradient>`,
+  )}<g filter="url(#ds)">${spines}${body}${scales}${head}</g>
+  <g filter="url(#glow2)"><circle cx="${px}" cy="${py}" r="${f(15 + wave(t * 2) * 1.5)}" fill="url(#orb)"/></g>
+  ${twinkles(t, [[262, 60, 1.1, 0], [262, 140, 0.9, 0.3], [262, 245, 1, 0.6]], "#ffe27a")}</svg>`
+}
+
 const CANVAS_VIEW_BOX = 'viewBox="-60 -60 632 632"'
 
 const withCanvas = (draw) => (t) =>
@@ -752,25 +982,36 @@ const decorations = [
   { slug: "cat-pink", category: "cute", name: "ねこ耳 ピンク", description: "やわらかいピンクのねこ耳と肉球", draw: catPink },
   { slug: "cat-black", category: "cute", name: "ねこ耳 くろ", description: "夜色のねこ耳と肉球", draw: catBlack },
   { slug: "cat-white", category: "cute", name: "ねこ耳 しろ", description: "ふわふわの白いねこ耳と肉球", draw: catWhite },
-  { slug: "bunny", category: "cute", name: "うさ耳リボン", description: "長いうさ耳とピンクのリボン", draw: bunny },
+  { slug: "bunny", priceCoins: 300, category: "cute", name: "うさ耳リボン", description: "長いうさ耳とピンクのリボン", draw: bunny },
   { slug: "ribbon", category: "cute", name: "おおきなリボン", description: "レースの縁どりと大きなリボン", draw: ribbon },
   { slug: "hearts", category: "cute", name: "ときめきハート", description: "鼓動するハートと立ちのぼるハート", draw: hearts },
-  { slug: "sweets", category: "cute", name: "おかしの国", description: "ドーナツとマカロン、キャンディ", draw: sweets },
-  { slug: "angel", category: "fantasy", name: "天使の翼", description: "光る輪と、はばたく白い翼", draw: angel },
-  { slug: "devil", category: "fantasy", name: "小悪魔", description: "赤い角とコウモリの翼、しっぽ", draw: devil },
-  { slug: "crown", category: "fantasy", name: "黄金の王冠", description: "宝石の王冠と月桂樹の輪", draw: crown },
-  { slug: "magic", category: "fantasy", name: "魔法陣", description: "ルーン文字が回る光の魔法陣", draw: magicCircle },
-  { slug: "thorn-rose", category: "fantasy", name: "いばらの薔薇", description: "深紅の薔薇といばらのつる", draw: thornRose },
-  { slug: "flames", category: "element", name: "業火", description: "下から燃えあがる炎と火の粉", draw: flames },
-  { slug: "lightning", category: "element", name: "迅雷", description: "アイコンを走る青白い稲妻", draw: lightning },
-  { slug: "ice-shards", category: "element", name: "氷の棘", description: "突きだす氷の結晶ときらめき", draw: iceShards },
+  { slug: "sweets", priceCoins: 300, category: "cute", name: "おかしの国", description: "ドーナツとマカロン、キャンディ", draw: sweets },
+  { slug: "angel", priceCoins: 1000, category: "fantasy", name: "天使の翼", description: "光る輪と、はばたく白い翼", draw: angel },
+  { slug: "devil", priceCoins: 1000, category: "fantasy", name: "小悪魔", description: "赤い角とコウモリの翼、しっぽ", draw: devil },
+  { slug: "crown", priceCoins: 1500, category: "fantasy", name: "黄金の王冠", description: "宝石の王冠と月桂樹の輪", draw: crown },
+  { slug: "magic", priceCoins: 800, category: "fantasy", name: "魔法陣", description: "ルーン文字が回る光の魔法陣", draw: magicCircle },
+  { slug: "thorn-rose", priceCoins: 800, category: "fantasy", name: "いばらの薔薇", description: "深紅の薔薇といばらのつる", draw: thornRose },
+  { slug: "flames", priceCoins: 1000, category: "element", name: "業火", description: "下から燃えあがる炎と火の粉", draw: flames },
+  { slug: "lightning", priceCoins: 1000, category: "element", name: "迅雷", description: "アイコンを走る青白い稲妻", draw: lightning },
+  { slug: "ice-shards", priceCoins: 800, category: "element", name: "氷の棘", description: "突きだす氷の結晶ときらめき", draw: iceShards },
   { slug: "galaxy", category: "element", name: "銀河", description: "星雲の輪をめぐる惑星たち", draw: galaxy },
   { slug: "neon", category: "cyber", name: "ネオンリング", description: "ピンクと水色のネオンとノイズ", draw: neon },
   { slug: "hud", category: "cyber", name: "サイバーHUD", description: "回る目盛りと照準のインターフェース", draw: hud },
-  { slug: "goldfish", category: "wa", name: "金魚鉢", description: "水の輪を泳ぐ金魚と水草", draw: goldfishes },
-  { slug: "wafuu", category: "wa", name: "青海波と扇", description: "金の青海波に、扇と飾り紐", draw: wafuu },
+  { slug: "goldfish", priceCoins: 500, category: "wa", name: "金魚鉢", description: "水の輪を泳ぐ金魚と水草", draw: goldfishes },
+  { slug: "wafuu", priceCoins: 500, category: "wa", name: "青海波と扇", description: "金の青海波に、扇と飾り紐", draw: wafuu },
   { slug: "ink", category: "wa", name: "墨と落款", description: "力強い筆の跡と朱の落款", draw: inkBrush },
-  { slug: "palette", category: "creator", name: "絵の具とパレット", description: "したたる絵の具とパレット、絵筆", draw: palette },
+  { slug: "palette", priceCoins: 300, category: "creator", name: "絵の具とパレット", description: "したたる絵の具とパレット、絵筆", draw: palette },
+  { slug: "fox", priceCoins: 500, category: "wa", name: "狐耳と狐面", description: "狐の耳と面、ゆらめく狐火", draw: fox },
+  { slug: "oni", priceCoins: 500, category: "wa", name: "鬼の角", description: "金の二本角と虎柄の輪", draw: oni },
+  { slug: "santa", priceCoins: 300, category: "cute", name: "サンタ帽", description: "赤い帽子と柊、降る雪", draw: santa },
+  { slug: "notes", priceCoins: 300, category: "cute", name: "めぐる音符", description: "五線譜をめぐるカラフルな音符", draw: notes },
+  { slug: "rainbow", priceCoins: 500, category: "nature", name: "虹と雲", description: "雲にかかる七色の虹", draw: rainbowClouds },
+  { slug: "witch", priceCoins: 800, category: "fantasy", name: "魔女の帽子", description: "とんがり帽子と飛ぶコウモリ", draw: witch },
+  { slug: "headphones", priceCoins: 500, category: "cyber", name: "ヘッドホン", description: "光るヘッドホンと波打つ音", draw: headphones },
+  { slug: "crown-silver", priceCoins: 1000, category: "fantasy", name: "白銀の王冠", description: "青いベルベットの白銀の王冠", draw: silverCrown },
+  { slug: "fallen-angel", priceCoins: 1500, category: "fantasy", name: "堕天使の翼", description: "黒い翼と赤く光る輪", draw: fallenAngel },
+  { slug: "blue-flames", priceCoins: 1500, category: "element", name: "蒼炎", description: "青く燃えあがる炎", draw: blueFlames },
+  { slug: "dragon", priceCoins: 3000, category: "fantasy", name: "昇り龍", description: "アイコンに巻きつく龍と光の玉", draw: dragon },
 ]
 
 export const DECORATIONS = decorations.map((item) => ({

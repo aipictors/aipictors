@@ -29,9 +29,6 @@ export default function SettingsPointsPage() {
       <div className="block md:hidden">
         <SettingsHeader title={t("コイン", "Coins")} />
       </div>
-      <h1 className="hidden font-bold text-2xl md:block">
-        {t("コイン", "Coins")}
-      </h1>
       <PointsSettingsForm />
     </div>
   )

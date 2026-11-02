@@ -90,16 +90,18 @@ export function MuteSetting () {
           検索結果、タグ経由の作品一覧、スタンプ広場などでミュートしたユーザの投稿を表示するか切り替えます。
         </p>
 
-        <label className="flex items-center space-x-2">
+        <label className="flex items-start gap-2">
           <input
             type="checkbox"
-            className="checkbox checkbox-sm"
+            className="checkbox checkbox-sm mt-1"
             checked={form.comments}
             onChange={handleChange("comments")}
           />
-          <span>ミュートしたユーザのコメントを表示する</span>
           <span>
-            ※ 表示する場合はデフォルトは隠しが入った状態で表示されます
+            ミュートしたユーザのコメントを表示する
+            <span className="block text-muted-foreground text-xs leading-5">
+              ※ 表示する場合はデフォルトは隠しが入った状態で表示されます
+            </span>
           </span>
         </label>
         <p className="pl-6 text-muted-foreground text-xs leading-5">

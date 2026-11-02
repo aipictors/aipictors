@@ -1,4 +1,5 @@
 import { Separator } from "~/components/ui/separator"
+import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 import { SettingFcmForm } from "~/routes/($lang).settings.push-notification/components/setting-fcm-form"
 
 /**
@@ -7,7 +8,9 @@ import { SettingFcmForm } from "~/routes/($lang).settings.push-notification/comp
 export default function SettingNotification () {
   return (
     <div className="w-full space-y-4">
-      <p className="font-bold text-2xl">{"Push通知設定"}</p>
+      <div className="block md:hidden">
+        <SettingsHeader title={"Push通知"} />
+      </div>
       <p>Push通知を設定することができます。</p>
       <p>
         PCブラウザに対応しています。スマートフォンのブラウザは対応していません。スマートフォンの場合は、今後アプリで通知に対応する予定です。

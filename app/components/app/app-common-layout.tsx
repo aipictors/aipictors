@@ -7,6 +7,8 @@ import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-rou
 type Props = Readonly<{
   outlet: React.ReactNode
   title?: string
+  /** 中で sticky を使う（横のはみ出しの隠し方を変える） */
+  isStickyEnabled?: boolean
 }>
 
 /**
@@ -17,6 +19,7 @@ export function AppCommonLayout(props: Props): React.ReactNode {
     <SidebarProvider>
       <AppContents
         outlet={props.outlet}
+        isStickyEnabled={props.isStickyEnabled}
         aside={<HomeRouteList title={props.title} />}
         header={
           <HomeHeader

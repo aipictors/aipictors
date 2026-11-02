@@ -1,3 +1,21 @@
+"""投稿の公開設定"""
+enum AccessType {
+  """下書き"""
+  DRAFT
+
+  """限定公開"""
+  LIMITED
+
+  """非公開"""
+  PRIVATE
+
+  """公開"""
+  PUBLIC
+
+  """新着非公開"""
+  SILENT
+}
+
 """実績の分類"""
 enum AchievementCategory {
   """閲覧・交流"""
@@ -14,20 +32,6 @@ enum AchievementCategory {
 
   """特別"""
   SPECIAL
-}
-
-"""実績の表示設定"""
-type AchievementSettingsNode {
-  """プロフィール・実績ページで、他の人に実績を見せない"""
-  isHiddenOnProfile: Boolean!
-
-  """達成したときのお知らせ（画面のカード）を出さない"""
-  isUnlockNoticeOff: Boolean!
-}
-
-input UpdateAchievementSettingsInput {
-  isHiddenOnProfile: Boolean!
-  isUnlockNoticeOff: Boolean!
 }
 
 """実績を確かめた結果"""
@@ -93,6 +97,15 @@ type AchievementNode {
   unlockedAt: Int
 }
 
+"""実績の表示設定"""
+type AchievementSettingsNode {
+  """プロフィール・実績ページで、他の人に実績を見せない"""
+  isHiddenOnProfile: Boolean!
+
+  """達成したときのお知らせ（画面のカード）を出さない"""
+  isUnlockNoticeOff: Boolean!
+}
+
 """実績のまとめ"""
 type AchievementSummaryNode {
   """今のレベルになったポイント"""
@@ -118,24 +131,6 @@ type AchievementSummaryNode {
   unlockedCount: Int!
 }
 
-"""投稿の公開設定"""
-enum AccessType {
-  """下書き"""
-  DRAFT
-
-  """限定公開"""
-  LIMITED
-
-  """非公開"""
-  PRIVATE
-
-  """公開"""
-  PUBLIC
-
-  """新着非公開"""
-  SILENT
-}
-
 """運営による公開設定"""
 enum AdminAccessType {
   """完全非公開"""
@@ -148,6 +143,34 @@ enum AdminAccessType {
   TEMPORARY_PRIVATE
 }
 
+"""管理者コイン操作履歴"""
+type AdminCoinOperationHistoryNode implements Node {
+  changedCount: Int!
+  createdAt: Int!
+  expiresAt: Int
+  freeDelta: Int!
+  freeGrantedTotal: Int!
+  freeReducedTotal: Int!
+  id: ID!
+  moderatorUserId: ID!
+  planType: String
+  premiumDelta: Int!
+  premiumGrantedTotal: Int!
+  premiumReducedTotal: Int!
+  targetCount: Int!
+  targetScope: String!
+  targetUserIds: [String!]!
+}
+
+type AdminCoinOperationResult {
+  changedCount: Int!
+  freeGrantedTotal: Int!
+  freeReducedTotal: Int!
+  premiumGrantedTotal: Int!
+  premiumReducedTotal: Int!
+  targetCount: Int!
+}
+
 """作品通報の管理項目"""
 type AdminWorkReportNode implements Node {
   comment: String
@@ -157,6 +180,55 @@ type AdminWorkReportNode implements Node {
   reportStatus: String!
   reportUser: UserNode
   work: WorkNode
+}
+
+"""AI評価ランキング入賞情報"""
+type AiEvaluationRankingAwardInfo {
+  dateText: String!
+  isSensitive: Boolean!
+  periodType: String!
+  rank: Int!
+}
+
+"""AI評価ランキング（作品）"""
+type AiEvaluationWorkRankingNode implements Node {
+  """入賞種別"""
+  awardTier: String!
+  dateText: String!
+
+  """評価対象作品数"""
+  evaluationCount: Int!
+  id: ID!
+  index: Int!
+  isSensitive: Boolean!
+
+  """AI評価点"""
+  overallScore: Int!
+
+  """ぴくたーちゃんコメント"""
+  pictorComment: String
+
+  """コメント生成日時"""
+  pictorCommentGeneratedAt: Int
+
+  """コメント生成モデル"""
+  pictorCommentModel: String
+
+  """ユーザ"""
+  user: UserNode!
+  userId: ID!
+
+  """作品"""
+  work: WorkNode
+  workId: ID!
+}
+
+input AiEvaluationWorkRankingsWhereInput {
+  day: Int
+  isSensitive: Boolean
+  month: Int
+  weekIndex: Int
+  year: Int
 }
 
 """モデル"""
@@ -268,18 +340,6 @@ type AlbumNode implements Node {
   worksCount: Int!
 }
 
-"""シリーズ内作品の並び順"""
-enum AlbumWorkOrderBy {
-  """投稿日でソート"""
-  DATE_CREATED
-
-  """いいね数でソート"""
-  LIKES_COUNT
-
-  """手動でソート"""
-  MANUAL
-}
-
 """アルバムの並び順"""
 enum AlbumOrderBy {
   """投稿時刻"""
@@ -322,6 +382,18 @@ input AlbumWhereInput {
 
   """ログインユーザID"""
   ownerLoginUserId: String!
+}
+
+"""シリーズ内作品の並び順"""
+enum AlbumWorkOrderBy {
+  """投稿日でソート"""
+  DATE_CREATED
+
+  """いいね数でソート"""
+  LIKES_COUNT
+
+  """手動でソート"""
+  MANUAL
 }
 
 input AlbumsWhereInput {
@@ -411,9 +483,6 @@ type AnimationPostNode implements Node {
   """画像の幅"""
   imageWidth: Int!
 
-  """Cloudflare Stream の動画UID"""
-  streamUid: String
-
   """ブックマークしている"""
   isBookmarked: Boolean!
 
@@ -500,6 +569,9 @@ type AnimationPostNode implements Node {
 
   """画像（小）の幅"""
   smallThumbnailImageWidth: Int!
+
+  """Cloudflare Stream の動画UID"""
+  streamUid: String
 
   """テイスト"""
   style: ImageStyle!
@@ -898,6 +970,12 @@ type CommentNode implements Node {
   """スタンプ"""
   sticker: StickerNode
 
+  """コメントに添付された推し情報"""
+  support: CommentSupportNode
+
+  """コメント先ユーザーの感謝コメント"""
+  supportThankYouMessage: String!
+
   """内容"""
   text: String!
   user: UserNode
@@ -906,6 +984,13 @@ type CommentNode implements Node {
   """作品"""
   work: WorkNode
   workId: ID
+}
+
+"""コメントに添付された推し情報"""
+type CommentSupportNode {
+  freeCoinAmount: Int!
+  premiumCoinAmount: Int!
+  totalPt: Int!
 }
 
 input CommentsOrderBy {
@@ -1102,6 +1187,9 @@ input CreateFluxImageGenerationTaskInput {
   """プロンプト"""
   prompt: String!
 
+  """無料リトライ元の履歴ID"""
+  retryFromNanoid: String
+
   """scale"""
   scale: Int
 
@@ -1144,11 +1232,16 @@ input CreateGeminiImageGenerationTaskInput {
   """画像のMIMEタイプ（image/png, image/jpeg など、imageBase64指定時必須）"""
   mimeType: String
 
-  """使用するGemini画像生成モデル（未指定の場合は gemini-2.5-flash-image を使用）"""
+  """
+  使用するGemini画像生成モデル（未指定の場合は gemini-2.5-flash-image を使用。Nano Banana / Nano Banana 2 は Lite / Standard / Premium プラン限定。Liteプランは1日3回まで）
+  """
   model: GeminiImageModel
 
   """プロンプト（日本語可）"""
   prompt: String!
+
+  """無料リトライ元の履歴ID"""
+  retryFromNanoid: String
 
   """生成する画像サイズ"""
   size: GeminiImageSize!
@@ -1214,13 +1307,19 @@ input CreateImageGenerationTaskInput {
   """プロンプト"""
   prompt: String!
 
+  """無料リトライ元の履歴ID"""
+  retryFromNanoid: String
+
   """sampler"""
   sampler: String!
-  """Schedule type（Karras / Exponential / SGM Uniform / Simple / Normal / Beta）。未指定はサンプラーごとの既定"""
-  scheduler: String
 
   """scale"""
   scale: Int!
+
+  """
+  Schedule type（Karras / Exponential / SGM Uniform / Simple / Normal / Beta）。未指定はサンプラーごとの既定
+  """
+  scheduler: String
 
   """seed"""
   seed: Float!
@@ -1237,7 +1336,7 @@ input CreateImageGenerationTaskInput {
   t2tInpaintingFillSize: String
   t2tMaskImageUrl: String
 
-  """生成の方式"""
+  """生成の方式（画像修正はFreeプラン1日3回まで、Liteプラン1日5回まで。Standard / Premiumプランは回数制限なし）"""
   type: ImageGenerationType!
 
   """アップスケールサイズ(x2, x4, x8)"""
@@ -1305,10 +1404,16 @@ input CreateReservedImageGenerationTaskInput {
   model: String!
   negativePrompt: String!
   prompt: String!
+
+  """無料リトライ元の履歴ID"""
+  retryFromNanoid: String
   sampler: String!
-  """Schedule type（Karras / Exponential / SGM Uniform / Simple / Normal / Beta）。未指定はサンプラーごとの既定"""
-  scheduler: String
   scale: Int!
+
+  """
+  Schedule type（Karras / Exponential / SGM Uniform / Simple / Normal / Beta）。未指定はサンプラーごとの既定
+  """
+  scheduler: String
   seed: Float!
 
   """画像のサイズ"""
@@ -1321,7 +1426,7 @@ input CreateReservedImageGenerationTaskInput {
   t2tInpaintingFillSize: String
   t2tMaskImageUrl: String
 
-  """生成の方式"""
+  """生成の方式（画像修正はFreeプラン1日3回まで、Liteプラン1日5回まで。Standard / Premiumプランは回数制限なし）"""
   type: ImageGenerationType!
 
   """アップスケールサイズ(x2, x4, x8)"""
@@ -1384,6 +1489,15 @@ input CreateWorkCommentInput {
   """センシティブなコメントかどうか"""
   isSensitive: Boolean
   stickerId: ID
+
+  """コメントに添付するフリーコイン数"""
+  supportFreeCoinAmount: Int
+
+  """推しを匿名で送るかどうか"""
+  supportIsAnonymous: Boolean
+
+  """コメントに添付するプレミアムコイン数"""
+  supportPremiumCoinAmount: Int
   text: String!
   workId: ID!
 }
@@ -1480,6 +1594,9 @@ input CreateWorkInput {
   smallThumbnailImageURL: String!
   smallThumbnailImageWidth: Int!
   steps: String
+
+  """Cloudflare Stream の動画UID"""
+  streamUid: String
   strength: String
 
   """お題ID"""
@@ -1497,11 +1614,11 @@ input CreateWorkInput {
   """種別"""
   type: WorkType!
 
+  """動画の長さ（秒）"""
+  videoDurationSeconds: Int
+
   """動画URL"""
   videoUrl: String
-
-  """Cloudflare Stream の動画UID"""
-  streamUid: String
 }
 
 input CreateWorkLikeInput {
@@ -1729,6 +1846,11 @@ input DeleteWorkLikeInput {
 enum Direction {
   ASC
   DESC
+}
+
+type EmailLoginResult {
+  isNew: Boolean!
+  token: String!
 }
 
 type EmergencyAnnouncementNode {
@@ -1974,10 +2096,14 @@ input FollowingUsersWhereInput {
 }
 
 enum GeminiImageModel {
-  """Gemini 2.5 Flash Image (Nano Banana)"""
+  """
+  Gemini 2.5 Flash Image (Nano Banana, Lite / Standard / Premium限定。Liteは1日3回まで)
+  """
   GEMINI_25_FLASH_IMAGE
 
-  """Gemini 3.1 Flash Image Preview (Nano Banana 2)"""
+  """
+  Gemini 3.1 Flash Image Preview (Nano Banana 2, Lite / Standard / Premium限定。Liteは1日3回まで)
+  """
   GEMINI_31_FLASH_IMAGE_PREVIEW
 }
 
@@ -2030,6 +2156,15 @@ enum GenerationAccessType {
 
   """公開（復元可能）"""
   PUBLIC_RESTORABLE
+}
+
+"""Google Play の定期購入 1 件"""
+input GooglePlayPurchaseInput {
+  """定期購入の ID（pass_lite / pass_standard / pass_premium）"""
+  productId: String!
+
+  """Play Billing の purchaseToken"""
+  purchaseToken: String!
 }
 
 input HotWorksWhereInput {
@@ -2176,9 +2311,10 @@ type ImageGenerationReservedTaskNode implements Node {
   negativePrompt: String!
   prompt: String!
   sampler: String!
+  scale: Int!
+
   """Schedule type。null はサンプラーごとの既定"""
   scheduler: String
-  scale: Int!
   seed: Float!
   sizeType: ImageGenerationSizeType!
   steps: Int!
@@ -2247,9 +2383,10 @@ type ImageGenerationResultNode implements Node {
   """お気に入り度"""
   rating: Int
   sampler: String!
+  scale: Int!
+
   """Schedule type。null はサンプラーごとの既定"""
   scheduler: String
-  scale: Int!
   seed: Float!
   sizeKind: ImageGenerationSizeKind!
   sizeType: ImageGenerationSizeType!
@@ -2457,9 +2594,10 @@ type ImageGenerationTaskNode implements Node {
   """お気に入り度"""
   rating: Int
   sampler: String!
+  scale: Int!
+
   """Schedule type。null はサンプラーごとの既定"""
   scheduler: String
-  scale: Int!
   seed: Float!
   sizeKind: ImageGenerationSizeKind!
   sizeType: ImageGenerationSizeType!
@@ -2495,10 +2633,10 @@ input ImageGenerationTasksWhereInput {
 
 """画像生成の種類"""
 enum ImageGenerationType {
-  """画像から"""
+  """画像から（画像修正。Freeは1日3回まで、Liteは1日5回まで、Standard / Premiumは無制限）"""
   IMAGE_TO_IMAGE
 
-  """画像から"""
+  """画像から（部分修正。Freeは1日3回まで、Liteは1日5回まで、Standard / Premiumは無制限）"""
   INPAINTING
 
   """テキストから"""
@@ -2945,6 +3083,12 @@ type LoginResult {
   token: String!
 }
 
+"""メール認証トークンでログインするInput"""
+input LoginWithEmailTokenInput {
+  """メール認証トークン"""
+  token: String!
+}
+
 input LoginWithPasswordInput {
   login: String!
   password: String!
@@ -3034,6 +3178,9 @@ type ModerationReportNode implements Node {
   """通知定型メッセージ"""
   reportMessage: String
 
+  """通知の種類（NEED_MOSAIC / COPYRIGHT_VIOLATION / INAPPROPRIATE_RATING など）"""
+  reportType: String
+
   """対応メッセージ"""
   responseMessage: String
 
@@ -3045,9 +3192,6 @@ type ModerationReportNode implements Node {
 
   """作品"""
   work: WorkNode
-
-  """通知の種類（NEED_MOSAIC / COPYRIGHT_VIOLATION / INAPPROPRIATE_RATING など）"""
-  reportType: String
 }
 
 """対応ステータス"""
@@ -3087,26 +3231,8 @@ input ModerationReportsWhereInput {
 }
 
 type Mutation {
-  """できなかったAI評価をやり直す（作者のみ）"""
-  retryWorkBotGrading(workId: ID!): Boolean!
-
-  """投稿した作品と生成画像をつなぐ（生成履歴の「投稿済み」の印）"""
-  linkWorkToGenerations(generationNanoids: [String!]!, workId: ID!): Int!
-
-  """実績を確かめる（今日のログインも記録）。まだ演出を見せていない達成を返す"""
-  checkAchievements(
-    """間隔をあけずに確かめる（投稿した直後など）"""
-    force: Boolean
-  ): AchievementCheckResultNode!
-
-  """運営からの修正依頼に対応したと返す"""
-  respondModerationReport(id: ID!, message: String): Boolean!
-
-  """実績の表示設定を変える"""
-  updateAchievementSettings(input: UpdateAchievementSettingsInput!): AchievementSettingsNode!
-
-  """達成の演出を見せた（次からは出さない）"""
-  markAchievementsSeen(keys: [String!]!): Boolean!
+  """モデレータ向けの一括コイン操作"""
+  adminAdjustCoins(expiresAt: Int, freeDelta: Int, planType: String, premiumDelta: Int, targetScope: String!, userIds: [ID!]): AdminCoinOperationResult!
 
   """コメント審査への異議申し立てを送信する"""
   appealCommentModeration(input: AppealCommentModerationInput!): Boolean!
@@ -3125,6 +3251,12 @@ type Mutation {
 
   """管理者権限で作品の設定を変更する"""
   changeWorkSettingsWithAdmin(input: WorkSettingsWithAdminInput!): Boolean
+
+  """実績を確かめる（今日のログインも記録）。まだ演出を見せていない達成を返す"""
+  checkAchievements(
+    """間隔をあけずに確かめる（投稿した直後など）"""
+    force: Boolean
+  ): AchievementCheckResultNode!
 
   """アカウントを作成する"""
   createAccount(input: CreateAccountInput!): UserNode!
@@ -3152,6 +3284,12 @@ type Mutation {
 
   """キャラクターを自動作成して表情差分を生成する"""
   createCharacterWithExpressions(input: CreateCharacterWithExpressionsInput!): CharacterWithExpressionsResult!
+
+  """コイン通知を作成する"""
+  createCoinNotification(message: String!): Boolean!
+
+  """管理者が指定ユーザ向けのコイン通知を作成する"""
+  createCoinNotificationForUser(message: String!, targetUserId: ID!): Boolean!
 
   """作品のコメントをいいねする"""
   createCommentLike(input: CreateCommentLikeInput!): CommentNode!
@@ -3327,17 +3465,29 @@ type Mutation {
   """SNSプロバイダーをユーザーに紐付ける"""
   linkUserProvider(input: LinkUserProviderInput!): UserProviderNode!
 
+  """投稿した作品と生成画像をつなぐ（生成履歴の「投稿済み」の印）"""
+  linkWorkToGenerations(generationNanoids: [String!]!, workId: ID!): Int!
+
+  """メール認証トークンでログインする"""
+  loginWithEmailToken(input: LoginWithEmailTokenInput!): EmailLoginResult!
+
   """パスワードでログインする"""
   loginWithPassword(input: LoginWithPasswordInput!): LoginResult!
 
   """WordPressのトークンでログインする"""
   loginWithWordPressToken(input: LoginWithWordPressTokenInput!): LoginResult!
 
+  """達成の演出を見せた（次からは出さない）"""
+  markAchievementsSeen(keys: [String!]!): Boolean!
+
   """タグをミュートする"""
   muteTag(input: MuteTagInput!): MutedTagNode
 
   """ユーザをミュートする"""
   muteUser(input: MuteUserInput!): UserNode!
+
+  """コインでアイコン枠を買う（買った枠の ID を返す）"""
+  purchaseUserAvatarFrame(input: PurchaseUserAvatarFrameInput!): ID!
 
   """キャラクターの表情を再生成する"""
   regenerateCharacterExpression(input: RegenerateCharacterExpressionInput!): CharacterExpressionNode!
@@ -3366,14 +3516,32 @@ type Mutation {
   """作品にBot採点機能をリクエストする"""
   requestWorkBotGrading(input: RequestWorkBotGradingInput!): WorkNode!
 
+  """作品に対してAI判定を再リクエストする"""
+  requestWorkImageAnalysis(input: RequestWorkImageAnalysisInput!): WorkNode!
+
+  """運営からの修正依頼に対応したと返す"""
+  respondModerationReport(id: ID!, message: String): Boolean!
+
+  """できなかったAI評価をやり直す（作者のみ）"""
+  retryWorkBotGrading(workId: ID!): Boolean!
+
   """モデレータによるコメント審査の承認・却下・差し戻し"""
   reviewCommentModeration(input: ReviewCommentModerationInput!): Boolean!
+
+  """メール認証リンクを送信する"""
+  sendEmailAuthLink(input: SendEmailAuthLinkInput!): Boolean!
 
   """SMS認証コードを送信する"""
   sendSmsVerification(input: SendSmsVerificationInput!): Boolean!
 
   """ユーザのフォローを解除する"""
   signImageGenerationTerms(input: SignImageGenerationTermsInput!): UserNode!
+
+  """App Store の購入（StoreKit の署名付き取引）をプランに反映する"""
+  syncAppStoreTransactions(input: SyncAppStoreTransactionsInput!): SyncAppStoreTransactionsResult!
+
+  """Google Play の購入（定期購入の purchaseToken）をプランに反映する"""
+  syncGooglePlayPurchases(input: SyncGooglePlayPurchasesInput!): SyncAppStoreTransactionsResult!
 
   """スタンプの公開状態を切り替える"""
   toggleStickerAccessType(input: ToggleStickerAccessTypeInput!): StickerNode!
@@ -3423,6 +3591,9 @@ type Mutation {
   """アカウントのWebFCMトークンを変更する"""
   updateAccountWebFcmToken(input: UpdateAccountWebFcmTokenInput!): UserNode!
 
+  """実績の表示設定を変える"""
+  updateAchievementSettings(input: UpdateAchievementSettingsInput!): AchievementSettingsNode!
+
   """シリーズを更新する"""
   updateAlbum(input: UpdateAlbumInput!): AlbumNode!
 
@@ -3464,6 +3635,9 @@ type Mutation {
 
   """スタンプを更新する"""
   updateSticker(input: UpdateStickerInput!): StickerNode!
+
+  """お題提案の備考を更新する（提案者のみ、審査待ちの間のみ）"""
+  updateThemeProposalNote(note: String, proposalId: ID!): ThemeProposalNode!
 
   """ユーザーイベントを更新する"""
   updateUserEvent(input: UpdateUserEventInput!): UserEventNode
@@ -4024,7 +4198,9 @@ type PassNode implements Node {
   isExpired: Boolean!
   payment: PaymentNode
 
-  """支払い方法（APP_STORE: iOS アプリの App Store、GOOGLE_PLAY: Android アプリの Google Play、STRIPE: ウェブ）"""
+  """
+  支払い方法（APP_STORE: iOS アプリの App Store、GOOGLE_PLAY: Android アプリの Google Play、STRIPE: ウェブ）
+  """
   paymentProvider: String!
   periodEnd: Int!
   periodStart: Int!
@@ -4116,6 +4292,23 @@ enum PostOrderBy {
   VIEWS_COUNT
 }
 
+type PostedGenerationLink {
+  nanoid: String
+  workId: ID
+}
+
+type PostedGenerationWork {
+  prompt: String
+  seed: String
+  workId: ID
+}
+
+"""生成履歴のどれが投稿済みか調べる材料"""
+type PostedGenerations {
+  links: [PostedGenerationLink!]
+  works: [PostedGenerationWork!]
+}
+
 input PostsWhereInput {
   """公開範囲"""
   accessTypes: [AccessType!]
@@ -4184,27 +4377,11 @@ type PromptonUserNode implements Node {
   name: String
 }
 
-type PostedGenerationLink {
-  nanoid: String!
-  workId: ID!
-}
-
-type PostedGenerationWork {
-  prompt: String!
-  seed: String!
-  workId: ID!
-}
-
-"""生成履歴のどれが投稿済みか調べる材料"""
-type PostedGenerations {
-  links: [PostedGenerationLink!]!
-  works: [PostedGenerationWork!]!
+input PurchaseUserAvatarFrameInput {
+  frameId: ID!
 }
 
 type Query {
-  """生成履歴のどれが投稿済みか調べる材料（本人の作品だけ）"""
-  postedGenerations(nanoids: [String!]!, seeds: [String!]!): PostedGenerations!
-
   """自分の実績の表示設定"""
   achievementSettings: AchievementSettingsNode
 
@@ -4214,11 +4391,29 @@ type Query {
   """実績の一覧（全実績と達成状況）。userId を省略すると自分（進み具合つき）"""
   achievements(userId: ID): [AchievementNode!]!
 
+  """モデレータ向けコイン操作履歴一覧"""
+  adminCoinOperationHistories(limit: Int!, offset: Int!): [AdminCoinOperationHistoryNode!]!
+
+  """モデレータ向けコイン操作履歴件数"""
+  adminCoinOperationHistoriesCount: Int!
+
   """コメント審査の管理一覧"""
   adminCommentModerationItems: [CommentModerationAdminItemNode!]!
 
+  """コメント審査の管理件数"""
+  adminCommentModerationItemsCount: Int!
+
   """モデレーター向け作品通報一覧"""
   adminWorkReports(limit: Int!, offset: Int!, onlyUnhandled: Boolean): [AdminWorkReportNode!]!
+
+  """モデレーター向け作品通報件数"""
+  adminWorkReportsCount(onlyUnhandled: Boolean): Int!
+
+  """
+  AI評価ランキング（作品）
+  ※キャッシュ不可
+  """
+  aiEvaluationWorkRankings(limit: Int!, offset: Int!, where: AiEvaluationWorkRankingsWhereInput!): [AiEvaluationWorkRankingNode!]!
 
   """モデル"""
   aiModel(where: AiModelWhereInput!): AiModelNode
@@ -4304,11 +4499,6 @@ type Query {
   """フィード"""
   feed(where: FeedWhereInput!): FeedNode
 
-  """
-  フォロー新着で、指定した時刻（UNIX 秒）より後に投稿された作品の数（100 まで）。タブの新着表示に使う
-  """
-  followUserFeedNewWorksCount(ratings: [Rating!], since: Int!): Int!
-
   """フォルダ"""
   folder(id: ID, where: FolderWhereInput): FolderNode
 
@@ -4317,6 +4507,9 @@ type Query {
 
   """フォルダ数"""
   foldersCount(where: FoldersWhereInput): Int
+
+  """フォロー新着で、指定した時刻（UNIX 秒）より後に投稿された作品の数（100 まで）。タブの新着表示に使う"""
+  followUserFeedNewWorksCount(ratings: [Rating!], since: Int!): Int!
 
   """フォロワー"""
   followers(limit: Int!, offset: Int!, where: FollowersWhereInput!): [UserNode!]!
@@ -4423,6 +4616,9 @@ type Query {
   """ランキング履歴"""
   postAwards(limit: Int!, offset: Int!, where: PostAwardsWhereInput!): [PostAwardNode!]!
 
+  """生成履歴のどれが投稿済みか調べる材料（本人の作品だけ）"""
+  postedGenerations(nanoids: [String!]!, seeds: [String!]!): PostedGenerations!
+
   """投稿"""
   posts(limit: Int!, offset: Int!, where: PostsWhereInput!): [PostNode!]!
 
@@ -4437,6 +4633,9 @@ type Query {
 
   """ランダム広告"""
   randomCustomerAdvertisement(where: RandomCustomerAdvertisementWhereInput!): CustomerAdvertisementNode
+
+  """ログインユーザーの作品が受け取ったコメント"""
+  receivedWorkComments(limit: Int!, offset: Int!, onlySupportAttached: Boolean): [CommentNode!]!
 
   """推奨タグ一覧（ログインユーザ関係なく）"""
   recommendedTags(limit: Int!, where: RecommendedTagsWhereInput!): [RecommendedTagNode!]!
@@ -4471,7 +4670,9 @@ type Query {
   """
   このユーザをフォローしている人がよくフォローしている人（フォローした直後のおすすめ）。見る人がフォロー・ブロック・ミュートしている人は出さない
   """
-  suggestedFollowUsers(limit: Int, 
+  suggestedFollowUsers(
+    limit: Int
+
     """省略すると、最近伸びているクリエイター"""
     userId: ID
   ): [UserNode!]!
@@ -4509,6 +4710,9 @@ type Query {
   """ユーザのシリーズ"""
   userAlbum(where: UserAlbumWhereInput): AlbumNode
 
+  """利用可能なユーザーアイコン枠一覧"""
+  userAvatarFrames: [UserAvatarFrameNode!]!
+
   """ユーザのバッジ一覧"""
   userBadges(limit: Int!, offset: Int!, where: UserBadgesWhereInput): [BadgeNode!]!
 
@@ -4529,6 +4733,9 @@ type Query {
 
   """ログイン中のユーザ"""
   viewer: Viewer
+
+  """コインで買ったアイコン枠の ID"""
+  viewerOwnedUserAvatarFrameIds: [ID!]!
 
   """ホワイトリスト用のタグ"""
   whiteListTags(where: WhiteListTagsInput): [TagNode!]!
@@ -4710,11 +4917,23 @@ input RequestWorkBotGradingInput {
   workType: WorkType
 }
 
+"""作品に対してAI判定を再リクエストする"""
+input RequestWorkImageAnalysisInput {
+  """作品ID"""
+  workId: ID!
+}
+
 input ReviewCommentModerationInput {
   action: String!
   commentId: ID!
   userNotice: String
   violationCategory: String
+}
+
+"""メール認証リンク送信用Input"""
+input SendEmailAuthLinkInput {
+  """メールアドレス"""
+  email: String!
 }
 
 input SendSmsVerificationInput {
@@ -4865,6 +5084,32 @@ type SubWorkNode implements Node {
   """サムネイル画像のURL"""
   thumbnailImage: ImageNode! @deprecated(reason: "廃止")
   thumbnailImageId: ID! @deprecated(reason: "廃止")
+}
+
+"""App Store の購入を反映する"""
+input SyncAppStoreTransactionsInput {
+  """
+  StoreKit 2 の Transaction.jwsRepresentation（in_app_purchase の serverVerificationData）
+  """
+  signedTransactions: [String!]!
+}
+
+"""App Store・Google Play の購入を反映した後の現在のプラン"""
+type SyncAppStoreTransactionsResult {
+  """現在のプラン（LITE / STANDARD / PREMIUM）。無ければ null"""
+  passType: String
+
+  """APP_STORE / GOOGLE_PLAY / STRIPE"""
+  paymentProvider: String
+
+  """現在のプランの期限（UNIX 秒）"""
+  periodEnd: Int
+}
+
+"""Google Play の購入を反映する"""
+input SyncGooglePlayPurchasesInput {
+  """queryPurchasesAsync / 購入直後の Purchase"""
+  purchases: [GooglePlayPurchaseInput!]!
 }
 
 """タグ"""
@@ -5040,6 +5285,11 @@ input UpdateAccountPasswordInput {
 
 input UpdateAccountWebFcmTokenInput {
   token: String
+}
+
+input UpdateAchievementSettingsInput {
+  isHiddenOnProfile: Boolean!
+  isUnlockNoticeOff: Boolean!
 }
 
 input UpdateAlbumInput {
@@ -5248,11 +5498,14 @@ input UpdateUserSettingInput {
   """閲覧コンテンツ"""
   preferenceRating: PreferenceRating
 
+  """セーフモード（全年齢のみ表示）"""
+  safetyMode: Boolean
+
   """選択中のユーザーアイコン枠ID"""
   selectedUserAvatarFrameId: ID
 
-  """セーフモード（全年齢のみ表示）"""
-  safetyMode: Boolean
+  """推されたときに表示する感謝コメント"""
+  supportThankYouMessage: String
 }
 
 input UpdateWorkInput {
@@ -5304,9 +5557,6 @@ input UpdateWorkInput {
   largeThumbnailImageURL: String!
   largeThumbnailImageWidth: Int!
 
-  """Cloudflare Stream の動画UID"""
-  streamUid: String
-
   """メイン画像のハッシュ値（同じ画像の重複投稿防止に使う）"""
   mainImageSha256: String!
   modelHash: String
@@ -5341,6 +5591,9 @@ input UpdateWorkInput {
   smallThumbnailImageURL: String!
   smallThumbnailImageWidth: Int!
   steps: String
+
+  """Cloudflare Stream の動画UID"""
+  streamUid: String
   strength: String
 
   """お題ID"""
@@ -5357,6 +5610,9 @@ input UpdateWorkInput {
 
   """種別"""
   type: WorkType!
+
+  """動画の長さ（秒）"""
+  videoDurationSeconds: Int
 
   """動画URL"""
   videoUrl: String
@@ -5386,6 +5642,22 @@ input UserAlbumWhereInput {
 
   """作成者のログインユーザID"""
   userId: ID!
+}
+
+"""ユーザーアイコン枠"""
+type UserAvatarFrameNode implements Node {
+  backgroundStyle: String
+  borderPadding: Int!
+  description: String
+  frameType: String!
+  id: ID!
+  name: String!
+  overlayImageUrl: String
+
+  """コインの枠の値段（サブスクの枠は null）"""
+  priceCoins: Int
+  requiredPassType: PassType!
+  slug: String!
 }
 
 input UserBadgesWhereInput {
@@ -5463,6 +5735,9 @@ type UserNode implements Node {
 
   """シリーズ"""
   albums(limit: Int!, offset: Int!, where: UserAlbumInput): [AlbumNode!]!
+
+  """表示中のユーザーアイコン枠"""
+  avatarFrame: UserAvatarFrameNode
 
   """入賞回数"""
   awardsCount: Int!
@@ -5618,7 +5893,7 @@ type UserNode implements Node {
   """ミュートしている"""
   isMuted: Boolean!
 
-  """公式アカウント（運営・モデレーター）かどうか"""
+  """公式アカウント（運営のユーザID 1 だけ）かどうか"""
   isOfficial: Boolean!
 
   """作品投稿がBANされているかどうか"""
@@ -5672,6 +5947,9 @@ type UserNode implements Node {
 
   """スタンプ"""
   stickers(limit: Int!, offset: Int!): [StickerNode!]!
+
+  """推されたときに表示する感謝コメント"""
+  supportThankYouMessage: String!
 
   """X"""
   twitterAccountId: String
@@ -5799,6 +6077,12 @@ type UserSettingNode implements Node {
 
   """閲覧コンテンツ"""
   preferenceRating: PreferenceRating!
+
+  """選択中のユーザーアイコン枠"""
+  selectedUserAvatarFrame: UserAvatarFrameNode
+
+  """推されたときに表示する感謝コメント"""
+  supportThankYouMessage: String
 
   """ダークモードを使用する"""
   useDarkMode: Boolean!
@@ -6005,7 +6289,7 @@ type Viewer {
   """最近使ったタグ一覧"""
   recentlyUsedTags: [TagNode!]!
 
-  """今日の有効な画像生成のタスクの数"""
+  """今日あと何枚生成できるかの残り枚数"""
   remainingImageGenerationTasksCount: Int!
 
   """現在の有効な画像生成の累計タスクの数"""
@@ -6037,6 +6321,12 @@ type Viewer {
 
   """保存したコレクション"""
   watchedFolders(limit: Int!, offset: Int!): [FolderNode!]!
+
+  """作品操作履歴"""
+  workActionHistories(limit: Int!, offset: Int!): [WorkActionHistoryNode!]!
+
+  """作品操作履歴数"""
+  workActionHistoryCount: Int!
 
   """自分の作品"""
   works(limit: Int!, offset: Int!): [WorkNode!]!
@@ -6072,6 +6362,21 @@ input WatchFolderInput {
 input WhiteListTagsInput {
   isSensitive: Boolean
   search: String
+}
+
+"""作品操作履歴"""
+type WorkActionHistoryNode implements Node {
+  actionType: String!
+  createdAt: Int!
+  detail: String
+  id: ID!
+  isModeratorAction: Boolean!
+  ratingLabel: String
+  summary: String!
+  thumbnailImageURL: String
+  title: String
+  workId: ID
+  workUrl: String
 }
 
 """アワード（作品）"""
@@ -6206,14 +6511,20 @@ type WorkEvaluationNode {
 
 """作品"""
 type WorkNode implements Node {
-  """AI評価の状況（DONE: 済み / PENDING: 作成中 / FAILED: 何度か試してもできなかった。AI評価を使っていなければ null）"""
-  botEvaluationStatus: String
-
   """閲覧権限の種類"""
   accessType: AccessType!
 
   """運営による閲覧権限の種類"""
   adminAccessType: AdminAccessType!
+
+  """AI評価デイリーランキング"""
+  aiDailyRanking: AiEvaluationRankingAwardInfo
+
+  """AI評価マンスリーランキング"""
+  aiMonthlyRanking: AiEvaluationRankingAwardInfo
+
+  """AI評価ウィークリーランキング"""
+  aiWeeklyRanking: AiEvaluationRankingAwardInfo
 
   """シリーズ情報"""
   album: AlbumNode
@@ -6260,6 +6571,14 @@ type WorkNode implements Node {
   """Bot評価の性格タイプ"""
   botEvaluationPersonality: String
 
+  """
+  AI評価の状況（DONE: 済み / PENDING: 作成中 / FAILED: 何度か試してもできなかった。AI評価を使っていなければ null）
+  """
+  botEvaluationStatus: String
+
+  """AI判定を再リクエストできるか"""
+  canRequestImageAnalysis: Boolean!
+
   """clipSkip"""
   clipSkip: Int
 
@@ -6299,6 +6618,15 @@ type WorkNode implements Node {
 
   """画像"""
   image: ImageNode @deprecated(reason: "廃止")
+
+  """本日残っているAI判定再リクエスト回数"""
+  imageAnalysisRemainingRequestsToday: Int!
+
+  """次にAI判定を再リクエスト可能になる日時"""
+  imageAnalysisRequestAvailableAt: Int
+
+  """AI判定を再リクエストできない理由"""
+  imageAnalysisRequestReason: String
 
   """画像の比率"""
   imageAspectRatio: Float!
@@ -6469,6 +6797,9 @@ type WorkNode implements Node {
   """画像生成関連の設定"""
   steps: Int
 
+  """Cloudflare Stream の動画UID"""
+  streamUid: String
+
   """画像生成関連の設定"""
   strength: String
 
@@ -6497,9 +6828,6 @@ type WorkNode implements Node {
 
   """種類"""
   type: String!
-
-  """Cloudflare Stream の動画UID"""
-  streamUid: String
 
   """更新日"""
   updatedAt: Int!

@@ -29,9 +29,6 @@ export default function SettingsDiscordPage() {
       <div className="block md:hidden">
         <SettingsHeader title={t("Discord 連携", "Discord")} />
       </div>
-      <h1 className="hidden font-bold text-2xl md:block">
-        {t("Discord 連携", "Discord")}
-      </h1>
       <DiscordLinkPage />
     </div>
   )

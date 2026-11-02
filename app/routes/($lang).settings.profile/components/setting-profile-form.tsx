@@ -1,30 +1,35 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Check, Loader2Icon, Pencil, PlusIcon } from "lucide-react"
+import { Pencil, PlusIcon } from "lucide-react"
 import { Suspense, useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
-import { AvatarFramePicker } from "~/routes/($lang).settings.profile/components/avatar-frame-picker"
+import { AvatarFrameStudio } from "~/routes/($lang).settings.profile/components/avatar-frame-studio"
+import { SettingsSaveBar } from "~/routes/($lang).settings/components/settings-save-bar"
+import { SettingsSection } from "~/routes/($lang).settings/components/settings-section"
 import { Button } from "~/components/ui/button"
-import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import { cn } from "~/lib/utils"
 import { SelectCreatedSensitiveWorksDialog } from "~/routes/($lang).my._index/components/select-created-sensitive-works-dialog"
 import {
   DialogWorkFragment,
   SelectCreatedWorksDialog,
 } from "~/routes/($lang).my._index/components/select-created-works-dialog"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-import { canUseUserAvatarFrame } from "~/utils/user-avatar-frame"
 
 /**
  * プロフィール設定フォーム
  */
+const inputClassName =
+  "h-11 w-full rounded-md border bg-background px-3 text-base md:text-sm"
+
+const textareaClassName =
+  "w-full rounded-md border bg-background px-3 py-2 text-base md:text-sm"
+
 export function SettingProfileForm() {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
@@ -187,7 +192,6 @@ export function SettingProfileForm() {
     await updateUserSetting({
       variables: {
         input: {
-          selectedUserAvatarFrameId,
           supportThankYouMessage,
         },
       },
@@ -214,353 +218,310 @@ export function SettingProfileForm() {
       ? null
       : avatarFrames.find((frame) => frame.id === selectedUserAvatarFrameId) ??
         savedSelectedAvatarFrame
-  const isNoFrameSelected = selectedUserAvatarFrameId === null
-  const canUseAvatarFrames = canUseUserAvatarFrame(currentPassType, "LITE")
 
   return (
-    <>
-      <div className="space-y-4">
-        <div className="justify-between">
-          <div className="relative">
-            {headerImageSrc ? (
-              <img
-                className="h-auto max-h-96 w-full object-cover"
-                src={headerImageSrc}
-                alt={t("ヘッダー画像", "Header Image")}
-              />
-            ) : (
-              <div className="h-40 w-full bg-gray-700" />
-            )}
-            <div className="absolute bottom-[-24px] left-2 size-32">
-              <UserAvatarWithFrame
-                alt={t("プロフィール画像", "Profile Image")}
-                frame={selectedAvatarFrame}
-                isDecorationAnimated
-                sizeClassName="size-32"
-                src={profileImageSrc}
-              />
-
-              <CropImageField
-                isHidePreviewImage={false}
-                cropWidth={240}
-                cropHeight={240}
-                onDeleteImage={() => {
-                  setProfileImage("")
-                }}
-                onCropToBase64={(base64: string) => {
-                  try {
-                    setProfileImage(base64)
-                  } catch (error) {
-                    console.error("Error in onCropToBase64:", error)
-                  }
-                }}
-                fileExtension={"webp"}
-              >
-                <Button
-                  className="absolute top-0 right-0 size-8 rounded-full p-0"
-                  variant={"secondary"}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-              </CropImageField>
-            </div>
-
+    <div className="space-y-5">
+      <section>
+        <div className="relative overflow-hidden rounded-xl">
+          {headerImageSrc ? (
+            <img
+              className="h-36 w-full object-cover sm:h-48"
+              src={headerImageSrc}
+              alt={t("ヘッダー画像", "Header Image")}
+            />
+          ) : (
+            <div className="h-36 w-full bg-muted sm:h-48" />
+          )}
+          <CropImageField
+            isHidePreviewImage={false}
+            cropWidth={1200}
+            cropHeight={627}
+            onDeleteImage={() => {
+              setHeaderImage("")
+            }}
+            onCropToBase64={setHeaderImage}
+            fileExtension={"webp"}
+          >
+            <Button
+              aria-label={t("ヘッダー画像を変更", "Change header image")}
+              className="absolute top-2 right-2 size-10 rounded-full p-0"
+              variant={"secondary"}
+            >
+              <Pencil className="size-4" />
+            </Button>
+          </CropImageField>
+        </div>
+        <div className="-mt-12 ml-4 flex items-end gap-3">
+          <div className="relative size-24 shrink-0">
+            <UserAvatarWithFrame
+              alt={t("プロフィール画像", "Profile Image")}
+              frame={selectedAvatarFrame}
+              isDecorationAnimated
+              sizeClassName="size-24"
+              src={profileImageSrc}
+            />
             <CropImageField
               isHidePreviewImage={false}
-              cropWidth={1200}
-              cropHeight={627}
+              cropWidth={240}
+              cropHeight={240}
               onDeleteImage={() => {
-                setHeaderImage("")
+                setProfileImage("")
               }}
-              onCropToBase64={setHeaderImage}
+              onCropToBase64={(base64: string) => {
+                try {
+                  setProfileImage(base64)
+                } catch (error) {
+                  console.error("Error in onCropToBase64:", error)
+                }
+              }}
               fileExtension={"webp"}
             >
               <Button
-                className="absolute top-1 right-1 size-8 rounded-full p-0"
+                aria-label={t("プロフィール画像を変更", "Change profile image")}
+                className="absolute right-0 bottom-0 z-10 size-9 rounded-full p-0 shadow-sm"
                 variant={"secondary"}
               >
                 <Pencil className="size-4" />
               </Button>
             </CropImageField>
           </div>
-          <p className="mt-8">
-            {t(
-              "プロフィール画像やヘッダー画像にR-18画像は掲載できません。",
-              "R-18 images cannot be used for profile or header images.",
-            )}
-          </p>
         </div>
+        <p className="mt-3 text-muted-foreground text-xs">
+          {t(
+            "プロフィール画像やヘッダー画像にR-18画像は掲載できません。",
+            "R-18 images cannot be used for profile or header images.",
+          )}
+        </p>
+      </section>
 
-        <div className="flex flex-col justify-between space-y-2">
-          <label className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            {t("アイコン枠", "Avatar Frame")}
-          </label>
-          <div className="space-y-3 rounded-md border p-3">
-            <p className="text-muted-foreground text-sm">
-              {canUseAvatarFrames
-                ? t(
-                    "ライト以上のサブスクユーザはアイコン枠を選択できます。枠の内容はテーブル管理された一覧から読み込みます。",
-                    "Lite and above subscribers can choose an avatar frame. The available frames are loaded from the managed frame table.",
-                  )
-                : t(
-                    "アイコン枠の利用はライト以上のサブスクユーザ向け機能です。",
-                    "Avatar frames are available for Lite and higher subscribers.",
-                  )}
+      <SettingsSection
+        title={t("アイコン枠", "Avatar Frame")}
+        description={t(
+          "サブスクの枠はプランの間使えます。コインの枠は一度買えばずっと使えます。選ぶとすぐ反映されます。",
+          "Plan frames are available while subscribed. Coin frames are yours to keep once purchased. Changes apply right away.",
+        )}
+      >
+        <AvatarFrameStudio
+          appliedFrame={selectedAvatarFrame}
+          appliedFrameId={selectedUserAvatarFrameId}
+          currentPassType={currentPassType}
+          frames={avatarFrames}
+          iconUrl={profileImageSrc}
+          ownedFrameIds={
+            profileAvatarFrameSettings?.viewerOwnedUserAvatarFrameIds ?? []
+          }
+          userName={userName}
+          onApplied={setSelectedUserAvatarFrameId}
+        />
+      </SettingsSection>
+
+      <SettingsSection title={t("基本情報", "Basic Info")}>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label htmlFor="nickname" className="font-medium text-sm">
+              {t("ニックネーム", "Nickname")}
+            </label>
+            <input
+              type="text"
+              id="nickname"
+              className={inputClassName}
+              maxLength={32}
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="profile" className="font-medium text-sm">
+              {t("プロフィール", "Profile")}
+            </label>
+            <AutoResizeTextarea
+              id="profile"
+              className={textareaClassName}
+              maxLength={320}
+              value={profile}
+              onChange={(e) => setProfile(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="enProfile" className="font-medium text-sm">
+              {t("英語プロフィール", "English Profile")}
+            </label>
+            <AutoResizeTextarea
+              id="enProfile"
+              className={textareaClassName}
+              maxLength={640}
+              value={enProfile}
+              onChange={(e) => setEnProfile(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label
+              htmlFor="supportThankYouMessage"
+              className="font-medium text-sm"
+            >
+              {t("推されたときの感謝コメント", "Support thank-you message")}
+            </label>
+            <AutoResizeTextarea
+              id="supportThankYouMessage"
+              className={textareaClassName}
+              maxLength={120}
+              placeholder={t(
+                "未設定時はデフォルトの感謝コメントが表示されます。",
+                "If left empty, the default thank-you message will be shown.",
+              )}
+              value={supportThankYouMessage}
+              onChange={(e) => setSupportThankYouMessage(e.target.value)}
+            />
+            <p className="text-muted-foreground text-xs leading-5">
+              {t(
+                "推しの完了画面と、推し付きコメントを送ったあとに表示します。",
+                "Shown after someone supports you, including support comments.",
+              )}
             </p>
-            {!canUseAvatarFrames && (
-              <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 p-3">
-                <div className="space-y-1">
-                  <p className="font-medium text-sm">
-                    {t(
-                      "サブスク登録でアイコン枠を使えます",
-                      "Subscribe to unlock avatar frames",
-                    )}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {t(
-                      "ライトプラン以上で、プロフィールや各一覧にアイコン枠を表示できます。",
-                      "With Lite or above, you can show avatar frames on your profile and across user lists.",
-                    )}
-                  </p>
-                </div>
-                <Link to="/plus">
-                  <Button size="sm" variant="secondary">
-                    {t("プランを見る", "View plans")}
-                  </Button>
-                </Link>
-              </div>
-            )}
-            <AvatarFramePicker
-              currentPassType={currentPassType}
-              frames={avatarFrames}
-              profileImageSrc={profileImageSrc}
-              selectedFrameId={selectedUserAvatarFrameId}
-              onSelect={setSelectedUserAvatarFrameId}
+          </div>
+        </div>
+      </SettingsSection>
+
+      <SettingsSection title={t("リンク・連絡先", "Links & Contact")}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <label htmlFor="website" className="font-medium text-sm">
+              {t("Webサイト", "Website")}
+            </label>
+            <input
+              type="url"
+              id="website"
+              className={inputClassName}
+              maxLength={1000}
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="mail" className="font-medium text-sm">
+              {t("メールアドレス", "Email Address")}
+            </label>
+            <input
+              type="email"
+              id="mail"
+              className={inputClassName}
+              maxLength={320}
+              value={mail}
+              onChange={(e) => setMail(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="twitter" className="font-medium text-sm">
+              {t("X(旧Twitter)", "X (formerly Twitter)")}
+            </label>
+            <input
+              type="text"
+              id="twitter"
+              className={inputClassName}
+              maxLength={255}
+              placeholder={"@"}
+              value={twitter}
+              onChange={(e) => setTwitter(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="instagram" className="font-medium text-sm">
+              {"Instagram"}
+            </label>
+            <input
+              type="text"
+              id="instagram"
+              className={inputClassName}
+              maxLength={255}
+              placeholder={"@"}
+              value={instagram}
+              onChange={(e) => setInstagram(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="github" className="font-medium text-sm">
+              {"GitHub"}
+            </label>
+            <input
+              type="text"
+              id="github"
+              className={inputClassName}
+              maxLength={255}
+              placeholder={"@"}
+              value={github}
+              onChange={(e) => setGithub(e.target.value)}
             />
           </div>
         </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="supportThankYouMessage"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("推されたときの感謝コメント", "Support thank-you message")}
-          </label>
-          <AutoResizeTextarea
-            id="supportThankYouMessage"
-            className="rounded-md border px-2 py-1"
-            maxLength={120}
-            placeholder={t(
-              "未設定時はデフォルトの感謝コメントが表示されます。",
-              "If left empty, the default thank-you message will be shown.",
-            )}
-            value={supportThankYouMessage}
-            onChange={(e) => setSupportThankYouMessage(e.target.value)}
-          />
-          <p className="text-muted-foreground text-xs leading-5">
-            {t(
-              "通常の推し完了モーダルと、推し付きコメント送信後の表示に使われます。",
-              "Used in the regular support success modal and after sending a support comment.",
-            )}
-          </p>
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="nickname"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("ニックネーム", "Nickname")}
-          </label>
-          <input
-            type="text"
-            id="nickname"
-            maxLength={32}
-            minLength={1}
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className="rounded-md border px-2 py-1"
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="profile"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("プロフィール", "Profile")}
-          </label>
-          <AutoResizeTextarea
-            id="profile"
-            className="rounded-md border px-2 py-1"
-            maxLength={320}
-            value={profile}
-            onChange={(e) => setProfile(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="enProfile"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("英語プロフィール", "English Profile")}
-          </label>
-          <AutoResizeTextarea
-            id="enProfile"
-            className="rounded-md border px-2 py-1"
-            maxLength={640}
-            value={enProfile}
-            onChange={(e) => setEnProfile(e.target.value)}
-          />
-        </div>
+      </SettingsSection>
 
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="website"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("Webサイト", "Website")}
-          </label>
-          <input
-            type="text"
-            id="website"
-            className="rounded-md border px-2 py-1"
-            value={website}
-            maxLength={1000}
-            onChange={(e) => setWebsite(e.target.value)}
-          />
+      <SettingsSection
+        title={t("ピックアップ作品", "Pickups")}
+        description={t(
+          "プロフィールの上の方に出す作品です。それぞれ 3 つまで選べます。",
+          "Works shown near the top of your profile. Up to 3 each.",
+        )}
+      >
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <p className="font-medium text-sm">{t("全年齢", "All ages")}</p>
+            <Suspense fallback={<AppLoadingPage />}>
+              <SelectCreatedWorksDialog
+                selectedWorks={selectedPickupWorks}
+                setSelectedWorks={setSelectedPickupWorks}
+                limit={3}
+              >
+                <div className="border-2 border-transparent p-1">
+                  <Button
+                    aria-label={t("作品を選ぶ", "Choose works")}
+                    className="size-16"
+                    size={"icon"}
+                    variant={"secondary"}
+                  >
+                    <PlusIcon />
+                  </Button>
+                </div>
+              </SelectCreatedWorksDialog>
+            </Suspense>
+          </div>
+          <div className="space-y-1.5">
+            <p className="font-medium text-sm">
+              {t("センシティブ", "Sensitive")}
+            </p>
+            <Suspense fallback={<AppLoadingPage />}>
+              <SelectCreatedSensitiveWorksDialog
+                selectedWorks={selectedPickupSensitiveWorks}
+                setSelectedWorks={setSelectedPickupSensitiveWorks}
+                limit={3}
+              >
+                <div className="border-2 border-transparent p-1">
+                  <Button
+                    aria-label={t("作品を選ぶ", "Choose works")}
+                    className="size-16"
+                    size={"icon"}
+                    variant={"secondary"}
+                  >
+                    <PlusIcon />
+                  </Button>
+                </div>
+              </SelectCreatedSensitiveWorksDialog>
+            </Suspense>
+          </div>
         </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="instagram"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"Instagram"}
-          </label>
-          <input
-            type="text"
-            id="instagram"
-            className="rounded-md border px-2 py-1"
-            value={instagram}
-            placeholder={"@"}
-            maxLength={255}
-            onChange={(e) => setInstagram(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="twitter"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("X(旧Twitter)", "X (formerly Twitter)")}
-          </label>
-          <input
-            type="text"
-            id="twitter"
-            className="rounded-md border px-2 py-1"
-            value={twitter}
-            placeholder={"@"}
-            maxLength={255}
-            onChange={(e) => setTwitter(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="github"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"Github"}
-          </label>
-          <input
-            type="text"
-            id="github"
-            className="rounded-md border px-2 py-1"
-            value={github}
-            placeholder={"@"}
-            maxLength={255}
-            onChange={(e) => setGithub(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="mail"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("メールアドレス", "Email Address")}
-          </label>
-          <input
-            type="text"
-            id="mail"
-            className="rounded-md border px-2 py-1"
-            value={mail}
-            placeholder={""}
-            maxLength={320}
-            onChange={(e) => setMail(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="pickup"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("ピックアップ ※最大3つ", "Pickups (Max 3)")}
-          </label>
-          <Suspense fallback={<AppLoadingPage />}>
-            <SelectCreatedWorksDialog
-              selectedWorks={selectedPickupWorks}
-              setSelectedWorks={setSelectedPickupWorks}
-              limit={3}
-            >
-              <div className="border-2 border-transparent p-1">
-                <Button className="size-16" size={"icon"} variant={"secondary"}>
-                  <PlusIcon />
-                </Button>
-              </div>
-            </SelectCreatedWorksDialog>
-          </Suspense>
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="sensitive-pickup"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t(
-              "センシティブピックアップ ※最大3つ",
-              "Sensitive Pickups (Max 3)",
-            )}
-          </label>
-          <Suspense fallback={<AppLoadingPage />}>
-            <SelectCreatedSensitiveWorksDialog
-              selectedWorks={selectedPickupSensitiveWorks}
-              setSelectedWorks={setSelectedPickupSensitiveWorks}
-              limit={3}
-            >
-              <div className="border-2 border-transparent p-1">
-                <Button className="size-16" size={"icon"} variant={"secondary"}>
-                  <PlusIcon />
-                </Button>
-              </div>
-            </SelectCreatedSensitiveWorksDialog>
-          </Suspense>
-        </div>
-        <Separator />
-        <Button
-          disabled={isUpdating}
-          onClick={onSubmit}
-          className="ml-auto block w-24"
-        >
-          {isUpdating ? (
-            <Loader2Icon className="m-auto size-4 animate-spin" />
-          ) : (
-            t("更新する", "Update")
-          )}
-        </Button>
-        <Separator />
-        <a className="m-auto block" href="settings/account/login">
-          <Button className="m-auto block" variant={"secondary"}>
-            {t("ログイン情報を変更する", "Change Login Information")}
-          </Button>
-        </a>
-      </div>
-    </>
+      </SettingsSection>
+
+      <Link
+        className="block py-2 text-center text-muted-foreground text-sm hover:underline"
+        to="/settings/account/login"
+      >
+        {t("ログイン情報を変更する", "Change Login Information")}
+      </Link>
+
+      <SettingsSaveBar
+        isSaving={isUpdating}
+        onSave={() => void onSubmit()}
+      />
+    </div>
   )
 }
 
@@ -618,19 +579,23 @@ const profileAvatarFrameSettingsQuery = graphql(
         id
         name
         description
+        slug
         requiredPassType
+        priceCoins
         frameType
         backgroundStyle
         overlayImageUrl
         borderPadding
       }
     }
+    viewerOwnedUserAvatarFrameIds
     userAvatarFrames {
       id
       slug
       name
       description
       requiredPassType
+      priceCoins
       frameType
       backgroundStyle
       overlayImageUrl

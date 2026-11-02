@@ -1,3 +1,5 @@
+import { useTranslation } from "~/hooks/use-translation"
+import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -26,5 +28,14 @@ export const headers: HeadersFunction = () => ({
 })
 
 export default function SettingAdvertisements () {
-  return <SettingAdvertisementsForm />
+  const t = useTranslation()
+
+  return (
+    <div className="w-full space-y-4">
+      <div className="block md:hidden">
+        <SettingsHeader title={t("広告設定", "Advertisement Settings")} />
+      </div>
+      <SettingAdvertisementsForm />
+    </div>
+  )
 }
