@@ -20,6 +20,7 @@ import {
   useRouteLoaderData,
 } from "@remix-run/react"
 import { lazy, Suspense, useEffect, useRef, useState } from "react"
+import { replayPendingClick } from "~/lib/replay-pending-click"
 import { PhotoProvider } from "react-photo-view"
 import { AppAnalytics } from "~/components/app/app-analytics"
 import { AppErrorPage } from "~/components/app/app-error-page"
@@ -671,6 +672,7 @@ export default function App(): React.ReactNode {
   // クライアントサイドのみでパフォーマンス監視を有効にする
   useEffect(() => {
     setIsMounted(true)
+    replayPendingClick()
   }, [])
 
   if (loaderData.isMaintenance) {
