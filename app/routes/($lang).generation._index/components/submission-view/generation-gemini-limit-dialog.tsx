@@ -36,11 +36,15 @@ const toResetText = (resetsAt: number | null) => {
     0,
     Math.round((resetsAt * 1000 - Date.now()) / 60000),
   )
-  return { hours: Math.floor(minutes / 60), minutes: minutes % 60 }
+  return {
+    days: Math.floor(minutes / 1440),
+    hours: Math.floor((minutes % 1440) / 60),
+    minutes: minutes % 60,
+  }
 }
 
 /**
- * Gemini の今日の枠を使い切って、プレミアムコインも足りないときの案内
+ * Gemini の今週の枠を使い切って、プレミアムコインも足りないときの案内
  * 行き止まりにしない: 待つ・コインを買う・ほかのモデルで続ける のどれでも選べるようにする
  */
 export function GenerationGeminiLimitDialog(props: Props) {
@@ -59,14 +63,14 @@ export function GenerationGeminiLimitDialog(props: Props) {
           <DialogHeader className="pr-6">
             <DialogTitle className="leading-snug">
               {t(
-                "今日の Gemini の枠を使い切りました",
-                "You've used today's Gemini allowance",
+                "今週の Gemini の枠を使い切りました",
+                "You've used this week's Gemini allowance",
               )}
             </DialogTitle>
             <DialogDescription>
               {t(
-                "Gemini は1枚の費用が高いので、毎日のフリーコインで作れる枚数に枠があります。",
-                "Gemini images cost more to make, so daily free coins cover a limited number.",
+                "Gemini は1枚の費用が高いので、毎日のフリーコインで作れる枚数に週の枠があります。",
+                "Gemini images cost more to make, so daily free coins cover a limited number each week.",
               )}
             </DialogDescription>
           </DialogHeader>
@@ -77,10 +81,10 @@ export function GenerationGeminiLimitDialog(props: Props) {
               <span>
                 {reset !== null
                   ? t(
-                      `あと${reset.hours}時間${reset.minutes}分（0時）で枠が戻ります`,
-                      `Resets in ${reset.hours}h ${reset.minutes}m (midnight JST)`,
+                      `あと${reset.days > 0 ? `${reset.days}日` : ""}${reset.hours}時間${reset.days > 0 ? "" : `${reset.minutes}分`}（月曜0時）で枠が戻ります`,
+                      `Resets in ${reset.days > 0 ? `${reset.days}d ` : ""}${reset.hours}h${reset.days > 0 ? "" : ` ${reset.minutes}m`} (Monday midnight JST)`,
                     )
-                  : t("毎日0時に枠が戻ります", "Resets at midnight JST")}
+                  : t("毎週月曜0時に枠が戻ります", "Resets Monday at midnight JST")}
               </span>
             </li>
             <li className="flex items-start gap-2">

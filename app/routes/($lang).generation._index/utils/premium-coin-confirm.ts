@@ -18,7 +18,7 @@ export function estimatePremiumCoinUse(props: {
 
 /**
  * Gemini の 1 枚で使うフリーコイン・プレミアムコインの見込み
- * 毎日のフリーコインから Gemini に使える量には枠がある（超えた分はプレミアムコイン）
+ * 毎日のフリーコインから Gemini に使える量には週の枠がある（超えた分はプレミアムコイン）
  */
 export function estimateGeminiCoinUse(props: {
   requestCoinCost: number

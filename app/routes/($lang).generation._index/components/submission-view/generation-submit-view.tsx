@@ -814,7 +814,7 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
-    // Gemini は毎日のフリーコインから使える量に枠がある。足りなければ先に案内する
+    // Gemini は毎日のフリーコインから使える量に週の枠がある。足りなければ先に案内する
     const geminiCoinUse =
       isGeminiModelSelected &&
       geminiAllowance?.isEnforced === true &&

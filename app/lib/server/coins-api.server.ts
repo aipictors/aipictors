@@ -158,7 +158,7 @@ export const getCoinSummaryFromApi = async (props: {
 
 type GeminiAllowance = {
   planType: string
-  dailyLimit: number
+  weeklyLimit: number
   used: number
   remaining: number
   isEnforced: boolean

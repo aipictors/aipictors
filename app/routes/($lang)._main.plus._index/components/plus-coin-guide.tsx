@@ -111,8 +111,8 @@ export function PlusCoinGuide() {
       </div>
       <p className="text-muted-foreground text-xs leading-relaxed">
         {t(
-          "Gemini は1枚の費用が高いため、毎日のフリーコインで作れるのはライト1枚・スタンダード4枚・プレミアム8枚まで（Nano Banana 2 はその半分）。超えた分はプレミアムコインで作れます。ほかのモデルに枠はありません。",
-          "Gemini images cost more to make, so daily free coins cover 1 (Lite), 4 (Standard) or 8 (Premium) per day (half that for Nano Banana 2). Premium coins cover the rest. Other models have no such limit.",
+          "Gemini は1枚の費用が高いため、毎日のフリーコインで作れるのは週にライト5枚・スタンダード20枚・プレミアム40枚まで（Nano Banana 2 はその半分。毎週月曜0時に戻ります）。超えた分はプレミアムコインで作れます。ほかのモデルに枠はありません。",
+          "Gemini images cost more to make, so daily free coins cover 5 (Lite), 20 (Standard) or 40 (Premium) per week (half that for Nano Banana 2; resets Monday at midnight JST). Premium coins cover the rest. Other models have no such limit.",
         )}
       </p>
       <p className="text-muted-foreground text-xs leading-relaxed">

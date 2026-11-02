@@ -61,12 +61,12 @@ export function PlusComparisonTable() {
     },
     {
       label: t(
-        "Gemini をフリーコインで作れる枚数（1日）",
-        "Gemini images on free coins (per day)",
+        "Gemini をフリーコインで作れる枚数（週）",
+        "Gemini images on free coins (per week)",
       ),
       value: (spec) =>
-        spec.geminiDailyImages > 0
-          ? t(`${spec.geminiDailyImages}枚`, `${spec.geminiDailyImages}`)
+        spec.geminiWeeklyImages > 0
+          ? t(`${spec.geminiWeeklyImages}枚`, `${spec.geminiWeeklyImages}`)
           : false,
     },
     {

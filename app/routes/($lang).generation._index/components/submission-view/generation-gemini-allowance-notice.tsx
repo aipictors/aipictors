@@ -20,35 +20,21 @@ export function GenerationGeminiAllowanceNotice(props: Props) {
 
   const { allowance, coinCost } = props
 
-  if (allowance.dailyLimit <= 0) {
+  if (allowance.weeklyLimit <= 0) {
     return null
   }
 
-  const limitImages = Math.floor(allowance.dailyLimit / coinCost)
-
-  if (!allowance.isEnforced) {
-    return (
-      <p className="flex items-start gap-1.5 rounded-md bg-muted px-2.5 py-1.5 text-muted-foreground text-xs leading-relaxed">
-        <Sparkles className="mt-0.5 size-3.5 shrink-0" />
-        <span>
-          {t(
-            `12月1日から、毎日のフリーコインで作れる Gemini は1日${limitImages}枚までになります（超えた分はプレミアムコインで作れます。ほかのモデルは変わりません）`,
-            `From Dec 1, daily free coins cover up to ${limitImages} Gemini images a day. Premium coins cover the rest. Other models don't change.`,
-          )}
-        </span>
-      </p>
-    )
-  }
+  const limitImages = Math.floor(allowance.weeklyLimit / coinCost)
 
   const remainingImages = Math.floor(allowance.remaining / coinCost)
-  const usedRate = Math.min(100, (allowance.used / allowance.dailyLimit) * 100)
+  const usedRate = Math.min(100, (allowance.used / allowance.weeklyLimit) * 100)
 
   return (
     <div className="space-y-1 rounded-md bg-muted px-2.5 py-1.5 text-xs">
       <div className="flex items-center justify-between gap-2">
         <span className="flex items-center gap-1.5 font-medium">
           <Sparkles className="size-3.5 shrink-0" />
-          {t("今日の Gemini の枠", "Today's Gemini allowance")}
+          {t("今週の Gemini の枠", "This week's Gemini allowance")}
         </span>
         <span
           className={cn(
@@ -72,8 +58,8 @@ export function GenerationGeminiAllowanceNotice(props: Props) {
       {remainingImages === 0 && (
         <p className="text-muted-foreground leading-relaxed">
           {t(
-            `0時に枠が戻ります。今すぐ作るときは1枚プレミアムコイン${coinCost}枚（残り${props.premiumBalance}枚）`,
-            `Resets at midnight JST. To keep going now, each image uses ${coinCost} premium coins (you have ${props.premiumBalance}).`,
+            `月曜0時に枠が戻ります。今すぐ作るときは1枚プレミアムコイン${coinCost}枚（残り${props.premiumBalance}枚）`,
+            `Resets Monday at midnight JST. To keep going now, each image uses ${coinCost} premium coins (you have ${props.premiumBalance}).`,
           )}
         </p>
       )}

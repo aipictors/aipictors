@@ -3,8 +3,8 @@ import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 
 export type GeminiAllowance = {
   planType: string
-  /** 1 日に毎日のフリーコインから Gemini に使える量（コイン） */
-  dailyLimit: number
+  /** 1 週間に毎日のフリーコインから Gemini に使える量（コイン） */
+  weeklyLimit: number
   used: number
   remaining: number
   /** 枠を適用しているか（適用前は案内だけ出す） */
@@ -16,7 +16,7 @@ export type GeminiAllowance = {
 }
 
 /**
- * 今日の Gemini の枠（Gemini を選んでいるときだけ読む）
+ * 今週の Gemini の枠（Gemini を選んでいるときだけ読む）
  */
 export function useGeminiAllowance(props: { isEnabled: boolean }) {
   const [allowance, setAllowance] = useState<GeminiAllowance | null>(null)

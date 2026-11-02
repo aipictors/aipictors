@@ -47,8 +47,8 @@ export function GenerationPremiumCoinConfirmDialog(props: Props) {
           <AlertDialogDescription>
             {props.isGeminiAllowance
               ? t(
-                  `今日の Gemini の枠を超えるため、この生成でプレミアムコインを${props.premiumCoinAmount ?? 0}枚使います。よろしいですか？（枠は毎日0時に戻ります）`,
-                  `This goes over today's Gemini allowance, so it will use ${props.premiumCoinAmount ?? 0} premium coins. Continue? (The allowance resets at midnight JST.)`,
+                  `今週の Gemini の枠を超えるため、この生成でプレミアムコインを${props.premiumCoinAmount ?? 0}枚使います。よろしいですか？（枠は毎週月曜0時に戻ります）`,
+                  `This goes over this week's Gemini allowance, so it will use ${props.premiumCoinAmount ?? 0} premium coins. Continue? (The allowance resets Monday at midnight JST.)`,
                 )
               : t(
                   `フリーコインが足りないため、この生成でプレミアムコインを${props.premiumCoinAmount ?? 0}枚使います。生成しますか？`,

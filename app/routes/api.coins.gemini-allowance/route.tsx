@@ -14,7 +14,7 @@ function toJsonResponse(body: unknown, status: number): Response {
 }
 
 /**
- * 今日の Gemini の枠（毎日のフリーコインから Gemini に使える量）
+ * 今週の Gemini の枠（毎日のフリーコインから Gemini に使える量）
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const authorization = request.headers.get("authorization")
