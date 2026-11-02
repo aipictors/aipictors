@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/client/index"
 import {
+  Link,
   useLocation,
   useNavigate,
   useNavigation,
@@ -243,6 +244,9 @@ function HomeHeader(props: Props) {
     location.pathname.includes("/new/") ||
     props.alwaysShowTitle
 
+  // サイドバーがないページ（画像生成）は、ヘッダーに三本線とロゴを出す
+  const hasOwnBrand = isSpecialPage && props.hasSidebarBrand !== true
+
   const isExistedNewNotificationData = useQuery(
     viewerIsExistedNewNotificationQuery,
     {
@@ -408,10 +412,14 @@ function HomeHeader(props: Props) {
   }
 
   return (
-    <AppHeader isSmallLeftPadding={isSpecialPage}>
+    <AppHeader
+      isSmallLeftPadding={isSpecialPage}
+      isBrandAligned={hasOwnBrand}
+    >
       <div
         className={cn(
-          "flex min-w-0 items-center gap-x-0.5 md:gap-x-2",
+          "flex min-w-0 items-center gap-x-0.5",
+          hasOwnBrand ? "md:gap-x-1" : "md:gap-x-2",
           props.alwaysShowTitle ? "" : "lg:hidden",
         )}
       >
@@ -426,7 +434,7 @@ function HomeHeader(props: Props) {
               aria-label={t("メニュー", "Menu")}
               className={
                 props.showPcSheetMenu
-                  ? "size-9 md:size-10" // PC版でも表示（Buttonのinline-flexを潰さない）
+                  ? "size-9 rounded-lg hover:bg-muted md:size-10" // PC版でも表示（Buttonのinline-flexを潰さない）
                   : "size-9 md:hidden" // PC版では非表示
               }
             >
@@ -460,8 +468,37 @@ function HomeHeader(props: Props) {
             <Search className="m-auto w-auto" />
           </Button>
         )}
-        <div className="hidden items-center md:ml-12 md:flex">
-          {/* 画像生成画面ではロゴを表示、その他の画面では余白のみ表示 */}
+        {/* 画像生成画面のロゴ。サイドバーのロゴ（home-route-list）と同じ大きさ・同じ位置にする */}
+        {hasOwnBrand && (
+          <Link
+            to={getSensitiveLink("/")}
+            onClick={() => setSearchText("")}
+            className="hidden h-10 shrink-0 items-center gap-2 rounded-lg px-2 transition-colors hover:bg-muted md:flex"
+          >
+            {navigation.state === "loading" ? (
+              <Loader2Icon className="size-8 animate-spin" />
+            ) : (
+              <img
+                src="/icon.svg"
+                className="size-8 rounded-full"
+                alt=""
+                width={40}
+                height={40}
+              />
+            )}
+            {/* 長いタイトルなので、幅が狭いと検索欄が右のボタンに重なる */}
+            <span className="hidden whitespace-nowrap font-bold text-xl lg:inline">
+              {title}
+            </span>
+          </Link>
+        )}
+        <div
+          className={cn(
+            "hidden items-center md:ml-12",
+            !hasOwnBrand && "md:flex",
+          )}
+        >
+          {/* サイドバーのロゴがあるページでは、同じ幅の余白だけ取る */}
           {isSpecialPage && (
             <Button
               variant="ghost"

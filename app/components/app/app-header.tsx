@@ -6,12 +6,15 @@ type Props = Readonly<{
   children: React.ReactNode
   announcement?: React.ReactNode
   isSmallLeftPadding?: boolean
+  /** 三本線をサイドバーのあるページ（home-route-list の left-7）と同じ位置に置く */
+  isBrandAligned?: boolean
 }>
 
 export function AppHeader(props: Props): React.ReactNode {
   const sidebarContext = useContext(SidebarContext)
 
   const leftPaddingClass = (() => {
+    if (props.isBrandAligned) return "pl-5 md:pl-7"
     if (props.isSmallLeftPadding) return "md:pl-4 lg:pl-8"
 
     const sidebarState = sidebarContext?.sidebarState
