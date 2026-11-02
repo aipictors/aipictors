@@ -1,13 +1,7 @@
 import { Link } from "@remix-run/react"
-import { Trophy } from "lucide-react"
+import { ChevronRightIcon, Trophy } from "lucide-react"
 import { useEffect, useState } from "react"
-import {
-  FreeSupportCoinIcon,
-  PremiumSupportCoinIcon,
-} from "~/components/support-coin-icons"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
-import { Button } from "~/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
 
 type SupportRankingItem = {
@@ -37,11 +31,6 @@ type ApiResponse = {
 }
 
 const formatNumber = (value: number) => value.toLocaleString()
-const PREMIUM_COIN_PT_MULTIPLIER = 10
-const toPremiumCoinAmount = (row: SupportRankingItem) =>
-  Math.max(0, Math.floor(row.premiumPtAmount / PREMIUM_COIN_PT_MULTIPLIER))
-const toFreeCoinAmount = (row: SupportRankingItem) =>
-  Math.max(0, row.freePtAmount)
 
 export function UserSupportRankingSection(props: {
   targetUserId: string
@@ -77,118 +66,124 @@ export function UserSupportRankingSection(props: {
     void load()
   }, [limit, props.targetUserId])
 
+  if (!isLoading && items.length === 0) {
+    return null
+  }
+
+  const toName = (row: SupportRankingItem) =>
+    row.isAnonymous
+      ? row.userName || t("匿名", "Anonymous")
+      : row.userName || row.userLogin || t("匿名", "Anonymous")
+
+  const toUserLink = (row: SupportRankingItem) =>
+    row.isAnonymous || !row.userLogin ? null : `/users/${row.userLogin}`
+
+  const top = items.slice(0, 3)
+  const rest = items.slice(3)
+
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Trophy className="h-5 w-5 text-sky-500" />
-              <span>
-                {t(
-                  "このユーザーへの貢献度ランキング",
-                  "Contribution ranking for this user",
-                )}
-              </span>
-            </CardTitle>
-            <p className="mt-1 text-muted-foreground text-sm">
-              {t(
-                "フリーコイン 1pt / プレミアムコイン 10pt で換算した累計ランキングです。",
-                "Cumulative ranking calculated as 1pt per free coin and 10pt per premium coin.",
-              )}
-            </p>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {isLoading ? (
-          [0, 1, 2].map((index) => (
+    <section className="space-y-4 rounded-3xl bg-gradient-to-br from-pink-500/10 via-rose-500/5 to-orange-400/10 p-4 md:p-6">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="flex items-center gap-2 font-bold text-lg tracking-tight md:text-xl">
+          <Trophy className="size-5 text-rose-500" />
+          {t("推してくれている人", "Top supporters")}
+        </h2>
+        <Link
+          to={`/users/${props.targetUserLogin}/supports`}
+          className="flex shrink-0 items-center text-muted-foreground text-sm transition-colors hover:text-foreground"
+        >
+          {t("もっと見る", "See more")}
+          <ChevronRightIcon className="size-4" />
+        </Link>
+      </div>
+
+      {isLoading ? (
+        <div className="grid grid-cols-3 gap-2 md:gap-3">
+          {[0, 1, 2].map((index) => (
             <div
               key={index}
-              className="flex items-center gap-3 rounded-lg border px-3 py-2 animate-pulse"
-            >
-              <div className="h-10 w-10 rounded-full bg-muted" />
-              <div className="flex-1 space-y-1">
-                <div className="h-3 w-24 rounded bg-muted" />
-                <div className="h-3 w-20 rounded bg-muted" />
-              </div>
-              <div className="h-4 w-16 rounded bg-muted" />
-            </div>
-          ))
-        ) : items.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            {t(
-              "まだこのユーザーへの貢献データはありません。",
-              "No contribution data for this user yet.",
-            )}
-          </p>
-        ) : (
-          items.map((row) => (
-            <div
-              key={`${row.rank}-${row.userId}`}
-              className="flex items-center gap-3 rounded-lg border px-3 py-2"
-            >
-              <SupportRankAvatar
-                rank={row.rank}
-                iconUrl={row.iconUrl}
-                name={row.userName ?? row.userLogin ?? row.userId}
-                size="sm"
-              />
-              <div className="min-w-0 flex-1">
-                {row.isAnonymous || !row.userLogin ? (
-                  <p className="truncate font-semibold text-sm">
-                    {row.userName || t("匿名", "Anonymous")}
+              className="h-36 animate-pulse rounded-2xl bg-background/60"
+            />
+          ))}
+        </div>
+      ) : (
+        <>
+          <ol className="grid grid-cols-3 gap-2 md:gap-3">
+            {top.map((row) => {
+              const link = toUserLink(row)
+              const body = (
+                <>
+                  <SupportRankAvatar
+                    rank={row.rank}
+                    iconUrl={row.iconUrl}
+                    name={toName(row)}
+                    size="md"
+                  />
+                  <p className="mt-2 w-full truncate text-center font-bold text-sm">
+                    {toName(row)}
                   </p>
-                ) : (
-                  <Link
-                    to={`/users/${row.userLogin}`}
-                    className="truncate font-semibold text-sm transition-opacity hover:opacity-70"
+                  <p className="text-muted-foreground text-xs tabular-nums">
+                    {formatNumber(row.ptAmount)} pt
+                  </p>
+                </>
+              )
+              const className =
+                "flex flex-col items-center rounded-2xl bg-background/80 px-2 py-4 shadow-sm"
+              return (
+                <li key={`${row.rank}-${row.userId}`}>
+                  {link ? (
+                    <Link
+                      to={link}
+                      className={`${className} hover:-translate-y-0.5 transition-transform`}
+                    >
+                      {body}
+                    </Link>
+                  ) : (
+                    <div className={className}>{body}</div>
+                  )}
+                </li>
+              )
+            })}
+          </ol>
+          {rest.length > 0 && (
+            <ol className="divide-y divide-border/50 rounded-2xl bg-background/80 px-3 shadow-sm">
+              {rest.map((row) => {
+                const link = toUserLink(row)
+                return (
+                  <li
+                    key={`${row.rank}-${row.userId}`}
+                    className="flex items-center gap-3 py-2"
                   >
-                    {row.userName || row.userLogin}
-                  </Link>
-                )}
-              </div>
-              <div className="shrink-0 text-right space-y-1 text-[11px]">
-                <p className="text-muted-foreground">
-                  {t("累計pt", "Cumulative pt")}
-                </p>
-                <p className="font-bold text-sm">
-                  {formatNumber(row.ptAmount)}
-                </p>
-                <div className="flex items-center justify-end gap-1 text-amber-700 dark:text-amber-400">
-                  <PremiumSupportCoinIcon className="h-4 w-4" />
-                  <span>
-                    {t(
-                      `${formatNumber(toPremiumCoinAmount(row))}コイン`,
-                      `${formatNumber(toPremiumCoinAmount(row))} coins`,
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-center justify-end gap-1 text-muted-foreground">
-                  <FreeSupportCoinIcon className="h-4 w-4" />
-                  <span>
-                    {t(
-                      `${formatNumber(toFreeCoinAmount(row))}コイン`,
-                      `${formatNumber(toFreeCoinAmount(row))} coins`,
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-
-        <Button
-          asChild
-          variant="ghost"
-          size="sm"
-          className="mt-1 w-full text-muted-foreground text-sm"
-        >
-          <Link to={`/users/${props.targetUserLogin}/supports`}>
-            {t("もっと見る", "See more")}
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
+                    <SupportRankAvatar
+                      rank={row.rank}
+                      iconUrl={row.iconUrl}
+                      name={toName(row)}
+                      size="sm"
+                    />
+                    <div className="min-w-0 flex-1">
+                      {link ? (
+                        <Link
+                          to={link}
+                          className="block truncate font-semibold text-sm hover:opacity-70"
+                        >
+                          {toName(row)}
+                        </Link>
+                      ) : (
+                        <p className="truncate font-semibold text-sm">
+                          {toName(row)}
+                        </p>
+                      )}
+                    </div>
+                    <p className="shrink-0 text-muted-foreground text-xs tabular-nums">
+                      {formatNumber(row.ptAmount)} pt
+                    </p>
+                  </li>
+                )
+              })}
+            </ol>
+          )}
+        </>
+      )}
+    </section>
   )
 }

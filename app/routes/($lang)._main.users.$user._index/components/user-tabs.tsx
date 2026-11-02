@@ -22,16 +22,36 @@ export function UserTabs(props: Props) {
 
   const base = `/users/${encodeURIComponent(user.login)}`
 
+  const counts: Record<string, number | undefined> = {
+    "/posts": props.worksCounts?.image,
+    "/novels": props.worksCounts?.novel,
+    "/notes": props.worksCounts?.column,
+    "/videos": props.worksCounts?.video,
+    "/models": props.modelsCount,
+  }
+
   const items: Array<{ path: string; label: string; show: boolean }> = [
     { path: "", label: t("ポートフォリオ", "Portfolio"), show: true },
-    { path: "/posts", label: t("画像", "Images"), show: user.hasImageWorks || (props.worksCounts?.image ?? 0) > 0 },
-    { path: "/novels", label: t("小説", "Novels"), show: user.hasNovelWorks || (props.worksCounts?.novel ?? 0) > 0 },
+    {
+      path: "/posts",
+      label: t("画像", "Images"),
+      show: user.hasImageWorks || (props.worksCounts?.image ?? 0) > 0,
+    },
+    {
+      path: "/novels",
+      label: t("小説", "Novels"),
+      show: user.hasNovelWorks || (props.worksCounts?.novel ?? 0) > 0,
+    },
     {
       path: "/notes",
       label: t("コラム", "Columns"),
       show: user.hasColumnWorks || (props.worksCounts?.column ?? 0) > 0,
     },
-    { path: "/videos", label: t("動画", "Videos"), show: user.hasVideoWorks || (props.worksCounts?.video ?? 0) > 0 },
+    {
+      path: "/videos",
+      label: t("動画", "Videos"),
+      show: user.hasVideoWorks || (props.worksCounts?.video ?? 0) > 0,
+    },
     {
       path: "/models",
       label: t("モデル", "Models"),
@@ -90,9 +110,9 @@ export function UserTabs(props: Props) {
                   )}
                 >
                   {item.label}
-                  {item.path === "/models" && (
-                    <span className="ml-1 text-muted-foreground text-xs tabular-nums">
-                      {props.modelsCount}
+                  {(counts[item.path] ?? 0) > 0 && (
+                    <span className="ml-1 self-center text-muted-foreground text-xs tabular-nums">
+                      {counts[item.path]?.toLocaleString()}
                     </span>
                   )}
                 </Link>

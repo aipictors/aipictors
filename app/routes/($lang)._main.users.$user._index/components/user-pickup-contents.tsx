@@ -3,15 +3,19 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import {
-  HomeWorkFragment,
-  HomeWorkSection,
-} from "~/routes/($lang)._main._index/components/home-work-section"
+  UserFeaturedWorks,
+  UserWorksGrid,
+  UserWorksSection,
+} from "~/routes/($lang)._main.users.$user._index/components/user-works-gallery"
 
 type Props = {
   userPickupWorks: FragmentOf<typeof HomeWorkFragment>[]
   userNewWorks: FragmentOf<typeof HomeWorkFragment>[]
   userId: string
+  /** 作品一覧（画像）へのリンク */
+  worksLink: string
 }
 
 export function UserPickupContents(props: Props) {
@@ -31,22 +35,18 @@ export function UserPickupContents(props: Props) {
   const newWorkDisplayed = workRes?.user?.works ?? props.userNewWorks
 
   return (
-    <div className="space-y-6">
+    <>
       {workDisplayed && workDisplayed.length > 0 && (
-        <HomeWorkSection
-          title={t("注目作品", "Featured")}
-          works={workDisplayed}
-          isCropped={true}
-        />
+        <UserWorksSection title={t("注目作品", "Featured")}>
+          <UserFeaturedWorks works={workDisplayed} />
+        </UserWorksSection>
       )}
       {newWorkDisplayed && newWorkDisplayed.length > 0 && (
-        <HomeWorkSection
-          title={t("最新", "Latest")}
-          works={newWorkDisplayed}
-          isCropped={false}
-        />
+        <UserWorksSection title={t("最新", "Latest")} link={props.worksLink}>
+          <UserWorksGrid works={newWorkDisplayed} />
+        </UserWorksSection>
       )}
-    </div>
+    </>
   )
 }
 

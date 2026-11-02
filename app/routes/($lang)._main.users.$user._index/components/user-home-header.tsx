@@ -1,5 +1,6 @@
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import type React from "react"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   user: FragmentOf<typeof UserHomeHeaderFragment>
@@ -16,8 +17,8 @@ export function UserHomeHeader(props: Props) {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-0 md:px-8 md:pt-4">
-      <div className="relative aspect-[3/1] max-h-64 w-full overflow-hidden bg-gradient-to-br from-sky-200 via-violet-200 to-pink-200 md:rounded-2xl dark:from-sky-950 dark:via-violet-950 dark:to-pink-950">
-        {user.headerImageUrl && (
+      <div className="relative aspect-[5/2] max-h-72 w-full overflow-hidden bg-muted md:aspect-[3/1] md:rounded-3xl">
+        {user.headerImageUrl ? (
           <img
             src={user.headerImageUrl}
             alt=""
@@ -27,9 +28,17 @@ export function UserHomeHeader(props: Props) {
             fetchPriority="high"
             decoding="async"
           />
+        ) : (
+          // ヘッダー画像がない人は、アイコンの色を広げて背景にする
+          <img
+            src={withIconUrlFallback(user.iconUrl)}
+            alt=""
+            className="absolute inset-0 size-full scale-125 object-cover opacity-80 blur-3xl saturate-150"
+            decoding="async"
+          />
         )}
       </div>
-      <div className="relative z-10 px-4 pt-3 pb-2 md:px-6">
+      <div className="relative z-10 px-4 pt-3 pb-4 md:px-6">
         {props.userIconView}
       </div>
     </div>

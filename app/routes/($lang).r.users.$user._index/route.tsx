@@ -17,10 +17,6 @@ import {
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
 import {
-  UserAboutCard,
-  UserAboutCardFragment,
-} from "~/routes/($lang)._main.users.$user._index/components/user-about-card"
-import {
   UserSensitivePickupContents,
   UserSensitivePickupFragment,
 } from "~/routes/($lang).r.users.$user._index/components/user-sensitive-pickup-contents"
@@ -115,7 +111,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function UserLayout () {
+export default function UserLayout() {
   const params = useParams<"user">()
 
   const authContext = useContext(AuthContext)
@@ -195,7 +191,6 @@ export default function UserLayout () {
     <div className="flex w-full flex-col justify-center">
       <div className="flex flex-col space-y-4">
         <div className="flex min-h-96 flex-col gap-y-4">
-          <UserAboutCard user={data.user} />
           <UserSensitivePickupContents
             userNewWorks={data.user.works ?? []}
             userPickupWorks={data.user.featuredSensitiveWorks ?? []}
@@ -240,7 +235,7 @@ const combinedUserAndWorksQuery = graphql(
     $columnWhere: WorksWhereInput!
   ) {
     user(id: $userId) {
-      ...UserAboutCard
+      id
       ...UserPickup
     }
     works(offset: $offset, limit: $limit, where: $portfolioWhere) {
@@ -256,7 +251,6 @@ const combinedUserAndWorksQuery = graphql(
   [
     HomeWorkFragment,
     HomeNovelsWorkListItemFragment,
-    UserAboutCardFragment,
     UserSensitivePickupFragment,
   ],
 )

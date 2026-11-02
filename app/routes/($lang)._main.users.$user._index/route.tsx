@@ -12,23 +12,16 @@ import {
   HomeNovelsWorkListItemFragment,
   HomeNovelsWorksSection,
 } from "~/routes/($lang)._main._index/components/home-novels-works-section"
-import {
-  HomeVideosWorkListItemFragment,
-  HomeVideosWorksSection,
-} from "~/routes/($lang)._main._index/components/home-video-works-section"
-import {
-  HomeWorkFragment,
-  HomeWorkSection,
-} from "~/routes/($lang)._main._index/components/home-work-section"
-import {
-  UserAboutCard,
-  UserAboutCardFragment,
-} from "~/routes/($lang)._main.users.$user._index/components/user-about-card"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import {
   UserPickupContents,
   UserPickupFragment,
 } from "~/routes/($lang)._main.users.$user._index/components/user-pickup-contents"
 import { UserSupportRankingSection } from "~/routes/($lang)._main.users.$user._index/components/user-support-ranking-section"
+import {
+  UserWorksGrid,
+  UserWorksSection,
+} from "~/routes/($lang)._main.users.$user._index/components/user-works-gallery"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -138,15 +131,62 @@ export default function UserLayout() {
   const columnWorks = data.columnWorks
   const videoWorks = data.videoWorks
 
+  const basePath = `/users/${encodeURIComponent(params.user)}`
+
+  // 注目・最新と同じ絵が続かないようにする
+  const shownWorkIds = new Set(
+    [...(data.user.featuredWorks ?? []), ...(data.user.works ?? [])].map(
+      (work) => work.id,
+    ),
+  )
+  const popularWorks = works.filter((work) => !shownWorkIds.has(work.id))
+  const hasContents =
+    shownWorkIds.size > 0 ||
+    works.length > 0 ||
+    novelWorks.length > 0 ||
+    columnWorks.length > 0 ||
+    videoWorks.length > 0 ||
+    data.userModels.length > 0
+
   return (
     <div className="flex w-full flex-col justify-center pb-10">
-      <div className="w-full space-y-8">
-        <UserAboutCard user={data.user} />
+      <div className="w-full space-y-10">
         <UserPickupContents
           userPickupWorks={data.user.featuredWorks ?? []}
           userNewWorks={data.user.works ?? []}
           userId={data.user.id}
+          worksLink={`${basePath}/posts`}
         />
+        {popularWorks.length > 0 && (
+          <UserWorksSection
+            title={t("人気の作品", "Popular")}
+            link={`${basePath}/posts`}
+          >
+            <UserWorksGrid works={popularWorks} />
+          </UserWorksSection>
+        )}
+        {novelWorks.length !== 0 && (
+          <HomeNovelsWorksSection
+            title={t("小説", "Novels")}
+            works={novelWorks}
+            isCropped={false}
+          />
+        )}
+        {columnWorks.length !== 0 && (
+          <HomeNovelsWorksSection
+            title={t("コラム", "Columns")}
+            works={columnWorks}
+            isCropped={false}
+          />
+        )}
+        {videoWorks.length !== 0 && (
+          <UserWorksSection
+            title={t("動画", "Videos")}
+            link={`${basePath}/videos`}
+          >
+            <UserWorksGrid works={videoWorks} />
+          </UserWorksSection>
+        )}
         {data.userModels.length > 0 && (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
@@ -154,7 +194,7 @@ export default function UserLayout() {
                 {t("公開しているモデル・LoRA", "Models & LoRAs")}
               </h2>
               <Link
-                to={`/users/${encodeURIComponent(params.user)}/models`}
+                to={`${basePath}/models`}
                 className="text-muted-foreground text-sm hover:text-foreground"
               >
                 {t("すべて見る", "See all")}
@@ -167,29 +207,11 @@ export default function UserLayout() {
             </div>
           </section>
         )}
-        <div className="space-y-6">
-          {works.length !== 0 && (
-            <HomeWorkSection
-              works={works}
-              isCropped={false}
-              isShowProfile={true}
-              autoPlayVideoPreview={true}
-            />
-          )}
-          {novelWorks.length !== 0 && (
-            <HomeNovelsWorksSection works={novelWorks} isCropped={false} />
-          )}
-          {columnWorks.length !== 0 && (
-            <HomeNovelsWorksSection works={columnWorks} isCropped={false} />
-          )}
-          {videoWorks.length !== 0 && (
-            <HomeVideosWorksSection
-              works={videoWorks}
-              isCropped={false}
-              isAutoPlay={true}
-            />
-          )}
-        </div>
+        {!hasContents && (
+          <p className="py-12 text-center text-muted-foreground text-sm">
+            {t("まだ作品がありません", "No works yet")}
+          </p>
+        )}
         <UserSupportRankingSection
           targetUserId={data.user.id}
           targetUserLogin={decodeURIComponent(params.user)}
@@ -218,7 +240,7 @@ const combinedUserAndWorksQuery = graphql(
     $videoWhere: WorksWhereInput!
   ) {
     user(id: $userId) {
-      ...UserAboutCard
+      id
       ...UserPickup
     }
     works(offset: $offset, limit: $limit, where: $portfolioWhere) {
@@ -231,14 +253,8 @@ const combinedUserAndWorksQuery = graphql(
       ...HomeWork
     }
     videoWorks: works(offset: $offset, limit: $limit, where: $videoWhere) {
-      ...HomeVideosWorkListItem
+      ...HomeWork
     }
   }`,
-  [
-    HomeWorkFragment,
-    HomeNovelsWorkListItemFragment,
-    HomeVideosWorkListItemFragment,
-    UserAboutCardFragment,
-    UserPickupFragment,
-  ],
+  [HomeWorkFragment, HomeNovelsWorkListItemFragment, UserPickupFragment],
 )

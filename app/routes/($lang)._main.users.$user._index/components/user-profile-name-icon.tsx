@@ -13,6 +13,7 @@ import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/components/profile-edit-dialog"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
@@ -104,6 +105,7 @@ export function UserProfileNameIcon(props: Props) {
   }
 
   const stats = [
+    { label: t("作品", "Works"), value: user.worksCount },
     {
       label: t("フォロワー", "Followers"),
       value: Math.max(0, user.followersCount + followersCountDelta),
@@ -113,11 +115,16 @@ export function UserProfileNameIcon(props: Props) {
     { label: t("入賞", "Awards"), value: user.awardsCount },
   ]
 
+  const startedAtText = new Date(user.createdAt * 1000).toLocaleDateString(
+    "ja-JP",
+    { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit" },
+  )
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div className="flex min-w-0 items-end gap-4">
-          <div className="-mt-12 md:-mt-16 shrink-0 rounded-full bg-background p-1">
+        <div className="flex min-w-0 items-end gap-3 md:gap-5">
+          <div className="-mt-14 md:-mt-20 shrink-0 rounded-full bg-background p-1 shadow-lg">
             <UserProfileAvatar
               alt={user.name}
               frame={user.avatarFrame}
@@ -125,9 +132,9 @@ export function UserProfileNameIcon(props: Props) {
               size="auto"
             />
           </div>
-          <div className="min-w-0 pb-1">
+          <div className="min-w-0 pb-0.5">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <h1 className="break-words font-bold text-xl leading-tight md:text-2xl">
+              <h1 className="break-words font-bold text-2xl leading-tight tracking-tight md:text-3xl">
                 {user.name.length > 0 ? user.name : t("名無し", "No name")}
               </h1>
               <OfficialBadge
@@ -137,10 +144,10 @@ export function UserProfileNameIcon(props: Props) {
               />
               <UserSubscriptionIcon passType={user.pass?.type} />
             </div>
-            <p className="flex flex-wrap items-center gap-x-2 break-all text-muted-foreground text-sm">
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-2 break-all text-muted-foreground text-sm">
               <span>@{user.login}</span>
               {!isMyPage && user.isFollower && (
-                <span className="rounded bg-muted px-1.5 py-0.5 text-xs">
+                <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
                   {t("フォローされています", "Follows you")}
                 </span>
               )}
@@ -148,13 +155,13 @@ export function UserProfileNameIcon(props: Props) {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 md:shrink-0 md:justify-end">
+        <div className="flex items-center gap-2 md:shrink-0 md:justify-end">
           {isMyPage ? (
             <ProfileEditDialog
               triggerChildren={
                 <Button
                   variant="secondary"
-                  className="flex-1 gap-1.5 rounded-full md:flex-none"
+                  className="h-11 flex-1 gap-1.5 rounded-full font-bold md:flex-none md:px-6"
                 >
                   <PenLine className="size-4" />
                   {t("プロフィールを編集", "Edit profile")}
@@ -169,7 +176,7 @@ export function UserProfileNameIcon(props: Props) {
               isFollower={Boolean(user.isFollower)}
               onFollowChange={onFollowChange}
               triggerChildren={
-                <Button className="flex-1 rounded-full px-6 font-bold active:scale-95 md:flex-none">
+                <Button className="h-11 flex-1 rounded-full px-6 font-bold active:scale-95 md:flex-none">
                   {user.isFollower
                     ? t("フォローバック", "Follow back")
                     : t("フォロー", "Follow")}
@@ -178,7 +185,7 @@ export function UserProfileNameIcon(props: Props) {
               unFollowTriggerChildren={
                 <Button
                   variant="secondary"
-                  className="group flex-1 gap-1 rounded-full px-6 hover:bg-destructive/10 hover:text-destructive active:scale-95 md:flex-none"
+                  className="group h-11 flex-1 gap-1 rounded-full px-6 font-bold hover:bg-destructive/10 hover:text-destructive active:scale-95 md:flex-none"
                 >
                   <CheckIcon className="size-4 group-hover:hidden" />
                   <span className="group-hover:hidden">
@@ -198,7 +205,7 @@ export function UserProfileNameIcon(props: Props) {
               targetUserIconUrl={user.iconUrl}
               freeCoinBalance={balance?.freeCoinsBalance ?? 0}
               premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
-              triggerClassName="rounded-full font-bold"
+              variant="profile"
             />
           )}
           <UserActionShare login={user.login} name={user.name} />
@@ -210,50 +217,42 @@ export function UserProfileNameIcon(props: Props) {
         </div>
       </div>
 
-      <UserProfileStatus statusText={user.statusText} isOwn={isMyPage} />
-
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-        <dl className="flex flex-wrap gap-x-6 gap-y-2">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="flex flex-row-reverse items-baseline justify-end gap-1.5"
-            >
-              <dt className="text-muted-foreground text-xs">{stat.label}</dt>
-              <dd className="font-bold text-base tabular-nums">
-                <OmissionNumber number={stat.value} />
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <UserAchievementShowcase userId={user.id} isOwn={isMyPage} />
-        {r18WorksCount > 0 && (
-          <SensitiveToggle
-            variant="compact"
-            label={`R18（${r18WorksCount >= 100 ? "99+" : r18WorksCount}）`}
-            className="h-6 border-red-200/40 bg-background/30 px-2 text-red-700 text-xs shadow-none dark:border-red-700/40"
-            showStatus={false}
-          />
-        )}
-      </div>
-
-      {isShowingSuggestions && (
-        <FollowSuggestions
-          userId={user.id}
-          userName={user.name}
-          onClose={() => setIsShowingSuggestions(false)}
-        />
-      )}
-
-      {(biographyText.length > 0 || externalLinks.length > 0) && (
-        <div className="space-y-2">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-8">
+        <div className="min-w-0 flex-1 space-y-3">
+          <UserProfileStatus statusText={user.statusText} isOwn={isMyPage} />
           {biographyText.length > 0 && (
-            <p className="max-w-3xl whitespace-pre-wrap break-words text-sm leading-relaxed">
-              <UserBiography text={biographyText} />
-            </p>
+            <UserProfileBiography text={biographyText} />
           )}
-          {externalLinks.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
+        </div>
+
+        <div className="flex shrink-0 flex-col gap-3 md:items-end">
+          <dl className="grid grid-cols-5 gap-1 rounded-2xl bg-muted/50 px-2 py-3 md:gap-0 md:px-1">
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="flex min-w-0 flex-col-reverse items-center gap-0.5 md:px-4"
+              >
+                <dt className="truncate text-[11px] text-muted-foreground md:text-xs">
+                  {stat.label}
+                </dt>
+                <dd className="font-bold text-base tabular-nums md:text-lg">
+                  <OmissionNumber number={stat.value} />
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 md:justify-end">
+            <UserAchievementShowcase userId={user.id} isOwn={isMyPage} />
+            {r18WorksCount > 0 && (
+              <SensitiveToggle
+                variant="compact"
+                label={`R18（${r18WorksCount >= 100 ? "99+" : r18WorksCount}）`}
+                className="h-6 border-red-200/40 bg-background/30 px-2 text-red-700 text-xs shadow-none dark:border-red-800/40 dark:text-red-300"
+                showStatus={false}
+              />
+            )}
+            <div className="flex items-center gap-1 text-muted-foreground">
               {externalLinks.map((link) => (
                 <SnsIconLink
                   key={link.key}
@@ -263,8 +262,48 @@ export function UserProfileNameIcon(props: Props) {
                 />
               ))}
             </div>
-          )}
+            <span className="text-muted-foreground text-xs">
+              {startedAtText} {t("開始", "Started")}
+            </span>
+          </div>
         </div>
+      </div>
+
+      {isShowingSuggestions && (
+        <FollowSuggestions
+          userId={user.id}
+          userName={user.name}
+          onClose={() => setIsShowingSuggestions(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+/** 自己紹介。長いものは畳んで、作品がすぐ見えるようにする */
+function UserProfileBiography(props: { text: string }) {
+  const t = useTranslation()
+  const [isExpanded, setIsExpanded] = useState(false)
+  const isLong = props.text.split("\n").length > 4 || props.text.length > 160
+
+  return (
+    <div className="max-w-3xl">
+      <p
+        className={cn(
+          "whitespace-pre-wrap break-words text-sm leading-relaxed",
+          isLong && !isExpanded && "line-clamp-4",
+        )}
+      >
+        <UserBiography text={props.text} />
+      </p>
+      {isLong && (
+        <button
+          type="button"
+          className="mt-1 text-muted-foreground text-xs hover:text-foreground"
+          onClick={() => setIsExpanded((value) => !value)}
+        >
+          {isExpanded ? t("閉じる", "Show less") : t("もっと見る", "Show more")}
+        </button>
       )}
     </div>
   )
@@ -284,6 +323,8 @@ export const UserProfileIconFragment = graphql(
     biography
     enBiography
     statusText
+    createdAt
+    worksCount
     receivedLikesCount
     receivedSensitiveLikesCount
     followersCount

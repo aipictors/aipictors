@@ -5,7 +5,7 @@
  */
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { CircleHelp, Loader2 } from "lucide-react"
+import { CircleHelp, HeartHandshake, Loader2 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
@@ -39,6 +39,8 @@ type Props = {
   premiumCoinBalance: number
   onSuccess?: () => void
   triggerClassName?: string
+  /** profile: マイページ用。目立つボタン 1 つにして、説明はダイアログの中に置く */
+  variant?: "default" | "profile"
 }
 
 type CoinBreakdown = {
@@ -151,6 +153,7 @@ export function SupportButton({
   premiumCoinBalance,
   onSuccess,
   triggerClassName,
+  variant = "default",
 }: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
@@ -421,30 +424,46 @@ export function SupportButton({
 
   return (
     <>
-      <div className="flex items-center gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="shrink-0 rounded-full"
-          aria-label={t("推すとは", "What is support?")}
-          title={t("推すとは", "What is support?")}
-          onClick={() => setIsInfoOpen(true)}
-        >
-          <CircleHelp className="h-4 w-4" />
-        </Button>
-
+      {variant === "profile" ? (
         <Button
           onClick={() => {
             void reloadBalance()
             setIsOpen(true)
           }}
-          className={cn(supportButtonClassName, !triggerClassName && "w-full")}
-          variant="default"
+          className="h-11 flex-1 gap-1.5 rounded-full border-0 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 px-6 font-bold text-white shadow-md shadow-rose-500/25 transition hover:opacity-90 hover:shadow-lg hover:shadow-rose-500/30 active:scale-95 md:flex-none"
         >
+          <HeartHandshake className="size-4" />
           {t("推す", "Support")}
         </Button>
-      </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="shrink-0 rounded-full"
+            aria-label={t("推すとは", "What is support?")}
+            title={t("推すとは", "What is support?")}
+            onClick={() => setIsInfoOpen(true)}
+          >
+            <CircleHelp className="h-4 w-4" />
+          </Button>
+
+          <Button
+            onClick={() => {
+              void reloadBalance()
+              setIsOpen(true)
+            }}
+            className={cn(
+              supportButtonClassName,
+              !triggerClassName && "w-full",
+            )}
+            variant="default"
+          >
+            {t("推す", "Support")}
+          </Button>
+        </div>
+      )}
 
       <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
         <DialogContent className="max-w-md">
@@ -475,10 +494,27 @@ export function SupportButton({
       </Dialog>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-h-[90svh] w-[calc(100vw-1rem)] max-w-md overflow-y-auto">
+        <DialogContent
+          className="max-h-[90svh] w-[calc(100vw-1rem)] max-w-md overflow-y-auto"
+          onOpenAutoFocus={(event) => {
+            // 説明のボタンに枠が出てしまうので、最初はどこにも合わせない
+            if (variant === "profile") event.preventDefault()
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="text-center">
               {t("推しポイント付与", "Support")}
+              {variant === "profile" && (
+                <button
+                  type="button"
+                  className="ml-1.5 inline-flex align-middle text-muted-foreground hover:text-foreground"
+                  aria-label={t("推すとは", "What is support?")}
+                  title={t("推すとは", "What is support?")}
+                  onClick={() => setIsInfoOpen(true)}
+                >
+                  <CircleHelp className="size-4" />
+                </button>
+              )}
             </DialogTitle>
           </DialogHeader>
 
@@ -766,7 +802,10 @@ export function SupportButton({
                 onCheckedChange={(checked) => setIsAnonymous(checked === true)}
                 disabled={isLoading}
               />
-              <Label htmlFor="support-anonymous" className="cursor-pointer text-sm">
+              <Label
+                htmlFor="support-anonymous"
+                className="cursor-pointer text-sm"
+              >
                 {t("匿名で推す", "Support anonymously")}
               </Label>
             </div>
