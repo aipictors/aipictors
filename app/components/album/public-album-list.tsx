@@ -121,12 +121,13 @@ type AlbumLikeButtonProps = {
   ownerUserId: string
   defaultLiked: boolean
   defaultLikesCount: number
+  className?: string
 }
 
 const iconButtonClassName =
   "flex h-8 items-center gap-1 rounded-full px-2 text-xs transition hover:bg-muted disabled:opacity-60"
 
-function AlbumLikeButton(props: AlbumLikeButtonProps) {
+export function AlbumLikeButton(props: AlbumLikeButtonProps) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const [createAlbumLike] = useMutation(CREATE_ALBUM_LIKE_MUTATION)
@@ -205,7 +206,10 @@ function AlbumLikeButton(props: AlbumLikeButtonProps) {
   if (isOwner) {
     return (
       <span
-        className="flex h-8 items-center gap-1 px-2 text-muted-foreground text-xs"
+        className={cn(
+          "flex h-8 items-center gap-1 px-2 text-muted-foreground text-xs",
+          props.className,
+        )}
         title={t("いいね", "Likes")}
       >
         <Heart className="size-4" aria-hidden="true" />
@@ -218,7 +222,7 @@ function AlbumLikeButton(props: AlbumLikeButtonProps) {
     return (
       <button
         type="button"
-        className={iconButtonClassName}
+        className={cn(iconButtonClassName, props.className)}
         aria-label={label}
         aria-pressed={isLiked}
         title={label}
@@ -232,7 +236,11 @@ function AlbumLikeButton(props: AlbumLikeButtonProps) {
 
   if (authContext.isLoading) {
     return (
-      <button type="button" className={iconButtonClassName} disabled>
+      <button
+        type="button"
+        className={cn(iconButtonClassName, props.className)}
+        disabled
+      >
         {content}
       </button>
     )
@@ -247,7 +255,7 @@ function AlbumLikeButton(props: AlbumLikeButtonProps) {
       triggerChildren={
         <button
           type="button"
-          className={iconButtonClassName}
+          className={cn(iconButtonClassName, props.className)}
           aria-label={label}
           title={label}
         >
@@ -261,9 +269,12 @@ function AlbumLikeButton(props: AlbumLikeButtonProps) {
 type AlbumWatchButtonProps = {
   albumId: string
   defaultWatched: boolean
+  className?: string
+  /** PC ではアイコンの横に「お気に入り」を出す */
+  isLabelVisible?: boolean
 }
 
-function AlbumWatchButton(props: AlbumWatchButtonProps) {
+export function AlbumWatchButton(props: AlbumWatchButtonProps) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const [watchAlbum] = useMutation(WATCH_ALBUM_MUTATION)
@@ -318,17 +329,22 @@ function AlbumWatchButton(props: AlbumWatchButtonProps) {
   }
 
   const icon = (
-    <Bookmark
-      className={cn("size-4", isWatched && "fill-amber-500 text-amber-500")}
-      aria-hidden="true"
-    />
+    <>
+      <Bookmark
+        className={cn("size-4", isWatched && "fill-amber-500 text-amber-500")}
+        aria-hidden="true"
+      />
+      {props.isLabelVisible && (
+        <span className="hidden sm:inline">{t("お気に入り", "Favorite")}</span>
+      )}
+    </>
   )
 
   if (authContext.isLoggedIn) {
     return (
       <button
         type="button"
-        className={iconButtonClassName}
+        className={cn(iconButtonClassName, props.className)}
         aria-label={label}
         aria-pressed={isWatched}
         title={label}
@@ -342,7 +358,11 @@ function AlbumWatchButton(props: AlbumWatchButtonProps) {
 
   if (authContext.isLoading) {
     return (
-      <button type="button" className={iconButtonClassName} disabled>
+      <button
+        type="button"
+        className={cn(iconButtonClassName, props.className)}
+        disabled
+      >
         {icon}
       </button>
     )
@@ -357,7 +377,7 @@ function AlbumWatchButton(props: AlbumWatchButtonProps) {
       triggerChildren={
         <button
           type="button"
-          className={iconButtonClassName}
+          className={cn(iconButtonClassName, props.className)}
           aria-label={label}
           title={label}
         >

@@ -1,39 +1,37 @@
+import { useQuery } from "@apollo/client/index"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import {
+  type MetaFunction,
+  type ShouldRevalidateFunction,
+  useLoaderData,
+} from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { useContext } from "react"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import { config, META } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
-import { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-article-editor-dialog"
+import {
+  ALBUM_WORKS_PER_PAGE,
+  isAdultAlbum,
+  toAlbumJsonLd,
+  toAlbumMetaText,
+  toAlbumPageIndex,
+  toAlbumShareImageUrl,
+  toAlbumWorkOrder,
+  toAlbumWorkSort,
+} from "~/routes/($lang)._main.$user.albums.$album._index/album-page-utils"
 import {
   AlbumArticleHeader,
   AlbumArticleHeaderFragment,
 } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-article-header"
+import { AlbumOwnerSeries } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-owner-series"
 import {
   AlbumWorkList,
   AlbumWorkListItemFragment,
 } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-work-list"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import type { MetaFunction } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
-import { type FragmentOf, graphql } from "gql.tada"
-import { useEffect, useState } from "react"
-import type { SortType } from "~/types/sort-type"
 import { createMeta } from "~/utils/create-meta"
-import { config, META } from "~/config"
-
-type AlbumWorkOrderParam = "DATE_CREATED" | "LIKES_COUNT" | "MANUAL"
-
-const toAlbumWorkOrder = (value: string | null): AlbumWorkOrderParam => {
-  if (
-    value === "DATE_CREATED" ||
-    value === "LIKES_COUNT" ||
-    value === "MANUAL"
-  ) {
-    return value
-  }
-
-  return "MANUAL"
-}
-
-const toSort = (value: string | null): SortType => {
-  return value === "ASC" ? "ASC" : "DESC"
-}
 
 export async function loader(props: LoaderFunctionArgs) {
   if (!props.params.album || !props.params.user) {
@@ -48,13 +46,9 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const url = new URL(props.request.url)
 
-  const page = url.searchParams.get("page")
-    ? Number.parseInt(url.searchParams.get("page") as string) > 100
-      ? 0
-      : Number.parseInt(url.searchParams.get("page") as string)
-    : 0
+  const page = toAlbumPageIndex(url.searchParams.get("page"))
   const orderBy = toAlbumWorkOrder(url.searchParams.get("orderBy"))
-  const sort = toSort(url.searchParams.get("sort"))
+  const sort = toAlbumWorkSort(url.searchParams.get("sort"))
 
   const result = await loaderClient.query({
     query: LoaderQuery,
@@ -63,8 +57,8 @@ export async function loader(props: LoaderFunctionArgs) {
         albumSlug: props.params.album,
         ownerLoginUserId: props.params.user,
       },
-      offset: 0,
-      limit: 16,
+      offset: ALBUM_WORKS_PER_PAGE * page,
+      limit: ALBUM_WORKS_PER_PAGE,
       orderBy,
       sort,
     },
@@ -75,84 +69,110 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 
   return {
-    ...result.data,
     album: result.data.album,
     page,
+    orderBy,
+    sort,
   }
 }
 
-export const meta: MetaFunction = (props) => {
+export const meta: MetaFunction<typeof loader> = (props) => {
   if (!props.data) {
     return [{ title: "シリーズ" }]
   }
 
-  const data = props.data as {
-    album: FragmentOf<typeof AlbumWorkListItemFragment>
-  }
-
-  const album = data.album
-
-  const worksCountPart = ""
+  const album = props.data.album
 
   return createMeta(
-    META.ALBUMS,
     {
-      title: `${album.title}${worksCountPart}` || "シリーズ詳細",
-      enTitle: `${album.title}'s page${worksCountPart}`,
-      description: album.description || "AI作品のシリーズ一覧を閲覧できます",
-      enDescription:
-        "This is the series page on Aipictors, where you can view a list of AI illustrations and other works.",
+      ...META.ALBUMS,
+      // 作品のないシリーズは検索結果に出さない
+      isIndex: album.worksCount > 0,
+    },
+    {
+      ...toAlbumMetaText(album, props.data.page),
+      url: toAlbumShareImageUrl(album) ?? config.defaultOgpImageUrl,
     },
     props.params.lang,
   )
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneWeek,
+  // 作品の一覧をサーバーの HTML に入れるので、追加した作品がすぐ出るよう短めにする
+  "Cache-Control": config.cacheControl.oneHour,
 })
+
+/**
+ * 表示の切り替え（?view=）では読み直さない
+ */
+export const shouldRevalidate: ShouldRevalidateFunction = (props) => {
+  const toKey = (url: URL) =>
+    [
+      url.pathname,
+      url.searchParams.get("page"),
+      url.searchParams.get("orderBy"),
+      url.searchParams.get("sort"),
+    ].join("|")
+
+  if (!props.formMethod && toKey(props.currentUrl) === toKey(props.nextUrl)) {
+    return false
+  }
+
+  return props.defaultShouldRevalidate
+}
 
 /**
  * シリーズの詳細
  */
-export default function albums () {
+export default function AlbumPage() {
   const data = useLoaderData<typeof loader>()
-  const [album, setAlbum] = useState(data.album)
-  const [refreshKey, setRefreshKey] = useState(0)
+  const t = useTranslation()
+  const authContext = useContext(AuthContext)
 
-  if (data === null) {
-    return null
-  }
+  // サーバーの HTML は未ログインの内容なので、ログイン中はいいねやフォローの状態を読み直す
+  const { data: viewerData, refetch } = useQuery(ViewerAlbumQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      albumId: data.album.id,
+      offset: ALBUM_WORKS_PER_PAGE * data.page,
+      limit: ALBUM_WORKS_PER_PAGE,
+      orderBy: data.orderBy,
+      sort: data.sort,
+    },
+    fetchPolicy: "network-only",
+    nextFetchPolicy: "cache-first",
+  })
 
-  useEffect(() => {
-    setAlbum(data.album)
-    setRefreshKey(0)
-  }, [data.album])
+  const album = viewerData?.album ?? data.album
+
+  const jsonLd = toAlbumJsonLd({
+    album: data.album,
+    works: data.album.works,
+    siteUrl: config.siteURL,
+    lang: t("ja", "en"),
+    labels: { series: t("シリーズ", "Series") },
+  })
 
   return (
-    <>
-      <article className="flex flex-col md:flex-row">
-        <div className="flex w-full flex-col">
-          <AlbumArticleHeader
-            album={album}
-            onUpdatedAlbum={(nextAlbum) => {
-              setAlbum((currentAlbum) => ({
-                ...currentAlbum,
-                ...nextAlbum,
-              }))
-              setRefreshKey((prev) => prev + 1)
-            }}
-          />
-          <AlbumWorkList
-            key={refreshKey}
-            albumWorks={album.works}
-            maxCount={album.worksCount}
-            albumId={album.id}
-            page={data.page}
-            refreshKey={refreshKey}
-          />
-        </div>
-      </article>
-    </>
+    <article className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 pb-10 md:gap-8">
+      <AppJsonLdScript jsonLd={jsonLd} />
+      <AlbumArticleHeader album={album} onUpdatedAlbum={() => refetch()} />
+      <AlbumWorkList
+        works={album.works}
+        maxCount={album.worksCount}
+        page={data.page}
+        orderBy={data.orderBy}
+        sort={data.sort}
+        isAdultSeries={isAdultAlbum(album)}
+      />
+      <AlbumOwnerSeries
+        albumId={album.id}
+        ownerUserId={album.user.id}
+        ownerLogin={album.user.login}
+        ownerName={album.user.name}
+        isAdultSeries={isAdultAlbum(album)}
+      />
+    </article>
   )
 }
 
@@ -164,12 +184,20 @@ const LoaderQuery = graphql(
         ...AlbumWorkListItem
       }
       ...AlbumArticleHeader
-      ...AlbumArticleEditorDialog
     }
   }`,
-  [
-    AlbumArticleHeaderFragment,
-    AlbumWorkListItemFragment,
-    AlbumArticleEditorDialogFragment,
-  ],
+  [AlbumArticleHeaderFragment, AlbumWorkListItemFragment],
+)
+
+const ViewerAlbumQuery = graphql(
+  `query ViewerAlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!, $orderBy: AlbumWorkOrderBy, $sort: Sort) {
+    album(id: $albumId) {
+      id
+      works(offset: $offset, limit: $limit, orderBy: $orderBy, sort: $sort) {
+        ...AlbumWorkListItem
+      }
+      ...AlbumArticleHeader
+    }
+  }`,
+  [AlbumArticleHeaderFragment, AlbumWorkListItemFragment],
 )

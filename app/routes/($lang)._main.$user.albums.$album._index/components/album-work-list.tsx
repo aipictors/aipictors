@@ -1,11 +1,10 @@
-import { useSuspenseQuery } from "@apollo/client/index"
-import { useSearchParams } from "@remix-run/react"
+import { Link, useNavigation, useSearchParams } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import type React from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
+import { LinkPagination } from "~/components/link-pagination"
 import { MasonryWorkGrid } from "~/components/masonry-work-grid"
-import { ResponsivePagination } from "~/components/responsive-pagination"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import {
   Select,
@@ -15,56 +14,28 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import {
+  ALBUM_WORKS_PER_PAGE,
+  type AlbumWorkOrder,
+  isAdultWork,
+} from "~/routes/($lang)._main.$user.albums.$album._index/album-page-utils"
 import type { SortType } from "~/types/sort-type"
 
 type Props = {
-  albumId: string
-  albumWorks: FragmentOf<typeof AlbumWorkListItemFragment>[]
+  works: FragmentOf<typeof AlbumWorkListItemFragment>[]
   maxCount: number
   page: number
-  refreshKey?: number
+  orderBy: AlbumWorkOrder
+  sort: SortType
+  isAdultSeries: boolean
 }
 
 type ViewMode = "square" | "natural"
-type AlbumWorkOrder = IntrospectionEnum<"AlbumWorkOrderBy">
-
-const getOrderLabel = (orderBy: AlbumWorkOrder, sort: SortType) => {
-  if (orderBy === "DATE_CREATED") {
-    return sort === "ASC" ? "投稿の古い順" : "投稿日順"
-  }
-
-  if (orderBy === "LIKES_COUNT") {
-    return "いいね順"
-  }
-
-  return "設定順"
-}
-
-const toPage = (value: string | null) => {
-  const parsedValue = Number.parseInt(value ?? "1", 10)
-
-  if (!Number.isInteger(parsedValue) || parsedValue < 1) {
-    return 0
-  }
-
-  return parsedValue - 1
-}
 
 const toViewMode = (value: string | null): ViewMode => {
   return value === "natural" ? "natural" : "square"
-}
-
-const toOrderBy = (value: string | null): AlbumWorkOrder => {
-  if (value === "DATE_CREATED" || value === "LIKES_COUNT" || value === "MANUAL") {
-    return value
-  }
-
-  return "MANUAL"
-}
-
-const toSort = (value: string | null): SortType => {
-  return value === "ASC" ? "ASC" : "DESC"
 }
 
 const toSelectOrderValue = (orderBy: AlbumWorkOrder, sort: SortType) => {
@@ -76,31 +47,33 @@ const toSelectOrderValue = (orderBy: AlbumWorkOrder, sort: SortType) => {
 }
 
 export function AlbumWorkList(props: Props) {
+  const t = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
-  const page = toPage(searchParams.get("page"))
+  const navigation = useNavigation()
   const viewMode = toViewMode(searchParams.get("view"))
-  const orderBy = toOrderBy(searchParams.get("orderBy"))
-  const sort = toSort(searchParams.get("sort"))
-  const selectOrderValue = toSelectOrderValue(orderBy, sort)
+  const isSeriesOrder = props.orderBy === "MANUAL"
+  const firstNumber = ALBUM_WORKS_PER_PAGE * props.page + 1
+  const lastNumber = Math.min(
+    ALBUM_WORKS_PER_PAGE * (props.page + 1),
+    props.maxCount,
+  )
+
+  const orderLabels: Record<string, string> = {
+    MANUAL: t("シリーズの順", "Series order"),
+    DATE_CREATED: t("新しい順", "Newest"),
+    DATE_CREATED_OLD: t("古い順", "Oldest"),
+    LIKES_COUNT: t("いいね順", "Most liked"),
+  }
 
   const updateSearchParams = (updates: {
-    page?: string | null
-    view?: ViewMode | null
-    orderBy?: AlbumWorkOrder | null
+    view?: ViewMode
+    orderBy?: AlbumWorkOrder
     sort?: SortType | null
   }) => {
     const params = new URLSearchParams(searchParams)
 
-    if (updates.page !== undefined) {
-      if (updates.page === null) {
-        params.delete("page")
-      } else {
-        params.set("page", updates.page)
-      }
-    }
-
     if (updates.view !== undefined) {
-      if (updates.view === null || updates.view === "square") {
+      if (updates.view === "square") {
         params.delete("view")
       } else {
         params.set("view", updates.view)
@@ -108,7 +81,7 @@ export function AlbumWorkList(props: Props) {
     }
 
     if (updates.orderBy !== undefined) {
-      if (updates.orderBy === null || updates.orderBy === "MANUAL") {
+      if (updates.orderBy === "MANUAL") {
         params.delete("orderBy")
       } else {
         params.set("orderBy", updates.orderBy)
@@ -125,66 +98,73 @@ export function AlbumWorkList(props: Props) {
       params.delete("page")
     }
 
-    setSearchParams(params)
+    // 一覧を見ている位置から動かさない
+    setSearchParams(params, { preventScrollReset: true })
   }
 
-  const { data } = useSuspenseQuery(query, {
-    variables: {
-      albumId: props.albumId,
-      offset: 32 * page,
-      limit: 32,
-      orderBy,
-      sort,
-    },
-    fetchPolicy: props.refreshKey ? "network-only" : "cache-first",
-    nextFetchPolicy: "cache-first",
-  })
+  const toPageHref = (page: number) => {
+    const params = new URLSearchParams(searchParams)
 
-  const albumWorks = data.album?.works ?? props.albumWorks
+    if (page === 0) {
+      params.delete("page")
+    } else {
+      params.set("page", String(page + 1))
+    }
+
+    const search = params.toString()
+
+    // ページを送ったら、表紙ではなく一覧の先頭に戻る
+    return `${search ? `?${search}` : "?"}#works`
+  }
 
   return (
-    <>
-      <div className="mb-4 flex items-center justify-end">
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <Select
-            value={selectOrderValue}
-            onValueChange={(value) => {
-              if (value === "MANUAL") {
-                updateSearchParams({ orderBy: value, sort: null })
-                return
-              }
-
-              if (value === "DATE_CREATED") {
-                updateSearchParams({ orderBy: value, sort: "DESC" })
-                return
-              }
-
-              if (value === "DATE_CREATED_OLD") {
-                updateSearchParams({ orderBy: "DATE_CREATED", sort: "ASC" })
-                return
-              }
-
-              if (value === "LIKES_COUNT") {
-                updateSearchParams({ orderBy: value, sort: null })
-              }
-            }}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="並び順">
-                {getOrderLabel(orderBy, sort)}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="MANUAL">設定順</SelectItem>
-              <SelectItem value="DATE_CREATED">投稿日順</SelectItem>
-              <SelectItem value="DATE_CREATED_OLD">投稿の古い順</SelectItem>
-              <SelectItem value="LIKES_COUNT">いいね順</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/90 p-1 pr-1.5 shadow-sm backdrop-blur-sm">
-            <span className="pl-2 font-medium text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-              View
+    <section id="works" className="flex scroll-mt-20 flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div className="flex items-baseline gap-2">
+          <h2 className="font-bold text-lg">{t("作品", "Works")}</h2>
+          {props.maxCount > ALBUM_WORKS_PER_PAGE && props.works.length > 0 && (
+            <span className="text-muted-foreground text-xs tabular-nums">
+              {t(
+                `${props.maxCount}件中 ${firstNumber}〜${lastNumber}件`,
+                `${firstNumber}–${lastNumber} of ${props.maxCount}`,
+              )}
             </span>
+          )}
+        </div>
+        {props.maxCount > 1 && (
+          <div className="flex items-center gap-2">
+            <Select
+              value={toSelectOrderValue(props.orderBy, props.sort)}
+              onValueChange={(value) => {
+                if (value === "DATE_CREATED_OLD") {
+                  updateSearchParams({ orderBy: "DATE_CREATED", sort: "ASC" })
+                  return
+                }
+
+                if (value === "MANUAL" || value === "LIKES_COUNT") {
+                  updateSearchParams({ orderBy: value, sort: null })
+                  return
+                }
+
+                if (value === "DATE_CREATED") {
+                  updateSearchParams({ orderBy: value, sort: "DESC" })
+                }
+              }}
+            >
+              <SelectTrigger
+                className="h-9 w-36"
+                aria-label={t("並び順", "Sort order")}
+              >
+                <SelectValue placeholder={t("並び順", "Sort order")} />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(orderLabels).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <ToggleGroup
               type="single"
               value={viewMode}
@@ -193,92 +173,157 @@ export function AlbumWorkList(props: Props) {
                   updateSearchParams({ view: value })
                 }
               }}
-              className="gap-1"
+              className="gap-0.5 rounded-md border p-0.5"
             >
               <ToggleGroupItem
                 value="square"
-                aria-label="正方形表示"
-                className="rounded-full px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                aria-label={t("正方形で表示", "Square view")}
+                title={t("正方形で表示", "Square view")}
+                className="size-8 min-w-8 p-0 data-[state=on]:bg-muted"
               >
                 <SquareViewIcon className="size-4" />
-                <span className="hidden sm:inline">正方形</span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="natural"
-                aria-label="比率維持表示"
-                className="rounded-full px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                aria-label={t("元の比率で表示", "Original ratio view")}
+                title={t("元の比率で表示", "Original ratio view")}
+                className="size-8 min-w-8 p-0 data-[state=on]:bg-muted"
               >
                 <NaturalViewIcon className="size-4" />
-                <span className="hidden sm:inline">比率維持</span>
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
-        </div>
+        )}
       </div>
 
-      {viewMode === "square" ? (
-        <SquareAlbumWorkGrid works={albumWorks} />
-      ) : (
-        <MasonryWorkGrid works={albumWorks} baseUrl="posts" />
-      )}
-
-      <div className="h-8" />
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
-        <ResponsivePagination
-          perPage={32}
-          maxCount={props.maxCount}
-          currentPage={page}
-          onPageChange={(newPage: number) => {
-            updateSearchParams({ page: String(newPage + 1) })
-          }}
-        />
+      <div
+        aria-busy={navigation.state === "loading"}
+        className={cn(
+          "transition-opacity duration-200",
+          navigation.state === "loading" && "opacity-60",
+        )}
+      >
+        {props.works.length === 0 ? (
+          <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-4 py-12 text-center text-muted-foreground text-sm">
+            {props.maxCount === 0 ? (
+              t("まだ作品がありません", "No works yet")
+            ) : (
+              <>
+                {t("このページに作品はありません", "No works on this page")}
+                <Link to={toPageHref(0)} className="text-foreground underline">
+                  {t("最初のページへ", "Go to the first page")}
+                </Link>
+              </>
+            )}
+          </div>
+        ) : viewMode === "square" ? (
+          <SquareAlbumWorkGrid
+            works={props.works}
+            firstNumber={isSeriesOrder ? firstNumber : null}
+            isAdultSeries={props.isAdultSeries}
+          />
+        ) : (
+          <MasonryWorkGrid
+            works={
+              props.isAdultSeries
+                ? props.works
+                : props.works.filter((work) => !isAdultWork(work))
+            }
+            baseUrl="posts"
+          />
+        )}
       </div>
-    </>
+
+      <LinkPagination
+        className="mt-2"
+        currentPage={props.page}
+        totalCount={props.maxCount}
+        perPage={ALBUM_WORKS_PER_PAGE}
+        maxPage={99}
+        toHref={toPageHref}
+        labels={{
+          prev: t("前へ", "Previous"),
+          next: t("次へ", "Next"),
+          nav: t("ページ送り", "Pagination"),
+        }}
+      />
+    </section>
   )
 }
 
 function SquareAlbumWorkGrid(props: {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
+  /** シリーズの順のときの最初の番号（ほかの順では番号を出さない） */
+  firstNumber: number | null
+  isAdultSeries: boolean
 }) {
-  return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-      {props.works.map((work) => (
-        <div
-          key={work.id}
-          className="group relative overflow-hidden rounded-xl bg-card shadow-sm transition-shadow duration-200 hover:shadow-md"
-        >
-          <CroppedWorkSquare
-            title={work.title}
-            workId={work.id}
-            subWorksCount={work.subWorksCount}
-            commentsCount={work.commentsCount}
-            imageUrl={work.smallThumbnailImageURL}
-            thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-            size="auto"
-            imageWidth={work.smallThumbnailImageWidth}
-            imageHeight={work.smallThumbnailImageHeight}
-            isPromptPublic={
-              work.promptAccessType === "PUBLIC" || work.isGeneration
-            }
-            hasVideoUrl={Boolean(work.url)}
-            isGeneration={work.isGeneration}
-          />
+  const t = useTranslation()
 
-          <div className="absolute right-2 bottom-2 z-10">
-            <LikeButton
-              size={44}
-              targetWorkId={work.id}
-              targetWorkOwnerUserId={work.user?.id ?? ""}
-              defaultLiked={work.isLiked}
-              defaultLikedCount={0}
-              likedCount={work.likesCount}
-              isBackgroundNone={true}
-              strokeWidth={2}
-            />
+  return (
+    <ol className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+      {props.works.map((work, index) => (
+        <li key={work.id} className="group min-w-0">
+          <div className="relative overflow-hidden rounded-xl bg-muted shadow-sm transition-shadow duration-200 group-hover:shadow-md">
+            {!props.isAdultSeries && isAdultWork(work) ? (
+              // 全年齢のシリーズに混ざった R18 の作品は、画像を読まずに案内だけ出す
+              <Link
+                to={`/posts/${work.id}`}
+                className="flex aspect-square flex-col items-center justify-center gap-1 text-muted-foreground text-xs"
+              >
+                <span className="rounded-full bg-rose-600 px-2 py-0.5 font-bold text-[11px] text-white">
+                  {work.rating}
+                </span>
+                {t("R18 の作品です", "Adult work")}
+              </Link>
+            ) : (
+              <>
+                <CroppedWorkSquare
+                  title={work.title}
+                  workId={work.id}
+                  subWorksCount={work.subWorksCount}
+                  commentsCount={work.commentsCount}
+                  imageUrl={work.smallThumbnailImageURL}
+                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                  size="auto"
+                  imageWidth={work.smallThumbnailImageWidth}
+                  imageHeight={work.smallThumbnailImageHeight}
+                  isLowPriority={true}
+                  displayWidth="(min-width: 1280px) 240px, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                  isPromptPublic={
+                    work.promptAccessType === "PUBLIC" || work.isGeneration
+                  }
+                  hasVideoUrl={Boolean(work.url)}
+                  isGeneration={work.isGeneration}
+                />
+                <div className="absolute right-2 bottom-2 z-10">
+                  <LikeButton
+                    size={44}
+                    targetWorkId={work.id}
+                    targetWorkOwnerUserId={work.user?.id ?? ""}
+                    defaultLiked={work.isLiked}
+                    defaultLikedCount={0}
+                    likedCount={work.likesCount}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                  />
+                </div>
+              </>
+            )}
           </div>
-        </div>
+          <Link
+            to={`/posts/${work.id}`}
+            className="mt-2 flex min-w-0 items-baseline gap-1.5 text-sm hover:underline"
+          >
+            {props.firstNumber !== null && (
+              <span className="shrink-0 font-bold text-muted-foreground tabular-nums">
+                {props.firstNumber + index}
+              </span>
+            )}
+            <span className="truncate">{work.title}</span>
+          </Link>
+        </li>
       ))}
-    </div>
+    </ol>
   )
 }
 
@@ -326,17 +371,4 @@ export const AlbumWorkListItemFragment = graphql(
     ...PhotoAlbumWork
   }`,
   [PhotoAlbumWorkFragment],
-)
-
-const query = graphql(
-  `query AlbumWorksList($albumId: ID!, $offset: Int!, $limit: Int!, $orderBy: AlbumWorkOrderBy, $sort: Sort) {
-    album(id: $albumId) {
-      id
-      worksCount
-      works(offset: $offset, limit: $limit, orderBy: $orderBy, sort: $sort) {
-        ...AlbumWorkListItem
-      }
-    }
-  }`,
-  [AlbumWorkListItemFragment],
 )
