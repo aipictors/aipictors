@@ -68,8 +68,8 @@ function BubblePosition(props: { children: React.ReactNode }) {
   return (
     <div className="-translate-y-1/2 absolute top-11 left-[calc(100%+0.25rem)] z-20 md:top-[4.25rem] md:left-[calc(100%+0.5rem)]">
       {/* 吹き出しの丸 2 つ。大きい方は本体の下にもぐらせてつなげる */}
-      <span className="-top-3.5 absolute left-1 size-2 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
-      <span className="-top-1.5 absolute left-4 size-4 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
+      <span className="-bottom-3.5 absolute left-1 size-2 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
+      <span className="-bottom-1.5 absolute left-4 size-4 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
       {props.children}
     </div>
   )
