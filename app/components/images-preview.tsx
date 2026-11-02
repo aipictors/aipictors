@@ -39,6 +39,9 @@ const toMainImageSizes = (aspectRatio: number | undefined) => {
 const FIXED_STAGE_IMAGE_SIZES =
   "(min-width: 768px) min(60vw, 72vh), min(100vw, 64vh)"
 
+/** 読み込み後の展開を待つ上限 */
+const STAGE_IMAGE_DECODE_TIMEOUT_MS = 500
+
 export function ImagesPreview(props: Props): React.ReactNode {
   const { mode = "page" } = props
   const [isOpen, setIsOpen] = useState(false)
@@ -349,6 +352,32 @@ export function ImagesPreview(props: Props): React.ReactNode {
     )
   }
 
+  /** 展開が終わったら表示できる印を付ける。展開の完了が来ないブラウザでも切り替えが止まらないよう待ち時間に上限を置く */
+  const markStageImageReadyAfterDecode = (
+    image: HTMLImageElement,
+    url: string,
+  ) => {
+    const done = () => markStageImageReady(url)
+    image.decode().then(done, done)
+    setTimeout(done, STAGE_IMAGE_DECODE_TIMEOUT_MS)
+  }
+
+  // サーバーの HTML に入っている画像は hydration の前に読み終わることがあり、そのときは
+  // onLoad が呼ばれない（押しても画像が変わらなくなる）ので、読み終わっているものをここで拾う
+  const stageRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const images =
+      stageRef.current?.querySelectorAll<HTMLImageElement>(
+        "img[data-stage-url]",
+      ) ?? []
+    for (const image of images) {
+      const url = image.dataset.stageUrl
+      if (url && image.complete && !stageReadyUrls.has(url)) {
+        markStageImageReadyAfterDecode(image, url)
+      }
+    }
+  }, [stageUrls.length])
+
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown)
     return () => {
@@ -592,12 +621,16 @@ export function ImagesPreview(props: Props): React.ReactNode {
   if (props.isFixedHeight) {
     return (
       <>
-        <div className="group/stage relative flex h-[64vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-muted/60 md:h-[72vh]">
+        <div
+          ref={stageRef}
+          className="group/stage relative flex h-[64vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-muted/60 md:h-[72vh]"
+        >
           {stageUrls.map((url) => {
             const isShown = url === shownStageUrl
             return (
               <img
                 key={url}
+                data-stage-url={url}
                 className={`absolute inset-0 size-full cursor-zoom-in object-contain ${isShown ? "" : "invisible"}`}
                 draggable={false}
                 alt={isShown ? "thumbnail" : ""}
@@ -605,10 +638,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 srcSet={toResizedImageSrcSet(url, { minWidth: 400 })}
                 sizes={FIXED_STAGE_IMAGE_SIZES}
                 fetchPriority={isShown ? "high" : "low"}
-                onLoad={(event) => {
-                  const done = () => markStageImageReady(url)
-                  event.currentTarget.decode().then(done, done)
-                }}
+                onLoad={(event) =>
+                  markStageImageReadyAfterDecode(event.currentTarget, url)
+                }
                 onError={() => markStageImageReady(url)}
                 onTouchStart={handleMainTouchStart}
                 onMouseUp={handleMainMouseUp}

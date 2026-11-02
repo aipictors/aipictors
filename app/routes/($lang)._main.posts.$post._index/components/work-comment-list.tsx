@@ -8,6 +8,7 @@ import { useBoolean } from "usehooks-ts"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { ExpansionTransition } from "~/components/expansion-transition"
+import { CoinAmountStepper } from "~/components/coin-amount-stepper"
 import {
   FreeSupportCoinIcon,
   PremiumSupportCoinIcon,
@@ -23,7 +24,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { Input } from "~/components/ui/input"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -143,11 +143,6 @@ const SUPPORT_PREMIUM_COIN_STEPS = [1, 3, 5, 10] as const
 /** これ以上の pt を送るときは確認する（桁の間違いを防ぐ） */
 const SUPPORT_CONFIRM_THRESHOLD_PT = 1000
 
-const parseClampedNonNegativeInt = (value: string, max: number) => {
-  const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
-  if (Number.isNaN(numeric)) return ""
-  return String(Math.min(Math.max(0, numeric), Math.max(0, max)))
-}
 
 const calculateCommentSupportDraft = (
   freeCoinAmount: number,
@@ -1038,61 +1033,55 @@ export function WorkCommentList(props: Props) {
                   {t("プレミアムコインを購入", "Buy premium coins")}
                 </Button>
               ) : (
-                <div className="flex items-center gap-1.5">
-                  {(supportCoinType === "FREE"
-                    ? SUPPORT_FREE_COIN_STEPS
-                    : SUPPORT_PREMIUM_COIN_STEPS
-                  ).map((amount) => {
-                    const current =
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5">
+                    {(supportCoinType === "FREE"
+                      ? SUPPORT_FREE_COIN_STEPS
+                      : SUPPORT_PREMIUM_COIN_STEPS
+                    ).map((amount) => {
+                      const current =
+                        supportCoinType === "FREE"
+                          ? currentFreeSupportCoinAmount
+                          : currentPremiumSupportCoinAmount
+                      const balance =
+                        supportCoinType === "FREE"
+                          ? coinBalances.freeBalance
+                          : coinBalances.premiumBalance
+                      return (
+                        <Button
+                          key={amount}
+                          type="button"
+                          size="sm"
+                          variant={current === amount ? "default" : "outline"}
+                          aria-pressed={current === amount}
+                          className="h-9 min-w-0 flex-1 rounded-full bg-background px-0 font-bold tabular-nums aria-pressed:bg-primary"
+                          disabled={amount > balance}
+                          onClick={() =>
+                            setSupportCoinAmount(
+                              supportCoinType,
+                              current === amount ? "0" : String(amount),
+                            )
+                          }
+                        >
+                          {amount}
+                        </Button>
+                      )
+                    })}
+                  </div>
+                  <CoinAmountStepper
+                    value={
                       supportCoinType === "FREE"
-                        ? currentFreeSupportCoinAmount
-                        : currentPremiumSupportCoinAmount
-                    const balance =
+                        ? supportFreeCoinAmount
+                        : supportPremiumCoinAmount
+                    }
+                    max={
                       supportCoinType === "FREE"
                         ? coinBalances.freeBalance
                         : coinBalances.premiumBalance
-                    return (
-                      <Button
-                        key={amount}
-                        type="button"
-                        size="sm"
-                        variant={current === amount ? "default" : "outline"}
-                        aria-pressed={current === amount}
-                        className="h-9 min-w-0 flex-1 rounded-full bg-background px-0 font-bold tabular-nums aria-pressed:bg-primary"
-                        disabled={amount > balance}
-                        onClick={() =>
-                          setSupportCoinAmount(
-                            supportCoinType,
-                            current === amount ? "0" : String(amount),
-                          )
-                        }
-                      >
-                        {amount}
-                      </Button>
-                    )
-                  })}
-                  <Input
-                    aria-label={t("枚数", "Amount")}
-                    inputMode="numeric"
-                    type="text"
-                    placeholder={t("枚数", "Qty")}
-                    value={
-                      (supportCoinType === "FREE"
-                        ? currentFreeSupportCoinAmount
-                        : currentPremiumSupportCoinAmount) || ""
                     }
-                    onChange={(event) =>
-                      setSupportCoinAmount(
-                        supportCoinType,
-                        parseClampedNonNegativeInt(
-                          event.target.value,
-                          supportCoinType === "FREE"
-                            ? coinBalances.freeBalance
-                            : coinBalances.premiumBalance,
-                        ),
-                      )
+                    onChange={(value) =>
+                      setSupportCoinAmount(supportCoinType, value)
                     }
-                    className="h-9 w-16 shrink-0 rounded-full bg-background px-2 text-center text-sm tabular-nums"
                   />
                 </div>
               )}

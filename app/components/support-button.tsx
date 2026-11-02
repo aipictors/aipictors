@@ -8,6 +8,7 @@ import { graphql } from "gql.tada"
 import { CircleHelp, HeartHandshake, Loader2 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
+import { CoinAmountStepper } from "~/components/coin-amount-stepper"
 import {
   FreeSupportCoinIcon,
   PremiumSupportCoinIcon,
@@ -22,8 +23,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
@@ -81,12 +80,6 @@ const calculateCustomCoinBreakdown = (
 const COIN_OPTIONS: Record<SupportCoinType, readonly number[]> = {
   FREE: [10, 30, 100, 300],
   PREMIUM: [1, 3, 10, 30],
-}
-
-const parseClampedNonNegativeInt = (value: string, max: number) => {
-  const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
-  if (Number.isNaN(numeric)) return ""
-  return String(Math.min(Math.max(0, numeric), Math.max(0, max)))
 }
 
 export function SupportButton({
@@ -489,28 +482,15 @@ export function SupportButton({
                 ))}
               </div>
               <div className="flex items-center gap-2">
-                <Label
-                  htmlFor="support-amount"
-                  className="shrink-0 text-muted-foreground text-xs"
-                >
-                  {t("枚数を入力", "Amount")}
-                </Label>
-                <Input
-                  id="support-amount"
-                  type="text"
-                  inputMode="numeric"
+                <CoinAmountStepper
+                  className="min-w-0 flex-1"
                   value={coinAmount}
-                  onChange={(event) => {
-                    hasTouchedAmountRef.current = true
-                    setCoinAmount(
-                      parseClampedNonNegativeInt(
-                        event.target.value,
-                        coinBalance,
-                      ),
-                    )
-                  }}
-                  className="h-10 min-w-0 flex-1 text-right font-bold tabular-nums"
+                  max={coinBalance}
                   disabled={isLoading}
+                  onChange={(value) => {
+                    hasTouchedAmountRef.current = true
+                    setCoinAmount(value)
+                  }}
                 />
                 <Button
                   type="button"
