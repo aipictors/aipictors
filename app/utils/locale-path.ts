@@ -91,6 +91,10 @@ export const toCanonicalSearch = (search: string, pathname = "") => {
   ) {
     return ""
   }
+  // ジャンルの入口は ?page= でもサーバーの HTML が同じ（ページ送りは画面で読む）ので 1 つにまとめる
+  if (/^\/(?:en\/)?posts\/(?:2d|2\.5d|3d)\/?$/.test(pathname)) {
+    return ""
+  }
   const params = new URLSearchParams(search)
   const page = Number.parseInt(params.get("page") ?? "", 10)
   if (Number.isFinite(page) && page > 0) {
