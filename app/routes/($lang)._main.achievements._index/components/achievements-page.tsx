@@ -247,7 +247,10 @@ export function AchievementsPage() {
                 setSelected(null)
                 setShareTarget({
                   userId: authContext.userId ?? "",
-                  highlight: { key: item.key, name: item.name },
+                  // 隠し実績はカードにも文章にも名前を出さない（見た人のネタバレになる）
+                  highlight: item.isHidden
+                    ? null
+                    : { key: item.key, name: item.name },
                 })
               }
             : undefined
@@ -812,6 +815,14 @@ function AchievementDetailDialog(props: {
             <DialogDescription>
               {t(item.description, item.enDescription)}
             </DialogDescription>
+            {props.isViewer && item.isHidden && item.isUnlocked && (
+              <p className="text-muted-foreground text-xs">
+                {t(
+                  "🤫 隠し実績です。これから見つける人のために、条件はナイショにしてね",
+                  "🤫 This is a secret. Please keep the condition to yourself for others to discover.",
+                )}
+              </p>
+            )}
           </DialogHeader>
 
           <div className="relative space-y-3">

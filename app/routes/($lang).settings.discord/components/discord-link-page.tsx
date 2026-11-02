@@ -216,7 +216,8 @@ export function DiscordLinkPage() {
   const unlocked = useMemo(
     () =>
       (data?.achievements ?? [])
-        .filter((item) => item.isUnlocked)
+        // 隠し実績はロール名として公開されてネタバレになるので選べない
+        .filter((item) => item.isUnlocked && !item.isHidden)
         .sort((a, b) => b.tier - a.tier || b.points - a.points),
     [data?.achievements],
   )

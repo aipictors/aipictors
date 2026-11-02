@@ -45,7 +45,7 @@ const BUBBLE_CLASS_NAME =
   "relative block w-max max-w-[calc(100vw-8.5rem)] rounded-3xl bg-popover px-3.5 py-2 text-left text-popover-foreground text-sm leading-snug shadow-lg ring-1 ring-border/60 md:max-w-md"
 
 /**
- * Discord のような、アイコンから出る吹き出し。アイコンの枠を基準に置く
+ * Discord のような、アイコンの横の吹き出し。ヘッダーとその下の境目にかかるように置く
  * 自分のページでは押して変えられる
  */
 export function UserProfileStatus(props: Props) {
@@ -66,7 +66,7 @@ export function UserProfileStatus(props: Props) {
 
 function BubblePosition(props: { children: React.ReactNode }) {
   return (
-    <div className="absolute bottom-[calc(100%-1.75rem)] left-[calc(100%-0.25rem)] z-20 md:bottom-[calc(100%-4.25rem)] md:left-[calc(100%-0.5rem)]">
+    <div className="-translate-y-1/2 absolute top-11 left-[calc(100%+0.25rem)] z-20 md:top-[4.25rem] md:left-[calc(100%+0.5rem)]">
       {/* 吹き出しの丸 2 つ。大きい方は本体の下にもぐらせてつなげる */}
       <span className="-top-3.5 absolute left-1 size-2 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
       <span className="-top-1.5 absolute left-4 size-4 rounded-full bg-popover shadow-md ring-1 ring-border/60" />

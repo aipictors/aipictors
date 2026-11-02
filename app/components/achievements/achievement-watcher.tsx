@@ -288,7 +288,7 @@ function AchievementUnlockToast(props: {
   achievement: UnlockedAchievement
   remaining: number
   onShown: (keys: string[]) => void
-  onShare: (highlight: { key: string; name: string }) => void
+  onShare: (highlight: { key: string; name: string } | null) => void
   onDone: () => void
 }) {
   const t = useTranslation()
@@ -408,6 +408,14 @@ function AchievementUnlockToast(props: {
                 props.achievement.enDescription,
               )}
             </p>
+            {props.achievement.isHidden && (
+              <p className="line-clamp-1 text-[11px] text-muted-foreground">
+                {t(
+                  "🤫 条件はナイショにしてね",
+                  "🤫 Please keep the condition a secret",
+                )}
+              </p>
+            )}
             {props.achievement.rewardCoins > 0 && (
               <p className="flex animate-achievement-coin items-center gap-1 font-bold text-amber-600 text-sm dark:text-amber-400">
                 <CoinIcon className="size-4" />+{props.achievement.rewardCoins}
@@ -429,7 +437,12 @@ function AchievementUnlockToast(props: {
         <button
           type="button"
           onClick={() => {
-            props.onShare({ key: props.achievement.key, name })
+            // 隠し実績はカードにも文章にも名前を出さない（見た人のネタバレになる）
+            props.onShare(
+              props.achievement.isHidden
+                ? null
+                : { key: props.achievement.key, name },
+            )
             leave()
           }}
           className="absolute right-3 bottom-2.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 px-2.5 py-1 font-bold text-[11px] text-white shadow transition hover:brightness-110 active:scale-95"

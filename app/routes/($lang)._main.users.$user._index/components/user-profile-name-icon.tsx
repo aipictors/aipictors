@@ -122,41 +122,38 @@ export function UserProfileNameIcon(props: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div className="flex min-w-0 items-end gap-3 md:gap-5">
-          <div className="-mt-14 md:-mt-20 relative shrink-0 rounded-full bg-background p-1 shadow-lg">
-            <UserProfileAvatar
-              alt={user.name}
-              frame={user.avatarFrame}
-              src={withIconUrlFallback(user.iconUrl)}
-              size="auto"
-            />
-            <UserProfileStatus statusText={user.statusText} isOwn={isMyPage} />
-          </div>
-          <div className="min-w-0 pb-0.5">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <h1 className="break-words font-bold text-2xl leading-tight tracking-tight md:text-3xl">
-                {user.name.length > 0 ? user.name : t("名無し", "No name")}
-              </h1>
-              <OfficialBadge
-                isOfficial={user.isOfficial}
-                isModerator={user.isModerator}
-                className="size-5"
-              />
-              <UserSubscriptionIcon passType={user.pass?.type} />
-            </div>
-            <p className="mt-0.5 flex flex-wrap items-center gap-x-2 break-all text-muted-foreground text-sm">
-              <span>@{user.login}</span>
-              {!isMyPage && user.isFollower && (
-                <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
-                  {t("フォローされています", "Follows you")}
-                </span>
-              )}
-            </p>
-          </div>
+      <div className="grid gap-x-4 gap-y-3 md:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="-mt-14 md:-mt-20 relative w-fit rounded-full bg-background p-1 shadow-lg">
+          <UserProfileAvatar
+            alt={user.name}
+            frame={user.avatarFrame}
+            src={withIconUrlFallback(user.iconUrl)}
+            size="auto"
+          />
+          <UserProfileStatus statusText={user.statusText} isOwn={isMyPage} />
         </div>
-
-        <div className="flex items-center gap-2 md:shrink-0 md:justify-end">
+        <div className="order-2 min-w-0 md:order-3 md:col-span-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <h1 className="break-words font-bold text-2xl leading-tight tracking-tight md:text-3xl">
+              {user.name.length > 0 ? user.name : t("名無し", "No name")}
+            </h1>
+            <OfficialBadge
+              isOfficial={user.isOfficial}
+              isModerator={user.isModerator}
+              className="size-5"
+            />
+            <UserSubscriptionIcon passType={user.pass?.type} />
+          </div>
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 break-all text-muted-foreground text-sm">
+            <span>@{user.login}</span>
+            {!isMyPage && user.isFollower && (
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                {t("フォローされています", "Follows you")}
+              </span>
+            )}
+          </p>
+        </div>
+        <div className="order-3 flex items-center gap-2 md:order-2 md:justify-end md:self-end">
           {isMyPage ? (
             <ProfileEditDialog
               triggerChildren={

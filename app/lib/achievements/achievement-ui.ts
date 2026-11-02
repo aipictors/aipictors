@@ -145,7 +145,11 @@ export function toAchievementBadgeUrl(props: {
   isHidden: boolean
   isUnlocked: boolean
 }) {
-  if (props.isHidden && !props.isUnlocked) {
+  // hidden- で始まるキーは、自分がまだ達成していない他の人の隠し実績
+  if (
+    (props.isHidden && !props.isUnlocked) ||
+    props.key.startsWith("hidden-")
+  ) {
     return `/achievements/badges/hidden.svg?v=${BADGE_IMAGE_VERSION}`
   }
   return `/achievements/badges/${props.key}.svg?v=${BADGE_IMAGE_VERSION}`

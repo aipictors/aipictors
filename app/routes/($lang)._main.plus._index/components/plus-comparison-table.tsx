@@ -85,6 +85,13 @@ export function PlusComparisonTable () {
       value: (spec) => spec.noAdvertisement,
     },
     {
+      label: t("宣伝作品（広告枠）", "Promotional works (ad space)"),
+      value: (spec) =>
+        spec.plan === "STANDARD" || spec.plan === "PREMIUM"
+          ? t("週1作品", "1 per week")
+          : false,
+    },
+    {
       label: t("認証マーク", "Verified badge"),
       value: (spec) => spec.badge,
     },
