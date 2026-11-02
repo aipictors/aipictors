@@ -74,6 +74,9 @@ export function HomeFooter(): React.ReactNode {
               {"コンテンツ"}
             </p>
             <div className="flex flex-col gap-y-2 text-muted-foreground text-sm">
+              <Link className="hover:text-foreground" to="/posts">
+                {"すべての作品"}
+              </Link>
               <Link
                 className="hover:text-foreground"
                 to={createLink("/posts/2d")}
@@ -85,6 +88,12 @@ export function HomeFooter(): React.ReactNode {
                 to={createLink("/posts/3d")}
               >
                 {"AIフォト"}
+              </Link>
+              <Link className="hover:text-foreground" to="/novels">
+                {"AI小説"}
+              </Link>
+              <Link className="hover:text-foreground" to="/notes">
+                {"コラム"}
               </Link>
               <Link
                 className="hover:text-foreground"

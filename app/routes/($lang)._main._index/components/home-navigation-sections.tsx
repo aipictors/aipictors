@@ -2,6 +2,7 @@ import {
   ActivityIcon,
   AwardIcon,
   BookImageIcon,
+  BookOpenIcon,
   BoxesIcon,
   HeartIcon,
   HelpCircleIcon,
@@ -14,6 +15,7 @@ import {
   LightbulbIcon,
   type LucideIcon,
   MapIcon,
+  NewspaperIcon,
   RocketIcon,
   SearchIcon,
   Shield,
@@ -69,6 +71,8 @@ export function getHomeNavigationSections(
         "/generation",
         "/new/image",
         "/archive",
+        "/novels",
+        "/notes",
       ].includes(path)
     ) {
       return path
@@ -151,6 +155,18 @@ export function getHomeNavigationSections(
           href: link("/posts/3d"),
           label: ["フォト", "Photo"],
           icon: BookImageIcon,
+        },
+        {
+          key: "novels",
+          href: link("/novels"),
+          label: ["小説", "Novels"],
+          icon: BookOpenIcon,
+        },
+        {
+          key: "notes",
+          href: link("/notes"),
+          label: ["コラム", "Columns"],
+          icon: NewspaperIcon,
         },
       ],
     },

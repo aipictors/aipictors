@@ -44,7 +44,7 @@ export type SharedExtra = {
  * 全拠点共通の KV にも置くページ。KV は書き込みが有料なので、数の限られた一覧（検索条件なし）だけにする
  */
 const SHARED_PAGE_PATH =
-  /^\/(?:(?:ja|en)\/?)?(?:r\/?)?(?:$|home\/?$|rankings(?:\/[\w-]+)*\/?$|themes(?:\/[\w-]+)*\/?$|tags\/?$|posts\/(?:2d|2\.5d|3d|novel|column|video)\/?$)/
+  /^\/(?:(?:ja|en)\/?)?(?:r\/?)?(?:$|home\/?$|rankings(?:\/[\w-]+)*\/?$|themes(?:\/[\w-]+)*\/?$|tags\/?$|novels\/?$|notes\/?$|posts(?:\/(?:2d|2\.5d|3d|novel|column|video))?\/?$)/
 
 export const isSharedPage = (url: URL) =>
   !url.search && SHARED_PAGE_PATH.test(url.pathname)

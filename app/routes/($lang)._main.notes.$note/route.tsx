@@ -1,17 +1,19 @@
-import { ParamsError } from "~/errors/params-error"
-import { NoteArticle } from "~/routes/($lang)._main.notes.$note/components/note-article"
-import { useParams } from "@remix-run/react"
+import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare"
+import { buildLocalePath, getPathLocale } from "~/utils/locale-path"
 
-export default function Note () {
-  const params = useParams()
-
-  if (params.note === undefined) {
-    throw new ParamsError()
+/**
+ * コラムの詳細は作品ページ（/posts/:id）にまとまっている
+ */
+export async function loader(props: LoaderFunctionArgs) {
+  const id = props.params.note ?? ""
+  if (!/^\d+$/.test(id)) {
+    throw new Response(null, { status: 404 })
   }
+  const locale = getPathLocale(new URL(props.request.url).pathname)
+  return redirect(buildLocalePath(locale, `/posts/${id}`), { status: 301 })
+}
 
-  return (
-    <>
-      <NoteArticle />
-    </>
-  )
+// 404 のときにサイトのエラーページを出すために必要
+export default function Route() {
+  return null
 }

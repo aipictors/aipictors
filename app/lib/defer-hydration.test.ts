@@ -1,7 +1,7 @@
 import { shouldWaitForInteraction, toDeferredModuleScript } from "./defer-hydration"
 
 test("閲覧ページだけ操作まで hydration を待つ", () => {
-  for (const path of ["/stickers", "/stickers/88052", "/", "/en", "/home", "/en/home", "/r/home", "/posts/818842", "/tags/%E7%8C%AB", "/rankings", "/users/admin", "/search", "/themes", "/themes/2026/10/28", "/r/tags/a"]) {
+  for (const path of ["/posts", "/novels", "/notes", "/en/novels", "/stickers", "/stickers/88052", "/", "/en", "/home", "/en/home", "/r/home", "/posts/818842", "/tags/%E7%8C%AB", "/rankings", "/users/admin", "/search", "/themes", "/themes/2026/10/28", "/r/tags/a"]) {
     expect(shouldWaitForInteraction(path)).toBe(true)
   }
   for (const path of ["/stickers/search/猫", "/stickers/download", "/generation", "/settings/account", "/new/image", "/posts/1/edit", "/admin/works", "/my", "/events/x"]) {
