@@ -74,6 +74,7 @@ export default function AiEvaluationMonthlyRankings() {
     <>
       <div className="space-y-6 pb-8">
         <RankingHeader
+          isPageHeading
           year={data.year}
           month={data.month}
           day={null}

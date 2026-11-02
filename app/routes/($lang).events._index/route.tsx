@@ -1,6 +1,13 @@
 import { gql } from "@apollo/client/index"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { Form, Link, type MetaFunction, useLoaderData } from "@remix-run/react"
+import {
+  Form,
+  Link,
+  type MetaFunction,
+  useLoaderData,
+  useParams,
+} from "@remix-run/react"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import {
   ChevronDown,
   ChevronLeft,
@@ -26,11 +33,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
+import { toJstWallClockUnixSeconds } from "~/utils/jst-date"
+import { getRenderNow } from "~/utils/render-now"
 import {
   AppEventCard,
   type EventCardItem,
 } from "~/routes/($lang).events._index/components/app-event-card"
+import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
 
 type EventSortType =
   | "SCHEDULE"
@@ -368,13 +382,19 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
             aria-hidden="true"
           >
             <img
-              src={event.thumbnailImageUrl}
+              src={toResizedImageUrl(event.thumbnailImageUrl, 64)}
               alt=""
               className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl"
               aria-hidden="true"
             />
+            {/* いちばん大きく見える画像。元画像を縮小して、JS より先に読む */}
             <img
-              src={event.thumbnailImageUrl}
+              src={toResizedImageUrl(event.thumbnailImageUrl, 640)}
+              srcSet={toResizedImageSrcSet(event.thumbnailImageUrl, {
+                minWidth: 320,
+              })}
+              sizes="(min-width: 1024px) 800px, 100vw"
+              fetchPriority="high"
               alt={event.title}
               className="relative h-full w-full object-contain transition duration-300 group-hover:scale-[1.02]"
             />
@@ -556,7 +576,7 @@ function EventListSection(props: EventListSectionProps) {
     : endedEvents.slice(0, ENDED_EVENTS_INITIAL_LIMIT)
 
   // 開催中で残り3日以内のもの
-  const nowSeconds = Date.now() / 1000
+  const nowSeconds = toJstWallClockUnixSeconds(new Date(getRenderNow()))
   const closingSoonCount = activeEvents.filter(
     (event) =>
       event.status === "ONGOING" && event.endAt - nowSeconds <= DAY_SECONDS * 3,
@@ -815,6 +835,8 @@ export const headers: HeadersFunction = () => ({
 export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
+  const params = useParams()
+
   const t = useTranslation()
 
   const formatNumberWithCommas = (value: number) => {
@@ -877,6 +899,17 @@ export default function FollowingLayout() {
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
+      <AppJsonLdScript
+        jsonLd={createCollectionJsonLd({
+          name: "イベント・企画",
+          path: "/events",
+          lang: params.lang,
+          items: [...userEvents, ...officialEvents].map((event) => ({
+            name: event.title,
+            path: `/events/${event.slug}`,
+          })),
+        })}
+      />
       <header className="relative overflow-hidden rounded-2xl border bg-linear-to-br from-violet-100 via-sky-50 to-rose-100 p-4 md:p-6 dark:from-violet-950/60 dark:via-sky-950/40 dark:to-rose-950/40">
         <div
           className="-right-10 -top-16 pointer-events-none absolute size-48 rounded-full bg-violet-400/20 blur-3xl md:size-72"

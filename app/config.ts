@@ -701,7 +701,8 @@ export const META: { [key: string]: MetaData } = {
   RANKINGS: {
     title: "ランキング",
     enTitle: "Rankings",
-    description: "Check Aipictors ranking information",
+    description:
+      "Aipictors のAIイラスト・AI画像のランキングです。デイリー・ウィークリー・マンスリーで人気の作品とクリエイターを見られます。",
     enDescription: "View the ranking information of Aipictors",
     isIndex: true,
   },
@@ -709,7 +710,7 @@ export const META: { [key: string]: MetaData } = {
     title: "お題",
     enTitle: "Themes",
     description:
-      "Themes are updated daily. Create and post AI illustrations based on the theme! Updated at midnight.",
+      "毎日 0 時に変わるお題に沿って、AIイラストを投稿して楽しめます。今日のお題と過去のお題、投稿された作品を見られます。",
     enDescription:
       "Daily themes updated. Create and share your AI illustrations based on today's theme! Updates at midnight.",
     isIndex: true,
@@ -763,6 +764,33 @@ export const META: { [key: string]: MetaData } = {
     image: "{{url}}",
     isIndex: true,
   },
+  NEW_WORKS: {
+    title: "新着のAIイラスト・AI画像",
+    enTitle: "New AI illustrations and images",
+    description:
+      "Aipictors に投稿された新着のAIイラスト・AIフォト・AI動画の一覧です。プロンプトつきの作品をいちばん新しい順に見られます。",
+    enDescription:
+      "The newest AI illustrations, photos and videos posted to Aipictors, many with their prompts.",
+    isIndex: true,
+  },
+  HOME_FEED: {
+    title: "ホーム",
+    enTitle: "Home",
+    description:
+      "おすすめのAIイラスト・AI画像、人気のタグ、ランキングをまとめたAipictorsのホームです。",
+    enDescription:
+      "Recommended AI illustrations and images, popular tags and rankings on Aipictors.",
+    isIndex: true,
+  },
+  GUIDELINE: {
+    title: "ガイドライン",
+    enTitle: "Guidelines",
+    description:
+      "Aipictors を安心して使っていただくための投稿・利用のガイドラインです。",
+    enDescription:
+      "Posting and usage guidelines for using Aipictors with confidence.",
+    isIndex: true,
+  },
   USERS: {
     title: "{{title}}",
     enTitle: "{{enTitle}}",
@@ -795,7 +823,8 @@ export const META: { [key: string]: MetaData } = {
   PRIVACY: {
     title: "プライバシーポリシー",
     enTitle: "Privacy Policy",
-    description: "Aipictorsの個人情報の利用目的、第三者への開示、Cookieの使用などについて説明します。",
+    description:
+      "Aipictors における個人情報の利用目的、第三者開示、Cookie の使用、アクセス解析についての方針です。",
     enDescription: "Read the privacy policy for Aipictors",
     isIndex: true,
   },
@@ -860,7 +889,8 @@ export const META: { [key: string]: MetaData } = {
   AI_RANKINGS_DAY: {
     title: "AI評価デイリーランキング",
     enTitle: "AI Evaluation Daily Rankings",
-    description: "AI evaluation daily ranking information",
+    description:
+      "AI が評価した点数で決まる、AIイラストのデイリーランキングです。上位の作品にはぴくたーちゃんのコメントがつきます。",
     enDescription: "View the AI evaluation daily ranking information",
     isIndex: true,
   },

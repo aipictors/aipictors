@@ -499,7 +499,6 @@ export const PhotoAlbumWorkFragment = graphql(
     prompt
     negativePrompt
     noise
-    seed
     steps
     sampler
     scale

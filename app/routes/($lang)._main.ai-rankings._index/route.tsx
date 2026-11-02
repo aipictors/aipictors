@@ -3,12 +3,14 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
+import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
 import {
   AiEvaluationRankingListItemFragment,
@@ -80,10 +82,24 @@ export const meta: MetaFunction = (props) => {
 
 export default function AiEvaluationRankingsIndex() {
   const data = useLoaderData<typeof loader>()
+  const params = useParams()
 
   return (
     <>
       <div className="space-y-6 pb-8">
+        <AppJsonLdScript
+          jsonLd={createCollectionJsonLd({
+            name: "AI評価デイリーランキング",
+            path: "/ai-rankings",
+            lang: params.lang,
+            parents: [{ name: "ランキング", path: "/rankings" }],
+            items: data.rankings.data.aiEvaluationWorkRankings.flatMap((item) =>
+              item.work
+                ? [{ name: item.work.title, path: `/posts/${item.work.id}` }]
+                : [],
+            ),
+          })}
+        />
         <FeaturedRankingsShowcase
           standardRankings={[]}
           aiRankings={data.rankings.data.aiEvaluationWorkRankings}

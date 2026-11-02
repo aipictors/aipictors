@@ -3,7 +3,8 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
@@ -17,6 +18,7 @@ import {
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { SupportPeriodRankingList } from "~/routes/($lang)._main.rankings._index/components/support-period-ranking-list"
 import { AiEvaluationRankingListItemFragment } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
+import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -166,6 +168,7 @@ export const meta: MetaFunction = (props) => {
  */
 export default function Rankings() {
   const data = useLoaderData<typeof loader>()
+  const params = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
   const rankingFamily: "standard" | "support" =
     data.rankingFamily === "support" ? "support" : "standard"
@@ -211,6 +214,18 @@ export default function Rankings() {
     <>
       {data && (
         <div className="space-y-6 pb-8">
+          <AppJsonLdScript
+            jsonLd={createCollectionJsonLd({
+              name: "AIイラストランキング",
+              path: "/rankings",
+              lang: params.lang,
+              items: (data.workAwards?.data.workAwards ?? []).flatMap((award) =>
+                award.work
+                  ? [{ name: award.work.title, path: `/posts/${award.work.id}` }]
+                  : [],
+              ),
+            })}
+          />
           {rankingFamily === "standard" && data.workAwards && data.aiRankings && (
             <FeaturedRankingsShowcase
               standardRankings={data.workAwards.data.workAwards}

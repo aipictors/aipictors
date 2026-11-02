@@ -1,17 +1,17 @@
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
+import { toJstDisplayDate } from "~/utils/to-jst-display-date"
 
 /**
- * UTC時間から日本時間（UTC+9）に変換
+ * イベントの日時（日本時間の壁時計を UTC として扱った UNIX 秒）を表示用の文字列にする。
+ * サーバー（UTC）とブラウザのどちらでも同じ文字になるようにする
  * @param time
  * @returns
  */
 export function useEventDateTimeText(time: number) {
   const t = useTranslation()
 
-  const date = new Date(time * 1000)
-
-  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
+  const japanTime = toJstDisplayDate((time - 9 * 60 * 60) * 1000)
 
   return t(
     format(japanTime, "yyyy年MM月dd日 HH時mm分"),
