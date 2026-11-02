@@ -17,6 +17,8 @@ import { useTranslation } from "~/hooks/use-translation"
 type Props = {
   /** 使う見込みのプレミアムコイン（null なら閉じている） */
   premiumCoinAmount: number | null
+  /** Gemini の今日の枠を超えるのが理由か（フリーコインは残っている） */
+  isGeminiAllowance?: boolean
   onConfirm: (props: { isNeverAskAgain: boolean }) => void
   onCancel: () => void
 }
@@ -43,10 +45,15 @@ export function GenerationPremiumCoinConfirmDialog(props: Props) {
             {t("プレミアムコインを使います", "Premium coins will be used")}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            {t(
-              `フリーコインが足りないため、この生成でプレミアムコインを${props.premiumCoinAmount ?? 0}枚使います。生成しますか？`,
-              `You don't have enough free coins, so this generation will use ${props.premiumCoinAmount ?? 0} premium coins. Continue?`,
-            )}
+            {props.isGeminiAllowance
+              ? t(
+                  `今日の Gemini の枠を超えるため、この生成でプレミアムコインを${props.premiumCoinAmount ?? 0}枚使います。よろしいですか？（枠は毎日0時に戻ります）`,
+                  `This goes over today's Gemini allowance, so it will use ${props.premiumCoinAmount ?? 0} premium coins. Continue? (The allowance resets at midnight JST.)`,
+                )
+              : t(
+                  `フリーコインが足りないため、この生成でプレミアムコインを${props.premiumCoinAmount ?? 0}枚使います。生成しますか？`,
+                  `You don't have enough free coins, so this generation will use ${props.premiumCoinAmount ?? 0} premium coins. Continue?`,
+                )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex items-center gap-2">

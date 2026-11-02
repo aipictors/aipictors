@@ -19,6 +19,7 @@ import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
 import { setCookie } from "~/lib/cookie-utils"
 import { cn } from "~/lib/utils"
+import { writeContentMode } from "~/utils/content-mode"
 
 type Props = {
   variant?: "compact" | "full" | "toggle" | "menu"
@@ -49,6 +50,8 @@ export function SensitiveToggle({
   }, [location.pathname])
 
   const performR18Toggle = () => {
+    writeContentMode(isR18Mode ? "all" : "r18")
+
     const isEnglish = locale === "en"
     let newPathname = location.pathname
 

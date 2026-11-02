@@ -17,6 +17,17 @@ export const GENERATION_COIN_COST = {
   nanoBanana2: 100,
 } as const
 
+/**
+ * 毎日のフリーコインで作れる Gemini Nano Banana の枚数（aipictors-api の gemini-allowance と同じ。2026-12-01 から）
+ * Nano Banana 2 はこの半分。超えた分はプレミアムコインで作れる
+ */
+const GEMINI_DAILY_IMAGES = {
+  FREE: 0,
+  LITE: 1,
+  STANDARD: 4,
+  PREMIUM: 8,
+} as const
+
 const configKey = {
   FREE: "free",
   LITE: "lite",
@@ -78,6 +89,7 @@ export function getPlanSpec(plan: PlanKey) {
     modelSlots: USER_MODEL_PLAN_LIMITS[plan],
     imageToImage: isPaid,
     nanoBanana: isPaid,
+    geminiDailyImages: GEMINI_DAILY_IMAGES[plan],
     nanoBanana2: isStandardOrAbove,
     fastMode: isStandardOrAbove,
     reservation: isStandardOrAbove,

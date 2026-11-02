@@ -156,6 +156,28 @@ export const getCoinSummaryFromApi = async (props: {
   return parseApiResponse<CoinSummary>(response)
 }
 
+type GeminiAllowance = {
+  planType: string
+  dailyLimit: number
+  used: number
+  remaining: number
+  isEnforced: boolean
+  enforcedFrom: number
+  resetsAt: number
+}
+
+export const getGeminiAllowanceFromApi = async (props: {
+  context: unknown
+  userId: string
+}) => {
+  const response = await fetch(
+    `${getApiBaseUrl(props.context)}/internal/coins/gemini-allowance/${props.userId}`,
+    { headers: getInternalHeaders(props.context) },
+  )
+
+  return parseApiResponse<GeminiAllowance>(response)
+}
+
 export const getAdminCoinHistoryFromApi = async (props: {
   context: unknown
   userId?: string | null

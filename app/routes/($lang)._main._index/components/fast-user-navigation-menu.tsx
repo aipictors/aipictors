@@ -5,7 +5,11 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import {
+  readHeaderUserSnapshot,
+  saveHeaderUserSnapshot,
+} from "~/utils/header-user-snapshot"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useQuery } from "@apollo/client/index"
 import { viewerBasicUserQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
@@ -52,8 +56,21 @@ export function FastUserNavigationMenu(props: Props) {
   // （全ページで読み込み後に取りに行くと API の負荷になるため）
 
   // 認証情報から最低限の表示
+  // 取得するまでは前回のアイコン（読み込み前の表示と同じもの）を出す
+  const [snapshot] = useState(() =>
+    typeof window === "undefined" ? null : readHeaderUserSnapshot(),
+  )
+
+  const fetchedIconUrl = data?.viewer?.user?.iconUrl
+
+  useEffect(() => {
+    if (fetchedIconUrl) {
+      saveHeaderUserSnapshot({ iconUrl: fetchedIconUrl })
+    }
+  }, [fetchedIconUrl])
+
   const iconUrl =
-    data?.viewer?.user?.iconUrl ?? authContext.avatarPhotoURL ?? ""
+    fetchedIconUrl ?? snapshot?.iconUrl ?? authContext.avatarPhotoURL ?? ""
   const displayName = data?.viewer?.user?.name ?? authContext.displayName ?? ""
   const avatarFrame = data?.viewer?.user?.avatarFrame ?? null
 

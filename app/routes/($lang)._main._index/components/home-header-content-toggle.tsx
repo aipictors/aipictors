@@ -15,14 +15,15 @@ import {
 } from "~/components/ui/alert-dialog"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
+import { useContentMode } from "~/hooks/use-content-mode"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { userBasicSettingQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
 import {
   buildAllAgesPath,
-  buildSensitiveHomePath,
   getLocalePrefix,
 } from "~/routes/($lang)._main._index/utils/content-rating-path"
+import { toR18Path, writeContentMode } from "~/utils/content-mode"
 
 const HIDE_KEY = "hideR18Button"
 const AGE_CONFIRMED_KEY = "ageConfirmed"
@@ -63,7 +64,9 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
 
   const localePrefix = getLocalePrefix(location.pathname)
   const pathWithoutLocale = location.pathname.slice(localePrefix.length) || "/"
-  const isR18 = /^\/r(?:\/|$)/.test(pathWithoutLocale)
+  const isOnR18Page = /^\/r(?:\/|$)/.test(pathWithoutLocale)
+  // 生成や設定など /r のページがないところでも、切り替えた状態を出す
+  const isR18 = useContentMode() === "r18"
 
   // R18 のページを見ているときは、非表示にしていても戻れるように出す
   if (isHidden && !isR18) {
@@ -71,11 +74,25 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
   }
 
   const goR18 = () => {
-    navigate(buildSensitiveHomePath(location.pathname, location.search))
+    writeContentMode("r18")
+    const target = toR18Path(location.pathname, location.search)
+    if (target !== null) {
+      navigate(target)
+      return
+    }
+    // /r のページがないところ（生成・設定・作品ページなど）はこのまま。次の移動から R18 になる
+    toast(t("R18 に切り替えました", "Switched to R18"))
   }
 
   const goAllAges = () => {
     if (!isR18) return
+    writeContentMode("all")
+    if (!isOnR18Page) return
+    // R18 の作品ページは全年齢のページにできないのでトップへ
+    if (/^\/r\/posts\/[^/]+/.test(pathWithoutLocale)) {
+      navigate(`${localePrefix}/`)
+      return
+    }
     navigate(buildAllAgesPath(location.pathname, location.search))
   }
 

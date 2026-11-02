@@ -21,6 +21,9 @@ import {
   GenerationNoticeDialog,
   useGenerationNotice,
 } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
+import { GenerationGeminiAllowanceNotice } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-allowance-notice"
+import { GenerationGeminiLimitDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-limit-dialog"
+import { useGeminiAllowance } from "~/routes/($lang).generation._index/hooks/use-gemini-allowance"
 import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
@@ -36,6 +39,7 @@ import {
   logWarn,
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import {
+  estimateGeminiCoinUse,
   estimatePremiumCoinUse,
   PREMIUM_COIN_CONFIRM_STORAGE_KEY,
 } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
@@ -237,6 +241,11 @@ export function GenerationSubmissionView(props: Props) {
 
   // コインが足りないときの案内（プラン・コイン購入）
   const [isCoinShortageOpen, setIsCoinShortageOpen] = useState(false)
+
+  const [isGeminiLimitOpen, setIsGeminiLimitOpen] = useState(false)
+
+  // プレミアムコインの確認で「Gemini の枠を超えるため」と伝えるか
+  const [isPremiumCoinForGemini, setIsPremiumCoinForGemini] = useState(false)
   const initialGrantToastShownRef = useRef(false)
 
   const loadCoinSummary = async () => {
@@ -271,6 +280,16 @@ export function GenerationSubmissionView(props: Props) {
   const { ipInfo } = useIpAddress()
 
   const authContext = useContext(AuthContext)
+
+  const isGeminiModelSelected =
+    context.config.modelType === "GEMINI" ||
+    context.config.modelId === "gemini-2.5-flash-image" ||
+    context.config.modelId === "gemini-3.1-flash-image-preview"
+
+  const { allowance: geminiAllowance, refetch: refetchGeminiAllowance } =
+    useGeminiAllowance({
+      isEnabled: isGeminiModelSelected && authContext.isLoggedIn,
+    })
 
   const { data: pass, refetch: refetchPass } = useQuery(
     viewerCurrentPassQuery,
@@ -597,7 +616,7 @@ export function GenerationSubmissionView(props: Props) {
         },
       })
       toast(
-        "Gemini Nano Banana / Gemini Nano Banana 2 はLite以上のプランでご利用いただけます（Liteは1日3回まで）。",
+        "Gemini Nano Banana はライト以上、Nano Banana 2 はスタンダード以上のプランで利用できます。",
       )
       return
     }
@@ -795,14 +814,43 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
+    // Gemini は毎日のフリーコインから使える量に枠がある。足りなければ先に案内する
+    const geminiCoinUse =
+      isGeminiModelSelected &&
+      geminiAllowance?.isEnforced === true &&
+      coinSummary !== null
+        ? estimateGeminiCoinUse({
+            requestCoinCost,
+            freeBalance: coinSummary.freeBalance,
+            premiumBalance: coinSummary.premiumBalance,
+            allowanceRemaining: geminiAllowance.remaining,
+          })
+        : null
+
+    if (geminiCoinUse !== null && !geminiCoinUse.canGenerate) {
+      logInfo({
+        source: "GenerationSubmit",
+        message: "Blocked: gemini allowance",
+        details: { requestCoinCost, remaining: geminiAllowance?.remaining },
+      })
+      setIsGeminiLimitOpen(true)
+      return
+    }
+
     // フリーコインが足りずプレミアムコインを使うときは確認する
     if (isPremiumCoinConfirmEnabled && coinSummary !== null) {
-      const premiumCoinUse = estimatePremiumCoinUse({
-        requestCoinCost,
-        freeBalance: coinSummary.freeBalance,
-        premiumBalance: coinSummary.premiumBalance,
-      })
+      const premiumCoinUse =
+        geminiCoinUse !== null
+          ? geminiCoinUse.premiumUse
+          : estimatePremiumCoinUse({
+              requestCoinCost,
+              freeBalance: coinSummary.freeBalance,
+              premiumBalance: coinSummary.premiumBalance,
+            })
       if (premiumCoinUse > 0) {
+        setIsPremiumCoinForGemini(
+          geminiCoinUse !== null && coinSummary.freeBalance >= requestCoinCost,
+        )
         const isConfirmed = await confirmPremiumCoinUse(premiumCoinUse)
         if (!isConfirmed) {
           logInfo({
@@ -892,6 +940,10 @@ export function GenerationSubmissionView(props: Props) {
         })
         if (error.message.includes("コイン残高が不足")) {
           setIsCoinShortageOpen(true)
+          return
+        }
+        if (error.message.includes("Gemini の枠")) {
+          setIsGeminiLimitOpen(true)
           return
         }
         toast(error.message)
@@ -1314,6 +1366,9 @@ export function GenerationSubmissionView(props: Props) {
       // 作成が終わった時点でもう一度一覧と残り枚数を取り直す
       dispatchGenerationEvent("generation:task-requested")
     }
+    if (isGeminiModelSelected) {
+      refetchGeminiAllowance()
+    }
     await loadCoinSummary().catch((error) => {
       if (error instanceof Error) {
         logWarn({
@@ -1351,6 +1406,13 @@ export function GenerationSubmissionView(props: Props) {
             <GenerationNoticeBanner
               notice={generationNotice}
               onOpen={() => setGenerationNoticeDialogMode("info")}
+            />
+          )}
+          {isGeminiModelSelected && geminiAllowance !== null && (
+            <GenerationGeminiAllowanceNotice
+              allowance={geminiAllowance}
+              coinCost={selectedModelCoinCost}
+              premiumBalance={coinSummary?.premiumBalance ?? 0}
             />
           )}
           <GenerationSubmitOperationParts
@@ -1394,6 +1456,14 @@ export function GenerationSubmissionView(props: Props) {
             : 0
         }
       />
+      <GenerationGeminiLimitDialog
+        open={isGeminiLimitOpen}
+        onOpenChange={setIsGeminiLimitOpen}
+        coinCost={selectedModelCoinCost}
+        premiumBalance={coinSummary?.premiumBalance ?? 0}
+        passType={subscription ?? null}
+        resetsAt={geminiAllowance?.resetsAt ?? null}
+      />
       <GenerationNoticeDialog
         notice={generationNoticeDialogMode === null ? null : generationNotice}
         mode={generationNoticeDialogMode ?? "info"}
@@ -1403,6 +1473,7 @@ export function GenerationSubmissionView(props: Props) {
       <GenerationPremiumCoinConfirmDialog
         key={premiumCoinConfirmAmount === null ? "closed" : "open"}
         premiumCoinAmount={premiumCoinConfirmAmount}
+        isGeminiAllowance={isPremiumCoinForGemini}
         onConfirm={({ isNeverAskAgain }) => {
           if (isNeverAskAgain) setIsPremiumCoinConfirmEnabled(false)
           settlePremiumCoinConfirm(true)

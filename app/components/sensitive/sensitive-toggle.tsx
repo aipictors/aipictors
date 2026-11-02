@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale"
 import { cn } from "~/lib/utils"
+import { writeContentMode } from "~/utils/content-mode"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -81,6 +82,8 @@ export function SensitiveToggle ({
   }
 
   const performR18Toggle = () => {
+    writeContentMode(isR18Mode ? "all" : "r18")
+
     if (targetUrl) {
       // targetUrlが指定されている場合は絶対パスとしてナビゲートする
       const normalizedTargetUrl = targetUrl.startsWith("/")

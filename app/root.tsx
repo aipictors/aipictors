@@ -26,6 +26,7 @@ import { AppAnalytics } from "~/components/app/app-analytics"
 import { AppErrorPage } from "~/components/app/app-error-page"
 import { AppNotFoundPage } from "~/components/app/app-not-found-page"
 import { Toaster } from "~/components/app/app-sonner"
+import { ContentModeGuard } from "~/components/content-mode-guard"
 import { ContextProviders } from "~/components/context-providers"
 import { ProgressBar } from "~/components/progress-bar"
 import { ThemeProvider } from "~/components/theme-provider"
@@ -34,6 +35,10 @@ import { cn } from "~/lib/utils"
 import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
+import {
+  HEADER_USER_INLINE_SCRIPT,
+  HEADER_USER_INLINE_STYLE,
+} from "~/utils/header-user-snapshot"
 import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { setRenderNow } from "~/utils/render-now"
@@ -559,6 +564,15 @@ export function Layout(props: Props): React.ReactNode {
               "window.addEventListener('vite:preloadError',function(e){try{if(sessionStorage.getItem('aipictors-chunk-reload'))return;sessionStorage.setItem('aipictors-chunk-reload','1');e.preventDefault();location.reload()}catch(_){}});window.addEventListener('load',function(){setTimeout(function(){try{sessionStorage.removeItem('aipictors-chunk-reload')}catch(_){}},10000)})",
           }}
         />
+        <script
+          // ヘッダーのアイコンを描画前に決める（app/utils/header-user-snapshot.ts）
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
+          dangerouslySetInnerHTML={{ __html: HEADER_USER_INLINE_SCRIPT }}
+        />
+        <style
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスタイル
+          dangerouslySetInnerHTML={{ __html: HEADER_USER_INLINE_STYLE }}
+        />
         <link rel="canonical" href={alternateLocaleUrls.canonical} />
         <meta property="og:url" content={alternateLocaleUrls.canonical} />
         {(location.pathname === "/" || location.pathname === "/en") && (
@@ -682,6 +696,7 @@ export default function App(): React.ReactNode {
   return (
     <>
       <Outlet />
+      <ContentModeGuard />
       {/* SSR時は非表示、クライアントサイドでのみ表示 */}
       {isMounted && (
         <>

@@ -16,7 +16,7 @@ type Row = {
 /**
  * 無料とプランの比較表
  */
-export function PlusComparisonTable () {
+export function PlusComparisonTable() {
   const t = useTranslation()
   const specs = PLAN_KEYS.map((plan) => getPlanSpec(plan))
 
@@ -27,7 +27,8 @@ export function PlusComparisonTable () {
     },
     {
       label: t("1回の生成枚数", "Images per request"),
-      value: (spec) => t(`${spec.imagesPerRequest}枚`, `${spec.imagesPerRequest}`),
+      value: (spec) =>
+        t(`${spec.imagesPerRequest}枚`, `${spec.imagesPerRequest}`),
     },
     {
       label: t("毎日のフリーコイン", "Daily free coins"),
@@ -39,7 +40,8 @@ export function PlusComparisonTable () {
     },
     {
       label: t("同時に生成できる数", "Concurrent requests"),
-      value: (spec) => t(`${spec.concurrentTasks}件`, `${spec.concurrentTasks}`),
+      value: (spec) =>
+        t(`${spec.concurrentTasks}件`, `${spec.concurrentTasks}`),
     },
     {
       label: t("高解像度（1回1枚）", "High resolution (1 per request)"),
@@ -56,6 +58,16 @@ export function PlusComparisonTable () {
     {
       label: "Nano Banana 2",
       value: (spec) => spec.nanoBanana2,
+    },
+    {
+      label: t(
+        "Gemini をフリーコインで作れる枚数（1日）",
+        "Gemini images on free coins (per day)",
+      ),
+      value: (spec) =>
+        spec.geminiDailyImages > 0
+          ? t(`${spec.geminiDailyImages}枚`, `${spec.geminiDailyImages}`)
+          : false,
     },
     {
       label: t("高速生成モード", "Fast mode"),

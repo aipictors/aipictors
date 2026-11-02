@@ -55,6 +55,11 @@ const HomeMenuRouteList = lazy(() =>
 )
 
 // ログイン時だけ表示するメニューは、表示するときに読み込む
+import {
+  HomeHeaderAuthPlaceholder,
+  HomeHeaderAvatarPlaceholder,
+} from "~/routes/($lang)._main._index/components/home-header-auth-placeholder"
+
 const HomeNotificationsMenu = lazy(() =>
   import(
     "~/routes/($lang)._main._index/components/home-notifications-menu"
@@ -412,10 +417,7 @@ function HomeHeader(props: Props) {
   }
 
   return (
-    <AppHeader
-      isSmallLeftPadding={isSpecialPage}
-      isBrandAligned={hasOwnBrand}
-    >
+    <AppHeader isSmallLeftPadding={isSpecialPage} isBrandAligned={hasOwnBrand}>
       <div
         className={cn(
           "flex min-w-0 items-center gap-x-0.5",
@@ -673,13 +675,9 @@ function HomeHeader(props: Props) {
         {/* お知らせアイコンとプロフィールアイコン */}
         {!isSearchFormOpen &&
           (authContext.isLoading ? (
-            // ログイン判定中のダミーUI（モバイル最適化済み）
-            // 閲覧ページは hydration を操作まで待つので、サーバーの HTML ではこの状態が長く続く。
-            // 点滅させると表示が終わらない扱いになり（Speed Index）、描画もし続けるので動かさない
-            <div className="flex items-center gap-2">
-              <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700" />
-              <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700" />
-            </div>
+            // ログイン判定中。閲覧ページは hydration を操作まで待つので、サーバーの HTML ではこの状態が長く続く。
+            // 前回のアイコンやログインボタンを描画前に出して、待っている感じをなくす
+            <HomeHeaderAuthPlaceholder />
           ) : authContext.isLoggedIn ? (
             // ログイン時のUI（Suspenseでスムーズなローディング）
             <div className="flex shrink-0 items-center gap-1.5">
@@ -699,11 +697,7 @@ function HomeHeader(props: Props) {
                   }
                 />
               </Suspense>
-              <Suspense
-                fallback={
-                  <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
-                }
-              >
+              <Suspense fallback={<HomeHeaderAvatarPlaceholder />}>
                 <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
               </Suspense>
             </div>

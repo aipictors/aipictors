@@ -9,6 +9,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth"
 import { startTransition, useEffect, useState } from "react"
+import { clearHeaderUserSnapshot } from "~/utils/header-user-snapshot"
 import { withFirebaseAnalytics } from "~/utils/run-after-load-idle"
 
 type Props = {
@@ -17,7 +18,7 @@ type Props = {
 
 type Claims = ParsedToken
 
-export function AuthContextProvider (props: Props): React.ReactNode {
+export function AuthContextProvider(props: Props): React.ReactNode {
   const [isLoading, setLoadingState] = useState(() => {
     return true
   })
@@ -182,6 +183,10 @@ export function AuthContextProvider (props: Props): React.ReactNode {
         isMobile,
         timestamp: new Date().toISOString(),
       })
+
+      if (user === null) {
+        clearHeaderUserSnapshot()
+      }
 
       // 未ログイン表示にするのは、実際にログアウトしている（user が null）ときだけ
       if (user === null) {

@@ -10,7 +10,7 @@ import { toMoneyNumberText } from "~/utils/to-money-number-text"
 /**
  * コインの仕組み
  */
-export function PlusCoinGuide () {
+export function PlusCoinGuide() {
   const t = useTranslation()
   const free = getPlanSpec("FREE")
   const standard = getPlanSpec("STANDARD")
@@ -37,12 +37,18 @@ export function PlusCoinGuide () {
     {
       label: "Gemini Nano Banana",
       cost: GENERATION_COIN_COST.nanoBanana,
-      note: t("ライト以上", "Lite or above"),
+      note: t(
+        "ライト以上・フリーコインで作れる枚数に1日の枠あり",
+        "Lite or above; free coins cover a limited number per day",
+      ),
     },
     {
       label: "Nano Banana 2",
       cost: GENERATION_COIN_COST.nanoBanana2,
-      note: t("スタンダード以上", "Standard or above"),
+      note: t(
+        "スタンダード以上・フリーコインで作れる枚数に1日の枠あり",
+        "Standard or above; free coins cover a limited number per day",
+      ),
     },
   ]
 
@@ -103,6 +109,12 @@ export function PlusCoinGuide () {
           ))}
         </ul>
       </div>
+      <p className="text-muted-foreground text-xs leading-relaxed">
+        {t(
+          "Gemini は1枚の費用が高いため、毎日のフリーコインで作れるのはライト1枚・スタンダード4枚・プレミアム8枚まで（Nano Banana 2 はその半分。2026年12月1日から）。超えた分はプレミアムコインで作れます。ほかのモデルに枠はありません。",
+          "Gemini images cost more to make, so daily free coins cover 1 (Lite), 4 (Standard) or 8 (Premium) per day (half that for Nano Banana 2; from Dec 1, 2026). Premium coins cover the rest. Other models have no such limit.",
+        )}
+      </p>
       <p className="text-muted-foreground text-xs leading-relaxed">
         {t(
           `例：スタンダードなら毎日${standard.dailyFreeCoins}コインで、通常生成を1回4枚×${standard.dailyFreeCoins / (GENERATION_COIN_COST.standard * 4)}回（${standard.dailyImages}枚）できます。生成ではフリーコインが先に使われ、足りない分は購入したプレミアムコインから使われます。`,
