@@ -41,10 +41,8 @@ import { DiscordNamePreview } from "~/routes/($lang).settings.discord/components
 import {
   toAchievementRoleBadgeUrl,
   toDiscordTierColor,
-  toLevelBadgeNumber,
   toLevelBadgeUrl,
   toLevelTier,
-  toNextLevelBadgeNumber,
 } from "~/routes/($lang).settings.discord/utils/discord-badges"
 
 const DISCORD_INVITE_URL = "https://discord.gg/7jA2MmtvtR"
@@ -510,7 +508,6 @@ function DiscordLinkedView(props: {
   const [isSyncing, setIsSyncing] = useState(false)
   const [isUnlinking, setIsUnlinking] = useState(false)
   const [visibleCount, setVisibleCount] = useState(VISIBLE_ACHIEVEMENTS_STEP)
-  const nextBadgeLevel = toNextLevelBadgeNumber(props.level)
 
   const link = { ...props.link, ...draft }
   const selected =
@@ -733,18 +730,6 @@ function DiscordLinkedView(props: {
             </li>
           ))}
         </ul>
-
-        <p className="text-muted-foreground text-xs leading-5">
-          {t(
-            `レベルのバッジは 1・5・10・15・20、その先は 10 ごとの節目の数字です。今はレベル ${props.level} なので「${toLevelBadgeNumber(props.level)}」のバッジです。`,
-            `Level badges show milestones: 1, 5, 10, 15, 20, then every 10 levels. You are level ${props.level}, so your badge shows ${toLevelBadgeNumber(props.level)}.`,
-          )}
-          {nextBadgeLevel !== null &&
-            t(
-              `次はレベル ${nextBadgeLevel} で変わります。`,
-              ` It changes next at level ${nextBadgeLevel}.`,
-            )}
-        </p>
 
         {props.achievements.length > visibleCount && (
           <Button

@@ -4,19 +4,13 @@
 
 import { toAchievementBadgeUrl } from "~/lib/achievements/achievement-ui"
 
-const LEVEL_ROLE_TIERS: { level: number; tier: number }[] = [
+const LEVEL_TIERS: { level: number; tier: number }[] = [
   { level: 1, tier: 1 },
-  { level: 5, tier: 1 },
   { level: 10, tier: 2 },
-  { level: 15, tier: 2 },
   { level: 20, tier: 3 },
-  { level: 30, tier: 3 },
   { level: 40, tier: 4 },
-  { level: 50, tier: 4 },
   { level: 60, tier: 5 },
-  { level: 70, tier: 5 },
   { level: 80, tier: 6 },
-  { level: 90, tier: 6 },
   { level: 100, tier: 7 },
 ]
 
@@ -30,25 +24,17 @@ const TIER_COLORS: Record<number, string> = {
   7: "#ff4d6d",
 }
 
-const toLevelRole = (level: number) => {
-  let matched = LEVEL_ROLE_TIERS[0]
-  for (const role of LEVEL_ROLE_TIERS) {
-    if (level >= role.level) matched = role
+export const toLevelTier = (level: number) => {
+  let matched = LEVEL_TIERS[0].tier
+  for (const item of LEVEL_TIERS) {
+    if (level >= item.level) matched = item.tier
   }
   return matched
 }
 
-export const toLevelTier = (level: number) => toLevelRole(level).tier
-
-/** バッジに書いてある節目の数字（レベル 43 なら 40） */
-export const toLevelBadgeNumber = (level: number) => toLevelRole(level).level
-
-/** 次にバッジが変わるレベル。一番上まで来ていれば null */
-export const toNextLevelBadgeNumber = (level: number) =>
-  LEVEL_ROLE_TIERS.find((role) => role.level > level)?.level ?? null
-
+/** 画像はレベルの数だけあるので、リポジトリに入れず R2 に置く（scripts/discord/generate-level-icons.mjs） */
 export const toLevelBadgeUrl = (level: number) =>
-  `/discord/level/${toLevelRole(level).level}.png`
+  `https://assets.aipictors.com/discord/level/${level}.png`
 
 export const toAchievementRoleBadgeUrl = (key: string) =>
   toAchievementBadgeUrl({ key, isHidden: false, isUnlocked: true })

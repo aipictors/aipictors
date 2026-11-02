@@ -11,21 +11,23 @@ import { join } from "node:path"
 const [puppeteerPath, outputDir] = process.argv.slice(2)
 const { default: puppeteer } = await import(puppeteerPath)
 
-const LEVELS = [
-  [1, 1],
-  [5, 1],
-  [10, 2],
-  [15, 2],
-  [20, 3],
-  [30, 3],
-  [40, 4],
-  [50, 4],
-  [60, 5],
-  [70, 5],
-  [80, 6],
-  [90, 6],
-  [100, 7],
-]
+// aipictors-api の lib/discord.ts の LEVEL_TIERS と同じ色分け。今の実績を全部達成するとレベル 88 なので余裕を持たせる
+const MAX_LEVEL = 199
+
+const toTier = (level) => {
+  if (level >= 100) return 7
+  if (level >= 80) return 6
+  if (level >= 60) return 5
+  if (level >= 40) return 4
+  if (level >= 20) return 3
+  if (level >= 10) return 2
+  return 1
+}
+
+const LEVELS = Array.from({ length: MAX_LEVEL }, (_, index) => [
+  index + 1,
+  toTier(index + 1),
+])
 
 // 実績のバッジのランクの金属と同じ系統
 const METALS = {
