@@ -53,8 +53,9 @@ export const toDeferredModuleScript = (
   // 表示はサーバーの HTML のままで、リンクは普通に移動できる。hydration（スマホで 1〜2 秒メインスレッドを使う）が
   // 表示直後のスクロールや画像の表示を止めていた。
   // ログインしている人はヘッダーなどがログイン後の表示に変わる必要があるので、待たない
+  // login_user_token は生成ページを開くまで入らないので、ヘッダーのアイコンの控えも見る（app/utils/header-user-snapshot.ts）
   const waitForInteraction = options.waitForInteraction
-    ? `await new Promise(function(r){try{if(/login_token=/.test(document.cookie)||localStorage.getItem("login_user_token")){r();return}}catch(e){}var d=false,es=["pointerdown","keydown","touchstart","scroll","wheel","mousemove"];function go(){if(d)return;d=true;es.forEach(function(e){removeEventListener(e,go,true)});r()}es.forEach(function(e){addEventListener(e,go,{capture:true,passive:true})});function idle(){setTimeout(go,${HYDRATE_IDLE_MS})}if(document.readyState==="complete")idle();else addEventListener("load",idle,{once:true})});\n`
+    ? `await new Promise(function(r){try{if(/login_token=/.test(document.cookie)||localStorage.getItem("login_user_token")||localStorage.getItem("aipictors.headerUser")){r();return}}catch(e){}var d=false,es=["pointerdown","keydown","touchstart","scroll","wheel","mousemove"];function go(){if(d)return;d=true;es.forEach(function(e){removeEventListener(e,go,true)});r()}es.forEach(function(e){addEventListener(e,go,{capture:true,passive:true})});function idle(){setTimeout(go,${HYDRATE_IDLE_MS})}if(document.readyState==="complete")idle();else addEventListener("load",idle,{once:true})});\n`
     : ""
   // 最初の描画を待つ（first-contentful-paint か、2 フレーム描画されたとき。中身が画像や文字でないページもあるため）。
   // 裏のタブでは描画されないので待たない。万一描画が来なくても 5 秒で始める
