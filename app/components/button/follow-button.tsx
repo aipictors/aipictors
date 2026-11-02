@@ -248,7 +248,7 @@ export function FollowButton(props: Props): React.ReactNode {
     <button
       type="button"
       className={cn(
-        "h-8 w-full rounded-full bg-clear-bright-blue p-1 font-bold text-white transition hover:opacity-80 active:scale-95",
+        "h-8 w-full whitespace-nowrap rounded-full bg-clear-bright-blue px-2 py-1 font-bold text-sm text-white transition hover:opacity-80 active:scale-95",
         props.className,
       )}
     >
@@ -260,7 +260,7 @@ export function FollowButton(props: Props): React.ReactNode {
     <button
       type="button"
       className={cn(
-        "group flex h-8 w-full items-center justify-center gap-1 rounded-full border border-border bg-secondary p-1 font-bold text-secondary-foreground transition hover:border-destructive/50 hover:bg-destructive/10 hover:text-destructive active:scale-95",
+        "group flex h-8 w-full items-center justify-center gap-1 whitespace-nowrap rounded-full border border-border bg-secondary px-2 py-1 font-bold text-secondary-foreground text-sm transition hover:border-destructive/50 hover:bg-destructive/10 hover:text-destructive active:scale-95",
         props.className,
       )}
       aria-label={t(

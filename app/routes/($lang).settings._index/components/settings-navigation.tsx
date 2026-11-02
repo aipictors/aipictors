@@ -63,7 +63,7 @@ export function SettingsNavigation() {
     {
       title: t("フォロー・ミュート", "Follow & Mute"),
       items: [
-        { href: "/settings/followed/tags", icon: TagIcon, label: t("フォロータグ", "Followed Tags") },
+        { href: "/settings/followed/tags", icon: TagIcon, label: t("お気に入りタグ", "Followed Tags") },
         { href: "/settings/muted/users", icon: UserXIcon, label: t("ユーザミュート", "Muted Users") },
         { href: "/settings/blocked/users", icon: UserXIcon, label: t("ユーザブロック", "Blocked Users") },
         { href: "/settings/muted/tags", icon: BookmarkXIcon, label: t("タグミュート", "Muted Tags") },

@@ -174,7 +174,7 @@ export function UserProfileNameIcon(props: Props) {
               isFollower={Boolean(user.isFollower)}
               onFollowChange={onFollowChange}
               triggerChildren={
-                <Button className="h-11 flex-1 rounded-full px-6 font-bold active:scale-95 md:flex-none">
+                <Button className="h-11 flex-1 whitespace-nowrap rounded-full px-3 font-bold active:scale-95 md:flex-none md:px-6">
                   {user.isFollower
                     ? t("フォローバック", "Follow back")
                     : t("フォロー", "Follow")}
@@ -183,7 +183,7 @@ export function UserProfileNameIcon(props: Props) {
               unFollowTriggerChildren={
                 <Button
                   variant="secondary"
-                  className="group h-11 flex-1 gap-1 rounded-full px-6 font-bold hover:bg-destructive/10 hover:text-destructive active:scale-95 md:flex-none"
+                  className="group h-11 flex-1 gap-1 whitespace-nowrap rounded-full px-3 font-bold hover:bg-destructive/10 hover:text-destructive active:scale-95 md:flex-none md:px-6"
                 >
                   <CheckIcon className="size-4 group-hover:hidden" />
                   <span className="group-hover:hidden">
@@ -204,6 +204,7 @@ export function UserProfileNameIcon(props: Props) {
               freeCoinBalance={balance?.freeCoinsBalance ?? 0}
               premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
               variant="profile"
+              triggerClassName="px-3 md:px-6"
             />
           )}
           <UserActionShare login={user.login} name={user.name} />

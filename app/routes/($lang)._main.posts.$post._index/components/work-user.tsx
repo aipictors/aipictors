@@ -113,6 +113,7 @@ export function WorkUser(props: Props) {
           isFollow={isFollow}
           isFollower={data?.user?.isFollower ?? false}
           onFollowChange={onFollowChange}
+          className="h-10"
         />
         {canShowSupportButton && (
           <SupportButton
@@ -122,6 +123,7 @@ export function WorkUser(props: Props) {
             freeCoinBalance={balance.freeCoinsBalance}
             premiumCoinBalance={balance.premiumCoinsBalance}
             variant="profile"
+            triggerClassName="h-10 w-full px-3 text-sm"
           />
         )}
       </div>

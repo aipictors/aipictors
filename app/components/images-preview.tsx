@@ -1,12 +1,15 @@
-import { ChevronLeft, ChevronRight, Keyboard, XIcon } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  Keyboard,
+  Loader2,
+  XIcon,
+} from "lucide-react"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
-import {
-  toResizedImageSrcSet,
-  toResizedImageUrl,
-} from "~/utils/resized-image-url"
 import { Button } from "~/components/ui/button"
+import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 
 type Props = {
   imageURLs: string[]
@@ -35,14 +38,6 @@ const toMainImageSizes = (aspectRatio: number | undefined) => {
 /** 高さ固定の枠の sizes。縦横比が分からない画像もあるので、枠の高さまでを上限にする */
 const FIXED_STAGE_IMAGE_SIZES =
   "(min-width: 768px) min(60vw, 72vh), min(100vw, 64vh)"
-
-const loadStageImage = (url: string) => {
-  const image = new Image()
-  image.sizes = FIXED_STAGE_IMAGE_SIZES
-  image.srcset = toResizedImageSrcSet(url, { minWidth: 400 }) ?? ""
-  image.src = url
-  return image
-}
 
 export function ImagesPreview(props: Props): React.ReactNode {
   const { mode = "page" } = props
@@ -319,34 +314,40 @@ export function ImagesPreview(props: Props): React.ReactNode {
     }
   }
 
-  // 前後の画像を先に読んでおき、切り替えをすぐ終わらせる（同じ srcSet / sizes で読む）
-  // biome-ignore lint/correctness/useExhaustiveDependencies: 表示中の画像が変わったときだけ
-  useEffect(() => {
-    if (!props.isFixedHeight || props.imageURLs.length < 2) return
-    const count = props.imageURLs.length
-    for (const offset of [1, -1]) {
-      loadStageImage(
-        props.imageURLs[(props.currentIndex + offset + count) % count],
-      )
-    }
-  }, [props.currentIndex, props.isFixedHeight])
+  // 枠に出す画像は重ねておき、読み込みと展開が終わったものの表示を切り替えるだけにする。
+  // 1 枚の src を変えると、読み込み中に消えたり画像の大きさに合わせて伸び縮みしたりする
+  const [stageReadyUrls, setStageReadyUrls] = useState(
+    () => new Set([props.thumbnailUrl]),
+  )
+  const [stageVisitedUrls, setStageVisitedUrls] = useState(
+    () => new Set([props.thumbnailUrl]),
+  )
+  if (props.isFixedHeight && !stageVisitedUrls.has(props.thumbnailUrl)) {
+    setStageVisitedUrls(new Set(stageVisitedUrls).add(props.thumbnailUrl))
+  }
+  const shownStageUrlRef = useRef(props.thumbnailUrl)
+  if (stageReadyUrls.has(props.thumbnailUrl)) {
+    shownStageUrlRef.current = props.thumbnailUrl
+  }
+  const shownStageUrl = shownStageUrlRef.current
+  const isStageImagePending = shownStageUrl !== props.thumbnailUrl
 
-  // 枠に出す画像は読み込みが終わってから入れ替える。src を直接変えると読み込み中に一瞬消える
-  const [stageImageUrl, setStageImageUrl] = useState(props.thumbnailUrl)
-  const isStageImagePending = stageImageUrl !== props.thumbnailUrl
+  // 今の画像のほか、前後を先に読む（押したときにすぐ出せるように）
+  const stageUrls = [...stageVisitedUrls]
+  for (const offset of [1, -1, 2]) {
+    const url =
+      props.imageURLs[
+        (props.currentIndex + offset + props.imageURLs.length * 2) %
+          props.imageURLs.length
+      ]
+    if (url && !stageVisitedUrls.has(url)) stageUrls.push(url)
+  }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: 選んだ画像が変わったときだけ
-  useEffect(() => {
-    if (!props.isFixedHeight || !isStageImagePending) return
-    let isCancelled = false
-    const show = () => {
-      if (!isCancelled) setStageImageUrl(props.thumbnailUrl)
-    }
-    loadStageImage(props.thumbnailUrl).decode().then(show, show)
-    return () => {
-      isCancelled = true
-    }
-  }, [props.thumbnailUrl, props.isFixedHeight])
+  const markStageImageReady = (url: string) => {
+    setStageReadyUrls((current) =>
+      current.has(url) ? current : new Set(current).add(url),
+    )
+  }
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown)
@@ -453,7 +454,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
     setTranslate({ x: 0, y: 0 })
   }
 
-  const handleMainTouchStart: React.TouchEventHandler<HTMLImageElement> = (e) => {
+  const handleMainTouchStart: React.TouchEventHandler<HTMLImageElement> = (
+    e,
+  ) => {
     dragMovedRef.current = false
     startCoord.current = {
       x: e.touches[0].clientX,
@@ -590,37 +593,37 @@ export function ImagesPreview(props: Props): React.ReactNode {
     return (
       <>
         <div className="group/stage relative flex h-[64vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-muted/60 md:h-[72vh]">
-          <img
-            ref={mainImgRef}
-            className="max-h-full max-w-full cursor-zoom-in object-contain"
-            draggable={false}
-            alt="thumbnail"
-            src={stageImageUrl}
-            srcSet={toResizedImageSrcSet(stageImageUrl, {
-              minWidth: 400,
-            })}
-            sizes={FIXED_STAGE_IMAGE_SIZES}
-            fetchPriority="high"
-            onTouchStart={handleMainTouchStart}
-            onMouseUp={handleMainMouseUp}
-            onMouseDown={handleMainMouseDown}
-            onTouchEnd={handleMainTouchEnd}
-            style={{ userSelect: "none" }}
-          />
-          {/* 読み込み中は選んだ画像のサムネイルを出して、押した反応をすぐ返す */}
-          {isStageImagePending && (
-            <img
-              className="pointer-events-none absolute inset-0 size-full object-contain blur-sm"
-              alt=""
-              src={toResizedImageUrl(props.thumbnailUrl, 160)}
-            />
-          )}
+          {stageUrls.map((url) => {
+            const isShown = url === shownStageUrl
+            return (
+              <img
+                key={url}
+                className={`absolute inset-0 size-full cursor-zoom-in object-contain ${isShown ? "" : "invisible"}`}
+                draggable={false}
+                alt={isShown ? "thumbnail" : ""}
+                src={url}
+                srcSet={toResizedImageSrcSet(url, { minWidth: 400 })}
+                sizes={FIXED_STAGE_IMAGE_SIZES}
+                fetchPriority={isShown ? "high" : "low"}
+                onLoad={(event) => {
+                  const done = () => markStageImageReady(url)
+                  event.currentTarget.decode().then(done, done)
+                }}
+                onError={() => markStageImageReady(url)}
+                onTouchStart={handleMainTouchStart}
+                onMouseUp={handleMainMouseUp}
+                onMouseDown={handleMainMouseDown}
+                onTouchEnd={handleMainTouchEnd}
+                style={{ userSelect: "none" }}
+              />
+            )
+          })}
           <button
             type="button"
             aria-label="前の画像"
             title="前の画像（A / ←）"
             onClick={prevImage}
-            className="absolute left-2 flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:focus-visible:opacity-100 md:group-hover/stage:opacity-100"
+            className="absolute left-2 flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:group-hover/stage:opacity-100 md:focus-visible:opacity-100"
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -629,11 +632,12 @@ export function ImagesPreview(props: Props): React.ReactNode {
             aria-label="次の画像"
             title="次の画像（D / →）"
             onClick={nextImage}
-            className="absolute right-2 flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:focus-visible:opacity-100 md:group-hover/stage:opacity-100"
+            className="absolute right-2 flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:group-hover/stage:opacity-100 md:focus-visible:opacity-100"
           >
             <ChevronRight className="size-5" />
           </button>
-          <span className="pointer-events-none absolute top-2 right-2 rounded-full bg-black/55 px-2.5 py-1 font-medium text-white text-xs tabular-nums backdrop-blur-sm">
+          <span className="pointer-events-none absolute top-2 right-2 flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 font-medium text-white text-xs tabular-nums backdrop-blur-sm">
+            {isStageImagePending && <Loader2 className="size-3 animate-spin" />}
             {props.currentIndex + 1} / {props.imageURLs.length}
           </span>
         </div>

@@ -37,7 +37,7 @@ const SETTINGS_PAGES: { href: string; ja: string; en: string }[] = [
     en: "Display Content",
   },
   { href: "/settings/color", ja: "カラーテーマ", en: "Color Theme" },
-  { href: "/settings/followed/tags", ja: "フォロータグ", en: "Followed Tags" },
+  { href: "/settings/followed/tags", ja: "お気に入りタグ", en: "Followed Tags" },
   { href: "/settings/muted/users", ja: "ユーザミュート", en: "Muted Users" },
   {
     href: "/settings/blocked/users",

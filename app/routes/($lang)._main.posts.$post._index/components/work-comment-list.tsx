@@ -6,7 +6,6 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { CoinIcon } from "~/components/coin-icon"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import {
@@ -28,6 +27,7 @@ import { Input } from "~/components/ui/input"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import {
@@ -137,8 +137,8 @@ type PremiumConfirmResponse = {
  * 推しコインのボタンで足す量。よく使われるのは 10〜100pt くらい（プレミアムは 1 枚 10pt）
  * 以前は 100/500/1000 でスマホでは入力が面倒、桁を間違えて多く送ってしまうことがあった
  */
-const SUPPORT_FREE_COIN_STEPS = [10, 20, 30, 50, 100] as const
-const SUPPORT_PREMIUM_COIN_STEPS = [1, 2, 3, 5, 10] as const
+const SUPPORT_FREE_COIN_STEPS = [10, 30, 50, 100] as const
+const SUPPORT_PREMIUM_COIN_STEPS = [1, 3, 5, 10] as const
 
 /** これ以上の pt を送るときは確認する（桁の間違いを防ぐ） */
 const SUPPORT_CONFIRM_THRESHOLD_PT = 1000
@@ -215,6 +215,9 @@ export function WorkCommentList(props: Props) {
 
   const [comment, setComment] = useState("")
   const [isSupportOpen, setIsSupportOpen] = useState(false)
+  const [supportCoinType, setSupportCoinType] = useState<"FREE" | "PREMIUM">(
+    "FREE",
+  )
   const [supportFreeCoinAmount, setSupportFreeCoinAmount] = useState("0")
   const [supportPremiumCoinAmount, setSupportPremiumCoinAmount] = useState("0")
   const [supportIsAnonymous, setSupportIsAnonymous] = useState(false)
@@ -614,26 +617,13 @@ export function WorkCommentList(props: Props) {
   const hasSupportInput =
     currentFreeSupportCoinAmount > 0 || currentPremiumSupportCoinAmount > 0
 
-  const adjustSupportCoinAmount = (
+  /** コインの種類は 1 つずつ。選び直すと金額もそちらだけになる */
+  const setSupportCoinAmount = (
     coinType: "FREE" | "PREMIUM",
-    delta: number,
+    amount: string,
   ) => {
-    const currentValue =
-      coinType === "FREE"
-        ? currentFreeSupportCoinAmount
-        : currentPremiumSupportCoinAmount
-    const maxValue =
-      coinType === "FREE"
-        ? coinBalances.freeBalance
-        : coinBalances.premiumBalance
-    const nextValue = Math.min(maxValue, Math.max(0, currentValue + delta))
-
-    if (coinType === "FREE") {
-      setSupportFreeCoinAmount(String(nextValue))
-      return
-    }
-
-    setSupportPremiumCoinAmount(String(nextValue))
+    setSupportFreeCoinAmount(coinType === "FREE" ? amount : "0")
+    setSupportPremiumCoinAmount(coinType === "PREMIUM" ? amount : "0")
   }
 
   const sendComment = async (
@@ -970,210 +960,159 @@ export function WorkCommentList(props: Props) {
                     disabled={
                       !authContext.isLoggedIn || props.isWorkOwnerBlocked
                     }
-                    variant={comment.trim().length > 0 ? "default" : "secondary"}
+                    variant={
+                      comment.trim().length > 0 ? "default" : "secondary"
+                    }
                     onClick={onWorkComment}
-                    className="h-[46px] min-h-[46px] rounded-2xl px-5 text-sm"
+                    className={cn(
+                      "h-[46px] min-h-[46px] whitespace-nowrap rounded-2xl px-5 text-sm",
+                      currentSupportDraft &&
+                        "border-0 bg-gradient-to-r from-pink-500 to-rose-500 px-3 font-bold text-white hover:opacity-90",
+                    )}
                   >
-                    {t("送信", "Send")}
+                    {currentSupportDraft
+                      ? t(
+                          `${currentSupportDraft.totalPt}pt 推す`,
+                          `Send ${currentSupportDraft.totalPt}pt`,
+                        )
+                      : t("送信", "Send")}
                   </Button>
                 )}
               </div>
             </div>
           </div>
           {isSupportOpen && !props.isWorkOwnerBlocked && !isOwnWork && (
-            <div className="rounded-xl border border-rose-200/80 bg-rose-50/80 p-3 dark:border-rose-900/60 dark:bg-rose-950/20">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-sm font-medium text-rose-700 dark:text-rose-200">
-                  <Heart className="size-4 fill-rose-500 text-rose-500" />
-                  <span>{t("推し付きコメント", "Support comment")}</span>
-                </div>
-                <div className="text-xs text-rose-700/80 dark:text-rose-200/80">
-                  {isLoadingCoinSummary ? t("読込中...", "Loading...") : ""}
-                </div>
+            <div className="space-y-2.5 rounded-2xl bg-rose-500/5 p-3 ring-1 ring-rose-500/20 md:ml-13">
+              <div className="flex items-center gap-1.5">
+                {(
+                  [
+                    {
+                      type: "FREE",
+                      icon: <FreeSupportCoinIcon className="size-4" />,
+                      label: t("フリー", "Free"),
+                      balance: coinBalances.freeBalance,
+                    },
+                    {
+                      type: "PREMIUM",
+                      icon: <PremiumSupportCoinIcon className="size-4" />,
+                      label: t("プレミアム×10pt", "Premium ×10pt"),
+                      balance: coinBalances.premiumBalance,
+                    },
+                  ] as const
+                ).map((item) => (
+                  <button
+                    key={item.type}
+                    type="button"
+                    aria-pressed={supportCoinType === item.type}
+                    onClick={() => {
+                      setSupportCoinType(item.type)
+                      setSupportCoinAmount(item.type, "0")
+                    }}
+                    className={cn(
+                      "flex min-w-0 items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-xs transition-colors",
+                      supportCoinType === item.type
+                        ? "bg-background font-bold shadow-sm ring-1 ring-rose-500/50"
+                        : "text-muted-foreground hover:bg-background/60",
+                    )}
+                  >
+                    {item.icon}
+                    {item.label}
+                    <span className="tabular-nums">
+                      {isLoadingCoinSummary
+                        ? "…"
+                        : item.balance.toLocaleString()}
+                    </span>
+                  </button>
+                ))}
               </div>
-              {!isLoadingCoinSummary && (
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-white/70 px-3 py-2 text-sm dark:bg-black/20">
-                  <span className="font-medium text-rose-700/80 dark:text-rose-100/80">
-                    {t("保有", "Balance")}
-                  </span>
-                  <span className="flex items-center gap-1.5 font-semibold text-foreground">
-                    <FreeSupportCoinIcon className="h-4 w-4" />
-                    <span>{coinBalances.freeBalance}</span>
-                  </span>
-                  <span className="flex items-center gap-1.5 font-semibold text-foreground">
-                    <PremiumSupportCoinIcon className="h-4 w-4" />
-                    <span>{coinBalances.premiumBalance}</span>
-                  </span>
+              {supportCoinType === "PREMIUM" &&
+              !isLoadingCoinSummary &&
+              coinBalances.premiumBalance === 0 ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={() => setIsPremiumPurchaseDialogOpen(true)}
+                >
+                  {t("プレミアムコインを購入", "Buy premium coins")}
+                </Button>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  {(supportCoinType === "FREE"
+                    ? SUPPORT_FREE_COIN_STEPS
+                    : SUPPORT_PREMIUM_COIN_STEPS
+                  ).map((amount) => {
+                    const current =
+                      supportCoinType === "FREE"
+                        ? currentFreeSupportCoinAmount
+                        : currentPremiumSupportCoinAmount
+                    const balance =
+                      supportCoinType === "FREE"
+                        ? coinBalances.freeBalance
+                        : coinBalances.premiumBalance
+                    return (
+                      <Button
+                        key={amount}
+                        type="button"
+                        size="sm"
+                        variant={current === amount ? "default" : "outline"}
+                        aria-pressed={current === amount}
+                        className="h-9 min-w-0 flex-1 rounded-full bg-background px-0 font-bold tabular-nums aria-pressed:bg-primary"
+                        disabled={amount > balance}
+                        onClick={() =>
+                          setSupportCoinAmount(
+                            supportCoinType,
+                            current === amount ? "0" : String(amount),
+                          )
+                        }
+                      >
+                        {amount}
+                      </Button>
+                    )
+                  })}
+                  <Input
+                    aria-label={t("枚数", "Amount")}
+                    inputMode="numeric"
+                    type="text"
+                    placeholder={t("枚数", "Qty")}
+                    value={
+                      (supportCoinType === "FREE"
+                        ? currentFreeSupportCoinAmount
+                        : currentPremiumSupportCoinAmount) || ""
+                    }
+                    onChange={(event) =>
+                      setSupportCoinAmount(
+                        supportCoinType,
+                        parseClampedNonNegativeInt(
+                          event.target.value,
+                          supportCoinType === "FREE"
+                            ? coinBalances.freeBalance
+                            : coinBalances.premiumBalance,
+                        ),
+                      )
+                    }
+                    className="h-9 w-16 shrink-0 rounded-full bg-background px-2 text-center text-sm tabular-nums"
+                  />
                 </div>
               )}
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <CoinIcon className="size-3.5" />
-                    {t("フリー", "Free")}
-                  </label>
-                  <Input
-                    inputMode="numeric"
-                    min={0}
-                    max={coinBalances.freeBalance}
-                    type="number"
-                    value={supportFreeCoinAmount}
-                    onChange={(event) =>
-                      setSupportFreeCoinAmount(
-                        parseClampedNonNegativeInt(
-                          event.target.value,
-                          coinBalances.freeBalance,
-                        ),
-                      )
-                    }
-                    disabled={!authContext.isLoggedIn}
-                  />
-                  <div className="grid grid-cols-3 gap-1.5 pt-1">
-                    {SUPPORT_FREE_COIN_STEPS.map((amount) => (
-                      <Button
-                        key={`free-${amount}`}
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-9"
-                        disabled={
-                          !authContext.isLoggedIn ||
-                          currentFreeSupportCoinAmount >= coinBalances.freeBalance
-                        }
-                        onClick={() => adjustSupportCoinAmount("FREE", amount)}
-                      >
-                        +{amount}
-                      </Button>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-9 text-muted-foreground"
-                      disabled={!authContext.isLoggedIn || currentFreeSupportCoinAmount <= 0}
-                      onClick={() => setSupportFreeCoinAmount("0")}
-                    >
-                      {t("リセット", "Reset")}
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <PremiumSupportCoinIcon className="size-3.5" />
-                      {t("プレミアム", "Premium")}
-                    </span>
-                    <a
-                      href="/settings/points"
-                      className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
-                    >
-                      + {t("購入", "Buy")}
-                    </a>
-                  </div>
-                  <Input
-                    inputMode="numeric"
-                    min={0}
-                    max={coinBalances.premiumBalance}
-                    type="number"
-                    value={supportPremiumCoinAmount}
-                    onChange={(event) =>
-                      setSupportPremiumCoinAmount(
-                        parseClampedNonNegativeInt(
-                          event.target.value,
-                          coinBalances.premiumBalance,
-                        ),
-                      )
-                    }
-                    disabled={!authContext.isLoggedIn}
-                  />
-                  <div className="grid grid-cols-3 gap-1.5 pt-1">
-                    {SUPPORT_PREMIUM_COIN_STEPS.map((amount) => (
-                      <Button
-                        key={`premium-${amount}`}
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-9"
-                        disabled={
-                          !authContext.isLoggedIn ||
-                          currentPremiumSupportCoinAmount >= coinBalances.premiumBalance
-                        }
-                        onClick={() => adjustSupportCoinAmount("PREMIUM", amount)}
-                      >
-                        +{amount}
-                      </Button>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-9 text-muted-foreground"
-                      disabled={!authContext.isLoggedIn || currentPremiumSupportCoinAmount <= 0}
-                      onClick={() => setSupportPremiumCoinAmount("0")}
-                    >
-                      {t("リセット", "Reset")}
-                    </Button>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground">
-                    {t("プレミアム1枚 = 10pt", "1 premium coin = 10pt")}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                {currentSupportDraft ? (
-                  <>
-                    <span className="rounded-full bg-white/80 px-2.5 py-1 font-semibold text-rose-700 dark:bg-black/20 dark:text-rose-100">
-                      {currentSupportDraft.totalPt}pt
-                    </span>
-                    {currentSupportDraft.freeCoinAmount > 0 && (
-                      <span className="flex items-center gap-1 rounded-full border border-rose-200 bg-white/80 px-2 py-1 dark:border-rose-900/60 dark:bg-black/20">
-                        <CoinIcon className="size-3.5" />
-                        {currentSupportDraft.freeCoinAmount}
-                      </span>
-                    )}
-                    {currentSupportDraft.premiumCoinAmount > 0 && (
-                      <span className="flex items-center gap-1 rounded-full border border-rose-200 bg-white/80 px-2 py-1 dark:border-rose-900/60 dark:bg-black/20">
-                        <PremiumSupportCoinIcon className="size-3.5" />
-                        {currentSupportDraft.premiumCoinAmount}
-                      </span>
-                    )}
-                  </>
-                ) : hasSupportInput ? (
-                  <span className="text-destructive">
-                    {t(
-                      "保有コイン数を超えています。",
-                      "The amount exceeds your balance.",
-                    )}
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">
-                    {t(
-                      "0 のままなら通常コメントとして送信されます。",
-                      "Zero values send a normal comment.",
-                    )}
-                  </span>
-                )}
-              </div>
-              <div className="mt-3 flex items-center gap-2 text-xs text-rose-800 dark:text-rose-100">
+              <label
+                htmlFor="support-anonymous-checkbox"
+                className="flex w-fit cursor-pointer items-center gap-1.5 text-muted-foreground text-xs"
+              >
                 <Checkbox
                   id="support-anonymous-checkbox"
                   checked={supportIsAnonymous}
                   onCheckedChange={(checked: boolean) =>
                     setSupportIsAnonymous(checked === true)
                   }
-                  disabled={!authContext.isLoggedIn}
                 />
-                <label
-                  htmlFor="support-anonymous-checkbox"
-                  className="cursor-pointer"
-                >
-                  {t("匿名で推す", "Support anonymously")}
-                </label>
-              </div>
+                {t("匿名で推す", "Support anonymously")}
+              </label>
             </div>
           )}
           <div className="flex flex-wrap items-center justify-between gap-3 pl-13 md:pl-14">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <Checkbox
                 id="sensitive-checkbox"
                 checked={isSensitive}
@@ -1197,17 +1136,27 @@ export function WorkCommentList(props: Props) {
                 <Button
                   disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
                   variant="secondary"
-                  size="icon"
-                  className="size-9 rounded-full"
-                  aria-label={t("推す", "Support")}
+                  aria-label={t("推しを付ける", "Add support")}
+                  aria-expanded={isSupportOpen}
+                  className={cn(
+                    "h-9 gap-1 rounded-full px-3 text-xs",
+                    isSupportOpen &&
+                      "bg-rose-500/15 text-rose-600 hover:bg-rose-500/20 dark:text-rose-300",
+                  )}
                   onClick={() => {
-                    if (!isSupportOpen) {
+                    if (isSupportOpen) {
+                      // 閉じたら推しは付けない
+                      setSupportCoinAmount("FREE", "0")
+                    } else {
                       void reloadCoinSummary()
                     }
                     setIsSupportOpen((value) => !value)
                   }}
                 >
-                  <Heart className="size-5" />
+                  <Heart
+                    className={cn("size-4", isSupportOpen && "fill-current")}
+                  />
+                  {t("推す", "Support")}
                 </Button>
               )}
               <Button
@@ -1225,39 +1174,39 @@ export function WorkCommentList(props: Props) {
         </div>
       </div>
       {stickers.length > 0 && !props.isWorkOwnerBlocked && (
-          <div className="flex gap-1 overflow-x-auto [scrollbar-width:thin]">
-            {stickers.map((sticker) => (
-              <StickerButton
-                key={sticker.id}
-                imageUrl={sticker.imageUrl ?? ""}
-                title={sticker.title}
-                onClick={async () => {
-                  try {
-                    setRecentStickerIds(recordRecentStickerId(sticker.id))
-                    await sendComment(
-                      comment,
-                      sticker.id,
-                      sticker.imageUrl ?? "",
-                      props.workId,
-                      userIcon,
-                      currentSupportDraft,
-                    )
-                  } catch (error) {
-                    toast(
-                      getApolloErrorMessage(error) ??
-                        t(
-                          "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
-                          "Failed to send the sticker. Please try again later.",
-                        ),
-                    )
-                  }
-                }}
-                size="x-large"
-                disabled={props.isWorkOwnerBlocked}
-              />
-            ))}
-          </div>
-        )}
+        <div className="flex gap-1 overflow-x-auto [scrollbar-width:thin]">
+          {stickers.map((sticker) => (
+            <StickerButton
+              key={sticker.id}
+              imageUrl={sticker.imageUrl ?? ""}
+              title={sticker.title}
+              onClick={async () => {
+                try {
+                  setRecentStickerIds(recordRecentStickerId(sticker.id))
+                  await sendComment(
+                    comment,
+                    sticker.id,
+                    sticker.imageUrl ?? "",
+                    props.workId,
+                    userIcon,
+                    currentSupportDraft,
+                  )
+                } catch (error) {
+                  toast(
+                    getApolloErrorMessage(error) ??
+                      t(
+                        "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
+                        "Failed to send the sticker. Please try again later.",
+                      ),
+                  )
+                }
+              }}
+              size="x-large"
+              disabled={props.isWorkOwnerBlocked}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="mt-6 space-y-5 overflow-y-auto">
         {props.isLoadingComments &&

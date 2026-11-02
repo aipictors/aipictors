@@ -12,9 +12,7 @@ import {
 } from "lucide-react"
 import React from "react"
 import { toast } from "sonner"
-import { CoinIcon } from "~/components/coin-icon"
 import { OfficialBadge } from "~/components/official-badge"
-import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
@@ -288,23 +286,9 @@ export function WorkComment(props: Props) {
             )}
           </div>
           {hasSupport && props.support && (
-            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-rose-50 px-3 py-1 font-medium text-rose-700 text-xs dark:bg-rose-950/40 dark:text-rose-200">
-              <span className="flex size-5 items-center justify-center rounded-full bg-white/80 dark:bg-black/20">
-                <Heart className="size-3.5 fill-rose-500 text-rose-500" />
-              </span>
-              <span>{props.support.totalPt}pt</span>
-              {props.support.freeCoinAmount > 0 && (
-                <span className="flex items-center gap-1 opacity-90">
-                  <CoinIcon className="size-3.5" />
-                  {props.support.freeCoinAmount}
-                </span>
-              )}
-              {props.support.premiumCoinAmount > 0 && (
-                <span className="flex items-center gap-1 opacity-90">
-                  <PremiumCoinIcon className="size-3.5" />
-                  {props.support.premiumCoinAmount}
-                </span>
-              )}
+            <div className="inline-flex w-fit items-center gap-1 rounded-full bg-rose-500/10 px-2 py-0.5 font-bold text-rose-600 text-xs dark:text-rose-300">
+              <Heart className="size-3 fill-current" />
+              {props.support.totalPt.toLocaleString()}pt
             </div>
           )}
           {props.text && (

@@ -29,7 +29,7 @@ export function WorkImageThumbnailCarousel({
   // 今の画像のサムネイルが一覧の外に出ていたら見える位置まで送る
   useEffect(() => {
     if (!api || api.slidesInView().includes(currentIndex)) return
-    api.scrollTo(currentIndex)
+    api.scrollTo(currentIndex, true)
   }, [api, currentIndex])
 
   // キーボードイベントハンドラー

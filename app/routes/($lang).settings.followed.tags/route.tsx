@@ -5,8 +5,8 @@ import type {
 } from "@remix-run/cloudflare"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
-import { FollowedTagList } from "~/routes/($lang).settings.followed.tags/components/followed-tag-list"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
+import { FollowedTagList } from "~/routes/($lang).settings.followed.tags/components/followed-tag-list"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -27,13 +27,13 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SettingFollowedTags () {
+export default function SettingFollowedTags() {
   const t = useTranslation()
 
   return (
     <div className="w-full space-y-4">
       <div className="block md:hidden">
-        <SettingsHeader title={t("フォローしているタグ", "Followed tags")} />
+        <SettingsHeader title={t("お気に入りタグ", "Favorite tags")} />
       </div>
       <FollowedTagList />
     </div>

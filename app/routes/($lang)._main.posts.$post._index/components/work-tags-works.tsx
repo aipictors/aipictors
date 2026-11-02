@@ -36,10 +36,12 @@ const worksQuery = graphql(
 /* ─── Component ─────────────────────────────────────────────── */
 type Props = {
   tagName: string
-  rating: "G" | "R15" | "R18" | "R18G"
+  rating?: "G" | "R15" | "R18" | "R18G"
+  /** rating の代わりに複数指定する（見る人の設定に合わせるとき） */
+  ratings?: ("G" | "R15" | "R18" | "R18G")[]
 }
 
-export function WorkTagsWorks({ tagName, rating }: Props) {
+export function WorkTagsWorks({ tagName, rating, ratings }: Props) {
   const auth = useContext(AuthContext)
   const t = useTranslation()
   const [pages, setPages] = useState<
@@ -48,13 +50,15 @@ export function WorkTagsWorks({ tagName, rating }: Props) {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   /* where 句は useMemo で固定 */
+  const ratingsKey = (ratings ?? [rating ?? "G"]).join(",")
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ratingsKey で中身の変化を見ている
   const where = useMemo(
     () => ({
       tagNames: [tagName],
-      ratings: [rating],
+      ratings: ratings ?? [rating ?? "G"],
       isNowCreatedAt: true,
     }),
-    [tagName, rating],
+    [tagName, ratingsKey],
   )
 
   /* 初回取得 */
@@ -71,7 +75,7 @@ export function WorkTagsWorks({ tagName, rating }: Props) {
   })
 
   // タグが変わったら最初から（前のタグの一覧は使わない）
-  const whereKey = `${tagName}\n${rating}`
+  const whereKey = `${tagName}\n${ratingsKey}`
   const [pagesKey, setPagesKey] = useState(whereKey)
   if (pagesKey !== whereKey) {
     setPagesKey(whereKey)
