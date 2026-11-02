@@ -20,6 +20,14 @@ export const loader = async (props: LoaderFunctionArgs) => {
   throw new Response("Not Found", { status: 404 })
 }
 
+/**
+ * 画面がないとリソースルートになり、/en/xxx の 404 が素の文字だけになる。
+ * 画面を持たせて、loader が投げた 404 を共通の 404 ページで出す
+ */
+export default function UnknownPage () {
+  return null
+}
+
 const handlePostsRedirect = async (url: URL) => {
   const postId = url.pathname.split("/").pop()
 

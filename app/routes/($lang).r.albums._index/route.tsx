@@ -20,6 +20,7 @@ import {
 import { config, META } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
+import { useTranslation } from "~/hooks/use-translation"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { toRatingText } from "~/utils/work/to-rating-text"
 
@@ -96,6 +97,7 @@ export const meta: MetaFunction = (props) => {
 export default function SensitiveAlbumsIndex() {
   const data = useLoaderData<typeof loader>()
   const navigate = useNavigate()
+  const t = useTranslation()
   const [searchParams] = useSearchParams()
 
   const updateSearchParams = (updates: Record<string, string | null>) => {
@@ -114,6 +116,9 @@ export default function SensitiveAlbumsIndex() {
 
   return (
     <div className="space-y-4">
+      <h1 className="font-bold text-2xl md:text-3xl">
+        {t("R18 のシリーズ", "R18 series")}
+      </h1>
       <div className="flex items-center justify-between gap-4">
         <p className="text-muted-foreground text-sm">{data.albumsCount}件</p>
         <div className="w-48">
