@@ -2,9 +2,6 @@ import type { ActionFunctionArgs } from "@remix-run/cloudflare"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import {
   createDiscordOAuthState,
-  createDiscordPkce,
-  DISCORD_NONCE_COOKIE,
-  DISCORD_VERIFIER_COOKIE,
   toDiscordAuthorizeUrl,
 } from "~/lib/server/discord-oauth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
@@ -41,28 +38,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
     return toJson({ error: "Unauthorized", data: null }, 401)
   }
 
-  const { state, nonce } = await createDiscordOAuthState({
+  const { state, codeChallenge } = await createDiscordOAuthState({
     secret,
     userId: viewer.userId,
     now: Math.floor(Date.now() / 1000),
   })
 
-  const pkce = await createDiscordPkce()
-  const cookieOptions = "Path=/api/discord; Max-Age=600; HttpOnly; Secure; SameSite=Lax"
-  const headers = new Headers({
-    "content-type": "application/json",
-    "cache-control": "no-store",
-  })
-  headers.append("set-cookie", `${DISCORD_NONCE_COOKIE}=${nonce}; ${cookieOptions}`)
-  headers.append("set-cookie", `${DISCORD_VERIFIER_COOKIE}=${pkce.verifier}; ${cookieOptions}`)
-
-  return new Response(
-    JSON.stringify({
-      error: null,
-      data: {
-        url: toDiscordAuthorizeUrl({ state, codeChallenge: pkce.challenge }),
-      },
-    }),
-    { status: 200, headers },
+  return toJson(
+    { error: null, data: { url: toDiscordAuthorizeUrl({ state, codeChallenge }) } },
+    200,
   )
 }

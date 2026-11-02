@@ -14,7 +14,7 @@ import {
   SparklesIcon,
   TriangleAlertIcon,
 } from "lucide-react"
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { AchievementBadge } from "~/components/achievements/achievement-badge"
 import {
@@ -48,6 +48,8 @@ import {
 const DISCORD_INVITE_URL = "https://discord.gg/7jA2MmtvtR"
 
 const VISIBLE_ACHIEVEMENTS_STEP = 24
+
+const AUTHORIZE_URL_REFRESH_MS = 20 * 60 * 1000
 
 type DiscordLink = {
   discordUserId: string
@@ -127,6 +129,35 @@ export function DiscordLinkPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.isLoading, authContext.isNotLoggedIn])
 
+  const oauthCode = searchParams.get("code")
+  const oauthState = searchParams.get("state")
+  const isFinishingLink = oauthCode !== null && oauthState !== null
+  const hasStartedFinishRef = useRef(false)
+
+  // Discord から戻ってきたら連携を完了する（未ログインならログイン後に）
+  useEffect(() => {
+    if (!isFinishingLink || hasStartedFinishRef.current) return
+    if (authContext.isLoading || authContext.isNotLoggedIn) return
+    hasStartedFinishRef.current = true
+
+    void (async () => {
+      let params: Record<string, string> = { result: "error" }
+      try {
+        const data = (await callStatusApi({
+          intent: "finish",
+          code: oauthCode,
+          state: oauthState,
+        })) as { result: string; bonus?: number }
+        params = { result: data.result, bonus: String(data.bonus ?? 0) }
+      } catch {
+        // 上の既定のまま
+      }
+      await load()
+      setSearchParams(params, { replace: true, preventScrollReset: true })
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authContext.isLoading, authContext.isNotLoggedIn, isFinishingLink])
+
   // 認可画面から戻ってきたときの結果を伝える
   useEffect(() => {
     const result = searchParams.get("result")
@@ -154,6 +185,13 @@ export function DiscordLinkPage() {
         t(
           "別の Discord アカウントと連携済みです。解除してからやり直してください",
           "Already linked to another Discord account. Unlink it first",
+        ),
+      )
+    } else if (result === "wrong_user") {
+      toast.error(
+        t(
+          "連携を始めたときと別の Aipictors アカウントでログインしています。同じアカウントでやり直してください",
+          "You're logged in to a different Aipictors account than the one that started linking. Please try again",
         ),
       )
     } else if (result === "expired") {
@@ -196,6 +234,15 @@ export function DiscordLinkPage() {
         <Button variant="outline" size="sm" onClick={() => void load()}>
           {t("再読み込み", "Retry")}
         </Button>
+      </div>
+    )
+  }
+
+  if (isFinishingLink) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-xl border py-16 text-center">
+        <Loader2Icon className="size-8 animate-spin text-[#5865f2]" />
+        <p className="font-medium">{t("連携しています…", "Linking…")}</p>
       </div>
     )
   }
@@ -243,11 +290,14 @@ function DiscordUnlinkedView(props: {
   bonusCoins: number
 }) {
   const t = useTranslation()
-  const [isConnecting, setIsConnecting] = useState(false)
+  const [authorizeUrl, setAuthorizeUrl] = useState<string | null>(null)
+  const [hasPrepareError, setHasPrepareError] = useState(false)
 
-  const connect = async () => {
+  // 押した瞬間に Discord のリンクを直接開けるよう、URL を先に用意しておく。
+  // 押してから通信すると、スマホが「リンクを押した」と扱わず Discord アプリが開かないことがある
+  const prepare = async () => {
     try {
-      setIsConnecting(true)
+      setHasPrepareError(false)
       const headers = await getViewerRequestHeaders({
         includeJsonContentType: true,
       })
@@ -262,17 +312,19 @@ function DiscordUnlinkedView(props: {
       if (!response.ok || !json.data) {
         throw new Error(json.error ?? "Failed")
       }
-      window.location.href = json.data.url
+      setAuthorizeUrl(json.data.url)
     } catch {
-      setIsConnecting(false)
-      toast.error(
-        t(
-          "連携を始められませんでした。もう一度お試しください",
-          "Could not start linking. Please try again",
-        ),
-      )
+      setHasPrepareError(true)
     }
   }
+
+  useEffect(() => {
+    void prepare()
+    // 有効期限（30 分）が切れる前に作り直す
+    const timer = setInterval(() => void prepare(), AUTHORIZE_URL_REFRESH_MS)
+    return () => clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const benefits = [
     {
@@ -355,22 +407,36 @@ function DiscordUnlinkedView(props: {
           {t("実際の見え方の例です", "A preview of how it looks")}
         </p>
 
-        <Button
-          onClick={() => void connect()}
-          disabled={isConnecting}
-          className="mt-4 h-12 w-full gap-2 bg-white font-bold text-[#404eed] text-base hover:bg-white/90 sm:w-auto sm:px-8"
-        >
-          {isConnecting ? (
+        {hasPrepareError ? (
+          <Button
+            onClick={() => void prepare()}
+            className="mt-4 h-12 w-full gap-2 bg-white font-bold text-[#404eed] text-base hover:bg-white/90 sm:w-auto sm:px-8"
+          >
+            {t("もう一度試す", "Try again")}
+          </Button>
+        ) : authorizeUrl === null ? (
+          <Button
+            disabled
+            className="mt-4 h-12 w-full gap-2 bg-white font-bold text-[#404eed] text-base hover:bg-white/90 sm:w-auto sm:px-8"
+          >
             <Loader2Icon className="size-5 animate-spin" />
-          ) : (
-            <DiscordIcon className="size-5" />
-          )}
-          {t("Discord と連携する", "Link with Discord")}
-        </Button>
+            {t("Discord と連携する", "Link with Discord")}
+          </Button>
+        ) : (
+          <Button
+            asChild
+            className="mt-4 h-12 w-full gap-2 bg-white font-bold text-[#404eed] text-base hover:bg-white/90 sm:w-auto sm:px-8"
+          >
+            <a href={authorizeUrl}>
+              <DiscordIcon className="size-5" />
+              {t("Discord と連携する", "Link with Discord")}
+            </a>
+          </Button>
+        )}
         <p className="mt-2 text-white/80 text-xs">
           {t(
-            "かんたん 30 秒。いつでも解除でき、解除すると表示も元に戻ります",
-            "Takes 30 seconds. Unlink anytime and everything goes back to how it was",
+            "Discord アプリが入っていればアプリで開きます。いつでも解除でき、解除すると表示も元に戻ります",
+            "Opens in the Discord app if you have it. Unlink anytime and everything goes back to how it was",
           )}
         </p>
       </section>
