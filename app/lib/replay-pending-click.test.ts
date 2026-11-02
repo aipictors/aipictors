@@ -1,4 +1,4 @@
-import { beforeEach, expect, test } from "bun:test"
+import { afterAll, beforeEach, expect, test } from "bun:test"
 import { replayPendingClick } from "./replay-pending-click"
 
 type TestWindow = {
@@ -12,6 +12,12 @@ beforeEach(() => {
   testWindow.__aipictorsHydrated = undefined
   testWindow.__aipictorsPendingClick = undefined
   ;(globalThis as unknown as { window: TestWindow }).window = testWindow
+})
+
+// 他のテストが使う window はそのまま戻す
+const originalWindow = globalThis.window
+afterAll(() => {
+  ;(globalThis as unknown as { window: unknown }).window = originalWindow
 })
 
 const toButton = (isConnected = true) => {
