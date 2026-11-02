@@ -17,6 +17,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const sitemaps = [
       { loc: `${SITE_URL}/sitemaps/pages.xml` },
       { loc: `${SITE_URL}/sitemaps/tags.xml` },
+      { loc: `${SITE_URL}/sitemaps/sensitive-tags.xml` },
       { loc: `${SITE_URL}/sitemaps/models.xml` },
       { loc: `${SITE_URL}/sitemaps/users.xml` },
       ...dates.map((date) => ({

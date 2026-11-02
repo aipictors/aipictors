@@ -17,10 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import { config } from "~/config"
+import { config, META } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { toRatingText } from "~/utils/work/to-rating-text"
 
 const PER_PAGE = 24
@@ -84,13 +84,10 @@ export const headers: HeadersFunction = () => ({
 })
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(
-    {
-      title: "R18シリーズ一覧",
-      enTitle: "Sensitive Series List",
-      description: "R18 / R18G のシリーズを閲覧できます",
-      enDescription: "Browse sensitive public series.",
-    },
+  // R18G の絞り込みは検索エンジンに載せない
+  const isR18g = new URL(`https://a.test${props.location.search}`).searchParams.get("rating") === "R18G"
+  return createSensitiveMeta(
+    isR18g ? { ...META.SENSITIVE_ALBUMS, isIndex: false } : META.SENSITIVE_ALBUMS,
     undefined,
     props.params.lang,
   )

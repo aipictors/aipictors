@@ -21,7 +21,10 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { config, META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
+import { SensitiveAgeGate } from "~/components/sensitive/sensitive-age-gate"
+import { SensitiveBlurToggle } from "~/components/sensitive/sensitive-blur"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
+import { hasNonIndexableSensitiveTag } from "~/utils/sensitive-tag-filter"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { getJstDate } from "~/utils/jst-date"
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
@@ -169,8 +172,13 @@ export const meta: MetaFunction = (props) => {
         ? ` - ${work.work.user?.name}の作品`
         : ""
 
-  return createMeta(
-    META.POSTS,
+  // R18G の作品と、未成年を連想させるタグなどが付いた作品は検索エンジンに載せない
+  const isIndex =
+    work.work.rating !== "R18G" &&
+    !hasNonIndexableSensitiveTag(work.work.tagNames)
+
+  return createSensitiveMeta(
+    { ...META.POSTS, isIndex },
     {
       title: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
       enTitle: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
@@ -292,6 +300,8 @@ export default function Work() {
     <>
       <AppBreadcrumbScript breadcrumb={breadcrumb} />
       <AppJsonLdScript jsonLd={artwork} />
+      <SensitiveAgeGate />
+      <SensitiveBlurToggle />
       <SensitiveWorkContainer
         post={data.post}
         work={data.work}

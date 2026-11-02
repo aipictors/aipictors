@@ -555,13 +555,73 @@ export const META: { [key: string]: MetaData } = {
     isIndex: true,
   },
   HOME_SENSITIVE: {
-    title: "センシティブ一覧",
-    enTitle: "Sensitive List",
+    title: "R18 AIイラスト｜新着・ランキング・人気タグ",
+    enTitle: "R18 AI Illustrations: New Works, Rankings and Popular Tags",
     description:
-      "Aipictors のセンシティブ（R18）作品の一覧です。18歳以上の方向けに、最新・人気のAIイラストをまとめています。",
+      "18歳以上の方向けの成人向けAIイラスト投稿コーナーです。新着作品、デイリーランキング、人気タグ、シリーズからAIイラストを探せます。プロンプトを公開している作品もあります。",
     enDescription:
-      "Sensitive (R18) AI works on Aipictors for adults aged 18 and over, with the latest and most popular illustrations.",
+      "Adult AI illustrations for people aged 18 and over. Browse new works, daily rankings, popular tags and series, many with their prompts.",
     isIndex: true,
+    isTop: true,
+  },
+  SENSITIVE_DEFAULT: {
+    title: "R18 AIイラスト",
+    enTitle: "R18 AI Illustrations",
+    description: "18歳以上の方向けの成人向けAIイラストのページです。",
+    enDescription: "A page of adult AI illustrations for people aged 18 and over.",
+    isIndex: false,
+  },
+  SENSITIVE_HOME_2D: {
+    title: "R18 AIイラスト（2D）一覧",
+    enTitle: "R18 2D AI Illustrations",
+    description:
+      "18歳以上の方向けの、2Dの成人向けAIイラスト一覧です。新着と人気の作品をプロンプトと一緒に探せます。",
+    enDescription:
+      "2D adult AI illustrations for people aged 18 and over. Find new and popular works together with their prompts.",
+    isIndex: true,
+  },
+  SENSITIVE_HOME_2_5D: {
+    title: "R18 AIイラスト（2.5D）一覧",
+    enTitle: "R18 2.5D AI Illustrations",
+    description:
+      "18歳以上の方向けの、2.5Dの成人向けAIイラスト一覧です。新着と人気の作品をプロンプトと一緒に探せます。",
+    enDescription:
+      "2.5D adult AI illustrations for people aged 18 and over. Find new and popular works together with their prompts.",
+    isIndex: false,
+  },
+  SENSITIVE_HOME_3D: {
+    title: "R18 AIフォト一覧",
+    enTitle: "R18 AI Photos",
+    description:
+      "18歳以上の方向けの、実写風の成人向けAI画像の一覧です。新着と人気の作品をプロンプトと一緒に探せます。",
+    enDescription:
+      "Photorealistic adult AI images for people aged 18 and over. Find new and popular works together with their prompts.",
+    isIndex: true,
+  },
+  SENSITIVE_THEMES: {
+    title: "R18 AIイラストのお題",
+    enTitle: "R18 AI Illustration Themes",
+    description:
+      "毎日変わるお題に沿って投稿された、18歳以上の方向けのAIイラストの一覧です。今日のお題と過去のお題を見られます。",
+    enDescription:
+      "Adult AI illustrations posted for daily themes, for people aged 18 and over. See today's theme and past themes.",
+    isIndex: true,
+  },
+  SENSITIVE_ALBUMS: {
+    title: "R18 AIイラストのシリーズ",
+    enTitle: "R18 AI Illustration Series",
+    description:
+      "続きものやテーマごとにまとめられた、18歳以上の方向けのAIイラストのシリーズ一覧です。",
+    enDescription:
+      "Adult AI illustrations grouped into series, for people aged 18 and over.",
+    isIndex: true,
+  },
+  SENSITIVE_NEW_COMMENTS: {
+    title: "新着コメント（R18）",
+    enTitle: "New Comments (R18)",
+    description: "R18の作品に寄せられた新着コメントの一覧です。",
+    enDescription: "New comments on R18 works.",
+    isIndex: false,
   },
   RELEASES: {
     title: "リリース情報",
@@ -755,25 +815,40 @@ export const META: { [key: string]: MetaData } = {
     image: "{{url}}",
     isIndex: true,
   },
+  SENSITIVE_RANKINGS: {
+    title: "R18 AIイラストランキング",
+    enTitle: "R18 AI Illustration Rankings",
+    description:
+      "18歳以上の方向けのAIイラストのランキングです。毎日の人気作品を、作品とクリエイターの両方で見られます。",
+    enDescription:
+      "Rankings of adult AI illustrations for people aged 18 and over, by work and by creator.",
+    isIndex: true,
+  },
   SENSITIVE_RANKINGS_DAY: {
-    title: "センシティブデイリーランキング",
-    enTitle: "Sensitive Daily Rankings",
-    description: "Sensitive AI illustration daily ranking information",
-    enDescription: "View sensitive AI illustration daily ranking information",
+    title: "R18 AIイラスト デイリーランキング",
+    enTitle: "R18 AI Illustration Daily Rankings",
+    description:
+      "18歳以上の方向けのAIイラストのデイリーランキングです。その日に人気だった作品を順位で見られます。",
+    enDescription:
+      "Daily rankings of adult AI illustrations for people aged 18 and over.",
     isIndex: true,
   },
   SENSITIVE_RANKINGS_WEEK: {
-    title: "センシティブ週間ランキング",
-    enTitle: "Sensitive Weekly Rankings",
-    description: "Sensitive AI illustration weekly ranking information",
-    enDescription: "View sensitive AI illustration weekly ranking information",
+    title: "R18 AIイラスト 週間ランキング",
+    enTitle: "R18 AI Illustration Weekly Rankings",
+    description:
+      "18歳以上の方向けのAIイラストの週間ランキングです。その週に人気だった作品を順位で見られます。",
+    enDescription:
+      "Weekly rankings of adult AI illustrations for people aged 18 and over.",
     isIndex: true,
   },
   SENSITIVE_RANKINGS_MONTHLY: {
-    title: "センシティブ月間ランキング",
-    enTitle: "Sensitive Monthly Rankings",
-    description: "Sensitive AI illustration monthly ranking information",
-    enDescription: "View sensitive AI illustration monthly ranking information",
+    title: "R18 AIイラスト 月間ランキング",
+    enTitle: "R18 AI Illustration Monthly Rankings",
+    description:
+      "18歳以上の方向けのAIイラストの月間ランキングです。その月に人気だった作品を順位で見られます。",
+    enDescription:
+      "Monthly rankings of adult AI illustrations for people aged 18 and over.",
     isIndex: true,
   },
   SENSITIVE_THEME_RANKINGS_WEEK: {

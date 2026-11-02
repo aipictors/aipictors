@@ -7,17 +7,27 @@ import type {
 } from "@remix-run/cloudflare"
 import { useParams, useSearchParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { graphql, readFragment } from "gql.tada"
+import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { SensitiveTagWorkSection } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-work-section"
 import { config, META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
+import {
+  isIndexableSensitiveTag,
+  isSuggestableSensitiveTag,
+} from "~/utils/sensitive-tag-filter"
+import { SensitiveTagLinks } from "~/routes/($lang).r._index/components/sensitive-tag-links"
 import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
-import type { BreadcrumbList, ItemList, WithContext } from "schema-dts"
+import type {
+  BreadcrumbList,
+  CollectionPage,
+  ItemList,
+  WithContext,
+} from "schema-dts"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { toListWorks } from "~/utils/to-list-works"
@@ -74,20 +84,27 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  const tagWorksCountResp = await loaderClient.query({
-    query: tagWorksCountQuery,
-    variables: {
-      where: {
-        tagName: decodedTag,
-        ratings: ["R18", "R18G"],
+  const [tagWorksCountResp, hotTagsResp] = await Promise.all([
+    loaderClient.query({
+      query: tagWorksCountQuery,
+      variables: {
+        where: {
+          tagName: decodedTag,
+          ratings: ["R18", "R18G"],
+        },
       },
-    },
-  })
+    }),
+    loaderClient.query({ query: relatedHotTagsQuery }),
+  ])
 
   return {
     tag: decodedTag,
     works: toListWorks(worksResp.data.tagWorks),
     worksCount: tagWorksCountResp.data.tagWorksCount,
+    hotTagNames: hotTagsResp.data.hotSensitiveTags
+      .map((tag) => tag.name)
+      .filter((name) => name !== decodedTag && isSuggestableSensitiveTag(name))
+      .slice(0, 16),
     page: page,
     isSensitive: true,
     mode: mode, // mode を追加
@@ -100,30 +117,25 @@ export const headers: HeadersFunction = () => ({
 
 export const meta: MetaFunction<typeof loader> = (props) => {
   if (!props.data) {
-    return [{ title: "センシティブなタグページ" }]
+    return createSensitiveMeta(META.SENSITIVE_DEFAULT, undefined, props.params.lang)
   }
-
-  const works = readFragment(PhotoAlbumWorkFragment, props.data.works)
-
-  const thumbnailUrl = works.length ? works[0].smallThumbnailImageURL : ""
 
   const worksCount = props.data.worksCount
 
   const tag = decodeURIComponent(props.params.tag ?? "")
 
-  const localePrefix = props.params.lang === "en" ? "/en" : ""
-  const baseUrl = `${config.siteURL}${localePrefix}`
-  const pageUrl = `${baseUrl}/r/tags/${encodeURIComponent(tag)}`
+  // 未成年を連想させるタグ・実在の人物・R18G に寄ったタグと、作品のないタグは検索エンジンに載せない
+  if (!isIndexableSensitiveTag(tag) || worksCount === 0) {
+    return createSensitiveMeta(META.SENSITIVE_DEFAULT, undefined, props.params.lang)
+  }
 
-  return createMeta(
+  return createSensitiveMeta(
     META.TAGS,
     {
-      title: `${tag}のR18のAIイラスト ${worksCount}件`,
-      enTitle: `A list of works where R18 AI illustrations of ${tag} are posted.`,
-      description: `${tag}のAIイラストが投稿されたR18の作品一覧ページです。`,
-      enDescription: `This is a list of works where R18 AI illustrations of ${tag} are posted.`,
-      url: thumbnailUrl,
-      pageUrl,
+      title: `${tag}のR18 AIイラスト（${worksCount}件）`,
+      enTitle: `${tag} R18 AI Illustrations (${worksCount})`,
+      description: `「${tag}」タグが付いた18歳以上の方向けのAIイラスト一覧です（${worksCount}件）。人気順や新着順で探せて、プロンプトを公開している作品もあります。`,
+      enDescription: `${worksCount} adult AI illustrations tagged "${tag}", for people aged 18 and over. Sort by popularity or date and see prompts where they are public.`,
     },
     props.params.lang,
   )
@@ -147,13 +159,14 @@ export default function Tag () {
       (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
     )
 
+  const defaultOrderBy: IntrospectionEnum<"WorkOrderBy"> =
+    authContext.isLoggedIn ? "DATE_CREATED" : "LIKES_COUNT"
+
   const [WorkOrderby, setWorkOrderby] = React.useState<
     IntrospectionEnum<"WorkOrderBy">
   >(
     (searchParams.get("orderBy") as IntrospectionEnum<"WorkOrderBy">) ||
-      authContext.isLoggedIn
-      ? "DATE_CREATED"
-      : "LIKES_COUNT",
+      defaultOrderBy,
   )
 
   const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
@@ -223,26 +236,34 @@ export default function Tag () {
 
   // URLパラメータの監視と更新
   useEffect(() => {
+    // 既定の値は URL に出さない（同じ一覧が別の URL で検索結果に出てしまうのを防ぐ）
     const params = new URLSearchParams()
     if (workType) {
       params.set("workType", workType)
     }
-    params.set("orderBy", WorkOrderby)
-    params.set("sort", worksOrderDeskAsc)
-    params.set("page", page.toString())
-    params.set("prompt", hasPrompt.toString())
+    if (WorkOrderby !== defaultOrderBy) {
+      params.set("orderBy", WorkOrderby)
+    }
+    if (worksOrderDeskAsc !== "DESC") {
+      params.set("sort", worksOrderDeskAsc)
+    }
+    if (page > 0) {
+      params.set("page", page.toString())
+    }
+    if (hasPrompt > 0) {
+      params.set("prompt", hasPrompt.toString())
+    }
 
     // mode パラメータの処理（デフォルトがpaginationなのでfeedの時のみセット）
     if (mode === "feed") {
       params.set("mode", "feed")
     }
 
-    // isSensitiveのパラメータが1なら、セット
-    if (data.isSensitive) {
-      params.set("sensitive", "1")
+    if (params.toString() === searchParams.toString()) {
+      return
     }
 
-    setSearchParams(params)
+    setSearchParams(params, { replace: true, preventScrollReset: true })
   }, [
     page,
     hasPrompt,
@@ -250,7 +271,8 @@ export default function Tag () {
     WorkOrderby,
     worksOrderDeskAsc,
     mode,
-    data.isSensitive,
+    defaultOrderBy,
+    searchParams,
     setSearchParams,
   ])
 
@@ -277,7 +299,7 @@ export default function Tag () {
       {
         "@type": "ListItem",
         position: 2,
-        name: lang === "en" ? "R18" : "R18",
+        name: lang === "en" ? "R18 AI Illustrations" : "R18 AIイラスト",
         item: `${baseUrl}/r`,
       },
       {
@@ -306,10 +328,27 @@ export default function Tag () {
     })),
   }
 
+  const collectionPage: WithContext<CollectionPage> = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name:
+      lang === "en"
+        ? `${tagName} R18 AI Illustrations`
+        : `${tagName}のR18 AIイラスト`,
+    url: pageUrl,
+    inLanguage: lang,
+    isFamilyFriendly: false,
+  }
+
   return (
     <>
       <AppBreadcrumbScript breadcrumb={breadcrumb} />
-      <AppJsonLdScript jsonLd={itemList} />
+      <AppJsonLdScript jsonLd={[collectionPage, itemList]} />
+      <h1 className="sr-only">
+        {lang === "en"
+          ? `${tagName} R18 AI illustrations`
+          : `${tagName}のR18 AIイラスト`}
+      </h1>
       <SensitiveTagWorkSection
         works={data.works}
         worksCount={data.worksCount}
@@ -335,6 +374,10 @@ export default function Tag () {
         setSort={setWorksOrderDeskAsc}
         setHasPrompt={setHasPrompt}
       />
+      <SensitiveTagLinks
+        title={lang === "en" ? "Popular tags" : "人気のタグ"}
+        tagNames={data.hotTagNames}
+      />
     </>
   )
 }
@@ -346,6 +389,15 @@ export const tagWorksQuery = graphql(
     }
   }`,
   [PhotoAlbumWorkFragment],
+)
+
+const relatedHotTagsQuery = graphql(
+  `query RelatedHotSensitiveTags {
+    hotSensitiveTags {
+      id
+      name
+    }
+  }`,
 )
 
 const tagWorksCountQuery = graphql(

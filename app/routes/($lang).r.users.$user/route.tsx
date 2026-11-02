@@ -29,7 +29,7 @@ import {
   UserSensitiveTabs,
   UserSensitiveTabsFragment,
 } from "~/routes/($lang).r.users.$user/components/user-sensitive-tabs"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -77,7 +77,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 
   const iconUrl = user.iconUrl !== null ? withIconUrlFallback(user.iconUrl) : ""
 
-  return createMeta(
+  return createSensitiveMeta(
     META.USERS,
     {
       title: `${user.name}のセンシティブマイページ${worksCountText}`,

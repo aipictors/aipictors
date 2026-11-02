@@ -13,7 +13,7 @@ import {
   AiEvaluationRankingWorkList,
 } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -60,7 +60,7 @@ export const headers: HeadersFunction = () => ({
 })
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.AI_RANKINGS_MONTHLY, undefined, props.params.lang)
+  return createSensitiveMeta(META.AI_RANKINGS_MONTHLY, undefined, props.params.lang)
 }
 
 export default function SensitiveAiEvaluationMonthlyRankings() {

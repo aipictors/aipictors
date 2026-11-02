@@ -3,7 +3,7 @@ import {
   HomeWorkFragment,
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
@@ -17,6 +17,8 @@ import {
   HomeVideosWorksSection,
 } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 
 /**
  * 期間指定による createdAt 範囲を計算するヘルパー関数
@@ -72,6 +74,8 @@ type Props = {
   isOneWorkPerUser?: boolean
   onSelect?: (index: string) => void
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
+  /** サーバーで読んだ 1 ページ目（既定の絞り込みのときだけ使う） */
+  initialWorks?: FragmentOf<typeof HomeWorkFragment>[] | null
 }
 
 /**
@@ -79,6 +83,7 @@ type Props = {
  */
 export function HomePaginationSensitiveWorksSection (props: Props) {
   const appContext = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   // 1ページあたりの件数（映像は少なめに）
   const perPageCount = props.workType === "VIDEO" ? 8 : 32
@@ -88,13 +93,13 @@ export function HomePaginationSensitiveWorksSection (props: Props) {
     props.timeRange || "ALL",
   )
 
-  const { data: worksResp } = useSuspenseQuery(WorksQuery, {
-    skip: appContext.isLoading,
+  const { data: worksResp, previousData } = useQuery(SensitiveWorksQuery, {
+    skip: appContext.isLoading || !viewerRatings.isReady,
     variables: {
       offset: props.page * perPageCount,
       limit: perPageCount,
       where: {
-        ratings: ["R18", "R18G"],
+        ratings: viewerRatings.sensitiveRatings,
         // 「公開（新着無）」の作品は新着一覧に出さない
         accessTypes: ["PUBLIC"],
         ...(props.workType !== null && {
@@ -122,11 +127,29 @@ export function HomePaginationSensitiveWorksSection (props: Props) {
     },
   })
 
+  const isDefaultList =
+    props.page === 0 &&
+    props.workType === null &&
+    props.isPromptPublic === null &&
+    props.sortType === null &&
+    (props.timeRange ?? "ALL") === "ALL"
+
+  // ページを送っている間は前のページを出したままにして、画面が飛ばないようにする
+  const works =
+    worksResp?.works ??
+    (isDefaultList ? props.initialWorks : null) ??
+    previousData?.works ??
+    null
+
   useEffect(() => {
     if (worksResp?.works) {
       props.updateWorks(worksResp.works)
     }
   }, [worksResp, props])
+
+  if (works === null) {
+    return <AppLoadingPage />
+  }
 
   return (
     <div className="space-y-4">
@@ -134,7 +157,7 @@ export function HomePaginationSensitiveWorksSection (props: Props) {
       {(props.workType === "WORK" || props.workType === null) && (
         <HomeWorkSection
           title={""}
-          works={worksResp?.works || []}
+          works={works}
           isCropped={props.isCropped}
           isShowProfile={true}
           onSelect={props.onSelect}
@@ -144,7 +167,7 @@ export function HomePaginationSensitiveWorksSection (props: Props) {
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
         <HomeNovelsWorksSection
           title={""}
-          works={worksResp?.works || []}
+          works={works}
           onSelect={props.onSelect}
         />
       )}
@@ -152,7 +175,7 @@ export function HomePaginationSensitiveWorksSection (props: Props) {
       {props.workType === "VIDEO" && (
         <HomeVideosWorksSection
           title={""}
-          works={worksResp?.works || []}
+          works={works}
           isAutoPlay={true}
         />
       )}
@@ -170,7 +193,7 @@ export function HomePaginationSensitiveWorksSection (props: Props) {
   )
 }
 
-const WorksQuery = graphql(
+export const SensitiveWorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...HomeWork

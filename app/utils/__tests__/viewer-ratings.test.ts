@@ -33,9 +33,15 @@ describe("toNormalModeRatings", () => {
 })
 
 describe("toSensitiveModeRatings", () => {
-  test("未ログインは R18 と R18G", () => {
+  test("未ログインは R18 のみ", () => {
     expect(
       toSensitiveModeRatings({ isLoggedIn: false, preferenceRating: null }),
+    ).toEqual(["R18"])
+  })
+
+  test("未ログインでも本人が有効にしたら R18G を含める", () => {
+    expect(
+      toSensitiveModeRatings({ isLoggedIn: false, preferenceRating: "R18G" }),
     ).toEqual(["R18", "R18G"])
   })
 

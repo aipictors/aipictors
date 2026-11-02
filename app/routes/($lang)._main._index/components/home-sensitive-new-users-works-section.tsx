@@ -8,6 +8,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 
 type Props = {
   works: FragmentOf<typeof HomeNewUsersWorksFragment>[]
@@ -18,15 +19,16 @@ type Props = {
  */
 export function HomeSensitiveNewUsersWorksSection (props: Props) {
   const appContext = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   // 新規ユーザ作品
   const { data: newUsersWorksResp } = useQuery(NewUsersWorksQuery, {
-    skip: appContext.isLoading,
+    skip: appContext.isLoading || !viewerRatings.isReady,
     variables: {
       offset: 0,
       limit: config.query.homeWorkCount.newUser,
       where: {
-        ratings: ["R18", "R18G"],
+        ratings: viewerRatings.sensitiveRatings,
         isNowCreatedAt: true,
       },
     },

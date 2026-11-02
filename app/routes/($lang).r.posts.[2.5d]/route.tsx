@@ -9,8 +9,9 @@ import {
 } from "~/routes/($lang)._main._index/components/home-work-list"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import type { HeadersFunction } from "@remix-run/cloudflare"
-import { config } from "~/config"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import { config, META } from "~/config"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 
 export async function loader() {
   const worksResp = await loaderClient.query({
@@ -31,6 +32,10 @@ export async function loader() {
     works: worksResp.data.works,
     hotTags: hotTagsResp.data.hotTags,
   }
+}
+
+export const meta: MetaFunction = (props) => {
+  return createSensitiveMeta(META.SENSITIVE_HOME_2_5D, undefined, props.params.lang)
 }
 
 export const headers: HeadersFunction = () => ({

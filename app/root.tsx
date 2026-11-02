@@ -573,6 +573,10 @@ export function Layout(props: Props): React.ReactNode {
           // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスタイル
           dangerouslySetInnerHTML={{ __html: HEADER_USER_INLINE_STYLE }}
         />
+        {/* R18 のページは検索エンジンのセーフサーチで正しく扱われるようにする */}
+        {/^(?:\/en)?\/r(?:\/|$)/.test(location.pathname) && (
+          <meta name="rating" content="adult" />
+        )}
         <link rel="canonical" href={alternateLocaleUrls.canonical} />
         <meta property="og:url" content={alternateLocaleUrls.canonical} />
         {(location.pathname === "/" || location.pathname === "/en") && (

@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import {
   fetchSitemapAiModels,
+  fetchSitemapSensitiveTagNames,
   fetchSitemapTagNames,
   fetchSitemapUsers,
   fetchUserModelsForSitemap,
@@ -41,6 +42,12 @@ const STATIC_PAGES: {
   { path: "/plus", changefreq: "monthly", priority: 0.4 },
   { path: "/releases", changefreq: "weekly", priority: 0.5 },
   { path: "/about", changefreq: "monthly", priority: 0.5 },
+  { path: "/r", changefreq: "hourly", priority: 0.7 },
+  { path: "/r/rankings", changefreq: "daily", priority: 0.6 },
+  { path: "/r/themes", changefreq: "daily", priority: 0.5 },
+  { path: "/r/albums", changefreq: "weekly", priority: 0.5 },
+  { path: "/r/posts/2d", changefreq: "daily", priority: 0.5 },
+  { path: "/r/posts/3d", changefreq: "daily", priority: 0.5 },
   { path: "/help", changefreq: "monthly", priority: 0.4 },
   { path: "/guideline", changefreq: "monthly", priority: 0.3 },
   { path: "/presskit", changefreq: "monthly", priority: 0.3 },
@@ -55,6 +62,7 @@ const ONE_DAY = 24 * ONE_HOUR
  * 個別のサイトマップ
  * - /sitemaps/pages.xml 固定ページ
  * - /sitemaps/tags.xml 人気のタグ
+ * - /sitemaps/sensitive-tags.xml R18 の人気のタグ（検索に載せられるものだけ）
  * - /sitemaps/models.xml 公式モデル・みんなのモデル
  * - /sitemaps/users.xml 作品のあるユーザーのページ（最近投稿した人・ランキング上位）
  * - /sitemaps/works-YYYY-MM-DD.xml その日（JST）に投稿された作品と、投稿した人のユーザーページ
@@ -87,6 +95,22 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
             loc: `${SITE_URL}/tags/${encodeURIComponent(tagName)}`,
             changefreq: "daily",
             priority: 0.7,
+          })),
+        ),
+        ONE_DAY,
+      )
+    })
+  }
+
+  if (name === "sensitive-tags.xml") {
+    return withEdgeCache(request, waitUntil, async () => {
+      const tagNames = await fetchSitemapSensitiveTagNames()
+      return xmlResponse(
+        toUrlSetXml(
+          tagNames.map((tagName) => ({
+            loc: `${SITE_URL}/r/tags/${encodeURIComponent(tagName)}`,
+            changefreq: "daily",
+            priority: 0.5,
           })),
         ),
         ONE_DAY,

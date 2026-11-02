@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useContext, useMemo } from "react"
+import { useContext, useMemo, useSyncExternalStore } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import {
   toNormalModeRatings,
@@ -23,6 +23,38 @@ type Result = {
   sensitiveRatings: ViewerRating[]
 }
 
+const ANONYMOUS_R18G_KEY = "showR18G"
+const ANONYMOUS_R18G_EVENT = "aipictors:show-r18g"
+
+const readAnonymousR18g = () => {
+  try {
+    return localStorage.getItem(ANONYMOUS_R18G_KEY) === "true"
+  } catch {
+    return false
+  }
+}
+
+const subscribeAnonymousR18g = (onChange: () => void) => {
+  window.addEventListener("storage", onChange)
+  window.addEventListener(ANONYMOUS_R18G_EVENT, onChange)
+  return () => {
+    window.removeEventListener("storage", onChange)
+    window.removeEventListener(ANONYMOUS_R18G_EVENT, onChange)
+  }
+}
+
+/**
+ * 未ログインの人の R18G の表示設定（端末に記憶する）
+ */
+export function setAnonymousR18gEnabled(isEnabled: boolean): void {
+  try {
+    localStorage.setItem(ANONYMOUS_R18G_KEY, isEnabled ? "true" : "false")
+  } catch {
+    // 保存できない環境では変わらない
+  }
+  window.dispatchEvent(new Event(ANONYMOUS_R18G_EVENT))
+}
+
 /**
  * ログインユーザの閲覧レーティング設定（設定 > 表示コンテンツ）を一覧のクエリ条件に変換する
  */
@@ -35,11 +67,19 @@ export function useViewerRatings(): Result {
     errorPolicy: "all",
   })
 
+  const isAnonymousR18gEnabled = useSyncExternalStore(
+    subscribeAnonymousR18g,
+    readAnonymousR18g,
+    () => false,
+  )
+
   const isLoggedIn = authContext.isLoggedIn
 
   const preferenceRating = isLoggedIn
     ? (data?.userSetting?.preferenceRating ?? null)
-    : null
+    : isAnonymousR18gEnabled
+      ? "R18G"
+      : null
 
   const isReady =
     authContext.isNotLoggedIn || (authContext.isLoggedIn && !loading)
@@ -57,7 +97,7 @@ export function useViewerRatings(): Result {
   return { isReady, normalRatings, sensitiveRatings }
 }
 
-const viewerPreferenceRatingQuery = graphql(`
+export const viewerPreferenceRatingQuery = graphql(`
   query ViewerPreferenceRating {
     userSetting {
       id

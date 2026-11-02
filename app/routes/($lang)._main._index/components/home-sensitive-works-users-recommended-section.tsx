@@ -9,6 +9,7 @@ import { useContext } from "react"
 import { config } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 
 type Props = {
   works: FragmentOf<typeof HomePromotionWorkFragment>[]
@@ -20,16 +21,17 @@ type Props = {
  */
 export function HomeSensitiveWorksUsersRecommendedSection (props: Props) {
   const appContext = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   // 推薦作品
   const { data: recommendedWorksResp } = useQuery(WorksQuery, {
-    skip: appContext.isLoading,
+    skip: appContext.isLoading || !viewerRatings.isReady,
     variables: {
       offset: 0,
       limit: config.query.homeWorkCount.promotion,
       where: {
         isRecommended: true,
-        ratings: ["R18", "R18G"],
+        ratings: viewerRatings.sensitiveRatings,
         ...(props.style && {
           style: props.style,
         }),

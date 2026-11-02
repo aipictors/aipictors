@@ -1,7 +1,12 @@
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { config } from "~/config"
+import { config, META } from "~/config"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { loaderClient } from "~/lib/loader-client"
 import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
@@ -66,6 +71,10 @@ export async function loader(params: LoaderFunctionArgs) {
     day,
     workAwards: workAwardsResp,
   }
+}
+
+export const meta: MetaFunction = (props) => {
+  return createSensitiveMeta(META.SENSITIVE_RANKINGS, undefined, props.params.lang)
 }
 
 export const headers: HeadersFunction = () => ({

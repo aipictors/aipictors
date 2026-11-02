@@ -13,7 +13,7 @@ import {
 } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
 import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   const yesterday = new Date()
@@ -76,7 +76,7 @@ export const headers: HeadersFunction = () => ({
 })
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.AI_RANKINGS_DAY, undefined, props.params.lang)
+  return createSensitiveMeta(META.AI_RANKINGS_DAY, undefined, props.params.lang)
 }
 
 export default function SensitiveAiEvaluationRankingsIndex() {

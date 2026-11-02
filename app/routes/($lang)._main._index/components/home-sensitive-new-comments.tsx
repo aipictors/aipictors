@@ -122,7 +122,7 @@ export const homeNewCommentsQuery = graphql(
       limit: 8,
       where: {
         isSensitive: true,
-        ratings: [R18, R18G],
+        ratings: [R18],
         isTextOnly: true
       }
     ) {

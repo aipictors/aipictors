@@ -1,6 +1,7 @@
 import { config } from "~/config"
 import { fetchPublicUserModels } from "~/lib/server/user-models.server"
 import type { UserModel } from "~/lib/user-models/types"
+import { isSuggestableSensitiveTag } from "~/utils/sensitive-tag-filter"
 
 /**
  * サイトマップの生成（/sitemap.xml と /sitemaps/*.xml）
@@ -301,6 +302,39 @@ export async function fetchSitemapTagNames(): Promise<string[]> {
   ]
   return Array.from(
     new Set(names.map((name) => name.trim()).filter((name) => name.length > 0)),
+  )
+}
+
+const hotSensitiveTagsQuery = `query SitemapHotSensitiveTags {
+  hotSensitiveTags {
+    name
+  }
+}`
+
+/**
+ * R18 の人気のタグ（ガイドラインに触れそうなものは除く）
+ */
+export async function fetchSitemapSensitiveTagNames(): Promise<string[]> {
+  const [recommended, hot] = await Promise.all([
+    graphqlRequest<{ recommendedTags: { tagName: string }[] }>(
+      recommendedTagsQuery,
+      { limit: 1000, where: { isSensitive: true } },
+    ),
+    graphqlRequest<{ hotSensitiveTags: { name: string }[] }>(
+      hotSensitiveTagsQuery,
+      {},
+    ),
+  ])
+  const names = [
+    ...(hot?.hotSensitiveTags ?? []).map((tag) => tag.name),
+    ...(recommended?.recommendedTags ?? []).map((tag) => tag.tagName),
+  ]
+  return Array.from(
+    new Set(
+      names
+        .map((name) => name.trim())
+        .filter((name) => name.length > 0 && isSuggestableSensitiveTag(name)),
+    ),
   )
 }
 

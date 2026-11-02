@@ -128,6 +128,8 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
       localStorage.setItem(AGE_CONFIRMED_KEY, "true")
       setIsAgeConfirmed(true)
     }
+    // 「次回から確認しない」を外しても、この訪問の間は /r のページで聞き直さない
+    sessionStorage.setItem("ageConfirmedSession", "true")
     setIsDialogOpen(false)
     goR18()
   }

@@ -26,18 +26,15 @@ export function toNormalModeRatings(props: {
 
 /**
  * センシティブモード（R18側）の一覧で表示するレーティング
- * - 未ログイン: 従来通り R18 と R18G
- * - ログイン済み: 「(センシティブモード時)R18G作品を表示する」がONのときのみ R18G を含める
+ * R18G は、ログインの有無によらず本人が有効にしたときだけ含める
+ * - 未ログイン: R18 のトップの「表示設定」で有効にしたとき（端末に記憶。preferenceRating に "R18G" を渡す）
+ * - ログイン済み: 「(センシティブモード時)R18G作品を表示する」がONのとき
  * @param props
  */
 export function toSensitiveModeRatings(props: {
   isLoggedIn: boolean
   preferenceRating: ViewerPreferenceRating | null
 }): ViewerRating[] {
-  if (!props.isLoggedIn) {
-    return ["R18", "R18G"]
-  }
-
   if (props.preferenceRating === "R18G") {
     return ["R18", "R18G"]
   }

@@ -15,11 +15,11 @@ import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.SENSITIVE_RANKINGS_DAY, undefined, props.params.lang)
+  return createSensitiveMeta(META.SENSITIVE_RANKINGS_DAY, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {

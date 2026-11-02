@@ -8,10 +8,10 @@ import type {
 } from "@remix-run/cloudflare"
 import { Suspense, useContext } from "react"
 import { config, META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.FOLLOWERS, undefined, props.params.lang)
+  return createSensitiveMeta(META.FOLLOWERS, undefined, props.params.lang)
 }
 
 export async function loader(_props: LoaderFunctionArgs) {
