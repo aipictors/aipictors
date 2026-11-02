@@ -2,7 +2,10 @@ import { ChevronLeft, ChevronRight, Keyboard, XIcon } from "lucide-react"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
-import { toResizedImageSrcSet } from "~/utils/resized-image-url"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
 import { Button } from "~/components/ui/button"
 
 type Props = {
@@ -27,6 +30,18 @@ const toMainImageSizes = (aspectRatio: number | undefined) => {
   }
   const ratio = Math.round(aspectRatio * 1000) / 1000
   return `(min-width: 768px) min(60vw, calc(72vh * ${ratio})), min(100vw, calc(64vh * ${ratio}))`
+}
+
+/** 高さ固定の枠の sizes。縦横比が分からない画像もあるので、枠の高さまでを上限にする */
+const FIXED_STAGE_IMAGE_SIZES =
+  "(min-width: 768px) min(60vw, 72vh), min(100vw, 64vh)"
+
+const loadStageImage = (url: string) => {
+  const image = new Image()
+  image.sizes = FIXED_STAGE_IMAGE_SIZES
+  image.srcset = toResizedImageSrcSet(url, { minWidth: 400 }) ?? ""
+  image.src = url
+  return image
 }
 
 export function ImagesPreview(props: Props): React.ReactNode {
@@ -310,16 +325,28 @@ export function ImagesPreview(props: Props): React.ReactNode {
     if (!props.isFixedHeight || props.imageURLs.length < 2) return
     const count = props.imageURLs.length
     for (const offset of [1, -1]) {
-      const url = props.imageURLs[(props.currentIndex + offset + count) % count]
-      const image = new Image()
-      image.sizes = toMainImageSizes(undefined)
-      image.srcset =
-        toResizedImageSrcSet(url, {
-          minWidth: 400,
-        }) ?? ""
-      image.src = url
+      loadStageImage(
+        props.imageURLs[(props.currentIndex + offset + count) % count],
+      )
     }
   }, [props.currentIndex, props.isFixedHeight])
+
+  // 枠に出す画像は読み込みが終わってから入れ替える。src を直接変えると読み込み中に一瞬消える
+  const [stageImageUrl, setStageImageUrl] = useState(props.thumbnailUrl)
+  const isStageImagePending = stageImageUrl !== props.thumbnailUrl
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: 選んだ画像が変わったときだけ
+  useEffect(() => {
+    if (!props.isFixedHeight || !isStageImagePending) return
+    let isCancelled = false
+    const show = () => {
+      if (!isCancelled) setStageImageUrl(props.thumbnailUrl)
+    }
+    loadStageImage(props.thumbnailUrl).decode().then(show, show)
+    return () => {
+      isCancelled = true
+    }
+  }, [props.thumbnailUrl, props.isFixedHeight])
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown)
@@ -563,17 +590,16 @@ export function ImagesPreview(props: Props): React.ReactNode {
     return (
       <>
         <div className="group/stage relative flex h-[64vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-muted/60 md:h-[72vh]">
-          {/* key を付けない: 次の画像が読み込まれるまで今の画像を出しておく（白く点滅しない） */}
           <img
             ref={mainImgRef}
             className="max-h-full max-w-full cursor-zoom-in object-contain"
             draggable={false}
             alt="thumbnail"
-            src={props.thumbnailUrl}
-            srcSet={toResizedImageSrcSet(props.thumbnailUrl, {
+            src={stageImageUrl}
+            srcSet={toResizedImageSrcSet(stageImageUrl, {
               minWidth: 400,
             })}
-            sizes={toMainImageSizes(undefined)}
+            sizes={FIXED_STAGE_IMAGE_SIZES}
             fetchPriority="high"
             onTouchStart={handleMainTouchStart}
             onMouseUp={handleMainMouseUp}
@@ -581,6 +607,14 @@ export function ImagesPreview(props: Props): React.ReactNode {
             onTouchEnd={handleMainTouchEnd}
             style={{ userSelect: "none" }}
           />
+          {/* 読み込み中は選んだ画像のサムネイルを出して、押した反応をすぐ返す */}
+          {isStageImagePending && (
+            <img
+              className="pointer-events-none absolute inset-0 size-full object-contain blur-sm"
+              alt=""
+              src={toResizedImageUrl(props.thumbnailUrl, 160)}
+            />
+          )}
           <button
             type="button"
             aria-label="前の画像"

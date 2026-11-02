@@ -333,6 +333,7 @@ export function WorkContainer(props: Props) {
                     <img
                       src="https://assets.aipictors.com/Aipictors_01_640.webp"
                       alt="Aipictors Logo"
+                      className="aspect-square h-auto w-full"
                       width={640}
                       height={640}
                       loading="lazy"
