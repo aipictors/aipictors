@@ -536,6 +536,33 @@ export const META: { [key: string]: MetaData } = {
       "Browse the latest and most popular AI photos and 3D images, together with the models and prompts used.",
     isIndex: true,
   },
+  POSTS_INDEX: {
+    title: "すべての作品",
+    enTitle: "All Works",
+    description:
+      "Aipictorsに投稿されたAIイラスト・AIフォト・AI動画・AI小説の新着一覧です。2D・2.5D・3Dのジャンル別の入口や、今週の人気作品からも探せます。",
+    enDescription:
+      "Browse the latest AI illustrations, photos, videos, and novels on Aipictors. Explore by 2D, 2.5D, and 3D genres or this week's most liked works.",
+    isIndex: true,
+  },
+  NOVELS: {
+    title: "AI小説の一覧",
+    enTitle: "AI Novels",
+    description:
+      "Aipictorsに投稿されたAI小説の一覧です。AIと一緒に書かれた物語や、AIイラストの挿絵つきの小説を、新着順・人気順で読めます。",
+    enDescription:
+      "Browse AI novels posted on Aipictors. Read stories written with AI and illustrated with AI art, sorted by latest or most liked.",
+    isIndex: true,
+  },
+  NOTES: {
+    title: "AIイラストのコラム一覧",
+    enTitle: "AI Art Columns",
+    description:
+      "Aipictorsに投稿されたコラムの一覧です。AIイラストの作り方のコツ、プロンプトの工夫、制作の裏話などを、人気順・新着順で読めます。",
+    enDescription:
+      "Browse columns posted on Aipictors, including AI art tips, prompt ideas, and behind-the-scenes stories, sorted by most liked or latest.",
+    isIndex: true,
+  },
   POSTS_2D: {
     title: "2DのAIイラスト・アニメ調の人気作品",
     enTitle: "2D AI Illustrations and Anime-Style Art",
@@ -1062,13 +1089,6 @@ export const META: { [key: string]: MetaData } = {
     enTitle: "Notification History",
     description: "You can check your notification history",
     enDescription: "View your notification history on Aipictors",
-    isIndex: false,
-  },
-  CREATOR: {
-    title: "支援リクエスト",
-    enTitle: "Support Requests",
-    description: "You can check your support requests",
-    enDescription: "View and manage your support requests",
     isIndex: false,
   },
   NEW_PROFILE: {

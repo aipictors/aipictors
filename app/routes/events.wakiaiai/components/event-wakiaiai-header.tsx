@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { Button } from "~/components/ui/button"
-import { DarkModeButton } from "~/routes/($lang).creator/components/dark-mode-button"
+import { DarkModeButton } from "~/routes/events.wakiaiai/components/dark-mode-button"
 
 type Props = {
   title: string

@@ -20,6 +20,9 @@ describe("isSharedPage", () => {
       "/themes",
       "/themes/2026/10/29",
       "/tags",
+      "/posts",
+      "/novels",
+      "/en/notes",
       "/posts/2d",
       "/posts/2.5d",
       "/en/posts/3d",
@@ -36,6 +39,7 @@ describe("isSharedPage", () => {
       "/users/admin",
       "/search",
       "/home?page=2",
+      "/novels?q=abc",
       "/rankings?tab=x",
       "/generation",
     ]) {
