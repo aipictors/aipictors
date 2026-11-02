@@ -295,7 +295,7 @@ export function GenerationDemoSubmissionView (props: Props) {
 
     if (isGeminiNanoBananaModel && !isLiteOrStandardOrPremium) {
       toast(
-        "Gemini Nano Banana / Gemini Nano Banana 2 はLite以上のプランでご利用いただけます（Liteは1日3回まで）。",
+        "Gemini Nano Banana / Gemini Nano Banana 2 はLite以上のプランでご利用いただけます。",
       )
       return
     }

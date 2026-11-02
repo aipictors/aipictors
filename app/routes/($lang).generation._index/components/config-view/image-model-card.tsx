@@ -153,7 +153,7 @@ export function ImageModelCard(props: Props) {
             props.displayName === "GeminiNanoBanana2") && (
             <p className="text-amber-600 text-xs dark:text-amber-400">
               {t(
-                "Nano Banana / Nano Banana 2 はLite以上限定です（Liteは1日3回まで）",
+                "Nano Banana / Nano Banana 2 はLite以上限定です",
                 "Nano Banana / Nano Banana 2 require Lite or above (Lite: 3/day)",
               )}
             </p>

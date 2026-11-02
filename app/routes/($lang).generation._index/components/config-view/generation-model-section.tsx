@@ -244,7 +244,7 @@ export function GenerationModelSection(props: Props) {
       {isLiteOnly && (
         <p className="text-muted-foreground text-xs">
           {t(
-            "Nano Banana / Nano Banana 2 はLite以上限定です（Liteは1日3回まで）",
+            "Nano Banana / Nano Banana 2 はLite以上限定です",
             "Nano Banana / Nano Banana 2 require Lite or above (Lite: 3/day)",
           )}
         </p>
