@@ -10,10 +10,11 @@ import {
   SelectItem,
 } from "~/components/ui/select"
 import { UserSearchItem } from "~/routes/($lang)._main.users._index/components/user-search-item"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useState, useId } from "react"
-import { useSearchParams } from "@remix-run/react"
+import { Link, useSearchParams } from "@remix-run/react"
+import { PictorChanSays } from "~/components/pictor-chan-says"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   UserSearchListItemFragment,
@@ -31,15 +32,23 @@ export function UserSearchList () {
   const perPage = Number.parseInt(searchParams.get("perPage") ?? "20", 10)
   const hasWorksFilter = searchParams.get("hasWorks") !== "false" // デフォルトはtrue
 
-  const { data, refetch } = useSuspenseQuery(usersSearchQuery, {
-    variables: {
-      offset: perPage * page,
-      limit: perPage,
-      where: {
-        search: search || undefined,
-      },
-    },
-  })
+  // 検索語がないと登録の新しい順に返り、作品のある人がほとんどいないので、聞きに行かない
+  const isWaitingForSearch = search === "" && hasWorksFilter
+
+  const { data, refetch } = useSuspenseQuery(
+    usersSearchQuery,
+    isWaitingForSearch
+      ? skipToken
+      : {
+          variables: {
+            offset: perPage * page,
+            limit: perPage,
+            where: {
+              search: search || undefined,
+            },
+          },
+        },
+  )
 
   const [refreshing, setRefreshing] = useState(false)
 
@@ -103,11 +112,14 @@ export function UserSearchList () {
           <Input
             type="text"
             name="q"
-            placeholder={t("ユーザ名で検索", "Search by username")}
+            placeholder={t("ユーザー名で検索", "Search by username")}
+            aria-label={t("ユーザー名で検索", "Search by username")}
             defaultValue={search}
-            className="rounded border px-2 py-1"
+            className="h-11 rounded-full px-4 text-base md:text-sm"
           />
-          <Button type="submit">{t("検索", "Search")}</Button>
+          <Button type="submit" className="h-11 rounded-full px-5">
+            {t("検索", "Search")}
+          </Button>
         </form>{" "}
         {/* 表示設定 */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
@@ -118,7 +130,10 @@ export function UserSearchList () {
               value={perPage.toString()}
               onValueChange={handlePerPageChange}
             >
-              <SelectTrigger className="w-20">
+              <SelectTrigger
+                className="h-11 w-24"
+                aria-label={t("表示件数", "Items per page")}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -131,7 +146,7 @@ export function UserSearchList () {
           </div>
 
           {/* 作品フィルター */}
-          <div className="flex items-center space-x-2">
+          <div className="flex min-h-11 items-center space-x-2">
             <Checkbox
               id={hasWorksFilterId}
               checked={hasWorksFilter}
@@ -139,54 +154,89 @@ export function UserSearchList () {
             />
             <label htmlFor={hasWorksFilterId} className="text-sm">
               {t(
-                "作品を投稿しているユーザのみ",
+                "作品を投稿しているユーザーのみ",
                 "Users with posted works only",
               )}
             </label>
           </div>
 
           {/* リフレッシュボタン */}
-          <Button onClick={onRefresh} disabled={refreshing} variant="outline">
-            {refreshing
-              ? t("更新中...", "Refreshing...")
-              : t("更新", "Refresh")}
-          </Button>
+          {!isWaitingForSearch && (
+            <Button
+              onClick={onRefresh}
+              disabled={refreshing}
+              variant="outline"
+              className="h-11 self-start md:self-auto"
+            >
+              {refreshing
+                ? t("更新中...", "Refreshing...")
+                : t("更新", "Refresh")}
+            </Button>
+          )}
         </div>
       </div>
 
       {/* ユーザリスト */}
       <div>
-        <div className="space-y-2">
-          {filteredUsers.map((user) => (
-            <div key={user.id} className="space-y-2">
-              <UserSearchItem user={user} works={user.works} />
-              <Separator />
-            </div>
-          ))}
-        </div>
-        <div className="h-8" />
-        {/* ページネーション */}
-        <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
-          <div className="flex justify-between">
-            <Button
-              onClick={() => handlePageChange(Math.max(0, page - 1))}
-              disabled={page === 0}
-              variant="outline"
-            >
-              {t("前へ", "Previous")}
-            </Button>
-            <span className="flex items-center px-4 text-sm">
-              {t("ページ", "Page")} {page + 1}
-            </span>
-            <Button
-              onClick={() => handlePageChange(page + 1)}
-              disabled={!filteredUsers || filteredUsers.length < perPage}
-              variant="outline"
-            >
-              {t("次へ", "Next")}
+        {isWaitingForSearch ? (
+          <div className="flex min-h-48 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed p-6">
+            <PictorChanSays>
+              {t(
+                "会いたいクリエーターのお名前を入れてみてくださいね。名前の一部だけでも探せますよ！",
+                "Enter the name of a creator you'd like to meet. Part of the name works too!",
+              )}
+            </PictorChanSays>
+            <Button asChild variant="outline" className="h-11 rounded-full">
+              <Link to="/rankings?type=users">
+                {t("人気のクリエーターをランキングで見る", "See popular creators")}
+              </Link>
             </Button>
           </div>
+        ) : filteredUsers.length === 0 ? (
+          <div className="flex min-h-48 items-center justify-center rounded-2xl border border-dashed p-6">
+            <PictorChanSays>
+              {t(
+                `「${search}」さんは見つかりませんでした。名前の一部だけでも探せますよ！`,
+                `I couldn't find "${search}". Try just part of the name!`,
+              )}
+            </PictorChanSays>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filteredUsers.map((user) => (
+              <div key={user.id} className="space-y-2">
+                <UserSearchItem user={user} works={user.works} />
+                <Separator />
+              </div>
+            ))}
+          </div>
+        )}
+        {/* ページネーション */}
+        {!isWaitingForSearch && (
+        <div className="flex items-center justify-between gap-2 pt-4">
+          <Button
+            onClick={() => handlePageChange(Math.max(0, page - 1))}
+            disabled={page === 0}
+            variant="outline"
+            className="h-11"
+          >
+            {t("前へ", "Previous")}
+          </Button>
+          <span className="px-4 text-sm">
+            {t("ページ", "Page")} {page + 1}
+          </span>
+          <Button
+            onClick={() => handlePageChange(page + 1)}
+            disabled={
+              data === undefined || (data.users?.length ?? 0) < perPage
+            }
+            variant="outline"
+            className="h-11"
+          >
+            {t("次へ", "Next")}
+          </Button>
         </div>
+        )}
       </div>
     </div>
   )

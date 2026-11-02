@@ -662,7 +662,7 @@ export const META: { [key: string]: MetaData } = {
   RELEASES: {
     title: "リリース情報",
     enTitle: "Release Information",
-    description: "Check the latest release information of Aipictors",
+    description: "Aipictorsの最新のアップデート、不具合対応、メンテナンスのお知らせをまとめています。",
     enDescription: "Stay updated on the latest Aipictors release information",
     isIndex: true,
   },
@@ -677,7 +677,7 @@ export const META: { [key: string]: MetaData } = {
   MILESTONES: {
     title: "開発予定",
     enTitle: "Development Milestones",
-    description: "Check the latest development roadmap of Aipictors",
+    description: "Aipictorsでいま開発している機能と、これまでにリリースした機能の一覧です。",
     enDescription: "Explore the latest development plans for Aipictors",
     isIndex: true,
   },
@@ -771,17 +771,38 @@ export const META: { [key: string]: MetaData } = {
     image: "{{url}}",
     isIndex: true,
   },
+  USERS_SEARCH: {
+    title: "ユーザー検索",
+    enTitle: "User Search",
+    description: "Aipictorsのクリエーターを名前で探せます。作品のサムネイルを見ながらお気に入りの作者を見つけましょう。",
+    enDescription: "Find Aipictors creators by name and discover your new favorite artists.",
+    isIndex: true,
+  },
+  GUIDELINE: {
+    title: "コミュニティガイドライン",
+    enTitle: "Community Guidelines",
+    description: "Aipictorsを安全で創造的なコミュニティとして維持するための、投稿や交流のルールと禁止事項です。",
+    enDescription: "Rules for posting and interacting that keep Aipictors a safe, creative community.",
+    isIndex: true,
+  },
+  THEME_PROPOSALS: {
+    title: "お題の提案",
+    enTitle: "Theme Proposals",
+    description: "Aipictorsのお題を誰でも提案できます。いいねが多い案ほど採用されやすく、採用されるとお題ページに名前が載ります。",
+    enDescription: "Anyone can propose Aipictors daily themes. Adopted themes show your name on the theme page.",
+    isIndex: true,
+  },
   PRIVACY: {
     title: "プライバシーポリシー",
     enTitle: "Privacy Policy",
-    description: "Information about the Aipictors privacy policy",
+    description: "Aipictorsの個人情報の利用目的、第三者への開示、Cookieの使用などについて説明します。",
     enDescription: "Read the privacy policy for Aipictors",
     isIndex: true,
   },
   APP: {
     title: "アプリ",
     enTitle: "App",
-    description: "Download the Aipictors app",
+    description: "AIイラスト投稿サイトAipictorsのアプリ。通知を受け取ったり、フォローしたクリエーターの作品をどこでもチェックできます。",
     enDescription: "Download the Aipictors app",
     isIndex: true,
   },
@@ -953,7 +974,7 @@ export const META: { [key: string]: MetaData } = {
   LOGIN: {
     title: "ログイン",
     enTitle: "Login",
-    description: "Log in and enjoy Aipictors!",
+    description: "Aipictorsにログインして、作品へのいいねやフォロー、画像生成、作品の投稿を楽しみましょう。",
     enDescription:
       "Login to access your Aipictors account and enjoy AI illustrations",
     isIndex: true,
@@ -989,7 +1010,7 @@ export const META: { [key: string]: MetaData } = {
   TERMS: {
     title: "利用規約",
     enTitle: "Terms of Use",
-    description: "Explanation of the terms of use for Aipictors",
+    description: "AIイラスト投稿サイトAipictorsの利用規約です。ご利用の前にご確認ください。",
     enDescription: "Read the terms of use for Aipictors",
     isIndex: true,
   },
@@ -1048,8 +1069,7 @@ export const META: { [key: string]: MetaData } = {
   SUPPORT_CHAT: {
     title: "お問い合わせ",
     enTitle: "Support Chat",
-    description:
-      "You can receive support through chat with the management team",
+    description: "チャットでAipictorsのサポートにお問い合わせいただけます。",
     enDescription:
       "Contact support through the chat feature with the Aipictors team",
     isIndex: false,

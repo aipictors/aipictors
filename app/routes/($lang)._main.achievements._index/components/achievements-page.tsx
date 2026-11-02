@@ -98,7 +98,7 @@ export function AchievementsPage() {
 
   if (loading && achievements.length === 0) {
     return (
-      <div className="flex justify-center py-24">
+      <div className="flex min-h-[462px] items-center justify-center">
         <Loader2Icon className="size-8 animate-spin text-border" />
       </div>
     )
@@ -918,7 +918,7 @@ const SAMPLE_BADGES = [
 function AchievementsLoggedOut() {
   const t = useTranslation()
   return (
-    <div className="mx-auto max-w-2xl space-y-6 py-12 text-center">
+    <div className="mx-auto min-h-[462px] max-w-2xl space-y-6 py-12 text-center">
       <div className="flex flex-wrap justify-center gap-2">
         {SAMPLE_BADGES.map((badge, index) => (
           <div

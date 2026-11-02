@@ -15,7 +15,7 @@ export default function Route () {
   return (
     <div className="container-shadcn-ui space-y-8 px-8 py-8">
       <h1 className="font-bold text-2xl">{t("利用規約", "Terns")}</h1>
-      <AppMarkdown>{t(text, enText)}</AppMarkdown>
+      <AppMarkdown isDemotedHeading>{t(text, enText)}</AppMarkdown>
     </div>
   )
 }

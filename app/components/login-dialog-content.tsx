@@ -87,11 +87,11 @@ export function LoginDialogContent (): React.ReactNode {
 
   return (
     <>
-      <div className="my-2 space-y-2">
-        <p className="text-sm">
+      <div className="my-3 space-y-2">
+        <p className="font-medium text-sm">
           {t("SNSアカウントでログイン", "Login with social accounts")}
         </p>
-        <p className="text-sm">
+        <p className="text-muted-foreground text-xs leading-relaxed">
           {t(
             "ここからアカウントを「作成」した場合は旧版にはパスワード認証のみ可能です",
             "If you create an account from here, only password authentication is available in the old version.",
@@ -120,8 +120,8 @@ export function LoginDialogContent (): React.ReactNode {
         </div>
       </div>
       <Separator />
-      <div className="my-2 w-full space-y-2">
-        <p className="text-sm">
+      <div className="my-3 w-full space-y-2">
+        <p className="font-medium text-sm">
           {t(
             "メールアドレスでログインまたは新規登録",
             "Log in or sign up with email",
@@ -134,10 +134,11 @@ export function LoginDialogContent (): React.ReactNode {
             onChange={(event) => setEmail(event.target.value)}
             placeholder={t("メールアドレス", "Email address")}
             disabled={isLoading || isSendingEmailLink}
+            className="h-11 text-base md:text-sm"
           />
           <button
             type="button"
-            className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 font-medium text-primary-foreground text-sm transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
             onClick={onSendEmailLink}
             disabled={isLoading || isSendingEmailLink}
           >
@@ -146,8 +147,8 @@ export function LoginDialogContent (): React.ReactNode {
         </div>
       </div>
       <Separator />
-      <div className="my-2 w-full space-y-2">
-        <p className="text-sm">
+      <div className="my-3 w-full space-y-2">
+        <p className="font-medium text-sm">
           {t(
             "またはアカウント情報でログイン",
             "Or log in with your account information",

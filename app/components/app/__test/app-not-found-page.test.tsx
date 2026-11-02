@@ -19,18 +19,23 @@ describe("AppNotFoundPage", () => {
     expect(headingElement).toBeInTheDocument()
   })
 
-  it("エラーメッセージが正しく表示されるかを確認", () => {
-    // エラーメッセージが正しく表示されるかを確認
-    const messageElement = screen.getByText(
-      "おっと! お探しのページは存在しないようです。",
-    )
-    expect(messageElement).toBeInTheDocument()
+  it("見出しが正しく表示されるかを確認", () => {
+    // 見出しが正しく表示されるかを確認
+    const heading = screen.getByRole("heading", { level: 1 })
+    expect(heading).toHaveTextContent("ページが見つかりません")
   })
 
-  it("ホームに戻るボタンが正しく表示されるかを確認", () => {
-    // ホームに戻るボタンが正しく表示されるかを確認
-    const linkElement = screen.getByRole("link", { name: /ホームに戻る/i })
+  it("検索欄が表示されるかを確認", () => {
+    // 検索欄が表示されるかを確認
+    expect(screen.getByRole("searchbox")).toHaveAttribute("name", "q")
+  })
+
+  it("トップへ戻るリンクが正しく表示されるかを確認", () => {
+    // トップへ戻るリンクが正しく表示されるかを確認
+    const linkElement = screen.getByRole("link", {
+      name: /トップページへ戻る/i,
+    })
     expect(linkElement).toBeInTheDocument()
-    expect(linkElement).toHaveAttribute("href", "https://www.aipictors.com")
+    expect(linkElement).toHaveAttribute("href", "/")
   })
 })

@@ -7,6 +7,8 @@ import type React from "react"
 type Props = Readonly<{
   className?: string
   breaks?: boolean
+  /** ページ側に h1 があるとき、本文の # を h2 に下げる */
+  isDemotedHeading?: boolean
   children: React.ReactNode
 }>
 
@@ -15,9 +17,14 @@ export function AppMarkdown (props: Props): React.ReactNode {
     return <>{props.children}</>
   }
 
-  const html = marked(props.children, {
-    breaks: props.breaks ?? false,
-  })
+  const options = { breaks: props.breaks ?? false }
+  const tokens = marked.lexer(props.children, options)
+  if (props.isDemotedHeading) {
+    for (const token of tokens) {
+      if (token.type === "heading" && token.depth < 6) token.depth += 1
+    }
+  }
+  const html = marked.parser(tokens, options)
 
   return (
     <div
@@ -29,6 +36,9 @@ export function AppMarkdown (props: Props): React.ReactNode {
         "[&>h1]:mt-8 [&>h1]:mb-6 [&>h1]:border-b [&>h1]:pb-2 [&>h1]:font-bold [&>h1]:text-2xl [&>h1]:text-foreground",
         "[&>h2]:mt-6 [&>h2]:mb-4 [&>h2]:font-semibold [&>h2]:text-foreground [&>h2]:text-xl",
         "[&>h3]:mt-4 [&>h3]:mb-3 [&>h3]:font-medium [&>h3]:text-foreground [&>h3]:text-lg",
+        // 見出しを下げても見た目は 1 段上のままにする
+        props.isDemotedHeading &&
+          "[&>h2]:mt-8 [&>h2]:mb-6 [&>h2]:border-b [&>h2]:pb-2 [&>h2]:font-bold [&>h2]:text-2xl [&>h3]:mt-6 [&>h3]:mb-4 [&>h3]:font-semibold [&>h3]:text-xl",
         // パラグラフとリストのスタイル
         "[&>p]:mb-4 [&>p]:text-muted-foreground [&>p]:leading-relaxed",
         "[&>ul>li]:mb-2 [&>ul>li]:text-muted-foreground [&>ul>li]:leading-relaxed [&>ul]:mb-4 [&>ul]:pl-6",

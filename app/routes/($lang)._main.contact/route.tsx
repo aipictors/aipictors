@@ -6,6 +6,7 @@ import type {
 import { Link } from "@remix-run/react"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
+import { PictorChanSays } from "~/components/pictor-chan-says"
 import { createMeta } from "~/utils/create-meta"
 import { Button } from "~/components/ui/button"
 import {
@@ -57,6 +58,13 @@ export default function Contact () {
           )}
         </p>
       </div>
+
+      <PictorChanSays className="justify-center">
+        {t(
+          "困ったことがあれば、まずチャットで聞いてくださいね。いつでもお待ちしています！",
+          "If you're stuck, try the chat first. We're always here for you!",
+        )}
+      </PictorChanSays>
 
       {/* お問い合わせオプション */}
       <div className="grid gap-6 md:grid-cols-2">
@@ -178,6 +186,12 @@ export default function Contact () {
             "For information handling, please check our Privacy Policy",
           )}
         </p>
+        <Link
+          to="/privacy"
+          className="inline-flex min-h-11 items-center text-primary text-sm underline-offset-4 hover:underline"
+        >
+          {t("プライバシーポリシーを見る", "View Privacy Policy")}
+        </Link>
       </div>
     </div>
   )

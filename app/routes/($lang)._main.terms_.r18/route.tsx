@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -42,7 +42,9 @@ export default function R18TermsPage() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{t("R18コンテンツ利用規約", "R18 Content Terms")}</CardTitle>
+          <h1 className="font-semibold text-2xl leading-none tracking-tight">
+            {t("R18コンテンツ利用規約", "R18 Content Terms")}
+          </h1>
           <p className="text-muted-foreground text-sm">
             {t(
               "このページは、R18 / R18G作品の投稿・公開時に適用される追加ルールです。",

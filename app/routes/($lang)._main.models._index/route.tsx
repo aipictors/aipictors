@@ -158,10 +158,17 @@ export default function ModelsPage() {
         <TabsContent value="community">
           <ClientOnly
             fallback={
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                {data.userModels.map((model) => (
-                  <UserModelCard key={model.id} model={model} blurSensitive />
-                ))}
+              <div className="flex min-h-screen flex-col gap-4">
+                {/* 読み込み後に出る検索欄と絞り込みの場所（カードがずれないように） */}
+                <div aria-hidden="true" className="flex flex-col gap-3">
+                  <div className="h-10 rounded-full bg-muted/60" />
+                  <div className="h-8 w-2/3 rounded-full bg-muted/40 md:mb-1" />
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                  {data.userModels.map((model) => (
+                    <UserModelCard key={model.id} model={model} blurSensitive />
+                  ))}
+                </div>
               </div>
             }
           >

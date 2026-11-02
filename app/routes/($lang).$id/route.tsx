@@ -16,7 +16,8 @@ export const loader = async (props: LoaderFunctionArgs) => {
     return redirect(`/posts/${id}`, { status: 301 })
   }
 
-  return redirect("/")
+  // 知らない URL をトップへ転送すると検索エンジンには中身のあるページに見えるので、404 にする
+  throw new Response("Not Found", { status: 404 })
 }
 
 const handlePostsRedirect = async (url: URL) => {

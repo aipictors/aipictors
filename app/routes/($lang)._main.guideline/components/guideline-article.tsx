@@ -12,7 +12,7 @@ export function GuidelineArticle () {
     <div className="container mx-auto max-w-4xl space-y-8 py-8">
       {/* ヘッダー */}
       <div className="space-y-4 text-center">
-        <h1 className="font-bold text-3xl">
+        <h1 className="font-bold text-2xl md:text-3xl">
           {t("コミュニティガイドライン", "Community Guidelines")}
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -24,20 +24,20 @@ export function GuidelineArticle () {
       </div>
 
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="basic">
+        <TabsList className="flex h-auto w-full justify-start overflow-x-auto md:grid md:grid-cols-5">
+          <TabsTrigger className="min-h-9 shrink-0 px-3" value="basic">
             {t("基本ルール", "Basic Rules")}
           </TabsTrigger>
-          <TabsTrigger value="posting">
+          <TabsTrigger className="min-h-9 shrink-0 px-3" value="posting">
             {t("投稿ルール", "Posting Rules")}
           </TabsTrigger>
-          <TabsTrigger value="interaction">
+          <TabsTrigger className="min-h-9 shrink-0 px-3" value="interaction">
             {t("交流ルール", "Interaction Rules")}
           </TabsTrigger>
-          <TabsTrigger value="prohibited">
+          <TabsTrigger className="min-h-9 shrink-0 px-3" value="prohibited">
             {t("禁止事項", "Prohibited Actions")}
           </TabsTrigger>
-          <TabsTrigger value="reporting">
+          <TabsTrigger className="min-h-9 shrink-0 px-3" value="reporting">
             {t("報告・対処", "Reporting")}
           </TabsTrigger>
         </TabsList>
@@ -54,7 +54,7 @@ export function GuidelineArticle () {
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 text-green-500" />
+                  <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
                   <div>
                     <h3 className="font-semibold">
                       {t("相互尊重", "Mutual Respect")}
@@ -68,7 +68,7 @@ export function GuidelineArticle () {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 text-green-500" />
+                  <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
                   <div>
                     <h3 className="font-semibold">
                       {t("創造性の促進", "Promoting Creativity")}
@@ -82,7 +82,7 @@ export function GuidelineArticle () {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 text-green-500" />
+                  <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
                   <div>
                     <h3 className="font-semibold">
                       {t("法令遵守", "Legal Compliance")}
@@ -182,7 +182,7 @@ export function GuidelineArticle () {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <XCircle className="mt-0.5 h-5 w-5 text-red-500" />
+                    <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
                     <div>
                       <h4 className="font-medium">
                         {t(
@@ -199,7 +199,7 @@ export function GuidelineArticle () {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <XCircle className="mt-0.5 h-5 w-5 text-red-500" />
+                    <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
                     <div>
                       <h4 className="font-medium">
                         {t("不適切なコンテンツ", "Inappropriate Content")}
@@ -213,7 +213,7 @@ export function GuidelineArticle () {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <XCircle className="mt-0.5 h-5 w-5 text-red-500" />
+                    <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
                     <div>
                       <h4 className="font-medium">
                         {t("年齢制限違反", "Age Rating Violations")}
@@ -291,7 +291,7 @@ export function GuidelineArticle () {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <XCircle className="mt-0.5 h-5 w-5 text-red-500" />
+                    <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
                     <div>
                       <h4 className="font-medium">
                         {t("ハラスメント", "Harassment")}
@@ -305,7 +305,7 @@ export function GuidelineArticle () {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <XCircle className="mt-0.5 h-5 w-5 text-red-500" />
+                    <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
                     <div>
                       <h4 className="font-medium">
                         {t("スパム行為", "Spam Activities")}
@@ -319,7 +319,7 @@ export function GuidelineArticle () {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <XCircle className="mt-0.5 h-5 w-5 text-red-500" />
+                    <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
                     <div>
                       <h4 className="font-medium">
                         {t("なりすまし", "Impersonation")}

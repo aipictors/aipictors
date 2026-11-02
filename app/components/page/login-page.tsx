@@ -1,25 +1,25 @@
-import { Card } from "~/components/ui/card"
-import { AppCanvas } from "~/routes/($lang).app._index/components/app-canvas"
+import { LoginCard } from "~/components/login-card"
 import { LoginDialogContent } from "~/components/login-dialog-content"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * ログインページ
+ * 認証の確認中（AppLoadingPage）と同じ高さにして、確認が終わったときに下のフッターが動かないようにする
  */
 export function LoginPage (): React.ReactNode {
+  const t = useTranslation()
+
   return (
-    <div className="flex w-full flex-col items-center justify-center pt-4 md:pt-0 lg:h-full lg:flex-row lg:items-start">
-      <div className="flex h-full w-full flex-1 flex-col items-center">
-        <div className="w-full space-y-4 lg:w-80">
-          <h1 className="w-full text-lg">{"ここから先はログインが必要です"}</h1>
-          <LoginDialogContent />
-        </div>
-      </div>
-      <div className="hidden h-full w-full flex-1 lg:block">
-        <Card className="h-full w-full bg-zinc-200 p-4 dark:bg-zinc-500">
-          <p className="text-sm">{"aipictors.com"}</p>
-          <AppCanvas />
-        </Card>
-      </div>
+    <div className="flex min-h-screen w-full items-start justify-center px-1 pt-4 pb-8 md:pt-8">
+      <LoginCard
+        title={t("ここから先はログインが必要です", "Please log in to continue")}
+        line={t(
+          "ログインしたら、続きをご案内しますね！",
+          "I'll guide you onward after you log in!",
+        )}
+      >
+        <LoginDialogContent />
+      </LoginCard>
     </div>
   )
 }

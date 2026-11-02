@@ -12,17 +12,17 @@ export function ImageModelList (props: Props) {
 
   return (
     <div className="flex flex-col space-y-4">
-      <h1 className="text-md text-xl">{t("モデル一覧", "Model List")}</h1>
-      <h2 className="text-md">
+      <h2 className="text-md text-xl">{t("モデル一覧", "Model List")}</h2>
+      <h3 className="text-md">
         {t("StableDiffusionなど", "Including StableDiffusion")}
-      </h2>
+      </h3>
       <ModelList />
-      <h2 className="text-md">
+      <h3 className="text-md">
         {t(
           "Aipictors生成機 - 搭載モデル一覧",
           "Aipictors Generator - Installed Models List",
         )}
-      </h2>
+      </h3>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {props.imageModels.map((imageModel) => (
           <div
@@ -33,7 +33,9 @@ export function ImageModelList (props: Props) {
               <img
                 src={imageModel.thumbnailImageURL ?? ""}
                 alt={imageModel.displayName}
-                className="h-auto w-full object-cover"
+                loading="lazy"
+                decoding="async"
+                className="aspect-square h-auto w-full object-cover"
               />
             </Link>
             <p className="p-2 text-center text-sm">{imageModel.displayName}</p>

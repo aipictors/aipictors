@@ -59,7 +59,8 @@ export function SocialLoginButton(props: Props): React.ReactNode {
 
   return (
     <Button
-      className="relative flex w-full items-center justify-center"
+      className="relative flex h-11 w-full items-center justify-center"
+      variant="outline"
       onClick={onLogin}
       disabled={props.disabled}
     >

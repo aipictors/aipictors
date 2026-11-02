@@ -426,6 +426,9 @@ export function RoadmapPage () {
                     <img
                       src="https://assets.aipictors.com/pictor-chan-01%20(1).webp"
                       alt="ぴくたーちゃん"
+                      width={130}
+                      height={256}
+                      loading="lazy"
                       className="h-64 w-auto object-contain drop-shadow-lg"
                     />
                   </div>

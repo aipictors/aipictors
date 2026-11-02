@@ -18,7 +18,7 @@ export default function Route () {
       <h1 className="font-bold text-2xl">
         {t("プライバシー・ポリシー", "Privacy Policy")}
       </h1>
-      <AppMarkdown>{t(text, enText)}</AppMarkdown>
+      <AppMarkdown isDemotedHeading>{t(text, enText)}</AppMarkdown>
     </div>
   )
 }

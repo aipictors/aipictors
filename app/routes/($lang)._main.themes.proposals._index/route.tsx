@@ -1,4 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client/index"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link, useSearchParams } from "@remix-run/react"
 import { addDays, format } from "date-fns"
 import { ja } from "date-fns/locale"
@@ -11,6 +12,8 @@ import {
 } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
@@ -68,6 +71,10 @@ type ThemeProposalsPageContentProps = {
 
 const PICTOR_CHAN_ICON_URL = "https://assets.aipictors.com/pictorchanicon.webp"
 const PAGE_SIZE = 24
+
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.THEME_PROPOSALS, undefined, props.params.lang)
+}
 
 export default function ThemeProposalsPage() {
   return <ThemeProposalsPageContent scope="all" />
@@ -325,7 +332,8 @@ export function ThemeProposalsPageContent(
                     "Anyone can propose themes from 8 days ahead. Pictor-chan picks daily, and more likes help. Adopted themes show your name on the theme page.",
                   )}
                 </p>
-                <div className="flex flex-wrap gap-2 pt-1 text-xs">
+                {/* 件数が届く前から場所を取っておく（下の一覧がずれないように） */}
+                <div className="flex min-h-7 flex-wrap gap-2 pt-1 text-xs">
                   {pendingCount !== null && (
                     <span className="rounded-full bg-white/25 px-2.5 py-1 backdrop-blur">
                       {t(
@@ -415,7 +423,7 @@ export function ThemeProposalsPageContent(
         </div>
       )}
 
-      <div className="sticky top-14 z-10 -mx-1 md:top-16 flex flex-col gap-2 rounded-2xl border bg-background/90 p-2 shadow-xs backdrop-blur md:flex-row md:items-center md:justify-between">
+      <div className="-mx-1 sticky top-14 z-10 flex flex-col gap-2 rounded-2xl border bg-background/90 p-2 shadow-xs backdrop-blur md:top-16 md:flex-row md:items-center md:justify-between">
         <div className="flex gap-1 overflow-x-auto">
           {statusTabs.map((tab) => (
             <button
