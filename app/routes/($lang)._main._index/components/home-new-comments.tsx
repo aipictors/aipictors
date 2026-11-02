@@ -1,9 +1,6 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
-import { ExternalLink, Type } from "lucide-react"
-import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { Badge } from "~/components/ui/badge"
-import { Button } from "~/components/ui/button"
+import { ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
@@ -21,72 +18,63 @@ export function HomeNewCommentsSection(props: Props) {
   const comments = readFragment(HomeNewCommentsFragment, props.comments)
 
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h2 className="font-semibold">{t("新規コメント", "New Comments")}</h2>
-          <Badge variant="secondary" className="text-xs">
-            <Type className="mr-1 h-3 w-3" />
-            {t("テキストのみ", "Text Only")}
-          </Badge>
-        </div>
-        <Link to="/comments/new">
-          <Button variant="ghost" size="sm" className="gap-1 text-xs">
-            {t("もっと見る", "View More")}
-            <ExternalLink className="h-3 w-3" />
-          </Button>
+    <section className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-bold text-sm">
+          {t("新規コメント", "New Comments")}
+        </h2>
+        <Link
+          to="/comments/new"
+          className="flex shrink-0 items-center text-muted-foreground text-xs hover:text-foreground"
+        >
+          {t("もっと見る", "View More")}
+          <ChevronRightIcon className="size-3.5" />
         </Link>
       </div>
 
-      <p className="text-muted-foreground text-xs">
-        {t(
-          "テキストが入力されているコメントのみを表示しています",
-          "Showing only comments with text content",
-        )}
-      </p>
-
-      {comments.map((comment) => {
-        const commentText = comment.comment?.text ?? ""
-
-        return (
-          <div
-            key={comment.comment?.id}
-            className="flex items-center space-x-2 opacity-80"
-          >
-            {comment.work?.smallThumbnailImageURL && (
-              <div className="flex items-center space-x-2">
-                <CroppedWorkSquare
-                  title={comment.work.title}
-                  workId={comment.work.id}
-                  imageUrl={comment.work?.smallThumbnailImageURL}
-                  size="sm"
-                  thumbnailImagePosition={
-                    comment.work?.thumbnailImagePosition ?? 0
-                  }
-                  imageWidth={comment.work?.smallThumbnailImageWidth}
-                  imageHeight={comment.work?.smallThumbnailImageHeight}
+      <ul className="-mx-2">
+        {comments.map((comment) => {
+          const work = comment.work
+          if (!work?.smallThumbnailImageURL) {
+            return null
+          }
+          return (
+            <li key={comment.comment?.id}>
+              <Link
+                to={`/posts/${work.id}`}
+                title={work.title}
+                className="flex gap-2.5 rounded-xl p-2 transition-colors hover:bg-muted"
+              >
+                <img
+                  src={work.smallThumbnailImageURL}
+                  alt=""
+                  width={48}
+                  height={48}
+                  loading="lazy"
+                  decoding="async"
+                  className="size-12 shrink-0 rounded-lg object-cover object-top"
                 />
-                <div className="flex flex-col space-y-2">
-                  {commentText.length > 0 && (
-                    <p>
-                      <span className="line-clamp-2 font-semibold text-md">
-                        {commentText}
-                      </span>
-                    </p>
-                  )}
-                  <div className="text-sm">
-                    {t(
-                      toElapsedTimeText(comment.createdAt),
-                      toElapsedTimeEnText(comment.createdAt),
-                    )}
-                  </div>
+                <div className="min-w-0 flex-1">
+                  <p className="line-clamp-2 break-words text-sm leading-snug">
+                    {comment.comment?.text ?? ""}
+                  </p>
+                  <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <span className="truncate">{comment.user?.name}</span>
+                    <span className="shrink-0">
+                      ·{" "}
+                      {t(
+                        toElapsedTimeText(comment.createdAt),
+                        toElapsedTimeEnText(comment.createdAt),
+                      )}
+                    </span>
+                  </p>
                 </div>
-              </div>
-            )}
-          </div>
-        )
-      })}
-    </div>
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
   )
 }
 

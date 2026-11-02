@@ -897,15 +897,16 @@ export function WorkCommentList(props: Props) {
   return (
     <>
       <div className="space-y-4">
-        <p>
-          {t("コメント", "Comments")} (
-          {props.isLoadingComments &&
-          showComments.length === 0 &&
-          (showNewComments?.length ?? 0) === 0
-            ? "..."
-            : showComments.length + (showNewComments?.length ?? 0)}
-          )
-        </p>
+        <h2 className="flex items-baseline gap-2 font-bold text-base">
+          {t("コメント", "Comments")}
+          <span className="font-normal text-muted-foreground text-sm tabular-nums">
+            {props.isLoadingComments &&
+            showComments.length === 0 &&
+            (showNewComments?.length ?? 0) === 0
+              ? ""
+              : showComments.length + (showNewComments?.length ?? 0)}
+          </span>
+        </h2>
         {props.isWorkOwnerBlocked && (
           <div className="rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
             {t(
@@ -914,41 +915,6 @@ export function WorkCommentList(props: Props) {
             )}
           </div>
         )}
-        {stickers.length > 0 && !props.isWorkOwnerBlocked && (
-          <div className="flex space-x-2 overflow-x-auto">
-            {stickers.map((sticker) => (
-              <StickerButton
-                key={sticker.id}
-                imageUrl={sticker.imageUrl ?? ""}
-                title={sticker.title}
-                onClick={async () => {
-                  try {
-                    setRecentStickerIds(recordRecentStickerId(sticker.id))
-                    await sendComment(
-                      comment,
-                      sticker.id,
-                      sticker.imageUrl ?? "",
-                      props.workId,
-                      userIcon,
-                      currentSupportDraft,
-                    )
-                  } catch (error) {
-                    toast(
-                      getApolloErrorMessage(error) ??
-                        t(
-                          "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
-                          "Failed to send the sticker. Please try again later.",
-                        ),
-                    )
-                  }
-                }}
-                size="2x-large"
-                disabled={props.isWorkOwnerBlocked}
-              />
-            ))}
-          </div>
-        )}
-
         <div className="space-y-3">
           <div className="flex w-full items-start gap-3">
             <UserAvatarWithFrame
@@ -969,10 +935,26 @@ export function WorkCommentList(props: Props) {
                     }}
                     rows={1}
                     value={comment}
-                    placeholder={t("コメントする", "Add a comment")}
+                    placeholder={
+                      authContext.isNotLoggedIn
+                        ? t(
+                            "ログインするとコメントできます",
+                            "Log in to comment",
+                          )
+                        : t("コメントする", "Add a comment")
+                    }
                     disabled={
                       !authContext.isLoggedIn || props.isWorkOwnerBlocked
                     }
+                    onKeyDown={(event) => {
+                      if (
+                        event.key === "Enter" &&
+                        (event.metaKey || event.ctrlKey)
+                      ) {
+                        event.preventDefault()
+                        onWorkComment()
+                      }
+                    }}
                     className="min-h-[46px] w-full rounded-2xl border-border/70 bg-background px-4 py-3"
                   />
                 </div>
@@ -988,7 +970,7 @@ export function WorkCommentList(props: Props) {
                     disabled={
                       !authContext.isLoggedIn || props.isWorkOwnerBlocked
                     }
-                    variant="secondary"
+                    variant={comment.trim().length > 0 ? "default" : "secondary"}
                     onClick={onWorkComment}
                     className="h-[46px] min-h-[46px] rounded-2xl px-5 text-sm"
                   >
@@ -1216,7 +1198,7 @@ export function WorkCommentList(props: Props) {
                   disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
                   variant="secondary"
                   size="icon"
-                  className="h-11 w-11 rounded-2xl"
+                  className="size-9 rounded-full"
                   aria-label={t("推す", "Support")}
                   onClick={() => {
                     if (!isSupportOpen) {
@@ -1232,7 +1214,7 @@ export function WorkCommentList(props: Props) {
                 disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
                 variant="secondary"
                 size="icon"
-                className="h-11 w-11 rounded-2xl"
+                className="size-9 rounded-full"
                 aria-label={t("スタンプを送る", "Send a sticker")}
                 onClick={onOpen}
               >
@@ -1242,13 +1224,59 @@ export function WorkCommentList(props: Props) {
           </div>
         </div>
       </div>
-      <div className="space-y-4 overflow-y-auto">
+      {stickers.length > 0 && !props.isWorkOwnerBlocked && (
+          <div className="flex gap-1 overflow-x-auto [scrollbar-width:thin]">
+            {stickers.map((sticker) => (
+              <StickerButton
+                key={sticker.id}
+                imageUrl={sticker.imageUrl ?? ""}
+                title={sticker.title}
+                onClick={async () => {
+                  try {
+                    setRecentStickerIds(recordRecentStickerId(sticker.id))
+                    await sendComment(
+                      comment,
+                      sticker.id,
+                      sticker.imageUrl ?? "",
+                      props.workId,
+                      userIcon,
+                      currentSupportDraft,
+                    )
+                  } catch (error) {
+                    toast(
+                      getApolloErrorMessage(error) ??
+                        t(
+                          "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
+                          "Failed to send the sticker. Please try again later.",
+                        ),
+                    )
+                  }
+                }}
+                size="x-large"
+                disabled={props.isWorkOwnerBlocked}
+              />
+            ))}
+          </div>
+        )}
+
+      <div className="mt-6 space-y-5 overflow-y-auto">
         {props.isLoadingComments &&
           showComments.length === 0 &&
           (showNewComments?.length ?? 0) === 0 && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2Icon className="size-4 animate-spin" />
-              <span>{t("コメントを読み込み中", "Loading comments")}</span>
+            // 届く前に場所を取っておく（下の一覧が押し下げられないように）
+            <div
+              className="space-y-5"
+              aria-label={t("コメントを読み込み中", "Loading comments")}
+            >
+              {[0, 1, 2].map((index) => (
+                <div key={index} className="flex animate-pulse gap-3">
+                  <div className="size-9 shrink-0 rounded-full bg-muted" />
+                  <div className="flex-1 space-y-2 pt-1">
+                    <div className="h-3 w-28 rounded bg-muted" />
+                    <div className="h-3 w-3/4 rounded bg-muted" />
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         {showNewComments && (

@@ -1,8 +1,10 @@
+import type React from "react"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { format } from "date-fns"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, ShieldAlert } from "lucide-react"
+import { cn } from "~/lib/utils"
 import { useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { OfficialBadge } from "~/components/official-badge"
@@ -36,6 +38,8 @@ type Props = {
   work: FragmentOf<typeof workArticleFragment>
   userSetting?: FragmentOf<typeof userSettingFragment>
   mode?: "dialog" | "page"
+  /** 作者の表示（渡すとタイトルの下に置き、記事の末尾の作者の行は出さない） */
+  authorSlot?: React.ReactNode
 }
 
 /**
@@ -49,6 +53,8 @@ export function WorkArticle(props: Props) {
   })
 
   const [tagNames, setTagNames] = useState<string[]>(props.work.tagNames)
+
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
 
   const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
 
@@ -157,6 +163,11 @@ export function WorkArticle(props: Props) {
   }
 
   const combinedText = `${displayTitle}\n${displayDescription}`.trim()
+
+  // 長い説明は畳んで、コメントや他の作品まで早くたどり着けるようにする
+  const isDescriptionLong =
+    displayDescription.length > 240 ||
+    displayDescription.split("\n").length > 6
   const sourceLanguage = combinedText ? detectLanguage(combinedText) : null
 
   const shouldShowTranslateLink = Boolean(
@@ -212,8 +223,6 @@ export function WorkArticle(props: Props) {
       setIsTranslating(false)
     }
   }
-
-  console.log(props.work.botEvaluation)
 
   const parseTextWithLinks = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
@@ -290,6 +299,14 @@ export function WorkArticle(props: Props) {
             </Button>
           </Link>
         )}
+        <h1 className="break-words font-bold text-xl leading-snug tracking-tight md:text-2xl">
+          {displayTitle}
+        </h1>
+        {isShowingTranslation && translatedTitle.length > 0 && (
+          <p className="whitespace-pre-wrap break-words text-muted-foreground text-sm">
+            {translatedTitle}
+          </p>
+        )}
         <WorkActionContainer
           accessType={props.work.accessType}
           workLikesCount={props.work.likesCount}
@@ -315,13 +332,8 @@ export function WorkArticle(props: Props) {
           workType={props.work.type}
           isTargetUserBlocked={Boolean(props.work.user?.isBlocked)}
         />
-        <h1 className="font-bold text-lg">{displayTitle}</h1>
-        {isShowingTranslation && translatedTitle.length > 0 && (
-          <p className="whitespace-pre-wrap break-words text-muted-foreground text-sm">
-            {translatedTitle}
-          </p>
-        )}
-        <div className="flex flex-col space-y-4">
+        {props.authorSlot}
+        <div className="flex flex-col space-y-3">
           {/* いいねしたユーザ一覧 */}
           {props.work.user && appContext.userId === props.work.user.id ? (
             <ToggleContent
@@ -360,20 +372,11 @@ export function WorkArticle(props: Props) {
                 />
               </div>
             </ToggleContent>
-          ) : (
-            <div className="flex items-center space-x-2">
-              <Heart
-                className={"fill-white text-black dark:text-white"}
-                size={16}
-                strokeWidth={1}
-              />
-              <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
-            </div>
-          )}
-          <span className="text-sm">
+          ) : null}
+          <span className="text-muted-foreground text-sm">
             {toDateTimeText(props.work.createdAt)}
           </span>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-4">
+          <div className="flex flex-wrap items-center gap-2">
             {props.work.model !== undefined &&
               props.work.model !== null &&
               props.work.model?.length !== 0 && (
@@ -502,17 +505,15 @@ export function WorkArticle(props: Props) {
             )}
           </div>
           {props.work.dailyTheme && (
-            <div className="flex items-center">
-              <span className="text-sm">
-                {t("参加お題", "participation theme")}
-                {":"}
-              </span>
-              <Link
-                to={`/themes/${props.work.dailyTheme.dateText.replace(/-/g, "/")}`}
-              >
-                <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
-              </Link>
-            </div>
+            <Link
+              to={`/themes/${props.work.dailyTheme.dateText.replace(/-/g, "/")}`}
+              className="w-fit text-sm hover:underline"
+            >
+              <span className="text-muted-foreground">
+                {t("参加お題", "Theme")}:
+              </span>{" "}
+              <span className="font-medium">{props.work.dailyTheme.title}</span>
+            </Link>
           )}
           <WorkArticleTags
             postId={props.work.id}
@@ -522,9 +523,25 @@ export function WorkArticle(props: Props) {
           />
         </div>
         <div className="space-y-2">
-          <p className="overflow-hidden whitespace-pre-wrap break-words">
+          <p
+            className={cn(
+              "overflow-hidden whitespace-pre-wrap break-words text-sm leading-relaxed md:text-base",
+              isDescriptionLong && !isDescriptionExpanded && "line-clamp-6",
+            )}
+          >
             {parseTextWithLinks(displayDescription)}
           </p>
+          {isDescriptionLong && (
+            <button
+              type="button"
+              className="font-medium text-muted-foreground text-sm hover:text-foreground"
+              onClick={() => setIsDescriptionExpanded((value) => !value)}
+            >
+              {isDescriptionExpanded
+                ? t("閉じる", "Show less")
+                : t("続きを読む", "Read more")}
+            </button>
+          )}
           {shouldShowTranslateLink && (
             <button
               type="button"
@@ -609,7 +626,7 @@ export function WorkArticle(props: Props) {
 
         {props.work.album && <WorkAlbumCard album={props.work.album} />}
 
-        {props.work.user && (
+        {props.work.user && !props.authorSlot && (
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex min-w-0 items-center space-x-4">
               <Link

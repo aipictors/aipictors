@@ -13,6 +13,8 @@ type Props = {
   mode?: "dialog" | "page" // ダイアログモードかページモードかを指定
   /** 表示中の画像の幅÷高さ。分かれば縮小版を表示する大きさに合わせて選ばせる */
   aspectRatio?: number
+  /** 複数枚の作品用。枠の高さを固定し、切り替えてもページが動かないようにする */
+  isFixedHeight?: boolean
 }
 
 /**
@@ -302,6 +304,23 @@ export function ImagesPreview(props: Props): React.ReactNode {
     }
   }
 
+  // 前後の画像を先に読んでおき、切り替えをすぐ終わらせる（同じ srcSet / sizes で読む）
+  // biome-ignore lint/correctness/useExhaustiveDependencies: 表示中の画像が変わったときだけ
+  useEffect(() => {
+    if (!props.isFixedHeight || props.imageURLs.length < 2) return
+    const count = props.imageURLs.length
+    for (const offset of [1, -1]) {
+      const url = props.imageURLs[(props.currentIndex + offset + count) % count]
+      const image = new Image()
+      image.sizes = toMainImageSizes(undefined)
+      image.srcset =
+        toResizedImageSrcSet(url, {
+          minWidth: 400,
+        }) ?? ""
+      image.src = url
+    }
+  }, [props.currentIndex, props.isFixedHeight])
+
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown)
     return () => {
@@ -539,6 +558,57 @@ export function ImagesPreview(props: Props): React.ReactNode {
       )}
     </div>
   ) : null
+
+  if (props.isFixedHeight) {
+    return (
+      <>
+        <div className="group/stage relative flex h-[64vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-muted/60 md:h-[72vh]">
+          {/* key を付けない: 次の画像が読み込まれるまで今の画像を出しておく（白く点滅しない） */}
+          <img
+            ref={mainImgRef}
+            className="max-h-full max-w-full cursor-zoom-in object-contain"
+            draggable={false}
+            alt="thumbnail"
+            src={props.thumbnailUrl}
+            srcSet={toResizedImageSrcSet(props.thumbnailUrl, {
+              minWidth: 400,
+            })}
+            sizes={toMainImageSizes(undefined)}
+            fetchPriority="high"
+            onTouchStart={handleMainTouchStart}
+            onMouseUp={handleMainMouseUp}
+            onMouseDown={handleMainMouseDown}
+            onTouchEnd={handleMainTouchEnd}
+            style={{ userSelect: "none" }}
+          />
+          <button
+            type="button"
+            aria-label="前の画像"
+            title="前の画像（A / ←）"
+            onClick={prevImage}
+            className="absolute left-2 flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:focus-visible:opacity-100 md:group-hover/stage:opacity-100"
+          >
+            <ChevronLeft className="size-5" />
+          </button>
+          <button
+            type="button"
+            aria-label="次の画像"
+            title="次の画像（D / →）"
+            onClick={nextImage}
+            className="absolute right-2 flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:focus-visible:opacity-100 md:group-hover/stage:opacity-100"
+          >
+            <ChevronRight className="size-5" />
+          </button>
+          <span className="pointer-events-none absolute top-2 right-2 rounded-full bg-black/55 px-2.5 py-1 font-medium text-white text-xs tabular-nums backdrop-blur-sm">
+            {props.currentIndex + 1} / {props.imageURLs.length}
+          </span>
+        </div>
+        {typeof document !== "undefined" && previewOverlay
+          ? createPortal(previewOverlay, document.body)
+          : null}
+      </>
+    )
+  }
 
   return (
     <>

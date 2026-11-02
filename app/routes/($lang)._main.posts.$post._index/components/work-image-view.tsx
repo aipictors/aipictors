@@ -35,8 +35,9 @@ export function WorkImageView (props: Props) {
   // カルーセルのレンダリング
   if (shouldRenderCarousel) {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-2">
         <ImagesPreview
+          isFixedHeight
           thumbnailUrl={allImageURLs[currentIndex]}
           imageURLs={allImageURLs}
           currentIndex={currentIndex}

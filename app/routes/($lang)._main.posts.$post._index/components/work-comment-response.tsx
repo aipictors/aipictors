@@ -237,29 +237,34 @@ export function WorkCommentResponse(props: Props) {
     <>
       <div
         className={cn(
-          "flex items-start space-x-4 pl-16",
+          "ml-4 flex items-start gap-2.5 border-border/60 border-l-2 pl-3",
           props.isMuted &&
             "border-gray-300 border-l-2 pl-[66px] opacity-60 dark:border-gray-700",
         )}
       >
-        <Link className="block size-10" to={`/users/${props.userId}`}>
+        <Link className="block size-8 shrink-0" to={`/users/${props.userId}`}>
           <UserAvatarWithFrame
             alt={props.userName ?? ""}
             frame={props.userAvatarFrame}
             isAnimated={false}
-            sizeClassName="size-10"
+            sizeClassName="size-8"
             src={props.userIconImageURL}
           />
         </Link>
-        <div className="flex flex-col space-y-2">
-          <div className="flex items-center space-x-2">
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <div className="flex flex-wrap items-center gap-x-2">
             <Link to={`/users/${props.userId}`}>
-              <p>{props.userName}</p>
+              <p className="font-semibold text-sm hover:underline">
+                {props.userName}
+              </p>
             </Link>
             <OfficialBadge
               isOfficial={props.userIsOfficial}
               isModerator={props.userIsModerator}
             />
+            <span className="text-muted-foreground text-xs">
+              {toDateTimeText(props.createdAt, true)}
+            </span>
             {props.isMuted && (
               <div className="flex items-center space-x-1">
                 <EyeOff className="size-3 text-gray-400" />
@@ -274,7 +279,7 @@ export function WorkCommentResponse(props: Props) {
               {props.text}
             </p>
             {props.moderationSummary?.moderationStatus === "REJECTED" && (
-              <div className="rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900">
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-2 text-amber-900 text-xs">
                 <p>
                   {props.moderationSummary.userNotice ??
                     t(
@@ -320,17 +325,17 @@ export function WorkCommentResponse(props: Props) {
           </div>
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link
-              className="group block w-32 overflow-hidden rounded-md"
+              className="group block w-24 overflow-hidden rounded-md"
               to={`/stickers/${props.stickerId}`}
               aria-label={t("スタンプ", "Sticker")}
             >
               <img
-                className="aspect-square w-32 overflow-hidden rounded-md object-contain py-2 transition-transform duration-300 group-hover:scale-105"
+                className="aspect-square w-24 overflow-hidden rounded-md object-contain transition-transform duration-300 group-hover:scale-105"
                 alt=""
                 src={props.stickerImageURL}
                 // スタンプは正方形。大きさを先に決めておき、読み込み後にコメント欄が伸びて下がずれないようにする
-                width={128}
-                height={128}
+                width={96}
+                height={96}
                 loading="lazy"
                 decoding="async"
               />
@@ -338,19 +343,16 @@ export function WorkCommentResponse(props: Props) {
           )}
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
             <img
-              className="aspect-square w-32 object-contain py-2"
+              className="aspect-square w-24 object-contain"
               alt=""
               src={props.stickerImageURL}
-              width={128}
-              height={128}
+              width={96}
+              height={96}
               loading="lazy"
               decoding="async"
             />
           )}
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <p className="text-xs text-muted-foreground">
-              {toDateTimeText(props.createdAt, true)}
-            </p>
+          <div className="-ml-2 flex flex-wrap items-center gap-x-1 text-muted-foreground">
             {props.isWorkOwnerLiked && (
               <div className="relative">
                 <Avatar className="relative size-4">
@@ -415,9 +417,9 @@ export function WorkCommentResponse(props: Props) {
                       <button
                         type="button"
                         aria-label="スタンプの詳細"
-                        className="inline-flex items-center"
+                        className="inline-flex size-7 items-center justify-center rounded-md hover:bg-muted hover:text-foreground"
                       >
-                        <ArrowDownToLine className="size-4" />
+                        <ArrowDownToLine className="size-3.5" />
                       </button>
                     </StickerInfoDialog>
                   )}
@@ -429,7 +431,7 @@ export function WorkCommentResponse(props: Props) {
                 <Button
                   type="button"
                   size="sm"
-                  variant={openReplyInput ? "secondary" : "outline"}
+                  variant={openReplyInput ? "secondary" : "ghost"}
                   className="h-7 gap-1 px-2 text-xs"
                   onClick={() => setOpenReplyInput(!openReplyInput)}
                 >

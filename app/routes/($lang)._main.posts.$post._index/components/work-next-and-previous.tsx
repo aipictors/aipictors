@@ -56,7 +56,7 @@ export function WorkNextAndPrevious (props: Props) {
 
   return (
     <>
-      <div className="flex text-md">
+      <div className="flex items-center font-semibold text-sm">
         <h2>{t("前後の作品", "Next and Previous Works")}</h2>
         <TooltipProvider>
           <Tooltip>

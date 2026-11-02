@@ -1,31 +1,27 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
+import { ChevronRightIcon } from "lucide-react"
 import { useContext, useMemo } from "react"
 import { Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { FollowSuggestions } from "~/components/user/follow-suggestions"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import {
-  type HomeAwardWorksFragment,
   HomeAwardWorksSection,
   homeAwardWorksQuery,
 } from "~/routes/($lang)._main._index/components/home-award-works"
-import {
-  type HomeNewCommentsFragment,
-  HomeNewCommentsSection,
-} from "~/routes/($lang)._main._index/components/home-new-comments"
+import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
 import {
   userSettingFragment,
   WorkArticle,
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
-import {
-  type CommentListItemFragment,
-  WorkCommentList,
-} from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
-import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
+import { WorkAuthorWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
 import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
 import {
@@ -186,53 +182,98 @@ export function WorkContainer(props: Props) {
             <WorkArticle
               work={work}
               userSetting={userSetting?.userSetting ?? undefined}
+              authorSlot={
+                work.user ? (
+                  <div className="md:hidden">
+                    <WorkUser
+                      userId={work.user.id}
+                      userLogin={work.user.login}
+                      userName={work.user.name}
+                      userIsOfficial={work.user.isOfficial}
+                      userIsModerator={work.user.isModerator}
+                      userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                      avatarFrame={work.user.avatarFrame}
+                      userFollowersCount={work.user.followersCount}
+                      userBiography={work.user.biography ?? ""}
+                      userEnBiography={work.user.enBiography ?? null}
+                      userWorksCount={work.user.worksCount}
+                    />
+                  </div>
+                ) : undefined
+              }
             />
-            {work.user && (
-              <WorkRelatedList
-                works={work.user.works.map((relatedWork) => ({
-                  smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
-                  thumbnailImagePosition:
-                    relatedWork.thumbnailImagePosition ?? 0,
-                  smallThumbnailImageWidth:
-                    relatedWork.smallThumbnailImageWidth,
-                  smallThumbnailImageHeight:
-                    relatedWork.smallThumbnailImageHeight,
-                  id: relatedWork.id,
-                  title: relatedWork.title,
-                  userId: relatedWork.userId,
-                  isLiked: relatedWork.isLiked,
-                  subWorksCount: relatedWork.subWorksCount,
-                  commentsCount: relatedWork.commentsCount,
-                }))}
-              />
-            )}
             {work.isCommentsEditable && (
-              <WorkCommentList
-                workId={work.id}
-                comments={comments}
-                isLoadingComments={isLoadingComments}
-                workOwnerId={work.user?.id}
-                workOwnerIconImageURL={work.user?.iconUrl}
-                workOwnerName={work.user?.name}
-                isWorkOwnerBlocked={work.user?.isBlocked ?? false}
-              />
-            )}
-            {work.user && (
-              <div className="block md:mt-0 lg:hidden">
-                <WorkUser
-                  userId={work.user.id}
-                  userLogin={work.user.login}
-                  userName={work.user.name}
-                  userIsOfficial={work.user.isOfficial}
-                  userIsModerator={work.user.isModerator}
-                  userIconImageURL={withIconUrlFallback(work.user?.iconUrl)}
-                  avatarFrame={work.user.avatarFrame}
-                  userFollowersCount={work.user.followersCount}
-                  userBiography={work.user.biography ?? ""}
-                  userEnBiography={work.user.enBiography ?? null}
-                  userWorksCount={work.user.worksCount}
+              <div className="border-t pt-6">
+                <WorkCommentList
+                  workId={work.id}
+                  comments={comments}
+                  isLoadingComments={isLoadingComments}
+                  workOwnerId={work.user?.id}
+                  workOwnerIconImageURL={work.user?.iconUrl}
+                  workOwnerName={work.user?.name}
+                  isWorkOwnerBlocked={work.user?.isBlocked ?? false}
                 />
               </div>
+            )}
+            {work.user && (
+              <div className="border-t pt-6">
+                <WorkAuthorWorks
+                  currentWorkId={work.id}
+                  works={work.user.works.map((relatedWork) => ({
+                    smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
+                    thumbnailImagePosition:
+                      relatedWork.thumbnailImagePosition ?? 0,
+                    smallThumbnailImageWidth:
+                      relatedWork.smallThumbnailImageWidth,
+                    smallThumbnailImageHeight:
+                      relatedWork.smallThumbnailImageHeight,
+                    id: relatedWork.id,
+                    title: relatedWork.title,
+                    userId: relatedWork.userId,
+                    isLiked: relatedWork.isLiked,
+                    subWorksCount: relatedWork.subWorksCount,
+                    commentsCount: relatedWork.commentsCount,
+                  }))}
+                  header={
+                    <div className="flex items-center justify-between gap-3">
+                      <Link
+                        to={`/users/${work.user.login}`}
+                        className="flex min-w-0 items-center gap-2"
+                      >
+                        <UserAvatarWithFrame
+                          alt={work.user.name}
+                          frame={work.user.avatarFrame}
+                          isAnimated={false}
+                          sizeClassName="size-8 shrink-0"
+                          src={withIconUrlFallback(work.user.iconUrl)}
+                        />
+                        <h2 className="truncate font-bold text-base">
+                          {t(
+                            `${work.user.name} の作品`,
+                            `More from ${work.user.name}`,
+                          )}
+                        </h2>
+                      </Link>
+                      <Link
+                        to={`/users/${work.user.login}/posts`}
+                        className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
+                      >
+                        {t("すべて見る", "See all")}
+                        <ChevronRightIcon className="size-4" />
+                      </Link>
+                    </div>
+                  }
+                />
+              </div>
+            )}
+            {work.user && authContext.isLoggedIn && (
+              <WorkLazySection>
+                <FollowSuggestions
+                  userId={work.user.id}
+                  userName={work.user.name}
+                  title={t("おすすめのクリエイター", "Suggested creators")}
+                />
+              </WorkLazySection>
             )}
           </div>
         </div>
@@ -284,6 +325,9 @@ export function WorkContainer(props: Props) {
                       </div>
                     </div>
                   )}
+                {newComments.length > 0 && (
+                  <HomeNewCommentsSection comments={newComments} />
+                )}
                 {!isSubscriptionUser && (
                   <Link to="/generation">
                     <img
@@ -296,9 +340,6 @@ export function WorkContainer(props: Props) {
                     />
                   </Link>
                 )}
-                {newComments.length > 0 && (
-                  <HomeNewCommentsSection comments={newComments} />
-                )}
                 {awardWorks.length > 0 && (
                   <HomeAwardWorksSection works={awardWorks} />
                 )}
@@ -307,16 +348,26 @@ export function WorkContainer(props: Props) {
           </div>
         </div>
       </div>
-      <section className="m-auto space-y-4">
+      <section className="m-auto border-t pt-6">
         {randomTag && (
-          <>
-            <div className="flex justify-between">
-              <h2 className="items-center space-x-2 font-bold text-md">
-                {t("おすすめ", "Recommended")}
-              </h2>
+          // タグはブラウザで選ぶので、見出しごと画面に近づいてから出す
+          <WorkLazySection minHeightClassName="min-h-[100vh]">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="truncate font-bold text-base">
+                  {t(`#${randomTag} のおすすめ`, `More #${randomTag}`)}
+                </h2>
+                <Link
+                  to={`/tags/${encodeURIComponent(randomTag)}`}
+                  className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
+                >
+                  {t("すべて見る", "See all")}
+                  <ChevronRightIcon className="size-4" />
+                </Link>
+              </div>
+              <WorkTagsWorks tagName={randomTag} rating={work.rating ?? "G"} />
             </div>
-            <WorkTagsWorks tagName={randomTag} rating={work.rating ?? "G"} />
-          </>
+          </WorkLazySection>
         )}
       </section>
       {/* <div className="flex w-full flex-col space-y-4 md:hidden">

@@ -196,13 +196,13 @@ export function ReplyCommentInput (props: Props) {
 
   return (
     <>
-      <div ref={rootRef} className="space-y-2 pb-24 pl-16 md:pb-0">
-        <div className="flex w-full items-center space-x-4">
+      <div ref={rootRef} className="space-y-2 pb-2 pl-12">
+        <div className="flex w-full items-center gap-2">
           <UserAvatarWithFrame
             alt={authContext.displayName ?? ""}
             frame={avatarFrame}
             isAnimated={false}
-            sizeClassName="size-10"
+            sizeClassName="size-8 shrink-0"
             src={withIconUrlFallback(iconUrl)}
           />
           <AutoResizeTextarea
@@ -210,8 +210,15 @@ export function ReplyCommentInput (props: Props) {
               setComment(event.target.value)
             }}
             value={comment}
-            placeholder={t("コメントする", "Add a comment")}
+            placeholder={t("返信する", "Write a reply")}
             disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+            autoFocus
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+                event.preventDefault()
+                onComment()
+              }
+            }}
           />
           <div>
             <Button
@@ -220,7 +227,7 @@ export function ReplyCommentInput (props: Props) {
               size={"icon"}
               onClick={onOpen}
             >
-              <StampIcon className="w-16" />
+              <StampIcon className="size-5" />
             </Button>
           </div>
           {isCreatingReplyComment ? (
@@ -230,14 +237,14 @@ export function ReplyCommentInput (props: Props) {
           ) : (
             <Button
               disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-              variant={"secondary"}
+              variant={comment.trim().length > 0 ? "default" : "secondary"}
               onClick={onComment}
             >
               {t("送信", "Send")}
             </Button>
           )}
         </div>
-        <div className="flex items-center space-x-2 pl-14 opacity-80">
+        <div className="flex items-center space-x-2 pl-10 opacity-80">
           <Checkbox
             id="reply-sensitive-checkbox"
             checked={isSensitive}
@@ -259,7 +266,7 @@ export function ReplyCommentInput (props: Props) {
           </div>
         </div>
         {props.isWorkOwnerBlocked && (
-          <p className="pl-14 text-amber-600 text-xs">
+          <p className="pl-10 text-amber-600 text-xs">
             {t(
               "このユーザーをブロック中のため、コメントとスタンプは送信できません。",
               "You cannot send comments or stickers because this user is blocked.",

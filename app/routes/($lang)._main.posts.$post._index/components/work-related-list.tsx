@@ -6,6 +6,7 @@ import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { Separator } from "~/components/ui/separator"
+import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 
 type Props = {
   works: {
@@ -25,7 +26,7 @@ type Props = {
 /**
  * 直近の作品一覧
  */
-export function WorkRelatedList (props: Props) {
+export function WorkRelatedList(props: Props) {
   return (
     <div className="relative space-y-4">
       <CarouselWithGradation
@@ -58,5 +59,58 @@ export function WorkRelatedList (props: Props) {
       />
       <Separator />
     </div>
+  )
+}
+
+/**
+ * 作者の他の作品（カルーセルだと先が見えないので、並べて見せる）
+ */
+export function WorkAuthorWorks(props: {
+  works: Props["works"]
+  currentWorkId: string
+  header: React.ReactNode
+}) {
+  const works = props.works
+    .filter((work) => work.id !== props.currentWorkId)
+    .slice(0, 8)
+
+  if (works.length === 0) {
+    return null
+  }
+
+  return (
+    <section className="space-y-3">
+      {props.header}
+      <WorkLazySection minHeightClassName="min-h-[50vw] md:min-h-80">
+        <div className="grid grid-cols-3 gap-2 md:grid-cols-4">
+          {works.map((work) => (
+            <div key={work.id} className="relative overflow-hidden rounded-xl">
+              <CroppedWorkSquare
+                title={work.title}
+                workId={work.id}
+                subWorksCount={work.subWorksCount}
+                imageUrl={work.smallThumbnailImageURL}
+                thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                size="auto"
+                imageWidth={work.smallThumbnailImageWidth}
+                imageHeight={work.smallThumbnailImageHeight}
+                commentsCount={work.commentsCount}
+              />
+              <div className="absolute right-0 bottom-0">
+                <LikeButton
+                  size={36}
+                  targetWorkId={work.id}
+                  targetWorkOwnerUserId={work.userId}
+                  defaultLiked={work.isLiked}
+                  defaultLikedCount={0}
+                  isBackgroundNone={true}
+                  strokeWidth={2}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </WorkLazySection>
+    </section>
   )
 }

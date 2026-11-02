@@ -5,7 +5,6 @@ import { useContext, useRef, useState } from "react"
 import { FollowButton } from "~/components/button/follow-button"
 import { OfficialBadge } from "~/components/official-badge"
 import { SupportButton } from "~/components/support-button"
-import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
@@ -67,45 +66,47 @@ export function WorkUser(props: Props) {
     (!appContext.isNotLoggedIn || hasViewerSession) &&
     appContext.userId !== props.userId &&
     balance !== null
+  const biography = t(
+    props.userBiography ?? "",
+    props.userEnBiography && props.userEnBiography.length > 0
+      ? props.userEnBiography.replace("\\'", "'")
+      : (props.userBiography ?? ""),
+  )
+
   return (
-    <Card>
-      <CardHeader>
-        <h2 className="p-4 font-semibold text-2xl leading-none tracking-tight">
-          <Link
-            to={`/users/${props.userLogin}`}
-            className="flex flex-col items-center text-center"
-          >
-            <UserAvatarWithFrame
-              alt={props.userName}
-              frame={props.avatarFrame}
-              sizeClassName="size-24"
-              src={props.userIconImageURL}
+    <section className="space-y-3 rounded-2xl border bg-card p-4">
+      <Link
+        to={`/users/${props.userLogin}`}
+        className="group flex items-center gap-3"
+      >
+        <UserAvatarWithFrame
+          alt={props.userName}
+          frame={props.avatarFrame}
+          sizeClassName="size-14 shrink-0"
+          src={props.userIconImageURL}
+        />
+        <div className="min-w-0">
+          <h2 className="flex items-center gap-1 font-bold leading-tight group-hover:underline">
+            <span className="truncate">{props.userName}</span>
+            <OfficialBadge
+              isOfficial={props.userIsOfficial}
+              isModerator={props.userIsModerator}
             />
-            <p className="mt-2 flex items-center justify-center gap-1 text-center font-bold text-md">
-              {props.userName}
-              <OfficialBadge
-                isOfficial={props.userIsOfficial}
-                isModerator={props.userIsModerator}
-              />
-            </p>
-          </Link>
-        </h2>
-      </CardHeader>
-      <CardContent className="flex w-full flex-col space-y-4">
-        <div className="m-auto mb-4 flex items-center space-x-4">
-          <div className="flex items-center">
-            <p className="font-bold text-sm">{`${Math.max(0, props.userFollowersCount + followersCountDelta)}`}</p>
-            <p className="text-sm text-muted-foreground">
-              {t("フォロワー", "Followers")}
-            </p>
-          </div>
-          <div className="flex items-center">
-            <p className="font-bold text-sm">{`${props.userWorksCount}`}</p>
-            <p className="text-sm text-muted-foreground">
-              {t("投稿", "Posts")}
-            </p>
-          </div>
+          </h2>
+          <p className="mt-1 text-muted-foreground text-xs">
+            <span className="font-bold text-foreground tabular-nums">
+              {Math.max(0, props.userFollowersCount + followersCountDelta)}
+            </span>{" "}
+            {t("フォロワー", "Followers")}
+            <span className="mx-1.5">·</span>
+            <span className="font-bold text-foreground tabular-nums">
+              {props.userWorksCount}
+            </span>{" "}
+            {t("投稿", "Posts")}
+          </p>
         </div>
+      </Link>
+      <div className="flex items-center gap-2 [&>*]:min-w-0 [&>*]:flex-1">
         <FollowButton
           targetUserId={props.userId}
           targetUserName={props.userName}
@@ -113,13 +114,6 @@ export function WorkUser(props: Props) {
           isFollower={data?.user?.isFollower ?? false}
           onFollowChange={onFollowChange}
         />
-        {isShowingSuggestions && (
-          <FollowSuggestions
-            userId={props.userId}
-            userName={props.userName}
-            onClose={() => setIsShowingSuggestions(false)}
-          />
-        )}
         {canShowSupportButton && (
           <SupportButton
             targetUserId={props.userId}
@@ -127,18 +121,23 @@ export function WorkUser(props: Props) {
             targetUserIconUrl={props.userIconImageURL}
             freeCoinBalance={balance.freeCoinsBalance}
             premiumCoinBalance={balance.premiumCoinsBalance}
+            variant="profile"
           />
         )}
-        <div>
-          {t(
-            props.userBiography ?? "",
-            props.userEnBiography && props.userEnBiography.length > 0
-              ? props.userEnBiography.replace("\\'", "'")
-              : (props.userBiography ?? ""),
-          )}
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+      {isShowingSuggestions && (
+        <FollowSuggestions
+          userId={props.userId}
+          userName={props.userName}
+          onClose={() => setIsShowingSuggestions(false)}
+        />
+      )}
+      {biography.length > 0 && (
+        <p className="line-clamp-3 whitespace-pre-wrap break-words text-muted-foreground text-sm leading-relaxed">
+          {biography}
+        </p>
+      )}
+    </section>
   )
 }
 
