@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { MessageCircleIcon, PlusIcon } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
@@ -13,10 +13,27 @@ import {
 import { Input } from "~/components/ui/input"
 import { Switch } from "~/components/ui/switch"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 const STATUS_MAX_LENGTH = 60
 
 const SWITCH_ID = "user-status-visible"
+
+/** 消えるまでの時間（分）。null は消さない */
+const EXPIRY_OPTIONS: { minutes: number | null; ja: string; en: string }[] = [
+  { minutes: 30, ja: "30分", en: "30 minutes" },
+  { minutes: 60, ja: "1時間", en: "1 hour" },
+  { minutes: 240, ja: "4時間", en: "4 hours" },
+  { minutes: 1440, ja: "24時間", en: "24 hours" },
+  { minutes: 4320, ja: "3日", en: "3 days" },
+  { minutes: 10080, ja: "7日", en: "7 days" },
+  { minutes: null, ja: "消さない", en: "Don't clear" },
+]
+
+/** 選択肢の「今の期限のまま」 */
+const KEEP_EXPIRY = "keep"
+
+type ExpiryChoice = typeof KEEP_EXPIRY | number | null
 
 type Props = {
   /** 他の人に見えているステータス */
@@ -24,11 +41,12 @@ type Props = {
   isOwn: boolean
 }
 
-const STATUS_CLASS_NAME =
-  "inline-flex max-w-full items-start gap-1.5 rounded-2xl rounded-tl-sm bg-muted px-3 py-1.5 text-left text-sm"
+const BUBBLE_CLASS_NAME =
+  "relative block w-max max-w-[calc(100vw-8.5rem)] rounded-3xl bg-popover px-3.5 py-2 text-left text-popover-foreground text-sm leading-snug shadow-lg ring-1 ring-border/60 md:max-w-md"
 
 /**
- * プロフィールのひとことステータス。本人は押して変えられる
+ * Discord のような、アイコンから出る吹き出し。アイコンの枠を基準に置く
+ * 自分のページでは押して変えられる
  */
 export function UserProfileStatus(props: Props) {
   if (props.isOwn) {
@@ -38,10 +56,22 @@ export function UserProfileStatus(props: Props) {
     return null
   }
   return (
-    <p className={STATUS_CLASS_NAME}>
-      <MessageCircleIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-      <span className="min-w-0 break-words">{props.statusText}</span>
-    </p>
+    <BubblePosition>
+      <p className={BUBBLE_CLASS_NAME}>
+        <span className="break-words">{props.statusText}</span>
+      </p>
+    </BubblePosition>
+  )
+}
+
+function BubblePosition(props: { children: React.ReactNode }) {
+  return (
+    <div className="absolute bottom-[calc(100%-1.75rem)] left-[calc(100%-0.25rem)] z-20 md:bottom-[calc(100%-4.25rem)] md:left-[calc(100%-0.5rem)]">
+      {/* 吹き出しの丸 2 つ。大きい方は本体の下にもぐらせてつなげる */}
+      <span className="-top-3.5 absolute left-1 size-2 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
+      <span className="-top-1.5 absolute left-4 size-4 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
+      {props.children}
+    </div>
   )
 }
 
@@ -50,43 +80,47 @@ function OwnUserProfileStatus(props: { statusText: string | null }) {
   const { data } = useQuery(viewerUserStatusQuery)
   const [isOpen, setIsOpen] = useState(false)
 
-  const text = data?.viewerUserStatus?.text ?? props.statusText ?? ""
-  const isVisible = data?.viewerUserStatus?.isVisible ?? true
+  const status = data?.viewerUserStatus
+  const text = status?.text ?? props.statusText ?? ""
+  const isVisible = status?.isVisible ?? true
 
   return (
     <>
-      <button
-        type="button"
-        className={`${STATUS_CLASS_NAME} transition-colors hover:bg-muted/70`}
-        onClick={() => setIsOpen(true)}
-      >
-        {text.length > 0 ? (
-          <>
-            <MessageCircleIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+      <BubblePosition>
+        <button
+          type="button"
+          className={cn(BUBBLE_CLASS_NAME, "transition hover:brightness-95")}
+          onClick={() => setIsOpen(true)}
+        >
+          {text.length > 0 ? (
             <span
-              className={`min-w-0 break-words ${isVisible ? "" : "text-muted-foreground line-through"}`}
+              className={cn(
+                "break-words",
+                !isVisible && "text-muted-foreground",
+              )}
             >
               {text}
+              {!isVisible && (
+                <span className="ml-1.5 whitespace-nowrap text-xs">
+                  {t("（非表示）", "(Hidden)")}
+                </span>
+              )}
             </span>
-            {!isVisible && (
-              <span className="shrink-0 text-muted-foreground text-xs leading-5">
-                {t("非表示", "Hidden")}
+          ) : (
+            <span className="flex items-center gap-2 text-muted-foreground">
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-foreground text-background">
+                <PlusIcon className="size-3.5" strokeWidth={3} />
               </span>
-            )}
-          </>
-        ) : (
-          <>
-            <PlusIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-            <span className="text-muted-foreground">
               {t("ステータスを設定", "Set a status")}
             </span>
-          </>
-        )}
-      </button>
+          )}
+        </button>
+      </BubblePosition>
       {isOpen && (
         <UserStatusDialog
           text={text}
           isVisible={isVisible}
+          expiresAt={status?.expiresAt ?? null}
           onClose={() => setIsOpen(false)}
         />
       )}
@@ -94,14 +128,33 @@ function OwnUserProfileStatus(props: { statusText: string | null }) {
   )
 }
 
+const toExpiresAt = (choice: ExpiryChoice, currentExpiresAt: number | null) => {
+  if (choice === KEEP_EXPIRY) return currentExpiresAt
+  if (choice === null) return null
+  return Math.floor(Date.now() / 1000) + choice * 60
+}
+
+const formatExpiresAt = (expiresAt: number) => {
+  return new Date(expiresAt * 1000).toLocaleString("ja-JP", {
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
+
 function UserStatusDialog(props: {
   text: string
   isVisible: boolean
+  expiresAt: number | null
   onClose: () => void
 }) {
   const t = useTranslation()
   const [text, setText] = useState(props.text)
   const [isVisible, setIsVisible] = useState(props.isVisible)
+  const [expiryChoice, setExpiryChoice] = useState<ExpiryChoice>(
+    props.expiresAt !== null ? KEEP_EXPIRY : null,
+  )
   const [updateStatus, { loading }] = useMutation(updateUserStatusMutation, {
     refetchQueries: [viewerUserStatusQuery],
     awaitRefetchQueries: true,
@@ -113,7 +166,13 @@ function UserStatusDialog(props: {
   const save = async (nextText: string) => {
     try {
       await updateStatus({
-        variables: { input: { text: nextText, isVisible } },
+        variables: {
+          input: {
+            text: nextText,
+            isVisible,
+            expiresAt: toExpiresAt(expiryChoice, props.expiresAt),
+          },
+        },
       })
       toast(t("ステータスを更新しました", "Status updated"))
       props.onClose()
@@ -125,6 +184,24 @@ function UserStatusDialog(props: {
       )
     }
   }
+
+  const options: { value: ExpiryChoice; label: string }[] = [
+    ...(props.expiresAt !== null
+      ? [
+          {
+            value: KEEP_EXPIRY as ExpiryChoice,
+            label: t(
+              `今の期限（${formatExpiresAt(props.expiresAt)}）`,
+              `Current (${formatExpiresAt(props.expiresAt)})`,
+            ),
+          },
+        ]
+      : []),
+    ...EXPIRY_OPTIONS.map((option) => ({
+      value: option.minutes,
+      label: t(option.ja, option.en),
+    })),
+  ]
 
   return (
     <Dialog open onOpenChange={(open) => !open && props.onClose()}>
@@ -144,11 +221,37 @@ function UserStatusDialog(props: {
               )}
             />
             <p
-              className={`text-right text-xs ${isTooLong ? "text-destructive" : "text-muted-foreground"}`}
+              className={cn(
+                "text-right text-xs",
+                isTooLong ? "text-destructive" : "text-muted-foreground",
+              )}
             >
               {length} / {STATUS_MAX_LENGTH}
             </p>
           </div>
+          <fieldset className="space-y-2">
+            <legend className="mb-2 text-sm">
+              {t("自動で消すまでの時間", "Clear after")}
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              {options.map((option) => (
+                <button
+                  key={String(option.value)}
+                  type="button"
+                  aria-pressed={expiryChoice === option.value}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-sm transition-colors",
+                    expiryChoice === option.value
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "hover:bg-muted",
+                  )}
+                  onClick={() => setExpiryChoice(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
           <div className="flex items-center justify-between gap-4">
             <label htmlFor={SWITCH_ID} className="cursor-pointer text-sm">
               {t("プロフィールに表示する", "Show on my profile")}
@@ -184,6 +287,7 @@ const viewerUserStatusQuery = graphql(
     viewerUserStatus {
       text
       isVisible
+      expiresAt
     }
   }`,
 )
@@ -193,6 +297,7 @@ const updateUserStatusMutation = graphql(
     updateUserStatus(input: $input) {
       text
       isVisible
+      expiresAt
     }
   }`,
 )

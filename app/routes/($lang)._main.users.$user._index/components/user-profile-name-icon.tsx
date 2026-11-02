@@ -124,13 +124,14 @@ export function UserProfileNameIcon(props: Props) {
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="flex min-w-0 items-end gap-3 md:gap-5">
-          <div className="-mt-14 md:-mt-20 shrink-0 rounded-full bg-background p-1 shadow-lg">
+          <div className="-mt-14 md:-mt-20 relative shrink-0 rounded-full bg-background p-1 shadow-lg">
             <UserProfileAvatar
               alt={user.name}
               frame={user.avatarFrame}
               src={withIconUrlFallback(user.iconUrl)}
               size="auto"
             />
+            <UserProfileStatus statusText={user.statusText} isOwn={isMyPage} />
           </div>
           <div className="min-w-0 pb-0.5">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -219,14 +220,13 @@ export function UserProfileNameIcon(props: Props) {
 
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-8">
         <div className="min-w-0 flex-1 space-y-3">
-          <UserProfileStatus statusText={user.statusText} isOwn={isMyPage} />
           {biographyText.length > 0 && (
             <UserProfileBiography text={biographyText} />
           )}
         </div>
 
         <div className="flex shrink-0 flex-col gap-3 md:items-end">
-          <dl className="grid grid-cols-5 gap-1 rounded-2xl bg-muted/50 px-2 py-3 md:gap-0 md:px-1">
+          <dl className="grid grid-cols-5 rounded-2xl bg-muted/50 px-1 py-3 md:px-1">
             {stats.map((stat) => (
               <div
                 key={stat.label}
@@ -235,7 +235,7 @@ export function UserProfileNameIcon(props: Props) {
                 <dt className="truncate text-[11px] text-muted-foreground md:text-xs">
                   {stat.label}
                 </dt>
-                <dd className="font-bold text-base tabular-nums md:text-lg">
+                <dd className="whitespace-nowrap font-bold text-sm tabular-nums md:text-lg">
                   <OmissionNumber number={stat.value} />
                 </dd>
               </div>

@@ -5515,6 +5515,9 @@ input UpdateUserSettingInput {
 }
 
 input UpdateUserStatusInput {
+  """消える時刻（UNIX 秒）。省略すると消えない"""
+  expiresAt: Int
+
   """プロフィールに出す"""
   isVisible: Boolean!
 
@@ -6110,6 +6113,8 @@ type UserSettingNode implements Node {
 
 """自分のステータス（非表示にしているものも返す）"""
 type UserStatusNode {
+  """消える時刻（UNIX 秒）。null は消えない"""
+  expiresAt: Int
   isVisible: Boolean!
   text: String!
 }
