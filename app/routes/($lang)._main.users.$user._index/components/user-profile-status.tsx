@@ -42,10 +42,11 @@ type Props = {
 }
 
 const BUBBLE_CLASS_NAME =
-  "relative block w-max max-w-[calc(100vw-8.5rem)] rounded-3xl bg-popover px-3.5 py-2 text-left text-popover-foreground text-sm leading-snug shadow-lg ring-1 ring-border/60 md:max-w-md"
+  "relative block w-max max-w-[calc(100vw-8rem)] rounded-3xl bg-popover px-3.5 py-2 text-left text-popover-foreground text-sm leading-snug shadow-lg ring-1 ring-border/60 md:max-w-md"
 
 /**
- * Discord のような、アイコンの横の吹き出し。ヘッダーとその下の境目にかかるように置く
+ * Discord のような、アイコンの横の吹き出し。ヘッダーとその下の境目を中心に置く
+ * 長い文はスマホだと 4 行になって吹き出しが大きくなるので 2 行で省略し、他の人は押すと全文が読める
  * 自分のページでは押して変えられる
  */
 export function UserProfileStatus(props: Props) {
@@ -55,18 +56,32 @@ export function UserProfileStatus(props: Props) {
   if (props.statusText === null) {
     return null
   }
+  return <PublicUserProfileStatus statusText={props.statusText} />
+}
+
+function PublicUserProfileStatus(props: { statusText: string }) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
   return (
     <BubblePosition>
-      <p className={BUBBLE_CLASS_NAME}>
-        <span className="break-words">{props.statusText}</span>
-      </p>
+      <button
+        type="button"
+        title={props.statusText}
+        aria-expanded={isExpanded}
+        className={BUBBLE_CLASS_NAME}
+        onClick={() => setIsExpanded((value) => !value)}
+      >
+        <span className={cn("break-words", !isExpanded && "line-clamp-2")}>
+          {props.statusText}
+        </span>
+      </button>
     </BubblePosition>
   )
 }
 
 function BubblePosition(props: { children: React.ReactNode }) {
   return (
-    <div className="-translate-y-1/2 absolute top-11 left-[calc(100%+0.25rem)] z-20 md:top-[4.25rem] md:left-[calc(100%+0.5rem)]">
+    <div className="-translate-y-1/2 absolute top-14 left-[calc(100%+0.25rem)] z-20 md:top-20 md:left-[calc(100%+0.5rem)]">
       {/* 吹き出しの丸 2 つ。大きい方は本体の下にもぐらせてつなげる */}
       <span className="-bottom-3.5 absolute left-1 size-2 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
       <span className="-bottom-1.5 absolute left-4 size-4 rounded-full bg-popover shadow-md ring-1 ring-border/60" />
@@ -95,7 +110,7 @@ function OwnUserProfileStatus(props: { statusText: string | null }) {
           {text.length > 0 ? (
             <span
               className={cn(
-                "break-words",
+                "line-clamp-2 break-words",
                 !isVisible && "text-muted-foreground",
               )}
             >
