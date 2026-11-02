@@ -18,19 +18,19 @@ export function HomeSensitiveTagList (props: Props) {
   return (
     <Carousel opts={{ dragFree: true, loop: false }}>
       <CarouselContent>
-        <CarouselItem className="basis-auto">
-          {props.themeTitle && (
+        {props.themeTitle && (
+          <CarouselItem className="basis-auto">
             <TagButton
-              link={`/r/tags/${props.themeTitle}`}
+              link={`/r/tags/${encodeURIComponent(props.themeTitle)}`}
               name={`今日のお題「${props.themeTitle}」`}
               isTagName={true}
             />
-          )}
-        </CarouselItem>
+          </CarouselItem>
+        )}
         {props.hotTags?.map((tag) => (
           <CarouselItem className="basis-auto" key={tag.id}>
             <TagButton
-              link={`/r/tags/${tag.name}`}
+              link={`/r/tags/${encodeURIComponent(tag.name)}`}
               name={tag.name}
               isTagName={true}
             />

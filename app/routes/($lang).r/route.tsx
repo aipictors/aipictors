@@ -1,35 +1,24 @@
 import { AppCommonLayout } from "~/components/app/app-common-layout"
+import { SensitiveAgeGate } from "~/components/sensitive/sensitive-age-gate"
+import { SensitiveBlurToggle } from "~/components/sensitive/sensitive-blur"
+import { META } from "~/config"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet } from "@remix-run/react"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 
-export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors | AIイラスト投稿・生成サイト | センシティブ"
-
-  const metaDescription =
-    "AIで作った画像を公開してみよう！AIイラスト・生成サイト「AIピクターズ」、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。センシティブの作品一覧です。"
-
-  const metaImage =
-    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
-
-  return [
-    { title: metaTitle },
-    { name: "description", content: metaDescription },
-    { name: "robots", content: "noindex" },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
-    { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
-  ]
-}
+/**
+ * 子のルートに meta が無いときの既定（検索エンジンには載せない）
+ * 公開の一覧は、それぞれのルートで index にする
+ */
+export const meta: MetaFunction = (props) =>
+  createSensitiveMeta(META.SENSITIVE_DEFAULT, undefined, props.params.lang)
 
 export default function SensitiveLayout () {
   return (
     <>
+      <SensitiveAgeGate />
       <AppCommonLayout outlet={<Outlet />} />
+      <SensitiveBlurToggle />
     </>
   )
 }

@@ -1,14 +1,19 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
 import { SensitiveThemeContainer } from "~/routes/($lang)._main.themes._index/components/sensitive-theme-container"
-import { config } from "~/config"
+import { config, META } from "~/config"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {
@@ -146,6 +151,10 @@ export async function loader(props: LoaderFunctionArgs) {
     year: year,
     month: month,
   }
+}
+
+export const meta: MetaFunction = (props) => {
+  return createSensitiveMeta(META.SENSITIVE_THEMES, undefined, props.params.lang)
 }
 
 export const headers: HeadersFunction = () => ({

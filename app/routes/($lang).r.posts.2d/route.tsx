@@ -11,7 +11,7 @@ import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { getJstDate } from "~/utils/jst-date"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { ArrowDownWideNarrow } from "lucide-react"
 import { useState, useEffect, Suspense } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
@@ -31,7 +31,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.HOME_2D, undefined, props.params.lang)
+  return createSensitiveMeta(META.SENSITIVE_HOME_2D, undefined, props.params.lang)
 }
 
 const getUtcDateString = (date: Date) => {
@@ -50,7 +50,7 @@ export async function loader(_props: LoaderFunctionArgs) {
   // }
 
   // 下記カテゴリからランダムに2つ選んで返す
-  const categories = ["おっぱい", "JK"]
+  const categories = ["ファンタジー", "コスプレ"]
 
   const getRandomCategories = () => {
     const currentTime = new Date()

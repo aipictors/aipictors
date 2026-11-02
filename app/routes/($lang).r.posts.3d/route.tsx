@@ -11,7 +11,7 @@ import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { getJstDate } from "~/utils/jst-date"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { useQuery } from "@apollo/client/index"
 import { ArrowDownWideNarrow } from "lucide-react"
 import { useState, useEffect, useContext, Suspense } from "react"
@@ -34,7 +34,7 @@ import { HomeSensitiveWorksTagSection } from "~/routes/($lang)._main._index/comp
 import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.HOME_3D, undefined, props.params.lang)
+  return createSensitiveMeta(META.SENSITIVE_HOME_3D, undefined, props.params.lang)
 }
 
 const getUtcDateString = (date: Date) => {

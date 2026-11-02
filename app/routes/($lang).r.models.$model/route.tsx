@@ -9,7 +9,7 @@ import type {
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { config, META } from "~/config"
 import {
   AiModelSensitiveArticle,
@@ -97,7 +97,7 @@ export const meta: MetaFunction = (props) => {
       ? aiModel.data.works[0].largeThumbnailImageURL
       : ""
 
-  return createMeta(
+  return createSensitiveMeta(
     META.MODEL,
     {
       title:

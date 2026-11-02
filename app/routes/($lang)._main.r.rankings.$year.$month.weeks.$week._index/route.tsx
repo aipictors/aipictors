@@ -1,8 +1,9 @@
 import { loaderClient } from "~/lib/loader-client"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
+import {
+  redirect,
+  type HeadersFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction,
 } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -13,7 +14,9 @@ import {
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { config, META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
+import { SensitiveAgeGate } from "~/components/sensitive/sensitive-age-gate"
+import { SensitiveBlurToggle } from "~/components/sensitive/sensitive-blur"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { getPreviousWeeklyPeriod } from "~/utils/get-weeks-in-month"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
@@ -103,7 +106,7 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.SENSITIVE_RANKINGS_WEEK, undefined, props.params.lang)
+  return createSensitiveMeta(META.SENSITIVE_RANKINGS_WEEK, undefined, props.params.lang)
 }
 
 export const headers: HeadersFunction = () => ({
@@ -132,6 +135,8 @@ export default function MonthlyAwards() {
 
   return (
     <>
+      <SensitiveAgeGate />
+      <SensitiveBlurToggle />
       <div className="space-y-6 pb-8">
         <RankingHeader
           year={data.year}
@@ -147,7 +152,7 @@ export default function MonthlyAwards() {
           month={data.month}
           day={null}
           weekIndex={data.weekIndex}
-          awards={data.workAwards.data.workAwards}
+          awards={data.workAwards?.data.workAwards ?? []}
         />
       </div>
     </>

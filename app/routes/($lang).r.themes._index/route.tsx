@@ -3,7 +3,7 @@ import { type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { config, META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
 import type { LoaderFunctionArgs } from "react-router-dom"
@@ -149,7 +149,7 @@ export const headers: HeadersFunction = () => ({
 })
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.THEMES, undefined, props.params.lang)
+  return createSensitiveMeta(META.SENSITIVE_THEMES, undefined, props.params.lang)
 }
 
 export default function Themes () {

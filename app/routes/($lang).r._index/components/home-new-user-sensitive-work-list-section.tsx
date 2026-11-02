@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from "@apollo/client/index"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
@@ -34,11 +35,13 @@ type Props = {
 export function HomeNewUsersSensitiveWorkListSection(props: Props) {
   const appContext = useContext(AuthContext)
 
+  const viewerRatings = useViewerRatings()
+
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
-    skip: appContext.isLoading,
+    skip: appContext.isLoading || !viewerRatings.isReady,
     variables: {
       where: {
-        ratings: ["R18", "R18G"],
+        ratings: viewerRatings.sensitiveRatings,
         isNowCreatedAt: true,
         ...(props.isOneWorkPerUser && { isOneWorkPerUser: true }),
       },

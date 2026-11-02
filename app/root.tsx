@@ -559,6 +559,10 @@ export function Layout(props: Props): React.ReactNode {
               "window.addEventListener('vite:preloadError',function(e){try{if(sessionStorage.getItem('aipictors-chunk-reload'))return;sessionStorage.setItem('aipictors-chunk-reload','1');e.preventDefault();location.reload()}catch(_){}});window.addEventListener('load',function(){setTimeout(function(){try{sessionStorage.removeItem('aipictors-chunk-reload')}catch(_){}},10000)})",
           }}
         />
+        {/* R18 のページは検索エンジンのセーフサーチで正しく扱われるようにする */}
+        {/^(?:\/en)?\/r(?:\/|$)/.test(location.pathname) && (
+          <meta name="rating" content="adult" />
+        )}
         <link rel="canonical" href={alternateLocaleUrls.canonical} />
         <meta property="og:url" content={alternateLocaleUrls.canonical} />
         {(location.pathname === "/" || location.pathname === "/en") && (
