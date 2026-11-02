@@ -37,7 +37,7 @@ export function buildSearchPath(
 }
 
 export function getSearchTermFromPathname(pathname: string): string | null {
-  const match = pathname.match(/^\/(?:r\/)?search\/([^/?#]+)/)
+  const match = pathname.match(/^(?:\/en)?\/(?:r\/)?search\/([^/?#]+)/)
 
   if (!match) {
     return null
@@ -47,5 +47,5 @@ export function getSearchTermFromPathname(pathname: string): string | null {
 }
 
 export function isSearchPathname(pathname: string): boolean {
-  return /^\/(?:r\/)?search(?:\/|$)/.test(pathname)
+  return /^(?:\/en)?\/(?:r\/)?search(?:\/|$)/.test(pathname)
 }

@@ -1,3 +1,4 @@
+import { toR18FallbackPath } from "~/utils/content-mode"
 import "react-photo-view/dist/react-photo-view.css"
 
 import {
@@ -233,7 +234,10 @@ const getMaintenanceStatus = async (): Promise<RootLoaderData> => {
   }
 }
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+/** ($lang) に入ってよい値。それ以外は存在しないページ（/xyz がトップとして 200 を返していた） */
+const VALID_LANG_PARAMS = new Set(["ja", "en", "r"])
+
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
 
   if (
@@ -251,6 +255,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     if (localeRedirect !== null) {
       throw redirect(localeRedirect.headers.Location, localeRedirect.status)
+    }
+
+    if (params.lang !== undefined && !VALID_LANG_PARAMS.has(params.lang)) {
+      throw new Response(null, { status: 404 })
+    }
+
+    const r18Fallback = toR18FallbackPath(url.pathname, url.search)
+
+    if (r18Fallback !== null) {
+      throw redirect(r18Fallback, 302)
     }
   }
 

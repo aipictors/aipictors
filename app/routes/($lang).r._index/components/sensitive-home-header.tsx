@@ -2,6 +2,7 @@ import { Link, useLocation } from "@remix-run/react"
 import {
   AwardIcon,
   CameraIcon,
+  HistoryIcon,
   LibraryBigIcon,
   LightbulbIcon,
   PaletteIcon,
@@ -39,6 +40,11 @@ export function SensitiveHomeHeader(props: Props): React.ReactNode {
       label: t("イラスト", "Illustrations"),
     },
     { to: "/r/posts/3d", icon: CameraIcon, label: t("フォト", "Photos") },
+    {
+      to: "/r/archive",
+      icon: HistoryIcon,
+      label: t("過去の名作", "Past Masterpieces"),
+    },
     {
       to: "/r/ai-rankings",
       icon: SparklesIcon,

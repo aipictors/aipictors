@@ -21,7 +21,6 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
-import { Separator } from "~/components/ui/separator"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
 import { config, META } from "~/config"
@@ -57,9 +56,13 @@ import { SensitiveHomeAbout } from "~/routes/($lang).r._index/components/sensiti
 import { SensitiveHomeHeader } from "~/routes/($lang).r._index/components/sensitive-home-header"
 import { SensitiveViewModeToggle } from "~/routes/($lang).r._index/components/sensitive-view-mode-toggle"
 import { SensitiveWorksFilterBar } from "~/routes/($lang).r._index/components/sensitive-works-filter-bar"
+import { getLocalePrefix } from "~/routes/($lang)._main._index/utils/content-rating-path"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { getJstDate } from "~/utils/jst-date"
-import { isSuggestableSensitiveTag } from "~/utils/sensitive-tag-filter"
+import {
+  isFeaturableSensitiveTag,
+  isFeaturableSensitiveWork,
+} from "~/utils/sensitive-tag-filter"
 
 // ---------- meta ----------
 export const meta: MetaFunction = (props) =>
@@ -114,15 +117,21 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {
     ...data,
+    // 選んで見せる枠には、ガイドラインに触れそうなタグの作品を出さない
+    promotionWorks: data.promotionWorks.filter(isFeaturableSensitiveWork),
+    newUserWorks: data.newUserWorks.filter(isFeaturableSensitiveWork),
+    workAwards: data.workAwards.filter(
+      (award) => award.work && isFeaturableSensitiveWork(award.work),
+    ),
     // タグはガイドラインに触れそうなものを除いてから HTML に入れる
     hotSensitiveTags: data.hotSensitiveTags.filter((tag) =>
-      isSuggestableSensitiveTag(tag.name),
+      isFeaturableSensitiveTag(tag.name),
     ),
     recommendedTags: data.recommendedTags
-      .filter((tag) => isSuggestableSensitiveTag(tag.tagName))
+      .filter((tag) => isFeaturableSensitiveTag(tag.tagName))
       .slice(0, 16),
     themeTitle:
-      themeTitle !== null && isSuggestableSensitiveTag(themeTitle)
+      themeTitle !== null && isFeaturableSensitiveTag(themeTitle)
         ? themeTitle
         : null,
     awardDateText: getUtcDateString(yesterday),
@@ -153,7 +162,10 @@ const syncQueryParam = (key: string, value: string | null) => {
 }
 
 // ---------- component ----------
-export default function Index() {
+/**
+ * R18 のトップ。forcedTab があるページ（/r/home）では、ほかのタブは /r へ移動して開く
+ */
+export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
   const data = useLoaderData<typeof loader>()
   const t = useTranslation()
   const navigate = useNavigate()
@@ -163,7 +175,9 @@ export default function Index() {
 
   // ------ local state ------
   const [currentTab, setCurrentTab] = useState(
-    searchParams.get("tab") ?? (authContext.isLoggedIn ? "new" : "home"),
+    props.forcedTab ??
+      searchParams.get("tab") ??
+      (authContext.isLoggedIn ? "new" : "home"),
   )
   const [workView, setWorkView] = useState(searchParams.get("view") ?? "new")
   const [newWorksPage, setNewWorksPage] = useState(
@@ -260,6 +274,12 @@ export default function Index() {
 
   // ------ URL sync helpers ------
   const handleTabChange = (tab: string) => {
+    if (props.forcedTab !== undefined) {
+      if (tab !== props.forcedTab) {
+        navigate(`${getLocalePrefix(location.pathname)}/r?tab=${tab}`)
+      }
+      return
+    }
     setCurrentTab(tab)
     syncQueryParam("tab", tab)
   }
@@ -318,7 +338,11 @@ export default function Index() {
   )
 
   useEffect(() => {
-    if (authContext.isLoading || searchParams.has("tab")) {
+    if (
+      props.forcedTab !== undefined ||
+      authContext.isLoading ||
+      searchParams.has("tab")
+    ) {
       return
     }
 
@@ -418,29 +442,23 @@ export default function Index() {
           <TabsContent value="home" className="m-0 flex flex-col space-y-4">
             <HomeSensitiveTagList hotTags={data.hotSensitiveTags} />
             <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-              {/* left */}
-              <div className="flex w-full min-w-0 flex-col space-y-6">
+              <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_278px)]">
                 <HomeSensitiveWorksUsersRecommendedSection
                   works={data.promotionWorks}
                 />
+                <HomeSensitiveNewUsersWorksSection works={data.newUserWorks} />
                 <HomeSensitiveAwardWorkSection
                   awardDateText={data.awardDateText}
-                  title={t("前日のランキング", "Yesterday's Ranking")}
+                  title={t("前日ランキング", "Previous Day Ranking")}
                   awards={data.workAwards}
                 />
                 <HomeSensitiveTagsSection
-                  title={t("人気のタグ", "Popular Tags")}
+                  title={t("人気タグ", "Popular Tags")}
                   tags={data.recommendedTags}
                 />
-                <HomeSensitiveNewUsersWorksSection works={data.newUserWorks} />
               </div>
-
-              {/* right */}
-              <Separator
-                orientation="vertical"
-                className="hidden h-[100vh] w-[1px] md:block"
-              />
-              <div className="flex w-full flex-col space-y-4 md:max-w-80">
+              {/* 右カラム（スクロールしても見えるように固定） */}
+              <aside className="flex w-full flex-col space-y-4 md:sticky md:top-20 md:w-[262px] md:max-w-[262px] md:shrink-0 md:self-start">
                 {!isSubscriptionUser &&
                   advertisements?.randomCustomerAdvertisement && (
                     <div className="relative border">
@@ -463,6 +481,10 @@ export default function Index() {
                             advertisements.randomCustomerAdvertisement.imageUrl
                           }
                           alt="Advertisement"
+                          loading="lazy"
+                          decoding="async"
+                          fetchPriority="low"
+                          className="h-auto w-full"
                         />
                       </Link>
                       <div className="absolute top-0 right-0">
@@ -475,7 +497,20 @@ export default function Index() {
                       </div>
                     </div>
                   )}
-
+                {!isSubscriptionUser && (
+                  <Link to="/generation">
+                    <img
+                      src="https://assets.aipictors.com/Aipictors_01_640.webp"
+                      alt="Aipictors Logo"
+                      width={640}
+                      height={640}
+                      loading="lazy"
+                      decoding="async"
+                      fetchPriority="low"
+                      className="h-auto w-full"
+                    />
+                  </Link>
+                )}
                 {data.newPostedUsers && (
                   <HomeNewSensitiveUsersSection users={data.newPostedUsers} />
                 )}
@@ -484,7 +519,7 @@ export default function Index() {
                     comments={data.newComments}
                   />
                 )}
-              </div>
+              </aside>
             </div>
             <SensitiveHomeAbout />
           </TabsContent>
@@ -689,6 +724,10 @@ const query = graphql(
       }
     ) {
       ...HomeWorkAward
+      work {
+        id
+        tagNames
+      }
     }
     recommendedTags: recommendedTags(
       limit: 40
@@ -706,6 +745,7 @@ const query = graphql(
       }
     ) {
       ...HomeNewUsersWorks
+      tagNames
     }
     newPostedUsers: newPostedUsers(
       offset: 0,
@@ -737,6 +777,7 @@ const query = graphql(
       }
     ) {
       ...HomePromotionWork
+      tagNames
     }
     # novelWorks: works(
     #   offset: 0,
@@ -820,3 +861,7 @@ const updateClickedCountCustomerAdvertisementMutation = graphql(
     }
   }`,
 )
+
+export default function Index() {
+  return <SensitiveHomeIndexPage />
+}

@@ -183,6 +183,51 @@ export function isSuggestableSensitiveTag(tag: string): boolean {
 }
 
 /**
+ * 運営が選んで大きく見せる枠（ランキング・殿堂・おすすめなど）で避ける語。
+ * 単独では判断できないが、未成年を連想させる作品に付くことが多いもの（部分一致。カタカナに揃えた形で書く）
+ */
+const FEATURE_EXCLUDED_TERMS = [
+  "少女",
+  "貧乳",
+  "微乳",
+  "チッパイ",
+  "ペド",
+  "young",
+  "littlegirl",
+]
+
+/**
+ * 作品に付いていても問題ないが、R18 の入口にタグ名だけを並べると未成年を連想させる語
+ */
+const TAG_LINK_EXCLUDED_TERMS = ["女ノ子", "男ノ子", "女子", "男子"]
+
+/**
+ * R18 のタグを入口の見出しやカードに出してよいか
+ */
+export function isFeaturableSensitiveTag(tag: string): boolean {
+  return (
+    isSuggestableSensitiveTag(tag) &&
+    !includesAny(normalizeTag(tag), [
+      ...FEATURE_EXCLUDED_TERMS,
+      ...TAG_LINK_EXCLUDED_TERMS,
+    ])
+  )
+}
+
+/**
+ * R18 の作品を「選んで見せる枠」に出してよいか（時系列の新着・検索には使わない）
+ */
+export function isFeaturableSensitiveWork(work: {
+  tagNames?: readonly string[] | null
+}): boolean {
+  return (work.tagNames ?? []).every(
+    (tag) =>
+      isSuggestableSensitiveTag(tag) &&
+      !includesAny(normalizeTag(tag), FEATURE_EXCLUDED_TERMS),
+  )
+}
+
+/**
  * 作品のタグのうち 1 つでも載せられないものがあれば、作品ページも検索エンジンに載せない
  */
 export function hasNonIndexableSensitiveTag(tagNames: string[]): boolean {

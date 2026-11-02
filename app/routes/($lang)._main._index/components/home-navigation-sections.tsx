@@ -1,3 +1,4 @@
+import { toR18Path } from "~/utils/content-mode"
 import {
   ActivityIcon,
   AwardIcon,
@@ -56,24 +57,7 @@ export function getHomeNavigationSections(
 ): HomeNavigationSection[] {
   const link = (path: string) => {
     if (!options.isSensitive) return path
-    if (
-      [
-        "/about",
-        "/terms",
-        "/privacy",
-        "/help",
-        "/releases",
-        "/roadmap",
-        "/pictor-chan",
-        "/models",
-        "/generation",
-        "/new/image",
-        "/archive",
-      ].includes(path)
-    ) {
-      return path
-    }
-    return `/r${path}`
+    return toR18Path(path) ?? path
   }
 
   const sections: HomeNavigationSection[] = [
@@ -82,7 +66,7 @@ export function getHomeNavigationSections(
       items: [
         {
           key: "home",
-          href: options.isSensitive ? "/r?tab=home" : "/home",
+          href: link("/home"),
           label: ["ホーム", "Home"],
           icon: HomeIcon,
         },
@@ -112,7 +96,7 @@ export function getHomeNavigationSections(
       items: [
         {
           key: "archive",
-          href: "/archive",
+          href: link("/archive"),
           label: ["過去の名作", "Past Masterpieces"],
           icon: HistoryIcon,
         },

@@ -11,8 +11,8 @@ export const buildSensitiveHomePath = (pathname: string, search: string) => {
   const pathWithoutLocale = pathname.slice(localePrefix.length) || "/"
   const params = new URLSearchParams(search)
 
-  if (pathWithoutLocale === "/" || pathWithoutLocale === "/home") {
-    params.set("tab", pathWithoutLocale === "/home" ? "home" : "new")
+  if (pathWithoutLocale === "/") {
+    params.set("tab", "new")
     return `${localePrefix}/r?${params.toString()}`
   }
 

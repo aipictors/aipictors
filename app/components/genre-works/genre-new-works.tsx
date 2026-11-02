@@ -20,6 +20,7 @@ import type { GenreConfig } from "~/components/genre-works/genre-works-config"
 import type { GenreWorksData } from "~/components/genre-works/genre-works-loader.server"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
 import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { WorksQuery } from "~/routes/($lang)._main._index/components/works-pagination-mode"
@@ -32,6 +33,7 @@ import type {
 type Props = {
   genre: GenreConfig
   works: GenreWorksData["newWorks"]
+  userLinkPrefix?: string
 }
 
 const WORK_TYPES: readonly WorkType[] = ["WORK", "VIDEO", "NOVEL", "COLUMN"]
@@ -221,8 +223,9 @@ export function GenreNewWorks(props: Props) {
           limit: PER_PAGE,
           where: {
             style: props.genre.style,
-            ratings: ["G"],
-            isSensitive: false,
+            ...(props.genre.isSensitive
+              ? { ratings: ["R18"] as const }
+              : { ratings: ["G"] as const, isSensitive: false }),
             isNowCreatedAt: true,
             orderBy: "DATE_CREATED",
             isOneWorkPerUser: true,
@@ -246,6 +249,7 @@ export function GenreNewWorks(props: Props) {
     hasNext,
     isLoadingMore,
     nextOffset,
+    props.genre.isSensitive,
     props.genre.style,
     props.works,
   ])
@@ -365,7 +369,11 @@ export function GenreNewWorks(props: Props) {
 
       {isServerList ? (
         <div className="space-y-6">
-          <ResponsivePhotoWorksAlbum works={allWorks} isShowProfile={true} />
+          <ResponsivePhotoWorksAlbum
+            works={allWorks}
+            isShowProfile={true}
+            userLinkPrefix={props.userLinkPrefix}
+          />
           {isExpanded && hasNext && <div ref={sentinelRef} className="h-px" />}
           {isLoadingMore && (
             <div className="flex justify-center py-6">
@@ -390,15 +398,28 @@ export function GenreNewWorks(props: Props) {
       ) : (
         <div className="min-h-[60vh]">
           <Suspense fallback={<AppLoadingPage />}>
-            <HomeWorksSection
-              style={props.genre.style}
-              workType={workType}
-              isPromptPublic={isPromptPublic}
-              sortType={sortType}
-              timeRange={timeRange}
-              isPagination={isPagination}
-              onPageChange={onChangePage}
-            />
+            {props.genre.isSensitive ? (
+              <HomeSensitiveWorksSection
+                page={parsePage(currentPage)}
+                setPage={onChangePage}
+                style={props.genre.style}
+                workType={workType}
+                isPromptPublic={isPromptPublic}
+                sortType={sortType}
+                timeRange={timeRange}
+                isPagination={isPagination}
+              />
+            ) : (
+              <HomeWorksSection
+                style={props.genre.style}
+                workType={workType}
+                isPromptPublic={isPromptPublic}
+                sortType={sortType}
+                timeRange={timeRange}
+                isPagination={isPagination}
+                onPageChange={onChangePage}
+              />
+            )}
           </Suspense>
         </div>
       )}

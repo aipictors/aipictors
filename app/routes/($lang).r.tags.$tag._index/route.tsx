@@ -17,7 +17,7 @@ import { config, META } from "~/config"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import {
   isIndexableSensitiveTag,
-  isSuggestableSensitiveTag,
+  isFeaturableSensitiveTag,
 } from "~/utils/sensitive-tag-filter"
 import { SensitiveTagLinks } from "~/routes/($lang).r._index/components/sensitive-tag-links"
 import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
@@ -103,7 +103,7 @@ export async function loader(props: LoaderFunctionArgs) {
     worksCount: tagWorksCountResp.data.tagWorksCount,
     hotTagNames: hotTagsResp.data.hotSensitiveTags
       .map((tag) => tag.name)
-      .filter((name) => name !== decodedTag && isSuggestableSensitiveTag(name))
+      .filter((name) => name !== decodedTag && isFeaturableSensitiveTag(name))
       .slice(0, 16),
     page: page,
     isSensitive: true,

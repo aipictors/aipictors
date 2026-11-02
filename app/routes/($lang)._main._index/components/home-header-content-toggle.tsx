@@ -89,7 +89,7 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
     writeContentMode("all")
     if (!isOnR18Page) return
     // R18 の作品ページは全年齢のページにできないのでトップへ
-    if (/^\/r\/posts\/[^/]+/.test(pathWithoutLocale)) {
+    if (/^\/r\/posts\/(?!(?:2d|2\.5d|3d)\/?$)[^/]+/.test(pathWithoutLocale)) {
       navigate(`${localePrefix}/`)
       return
     }

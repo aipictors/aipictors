@@ -26,7 +26,10 @@ import {
   searchWorkIdsByText,
 } from "~/lib/server/work-text-search.server"
 import { TEXT_SEARCH_COUNT_LIMIT } from "~/lib/work-text-search-constants"
+import { getLocalePrefix } from "~/routes/($lang)._main._index/utils/content-rating-path"
+import { isR18Path, writeContentMode } from "~/utils/content-mode"
 import { buildSearchPath } from "~/utils/search-route"
+import { isFeaturableSensitiveTag } from "~/utils/sensitive-tag-filter"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { toListWorks } from "~/utils/to-list-works"
 
@@ -58,6 +61,10 @@ const getRatingFilter = (
 
   return isSensitiveMode ? "R18" : "G"
 }
+
+/** 検索の URL。R18 の絞り込みは /r/search、全年齢と R-15 は /search に分ける */
+const getSearchBasePath = (pathname: string, rating: "R18" | "all") =>
+  `${getLocalePrefix(pathname)}${rating === "R18" ? "/r" : ""}/search`
 
 const getStyleFilter = (value: string | null): SearchStyleFilter => {
   if (value === "ILLUSTRATION" || value === "REAL") {
@@ -118,8 +125,7 @@ const buildWorksWhere = (props: {
 
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
-  const isSensitiveMode = url.pathname.startsWith("/r/")
-  const basePath = isSensitiveMode ? "/r/search" : "/search"
+  const isSensitiveMode = isR18Path(url.pathname)
   const pathSearchQuery = props.params.q
     ? decodeURIComponent(props.params.q)
     : null
@@ -134,8 +140,15 @@ export async function loader(props: LoaderFunctionArgs) {
   const style = getStyleFilter(url.searchParams.get("style"))
   const prompt = getPromptFilter(url.searchParams.get("prompt"))
   const defaultRating = isSensitiveMode ? "R18" : "G"
+  // /search?age_limit=R18 と /r/search?age_limit=G のねじれをなくす（R18 の表示は /r に揃える）
+  const isOnRatingPage = (rating === "R18") === isSensitiveMode
+  const basePath = getSearchBasePath(
+    url.pathname,
+    rating === "R18" ? "R18" : "all",
+  )
 
   if (
+    !isOnRatingPage ||
     pathSearchQuery !== null ||
     url.searchParams.has("q") ||
     url.searchParams.has("rating") ||
@@ -146,7 +159,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
     nextSearchParams.delete("q")
     nextSearchParams.delete("rating")
-    nextSearchParams.set("age_limit", rating === defaultRating ? "" : rating)
+    nextSearchParams.set("age_limit", rating === "R15" ? "R15" : "")
 
     if (currentPage > 0) {
       nextSearchParams.set("page", String(currentPage))
@@ -302,7 +315,9 @@ export async function loader(props: LoaderFunctionArgs) {
     .map(([name]) => name)
 
   return {
-    relatedTags,
+    relatedTags: isSensitiveMode
+      ? relatedTags.filter(isFeaturableSensitiveTag)
+      : relatedTags,
     filters: {
       prompt,
       rating,
@@ -311,10 +326,14 @@ export async function loader(props: LoaderFunctionArgs) {
     currentPage,
     isSensitiveMode,
     popularTags:
-      popularTagsResp.data?.recommendedTags?.map((tag) => ({
-        name: tag.tagName,
-        thumbnailUrl: tag.thumbnailUrl,
-      })) ?? [],
+      popularTagsResp.data?.recommendedTags
+        ?.map((tag) => ({
+          name: tag.tagName,
+          thumbnailUrl: tag.thumbnailUrl,
+        }))
+        // 入口に出すタグは、ガイドラインに触れそうなものを除いてから HTML に入れる
+        .filter((tag) => !isSensitiveMode || isFeaturableSensitiveTag(tag.name)) ??
+      [],
     rankingWorks: toListWorks(rankingResp.data?.works),
     searchQuery,
     works: toListWorks(works),
@@ -384,7 +403,8 @@ export default function SearchRoute() {
     setSearchText(data.searchQuery ?? "")
   }, [data.searchQuery])
 
-  const basePath = location.pathname.startsWith("/r/") ? "/r/search" : "/search"
+  // 作品・ユーザー・タグへのリンク（R18 の検索からは R18 のページへ）
+  const pagePrefix = data.isSensitiveMode ? "/r" : ""
 
   const buildFilterParams = (
     next?: Partial<typeof data.filters> & {
@@ -405,10 +425,7 @@ export default function SearchRoute() {
     const prompt = next?.prompt ?? data.filters.prompt
     const page = next?.page ?? 0
 
-    params.set(
-      "age_limit",
-      rating === (data.isSensitiveMode ? "R18" : "G") ? "" : rating,
-    )
+    params.set("age_limit", rating === "R15" ? "R15" : "")
 
     if (style !== "all") {
       params.set("style", style)
@@ -440,7 +457,15 @@ export default function SearchRoute() {
         : next,
     )
 
+    const nextRating = next?.rating ?? data.filters.rating
+    const basePath = getSearchBasePath(
+      location.pathname,
+      nextRating === "R18" ? "R18" : "all",
+    )
+
     executeSearchWithRateLimit(() => {
+      // ここで R18 を選ぶ・外すのは、ヘッダーの切り替えと同じ意味にする
+      writeContentMode(nextRating === "R18" ? "r18" : "all")
       navigate(buildSearchPath(normalizedQuery, nextParams, { basePath }))
     })
   }
@@ -502,7 +527,9 @@ export default function SearchRoute() {
                 <h1 className="break-words font-bold text-2xl leading-tight md:text-3xl">
                   {data.searchQuery
                     ? `#${data.searchQuery}`
-                    : t("作品検索", "Search")}
+                    : data.isSensitiveMode
+                      ? t("R18 作品検索", "R18 search")
+                      : t("作品検索", "Search")}
                 </h1>
                 <p className="mt-3 text-muted-foreground text-sm md:text-base">
                   {data.searchQuery
@@ -523,7 +550,7 @@ export default function SearchRoute() {
                 </p>
                 {data.searchQuery && (
                   <Link
-                    to={`/tags/${encodeURIComponent(data.searchQuery)}`}
+                    to={`${pagePrefix}/tags/${encodeURIComponent(data.searchQuery)}`}
                     className="mt-3 inline-flex items-center gap-1 rounded-full border px-3.5 py-1.5 font-medium text-sm transition-colors hover:bg-muted"
                   >
                     {t(
@@ -721,7 +748,7 @@ export default function SearchRoute() {
 
                         <div className="mt-2 flex items-start justify-between gap-2">
                           <Link
-                            to={`/posts/${work.id}`}
+                            to={`${pagePrefix}/posts/${work.id}`}
                             className="line-clamp-2 flex-1 font-semibold text-sm leading-snug hover:underline"
                           >
                             {work.title}
@@ -735,7 +762,7 @@ export default function SearchRoute() {
 
                         {work.user && (
                           <Link
-                            to={`/users/${work.user.id}`}
+                            to={`${pagePrefix}/users/${work.user.id}`}
                             className="mt-2 flex items-center gap-2"
                           >
                             <Avatar className="size-6">
@@ -796,7 +823,7 @@ export default function SearchRoute() {
                   {data.popularTags.map((tag) => (
                     <Link
                       key={tag.name}
-                      to={`/tags/${encodeURIComponent(tag.name)}`}
+                      to={`${pagePrefix}/tags/${encodeURIComponent(tag.name)}`}
                       className="inline-flex h-9 items-center rounded-full border bg-background px-4 font-medium text-sm transition-colors hover:border-foreground/40"
                     >
                       #{tag.name}
@@ -816,7 +843,7 @@ export default function SearchRoute() {
                 {data.popularTags.map((tag) => (
                   <Link
                     key={tag.name}
-                    to={`/tags/${encodeURIComponent(tag.name)}`}
+                    to={`${pagePrefix}/tags/${encodeURIComponent(tag.name)}`}
                     className="inline-flex h-8 items-center rounded-full border px-3 font-medium text-sm transition-colors hover:border-foreground/40"
                   >
                     #{tag.name}
@@ -833,7 +860,7 @@ export default function SearchRoute() {
                 {data.rankingWorks.map((work, index) => (
                   <Link
                     key={work.id}
-                    to={`/posts/${work.id}`}
+                    to={`${pagePrefix}/posts/${work.id}`}
                     className="flex items-start gap-3"
                   >
                     <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-orange-400 font-bold text-black text-sm">
@@ -886,10 +913,11 @@ export default function SearchRoute() {
 
 export const meta: MetaFunction<typeof loader> = (props) => {
   const searchQuery = props.data?.searchQuery ?? ""
+  const isSensitiveMode = props.data?.isSensitiveMode ?? false
 
   const title = searchQuery
-    ? `「${searchQuery}」の検索結果 - Aipictors`
-    : "作品検索（タグ・タイトル・説明） - Aipictors"
+    ? `「${searchQuery}」の${isSensitiveMode ? "R18 " : ""}検索結果 - Aipictors`
+    : `${isSensitiveMode ? "R18 " : ""}作品検索（タグ・タイトル・説明） - Aipictors`
   const description = searchQuery
     ? `#${searchQuery} のタグで投稿された作品を一覧表示します。`
     : "AIイラストをタグ・タイトル・説明から検索できます。人気のタグやランキングもあわせて確認できます。"
@@ -905,8 +933,10 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     { name: "twitter:description", content: description },
     {
       name: "robots",
-      content: searchQuery ? "noindex, follow" : "index, follow",
+      content:
+        searchQuery || isSensitiveMode ? "noindex, follow" : "index, follow",
     },
+    ...(isSensitiveMode ? [{ name: "rating", content: "adult" }] : []),
   ]
 }
 

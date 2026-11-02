@@ -9,6 +9,7 @@ import { useContext } from "react"
 import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
+import { isFeaturableSensitiveWork } from "~/utils/sensitive-tag-filter"
 
 type Props = {
   works: FragmentOf<typeof HomeNewUsersWorksFragment>[]
@@ -34,7 +35,9 @@ export function HomeSensitiveNewUsersWorksSection (props: Props) {
     },
   })
 
-  const workDisplayed = newUsersWorksResp?.newUserWorks ?? props.works
+  const workDisplayed =
+    newUsersWorksResp?.newUserWorks.filter(isFeaturableSensitiveWork) ??
+    props.works
 
   const t = useTranslation()
 
@@ -64,6 +67,7 @@ const NewUsersWorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: NewUsersWorksWhereInput!) {
     newUserWorks(offset: $offset, limit: $limit, where: $where) {
       ...HomeNewUsersWorks
+      tagNames
     }
   }`,
   [HomeNewUsersWorksFragment],

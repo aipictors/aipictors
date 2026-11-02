@@ -62,7 +62,8 @@ const R18_TWIN_PATHS: RegExp[] = [
   /^\/(?:ai-)?rankings(?:\/|$)/,
   /^\/albums\/?$/,
   /^\/search(?:\/|$)/,
-  /^\/stickers\/?$/,
+  /^\/archive\/?$/,
+  /^\/home\/?$/,
   /^\/collections(?:\/|$)/,
   /^\/comments\/new\/?$/,
   /^\/events(?:\/[^/]+(?:\/award)?)?\/?$/,
@@ -75,10 +76,17 @@ const R18_TWIN_PATHS: RegExp[] = [
   /^\/users\/[^/]+(?:\/(?:albums|badges|collections|notes|novels|posts|stickers|videos))?\/?$/,
 ]
 
+/**
+ * /r のページはあるが、全年齢のパスを置き換えないもの（app/routes の ($lang).r.* と ($lang)._main.r.*）
+ * 作品ページはサーバーが年齢区分で振り分ける。一覧からのリンクは /r/posts/:id を直接指す
+ */
+const R18_ROUTE_PATHS: RegExp[] = [/^\/posts\/[^/]+\/?$/]
+
 /** トップ系のページは /r のタブになる */
 const R18_HOME_TABS: Record<string, string> = {
   "/": "new",
-  "/home": "home",
+  "/new-works": "new",
+  "/posts": "new",
   "/follow-user-works": "follow-user",
   "/follow-tag-works": "follow-tag",
 }
@@ -103,4 +111,38 @@ export const toR18Path = (pathname: string, search = ""): string | null => {
   }
 
   return null
+}
+
+/** 全年齢ではページが分かれているが、R18 ではトップのタブにあるもの */
+const R18_TAB_PATHS: Record<string, string> = {
+  "/new-works": "new",
+  "/posts": "new",
+  "/follow-user-works": "follow-user",
+  "/follow-tag-works": "follow-tag",
+}
+
+/**
+ * /r のページがないパスを開いたときの移動先。移動しないときは null
+ * /r/xxx は ($lang) が r として xxx の全年齢のページに当たり、R18 なのに全年齢の作品が出ていた。
+ * 新しいページを足しても同じことが起きないよう、/r のページがあるもの以外はすべて /r を外す
+ */
+export const toR18FallbackPath = (
+  pathname: string,
+  search = "",
+): string | null => {
+  const { localePrefix, path: rawPath } = splitLocale(pathname)
+  if (!/^\/r\/./.test(rawPath)) return null
+  const path = rawPath.slice(2).replace(/(?<=.)\/$/, "")
+
+  const tab = R18_TAB_PATHS[path]
+  if (tab !== undefined) {
+    const params = new URLSearchParams(search)
+    params.set("tab", tab)
+    return `${localePrefix}/r?${params.toString()}`
+  }
+
+  if (R18_ROUTE_PATHS.some((pattern) => pattern.test(path))) return null
+  if (R18_TWIN_PATHS.some((pattern) => pattern.test(path))) return null
+
+  return `${localePrefix}${path}${search}`
 }

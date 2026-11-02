@@ -16,6 +16,7 @@ export function SensitiveHomeAbout(): React.ReactNode {
     { to: "/r/albums", label: t("R18 シリーズ", "R18 series") },
     { to: "/r/posts/2d", label: t("R18 イラスト", "R18 illustrations") },
     { to: "/r/posts/3d", label: t("R18 フォト", "R18 photos") },
+    { to: "/r/archive", label: t("R18 過去の名作", "R18 past masterpieces") },
     { to: "/guideline", label: t("投稿ガイドライン", "Posting guidelines") },
   ]
 

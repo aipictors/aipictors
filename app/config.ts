@@ -509,6 +509,15 @@ export const META: { [key: string]: MetaData } = {
       "Pictor-chan picks past AI illustrations and photos from Aipictors every day. Browse by year, season, or the hall of fame.",
     isIndex: true,
   },
+  ARCHIVE_SENSITIVE: {
+    title: "過去の名作（R18）",
+    enTitle: "Past Masterpieces (R18)",
+    description:
+      "18歳以上の方向けに、過去に人気だったR18のAIイラストを毎日選び直して紹介します。年別・春夏秋冬・殿堂から探せます。",
+    enDescription:
+      "Past popular R18 AI illustrations, re-picked every day for people aged 18 and over. Browse by year, season, or the hall of fame.",
+    isIndex: false,
+  },
   HOME_2D: {
     title: "イラスト一覧",
     enTitle: "Illustration List",

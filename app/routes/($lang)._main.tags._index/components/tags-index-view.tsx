@@ -109,7 +109,7 @@ export function TagsIndexView(props: Props) {
           </p>
           <h1 className="font-bold text-2xl tracking-tight md:text-3xl">
             {props.isSensitive
-              ? t("センシティブなタグ", "Sensitive tags")
+              ? t("R18 のタグ", "R18 tags")
               : t("タグからAIイラストを探す", "Find AI art by tag")}
           </h1>
           <p className="text-muted-foreground text-sm leading-relaxed">

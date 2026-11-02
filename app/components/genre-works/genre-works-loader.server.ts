@@ -4,11 +4,16 @@ import {
   GenreWorkCardFragment,
 } from "~/components/genre-works/genre-work-card"
 import {
-  GENRE_CONFIGS,
+  type GenreConfig,
   type GenreKey,
+  toGenreConfig,
 } from "~/components/genre-works/genre-works-config"
 import { pickTrendingTags } from "~/components/genre-works/pick-trending-tags"
 import { loaderClient } from "~/lib/loader-client"
+import {
+  isFeaturableSensitiveTag,
+  isFeaturableSensitiveWork,
+} from "~/utils/sensitive-tag-filter"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -23,14 +28,32 @@ const toDaysAgoIso = (days: number) =>
 
 type WorksWhere = VariablesOf<typeof GenreWorksQuery>["week"]
 
-/** 全年齢で公開中の画像作品（入口に大きく出すものはこの条件にする） */
-const baseWhere = (style: WorksWhere["style"]): WorksWhere => ({
+/** 公開中の画像作品（入口に大きく出すものはこの条件にする）。R18G は入口に出さない */
+const baseWhere = (
+  style: WorksWhere["style"],
+  isSensitive: boolean,
+): WorksWhere => ({
   style,
-  ratings: ["G"],
-  isSensitive: false,
+  ...(isSensitive
+    ? { ratings: ["R18"] as const }
+    : { ratings: ["G"] as const, isSensitive: false }),
   isNowCreatedAt: true,
   workType: "WORK",
 })
+
+/** R18 のタグのカードの数（4 列で並べるので 4 の倍数で出す） */
+const R18_TASTE_COUNT = 8
+
+/** 作品を探す手がかりにならないタグ */
+const R18_META_TAG_PATTERN = /^(r-?18g?|nsfw|エロ|えろ|オリジナル|ai.*)$/i
+
+const JAPANESE_PATTERN = /[ぁ-んァ-ヶ一-龠]/
+
+/** タグを入口に出してよいか（英単語を分けて付けたタグはカードにしても分かりにくいので出さない） */
+const isR18GenreTag = (tag: string) =>
+  JAPANESE_PATTERN.test(tag) &&
+  !R18_META_TAG_PATTERN.test(tag) &&
+  isFeaturableSensitiveTag(tag)
 
 const RANKING_COUNT = 10
 const HERO_COUNT = 5
@@ -45,9 +68,13 @@ type CardWork = ResultOf<typeof GenreWorksQuery>["weekWorks"][number]
  * - 乱数は使わない（キャッシュする HTML の内容が読み直すたびに変わらないように）
  * - 同じ作品が別の枠に重ねて出ないよう、ランキング→ヒーロー→定番の順に取り除く
  */
-export async function loadGenreWorks(key: GenreKey) {
-  const genre = GENRE_CONFIGS[key]
-  const base = baseWhere(genre.style)
+export async function loadGenreWorks(
+  key: GenreKey,
+  options: { isSensitive?: boolean } = {},
+) {
+  const isSensitive = options.isSensitive === true
+  const genre: GenreConfig = toGenreConfig(key, isSensitive)
+  const base = baseWhere(genre.style, isSensitive)
   const liked: WorksWhere = {
     ...base,
     orderBy: "LIKES_COUNT",
@@ -55,7 +82,7 @@ export async function loadGenreWorks(key: GenreKey) {
   }
 
   const toCoverWhere = (style: WorksWhere["style"]): WorksWhere => ({
-    ...baseWhere(style),
+    ...baseWhere(style, isSensitive),
     orderBy: "LIKES_COUNT",
     createdAtAfter: toDaysAgoIso(30),
   })
@@ -73,10 +100,9 @@ export async function loadGenreWorks(key: GenreKey) {
       month: { ...liked, createdAtAfter: toDaysAgoIso(30) },
       classics: liked,
       newWorks: {
-        style: genre.style,
-        ratings: ["G"],
-        isSensitive: false,
-        isNowCreatedAt: true,
+        ...base,
+        // 新着は小説・動画なども出す
+        workType: undefined,
         orderBy: "DATE_CREATED",
         // 連続で投稿する人の作品だけで埋まらないようにする
         isOneWorkPerUser: true,
@@ -90,13 +116,22 @@ export async function loadGenreWorks(key: GenreKey) {
       taste5: toTasteWhere(5),
       taste6: toTasteWhere(6),
       taste7: toTasteWhere(7),
-      cover2d: toCoverWhere(GENRE_CONFIGS["2d"].style),
-      cover25d: toCoverWhere(GENRE_CONFIGS["2.5d"].style),
-      cover3d: toCoverWhere(GENRE_CONFIGS["3d"].style),
+      withTastes: !isSensitive,
+      cover2d: toCoverWhere(toGenreConfig("2d", isSensitive).style),
+      cover25d: toCoverWhere(toGenreConfig("2.5d", isSensitive).style),
+      cover3d: toCoverWhere(toGenreConfig("3d", isSensitive).style),
     },
   })
 
   const data = result.data
+
+  /** 選んで見せる枠に出してよいか（全年齢は条件で絞ってあるので見ない） */
+  const isFeaturable = (work: { tagNames?: readonly string[] | null }) =>
+    !isSensitive || isFeaturableSensitiveWork(work)
+
+  const weekWorks = data.weekWorks.filter(isFeaturable)
+  const monthWorks = data.monthWorks.filter(isFeaturable)
+  const classicWorks = data.classicWorks.filter(isFeaturable)
 
   const usedIds = new Set<string>()
   const takeUnused = (works: readonly CardWork[], count: number) => {
@@ -112,12 +147,9 @@ export async function loadGenreWorks(key: GenreKey) {
     return picked
   }
 
-  const rankingWorks = takeUnused(data.weekWorks, RANKING_COUNT)
-  const heroWorks = takeUnused(
-    [...data.monthWorks, ...data.classicWorks],
-    HERO_COUNT,
-  )
-  const classicWorks = takeUnused(data.classicWorks, CLASSICS_COUNT)
+  const rankingWorks = takeUnused(weekWorks, RANKING_COUNT)
+  const heroWorks = takeUnused([...monthWorks, ...classicWorks], HERO_COUNT)
+  const pickedClassicWorks = takeUnused(classicWorks, CLASSICS_COUNT)
 
   const tasteWorks = [
     data.taste0,
@@ -132,7 +164,7 @@ export async function loadGenreWorks(key: GenreKey) {
 
   // 同じ作品に複数のタグが付いていることが多いので、カードごとに別の作品の画像にする
   const usedTasteIds = new Set<string>()
-  const tastes = genre.tastes.map((taste, index) => {
+  const fixedTastes = genre.tastes.map((taste, index) => {
     const work = tasteWorks[index]?.find((item) => !usedTasteIds.has(item.id))
     if (work) {
       usedTasteIds.add(work.id)
@@ -140,20 +172,55 @@ export async function loadGenreWorks(key: GenreKey) {
     return { tag: taste.tag, imageUrl: work?.smallThumbnailImageURL ?? null }
   })
 
+  // R18 はタグを固定で持たず、人気の作品に付いているものから選ぶ
+  const r18Pool = [
+    ...new Map(
+      [...weekWorks, ...monthWorks, ...classicWorks].map((work) => [
+        work.id,
+        work,
+      ]),
+    ).values(),
+  ]
+  const r18Tags = isSensitive
+    ? pickTrendingTags(r18Pool, { limit: 24, isAllowed: isR18GenreTag })
+    : []
+  const r18Tastes = r18Tags.flatMap((tag) => {
+    const work = r18Pool.find(
+      (item) => item.tagNames?.includes(tag) && !usedTasteIds.has(item.id),
+    )
+    if (!work) return []
+    usedTasteIds.add(work.id)
+    return [{ tag, imageUrl: work.smallThumbnailImageURL ?? null }]
+  })
+  const tasteCards = r18Tastes.slice(
+    0,
+    Math.min(R18_TASTE_COUNT, Math.floor(r18Tastes.length / 4) * 4),
+  )
+  const tasteCardNames = new Set(tasteCards.map((taste) => taste.tag))
+
+  const toCover = (
+    works: readonly {
+      tagNames?: readonly string[] | null
+      smallThumbnailImageURL: string | null
+    }[],
+  ) => works.find(isFeaturable)?.smallThumbnailImageURL ?? null
+
   return {
     heroWorks,
     rankingWorks,
-    classicWorks,
+    classicWorks: pickedClassicWorks,
     newWorks: data.newWorks,
-    tastes,
-    trendingTags: pickTrendingTags(data.weekWorks, {
-      limit: 12,
-      excludes: genre.tastes.map((taste) => taste.tag),
-    }),
+    tastes: isSensitive ? tasteCards : fixedTastes,
+    trendingTags: isSensitive
+      ? r18Tags.filter((tag) => !tasteCardNames.has(tag)).slice(0, 12)
+      : pickTrendingTags(data.weekWorks, {
+          limit: 12,
+          excludes: genre.tastes.map((taste) => taste.tag),
+        }),
     covers: {
-      "2d": data.cover2d[0]?.smallThumbnailImageURL ?? null,
-      "2.5d": data.cover25d[0]?.smallThumbnailImageURL ?? null,
-      "3d": data.cover3d[0]?.smallThumbnailImageURL ?? null,
+      "2d": toCover(data.cover2d),
+      "2.5d": toCover(data.cover25d),
+      "3d": toCover(data.cover3d),
     } satisfies Record<GenreKey, string | null>,
   }
 }
@@ -178,6 +245,7 @@ const GenreWorksQuery = graphql(
     $cover2d: WorksWhereInput!
     $cover25d: WorksWhereInput!
     $cover3d: WorksWhereInput!
+    $withTastes: Boolean!
   ) {
     weekWorks: works(offset: 0, limit: 40, where: $week) {
       ...GenreWorkCard
@@ -194,17 +262,17 @@ const GenreWorksQuery = graphql(
     newWorks: works(offset: 0, limit: $newWorksLimit, where: $newWorks) {
       ...GenreNewWork
     }
-    taste0: works(offset: 0, limit: 8, where: $taste0) { id smallThumbnailImageURL }
-    taste1: works(offset: 0, limit: 8, where: $taste1) { id smallThumbnailImageURL }
-    taste2: works(offset: 0, limit: 8, where: $taste2) { id smallThumbnailImageURL }
-    taste3: works(offset: 0, limit: 8, where: $taste3) { id smallThumbnailImageURL }
-    taste4: works(offset: 0, limit: 8, where: $taste4) { id smallThumbnailImageURL }
-    taste5: works(offset: 0, limit: 8, where: $taste5) { id smallThumbnailImageURL }
-    taste6: works(offset: 0, limit: 8, where: $taste6) { id smallThumbnailImageURL }
-    taste7: works(offset: 0, limit: 8, where: $taste7) { id smallThumbnailImageURL }
-    cover2d: works(offset: 0, limit: 1, where: $cover2d) { id smallThumbnailImageURL }
-    cover25d: works(offset: 0, limit: 1, where: $cover25d) { id smallThumbnailImageURL }
-    cover3d: works(offset: 0, limit: 1, where: $cover3d) { id smallThumbnailImageURL }
+    taste0: works(offset: 0, limit: 8, where: $taste0) @include(if: $withTastes) { id smallThumbnailImageURL }
+    taste1: works(offset: 0, limit: 8, where: $taste1) @include(if: $withTastes) { id smallThumbnailImageURL }
+    taste2: works(offset: 0, limit: 8, where: $taste2) @include(if: $withTastes) { id smallThumbnailImageURL }
+    taste3: works(offset: 0, limit: 8, where: $taste3) @include(if: $withTastes) { id smallThumbnailImageURL }
+    taste4: works(offset: 0, limit: 8, where: $taste4) @include(if: $withTastes) { id smallThumbnailImageURL }
+    taste5: works(offset: 0, limit: 8, where: $taste5) @include(if: $withTastes) { id smallThumbnailImageURL }
+    taste6: works(offset: 0, limit: 8, where: $taste6) @include(if: $withTastes) { id smallThumbnailImageURL }
+    taste7: works(offset: 0, limit: 8, where: $taste7) @include(if: $withTastes) { id smallThumbnailImageURL }
+    cover2d: works(offset: 0, limit: 6, where: $cover2d) { id smallThumbnailImageURL tagNames }
+    cover25d: works(offset: 0, limit: 6, where: $cover25d) { id smallThumbnailImageURL tagNames }
+    cover3d: works(offset: 0, limit: 6, where: $cover3d) { id smallThumbnailImageURL tagNames }
   }`,
   [GenreWorkCardFragment, GenreNewWorkFragment],
 )

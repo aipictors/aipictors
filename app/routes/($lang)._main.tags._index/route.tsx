@@ -8,11 +8,13 @@ import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import { TagsIndexView } from "~/routes/($lang)._main.tags._index/components/tags-index-view"
+import { isR18Path } from "~/utils/content-mode"
 import { createMeta } from "~/utils/create-meta"
+import { isFeaturableSensitiveTag } from "~/utils/sensitive-tag-filter"
 
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
-  const isSensitive = url.pathname.includes("/r/tags")
+  const isSensitive = isR18Path(url.pathname)
 
   const [hotResp, popularResp] = await Promise.all([
     loaderClient.query({ query: hotTagsQuery, variables: {} }),
@@ -30,11 +32,13 @@ export async function loader(props: LoaderFunctionArgs) {
       worksCount: tag.worksCount,
       thumbnailUrl: tag.firstWork?.smallThumbnailImageURL ?? null,
     }))
+    .filter((tag) => !isSensitive || isFeaturableSensitiveTag(tag.name))
     .slice(0, 12)
 
   const hotNames = new Set(hotTags.map((tag) => tag.name))
   const popularTags = popularResp.data.recommendedTags
     .filter((tag) => !hotNames.has(tag.tagName))
+    .filter((tag) => !isSensitive || isFeaturableSensitiveTag(tag.tagName))
     .map((tag) => ({ name: tag.tagName, thumbnailUrl: tag.thumbnailUrl }))
 
   const usedNames = new Set([
@@ -65,7 +69,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   return createMeta(
     { ...META.TAGS, isIndex: !isSensitive },
     {
-      title: isSensitive ? "センシティブなタグ一覧" : "タグ一覧・人気のタグ",
+      title: isSensitive ? "R18 のタグ一覧" : "タグ一覧・人気のタグ",
       enTitle: isSensitive ? "Sensitive tags" : "Tags",
       description: `AIイラストを人気のタグ・いま増えているタグから探せます。${
         sample ? `${sample}など、` : ""

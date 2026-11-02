@@ -19,11 +19,11 @@ import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { GenreNewWorks } from "~/components/genre-works/genre-new-works"
 import { GenreWorkCard } from "~/components/genre-works/genre-work-card"
 import {
-  GENRE_CONFIGS,
   GENRE_KEYS,
   type GenreConfig,
   type GenreKey,
   type GenreSectionKey,
+  toGenreConfig,
 } from "~/components/genre-works/genre-works-config"
 import type { GenreWorksData } from "~/components/genre-works/genre-works-loader.server"
 import { OptimizedImage } from "~/components/optimized-image"
@@ -40,6 +40,8 @@ import {
 type Props = {
   genreKey: GenreKey
   data: GenreWorksData
+  /** R18 の入口として出す */
+  isSensitive?: boolean
 }
 
 /** 人気作品の横スクロール（スマホ）と格子（PC）の共通クラス */
@@ -54,21 +56,27 @@ const WORK_ROW_SIZES =
 /**
  * ジャンル（2D / 2.5D / 3D）の入口ページ
  * データは loader で取り、ファーストビューは hydration の前に完成させる。
- * 文章・タグ・並びは GENRE_CONFIGS で切り替える
+ * 文章・タグ・並びは genre-works-config で切り替える
  */
 export function GenreWorksPage(props: Props) {
   const t = useTranslation()
   const location = useLocation()
-  const genre = GENRE_CONFIGS[props.genreKey]
+  const isSensitive = props.isSensitive === true
+  const genre = toGenreConfig(props.genreKey, isSensitive)
   const { data } = props
 
   const isEnglish = getPathLocale(location.pathname) === "en"
   const localePrefix = isEnglish ? "/en" : ""
-  const toPath = (path: string) => `${localePrefix}${path}`
+  /** 作品・タグ・ランキングなど、R18 では /r のページがあるもの */
+  const toPath = (path: string) =>
+    `${localePrefix}${isSensitive ? "/r" : ""}${path}`
+  /** 生成・モデル・ガイドラインなど、全年齢と R18 で同じページ */
+  const toSharedPath = (path: string) => `${localePrefix}${path}`
   const text = (value: readonly [string, string]) => t(value[0], value[1])
 
   const homeUrl = `${config.siteURL}${localePrefix}`
-  const pageUrl = `${homeUrl}${genre.path}`
+  const sectionUrl = `${homeUrl}${isSensitive ? "/r" : ""}`
+  const pageUrl = `${sectionUrl}${genre.path}`
 
   const collectionPage: WithContext<CollectionPage> = {
     "@context": "https://schema.org",
@@ -78,16 +86,20 @@ export function GenreWorksPage(props: Props) {
     url: pageUrl,
     inLanguage: isEnglish ? "en" : "ja",
     isPartOf: { "@type": "WebSite", name: "Aipictors", url: `${homeUrl}/` },
-    mainEntity: {
-      "@type": "ItemList",
-      name: text(genre.rankingTitle),
-      itemListElement: data.rankingWorks.map((work, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        name: work.title,
-        url: `${homeUrl}/posts/${work.id}`,
-      })),
-    },
+    ...(isSensitive
+      ? { isFamilyFriendly: false }
+      : {
+          mainEntity: {
+            "@type": "ItemList",
+            name: text(genre.rankingTitle),
+            itemListElement: data.rankingWorks.map((work, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: work.title,
+              url: `${homeUrl}/posts/${work.id}`,
+            })),
+          },
+        }),
   }
 
   const breadcrumb: WithContext<BreadcrumbList> = {
@@ -120,7 +132,7 @@ export function GenreWorksPage(props: Props) {
   }
 
   const sections: Record<GenreSectionKey, ReactNode> = {
-    tastes: (
+    tastes: (data.tastes.length > 0 || data.trendingTags.length > 0) && (
       <GenreTastes
         key="tastes"
         genre={genre}
@@ -184,20 +196,32 @@ export function GenreWorksPage(props: Props) {
 
   return (
     <div className="mx-auto flex w-full min-w-0 max-w-[1400px] flex-col gap-10 pb-12">
-      <AppJsonLdScript jsonLd={[collectionPage, breadcrumb, faqPage]} />
+      <AppJsonLdScript
+        jsonLd={
+          // R18 は検索結果に質問と答えを広げない
+          isSensitive
+            ? [collectionPage, breadcrumb]
+            : [collectionPage, breadcrumb, faqPage]
+        }
+      />
 
       <GenreHero
         genre={genre}
         works={data.heroWorks}
         covers={data.covers}
         toPath={toPath}
+        toSharedPath={toSharedPath}
       />
 
       {genre.sectionOrder.map((key) => sections[key])}
 
-      <GenreNewWorks genre={genre} works={data.newWorks} />
+      <GenreNewWorks
+        genre={genre}
+        works={data.newWorks}
+        userLinkPrefix={toPath("/users")}
+      />
 
-      <GenreHowTo genre={genre} toPath={toPath} />
+      <GenreHowTo genre={genre} toPath={toPath} toSharedPath={toSharedPath} />
 
       <section
         aria-labelledby="genre-about-heading"
@@ -224,18 +248,31 @@ export function GenreWorksPage(props: Props) {
               </Link>
             </li>
             <li>
-              <Link className="text-primary underline" to={toPath("/models")}>
+              <Link
+                className="text-primary underline"
+                to={toSharedPath("/models")}
+              >
                 {t("モデル一覧", "Models")}
               </Link>
             </li>
             <li>
               <Link
                 className="text-primary underline"
-                to={toPath("/guideline")}
+                to={toSharedPath("/guideline")}
               >
                 {t("ガイドライン", "Guidelines")}
               </Link>
             </li>
+            {isSensitive && (
+              <li>
+                <Link
+                  className="text-primary underline"
+                  to={toSharedPath("/terms/r18")}
+                >
+                  {t("R18規約", "R18 terms")}
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
         <div className="space-y-3">
@@ -310,6 +347,7 @@ function GenreHero(props: {
   works: GenreWorksData["heroWorks"]
   covers: GenreWorksData["covers"]
   toPath: (path: string) => string
+  toSharedPath: (path: string) => string
 }) {
   const t = useTranslation()
   const { genre } = props
@@ -341,8 +379,11 @@ function GenreHero(props: {
           <nav aria-label={t("パンくずリスト", "Breadcrumb")}>
             <ol className="flex items-center gap-1 text-muted-foreground text-xs">
               <li>
-                <Link to={props.toPath("/")} className="hover:underline">
-                  {t("ホーム", "Home")}
+                <Link
+                  to={genre.isSensitive ? props.toPath("") : props.toPath("/")}
+                  className="hover:underline"
+                >
+                  {genre.isSensitive ? "R18" : t("ホーム", "Home")}
                 </Link>
               </li>
               <ChevronRightIcon aria-hidden={true} className="size-3" />
@@ -364,10 +405,11 @@ function GenreHero(props: {
             current={genre.key}
             covers={props.covers}
             toPath={props.toPath}
+            isSensitive={genre.isSensitive}
           />
           <div className="flex flex-wrap gap-2">
             <Button asChild className="h-11 rounded-full px-5">
-              <Link to={props.toPath("/generation")}>
+              <Link to={props.toSharedPath("/generation")}>
                 <WandSparklesIcon className="mr-1.5 size-4" />
                 {t("このテイストを作る", "Make your own")}
               </Link>
@@ -490,6 +532,7 @@ function GenreSwitcher(props: {
   current: GenreKey
   covers: GenreWorksData["covers"]
   toPath: (path: string) => string
+  isSensitive: boolean
 }) {
   const t = useTranslation()
 
@@ -497,7 +540,7 @@ function GenreSwitcher(props: {
     <nav aria-label={t("テイストの切り替え", "Switch taste")}>
       <ul className="flex gap-2">
         {GENRE_KEYS.map((key) => {
-          const item = GENRE_CONFIGS[key]
+          const item = toGenreConfig(key, props.isSensitive)
           const isCurrent = key === props.current
           const cover = props.covers[key]
           return (
@@ -554,7 +597,7 @@ function GenreTastes(props: {
       lead={t(genre.tastesLead[0], genre.tastesLead[1])}
       link={{ to: props.toPath("/tags"), label: t("タグ一覧", "All tags") }}
     >
-      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:gap-3">
+      <ul className="grid grid-cols-2 gap-2 empty:hidden sm:grid-cols-4 md:gap-3">
         {props.tastes.map((taste, index) => {
           const description = genre.tastes[index]?.description
           return (
@@ -623,6 +666,7 @@ function GenreTastes(props: {
 function GenreHowTo(props: {
   genre: GenreConfig
   toPath: (path: string) => string
+  toSharedPath: (path: string) => string
 }) {
   const t = useTranslation()
   const { genre } = props
@@ -664,6 +708,7 @@ function GenreHowTo(props: {
             </li>
           ))}
         </ol>
+        {genre.samplePrompts.length > 0 && (
         <div className="space-y-2">
           <h3 className="font-bold text-sm">
             {t("プロンプトを試す", "Try a prompt")}
@@ -672,7 +717,7 @@ function GenreHowTo(props: {
             {genre.samplePrompts.map((sample) => (
               <li key={sample.prompt} className="min-w-0">
                 <Link
-                  to={`${props.toPath("/generation")}?prompts=${encodeURIComponent(sample.prompt)}`}
+                  to={`${props.toSharedPath("/generation")}?prompts=${encodeURIComponent(sample.prompt)}`}
                   rel="nofollow"
                   className="group flex h-full flex-col gap-1.5 rounded-xl border bg-background/70 p-3 transition-colors hover:border-foreground/40"
                 >
@@ -688,9 +733,10 @@ function GenreHowTo(props: {
             ))}
           </ul>
         </div>
+        )}
         <div className="flex flex-wrap gap-2">
           <Button asChild className="h-11 rounded-full px-5">
-            <Link to={props.toPath("/generation")}>
+            <Link to={props.toSharedPath("/generation")}>
               <WandSparklesIcon className="mr-1.5 size-4" />
               {t("画像生成を開く", "Open the generator")}
             </Link>
@@ -726,7 +772,7 @@ function GenreRelated(props: {
       </h2>
       <ul className="grid grid-cols-2 gap-3">
         {others.map((key) => {
-          const item = GENRE_CONFIGS[key]
+          const item = toGenreConfig(key, props.genre.isSensitive)
           const cover = props.covers[key]
           return (
             <li key={key} className="min-w-0">

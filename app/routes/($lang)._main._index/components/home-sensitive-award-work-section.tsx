@@ -9,6 +9,7 @@ import { useContext } from "react"
 import { Heart } from "lucide-react"
 import { config } from "~/config"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { isFeaturableSensitiveWork } from "~/utils/sensitive-tag-filter"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import {
@@ -53,7 +54,10 @@ export function HomeSensitiveAwardWorkSection (props: Props) {
     },
   })
 
-  const workDisplayed = workAwardsResp?.workAwards ?? props.awards
+  const workDisplayed =
+    workAwardsResp?.workAwards.filter(
+      (award) => award.work && isFeaturableSensitiveWork(award.work),
+    ) ?? props.awards
 
   const yesterdayStr = `${yesterday.getFullYear()}/${
     yesterday.getMonth() + 1
@@ -68,7 +72,7 @@ export function HomeSensitiveAwardWorkSection (props: Props) {
           {props.title}
         </h2>
         {/* 昨日の日付 // /2024/05/01 */}
-        <Link to={`rankings/${yesterdayStr}`}>
+        <Link to={`/r/rankings/${yesterdayStr}`}>
           <Button variant={"secondary"} size={"sm"}>
             {t("すべて見る", "All")}
           </Button>
@@ -179,6 +183,10 @@ const WorkAwardsQuery = graphql(
     workAwards(offset: $offset, limit: $limit, where: $where) {
       id
       ...HomeWorkAward
+      work {
+        id
+        tagNames
+      }
     }
   }`,
   [HomeWorkAwardFragment],

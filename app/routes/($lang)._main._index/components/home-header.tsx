@@ -29,6 +29,7 @@ import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
+import { useContentMode } from "~/hooks/use-content-mode"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -102,6 +103,7 @@ function HomeHeader(props: Props) {
   const isNavigatingRef = useRef(false)
   const isManualNavigationRef = useRef(false) // 手動ナビゲーションフラグを追加
   const sensitivePath = /\/r($|\/)/.test(location.pathname)
+  const isR18Mode = useContentMode() === "r18"
   const {
     isRateLimitDialogOpen,
     executeSearchWithRateLimit,
@@ -189,7 +191,7 @@ function HomeHeader(props: Props) {
     const trimmedText = searchText.trim()
 
     if (trimmedText === "") {
-      navigate(getSensitiveLink("/search"))
+      navigate(getSensitiveLink("/search", isR18Mode))
       return
     }
 
@@ -209,9 +211,13 @@ function HomeHeader(props: Props) {
     }
 
     const baseUrl = buildSearchPath(sanitizedText)
-    const targetUrl = generateSensitiveUrl(baseUrl, isSensitive)
+    // R18 に切り替えている間は、ヘッダーの検索も R18 で探す
+    const targetUrl = generateSensitiveUrl(
+      baseUrl,
+      isSensitive || isR18Mode,
+    )
 
-    if (shouldShowWarning) {
+    if (shouldShowWarning && !isR18Mode) {
       // Show warning dialog
       setPendingSearchData({ sanitizedText, targetUrl })
       setShowSensitiveWarning(true)

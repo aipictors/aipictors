@@ -9,6 +9,8 @@ export type GenreSectionKey = "tastes" | "ranking" | "classics"
 
 export type GenreConfig = {
   key: GenreKey
+  /** R18 の入口か（リンク先・作品の条件・構造化データが変わる） */
+  isSensitive: boolean
   path: string
   style: IntrospectionEnum<"ImageStyle">
   /** テイスト切り替えの表示名 */
@@ -54,6 +56,7 @@ const FREE_ANSWER: Text = [
 export const GENRE_CONFIGS: Record<GenreKey, GenreConfig> = {
   "2d": {
     key: "2d",
+    isSensitive: false,
     path: "/posts/2d",
     style: "ILLUSTRATION",
     label: ["2D", "2D"],
@@ -207,6 +210,7 @@ export const GENRE_CONFIGS: Record<GenreKey, GenreConfig> = {
   },
   "2.5d": {
     key: "2.5d",
+    isSensitive: false,
     path: "/posts/2.5d",
     style: "SEMI_REAL",
     label: ["2.5D", "2.5D"],
@@ -354,6 +358,7 @@ export const GENRE_CONFIGS: Record<GenreKey, GenreConfig> = {
   },
   "3d": {
     key: "3d",
+    isSensitive: false,
     path: "/posts/3d",
     style: "REAL",
     label: ["3D", "3D"],
@@ -515,3 +520,176 @@ export const GENRE_CONFIGS: Record<GenreKey, GenreConfig> = {
 }
 
 export const GENRE_KEYS: readonly GenreKey[] = ["2d", "2.5d", "3d"]
+
+const R18_RANKING_LEAD: Text = [
+  "この1週間に投稿された作品を、いいねの多い順に並べています（1人1作品）",
+  "Works posted in the last 7 days, by likes (one per creator)",
+]
+
+const R18_CLASSICS_LEAD: Text = [
+  "投稿からの累計でいいねが多い作品です",
+  "The most liked works of all time",
+]
+
+const R18_TASTES_LEAD: Text = [
+  "人気の作品によく付いているタグから探せます",
+  "Tags that often appear on popular works",
+]
+
+const R18_FAQS: GenreConfig["faqs"] = [
+  {
+    question: ["このページは誰が見られますか？", "Who can view this page?"],
+    answer: [
+      "18歳以上の方だけがご覧いただけます。18歳未満の方はご利用いただけません。",
+      "Only people aged 18 and over. If you are under 18, please do not use this section.",
+    ],
+  },
+  {
+    question: [
+      "人前で開くときに画像を隠せますか？",
+      "Can I hide images in public?",
+    ],
+    answer: [
+      "画面右下の目のボタンで、作品の画像をまとめてぼかせます。設定はこの端末に記憶されます。",
+      "Yes. The eye button at the bottom right blurs all work images, and the setting is remembered on this device.",
+    ],
+  },
+  {
+    question: ["投稿のときに気をつけることは？", "What should I check before posting?"],
+    answer: [
+      "年齢区分を正しく設定してください。児童の性的搾取を示唆する内容や、実在の人物の無断使用は禁止しています。詳しくはR18規約とガイドラインをご確認ください。",
+      "Set the correct age rating. Content suggesting the sexual exploitation of children and unauthorized use of real people are prohibited. See the R18 terms and guidelines.",
+    ],
+  },
+]
+
+const R18_STEPS: GenreConfig["steps"] = [
+  {
+    title: ["好きな作品のモデルを確かめる", "Check the model of a work you like"],
+    body: [
+      "作品ページで使われているモデルやプロンプトが公開されていれば、同じものから試せます。",
+      "If a work shares its model and prompt, you can start from the same ones.",
+    ],
+  },
+  {
+    title: ["生成して選ぶ", "Generate and choose"],
+    body: [
+      "何枚か作って、気に入ったものを選びましょう。ガイドラインに沿った内容で作成してください。",
+      "Make a few and pick your favorite. Please stay within the guidelines.",
+    ],
+  },
+  {
+    title: ["年齢区分を R18 にして投稿する", "Post it with the R18 rating"],
+    body: [
+      "投稿画面で年齢区分を R18 に、テイストを選んで公開すると、このページに載ります。",
+      "Choose the R18 rating and a taste when posting, and your work appears on this page.",
+    ],
+  },
+]
+
+/** R18 の入口の文章。タグは作品のデータから選ぶので固定で持たない */
+const toR18GenreConfig = (
+  key: GenreKey,
+  texts: Pick<
+    GenreConfig,
+    | "name"
+    | "h1"
+    | "lead"
+    | "rankingTitle"
+    | "classicsTitle"
+    | "newTitle"
+    | "aboutTitle"
+    | "about"
+  >,
+): GenreConfig => ({
+  ...GENRE_CONFIGS[key],
+  ...texts,
+  isSensitive: true,
+  blobs: ["bg-rose-500/15", "bg-fuchsia-500/15"],
+  sectionOrder: ["ranking", "tastes", "classics"],
+  tastes: [],
+  tastesTitle: ["人気のタグから探す", "Browse popular tags"],
+  tastesLead: R18_TASTES_LEAD,
+  rankingLead: R18_RANKING_LEAD,
+  classicsLead: R18_CLASSICS_LEAD,
+  howToTitle: ["自分でも作ってみる", "Make your own"],
+  howToLead: [
+    "公開されているモデルやプロンプトを参考にできます。",
+    "You can learn from the models and prompts creators have shared.",
+  ],
+  steps: R18_STEPS,
+  samplePrompts: [],
+  faqs: R18_FAQS,
+})
+
+export const R18_GENRE_CONFIGS: Record<GenreKey, GenreConfig> = {
+  "2d": toR18GenreConfig("2d", {
+    name: ["R18 2D AIイラスト", "R18 2D AI illustrations"],
+    h1: ["R18 2DのAIイラスト", "R18 2D AI illustrations"],
+    lead: [
+      "18歳以上の方向けの、アニメ調・イラスト調の作品を集めました。今週の人気作品やタグから探せます。",
+      "Anime and illustration-style works for people aged 18 and over. Explore this week's popular works and tags.",
+    ],
+    rankingTitle: ["今週の人気 R18 イラスト", "Popular R18 illustrations this week"],
+    classicsTitle: ["これまでに人気の R18 イラスト", "All-time favorites"],
+    newTitle: ["新着の R18 イラスト", "New R18 illustrations"],
+    aboutTitle: ["このページについて", "About this page"],
+    about: [
+      [
+        "投稿するときに年齢区分 R18、テイスト「イラスト」が選ばれた作品を集めています。",
+        "This page collects works posted with the R18 rating and the “Illustration” taste.",
+      ],
+      [
+        "「P」のマークが付いた作品はプロンプトが公開されています。投稿にはガイドラインとR18規約が適用されます。",
+        "Works marked “P” share their prompts. All posts are subject to the guidelines and R18 terms.",
+      ],
+    ],
+  }),
+  "2.5d": toR18GenreConfig("2.5d", {
+    name: ["R18 2.5D AIイラスト", "R18 2.5D AI art"],
+    h1: ["R18 2.5D・セミリアルのAIイラスト", "R18 2.5D and semi-real AI art"],
+    lead: [
+      "18歳以上の方向けの、イラストと実写の中間にあるセミリアルの作品を集めました。今週の人気作品やタグから探せます。",
+      "Semi-real works between illustration and photorealism, for people aged 18 and over. Explore this week's popular works and tags.",
+    ],
+    rankingTitle: ["今週の人気 R18 2.5D 作品", "Popular R18 2.5D works this week"],
+    classicsTitle: ["これまでに人気の R18 2.5D 作品", "All-time favorites"],
+    newTitle: ["新着の R18 2.5D 作品", "New R18 2.5D works"],
+    aboutTitle: ["このページについて", "About this page"],
+    about: [
+      [
+        "投稿するときに年齢区分 R18、テイスト「セミリアル」が選ばれた作品を集めています。",
+        "This page collects works posted with the R18 rating and the “Semi-real” taste.",
+      ],
+      [
+        "「P」のマークが付いた作品はプロンプトが公開されています。投稿にはガイドラインとR18規約が適用されます。",
+        "Works marked “P” share their prompts. All posts are subject to the guidelines and R18 terms.",
+      ],
+    ],
+  }),
+  "3d": toR18GenreConfig("3d", {
+    name: ["R18 AIフォト", "R18 AI photos"],
+    h1: ["R18 3D・実写風のAI画像", "R18 3D and photorealistic AI images"],
+    lead: [
+      "18歳以上の方向けの、写真のようなAIフォトや3D調の作品を集めました。登場するのはAIが作った架空の人物です。今週の人気作品やタグから探せます。",
+      "Photo-like AI images and 3D-style works for people aged 18 and over, featuring fictional AI-made people. Explore this week's popular works and tags.",
+    ],
+    rankingTitle: ["今週の人気 R18 AIフォト", "Popular R18 AI photos this week"],
+    classicsTitle: ["これまでに人気の R18 AIフォト", "All-time favorites"],
+    newTitle: ["新着の R18 AIフォト・3D作品", "New R18 AI photos and 3D works"],
+    aboutTitle: ["このページについて", "About this page"],
+    about: [
+      [
+        "投稿するときに年齢区分 R18、テイスト「リアル」が選ばれた作品を集めています。",
+        "This page collects works posted with the R18 rating and the “Real” taste.",
+      ],
+      [
+        "芸能人や実在の人物の無断使用は禁止しています。見つけた場合は作品ページから通報してください。",
+        "Unauthorized use of celebrities or real people is prohibited. Please report such works from the work page.",
+      ],
+    ],
+  }),
+}
+
+export const toGenreConfig = (key: GenreKey, isSensitive: boolean) =>
+  isSensitive ? R18_GENRE_CONFIGS[key] : GENRE_CONFIGS[key]

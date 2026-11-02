@@ -11,7 +11,12 @@ const GENERATED_TAG_PATTERN = /-[0-9a-f]{6,}$/i
  */
 export function pickTrendingTags(
   works: readonly { tagNames?: readonly string[] | null }[],
-  options: { limit: number; excludes?: readonly string[] },
+  options: {
+    limit: number
+    excludes?: readonly string[]
+    /** 渡すと、全年齢向けの除外の代わりにこの判定を使う（R18 の入口） */
+    isAllowed?: (tag: string) => boolean
+  },
 ): string[] {
   const excludes = new Set(options.excludes ?? [])
   const counts = new Map<string, number>()
@@ -20,7 +25,11 @@ export function pickTrendingTags(
       const name = tag.trim()
       if (name.length === 0 || name.length > 16) continue
       if (excludes.has(name)) continue
-      if (HIDDEN_TAG_PATTERN.test(name)) continue
+      if (
+        options.isAllowed ? !options.isAllowed(name) : HIDDEN_TAG_PATTERN.test(name)
+      ) {
+        continue
+      }
       if (GENERATED_TAG_PATTERN.test(name)) continue
       counts.set(name, (counts.get(name) ?? 0) + 1)
     }
