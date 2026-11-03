@@ -189,7 +189,8 @@ const withRequest = (
   request: Request,
 ): Parameters<PagesFunction>[0] => ({
   ...ctx,
-  request,
+  // new Request(url, ctx.request) は cf を引き継ぐが、型には残らない
+  request: request as Parameters<PagesFunction>[0]["request"],
   waitUntil: ctx.waitUntil.bind(ctx),
   passThroughOnException: ctx.passThroughOnException.bind(ctx),
   next: ctx.next.bind(ctx),

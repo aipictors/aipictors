@@ -65,7 +65,11 @@ describe("checkLocaleRedirect", () => {
   })
 
   test("cookie がなければ、日本語ブラウザで開いた英語の URL はそのまま", () => {
-    for (const headers of [{ "Accept-Language": "ja-JP,ja;q=0.9" }, {}]) {
+    const cases: Record<string, string>[] = [
+      { "Accept-Language": "ja-JP,ja;q=0.9" },
+      {},
+    ]
+    for (const headers of cases) {
       const request = createMockRequest("http://example.com/en/home", headers)
       expect(checkLocaleRedirect(request)).toBeNull()
     }

@@ -55,7 +55,7 @@ export default function HomeRecommendedRoute() {
   const where = {
     isRecommended: true,
     sort: "DESC" as const,
-    ratings: ["G", "R15"] as const,
+    ratings: ["G" as const, "R15" as const],
   }
 
   const { data, loading } = useQuery(recommendedWorksQuery, {

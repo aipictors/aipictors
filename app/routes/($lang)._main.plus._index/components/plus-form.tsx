@@ -102,6 +102,7 @@ export function PlusForm () {
         type: "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS"
         price: number
         periodEnd: number
+        paymentProvider: string
       } | null
     } | null
   }>(viewerCurrentPassQuery, {})

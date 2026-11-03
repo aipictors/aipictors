@@ -33,6 +33,7 @@ import {
   X,
   Sparkles,
 } from "lucide-react"
+import type { ResultOf } from "gql.tada"
 import { cn } from "~/lib/utils"
 import {
   VIEWER_CHARACTERS,
@@ -64,9 +65,25 @@ type Character = {
   baseImageUrl?: string | null
   thumbnailUrl?: string | null
   isPublic: boolean
-  createdAt: number
+  createdAt: string
   expressions: CharacterExpression[]
 }
+
+/** API は全項目 nullable。この画面で扱う形にそろえる */
+const toCharacter = (
+  character: ResultOf<typeof VIEWER_CHARACTERS>["characters"][number],
+): Character => ({
+  ...character,
+  nanoid: character.nanoid ?? "",
+  name: character.name ?? "",
+  isPublic: character.isPublic ?? false,
+  createdAt: character.createdAt ?? "",
+  expressions: character.expressions.map((expression) => ({
+    ...expression,
+    expressionName: expression.expressionName ?? "",
+    createdAt: expression.createdAt ?? "",
+  })),
+})
 
 export function CharacterList (props: Props) {
   const t = useTranslation()
@@ -110,7 +127,7 @@ export function CharacterList (props: Props) {
 
   const filteredCharacters = useMemo(() => {
     if (!Array.isArray(characters)) return []
-    return characters
+    return characters.map(toCharacter)
   }, [characters])
 
   const handleAddExpression = (character: Character) => {

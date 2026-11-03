@@ -189,8 +189,8 @@ export function GenerationQueryProvider (props: Props) {
     <GenerationQueryContext.Provider
       value={{
         ...props.generationQueryContext,
-        engineStatus,
-        userStatus,
+        engineStatus: engineStatus ?? null,
+        userStatus: userStatus ?? null,
         currentPass: currentPass ?? null,
         user: user ?? null,
       }}

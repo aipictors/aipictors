@@ -208,7 +208,7 @@ export default function MonthlyAwards() {
             month={data.month}
             day={null}
             weekIndex={data.weekIndex}
-            awards={data.workAwards.data.workAwards}
+            awards={data.workAwards?.data.workAwards ?? []}
           />
         )}
       </div>

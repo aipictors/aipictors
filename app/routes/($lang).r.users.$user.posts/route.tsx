@@ -4,7 +4,7 @@ import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { UserPostsItemFragment } from "~/routes/($lang)._main.users.$user.posts/components/user-post-list"
+import { UserPostsItemFragment } from "~/routes/($lang).r.users.$user.posts/components/user-sensitive-post-list"
 import { UserSensitivePostList } from "~/routes/($lang).r.users.$user.posts/components/user-sensitive-post-list"
 import { config } from "~/config"
 

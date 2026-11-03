@@ -10,7 +10,8 @@ test("一覧に要らない重い項目だけを外す", () => {
       user: { id: "u", name: "n", biography: "b", iconUrl: "i" },
     },
   ])
-  expect(work).toEqual({
+  // 戻り値の型は入力と同じ（一覧で使わない項目は持っていないものとして扱う）
+  expect(work as unknown).toEqual({
     id: "1",
     title: "t",
     user: { id: "u", name: "n", iconUrl: "i" },

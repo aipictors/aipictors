@@ -599,10 +599,6 @@ export function GenerationSubmissionView(props: Props) {
     })
 
     const isGeminiNanoBananaModel =
-      context.config.modelName === "Gemini 2.5" ||
-      context.config.modelName === "GeminiNanoBanana" ||
-      context.config.modelName === "Gemini 3.1" ||
-      context.config.modelName === "GeminiNanoBanana2" ||
       context.config.modelId === "gemini-2.5-flash-image" ||
       context.config.modelId === "gemini-3.1-flash-image-preview"
 
@@ -612,7 +608,6 @@ export function GenerationSubmissionView(props: Props) {
         message: "Blocked: Gemini Nano Banana requires LITE+",
         details: {
           modelId: context.config.modelId,
-          modelName: context.config.modelName,
           plan: context.currentPass?.type ?? null,
         },
       })

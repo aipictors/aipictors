@@ -1,12 +1,12 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare"
-import { object, safeParse, string, union, literal } from "valibot"
+import { literal, nullable, object, safeParse, string, union } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 
 const bodySchema = object({
   passType: union([literal("LITE"), literal("STANDARD"), literal("PREMIUM")]),
   currentPassType: string(),
-  prorationDate: union([literal(null), string(),]),
+  prorationDate: nullable(string()),
 })
 
 function toJsonResponse(body: unknown, status: number): Response {

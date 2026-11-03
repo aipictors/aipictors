@@ -40,6 +40,7 @@ type Comment = {
   } | null
   work: {
     id: string
+    title: string
     smallThumbnailImageURL: string | null
     smallThumbnailImageHeight: number | null
     smallThumbnailImageWidth: number | null

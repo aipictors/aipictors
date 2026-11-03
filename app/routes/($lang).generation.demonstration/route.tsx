@@ -76,6 +76,7 @@ export default function GenerationDemonstrationPage () {
             config={<GenerationDemoConfigView />}
             settingLanguageUsedForPromptView={null}
             promptEditor={<GenerationDemoPromptView />}
+            mobilePromptEditor={null}
             negativePromptEditor={<GenerationDemoNegativePromptView />}
             taskDetails={<GenerationTaskDetailsView />}
             submissionView={
@@ -89,6 +90,7 @@ export default function GenerationDemonstrationPage () {
         aside={
           <GenerationAsideView
             advertisement={null}
+            coinHistory={null}
             taskList={
               <GenerationDemoTaskListView
                 rating={rating}

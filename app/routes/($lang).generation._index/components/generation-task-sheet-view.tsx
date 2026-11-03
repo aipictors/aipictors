@@ -383,7 +383,7 @@ export function GenerationTaskSheetView(props: Props) {
 
   // Early returns after hooks
   if (displayStatus === "PENDING" || displayStatus === "IN_PROGRESS") {
-    return <InProgressImageGenerationTaskResult task={imageGenerationTask} />
+    return <InProgressImageGenerationTaskResult task={imageGenerationTask ?? undefined} />
   }
 
   if (userNanoid === null) return null

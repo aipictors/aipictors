@@ -287,10 +287,6 @@ export function GenerationDemoSubmissionView (props: Props) {
         : "TEXT_TO_IMAGE"
 
     const isGeminiNanoBananaModel =
-      context.config.modelName === "Gemini 2.5" ||
-      context.config.modelName === "GeminiNanoBanana" ||
-      context.config.modelName === "Gemini 3.1" ||
-      context.config.modelName === "GeminiNanoBanana2" ||
       context.config.modelId === "gemini-2.5-flash-image" ||
       context.config.modelId === "gemini-3.1-flash-image-preview"
 

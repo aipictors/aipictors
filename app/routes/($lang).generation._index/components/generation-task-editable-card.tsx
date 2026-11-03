@@ -1,5 +1,6 @@
 import { useMutation } from "@apollo/client/index"
-import { type FragmentOf, graphql, type IntrospectionEnum } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useState } from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
@@ -380,7 +381,7 @@ export function GenerationTaskEditableCard(props: Props) {
     )
   }
 
-  const originalImageUrl = props.task.imageUrl
+  const originalImageUrl = props.task.imageUrl ?? ""
   const originalThumbnailUrl = props.task.thumbnailUrl ?? ""
 
   const normalizedImageUrl = normalizeGenerativeFileUrl(originalImageUrl)

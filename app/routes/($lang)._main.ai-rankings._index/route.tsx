@@ -95,7 +95,7 @@ export default function AiEvaluationRankingsIndex() {
             path: "/ai-rankings",
             lang: params.lang,
             parents: [{ name: "ランキング", path: "/rankings" }],
-            items: data.rankings.data.aiEvaluationWorkRankings.flatMap((item) =>
+            items: (data.rankings?.data.aiEvaluationWorkRankings ?? []).flatMap((item) =>
               item.work
                 ? [{ name: t(item.work.title, item.work.enTitle || undefined), path: `/posts/${item.work.id}` }]
                 : [],
@@ -104,7 +104,7 @@ export default function AiEvaluationRankingsIndex() {
         />
         <FeaturedRankingsShowcase
           standardRankings={[]}
-          aiRankings={data.rankings.data.aiEvaluationWorkRankings}
+          aiRankings={data.rankings?.data.aiEvaluationWorkRankings ?? []}
         />
         <RankingHeader
           year={data.year}
@@ -118,7 +118,7 @@ export default function AiEvaluationRankingsIndex() {
           month={data.month}
           day={data.day}
           weekIndex={null}
-          rankings={data.rankings.data.aiEvaluationWorkRankings}
+          rankings={data.rankings?.data.aiEvaluationWorkRankings ?? []}
         />
       </div>
     </>

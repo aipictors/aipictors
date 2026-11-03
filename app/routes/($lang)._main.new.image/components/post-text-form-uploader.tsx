@@ -9,8 +9,8 @@ import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
 import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
-import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import type { PostTextFormAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
+import type { PostTextFormState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-state"
 import {
   getExtractInfoFromBase64,
   getExtractInfoFromPNG,
@@ -18,7 +18,7 @@ import {
 
 type Props = {
   dispatch: Dispatch<PostTextFormAction>
-  state: PostImageFormState
+  state: PostTextFormState
   onInputFiles?: (files: FileList) => void
 }
 

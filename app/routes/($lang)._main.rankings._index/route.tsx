@@ -230,7 +230,7 @@ export default function Rankings() {
           />
           {rankingFamily === "standard" && data.workAwards && data.aiRankings && (
             <FeaturedRankingsShowcase
-              standardRankings={data.workAwards.data.workAwards}
+              standardRankings={data.workAwards?.data.workAwards ?? []}
               aiRankings={data.aiRankings.data.aiEvaluationWorkRankings}
             />
           )}
@@ -261,7 +261,7 @@ export default function Rankings() {
               year={data.year}
               month={data.month}
               day={data.day}
-              awards={data.workAwards.data.workAwards}
+              awards={data.workAwards?.data.workAwards ?? []}
               weekIndex={null}
             />
           )}

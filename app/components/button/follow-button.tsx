@@ -133,18 +133,20 @@ function useOptimisticFollow(props: {
       while (desiredRef.current !== confirmedRef.current) {
         const nextIsFollow = desiredRef.current
         const input = { userId: props.targetUserId }
-        const res = nextIsFollow
-          ? await client.mutate({
-              mutation: followUserMutation,
-              variables: { input },
-            })
-          : await client.mutate({
-              mutation: unfollowUserMutation,
-              variables: { input },
-            })
-        const serverIsFollow = nextIsFollow
-          ? (res.data?.followUser?.isFollowee ?? nextIsFollow)
-          : (res.data?.unfollowUser?.isFollowee ?? nextIsFollow)
+        const result = nextIsFollow
+          ? (
+              await client.mutate({
+                mutation: followUserMutation,
+                variables: { input },
+              })
+            ).data?.followUser
+          : (
+              await client.mutate({
+                mutation: unfollowUserMutation,
+                variables: { input },
+              })
+            ).data?.unfollowUser
+        const serverIsFollow = result?.isFollowee ?? nextIsFollow
         if (serverIsFollow !== confirmedRef.current) {
           updateCache(serverIsFollow)
           if (serverIsFollow) requestAchievementCheck()

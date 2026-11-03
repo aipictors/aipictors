@@ -146,6 +146,14 @@ export const postTextFormInputReducer = (
       }
     }
     case "SET_RESERVATION_DATE": {
+      if (action.payload === null) {
+        return {
+          ...state,
+          reservationDate: null,
+          themeId: null,
+        }
+      }
+
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       const daysLater = new Date(today)

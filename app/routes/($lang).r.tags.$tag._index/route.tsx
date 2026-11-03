@@ -112,5 +112,5 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 
 export default function SensitiveTagPage() {
   const data = useLoaderData<typeof loader>()
-  return <TagPageView key={data.tag} {...data} isSensitive />
+  return <TagPageView key={data.tag} {...data} enTagName={null} isSensitive />
 }

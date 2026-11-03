@@ -2,6 +2,7 @@ import { cn } from "~/lib/utils"
 import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
 import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
 import type { Dispatch } from "react"
+import type { VideoUploadPassType } from "~/utils/video-upload-limit"
 import type { PostAnimationFormAction } from "~/routes/($lang)._main.new.animation/reducers/actions/post-animation-form-action"
 import type { PostAnimationFormState } from "~/routes/($lang)._main.new.animation/reducers/states/post-animation-form-state"
 import { PostFormItemVideo } from "~/routes/($lang)._main.new.image/components/post-form-item-video"
@@ -9,7 +10,7 @@ import { PostFormItemVideo } from "~/routes/($lang)._main.new.image/components/p
 type Props = {
   dispatch: Dispatch<PostAnimationFormAction>
   state: PostAnimationFormState
-  currentPassType?: "LITE" | "STANDARD" | "PREMIUM" | null
+  currentPassType?: VideoUploadPassType
   previewVideoUrl?: string
 }
 

@@ -10,6 +10,7 @@ import type { FragmentOf } from "gql.tada"
 type Work = {
   id: string
   title: string
+  enTitle?: string | null
   smallThumbnailImageURL: string
   smallThumbnailImageWidth: number
   smallThumbnailImageHeight: number

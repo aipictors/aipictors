@@ -357,14 +357,16 @@ export async function loader(props: LoaderFunctionArgs) {
     await Promise.all([
       fetchReleaseList({
         limit: 4,
-      }).catch(() => ({
-        contents: [],
-        totalCount: 0,
-        offset: 0,
-        limit: 4,
-      })),
-      fetchFeaturedTaggedReleases().catch(() => []),
-      fetchLatestImportantRelease().catch(() => null),
+      }).catch(
+        (): MicroCmsApiReleaseResponse => ({
+          contents: [],
+          totalCount: 0,
+          offset: 0,
+          limit: 4,
+        }),
+      ),
+      fetchFeaturedTaggedReleases().catch((): MicroCmsApiRelease[] => []),
+      fetchLatestImportantRelease().catch((): MicroCmsApiRelease | null => null),
     ])
 
   const safeReleaseList =
@@ -380,7 +382,7 @@ export async function loader(props: LoaderFunctionArgs) {
     featuredReleaseList: Array.isArray(featuredReleaseList)
       ? featuredReleaseList.map(toReleaseSummary)
       : [],
-    importantRelease: isImportantReleaseVisible(
+    importantRelease: latestImportantRelease && isImportantReleaseVisible(
       latestImportantRelease,
       now.getTime(),
     )

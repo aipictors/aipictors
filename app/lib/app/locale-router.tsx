@@ -5,10 +5,9 @@ import {
   useNavigate as useRemixNavigate,
   type LinkProps,
   type NavLinkProps,
-  type NavigateOptions,
-  type To,
 } from "@remix-run/react"
 import { forwardRef, useCallback } from "react"
+import type { NavigateOptions, To } from "react-router-dom"
 import {
   buildLocalePath,
   getPathLocale,

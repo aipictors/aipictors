@@ -86,7 +86,7 @@ export default function SensitiveAiEvaluationRankingsIndex() {
     <div className="space-y-6 pb-8">
       <FeaturedRankingsShowcase
         standardRankings={[]}
-        aiRankings={data.rankings.data.aiEvaluationWorkRankings}
+        aiRankings={data.rankings?.data.aiEvaluationWorkRankings ?? []}
       />
       <RankingHeader
         year={data.year}
@@ -104,7 +104,7 @@ export default function SensitiveAiEvaluationRankingsIndex() {
         day={data.day}
         weekIndex={null}
         isSensitive={true}
-        rankings={data.rankings.data.aiEvaluationWorkRankings}
+        rankings={data.rankings?.data.aiEvaluationWorkRankings ?? []}
       />
     </div>
   )

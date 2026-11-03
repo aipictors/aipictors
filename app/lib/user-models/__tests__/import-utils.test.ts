@@ -113,7 +113,7 @@ describe("parseStoredImportJobs", () => {
   const job = {
     modelId: "abc123def456",
     name: "かわいい LoRA",
-    kind: "LORA",
+    kind: "LORA" as const,
     sizeBytes: 1000,
     startedAt: now - 1000,
   }

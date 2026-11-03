@@ -125,7 +125,7 @@ export default function AiEvaluationWeeklyRankings() {
           month={data.month}
           day={null}
           weekIndex={data.weekIndex}
-          rankings={data.rankings.data.aiEvaluationWorkRankings}
+          rankings={data.rankings?.data.aiEvaluationWorkRankings ?? []}
         />
       </div>
     </>

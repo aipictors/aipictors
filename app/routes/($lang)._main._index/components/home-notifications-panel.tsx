@@ -568,7 +568,7 @@ function NotificationRowView(props: {
       {item.work?.smallThumbnailImageURL && (
         <img
           src={item.work.smallThumbnailImageURL}
-          alt={t(item.work.title, item.work.enTitle || undefined) ?? ""}
+          alt={item.work.title ? t(item.work.title, item.work.enTitle || undefined) : ""}
           loading="lazy"
           className={cn(
             "shrink-0 rounded-lg object-cover",

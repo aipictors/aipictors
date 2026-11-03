@@ -516,7 +516,19 @@ export function WorkViewerDialog({
               <div className="mx-auto w-full max-w-5xl p-3 pb-24 md:px-16 md:py-6">
                 <WorkArticle
                   work={{
+                    // 一覧のデータで先に表示する間は、詳細の項目がない
+                    uuid: null,
+                    album: null,
+                    seed: 0,
+                    aiDailyRanking: null,
+                    aiWeeklyRanking: null,
+                    aiMonthlyRanking: null,
+                    botEvaluationStatus: null,
                     ...currentWork,
+                    likedUsers: (currentWork.likedUsers ?? []).map((user) => ({
+                      avatarFrame: null,
+                      ...user,
+                    })),
                     isBotGradingEnabled:
                       (
                         currentWork as unknown as {
@@ -532,7 +544,12 @@ export function WorkViewerDialog({
                     botEvaluation: ((currentWork as any).botEvaluation ??
                       null) as any,
                     user: currentWork.user
-                      ? { ...currentWork.user, works: [] }
+                      ? {
+                          isOfficial: false,
+                          isModerator: false,
+                          ...currentWork.user,
+                          works: [],
+                        }
                       : null,
                     nextWork: null,
                     previousWork: null,

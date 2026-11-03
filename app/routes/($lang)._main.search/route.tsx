@@ -341,8 +341,13 @@ export async function loader(props: LoaderFunctionArgs) {
     ])
 
   const textResult = await textResultPromise
+  const worksCountData = worksCountResp?.data
   const tagWorksCount =
-    worksCountResp?.data?.worksCount ?? worksCountResp?.data?.tagWorksCount ?? 0
+    worksCountData === undefined
+      ? 0
+      : "worksCount" in worksCountData
+        ? worksCountData.worksCount
+        : worksCountData.tagWorksCount
   // 指定がなければキーワードの部分一致（タイトル・説明・タグ）を出す。
   // 部分一致で 1 件もなく、タグの完全一致だけあるときはタグの結果を出す
   const mode: "tag" | "text" =

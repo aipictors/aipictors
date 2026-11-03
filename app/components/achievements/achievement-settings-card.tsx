@@ -118,6 +118,7 @@ export const achievementSettingsQuery = graphql(
 const updateAchievementSettingsMutation = graphql(
   `mutation UpdateAchievementSettings($input: UpdateAchievementSettingsInput!) {
     updateAchievementSettings(input: $input) {
+      __typename
       isHiddenOnProfile
       isUnlockNoticeOff
     }

@@ -55,7 +55,7 @@ export const vPostAnimationFormInputAction = union([
   }),
   object({
     type: literal("SET_ALBUM_ID"),
-    payload: string(),
+    payload: nullable(string()),
   }),
   object({
     type: literal("SET_LINK"),
@@ -107,11 +107,11 @@ export const vPostAnimationFormInputAction = union([
   }),
   object({
     type: literal("SET_RESERVATION_DATE"),
-    payload: string(),
+    payload: nullable(string()),
   }),
   object({
     type: literal("SET_RESERVATION_TIME"),
-    payload: string(),
+    payload: nullable(string()),
   }),
   object({
     type: literal("SET_CORRECTION_MESSAGE"),

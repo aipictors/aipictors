@@ -46,6 +46,7 @@ export function UserSensitiveTabs(props: Props) {
     hasAlbums: user.hasAlbums,
     hasPublicStickers: user.hasPublicStickers,
     hasBadges: user.hasBadges,
+    hasUserEvents: false,
     lang: locale,
   })
 

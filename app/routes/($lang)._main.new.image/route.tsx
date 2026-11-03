@@ -18,7 +18,7 @@ import {
 } from "react"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { toast } from "sonner"
-import { safeParse } from "valibot"
+import { type GenericSchema, type InferOutput, safeParse } from "valibot"
 import { Button } from "~/components/ui/button"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
@@ -120,13 +120,13 @@ const normalizeDate = (value: unknown) => {
   return new Date()
 }
 
-const normalizeEnum = <T,>(
-  validator: Parameters<typeof safeParse>[0],
+const normalizeEnum = <T extends GenericSchema>(
+  validator: T,
   value: unknown,
-  fallback: T,
-) => {
+  fallback: InferOutput<T>,
+): InferOutput<T> => {
   const result = safeParse(validator, value)
-  return result.success ? (result.output as T) : fallback
+  return result.success ? result.output : fallback
 }
 
 const normalizeTags = (value: unknown) => {
@@ -426,7 +426,7 @@ const INITIAL_POST_IMAGE_FORM_MEDIA_STATE = {
   thumbnailPosX: 0,
   thumbnailPosY: 0,
   isSelectedGenerationImage: false,
-} as const
+}
 
 const createInitialPostImageFormInputState = () => ({
   accessType: "PUBLIC" as const,

@@ -209,7 +209,7 @@ export default function DayAwards() {
             year={data.year}
             month={data.month}
             day={data.day}
-            awards={data.workAwards.data.workAwards}
+            awards={data.workAwards?.data.workAwards ?? []}
             weekIndex={null}
           />
         )}

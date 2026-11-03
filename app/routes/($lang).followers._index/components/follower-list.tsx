@@ -53,10 +53,10 @@ export function FollowerList () {
 
   const followersWorksWhere = isSensitivePage
     ? {
-        ratings: ["R18", "R18G"] as const,
+        ratings: ["R18" as const, "R18G" as const],
       }
     : {
-        ratings: ["G", "R15"] as const,
+        ratings: ["G" as const, "R15" as const],
       }
 
   const { data, refetch } = useSuspenseQuery(userQuery, {

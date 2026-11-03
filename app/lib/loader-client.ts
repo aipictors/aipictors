@@ -9,7 +9,8 @@ import { config } from "~/config"
 
 const httpLink = createHttpLink({
   uri: config.graphql.endpoint,
-  fetch: async (uri, options) => {
+  // bun-types の typeof fetch は preconnect を要求するが、Workers の fetch にはない
+  fetch: (async (uri: Parameters<typeof fetch>[0], options?: RequestInit) => {
     const response = await fetch(uri, options)
 
     if (!response.ok && typeof window === "undefined") {
@@ -26,7 +27,7 @@ const httpLink = createHttpLink({
     }
 
     return response
-  },
+  }) as typeof fetch,
   // TODO: タイムアウトを設定する
   // fetchOptions: {
   //   signal: AbortSignal.timeout(2000),

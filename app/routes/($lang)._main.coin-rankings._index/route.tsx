@@ -263,7 +263,8 @@ const fetchWeeksFromBackend = async (context: unknown): Promise<string[]> => {
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url)
-  const kind = url.searchParams.get("kind") === "sent" ? "sent" : "received"
+  const kind: RankingData["kind"] =
+    url.searchParams.get("kind") === "sent" ? "sent" : "received"
   const weekStartDate = url.searchParams.get("weekStartDate") ?? undefined
 
   const [weeks, receivedData, sentData] = await Promise.all([

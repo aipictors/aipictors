@@ -31,7 +31,7 @@ type Character = {
   baseImageUrl?: string | null
   thumbnailUrl?: string | null
   isPublic: boolean
-  createdAt: number
+  createdAt: string
   expressions: Array<{
     id: string
     expressionName: string

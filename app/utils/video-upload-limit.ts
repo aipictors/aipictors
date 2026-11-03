@@ -1,4 +1,10 @@
-export type VideoUploadPassType = "LITE" | "STANDARD" | "PREMIUM" | null | undefined
+export type VideoUploadPassType =
+  | "LITE"
+  | "STANDARD"
+  | "PREMIUM"
+  | "TWO_DAYS"
+  | null
+  | undefined
 
 export const isSubscribedVideoUploader = (
   passType: VideoUploadPassType,

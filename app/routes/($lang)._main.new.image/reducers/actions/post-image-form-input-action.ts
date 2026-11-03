@@ -1,4 +1,5 @@
 import { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
+import { vPostGenerationParamAccessType } from "~/routes/($lang)._main.new.image/validations/post-generation-params-access-type"
 import { vPostAccessType } from "~/routes/($lang)._main.new.image/validations/post-access-type"
 import { vPostRating } from "~/routes/($lang)._main.new.image/validations/post-rating"
 import { vTag } from "~/routes/($lang)._main.new.image/validations/post-tag"
@@ -177,7 +178,7 @@ export const vPostImageFormInputAction = union([
       useGenerationParams: boolean(),
       ratingRestriction: vPostRating,
       accessType: vPostAccessType,
-      generationParamAccessType: union([literal("PUBLIC"), literal("PRIVATE")]),
+      generationParamAccessType: vPostGenerationParamAccessType,
       imageStyle: union([
         literal("ILLUSTRATION"),
         literal("REAL"),

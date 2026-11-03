@@ -14,6 +14,7 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 type RankingWork = {
   id: string
   title: string
+  enTitle?: string | null
   largeThumbnailImageURL: string | null
   smallThumbnailImageURL: string | null
   commentsCount: number

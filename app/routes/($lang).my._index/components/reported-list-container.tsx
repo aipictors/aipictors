@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
-import { graphql } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import {
   AlertTriangleIcon,
   CheckCircle2Icon,
@@ -26,7 +26,7 @@ type Props = {
 
 type Tab = "ACTION" | "INFO" | "DONE"
 
-const editUrl = (id: string, workType: IntrospectionEnum<"WorkType">) => {
+const editUrl = (id: string, workType: string) => {
   if (workType === "VIDEO") return `/posts/${id}/animation/edit`
   if (workType === "COLUMN" || workType === "NOVEL")
     return `/posts/${id}/text/edit`
@@ -163,11 +163,7 @@ export function ModerationReportsContainer(_props: Props) {
 }
 
 function ReportCard(props: {
-  report: NonNullable<
-    NonNullable<
-      ReturnType<typeof useQuery<typeof moderationReportsQuery>>["data"]
-    >["moderationReports"][number]
-  >
+  report: ResultOf<typeof moderationReportsQuery>["moderationReports"][number]
   group: Tab
   onResponded: () => void
 }) {

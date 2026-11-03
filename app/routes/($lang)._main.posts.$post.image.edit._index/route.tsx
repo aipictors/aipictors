@@ -225,6 +225,7 @@ export default function EditImage() {
   }, [work])
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
+    videoDurationSeconds: null,
     editTargetImageBase64: null,
     indexList: [],
     isDrawing: false,

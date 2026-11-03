@@ -13,4 +13,12 @@ declare global {
   const afterEach: typeof import("bun:test")["afterEach"]
   const beforeEach: typeof import("bun:test")["beforeEach"]
 }
+
+declare module "react" {
+  // <link blocking="render"> はブラウザの属性だが @types/react にない
+  interface LinkHTMLAttributes<T> {
+    blocking?: string
+  }
+}
+
 export type {}

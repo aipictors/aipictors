@@ -56,7 +56,7 @@ export const vPostTextFormInputAction = union([
   }),
   object({
     type: literal("SET_ALBUM_ID"),
-    payload: string(),
+    payload: nullable(string()),
   }),
   object({
     type: literal("SET_LINK"),
@@ -112,11 +112,11 @@ export const vPostTextFormInputAction = union([
   }),
   object({
     type: literal("SET_RESERVATION_DATE"),
-    payload: string(),
+    payload: nullable(string()),
   }),
   object({
     type: literal("SET_RESERVATION_TIME"),
-    payload: string(),
+    payload: nullable(string()),
   }),
   object({
     type: literal("SET_IMAGE_INFORMATION"),

@@ -9,7 +9,7 @@ import type {
 } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
+import { type FragmentOf, readFragment } from "gql.tada"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
@@ -17,6 +17,7 @@ import { config, META } from "~/config"
 import {
   AiModelArticle,
   aiModelQuery,
+  ModelItemFragment,
 } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -133,10 +134,7 @@ export default function ModelPage () {
   }
 
   // ページを変えた URL は canonical が別なので、そのページの作品だけを載せる
-  const model = data.data as {
-    name: string
-    works?: { id: string; title: string }[] | null
-  }
+  const model = readFragment(ModelItemFragment, data.data)
 
   return (
     <>
@@ -146,7 +144,7 @@ export default function ModelPage () {
           path: `/models/${encodeURIComponent(model.name)}`,
           lang: params.lang,
           parents: [{ name: "AI画像生成モデル一覧", path: "/models" }],
-          items: (model.works ?? []).map((work) => ({
+          items: model.works.map((work) => ({
             name: t(work.title, work.enTitle || undefined),
             path: `/posts/${work.id}`,
           })),

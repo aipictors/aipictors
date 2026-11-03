@@ -115,7 +115,7 @@ export default function Rankings() {
     <>
       <div className="space-y-6 pb-8">
         <FeaturedRankingsShowcase
-          standardRankings={data.workAwards.data.workAwards}
+          standardRankings={data.workAwards?.data.workAwards ?? []}
           aiRankings={[]}
           standardSectionTitle="R18ランキング"
           standardRankLabelPrefix="R18ランキング"
@@ -144,7 +144,7 @@ export default function Rankings() {
           year={data.year}
           month={data.month}
           day={data.day}
-          awards={data.workAwards.data.workAwards}
+          awards={data.workAwards?.data.workAwards ?? []}
           weekIndex={null}
         />
       )}

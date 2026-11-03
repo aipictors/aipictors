@@ -8,6 +8,7 @@ import { debounce } from "~/utils/mobile-performance"
 type Work = {
   id: string
   title: string
+  enTitle?: string | null
   imageUrl: string
   width: number
   height: number
