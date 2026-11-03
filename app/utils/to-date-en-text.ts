@@ -1,4 +1,4 @@
-import { format } from "date-fns"
+import { formatDate } from "~/utils/format-date"
 import { toJstDisplayDate } from "~/utils/to-jst-display-date"
 
 /**
@@ -9,5 +9,5 @@ export const toDateEnText: (time: number) => string = (
   time: number,
 ): string => {
   const date = toJstDisplayDate(time * 1000)
-  return format(date, "yyyy/MM/dd")
+  return formatDate(date, "yyyy/MM/dd")
 }

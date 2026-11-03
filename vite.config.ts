@@ -110,6 +110,15 @@ export default defineConfig({
         // 細かく分かれていると、モバイルの計測で最初の表示が大きく遅れる。
         // React と Apollo を別のファイルに分けると、読み込み順で Apollo が React を見つけられず壊れるので、必ず同じファイルにする
         manualChunks(id) {
+          // date-fns の format とロケールは使うページが限られる（ふだんの日付は ~/utils/format-date）。
+          // 小さいチャンクをまとめるときに全ページ共通のファイルへ入らないようにする
+          if (id.includes("/node_modules/date-fns/")) {
+            return /\/date-fns\/(format\.js|_lib\/format\/|locale\/|locale\.js|getDayOfYear|getISOWeek|getWeek|startOfISOWeek|startOfWeekYear|parseISO)/.test(
+              id,
+            )
+              ? "date-fns-format"
+              : "date-fns-core"
+          }
           // 規約などの Markdown の文字列は、小さいチャンクをまとめるときに全ページ共通のファイルへ入らないようにする
           const markdownName = id.match(/([\w-]+)\.md\?raw$/)?.[1]
           if (markdownName) {

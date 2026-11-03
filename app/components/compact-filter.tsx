@@ -24,7 +24,7 @@ import {
 } from "~/components/ui/popover"
 import { Calendar } from "~/components/ui/calendar"
 import { FilterIcon, CalendarIcon, XIcon, Search, Loader2 } from "lucide-react"
-import { format } from "date-fns"
+import { formatDate } from "~/utils/format-date"
 import { cn } from "~/lib/utils"
 import { useTranslation } from "~/hooks/use-translation"
 import {
@@ -397,7 +397,7 @@ function FilterContent({
               >
                 <CalendarIcon className="mr-1 h-3 w-3" />
                 {localFilters.dateFrom
-                  ? format(localFilters.dateFrom, "MM/dd")
+                  ? formatDate(localFilters.dateFrom, "MM/dd")
                   : t("開始", "From")}
               </Button>
             </PopoverTrigger>
@@ -423,7 +423,7 @@ function FilterContent({
               >
                 <CalendarIcon className="mr-1 h-3 w-3" />
                 {localFilters.dateTo
-                  ? format(localFilters.dateTo, "MM/dd")
+                  ? formatDate(localFilters.dateTo, "MM/dd")
                   : t("終了", "To")}
               </Button>
             </PopoverTrigger>

@@ -1,7 +1,7 @@
 import type React from "react"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
-import { format } from "date-fns"
+import { formatDate } from "~/utils/format-date"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, ShieldAlert } from "lucide-react"
 import { cn } from "~/lib/utils"
@@ -65,7 +65,7 @@ export function WorkArticle(props: Props) {
 
   const toDateTextUrl = (time: number, dateFormat: string) => {
     const date = new Date(time * 1000)
-    return format(date, dateFormat)
+    return formatDate(date, dateFormat)
   }
 
   const toAiRankingPath = (

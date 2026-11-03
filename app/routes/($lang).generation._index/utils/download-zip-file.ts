@@ -1,4 +1,4 @@
-import { format } from "date-fns"
+import { formatDate } from "~/utils/format-date"
 
 interface FileObject {
   name: string
@@ -39,7 +39,7 @@ export const downloadZipFile = async (props: Props): Promise<void> => {
 
     const now = new Date()
 
-    const formattedDate = format(now, "yyyyMMddHHmmss")
+    const formattedDate = formatDate(now, "yyyyMMddHHmmss")
 
     linkNode.download = `${props.name}_${formattedDate}.zip`
 

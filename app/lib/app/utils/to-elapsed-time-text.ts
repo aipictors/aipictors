@@ -1,11 +1,9 @@
-import {
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  differenceInMonths,
-  differenceInSeconds,
-  format,
-} from "date-fns"
+import { differenceInDays } from "date-fns/differenceInDays"
+import { differenceInHours } from "date-fns/differenceInHours"
+import { differenceInMinutes } from "date-fns/differenceInMinutes"
+import { differenceInMonths } from "date-fns/differenceInMonths"
+import { differenceInSeconds } from "date-fns/differenceInSeconds"
+import { formatDate } from "~/utils/format-date"
 import { getRenderNow } from "~/utils/render-now"
 import { toJstDisplayDate } from "~/utils/to-jst-display-date"
 
@@ -21,7 +19,7 @@ export function toElapsedTimeText(createdAt: number): string {
   const months = differenceInMonths(dateLeft, dateRight)
 
   if (12 < months) {
-    return format(dateRight, "yyyy年MM月dd日 HH時mm分")
+    return formatDate(dateRight, "yyyy年MM月dd日 HH時mm分")
   }
 
   if (0 < months) {
@@ -31,7 +29,7 @@ export function toElapsedTimeText(createdAt: number): string {
   const days = differenceInDays(dateLeft, dateRight)
 
   if (30 < days) {
-    return format(dateRight, "yyyy年MM月dd日 HH時mm分")
+    return formatDate(dateRight, "yyyy年MM月dd日 HH時mm分")
   }
 
   if (0 < days) {

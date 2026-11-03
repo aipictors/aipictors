@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
-import { format } from "date-fns"
+import { formatDate } from "~/utils/format-date"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, ShieldAlert } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
@@ -46,7 +46,7 @@ export function DraftWorkArticle(props: Props) {
 
   const toDateTextUrl = (time: number, dateFormat: string) => {
     const date = new Date(time * 1000)
-    return format(date, dateFormat)
+    return formatDate(date, dateFormat)
   }
 
   useEffect(() => {

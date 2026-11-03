@@ -1,4 +1,4 @@
-import { format } from "date-fns"
+import { formatDate } from "~/utils/format-date"
 
 type Item = {
   /**
@@ -18,7 +18,7 @@ type Item = {
 export function toGenerationImageFileNames(
   items: Item[],
   formatDate: (date: Date) => string = (date) =>
-    format(date, "yyyyMMdd-HHmmss"),
+    formatDate(date, "yyyyMMdd-HHmmss"),
 ): string[] {
   const order = items
     .map((item, index) => ({ item, index }))
