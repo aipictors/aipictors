@@ -187,6 +187,9 @@ export const WorkByImageHashQuery = graphql(
       accessType
       nanoid
       uuid
+      user {
+        id
+      }
     }
   }`,
 )

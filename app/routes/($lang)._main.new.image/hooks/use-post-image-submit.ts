@@ -63,7 +63,10 @@ export function usePostImageSubmit(props: Props) {
 
   const [createWork] = useMutation(CreateWorkMutation)
   const [linkWorkToGenerations] = useMutation(LinkWorkToGenerationsMutation)
-  const [checkWorkByImageHash] = useLazyQuery(WorkByImageHashQuery)
+  const [checkWorkByImageHash] = useLazyQuery(WorkByImageHashQuery, {
+    // 前回のリトライで「なし」だった結果をキャッシュから返さない
+    fetchPolicy: "network-only",
+  })
 
   const uploadImages = async () => {
     if (userId === null) {
@@ -314,133 +317,146 @@ export function usePostImageSubmit(props: Props) {
     const MAX_RETRIES = 3
     const uploadedImageUrls: string[] = []
 
+    const failPost = async (error: unknown) => {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+      await Promise.all(uploadedImageUrls.map((url) => deleteUploadedImage(url)))
+      dispatch({ type: "SET_PROGRESS", payload: 0 })
+      finishPosting()
+    }
+
+    const completePost = async (
+      uploadedWorkId: string,
+      uploadedWorkUuid: string | null,
+    ) => {
+      dispatch({
+        type: "MARK_AS_DONE",
+        payload: { uploadedWorkId, uploadedWorkUuid },
+      })
+
+      await clearPersistedPostDrafts()
+
+      toast(t("作品を投稿しました", "Work has been posted"))
+      finishPosting()
+    }
+
+    // アップロードは 1 回だけ。失敗したら作品を作らずに終える（投稿し直せばやり直せる）
+    let prepared: Pick<
+      Parameters<typeof toImageWorkInput>[0],
+      | "reservedAt"
+      | "mainImageSha256"
+      | "mainImageSize"
+      | "smallThumbnail"
+      | "largeThumbnail"
+    >
+
+    try {
+      dispatch({ type: "SET_PROGRESS", payload: 10 })
+
+      const smallThumbnail = await resizeThumbnail(
+        formResult.output.thumbnailBase64,
+        400,
+        1200,
+        "webp",
+      )
+
+      dispatch({ type: "SET_PROGRESS", payload: 20 })
+
+      const largeThumbnail = await resizeThumbnail(
+        formResult.output.thumbnailBase64,
+        600,
+        1600,
+        "webp",
+      )
+
+      dispatch({ type: "SET_PROGRESS", payload: 30 })
+
+      // 順に小サムネイル・大サムネイル・OGP（なければ空文字）・AI 評価用・本体の画像
+      uploadedImageUrls.push(
+        await uploadPublicImage(smallThumbnail.base64, token),
+      )
+
+      dispatch({ type: "SET_PROGRESS", payload: 40 })
+
+      uploadedImageUrls.push(
+        await uploadPublicImage(largeThumbnail.base64, token),
+      )
+
+      dispatch({ type: "SET_PROGRESS", payload: 50 })
+
+      uploadedImageUrls.push(
+        state.ogpBase64 ? await uploadPublicImage(state.ogpBase64, token) : "",
+      )
+
+      dispatch({ type: "SET_PROGRESS", payload: 60 })
+
+      // AI評価用のJPEG画像をアップロード
+      const botGradingImage = await resizeImage(
+        formResult.output.thumbnailBase64,
+        400,
+        400,
+        "jpeg",
+      )
+
+      uploadedImageUrls.push(
+        await uploadPublicImage(botGradingImage.base64, token),
+      )
+
+      const uploadResults = await uploadImages()
+      const imageUrls = uploadResults.filter((url) => url !== null)
+
+      if (imageUrls.length === 0) {
+        throw new Error(
+          t("画像のアップロードに失敗しました", "Failed to upload the images"),
+        )
+      }
+
+      uploadedImageUrls.push(...imageUrls)
+
+      prepared = {
+        reservedAt: toPostReservedAt(
+          inputState.reservationDate,
+          inputState.reservationTime,
+        ),
+        mainImageSha256: await sha256(formResult.output.thumbnailBase64),
+        mainImageSize: await getSizeFromBase64(
+          formResult.output.thumbnailBase64,
+        ),
+        smallThumbnail,
+        largeThumbnail,
+      }
+
+      dispatch({ type: "SET_PROGRESS", payload: 70 })
+    } catch (error) {
+      await failPost(error)
+      return
+    }
+
+    // 作品の作成だけをリトライする
     const performPost = async (retryCount = 0): Promise<void> => {
       try {
         console.log(
           `[投稿処理] リトライ回数: ${retryCount}, rating: ${inputState.ratingRestriction}`,
         )
-        dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-        const smallThumbnail = await resizeThumbnail(
-          formResult.output.thumbnailBase64,
-          400,
-          1200,
-          "webp",
-        )
+        // 前回の createWork は応答が返らなかっただけで届いていることがある。
+        // 作品の有無を確かめられないときは送らない（二重に作らない）
+        if (retryCount > 0) {
+          const { data, error } = await checkWorkByImageHash({
+            variables: { imageHash: prepared.mainImageSha256 },
+          })
 
-        dispatch({ type: "SET_PROGRESS", payload: 20 })
-
-        const largeThumbnail = await resizeThumbnail(
-          formResult.output.thumbnailBase64,
-          600,
-          1600,
-          "webp",
-        )
-
-        dispatch({ type: "SET_PROGRESS", payload: 30 })
-
-        // 初回のみ画像をアップロードし、リトライ時は既存のURLを使用
-        if (retryCount === 0) {
-          const smallThumbnailUrl = await uploadPublicImage(
-            smallThumbnail.base64,
-            token,
-          )
-
-          dispatch({ type: "SET_PROGRESS", payload: 40 })
-
-          const largeThumbnailUrl = await uploadPublicImage(
-            largeThumbnail.base64,
-            token,
-          )
-
-          dispatch({ type: "SET_PROGRESS", payload: 50 })
-
-          const ogpBase64Url = state.ogpBase64
-            ? await uploadPublicImage(
-                state.ogpBase64,
-                token,
-              )
-            : null
-
-          dispatch({ type: "SET_PROGRESS", payload: 60 })
-
-          // AI評価用のJPEG画像をアップロード
-          const botGradingImage = await resizeImage(
-            formResult.output.thumbnailBase64,
-            400,
-            400,
-            "jpeg",
-          )
-
-          const botGradingImageUrl = await uploadPublicImage(
-            botGradingImage.base64,
-            token,
-          )
-
-          const uploadResults = await uploadImages()
-          const imageUrls = uploadResults.filter((url) => url !== null)
-
-          if (imageUrls.length === 0) {
-            throw new Error(
-              t(
-                "画像のアップロードに失敗しました",
-                "Failed to upload the images",
-              ),
-            )
+          if (error !== undefined) {
+            throw error
           }
 
-          // uploadedImageUrlsに順番に追加
-          uploadedImageUrls.push(smallThumbnailUrl)
-          uploadedImageUrls.push(largeThumbnailUrl)
-          uploadedImageUrls.push(ogpBase64Url || "") // nullの場合は空文字列
-          uploadedImageUrls.push(botGradingImageUrl)
-          uploadedImageUrls.push(...imageUrls)
-        }
+          const existingWork = data?.workByImageHash
 
-        const reservedAt = toPostReservedAt(
-          inputState.reservationDate,
-          inputState.reservationTime,
-        )
-
-        const mainImageSha256 = await sha256(formResult.output.thumbnailBase64)
-
-        const mainImageSize = await getSizeFromBase64(
-          formResult.output.thumbnailBase64,
-        )
-
-        dispatch({ type: "SET_PROGRESS", payload: 70 })
-
-        // リトライ時は先にworkByImageHashで作品の存在確認
-        if (retryCount > 0) {
-          try {
-            const { data: existingWorkData } = await checkWorkByImageHash({
-              variables: { imageHash: mainImageSha256 },
-            })
-
-            const existingWork = existingWorkData?.workByImageHash as {
-              id: string
-              uuid: string | null
-            } | null
-            if (existingWork?.id) {
-              // 作品が既に存在する場合は成功として扱う
-              dispatch({
-                type: "MARK_AS_DONE",
-                payload: {
-                  uploadedWorkId: existingWork.id,
-                  uploadedWorkUuid: existingWork.uuid || null,
-                },
-              })
-
-              toast(t("作品を投稿しました", "Work has been posted"))
-              finishPosting()
-              return
-            }
-          } catch (error) {
-            // workByImageHashでエラーが発生した場合は無視して続行
-            console.warn(
-              "workByImageHash query failed, continuing with post:",
-              error,
-            )
+          // 同じハッシュの他人の作品は今回の投稿ではない（createWork が重複として断る）
+          if (existingWork && existingWork.user?.id === userId) {
+            await completePost(existingWork.id, existingWork.uuid)
+            return
           }
         }
 
@@ -450,12 +466,8 @@ export function usePostImageSubmit(props: Props) {
               form: formResult.output,
               inputState,
               state,
-              reservedAt,
-              mainImageSha256,
-              mainImageSize,
+              ...prepared,
               uploadedImageUrls,
-              smallThumbnail,
-              largeThumbnail,
             }),
           },
         })
@@ -466,18 +478,7 @@ export function usePostImageSubmit(props: Props) {
           )
         }
 
-        dispatch({
-          type: "MARK_AS_DONE",
-          payload: {
-            uploadedWorkId: work.data?.createWork.id,
-            uploadedWorkUuid: work.data?.createWork.uuid,
-          },
-        })
-
-        await clearPersistedPostDrafts()
-
-        toast(t("作品を投稿しました", "Work has been posted"))
-        finishPosting()
+        await completePost(work.data.createWork.id, work.data.createWork.uuid)
       } catch (error) {
         if (retryCount < MAX_RETRIES) {
           // リトライ前に少し待機
@@ -493,16 +494,7 @@ export function usePostImageSubmit(props: Props) {
             performPost(retryCount + 1)
           }, waitTime)
         } else {
-          // 最大リトライ回数に達した場合は画像を削除
-          if (error instanceof Error) {
-            toast(error.message)
-          }
-          const promises = uploadedImageUrls.map((url) => {
-            return deleteUploadedImage(url)
-          })
-          await Promise.all(promises)
-          dispatch({ type: "SET_PROGRESS", payload: 0 })
-          finishPosting()
+          await failPost(error)
         }
       }
     }

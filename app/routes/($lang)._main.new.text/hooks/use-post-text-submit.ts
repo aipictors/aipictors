@@ -57,18 +57,6 @@ export function usePostTextSubmit(props: Props) {
   }
 
   const onPost = async () => {
-    const url = uploadTextFile(
-      inputState.md,
-      "md",
-      token,
-      "https://text-files.aipictors.com/c09d45d7-c949-4515-b477-d1c17f1dd038",
-    )
-
-    if (url === null) {
-      toast(t("本文のアップロードに失敗しました", "Failed to upload the text"))
-      return
-    }
-
     if (formResult.success === false) {
       for (const issue of formResult.issues) {
         toast(issue.message)
@@ -180,18 +168,8 @@ export function usePostTextSubmit(props: Props) {
 
       dispatch({ type: "SET_PROGRESS", payload: 70 })
 
-      const textFile = await uploadTextFile(
-        inputState.md,
-        "md",
-        token,
-      )
-
-      if (textFile === null) {
-        toast(
-          t("本文のアップロードに失敗しました", "Failed to upload the text"),
-        )
-        return
-      }
+      // fileid を渡さないので、投稿ごとに別のファイルになる（失敗は例外で下の catch へ）
+      const textFile = await uploadTextFile(inputState.md, "md", token)
 
       const uploadResults = await uploadImages()
 
