@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 import {
   type MetaFunction,
@@ -6,12 +6,9 @@ import {
   useLoaderData,
   useSearchParams,
 } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import React, { useContext, useEffect, useReducer, useRef } from "react"
+import React, { useContext, useReducer } from "react"
 import type { LoaderFunctionArgs } from "react-router-dom"
-import { toast } from "sonner"
 import { safeParse } from "valibot"
-import { Button } from "~/components/ui/button"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -19,48 +16,25 @@ import { loaderClient } from "~/lib/loader-client"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
 import { PostFormSubmitBar } from "~/routes/($lang)._main.new.image/components/post-form-submit-bar"
-import {
-  PostTextFormAiModelFragment,
-  PostTextFormAlbumFragment,
-  PostTextFormInput,
-  PostTextFormPassFragment,
-  PostTextFormRecentlyUsedTagsFragment,
-} from "~/routes/($lang)._main.new.image/components/post-text-form-input"
+import { PostTextFormInput } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { PostTextFormUploader } from "~/routes/($lang)._main.new.image/components/post-text-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
+import {
+  mergePostFormEvents,
+  type RawEventOption,
+} from "~/routes/($lang)._main.new.image/utils/post-form-event"
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
+import { usePostTextGenerationResults } from "~/routes/($lang)._main.new.text/hooks/use-post-text-generation-results"
+import { usePostTextSubmit } from "~/routes/($lang)._main.new.text/hooks/use-post-text-submit"
 import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
-import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
-import { createMeta } from "~/utils/create-meta"
-import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
-import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import {
-  getJstDate,
-  jstDateTimeToWallClockUnixSeconds,
-  toJstWallClockUnixSeconds,
-} from "~/utils/jst-date"
-import { resizeThumbnail } from "~/utils/resize-image"
-import { sha256 } from "~/utils/sha256"
-import { uploadPublicImage } from "~/utils/upload-public-image"
-import { uploadTextFile } from "~/utils/upload-text-file"
-
-type EventRating = "G" | "R15" | "R18" | "R18G"
-
-type EventOption = {
-  title: string | null
-  description: string | null
-  thumbnailImageUrl?: string | null
-  headerImageUrl?: string | null
-  tag: string | null
-  ratings?: EventRating[] | null
-  startAt: number
-  endAt: number
-  slug: string | null
-  source: "OFFICIAL" | "USER"
-}
-
-type RawEventOption = Omit<EventOption, "source">
+  SelectedUserEventQuery,
+  UserEventsQuery,
+  viewerQuery,
+} from "~/routes/($lang)._main.new.text/utils/new-text-queries"
+import { createMeta } from "~/utils/create-meta"
+import { getJstDate } from "~/utils/jst-date"
 
 export default function NewText() {
   const data = useLoaderData<typeof loader>()
@@ -127,19 +101,11 @@ export default function NewText() {
   const selectedUserEvent = selectedUserEventData?.userEvent as
     | RawEventOption
     | undefined
-  const mergedUserEvents =
-    selectedUserEvent &&
-    !userEvents.some(
-      (event) =>
-        event.slug === selectedUserEvent.slug ||
-        event.tag === selectedUserEvent.tag,
-    )
-      ? [selectedUserEvent, ...userEvents]
-      : userEvents
-  const events: EventOption[] = [
-    ...appEvents.map((event) => ({ ...event, source: "OFFICIAL" as const })),
-    ...mergedUserEvents.map((event) => ({ ...event, source: "USER" as const })),
-  ]
+  const events = mergePostFormEvents({
+    appEvents,
+    userEvents,
+    selectedUserEvent,
+  })
 
   const [state, dispatch] = useReducer(postTextFormReducer, {
     editTargetImageBase64: null,
@@ -190,90 +156,11 @@ export default function NewText() {
     correctionMessage: "",
   })
 
-  const generationResultsKey =
-    viewerData?.viewer?.imageGenerationResults?.map((r) => r.id).join("|") ?? ""
-
-  const processedGenerationKeyRef = useRef<string>("")
-
-  useEffect(() => {
-    let cancelled = false
-    const processImages = async () => {
-      if (generationNanoids.length === 0) {
-        return
-      }
-
-      const results = viewerData?.viewer?.imageGenerationResults
-      if (!results || results.length === 0) {
-        return
-      }
-
-      const key = `${generationNanoids.join("|")}::${generationResultsKey}`
-      if (processedGenerationKeyRef.current === key) {
-        return
-      }
-      processedGenerationKeyRef.current = key
-
-      const base64Urls = await Promise.all(
-        results
-          .map((result) => {
-            const url = result.imageUrl ?? result.thumbnailUrl
-            return url ? createBase64FromImageURL(url) : ""
-          })
-          .filter((url) => url !== ""),
-      )
-
-      if (cancelled) {
-        return
-      }
-
-      dispatch({
-        type: "SET_ITEMS",
-        payload: base64Urls.map((content, index) => ({
-          id: index,
-          content,
-        })),
-      })
-
-      dispatch({
-        type: "SET_THUMBNAIL_BASE64",
-        payload: base64Urls[0] ?? null,
-      })
-
-      const first = results[0]
-      dispatch({
-        type: "SET_PNG_INFO",
-        payload: {
-          src: null,
-          params: {
-            prompt: first.prompt,
-            negativePrompt: first.negativePrompt,
-            seed: first.seed.toString(),
-            sampler: first.sampler,
-            strength: "",
-            noise: "",
-            model: first.model?.name,
-            modelHash: first.model?.id,
-            steps: first.steps.toString(),
-            scale: first.scale.toString(),
-            vae: "",
-          },
-        },
-      })
-
-      dispatch({
-        type: "IS_SELECTED_GENERATION_IMAGE",
-        payload: true,
-      })
-    }
-
-    processImages()
-    return () => {
-      cancelled = true
-    }
-  }, [generationNanoids.join("|"), generationResultsKey])
-
-  const [createWork, { loading: isCreatedLoading }] =
-    useMutation(CreateWorkMutation)
+  usePostTextGenerationResults({
+    generationNanoids,
+    viewerData,
+    dispatch,
+  })
 
   const formResult = safeParse(vPostTextForm, {
     title: inputState.title,
@@ -285,294 +172,16 @@ export default function NewText() {
     md: inputState.md,
   })
 
-  const uploadImages = async () => {
-    if (authContext.userId === null) {
-      return []
-    }
-    const images = state.items.map((item) => item.content)
-    const uploads = images.map((image) => {
-      if (image === null) {
-        return null
-      }
-      return uploadPublicImage(image, viewerData?.viewer?.token)
-    })
-    const imageUrls = await Promise.all(uploads)
-    return imageUrls
-  }
-
-  const onPost = async () => {
-    const url = uploadTextFile(
-      inputState.md,
-      "md",
-      viewerData?.viewer?.token,
-      "https://text-files.aipictors.com/c09d45d7-c949-4515-b477-d1c17f1dd038",
-    )
-
-    if (url === null) {
-      toast(t("本文のアップロードに失敗しました", "Failed to upload the text"))
-      return
-    }
-
-    if (formResult.success === false) {
-      for (const issue of formResult.issues) {
-        toast(issue.message)
-        return
-      }
-      return
-    }
-
-    if (
-      inputState.reservationDate !== null &&
-      inputState.reservationTime === null
-    ) {
-      toast(
-        t(
-          "予約投稿の時間を入力してください",
-          "Please enter the scheduled post time",
-        ),
-      )
-      return
-    }
-
-    if (
-      inputState.reservationDate === null &&
-      inputState.reservationTime !== null
-    ) {
-      toast(
-        t(
-          "予約投稿の時間を入力してください",
-          "Please enter the scheduled post time",
-        ),
-      )
-      return
-    }
-
-    const selectedEventTags = new Set(
-      inputState.tags.map((tag) => tag.text.trim()).filter(Boolean),
-    )
-
-    if (selectedEventTags.size > 0) {
-      // イベントの開催期間は日本時間の壁時計をUTCとして扱ったUNIX秒で返却されるため合わせる
-      const publishAtUnixSeconds =
-        (inputState.reservationDate !== null &&
-        inputState.reservationTime !== null
-          ? jstDateTimeToWallClockUnixSeconds(
-              inputState.reservationDate,
-              inputState.reservationTime,
-            )
-          : null) ?? toJstWallClockUnixSeconds()
-
-      const selectedEvents = events.filter(
-        (event) => event.tag && selectedEventTags.has(event.tag),
-      )
-
-      const outOfPeriodEvent = selectedEvents.find((event) => {
-        return (
-          publishAtUnixSeconds < event.startAt ||
-          publishAtUnixSeconds > event.endAt
-        )
-      })
-
-      if (outOfPeriodEvent) {
-        if (
-          inputState.reservationDate !== null &&
-          inputState.reservationTime !== null
-        ) {
-          toast(
-            t(
-              "予約公開日時がイベント開催期間外です。\n開催期間内の日付を指定してください。",
-              "Scheduled publish time is outside the event period. Please choose a date within the event period.",
-            ),
-          )
-          return
-        }
-
-        if (publishAtUnixSeconds < outOfPeriodEvent.startAt) {
-          toast(
-            t(
-              "このイベントはまだ開始されていません。\nイベント開始後に投稿してください。",
-              "This event has not started yet. Please post after the event starts.",
-            ),
-          )
-          return
-        }
-
-        toast(t("このイベントは終了しています。", "This event has ended."))
-        return
-      }
-    }
-
-    const uploadedImageUrls = []
-
-    try {
-      dispatch({ type: "SET_PROGRESS", payload: 10 })
-
-      const smallThumbnail = await resizeThumbnail(
-          formResult.output.thumbnailBase64,
-          400,
-          1200,
-          "webp",
-        )
-
-      dispatch({ type: "SET_PROGRESS", payload: 20 })
-
-      const largeThumbnail = await resizeThumbnail(
-          formResult.output.thumbnailBase64,
-          600,
-          1600,
-          "webp",
-        )
-
-      dispatch({ type: "SET_PROGRESS", payload: 30 })
-
-      const smallThumbnailUrl = await uploadPublicImage(
-        smallThumbnail.base64,
-        viewerData?.viewer?.token,
-      )
-
-      dispatch({ type: "SET_PROGRESS", payload: 40 })
-
-      uploadedImageUrls.push(smallThumbnailUrl)
-
-      const largeThumbnailUrl = await uploadPublicImage(
-        largeThumbnail.base64,
-        viewerData?.viewer?.token,
-      )
-
-      dispatch({ type: "SET_PROGRESS", payload: 50 })
-
-      uploadedImageUrls.push(largeThumbnailUrl)
-
-      const ogpBase64Url = state.ogpBase64
-        ? await uploadPublicImage(state.ogpBase64, viewerData?.viewer?.token)
-        : null
-
-      dispatch({ type: "SET_PROGRESS", payload: 60 })
-
-      if (ogpBase64Url !== null) {
-        uploadedImageUrls.push(ogpBase64Url)
-      }
-
-      const reservedAt =
-        inputState.reservationDate !== null &&
-        inputState.reservationTime !== null
-          ? new Date(
-              `${inputState.reservationDate}T${inputState.reservationTime}`,
-            ).getTime() +
-            3600000 * 9
-          : undefined
-
-      const mainImageSha256 = await sha256(formResult.output.thumbnailBase64)
-
-      const mainImageSize = await getSizeFromBase64(
-        formResult.output.thumbnailBase64,
-      )
-
-      dispatch({ type: "SET_PROGRESS", payload: 70 })
-
-      const textFile = await uploadTextFile(
-        inputState.md,
-        "md",
-        viewerData?.viewer?.token,
-      )
-
-      if (textFile === null) {
-        toast(
-          t("本文のアップロードに失敗しました", "Failed to upload the text"),
-        )
-        return
-      }
-
-      const uploadResults = await uploadImages()
-
-      const imageUrls = uploadResults.filter((url) => url !== null)
-
-      if (imageUrls.length === 0) {
-        toast(t("画像のアップロードに失敗しました", "Failed to upload images"))
-        return
-      }
-
-      const work = await createWork({
-        variables: {
-          input: {
-            title: formResult.output.title,
-            entitle: formResult.output.enTitle,
-            explanation: formResult.output.caption,
-            enExplanation: formResult.output.enCaption,
-            rating: inputState.ratingRestriction,
-            prompt: state.pngInfo?.params.prompt ?? null,
-            negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
-            seed: state.pngInfo?.params.seed?.toString() ?? null,
-            sampler: state.pngInfo?.params.sampler?.toString() ?? null,
-            strength: state.pngInfo?.params.strength?.toString() ?? null,
-            noise: state.pngInfo?.params.noise?.toString() ?? null,
-            modelName: state.pngInfo?.params.model ?? null,
-            modelHash: state.pngInfo?.params.modelHash?.toString() ?? null,
-            otherGenerationParams: state.pngInfo?.src ?? null,
-            pngInfo: state.pngInfo?.src ?? null,
-            imageStyle: inputState.imageStyle,
-            relatedUrl: inputState.link,
-            tags: inputState.tags.map((tag) => tag.text),
-            isTagEditable: inputState.useTagFeature,
-            isCommentEditable: inputState.useCommentFeature,
-            thumbnailPosition: state.isThumbnailLandscape
-              ? state.thumbnailPosX
-              : state.thumbnailPosY,
-            modelId: inputState.aiModelId,
-            type: inputState.type ?? "COLUMN",
-            subjectId: inputState.themeId,
-            albumId: inputState.albumId,
-            isPromotion: inputState.usePromotionFeature,
-            reservedAt: reservedAt,
-            mainImageSha256: mainImageSha256,
-            accessType: inputState.accessType,
-            imageUrls: imageUrls,
-            smallThumbnailImageURL: smallThumbnailUrl,
-            smallThumbnailImageWidth: smallThumbnail.width,
-            smallThumbnailImageHeight: smallThumbnail.height,
-            largeThumbnailImageURL: largeThumbnailUrl,
-            largeThumbnailImageWidth: largeThumbnail.width,
-            largeThumbnailImageHeight: largeThumbnail.height,
-            videoUrl: null,
-            ogpImageUrl: ogpBase64Url,
-            imageHeight: mainImageSize.height,
-            imageWidth: mainImageSize.width,
-            accessGenerationType:
-              state.isSelectedGenerationImage && inputState.useGenerationParams
-                ? "PUBLIC_RESTORABLE"
-                : inputState.useGenerationParams
-                  ? "PUBLIC"
-                  : "PRIVATE",
-            mdUrl: textFile,
-          },
-        },
-      })
-
-      if (work.data?.createWork === undefined) {
-        toast(t("作品の投稿に失敗しました", "Failed to post the work"))
-        return
-      }
-
-      dispatch({
-        type: "MARK_AS_DONE",
-        payload: {
-          uploadedWorkId: work.data?.createWork.id,
-          uploadedWorkUuid: work.data?.createWork.uuid,
-        },
-      })
-
-      toast(t("作品を投稿しました", "Work has been posted"))
-    } catch (error) {
-      if (error instanceof Error) {
-        toast(error.message)
-      }
-      const promises = uploadedImageUrls.map((url) => {
-        return deleteUploadedImage(url)
-      })
-      await Promise.all(promises)
-      dispatch({ type: "SET_PROGRESS", payload: 0 })
-    }
-  }
+  const onPost = usePostTextSubmit({
+    state,
+    inputState,
+    dispatch,
+    events,
+    formResult,
+    token: viewerData?.viewer?.token,
+    userId: authContext.userId,
+    t,
+  })
 
   const createdAt = new Date(
     `${inputState.reservationDate}T${inputState.reservationTime}`,
@@ -713,177 +322,3 @@ export const headers: HeadersFunction = () => ({
   // 投稿画面なのでキャッシュは不要
   // "Cache-Control": config.cacheControl.oneHour,
 })
-
-const viewerQuery = graphql(
-  `query ViewerQuery(
-    $limit: Int!,
-    $offset: Int!,
-    $ownerUserId: ID
-    $generationOffset: Int!,
-    $generationLimit: Int!,
-    $generationWhere: ImageGenerationResultsWhereInput,
-    $startDate: String!,
-    $endDate: String!,
-    $startAt: String!,
-  ) {
-    viewer {
-      id
-      token
-      currentPass {
-        ...PostTextFormPass
-      }
-      recentlyUsedTags {
-        ...PostTextFormRecentlyUsedTags
-      }
-      imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
-        id
-        prompt
-        negativePrompt
-        seed
-        steps
-        scale
-        sampler
-        clipSkip
-        sizeType
-        t2tImageUrl
-        t2tMaskImageUrl
-        t2tDenoisingStrengthSize
-        t2tInpaintingFillSize
-        rating
-        completedAt
-        isProtected
-        generationType
-        postModelId
-        modelHash
-        model {
-          id
-          name
-          type
-        }
-        vae
-        nanoid
-        status
-        estimatedSeconds
-        controlNetControlMode
-        controlNetEnabled
-        controlNetGuidanceEnd
-        controlNetGuidanceStart
-        controlNetPixelPerfect
-        controlNetProcessorRes
-        controlNetResizeMode
-        controlNetThresholdA
-        controlNetThresholdB
-        controlNetWeight
-        controlNetModule
-        controlNetModel
-        controlNetSaveDetectedMap
-        controlNetHrOption
-        upscaleSize
-        imageUrl
-        thumbnailUrl
-      }
-    }
-    albums(
-      offset: $offset,
-      limit: $limit,
-      where: {
-        ownerUserId: $ownerUserId,
-        needInspected: false,
-        needsThumbnailImage: false,
-      }
-    ) {
-      ...PostTextFormAlbum
-    }
-    aiModels(offset: 0, limit: 124, where: {}) {
-      id
-      ...PostTextFormAiModel
-    }
-    dailyThemes(
-      limit: 8,
-      offset: 0,
-      where: {
-        startDate: $startDate,
-        endDate: $endDate,
-      }) {
-      id
-      title
-      dateText
-      note
-    }
-    appEvents(
-      limit: 8,
-      offset: 0,
-      where: {
-        endAt: $startAt,
-      }
-    ) {
-      id
-      description
-      title
-      thumbnailImageUrl
-      headerImageUrl
-      tag
-      slug
-      startAt
-      endAt
-    }
-  }`,
-  [
-    PostTextFormAiModelFragment,
-    PostTextFormAlbumFragment,
-    PostTextFormPassFragment,
-    PostTextFormRecentlyUsedTagsFragment,
-  ],
-)
-
-const UserEventsQuery = graphql(
-  `query UserEventsQuery($limit: Int!, $offset: Int!, $endAt: String!) {
-    userEvents(
-      limit: $limit,
-      offset: $offset,
-      where: {
-        endAt: $endAt,
-      }
-    ) {
-      id
-      description
-      title
-      thumbnailImageUrl
-      headerImageUrl
-      ratings
-      tag: mainTag
-      slug
-      startAt
-      endAt
-    }
-  }`,
-)
-
-const SelectedUserEventQuery = graphql(
-  `query SelectedUserEvent($slug: String!) {
-    userEvent(slug: $slug) {
-      id
-      description
-      title
-      thumbnailImageUrl
-      headerImageUrl
-      ratings
-      tag: mainTag
-      slug
-      startAt
-      endAt
-    }
-  }`,
-)
-
-const CreateWorkMutation = graphql(
-  `mutation CreateWork($input: CreateWorkInput!) {
-    createWork(input: $input) {
-      id
-      title
-      accessType
-      nanoid
-      uuid
-    }
-  }`,
-)
