@@ -3480,6 +3480,9 @@ type Mutation {
   """達成の演出を見せた（次からは出さない）"""
   markAchievementsSeen(keys: [String!]!): Boolean!
 
+  """お知らせをすべて確認済みにする"""
+  markNotificationsAsRead: Boolean!
+
   """タグをミュートする"""
   muteTag(input: MuteTagInput!): MutedTagNode
 
@@ -3975,7 +3978,20 @@ enum NotificationType {
   WORK_COMMENT
 }
 
+"""未読の通知の数（種類ごと）。コインの付与・失効はベルの数字に入れない"""
+type UnreadNotificationCountsNode {
+  award: Int!
+  comment: Int!
+  follow: Int!
+  liked: Int!
+  message: Int!
+  moderation: Int!
+  reply: Int!
+}
+
 input NotificationsWhereInput {
+  """コインの付与・失効などのお知らせを除く"""
+  excludeCoin: Boolean
   type: NotificationType
 }
 
@@ -6243,6 +6259,9 @@ type Viewer {
 
   """新しい通知がある"""
   hasUnreadNotifications(limit: Int!, offset: Int!, where: NotificationsWhereInput): Boolean!
+
+  """未読の通知の数（種類ごと）"""
+  unreadNotificationCounts: UnreadNotificationCountsNode!
   id: ID!
 
   """画像生成ジョブ"""

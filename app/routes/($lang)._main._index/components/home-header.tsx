@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client/index"
+import { EMPTY_UNREAD_COUNTS } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
 import {
   Link,
   useLocation,
@@ -258,49 +259,36 @@ function HomeHeader(props: Props) {
   // サイドバーがないページ（画像生成）は、ヘッダーに三本線とロゴを出す
   const hasOwnBrand = isSpecialPage && props.hasSidebarBrand !== true
 
-  const isExistedNewNotificationData = useQuery(
-    viewerIsExistedNewNotificationQuery,
-    {
-      skip: !authContext.isLoggedIn || authContext.isLoading, // ログイン確定かつloading終了している場合のみ実行
-      errorPolicy: "all",
-      fetchPolicy: "cache-and-network", // キャッシュがあれば使い、バックグラウンドで更新
-    },
-  )
-  const isExistedNewNotification =
-    isExistedNewNotificationData.data?.viewer?.isExistedNewNotification
+  const unreadNotificationData = useQuery(viewerUnreadNotificationCountsQuery, {
+    skip: !authContext.isLoggedIn || authContext.isLoading, // ログイン確定かつloading終了している場合のみ実行
+    errorPolicy: "all",
+    fetchPolicy: "cache-and-network", // キャッシュがあれば使い、バックグラウンドで更新
+  })
+  const unreadNotificationCounts =
+    unreadNotificationData.data?.viewer?.unreadNotificationCounts ??
+    EMPTY_UNREAD_COUNTS
 
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
-  const [isExistedNewNotificationState, setIsExistedNewNotificationState] =
-    useState(isExistedNewNotification ?? false)
 
-  // isExistedNewNotification の値が変更された時に状態を同期
+  // 開きっぱなしのタブに戻ってきたら、未読の数を取り直す
   useEffect(() => {
-    debugLog.notification("Notification state changed:", {
-      isExistedNewNotification,
-      queryData: isExistedNewNotificationData.data,
-      queryLoading: isExistedNewNotificationData.loading,
-      queryError: !!isExistedNewNotificationData.error,
-      authContext: {
-        isLoggedIn: authContext.isLoggedIn,
-        isNotLoggedIn: authContext.isNotLoggedIn,
-        isLoading: authContext.isLoading,
-        userId: authContext.userId,
-        login: authContext.login,
-      },
-    })
-    setIsExistedNewNotificationState(isExistedNewNotification ?? false)
-  }, [isExistedNewNotification, isExistedNewNotificationData])
-
-  // ログイン状態が変更された時に通知状態をリセット
-  useEffect(() => {
-    debugLog.auth("Auth state changed:", {
-      isNotLoggedIn: authContext.isNotLoggedIn,
-      resetting: authContext.isNotLoggedIn,
-    })
-    if (authContext.isNotLoggedIn) {
-      setIsExistedNewNotificationState(false)
+    if (!authContext.isLoggedIn || authContext.isLoading) return
+    let lastFetchedAt = Date.now()
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "visible") return
+      if (Date.now() - lastFetchedAt < 60 * 1000) return
+      lastFetchedAt = Date.now()
+      void unreadNotificationData.refetch().catch(() => {})
     }
-  }, [authContext.isNotLoggedIn])
+    document.addEventListener("visibilitychange", onVisibilityChange)
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange)
+    }
+  }, [
+    authContext.isLoggedIn,
+    authContext.isLoading,
+    unreadNotificationData.refetch,
+  ])
 
   const _handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
@@ -693,14 +681,10 @@ function HomeHeader(props: Props) {
                 }
               >
                 <HomeNotificationsMenu
-                  isExistedNewNotification={isExistedNewNotificationState}
-                  setIsExistedNewNotificationState={
-                    setIsExistedNewNotificationState
-                  }
-                  checkedNotificationTimes={
-                    isExistedNewNotificationData.data?.viewer
-                      ?.checkedNotificationTimes ?? []
-                  }
+                  unreadCounts={unreadNotificationCounts}
+                  onMarkedAsRead={() => {
+                    void unreadNotificationData.refetch().catch(() => {})
+                  }}
                 />
               </Suspense>
               <Suspense fallback={<HomeHeaderAvatarPlaceholder />}>
@@ -755,24 +739,21 @@ function HomeHeader(props: Props) {
   )
 }
 
-export const CheckedNotificationTimesFragment = graphql(
-  `fragment CheckedNotificationTimes on CheckedNotificationTimeNode @_unmask {
-    type
-    checkedTime
-  }`,
-)
-
-const viewerIsExistedNewNotificationQuery = graphql(
-  `query ViewerIsExistedNewNotification {
+const viewerUnreadNotificationCountsQuery = graphql(
+  `query ViewerUnreadNotificationCounts {
     viewer {
       id
-      isExistedNewNotification
-      checkedNotificationTimes {
-        ...CheckedNotificationTimes
+      unreadNotificationCounts {
+        liked
+        comment
+        reply
+        follow
+        award
+        message
+        moderation
       }
     }
   }`,
-  [CheckedNotificationTimesFragment],
 )
 
 export default HomeHeader
