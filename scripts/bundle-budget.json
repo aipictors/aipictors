@@ -1,0 +1,25 @@
+{
+  "pagesGzipKb": {
+    "home": 469,
+    "work": 520,
+    "generation": 541,
+    "tag": 415,
+    "ranking": 410,
+    "search": 394,
+    "user": 464,
+    "newImage": 512
+  },
+  "pagesFiles": {
+    "home": 131,
+    "work": 155,
+    "generation": 124,
+    "tag": 108,
+    "ranking": 108,
+    "search": 97,
+    "user": 133,
+    "newImage": 122
+  },
+  "clientMb": 63,
+  "clientFiles": 2502,
+  "largestJsKb": 539
+}

@@ -11,6 +11,7 @@
     "check": "tsc -p tsconfig.dts.json --noEmit --isolatedDeclarations",
     "check:tsc": "tsc --noEmit",
     "test": "bun test",
+    "check:bundle": "bun run scripts/check-bundle-size.ts",
     "lint": "biome lint --write app",
     "lint:unsafe": "biome lint --write --unsafe app",
     "storybook": "storybook dev -p 6006 --no-open",
