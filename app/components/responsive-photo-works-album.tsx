@@ -62,7 +62,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                     props.priorityCount !== undefined &&
                     index >= props.priorityCount
                   }
-                  title={t(workItem.title, workItem.enTitle || undefined)}
+                  title={t.workTitle(workItem.title, workItem.enTitle)}
                   workId={workItem.id}
                   subWorksCount={workItem.subWorksCount}
                   commentsCount={workItem.commentsCount}
@@ -106,10 +106,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                       type="button"
                       className="min-w-0 cursor-pointer text-left font-bold"
                       onClick={() => props.onSelect?.(workItem.id.toString())}
-                      aria-label={`Open ${t(workItem.title, workItem.enTitle || undefined)}`}
+                      aria-label={`Open ${t.workTitle(workItem.title, workItem.enTitle)}`}
                     >
                       <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
-                        {t(workItem.title, workItem.enTitle || undefined)}
+                        {t.workTitle(workItem.title, workItem.enTitle)}
                       </p>
                     </button>
                   ) : (
@@ -118,7 +118,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                       to={`/posts/${workItem.id}`}
                     >
                       <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
-                        {t(workItem.title, workItem.enTitle || undefined)}
+                        {t.workTitle(workItem.title, workItem.enTitle)}
                       </p>
                     </Link>
                   )}
@@ -220,7 +220,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         type="button"
                         className="absolute inset-0 block h-full w-full cursor-pointer overflow-hidden"
                         onClick={() => props.onSelect?.(work.id.toString())}
-                        aria-label={`Open ${t(work.title, work.enTitle || undefined)}`}
+                        aria-label={`Open ${t.workTitle(work.title, work.enTitle)}`}
                       >
                         <HoverVideoImage
                           workId={work.id}
@@ -228,7 +228,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                           videoUrl={work.url}
                           streamUid={work.streamUid}
                           isAutoPlay={props.autoPlayVideoPreview}
-                          alt={t(work.title, work.enTitle || undefined)}
+                          alt={t.workTitle(work.title, work.enTitle)}
                           width={width}
                           height={height}
                           fetchPriority={
@@ -258,7 +258,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         videoUrl={work.url}
                         streamUid={work.streamUid}
                         isAutoPlay={props.autoPlayVideoPreview}
-                        alt={t(work.title, work.enTitle || undefined)}
+                        alt={t.workTitle(work.title, work.enTitle)}
                         to={`/posts/${work.id}`}
                         width={width}
                         height={height}
@@ -348,16 +348,16 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                             e.stopPropagation()
                             props.onSelect?.(work.id.toString())
                           }}
-                          aria-label={`Open ${t(work.title, work.enTitle || undefined)}`}
+                          aria-label={`Open ${t.workTitle(work.title, work.enTitle)}`}
                         >
-                          <p className="truncate text-sm">{t(work.title, work.enTitle || undefined)}</p>
+                          <p className="truncate text-sm">{t.workTitle(work.title, work.enTitle)}</p>
                         </button>
                       ) : (
                         <Link
                           className="min-w-0 font-bold hover:underline"
                           to={`/posts/${work.id}`}
                         >
-                          <p className="truncate text-sm">{t(work.title, work.enTitle || undefined)}</p>
+                          <p className="truncate text-sm">{t.workTitle(work.title, work.enTitle)}</p>
                         </Link>
                       )}
                       {work.user && (

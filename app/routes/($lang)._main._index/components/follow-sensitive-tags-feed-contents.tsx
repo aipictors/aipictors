@@ -64,7 +64,9 @@ const workFieldsFragment = graphql(`
     enTitle
     largeThumbnailImageURL
     description
+    enDescription
     tagNames
+    enTagNames
     isLiked
     likesCount
     createdAt
@@ -89,6 +91,7 @@ const followedTagsPreviewQuery = graphql(`
       followingTags(offset: 0, limit: $limit) {
         id
         name
+        enName
       }
     }
   }
@@ -207,7 +210,7 @@ export function FollowSensitiveTagsFeedContents({
                 variant="secondary"
                 className="rounded-full px-3"
               >
-                {tag.name}
+                {t.tag(tag.name, tag.enName) ?? tag.name}
               </Button>
             </Link>
           ))}
@@ -266,8 +269,7 @@ function PaginationMode({
   const { data, loading, refetch } = useQuery(
     isTimelineView ? feedQuery : feedWorkListQuery,
     {
-      skip:
-        auth.isLoading || auth.isNotLoggedIn || !viewerRatings.isReady,
+      skip: auth.isLoading || auth.isNotLoggedIn || !viewerRatings.isReady,
       variables: {
         limit: PER_PAGE,
         offset,
@@ -382,8 +384,7 @@ function InfiniteMode({
     fetchMore,
     loading: loadingFirst,
   } = useQuery(QUERY, {
-    skip:
-      auth.isLoading || auth.isNotLoggedIn || !viewerRatings.isReady,
+    skip: auth.isLoading || auth.isNotLoggedIn || !viewerRatings.isReady,
     variables: queryVars,
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
@@ -402,7 +403,7 @@ function InfiniteMode({
 
   const flatWorks = useMemo(
     () =>
-      flat.map((p) => p.work).filter(Boolean) as FragmentOf<
+      flat.map((p) => p.work).filter(Boolean) as unknown as FragmentOf<
         typeof PhotoAlbumWorkFragment
       >[],
     [flat],
@@ -606,7 +607,7 @@ function TimelineView({
                     <Link to={`/posts/${work.id}`}>
                       <img
                         src={work.largeThumbnailImageURL}
-                        alt={t(work.title, work.enTitle || undefined)}
+                        alt={t.workTitle(work.title, work.enTitle)}
                         className="w-full rounded-md"
                       />
                     </Link>
@@ -619,7 +620,7 @@ function TimelineView({
                         <Link to={`/posts/${work.id}`}>
                           <img
                             src={work.largeThumbnailImageURL}
-                            alt={t(work.title, work.enTitle || undefined)}
+                            alt={t.workTitle(work.title, work.enTitle)}
                             className="w-full rounded-md"
                           />
                         </Link>
@@ -628,7 +629,7 @@ function TimelineView({
                       <Link to={`/posts/${work.id}`}>
                         <img
                           src={work.largeThumbnailImageURL}
-                          alt={t(work.title, work.enTitle || undefined)}
+                          alt={t.workTitle(work.title, work.enTitle)}
                           className="w-full rounded-md"
                         />
                       </Link>
@@ -661,7 +662,7 @@ function TimelineView({
                                 >
                                   <img
                                     src={sw.imageUrl}
-                                    alt={t(work.title, work.enTitle || undefined)}
+                                    alt={t.workTitle(work.title, work.enTitle)}
                                     className="w-full rounded-md"
                                   />
                                 </Link>
@@ -670,8 +671,10 @@ function TimelineView({
                       </>
                     ) : null}
                   </div>
-                  <div className="font-semibold text-md">{t(work.title, work.enTitle || undefined)}</div>
-                  <div>{work.description}</div>
+                  <div className="font-semibold text-md">
+                    {t.workTitle(work.title, work.enTitle)}
+                  </div>
+                  <div>{t.text(work.description, work.enDescription)}</div>
                   <div className="flex items-center space-x-4">
                     <LikeButton
                       size={40}
@@ -693,13 +696,17 @@ function TimelineView({
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-x-4">
-                    {work.tagNames?.map((tag) => (
-                      <Link key={tag} to={`/r/tags/${tag}`} className="p-0">
-                        <Button variant="link" className="p-0">
-                          {tag}
-                        </Button>
-                      </Link>
-                    ))}
+                    {work.tagNames?.map((tag, index) => {
+                      const label = t.tag(tag, work.enTagNames?.[index])
+                      if (label === null) return null
+                      return (
+                        <Link key={tag} to={`/r/tags/${tag}`} className="p-0">
+                          <Button variant="link" className="p-0">
+                            {label}
+                          </Button>
+                        </Link>
+                      )
+                    })}
                   </div>
                   <div className="text-sm">
                     {work.createdAt ? toDateTimeText(work.createdAt) : ""}
@@ -744,7 +751,7 @@ function GridView({
   if (isMobile) {
     const optimizedWorks = works.map((work) => ({
       id: work.id,
-      title: t(work.title, work.enTitle || undefined),
+      title: t.workTitle(work.title, work.enTitle),
       imageUrl: work.largeThumbnailImageURL,
       width: 300, // fallback width for mobile
       height: 200, // fallback height for mobile

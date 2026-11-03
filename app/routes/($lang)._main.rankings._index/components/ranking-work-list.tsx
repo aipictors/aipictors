@@ -35,7 +35,7 @@ function RankingWorkCard(props: {
         <div className={featured ? "space-y-4" : "space-y-3"}>
           <div className="relative overflow-hidden rounded-[24px] bg-muted/30">
             <CroppedWorkSquare
-              title={t(workItem.work.title, workItem.work.enTitle || undefined)}
+              title={t.workTitle(workItem.work.title, workItem.work.enTitle)}
               workId={workItem.work.id}
               subWorksCount={workItem.work.subWorksCount}
               imageUrl={workItem.work.smallThumbnailImageURL}
@@ -61,7 +61,7 @@ function RankingWorkCard(props: {
 
           <div className="space-y-2">
             <p className={featured ? "line-clamp-2 font-bold text-base text-foreground sm:text-lg" : "line-clamp-2 font-bold text-sm text-foreground sm:text-base"}>
-              {t(workItem.work.title, workItem.work.enTitle || undefined)}
+              {t.workTitle(workItem.work.title, workItem.work.enTitle)}
             </p>
 
             <div className="flex flex-wrap items-center gap-2 text-xs">

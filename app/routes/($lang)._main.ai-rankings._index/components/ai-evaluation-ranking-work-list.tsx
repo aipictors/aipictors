@@ -120,7 +120,7 @@ function RankingWorkCard(props: {
           <div className="space-y-3">
             <div className="relative overflow-hidden rounded-[24px] bg-muted/30">
               <CroppedWorkSquare
-                title={t(workItem.work.title, workItem.work.enTitle || undefined)}
+                title={t.workTitle(workItem.work.title, workItem.work.enTitle)}
                 workId={workItem.work.id}
                 subWorksCount={workItem.work.subWorksCount}
                 imageUrl={workItem.work.smallThumbnailImageURL}
@@ -149,7 +149,7 @@ function RankingWorkCard(props: {
 
             <div className="space-y-2">
               <p className={featured ? "line-clamp-2 font-bold text-base text-foreground sm:text-lg" : "line-clamp-2 font-bold text-sm text-foreground sm:text-base"}>
-                {t(workItem.work.title, workItem.work.enTitle || undefined)}
+                {t.workTitle(workItem.work.title, workItem.work.enTitle)}
               </p>
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="rounded-full bg-amber-100 px-2.5 py-1 font-semibold text-amber-700 dark:bg-amber-950/60 dark:text-amber-200">
@@ -175,7 +175,7 @@ function RankingWorkCard(props: {
           {featured && <div className="min-w-0 space-y-4">
             {workItem.index <= 5 && workItem.pictorComment ? (
               <RankingCommentPreview
-                title={t(workItem.work.title, workItem.work.enTitle || undefined)}
+                title={t.workTitle(workItem.work.title, workItem.work.enTitle)}
                 comment={workItem.pictorComment}
                 score={workItem.overallScore}
                 awardTier={workItem.awardTier}

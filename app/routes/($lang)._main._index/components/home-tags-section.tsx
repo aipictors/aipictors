@@ -49,6 +49,7 @@ export function HomeTagsSection (props: Props) {
     <HomeTagsSectionItem
       key={index.toString()}
       tagName={tag.tagName}
+      enTagName={tag.enTagName}
       tagThumbnailUrl={tag.thumbnailUrl}
     />
   ))
@@ -98,6 +99,7 @@ export function HomeTagsSection (props: Props) {
 export const HomeTagFragment = graphql(
   `fragment HomeTag on RecommendedTagNode @_unmask {
     tagName
+    enTagName
     thumbnailUrl
   }`,
 )

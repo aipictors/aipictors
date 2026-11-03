@@ -405,14 +405,14 @@ export default function Aipictors3rdAnniversary () {
                       <div className="relative aspect-square overflow-hidden">
                         <img
                           src={work.smallThumbnailImageURL}
-                          alt={t(work.title, work.enTitle || undefined)}
+                          alt={t.workTitle(work.title, work.enTitle)}
                           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                       </div>
                       <CardContent className="p-4">
                         <p className="line-clamp-2 font-medium text-sm dark:text-white">
-                          {t(work.title, work.enTitle || undefined)}
+                          {t.workTitle(work.title, work.enTitle)}
                         </p>
                       </CardContent>
                     </Card>

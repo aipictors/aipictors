@@ -1716,6 +1716,9 @@ type DailyThemeNode implements Node {
   """日にち"""
   day: Int!
 
+  """タイトルの英語（なければ null）"""
+  enTitle: String
+
   """作品"""
   firstWork: WorkNode
   id: ID!
@@ -4823,6 +4826,8 @@ enum Rating {
 
 """推奨タグ"""
 type RecommendedTagNode {
+  """英語名（なければ null）"""
+  enTagName: String
   tagName: String!
   thumbnailUrl: String!
 }
@@ -5140,6 +5145,9 @@ input SyncGooglePlayPurchasesInput {
 
 """タグ"""
 type TagNode implements Node {
+  """英語名（なければ null）"""
+  enName: String
+
   """最初の作品"""
   firstWork: WorkNode
   id: ID!
@@ -6702,6 +6710,9 @@ type WorkNode implements Node {
 
   """説明(英語)"""
   enDescription: String
+
+  """タグの英語名。tagNames と同じ順で、ない場合は null"""
+  enTagNames: [String]!
 
   """タイトル(英語)"""
   enTitle: String!

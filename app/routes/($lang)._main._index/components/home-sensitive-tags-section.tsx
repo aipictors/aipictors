@@ -35,6 +35,7 @@ export function HomeSensitiveTagsSection (props: Props) {
             <CarouselItem className="basis-auto" key={index.toString()}>
               <HomeSensitiveTagsSectionItem
                 tagName={tag.tagName}
+                enTagName={tag.enTagName}
                 tagThumbnailUrl={tag.thumbnailUrl}
               />
             </CarouselItem>
@@ -49,6 +50,7 @@ export function HomeSensitiveTagsSection (props: Props) {
 const HomeTagFragment = graphql(
   `fragment HomeTag on RecommendedTagNode @_unmask {
     tagName
+    enTagName
     thumbnailUrl
   }`,
 )

@@ -45,8 +45,8 @@ export function HomeNovelsWorksSection (props: Props) {
               <NovelWorkPreviewItem
                 workId={work.id}
                 imageUrl={work.smallThumbnailImageURL}
-                title={t(work.title, work.enTitle || undefined)}
-                text={work.description ?? ""}
+                title={t.workTitle(work.title, work.enTitle)}
+                text={t.text(work.description, work.enDescription)}
                 tags={[]}
               />
             </div>
@@ -85,6 +85,7 @@ export const HomeNovelsWorkListItemFragment = graphql(
     title
     enTitle
     description
+    enDescription
     smallThumbnailImageURL
     isLiked
     user {

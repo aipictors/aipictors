@@ -1,3 +1,4 @@
+import { containsJapanese, useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { useRotatingHomeEvents } from "~/routes/($lang)._main._index/components/use-rotating-home-events"
 import type { MicroCmsApiRelease } from "~/types/micro-cms-release-response"
@@ -7,12 +8,17 @@ type Props = {
 }
 
 export function HomeLoginNoticeMarquee(props: Props) {
-  const { currentIndex, isVisible } = useRotatingHomeEvents(props.releases, {
+  const t = useTranslation()
+  // お知らせは日本語だけなので、英語の画面には出さない
+  const releases = t.isEnglish
+    ? props.releases.filter((release) => !containsJapanese(release.title))
+    : props.releases
+  const { currentIndex, isVisible } = useRotatingHomeEvents(releases, {
     intervalMs: 4600,
     fadeMs: 900,
   })
 
-  const currentRelease = props.releases[currentIndex]
+  const currentRelease = releases[currentIndex]
 
   if (!currentRelease) {
     return null

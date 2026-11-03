@@ -52,7 +52,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
         photos={props.works.map((work, _index) => ({
           key: work.id,
           src: work.smallThumbnailImageURL,
-          alt: t(work.title, work.enTitle || undefined),
+          alt: t.workTitle(work.title, work.enTitle),
           url: work.url,
           streamUid: work.streamUid,
           width: work.smallThumbnailImageWidth,

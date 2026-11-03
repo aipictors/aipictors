@@ -95,7 +95,7 @@ export function WorkNextAndPrevious (props: Props) {
 
         <div className="w-full opacity-50">
           <CroppedWorkSquare
-            title={t(props.work.title, props.work.enTitle || undefined)}
+            title={t.workTitle(props.work.title, props.work.enTitle)}
             workId={props.work.id}
             imageUrl={props.work.smallThumbnailImageURL}
             imageWidth={props.work.smallThumbnailImageWidth}

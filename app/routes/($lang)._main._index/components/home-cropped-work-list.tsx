@@ -39,7 +39,7 @@ export function HomeCroppedWorkList(props: Props) {
             .map((work) => {
               const renderContent = (isInsideInteractive: boolean) => (
                 <CroppedWorkSquare
-                  title={t(work.title, work.enTitle || undefined)}
+                  title={t.workTitle(work.title, work.enTitle)}
                   isInsideInteractive={isInsideInteractive}
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
@@ -78,10 +78,7 @@ export function HomeCroppedWorkList(props: Props) {
                     </Link>
                   )}
                   <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                    {t(
-                      t(work.title, work.enTitle || undefined),
-                      work.enTitle.length > 0 ? work.enTitle : work.title,
-                    )}
+                    {t.workTitle(work.title, work.enTitle)}
                   </p>
                   {work.user && (
                     <UserNameBadge
@@ -111,7 +108,7 @@ export function HomeCroppedWorkList(props: Props) {
                   className="relative overflow-hidden"
                 >
                   <CroppedWorkSquare
-                    title={t(work.title, work.enTitle || undefined)}
+                    title={t.workTitle(work.title, work.enTitle)}
                     isInsideInteractive={true}
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}
@@ -133,7 +130,7 @@ export function HomeCroppedWorkList(props: Props) {
                 {work.user && props.isShowProfile && (
                   <>
                     <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                      {t(work.title, work.enTitle || undefined)}
+                      {t.workTitle(work.title, work.enTitle)}
                     </p>
                     <UserNameBadge
                       userId={work.user.id}

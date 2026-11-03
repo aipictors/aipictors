@@ -72,7 +72,7 @@ export function ReadingWorksPage(props: Props) {
       itemListElement: data.works.map((work, index) => ({
         "@type": "ListItem",
         position: data.page * WORKS_INDEX_PER_PAGE + index + 1,
-        name: t(work.title, work.enTitle || undefined),
+        name: t.workTitle(work.title, work.enTitle),
         url: `${homeUrl}/posts/${work.id}`,
       })),
     },

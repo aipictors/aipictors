@@ -472,7 +472,7 @@ export function WorkViewerDialog({
             </span>
           </button>
           <DialogTitle className="min-w-0 flex-1 truncate font-bold text-base">
-            {t(currentWork.title, currentWork.enTitle || undefined)}
+            {t.workTitle(currentWork.title, currentWork.enTitle)}
           </DialogTitle>
           <span className="shrink-0 text-muted-foreground text-xs tabular-nums">
             {index + 1} / {works.length}
@@ -504,7 +504,7 @@ export function WorkViewerDialog({
                 <div className="relative">
                   <img
                     src={work.smallThumbnailImageURL}
-                    alt={t(work.title, work.enTitle || undefined)}
+                    alt={t.workTitle(work.title, work.enTitle)}
                     className="max-h-[60vh] max-w-full rounded-lg object-contain opacity-60 blur-[2px]"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -657,7 +657,7 @@ export function WorkViewerDialog({
             <WorkActionContainer
               accessType={currentWork.accessType}
               workLikesCount={currentWork.likesCount}
-              title={t(currentWork.title, currentWork.enTitle || undefined)}
+              title={t.workTitle(currentWork.title, currentWork.enTitle)}
               description=""
               currentImageUrl={currentWork.imageURL}
               imageUrls={[currentWork.imageURL]}

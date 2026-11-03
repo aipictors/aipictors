@@ -89,7 +89,7 @@ export function HomeAwardWorkSection (props: Props) {
                     work.work.smallThumbnailImageWidth &&
                     work.work.smallThumbnailImageHeight && (
                       <CroppedWorkSquare
-                        title={work.work.title}
+                        title={t.workTitle(work.work.title, work.work.enTitle)}
                         workId={work.work.id}
                         imageUrl={work.work?.smallThumbnailImageURL}
                         subWorksCount={work.work.subWorksCount}
@@ -118,7 +118,7 @@ export function HomeAwardWorkSection (props: Props) {
                   )}
                 </div>
                 <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                  {work.work?.title}
+                  {work.work ? t.workTitle(work.work.title, work.work.enTitle) : ""}
                 </p>
                 <div className="flex max-w-40 items-center justify-between">
                   {work.work?.user?.id && work.work?.user?.name && (

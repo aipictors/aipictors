@@ -326,7 +326,7 @@ function InfiniteMode(props: Props) {
 
   const flatWorks = useMemo(
     () =>
-      flat.map((p) => p.work).filter(Boolean) as FragmentOf<
+      flat.map((p) => p.work).filter(Boolean) as unknown as FragmentOf<
         typeof PhotoAlbumWorkFragment
       >[],
     [flat],
@@ -663,7 +663,7 @@ function FeedContent({
                           >
                             <img
                               src={work.largeThumbnailImageURL}
-                              alt={t(work.title, work.enTitle || undefined)}
+                              alt={t.workTitle(work.title, work.enTitle)}
                               className="w-full rounded-md"
                             />
                           </button>
@@ -671,7 +671,7 @@ function FeedContent({
                           <Link to={`/posts/${work.id}`}>
                             <img
                               src={work.largeThumbnailImageURL}
-                              alt={t(work.title, work.enTitle || undefined)}
+                              alt={t.workTitle(work.title, work.enTitle)}
                               className="w-full rounded-md"
                             />
                           </Link>
@@ -703,7 +703,10 @@ function FeedContent({
                                     >
                                       <img
                                         src={subWork.imageUrl}
-                                        alt={t(work.title, work.enTitle || undefined)}
+                                        alt={t.workTitle(
+                                          work.title,
+                                          work.enTitle,
+                                        )}
                                         className="w-full rounded-md"
                                       />
                                     </Link>
@@ -712,8 +715,10 @@ function FeedContent({
                           </>
                         )}
                       </div>
-                      <div className="font-semibold text-md">{t(work.title, work.enTitle || undefined)}</div>
-                      <div>{work.description}</div>
+                      <div className="font-semibold text-md">
+                        {t.workTitle(work.title, work.enTitle)}
+                      </div>
+                      <div>{t.text(work.description, work.enDescription)}</div>
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center">
                           <LikeButton
@@ -737,17 +742,21 @@ function FeedContent({
                         </Button>
                       </div>
                       <div className="flex flex-wrap gap-x-4">
-                        {work.tagNames?.map((tagName) => (
-                          <Link
-                            to={`/tags/${tagName}`}
-                            key={tagName}
-                            className="p-0"
-                          >
-                            <Button className="p-0" variant={"link"}>
-                              {`#${tagName}`}
-                            </Button>
-                          </Link>
-                        ))}
+                        {work.tagNames?.map((tagName, index) => {
+                          const label = t.tag(tagName, work.enTagNames?.[index])
+                          if (label === null) return null
+                          return (
+                            <Link
+                              to={`/tags/${tagName}`}
+                              key={tagName}
+                              className="p-0"
+                            >
+                              <Button className="p-0" variant={"link"}>
+                                {`#${label}`}
+                              </Button>
+                            </Link>
+                          )
+                        })}
                       </div>
                       <div className="text-sm">
                         {work.createdAt && toDateTimeText(work.createdAt)}
@@ -799,7 +808,9 @@ const workFieldsFragment = graphql(
     enTitle
     largeThumbnailImageURL
     description
+    enDescription
     tagNames
+    enTagNames
     isLiked
     likesCount
     createdAt

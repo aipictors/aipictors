@@ -65,7 +65,7 @@ export function FollowingUserItem (props: Props) {
             <div className="size-32 rounded-md">
               <img
                 className="size-32 object-cover"
-                alt={t(work.title, work.enTitle || undefined)}
+                alt={t.workTitle(work.title, work.enTitle)}
                 key={work.id}
                 src={work.smallThumbnailImageURL}
               />

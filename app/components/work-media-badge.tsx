@@ -1,4 +1,5 @@
 import { Play, Sparkles } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
  * 参照生成ボタンがある場合は位置を調整します
  */
 export function WorkMediaBadge (props: Props): React.ReactNode {
+  const t = useTranslation()
   const {
     isPromptPublic = false,
     hasVideoUrl = false,
@@ -54,7 +56,7 @@ export function WorkMediaBadge (props: Props): React.ReactNode {
             "flex items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-sm backdrop-blur-sm",
             badgeSize,
           )}
-          title="Aipictors生成作品"
+          title={t("Aipictors生成作品", "Generated on Aipictors")}
         >
           <Sparkles className={cn("fill-white", iconSize)} />
         </div>
@@ -67,7 +69,7 @@ export function WorkMediaBadge (props: Props): React.ReactNode {
             "flex items-center justify-center rounded-full bg-blue-600/80 text-white backdrop-blur-sm",
             badgeSize,
           )}
-          title="プロンプト公開作品"
+          title={t("プロンプト公開作品", "Prompt available")}
         >
           <span className={cn("font-bold", textSize)}>P</span>
         </div>
@@ -80,7 +82,7 @@ export function WorkMediaBadge (props: Props): React.ReactNode {
             "flex items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm",
             badgeSize,
           )}
-          title="動画作品"
+          title={t("動画作品", "Video")}
         >
           <Play className={cn("fill-white", iconSize)} />
         </div>

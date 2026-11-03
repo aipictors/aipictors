@@ -53,7 +53,7 @@ export function HomeSensitiveNewCommentsSection (props: Props) {
           {comment.work?.smallThumbnailImageURL && (
             <div className="flex items-center space-x-2">
               <CroppedWorkSquare
-                title={comment.work.title}
+                title={t.workTitle(comment.work.title, comment.work.enTitle)}
                 workId={comment.work.id}
                 imageUrl={comment.work?.smallThumbnailImageURL}
                 size="sm"

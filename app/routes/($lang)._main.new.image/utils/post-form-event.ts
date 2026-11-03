@@ -1,4 +1,3 @@
-import type { TranslationFn } from "~/hooks/use-translation"
 import {
   jstDateTimeToWallClockUnixSeconds,
   toJstWallClockUnixSeconds,
@@ -55,7 +54,7 @@ export const getPostEventPeriodError = (props: {
   events: EventOption[]
   reservationDate: string | null
   reservationTime: string | null
-  t: TranslationFn
+  t: (jaText: string, enText?: string) => string
 }): string | null => {
   const { events, reservationDate, reservationTime, t } = props
 

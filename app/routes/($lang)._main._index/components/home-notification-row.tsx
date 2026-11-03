@@ -63,7 +63,7 @@ export function NotificationRowView(props: {
         <RowTitle item={item} group={group} />
         {item.kind === "liked" && item.work?.title && (
           <p className="truncate text-muted-foreground text-xs">
-            {t(item.work.title, item.work.enTitle || undefined)}
+            {t.workTitle(item.work.title, item.work.enTitle)}
           </p>
         )}
         {item.parentComment && (
@@ -124,7 +124,7 @@ export function NotificationRowView(props: {
           src={item.work.smallThumbnailImageURL}
           alt={
             item.work.title
-              ? t(item.work.title, item.work.enTitle || undefined)
+              ? t.workTitle(item.work.title, item.work.enTitle)
               : ""
           }
           loading="lazy"

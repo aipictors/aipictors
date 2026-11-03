@@ -16,7 +16,7 @@ export function WorkList (props: Props) {
       {props.works.map((work) => (
         <div key={work.id}>
           <CroppedWorkSquare
-            title={t(work.title, work.enTitle || undefined)}
+            title={t.workTitle(work.title, work.enTitle)}
             workId={work.id}
             imageUrl={work.smallThumbnailImageURL}
             thumbnailImagePosition={work.thumbnailImagePosition ?? 0}

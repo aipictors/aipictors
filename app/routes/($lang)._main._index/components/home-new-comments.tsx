@@ -44,7 +44,7 @@ export function HomeNewCommentsSection(props: Props) {
             <li key={comment.comment?.id}>
               <Link
                 to={`${props.isSensitive ? "/r" : ""}/posts/${work.id}`}
-                title={t(work.title, work.enTitle || undefined)}
+                title={t.workTitle(work.title, work.enTitle)}
                 className="flex gap-2.5 rounded-xl p-2 transition-colors hover:bg-muted"
               >
                 <img

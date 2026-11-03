@@ -223,7 +223,7 @@ export default function Rankings() {
               lang: params.lang,
               items: (data.workAwards?.data.workAwards ?? []).flatMap((award) =>
                 award.work
-                  ? [{ name: t(award.work.title, award.work.enTitle || undefined), path: `/posts/${award.work.id}` }]
+                  ? [{ name: t.workTitle(award.work.title, award.work.enTitle), path: `/posts/${award.work.id}` }]
                   : [],
               ),
             })}

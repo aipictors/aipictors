@@ -45,7 +45,7 @@ export function WorkRelatedList(props: Props) {
         items={props.works.map((work) => (
           <div key={work.id} className="relative">
             <CroppedWorkSquare
-              title={work.title ? t(work.title, work.enTitle || undefined) : undefined}
+              title={work.title ? t.workTitle(work.title, work.enTitle) : undefined}
               workId={work.id}
               subWorksCount={work.subWorksCount}
               imageUrl={work.smallThumbnailImageURL}
@@ -194,7 +194,7 @@ function WorkAuthorWorks(props: {
             smallThumbnailImageWidth: work.smallThumbnailImageWidth,
             smallThumbnailImageHeight: work.smallThumbnailImageHeight,
             id: work.id,
-            title: work.title ? t(work.title, work.enTitle || undefined) : undefined,
+            title: work.title ? t.workTitle(work.title, work.enTitle) : undefined,
             userId: work.userId,
             isLiked: work.isLiked,
             subWorksCount: work.subWorksCount,
@@ -244,7 +244,7 @@ function WorkAuthorWorks(props: {
           items={works.map((work) => (
             <div key={work.id} className="relative">
               <CroppedWorkSquare
-                title={work.title ? t(work.title, work.enTitle || undefined) : undefined}
+                title={work.title ? t.workTitle(work.title, work.enTitle) : undefined}
                 workId={work.id}
                 subWorksCount={work.subWorksCount}
                 imageUrl={work.smallThumbnailImageURL}
@@ -331,7 +331,7 @@ export function WorkAuthorWorksSection(props: {
         smallThumbnailImageWidth: work.smallThumbnailImageWidth,
         smallThumbnailImageHeight: work.smallThumbnailImageHeight,
         id: work.id,
-        title: work.title ? t(work.title, work.enTitle || undefined) : undefined,
+        title: work.title ? t.workTitle(work.title, work.enTitle) : undefined,
         userId: work.userId,
         isLiked: work.isLiked,
         subWorksCount: work.subWorksCount,

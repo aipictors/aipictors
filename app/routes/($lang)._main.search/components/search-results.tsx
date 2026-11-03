@@ -33,7 +33,7 @@ export function SearchResults(props: {
             <article key={work.id} className="min-w-0">
               <div className="group relative">
                 <CroppedWorkSquare
-                  title={t(work.title, work.enTitle || undefined)}
+                  title={t.workTitle(work.title, work.enTitle)}
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
                   thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
@@ -68,7 +68,7 @@ export function SearchResults(props: {
                   to={`${pagePrefix}/posts/${work.id}`}
                   className="line-clamp-2 flex-1 font-semibold text-sm leading-snug hover:underline"
                 >
-                  {t(work.title, work.enTitle || undefined)}
+                  {t.workTitle(work.title, work.enTitle)}
                 </Link>
 
                 <div className="flex shrink-0 items-center gap-1 text-muted-foreground text-xs">

@@ -85,7 +85,7 @@ export function ReadingWorkCard(props: Props) {
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <h3 className="font-bold text-sm leading-snug md:text-base">
           <Link to={props.to} className="line-clamp-2 hover:underline">
-            {t(work.title, work.enTitle || undefined)}
+            {t.workTitle(work.title, work.enTitle)}
           </Link>
         </h3>
         {work.excerpt !== "" && (

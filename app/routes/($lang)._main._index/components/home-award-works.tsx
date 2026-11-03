@@ -32,7 +32,7 @@ export function HomeAwardWorksSection (props: Props) {
             >
               <div className="flex h-full items-center space-x-2">
                 <CroppedWorkSquare
-                  title={work.work?.title}
+                  title={work.work ? t.workTitle(work.work.title, work.work.enTitle) : undefined}
                   workId={work.work?.id ?? ""}
                   imageUrl={work.work?.smallThumbnailImageURL ?? ""}
                   thumbnailImagePosition={
@@ -44,7 +44,7 @@ export function HomeAwardWorksSection (props: Props) {
                 />
                 <div className="flex flex-col space-y-2">
                   <Link to={`/posts/${work.work?.id}`}>
-                    <p className="font-semibold">{work.work?.title}</p>
+                    <p className="font-semibold">{work.work ? t.workTitle(work.work.title, work.work.enTitle) : ""}</p>
                   </Link>
                   {work.work?.user && (
                     <Link to={`/users/${work.work?.user.id}`}>

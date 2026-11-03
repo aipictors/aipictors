@@ -1,6 +1,6 @@
 import { Link } from "~/lib/app/locale-router"
 import { AlertTriangle, ChevronRight } from "lucide-react"
-import { useTranslation } from "~/hooks/use-translation"
+import { containsJapanese, useTranslation } from "~/hooks/use-translation"
 import type { MicroCmsApiRelease } from "~/types/micro-cms-release-response"
 import { getReleasePublishedAtMs } from "~/utils/micro-cms-release"
 
@@ -29,6 +29,9 @@ const formatReleaseDateTime = (release: MicroCmsApiRelease) => {
 export function HomeImportantReleaseBanner(props: Props) {
   const t = useTranslation()
   const publishedAtText = formatReleaseDateTime(props.release)
+
+  // お知らせは日本語だけなので、英語の画面には出さない
+  if (t.isEnglish && containsJapanese(props.release.title)) return null
 
   // 1 行の細い帯にする（以前は 3 行の大きな枠で、スマホでは 1 画面目の多くを使っていた）
   return (

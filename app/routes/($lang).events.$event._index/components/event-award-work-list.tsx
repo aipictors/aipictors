@@ -91,7 +91,7 @@ export function EventAwardWorkList (props: Props) {
                   >
                     <div className="relative">
                       <CroppedWorkSquare
-                        title={t(work.title, work.enTitle || undefined)}
+                        title={t.workTitle(work.title, work.enTitle)}
                         workId={work.id}
                         imageUrl={work.smallThumbnailImageURL}
                         subWorksCount={work.subWorksCount}
@@ -118,7 +118,7 @@ export function EventAwardWorkList (props: Props) {
                       </div>
                     </div>
                     <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                      {t(work.title, work.enTitle || undefined)}
+                      {t.workTitle(work.title, work.enTitle)}
                     </p>
                     <div className="flex items-center justify-between gap-2">
                       <UserNameBadge

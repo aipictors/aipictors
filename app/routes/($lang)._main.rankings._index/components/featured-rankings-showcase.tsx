@@ -76,7 +76,7 @@ function createStandardCardData(
   return {
     id: item.work.id,
     href: `/posts/${item.work.id}`,
-    title: t(item.work.title, item.work.enTitle || undefined),
+    title: t.workTitle(item.work.title, item.work.enTitle),
     imageUrl: item.work.largeThumbnailImageURL ?? item.work.smallThumbnailImageURL,
     userName: item.work.user?.name ?? t("不明なユーザー", "Unknown user"),
     userIconUrl: withIconUrlFallback(item.work.user?.iconUrl ?? null),
@@ -105,7 +105,7 @@ function createAiCardData(
   return {
     id: item.work.id,
     href: `/posts/${item.work.id}`,
-    title: t(item.work.title, item.work.enTitle || undefined),
+    title: t.workTitle(item.work.title, item.work.enTitle),
     imageUrl: item.work.largeThumbnailImageURL ?? item.work.smallThumbnailImageURL,
     userName: item.work.user?.name ?? t("不明なユーザー", "Unknown user"),
     userIconUrl: withIconUrlFallback(item.work.user?.iconUrl ?? null),

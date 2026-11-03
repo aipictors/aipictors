@@ -61,7 +61,7 @@ export function UserSensitiveNovelList(props: Props) {
                 <NovelWorkPreviewItem
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
-                  title={t(work.title, work.enTitle || undefined)}
+                  title={t.workTitle(work.title, work.enTitle)}
                   text={work.description ?? ""}
                 />
                 {work.user && (

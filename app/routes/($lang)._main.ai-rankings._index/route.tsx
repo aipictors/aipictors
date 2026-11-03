@@ -97,7 +97,7 @@ export default function AiEvaluationRankingsIndex() {
             parents: [{ name: "ランキング", path: "/rankings" }],
             items: (data.rankings?.data.aiEvaluationWorkRankings ?? []).flatMap((item) =>
               item.work
-                ? [{ name: t(item.work.title, item.work.enTitle || undefined), path: `/posts/${item.work.id}` }]
+                ? [{ name: t.workTitle(item.work.title, item.work.enTitle), path: `/posts/${item.work.id}` }]
                 : [],
             ),
           })}

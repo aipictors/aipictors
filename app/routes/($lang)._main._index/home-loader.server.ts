@@ -268,6 +268,7 @@ const query = graphql(
     dailyTheme(year: $year, month: $month, day: $day) {
       id
       title
+      enTitle
     }
     hotTags {
       ...HomeTagListItem

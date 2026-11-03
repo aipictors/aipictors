@@ -43,7 +43,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
             >
               <div className="relative">
                 <CroppedWorkSquare
-                  title={t(workItem.title, workItem.enTitle || undefined)}
+                  title={t.workTitle(workItem.title, workItem.enTitle)}
                   workId={workItem.id}
                   subWorksCount={workItem.subWorksCount}
                   commentsCount={workItem.commentsCount}
@@ -110,7 +110,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
             const image = (
               <OptimizedImage
                 src={imageUrl}
-                alt={t(work.title, work.enTitle || undefined)}
+                alt={t.workTitle(work.title, work.enTitle)}
                 className="h-full w-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
                 width={width}
                 height={height}
@@ -135,7 +135,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                       type="button"
                       className="absolute inset-0 block h-full w-full cursor-pointer overflow-hidden"
                       onClick={() => props.onSelect?.(work.id.toString())}
-                      aria-label={`Open ${t(work.title, work.enTitle || undefined)}`}
+                      aria-label={`Open ${t.workTitle(work.title, work.enTitle)}`}
                     >
                       {image}
                     </button>
@@ -219,16 +219,16 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                           e.stopPropagation()
                           props.onSelect?.(work.id.toString())
                         }}
-                        aria-label={`Open ${t(work.title, work.enTitle || undefined)}`}
+                        aria-label={`Open ${t.workTitle(work.title, work.enTitle)}`}
                       >
-                        <p className="truncate text-sm">{t(work.title, work.enTitle || undefined)}</p>
+                        <p className="truncate text-sm">{t.workTitle(work.title, work.enTitle)}</p>
                       </button>
                     ) : (
                       <Link
                         className="min-w-0 font-bold hover:underline"
                         to={`/posts/${work.id}`}
                       >
-                        <p className="truncate text-sm">{t(work.title, work.enTitle || undefined)}</p>
+                        <p className="truncate text-sm">{t.workTitle(work.title, work.enTitle)}</p>
                       </Link>
                     )}
                     <div className="flex min-w-0 items-center justify-between gap-2">
@@ -293,7 +293,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
         <div key={work.id} className="flex flex-col space-y-2">
           <div className="relative">
             <CroppedWorkSquare
-              title={t(work.title, work.enTitle || undefined)}
+              title={t.workTitle(work.title, work.enTitle)}
               workId={work.id}
               imageUrl={work.smallThumbnailImageURL}
               thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
@@ -331,11 +331,11 @@ function HomeCroppedWorksWithGenerationButton(props: {
                   onClick={() => props.onSelect?.(work.id)}
                   className="cursor-pointer text-left"
                 >
-                  <p className="line-clamp-2 text-sm">{t(work.title, work.enTitle || undefined)}</p>
+                  <p className="line-clamp-2 text-sm">{t.workTitle(work.title, work.enTitle)}</p>
                 </button>
               ) : (
                 <Link to={`/posts/${work.id}`}>
-                  <p className="line-clamp-2 text-sm">{t(work.title, work.enTitle || undefined)}</p>
+                  <p className="line-clamp-2 text-sm">{t.workTitle(work.title, work.enTitle)}</p>
                 </Link>
               )}
               <Link to={`/users/${work.user?.id}`}>

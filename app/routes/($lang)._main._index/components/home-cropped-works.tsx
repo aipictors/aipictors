@@ -56,7 +56,7 @@ export function HomeCroppedWorks(props: Props) {
                       props.priorityCount !== undefined &&
                       index >= props.priorityCount
                     }
-                    title={t(work.title, work.enTitle || undefined)}
+                    title={t.workTitle(work.title, work.enTitle)}
                     isInsideInteractive={true}
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}
@@ -89,10 +89,7 @@ export function HomeCroppedWorks(props: Props) {
                   </div>
                 </Link>
                 <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                  {t(
-                    t(work.title, work.enTitle || undefined),
-                    work.enTitle.length > 0 ? work.enTitle : work.title,
-                  )}
+                  {t.workTitle(work.title, work.enTitle)}
                 </p>
                 {work.user && (
                   <UserNameBadge
@@ -133,7 +130,7 @@ export function HomeCroppedWorks(props: Props) {
                       media={
                         props.isMobileOnly ? "(max-width: 767.98px)" : undefined
                       }
-                      title={t(work.title, work.enTitle || undefined)}
+                      title={t.workTitle(work.title, work.enTitle)}
                       workId={work.id}
                       imageUrl={work.smallThumbnailImageURL}
                       thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
@@ -175,7 +172,7 @@ export function HomeCroppedWorks(props: Props) {
                       media={
                         props.isMobileOnly ? "(max-width: 767.98px)" : undefined
                       }
-                      title={t(work.title, work.enTitle || undefined)}
+                      title={t.workTitle(work.title, work.enTitle)}
                       isInsideInteractive={true}
                       workId={work.id}
                       imageUrl={work.smallThumbnailImageURL}
@@ -211,7 +208,7 @@ export function HomeCroppedWorks(props: Props) {
                 {work.user && props.isShowProfile && (
                   <>
                     <p className="mt-1.5 overflow-hidden text-ellipsis text-nowrap font-bold text-sm">
-                      {t(work.title, work.enTitle || undefined)}
+                      {t.workTitle(work.title, work.enTitle)}
                     </p>
                     <UserNameBadge
                       userId={work.user.id}

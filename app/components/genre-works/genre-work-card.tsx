@@ -55,7 +55,7 @@ export function GenreWorkCard(props: Props) {
             maxWidth: work.smallThumbnailImageWidth || undefined,
           })}
           sizes={props.sizes}
-          alt={t(work.title, work.enTitle || undefined)}
+          alt={t.workTitle(work.title, work.enTitle)}
           width={work.smallThumbnailImageWidth}
           height={work.smallThumbnailImageHeight}
           className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -81,7 +81,7 @@ export function GenreWorkCard(props: Props) {
         </span>
       </Link>
       <Link to={props.to} className="block truncate font-bold text-sm">
-        {t(work.title, work.enTitle || undefined)}
+        {t.workTitle(work.title, work.enTitle)}
       </Link>
       <div className="flex items-center justify-between gap-2">
         {work.user ? (

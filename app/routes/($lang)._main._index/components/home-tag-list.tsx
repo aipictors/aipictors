@@ -7,6 +7,7 @@ import { getJstDate } from "~/utils/jst-date"
 type Props = {
   hotTags: FragmentOf<typeof HomeTagListItemFragment>[]
   themeTitle?: string
+  themeEnTitle?: string | null
 }
 
 /**
@@ -35,20 +36,30 @@ export function HomeTagList (props: Props) {
           <li className="shrink-0 snap-start">
             <TagButton
               link={`/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`}
-              name={`今日のお題「${props.themeTitle}」`}
+              name={
+                t.isEnglish
+                  ? t.tag(props.themeTitle, props.themeEnTitle)
+                    ? `Today's theme: ${t.tag(props.themeTitle, props.themeEnTitle)}`
+                    : "Today's theme"
+                  : `今日のお題「${props.themeTitle}」`
+              }
               isTagName={true}
             />
           </li>
         )}
-        {props.hotTags?.map((tag) => (
-          <li className="shrink-0 snap-start" key={tag.id}>
-            <TagButton
-              link={`/tags/${tag.name}`}
-              name={tag.name}
-              isTagName={true}
-            />
-          </li>
-        ))}
+        {props.hotTags?.map((tag) => {
+          const label = t.tag(tag.name, tag.enName)
+          if (label === null) return null
+          return (
+            <li className="shrink-0 snap-start" key={tag.id}>
+              <TagButton
+                link={`/tags/${tag.name}`}
+                name={label}
+                isTagName={true}
+              />
+            </li>
+          )
+        })}
       </ul>
     </nav>
   )
@@ -100,5 +111,6 @@ export const HomeTagListItemFragment = graphql(
   `fragment HomeTagListItem on TagNode @_unmask {
     id
     name
+    enName
   }`,
 )

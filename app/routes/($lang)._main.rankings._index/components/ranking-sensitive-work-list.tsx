@@ -53,7 +53,7 @@ export function RankingSensitiveWorkList (props: Props) {
               <>
                 <div className="relative">
                   <CroppedWorkSquare
-                    title={t(workItem.work.title, workItem.work.enTitle || undefined)}
+                    title={t.workTitle(workItem.work.title, workItem.work.enTitle)}
                     workId={workItem.work.id}
                     subWorksCount={workItem.work.subWorksCount}
                     imageUrl={workItem.work.smallThumbnailImageURL}
@@ -78,7 +78,7 @@ export function RankingSensitiveWorkList (props: Props) {
                   </div>
                 </div>
                 <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
-                  {t(workItem.work.title, workItem.work.enTitle || undefined)}
+                  {t.workTitle(workItem.work.title, workItem.work.enTitle)}
                 </p>
                 {workItem.work.user && (
                   <UserNameBadge

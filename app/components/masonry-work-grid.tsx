@@ -194,7 +194,7 @@ function WorkItem(props: WorkItemProps) {
         {/* ここが重要：block + absolute inset-0 で下余白を完全排除 */}
         <OptimizedImage
           src={work.smallThumbnailImageURL}
-          alt={t(work.title, work.enTitle || undefined)}
+          alt={t.workTitle(work.title, work.enTitle)}
           width={work.smallThumbnailImageWidth}
           height={work.smallThumbnailImageHeight}
           className="absolute inset-0 block h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"

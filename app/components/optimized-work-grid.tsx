@@ -129,7 +129,7 @@ const WorkItem = memo(
       >
         <OptimizedImage
           src={work.imageUrl}
-          alt={t(work.title, work.enTitle || undefined)}
+          alt={t.workTitle(work.title, work.enTitle)}
           width={work.width}
           height={work.height}
           loading="lazy"
@@ -142,7 +142,7 @@ const WorkItem = memo(
         {/* タイトル */}
         <div className="absolute right-2 bottom-2 left-2 translate-y-full transform transition-transform duration-200 group-hover:translate-y-0">
           <p className="truncate font-medium text-sm text-white">
-            {t(work.title, work.enTitle || undefined)}
+            {t.workTitle(work.title, work.enTitle)}
           </p>
           {work.userName && (
             <p className="truncate text-white/80 text-xs">{work.userName}</p>

@@ -194,7 +194,7 @@ export default function Themes() {
           path: "/themes",
           lang: params.lang,
           items: (data.works ?? []).map((work) => ({
-            name: t(work.title, work.enTitle || undefined),
+            name: t.workTitle(work.title, work.enTitle),
             path: `/posts/${work.id}`,
           })),
         })}

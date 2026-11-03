@@ -279,7 +279,7 @@ function SquareAlbumWorkGrid(props: {
             ) : (
               <>
                 <CroppedWorkSquare
-                  title={t(work.title, work.enTitle || undefined)}
+                  title={t.workTitle(work.title, work.enTitle)}
                   workId={work.id}
                   subWorksCount={work.subWorksCount}
                   commentsCount={work.commentsCount}
@@ -320,7 +320,7 @@ function SquareAlbumWorkGrid(props: {
                 {props.firstNumber + index}
               </span>
             )}
-            <span className="truncate">{t(work.title, work.enTitle || undefined)}</span>
+            <span className="truncate">{t.workTitle(work.title, work.enTitle)}</span>
           </Link>
         </li>
       ))}

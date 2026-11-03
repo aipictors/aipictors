@@ -105,7 +105,7 @@ export function FollowSuggestions(props: Props) {
                 <img
                   key={work.id}
                   src={work.smallThumbnailImageURL}
-                  alt={t(work.title, work.enTitle || undefined)}
+                  alt={t.workTitle(work.title, work.enTitle)}
                   loading="lazy"
                   className="aspect-square w-full bg-muted object-cover"
                 />

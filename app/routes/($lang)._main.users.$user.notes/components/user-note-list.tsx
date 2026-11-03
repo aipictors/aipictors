@@ -59,7 +59,7 @@ export function UserNoteList(props: Props) {
           <TextWorkCard
             key={work.id}
             id={work.id}
-            title={t(work.title, work.enTitle || undefined)}
+            title={t.workTitle(work.title, work.enTitle)}
             description={work.description ?? null}
             thumbnailUrl={work.smallThumbnailImageURL}
             likesCount={work.likesCount}

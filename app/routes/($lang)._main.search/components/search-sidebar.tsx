@@ -50,14 +50,14 @@ export function SearchSidebar(props: {
 
               <img
                 src={work.smallThumbnailImageURL}
-                alt={t(work.title, work.enTitle || undefined)}
+                alt={t.workTitle(work.title, work.enTitle)}
                 loading="lazy"
                 className="size-14 shrink-0 rounded-md object-cover"
               />
 
               <div className="min-w-0">
                 <p className="line-clamp-2 font-semibold text-sm leading-snug">
-                  {t(work.title, work.enTitle || undefined)}
+                  {t.workTitle(work.title, work.enTitle)}
                 </p>
                 <div className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
                   <Avatar className="size-5">

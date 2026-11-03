@@ -105,7 +105,7 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
               <Link to={`/posts/${work.id}`} className="block">
                 <img
                   src={work.largeThumbnailImageURL}
-                  alt={t(work.title, work.enTitle || undefined)}
+                  alt={t.workTitle(work.title, work.enTitle)}
                   loading="lazy"
                   decoding="async"
                   className="aspect-[4/3] w-full object-cover"
@@ -116,7 +116,7 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
                   to={`/posts/${work.id}`}
                   className="line-clamp-2 font-bold text-sm hover:underline"
                 >
-                  {t(work.title, work.enTitle || undefined)}
+                  {t.workTitle(work.title, work.enTitle)}
                 </Link>
                 {work.user && (
                   <Link

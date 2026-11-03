@@ -145,7 +145,7 @@ export default function ModelPage () {
           lang: params.lang,
           parents: [{ name: "AI画像生成モデル一覧", path: "/models" }],
           items: model.works.map((work) => ({
-            name: t(work.title, work.enTitle || undefined),
+            name: t.workTitle(work.title, work.enTitle),
             path: `/posts/${work.id}`,
           })),
         })}

@@ -64,6 +64,7 @@ export function HomeFeedTabContent(
           <div>
             <HomeTagList
               themeTitle={data.dailyTheme.title}
+              themeEnTitle={data.dailyTheme.enTitle}
               hotTags={data.hotTags}
             />
           </div>
