@@ -94,6 +94,14 @@ const toTimeText = (createdAt: number) => {
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+/** 値のない項目（「項目: -」）は読み飛ばせるように出さない */
+const toDetailText = (detail: string) => {
+  return detail
+    .split("\n")
+    .filter((line) => !/:\s*-\s*$/.test(line))
+    .join("\n")
+}
+
 /**
  * 操作履歴: 種類で絞り込み、日付ごとにまとめる（種類とページは URL に残す）
  */
@@ -308,7 +316,7 @@ export default function MyHistories() {
                     </div>
                     {isOpened && (
                       <div className="whitespace-pre-wrap break-words border-t bg-muted/40 p-3 text-sm leading-6">
-                        {history.detail}
+                        {toDetailText(history.detail ?? "")}
                       </div>
                     )}
                   </li>
