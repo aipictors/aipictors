@@ -2,10 +2,12 @@
 
 # Aipictors（Remix + Cloudflare Workers）
 
+開発の手順（型チェック、GraphQL のスキーマ更新、デプロイなど）は `AGENTS.md` を参照。
+
 ## Big Picture（重要な境界）
 - フロントはRemix（Vite）で、`functions/[[path]].ts` を `wrangler pages functions build` して Cloudflare Workers に配信する。
 - ルーティングはファイルベースの `flatRoutes()`（定義: `app/routes.ts`、実体: `app/routes/**/route.tsx`）。
-- GraphQLは `gql.tada` + `@apollo/client` を使用（例: `app/routes/($lang)._main.posts.$post._index/route.tsx`）。
+- GraphQLは `gql.tada` + `@apollo/client` を使用（例: `app/routes/($lang)._main.posts.$post._index/route.tsx`）。`app/graphql-env.d.ts` は生成物なので `bun run gql:generate` で更新する。
 - GraphQL endpointはSSR/ブラウザで切り替わる（`app/config.ts` の `graphql.endpoint`、envは `app/env.ts`）。
 - 画像生成系は「ログイン情報参照のためSSRで取得しない」注意あり（`app/routes/($lang).generation/README.md` の `skipToken` 参照）。
 - App/Flutter階層は審査に影響するため“他階層へ遷移禁止”（`app/routes/($lang).app._index/README.md` と `app/routes/($lang).flutter/README.md`）。
