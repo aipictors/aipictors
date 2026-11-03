@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ComponentProps } from "react"
+import { lazy, memo, Suspense, type ComponentProps } from "react"
 
 // エディタ（tiptap / markdown-it）は大きいので、小説・コラムを表示するときにだけ読み込む
 const WorkMarkdownViewImpl = lazy(() =>
@@ -9,10 +9,16 @@ const WorkMarkdownViewImpl = lazy(() =>
 
 type Props = ComponentProps<typeof WorkMarkdownViewImpl>
 
-export function WorkMarkdownView(props: Props): React.ReactNode {
+/**
+ * 親の再描画（Apollo のクエリの結果など）が、エディタの読み込みを待っている Suspense まで届かないように memo にする。
+ * hydration が終わる前に届くと、React が中身を作り直してしまう（React error #421）
+ */
+export const WorkMarkdownView = memo(function WorkMarkdownView (
+  props: Props,
+): React.ReactNode {
   return (
     <Suspense fallback={null}>
       <WorkMarkdownViewImpl {...props} />
     </Suspense>
   )
-}
+})
