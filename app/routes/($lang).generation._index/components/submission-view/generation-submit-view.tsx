@@ -1,37 +1,37 @@
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
 import { useNavigate } from "~/lib/app/locale-router"
-import { graphql } from "gql.tada"
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useState } from "react"
 import { toast } from "sonner"
-import { useBoolean, useLocalStorage, useMediaQuery } from "usehooks-ts"
+import { useBoolean, useMediaQuery } from "usehooks-ts"
 import { AppFixedContent } from "~/components/app/app-fixed-content"
 import { VerificationDialog } from "~/components/verification-dialog"
-import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useIpAddress } from "~/hooks/use-ip-address"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
-import {
-  getViewerRequestHeaders,
-  hasViewerRequestSession,
-} from "~/lib/viewer-request-headers"
 import { GenerationCoinShortageDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-coin-shortage-dialog"
 import {
   GenerationNoticeBanner,
   GenerationNoticeDialog,
-  useGenerationNotice,
 } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
 import { GenerationGeminiAllowanceNotice } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-allowance-notice"
 import { GenerationGeminiLimitDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-limit-dialog"
 import { useGeminiAllowance } from "~/routes/($lang).generation._index/hooks/use-gemini-allowance"
 import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
+import {
+  useGenerationCoinSummary,
+  useGenerationCoinSummaryRefresh,
+} from "~/routes/($lang).generation._index/hooks/use-generation-coin-summary"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationNoticeConfirm } from "~/routes/($lang).generation._index/hooks/use-generation-notice-confirm"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
+import { useGenerationTaskMutations } from "~/routes/($lang).generation._index/hooks/use-generation-task-mutations"
 import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/use-is-editing-text-field"
 import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
+import { usePremiumCoinConfirm } from "~/routes/($lang).generation._index/hooks/use-premium-coin-confirm"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 // 追加: 診断ログ
 import {
@@ -39,74 +39,21 @@ import {
   logInfo,
   logWarn,
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
+import { findGenerationSubmitBlock } from "~/routes/($lang).generation._index/utils/find-generation-submit-block"
+import { calcGenerationModelCoinCost } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
+import {
+  signImageGenerationTermsMutation,
+  viewerCurrentPassQuery,
+  viewerLineUserIdQuery,
+  ViewerTokenQuery,
+  viewerUserQuery,
+} from "~/routes/($lang).generation._index/utils/generation-submit-queries"
 import {
   estimateGeminiCoinUse,
   estimatePremiumCoinUse,
-  PREMIUM_COIN_CONFIRM_STORAGE_KEY,
 } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
-import type { GeminiImageSize } from "~/types/gemini-image-generation"
-import { GENERATION_NOTICE_ACK_STORAGE_KEY } from "~/utils/generation-notice"
+import { requestGenerationTasks } from "~/routes/($lang).generation._index/utils/request-generation-tasks"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-
-const standardImageGenerationCoinCost = 10
-const imageEditGenerationCoinCost = 50
-const geminiNanoBananaCoinCost = 50
-const geminiNanoBanana2CoinCost = 100
-const fluxSchnellCoinCost = 30
-const fluxProCoinCost = 50
-
-/**
- * 生成画面のほかの部品に知らせるイベント（一覧の更新・送信中の仮カードなど）
- */
-const dispatchGenerationEvent = (name: string, detail?: unknown) => {
-  if (typeof window === "undefined") return
-  try {
-    window.dispatchEvent(new CustomEvent(name, { detail }))
-  } catch {
-    // noop
-  }
-}
-
-const formatCoinAmount = (value: number) => {
-  return value.toLocaleString()
-}
-
-/**
- * UIサイズタイプをGeminiImageSizeに変換する
- */
-const convertToGeminiImageSize = (sizeType: string): GeminiImageSize => {
-  switch (sizeType) {
-    case "SD3_512_512":
-    case "SD5_512_512":
-      return "SQUARE_512"
-    case "SD3_768_768":
-    case "SD5_768_768":
-      return "SQUARE_768"
-    case "SD3_1024_1024":
-    case "SD5_1024_1024":
-      return "SQUARE_1024"
-    case "SD3_1216_832":
-      return "LANDSCAPE"
-    case "SD3_1280_720":
-      return "LANDSCAPE"
-    case "SD3_832_1216":
-      return "PORTRAIT"
-    case "SD3_720_1280":
-    case "SD5_720_1280":
-      return "PORTRAIT"
-    default:
-      return "SQUARE_1024"
-  }
-}
-
-const ViewerTokenQuery = graphql(
-  `query ViewerTokenQuery {
-    viewer {
-      id
-      token
-    }
-  }`,
-)
 
 type Props = {
   termsText: string
@@ -114,36 +61,6 @@ type Props = {
    * スマホで生成ボタンの上に出すプロンプト欄
    */
   composer?: React.ReactNode
-}
-
-type CoinSummaryResponse = {
-  error: string | null
-  data: {
-    freeBalance: number
-    premiumBalance: number
-    totalBalance: number
-    granted: boolean
-    grantedFreeCoins: number
-    grantedPremiumCoins: number
-  } | null
-}
-
-const normalizeCoinSummary = (
-  summary: CoinSummaryResponse["data"],
-): CoinSummaryResponse["data"] => {
-  if (summary === null) {
-    return null
-  }
-
-  const freeBalance = Math.max(0, summary.freeBalance ?? 0)
-  const premiumBalance = Math.max(0, summary.premiumBalance ?? 0)
-
-  return {
-    ...summary,
-    freeBalance,
-    premiumBalance,
-    totalBalance: Math.max(0, freeBalance + premiumBalance),
-  }
 }
 
 export function GenerationSubmissionView(props: Props) {
@@ -163,82 +80,23 @@ export function GenerationSubmissionView(props: Props) {
 
   const isEditingTextField = useIsEditingTextField()
 
-  const [isPremiumCoinConfirmEnabled, setIsPremiumCoinConfirmEnabled] =
-    useLocalStorage(PREMIUM_COIN_CONFIRM_STORAGE_KEY, true)
+  const {
+    isPremiumCoinConfirmEnabled,
+    setIsPremiumCoinConfirmEnabled,
+    premiumCoinConfirmAmount,
+    settlePremiumCoinConfirm,
+    confirmPremiumCoinUse,
+  } = usePremiumCoinConfirm()
 
-  // プレミアムコインを使う前の確認（開いている間は使う見込みの枚数を持つ）
-  const [premiumCoinConfirmAmount, setPremiumCoinConfirmAmount] = useState<
-    number | null
-  >(null)
-  const premiumCoinConfirmResolveRef = useRef<
-    ((isConfirmed: boolean) => void) | null
-  >(null)
-
-  const settlePremiumCoinConfirm = (isConfirmed: boolean) => {
-    premiumCoinConfirmResolveRef.current?.(isConfirmed)
-    premiumCoinConfirmResolveRef.current = null
-    setPremiumCoinConfirmAmount(null)
-  }
-
-  const confirmPremiumCoinUse = (amount: number) => {
-    return new Promise<boolean>((resolve) => {
-      premiumCoinConfirmResolveRef.current = resolve
-      setPremiumCoinConfirmAmount(amount)
-    })
-  }
-
-  // メンテナンス中・不安定などのお知らせ（運営が KV に置く）
-  const generationNotice = useGenerationNotice()
-
-  const [generationNoticeAckId, setGenerationNoticeAckId] = useLocalStorage<
-    string | null
-  >(GENERATION_NOTICE_ACK_STORAGE_KEY, null)
-
-  const [generationNoticeDialogMode, setGenerationNoticeDialogMode] = useState<
-    "confirm" | "info" | null
-  >(null)
-  const generationNoticeResolveRef = useRef<
-    ((isConfirmed: boolean) => void) | null
-  >(null)
-
-  const settleGenerationNotice = (isConfirmed: boolean) => {
-    generationNoticeResolveRef.current?.(isConfirmed)
-    generationNoticeResolveRef.current = null
-    setGenerationNoticeDialogMode(null)
-  }
-
-  // 確認中にお知らせが取り下げられたら、そのまま送る
-  useEffect(() => {
-    if (generationNotice === null && generationNoticeDialogMode !== null) {
-      generationNoticeResolveRef.current?.(true)
-      generationNoticeResolveRef.current = null
-      setGenerationNoticeDialogMode(null)
-    }
-  }, [generationNotice, generationNoticeDialogMode])
-
-  /**
-   * 生成を送る前にお知らせを出す。送ってよければ true
-   * - メンテナンス中は送らない
-   * - それ以外は、同じお知らせを一度確認したら次からは出さない
-   */
-  const confirmGenerationNotice = () => {
-    const notice = generationNotice
-    if (notice === null) return Promise.resolve(true)
-    if (notice.kind !== "maintenance" && generationNoticeAckId === notice.id) {
-      return Promise.resolve(true)
-    }
-    return new Promise<boolean>((resolve) => {
-      generationNoticeResolveRef.current = (isConfirmed) => {
-        if (isConfirmed) setGenerationNoticeAckId(notice.id)
-        resolve(isConfirmed && notice.kind !== "maintenance")
-      }
-      setGenerationNoticeDialogMode("confirm")
-    })
-  }
+  const {
+    generationNotice,
+    generationNoticeDialogMode,
+    setGenerationNoticeDialogMode,
+    settleGenerationNotice,
+    confirmGenerationNotice,
+  } = useGenerationNoticeConfirm()
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
-  const [coinSummary, setCoinSummary] =
-    useState<CoinSummaryResponse["data"]>(null)
 
   // コインが足りないときの案内（プラン・コイン購入）
   const [isCoinShortageOpen, setIsCoinShortageOpen] = useState(false)
@@ -247,35 +105,12 @@ export function GenerationSubmissionView(props: Props) {
 
   // プレミアムコインの確認で「Gemini の枠を超えるため」と伝えるか
   const [isPremiumCoinForGemini, setIsPremiumCoinForGemini] = useState(false)
-  const initialGrantToastShownRef = useRef(false)
-
-  const loadCoinSummary = async () => {
-    if (!authContext.isLoggedIn && !hasViewerRequestSession()) {
-      setCoinSummary(null)
-      return
-    }
-
-    const response = await fetch("/api/coins/summary", {
-      headers: await getViewerRequestHeaders(),
-    })
-
-    const json = (await response.json()) as CoinSummaryResponse
-    if (!response.ok || json.error || json.data === null) {
-      throw new Error(json.error ?? "Failed to load coins")
-    }
-
-    setCoinSummary(normalizeCoinSummary(json.data))
-
-    if (json.data.granted && !initialGrantToastShownRef.current) {
-      initialGrantToastShownRef.current = true
-      toast(
-        `本日の付与コインとして${json.data.grantedFreeCoins + json.data.grantedPremiumCoins}コインが付与されました。本日24:00まで有効です。`,
-        { position: "top-center" },
-      )
-    }
-  }
 
   const authContext = useContext(AuthContext)
+
+  const { coinSummary, loadCoinSummary } = useGenerationCoinSummary({
+    isLoggedIn: authContext.isLoggedIn,
+  })
 
   const { data: tokenData } = useQuery(ViewerTokenQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -301,120 +136,13 @@ export function GenerationSubmissionView(props: Props) {
     },
   )
 
-  const [createTask, { loading: isCreatingTask }] = useMutation(
-    createImageGenerationTaskMutation,
-    {
-      refetchQueries: [viewerCurrentPassQuery],
-      onCompleted() {
-        logInfo({
-          source: "GenerationSubmit",
-          message: "createImageGenerationTask completed",
-        })
-      },
-      onError(error) {
-        logError({
-          source: "GenerationSubmit",
-          message: "createImageGenerationTask error",
-          details: { name: error.name, message: error.message },
-        })
-        // コインが足りないときはトーストではなく、プラン・コイン購入の案内を出す
-        if (error.message.includes("コイン残高が不足")) {
-          setIsCoinShortageOpen(true)
-          return
-        }
-        if (isDesktop) {
-          toast.error(error.message)
-        } else {
-          toast.error(error.message, { position: "top-center" })
-        }
-      },
-    },
-  )
-
-  const [createFluxTask] = useMutation(createFluxImageGenerationTaskMutation, {
-    refetchQueries: [viewerCurrentPassQuery],
-    onCompleted() {
-      logInfo({
-        source: "GenerationSubmit",
-        message: "createFluxTask completed",
-      })
-    },
-    onError(error) {
-      logError({
-        source: "GenerationSubmit",
-        message: "createFluxTask error",
-        details: { name: error.name, message: error.message },
-      })
-      if (isDesktop) {
-        toast.error(error.message)
-      } else {
-        toast.error(error.message, { position: "top-center" })
-      }
-    },
-  })
-
-  const [createGeminiTask] = useMutation<{
-    createGeminiImageGenerationTask: {
-      id: string
-      nanoid: string
-      status: string
-    }
-  }>(createGeminiImageGenerationTaskMutation, {
-    refetchQueries: [viewerCurrentPassQuery],
-    onCompleted(data) {
-      if (data?.createGeminiImageGenerationTask) {
-        logInfo({
-          source: "GenerationSubmit",
-          message: "createGeminiTask completed",
-          details: {
-            id: data.createGeminiImageGenerationTask.id,
-            status: data.createGeminiImageGenerationTask.status,
-            nanoid: data.createGeminiImageGenerationTask.nanoid,
-          },
-        })
-        toast("Geminiタスクが作成されました。完了後に結果が表示されます。", {
-          position: isDesktop ? "bottom-right" : "top-center",
-        })
-      }
-    },
-    onError(error) {
-      logError({
-        source: "GenerationSubmit",
-        message: "createGeminiTask error",
-        details: { name: error.name, message: error.message },
-      })
-      if (isDesktop) {
-        toast.error(error.message)
-      } else {
-        toast.error(error.message, { position: "top-center" })
-      }
-    },
-  })
-
-  const [createReservedTask] = useMutation(
-    createImageGenerationTaskReservedMutation,
-    {
-      refetchQueries: [viewerCurrentPassQuery],
-      onCompleted() {
-        logInfo({
-          source: "GenerationSubmit",
-          message: "createReservedTask completed",
-        })
-      },
-      onError(error) {
-        logError({
-          source: "GenerationSubmit",
-          message: "createReservedTask error",
-          details: { name: error.name, message: error.message },
-        })
-        if (isDesktop) {
-          toast.error(error.message)
-        } else {
-          toast.error(error.message, { position: "top-center" })
-        }
-      },
-    },
-  )
+  const {
+    createTask,
+    isCreatingTask,
+    createFluxTask,
+    createGeminiTask,
+    createReservedTask,
+  } = useGenerationTaskMutations({ isDesktop, setIsCoinShortageOpen })
 
   const { data: lineUserId } = useQuery(viewerLineUserIdQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -600,161 +328,21 @@ export function GenerationSubmissionView(props: Props) {
       details: { generationType },
     })
 
-    const isGeminiNanoBananaModel =
-      context.config.modelId === "gemini-2.5-flash-image" ||
-      context.config.modelId === "gemini-3.1-flash-image-preview"
+    const submitBlock = findGenerationSubmitBlock({
+      config: context.config,
+      passType: context.currentPass?.type,
+      generationType,
+      inProgressImageGenerationTasksCount,
+      maxTasksCount,
+    })
 
-    if (isGeminiNanoBananaModel && !isLiteOrStandardOrPremium) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: Gemini Nano Banana requires LITE+",
-        details: {
-          modelId: context.config.modelId,
-          plan: context.currentPass?.type ?? null,
-        },
-      })
-      toast(
-        "Gemini Nano Banana はライト以上、Nano Banana 2 はスタンダード以上のプランで利用できます。",
-      )
-      return
-    }
-
-    // GEMINIの場合は画像から生成をプラン関係なく利用可能
-    if (
-      context.config.i2iImageBase64 &&
-      !isLiteOrStandardOrPremium &&
-      context.config.modelType !== "GEMINI"
-    ) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: IMG2IMG requires LITE+",
-      })
-      toast("img2imgはLITE以上のプランでご利用いただけます。")
-      return
-    }
-
-    if (context.config.generationCount > 1 && !isStandardOrPremium) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: multi-count requires STANDARD+",
-        details: { count: context.config.generationCount },
-      })
-      toast("STANDARD以上のプランで生成回数をまとめて指定できます。")
-      return
-    }
-
-    // 生成中かつスタンダード、プレミアム以外ならサブスクに誘導
-    if (inProgressImageGenerationTasksCount !== 0 && !isStandardOrPremium) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: concurrent generation requires STANDARD+",
-        details: { inProgressImageGenerationTasksCount },
-      })
-      toast("STANDARD以上のプランで複数枚同時生成可能です。")
-      return
-    }
-
-    // i2iの場合は連続生成数を超過していたらエラーにする
-    if (
-      generationType === "IMAGE_TO_IMAGE" &&
-      inProgressImageGenerationTasksCount + context.config.generationCount >
-        maxTasksCount
-    ) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: IMG2IMG concurrent limit",
-        details: {
-          inProgress: inProgressImageGenerationTasksCount,
-          requestCount: context.config.generationCount,
-          maxTasksCount,
-        },
-      })
-      toast("同時生成枚数の上限です。")
-      return
-    }
-
-    if (
-      context.config.generationCount > 1 &&
-      context.config.controlNetImageBase64 !== null
-    ) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: ControlNet with multi-count not allowed",
-      })
-      toast("ControlNetを使用する場合は1枚ずつ生成下さい。")
-      return
-    }
-
-    if (
-      context.config.modelType === "FLUX" &&
-      context.config.controlNetImageBase64 !== null
-    ) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: FLUX with ControlNet",
-      })
-      if (isDesktop) {
-        toast("FLUXモデルはControlNetを使用できません。")
-        return
+    if (submitBlock !== null) {
+      logWarn({ source: "GenerationSubmit", ...submitBlock.log })
+      if (submitBlock.isTopCenterOnMobile && !isDesktop) {
+        toast(submitBlock.toast, { position: "top-center" })
+      } else {
+        toast(submitBlock.toast)
       }
-      toast("FLUXモデルはControlNetを使用できません。", {
-        position: "top-center",
-      })
-      return
-    }
-
-    if (context.config.modelType === "FLUX" && context.config.i2iImageBase64) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: FLUX with IMG2IMG",
-      })
-      if (isDesktop) {
-        toast(
-          "FLUXモデルは画像から生成を一時的に停止しています、申し訳ございません",
-        )
-        return
-      }
-      toast(
-        "FLUXモデルは画像から生成を一時的に停止しています、申し訳ございません",
-        {
-          position: "top-center",
-        },
-      )
-      return
-    }
-
-    if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: HighRes with IMG2IMG",
-      })
-      if (isDesktop) {
-        toast(
-          "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
-        )
-        return
-      }
-      toast(
-        "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
-        {
-          position: "top-center",
-        },
-      )
-      return
-    }
-
-    if (
-      context.config.controlNetImageBase64 !== null &&
-      (context.config.controlNetWeight === null ||
-        context.config.controlNetModule === null)
-    ) {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Blocked: ControlNet settings incomplete",
-      })
-      toast(
-        "ControlNetの画像が設定されていますが、詳細設定が完了していません。画像を消すか、設定を完了して下さい。",
-      )
       return
     }
 
@@ -998,48 +586,17 @@ export function GenerationSubmissionView(props: Props) {
       ? "IMAGE_TO_IMAGE"
       : "TEXT_TO_IMAGE"
 
-  const selectedModelCoinCost = (() => {
-    const selectedModel = context.imageModels.find((model) => {
-      return model.id === context.config.modelId
-    })
+  const selectedModel = context.imageModels.find((model) => {
+    return model.id === context.config.modelId
+  })
 
-    const modelKey =
-      selectedModel?.name ?? selectedModel?.id ?? context.config.modelId ?? ""
-    const normalizedModelKey = modelKey.toLowerCase()
-
-    if (normalizedModelKey === "flux.1 pro") {
-      return fluxProCoinCost
-    }
-
-    if (normalizedModelKey === "flux.1 schnell") {
-      return fluxSchnellCoinCost
-    }
-
-    const isGeminiModel =
-      context.config.modelType === "GEMINI" ||
-      normalizedModelKey.includes("gemini")
-
-    if (isGeminiModel) {
-      const isGemini31 =
-        normalizedModelKey === "gemini-3.1-flash-image-preview" ||
-        normalizedModelKey.includes("gemini-3.1") ||
-        normalizedModelKey.includes("gemininanobanana2")
-
-      return isGemini31 ? geminiNanoBanana2CoinCost : geminiNanoBananaCoinCost
-    }
-
-    if (selectedGenerationType === "IMAGE_TO_IMAGE") {
-      return imageEditGenerationCoinCost
-    }
-
-    // 高解像度は 1 枚 2 倍（サーバーの lib/image-generation-coins.ts と同じ）
-    const multiplier =
-      context.config.upscaleSize !== null && context.config.upscaleSize > 1
-        ? 2
-        : 1
-
-    return standardImageGenerationCoinCost * multiplier
-  })()
+  const selectedModelCoinCost = calcGenerationModelCoinCost({
+    modelKey:
+      selectedModel?.name ?? selectedModel?.id ?? context.config.modelId ?? "",
+    modelType: context.config.modelType,
+    generationType: selectedGenerationType,
+    upscaleSize: context.config.upscaleSize,
+  })
 
   /**
    * 1 回の生成で作る枚数（上限はサーバーと同じ決まり。利用者が 1〜上限で選べる）
@@ -1054,63 +611,10 @@ export function GenerationSubmissionView(props: Props) {
   const isCoinSummaryLoading = authContext.isLoggedIn && coinSummary === null
   const ownedCoinCount = coinSummary?.totalBalance ?? 0
 
-  useEffect(() => {
-    loadCoinSummary().catch((error) => {
-      if (error instanceof Error) {
-        logWarn({
-          source: "GenerationSubmit",
-          message: "Failed to load coin summary",
-          details: { message: error.message },
-        })
-      }
-    })
-  }, [authContext.isLoggedIn])
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
-
-    const onTaskRequested = () => {
-      loadCoinSummary().catch((error) => {
-        if (error instanceof Error) {
-          logWarn({
-            source: "GenerationSubmit",
-            message: "Failed to refresh coin summary after task update",
-            details: { message: error.message },
-          })
-        }
-      })
-    }
-
-    window.addEventListener("generation:task-requested", onTaskRequested)
-    return () => {
-      window.removeEventListener("generation:task-requested", onTaskRequested)
-    }
-  }, [authContext.isLoggedIn])
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
-
-    const onResultArrived = () => {
-      loadCoinSummary().catch((error) => {
-        if (error instanceof Error) {
-          logWarn({
-            source: "GenerationSubmit",
-            message: "Failed to refresh coin summary after result update",
-            details: { message: error.message },
-          })
-        }
-      })
-    }
-
-    window.addEventListener("generation:result-arrived", onResultArrived)
-    return () => {
-      window.removeEventListener("generation:result-arrived", onResultArrived)
-    }
-  }, [authContext.isLoggedIn])
+  useGenerationCoinSummaryRefresh({
+    isLoggedIn: authContext.isLoggedIn,
+    loadCoinSummary,
+  })
 
   // 移動: createTaskCore をコンポーネント内に配置（スコープ修正）
   const createTaskCore = async (
@@ -1119,271 +623,44 @@ export function GenerationSubmissionView(props: Props) {
     generationType: string,
     i2iFileUrl: string,
   ) => {
-    logInfo({
-      source: "GenerationSubmit",
-      message: "createTaskCore start",
-      details: {
-        taskCount,
-        modelName,
-        generationType,
-        hasI2iFileUrl: i2iFileUrl !== "",
-      },
-    })
-    const taskCounts = Array.from({ length: taskCount }, (_, i) => i)
-
-    // シードを設定する、連続生成のときはSeedは連番にする
-    // 1 依頼で複数枚作るときは依頼の中で Seed+1, Seed+2… になるので、依頼ごとに枚数ぶんずらす
-    const seeds: number[] = []
-
-    taskCounts.map((i) => {
-      if (context.config.seed === -1) {
-        seeds.push(-1)
-      } else {
-        seeds.push(context.config.seed + i * imagesPerRequest)
-      }
-    })
-
-    // プロンプトが設定されていない場合はランダムなプロンプトを使用する
-    const promptsTexts: string[] = []
-
-    taskCounts.map((_i) => {
-      if (context.config.promptText) {
-        promptsTexts.push(context.config.promptText)
-      } else {
-        promptsTexts.push(
-          config.generationFeature.randomPrompts[
-            Math.floor(
-              Math.random() * config.generationFeature.randomPrompts.length,
-            )
-          ],
-        )
-      }
-    })
-
-    const controlNetImageUrl = await getControlNetImageUrl(
-      context.config.controlNetImageBase64,
-    )
-
-    const nowGeneratingCount = inProgressImageGenerationTasksCount
-    const promises = taskCounts.map((i) => {
-      if (i2iFileUrl !== "" && i + 1 + nowGeneratingCount > maxTasksCount) {
-        logWarn({
-          source: "GenerationSubmit",
-          message: "Skip one: IMG2IMG beyond maxTasksCount",
-          details: { index: i, nowGeneratingCount, maxTasksCount },
+    await requestGenerationTasks({
+      taskCount,
+      modelName,
+      generationType,
+      i2iFileUrl,
+      config: context.config,
+      scheduler,
+      imagesPerRequest,
+      inProgressImageGenerationTasksCount,
+      maxTasksCount,
+      getControlNetImageUrl,
+      createTask,
+      createFluxTask,
+      createGeminiTask,
+      createReservedTask,
+      onFinished: async () => {
+        if (isGeminiModelSelected) {
+          refetchGeminiAllowance()
+        }
+        await loadCoinSummary().catch((error) => {
+          if (error instanceof Error) {
+            logWarn({
+              source: "GenerationSubmit",
+              message: "Failed to refresh coin summary",
+              details: { message: error.message },
+            })
+          }
         })
-        // i2iの場合は通常の連続生成の枚数を超過していたら何もしない
-        return
-      }
-      if (i + 1 + nowGeneratingCount > maxTasksCount) {
-        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
+        if (typeof context.user?.nanoid !== "string") {
           logWarn({
             source: "GenerationSubmit",
-            message: "Skip reserved: flux does not support reservation",
-            details: { index: i },
+            message: "Missing user nanoid after tasks",
           })
-          // flux.1は予約生成に対応していない
+          toast("画面更新して再度お試し下さい。")
           return
         }
-        logInfo({
-          source: "GenerationSubmit",
-          message: "Create reserved task",
-          details: { index: i },
-        })
-        return createReservedTask({
-          variables: {
-            input: {
-              count: 1,
-              model: modelName,
-              vae: context.config.vae ?? "",
-              prompt: context.config.promptText,
-              isPromptGenerationEnabled:
-                context.config.languageUsedForPrompt === "jp",
-              negativePrompt: context.config.negativePromptText,
-              seed: seeds[i],
-              steps:
-                context.config.steps >
-                  config.generationFeature.imageGenerationMaxSteps ||
-                context.config.steps <
-                  config.generationFeature.imageGenerationMinSteps
-                  ? config.generationFeature.imageGenerationMaxSteps
-                  : context.config.steps,
-              scale: context.config.scale,
-              sampler: context.config.sampler,
-              scheduler: scheduler,
-              clipSkip: context.config.clipSkip,
-              sizeType: context.config
-                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-              type: "TEXT_TO_IMAGE",
-              controlNetImageUrl: controlNetImageUrl,
-              controlNetWeight: context.config.controlNetWeight
-                ? Number(context.config.controlNetWeight)
-                : null,
-              controlNetModel: context.config.controlNetModel,
-              controlNetModule: context.config.controlNetModule,
-              upscaleSize: context.config.upscaleSize,
-            },
-          },
-        })
-      }
-      if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
-        logInfo({
-          source: "GenerationSubmit",
-          message: "Create FLUX task",
-          details: { index: i, promptLength: promptsTexts[i]?.length ?? 0 },
-        })
-        return createFluxTask({
-          variables: {
-            input: {
-              count: 1,
-              prompt: promptsTexts[i],
-              isPromptGenerationEnabled:
-                context.config.languageUsedForPrompt === "jp",
-              negativePrompt: context.config.negativePromptText,
-              seed: seeds[i],
-              steps:
-                context.config.steps >
-                  config.generationFeature.imageGenerationMaxSteps ||
-                context.config.steps <
-                  config.generationFeature.imageGenerationMinSteps
-                  ? config.generationFeature.imageGenerationMaxSteps
-                  : context.config.steps,
-              scale: context.config.scale,
-              sizeType: context.config
-                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-              modelName: modelName,
-            },
-          },
-        })
-      }
-      if (
-        modelName === "Gemini 2.5" ||
-        modelName === "Gemini 3.1" ||
-        context.config.modelType === "SD5" ||
-        context.config.modelType === "GEMINI"
-      ) {
-        // Geminiモデル、SD5タイプ、またはGEMINIタイプの場合はGeminiタスクとして作成
-        logInfo({
-          source: "GenerationSubmit",
-          message: "Create Gemini task",
-          details: {
-            index: i,
-            promptLength: promptsTexts[i]?.length ?? 0,
-            hasImageUrl: Boolean(i2iFileUrl),
-            size: convertToGeminiImageSize(context.config.sizeType),
-          },
-        })
-        return createGeminiTask({
-          variables: {
-            input: {
-              prompt: promptsTexts[i],
-              size: convertToGeminiImageSize(context.config.sizeType),
-              imageUrl: i2iFileUrl || null,
-              model:
-                modelName?.toLowerCase().includes("3.1") ||
-                modelName?.toLowerCase().includes("nanobanana2") ||
-                modelName?.toLowerCase().includes("nano banana 2") ||
-                modelName === "GeminiNanoBanana2" ||
-                modelName === "gemini-3.1-flash-image-preview"
-                  ? "GEMINI_31_FLASH_IMAGE_PREVIEW"
-                  : "GEMINI_25_FLASH_IMAGE",
-            },
-          },
-        })
-      }
-      logInfo({
-        source: "GenerationSubmit",
-        message: "Create SD task",
-        details: {
-          index: i,
-          promptLength: promptsTexts[i]?.length ?? 0,
-          generationType,
-          hasI2i: i2iFileUrl !== "",
-        },
-      })
-      return createTask({
-        variables: {
-          input: {
-            // 1 回で作る枚数（サーバー側で上限に収める）
-            count: imagesPerRequest,
-            model: modelName,
-            vae: context.config.vae ?? "",
-            prompt: promptsTexts[i],
-            isPromptGenerationEnabled:
-              context.config.languageUsedForPrompt === "jp",
-            negativePrompt: context.config.negativePromptText,
-            seed: seeds[i],
-            steps:
-              context.config.steps >
-                config.generationFeature.imageGenerationMaxSteps ||
-              context.config.steps <
-                config.generationFeature.imageGenerationMinSteps
-                ? config.generationFeature.imageGenerationMaxSteps
-                : context.config.steps,
-            scale: context.config.scale,
-            sampler: context.config.sampler,
-            scheduler: scheduler,
-            clipSkip: context.config.clipSkip,
-            sizeType: context.config
-              .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-            type: generationType as IntrospectionEnum<"ImageGenerationType">,
-            t2tImageUrl: i2iFileUrl,
-            t2tDenoisingStrengthSize:
-              context.config.i2iDenoisingStrengthSize.toString(),
-            controlNetImageUrl: controlNetImageUrl,
-            controlNetWeight: context.config.controlNetWeight
-              ? Number(context.config.controlNetWeight)
-              : null,
-            controlNetModel: context.config.controlNetModel,
-            controlNetModule: context.config.controlNetModule,
-            upscaleSize: context.config.upscaleSize,
-          },
-        },
-      })
+      },
     })
-    // 送信中の仮カードを一覧に出す（サーバーの応答を待たずに反応を返す）
-    const requestKey = `${Date.now()}-${Math.random().toString(36).slice(2)}`
-    const sendingCount = promises.filter(
-      (promise) => promise !== undefined,
-    ).length
-    dispatchGenerationEvent("generation:task-sending", {
-      key: requestKey,
-      count: sendingCount,
-    })
-    dispatchGenerationEvent("generation:task-requested")
-    logInfo({ source: "GenerationSubmit", message: "Requested task creations" })
-    const results = await Promise.all(promises)
-    const createdCount = results.filter((result) => {
-      return result !== undefined && !result.errors && result.data
-    }).length
-    dispatchGenerationEvent("generation:task-sent", {
-      key: requestKey,
-      count: createdCount,
-    })
-    if (createdCount > 0) {
-      // 作成が終わった時点でもう一度一覧と残り枚数を取り直す
-      dispatchGenerationEvent("generation:task-requested")
-    }
-    if (isGeminiModelSelected) {
-      refetchGeminiAllowance()
-    }
-    await loadCoinSummary().catch((error) => {
-      if (error instanceof Error) {
-        logWarn({
-          source: "GenerationSubmit",
-          message: "Failed to refresh coin summary",
-          details: { message: error.message },
-        })
-      }
-    })
-    if (typeof context.user?.nanoid !== "string") {
-      logWarn({
-        source: "GenerationSubmit",
-        message: "Missing user nanoid after tasks",
-      })
-      toast("画面更新して再度お試し下さい。")
-      return
-    }
   }
 
   return (
@@ -1488,79 +765,3 @@ export function GenerationSubmissionView(props: Props) {
     </>
   )
 }
-
-const viewerCurrentPassQuery = graphql(
-  `query ViewerCurrentPass {
-    viewer {
-      id
-      currentPass {
-        id
-        type
-      }
-      isExistedPreviousPass
-    }
-  }`,
-)
-
-const viewerLineUserIdQuery = graphql(
-  `query viewerLineUserId {
-    viewer {
-      id
-      lineUserId
-    }
-  }`,
-)
-
-const viewerUserQuery = graphql(
-  `query ViewerUser {
-    viewer {
-      id
-      user {
-        id
-        generatedCount
-      }
-    }
-  }`,
-)
-
-const createImageGenerationTaskReservedMutation = graphql(
-  `mutation CreateReservedImageGenerationTask($input: CreateReservedImageGenerationTaskInput!) {
-    createReservedImageGenerationTask(input: $input) {
-      id
-    }
-  }`,
-)
-
-const createImageGenerationTaskMutation = graphql(
-  `mutation CreateImageGenerationTask($input: CreateImageGenerationTaskInput!) {
-    createImageGenerationTask(input: $input) {
-      id
-    }
-  }`,
-)
-
-const createFluxImageGenerationTaskMutation = graphql(
-  `mutation CreateFluxImageGenerationTask($input: CreateFluxImageGenerationTaskInput!) {
-    createFluxImageGenerationTask(input: $input) {
-      id
-    }
-  }`,
-)
-
-const createGeminiImageGenerationTaskMutation = graphql(
-  `mutation CreateGeminiImageGenerationTask($input: CreateGeminiImageGenerationTaskInput!) {
-    createGeminiImageGenerationTask(input: $input) {
-      id
-      nanoid
-      status
-    }
-  }`,
-)
-
-const signImageGenerationTermsMutation = graphql(
-  `mutation SignImageGenerationTerms($input: SignImageGenerationTermsInput!) {
-    signImageGenerationTerms(input: $input) {
-      id
-    }
-  }`,
-)
