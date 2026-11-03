@@ -1,6 +1,3 @@
-import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { RecommendedBanner } from "~/routes/($lang).my._index/components/recommended-banner"
-import { RecommendedListContainer } from "~/routes/($lang).my._index/components/recommended-list-container"
 import { useQuery } from "@apollo/client/index"
 import type {
   HeadersFunction,
@@ -8,9 +5,10 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
-import { Suspense } from "react"
-import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
+import { MyRecommendedList } from "~/routes/($lang).my._index/components/my-collected-works"
+import { RecommendedBanner } from "~/routes/($lang).my._index/components/recommended-banner"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MY_RECOMMENDED, undefined, props.params.lang)
@@ -31,8 +29,8 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyRecommended () {
-  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+export default function MyRecommended() {
+  const { data: pass, loading } = useQuery(viewerCurrentPassQuery, {})
 
   const passData = pass?.viewer?.currentPass
 
@@ -40,12 +38,10 @@ export default function MyRecommended () {
     passData?.type === "STANDARD" || passData?.type === "PREMIUM"
 
   return (
-    <>
-      <Suspense fallback={<AppLoadingPage />}>
-        <RecommendedListContainer />
-      </Suspense>
-      {!isStandardOrPremium && <RecommendedBanner />}
-    </>
+    <div className="flex flex-col gap-3">
+      {!loading && !isStandardOrPremium && <RecommendedBanner />}
+      <MyRecommendedList />
+    </div>
   )
 }
 

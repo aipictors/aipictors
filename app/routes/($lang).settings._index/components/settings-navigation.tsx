@@ -9,7 +9,6 @@ import {
   CoinsIcon,
   EyeIcon,
   Gift,
-  MedalIcon,
   MessagesSquareIcon,
   PaletteIcon,
   Radio,
@@ -45,7 +44,6 @@ export function SettingsNavigation() {
       title: t("コイン・サポート", "Coins & Support"),
       items: [
         { href: "/settings/points", icon: CoinsIcon, label: t("コイン", "Coins") },
-        { href: "/settings/request", icon: MedalIcon, label: t("サポートを受け取る", "Receive Support") },
         { href: "/settings/support-received", icon: Gift, label: t("応援コイン受け取り", "Received Support Coins") },
         ...(data?.viewer?.isAdvertiser
           ? [{ href: "/settings/advertisements", icon: Radio, label: t("広告設定", "Advertisement Settings") }]

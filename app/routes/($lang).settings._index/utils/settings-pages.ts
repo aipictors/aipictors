@@ -7,11 +7,6 @@ const SETTINGS_PAGES: { href: string; ja: string; en: string }[] = [
   { href: "/settings/discord", ja: "Discord 連携", en: "Discord" },
   { href: "/settings/points", ja: "コイン", en: "Coins" },
   {
-    href: "/settings/request",
-    ja: "サポートを受け取る",
-    en: "Receive Support",
-  },
-  {
     href: "/settings/support-received",
     ja: "応援コイン受け取り",
     en: "Received Support Coins",

@@ -6182,6 +6182,12 @@ type Viewer {
   """シリーズ"""
   albums(limit: Int!, offset: Int!, where: ViewerAlbumsWhereInput): [AlbumNode!]!
 
+  """ブックマークした作品"""
+  bookmarkedWorks(limit: Int!, offset: Int!, where: UserWorksWhereInput): [WorkNode!]!
+
+  """ブックマークした作品の数"""
+  bookmarkedWorksCount(where: UserWorksWhereInput): Int!
+
   """連続で生成可能な最大タスク数"""
   availableConsecutiveImageGenerationsCount: Int!
 
@@ -6304,7 +6310,10 @@ type Viewer {
   likedPosts(limit: Int!, offset: Int!): [PostNode!]!
 
   """いいねした作品"""
-  likedWorks(limit: Int!, offset: Int!): [WorkNode!]!
+  likedWorks(limit: Int!, offset: Int!, where: UserWorksWhereInput): [WorkNode!]!
+
+  """いいねした作品の数"""
+  likedWorksCount(where: UserWorksWhereInput): Int!
 
   """LINEアカウントID"""
   lineUserId: String
@@ -6364,16 +6373,25 @@ type Viewer {
   verificationUrl: String!
 
   """閲覧した作品"""
-  viewedWorks(limit: Int!, offset: Int!): [WorkNode!]!
+  viewedWorks(limit: Int!, offset: Int!, where: UserWorksWhereInput): [WorkNode!]!
+
+  """推薦中の作品"""
+  recommendedWorks(limit: Int!, offset: Int!, where: UserWorksWhereInput): [WorkNode!]!
+
+  """推薦中の作品の数"""
+  recommendedWorksCount(where: UserWorksWhereInput): Int!
+
+  """閲覧した作品の数"""
+  viewedWorksCount(where: UserWorksWhereInput): Int!
 
   """保存したコレクション"""
   watchedFolders(limit: Int!, offset: Int!): [FolderNode!]!
 
   """作品操作履歴"""
-  workActionHistories(limit: Int!, offset: Int!): [WorkActionHistoryNode!]!
+  workActionHistories(actionType: String, limit: Int!, offset: Int!): [WorkActionHistoryNode!]!
 
   """作品操作履歴数"""
-  workActionHistoryCount: Int!
+  workActionHistoryCount(actionType: String): Int!
 
   """自分の作品"""
   works(limit: Int!, offset: Int!): [WorkNode!]!
