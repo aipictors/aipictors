@@ -131,7 +131,7 @@ export function xmlResponse(xml: string, maxAgeSeconds: number): Response {
 }
 
 /** 2: 作品のサイトマップに投稿者のユーザーページを追加 */
-const SITEMAP_CACHE_VERSION = "2"
+const SITEMAP_CACHE_VERSION = "3"
 
 /**
  * Workers のキャッシュ（caches.default）を使ってレスポンスを使い回す
