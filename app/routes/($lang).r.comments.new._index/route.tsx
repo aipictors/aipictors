@@ -60,6 +60,7 @@ const newCommentsPageQuery = graphql(
       }
       work {
         id
+        title
         smallThumbnailImageURL
         smallThumbnailImageHeight
         smallThumbnailImageWidth
