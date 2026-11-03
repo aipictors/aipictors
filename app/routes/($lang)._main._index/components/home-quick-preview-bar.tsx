@@ -102,7 +102,7 @@ export function HomeQuickPreviewBar(props: Props) {
                 {formatEventDate(firstEvent.startAt)} -{" "}
                 {formatEventDate(firstEvent.endAt)}
                 {firstEvent.tags[0] && t.text(firstEvent.tags[0])
-                  ? ` ・ #${t.text(firstEvent.tags[0])}`
+                  ? `${t(" ・ ", " · ")}#${t.text(firstEvent.tags[0])}`
                   : ""}
               </div>
               <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
