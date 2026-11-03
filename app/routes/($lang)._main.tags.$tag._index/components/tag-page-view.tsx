@@ -276,7 +276,12 @@ export function TagPageView(props: Props) {
               {t("タグ", "Tag")}
             </p>
             <h1 className="break-words font-bold text-3xl leading-tight tracking-tight md:text-4xl">
-              {props.tag}
+              {props.enTagName ?? props.tag}
+              {props.enTagName && (
+                <span className="ml-2 font-normal text-lg text-muted-foreground">
+                  {props.tag}
+                </span>
+              )}
             </h1>
             <p className="text-muted-foreground text-sm">
               {props.isSensitive

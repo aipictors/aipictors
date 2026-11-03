@@ -4725,6 +4725,7 @@ type Query {
 
   """ユーザ"""
   promotionWorks(isSensitive: Boolean, limit: Int!): [WorkNode!]!
+  tagEnName(name: String!): String
   user(id: ID!): UserNode
 
   """ユーザのシリーズ"""

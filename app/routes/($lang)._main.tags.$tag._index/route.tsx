@@ -1,3 +1,4 @@
+import { loaderClient } from "~/lib/loader-client"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -74,8 +75,21 @@ export async function loader(props: LoaderFunctionArgs) {
     }
   }
 
+  // 英語の検索で見つかるように、英語のページのタイトルと見出しは英語名にする
+  const enTagName =
+    props.params.lang === "en" && !isR18Fallback
+      ? await loaderClient
+          .query({
+            query: tagEnNameQuery,
+            variables: { name: tagName },
+          })
+          .then((result) => result.data.tagEnName ?? null)
+          .catch(() => null)
+      : null
+
   return {
     tag: tagName,
+    enTagName,
     works: toListWorks(works),
     worksCount,
     query,
@@ -96,7 +110,9 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     return [{ title: "タグ" }]
   }
 
-  const { tag, worksCount, query, relatedTags, isR18Fallback } = props.data
+  const { tag, enTagName, worksCount, query, relatedTags, isR18Fallback } =
+    props.data
+  const enTag = enTagName ? `${enTagName} (${tag})` : tag
   const coverWork = props.data.works[0]
   const lang = props.params.lang === "en" ? "en" : "ja"
   const pageSuffixJa = query.page > 0 ? `（${query.page + 1}ページ目）` : ""
@@ -114,11 +130,11 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     },
     {
       title: `${tag}のAIイラスト・画像 ${worksCount.toLocaleString()}件${pageSuffixJa}`,
-      enTitle: `${tag} AI art & images (${worksCount.toLocaleString()})${pageSuffixEn}`,
+      enTitle: `${enTag} AI art & images (${worksCount.toLocaleString()})${pageSuffixEn}`,
       description: `「${tag}」タグのAIイラスト・AI画像を${worksCount.toLocaleString()}件掲載。${
         relatedText ? `${relatedText} など関連タグの作品や、` : ""
       }プロンプト付きの作品も探せます。AI画像投稿・生成サイト Aipictors（AIピクターズ）`,
-      enDescription: `Browse ${worksCount.toLocaleString()} AI illustrations and images tagged "${tag}" on Aipictors${
+      enDescription: `Browse ${worksCount.toLocaleString()} AI illustrations and images tagged "${enTag}" on Aipictors${
         relatedText ? `, with related tags like ${relatedText}` : ""
       }. Many works include their prompts and generation settings.`,
       url:
@@ -136,6 +152,12 @@ export default function TagPage() {
   const data = useLoaderData<typeof loader>()
   return <TagPageView key={data.tag} {...data} />
 }
+
+const tagEnNameQuery = graphql(
+  `query TagEnName($name: String!) {
+    tagEnName(name: $name)
+  }`,
+)
 
 /**
  * R18 のタグ一覧（sensitive-tag-work-section）から使う

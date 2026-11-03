@@ -1,3 +1,4 @@
+import { buildLocalePath } from "~/utils/locale-path"
 import { useLocation } from "@remix-run/react"
 import { Link } from "~/lib/app/locale-router"
 import clsx from "clsx"
@@ -40,7 +41,9 @@ export function SidebarNavigationButton({
   className,
   isExternal,
 }: Props): React.ReactNode {
-  const { pathname } = useLocation()
+  const { pathname: rawPathname } = useLocation()
+  // 英語のページでも同じ項目を選択中にする
+  const pathname = buildLocalePath("ja", rawPathname)
   const { sidebarState } = useSidebar()
   const active = pathname === href || pathname.startsWith(`${href}/`)
 
