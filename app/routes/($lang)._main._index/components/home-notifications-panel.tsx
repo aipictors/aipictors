@@ -15,10 +15,11 @@ import {
   SparklesIcon,
   UserRoundPlusIcon,
 } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { FollowButton } from "~/components/button/follow-button"
 import { SupportCoinBreakdown } from "~/components/support-coin-breakdown"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
@@ -75,6 +76,13 @@ type PanelWork = {
   smallThumbnailImageURL?: string | null
 }
 
+/** 返信先のコメント（返信の通知で、何への返信か分かるように出す） */
+type PanelParentComment = {
+  text?: string | null
+  sticker?: { imageUrl?: string | null } | null
+  user?: { id: string; name: string } | null
+}
+
 export type PanelItem = {
   id: string
   kind: NotificationPanelKind
@@ -88,6 +96,7 @@ export type PanelItem = {
   support: PanelSupport | null
   replyTargetCommentId: string | null
   myReplies: PanelReply[]
+  parentComment: PanelParentComment | null
 }
 
 const KIND_STYLES: Record<
@@ -114,6 +123,7 @@ type PanelNode = {
   myReplies?: PanelReply[] | null
   support?: PanelSupport | null
   replyTargetCommentId?: string | null
+  comment?: PanelParentComment | null
 }
 
 const KIND_BY_TYPENAME: Record<string, NotificationPanelKind> = {
@@ -145,6 +155,7 @@ const toPanelItem = (node: PanelNode): PanelItem | null => {
     support: node.support ?? null,
     replyTargetCommentId: node.replyTargetCommentId ?? null,
     myReplies: node.myReplies ?? [],
+    parentComment: kind === "reply" ? (node.comment ?? null) : null,
   }
 }
 
@@ -501,6 +512,12 @@ function NotificationRowView(props: {
             {t(item.work.title, item.work.enTitle || undefined)}
           </p>
         )}
+        {item.parentComment && (
+          <ParentCommentQuote
+            comment={item.parentComment}
+            isExpanded={props.isExpanded}
+          />
+        )}
         {item.message && item.kind !== "award" && item.kind !== "coin" && (
           <p
             className={cn(
@@ -607,6 +624,55 @@ function NotificationRowView(props: {
       </Link>
       {props.footer}
     </>
+  )
+}
+
+/**
+ * 返信先のコメント（自分のコメントなら「あなたのコメント」）
+ */
+function ParentCommentQuote(props: {
+  comment: PanelParentComment
+  isExpanded?: boolean
+}) {
+  const t = useTranslation()
+  const authContext = useContext(AuthContext)
+  const { comment } = props
+  const isMine =
+    comment.user?.id !== undefined && comment.user.id === authContext.userId
+  const stickerUrl = comment.sticker?.imageUrl
+
+  return (
+    <div className="space-y-1 border-l-2 pl-2 text-muted-foreground text-xs">
+      <p className="font-medium">
+        {isMine
+          ? t("あなたのコメント", "Your comment")
+          : t(
+              `${comment.user?.name ?? "匿名のユーザー"}さんのコメント`,
+              `${comment.user?.name ?? "Someone"}'s comment`,
+            )}
+      </p>
+      {comment.text && (
+        <p
+          className={cn(
+            "whitespace-pre-line break-words leading-relaxed",
+            !props.isExpanded && "line-clamp-2",
+          )}
+        >
+          {comment.text}
+        </p>
+      )}
+      {stickerUrl && (
+        <img
+          src={stickerUrl}
+          alt={t("スタンプ", "Sticker")}
+          loading="lazy"
+          className={cn(
+            "rounded-md object-cover",
+            props.isExpanded ? "size-16" : "size-10",
+          )}
+        />
+      )}
+    </div>
   )
 }
 
@@ -832,6 +898,7 @@ const PanelReplyFragment = graphql(
     sticker { id imageUrl }
     support { freeCoinAmount premiumCoinAmount totalPt }
     replyTargetCommentId
+    comment { id text sticker { id imageUrl } user { id name } }
   }`,
 )
 
