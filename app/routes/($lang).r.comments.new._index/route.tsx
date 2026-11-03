@@ -5,7 +5,7 @@ import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
-import { NewCommentsPageContent } from "./components/new-comments-page-content"
+import { NewCommentsPageContent } from "~/routes/($lang)._main.comments.new._index/components/new-comments-page-content"
 
 export const meta: MetaFunction = (props) => {
   return createSensitiveMeta(META.SENSITIVE_NEW_COMMENTS, undefined, props.params.lang)
@@ -30,7 +30,10 @@ export default function NewCommentsPage () {
   }
 
   return (
-    <NewCommentsPageContent initialComments={data.newComments as never[]} />
+    <NewCommentsPageContent
+      initialComments={data.newComments as never[]}
+      isSensitive
+    />
   )
 }
 

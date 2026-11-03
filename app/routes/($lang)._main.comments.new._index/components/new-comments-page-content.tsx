@@ -57,9 +57,15 @@ type Comment = {
 
 type Props = {
   initialComments: Comment[]
+  /** R18 の一覧（/r/comments/new） */
+  isSensitive?: boolean
 }
 
 export function NewCommentsPageContent (props: Props) {
+  const ratingWhere = props.isSensitive
+    ? { isSensitive: true, ratings: ["R18" as const, "R18G" as const] }
+    : { isSensitive: false, ratings: ["G" as const, "R15" as const] }
+
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 
@@ -88,8 +94,7 @@ export function NewCommentsPageContent (props: Props) {
     variables: {
       offset,
       where: {
-        isSensitive: false,
-        ratings: ["G", "R15"],
+        ...ratingWhere,
         ...(filter === "text-only" && { isTextOnly: true }),
         ...(filter === "sticker-only" && { isStickerOnly: true }),
       },
@@ -136,8 +141,7 @@ export function NewCommentsPageContent (props: Props) {
           const result = await refetch({
             offset: 0,
             where: {
-              isSensitive: false,
-              ratings: ["G", "R15"],
+              ...ratingWhere,
               ...(filter === "text-only" && { isTextOnly: true }),
               ...(filter === "sticker-only" && { isStickerOnly: true }),
             },
@@ -209,8 +213,7 @@ export function NewCommentsPageContent (props: Props) {
       const result = await refetch({
         offset,
         where: {
-          isSensitive: false,
-          ratings: ["G", "R15"],
+          ...ratingWhere,
           ...(filter === "text-only" && { isTextOnly: true }),
           ...(filter === "sticker-only" && { isStickerOnly: true }),
         },
@@ -241,8 +244,7 @@ export function NewCommentsPageContent (props: Props) {
       const result = await refetch({
         offset: 0,
         where: {
-          isSensitive: false,
-          ratings: ["G", "R15"],
+          ...ratingWhere,
           ...(value === "text-only" && { isTextOnly: true }),
           ...(value === "sticker-only" && { isStickerOnly: true }),
         },
@@ -268,6 +270,11 @@ export function NewCommentsPageContent (props: Props) {
           <h1 className="font-bold text-2xl">
             {t("新規コメント一覧", "New Comments")}
           </h1>
+          {props.isSensitive && (
+            <Badge variant="destructive" className="text-xs">
+              R18
+            </Badge>
+          )}
         </div>
 
         {/* フィルタ */}
