@@ -1,5 +1,5 @@
 import { Card } from "~/components/ui/card"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"

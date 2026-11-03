@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import { type MetaFunction, useLoaderData, useParams } from "@remix-run/react"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
@@ -175,6 +176,7 @@ export const meta: MetaFunction = (props) => {
 }
 
 export default function Themes() {
+  const t = useTranslation()
   const data = useLoaderData<typeof loader>()
   const params = useParams()
 
@@ -192,7 +194,7 @@ export default function Themes() {
           path: "/themes",
           lang: params.lang,
           items: (data.works ?? []).map((work) => ({
-            name: work.title,
+            name: t(work.title, work.enTitle || undefined),
             path: `/posts/${work.id}`,
           })),
         })}

@@ -1,4 +1,5 @@
-import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import {
   Loader2Icon,
   SearchIcon,
@@ -97,6 +98,7 @@ function FilterChip(props: {
  * みんなのモデルの検索・フィルタ・無限スクロール一覧
  */
 export function UserModelBrowser(props: Props) {
+  const t = useTranslation()
   const [filters, setFilters] = useState<UserModelBrowserFilters>({
     ...defaultUserModelBrowserFilters,
     ...props.initialFilters,
@@ -179,16 +181,16 @@ export function UserModelBrowser(props: Props) {
             <Input
               value={searchText}
               onChange={(event) => setSearchText(event.target.value)}
-              placeholder="モデル名・タグ・作者で検索"
+              placeholder={t("モデル名・タグ・作者で検索", "Search by model name, tag or creator")}
               className="h-10 rounded-full pr-9 pl-9"
-              aria-label="モデルを検索"
+              aria-label={t("モデルを検索", "Search models")}
             />
             {searchText !== "" && (
               <button
                 type="button"
                 className="-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground hover:text-foreground"
                 onClick={() => setSearchText("")}
-                aria-label="検索をクリア"
+                aria-label={t("検索をクリア", "Clear search")}
               >
                 <XIcon className="size-4" />
               </button>
@@ -202,13 +204,13 @@ export function UserModelBrowser(props: Props) {
           >
             <SelectTrigger
               className="h-10 w-28 rounded-full"
-              aria-label="並び替え"
+              aria-label={t("並び替え", "Sort")}
             >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="popular">人気順</SelectItem>
-              <SelectItem value="new">新着順</SelectItem>
+              <SelectItem value="popular">{t("人気順", "Popular")}</SelectItem>
+              <SelectItem value="new">{t("新着順", "Newest")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -220,7 +222,7 @@ export function UserModelBrowser(props: Props) {
                 isActive={filters.kind === null}
                 onClick={() => updateFilters({ kind: null })}
               >
-                すべて
+                {t("すべて", "All")}
               </FilterChip>
               {USER_MODEL_KINDS.map((item) => (
                 <FilterChip
@@ -267,7 +269,7 @@ export function UserModelBrowser(props: Props) {
 
       {query.isError && (
         <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-4 text-sm">
-          <p className="font-medium">モデルを読み込めませんでした</p>
+          <p className="font-medium">{t("モデルを読み込めませんでした", "Could not load models")}</p>
           <p className="mt-1 text-muted-foreground">
             {query.error instanceof Error ? query.error.message : ""}
           </p>
@@ -277,7 +279,7 @@ export function UserModelBrowser(props: Props) {
             className="mt-3"
             onClick={() => query.refetch()}
           >
-            再読み込み
+            {t("再読み込み", "Reload")}
           </Button>
         </div>
       )}
@@ -295,13 +297,13 @@ export function UserModelBrowser(props: Props) {
           <PictorChanSays>
             {hasActiveFilter
               ? "条件に合うモデルが見つかりませんでした。キーワードやフィルタを変えてみてくださいね！"
-              : "まだモデルがありません。最初のモデルをアップロードしてみませんか？"}
+              : t("まだモデルがありません。最初のモデルをアップロードしてみませんか？", "No models yet. Why not upload the first one?")}
           </PictorChanSays>
           {!hasActiveFilter && (
             <Button asChild size="sm" className="rounded-full">
               <Link to="/models/upload">
                 <UploadIcon className="mr-1 size-4" />
-                モデルをアップロード
+                {t("モデルをアップロード", "Upload a model")}
               </Link>
             </Button>
           )}
@@ -332,7 +334,7 @@ export function UserModelBrowser(props: Props) {
             size="sm"
             onClick={() => query.fetchNextPage()}
           >
-            もっと見る
+            {t("もっと見る", "See more")}
           </Button>
         )}
       </div>

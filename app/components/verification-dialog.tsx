@@ -8,7 +8,7 @@ import { useQuery } from "@apollo/client/index"
 import { useEffect, useState } from "react"
 import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
 import { PlusUpsellCard } from "~/components/plus-upsell-card"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 

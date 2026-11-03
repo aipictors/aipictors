@@ -1,7 +1,7 @@
 import { graphql } from "gql.tada"
 import { Card } from "~/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { useQuery } from "@apollo/client/index"

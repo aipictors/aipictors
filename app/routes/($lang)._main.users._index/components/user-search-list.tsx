@@ -13,7 +13,8 @@ import { UserSearchItem } from "~/routes/($lang)._main.users._index/components/u
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useState, useId } from "react"
-import { Link, useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { PictorChanSays } from "~/components/pictor-chan-says"
 import { useTranslation } from "~/hooks/use-translation"
 import {

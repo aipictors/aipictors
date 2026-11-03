@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
 import { XIcon } from "lucide-react"

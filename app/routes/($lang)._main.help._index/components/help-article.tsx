@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { Badge } from "~/components/ui/badge"
 import { Separator } from "~/components/ui/separator"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 
 const HELP_TABS = [
   "quickstart",
@@ -406,12 +406,12 @@ export function HelpArticle () {
                     "ご登録いただいた個人情報は、サービスの提供とユーザーサポートのためにのみ使用します。詳細は",
                     "Personal information provided during registration will only be used for service provision and user support. For details, please see our",
                   )}
-                  <a
-                    href="/privacy"
+                  <Link
+                    to="/privacy"
                     className="ml-1 text-blue-600 hover:underline"
                   >
                     {t("プライバシーポリシー", "Privacy Policy")}
-                  </a>
+                  </Link>
                   {t("をご確認ください。", ".")}
                 </p>
               </div>
@@ -990,12 +990,12 @@ export function HelpArticle () {
                       "Aipictorsは安全で創造的なコミュニティを目指しています。投稿や交流の際は",
                       "Aipictors aims to be a safe and creative community. When posting or interacting, please refer to our",
                     )}
-                    <a
-                      href="/guideline"
+                    <Link
+                      to="/guideline"
                       className="mx-1 text-blue-600 hover:underline"
                     >
                       {t("コミュニティガイドライン", "Community Guidelines")}
-                    </a>
+                    </Link>
                     {t("をご確認ください。", ".")}
                   </p>
                 </div>
@@ -1112,15 +1112,15 @@ export function HelpArticle () {
           )}
         </p>
         <div className="flex justify-center space-x-4">
-          <a href="/contact" className="text-blue-600 text-sm hover:underline">
+          <Link to="/contact" className="text-blue-600 text-sm hover:underline">
             {t("お問い合わせ", "Contact")}
-          </a>
-          <a href="/terms" className="text-blue-600 text-sm hover:underline">
+          </Link>
+          <Link to="/terms" className="text-blue-600 text-sm hover:underline">
             {t("利用規約", "Terms of Service")}
-          </a>
-          <a href="/privacy" className="text-blue-600 text-sm hover:underline">
+          </Link>
+          <Link to="/privacy" className="text-blue-600 text-sm hover:underline">
             {t("プライバシーポリシー", "Privacy Policy")}
-          </a>
+          </Link>
         </div>
       </div>
     </div>

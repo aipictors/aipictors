@@ -1,4 +1,5 @@
 import { config } from "~/config"
+import { buildLocalePath, parseLocalePath } from "~/utils/locale-path"
 import { fetchPublicUserModels } from "~/lib/server/user-models.server"
 import type { UserModel } from "~/lib/user-models/types"
 import { isSuggestableSensitiveTag } from "~/utils/sensitive-tag-filter"
@@ -25,7 +26,7 @@ type SitemapUrl = {
   lastmod?: string
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly"
   priority?: number
-  images?: { loc: string; title?: string }[]
+  images?: { loc: string; title?: string; enTitle?: string }[]
 }
 
 const escapeXml = (value: string) =>
@@ -39,10 +40,43 @@ const escapeXml = (value: string) =>
     // biome-ignore lint/suspicious/noControlCharactersInRegex: 制御文字の除去
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
 
+/**
+ * 日本語と英語の両方の URL を、互いの別言語版として載せる（hreflang）
+ */
+const toLocalizedUrls = (url: SitemapUrl) => {
+  const path = url.loc.slice(SITE_URL.length) || "/"
+  // R18 のページは英語の検索に広げない
+  if (parseLocalePath(path).isSensitive) {
+    return [{ url, loc: url.loc, alternates: "" }]
+  }
+  const ja = `${SITE_URL}${buildLocalePath("ja", path)}`
+  const en = `${SITE_URL}${buildLocalePath("en", path)}`
+  const alternates = [
+    `<xhtml:link rel="alternate" hreflang="ja" href="${escapeXml(ja)}"/>`,
+    `<xhtml:link rel="alternate" hreflang="en" href="${escapeXml(en)}"/>`,
+    `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(en)}"/>`,
+  ].join("")
+  return [
+    { url, loc: ja, alternates },
+    {
+      url: {
+        ...url,
+        images: url.images?.map((image) => ({
+          ...image,
+          title: image.enTitle || image.title,
+        })),
+      },
+      loc: en,
+      alternates,
+    },
+  ]
+}
+
 export function toUrlSetXml(urls: SitemapUrl[]): string {
   const body = urls
-    .map((url) => {
-      const parts = [`<loc>${escapeXml(url.loc)}</loc>`]
+    .flatMap(toLocalizedUrls)
+    .map(({ url, loc, alternates }) => {
+      const parts = [`<loc>${escapeXml(loc)}</loc>`, alternates]
       if (url.lastmod) parts.push(`<lastmod>${url.lastmod}</lastmod>`)
       if (url.changefreq)
         parts.push(`<changefreq>${url.changefreq}</changefreq>`)
@@ -63,7 +97,7 @@ export function toUrlSetXml(urls: SitemapUrl[]): string {
     .join("\n")
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${body}
 </urlset>`
 }
@@ -189,6 +223,7 @@ export function isValidSitemapDate(date: string): boolean {
 type SitemapWork = {
   id: string
   title: string
+  enTitle?: string | null
   createdAt: number
   largeThumbnailImageURL: string
   user: { login: string } | null
@@ -198,6 +233,7 @@ const dayWorksQuery = `query SitemapDayWorks($offset: Int!, $limit: Int!, $where
   works(offset: $offset, limit: $limit, where: $where) {
     id
     title
+    enTitle
     createdAt
     largeThumbnailImageURL
     user {

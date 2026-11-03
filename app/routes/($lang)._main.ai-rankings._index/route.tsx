@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -81,6 +82,7 @@ export const meta: MetaFunction = (props) => {
 }
 
 export default function AiEvaluationRankingsIndex() {
+  const t = useTranslation()
   const data = useLoaderData<typeof loader>()
   const params = useParams()
 
@@ -95,7 +97,7 @@ export default function AiEvaluationRankingsIndex() {
             parents: [{ name: "ランキング", path: "/rankings" }],
             items: data.rankings.data.aiEvaluationWorkRankings.flatMap((item) =>
               item.work
-                ? [{ name: item.work.title, path: `/posts/${item.work.id}` }]
+                ? [{ name: t(item.work.title, item.work.enTitle || undefined), path: `/posts/${item.work.id}` }]
                 : [],
             ),
           })}

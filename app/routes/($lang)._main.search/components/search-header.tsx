@@ -1,4 +1,5 @@
-import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
+import { useLocation, useSearchParams } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { Cpu, Search, SlidersHorizontal, User, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"

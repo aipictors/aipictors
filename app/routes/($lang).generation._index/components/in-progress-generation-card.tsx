@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { SparklesIcon, ZapIcon } from "lucide-react"
 import { useContext } from "react"
 import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"

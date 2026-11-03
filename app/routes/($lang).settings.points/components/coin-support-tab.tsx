@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { ChevronRight, Gift, Trophy } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"

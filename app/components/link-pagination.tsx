@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { cn } from "~/lib/utils"
 

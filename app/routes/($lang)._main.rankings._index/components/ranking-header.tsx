@@ -1,4 +1,5 @@
-import { Link, useLocation, useNavigate } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   CalendarIcon,
   ChevronLeftIcon,
@@ -392,7 +393,7 @@ export function RankingHeader(props: Props) {
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 font-medium text-muted-foreground text-xs">
               <LayoutGridIcon className="h-3.5 w-3.5" />
-              <span>ランキングを探す</span>
+              <span>{t("ランキングを探す", "Browse rankings")}</span>
             </div>
             <div>
               <Heading className="font-semibold text-foreground text-lg sm:text-xl">
@@ -429,7 +430,7 @@ export function RankingHeader(props: Props) {
             </span>
             {props.day !== null && props.rankingType === "users" && (
               <span className="rounded-full bg-purple-100 px-3 py-1.5 font-medium text-purple-700 dark:bg-purple-950/60 dark:text-purple-200">
-                最高いいね数で順位付け
+                {t("最高いいね数で順位付け", "Ranked by most likes")}
               </span>
             )}
           </div>
@@ -625,7 +626,7 @@ export function RankingHeader(props: Props) {
                   {t("日付候補", "Recent periods")}
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  最近の候補一覧は必要なときだけ展開できます。
+                  {t("最近の候補一覧は必要なときだけ展開できます。", "Expand the recent list only when you need it.")}
                 </p>
               </div>
               <Button
@@ -635,7 +636,7 @@ export function RankingHeader(props: Props) {
                 onClick={() => setIsDateRailOpen((value) => !value)}
                 className="h-8 rounded-full px-3 text-xs"
               >
-                {isDateRailOpen ? "閉じる" : "表示"}
+                {isDateRailOpen ? t("閉じる", "Close") : t("表示", "Show")}
               </Button>
             </div>
 

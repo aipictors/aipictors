@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { ChevronRightIcon, HeartIcon, ImagesIcon } from "lucide-react"
 import { LikeButton } from "~/components/like-button"

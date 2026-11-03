@@ -1,6 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { createCalendarCells } from "~/routes/($lang)._main.themes._index/utils/create-calendar-cells"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ChevronLeftIcon, ChevronRightIcon, LockIcon } from "lucide-react"
 import { cn } from "~/lib/utils"

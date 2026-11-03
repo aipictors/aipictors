@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/client/index"
-import { Link, useFetcher, useLocation } from "@remix-run/react"
+import { useFetcher, useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
   ChevronRightIcon,
@@ -260,7 +261,7 @@ export function TagPageView(props: Props) {
                   <img
                     // PC だけで見える小さな表紙（112px 以下）。スマホで優先して読むと一覧の画像（LCP）が遅れるので優先しない
                     src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
-                    alt={work.title}
+                    alt={t(work.title, work.enTitle || undefined)}
                     width={work.smallThumbnailImageWidth}
                     height={work.smallThumbnailImageHeight}
                     className="size-full object-cover"
@@ -476,7 +477,7 @@ export function TagPageView(props: Props) {
               {t(
                 `Aipictors には「${props.tag}」タグが付いたAIイラスト・AI画像が${props.worksCount.toLocaleString()}件投稿されています。${
                   topWork
-                    ? `いま人気の作品は「${topWork.title}」${topWork.user ? `（${topWork.user.name}）` : ""}などです。`
+                    ? `いま人気の作品は「${t(topWork.title, topWork.enTitle || undefined)}」${topWork.user ? `（${topWork.user.name}）` : ""}などです。`
                     : ""
                 }${
                   relatedNames.length > 0

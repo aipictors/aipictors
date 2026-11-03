@@ -1,5 +1,5 @@
 import { WorkCard } from "~/routes/($lang)._main.posts._index/components/work-card"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
@@ -29,6 +29,7 @@ export const HomeWorkListItemFragment = graphql(
   `fragment HomeWorkListItem on WorkNode @_unmask {
     id
     title
+    enTitle
     accessType
     adminAccessType
     type

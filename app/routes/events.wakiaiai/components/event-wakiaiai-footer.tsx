@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Button } from "~/components/ui/button"
 
 export function EventWakiaiaiFooter () {

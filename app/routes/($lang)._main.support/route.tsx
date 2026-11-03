@@ -1,5 +1,6 @@
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { Link, useOutlet } from "@remix-run/react"
+import { useOutlet } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { MessageCircleIcon } from "lucide-react"
 import { useContext } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"

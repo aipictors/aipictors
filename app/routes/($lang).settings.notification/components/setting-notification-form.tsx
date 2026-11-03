@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { ChevronRight } from "lucide-react"
 import { useContext, useEffect, useId, useState } from "react"
 import { toast } from "sonner"

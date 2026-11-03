@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { useContext } from "react"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -121,6 +121,7 @@ export const HomeNewCommentsFragment = graphql(
     work {
       id
       title
+      enTitle
       smallThumbnailImageURL
       smallThumbnailImageHeight
       smallThumbnailImageWidth

@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Images, MessageCircleIcon } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thumbnail-overlay"

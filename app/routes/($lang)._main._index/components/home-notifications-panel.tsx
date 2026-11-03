@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
   AwardIcon,
@@ -462,7 +462,7 @@ function NotificationRowView(props: {
         <RowTitle item={item} group={group} />
         {item.kind === "liked" && item.work?.title && (
           <p className="truncate text-muted-foreground text-xs">
-            {item.work.title}
+            {t(item.work.title, item.work.enTitle || undefined)}
           </p>
         )}
         {item.message && item.kind !== "award" && item.kind !== "coin" && (
@@ -498,7 +498,7 @@ function NotificationRowView(props: {
       {item.work?.smallThumbnailImageURL && (
         <img
           src={item.work.smallThumbnailImageURL}
-          alt={item.work.title ?? ""}
+          alt={t(item.work.title, item.work.enTitle || undefined) ?? ""}
           loading="lazy"
           className="size-11 shrink-0 rounded-lg object-cover"
         />

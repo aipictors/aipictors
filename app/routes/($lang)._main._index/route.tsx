@@ -5,12 +5,8 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { json, redirect } from "@remix-run/cloudflare"
-import {
-  Link,
-  useLoaderData,
-  useNavigate,
-  useSearchParams,
-} from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import {
@@ -1066,10 +1062,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             <div className="min-w-0 flex-1">
               <AppAnimatedTabs
                 tabs={[
-                  { label: "ホーム", value: "home" },
-                  { label: "新着・人気", value: "new" },
+                  { label: t("ホーム", "Home"), value: "home" },
+                  { label: t("新着・人気", "New & popular"), value: "new" },
                   {
-                    label: "フォロー新着",
+                    label: t("フォロー新着", "Following"),
                     value: "follow-user",
                     badge:
                       followFeedNew.count > 0 &&
@@ -1081,7 +1077,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                         </span>
                       ) : null,
                   },
-                  { label: "お気に入りタグ新着", value: "follow-tag" },
+                  { label: t("お気に入りタグ新着", "Favorite tags"), value: "follow-tag" },
                 ]}
                 value={currentTab}
                 onChange={handleTabChange}

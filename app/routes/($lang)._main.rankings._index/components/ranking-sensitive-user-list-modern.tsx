@@ -1,7 +1,7 @@
 import { Badge } from "~/components/ui/badge"
 import { Card } from "~/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"

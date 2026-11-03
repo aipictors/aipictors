@@ -1,5 +1,5 @@
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { userNavigationStyles } from "~/routes/($lang)._main._index/components/user-navigation-styles"
 
 type LegacyProps = {

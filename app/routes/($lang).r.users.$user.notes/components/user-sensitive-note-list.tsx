@@ -1,7 +1,8 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "~/lib/app/locale-router"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { LikeButton } from "~/components/like-button"
 import { ResponsivePagination } from "~/components/responsive-pagination"
@@ -17,6 +18,7 @@ type Props = {
 }
 
 export function UserSensitiveNoteList(props: Props) {
+  const t = useTranslation()
   const authContext = useContext(AuthContext)
 
   const userId =
@@ -59,7 +61,7 @@ export function UserSensitiveNoteList(props: Props) {
                   <NovelWorkPreviewItem
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}
-                    title={work.title}
+                    title={t(work.title, work.enTitle || undefined)}
                     text={work.description ?? ""}
                     tags={[]}
                   />
@@ -112,6 +114,7 @@ export const UserNotesItemFragment = graphql(
     smallThumbnailImageURL
     isLiked
     title
+    enTitle
     description
     user {
       id

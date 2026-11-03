@@ -1,5 +1,6 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { Link, useLoaderData, useParams } from "@remix-run/react"
+import { useLoaderData, useParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { UserModelCard } from "~/components/user-models/user-model-card"
 import { config } from "~/config"

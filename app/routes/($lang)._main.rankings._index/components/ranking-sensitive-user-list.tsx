@@ -8,7 +8,7 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { Card } from "~/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Loader2, Trophy, Heart, TrendingUp } from "lucide-react"
 
 type Props = {

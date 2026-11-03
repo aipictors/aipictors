@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { toLocaleFromAcceptLanguage } from "~/utils/locale-path"
 
 function createMockRequest(url: string, headers: Record<string, string> = {}) {
   const normalizedHeaders = new Map(
@@ -79,5 +80,22 @@ describe("checkLocaleRedirect", () => {
 
     expect(result).not.toBeNull()
     expect(result?.headers.Location).toBe("/")
+  })
+})
+
+describe("toLocaleFromAcceptLanguage", () => {
+  test("日本語と英語のうち希望順で先の方", () => {
+    expect(toLocaleFromAcceptLanguage("en-US,en;q=0.9,ja;q=0.8")).toBe("en")
+    expect(toLocaleFromAcceptLanguage("ja,en-US;q=0.9")).toBe("ja")
+    expect(toLocaleFromAcceptLanguage("en;q=0.5,ja;q=0.9")).toBe("ja")
+    expect(toLocaleFromAcceptLanguage("de-DE,de;q=0.9,en;q=0.8")).toBe("en")
+    expect(toLocaleFromAcceptLanguage("de,ja;q=0.5")).toBe("ja")
+  })
+
+  test("日本語も英語もない海外のブラウザは英語、言語設定がなければ日本語", () => {
+    expect(toLocaleFromAcceptLanguage("zh-CN,zh;q=0.9")).toBe("en")
+    expect(toLocaleFromAcceptLanguage(null)).toBe("ja")
+    expect(toLocaleFromAcceptLanguage("")).toBe("ja")
+    expect(toLocaleFromAcceptLanguage("*")).toBe("ja")
   })
 })

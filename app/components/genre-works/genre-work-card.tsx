@@ -1,4 +1,5 @@
-import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
@@ -33,6 +34,7 @@ const RANK_CLASS_NAMES: Record<number, string> = {
  * 枠の縦横比を CSS で先に決めるので、画像が読み終わっても並びがずれない
  */
 export function GenreWorkCard(props: Props) {
+  const t = useTranslation()
   const { work } = props
 
   const imageUrl = work.smallThumbnailImageURL
@@ -53,7 +55,7 @@ export function GenreWorkCard(props: Props) {
             maxWidth: work.smallThumbnailImageWidth || undefined,
           })}
           sizes={props.sizes}
-          alt={work.title}
+          alt={t(work.title, work.enTitle || undefined)}
           width={work.smallThumbnailImageWidth}
           height={work.smallThumbnailImageHeight}
           className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -79,7 +81,7 @@ export function GenreWorkCard(props: Props) {
         </span>
       </Link>
       <Link to={props.to} className="block truncate font-bold text-sm">
-        {work.title}
+        {t(work.title, work.enTitle || undefined)}
       </Link>
       <div className="flex items-center justify-between gap-2">
         {work.user ? (
@@ -114,6 +116,7 @@ export const GenreWorkCardFragment = graphql(
   `fragment GenreWorkCard on WorkNode @_unmask {
     id
     title
+    enTitle
     likesCount
     url
     isGeneration

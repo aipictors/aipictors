@@ -63,6 +63,7 @@ export const UserVideosItemFragment = graphql(
   `fragment UserVideosItem on WorkNode @_unmask {
     id
     title
+    enTitle
     url
     streamUid
     smallThumbnailImageHeight

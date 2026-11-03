@@ -1,4 +1,4 @@
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { RefreshCcwIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"

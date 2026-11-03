@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
-import { useNavigate, useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"

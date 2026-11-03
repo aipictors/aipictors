@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Headset, Loader2Icon, RefreshCwIcon } from "lucide-react"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { toast } from "sonner"

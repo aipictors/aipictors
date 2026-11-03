@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { PictorChanSays } from "~/components/pictor-chan-says"

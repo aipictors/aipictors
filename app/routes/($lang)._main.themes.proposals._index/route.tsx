@@ -1,6 +1,7 @@
 import { gql, useMutation, useQuery } from "@apollo/client/index"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { Link, useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { addDays, format } from "date-fns"
 import { ja } from "date-fns/locale"
 import {

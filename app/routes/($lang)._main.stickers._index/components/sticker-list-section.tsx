@@ -1,4 +1,5 @@
-import { Link, useNavigation, useSearchParams } from "@remix-run/react"
+import { useNavigation, useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { useTranslation } from "~/hooks/use-translation"

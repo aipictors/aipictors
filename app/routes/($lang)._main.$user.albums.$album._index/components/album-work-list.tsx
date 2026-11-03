@@ -1,4 +1,5 @@
-import { Link, useNavigation, useSearchParams } from "@remix-run/react"
+import { useNavigation, useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import type React from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
@@ -278,7 +279,7 @@ function SquareAlbumWorkGrid(props: {
             ) : (
               <>
                 <CroppedWorkSquare
-                  title={work.title}
+                  title={t(work.title, work.enTitle || undefined)}
                   workId={work.id}
                   subWorksCount={work.subWorksCount}
                   commentsCount={work.commentsCount}
@@ -319,7 +320,7 @@ function SquareAlbumWorkGrid(props: {
                 {props.firstNumber + index}
               </span>
             )}
-            <span className="truncate">{work.title}</span>
+            <span className="truncate">{t(work.title, work.enTitle || undefined)}</span>
           </Link>
         </li>
       ))}

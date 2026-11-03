@@ -1,4 +1,5 @@
-import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, Images, MessageCircle } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
@@ -39,6 +40,7 @@ const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
  * レスポンシブ対応の作品一覧
  */
 export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
+  const t = useTranslation()
   const { showDesktop, showMobile } = useLayoutVariant()
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
@@ -59,7 +61,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                     props.priorityCount !== undefined &&
                     index >= props.priorityCount
                   }
-                  title={workItem.title}
+                  title={t(workItem.title, workItem.enTitle || undefined)}
                   workId={workItem.id}
                   subWorksCount={workItem.subWorksCount}
                   commentsCount={workItem.commentsCount}
@@ -100,10 +102,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                       type="button"
                       className="min-w-0 cursor-pointer text-left font-bold"
                       onClick={() => props.onSelect?.(workItem.id.toString())}
-                      aria-label={`Open ${workItem.title}`}
+                      aria-label={`Open ${t(workItem.title, workItem.enTitle || undefined)}`}
                     >
                       <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
-                        {workItem.title}
+                        {t(workItem.title, workItem.enTitle || undefined)}
                       </p>
                     </button>
                   ) : (
@@ -112,7 +114,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                       to={`/posts/${workItem.id}`}
                     >
                       <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
-                        {workItem.title}
+                        {t(workItem.title, workItem.enTitle || undefined)}
                       </p>
                     </Link>
                   )}
@@ -211,7 +213,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         type="button"
                         className="absolute inset-0 block h-full w-full cursor-pointer overflow-hidden"
                         onClick={() => props.onSelect?.(work.id.toString())}
-                        aria-label={`Open ${work.title}`}
+                        aria-label={`Open ${t(work.title, work.enTitle || undefined)}`}
                       >
                         <HoverVideoImage
                           workId={work.id}
@@ -219,7 +221,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                           videoUrl={work.url}
                           streamUid={work.streamUid}
                           isAutoPlay={props.autoPlayVideoPreview}
-                          alt={work.title}
+                          alt={t(work.title, work.enTitle || undefined)}
                           width={width}
                           height={height}
                           fetchPriority={
@@ -249,7 +251,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         videoUrl={work.url}
                         streamUid={work.streamUid}
                         isAutoPlay={props.autoPlayVideoPreview}
-                        alt={work.title}
+                        alt={t(work.title, work.enTitle || undefined)}
                         to={`/posts/${work.id}`}
                         width={width}
                         height={height}
@@ -339,16 +341,16 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                             e.stopPropagation()
                             props.onSelect?.(work.id.toString())
                           }}
-                          aria-label={`Open ${work.title}`}
+                          aria-label={`Open ${t(work.title, work.enTitle || undefined)}`}
                         >
-                          <p className="truncate text-sm">{work.title}</p>
+                          <p className="truncate text-sm">{t(work.title, work.enTitle || undefined)}</p>
                         </button>
                       ) : (
                         <Link
                           className="min-w-0 font-bold hover:underline"
                           to={`/posts/${work.id}`}
                         >
-                          <p className="truncate text-sm">{work.title}</p>
+                          <p className="truncate text-sm">{t(work.title, work.enTitle || undefined)}</p>
                         </Link>
                       )}
                       {work.user && (

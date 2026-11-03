@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import type { FragmentOf } from "gql.tada"
@@ -21,6 +22,7 @@ function RankingWorkCard(props: {
   index: number
   featured?: boolean
 }) {
+  const t = useTranslation()
   const { workItem, index, featured = false } = props
 
   if (!workItem.work) {
@@ -33,7 +35,7 @@ function RankingWorkCard(props: {
         <div className={featured ? "space-y-4" : "space-y-3"}>
           <div className="relative overflow-hidden rounded-[24px] bg-muted/30">
             <CroppedWorkSquare
-              title={workItem.work.title}
+              title={t(workItem.work.title, workItem.work.enTitle || undefined)}
               workId={workItem.work.id}
               subWorksCount={workItem.work.subWorksCount}
               imageUrl={workItem.work.smallThumbnailImageURL}
@@ -59,7 +61,7 @@ function RankingWorkCard(props: {
 
           <div className="space-y-2">
             <p className={featured ? "line-clamp-2 font-bold text-base text-foreground sm:text-lg" : "line-clamp-2 font-bold text-sm text-foreground sm:text-base"}>
-              {workItem.work.title}
+              {t(workItem.work.title, workItem.work.enTitle || undefined)}
             </p>
 
             <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -184,6 +186,7 @@ export const WorkAwardListItemFragment = graphql(
       work {
         id
         title
+        enTitle
         accessType
         adminAccessType
         type

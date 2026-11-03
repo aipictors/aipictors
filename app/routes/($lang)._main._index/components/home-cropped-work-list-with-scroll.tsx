@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
@@ -14,6 +15,7 @@ type Props = {
  * クロップ済み作品一覧
  */
 export function HomeCroppedWorkListWithScroll (props: Props) {
+  const t = useTranslation()
   if (props.works === null || props.works.length === 0) {
     return null
   }
@@ -25,7 +27,7 @@ export function HomeCroppedWorkListWithScroll (props: Props) {
           <div key={work.id} className="flex flex-col space-y-2">
             <div className="relative">
               <CroppedWorkSquare
-                title={work.title}
+                title={t(work.title, work.enTitle || undefined)}
                 workId={work.id}
                 subWorksCount={work.subWorksCount}
                 imageUrl={work.smallThumbnailImageURL}
@@ -49,7 +51,7 @@ export function HomeCroppedWorkListWithScroll (props: Props) {
               </div>
             </div>
             <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-              {work.title}
+              {t(work.title, work.enTitle || undefined)}
             </p>
             <UserNameBadge
               userId={work.user?.id ?? ""}
@@ -68,6 +70,7 @@ export const HomeCoppedWorkFragment = graphql(
   `fragment HomeCoppedWork on WorkNode @_unmask {
     id
     title
+    enTitle
     likesCount
     isLiked
     smallThumbnailImageURL

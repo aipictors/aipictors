@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   CheckCircle2Icon,

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
-import { Link, useLocation, useNavigate, useSearchParams } from "@remix-run/react"
+import { useLocation, useSearchParams } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   Dialog,
   DialogContent,

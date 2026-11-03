@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { CheckIcon, SparklesIcon } from "lucide-react"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Button } from "~/components/ui/button"
@@ -150,7 +150,7 @@ export function PassPlanDescription(props: Props) {
             <span>{t("広告の非表示・認証マーク", "Ad-free & verified badge")}</span>
           </li>
         )}
-        {toPassFeatures(props.plan).map((feature) => (
+        {toPassFeatures(props.plan, t).map((feature) => (
           <li key={feature} className="flex items-start gap-2">
             <CheckIcon
               className={cn(

@@ -1,3 +1,4 @@
+import { Link } from "~/lib/app/locale-router"
 import {
   AlertTriangleIcon,
   CheckCircle2Icon,
@@ -227,13 +228,13 @@ export function ModelLibraryImportDialog(props: Props) {
               <p className="text-destructive text-xs leading-relaxed">
                 {error}
                 {isLimitExceeded && (
-                  <a
-                    href="/plus"
+                  <Link
+                    to="/plus"
                     target={props.linkTarget}
                     className="ml-1 font-medium underline"
                   >
                     プランを見る
-                  </a>
+                  </Link>
                 )}
               </p>
             ) : (

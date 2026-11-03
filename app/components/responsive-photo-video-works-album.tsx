@@ -1,8 +1,9 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { type FragmentOf, graphql } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import SSR from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Heart } from "lucide-react"
 import { LikeButton } from "~/components/like-button"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
@@ -19,6 +20,7 @@ type Props = {
  * レスポンシブ対応の作品一覧
  */
 export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
+  const t = useTranslation()
   if (props.works.length === 1) {
     return (
       <div className="relative transition-all" style={{ position: "relative" }}>
@@ -50,7 +52,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
         photos={props.works.map((work, _index) => ({
           key: work.id,
           src: work.smallThumbnailImageURL,
-          alt: work.title,
+          alt: t(work.title, work.enTitle || undefined),
           url: work.url,
           streamUid: work.streamUid,
           width: work.smallThumbnailImageWidth,
@@ -165,6 +167,7 @@ export const PhotoAlbumVideoWorkFragment = graphql(
   `fragment PhotoAlbumVideoWork on WorkNode @_unmask {
     id
     title
+    enTitle
     url
     streamUid
     smallThumbnailImageHeight

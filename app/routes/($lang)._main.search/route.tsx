@@ -4,7 +4,8 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { redirect } from "@remix-run/cloudflare"
-import { Link, useLoaderData, useLocation, useNavigate } from "@remix-run/react"
+import { useLoaderData, useLocation } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { ChevronRightIcon, Heart, SearchIcon } from "lucide-react"
 import { type FormEvent, useContext, useEffect, useState } from "react"
@@ -850,7 +851,7 @@ export default function SearchRoute() {
                       <article key={work.id} className="min-w-0">
                         <div className="group relative">
                           <CroppedWorkSquare
-                            title={work.title}
+                            title={t(work.title, work.enTitle || undefined)}
                             workId={work.id}
                             imageUrl={work.smallThumbnailImageURL}
                             thumbnailImagePosition={
@@ -888,7 +889,7 @@ export default function SearchRoute() {
                             to={`${pagePrefix}/posts/${work.id}`}
                             className="line-clamp-2 flex-1 font-semibold text-sm leading-snug hover:underline"
                           >
-                            {work.title}
+                            {t(work.title, work.enTitle || undefined)}
                           </Link>
 
                           <div className="flex shrink-0 items-center gap-1 text-muted-foreground text-xs">
@@ -1006,14 +1007,14 @@ export default function SearchRoute() {
 
                     <img
                       src={work.smallThumbnailImageURL}
-                      alt={work.title}
+                      alt={t(work.title, work.enTitle || undefined)}
                       loading="lazy"
                       className="size-14 shrink-0 rounded-md object-cover"
                     />
 
                     <div className="min-w-0">
                       <p className="line-clamp-2 font-semibold text-sm leading-snug">
-                        {work.title}
+                        {t(work.title, work.enTitle || undefined)}
                       </p>
                       <div className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
                         <Avatar className="size-5">
@@ -1052,12 +1053,21 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   const searchQuery = props.data?.searchQuery ?? ""
   const isSensitiveMode = props.data?.isSensitiveMode ?? false
 
-  const title = searchQuery
-    ? `「${searchQuery}」の${isSensitiveMode ? "R18 " : ""}検索結果 - Aipictors`
-    : `${isSensitiveMode ? "R18 " : ""}作品検索（タグ・タイトル・説明） - Aipictors`
-  const description = searchQuery
-    ? `#${searchQuery} のタグで投稿された作品を一覧表示します。`
-    : "AIイラストをタグ・タイトル・説明から検索できます。人気のタグやランキングもあわせて確認できます。"
+  const isEn = props.params.lang === "en"
+  const title = isEn
+    ? searchQuery
+      ? `${isSensitiveMode ? "R18 " : ""}Search results for "${searchQuery}" - Aipictors`
+      : `Search ${isSensitiveMode ? "R18 " : ""}AI art by tag, title and description - Aipictors`
+    : searchQuery
+      ? `「${searchQuery}」の${isSensitiveMode ? "R18 " : ""}検索結果 - Aipictors`
+      : `${isSensitiveMode ? "R18 " : ""}作品検索（タグ・タイトル・説明） - Aipictors`
+  const description = isEn
+    ? searchQuery
+      ? `Works tagged #${searchQuery} on Aipictors.`
+      : "Search AI illustrations by tag, title and description. See popular tags and rankings too."
+    : searchQuery
+      ? `#${searchQuery} のタグで投稿された作品を一覧表示します。`
+      : "AIイラストをタグ・タイトル・説明から検索できます。人気のタグやランキングもあわせて確認できます。"
 
   return [
     { title },

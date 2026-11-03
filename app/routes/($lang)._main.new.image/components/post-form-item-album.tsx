@@ -26,7 +26,7 @@ export function PostFormItemAlbum (props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">{t("シリーズ", "Album")}</p>
+        <p className="font-bold text-sm">{t("シリーズ", "Series")}</p>
         <Select
           disabled={!hasAlbums}
           value={props.album ?? "__none__"}

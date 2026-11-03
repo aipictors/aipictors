@@ -1,5 +1,6 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { FollowButton } from "~/components/button/follow-button"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { LikeButton } from "~/components/like-button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
@@ -11,6 +12,7 @@ type Props = {
 }
 
 export function UserSearchItem (props: Props) {
+  const t = useTranslation()
   const MAX_LENGTH = 40 // Set your desired maximum length
 
   const truncateText = (text: string, maxLength: number) => {
@@ -56,7 +58,7 @@ export function UserSearchItem (props: Props) {
             <div className="size-32 rounded-md">
               <img
                 className="size-32 rounded-md object-cover"
-                alt={work.title}
+                alt={t(work.title, work.enTitle || undefined)}
                 src={work.smallThumbnailImageURL}
                 width={128}
                 height={128}
@@ -103,6 +105,7 @@ export const UserSearchListItemWorkFragment = graphql(
   `fragment UserSearchListItemWork on WorkNode  @_unmask {
     id
     title
+    enTitle
     smallThumbnailImageURL
     isLiked
     user {

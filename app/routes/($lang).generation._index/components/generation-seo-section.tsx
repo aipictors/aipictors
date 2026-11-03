@@ -1,4 +1,5 @@
-import { Link, useParams } from "@remix-run/react"
+import { useParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { ChevronDown } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import type {

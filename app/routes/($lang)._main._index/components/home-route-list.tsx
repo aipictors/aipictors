@@ -1,5 +1,6 @@
 import { gql, useLazyQuery } from "@apollo/client/index"
-import { Link, useLocation, useNavigation } from "@remix-run/react"
+import { useLocation, useNavigation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import {
   ChevronDownIcon,
   ChevronLeftIcon,

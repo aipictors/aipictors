@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import type { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
@@ -118,6 +119,7 @@ export const meta: MetaFunction = (props) => {
  * モデルの詳細
  */
 export default function ModelPage () {
+  const t = useTranslation()
   const params = useParams()
 
   if (params.model === undefined) {
@@ -145,7 +147,7 @@ export default function ModelPage () {
           lang: params.lang,
           parents: [{ name: "AI画像生成モデル一覧", path: "/models" }],
           items: (model.works ?? []).map((work) => ({
-            name: work.title,
+            name: t(work.title, work.enTitle || undefined),
             path: `/posts/${work.id}`,
           })),
         })}

@@ -11,6 +11,7 @@
  */
 
 import { getLayoutHint } from "~/utils/layout-hint"
+import { toLocaleFromAcceptLanguage } from "~/utils/locale-path"
 
 type KvNamespace = {
   getWithMetadata(
@@ -131,8 +132,7 @@ const getLocale = (request: Request): "ja" | "en" => {
   const cookie = request.headers.get("cookie") ?? ""
   const match = cookie.match(/(?:^|;\s*)locale=(ja|en)/)
   if (match) return match[1] as "ja" | "en"
-  const acceptLanguage = request.headers.get("accept-language")?.toLowerCase()
-  return acceptLanguage?.startsWith("en") ? "en" : "ja"
+  return toLocaleFromAcceptLanguage(request.headers.get("accept-language"))
 }
 
 export const createEdgePageCache = (version: string) => {
@@ -140,6 +140,13 @@ export const createEdgePageCache = (version: string) => {
     if (request.method !== "GET") return false
     if (request.headers.get("authorization")) return false
     if (EXCLUDED_PATH.test(url.pathname)) return false
+    // 日本語を選んだ人が英語の URL を開いたときは日本語へ転送する（保存済みの英語を返さない）
+    if (
+      /^\/en(?:\/|$)/.test(url.pathname) &&
+      /(?:^|;\s*)locale=ja(?:;|$)/.test(request.headers.get("cookie") ?? "")
+    ) {
+      return false
+    }
     // 画像やファイル（拡張子つき）は対象外
     if (/\.[a-z0-9]{2,5}$/i.test(url.pathname)) return false
     const isData = url.searchParams.has("_data")

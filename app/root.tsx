@@ -8,19 +8,8 @@ import {
   type MetaFunction,
   redirect,
 } from "@remix-run/cloudflare"
-import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  type ShouldRevalidateFunction,
-  useLocation,
-  useNavigate,
-  useRouteError,
-  useRouteLoaderData,
-} from "@remix-run/react"
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, type ShouldRevalidateFunction, useLocation, useRouteError, useRouteLoaderData } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { lazy, Suspense, useEffect, useRef, useState } from "react"
 import { replayPendingClick } from "~/lib/replay-pending-click"
 import { PhotoProvider } from "react-photo-view"
@@ -42,6 +31,7 @@ import {
   HEADER_USER_INLINE_STYLE,
 } from "~/utils/header-user-snapshot"
 import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
+import { toLocalePathname } from "~/lib/app/locale-router"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { setRenderNow } from "~/utils/render-now"
 import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
@@ -724,6 +714,34 @@ export function Layout(props: Props): React.ReactNode {
   )
 }
 
+/**
+ * 英語で見ている人を、サーバーの転送や書き換えていないリンクで日本語に戻さない。
+ * 言語の切り替えでは先に cookie を ja にするので、ここでは戻さない
+ */
+function KeepEnglishLocale(): null {
+  const { pathname, search, hash } = useLocation()
+  const navigate = useNavigate()
+  const previousLocaleRef = useRef(getPathLocale(pathname))
+
+  useEffect(() => {
+    const locale = getPathLocale(pathname)
+    if (
+      previousLocaleRef.current === "en" &&
+      locale === "ja" &&
+      !/(?:^|;\s*)locale=ja(?:;|$)/.test(document.cookie) &&
+      toLocalePathname("en", pathname) !== pathname
+    ) {
+      navigate(`${toLocalePathname("en", pathname)}${search}${hash}`, {
+        replace: true,
+      })
+      return
+    }
+    previousLocaleRef.current = locale
+  }, [pathname, search, hash, navigate])
+
+  return null
+}
+
 export default function App(): React.ReactNode {
   const loaderData = useRootLoaderData()
   const [isMounted, setIsMounted] = useState(false)
@@ -741,6 +759,7 @@ export default function App(): React.ReactNode {
   return (
     <>
       <Outlet />
+      <KeepEnglishLocale />
       <ContentModeGuard />
       {/* SSR時は非表示、クライアントサイドでのみ表示 */}
       {isMounted && (

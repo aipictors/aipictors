@@ -1,12 +1,7 @@
 import { useQuery } from "@apollo/client/index"
 import { EMPTY_UNREAD_COUNTS } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useNavigation,
-  useSearchParams,
-} from "@remix-run/react"
+import { useLocation, useNavigation, useSearchParams } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
   ImagePlusIcon,

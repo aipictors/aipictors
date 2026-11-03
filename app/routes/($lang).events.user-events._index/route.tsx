@@ -97,8 +97,8 @@ const buildUserEventIconMap = async (userIds: string[]) => {
   return new Map<string, string | null>(responses)
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.EVENTS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.EVENTS, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {

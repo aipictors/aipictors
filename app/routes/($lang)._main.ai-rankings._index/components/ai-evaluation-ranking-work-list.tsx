@@ -1,5 +1,6 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import { useContext, useEffect, useRef, useState } from "react"
@@ -105,6 +106,7 @@ function RankingWorkCard(props: {
   index: number
   featured?: boolean
 }) {
+  const t = useTranslation()
   const { workItem, featured = false } = props
 
   if (!workItem.work) {
@@ -118,7 +120,7 @@ function RankingWorkCard(props: {
           <div className="space-y-3">
             <div className="relative overflow-hidden rounded-[24px] bg-muted/30">
               <CroppedWorkSquare
-                title={workItem.work.title}
+                title={t(workItem.work.title, workItem.work.enTitle || undefined)}
                 workId={workItem.work.id}
                 subWorksCount={workItem.work.subWorksCount}
                 imageUrl={workItem.work.smallThumbnailImageURL}
@@ -147,7 +149,7 @@ function RankingWorkCard(props: {
 
             <div className="space-y-2">
               <p className={featured ? "line-clamp-2 font-bold text-base text-foreground sm:text-lg" : "line-clamp-2 font-bold text-sm text-foreground sm:text-base"}>
-                {workItem.work.title}
+                {t(workItem.work.title, workItem.work.enTitle || undefined)}
               </p>
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="rounded-full bg-amber-100 px-2.5 py-1 font-semibold text-amber-700 dark:bg-amber-950/60 dark:text-amber-200">
@@ -173,7 +175,7 @@ function RankingWorkCard(props: {
           {featured && <div className="min-w-0 space-y-4">
             {workItem.index <= 5 && workItem.pictorComment ? (
               <RankingCommentPreview
-                title={workItem.work.title}
+                title={t(workItem.work.title, workItem.work.enTitle || undefined)}
                 comment={workItem.pictorComment}
                 score={workItem.overallScore}
                 awardTier={workItem.awardTier}
@@ -289,6 +291,7 @@ export const AiEvaluationRankingListItemFragment = graphql(
     work {
       id
       title
+      enTitle
       likesCount
       commentsCount
       viewsCount

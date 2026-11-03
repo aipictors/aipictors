@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
@@ -82,6 +82,7 @@ export const HomeAwardWorksFragment = graphql(
       smallThumbnailImageWidth
       thumbnailImagePosition
       title
+      enTitle
       user {
         id
         iconUrl

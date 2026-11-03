@@ -1,4 +1,5 @@
-import { Link, useLocation } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import type { LucideIcon } from "lucide-react"
 import clsx from "clsx"
 import type { ReactNode } from "react"

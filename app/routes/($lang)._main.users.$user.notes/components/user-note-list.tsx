@@ -59,7 +59,7 @@ export function UserNoteList(props: Props) {
           <TextWorkCard
             key={work.id}
             id={work.id}
-            title={work.title}
+            title={t(work.title, work.enTitle || undefined)}
             description={work.description ?? null}
             thumbnailUrl={work.smallThumbnailImageURL}
             likesCount={work.likesCount}
@@ -76,6 +76,7 @@ export const UserNotesItemFragment = graphql(
     smallThumbnailImageURL
     isLiked
     title
+    enTitle
     likesCount
     description
     user {

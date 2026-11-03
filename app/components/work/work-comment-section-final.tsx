@@ -20,7 +20,7 @@ import {
   StampIcon,
 } from "lucide-react"
 import { useState, useContext, useRef, useEffect } from "react"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { useTranslation } from "~/hooks/use-translation"

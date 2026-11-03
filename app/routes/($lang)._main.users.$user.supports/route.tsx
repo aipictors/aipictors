@@ -1,6 +1,7 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
-import { Link, useLoaderData, useParams } from "@remix-run/react"
+import { useLoaderData, useParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { Trophy } from "lucide-react"
 import {

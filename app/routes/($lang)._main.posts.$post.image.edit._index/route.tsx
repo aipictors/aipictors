@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { Link, useBeforeUnload, useLoaderData } from "@remix-run/react"
+import { useBeforeUnload, useLoaderData } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { useCallback, useContext, useEffect, useReducer, useState } from "react"
 import { toast } from "sonner"

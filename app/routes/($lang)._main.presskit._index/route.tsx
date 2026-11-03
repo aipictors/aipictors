@@ -1,3 +1,4 @@
+import { Link } from "~/lib/app/locale-router"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -290,13 +291,13 @@ export default function Presskit () {
             </div>
 
             <Button asChild variant="outline" className="w-full sm:w-auto">
-              <a
-                href="/pictor-chan"
+              <Link
+                to="/pictor-chan"
                 className="inline-flex items-center justify-center gap-2"
               >
                 <SparklesIcon className="h-4 w-4" />
                 {t("ぴくたーちゃんについて", "About Pictor-chan")}
-              </a>
+              </Link>
             </Button>
           </div>
         </div>
@@ -339,12 +340,12 @@ export default function Presskit () {
           )}
         </p>
         <Button asChild variant="default" className="w-full sm:w-auto">
-          <a
-            href="/contact"
+          <Link
+            to="/contact"
             className="inline-flex items-center justify-center gap-2"
           >
             {t("お問い合わせページへ", "Go to Contact Page")}
-          </a>
+          </Link>
         </Button>
       </div>
     </div>

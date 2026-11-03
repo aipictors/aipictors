@@ -1,5 +1,5 @@
 import { gql, useMutation } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Bookmark, Heart, Images } from "lucide-react"
 import { useContext, useEffect, useRef, useState } from "react"

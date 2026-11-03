@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import {

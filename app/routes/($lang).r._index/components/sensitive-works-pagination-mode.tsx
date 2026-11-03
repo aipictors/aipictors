@@ -1,5 +1,6 @@
 import { useContext, useEffect, useMemo } from "react"
-import { useNavigate, useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"

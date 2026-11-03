@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
@@ -44,7 +44,7 @@ export function HomeNewCommentsSection(props: Props) {
             <li key={comment.comment?.id}>
               <Link
                 to={`${props.isSensitive ? "/r" : ""}/posts/${work.id}`}
-                title={work.title}
+                title={t(work.title, work.enTitle || undefined)}
                 className="flex gap-2.5 rounded-xl p-2 transition-colors hover:bg-muted"
               >
                 <img
@@ -96,6 +96,7 @@ export const HomeNewCommentsFragment = graphql(
     work {
       id
       title
+      enTitle
       smallThumbnailImageURL
       smallThumbnailImageHeight
       smallThumbnailImageWidth

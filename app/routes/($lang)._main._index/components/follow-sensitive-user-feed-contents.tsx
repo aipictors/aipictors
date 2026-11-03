@@ -16,7 +16,7 @@ import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { MessageCircleIcon, Loader2Icon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
@@ -603,7 +603,7 @@ function FeedContent({
                           >
                             <img
                               src={work.largeThumbnailImageURL}
-                              alt={work.title}
+                              alt={t(work.title, work.enTitle || undefined)}
                               className="w-full rounded-md"
                             />
                           </button>
@@ -611,7 +611,7 @@ function FeedContent({
                           <Link to={`/posts/${work.id}`}>
                             <img
                               src={work.largeThumbnailImageURL}
-                              alt={work.title}
+                              alt={t(work.title, work.enTitle || undefined)}
                               className="w-full rounded-md"
                             />
                           </Link>
@@ -643,7 +643,7 @@ function FeedContent({
                                     >
                                       <img
                                         src={subWork.imageUrl}
-                                        alt={work.title}
+                                        alt={t(work.title, work.enTitle || undefined)}
                                         className="w-full rounded-md"
                                       />
                                     </Link>
@@ -652,7 +652,7 @@ function FeedContent({
                           </>
                         )}
                       </div>
-                      <div className="font-semibold text-md">{work.title}</div>
+                      <div className="font-semibold text-md">{t(work.title, work.enTitle || undefined)}</div>
                       <div>{work.description}</div>
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center">
@@ -734,6 +734,7 @@ export const workFieldsFragment = graphql(
   `fragment PartialWorkFields on WorkNode @_unmask {
     id
     title
+    enTitle
     largeThumbnailImageURL
     description
     tagNames

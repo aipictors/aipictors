@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Heart } from "lucide-react"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { cn } from "~/lib/utils"

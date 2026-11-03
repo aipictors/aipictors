@@ -1,4 +1,5 @@
-import { Link, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import type {

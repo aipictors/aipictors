@@ -1,5 +1,6 @@
+import { useTranslation } from "~/hooks/use-translation"
 import type { FragmentOf } from "gql.tada"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Heart, Images, MessageCircle } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
@@ -27,6 +28,7 @@ type Props = {
  * 各サムネイル下に参照生成ボタンが表示される
  */
 export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
+  const t = useTranslation()
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
@@ -41,7 +43,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
             >
               <div className="relative">
                 <CroppedWorkSquare
-                  title={workItem.title}
+                  title={t(workItem.title, workItem.enTitle || undefined)}
                   workId={workItem.id}
                   subWorksCount={workItem.subWorksCount}
                   commentsCount={workItem.commentsCount}
@@ -108,7 +110,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
             const image = (
               <OptimizedImage
                 src={imageUrl}
-                alt={work.title}
+                alt={t(work.title, work.enTitle || undefined)}
                 className="h-full w-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
                 width={width}
                 height={height}
@@ -133,7 +135,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                       type="button"
                       className="absolute inset-0 block h-full w-full cursor-pointer overflow-hidden"
                       onClick={() => props.onSelect?.(work.id.toString())}
-                      aria-label={`Open ${work.title}`}
+                      aria-label={`Open ${t(work.title, work.enTitle || undefined)}`}
                     >
                       {image}
                     </button>
@@ -217,16 +219,16 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                           e.stopPropagation()
                           props.onSelect?.(work.id.toString())
                         }}
-                        aria-label={`Open ${work.title}`}
+                        aria-label={`Open ${t(work.title, work.enTitle || undefined)}`}
                       >
-                        <p className="truncate text-sm">{work.title}</p>
+                        <p className="truncate text-sm">{t(work.title, work.enTitle || undefined)}</p>
                       </button>
                     ) : (
                       <Link
                         className="min-w-0 font-bold hover:underline"
                         to={`/posts/${work.id}`}
                       >
-                        <p className="truncate text-sm">{work.title}</p>
+                        <p className="truncate text-sm">{t(work.title, work.enTitle || undefined)}</p>
                       </Link>
                     )}
                     <div className="flex min-w-0 items-center justify-between gap-2">
@@ -281,6 +283,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
   isShowProfile?: boolean
   onSelect?: (index: string) => void
 }) {
+  const t = useTranslation()
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
@@ -290,7 +293,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
         <div key={work.id} className="flex flex-col space-y-2">
           <div className="relative">
             <CroppedWorkSquare
-              title={work.title}
+              title={t(work.title, work.enTitle || undefined)}
               workId={work.id}
               imageUrl={work.smallThumbnailImageURL}
               thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
@@ -328,11 +331,11 @@ function HomeCroppedWorksWithGenerationButton(props: {
                   onClick={() => props.onSelect?.(work.id)}
                   className="cursor-pointer text-left"
                 >
-                  <p className="line-clamp-2 text-sm">{work.title}</p>
+                  <p className="line-clamp-2 text-sm">{t(work.title, work.enTitle || undefined)}</p>
                 </button>
               ) : (
                 <Link to={`/posts/${work.id}`}>
-                  <p className="line-clamp-2 text-sm">{work.title}</p>
+                  <p className="line-clamp-2 text-sm">{t(work.title, work.enTitle || undefined)}</p>
                 </Link>
               )}
               <Link to={`/users/${work.user?.id}`}>

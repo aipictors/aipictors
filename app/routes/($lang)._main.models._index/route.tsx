@@ -1,9 +1,11 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import {
   imageModelCardFragment,
   ImageModelList,
 } from "~/routes/($lang)._main.models._index/components/image-model-list"
-import { Link, useLoaderData, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import type {
   HeadersFunction,
@@ -79,6 +81,7 @@ const parseFilters = (
 }
 
 export default function ModelsPage() {
+  const t = useTranslation()
   const data = useLoaderData<typeof loader>()
 
   const [searchParams, setSearchParams] = useSearchParams()
@@ -107,10 +110,10 @@ export default function ModelsPage() {
           <div className="space-y-2">
             <p className="flex items-center gap-1.5 font-medium text-violet-600 text-xs dark:text-violet-400">
               <SparklesIcon className="size-3.5" />
-              みんなのモデルで生成できるようになりました
+              {t("みんなのモデルで生成できるようになりました", "You can now generate with community models")}
             </p>
             <h1 className="font-bold text-2xl tracking-tight md:text-3xl">
-              モデル（LoRA・チェックポイント）
+              {t("モデル（LoRA・チェックポイント）", "Models (LoRA & checkpoints)")}
             </h1>
             <p className="max-w-xl text-muted-foreground text-sm leading-relaxed">
               {
@@ -122,13 +125,13 @@ export default function ModelsPage() {
             <Button asChild variant="outline" className="rounded-full">
               <Link to="/models/library">
                 <FolderCogIcon className="mr-1.5 size-4" />
-                モデルライブラリ
+                {t("モデルライブラリ", "Model library")}
               </Link>
             </Button>
             <Button asChild className="rounded-full">
               <Link to="/models/upload">
                 <UploadIcon className="mr-1.5 size-4" />
-                アップロード
+                {t("アップロード", "Upload")}
               </Link>
             </Button>
           </div>
@@ -149,10 +152,10 @@ export default function ModelsPage() {
       >
         <TabsList className="mb-4">
           <TabsTrigger value="community" className="px-4">
-            みんなのモデル
+            {t("みんなのモデル", "Community models")}
           </TabsTrigger>
           <TabsTrigger value="official" className="px-4">
-            公式モデル
+            {t("公式モデル", "Official models")}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="community">

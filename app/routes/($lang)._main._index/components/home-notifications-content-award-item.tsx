@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql, type FragmentOf } from "gql.tada"
 import { toDateText } from "~/utils/to-date-text"
 
@@ -52,6 +52,7 @@ export const WorkAwardNotificationFragment = graphql(
     work {
       id
       title
+      enTitle
       smallThumbnailImageURL
     }
   }`,

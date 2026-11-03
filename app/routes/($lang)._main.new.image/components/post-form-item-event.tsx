@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { useEffect, useState } from "react"
 import type { Tag } from "~/components/tag/tag-input"
 import { Card, CardContent } from "~/components/ui/card"

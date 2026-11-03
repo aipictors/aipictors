@@ -9,7 +9,7 @@ import { Switch } from "~/components/ui/switch"
 import { Label } from "~/components/ui/label"
 import { OnboardingSteps } from "~/components/onboarding-steps"
 import { cn } from "~/lib/utils"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { useTranslation } from "~/hooks/use-translation"
 
 /**

@@ -1,6 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { SearchIcon } from "lucide-react"
 import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳フックをインポート

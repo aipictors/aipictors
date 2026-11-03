@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "~/lib/app/locale-router"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ResponsivePhotoVideoWorksAlbum } from "~/components/responsive-photo-video-works-album"
 import { AuthContext } from "~/contexts/auth-context"
@@ -66,6 +66,7 @@ export const UserVideosItemFragment = graphql(
   `fragment UserVideosItem on WorkNode @_unmask {
     id
     title
+    enTitle
     url
     smallThumbnailImageHeight
     smallThumbnailImageWidth

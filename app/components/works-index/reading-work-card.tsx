@@ -1,4 +1,5 @@
-import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { graphql, type ResultOf } from "gql.tada"
 import { BookOpenIcon, Heart, MessageCircle } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
@@ -12,6 +13,7 @@ export const ReadingWorkFragment = graphql(
   `fragment ReadingWork on WorkNode @_unmask {
     id
     title
+    enTitle
     description
     likesCount
     commentsCount
@@ -49,6 +51,7 @@ type Props = {
  * 表紙の枠は CSS で先に決めるので、画像が読み終わっても並びがずれない
  */
 export function ReadingWorkCard(props: Props) {
+  const t = useTranslation()
   const { work } = props
   const imageUrl = work.smallThumbnailImageURL
 
@@ -82,7 +85,7 @@ export function ReadingWorkCard(props: Props) {
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <h3 className="font-bold text-sm leading-snug md:text-base">
           <Link to={props.to} className="line-clamp-2 hover:underline">
-            {work.title}
+            {t(work.title, work.enTitle || undefined)}
           </Link>
         </h3>
         {work.excerpt !== "" && (

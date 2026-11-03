@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Heart, Eye, Images } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { Skeleton } from "~/components/ui/skeleton"

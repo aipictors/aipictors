@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
@@ -214,6 +215,7 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => ({
 })
 
 export default function Work () {
+  const t = useTranslation()
   const params = useParams()
 
   if (params.post === undefined) {
@@ -242,8 +244,8 @@ export default function Work () {
     lang === "en"
       ? data.work.enTitle && data.work.enTitle.length > 0
         ? data.work.enTitle
-        : data.work.title
-      : data.work.title
+        : t(data.work.title, data.work.enTitle || undefined)
+      : t(data.work.title, data.work.enTitle || undefined)
 
   const descriptionRaw =
     lang === "en"

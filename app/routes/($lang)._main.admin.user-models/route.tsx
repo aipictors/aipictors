@@ -1,7 +1,7 @@
 import { gql, useQuery as useApolloQuery } from "@apollo/client/index"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Boxes, ImageOff, Lock, LockOpen } from "lucide-react"
 import { useContext, useState } from "react"

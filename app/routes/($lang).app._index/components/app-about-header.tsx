@@ -1,5 +1,5 @@
 import { AppCanvas } from "~/routes/($lang).app._index/components/app-canvas"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { BellIcon, HeartIcon, ImagePlusIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 

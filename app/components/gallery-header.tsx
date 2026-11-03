@@ -1,9 +1,5 @@
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "@remix-run/react"
+import { useLocation, useSearchParams } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { Grid3X3, MenuIcon, Search, X } from "lucide-react"
 import { lazy, Suspense, useEffect, useState } from "react"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"

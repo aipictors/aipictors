@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { memo, useMemo } from "react"
 import { LazyLoadComponent } from "~/components/lazy-load-component"
 import { OptimizedImage } from "~/components/optimized-image"
@@ -117,6 +118,7 @@ const WorkItem = memo(
     itemHeight: number
     onClick: () => void
   }) => {
+  const t = useTranslation()
     return (
       <button
         type="button"
@@ -126,7 +128,7 @@ const WorkItem = memo(
       >
         <OptimizedImage
           src={work.imageUrl}
-          alt={work.title}
+          alt={t(work.title, work.enTitle || undefined)}
           width={work.width}
           height={work.height}
           loading="lazy"
@@ -139,7 +141,7 @@ const WorkItem = memo(
         {/* タイトル */}
         <div className="absolute right-2 bottom-2 left-2 translate-y-full transform transition-transform duration-200 group-hover:translate-y-0">
           <p className="truncate font-medium text-sm text-white">
-            {work.title}
+            {t(work.title, work.enTitle || undefined)}
           </p>
           {work.userName && (
             <p className="truncate text-white/80 text-xs">{work.userName}</p>

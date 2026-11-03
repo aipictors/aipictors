@@ -1,5 +1,5 @@
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { useTranslation } from "~/hooks/use-translation"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
@@ -102,6 +102,7 @@ export const HomeNewCommentsFragment = graphql(
     work {
       id
       title
+      enTitle
       smallThumbnailImageURL
       smallThumbnailImageHeight
       smallThumbnailImageWidth

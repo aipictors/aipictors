@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { useRotatingHomeEvents } from "~/routes/($lang)._main._index/components/use-rotating-home-events"
 import type { MicroCmsApiRelease } from "~/types/micro-cms-release-response"
 

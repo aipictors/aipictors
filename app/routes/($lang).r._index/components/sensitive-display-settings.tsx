@@ -1,5 +1,6 @@
 import { useMutation } from "@apollo/client/index"
-import { Link, useLocation } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { SlidersHorizontalIcon } from "lucide-react"
 import { useContext, useId, useState } from "react"

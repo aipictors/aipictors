@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { Heart } from "lucide-react"
 import { useContext } from "react"
@@ -91,7 +91,7 @@ export function EventAwardWorkList (props: Props) {
                   >
                     <div className="relative">
                       <CroppedWorkSquare
-                        title={work.title}
+                        title={t(work.title, work.enTitle || undefined)}
                         workId={work.id}
                         imageUrl={work.smallThumbnailImageURL}
                         subWorksCount={work.subWorksCount}
@@ -118,7 +118,7 @@ export function EventAwardWorkList (props: Props) {
                       </div>
                     </div>
                     <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                      {work.title}
+                      {t(work.title, work.enTitle || undefined)}
                     </p>
                     <div className="flex items-center justify-between gap-2">
                       <UserNameBadge
@@ -147,6 +147,7 @@ export const EventAwardWorkListItemFragment = graphql(
   `fragment EventAwardWorkListItem on WorkNode @_unmask {
     id
     title
+    enTitle
     accessType
     adminAccessType
     type

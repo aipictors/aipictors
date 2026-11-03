@@ -3,6 +3,7 @@ import {
   buildLocalePath,
   getPathLocale,
   normalizeLocalePath,
+  toLocaleFromAcceptLanguage,
   type SupportedLocale,
 } from "~/utils/locale-path"
 
@@ -22,15 +23,9 @@ export function checkLocaleRedirect(request: Request): LocaleRedirect | null {
       : null
 
   // ユーザーが言語切替で保存した cookie を最優先にし、未設定時のみブラウザ言語を使う
-  const acceptLanguage = request.headers.get("Accept-Language")?.toLowerCase()
-
-  const locale: SupportedLocale = cookieLocale
-    ? cookieLocale
-    : acceptLanguage
-    ? acceptLanguage.startsWith("en")
-      ? "en"
-      : "ja"
-    : "ja"
+  const locale: SupportedLocale =
+    cookieLocale ??
+    toLocaleFromAcceptLanguage(request.headers.get("Accept-Language"))
 
   const url = new URL(request.url)
   const pathname = url.pathname

@@ -1,6 +1,6 @@
 import { memo, useMemo, useCallback } from "react"
 import type { FragmentOf } from "gql.tada"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Heart, Eye, Images } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"

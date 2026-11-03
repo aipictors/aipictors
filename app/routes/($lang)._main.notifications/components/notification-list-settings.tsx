@@ -1,5 +1,6 @@
 import { useEffect } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
+import { useNavigate } from "~/lib/app/locale-router"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 

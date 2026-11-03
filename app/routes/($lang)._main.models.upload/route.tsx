@@ -1,5 +1,5 @@
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { ArrowLeftIcon, ShieldCheckIcon } from "lucide-react"
 import { ClientOnly } from "remix-utils/client-only"
 import { Button } from "~/components/ui/button"

@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import type { UserModelAuthor as Author } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"

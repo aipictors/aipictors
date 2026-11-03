@@ -541,11 +541,18 @@ export function PostImageFormInput(props: Props) {
           }}
         />
       )}
+      <PostFormItemAlbum
+        album={props.state.albumId}
+        albums={albumOptions()}
+        setAlbumId={(albumId) => {
+          props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
+        }}
+      />
       <PostFormAdvancedSection
         isCollapsed={props.isAdvancedCollapsed}
         summary={t(
-          "英語版・シリーズ・許可の設定・AI評価・関連リンクなど",
-          "English version, album, permissions, AI evaluation, related link and more",
+          "英語版・許可の設定・AI評価・関連リンク・宣伝作品など",
+          "English version, permissions, AI evaluation, related link, promotion and more",
         )}
       >
       <PostFormItemEnglish
@@ -557,13 +564,6 @@ export function PostImageFormInput(props: Props) {
         }}
         title={props.state.enTitle}
         caption={props.state.enCaption}
-      />
-      <PostFormItemAlbum
-        album={props.state.albumId}
-        albums={albumOptions()}
-        setAlbumId={(albumId) => {
-          props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
-        }}
       />
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}

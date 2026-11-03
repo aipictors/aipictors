@@ -5,7 +5,7 @@ import { Separator } from "~/components/ui/separator"
 import { Button } from "~/components/ui/button"
 import { Copy, Download, ExternalLink, Heart, Star } from "lucide-react"
 import { useToast } from "~/hooks/use-toast"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 
 export function PictorChanProfile () {
   const t = useTranslation()

@@ -1,5 +1,5 @@
 import { useApolloClient, useQuery } from "@apollo/client/index"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon, MessageCircleIcon } from "lucide-react"
 import {
@@ -663,7 +663,7 @@ function FeedContent({
                           >
                             <img
                               src={work.largeThumbnailImageURL}
-                              alt={work.title}
+                              alt={t(work.title, work.enTitle || undefined)}
                               className="w-full rounded-md"
                             />
                           </button>
@@ -671,7 +671,7 @@ function FeedContent({
                           <Link to={`/posts/${work.id}`}>
                             <img
                               src={work.largeThumbnailImageURL}
-                              alt={work.title}
+                              alt={t(work.title, work.enTitle || undefined)}
                               className="w-full rounded-md"
                             />
                           </Link>
@@ -703,7 +703,7 @@ function FeedContent({
                                     >
                                       <img
                                         src={subWork.imageUrl}
-                                        alt={work.title}
+                                        alt={t(work.title, work.enTitle || undefined)}
                                         className="w-full rounded-md"
                                       />
                                     </Link>
@@ -712,7 +712,7 @@ function FeedContent({
                           </>
                         )}
                       </div>
-                      <div className="font-semibold text-md">{work.title}</div>
+                      <div className="font-semibold text-md">{t(work.title, work.enTitle || undefined)}</div>
                       <div>{work.description}</div>
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center">
@@ -796,6 +796,7 @@ export const workFieldsFragment = graphql(
   `fragment PartialWorkFields on WorkNode @_unmask {
     id
     title
+    enTitle
     largeThumbnailImageURL
     description
     tagNames

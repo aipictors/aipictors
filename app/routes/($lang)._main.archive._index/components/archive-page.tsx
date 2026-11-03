@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/client/index"
-import { Link, useLocation, useSearchParams } from "@remix-run/react"
+import { useLocation, useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { HistoryIcon, ShuffleIcon } from "lucide-react"
 import { useContext, useEffect, useMemo, useState } from "react"

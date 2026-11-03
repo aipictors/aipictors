@@ -14,6 +14,38 @@ const normalizeRemainder = (remainder: string) => {
   return remainder.startsWith("/") ? remainder : `/${remainder}`
 }
 
+/**
+ * ブラウザの言語設定（Accept-Language）から表示言語を決める。
+ * 希望順に見て、日本語と英語のうち先にある方。どちらもない海外のブラウザは英語にする。
+ * 言語設定を送らない検索エンジンなどは日本語（/en は /en のまま読める）
+ */
+export const toLocaleFromAcceptLanguage = (
+  acceptLanguage: string | null | undefined,
+): SupportedLocale => {
+  const languages = (acceptLanguage ?? "")
+    .toLowerCase()
+    .split(",")
+    .map((item, index) => {
+      const [tag, ...params] = item.trim().split(";")
+      const q = params
+        .map((param) => param.trim().match(/^q=([\d.]+)$/)?.[1])
+        .find((value) => value !== undefined)
+      return {
+        language: tag.trim().split("-")[0],
+        q: q === undefined ? 1 : Number(q),
+        index,
+      }
+    })
+    .filter((item) => item.language !== "" && item.language !== "*" && item.q > 0)
+    .sort((a, b) => b.q - a.q || a.index - b.index)
+
+  if (languages.length === 0) return "ja"
+  const known = languages.find(
+    (item) => item.language === "ja" || item.language === "en",
+  )
+  return known?.language === "ja" ? "ja" : "en"
+}
+
 export const parseLocalePath = (pathname: string): LocalePathState => {
   const segments = pathname.split("/").filter(Boolean)
 
@@ -132,6 +164,7 @@ export const buildAlternateLocaleUrls = (
       `${siteUrl}${normalizeLocalePath(pathname)}${normalizedSearch}`,
     ja: `${siteUrl}${jaPath}${normalizedSearch}`,
     en: `${siteUrl}${enPath}${normalizedSearch}`,
-    xDefault: `${siteUrl}${jaPath}${normalizedSearch}`,
+    // 日本語でも英語でもない地域の人に出す URL。日本語より英語の方が読める人が多い
+    xDefault: `${siteUrl}${enPath}${normalizedSearch}`,
   }
 }

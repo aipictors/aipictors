@@ -3,7 +3,8 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { Link, useLoaderData, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { format } from "date-fns"
 import { graphql } from "gql.tada"
 import {

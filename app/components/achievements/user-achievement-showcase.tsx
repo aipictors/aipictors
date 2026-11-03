@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { Share2Icon } from "lucide-react"
 import { useState } from "react"

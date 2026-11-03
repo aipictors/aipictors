@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { useCallback, useEffect, useRef, useState, useMemo } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
@@ -57,6 +58,7 @@ export function WorkViewerDialog({
   isLoadingMore = false,
   startWorkId,
 }: Props): React.ReactNode {
+  const t = useTranslation()
   // ────────── State / Refs ──────────
   const initialIndex = useMemo(() => {
     if (startWorkId) {
@@ -470,7 +472,7 @@ export function WorkViewerDialog({
             </span>
           </button>
           <DialogTitle className="min-w-0 flex-1 truncate font-bold text-base">
-            {currentWork.title}
+            {t(currentWork.title, currentWork.enTitle || undefined)}
           </DialogTitle>
           <span className="shrink-0 text-muted-foreground text-xs tabular-nums">
             {index + 1} / {works.length}
@@ -502,7 +504,7 @@ export function WorkViewerDialog({
                 <div className="relative">
                   <img
                     src={work.smallThumbnailImageURL}
-                    alt={work.title}
+                    alt={t(work.title, work.enTitle || undefined)}
                     className="max-h-[60vh] max-w-full rounded-lg object-contain opacity-60 blur-[2px]"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -638,7 +640,7 @@ export function WorkViewerDialog({
             <WorkActionContainer
               accessType={currentWork.accessType}
               workLikesCount={currentWork.likesCount}
-              title={currentWork.title}
+              title={t(currentWork.title, currentWork.enTitle || undefined)}
               description=""
               currentImageUrl={currentWork.imageURL}
               imageUrls={[currentWork.imageURL]}

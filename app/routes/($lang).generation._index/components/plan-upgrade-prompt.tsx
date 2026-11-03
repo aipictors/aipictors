@@ -1,5 +1,5 @@
 import { Crown } from "lucide-react"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 

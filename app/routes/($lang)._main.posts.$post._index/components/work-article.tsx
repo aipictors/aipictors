@@ -1,6 +1,6 @@
 import type React from "react"
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { format } from "date-fns"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, ShieldAlert } from "lucide-react"
@@ -277,21 +277,21 @@ export function WorkArticle(props: Props) {
         <WorkVideoView
           videoUrl={props.work.url ?? ""}
           posterUrl={props.work.smallThumbnailImageURL}
-          title={props.work.title}
+          title={t(props.work.title, props.work.enTitle || undefined)}
         />
       )}
       {props.work.type === "COLUMN" && (
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
-          title={props.work.title}
+          title={t(props.work.title, props.work.enTitle || undefined)}
         />
       )}
       {props.work.type === "NOVEL" && (
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
-          title={props.work.title}
+          title={t(props.work.title, props.work.enTitle || undefined)}
         />
       )}
       <section className="mt-4 flex flex-col space-y-4">
@@ -313,7 +313,7 @@ export function WorkArticle(props: Props) {
         <WorkActionContainer
           accessType={props.work.accessType}
           workLikesCount={props.work.likesCount}
-          title={props.work.title}
+          title={t(props.work.title, props.work.enTitle || undefined)}
           description={
             (props.work.description?.length ?? 0) > 100
               ? `${props.work.description?.slice(0, 100)}...`
@@ -741,6 +741,7 @@ export const workArticleFragment = graphql(
         id
         userId
         title
+        enTitle
         largeThumbnailImageURL
         largeThumbnailImageWidth
         largeThumbnailImageHeight
@@ -940,6 +941,7 @@ export const sensitiveWorkArticleFragment = graphql(
         id
         userId
         title
+        enTitle
         largeThumbnailImageURL
         largeThumbnailImageWidth
         largeThumbnailImageHeight

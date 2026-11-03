@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import type { FragmentOf } from "gql.tada"
@@ -17,6 +18,7 @@ type Props = {
 }
 
 export function RankingSensitiveWorkList (props: Props) {
+  const t = useTranslation()
   const appContext = useContext(AuthContext)
 
   const works = props.awards
@@ -51,7 +53,7 @@ export function RankingSensitiveWorkList (props: Props) {
               <>
                 <div className="relative">
                   <CroppedWorkSquare
-                    title={workItem.work.title}
+                    title={t(workItem.work.title, workItem.work.enTitle || undefined)}
                     workId={workItem.work.id}
                     subWorksCount={workItem.work.subWorksCount}
                     imageUrl={workItem.work.smallThumbnailImageURL}
@@ -76,7 +78,7 @@ export function RankingSensitiveWorkList (props: Props) {
                   </div>
                 </div>
                 <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
-                  {workItem.work.title}
+                  {t(workItem.work.title, workItem.work.enTitle || undefined)}
                 </p>
                 {workItem.work.user && (
                   <UserNameBadge
@@ -105,6 +107,7 @@ export const SensitiveWorkAwardListItemFragment = graphql(
       work {
         id
         title
+        enTitle
         accessType
         adminAccessType
         type

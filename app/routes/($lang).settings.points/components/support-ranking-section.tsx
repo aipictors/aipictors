@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Award } from "lucide-react"
 import { useContext, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"

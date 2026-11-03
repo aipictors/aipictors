@@ -17,7 +17,8 @@ import {
 import { Badge } from "~/components/ui/badge"
 import { Filter, ChevronDown, ChevronUp, X } from "lucide-react"
 import { useState, useEffect } from "react"
-import { useSearchParams, useNavigate, useLocation } from "@remix-run/react"
+import { useSearchParams, useLocation } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { useTranslation } from "~/hooks/use-translation"
 
 type WorkType = "ALL" | "WORK" | "VIDEO" | "NOVEL" | "COLUMN"

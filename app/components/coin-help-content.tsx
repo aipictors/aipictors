@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { CircleDollarSign, Sparkles, TrendingUp, Wallet } from "lucide-react"
 import { CoinIcon } from "~/components/coin-icon"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"

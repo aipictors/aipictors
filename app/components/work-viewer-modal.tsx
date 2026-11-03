@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { useEffect, useState } from "react"
 import {
   Dialog,
@@ -18,6 +19,7 @@ type Props = {
 }
 
 export function WorkViewerModal ({ works, startIndex, onClose }: Props): React.ReactNode {
+  const t = useTranslation()
   const [index, setIndex] = useState(startIndex)
   const work = works[index]
 
@@ -47,12 +49,12 @@ export function WorkViewerModal ({ works, startIndex, onClose }: Props): React.R
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="flex max-h-[90vh] max-w-[90vw] p-0">
         <DialogHeader>
-          <DialogTitle className="sr-only">{work.title}</DialogTitle>
+          <DialogTitle className="sr-only">{t(work.title, work.enTitle || undefined)}</DialogTitle>
         </DialogHeader>
         <div className="relative flex flex-1 items-center justify-center bg-black">
           <img
             src={work.largeThumbnailImageURL}
-            alt={work.title}
+            alt={t(work.title, work.enTitle || undefined)}
             className="max-h-[90vh] max-w-full object-contain"
           />
           <Button

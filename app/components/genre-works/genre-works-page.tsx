@@ -1,4 +1,5 @@
-import { Link, useLocation } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import {
   ArrowRightIcon,
   ChevronRightIcon,
@@ -95,7 +96,7 @@ export function GenreWorksPage(props: Props) {
             itemListElement: data.rankingWorks.map((work, index) => ({
               "@type": "ListItem",
               position: index + 1,
-              name: work.title,
+              name: t(work.title, work.enTitle || undefined),
               url: `${homeUrl}/posts/${work.id}`,
             })),
           },
@@ -447,6 +448,7 @@ function GenreHeroImages(props: {
   works: GenreWorksData["heroWorks"]
   toPath: (path: string) => string
 }) {
+  const t = useTranslation()
   const layout = props.genre.heroLayout
 
   const gridClassName = {
@@ -500,7 +502,7 @@ function GenreHeroImages(props: {
             <Link
               to={props.toPath(`/posts/${work.id}`)}
               className="group absolute inset-0 block"
-              aria-label={work.title}
+              aria-label={t(work.title, work.enTitle || undefined)}
             >
               <OptimizedImage
                 src={toResizedImageUrl(imageUrl, isBig ? 640 : 320) ?? imageUrl}
@@ -513,7 +515,7 @@ function GenreHeroImages(props: {
                     ? "(min-width: 1024px) 300px, 33vw"
                     : "(min-width: 1024px) 220px, 33vw"
                 }
-                alt={work.title}
+                alt={t(work.title, work.enTitle || undefined)}
                 width={width}
                 height={height}
                 loading={index < 3 ? "eager" : "lazy"}

@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 
 const planName = (planType: string | null): string => {

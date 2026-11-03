@@ -1,7 +1,8 @@
 import { useLazyQuery, useMutation, useQuery, gql } from "@apollo/client/index"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
-import { Link, useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect, useMemo, useState } from "react"
 import {

@@ -1,4 +1,4 @@
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { Cpu, Search, Tag, TrendingUp } from "lucide-react"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"

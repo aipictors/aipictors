@@ -7,7 +7,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { MousePointerClickIcon } from "lucide-react"
 import { loaderClient } from "~/lib/loader-client"
 import { graphql } from "gql.tada"

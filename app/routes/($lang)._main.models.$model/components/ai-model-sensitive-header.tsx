@@ -1,4 +1,4 @@
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { EllipsisIcon, RefreshCcwIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import {

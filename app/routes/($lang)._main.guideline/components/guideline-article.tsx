@@ -1,3 +1,4 @@
+import { Link } from "~/lib/app/locale-router"
 import { useTranslation } from "~/hooks/use-translation"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
@@ -501,12 +502,12 @@ export function GuidelineArticle () {
                   </li>
                   <li>
                     {t("緊急の場合は", "For urgent cases, contact")}
-                    <a
-                      href="/contact"
+                    <Link
+                      to="/contact"
                       className="mx-1 text-blue-600 hover:underline"
                     >
                       {t("お問い合わせフォーム", "contact form")}
-                    </a>
+                    </Link>
                     {t("からご連絡", "")}
                   </li>
                 </ol>
@@ -606,15 +607,15 @@ export function GuidelineArticle () {
           )}
         </p>
         <div className="flex justify-center space-x-4">
-          <a href="/contact" className="text-blue-600 text-sm hover:underline">
+          <Link to="/contact" className="text-blue-600 text-sm hover:underline">
             {t("お問い合わせ", "Contact")}
-          </a>
-          <a href="/terms" className="text-blue-600 text-sm hover:underline">
+          </Link>
+          <Link to="/terms" className="text-blue-600 text-sm hover:underline">
             {t("利用規約", "Terms of Service")}
-          </a>
-          <a href="/help" className="text-blue-600 text-sm hover:underline">
+          </Link>
+          <Link to="/help" className="text-blue-600 text-sm hover:underline">
             {t("使い方ガイド", "User Guide")}
-          </a>
+          </Link>
         </div>
       </div>
     </div>

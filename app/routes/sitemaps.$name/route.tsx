@@ -188,7 +188,13 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
             loc: `${SITE_URL}/posts/${work.id}`,
             lastmod: new Date(work.createdAt * 1000).toISOString(),
             images: work.largeThumbnailImageURL
-              ? [{ loc: work.largeThumbnailImageURL, title: work.title }]
+              ? [
+                  {
+                    loc: work.largeThumbnailImageURL,
+                    title: work.title,
+                    enTitle: work.enTitle ?? undefined,
+                  },
+                ]
               : undefined,
           })),
           ...userLogins.map((login) => ({

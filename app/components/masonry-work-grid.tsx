@@ -1,4 +1,5 @@
-import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { Eye, Heart, Images } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
@@ -176,6 +177,7 @@ export function MasonryWorkGrid(props: Props): React.ReactNode {
  * - 親Linkに `leading-none` を入れて行高由来の隙間も予防
  */
 function WorkItem(props: WorkItemProps) {
+  const t = useTranslation()
   const { work, baseUrl = "posts/gallery" } = props
 
   const aspectRatio =
@@ -192,7 +194,7 @@ function WorkItem(props: WorkItemProps) {
         {/* ここが重要：block + absolute inset-0 で下余白を完全排除 */}
         <OptimizedImage
           src={work.smallThumbnailImageURL}
-          alt={work.title}
+          alt={t(work.title, work.enTitle || undefined)}
           width={work.smallThumbnailImageWidth}
           height={work.smallThumbnailImageHeight}
           className="absolute inset-0 block h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"

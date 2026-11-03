@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Check, Minus, Plus } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"

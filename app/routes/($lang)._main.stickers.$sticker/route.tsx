@@ -8,7 +8,8 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { loaderClient } from "~/lib/loader-client"
-import { Link, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import type { BreadcrumbList, ImageObject, WithContext } from "schema-dts"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"

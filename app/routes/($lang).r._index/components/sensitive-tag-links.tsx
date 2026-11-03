@@ -1,4 +1,5 @@
-import { Link, useLocation } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { getLocalePrefix } from "~/routes/($lang)._main._index/utils/content-rating-path"
 
 type Props = {

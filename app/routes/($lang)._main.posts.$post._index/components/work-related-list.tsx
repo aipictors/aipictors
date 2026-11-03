@@ -3,7 +3,7 @@
  */
 
 import { useApolloClient } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import type { EmblaCarouselType } from "embla-carousel"
 import { graphql } from "gql.tada"
 import { ChevronRightIcon } from "lucide-react"
@@ -26,6 +26,7 @@ type Props = {
     smallThumbnailImageHeight: number
     id: string
     title?: string
+    enTitle?: string | null
     userId: string
     isLiked: boolean
     subWorksCount: number
@@ -37,13 +38,14 @@ type Props = {
  * 直近の作品一覧
  */
 export function WorkRelatedList(props: Props) {
+  const t = useTranslation()
   return (
     <div className="relative space-y-4">
       <CarouselWithGradation
         items={props.works.map((work) => (
           <div key={work.id} className="relative">
             <CroppedWorkSquare
-              title={work.title}
+              title={t(work.title, work.enTitle || undefined)}
               workId={work.id}
               subWorksCount={work.subWorksCount}
               imageUrl={work.smallThumbnailImageURL}
@@ -131,6 +133,7 @@ export function WorkAuthorWorks(props: {
   ratings: AuthorWorksRating[]
   header: React.ReactNode
 }) {
+  const t = useTranslation()
   const client = useApolloClient()
   const [api, setApi] = useState<CarouselApi>()
   const [moreWorks, setMoreWorks] = useState<Props["works"]>([])
@@ -191,7 +194,7 @@ export function WorkAuthorWorks(props: {
             smallThumbnailImageWidth: work.smallThumbnailImageWidth,
             smallThumbnailImageHeight: work.smallThumbnailImageHeight,
             id: work.id,
-            title: work.title ?? undefined,
+            title: t(work.title, work.enTitle || undefined) ?? undefined,
             userId: work.userId,
             isLiked: work.isLiked,
             subWorksCount: work.subWorksCount,
@@ -241,7 +244,7 @@ export function WorkAuthorWorks(props: {
           items={works.map((work) => (
             <div key={work.id} className="relative">
               <CroppedWorkSquare
-                title={work.title}
+                title={t(work.title, work.enTitle || undefined)}
                 workId={work.id}
                 subWorksCount={work.subWorksCount}
                 imageUrl={work.smallThumbnailImageURL}
@@ -278,6 +281,7 @@ const authorMoreWorksQuery = graphql(
         id
         userId
         title
+        enTitle
         smallThumbnailImageURL
         smallThumbnailImageWidth
         smallThumbnailImageHeight
@@ -301,6 +305,7 @@ type AuthorWorksUser = {
   works: (Omit<Props["works"][number], "thumbnailImagePosition" | "title"> & {
     thumbnailImagePosition?: number | null
     title?: string | null
+    enTitle?: string | null
   })[]
 }
 
@@ -326,7 +331,7 @@ export function WorkAuthorWorksSection(props: {
         smallThumbnailImageWidth: work.smallThumbnailImageWidth,
         smallThumbnailImageHeight: work.smallThumbnailImageHeight,
         id: work.id,
-        title: work.title ?? undefined,
+        title: t(work.title, work.enTitle || undefined) ?? undefined,
         userId: work.userId,
         isLiked: work.isLiked,
         subWorksCount: work.subWorksCount,

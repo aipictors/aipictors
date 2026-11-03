@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client/index"
 import { RiGoogleFill, RiTwitterXFill } from "@remixicon/react"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import {
   GoogleAuthProvider,
   getAuth,

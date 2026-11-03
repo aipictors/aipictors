@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client/index"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { ArrowDown, ArrowUp } from "lucide-react"
 import { type ReactNode, useContext } from "react"

@@ -1,4 +1,5 @@
-import { Link, useLocation } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"

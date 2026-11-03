@@ -1,6 +1,6 @@
 // LikeButton は CroppedWorkSquare 内部での表示に統合されたため未使用
 
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
@@ -39,7 +39,7 @@ export function HomeCroppedWorkList(props: Props) {
             .map((work) => {
               const renderContent = (isInsideInteractive: boolean) => (
                 <CroppedWorkSquare
-                  title={work.title}
+                  title={t(work.title, work.enTitle || undefined)}
                   isInsideInteractive={isInsideInteractive}
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
@@ -79,7 +79,7 @@ export function HomeCroppedWorkList(props: Props) {
                   )}
                   <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
                     {t(
-                      work.title,
+                      t(work.title, work.enTitle || undefined),
                       work.enTitle.length > 0 ? work.enTitle : work.title,
                     )}
                   </p>
@@ -111,7 +111,7 @@ export function HomeCroppedWorkList(props: Props) {
                   className="relative overflow-hidden"
                 >
                   <CroppedWorkSquare
-                    title={work.title}
+                    title={t(work.title, work.enTitle || undefined)}
                     isInsideInteractive={true}
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}
@@ -133,7 +133,7 @@ export function HomeCroppedWorkList(props: Props) {
                 {work.user && props.isShowProfile && (
                   <>
                     <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                      {work.title}
+                      {t(work.title, work.enTitle || undefined)}
                     </p>
                     <UserNameBadge
                       userId={work.user.id}

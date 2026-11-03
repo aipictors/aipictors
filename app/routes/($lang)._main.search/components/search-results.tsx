@@ -1,10 +1,6 @@
 import { useQuery } from "@apollo/client/index"
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "@remix-run/react"
+import { useLocation, useParams, useSearchParams } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { format } from "date-fns"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Eye, Grid, List, Loader2, X } from "lucide-react"

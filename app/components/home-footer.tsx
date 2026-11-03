@@ -1,5 +1,7 @@
-import { Link, useLocation } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { SnsIconLink } from "~/components/sns-icon"
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
 /**
@@ -7,6 +9,7 @@ import { cn } from "~/lib/utils"
  */
 export function HomeFooter(): React.ReactNode {
   const location = useLocation()
+  const t = useTranslation()
   const isSensitive = /\/r($|\/)/.test(location.pathname)
   const createLink = (path: string) => {
     if (!isSensitive) {
@@ -62,137 +65,138 @@ export function HomeFooter(): React.ReactNode {
                 <span className="font-bold text-lg">Aipictors</span>
               </Link>
               <p className="text-muted-foreground text-sm">
-                {
-                  "AipictorsはAIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
-                }
+                {t(
+                    "AipictorsはAIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。",
+                    "Aipictors is a community for posting and discovering AI illustrations, AI photos and AI novels.",
+                  )}
               </p>
             </div>
           </div>
 
           <div className="space-y-3">
             <p className="whitespace-nowrap font-medium text-sm">
-              {"コンテンツ"}
+              {t("コンテンツ", "Content")}
             </p>
             <div className="flex flex-col gap-y-2 text-muted-foreground text-sm">
               <Link className="hover:text-foreground" to="/posts">
-                {"すべての作品"}
+                {t("すべての作品", "All works")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to={createLink("/posts/2d")}
               >
-                {"AIイラスト"}
+                {t("AIイラスト", "AI illustrations")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to={createLink("/posts/3d")}
               >
-                {"AIフォト"}
+                {t("AIフォト", "AI photos")}
               </Link>
               <Link className="hover:text-foreground" to="/novels">
-                {"AI小説"}
+                {t("AI小説", "AI novels")}
               </Link>
               <Link className="hover:text-foreground" to="/notes">
-                {"コラム"}
+                {t("コラム", "Columns")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to={createLink("/themes")}
               >
-                {"テーマ"}
+                {t("テーマ", "Themes")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to={createLink("/models")}
               >
-                {"AIモデル"}
+                {t("AIモデル", "AI models")}
               </Link>
               <Link className="hover:text-foreground" to={createLink("/tags")}>
-                {"タグ"}
+                {t("タグ", "Tags")}
               </Link>
             </div>
           </div>
 
           <div className="space-y-3">
-            <p className="whitespace-nowrap font-medium text-sm">{"検索"}</p>
+            <p className="whitespace-nowrap font-medium text-sm">{t("検索", "Search")}</p>
             <div className="flex flex-col gap-y-2 text-muted-foreground text-sm">
               <Link className="hover:text-foreground" to="/search">
-                {"作品を検索"}
+                {t("作品を検索", "Search works")}
               </Link>
               <Link className="hover:text-foreground" to={createLink("/tags")}>
-                {"タグをさがす"}
+                {t("タグをさがす", "Browse tags")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to={createLink("/models")}
               >
-                {"AIモデルをさがす"}
+                {t("AIモデルをさがす", "Browse AI models")}
               </Link>
             </div>
           </div>
 
           <div className="space-y-3">
             <p className="whitespace-nowrap font-medium text-sm">
-              {"ランキング"}
+              {t("ランキング", "Rankings")}
             </p>
             <div className="flex flex-col gap-y-2 text-muted-foreground text-sm">
               <Link
                 className="hover:text-foreground"
                 to={createLink("/rankings")}
               >
-                {"ランキング（作品）"}
+                {t("ランキング（作品）", "Work rankings")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to={createLink("/rankings?type=users")}
               >
-                {"ランキング（ユーザー）"}
+                {t("ランキング（ユーザー）", "User rankings")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to={createLink("/rankings")}
               >
-                {"ランキング一覧"}
+                {t("ランキング一覧", "All rankings")}
               </Link>
             </div>
           </div>
 
           <div className="space-y-3">
             <p className="whitespace-nowrap font-medium text-sm">
-              {"投稿企画・コンテスト"}
+              {t("投稿企画・コンテスト", "Events & contests")}
             </p>
             <div className="flex flex-col gap-y-2 text-muted-foreground text-sm">
               <Link className="hover:text-foreground" to="/events/posts">
-                {"企画・コンテスト一覧"}
+                {t("企画・コンテスト一覧", "All events & contests")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to="/events/posts?status=ONGOING"
               >
-                {"開催中の企画"}
+                {t("開催中の企画", "Ongoing events")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to="/events/posts?status=UPCOMING"
               >
-                {"開催予定の企画"}
+                {t("開催予定の企画", "Upcoming events")}
               </Link>
               <Link className="hover:text-foreground" to="/events/user-events">
-                {"ユーザー主催投稿企画一覧"}
+                {t("ユーザー主催投稿企画一覧", "User-hosted events")}
               </Link>
             </div>
           </div>
 
           <div className="space-y-3">
             <p className="whitespace-nowrap font-medium text-sm">
-              {"サイトについて"}
+              {t("サイトについて", "About")}
             </p>
             <div className="flex flex-col gap-y-2 text-muted-foreground text-sm">
               <Link className="hover:text-foreground" to="/about">
-                {"Aipictorsとは"}
+                {t("Aipictorsとは", "About Aipictors")}
               </Link>
               <Link className="hover:text-foreground" to="/roadmap">
-                {"ロードマップ"}
+                {t("ロードマップ", "Roadmap")}
               </Link>
             </div>
           </div>
@@ -225,28 +229,28 @@ export function HomeFooter(): React.ReactNode {
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-muted-foreground text-sm">
               <Link className="hover:text-foreground" to="/terms">
-                {"利用規約"}
+                {t("利用規約", "Terms of Use")}
               </Link>
               <Link className="hover:text-foreground" to="/privacy">
-                {"個人情報保護方針"}
+                {t("個人情報保護方針", "Privacy Policy")}
               </Link>
               <Link
                 className="hover:text-foreground"
                 to="/specified-commercial-transaction-act"
               >
-                {"特定商取引法に基づく表記"}
+                {t("特定商取引法に基づく表記", "Legal Notice")}
               </Link>
               <Link className="hover:text-foreground" to="/guideline">
-                {"コインの利用に関するガイドライン"}
+                {t("コインの利用に関するガイドライン", "Coin Guidelines")}
               </Link>
               <Link className="hover:text-foreground" to="/help">
                 {"FAQ"}
               </Link>
               <Link className="hover:text-foreground" to="/contact">
-                {"お問い合わせ"}
+                {t("お問い合わせ", "Contact")}
               </Link>
               <Link className="hover:text-foreground" to="/presskit">
-                {"広告掲載"}
+                {t("広告掲載", "Advertise")}
               </Link>
               <Link
                 className="text-xs hover:text-foreground"
@@ -262,7 +266,7 @@ export function HomeFooter(): React.ReactNode {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {"運営会社"}
+                {t("運営会社", "Company")}
               </Link>
             </div>
 

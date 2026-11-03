@@ -1,4 +1,5 @@
-import { useLocation, useNavigate } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import {
   CalendarIcon,
   ChevronLeftIcon,

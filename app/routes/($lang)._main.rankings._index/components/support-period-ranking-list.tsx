@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Trophy } from "lucide-react"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"

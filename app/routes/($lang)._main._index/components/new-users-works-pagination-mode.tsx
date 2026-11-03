@@ -1,7 +1,8 @@
 // components/WorksPaginationMode.tsx
 
 import { useQuery } from "@apollo/client/index"
-import { useNavigate, useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { useContext, useEffect, useMemo } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"

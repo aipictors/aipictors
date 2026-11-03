@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { LikeButton } from "~/components/like-button"
 import { graphql, type FragmentOf } from "gql.tada"
@@ -18,6 +19,7 @@ type Props = {
  * 小説作品一覧
  */
 export function HomeNovelsWorksSection (props: Props) {
+  const t = useTranslation()
   if (!props.works) {
     return null
   }
@@ -43,7 +45,7 @@ export function HomeNovelsWorksSection (props: Props) {
               <NovelWorkPreviewItem
                 workId={work.id}
                 imageUrl={work.smallThumbnailImageURL}
-                title={work.title}
+                title={t(work.title, work.enTitle || undefined)}
                 text={work.description ?? ""}
                 tags={[]}
               />
@@ -81,6 +83,7 @@ export const HomeNovelsWorkListItemFragment = graphql(
   `fragment HomeNovelsWorkListItem on WorkNode @_unmask {
     id
     title
+    enTitle
     description
     smallThumbnailImageURL
     isLiked

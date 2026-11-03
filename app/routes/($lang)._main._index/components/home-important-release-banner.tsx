@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { AlertTriangle, ChevronRight } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { MicroCmsApiRelease } from "~/types/micro-cms-release-response"

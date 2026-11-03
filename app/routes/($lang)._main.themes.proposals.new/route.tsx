@@ -1,5 +1,5 @@
 import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client/index"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   addDays,
   addMonths,

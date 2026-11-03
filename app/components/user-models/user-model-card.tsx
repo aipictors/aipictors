@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { CheckIcon, ImageOffIcon, PlayIcon } from "lucide-react"
 import { UserModelAuthor } from "~/components/user-models/user-model-author"
 import {

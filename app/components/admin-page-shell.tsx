@@ -16,7 +16,8 @@ import {
   Users,
 } from "lucide-react"
 import { gql, useQuery } from "@apollo/client/index"
-import { Link, useLocation } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type CSSProperties, type ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"

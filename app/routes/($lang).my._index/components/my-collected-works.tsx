@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
-import { Link, useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql, type ResultOf } from "gql.tada"
 import {
   BookmarkIcon,

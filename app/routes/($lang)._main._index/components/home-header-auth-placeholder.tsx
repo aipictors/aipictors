@@ -1,3 +1,4 @@
+import { Link } from "~/lib/app/locale-router"
 import { BellIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -28,12 +29,12 @@ export function HomeHeaderAuthPlaceholder() {
       </div>
       <div className="aip-auth-guest items-center gap-0.5 md:ml-1 md:gap-1">
         <div className="size-9 md:size-10" />
-        <a
-          href="/login"
+        <Link
+          to="/login"
           className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary px-3 font-medium text-primary-foreground text-sm md:h-10 md:px-4"
         >
           {t("ログイン", "Login")}
-        </a>
+        </Link>
       </div>
     </>
   )

@@ -18,7 +18,7 @@ import { useContext, useState, useId } from "react"
 import { useMutation } from "@apollo/client/index"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { useTranslation } from "~/hooks/use-translation"
 
 /**

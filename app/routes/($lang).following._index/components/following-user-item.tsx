@@ -1,4 +1,5 @@
-import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { graphql, type FragmentOf } from "gql.tada"
 import { LikeButton } from "~/components/like-button"
 import { FollowButton } from "~/components/button/follow-button"
@@ -11,6 +12,7 @@ type Props = {
 }
 
 export function FollowingUserItem (props: Props) {
+  const t = useTranslation()
   const MAX_LENGTH = 40 // Set your desired maximum length
 
   const truncateText = (text: string, maxLength: number) => {
@@ -63,7 +65,7 @@ export function FollowingUserItem (props: Props) {
             <div className="size-32 rounded-md">
               <img
                 className="size-32 object-cover"
-                alt={work.title}
+                alt={t(work.title, work.enTitle || undefined)}
                 key={work.id}
                 src={work.smallThumbnailImageURL}
               />
@@ -108,6 +110,7 @@ export const FolloweeListItemWorkFragment = graphql(
   `fragment FolloweeListItemWork on WorkNode  @_unmask {
     id
     title
+    enTitle
     smallThumbnailImageURL
     isLiked
     user {

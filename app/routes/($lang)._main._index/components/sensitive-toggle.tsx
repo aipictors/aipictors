@@ -1,6 +1,7 @@
 import { Eye, EyeOff, Shield } from "lucide-react"
 import { useEffect, useId, useState } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
+import { useNavigate } from "~/lib/app/locale-router"
 import {
   AlertDialog,
   AlertDialogAction,

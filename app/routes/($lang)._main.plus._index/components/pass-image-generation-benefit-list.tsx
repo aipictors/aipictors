@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toPassFeatures } from "~/routes/($lang)._main.plus._index/utils/to-pass-features"
 
@@ -6,7 +7,8 @@ type Props = {
 }
 
 export function PassImageGenerationBenefitList (props: Props) {
-  const features = toPassFeatures(props.passType)
+  const t = useTranslation()
+  const features = toPassFeatures(props.passType, t)
 
   return (
     <ul className="ml-6 list-disc space-y-2">

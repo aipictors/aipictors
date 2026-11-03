@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 
 type Props = {

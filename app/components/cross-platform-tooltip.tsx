@@ -3,7 +3,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "~/components/ui/popover"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { HelpCircleIcon } from "lucide-react"
 
 type Props = {

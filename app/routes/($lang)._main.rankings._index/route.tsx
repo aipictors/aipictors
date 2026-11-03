@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -167,6 +168,7 @@ export const meta: MetaFunction = (props) => {
  * ランキングの履歴
  */
 export default function Rankings() {
+  const t = useTranslation()
   const data = useLoaderData<typeof loader>()
   const params = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -221,7 +223,7 @@ export default function Rankings() {
               lang: params.lang,
               items: (data.workAwards?.data.workAwards ?? []).flatMap((award) =>
                 award.work
-                  ? [{ name: award.work.title, path: `/posts/${award.work.id}` }]
+                  ? [{ name: t(award.work.title, award.work.enTitle || undefined), path: `/posts/${award.work.id}` }]
                   : [],
               ),
             })}

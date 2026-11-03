@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { Loader2Icon, Pencil } from "lucide-react"
 import { useContext, useState } from "react"

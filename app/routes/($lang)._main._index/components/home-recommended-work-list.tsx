@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { RiQuestionLine } from "@remixicon/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import {

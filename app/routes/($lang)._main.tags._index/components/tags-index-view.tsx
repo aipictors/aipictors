@@ -1,4 +1,5 @@
-import { Link, useLocation, useNavigate } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { HashIcon, SearchIcon, TrendingUpIcon } from "lucide-react"
 import { type FormEvent, useState } from "react"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"

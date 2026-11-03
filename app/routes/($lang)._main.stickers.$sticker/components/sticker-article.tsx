@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CheckIcon, ChevronRightIcon, DownloadIcon, Loader2Icon, PlusIcon, StampIcon } from "lucide-react"
 import { useContext, useState } from "react"

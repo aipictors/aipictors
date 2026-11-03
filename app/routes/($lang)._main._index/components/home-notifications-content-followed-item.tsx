@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ArrowLeftRightIcon } from "lucide-react"
 import { FollowButton } from "~/components/button/follow-button"

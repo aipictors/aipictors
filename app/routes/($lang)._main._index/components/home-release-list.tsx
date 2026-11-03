@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { Button } from "~/components/ui/button"
 import { ReleaseTagBadge } from "~/components/release-tag-badge"
 import { useTranslation } from "~/hooks/use-translation"

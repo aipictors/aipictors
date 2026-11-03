@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 
 const models = [
   { id: "stablediffusion", name: "StableDiffusion", label: "SD" },

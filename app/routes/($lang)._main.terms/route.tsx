@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import text from "~/assets/terms.md?raw"
 import enText from "~/assets/terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"

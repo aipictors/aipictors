@@ -3,7 +3,7 @@ import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { Heart } from "lucide-react"
@@ -159,6 +159,7 @@ export const HomeWorkAwardFragment = graphql(
       work {
         id
         title
+        enTitle
         likesCount
         isLiked
         smallThumbnailImageURL

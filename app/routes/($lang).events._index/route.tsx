@@ -1,12 +1,7 @@
 import { gql } from "@apollo/client/index"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import {
-  Form,
-  Link,
-  type MetaFunction,
-  useLoaderData,
-  useParams,
-} from "@remix-run/react"
+import { Form, type MetaFunction, useLoaderData, useParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import {
   ChevronDown,
@@ -512,8 +507,8 @@ function CreateEventCta(props: { compact?: boolean }) {
   const t = useTranslation()
 
   return (
-    <a
-      href="/events/new"
+    <Link
+      to="/events/new"
       className={`group flex h-full flex-col justify-center gap-2 rounded-2xl border-2 border-dashed bg-card/50 p-5 transition hover:border-[#0077d9] hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
         props.compact ? "" : "min-h-48 items-center text-center"
       }`}
@@ -533,7 +528,7 @@ function CreateEventCta(props: { compact?: boolean }) {
       <span className="font-semibold text-[#0077d9] text-sm group-hover:underline dark:text-sky-400">
         {t("企画を作る →", "Create an event →")}
       </span>
-    </a>
+    </Link>
   )
 }
 
@@ -732,8 +727,8 @@ function EventCategoryTabTrigger(props: {
   )
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.EVENTS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.EVENTS, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -956,17 +951,17 @@ export default function FollowingLayout() {
           </div>
           <div className="grid shrink-0 grid-cols-2 gap-2 md:flex">
             <Button asChild className="rounded-full md:h-11 md:px-6">
-              <a href="/events/new">
+              <Link to="/events/new">
                 <Plus className="size-4" aria-hidden="true" />
                 {t("企画を作る", "Host an event")}
-              </a>
+              </Link>
             </Button>
             <Button
               asChild
               variant="outline"
               className="rounded-full bg-background/80 md:h-11 md:px-6"
             >
-              <a href="/my/events">{t("マイイベント", "My events")}</a>
+              <Link to="/my/events">{t("マイイベント", "My events")}</Link>
             </Button>
           </div>
         </div>

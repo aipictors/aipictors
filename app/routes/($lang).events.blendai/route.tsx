@@ -5,7 +5,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { MousePointerClickIcon } from "lucide-react"
 import { ImageGenerationReferenceCard } from "~/routes/($lang).events.blendai/components/image-generation-reference-card"
 import { useTranslation } from "~/hooks/use-translation"

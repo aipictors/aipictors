@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { toDateText } from "~/lib/app/utils/to-date-text"

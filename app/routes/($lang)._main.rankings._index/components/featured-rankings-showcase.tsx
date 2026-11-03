@@ -1,4 +1,5 @@
-import { Link } from "@remix-run/react"
+import { type TranslationFn, useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import {
   CrownIcon,
   EyeIcon,
@@ -60,6 +61,7 @@ type Props = {
 }
 
 function createStandardCardData(
+  t: TranslationFn,
   item: StandardRankingItem,
   options: {
     sectionTitle: string
@@ -73,22 +75,28 @@ function createStandardCardData(
   return {
     id: item.work.id,
     href: `/posts/${item.work.id}`,
-    title: item.work.title,
+    title: t(item.work.title, item.work.enTitle || undefined),
     imageUrl: item.work.largeThumbnailImageURL ?? item.work.smallThumbnailImageURL,
-    userName: item.work.user?.name ?? "不明なユーザー",
+    userName: item.work.user?.name ?? t("不明なユーザー", "Unknown user"),
     userIconUrl: withIconUrlFallback(item.work.user?.iconUrl ?? null),
     likesCount: item.snapshotLikedCount ?? item.work.likesCount,
     commentsCount: item.work.commentsCount,
     viewsCount: item.work.viewsCount,
     rank: item.index,
-    rankLabel: `${options.rankLabelPrefix} ${item.index}位`,
+    rankLabel: t(
+      `${options.rankLabelPrefix} ${item.index}位`,
+      `${options.rankLabelPrefix} #${item.index}`,
+    ),
     kindLabel: options.sectionTitle,
     badgeClassName:
       "border-slate-200/80 bg-white/90 text-slate-700 dark:border-white/15 dark:bg-slate-900/80 dark:text-slate-100",
   }
 }
 
-function createAiCardData(item: AiRankingItem): FeaturedWorkCardData | null {
+function createAiCardData(
+  t: TranslationFn,
+  item: AiRankingItem,
+): FeaturedWorkCardData | null {
   if (!item.work) {
     return null
   }
@@ -96,16 +104,16 @@ function createAiCardData(item: AiRankingItem): FeaturedWorkCardData | null {
   return {
     id: item.work.id,
     href: `/posts/${item.work.id}`,
-    title: item.work.title,
+    title: t(item.work.title, item.work.enTitle || undefined),
     imageUrl: item.work.largeThumbnailImageURL ?? item.work.smallThumbnailImageURL,
-    userName: item.work.user?.name ?? "不明なユーザー",
+    userName: item.work.user?.name ?? t("不明なユーザー", "Unknown user"),
     userIconUrl: withIconUrlFallback(item.work.user?.iconUrl ?? null),
     likesCount: item.work.likesCount,
     commentsCount: item.work.commentsCount,
     viewsCount: item.work.viewsCount,
     rank: item.index,
-    rankLabel: `AIランキング ${item.index}位`,
-    kindLabel: "AIランキング",
+    rankLabel: t(`AIランキング ${item.index}位`, `AI ranking #${item.index}`),
+    kindLabel: t("AIランキング", "AI ranking"),
     badgeClassName:
       "border-amber-200/80 bg-white/90 text-amber-700 dark:border-white/15 dark:bg-amber-950/70 dark:text-amber-100",
   }
@@ -117,6 +125,7 @@ function FeaturedRankingBlock(props: {
   accentClassName: string
   icon: React.ComponentType<{ className?: string }>
 }) {
+  const t = useTranslation()
   const primaryItem = props.items[0]
   const secondaryItems = props.items.slice(1, 5)
   const Icon = props.icon
@@ -159,7 +168,7 @@ function FeaturedRankingBlock(props: {
             )}
             <div className="absolute top-2 left-2 inline-flex max-w-[calc(100%-16px)] items-center gap-1 rounded-full bg-black/75 px-2 py-1 font-semibold text-[10px] text-white shadow-lg backdrop-blur-sm sm:top-2.5 sm:left-2.5 sm:gap-1.5 sm:px-2.5 sm:text-[11px]">
               <CrownIcon className="h-3 w-3 text-amber-300" />
-              <span className="sm:hidden">1位</span>
+              <span className="sm:hidden">{t("1位", "#1")}</span>
               <span className="hidden sm:inline">{primaryItem.rankLabel}</span>
             </div>
           </div>
@@ -220,7 +229,7 @@ function FeaturedRankingBlock(props: {
       {secondaryItems.length > 0 && (
         <div className="hidden space-y-2 sm:block">
           <p className="font-medium text-foreground text-sm">
-            上位作品
+            {t("上位作品", "Top works")}
           </p>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
               {secondaryItems.map((item) => (
@@ -273,20 +282,21 @@ function FeaturedRankingBlock(props: {
 }
 
 export function FeaturedRankingsShowcase(props: Props) {
-  const standardSectionTitle = props.standardSectionTitle ?? "通常ランキング"
+  const t = useTranslation()
+  const standardSectionTitle = props.standardSectionTitle ?? t("通常ランキング", "Rankings")
   const standardRankLabelPrefix =
     props.standardRankLabelPrefix ?? standardSectionTitle
 
   const standardItems = props.standardRankings
     .map((item) =>
-      createStandardCardData(item, {
+      createStandardCardData(t, item, {
         sectionTitle: standardSectionTitle,
         rankLabelPrefix: standardRankLabelPrefix,
       }),
     )
     .filter((item): item is FeaturedWorkCardData => item !== null)
   const aiItems = props.aiRankings
-    .map(createAiCardData)
+    .map((item) => createAiCardData(t, item))
     .filter((item): item is FeaturedWorkCardData => item !== null)
 
   if (standardItems.length === 0 && aiItems.length === 0) {
@@ -300,11 +310,11 @@ export function FeaturedRankingsShowcase(props: Props) {
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1.5 font-semibold text-orange-700 text-xs dark:bg-orange-950/60 dark:text-orange-200">
               <SparklesIcon className="h-3.5 w-3.5" />
-              <span>本日の注目ランキング</span>
+              <span>{t("本日の注目ランキング", "Today's featured rankings")}</span>
             </div>
             <div>
               <h1 className="font-bold text-foreground text-xl sm:text-2xl">
-                いま見てほしい上位作品
+                {t("いま見てほしい上位作品", "Top works to see right now")}
               </h1>
             </div>
           </div>
@@ -318,7 +328,7 @@ export function FeaturedRankingsShowcase(props: Props) {
             icon={CrownIcon}
           />
           <FeaturedRankingBlock
-            title="AIランキング"
+            title={t("AIランキング", "AI ranking")}
             items={aiItems}
             accentClassName="from-amber-500 via-orange-500 to-rose-500 text-white dark:from-amber-300 dark:via-orange-300 dark:to-rose-300 dark:text-amber-950"
             icon={SparklesIcon}

@@ -1,3 +1,4 @@
+import { Link } from "~/lib/app/locale-router"
 import { getAuth, getIdToken } from "firebase/auth"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -947,9 +948,9 @@ function RetentionSuggestion(props: {
         <p className="mt-1 text-muted-foreground text-xs">
           {"失敗した生成はコインを使わずにやり直せます。直らないときは、お問い合わせから送っていただくとスタッフが確認します。"}
         </p>
-        <a href="/support/chat" className="mt-2 inline-block text-sky-600 text-xs underline dark:text-sky-300">
+        <Link to="/support/chat" className="mt-2 inline-block text-sky-600 text-xs underline dark:text-sky-300">
           {"お問い合わせを開く"}
-        </a>
+        </Link>
       </div>
     )
   }

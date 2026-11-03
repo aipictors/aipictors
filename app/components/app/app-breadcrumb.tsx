@@ -1,5 +1,5 @@
 import { config } from "~/config"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import type { BreadcrumbList, WithContext } from "schema-dts"
 
 type Props = Readonly<{

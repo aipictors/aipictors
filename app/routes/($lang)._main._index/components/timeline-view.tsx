@@ -7,7 +7,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { MessageCircleIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { cn } from "~/lib/utils"
@@ -126,7 +126,7 @@ export function TimelineView ({ feedType, userId, page = 0, setPage }: Props) {
                         <Link to={`/posts/${work.id}`}>
                           <img
                             src={work.largeThumbnailImageURL}
-                            alt={work.title}
+                            alt={t(work.title, work.enTitle || undefined)}
                             className="w-full rounded-md"
                           />
                         </Link>
@@ -157,7 +157,7 @@ export function TimelineView ({ feedType, userId, page = 0, setPage }: Props) {
                                     >
                                       <img
                                         src={subWork.imageUrl}
-                                        alt={work.title}
+                                        alt={t(work.title, work.enTitle || undefined)}
                                         className="w-full rounded-md"
                                       />
                                     </Link>
@@ -166,7 +166,7 @@ export function TimelineView ({ feedType, userId, page = 0, setPage }: Props) {
                           </>
                         )}
                       </div>
-                      <div className="font-semibold text-md">{work.title}</div>
+                      <div className="font-semibold text-md">{t(work.title, work.enTitle || undefined)}</div>
                       {work.description && (
                         <div className="text-muted-foreground text-sm">
                           {work.description}
@@ -273,6 +273,7 @@ export const TimelineWorkFieldsFragment = graphql(
   `fragment TimelineWorkFields on WorkNode @_unmask {
     id
     title
+    enTitle
     largeThumbnailImageURL
     description
     tagNames

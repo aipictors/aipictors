@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { useQueryClient } from "@tanstack/react-query"
 import { FileBoxIcon, Loader2Icon, WandSparklesIcon } from "lucide-react"
 import { useEffect, useState } from "react"

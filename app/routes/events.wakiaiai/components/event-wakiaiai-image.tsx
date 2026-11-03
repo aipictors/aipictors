@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { MousePointerClickIcon } from "lucide-react"
 
 type Props = {

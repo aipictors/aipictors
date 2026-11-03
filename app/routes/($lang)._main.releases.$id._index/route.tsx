@@ -1,4 +1,5 @@
-import { Link, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"

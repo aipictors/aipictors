@@ -4,13 +4,8 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import {
-  Link,
-  useLoaderData,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "@remix-run/react"
+import { useLoaderData, useLocation, useSearchParams } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useContext, useEffect, useMemo, useState } from "react"
 import type { BreadcrumbList, CollectionPage, WithContext } from "schema-dts"

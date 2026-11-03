@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { memo } from "react"
 import { OptimizedWorkGrid } from "~/components/optimized-work-grid"
 import {
@@ -32,6 +33,7 @@ type Props = {
  * - 大きい画面では ResponsivePhotoWorksAlbum を使用
  */
 export const MobileOptimizedWorksRenderer = memo((props: Props) => {
+  const t = useTranslation()
   const { works, onSelect, loading = false } = props
 
   // モバイル判定（SSR対応）
@@ -53,7 +55,7 @@ export const MobileOptimizedWorksRenderer = memo((props: Props) => {
   if (isMobile) {
     const optimizedWorks = works.map((work) => ({
       id: work.id,
-      title: work.title,
+      title: t(work.title, work.enTitle || undefined),
       imageUrl: work.smallThumbnailImageURL,
       width: work.smallThumbnailImageWidth,
       height: work.smallThumbnailImageHeight,

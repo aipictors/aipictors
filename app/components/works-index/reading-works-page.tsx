@@ -1,4 +1,5 @@
-import { Form, Link, useLocation } from "@remix-run/react"
+import { Form, useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { ArrowRightIcon, SearchIcon } from "lucide-react"
 import type { BreadcrumbList, CollectionPage, WithContext } from "schema-dts"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
@@ -71,7 +72,7 @@ export function ReadingWorksPage(props: Props) {
       itemListElement: data.works.map((work, index) => ({
         "@type": "ListItem",
         position: data.page * WORKS_INDEX_PER_PAGE + index + 1,
-        name: work.title,
+        name: t(work.title, work.enTitle || undefined),
         url: `${homeUrl}/posts/${work.id}`,
       })),
     },

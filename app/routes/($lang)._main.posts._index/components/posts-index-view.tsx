@@ -1,4 +1,5 @@
-import { Link, useLocation } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import type { ResultOf } from "gql.tada"
 import type { BreadcrumbList, CollectionPage, WithContext } from "schema-dts"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
@@ -166,7 +167,7 @@ export function PostsIndexView(props: Props) {
       itemListElement: data.works.map((work, index) => ({
         "@type": "ListItem",
         position: data.page * WORKS_INDEX_PER_PAGE + index + 1,
-        name: work.title,
+        name: t(work.title, work.enTitle || undefined),
         url: `${homeUrl}/posts/${work.id}`,
       })),
     },

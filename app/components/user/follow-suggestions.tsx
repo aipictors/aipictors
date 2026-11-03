@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { XIcon } from "lucide-react"
 import { useContext } from "react"
@@ -105,7 +105,7 @@ export function FollowSuggestions(props: Props) {
                 <img
                   key={work.id}
                   src={work.smallThumbnailImageURL}
-                  alt={work.title}
+                  alt={t(work.title, work.enTitle || undefined)}
                   loading="lazy"
                   className="aspect-square w-full bg-muted object-cover"
                 />
@@ -137,6 +137,7 @@ const suggestedFollowUsersQuery = graphql(
       works(offset: 0, limit: 3, where: { ratings: [G] }) {
         id
         title
+        enTitle
         smallThumbnailImageURL
       }
     }

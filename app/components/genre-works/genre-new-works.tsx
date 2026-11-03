@@ -1,5 +1,6 @@
 import { useApolloClient } from "@apollo/client/index"
-import { useNavigate, useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { Loader2Icon, SlidersHorizontalIcon, SparklesIcon } from "lucide-react"
 import { Suspense, useCallback, useEffect, useRef, useState } from "react"

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   AlertTriangleIcon,

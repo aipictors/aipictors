@@ -1,3 +1,4 @@
+import { Link } from "~/lib/app/locale-router"
 import { CropImageField } from "~/components/crop-image-field"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Button } from "~/components/ui/button"
@@ -78,12 +79,12 @@ export function GenerationConfigI2i() {
                 "全モデルで画像から生成を利用できるのは",
                 "Image-to-image generation for all models is available with",
               )}
-              <a
-                href="/plus"
+              <Link
+                to="/plus"
                 className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 {t("LITEプラン以上", "LITE plan or higher")}
-              </a>
+              </Link>
               {t("です。", ".")}
             </div>
           </div>

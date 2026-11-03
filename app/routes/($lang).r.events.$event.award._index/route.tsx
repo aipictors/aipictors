@@ -1,5 +1,6 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData, useNavigate } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { format } from "date-fns"
 import { graphql } from "gql.tada"
 import { RefreshCcwIcon } from "lucide-react"

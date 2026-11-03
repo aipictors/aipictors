@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { CircleHelp } from "lucide-react"
 import { CoinHelpContent } from "~/components/coin-help-content"
 import { Button } from "~/components/ui/button"

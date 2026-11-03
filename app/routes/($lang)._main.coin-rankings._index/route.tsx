@@ -9,7 +9,8 @@
  */
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
-import { Link, useLoaderData, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Trophy } from "lucide-react"
 import { useMemo, useState } from "react"
 import { CoinHelpDialog } from "~/components/coin-help-dialog"

@@ -4,7 +4,7 @@
  * - 推しランキング・貢献度ランキングをそれぞれ上位 5 件表示
  * - 「もっと見る」で /coin-rankings へ遷移
  */
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { Trophy } from "lucide-react"
 import { useEffect, useState } from "react"
 import {

@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
@@ -6,12 +7,8 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import {
-  Link,
-  useLoaderData,
-  useNavigate,
-  useSearchParams,
-} from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   CalendarIcon,
   TrophyIcon,
@@ -137,6 +134,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function Aipictors3rdAnniversary () {
+  const t = useTranslation()
   const data = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -407,14 +405,14 @@ export default function Aipictors3rdAnniversary () {
                       <div className="relative aspect-square overflow-hidden">
                         <img
                           src={work.smallThumbnailImageURL}
-                          alt={work.title}
+                          alt={t(work.title, work.enTitle || undefined)}
                           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                       </div>
                       <CardContent className="p-4">
                         <p className="line-clamp-2 font-medium text-sm dark:text-white">
-                          {work.title}
+                          {t(work.title, work.enTitle || undefined)}
                         </p>
                       </CardContent>
                     </Card>

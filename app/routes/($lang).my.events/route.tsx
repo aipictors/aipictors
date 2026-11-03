@@ -4,7 +4,8 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { Link, useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
   CalendarDaysIcon,

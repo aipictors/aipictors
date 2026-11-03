@@ -1,5 +1,6 @@
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
-import { Link, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { graphql, type ResultOf } from "gql.tada"
 import { CalendarDaysIcon, CheckIcon, ExternalLinkIcon } from "lucide-react"
 import { PictorChanSays } from "~/components/pictor-chan-says"

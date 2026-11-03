@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { FollowButton } from "~/components/button/follow-button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
@@ -102,6 +102,7 @@ export const FollowerListItemWorkFragment = graphql(
   `fragment FollowerListItemWork on WorkNode  @_unmask {
     id
     title
+    enTitle
     smallThumbnailImageURL
     isLiked
     user {

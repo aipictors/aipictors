@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client/index"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import {
   type AuthProvider,
   browserPopupRedirectResolver,

@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { CrownIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Progress } from "~/components/ui/progress"

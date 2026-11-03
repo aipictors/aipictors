@@ -3,7 +3,7 @@ import {
   useQuery,
   useSuspenseQuery,
 } from "@apollo/client/index"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon, MessageCircleIcon } from "lucide-react"
 import {
@@ -61,6 +61,7 @@ export const workFieldsFragment = graphql(`
   fragment PartialWorkFields on WorkNode @_unmask {
     id
     title
+    enTitle
     largeThumbnailImageURL
     description
     tagNames
@@ -605,7 +606,7 @@ function TimelineView({
                     <Link to={`/posts/${work.id}`}>
                       <img
                         src={work.largeThumbnailImageURL}
-                        alt={work.title}
+                        alt={t(work.title, work.enTitle || undefined)}
                         className="w-full rounded-md"
                       />
                     </Link>
@@ -618,7 +619,7 @@ function TimelineView({
                         <Link to={`/posts/${work.id}`}>
                           <img
                             src={work.largeThumbnailImageURL}
-                            alt={work.title}
+                            alt={t(work.title, work.enTitle || undefined)}
                             className="w-full rounded-md"
                           />
                         </Link>
@@ -627,7 +628,7 @@ function TimelineView({
                       <Link to={`/posts/${work.id}`}>
                         <img
                           src={work.largeThumbnailImageURL}
-                          alt={work.title}
+                          alt={t(work.title, work.enTitle || undefined)}
                           className="w-full rounded-md"
                         />
                       </Link>
@@ -660,7 +661,7 @@ function TimelineView({
                                 >
                                   <img
                                     src={sw.imageUrl}
-                                    alt={work.title}
+                                    alt={t(work.title, work.enTitle || undefined)}
                                     className="w-full rounded-md"
                                   />
                                 </Link>
@@ -669,7 +670,7 @@ function TimelineView({
                       </>
                     ) : null}
                   </div>
-                  <div className="font-semibold text-md">{work.title}</div>
+                  <div className="font-semibold text-md">{t(work.title, work.enTitle || undefined)}</div>
                   <div>{work.description}</div>
                   <div className="flex items-center space-x-4">
                     <LikeButton
@@ -736,13 +737,14 @@ function GridView({
   works: NonNullable<PostItem["work"]>[]
   onSelect?: (index: string) => void
 }) {
+  const t = useTranslation()
   // モバイル最適化: 小さい画面では最適化グリッドを使用
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768
 
   if (isMobile) {
     const optimizedWorks = works.map((work) => ({
       id: work.id,
-      title: work.title,
+      title: t(work.title, work.enTitle || undefined),
       imageUrl: work.largeThumbnailImageURL,
       width: 300, // fallback width for mobile
       height: 200, // fallback height for mobile

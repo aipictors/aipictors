@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { LockIcon } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { useTranslation } from "~/hooks/use-translation"

@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
@@ -56,7 +56,7 @@ export function HomeCroppedWorks(props: Props) {
                       props.priorityCount !== undefined &&
                       index >= props.priorityCount
                     }
-                    title={work.title}
+                    title={t(work.title, work.enTitle || undefined)}
                     isInsideInteractive={true}
                     workId={work.id}
                     imageUrl={work.smallThumbnailImageURL}
@@ -90,7 +90,7 @@ export function HomeCroppedWorks(props: Props) {
                 </Link>
                 <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
                   {t(
-                    work.title,
+                    t(work.title, work.enTitle || undefined),
                     work.enTitle.length > 0 ? work.enTitle : work.title,
                   )}
                 </p>
@@ -133,7 +133,7 @@ export function HomeCroppedWorks(props: Props) {
                       media={
                         props.isMobileOnly ? "(max-width: 767.98px)" : undefined
                       }
-                      title={work.title}
+                      title={t(work.title, work.enTitle || undefined)}
                       workId={work.id}
                       imageUrl={work.smallThumbnailImageURL}
                       thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
@@ -175,7 +175,7 @@ export function HomeCroppedWorks(props: Props) {
                       media={
                         props.isMobileOnly ? "(max-width: 767.98px)" : undefined
                       }
-                      title={work.title}
+                      title={t(work.title, work.enTitle || undefined)}
                       isInsideInteractive={true}
                       workId={work.id}
                       imageUrl={work.smallThumbnailImageURL}
@@ -211,7 +211,7 @@ export function HomeCroppedWorks(props: Props) {
                 {work.user && props.isShowProfile && (
                   <>
                     <p className="mt-1.5 overflow-hidden text-ellipsis text-nowrap font-bold text-sm">
-                      {work.title}
+                      {t(work.title, work.enTitle || undefined)}
                     </p>
                     <UserNameBadge
                       userId={work.user.id}

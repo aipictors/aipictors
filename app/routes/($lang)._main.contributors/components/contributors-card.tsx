@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
 import type { Contributor } from "~/routes/($lang)._main.contributors/types/contributor"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 import { RiTwitterXLine } from "@remixicon/react"
 import { HomeIcon } from "lucide-react"
 

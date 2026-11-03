@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link } from "~/lib/app/locale-router"
 import { Button } from "~/components/ui/button"
 import { DarkModeButton } from "~/routes/events.wakiaiai/components/dark-mode-button"
 

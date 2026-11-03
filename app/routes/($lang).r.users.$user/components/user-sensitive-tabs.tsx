@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/client/index"
-import { useLocation, useNavigate } from "@remix-run/react"
+import { useLocation } from "@remix-run/react"
+import { useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { useLocale } from "~/hooks/use-locale"
 import { cn } from "~/lib/utils"

@@ -5,7 +5,7 @@ import { AvatarFallback } from "@radix-ui/react-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "@remix-run/react"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   message: FragmentOf<typeof RecipientMessageFragment>
