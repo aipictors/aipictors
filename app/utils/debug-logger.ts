@@ -67,34 +67,3 @@ export const debugLog: DebugLog = {
     }
   },
 }
-
-/**
- * レンダリングパフォーマンス計測用ユーティリティ
- */
-type PerformanceTimer = {
-  start: (label: string) => void
-  end: (label: string) => void
-}
-
-const performanceTimer: PerformanceTimer = {
-  start: (label: string) => {
-    if (isDevelopment && typeof performance !== "undefined") {
-      performance.mark(`${label}-start`)
-    }
-  },
-  end: (label: string) => {
-    if (isDevelopment && typeof performance !== "undefined") {
-      performance.mark(`${label}-end`)
-      try {
-        performance.measure(label, `${label}-start`, `${label}-end`)
-        const measures = performance.getEntriesByName(label)
-        const lastMeasure = measures[measures.length - 1]
-        debugLog.performance(
-          `${label} took ${lastMeasure.duration.toFixed(2)}ms`,
-        )
-      } catch {
-        // パフォーマンス計測に失敗してもアプリケーションには影響しない
-      }
-    }
-  },
-}

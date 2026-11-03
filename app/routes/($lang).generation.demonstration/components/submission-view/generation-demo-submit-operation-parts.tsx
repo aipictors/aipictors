@@ -33,40 +33,6 @@ type Props = {
 }
 
 /**
- * 生成ボタンのラベル
- * @param isSetI2iImage
- * @param prompts
- * @param seed
- */
-function getDemoSubmitButtonLabel (
-  isSetI2iImage: boolean,
-  prompts: string,
-  seed: number,
-  inProgressImageGenerationTasksCount: number,
-) {
-  const t = useTranslation()
-
-  const seedLabel = seed === -1 ? "" : t("(Seed固定)", "(Seed fixed)")
-
-  if (!prompts) {
-    if (isSetI2iImage) {
-      return t(
-        `画像からランダム生成${seedLabel}`,
-        `Random generation from image ${seedLabel}`,
-      )
-    }
-    return t(`ランダム生成${seedLabel}`, `Random generation ${seedLabel}`)
-  }
-  if (isSetI2iImage) {
-    return t(`画像から生成${seedLabel}`, `Generate from image ${seedLabel}`)
-  }
-  if (inProgressImageGenerationTasksCount > 0) {
-    return t(`追加生成${seedLabel}`, `Add generation ${seedLabel}`)
-  }
-  return t(`生成${seedLabel}`, `Generate ${seedLabel}`)
-}
-
-/**
  * 生成実行に関わる操作UI
  */
 export function GenerationDemoSubmitOperationParts (props: Props) {

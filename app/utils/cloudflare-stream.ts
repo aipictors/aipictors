@@ -70,16 +70,6 @@ export function toCloudflareStreamEmbedUrl(
   return `https://${STREAM_IFRAME_HOST}/${uid}`
 }
 
-function toCloudflareStreamEmbedUrlFromUid(
-  uid: string | null | undefined,
-): string | null {
-  if (!isCloudflareStreamUid(uid)) {
-    return null
-  }
-
-  return `https://${STREAM_IFRAME_HOST}/${uid}`
-}
-
 export function toCloudflareStreamHlsUrlFromUid(
   uid: string | null | undefined,
 ): string | null {

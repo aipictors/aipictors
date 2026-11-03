@@ -290,15 +290,6 @@ const workQuery = graphql(
   [workArticleFragment],
 )
 
-const _sensitiveWorkQuery = graphql(
-  `query Work($id: ID!) {
-    work(id: $id) {
-      ...WorkArticle
-    }
-  }`,
-  [sensitiveWorkArticleFragment],
-)
-
 const updateClickedCountCustomerAdvertisementMutation = graphql(
   `mutation UpdateClickedCountCustomerAdvertisement($id: ID!) {
     updateClickedCountCustomerAdvertisement(id: $id) {

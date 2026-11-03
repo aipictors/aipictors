@@ -38,13 +38,6 @@ export const getExtractInfoFromPNG = async (file: File): Promise<PNGInfo> => {
   return { params: exchangeFromPNGItem(pngInfo), src: pngStr }
 }
 
-const getExtractInfoFromBase64PNG = async (
-  base64: string,
-): Promise<PNGInfo> => {
-  const file = await urlToFile(base64, "image.png")
-  return await getExtractInfoFromPNG(file)
-}
-
 /**
  * Converts an image URL to a File object.
  * @param imageUrl - The URL of the image.

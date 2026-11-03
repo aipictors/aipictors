@@ -68,19 +68,6 @@ export type SelectedUserCheckpoint = {
   recommendedSettings?: UserModelRecommendedSettings | null
 }
 
-const toSelectedUserCheckpoint = (
-  model: Pick<UserModel, "id" | "name" | "baseModel" | "thumbnailUrl">,
-  officialModelId: string,
-): SelectedUserCheckpoint => {
-  return {
-    id: model.id,
-    name: model.name,
-    baseModel: model.baseModel,
-    thumbnailUrl: model.thumbnailUrl,
-    officialModelId,
-  }
-}
-
 /**
  * トリガーワード（カンマ区切り）を配列にする
  */

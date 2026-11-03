@@ -341,15 +341,6 @@ export function SensitiveWorkContainer(props: Props) {
   )
 }
 
-const _workQuery = graphql(
-  `query Work($id: ID!) {
-    work(id: $id) {
-      ...WorkArticle
-    }
-  }`,
-  [workArticleFragment],
-)
-
 const sensitiveWorkQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {

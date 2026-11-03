@@ -93,16 +93,3 @@ const FolloweeListItemFragment = graphql(
     isFollowee
   }`,
 )
-
-const FolloweeListItemWorkFragment = graphql(
-  `fragment FolloweeListItemWork on WorkNode  @_unmask {
-    id
-    title
-    enTitle
-    smallThumbnailImageURL
-    isLiked
-    user {
-      id
-    }
-  }`,
-)

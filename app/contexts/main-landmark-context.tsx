@@ -6,7 +6,3 @@ import { createContext, useContext } from "react"
  * （<main> が無いページ・入れ子になっているページがあり、Lighthouse のユーザー補助で減点されていた）
  */
 export const MainLandmarkContext = createContext(false)
-
-function useIsInsideMain(): boolean {
-  return useContext(MainLandmarkContext)
-}

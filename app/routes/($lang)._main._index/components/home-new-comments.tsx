@@ -109,20 +109,3 @@ export const HomeNewCommentsFragment = graphql(
     createdAt
   }`,
 )
-
-const homeNewCommentsQuery = graphql(
-  `query HomeNewComments {
-    newComments: newComments(
-      offset: 0,
-      limit: 8,
-      where: {
-        isSensitive: false,
-        ratings: [G, R15],
-        isTextOnly: true
-      }
-    ) {
-      ...HomeNewComments
-    }
-  }`,
-  [HomeNewCommentsFragment],
-)

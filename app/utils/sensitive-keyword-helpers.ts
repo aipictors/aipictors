@@ -9,14 +9,6 @@ function shouldSkipSensitiveWarning(): boolean {
 }
 
 /**
- * センシティブキーワード警告の設定をリセット
- */
-function resetSensitiveWarningPreference(): void {
-  if (typeof window === "undefined") return
-  localStorage.removeItem("skipSensitiveKeywordWarning")
-}
-
-/**
  * 検索テキストがセンシティブかどうかとその処理方法を判定
  */
 export function analyzeSensitiveSearch(searchText: string): {

@@ -6,29 +6,6 @@ export const getLocalePrefix = (pathname: string) => {
   return localeMatch ? `/${localeMatch[1]}` : ""
 }
 
-const buildSensitiveHomePath = (pathname: string, search: string) => {
-  const localePrefix = getLocalePrefix(pathname)
-  const pathWithoutLocale = pathname.slice(localePrefix.length) || "/"
-  const params = new URLSearchParams(search)
-
-  if (pathWithoutLocale === "/") {
-    params.set("tab", "new")
-    return `${localePrefix}/r?${params.toString()}`
-  }
-
-  if (pathWithoutLocale === "/follow-user-works") {
-    params.set("tab", "follow-user")
-    return `${localePrefix}/r?${params.toString()}`
-  }
-
-  if (pathWithoutLocale === "/follow-tag-works") {
-    params.set("tab", "follow-tag")
-    return `${localePrefix}/r?${params.toString()}`
-  }
-
-  return `${localePrefix}/r${pathWithoutLocale}${search}`
-}
-
 export const buildAllAgesPath = (pathname: string, search: string) => {
   const localePrefix = getLocalePrefix(pathname)
   const pathWithoutLocale = pathname.slice(localePrefix.length) || "/"

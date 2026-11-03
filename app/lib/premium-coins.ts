@@ -32,8 +32,6 @@ const COIN_PRICE_YEN = 0.8
 export const BONUS_THRESHOLD = 1000
 export const BONUS_RATE = 0.1
 export const MIN_CUSTOM_COINS = 100
-const PREMIUM_COIN_PT_MULTIPLIER = 10
-const AMAZON_POINT_RATE_YEN = 0.3
 
 export const calcBonusCoins = (coins: number): number => {
   if (coins < BONUS_THRESHOLD) return 0

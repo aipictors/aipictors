@@ -46,20 +46,3 @@ export const userNavigationStyles = {
     menuIcon: "h-4 w-4", // メニューアイコンスケルトン
   },
 } as const
-
-/**
- * スケルトン用のクラス名を生成するヘルパー関数
- */
-const getSkeletonClass = (baseSize: string) => {
-  return `${baseSize} ${userNavigationStyles.skeleton.base}`
-}
-
-/**
- * メニュー項目のスケルトン用のクラス名を生成するヘルパー関数
- */
-const getMenuSkeletonClass = (
-  menuType: keyof typeof userNavigationStyles.menuTextWidths,
-) => {
-  const width = userNavigationStyles.menuTextWidths[menuType]
-  return `${userNavigationStyles.menuText} ${width} ${userNavigationStyles.skeleton.base}`
-}

@@ -107,13 +107,3 @@ export const getGenerationSizeOptions = (
     })
     .sort((a, b) => a.width / a.height - b.width / b.height)
 }
-
-/**
- * モデルの種類ごとの初期サイズ
- */
-const getDefaultSizeType = (modelType: string) => {
-  if (modelType === "SD1") return "SD1_512_768"
-  const options =
-    sizeOptionsByModelType[modelType] ?? sizeOptionsByModelType.SDXL
-  return options.square[0]
-}

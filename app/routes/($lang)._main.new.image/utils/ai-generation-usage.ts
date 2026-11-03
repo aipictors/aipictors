@@ -86,18 +86,3 @@ export function consumeAiGenerationUsage(): boolean {
   saveUsageData(newUsage)
   return true
 }
-
-/**
- * 今日の利用回数を取得
- */
-function getTodayUsageCount(): number {
-  const usage = getUsageData()
-  return usage.count
-}
-
-/**
- * 1日の利用上限を取得
- */
-function getDailyLimit(): number {
-  return DAILY_LIMIT
-}

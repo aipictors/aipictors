@@ -84,11 +84,3 @@ export function HomeRecommendedWorkList(props: Props) {
     </section>
   )
 }
-
-const HomeWorkFragment = graphql(
-  `fragment HomeWork on WorkNode @_unmask {
-    ...PhotoAlbumWork
-    ...HomeCoppedWork
-  }`,
-  [PhotoAlbumWorkFragment, HomeCoppedWorkFragment],
-)

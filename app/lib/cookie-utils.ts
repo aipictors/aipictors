@@ -93,20 +93,3 @@ function getCookie(name: string): string | null {
 export function hasCookie(name: string): boolean {
   return getCookie(name) !== null
 }
-
-/**
- * Cookieを削除する
- */
-function deleteCookie(name: string, path = "/"): boolean {
-  try {
-    if (typeof document === "undefined") {
-      return false
-    }
-
-    document.cookie = `${encodeURIComponent(name)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`
-    return true
-  } catch (error) {
-    console.error("Cookie削除エラー:", error)
-    return false
-  }
-}

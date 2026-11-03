@@ -5,16 +5,3 @@ export type GeminiImageSize =
   | "SQUARE_512"
   | "SQUARE_768"
   | "SQUARE_1024"
-
-type GeminiImageModel =
-  | "GEMINI_25_FLASH_IMAGE"
-  | "GEMINI_31_FLASH_IMAGE_PREVIEW"
-
-type CreateGeminiImageGenerationTaskInput = {
-  prompt: string
-  imageBase64?: string | null
-  imageUrl?: string | null
-  mimeType?: string | null
-  model?: GeminiImageModel | null
-  size: GeminiImageSize
-}
