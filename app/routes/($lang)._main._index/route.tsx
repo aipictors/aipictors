@@ -4,7 +4,6 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { json, redirect } from "@remix-run/cloudflare"
 import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { Link, useNavigate } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
@@ -42,7 +41,7 @@ import {
 import { Skeleton } from "~/components/ui/skeleton"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
-import { config, META } from "~/config"
+import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFollowFeedNewCount } from "~/hooks/use-follow-feed-new-count"
 import { useLocale } from "~/hooks/use-locale"
@@ -52,17 +51,12 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { loaderClient } from "~/lib/loader-client"
 import { FollowFeedNotice } from "~/routes/($lang)._main._index/components/follow-feed-notice"
-import {
-  HomeAwardWorkSection,
-  type HomeWorkAwardFragment,
-} from "~/routes/($lang)._main._index/components/home-award-work-section"
+import { HomeAwardWorkSection } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import {
   HomeDeferredSection,
   HomeWorkSectionPlaceholder,
 } from "~/routes/($lang)._main._index/components/home-deferred-section"
-import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
 import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeLoginNoticeMarquee } from "~/routes/($lang)._main._index/components/home-login-notice-marquee"
@@ -76,47 +70,30 @@ import {
   HomeNewUsersSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import {
-  HomeNewUsersWorksFragment,
+  type HomeNewUsersWorksFragment,
   HomeNewUsersWorksSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
-import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import { HomeRecentSupportHistory } from "~/routes/($lang)._main._index/components/home-recent-support-history"
 import { HomeSupportRankingSection } from "~/routes/($lang)._main._index/components/home-support-ranking-section"
-import {
-  HomeTagList,
-  HomeTagListItemFragment,
-} from "~/routes/($lang)._main._index/components/home-tag-list"
-import {
-  HomeTagFragment,
-  HomeTagsSection,
-} from "~/routes/($lang)._main._index/components/home-tags-section"
-import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import { HomeTagList } from "~/routes/($lang)._main._index/components/home-tag-list"
+import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
-import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
-import type { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksTagSection } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import {
-  HomePromotionWorkFragment,
+  type HomePromotionWorkFragment,
   HomeWorksUsersRecommendedSection,
 } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import { PER_IMG } from "~/routes/($lang)._main._index/utils/works-utils"
-import type {
-  MicroCmsApiRelease,
-  MicroCmsApiReleaseResponse,
-} from "~/types/micro-cms-release-response"
-import { createMeta } from "~/utils/create-meta"
-import { getJstDate } from "~/utils/jst-date"
+import { homeLoader } from "~/routes/($lang)._main._index/home-loader.server"
 import {
-  fetchFeaturedTaggedReleases,
-  fetchLatestImportantRelease,
-  fetchReleaseList,
-  isImportantReleaseVisible,
-} from "~/utils/micro-cms-release"
+  HOME_TAB_PATHS,
+  type HomeTab,
+} from "~/routes/($lang)._main._index/utils/home-tabs"
+import { createMeta } from "~/utils/create-meta"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 
 // フォロー新着・お気に入りタグ新着タブは表示したときにだけ読み込む
@@ -136,343 +113,13 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
 }
 
-export type HomeTab = "home" | "new" | "follow-user" | "follow-tag"
 
-export const HOME_TAB_PATHS: Record<HomeTab, string> = {
-  home: "/home",
-  new: "/",
-  "follow-user": "/follow-user-works",
-  "follow-tag": "/follow-tag-works",
-}
 
-const getUtcDateString = (date: Date) => {
-  const year = date.getUTCFullYear()
-  const month = `0${date.getUTCMonth() + 1}`.slice(-2)
-  const day = `0${date.getUTCDate()}`.slice(-2)
 
-  return `${year}/${month}/${day}`
-}
 
-const normalizeOfficialHomePreviewEvent = (event: any): HomePreviewEvent => ({
-  id: event.id,
-  slug: event.slug,
-  title: event.title,
-  thumbnailImageUrl: event.thumbnailImageUrl,
-  status: event.status,
-  startAt: event.startAt,
-  endAt: event.endAt,
-  isOfficial: true,
-  rankingEnabled: false,
-  entryCount: event.worksCount ?? 0,
-  participantCount: 0,
-  tags: event.tag ? [event.tag] : [],
-  userIconUrl: null,
-  userName: "Aipictors",
-})
 
-const normalizeUserHomePreviewEvent = (event: any): HomePreviewEvent => ({
-  id: event.id,
-  slug: event.slug,
-  title: event.title,
-  thumbnailImageUrl:
-    event.thumbnailImageUrl || event.headerImageUrl || "/images/opepnepe.png",
-  status: event.status,
-  startAt: event.startAt,
-  endAt: event.endAt,
-  isOfficial: false,
-  rankingEnabled: event.rankingEnabled,
-  entryCount: event.entryCount,
-  participantCount: event.participantCount,
-  tags: [event.mainTag, ...(event.tags ?? [])].filter(Boolean),
-  userIconUrl: event.userIconUrl ?? null,
-  userName: event.userName,
-})
 
-const shuffleArray = <T,>(items: T[]) => {
-  const copied = [...items]
 
-  for (let index = copied.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1))
-    ;[copied[index], copied[randomIndex]] = [copied[randomIndex], copied[index]]
-  }
-
-  return copied
-}
-
-const isHomePreviewTargetStatus = (status: string) => {
-  return status === "ONGOING" || status === "UPCOMING"
-}
-
-const buildHomeEventPreviews = (officialEvents: any[], userEvents: any[]) => {
-  return shuffleArray([
-    ...officialEvents
-      .filter((event) => isHomePreviewTargetStatus(event.status))
-      .map(normalizeOfficialHomePreviewEvent),
-    ...userEvents
-      .filter((event) => isHomePreviewTargetStatus(event.status))
-      .map(normalizeUserHomePreviewEvent),
-  ])
-}
-
-const createEmptyReleaseList = (): MicroCmsApiReleaseResponse => ({
-  contents: [],
-  totalCount: 0,
-  offset: 0,
-  limit: 4,
-})
-
-const createBaseHomeLoaderData = (props: {
-  awardDateText: string
-  firstTag: string
-  secondTag: string
-  releaseList: MicroCmsApiReleaseResponse
-  featuredReleaseList: MicroCmsApiRelease[]
-  importantRelease: MicroCmsApiRelease | null
-}) => ({
-  awardDateText: props.awardDateText,
-  dailyTheme: null,
-  eventPreviews: [] as HomePreviewEvent[],
-  firstTag: props.firstTag,
-  featuredReleaseList: props.featuredReleaseList,
-  hotTags: [] as FragmentOf<typeof HomeTagListItemFragment>[],
-  importantRelease: props.importantRelease,
-  initialNewWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
-  newComments: [] as FragmentOf<typeof HomeNewCommentsFragment>[],
-  newPostedUsers: [] as FragmentOf<typeof HomeNewPostedUsersFragment>[],
-  newUserWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
-  promotionWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
-  recommendedTags: [] as FragmentOf<typeof HomeTagFragment>[],
-  releaseList: props.releaseList,
-  secondTag: props.secondTag,
-  secondTagWorks: [] as FragmentOf<typeof HomeTagWorkFragment>[],
-  workAwards: [] as FragmentOf<typeof HomeWorkAwardFragment>[],
-  firstTagWorks: [] as FragmentOf<typeof HomeTagWorkFragment>[],
-})
-
-/**
- * ホームではお知らせのタイトルだけ使うので、本文（Markdown 全文）は HTML に入れない
- */
-function toReleaseSummary<T extends { description: string }>(release: T): T {
-  return { ...release, description: "" }
-}
-
-/**
- * ホームの一覧で使わない、作品の詳細画面用の項目（HomeWork フラグメントは詳細画面と共通で項目が多い）。
- * HTML に入るローダーのデータが大きいと、回線の遅いスマホで最初の画像の読み込みが遅れる
- */
-const HOME_LIST_OMIT_WORK_KEYS = [
-  "likedUsers",
-  "prompt",
-  "negativePrompt",
-  "noise",
-  "seed",
-  "steps",
-  "sampler",
-  "scale",
-  "strength",
-  "vae",
-  "clipSkip",
-  "otherGenerationParams",
-  "pngInfo",
-  "style",
-  "ogpThumbnailImageUrl",
-  "relatedUrl",
-] as const
-
-const HOME_LIST_OMIT_USER_KEYS = [
-  "biography",
-  "enBiography",
-  "webFcmToken",
-  "headerImageUrl",
-  "promptonUser",
-] as const
-
-function toHomeListWorks<T>(works: T[] | null | undefined): T[] {
-  if (!Array.isArray(works)) return []
-  return works.map((work) => {
-    const copy = { ...(work as Record<string, unknown>) }
-    for (const key of HOME_LIST_OMIT_WORK_KEYS) delete copy[key]
-    if (copy.user && typeof copy.user === "object") {
-      const user = { ...(copy.user as Record<string, unknown>) }
-      for (const key of HOME_LIST_OMIT_USER_KEYS) delete user[key]
-      copy.user = user
-    }
-    return copy as T
-  })
-}
-
-export async function loader(props: LoaderFunctionArgs) {
-  const url = new URL(props.request.url)
-  const legacyTab = url.searchParams.get("tab")
-  const currentPathLeaf = url.pathname.split("/").filter(Boolean).at(-1) ?? ""
-  const isHomeRoute = currentPathLeaf === "home"
-  const isFollowUserRoute = currentPathLeaf === "follow-user-works"
-  const isFollowTagRoute = currentPathLeaf === "follow-tag-works"
-  const isDefaultTopRoute =
-    !isHomeRoute && !isFollowUserRoute && !isFollowTagRoute
-
-  if (
-    legacyTab === "home" ||
-    legacyTab === "new" ||
-    legacyTab === "follow-user" ||
-    legacyTab === "follow-tag"
-  ) {
-    url.pathname = HOME_TAB_PATHS[legacyTab]
-    url.searchParams.delete("tab")
-
-    return redirect(`${url.pathname}${url.search}`, { status: 302 })
-  }
-
-  const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
-
-  const getRandomCategories = () => {
-    const currentTime = new Date()
-    const secondSeed = Math.floor(currentTime.getTime() / 1000)
-
-    const seededRandom = (seed: number, str: string) => {
-      const combined = seed + str.charCodeAt(0)
-      const x = Math.sin(combined) * 10000
-      return x - Math.floor(x)
-    }
-
-    const randomCategories = categories
-      .map((cat) => ({
-        cat,
-        sortKey: seededRandom(secondSeed, cat),
-      }))
-      .sort((a, b) => a.sortKey - b.sortKey)
-      .slice(0, 2)
-      .map((item) => item.cat)
-
-    return randomCategories
-  }
-
-  const randomCategories = getRandomCategories()
-
-  const now = getJstDate()
-  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-  const awardDateText = getUtcDateString(yesterday)
-
-  const [releaseList, featuredReleaseList, latestImportantRelease] =
-    await Promise.all([
-      fetchReleaseList({
-        limit: 4,
-      }).catch(
-        (): MicroCmsApiReleaseResponse => ({
-          contents: [],
-          totalCount: 0,
-          offset: 0,
-          limit: 4,
-        }),
-      ),
-      fetchFeaturedTaggedReleases().catch((): MicroCmsApiRelease[] => []),
-      fetchLatestImportantRelease().catch((): MicroCmsApiRelease | null => null),
-    ])
-
-  const safeReleaseList =
-    releaseList && Array.isArray(releaseList.contents)
-      ? { ...releaseList, contents: releaseList.contents.map(toReleaseSummary) }
-      : createEmptyReleaseList()
-
-  const baseLoaderData = createBaseHomeLoaderData({
-    awardDateText,
-    firstTag: randomCategories[0],
-    secondTag: randomCategories[1],
-    releaseList: safeReleaseList,
-    featuredReleaseList: Array.isArray(featuredReleaseList)
-      ? featuredReleaseList.map(toReleaseSummary)
-      : [],
-    importantRelease: latestImportantRelease && isImportantReleaseVisible(
-      latestImportantRelease,
-      now.getTime(),
-    )
-      ? toReleaseSummary(latestImportantRelease)
-      : null,
-  })
-
-  if (!isHomeRoute) {
-    if (!isDefaultTopRoute) {
-      return json(baseLoaderData, {
-        headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-        },
-      })
-    }
-
-    const initialWorksResult = await loaderClient.query({
-      query: initialNewWorksQuery,
-      errorPolicy: "all",
-      variables: {
-        limit: PER_IMG,
-        offset: 0,
-        where: {
-          beforeCreatedAt: new Date().toISOString(),
-          isNowCreatedAt: true,
-          orderBy: "DATE_CREATED",
-          ratings: ["G", "R15"],
-          // 「公開（新着無）」の作品は新着一覧に出さない
-          accessTypes: ["PUBLIC"],
-        },
-      },
-    })
-
-    return json(
-      {
-        ...baseLoaderData,
-        initialNewWorks: Array.isArray(initialWorksResult.data?.works)
-          ? initialWorksResult.data.works
-          : [],
-      },
-      {
-        headers: {
-          "Cache-Control": config.cacheControl.home,
-        },
-      },
-    )
-  }
-
-  const result = await loaderClient.query({
-    query: query,
-    errorPolicy: "all",
-    variables: {
-      day: now.getDate(),
-      month: now.getMonth() + 1,
-      year: now.getFullYear(),
-      // 最初に見える一覧と右カラムはサーバーで取ってHTMLに入れる（以前は表示後にログイン確認を待ってから取得していた）
-      promotionLimit: config.query.homeWorkCount.promotion,
-      newUserWorksLimit: config.query.homeWorkCount.newUser,
-    },
-  })
-
-  const resultData = result.data
-  const appEvents: any[] = Array.isArray(resultData?.appEvents)
-    ? resultData.appEvents
-    : []
-  const userEvents: any[] = Array.isArray(resultData?.userEvents)
-    ? resultData.userEvents
-    : []
-  const eventPreviews = buildHomeEventPreviews(appEvents, userEvents)
-
-  return json(
-    {
-      ...baseLoaderData,
-      ...(resultData ?? {}),
-      // 一覧に出すだけなので、詳細画面用の項目は HTML に入れない（作品のダイアログは開くときに取り直す）
-      promotionWorks: toHomeListWorks(resultData?.promotionWorks),
-      newUserWorks: toHomeListWorks(resultData?.newUserWorks),
-      eventPreviews,
-      hotTags: Array.isArray(resultData?.hotTags) ? resultData.hotTags : [],
-      recommendedTags: Array.isArray(resultData?.recommendedTags)
-        ? resultData.recommendedTags
-        : [],
-    },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.home,
-      },
-    },
-  )
-}
 
 // カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
 /**
@@ -497,6 +144,10 @@ type HomeIndexPageProps = {
   forcedTab?: HomeTab
   /** /new-works として表示している（ページの見出しを変える） */
   isNewWorksPage?: boolean
+}
+
+export async function loader(props: LoaderFunctionArgs) {
+  return homeLoader(props)
 }
 
 export function HomeIndexPage(props: HomeIndexPageProps = {}) {
@@ -1750,107 +1401,6 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => ({
     "no-store, no-cache, must-revalidate, max-age=0",
 })
 
-const initialNewWorksQuery = graphql(
-  `query InitialNewWorks($offset:Int!,$limit:Int!,$where:WorksWhereInput!) {
-     works(offset:$offset,limit:$limit,where:$where){
-       ...HomeWork
-       ...HomeNovelsWorkListItem
-       ...HomeVideosWorkListItem
-     }
-   }`,
-  [
-    HomeWorkFragment,
-    HomeNovelsWorkListItemFragment,
-    HomeVideosWorkListItemFragment,
-  ],
-)
-
-const query = graphql(
-  `query HomeQuery(
-    $year: Int!
-    $month: Int!
-    $day: Int!
-    $promotionLimit: Int!
-    $newUserWorksLimit: Int!
-  ) {
-    promotionWorks: works(
-      offset: 0
-      limit: $promotionLimit
-      where: { isRecommended: true, sort: DESC, ratings: [G, R15] }
-    ) {
-      ...HomePromotionWork
-    }
-    newUserWorks(
-      offset: 0
-      limit: $newUserWorksLimit
-      where: { ratings: [G], isNowCreatedAt: true }
-    ) {
-      ...HomeNewUsersWorks
-    }
-    newPostedUsers(offset: 0, limit: 8) {
-      ...HomeNewPostedUsers
-    }
-    newComments(
-      offset: 0
-      limit: 8
-      where: { isSensitive: false, isTextOnly: true, ratings: [G, R15] }
-    ) {
-      ...HomeNewComments
-    }
-    dailyTheme(year: $year, month: $month, day: $day) {
-      id
-      title
-    }
-    hotTags {
-      ...HomeTagListItem
-    }
-    recommendedTags: recommendedTags(
-      limit: 16
-      where: {
-        isSensitive: false,
-      }
-    ) {
-      ...HomeTag
-    }
-    appEvents(limit: 12, offset: 0) {
-      id
-      slug
-      title
-      thumbnailImageUrl
-      status
-      startAt
-      endAt
-      tag
-      worksCount
-    }
-    userEvents(limit: 12, offset: 0) {
-      id
-      slug
-      title
-      thumbnailImageUrl
-      headerImageUrl
-      status
-      startAt
-      endAt
-      mainTag
-      tags
-      rankingEnabled
-      entryCount
-      participantCount
-      userId
-      userIconUrl
-      userName
-    }
-  }`,
-  [
-    HomeTagListItemFragment,
-    HomeTagFragment,
-    HomePromotionWorkFragment,
-    HomeNewUsersWorksFragment,
-    HomeNewPostedUsersFragment,
-    HomeNewCommentsFragment,
-  ],
-)
 
 const homeSidebarQuery = graphql(
   `query HomeSidebarQuery {
