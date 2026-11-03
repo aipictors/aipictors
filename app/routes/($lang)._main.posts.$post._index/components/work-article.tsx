@@ -21,6 +21,7 @@ import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/comp
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
+import { WorkPromotionBanner } from "~/components/work/work-promotion"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
 import { WorkAuthorFollowButton } from "~/routes/($lang)._main.posts.$post._index/components/work-author-follow-button"
@@ -295,6 +296,12 @@ export function WorkArticle(props: Props) {
         />
       )}
       <section className="mt-4 flex flex-col space-y-4">
+        {props.work.isPromotion === true && (
+          <WorkPromotionBanner
+            relatedUrl={props.work.relatedUrl}
+            userName={props.work.user?.name}
+          />
+        )}
         {props.work.isGeneration && (
           <Link to={`/generation?work=${props.work.id}`}>
             <Button variant={"secondary"} className="w-full">
@@ -422,7 +429,7 @@ export function WorkArticle(props: Props) {
                 className="flex items-center space-x-2"
               >
                 <span className="text-md">
-                  {t("宣伝作品", "Promotional work")}
+                  {t("宣伝作品", "Promoted")}
                 </span>
               </Badge>
             )}

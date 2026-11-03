@@ -4724,6 +4724,7 @@ type Query {
   themeProposalsCount(date: String, endDate: String, month: Int, proposerUserId: ID, startDate: String, status: String, year: Int): Int!
 
   """ユーザ"""
+  promotionWorks(isSensitive: Boolean, limit: Int!): [WorkNode!]!
   user(id: ID!): UserNode
 
   """ユーザのシリーズ"""

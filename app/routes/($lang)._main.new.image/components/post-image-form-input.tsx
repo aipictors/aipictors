@@ -648,6 +648,7 @@ export function PostImageFormInput(props: Props) {
           props.currentPass?.type === "PREMIUM"
         }
         isChecked={props.state.usePromotionFeature}
+        hasLink={(props.state.link ?? "").trim().length > 0}
         onChange={(isAd) => {
           props.dispatch({ type: "ENABLE_PROMOTION_FEATURE", payload: isAd })
         }}

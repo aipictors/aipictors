@@ -1,3 +1,4 @@
+import { WorkPromotionMark } from "~/components/work/work-promotion"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -83,6 +84,9 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                     isSensitiveWork(workItem)
                   }
                 />
+                {workItem.isPromotion && (
+                  <WorkPromotionMark className="absolute top-1.5 left-1.5" />
+                )}
                 <div className="absolute right-0 bottom-0">
                   <LikeButton
                     size={56}
@@ -208,6 +212,9 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                     className="relative w-full overflow-hidden rounded-lg bg-muted transition-shadow duration-200 hover:shadow-lg"
                     style={{ aspectRatio: `${ratio}` }}
                   >
+                    {work.isPromotion && (
+                      <WorkPromotionMark className="absolute top-1.5 left-1.5 z-10" />
+                    )}
                     {props.onSelect ? (
                       <button
                         type="button"

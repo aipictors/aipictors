@@ -46,6 +46,7 @@ import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFollowFeedNewCount } from "~/hooks/use-follow-feed-new-count"
 import { useLocale } from "~/hooks/use-locale"
+import { HomePromotionWorksSection } from "~/components/work/work-promotion"
 import { useTranslation } from "~/hooks/use-translation"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
@@ -1104,6 +1105,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 featuredReleases={data.featuredReleaseList}
                 releaseList={data.releaseList}
               />
+              <HomePromotionWorksSection />
               {/* サーバーで取った一覧をすぐ出す（スクロールやログイン確認を待たない） */}
               <HomeWorksUsersRecommendedSection
                 works={

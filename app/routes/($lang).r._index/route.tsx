@@ -1,3 +1,4 @@
+import { HomePromotionWorksSection } from "~/components/work/work-promotion"
 import { useMutation, useQuery } from "@apollo/client/index"
 import type {
   HeadersFunction,
@@ -438,6 +439,7 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
             <HomeSensitiveTagList hotTags={data.hotSensitiveTags} />
             <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
               <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_278px)]">
+                <HomePromotionWorksSection isSensitive />
                 <HomeSensitiveWorksUsersRecommendedSection
                   works={data.promotionWorks}
                 />

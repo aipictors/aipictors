@@ -100,7 +100,7 @@ export function PlusComparisonTable() {
       label: t("宣伝作品（広告枠）", "Promotional works (ad space)"),
       value: (spec) =>
         spec.plan === "STANDARD" || spec.plan === "PREMIUM"
-          ? t("週1作品", "1 per week")
+          ? t("週1作品・ホームに7日間", "1 per week, on home for 7 days")
           : false,
     },
     {
