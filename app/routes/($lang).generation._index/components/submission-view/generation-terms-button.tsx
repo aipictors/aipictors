@@ -1,4 +1,4 @@
-import { AppMarkdown } from "~/components/app/app-markdown"
+import { lazy, Suspense } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,6 +12,13 @@ import {
 } from "~/components/ui/alert-dialog"
 import { Button } from "~/components/ui/button"
 import { ScrollArea } from "~/components/ui/scroll-area"
+
+// 規約を開いたときに読み込む（marked と zenn-content-css）
+const AppMarkdown = lazy(() =>
+  import("~/components/app/app-markdown").then((module) => ({
+    default: module.AppMarkdown,
+  })),
+)
 
 type Props = {
   termsMarkdownText: string
@@ -41,7 +48,9 @@ export function GenerationTermsButton (props: Props) {
         </AlertDialogHeader>
         <AlertDialogDescription>
           <ScrollArea className="h-64 w-full">
-            <AppMarkdown>{props.termsMarkdownText}</AppMarkdown>
+            <Suspense fallback={null}>
+              <AppMarkdown>{props.termsMarkdownText}</AppMarkdown>
+            </Suspense>
           </ScrollArea>
         </AlertDialogDescription>
         <AlertDialogFooter>

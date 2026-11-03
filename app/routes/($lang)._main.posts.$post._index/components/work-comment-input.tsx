@@ -188,7 +188,7 @@ export function ReplyCommentInput (props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data = null } = useQuery(viewerUserQuery, {
-    skip: authContext.isLoading,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const iconUrl = data?.viewer?.user?.iconUrl ?? ""

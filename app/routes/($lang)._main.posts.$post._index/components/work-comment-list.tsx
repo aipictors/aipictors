@@ -41,7 +41,7 @@ import {
   WorkCommentFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-response"
-import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
+import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import {
   readRecentStickerIds,
@@ -871,7 +871,7 @@ export function WorkCommentList(props: Props) {
   )
 
   const { data = null } = useQuery(viewerUserQuery, {
-    skip: authContext.isLoading,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const stickers = sortStickersByRecent(

@@ -1,5 +1,4 @@
-import { format } from "date-fns"
-import { zipSync } from "fflate"
+import { formatDate } from "~/utils/format-date"
 
 interface FileObject {
   name: string
@@ -21,6 +20,9 @@ export const downloadZipFile = async (props: Props): Promise<void> => {
       throw new Error("No valid images found to download.")
     }
 
+    // ダウンロードするときに読み込む
+    const { zipSync } = await import("fflate")
+
     const data = zipSync(
       Object.fromEntries(props.files.map((file) => [file.name, file.data])),
       {},
@@ -37,7 +39,7 @@ export const downloadZipFile = async (props: Props): Promise<void> => {
 
     const now = new Date()
 
-    const formattedDate = format(now, "yyyyMMddHHmmss")
+    const formattedDate = formatDate(now, "yyyyMMddHHmmss")
 
     linkNode.download = `${props.name}_${formattedDate}.zip`
 

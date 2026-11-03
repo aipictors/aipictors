@@ -9,7 +9,8 @@ import { ReportDialog } from "~/routes/($lang)._main.posts.$post._index/componen
 import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { DownloadIcon, MoreHorizontal, SendIcon, ShieldAlert } from "lucide-react"
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { AuthContext } from "~/contexts/auth-context"
 import { toast } from "sonner"
 import { ModerationRatingReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/moderation-rating-report-dialog"
 import { ModerationStyleReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/moderation-style-report-dialog"
@@ -99,7 +100,11 @@ export function WorkActionMenu (props: Props) {
     }
   }
 
-  const { data: isModeratorData } = useQuery(IsModeratorQuery, {})
+  const authContext = useContext(AuthContext)
+
+  const { data: isModeratorData } = useQuery(IsModeratorQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  })
 
   return (
     <Popover>

@@ -10,6 +10,7 @@
     "start": "wrangler pages dev ./build/client",
     "check": "NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit",
     "test": "bun test",
+    "check:bundle": "bun run scripts/check-bundle-size.ts",
     "lint": "biome lint --write app",
     "lint:unsafe": "biome lint --write --unsafe app",
     "storybook": "storybook dev -p 6006 --no-open",
@@ -142,7 +143,6 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.9.3",
     "vite": "^5.4.2",
-    "vite-plugin-static-copy": "^2.1.0",
     "vite-tsconfig-paths": "^5.0.1",
     "wrangler": "^4"
   },

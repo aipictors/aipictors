@@ -1,11 +1,11 @@
 import type React from "react"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
-import { format } from "date-fns"
+import { formatDate } from "~/utils/format-date"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, ShieldAlert } from "lucide-react"
 import { cn } from "~/lib/utils"
-import { useContext, useEffect, useState } from "react"
+import { startTransition, useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { OfficialBadge } from "~/components/official-badge"
 import { ToggleContent } from "~/components/toggle-content"
@@ -65,7 +65,7 @@ export function WorkArticle(props: Props) {
 
   const toDateTextUrl = (time: number, dateFormat: string) => {
     const date = new Date(time * 1000)
-    return format(date, dateFormat)
+    return formatDate(date, dateFormat)
   }
 
   const toAiRankingPath = (
@@ -125,7 +125,11 @@ export function WorkArticle(props: Props) {
       fetch(props.work.mdUrl)
         .then((res) => res.text())
         .then((text) => {
-          setMarkdownContent(text)
+          // hydration が終わる前に急ぎの更新として届くと、遅延読み込みの Suspense の中身を
+          // React が作り直してしまう（React error #421）
+          startTransition(() => {
+            setMarkdownContent(text)
+          })
         })
         .catch((err) => console.error("Error fetching markdown file:", err))
     }

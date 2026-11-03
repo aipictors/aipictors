@@ -3,7 +3,7 @@ import { useState } from "react"
 import { config } from "~/config"
 import { load } from "@l4ph/nsfwts"
 
-const modelUrl = "./nsfwjs.onnx"
+const modelUrl = "/nsfw_model/nsfwjs.onnx"
 const isDevelopmentMode = config.isDevelopmentMode
 
 export default function CheckNsfw () {

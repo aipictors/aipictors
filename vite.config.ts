@@ -4,7 +4,6 @@ import {
 } from "@remix-run/dev"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
-import { viteStaticCopy } from "vite-plugin-static-copy"
 import tailwindcss from "@tailwindcss/vite"
 import { mkdirSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path"
@@ -38,6 +37,19 @@ const criticalCssSource = (): Plugin => ({
     const out = join(options.dir, "..", "critical-css-source.json")
     mkdirSync(dirname(out), { recursive: true })
     writeFileSync(out, JSON.stringify({ ...tailwind, inline }))
+  },
+})
+
+/**
+ * @fontsource の CSS から woff の指定を外す。どのブラウザも woff2 を読めるので、
+ * woff のファイル（フォント 1 つで数千個、合計 90MB）が配布物に入らないようにする
+ */
+const fontsourceWoff2Only = (): Plugin => ({
+  name: "aipictors-fontsource-woff2-only",
+  enforce: "pre",
+  transform(code, id) {
+    if (!/\/@fontsource(-variable)?\/.+\.css(\?|$)/.test(id)) return null
+    return code.replace(/,\s*url\([^)]+\.woff\)\s*format\(["']woff["']\)/g, "")
   },
 })
 
@@ -78,26 +90,7 @@ export default defineConfig({
     tsconfigPaths(),
     tailwindcss(),
     criticalCssSource(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: "./node_modules/onnxruntime-web/dist/*.wasm",
-          dest: "./debug",
-        },
-        {
-          src: "./public/nsfw_model/*.onnx",
-          dest: "./debug",
-        },
-        {
-          src: "./node_modules/onnxruntime-web/dist/*.wasm",
-          dest: "./new",
-        },
-        {
-          src: "./public/nsfw_model/*.onnx",
-          dest: "./new",
-        },
-      ],
-    }),
+    fontsourceWoff2Only(),
   ],
   define: {
     VITE_VERSION: JSON.stringify(process.env.npm_package_version),
@@ -117,6 +110,20 @@ export default defineConfig({
         // 細かく分かれていると、モバイルの計測で最初の表示が大きく遅れる。
         // React と Apollo を別のファイルに分けると、読み込み順で Apollo が React を見つけられず壊れるので、必ず同じファイルにする
         manualChunks(id) {
+          // date-fns の format とロケールは使うページが限られる（ふだんの日付は ~/utils/format-date）。
+          // 小さいチャンクをまとめるときに全ページ共通のファイルへ入らないようにする
+          if (id.includes("/node_modules/date-fns/")) {
+            return /\/date-fns\/(format\.js|_lib\/format\/|locale\/|locale\.js|getDayOfYear|getISOWeek|getWeek|startOfISOWeek|startOfWeekYear|parseISO)/.test(
+              id,
+            )
+              ? "date-fns-format"
+              : "date-fns-core"
+          }
+          // 規約などの Markdown の文字列は、小さいチャンクをまとめるときに全ページ共通のファイルへ入らないようにする
+          const markdownName = id.match(/([\w-]+)\.md\?raw$/)?.[1]
+          if (markdownName) {
+            return `markdown-${markdownName}`
+          }
           if (
             /node_modules\/(react|react-dom|scheduler|@remix-run|react-router|react-router-dom|turbo-stream|cookie|set-cookie-parser|@apollo|graphql|@wry|optimism|zen-observable|zen-observable-ts|ts-invariant|symbol-observable|@graphql-typed-document-node|rehackt|hoist-non-react-statics|tslib|@tanstack|use-sync-external-store)\//.test(
               id,

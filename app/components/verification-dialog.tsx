@@ -14,7 +14,8 @@ import {
 import { RiGoogleFill } from "@remixicon/react"
 import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import { AuthContext } from "~/contexts/auth-context"
 import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
 import { PlusUpsellCard } from "~/components/plus-upsell-card"
 import { Link } from "~/lib/app/locale-router"
@@ -99,8 +100,12 @@ function GoogleVerificationButton() {
 export function VerificationDialog (props: Props): React.ReactNode {
   const t = useTranslation()
 
+  const authContext = useContext(AuthContext)
+
   const { data: verificationUrlRet, refetch: verificationUrlRefetch } =
-    useQuery(verificationUrlQuery)
+    useQuery(verificationUrlQuery, {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
+    })
 
   const verificationUrl = verificationUrlRet?.viewer?.verificationUrl
 

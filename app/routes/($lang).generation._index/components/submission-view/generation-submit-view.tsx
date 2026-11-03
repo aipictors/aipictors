@@ -275,12 +275,14 @@ export function GenerationSubmissionView(props: Props) {
     }
   }
 
-  const { data: tokenData } = useQuery(ViewerTokenQuery)
+  const authContext = useContext(AuthContext)
+
+  const { data: tokenData } = useQuery(ViewerTokenQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  })
 
   // IPアドレス取得
   const { ipInfo } = useIpAddress()
-
-  const authContext = useContext(AuthContext)
 
   const isGeminiModelSelected =
     context.config.modelType === "GEMINI" ||
@@ -415,7 +417,7 @@ export function GenerationSubmissionView(props: Props) {
   )
 
   const { data: lineUserId } = useQuery(viewerLineUserIdQuery, {
-    skip: authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const [signTerms, { loading: isSigningTerms }] = useMutation(
@@ -519,7 +521,7 @@ export function GenerationSubmissionView(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(viewerUserQuery, {
-    skip: appContext.isLoading,
+    skip: appContext.isLoading || appContext.isNotLoggedIn,
   })
 
   const generatedCount = data?.viewer?.user.generatedCount ?? 0
