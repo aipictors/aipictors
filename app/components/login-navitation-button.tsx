@@ -1,4 +1,4 @@
-import { LoginDialogContent } from "~/components/login-dialog-content"
+import { LazyLoginDialogContent } from "~/components/lazy-login-dialog-content"
 import {
   Dialog,
   DialogContent,
@@ -34,7 +34,7 @@ export function LoginNavigationButton (): React.ReactNode {
             )}
           </DialogDescription>
         </DialogHeader>
-        <LoginDialogContent />
+        <LazyLoginDialogContent />
       </DialogContent>
     </Dialog>
   )

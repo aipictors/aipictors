@@ -1,7 +1,7 @@
 import { Slot } from "@radix-ui/react-slot"
 import { LoaderIcon } from "lucide-react"
 import { useState } from "react"
-import { LoginDialogContent } from "~/components/login-dialog-content"
+import { LazyLoginDialogContent } from "~/components/lazy-login-dialog-content"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -93,7 +93,7 @@ export function LoginDialogButton(props: Props): React.ReactNode {
               )}
           </DialogDescription>
         </DialogHeader>
-        <LoginDialogContent />
+        <LazyLoginDialogContent />
       </DialogContent>
     </Dialog>
   )
