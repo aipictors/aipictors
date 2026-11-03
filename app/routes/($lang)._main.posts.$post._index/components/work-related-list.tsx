@@ -68,17 +68,60 @@ export function WorkRelatedList(props: Props) {
 }
 
 /**
- * 作者の他の作品。小さいサムネイルの横スクロールにしている（ユーザーの要望で、大きいグリッドには戻さない）
+ * 作者の他の作品。layout は横スクロール（AI 評価とコメントの間）とグリッド（コメントの下）の 2 つで、
+ * どちらも出す（ユーザーの要望）。
  */
 export function WorkAuthorWorks(props: {
   works: Props["works"]
   currentWorkId: string
   header: React.ReactNode
+  layout?: "carousel" | "grid"
 }) {
   const works = props.works.filter((work) => work.id !== props.currentWorkId)
 
   if (works.length === 0) {
     return null
+  }
+
+  if (props.layout === "grid") {
+    return (
+      <section className="space-y-3">
+        {props.header}
+        <WorkLazySection minHeightClassName="min-h-[50vw] md:min-h-80">
+          <div className="grid grid-cols-3 gap-2 md:grid-cols-4">
+            {works.slice(0, 8).map((work) => (
+              <div
+                key={work.id}
+                className="relative overflow-hidden rounded-xl"
+              >
+                <CroppedWorkSquare
+                  title={work.title}
+                  workId={work.id}
+                  subWorksCount={work.subWorksCount}
+                  imageUrl={work.smallThumbnailImageURL}
+                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                  size="auto"
+                  imageWidth={work.smallThumbnailImageWidth}
+                  imageHeight={work.smallThumbnailImageHeight}
+                  commentsCount={work.commentsCount}
+                />
+                <div className="absolute right-0 bottom-0">
+                  <LikeButton
+                    size={36}
+                    targetWorkId={work.id}
+                    targetWorkOwnerUserId={work.userId}
+                    defaultLiked={work.isLiked}
+                    defaultLikedCount={0}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </WorkLazySection>
+      </section>
+    )
   }
 
   return (
@@ -135,11 +178,13 @@ type AuthorWorksUser = {
 export function WorkAuthorWorksSection(props: {
   user: AuthorWorksUser
   currentWorkId: string
+  layout?: "carousel" | "grid"
 }) {
   const t = useTranslation()
   return (
     <WorkAuthorWorks
       currentWorkId={props.currentWorkId}
+      layout={props.layout}
       works={props.user.works.map((work) => ({
         smallThumbnailImageURL: work.smallThumbnailImageURL,
         thumbnailImagePosition: work.thumbnailImagePosition ?? 0,

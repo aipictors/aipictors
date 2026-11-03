@@ -217,6 +217,15 @@ export function SensitiveWorkContainer(props: Props) {
                 />
               </div>
             )}
+            {workForArticle.user && (
+              <div className="border-t pt-6">
+                <WorkAuthorWorksSection
+                  user={workForArticle.user}
+                  currentWorkId={workForArticle.id}
+                  layout="grid"
+                />
+              </div>
+            )}
             {workForArticle.user && authContext.isLoggedIn && (
               <WorkLazySection>
                 <FollowSuggestions

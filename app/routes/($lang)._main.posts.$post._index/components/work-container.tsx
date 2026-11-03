@@ -203,7 +203,7 @@ export function WorkContainer(props: Props) {
                 ) : undefined
               }
             />
-            {/* AI 評価（WorkArticle の中）→ 作者の他の作品 → アルバム → コメントの順 */}
+            {/* AI 評価（WorkArticle の中）→ 作者の他の作品（横スクロール）→ アルバム → コメント → 作者の他の作品（グリッド）の順 */}
             {work.user && (
               <div className="border-t pt-6">
                 <WorkAuthorWorksSection
@@ -223,6 +223,15 @@ export function WorkContainer(props: Props) {
                   workOwnerIconImageURL={work.user?.iconUrl}
                   workOwnerName={work.user?.name}
                   isWorkOwnerBlocked={work.user?.isBlocked ?? false}
+                />
+              </div>
+            )}
+            {work.user && (
+              <div className="border-t pt-6">
+                <WorkAuthorWorksSection
+                  user={work.user}
+                  currentWorkId={work.id}
+                  layout="grid"
                 />
               </div>
             )}
