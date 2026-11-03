@@ -1,7 +1,7 @@
 import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { ChevronRightIcon } from "lucide-react"
-import { useTranslation } from "~/hooks/use-translation"
+import { containsJapanese, useTranslation } from "~/hooks/use-translation"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 
@@ -17,7 +17,15 @@ type Props = {
 export function HomeNewCommentsSection(props: Props) {
   const t = useTranslation()
 
-  const comments = readFragment(HomeNewCommentsFragment, props.comments)
+  // コメントは毎回翻訳すると翻訳の回数の上限に届くので、英語の画面では日本語のものを出さない
+  const comments = readFragment(HomeNewCommentsFragment, props.comments).filter(
+    (comment) =>
+      !t.isEnglish || !containsJapanese(comment.comment?.text ?? ""),
+  )
+
+  if (comments.length === 0) {
+    return null
+  }
 
   return (
     <section className="space-y-2">

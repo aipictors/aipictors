@@ -1,5 +1,6 @@
 import { Badge } from "~/components/ui/badge"
 import { Bug, RefreshCw, Wrench } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import type { FeaturedReleaseTag } from "~/utils/micro-cms-release"
 
@@ -36,7 +37,14 @@ const getReleaseTagMeta = (tag?: string | null) => {
   }
 }
 
+const RELEASE_TAG_EN: Record<string, string> = {
+  アップデート: "Update",
+  不具合対応: "Bug fix",
+  メンテナンス: "Maintenance",
+}
+
 export function ReleaseTagBadge(props: Props) {
+  const t = useTranslation()
   const meta = getReleaseTagMeta(props.tag)
 
   if (!meta) {
@@ -44,7 +52,7 @@ export function ReleaseTagBadge(props: Props) {
 
     return (
       <Badge variant="secondary" className={props.className}>
-        {props.tag}
+        {t(props.tag, RELEASE_TAG_EN[props.tag] ?? (t.text(props.tag) || "News"))}
       </Badge>
     )
   }
@@ -57,7 +65,7 @@ export function ReleaseTagBadge(props: Props) {
       className={cn("inline-flex items-center gap-1", meta.className, props.className)}
     >
       <Icon className="h-3.5 w-3.5" />
-      <span>{meta.label}</span>
+      <span>{t(meta.label, RELEASE_TAG_EN[meta.label])}</span>
     </Badge>
   )
 }

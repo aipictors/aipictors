@@ -94,7 +94,7 @@ export function HomeSupportRankingSection() {
   }, [])
 
   const weekLabel = weekStartDate
-    ? new Intl.DateTimeFormat("ja-JP", {
+    ? new Intl.DateTimeFormat(t.isEnglish ? "en-US" : "ja-JP", {
         timeZone: "Asia/Tokyo",
         year: "numeric",
         month: "long",
