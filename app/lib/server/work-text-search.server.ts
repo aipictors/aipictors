@@ -81,6 +81,9 @@ async function queryWorkIdsByText(props: {
   }
   const ratings = RATING_CODES[props.rating]
   const order = props.order ?? "popular"
+  // 投稿日順で公開前の予約投稿が先頭に来ると、GraphQL で落ちてページが欠ける
+  const isDateOrder = order !== "popular"
+  const nowSeconds = Math.floor(Date.now() / 1000)
   const ratingPlaceholders = ratings.map(() => "?").join(",")
   const likePattern = `%${query.replace(/[\\%_]/g, (c) => `\\${c}`)}%`
 
@@ -97,6 +100,7 @@ async function queryWorkIdsByText(props: {
         .prepare(
           `SELECT w.id AS id FROM works w
            WHERE ${matchedIds} AND w.rating IN (${ratingPlaceholders})
+             ${isDateOrder ? "AND w.created_at <= ?" : ""}
            ORDER BY ${
              order === "popular"
                ? "(w.title LIKE ? ESCAPE '\\') DESC, w.likes DESC"
@@ -108,7 +112,7 @@ async function queryWorkIdsByText(props: {
           match,
           match,
           ...ratings,
-          ...(order === "popular" ? [likePattern] : []),
+          ...(isDateOrder ? [nowSeconds] : [likePattern]),
           props.limit,
           props.offset,
         )
@@ -135,6 +139,7 @@ async function queryWorkIdsByText(props: {
         `SELECT id FROM works
           WHERE (title LIKE ? ESCAPE '\\' OR en_title LIKE ? ESCAPE '\\' OR tags LIKE ? ESCAPE '\\')
             AND rating IN (${ratingPlaceholders})
+            ${isDateOrder ? "AND created_at <= ?" : ""}
           ORDER BY ${
             order === "popular"
               ? "likes DESC"
@@ -146,6 +151,7 @@ async function queryWorkIdsByText(props: {
         likePattern,
         likePattern,
         ...ratings,
+        ...(isDateOrder ? [nowSeconds] : []),
         props.limit,
         props.offset,
       )

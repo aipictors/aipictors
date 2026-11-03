@@ -196,14 +196,18 @@ export async function loader(props: LoaderFunctionArgs) {
     )
   }
 
-  const resultWhere = buildWorksWhere({
-    tagQuery: searchQuery,
-    rating,
-    style,
-    prompt,
-    order,
-    userId: filterUserId,
-  })
+  // isNowCreatedAt がないと works は投稿から 1 日以内の作品を返さない
+  const resultWhere = {
+    ...buildWorksWhere({
+      tagQuery: searchQuery,
+      rating,
+      style,
+      prompt,
+      order,
+      userId: filterUserId,
+    }),
+    isNowCreatedAt: true,
+  }
   const shouldUseFilteredCount =
     style !== "all" || prompt !== "all" || filterUserId !== null
   const rankingWhere = buildWorksWhere({
@@ -232,6 +236,7 @@ export async function loader(props: LoaderFunctionArgs) {
       search: query,
       searchInTags: true,
       searchInDescription: true,
+      isNowCreatedAt: true,
     }
     const [idsResp, countResp] = await Promise.all([
       loaderClient.query({
@@ -274,7 +279,7 @@ export async function loader(props: LoaderFunctionArgs) {
         variables: {
           offset: 0,
           limit: ids.length,
-          where: { ids, ratings: [rating] },
+          where: { ids, ratings: [rating], isNowCreatedAt: true },
         },
       })
       const byId = new Map(resp.data.works.map((work) => [work.id, work]))
