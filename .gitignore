@@ -42,9 +42,10 @@ __generated__
 *.pem
 
 # debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+*.log
+tsc_output.txt
+.tmp/
+vite.config.ts.timestamp-*
 
 # local env files
 # .env*.local
