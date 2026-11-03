@@ -1,15 +1,12 @@
 import type React from "react"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
-import { formatDate } from "~/utils/format-date"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, ShieldAlert } from "lucide-react"
-import { cn } from "~/lib/utils"
 import { startTransition, useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { OfficialBadge } from "~/components/official-badge"
 import { ToggleContent } from "~/components/toggle-content"
-import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
@@ -22,18 +19,28 @@ import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
 import { WorkPromotionBanner } from "~/components/work/work-promotion"
+import type {
+  userSettingFragment,
+  workArticleFragment,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-article-fragments"
+import { WorkArticleBadges } from "~/routes/($lang)._main.posts.$post._index/components/work-article-badges"
+import { detectLanguage } from "~/routes/($lang)._main.posts.$post._index/components/work-article-utils"
+import { WorkArticleDescription } from "~/routes/($lang)._main.posts.$post._index/components/work-article-description"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
 import { WorkAuthorFollowButton } from "~/routes/($lang)._main.posts.$post._index/components/work-author-follow-button"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
-import { getWeeklyRankingPeriod } from "~/utils/get-weeks-in-month"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { toRatingText } from "~/utils/work/to-rating-text"
-import { toStyleText } from "~/utils/work/to-style-text"
+
+export {
+  sensitiveWorkArticleFragment,
+  userSettingFragment,
+  workArticleFragment,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-article-fragments"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -62,44 +69,6 @@ export function WorkArticle(props: Props) {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
 
   const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
-
-  const toDateTextUrl = (time: number, dateFormat: string) => {
-    const date = new Date(time * 1000)
-    return formatDate(date, dateFormat)
-  }
-
-  const toAiRankingPath = (
-    ranking:
-      | FragmentOf<typeof workArticleFragment>["aiDailyRanking"]
-      | FragmentOf<typeof workArticleFragment>["aiWeeklyRanking"]
-      | FragmentOf<typeof workArticleFragment>["aiMonthlyRanking"],
-  ) => {
-    if (ranking === null || ranking === undefined) {
-      return null
-    }
-
-    const pathnamePrefix = ranking.isSensitive
-      ? "/r/ai-rankings"
-      : "/ai-rankings"
-
-    if (ranking.periodType === "daily") {
-      return `${pathnamePrefix}/${ranking.dateText.replace(/-/g, "/")}`
-    }
-
-    if (ranking.periodType === "monthly") {
-      const [year, month] = ranking.dateText.split("-")
-      return `${pathnamePrefix}/${year}/${month}`
-    }
-
-    const [yearText, monthText, dayText] = ranking.dateText.split("-")
-    const { year, month, weekIndex } = getWeeklyRankingPeriod(
-      Number(yearText),
-      Number(monthText),
-      Number(dayText),
-    )
-
-    return `${pathnamePrefix}/${year}/${month}/weeks/${weekIndex}`
-  }
 
   useEffect(() => {
     setTagNames(props.work.tagNames)
@@ -155,21 +124,6 @@ export function WorkArticle(props: Props) {
     props.work.description ?? "",
     props.work.enDescription ?? props.work.description ?? "",
   )
-
-  const isProbablyJapanese = (text: string) =>
-    /[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF]/.test(text)
-
-  const isProbablyEnglish = (text: string) =>
-    /[A-Za-z]/.test(text) &&
-    !/[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF\u0400-\u04FF]/.test(
-      text,
-    )
-
-  const detectLanguage = (text: string): "ja" | "en" | null => {
-    if (isProbablyJapanese(text)) return "ja"
-    if (isProbablyEnglish(text)) return "en"
-    return null
-  }
 
   const combinedText = `${displayTitle}\n${displayDescription}`.trim()
 
@@ -230,28 +184,6 @@ export function WorkArticle(props: Props) {
     } finally {
       setIsTranslating(false)
     }
-  }
-
-  const parseTextWithLinks = (text: string) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g
-    const parts = text.split(urlRegex)
-
-    return parts.map((part, index) => {
-      if (urlRegex.test(part)) {
-        return (
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500"
-            key={index.toString()}
-            href={part}
-          >
-            {part}
-          </a>
-        )
-      }
-      return part
-    })
   }
 
   return (
@@ -390,134 +322,7 @@ export function WorkArticle(props: Props) {
           <span className="text-muted-foreground text-sm">
             {toDateTimeText(props.work.createdAt)}
           </span>
-          <div className="flex flex-wrap items-center gap-2">
-            {props.work.model !== undefined &&
-              props.work.model !== null &&
-              props.work.model?.length !== 0 && (
-                <Link to={`/models/${props.work.model}`}>
-                  <Badge
-                    variant="secondary"
-                    className="flex items-center space-x-2"
-                  >
-                    <span className="text-md">
-                      {t("使用モデル名", "model name used")}
-                      {":"}
-                    </span>
-                    <span className="text-md">{props.work.model}</span>
-                  </Badge>
-                </Link>
-              )}
-            {props.work.rating !== null && (
-              <Badge
-                variant="secondary"
-                className="flex items-center space-x-2"
-              >
-                <span className="text-md">
-                  {t("対象年齢", "target age")}
-                  {":"}
-                </span>
-                {toRatingText(props.work.rating)}
-              </Badge>
-            )}
-            <Badge variant="secondary" className="flex items-center space-x-2">
-              <span className="text-md">
-                {t("スタイル", "style")}
-                {":"}
-              </span>
-              {toStyleText(props.work.style)}
-            </Badge>
-
-            {props.work.isPromotion === true && (
-              <Badge
-                variant="secondary"
-                className="flex items-center space-x-2"
-              >
-                <span className="text-md">
-                  {t("宣伝作品", "Promoted")}
-                </span>
-              </Badge>
-            )}
-            {props.work.dailyRanking && (
-              <Link
-                to={`/rankings/${toDateTextUrl(props.work.createdAt, "yyyy/MM/dd")}`}
-              >
-                <Badge
-                  variant="secondary"
-                  className="flex items-center space-x-2"
-                >
-                  {t("デイリー入賞", "Daily Rank")} {props.work.dailyRanking}{" "}
-                  {t("位", "Rank")}
-                </Badge>
-              </Link>
-            )}
-            {props.work.weeklyRanking && (
-              <Badge
-                variant="secondary"
-                className="flex items-center space-x-2"
-              >
-                {t("ウィークリー入賞", "Weekly Rank")}{" "}
-                {props.work.weeklyRanking} {t("位", "Rank")}
-              </Badge>
-            )}
-            {props.work.monthlyRanking && (
-              <Link
-                to={`/rankings/${toDateTextUrl(props.work.createdAt, "yyyy/MM")}`}
-              >
-                <Badge
-                  variant="secondary"
-                  className="flex items-center space-x-2"
-                >
-                  {t("マンスリー入賞", "Monthly Rank")}{" "}
-                  {props.work.monthlyRanking} {t("位", "Rank")}
-                </Badge>
-              </Link>
-            )}
-            {props.work.aiDailyRanking && (
-              <Link
-                to={
-                  toAiRankingPath(props.work.aiDailyRanking) ?? "/ai-rankings"
-                }
-              >
-                <Badge
-                  variant="secondary"
-                  className="flex items-center space-x-2"
-                >
-                  {t("AIデイリー入賞", "AI Daily Rank")}{" "}
-                  {props.work.aiDailyRanking.rank} {t("位", "Rank")}
-                </Badge>
-              </Link>
-            )}
-            {props.work.aiWeeklyRanking && (
-              <Link
-                to={
-                  toAiRankingPath(props.work.aiWeeklyRanking) ?? "/ai-rankings"
-                }
-              >
-                <Badge
-                  variant="secondary"
-                  className="flex items-center space-x-2"
-                >
-                  {t("AIウィークリー入賞", "AI Weekly Rank")}{" "}
-                  {props.work.aiWeeklyRanking.rank} {t("位", "Rank")}
-                </Badge>
-              </Link>
-            )}
-            {props.work.aiMonthlyRanking && (
-              <Link
-                to={
-                  toAiRankingPath(props.work.aiMonthlyRanking) ?? "/ai-rankings"
-                }
-              >
-                <Badge
-                  variant="secondary"
-                  className="flex items-center space-x-2"
-                >
-                  {t("AIマンスリー入賞", "AI Monthly Rank")}{" "}
-                  {props.work.aiMonthlyRanking.rank} {t("位", "Rank")}
-                </Badge>
-              </Link>
-            )}
-          </div>
+          <WorkArticleBadges work={props.work} />
           {props.work.dailyTheme && (
             <Link
               to={`/themes/${props.work.dailyTheme.dateText.replace(/-/g, "/")}`}
@@ -537,57 +342,18 @@ export function WorkArticle(props: Props) {
             isEditable={props.work.isTagEditable}
           />
         </div>
-        <div className="space-y-2">
-          {/* キャプションがタグや生成情報に埋もれないように背景を付ける（空なら枠も出さない） */}
-          {displayDescription.trim().length > 0 && (
-            <div className="space-y-2 rounded-lg bg-muted px-3 py-2.5">
-              <p
-                className={cn(
-                  "overflow-hidden whitespace-pre-wrap break-words text-sm leading-relaxed md:text-base",
-                  isDescriptionLong && !isDescriptionExpanded && "line-clamp-6",
-                )}
-              >
-                {parseTextWithLinks(displayDescription)}
-              </p>
-              {isDescriptionLong && (
-                <button
-                  type="button"
-                  className="font-medium text-muted-foreground text-sm hover:text-foreground"
-                  onClick={() => setIsDescriptionExpanded((value) => !value)}
-                >
-                  {isDescriptionExpanded
-                    ? t("閉じる", "Show less")
-                    : t("続きを読む", "Read more")}
-                </button>
-              )}
-            </div>
-          )}
-          {shouldShowTranslateLink && (
-            <button
-              type="button"
-              onClick={onClickTranslate}
-              disabled={isTranslating}
-              className="text-muted-foreground text-xs underline underline-offset-2 hover:text-foreground disabled:cursor-default disabled:opacity-50"
-            >
-              {isShowingTranslation
-                ? t("原文を表示", "Show original")
-                : translateLinkLabel}
-            </button>
-          )}
-          {isShowingTranslation && displayDescription.length > 0 && (
-            <div className="rounded-md bg-muted p-2">
-              {isTranslating ? (
-                <p className="text-muted-foreground text-xs">
-                  {t("翻訳中...", "Translating...")}
-                </p>
-              ) : (
-                <p className="whitespace-pre-wrap break-words text-muted-foreground text-sm">
-                  {translatedDescription}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
+        <WorkArticleDescription
+          displayDescription={displayDescription}
+          isDescriptionExpanded={isDescriptionExpanded}
+          isDescriptionLong={isDescriptionLong}
+          isShowingTranslation={isShowingTranslation}
+          isTranslating={isTranslating}
+          onClickTranslate={onClickTranslate}
+          setIsDescriptionExpanded={setIsDescriptionExpanded}
+          shouldShowTranslateLink={shouldShowTranslateLink}
+          translateLinkLabel={translateLinkLabel}
+          translatedDescription={translatedDescription}
+        />
         {props.work.relatedUrl !== null &&
           props.work.relatedUrl !== "undefined" &&
           props.work.relatedUrl?.length > 0 && (
@@ -686,412 +452,5 @@ const viewerBookmarkFolderIdQuery = graphql(
       id
       bookmarkFolderId
     }
-  }`,
-)
-
-export const workArticleFragment = graphql(
-  `fragment WorkArticle on WorkNode @_unmask {
-    id
-    uuid
-    isMyRecommended
-    title
-    mdUrl
-    accessType
-    type
-    adminAccessType
-    promptAccessType
-    rating
-    description
-    isSensitive
-    enTitle
-    enDescription
-    imageURL
-    largeThumbnailImageURL
-    largeThumbnailImageWidth
-    largeThumbnailImageHeight
-    smallThumbnailImageURL
-    smallThumbnailImageWidth
-    smallThumbnailImageHeight
-    thumbnailImagePosition
-    subWorksCount
-    url
-    isDeleted
-    user {
-      id
-      biography
-      enBiography
-      login
-      nanoid
-      name
-      isOfficial
-      isModerator
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followersCount
-      worksCount
-      iconUrl
-      avatarFrame {
-        id
-        frameType
-        backgroundStyle
-        overlayImageUrl
-        borderPadding
-      }
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
-      receivedLikesCount
-      createdLikesCount
-      createdBookmarksCount
-      isMuted
-      isBlocked
-      works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
-        id
-        userId
-        title
-        enTitle
-        largeThumbnailImageURL
-        largeThumbnailImageWidth
-        largeThumbnailImageHeight
-        smallThumbnailImageURL
-        smallThumbnailImageWidth
-        smallThumbnailImageHeight
-        thumbnailImagePosition
-        subWorksCount
-        commentsCount
-        isLiked
-      }
-      promptonUser {
-        id
-      }
-    }
-    likedUsers(offset: 0, limit: 48) {
-      id
-      name
-      iconUrl
-      login
-      avatarFrame {
-        id
-        frameType
-        backgroundStyle
-        overlayImageUrl
-        borderPadding
-      }
-    }
-    album {
-      id
-      title
-      description
-      slug
-      user {
-        login
-      }
-    }
-    dailyTheme {
-      id
-      title
-      dateText
-    }
-    tagNames
-    createdAt
-    likesCount
-    viewsCount
-    commentsCount
-    subWorks {
-      id
-      imageUrl
-    }
-    nextWork {
-      id
-      title
-      smallThumbnailImageURL
-      smallThumbnailImageWidth
-      smallThumbnailImageHeight
-      thumbnailImagePosition
-    }
-    previousWork {
-      id
-      title
-      smallThumbnailImageURL
-      smallThumbnailImageWidth
-      smallThumbnailImageHeight
-      thumbnailImagePosition
-    }
-    model
-    modelHash
-    generationModelId
-    workModelId
-    isTagEditable
-    isCommentsEditable
-    isLiked
-    isBookmarked
-    isInCollection
-    isPromotion
-    isGeneration
-    ogpThumbnailImageUrl
-    prompt
-    negativePrompt
-    noise
-    seed
-    steps
-    sampler
-    scale
-    strength
-    vae
-    clipSkip
-    otherGenerationParams
-    pngInfo
-    style
-    url
-    updatedAt
-    dailyRanking
-    weeklyRanking
-    monthlyRanking
-    aiDailyRanking {
-      rank
-      dateText
-      periodType
-      isSensitive
-    }
-    aiWeeklyRanking {
-      rank
-      dateText
-      periodType
-      isSensitive
-    }
-    aiMonthlyRanking {
-      rank
-      dateText
-      periodType
-      isSensitive
-    }
-    relatedUrl
-    nanoid
-    isBotGradingEnabled
-    isBotGradingPublic
-    botEvaluationStatus
-    botEvaluation {
-      cutenessScore
-      coolnessScore
-      beautyScore
-      originalityScore
-      compositionScore
-      colorScore
-      detailScore
-      consistencyScore
-      overallScore
-      comment
-      personality
-    }
-  }`,
-)
-
-export const sensitiveWorkArticleFragment = graphql(
-  `fragment WorkArticle on WorkNode @_unmask {
-    id
-    uuid
-    url
-    isMyRecommended
-    title
-    mdUrl
-    accessType
-    type
-    adminAccessType
-    promptAccessType
-    rating
-    description
-    isSensitive
-    enTitle
-    enDescription
-    imageURL
-    largeThumbnailImageURL
-    largeThumbnailImageWidth
-    largeThumbnailImageHeight
-    smallThumbnailImageURL
-    smallThumbnailImageWidth
-    smallThumbnailImageHeight
-    thumbnailImagePosition
-    subWorksCount
-    isDeleted
-    user {
-      id
-      biography
-      enBiography
-      login
-      nanoid
-      name
-      isOfficial
-      isModerator
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followersCount
-      worksCount
-      iconUrl
-      avatarFrame {
-        id
-        frameType
-        backgroundStyle
-        overlayImageUrl
-        borderPadding
-      }
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
-      receivedLikesCount
-      createdLikesCount
-      createdBookmarksCount
-      isMuted
-      isBlocked
-      works(offset: 0, limit: 16, where: { ratings: [R18, R18G] }) {
-        id
-        userId
-        title
-        enTitle
-        largeThumbnailImageURL
-        largeThumbnailImageWidth
-        largeThumbnailImageHeight
-        smallThumbnailImageURL
-        smallThumbnailImageWidth
-        smallThumbnailImageHeight
-        thumbnailImagePosition
-        subWorksCount
-        commentsCount
-        isLiked
-      }
-      promptonUser {
-        id
-      }
-    }
-    likedUsers(offset: 0, limit: 120) {
-      id
-      name
-      iconUrl
-      login
-      avatarFrame {
-        id
-        frameType
-        backgroundStyle
-        overlayImageUrl
-        borderPadding
-      }
-    }
-    album {
-      id
-      title
-      description
-      slug
-      user {
-        login
-      }
-    }
-    dailyTheme {
-      id
-      title
-      dateText
-    }
-    tagNames
-    createdAt
-    likesCount
-    viewsCount
-    commentsCount
-    subWorks {
-      id
-      imageUrl
-    }
-    nextWork {
-      id
-      title
-      smallThumbnailImageURL
-      smallThumbnailImageWidth
-      smallThumbnailImageHeight
-      thumbnailImagePosition
-    }
-    previousWork {
-      id
-      title
-      smallThumbnailImageURL
-      smallThumbnailImageWidth
-      smallThumbnailImageHeight
-      thumbnailImagePosition
-    }
-    model
-    modelHash
-    generationModelId
-    workModelId
-    isTagEditable
-    isCommentsEditable
-    isLiked
-    isBookmarked
-    isInCollection
-    aiDailyRanking {
-      rank
-      dateText
-      periodType
-      isSensitive
-    }
-    aiWeeklyRanking {
-      rank
-      dateText
-      periodType
-      isSensitive
-    }
-    aiMonthlyRanking {
-      rank
-      dateText
-      periodType
-      isSensitive
-    }
-    isPromotion
-    isGeneration
-    ogpThumbnailImageUrl
-    prompt
-    negativePrompt
-    noise
-    seed
-    steps
-    sampler
-    scale
-    strength
-    vae
-    clipSkip
-    otherGenerationParams
-    pngInfo
-    style
-    url
-    updatedAt
-    dailyRanking
-    weeklyRanking
-    monthlyRanking
-    relatedUrl
-    nanoid
-    isPromotion
-    isBotGradingEnabled
-    isBotGradingPublic
-    botEvaluationStatus
-    botEvaluation {
-      cutenessScore
-      coolnessScore
-      beautyScore
-      originalityScore
-      compositionScore
-      colorScore
-      detailScore
-      consistencyScore
-      overallScore
-      comment
-      personality
-    }
-  }`,
-)
-
-export const userSettingFragment = graphql(
-  `fragment UserSetting on UserSettingNode @_unmask {
-      id
   }`,
 )

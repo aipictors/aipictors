@@ -3,469 +3,46 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { redirect } from "@remix-run/cloudflare"
 import { useLoaderData, useLocation } from "@remix-run/react"
-import { Link, useNavigate } from "~/lib/app/locale-router"
-import { graphql } from "gql.tada"
-import { ChevronRightIcon, Heart, SearchIcon } from "lucide-react"
-import { type FormEvent, useContext, useEffect, useState } from "react"
-import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { LikeButton } from "~/components/like-button"
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { SearchIcon } from "lucide-react"
+import { type FormEvent, useEffect, useState } from "react"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { config } from "~/config"
-import { AuthContext } from "~/contexts/auth-context"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
-import { loaderClient } from "~/lib/loader-client"
-import { cn } from "~/lib/utils"
+import { useNavigate } from "~/lib/app/locale-router"
+import { SearchFacetFilters } from "~/routes/($lang)._main.search/components/search-facet-filters"
+import { SearchModeTabs } from "~/routes/($lang)._main.search/components/search-mode-tabs"
+import { SearchOrderFilters } from "~/routes/($lang)._main.search/components/search-order-filters"
+import { SearchPageHeader } from "~/routes/($lang)._main.search/components/search-page-header"
+import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
+import { SearchSidebar } from "~/routes/($lang)._main.search/components/search-sidebar"
+import { searchLoader } from "~/routes/($lang)._main.search/search-loader.server"
 import {
-  getSearchDb,
-  searchWorkIdsByText,
-  type WorkTextSearchOrder,
-} from "~/lib/server/work-text-search.server"
-import { TEXT_SEARCH_COUNT_LIMIT } from "~/lib/work-text-search-constants"
-import { getLocalePrefix } from "~/routes/($lang)._main._index/utils/content-rating-path"
-import { isR18Path, writeContentMode } from "~/utils/content-mode"
+  buildSearchFilterParams,
+  getSearchBasePath,
+  normalizeTagQuery,
+  type SearchFilterChange,
+  type SearchRatingFilter,
+} from "~/routes/($lang)._main.search/utils/search-filters"
+import { writeContentMode } from "~/utils/content-mode"
 import { buildSearchPath } from "~/utils/search-route"
-import { isFeaturableSensitiveTag } from "~/utils/sensitive-tag-filter"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { toListWorks } from "~/utils/to-list-works"
-
-type SearchRatingFilter = "G" | "R15" | "R18"
-type SearchStyleFilter = "all" | "ILLUSTRATION" | "REAL"
-type SearchPromptFilter = "all" | "with" | "without"
-type SearchOrderFilter = WorkTextSearchOrder
-
-const RESULTS_LIMIT = 30
-/** タイトル・説明の検索で開けるページの上限（0 始まり） */
-const TEXT_SEARCH_MAX_PAGE = 29
-const SIDEBAR_RANKING_LIMIT = 7
-
-const normalizeTagQuery = (value?: string | null) => {
-  if (!value) {
-    return null
-  }
-
-  const normalized = value.trim().replace(/^#+/, "")
-  return normalized.length > 0 ? normalized : null
-}
-
-const getRatingFilter = (
-  value: string | null,
-  isSensitiveMode: boolean,
-): SearchRatingFilter => {
-  if (value === "G" || value === "R15" || value === "R18") {
-    return value
-  }
-
-  return isSensitiveMode ? "R18" : "G"
-}
-
-/** 検索の URL。R18 の絞り込みは /r/search、全年齢と R-15 は /search に分ける */
-const getSearchBasePath = (pathname: string, rating: "R18" | "all") =>
-  `${getLocalePrefix(pathname)}${rating === "R18" ? "/r" : ""}/search`
-
-const getStyleFilter = (value: string | null): SearchStyleFilter => {
-  if (value === "ILLUSTRATION" || value === "REAL") {
-    return value
-  }
-
-  return "all"
-}
-
-const getPromptFilter = (value: string | null): SearchPromptFilter => {
-  if (value === "with" || value === "without") {
-    return value
-  }
-
-  return "all"
-}
-
-const getOrderFilter = (value: string | null): SearchOrderFilter => {
-  if (value === "new" || value === "old") {
-    return value
-  }
-
-  return "popular"
-}
-
-/** 「自分の作品のみ」の相手。ページはキャッシュするので、ログイン情報ではなく URL で受ける */
-const getUserFilter = (value: string | null) =>
-  value !== null && /^\d+$/.test(value) ? value : null
-
-const getCurrentPage = (value: string | null) => {
-  const parsed = Number(value ?? "0")
-
-  if (!Number.isFinite(parsed) || parsed < 0) {
-    return 0
-  }
-
-  return Math.floor(parsed)
-}
-
-const buildWorksWhere = (props: {
-  tagQuery?: string | null
-  rating: SearchRatingFilter
-  style: SearchStyleFilter
-  prompt: SearchPromptFilter
-  order?: SearchOrderFilter
-  userId?: string | null
-}) => {
-  const order = props.order ?? "popular"
-  const where: Record<string, unknown> = {
-    ratings: [props.rating],
-    orderBy: order === "popular" ? "LIKES_COUNT" : "DATE_CREATED",
-    sort: order === "old" ? "ASC" : "DESC",
-  }
-
-  if (props.userId) {
-    where.userId = props.userId
-  }
-
-  if (props.tagQuery) {
-    where.tagNames = [props.tagQuery]
-  }
-
-  if (props.style !== "all") {
-    where.style = props.style
-  }
-
-  if (props.prompt === "with") {
-    where.hasPrompt = true
-  }
-
-  if (props.prompt === "without") {
-    where.hasPrompt = false
-  }
-
-  return where
-}
 
 export async function loader(props: LoaderFunctionArgs) {
-  const url = new URL(props.request.url)
-  const isSensitiveMode = isR18Path(url.pathname)
-  const pathSearchQuery = props.params.q
-    ? decodeURIComponent(props.params.q)
-    : null
-  const searchQuery = normalizeTagQuery(
-    pathSearchQuery ?? url.searchParams.get("tag") ?? url.searchParams.get("q"),
-  )
-  const currentPage = getCurrentPage(url.searchParams.get("page"))
-  const rating = getRatingFilter(
-    url.searchParams.get("age_limit") ?? url.searchParams.get("rating"),
-    isSensitiveMode,
-  )
-  const style = getStyleFilter(url.searchParams.get("style"))
-  const prompt = getPromptFilter(url.searchParams.get("prompt"))
-  const order = getOrderFilter(url.searchParams.get("order"))
-  const filterUserId = getUserFilter(url.searchParams.get("user"))
-  const defaultRating = isSensitiveMode ? "R18" : "G"
-  // /search?age_limit=R18 と /r/search?age_limit=G のねじれをなくす（R18 の表示は /r に揃える）
-  const isOnRatingPage = (rating === "R18") === isSensitiveMode
-  const basePath = getSearchBasePath(
-    url.pathname,
-    rating === "R18" ? "R18" : "all",
-  )
-
-  if (
-    !isOnRatingPage ||
-    pathSearchQuery !== null ||
-    url.searchParams.has("q") ||
-    url.searchParams.has("rating") ||
-    (searchQuery !== null && !url.searchParams.has("age_limit")) ||
-    url.searchParams.get("page") === "0"
-  ) {
-    const nextSearchParams = new URLSearchParams(url.searchParams)
-
-    nextSearchParams.delete("q")
-    nextSearchParams.delete("rating")
-    nextSearchParams.set("age_limit", rating === "R15" ? "R15" : "")
-
-    if (currentPage > 0) {
-      nextSearchParams.set("page", String(currentPage))
-    } else {
-      nextSearchParams.delete("page")
-    }
-
-    return redirect(
-      buildSearchPath(searchQuery, nextSearchParams, { basePath }),
-    )
-  }
-
-  // isNowCreatedAt がないと works は投稿から 1 日以内の作品を返さない
-  const resultWhere = {
-    ...buildWorksWhere({
-      tagQuery: searchQuery,
-      rating,
-      style,
-      prompt,
-      order,
-      userId: filterUserId,
-    }),
-    isNowCreatedAt: true,
-  }
-  const shouldUseFilteredCount =
-    style !== "all" || prompt !== "all" || filterUserId !== null
-  const rankingWhere = buildWorksWhere({
-    rating,
-    style,
-    prompt,
-  })
-
-  // タイトル・説明の部分一致（D1 の検索用データベース）。GraphQL の取得と並行して進める
-  const searchDb = getSearchDb(props.context)
-  const requestedMode = url.searchParams.get("mode")
-  const textOffset =
-    requestedMode !== "tag"
-      ? Math.min(currentPage, TEXT_SEARCH_MAX_PAGE) * RESULTS_LIMIT
-      : 0
-  // D1 には投稿者がないので、自分の作品だけのときは GraphQL で探す（1 人分なので重くない）
-  const searchOwnWorkIds = async (query: string) => {
-    const where = {
-      ...buildWorksWhere({
-        rating,
-        style: "all",
-        prompt: "all",
-        order,
-        userId: filterUserId,
-      }),
-      search: query,
-      searchInTags: true,
-      searchInDescription: true,
-      isNowCreatedAt: true,
-    }
-    const [idsResp, countResp] = await Promise.all([
-      loaderClient.query({
-        query: searchOwnWorkIdsQuery,
-        variables: { offset: textOffset, limit: RESULTS_LIMIT, where },
-      }),
-      loaderClient.query({ query: worksCountQuery, variables: { where } }),
-    ])
-    return {
-      ids: idsResp.data.works.map((work) => work.id),
-      count: countResp.data.worksCount,
-    }
-  }
-  const textSearchPromise =
-    searchQuery === null
-      ? null
-      : filterUserId !== null
-        ? searchOwnWorkIds(searchQuery)
-        : searchDb
-          ? searchWorkIdsByText({
-              db: searchDb,
-              query: searchQuery,
-              rating,
-              order,
-              offset: textOffset,
-              limit: RESULTS_LIMIT,
-            })
-          : null
-  const textResultPromise = textSearchPromise
-    ? textSearchPromise.catch((error) => {
-        console.error("text search failed", error)
-        return null
-      })
-    : Promise.resolve(null)
-  const fetchTextWorks = async (ids: string[]) => {
-    if (ids.length === 0) return []
-    try {
-      const resp = await loaderClient.query({
-        query: searchTextWorksQuery,
-        variables: {
-          offset: 0,
-          limit: ids.length,
-          where: { ids, ratings: [rating], isNowCreatedAt: true },
-        },
-      })
-      const byId = new Map(resp.data.works.map((work) => [work.id, work]))
-      return ids.map((id) => byId.get(id)).filter((work) => work !== undefined)
-    } catch {
-      return []
-    }
-  }
-  // タイトル・説明のタブを開いているときは、作品の取得も先に始めておく
-  const eagerTextWorksPromise =
-    requestedMode !== "tag"
-      ? textResultPromise.then((result) => fetchTextWorks(result?.ids ?? []))
-      : null
-
-  const [popularTagsResp, rankingResp, worksResp, worksCountResp] =
-    await Promise.all([
-      loaderClient.query({
-        query: popularTagsQuery,
-        variables: {
-          limit: searchQuery ? 12 : 40,
-          where: { isSensitive: isSensitiveMode },
-        },
-      }),
-      loaderClient.query({
-        query: rankingWorksQuery,
-        variables: {
-          offset: 0,
-          limit: SIDEBAR_RANKING_LIMIT,
-          where: rankingWhere,
-        },
-      }),
-      searchQuery
-        ? loaderClient.query({
-            query: searchTagWorksQuery,
-            variables: {
-              offset: currentPage * RESULTS_LIMIT,
-              limit: RESULTS_LIMIT,
-              where: resultWhere,
-            },
-          })
-        : Promise.resolve(null),
-      searchQuery
-        ? shouldUseFilteredCount
-          ? loaderClient.query({
-              query: worksCountQuery,
-              variables: { where: resultWhere },
-            })
-          : loaderClient.query({
-              query: tagWorksCountQuery,
-              variables: {
-                where: {
-                  ratings: [rating],
-                  tagName: searchQuery,
-                },
-              },
-            })
-        : Promise.resolve(null),
-    ])
-
-  const textResult = await textResultPromise
-  const worksCountData = worksCountResp?.data
-  const tagWorksCount =
-    worksCountData === undefined
-      ? 0
-      : "worksCount" in worksCountData
-        ? worksCountData.worksCount
-        : worksCountData.tagWorksCount
-  // 指定がなければキーワードの部分一致（タイトル・説明・タグ）を出す。
-  // 部分一致で 1 件もなく、タグの完全一致だけあるときはタグの結果を出す
-  const mode: "tag" | "text" =
-    textResult === null
-      ? "tag"
-      : requestedMode === "tag"
-        ? "tag"
-        : requestedMode === "text" ||
-            textResult.count > 0 ||
-            tagWorksCount === 0
-          ? "text"
-          : "tag"
-
-  const textWorks =
-    mode !== "text"
-      ? []
-      : eagerTextWorksPromise
-        ? await eagerTextWorksPromise
-        : await fetchTextWorks(textResult?.ids ?? [])
-
-  const works = mode === "text" ? textWorks : (worksResp?.data?.tagWorks ?? [])
-  const relatedTagCounts = new Map<string, number>()
-  for (const work of works) {
-    for (const name of new Set(work.tagNames ?? [])) {
-      const trimmed = name.trim()
-      if (!trimmed || trimmed.toLowerCase() === searchQuery?.toLowerCase()) {
-        continue
-      }
-      relatedTagCounts.set(trimmed, (relatedTagCounts.get(trimmed) ?? 0) + 1)
-    }
-  }
-  const relatedTags = Array.from(relatedTagCounts.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 16)
-    .map(([name]) => name)
-
-  return {
-    relatedTags: isSensitiveMode
-      ? relatedTags.filter(isFeaturableSensitiveTag)
-      : relatedTags,
-    filters: {
-      order,
-      prompt,
-      rating,
-      style,
-      userId: filterUserId,
-    },
-    currentPage,
-    isSensitiveMode,
-    popularTags:
-      popularTagsResp.data?.recommendedTags
-        ?.map((tag) => ({
-          name: tag.tagName,
-          thumbnailUrl: tag.thumbnailUrl,
-        }))
-        // 入口に出すタグは、ガイドラインに触れそうなものを除いてから HTML に入れる
-        .filter(
-          (tag) => !isSensitiveMode || isFeaturableSensitiveTag(tag.name),
-        ) ?? [],
-    rankingWorks: toListWorks(rankingResp.data?.works),
-    searchQuery,
-    works: toListWorks(works),
-    mode,
-    tagWorksCount,
-    textWorksCount: textResult?.count ?? null,
-    worksCount: mode === "text" ? (textResult?.count ?? 0) : tagWorksCount,
-  }
+  return searchLoader(props)
 }
 
 export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-function FilterButton(props: {
-  children: React.ReactNode
-  isActive: boolean
-  onClick: () => void
-  variant?: "underline" | "pill"
-}) {
-  if (props.variant === "pill") {
-    return (
-      <button
-        type="button"
-        onClick={props.onClick}
-        className={cn(
-          "rounded-sm border px-4 py-2 text-sm transition-colors",
-          props.isActive
-            ? "border-foreground bg-foreground text-background"
-            : "border-border bg-background text-muted-foreground hover:text-foreground",
-        )}
-      >
-        {props.children}
-      </button>
-    )
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={props.onClick}
-      className={cn(
-        "border-b-2 px-1 pb-3 font-medium text-base transition-colors md:text-lg",
-        props.isActive
-          ? "border-foreground text-foreground"
-          : "border-transparent text-muted-foreground hover:text-foreground",
-      )}
-    >
-      {props.children}
-    </button>
-  )
-}
-
 export default function SearchRoute() {
   const data = useLoaderData<typeof loader>()
   const location = useLocation()
   const navigate = useNavigate()
   const t = useTranslation()
-  const authContext = useContext(AuthContext)
   const {
     isRateLimitDialogOpen,
     executeSearchWithRateLimit,
@@ -480,63 +57,14 @@ export default function SearchRoute() {
   // 作品・ユーザー・タグへのリンク（R18 の検索からは R18 のページへ）
   const pagePrefix = data.isSensitiveMode ? "/r" : ""
 
-  const buildFilterParams = (
-    next?: Partial<typeof data.filters> & {
-      page?: number
-      mode?: "tag" | "text" | null
-    },
-  ) => {
-    const params = new URLSearchParams()
-    const mode = next?.mode === undefined ? data.mode : next.mode
-    if (mode === "text") {
-      params.set("mode", "text")
-    } else if (mode === "tag") {
-      // 指定がないとキーワードの部分一致になるので、タグの一致は明示する
-      params.set("mode", "tag")
-    }
-    const rating = next?.rating ?? data.filters.rating
-    const style = next?.style ?? data.filters.style
-    const prompt = next?.prompt ?? data.filters.prompt
-    const order = next?.order ?? data.filters.order
-    const userId =
-      next?.userId === undefined ? data.filters.userId : next.userId
-    const page = next?.page ?? 0
-
-    params.set("age_limit", rating === "R15" ? "R15" : "")
-
-    if (order !== "popular") {
-      params.set("order", order)
-    }
-
-    if (userId) {
-      params.set("user", userId)
-    }
-
-    if (style !== "all") {
-      params.set("style", style)
-    }
-
-    if (prompt !== "all") {
-      params.set("prompt", prompt)
-    }
-
-    if (page > 0) {
-      params.set("page", String(page))
-    }
-
-    return params
-  }
-
   const navigateToSearch = (
     tagName?: string | null,
-    next?: Partial<typeof data.filters> & {
-      page?: number
-      mode?: "tag" | "text" | null
-    },
+    next?: SearchFilterChange,
   ) => {
     const normalizedQuery = normalizeTagQuery(tagName)
     // 新しい言葉で検索するときは、タグ・タイトルのどちらを出すか自動で決める
-    const nextParams = buildFilterParams(
+    const nextParams = buildSearchFilterParams(
+      data,
       normalizedQuery !== data.searchQuery && next?.mode === undefined
         ? { ...next, mode: null }
         : next,
@@ -559,8 +87,6 @@ export default function SearchRoute() {
     event.preventDefault()
     navigateToSearch(searchText)
   }
-
-  const hasResults = data.searchQuery !== null
 
   return (
     <>
@@ -610,435 +136,40 @@ export default function SearchRoute() {
 
         <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_280px] 2xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="min-w-0">
-            <div className="mb-7 pb-4 md:pb-5">
-              <div>
-                <h1 className="break-words font-bold text-2xl leading-tight md:text-3xl">
-                  {data.searchQuery
-                    ? `#${data.searchQuery}`
-                    : data.isSensitiveMode
-                      ? t("R18 作品検索", "R18 search")
-                      : t("作品検索", "Search")}
-                </h1>
-                <p className="mt-3 text-muted-foreground text-sm md:text-base">
-                  {data.searchQuery
-                    ? t(
-                        data.mode === "text"
-                          ? `タイトル・説明に「${data.searchQuery}」を含む作品 ${
-                              data.worksCount >= TEXT_SEARCH_COUNT_LIMIT
-                                ? `${TEXT_SEARCH_COUNT_LIMIT.toLocaleString()}件以上`
-                                : `${data.worksCount.toLocaleString()}件`
-                            }`
-                          : `タグ「${data.searchQuery}」の作品 ${data.worksCount.toLocaleString()}件`,
-                        `${data.worksCount.toLocaleString()} works`,
-                      )
-                    : t(
-                        "キーワードを入力するか、人気のタグから選んでください",
-                        "Enter a tag name or pick a popular tag",
-                      )}
-                </p>
-                {data.searchQuery && (
-                  <Link
-                    to={`${pagePrefix}/tags/${encodeURIComponent(data.searchQuery)}`}
-                    className="mt-3 inline-flex items-center gap-1 rounded-full border px-3.5 py-1.5 font-medium text-sm transition-colors hover:bg-muted"
-                  >
-                    {t(
-                      `#${data.searchQuery} のタグページを見る`,
-                      `Open the #${data.searchQuery} tag page`,
-                    )}
-                    <ChevronRightIcon className="size-4" />
-                  </Link>
-                )}
-              </div>
-              {data.relatedTags.length > 0 && (
-                <div className="-mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
-                  {data.relatedTags.map((tagName) => (
-                    <button
-                      key={tagName}
-                      type="button"
-                      onClick={() => navigateToSearch(tagName)}
-                      className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full border bg-background px-3 text-muted-foreground text-sm transition-colors hover:border-foreground/40 hover:text-foreground"
-                    >
-                      #{tagName}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SearchPageHeader
+              data={data}
+              navigateToSearch={navigateToSearch}
+              pagePrefix={pagePrefix}
+            />
 
             {data.searchQuery && data.textWorksCount !== null && (
-              <div
-                role="tablist"
-                aria-label={t("検索の種類", "Search type")}
-                className="mb-5 flex gap-1 rounded-full bg-muted p-1 sm:inline-flex"
-              >
-                {(
-                  [
-                    [
-                      "text",
-                      t("キーワードを含む", "Contains keyword"),
-                      data.textWorksCount >= TEXT_SEARCH_COUNT_LIMIT
-                        ? `${TEXT_SEARCH_COUNT_LIMIT.toLocaleString()}+`
-                        : data.textWorksCount.toLocaleString(),
-                    ],
-                    [
-                      "tag",
-                      t("タグが一致", "Exact tag"),
-                      data.tagWorksCount.toLocaleString(),
-                    ],
-                  ] as const
-                ).map(([mode, label, count]) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    role="tab"
-                    aria-selected={data.mode === mode}
-                    onClick={() => navigateToSearch(data.searchQuery, { mode })}
-                    className={cn(
-                      "flex-1 whitespace-nowrap rounded-full px-4 py-2 font-medium text-sm transition-colors sm:flex-none",
-                      data.mode === mode
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {label}
-                    <span className="ml-1.5 text-muted-foreground text-xs tabular-nums">
-                      {count}
-                    </span>
-                  </button>
-                ))}
-              </div>
+              <SearchModeTabs
+                data={data}
+                navigateToSearch={navigateToSearch}
+                textWorksCount={data.textWorksCount}
+              />
             )}
 
             {data.searchQuery && (
-              <div className="mb-5 flex flex-wrap items-center gap-2">
-                <div
-                  role="group"
-                  aria-label={t("並び順", "Sort order")}
-                  className="flex rounded-full bg-muted p-1"
-                >
-                  {(
-                    [
-                      ["popular", t("人気順", "Popular")],
-                      ["new", t("新しい順", "Newest")],
-                      ["old", t("古い順", "Oldest")],
-                    ] as const
-                  ).map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      aria-pressed={data.filters.order === value}
-                      onClick={() => {
-                        navigateToSearch(data.searchQuery, { order: value })
-                      }}
-                      className={cn(
-                        "whitespace-nowrap rounded-full px-3.5 py-1.5 font-medium text-sm transition-colors",
-                        data.filters.order === value
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-
-                {(authContext.userId || data.filters.userId) && (
-                  <button
-                    type="button"
-                    aria-pressed={data.filters.userId !== null}
-                    onClick={() => {
-                      navigateToSearch(data.searchQuery, {
-                        userId: data.filters.userId ? null : authContext.userId,
-                      })
-                    }}
-                    className={cn(
-                      "h-9 whitespace-nowrap rounded-full border px-3.5 font-medium text-sm transition-colors",
-                      data.filters.userId
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border bg-background text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {t("自分の作品のみ", "My works only")}
-                  </button>
-                )}
-              </div>
+              <SearchOrderFilters
+                data={data}
+                navigateToSearch={navigateToSearch}
+              />
             )}
 
-            <div className="mb-6 flex flex-col gap-5 md:mb-8">
-              <div
-                className={cn(
-                  "flex flex-wrap items-center gap-6 pb-1",
-                  data.mode === "text" && "hidden",
-                )}
-              >
-                {(
-                  [
-                    ["all", t("すべて", "All")],
-                    ["ILLUSTRATION", t("AIイラスト", "AI Illustration")],
-                    ["REAL", t("AIフォト", "AI Photo")],
-                  ] as const
-                ).map(([value, label]) => (
-                  <FilterButton
-                    key={value}
-                    isActive={data.filters.style === value}
-                    onClick={() => {
-                      navigateToSearch(data.searchQuery, { style: value })
-                    }}
-                  >
-                    {label}
-                  </FilterButton>
-                ))}
-              </div>
+            <SearchFacetFilters
+              data={data}
+              navigateToSearch={navigateToSearch}
+            />
 
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="order-1 flex flex-wrap gap-2 md:order-2 md:justify-end">
-                  {(
-                    [
-                      ["G", t("全年齢", "All ages")],
-                      ["R15", "R-15"],
-                      ["R18", "R-18"],
-                    ] as const
-                  ).map(([value, label]) => (
-                    <FilterButton
-                      key={value}
-                      variant="pill"
-                      isActive={data.filters.rating === value}
-                      onClick={() => {
-                        navigateToSearch(data.searchQuery, { rating: value })
-                      }}
-                    >
-                      {label}
-                    </FilterButton>
-                  ))}
-                </div>
-
-                <div
-                  className={cn(
-                    "order-2 flex flex-wrap gap-0 md:order-1",
-                    data.mode === "text" && "invisible",
-                  )}
-                >
-                  {(
-                    [
-                      ["all", t("すべて", "All")],
-                      ["with", t("プロンプトあり", "With prompt")],
-                      ["without", t("プロンプトなし", "Without prompt")],
-                    ] as const
-                  ).map(([value, label], index) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => {
-                        navigateToSearch(data.searchQuery, { prompt: value })
-                      }}
-                      className={cn(
-                        "border px-4 py-3 text-sm transition-colors md:text-base",
-                        index === 0 ? "rounded-l-md" : "",
-                        index === 2 ? "rounded-r-md" : "",
-                        index > 0 ? "-ml-px" : "",
-                        data.filters.prompt === value
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-border bg-background text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {hasResults ? (
-              data.works.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 md:gap-x-4 lg:grid-cols-4 2xl:grid-cols-5">
-                    {data.works.map((work) => (
-                      <article key={work.id} className="min-w-0">
-                        <div className="group relative">
-                          <CroppedWorkSquare
-                            title={t(work.title, work.enTitle || undefined)}
-                            workId={work.id}
-                            imageUrl={work.smallThumbnailImageURL}
-                            thumbnailImagePosition={
-                              work.thumbnailImagePosition ?? 0
-                            }
-                            size="auto"
-                            imageWidth={work.smallThumbnailImageWidth}
-                            imageHeight={work.smallThumbnailImageHeight}
-                            subWorksCount={work.subWorksCount}
-                            commentsCount={work.commentsCount}
-                            isPromptPublic={
-                              work.promptAccessType === "PUBLIC" ||
-                              work.isGeneration
-                            }
-                            hasVideoUrl={Boolean(work.url)}
-                            isGeneration={work.isGeneration}
-                          />
-
-                          <div className="absolute right-2 bottom-2 z-10">
-                            <LikeButton
-                              size={48}
-                              targetWorkId={work.id}
-                              targetWorkOwnerUserId={work.user?.id ?? ""}
-                              defaultLiked={work.isLiked}
-                              defaultLikedCount={0}
-                              likedCount={work.likesCount}
-                              isBackgroundNone={true}
-                              strokeWidth={2}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="mt-2 flex items-start justify-between gap-2">
-                          <Link
-                            to={`${pagePrefix}/posts/${work.id}`}
-                            className="line-clamp-2 flex-1 font-semibold text-sm leading-snug hover:underline"
-                          >
-                            {t(work.title, work.enTitle || undefined)}
-                          </Link>
-
-                          <div className="flex shrink-0 items-center gap-1 text-muted-foreground text-xs">
-                            <Heart className="size-3.5" />
-                            <span>{work.likesCount}</span>
-                          </div>
-                        </div>
-
-                        {work.user && (
-                          <Link
-                            to={`${pagePrefix}/users/${work.user.id}`}
-                            className="mt-2 flex items-center gap-2"
-                          >
-                            <Avatar className="size-6">
-                              <AvatarImage
-                                src={withIconUrlFallback(work.user.iconUrl)}
-                                alt={work.user.name}
-                              />
-                              <AvatarFallback>
-                                {work.user.name.slice(0, 1)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="truncate text-muted-foreground text-xs md:text-sm">
-                              {work.user.name}
-                            </span>
-                          </Link>
-                        )}
-                      </article>
-                    ))}
-                  </div>
-
-                  {data.worksCount > RESULTS_LIMIT && (
-                    <div className="mt-10 flex justify-center">
-                      <ResponsivePagination
-                        maxCount={
-                          data.mode === "text"
-                            ? Math.min(
-                                data.worksCount,
-                                (TEXT_SEARCH_MAX_PAGE + 1) * RESULTS_LIMIT,
-                              )
-                            : data.worksCount
-                        }
-                        perPage={RESULTS_LIMIT}
-                        currentPage={data.currentPage}
-                        onPageChange={(page) => {
-                          navigateToSearch(data.searchQuery, { page })
-                        }}
-                        isActiveButtonStyle
-                      />
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="rounded-md border bg-muted/20 px-6 py-16 text-center">
-                  <p className="text-lg text-muted-foreground">
-                    {t(
-                      "該当する作品が見つかりませんでした",
-                      "No works were found",
-                    )}
-                  </p>
-                </div>
-              )
-            ) : (
-              <section className="rounded-2xl border bg-muted/20 p-5 md:p-7">
-                <h2 className="mb-4 font-bold text-lg">
-                  {t("人気のタグ", "Popular tags")}
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {data.popularTags.map((tag) => (
-                    <Link
-                      key={tag.name}
-                      to={`${pagePrefix}/tags/${encodeURIComponent(tag.name)}`}
-                      className="inline-flex h-9 items-center rounded-full border bg-background px-4 font-medium text-sm transition-colors hover:border-foreground/40"
-                    >
-                      #{tag.name}
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
+            <SearchResults
+              data={data}
+              navigateToSearch={navigateToSearch}
+              pagePrefix={pagePrefix}
+            />
           </div>
 
-          <aside className="hidden space-y-10 xl:block">
-            <section>
-              <h2 className="mb-4 font-bold text-lg">
-                {t("人気のイラストタグ", "Popular Illustration Tags")}
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {data.popularTags.map((tag) => (
-                  <Link
-                    key={tag.name}
-                    to={`${pagePrefix}/tags/${encodeURIComponent(tag.name)}`}
-                    className="inline-flex h-8 items-center rounded-full border px-3 font-medium text-sm transition-colors hover:border-foreground/40"
-                  >
-                    #{tag.name}
-                  </Link>
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <h2 className="mb-4 font-bold text-lg">
-                {t("人気ランキング", "Popular Ranking")}
-              </h2>
-              <div className="space-y-4">
-                {data.rankingWorks.map((work, index) => (
-                  <Link
-                    key={work.id}
-                    to={`${pagePrefix}/posts/${work.id}`}
-                    className="flex items-start gap-3"
-                  >
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-orange-400 font-bold text-black text-sm">
-                      {index + 1}
-                    </div>
-
-                    <img
-                      src={work.smallThumbnailImageURL}
-                      alt={t(work.title, work.enTitle || undefined)}
-                      loading="lazy"
-                      className="size-14 shrink-0 rounded-md object-cover"
-                    />
-
-                    <div className="min-w-0">
-                      <p className="line-clamp-2 font-semibold text-sm leading-snug">
-                        {t(work.title, work.enTitle || undefined)}
-                      </p>
-                      <div className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
-                        <Avatar className="size-5">
-                          <AvatarImage
-                            src={withIconUrlFallback(work.user?.iconUrl)}
-                            alt={work.user?.name ?? ""}
-                          />
-                          <AvatarFallback>
-                            {work.user?.name?.slice(0, 1) ?? "?"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="truncate">{work.user?.name}</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          </aside>
+          <SearchSidebar data={data} pagePrefix={pagePrefix} />
         </div>
       </div>
 
@@ -1093,61 +224,3 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     ...(isSensitiveMode ? [{ name: "rating", content: "adult" }] : []),
   ]
 }
-
-const rankingWorksQuery = graphql(
-  `query SearchRankingWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PhotoAlbumWork
-    }
-  }`,
-  [PhotoAlbumWorkFragment],
-)
-
-const searchTagWorksQuery = graphql(
-  `query SearchTagWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    tagWorks(offset: $offset, limit: $limit, where: $where) {
-      ...PhotoAlbumWork
-      tagNames
-    }
-  }`,
-  [PhotoAlbumWorkFragment],
-)
-
-const searchTextWorksQuery = graphql(
-  `query SearchTextWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PhotoAlbumWork
-      tagNames
-    }
-  }`,
-  [PhotoAlbumWorkFragment],
-)
-
-const searchOwnWorkIdsQuery = graphql(
-  `query SearchOwnWorkIds($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      id
-    }
-  }`,
-)
-
-const worksCountQuery = graphql(
-  `query SearchTagWorksCount($where: WorksWhereInput) {
-    worksCount(where: $where)
-  }`,
-)
-
-const tagWorksCountQuery = graphql(
-  `query SearchExactTagWorksCount($where: TagWorksCountWhereInput!) {
-    tagWorksCount(where: $where)
-  }`,
-)
-
-const popularTagsQuery = graphql(
-  `query SearchPopularTags($limit: Int!, $where: RecommendedTagsWhereInput!) {
-    recommendedTags(limit: $limit, where: $where) {
-      tagName
-      thumbnailUrl
-    }
-  }`,
-)
