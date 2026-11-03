@@ -33,6 +33,9 @@ import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._in
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
 
+/** 作者の他の作品に出す年齢種別（作品ページと一緒に読む分と同じ） */
+const AUTHOR_WORKS_RATINGS: ("G" | "R15" | "R18" | "R18G")[] = ["R18", "R18G"]
+
 type Props = {
   post: string
   work: FragmentOf<typeof workArticleFragment> | null
@@ -199,6 +202,7 @@ export function SensitiveWorkContainer(props: Props) {
                 <WorkAuthorWorksSection
                   user={workForArticle.user}
                   currentWorkId={workForArticle.id}
+                  ratings={AUTHOR_WORKS_RATINGS}
                 />
               </div>
             )}
@@ -214,15 +218,6 @@ export function SensitiveWorkContainer(props: Props) {
                   workOwnerIconImageURL={workForArticle.user?.iconUrl}
                   workOwnerName={workForArticle.user?.name}
                   isWorkOwnerBlocked={workForArticle.user?.isBlocked ?? false}
-                />
-              </div>
-            )}
-            {workForArticle.user && (
-              <div className="border-t pt-6">
-                <WorkAuthorWorksSection
-                  user={workForArticle.user}
-                  currentWorkId={workForArticle.id}
-                  layout="grid"
                 />
               </div>
             )}

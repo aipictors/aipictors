@@ -31,6 +31,9 @@ import {
 import { getJstDate } from "~/utils/jst-date"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
+/** 作者の他の作品に出す年齢種別（作品ページと一緒に読む分と同じ） */
+const AUTHOR_WORKS_RATINGS: ("G" | "R15" | "R18" | "R18G")[] = ["G", "R15"]
+
 type Props = {
   post: string
   work: FragmentOf<typeof workArticleFragment> | null
@@ -203,12 +206,13 @@ export function WorkContainer(props: Props) {
                 ) : undefined
               }
             />
-            {/* AI 評価（WorkArticle の中）→ 作者の他の作品（横スクロール）→ アルバム → コメント → 作者の他の作品（グリッド）の順 */}
+            {/* AI 評価（WorkArticle の中）→ 作者の他の作品（横スクロール）→ アルバム → コメントの順 */}
             {work.user && (
               <div className="border-t pt-6">
                 <WorkAuthorWorksSection
                   user={work.user}
                   currentWorkId={work.id}
+                  ratings={AUTHOR_WORKS_RATINGS}
                 />
               </div>
             )}
@@ -223,15 +227,6 @@ export function WorkContainer(props: Props) {
                   workOwnerIconImageURL={work.user?.iconUrl}
                   workOwnerName={work.user?.name}
                   isWorkOwnerBlocked={work.user?.isBlocked ?? false}
-                />
-              </div>
-            )}
-            {work.user && (
-              <div className="border-t pt-6">
-                <WorkAuthorWorksSection
-                  user={work.user}
-                  currentWorkId={work.id}
-                  layout="grid"
                 />
               </div>
             )}

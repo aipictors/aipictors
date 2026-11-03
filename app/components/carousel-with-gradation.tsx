@@ -1,5 +1,6 @@
 import {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
@@ -8,6 +9,8 @@ import {
 
 type Props = {
   items: React.ReactNode[]
+  opts?: React.ComponentProps<typeof Carousel>["opts"]
+  setApi?: (api: CarouselApi) => void
 }
 
 /**
@@ -20,7 +23,10 @@ export function CarouselWithGradation (props: Props): React.ReactNode {
 
   return (
     <>
-      <Carousel opts={{ dragFree: true, loop: false }}>
+      <Carousel
+        opts={props.opts ?? { dragFree: true, loop: false }}
+        setApi={props.setApi}
+      >
         <CarouselContent>
           {props.items.map((item, index) => (
             <CarouselItem
