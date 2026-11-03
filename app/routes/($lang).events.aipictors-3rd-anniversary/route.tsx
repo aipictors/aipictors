@@ -658,6 +658,7 @@ export default function Aipictors3rdAnniversary () {
                         受賞作品
                       </h3>
                       <EventAwardWorkList
+                        eventSource="OFFICIAL"
                         works={data.anniversaryEvent.awardWorks}
                         slug={data.anniversaryEvent.slug ?? ""}
                       />
@@ -665,6 +666,7 @@ export default function Aipictors3rdAnniversary () {
                   )}
                   {data.anniversaryEvent.works && (
                     <EventWorkList
+                      eventSource="OFFICIAL"
                       works={data.anniversaryEvent.works}
                       maxCount={data.anniversaryEvent.worksCount as number}
                       page={data.page}
@@ -714,6 +716,7 @@ export default function Aipictors3rdAnniversary () {
                           受賞作品
                         </h3>
                         <EventAwardWorkList
+                          eventSource="OFFICIAL"
                           works={data.before3rdEvent.awardWorks}
                           slug={data.before3rdEvent.slug ?? ""}
                         />
@@ -721,6 +724,7 @@ export default function Aipictors3rdAnniversary () {
                     )}
                   {data.before3rdEvent.works && (
                     <EventWorkList
+                      eventSource="OFFICIAL"
                       works={data.before3rdEvent.works}
                       maxCount={data.before3rdEvent.worksCount as number}
                       page={0}
@@ -765,6 +769,7 @@ export default function Aipictors3rdAnniversary () {
                 <CardContent className="pt-6">
                   {data.rankingWorks.length > 0 ? (
                     <EventWorkList
+                      eventSource="OFFICIAL"
                       works={data.rankingWorks}
                       maxCount={data.rankingWorks.length}
                       page={0}

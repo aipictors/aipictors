@@ -365,6 +365,13 @@ const workLikedUsersQuery = graphql(
         name
         iconUrl
         login
+        avatarFrame {
+          id
+          frameType
+          backgroundStyle
+          overlayImageUrl
+          borderPadding
+        }
       }
     }
   }`,

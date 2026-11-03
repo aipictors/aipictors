@@ -549,6 +549,7 @@ const newCommentsQuery = graphql(
       }
       work {
         id
+        title
         smallThumbnailImageURL
         smallThumbnailImageHeight
         smallThumbnailImageWidth

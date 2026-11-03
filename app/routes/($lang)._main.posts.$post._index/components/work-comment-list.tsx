@@ -1835,6 +1835,13 @@ const userQuery = graphql(
     user(id: $userId) {
       id
       iconUrl
+      avatarFrame {
+        id
+        frameType
+        backgroundStyle
+        overlayImageUrl
+        borderPadding
+      }
     }
   }`,
 )

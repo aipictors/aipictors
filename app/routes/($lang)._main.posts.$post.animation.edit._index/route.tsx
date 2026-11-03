@@ -498,7 +498,10 @@ export default function EditImage () {
               : null
           }
           aiModels={viewer?.aiModels ?? []}
-          events={viewer?.appEvents ?? []}
+          events={(viewer?.appEvents ?? []).map((event) => ({
+            ...event,
+            source: "OFFICIAL" as const,
+          }))}
           needFix={work?.moderatorReport?.status === "UNHANDLED"}
         />
         <div className="h-4" />
@@ -601,8 +604,11 @@ const viewerQuery = graphql(
       id
       description
       title
+      thumbnailImageUrl
+      headerImageUrl
       tag
       slug
+      startAt
       endAt
     }
   }`,

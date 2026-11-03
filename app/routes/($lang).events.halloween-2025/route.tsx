@@ -414,6 +414,7 @@ export default function EventHalloween2025() {
         {data.appEvent?.awardWorks && data.appEvent.awardWorks.length > 0 && (
           <section>
             <EventAwardWorkList
+              eventSource="OFFICIAL"
               works={data.appEvent.awardWorks}
               slug="halloween-2025"
             />
@@ -442,6 +443,7 @@ export default function EventHalloween2025() {
               </div>
             </div>
             <EventWorkList
+              eventSource="OFFICIAL"
               works={data.appEvent.works}
               maxCount={data.appEvent.worksCount}
               page={data.page}

@@ -308,12 +308,14 @@ You can also copy the prompts and generate them locally.`,
       {/* 作品 一覧 */}
       {data.appEvent.awardWorks && (
         <EventAwardWorkList
+          eventSource="OFFICIAL"
           works={data.appEvent.awardWorks}
           slug={data.appEvent.slug ?? ""}
         />
       )}
       {data.appEvent.works && (
         <EventWorkList
+          eventSource="OFFICIAL"
           works={data.appEvent.works}
           maxCount={data.appEvent.worksCount as number}
           page={data.page}

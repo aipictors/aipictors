@@ -646,7 +646,10 @@ export default function EditText() {
               : null
           }
           aiModels={viewer?.aiModels ?? []}
-          events={viewer?.appEvents ?? []}
+          events={(viewer?.appEvents ?? []).map((event) => ({
+            ...event,
+            source: "OFFICIAL" as const,
+          }))}
           needFix={work?.moderatorReport?.status === "UNHANDLED"}
           mdUrl={work?.mdUrl ?? ""}
         />
@@ -740,8 +743,11 @@ const viewerQuery = graphql(
       id
       description
       title
+      thumbnailImageUrl
+      headerImageUrl
       tag
       slug
+      startAt
       endAt
     }
   }`,
