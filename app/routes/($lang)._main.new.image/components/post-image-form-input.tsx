@@ -39,6 +39,7 @@ type AiEvaluationProps = {
   workId: string
   isAlreadyRequested?: boolean
   isAlreadyEvaluated?: boolean
+    evaluationStatus?: string | null
   isBotGradingEnabled?: boolean
   currentBotGradingPublic?: boolean
   currentBotGradingRankingEnabled?: boolean
@@ -581,6 +582,7 @@ export function PostImageFormInput(props: Props) {
           workId={props.aiEvaluationProps.workId}
           isAlreadyRequested={props.aiEvaluationProps.isAlreadyRequested}
           isAlreadyEvaluated={props.aiEvaluationProps.isAlreadyEvaluated}
+          evaluationStatus={props.aiEvaluationProps.evaluationStatus}
           isBotGradingEnabled={props.aiEvaluationProps.isBotGradingEnabled}
           currentBotGradingPublic={
             props.aiEvaluationProps.currentBotGradingPublic

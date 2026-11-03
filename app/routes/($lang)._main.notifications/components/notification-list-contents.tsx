@@ -17,6 +17,7 @@ import {
   ShieldAlertIcon,
   SparklesIcon,
   UserRoundPlusIcon,
+  XIcon,
 } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -427,7 +428,14 @@ function NotificationHistory(props: {
           renderFooter={(item) =>
             (item.kind === "comment" || item.kind === "reply") &&
             item.replyTargetCommentId ? (
-              <InlineReply item={item} />
+              <InlineReply
+                item={item}
+                onHidden={() =>
+                  setItems((current) =>
+                    current.filter((value) => value.id !== item.id),
+                  )
+                }
+              />
             ) : null
           }
         />
@@ -464,12 +472,34 @@ function NotificationHistory(props: {
 /**
  * その場で返信する（作品ページに移らなくていいように）
  */
-function InlineReply(props: { item: PanelItem }) {
+function InlineReply(props: { item: PanelItem; onHidden: () => void }) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [text, setText] = useState("")
   const [sentTexts, setSentTexts] = useState<string[]>([])
   const [createReply, { loading }] = useMutation(createResponseCommentMutation)
+  const [hideNotification, { loading: isHiding }] = useMutation(
+    hideNotificationMutation,
+  )
+
+  const onHide = async () => {
+    if (
+      !window.confirm(
+        t(
+          "この通知を一覧から消しますか？（コメント自体は消えません）",
+          "Remove this notification from the list? (The comment itself stays.)",
+        ),
+      )
+    ) {
+      return
+    }
+    try {
+      await hideNotification({ variables: { id: props.item.id } })
+      props.onHidden()
+    } catch {
+      toast(t("消せませんでした", "Could not remove it"))
+    }
+  }
 
   const replies = props.item.myReplies
 
@@ -552,6 +582,7 @@ function InlineReply(props: { item: PanelItem }) {
           </div>
         </div>
       ) : (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <button
           type="button"
           onClick={() => setIsOpen(true)}
@@ -566,6 +597,16 @@ function InlineReply(props: { item: PanelItem }) {
             ? t("返信済み・もう一度返信する", "Replied. Reply again")
             : t("返信する", "Reply")}
         </button>
+          <button
+            type="button"
+            disabled={isHiding}
+            onClick={() => void onHide()}
+            className="flex items-center gap-1 font-medium text-muted-foreground text-xs hover:text-foreground disabled:opacity-50"
+          >
+            <XIcon className="size-3.5" />
+            {t("一覧から消す", "Remove from list")}
+          </button>
+        </div>
       )}
     </div>
   )
@@ -591,6 +632,12 @@ const unreadCountsQuery = graphql(
 const markNotificationsAsReadMutation = graphql(
   `mutation MarkNotificationsAsReadFromPage {
     markNotificationsAsRead
+  }`,
+)
+
+const hideNotificationMutation = graphql(
+  `mutation HideNotification($id: ID!) {
+    hideNotification(id: $id)
   }`,
 )
 

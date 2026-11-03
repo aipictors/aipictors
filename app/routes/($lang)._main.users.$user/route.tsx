@@ -255,9 +255,9 @@ const UserQuery = graphql(
 const UserR18WorksCountQuery = graphql(
   `query UserR18WorksCount($userId: ID!) {
     r18WorksCount: worksCount(where: { userId: $userId, ratings: [R18, R18G], isSensitive: true })
-    imageWorksCount: worksCount(where: { userId: $userId, workType: WORK, ratings: [G, R15] })
-    novelWorksCount: worksCount(where: { userId: $userId, workType: NOVEL, ratings: [G, R15] })
-    videoWorksCount: worksCount(where: { userId: $userId, workType: VIDEO, ratings: [G, R15] })
-    columnWorksCount: worksCount(where: { userId: $userId, workType: COLUMN, ratings: [G, R15] })
+    imageWorksCount: worksCount(where: { userId: $userId, workType: WORK, ratings: [G, R15], isNowCreatedAt: true })
+    novelWorksCount: worksCount(where: { userId: $userId, workType: NOVEL, ratings: [G, R15], isNowCreatedAt: true })
+    videoWorksCount: worksCount(where: { userId: $userId, workType: VIDEO, ratings: [G, R15], isNowCreatedAt: true })
+    columnWorksCount: worksCount(where: { userId: $userId, workType: COLUMN, ratings: [G, R15], isNowCreatedAt: true })
   }`,
 )

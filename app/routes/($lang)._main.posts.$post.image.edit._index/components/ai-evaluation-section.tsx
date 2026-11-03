@@ -1,3 +1,4 @@
+import { cn } from "~/lib/utils"
 import { useId } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
@@ -20,7 +21,7 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { Separator } from "~/components/ui/separator"
-import { Sparkles, Loader2Icon, CheckCircle } from "lucide-react"
+import { Sparkles, Loader2Icon, CheckCircle, CircleSlash } from "lucide-react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -38,6 +39,8 @@ type Props = {
   workId: string
   isAlreadyRequested?: boolean
   isAlreadyEvaluated?: boolean
+  /** DONE / PENDING / FAILED / REFUSED */
+  evaluationStatus?: string | null
   isBotGradingEnabled?: boolean
   currentBotGradingPublic?: boolean
   currentBotGradingRankingEnabled?: boolean
@@ -193,9 +196,25 @@ export function AiEvaluationSection (props: Props) {
         icon: CheckCircle,
       }
     }
+    if (props.evaluationStatus === "REFUSED") {
+      return {
+        text: "この作品はAI評価の対象外でした",
+        disabled: true,
+        variant: "secondary" as const,
+        icon: CircleSlash,
+      }
+    }
+    if (props.evaluationStatus === "FAILED") {
+      return {
+        text: "AI評価を作成できませんでした（作品ページでやり直せます）",
+        disabled: true,
+        variant: "secondary" as const,
+        icon: CircleSlash,
+      }
+    }
     if (props.isAlreadyRequested) {
       return {
-        text: "AI評価リクエスト済み",
+        text: "AI評価を作成中です",
         disabled: true,
         variant: "secondary" as const,
         icon: Loader2Icon,
@@ -291,7 +310,12 @@ export function AiEvaluationSection (props: Props) {
                 disabled={buttonConfig.disabled || !isLoggedIn}
                 className="w-full"
               >
-                <ButtonIcon className="mr-2 h-4 w-4" />
+                <ButtonIcon
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    buttonConfig.icon === Loader2Icon && "animate-spin",
+                  )}
+                />
                 {buttonConfig.text}
               </Button>
             </DialogTrigger>

@@ -814,7 +814,8 @@ export default function EditImage() {
           aiEvaluationProps={{
             workId: work?.id || "",
             isAlreadyRequested: Boolean(work?.isBotGradingEnabled),
-            isAlreadyEvaluated: false, // 実際の評価状態に応じて設定
+            isAlreadyEvaluated: work?.botEvaluationStatus === "DONE",
+            evaluationStatus: work?.botEvaluationStatus ?? null,
             isBotGradingEnabled: Boolean(work?.isBotGradingEnabled),
             // inputStateの値を直接使用
             currentBotGradingPublic: inputState.isBotGradingPublic,
@@ -981,6 +982,7 @@ const workQuery = graphql(
       url
       relatedUrl
       isBotGradingEnabled
+      botEvaluationStatus
       isBotGradingPublic
       isBotGradingRankingEnabled
       user {

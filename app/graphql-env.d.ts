@@ -3231,6 +3231,8 @@ input ModerationReportsWhereInput {
 }
 
 type Mutation {
+  """コメント・返信の通知を自分の一覧から消す"""
+  hideNotification(id: ID!): Boolean!
   """Google アカウントで本人確認する"""
   verifyAccountWithGoogle: Boolean!
   """モデレータ向けの一括コイン操作"""
