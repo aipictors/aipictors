@@ -1,5 +1,4 @@
 import { format } from "date-fns"
-import { zipSync } from "fflate"
 
 interface FileObject {
   name: string
@@ -20,6 +19,9 @@ export const downloadZipFile = async (props: Props): Promise<void> => {
     if (props.files.length <= 0) {
       throw new Error("No valid images found to download.")
     }
+
+    // ダウンロードするときに読み込む
+    const { zipSync } = await import("fflate")
 
     const data = zipSync(
       Object.fromEntries(props.files.map((file) => [file.name, file.data])),

@@ -110,6 +110,11 @@ export default defineConfig({
         // 細かく分かれていると、モバイルの計測で最初の表示が大きく遅れる。
         // React と Apollo を別のファイルに分けると、読み込み順で Apollo が React を見つけられず壊れるので、必ず同じファイルにする
         manualChunks(id) {
+          // 規約などの Markdown の文字列は、小さいチャンクをまとめるときに全ページ共通のファイルへ入らないようにする
+          const markdownName = id.match(/([\w-]+)\.md\?raw$/)?.[1]
+          if (markdownName) {
+            return `markdown-${markdownName}`
+          }
           if (
             /node_modules\/(react|react-dom|scheduler|@remix-run|react-router|react-router-dom|turbo-stream|cookie|set-cookie-parser|@apollo|graphql|@wry|optimism|zen-observable|zen-observable-ts|ts-invariant|symbol-observable|@graphql-typed-document-node|rehackt|hoist-non-react-statics|tslib|@tanstack|use-sync-external-store)\//.test(
               id,

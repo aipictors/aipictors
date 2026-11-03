@@ -2,10 +2,12 @@ import { Button } from "~/components/ui/button"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { getCroppedImage } from "~/utils/get-cropped-image"
 import getResizedImg from "~/utils/get-resized-image"
-import { useState } from "react"
+import { lazy, Suspense, useState } from "react"
 import type { Area } from "react-easy-crop"
-import Cropper from "react-easy-crop"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
+
+// 切り抜きを開いたときに読み込む（作品・ユーザーなど多くのページの最初の JS に入っていた）
+const Cropper = lazy(() => import("react-easy-crop"))
 
 type Props = {
   src: string
@@ -90,20 +92,22 @@ export function ImageCropperModal (props: Props): React.ReactNode {
       <DialogContent>
         <div className="">
           <div className="mb-2 h-[72vh] w-[80vw]">
-            <Cropper
-              classes={{
-                containerClassName: `mb-16 mt-1 ${props.cropContainerClassName}`,
-              }}
-              image={props.src}
-              crop={crop}
-              zoom={zoom}
-              aspect={aspectRatio}
-              onCropChange={setCrop}
-              onCropComplete={onCropComplete}
-              onZoomChange={setZoom}
-              showGrid={false}
-              objectFit="contain"
-            />
+            <Suspense fallback={null}>
+              <Cropper
+                classes={{
+                  containerClassName: `mb-16 mt-1 ${props.cropContainerClassName}`,
+                }}
+                image={props.src}
+                crop={crop}
+                zoom={zoom}
+                aspect={aspectRatio}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+                showGrid={false}
+                objectFit="contain"
+              />
+            </Suspense>
           </div>
           <div className="absolute bottom-4 left-4 flex items-center">
             <div className="flex items-center">

@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { useTranslation } from "~/hooks/use-translation"
-import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
+import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {

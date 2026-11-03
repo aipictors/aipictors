@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { lazy, Suspense, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,13 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { SettingProfileForm } from "~/routes/($lang).settings.profile/components/setting-profile-form"
+
+// 自分のプロフィールを編集するときに読み込む
+const SettingProfileForm = lazy(() =>
+  import(
+    "~/routes/($lang).settings.profile/components/setting-profile-form"
+  ).then((module) => ({ default: module.SettingProfileForm })),
+)
 
 type Props = {
   triggerChildren: React.ReactNode
@@ -27,7 +33,11 @@ export function ProfileEditDialog(props: Props) {
           <DialogTitle>プロフィール編集</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[80vh] overflow-hidden pr-4">
-          {open && <SettingProfileForm />}
+          {open && (
+            <Suspense fallback={null}>
+              <SettingProfileForm />
+            </Suspense>
+          )}
         </ScrollArea>
       </DialogContent>
     </Dialog>

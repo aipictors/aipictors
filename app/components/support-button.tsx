@@ -26,7 +26,7 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
-import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
+import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 
 type Props = {
   targetUserId: string
