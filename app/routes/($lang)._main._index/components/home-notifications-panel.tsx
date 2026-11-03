@@ -291,6 +291,8 @@ export function HomeNotificationsPanel(props: Props) {
 
 const TAB_WHERE = {
   ALL: { excludeCoin: true },
+  COMMENT: { type: "WORK_COMMENT" },
+  REPLY: { type: "COMMENT_REPLY" },
   LIKED: { type: "LIKED_WORK" },
   FOLLOW: { type: "FOLLOW" },
   AWARD: { type: "WORK_AWARD" },
@@ -319,29 +321,57 @@ function NotificationList(props: {
   )
 }
 
+/** コメントと返信は混ぜず、切り替えて見る（返信だけ未読なら返信から開く） */
 function CommentList(props: { unread: UnreadCounts; onClose: () => void }) {
-  const { data, loading } = useQuery(panelCommentsQuery, {
-    variables: { limit: 30 },
-    fetchPolicy: "cache-and-network",
-  })
-
-  // コメントと返信は別々に取るので、合わせて新しい順にする
-  const items = useMemo(
-    () =>
-      toPanelItems([
-        ...((data?.viewer?.comments ?? []) as unknown[]),
-        ...((data?.viewer?.replies ?? []) as unknown[]),
-      ]),
-    [data],
+  const t = useTranslation()
+  const [kind, setKind] = useState<"COMMENT" | "REPLY">(
+    props.unread.comment === 0 && props.unread.reply > 0 ? "REPLY" : "COMMENT",
   )
+  const items = [
+    {
+      value: "COMMENT" as const,
+      label: t("作品へのコメント", "On your works"),
+      count: props.unread.comment,
+    },
+    {
+      value: "REPLY" as const,
+      label: t("返信", "Replies"),
+      count: props.unread.reply,
+    },
+  ]
 
   return (
-    <RowList
-      items={items}
-      isLoading={loading && data === undefined}
-      unread={props.unread}
-      onClose={props.onClose}
-    />
+    <>
+      <div className="sticky top-0 z-10 flex gap-1 border-b bg-popover p-2">
+        {items.map((item) => (
+          <button
+            key={item.value}
+            type="button"
+            aria-pressed={kind === item.value}
+            onClick={() => setKind(item.value)}
+            className={cn(
+              "flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg font-medium text-xs transition-colors",
+              kind === item.value
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {item.label}
+            {item.count > 0 && (
+              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 font-bold text-[10px] text-white tabular-nums">
+                {toBadgeText(item.count)}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+      <NotificationList
+        key={kind}
+        tab={kind}
+        unread={props.unread}
+        onClose={props.onClose}
+      />
+    </>
   )
 }
 
@@ -452,6 +482,11 @@ function NotificationRowView(props: {
           {t(
             toElapsedTimeText(item.createdAt),
             toElapsedTimeEnText(item.createdAt),
+          )}
+          {item.kind === "reply" && (
+            <span className="rounded-full bg-indigo-500/15 px-1.5 py-0.5 font-medium text-indigo-700 dark:text-indigo-300">
+              {t("返信", "Reply")}
+            </span>
           )}
           {item.isNotReplied && (
             <span className="rounded-full bg-sky-500/15 px-1.5 py-0.5 font-medium text-sky-700 dark:text-sky-300">
@@ -588,14 +623,14 @@ function RowTitle(props: { item: PanelItem; group: PanelItem[] }) {
       return (
         <p className={className}>
           {name}
-          {t("さんがコメントしました", " commented on your work")}
+          {t("さんが作品にコメントしました", " commented on your work")}
         </p>
       )
     case "reply":
       return (
         <p className={className}>
           {name}
-          {t("さんが返信しました", " replied")}
+          {t("さんがコメントに返信しました", " replied to a comment")}
         </p>
       )
     case "follow":
@@ -759,37 +794,6 @@ const panelNotificationsQuery = graphql(
     viewer {
       id
       notifications(offset: 0, limit: $limit, where: $where) {
-        __typename
-        ... on LikedWorkNotificationNode { ...PanelLiked }
-        ... on WorkCommentNotificationNode { ...PanelComment }
-        ... on WorkCommentReplyNotificationNode { ...PanelReply }
-        ... on FollowNotificationNode { ...PanelFollow }
-        ... on WorkAwardNotificationNode { ...PanelAward }
-      }
-    }
-  }`,
-  [
-    PanelLikedFragment,
-    PanelCommentFragment,
-    PanelReplyFragment,
-    PanelFollowFragment,
-    PanelAwardFragment,
-  ],
-)
-
-const panelCommentsQuery = graphql(
-  `query PanelCommentNotifications($limit: Int!) {
-    viewer {
-      id
-      comments: notifications(offset: 0, limit: $limit, where: { type: WORK_COMMENT }) {
-        __typename
-        ... on LikedWorkNotificationNode { ...PanelLiked }
-        ... on WorkCommentNotificationNode { ...PanelComment }
-        ... on WorkCommentReplyNotificationNode { ...PanelReply }
-        ... on FollowNotificationNode { ...PanelFollow }
-        ... on WorkAwardNotificationNode { ...PanelAward }
-      }
-      replies: notifications(offset: 0, limit: $limit, where: { type: COMMENT_REPLY }) {
         __typename
         ... on LikedWorkNotificationNode { ...PanelLiked }
         ... on WorkCommentNotificationNode { ...PanelComment }

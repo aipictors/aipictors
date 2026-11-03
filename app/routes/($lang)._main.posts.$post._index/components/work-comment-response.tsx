@@ -9,6 +9,7 @@ import {
   Loader2Icon,
   Reply,
   ThumbsUpIcon,
+  CornerDownRightIcon,
 } from "lucide-react"
 import React from "react"
 import { toast } from "sonner"
@@ -38,6 +39,8 @@ type Props = {
   userIsModerator?: boolean
   text?: string
   createdAt: number
+  /** 返信先のコメントを書いた人 */
+  replyToUserName?: string | null
   replyId: string
   targetCommentId: string
   userId: string
@@ -237,24 +240,36 @@ export function WorkCommentResponse(props: Props) {
     <>
       <div
         className={cn(
-          "ml-4 flex items-start gap-2.5 border-border/60 border-l-2 pl-3",
+          // 親のコメントの本文の位置より右に下げて、コメントと返信の差をはっきりさせる
+          "ml-5 flex items-start gap-3 border-border border-l-2 pl-4 md:ml-[52px]",
           props.isMuted &&
             "border-gray-300 border-l-2 pl-[66px] opacity-60 dark:border-gray-700",
         )}
       >
-        <Link className="block size-8 shrink-0" to={`/users/${props.userId}`}>
+        <Link className="block size-10 shrink-0" to={`/users/${props.userId}`}>
           <UserAvatarWithFrame
             alt={props.userName ?? ""}
             frame={props.userAvatarFrame}
             isAnimated={false}
-            sizeClassName="size-8"
+            sizeClassName="size-10"
             src={props.userIconImageURL}
           />
         </Link>
         <div className="min-w-0 flex-1 space-y-1.5">
+          {props.replyToUserName && (
+            <p className="flex items-center gap-1 text-muted-foreground text-xs">
+              <CornerDownRightIcon className="size-3 shrink-0" />
+              <span className="truncate">
+                {t(
+                  `${props.replyToUserName} さんのコメントへの返信`,
+                  `Reply to ${props.replyToUserName}`,
+                )}
+              </span>
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-x-2">
             <Link to={`/users/${props.userId}`}>
-              <p className="font-semibold text-sm hover:underline">
+              <p className="font-semibold text-base hover:underline">
                 {props.userName}
               </p>
             </Link>
@@ -275,7 +290,7 @@ export function WorkCommentResponse(props: Props) {
             )}
           </div>
           <div className="space-y-2">
-            <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
+            <p className="overflow-hidden whitespace-pre-wrap break-words text-[15px] leading-relaxed">
               {props.text}
             </p>
             {props.moderationSummary?.moderationStatus === "REJECTED" && (
@@ -325,17 +340,17 @@ export function WorkCommentResponse(props: Props) {
           </div>
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link
-              className="group block w-24 overflow-hidden rounded-md"
+              className="group block w-32 overflow-hidden rounded-md"
               to={`/stickers/${props.stickerId}`}
               aria-label={t("スタンプ", "Sticker")}
             >
               <img
-                className="aspect-square w-24 overflow-hidden rounded-md object-contain transition-transform duration-300 group-hover:scale-105"
+                className="aspect-square w-32 overflow-hidden rounded-md object-contain transition-transform duration-300 group-hover:scale-105"
                 alt=""
                 src={props.stickerImageURL}
                 // スタンプは正方形。大きさを先に決めておき、読み込み後にコメント欄が伸びて下がずれないようにする
-                width={96}
-                height={96}
+                width={128}
+                height={128}
                 loading="lazy"
                 decoding="async"
               />
@@ -343,11 +358,11 @@ export function WorkCommentResponse(props: Props) {
           )}
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
             <img
-              className="aspect-square w-24 object-contain"
+              className="aspect-square w-32 object-contain"
               alt=""
               src={props.stickerImageURL}
-              width={96}
-              height={96}
+              width={128}
+              height={128}
               loading="lazy"
               decoding="async"
             />

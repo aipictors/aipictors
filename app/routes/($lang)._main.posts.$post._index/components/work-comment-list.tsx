@@ -143,7 +143,6 @@ const SUPPORT_PREMIUM_COIN_STEPS = [1, 3, 5, 10] as const
 /** これ以上の pt を送るときは確認する（桁の間違いを防ぐ） */
 const SUPPORT_CONFIRM_THRESHOLD_PT = 1000
 
-
 const calculateCommentSupportDraft = (
   freeCoinAmount: number,
   premiumCoinAmount: number,
@@ -1383,6 +1382,7 @@ export function WorkCommentList(props: Props) {
                   userIsModerator={newReply.user?.isModerator}
                   replyId={newReply.id}
                   targetCommentId={comment.id}
+                  replyToUserName={comment.user?.name}
                   isLiked={
                     newReply.isLiked &&
                     !canceledCommentIds.includes(newReply.id)
@@ -1452,6 +1452,7 @@ export function WorkCommentList(props: Props) {
                     userIsModerator={reply.user?.isModerator}
                     replyId={reply.id}
                     targetCommentId={comment.id}
+                    replyToUserName={comment.user?.name}
                     iconUrl={withIconUrlFallback(userIcon)}
                     onDeleteComment={() => {
                       onDeleteComment(reply.id)
@@ -1624,6 +1625,7 @@ export function WorkCommentList(props: Props) {
                       userIsModerator={newReply.user?.isModerator}
                       replyId={newReply.id}
                       targetCommentId={comment.id}
+                      replyToUserName={comment.user?.name}
                       onDeleteComment={() => {
                         onDeleteComment(newReply.id)
                       }}
@@ -1683,6 +1685,7 @@ export function WorkCommentList(props: Props) {
                         userIsModerator={reply.user?.isModerator}
                         replyId={reply.id}
                         targetCommentId={comment.id}
+                        replyToUserName={comment.user?.name}
                         iconUrl={withIconUrlFallback(userIcon)}
                         onDeleteComment={() => {
                           onDeleteComment(reply.id)

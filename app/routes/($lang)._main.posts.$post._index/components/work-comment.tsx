@@ -258,14 +258,14 @@ export function WorkComment(props: Props) {
             alt={props.userName ?? ""}
             frame={props.userAvatarFrame}
             isAnimated={false}
-            sizeClassName="size-9"
+            sizeClassName="size-10"
             src={props.userIconImageURL}
           />
         </Link>
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex flex-wrap items-center gap-x-2">
             <Link to={`/users/${props.userId}`}>
-              <span className="font-semibold text-sm hover:underline">
+              <span className="font-semibold text-base hover:underline">
                 {props.userName}
               </span>
             </Link>
@@ -293,7 +293,7 @@ export function WorkComment(props: Props) {
           )}
           {props.text && (
             <div className="space-y-2">
-              <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
+              <p className="overflow-hidden whitespace-pre-wrap break-words text-[15px] leading-relaxed">
                 {props.text}
               </p>
               {props.moderationSummary?.moderationStatus === "REJECTED" && (
@@ -344,17 +344,17 @@ export function WorkComment(props: Props) {
           )}
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link
-              className="group block w-24 overflow-hidden"
+              className="group block w-32 overflow-hidden"
               to={`/stickers/${props.stickerId}`}
               aria-label={t("スタンプ", "Sticker")}
             >
               <img
-                className="aspect-square w-24 object-contain transition-transform duration-300 group-hover:scale-105"
+                className="aspect-square w-32 object-contain transition-transform duration-300 group-hover:scale-105"
                 alt=""
                 src={props.stickerImageURL}
                 // スタンプは正方形。大きさを先に決めておき、読み込み後にコメント欄が伸びて下がずれないようにする
-                width={96}
-                height={96}
+                width={128}
+                height={128}
                 loading="lazy"
                 decoding="async"
               />
@@ -362,11 +362,11 @@ export function WorkComment(props: Props) {
           )}
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
             <img
-              className="aspect-square w-24 object-contain"
+              className="aspect-square w-32 object-contain"
               alt=""
               src={props.stickerImageURL}
-              width={96}
-              height={96}
+              width={128}
+              height={128}
               loading="lazy"
               decoding="async"
             />
