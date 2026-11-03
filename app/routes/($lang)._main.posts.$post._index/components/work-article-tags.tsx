@@ -10,9 +10,11 @@ type Props = {
   setTagNames: React.Dispatch<React.SetStateAction<string[]>>
   isEditable?: boolean
   postId: string
+  /** R18 の作品ページ（タグのリンクを /r に） */
+  isSensitive?: boolean
 }
 
-export function WorkArticleTags (props: Props) {
+export function WorkArticleTags(props: Props) {
   const [isOpenEdit, setIsOpenEdit] = React.useState(false)
 
   const [tags, setTags] = React.useState<Tag[]>([
@@ -29,7 +31,11 @@ export function WorkArticleTags (props: Props) {
     <>
       <div className="flex flex-row flex-wrap items-center gap-x-4">
         {props.tagNames.map((tagName) => (
-          <Link to={`/tags/${tagName}`} key={tagName} className="p-0">
+          <Link
+            to={`${props.isSensitive ? "/r" : ""}/tags/${tagName}`}
+            key={tagName}
+            className="p-0"
+          >
             <Button className="p-0" variant={"link"}>{`#${tagName}`}</Button>
           </Link>
         ))}

@@ -6,6 +6,8 @@ import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 
 type Props = {
+  /** R18 のページ（リンクを /r に） */
+  isSensitive?: boolean
   comments: FragmentOf<typeof HomeNewCommentsFragment>[]
 }
 
@@ -24,7 +26,7 @@ export function HomeNewCommentsSection(props: Props) {
           {t("新規コメント", "New Comments")}
         </h2>
         <Link
-          to="/comments/new"
+          to={`${props.isSensitive ? "/r" : ""}/comments/new`}
           className="flex shrink-0 items-center text-muted-foreground text-xs hover:text-foreground"
         >
           {t("もっと見る", "View More")}
@@ -41,7 +43,7 @@ export function HomeNewCommentsSection(props: Props) {
           return (
             <li key={comment.comment?.id}>
               <Link
-                to={`/posts/${work.id}`}
+                to={`${props.isSensitive ? "/r" : ""}/posts/${work.id}`}
                 title={work.title}
                 className="flex gap-2.5 rounded-xl p-2 transition-colors hover:bg-muted"
               >

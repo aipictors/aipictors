@@ -1,4 +1,6 @@
 import {
+  WorkArticle,
+  userSettingFragment,
   workArticleFragment,
   sensitiveWorkArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
@@ -7,7 +9,11 @@ import { useContext, useMemo } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { useMutation, useQuery } from "@apollo/client/index"
-import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
+import { WorkAuthorWorksSection } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
+import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
+import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
+import { FollowSuggestions } from "~/components/user/follow-suggestions"
+import { ChevronRightIcon } from "lucide-react"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
 import {
   type CommentListItemFragment,
@@ -25,8 +31,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
-import { HomeNewSensitiveCommentsSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-comments"
-import { SensitiveWorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/sensitive-work-article"
+import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
 
 type Props = {
   post: string
@@ -41,7 +46,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function SensitiveWorkContainer (props: Props) {
+export function SensitiveWorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   const isWorkOwner =
@@ -68,7 +73,8 @@ export function SensitiveWorkContainer (props: Props) {
   })
 
   const workBase = data?.work ?? props.work
-  const likedUsers = likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
+  const likedUsers =
+    likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
   const work = workBase ? { ...workBase, likedUsers } : workBase
 
   const { data: workCommentsRet } = useQuery(workCommentsQuery, {
@@ -161,55 +167,64 @@ export function SensitiveWorkContainer (props: Props) {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex w-full flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <SensitiveWorkArticle
+            <WorkArticle
               work={workForArticle}
               userSetting={userSetting?.userSetting ?? undefined}
+              isSensitive
+              isAlbumHidden
+              authorSlot={
+                workForArticle.user ? (
+                  <div className="md:hidden">
+                    <WorkUser
+                      userId={workForArticle.user.id}
+                      userLogin={workForArticle.user.login}
+                      userName={workForArticle.user.name}
+                      userIsOfficial={workForArticle.user.isOfficial}
+                      userIsModerator={workForArticle.user.isModerator}
+                      userIconImageURL={withIconUrlFallback(
+                        workForArticle.user.iconUrl,
+                      )}
+                      avatarFrame={workForArticle.user.avatarFrame}
+                      userFollowersCount={workForArticle.user.followersCount}
+                      userBiography={workForArticle.user.biography ?? ""}
+                      userEnBiography={workForArticle.user.enBiography ?? null}
+                      userWorksCount={workForArticle.user.worksCount}
+                    />
+                  </div>
+                ) : undefined
+              }
             />
-            {workForArticle.user !== null &&
-              workForArticle.user.works.length > 0 && (
-                <WorkRelatedList
-                  works={workForArticle.user.works.map((relatedWork) => ({
-                    smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
-                    thumbnailImagePosition:
-                      relatedWork.thumbnailImagePosition ?? 0,
-                    smallThumbnailImageWidth:
-                      relatedWork.smallThumbnailImageWidth,
-                    smallThumbnailImageHeight:
-                      relatedWork.smallThumbnailImageHeight,
-                    id: relatedWork.id,
-                    title: relatedWork.title,
-                    userId: relatedWork.userId,
-                    isLiked: relatedWork.isLiked,
-                    subWorksCount: relatedWork.subWorksCount,
-                    commentsCount: relatedWork.commentsCount,
-                  }))}
-                />
-              )}
-            {workForArticle.isCommentsEditable && (
-              <WorkCommentList
-                workId={workForArticle.id}
-                comments={comments}
-                workOwnerId={workForArticle.user?.id}
-                workOwnerIconImageURL={workForArticle.user?.iconUrl}
-                workOwnerName={workForArticle.user?.name}
-                isWorkOwnerBlocked={workForArticle.user?.isBlocked ?? false}
-              />
-            )}
-            {workForArticle.user !== null && (
-              <div className="block md:mt-0 lg:hidden">
-                <WorkUser
-                  userId={workForArticle.user.id}
-                  userLogin={workForArticle.user.login}
-                  userName={workForArticle.user.name}
-                  userIconImageURL={withIconUrlFallback(
-                    workForArticle.user.iconUrl,
-                  )}
-                  userFollowersCount={workForArticle.user.followersCount}
-                  userBiography={workForArticle.user.biography ?? ""}
-                  userEnBiography={workForArticle.user.enBiography ?? null}
-                  userWorksCount={workForArticle.user.worksCount}
+            {workForArticle.user && (
+              <div className="border-t pt-6">
+                <WorkAuthorWorksSection
+                  user={workForArticle.user}
+                  currentWorkId={workForArticle.id}
                 />
               </div>
+            )}
+            {workForArticle.album && (
+              <WorkAlbumCard album={workForArticle.album} />
+            )}
+            {workForArticle.isCommentsEditable && (
+              <div className="border-t pt-6">
+                <WorkCommentList
+                  workId={workForArticle.id}
+                  comments={comments}
+                  workOwnerId={workForArticle.user?.id}
+                  workOwnerIconImageURL={workForArticle.user?.iconUrl}
+                  workOwnerName={workForArticle.user?.name}
+                  isWorkOwnerBlocked={workForArticle.user?.isBlocked ?? false}
+                />
+              </div>
+            )}
+            {workForArticle.user && authContext.isLoggedIn && (
+              <WorkLazySection>
+                <FollowSuggestions
+                  userId={workForArticle.user.id}
+                  userName={workForArticle.user.name}
+                  title={t("おすすめのクリエイター", "Suggested creators")}
+                />
+              </WorkLazySection>
             )}
           </div>
         </div>
@@ -219,10 +234,13 @@ export function SensitiveWorkContainer (props: Props) {
               <WorkUser
                 userId={workForArticle.user.id}
                 userName={workForArticle.user.name}
+                userIsOfficial={workForArticle.user.isOfficial}
+                userIsModerator={workForArticle.user.isModerator}
                 userLogin={workForArticle.user.login}
                 userIconImageURL={withIconUrlFallback(
                   workForArticle.user.iconUrl,
                 )}
+                avatarFrame={workForArticle.user.avatarFrame}
                 userFollowersCount={workForArticle.user.followersCount}
                 userBiography={workForArticle.user.biography ?? ""}
                 userEnBiography={workForArticle.user.enBiography ?? null}
@@ -260,22 +278,24 @@ export function SensitiveWorkContainer (props: Props) {
                       </div>
                     </div>
                   )}
+                {props.newComments && props.newComments.length > 0 && (
+                  <HomeNewCommentsSection
+                    comments={props.newComments}
+                    isSensitive
+                  />
+                )}
                 {!isSubscriptionUser && (
                   <Link to="/generation">
                     <img
                       src="https://assets.aipictors.com/Aipictors_01_640.webp"
                       alt="Aipictors Logo"
+                      className="aspect-square h-auto w-full"
                       width={640}
                       height={640}
                       loading="lazy"
                       decoding="async"
                     />
                   </Link>
-                )}
-                {props.newComments && props.newComments.length > 0 && (
-                  <HomeNewSensitiveCommentsSection
-                    comments={props.newComments}
-                  />
                 )}
                 {props.awardWorks && (
                   <HomeAwardWorksSection works={props.awardWorks} />
@@ -285,19 +305,29 @@ export function SensitiveWorkContainer (props: Props) {
           </div>
         </div>
       </div>
-      <section className="m-auto space-y-4">
+      <section className="m-auto border-t pt-6">
         {randomTag && (
-          <>
-            <div className="flex justify-between">
-              <h2 className="items-center space-x-2 font-bold text-md">
-                {t("おすすめ", "Recommended")}
-              </h2>
+          // タグはブラウザで選ぶので、見出しごと画面に近づいてから出す
+          <WorkLazySection minHeightClassName="min-h-[100vh]">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="truncate font-bold text-base">
+                  {t(`#${randomTag} のおすすめ`, `More #${randomTag}`)}
+                </h2>
+                <Link
+                  to={`/r/tags/${encodeURIComponent(randomTag)}`}
+                  className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
+                >
+                  {t("すべて見る", "See all")}
+                  <ChevronRightIcon className="size-4" />
+                </Link>
+              </div>
+              <SensitiveWorkTagsWorks
+                tagName={randomTag}
+                rating={work.rating ?? "R18"}
+              />
             </div>
-            <SensitiveWorkTagsWorks
-              tagName={randomTag}
-              rating={work.rating ?? "R18"}
-            />
-          </>
+          </WorkLazySection>
         )}
       </section>
       {/* <div className="flex w-full flex-col space-y-4 md:hidden">
@@ -385,17 +415,11 @@ const randomCustomerAdvertisementQuery = graphql(
   [SideMenuAdvertisementsFragment],
 )
 
-export const userSensitiveSettingFragment = graphql(
-  `fragment UserSensitiveSetting on UserSettingNode @_unmask {
-      id
-  }`,
-)
-
 const userSensitiveSettingQuery = graphql(
-  `query UserSensitiveSetting {
+  `query UserSetting {
     userSetting {
-      ...UserSensitiveSetting
+      ...UserSetting
     }
   }`,
-  [userSensitiveSettingFragment],
+  [userSettingFragment],
 )

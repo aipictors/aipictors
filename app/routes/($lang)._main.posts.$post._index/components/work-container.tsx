@@ -5,7 +5,6 @@ import { useContext, useMemo } from "react"
 import { Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
-import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import {
@@ -18,10 +17,11 @@ import {
   WorkArticle,
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
+import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
-import { WorkAuthorWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
+import { WorkAuthorWorksSection } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
 import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
 import {
@@ -182,6 +182,7 @@ export function WorkContainer(props: Props) {
             <WorkArticle
               work={work}
               userSetting={userSetting?.userSetting ?? undefined}
+              isAlbumHidden
               authorSlot={
                 work.user ? (
                   <div className="md:hidden">
@@ -202,58 +203,16 @@ export function WorkContainer(props: Props) {
                 ) : undefined
               }
             />
-            {/* 作者の他の作品は AI 評価（WorkArticle の中）とコメントの間に置く */}
+            {/* AI 評価（WorkArticle の中）→ 作者の他の作品 → アルバム → コメントの順 */}
             {work.user && (
               <div className="border-t pt-6">
-                <WorkAuthorWorks
+                <WorkAuthorWorksSection
+                  user={work.user}
                   currentWorkId={work.id}
-                  works={work.user.works.map((relatedWork) => ({
-                    smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
-                    thumbnailImagePosition:
-                      relatedWork.thumbnailImagePosition ?? 0,
-                    smallThumbnailImageWidth:
-                      relatedWork.smallThumbnailImageWidth,
-                    smallThumbnailImageHeight:
-                      relatedWork.smallThumbnailImageHeight,
-                    id: relatedWork.id,
-                    title: relatedWork.title,
-                    userId: relatedWork.userId,
-                    isLiked: relatedWork.isLiked,
-                    subWorksCount: relatedWork.subWorksCount,
-                    commentsCount: relatedWork.commentsCount,
-                  }))}
-                  header={
-                    <div className="flex items-center justify-between gap-3">
-                      <Link
-                        to={`/users/${work.user.login}`}
-                        className="flex min-w-0 items-center gap-2"
-                      >
-                        <UserAvatarWithFrame
-                          alt={work.user.name}
-                          frame={work.user.avatarFrame}
-                          isAnimated={false}
-                          sizeClassName="size-8 shrink-0"
-                          src={withIconUrlFallback(work.user.iconUrl)}
-                        />
-                        <h2 className="truncate font-bold text-base">
-                          {t(
-                            `${work.user.name} の作品`,
-                            `More from ${work.user.name}`,
-                          )}
-                        </h2>
-                      </Link>
-                      <Link
-                        to={`/users/${work.user.login}/posts`}
-                        className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
-                      >
-                        {t("すべて見る", "See all")}
-                        <ChevronRightIcon className="size-4" />
-                      </Link>
-                    </div>
-                  }
                 />
               </div>
             )}
+            {work.album && <WorkAlbumCard album={work.album} />}
             {work.isCommentsEditable && (
               <div className="border-t pt-6">
                 <WorkCommentList

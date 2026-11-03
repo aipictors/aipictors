@@ -40,6 +40,10 @@ type Props = {
   mode?: "dialog" | "page"
   /** 作者の表示（渡すとタイトルの下に置き、記事の末尾の作者の行は出さない） */
   authorSlot?: React.ReactNode
+  /** R18 の作品ページ */
+  isSensitive?: boolean
+  /** アルバムを親が別の場所に出す（作品ページは「XXさんの作品」の下） */
+  isAlbumHidden?: boolean
 }
 
 /**
@@ -166,8 +170,7 @@ export function WorkArticle(props: Props) {
 
   // 長い説明は畳んで、コメントや他の作品まで早くたどり着けるようにする
   const isDescriptionLong =
-    displayDescription.length > 240 ||
-    displayDescription.split("\n").length > 6
+    displayDescription.length > 240 || displayDescription.split("\n").length > 6
   const sourceLanguage = combinedText ? detectLanguage(combinedText) : null
 
   const shouldShowTranslateLink = Boolean(
@@ -516,6 +519,7 @@ export function WorkArticle(props: Props) {
             </Link>
           )}
           <WorkArticleTags
+            isSensitive={props.isSensitive}
             postId={props.work.id}
             tagNames={tagNames}
             setTagNames={setTagNames}
@@ -624,7 +628,9 @@ export function WorkArticle(props: Props) {
           />
         </div>
 
-        {props.work.album && <WorkAlbumCard album={props.work.album} />}
+        {props.work.album && !props.isAlbumHidden && (
+          <WorkAlbumCard album={props.work.album} />
+        )}
 
         {props.work.user && !props.authorSlot && (
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -869,6 +875,8 @@ export const workArticleFragment = graphql(
 export const sensitiveWorkArticleFragment = graphql(
   `fragment WorkArticle on WorkNode @_unmask {
     id
+    uuid
+    url
     isMyRecommended
     title
     mdUrl
@@ -1003,6 +1011,24 @@ export const sensitiveWorkArticleFragment = graphql(
     isLiked
     isBookmarked
     isInCollection
+    aiDailyRanking {
+      rank
+      dateText
+      periodType
+      isSensitive
+    }
+    aiWeeklyRanking {
+      rank
+      dateText
+      periodType
+      isSensitive
+    }
+    aiMonthlyRanking {
+      rank
+      dateText
+      periodType
+      isSensitive
+    }
     isPromotion
     isGeneration
     ogpThumbnailImageUrl

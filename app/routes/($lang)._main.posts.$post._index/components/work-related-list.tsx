@@ -2,11 +2,16 @@
  * 作品の関連作品一覧
  */
 
+import { Link } from "@remix-run/react"
+import { ChevronRightIcon } from "lucide-react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { Separator } from "~/components/ui/separator"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { useTranslation } from "~/hooks/use-translation"
 import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: {
@@ -110,5 +115,69 @@ export function WorkAuthorWorks(props: {
         />
       </WorkLazySection>
     </section>
+  )
+}
+
+type AuthorWorksUser = {
+  login: string
+  name: string
+  iconUrl?: string | null
+  avatarFrame?: React.ComponentProps<typeof UserAvatarWithFrame>["frame"]
+  works: (Omit<Props["works"][number], "thumbnailImagePosition" | "title"> & {
+    thumbnailImagePosition?: number | null
+    title?: string | null
+  })[]
+}
+
+/**
+ * 作品ページの「XXさんの作品」（見出しつき。全年齢と R18 で同じ）
+ */
+export function WorkAuthorWorksSection(props: {
+  user: AuthorWorksUser
+  currentWorkId: string
+}) {
+  const t = useTranslation()
+  return (
+    <WorkAuthorWorks
+      currentWorkId={props.currentWorkId}
+      works={props.user.works.map((work) => ({
+        smallThumbnailImageURL: work.smallThumbnailImageURL,
+        thumbnailImagePosition: work.thumbnailImagePosition ?? 0,
+        smallThumbnailImageWidth: work.smallThumbnailImageWidth,
+        smallThumbnailImageHeight: work.smallThumbnailImageHeight,
+        id: work.id,
+        title: work.title ?? undefined,
+        userId: work.userId,
+        isLiked: work.isLiked,
+        subWorksCount: work.subWorksCount,
+        commentsCount: work.commentsCount,
+      }))}
+      header={
+        <div className="flex items-center justify-between gap-3">
+          <Link
+            to={`/users/${props.user.login}`}
+            className="flex min-w-0 items-center gap-2"
+          >
+            <UserAvatarWithFrame
+              alt={props.user.name}
+              frame={props.user.avatarFrame}
+              isAnimated={false}
+              sizeClassName="size-8 shrink-0"
+              src={withIconUrlFallback(props.user.iconUrl)}
+            />
+            <h2 className="truncate font-bold text-base">
+              {t(`${props.user.name} の作品`, `More from ${props.user.name}`)}
+            </h2>
+          </Link>
+          <Link
+            to={`/users/${props.user.login}/posts`}
+            className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
+          >
+            {t("すべて見る", "See all")}
+            <ChevronRightIcon className="size-4" />
+          </Link>
+        </div>
+      }
+    />
   )
 }
