@@ -1,75 +1,52 @@
-import { loaderClient } from "~/lib/loader-client"
-import {
-  StickerList,
-  StickerListItemFragment,
-} from "~/routes/($lang)._main.stickers._index/components/sticker-list"
-import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
-import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
 import type {
-  MetaFunction,
-  LoaderFunctionArgs,
   HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
 } from "@remix-run/cloudflare"
-import { Link, useLoaderData } from "@remix-run/react"
-import { useLazyQuery } from "@apollo/client/index"
-import { graphql, type ResultOf } from "gql.tada"
-import { Loader2Icon } from "lucide-react"
-import { useState } from "react"
+import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import type { BreadcrumbList, CollectionPage, WithContext } from "schema-dts"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
-import { Button } from "~/components/ui/button"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
-import { cn } from "~/lib/utils"
+import { loaderClient } from "~/lib/loader-client"
+import { StickerListItemFragment } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
+import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
+import { StickerListSection } from "~/routes/($lang)._main.stickers._index/components/sticker-list-section"
+import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
+import {
+  readStickerListParams,
+  STICKER_SORTS,
+  STICKERS_PER_PAGE,
+} from "~/routes/($lang)._main.stickers._index/utils/sticker-list-params"
 import { createMeta } from "~/utils/create-meta"
 
-const PER_PAGE = 42
-
 const SITE_URL = "https://www.aipictors.com"
-
-const STICKER_SORTS = {
-  new: {
-    ja: "新着",
-    en: "New",
-    where: {},
-  },
-  popular: {
-    ja: "人気",
-    en: "Popular",
-    where: { orderBy: "DATE_DOWNLOADED", sort: "DESC" },
-  },
-  used: {
-    ja: "最近使われた",
-    en: "Recently used",
-    where: { orderBy: "DATE_USED", sort: "DESC" },
-  },
-} as const
-
-type StickerSort = keyof typeof STICKER_SORTS
-
-const toStickerSort = (value: string | null): StickerSort => {
-  return value === "popular" || value === "used" ? value : "new"
-}
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.STICKERS, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const sort = toStickerSort(new URL(props.request.url).searchParams.get("sort"))
+  const { sort, page } = readStickerListParams(props.request)
 
-  const stickersResp = await loaderClient.query({
-    query: stickersQuery,
-    variables: {
-      offset: 0,
-      limit: PER_PAGE,
-      where: STICKER_SORTS[sort].where,
-    },
-  })
+  const [stickersResp, stickersCountResp] = await Promise.all([
+    loaderClient.query({
+      query: stickersQuery,
+      variables: {
+        offset: page * STICKERS_PER_PAGE,
+        limit: STICKERS_PER_PAGE,
+        where: STICKER_SORTS[sort].where,
+      },
+    }),
+    loaderClient.query({ query: stickersCountQuery }),
+  ])
 
   return {
     sort,
+    page,
     stickers: stickersResp.data.stickers,
+    stickersCount: stickersCountResp.data.stickersCount,
   }
 }
 
@@ -91,7 +68,7 @@ const breadcrumbJsonLd: WithContext<BreadcrumbList> = {
   ],
 }
 
-export default function StickersPage () {
+export default function StickersPage() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -117,40 +94,16 @@ export default function StickersPage () {
       <AppJsonLdScript jsonLd={[jsonLd, breadcrumbJsonLd]} />
       <StickerListHeader />
       <StickerSearchForm />
-      <section className="flex flex-col gap-4">
-        <nav className="flex gap-1 border-b" aria-label={t("並び順", "Sort")}>
-          {(Object.keys(STICKER_SORTS) as StickerSort[]).map((sort) => (
-            <Link
-              key={sort}
-              to={sort === "new" ? "/stickers" : `/stickers?sort=${sort}`}
-              preventScrollReset
-              prefetch="intent"
-              aria-current={data.sort === sort ? "page" : undefined}
-              className={cn(
-                "-mb-px border-b-2 px-3 py-2 font-medium text-sm transition-colors",
-                data.sort === sort
-                  ? "border-foreground text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t(STICKER_SORTS[sort].ja, STICKER_SORTS[sort].en)}
-            </Link>
-          ))}
-        </nav>
-        <h2 className="sr-only">
-          {t(
-            `${STICKER_SORTS[data.sort].ja}のスタンプ`,
-            `${STICKER_SORTS[data.sort].en} stickers`,
-          )}
-        </h2>
-        <StickerList stickers={data.stickers} isFirstView />
-        <MoreStickers
-          key={data.sort}
-          sort={data.sort}
-          isInitiallyFull={data.stickers.length === PER_PAGE}
-          excludedIds={data.stickers.map((sticker) => sticker.id)}
-        />
-      </section>
+      <StickerListSection
+        stickers={data.stickers}
+        count={data.stickersCount}
+        sort={data.sort}
+        page={data.page}
+        emptyMessage={t(
+          "このページにスタンプはありません",
+          "No stickers on this page",
+        )}
+      />
       <section className="space-y-3 rounded-2xl bg-muted/40 p-4 text-sm md:p-6">
         <h2 className="font-bold text-base">
           {t("スタンプの使い方", "How to use stickers")}
@@ -195,71 +148,6 @@ export default function StickersPage () {
   )
 }
 
-function MoreStickers(props: {
-  sort: StickerSort
-  isInitiallyFull: boolean
-  excludedIds: string[]
-}) {
-  const t = useTranslation()
-
-  const [stickers, setStickers] = useState<
-    ResultOf<typeof stickersQuery>["stickers"]
-  >([])
-  const [offset, setOffset] = useState(PER_PAGE)
-  const [hasMore, setHasMore] = useState(props.isInitiallyFull)
-
-  const [fetchStickers, { loading, error }] = useLazyQuery(stickersQuery, {
-    fetchPolicy: "network-only",
-  })
-
-  const loadMore = async () => {
-    const result = await fetchStickers({
-      variables: {
-        offset,
-        limit: PER_PAGE,
-        where: STICKER_SORTS[props.sort].where,
-      },
-    })
-    const next = result.data?.stickers
-    if (next === undefined) return
-    setStickers((current) => {
-      // 読み込む間に新しいスタンプが増えると、前のページと同じものが来ることがある
-      const seen = new Set([
-        ...props.excludedIds,
-        ...current.map((sticker) => sticker.id),
-      ])
-      return [...current, ...next.filter((sticker) => !seen.has(sticker.id))]
-    })
-    setOffset((current) => current + PER_PAGE)
-    setHasMore(next.length === PER_PAGE)
-  }
-
-  return (
-    <>
-      {stickers.length > 0 && <StickerList stickers={stickers} />}
-      {error && (
-        <p className="text-center text-destructive text-sm">
-          {t(
-            "読み込めませんでした。もう一度お試しください。",
-            "Could not load. Please try again.",
-          )}
-        </p>
-      )}
-      {hasMore && (
-        <Button
-          variant="secondary"
-          className="mx-auto h-10 min-w-48 rounded-full"
-          disabled={loading}
-          onClick={() => void loadMore()}
-        >
-          {loading && <Loader2Icon className="mr-2 size-4 animate-spin" />}
-          {t("もっと見る", "Show more")}
-        </Button>
-      )}
-    </>
-  )
-}
-
 const stickersQuery = graphql(
   `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
     stickers(offset: $offset, limit: $limit, where: $where) {
@@ -267,4 +155,10 @@ const stickersQuery = graphql(
     }
   }`,
   [StickerListItemFragment],
+)
+
+const stickersCountQuery = graphql(
+  `query StickersCount {
+    stickersCount
+  }`,
 )

@@ -1,363 +1,460 @@
-import { RoundedLightButton } from "~/components/button/rounded-light-button"
+import { useQuery } from "@apollo/client/index"
+import { Link, useSearchParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import {
+  DownloadIcon,
+  ImageUpIcon,
+  Loader2Icon,
+  LockIcon,
+  SearchIcon,
+  StampIcon,
+  StoreIcon,
+  WandSparklesIcon,
+} from "lucide-react"
+import { lazy, Suspense, useContext, useEffect, useState } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Button } from "~/components/ui/button"
-import { AuthContext } from "~/contexts/auth-context"
-import { StickerButton } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { useMutation, useSuspenseQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import { useState, useContext, useRef, useEffect } from "react"
-import { toast } from "sonner"
-import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-dialog"
-import { useTranslation } from "~/hooks/use-translation" // 翻訳フックをインポート
-import { useFocusTimeout } from "~/hooks/use-focus-timeout"
+import { Input } from "~/components/ui/input"
 import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "~/components/ui/dialog"
-import { StickerChangeAccessTypeActionDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-action-dialog"
-import { PlusIcon } from "lucide-react"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
+import { Skeleton } from "~/components/ui/skeleton"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-dialog"
+import {
+  MyStickerDialog,
+  MyStickerFragment,
+  type MyStickerTab,
+  toStickerTitle,
+} from "~/routes/($lang).settings.sticker/components/my-sticker-dialog"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
-export function MyStickersList () {
+// 作成ツールはとても大きいので、開いたときに読み込む
+const StickerCreator = lazy(() =>
+  import(
+    "~/routes/($lang)._main.stickers._index/components/sticker-creator"
+  ).then((module) => ({ default: module.StickerCreator })),
+)
+
+const PER_PAGE = 60
+
+const TABS = [
+  {
+    param: "added",
+    value: "DOWNLOADED",
+    ja: "マイスタンプ",
+    en: "My Stickers",
+    hintJa:
+      "広場から追加したスタンプです。標準の5種類は追加しなくても使えます。",
+    hintEn:
+      "Stickers you added from the Square. The 5 standard stickers are always available.",
+  },
+  {
+    param: "private",
+    value: "PRIVATE_CREATED",
+    ja: "作成（非公開）",
+    en: "Created (private)",
+    hintJa: "自分だけが使えます。押すと見え方の確認や公開ができます。",
+    hintEn: "Only you can use these. Tap one to preview or publish it.",
+  },
+  {
+    param: "public",
+    value: "PUBLIC_CREATED",
+    ja: "作成（公開）",
+    en: "Created (public)",
+    hintJa: "広場に並んでいて、誰でも追加して使えます。",
+    hintEn: "Listed in the Square. Anyone can add and use them.",
+  },
+] as const
+
+/**
+ * 設定のスタンプ一覧。タブ、検索、並び順、ページは URL に残す
+ */
+export function MyStickersList() {
   const authContext = useContext(AuthContext)
-  const t = useTranslation() // 翻訳フックの使用
+  const t = useTranslation()
 
-  // 認証がロード中の場合はローディング状態を表示
-  if (authContext.isLoading) {
-    return (
-      <div className="flex min-h-96 items-center justify-center">
-        <div className="text-gray-500 text-sm">
-          {t("読み込み中...", "Loading...")}
-        </div>
-      </div>
-    )
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [isCreatorOpen, setIsCreatorOpen] = useState(false)
+
+  const isSkipped = authContext.isLoading || authContext.isNotLoggedIn
+
+  const { data: countsData, refetch: refetchCounts } = useQuery(countsQuery, {
+    skip: isSkipped,
+    fetchPolicy: "cache-and-network",
+  })
+
+  const counts = countsData?.viewer
+
+  const countOf = (tab: MyStickerTab) => {
+    if (counts === undefined || counts === null) return null
+    if (tab === "DOWNLOADED") return counts.downloadedCount
+    if (tab === "PRIVATE_CREATED") return counts.privateCount
+    return counts.publicCount
   }
 
-  return <MyStickersContent />
-}
-
-function MyStickersContent() {
-  const authContext = useContext(AuthContext)
-  const t = useTranslation() // 翻訳フックの使用
-
-  // フォーカスタイムアウト検知
-  const isTimeout = useFocusTimeout()
-
-  const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)
-
-  // スクロール位置保持用
-  const listContainerRef = useRef<HTMLDivElement>(null)
-  const [savedScrollPositions, setSavedScrollPositions] = useState<
-    Record<string, number>
-  >({})
-
-  const [stickerStatus, setStickerStatue] = useState<
-    "PRIVATE_CREATED" | "DOWNLOADED" | "PUBLIC_CREATED"
-  >("DOWNLOADED")
-
-  const maxStickersPage = 120
-
-  const { data: stickersCount = null, refetch: reactStickers } =
-    useSuspenseQuery(viewerUserStickersCountQuery, {
-      variables: {
-        where: {
-          savedTypes: [stickerStatus],
-        },
-      },
-    })
-
-  const { data: stickers = null, refetch: reactStickersCount } =
-    useSuspenseQuery(viewerUserStickersQuery, {
-      variables: {
-        limit: maxStickersPage,
-        offset: createdSortStickerPage * maxStickersPage,
-        orderBy: "DATE_CREATED",
-        where: {
-          savedTypes: [stickerStatus],
-        },
-      },
-    })
-
-  // フォーカスタイムアウト時の自動リフレッシュ
-  useEffect(() => {
-    if (isTimeout && authContext.login) {
-      console.log("Focus timeout detected, refreshing stickers...")
-      reactStickers().catch((error) => {
-        console.warn("Failed to refresh stickers after timeout:", error)
-      })
-      reactStickersCount().catch((error) => {
-        console.warn("Failed to refresh sticker count after timeout:", error)
-      })
-    }
-  }, [isTimeout, authContext.login, reactStickers, reactStickersCount])
-
-  // スクロール位置の保存
-  const saveScrollPosition = () => {
-    if (listContainerRef.current) {
-      const scrollKey = `${stickerStatus}-${createdSortStickerPage}`
-      setSavedScrollPositions((prev) => ({
-        ...prev,
-        [scrollKey]: listContainerRef.current?.scrollTop ?? 0,
-      }))
-    }
+  const toDefaultTab = (): MyStickerTab => {
+    // 追加したスタンプがなければ、中身のあるタブを最初に見せる
+    if (countOf("DOWNLOADED") !== 0) return "DOWNLOADED"
+    if ((countOf("PRIVATE_CREATED") ?? 0) > 0) return "PRIVATE_CREATED"
+    if ((countOf("PUBLIC_CREATED") ?? 0) > 0) return "PUBLIC_CREATED"
+    return "DOWNLOADED"
   }
 
-  // スクロール位置の復元
-  const restoreScrollPosition = () => {
-    if (listContainerRef.current) {
-      const scrollKey = `${stickerStatus}-${createdSortStickerPage}`
-      const savedPosition = savedScrollPositions[scrollKey]
-      if (savedPosition !== undefined) {
-        setTimeout(() => {
-          if (listContainerRef.current) {
-            listContainerRef.current.scrollTop = savedPosition
-          }
-        }, 50)
-      }
-    }
-  }
+  const tab =
+    TABS.find((item) => item.param === searchParams.get("tab"))?.value ??
+    toDefaultTab()
+  const currentTab = TABS.find((item) => item.value === tab) ?? TABS[0]
 
-  // ページ変更時の処理
-  const handlePageChange = (page: number) => {
-    saveScrollPosition()
-    setCreatedSortStickerPage(page)
-  }
-
-  // タブ変更時の処理
-  const handleStatusChange = (
-    status: "PRIVATE_CREATED" | "DOWNLOADED" | "PUBLIC_CREATED",
-  ) => {
-    saveScrollPosition()
-    setStickerStatue(status)
-    setCreatedSortStickerPage(0)
-  }
-
-  // データ変更後のスクロール位置復元
-  useEffect(() => {
-    restoreScrollPosition()
-  }, [stickerStatus, createdSortStickerPage, stickers])
-
-  const maxCount = stickersCount?.viewer?.userStickersCount ?? 0
-
-  const [deleteUserSticker, { loading: isDeletingUserSticker }] = useMutation(
-    deleteUserStickerMutation,
+  const search = searchParams.get("q") ?? ""
+  const sort = searchParams.get("sort") === "used" ? "used" : "added"
+  const page = Math.max(
+    Number.parseInt(searchParams.get("page") ?? "0") || 0,
+    0,
   )
 
-  const onDelete = async (stickerId: string) => {
-    if (isDeletingUserSticker) {
-      return
-    }
-
-    try {
-      await deleteUserSticker({
-        variables: {
-          input: {
-            stickerId,
-          },
-        },
-      })
-      toast(t("スタンプを削除しました", "Sticker deleted"))
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(
-          error.message ??
-            t("スタンプの削除に失敗しました", "Failed to delete sticker"),
-        )
+  const updateParams = (changes: Record<string, string | null>) => {
+    const next = new URLSearchParams(searchParams)
+    // ページ以外を変えたら最初のページに戻す
+    next.delete("page")
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === null) {
+        next.delete(key)
       } else {
-        toast.error(
-          t("スタンプの削除に失敗しました", "Failed to delete sticker"),
-        )
+        next.set(key, value)
       }
-    } finally {
-      reactStickers()
-      reactStickersCount()
     }
+    setSearchParams(next, { replace: true, preventScrollReset: true })
   }
 
-  const onAccessTypeChange = () => {
-    reactStickers()
-    reactStickersCount()
+  const [searchInput, setSearchInput] = useState(search)
+
+  useEffect(() => {
+    setSearchInput(search)
+  }, [search])
+
+  useEffect(() => {
+    if (searchInput === search) return
+    const timer = setTimeout(() => {
+      updateParams({ q: searchInput === "" ? null : searchInput })
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [searchInput])
+
+  const {
+    data: currentData,
+    previousData,
+    loading,
+    refetch: refetchList,
+  } = useQuery(stickersQuery, {
+    skip: isSkipped,
+    fetchPolicy: "cache-and-network",
+    variables: {
+      limit: PER_PAGE,
+      offset: page * PER_PAGE,
+      // DATE_CREATED は標準スタンプが先頭に混ざるので使わない
+      orderBy: sort === "used" ? "DATE_USED" : "DATE_DOWNLOADED",
+      where: {
+        savedTypes: [tab],
+        ...(search !== "" && { search }),
+      },
+    },
+  })
+
+  const data = currentData ?? previousData
+  const stickers = data?.viewer?.userStickers
+  const totalCount = data?.viewer?.userStickersCount ?? 0
+  const selected = stickers?.find((sticker) => sticker.id === selectedId)
+
+  const refetch = () => {
+    void refetchList()
+    void refetchCounts()
   }
+
+  // 最後のページの最後の1枚を消したら、前のページに戻す
+  useEffect(() => {
+    if (page > 0 && stickers?.length === 0 && currentData !== undefined) {
+      updateParams({})
+    }
+  }, [page, stickers?.length, currentData])
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center space-x-2">
-        <Link to="/stickers">
-          <Button variant={"secondary"}>
-            {t("スタンプ広場", "Sticker Plaza")}
-          </Button>
-        </Link>
+    <div className="space-y-4 pb-8">
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+        <Button
+          className="h-10 gap-1.5 rounded-full"
+          aria-expanded={isCreatorOpen}
+          onClick={() => setIsCreatorOpen((value) => !value)}
+        >
+          <WandSparklesIcon className="size-4" />
+          {t("ツールで作る", "Make with tool")}
+        </Button>
         <AddStickerDialog
-          onAddedSicker={() => {
-            reactStickers()
-            reactStickersCount()
+          onAddedSicker={(isPublic) => {
+            refetch()
+            updateParams({
+              tab: isPublic ? "public" : "private",
+              q: null,
+              sort: null,
+            })
           }}
         >
-          <Button variant={"secondary"}>
-            {t("新規スタンプを作成する", "New Sticker")}
-            <PlusIcon className="w-8" />
+          <Button variant="secondary" className="h-10 gap-1.5 rounded-full">
+            <ImageUpIcon className="size-4" />
+            {t("画像から作る", "From an image")}
           </Button>
         </AddStickerDialog>
+        <Button
+          variant="ghost"
+          className="col-span-2 h-10 gap-1.5 rounded-full sm:ml-auto"
+          asChild
+        >
+          <Link to="/stickers">
+            <StoreIcon className="size-4" />
+            {t("スタンプ広場でさがす", "Browse the Sticker Square")}
+          </Link>
+        </Button>
       </div>
-      <div className="flex space-x-2">
-        <RoundedLightButton
-          onClick={() => {
-            handleStatusChange("DOWNLOADED")
-          }}
-          isActive={stickerStatus === "DOWNLOADED"}
+
+      {isCreatorOpen && (
+        <Suspense
+          fallback={
+            <div className="flex h-40 items-center justify-center rounded-xl border">
+              <Loader2Icon className="size-6 animate-spin text-muted-foreground" />
+            </div>
+          }
         >
-          {t("マイスタンプ", "My Stickers")}
-        </RoundedLightButton>
-        <RoundedLightButton
-          onClick={() => {
-            handleStatusChange("PRIVATE_CREATED")
-          }}
-          isActive={stickerStatus === "PRIVATE_CREATED"}
-        >
-          {t("作成(非公開)", "Created (Private)")}
-        </RoundedLightButton>
-        <RoundedLightButton
-          onClick={() => {
-            handleStatusChange("PUBLIC_CREATED")
-          }}
-          isActive={stickerStatus === "PUBLIC_CREATED"}
-        >
-          {t("作成(公開)", "Created (Public)")}
-        </RoundedLightButton>
-      </div>
+          <StickerCreator
+            onClose={() => {
+              setIsCreatorOpen(false)
+              refetch()
+            }}
+          />
+        </Suspense>
+      )}
+
       <div
-        ref={listContainerRef}
-        className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center overflow-y-auto"
+        role="tablist"
+        aria-label={t("スタンプの種類", "Sticker type")}
+        className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none]"
       >
-        {stickers?.viewer?.userStickers?.map((sticker) =>
-          stickerStatus !== "DOWNLOADED" ? (
-            <Dialog key={sticker.id}>
-              <DialogTrigger asChild>
-                <StickerButton
-                  key={sticker.id}
-                  imageUrl={sticker.imageUrl ?? ""}
-                  title={sticker.title}
-                  onClick={() => {}}
-                  onDelete={() => {
-                    onDelete(sticker.id)
-                  }}
-                />
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>
-                    {t("タイトル：", "Title:")}
-                    {sticker.title}
-                  </DialogTitle>
-                </DialogHeader>
-                {sticker.accessType === "PRIVATE" ? (
-                  <img
-                    className="m-auto mb-2 w-24 duration-500"
-                    src={sticker.imageUrl ?? ""}
-                    alt={sticker.title}
-                  />
-                ) : (
-                  <Link className="m-auto w-24" to={`/stickers/${sticker.id}`}>
-                    <img
-                      className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
-                      src={sticker.imageUrl ?? ""}
-                      alt={sticker.title}
-                    />
-                  </Link>
-                )}
-                <DialogFooter>
-                  {sticker.accessType === "PRIVATE" ? (
-                    <StickerChangeAccessTypeActionDialog
-                      title={sticker.title}
-                      stickerId={sticker.id}
-                      imageUrl={sticker.imageUrl ?? ""}
-                      accessType={sticker.accessType}
-                      onAccessTypeChange={onAccessTypeChange}
-                    >
-                      <Button className="w-full">
-                        {t("公開する", "Make Public")}
-                      </Button>
-                    </StickerChangeAccessTypeActionDialog>
-                  ) : (
-                    <Button disabled={true} className="w-full">
-                      {t("公開済み", "Already Public")}
-                    </Button>
+        {TABS.map((item) => (
+          <button
+            key={item.value}
+            type="button"
+            role="tab"
+            aria-selected={tab === item.value}
+            onClick={() => updateParams({ tab: item.param })}
+            className={cn(
+              "flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 font-medium text-sm transition-colors",
+              tab === item.value
+                ? "bg-foreground text-background"
+                : "bg-muted text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {t(item.ja, item.en)}
+            <span className="text-xs tabular-nums opacity-70">
+              {countOf(item.value)?.toLocaleString() ?? "-"}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <p className="text-muted-foreground text-xs leading-5">
+        {t(currentTab.hintJa, currentTab.hintEn)}
+      </p>
+
+      <div className="flex gap-2">
+        <div className="relative min-w-0 flex-1">
+          <SearchIcon className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3 size-4 text-muted-foreground" />
+          <Input
+            type="search"
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            placeholder={t("タイトルで検索", "Search by title")}
+            aria-label={t("タイトルで検索", "Search by title")}
+            className="h-10 pl-9"
+          />
+        </div>
+        <Select
+          value={sort}
+          onValueChange={(value) =>
+            updateParams({ sort: value === "used" ? "used" : null })
+          }
+        >
+          <SelectTrigger
+            className="h-10 w-36 shrink-0"
+            aria-label={t("並び順", "Sort")}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="added">
+              {t("追加が新しい順", "Recently added")}
+            </SelectItem>
+            <SelectItem value="used">
+              {t("最近使った順", "Recently used")}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {stickers === undefined && (
+        <div className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-4 md:grid-cols-5">
+          {Array.from({ length: 10 }, (_, index) => index).map((index) => (
+            <Skeleton key={index} className="aspect-square rounded-2xl" />
+          ))}
+        </div>
+      )}
+
+      {stickers !== undefined && stickers.length === 0 && (
+        <div className="flex flex-col items-center gap-3 py-12 text-center">
+          <StampIcon className="size-8 text-muted-foreground" />
+          <p className="text-muted-foreground text-sm">
+            {search !== ""
+              ? t(
+                  `「${search}」に合うスタンプはありません`,
+                  `No stickers match "${search}"`,
+                )
+              : tab === "DOWNLOADED"
+                ? t(
+                    "まだ追加したスタンプはありません",
+                    "You have not added any stickers yet",
+                  )
+                : t(
+                    "このタブのスタンプはまだありません",
+                    "No stickers here yet",
                   )}
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            <StickerButton
+          </p>
+          {search === "" && tab === "DOWNLOADED" && (
+            <Button variant="secondary" className="rounded-full" asChild>
+              <Link to="/stickers">
+                {t("スタンプ広場を見る", "Browse the Sticker Square")}
+              </Link>
+            </Button>
+          )}
+        </div>
+      )}
+
+      {stickers !== undefined && stickers.length > 0 && (
+        <div
+          className={cn(
+            "grid grid-cols-3 gap-x-2 gap-y-4 transition-opacity sm:grid-cols-4 md:grid-cols-5",
+            loading && currentData === undefined && "opacity-60",
+          )}
+        >
+          {stickers.map((sticker) => (
+            <button
               key={sticker.id}
-              imageUrl={sticker.imageUrl ?? ""}
-              title={sticker.title}
-              onClick={() => {}}
-              onDelete={() => {
-                onDelete(sticker.id)
-              }}
-            />
-          ),
-        )}
-      </div>
-      <div className="mt-1 mb-1">
-        <ResponsivePagination
-          perPage={maxStickersPage}
-          maxCount={maxCount}
-          currentPage={createdSortStickerPage}
-          onPageChange={handlePageChange}
-          disableScrollToTop={true}
+              type="button"
+              onClick={() => setSelectedId(sticker.id)}
+              className="group min-w-0 text-left"
+            >
+              <div className="relative overflow-hidden rounded-2xl bg-muted/60 transition group-hover:bg-muted">
+                <img
+                  className="aspect-square w-full object-contain p-1.5 transition-transform duration-200 group-hover:scale-105"
+                  src={toResizedImageUrl(sticker.imageUrl, 240) ?? ""}
+                  alt={toStickerTitle(sticker.title)}
+                  width={240}
+                  height={240}
+                  loading="lazy"
+                  decoding="async"
+                />
+                {tab === "PRIVATE_CREATED" && (
+                  <span className="absolute top-1.5 left-1.5 rounded-full bg-background/90 p-1">
+                    <LockIcon className="size-3" />
+                  </span>
+                )}
+              </div>
+              <p
+                className={cn(
+                  "mt-1.5 truncate font-medium text-sm",
+                  toStickerTitle(sticker.title) === "" &&
+                    "text-muted-foreground",
+                )}
+              >
+                {toStickerTitle(sticker.title) || t("タイトルなし", "Untitled")}
+              </p>
+              {tab !== "PRIVATE_CREATED" && (
+                <p className="flex items-center gap-2.5 text-muted-foreground text-xs tabular-nums">
+                  <span
+                    className="flex items-center gap-0.5"
+                    title={t("追加された数", "Added")}
+                  >
+                    <DownloadIcon className="size-3" />
+                    {sticker.downloadsCount}
+                  </span>
+                  <span
+                    className="flex items-center gap-0.5"
+                    title={t("使われた数", "Used")}
+                  >
+                    <StampIcon className="size-3" />
+                    {sticker.usesCount}
+                  </span>
+                </p>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <ResponsivePagination
+        perPage={PER_PAGE}
+        maxCount={totalCount}
+        currentPage={page}
+        maxPages={Math.ceil(totalCount / PER_PAGE)}
+        onPageChange={(nextPage) => {
+          const next = new URLSearchParams(searchParams)
+          if (nextPage === 0) {
+            next.delete("page")
+          } else {
+            next.set("page", nextPage.toString())
+          }
+          setSearchParams(next, { preventScrollReset: true })
+        }}
+      />
+
+      {selected !== undefined && (
+        <MyStickerDialog
+          key={selected.id}
+          sticker={selected}
+          tab={tab}
+          onClose={() => setSelectedId(null)}
+          onChanged={refetch}
         />
-      </div>
+      )}
     </div>
   )
 }
 
-const deleteUserStickerMutation = graphql(
-  `mutation DeleteUserSticker($input: DeleteUserStickerInput!) {
-    deleteUserSticker(input: $input) {
-      id
-    }
-  }`,
-)
-
-export const StickerAccessTypeDialogFragment = graphql(
-  `fragment StickerAccessTypeDialog on StickerNode @_unmask {
-    id
-    title
-    imageUrl
-    accessType
-  }`,
-)
-
-const _updateStickerMutation = graphql(
-  `mutation updateSticker($input: UpdateStickerInput!) {
-    updateSticker(input: $input) {
-      id
-    }
-  }`,
-)
-
-const viewerUserStickersCountQuery = graphql(
-  `query ViewerUserStickersCount($where: UserStickersWhereInput) {
+const countsQuery = graphql(
+  `query ViewerMyStickerCounts {
     viewer {
       id
-      userStickersCount(where: $where)
+      downloadedCount: userStickersCount(where: { savedTypes: [DOWNLOADED] })
+      privateCount: userStickersCount(where: { savedTypes: [PRIVATE_CREATED] })
+      publicCount: userStickersCount(where: { savedTypes: [PUBLIC_CREATED] })
     }
   }`,
 )
 
-const viewerUserStickersQuery = graphql(
-  `query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy, $where: UserStickersWhereInput) {
+const stickersQuery = graphql(
+  `query ViewerMyStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy, $where: UserStickersWhereInput) {
     viewer {
       id
       userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {
-        ...StickerAccessTypeDialog
+        ...MySticker
       }
+      userStickersCount(where: $where)
     }
   }`,
-  [StickerAccessTypeDialogFragment],
+  [MyStickerFragment],
 )

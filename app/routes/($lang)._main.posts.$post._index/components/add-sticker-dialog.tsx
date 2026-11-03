@@ -1,4 +1,11 @@
+import { useMutation, useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Loader2Icon } from "lucide-react"
+import { useContext, useEffect, useId, useState } from "react"
+import { toast } from "sonner"
 import { CropImageField } from "~/components/crop-image-field"
+import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -7,25 +14,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
-import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
-import { useContext, useEffect, useId, useState } from "react"
-import { Button } from "~/components/ui/button"
-import { toast } from "sonner"
-import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
 import { AuthContext } from "~/contexts/auth-context"
-import { Checkbox } from "~/components/ui/checkbox"
-import { Input } from "~/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
-import { useMutation, useQuery } from "@apollo/client/index"
-import { Loader2Icon } from "lucide-react"
-import { uploadPublicImage } from "~/utils/upload-public-image"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
-import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { StickerPublishFields } from "~/routes/($lang)._main.posts.$post._index/components/sticker-publish-fields"
+import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
+import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
 type Props = {
-  onAddedSicker?: () => void
+  onAddedSicker?: (isPublic: boolean) => void
   defaultImageBase64?: string
   open?: boolean
   onOpenChange?: (open: boolean) => void
@@ -35,7 +34,7 @@ type Props = {
 /**
  * スタンプ追加ダイアログ
  */
-export function AddStickerDialog (props: Props) {
+export function AddStickerDialog(props: Props) {
   const authContext = useContext(AuthContext)
 
   const t = useTranslation()
@@ -65,16 +64,6 @@ export function AddStickerDialog (props: Props) {
 
   const id = useId()
   const publicStickerId = `${id}-public-sticker`
-  const personId = `${id}-person-check`
-  const animalId = `${id}-animal-check`
-  const machineId = `${id}-machine-check`
-  const backgroundId = `${id}-background-check`
-  const objectId = `${id}-object-check`
-  const happyId = `${id}-happy-check`
-  const enjoyId = `${id}-enjoy-check`
-  const celebrationId = `${id}-celebration-check`
-  const sadId = `${id}-sad-check`
-  const otherId = `${id}-other-check`
 
   const { data: token } = useQuery(viewerTokenQuery)
 
@@ -127,6 +116,11 @@ export function AddStickerDialog (props: Props) {
       return
     }
 
+    if (isPublic && tag === "") {
+      toast(t("タグを選択してください", "Please select a tag"))
+      return
+    }
+
     const _imageFileName = `${createRandomString(30)}.webp`
 
     const uploadedImageUrl = await uploadPublicImage(
@@ -168,10 +162,17 @@ export function AddStickerDialog (props: Props) {
       })
 
       if (props.onAddedSicker) {
-        props.onAddedSicker()
+        props.onAddedSicker(isPublic)
       }
 
-      toast(t("スタンプを追加しました", "Sticker added successfully"))
+      toast(
+        isPublic
+          ? t("スタンプを公開しました", "Sticker published")
+          : t(
+              "非公開で作成しました。公開は「設定 > スタンプ」からできます",
+              "Created as private. You can publish it from Settings > Stickers",
+            ),
+      )
       onClose()
     } catch (error) {
       if (error instanceof Error) {
@@ -231,94 +232,15 @@ export function AddStickerDialog (props: Props) {
             </label>
           </div>
           {isPublic && (
-            <div className="space-y-2">
-              <p className="mt-2">{t("タイトル", "Title")}</p>
-              <Input
-                onChange={(event) => {
-                  setTitle(event.target.value)
-                }}
-                value={title}
-                placeholder={t("タイトル", "Title")}
-              />
-              <p>{t("ジャンル", "Genre")}</p>
-              <RadioGroup
-                value={genre}
-                onValueChange={(value) => {
-                  setGenre(value)
-                }}
-                className="flex items-center space-x-2"
-              >
-                <div className="items-center space-x-2">
-                  <label htmlFor={personId}>
-                    {t("人物", "Character")}
-                    <RadioGroupItem value="CHARACTER" id={personId} />
-                  </label>
-                </div>
-                <div className="items-center space-x-2">
-                  <label htmlFor={animalId}>
-                    {t("動物", "Animal")}
-                    <RadioGroupItem value="ANIMAL" id={animalId} />
-                  </label>
-                </div>
-                <div className="items-center space-x-2">
-                  <label htmlFor={machineId}>
-                    {t("機械", "Machine")}
-                    <RadioGroupItem value="MACHINE" id={machineId} />
-                  </label>
-                </div>
-                <div className="items-center space-x-2">
-                  <label htmlFor={backgroundId}>
-                    {t("背景", "Background")}
-                    <RadioGroupItem value="BACKGROUND" id={backgroundId} />
-                  </label>
-                </div>
-                <div className="items-center space-x-2">
-                  <label htmlFor={objectId}>
-                    {t("物", "Object")}
-                    <RadioGroupItem value="OBJECT" id={objectId} />
-                  </label>
-                </div>
-              </RadioGroup>
-              <p>{t("タグ", "Tag")}</p>
-              <RadioGroup
-                value={tag.toString()}
-                onValueChange={(value) => {
-                  setTag(value)
-                }}
-                className="flex items-center space-x-2"
-              >
-                <div className="items-center space-x-2">
-                  <label htmlFor={happyId}>
-                    {t("楽しい", "Fun")}
-                    <RadioGroupItem value="楽しい" id={happyId} />
-                  </label>
-                </div>
-                <div className="items-center space-x-2">
-                  <label htmlFor={enjoyId}>
-                    {t("嬉しい", "Happy")}
-                    <RadioGroupItem value="嬉しい" id={enjoyId} />
-                  </label>
-                </div>
-                <div className="items-center space-x-2">
-                  <label htmlFor={celebrationId}>
-                    {t("お祝い", "Celebration")}
-                    <RadioGroupItem value="お祝い" id={celebrationId} />
-                  </label>
-                </div>
-                <div className="items-center space-x-2">
-                  <label htmlFor={sadId}>
-                    {t("悲しい", "Sad")}
-                    <RadioGroupItem value="悲しい" id={sadId} />
-                  </label>
-                </div>
-                <div className="items-center space-x-2">
-                  <label htmlFor={otherId}>
-                    {t("その他", "Other")}
-                    <RadioGroupItem value="その他" id={otherId} />
-                  </label>
-                </div>
-              </RadioGroup>
-            </div>
+            <StickerPublishFields
+              className="mt-3"
+              title={title}
+              genre={genre}
+              tag={tag}
+              onChangeTitle={setTitle}
+              onChangeGenre={setGenre}
+              onChangeTag={setTag}
+            />
           )}
         </div>
         <DialogFooter>

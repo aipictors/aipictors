@@ -1,17 +1,12 @@
-import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { useContext } from "react"
 import { config } from "~/config"
-import { AuthContext } from "~/contexts/auth-context"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { createUserTabMeta } from "~/routes/($lang)._main.users.$user/user-tab-meta"
-import {
-  UserStickerList,
-  UserStickersItemFragment,
-} from "~/routes/($lang)._main.users.$user.stickers/components/user-sticker-list"
+import { UserStickerList } from "~/routes/($lang)._main.users.$user.stickers/components/user-sticker-list"
+import { loadUserStickers } from "~/routes/($lang)._main.users.$user.stickers/utils/load-user-stickers"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -29,32 +24,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const url = new URL(props.request.url)
-
-  const page = url.searchParams.get("page")
-    ? Number.parseInt(url.searchParams.get("page") as string) > 100
-      ? 0
-      : Number.parseInt(url.searchParams.get("page") as string)
-    : 0
-
-  const stickersResp = await loaderClient.query({
-    query: userStickersQuery,
-    variables: {
-      userId: userIdResp.data.user.id,
-      offset: 0,
-      limit: 256,
-    },
-  })
-
-  if (stickersResp.data.user === null) {
-    throw new Response(null, { status: 404 })
-  }
-
-  return {
-    page,
-    stickers: stickersResp.data.user.stickers,
-    userId: userIdResp.data.user.id,
-  }
+  return await loadUserStickers(userIdResp.data.user.id, props.request)
 }
 
 export const headers: HeadersFunction = () => ({
@@ -68,26 +38,9 @@ export default function UserPosts() {
     throw new ParamsError()
   }
 
-  const appContext = useContext(AuthContext)
-
   const data = useLoaderData<typeof loader>()
 
-  const { data: stickers } = useQuery(userStickersQuery, {
-    skip: appContext.isLoading || appContext.isNotLoggedIn,
-    variables: {
-      userId: data.userId,
-      offset: 0,
-      limit: 256,
-    },
-  })
-
-  const userStickers = data.stickers ?? stickers?.user?.stickers
-
-  return (
-    <div className="flex w-full flex-col justify-center">
-      <UserStickerList stickers={userStickers} page={data.page} />
-    </div>
-  )
+  return <UserStickerList data={data} />
 }
 
 const userIdQuery = graphql(
@@ -96,17 +49,6 @@ const userIdQuery = graphql(
       id
     }
   }`,
-)
-
-const userStickersQuery = graphql(
-  `query UserStickers($userId: ID!, $offset: Int!, $limit: Int!) {
-    user(id: $userId) {
-      stickers(offset: $offset, limit: $limit) {
-        ...StickerItem
-      }
-    }
-  }`,
-  [UserStickersItemFragment],
 )
 
 export const meta = createUserTabMeta("スタンプ", "Stickers")

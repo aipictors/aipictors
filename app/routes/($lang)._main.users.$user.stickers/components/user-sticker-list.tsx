@@ -1,37 +1,27 @@
-import { Link } from "@remix-run/react"
-import { type FragmentOf, graphql } from "gql.tada"
+import type { SerializeFrom } from "@remix-run/cloudflare"
 import { useTranslation } from "~/hooks/use-translation"
-import { StickerCard } from "~/routes/($lang)._main.stickers._index/components/sticker-card"
+import { StickerListSection } from "~/routes/($lang)._main.stickers._index/components/sticker-list-section"
+import type { loadUserStickers } from "~/routes/($lang)._main.users.$user.stickers/utils/load-user-stickers"
 
 type Props = {
-  stickers: FragmentOf<typeof UserStickersItemFragment>[]
-  page: number
+  data: SerializeFrom<Awaited<ReturnType<typeof loadUserStickers>>>
 }
 
 export function UserStickerList(props: Props) {
-  const _t = useTranslation()
+  const t = useTranslation()
 
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="flex min-h-96 flex-col gap-y-4">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {props.stickers.map((sticker) => (
-            <Link key={sticker.id} to={`/stickers/${sticker.id}`}>
-              <StickerCard sticker={sticker} />
-            </Link>
-          ))}
-        </div>
-      </div>
+    <div className="flex min-h-96 w-full flex-col">
+      <StickerListSection
+        stickers={props.data.stickers}
+        count={props.data.stickersCount}
+        sort={props.data.sort}
+        page={props.data.page}
+        emptyMessage={t(
+          "公開しているスタンプはありません",
+          "No public stickers",
+        )}
+      />
     </div>
   )
 }
-
-export const UserStickersItemFragment = graphql(
-  `fragment StickerItem on StickerNode @_unmask {
-    id
-    title
-    imageUrl
-    downloadsCount
-    usesCount
-  }`,
-)

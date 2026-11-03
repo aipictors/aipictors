@@ -1,45 +1,50 @@
-import { ParamsError } from "~/errors/params-error"
-import { loaderClient } from "~/lib/loader-client"
-import {
-  StickerList,
-  StickerListItemFragment,
-} from "~/routes/($lang)._main.stickers._index/components/sticker-list"
-import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
-import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config } from "~/config"
+import { ParamsError } from "~/errors/params-error"
+import { useTranslation } from "~/hooks/use-translation"
+import { loaderClient } from "~/lib/loader-client"
+import { StickerListItemFragment } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
+import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
+import { StickerListSection } from "~/routes/($lang)._main.stickers._index/components/sticker-list-section"
+import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
+import {
+  readStickerListParams,
+  STICKER_SORTS,
+  STICKERS_PER_PAGE,
+} from "~/routes/($lang)._main.stickers._index/utils/sticker-list-params"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.search === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  // const redirectResponse = checkLocaleRedirect(props.request)
+  const { sort, page } = readStickerListParams(props.request)
 
-  // if (redirectResponse) {
-  //   return redirectResponse
-  // }
+  const search = decodeURIComponent(props.params.search)
 
-  const stickers = await loaderClient.query({
-    query: stickersQuery,
-    variables: {
-      offset: 0,
-      limit: 256,
-      where: {
-        search: decodeURIComponent(props.params.search),
+  const [stickersResp, stickersCountResp] = await Promise.all([
+    loaderClient.query({
+      query: stickersQuery,
+      variables: {
+        offset: page * STICKERS_PER_PAGE,
+        limit: STICKERS_PER_PAGE,
+        where: { ...STICKER_SORTS[sort].where, search },
       },
-    },
-  })
-
-  const isEmpty = stickers.data.stickers.length === 0
+    }),
+    loaderClient.query({
+      query: stickersCountQuery,
+      variables: { where: { search } },
+    }),
+  ])
 
   return {
-    stickers: stickers.data.stickers,
-    isEmpty,
-    search: props.params.search,
+    sort,
+    page,
+    stickers: stickersResp.data.stickers,
+    stickersCount: stickersCountResp.data.stickersCount,
+    search,
   }
 }
 
@@ -50,7 +55,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * スタンプの検索画面
  */
-export default function Stickers () {
+export default function Stickers() {
   const params = useParams()
 
   if (params.search === undefined) {
@@ -59,19 +64,22 @@ export default function Stickers () {
 
   const data = useLoaderData<typeof loader>()
 
-  if (data === null) {
-    return null
-  }
+  const t = useTranslation()
 
   return (
-    <div className="flex flex-col space-y-8 pb-16">
+    <div className="flex flex-col gap-5 pb-16">
       <StickerListHeader title={data.search} />
-      <StickerSearchForm text={decodeURIComponent(data.search)} />
-      {data.isEmpty ? (
-        <p>{"スタンプが見つかりませんでした"}</p>
-      ) : (
-        <StickerList stickers={data.stickers} />
-      )}
+      <StickerSearchForm key={data.search} text={data.search} />
+      <StickerListSection
+        stickers={data.stickers}
+        count={data.stickersCount}
+        sort={data.sort}
+        page={data.page}
+        emptyMessage={t(
+          "スタンプが見つかりませんでした",
+          "No stickers were found",
+        )}
+      />
     </div>
   )
 }
@@ -83,4 +91,10 @@ const stickersQuery = graphql(
     }
   }`,
   [StickerListItemFragment],
+)
+
+const stickersCountQuery = graphql(
+  `query StickersCount($where: StickersWhereInput) {
+    stickersCount(where: $where)
+  }`,
 )
