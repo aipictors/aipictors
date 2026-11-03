@@ -51,9 +51,13 @@ describe("サイズの選択肢", () => {
   test("縦長から横長の順", () => {
     expect(getGenerationSizeOptions("SDXL").map((o) => o.ratioLabel)).toEqual([
       "5:12",
+      "9:16",
       "2:3",
+      "3:4",
       "1:1",
+      "4:3",
       "3:2",
+      "16:9",
       "12:5",
     ])
   })

@@ -19,8 +19,8 @@ const sizeOptionsByModelType: Record<
   },
   SDXL: {
     square: ["SD3_1024_1024"],
-    portrait: ["SD3_832_1216", "SD3_640_1536"],
-    landscape: ["SD3_1216_832", "SD3_1536_640"],
+    portrait: ["SD3_896_1152", "SD3_832_1216", "CUSTOM_768_1344", "SD3_640_1536"],
+    landscape: ["SD3_1152_896", "SD3_1216_832", "CUSTOM_1344_768", "SD3_1536_640"],
   },
   FLUX: {
     square: ["SD4_896_896"],
@@ -83,6 +83,13 @@ export const toRatioLabel = (width: number, height: number) => {
 }
 
 /**
+ * 幅・高さを指定できるモデル（FLUX と Gemini は決まったサイズのみ）
+ */
+export const canUseCustomGenerationSize = (modelType: string) => {
+  return modelType === "SD1" || modelType === "SD2" || modelType === "SDXL"
+}
+
+/**
  * 選べるサイズを縦長 → 正方形 → 横長の順に
  */
 export const getGenerationSizeOptions = (
@@ -106,4 +113,25 @@ export const getGenerationSizeOptions = (
       }
     })
     .sort((a, b) => a.width / a.height - b.width / b.height)
+}
+
+/**
+ * 一番近い比率の選択肢
+ */
+export const findNearestSizeType = (
+  options: GenerationSizeOption[],
+  size: { width: number; height: number } | undefined,
+) => {
+  if (!size) return options[0]?.sizeType ?? "SD3_1024_1024"
+  const ratio = Math.log(size.width / Math.max(1, size.height))
+  let best = options[0]
+  for (const option of options) {
+    if (
+      Math.abs(Math.log(option.width / option.height) - ratio) <
+      Math.abs(Math.log(best.width / best.height) - ratio)
+    ) {
+      best = option
+    }
+  }
+  return best?.sizeType ?? "SD3_1024_1024"
 }

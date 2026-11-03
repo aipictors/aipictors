@@ -1,6 +1,8 @@
+import { getGenerationSizeMultiplier } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
+
 /**
  * 1 回の生成で作れる枚数の上限（サーバーと同じ決まり）
- * 無料 2 枚・ライト以上 4 枚。高解像度・画像から生成・ControlNet・FLUX・Gemini は 1 枚
+ * 無料 2 枚・ライト以上 4 枚。高解像度・大きいサイズ・画像から生成・ControlNet・FLUX・Gemini は 1 枚
  * Seed を指定したときも 2 枚目以降は Seed+1, Seed+2… で作る（1 枚目は 1 枚で作ったときと同じ絵）
  */
 export const getMaxImagesPerRequest = (props: {
@@ -10,6 +12,7 @@ export const getMaxImagesPerRequest = (props: {
   upscaleSize: number | null
   hasControlNet: boolean
   isPaidPlan: boolean
+  sizeType?: string
 }) => {
   const modelKey = props.modelKey.toLowerCase()
   if (
@@ -24,6 +27,7 @@ export const getMaxImagesPerRequest = (props: {
   if (props.generationType !== "TEXT_TO_IMAGE") return 1
   if (props.upscaleSize !== null && props.upscaleSize > 1) return 1
   if (props.hasControlNet) return 1
+  if (getGenerationSizeMultiplier(props.sizeType) > 1) return 1
   return props.isPaidPlan ? 4 : 2
 }
 

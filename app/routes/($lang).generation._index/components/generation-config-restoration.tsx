@@ -1,3 +1,4 @@
+import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -80,7 +81,7 @@ export function GenerationConfigRestoration(props: Props) {
           task.prompt,
           task.negativePrompt,
           task.seed,
-          task.sizeType,
+          toTaskSizeType(task),
           task.clipSkip,
           null,
           null,
@@ -178,6 +179,8 @@ const imageGenerationResultQuery = graphql(
       negativePrompt
       seed
       sizeType
+      width
+      height
       clipSkip
       model {
         id

@@ -51,6 +51,7 @@ export function useImagesPerRequest() {
     upscaleSize: context.config.upscaleSize,
     hasControlNet: context.config.controlNetImageBase64 !== null,
     isPaidPlan,
+    sizeType: context.config.sizeType,
   })
 
   return {

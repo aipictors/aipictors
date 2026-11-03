@@ -26,6 +26,8 @@ export function useCachedImageGenerationTask(id: string) {
         clipSkip
         imageUrl
         sizeType
+        width
+        height
         vae
         controlNetModule
         controlNetWeight

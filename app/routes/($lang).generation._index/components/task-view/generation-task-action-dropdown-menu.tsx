@@ -174,6 +174,8 @@ const deleteReservedImageGenerationTasksMutation = graphql(
       sampler
       clipSkip
       sizeType
+      width
+      height
       t2tImageUrl
       t2tMaskImageUrl
       t2tDenoisingStrengthSize

@@ -1,3 +1,4 @@
+import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useEffect, useMemo, useState } from "react"
@@ -132,7 +133,7 @@ export function GenerationTaskList(props: Props) {
       task.prompt,
       task.negativePrompt,
       task.seed,
-      task.sizeType,
+      toTaskSizeType(task),
       task.clipSkip,
       null,
       null,

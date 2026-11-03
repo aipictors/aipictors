@@ -1,3 +1,7 @@
+import {
+  toGenerationSizeInput,
+  toTaskSizeType,
+} from "~/routes/($lang).generation._index/types/generation-size"
 import { useMutation } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -242,8 +246,9 @@ export function GenerationTaskEditableCard(props: Props) {
               scale: props.task.scale,
               sampler: props.task.sampler,
               clipSkip: props.task.clipSkip,
-              sizeType: props.task
-                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+              ...toGenerationSizeInput<
+                IntrospectionEnum<"ImageGenerationSizeType">
+              >(toTaskSizeType(props.task)),
               type: props.task
                 .generationType as IntrospectionEnum<"ImageGenerationType">,
               t2tImageUrl: props.task.t2tImageUrl || null,
@@ -515,6 +520,8 @@ export const EditableGenerationResultCardFragment = graphql(
     seed
     clipSkip
     sizeType
+    width
+    height
     generationType
     t2tImageUrl
     t2tMaskImageUrl
@@ -555,6 +562,8 @@ export const EditableGenerationResultCardTaskFragment = graphql(
     seed
     clipSkip
     sizeType
+    width
+    height
     generationType
     t2tImageUrl
     t2tMaskImageUrl

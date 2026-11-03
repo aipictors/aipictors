@@ -596,6 +596,7 @@ export function GenerationSubmissionView(props: Props) {
     modelType: context.config.modelType,
     generationType: selectedGenerationType,
     upscaleSize: context.config.upscaleSize,
+    sizeType: context.config.sizeType,
   })
 
   /**

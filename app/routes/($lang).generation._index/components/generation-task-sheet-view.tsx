@@ -1,3 +1,4 @@
+import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 import { useMutation } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useCallback, useEffect, useState } from "react"
@@ -129,7 +130,7 @@ export function GenerationTaskSheetView(props: Props) {
       props.task.prompt,
       props.task.negativePrompt,
       isWithSeed ? props.task.seed : -1,
-      props.task.sizeType,
+      toTaskSizeType(props.task),
       props.task.clipSkip,
       null,
       null,

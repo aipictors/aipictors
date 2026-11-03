@@ -1,3 +1,5 @@
+import { isUpscaleOverFreeLimit } from "~/routes/($lang).generation._index/types/generation-size"
+import { getGenerationSizeMultiplier } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { GradientBorderButton } from "~/components/button/gradient-border-button"
 import { CoinIcon } from "~/components/coin-icon"
@@ -119,8 +121,20 @@ export function GenerationSubmitOperationParts(props: Props) {
   /**
    * 1 回の生成で使う「通常 1 枚分」の数（高解像度は 2 枚分）
    */
+  const sizeMultiplier = getGenerationSizeMultiplier(context.config.sizeType)
+
   const requestImageUnits =
-    (props.imagesPerRequest ?? 1) * (context.config.upscaleSize === 2 ? 2 : 1)
+    (props.imagesPerRequest ?? 1) *
+    (context.config.upscaleSize === 2 ? 2 : 1) *
+    sizeMultiplier
+
+  const passType = context.currentPass?.type
+
+  // サブスクでない人は拡大後のサイズも 2048×2048 まで
+  const isUpscaleDisabled = isUpscaleOverFreeLimit(
+    context.config.sizeType,
+    passType === "LITE" || passType === "STANDARD" || passType === "PREMIUM",
+  )
 
   /**
    * ボタンの文言に 1 回で作る枚数を添える（例: 生成 ×4枚）
@@ -235,6 +249,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                   )
                 }}
                 checked={context.config.upscaleSize === 2}
+                disabled={isUpscaleDisabled}
                 id="extras-mode"
               />
               <div className="text-center leading-3">
@@ -248,7 +263,10 @@ export function GenerationSubmitOperationParts(props: Props) {
                   htmlFor="extras-mode"
                   className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
                 >
-                  {t("1枚・コイン2倍", "1 image, 2x coins")}
+                  {t(
+                    `1枚・コイン${sizeMultiplier * 2}倍`,
+                    `1 image, ${sizeMultiplier * 2}x coins`,
+                  )}
                 </Label>
               </div>
             </div>
@@ -339,6 +357,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                     )
                   }}
                   checked={context.config.upscaleSize === 2}
+                  disabled={isUpscaleDisabled}
                   id="extras-mode"
                 />
                 <div className="text-center leading-3">
@@ -352,7 +371,10 @@ export function GenerationSubmitOperationParts(props: Props) {
                     htmlFor="extras-mode"
                     className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
                   >
-                    {t("1枚・コイン2倍", "1 image, 2x coins")}
+                    {t(
+                    `1枚・コイン${sizeMultiplier * 2}倍`,
+                    `1 image, ${sizeMultiplier * 2}x coins`,
+                  )}
                   </Label>
                 </div>
               </div>

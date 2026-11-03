@@ -1,5 +1,11 @@
 import type { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
 
+import {
+  freeGenerationMaxPixels,
+  isCustomSizeType,
+  parseGenerationSize,
+} from "~/routes/($lang).generation._index/types/generation-size"
+
 type Props = {
   config: GenerationConfigState
   passType: string | null | undefined
@@ -129,6 +135,25 @@ export const findGenerationSubmitBlock = (
       toast:
         "FLUXモデルは画像から生成を一時的に停止しています、申し訳ございません",
       isTopCenterOnMobile: true,
+    }
+  }
+
+  if (isCustomSizeType(config.sizeType)) {
+    const { width, height } = parseGenerationSize(config.sizeType)
+    const scale = config.upscaleSize !== null && config.upscaleSize > 1 ? config.upscaleSize : 1
+    if (
+      !isLiteOrStandardOrPremium &&
+      width * scale * height * scale > freeGenerationMaxPixels
+    ) {
+      return {
+        log: {
+          message: "Blocked: size over free limit",
+          details: { width, height, scale },
+        },
+        toast:
+          "サブスクに入っていない場合、出力サイズは 2048×2048（約4メガピクセル）までです",
+        isTopCenterOnMobile: true,
+      }
     }
   }
 

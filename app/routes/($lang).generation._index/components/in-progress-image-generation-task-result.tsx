@@ -14,6 +14,7 @@ import { StarRating } from "~/routes/($lang).generation._index/components/task-v
 import {
   type GenerationSize,
   parseGenerationSize,
+  toTaskSizeType,
 } from "~/routes/($lang).generation._index/types/generation-size"
 import { CopyButton } from "./copy-button"
 
@@ -31,7 +32,7 @@ export function InProgressImageGenerationTaskResult(props: Props) {
   if (props.task === undefined) return null
 
   const generationSize: GenerationSize = parseGenerationSize(
-    props.task.sizeType,
+    toTaskSizeType(props.task),
   )
 
   /**
@@ -211,6 +212,8 @@ export const InProgressGenerationImageResultFragment = graphql(
     sampler
     scheduler
     sizeType
+    width
+    height
     upscaleSize
     status
     clipSkip
@@ -236,6 +239,8 @@ export const InProgressGenerationImageResultTaskFragment = graphql(
     sampler
     scheduler
     sizeType
+    width
+    height
     upscaleSize
     status
     clipSkip

@@ -539,6 +539,8 @@ export const GenerationImageResultSheetContentFragment = graphql(
     clipSkip
     imageUrl
     sizeType
+    width
+    height
     vae
     controlNetModule
     controlNetWeight
@@ -570,6 +572,8 @@ export const GenerationImageResultSheetContentTaskFragment = graphql(
     clipSkip
     imageUrl
     sizeType
+    width
+    height
     vae
     controlNetModule
     controlNetWeight

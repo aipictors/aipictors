@@ -1,3 +1,4 @@
+import { generationPixelsPerCoinUnit } from "~/routes/($lang).generation._index/types/generation-size"
 const standardImageGenerationCoinCost = 10
 const imageEditGenerationCoinCost = 50
 const geminiNanoBananaCoinCost = 50
@@ -36,6 +37,18 @@ export const normalizeCoinSummary = (
 }
 
 /**
+ * 大きいサイズの倍率（1.6 メガピクセルごとに 1 倍。サーバーの getImageGenerationSizeMultiplier と同じ）
+ * 依頼に載る幅・高さで数える（SD1 の 1.5 倍の補助は含めない）
+ */
+export const getGenerationSizeMultiplier = (sizeType?: string) => {
+  if (!sizeType) return 1
+  const parts = sizeType.split("_")
+  const pixels = Number.parseInt(parts[1], 10) * Number.parseInt(parts[2], 10)
+  if (!Number.isFinite(pixels)) return 1
+  return Math.max(1, Math.ceil(pixels / generationPixelsPerCoinUnit))
+}
+
+/**
  * モデルごとの 1 枚のコイン（高解像度は 2 倍）
  */
 export const calcGenerationModelCoinCost = (props: {
@@ -43,7 +56,9 @@ export const calcGenerationModelCoinCost = (props: {
   modelType: string | null
   generationType: "IMAGE_TO_IMAGE" | "TEXT_TO_IMAGE"
   upscaleSize: number | null
+  sizeType?: string
 }) => {
+  const sizeMultiplier = getGenerationSizeMultiplier(props.sizeType)
   const normalizedModelKey = props.modelKey.toLowerCase()
 
   if (normalizedModelKey === "flux.1 pro") {
@@ -68,7 +83,7 @@ export const calcGenerationModelCoinCost = (props: {
   }
 
   if (props.generationType === "IMAGE_TO_IMAGE") {
-    return imageEditGenerationCoinCost
+    return imageEditGenerationCoinCost * sizeMultiplier
   }
 
   // 高解像度は 1 枚 2 倍（サーバーの lib/image-generation-coins.ts と同じ）
@@ -77,5 +92,5 @@ export const calcGenerationModelCoinCost = (props: {
       ? 2
       : 1
 
-  return standardImageGenerationCoinCost * multiplier
+  return standardImageGenerationCoinCost * multiplier * sizeMultiplier
 }

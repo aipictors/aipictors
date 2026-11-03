@@ -6,6 +6,7 @@ const config = (overrides: Partial<GenerationConfigState>) =>
   ({
     modelId: "model",
     modelType: "SD1",
+    sizeType: "SD1_512_768",
     i2iImageBase64: null,
     generationCount: 1,
     controlNetImageBase64: null,
@@ -116,5 +117,20 @@ describe("findGenerationSubmitBlock", () => {
         { passType: null },
       )?.log.message,
     ).toBe("Blocked: IMG2IMG requires LITE+")
+  })
+
+  test("サブスクでなければ出力は 2048×2048 まで", () => {
+    const free = { passType: null }
+    expect(find({ sizeType: "CUSTOM_2048_2048" }, free)).toBeNull()
+    expect(find({ sizeType: "CUSTOM_2056_2048" }, free)?.log.message).toBe(
+      "Blocked: size over free limit",
+    )
+    expect(
+      find({ sizeType: "CUSTOM_1024_1024", upscaleSize: 2 }, free),
+    ).toBeNull()
+    expect(
+      find({ sizeType: "CUSTOM_1032_1024", upscaleSize: 2 }, free)?.log.message,
+    ).toBe("Blocked: size over free limit")
+    expect(find({ sizeType: "CUSTOM_2496_2496", upscaleSize: 2 })).toBeNull()
   })
 })

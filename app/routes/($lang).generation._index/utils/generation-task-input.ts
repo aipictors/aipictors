@@ -1,3 +1,4 @@
+import { toGenerationSizeInput } from "~/routes/($lang).generation._index/types/generation-size"
 import { config as appConfig } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
@@ -67,8 +68,9 @@ export const toReservedTaskInput = (props: {
     sampler: config.sampler,
     scheduler: props.scheduler,
     clipSkip: config.clipSkip,
-    sizeType: config
-      .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+    ...toGenerationSizeInput<IntrospectionEnum<"ImageGenerationSizeType">>(
+      config.sizeType,
+    ),
     type: "TEXT_TO_IMAGE" as const,
     controlNetImageUrl: props.controlNetImageUrl,
     controlNetWeight: config.controlNetWeight
@@ -163,8 +165,9 @@ export const toImageGenerationTaskInput = (props: {
     sampler: config.sampler,
     scheduler: props.scheduler,
     clipSkip: config.clipSkip,
-    sizeType: config
-      .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+    ...toGenerationSizeInput<IntrospectionEnum<"ImageGenerationSizeType">>(
+      config.sizeType,
+    ),
     type: props.generationType as IntrospectionEnum<"ImageGenerationType">,
     t2tImageUrl: props.i2iFileUrl,
     t2tDenoisingStrengthSize:

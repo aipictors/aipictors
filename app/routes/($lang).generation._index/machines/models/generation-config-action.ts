@@ -1,3 +1,5 @@
+import { isCustomSizeType } from "~/routes/($lang).generation._index/types/generation-size"
+import { canUseCustomGenerationSize } from "~/routes/($lang).generation._index/utils/generation-size-options"
 import { config } from "~/config"
 import { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
 import { produce } from "immer"
@@ -952,6 +954,10 @@ export class GenerationConfigAction {
    * @returns
    */
   getModelSizeType(sizeType: string, modelType: string) {
+    if (isCustomSizeType(sizeType) && canUseCustomGenerationSize(modelType)) {
+      return sizeType
+    }
+
     if (modelType === "SD1") {
       if (
         sizeType === "SD2_768_768" ||
