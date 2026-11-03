@@ -1,4 +1,4 @@
-import { formatPromptText } from "~/routes/($lang).generation._index/utils/format-prompt-text"
+import { formatPromptText, removeEmptyPromptParts } from "~/routes/($lang).generation._index/utils/format-prompt-text"
 import { describe, expect, test } from "bun:test"
 
 describe("formatPromptText", () => {
@@ -22,4 +22,8 @@ describe("formatPromptText", () => {
     const result = formatPromptText(input)
     expect(result).toBe(expectedOutput)
   })
+})
+
+test("removeEmptyPromptParts は空要素だけを消し、空白は残す", () => {
+  expect(removeEmptyPromptParts("a,, b,")).toBe("a, b")
 })

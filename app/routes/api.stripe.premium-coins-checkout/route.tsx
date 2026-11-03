@@ -9,6 +9,7 @@ import {
   PREMIUM_COIN_PACKAGES,
   parsePremiumCoinPackageId,
 } from "~/lib/server/premium-coins.server"
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 const postStripeForm = async (secretKey: string, params: URLSearchParams) => {
   const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
@@ -129,16 +130,6 @@ const toSafeRelativePath = (value: string | undefined) => {
   }
 
   return value
-}
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {

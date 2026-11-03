@@ -2,20 +2,11 @@ import type { ActionFunctionArgs } from "@remix-run/cloudflare"
 import { object, safeParse, string } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 const bodySchema = object({
   sessionId: string(),
 })
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
 
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== "POST") {

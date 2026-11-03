@@ -36,6 +36,7 @@ import {
   writeCoinSummaryCache,
 } from "~/routes/($lang).settings.points/utils/coin-summary-cache"
 import { AuthContext } from "~/contexts/auth-context"
+import { normalizeUnixTimestampSeconds } from "~/utils/normalize-unix-timestamp-seconds"
 
 const formatCoinAmount = (value: number) => {
   return value.toLocaleString()
@@ -66,30 +67,6 @@ type PremiumConfirmResponse = {
     totalCoins?: number
     paymentStatus?: string | null
   } | null
-}
-
-const normalizeUnixTimestampSeconds = (value: unknown) => {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value > 1_000_000_000_000 ? Math.floor(value / 1000) : value
-  }
-
-  if (typeof value === "string") {
-    const trimmed = value.trim()
-    if (trimmed.length === 0) return null
-
-    if (/^\d+$/.test(trimmed)) {
-      const parsed = Number(trimmed)
-      if (!Number.isFinite(parsed)) return null
-      return parsed > 1_000_000_000_000 ? Math.floor(parsed / 1000) : parsed
-    }
-
-    const parsedDate = new Date(trimmed)
-    if (!Number.isNaN(parsedDate.getTime())) {
-      return Math.floor(parsedDate.getTime() / 1000)
-    }
-  }
-
-  return null
 }
 
 const normalizeLedger = (rows: unknown): LedgerItem[] => {

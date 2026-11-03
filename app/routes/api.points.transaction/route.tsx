@@ -3,22 +3,13 @@ import { object, string, number, safeParse, optional } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 import { applyPointsTransactionViaApi } from "~/lib/server/points-api.server"
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 const bodySchema = object({
   type: string(),
   points: number(),
   reason: optional(string()),
 })
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
 
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== "POST") {

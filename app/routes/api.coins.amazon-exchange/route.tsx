@@ -17,6 +17,7 @@ import {
   AMAZON_EXCHANGE_PACKAGES,
   parseAmazonExchangePackageId,
 } from "../../lib/server/amazon-exchange.server"
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 // ─── shared helpers ──────────────────────────────────────────────────────────
 
@@ -34,16 +35,6 @@ export type AmazonExchangeRequest = {
 const bodySchema = object({
   packageId: string(),
 })
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
 const getInternalHeaders = (internalToken: string) => ({
   Authorization: `Bearer ${internalToken}`,
   "Content-Type": "application/json",

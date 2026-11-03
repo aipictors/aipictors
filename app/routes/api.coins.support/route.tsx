@@ -2,6 +2,7 @@ import type { ActionFunctionArgs } from "@remix-run/cloudflare"
 import { boolean, nullable, number, object, optional, safeParse, string } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 /**
  * コインで推しを送るAPI
@@ -23,16 +24,6 @@ const bodySchema = object({
   isAnonymous: optional(boolean()),
   source: optional(nullable(string())),
 })
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
 
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== "POST") {

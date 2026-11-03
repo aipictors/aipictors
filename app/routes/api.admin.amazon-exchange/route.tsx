@@ -13,16 +13,7 @@ import { object, safeParse, string } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { createCoinNotificationForUserViaGraphQL } from "~/lib/server/coin-notification.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 const getInternalHeaders = (
   internalToken: string,

@@ -10,6 +10,7 @@ import type { ActionFunctionArgs } from "@remix-run/cloudflare"
 import { boolean, number, object, optional, safeParse, string } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
+import { toJsonResponse as toJson } from "~/lib/server/json-response.server"
 
 const bodySchema = object({
   recipientUserId: string(),
@@ -17,16 +18,6 @@ const bodySchema = object({
   amount: number(),
   reason: optional(string()),
 })
-
-function toJson(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
 
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== "POST") {

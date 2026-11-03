@@ -15,6 +15,7 @@ import {
   getInternalHeaders,
 } from "~/lib/server/coins-api.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
+import { toJsonResponse as toJson } from "~/lib/server/json-response.server"
 
 const OPS = new Set([
   "thread",
@@ -121,16 +122,6 @@ async function loadModerationContext(props: {
   } catch {
     return null
   }
-}
-
-function toJson(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
 }
 
 export async function loader(_props: LoaderFunctionArgs): Promise<Response> {

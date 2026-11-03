@@ -8,17 +8,7 @@ import { NegativePromptsDialogContent } from "~/routes/($lang).generation._index
 import { PromptTagTextarea } from "~/routes/($lang).generation._index/components/prompt-view/prompt-tag-textarea"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
-
-/**
- * Format prompt text
- * @param text
- */
-function formatPromptTextForKeyWord(text: string) {
-  return text
-    .split(",")
-    .filter((t) => t.length !== 0)
-    .join(",")
-}
+import { removeEmptyPromptParts as formatPromptTextForKeyWord } from "~/routes/($lang).generation._index/utils/format-prompt-text"
 
 export function GenerationNegativePromptView() {
   const context = useGenerationContext()

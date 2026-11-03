@@ -1,3 +1,4 @@
+import { toJsonResponse } from "~/lib/server/json-response.server"
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -13,18 +14,7 @@ type RouteContext =
   | LoaderFunctionArgs["context"]
   | ActionFunctionArgs["context"]
 
-export function toUserModelsJsonResponse(
-  body: unknown,
-  status: number,
-): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
+export const toUserModelsJsonResponse = toJsonResponse
 
 type ApiTarget = {
   apiBaseUrl: string

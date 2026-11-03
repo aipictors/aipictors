@@ -1,14 +1,5 @@
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-
-/**
- * カンマ区切りの空要素を取り除く
- */
-function formatPromptText(text: string) {
-  return text
-    .split(",")
-    .filter((t) => t.length !== 0)
-    .join(",")
-}
+import { removeEmptyPromptParts as formatPromptText } from "~/routes/($lang).generation._index/utils/format-prompt-text"
 
 /**
  * キーワード一覧からプロンプト（またはネガティブプロンプト）を足し引きする

@@ -6,17 +6,7 @@ import { Button } from "~/components/ui/button"
 import { NegativePromptsDialogContent } from "~/routes/($lang).generation._index/components/negative-prompt-view/negative-prompts-dialog-content"
 import { useBoolean } from "usehooks-ts"
 import { useTranslation } from "~/hooks/use-translation"
-
-/**
- * Format prompt text
- * @param text
- */
-function formatPromptTextForKeyWord (text: string) {
-  return text
-    .split(",")
-    .filter((t) => t.length !== 0)
-    .join(",")
-}
+import { removeEmptyPromptParts as formatPromptTextForKeyWord } from "~/routes/($lang).generation._index/utils/format-prompt-text"
 
 export function GenerationDemoNegativePromptView () {
   const context = useGenerationContext()

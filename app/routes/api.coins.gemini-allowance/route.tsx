@@ -2,16 +2,7 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getGeminiAllowanceFromApi } from "~/lib/server/coins-api.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 /**
  * 今週の Gemini の枠（毎日のフリーコインから Gemini に使える量）

@@ -1,15 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { createAdminReleaseAction } from "~/lib/server/admin-release.server"
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 export async function loader(_props: LoaderFunctionArgs) {
   return toJsonResponse({ error: "Method not allowed", data: null }, 405)

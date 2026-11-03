@@ -8,17 +8,7 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 import { BookTextIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 import { useTranslation } from "~/hooks/use-translation"
-
-/**
- * Format prompt text
- * @param text
- */
-function formatPromptTextForKeyWord (text: string) {
-  return text
-    .split(",")
-    .filter((t) => t.length !== 0)
-    .join(",")
-}
+import { removeEmptyPromptParts as formatPromptTextForKeyWord } from "~/routes/($lang).generation._index/utils/format-prompt-text"
 
 export function GenerationDemoPromptView () {
   const context = useGenerationContext()

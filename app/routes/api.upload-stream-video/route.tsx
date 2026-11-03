@@ -1,4 +1,5 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare"
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 type CloudflareUploadResponse = {
   success?: boolean
@@ -11,16 +12,6 @@ type CloudflareUploadResponse = {
     }
     thumbnail?: string
   }
-}
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
 }
 
 function getSecretFromContextOrBuild(

@@ -5,15 +5,7 @@ import {
   toDiscordAuthorizeUrl,
 } from "~/lib/server/discord-oauth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
-
-const toJson = (body: unknown, status: number) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
+import { toJsonResponse as toJson } from "~/lib/server/json-response.server"
 
 /**
  * Discord の認可画面の URL を返す（ログイン中の本人だけ）

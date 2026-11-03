@@ -9,17 +9,7 @@ import { GenerationViewCard } from "~/routes/($lang).generation._index/component
 import { PromptCategoriesDialogContent } from "~/routes/($lang).generation._index/components/prompt-view/prompt-categories-dialog-content"
 import { PromptTagTextarea } from "~/routes/($lang).generation._index/components/prompt-view/prompt-tag-textarea"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-
-/**
- * Format prompt text
- * @param text
- */
-function formatPromptTextForKeyWord(text: string) {
-  return text
-    .split(",")
-    .filter((t) => t.length !== 0)
-    .join(",")
-}
+import { removeEmptyPromptParts as formatPromptTextForKeyWord } from "~/routes/($lang).generation._index/utils/format-prompt-text"
 
 export function GenerationPromptView() {
   const context = useGenerationContext()

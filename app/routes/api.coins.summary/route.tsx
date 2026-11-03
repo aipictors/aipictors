@@ -3,16 +3,7 @@ import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { createCoinNotificationsViaGraphQL } from "~/lib/server/coin-notification.server"
 import { getCoinSummaryFromApi } from "~/lib/server/coins-api.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   if (request.method !== "GET") {

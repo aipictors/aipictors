@@ -12,15 +12,7 @@ import {
   verifyDiscordOAuthState,
 } from "~/lib/server/discord-oauth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
-
-const toJson = (body: unknown, status: number) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
+import { toJsonResponse as toJson } from "~/lib/server/json-response.server"
 
 const getViewerUserId = async (request: Request, context: unknown) => {
   const authorization = request.headers.get("authorization")

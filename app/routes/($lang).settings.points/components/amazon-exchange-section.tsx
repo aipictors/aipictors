@@ -19,6 +19,7 @@ import {
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import type { AmazonExchangeRequest } from "~/routes/api.coins.amazon-exchange/route"
+import { normalizeUnixTimestampSeconds } from "~/utils/normalize-unix-timestamp-seconds"
 
 const PACKAGE_OPTIONS = Object.values(AMAZON_EXCHANGE_PACKAGES)
 
@@ -45,30 +46,6 @@ type ExchangeListData = {
   requests: AmazonExchangeRequest[]
   pendingCount: number
   remainingSlots: number
-}
-
-const normalizeUnixTimestampSeconds = (value: unknown) => {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value > 1_000_000_000_000 ? Math.floor(value / 1000) : value
-  }
-
-  if (typeof value === "string") {
-    const trimmed = value.trim()
-    if (trimmed.length === 0) return null
-
-    if (/^\d+$/.test(trimmed)) {
-      const parsed = Number(trimmed)
-      if (!Number.isFinite(parsed)) return null
-      return parsed > 1_000_000_000_000 ? Math.floor(parsed / 1000) : parsed
-    }
-
-    const parsedDate = new Date(trimmed)
-    if (!Number.isNaN(parsedDate.getTime())) {
-      return Math.floor(parsedDate.getTime() / 1000)
-    }
-  }
-
-  return null
 }
 
 const normalizeExchangeListData = (

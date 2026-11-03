@@ -1,5 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { isCloudflareStreamUid } from "~/utils/cloudflare-stream"
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 type CloudflareStreamStatusResponse = {
   result?: {
@@ -10,16 +11,6 @@ type CloudflareStreamStatusResponse = {
     }
   }
   success?: boolean
-}
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
 }
 
 function toCachedJsonResponse(

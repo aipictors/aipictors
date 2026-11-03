@@ -1,15 +1,6 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare"
 import { getServerEnvValue } from "~/lib/server/env.server"
-
-function toJsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-    },
-  })
-}
+import { toJsonResponse } from "~/lib/server/json-response.server"
 
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== "POST") {
