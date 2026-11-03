@@ -61,6 +61,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       url: body.url,
       name: body.name,
       rating: body.rating,
+      thumbnailUrl: body.thumbnailUrl,
     },
     fallbackError: "取り込みを開始できませんでした",
   })

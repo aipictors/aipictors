@@ -1,3 +1,4 @@
+import { useModelImageUploader } from "~/components/user-models/use-image-uploader"
 import { Link } from "~/lib/app/locale-router"
 import {
   AlertTriangleIcon,
@@ -80,11 +81,33 @@ export function ModelLibraryImportDialog(props: Props) {
   const [isLimitExceeded, setIsLimitExceeded] = useState(false)
   const [name, setName] = useState("")
   const [rating, setRating] = useState<UserModelRating>("G")
+  const uploader = useModelImageUploader()
+  // Civitai に全年齢の作例がないモデルは、サムネイルを選んでもらう
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false)
+  const thumbnailInputRef = useRef<HTMLInputElement>(null)
+
+  const onSelectThumbnail = async (file: File | undefined) => {
+    if (!file) return
+    setIsUploadingThumbnail(true)
+    try {
+      setThumbnailUrl(await uploader.upload(file))
+    } catch (error) {
+      toast(
+        error instanceof Error
+          ? error.message
+          : "画像のアップロードに失敗しました",
+      )
+    } finally {
+      setIsUploadingThumbnail(false)
+    }
+  }
   const requestRef = useRef(0)
 
   const reset = () => {
     requestRef.current += 1
     setPreview(null)
+    setThumbnailUrl(null)
     setError(null)
     setIsLimitExceeded(false)
     setIsChecking(false)
@@ -150,6 +173,7 @@ export function ModelLibraryImportDialog(props: Props) {
       kind: preview.kind,
       sizeBytes: preview.sizeBytes,
       fileName: preview.filename,
+      thumbnailUrl: preview.thumbnailUrl ? undefined : (thumbnailUrl ?? undefined),
       onComplete: (job) => {
         toast(`「${job.name}」を取り込みました。マイモデルから使えます`)
         props.onImported?.()
@@ -161,6 +185,8 @@ export function ModelLibraryImportDialog(props: Props) {
     props.onStarted?.()
     props.onOpenChange(false)
   }
+
+  const isThumbnailMissing = preview !== null && !preview.thumbnailUrl && !thumbnailUrl
 
   const licenseNote = preview
     ? licenseNoteText(preview.licenseAllowsOtherServices)
@@ -247,11 +273,41 @@ export function ModelLibraryImportDialog(props: Props) {
           </form>
         ) : (
           <div className="grid gap-4">
+            {preview && !preview.thumbnailUrl && (
+              <div className="space-y-2 rounded-xl border border-amber-500/40 bg-amber-500/5 p-3">
+                <p className="text-sm">
+                  このモデルには全年齢の作例がありません。サムネイルにする画像を選んでください。
+                </p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  disabled={!uploader.isReady || isUploadingThumbnail}
+                  onClick={() => thumbnailInputRef.current?.click()}
+                >
+                  {isUploadingThumbnail
+                    ? "アップロード中…"
+                    : thumbnailUrl
+                      ? "画像を選び直す"
+                      : "画像を選ぶ"}
+                </Button>
+                <input
+                  ref={thumbnailInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  hidden
+                  onChange={(event) => {
+                    onSelectThumbnail(event.target.files?.[0])
+                    event.target.value = ""
+                  }}
+                />
+              </div>
+            )}
             <div className="flex gap-3 rounded-xl border p-3">
               <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
-                {preview.thumbnailUrl ? (
+                {preview.thumbnailUrl || thumbnailUrl ? (
                   <img
-                    src={preview.thumbnailUrl}
+                    src={preview.thumbnailUrl ?? thumbnailUrl ?? undefined}
                     alt=""
                     referrerPolicy="no-referrer"
                     className="size-full object-cover"
@@ -386,7 +442,12 @@ export function ModelLibraryImportDialog(props: Props) {
             </Button>
             <Button
               onClick={onSubmit}
-              disabled={preview.tooLarge || name.trim() === ""}
+              disabled={
+                preview.tooLarge ||
+                name.trim() === "" ||
+                isThumbnailMissing ||
+                isUploadingThumbnail
+              }
             >
               取り込む
             </Button>

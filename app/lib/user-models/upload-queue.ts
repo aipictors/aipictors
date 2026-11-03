@@ -77,7 +77,12 @@ export type UploadJob = {
 
 type JobInternal = {
   file: File | null
-  importInput?: { url: string; name?: string; rating?: UserModelRating }
+  importInput?: {
+    url: string
+    name?: string
+    rating?: UserModelRating
+    thumbnailUrl?: string
+  }
   pollTimer?: ReturnType<typeof setTimeout> | null
   fields: UserModelEditableFields
   sha256: string | null
@@ -522,6 +527,7 @@ export const enqueueUserModelImport = (input: {
   url: string
   name: string
   rating?: UserModelRating
+  thumbnailUrl?: string
   kind: UserModelKind
   sizeBytes: number
   fileName: string
@@ -530,7 +536,12 @@ export const enqueueUserModelImport = (input: {
   const id = newJobId()
   internals.set(id, {
     file: null,
-    importInput: { url: input.url, name: input.name, rating: input.rating },
+    importInput: {
+      url: input.url,
+      name: input.name,
+      rating: input.rating,
+      thumbnailUrl: input.thumbnailUrl,
+    },
     pollTimer: null,
     fields: emptyFieldsFor(input.name),
     sha256: null,

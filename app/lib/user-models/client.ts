@@ -270,6 +270,7 @@ export const startUserModelImport = async (input: {
   url: string
   name?: string
   rating?: UserModelRating
+  thumbnailUrl?: string
 }): Promise<StartUserModelImportResult> => {
   const data = await request<StartUserModelImportResult>(
     "/api/user-models/imports",

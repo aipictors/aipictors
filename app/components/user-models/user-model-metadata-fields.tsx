@@ -185,6 +185,7 @@ export function UserModelMetadataFields(props: Props) {
           サムネイル・サンプル画像
         </FieldLabel>
         <p className="text-muted-foreground text-xs">
+          サムネイルは必須です。選ばなかった場合は Civitai の作例から自動で設定し、見つからないときは登録の前に選んでもらいます。
           このモデルで生成した画像を載せると、使ってもらいやすくなります。★
           を押した画像がサムネイルになります。
         </p>
