@@ -28,6 +28,8 @@ type Props = {
   isDeletable?: boolean
   /** ファイル名を押して変えられるようにする */
   isFileNameEditable?: boolean
+  /** 画像ごとの差し替えボタンを押したとき */
+  onReplace?: (id: number) => void
   optionalButton?: React.ReactNode
   onClickOptionButton?: (id: number) => void
   dummyEnableDragItem?: React.ReactNode // アイテム一覧に並び替えできないダミーアイテム
@@ -153,6 +155,7 @@ export function SortableItems(props: Props): React.ReactNode {
                     }
                   : undefined
               }
+              onReplace={props.onReplace}
               isDeletable={props.isDeletable}
               onDelete={deleteIndex}
               optionalButton={props.optionalButton}

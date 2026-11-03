@@ -14,6 +14,15 @@ export const loader = async (props: LoaderFunctionArgs) => {
     "/stamp-space": "/stickers",
     "/real": "/posts/3d",
     "/idea": "/themes",
+    // 旧サイトの URL（ブックマークや外部リンクから今も来る）
+    "/post": "/new/image",
+    "/works": "/posts",
+    "/work": "/posts",
+    "/ranking": "/rankings",
+    "/sensitive": "/r",
+    "/generate": "/generation",
+    "/event": "/events",
+    "/contest": "/events",
   }
 
   if (/^\/series\/?$/.test(pathname)) {

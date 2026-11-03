@@ -1,5 +1,5 @@
 import { useSortable } from "@dnd-kit/sortable"
-import { XIcon } from "lucide-react"
+import { RefreshCwIcon, XIcon } from "lucide-react"
 import { type HTMLAttributes, useState } from "react"
 import { FileNameLabel } from "~/components/drag/file-name-label"
 import { ImageItem } from "~/components/drag/image-item"
@@ -19,6 +19,8 @@ type Props = {
   /** 何枚目か（1 枚だけのときは出さない） */
   position?: number
   onRenameFile?: (fileName: string) => void
+  /** この画像だけ別の画像に入れ替える（順番はそのまま） */
+  onReplace?: (id: number) => void
   isDeletable?: boolean
   onDelete?: (id: number) => void
   optionalButton?: React.ReactNode
@@ -33,6 +35,7 @@ export function SortableItem({
   item,
   position,
   onRenameFile,
+  onReplace,
   ...props
 }: Props): React.ReactNode {
   const [isDeleted, _setIsDeleted] = useState(false)
@@ -81,6 +84,18 @@ export function SortableItem({
             }}
           >
             <XIcon className="size-4 md:h-6 md:w-6" />
+          </Button>
+        )}
+        {onReplace && (
+          <Button
+            type="button"
+            className="absolute right-2 bottom-2 size-6 md:h-8 md:w-8"
+            size={"icon"}
+            title="この画像を差し替える"
+            aria-label="この画像を差し替える"
+            onClick={() => onReplace(item.id)}
+          >
+            <RefreshCwIcon className="size-4 md:h-5 md:w-5" />
           </Button>
         )}
         {props.optionalButton && (

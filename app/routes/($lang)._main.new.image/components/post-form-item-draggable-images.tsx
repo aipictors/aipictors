@@ -1,5 +1,5 @@
 import { ArrowDownAZIcon, PencilLineIcon, PlusIcon } from "lucide-react"
-import { useEffect, useState } from "react"
+import { type ChangeEvent, useEffect, useRef, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 import type { TSortableItem } from "~/components/drag/sortable-item"
@@ -303,6 +303,50 @@ export function PostFormItemDraggableImages(props: Props) {
     }
   }
 
+  const replaceInputRef = useRef<HTMLInputElement>(null)
+  const replaceTargetIdRef = useRef<number | null>(null)
+
+  /** 1 枚だけ入れ替える。順番と他の画像はそのまま */
+  const handleReplaceFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    const targetId = replaceTargetIdRef.current
+    // 同じファイルをもう一度選べるように空にする
+    event.target.value = ""
+    if (!file || targetId === null) {
+      return
+    }
+
+    if (file.size > maxSize) {
+      toast(
+        t(
+          `${maxSizeLabel}以内の画像を選択してください`,
+          `Please choose an image under ${maxSizeLabel}`,
+        ),
+      )
+      return
+    }
+
+    try {
+      const webpDataUrl = await toWebpDataUrl(await readFileAsDataUrl(file))
+      props.onChangeItems(
+        props.items.map((item) =>
+          item.id === targetId
+            ? { ...item, content: webpDataUrl, fileName: file.name }
+            : item,
+        ),
+      )
+      toast(t("画像を差し替えました", "Image replaced"))
+    } catch (error) {
+      console.error(error)
+      toast(
+        t(
+          "画像の読み込みに失敗しました。別の画像でお試しください",
+          "Failed to load the image. Please try a different file.",
+        ),
+      )
+    }
+  }
+
   const { getRootProps, getInputProps } = useDropzone({
     minSize: 0,
     maxSize: maxSize,
@@ -332,8 +376,7 @@ export function PostFormItemDraggableImages(props: Props) {
     disabled: props.isOnlyMove,
   })
 
-  const hasFileNames =
-    props.items.filter((item) => item.fileName).length >= 2
+  const hasFileNames = props.items.filter((item) => item.fileName).length >= 2
 
   return (
     <>
@@ -349,6 +392,19 @@ export function PostFormItemDraggableImages(props: Props) {
         )}
       >
         {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
+        {!props.isOnlyMove && (
+          <input
+            ref={replaceInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp,image/bmp"
+            className="hidden"
+            aria-hidden="true"
+            tabIndex={-1}
+            onChange={(event) => {
+              void handleReplaceFile(event)
+            }}
+          />
+        )}
         {props.items.length === 0 && !props.isOnlyMove && (
           <button
             type="button"
@@ -393,6 +449,14 @@ export function PostFormItemDraggableImages(props: Props) {
           items={props.items}
           isDeletable={!props.isOnlyMove}
           isFileNameEditable={true}
+          onReplace={
+            props.isOnlyMove
+              ? undefined
+              : (id) => {
+                  replaceTargetIdRef.current = id
+                  replaceInputRef.current?.click()
+                }
+          }
           setItems={props.setItems}
           setIndexList={props.setIndexList}
           optionalButton={
@@ -436,9 +500,7 @@ export function PostFormItemDraggableImages(props: Props) {
           <div
             className={cn(
               "m-4 flex flex-col rounded-b",
-              props.isThemedEmptyState
-                ? "text-muted-foreground"
-                : "text-white",
+              props.isThemedEmptyState ? "text-muted-foreground" : "text-white",
             )}
           >
             <p className="text-center text-sm">{"JPEG、PNG、GIF、WEBP、BMP"}</p>

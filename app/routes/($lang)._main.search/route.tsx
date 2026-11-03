@@ -7,7 +7,7 @@ import { redirect } from "@remix-run/cloudflare"
 import { Link, useLoaderData, useLocation, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ChevronRightIcon, Heart, SearchIcon } from "lucide-react"
-import { type FormEvent, useEffect, useState } from "react"
+import { type FormEvent, useContext, useEffect, useState } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { ResponsivePagination } from "~/components/responsive-pagination"
@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
@@ -24,6 +25,7 @@ import { cn } from "~/lib/utils"
 import {
   getSearchDb,
   searchWorkIdsByText,
+  type WorkTextSearchOrder,
 } from "~/lib/server/work-text-search.server"
 import { TEXT_SEARCH_COUNT_LIMIT } from "~/lib/work-text-search-constants"
 import { getLocalePrefix } from "~/routes/($lang)._main._index/utils/content-rating-path"
@@ -36,6 +38,7 @@ import { toListWorks } from "~/utils/to-list-works"
 type SearchRatingFilter = "G" | "R15" | "R18"
 type SearchStyleFilter = "all" | "ILLUSTRATION" | "REAL"
 type SearchPromptFilter = "all" | "with" | "without"
+type SearchOrderFilter = WorkTextSearchOrder
 
 const RESULTS_LIMIT = 30
 /** タイトル・説明の検索で開けるページの上限（0 始まり） */
@@ -82,6 +85,18 @@ const getPromptFilter = (value: string | null): SearchPromptFilter => {
   return "all"
 }
 
+const getOrderFilter = (value: string | null): SearchOrderFilter => {
+  if (value === "new" || value === "old") {
+    return value
+  }
+
+  return "popular"
+}
+
+/** 「自分の作品のみ」の相手。ページはキャッシュするので、ログイン情報ではなく URL で受ける */
+const getUserFilter = (value: string | null) =>
+  value !== null && /^\d+$/.test(value) ? value : null
+
 const getCurrentPage = (value: string | null) => {
   const parsed = Number(value ?? "0")
 
@@ -97,11 +112,18 @@ const buildWorksWhere = (props: {
   rating: SearchRatingFilter
   style: SearchStyleFilter
   prompt: SearchPromptFilter
+  order?: SearchOrderFilter
+  userId?: string | null
 }) => {
+  const order = props.order ?? "popular"
   const where: Record<string, unknown> = {
     ratings: [props.rating],
-    orderBy: "LIKES_COUNT",
-    sort: "DESC",
+    orderBy: order === "popular" ? "LIKES_COUNT" : "DATE_CREATED",
+    sort: order === "old" ? "ASC" : "DESC",
+  }
+
+  if (props.userId) {
+    where.userId = props.userId
   }
 
   if (props.tagQuery) {
@@ -139,6 +161,8 @@ export async function loader(props: LoaderFunctionArgs) {
   )
   const style = getStyleFilter(url.searchParams.get("style"))
   const prompt = getPromptFilter(url.searchParams.get("prompt"))
+  const order = getOrderFilter(url.searchParams.get("order"))
+  const filterUserId = getUserFilter(url.searchParams.get("user"))
   const defaultRating = isSensitiveMode ? "R18" : "G"
   // /search?age_limit=R18 と /r/search?age_limit=G のねじれをなくす（R18 の表示は /r に揃える）
   const isOnRatingPage = (rating === "R18") === isSensitiveMode
@@ -177,8 +201,11 @@ export async function loader(props: LoaderFunctionArgs) {
     rating,
     style,
     prompt,
+    order,
+    userId: filterUserId,
   })
-  const shouldUseFilteredCount = style !== "all" || prompt !== "all"
+  const shouldUseFilteredCount =
+    style !== "all" || prompt !== "all" || filterUserId !== null
   const rankingWhere = buildWorksWhere({
     rating,
     style,
@@ -188,22 +215,57 @@ export async function loader(props: LoaderFunctionArgs) {
   // タイトル・説明の部分一致（D1 の検索用データベース）。GraphQL の取得と並行して進める
   const searchDb = getSearchDb(props.context)
   const requestedMode = url.searchParams.get("mode")
-  const textResultPromise =
-    searchQuery && searchDb
-      ? searchWorkIdsByText({
-          db: searchDb,
-          query: searchQuery,
-          rating,
-          offset:
-            requestedMode !== "tag"
-              ? Math.min(currentPage, TEXT_SEARCH_MAX_PAGE) * RESULTS_LIMIT
-              : 0,
-          limit: RESULTS_LIMIT,
-        }).catch((error) => {
-          console.error("text search failed", error)
-          return null
-        })
-      : Promise.resolve(null)
+  const textOffset =
+    requestedMode !== "tag"
+      ? Math.min(currentPage, TEXT_SEARCH_MAX_PAGE) * RESULTS_LIMIT
+      : 0
+  // D1 には投稿者がないので、自分の作品だけのときは GraphQL で探す（1 人分なので重くない）
+  const searchOwnWorkIds = async (query: string) => {
+    const where = {
+      ...buildWorksWhere({
+        rating,
+        style: "all",
+        prompt: "all",
+        order,
+        userId: filterUserId,
+      }),
+      search: query,
+      searchInTags: true,
+      searchInDescription: true,
+    }
+    const [idsResp, countResp] = await Promise.all([
+      loaderClient.query({
+        query: searchOwnWorkIdsQuery,
+        variables: { offset: textOffset, limit: RESULTS_LIMIT, where },
+      }),
+      loaderClient.query({ query: worksCountQuery, variables: { where } }),
+    ])
+    return {
+      ids: idsResp.data.works.map((work) => work.id),
+      count: countResp.data.worksCount,
+    }
+  }
+  const textSearchPromise =
+    searchQuery === null
+      ? null
+      : filterUserId !== null
+        ? searchOwnWorkIds(searchQuery)
+        : searchDb
+          ? searchWorkIdsByText({
+              db: searchDb,
+              query: searchQuery,
+              rating,
+              order,
+              offset: textOffset,
+              limit: RESULTS_LIMIT,
+            })
+          : null
+  const textResultPromise = textSearchPromise
+    ? textSearchPromise.catch((error) => {
+        console.error("text search failed", error)
+        return null
+      })
+    : Promise.resolve(null)
   const fetchTextWorks = async (ids: string[]) => {
     if (ids.length === 0) return []
     try {
@@ -216,9 +278,7 @@ export async function loader(props: LoaderFunctionArgs) {
         },
       })
       const byId = new Map(resp.data.works.map((work) => [work.id, work]))
-      return ids
-        .map((id) => byId.get(id))
-        .filter((work) => work !== undefined)
+      return ids.map((id) => byId.get(id)).filter((work) => work !== undefined)
     } catch {
       return []
     }
@@ -276,9 +336,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const textResult = await textResultPromise
   const tagWorksCount =
-    worksCountResp?.data?.worksCount ??
-    worksCountResp?.data?.tagWorksCount ??
-    0
+    worksCountResp?.data?.worksCount ?? worksCountResp?.data?.tagWorksCount ?? 0
   // 指定がなければキーワードの部分一致（タイトル・説明・タグ）を出す。
   // 部分一致で 1 件もなく、タグの完全一致だけあるときはタグの結果を出す
   const mode: "tag" | "text" =
@@ -286,7 +344,9 @@ export async function loader(props: LoaderFunctionArgs) {
       ? "tag"
       : requestedMode === "tag"
         ? "tag"
-        : requestedMode === "text" || textResult.count > 0 || tagWorksCount === 0
+        : requestedMode === "text" ||
+            textResult.count > 0 ||
+            tagWorksCount === 0
           ? "text"
           : "tag"
 
@@ -297,8 +357,7 @@ export async function loader(props: LoaderFunctionArgs) {
         ? await eagerTextWorksPromise
         : await fetchTextWorks(textResult?.ids ?? [])
 
-  const works =
-    mode === "text" ? textWorks : (worksResp?.data?.tagWorks ?? [])
+  const works = mode === "text" ? textWorks : (worksResp?.data?.tagWorks ?? [])
   const relatedTagCounts = new Map<string, number>()
   for (const work of works) {
     for (const name of new Set(work.tagNames ?? [])) {
@@ -319,9 +378,11 @@ export async function loader(props: LoaderFunctionArgs) {
       ? relatedTags.filter(isFeaturableSensitiveTag)
       : relatedTags,
     filters: {
+      order,
       prompt,
       rating,
       style,
+      userId: filterUserId,
     },
     currentPage,
     isSensitiveMode,
@@ -332,8 +393,9 @@ export async function loader(props: LoaderFunctionArgs) {
           thumbnailUrl: tag.thumbnailUrl,
         }))
         // 入口に出すタグは、ガイドラインに触れそうなものを除いてから HTML に入れる
-        .filter((tag) => !isSensitiveMode || isFeaturableSensitiveTag(tag.name)) ??
-      [],
+        .filter(
+          (tag) => !isSensitiveMode || isFeaturableSensitiveTag(tag.name),
+        ) ?? [],
     rankingWorks: toListWorks(rankingResp.data?.works),
     searchQuery,
     works: toListWorks(works),
@@ -392,6 +454,7 @@ export default function SearchRoute() {
   const location = useLocation()
   const navigate = useNavigate()
   const t = useTranslation()
+  const authContext = useContext(AuthContext)
   const {
     isRateLimitDialogOpen,
     executeSearchWithRateLimit,
@@ -423,9 +486,20 @@ export default function SearchRoute() {
     const rating = next?.rating ?? data.filters.rating
     const style = next?.style ?? data.filters.style
     const prompt = next?.prompt ?? data.filters.prompt
+    const order = next?.order ?? data.filters.order
+    const userId =
+      next?.userId === undefined ? data.filters.userId : next.userId
     const page = next?.page ?? 0
 
     params.set("age_limit", rating === "R15" ? "R15" : "")
+
+    if (order !== "popular") {
+      params.set("order", order)
+    }
+
+    if (userId) {
+      params.set("user", userId)
+    }
 
     if (style !== "all") {
       params.set("style", style)
@@ -506,7 +580,10 @@ export default function SearchRoute() {
             <Input
               value={searchText}
               onChange={(event) => setSearchText(event.target.value)}
-              placeholder={t("タグ・タイトル・説明で検索", "Search tags, titles and descriptions")}
+              placeholder={t(
+                "タグ・タイトル・説明で検索",
+                "Search tags, titles and descriptions",
+              )}
               className="h-12 border-0 text-base shadow-none focus-visible:ring-0"
             />
             <Button
@@ -618,6 +695,61 @@ export default function SearchRoute() {
                     </span>
                   </button>
                 ))}
+              </div>
+            )}
+
+            {data.searchQuery && (
+              <div className="mb-5 flex flex-wrap items-center gap-2">
+                <div
+                  role="group"
+                  aria-label={t("並び順", "Sort order")}
+                  className="flex rounded-full bg-muted p-1"
+                >
+                  {(
+                    [
+                      ["popular", t("人気順", "Popular")],
+                      ["new", t("新しい順", "Newest")],
+                      ["old", t("古い順", "Oldest")],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      aria-pressed={data.filters.order === value}
+                      onClick={() => {
+                        navigateToSearch(data.searchQuery, { order: value })
+                      }}
+                      className={cn(
+                        "whitespace-nowrap rounded-full px-3.5 py-1.5 font-medium text-sm transition-colors",
+                        data.filters.order === value
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                {(authContext.userId || data.filters.userId) && (
+                  <button
+                    type="button"
+                    aria-pressed={data.filters.userId !== null}
+                    onClick={() => {
+                      navigateToSearch(data.searchQuery, {
+                        userId: data.filters.userId ? null : authContext.userId,
+                      })
+                    }}
+                    className={cn(
+                      "h-9 whitespace-nowrap rounded-full border px-3.5 font-medium text-sm transition-colors",
+                      data.filters.userId
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border bg-background text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {t("自分の作品のみ", "My works only")}
+                  </button>
+                )}
               </div>
             )}
 
@@ -969,6 +1101,14 @@ const searchTextWorksQuery = graphql(
     }
   }`,
   [PhotoAlbumWorkFragment],
+)
+
+const searchOwnWorkIdsQuery = graphql(
+  `query SearchOwnWorkIds($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      id
+    }
+  }`,
 )
 
 const worksCountQuery = graphql(

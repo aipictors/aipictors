@@ -35,6 +35,12 @@ export const getSearchDb = (context: unknown): D1Like | null => {
     : null
 }
 
+/** popular: タイトルに含むものを先にしていいね順、new / old: 投稿日順 */
+export type WorkTextSearchOrder = "popular" | "new" | "old"
+
+const toDateOrderSql = (order: WorkTextSearchOrder, column: string) =>
+  order === "old" ? `${column} ASC` : `${column} DESC`
+
 /**
  * D1 がまれに 40 秒以上応答しないことがあり、検索ページ全体が表示されなくなっていた。
  * 待つのはこの時間までにして、間に合わなければ失敗扱いにする（呼び出し側はタイトル・説明の結果なしで表示する）
@@ -45,6 +51,7 @@ export function searchWorkIdsByText(props: {
   db: D1Like
   query: string
   rating: "G" | "R15" | "R18"
+  order?: WorkTextSearchOrder
   offset: number
   limit: number
 }): Promise<{ ids: string[]; count: number }> {
@@ -64,6 +71,7 @@ async function queryWorkIdsByText(props: {
   db: D1Like
   query: string
   rating: "G" | "R15" | "R18"
+  order?: WorkTextSearchOrder
   offset: number
   limit: number
 }): Promise<{ ids: string[]; count: number }> {
@@ -72,6 +80,7 @@ async function queryWorkIdsByText(props: {
     return { ids: [], count: 0 }
   }
   const ratings = RATING_CODES[props.rating]
+  const order = props.order ?? "popular"
   const ratingPlaceholders = ratings.map(() => "?").join(",")
   const likePattern = `%${query.replace(/[\\%_]/g, (c) => `\\${c}`)}%`
 
@@ -88,10 +97,21 @@ async function queryWorkIdsByText(props: {
         .prepare(
           `SELECT w.id AS id FROM works w
            WHERE ${matchedIds} AND w.rating IN (${ratingPlaceholders})
-           ORDER BY (w.title LIKE ? ESCAPE '\\') DESC, w.likes DESC
+           ORDER BY ${
+             order === "popular"
+               ? "(w.title LIKE ? ESCAPE '\\') DESC, w.likes DESC"
+               : toDateOrderSql(order, "w.created_at")
+           }
            LIMIT ? OFFSET ?`,
         )
-        .bind(match, match, ...ratings, likePattern, props.limit, props.offset)
+        .bind(
+          match,
+          match,
+          ...ratings,
+          ...(order === "popular" ? [likePattern] : []),
+          props.limit,
+          props.offset,
+        )
         .all<{ id: number }>(),
       props.db
         .prepare(
@@ -115,7 +135,11 @@ async function queryWorkIdsByText(props: {
         `SELECT id FROM works
           WHERE (title LIKE ? ESCAPE '\\' OR en_title LIKE ? ESCAPE '\\' OR tags LIKE ? ESCAPE '\\')
             AND rating IN (${ratingPlaceholders})
-          ORDER BY likes DESC LIMIT ? OFFSET ?`,
+          ORDER BY ${
+            order === "popular"
+              ? "likes DESC"
+              : toDateOrderSql(order, "created_at")
+          } LIMIT ? OFFSET ?`,
       )
       .bind(
         likePattern,
