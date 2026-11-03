@@ -4,7 +4,6 @@ import {
 } from "@remix-run/dev"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
-import { viteStaticCopy } from "vite-plugin-static-copy"
 import tailwindcss from "@tailwindcss/vite"
 import { mkdirSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path"
@@ -38,6 +37,19 @@ const criticalCssSource = (): Plugin => ({
     const out = join(options.dir, "..", "critical-css-source.json")
     mkdirSync(dirname(out), { recursive: true })
     writeFileSync(out, JSON.stringify({ ...tailwind, inline }))
+  },
+})
+
+/**
+ * @fontsource の CSS から woff の指定を外す。どのブラウザも woff2 を読めるので、
+ * woff のファイル（フォント 1 つで数千個、合計 90MB）が配布物に入らないようにする
+ */
+const fontsourceWoff2Only = (): Plugin => ({
+  name: "aipictors-fontsource-woff2-only",
+  enforce: "pre",
+  transform(code, id) {
+    if (!/\/@fontsource(-variable)?\/.+\.css(\?|$)/.test(id)) return null
+    return code.replace(/,\s*url\([^)]+\.woff\)\s*format\(["']woff["']\)/g, "")
   },
 })
 
@@ -78,26 +90,7 @@ export default defineConfig({
     tsconfigPaths(),
     tailwindcss(),
     criticalCssSource(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: "./node_modules/onnxruntime-web/dist/*.wasm",
-          dest: "./debug",
-        },
-        {
-          src: "./public/nsfw_model/*.onnx",
-          dest: "./debug",
-        },
-        {
-          src: "./node_modules/onnxruntime-web/dist/*.wasm",
-          dest: "./new",
-        },
-        {
-          src: "./public/nsfw_model/*.onnx",
-          dest: "./new",
-        },
-      ],
-    }),
+    fontsourceWoff2Only(),
   ],
   define: {
     VITE_VERSION: JSON.stringify(process.env.npm_package_version),

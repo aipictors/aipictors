@@ -1,6 +1,4 @@
-import { load } from "@l4ph/nsfwts"
-
-const modelUrl = "./nsfwjs.onnx"
+const modelUrl = "/nsfw_model/nsfwjs.onnx"
 
 export interface NsfwResults {
   drawings: number
@@ -23,6 +21,8 @@ export const getNsfwPredictions = async (
       img.src = imageUrl
       img.onload = async () => {
         try {
+          // onnxruntime は大きいので、判定するときに読み込む
+          const { load } = await import("@l4ph/nsfwts")
           const results: unknown = await load(img, modelUrl)
 
           // Ensure results conform to the NsfwResults interface
