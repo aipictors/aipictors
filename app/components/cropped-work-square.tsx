@@ -270,7 +270,7 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
               >
                 <MessageCircleIcon className="size-3 text-muted-foreground" />
                 <span className="font-semibold text-xs leading-none">
-                  {props.commentsCount + 1}
+                  {props.commentsCount}
                 </span>
               </Badge>
             )}
@@ -353,7 +353,7 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
         >
           <MessageCircleIcon className="size-3 text-muted-foreground" />
           <span className="font-semibold text-xs leading-none">
-            {props.commentsCount + 1}
+            {props.commentsCount}
           </span>
         </Badge>
       )}
