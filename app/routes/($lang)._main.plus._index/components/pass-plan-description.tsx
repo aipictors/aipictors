@@ -1,3 +1,4 @@
+import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { Link } from "~/lib/app/locale-router"
 import { CheckIcon, SparklesIcon } from "lucide-react"
 import { LoginDialogButton } from "~/components/login-dialog-button"
@@ -72,6 +73,11 @@ export function PassPlanDescription(props: Props) {
           {isFree ? "" : t("/月（税込）", "/mo (tax incl.)")}
         </span>
       </p>
+      {!isFree && t("", `${toApproxUsdText(spec.price)}/mo, billed in JPY`) && (
+        <p className="mt-0.5 text-muted-foreground text-xs">
+          {t("", `${toApproxUsdText(spec.price)}/mo, billed in JPY`)}
+        </p>
+      )}
       {!isFree && isFirstMonthOffer && (
         <p className="mt-1 inline-flex w-fit items-center rounded-full bg-fuchsia-600/10 px-2 py-0.5 font-bold text-fuchsia-700 text-xs dark:text-fuchsia-300">
           {t(

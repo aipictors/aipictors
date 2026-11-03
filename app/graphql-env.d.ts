@@ -3231,6 +3231,8 @@ input ModerationReportsWhereInput {
 }
 
 type Mutation {
+  """Google アカウントで本人確認する"""
+  verifyAccountWithGoogle: Boolean!
   """モデレータ向けの一括コイン操作"""
   adminAdjustCoins(expiresAt: Int, freeDelta: Int, planType: String, premiumDelta: Int, targetScope: String!, userIds: [ID!]): AdminCoinOperationResult!
 

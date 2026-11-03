@@ -1,3 +1,4 @@
+import { useLocation } from "@remix-run/react"
 import { SupportCoinBreakdown } from "~/components/support-coin-breakdown"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
@@ -27,6 +28,11 @@ import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/c
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import {
+  shouldAutoTranslateComment,
+  translateCommentAutomatically,
+} from "~/utils/comment-auto-translate"
+import { parseLocalePath } from "~/utils/locale-path"
 import { translateText } from "~/utils/translate-text"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -102,6 +108,24 @@ export function WorkComment(props: Props) {
   React.useEffect(() => {
     setTargetLanguage((navigator.language ?? "en").split("-")[0] ?? "en")
   }, [])
+
+  // 表示中の言語と違うコメントは自動で訳す（R18 のページは「翻訳」を押したときだけ）
+  const { pathname } = useLocation()
+  React.useEffect(() => {
+    const { locale, isSensitive } = parseLocalePath(pathname)
+    if (isSensitive || !shouldAutoTranslateComment(props.text, locale)) return
+    let isCanceled = false
+    void translateCommentAutomatically(props.text ?? "", locale).then(
+      (result) => {
+        if (isCanceled || result.length === 0) return
+        setTranslatedText(result)
+        setIsShowingTranslation(true)
+      },
+    )
+    return () => {
+      isCanceled = true
+    }
+  }, [pathname, props.text])
 
   const isProbablyJapanese = (text: string) =>
     /[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF]/.test(text)

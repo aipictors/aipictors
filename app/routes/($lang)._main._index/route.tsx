@@ -46,6 +46,7 @@ import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFollowFeedNewCount } from "~/hooks/use-follow-feed-new-count"
 import { useLocale } from "~/hooks/use-locale"
+import { HomeEnglishHero } from "~/components/home-english-hero"
 import { HomePromotionWorksSection } from "~/components/work/work-promotion"
 import { useTranslation } from "~/hooks/use-translation"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
@@ -1057,6 +1058,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
         onValueChange={handleTabChange}
         className="space-y-6"
       >
+        <HomeEnglishHero />
         {/* ヘッダー部分: タブ */}
         <div className="-mx-4 bg-background/98 px-4 py-2">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">

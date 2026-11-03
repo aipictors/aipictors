@@ -1,3 +1,4 @@
+import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { CheckIcon, MinusIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -23,7 +24,13 @@ export function PlusComparisonTable() {
   const rows: Row[] = [
     {
       label: t("月額（税込）", "Monthly (tax incl.)"),
-      value: (spec) => `¥${toMoneyNumberText(spec.price)}`,
+      value: (spec) =>
+        spec.price > 0
+          ? t(
+              `¥${toMoneyNumberText(spec.price)}`,
+              `¥${toMoneyNumberText(spec.price)} (${toApproxUsdText(spec.price)})`,
+            )
+          : `¥${toMoneyNumberText(spec.price)}`,
     },
     {
       label: t("1回の生成枚数", "Images per request"),

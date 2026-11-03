@@ -233,14 +233,14 @@ export function GenerationAboutPage () {
           <AccordionItem value="item-2">
             <AccordionTrigger>
               {t(
-                "LINE認証がうまくいかない",
-                "Having Trouble with LINE Authentication?",
+                "本人確認がうまくいかない",
+                "Having trouble with verification?",
               )}
             </AccordionTrigger>
             <AccordionContent>
               {t(
-                "LINE認証がうまくいかない場合は、お手数ですが、サポートまでお問い合わせください。",
-                "If you're having trouble with LINE authentication, please feel free to contact support.",
+                "本人確認は Google または LINE でできます。うまくいかない場合は、お手数ですが、サポートまでお問い合わせください。",
+                "You can verify with Google or LINE. If you are having trouble, please contact support.",
               )}
               <Link to="/support/chat">
                 {t("サポートへのお問い合わせはこちら", "Contact Support Here")}
