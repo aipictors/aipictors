@@ -14,7 +14,6 @@ import {
   useWorkCommentList,
   type WorkCommentListProps,
 } from "~/routes/($lang)._main.posts.$post._index/hooks/use-work-comment-list"
-import { useProgressiveCount } from "~/routes/($lang)._main.posts.$post._index/hooks/use-progressive-count"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import { recordRecentStickerId } from "~/utils/sticker-recent"
@@ -47,14 +46,6 @@ export function WorkCommentList(props: WorkCommentListProps) {
     supportSuccessState,
     userIcon,
   } = state
-
-  // 作品のページは押さずに全件読める。フィードと管理画面は枠が狭いのでボタンのまま
-  const isAutoReveal = props.defaultShowCommentCount === undefined
-  const { count: revealedCount, sentinelRef } = useProgressiveCount(
-    showComments.length,
-    showCommentsBeforeMore.length,
-    props.workId,
-  )
 
   return (
     <>
@@ -146,10 +137,7 @@ export function WorkCommentList(props: WorkCommentListProps) {
             workOwnerIconImageURL={props.workOwnerIconImageURL}
           />
         )}
-        {(isAutoReveal
-          ? showComments.slice(0, revealedCount)
-          : showCommentsBeforeMore
-        ).map((comment) => (
+        {showCommentsBeforeMore.map((comment) => (
           <WorkCommentThread
             key={comment.id}
             {...state}
@@ -158,10 +146,7 @@ export function WorkCommentList(props: WorkCommentListProps) {
             workOwnerIconImageURL={props.workOwnerIconImageURL}
           />
         ))}
-        {isAutoReveal && revealedCount < showComments.length && (
-          <div ref={sentinelRef} aria-hidden="true" className="h-px" />
-        )}
-        {!isAutoReveal && showCommentsAfterMore.length > 0 && (
+        {showCommentsAfterMore.length > 0 && (
           <ExpansionTransition
             triggerChildren={
               <Button className="w-full" variant={"secondary"}>
