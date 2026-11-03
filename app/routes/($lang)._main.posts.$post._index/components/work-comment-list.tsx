@@ -871,7 +871,7 @@ export function WorkCommentList(props: Props) {
   )
 
   const { data = null } = useQuery(viewerUserQuery, {
-    skip: authContext.isLoading,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const stickers = sortStickersByRecent(

@@ -6,6 +6,7 @@ import { Link } from "~/lib/app/locale-router"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { AuthContext } from "~/contexts/auth-context"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   HomeAwardWorksSection,
@@ -52,11 +53,16 @@ export function WorkContainer(props: Props) {
     props.work?.user !== null &&
     authContext.userId === props.work?.user.id
 
+  // 右の列（広告・新着コメント・受賞作品）は PC でしか出ないので、スマホでは取得しない
+  const { showDesktop } = useLayoutVariant()
+
   const { data: workRet } = useQuery(workQuery, {
+    // ログインしていない人には、ローダーの作品と同じものが返るので取り直さない
     skip:
-      props.work?.user !== null &&
-      authContext.userId !== props.work?.user.id &&
-      authContext.isLoading,
+      (props.work !== null && authContext.isNotLoggedIn) ||
+      (props.work?.user !== null &&
+        authContext.userId !== props.work?.user.id &&
+        authContext.isLoading),
     variables: {
       id: props.post,
     },
@@ -94,6 +100,7 @@ export function WorkContainer(props: Props) {
   const comments = workCommentsRet?.work?.comments ?? []
 
   const { data: newCommentsData } = useQuery(newCommentsQuery, {
+    skip: !showDesktop,
     fetchPolicy: "cache-first",
     ssr: false,
   })
@@ -102,6 +109,7 @@ export function WorkContainer(props: Props) {
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
   const { data: awardWorksData } = useQuery(homeAwardWorksQuery, {
+    skip: !showDesktop,
     fetchPolicy: "cache-first",
     ssr: false,
     variables: {
@@ -133,9 +141,12 @@ export function WorkContainer(props: Props) {
     [work?.id, tagsKey],
   )
 
-  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {
+    skip: !showDesktop || authContext.isLoading || authContext.isNotLoggedIn,
+  })
 
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
+    skip: !showDesktop,
     variables: {
       where: {
         isSensitive: false,
