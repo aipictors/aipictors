@@ -13,7 +13,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * ログイン画面
  */
-export default function Login () {
+export default function Login() {
   const t = useTranslation()
 
   const benefits = [
@@ -38,7 +38,7 @@ export default function Login () {
   ]
 
   return (
-    <div className="container flex justify-center gap-10 py-4 md:py-8 lg:items-center lg:justify-center">
+    <div className="container flex justify-center gap-10 px-3 py-4 md:py-8 lg:items-center lg:justify-center">
       <div className="hidden max-w-sm flex-1 items-center gap-6 lg:flex">
         <img
           src="/images/pictor-chan/run.webp"
@@ -65,7 +65,7 @@ export default function Login () {
         </div>
       </div>
       <LoginCard
-        title={t("ログイン", "Log in")}
+        title={t("ログイン・新規登録", "Log in or sign up")}
         line={t(
           "今日はどんな作品に会えるでしょう？",
           "What works will you find today?",

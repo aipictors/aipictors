@@ -2,19 +2,20 @@ import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Loader2Icon, Shield, Eye, Heart } from "lucide-react"
+import { Loader2Icon, Shield, Eye } from "lucide-react"
 import { useContext, useEffect, useState, useId } from "react"
 import { toast } from "sonner"
 import { Switch } from "~/components/ui/switch"
 import { Label } from "~/components/ui/label"
-import { Separator } from "~/components/ui/separator"
+import { OnboardingSteps } from "~/components/onboarding-steps"
+import { cn } from "~/lib/utils"
 import { useNavigate } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * 新しいユーザー設定フォーム
  */
-export function NewUserSettingsForm () {
+export function NewUserSettingsForm() {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
@@ -35,8 +36,8 @@ export function NewUserSettingsForm () {
 
   const preferenceRating = userSettingData?.userSetting?.preferenceRating
 
-  // 年齢確認状態（初期値を18歳以上に設定）
-  const [isAdult, setIsAdult] = useState<boolean>(true)
+  // 年齢は本人に選んでもらう（選ぶまで次へ進めない。最初から 18 歳以上にはしない）
+  const [isAdult, setIsAdult] = useState<boolean | null>(null)
 
   // 設定状態
   const [showR15InNormalMode, setShowR15InNormalMode] = useState(false)
@@ -107,7 +108,9 @@ export function NewUserSettingsForm () {
 
     let rating: "G" | "R15" | "R18" | "R18G" = "G"
 
-    if (showR18GInSensitiveMode) {
+    if (isAdult !== true) {
+      rating = "G"
+    } else if (showR18GInSensitiveMode) {
       rating = "R18G"
     } else if (showSensitiveModeToggle) {
       rating = "R18"
@@ -115,316 +118,181 @@ export function NewUserSettingsForm () {
       rating = "R15"
     }
 
-    await updateUserSetting({
-      variables: {
-        input: {
-          preferenceRating: rating,
-          isNotifyComment: isNotifyComment,
+    try {
+      await updateUserSetting({
+        variables: {
+          input: {
+            preferenceRating: rating,
+            isNotifyComment: isNotifyComment,
+          },
         },
-      },
-    })
+      })
 
-    toast(t("設定を更新しました。", "Settings updated."))
-    navigate("/settings/completed")
+      navigate("/settings/completed")
+    } catch (error) {
+      toast(
+        error instanceof Error
+          ? error.message
+          : t("保存できませんでした。", "Could not save."),
+      )
+    }
   }
 
+  const toggles = [
+    {
+      id: showR15Id,
+      label: "R-15",
+      text: t(
+        "軽い暴力表現や扇情的な表現を含む作品",
+        "Works with mild violence or suggestive content",
+      ),
+      checked: showR15InNormalMode,
+      onChange: handleR15Toggle,
+      disabled: false,
+    },
+    {
+      id: showSensitiveToggleId,
+      label: "R-18",
+      text: t(
+        "成人向けの作品（性的な表現を含む）",
+        "Adult works, including sexual content",
+      ),
+      checked: showSensitiveModeToggle,
+      onChange: handleR18Toggle,
+      disabled: !showR15InNormalMode,
+    },
+    {
+      id: showR18GId,
+      label: "R-18G",
+      text: t(
+        "極めて過激な表現を含む成人向けの作品",
+        "Adult works with extreme content",
+      ),
+      checked: showR18GInSensitiveMode,
+      onChange: setShowR18GInSensitiveMode,
+      disabled: !showSensitiveModeToggle,
+    },
+  ]
+
   return (
-    <div className="mx-auto max-w-4xl space-y-8 p-6">
-      {/* ウェルカムセクション */}
-      <div className="rounded-xl border border-gray-100 bg-gradient-to-r from-green-50 to-blue-50 p-8 dark:border-gray-700 dark:from-green-900/30 dark:to-blue-900/30">
-        <div className="space-y-4 text-center">
-          <h1 className="font-bold text-gray-800 text-xl dark:text-gray-100">
-            {t("表示設定の説明", "Display Settings Explanation")}
-          </h1>
-          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-600 dark:bg-blue-900/30">
-            <p className="text-blue-800 text-sm dark:text-blue-200">
-              {isAdult ? (
-                <span className="flex items-center gap-2">
-                  <Eye className="size-4" />
-                  {t(
-                    "18歳以上の方は、すべてのコンテンツ設定が利用できます",
-                    "Users 18 and older can access all content settings",
-                  )}
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <Shield className="size-4" />
-                  {t(
-                    "18歳未満の方は、適切なコンテンツのみ表示されます",
-                    "Users under 18 will only see appropriate content",
-                  )}
-                </span>
-              )}
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="mx-auto w-full max-w-lg space-y-5 px-3 pt-4 pb-28 md:pt-8">
+      <OnboardingSteps current={2} />
 
-      {/* 年齢設定セクション */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-        <h2 className="mb-4 font-bold text-gray-800 text-xl dark:text-gray-100">
-          {t("年齢設定", "Age Setting")}
-        </h2>
-        <div className="space-y-4">
-          <p className="text-gray-600 text-sm dark:text-gray-300">
-            {t(
-              "年齢設定は表示されるコンテンツの制限に影響します。いつでも変更可能です。",
-              "Age setting affects content visibility restrictions. You can change this anytime.",
-            )}
-          </p>
-          <div className="flex gap-3">
-            <Button
-              onClick={() => handleAgeChange(false)}
-              variant={!isAdult ? "default" : "outline"}
-              className="h-12 flex-1"
-            >
-              <Shield className="mr-2 size-4" />
-              {t("18歳未満", "Under 18")}
-            </Button>
-            <Button
-              onClick={() => handleAgeChange(true)}
-              variant={isAdult ? "default" : "outline"}
-              className="h-12 flex-1"
-            >
-              <Eye className="mr-2 size-4" />
-              {t("18歳以上", "18 or older")}
-            </Button>
-          </div>
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-600 dark:bg-amber-900/30">
-            <p className="text-amber-800 text-xs dark:text-amber-200">
-              ⚠️ {t("現在の設定: ", "Current setting: ")}
-              <strong>
-                {isAdult
-                  ? t("18歳以上", "18 or older")
-                  : t("18歳未満", "Under 18")}
-              </strong>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* コンテンツレーティング説明 */}
-      <div className="space-y-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <h2 className="font-bold text-gray-800 text-xl dark:text-gray-100">
-            {t("コンテンツレーティングについて", "About Content Ratings")}
-          </h2>
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            {/* Gレーティング */}
-            <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-600 dark:bg-green-900/30">
-              <div className="flex items-center gap-2">
-                <span className="flex size-8 items-center justify-center rounded-full bg-green-500 font-bold text-white">
-                  G
-                </span>
-                <h3 className="font-semibold text-green-800 dark:text-green-200">
-                  {t("全年齢対象", "General Audiences")}
-                </h3>
-              </div>
-              <p className="mt-2 text-green-700 text-sm dark:text-green-300">
-                {t(
-                  "誰でも安心して見ることができる健全なコンテンツ",
-                  "Safe content that anyone can view with confidence",
-                )}
-              </p>
-            </div>
-
-            {/* R15レーティング */}
-            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-600 dark:bg-yellow-900/30">
-              <div className="flex items-center gap-2">
-                <span className="flex size-8 items-center justify-center rounded-full bg-yellow-500 font-bold text-white">
-                  15
-                </span>
-                <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">
-                  {t("15歳以上推奨", "15+ Recommended")}
-                </h3>
-              </div>
-              <p className="mt-2 text-red-700 text-sm dark:text-red-300">
-                {t(
-                  "軽度な暴力表現や扇情的な表現を含む可能性があります",
-                  "May contain mild violence or suggestive content",
-                )}
-              </p>
-            </div>
-
-            {/* R18・R18Gレーティング（18歳以上のみ表示） */}
-            {isAdult && (
-              <>
-                <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-600 dark:bg-red-900/30">
-                  <div className="flex items-center gap-2">
-                    <span className="flex size-8 items-center justify-center rounded-full bg-red-500 font-bold text-white">
-                      18
-                    </span>
-                    <h3 className="font-semibold text-red-800 dark:text-red-200">
-                      {t("18歳以上限定", "18+ Only")}
-                    </h3>
-                  </div>
-                  <p className="mt-2 text-gray-600 text-sm dark:text-gray-300">
-                    {t(
-                      "成人向けコンテンツ（性的表現を含む）",
-                      "Adult content (including sexual expressions)",
-                    )}
-                  </p>
-                </div>
-
-                <div className="rounded-lg border border-purple-200 bg-purple-50 p-4 dark:border-purple-600 dark:bg-purple-900/30">
-                  <div className="flex items-center gap-2">
-                    <span className="flex size-8 items-center justify-center rounded-full bg-purple-500 font-bold text-white">
-                      G
-                    </span>
-                    <h3 className="font-semibold text-purple-800 dark:text-purple-200">
-                      {t("R18G", "R18G")}
-                    </h3>
-                  </div>
-                  <p className="mt-2 text-gray-600 text-sm dark:text-gray-300">
-                    {t(
-                      "極めて過激な表現を含む成人向けコンテンツ",
-                      "Adult content with extremely explicit expressions",
-                    )}
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 表示設定 */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-        <h2 className="font-bold text-gray-800 text-xl dark:text-gray-100">
-          {t("表示するコンテンツを選択", "Select Content to Display")}
-        </h2>
-        <div className="mt-6 space-y-6">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id={showR15Id}
-                checked={showR15InNormalMode}
-                onCheckedChange={handleR15Toggle}
-                disabled={!isAdult && !showR15InNormalMode}
-              />
-              <Label htmlFor={showR15Id} className="flex items-center gap-2">
-                <span className="flex size-6 items-center justify-center rounded-full bg-yellow-500 font-bold text-white text-xs">
-                  15
-                </span>
-                {t("R15コンテンツを表示", "Show R15 content")}
-              </Label>
-            </div>
-            <p className="text-gray-600 text-sm dark:text-gray-300">
-              {t(
-                "軽度な暴力表現や扇情的な表現を含むコンテンツを表示します",
-                "Shows content with mild violence or suggestive expressions",
-              )}
-            </p>
-          </div>
-
-          {isAdult && (
-            <>
-              <Separator />
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id={showSensitiveToggleId}
-                    checked={showSensitiveModeToggle}
-                    onCheckedChange={handleR18Toggle}
-                    disabled={!showR15InNormalMode}
-                  />
-                  <Label
-                    htmlFor={showSensitiveToggleId}
-                    className="flex items-center gap-2"
-                  >
-                    <span className="flex size-6 items-center justify-center rounded-full bg-red-500 font-bold text-white text-xs">
-                      18
-                    </span>
-                    {t("R18コンテンツを表示", "Show R18 content")}
-                  </Label>
-                </div>
-                <p className="text-gray-600 text-sm dark:text-gray-300">
-                  {t(
-                    "成人向けコンテンツを表示します（性的表現を含む）",
-                    "Shows adult content (including sexual expressions)",
-                  )}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id={showR18GId}
-                    checked={showR18GInSensitiveMode}
-                    onCheckedChange={setShowR18GInSensitiveMode}
-                    disabled={!showSensitiveModeToggle}
-                  />
-                  <Label
-                    htmlFor={showR18GId}
-                    className="flex items-center gap-2"
-                  >
-                    <span className="flex size-6 items-center justify-center rounded-full bg-purple-500 font-bold text-white text-xs">
-                      G
-                    </span>
-                    {t("R18Gコンテンツを表示", "Show R18G content")}
-                  </Label>
-                </div>
-                <p className="text-gray-600 text-sm dark:text-gray-300">
-                  {t(
-                    "極めて過激な表現を含む成人向けコンテンツを表示します",
-                    "Shows adult content with extremely explicit expressions",
-                  )}
-                </p>
-              </div>
-            </>
+      <div className="space-y-1">
+        <h1 className="font-bold text-2xl">
+          {t("表示する作品を選びましょう", "Choose what you see")}
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          {t(
+            "いつでも設定画面から変えられます。",
+            "You can change this anytime in settings.",
           )}
-
-          <Separator />
-
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id={notifyCommentId}
-                checked={isNotifyComment}
-                onCheckedChange={setIsNotifyComment}
-              />
-              <Label
-                htmlFor={notifyCommentId}
-                className="flex items-center gap-2"
-              >
-                <Heart className="size-4" />
-                {t("コメント通知を受け取る", "Receive comment notifications")}
-              </Label>
-            </div>
-            <p className="text-gray-600 text-sm dark:text-gray-300">
-              {t(
-                "作品にコメントがついた時に通知を受け取ります",
-                "Receive notifications when your works receive comments",
-              )}
-            </p>
-          </div>
-        </div>
+        </p>
       </div>
 
-      {/* 完了ボタン */}
-      <div className="rounded-xl border border-green-200 bg-green-50 p-6 dark:border-green-600 dark:bg-green-900/30">
-        <div className="text-center">
-          <h3 className="mb-2 font-bold text-gray-800 text-lg dark:text-gray-100">
-            {t("設定完了", "Settings Complete")}
-          </h3>
-          <p className="mb-6 text-gray-600 dark:text-gray-300">
+      <div className="space-y-2">
+        <p className="font-medium text-sm">{t("あなたの年齢", "Your age")}</p>
+        <div className="grid grid-cols-2 gap-2">
+          {(
+            [
+              [false, t("18歳未満", "Under 18"), Shield],
+              [true, t("18歳以上", "18 or older"), Eye],
+            ] as const
+          ).map(([value, label, Icon]) => (
+            <Button
+              key={label}
+              type="button"
+              aria-pressed={isAdult === value}
+              variant={isAdult === value ? "default" : "outline"}
+              onClick={() => handleAgeChange(value)}
+              className="h-12 rounded-xl font-semibold"
+            >
+              <Icon className="mr-2 size-4" />
+              {label}
+            </Button>
+          ))}
+        </div>
+        {isAdult === false && (
+          <p className="text-muted-foreground text-xs">
             {t(
-              "これでAipictorsをお楽しみいただけます",
-              "You can now enjoy Aipictors",
+              "全年齢の作品だけを表示します。",
+              "Only all-ages works will be shown.",
             )}
           </p>
+        )}
+      </div>
+
+      {isAdult && (
+        <div className="divide-y rounded-xl border">
+          <div className="px-4 py-3">
+            <p className="font-medium text-sm">
+              {t("全年齢の作品に加えて表示するもの", "Also show")}
+            </p>
+          </div>
+          {toggles.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-center justify-between gap-3 px-4 py-3"
+            >
+              <Label
+                htmlFor={item.id}
+                className={cn(
+                  "min-w-0 cursor-pointer space-y-0.5",
+                  item.disabled && "opacity-50",
+                )}
+              >
+                <span className="block font-semibold">{item.label}</span>
+                <span className="block font-normal text-muted-foreground text-xs">
+                  {item.text}
+                </span>
+              </Label>
+              <Switch
+                id={item.id}
+                checked={item.checked}
+                disabled={item.disabled}
+                onCheckedChange={item.onChange}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
+        <Label
+          htmlFor={notifyCommentId}
+          className="min-w-0 cursor-pointer space-y-0.5"
+        >
+          <span className="block font-semibold">
+            {t("コメントの通知", "Comment notifications")}
+          </span>
+          <span className="block font-normal text-muted-foreground text-xs">
+            {t(
+              "作品にコメントがついたら知らせます",
+              "Get notified when someone comments on your work",
+            )}
+          </span>
+        </Label>
+        <Switch
+          id={notifyCommentId}
+          checked={isNotifyComment}
+          onCheckedChange={setIsNotifyComment}
+        />
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
+        <div className="mx-auto max-w-lg">
           <Button
-            disabled={isUpdatingUserSetting}
+            type="button"
+            disabled={isUpdatingUserSetting || isAdult === null}
             onClick={onSubmit}
-            className="h-12 w-full rounded-lg bg-green-600 font-semibold text-lg hover:bg-green-700 disabled:opacity-50"
+            className="h-12 w-full rounded-xl font-semibold"
           >
             {isUpdatingUserSetting ? (
-              <div className="flex items-center gap-2">
-                <Loader2Icon className="size-5 animate-spin" />
-                {t("保存中...", "Saving...")}
-              </div>
+              <Loader2Icon className="size-5 animate-spin" />
+            ) : isAdult === null ? (
+              t("年齢を選んでください", "Select your age")
             ) : (
-              t("設定を完了する", "Complete Settings")
+              t("はじめる", "Get started")
             )}
           </Button>
         </div>

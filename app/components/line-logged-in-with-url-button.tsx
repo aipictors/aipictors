@@ -2,15 +2,17 @@ import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { toast } from "sonner"
 import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
+import { writeLastLoginMethod } from "~/utils/login-flow"
 
 type Props = {
   text?: string
+  badge?: React.ReactNode
 }
 
 /**
  * LINEログインボタン
  */
-export function LineLoggedInWithUrlButton (props: Props): React.ReactNode {
+export function LineLoggedInWithUrlButton(props: Props): React.ReactNode {
   const { data } = useQuery(authenticationLineAccountUrlQuery, {})
 
   const url = data?.authenticationLineAccountUrl
@@ -19,6 +21,7 @@ export function LineLoggedInWithUrlButton (props: Props): React.ReactNode {
     if (url === null || url === "") {
       return
     }
+    writeLastLoginMethod("line")
     window.location.href = url ?? ""
   }
 
@@ -26,6 +29,7 @@ export function LineLoggedInWithUrlButton (props: Props): React.ReactNode {
     return (
       <LineLoggedInButton
         text={props.text}
+        badge={props.badge}
         onClick={() => {
           toast("LINEログインのURLが取得できませんでした。")
         }}
@@ -34,7 +38,13 @@ export function LineLoggedInWithUrlButton (props: Props): React.ReactNode {
     )
   }
 
-  return <LineLoggedInButton text={props.text} onClick={onClick} />
+  return (
+    <LineLoggedInButton
+      text={props.text}
+      badge={props.badge}
+      onClick={onClick}
+    />
+  )
 }
 
 const authenticationLineAccountUrlQuery = graphql(

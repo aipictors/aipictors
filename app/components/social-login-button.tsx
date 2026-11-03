@@ -1,22 +1,32 @@
-import { Button } from "~/components/ui/button"
-import { RiRestartLine } from "@remixicon/react"
+import { useMutation } from "@apollo/client/index"
+import { useNavigate } from "@remix-run/react"
 import {
   type AuthProvider,
   browserPopupRedirectResolver,
   getAuth,
   signInWithPopup,
 } from "firebase/auth"
-import type { ReactElement } from "react"
-import { toast } from "sonner"
 import { graphql } from "gql.tada"
-import { useMutation } from "@apollo/client/index"
-import { useNavigate } from "@remix-run/react"
+import { Loader2Icon } from "lucide-react"
+import { type ReactElement, useState } from "react"
+import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
+import {
+  type LoginMethod,
+  toSocialLoginErrorMessage,
+  writeLastLoginMethod,
+} from "~/utils/login-flow"
 
 type Props = {
   disabled: boolean
   provider: AuthProvider
+  method: LoginMethod
   buttonText?: string | null
   icon?: ReactElement
+  /** 前回使った方法の目印 */
+  badge?: React.ReactNode
+  /** 失敗したときの文（新しく試すときは null） */
+  onError?: (message: string | null) => void
 }
 
 /**
@@ -24,14 +34,19 @@ type Props = {
  * Googleでログインするなど
  */
 export function SocialLoginButton(props: Props): React.ReactNode {
+  const t = useTranslation()
   const [isInitializedUserProfile] = useMutation(
     isInitializedUserProfileMutation,
   )
+  const [isSigningIn, setIsSigningIn] = useState(false)
 
   const navigate = useNavigate()
 
   const onLogin = async () => {
-    if (props.disabled) return
+    if (props.disabled || isSigningIn) return
+
+    props.onError?.(null)
+    setIsSigningIn(true)
 
     try {
       await signInWithPopup(
@@ -39,39 +54,44 @@ export function SocialLoginButton(props: Props): React.ReactNode {
         props.provider,
         browserPopupRedirectResolver,
       )
+    } catch (error) {
+      setIsSigningIn(false)
+      props.onError?.(toSocialLoginErrorMessage(error, t))
+      return
+    }
 
-      // ユーザ設定有無チェック
-      const isInitializedUserProfileRet = await isInitializedUserProfile()
+    writeLastLoginMethod(props.method)
 
-      if (
-        isInitializedUserProfileRet.data &&
-        !isInitializedUserProfileRet.data.isInitializedUserProfile
-      ) {
-        // 存在しない場合はユーザ設定作成画面へ遷移
+    // ここから先の失敗はログイン自体の失敗ではない（確認できなければ今のページのまま）
+    try {
+      const result = await isInitializedUserProfile()
+      if (result.data && !result.data.isInitializedUserProfile) {
         navigate("/new/profile")
       }
     } catch (error) {
-      if (error instanceof Error) {
-        toast("アカウントが見つかりませんでした")
-      }
+      console.warn("Failed to check the user profile:", error)
+    } finally {
+      setIsSigningIn(false)
     }
   }
 
   return (
     <Button
-      className="relative flex h-11 w-full items-center justify-center"
+      type="button"
+      className="relative flex h-12 w-full items-center justify-center rounded-xl font-semibold"
       variant="outline"
       onClick={onLogin}
-      disabled={props.disabled}
+      disabled={props.disabled || isSigningIn}
     >
-      <div className="absolute left-4">
-        {props.disabled ? (
-          <RiRestartLine className="mr-2 size-4 animate-spin" />
+      <span className="absolute left-4 flex size-5 items-center justify-center">
+        {isSigningIn ? (
+          <Loader2Icon className="size-4 animate-spin" />
         ) : (
           props.icon
         )}
-      </div>
+      </span>
       {props.buttonText}
+      {props.badge && <span className="absolute right-3">{props.badge}</span>}
     </Button>
   )
 }
