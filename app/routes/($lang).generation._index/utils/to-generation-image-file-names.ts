@@ -17,7 +17,7 @@ type Item = {
  */
 export function toGenerationImageFileNames(
   items: Item[],
-  formatDate: (date: Date) => string = (date) =>
+  toTimeText: (date: Date) => string = (date) =>
     formatDate(date, "yyyyMMdd-HHmmss"),
 ): string[] {
   const order = items
@@ -41,7 +41,7 @@ export function toGenerationImageFileNames(
     const date =
       item.completedAt === null
         ? "unknown"
-        : formatDate(new Date(item.completedAt * 1000))
+        : toTimeText(new Date(item.completedAt * 1000))
     names[index] = `${date}_${sequence}.${item.extension}`
   })
 

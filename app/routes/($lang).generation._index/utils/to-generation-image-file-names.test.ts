@@ -71,4 +71,12 @@ describe("parseCompletedAt", () => {
     expect(parseCompletedAt("abc")).toBeNull()
     expect(parseCompletedAt("0")).toBeNull()
   })
+
+  test("日付の整形を渡さなくても既定の形式で作れる", () => {
+    const [name] = toGenerationImageFileNames([
+      { completedAt: 1793000000, extension: "png" },
+    ])
+
+    expect(name).toMatch(/^\d{8}-\d{6}_001\.png$/)
+  })
 })

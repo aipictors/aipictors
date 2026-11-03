@@ -48,7 +48,7 @@ node_modules/.bin/wrangler pages dev /tmp/aipictors-client --ip 127.0.0.1 --port
 npx lighthouse http://127.0.0.1:8788/ --only-categories=performance --chrome-flags="--headless=new"
 ```
 
-本番の API を読みに行く。`/api/coins/*` はローカルでは 500 になる（変更前も同じ。秘密情報がないためとみられる）。`bun wrangler pages dev` は起動しても応答しないので、wrangler を直接実行する。
+本番の API を読みに行く。`works` などは query でも閲覧数と閲覧履歴を書き込むので、開いたページの分だけ本番のデータが増える。繰り返しの計測は最小限にする。`/api/coins/*` はローカルでは 500 になる（変更前も同じ。秘密情報がないためとみられる）。`bun wrangler pages dev` は起動しても応答しないので、wrangler を直接実行する。
 
 ## 試して、入れなかったもの
 
