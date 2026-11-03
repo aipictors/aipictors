@@ -34,7 +34,10 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type LoaderData = Awaited<ReturnType<typeof loader>>
 
-type Props = LoaderData
+type Props = LoaderData & {
+  /** R18 のタグページ（/r/tags/:tag）。リンクを /r に揃え、年齢区分の絞り込みを出さない */
+  isSensitive?: boolean
+}
 
 const viewerFollowedTagsQuery = graphql(
   `query TagPageViewerFollowedTags($offset: Int!, $limit: Int!) {
@@ -75,7 +78,7 @@ function Chip(props: {
 }
 
 /**
- * タグページ（/tags/:tag）
+ * タグページ（/tags/:tag、/r/tags/:tag）
  * 並び順・絞り込み・ページは URL で持ち、サーバーで描画する（共有・検索エンジンのため）
  */
 export function TagPageView(props: Props) {
@@ -158,17 +161,22 @@ export function TagPageView(props: Props) {
     R15: "R-15",
   }
 
-  const tagHref = (name: string) => `/tags/${encodeURIComponent(name)}`
+  const pagePrefix = props.isSensitive ? "/r" : ""
+  const tagHref = (name: string) =>
+    `${pagePrefix}/tags/${encodeURIComponent(name)}`
   const homeUrl = locale === "en" ? `${config.siteURL}/en` : config.siteURL
-  const tagsUrl = `${homeUrl}/tags`
-  const pageUrl = `${homeUrl}/tags/${encodeURIComponent(props.tag)}`
+  const tagsUrl = `${homeUrl}${pagePrefix}/tags`
+  const pageUrl = `${homeUrl}${pagePrefix}/tags/${encodeURIComponent(props.tag)}`
 
   const jsonLd: WithContext<CollectionPage> = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: t(`${props.tag}のAIイラスト・画像`, `${props.tag} AI art`),
+    name: props.isSensitive
+      ? t(`${props.tag}のR18 AIイラスト`, `${props.tag} R18 AI art`)
+      : t(`${props.tag}のAIイラスト・画像`, `${props.tag} AI art`),
     url: pageUrl,
     inLanguage: locale,
+    ...(props.isSensitive && { isFamilyFriendly: false }),
     about: { "@type": "Thing", name: props.tag },
     isPartOf: { "@type": "WebSite", name: "Aipictors", url: homeUrl },
     mainEntity: {
@@ -177,7 +185,7 @@ export function TagPageView(props: Props) {
       itemListElement: props.works.map((work, index) => ({
         "@type": "ListItem",
         position: query.page * TAG_PAGE_SIZE + index + 1,
-        url: `${homeUrl}/posts/${work.id}`,
+        url: `${homeUrl}${pagePrefix}/posts/${work.id}`,
         name: locale === "en" && work.enTitle ? work.enTitle : work.title,
         image: work.largeThumbnailImageURL || work.smallThumbnailImageURL,
       })),
@@ -213,11 +221,11 @@ export function TagPageView(props: Props) {
         aria-label={t("パンくずリスト", "Breadcrumb")}
         className="flex items-center gap-1 overflow-x-auto whitespace-nowrap text-muted-foreground text-xs"
       >
-        <Link to="/" className="hover:text-foreground">
+        <Link to={pagePrefix || "/"} className="hover:text-foreground">
           {t("ホーム", "Home")}
         </Link>
         <ChevronRightIcon className="size-3 shrink-0" />
-        <Link to="/tags" className="hover:text-foreground">
+        <Link to={`${pagePrefix}/tags`} className="hover:text-foreground">
           {t("タグ", "Tags")}
         </Link>
         <ChevronRightIcon className="size-3 shrink-0" />
@@ -243,7 +251,7 @@ export function TagPageView(props: Props) {
               {coverWorks.map((work, index) => (
                 <Link
                   key={work.id}
-                  to={`/posts/${work.id}`}
+                  to={`${pagePrefix}/posts/${work.id}`}
                   className={cn(
                     "block overflow-hidden rounded-xl border-2 border-background shadow-md",
                     index === 0 ? "size-28" : "mt-6 size-20",
@@ -270,10 +278,15 @@ export function TagPageView(props: Props) {
               {props.tag}
             </h1>
             <p className="text-muted-foreground text-sm">
-              {t(
-                `${props.worksCount.toLocaleString()}件のAIイラスト・画像`,
-                `${props.worksCount.toLocaleString()} AI illustrations & images`,
-              )}
+              {props.isSensitive
+                ? t(
+                    `${props.worksCount.toLocaleString()}件のR18 AIイラスト`,
+                    `${props.worksCount.toLocaleString()} R18 AI illustrations`,
+                  )
+                : t(
+                    `${props.worksCount.toLocaleString()}件のAIイラスト・画像`,
+                    `${props.worksCount.toLocaleString()} AI illustrations & images`,
+                  )}
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -337,17 +350,21 @@ export function TagPageView(props: Props) {
           })}
         </div>
         <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 [scrollbar-width:none]">
-          {(Object.keys(ratingLabels) as TagPageRating[]).map((rating) => (
-            <Chip
-              key={rating}
-              to={hrefWith({ rating })}
-              isActive={query.rating === rating}
-              replace
-            >
-              {ratingLabels[rating]}
-            </Chip>
-          ))}
-          <span className="mx-1 h-5 w-px shrink-0 bg-border" />
+          {!props.isSensitive && (
+            <>
+              {(Object.keys(ratingLabels) as TagPageRating[]).map((rating) => (
+                <Chip
+                  key={rating}
+                  to={hrefWith({ rating })}
+                  isActive={query.rating === rating}
+                  replace
+                >
+                  {ratingLabels[rating]}
+                </Chip>
+              ))}
+              <span className="mx-1 h-5 w-px shrink-0 bg-border" />
+            </>
+          )}
           <Chip
             to={hrefWith({ hasPrompt: !query.hasPrompt })}
             isActive={query.hasPrompt}
@@ -451,7 +468,7 @@ export function TagPageView(props: Props) {
           <div className="space-y-3">
             <h2 id="tag-about-heading" className="font-bold text-lg">
               {t(
-                `「${props.tag}」のAIイラストについて`,
+                `「${props.tag}」の${props.isSensitive ? "R18 " : ""}AIイラストについて`,
                 `About "${props.tag}" AI art`,
               )}
             </h2>
@@ -484,7 +501,9 @@ export function TagPageView(props: Props) {
                 size="sm"
                 className="rounded-full"
               >
-                <Link to="/tags">{t("タグ一覧", "All tags")}</Link>
+                <Link to={`${pagePrefix}/tags`}>
+                  {t("タグ一覧", "All tags")}
+                </Link>
               </Button>
               <Button
                 asChild
@@ -493,7 +512,7 @@ export function TagPageView(props: Props) {
                 className="rounded-full"
               >
                 <Link
-                  to={`/search?age_limit=&tag=${encodeURIComponent(props.tag)}`}
+                  to={`${pagePrefix}/search?age_limit=&tag=${encodeURIComponent(props.tag)}`}
                 >
                   {t("このタグで詳しく検索", "Advanced search")}
                 </Link>
@@ -519,7 +538,7 @@ export function TagPageView(props: Props) {
                 {props.creators.map((creator) => (
                   <li key={creator.id}>
                     <Link
-                      to={`/users/${creator.id}`}
+                      to={`${pagePrefix}/users/${creator.id}`}
                       className="flex min-w-0 items-center gap-2 rounded-lg p-1.5 hover:bg-muted"
                     >
                       <img
