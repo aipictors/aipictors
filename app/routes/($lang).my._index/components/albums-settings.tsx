@@ -1,4 +1,3 @@
-import { useState } from "react"
 import {
   Select,
   SelectContent,
@@ -6,139 +5,95 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { AlbumsListSortableSetting } from "~/routes/($lang).my._index/components/albums-list-sortable-setting"
 import type { SortType } from "~/types/sort-type"
-import { toRatingText } from "~/utils/work/to-rating-text"
 
 type Props = {
   sort: SortType
   orderBy: IntrospectionEnum<"AlbumOrderBy">
   rating: IntrospectionEnum<"AlbumRating"> | null
-  sumAlbumsCount: number
   setRating: (rating: IntrospectionEnum<"AlbumRating"> | null) => void
-  setSort: (sort: SortType) => void
-  onClickAlbumTitleSortButton: () => void
-  onClickAlbumDateSortButton: () => void
-  onClickAlbumUpdatedSortButton: () => void
-  onClickAlbumManualSortButton: () => void
+  onSort: (orderBy: IntrospectionEnum<"AlbumOrderBy">, sort: SortType) => void
 }
 
+const SORT_OPTIONS: {
+  orderBy: IntrospectionEnum<"AlbumOrderBy">
+  sort: SortType
+  ja: string
+  en: string
+}[] = [
+  { orderBy: "DATE_CREATED", sort: "DESC", ja: "新しい順", en: "Newest" },
+  { orderBy: "DATE_CREATED", sort: "ASC", ja: "古い順", en: "Oldest" },
+  {
+    orderBy: "DATE_UPDATED",
+    sort: "DESC",
+    ja: "更新が新しい順",
+    en: "Recently updated",
+  },
+  { orderBy: "NAME", sort: "ASC", ja: "タイトル順", en: "Title" },
+  { orderBy: "MANUAL", sort: "DESC", ja: "手動で並べる", en: "Manual order" },
+]
+
 /**
- * アルバム設定
+ * シリーズの並び順と絞り込み
  */
 export function AlbumsSetting(props: Props) {
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-
-  const [maxHeight, setMaxHeight] = useState("0px")
-
-  const [opacity, setOpacity] = useState(0)
-
-  const allSortType = [
-    "DATE_CREATED",
-    "DATE_UPDATED",
-    "MANUAL",
-    "NAME",
-  ] as IntrospectionEnum<"AlbumOrderBy">[]
-
-  const onValueChangeOrderBy = (value: string) => {
-    if (value === "NAME") {
-      props.onClickAlbumTitleSortButton()
-      return
-    }
-
-    if (value === "DATE_CREATED") {
-      props.onClickAlbumDateSortButton()
-      return
-    }
-
-    if (value === "DATE_UPDATED") {
-      props.onClickAlbumUpdatedSortButton()
-      return
-    }
-
-    if (value === "MANUAL") {
-      props.onClickAlbumManualSortButton()
-    }
-  }
-
-  const _onToggleFilterButton = () => {
-    if (isFilterOpen) {
-      setMaxHeight("0px")
-      setOpacity(0)
-    } else {
-      setMaxHeight("480px") // 適切な高さに調整
-      setOpacity(1)
-    }
-    setIsFilterOpen(!isFilterOpen)
-  }
-
+  const t = useTranslation()
   return (
-    <>
-      <div className="mb-4">
-        <div
-          className="mt-4 mb-4"
-          style={{
-            maxHeight: maxHeight,
-            overflow: "hidden",
-            transition: "max-height 0.3s ease-out, opacity 0.3s ease-out",
-            opacity: opacity,
-          }}
+    <div className="mb-3 grid grid-cols-2 gap-2 md:max-w-md">
+      <Select
+        value={`${props.orderBy}:${props.sort}`}
+        onValueChange={(value) => {
+          const option = SORT_OPTIONS.find(
+            (item) => `${item.orderBy}:${item.sort}` === value,
+          )
+          if (option) props.onSort(option.orderBy, option.sort)
+        }}
+      >
+        <SelectTrigger
+          aria-label={t("並び順", "Sort")}
+          className="h-9 rounded-lg text-xs md:text-sm"
         >
-          <div className="flex flex-col gap-4 md:flex-row">
-            <Select value={props.orderBy} onValueChange={onValueChangeOrderBy}>
-              <SelectTrigger>
-                <SelectValue placeholder="並び順" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="NAME">{"タイトル順"}</SelectItem>
-                <SelectItem value="DATE_CREATED">{"作成日順"}</SelectItem>
-                <SelectItem value="DATE_UPDATED">{"更新日順"}</SelectItem>
-                <SelectItem value="MANUAL">{"手動"}</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              value={props.rating ? props.rating : ""}
-              onValueChange={(value) => {
-                if (value === "ALL") {
-                  props.setRating(null)
-                  return
-                }
-                props.setRating(value as IntrospectionEnum<"AlbumRating">)
-              }}
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {SORT_OPTIONS.map((option) => (
+            <SelectItem
+              key={`${option.orderBy}:${option.sort}`}
+              value={`${option.orderBy}:${option.sort}`}
             >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={
-                    props.rating
-                      ? toRatingText(props.rating)
-                      : "すべての年齢制限"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">{"すべての年齢制限"}</SelectItem>
-                <SelectItem value="G">{"全年齢"}</SelectItem>
-                <SelectItem value="R15">{"R15"}</SelectItem>
-                <SelectItem value="R18">{"R18"}</SelectItem>
-                <SelectItem value="R18G">{"R18G"}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="block md:hidden">
-          <AlbumsListSortableSetting
-            nowSort={props.sort}
-            nowOrderBy={props.orderBy}
-            allOrderBy={allSortType}
-            setSort={props.setSort}
-            onClickAlbumTitleSortButton={props.onClickAlbumTitleSortButton}
-            onClickAlbumDateSortButton={props.onClickAlbumDateSortButton}
-            onClickAlbumUpdatedSortButton={props.onClickAlbumUpdatedSortButton}
-            onClickAlbumManualSortButton={props.onClickAlbumManualSortButton}
-          />
-        </div>
-      </div>
-    </>
+              {t(option.ja, option.en)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Select
+        value={props.rating ?? "ALL"}
+        onValueChange={(value) =>
+          props.setRating(
+            value === "ALL"
+              ? null
+              : (value as IntrospectionEnum<"AlbumRating">),
+          )
+        }
+      >
+        <SelectTrigger
+          aria-label={t("年齢制限", "Rating")}
+          className="h-9 rounded-lg text-xs md:text-sm"
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="ALL">
+            {t("すべての年齢", "All ratings")}
+          </SelectItem>
+          <SelectItem value="G">{t("全年齢", "All ages")}</SelectItem>
+          <SelectItem value="R15">R-15</SelectItem>
+          <SelectItem value="R18">R-18</SelectItem>
+          <SelectItem value="R18G">R-18G</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
   )
 }

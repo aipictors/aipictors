@@ -1,107 +1,60 @@
-import type { SortType } from "~/types/sort-type"
-import { AuthContext } from "~/contexts/auth-context"
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext, useEffect, useMemo } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { WorksList } from "~/routes/($lang).my._index/components/works-list"
-import { useQuery } from "@apollo/client/index"
+import { Button } from "~/components/ui/button"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { graphql } from "gql.tada"
-import { MobileWorkListItemFragment } from "~/routes/($lang).my._index/components/works-sp-list"
+import { cn } from "~/lib/utils"
+import {
+  type MyWork,
+  MyWorkListItemFragment,
+} from "~/routes/($lang).my._index/components/my-work-items"
+import { WorksList } from "~/routes/($lang).my._index/components/works-list"
+import type { SortType } from "~/types/sort-type"
 
 type Props = {
   page: number
+  perPage: number
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   accessType: IntrospectionEnum<"AccessType"> | null
   workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
-  isFixedPagination?: boolean
-  perPage?: number
-  setWorksMaxCount: (worksMaxCount: number) => void
-  setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
-  setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
-  setSort: (sort: SortType) => void
+  search: string
+  isFiltered: boolean
+  onClearFilters: () => void
   setPage: (page: number) => void
-  onClickTitleSortButton: () => void
-  onClickLikeSortButton: () => void
-  onClickBookmarkSortButton: () => void
-  onClickCommentSortButton: () => void
-  onClickViewSortButton: () => void
-  onClickAccessTypeSortButton: () => void
-  onClickDateSortButton: () => void
-  onClickWorkTypeSortButton: () => void
-  onClickIsPromotionSortButton: () => void
-  onClickAgeTypeSortButton: () => void
+  onSort: (orderBy: IntrospectionEnum<"WorkOrderBy">, sort: SortType) => void
 }
 
 /**
  * 作品一覧コンテナ
  */
-export function WorksListContainer (props: Props) {
+export function WorksListContainer(props: Props) {
+  const t = useTranslation()
   const authContext = useContext(AuthContext)
 
-  // クエリ変数のメモ化で不要な再実行を防ぐ
-  const worksQueryVariables = useMemo(
+  // 一覧と件数は同じ条件で数える（予約投稿の分だけ件数が合わないことがあった）
+  const where = useMemo(
     () => ({
-      offset: (props.perPage ?? 50) * props.page,
-      limit: props.perPage ?? 50,
-      where: {
-        userId: authContext.userId || "",
-        orderBy: props.orderBy,
-        sort: props.sort,
-        isIncludePrivate: true,
-        ...(props.accessType !== null && {
-          accessTypes: [props.accessType],
-        }),
-        ...(props.workType !== null && {
-          workTypes: [props.workType],
-        }),
-        ...(props.rating !== null
-          ? {
-              ratings: [props.rating] as ("G" | "R15" | "R18" | "R18G")[],
-            }
-          : {
-              ratings: ["G", "R15", "R18", "R18G"] as (
-                | "G"
-                | "R15"
-                | "R18"
-                | "R18G"
-              )[],
-            }),
-        createdAtAfter: new Date("1999/01/01").toISOString(),
-        beforeCreatedAt: new Date("2099/01/01").toISOString(),
-      },
-    }),
-    [
-      props.page,
-      props.perPage,
-      authContext.userId,
-      props.orderBy,
-      props.sort,
-      props.accessType,
-      props.workType,
-      props.rating,
-    ],
-  )
-
-  const worksCountQueryVariables = useMemo(
-    () => ({
-      where: {
-        userId: authContext.userId || "",
-        orderBy: props.orderBy,
-        sort: props.sort,
-        isIncludePrivate: true,
-        isNowCreatedAt: true,
-        ...(props.accessType !== null && {
-          accessTypes: [props.accessType],
-        }),
-        ...(props.workType !== null && {
-          workTypes: [props.workType],
-        }),
-        ...(props.rating !== null && {
-          ratings: [props.rating] as ("G" | "R15" | "R18" | "R18G")[],
-        }),
-      },
+      userId: authContext.userId || "",
+      orderBy: props.orderBy,
+      sort: props.sort,
+      isIncludePrivate: true,
+      ...(props.accessType !== null && { accessTypes: [props.accessType] }),
+      ...(props.workType !== null && { workTypes: [props.workType] }),
+      ratings: (props.rating !== null
+        ? [props.rating]
+        : ["G", "R15", "R18", "R18G"]) as ("G" | "R15" | "R18" | "R18G")[],
+      ...(props.search.length > 0 && {
+        search: props.search,
+        searchInTags: true,
+        searchInDescription: true,
+      }),
+      createdAtAfter: new Date("1999/01/01").toISOString(),
+      beforeCreatedAt: new Date("2099/01/01").toISOString(),
     }),
     [
       authContext.userId,
@@ -110,161 +63,129 @@ export function WorksListContainer (props: Props) {
       props.accessType,
       props.workType,
       props.rating,
+      props.search,
     ],
   )
 
-  // Hooksは常に呼び出す必要がある（条件分岐の前）
-  const {
-    data: workResp,
-    loading: workLoading,
-    error: workError,
-  } = useQuery(worksQuery, {
-    skip:
-      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
-    variables: worksQueryVariables,
-    errorPolicy: "all", // 部分的なデータも受け取る
-    fetchPolicy: "cache-and-network", // キャッシュを優先してネットワークエラーを軽減
+  const skip =
+    authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId
+
+  const { data, previousData, loading, error, refetch } = useQuery(worksQuery, {
+    skip,
+    variables: {
+      offset: props.perPage * props.page,
+      limit: props.perPage,
+      where,
+    },
+    errorPolicy: "all",
+    fetchPolicy: "cache-and-network",
     notifyOnNetworkStatusChange: true,
   })
 
-  const {
-    data: worksCountResp,
-    loading: countLoading,
-    error: countError,
-  } = useQuery(worksCountQuery, {
-    skip:
-      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
-    variables: worksCountQueryVariables,
-    errorPolicy: "all", // 部分的なデータも受け取る
-    fetchPolicy: "cache-and-network", // キャッシュを優先してネットワークエラーを軽減
-    notifyOnNetworkStatusChange: true,
-  })
+  const { data: countData, previousData: previousCountData } = useQuery(
+    worksCountQuery,
+    {
+      skip,
+      variables: { where },
+      errorPolicy: "all",
+      fetchPolicy: "cache-and-network",
+    },
+  )
 
-  const works = workResp?.works
-  const worksMaxCount = worksCountResp?.worksCount ?? 0
+  const worksCount = countData?.worksCount ?? previousCountData?.worksCount ?? 0
 
+  // ページを移っても前の一覧を残して薄くする（毎回スピナーに置き換えると、位置が飛んで見失う）
+  const works = (data?.works ?? previousData?.works) as MyWork[] | undefined
+  const lastPage = Math.max(Math.ceil(worksCount / props.perPage) - 1, 0)
+
+  // 作品を消したあとなどで今のページがなくなったら、最後のページへ戻す
   useEffect(() => {
-    props.setWorksMaxCount(worksMaxCount)
-  }, [worksMaxCount, props])
+    if (countData?.worksCount !== undefined && props.page > lastPage) {
+      props.setPage(lastPage)
+    }
+  }, [countData?.worksCount, lastPage, props])
 
-  // ログインしていない場合は早期リターン（Hooks呼び出し後）
-  if (
-    authContext.isLoading ||
-    authContext.isNotLoggedIn ||
-    authContext.userId === undefined ||
-    !authContext.userId
-  ) {
-    return null
+  if (skip) {
+    return authContext.isLoading ? <ListSkeleton /> : null
   }
 
-  // エラーハンドリング - より詳細な情報と再試行機能
-  if (workError && !workResp) {
-    console.error("Works query error:", workError)
-    const isNetworkError = workError.networkError !== null
-    const isTimeoutError =
-      workError.message.includes("timeout") ||
-      workError.message.includes("fetch")
-
+  if (error && works === undefined) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 p-8">
-        <div className="text-center">
-          <p className="font-medium text-gray-900 text-lg dark:text-gray-100">
-            作品の読み込みに失敗しました
-          </p>
-          {isNetworkError && (
-            <p className="mt-2 text-gray-600 text-sm dark:text-gray-400">
-              ネットワークエラーが発生しました。混雑時間帯の可能性があります。
-            </p>
-          )}
-          {isTimeoutError && (
-            <p className="mt-2 text-gray-600 text-sm dark:text-gray-400">
-              リクエストがタイムアウトしました。しばらく時間をおいて再試行してください。
-            </p>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={() => window.location.reload()}
-          className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-        >
-          再読み込み
-        </button>
-      </div>
-    )
-  }
-
-  if (countError && !worksCountResp) {
-    console.error("Works count query error:", countError)
-    // カウントエラーは非致命的なので警告のみ表示
-  }
-
-  // ローディング状態 - ネットワーク状況を考慮した表示
-  if (workLoading || countLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center space-y-4 p-8">
-        <div className="h-8 w-8 animate-spin rounded-full border-gray-900 border-b-2 dark:border-gray-100" />
-        <p className="text-gray-600 text-sm dark:text-gray-400">
-          作品を読み込んでいます...
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-14 text-center">
+        <p className="font-medium">
+          {t("作品を読み込めませんでした", "Could not load your works")}
         </p>
-        {workLoading && countLoading && (
-          <p className="text-gray-500 text-xs dark:text-gray-500">
-            混雑時は読み込みに時間がかかる場合があります
-          </p>
-        )}
+        <p className="text-muted-foreground text-sm">
+          {t(
+            "混み合っている可能性があります。少し待ってからお試しください。",
+            "The site may be busy. Please try again shortly.",
+          )}
+        </p>
+        <Button variant="outline" onClick={() => void refetch()}>
+          {t("もう一度読み込む", "Retry")}
+        </Button>
       </div>
     )
+  }
+
+  if (works === undefined) {
+    return <ListSkeleton />
   }
 
   return (
     <>
-      <WorksList
-        works={works ?? []}
-        accessType={props.accessType}
-        rating={props.rating}
-        sort={props.sort}
-        orderBy={props.orderBy}
-        setAccessType={props.setAccessType}
-        setRating={props.setRating}
-        setSort={props.setSort}
-        onClickAgeTypeSortButton={props.onClickAgeTypeSortButton}
-        onClickTitleSortButton={props.onClickTitleSortButton}
-        onClickLikeSortButton={props.onClickLikeSortButton}
-        onClickBookmarkSortButton={props.onClickBookmarkSortButton}
-        onClickCommentSortButton={props.onClickCommentSortButton}
-        onClickViewSortButton={props.onClickViewSortButton}
-        onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
-        onClickDateSortButton={props.onClickDateSortButton}
-        onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
-        onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
-      />
-      {props.isFixedPagination && (
-        <>
-          <div className="h-8" />
-          <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
-            <ResponsivePagination
-              perPage={props.perPage ?? 50}
-              maxCount={worksMaxCount}
-              currentPage={props.page}
-              onPageChange={(page: number) => {
-                props.setPage(page)
-              }}
-            />
-          </div>
-        </>
-      )}
-      {!props.isFixedPagination && (
-        <div className="mt-4 mb-8">
+      <div
+        aria-busy={loading}
+        className={cn(
+          "space-y-3 transition-opacity",
+          loading && "pointer-events-none opacity-60",
+        )}
+      >
+        <WorksList
+          key={authContext.userId}
+          works={works}
+          worksCount={worksCount}
+          isFiltered={props.isFiltered}
+          onClearFilters={props.onClearFilters}
+          sort={props.sort}
+          orderBy={props.orderBy}
+          onSort={props.onSort}
+        />
+      </div>
+      {worksCount > props.perPage && (
+        // 一覧の範囲でだけ画面の下に固定する（フッターに重ならない）
+        <div className="sticky bottom-0 z-10 mt-3 flex justify-center border-t bg-background/95 py-2 backdrop-blur">
           <ResponsivePagination
-            perPage={props.perPage ?? 50}
-            maxCount={worksMaxCount}
+            perPage={props.perPage}
+            maxCount={worksCount}
             currentPage={props.page}
             onPageChange={(page: number) => {
               props.setPage(page)
+              window.scrollTo({ top: 0 })
             }}
           />
         </div>
       )}
     </>
+  )
+}
+
+function ListSkeleton() {
+  return (
+    <div aria-hidden className="divide-y rounded-xl border">
+      {[0, 1, 2, 3, 4].map((index) => (
+        <div
+          key={index}
+          className="flex animate-pulse items-center gap-3 p-2.5"
+        >
+          <div className="size-14 shrink-0 rounded-lg bg-muted" />
+          <div className="flex-1 space-y-2">
+            <div className="h-3 w-1/2 rounded bg-muted" />
+            <div className="h-3 w-1/4 rounded bg-muted" />
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -277,8 +198,8 @@ const worksCountQuery = graphql(
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...MobileWorkListItem
+      ...MyWorkListItem
     }
   }`,
-  [MobileWorkListItemFragment],
+  [MyWorkListItemFragment],
 )

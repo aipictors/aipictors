@@ -4,8 +4,6 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { useSearchParams } from "@remix-run/react"
-import React, { Suspense, useEffect } from "react"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { META } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { WorksListContainer } from "~/routes/($lang).my._index/components/works-list-container"
@@ -32,195 +30,106 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
+const WORK_TYPES = ["WORK", "VIDEO", "NOVEL", "COLUMN"]
+const ACCESS_TYPES = ["PUBLIC", "SILENT", "LIMITED", "PRIVATE", "DRAFT"]
+const RATINGS = ["G", "R15", "R18", "R18G"]
+
 export default function MyPosts() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // 初期値をURLパラメータから取得（一度だけ実行）
-  const [isInitialized, setIsInitialized] = React.useState(false)
-  const [page, setPage] = React.useState(0)
-  const [albumOrderDeskAsc, _setAlbumOrderDeskAsc] =
-    React.useState<SortType>("DESC")
-  const [accessType, setAccessType] =
-    React.useState<IntrospectionEnum<"AccessType"> | null>(null)
-  const [workType, setWorkType] =
-    React.useState<IntrospectionEnum<"WorkType"> | null>(null)
-  const [WorkOrderby, setWorkOrderby] =
-    React.useState<IntrospectionEnum<"WorkOrderBy">>("DATE_CREATED")
-  const [worksOrderDeskAsc, setWorksOrderDeskAsc] =
-    React.useState<SortType>("DESC")
-  const [rating, setRating] =
-    React.useState<IntrospectionEnum<"Rating"> | null>(null)
-  const [perPage, setPerPage] = React.useState(50)
+  // 条件は URL に持つ（戻る・共有・再読み込みで同じ一覧になる。前の URL もそのまま開ける）
+  const page = Math.max(Number(searchParams.get("page")) || 0, 0)
+  const perPage = Number(searchParams.get("perPage")) || 50
+  const search = searchParams.get("q") ?? ""
+  const orderBy = (searchParams.get("WorkOrderby") ??
+    "DATE_CREATED") as IntrospectionEnum<"WorkOrderBy">
+  const sort: SortType =
+    searchParams.get("worksOrderDeskAsc") === "ASC" ? "ASC" : "DESC"
 
-  // URLパラメータから初期値を設定（一度だけ実行）
-  useEffect(() => {
-    if (!isInitialized) {
-      setPage(Number(searchParams.get("page")) || 0)
-      _setAlbumOrderDeskAsc(
-        (searchParams.get("albumOrderDeskAsc") as SortType) || "DESC",
-      )
-      setAccessType(
-        (searchParams.get("accessType") as IntrospectionEnum<"AccessType">) ||
-          null,
-      )
-      setWorkType(
-        (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
-      )
-      setWorkOrderby(
-        (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
-          "DATE_CREATED",
-      )
-      setWorksOrderDeskAsc(
-        (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
-      )
-      setRating(
-        (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
-      )
-      setPerPage(Number(searchParams.get("perPage")) || 50)
-      setIsInitialized(true)
-    }
-  }, [searchParams, isInitialized])
+  const pick = <T extends string>(key: string, allowed: string[]) => {
+    const value = searchParams.get(key)
+    return value !== null && allowed.includes(value) ? (value as T) : null
+  }
+  const accessType = pick<IntrospectionEnum<"AccessType">>(
+    "accessType",
+    ACCESS_TYPES,
+  )
+  const workType = pick<IntrospectionEnum<"WorkType">>("workType", WORK_TYPES)
+  const rating = pick<IntrospectionEnum<"Rating">>("rating", RATINGS)
 
-  // URLパラメータの更新（初期化後のみ実行）
-  useEffect(() => {
-    if (!isInitialized) return
+  const isFiltered =
+    search.length > 0 ||
+    accessType !== null ||
+    workType !== null ||
+    rating !== null
 
-    const params = new URLSearchParams()
-
-    params.set("page", String(page))
-    params.set("perPage", String(perPage))
-    params.set("albumOrderDeskAsc", albumOrderDeskAsc)
-    if (accessType) params.set("accessType", accessType)
-    if (workType) params.set("workType", workType)
-    if (rating) params.set("rating", rating)
-    params.set("WorkOrderby", WorkOrderby)
-    params.set("worksOrderDeskAsc", worksOrderDeskAsc)
-
-    setSearchParams(params, { replace: true, preventScrollReset: true })
-  }, [
-    isInitialized,
-    page,
-    perPage,
-    albumOrderDeskAsc,
-    accessType,
-    workType,
-    rating,
-    WorkOrderby,
-    worksOrderDeskAsc,
-  ])
-
-  // 作品一覧のソートボタンクリック時の処理
-  const onClickTitleSortButton = () => {
-    setWorkOrderby("NAME")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  /** 条件を変える（page を指定しなければ 1 ページ目へ戻す） */
+  const update = (patch: Record<string, string | null>) => {
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current)
+        if (!("page" in patch)) next.delete("page")
+        for (const [key, value] of Object.entries(patch)) {
+          if (value === null || value === "") next.delete(key)
+          else next.set(key, value)
+        }
+        // 既定値は URL に出さない
+        if (next.get("page") === "0") next.delete("page")
+        if (next.get("perPage") === "50") next.delete("perPage")
+        if (next.get("WorkOrderby") === "DATE_CREATED") {
+          next.delete("WorkOrderby")
+        }
+        if (next.get("worksOrderDeskAsc") === "DESC") {
+          next.delete("worksOrderDeskAsc")
+        }
+        next.delete("albumOrderDeskAsc")
+        return next
+      },
+      { replace: true, preventScrollReset: true },
+    )
   }
 
-  const onClickLikeSortButton = () => {
-    setWorkOrderby("LIKES_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
+  const onSort = (
+    nextOrderBy: IntrospectionEnum<"WorkOrderBy">,
+    nextSort: SortType,
+  ) => update({ WorkOrderby: nextOrderBy, worksOrderDeskAsc: nextSort })
 
-  const onClickBookmarkSortButton = () => {
-    setWorkOrderby("BOOKMARKS_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickCommentSortButton = () => {
-    setWorkOrderby("COMMENTS_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickViewSortButton = () => {
-    setWorkOrderby("VIEWS_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickAgeTypeSortButton = () => {
-    setWorkOrderby("AGE_TYPE")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickAccessTypeSortButton = () => {
-    setWorkOrderby("ACCESS_TYPE")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickDateSortButton = () => {
-    setWorkOrderby("DATE_CREATED")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickWorkTypeSortButton = () => {
-    setWorkOrderby("WORK_TYPE")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickIsPromotionSortButton = () => {
-    setWorkOrderby("IS_PROMOTION")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickPerPageChange = (perPage: number) => {
-    setPerPage(perPage)
-    setPage(0)
-  }
-
-  const [worksMaxCount, setWorksMaxCount] = React.useState(0)
+  const onClearFilters = () =>
+    update({ q: null, accessType: null, workType: null, rating: null })
 
   return (
-    <>
-      <Suspense fallback={<AppLoadingPage />}>
-        <WorksSetting
-          sort={worksOrderDeskAsc}
-          orderBy={WorkOrderby}
-          sumWorksCount={worksMaxCount}
-          accessType={accessType}
-          workType={workType}
-          rating={rating}
-          perPage={perPage}
-          onClickTitleSortButton={onClickTitleSortButton}
-          onClickLikeSortButton={onClickLikeSortButton}
-          onClickBookmarkSortButton={onClickBookmarkSortButton}
-          onClickCommentSortButton={onClickCommentSortButton}
-          onClickViewSortButton={onClickViewSortButton}
-          onClickAccessTypeSortButton={onClickAccessTypeSortButton}
-          onClickDateSortButton={onClickDateSortButton}
-          onClickWorkTypeSortButton={onClickWorkTypeSortButton}
-          onClickIsPromotionSortButton={onClickIsPromotionSortButton}
-          setAccessType={setAccessType}
-          setWorkType={setWorkType}
-          setRating={setRating}
-          setSort={setWorksOrderDeskAsc}
-          onClickPerPageChange={onClickPerPageChange}
-        />
-        <Suspense fallback={<AppLoadingPage />}>
-          <WorksListContainer
-            page={page}
-            accessType={accessType}
-            workType={workType}
-            rating={rating}
-            sort={worksOrderDeskAsc}
-            orderBy={WorkOrderby}
-            isFixedPagination={true}
-            perPage={perPage}
-            setWorksMaxCount={setWorksMaxCount}
-            setAccessType={setAccessType}
-            setRating={setRating}
-            setSort={setWorksOrderDeskAsc}
-            setPage={setPage}
-            onClickTitleSortButton={onClickTitleSortButton}
-            onClickLikeSortButton={onClickLikeSortButton}
-            onClickBookmarkSortButton={onClickBookmarkSortButton}
-            onClickCommentSortButton={onClickCommentSortButton}
-            onClickViewSortButton={onClickViewSortButton}
-            onClickAgeTypeSortButton={onClickAgeTypeSortButton}
-            onClickAccessTypeSortButton={onClickAccessTypeSortButton}
-            onClickDateSortButton={onClickDateSortButton}
-            onClickWorkTypeSortButton={onClickWorkTypeSortButton}
-            onClickIsPromotionSortButton={onClickIsPromotionSortButton}
-          />
-        </Suspense>
-      </Suspense>
-    </>
+    <div className="space-y-3">
+      <WorksSetting
+        sort={sort}
+        orderBy={orderBy}
+        accessType={accessType}
+        workType={workType}
+        rating={rating}
+        search={search}
+        perPage={perPage}
+        isFiltered={isFiltered}
+        setSearch={(value) => update({ q: value })}
+        setAccessType={(value) => update({ accessType: value })}
+        setWorkType={(value) => update({ workType: value })}
+        setRating={(value) => update({ rating: value })}
+        onSort={onSort}
+        onClickPerPageChange={(value) => update({ perPage: String(value) })}
+        onClearFilters={onClearFilters}
+      />
+      <WorksListContainer
+        page={page}
+        perPage={perPage}
+        accessType={accessType}
+        workType={workType}
+        rating={rating}
+        search={search}
+        sort={sort}
+        orderBy={orderBy}
+        isFiltered={isFiltered}
+        onClearFilters={onClearFilters}
+        setPage={(value) => update({ page: String(value) })}
+        onSort={onSort}
+      />
+    </div>
   )
 }

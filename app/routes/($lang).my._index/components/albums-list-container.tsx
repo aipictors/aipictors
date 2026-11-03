@@ -18,8 +18,6 @@ type Props = {
   albumsMaxCount: number
   rating: IntrospectionEnum<"AlbumRating"> | null
   setAlbumPage: (page: number) => void
-  onClickAlbumTitleSortButton: () => void
-  onClickAlbumDateSortButton: () => void
 }
 
 /**
@@ -63,34 +61,36 @@ export function AlbumsListContainer(props: Props) {
         <WorksSeriesAddButton refetch={refetchAlbums} isEmpty />
       ) : (
         <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="text-muted-foreground text-sm">
-            {`${props.albumsMaxCount}件のシリーズ`}
+          <p className="text-muted-foreground text-sm tabular-nums">
+            {`${props.albumsMaxCount.toLocaleString()}件のシリーズ`}
           </p>
           <WorksSeriesAddButton refetch={refetchAlbums} />
         </div>
       )}
-      <AlbumsList
-        albums={albums}
-        refetch={refetchAlbums}
-        sort={props.sort}
-        orderBy={props.orderBy}
-        onClickTitleSortButton={props.onClickAlbumTitleSortButton}
-        onClickDateSortButton={props.onClickAlbumDateSortButton}
-      />
-      {!isManualOrder && (
-        <>
-          <div className="h-8" />
-          <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
-            <ResponsivePagination
-              perPage={16}
-              maxCount={props.albumsMaxCount}
-              currentPage={props.page}
-              onPageChange={(page: number) => {
-                props.setAlbumPage(page)
-              }}
-            />
-          </div>
-        </>
+      {albums.length > 0 && (
+        <AlbumsList
+          albums={albums}
+          refetch={refetchAlbums}
+          orderBy={props.orderBy}
+        />
+      )}
+      {albums.length === 0 && props.rating !== null && (
+        <p className="rounded-xl border border-dashed px-6 py-14 text-center text-muted-foreground text-sm">
+          この年齢制限のシリーズはありません
+        </p>
+      )}
+      {!isManualOrder && props.albumsMaxCount > 16 && (
+        <div className="sticky bottom-0 z-10 mt-3 flex justify-center border-t bg-background/95 py-2 backdrop-blur">
+          <ResponsivePagination
+            perPage={16}
+            maxCount={props.albumsMaxCount}
+            currentPage={props.page}
+            onPageChange={(page: number) => {
+              props.setAlbumPage(page)
+              window.scrollTo({ top: 0 })
+            }}
+          />
+        </div>
       )}
     </>
   )

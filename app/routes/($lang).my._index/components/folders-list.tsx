@@ -1,58 +1,128 @@
+import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { useState } from "react"
+import { toast } from "sonner"
 import {
-  FoldersListTable,
-  FolderTableItemFragment,
-} from "~/routes/($lang).my._index/components/folders-list-table"
-import { FoldersSpList } from "~/routes/($lang).my._index/components/folders-sp-list"
-import { type FragmentOf, graphql } from "gql.tada"
-import { MobileFolderListItemFragment } from "~/routes/($lang).my._index/components/folders-sp-list-item"
-import type { SortType } from "~/types/sort-type"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog"
+import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
+import {
+  MY_COLLECTION_GRID_CLASS,
+  MyCollectionCard,
+} from "~/routes/($lang).my._index/components/my-collection-card"
+
+type Folder = {
+  id: string
+  nanoid?: string | null
+  title: string
+  createdAt: number
+  thumbnailImageURL?: string | null
+  worksCount?: number | null
+}
 
 type Props = {
-  folders: FragmentOf<typeof FolderListItemFragment>[]
-  sort: SortType
-  orderBy: IntrospectionEnum<"FolderOrderBy">
-  onClickTitleSortButton: () => void
-  onClickDateSortButton: () => void
+  folders: Folder[]
+  refetch: () => void
 }
 
 /**
- * シリーズ一覧
+ * コレクション一覧
  */
-export function FoldersList (props: Props) {
-  const truncateTitle = (title: string, maxLength: number) => {
-    return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
-  }
+export function FoldersList(props: Props) {
+  const t = useTranslation()
+  const [deletingFolder, setDeletingFolder] = useState<Folder | null>(null)
+  const [deleteFolder, { loading }] = useMutation(deleteFolderMutation)
 
-  const displayFolders = props.folders.map((folder) => {
-    return {
-      ...folder,
-      title: truncateTitle(folder.title, 32),
+  const onDelete = async () => {
+    if (deletingFolder === null) return
+    try {
+      await deleteFolder({
+        variables: { input: { folderId: deletingFolder.id } },
+      })
+      toast(t("コレクションを削除しました", "Collection deleted"))
+      props.refetch()
+    } catch (error) {
+      toast(
+        error instanceof Error
+          ? error.message
+          : t("削除できませんでした", "Could not delete"),
+      )
     }
-  })
+    setDeletingFolder(null)
+  }
 
   return (
     <>
-      <div className="hidden md:block">
-        <FoldersListTable
-          folders={displayFolders}
-          sort={props.sort}
-          orderBy={props.orderBy}
-          onClickTitleSortButton={props.onClickTitleSortButton}
-          onClickDateSortButton={props.onClickDateSortButton}
-        />
-      </div>
-      <div className="block md:hidden">
-        <FoldersSpList folders={props.folders} />
-      </div>
+      <ul className={MY_COLLECTION_GRID_CLASS}>
+        {props.folders.map((folder) => (
+          <MyCollectionCard
+            key={folder.id}
+            to={`/collections/${folder.nanoid}`}
+            title={folder.title}
+            thumbnailUrl={folder.thumbnailImageURL}
+            worksCount={folder.worksCount}
+            createdAt={folder.createdAt}
+            onDelete={() => setDeletingFolder(folder)}
+          />
+        ))}
+      </ul>
+      <AlertDialog
+        open={deletingFolder !== null}
+        onOpenChange={(open) => {
+          if (!open && !loading) setDeletingFolder(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t(
+                `「${deletingFolder?.title}」を削除しますか？`,
+                `Delete "${deletingFolder?.title}"?`,
+              )}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t(
+                "コレクションだけを削除します。中の作品は消えません。",
+                "Only the collection is deleted. Its works stay.",
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={loading}>
+              {t("キャンセル", "Cancel")}
+            </AlertDialogCancel>
+            <Button variant="destructive" disabled={loading} onClick={onDelete}>
+              {t("削除する", "Delete")}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }
 
 export const FolderListItemFragment = graphql(
   `fragment FolderListItem on FolderNode @_unmask {
-    ...FolderTableItem
-    ...MobileFolderListItem
+    id
+    nanoid
+    title
+    createdAt
+    thumbnailImageURL
+    worksCount
   }`,
-  [FolderTableItemFragment, MobileFolderListItemFragment],
+)
+
+const deleteFolderMutation = graphql(
+  `mutation DeleteFolder($input: DeleteFolderInput!) {
+    deleteFolder(input: $input) {
+      id
+    }
+  }`,
 )

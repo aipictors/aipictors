@@ -1,4 +1,4 @@
-import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { MyCollectionGridSkeleton } from "~/routes/($lang).my._index/components/my-collection-card"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import type {
@@ -34,7 +34,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyFolders () {
+export default function MyFolders() {
   const authContext = useContext(AuthContext)
 
   const [folderPage, setFolderPage] = React.useState(0)
@@ -56,31 +56,21 @@ export default function MyFolders () {
   const [FolderOrderby, setFolderOrderby] =
     React.useState<IntrospectionEnum<"FolderOrderBy">>("DATE_CREATED")
 
-  // アルバム一覧のソートボタンクリック時の処理
-  const onClickFolderTitleSortButton = () => {
-    setFolderOrderby("NAME")
-    setFolderOrderDeskAsc(folderOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickFolderDateSortButton = () => {
-    setFolderOrderby("DATE_CREATED")
-    setFolderOrderDeskAsc(folderOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
   return (
-    <>
-      <Suspense fallback={<AppLoadingPage />}>
-        <FoldersListContainer
-          page={folderPage}
-          sort={folderOrderDeskAsc}
-          orderBy={FolderOrderby}
-          foldersMaxCount={foldersMaxCount}
-          setFolderPage={setFolderPage}
-          onClickFolderTitleSortButton={onClickFolderTitleSortButton}
-          onClickFolderDateSortButton={onClickFolderDateSortButton}
-        />
-      </Suspense>
-    </>
+    <Suspense fallback={<MyCollectionGridSkeleton />}>
+      <FoldersListContainer
+        page={folderPage}
+        sort={folderOrderDeskAsc}
+        orderBy={FolderOrderby}
+        foldersMaxCount={foldersMaxCount}
+        setFolderPage={setFolderPage}
+        onSort={(orderBy, sort) => {
+          setFolderPage(0)
+          setFolderOrderby(orderBy)
+          setFolderOrderDeskAsc(sort)
+        }}
+      />
+    </Suspense>
   )
 }
 

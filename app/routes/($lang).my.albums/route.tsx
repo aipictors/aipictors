@@ -6,7 +6,7 @@ import type {
 } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import React, { Suspense, useContext } from "react"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { MyCollectionGridSkeleton } from "~/routes/($lang).my._index/components/my-collection-card"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -65,44 +65,13 @@ export default function MyAlbums() {
 
   const albumsMaxCount = albumsCountResp?.albumsCount ?? 0
 
-  // アルバム一覧のソートボタンクリック時の処理
-  const onClickAlbumTitleSortButton = () => {
+  const onSort = (
+    orderBy: IntrospectionEnum<"AlbumOrderBy">,
+    sort: SortType,
+  ) => {
     setAlbumPage(0)
-    if (AlbumOrderby === "NAME") {
-      setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-      return
-    }
-
-    setAlbumOrderby("NAME")
-    setAlbumOrderDeskAsc("DESC")
-  }
-
-  const onClickAlbumDateSortButton = () => {
-    setAlbumPage(0)
-    if (AlbumOrderby === "DATE_CREATED") {
-      setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-      return
-    }
-
-    setAlbumOrderby("DATE_CREATED")
-    setAlbumOrderDeskAsc("DESC")
-  }
-
-  const onClickAlbumUpdatedSortButton = () => {
-    setAlbumPage(0)
-    if (AlbumOrderby === "DATE_UPDATED") {
-      setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-      return
-    }
-
-    setAlbumOrderby("DATE_UPDATED")
-    setAlbumOrderDeskAsc("DESC")
-  }
-
-  const onClickAlbumManualSortButton = () => {
-    setAlbumOrderby("MANUAL")
-    setAlbumPage(0)
-    setAlbumOrderDeskAsc("DESC")
+    setAlbumOrderby(orderBy)
+    setAlbumOrderDeskAsc(sort)
   }
 
   return (
@@ -110,25 +79,21 @@ export default function MyAlbums() {
       <AlbumsSetting
         sort={albumOrderDeskAsc}
         orderBy={AlbumOrderby}
-        sumAlbumsCount={albumsMaxCount}
         rating={albumRating}
-        onClickAlbumTitleSortButton={onClickAlbumTitleSortButton}
-        onClickAlbumDateSortButton={onClickAlbumDateSortButton}
-        onClickAlbumUpdatedSortButton={onClickAlbumUpdatedSortButton}
-        onClickAlbumManualSortButton={onClickAlbumManualSortButton}
-        setRating={setAlbumRating}
-        setSort={setAlbumOrderDeskAsc}
+        onSort={onSort}
+        setRating={(rating) => {
+          setAlbumPage(0)
+          setAlbumRating(rating)
+        }}
       />
-      <Suspense fallback={<AppLoadingPage />}>
+      <Suspense fallback={<MyCollectionGridSkeleton />}>
         <AlbumsListContainer
           page={albumPage}
           sort={albumOrderDeskAsc}
           orderBy={AlbumOrderby}
-          rating={albumRating}
           albumsMaxCount={albumsMaxCount}
+          rating={albumRating}
           setAlbumPage={setAlbumPage}
-          onClickAlbumTitleSortButton={onClickAlbumTitleSortButton}
-          onClickAlbumDateSortButton={onClickAlbumDateSortButton}
         />
       </Suspense>
     </>
