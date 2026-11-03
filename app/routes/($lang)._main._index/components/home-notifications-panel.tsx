@@ -158,7 +158,7 @@ export function HomeNotificationsPanel(props: Props) {
     },
     {
       value: "COMMENT",
-      label: t("コメント", "Comments"),
+      label: t("コメント", "Replies"),
       icon: MessageCircleIcon,
       count: commentUnread,
     },
@@ -170,7 +170,7 @@ export function HomeNotificationsPanel(props: Props) {
     },
     {
       value: "FOLLOW",
-      label: t("フォロー", "Follows"),
+      label: t("フォロー", "Follow"),
       icon: UserRoundPlusIcon,
       count: props.unread.follow,
     },
@@ -188,7 +188,7 @@ export function HomeNotificationsPanel(props: Props) {
     },
     {
       value: "MESSAGE",
-      label: t("メッセージ", "Messages"),
+      label: t("運営", "Team"),
       icon: MailIcon,
       count: props.unread.message,
     },
@@ -209,10 +209,11 @@ export function HomeNotificationsPanel(props: Props) {
         </Link>
       </div>
 
+      {/* 7 つを横スクロールにすると後ろが見切れて気づけないので、1 行に全部収める */}
       <div
         role="tablist"
         aria-label={t("お知らせの種類", "Notification type")}
-        className="flex shrink-0 gap-1.5 overflow-x-auto border-b px-4 pb-3 [scrollbar-width:none]"
+        className="grid shrink-0 grid-cols-7 gap-0.5 border-b px-1.5 pb-2"
       >
         {tabs.map((item) => {
           const Icon = item.icon
@@ -225,19 +226,21 @@ export function HomeNotificationsPanel(props: Props) {
               aria-selected={isActive}
               onClick={() => setTab(item.value)}
               className={cn(
-                "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 font-medium text-xs transition-colors",
+                "flex min-w-0 flex-col items-center gap-1 rounded-lg px-0.5 py-1.5 font-medium text-[10px] leading-none transition-colors",
                 isActive
                   ? "bg-foreground text-background"
-                  : "bg-muted text-muted-foreground hover:text-foreground",
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              <Icon className="size-3.5" />
-              {item.label}
-              {item.count > 0 && (
-                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 font-bold text-[10px] text-white tabular-nums">
-                  {toBadgeText(item.count)}
-                </span>
-              )}
+              <span className="relative">
+                <Icon className="size-4" />
+                {item.count > 0 && (
+                  <span className="absolute -top-1.5 left-2.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-red-500 px-0.5 font-bold text-[9px] text-white tabular-nums">
+                    {toBadgeText(item.count)}
+                  </span>
+                )}
+              </span>
+              <span className="whitespace-nowrap">{item.label}</span>
             </button>
           )
         })}
