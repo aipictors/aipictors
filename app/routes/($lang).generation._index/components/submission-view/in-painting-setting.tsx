@@ -24,10 +24,9 @@ export function InPaintingSetting(props: Props) {
           <p>{"ノイズ除去強度："}</p>
           <p>{"弱"}</p>
           <Slider
-            aria-label="ブラシの大きさ"
             onChange={handleStrengthSizeChange}
             className="color-pink w-32"
-            aria-label="slider-ex-2"
+            aria-label="ノイズ除去強度"
             max={1}
             min={0.1}
             step={0.1}

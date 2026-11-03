@@ -44,7 +44,6 @@ export function ConfigLoraModel (props: Props) {
           <div className="flex items-center gap-x-2">
             <Slider
               aria-label="LoRAの強さ"
-              aria-label="slider-ex-2"
               defaultValue={[props.value]}
               min={-1}
               max={1}

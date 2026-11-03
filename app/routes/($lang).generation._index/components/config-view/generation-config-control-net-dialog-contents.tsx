@@ -229,7 +229,6 @@ export function GenerationConfigControlNetDialogContents (props: Props) {
             <Slider
               aria-label="ControlNetの強さ"
               className="color-pink w-full"
-              aria-label="slider-ex-2"
               min={0.1}
               max={2.0}
               step={0.1}

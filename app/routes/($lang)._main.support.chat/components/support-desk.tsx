@@ -144,9 +144,13 @@ export function SupportDesk() {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: { offset: 0, limit: 10 },
   })
-  const letters = (lettersData?.viewer?.supportMessages ?? []).filter(
+  const letters = (lettersData?.viewer?.supportMessages ?? []).flatMap(
     (message) =>
-      !message.isViewer && !message.text.startsWith("この度はご登録いただき"),
+      message.text !== null &&
+      !message.isViewer &&
+      !message.text.startsWith("この度はご登録いただき")
+        ? [{ ...message, text: message.text }]
+        : [],
   )
 
   const load = useCallback(async (ticketId?: string) => {

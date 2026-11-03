@@ -337,15 +337,15 @@ export function SupportReceivedSummaryPage() {
                   <div key={comment.id} className="rounded-xl border p-3">
                     <div className="flex items-start gap-3">
                       <UserAvatarWithFrame
-                        alt={comment.user.name}
-                        frame={comment.user.avatarFrame as UserAvatarFramePresentation | null}
+                        alt={comment.user?.name ?? ""}
+                        frame={(comment.user?.avatarFrame ?? null) as UserAvatarFramePresentation | null}
                         isAnimated={false}
                         sizeClassName="size-10"
-                        src={withIconUrlFallback(comment.user.iconUrl)}
+                        src={withIconUrlFallback(comment.user?.iconUrl)}
                       />
                       <div className="min-w-0 flex-1 space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-semibold text-sm">{comment.user.name}</span>
+                          <span className="font-semibold text-sm">{comment.user?.name}</span>
                           <span className="text-muted-foreground text-xs">
                             {formatDateTime(comment.createdAt)}
                           </span>

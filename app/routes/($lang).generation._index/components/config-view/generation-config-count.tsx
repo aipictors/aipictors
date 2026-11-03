@@ -57,7 +57,6 @@ export function GenerationConfigCount (props: Props) {
           <Slider
             aria-label="生成枚数"
             disabled={!isStandardOrPremium}
-            aria-label="slider-ex-2"
             defaultValue={[context.config.generationCount]}
             min={1}
             max={Math.min(props.remainingImageGenerationTasksCount, 10)}

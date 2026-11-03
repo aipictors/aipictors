@@ -12,8 +12,14 @@ type Task = {
 }
 
 type Posted = {
-  links: readonly { nanoid: string; workId: string }[]
-  works: readonly { workId: string; seed: string; prompt: string }[]
+  links: readonly { nanoid: string | null; workId: string | null }[] | null
+  works:
+    | readonly {
+        workId: string | null
+        seed: string | null
+        prompt: string | null
+      }[]
+    | null
 }
 
 /** 空白と区切りの違いは同じと見なす */
@@ -42,10 +48,16 @@ export function toPostedWorkMap(tasks: readonly Task[], posted: Posted | null) {
   if (posted === null) return result
 
   const workBySeedAndPrompt = new Map(
-    posted.works.map((work) => [
-      `${work.seed}|${normalizePrompt(work.prompt)}`,
-      work.workId,
-    ]),
+    (posted.works ?? []).flatMap((work) =>
+      work.workId !== null && work.seed !== null && work.prompt !== null
+        ? [
+            [
+              `${work.seed}|${normalizePrompt(work.prompt)}`,
+              work.workId,
+            ] as const,
+          ]
+        : [],
+    ),
   )
   for (const task of tasks) {
     if (!task.nanoid || typeof task.seed !== "number" || task.seed <= 0) {
@@ -58,8 +70,10 @@ export function toPostedWorkMap(tasks: readonly Task[], posted: Posted | null) {
     if (workId !== undefined) result.set(task.nanoid, workId)
   }
   // 投稿画面の記録を優先する
-  for (const link of posted.links) {
-    result.set(link.nanoid, link.workId)
+  for (const link of posted.links ?? []) {
+    if (link.nanoid !== null && link.workId !== null) {
+      result.set(link.nanoid, link.workId)
+    }
   }
   return result
 }

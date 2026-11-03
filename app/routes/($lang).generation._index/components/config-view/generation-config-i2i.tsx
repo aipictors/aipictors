@@ -118,7 +118,6 @@ export function GenerationConfigI2i() {
 
                 aria-label="画像の影響度"
                 className="color-pink w-full"
-                aria-label="i2i-change-strength"
                 min={CHANGE_STRENGTH_MIN}
                 max={CHANGE_STRENGTH_MAX}
                 step={0.01}

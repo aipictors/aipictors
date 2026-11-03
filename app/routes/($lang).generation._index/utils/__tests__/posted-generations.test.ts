@@ -53,4 +53,21 @@ describe("生成履歴の投稿済み", () => {
     })
     expect(map.size).toBe(0)
   })
+
+  test("API が null を返しても落ちない（スキーマ上どれも nullable）", () => {
+    expect(
+      toPostedWorkMap([task("a", 5, "x")], { links: null, works: null }).size,
+    ).toBe(0)
+    const map = toPostedWorkMap([task("a", 5, "x"), task("b", 6, "y")], {
+      links: [
+        { nanoid: null, workId: "1" },
+        { nanoid: "b", workId: null },
+      ],
+      works: [
+        { workId: null, seed: "5", prompt: "x" },
+        { workId: "2", seed: "5", prompt: null },
+      ],
+    })
+    expect(map.size).toBe(0)
+  })
 })
