@@ -202,19 +202,7 @@ export function WorkContainer(props: Props) {
                 ) : undefined
               }
             />
-            {work.isCommentsEditable && (
-              <div className="border-t pt-6">
-                <WorkCommentList
-                  workId={work.id}
-                  comments={comments}
-                  isLoadingComments={isLoadingComments}
-                  workOwnerId={work.user?.id}
-                  workOwnerIconImageURL={work.user?.iconUrl}
-                  workOwnerName={work.user?.name}
-                  isWorkOwnerBlocked={work.user?.isBlocked ?? false}
-                />
-              </div>
-            )}
+            {/* 作者の他の作品は AI 評価（WorkArticle の中）とコメントの間に置く */}
             {work.user && (
               <div className="border-t pt-6">
                 <WorkAuthorWorks
@@ -263,6 +251,19 @@ export function WorkContainer(props: Props) {
                       </Link>
                     </div>
                   }
+                />
+              </div>
+            )}
+            {work.isCommentsEditable && (
+              <div className="border-t pt-6">
+                <WorkCommentList
+                  workId={work.id}
+                  comments={comments}
+                  isLoadingComments={isLoadingComments}
+                  workOwnerId={work.user?.id}
+                  workOwnerIconImageURL={work.user?.iconUrl}
+                  workOwnerName={work.user?.name}
+                  isWorkOwnerBlocked={work.user?.isBlocked ?? false}
                 />
               </div>
             )}
