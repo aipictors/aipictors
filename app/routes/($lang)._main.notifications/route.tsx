@@ -1,4 +1,5 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { LoginPage } from "~/components/page/login-page"
 import { AuthContext } from "~/contexts/auth-context"
 import type {
   HeadersFunction,
@@ -34,9 +35,17 @@ export const headers: HeadersFunction = () => ({
 export default function Notifications () {
   const authContext = useContext(AuthContext)
 
+  if (authContext.isLoading) {
+    return <AppLoadingPage />
+  }
+
+  if (authContext.isNotLoggedIn) {
+    return <LoginPage />
+  }
+
   return (
     <Suspense fallback={<AppLoadingPage />}>
-      {authContext.isLoggedIn && <NotificationListContents />}
+      <NotificationListContents />
     </Suspense>
   )
 }

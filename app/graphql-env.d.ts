@@ -3990,6 +3990,8 @@ type UnreadNotificationCountsNode {
 }
 
 input NotificationsWhereInput {
+  """コメントの通知を返信済み（true）・未返信（false）で絞る"""
+  isReplied: Boolean
   """コインの付与・失効などのお知らせを除く"""
   excludeCoin: Boolean
   type: NotificationType
@@ -6493,6 +6495,10 @@ input WorkAwardsWhereInput {
 
 """通知（コメント）"""
 type WorkCommentNotificationNode implements Node {
+  """返信するときの宛先のコメント"""
+  replyTargetCommentId: ID
+  """コメントに添付された推しコイン"""
+  support: CommentSupportNode
   createdAt: Int!
   id: ID!
   message: String
@@ -6510,6 +6516,10 @@ type WorkCommentNotificationNode implements Node {
 
 """通知（リプライ）"""
 type WorkCommentReplyNotificationNode implements Node {
+  """返信するときの宛先のコメント"""
+  replyTargetCommentId: ID
+  """コメントに添付された推しコイン"""
+  support: CommentSupportNode
   """返信元のコメント"""
   comment: CommentNode
   createdAt: Int!

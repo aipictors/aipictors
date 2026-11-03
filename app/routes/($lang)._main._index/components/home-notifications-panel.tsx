@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { useMemo, useState } from "react"
 import { FollowButton } from "~/components/button/follow-button"
+import { SupportCoinBreakdown } from "~/components/support-coin-breakdown"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -48,6 +49,18 @@ type Props = {
   onClose: () => void
 }
 
+export type PanelSupport = {
+  freeCoinAmount: number
+  premiumCoinAmount: number
+  totalPt: number
+}
+
+export type PanelReply = {
+  id: string
+  text?: string | null
+  sticker?: { imageUrl?: string | null } | null
+}
+
 type PanelUser = {
   id: string
   name: string
@@ -58,10 +71,11 @@ type PanelUser = {
 type PanelWork = {
   id: string
   title?: string | null
+  enTitle?: string | null
   smallThumbnailImageURL?: string | null
 }
 
-type PanelItem = {
+export type PanelItem = {
   id: string
   kind: NotificationPanelKind
   createdAt: number
@@ -71,6 +85,9 @@ type PanelItem = {
   message: string | null
   stickerUrl: string | null
   isNotReplied: boolean
+  support: PanelSupport | null
+  replyTargetCommentId: string | null
+  myReplies: PanelReply[]
 }
 
 const KIND_STYLES: Record<
@@ -94,7 +111,9 @@ type PanelNode = {
   work?: PanelWork | null
   user?: PanelUser | null
   sticker?: { imageUrl?: string | null } | null
-  myReplies?: { id: string }[] | null
+  myReplies?: PanelReply[] | null
+  support?: PanelSupport | null
+  replyTargetCommentId?: string | null
 }
 
 const KIND_BY_TYPENAME: Record<string, NotificationPanelKind> = {
@@ -123,10 +142,13 @@ const toPanelItem = (node: PanelNode): PanelItem | null => {
     message: node.message ?? null,
     stickerUrl: node.sticker?.imageUrl ?? null,
     isNotReplied: kind === "comment" && (node.myReplies?.length ?? 0) === 0,
+    support: node.support ?? null,
+    replyTargetCommentId: node.replyTargetCommentId ?? null,
+    myReplies: node.myReplies ?? [],
   }
 }
 
-const toPanelItems = (nodes: unknown): PanelItem[] =>
+export const toPanelItems = (nodes: unknown): PanelItem[] =>
   ((nodes ?? []) as PanelNode[])
     .map(toPanelItem)
     .filter((item) => item !== null)
@@ -289,7 +311,7 @@ export function HomeNotificationsPanel(props: Props) {
   )
 }
 
-const TAB_WHERE = {
+export const TAB_WHERE = {
   ALL: { excludeCoin: true },
   COMMENT: { type: "WORK_COMMENT" },
   REPLY: { type: "COMMENT_REPLY" },
@@ -305,7 +327,7 @@ function NotificationList(props: {
   onClose: () => void
 }) {
   const { data, loading } = useQuery(panelNotificationsQuery, {
-    variables: { limit: 40, where: TAB_WHERE[props.tab] },
+    variables: { offset: 0, limit: 40, where: TAB_WHERE[props.tab] },
     fetchPolicy: "cache-and-network",
   })
 
@@ -375,11 +397,16 @@ function CommentList(props: { unread: UnreadCounts; onClose: () => void }) {
   )
 }
 
-function RowList(props: {
+export function RowList(props: {
   items: PanelItem[]
   isLoading: boolean
   unread: UnreadCounts
   onClose: () => void
+  /** 通知ページ用: 本文を省略せず、スタンプとサムネイルを大きく */
+  isExpanded?: boolean
+  /** 行の下に出すもの（通知ページの返信欄） */
+  renderFooter?: (item: PanelItem) => React.ReactNode
+  emptyText?: string
 }) {
   const t = useTranslation()
 
@@ -402,7 +429,9 @@ function RowList(props: {
   if (rows.length === 0) {
     return (
       <EmptyState
-        text={t("まだお知らせはありません", "No notifications yet")}
+        text={
+          props.emptyText ?? t("まだお知らせはありません", "No notifications yet")
+        }
       />
     )
   }
@@ -423,7 +452,12 @@ function RowList(props: {
                 {sectionLabels[section]}
               </p>
             )}
-            <NotificationRowView row={row} onClose={props.onClose} />
+            <NotificationRowView
+              row={row}
+              onClose={props.onClose}
+              isExpanded={props.isExpanded}
+              footer={props.renderFooter?.(row.item)}
+            />
           </div>
         )
       })}
@@ -444,6 +478,8 @@ const toRowHref = (item: PanelItem) => {
 function NotificationRowView(props: {
   row: NotificationRow<PanelItem>
   onClose: () => void
+  isExpanded?: boolean
+  footer?: React.ReactNode
 }) {
   const t = useTranslation()
   const { item, group, isUnread } = props.row
@@ -466,16 +502,33 @@ function NotificationRowView(props: {
           </p>
         )}
         {item.message && item.kind !== "award" && item.kind !== "coin" && (
-          <p className="line-clamp-2 whitespace-pre-line break-words text-muted-foreground text-xs leading-relaxed">
+          <p
+            className={cn(
+              "whitespace-pre-line break-words leading-relaxed",
+              props.isExpanded
+                ? "rounded-lg bg-muted/60 px-3 py-2 text-foreground text-sm"
+                : "line-clamp-2 text-muted-foreground text-xs",
+            )}
+          >
             {item.message}
           </p>
+        )}
+        {item.support && item.support.totalPt > 0 && (
+          <SupportCoinBreakdown
+            freeCoinAmount={item.support.freeCoinAmount}
+            premiumCoinAmount={item.support.premiumCoinAmount}
+            totalPt={item.support.totalPt}
+          />
         )}
         {item.stickerUrl && (
           <img
             src={item.stickerUrl}
             alt={t("スタンプ", "Sticker")}
             loading="lazy"
-            className="size-12 rounded-md object-cover"
+            className={cn(
+              "rounded-md object-cover",
+              props.isExpanded ? "size-24" : "size-12",
+            )}
           />
         )}
         <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -500,7 +553,10 @@ function NotificationRowView(props: {
           src={item.work.smallThumbnailImageURL}
           alt={t(item.work.title, item.work.enTitle || undefined) ?? ""}
           loading="lazy"
-          className="size-11 shrink-0 rounded-lg object-cover"
+          className={cn(
+            "shrink-0 rounded-lg object-cover",
+            props.isExpanded ? "size-14 md:size-16" : "size-11",
+          )}
         />
       )}
     </>
@@ -541,13 +597,16 @@ function NotificationRowView(props: {
   }
 
   return (
-    <Link
-      to={href}
-      onClick={props.onClose}
-      className={cn(rowClassName, "hover:bg-muted/60")}
-    >
-      {body}
-    </Link>
+    <>
+      <Link
+        to={href}
+        onClick={props.onClose}
+        className={cn(rowClassName, "hover:bg-muted/60")}
+      >
+        {body}
+      </Link>
+      {props.footer}
+    </>
   )
 }
 
@@ -645,7 +704,7 @@ function RowTitle(props: { item: PanelItem; group: PanelItem[] }) {
   }
 }
 
-function MessageList(props: { unread: UnreadCounts; onClose: () => void }) {
+export function MessageList(props: { unread: UnreadCounts; onClose: () => void }) {
   const t = useTranslation()
   const { data, loading } = useQuery(panelMessagesQuery, {
     variables: { limit: 20 },
@@ -710,7 +769,7 @@ function MessageList(props: { unread: UnreadCounts; onClose: () => void }) {
   )
 }
 
-function RowSkeletons() {
+export function RowSkeletons() {
   return (
     <div aria-hidden className="space-y-1 py-2">
       {[0, 1, 2, 3, 4].map((index) => (
@@ -727,7 +786,7 @@ function RowSkeletons() {
   )
 }
 
-function EmptyState(props: { text: string }) {
+export function EmptyState(props: { text: string }) {
   return (
     <div className="flex h-full min-h-48 flex-col items-center justify-center gap-3 px-6 text-center">
       <img
@@ -744,7 +803,7 @@ const PanelLikedFragment = graphql(
   `fragment PanelLiked on LikedWorkNotificationNode @_unmask {
     id
     createdAt
-    work { id title smallThumbnailImageURL }
+    work { id title enTitle smallThumbnailImageURL }
     user { id name iconUrl }
   }`,
 )
@@ -754,10 +813,12 @@ const PanelCommentFragment = graphql(
     id
     createdAt
     message
-    work { id title smallThumbnailImageURL }
+    work { id title enTitle smallThumbnailImageURL }
     user { id name iconUrl }
     sticker { id imageUrl }
-    myReplies { id }
+    myReplies { id text sticker { id imageUrl } }
+    support { freeCoinAmount premiumCoinAmount totalPt }
+    replyTargetCommentId
   }`,
 )
 
@@ -766,9 +827,11 @@ const PanelReplyFragment = graphql(
     id
     createdAt
     message
-    work { id title smallThumbnailImageURL }
+    work { id title enTitle smallThumbnailImageURL }
     user { id name iconUrl }
     sticker { id imageUrl }
+    support { freeCoinAmount premiumCoinAmount totalPt }
+    replyTargetCommentId
   }`,
 )
 
@@ -785,15 +848,15 @@ const PanelAwardFragment = graphql(
     id
     createdAt
     message
-    work { id title smallThumbnailImageURL }
+    work { id title enTitle smallThumbnailImageURL }
   }`,
 )
 
-const panelNotificationsQuery = graphql(
-  `query PanelNotifications($limit: Int!, $where: NotificationsWhereInput) {
+export const panelNotificationsQuery = graphql(
+  `query PanelNotifications($offset: Int!, $limit: Int!, $where: NotificationsWhereInput) {
     viewer {
       id
-      notifications(offset: 0, limit: $limit, where: $where) {
+      notifications(offset: $offset, limit: $limit, where: $where) {
         __typename
         ... on LikedWorkNotificationNode { ...PanelLiked }
         ... on WorkCommentNotificationNode { ...PanelComment }

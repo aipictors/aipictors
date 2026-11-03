@@ -1,3 +1,4 @@
+import { SupportCoinBreakdown } from "~/components/support-coin-breakdown"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
@@ -286,10 +287,11 @@ export function WorkComment(props: Props) {
             )}
           </div>
           {hasSupport && props.support && (
-            <div className="inline-flex w-fit items-center gap-1 rounded-full bg-rose-500/10 px-2 py-0.5 font-bold text-rose-600 text-xs dark:text-rose-300">
-              <Heart className="size-3 fill-current" />
-              {props.support.totalPt.toLocaleString()}pt
-            </div>
+            <SupportCoinBreakdown
+              freeCoinAmount={props.support.freeCoinAmount}
+              premiumCoinAmount={props.support.premiumCoinAmount}
+              totalPt={props.support.totalPt}
+            />
           )}
           {props.text && (
             <div className="space-y-2">
