@@ -65,7 +65,7 @@ type ApiEnvelope<T> = {
   data: T | null
 }
 
-export const parseUserModelsResponse = async <T>(
+const parseUserModelsResponse = async <T>(
   response: Response,
 ): Promise<T> => {
   const text = await response.text()

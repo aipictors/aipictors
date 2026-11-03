@@ -7,7 +7,7 @@
 const RESIZABLE_ORIGIN = "https://files.aipictors.com/"
 
 /** Worker が受け付ける幅（Worker 側の WIDTHS と同じにする） */
-export const RESIZED_IMAGE_WIDTHS = [
+const RESIZED_IMAGE_WIDTHS = [
   48, 64, 96, 128, 160, 240, 320, 400, 480, 640, 800, 1080, 1280,
 ] as const
 

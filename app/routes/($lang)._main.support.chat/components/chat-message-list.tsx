@@ -50,7 +50,7 @@ export function ChatMessageList (props: Props) {
   )
 }
 
-export const MessageThreadRecipientFragment = graphql(
+const MessageThreadRecipientFragment = graphql(
   `fragment MessageThreadRecipient on UserNode @_unmask {
     id
     iconUrl

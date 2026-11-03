@@ -43,7 +43,7 @@ export function HomeSensitiveTagList (props: Props) {
   )
 }
 
-export const HomeTagListItemFragment = graphql(
+const HomeTagListItemFragment = graphql(
   `fragment HomeTagListItem on TagNode @_unmask {
     id
     name

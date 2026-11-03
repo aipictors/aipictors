@@ -126,7 +126,7 @@ const authorWorksCarouselOptions = {
 /**
  * 作者の他の作品（横スクロール）。端に近づいたら続きを読む
  */
-export function WorkAuthorWorks(props: {
+function WorkAuthorWorks(props: {
   works: Props["works"]
   currentWorkId: string
   userId: string

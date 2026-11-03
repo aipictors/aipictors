@@ -29,7 +29,7 @@ import {
   type UserAvatarFramePresentation,
 } from "~/utils/user-avatar-frame"
 
-export type AvatarFrameItem = UserAvatarFramePresentation & {
+type AvatarFrameItem = UserAvatarFramePresentation & {
   id: string
   slug: string
   name: string

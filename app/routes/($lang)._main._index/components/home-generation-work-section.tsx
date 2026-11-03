@@ -76,7 +76,7 @@ export function HomeGenerationWorkSection (props: Props) {
   )
 }
 
-export const HomeWorkFragment = graphql(
+const HomeWorkFragment = graphql(
   `fragment HomeWork on WorkNode @_unmask {
     ...PhotoAlbumWork
     ...HomeCoppedWork

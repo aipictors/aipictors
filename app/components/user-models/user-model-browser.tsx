@@ -49,7 +49,7 @@ export type UserModelBrowserFilters = {
   sort: UserModelSort
 }
 
-export const defaultUserModelBrowserFilters: UserModelBrowserFilters = {
+const defaultUserModelBrowserFilters: UserModelBrowserFilters = {
   q: "",
   kind: null,
   baseModel: null,

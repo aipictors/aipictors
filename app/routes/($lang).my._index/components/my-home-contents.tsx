@@ -785,7 +785,7 @@ const viewerUserQuery = graphql(
   }`,
 )
 
-export const MyWorkFragment = graphql(
+const MyWorkFragment = graphql(
   `fragment MyWork on WorkNode @_unmask {
     id
     title

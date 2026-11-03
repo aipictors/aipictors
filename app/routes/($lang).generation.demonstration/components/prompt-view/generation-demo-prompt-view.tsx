@@ -13,7 +13,7 @@ import { useTranslation } from "~/hooks/use-translation"
  * Format prompt text
  * @param text
  */
-export function formatPromptTextForKeyWord (text: string) {
+function formatPromptTextForKeyWord (text: string) {
   return text
     .split(",")
     .filter((t) => t.length !== 0)

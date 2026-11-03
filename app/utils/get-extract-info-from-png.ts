@@ -1,4 +1,4 @@
-export interface PNGChunk {
+interface PNGChunk {
   keyword: string
   text: string
 }
@@ -38,7 +38,7 @@ export const getExtractInfoFromPNG = async (file: File): Promise<PNGInfo> => {
   return { params: exchangeFromPNGItem(pngInfo), src: pngStr }
 }
 
-export const getExtractInfoFromBase64PNG = async (
+const getExtractInfoFromBase64PNG = async (
   base64: string,
 ): Promise<PNGInfo> => {
   const file = await urlToFile(base64, "image.png")
@@ -171,7 +171,7 @@ const exchangeFromPNGItem = (item: PNGItem): ImageParameters => {
   return parameters
 }
 
-export const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
+const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
   const info: PNGItem = {}
 
   if (chunks.some((e) => e.keyword === "Software" && e.text === "NovelAI")) {

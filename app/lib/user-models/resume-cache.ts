@@ -3,7 +3,7 @@ import type { UploadedPart } from "~/lib/user-models/types"
 /**
  * 中断したアップロードの再開用（sha256 ごとに送信済みパートを保存）
  */
-export type ResumeCache = {
+type ResumeCache = {
   modelId: string
   parts: UploadedPart[]
 }

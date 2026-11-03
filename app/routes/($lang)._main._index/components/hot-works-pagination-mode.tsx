@@ -78,7 +78,7 @@ export function HotWorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) 
   )
 }
 
-export const WorksQuery = graphql(
+const WorksQuery = graphql(
   `query Works($where:HotWorksWhereInput!) {
      hotWorks(where:$where){
        ...HomeWork

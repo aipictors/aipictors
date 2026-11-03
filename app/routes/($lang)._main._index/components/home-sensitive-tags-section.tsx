@@ -46,7 +46,7 @@ export function HomeSensitiveTagsSection (props: Props) {
   )
 }
 
-export const HomeTagFragment = graphql(
+const HomeTagFragment = graphql(
   `fragment HomeTag on RecommendedTagNode @_unmask {
     tagName
     thumbnailUrl

@@ -30,7 +30,7 @@ type Props = {
 /**
  * v2 などのバージョンは残したままアンダーバー以降の詳細を省く
  */
-export const trimModelName = (input: string) => {
+const trimModelName = (input: string) => {
   if (input === "blue_pencil-v10") {
     return "blue_pencil"
   }

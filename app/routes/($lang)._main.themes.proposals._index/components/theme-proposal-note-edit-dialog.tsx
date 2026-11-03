@@ -14,7 +14,7 @@ import {
 import { Textarea } from "~/components/ui/textarea"
 import { useTranslation } from "~/hooks/use-translation"
 
-export const MAX_THEME_PROPOSAL_NOTE_LENGTH = 500
+const MAX_THEME_PROPOSAL_NOTE_LENGTH = 500
 
 type Props = {
   proposalId: string

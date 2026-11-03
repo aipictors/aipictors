@@ -23,7 +23,7 @@ type CssNode = {
 }
 
 /** hydration の開始まで読まない CSS の rel（app/lib/defer-hydration.ts と同じ） */
-export const DEFERRED_STYLESHEET_REL = "aipictors-deferred-stylesheet"
+const DEFERRED_STYLESHEET_REL = "aipictors-deferred-stylesheet"
 
 const PLACEHOLDER = "<style data-critical-css=\"\"></style>"
 

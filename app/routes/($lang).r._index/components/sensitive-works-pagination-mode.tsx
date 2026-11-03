@@ -118,7 +118,7 @@ export function SensitiveWorksPaginationMode({
   )
 }
 
-export const WorksQuery = graphql(
+const WorksQuery = graphql(
   `query Works($offset:Int!,$limit:Int!,$where:WorksWhereInput!) {
      works(offset:$offset,limit:$limit,where:$where){
        ...HomeWork

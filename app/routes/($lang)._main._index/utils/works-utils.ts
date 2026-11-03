@@ -3,7 +3,7 @@ import type { WorksWhereInput } from "../types/works"
 import type { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 
 export const PER_IMG = 32
-export const PER_VID = 8
+const PER_VID = 8
 
 type HomeWorksProps = ComponentProps<typeof HomeWorksSection>
 

@@ -2,7 +2,7 @@
  * 実績の表示に使うもの（ランクの名前と色・種類の名前・バッジ画像）
  */
 
-export type AchievementTierInfo = {
+type AchievementTierInfo = {
   ja: string
   en: string
   /** 文字色（Tailwind） */

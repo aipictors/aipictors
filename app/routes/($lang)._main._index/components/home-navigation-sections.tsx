@@ -27,7 +27,7 @@ import {
   WandSparklesIcon,
 } from "lucide-react"
 
-export type HomeNavigationItem = {
+type HomeNavigationItem = {
   key: string
   href: string
   label: [string, string]
@@ -36,7 +36,7 @@ export type HomeNavigationItem = {
   isExternal?: boolean
 }
 
-export type HomeNavigationSection = {
+type HomeNavigationSection = {
   key: string
   /** 見出し（なければ見出しなし） */
   title?: [string, string]

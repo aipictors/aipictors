@@ -74,7 +74,7 @@ function chunkPosts<T>(arr: T[], size: number): T[][] {
 /* -----------------------------------------------------------------
  * GraphQL
  * -----------------------------------------------------------------*/
-export const workFieldsFragment = graphql(`
+const workFieldsFragment = graphql(`
   fragment PartialWorkFields on WorkNode @_unmask {
     id
     title
@@ -155,7 +155,7 @@ const feedWorkListQuery = graphql(
 /* -----------------------------------------------------------------
  * Types
  * -----------------------------------------------------------------*/
-export type PostItem = {
+type PostItem = {
   id: string
   work?:
     | (FragmentOf<typeof workFieldsFragment> & {
@@ -164,7 +164,7 @@ export type PostItem = {
     | null
 }
 
-export type FollowTagsFeedContentsProps = {
+type FollowTagsFeedContentsProps = {
   _tab?: string
   page: number
   setPage: (p: number) => void

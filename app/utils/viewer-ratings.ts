@@ -1,6 +1,6 @@
 export type ViewerRating = "G" | "R15" | "R18" | "R18G"
 
-export type ViewerPreferenceRating = "G" | "R15" | "R18" | "R18G"
+type ViewerPreferenceRating = "G" | "R15" | "R18" | "R18G"
 
 /**
  * 通常モード（全年齢側）の一覧で表示するレーティング

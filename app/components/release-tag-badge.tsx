@@ -8,7 +8,7 @@ type Props = {
   className?: string
 }
 
-export const getReleaseTagMeta = (tag?: string | null) => {
+const getReleaseTagMeta = (tag?: string | null) => {
   switch (tag) {
     case "アップデート":
       return {
@@ -62,4 +62,3 @@ export function ReleaseTagBadge(props: Props) {
   )
 }
 
-export type { FeaturedReleaseTag }

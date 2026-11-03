@@ -852,7 +852,7 @@ export function RowSkeletons() {
   )
 }
 
-export function EmptyState(props: { text: string }) {
+function EmptyState(props: { text: string }) {
   return (
     <div className="flex h-full min-h-48 flex-col items-center justify-center gap-3 px-6 text-center">
       <img

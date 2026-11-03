@@ -60,7 +60,7 @@ export function HomeWorksGeneratedSection(props: Props) {
   )
 }
 
-export const HomeGenerationWorkFragment = graphql(
+const HomeGenerationWorkFragment = graphql(
   `fragment HomeGenerationWork on WorkNode @_unmask {
     id
     ...HomeWork

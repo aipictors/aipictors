@@ -1,7 +1,7 @@
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 
-export type SupportRankingItemWithUser = {
+type SupportRankingItemWithUser = {
   rank: number
   userId: string
   coinAmount: number

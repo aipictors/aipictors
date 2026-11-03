@@ -1,4 +1,4 @@
-export type PremiumCoinPackageId =
+type PremiumCoinPackageId =
   | "PREMIUM_COINS_100"
   | "PREMIUM_COINS_1000"
   | "PREMIUM_COINS_10000"
@@ -28,12 +28,12 @@ export const PREMIUM_COIN_PACKAGES = {
   },
 } as const
 
-export const COIN_PRICE_YEN = 0.8
+const COIN_PRICE_YEN = 0.8
 export const BONUS_THRESHOLD = 1000
 export const BONUS_RATE = 0.1
 export const MIN_CUSTOM_COINS = 100
-export const PREMIUM_COIN_PT_MULTIPLIER = 10
-export const AMAZON_POINT_RATE_YEN = 0.3
+const PREMIUM_COIN_PT_MULTIPLIER = 10
+const AMAZON_POINT_RATE_YEN = 0.3
 
 export const calcBonusCoins = (coins: number): number => {
   if (coins < BONUS_THRESHOLD) return 0

@@ -26,7 +26,7 @@ type CoinSummary = {
   grantedPremiumCoins: number
 }
 
-export type AdminCoinHistoryItem = {
+type AdminCoinHistoryItem = {
   id: number
   userId: string
   coinType: "FREE" | "PREMIUM"
@@ -41,7 +41,7 @@ export type AdminCoinHistoryItem = {
   runningTotalBalance: number
 }
 
-export type AdminCoinHistoryLot = {
+type AdminCoinHistoryLot = {
   id: number
   coinType: "FREE" | "PREMIUM"
   amount: number
@@ -49,7 +49,7 @@ export type AdminCoinHistoryLot = {
   createdAt: number
 }
 
-export type AdminCoinHistoryResult = {
+type AdminCoinHistoryResult = {
   items: AdminCoinHistoryItem[]
   totalCount: number
   offset: number

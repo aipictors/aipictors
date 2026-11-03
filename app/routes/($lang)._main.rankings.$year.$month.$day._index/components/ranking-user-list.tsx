@@ -210,7 +210,7 @@ export function RankingUserList (_props: Props) {
   )
 }
 
-export const UserRankingListItemFragment = graphql(
+const UserRankingListItemFragment = graphql(
   `fragment UserRankingListItem on UserRankingNode {
     id
     date

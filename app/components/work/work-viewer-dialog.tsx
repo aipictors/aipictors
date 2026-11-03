@@ -34,7 +34,7 @@ interface Props {
 }
 
 /** 要素を親要素の縦方向中央にスクロールして合わせる */
-export function scrollItemIntoVerticalCenter(
+function scrollItemIntoVerticalCenter(
   container: HTMLElement,
   item: HTMLElement,
   smooth = true,
@@ -691,7 +691,7 @@ export function WorkViewerDialog({
 }
 
 // GraphQL部分は変更なし
-export const workArticleFragment =
+const workArticleFragment =
   graphql(`fragment WorkArticle on WorkNode @_unmask {
   id
   isMyRecommended
@@ -816,7 +816,7 @@ export const workArticleFragment =
   }
 }`)
 
-export const WorkCommentFragment =
+const WorkCommentFragment =
   graphql(`fragment WorkComment on CommentNode @_unmask {
   id
   createdAt

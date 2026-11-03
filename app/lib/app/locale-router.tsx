@@ -62,7 +62,7 @@ Link.displayName = "Link"
 /**
  * 今の言語を保つ NavLink
  */
-export const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
+const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
   (props, ref) => {
     const { pathname } = useLocation()
     return (

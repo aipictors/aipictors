@@ -383,7 +383,7 @@ const viewerBookmarkFolderIdQuery = graphql(
   }`,
 )
 
-export const workArticleFragment = graphql(
+const workArticleFragment = graphql(
   `fragment WorkArticle on WorkNode @_unmask {
     id
     isMyRecommended
@@ -537,7 +537,7 @@ export const workArticleFragment = graphql(
   }`,
 )
 
-export const sensitiveWorkArticleFragment = graphql(
+const sensitiveWorkArticleFragment = graphql(
   `fragment WorkArticle on WorkNode @_unmask {
     id
     isMyRecommended

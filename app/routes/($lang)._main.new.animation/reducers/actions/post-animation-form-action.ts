@@ -13,7 +13,7 @@ export type PostAnimationFormAction = InferInput<
   typeof vPostAnimationFormAction
 >
 
-export const vFile = object({
+const vFile = object({
   name: string(),
   size: number(),
   type: string(),

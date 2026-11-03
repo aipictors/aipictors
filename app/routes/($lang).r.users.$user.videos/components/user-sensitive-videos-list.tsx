@@ -62,7 +62,7 @@ export function UserSensitiveVideoList(props: Props) {
   )
 }
 
-export const UserVideosItemFragment = graphql(
+const UserVideosItemFragment = graphql(
   `fragment UserVideosItem on WorkNode @_unmask {
     id
     title
@@ -83,7 +83,7 @@ export const UserVideosItemFragment = graphql(
   }`,
 )
 
-export const UserVideosQuery = graphql(
+const UserVideosQuery = graphql(
   `query UserVideos($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...UserVideosItem

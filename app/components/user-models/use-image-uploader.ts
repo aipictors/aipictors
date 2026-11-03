@@ -7,7 +7,7 @@ import { uploadPublicImage } from "~/utils/upload-public-image"
 /**
  * 画像ファイルを最大辺 maxSize の webp に縮小して base64 にする
  */
-export const fileToResizedDataUrl = (
+const fileToResizedDataUrl = (
   file: File,
   maxSize = 1280,
 ): Promise<string> => {

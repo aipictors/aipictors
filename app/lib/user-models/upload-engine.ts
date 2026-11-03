@@ -9,7 +9,7 @@ import type {
  */
 const HASH_READ_BYTES = 16 * 1024 * 1024
 
-export type PartPlan = {
+type PartPlan = {
   partNumber: number
   start: number
   end: number

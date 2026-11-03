@@ -1,6 +1,6 @@
-export type PointsPackageId = "POINTS_100" | "POINTS_300" | "POINTS_1000"
+type PointsPackageId = "POINTS_100" | "POINTS_300" | "POINTS_1000"
 
-export type PointsPackage = {
+type PointsPackage = {
 	id: PointsPackageId
 	points: number
 	priceId: string
@@ -37,7 +37,7 @@ const signPayload = async (secret: string, payload: string) => {
 	return toHex(new Uint8Array(signature))
 }
 
-export const verifyStripeWebhookSignature = async (props: {
+const verifyStripeWebhookSignature = async (props: {
 	payload: string
 	signatureHeader: string
 	webhookSecret: string
@@ -78,7 +78,7 @@ export const verifyStripeWebhookSignature = async (props: {
 	return signatures.some((value) => timingSafeEqualHex(value, expected))
 }
 
-export const resolvePointsPackageMap = (props: {
+const resolvePointsPackageMap = (props: {
 	price100: string | null
 	price300: string | null
 	price1000: string | null

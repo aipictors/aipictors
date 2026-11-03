@@ -59,7 +59,7 @@ export function HomeSensitiveWorksUsersRecommendedSection (props: Props) {
   )
 }
 
-export const HomePromotionWorkFragment = graphql(
+const HomePromotionWorkFragment = graphql(
   `fragment HomePromotionWork on WorkNode @_unmask {
     id
     ...HomeWork

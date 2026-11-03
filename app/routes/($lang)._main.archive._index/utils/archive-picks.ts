@@ -12,10 +12,10 @@ export type ArchivePeriod = {
   season: ArchiveSeason | null
 }
 
-export type ArchiveDateRange = { after: string | null; before: string }
+type ArchiveDateRange = { after: string | null; before: string }
 
 /** サービス開始の年 */
-export const ARCHIVE_FIRST_YEAR = 2022
+const ARCHIVE_FIRST_YEAR = 2022
 
 /** 新作は他のページで見られるので、公開からこの日数がたった作品だけ紹介する */
 const ARCHIVE_MIN_AGE_DAYS = 30

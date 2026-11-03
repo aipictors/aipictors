@@ -454,8 +454,6 @@ export const config: AppConfig = {
  * キーコードの型定義
  */
 export enum KeyCodes {
-  Q = "KeyQ",
-  E = "KeyE",
   F = "KeyF",
   ALLOW_LEFT = "ArrowLeft",
   ALLOW_RIGHT = "ArrowRight",

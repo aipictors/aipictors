@@ -25,11 +25,11 @@ export const officialBaseModel = (
   return "SDXL"
 }
 
-export const officialCheckpointKey = (id: string) => `official-checkpoint:${id}`
+const officialCheckpointKey = (id: string) => `official-checkpoint:${id}`
 
-export const officialLoraKey = (name: string) => `official-lora:${name}`
+const officialLoraKey = (name: string) => `official-lora:${name}`
 
-export const userModelKey = (id: string) => `user:${id}`
+const userModelKey = (id: string) => `user:${id}`
 
 export const fromOfficialCheckpoint = (
   model: OfficialCheckpoint,

@@ -156,7 +156,7 @@ export function HomeSensitiveAwardWorkSection (props: Props) {
   )
 }
 
-export const HomeWorkAwardFragment = graphql(
+const HomeWorkAwardFragment = graphql(
   `fragment HomeWorkAward on WorkAwardNode @_unmask {
       id
       work {

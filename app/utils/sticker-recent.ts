@@ -27,7 +27,7 @@ export const readRecentStickerIds = (): string[] => {
   }
 }
 
-export const writeRecentStickerIds = (stickerIds: string[]) => {
+const writeRecentStickerIds = (stickerIds: string[]) => {
   if (!canUseStorage()) {
     return
   }

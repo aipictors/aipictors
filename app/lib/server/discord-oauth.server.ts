@@ -8,8 +8,8 @@
  */
 
 /** Discord アプリ「Aipictors」（公開クライアントなので secret はなく PKCE で確かめる） */
-export const DISCORD_CLIENT_ID = "1566508809940115497"
-export const DISCORD_OAUTH_SCOPES = "identify"
+const DISCORD_CLIENT_ID = "1566508809940115497"
+const DISCORD_OAUTH_SCOPES = "identify"
 export const DISCORD_REDIRECT_URI =
   "https://www.aipictors.com/api/discord/callback"
 

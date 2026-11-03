@@ -12,12 +12,12 @@ export type PromptTag = {
   aliases: string[]
 }
 
-export type PromptTagSuggestion = PromptTag & {
+type PromptTagSuggestion = PromptTag & {
   /** 別名で当たったときの別名 */
   matchedAlias: string | null
 }
 
-export type PromptToken = {
+type PromptToken = {
   /** 置き換える範囲の先頭（括弧や空白の後ろ） */
   start: number
   /** 置き換える範囲の終わり */
@@ -100,7 +100,7 @@ export function findPromptToken(text: string, cursor: number): PromptToken {
 /**
  * 検索用に揃える（小文字・空白は _・括弧のエスケープを外す）
  */
-export function normalizeTagQuery(text: string) {
+function normalizeTagQuery(text: string) {
   // 全角英数（IME がオンのまま打ったとき）も半角にそろえる
   return text
     .normalize("NFKC")

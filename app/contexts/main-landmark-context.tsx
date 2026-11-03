@@ -7,6 +7,6 @@ import { createContext, useContext } from "react"
  */
 export const MainLandmarkContext = createContext(false)
 
-export function useIsInsideMain(): boolean {
+function useIsInsideMain(): boolean {
   return useContext(MainLandmarkContext)
 }

@@ -16,7 +16,7 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 // スロットル関数
-export function throttle<T extends (...args: any[]) => any>(
+function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number,
 ): (...args: Parameters<T>) => void {
@@ -33,7 +33,7 @@ export function throttle<T extends (...args: any[]) => any>(
 }
 
 // 画像の事前読み込み
-export function preloadImage(src: string): Promise<void> {
+function preloadImage(src: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => resolve()
@@ -43,7 +43,7 @@ export function preloadImage(src: string): Promise<void> {
 }
 
 // WebP サポートの検出
-export function detectWebPSupport(): Promise<boolean> {
+function detectWebPSupport(): Promise<boolean> {
   if (typeof window === "undefined") return Promise.resolve(false)
 
   return new Promise((resolve) => {
@@ -57,7 +57,7 @@ export function detectWebPSupport(): Promise<boolean> {
 }
 
 // リソースヒントの追加
-export function addResourceHint(
+function addResourceHint(
   href: string,
   rel: "preload" | "prefetch" | "dns-prefetch" | "preconnect",
   as?: string,
@@ -76,7 +76,7 @@ export function addResourceHint(
 }
 
 // モバイルデバイスの検出
-export function isMobileDevice(): boolean {
+function isMobileDevice(): boolean {
   if (typeof window === "undefined") return false
 
   return (
@@ -87,7 +87,7 @@ export function isMobileDevice(): boolean {
 }
 
 // バンドルサイズ警告（開発環境のみ）
-export function warnLargeBundle(componentName: string, sizeKB: number): void {
+function warnLargeBundle(componentName: string, sizeKB: number): void {
   if (process.env.NODE_ENV === "development" && sizeKB > 100) {
     console.warn(
       `⚠️ Large bundle detected: ${componentName} (${sizeKB}KB). Consider code splitting.`,
@@ -96,7 +96,7 @@ export function warnLargeBundle(componentName: string, sizeKB: number): void {
 }
 
 // パフォーマンス監視
-export function measurePerformance(name: string, fn: () => void): void {
+function measurePerformance(name: string, fn: () => void): void {
   if (typeof window === "undefined" || process.env.NODE_ENV !== "development") {
     fn()
     return

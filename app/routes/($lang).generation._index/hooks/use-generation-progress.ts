@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-export type GenerationProgress = {
+type GenerationProgress = {
   state: "waiting" | "queued" | "active" | "completed"
   /** 0〜1 */
   progress: number

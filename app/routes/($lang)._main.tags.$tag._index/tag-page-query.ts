@@ -24,7 +24,7 @@ export type TagPageQuery = {
   hasPrompt: boolean
 }
 
-export const TAG_PAGE_ORDERS: TagPageOrderBy[] = [
+const TAG_PAGE_ORDERS: TagPageOrderBy[] = [
   "LIKES_COUNT",
   "DATE_CREATED",
   "VIEWS_COUNT",

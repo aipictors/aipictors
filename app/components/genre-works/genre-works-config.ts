@@ -622,7 +622,7 @@ const toR18GenreConfig = (
   faqs: R18_FAQS,
 })
 
-export const R18_GENRE_CONFIGS: Record<GenreKey, GenreConfig> = {
+const R18_GENRE_CONFIGS: Record<GenreKey, GenreConfig> = {
   "2d": toR18GenreConfig("2d", {
     name: ["R18 2D AIイラスト", "R18 2D AI illustrations"],
     h1: ["R18 2DのAIイラスト", "R18 2D AI illustrations"],

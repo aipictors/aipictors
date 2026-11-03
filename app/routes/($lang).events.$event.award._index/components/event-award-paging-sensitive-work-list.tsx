@@ -53,7 +53,7 @@ export function EventAwardPagingSensitiveWorkList(props: Props) {
   )
 }
 
-export const EventAwardWorkListItemFragment = graphql(
+const EventAwardWorkListItemFragment = graphql(
   `fragment EventAwardWorkListItem on WorkNode @_unmask {
     ...PhotoAlbumWork
   }`,

@@ -372,7 +372,7 @@ function getStatusStyle(status: string) {
   }
 }
 
-export function getPictorMessage(
+function getPictorMessage(
   t: ReturnType<typeof useTranslation>,
   proposal: Pick<
     ThemeProposalCardItem,

@@ -8,7 +8,7 @@ import { useQuery } from "@apollo/client/index"
 import { Loader2, Trophy, Heart, TrendingUp } from "lucide-react"
 import { Badge } from "~/components/ui/badge"
 
-export const UserRankingListItemFragment = graphql(
+const UserRankingListItemFragment = graphql(
   `fragment UserRankingListItem on UserRankingNode {
     id
     date

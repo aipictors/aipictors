@@ -34,7 +34,7 @@ type Ctx = {
 /**
  * 全拠点共通の KV に置く追加の内容（HTML から外したローダーのデータなど）
  */
-export type SharedExtra = {
+type SharedExtra = {
   /** 描画し終えたあとに、一緒に置く内容を返す */
   get: () => string | undefined
   /** KV から返すときに、その拠点に戻す */

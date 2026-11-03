@@ -14,7 +14,7 @@ type Props = {
 /**
  * クロップ済み作品一覧
  */
-export function HomeCroppedWorkListWithScroll (props: Props) {
+function HomeCroppedWorkListWithScroll (props: Props) {
   const t = useTranslation()
   if (props.works === null || props.works.length === 0) {
     return null

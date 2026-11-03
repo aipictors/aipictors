@@ -56,7 +56,7 @@ function saveUsageData(data: UsageData): void {
 /**
  * 今日の残り利用回数を取得
  */
-export function getRemainingUsage(): number {
+function getRemainingUsage(): number {
   const usage = getUsageData()
   return Math.max(0, DAILY_LIMIT - usage.count)
 }
@@ -90,7 +90,7 @@ export function consumeAiGenerationUsage(): boolean {
 /**
  * 今日の利用回数を取得
  */
-export function getTodayUsageCount(): number {
+function getTodayUsageCount(): number {
   const usage = getUsageData()
   return usage.count
 }
@@ -98,6 +98,6 @@ export function getTodayUsageCount(): number {
 /**
  * 1日の利用上限を取得
  */
-export function getDailyLimit(): number {
+function getDailyLimit(): number {
   return DAILY_LIMIT
 }

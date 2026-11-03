@@ -38,7 +38,7 @@ type Props = {
  * @param prompts
  * @param seed
  */
-export function getDemoSubmitButtonLabel (
+function getDemoSubmitButtonLabel (
   isSetI2iImage: boolean,
   prompts: string,
   seed: number,

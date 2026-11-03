@@ -152,7 +152,7 @@ export function HomeCroppedWorkList(props: Props) {
   )
 }
 
-export const HomeCoppedWorkFragment = graphql(
+const HomeCoppedWorkFragment = graphql(
   `fragment HomeCoppedWork on WorkNode @_unmask {
     id
     title

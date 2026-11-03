@@ -3,7 +3,7 @@ import { parseGenerationSize } from "~/routes/($lang).generation._index/types/ge
 /**
  * モデルの種類ごとに選べるサイズ
  */
-export const sizeOptionsByModelType: Record<
+const sizeOptionsByModelType: Record<
   string,
   { square: string[]; portrait: string[]; landscape: string[] }
 > = {
@@ -39,7 +39,7 @@ export const sizeOptionsByModelType: Record<
   },
 }
 
-export type GenerationSizeOption = {
+type GenerationSizeOption = {
   sizeType: string
   width: number
   height: number
@@ -111,7 +111,7 @@ export const getGenerationSizeOptions = (
 /**
  * モデルの種類ごとの初期サイズ
  */
-export const getDefaultSizeType = (modelType: string) => {
+const getDefaultSizeType = (modelType: string) => {
   if (modelType === "SD1") return "SD1_512_768"
   const options =
     sizeOptionsByModelType[modelType] ?? sizeOptionsByModelType.SDXL

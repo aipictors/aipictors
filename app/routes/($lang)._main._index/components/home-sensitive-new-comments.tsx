@@ -86,7 +86,7 @@ export function HomeSensitiveNewCommentsSection (props: Props) {
   )
 }
 
-export const HomeNewCommentsFragment = graphql(
+const HomeNewCommentsFragment = graphql(
   `fragment HomeNewComments on NewCommentNode {
     user {
       id
@@ -116,7 +116,7 @@ export const HomeNewCommentsFragment = graphql(
   }`,
 )
 
-export const homeNewCommentsQuery = graphql(
+const homeNewCommentsQuery = graphql(
   `query HomeNewComments {
     newComments: newComments(
       offset: 0,

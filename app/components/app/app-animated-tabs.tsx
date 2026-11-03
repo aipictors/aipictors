@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-export interface TabItem {
+interface TabItem {
   label: string
   value: string
   /**

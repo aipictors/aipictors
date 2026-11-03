@@ -160,7 +160,7 @@ export function ImageGenerationSelectorDialog(props: Props) {
   )
 }
 
-export const viewerImageGenerationResultsQuery = graphql(
+const viewerImageGenerationResultsQuery = graphql(
   `query ViewerImageGenerationResults($offset: Int!, $limit: Int!, $where: ImageGenerationResultsWhereInput) {
     viewer {
       id

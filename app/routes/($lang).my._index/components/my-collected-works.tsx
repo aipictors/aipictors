@@ -782,7 +782,7 @@ export function MyRecommendedList() {
   )
 }
 
-export const MyCollectedWorkFragment = graphql(
+const MyCollectedWorkFragment = graphql(
   `fragment MyCollectedWork on WorkNode @_unmask {
     id
     title

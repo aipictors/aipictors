@@ -32,7 +32,7 @@ export const preloadModelLibrary = () => {
   import("~/components/model-library/model-library-dialog")
 }
 
-export type OpenModelLibraryOptions = {
+type OpenModelLibraryOptions = {
   section?: ModelLibrarySection
   kind?: UserModelKind | null
   startWithUpload?: boolean

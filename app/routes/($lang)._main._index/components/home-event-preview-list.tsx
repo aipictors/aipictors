@@ -53,7 +53,7 @@ const formatEventDate = (unixTime: number) => {
   return `${year}.${month}.${day}`
 }
 
-export function HomeEventPreviewList({ events }: Props) {
+function HomeEventPreviewList({ events }: Props) {
   const t = useTranslation()
   const { currentIndex, isVisible } = useRotatingHomeEvents(events)
   const visibleEvents = getRotatingItems(events, currentIndex, 3)

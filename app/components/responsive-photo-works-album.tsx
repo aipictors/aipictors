@@ -538,7 +538,7 @@ const _userQuery = graphql(
   }`,
 )
 
-export const CommentListItemFragment = graphql(
+const CommentListItemFragment = graphql(
   `fragment Comment on CommentNode @_unmask {
       ...WorkComment
       responses(offset: 0, limit: 128) {

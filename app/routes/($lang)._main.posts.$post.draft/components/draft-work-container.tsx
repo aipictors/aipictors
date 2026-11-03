@@ -319,7 +319,7 @@ const viewerCurrentPassQuery = graphql(
   }`,
 )
 
-export const SideMenuAdvertisementsFragment = graphql(
+const SideMenuAdvertisementsFragment = graphql(
   `fragment SideMenuAdvertisementsFields on CustomerAdvertisementNode @_unmask {
       id
       imageUrl

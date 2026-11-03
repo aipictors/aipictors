@@ -730,7 +730,7 @@ function FeedContent({
   )
 }
 
-export const workFieldsFragment = graphql(
+const workFieldsFragment = graphql(
   `fragment PartialWorkFields on WorkNode @_unmask {
     id
     title

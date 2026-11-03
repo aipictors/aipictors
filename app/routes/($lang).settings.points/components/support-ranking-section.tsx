@@ -19,7 +19,7 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 
-export type SupportRankingItem = {
+type SupportRankingItem = {
   rank: number
   userId: string
   coinAmount: number
@@ -466,7 +466,7 @@ type RankingCardProps = {
   limit?: number
 }
 
-export function RankingCard({
+function RankingCard({
   title,
   colorClass,
   items,

@@ -61,7 +61,7 @@ const lastCoinBalance: { free: number | null; premium: number | null } = {
  * ヘッダーのナビゲーションメニューの内容部分（アイコン部分を除く）
  * HomeUserNavigationMenuから分離された最新の実装
  */
-export function UserNavigationMenuContent(props: Props) {
+function UserNavigationMenuContent(props: Props) {
   const authContext = useContext(AuthContext)
   // 前に開いたときの残高をすぐ出し、裏で取り直す
   const [freeCoinBalance, setFreeCoinBalance] = useState<number | null>(

@@ -33,7 +33,7 @@ const OMIT_USER_KEYS = [
   "promptonUser",
 ] as const
 
-export function toListWork<T>(work: T): T {
+function toListWork<T>(work: T): T {
   if (work === null || typeof work !== "object") return work
   const copy = { ...(work as Record<string, unknown>) }
   for (const key of OMIT_WORK_KEYS) delete copy[key]

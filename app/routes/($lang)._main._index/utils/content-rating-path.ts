@@ -6,7 +6,7 @@ export const getLocalePrefix = (pathname: string) => {
   return localeMatch ? `/${localeMatch[1]}` : ""
 }
 
-export const buildSensitiveHomePath = (pathname: string, search: string) => {
+const buildSensitiveHomePath = (pathname: string, search: string) => {
   const localePrefix = getLocalePrefix(pathname)
   const pathWithoutLocale = pathname.slice(localePrefix.length) || "/"
   const params = new URLSearchParams(search)

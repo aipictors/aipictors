@@ -54,7 +54,7 @@ export function CollectionArticle(props: Props) {
   )
 }
 
-export const FolderArticleFragment = graphql(
+const FolderArticleFragment = graphql(
   `fragment FolderArticle on FolderNode @_unmask {
       id
       thumbnailImageURL

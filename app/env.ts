@@ -1,6 +1,6 @@
 import { object, string, parse, optional } from "valibot"
 
-export type Env = {
+type Env = {
   VITE_APP_URL: string
   VITE_FIREBASE_API_KEY: string
   VITE_FIREBASE_APP_ID: string

@@ -13,7 +13,7 @@ type Props = {
 /**
  * 画面全体へ表示するためのコンテナー
  */
-export function FullScreenContainer(props: Props): React.ReactNode {
+function FullScreenContainer(props: Props): React.ReactNode {
   const [isMounted, setIsMounted] = useState(false)
 
   /**

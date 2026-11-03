@@ -88,7 +88,7 @@ export function FollowingUserItem (props: Props) {
   )
 }
 
-export const FolloweeListItemFragment = graphql(
+const FolloweeListItemFragment = graphql(
   `fragment FolloweeListItem on UserNode  @_unmask {
     id
     name
@@ -106,7 +106,7 @@ export const FolloweeListItemFragment = graphql(
   }`,
 )
 
-export const FolloweeListItemWorkFragment = graphql(
+const FolloweeListItemWorkFragment = graphql(
   `fragment FolloweeListItemWork on WorkNode  @_unmask {
     id
     title

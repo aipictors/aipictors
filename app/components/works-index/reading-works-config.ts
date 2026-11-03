@@ -7,7 +7,7 @@ export type ReadingSort = "new" | "popular"
 /** [日本語, English] */
 type Text = readonly [string, string]
 
-export type ReadingConfig = {
+type ReadingConfig = {
   kind: ReadingKind
   path: string
   workType: IntrospectionEnum<"WorkType">

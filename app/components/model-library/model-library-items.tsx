@@ -55,7 +55,7 @@ export const canUseLibraryItem = (item: ModelLibraryItem): boolean => {
   return true
 }
 
-export function ModelKindLabel(props: {
+function ModelKindLabel(props: {
   kind: ModelLibraryItem["kind"]
   className?: string
 }) {

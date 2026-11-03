@@ -88,7 +88,7 @@ export const UserNovelsItemFragment = graphql(
   }`,
 )
 
-export const UserNovelsQuery = graphql(
+const UserNovelsQuery = graphql(
   `query UserNovels($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...UserNovelsItem

@@ -16,7 +16,7 @@ export type LedgerItem = {
 
 export type LedgerFilter = "all" | "received" | "used" | "expired"
 
-export type LedgerGroup = {
+type LedgerGroup = {
   key: string
   coinType: CoinType
   kind: string
@@ -27,7 +27,7 @@ export type LedgerGroup = {
   lastAt: number
 }
 
-export type LedgerDay = {
+type LedgerDay = {
   dateKey: string
   at: number
   groups: LedgerGroup[]

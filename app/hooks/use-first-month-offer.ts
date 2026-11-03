@@ -7,7 +7,7 @@ import { AuthContext } from "~/contexts/auth-context"
  * 今プランに入っていない人（はじめての人・以前入っていた人）の初月半額（決済のときに aipictors-api が判定してクーポンを付ける）
  * 画面では、ログインしていない人と、今プランに入っていない人に案内する
  */
-export const FIRST_MONTH_DISCOUNT_RATE = 0.5
+const FIRST_MONTH_DISCOUNT_RATE = 0.5
 
 export function useFirstMonthOffer() {
   const authContext = useContext(AuthContext)

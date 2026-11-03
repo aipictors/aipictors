@@ -484,7 +484,7 @@ export const PostAnimationFormAlbumFragment = graphql(
   }`,
 )
 
-export const PostAnimationFormRecentlyUsedTagsFragment = graphql(
+const PostAnimationFormRecentlyUsedTagsFragment = graphql(
   `fragment PostAnimationFormRecentlyUsedTags on TagNode @_unmask {
     id
     name

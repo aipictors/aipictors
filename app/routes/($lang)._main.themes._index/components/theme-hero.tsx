@@ -15,7 +15,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getJstDate } from "~/utils/jst-date"
 
-export type ThemeHeroTheme = {
+type ThemeHeroTheme = {
   id: string
   title: string
   year: number

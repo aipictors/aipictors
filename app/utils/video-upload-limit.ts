@@ -6,7 +6,7 @@ export type VideoUploadPassType =
   | null
   | undefined
 
-export const isSubscribedVideoUploader = (
+const isSubscribedVideoUploader = (
   passType: VideoUploadPassType,
 ) => {
   return passType === "LITE" || passType === "STANDARD" || passType === "PREMIUM"

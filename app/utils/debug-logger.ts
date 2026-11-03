@@ -76,7 +76,7 @@ type PerformanceTimer = {
   end: (label: string) => void
 }
 
-export const performanceTimer: PerformanceTimer = {
+const performanceTimer: PerformanceTimer = {
   start: (label: string) => {
     if (isDevelopment && typeof performance !== "undefined") {
       performance.mark(`${label}-start`)

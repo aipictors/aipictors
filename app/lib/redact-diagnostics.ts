@@ -1,7 +1,7 @@
 // filepath: app/lib/redact-diagnostics.ts
 // 診断ログ向け: 機密情報を含む可能性のある値を再帰的にマスキングする純粋関数
 
-export type Redacted = unknown
+type Redacted = unknown
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null

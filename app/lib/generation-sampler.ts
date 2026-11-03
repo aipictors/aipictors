@@ -3,7 +3,7 @@
  * バックエンド（aipictors-system lib/generation-sampler.ts）と同じ一覧にしておく（違う値は既定に置き換えられる）
  */
 
-export type GenerationSamplerOption = {
+type GenerationSamplerOption = {
   value: string
   /**
    * 選択肢の下に出すひとこと
@@ -12,7 +12,7 @@ export type GenerationSamplerOption = {
   descriptionEn: string
 }
 
-export const DEFAULT_GENERATION_SAMPLER = "DPM++ 2M"
+const DEFAULT_GENERATION_SAMPLER = "DPM++ 2M"
 
 export const GENERATION_SAMPLER_OPTIONS: GenerationSamplerOption[] = [
   {
@@ -77,7 +77,7 @@ export const GENERATION_SAMPLER_OPTIONS: GenerationSamplerOption[] = [
   },
 ]
 
-export type GenerationSchedulerOption = {
+type GenerationSchedulerOption = {
   /**
    * null は「自動」（サンプラーごとの既定）
    */
@@ -230,7 +230,7 @@ export const GENERATION_SETTINGS_PRESETS: GenerationSettingsPreset[] = [
   },
 ]
 
-export type GenerationRecommendedSettings = {
+type GenerationRecommendedSettings = {
   sampler: string | null
   scheduler: string | null
   cfgScale: number | null

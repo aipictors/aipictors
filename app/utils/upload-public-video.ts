@@ -3,7 +3,7 @@ import { config } from "~/config"
 
 const VIDEO_UPLOAD_TIMEOUT_MS = 120_000
 
-export type UploadedStreamVideo = {
+type UploadedStreamVideo = {
   uid: string | null
   url: string
 }

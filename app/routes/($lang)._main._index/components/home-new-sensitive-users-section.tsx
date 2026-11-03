@@ -41,7 +41,7 @@ export function HomeNewSensitiveUsersSection (props: Props) {
   )
 }
 
-export const HomeNewPostedUsersFragment = graphql(
+const HomeNewPostedUsersFragment = graphql(
   `fragment HomeNewPostedUsers on UserNode @_unmask {
     id
     iconUrl

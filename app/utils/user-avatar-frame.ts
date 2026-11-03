@@ -19,7 +19,7 @@ const passRankMap: Record<string, number> = {
   PREMIUM: 3,
 }
 
-export const getUserAvatarFramePassRank = (
+const getUserAvatarFramePassRank = (
   passType: UserAvatarFramePassType,
 ) => {
   if (passType === null || passType === undefined) {
@@ -29,7 +29,7 @@ export const getUserAvatarFramePassRank = (
   return passRankMap[passType] ?? 0
 }
 
-export const canUseUserAvatarFrame = (
+const canUseUserAvatarFrame = (
   currentPassType: UserAvatarFramePassType,
   requiredPassType: UserAvatarFramePassType,
 ) => {
@@ -56,7 +56,7 @@ export const toUserAvatarFramePassLabel = (
 }
 
 /** アイコンの外にはみ出す装飾（画像を重ねる） */
-export const USER_AVATAR_DECORATION_FRAME_TYPE = "DECORATION"
+const USER_AVATAR_DECORATION_FRAME_TYPE = "DECORATION"
 
 export const isUserAvatarDecoration = (
   frame: UserAvatarFramePresentation | null | undefined,
@@ -97,7 +97,7 @@ export const toUserAvatarFrameCategory = (
   )
 }
 
-export type UserAvatarFrameAccess = "AVAILABLE" | "NEEDS_PLAN" | "NEEDS_COINS"
+type UserAvatarFrameAccess = "AVAILABLE" | "NEEDS_PLAN" | "NEEDS_COINS"
 
 type UserAvatarFrameAccessContext = {
   currentPassType: UserAvatarFramePassType

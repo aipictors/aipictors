@@ -164,7 +164,7 @@ export function GenerationConfigRestoration(props: Props) {
   return props.children
 }
 
-export const imageGenerationResultQuery = graphql(
+const imageGenerationResultQuery = graphql(
   `query ImageGenerationResult($id: ID!) {
     imageGenerationResult(id: $id) {
       id
@@ -187,7 +187,7 @@ export const imageGenerationResultQuery = graphql(
   }`,
 )
 
-export const workQuery = graphql(
+const workQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       id

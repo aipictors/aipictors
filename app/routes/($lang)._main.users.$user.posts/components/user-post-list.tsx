@@ -106,7 +106,7 @@ export const UserPostsItemFragment = graphql(
   }`,
 )
 
-export const UserPostsQuery = graphql(
+const UserPostsQuery = graphql(
   `query UserPosts($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...UserPostsItem

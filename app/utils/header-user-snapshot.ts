@@ -4,7 +4,7 @@
  */
 const STORAGE_KEY = "aipictors.headerUser"
 
-export type HeaderUserSnapshot = {
+type HeaderUserSnapshot = {
   iconUrl: string
 }
 

@@ -111,7 +111,7 @@ export const UserSensitiveTabsFragment = graphql(
   }`,
 )
 
-export const UserSensitiveWorksCountQuery = graphql(
+const UserSensitiveWorksCountQuery = graphql(
   `query UserSensitiveWorksCount($userId: ID!) {
     imageWorksCount: worksCount(where: { userId: $userId, workType: WORK, ratings: [R18, R18G], isSensitive: true })
     novelWorksCount: worksCount(where: { userId: $userId, workType: NOVEL, ratings: [R18, R18G], isSensitive: true })

@@ -2,7 +2,7 @@
  * 安全なCookie操作ユーティリティ
  */
 
-export type CookieOptions = {
+type CookieOptions = {
   expires?: Date
   maxAge?: number
   path?: string
@@ -66,7 +66,7 @@ export function setCookie(
 /**
  * Cookieを取得する
  */
-export function getCookie(name: string): string | null {
+function getCookie(name: string): string | null {
   try {
     if (typeof document === "undefined") {
       return null
@@ -97,7 +97,7 @@ export function hasCookie(name: string): boolean {
 /**
  * Cookieを削除する
  */
-export function deleteCookie(name: string, path = "/"): boolean {
+function deleteCookie(name: string, path = "/"): boolean {
   try {
     if (typeof document === "undefined") {
       return false

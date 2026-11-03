@@ -50,14 +50,14 @@ export const userNavigationStyles = {
 /**
  * スケルトン用のクラス名を生成するヘルパー関数
  */
-export const getSkeletonClass = (baseSize: string) => {
+const getSkeletonClass = (baseSize: string) => {
   return `${baseSize} ${userNavigationStyles.skeleton.base}`
 }
 
 /**
  * メニュー項目のスケルトン用のクラス名を生成するヘルパー関数
  */
-export const getMenuSkeletonClass = (
+const getMenuSkeletonClass = (
   menuType: keyof typeof userNavigationStyles.menuTextWidths,
 ) => {
   const width = userNavigationStyles.menuTextWidths[menuType]

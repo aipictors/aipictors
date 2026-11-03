@@ -3,7 +3,7 @@ import { isSensitiveKeyword } from "./is-sensitive-keyword"
 /**
  * センシティブキーワード警告をスキップするかどうかをチェック
  */
-export function shouldSkipSensitiveWarning(): boolean {
+function shouldSkipSensitiveWarning(): boolean {
   if (typeof window === "undefined") return false
   return localStorage.getItem("skipSensitiveKeywordWarning") === "true"
 }
@@ -11,7 +11,7 @@ export function shouldSkipSensitiveWarning(): boolean {
 /**
  * センシティブキーワード警告の設定をリセット
  */
-export function resetSensitiveWarningPreference(): void {
+function resetSensitiveWarningPreference(): void {
   if (typeof window === "undefined") return
   localStorage.removeItem("skipSensitiveKeywordWarning")
 }

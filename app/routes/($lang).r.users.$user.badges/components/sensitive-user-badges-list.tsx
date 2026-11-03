@@ -28,7 +28,7 @@ export function SensitiveUserBadgesList (props: Props) {
   )
 }
 
-export const UserBadgeListItemFragment = graphql(`
+const UserBadgeListItemFragment = graphql(`
   fragment UserBadgeListItem on BadgeNode @_unmask {
     id
     imageUrl

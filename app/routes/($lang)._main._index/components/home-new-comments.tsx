@@ -110,7 +110,7 @@ export const HomeNewCommentsFragment = graphql(
   }`,
 )
 
-export const homeNewCommentsQuery = graphql(
+const homeNewCommentsQuery = graphql(
   `query HomeNewComments {
     newComments: newComments(
       offset: 0,

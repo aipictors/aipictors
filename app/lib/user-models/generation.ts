@@ -68,7 +68,7 @@ export type SelectedUserCheckpoint = {
   recommendedSettings?: UserModelRecommendedSettings | null
 }
 
-export const toSelectedUserCheckpoint = (
+const toSelectedUserCheckpoint = (
   model: Pick<UserModel, "id" | "name" | "baseModel" | "thumbnailUrl">,
   officialModelId: string,
 ): SelectedUserCheckpoint => {

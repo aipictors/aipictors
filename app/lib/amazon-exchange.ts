@@ -1,6 +1,6 @@
 export type AmazonExchangePackageId = "AMAZON_1000" | "AMAZON_10000"
 
-export type AmazonExchangePackage = {
+type AmazonExchangePackage = {
   id: AmazonExchangePackageId
   coinAmount: number
   amazonPointYen: number

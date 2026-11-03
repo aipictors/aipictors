@@ -114,7 +114,7 @@ export const getPathLocale = (pathname: string): SupportedLocale => {
  * canonical に残すクエリ（並び替え・絞り込み・トラッキング用のクエリは外して、
  * 同じ内容の URL を 1 つにまとめる）。ページ番号だけは別の内容なので残す。
  */
-export const toCanonicalSearch = (search: string, pathname = "") => {
+const toCanonicalSearch = (search: string, pathname = "") => {
   // 作品ページには一覧のページ番号がないので、?page= も外す
   if (
     /^\/(?:en\/)?(?:r\/)?posts\/(?:\d+|[0-9a-f]{8}-[0-9a-f-]{27})\/?$/i.test(

@@ -196,7 +196,7 @@ export function RankingSensitiveUserListModern (props: Props) {
   )
 }
 
-export const SensitiveUserRankingListItemFragment = graphql(
+const SensitiveUserRankingListItemFragment = graphql(
   `fragment SensitiveUserRankingListItem on UserRankingNode @_unmask {
     id
     date

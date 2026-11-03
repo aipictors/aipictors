@@ -1,5 +1,5 @@
 /** ぴくたーちゃんのセリフ（日本語・英語） */
-export type PictorChanLine = readonly [string, string]
+type PictorChanLine = readonly [string, string]
 
 /** 迷子のページ（404）で話すこと。日替わりで、タップすると次のセリフになる */
 export const NOT_FOUND_LINES: readonly PictorChanLine[] = [

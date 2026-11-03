@@ -7,7 +7,7 @@ import {
   type SupportedLocale,
 } from "~/utils/locale-path"
 
-export type LocaleRedirect = {
+type LocaleRedirect = {
   status: number
   headers: {
     Location: string

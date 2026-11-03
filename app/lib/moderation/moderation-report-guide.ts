@@ -2,7 +2,7 @@
  * 運営からのお知らせ（修正依頼）の種類ごとの説明と、やること
  */
 
-export type ModerationReportGuide = {
+type ModerationReportGuide = {
   /** 短い見出し */
   title: string
   /** 何をすればよいか（手順） */
