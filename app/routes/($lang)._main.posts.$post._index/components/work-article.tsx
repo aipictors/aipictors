@@ -527,24 +527,29 @@ export function WorkArticle(props: Props) {
           />
         </div>
         <div className="space-y-2">
-          <p
-            className={cn(
-              "overflow-hidden whitespace-pre-wrap break-words text-sm leading-relaxed md:text-base",
-              isDescriptionLong && !isDescriptionExpanded && "line-clamp-6",
-            )}
-          >
-            {parseTextWithLinks(displayDescription)}
-          </p>
-          {isDescriptionLong && (
-            <button
-              type="button"
-              className="font-medium text-muted-foreground text-sm hover:text-foreground"
-              onClick={() => setIsDescriptionExpanded((value) => !value)}
-            >
-              {isDescriptionExpanded
-                ? t("閉じる", "Show less")
-                : t("続きを読む", "Read more")}
-            </button>
+          {/* キャプションがタグや生成情報に埋もれないように背景を付ける（空なら枠も出さない） */}
+          {displayDescription.trim().length > 0 && (
+            <div className="space-y-2 rounded-lg bg-muted px-3 py-2.5">
+              <p
+                className={cn(
+                  "overflow-hidden whitespace-pre-wrap break-words text-sm leading-relaxed md:text-base",
+                  isDescriptionLong && !isDescriptionExpanded && "line-clamp-6",
+                )}
+              >
+                {parseTextWithLinks(displayDescription)}
+              </p>
+              {isDescriptionLong && (
+                <button
+                  type="button"
+                  className="font-medium text-muted-foreground text-sm hover:text-foreground"
+                  onClick={() => setIsDescriptionExpanded((value) => !value)}
+                >
+                  {isDescriptionExpanded
+                    ? t("閉じる", "Show less")
+                    : t("続きを読む", "Read more")}
+                </button>
+              )}
+            </div>
           )}
           {shouldShowTranslateLink && (
             <button
