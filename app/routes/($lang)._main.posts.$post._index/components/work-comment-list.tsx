@@ -21,9 +21,6 @@ import { recordRecentStickerId } from "~/utils/sticker-recent"
 
 export { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-queries"
 
-/** 作品のページで最初に描画するコメントの数（取得が終わる前は 0 件なので、件数からは決めない） */
-const INITIAL_COMMENT_COUNT = 8
-
 /**
  * 作品へのコメント一覧
  */
@@ -55,7 +52,7 @@ export function WorkCommentList(props: WorkCommentListProps) {
   const isAutoReveal = props.defaultShowCommentCount === undefined
   const { count: revealedCount, sentinelRef } = useProgressiveCount(
     showComments.length,
-    INITIAL_COMMENT_COUNT,
+    showCommentsBeforeMore.length,
     props.workId,
   )
 
