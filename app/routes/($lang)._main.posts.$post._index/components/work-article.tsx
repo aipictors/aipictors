@@ -89,18 +89,25 @@ export function WorkArticle(props: Props) {
   const [markdownContent, setMarkdownContent] = useState<string>("")
 
   useEffect(() => {
+    // 別の作品へ移動したら、前の作品の本文を残さない
+    setMarkdownContent("")
     // マークダウンファイルの URL からマークダウンを取得する
-    if (props.work.mdUrl) {
-      fetch(props.work.mdUrl)
-        .then((res) => res.text())
-        .then((text) => {
-          // hydration が終わる前に急ぎの更新として届くと、遅延読み込みの Suspense の中身を
-          // React が作り直してしまう（React error #421）
-          startTransition(() => {
-            setMarkdownContent(text)
-          })
+    if (!props.work.mdUrl) return
+    let isCurrent = true
+    fetch(props.work.mdUrl)
+      .then((res) => res.text())
+      .then((text) => {
+        // 先に開いた作品の本文が後から届いても上書きしない
+        if (!isCurrent) return
+        // hydration が終わる前に急ぎの更新として届くと、遅延読み込みの Suspense の中身を
+        // React が作り直してしまう（React error #421）
+        startTransition(() => {
+          setMarkdownContent(text)
         })
-        .catch((err) => console.error("Error fetching markdown file:", err))
+      })
+      .catch((err) => console.error("Error fetching markdown file:", err))
+    return () => {
+      isCurrent = false
     }
   }, [props.work.mdUrl])
 

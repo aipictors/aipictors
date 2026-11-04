@@ -2,12 +2,23 @@ import { isCustomSizeType } from "~/routes/($lang).generation._index/types/gener
 import { canUseCustomGenerationSize } from "~/routes/($lang).generation._index/utils/generation-size-options"
 import { config } from "~/config"
 import { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
-import { produce } from "immer"
 
 type Props = {
   maxTasksCount: number
   availableLoraModelsCount: number
 }
+
+/** 「最近」に残すモデルの数（選択中の 1 つ + 表示する 4 つ） */
+const RECENT_MODEL_IDS_MAX = 5
+
+/**
+ * 選んだモデルを先頭にする（以前は選択中のモデルの枠だけを置き換えていて、他の枠が入れ替わらなかった）
+ */
+const toRecentModelIds = (modelIds: string[], id: string) =>
+  [id, ...modelIds.filter((modelId) => modelId !== id)].slice(
+    0,
+    RECENT_MODEL_IDS_MAX,
+  )
 
 /**
  * 画像生成の状態を作成する
@@ -198,16 +209,10 @@ export class GenerationConfigAction {
    * @param id
    * @returns
    */
-  updateModelId(id: string, modelType: string) {
-    const modelIds = produce(this.state.modelIds, (draft: string[]) => {
-      const index = draft.findIndex((modelId: string) => {
-        return this.state.modelId === modelId
-      })
-      if (index === -1) return
-      if (!draft.includes(id)) {
-        draft[index] = id
-      }
-    })
+  updateModelId(id: string, modelType: string, isRecent = true) {
+    const modelIds = isRecent
+      ? toRecentModelIds(this.state.modelIds, id)
+      : this.state.modelIds
 
     if (this.state.modelType !== modelType) {
       // 現在の選択中のモデルと違う場合はサイズ、VAEを自動変更させる
@@ -284,15 +289,7 @@ export class GenerationConfigAction {
    * @returns
    */
   updateModelIdAndPrompt(id: string, modelType: string, promptText: string) {
-    const modelIds = produce(this.state.modelIds, (draft: string[]) => {
-      const index = draft.findIndex((modelId: string) => {
-        return this.state.modelId === modelId
-      })
-      if (index === -1) return
-      if (!draft.includes(id)) {
-        draft[index] = id
-      }
-    })
+    const modelIds = toRecentModelIds(this.state.modelIds, id)
 
     if (this.state.modelType !== modelType) {
       // 現在の選択中のモデルと違う場合はサイズ、VAEを自動変更させる

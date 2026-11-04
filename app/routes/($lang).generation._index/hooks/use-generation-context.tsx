@@ -227,8 +227,14 @@ export function useGenerationContext() {
    * モデルを変更する
    * @param modelId
    */
-  const updateModelId = (modelId: string, modelType: string) => {
-    const value = getConfigAction().updateModelId(modelId, modelType).getState()
+  const updateModelId = (
+    modelId: string,
+    modelType: string,
+    isRecent = true,
+  ) => {
+    const value = getConfigAction()
+      .updateModelId(modelId, modelType, isRecent)
+      .getState()
     sendConfig(value)
   }
 

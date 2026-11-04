@@ -177,6 +177,41 @@ describe("ImageGenerationAction", () => {
       expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
 
+    test("選んだモデルが「最近」の先頭に来て、前のモデルも残る", () => {
+      const action = new GenerationConfigAction(
+        { ...config, modelId: "1", modelIds: ["1", "3", "19"] },
+        { maxTasksCount: 0, availableLoraModelsCount: 0 },
+      )
+      const first = action.updateModelId("7", "SD1")
+      expect(first.getState().modelIds).toEqual(["7", "1", "3", "19"])
+      const second = first.updateModelId("3", "SD1")
+      expect(second.getState().modelIds).toEqual(["3", "7", "1", "19"])
+    })
+
+    test("「最近」は増え続けない", () => {
+      const action = new GenerationConfigAction(
+        { ...config, modelId: "1", modelIds: ["1", "2", "3", "4", "5"] },
+        { maxTasksCount: 0, availableLoraModelsCount: 0 },
+      )
+      expect(action.updateModelId("6", "SD1").getState().modelIds).toEqual([
+        "6",
+        "1",
+        "2",
+        "3",
+        "4",
+      ])
+    })
+
+    test("裏で使うモデルは「最近」に入れない", () => {
+      const action = new GenerationConfigAction(
+        { ...config, modelId: "1", modelIds: ["1", "3"] },
+        { maxTasksCount: 0, availableLoraModelsCount: 0 },
+      )
+      const state = action.updateModelId("9", "SD1", false).getState()
+      expect(state.modelId).toBe("9")
+      expect(state.modelIds).toEqual(["1", "3"])
+    })
+
     test("モデルを変えてもプロンプトは変わらない", () => {
       const action = imageGenerationAction.updatePrompt("1girl, smile")
       for (const modelType of ["SD1", "SDXL", "FLUX", "GEMINI"]) {

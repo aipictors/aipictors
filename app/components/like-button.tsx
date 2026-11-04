@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client/index"
+import { useApolloClient, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Heart } from "lucide-react"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
@@ -9,6 +9,10 @@ import { useFollowNudge } from "~/hooks/use-follow-nudge"
 import { useTranslation } from "~/hooks/use-translation"
 import { requestAchievementCheck } from "~/lib/achievements/achievement-ui"
 import { isLikeShortcutKeyEvent } from "~/lib/is-like-shortcut-key-event"
+import {
+  fetchViewerWorkLike,
+  rememberViewerWorkLike,
+} from "~/lib/viewer-work-like"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -36,6 +40,8 @@ export function LikeButton(props: Props): React.ReactNode {
   const location = useLocation()
 
   const authContext = useContext(AuthContext)
+
+  const apolloClient = useApolloClient()
 
   const nudgeFollow = useFollowNudge()
 
@@ -116,6 +122,40 @@ export function LikeButton(props: Props): React.ReactNode {
     }
   }, [props.defaultLiked, props.defaultLikedCount, getLocalLikeState])
 
+  // 一覧の多くはサーバーで未ログインとして取得するので isLiked が常に false になる。
+  // ここでログイン中のユーザーの状態を確かめる（他の端末での変更も反映する）
+  const viewerUserId = authContext.isLoggedIn ? authContext.userId : null
+  const isOwnWork = authContext.userId === props.targetWorkOwnerUserId
+
+  useEffect(() => {
+    if (!viewerUserId || isOwnWork) return
+    if (props.defaultLiked && getLocalLikeState() === null) return
+    let isCurrent = true
+    fetchViewerWorkLike(apolloClient, viewerUserId, props.targetWorkId).then(
+      (liked) => {
+        if (!isCurrent || liked === null) return
+        setIsLiked(liked)
+        const localState = getLocalLikeState()
+        if (localState !== null && localState.liked !== liked) {
+          localStorage.removeItem(localStorageKey)
+          setLikedCount(props.defaultLikedCount)
+        }
+      },
+    )
+    return () => {
+      isCurrent = false
+    }
+  }, [
+    apolloClient,
+    viewerUserId,
+    isOwnWork,
+    props.targetWorkId,
+    props.defaultLiked,
+    props.defaultLikedCount,
+    getLocalLikeState,
+    localStorageKey,
+  ])
+
   const performLike = async (isAnonymous?: boolean) => {
     if (props.onClick) {
       props.onClick(!isLiked)
@@ -133,6 +173,9 @@ export function LikeButton(props: Props): React.ReactNode {
 
     // ローカルストレージに保存
     setLocalLikeState(newIsLiked, newLikedCount)
+    if (viewerUserId) {
+      rememberViewerWorkLike(viewerUserId, props.targetWorkId, newIsLiked)
+    }
 
     try {
       if (!isLiked) {
@@ -164,6 +207,9 @@ export function LikeButton(props: Props): React.ReactNode {
       setIsLiked(isLiked)
       setLikedCount(likedCount)
       setLocalLikeState(isLiked, likedCount)
+      if (viewerUserId) {
+        rememberViewerWorkLike(viewerUserId, props.targetWorkId, isLiked)
+      }
     }
   }
 
@@ -182,7 +228,6 @@ export function LikeButton(props: Props): React.ReactNode {
   const onShortcutRef = useRef(handleOnClick)
   onShortcutRef.current = handleOnClick
 
-  const isOwnWork = authContext.userId === props.targetWorkOwnerUserId
   const canUseShortcutKey =
     props.isUsedShortcutKey === true &&
     authContext.isLoggedIn &&
@@ -260,7 +305,8 @@ export function LikeButton(props: Props): React.ReactNode {
                 height: `${size}px`,
                 backgroundSize: `auto ${size}px`,
                 transition: "background-position steps(25)",
-                transitionDuration: isLiked ? "1s" : "0s",
+                // 押したときだけ再生する（状態を読み込んだだけでは一斉に動かさない）
+                transitionDuration: clicked && isLiked ? "1s" : "0s",
                 backgroundPosition: isLiked ? `-${width}px 0` : "0 0",
                 flexShrink: 0,
                 marginLeft: props.text ? "0" : "0",
@@ -324,7 +370,7 @@ export function LikeButton(props: Props): React.ReactNode {
           height: `${size}px`,
           backgroundSize: `auto ${size}px`,
           transition: "background-position steps(25)",
-          transitionDuration: isLiked ? "1s" : "0s",
+          transitionDuration: clicked && isLiked ? "1s" : "0s",
           backgroundPosition: isLiked ? `-${width}px 0` : "0 0",
           flexShrink: 0,
           marginLeft: props.text ? "0" : "0",

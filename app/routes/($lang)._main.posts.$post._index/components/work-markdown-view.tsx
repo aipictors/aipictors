@@ -56,8 +56,9 @@ export function WorkMarkdownView (props: Props) {
     content: props.md,
   })
 
+  // 同じタブで別の作品へ移動すると同じエディタのまま md だけ変わるので、毎回入れ直す
   useEffect(() => {
-    if (editor && editor.getText() === "") {
+    if (editor) {
       editor.commands.setContent(props.md || "")
     }
   }, [props.md, editor])

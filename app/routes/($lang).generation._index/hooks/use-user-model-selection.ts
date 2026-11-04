@@ -59,7 +59,8 @@ export function useUserModelSelection() {
       recommendedSettings: model.recommendedSettings ?? null,
       anchorModelId,
     })
-    context.updateModelId(anchorModelId, modelType)
+    // 裏で使う公式モデルなので「最近」には入れない
+    context.updateModelId(anchorModelId, modelType, false)
   }
 
   /**

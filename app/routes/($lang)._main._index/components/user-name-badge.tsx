@@ -32,12 +32,13 @@ export function UserNameBadge (props: Props) {
           "p-3": props.padding === "lg",
         })}
       >
-        <div className="flex items-center space-x-2">
+        {/* 名前が長くても、いいね数が枠の外に押し出されないように名前の側を縮める */}
+        <div className="flex min-w-0 items-center space-x-2">
           <UserAvatarWithFrame
             alt={props.name}
             frame={props.frame}
             isAnimated={false}
-            sizeClassName={cn("rounded-full", {
+            sizeClassName={cn("shrink-0 rounded-full", {
               "size-4": props.width === "sm",
               "size-6": props.width === "md",
               "size-8": props.width === "lg",
@@ -45,7 +46,7 @@ export function UserNameBadge (props: Props) {
             src={withIconUrlFallback(props.userIconImageURL)}
           />
           <p
-            className={cn("overflow-hidden text-ellipsis text-nowrap", {
+            className={cn("min-w-0 overflow-hidden text-ellipsis text-nowrap", {
               "max-w-16 text-xs":
                 props.width === "sm" && props.snapshotLikedCount,
               "max-w-20 text-xs":
@@ -61,7 +62,7 @@ export function UserNameBadge (props: Props) {
           </p>
         </div>
         {props.likesCount !== undefined && (
-          <div className="ml-auto items-center">
+          <div className="ml-auto shrink-0 items-center pl-1">
             <div className="flex items-center space-x-1">
               <Heart className="size-3 fill-gray-400 text-gray-400" />
               <span className="text-xs">{props.likesCount}</span>
