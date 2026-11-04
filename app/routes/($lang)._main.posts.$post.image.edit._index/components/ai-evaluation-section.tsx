@@ -198,7 +198,7 @@ export function AiEvaluationSection (props: Props) {
     }
     if (props.evaluationStatus === "REFUSED") {
       return {
-        text: "この作品はAI評価の対象外でした",
+        text: "AI評価はありません",
         disabled: true,
         variant: "secondary" as const,
         icon: CircleSlash,
