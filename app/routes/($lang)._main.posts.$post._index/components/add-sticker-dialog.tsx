@@ -206,9 +206,9 @@ export function AddStickerDialog(props: Props) {
         <CropImageField
           isHidePreviewImage={imageBase64 === ""}
           defaultCroppedImage={props.defaultImageBase64}
-          cropWidth={240}
-          cropHeight={240}
-          fileExtension={"webp"}
+          cropWidth={512}
+          cropHeight={512}
+          fileExtension={"png"}
           onDeleteImage={onDeleteImage}
           onCrop={onCrop}
         />

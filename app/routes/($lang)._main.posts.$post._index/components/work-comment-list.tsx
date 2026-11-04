@@ -44,7 +44,6 @@ export function WorkCommentList(props: WorkCommentListProps) {
     showNewComments,
     stickers,
     supportSuccessState,
-    userIcon,
   } = state
 
   return (
@@ -86,9 +85,7 @@ export function WorkCommentList(props: WorkCommentListProps) {
                   await sendComment(
                     comment,
                     sticker.id,
-                    sticker.imageUrl ?? "",
                     props.workId,
-                    userIcon,
                     currentSupportDraft,
                   )
                 } catch (error) {
@@ -171,14 +168,12 @@ export function WorkCommentList(props: WorkCommentListProps) {
       <StickerDialog
         isOpen={isOpen}
         onClose={onClose}
-        onSend={async (stickerId: string, url: string) => {
+        onSend={async (stickerId: string) => {
           setRecentStickerIds(recordRecentStickerId(stickerId))
           await sendComment(
             comment,
             stickerId,
-            url,
             props.workId,
-            userIcon,
             currentSupportDraft,
           )
         }}

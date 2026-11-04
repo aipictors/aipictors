@@ -23,7 +23,6 @@ import {
   type Comment,
   type CommentSupportDraft,
   fetchCoinSummary,
-  getJSTDate,
   type ReplyComment,
   SUPPORT_CONFIRM_THRESHOLD_PT,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
@@ -305,9 +304,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
   const sendComment = async (
     text: string,
     stickerId: string,
-    stickerImageURL: string,
     targetWorkId: string,
-    iconUrl: string | null | undefined = null,
     supportDraft: CommentSupportDraft | null = null,
   ) => {
     try {
@@ -432,29 +429,8 @@ export function useWorkCommentList(props: WorkCommentListProps) {
         }
 
         setNewComments([
-          {
-            id: res.data.createWorkComment.id,
-            text: text,
-            createdAt: getJSTDate().getTime() / 1000,
-            likesCount: 0,
-            isWorkOwnerLiked: false,
-            isLiked: false,
-            user: {
-              id: appContext.userId ?? "",
-              name: appContext.displayName ?? "",
-              iconUrl: withIconUrlFallback(iconUrl),
-              avatarFrame: userAvatarFrame,
-            },
-            sticker: {
-              image: {
-                downloadURL: stickerImageURL,
-              },
-            },
-            support: res.data.createWorkComment.support ?? null,
-            isMuted: false,
-            isSensitive: isSensitive,
-            ...newComments,
-          },
+          { ...res.data.createWorkComment, isSensitive },
+          ...newComments,
         ])
       }
     } catch (_e) {
@@ -535,9 +511,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     sendComment(
       inputComment,
       "-1",
-      "",
       props.workId,
-      userIcon,
       currentSupportDraft,
     )
   }

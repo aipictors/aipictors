@@ -2,7 +2,6 @@ import { expect, test } from "bun:test"
 import {
   calculateCommentSupportDraft,
   clearPremiumCheckoutSearchParams,
-  getJSTDate,
 } from "../work-comment-list-utils"
 
 test("フリーは 1pt、プレミアムは 10pt で数える", () => {
@@ -20,12 +19,6 @@ test("残高を超える、合計が 0、整数でない、負の値は null", (
   expect(calculateCommentSupportDraft(1.5, 0, 100, 5)).toBeNull()
   expect(calculateCommentSupportDraft(-1, 0, 100, 5)).toBeNull()
   expect(calculateCommentSupportDraft(0, -1, 100, 5)).toBeNull()
-})
-
-test("日本時間の日付を返す", () => {
-  const before = Date.now()
-  const offsetMs = new Date().getTimezoneOffset() * 60000 + 9 * 60 * 60 * 1000
-  expect(getJSTDate().getTime() - offsetMs).toBeGreaterThanOrEqual(before)
 })
 
 test("決済のパラメータだけを URL から消す", () => {

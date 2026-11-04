@@ -8,6 +8,8 @@ import { useBoolean } from "usehooks-ts"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
+import type { Comment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
+import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -18,12 +20,7 @@ import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 type Props = {
   targetCommentId: string
   iconUrl: string
-  onReplyCompleted: (
-    id: string,
-    text: string,
-    stickerId: string,
-    stickerImageURL: string,
-  ) => void
+  onReplyCompleted: (reply: Comment) => void
   isWorkOwnerBlocked?: boolean
 }
 
@@ -131,7 +128,6 @@ export function ReplyCommentInput (props: Props) {
     text: string,
     targetCommentId: string,
     stickerId?: string,
-    stickerImageURL?: string,
   ) => {
     try {
       if (props.targetCommentId !== undefined) {
@@ -149,12 +145,9 @@ export function ReplyCommentInput (props: Props) {
         setIsSensitive(false)
         clearReplyDraft()
 
-        props.onReplyCompleted(
-          commentRes.data?.createResponseComment.id ?? "",
-          text,
-          stickerId ?? "",
-          stickerImageURL ?? "",
-        )
+        if (commentRes.data) {
+          props.onReplyCompleted(commentRes.data.createResponseComment)
+        }
       } else {
         throw new Error(
           t(
@@ -277,13 +270,8 @@ export function ReplyCommentInput (props: Props) {
       <StickerDialog
         isOpen={isOpen}
         onClose={onClose}
-        onSend={async (stickerId: string, stickerImageURL: string) => {
-          await sendComment(
-            comment,
-            props.targetCommentId,
-            stickerId,
-            stickerImageURL,
-          )
+        onSend={async (stickerId: string) => {
+          await sendComment(comment, props.targetCommentId, stickerId)
 
           setComment("")
 
@@ -298,9 +286,10 @@ export function ReplyCommentInput (props: Props) {
 const createResponseCommentMutation = graphql(
   `mutation CreateResponseComment($input: CreateResponseCommentInput!) {
     createResponseComment(input: $input) {
-      id
+      ...WorkComment
     }
   }`,
+  [WorkCommentFragment],
 )
 
 const viewerUserQuery = graphql(

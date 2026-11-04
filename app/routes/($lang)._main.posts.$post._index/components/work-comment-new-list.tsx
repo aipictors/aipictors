@@ -1,5 +1,4 @@
 import { WorkComment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
-import { getJSTDate } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import type {
   WorkCommentListProps,
   WorkCommentListState,
@@ -18,13 +17,9 @@ export function WorkCommentNewList(
     | "isDeletingCommentLike"
     | "likedCommentIds"
     | "moderationSummaryMap"
-    | "newComments"
     | "onCreateCommentLike"
     | "onDeleteComment"
     | "onDeleteCommentLike"
-    | "setNewComments"
-    | "userAvatarFrame"
-    | "userIcon"
   > &
     Pick<
       WorkCommentListProps,
@@ -40,14 +35,10 @@ export function WorkCommentNewList(
     isDeletingCommentLike,
     likedCommentIds,
     moderationSummaryMap,
-    newComments,
     onCreateCommentLike,
     onDeleteComment,
     onDeleteCommentLike,
-    setNewComments,
     showNewComments,
-    userAvatarFrame,
-    userIcon,
   } = props
 
   return (
@@ -59,7 +50,11 @@ export function WorkCommentNewList(
             isMine={comment.user?.id === appContext.userId}
             createdAt={comment.createdAt}
             support={comment.support ?? null}
-            stickerImageURL={comment.sticker?.image?.downloadURL}
+            stickerImageURL={comment.sticker?.imageUrl ?? ""}
+            stickerTitle={comment.sticker?.title}
+            stickerId={comment.sticker?.id}
+            stickerAccessType={comment.sticker?.accessType}
+            isStickerDownloadable={comment.sticker?.isDownloaded}
             text={comment.text}
             workOwnerIconImageURL={withIconUrlFallback(
               props.workOwnerIconImageURL,
@@ -89,36 +84,6 @@ export function WorkCommentNewList(
             onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
             onDeleteComment={() => onDeleteComment(comment.id)}
             isWorkOwnerBlocked={props.isWorkOwnerBlocked}
-            onReplyCompleted={(
-              id: string,
-              text: string,
-              _stickerId: string,
-              stickerImageURL: string,
-            ) => {
-              setNewComments([
-                {
-                  id: id,
-                  text: text,
-                  createdAt: getJSTDate().getTime() / 1000,
-                  likesCount: 0,
-                  isWorkOwnerLiked: false,
-                  isLiked: false,
-                  user: {
-                    id: appContext.userId ?? "",
-                    name: appContext.displayName ?? "",
-                    iconUrl: withIconUrlFallback(userIcon),
-                    avatarFrame: userAvatarFrame,
-                  },
-                  sticker: {
-                    image: {
-                      downloadURL: stickerImageURL,
-                    },
-                  },
-                  isMuted: false,
-                  ...newComments,
-                },
-              ])
-            }}
           />
         </div>
       ))}

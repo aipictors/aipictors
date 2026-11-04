@@ -26,7 +26,6 @@ export function WorkCommentExpandedThread(
     | "onDeleteCommentLike"
     | "setNewReplyComments"
     | "showNewReplyComments"
-    | "userAvatarFrame"
     | "userIcon"
     | "hideCommentIds"
   > &
@@ -51,7 +50,6 @@ export function WorkCommentExpandedThread(
     onDeleteCommentLike,
     setNewReplyComments,
     showNewReplyComments,
-    userAvatarFrame,
     userIcon,
     hideCommentIds,
   } = props
@@ -91,35 +89,10 @@ export function WorkCommentExpandedThread(
         commentId={comment.id}
         onDeleteComment={() => onDeleteComment(comment.id)}
         isWorkOwnerBlocked={props.isWorkOwnerBlocked}
-        onReplyCompleted={(
-          id: string,
-          text: string,
-          _stickerId: string,
-          stickerImageURL: string,
-        ) => {
+        onReplyCompleted={(reply) => {
           setNewReplyComments([
-            ...(newReplyComments || []),
-            {
-              replyTargetId: comment.id,
-              id: id,
-              text: text,
-              createdAt: Date.now(),
-              likesCount: 0,
-              isWorkOwnerLiked: false,
-              isLiked: false,
-              isMuted: false,
-              isSensitive: false, // TODO: Get this value from ReplyCommentInput
-              user: {
-                id: appContext.userId ?? "",
-                name: appContext.displayName ?? "",
-                iconUrl: withIconUrlFallback(userIcon),
-              },
-              sticker: {
-                image: {
-                  downloadURL: stickerImageURL,
-                },
-              },
-            },
+            ...newReplyComments,
+            { ...reply, replyTargetId: comment.id },
           ])
         }}
       />
@@ -131,7 +104,11 @@ export function WorkCommentExpandedThread(
             userId={newReply.user?.id ?? ""}
             isMine={newReply.user?.id === appContext.userId}
             createdAt={newReply.createdAt}
-            stickerImageURL={newReply.sticker?.image?.downloadURL}
+            stickerImageURL={newReply.sticker?.imageUrl ?? ""}
+            stickerTitle={newReply.sticker?.title}
+            stickerId={newReply.sticker?.id}
+            stickerAccessType={newReply.sticker?.accessType}
+            isStickerDownloadable={newReply.sticker?.isDownloaded}
             text={newReply.text}
             iconUrl={withIconUrlFallback(userIcon)}
             isWorkOwnerLiked={newReply.isWorkOwnerLiked}
@@ -139,7 +116,7 @@ export function WorkCommentExpandedThread(
             workOwnerIconImageURL={withIconUrlFallback(
               props.workOwnerIconImageURL,
             )}
-            userIconImageURL={withIconUrlFallback(newReply.user.iconUrl)}
+            userIconImageURL={withIconUrlFallback(newReply.user?.iconUrl)}
             userAvatarFrame={newReply.user?.avatarFrame}
             isLiked={
               newReply.isLiked && !canceledCommentIds.includes(newReply.id)
@@ -213,37 +190,10 @@ export function WorkCommentExpandedThread(
                 onDeleteComment(reply.id)
               }}
               isWorkOwnerBlocked={props.isWorkOwnerBlocked}
-              onReplyCompleted={(
-                id: string,
-                text: string,
-                _stickerId: string,
-                stickerImageURL: string,
-              ) => {
-                // 表示コメントを追加
+              onReplyCompleted={(reply) => {
                 setNewReplyComments([
                   ...newReplyComments,
-                  {
-                    replyTargetId: comment.id,
-                    id: id,
-                    text: text,
-                    createdAt: Date.now(),
-                    likesCount: 0,
-                    isWorkOwnerLiked: false,
-                    isLiked: false,
-                    isMuted: false,
-                    isSensitive: false, // TODO: Get this value from ReplyCommentInput
-                    user: {
-                      id: appContext.userId ?? "",
-                      name: appContext.displayName ?? "",
-                      iconUrl: withIconUrlFallback(userIcon),
-                      avatarFrame: userAvatarFrame,
-                    },
-                    sticker: {
-                      image: {
-                        downloadURL: stickerImageURL,
-                      },
-                    },
-                  },
+                  { ...reply, replyTargetId: comment.id },
                 ])
               }}
             />

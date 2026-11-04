@@ -1,60 +1,13 @@
+import type { FragmentOf } from "gql.tada"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
-import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
+import type { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
 
-// コメント
-export type Comment = {
-  id: string
-  text: string
-  createdAt: number
-  isLiked: boolean
-  isMuted: boolean
-  isSensitive?: boolean
-  likesCount: number
-  isWorkOwnerLiked: boolean
-  user: {
-    id: string
-    name: string
-    isOfficial?: boolean
-    isModerator?: boolean
-    iconUrl: string
-    avatarFrame?: UserAvatarFramePresentation | null
-  }
-  sticker: {
-    image: {
-      downloadURL: string
-    }
-  }
-  support?: {
-    freeCoinAmount: number
-    premiumCoinAmount: number
-    totalPt: number
-  } | null
-}
+// 投稿直後に一覧へ足すコメント。サーバーが返した内容をそのまま使う
+export type Comment = FragmentOf<typeof WorkCommentFragment>
 
-// 返信コメント
-export type ReplyComment = {
+// 投稿直後に一覧へ足す返信
+export type ReplyComment = Comment & {
   replyTargetId: string
-  id: string
-  text: string
-  createdAt: number
-  isLiked: boolean
-  isMuted: boolean
-  isSensitive?: boolean
-  likesCount: number
-  isWorkOwnerLiked: boolean
-  user: {
-    id: string
-    name: string
-    isOfficial?: boolean
-    isModerator?: boolean
-    iconUrl: string
-    avatarFrame?: UserAvatarFramePresentation | null
-  }
-  sticker: {
-    image: {
-      downloadURL: string
-    }
-  }
 }
 
 export type CommentSupportDraft = {
@@ -112,14 +65,6 @@ export const calculateCommentSupportDraft = (
 }
 
 // 日本時間の日付を計算する関数
-export const getJSTDate = () => {
-  const date = new Date()
-  const utcOffset = date.getTimezoneOffset() * 60000 // 分単位のオフセットをミリ秒に変換
-  const jstOffset = 9 * 60 * 60 * 1000 // JSTはUTC+9
-  const jstDate = new Date(date.getTime() + utcOffset + jstOffset)
-  return jstDate
-}
-
 /** 決済から戻ったときの URL のパラメータを消す */
 export const clearPremiumCheckoutSearchParams = () => {
   if (typeof window === "undefined") {

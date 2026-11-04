@@ -24,6 +24,7 @@ import { CommentAppealDialog } from "~/routes/($lang)._main.posts.$post._index/c
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import { CommentReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-report-dialog"
 import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
+import type { Comment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { toDateTimeText } from "~/utils/to-date-time-text"
@@ -68,12 +69,7 @@ type Props = {
   isStickerDownloadable?: boolean
   onDeleteComment: () => void
   moderationSummary?: CommentModerationSummaryState | null
-  onReplyCompleted?: (
-    id: string,
-    text: string,
-    stickerId: string,
-    stickerImageURL: string,
-  ) => void
+  onReplyCompleted?: (reply: Comment) => void
   onCreateCommentLike: () => void
   onDeleteCommentLike: () => void
   isWorkOwnerBlocked?: boolean
@@ -508,15 +504,8 @@ export function WorkCommentResponse(props: Props) {
       {!props.isMine && openReplyInput && (
         <ReplyCommentInput
           targetCommentId={props.targetCommentId}
-          onReplyCompleted={(
-            id: string,
-            text: string,
-            stickerId,
-            stickerImageURL: string,
-          ) => {
-            if (props.onReplyCompleted) {
-              props.onReplyCompleted(id, text, stickerId, stickerImageURL)
-            }
+          onReplyCompleted={(reply) => {
+            props.onReplyCompleted?.(reply)
           }}
           iconUrl={props.iconUrl}
           isWorkOwnerBlocked={props.isWorkOwnerBlocked}
