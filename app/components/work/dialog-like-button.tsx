@@ -205,6 +205,10 @@ export function DialogLikeButton(props: Props): React.ReactNode {
     }
   }, [props.targetWorkId, props.isUsedShortcutKey, handleFavoritedKeyDown])
 
+  if (authContext.userId === props.targetWorkOwnerUserId) {
+    return null
+  }
+
   // ログインしていない場合
   if (authContext.isLoading || authContext.isNotLoggedIn) {
     return (

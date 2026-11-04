@@ -1,14 +1,14 @@
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Heart } from "lucide-react"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router-dom"
 import { LoginDialogButton } from "~/components/login-dialog-button"
-import { KeyCodes } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFollowNudge } from "~/hooks/use-follow-nudge"
 import { useTranslation } from "~/hooks/use-translation"
 import { requestAchievementCheck } from "~/lib/achievements/achievement-ui"
+import { isLikeShortcutKeyEvent } from "~/lib/is-like-shortcut-key-event"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -89,33 +89,6 @@ export function LikeButton(props: Props): React.ReactNode {
     }
   }, [])
   const [clicked, setClicked] = useState(false)
-
-  const handleFavoritedKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const tagName = document.activeElement?.tagName.toLowerCase()
-      if (
-        tagName === "input" ||
-        tagName === "textarea" ||
-        isLiked ||
-        props.defaultLiked
-      ) {
-        return
-      }
-      if (event.code === KeyCodes.F) {
-        handleOnClick(event)
-      }
-    },
-    [isLiked, props.defaultLiked],
-  )
-
-  useEffect(() => {
-    if (props.isUsedShortcutKey) {
-      if (typeof document !== "undefined") {
-        document.removeEventListener("keydown", handleFavoritedKeyDown)
-        document.addEventListener("keydown", handleFavoritedKeyDown)
-      }
-    }
-  }, [props.targetWorkId, handleFavoritedKeyDown])
 
   // targetWorkIdが変更されたときの処理
   useEffect(() => {
@@ -205,7 +178,31 @@ export function LikeButton(props: Props): React.ReactNode {
     await performLike(defaultIsAnonymous)
   }
 
-  if (authContext.userId === props.targetWorkOwnerUserId) {
+  // ショートカットは常に今表示している作品に対して動かす
+  const onShortcutRef = useRef(handleOnClick)
+  onShortcutRef.current = handleOnClick
+
+  const isOwnWork = authContext.userId === props.targetWorkOwnerUserId
+  const canUseShortcutKey =
+    props.isUsedShortcutKey === true &&
+    authContext.isLoggedIn &&
+    !isOwnWork &&
+    !props.isTargetUserBlocked &&
+    !isLiked
+
+  useEffect(() => {
+    if (!canUseShortcutKey) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!isLikeShortcutKeyEvent(event)) return
+      // 作品ダイアログの裏にあるページの作品をいいねしない
+      if (document.querySelector('[role="dialog"]') !== null) return
+      onShortcutRef.current(event)
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [canUseShortcutKey])
+
+  if (isOwnWork) {
     return null
   }
 
