@@ -2,7 +2,6 @@ import { useSearchParams } from "@remix-run/react"
 import { useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useUserModel } from "~/components/user-models/use-user-models"
-import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 
@@ -71,18 +70,7 @@ export function GenerationUserModelFromUrl() {
         if (selection.checkpoint) {
           selection.clearCheckpoint({ restore: false })
         }
-        const prompt = official.prompts.join(",")
-        if (context.config.isUseRecommendedPrompt) {
-          context.updateModelIdAndPrompt(
-            official.id,
-            official.type,
-            prompt === ""
-              ? config.generationFeature.defaultPromptValue
-              : prompt,
-          )
-        } else {
-          context.updateModelId(official.id, official.type)
-        }
+        context.updateModelId(official.id, official.type)
         toast(`「${official.displayName ?? official.name}」を選択しました`, {
           position: "top-center",
         })

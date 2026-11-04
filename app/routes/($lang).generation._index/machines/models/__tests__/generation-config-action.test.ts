@@ -177,6 +177,15 @@ describe("ImageGenerationAction", () => {
       expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
 
+    test("モデルを変えてもプロンプトは変わらない", () => {
+      const action = imageGenerationAction.updatePrompt("1girl, smile")
+      for (const modelType of ["SD1", "SDXL", "FLUX", "GEMINI"]) {
+        expect(action.updateModelId("1", modelType).getState().promptText).toBe(
+          "1girl, smile",
+        )
+      }
+    })
+
     test("should update the size type to SD2_768_768 when the model id is 22, 23, or 24 and the current size type includes SD1", () => {
       const id = "22"
       const updatedConfig = imageGenerationAction.updateModelId(id, "SD2")
@@ -241,34 +250,33 @@ describe("getNegativePromptTextFromSd", () => {
     availableLoraModelsCount: 0,
   })
 
-  test("should return 'EasyNegative' when negativePromptText is empty and sdType is 'SD1'", () => {
-    const sdType = "SD1"
-    const negativePromptText = ""
-    const result = imageGenerationAction.getNegativePromptText(
-      sdType,
-      negativePromptText,
-    )
-    expect(result).toBe("EasyNegative")
+  test("空欄はモデルを変えても空欄のまま", () => {
+    for (const modelType of ["SD1", "SD2", "SDXL", "FLUX", "GEMINI", "SD5"]) {
+      expect(imageGenerationAction.getNegativePromptText(modelType, "")).toBe(
+        "",
+      )
+    }
   })
 
-  test("should return 'Mayng' when negativePromptText is empty and sdType is 'SD2'", () => {
-    const sdType = "SD2"
-    const negativePromptText = ""
-    const result = imageGenerationAction.getNegativePromptText(
-      sdType,
-      negativePromptText,
-    )
-    expect(result).toBe("Mayng")
+  test("入力したネガティブプロンプトはモデルを変えてもそのまま", () => {
+    expect(
+      imageGenerationAction.getNegativePromptText("SDXL", "lowres, bad hands"),
+    ).toBe("lowres, bad hands")
   })
 
-  test("should return 'negativeXL_D' when negativePromptText is empty and sdType is 'SDXL'", () => {
-    const sdType = "SDXL"
-    const negativePromptText = ""
-    const result = imageGenerationAction.getNegativePromptText(
-      sdType,
-      negativePromptText,
-    )
-    expect(result).toBe("negativeXL_D")
+  test("初期値のネガティブプロンプトだけモデルに合うものに入れ替える", () => {
+    expect(
+      imageGenerationAction.getNegativePromptText("SDXL", "EasyNegative"),
+    ).toBe("negativeXL_D")
+    expect(
+      imageGenerationAction.getNegativePromptText("SD2", "negativeXL_D"),
+    ).toBe("Mayng")
+  })
+
+  test("Gemini などに変えても初期値を消さない（戻したときに空にならない）", () => {
+    expect(
+      imageGenerationAction.getNegativePromptText("GEMINI", "EasyNegative"),
+    ).toBe("EasyNegative")
   })
 
   test("should return 'EasyNegative' when negativePromptText is 'EasyNegative' and sdType is 'SD1'", () => {

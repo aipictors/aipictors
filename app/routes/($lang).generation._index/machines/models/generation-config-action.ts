@@ -915,33 +915,25 @@ export class GenerationConfigAction {
    */
   getNegativePromptText(modelType: string, negativePromptText: string) {
     const isDefaultPrompt =
-      negativePromptText === "" ||
       negativePromptText === "EasyNegative" ||
       negativePromptText === "Mayng" ||
       negativePromptText === "negativeXL_D"
 
-    if (isDefaultPrompt && modelType === "SD1") {
+    // 入力した内容と空欄はモデルを変えてもそのまま
+    if (!isDefaultPrompt) {
+      return negativePromptText
+    }
+
+    if (modelType === "SD1") {
       return "EasyNegative"
     }
 
-    if (isDefaultPrompt && modelType === "SD2") {
+    if (modelType === "SD2") {
       return "Mayng"
     }
 
-    if (isDefaultPrompt && modelType === "SDXL") {
+    if (modelType === "SDXL" || modelType === "FLUX") {
       return "negativeXL_D"
-    }
-
-    if (isDefaultPrompt && modelType === "FLUX") {
-      return "negativeXL_D"
-    }
-
-    if (isDefaultPrompt && modelType === "GEMINI") {
-      return ""
-    }
-
-    if (isDefaultPrompt && modelType === "SD5") {
-      return ""
     }
 
     return negativePromptText

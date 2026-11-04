@@ -7,8 +7,6 @@ import type {
   ModelLibrarySection,
 } from "~/components/model-library/model-library-types"
 import { Button } from "~/components/ui/button"
-import { Checkbox } from "~/components/ui/checkbox"
-import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { parseUserLoraName } from "~/lib/user-models/generation"
 import type { UserModelKind } from "~/lib/user-models/types"
@@ -83,20 +81,12 @@ export function GenerationModelLibraryProvider(props: Props) {
     setIsOpen(true)
   }
 
-  const selectOfficialModel = (id: string, type: string, prompt: string) => {
+  const selectOfficialModel = (id: string, type: string) => {
     // 公式モデルを選んだらみんなのモデルの選択は外す
     if (userModelSelection.checkpoint) {
       userModelSelection.clearCheckpoint({ restore: false })
     }
-    if (context.config.isUseRecommendedPrompt) {
-      context.updateModelIdAndPrompt(
-        id,
-        type,
-        prompt === "" ? config.generationFeature.defaultPromptValue : prompt,
-      )
-    } else {
-      context.updateModelId(id, type)
-    }
+    context.updateModelId(id, type)
   }
 
   const loraNames = context.promptLoraModels.map((text) => text.split(":")[0])
@@ -117,7 +107,6 @@ export function GenerationModelLibraryProvider(props: Props) {
         selectOfficialModel(
           item.officialCheckpoint.id,
           item.officialCheckpoint.type,
-          item.officialCheckpoint.prompts.join(","),
         )
       } else if (item.userModel) {
         userModelSelection.selectCheckpoint(item.userModel)
@@ -191,28 +180,6 @@ export function GenerationModelLibraryProvider(props: Props) {
             }
             selectedKeys={selectedKeys}
             onUse={onUse}
-            toolbarExtra={(state) =>
-              state.kind === "LORA" ||
-              state.section === "community" ||
-              state.section === "mine" ? null : (
-                <div className="flex w-fit items-center gap-2">
-                  <Checkbox
-                    id="model-library-recommended-prompt"
-                    checked={context.config.isUseRecommendedPrompt}
-                    onCheckedChange={(value) =>
-                      context.changeUseRecommendedPrompt(value === true)
-                    }
-                    className="size-3.5"
-                  />
-                  <label
-                    htmlFor="model-library-recommended-prompt"
-                    className="cursor-pointer text-muted-foreground text-xs"
-                  >
-                    公式モデルを選んだときに推奨プロンプトを入れる
-                  </label>
-                </div>
-              )
-            }
             footer={
               loraCount > 0 || options.kind === "LORA" ? (
                 <div className="flex shrink-0 items-center justify-between gap-3 border-t bg-background px-4 py-3 md:px-5">
