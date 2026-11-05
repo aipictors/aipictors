@@ -56,7 +56,7 @@ export function DlsiteAffiliateCard(props: Props) {
     <div ref={ref} className="w-full space-y-3 rounded-md border p-3">
       <div className="flex items-center justify-between gap-2">
         <p className="font-bold text-sm">
-          {t("DLsite で似た作品を探す", "Find similar works on DLsite")}
+          {t("DLsite で人気の AI 生成作品", "Popular AI works on DLsite")}
         </p>
         <span className="rounded border px-1 text-muted-foreground text-xs">
           PR
