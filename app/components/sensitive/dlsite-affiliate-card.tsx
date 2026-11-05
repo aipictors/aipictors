@@ -1,10 +1,12 @@
 import { ExternalLinkIcon } from "lucide-react"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import {
+  type DlsiteWork,
   pickDlsiteSearchTags,
   toDlsiteAiRankingUrl,
   toDlsiteAiSearchUrl,
+  toDlsiteWorkUrl,
 } from "~/utils/dlsite-affiliate"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
@@ -23,6 +25,7 @@ export function DlsiteAffiliateCard(props: Props) {
   const tags = pickDlsiteSearchTags(props.tags)
 
   const ref = useRef<HTMLDivElement>(null)
+  const [works, setWorks] = useState<DlsiteWork[]>([])
 
   // PC とスマホで同じ枠を CSS で出し分けているので、画面に半分以上出たときだけ 1 回数える
   useEffect(() => {
@@ -33,6 +36,13 @@ export function DlsiteAffiliateCard(props: Props) {
         if (!entries.some((entry) => entry.isIntersecting)) return
         trackGrowthEvent("dlsite_view", props.source)
         observer.disconnect()
+        // 画面に出てから作品を読む（売れ筋 30 件から 4 件を選ぶ）
+        fetch("/api/dlsite-works")
+          .then(
+            (response) => response.json() as Promise<{ works?: DlsiteWork[] }>,
+          )
+          .then((data) => setWorks(pickRandomWorks(data.works ?? [], 4)))
+          .catch(() => {})
       },
       { threshold: 0.5 },
     )
@@ -52,6 +62,34 @@ export function DlsiteAffiliateCard(props: Props) {
           PR
         </span>
       </div>
+      {works.length > 0 && (
+        <div className="grid grid-cols-2 gap-2">
+          {works.map((work) => (
+            <a
+              key={work.workno}
+              href={toDlsiteWorkUrl(work.workno)}
+              target="_blank"
+              rel="noopener sponsored"
+              onClick={onClick}
+              className="group space-y-1"
+            >
+              <img
+                src={work.imageUrl}
+                alt={work.name}
+                width={300}
+                height={300}
+                loading="lazy"
+                decoding="async"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="aspect-square w-full rounded object-cover"
+              />
+              <p className="line-clamp-2 text-xs leading-snug group-hover:underline">
+                {work.name}
+              </p>
+            </a>
+          ))}
+        </div>
+      )}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
@@ -80,4 +118,14 @@ export function DlsiteAffiliateCard(props: Props) {
       </a>
     </div>
   )
+}
+
+/** 毎回同じ作品にならないように選ぶ */
+function pickRandomWorks(works: DlsiteWork[], count: number) {
+  const pool = [...works]
+  const picked: DlsiteWork[] = []
+  while (pool.length > 0 && picked.length < count) {
+    picked.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0])
+  }
+  return picked
 }

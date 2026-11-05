@@ -4,6 +4,8 @@ import {
   toDlsiteAffiliateUrl,
   toDlsiteAiRankingUrl,
   toDlsiteAiSearchUrl,
+  toDlsiteWorks,
+  toDlsiteWorkUrl,
 } from "~/utils/dlsite-affiliate"
 
 describe("dlsite-affiliate", () => {
@@ -39,5 +41,51 @@ describe("dlsite-affiliate", () => {
     expect(
       pickDlsiteSearchTags(["成人向け", "オリジナル", "r18", "漫画"]),
     ).toEqual(["漫画"])
+  })
+
+  test("作品ページのリンクもアフィリエイト経由", () => {
+    expect(
+      decodeURIComponent(toDlsiteWorkUrl("RJ01730150").split("/url/")[1]),
+    ).toBe("https://www.dlsite.com/aix/work/=/product_id/RJ01730150.html")
+  })
+
+  test("ランキング API の中身から表示用の項目だけ残す", () => {
+    const works = toDlsiteWorks([
+      {
+        workno: "RJ01730150",
+        work_name: "作品A",
+        maker_name: "サークルA",
+        ranking: 1,
+        image_main: {
+          resize_url:
+            "resize/images2/work/doujin/RJ01731000/RJ01730150_img_main",
+        },
+      },
+      { workno: "bad", work_name: "x", image_main: { resize_url: "a" } },
+      { workno: "RJ1", work_name: "画像なし", image_main: null },
+      {
+        workno: "RJ2",
+        work_name: "元画像",
+        image_main: { url: "//img.dlsite.jp/a.jpg" },
+      },
+    ])
+    expect(works).toEqual([
+      {
+        workno: "RJ01730150",
+        name: "作品A",
+        maker: "サークルA",
+        rank: 1,
+        imageUrl:
+          "https://img.dlsite.jp/resize/images2/work/doujin/RJ01731000/RJ01730150_img_main_300x300.jpg",
+      },
+      {
+        workno: "RJ2",
+        name: "元画像",
+        maker: "",
+        rank: null,
+        imageUrl: "https://img.dlsite.jp/a.jpg",
+      },
+    ])
+    expect(toDlsiteWorks(null)).toEqual([])
   })
 })
