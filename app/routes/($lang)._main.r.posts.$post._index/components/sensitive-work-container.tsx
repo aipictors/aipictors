@@ -29,6 +29,7 @@ import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/compon
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate, Link } from "~/lib/app/locale-router"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { DlsiteAffiliateCard } from "~/components/sensitive/dlsite-affiliate-card"
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
@@ -209,6 +210,11 @@ export function SensitiveWorkContainer(props: Props) {
             {workForArticle.album && (
               <WorkAlbumCard album={workForArticle.album} />
             )}
+            {!isSubscriptionUser && (
+              <div className="md:hidden">
+                <DlsiteAffiliateCard tags={tags} source="r_post_mobile" />
+              </div>
+            )}
             {workForArticle.isCommentsEditable && (
               <div className="border-t pt-6">
                 <WorkCommentList
@@ -282,6 +288,9 @@ export function SensitiveWorkContainer(props: Props) {
                       </div>
                     </div>
                   )}
+                {!isSubscriptionUser && (
+                  <DlsiteAffiliateCard tags={tags} source="r_post_side" />
+                )}
                 {props.newComments && props.newComments.length > 0 && (
                   <HomeNewCommentsSection
                     comments={props.newComments}
