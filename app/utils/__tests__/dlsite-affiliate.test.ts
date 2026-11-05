@@ -34,4 +34,10 @@ describe("dlsite-affiliate", () => {
       pickDlsiteSearchTags(["メイド", " ", "メイド", "猫耳", "制服", "水着"]),
     ).toEqual(["メイド", "猫耳", "制服"])
   })
+
+  test("成人向け・オリジナルなどの広いタグは使わない", () => {
+    expect(
+      pickDlsiteSearchTags(["成人向け", "オリジナル", "r18", "漫画"]),
+    ).toEqual(["漫画"])
+  })
 })

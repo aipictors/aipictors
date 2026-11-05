@@ -23,12 +23,36 @@ export function toDlsiteAiRankingUrl() {
   return toDlsiteAffiliateUrl(`${DLSITE_AI_FLOOR_URL}/ranking/week`)
 }
 
-/** 検索に使うタグ（空・重複を除いて先頭から） */
+/** どの作品にも付く広いタグは検索しても絞れないので使わない */
+const GENERIC_TAGS = new Set(
+  [
+    "成人向け",
+    "R18",
+    "R-18",
+    "R18G",
+    "オリジナル",
+    "AI",
+    "AIイラスト",
+    "AI生成",
+    "AIアート",
+    "NovelAI",
+    "StableDiffusion",
+    "Stable Diffusion",
+  ].map((tag) => tag.toLowerCase()),
+)
+
+/** 検索に使うタグ（空・重複・広いタグを除いて先頭から） */
 export function pickDlsiteSearchTags(tags: string[], max = 3) {
   const picked: string[] = []
   for (const tag of tags) {
     const name = tag.trim()
-    if (name.length === 0 || name.length > 30 || picked.includes(name)) continue
+    if (
+      name.length === 0 ||
+      name.length > 30 ||
+      picked.includes(name) ||
+      GENERIC_TAGS.has(name.toLowerCase())
+    )
+      continue
     picked.push(name)
     if (picked.length >= max) break
   }

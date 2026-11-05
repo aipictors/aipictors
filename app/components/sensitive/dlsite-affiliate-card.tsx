@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   pickDlsiteSearchTags,
@@ -22,14 +22,28 @@ export function DlsiteAffiliateCard(props: Props) {
   const t = useTranslation()
   const tags = pickDlsiteSearchTags(props.tags)
 
+  const ref = useRef<HTMLDivElement>(null)
+
+  // PC とスマホで同じ枠を CSS で出し分けているので、画面に半分以上出たときだけ 1 回数える
   useEffect(() => {
-    trackGrowthEvent("dlsite_view", props.source)
+    const element = ref.current
+    if (!element || typeof IntersectionObserver === "undefined") return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return
+        trackGrowthEvent("dlsite_view", props.source)
+        observer.disconnect()
+      },
+      { threshold: 0.5 },
+    )
+    observer.observe(element)
+    return () => observer.disconnect()
   }, [props.source])
 
   const onClick = () => trackGrowthEvent("dlsite_click", props.source)
 
   return (
-    <div className="w-full space-y-3 rounded-md border p-3">
+    <div ref={ref} className="w-full space-y-3 rounded-md border p-3">
       <div className="flex items-center justify-between gap-2">
         <p className="font-bold text-sm">
           {t("DLsite で似た作品を探す", "Find similar works on DLsite")}
