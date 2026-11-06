@@ -11,7 +11,19 @@ import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
 import { cn } from "~/lib/utils"
 import { ReferenceGenerationButton } from "~/routes/($lang)._main._index/components/reference-generation-button"
+import { useGridLayout } from "~/hooks/use-grid-layout"
+import {
+  type GridColumnBreakpoint,
+  incompleteRowHiddenClassName,
+} from "~/utils/grid-layout"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+
+/** PC で正方形に並べるときの列数: md:4 / xl:5 / 2xl:6（スマホは下の 2 列の一覧） */
+const DESKTOP_SQUARE_BREAKPOINTS: GridColumnBreakpoint[] = [
+  { columns: 4, hiddenClassName: "md:max-xl:hidden" },
+  { columns: 5, hiddenClassName: "xl:max-2xl:hidden" },
+  { columns: 6, hiddenClassName: "2xl:hidden" },
+]
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -29,6 +41,7 @@ type Props = {
  */
 export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
   const t = useTranslation()
+  const { gridLayout } = useGridLayout()
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
@@ -78,6 +91,121 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
           )
         })}
       </div>
+    )
+  }
+
+  const mobileList = (
+    <div className="block md:hidden">
+      <HomeCroppedWorksWithGenerationButton
+        works={props.works}
+        isShowProfile={true}
+        onSelect={props.onSelect}
+      />
+    </div>
+  )
+
+  if (gridLayout === "square") {
+    return (
+      <>
+        {/* 正方形で格子状に並べる。最後の行の半端な作品は隠して行を埋める */}
+        <div className="hidden gap-x-3 gap-y-4 md:grid md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+          {props.works.map((work, index) => (
+            <div
+              key={work.id}
+              className={cn(
+                "flex min-w-0 flex-col gap-1.5",
+                incompleteRowHiddenClassName(
+                  index,
+                  props.works.length,
+                  DESKTOP_SQUARE_BREAKPOINTS,
+                ),
+              )}
+            >
+              <div className="relative">
+                <CroppedWorkSquare
+                  title={t.workTitle(work.title, work.enTitle)}
+                  workId={work.id}
+                  subWorksCount={work.subWorksCount}
+                  commentsCount={work.commentsCount}
+                  imageUrl={work.smallThumbnailImageURL}
+                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                  size="auto"
+                  displayWidth="(min-width: 1536px) 15vw, (min-width: 1280px) 18vw, 23vw"
+                  imageWidth={work.smallThumbnailImageWidth}
+                  imageHeight={work.smallThumbnailImageHeight}
+                  isPromptPublic={
+                    work.promptAccessType === "PUBLIC" || work.isGeneration
+                  }
+                  hasVideoUrl={Boolean(work.url)}
+                  isGeneration={work.isGeneration}
+                  hasReferenceButton={true}
+                  onSelect={props.onSelect}
+                />
+                <div className="absolute right-0 bottom-0">
+                  <LikeButton
+                    size={56}
+                    targetWorkId={work.id}
+                    targetWorkOwnerUserId={work.user?.id ?? ""}
+                    defaultLiked={work.isLiked}
+                    defaultLikedCount={0}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                  />
+                </div>
+              </div>
+              {props.isShowProfile && (
+                <div className="flex min-w-0 flex-col gap-1">
+                  {props.onSelect ? (
+                    <button
+                      type="button"
+                      className="min-w-0 cursor-pointer text-left font-bold"
+                      onClick={() => props.onSelect?.(work.id.toString())}
+                      aria-label={`Open ${t.workTitle(work.title, work.enTitle)}`}
+                    >
+                      <p className="truncate text-sm">
+                        {t.workTitle(work.title, work.enTitle)}
+                      </p>
+                    </button>
+                  ) : (
+                    <Link
+                      className="min-w-0 font-bold hover:underline"
+                      to={`/posts/${work.id}`}
+                    >
+                      <p className="truncate text-sm">
+                        {t.workTitle(work.title, work.enTitle)}
+                      </p>
+                    </Link>
+                  )}
+                  <div className="flex min-w-0 items-center justify-between gap-2">
+                    <Link className="min-w-0" to={`/users/${work.user?.id}`}>
+                      <div className="flex min-w-0 items-center gap-1.5">
+                        <UserAvatarWithFrame
+                          alt={work.user?.name ?? ""}
+                          frame={work.user?.avatarFrame}
+                          isAnimated={false}
+                          sizeClassName="size-5"
+                          src={withIconUrlFallback(work.user?.iconUrl)}
+                        />
+                        <span className="truncate text-muted-foreground text-xs">
+                          {work.user?.name}
+                        </span>
+                      </div>
+                    </Link>
+                    <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                      <Heart className="size-3 fill-current" />
+                      <span className="text-xs tabular-nums">
+                        {work.likesCount}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <ReferenceGenerationButton workId={work.id} />
+            </div>
+          ))}
+        </div>
+        {mobileList}
+      </>
     )
   }
 
@@ -221,14 +349,18 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                         }}
                         aria-label={`Open ${t.workTitle(work.title, work.enTitle)}`}
                       >
-                        <p className="truncate text-sm">{t.workTitle(work.title, work.enTitle)}</p>
+                        <p className="truncate text-sm">
+                          {t.workTitle(work.title, work.enTitle)}
+                        </p>
                       </button>
                     ) : (
                       <Link
                         className="min-w-0 font-bold hover:underline"
                         to={`/posts/${work.id}`}
                       >
-                        <p className="truncate text-sm">{t.workTitle(work.title, work.enTitle)}</p>
+                        <p className="truncate text-sm">
+                          {t.workTitle(work.title, work.enTitle)}
+                        </p>
                       </Link>
                     )}
                     <div className="flex min-w-0 items-center justify-between gap-2">
@@ -263,13 +395,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
           })}
         </div>
       </div>
-      <div className="block md:hidden">
-        <HomeCroppedWorksWithGenerationButton
-          works={props.works}
-          isShowProfile={true}
-          onSelect={props.onSelect}
-        />
-      </div>
+      {mobileList}
     </>
   )
 }
@@ -331,11 +457,15 @@ function HomeCroppedWorksWithGenerationButton(props: {
                   onClick={() => props.onSelect?.(work.id)}
                   className="cursor-pointer text-left"
                 >
-                  <p className="line-clamp-2 text-sm">{t.workTitle(work.title, work.enTitle)}</p>
+                  <p className="line-clamp-2 text-sm">
+                    {t.workTitle(work.title, work.enTitle)}
+                  </p>
                 </button>
               ) : (
                 <Link to={`/posts/${work.id}`}>
-                  <p className="line-clamp-2 text-sm">{t.workTitle(work.title, work.enTitle)}</p>
+                  <p className="line-clamp-2 text-sm">
+                    {t.workTitle(work.title, work.enTitle)}
+                  </p>
                 </Link>
               )}
               <Link to={`/users/${work.user?.id}`}>

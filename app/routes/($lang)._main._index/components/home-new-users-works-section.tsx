@@ -20,7 +20,7 @@ type Props = {
 /**
  * 新規ユーザの作品
  */
-export function HomeNewUsersWorksSection (props: Props) {
+export function HomeNewUsersWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   // 新規ユーザ作品
@@ -52,6 +52,7 @@ export function HomeNewUsersWorksSection (props: Props) {
           works={workDisplayed}
           isCropped={true}
           isShowProfile={false}
+          fillRows={true}
           autoPlayVideoPreview={true}
           onSelect={props.onSelect}
         />

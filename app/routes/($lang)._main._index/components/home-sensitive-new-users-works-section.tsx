@@ -18,7 +18,7 @@ type Props = {
 /**
  * 新規ユーザの作品
  */
-export function HomeSensitiveNewUsersWorksSection (props: Props) {
+export function HomeSensitiveNewUsersWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
   const viewerRatings = useViewerRatings()
 
@@ -49,6 +49,7 @@ export function HomeSensitiveNewUsersWorksSection (props: Props) {
           works={workDisplayed}
           isCropped={true}
           isShowProfile={false}
+          fillRows={true}
         />
       )}
     </>

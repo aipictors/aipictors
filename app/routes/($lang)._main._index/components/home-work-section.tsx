@@ -28,6 +28,8 @@ type Props = {
   isShowProfile?: boolean
   autoPlayVideoPreview?: boolean
   onSelect?: (index: string) => void
+  /** 最後の行の半端な作品を隠して行をぴったり埋める（正方形のとき） */
+  fillRows?: boolean
 }
 
 export function HomeWorkSection(props: Props) {
@@ -55,9 +57,7 @@ export function HomeWorkSection(props: Props) {
         </h2>
         {props.link && (
           <Button asChild variant={"secondary"} size={"sm"}>
-            <Link to={props.link}>
-              {t("すべて見る", "All")}
-            </Link>
+            <Link to={props.link}>{t("すべて見る", "All")}</Link>
           </Button>
         )}
       </div>
@@ -66,6 +66,7 @@ export function HomeWorkSection(props: Props) {
           works={props.works}
           autoPlayVideoPreview={props.autoPlayVideoPreview}
           onSelect={props.onSelect}
+          fillRows={props.fillRows}
         />
       ) : (
         <ResponsivePhotoWorksAlbum
@@ -77,6 +78,7 @@ export function HomeWorkSection(props: Props) {
           autoPlayVideoPreview={props.autoPlayVideoPreview}
           compactWhenFew={true}
           onSelect={props.onSelect}
+          fillRows={props.fillRows}
         />
       )}
     </section>

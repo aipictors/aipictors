@@ -20,7 +20,7 @@ type Props = {
 /**
  * ユーザからの推薦作品
  */
-export function HomeWorksUsersRecommendedSection (props: Props) {
+export function HomeWorksUsersRecommendedSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   // 推薦作品
@@ -59,6 +59,7 @@ export function HomeWorksUsersRecommendedSection (props: Props) {
           linkLabel={t("もっと見る", "All recommended")}
           isCropped={false}
           isShowProfile={true}
+          fillRows={true}
           autoPlayVideoPreview={true}
           // ホームで最初に見える画像（スマホの LCP）。lazy のままだと読み込みが後回しになっていた
           priorityCount={2}

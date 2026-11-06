@@ -18,7 +18,7 @@ type Props = {
 /**
  * ユーザからの推薦作品
  */
-export function HomeSensitiveWorksUsersRecommendedSection (props: Props) {
+export function HomeSensitiveWorksUsersRecommendedSection(props: Props) {
   const appContext = useContext(AuthContext)
   const viewerRatings = useViewerRatings()
 
@@ -51,6 +51,7 @@ export function HomeSensitiveWorksUsersRecommendedSection (props: Props) {
           works={workDisplayed}
           isCropped={false}
           isShowProfile={true}
+          fillRows={true}
           autoPlayVideoPreview={true}
           priorityCount={2}
         />

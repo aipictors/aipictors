@@ -31,6 +31,8 @@ type Props = {
   /** 先頭から何件の画像を優先して読み込むか（画面の最初に見える一覧で使う） */
   priorityCount?: number
   onSelect?: (index: string) => void
+  /** 最後の行の半端な作品を隠して行をぴったり埋める（正方形のとき） */
+  fillRows?: boolean
 }
 
 export function HomeRecommendedWorkList(props: Props) {
@@ -69,7 +71,11 @@ export function HomeRecommendedWorkList(props: Props) {
         )}
       </div>
       {props.isCropped ? (
-        <HomeCroppedWorkList works={props.works} onSelect={props.onSelect} />
+        <HomeCroppedWorkList
+          works={props.works}
+          onSelect={props.onSelect}
+          fillRows={props.fillRows}
+        />
       ) : (
         <ResponsivePhotoWorksAlbum
           works={props.works}
@@ -79,6 +85,7 @@ export function HomeRecommendedWorkList(props: Props) {
           compactWhenFew={true}
           priorityCount={props.priorityCount}
           onSelect={props.onSelect}
+          fillRows={props.fillRows}
         />
       )}
     </section>

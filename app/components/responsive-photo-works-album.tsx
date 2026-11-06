@@ -13,7 +13,11 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
-import type { GridLayout } from "~/utils/grid-layout"
+import {
+  type GridLayout,
+  incompleteRowHiddenClassName,
+  SQUARE_GRID_BREAKPOINTS,
+} from "~/utils/grid-layout"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -35,6 +39,8 @@ type Props = {
    * 並べ方を固定する。省略時は利用者の設定（正方形／元の比率、app/hooks/use-grid-layout.ts）
    */
   layout?: GridLayout
+  /** 正方形のとき、最後の行の半端な作品を隠して行をぴったり埋める（ホームの一覧など、続きを読まない一覧で使う） */
+  fillRows?: boolean
 }
 
 /** 正方形で並べるときの列数（スマホ 2・PC は画面幅に合わせて 4〜6） */
@@ -75,7 +81,16 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
           return (
             <div
               key={workItem.id.toString()}
-              className="relative flex min-w-0 flex-col gap-1.5"
+              className={cn(
+                "relative flex min-w-0 flex-col gap-1.5",
+                props.fillRows &&
+                  !isFew &&
+                  incompleteRowHiddenClassName(
+                    index,
+                    props.works.length,
+                    SQUARE_GRID_BREAKPOINTS,
+                  ),
+              )}
             >
               <div className="relative">
                 <CroppedWorkSquare
