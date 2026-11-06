@@ -234,12 +234,6 @@ export function WorkContainer(props: Props) {
                 />
               </div>
             )}
-            <AdSlot
-              slot={config.googleAdsense.slots.workInline}
-              enabled={isAdAllowed}
-              minHeight={280}
-              className="border-t pt-4"
-            />
             {work.album && <WorkAlbumCard album={work.album} />}
             {work.isCommentsEditable && (
               <div className="border-t pt-6">
@@ -254,6 +248,13 @@ export function WorkContainer(props: Props) {
                 />
               </div>
             )}
+            {/* スマホは右列が無いので、コメントの下に出す（コメントの上には出さない） */}
+            <AdSlot
+              slot={config.googleAdsense.slots.workInline}
+              enabled={isAdAllowed}
+              minHeight={280}
+              className="border-t pt-4 md:hidden"
+            />
             {work.user && authContext.isLoggedIn && (
               <WorkLazySection>
                 <FollowSuggestions
@@ -346,6 +347,14 @@ export function WorkContainer(props: Props) {
                 {awardWorks.length > 0 && (
                   <HomeAwardWorksSection works={awardWorks} />
                 )}
+                {/* PC は前日ランキングの下に出す */}
+                <AdSlot
+                  slot={config.googleAdsense.slots.workInline}
+                  enabled={isAdAllowed}
+                  minHeight={250}
+                  format="rectangle"
+                  className="w-full"
+                />
               </div>
             </div>
           </div>
