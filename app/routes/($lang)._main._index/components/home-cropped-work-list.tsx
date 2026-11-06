@@ -1,12 +1,12 @@
 // LikeButton は CroppedWorkSquare 内部での表示に統合されたため未使用
 
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
-import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import {
   type GridColumnBreakpoint,
   incompleteRowHiddenClassName,
@@ -20,6 +20,10 @@ const DESKTOP_BREAKPOINTS: GridColumnBreakpoint[] = [
   { columns: 5, hiddenClassName: "xl:max-2xl:hidden" },
   { columns: 6, hiddenClassName: "2xl:hidden" },
 ]
+
+/** 上の列数に合わせた画像の表示幅（sizes）。画像は列の幅いっぱいに広げる */
+const DESKTOP_SIZES =
+  "(min-width: 1536px) 15vw, (min-width: 1280px) 18vw, (min-width: 1024px) 23vw, 31vw"
 
 /** スマホ: 2 列（スマホ用の一覧は PC では出ないので常に隠してよい） */
 const MOBILE_BREAKPOINTS: GridColumnBreakpoint[] = [
@@ -62,7 +66,7 @@ export function HomeCroppedWorkList(props: Props) {
   return (
     <>
       {showDesktop && (
-        <section className="hidden grid-cols-2 gap-3 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        <section className="hidden grid-cols-2 gap-x-3 gap-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {works.map((work, index) => {
             const renderContent = (isInsideInteractive: boolean) => (
               <CroppedWorkSquare
@@ -74,7 +78,8 @@ export function HomeCroppedWorkList(props: Props) {
                 streamUid={work.streamUid}
                 isAutoPlay={props.autoPlayVideoPreview}
                 thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                size="lg"
+                size="auto"
+                displayWidth={DESKTOP_SIZES}
                 imageWidth={work.smallThumbnailImageWidth}
                 imageHeight={work.smallThumbnailImageHeight}
                 subWorksCount={work.subWorksCount}
@@ -150,7 +155,8 @@ export function HomeCroppedWorkList(props: Props) {
                   streamUid={work.streamUid}
                   isAutoPlay={props.autoPlayVideoPreview}
                   thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                  size="lg"
+                  size="auto"
+                  displayWidth="48vw"
                   imageWidth={work.smallThumbnailImageWidth}
                   imageHeight={work.smallThumbnailImageHeight}
                   subWorksCount={work.subWorksCount}
