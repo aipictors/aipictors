@@ -90,7 +90,13 @@ type AppConfig = {
     }
   }
   googleAdsense: {
+    enabled: boolean
     client: string
+    slots: {
+      workSide: string
+      workInline: string
+      list: string
+    }
   }
   graphql: {
     endpoint: string
@@ -369,6 +375,19 @@ export const config: AppConfig = {
      * クライアントID
      */
     client: "ca-pub-2116548824296763",
+    /**
+     * false にすると Google 広告をすべて止める
+     */
+    enabled: true,
+    /**
+     * 広告ユニット ID（AdSense の「広告ユニットごと」で作ったもの）。
+     * 場所ごとの成績を見たいときは、場所ごとにユニットを作って差し替える
+     */
+    slots: {
+      workSide: "5201832236",
+      workInline: "5201832236",
+      list: "5201832236",
+    },
   },
   /**
    * GraphQLのエンドポイント

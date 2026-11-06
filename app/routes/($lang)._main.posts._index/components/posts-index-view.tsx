@@ -1,7 +1,7 @@
 import { useLocation } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import type { ResultOf } from "gql.tada"
 import type { BreadcrumbList, CollectionPage, WithContext } from "schema-dts"
+import { AdSlot } from "~/components/ads/ad-slot"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import {
   GenreWorkCard,
@@ -16,6 +16,7 @@ import {
 import { WorksIndexSortTabs } from "~/components/works-index/works-index-sort-tabs"
 import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { getPathLocale } from "~/utils/locale-path"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 
@@ -226,7 +227,10 @@ export function PostsIndexView(props: Props) {
             {entries.map((entry, index) => {
               const imageUrl = data.entries?.covers[entry.key]
               return (
-                <li key={entry.key} className="w-32 shrink-0 snap-start md:w-auto">
+                <li
+                  key={entry.key}
+                  className="w-32 shrink-0 snap-start md:w-auto"
+                >
                   <Link
                     to={toPath(entry.path)}
                     className="group relative block aspect-[4/3] overflow-hidden rounded-xl bg-muted"
@@ -276,10 +280,7 @@ export function PostsIndexView(props: Props) {
 
       <section aria-labelledby="posts-list-heading" className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2
-            id="posts-list-heading"
-            className="font-bold text-lg md:text-xl"
-          >
+          <h2 id="posts-list-heading" className="font-bold text-lg md:text-xl">
             {t(LIST_TITLES[data.sort][0], LIST_TITLES[data.sort][1])}
           </h2>
           <WorksIndexSortTabs
@@ -321,6 +322,13 @@ export function PostsIndexView(props: Props) {
             ))}
           </ul>
         )}
+
+        {/* この一覧は全年齢の作品だけ */}
+        <AdSlot
+          slot={config.googleAdsense.slots.list}
+          enabled={data.works.length > 0}
+          minHeight={280}
+        />
 
         <WorksIndexPagination
           page={data.page}
