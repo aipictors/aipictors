@@ -30,6 +30,7 @@ import {
   HEADER_USER_INLINE_SCRIPT,
   HEADER_USER_INLINE_STYLE,
 } from "~/utils/header-user-snapshot"
+import { PAGE_VIEW_INLINE_SCRIPT, trackPageView } from "~/utils/page-view"
 import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
 import { toLocalePathname } from "~/lib/app/locale-router"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
@@ -600,6 +601,11 @@ export function Layout(props: Props): React.ReactNode {
           // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
           dangerouslySetInnerHTML={{ __html: HEADER_USER_INLINE_SCRIPT }}
         />
+        <script
+          // 最初のページ表示を数える（hydration を待たない。app/utils/page-view.ts）
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
+          dangerouslySetInnerHTML={{ __html: PAGE_VIEW_INLINE_SCRIPT }}
+        />
         <style
           // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスタイル
           dangerouslySetInnerHTML={{ __html: HEADER_USER_INLINE_STYLE }}
@@ -760,6 +766,7 @@ export default function App(): React.ReactNode {
     <>
       <Outlet />
       <KeepEnglishLocale />
+      <PageViewTracker />
       <ContentModeGuard />
       {/* SSR時は非表示、クライアントサイドでのみ表示 */}
       {isMounted && (
@@ -778,4 +785,24 @@ export default function App(): React.ReactNode {
       <ProgressBar />
     </>
   )
+}
+
+/**
+ * サイト内の移動でのページ表示を数える（最初の表示は HTML のスクリプトが数えている）
+ */
+function PageViewTracker(): null {
+  const { pathname } = useLocation()
+  const previousPathRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (
+      previousPathRef.current !== null &&
+      previousPathRef.current !== pathname
+    ) {
+      trackPageView("internal", pathname)
+    }
+    previousPathRef.current = pathname
+  }, [pathname])
+
+  return null
 }

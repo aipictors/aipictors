@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react"
 import {
+  BarChart3,
   Headset,
   Coins,
   GripVertical,
@@ -38,6 +39,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "ダッシュボード",
     description: "管理メニューの入口",
     icon: LayoutGrid,
+  },
+  {
+    href: "/admin/analytics",
+    title: "分析",
+    description: "売上・会員・PV・流入元の推移",
+    icon: BarChart3,
   },
   {
     href: "/admin/support",

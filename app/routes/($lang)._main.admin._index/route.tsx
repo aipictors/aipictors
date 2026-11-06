@@ -39,6 +39,11 @@ export async function loader(_props: LoaderFunctionArgs) {
 
 const quickActions = [
   {
+    href: "/admin/analytics",
+    title: "分析",
+    subtitle: "売上・会員・PV・流入元の推移を見る",
+  },
+  {
     href: "/admin/support",
     title: "お問い合わせ",
     subtitle: "AI から引き継いだ相談に返事する",
