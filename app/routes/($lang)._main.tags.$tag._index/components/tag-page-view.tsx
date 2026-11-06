@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client/index"
 import { useFetcher, useLocation } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
   ChevronRightIcon,
@@ -10,6 +9,7 @@ import {
 } from "lucide-react"
 import { useContext, useEffect, useMemo, useState } from "react"
 import type { BreadcrumbList, CollectionPage, WithContext } from "schema-dts"
+import { AdSlot } from "~/components/ads/ad-slot"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
 import { LinkPagination } from "~/components/link-pagination"
@@ -18,6 +18,7 @@ import { Button } from "~/components/ui/button"
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { TagActionOther } from "~/routes/($lang)._main.tags._index/components/tag-action-other"
 import type { loader } from "~/routes/($lang)._main.tags.$tag._index/route"
@@ -429,6 +430,18 @@ export function TagPageView(props: Props) {
           )}
         </div>
       )}
+
+      {/* Google 広告は全年齢の作品だけが並ぶときに出す */}
+      <AdSlot
+        slot={config.googleAdsense.slots.list}
+        enabled={
+          !props.isSensitive &&
+          !props.isR18Fallback &&
+          works.length > 0 &&
+          works.every((work) => work.rating === "G")
+        }
+        minHeight={280}
+      />
 
       {/* もっと見る・ページ送り */}
       {works.length > 0 && (

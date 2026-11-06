@@ -2,23 +2,26 @@ import { useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ChevronRightIcon } from "lucide-react"
 import { useContext, useMemo } from "react"
-import { Link } from "~/lib/app/locale-router"
+import { AdSlot } from "~/components/ads/ad-slot"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { PlusUpsellCard } from "~/components/plus-upsell-card"
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
+import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import {
   HomeAwardWorksSection,
   homeAwardWorksQuery,
 } from "~/routes/($lang)._main._index/components/home-award-works"
 import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
 import {
   userSettingFragment,
   WorkArticle,
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
-import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
@@ -179,6 +182,9 @@ export function WorkContainer(props: Props) {
 
   const t = useTranslation()
 
+  // Google 広告は全年齢の作品だけ（R15 以上は規約で出せない）
+  const isAdAllowed = work?.rating === "G"
+
   if (work === null || work.isDeleted === true) {
     return null
   }
@@ -227,6 +233,12 @@ export function WorkContainer(props: Props) {
                 />
               </div>
             )}
+            <AdSlot
+              slot={config.googleAdsense.slots.workInline}
+              enabled={isAdAllowed}
+              minHeight={280}
+              className="border-t pt-4"
+            />
             {work.album && <WorkAlbumCard album={work.album} />}
             {work.isCommentsEditable && (
               <div className="border-t pt-6">
@@ -272,6 +284,14 @@ export function WorkContainer(props: Props) {
           )}
           <div className="invisible flex w-full flex-col space-y-4 md:visible">
             <WorkNextAndPrevious work={work} />
+            <AdSlot
+              slot={config.googleAdsense.slots.workSide}
+              enabled={isAdAllowed}
+              minHeight={250}
+              fixedSize={{ width: 300, height: 250 }}
+              fallback={<PlusUpsellCard className="h-[250px] overflow-hidden" />}
+              className="w-full"
+            />
             <div className="flex w-full flex-col space-y-4">
               <div className="relative grid gap-4">
                 {!isSubscriptionUser &&
