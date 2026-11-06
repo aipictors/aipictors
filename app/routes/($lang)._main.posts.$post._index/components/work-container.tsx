@@ -24,7 +24,7 @@ import {
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
-import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
+import { WorkPrevNextBar } from "~/routes/($lang)._main.posts.$post._index/components/work-prev-next-bar"
 import { WorkAuthorWorksSection } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
 import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
@@ -223,7 +223,8 @@ export function WorkContainer(props: Props) {
                 ) : undefined
               }
             />
-            {/* AI 評価（WorkArticle の中）→ 作者の他の作品（横スクロール）→ アルバム → コメントの順 */}
+            {/* 前後の作品（← → キーでも移れる）→ AI 評価（WorkArticle の中）→ 作者の他の作品（横スクロール）→ アルバム → コメントの順 */}
+            <WorkPrevNextBar work={work} />
             {work.user && (
               <div className="border-t pt-6">
                 <WorkAuthorWorksSection
@@ -283,13 +284,14 @@ export function WorkContainer(props: Props) {
             </div>
           )}
           <div className="invisible flex w-full flex-col space-y-4 md:visible">
-            <WorkNextAndPrevious work={work} />
             <AdSlot
               slot={config.googleAdsense.slots.workSide}
               enabled={isAdAllowed}
               minHeight={250}
               fixedSize={{ width: 300, height: 250 }}
-              fallback={<PlusUpsellCard className="h-[250px] overflow-hidden" />}
+              fallback={
+                <PlusUpsellCard className="h-[250px] overflow-hidden" />
+              }
               className="w-full"
             />
             <div className="flex w-full flex-col space-y-4">

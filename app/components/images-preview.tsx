@@ -522,6 +522,8 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const previewOverlay = isOpen ? (
     // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard navigation required
     <div
+      role="dialog"
+      aria-modal="true"
       className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-black/90"
       onClick={handleBackgroundClick}
     >

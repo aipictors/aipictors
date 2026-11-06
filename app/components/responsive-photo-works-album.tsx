@@ -1,6 +1,3 @@
-import { WorkPromotionMark } from "~/components/work/work-promotion"
-import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, Images, MessageCircle } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
@@ -8,12 +5,15 @@ import { HoverVideoImage } from "~/components/hover-video-image"
 import { LikeButton } from "~/components/like-button"
 import { Badge } from "~/components/ui/badge"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { WorkPromotionMark } from "~/components/work/work-promotion"
 import { WorkMediaBadge } from "~/components/work-media-badge"
+import { useGridLayout } from "~/hooks/use-grid-layout"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
-import { StickerButtonFragment } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
+import type { GridLayout } from "~/utils/grid-layout"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -31,7 +31,19 @@ type Props = {
   /** ユーザリンクのプレフィックス（例: "/users" または "/posts/gallery/users"） */
   userLinkPrefix?: string
   shouldMaskSensitiveWorks?: boolean
+  /**
+   * 並べ方を固定する。省略時は利用者の設定（正方形／元の比率、app/hooks/use-grid-layout.ts）
+   */
+  layout?: GridLayout
 }
+
+/** 正方形で並べるときの列数（スマホ 2・PC は画面幅に合わせて 4〜6） */
+const SQUARE_GRID_CLASS =
+  "grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+
+/** 上の列数に合わせた画像の表示幅（sizes） */
+const SQUARE_GRID_SIZES =
+  "(min-width: 1536px) 15vw, (min-width: 1280px) 18vw, (min-width: 768px) 23vw, (min-width: 640px) 31vw, 48vw"
 
 const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
   return work.isSensitive || work.rating === "R18" || work.rating === "R18G"
@@ -43,17 +55,27 @@ const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
 export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
   const t = useTranslation()
   const { showDesktop, showMobile } = useLayoutVariant()
+  const { gridLayout } = useGridLayout()
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
-  if (props.compactWhenFew && props.works.length <= 4) {
+  const isFew = props.compactWhenFew === true && props.works.length <= 4
+  const isSquare = (props.layout ?? gridLayout) === "square"
+
+  if (isFew || isSquare) {
     return (
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+      <div
+        className={
+          isFew
+            ? "grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4"
+            : SQUARE_GRID_CLASS
+        }
+      >
         {props.works.map((workItem, index) => {
           return (
             <div
               key={workItem.id.toString()}
-              className="relative flex min-w-0 flex-col space-y-2"
+              className="relative flex min-w-0 flex-col gap-1.5"
             >
               <div className="relative">
                 <CroppedWorkSquare
@@ -72,6 +94,8 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   isAutoPlay={props.autoPlayVideoPreview}
                   thumbnailImagePosition={workItem.thumbnailImagePosition ?? 0}
                   size="auto"
+                  displayWidth={isFew ? undefined : SQUARE_GRID_SIZES}
+                  onSelect={props.onSelect}
                   imageWidth={workItem.smallThumbnailImageWidth}
                   imageHeight={workItem.smallThumbnailImageHeight}
                   isPromptPublic={
@@ -100,7 +124,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                 </div>
               </div>
               {props.isShowProfile && (
-                <>
+                <div className="flex min-w-0 flex-col gap-1">
                   {props.onSelect ? (
                     <button
                       type="button"
@@ -108,47 +132,48 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                       onClick={() => props.onSelect?.(workItem.id.toString())}
                       aria-label={`Open ${t.workTitle(workItem.title, workItem.enTitle)}`}
                     >
-                      <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
+                      <p className="truncate text-sm">
                         {t.workTitle(workItem.title, workItem.enTitle)}
                       </p>
                     </button>
                   ) : (
                     <Link
-                      className="min-w-0 font-bold"
+                      className="min-w-0 font-bold hover:underline"
                       to={`/posts/${workItem.id}`}
                     >
-                      <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
+                      <p className="truncate text-sm">
                         {t.workTitle(workItem.title, workItem.enTitle)}
                       </p>
                     </Link>
                   )}
-
                   {workItem.user && (
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex min-w-0 items-center justify-between gap-2">
                       <Link
                         className="min-w-0"
                         to={`${props.userLinkPrefix || "/users"}/${workItem.user.id}`}
                       >
-                        <div className="flex min-w-0 items-center space-x-2">
+                        <div className="flex min-w-0 items-center gap-1.5">
                           <UserAvatarWithFrame
                             alt={workItem.user.name}
                             frame={workItem.user.avatarFrame}
                             isAnimated={false}
-                            sizeClassName="size-6"
+                            sizeClassName="size-5"
                             src={withIconUrlFallback(workItem.user.iconUrl)}
                           />
-                          <span className="block max-w-24 truncate text-sm">
+                          <span className="truncate text-muted-foreground text-xs">
                             {workItem.user.name}
                           </span>
                         </div>
                       </Link>
-                      <div className="flex shrink-0 items-center space-x-1 rounded-md bg-card p-1">
-                        <Heart className="size-3 fill-gray-400 text-gray-400" />
-                        <span className="text-xs">{workItem.likesCount}</span>
+                      <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                        <Heart className="size-3 fill-current" />
+                        <span className="text-xs tabular-nums">
+                          {workItem.likesCount}
+                        </span>
                       </div>
                     </div>
                   )}
-                </>
+                </div>
               )}
             </div>
           )
@@ -350,14 +375,18 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                           }}
                           aria-label={`Open ${t.workTitle(work.title, work.enTitle)}`}
                         >
-                          <p className="truncate text-sm">{t.workTitle(work.title, work.enTitle)}</p>
+                          <p className="truncate text-sm">
+                            {t.workTitle(work.title, work.enTitle)}
+                          </p>
                         </button>
                       ) : (
                         <Link
                           className="min-w-0 font-bold hover:underline"
                           to={`/posts/${work.id}`}
                         >
-                          <p className="truncate text-sm">{t.workTitle(work.title, work.enTitle)}</p>
+                          <p className="truncate text-sm">
+                            {t.workTitle(work.title, work.enTitle)}
+                          </p>
                         </Link>
                       )}
                       {work.user && (

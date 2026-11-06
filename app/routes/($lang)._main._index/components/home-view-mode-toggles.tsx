@@ -1,6 +1,7 @@
 import { LayoutList, Maximize2, MousePointerClick, Rows3 } from "lucide-react"
-import { cn } from "~/lib/utils"
+import { GridLayoutToggle } from "~/components/grid-layout-toggle"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   /** ページ切り替え表示か（undefined なら切り替えを出さない） */
@@ -13,7 +14,7 @@ type Props = {
 }
 
 /**
- * 一覧の表示の切り替え（続けて表示／ページごと、作品をダイアログで開く／ページで開く）
+ * 一覧の表示の切り替え（サムネイルの並べ方、続けて表示／ページごと、作品をダイアログで開く／ページで開く）
  * 以前は絞り込み欄の中やタブごとにばらばらに置いていて、見つけにくかった
  */
 export function HomeViewModeToggles(props: Props) {
@@ -34,6 +35,7 @@ export function HomeViewModeToggles(props: Props) {
         props.className,
       )}
     >
+      <GridLayoutToggle />
       {props.isPagination !== undefined && props.onPaginationChange && (
         <fieldset className="inline-flex rounded-full border bg-muted/40 p-0.5">
           <legend className="sr-only">{t("一覧の表示", "List display")}</legend>

@@ -10,6 +10,7 @@
  *   拠点のキャッシュは拠点ごとなので、海外や久しぶりの拠点では API から作り直して 2〜4 秒かかっていた
  */
 
+import { getGridLayout } from "~/utils/grid-layout"
 import { getLayoutHint } from "~/utils/layout-hint"
 import { toLocaleFromAcceptLanguage } from "~/utils/locale-path"
 
@@ -162,7 +163,8 @@ export const createEdgePageCache = (version: string) => {
     key.hostname = "www.aipictors.com"
     key.protocol = "https:"
     // 端末の種類で描画する一覧が違う（app/utils/layout-hint.ts）
-    key.pathname = `/__edge/${version}/${getLocale(request)}/${getLayoutHint(request)}${url.pathname}`
+    // サムネイルの並べ方（cookie）でも描画が違う（app/utils/grid-layout.ts）
+    key.pathname = `/__edge/${version}/${getLocale(request)}/${getLayoutHint(request)}/${getGridLayout(request)}${url.pathname}`
     key.searchParams.sort()
     return new Request(key.toString(), { method: "GET" })
   }

@@ -32,6 +32,7 @@ import {
 } from "~/utils/header-user-snapshot"
 import { PAGE_VIEW_INLINE_SCRIPT, trackPageView } from "~/utils/page-view"
 import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
+import { type GridLayout, getGridLayout } from "~/utils/grid-layout"
 import { toLocalePathname } from "~/lib/app/locale-router"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { setRenderNow } from "~/utils/render-now"
@@ -67,6 +68,8 @@ type RootLoaderData = {
   renderedAt?: number
   /** スマホ用・PC 用のどちらの一覧を描画するか（app/hooks/use-layout-variant.ts） */
   layoutHint?: LayoutHint
+  /** 作品一覧のサムネイルの並べ方（app/hooks/use-grid-layout.ts） */
+  gridLayout?: GridLayout
 }
 
 const defaultRootLoaderData: RootLoaderData = {
@@ -277,6 +280,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     ...maintenanceStatus,
     renderedAt: Date.now(),
     layoutHint: getLayoutHint(request),
+    gridLayout: getGridLayout(request),
   })
 }
 

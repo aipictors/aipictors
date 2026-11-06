@@ -64,7 +64,9 @@ export const toDeferredModuleScript = (
   // JS と回線を取り合うと、いちばん大きい画像（LCP）の表示が遅れるため。こちらは最大 1.5 秒で打ち切る
   // hydration の前に押されたボタンを覚えておく（app/lib/replay-pending-click.ts が hydration 後に押し直す）。
   // 最初の操作で hydration が始まるので、覚えておかないと最初のタップがなかったことになる
+  // 押されたキー（作品ページの ← → で前後の作品へ移る、app/routes/($lang)._main.posts.$post._index/components/work-prev-next-bar.tsx）も覚えておく
   return `addEventListener("click",function(e){if(window.__aipictorsHydrated)return;var b=e.target&&e.target.closest&&e.target.closest("button");if(b&&!b.closest("a,form"))window.__aipictorsPendingClick={el:b,at:Date.now()}},{capture:true,passive:true});
+addEventListener("keydown",function(e){if(window.__aipictorsHydrated||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey)return;window.__aipictorsPendingKey={code:e.code,at:Date.now()}},{capture:true,passive:true});
 await new Promise(function(r){if(document.visibilityState==="hidden"){r();return}var d=false;function f(){if(!d){d=true;setTimeout(r,0)}}try{new PerformanceObserver(function(l){if(l.getEntriesByName("first-contentful-paint").length>0)f()}).observe({type:"paint",buffered:true})}catch(e){}requestAnimationFrame(function(){requestAnimationFrame(f)});setTimeout(f,5000)});
 ${waitForInteraction}await Promise.race([Promise.all(Array.prototype.map.call(document.querySelectorAll('img[fetchpriority="high"]'),function(i){return i.complete?0:new Promise(function(r){i.addEventListener("load",r,{once:true});i.addEventListener("error",r,{once:true})})})),new Promise(function(r){setTimeout(r,1500)})]);
 document.querySelectorAll('link[rel="aipictors-deferred-stylesheet"]').forEach(function(l){l.rel="stylesheet"});

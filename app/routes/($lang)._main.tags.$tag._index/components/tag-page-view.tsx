@@ -10,6 +10,7 @@ import {
 import { useContext, useEffect, useMemo, useState } from "react"
 import type { BreadcrumbList, CollectionPage, WithContext } from "schema-dts"
 import { AdSlot } from "~/components/ads/ad-slot"
+import { GridLayoutToggle } from "~/components/grid-layout-toggle"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
 import { LinkPagination } from "~/components/link-pagination"
@@ -380,6 +381,7 @@ export function TagPageView(props: Props) {
             <SparklesIcon className="size-3.5" />
             {t("プロンプトあり", "With prompt")}
           </Chip>
+          <GridLayoutToggle className="ml-auto shrink-0" />
         </div>
       </div>
 
