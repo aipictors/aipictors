@@ -251,7 +251,11 @@ function AnalyticsBody(props: { data: AnalyticsResponse; range: number }) {
         <Kpi
           label={`ページ表示（${days.length} 日）`}
           value={formatCount(totals.pv)}
-          detail={`外からの訪問 ${formatCount(totals.landings)}`}
+          detail={
+            totals.pv > 0
+              ? `外からの訪問 ${formatCount(totals.landings)}`
+              : "2026/11/06 から計測（翌日の 00:30 に前日分が入ります）"
+          }
           change={hasPrevious ? changeRate(totals.pv, previousTotals.pv) : null}
         />
         <Kpi
