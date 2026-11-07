@@ -1,6 +1,8 @@
 import { Link } from "~/lib/app/locale-router"
 import { OptimizedImage } from "~/components/optimized-image"
 import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thumbnail-overlay"
+import { useIsSensitiveBlurred } from "~/hooks/use-sensitive-blur"
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -33,6 +35,8 @@ type Props = {
  * Safari対応：特定の表示問題を修正
  */
 export function HoverVideoImage(props: Props): React.ReactNode {
+  const t = useTranslation()
+  const isSensitiveBlurred = useIsSensitiveBlurred(props.workId)
   const imageContent = (
     <>
       <OptimizedImage
@@ -59,7 +63,12 @@ export function HoverVideoImage(props: Props): React.ReactNode {
         imageUrl={props.imageUrl}
         imageWidth={props.width}
         imageHeight={props.height}
-        isHidden={props.shouldMaskSensitive === true}
+        isHidden={props.shouldMaskSensitive === true || isSensitiveBlurred}
+        label={
+          props.shouldMaskSensitive === true
+            ? undefined
+            : t("センシティブ", "Sensitive")
+        }
       />
     </>
   )

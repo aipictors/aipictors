@@ -1,4 +1,5 @@
 import { AuthContext } from "~/contexts/auth-context"
+import { useSensitiveBlurSetting } from "~/hooks/use-sensitive-blur"
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect } from "react"
 import React from "react"
@@ -104,9 +105,25 @@ export function SettingRestrictionForm () {
     setShowHeaderRatingToggle(localStorage.getItem("hideR18Button") !== "true")
   }, [])
 
+  const { isBlur: isBlurSensitive, setBlur: setBlurSensitive } =
+    useSensitiveBlurSetting()
+
   return (
     <div className="space-y-4">
       <div className="divide-y rounded-xl border px-4">
+        <SettingsSwitchRow
+          htmlFor="blur-sensitive"
+          title={t(
+            "センシティブな作品をぼかす（リアルな作風で子どもに見える人物の際どい表現など、画像の自動判定によるもの）",
+            "Blur sensitive works (flagged by the automatic image check)",
+          )}
+        >
+          <Switch
+            onCheckedChange={setBlurSensitive}
+            checked={isBlurSensitive}
+            id="blur-sensitive"
+          />
+        </SettingsSwitchRow>
         <SettingsSwitchRow
             htmlFor="show-r15"
             title={t(

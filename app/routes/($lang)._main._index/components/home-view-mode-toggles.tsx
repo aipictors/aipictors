@@ -1,5 +1,6 @@
 import { LayoutList, Maximize2, MousePointerClick, Rows3 } from "lucide-react"
 import { GridLayoutToggle } from "~/components/grid-layout-toggle"
+import { SensitiveBlurToggle } from "~/components/sensitive-blur-toggle"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
@@ -36,6 +37,7 @@ export function HomeViewModeToggles(props: Props) {
       )}
     >
       <GridLayoutToggle />
+      <SensitiveBlurToggle />
       {props.isPagination !== undefined && props.onPaginationChange && (
         <fieldset className="inline-flex rounded-full border bg-muted/40 p-0.5">
           <legend className="sr-only">{t("一覧の表示", "List display")}</legend>

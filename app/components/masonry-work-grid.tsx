@@ -5,6 +5,8 @@ import { Eye, Heart, Images } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { LikeButton } from "~/components/like-button"
 import { OptimizedImage } from "~/components/optimized-image"
+import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thumbnail-overlay"
+import { useIsSensitiveBlurred } from "~/hooks/use-sensitive-blur"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { Skeleton } from "~/components/ui/skeleton"
 
@@ -179,6 +181,7 @@ export function MasonryWorkGrid(props: Props): React.ReactNode {
 function WorkItem(props: WorkItemProps) {
   const t = useTranslation()
   const { work, baseUrl = "posts/gallery" } = props
+  const isSensitiveBlurred = useIsSensitiveBlurred(work.id)
 
   const aspectRatio =
     work.smallThumbnailImageHeight / work.smallThumbnailImageWidth
@@ -199,6 +202,14 @@ function WorkItem(props: WorkItemProps) {
           height={work.smallThumbnailImageHeight}
           className="absolute inset-0 block h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
+        />
+
+        <SensitiveThumbnailOverlay
+          imageUrl={work.smallThumbnailImageURL}
+          imageWidth={work.smallThumbnailImageWidth}
+          imageHeight={work.smallThumbnailImageHeight}
+          isHidden={isSensitiveBlurred}
+          label={t("センシティブ", "Sensitive")}
         />
 
         {/* オーバーレイ */}

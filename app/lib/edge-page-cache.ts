@@ -11,6 +11,7 @@
  */
 
 import { getGridLayout } from "~/utils/grid-layout"
+import { getSensitiveBlur } from "~/utils/sensitive-blur"
 import { getLayoutHint } from "~/utils/layout-hint"
 import { toLocaleFromAcceptLanguage } from "~/utils/locale-path"
 
@@ -164,7 +165,8 @@ export const createEdgePageCache = (version: string) => {
     key.protocol = "https:"
     // 端末の種類で描画する一覧が違う（app/utils/layout-hint.ts）
     // サムネイルの並べ方（cookie）でも描画が違う（app/utils/grid-layout.ts）
-    key.pathname = `/__edge/${version}/${getLocale(request)}/${getLayoutHint(request)}/${getGridLayout(request)}${url.pathname}`
+    // センシティブな作品のぼかしの ON/OFF（cookie）でも違う（app/utils/sensitive-blur.ts）
+    key.pathname = `/__edge/${version}/${getLocale(request)}/${getLayoutHint(request)}/${getGridLayout(request)}${getSensitiveBlur(request) ? "" : "-noblur"}${url.pathname}`
     key.searchParams.sort()
     return new Request(key.toString(), { method: "GET" })
   }

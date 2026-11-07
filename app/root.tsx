@@ -33,6 +33,10 @@ import {
 import { PAGE_VIEW_INLINE_SCRIPT, trackPageView } from "~/utils/page-view"
 import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
 import { type GridLayout, getGridLayout } from "~/utils/grid-layout"
+import {
+  fetchSensitiveWorkIds,
+  getSensitiveBlur,
+} from "~/utils/sensitive-blur"
 import { toLocalePathname } from "~/lib/app/locale-router"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { setRenderNow } from "~/utils/render-now"
@@ -70,6 +74,10 @@ type RootLoaderData = {
   layoutHint?: LayoutHint
   /** 作品一覧のサムネイルの並べ方（app/hooks/use-grid-layout.ts） */
   gridLayout?: GridLayout
+  /** センシティブな作品をぼかすか（app/hooks/use-sensitive-blur.ts） */
+  blurSensitive?: boolean
+  /** ぼかす作品の ID（画像の自動判定でセンシティブとしたもの） */
+  sensitiveWorkIds?: string[]
 }
 
 const defaultRootLoaderData: RootLoaderData = {
@@ -281,6 +289,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     renderedAt: Date.now(),
     layoutHint: getLayoutHint(request),
     gridLayout: getGridLayout(request),
+    blurSensitive: getSensitiveBlur(request),
+    sensitiveWorkIds: await fetchSensitiveWorkIds(),
   })
 }
 
