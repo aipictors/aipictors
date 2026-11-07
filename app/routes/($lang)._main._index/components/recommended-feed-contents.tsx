@@ -42,14 +42,13 @@ export function RecommendedFeedContents(props: Props) {
     [viewerRatings.normalRatings],
   )
 
-  const isGuestList = authContext.isNotLoggedIn
-  const canUseInitial =
-    isGuestList && ratings.includes("G") && ratings.includes("R15")
+  // ログインしていない人と、ログイン状態を確認中（サーバーでの描画を含む）は、サーバーで取った一覧を出す
+  const isPersonal = authContext.isLoggedIn && viewerRatings.isReady
 
   const client = useApolloClient()
 
   const { data, loading, error } = useQuery(recommendedFeedWorksQuery, {
-    skip: authContext.isLoading || !viewerRatings.isReady || canUseInitial,
+    skip: !isPersonal,
     variables: { offset: 0, limit: RECOMMENDED_PER_PAGE, ratings },
     // 並びは人ごとに変わるので、毎回取り直す
     fetchPolicy: "network-only",
@@ -60,9 +59,17 @@ export function RecommendedFeedContents(props: Props) {
   const [hasNext, setHasNext] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
-  const baseWorks = canUseInitial
-    ? props.initialWorks
-    : (data?.recommendedFeedWorks ?? [])
+  // あなた向けの並びが届くまでは、サーバーで取った一覧を出しておく
+  const personalWorks = data?.recommendedFeedWorks
+  const isUsingInitial = !isPersonal || personalWorks === undefined
+  const baseWorks = isUsingInitial ? props.initialWorks : personalWorks
+
+  // 並びが入れ替わったら、続きの読み込みもやり直す
+  // biome-ignore lint/correctness/useExhaustiveDependencies: 入れ替わったときだけ
+  useEffect(() => {
+    setExtraWorks([])
+    setHasNext(true)
+  }, [isUsingInitial])
 
   const works = useMemo(() => {
     const seen = new Set<string>()
@@ -87,7 +94,7 @@ export function RecommendedFeedContents(props: Props) {
         variables: {
           offset: works.length,
           limit: RECOMMENDED_PER_PAGE,
-          ratings: canUseInitial ? ["G", "R15"] : ratings,
+          ratings: isUsingInitial ? ["G", "R15"] : ratings,
         },
         fetchPolicy: "network-only",
       })
@@ -99,14 +106,14 @@ export function RecommendedFeedContents(props: Props) {
     } finally {
       setIsLoadingMore(false)
     }
-  }, [isLoadingMore, hasNext, client, works.length, canUseInitial, ratings])
+  }, [isLoadingMore, hasNext, client, works.length, isUsingInitial, ratings])
 
   const sentinelRef = useInfiniteScroll(() => void loadMore(), {
     hasNext: hasNext && works.length > 0,
     loading: isLoadingMore,
   })
 
-  if (works.length === 0 && (loading || authContext.isLoading)) {
+  if (works.length === 0 && loading) {
     return <HomeNewWorksSkeleton view="new" isPagination={false} />
   }
 
