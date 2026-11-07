@@ -1,7 +1,16 @@
 import { useApolloClient, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { Loader2Icon, SparklesIcon } from "lucide-react"
-import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { EyeOffIcon, Loader2Icon, SparklesIcon } from "lucide-react"
+import { toast } from "sonner"
+import {
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
@@ -11,9 +20,14 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
 import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
+import { RecommendedFeedShelf } from "~/routes/($lang)._main._index/components/recommended-feed-shelf"
+import { useFeedEvents } from "~/routes/($lang)._main._index/hooks/use-feed-events"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 
 export const RECOMMENDED_PER_PAGE = 32
+
+/** 一覧を区切って、途中に棚（フォロー新着・お気に入りタグ新着）を差し込む位置 */
+const SHELF_AT = [24, 56]
 
 type Work = FragmentOf<typeof PhotoAlbumWorkFragment>
 
@@ -71,14 +85,72 @@ export function RecommendedFeedContents(props: Props) {
     setHasNext(true)
   }, [isUsingInitial])
 
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set())
+
   const works = useMemo(() => {
     const seen = new Set<string>()
     return [...baseWorks, ...extraWorks].filter((work) => {
-      if (seen.has(work.id)) return false
+      if (seen.has(work.id) || hiddenIds.has(work.id)) return false
       seen.add(work.id)
       return true
     })
-  }, [baseWorks, extraWorks])
+  }, [baseWorks, extraWorks, hiddenIds])
+
+  // 見た・開いた・興味なしを記録して、おすすめの並べ替えと学習に使う
+  const feedEvents = useFeedEvents()
+  const listRef = useRef<HTMLDivElement>(null)
+  const { observe } = feedEvents
+  // biome-ignore lint/correctness/useExhaustiveDependencies: 一覧が出たときに見張り始める
+  useEffect(() => observe(listRef.current), [observe, works.length > 0])
+
+  const onHide = useCallback(
+    (workId: string) => {
+      feedEvents.record(workId, "HIDE")
+      setHiddenIds((current) => new Set(current).add(workId))
+      toast(
+        t(
+          "この作品を表示しないようにしました。似た作品も出にくくなります",
+          "Hidden. Similar works will appear less often",
+        ),
+      )
+    },
+    [feedEvents, t],
+  )
+
+  const onSelect = props.onSelect
+    ? (workId: string) => {
+        feedEvents.record(workId, "CLICK")
+        props.onSelect?.(workId)
+      }
+    : undefined
+
+  const renderHideButton = (workId: string) =>
+    authContext.isLoggedIn ? (
+      <button
+        type="button"
+        onClick={(event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          onHide(workId)
+        }}
+        title={t("興味なし", "Not interested")}
+        aria-label={t("興味なし", "Not interested")}
+        className="absolute top-1.5 right-1.5 z-20 flex size-7 items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition-opacity focus:opacity-100 group-hover/item:opacity-100 [@media(hover:none)]:opacity-70 hover:bg-black/75"
+      >
+        <EyeOffIcon className="size-3.5" />
+      </button>
+    ) : null
+
+  const chunks = useMemo(() => {
+    const result: Work[][] = []
+    let start = 0
+    for (const end of [...SHELF_AT, Number.POSITIVE_INFINITY]) {
+      const chunk = works.slice(start, end)
+      if (chunk.length > 0) result.push(chunk)
+      start = end
+    }
+    return result
+  }, [works])
 
   const { updateWorks } = props
   useEffect(() => {
@@ -155,12 +227,46 @@ export function RecommendedFeedContents(props: Props) {
           </Link>
         </p>
       )}
-      <ResponsivePhotoWorksAlbum
-        works={works}
-        isShowProfile={true}
-        onSelect={props.onSelect}
-        priorityCount={8}
-      />
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: 開いた作品を記録するだけ（操作は中のリンクとボタン） */}
+      <div
+        ref={listRef}
+        className="space-y-6"
+        onClickCapture={(event) => {
+          const link = (event.target as HTMLElement).closest(
+            "a[href*='/posts/']",
+          )
+          const workId = link
+            ?.getAttribute("href")
+            ?.match(/\/posts\/(\d+)/)?.[1]
+          if (workId) feedEvents.record(workId, "CLICK")
+        }}
+      >
+        {chunks.map((chunk, index) => (
+          <Fragment key={chunk[0]?.id ?? index}>
+            <ResponsivePhotoWorksAlbum
+              works={chunk}
+              isShowProfile={true}
+              onSelect={onSelect}
+              priorityCount={index === 0 ? 8 : 0}
+              renderItemOverlay={renderHideButton}
+            />
+            {index === 0 && chunks.length > 1 && (
+              <RecommendedFeedShelf
+                type="FOLLOW_USER"
+                title={t("フォロー新着", "From people you follow")}
+                link="/follow-user-works"
+              />
+            )}
+            {index === 1 && chunks.length > 2 && (
+              <RecommendedFeedShelf
+                type="FOLLOW_TAG"
+                title={t("お気に入りタグの新着", "From your favorite tags")}
+                link="/follow-tag-works"
+              />
+            )}
+          </Fragment>
+        ))}
+      </div>
       <div ref={sentinelRef} className="h-10" />
       {isLoadingMore && (
         <div className="flex justify-center py-4">

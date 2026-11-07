@@ -41,6 +41,8 @@ type Props = {
   layout?: GridLayout
   /** 正方形のとき、最後の行の半端な作品を隠して行をぴったり埋める（ホームの一覧など、続きを読まない一覧で使う） */
   fillRows?: boolean
+  /** 作品の画像の上に重ねるもの（おすすめの「興味なし」など） */
+  renderItemOverlay?: (workId: string) => React.ReactNode
 }
 
 /** 正方形で並べるときの列数（スマホ 2・PC は画面幅に合わせて 4〜6） */
@@ -81,8 +83,9 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
           return (
             <div
               key={workItem.id.toString()}
+              data-work-id={workItem.id}
               className={cn(
-                "relative flex min-w-0 flex-col gap-1.5",
+                "group/item relative flex min-w-0 flex-col gap-1.5",
                 props.fillRows &&
                   !isFew &&
                   incompleteRowHiddenClassName(
@@ -126,6 +129,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                 {workItem.isPromotion && (
                   <WorkPromotionMark className="absolute top-1.5 left-1.5" />
                 )}
+                {props.renderItemOverlay?.(workItem.id.toString())}
                 <div className="absolute right-0 bottom-0">
                   <LikeButton
                     size={56}
@@ -242,7 +246,8 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
               return (
                 <div
                   key={work.id}
-                  className="relative min-w-0"
+                  data-work-id={work.id}
+                  className="group/item relative min-w-0"
                   style={{
                     flexGrow: ratio * 100,
                     flexBasis: `${Math.round(ratio * targetRowHeight)}px`,
@@ -255,6 +260,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                     {work.isPromotion && (
                       <WorkPromotionMark className="absolute top-1.5 left-1.5 z-10" />
                     )}
+                    {props.renderItemOverlay?.(work.id.toString())}
                     {props.onSelect ? (
                       <button
                         type="button"
