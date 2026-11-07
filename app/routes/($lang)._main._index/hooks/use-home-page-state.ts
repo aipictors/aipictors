@@ -51,7 +51,7 @@ export function useHomePageState(props: {
 
   const markFollowFeedAsSeen = followFeedNew.markAsSeen
 
-  const currentTab = props.forcedTab ?? "new"
+  const currentTab = props.forcedTab ?? "recommended"
 
   useEffect(() => {
     if (currentTab === "follow-user") {
@@ -204,6 +204,7 @@ export function useHomePageState(props: {
   // タブ変更時（Tabs の onValueChange）などで呼ばれる
   const handleTabChange = (tab: string) => {
     if (
+      tab === "recommended" ||
       tab === "home" ||
       tab === "new" ||
       tab === "follow-user" ||

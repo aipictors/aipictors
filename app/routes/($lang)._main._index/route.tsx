@@ -18,6 +18,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-follow-tab-contents"
 import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeNewTabContent } from "~/routes/($lang)._main._index/components/home-new-tab-content"
+import { HomeRecommendedTabContent } from "~/routes/($lang)._main._index/components/home-recommended-tab-content"
 import { HomeRecentSupportHistory } from "~/routes/($lang)._main._index/components/home-recent-support-history"
 import { homeLoader } from "~/routes/($lang)._main._index/home-loader.server"
 import { useHomePageState } from "~/routes/($lang)._main._index/hooks/use-home-page-state"
@@ -92,8 +93,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             <div className="min-w-0 flex-1">
               <AppAnimatedTabs
                 tabs={[
-                  { label: t("ホーム", "Home"), value: "home" },
-                  { label: t("新着・人気", "New & popular"), value: "new" },
+                  { label: t("おすすめ", "For you"), value: "recommended" },
                   {
                     label: t("フォロー新着", "Following"),
                     value: "follow-user",
@@ -111,6 +111,8 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                     label: t("お気に入りタグ新着", "Favorite tags"),
                     value: "follow-tag",
                   },
+                  { label: t("新着・人気", "New & popular"), value: "new" },
+                  { label: t("ピックアップ", "Picks"), value: "home" },
                 ]}
                 value={currentTab}
                 onChange={handleTabChange}
@@ -118,7 +120,9 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             </div>
           </div>
         </div>
-        {/* ---------------------- タブ: ホーム ---------------------- */}
+        {/* ---------------------- タブ: おすすめ（メイン） ---------------------- */}
+        <HomeRecommendedTabContent {...state} data={data} />
+        {/* ---------------------- タブ: ピックアップ（推薦・ランキングなどの欄） ---------------------- */}
         <HomeFeedTabContent {...state} data={data} />
         {/* ---------------------- タブ: 新着・人気 ---------------------- */}
         <HomeNewTabContent {...state} checkboxId={checkboxId} data={data} />
@@ -144,7 +148,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 }
 
 export default function Index() {
-  return <HomeIndexPage forcedTab="new" />
+  return <HomeIndexPage forcedTab="recommended" />
 }
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => ({

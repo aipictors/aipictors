@@ -1,8 +1,9 @@
 import type { LoaderFunctionArgs, SerializeFrom } from "@remix-run/cloudflare"
+import { RECOMMENDED_PER_PAGE } from "~/routes/($lang)._main._index/components/recommended-feed-contents"
 import { json, redirect } from "@remix-run/cloudflare"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { config } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
@@ -55,6 +56,7 @@ const createBaseHomeLoaderData = (props: {
   hotTags: [] as FragmentOf<typeof HomeTagListItemFragment>[],
   importantRelease: props.importantRelease,
   initialNewWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  initialRecommendedWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
   newComments: [] as FragmentOf<typeof HomeNewCommentsFragment>[],
   newPostedUsers: [] as FragmentOf<typeof HomeNewPostedUsersFragment>[],
   newUserWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
@@ -74,6 +76,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
   const isHomeRoute = currentPathLeaf === "home"
   const isFollowUserRoute = currentPathLeaf === "follow-user-works"
   const isFollowTagRoute = currentPathLeaf === "follow-tag-works"
+  const isNewWorksRoute = currentPathLeaf === "new-works"
   const isDefaultTopRoute =
     !isHomeRoute && !isFollowUserRoute && !isFollowTagRoute
 
@@ -108,7 +111,9 @@ export async function homeLoader(props: LoaderFunctionArgs) {
         }),
       ),
       fetchFeaturedTaggedReleases().catch((): MicroCmsApiRelease[] => []),
-      fetchLatestImportantRelease().catch((): MicroCmsApiRelease | null => null),
+      fetchLatestImportantRelease().catch(
+        (): MicroCmsApiRelease | null => null,
+      ),
     ])
 
   const safeReleaseList =
@@ -124,12 +129,11 @@ export async function homeLoader(props: LoaderFunctionArgs) {
     featuredReleaseList: Array.isArray(featuredReleaseList)
       ? featuredReleaseList.map(toReleaseSummary)
       : [],
-    importantRelease: latestImportantRelease && isImportantReleaseVisible(
-      latestImportantRelease,
-      now.getTime(),
-    )
-      ? toReleaseSummary(latestImportantRelease)
-      : null,
+    importantRelease:
+      latestImportantRelease &&
+      isImportantReleaseVisible(latestImportantRelease, now.getTime())
+        ? toReleaseSummary(latestImportantRelease)
+        : null,
   })
 
   if (!isHomeRoute) {
@@ -139,6 +143,30 @@ export async function homeLoader(props: LoaderFunctionArgs) {
           "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
         },
       })
+    }
+
+    // トップ（/）は「おすすめ」。ログインしていない人向けの並びをサーバーで取って、最初の表示に使う
+    if (!isNewWorksRoute) {
+      const recommendedResult = await loaderClient.query({
+        query: initialRecommendedWorksQuery,
+        errorPolicy: "all",
+        variables: { offset: 0, limit: RECOMMENDED_PER_PAGE },
+      })
+      return json(
+        {
+          ...baseLoaderData,
+          initialRecommendedWorks: Array.isArray(
+            recommendedResult.data?.recommendedFeedWorks,
+          )
+            ? recommendedResult.data.recommendedFeedWorks
+            : [],
+        },
+        {
+          headers: {
+            "Cache-Control": config.cacheControl.home,
+          },
+        },
+      )
     }
 
     const initialWorksResult = await loaderClient.query({
@@ -217,6 +245,15 @@ export async function homeLoader(props: LoaderFunctionArgs) {
 }
 
 export type HomeLoaderData = SerializeFrom<typeof homeLoader>
+
+const initialRecommendedWorksQuery = graphql(
+  `query InitialRecommendedWorks($offset: Int!, $limit: Int!) {
+    recommendedFeedWorks(offset: $offset, limit: $limit, ratings: [G, R15]) {
+      ...PhotoAlbumWork
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
+)
 
 const initialNewWorksQuery = graphql(
   `query InitialNewWorks($offset:Int!,$limit:Int!,$where:WorksWhereInput!) {

@@ -3240,6 +3240,9 @@ type Mutation {
   """コメント審査への異議申し立てを送信する"""
   appealCommentModeration(input: AppealCommentModerationInput!): Boolean!
 
+  """投稿者が画像の自動判定は違うと運営に知らせる"""
+  appealWorkAutoModeration(message: String, workId: ID!): Boolean!
+
   """ユーザをブロックする"""
   blockUser(input: BlockUserInput!): UserNode!
 
@@ -3527,6 +3530,16 @@ type Mutation {
 
   """作品に対してAI判定を再リクエストする"""
   requestWorkImageAnalysis(input: RequestWorkImageAnalysisInput!): WorkNode!
+
+  """モデレーターが画像の自動判定を確認して、区分（G / R15 / R18 / R18G）と公開を決める"""
+  resolveWorkAutoModeration(
+    isPublish: Boolean
+
+    """センシティブのまま（一覧でぼかす）にするか"""
+    keepSensitive: Boolean
+    rating: String!
+    workId: ID!
+  ): Boolean!
 
   """運営からの修正依頼に対応したと返す"""
   respondModerationReport(id: ID!, message: String): Boolean!
@@ -4660,6 +4673,15 @@ type Query {
   """ログインユーザーの作品が受け取ったコメント"""
   receivedWorkComments(limit: Int!, offset: Int!, onlySupportAttached: Boolean): [CommentNode!]!
 
+  """ホームの「おすすめ」。直近 3 日の作品を、ログイン中ならフォロー・いいねの傾向に合わせて並べる（ログインしていなければ反応の勢いと新しさ）"""
+  recommendedFeedWorks(
+    limit: Int!
+    offset: Int!
+
+    """省くと全年齢と R15"""
+    ratings: [Rating!]
+  ): [WorkNode!]!
+
   """推奨タグ一覧（ログインユーザ関係なく）"""
   recommendedTags(limit: Int!, where: RecommendedTagsWhereInput!): [RecommendedTagNode!]!
 
@@ -4680,6 +4702,9 @@ type Query {
 
   """センシティブユーザランキング"""
   sensitiveUserRankings(limit: Int!, offset: Int!, where: UserRankingsWhereInput): [UserRankingNode!]!
+
+  """一覧でぼかす作品の ID（画像の自動判定でセンシティブとしたもの。運営が問題なしとしたものは除く）"""
+  sensitiveWorkIds: [ID!]!
 
   """スタンプ"""
   sticker(id: ID!): StickerNode
@@ -4771,6 +4796,12 @@ type Query {
 
   """作品"""
   work(id: ID!, isUpdateHistory: Boolean): WorkNode
+
+  """モデレーター向け: 画像の自動判定の一覧（statuses を省くと確認待ち・判定違いの連絡あり）"""
+  workAutoModerations(limit: Int!, offset: Int!, statuses: [String!]): [WorkAutoModerationNode!]!
+
+  """モデレーター向け: 画像の自動判定の件数"""
+  workAutoModerationsCount(statuses: [String!]): Int!
 
   """
   ランキング履歴
@@ -6472,6 +6503,48 @@ type WorkActionHistoryNode implements Node {
   workUrl: String
 }
 
+"""画像の自動判定の結果"""
+type WorkAutoModerationNode {
+  analyzedAt: Int
+  appealMessage: String
+  appealedAt: Int
+
+  """自動判定の後の区分"""
+  appliedRating: String
+
+  """自動判定の区分"""
+  detectedRating: String
+
+  """リアルな作風で子どもに見える人物の際どい表現の疑い（一覧でぼかす）"""
+  isChildRisk: Boolean
+
+  """自動判定で一時非公開にしているか"""
+  isHidden: Boolean
+
+  """運営がセンシティブのまま（一覧でぼかす）にしたか"""
+  isKeepSensitive: Boolean
+
+  """性器にモザイクが無い疑い"""
+  isNeedMosaic: Boolean
+
+  """運営が確認して決めた区分"""
+  moderatorRating: String
+
+  """投稿者が選んでいた区分"""
+  previousRating: String
+
+  """画像ごとの判定（モデレーター向け。投稿者には返さない）"""
+  reasonsJson: String
+  resolvedAt: Int
+
+  """
+  NONE: 何もしていない / APPLIED: 区分を厳しくした / REVIEW: 運営の確認待ち / APPEALED: 投稿者から判定違いの連絡あり / RESOLVED: 運営が確認済み
+  """
+  status: String
+  work: WorkNode
+  workId: ID
+}
+
 """アワード（作品）"""
 type WorkAwardNode implements Node {
   dateText: String!
@@ -6634,6 +6707,9 @@ type WorkNode implements Node {
   """シリーズ情報"""
   album: AlbumNode
 
+  """画像の自動判定の結果（投稿者とモデレーターだけ）"""
+  autoModeration: WorkAutoModerationNode
+
   """ブックマーク数"""
   bookmarksCount: Int!
 
@@ -6786,6 +6862,9 @@ type WorkNode implements Node {
 
   """センシティブである"""
   isSensitive: Boolean!
+
+  """画像の自動判定でセンシティブ（リアルな作風で子どもに見える人物の際どい表現の疑い）とした作品。一覧や作品ページでぼかす"""
+  isSensitiveFlagged: Boolean!
 
   """タグ編集許可"""
   isTagEditable: Boolean!
