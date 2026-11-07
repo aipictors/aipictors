@@ -1,21 +1,19 @@
-export { headers, loader } from "~/routes/($lang)._main._index/route"
+import { json, type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare"
+import { Outlet } from "@remix-run/react"
 
-import type { MetaFunction } from "@remix-run/cloudflare"
-import { useOutlet } from "@remix-run/react"
-import { META } from "~/config"
-import { HomeIndexPage } from "~/routes/($lang)._main._index/route"
-import { createMeta } from "~/utils/create-meta"
-
-export const meta: MetaFunction = (props) => {
-  return createMeta(META.HOME_FEED, undefined, props.params.lang)
+/**
+ * 以前の「ピックアップ」（/home）。いまはトップ（/）がホームなので / へ転送する。
+ * 下のページ（/home/recommended）はそのまま出す
+ */
+export async function loader(props: LoaderFunctionArgs) {
+  const url = new URL(props.request.url)
+  const match = url.pathname.match(/^(\/(?:ja|en))?\/home\/?$/)
+  if (match) {
+    return redirect(`${match[1] ?? "/"}${url.search}`, { status: 301 })
+  }
+  return json(null)
 }
 
 export default function HomePage() {
-  const outlet = useOutlet()
-
-  if (outlet) {
-    return outlet
-  }
-
-  return <HomeIndexPage forcedTab="home" />
+  return <Outlet />
 }

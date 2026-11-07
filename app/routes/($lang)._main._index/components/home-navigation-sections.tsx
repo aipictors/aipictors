@@ -1,4 +1,3 @@
-import { toR18Path } from "~/utils/content-mode"
 import {
   ActivityIcon,
   AwardIcon,
@@ -26,6 +25,7 @@ import {
   UsersIcon,
   WandSparklesIcon,
 } from "lucide-react"
+import { toR18Path } from "~/utils/content-mode"
 
 type HomeNavigationItem = {
   key: string
@@ -68,7 +68,7 @@ export function getHomeNavigationSections(
       items: [
         {
           key: "home",
-          href: link("/home"),
+          href: options.isSensitive ? "/r/home" : "/",
           label: ["ホーム", "Home"],
           icon: HomeIcon,
         },

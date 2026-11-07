@@ -790,13 +790,13 @@ export const META: { [key: string]: MetaData } = {
       "The newest AI illustrations, photos and videos posted to Aipictors, many with their prompts.",
     isIndex: true,
   },
-  HOME_FEED: {
-    title: "ピックアップ - ユーザの推薦・前日ランキング・人気タグ",
-    enTitle: "Picks - Recommended by users, daily ranking and popular tags",
+  RECOMMENDED_FEED: {
+    title: "おすすめ - ここ3日の人気・あなた向けのAIイラスト",
+    enTitle: "For you - Popular and personal picks from the last 3 days",
     description:
-      "ユーザから推薦されたAIイラスト、前日ランキング、新規クリエイターの初投稿作品、人気のタグやお題をまとめて見られるAipictorsのピックアップです。",
+      "ここ3日に投稿されたAIイラスト・AI画像から、反応の多い作品やフォロー・いいねに合わせた作品を選んで並べています。",
     enDescription:
-      "AI illustrations recommended by users, yesterday's ranking, first works by new creators, popular tags and themes on Aipictors.",
+      "Popular AI illustrations from the last 3 days, and picks based on your follows and likes.",
     isIndex: true,
   },
   FOLLOW_FEED: {

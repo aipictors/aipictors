@@ -1,5 +1,4 @@
 import type { LoaderFunctionArgs, SerializeFrom } from "@remix-run/cloudflare"
-import { RECOMMENDED_PER_PAGE } from "~/routes/($lang)._main._index/components/recommended-feed-contents"
 import { json, redirect } from "@remix-run/cloudflare"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
@@ -18,6 +17,7 @@ import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/co
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import type { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { RECOMMENDED_PER_PAGE } from "~/routes/($lang)._main._index/components/recommended-feed-contents"
 import { buildHomeEventPreviews } from "~/routes/($lang)._main._index/utils/home-event-previews"
 import {
   createEmptyReleaseList,
@@ -73,15 +73,19 @@ export async function homeLoader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const legacyTab = url.searchParams.get("tab")
   const currentPathLeaf = url.pathname.split("/").filter(Boolean).at(-1) ?? ""
-  const isHomeRoute = currentPathLeaf === "home"
+  const isRecommendedRoute = currentPathLeaf === "recommended"
   const isFollowUserRoute = currentPathLeaf === "follow-user-works"
   const isFollowTagRoute = currentPathLeaf === "follow-tag-works"
   const isNewWorksRoute = currentPathLeaf === "new-works"
-  const isDefaultTopRoute =
-    !isHomeRoute && !isFollowUserRoute && !isFollowTagRoute
+  // トップ（/）がホーム（推薦・ランキングなどの欄）
+  const isHomeRoute =
+    !isRecommendedRoute &&
+    !isFollowUserRoute &&
+    !isFollowTagRoute &&
+    !isNewWorksRoute
 
   if (
-    legacyTab === "home" ||
+    legacyTab === "recommended" ||
     legacyTab === "new" ||
     legacyTab === "follow-user" ||
     legacyTab === "follow-tag"
@@ -137,7 +141,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
   })
 
   if (!isHomeRoute) {
-    if (!isDefaultTopRoute) {
+    if (isFollowUserRoute || isFollowTagRoute) {
       return json(baseLoaderData, {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
@@ -145,8 +149,8 @@ export async function homeLoader(props: LoaderFunctionArgs) {
       })
     }
 
-    // トップ（/）は「おすすめ」。ログインしていない人向けの並びをサーバーで取って、最初の表示に使う
-    if (!isNewWorksRoute) {
+    // おすすめ（/recommended）は、ログインしていない人向けの並びをサーバーで取って、最初の表示に使う
+    if (isRecommendedRoute) {
       const recommendedResult = await loaderClient.query({
         query: initialRecommendedWorksQuery,
         errorPolicy: "all",

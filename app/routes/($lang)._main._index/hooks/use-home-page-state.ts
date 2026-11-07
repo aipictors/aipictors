@@ -1,5 +1,5 @@
-import type { FragmentOf } from "gql.tada"
 import { useSearchParams } from "@remix-run/react"
+import type { FragmentOf } from "gql.tada"
 import {
   startTransition,
   useContext,
@@ -51,7 +51,7 @@ export function useHomePageState(props: {
 
   const markFollowFeedAsSeen = followFeedNew.markAsSeen
 
-  const currentTab = props.forcedTab ?? "recommended"
+  const currentTab = props.forcedTab ?? "home"
 
   useEffect(() => {
     if (currentTab === "follow-user") {

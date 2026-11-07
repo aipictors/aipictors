@@ -18,8 +18,8 @@ import {
 } from "~/routes/($lang)._main._index/components/home-follow-tab-contents"
 import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeNewTabContent } from "~/routes/($lang)._main._index/components/home-new-tab-content"
-import { HomeRecommendedTabContent } from "~/routes/($lang)._main._index/components/home-recommended-tab-content"
 import { HomeRecentSupportHistory } from "~/routes/($lang)._main._index/components/home-recent-support-history"
+import { HomeRecommendedTabContent } from "~/routes/($lang)._main._index/components/home-recommended-tab-content"
 import { homeLoader } from "~/routes/($lang)._main._index/home-loader.server"
 import { useHomePageState } from "~/routes/($lang)._main._index/hooks/use-home-page-state"
 import {
@@ -99,9 +99,9 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               <AppAnimatedTabs
                 tabs={[
                   {
-                    label: t("おすすめ", "For you"),
-                    value: "recommended",
-                    href: HOME_TAB_PATHS.recommended,
+                    label: t("ホーム", "Home"),
+                    value: "home",
+                    href: HOME_TAB_PATHS.home,
                   },
                   // フォロー中・お気に入りタグはログインしている人だけ（ログインしていないと中身が無い）
                   ...(isLoggedIn || currentTab === "follow-user"
@@ -123,9 +123,9 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                       ]
                     : []),
                   {
-                    label: t("新着", "New"),
-                    value: "new",
-                    href: HOME_TAB_PATHS.new,
+                    label: t("おすすめ", "For you"),
+                    value: "recommended",
+                    href: HOME_TAB_PATHS.recommended,
                   },
                   ...(isLoggedIn || currentTab === "follow-tag"
                     ? [
@@ -142,9 +142,9 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                     href: "/rankings",
                   },
                   {
-                    label: t("ピックアップ", "Picks"),
-                    value: "home",
-                    href: HOME_TAB_PATHS.home,
+                    label: t("新着", "New"),
+                    value: "new",
+                    href: HOME_TAB_PATHS.new,
                   },
                 ]}
                 value={currentTab}
@@ -153,10 +153,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             </div>
           </div>
         </div>
-        {/* ---------------------- タブ: おすすめ（メイン） ---------------------- */}
-        <HomeRecommendedTabContent {...state} data={data} />
-        {/* ---------------------- タブ: ピックアップ（推薦・ランキングなどの欄） ---------------------- */}
+        {/* ---------------------- タブ: ホーム（推薦・ランキングなどの欄） ---------------------- */}
         <HomeFeedTabContent {...state} data={data} />
+        {/* ---------------------- タブ: おすすめ ---------------------- */}
+        <HomeRecommendedTabContent {...state} data={data} />
         {/* ---------------------- タブ: 新着・人気 ---------------------- */}
         <HomeNewTabContent {...state} checkboxId={checkboxId} data={data} />
         {/* ---------------------- タブ: フォロー中のユーザ ---------------------- */}
@@ -181,7 +181,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 }
 
 export default function Index() {
-  return <HomeIndexPage forcedTab="recommended" />
+  return <HomeIndexPage forcedTab="home" />
 }
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => ({

@@ -1,7 +1,6 @@
 import { useApolloClient, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { EyeOffIcon, Loader2Icon, SparklesIcon } from "lucide-react"
-import { toast } from "sonner"
 import {
   Fragment,
   useCallback,
@@ -11,16 +10,18 @@ import {
   useRef,
   useState,
 } from "react"
+import { toast } from "sonner"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
+import { useGridLayout } from "~/hooks/use-grid-layout"
 import { useTranslation } from "~/hooks/use-translation"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
-import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
 import { HomeGuestJoinCard } from "~/routes/($lang)._main._index/components/home-guest-join-card"
+import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
 import { RecommendedFeedShelf } from "~/routes/($lang)._main._index/components/recommended-feed-shelf"
 import { useFeedEvents } from "~/routes/($lang)._main._index/hooks/use-feed-events"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
@@ -47,6 +48,7 @@ export function RecommendedFeedContents(props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const viewerRatings = useViewerRatings()
+  const isSquare = useGridLayout().gridLayout === "square"
 
   // おすすめは全年齢・R15 の中から（R18 は R18 のページで見る）
   const ratings = useMemo(
@@ -153,6 +155,32 @@ export function RecommendedFeedContents(props: Props) {
     return result
   }, [works])
 
+  /** 一覧の position 件目の前に差し込む棚 */
+  const renderShelf = (position: number) => {
+    if (position === SHELF_AT[0]) {
+      return (
+        <>
+          {authContext.isNotLoggedIn && <HomeGuestJoinCard />}
+          <RecommendedFeedShelf
+            type="FOLLOW_USER"
+            title={t("フォロー新着", "From people you follow")}
+            link="/follow-user-works"
+          />
+        </>
+      )
+    }
+    if (position === SHELF_AT[1]) {
+      return (
+        <RecommendedFeedShelf
+          type="FOLLOW_TAG"
+          title={t("お気に入りタグの新着", "From your favorite tags")}
+          link="/follow-tag-works"
+        />
+      )
+    }
+    return null
+  }
+
   const { updateWorks } = props
   useEffect(() => {
     updateWorks?.(works)
@@ -242,34 +270,34 @@ export function RecommendedFeedContents(props: Props) {
           if (workId) feedEvents.record(workId, "CLICK")
         }}
       >
-        {chunks.map((chunk, index) => (
-          <Fragment key={chunk[0]?.id ?? index}>
-            <ResponsivePhotoWorksAlbum
-              works={chunk}
-              isShowProfile={true}
-              onSelect={onSelect}
-              priorityCount={index === 0 ? 8 : 0}
-              renderItemOverlay={renderHideButton}
-            />
-            {index === 0 && chunks.length > 1 && authContext.isNotLoggedIn && (
-              <HomeGuestJoinCard />
-            )}
-            {index === 0 && chunks.length > 1 && (
-              <RecommendedFeedShelf
-                type="FOLLOW_USER"
-                title={t("フォロー新着", "From people you follow")}
-                link="/follow-user-works"
+        {isSquare ? (
+          // 正方形は 1 つの格子に棚を差し込む（区切りで最後の行が埋まらず穴が空かないよう、後ろの作品で詰める）
+          <ResponsivePhotoWorksAlbum
+            works={works}
+            isShowProfile={true}
+            onSelect={onSelect}
+            priorityCount={8}
+            renderItemOverlay={renderHideButton}
+            renderAfterItem={(index) =>
+              index + 1 < works.length ? renderShelf(index + 1) : null
+            }
+          />
+        ) : (
+          chunks.map((chunk, index) => (
+            <Fragment key={chunk[0]?.id ?? index}>
+              <ResponsivePhotoWorksAlbum
+                works={chunk}
+                isShowProfile={true}
+                onSelect={onSelect}
+                priorityCount={index === 0 ? 8 : 0}
+                renderItemOverlay={renderHideButton}
               />
-            )}
-            {index === 1 && chunks.length > 2 && (
-              <RecommendedFeedShelf
-                type="FOLLOW_TAG"
-                title={t("お気に入りタグの新着", "From your favorite tags")}
-                link="/follow-tag-works"
-              />
-            )}
-          </Fragment>
-        ))}
+              {index < chunks.length - 1 && (
+                <div className="space-y-4">{renderShelf(SHELF_AT[index])}</div>
+              )}
+            </Fragment>
+          ))
+        )}
       </div>
       <div ref={sentinelRef} className="h-10" />
       {isLoadingMore && (

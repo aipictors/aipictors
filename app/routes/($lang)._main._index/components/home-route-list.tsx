@@ -1,6 +1,5 @@
 import { gql, useLazyQuery } from "@apollo/client/index"
 import { useLocation, useNavigation } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -18,6 +17,7 @@ import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { getHomeNavigationSections } from "~/routes/($lang)._main._index/components/home-navigation-sections"
 
@@ -80,7 +80,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         <MenuIcon className="size-5" />
       </Button>
       <Link
-        to={getSensitiveLink("/home")}
+        to={sensitivePath ? "/r/home" : "/"}
         className="flex h-10 items-center gap-2 rounded-lg px-2 transition-colors hover:bg-muted"
       >
         {navigation.state === "loading" ? (

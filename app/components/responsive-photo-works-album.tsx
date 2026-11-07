@@ -1,4 +1,5 @@
 import { type FragmentOf, graphql } from "gql.tada"
+import { Fragment } from "react"
 import { Heart, Images, MessageCircle } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { HoverVideoImage } from "~/components/hover-video-image"
@@ -43,6 +44,11 @@ type Props = {
   fillRows?: boolean
   /** 作品の画像の上に重ねるもの（おすすめの「興味なし」など） */
   renderItemOverlay?: (workId: string) => React.ReactNode
+  /**
+   * 正方形のとき、index 番目の作品の後ろに横幅いっぱいの欄を差し込む（おすすめの途中の棚など）。
+   * 差し込んだ欄の手前の行が埋まらないときは、後ろの作品を詰めて穴を空けない
+   */
+  renderAfterItem?: (index: number) => React.ReactNode
 }
 
 /** 正方形で並べるときの列数（スマホ 2・PC は画面幅に合わせて 4〜6） */
@@ -73,128 +79,140 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
   if (isFew || isSquare) {
     return (
       <div
-        className={
+        className={cn(
           isFew
             ? "grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4"
-            : SQUARE_GRID_CLASS
-        }
+            : SQUARE_GRID_CLASS,
+          // 差し込んだ欄の手前に空いたマスを、後ろの作品で埋める
+          props.renderAfterItem && "grid-flow-row-dense",
+        )}
       >
         {props.works.map((workItem, index) => {
+          const after = props.renderAfterItem?.(index)
           return (
-            <div
-              key={workItem.id.toString()}
-              data-work-id={workItem.id}
-              className={cn(
-                "group/item relative flex min-w-0 flex-col gap-1.5",
-                props.fillRows &&
-                  !isFew &&
-                  incompleteRowHiddenClassName(
-                    index,
-                    props.works.length,
-                    SQUARE_GRID_BREAKPOINTS,
-                  ),
-              )}
-            >
-              <div className="relative">
-                <CroppedWorkSquare
-                  isPriority={index < (props.priorityCount ?? 0)}
-                  isLowPriority={
-                    props.priorityCount !== undefined &&
-                    index >= props.priorityCount
-                  }
-                  title={t.workTitle(workItem.title, workItem.enTitle)}
-                  workId={workItem.id}
-                  subWorksCount={workItem.subWorksCount}
-                  commentsCount={workItem.commentsCount}
-                  imageUrl={workItem.smallThumbnailImageURL}
-                  videoUrl={workItem.url}
-                  streamUid={workItem.streamUid}
-                  isAutoPlay={props.autoPlayVideoPreview}
-                  thumbnailImagePosition={workItem.thumbnailImagePosition ?? 0}
-                  size="auto"
-                  displayWidth={isFew ? undefined : SQUARE_GRID_SIZES}
-                  onSelect={props.onSelect}
-                  imageWidth={workItem.smallThumbnailImageWidth}
-                  imageHeight={workItem.smallThumbnailImageHeight}
-                  isPromptPublic={
-                    workItem.promptAccessType === "PUBLIC" ||
-                    workItem.isGeneration
-                  }
-                  hasVideoUrl={Boolean(workItem.url || workItem.streamUid)}
-                  shouldMaskSensitive={
-                    props.shouldMaskSensitiveWorks === true &&
-                    isSensitiveWork(workItem)
-                  }
-                />
-                {workItem.isPromotion && (
-                  <WorkPromotionMark className="absolute top-1.5 left-1.5" />
+            <Fragment key={workItem.id.toString()}>
+              <div
+                data-work-id={workItem.id}
+                className={cn(
+                  "group/item relative flex min-w-0 flex-col gap-1.5",
+                  props.fillRows &&
+                    !isFew &&
+                    incompleteRowHiddenClassName(
+                      index,
+                      props.works.length,
+                      SQUARE_GRID_BREAKPOINTS,
+                    ),
                 )}
-                {props.renderItemOverlay?.(workItem.id.toString())}
-                <div className="absolute right-0 bottom-0">
-                  <LikeButton
-                    size={56}
-                    targetWorkId={workItem.id}
-                    targetWorkOwnerUserId={workItem.user?.id ?? ""}
-                    defaultLiked={workItem.isLiked}
-                    defaultLikedCount={0}
-                    isBackgroundNone={true}
-                    strokeWidth={2}
+              >
+                <div className="relative">
+                  <CroppedWorkSquare
+                    isPriority={index < (props.priorityCount ?? 0)}
+                    isLowPriority={
+                      props.priorityCount !== undefined &&
+                      index >= props.priorityCount
+                    }
+                    title={t.workTitle(workItem.title, workItem.enTitle)}
+                    workId={workItem.id}
+                    subWorksCount={workItem.subWorksCount}
+                    commentsCount={workItem.commentsCount}
+                    imageUrl={workItem.smallThumbnailImageURL}
+                    videoUrl={workItem.url}
+                    streamUid={workItem.streamUid}
+                    isAutoPlay={props.autoPlayVideoPreview}
+                    thumbnailImagePosition={
+                      workItem.thumbnailImagePosition ?? 0
+                    }
+                    size="auto"
+                    displayWidth={isFew ? undefined : SQUARE_GRID_SIZES}
+                    onSelect={props.onSelect}
+                    imageWidth={workItem.smallThumbnailImageWidth}
+                    imageHeight={workItem.smallThumbnailImageHeight}
+                    isPromptPublic={
+                      workItem.promptAccessType === "PUBLIC" ||
+                      workItem.isGeneration
+                    }
+                    hasVideoUrl={Boolean(workItem.url || workItem.streamUid)}
+                    shouldMaskSensitive={
+                      props.shouldMaskSensitiveWorks === true &&
+                      isSensitiveWork(workItem)
+                    }
                   />
-                </div>
-              </div>
-              {props.isShowProfile && (
-                <div className="flex min-w-0 flex-col gap-1">
-                  {props.onSelect ? (
-                    <button
-                      type="button"
-                      className="min-w-0 cursor-pointer text-left font-bold"
-                      onClick={() => props.onSelect?.(workItem.id.toString())}
-                      aria-label={`Open ${t.workTitle(workItem.title, workItem.enTitle)}`}
-                    >
-                      <p className="truncate text-sm">
-                        {t.workTitle(workItem.title, workItem.enTitle)}
-                      </p>
-                    </button>
-                  ) : (
-                    <Link
-                      className="min-w-0 font-bold hover:underline"
-                      to={`/posts/${workItem.id}`}
-                    >
-                      <p className="truncate text-sm">
-                        {t.workTitle(workItem.title, workItem.enTitle)}
-                      </p>
-                    </Link>
+                  {workItem.isPromotion && (
+                    <WorkPromotionMark className="absolute top-1.5 left-1.5" />
                   )}
-                  {workItem.user && (
-                    <div className="flex min-w-0 items-center justify-between gap-2">
-                      <Link
-                        className="min-w-0"
-                        to={`${props.userLinkPrefix || "/users"}/${workItem.user.id}`}
+                  {props.renderItemOverlay?.(workItem.id.toString())}
+                  <div className="absolute right-0 bottom-0">
+                    <LikeButton
+                      size={56}
+                      targetWorkId={workItem.id}
+                      targetWorkOwnerUserId={workItem.user?.id ?? ""}
+                      defaultLiked={workItem.isLiked}
+                      defaultLikedCount={0}
+                      isBackgroundNone={true}
+                      strokeWidth={2}
+                    />
+                  </div>
+                </div>
+                {props.isShowProfile && (
+                  <div className="flex min-w-0 flex-col gap-1">
+                    {props.onSelect ? (
+                      <button
+                        type="button"
+                        className="min-w-0 cursor-pointer text-left font-bold"
+                        onClick={() => props.onSelect?.(workItem.id.toString())}
+                        aria-label={`Open ${t.workTitle(workItem.title, workItem.enTitle)}`}
                       >
-                        <div className="flex min-w-0 items-center gap-1.5">
-                          <UserAvatarWithFrame
-                            alt={workItem.user.name}
-                            frame={workItem.user.avatarFrame}
-                            isAnimated={false}
-                            sizeClassName="size-5"
-                            src={withIconUrlFallback(workItem.user.iconUrl)}
-                          />
-                          <span className="truncate text-muted-foreground text-xs">
-                            {workItem.user.name}
+                        <p className="truncate text-sm">
+                          {t.workTitle(workItem.title, workItem.enTitle)}
+                        </p>
+                      </button>
+                    ) : (
+                      <Link
+                        className="min-w-0 font-bold hover:underline"
+                        to={`/posts/${workItem.id}`}
+                      >
+                        <p className="truncate text-sm">
+                          {t.workTitle(workItem.title, workItem.enTitle)}
+                        </p>
+                      </Link>
+                    )}
+                    {workItem.user && (
+                      <div className="flex min-w-0 items-center justify-between gap-2">
+                        <Link
+                          className="min-w-0"
+                          to={`${props.userLinkPrefix || "/users"}/${workItem.user.id}`}
+                        >
+                          <div className="flex min-w-0 items-center gap-1.5">
+                            <UserAvatarWithFrame
+                              alt={workItem.user.name}
+                              frame={workItem.user.avatarFrame}
+                              isAnimated={false}
+                              sizeClassName="size-5"
+                              src={withIconUrlFallback(workItem.user.iconUrl)}
+                            />
+                            <span className="truncate text-muted-foreground text-xs">
+                              {workItem.user.name}
+                            </span>
+                          </div>
+                        </Link>
+                        <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                          <Heart className="size-3 fill-current" />
+                          <span className="text-xs tabular-nums">
+                            {workItem.likesCount}
                           </span>
                         </div>
-                      </Link>
-                      <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
-                        <Heart className="size-3 fill-current" />
-                        <span className="text-xs tabular-nums">
-                          {workItem.likesCount}
-                        </span>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                )}
+              </div>
+              {after !== undefined && after !== null && after !== false && (
+                // 中身が無いとき（棚に作品が無いなど）は行ごと消す
+                <div className="col-span-full min-w-0 space-y-4 empty:hidden">
+                  {after}
                 </div>
               )}
-            </div>
+            </Fragment>
           )
         })}
       </div>

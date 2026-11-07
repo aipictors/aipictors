@@ -1,6 +1,5 @@
 import { gql, useMutation } from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
-import { useNavigate } from "~/lib/app/locale-router"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { Loader2Icon } from "lucide-react"
 import { useContext, useEffect, useRef, useState } from "react"
@@ -8,6 +7,7 @@ import { LoginDialogContent } from "~/components/login-dialog-content"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { useNavigate } from "~/lib/app/locale-router"
 import { rememberLoginNext, takeLoginNext } from "~/utils/login-flow"
 
 /**
@@ -34,7 +34,7 @@ export function LoginForm() {
   )
 
   const onClickHome = () => {
-    window.location.href = "/home"
+    window.location.href = "/"
   }
 
   const navigate = useNavigate()
@@ -64,7 +64,7 @@ export function LoginForm() {
 
     const goNext = (isInitialized: boolean) => {
       const next = takeLoginNext()
-      navigate(isInitialized ? (next ?? "/home") : "/new/profile", {
+      navigate(isInitialized ? (next ?? "/") : "/new/profile", {
         replace: true,
       })
     }
