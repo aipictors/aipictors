@@ -22,6 +22,7 @@ import { GenerationTaskRatingButton } from "~/routes/($lang).generation._index/c
 import { GenerationTaskZoomUpButton } from "~/routes/($lang).generation._index/components/generation-task-zoom-up-button"
 import { InProgressGenerationCard } from "~/routes/($lang).generation._index/components/in-progress-generation-card"
 import { ReservedGenerationCard } from "~/routes/($lang).generation._index/components/reserved-generation-card"
+import { useGenerationMaintenance } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
@@ -68,6 +69,8 @@ export function GenerationTaskEditableCard(props: Props) {
   const context = useGenerationContext()
 
   const data = useGenerationQuery()
+
+  const generationMaintenance = useGenerationMaintenance()
 
   const [isHovered, setIsHovered] = useState(false)
 
@@ -171,6 +174,11 @@ export function GenerationTaskEditableCard(props: Props) {
   }
 
   const onRetryTask = async () => {
+    if (generationMaintenance.enabled) {
+      toast("画像生成はメンテナンス中です")
+      return
+    }
+
     if (props.taskNanoid === null) {
       toast("リトライ対象が見つかりません。")
       return

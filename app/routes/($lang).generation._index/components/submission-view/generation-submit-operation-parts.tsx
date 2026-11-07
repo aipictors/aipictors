@@ -40,6 +40,8 @@ type Props = {
   premiumCoinBalance: number
   termsText: string
   availableImageGenerationMaxTasksCount: number
+  /** 画像生成のメンテナンス中（生成ボタンを押せなくする） */
+  isMaintenance?: boolean
   onCreateTask: () => void
   onSignTerms: () => void
 }
@@ -282,6 +284,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                   <GradientBlueButton
                     onClick={() => {}}
                     className="w-full text-balance"
+                    disabled={props.isMaintenance === true}
                     isNoBackground={true}
                   >
                     <div className="flex items-center">
@@ -310,7 +313,9 @@ export function GenerationSubmitOperationParts(props: Props) {
                 onSubmit={props.onSignTerms}
                 triggerChildren={
                   <GradientBorderButton
-                    disabled={props.isCreatingTask}
+                    disabled={
+                      props.isCreatingTask || props.isMaintenance === true
+                    }
                     onClick={() => {}}
                     className="w-full text-balance"
                     isNoBackground={true}
@@ -331,18 +336,24 @@ export function GenerationSubmitOperationParts(props: Props) {
                 await props.onCreateTask()
               }}
               isLoading={props.isCreatingTask}
-              isDisabled={context.config.isDisabled}
+              isDisabled={
+                context.config.isDisabled || props.isMaintenance === true
+              }
               isCoinSummaryLoading={props.isCoinSummaryLoading}
               requestCoinCost={props.requestCoinCost}
               ownedCoinCount={props.ownedCoinCount}
-              buttonActionCaption={withImageCount(
-                getSubmitButtonLabel(
-                  !!context.config.i2iImageBase64,
-                  context.config.promptText,
-                  context.config.seed,
-                  generatingCount,
-                ),
-              )}
+              buttonActionCaption={
+                props.isMaintenance === true
+                  ? t("メンテナンス中", "Under maintenance")
+                  : withImageCount(
+                      getSubmitButtonLabel(
+                        !!context.config.i2iImageBase64,
+                        context.config.promptText,
+                        context.config.seed,
+                        generatingCount,
+                      ),
+                    )
+              }
             />
           )}
         {/* プレミアム以外（コインが足りないときは送る前にプラン・コイン購入の案内を出すので、ここでは案内しない） */}
@@ -383,18 +394,24 @@ export function GenerationSubmitOperationParts(props: Props) {
                   await props.onCreateTask()
                 }}
                 isLoading={props.isCreatingTask}
-                isDisabled={context.config.isDisabled}
+                isDisabled={
+                  context.config.isDisabled || props.isMaintenance === true
+                }
                 isCoinSummaryLoading={props.isCoinSummaryLoading}
                 requestCoinCost={props.requestCoinCost}
                 ownedCoinCount={props.ownedCoinCount}
-                buttonActionCaption={withImageCount(
-                  getSubmitButtonLabel(
-                    !!context.config.i2iImageBase64,
-                    context.config.promptText,
-                    context.config.seed,
-                    generatingCount,
-                  ),
-                )}
+                buttonActionCaption={
+                  props.isMaintenance === true
+                    ? t("メンテナンス中", "Under maintenance")
+                    : withImageCount(
+                        getSubmitButtonLabel(
+                          !!context.config.i2iImageBase64,
+                          context.config.promptText,
+                          context.config.seed,
+                          generatingCount,
+                        ),
+                      )
+                }
               />
             </div>
           )}

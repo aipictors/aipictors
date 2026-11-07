@@ -83,8 +83,12 @@ export async function loader() {
   }
 }
 
-export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.short,
+export const headers: HeadersFunction = ({ parentHeaders }) => ({
+  // 画像生成のメンテナンス中は親（生成画面の枠）が no-store にする
+  "Cache-Control":
+    parentHeaders.get("Cache-Control") === "no-store"
+      ? "no-store"
+      : config.cacheControl.short,
 })
 
 export function HydrateFallback() {

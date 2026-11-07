@@ -12,6 +12,17 @@ import {
   shouldWaitForInteraction,
 } from "../app/lib/defer-hydration"
 import { createEdgePageCache } from "../app/lib/edge-page-cache"
+import {
+  createSiteMaintenanceHtml,
+  GENERATION_MAINTENANCE_KV_KEY,
+  getMaintenanceRetryAfter,
+  hasMaintenanceBypass,
+  MAINTENANCE_BYPASS_COOKIE,
+  MAINTENANCE_BYPASS_PARAM,
+  type MaintenanceFlag,
+  readMaintenanceFlag,
+  SITE_MAINTENANCE_KV_KEY,
+} from "../app/lib/maintenance-mode"
 import { checkLocaleRedirect } from "../app/utils/check-locale-redirect"
 import { getLegacyRedirectPath } from "../app/utils/legacy-redirect"
 import {
@@ -497,6 +508,77 @@ const getMaintenanceStatus = async (
   }
 }
 
+/** 生成画面（/generation 以下、ページのデータの .data も） */
+const GENERATION_PAGE_PATH = /^\/(?:(?:ja|en)\/)?generation(?:[/.]|$)/
+
+/** メンテナンス中にページではなく JSON を返すもの（API・ページのデータ・送信） */
+const isMaintenanceJsonRequest = (request: Request, url: URL): boolean => {
+  const method = request.method.toUpperCase()
+  if (method !== "GET" && method !== "HEAD") return true
+  if (NON_PAGE_PATH.test(url.pathname)) return true
+  if (url.pathname.endsWith(".data") || url.searchParams.has("_data")) {
+    return true
+  }
+  return !isHtmlNavigationRequest(request)
+}
+
+const createSiteMaintenanceResponse = (
+  request: Request,
+  url: URL,
+  flag: MaintenanceFlag,
+): Response => {
+  const headers = {
+    "Cache-Control": "no-store",
+    "Retry-After": String(getMaintenanceRetryAfter(flag)),
+    "X-Robots-Tag": "noindex, nofollow, noarchive",
+  }
+  if (isMaintenanceJsonRequest(request, url)) {
+    return new Response(
+      JSON.stringify({
+        error: "MAINTENANCE",
+        message: flag.message ?? "ただいまメンテナンス中です。",
+        endsAt: flag.endsAt,
+      }),
+      {
+        status: 503,
+        headers: { ...headers, "Content-Type": "application/json" },
+      },
+    )
+  }
+  return new Response(
+    request.method.toUpperCase() === "HEAD"
+      ? null
+      : createSiteMaintenanceHtml(flag),
+    {
+      status: 503,
+      headers: { ...headers, "Content-Type": "text/html; charset=utf-8" },
+    },
+  )
+}
+
+/**
+ * ?maintenance_bypass=<bypassToken> で確認用の cookie を付け、引数を外した URL へ戻す
+ */
+const createMaintenanceBypassResponse = (
+  url: URL,
+  flag: MaintenanceFlag,
+): Response | null => {
+  const token = url.searchParams.get(MAINTENANCE_BYPASS_PARAM)
+  if (token === null || flag.bypassToken === null) return null
+  if (token !== flag.bypassToken) return null
+  const next = new URL(url)
+  next.searchParams.delete(MAINTENANCE_BYPASS_PARAM)
+  const isSecure = url.protocol === "https:"
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: `${next.pathname}${next.search}`,
+      "Cache-Control": "no-store",
+      "Set-Cookie": `${MAINTENANCE_BYPASS_COOKIE}=${encodeURIComponent(token)}; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax${isSecure ? "; Secure" : ""}`,
+    },
+  })
+}
+
 export const onRequest: PagesFunction = async (ctx) => {
   // 画像の縮小版は画像の Worker にそのまま渡す（app/utils/resized-image-url.ts）
   const imageResize = (
@@ -646,10 +728,34 @@ export const onRequest: PagesFunction = async (ctx) => {
     }
   }
 
+  // KV の maintenance:site（docs/maintenance-mode.md）。API の maintenanceStatus より先に見る
+  // （DB の移行中は API が止まるので、API に問い合わせずに出せるようにする）
+  const siteMaintenance = await readMaintenanceFlag(
+    ctx.env,
+    SITE_MAINTENANCE_KV_KEY,
+  )
+  const isMaintenanceBypassed =
+    siteMaintenance.enabled &&
+    hasMaintenanceBypass(ctx.request, siteMaintenance)
+  if (siteMaintenance.enabled && !isMaintenanceBypassed) {
+    const bypassResponse = createMaintenanceBypassResponse(
+      requestUrl,
+      siteMaintenance,
+    )
+    if (bypassResponse) return bypassResponse
+    return createSiteMaintenanceResponse(
+      ctx.request,
+      requestUrl,
+      siteMaintenance,
+    )
+  }
+
   // メンテナンスモード時はSEOに配慮して 503 を返す（noindex + Retry-After）
   // NOTE: リダイレクトではなく同一URLでメンテ表示することで、検索エンジンへ
   // 「一時的な停止」であることを正しく伝えやすくする。
-  const { isMaintenance, message } = await getMaintenanceStatus(ctx)
+  const { isMaintenance, message } = isMaintenanceBypassed
+    ? { isMaintenance: false, message: null }
+    : await getMaintenanceStatus(ctx)
   if (isMaintenance) {
     if (isHtmlNavigationRequest(ctx.request)) {
       return new Response(createMaintenanceHtml(message), {
@@ -888,6 +994,17 @@ export const onRequest: PagesFunction = async (ctx) => {
       criticalCssSource as CriticalCssSource,
       { deferStylesheets: shouldWaitForInteraction(requestUrl.pathname) },
     )
+  // 画像生成のメンテナンス中は、生成画面をキャッシュから返さない（帯の出ていない画面を返さないため）。
+  // メンテナンス中に描画した画面は loader が no-store にするので保存されない
+  // 運営がメンテナンス中に確認する画面も、移行途中の内容を再開後に返さないようキャッシュしない
+  if (isMaintenanceBypassed) return render()
+  if (
+    GENERATION_PAGE_PATH.test(requestUrl.pathname) &&
+    (await readMaintenanceFlag(ctx.env, GENERATION_MAINTENANCE_KV_KEY)).enabled
+  ) {
+    return render()
+  }
+
   if (!ADMIN_HOSTNAMES.has(requestUrl.hostname)) {
     // 全拠点共通の KV にはローダーのデータも一緒に置き、返す拠点に戻す
     return edgePageCache.handle(ctx, render, {

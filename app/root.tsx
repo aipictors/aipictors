@@ -32,6 +32,11 @@ import {
 } from "~/utils/header-user-snapshot"
 import { PAGE_VIEW_INLINE_SCRIPT, trackPageView } from "~/utils/page-view"
 import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
+import {
+  hasMaintenanceBypass,
+  readMaintenanceFlag,
+  SITE_MAINTENANCE_KV_KEY,
+} from "~/lib/maintenance-mode"
 import { type GridLayout, getGridLayout } from "~/utils/grid-layout"
 import { toLocalePathname } from "~/lib/app/locale-router"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
@@ -232,7 +237,11 @@ const getMaintenanceStatus = async (): Promise<RootLoaderData> => {
 /** ($lang) に入ってよい値。それ以外は存在しないページ（/xyz がトップとして 200 を返していた） */
 const VALID_LANG_PARAMS = new Set(["ja", "en", "r"])
 
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({
+  request,
+  params,
+  context,
+}: LoaderFunctionArgs) => {
   const url = new URL(request.url)
 
   if (
@@ -263,7 +272,15 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     }
   }
 
-  const maintenanceStatus = await getMaintenanceStatus()
+  // KV の maintenance:site の確認用 cookie があれば、API のメンテナンス表示も出さない（functions/[[path]].ts と同じ）
+  const siteMaintenance = await readMaintenanceFlag(
+    context.cloudflare?.env,
+    SITE_MAINTENANCE_KV_KEY,
+  )
+  const maintenanceStatus =
+    siteMaintenance.enabled && hasMaintenanceBypass(request, siteMaintenance)
+      ? defaultRootLoaderData
+      : await getMaintenanceStatus()
 
   if (maintenanceStatus.isMaintenance) {
     return json<RootLoaderData>(maintenanceStatus, {

@@ -9,26 +9,54 @@ import {
 } from "~/routes/($lang).generation._index/components/generation-query-provider"
 import { SidebarProvider } from "~/components/sidebar-provider"
 import { isApolloError } from "@apollo/client/errors"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import {
+  type HeadersFunction,
+  json,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+} from "@remix-run/cloudflare"
 import { Outlet, useLoaderData } from "@remix-run/react"
 import { Suspense } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
+import {
+  GENERATION_MAINTENANCE_KV_KEY,
+  readMaintenanceFlag,
+  toPublicMaintenanceFlag,
+} from "~/lib/maintenance-mode"
+import {
+  GenerationMaintenanceBanner,
+  GenerationNoticeProvider,
+} from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.GENERATION, undefined, props.params.lang)
 }
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
   try {
-    const result = await loaderClient.query({
-      query: GenerationQueryContextQuery,
-      variables: {},
-    })
+    // 画像生成のメンテナンス（KV の maintenance:generation、docs/maintenance-mode.md）
+    const [result, generationMaintenance] = await Promise.all([
+      loaderClient.query({
+        query: GenerationQueryContextQuery,
+        variables: {},
+      }),
+      readMaintenanceFlag(
+        props.context.cloudflare?.env,
+        GENERATION_MAINTENANCE_KV_KEY,
+      ),
+    ])
 
-    return {
-      data: result.data,
-    }
+    return json(
+      {
+        data: result.data,
+        generationMaintenance: toPublicMaintenanceFlag(generationMaintenance),
+      },
+      // メンテナンス中の画面は拠点のキャッシュに置かない（終わったあとに帯が残らないように）
+      generationMaintenance.enabled
+        ? { headers: { "Cache-Control": "no-store" } }
+        : undefined,
+    )
   } catch (error) {
     if (error instanceof Error && isApolloError(error)) {
       throw new Response(error.message, { status: 500 })
@@ -40,8 +68,9 @@ export async function loader() {
   }
 }
 
-export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneDay,
+export const headers: HeadersFunction = ({ loaderHeaders }) => ({
+  "Cache-Control":
+    loaderHeaders.get("Cache-Control") ?? config.cacheControl.oneDay,
 })
 
 export function HydrateFallback () {
@@ -64,15 +93,18 @@ export default function GenerationLayout () {
         showPcSheetMenu={true}
         title={t("Aipictors画像生成", "Aipictors Generator")}
       />
-      <Suspense fallback={<AppLoadingPage />}>
-        <GenerationQueryProvider generationQueryContext={data.data}>
-          <GenerationConfigProvider>
-            <div className="container max-w-none px-4">
-              <Outlet />
-            </div>
-          </GenerationConfigProvider>
-        </GenerationQueryProvider>
-      </Suspense>
+      <GenerationNoticeProvider initialMaintenance={data.generationMaintenance}>
+        <GenerationMaintenanceBanner />
+        <Suspense fallback={<AppLoadingPage />}>
+          <GenerationQueryProvider generationQueryContext={data.data}>
+            <GenerationConfigProvider>
+              <div className="container max-w-none px-4">
+                <Outlet />
+              </div>
+            </GenerationConfigProvider>
+          </GenerationQueryProvider>
+        </Suspense>
+      </GenerationNoticeProvider>
     </SidebarProvider>
   )
 }

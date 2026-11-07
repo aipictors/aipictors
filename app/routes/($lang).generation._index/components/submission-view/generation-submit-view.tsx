@@ -14,6 +14,7 @@ import { GenerationCoinShortageDialog } from "~/routes/($lang).generation._index
 import {
   GenerationNoticeBanner,
   GenerationNoticeDialog,
+  useGenerationMaintenance,
 } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
 import { GenerationGeminiAllowanceNotice } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-allowance-notice"
 import { GenerationGeminiLimitDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-limit-dialog"
@@ -95,6 +96,9 @@ export function GenerationSubmissionView(props: Props) {
     settleGenerationNotice,
     confirmGenerationNotice,
   } = useGenerationNoticeConfirm()
+
+  // 画像生成のメンテナンス中は生成ボタンを押せなくする（帯は生成画面の枠に出す）
+  const generationMaintenance = useGenerationMaintenance()
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
@@ -274,6 +278,11 @@ export function GenerationSubmissionView(props: Props) {
         upscaleSize: context.config.upscaleSize,
       },
     })
+
+    if (generationMaintenance.enabled) {
+      toast("画像生成はメンテナンス中です")
+      return
+    }
 
     if (!(await confirmGenerationNotice())) {
       logInfo({
@@ -713,6 +722,7 @@ export function GenerationSubmissionView(props: Props) {
             availableImageGenerationMaxTasksCount={
               remainingImageGenerationTasksCount
             }
+            isMaintenance={generationMaintenance.enabled}
             onCreateTask={onCreateTask}
             onSignTerms={onSignTerms}
           />

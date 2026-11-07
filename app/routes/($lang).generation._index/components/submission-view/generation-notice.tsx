@@ -1,6 +1,6 @@
 import { Link } from "~/lib/app/locale-router"
 import { InfoIcon, TriangleAlertIcon, WrenchIcon } from "lucide-react"
-import { useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,6 +12,10 @@ import {
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  formatMaintenanceEndsAt,
+  type PublicMaintenanceFlag,
+} from "~/lib/maintenance-mode"
 import { cn } from "~/lib/utils"
 import type {
   GenerationNotice,
@@ -23,11 +27,35 @@ const REFRESH_INTERVAL_MS = 60_000
 
 const DISCORD_INVITE_URL = "https://discord.gg/hcQggQEYfn"
 
+type GenerationNoticeState = {
+  notice: GenerationNotice | null
+  /** 画像生成のメンテナンス（KV の maintenance:generation） */
+  maintenance: PublicMaintenanceFlag
+}
+
+const MAINTENANCE_DISABLED: PublicMaintenanceFlag = {
+  enabled: false,
+  endsAt: null,
+  message: null,
+}
+
+const GenerationNoticeContext = createContext<GenerationNoticeState>({
+  notice: null,
+  maintenance: MAINTENANCE_DISABLED,
+})
+
 /**
- * 生成画面のお知らせ（なければ null）
+ * 生成画面のお知らせとメンテナンス状態を取り直して配る（生成画面の枠に置く）
+ * メンテナンス状態の最初の値は loader から受け取り、切り替えは再読み込みなしで反映する
  */
-export function useGenerationNotice() {
-  const [notice, setNotice] = useState<GenerationNotice | null>(null)
+export function GenerationNoticeProvider(props: {
+  initialMaintenance: PublicMaintenanceFlag
+  children: React.ReactNode
+}) {
+  const [state, setState] = useState<GenerationNoticeState>({
+    notice: null,
+    maintenance: props.initialMaintenance,
+  })
 
   useEffect(() => {
     let isCancelled = false
@@ -38,8 +66,14 @@ export function useGenerationNotice() {
         if (!response.ok) return
         const body = (await response.json()) as {
           data: GenerationNotice | null
+          maintenance?: PublicMaintenanceFlag | null
         }
-        if (!isCancelled) setNotice(body.data)
+        if (!isCancelled) {
+          setState({
+            notice: body.data,
+            maintenance: body.maintenance ?? MAINTENANCE_DISABLED,
+          })
+        }
       } catch {
         // 取れなければ前回のまま
       }
@@ -54,7 +88,64 @@ export function useGenerationNotice() {
     }
   }, [])
 
-  return notice
+  return (
+    <GenerationNoticeContext.Provider value={state}>
+      {props.children}
+    </GenerationNoticeContext.Provider>
+  )
+}
+
+/**
+ * 生成画面のお知らせ（なければ null）
+ */
+export function useGenerationNotice() {
+  return useContext(GenerationNoticeContext).notice
+}
+
+/**
+ * 画像生成のメンテナンス状態
+ */
+export function useGenerationMaintenance() {
+  return useContext(GenerationNoticeContext).maintenance
+}
+
+/**
+ * 画像生成のメンテナンス中に生成画面の上に出す帯
+ */
+export function GenerationMaintenanceBanner() {
+  const t = useTranslation()
+  const maintenance = useGenerationMaintenance()
+  if (!maintenance.enabled) return null
+
+  const endsAt =
+    formatMaintenanceEndsAt(maintenance.endsAt, t.isEnglish ? "en" : "ja") ??
+    t("未定", "TBD")
+
+  return (
+    <div className="container max-w-none px-4 pt-2">
+      <div
+        role="alert"
+        className="flex items-start gap-3 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200"
+      >
+        <WrenchIcon className="mt-0.5 size-5 shrink-0" />
+        <div className="min-w-0 space-y-1">
+          <p className="font-bold text-sm md:text-base">
+            {t(
+              `画像生成はメンテナンス中です（終了予定 ${endsAt}）`,
+              `Image generation is under maintenance (until ${endsAt})`,
+            )}
+          </p>
+          <p className="text-xs md:text-sm">
+            {maintenance.message ??
+              t(
+                "終わるまで生成できません。作品の閲覧・投稿などはふだんどおりご利用いただけます。",
+                "You cannot generate images until it is finished. Other features are available as usual.",
+              )}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 const useNoticeText = (notice: GenerationNotice) => {

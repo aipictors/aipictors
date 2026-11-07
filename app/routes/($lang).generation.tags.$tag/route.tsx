@@ -40,8 +40,12 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 }
 
-export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+export const headers: HeadersFunction = ({ parentHeaders }) => ({
+  // 画像生成のメンテナンス中は親（生成画面の枠）が no-store にする
+  "Cache-Control":
+    parentHeaders.get("Cache-Control") === "no-store"
+      ? "no-store"
+      : config.cacheControl.oneHour,
 })
 
 export default function GenerationTag () {
