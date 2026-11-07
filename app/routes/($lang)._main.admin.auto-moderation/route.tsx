@@ -187,7 +187,6 @@ type AutoModerationItem = {
   isChildRisk: boolean
   isNeedMosaic: boolean
   isHidden: boolean
-  isKeepSensitive: boolean
   appealMessage: string | null
   analyzedAt: number
   appealedAt: number | null
@@ -209,7 +208,6 @@ function AutoModerationCard(props: {
   const { item } = props
   const [resolve, { loading }] = useMutation(resolveMutation)
   const [isPublish, setIsPublish] = useState(item.isHidden)
-  const [keepSensitive, setKeepSensitive] = useState(true)
 
   const images: ImageResult[] = (() => {
     try {
@@ -222,7 +220,7 @@ function AutoModerationCard(props: {
   const onResolve = async (rating: string) => {
     try {
       await resolve({
-        variables: { workId: item.workId, rating, isPublish, keepSensitive },
+        variables: { workId: item.workId, rating, isPublish },
       })
       toast.success(`区分を「${ratingLabel(rating)}」にしました`)
       props.onResolved()
@@ -273,12 +271,7 @@ function AutoModerationCard(props: {
               )}
               {item.isChildRisk && (
                 <Badge className="bg-rose-600 text-white">
-                  センシティブ（子どもに見える人物の際どい表現の疑い）
-                  {item.status === "RESOLVED"
-                    ? item.isKeepSensitive
-                      ? "・ぼかしのまま"
-                      : "・ぼかしを外した"
-                    : "・一覧でぼかし中"}
+                  子どもに見える人物の性的な表現の疑い
                 </Badge>
               )}
               {item.isNeedMosaic && (
@@ -355,16 +348,6 @@ function AutoModerationCard(props: {
                 </Button>
               ))}
             </div>
-            {item.isChildRisk && (
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={keepSensitive}
-                  onChange={(event) => setKeepSensitive(event.target.checked)}
-                />
-                センシティブのまま一覧でぼかす（外すと普通に表示）
-              </label>
-            )}
             {item.isHidden && (
               <label className="flex items-center gap-2 text-sm">
                 <input
@@ -407,7 +390,6 @@ const autoModerationsQuery = gql`
       isChildRisk
       isNeedMosaic
       isHidden
-      isKeepSensitive
       appealMessage
       analyzedAt
       appealedAt
@@ -434,13 +416,11 @@ const resolveMutation = gql`
     $workId: ID!
     $rating: String!
     $isPublish: Boolean
-    $keepSensitive: Boolean
   ) {
     resolveWorkAutoModeration(
       workId: $workId
       rating: $rating
       isPublish: $isPublish
-      keepSensitive: $keepSensitive
     )
   }
 `

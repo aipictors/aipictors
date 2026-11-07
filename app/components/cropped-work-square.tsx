@@ -4,8 +4,6 @@ import { OptimizedImage } from "~/components/optimized-image"
 import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thumbnail-overlay"
 import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
-import { useIsSensitiveBlurred } from "~/hooks/use-sensitive-blur"
-import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 
@@ -85,8 +83,6 @@ function toSizes(props: Props): string {
  * 四角形で作品をクロップして表示するコンポーネント
  */
 export function CroppedWorkSquare(props: Props): React.ReactNode {
-  const t = useTranslation()
-  const isSensitiveBlurred = useIsSensitiveBlurred(props.workId)
   // 仕様: 常に表示領域は正方形。auto は親グリッドセル幅にフィットして aspect-square。固定サイズは size-* で正方形。
   // 仕様: 短辺フィット + 長辺方向のみ translate. オーバーレイのズレ防止のためラッパーを正方形サイズそのものにする。
 
@@ -205,12 +201,7 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
         imageUrl={props.imageUrl}
         imageWidth={props.imageWidth}
         imageHeight={props.imageHeight}
-        isHidden={props.shouldMaskSensitive === true || isSensitiveBlurred}
-        label={
-          props.shouldMaskSensitive === true
-            ? undefined
-            : t("センシティブ", "Sensitive")
-        }
+        isHidden={props.shouldMaskSensitive === true}
       />
     </>
   )

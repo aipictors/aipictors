@@ -6,7 +6,6 @@ import { Heart, ShieldAlert } from "lucide-react"
 import { startTransition, useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { OfficialBadge } from "~/components/official-badge"
-import { SensitiveWorkGate } from "~/components/sensitive/sensitive-work-gate"
 import { ToggleContent } from "~/components/toggle-content"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
@@ -201,24 +200,22 @@ export function WorkArticle(props: Props) {
         postAccessType={props.work.accessType}
       />
       {props.work.type === "WORK" && (
-        <SensitiveWorkGate workId={props.work.id}>
-          <WorkImageView
-            workImageURL={props.work.imageURL}
-            subWorkImageURLs={props.work.subWorks
-              .filter((subWork) => subWork.imageUrl !== null)
-              .map((subWork) => {
-                return subWork.imageUrl ?? ""
-              })}
-            onSelectedImage={setSelectedImageUrl}
-            workImageAspectRatio={
-              props.work.largeThumbnailImageHeight > 0
-                ? props.work.largeThumbnailImageWidth /
-                  props.work.largeThumbnailImageHeight
-                : undefined
-            }
-            mode={props.mode}
-          />
-        </SensitiveWorkGate>
+        <WorkImageView
+          workImageURL={props.work.imageURL}
+          subWorkImageURLs={props.work.subWorks
+            .filter((subWork) => subWork.imageUrl !== null)
+            .map((subWork) => {
+              return subWork.imageUrl ?? ""
+            })}
+          onSelectedImage={setSelectedImageUrl}
+          workImageAspectRatio={
+            props.work.largeThumbnailImageHeight > 0
+              ? props.work.largeThumbnailImageWidth /
+                props.work.largeThumbnailImageHeight
+              : undefined
+          }
+          mode={props.mode}
+        />
       )}
       {props.work.type === "VIDEO" && (
         <WorkVideoView

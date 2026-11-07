@@ -6,7 +6,6 @@ import {
   Settings2Icon,
 } from "lucide-react"
 import { GridLayoutToggle } from "~/components/grid-layout-toggle"
-import { SensitiveBlurToggle } from "~/components/sensitive-blur-toggle"
 import {
   Popover,
   PopoverContent,
@@ -44,7 +43,6 @@ export function HomeViewModeToggles(props: Props) {
   const controls = (
     <>
       <GridLayoutToggle />
-      <SensitiveBlurToggle />
       {props.isPagination !== undefined && props.onPaginationChange && (
         <fieldset className="inline-flex rounded-full border bg-muted/40 p-0.5">
           <legend className="sr-only">{t("一覧の表示", "List display")}</legend>

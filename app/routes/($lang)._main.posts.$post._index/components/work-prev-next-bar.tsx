@@ -3,7 +3,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useEffect } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link, useNavigate } from "~/lib/app/locale-router"
-import { useIsSensitiveBlurred } from "~/hooks/use-sensitive-blur"
 import { cn } from "~/lib/utils"
 import type { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
@@ -123,7 +122,6 @@ function NeighborLink(props: {
   label: string
 }) {
   const isOlder = props.direction === "older"
-  const isSensitiveBlurred = useIsSensitiveBlurred(props.work.id)
 
   return (
     <Link
@@ -152,10 +150,7 @@ function NeighborLink(props: {
         decoding="async"
         width={48}
         height={48}
-        className={cn(
-          "size-12 shrink-0 rounded-lg bg-muted object-cover",
-          isSensitiveBlurred && "blur-md",
-        )}
+        className="size-12 shrink-0 rounded-lg bg-muted object-cover"
       />
       <span className="flex min-w-0 flex-col">
         <span className="text-muted-foreground text-xs">{props.label}</span>
