@@ -40,6 +40,7 @@ import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/compone
 import { HomeSensitiveWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-users-recommended-section"
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
+import { RecommendedFeedContents } from "~/routes/($lang)._main._index/components/recommended-feed-contents"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeNewUsersSensitiveWorkListSection } from "~/routes/($lang).r._index/components/home-new-user-sensitive-work-list-section"
 import {
@@ -170,10 +171,9 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
   const authContext = useContext(AuthContext)
 
   // ------ local state ------
+  // 最初はホーム（推薦・ランキングなどの欄）。全年齢のトップと同じ
   const [currentTab, setCurrentTab] = useState(
-    props.forcedTab ??
-      searchParams.get("tab") ??
-      (authContext.isLoggedIn ? "new" : "home"),
+    props.forcedTab ?? searchParams.get("tab") ?? "home",
   )
   const [workView, setWorkView] = useState(searchParams.get("view") ?? "new")
   const [newWorksPage, setNewWorksPage] = useState(
@@ -223,6 +223,7 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
   const displayedWorks = useMemo(() => {
     switch (currentTab) {
       case "new":
+      case "recommended":
       case "follow-user":
       case "follow-tag":
         return currentWorks
@@ -333,22 +334,6 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
     pass?.viewer?.currentPass?.type ?? "",
   )
 
-  useEffect(() => {
-    if (
-      props.forcedTab !== undefined ||
-      authContext.isLoading ||
-      searchParams.has("tab")
-    ) {
-      return
-    }
-
-    if (!authContext.isLoggedIn || currentTab !== "home") {
-      return
-    }
-
-    setCurrentTab("new")
-  }, [authContext.isLoading, authContext.isLoggedIn, currentTab, searchParams])
-
   // localStorageからダイアログモードを復元
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -419,15 +404,33 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
         >
           {/* ---------- TAB HEADER ---------- */}
           <div className="flex items-center sm:gap-x-2 md:gap-x-4">
+            {/* 全年齢のトップと同じ並び（フォロー中・お気に入りタグはログインしている人だけ） */}
             <AppAnimatedTabs
               tabs={[
-                { label: t("おすすめ", "For you"), value: "home" },
-                { label: t("新着", "New"), value: "new" },
-                { label: t("フォロー", "Following"), value: "follow-user" },
+                { label: t("ホーム", "Home"), value: "home" },
+                ...(authContext.isLoggedIn || currentTab === "follow-user"
+                  ? [
+                      {
+                        label: t("フォロー中", "Following"),
+                        value: "follow-user",
+                      },
+                    ]
+                  : []),
+                { label: t("おすすめ", "For you"), value: "recommended" },
+                ...(authContext.isLoggedIn || currentTab === "follow-tag"
+                  ? [
+                      {
+                        label: t("お気に入りタグ", "Favorite tags"),
+                        value: "follow-tag",
+                      },
+                    ]
+                  : []),
                 {
-                  label: t("お気に入りタグ", "Favorite tags"),
-                  value: "follow-tag",
+                  label: t("ランキング", "Ranking"),
+                  value: "ranking",
+                  href: "/r/rankings",
                 },
+                { label: t("新着", "New"), value: "new" },
               ]}
               value={currentTab}
               onChange={handleTabChange}
@@ -519,6 +522,18 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
               </aside>
             </div>
             <SensitiveHomeAbout />
+          </TabsContent>
+
+          {/* ---------- おすすめ ---------- */}
+          <TabsContent value="recommended" className="m-0">
+            {currentTab === "recommended" && (
+              <RecommendedFeedContents
+                isSensitive
+                initialWorks={[]}
+                onSelect={isDialogMode ? openWork : undefined}
+                updateWorks={updateCurrentWorks}
+              />
+            )}
           </TabsContent>
 
           {/* ---------- NEW / NEW-USER ---------- */}

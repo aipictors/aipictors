@@ -1,21 +1,14 @@
-import type { MetaFunction } from "@remix-run/cloudflare"
-import { META } from "~/config"
-import { SensitiveHomeIndexPage } from "~/routes/($lang).r._index/route"
-import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
-
-export { headers, loader } from "~/routes/($lang).r._index/route"
-
-/** /r の「おすすめ」と同じ内容なので、検索エンジンには /r を載せる */
-export const meta: MetaFunction = (props) =>
-  createSensitiveMeta(
-    { ...META.HOME_SENSITIVE, isIndex: false, isTop: false },
-    undefined,
-    props.params.lang,
-  )
+import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare"
 
 /**
- * R18 のホーム（全年齢の /home にあたる）
+ * 以前の R18 のホーム（/r/home）。いまは /r がホームなので /r へ転送する
  */
+export async function loader(props: LoaderFunctionArgs) {
+  const url = new URL(props.request.url)
+  const prefix = url.pathname.match(/^\/(?:ja|en)(?=\/)/)?.[0] ?? ""
+  return redirect(`${prefix}/r${url.search}`, { status: 301 })
+}
+
 export default function SensitiveHomePage() {
-  return <SensitiveHomeIndexPage forcedTab="home" />
+  return null
 }

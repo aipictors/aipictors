@@ -80,7 +80,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         <MenuIcon className="size-5" />
       </Button>
       <Link
-        to={sensitivePath ? "/r/home" : "/"}
+        to={sensitivePath ? "/r" : "/"}
         className="flex h-10 items-center gap-2 rounded-lg px-2 transition-colors hover:bg-muted"
       >
         {navigation.state === "loading" ? (

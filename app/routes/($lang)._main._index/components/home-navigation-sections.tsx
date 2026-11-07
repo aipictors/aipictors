@@ -68,7 +68,7 @@ export function getHomeNavigationSections(
       items: [
         {
           key: "home",
-          href: options.isSensitive ? "/r/home" : "/",
+          href: options.isSensitive ? "/r" : "/",
           label: ["ホーム", "Home"],
           icon: HomeIcon,
         },

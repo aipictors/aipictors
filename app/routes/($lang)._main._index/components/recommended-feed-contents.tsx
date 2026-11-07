@@ -33,11 +33,16 @@ const SHELF_AT = [24, 56]
 
 type Work = FragmentOf<typeof PhotoAlbumWorkFragment>
 
+/** 届く前の空の一覧（毎回新しい配列にすると、一覧を受け取る親の更新が止まらなくなる） */
+const NO_WORKS: Work[] = []
+
 type Props = {
   /** サーバーで取ったログインしていない人向けの最初の一覧（すぐ出すため） */
   initialWorks: Work[]
   onSelect?: (index: string) => void
   updateWorks?: (works: Work[]) => void
+  /** R18 のおすすめ（R18 の作品から選ぶ。サーバーでは取らず、表示してから読む） */
+  isSensitive?: boolean
 }
 
 /**
@@ -50,13 +55,23 @@ export function RecommendedFeedContents(props: Props) {
   const viewerRatings = useViewerRatings()
   const isSquare = useGridLayout().gridLayout === "square"
 
-  // おすすめは全年齢・R15 の中から（R18 は R18 のページで見る）
+  const isSensitive = props.isSensitive === true
+
+  // おすすめは全年齢・R15 の中から（R18 は R18 のページのおすすめで見る）
   const ratings = useMemo(
     () =>
-      viewerRatings.normalRatings.filter(
-        (rating) => rating === "G" || rating === "R15",
-      ),
-    [viewerRatings.normalRatings],
+      isSensitive
+        ? viewerRatings.sensitiveRatings.filter((rating) => rating === "R18")
+        : viewerRatings.normalRatings.filter(
+            (rating) => rating === "G" || rating === "R15",
+          ),
+    [isSensitive, viewerRatings.normalRatings, viewerRatings.sensitiveRatings],
+  )
+
+  /** ログインしていない人向けの並び（全年齢は最初の一覧をサーバーで取ってある） */
+  const guestRatings = useMemo<("G" | "R15" | "R18")[]>(
+    () => (isSensitive ? ["R18"] : ["G", "R15"]),
+    [isSensitive],
   )
 
   // ログインしていない人と、ログイン状態を確認中（サーバーでの描画を含む）は、サーバーで取った一覧を出す
@@ -64,9 +79,15 @@ export function RecommendedFeedContents(props: Props) {
 
   const client = useApolloClient()
 
+  // R18 はサーバーで取っていないので、ログインしていない人の並びもここで読む
+  const isGuestQuery = isSensitive && !isPersonal && !authContext.isLoading
   const { data, loading, error } = useQuery(recommendedFeedWorksQuery, {
-    skip: !isPersonal,
-    variables: { offset: 0, limit: RECOMMENDED_PER_PAGE, ratings },
+    skip: !isPersonal && !isGuestQuery,
+    variables: {
+      offset: 0,
+      limit: RECOMMENDED_PER_PAGE,
+      ratings: isPersonal && ratings.length > 0 ? ratings : guestRatings,
+    },
     // 並びは人ごとに変わるので、毎回取り直す
     fetchPolicy: "network-only",
     nextFetchPolicy: "cache-first",
@@ -78,8 +99,13 @@ export function RecommendedFeedContents(props: Props) {
 
   // あなた向けの並びが届くまでは、サーバーで取った一覧を出しておく
   const personalWorks = data?.recommendedFeedWorks
-  const isUsingInitial = !isPersonal || personalWorks === undefined
-  const baseWorks = isUsingInitial ? props.initialWorks : personalWorks
+  const isUsingInitial = isSensitive
+    ? !isPersonal
+    : !isPersonal || personalWorks === undefined
+  const baseWorks =
+    isSensitive || !isUsingInitial
+      ? (personalWorks ?? NO_WORKS)
+      : props.initialWorks
 
   // 並びが入れ替わったら、続きの読み込みもやり直す
   // biome-ignore lint/correctness/useExhaustiveDependencies: 入れ替わったときだけ
@@ -157,6 +183,12 @@ export function RecommendedFeedContents(props: Props) {
 
   /** 一覧の position 件目の前に差し込む棚 */
   const renderShelf = (position: number) => {
+    // 棚（フォロー新着・お気に入りタグ新着）は全年齢のものなので、R18 では登録の案内だけ
+    if (isSensitive) {
+      return position === SHELF_AT[0] && authContext.isNotLoggedIn ? (
+        <HomeGuestJoinCard />
+      ) : null
+    }
     if (position === SHELF_AT[0]) {
       return (
         <>
@@ -195,7 +227,8 @@ export function RecommendedFeedContents(props: Props) {
         variables: {
           offset: works.length,
           limit: RECOMMENDED_PER_PAGE,
-          ratings: isUsingInitial ? ["G", "R15"] : ratings,
+          ratings:
+            isUsingInitial || ratings.length === 0 ? guestRatings : ratings,
         },
         fetchPolicy: "network-only",
       })
@@ -207,14 +240,25 @@ export function RecommendedFeedContents(props: Props) {
     } finally {
       setIsLoadingMore(false)
     }
-  }, [isLoadingMore, hasNext, client, works.length, isUsingInitial, ratings])
+  }, [
+    isLoadingMore,
+    hasNext,
+    client,
+    works.length,
+    isUsingInitial,
+    ratings,
+    guestRatings,
+  ])
 
   const sentinelRef = useInfiniteScroll(() => void loadMore(), {
     hasNext: hasNext && works.length > 0,
     loading: isLoadingMore,
   })
 
-  if (works.length === 0 && loading) {
+  // R18 は最初の一覧をサーバーで取っていないので、届くまで読み込み中を出す
+  const isWaitingSensitive =
+    isSensitive && error === undefined && personalWorks === undefined
+  if (works.length === 0 && (loading || isWaitingSensitive)) {
     return <HomeNewWorksSkeleton view="new" isPagination={false} />
   }
 
@@ -311,7 +355,10 @@ export function RecommendedFeedContents(props: Props) {
             "ここ3日のおすすめは以上です。もっと見るなら",
             "That's all for the last 3 days. See more in",
           )}
-          <Link to="/new-works" className="mx-1 underline">
+          <Link
+            to={isSensitive ? "/r?tab=new" : "/new-works"}
+            className="mx-1 underline"
+          >
             {t("新着", "New")}
           </Link>
           {t("へ", "")}

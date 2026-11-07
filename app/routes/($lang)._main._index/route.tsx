@@ -18,7 +18,6 @@ import {
 } from "~/routes/($lang)._main._index/components/home-follow-tab-contents"
 import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeNewTabContent } from "~/routes/($lang)._main._index/components/home-new-tab-content"
-import { HomeRecentSupportHistory } from "~/routes/($lang)._main._index/components/home-recent-support-history"
 import { HomeRecommendedTabContent } from "~/routes/($lang)._main._index/components/home-recommended-tab-content"
 import { homeLoader } from "~/routes/($lang)._main._index/home-loader.server"
 import { useHomePageState } from "~/routes/($lang)._main._index/hooks/use-home-page-state"
@@ -82,8 +81,6 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
       {data.importantRelease && (
         <HomeImportantReleaseBanner release={data.importantRelease} />
       )}
-
-      <HomeRecentSupportHistory />
 
       <Tabs
         value={currentTab}
