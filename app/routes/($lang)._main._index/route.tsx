@@ -22,7 +22,10 @@ import { HomeRecommendedTabContent } from "~/routes/($lang)._main._index/compone
 import { HomeRecentSupportHistory } from "~/routes/($lang)._main._index/components/home-recent-support-history"
 import { homeLoader } from "~/routes/($lang)._main._index/home-loader.server"
 import { useHomePageState } from "~/routes/($lang)._main._index/hooks/use-home-page-state"
-import type { HomeTab } from "~/routes/($lang)._main._index/utils/home-tabs"
+import {
+  HOME_TAB_PATHS,
+  type HomeTab,
+} from "~/routes/($lang)._main._index/utils/home-tabs"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -57,6 +60,8 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     loadMore,
     workDialog,
   } = state
+
+  const isLoggedIn = state.authContext.isLoggedIn
 
   if (data === null) {
     return null
@@ -93,26 +98,54 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             <div className="min-w-0 flex-1">
               <AppAnimatedTabs
                 tabs={[
-                  { label: t("おすすめ", "For you"), value: "recommended" },
                   {
-                    label: t("フォロー新着", "Following"),
-                    value: "follow-user",
-                    badge:
-                      followFeedNew.count > 0 &&
-                      currentTab !== "follow-user" ? (
-                        <span className="fade-in-0 zoom-in-50 ml-1 inline-flex min-w-5 animate-in items-center justify-center rounded-full bg-clear-bright-blue px-1.5 align-middle font-bold text-[10px] text-white leading-5">
-                          {followFeedNew.count >= 100
-                            ? "99+"
-                            : followFeedNew.count}
-                        </span>
-                      ) : null,
+                    label: t("おすすめ", "For you"),
+                    value: "recommended",
+                    href: HOME_TAB_PATHS.recommended,
+                  },
+                  // フォロー中・お気に入りタグはログインしている人だけ（ログインしていないと中身が無い）
+                  ...(isLoggedIn || currentTab === "follow-user"
+                    ? [
+                        {
+                          label: t("フォロー中", "Following"),
+                          value: "follow-user",
+                          href: HOME_TAB_PATHS["follow-user"],
+                          badge:
+                            followFeedNew.count > 0 &&
+                            currentTab !== "follow-user" ? (
+                              <span className="fade-in-0 zoom-in-50 ml-1 inline-flex min-w-5 animate-in items-center justify-center rounded-full bg-clear-bright-blue px-1.5 align-middle font-bold text-[10px] text-white leading-5">
+                                {followFeedNew.count >= 100
+                                  ? "99+"
+                                  : followFeedNew.count}
+                              </span>
+                            ) : null,
+                        },
+                      ]
+                    : []),
+                  {
+                    label: t("新着", "New"),
+                    value: "new",
+                    href: HOME_TAB_PATHS.new,
+                  },
+                  ...(isLoggedIn || currentTab === "follow-tag"
+                    ? [
+                        {
+                          label: t("お気に入りタグ", "Favorite tags"),
+                          value: "follow-tag",
+                          href: HOME_TAB_PATHS["follow-tag"],
+                        },
+                      ]
+                    : []),
+                  {
+                    label: t("ランキング", "Ranking"),
+                    value: "ranking",
+                    href: "/rankings",
                   },
                   {
-                    label: t("お気に入りタグ新着", "Favorite tags"),
-                    value: "follow-tag",
+                    label: t("ピックアップ", "Picks"),
+                    value: "home",
+                    href: HOME_TAB_PATHS.home,
                   },
-                  { label: t("新着・人気", "New & popular"), value: "new" },
-                  { label: t("ピックアップ", "Picks"), value: "home" },
                 ]}
                 value={currentTab}
                 onChange={handleTabChange}

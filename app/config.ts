@@ -791,13 +791,22 @@ export const META: { [key: string]: MetaData } = {
     isIndex: true,
   },
   HOME_FEED: {
-    title: "ホーム",
-    enTitle: "Home",
+    title: "ピックアップ - ユーザの推薦・前日ランキング・人気タグ",
+    enTitle: "Picks - Recommended by users, daily ranking and popular tags",
     description:
-      "おすすめのAIイラスト・AI画像、人気のタグ、ランキングをまとめたAipictorsのホームです。",
+      "ユーザから推薦されたAIイラスト、前日ランキング、新規クリエイターの初投稿作品、人気のタグやお題をまとめて見られるAipictorsのピックアップです。",
     enDescription:
-      "Recommended AI illustrations and images, popular tags and rankings on Aipictors.",
+      "AI illustrations recommended by users, yesterday's ranking, first works by new creators, popular tags and themes on Aipictors.",
     isIndex: true,
+  },
+  FOLLOW_FEED: {
+    title: "フォロー中・お気に入りタグの新着",
+    enTitle: "Following and favorite tags",
+    description:
+      "フォローしているクリエイターとお気に入りタグの新しい作品の一覧です。",
+    enDescription: "New works from creators you follow and your favorite tags.",
+    // 人ごとに中身が違うので検索結果には載せない
+    isIndex: false,
   },
   USERS: {
     title: "{{title}}",

@@ -20,6 +20,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
 import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
+import { HomeGuestJoinCard } from "~/routes/($lang)._main._index/components/home-guest-join-card"
 import { RecommendedFeedShelf } from "~/routes/($lang)._main._index/components/recommended-feed-shelf"
 import { useFeedEvents } from "~/routes/($lang)._main._index/hooks/use-feed-events"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
@@ -250,6 +251,9 @@ export function RecommendedFeedContents(props: Props) {
               priorityCount={index === 0 ? 8 : 0}
               renderItemOverlay={renderHideButton}
             />
+            {index === 0 && chunks.length > 1 && authContext.isNotLoggedIn && (
+              <HomeGuestJoinCard />
+            )}
             {index === 0 && chunks.length > 1 && (
               <RecommendedFeedShelf
                 type="FOLLOW_USER"

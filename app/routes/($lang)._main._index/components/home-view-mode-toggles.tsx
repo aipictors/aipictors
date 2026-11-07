@@ -1,6 +1,17 @@
-import { LayoutList, Maximize2, MousePointerClick, Rows3 } from "lucide-react"
+import {
+  LayoutList,
+  Maximize2,
+  MousePointerClick,
+  Rows3,
+  Settings2Icon,
+} from "lucide-react"
 import { GridLayoutToggle } from "~/components/grid-layout-toggle"
 import { SensitiveBlurToggle } from "~/components/sensitive-blur-toggle"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
@@ -17,6 +28,7 @@ type Props = {
 /**
  * 一覧の表示の切り替え（サムネイルの並べ方、続けて表示／ページごと、作品をダイアログで開く／ページで開く）
  * 以前は絞り込み欄の中やタブごとにばらばらに置いていて、見つけにくかった
+ * スマホでは 2 行になって作品が下がるので、「表示」ボタンの中にまとめる
  */
 export function HomeViewModeToggles(props: Props) {
   const t = useTranslation()
@@ -29,13 +41,8 @@ export function HomeViewModeToggles(props: Props) {
         : "text-muted-foreground hover:text-foreground",
     )
 
-  return (
-    <div
-      className={cn(
-        "flex flex-wrap items-center gap-1.5 sm:gap-2",
-        props.className,
-      )}
-    >
+  const controls = (
+    <>
       <GridLayoutToggle />
       <SensitiveBlurToggle />
       {props.isPagination !== undefined && props.onPaginationChange && (
@@ -95,6 +102,31 @@ export function HomeViewModeToggles(props: Props) {
           </button>
         </fieldset>
       )}
+    </>
+  )
+
+  return (
+    <div className={cn("flex items-center gap-1.5", props.className)}>
+      <div className="hidden flex-wrap items-center gap-2 sm:flex">
+        {controls}
+      </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="flex h-8 items-center gap-1 rounded-full border bg-muted/40 px-3 font-medium text-xs sm:hidden"
+          >
+            <Settings2Icon className="size-3.5" />
+            {t("表示", "Display")}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="end"
+          className="flex w-auto max-w-[calc(100vw-2rem)] flex-col items-start gap-2"
+        >
+          {controls}
+        </PopoverContent>
+      </Popover>
     </div>
   )
 }
