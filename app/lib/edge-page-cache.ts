@@ -11,7 +11,7 @@
  */
 
 import { getGridLayout } from "~/utils/grid-layout"
-import { getSensitiveBlur } from "~/utils/sensitive-blur"
+import { getSensitiveBlur } from "~/utils/sensitive-blur-cookie"
 import { getLayoutHint } from "~/utils/layout-hint"
 import { toLocaleFromAcceptLanguage } from "~/utils/locale-path"
 

@@ -33,10 +33,8 @@ import {
 import { PAGE_VIEW_INLINE_SCRIPT, trackPageView } from "~/utils/page-view"
 import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
 import { type GridLayout, getGridLayout } from "~/utils/grid-layout"
-import {
-  fetchSensitiveWorkIds,
-  getSensitiveBlur,
-} from "~/utils/sensitive-blur"
+import { fetchSensitiveWorkIds } from "~/utils/sensitive-blur"
+import { getSensitiveBlur } from "~/utils/sensitive-blur-cookie"
 import { toLocalePathname } from "~/lib/app/locale-router"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { setRenderNow } from "~/utils/render-now"

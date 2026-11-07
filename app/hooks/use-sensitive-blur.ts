@@ -3,7 +3,7 @@ import { useCallback, useMemo, useSyncExternalStore } from "react"
 import {
   parseSensitiveBlur,
   SENSITIVE_BLUR_COOKIE,
-} from "~/utils/sensitive-blur"
+} from "~/utils/sensitive-blur-cookie"
 
 const listeners = new Set<() => void>()
 
