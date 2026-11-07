@@ -2,7 +2,9 @@ import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { ChevronRightIcon, HeartIcon, ImagesIcon } from "lucide-react"
 import { LikeButton } from "~/components/like-button"
+import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thumbnail-overlay"
 import { WorkMediaBadge } from "~/components/work-media-badge"
+import { useIsSensitiveBlurred } from "~/hooks/use-sensitive-blur"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import type { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
@@ -27,6 +29,7 @@ function UserWorkCard(props: {
   const t = useTranslation()
   const work = props.work
   const hasVideo = Boolean(work.url || work.streamUid)
+  const isSensitiveBlurred = useIsSensitiveBlurred(work.id)
 
   return (
     <article
@@ -72,6 +75,13 @@ function UserWorkCard(props: {
               ? "object-contain"
               : "object-cover object-[50%_20%]",
           )}
+        />
+        <SensitiveThumbnailOverlay
+          imageUrl={work.smallThumbnailImageURL}
+          imageWidth={work.smallThumbnailImageWidth}
+          imageHeight={work.smallThumbnailImageHeight}
+          isHidden={isSensitiveBlurred}
+          label={t("センシティブ", "Sensitive")}
         />
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-3 pt-10 pr-12 pb-2.5 text-white transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100 md:opacity-0">
           <p className="truncate font-bold text-sm drop-shadow">
