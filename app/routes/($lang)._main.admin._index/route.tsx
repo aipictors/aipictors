@@ -89,6 +89,11 @@ const quickActions = [
     subtitle: "通報理由と対象作品を確認",
   },
   {
+    href: "/admin/auto-moderation",
+    title: "画像の自動判定",
+    subtitle: "自動で区分を変えた作品・確認待ち・判定違いの連絡",
+  },
+  {
     href: "/admin/user-models",
     title: "モデル通報",
     subtitle: "通報されたみんなのモデルを確認・非公開",

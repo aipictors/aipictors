@@ -563,6 +563,7 @@ export default function NewImage() {
         />
       </div>
       <SuccessCreatedWorkDialog
+          showAutoModeration
         isOpen={state.progress === 100}
         title={inputState.title}
         description={inputState.caption}

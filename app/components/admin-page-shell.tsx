@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react"
 import {
+  ScanEye,
   BarChart3,
   Headset,
   Coins,
@@ -93,6 +94,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "作品通報一覧",
     description: "通報理由と対象作品を確認",
     icon: ShieldAlert,
+  },
+  {
+    href: "/admin/auto-moderation",
+    title: "画像の自動判定",
+    description: "自動で区分を変えた作品・確認待ち・判定違いの連絡",
+    icon: ScanEye,
   },
   {
     href: "/admin/user-models",

@@ -1,7 +1,6 @@
 import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useBeforeUnload, useLoaderData } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { useCallback, useContext, useEffect, useReducer, useState } from "react"
 import { safeParse } from "valibot"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
@@ -9,6 +8,7 @@ import { ModerationFixBanner } from "~/components/moderation/moderation-fix-bann
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import { PostImageFormInput } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
@@ -346,6 +346,7 @@ export default function EditImage() {
         </Button>
       </div>
       <SuccessCreatedWorkDialog
+        showAutoModeration
         isOpen={state.progress === 100}
         title={inputState.title}
         description={inputState.caption}

@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
 import { graphql, type ResultOf } from "gql.tada"
 import {
   AlertTriangleIcon,
@@ -12,8 +11,10 @@ import {
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
+import { WorkAutoModerationAppeal } from "~/components/work/work-auto-moderation"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { getModerationReportGuide } from "~/lib/moderation/moderation-report-guide"
 import { cn } from "~/lib/utils"
@@ -281,6 +282,7 @@ function ReportCard(props: {
               ))}
             </ol>
           )}
+          {work && <WorkAutoModerationAppeal workId={work.id} />}
           {report.responseMessage && (
             <p className="text-muted-foreground text-xs">
               {t("あなたの報告", "Your report")}: 「{report.responseMessage}」

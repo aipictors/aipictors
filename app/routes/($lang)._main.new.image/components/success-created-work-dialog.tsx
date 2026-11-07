@@ -1,10 +1,11 @@
+import { useEffect } from "react"
 import { Button } from "~/components/ui/button"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
+import { WorkAutoModerationPostNotice } from "~/components/work/work-auto-moderation"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
-import { Link } from "~/lib/app/locale-router"
-import { useEffect } from "react"
-import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title: string | null
@@ -16,9 +17,11 @@ type Props = {
   shareTags: string[]
   createdAt: number
   accessType: IntrospectionEnum<"AccessType">
+  /** 画像の自動判定の結果を出す（画像の作品だけ） */
+  showAutoModeration?: boolean
 }
 
-export function SuccessCreatedWorkDialog (props: Props) {
+export function SuccessCreatedWorkDialog(props: Props) {
   const t = useTranslation()
 
   const getRandomColor = () => {
@@ -149,6 +152,9 @@ export function SuccessCreatedWorkDialog (props: Props) {
           <p className="text-center font-bold">
             {t("作品が更新されました", "The work has been updated")}
           </p>
+          {props.showAutoModeration && props.isOpen && (
+            <WorkAutoModerationPostNotice workId={props.workId} />
+          )}
           <p className="text-center text-sm opacity-80">
             {t("この作品をシェアする", "Share this work")}
           </p>
