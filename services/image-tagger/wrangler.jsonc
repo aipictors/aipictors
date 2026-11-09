@@ -1,0 +1,18 @@
+{
+  "name": "aipictors-image-tagger",
+  "main": "worker.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": false,
+  "containers": [
+    {
+      "class_name": "ImageTagger",
+      "image": "./Dockerfile",
+      "instance_type": "standard-1",
+      "max_instances": 1
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "IMAGE_TAGGER", "class_name": "ImageTagger" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ImageTagger"] }]
+}
