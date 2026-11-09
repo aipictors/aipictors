@@ -41,7 +41,14 @@ export const CONTEXT_ONLY_HEADER = "x-aipictors-context-only"
  * 配信のキャッシュから消えていたら、同じページをその場で描画し直してデータだけ受け取る
  */
 const toContextLoader = (token: string): string =>
-  `await (async function(){var t=await fetch("${CONTEXT_PATH_PREFIX}${token}").then(function(r){return r.ok?r.text():null}).catch(function(){return null});if(t===null){t=await fetch(location.href,{headers:{"${CONTEXT_ONLY_HEADER}":"1"}}).then(function(r){return r.text()})}(0,eval)(t)})();\n`
+  `await (async function(){var t=await (window.__aipictorsContext||fetchContext());if(t===null){t=await fetch(location.href,{headers:{"${CONTEXT_ONLY_HEADER}":"1"}}).then(function(r){return r.text()})}(0,eval)(t)})();\n`
+
+/**
+ * ログイン中の人は操作を待たずに hydration するので、データの取得は描画を待たずに始める
+ * （待ってから取ると、JS が揃ったあとにデータの往復ぶん 0.5〜0.7 秒余計に待っていた）
+ */
+const toContextPrefetch = (token: string): string =>
+  `function fetchContext(){return fetch("${CONTEXT_PATH_PREFIX}${token}").then(function(r){return r.ok?r.text():null}).catch(function(){return null})}try{if(/login_token=/.test(document.cookie)||localStorage.getItem("login_user_token")||localStorage.getItem("aipictors.headerUser")){window.__aipictorsContext=fetchContext()}}catch(e){}\n`
 
 export const toDeferredModuleScript = (
   source: string,
@@ -65,7 +72,7 @@ export const toDeferredModuleScript = (
   // hydration の前に押されたボタンを覚えておく（app/lib/replay-pending-click.ts が hydration 後に押し直す）。
   // 最初の操作で hydration が始まるので、覚えておかないと最初のタップがなかったことになる
   // 押されたキー（作品ページの ← → で前後の作品へ移る、app/routes/($lang)._main.posts.$post._index/components/work-prev-next-bar.tsx）も覚えておく
-  return `addEventListener("click",function(e){if(window.__aipictorsHydrated)return;var b=e.target&&e.target.closest&&e.target.closest("button");if(b&&!b.closest("a,form"))window.__aipictorsPendingClick={el:b,at:Date.now()}},{capture:true,passive:true});
+  return `${options.contextToken ? toContextPrefetch(options.contextToken) : ""}addEventListener("click",function(e){if(window.__aipictorsHydrated)return;var b=e.target&&e.target.closest&&e.target.closest("button");if(b&&!b.closest("a,form"))window.__aipictorsPendingClick={el:b,at:Date.now()}},{capture:true,passive:true});
 addEventListener("keydown",function(e){if(window.__aipictorsHydrated||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey)return;window.__aipictorsPendingKey={code:e.code,at:Date.now()}},{capture:true,passive:true});
 await new Promise(function(r){if(document.visibilityState==="hidden"){r();return}var d=false;function f(){if(!d){d=true;setTimeout(r,0)}}try{new PerformanceObserver(function(l){if(l.getEntriesByName("first-contentful-paint").length>0)f()}).observe({type:"paint",buffered:true})}catch(e){}requestAnimationFrame(function(){requestAnimationFrame(f)});setTimeout(f,5000)});
 ${waitForInteraction}await Promise.race([Promise.all(Array.prototype.map.call(document.querySelectorAll('img[fetchpriority="high"]'),function(i){return i.complete?0:new Promise(function(r){i.addEventListener("load",r,{once:true});i.addEventListener("error",r,{once:true})})})),new Promise(function(r){setTimeout(r,1500)})]);

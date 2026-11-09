@@ -59,4 +59,11 @@ Disallow: /
 User-agent: meta-externalagent
 Disallow: /
 
+# 監視ツールや AI の学習・データ収集用のクローラー（検索や回答からの流入がなく、1 時間に数百〜千ページ読みに来ていた）
+User-agent: AwarioBot
+User-agent: Amazonbot
+User-agent: LinkupBot
+User-agent: Reflectionbot
+Disallow: /
+
 Sitemap: https://www.aipictors.com/sitemap.xml

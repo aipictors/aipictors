@@ -10,6 +10,7 @@
  *   拠点のキャッシュは拠点ごとなので、海外や久しぶりの拠点では API から作り直して 2〜4 秒かかっていた
  */
 
+import { isbot } from "isbot"
 import { getGridLayout } from "~/utils/grid-layout"
 import { getLayoutHint } from "~/utils/layout-hint"
 import { toLocaleFromAcceptLanguage } from "~/utils/locale-path"
@@ -386,8 +387,11 @@ export const createEdgePageCache = (version: string) => {
           return forBrowser(cached, "HIT")
         }
         if (ageSeconds < ttl + swr) {
-          // 古いものを返して裏で作り直す
-          ctx.waitUntil(renderAndStore().catch(() => undefined))
+          // 古いものを返して裏で作り直す（クローラーのためには作り直さない。
+          // ページ取得の 9 割はクローラーで、1 回の描画で D1 に 17 文ほど投げる）
+          if (!isbot(ctx.request.headers.get("user-agent"))) {
+            ctx.waitUntil(renderAndStore().catch(() => undefined))
+          }
           return forBrowser(cached, "STALE")
         }
         staleIfError = () => forBrowser(cached as Response, "STALE-IF-ERROR")
