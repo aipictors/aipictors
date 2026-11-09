@@ -23,7 +23,13 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-package-lock
-      - run: npx wrangler deploy
+      - name: deploy
+        run: |
+          set -o pipefail
+          npx wrangler deploy 2>&1 | tee /tmp/wrangler.log || {
+            echo "::error::$(tail -c 1800 /tmp/wrangler.log | sed 's/\x1b\[[0-9;]*m//g' | tr '\n' '|')"
+            exit 1
+          }
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
