@@ -655,7 +655,7 @@ export const onRequest: PagesFunction = async (ctx) => {
           earlyUrl,
         ),
         { headers: ctx.request.headers },
-      ),
+      ) as typeof ctx.request,
     })
     if (!rendered.ok) return new Response("Not Found", { status: 404 })
     return new Response(rendered.body, { headers: contextHeaders })
