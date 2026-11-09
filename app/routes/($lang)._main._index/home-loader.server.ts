@@ -205,7 +205,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
         {
           ...baseLoaderData,
           initialRecommendedWorks: Array.isArray(
-            recommendedResult.data?.recommendedFeedWorks,
+            recommendedResult?.data?.recommendedFeedWorks,
           )
             ? recommendedResult.data.recommendedFeedWorks
             : [],
@@ -223,7 +223,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
     return json(
       {
         ...baseLoaderData,
-        initialNewWorks: Array.isArray(initialWorksResult.data?.works)
+        initialNewWorks: Array.isArray(initialWorksResult?.data?.works)
           ? initialWorksResult.data.works
           : [],
       },
@@ -237,7 +237,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
 
   const result = await homeRequest
 
-  const resultData = result.data
+  const resultData = result?.data
   const appEvents = Array.isArray(resultData?.appEvents)
     ? resultData.appEvents
     : []
