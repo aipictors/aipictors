@@ -116,6 +116,15 @@ const MIN_SWR_SECONDS = 60 * 60 * 6
 const STALE_IF_ERROR_SECONDS = 60 * 60 * 24 * 7
 
 /**
+ * クローラーに古いページを返してよい期間。ページ取得の大半はクローラーで、1 回の描画で D1 に十数本投げるので、
+ * 手元にあるものは作り直さずに返す
+ */
+const BOT_MAX_STALE_SECONDS = 60 * 60 * 24 * 2
+
+export const canServeStaleToBot = (ageSeconds: number) =>
+  ageSeconds >= 0 && ageSeconds < BOT_MAX_STALE_SECONDS
+
+/**
  * 新着一覧は古い並びが目立つので、古いものを返す期間を短くする
  */
 const LATEST_PAGE_PATH = /^\/(?:en\/)?(?:r\/)?new-works\/?$/
@@ -187,6 +196,15 @@ export const createEdgePageCache = (version: string) => {
     key.searchParams.sort()
     return new Request(key.toString(), { method: "GET" })
   }
+
+  /**
+   * クローラー向けの控え。デプロイでキャッシュのキーが変わっても残るよう版を含めない
+   * （デプロイの直後にクローラーの分まで全部作り直すと D1 の負荷の山になる）
+   */
+  const toBotFallbackKey = (cacheKey: Request) =>
+    new Request(cacheKey.url.replace(`/__edge/${version}/`, "/__edge-bot/"), {
+      method: "GET",
+    })
 
   /**
    * キャッシュの保存時間（秒）。キャッシュしないなら null
@@ -326,6 +344,7 @@ export const createEdgePageCache = (version: string) => {
       return render()
     }
     const cacheKey = toCacheKey(ctx.request, url)
+    const isBot = isbot(ctx.request.headers.get("user-agent"))
     const kv = isSharedPage(url) ? getSharedKv(ctx) : null
     const sharedKey = cacheKey.url
     /** KV にあるものの保存時刻（読んでいないときは undefined） */
@@ -351,6 +370,13 @@ export const createEdgePageCache = (version: string) => {
       ctx.waitUntil(
         store(cacheKey, response.clone(), ttl).catch(() => undefined),
       )
+      if (isBot) {
+        ctx.waitUntil(
+          store(toBotFallbackKey(cacheKey), response.clone(), ttl).catch(
+            () => undefined,
+          ),
+        )
+      }
       if (kv && forShared) {
         ctx.waitUntil(
           (async () => {
@@ -389,10 +415,13 @@ export const createEdgePageCache = (version: string) => {
         if (ageSeconds < ttl + swr) {
           // 古いものを返して裏で作り直す（クローラーのためには作り直さない。
           // ページ取得の 9 割はクローラーで、1 回の描画で D1 に 17 文ほど投げる）
-          if (!isbot(ctx.request.headers.get("user-agent"))) {
+          if (!isBot) {
             ctx.waitUntil(renderAndStore().catch(() => undefined))
           }
           return forBrowser(cached, "STALE")
+        }
+        if (isBot && canServeStaleToBot(ageSeconds)) {
+          return forBrowser(cached, "BOT-STALE")
         }
         staleIfError = () => forBrowser(cached as Response, "STALE-IF-ERROR")
       }
@@ -436,6 +465,17 @@ export const createEdgePageCache = (version: string) => {
             )
           }
         }
+      }
+    }
+
+    if (isBot && !wantsFresh(ctx.request)) {
+      const fallback = await caches.default
+        .match(toBotFallbackKey(cacheKey))
+        .catch(() => undefined)
+      const ageSeconds =
+        (Date.now() - Number(fallback?.headers.get("X-Edge-Stored-At"))) / 1000
+      if (fallback && canServeStaleToBot(ageSeconds)) {
+        return forBrowser(fallback, "BOT-FALLBACK")
       }
     }
 

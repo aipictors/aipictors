@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test"
-import { getSwrSeconds, isSharedPage } from "~/lib/edge-page-cache"
+import {
+  canServeStaleToBot,
+  getSwrSeconds,
+  isSharedPage,
+} from "~/lib/edge-page-cache"
 
 const shared = (path: string) =>
   isSharedPage(new URL(`https://www.aipictors.com${path}`))
@@ -58,5 +62,14 @@ describe("getSwrSeconds", () => {
   test("ほかのページは 6 時間以上", () => {
     expect(getSwrSeconds("/", 300)).toBe(21600)
     expect(getSwrSeconds("/rankings", null)).toBe(21600)
+  })
+})
+
+describe("canServeStaleToBot", () => {
+  test("2 日まではクローラーに古いページを返す", () => {
+    expect(canServeStaleToBot(60)).toBe(true)
+    expect(canServeStaleToBot(60 * 60 * 47)).toBe(true)
+    expect(canServeStaleToBot(60 * 60 * 49)).toBe(false)
+    expect(canServeStaleToBot(Number.NaN)).toBe(false)
   })
 })
