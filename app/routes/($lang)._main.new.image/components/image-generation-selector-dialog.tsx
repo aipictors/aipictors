@@ -1,3 +1,4 @@
+import type { GenerationResultParams } from "~/routes/($lang)._main.new.image/utils/to-generation-image-information"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useState } from "react"
@@ -15,6 +16,7 @@ type Props = {
     selectedImage: string[],
     selectedIds: string[],
     lastSelectedOriginalImage: string,
+    lastSelectedResult: GenerationResultParams | null,
   ) => void
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
@@ -41,11 +43,14 @@ export function ImageGenerationSelectorDialog(props: Props) {
   >({})
   const [lastSelectedOriginalImage, setLastSelectedOriginalImage] =
     useState<string>("")
+  const [lastSelectedResult, setLastSelectedResult] =
+    useState<GenerationResultParams | null>(null)
 
   const handleImageClick = async (
     imageUrl: string | null,
     thumbnailUrl: string | null,
     id: string,
+    result: GenerationResultParams,
   ) => {
     const sourceUrl = imageUrl || thumbnailUrl
     if (!sourceUrl) {
@@ -77,12 +82,13 @@ export function ImageGenerationSelectorDialog(props: Props) {
 
     // 生成元画像のURLはCORSでfetchできないケースがあるため、以降の抽出処理向けにプロキシURLを渡す
     setLastSelectedOriginalImage(getDownloadProxyUrl(sourceUrl))
+    setLastSelectedResult(result)
   }
 
   const handleSubmit = async () => {
     try {
       if (selectedIds.length === 0) {
-        props.onSubmit([], [], "")
+        props.onSubmit([], [], "", null)
         props.setIsOpen(false)
         return
       }
@@ -106,7 +112,12 @@ export function ImageGenerationSelectorDialog(props: Props) {
         }),
       )
 
-      props.onSubmit(base64Images, selectedIds, lastSelectedOriginalImage)
+      props.onSubmit(
+        base64Images,
+        selectedIds,
+        lastSelectedOriginalImage,
+        lastSelectedResult,
+      )
       props.setIsOpen(false)
     } catch (error) {
       console.error(error)
@@ -128,6 +139,7 @@ export function ImageGenerationSelectorDialog(props: Props) {
                       result.imageUrl,
                       result.thumbnailUrl,
                       result.id,
+                      result,
                     )
                   }
                   className={cn("size-24 overflow-hidden", {
@@ -168,6 +180,18 @@ const viewerImageGenerationResultsQuery = graphql(
         id
         imageUrl
         thumbnailUrl
+        prompt
+        negativePrompt
+        seed
+        steps
+        scale
+        sampler
+        vae
+        modelHash
+        model {
+          id
+          name
+        }
       }
     }
   }`,

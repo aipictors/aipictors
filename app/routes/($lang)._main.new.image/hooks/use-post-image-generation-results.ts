@@ -8,7 +8,11 @@ import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/
 import type { ViewerQuery } from "~/routes/($lang)._main.new.image/utils/new-image-queries"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
-import { getExtractInfoFromBase64 } from "~/utils/get-extract-info-from-png"
+import {
+  getExtractInfoFromBase64,
+  type PNGInfo,
+} from "~/utils/get-extract-info-from-png"
+import { toGenerationImageInformation } from "~/routes/($lang)._main.new.image/utils/to-generation-image-information"
 
 type Props = {
   /**
@@ -103,23 +107,23 @@ export function usePostImageGenerationResults(props: Props) {
 
         const primary = fulfilled[0].result
 
-        // PNGメタ情報の抽出は失敗しても投稿は可能なので、例外は握りつぶす
+        // PNG に生成情報がない画像もあるので、生成履歴の内容で必ず埋める
+        let pngInfo: PNGInfo | null = null
         try {
           const infoUrl = primary.imageUrl ?? primary.thumbnailUrl
           if (infoUrl) {
-            const proxied = getDownloadProxyUrl(infoUrl)
-            const pngInfo = await getExtractInfoFromBase64(proxied)
-            pngInfo.params.prompt = primary.prompt
-            pngInfo.params.negativePrompt = primary.negativePrompt
-
-            dispatchInput({
-              type: "SET_IMAGE_INFORMATION",
-              payload: pngInfo,
-            })
+            pngInfo = await getExtractInfoFromBase64(
+              getDownloadProxyUrl(infoUrl),
+            )
           }
         } catch {
-          // noop
+          // PNG でない・取得できないときは生成履歴の内容だけを使う
         }
+
+        dispatchInput({
+          type: "SET_IMAGE_INFORMATION",
+          payload: toGenerationImageInformation(primary, pngInfo),
+        })
 
         dispatchInput({
           type: "SET_AI_MODEL_ID",

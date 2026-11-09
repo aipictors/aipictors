@@ -1,3 +1,7 @@
+import {
+  type GenerationResultParams,
+  toGenerationImageInformation,
+} from "~/routes/($lang)._main.new.image/utils/to-generation-image-information"
 import FullScreenContainer from "~/components/full-screen-container"
 import { useDropzone } from "react-dropzone-esm"
 import { ImageIcon, VideoIcon } from "lucide-react"
@@ -670,6 +674,7 @@ export function PostImageFormUploader (props: Props) {
             selectedImage: string[],
             selectedIds: string[],
             lastSelectedOriginalImage: string,
+            lastSelectedResult: GenerationResultParams | null,
           ) => {
             props.dispatch({
               type: "SUBMIT_IMAGE_GENERATION_DIALOG",
@@ -690,16 +695,20 @@ export function PostImageFormUploader (props: Props) {
               payload: true,
             })
 
+            let pngInfo: PNGInfo | null = null
             try {
-              const pngInfo = await getExtractInfoFromBase64(
+              pngInfo = await getExtractInfoFromBase64(
                 lastSelectedOriginalImage,
               )
-              if (pngInfo.src !== null) {
-                props.onChangeImageInformation(pngInfo)
-                return
-              }
             } catch {
-              // 生成画像がPNGでない/取得できない場合は無視する
+              // 生成画像がPNGでない/取得できない場合は生成履歴の内容だけを使う
+            }
+            if (lastSelectedResult !== null) {
+              props.onChangeImageInformation(
+                toGenerationImageInformation(lastSelectedResult, pngInfo),
+              )
+            } else if (pngInfo !== null && pngInfo.src !== null) {
+              props.onChangeImageInformation(pngInfo)
             }
           }}
         />
