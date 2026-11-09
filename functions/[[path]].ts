@@ -523,6 +523,14 @@ const isMaintenanceJsonRequest = (request: Request, url: URL): boolean => {
   return !isHtmlNavigationRequest(request)
 }
 
+/** ページの表示。クローラーは Accept に text/html を付けないことが多いので、データ取得と API 以外はページとして扱う */
+const isPageRequest = (request: Request, url: URL) => {
+  const accept = request.headers.get("accept")
+  if (accept?.includes("text/html")) return true
+  if (accept !== null && !accept.includes("*/*")) return false
+  return !url.pathname.endsWith(".data") && !url.pathname.startsWith("/api/")
+}
+
 const createSiteMaintenanceResponse = (
   request: Request,
   url: URL,
@@ -1005,7 +1013,7 @@ export const onRequest: PagesFunction = async (ctx) => {
     if (
       rendered.status >= 500 &&
       ctx.request.method === "GET" &&
-      ctx.request.headers.get("accept")?.includes("text/html")
+      isPageRequest(ctx.request, requestUrl)
     ) {
       await rendered.body?.cancel()
       return createTemporarilyUnavailablePage(requestUrl.pathname)

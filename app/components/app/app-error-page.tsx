@@ -5,6 +5,23 @@ import { useTranslation } from "~/hooks/use-translation"
 import { getPathLocale } from "~/utils/locale-path"
 import { ERROR_LINES, getDailyLineIndex } from "~/utils/pictor-chan-lines"
 
+/** 同じページは 1 分に 3 回まで読み込み直す（temporarily-unavailable-page と同じ決まり）。回数を超えたら null */
+const takeAutoReloadDelay = (pathname: string): number | null => {
+  try {
+    const key = `aip-reload:${pathname}`
+    const saved = JSON.parse(sessionStorage.getItem(key) ?? "{}") as {
+      n?: number
+      t?: number
+    }
+    const count = Date.now() - (saved.t ?? 0) < 60_000 ? (saved.n ?? 0) : 0
+    if (count >= 3) return null
+    sessionStorage.setItem(key, JSON.stringify({ n: count + 1, t: Date.now() }))
+    return 2000 + count * 3000
+  } catch {
+    return null
+  }
+}
+
 type Props = Readonly<{
   status: number
   message: string
@@ -32,6 +49,20 @@ export function AppErrorPage (props: Props): React.ReactNode {
     console.error(message)
   }, [message])
 
+  // サーバーの一時的な失敗（ページ移動のデータ取得など）は、エラーを見せずに読み込み直す
+  const [isReloading, setIsReloading] = useState(props.status >= 500)
+
+  useEffect(() => {
+    if (props.status < 500) return
+    const delay = takeAutoReloadDelay(pathname)
+    if (delay === null) {
+      setIsReloading(false)
+      return
+    }
+    const timer = setTimeout(() => window.location.reload(), delay)
+    return () => clearTimeout(timer)
+  }, [props.status, pathname])
+
   // .data の URL を含むエラーの場合にリダイレクト処理を実行
   if (
     message.includes("Unable to decode turbo-stream response from URL:") &&
@@ -47,6 +78,22 @@ export function AppErrorPage (props: Props): React.ReactNode {
       window.location.replace(redirectUrl)
       return null // リダイレクト中は何も表示しない
     }
+  }
+
+  if (isReloading) {
+    return (
+      <AppStatusPageShell
+        homePath={prefix || "/"}
+        standalone={props.standalone}
+      >
+        <p className="text-center text-sm">
+          {t(
+            "少し混み合っています。自動で読み込み直しています…",
+            "We're a little busy right now. Reloading automatically…",
+          )}
+        </p>
+      </AppStatusPageShell>
+    )
   }
 
   return (
