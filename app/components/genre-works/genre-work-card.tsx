@@ -1,4 +1,3 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
