@@ -101,6 +101,7 @@ const flush = () =>
   act(async () => await new Promise((resolve) => setTimeout(resolve, 0)))
 
 beforeEach(() => {
+  window.sessionStorage.clear()
   checkCalls.length = 0
   seenCalls.length = 0
   checkResult = { isInitialSync: false, unlocked: [] }
