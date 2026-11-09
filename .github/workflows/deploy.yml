@@ -31,6 +31,8 @@ jobs:
         run: rm -rf node_modules && bun install --ignore-scripts --frozen-lockfile
       - name: 💪 build remix app
         run: bun remix vite:build
+      - name: 💪 write build version
+        run: bun scripts/write-build-version.mjs
       - name: 💪 build functions
         run: bun wrangler pages functions build --outdir build/worker
       - name: 🚀 deploy

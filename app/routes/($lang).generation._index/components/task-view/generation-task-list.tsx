@@ -430,6 +430,9 @@ export function GenerationTaskList(props: Props) {
               maxPages={maxPagesByPlan}
               disableScrollToTop={true}
             />
+            <p className="mt-2 px-2 text-muted-foreground text-xs">
+              2027年1月1日から、生成画像の保存期間は無料3か月・ライト6か月・スタンダード1年・プレミアム2年になります（保護した画像は消えません）。
+            </p>
             <PlanUpgradePrompt currentPlan={queryData.currentPass?.type} />
           </>
         )}

@@ -33,6 +33,16 @@ export function PlusComparisonTable() {
           : `¥${toMoneyNumberText(spec.price)}`,
     },
     {
+      label: t("生成画像の保存期間", "Generated image retention"),
+      value: (spec) =>
+        ({
+          FREE: t("3か月", "3 months"),
+          LITE: t("6か月", "6 months"),
+          STANDARD: t("1年", "1 year"),
+          PREMIUM: t("2年", "2 years"),
+        })[spec.plan],
+    },
+    {
       label: t("1回の生成枚数", "Images per request"),
       value: (spec) =>
         t(`${spec.imagesPerRequest}枚`, `${spec.imagesPerRequest}`),

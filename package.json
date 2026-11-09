@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "remix vite:build && wrangler pages functions build --outdir build/worker",
+    "build": "remix vite:build && node scripts/write-build-version.mjs && wrangler pages functions build --outdir build/worker",
     "dev": "if [[ -f ../aipictors-system/.env ]]; then set -a && source ../aipictors-system/.env && export VITE_DEV_WORDPRESS_API_KEY=${VITE_DEV_WORDPRESS_API_KEY:-$WORDPRESS_API_KEY} && set +a; fi && remix vite:dev",
     "dev:fresh": "rm -rf build .vite && if [[ -f ../aipictors-system/.env ]]; then set -a && source ../aipictors-system/.env && export VITE_DEV_WORDPRESS_API_KEY=${VITE_DEV_WORDPRESS_API_KEY:-$WORDPRESS_API_KEY} && set +a; fi && remix vite:dev",
     "start": "wrangler pages dev ./build/client",
