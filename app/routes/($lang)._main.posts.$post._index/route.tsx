@@ -21,6 +21,7 @@ import { OwnWorkNotFoundPage } from "~/components/work/own-work-not-found-page"
 import { config, META } from "~/config"
 import { ParamsError } from "~/errors/params-error"
 import { useTranslation } from "~/hooks/use-translation"
+import { isbot } from "isbot"
 import { loaderClient } from "~/lib/loader-client"
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
@@ -77,11 +78,27 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  // 投稿した直後は API のキャッシュとレプリカを使わない（できたばかりの作品が見つからないことがないように）
+  const isFreshRead = /(?:^|;\s*)aip_fresh=1(?:;|$)/.test(
+    props.request.headers.get("cookie") ?? "",
+  )
+
+  const isCrawler = isbot(props.request.headers.get("user-agent"))
+
   const workResp = await loaderClient.query({
     query: workQuery,
     variables: {
       id: props.params.post,
     },
+    ...((isFreshRead || isCrawler) && {
+      context: {
+        headers: {
+          ...(isFreshRead && { "x-aipictors-fresh": "1" }),
+          // クローラーの表示は作品の閲覧数に数えない
+          ...(isCrawler && { "x-aipictors-no-view": "1" }),
+        },
+      },
+    }),
   })
 
   if (workResp.data.work === null) {

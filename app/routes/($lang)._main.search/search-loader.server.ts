@@ -4,6 +4,7 @@ import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { loaderClient } from "~/lib/loader-client"
 import {
+  getSearchCacheKv,
   getSearchDb,
   searchWorkIdsByText,
 } from "~/lib/server/work-text-search.server"
@@ -141,6 +142,7 @@ export async function searchLoader(props: LoaderFunctionArgs) {
         : searchDb
           ? searchWorkIdsByText({
               db: searchDb,
+              kv: getSearchCacheKv(props.context),
               query: searchQuery,
               rating,
               order,

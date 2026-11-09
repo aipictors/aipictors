@@ -46,7 +46,6 @@ const contextSetter: ContextSetter = async (_, context) => {
   return {
     headers: {
       ...context.headers,
-      authorization: null,
       provider: "aipictors",
       platform: "web",
     },
