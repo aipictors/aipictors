@@ -7,7 +7,7 @@ import { Container } from "@cloudflare/containers"
  */
 export class ImageTagger extends Container {
   defaultPort = 8510
-  sleepAfter = "3m"
+  sleepAfter = "45s"
   envVars = { THREADS: "1" }
 
   async fetch(request) {

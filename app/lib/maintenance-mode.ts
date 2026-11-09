@@ -86,6 +86,37 @@ const getKv = (env: unknown): KvNamespace | null => {
   return kv ?? null
 }
 
+/** KV の読み取りは 1 回ごとに課金されるので、拠点のキャッシュで isolate の間で共有する */
+const SHARED_CACHE_TTL_MS = 60_000
+
+const toSharedCacheKey = (key: string) =>
+  new Request(`https://www.aipictors.com/__cache/maintenance-flag/${key}`)
+
+const readSharedFlag = async (key: string): Promise<MaintenanceFlag | null> => {
+  if (typeof caches === "undefined") return null
+  const cached = await caches.default
+    .match(toSharedCacheKey(key))
+    .catch(() => undefined)
+  if (!cached) return null
+  const entry = (await cached.json()) as {
+    flag: MaintenanceFlag
+    at: number
+  }
+  return Date.now() - entry.at < SHARED_CACHE_TTL_MS ? entry.flag : null
+}
+
+const writeSharedFlag = async (key: string, flag: MaintenanceFlag) => {
+  if (typeof caches === "undefined") return
+  await caches.default
+    .put(
+      toSharedCacheKey(key),
+      new Response(JSON.stringify({ flag, at: Date.now() }), {
+        headers: { "Cache-Control": "public, max-age=3600" },
+      }),
+    )
+    .catch(() => undefined)
+}
+
 /**
  * フラグを読む（20 秒はメモリの値を使う）。読めなければ前回の値、それもなければ無効として扱う
  */
@@ -100,8 +131,14 @@ export const readMaintenanceFlag = async (
   const kv = getKv(env)
   if (kv === null) return DISABLED
   try {
+    const shared = await readSharedFlag(key)
+    if (shared !== null) {
+      memoryCache.set(key, { flag: shared, at: Date.now() })
+      return shared
+    }
     const flag = parseMaintenanceFlag(await kv.get(key, { type: "text" }))
     memoryCache.set(key, { flag, at: Date.now() })
+    await writeSharedFlag(key, flag)
     return flag
   } catch {
     return cached?.flag ?? DISABLED
