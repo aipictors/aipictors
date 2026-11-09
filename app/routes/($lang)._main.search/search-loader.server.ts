@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs, SerializeFrom } from "@remix-run/cloudflare"
 import { redirect } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
+import { isbot } from "isbot"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { loaderClient } from "~/lib/loader-client"
 import {
@@ -143,6 +144,7 @@ export async function searchLoader(props: LoaderFunctionArgs) {
           ? searchWorkIdsByText({
               db: searchDb,
               kv: getSearchCacheKv(props.context),
+              skipShortScan: isbot(props.request.headers.get("user-agent")),
               query: searchQuery,
               rating,
               order,

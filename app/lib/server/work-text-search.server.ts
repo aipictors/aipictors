@@ -65,6 +65,7 @@ export function searchWorkIdsByText(props: {
   order?: WorkTextSearchOrder
   offset: number
   limit: number
+  skipShortScan?: boolean
 }): Promise<{ ids: string[]; count: number }> {
   let timer: ReturnType<typeof setTimeout> | undefined
   const timeout = new Promise<never>((_, reject) => {
@@ -86,6 +87,8 @@ export function searchWorkIdsByText(props: {
  */
 const SEARCH_CACHE_ORIGIN = "https://www.aipictors.com/__cache/text-search/"
 const FTS_CACHE_TTL_SECONDS = 60 * 10
+/** 2 文字以下の語で読む作品の上限（いいね順・投稿日順の上位。全件は 1 回 71 万行） */
+const SHORT_WORD_SCAN_LIMIT = 150_000
 const LIKE_CACHE_TTL_SECONDS = 60 * 60 * 6
 
 type SearchCacheKv = {
@@ -158,6 +161,7 @@ async function queryWorkIdsByText(props: {
   order?: WorkTextSearchOrder
   offset: number
   limit: number
+  skipShortScan?: boolean
 }): Promise<{ ids: string[]; count: number }> {
   const query = props.query.trim().slice(0, 50)
   if (query.length === 0) {
@@ -173,6 +177,10 @@ async function queryWorkIdsByText(props: {
 
   // trigram は 3 文字以上でないと使えない
   const useFts = Array.from(query).length >= 3
+  // クローラーには 2 文字以下の全文検索はしない（タグの一致は別に出る）
+  if (!useFts && props.skipShortScan) {
+    return { ids: [], count: 0 }
+  }
   const match = `"${query.replace(/"/g, '""')}"`
   // タイトル・説明の索引とタグの索引のどちらかに当たった作品
   const matchedIds = `(w.id IN (SELECT rowid FROM works_fts WHERE works_fts MATCH ?)
@@ -203,7 +211,11 @@ async function queryWorkIdsByText(props: {
           .all<{ id: number }>()
       : props.db
           .prepare(
-            `SELECT id FROM works
+            `SELECT id FROM (
+              SELECT id, title, en_title, tags, rating, likes, created_at FROM works
+               ORDER BY ${order === "popular" ? "likes DESC" : toDateOrderSql(order, "created_at")}
+               LIMIT ${SHORT_WORD_SCAN_LIMIT}
+            )
           WHERE (title LIKE ? ESCAPE '\\' OR en_title LIKE ? ESCAPE '\\' OR tags LIKE ? ESCAPE '\\')
             AND rating IN (${ratingPlaceholders})
             ${isDateOrder ? "AND created_at <= ?" : ""}
