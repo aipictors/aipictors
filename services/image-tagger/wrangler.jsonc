@@ -5,6 +5,7 @@
   "workers_dev": false,
   "containers": [
     {
+      "name": "aipictors-image-tagger-imagetagger",
       "class_name": "ImageTagger",
       "image": "./Dockerfile",
       "instance_type": "standard-1",
