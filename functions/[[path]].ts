@@ -594,7 +594,19 @@ export const onRequest: PagesFunction = async (ctx) => {
     ctx.env as unknown as { IMAGE_RESIZE?: { fetch: typeof fetch } }
   ).IMAGE_RESIZE
   if (imageResize && new URL(ctx.request.url).pathname.startsWith("/_w/")) {
-    return imageResize.fetch(ctx.request)
+    try {
+      return await imageResize.fetch(ctx.request)
+    } catch {
+      // 大きい画像の変換でメモリが足りなかったときは、元の画像を見せる
+      const key = new URL(ctx.request.url).pathname.split("/").slice(3).join("/")
+      return new Response(null, {
+        status: 302,
+        headers: {
+          location: `https://files.aipictors.com/${key}`,
+          "cache-control": "no-store",
+        },
+      })
+    }
   }
 
   // HTML から外したローダーのデータ（app/lib/defer-hydration.ts）
