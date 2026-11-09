@@ -73,14 +73,15 @@ const originalQuery = loaderClient.query.bind(loaderClient)
 
 /**
  * 一部の項目だけ失敗しても（D1 の過負荷など）取れた分でページを出す。
- * 何も取れなかったときと、呼び出し側が errorPolicy を指定したときは今まで通り。
+ * 何も取れなかったときはエラーにする（呼び出し側の errorPolicy によらない）。
  */
 loaderClient.query = (async (options: Parameters<typeof originalQuery>[0]) => {
   const result = await originalQuery(options)
-  if (options.errorPolicy !== undefined || !result.errors?.length) {
+  if (!result.errors?.length) {
     return result
   }
   const values = Object.values((result.data ?? {}) as Record<string, unknown>)
+  // 取得に失敗して null になったものを「存在しない」（404）と扱わせない
   if (values.every((value) => value === null || value === undefined)) {
     throw new ApolloError({ graphQLErrors: result.errors })
   }
