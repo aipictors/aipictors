@@ -22,6 +22,7 @@ import {
   clearPremiumCheckoutSearchParams,
   type Comment,
   type CommentSupportDraft,
+  excludeShownComments,
   fetchCoinSummary,
   type ReplyComment,
   SUPPORT_CONFIRM_THRESHOLD_PT,
@@ -159,12 +160,17 @@ export function useWorkCommentList(props: WorkCommentListProps) {
   const userIcon = userResp?.data?.user?.iconUrl
   const userAvatarFrame = userResp?.data?.user?.avatarFrame ?? null
 
-  const showNewComments = newComments?.filter(
-    (comment) => !hideCommentIds.includes(comment.id),
+  // 一覧を読み直して届いたものは一覧の側で出す
+  const showNewComments = excludeShownComments(
+    newComments,
+    moderationCommentIds,
+    hideCommentIds,
   )
 
-  const showNewReplyComments = newReplyComments?.filter(
-    (comment) => !hideCommentIds.includes(comment.id),
+  const showNewReplyComments = excludeShownComments(
+    newReplyComments,
+    moderationCommentIds,
+    hideCommentIds,
   )
 
   const [likedCommentIds, setLikedCommentIds] = useState<string[]>([])
@@ -190,6 +196,8 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     if (newComments !== null) {
       setNewComments([])
     }
+    // 残すと作品に戻ったときに、読み込み直した返信と二重に並ぶ
+    setNewReplyComments([])
   }, [props.workId])
 
   useEffect(() => {

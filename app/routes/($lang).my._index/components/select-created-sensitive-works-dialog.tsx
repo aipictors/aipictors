@@ -48,6 +48,8 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
         orderBy: "DATE_CREATED",
         sort: "DESC",
         isSensitive: true,
+        // 投稿から 24 時間以内の作品も選べるように（省略すると API は 24 時間より前だけ返す）
+        isNowCreatedAt: true,
       },
     },
   })
@@ -59,6 +61,8 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
       where: {
         userId: appContext.userId,
         isSensitive: true,
+        // 投稿から 24 時間以内の作品も選べるように（省略すると API は 24 時間より前だけ返す）
+        isNowCreatedAt: true,
       },
     },
   })

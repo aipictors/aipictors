@@ -49,6 +49,8 @@ export function SelectCreatedWorksDialog(props: Props) {
         sort: "DESC",
         // R15 は全年齢側で選べるように（isSensitive: false だと G だけになる）
         ratings: ["G", "R15"],
+        // 投稿から 24 時間以内の作品も選べるように（省略すると API は 24 時間より前だけ返す）
+        isNowCreatedAt: true,
       },
     },
   })
@@ -61,6 +63,8 @@ export function SelectCreatedWorksDialog(props: Props) {
         userId: appContext.userId,
         // R15 は全年齢側で選べるように（isSensitive: false だと G だけになる）
         ratings: ["G", "R15"],
+        // 投稿から 24 時間以内の作品も選べるように（省略すると API は 24 時間より前だけ返す）
+        isNowCreatedAt: true,
       },
     },
   })

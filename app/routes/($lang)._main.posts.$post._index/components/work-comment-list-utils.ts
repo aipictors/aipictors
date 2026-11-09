@@ -66,6 +66,18 @@ export const calculateCommentSupportDraft = (
 
 // 日本時間の日付を計算する関数
 /** 決済から戻ったときの URL のパラメータを消す */
+/**
+ * 送信直後の仮表示のうち、一覧に届いたものと非表示にしたものを除く
+ */
+export const excludeShownComments = <T extends { id: string }>(
+  comments: T[],
+  loadedCommentIds: string[],
+  hiddenCommentIds: string[],
+): T[] => {
+  const excludedIds = new Set([...loadedCommentIds, ...hiddenCommentIds])
+  return comments.filter((comment) => !excludedIds.has(comment.id))
+}
+
 export const clearPremiumCheckoutSearchParams = () => {
   if (typeof window === "undefined") {
     return

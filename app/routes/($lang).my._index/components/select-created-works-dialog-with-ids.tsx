@@ -158,6 +158,8 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         userId: appContext.userId,
         orderBy: "DATE_CREATED",
         sort: "DESC",
+        // 投稿から 24 時間以内の作品も選べるように（省略すると API は 24 時間より前だけ返す）
+        isNowCreatedAt: true,
       },
     },
     fetchPolicy: "cache-and-network",
@@ -172,6 +174,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     variables: {
       where: {
         userId: appContext.userId,
+        isNowCreatedAt: true,
       },
     },
     fetchPolicy: "cache-and-network",
@@ -190,6 +193,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         ids: props.selectedWorkIds,
         orderBy: "DATE_CREATED",
         sort: "DESC",
+        isNowCreatedAt: true,
       },
     },
     fetchPolicy: "cache-first",
@@ -206,6 +210,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     variables: {
       where: {
         ids: props.selectedWorkIds,
+        isNowCreatedAt: true,
       },
     },
     fetchPolicy: "cache-and-network",
