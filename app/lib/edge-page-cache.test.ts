@@ -66,10 +66,10 @@ describe("getSwrSeconds", () => {
 })
 
 describe("canServeStaleToBot", () => {
-  test("2 日まではクローラーに古いページを返す", () => {
+  test("14 日まではクローラーに古いページを返す", () => {
     expect(canServeStaleToBot(60)).toBe(true)
     expect(canServeStaleToBot(60 * 60 * 47)).toBe(true)
-    expect(canServeStaleToBot(60 * 60 * 49)).toBe(false)
+    expect(canServeStaleToBot(60 * 60 * 24 * 14 + 1)).toBe(false)
     expect(canServeStaleToBot(Number.NaN)).toBe(false)
   })
 })
