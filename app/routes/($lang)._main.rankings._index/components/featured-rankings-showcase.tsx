@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { type TranslationFn, useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import {
@@ -159,7 +160,7 @@ function FeaturedRankingBlock(props: {
           <div className="relative w-24 shrink-0 overflow-hidden rounded-[18px] bg-muted/30 sm:w-28 sm:rounded-[20px] md:w-[120px]">
             {primaryItem.imageUrl ? (
               <img
-                src={primaryItem.imageUrl}
+                src={toResizedImageUrl(primaryItem.imageUrl, 240)}
                 alt={primaryItem.title}
                 className="aspect-square h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 loading="lazy"
@@ -242,7 +243,7 @@ function FeaturedRankingBlock(props: {
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-muted/30">
                     {item.imageUrl ? (
                       <img
-                        src={item.imageUrl}
+                        src={toResizedImageUrl(item.imageUrl, 240)}
                         alt={item.title}
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                         loading="lazy"

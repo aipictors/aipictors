@@ -431,7 +431,7 @@ export function GenerationTaskEditableCard(props: Props) {
             className={cn(`generation-image-${props.taskNanoid}`, "m-auto")}
             src={
               context.config.taskListThumbnailType === "light"
-                ? normalizedThumbnailUrl
+                ? toResizedImageUrl(normalizedThumbnailUrl, 480)
                 : toResizedImageUrl(normalizedImageUrl, 640)
             }
             data-original={normalizedImageUrl}
