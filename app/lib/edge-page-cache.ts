@@ -109,6 +109,19 @@ const DEFAULT_SWR_SECONDS = 300
  */
 const MIN_SWR_SECONDS = 60 * 60 * 6
 
+/**
+ * 新着一覧は古い並びが目立つので、古いものを返す期間を短くする
+ */
+const LATEST_PAGE_PATH = /^\/(?:en\/)?(?:r\/)?new-works\/?$/
+const LATEST_PAGE_SWR_SECONDS = 60 * 10
+
+export const getSwrSeconds = (pathname: string, swr: number | null) => {
+  if (LATEST_PAGE_PATH.test(pathname)) {
+    return Math.min(swr ?? DEFAULT_SWR_SECONDS, LATEST_PAGE_SWR_SECONDS)
+  }
+  return Math.max(swr ?? DEFAULT_SWR_SECONDS, MIN_SWR_SECONDS)
+}
+
 const parseCacheControl = (value: string | null) => {
   const lower = (value ?? "").toLowerCase()
   const num = (name: string) => {
@@ -187,7 +200,7 @@ export const createEdgePageCache = (version: string) => {
     if (cc.sMaxAge !== null && cc.sMaxAge > 0 && !cc.isPrivate) {
       return {
         ttl: cc.sMaxAge,
-        swr: Math.max(cc.swr ?? DEFAULT_SWR_SECONDS, MIN_SWR_SECONDS),
+        swr: getSwrSeconds(url.pathname, cc.swr),
       }
     }
     if (
@@ -195,7 +208,10 @@ export const createEdgePageCache = (version: string) => {
       !response.headers.get("Cache-Control") &&
       PUBLIC_DATA_PATH.test(url.pathname)
     ) {
-      return { ttl: DEFAULT_DATA_TTL_SECONDS, swr: MIN_SWR_SECONDS }
+      return {
+        ttl: DEFAULT_DATA_TTL_SECONDS,
+        swr: getSwrSeconds(url.pathname, null),
+      }
     }
     return null
   }
@@ -251,7 +267,12 @@ export const createEdgePageCache = (version: string) => {
       h: [string, string][]
       x?: string
     }
-    return { meta, headers: head.h, extra: head.x, body: value.slice(newline + 1) }
+    return {
+      meta,
+      headers: head.h,
+      extra: head.x,
+      body: value.slice(newline + 1),
+    }
   }
 
   const writeShared = async (
@@ -264,13 +285,23 @@ export const createEdgePageCache = (version: string) => {
     const body = await response.text()
     const headers: [string, string][] = []
     response.headers.forEach((value, name) => {
-      if (!SHARED_SKIP_HEADERS.has(name.toLowerCase())) headers.push([name, value])
+      if (!SHARED_SKIP_HEADERS.has(name.toLowerCase()))
+        headers.push([name, value])
     })
-    const metadata: SharedMetadata = { s: Date.now(), t: ttl.ttl, w: ttl.swr, v: 1 }
-    await kv.put(key, `${JSON.stringify({ h: headers, x: extra?.get() })}\n${body}`, {
-      expirationTtl: Math.max(ttl.ttl + ttl.swr, 60),
-      metadata,
-    })
+    const metadata: SharedMetadata = {
+      s: Date.now(),
+      t: ttl.ttl,
+      w: ttl.swr,
+      v: 1,
+    }
+    await kv.put(
+      key,
+      `${JSON.stringify({ h: headers, x: extra?.get() })}\n${body}`,
+      {
+        expirationTtl: Math.max(ttl.ttl + ttl.swr, 60),
+        metadata,
+      },
+    )
   }
 
   /**

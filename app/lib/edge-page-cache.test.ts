@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { isSharedPage } from "~/lib/edge-page-cache"
+import { getSwrSeconds, isSharedPage } from "~/lib/edge-page-cache"
 
 const shared = (path: string) =>
   isSharedPage(new URL(`https://www.aipictors.com${path}`))
@@ -45,5 +45,18 @@ describe("isSharedPage", () => {
     ]) {
       expect(shared(path)).toBe(false)
     }
+  })
+})
+
+describe("getSwrSeconds", () => {
+  test("新着一覧は 10 分まで", () => {
+    for (const path of ["/new-works", "/en/new-works", "/r/new-works"]) {
+      expect(getSwrSeconds(path, 86400)).toBe(600)
+    }
+  })
+
+  test("ほかのページは 6 時間以上", () => {
+    expect(getSwrSeconds("/", 300)).toBe(21600)
+    expect(getSwrSeconds("/rankings", null)).toBe(21600)
   })
 })
