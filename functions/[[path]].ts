@@ -834,6 +834,19 @@ export const onRequest: PagesFunction = async (ctx) => {
       try {
         const res = await executeWithTimeout(remix(ctx))
 
+        // DB の過負荷は短い波で来るので、読むだけのページは少し待って 1 回だけ作り直す
+        if (
+          res.status >= 500 &&
+          ctx.request.method === "GET" &&
+          attempt < maxRetry - 1
+        ) {
+          await res.body?.cancel()
+          await new Promise((resolve) =>
+            setTimeout(resolve, 400 + Math.random() * 400),
+          )
+          continue
+        }
+
         // IMPORTANT:
         // Do not consume the body (e.g. res.text()), otherwise binary responses
         // like images/zip will be corrupted.

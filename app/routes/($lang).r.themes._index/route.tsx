@@ -140,7 +140,7 @@ export async function loader(props: LoaderFunctionArgs) {
     dailyBeforeThemes: dailyBeforeThemes.data.dailyThemes,
     worksCount: worksResp ? worksResp.data.worksCount : null,
     page,
-    themeId: Number(todayThemesResp.data.dailyThemes[0].id),
+    themeId: Number(todayThemesResp.data.dailyThemes[0]?.id ?? 0),
   }
 }
 

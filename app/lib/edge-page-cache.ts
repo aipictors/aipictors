@@ -110,6 +110,11 @@ const DEFAULT_SWR_SECONDS = 300
 const MIN_SWR_SECONDS = 60 * 60 * 6
 
 /**
+ * ページを作れなかったとき（DB の過負荷など）に、エラーの代わりに返すため古いものを残しておく期間
+ */
+const STALE_IF_ERROR_SECONDS = 60 * 60 * 24 * 7
+
+/**
  * 新着一覧は古い並びが目立つので、古いものを返す期間を短くする
  */
 const LATEST_PAGE_PATH = /^\/(?:en\/)?(?:r\/)?new-works\/?$/
@@ -244,7 +249,10 @@ export const createEdgePageCache = (version: string) => {
     headers.set("X-Edge-Ttl", String(ttl.ttl))
     headers.set("X-Edge-Swr", String(ttl.swr))
     // Cache API に残しておく時間（期限は X-Edge-Stored-At で判定する）
-    headers.set("Cache-Control", `public, max-age=${ttl.ttl + ttl.swr}`)
+    headers.set(
+      "Cache-Control",
+      `public, max-age=${Math.max(ttl.ttl + ttl.swr, STALE_IF_ERROR_SECONDS)}`,
+    )
     await caches.default.put(
       cacheKey,
       new Response(response.body, { status: response.status, headers }),
@@ -298,7 +306,7 @@ export const createEdgePageCache = (version: string) => {
       key,
       `${JSON.stringify({ h: headers, x: extra?.get() })}\n${body}`,
       {
-        expirationTtl: Math.max(ttl.ttl + ttl.swr, 60),
+        expirationTtl: Math.max(ttl.ttl + ttl.swr, STALE_IF_ERROR_SECONDS),
         metadata,
       },
     )
@@ -365,6 +373,9 @@ export const createEdgePageCache = (version: string) => {
       cached = undefined
     }
 
+    /** ページを作れなかったときに代わりに返す、期限切れのもの */
+    let staleIfError: (() => Response) | null = null
+
     if (cached) {
       const storedAt = Number(cached.headers.get("X-Edge-Stored-At"))
       const ttl = Number(cached.headers.get("X-Edge-Ttl"))
@@ -379,6 +390,7 @@ export const createEdgePageCache = (version: string) => {
           ctx.waitUntil(renderAndStore().catch(() => undefined))
           return forBrowser(cached, "STALE")
         }
+        staleIfError = () => forBrowser(cached as Response, "STALE-IF-ERROR")
       }
     }
 
@@ -408,10 +420,25 @@ export const createEdgePageCache = (version: string) => {
           }
           return forBrowser(response, "SHARED")
         }
+        if (ageSeconds >= 0 && staleIfError === null) {
+          staleIfError = () => {
+            if (shared.extra !== undefined) sharedExtra?.restore(shared.extra)
+            return forBrowser(
+              new Response(shared.body, {
+                status: 200,
+                headers: shared.headers,
+              }),
+              "STALE-IF-ERROR",
+            )
+          }
+        }
       }
     }
 
     const { response, stored } = await renderAndStore()
+    if (response.status >= 500 && staleIfError) {
+      return staleIfError()
+    }
     return stored ? forBrowser(response, "MISS") : response
   }
 
