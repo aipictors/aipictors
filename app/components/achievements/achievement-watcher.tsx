@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
-import { useNavigate } from "~/lib/app/locale-router"
 import { graphql, type ResultOf } from "gql.tada"
 import { Share2Icon, XIcon } from "lucide-react"
 import {
@@ -28,15 +27,36 @@ import {
 } from "~/components/ui/dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import {
   getAchievementTier,
   onAchievementCheckRequested,
 } from "~/lib/achievements/achievement-ui"
+import { useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
+import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 
 /** ページを移ったときに確かめる間隔 */
-const ROUTE_CHECK_INTERVAL_MS = 60 * 1000
+const ROUTE_CHECK_INTERVAL_MS = 10 * 60 * 1000
+
+/** 読み込み直しても間隔を守るために、確かめた時刻をタブごとに残す */
+const LAST_CHECKED_AT_KEY = "achievement-last-checked-at"
+
+const readLastCheckedAt = () => {
+  if (typeof window === "undefined") return 0
+  try {
+    return Number(window.sessionStorage.getItem(LAST_CHECKED_AT_KEY)) || 0
+  } catch {
+    return 0
+  }
+}
+
+const saveLastCheckedAt = (value: number) => {
+  try {
+    window.sessionStorage.setItem(LAST_CHECKED_AT_KEY, String(value))
+  } catch {
+    // 保存できなくても確かめる回数が増えるだけ
+  }
+}
 
 /** 投稿・いいねなどのあと、少し待ってからまとめて確かめる */
 const REQUEST_DEBOUNCE_MS = 1500
@@ -50,7 +70,7 @@ type UnlockedAchievement = ResultOf<
 
 /**
  * 実績を確かめて、達成したら演出を出す（ログインしている人だけ。画面の操作は邪魔しない）
- * - 開いたとき・ページを移ったとき（1 分に 1 回まで）・タブに戻ったとき・投稿やいいねのあと
+ * - 開いたとき・ページを移ったとき（10 分に 1 回まで）・タブに戻ったとき・投稿やいいねのあと
  * - 1 件ずつ右下（スマホは下）にカードで出す。触っている間は消えない。押すと実績ページへ
  * - はじめての確認でこれまでの分をまとめて達成したときだけ、一覧のダイアログで見せる
  */
@@ -81,7 +101,7 @@ export function AchievementWatcher() {
 
   /** この画面で一度出したもの（同じものを二度出さない） */
   const shownKeysRef = useRef(new Set<string>())
-  const lastCheckedAtRef = useRef(0)
+  const lastCheckedAtRef = useRef(readLastCheckedAt())
   const isCheckingRef = useRef(false)
 
   const isLoggedIn = !authContext.isLoading && authContext.isLoggedIn
@@ -102,6 +122,7 @@ export function AchievementWatcher() {
       if (!isLoggedIn || isCheckingRef.current) return
       isCheckingRef.current = true
       lastCheckedAtRef.current = Date.now()
+      saveLastCheckedAt(lastCheckedAtRef.current)
       try {
         const { data } = await checkAchievements({ variables: { force } })
         const result = data?.checkAchievements

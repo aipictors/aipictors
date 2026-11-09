@@ -21,6 +21,7 @@ import {
   readMaintenanceFlag,
   SITE_MAINTENANCE_KV_KEY,
 } from "../app/lib/maintenance-mode"
+import { createTemporarilyUnavailablePage } from "../app/lib/temporarily-unavailable-page"
 import { checkLocaleRedirect } from "../app/utils/check-locale-redirect"
 import { getLegacyRedirectPath } from "../app/utils/legacy-redirect"
 import {
@@ -999,14 +1000,24 @@ export const onRequest: PagesFunction = async (ctx) => {
     )
   }
 
-  const render = async () =>
-    inlineCriticalCss(
-      deferHydration(await renderWithRetry(), requestUrl.pathname, {
+  const render = async () => {
+    const rendered = await renderWithRetry()
+    if (
+      rendered.status >= 500 &&
+      ctx.request.method === "GET" &&
+      ctx.request.headers.get("accept")?.includes("text/html")
+    ) {
+      await rendered.body?.cancel()
+      return createTemporarilyUnavailablePage(requestUrl.pathname)
+    }
+    return inlineCriticalCss(
+      deferHydration(rendered, requestUrl.pathname, {
         storeContext,
       }),
       criticalCssSource as CriticalCssSource,
       { deferStylesheets: shouldWaitForInteraction(requestUrl.pathname) },
     )
+  }
   // 画像生成のメンテナンス中は、生成画面をキャッシュから返さない（帯の出ていない画面を返さないため）。
   // メンテナンス中に描画した画面は loader が no-store にするので保存されない
   // 運営がメンテナンス中に確認する画面も、移行途中の内容を再開後に返さないようキャッシュしない
