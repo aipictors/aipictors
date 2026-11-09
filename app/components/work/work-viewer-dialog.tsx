@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   type ComponentProps,
@@ -520,7 +521,7 @@ export function WorkViewerDialog({
               <div className="flex h-full items-center justify-center p-4">
                 <div className="relative">
                   <img
-                    src={work.smallThumbnailImageURL}
+                    src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                     alt={t.workTitle(work.title, work.enTitle)}
                     className="max-h-[60vh] max-w-full rounded-lg object-contain opacity-60 blur-[2px]"
                   />
@@ -661,7 +662,7 @@ export function WorkViewerDialog({
                 onClick={() => setIndex(i)}
               >
                 <img
-                  src={w.smallThumbnailImageURL}
+                  src={toResizedImageUrl(w.smallThumbnailImageURL, 240)}
                   alt=""
                   className="aspect-square w-full bg-muted object-cover"
                   draggable={false}

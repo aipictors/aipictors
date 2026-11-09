@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useTranslation } from "~/hooks/use-translation"
 import { FollowButton } from "~/components/button/follow-button"
 import { Link } from "~/lib/app/locale-router"
@@ -59,7 +60,7 @@ export function UserSearchItem (props: Props) {
               <img
                 className="size-32 rounded-md object-cover"
                 alt={t.workTitle(work.title, work.enTitle)}
-                src={work.smallThumbnailImageURL}
+                src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                 width={128}
                 height={128}
                 loading="lazy"

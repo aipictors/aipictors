@@ -563,7 +563,7 @@ export function TagPageView(props: Props) {
                       className="flex min-w-0 items-center gap-2 rounded-lg p-1.5 hover:bg-muted"
                     >
                       <img
-                        src={withIconUrlFallback(creator.iconUrl)}
+                        src={toResizedImageUrl(withIconUrlFallback(creator.iconUrl), 96)}
                         alt=""
                         loading="lazy"
                         className="size-7 shrink-0 rounded-full object-cover"

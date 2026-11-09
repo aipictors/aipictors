@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import {
   useApolloClient,
   useQuery,
@@ -620,7 +621,7 @@ function TimelineView({
                   <div className="relative">
                     <Link to={`/posts/${work.id}`}>
                       <img
-                        src={work.largeThumbnailImageURL}
+                        src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
                         alt={t.workTitle(work.title, work.enTitle)}
                         className="w-full rounded-md"
                       />
@@ -633,7 +634,7 @@ function TimelineView({
                       >
                         <Link to={`/posts/${work.id}`}>
                           <img
-                            src={work.largeThumbnailImageURL}
+                            src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
                             alt={t.workTitle(work.title, work.enTitle)}
                             className="w-full rounded-md"
                           />
@@ -642,7 +643,7 @@ function TimelineView({
                     ) : (
                       <Link to={`/posts/${work.id}`}>
                         <img
-                          src={work.largeThumbnailImageURL}
+                          src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
                           alt={t.workTitle(work.title, work.enTitle)}
                           className="w-full rounded-md"
                         />

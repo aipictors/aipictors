@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
@@ -252,7 +253,7 @@ function EditButton(props: { work: MyWork }) {
 function Thumbnail(props: { work: MyWork; className?: string }) {
   return (
     <img
-      src={props.work.smallThumbnailImageURL}
+      src={toResizedImageUrl(props.work.smallThumbnailImageURL, 240)}
       alt=""
       loading="lazy"
       decoding="async"

@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
@@ -142,7 +143,7 @@ export function DashboardHomeContents() {
             <div className="size-20 shrink-0 overflow-hidden rounded-full border-4 border-card bg-muted md:size-24">
               {user ? (
                 <img
-                  src={withIconUrlFallback(user.iconUrl)}
+                  src={toResizedImageUrl(withIconUrlFallback(user.iconUrl), 96)}
                   alt={user.name}
                   className="size-full object-cover"
                   width={96}
@@ -316,7 +317,7 @@ export function DashboardHomeContents() {
                 className="group relative aspect-square overflow-hidden rounded-xl bg-muted"
               >
                 <img
-                  src={work.smallThumbnailImageURL}
+                  src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                   alt={work.title}
                   className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105"
                   width={200}
@@ -358,7 +359,7 @@ export function DashboardHomeContents() {
                       {index + 1}
                     </span>
                     <img
-                      src={work.smallThumbnailImageURL}
+                      src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                       alt={work.title}
                       className="size-11 shrink-0 rounded-lg object-cover"
                       width={44}

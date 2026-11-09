@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useTranslation } from "~/hooks/use-translation"
 import { type FragmentOf, graphql } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
@@ -30,7 +31,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
             className="max-h-32 overflow-hidden rounded"
           >
             <img
-              src={props.works[0].smallThumbnailImageURL}
+              src={toResizedImageUrl(props.works[0].smallThumbnailImageURL, 240)}
               alt={props.works[0].title}
               className="max-h-72 w-full overflow-hidden rounded object-contain"
             />

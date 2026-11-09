@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -404,7 +405,7 @@ export default function Aipictors3rdAnniversary () {
                     <Card className="overflow-hidden transition-all hover:shadow-xl dark:border-orange-700 dark:bg-gray-900/50">
                       <div className="relative aspect-square overflow-hidden">
                         <img
-                          src={work.smallThumbnailImageURL}
+                          src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                           alt={t.workTitle(work.title, work.enTitle)}
                           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                         />

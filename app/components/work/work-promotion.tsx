@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { ExternalLinkIcon, MegaphoneIcon } from "lucide-react"
@@ -104,7 +105,7 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
             <div className="flex h-full flex-col overflow-hidden rounded-[11px] bg-card">
               <Link to={`/posts/${work.id}`} className="block">
                 <img
-                  src={work.largeThumbnailImageURL}
+                  src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
                   alt={t.workTitle(work.title, work.enTitle)}
                   loading="lazy"
                   decoding="async"
@@ -124,7 +125,7 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
                     className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs hover:text-foreground"
                   >
                     <img
-                      src={withIconUrlFallback(work.user.iconUrl)}
+                      src={toResizedImageUrl(withIconUrlFallback(work.user.iconUrl), 96)}
                       alt=""
                       loading="lazy"
                       className="size-5 shrink-0 rounded-full object-cover"

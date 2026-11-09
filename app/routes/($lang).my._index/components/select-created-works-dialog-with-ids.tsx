@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useQuery } from "@apollo/client/index"
 // ----- dnd-kit -----
 import {
@@ -95,7 +96,7 @@ function SortableItem(props: SortableItemProps) {
       </span>
       <img
         className="size-16 shrink-0 rounded-lg bg-muted object-contain sm:size-20"
-        src={props.work.smallThumbnailImageURL}
+        src={toResizedImageUrl(props.work.smallThumbnailImageURL, 240)}
         alt=""
       />
       <div className="min-w-0 flex-1">
@@ -326,7 +327,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                   "absolute inset-0 h-full w-full object-contain transition",
                   isSelected ? "opacity-80" : "group-hover:opacity-90",
                 )}
-                src={work.smallThumbnailImageURL}
+                src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                 alt=""
                 loading="lazy"
               />
@@ -439,7 +440,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             <div className="flex w-[min(100vw-2rem,32rem)] items-center gap-3 rounded-xl border bg-background p-3 shadow-lg">
               <img
                 className="size-20 rounded-lg object-cover"
-                src={activeDragItem.smallThumbnailImageURL}
+                src={toResizedImageUrl(activeDragItem.smallThumbnailImageURL, 240)}
                 alt=""
               />
               <p className="line-clamp-2 font-medium text-sm">
@@ -491,7 +492,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
               >
                 <img
                   className="absolute inset-0 h-full w-full object-contain"
-                  src={work.smallThumbnailImageURL}
+                  src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                   alt={work.title}
                 />
                 <span className="absolute top-1 left-1 flex size-5 items-center justify-center rounded-full bg-black/60 font-semibold text-[10px] text-white">

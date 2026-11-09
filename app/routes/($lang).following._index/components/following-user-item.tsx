@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { graphql, type FragmentOf } from "gql.tada"
@@ -67,7 +68,7 @@ export function FollowingUserItem (props: Props) {
                 className="size-32 object-cover"
                 alt={t.workTitle(work.title, work.enTitle)}
                 key={work.id}
-                src={work.smallThumbnailImageURL}
+                src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
               />
             </div>
             <div className="absolute right-0 bottom-0">

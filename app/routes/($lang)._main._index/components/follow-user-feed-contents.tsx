@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useApolloClient, useQuery } from "@apollo/client/index"
 import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
 import { Link, useNavigate } from "~/lib/app/locale-router"
@@ -667,7 +668,7 @@ function FeedContent({
                             onClick={() => onSelect(work.id)}
                           >
                             <img
-                              src={work.largeThumbnailImageURL}
+                              src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
                               alt={t.workTitle(work.title, work.enTitle)}
                               className="w-full rounded-md"
                             />
@@ -675,7 +676,7 @@ function FeedContent({
                         ) : (
                           <Link to={`/posts/${work.id}`}>
                             <img
-                              src={work.largeThumbnailImageURL}
+                              src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
                               alt={t.workTitle(work.title, work.enTitle)}
                               className="w-full rounded-md"
                             />

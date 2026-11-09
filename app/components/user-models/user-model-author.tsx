@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
@@ -39,7 +40,7 @@ export function UserModelAuthor(props: Props) {
       )}
     >
       <img
-        src={withIconUrlFallback(user?.iconUrl)}
+        src={toResizedImageUrl(withIconUrlFallback(user?.iconUrl), 96)}
         alt=""
         className={cn(iconSize, "shrink-0 rounded-full object-cover")}
         loading="lazy"

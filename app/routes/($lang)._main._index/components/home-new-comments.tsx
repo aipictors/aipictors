@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { ChevronRightIcon } from "lucide-react"
@@ -56,7 +57,7 @@ export function HomeNewCommentsSection(props: Props) {
                 className="flex gap-2.5 rounded-xl p-2 transition-colors hover:bg-muted"
               >
                 <img
-                  src={work.smallThumbnailImageURL}
+                  src={toResizedImageUrl(work.smallThumbnailImageURL, 96)}
                   alt=""
                   width={48}
                   height={48}

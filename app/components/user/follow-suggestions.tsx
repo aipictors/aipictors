@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
@@ -104,7 +105,7 @@ export function FollowSuggestions(props: Props) {
               {user.works.slice(0, 3).map((work) => (
                 <img
                   key={work.id}
-                  src={work.smallThumbnailImageURL}
+                  src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                   alt={t.workTitle(work.title, work.enTitle)}
                   loading="lazy"
                   className="aspect-square w-full bg-muted object-cover"

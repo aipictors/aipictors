@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { graphql, type ResultOf } from "gql.tada"
@@ -100,7 +101,7 @@ export function ReadingWorkCard(props: Props) {
               className="flex min-w-0 items-center gap-1.5 hover:text-foreground"
             >
               <img
-                src={withIconUrlFallback(work.user.iconUrl)}
+                src={toResizedImageUrl(withIconUrlFallback(work.user.iconUrl), 96)}
                 alt=""
                 width={20}
                 height={20}

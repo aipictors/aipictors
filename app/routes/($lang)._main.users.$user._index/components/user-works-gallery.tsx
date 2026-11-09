@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { ChevronRightIcon, HeartIcon, ImagesIcon } from "lucide-react"
@@ -42,7 +43,7 @@ function UserWorkCard(props: {
       >
         {props.isContained && (
           <img
-            src={work.smallThumbnailImageURL}
+            src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
             alt=""
             aria-hidden="true"
             loading="lazy"

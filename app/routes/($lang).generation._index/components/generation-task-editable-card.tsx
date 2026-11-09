@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import {
   toGenerationSizeInput,
   toTaskSizeType,
@@ -431,7 +432,7 @@ export function GenerationTaskEditableCard(props: Props) {
             src={
               context.config.taskListThumbnailType === "light"
                 ? normalizedThumbnailUrl
-                : normalizedImageUrl
+                : toResizedImageUrl(normalizedImageUrl, 640)
             }
             data-original={normalizedImageUrl}
             data-original-raw={originalImageUrl}

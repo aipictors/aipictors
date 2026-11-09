@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql, type ResultOf } from "gql.tada"
 import {
@@ -199,7 +200,7 @@ function ReportCard(props: {
             className="size-20 shrink-0 overflow-hidden rounded-xl bg-muted"
           >
             <img
-              src={work.smallThumbnailImageURL}
+              src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
               alt={work.title}
               className="h-full w-full object-cover"
               loading="lazy"

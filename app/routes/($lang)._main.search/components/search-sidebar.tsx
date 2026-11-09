@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -49,7 +50,7 @@ export function SearchSidebar(props: {
               </div>
 
               <img
-                src={work.smallThumbnailImageURL}
+                src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
                 alt={t.workTitle(work.title, work.enTitle)}
                 loading="lazy"
                 className="size-14 shrink-0 rounded-md object-cover"

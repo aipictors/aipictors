@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import type React from "react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -31,7 +32,7 @@ export function UserHomeHeader(props: Props) {
         ) : (
           // ヘッダー画像がない人は、アイコンの色を広げて背景にする
           <img
-            src={withIconUrlFallback(user.iconUrl)}
+            src={toResizedImageUrl(withIconUrlFallback(user.iconUrl), 96)}
             alt=""
             className="absolute inset-0 size-full scale-125 object-cover opacity-80 blur-3xl saturate-150"
             decoding="async"

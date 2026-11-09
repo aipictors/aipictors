@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import {
   AwardIcon,
   CoinsIcon,
@@ -121,7 +122,7 @@ export function NotificationRowView(props: {
       </div>
       {item.work?.smallThumbnailImageURL && (
         <img
-          src={item.work.smallThumbnailImageURL}
+          src={toResizedImageUrl(item.work.smallThumbnailImageURL, 240)}
           alt={
             item.work.title
               ? t.workTitle(item.work.title, item.work.enTitle)

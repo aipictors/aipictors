@@ -1,3 +1,4 @@
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CheckIcon, ImageIcon, PlusIcon } from "lucide-react"
@@ -105,7 +106,7 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
         >
           <img
             className="size-24 rounded-md object-cover"
-            src={work.smallThumbnailImageURL}
+            src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
             alt=""
           />
           <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
@@ -158,7 +159,7 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
           >
             <img
               className="size-16 rounded-md object-cover md:h-24 md:w-24"
-              src={work.smallThumbnailImageURL}
+              src={toResizedImageUrl(work.smallThumbnailImageURL, 240)}
               alt=""
             />
             <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">

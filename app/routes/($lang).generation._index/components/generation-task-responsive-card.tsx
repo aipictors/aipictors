@@ -12,6 +12,7 @@ import {
 } from "~/routes/($lang).generation._index/components/generation-task-dialog-button"
 import { ReservedGenerationLinkCard } from "~/routes/($lang).generation._index/components/reserved-generation-link-card"
 import { ErrorBoundary } from "react-error-boundary"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
@@ -36,15 +37,17 @@ type Props = {
  * レスポンシブ対応の画像生成の履歴
  */
 export function GenerationTaskResponsiveCard (props: Props) {
+  const { showDesktop, showMobile } = useLayoutVariant()
+
   return (
     <>
       <ErrorBoundary key={props.task.id} fallback={<ErrorResultCard />}>
-        {props.task.status === "RESERVED" && (
+        {showMobile && props.task.status === "RESERVED" && (
           <div className="block md:hidden">
             <ReservedGenerationLinkCard taskNanoid={props.task.nanoid ?? ""} />
           </div>
         )}
-        {props.task.status !== "RESERVED" && (
+        {showMobile && props.task.status !== "RESERVED" && (
           <div className="block md:hidden">
             <GenerationTaskDialogButton
               task={props.task}
@@ -57,7 +60,7 @@ export function GenerationTaskResponsiveCard (props: Props) {
             />
           </div>
         )}
-        {props.isDialog && (
+        {showDesktop && props.isDialog && (
           <div className="hidden md:block">
             <GenerationTaskDialogButton
               task={props.task}
@@ -70,7 +73,7 @@ export function GenerationTaskResponsiveCard (props: Props) {
             />
           </div>
         )}
-        {!props.isDialog && (
+        {showDesktop && !props.isDialog && (
           <div className="hidden md:block">
             <GenerationTaskButton
               task={props.task}

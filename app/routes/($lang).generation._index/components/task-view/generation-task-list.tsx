@@ -1,3 +1,4 @@
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -194,6 +195,8 @@ export function GenerationTaskList(props: Props) {
 
   const componentTasks = activeTasks
 
+  const { showDesktop, showMobile } = useLayoutVariant()
+
   const perPage = props.rating === 0 || props.rating === -1 ? 56 : 800
   const maxPagesByPlan = getMaxPagesByPlan(queryData.currentPass?.type)
 
@@ -325,23 +328,27 @@ export function GenerationTaskList(props: Props) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* モバイル: プル・トゥ・リフレッシュ付きスクロール */}
-      <div className="md:hidden">
-        <MobilePullToRefresh
-          onRefresh={props.onRefresh}
-          scrollContainerClassName="max-h-96 px-2"
-        >
-          {Grid}
-        </MobilePullToRefresh>
-      </div>
+      {showMobile && (
+        <div className="md:hidden">
+          <MobilePullToRefresh
+            onRefresh={props.onRefresh}
+            scrollContainerClassName="max-h-96 px-2"
+          >
+            {Grid}
+          </MobilePullToRefresh>
+        </div>
+      )}
 
       {/* デスクトップ: グリッドだけをスクロールし、ページングは常に表示 */}
-      <div className="hidden min-h-0 flex-1 flex-col md:flex">
-        <ScrollArea type="always" className="min-h-0 flex-1 md:px-4">
-          {/* <Suspense fallback={<AppLoadingPage />}> */}
-          {Grid}
-          {/* </Suspense> */}
-        </ScrollArea>
-      </div>
+      {showDesktop && (
+        <div className="hidden min-h-0 flex-1 flex-col md:flex">
+          <ScrollArea type="always" className="min-h-0 flex-1 md:px-4">
+            {/* <Suspense fallback={<AppLoadingPage />}> */}
+            {Grid}
+            {/* </Suspense> */}
+          </ScrollArea>
+        </div>
+      )}
 
       <div className="shrink-0 space-y-3 p-2 pb-4 md:p-4 md:pt-2 md:pb-4">
         {props.protect !== 1 && (

@@ -1,5 +1,6 @@
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Card } from "~/components/ui/card"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 
 type Props = {
   title?: string
@@ -14,9 +15,12 @@ type Props = {
  * @param props
  */
 export function GenerationViewCard (props: Props) {
+  // 画面幅で片方だけを描画する（子の一覧を二重に描画しない）
+  const { showDesktop, showMobile } = useLayoutVariant()
+
   return (
     <>
-      <div className="block md:hidden">
+      {showMobile && <div className="block md:hidden">
         <div className="flex min-h-8 items-center justify-between px-0 pt-1 pb-1 md:px-4">
           <div className="flex items-center">
             <span className="font-semibold text-sm">{props.title}</span>
@@ -32,8 +36,8 @@ export function GenerationViewCard (props: Props) {
           </div>
         </div>
         {props.children}
-      </div>
-      <Card className="hidden h-full w-full max-w-none flex-col overflow-hidden md:flex">
+      </div>}
+      {showDesktop && <Card className="hidden h-full w-full max-w-none flex-col overflow-hidden md:flex">
         <div className="flex min-h-11 items-center justify-between px-4 pt-2 pb-1">
           <div className="flex items-center">
             <span className="font-semibold text-sm">{props.title}</span>
@@ -52,7 +56,7 @@ export function GenerationViewCard (props: Props) {
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {props.children}
         </div>
-      </Card>
+      </Card>}
     </>
   )
 }
