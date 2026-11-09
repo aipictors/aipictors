@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client/index"
+import { FeedLoadError } from "~/components/feed-load-error"
 import { useMemo, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
@@ -30,12 +31,16 @@ export function NotificationList(props: {
   unread: UnreadCounts
   onClose: () => void
 }) {
-  const { data, loading } = useQuery(panelNotificationsQuery, {
+  const { data, loading, error, refetch } = useQuery(panelNotificationsQuery, {
     variables: { offset: 0, limit: 40, where: TAB_WHERE[props.tab] },
     fetchPolicy: "cache-and-network",
   })
 
   const items = useMemo(() => toPanelItems(data?.viewer?.notifications), [data])
+
+  if (items.length === 0 && !loading && error !== undefined) {
+    return <FeedLoadError onRetry={() => refetch()} />
+  }
 
   return (
     <RowList

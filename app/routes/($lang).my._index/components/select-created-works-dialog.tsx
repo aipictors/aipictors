@@ -47,7 +47,8 @@ export function SelectCreatedWorksDialog(props: Props) {
         userId: appContext.userId,
         orderBy: "DATE_CREATED",
         sort: "DESC",
-        isSensitive: false,
+        // R15 は全年齢側で選べるように（isSensitive: false だと G だけになる）
+        ratings: ["G", "R15"],
       },
     },
   })
@@ -58,7 +59,8 @@ export function SelectCreatedWorksDialog(props: Props) {
     variables: {
       where: {
         userId: appContext.userId,
-        isSensitive: false,
+        // R15 は全年齢側で選べるように（isSensitive: false だと G だけになる）
+        ratings: ["G", "R15"],
       },
     },
   })

@@ -40,6 +40,13 @@ export const isNoQueueModel = (name: string | undefined, type?: string) => {
 }
 
 /**
+ * STANDARD 以上向けのモデル（プランのページの案内と同じ）
+ */
+export const isStandardOnlyModel = (name: string | undefined) => {
+  return name === "Gemini 3.1" || name === "GeminiNanoBanana2"
+}
+
+/**
  * LITE 以上でだけ使えるモデル
  */
 export const isLiteOnlyModel = (name: string | undefined) => {
@@ -117,7 +124,9 @@ export function ConfigModelButton(props: Props) {
                       className="text-xs text-muted-foreground"
                       variant={"destructive"}
                     >
-                      {t("LITE以上限定", "LITE or above only")}
+                      {isStandardOnlyModel(props.name)
+                        ? t("STANDARD以上限定", "STANDARD or above only")
+                        : t("LITE以上限定", "LITE or above only")}
                     </Badge>
                   )}
                   {(props.name?.toLowerCase().includes("gemini") ||
@@ -154,8 +163,8 @@ export function ConfigModelButton(props: Props) {
                   props.name === "GeminiNanoBanana2") && (
                   <p className="text-left text-amber-600 text-xs dark:text-amber-400">
                     {t(
-                      "Nano Banana / Nano Banana 2 はLite以上限定です",
-                      "Nano Banana / Nano Banana 2 require Lite or above (Lite: 3/day)",
+                      "Nano Banana はLite以上、Nano Banana 2 はStandard以上限定です",
+                      "Nano Banana requires Lite or above, Nano Banana 2 requires Standard or above",
                     )}
                   </p>
                 )}

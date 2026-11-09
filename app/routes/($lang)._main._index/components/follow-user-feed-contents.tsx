@@ -1,4 +1,5 @@
 import { useApolloClient, useQuery } from "@apollo/client/index"
+import { FeedLoadError } from "~/components/feed-load-error"
 import { Link, useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon, MessageCircleIcon } from "lucide-react"
@@ -109,7 +110,7 @@ function PaginationMode(props: Props) {
 
   const offset = PER_PAGE * currentPage
 
-  const { data, loading, refetch } = useQuery(
+  const { data, loading, error, refetch } = useQuery(
     isTimelineView ? feedQuery : feedWorkListQuery,
     {
       skip:
@@ -128,7 +129,7 @@ function PaginationMode(props: Props) {
         },
       },
       fetchPolicy: "cache-and-network",
-      errorPolicy: "ignore",
+      errorPolicy: "all",
     },
   )
 
@@ -190,6 +191,10 @@ function PaginationMode(props: Props) {
         {t("ログインするとフォローできます", "Log in to follow users")}
       </FollowFeedNotice>
     )
+  }
+
+  if (posts.length === 0 && !loading && error !== undefined) {
+    return <FeedLoadError onRetry={() => refetch()} />
   }
 
   if (posts.length === 0 && !loading) {
@@ -297,6 +302,8 @@ function InfiniteMode(props: Props) {
     data,
     fetchMore,
     loading: loadingFirst,
+    error: firstError,
+    refetch: refetchFirst,
   } = useQuery(QUERY, {
     skip:
       authContext.isLoading ||
@@ -305,7 +312,7 @@ function InfiniteMode(props: Props) {
     variables: queryVars,
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
-    errorPolicy: "ignore",
+    errorPolicy: "all",
   })
 
   // ─── usePagedInfinite (local store key 付き) ─────────────
@@ -412,6 +419,9 @@ function InfiniteMode(props: Props) {
         {t("ログインするとフォローできます", "Log in to follow users")}
       </FollowFeedNotice>
     )
+  }
+  if (flat.length === 0 && !loadingFirst && firstError !== undefined) {
+    return <FeedLoadError onRetry={() => refetchFirst()} />
   }
   if (flat.length === 0 && !loadingFirst) {
     return <FollowFeedEmpty />

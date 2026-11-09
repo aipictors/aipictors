@@ -13,6 +13,7 @@ import { baseModelLabel } from "~/lib/user-models/constants"
 import { cn } from "~/lib/utils"
 import {
   isLiteOnlyModel,
+  isStandardOnlyModel,
   isNoQueueModel,
   modelCoinCost,
 } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
@@ -192,7 +193,9 @@ export function GenerationModelSection(props: Props) {
             )}
             {isLiteOnly && (
               <Tag className="bg-amber-500/10 text-amber-700 dark:text-amber-400">
-                {t("LITE以上", "LITE+")}
+                {isStandardOnlyModel(officialModel?.name)
+                  ? t("STANDARD以上", "STANDARD+")
+                  : t("LITE以上", "LITE+")}
               </Tag>
             )}
             {isNoQueue && <Tag>{t("待ち人数なし", "No queue")}</Tag>}
@@ -244,8 +247,8 @@ export function GenerationModelSection(props: Props) {
       {isLiteOnly && (
         <p className="text-muted-foreground text-xs">
           {t(
-            "Nano Banana / Nano Banana 2 はLite以上限定です",
-            "Nano Banana / Nano Banana 2 require Lite or above (Lite: 3/day)",
+            "Nano Banana はLite以上、Nano Banana 2 はStandard以上限定です",
+            "Nano Banana requires Lite or above, Nano Banana 2 requires Standard or above",
           )}
         </p>
       )}

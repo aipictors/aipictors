@@ -36,6 +36,29 @@ type Props = {
 
 const SCRIPT_ID = "aipictors-adsbygoogle"
 
+const AD_FREE_STORAGE_KEY = "aipictors-ad-free-until"
+const AD_FREE_REMEMBER_MS = 3 * 24 * 60 * 60 * 1000
+
+const rememberAdFree = () => {
+  try {
+    window.localStorage.setItem(
+      AD_FREE_STORAGE_KEY,
+      String(Date.now() + AD_FREE_REMEMBER_MS),
+    )
+  } catch (_error) {
+    // 保存できなくても広告の判定はできる
+  }
+}
+
+const isRememberedAdFree = () => {
+  try {
+    const until = window.localStorage.getItem(AD_FREE_STORAGE_KEY)
+    return until !== null && Number(until) > Date.now()
+  } catch (_error) {
+    return false
+  }
+}
+
 /**
  * 広告のスクリプトを 1 回だけ読む。
  * 最初の表示を遅くしないよう、広告枠が画面に近づいてから読む
@@ -61,15 +84,21 @@ export function useAdVisibility(): "show" | "hide" | "unknown" {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
+  const type = data?.viewer?.currentPass?.type
+  const isSubscribed =
+    type === "LITE" || type === "STANDARD" || type === "PREMIUM"
+
+  useEffect(() => {
+    if (isSubscribed) rememberAdFree()
+  }, [isSubscribed])
+
   if (!config.googleAdsense.enabled) return "hide"
   if (authContext.isLoading) return "unknown"
   if (authContext.isNotLoggedIn) return "show"
-  if (loading || data === undefined) return "unknown"
-
-  const type = data.viewer?.currentPass?.type
-  const isSubscribed =
-    type === "LITE" || type === "STANDARD" || type === "PREMIUM"
-  return isSubscribed ? "hide" : "show"
+  if (loading || data === undefined || !data.viewer) return "unknown"
+  if (isSubscribed) return "hide"
+  // プランの取得が一時的に失敗すると「パスなし」で返ることがあるので、最近サブスクだった人には出さない
+  return isRememberedAdFree() ? "hide" : "show"
 }
 
 /**
