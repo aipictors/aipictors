@@ -614,6 +614,25 @@ export const onRequest: PagesFunction = async (ctx) => {
     })
   }
 
+  // ルートの一覧（ページ移動のたびに呼ばれる）はデプロイごとに内容が決まるので拠点で共有する
+  if (
+    earlyUrl.pathname === "/__manifest" &&
+    ctx.request.method === "GET" &&
+    earlyUrl.searchParams.has("version")
+  ) {
+    const key = new Request(
+      `https://www.aipictors.com/__cache/manifest${earlyUrl.search}`,
+    )
+    const hit = await caches.default.match(key)
+    if (hit) return hit
+    const response = await remix(ctx)
+    if (response.status !== 200) return response
+    const cacheable = new Response(response.body, response)
+    cacheable.headers.set("Cache-Control", "public, max-age=86400")
+    ctx.waitUntil(caches.default.put(key, cacheable.clone()))
+    return cacheable
+  }
+
   // 旧サイトのプロフィール URL（/user?id=…）は今のプロフィールへ
   const legacyPath = getLegacyRedirectPath(earlyUrl)
   if (legacyPath) {
