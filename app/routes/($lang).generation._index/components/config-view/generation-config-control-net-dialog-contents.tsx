@@ -252,18 +252,25 @@ export function GenerationConfigControlNetDialogContents (props: Props) {
               }}
             />
           </div>
+        </>
+      )}
 
-          {sampleImageUrl !== null && (
-            <>
-              <div className="flex gap-x-2">
-                <div className="text-sm">{"サンプル"}</div>
-                <CrossPlatformTooltip
-                  text={"左：参考画像、中：抽出画像、右：生成画像"}
-                />
-              </div>
-              <img src={sampleImageUrl} className={"w-full"} alt={"-"} />
-            </>
-          )}
+      {sampleImageUrl !== null && (
+        <>
+          <div className="flex gap-x-2">
+            <div className="text-sm">{"サンプル"}</div>
+            <CrossPlatformTooltip
+              text={"左：参考画像、中：抽出画像、右：生成画像"}
+            />
+          </div>
+          <img
+            key={sampleImageUrl}
+            src={sampleImageUrl}
+            className={"w-full"}
+            width={1536}
+            height={512}
+            alt={"-"}
+          />
         </>
       )}
     </>

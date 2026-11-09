@@ -9,12 +9,17 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 
+const PUBLIC_CACHE_CONTROL = "public, max-age=60, stale-while-revalidate=120"
+
+/** 拠点のキャッシュに置く時間（秒） */
+const EDGE_CACHE_SECONDS = 300
+
 function toJsonResponse(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       "content-type": "application/json",
-      "cache-control": "public, max-age=60, stale-while-revalidate=120",
+      "cache-control": PUBLIC_CACHE_CONTROL,
     },
   })
 }
@@ -46,6 +51,19 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   const url = new URL(request.url)
   const query = url.search ? url.search : ""
+
+  // ホームを開くたびに 1 人ずつ GraphQL で名前を引いていたので、週間の順位は拠点ごとに使い回す
+  const cache =
+    typeof caches === "undefined" || url.searchParams.has("recipientUserId")
+      ? null
+      : caches.default
+  const cacheKey = new Request(url.toString())
+  const cached = await cache?.match(cacheKey).catch(() => undefined)
+  if (cached) {
+    const hit = new Response(cached.body, cached)
+    hit.headers.set("cache-control", PUBLIC_CACHE_CONTROL)
+    return hit
+  }
 
   const apiResponse = await fetch(
     `${apiBaseUrl}/internal/coins/support/rankings${query}`,
@@ -95,6 +113,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   // 特定の人を推した一覧は、推した直後に反映されるようにブラウザにも残さない
   if (url.searchParams.has("recipientUserId")) {
     response.headers.set("cache-control", "no-store")
+  }
+  if (cache) {
+    const stored = response.clone()
+    stored.headers.set("cache-control", `public, max-age=${EDGE_CACHE_SECONDS}`)
+    await cache.put(cacheKey, stored).catch(() => {})
   }
   return response
 }
