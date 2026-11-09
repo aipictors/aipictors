@@ -102,6 +102,55 @@ export async function homeLoader(props: LoaderFunctionArgs) {
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
   const awardDateText = getUtcDateString(yesterday)
 
+  // お知らせ（microCMS）を待たずに、ページのデータも同時に取り始める
+  const recommendedWorksRequest = isRecommendedRoute
+    ? loaderClient.query({
+        query: initialRecommendedWorksQuery,
+        errorPolicy: "all",
+        variables: { offset: 0, limit: RECOMMENDED_PER_PAGE },
+      })
+    : null
+  const newWorksRequest = isNewWorksRoute
+    ? loaderClient.query({
+        query: initialNewWorksQuery,
+        errorPolicy: "all",
+        variables: {
+          limit: PER_IMG,
+          offset: 0,
+          where: {
+            beforeCreatedAt: new Date().toISOString(),
+            isNowCreatedAt: true,
+            orderBy: "DATE_CREATED",
+            ratings: ["G", "R15"],
+            // 「公開（新着無）」の作品は新着一覧に出さない
+            accessTypes: ["PUBLIC"],
+          },
+        },
+      })
+    : null
+  const homeRequest = isHomeRoute
+    ? loaderClient.query({
+        query: query,
+        errorPolicy: "all",
+        variables: {
+          day: now.getDate(),
+          month: now.getMonth() + 1,
+          year: now.getFullYear(),
+          // 最初に見える一覧と右カラムはサーバーで取ってHTMLに入れる（以前は表示後にログイン確認を待ってから取得していた）
+          promotionLimit: config.query.homeWorkCount.promotion,
+          newUserWorksLimit: config.query.homeWorkCount.newUser,
+        },
+      })
+    : null
+  // 先に失敗しても、await するまで未処理の拒否にしない
+  for (const request of [
+    recommendedWorksRequest,
+    newWorksRequest,
+    homeRequest,
+  ]) {
+    request?.catch(() => {})
+  }
+
   const [releaseList, featuredReleaseList, latestImportantRelease] =
     await Promise.all([
       fetchReleaseList({
@@ -151,11 +200,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
 
     // おすすめ（/recommended）は、ログインしていない人向けの並びをサーバーで取って、最初の表示に使う
     if (isRecommendedRoute) {
-      const recommendedResult = await loaderClient.query({
-        query: initialRecommendedWorksQuery,
-        errorPolicy: "all",
-        variables: { offset: 0, limit: RECOMMENDED_PER_PAGE },
-      })
+      const recommendedResult = await recommendedWorksRequest
       return json(
         {
           ...baseLoaderData,
@@ -173,22 +218,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
       )
     }
 
-    const initialWorksResult = await loaderClient.query({
-      query: initialNewWorksQuery,
-      errorPolicy: "all",
-      variables: {
-        limit: PER_IMG,
-        offset: 0,
-        where: {
-          beforeCreatedAt: new Date().toISOString(),
-          isNowCreatedAt: true,
-          orderBy: "DATE_CREATED",
-          ratings: ["G", "R15"],
-          // 「公開（新着無）」の作品は新着一覧に出さない
-          accessTypes: ["PUBLIC"],
-        },
-      },
-    })
+    const initialWorksResult = await newWorksRequest
 
     return json(
       {
@@ -205,18 +235,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
     )
   }
 
-  const result = await loaderClient.query({
-    query: query,
-    errorPolicy: "all",
-    variables: {
-      day: now.getDate(),
-      month: now.getMonth() + 1,
-      year: now.getFullYear(),
-      // 最初に見える一覧と右カラムはサーバーで取ってHTMLに入れる（以前は表示後にログイン確認を待ってから取得していた）
-      promotionLimit: config.query.homeWorkCount.promotion,
-      newUserWorksLimit: config.query.homeWorkCount.newUser,
-    },
-  })
+  const result = await homeRequest
 
   const resultData = result.data
   const appEvents = Array.isArray(resultData?.appEvents)
