@@ -115,8 +115,8 @@ export function usePagedInfinite<T extends ObjectWithId>(
   const flat = useMemo(() => pages.flat(), [pages])
 
   const appendPage = useCallback(
-    (newPage: T[]) => {
-      if (newPage.length === 0) return
+    (newPage: T[]): number => {
+      if (newPage.length === 0) return 0
 
       const deduplicated = deduplicateItems(newPage)
       if (deduplicated.length === 0) {
@@ -125,10 +125,11 @@ export function usePagedInfinite<T extends ObjectWithId>(
             "[usePagedInfinite] All items were duplicates, skipping append",
           )
         }
-        return
+        return 0
       }
 
       setPages((prev) => [...prev, deduplicated])
+      return deduplicated.length
     },
     [deduplicateItems, debug, setPages],
   )

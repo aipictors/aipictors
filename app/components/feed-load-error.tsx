@@ -20,3 +20,23 @@ export function FeedLoadError(props: { onRetry: () => void }) {
     </div>
   )
 }
+
+/**
+ * ページ送りで最後より先を開いたとき。「フォローしていない」の案内と区別して、先頭へ戻れるようにする
+ */
+export function FeedPageEnd(props: { onBackToFirstPage: () => void }) {
+  const t = useTranslation()
+  return (
+    <div className="space-y-3 py-10 text-center">
+      <p className="text-muted-foreground text-sm">
+        {t(
+          "このページに作品はありません。",
+          "There are no works on this page.",
+        )}
+      </p>
+      <Button variant="secondary" onClick={props.onBackToFirstPage}>
+        {t("最初のページへ", "Back to first page")}
+      </Button>
+    </div>
+  )
+}

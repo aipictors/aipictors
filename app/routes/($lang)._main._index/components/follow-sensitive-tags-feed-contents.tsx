@@ -17,6 +17,7 @@ import {
 } from "react"
 import { LikeButton } from "~/components/like-button"
 import { OptimizedWorkGrid } from "~/components/optimized-work-grid"
+import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   PhotoAlbumWorkFragment,
@@ -33,6 +34,7 @@ import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { useFeedLoadMore } from "~/routes/($lang)._main._index/hooks/use-feed-load-more"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
 import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
@@ -266,7 +268,7 @@ function PaginationMode({
   const [prevDataKey, setPrevDataKey] = useState<string>("")
 
   const offset = page * PER_PAGE
-  const { data, loading, refetch } = useQuery(
+  const { data, loading, error, refetch } = useQuery(
     isTimelineView ? feedQuery : feedWorkListQuery,
     {
       skip: auth.isLoading || auth.isNotLoggedIn || !viewerRatings.isReady,
@@ -277,7 +279,7 @@ function PaginationMode({
         feedPostsWhere: { ratings: viewerRatings.sensitiveRatings },
       },
       fetchPolicy: "cache-and-network",
-      errorPolicy: "ignore",
+      errorPolicy: "all",
     },
   )
 
@@ -286,7 +288,6 @@ function PaginationMode({
 
   const handlePageChange = (p: number) => {
     setPage(p)
-    refetch({ offset: p * PER_PAGE })
   }
 
   // updateWorksを正しいタイミングで呼ぶ
@@ -309,6 +310,12 @@ function PaginationMode({
 
   if (auth.isLoading) return <Loader />
   if (auth.isNotLoggedIn || !auth.userId) return <NeedLoginMessage />
+  if (!loading && posts.length === 0 && error !== undefined) {
+    return <FeedLoadError onRetry={() => refetch()} />
+  }
+  if (!loading && posts.length === 0 && page > 0) {
+    return <FeedPageEnd onBackToFirstPage={() => setPage(0)} />
+  }
   if (!loading && posts.length === 0) return <NoDataMessage />
 
   return (
@@ -350,7 +357,6 @@ function InfiniteMode({
   const client = useApolloClient()
   const auth = useContext(AuthContext)
   const viewerRatings = useViewerRatings()
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [_prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
   const feedWhere = useMemo(
@@ -383,12 +389,14 @@ function InfiniteMode({
     data,
     fetchMore,
     loading: loadingFirst,
+    error: firstError,
+    refetch: refetchFirst,
   } = useQuery(QUERY, {
     skip: auth.isLoading || auth.isNotLoggedIn || !viewerRatings.isReady,
     variables: queryVars,
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
-    errorPolicy: "ignore",
+    errorPolicy: "all",
   })
 
   const storeKey = JSON.stringify({
@@ -452,28 +460,30 @@ function InfiniteMode({
   const ready = initialPages.length > 0 || !!data?.feed?.posts?.length
   useScrollRestoration("follow-tag-infinite", ready)
 
-  const hasNext = (pages.at(-1)?.length ?? 0) >= PER_PAGE - 8
-  const loadMore = useCallback(async () => {
-    if (!hasNext || loadingFirst || isLoadingMore) return
-    setIsLoadingMore(true)
-    try {
+  const fetchPage = useCallback(
+    async (offset: number) => {
       const res = await fetchMore({
-        variables: { ...queryVars, offset: flat.length },
+        variables: { ...queryVars, offset },
       })
-      const newPosts = res.data?.feed?.posts as PostItem[] | undefined
-      if (newPosts?.length) appendPage(newPosts)
-    } finally {
-      setIsLoadingMore(false)
-    }
-  }, [
-    hasNext,
-    loadingFirst,
-    isLoadingMore,
-    fetchMore,
-    queryVars,
-    flat.length,
-    appendPage,
-  ])
+      const posts = res.data?.feed?.posts as PostItem[] | undefined
+      // errorPolicy が all だと、失敗しても reject されず data が空で返る
+      if (posts === undefined) {
+        throw new Error("Failed to load the feed page")
+      }
+      return posts
+    },
+    [fetchMore, queryVars],
+  )
+
+  const { hasNext, isLoadingMore, isLoadMoreFailed, loadMore, retryLoadMore } =
+    useFeedLoadMore<PostItem>({
+      perPage: PER_PAGE,
+      flatLength: flat.length,
+      isReady: !loadingFirst,
+      resetKey: storeKey,
+      fetchPage,
+      appendPage,
+    })
 
   const sentinelRef = useInfiniteScroll(loadMore, {
     hasNext,
@@ -482,6 +492,9 @@ function InfiniteMode({
 
   if (auth.isLoading) return <Loader />
   if (auth.isNotLoggedIn || !auth.userId) return <NeedLoginMessage />
+  if (!loadingFirst && flat.length === 0 && firstError !== undefined) {
+    return <FeedLoadError onRetry={() => refetchFirst()} />
+  }
   if (!loadingFirst && flat.length === 0) return <NoDataMessage />
 
   return (
@@ -502,6 +515,7 @@ function InfiniteMode({
       ))}
       {isLoadingMore && <Loader />}
       {hasNext && <div ref={sentinelRef} style={{ height: 1 }} />}
+      {isLoadMoreFailed && <FeedLoadError onRetry={retryLoadMore} />}
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { useQuery, useApolloClient } from "@apollo/client/index"
-import { FeedLoadError } from "~/components/feed-load-error"
+import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
 import { graphql, type FragmentOf } from "gql.tada"
 import {
   Suspense,
@@ -29,6 +29,7 @@ import {
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { useTranslation } from "~/hooks/use-translation"
+import { useFeedLoadMore } from "~/routes/($lang)._main._index/hooks/use-feed-load-more"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
@@ -134,17 +135,6 @@ function PaginationMode(props: Props) {
 
   const handlePageChange = (page: number) => {
     setPage(page)
-    refetch({
-      offset: page * PER_PAGE,
-      limit: PER_PAGE,
-      feedWhere: {
-        userId: authContext.userId ?? "-1",
-        type: "FOLLOW_USER",
-      },
-      feedPostsWhere: {
-        ratings: viewerRatings.sensitiveRatings,
-      },
-    })
   }
 
   // updateWorksを正しいタイミングで呼ぶ
@@ -198,6 +188,10 @@ function PaginationMode(props: Props) {
 
   if (posts.length === 0 && !loading && error !== undefined) {
     return <FeedLoadError onRetry={() => refetch()} />
+  }
+
+  if (posts.length === 0 && !loading && currentPage > 0) {
+    return <FeedPageEnd onBackToFirstPage={() => setPage(0)} />
   }
 
   if (posts.length === 0 && !loading) {
@@ -259,7 +253,6 @@ function InfiniteMode(props: Props) {
   const t = useTranslation()
 
   const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [_prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
   // ─── クエリ & 共通変数 ───────────────────────────────
@@ -390,30 +383,30 @@ function InfiniteMode(props: Props) {
   useScrollRestoration("follow-user-infinite", ready)
 
   // ─── 追加ロード ────────────────────────────────────
-  const hasNext = (pages.at(-1)?.length ?? 0) >= PER_PAGE - 8
-
-  const loadMore = useCallback(async () => {
-    if (!hasNext || loadingFirst || isLoadingMore) return
-
-    setIsLoadingMore(true)
-    try {
+  const fetchPage = useCallback(
+    async (offset: number) => {
       const res = await fetchMore({
-        variables: { ...queryVars, offset: flat.length },
+        variables: { ...queryVars, offset },
       })
-      const newPosts = res.data?.feed?.posts as PostItem[] | undefined
-      if (newPosts?.length) appendPage(newPosts)
-    } finally {
-      setIsLoadingMore(false)
-    }
-  }, [
-    hasNext,
-    loadingFirst,
-    isLoadingMore,
-    fetchMore,
-    queryVars,
-    flat.length,
-    appendPage,
-  ])
+      const posts = res.data?.feed?.posts as PostItem[] | undefined
+      // errorPolicy が all だと、失敗しても reject されず data が空で返る
+      if (posts === undefined) {
+        throw new Error("Failed to load the feed page")
+      }
+      return posts
+    },
+    [fetchMore, queryVars],
+  )
+
+  const { hasNext, isLoadingMore, isLoadMoreFailed, loadMore, retryLoadMore } =
+    useFeedLoadMore<PostItem>({
+      perPage: PER_PAGE,
+      flatLength: flat.length,
+      isReady: !loadingFirst,
+      resetKey: keyForStore,
+      fetchPage,
+      appendPage,
+    })
 
   const sentinelRef = useInfiniteScroll(loadMore, {
     hasNext,
@@ -490,6 +483,7 @@ function InfiniteMode(props: Props) {
       {hasNext && (
         <div ref={sentinelRef} style={{ height: 1 } as React.CSSProperties} />
       )}
+      {isLoadMoreFailed && <FeedLoadError onRetry={retryLoadMore} />}
     </div>
   )
 }
