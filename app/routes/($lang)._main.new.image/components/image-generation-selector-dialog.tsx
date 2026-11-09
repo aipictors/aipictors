@@ -17,6 +17,7 @@ type Props = {
     selectedIds: string[],
     lastSelectedOriginalImage: string,
     lastSelectedResult: GenerationResultParams | null,
+    selectedNanoids: string[],
   ) => void
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
@@ -88,7 +89,7 @@ export function ImageGenerationSelectorDialog(props: Props) {
   const handleSubmit = async () => {
     try {
       if (selectedIds.length === 0) {
-        props.onSubmit([], [], "", null)
+        props.onSubmit([], [], "", null, [])
         props.setIsOpen(false)
         return
       }
@@ -117,6 +118,12 @@ export function ImageGenerationSelectorDialog(props: Props) {
         selectedIds,
         lastSelectedOriginalImage,
         lastSelectedResult,
+        selectedIds.map(
+          (id) =>
+            imageGenerationResults?.viewer?.imageGenerationResults.find(
+              (result) => result.id === id,
+            )?.nanoid ?? "",
+        ),
       )
       props.setIsOpen(false)
     } catch (error) {
@@ -180,6 +187,7 @@ const viewerImageGenerationResultsQuery = graphql(
         id
         imageUrl
         thumbnailUrl
+        nanoid
         prompt
         negativePrompt
         seed

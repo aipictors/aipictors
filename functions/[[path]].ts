@@ -5,11 +5,15 @@ import {
 } from "../app/lib/critical-css"
 import {
   CONTEXT_ONLY_HEADER,
+  CONTEXT_ONLY_PARAM,
   CONTEXT_PATH_PREFIX,
   deferHydration,
   shouldWaitForInteraction,
 } from "../app/lib/defer-hydration"
-import { createEdgePageCache } from "../app/lib/edge-page-cache"
+import {
+  createEdgePageCache,
+  withoutSharedCache,
+} from "../app/lib/edge-page-cache"
 import {
   createSiteMaintenanceHtml,
   GENERATION_MAINTENANCE_KV_KEY,
@@ -632,13 +636,29 @@ export const onRequest: PagesFunction = async (ctx) => {
         toContextCacheUrl(earlyUrl.pathname.slice(CONTEXT_PATH_PREFIX.length)),
       ),
     )
-    if (!cached) return new Response("Not Found", { status: 404 })
-    return new Response(cached.body, {
-      headers: {
-        "Content-Type": "text/javascript; charset=utf-8",
-        "Cache-Control": "private, max-age=3600",
-      },
+    const contextHeaders = {
+      "Content-Type": "text/javascript; charset=utf-8",
+      // 配信のキャッシュに置いて、別の拠点でも描画し直さない
+      "Cache-Control": "public, max-age=172800",
+    }
+    if (cached) return new Response(cached.body, { headers: contextHeaders })
+    // HTML を別の拠点で描画したときは、この拠点にデータがないので描画し直す
+    const pagePath = earlyUrl.searchParams.get("p")
+    if (!pagePath?.startsWith("/") || pagePath.startsWith("//")) {
+      return new Response("Not Found", { status: 404 })
+    }
+    const rendered = await onRequest({
+      ...ctx,
+      request: new Request(
+        new URL(
+          `${pagePath}${pagePath.includes("?") ? "&" : "?"}${CONTEXT_ONLY_PARAM}=1`,
+          earlyUrl,
+        ),
+        { headers: ctx.request.headers },
+      ),
     })
+    if (!rendered.ok) return new Response("Not Found", { status: 404 })
+    return new Response(rendered.body, { headers: contextHeaders })
   }
 
   // ルートの一覧（ページ移動のたびに呼ばれる）はデプロイごとに内容が決まるので拠点で共有する
@@ -1015,7 +1035,10 @@ export const onRequest: PagesFunction = async (ctx) => {
   // hydration の開始は最初の描画のあとにする（app/lib/defer-hydration.ts）
   // 最初の描画に要る CSS だけを HTML に入れる（app/lib/critical-css.ts）
   // キャッシュから消えていたローダーのデータを、その場で描画し直して返す
-  if (ctx.request.headers.get(CONTEXT_ONLY_HEADER) === "1") {
+  if (
+    ctx.request.headers.get(CONTEXT_ONLY_HEADER) === "1" ||
+    requestUrl.searchParams.get(CONTEXT_ONLY_PARAM) === "1"
+  ) {
     let script = ""
     const transformed = deferHydration(
       await renderWithRetry(),
@@ -1075,12 +1098,12 @@ export const onRequest: PagesFunction = async (ctx) => {
   // 画像生成のメンテナンス中は、生成画面をキャッシュから返さない（帯の出ていない画面を返さないため）。
   // メンテナンス中に描画した画面は loader が no-store にするので保存されない
   // 運営がメンテナンス中に確認する画面も、移行途中の内容を再開後に返さないようキャッシュしない
-  if (isMaintenanceBypassed) return render()
+  if (isMaintenanceBypassed) return withoutSharedCache(await render())
   if (
     GENERATION_PAGE_PATH.test(requestUrl.pathname) &&
     (await readMaintenanceFlag(ctx.env, GENERATION_MAINTENANCE_KV_KEY)).enabled
   ) {
-    return render()
+    return withoutSharedCache(await render())
   }
 
   if (!ADMIN_HOSTNAMES.has(requestUrl.hostname)) {
@@ -1102,5 +1125,5 @@ export const onRequest: PagesFunction = async (ctx) => {
       },
     })
   }
-  return render()
+  return withoutSharedCache(await render())
 }

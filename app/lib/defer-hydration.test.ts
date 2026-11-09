@@ -20,6 +20,6 @@ test("データを外したページは hydration の前にデータを読み込
     waitForInteraction: true,
     contextToken: "abc",
   })
-  expect(script).toContain('fetch("/__ctx/abc")')
+  expect(script).toContain('fetch("/__ctx/abc?p="')
   expect(script.indexOf("/__ctx/abc")).toBeLessThan(script.indexOf("await import("))
 })

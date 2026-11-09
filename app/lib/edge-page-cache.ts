@@ -100,6 +100,17 @@ const PUBLIC_DATA_PATH =
   /^\/(?:en\/)?(?:r\/?)?(?:$|home$|rankings|ai-rankings|posts\/(?:2d|2\.5d|3d|novel|column|video)|tags|themes|albums|events|models|search|users\/[^/]+$|posts\/\d+$)/
 
 const DEFAULT_DATA_TTL_SECONDS = 30
+
+/** Cloudflare の Transform Rules が付ける、ページの見分けに使うヘッダー（services/edge-snippets/README.md） */
+const EDGE_LOCALE_HEADER = "x-aip-locale"
+const EDGE_LAYOUT_HEADER = "x-aip-layout"
+const EDGE_GRID_HEADER = "x-aip-grid"
+const EDGE_VARY_HEADERS = `${EDGE_LOCALE_HEADER}, ${EDGE_LAYOUT_HEADER}, ${EDGE_GRID_HEADER}, x-aip-fresh`
+
+/** 配信のキャッシュで古いものを返す上限（秒） */
+const MAX_EDGE_SWR_SECONDS = 60 * 60 * 24
+
+const WORK_PAGE_PATH = /^\/(?:(?:ja|en)\/)?(?:r\/)?posts\/(\d+)\/?$/
 const DEFAULT_SWR_SECONDS = 300
 
 /**
@@ -162,6 +173,20 @@ const getLocale = (request: Request): "ja" | "en" => {
   const match = cookie.match(/(?:^|;\s*)locale=(ja|en)/)
   if (match) return match[1] as "ja" | "en"
   return toLocaleFromAcceptLanguage(request.headers.get("accept-language"))
+}
+
+/** ページの見分けをしない応答を、配信のキャッシュに保存させない（ページの Cache-Control に s-maxage があるため） */
+export const withoutSharedCache = (response: Response, url?: URL) => {
+  // API やサイトマップは見分けがいらないので、そのまま保存してよい
+  if (
+    (url && /^\/(?:api|sitemap)/.test(url.pathname)) ||
+    !response.headers.get("Cache-Control")?.includes("s-maxage")
+  ) {
+    return response
+  }
+  const uncached = new Response(response.body, response)
+  uncached.headers.set("Cache-Control", "private, no-store")
+  return uncached
 }
 
 export const createEdgePageCache = (version: string) => {
@@ -241,15 +266,58 @@ export const createEdgePageCache = (version: string) => {
   }
 
   /**
-   * ブラウザには保存させない（新しい内容をすぐ見られるように）
+   * 配信のキャッシュ（Workers のキャッシュ）に保存してよいか。
+   * 端末・言語などの見分けに使うヘッダーがこのページの描画と一致するときだけ保存する
    */
-  const forBrowser = (response: Response, state: string) => {
+  const canShareAcrossEdge = (request: Request) =>
+    !wantsFresh(request) &&
+    request.headers.get(EDGE_LOCALE_HEADER) === getLocale(request) &&
+    request.headers.get(EDGE_LAYOUT_HEADER) === getLayoutHint(request) &&
+    request.headers.get(EDGE_GRID_HEADER) === getGridLayout(request)
+
+  /**
+   * ブラウザには保存させない（新しい内容をすぐ見られるように）。
+   * 配信のキャッシュには CDN-Cache-Control で保存し、次からは Worker を動かさない
+   */
+  const forBrowser = (
+    request: Request,
+    url: URL,
+    response: Response,
+    state: string,
+    ttl?: { ttl: number; swr: number } | null,
+  ) => {
     const headers = new Headers(response.headers)
+    const storedAt = Number(headers.get("X-Edge-Stored-At"))
+    const edgeTtl =
+      ttl ??
+      (headers.has("X-Edge-Ttl")
+        ? {
+            ttl: Number(headers.get("X-Edge-Ttl")),
+            swr: Number(headers.get("X-Edge-Swr")),
+          }
+        : null)
     headers.set("Cache-Control", "public, max-age=0, must-revalidate")
     headers.set("X-Edge-Cache", state)
+    headers.set("Vary", EDGE_VARY_HEADERS)
     headers.delete("X-Edge-Stored-At")
     headers.delete("X-Edge-Ttl")
     headers.delete("X-Edge-Swr")
+    const remaining = edgeTtl
+      ? Math.floor(
+          edgeTtl.ttl - (storedAt ? (Date.now() - storedAt) / 1000 : 0),
+        )
+      : 0
+    if (edgeTtl && remaining > 0 && canShareAcrossEdge(request)) {
+      headers.set(
+        "CDN-Cache-Control",
+        `public, max-age=${remaining}, stale-while-revalidate=${Math.min(edgeTtl.swr, MAX_EDGE_SWR_SECONDS)}`,
+      )
+      const workId = url.pathname.match(WORK_PAGE_PATH)?.[1]
+      if (workId) headers.set("Cache-Tag", `work-${workId}`)
+    } else {
+      // 配信のキャッシュの同じ URL を上書きしない
+      headers.set("Cache-Control", "private, no-store")
+    }
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
@@ -341,7 +409,7 @@ export const createEdgePageCache = (version: string) => {
   ): Promise<Response> => {
     const url = new URL(ctx.request.url)
     if (!isCacheableRequest(ctx.request, url)) {
-      return render()
+      return withoutSharedCache(await render(), url)
     }
     const cacheKey = toCacheKey(ctx.request, url)
     const isBot = isbot(ctx.request.headers.get("user-agent"))
@@ -410,7 +478,7 @@ export const createEdgePageCache = (version: string) => {
       const ageSeconds = (Date.now() - storedAt) / 1000
       if (Number.isFinite(ageSeconds) && ageSeconds >= 0) {
         if (ageSeconds < ttl) {
-          return forBrowser(cached, "HIT")
+          return forBrowser(ctx.request, url, cached, "HIT")
         }
         if (ageSeconds < ttl + swr) {
           // 古いものを返して裏で作り直す（クローラーのためには作り直さない。
@@ -418,12 +486,12 @@ export const createEdgePageCache = (version: string) => {
           if (!isBot) {
             ctx.waitUntil(renderAndStore().catch(() => undefined))
           }
-          return forBrowser(cached, "STALE")
+          return forBrowser(ctx.request, url, cached, "STALE")
         }
         if (isBot && canServeStaleToBot(ageSeconds)) {
-          return forBrowser(cached, "BOT-STALE")
+          return forBrowser(ctx.request, url, cached, "BOT-STALE")
         }
-        staleIfError = () => forBrowser(cached as Response, "STALE-IF-ERROR")
+        staleIfError = () => forBrowser(ctx.request, url, cached as Response, "STALE-IF-ERROR")
       }
     }
 
@@ -449,14 +517,16 @@ export const createEdgePageCache = (version: string) => {
           )
           if (ageSeconds >= shared.meta.t) {
             ctx.waitUntil(renderAndStore().catch(() => undefined))
-            return forBrowser(response, "SHARED-STALE")
+            return forBrowser(ctx.request, url, response, "SHARED-STALE")
           }
-          return forBrowser(response, "SHARED")
+          return forBrowser(ctx.request, url, response, "SHARED", { ttl: shared.meta.t - ageSeconds, swr: shared.meta.w })
         }
         if (ageSeconds >= 0 && staleIfError === null) {
           staleIfError = () => {
             if (shared.extra !== undefined) sharedExtra?.restore(shared.extra)
             return forBrowser(
+              ctx.request,
+              url,
               new Response(shared.body, {
                 status: 200,
                 headers: shared.headers,
@@ -475,7 +545,7 @@ export const createEdgePageCache = (version: string) => {
       const ageSeconds =
         (Date.now() - Number(fallback?.headers.get("X-Edge-Stored-At"))) / 1000
       if (fallback && canServeStaleToBot(ageSeconds)) {
-        return forBrowser(fallback, "BOT-FALLBACK")
+        return forBrowser(ctx.request, url, fallback, "BOT-FALLBACK")
       }
     }
 
@@ -483,7 +553,9 @@ export const createEdgePageCache = (version: string) => {
     if (response.status >= 500 && staleIfError) {
       return staleIfError()
     }
-    return stored ? forBrowser(response, "MISS") : response
+    return stored
+      ? forBrowser(ctx.request, url, response, "MISS", getTtl(url, response))
+      : withoutSharedCache(response, url)
   }
 
   return { handle }

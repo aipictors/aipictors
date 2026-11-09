@@ -675,12 +675,14 @@ export function PostImageFormUploader (props: Props) {
             selectedIds: string[],
             lastSelectedOriginalImage: string,
             lastSelectedResult: GenerationResultParams | null,
+            selectedNanoids: string[],
           ) => {
             props.dispatch({
               type: "SUBMIT_IMAGE_GENERATION_DIALOG",
               payload: {
                 selectedImageGenerationUrls: selectedImage,
                 selectedImageGenerationIds: selectedIds,
+                selectedImageGenerationNanoids: selectedNanoids,
               },
             })
             if (selectedImage.length === 0) {

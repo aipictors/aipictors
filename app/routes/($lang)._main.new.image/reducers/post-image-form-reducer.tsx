@@ -154,19 +154,21 @@ export const postImageFormReducer = (
       }
     }
     case "SUBMIT_IMAGE_GENERATION_DIALOG": {
-      const newItems: { id: number; content: string }[] =
-        action.payload.selectedImageGenerationUrls.reduce(
-          (acc: { id: number; content: string }[], url: string) => {
-            if (!state.items.some((item) => item.content === url)) {
-              acc.push({
-                id: Math.floor(Math.random() * 10000),
-                content: url,
-              })
-            }
-            return acc
-          },
-          [],
-        )
+      const newItems = action.payload.selectedImageGenerationUrls.flatMap(
+        (url: string, index: number) =>
+          state.items.some((item) => item.content === url)
+            ? []
+            : [
+                {
+                  id: Math.floor(Math.random() * 10000),
+                  content: url,
+                  // 生成履歴に「投稿済み」の印を付けるために持っておく
+                  generationNanoid:
+                    action.payload.selectedImageGenerationNanoids?.[index] ||
+                    null,
+                },
+              ],
+      )
 
       return {
         ...state,

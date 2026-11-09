@@ -36,19 +36,22 @@ export const CONTEXT_PATH_PREFIX = "/__ctx/"
 /** HTML から外したデータを、この場で取り直すときのヘッダー（functions/[[path]].ts） */
 export const CONTEXT_ONLY_HEADER = "x-aipictors-context-only"
 
+/** 同じ用途のクエリ（ヘッダーだけだと、配信のキャッシュが HTML を返してしまう） */
+export const CONTEXT_ONLY_PARAM = "__ctx_only"
+
 /**
  * hydration の直前に、HTML から外したローダーのデータを読み込んで実行する。
  * 配信のキャッシュから消えていたら、同じページをその場で描画し直してデータだけ受け取る
  */
 const toContextLoader = (token: string): string =>
-  `await (async function(){var t=await (window.__aipictorsContext||fetchContext());if(t===null){t=await fetch(location.href,{headers:{"${CONTEXT_ONLY_HEADER}":"1"}}).then(function(r){return r.text()})}(0,eval)(t)})();\n`
+  `await (async function(){var t=await (window.__aipictorsContext||fetchContext());if(t===null){t=await fetch(location.pathname+(location.search?location.search+"&":"?")+"${CONTEXT_ONLY_PARAM}=1",{cache:"no-store"}).then(function(r){return r.text()})}(0,eval)(t)})();\n`
 
 /**
  * ログイン中の人は操作を待たずに hydration するので、データの取得は描画を待たずに始める
  * （待ってから取ると、JS が揃ったあとにデータの往復ぶん 0.5〜0.7 秒余計に待っていた）
  */
 const toContextPrefetch = (token: string): string =>
-  `function fetchContext(){return fetch("${CONTEXT_PATH_PREFIX}${token}").then(function(r){return r.ok?r.text():null}).catch(function(){return null})}try{if(/login_token=/.test(document.cookie)||localStorage.getItem("login_user_token")||localStorage.getItem("aipictors.headerUser")){window.__aipictorsContext=fetchContext()}}catch(e){}\n`
+  `function fetchContext(){return fetch("${CONTEXT_PATH_PREFIX}${token}?p="+encodeURIComponent(location.pathname+location.search)).then(function(r){return r.ok?r.text():null}).catch(function(){return null})}try{if(/login_token=/.test(document.cookie)||localStorage.getItem("login_user_token")||localStorage.getItem("aipictors.headerUser")){window.__aipictorsContext=fetchContext()}}catch(e){}\n`
 
 export const toDeferredModuleScript = (
   source: string,

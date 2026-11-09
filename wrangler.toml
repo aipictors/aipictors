@@ -1,6 +1,6 @@
 name = "aipictors"
 compatibility_date = "2024-11-11"
-main = "./build/worker/index.js"
+main = "./worker-entry.ts"
 assets = { directory = "./build/client" }
 # Worker のモジュールを小さくして起動の CPU 時間を減らす
 minify = true
@@ -17,6 +17,10 @@ AIPICTORS_API_BASE_URL = "https://backend.aipictors.com"
 # AIPICTORS_API_INTERNAL_TOKEN = ""
 # AIPICTORS_API_CF_ACCESS_CLIENT_ID = ""
 # AIPICTORS_API_CF_ACCESS_CLIENT_SECRET = ""
+
+# 未ログイン向けのページを全世界で共有して保存し、保存済みなら Worker を動かさない（CDN-Cache-Control を付けたものだけ）
+[cache]
+enabled = true
 
 [observability]
 enabled = true

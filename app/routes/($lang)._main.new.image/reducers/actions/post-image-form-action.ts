@@ -5,6 +5,7 @@ import {
   array,
   boolean,
   literal,
+  optional,
   nullable,
   number,
   object,
@@ -116,6 +117,7 @@ export const vPostImageFormAction = union([
     payload: object({
       selectedImageGenerationUrls: array(string()),
       selectedImageGenerationIds: array(string()),
+      selectedImageGenerationNanoids: optional(array(string())),
     }),
   }),
   object({
