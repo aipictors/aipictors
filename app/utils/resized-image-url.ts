@@ -6,10 +6,11 @@
 
 const RESIZABLE_ORIGIN = "https://files.aipictors.com/"
 
-/** Worker が受け付ける幅（Worker 側の WIDTHS と同じにする） */
-const RESIZED_IMAGE_WIDTHS = [
-  48, 64, 96, 128, 160, 240, 320, 400, 480, 640, 800, 1080, 1280,
-] as const
+/**
+ * 使う幅（Worker 側の WIDTHS に含まれるもの）。
+ * 種類が多いほど縮小の処理と R2 への保存が増えるので絞っている
+ */
+const RESIZED_IMAGE_WIDTHS = [96, 240, 480, 640, 800, 1280] as const
 
 function isResizable(url: string | null | undefined): url is string {
   if (!url?.startsWith(RESIZABLE_ORIGIN)) return false

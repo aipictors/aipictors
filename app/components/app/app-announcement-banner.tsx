@@ -60,12 +60,15 @@ export function AppAnnouncementBanner(): React.ReactNode {
   const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true)
   const location = useLocation()
 
-  const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {})
 
   // 表示対象のパスを判定（トップ画面専用）
   // `($lang)` を使っているため、`/` と `/<lang>` の両方をトップ扱いにする
   const isAnnouncementPath =
     location.pathname === "/" || /^\/[a-z]{2}$/.test(location.pathname)
+
+  const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {
+    skip: !isAnnouncementPath,
+  })
 
   // お知らせが読み込まれたら、過去に閉じたものかチェック
   useEffect(() => {

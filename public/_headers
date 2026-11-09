@@ -54,3 +54,8 @@
   Content-Type: text/plain; charset=utf-8
 /achievements/*
   Cache-Control: public, max-age=86400
+
+# ページ表示の計測（中身は空。静的ファイルなので Worker を起動しない）
+/api/pv
+  Cache-Control: no-store
+  Content-Type: text/plain

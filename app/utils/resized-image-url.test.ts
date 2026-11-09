@@ -23,9 +23,8 @@ test("ほかの画像・縮小済み・クエリ付きはそのまま", () => {
 test("srcset は元画像の幅までにする", () => {
   expect(toResizedImageSrcSet(URL, { minWidth: 160, maxWidth: 300 })).toBe(
     [
-      "/_w/160/abc-123 160w",
       "/_w/240/abc-123 240w",
-      "/_w/320/abc-123 300w",
+      "/_w/480/abc-123 300w",
     ].join(", "),
   )
 })

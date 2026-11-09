@@ -82,7 +82,8 @@ export default defineConfig({
         v3_fetcherPersist: true,
         v3_relativeSplatPath: true,
         v3_throwAbortReason: true,
-        v3_lazyRouteDiscovery: true,
+        // /__manifest への問い合わせが Worker の CPU の 1 割を超えていたので、最初に全ルートを渡す
+        v3_lazyRouteDiscovery: false,
         v3_singleFetch: true,
         v3_routeConfig: true,
       },

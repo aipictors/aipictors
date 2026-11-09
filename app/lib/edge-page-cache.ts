@@ -119,7 +119,7 @@ const STALE_IF_ERROR_SECONDS = 60 * 60 * 24 * 7
  * クローラーに古いページを返してよい期間。ページ取得の大半はクローラーで、1 回の描画で D1 に十数本投げるので、
  * 手元にあるものは作り直さずに返す
  */
-const BOT_MAX_STALE_SECONDS = 60 * 60 * 24 * 2
+const BOT_MAX_STALE_SECONDS = 60 * 60 * 24 * 14
 
 export const canServeStaleToBot = (ageSeconds: number) =>
   ageSeconds >= 0 && ageSeconds < BOT_MAX_STALE_SECONDS

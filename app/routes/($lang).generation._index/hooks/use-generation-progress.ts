@@ -11,7 +11,7 @@ type GenerationProgress = {
   queuePosition: number | null
 }
 
-const POLL_INTERVAL_MS = 1200
+const POLL_INTERVAL_MS = 3000
 
 /**
  * 生成中のタスクの途中経過を取得する（/api/generation/progress を短い間隔で確認）
