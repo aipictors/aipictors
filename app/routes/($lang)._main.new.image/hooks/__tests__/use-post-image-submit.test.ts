@@ -163,7 +163,8 @@ test("どのアップロードで失敗しても createWork を送らず、失�
     const isPostingRef = await post()
 
     expect(createWork).not.toHaveBeenCalled()
-    expect(uploadCount).toBe(failAt)
+    // アップロードは同時に始めるので、失敗しても 4 回とも送っている
+    expect(uploadCount).toBe(4)
     expect(toastMock).toHaveBeenCalledWith("upload failed")
     expect(actions.at(-1)).toEqual({ type: "SET_PROGRESS", payload: 0 })
     expect(doneActions()).toHaveLength(0)

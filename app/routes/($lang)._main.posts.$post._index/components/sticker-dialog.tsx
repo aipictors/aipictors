@@ -255,6 +255,7 @@ export function StickerDialog(props: Props) {
             {stickers === null &&
               Array.from({ length: 24 }).map((_, index) => (
                 <div
+                  // biome-ignore lint/suspicious/noArrayIndexKey: 読み込み中の枠は順番が変わらない
                   key={index}
                   className="animate-pulse rounded-md bg-muted"
                   style={{ width: stickerSize, height: stickerSize }}

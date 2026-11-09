@@ -365,28 +365,39 @@ export function usePostImageSubmit(props: Props) {
 
       dispatch({ type: "SET_PROGRESS", payload: 30 })
 
-      const [
-        smallThumbnailUrl,
-        largeThumbnailUrl,
-        ogpUrl,
-        botGradingImageUrl,
-        uploadResults,
-      ] = await Promise.all([
-        uploadPublicImage(smallThumbnail.base64, token),
-        uploadPublicImage(largeThumbnail.base64, token),
-        state.ogpBase64 ? uploadPublicImage(state.ogpBase64, token) : "",
-        uploadPublicImage(botGradingImage.base64, token),
-        uploadImages(),
+      // 順に小サムネイル・大サムネイル・OGP（なければ空文字）・AI 評価用
+      const [thumbnails, images] = await Promise.all([
+        Promise.allSettled(
+          [
+            smallThumbnail.base64,
+            largeThumbnail.base64,
+            state.ogpBase64,
+            botGradingImage.base64,
+          ].map((base64) => (base64 ? uploadPublicImage(base64, token) : "")),
+        ),
+        uploadImages()
+          .then((value) => ({ ok: true as const, value }))
+          .catch((reason: unknown) => ({ ok: false as const, reason })),
       ])
 
-      // 順に小サムネイル・大サムネイル・OGP（なければ空文字）・AI 評価用・本体の画像
-      uploadedImageUrls.push(
-        smallThumbnailUrl,
-        largeThumbnailUrl,
-        ogpUrl,
-        botGradingImageUrl,
+      const thumbnailUrls = thumbnails.flatMap((result) =>
+        result.status === "fulfilled" ? [result.value] : [],
+      )
+      const failedThumbnail = thumbnails.find(
+        (result) => result.status === "rejected",
       )
 
+      // 途中で失敗しても、届いた分は failPost で消せるように覚える
+      uploadedImageUrls.push(...thumbnailUrls)
+
+      if (failedThumbnail !== undefined) {
+        throw failedThumbnail.reason
+      }
+      if (!images.ok) {
+        throw images.reason
+      }
+
+      const uploadResults = images.value
       const imageUrls = uploadResults.filter((url) => url !== null)
 
       if (imageUrls.length === 0) {
