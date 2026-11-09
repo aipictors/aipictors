@@ -480,10 +480,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
   )
 }
 
+// 一覧の作品 1 件ごとに DB を引くので、一覧で使う項目だけにする（詳細はダイアログを開くときに取り直す）
 export const PhotoAlbumWorkFragment = graphql(
   `fragment PhotoAlbumWork on WorkNode @_unmask {
     id
-    isMyRecommended
     title
     mdUrl
     accessType
@@ -509,16 +509,9 @@ export const PhotoAlbumWorkFragment = graphql(
     isDeleted
     user {
       id
-      biography
-      enBiography
       login
       nanoid
       name
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followersCount
-      worksCount
       iconUrl
       avatarFrame {
         id
@@ -527,30 +520,6 @@ export const PhotoAlbumWorkFragment = graphql(
         overlayImageUrl
         borderPadding
       }
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
-      receivedLikesCount
-      createdLikesCount
-      createdBookmarksCount
-      isMuted
-      isBlocked
-      promptonUser {
-        id
-      }
-    }
-    likedUsers(offset: 0, limit: 64) {
-      id
-      name
-      iconUrl
-      login
-    }
-    dailyTheme {
-      id
-      title
-      dateText
     }
     tagNames
     createdAt
@@ -561,36 +530,11 @@ export const PhotoAlbumWorkFragment = graphql(
       id
       imageUrl
     }
-    model
-    modelHash
-    generationModelId
-    workModelId
-    isTagEditable
     isCommentsEditable
     isLiked
-    isBookmarked
-    isInCollection
     isPromotion
     isGeneration
-    ogpThumbnailImageUrl
-    prompt
-    negativePrompt
-    noise
-    steps
-    sampler
-    scale
-    strength
-    vae
-    clipSkip
-    otherGenerationParams
-    pngInfo
-    style
-    url
     updatedAt
-    dailyRanking
-    weeklyRanking
-    monthlyRanking
-    relatedUrl
     nanoid
   }`,
 )

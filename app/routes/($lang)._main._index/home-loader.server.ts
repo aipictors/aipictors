@@ -69,6 +69,29 @@ const createBaseHomeLoaderData = (props: {
   firstTagWorks: [] as FragmentOf<typeof HomeTagWorkFragment>[],
 })
 
+const RELEASES_CACHE_MS = 60 * 1000
+const releasesCache = new Map<string, { expiresAt: number; value: unknown }>()
+
+/**
+ * お知らせ（microCMS）は全員共通で、外部サービスの応答をページのたびに 3 回待っていたので isolate で少し使い回す。
+ * Workers は別のリクエストの I/O を待てないので、届いた値だけを覚える
+ */
+const memoizeReleases = async <T>(
+  key: string,
+  load: () => Promise<T>,
+): Promise<T> => {
+  const cached = releasesCache.get(key)
+  if (cached !== undefined && cached.expiresAt > Date.now()) {
+    return cached.value as T
+  }
+  const value = await load()
+  releasesCache.set(key, {
+    expiresAt: Date.now() + RELEASES_CACHE_MS,
+    value,
+  })
+  return value
+}
+
 export async function homeLoader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const legacyTab = url.searchParams.get("tab")
@@ -153,9 +176,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
 
   const [releaseList, featuredReleaseList, latestImportantRelease] =
     await Promise.all([
-      fetchReleaseList({
-        limit: 4,
-      }).catch(
+      memoizeReleases("list", () => fetchReleaseList({ limit: 4 })).catch(
         (): MicroCmsApiReleaseResponse => ({
           contents: [],
           totalCount: 0,
@@ -163,8 +184,10 @@ export async function homeLoader(props: LoaderFunctionArgs) {
           limit: 4,
         }),
       ),
-      fetchFeaturedTaggedReleases().catch((): MicroCmsApiRelease[] => []),
-      fetchLatestImportantRelease().catch(
+      memoizeReleases("featured", () => fetchFeaturedTaggedReleases()).catch(
+        (): MicroCmsApiRelease[] => [],
+      ),
+      memoizeReleases("important", () => fetchLatestImportantRelease()).catch(
         (): MicroCmsApiRelease | null => null,
       ),
     ])

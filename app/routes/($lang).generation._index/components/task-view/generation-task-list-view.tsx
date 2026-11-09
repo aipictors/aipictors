@@ -114,18 +114,25 @@ export function GenerationTaskListView (props: Props) {
   const isAutoRefreshingRef = useRef(false)
   const autoRefreshRequestedAtRef = useRef<number>(0)
 
+  // 生成中の数が変わったときだけ取り直す（開いた直後は useQuery が取るので、数が届いただけでは取り直さない）
+  const inProgressCount =
+    queryData.userStatus?.inProgressImageGenerationTasksCount ||
+    queryData.userStatus?.inProgressImageGenerationReservedTasksCount
+  const previousInProgressCountRef = useRef(inProgressCount)
   useEffect(() => {
-    if (authContext.isLoading || authContext.isNotLoggedIn) {
+    const previousCount = previousInProgressCountRef.current
+    previousInProgressCountRef.current = inProgressCount
+    if (
+      previousCount === undefined ||
+      previousCount === inProgressCount ||
+      authContext.isLoading ||
+      authContext.isNotLoggedIn
+    ) {
       return
     }
     taskRefetch()
     resultRefetch()
-  }, [
-    authContext.isLoading,
-    authContext.isNotLoggedIn,
-    queryData.userStatus?.inProgressImageGenerationTasksCount ||
-      queryData.userStatus?.inProgressImageGenerationReservedTasksCount,
-  ])
+  }, [authContext.isLoading, authContext.isNotLoggedIn, inProgressCount])
 
   const stopAutoRefresh = useCallback(() => {
     isAutoRefreshingRef.current = false

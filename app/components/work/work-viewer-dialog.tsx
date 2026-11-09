@@ -1,5 +1,12 @@
 import { useTranslation } from "~/hooks/use-translation"
-import { useCallback, useEffect, useRef, useState, useMemo } from "react"
+import {
+  type ComponentProps,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { useQuery } from "@apollo/client/index"
@@ -19,6 +26,14 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 
 // ───────────────── Types ─────────────────
+
+/** 一覧のデータには無く、作品を取り直すと入る項目 */
+type WorkDetailFields = {
+  likedUsers?: { id: string; name: string; iconUrl: string | null; login: string }[]
+  isBookmarked?: boolean
+  isMyRecommended?: boolean
+  user?: { isBlocked?: boolean } | null
+}
 
 interface Props {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -323,6 +338,8 @@ export function WorkViewerDialog({
   const isCurrentWorkLoading = (!isWorkCached && loading) || isDebouncing
 
   // ────────── 安全性チェック ──────────
+  const detailFields = (currentWork ?? {}) as WorkDetailFields
+
   if (!work || !currentWork) {
     console.error(
       "Work not found at index:",
@@ -524,8 +541,12 @@ export function WorkViewerDialog({
                     aiWeeklyRanking: null,
                     aiMonthlyRanking: null,
                     botEvaluationStatus: null,
+                    dailyTheme: null,
+                    isBookmarked: false,
+                    isInCollection: false,
+                    isMyRecommended: false,
                     ...currentWork,
-                    likedUsers: (currentWork.likedUsers ?? []).map((user) => ({
+                    likedUsers: (detailFields.likedUsers ?? []).map((user) => ({
                       avatarFrame: null,
                       ...user,
                     })),
@@ -547,13 +568,29 @@ export function WorkViewerDialog({
                       ? {
                           isOfficial: false,
                           isModerator: false,
+                          biography: null,
+                          enBiography: null,
+                          receivedLikesCount: 0,
+                          receivedViewsCount: 0,
+                          awardsCount: 0,
+                          followersCount: 0,
+                          worksCount: 0,
+                          headerImageUrl: null,
+                          webFcmToken: null,
+                          isFollower: false,
+                          isFollowee: false,
+                          createdLikesCount: 0,
+                          createdBookmarksCount: 0,
+                          isMuted: false,
+                          isBlocked: false,
+                          promptonUser: null,
                           ...currentWork.user,
                           works: [],
                         }
                       : null,
                     nextWork: null,
                     previousWork: null,
-                  }}
+                  } as unknown as ComponentProps<typeof WorkArticle>["work"]}
                   userSetting={undefined}
                   mode={"dialog"}
                 />
@@ -664,12 +701,12 @@ export function WorkViewerDialog({
               targetWorkId={currentWork.id}
               bookmarkFolderId={null}
               defaultLiked={currentWork.isLiked}
-              defaultBookmarked={currentWork.isBookmarked}
+              defaultBookmarked={detailFields.isBookmarked ?? false}
               targetWorkOwnerUserId={currentWork.user?.id ?? ""}
-              isRecommended={currentWork.isMyRecommended}
+              isRecommended={detailFields.isMyRecommended ?? false}
               isDisabledShare={false}
               isSensitive={currentWork.isSensitive}
-              isTargetUserBlocked={Boolean(currentWork.user?.isBlocked)}
+              isTargetUserBlocked={Boolean(detailFields.user?.isBlocked)}
               workType={currentWork.type}
               mode="dialogLikeOnly"
             />

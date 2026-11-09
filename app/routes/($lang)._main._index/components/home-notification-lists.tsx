@@ -26,14 +26,43 @@ import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
+/** パネルに出す件数（全部は「通知の履歴をすべて見る」で見る） */
+const PANEL_NOTIFICATIONS_LIMIT = 20
+/** 開き直しただけなら取り直さない間隔 */
+const PANEL_REFRESH_INTERVAL_MS = 60 * 1000
+
+const panelFetchedAt = new Map<string, number>()
+
+export const panelNotificationsVariables = (tab: keyof typeof TAB_WHERE) => ({
+  offset: 0,
+  limit: PANEL_NOTIFICATIONS_LIMIT,
+  where: TAB_WHERE[tab],
+})
+
+/** ベルやタブを押し直すたびに取り直さない。未読が増えたときはベルの数字の更新で取り直す */
+const toPanelFetchPolicy = (tab: keyof typeof TAB_WHERE) => {
+  const now = Date.now()
+  if (now - (panelFetchedAt.get(tab) ?? 0) < PANEL_REFRESH_INTERVAL_MS) {
+    return "cache-first" as const
+  }
+  panelFetchedAt.set(tab, now)
+  return "cache-and-network" as const
+}
+
+export const resetPanelNotificationsFreshness = () => {
+  panelFetchedAt.clear()
+}
+
 export function NotificationList(props: {
   tab: keyof typeof TAB_WHERE
   unread: UnreadCounts
   onClose: () => void
 }) {
+  // 描画のたびに変わらないよう、開いたときに 1 回だけ決める
+  const [fetchPolicy] = useState(() => toPanelFetchPolicy(props.tab))
   const { data, loading, error, refetch } = useQuery(panelNotificationsQuery, {
-    variables: { offset: 0, limit: 40, where: TAB_WHERE[props.tab] },
-    fetchPolicy: "cache-and-network",
+    variables: panelNotificationsVariables(props.tab),
+    fetchPolicy,
   })
 
   const items = useMemo(() => toPanelItems(data?.viewer?.notifications), [data])

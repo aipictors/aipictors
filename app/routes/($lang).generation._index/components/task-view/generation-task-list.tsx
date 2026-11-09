@@ -264,7 +264,8 @@ export function GenerationTaskList(props: Props) {
   const { data: postedData } = useQuery(PostedGenerationsQuery, {
     skip: postedNanoids.length === 0,
     errorPolicy: "ignore",
-    fetchPolicy: "cache-and-network",
+    // 投稿済みの印は同じ履歴なら変わらないので、表示のたびに取り直さない
+    fetchPolicy: "cache-first",
     variables: {
       nanoids: postedNanoids,
       seeds: toSearchableSeeds(postedTargets),

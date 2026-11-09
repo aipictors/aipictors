@@ -326,9 +326,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                   <div className="pointer-events-none absolute bottom-2 left-1 z-10">
                     <WorkMediaBadge
                       isPromptPublic={
-                        (work.promptAccessType === "PUBLIC" &&
-                          work.prompt !== "") ||
-                        work.isGeneration
+                        work.promptAccessType === "PUBLIC" || work.isGeneration
                       }
                       hasVideoUrl={Boolean(work.url)}
                       isGeneration={work.isGeneration}

@@ -1,7 +1,7 @@
-import { useMutation } from "@apollo/client/index"
+import { useApolloClient, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { BellIcon } from "lucide-react"
-import { useContext, useState } from "react"
+import { useContext, useRef, useState } from "react"
 import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
@@ -9,7 +9,12 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { AuthContext } from "~/contexts/auth-context"
+import {
+  panelNotificationsVariables,
+  resetPanelNotificationsFreshness,
+} from "~/routes/($lang)._main._index/components/home-notification-lists"
 import { HomeNotificationsPanel } from "~/routes/($lang)._main._index/components/home-notifications-panel"
+import { panelNotificationsQuery } from "~/routes/($lang)._main._index/components/home-notifications-panel-queries"
 import {
   EMPTY_UNREAD_COUNTS,
   toBadgeText,
@@ -33,6 +38,8 @@ export function HomeNotificationsMenu(props: Props) {
   const [unreadSnapshot, setUnreadSnapshot] =
     useState<UnreadCounts>(EMPTY_UNREAD_COUNTS)
   const [markAsRead] = useMutation(markNotificationsAsReadMutation)
+  const client = useApolloClient()
+  const lastPrefetchedAtRef = useRef(0)
 
   if (!authContext.isLoggedIn) {
     return null
@@ -45,10 +52,26 @@ export function HomeNotificationsMenu(props: Props) {
     if (!next) return
     setUnreadSnapshot(props.unreadCounts)
     if (total > 0) {
+      // 新しい通知があるときは必ず取り直す
+      resetPanelNotificationsFreshness()
       void markAsRead()
         .then(props.onMarkedAsRead)
         .catch(() => {})
     }
+  }
+
+  // マウスを乗せた時点で読み始める（押してから読むと待ち時間がそのまま見える）
+  const prefetch = () => {
+    const now = Date.now()
+    if (now - lastPrefetchedAtRef.current < 60 * 1000) return
+    lastPrefetchedAtRef.current = now
+    void client
+      .query({
+        query: panelNotificationsQuery,
+        variables: panelNotificationsVariables("ALL"),
+        fetchPolicy: "network-only",
+      })
+      .catch(() => {})
   }
 
   return (
@@ -58,6 +81,7 @@ export function HomeNotificationsMenu(props: Props) {
           size="icon"
           variant="ghost"
           aria-label={total > 0 ? `通知（未読 ${total} 件）` : "通知"}
+          onPointerEnter={prefetch}
           className="relative shrink-0 rounded-full"
         >
           <BellIcon className="size-5" />

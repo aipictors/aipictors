@@ -128,7 +128,7 @@ const feedQuery = graphql(
         id
         work {
           ...PartialWorkFields
-          comments(offset: 0, limit: 128) {
+          comments(offset: 0, limit: 10) {
             ...Comment
           }
         }
