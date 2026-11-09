@@ -129,37 +129,36 @@ export function GenerationConfigControlNetDialogContents (props: Props) {
     props.setModel("")
   }
 
-  // https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp
   const getSampleImageUrl = () => {
     if (props.module === "dw_openpose_full") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp"
+      return "https://assets.aipictors.com/generation/controlnet/dw_openpose_full.webp"
     }
     if (props.module === "openpose_full") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp"
+      return "https://assets.aipictors.com/generation/controlnet/dw_openpose_full.webp"
     }
     if (props.module === "openpose") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/openpose.webp"
+      return "https://assets.aipictors.com/generation/controlnet/openpose.webp"
     }
     if (props.module === "canny") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/canny.webp"
+      return "https://assets.aipictors.com/generation/controlnet/canny.webp"
     }
     if (props.module === "depth_midas") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/depth_midas.webp"
+      return "https://assets.aipictors.com/generation/controlnet/depth_midas.webp"
     }
     if (props.module === "softedge_pidinet") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/softedge_pidinet.webp"
+      return "https://assets.aipictors.com/generation/controlnet/softedge_pidinet.webp"
     }
     if (props.module === "mlsd") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/mlsd.webp"
+      return "https://assets.aipictors.com/generation/controlnet/mlsd.webp"
     }
     if (props.module === "scribble_pidinet") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/scribble_pidinet.webp"
+      return "https://assets.aipictors.com/generation/controlnet/scribble_pidinet.webp"
     }
     if (props.module === "seg_ofade20k") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/segmentation.webp"
+      return "https://assets.aipictors.com/generation/controlnet/segmentation.webp"
     }
     if (props.module === "reference_only") {
-      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/reference_only.webp"
+      return "https://assets.aipictors.com/generation/controlnet/reference_only.webp"
     }
     return null
   }

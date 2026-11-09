@@ -443,7 +443,7 @@ export const config: AppConfig = {
    * ワードプレスリンク
    */
   wordpressLink: {
-    top: "https://legacy.aipictors.com",
+    top: "https://www.aipictors.com",
   },
   /**
    * サイトのURL
