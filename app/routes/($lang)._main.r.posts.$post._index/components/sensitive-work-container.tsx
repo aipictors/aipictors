@@ -33,6 +33,7 @@ import { DlsiteAffiliateCard } from "~/components/sensitive/dlsite-affiliate-car
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { mergeWorkViewerState } from "~/routes/($lang)._main.posts.$post._index/utils/merge-work-viewer-state"
 
 /** 作者の他の作品に出す年齢種別（作品ページと一緒に読む分と同じ） */
 const AUTHOR_WORKS_RATINGS: ("G" | "R15" | "R18" | "R18G")[] = ["R18", "R18G"]
@@ -60,8 +61,19 @@ export function SensitiveWorkContainer(props: Props) {
     props.work?.user !== null &&
     authContext.userId === props.work?.user?.id
 
-  const { data, refetch } = useQuery(sensitiveWorkQuery, {
-    skip: authContext.userId !== props.work?.user?.id && authContext.isLoading,
+  // 全体を取り直すのは、ローダーで取れない作品と自分の作品（非公開のプロンプトなど）だけ
+  const needsFullWork = props.work === null || isWorkOwner
+
+  const { data } = useQuery(sensitiveWorkQuery, {
+    skip: !needsFullWork || (props.work === null && authContext.isLoading),
+    variables: {
+      id: props.post,
+    },
+  })
+
+  // 他の人の作品で閲覧者によって変わるのはここだけ
+  const { data: viewerStateRet } = useQuery(sensitiveWorkViewerStateQuery, {
+    skip: needsFullWork || authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       id: props.post,
     },
@@ -76,7 +88,8 @@ export function SensitiveWorkContainer(props: Props) {
     },
   })
 
-  const workBase = data?.work ?? props.work
+  const workBase =
+    data?.work ?? mergeWorkViewerState(props.work, viewerStateRet?.work)
   const likedUsers =
     likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
   const work = workBase ? { ...workBase, likedUsers } : workBase
@@ -357,6 +370,24 @@ const sensitiveWorkQuery = graphql(
     }
   }`,
   [sensitiveWorkArticleFragment],
+)
+
+const sensitiveWorkViewerStateQuery = graphql(
+  `query SensitiveWorkViewerState($id: ID!) {
+    work(id: $id) {
+      id
+      isLiked
+      isBookmarked
+      isMyRecommended
+      user {
+        id
+        isFollower
+        isFollowee
+        isMuted
+        isBlocked
+      }
+    }
+  }`,
 )
 
 const workLikedUsersQuery = graphql(

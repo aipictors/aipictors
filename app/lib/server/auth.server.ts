@@ -8,7 +8,41 @@ export type VerifiedViewer = {
   currentPassType: string | null
 }
 
+const VERIFIED_VIEWER_TTL_MS = 30_000
+const VERIFIED_VIEWER_MAX_ENTRIES = 2000
+const verifiedViewers = new Map<
+  string,
+  { viewer: VerifiedViewer; expiresAt: number }
+>()
+
+/**
+ * /api の各ルートが毎回 GraphQL を通して本人確認していて、同じページの数本で同じ確認を繰り返していた。
+ * 同じトークンの確認結果を isolate で少しの間使い回す（成功だけ覚える）
+ */
 export const verifyViewerFromGraphQL = async (props: {
+  graphqlEndpoint: string
+  authorization: string
+  wpUserId?: string | null
+}): Promise<VerifiedViewer | null> => {
+  const cacheKey = `${props.wpUserId ?? ""}:${props.authorization}`
+  const cached = verifiedViewers.get(cacheKey)
+  if (cached !== undefined && cached.expiresAt > Date.now()) {
+    return cached.viewer
+  }
+  const viewer = await fetchVerifiedViewer(props)
+  if (viewer !== null) {
+    if (verifiedViewers.size >= VERIFIED_VIEWER_MAX_ENTRIES) {
+      verifiedViewers.clear()
+    }
+    verifiedViewers.set(cacheKey, {
+      viewer,
+      expiresAt: Date.now() + VERIFIED_VIEWER_TTL_MS,
+    })
+  }
+  return viewer
+}
+
+const fetchVerifiedViewer = async (props: {
   graphqlEndpoint: string
   authorization: string
   wpUserId?: string | null

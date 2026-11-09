@@ -91,6 +91,8 @@ export function ImageModelCard(props: Props) {
           }
           src={props.thumbnailImageURL ?? ""}
           alt={props.displayName ?? ""}
+          loading="lazy"
+          decoding="async"
           style={{ transformOrigin: "center" }}
         />
         {props.type && (

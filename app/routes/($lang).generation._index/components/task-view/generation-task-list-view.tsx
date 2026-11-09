@@ -309,10 +309,12 @@ export function GenerationTaskListView (props: Props) {
 
       // 以降は一定間隔で最新一覧を追い続ける（生成中/予約中がなくなったら停止）。
       // 生成の完了は途中経過の確認（generation:task-completed）ですぐ分かるので、ここは保険の間隔
+      // （履歴 2 種を毎回取り直すので短くしない。見ていないタブでは取らない）
       autoRefreshTimerRef.current = setInterval(() => {
         if (!isAutoRefreshingRef.current) return
+        if (document.visibilityState !== "visible") return
         refreshAndMaybeStop()
-      }, 4000)
+      }, 8000)
     }, 300)
   }, [
     refreshAndMaybeStop,

@@ -130,7 +130,7 @@ export function GenerationQueryProvider (props: Props) {
   useEffect(() => {
     // 生成中/予約中の間だけ定期的にステータスを更新する
     const time = setInterval(() => {
-      if (isTimeout) {
+      if (isTimeout || document.visibilityState !== "visible") {
         return
       }
       const hasInProgress =

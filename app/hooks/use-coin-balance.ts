@@ -9,6 +9,7 @@ import {
   getViewerRequestHeaders,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
+import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
 
 type CoinBalance = {
   freeCoinsBalance: number
@@ -41,10 +42,7 @@ export function useCoinBalance() {
         const headers = await getViewerRequestHeaders({
           includeJsonContentType: true,
         })
-        const res = await fetch(`/api/coins/summary`, {
-          method: "GET",
-          headers,
-        })
+        const res = await fetchCoinSummaryShared(headers)
 
         const json = (await res.json()) as {
           error?: string

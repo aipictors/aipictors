@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
 
 const DISMISS_KEY = "member-thanks-2026-11"
 
@@ -62,7 +63,7 @@ export function MemberThanksBanner () {
         const headers = await getViewerRequestHeaders({
           includeJsonContentType: true,
         })
-        const res = await fetch("/api/coins/summary", { headers })
+        const res = await fetchCoinSummaryShared(headers)
         const json = (await res.json()) as {
           data?: { thanksCampaigns?: string[] }
         }

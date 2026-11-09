@@ -44,6 +44,7 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { graphql } from "gql.tada"
 import { userNavigationStyles } from "./user-navigation-styles"
+import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
 
 type Props = {
   onLogout(): void
@@ -117,11 +118,9 @@ function UserNavigationMenuContent(props: Props) {
       }
 
       try {
-        const response = await fetch("/api/coins/summary", {
-          headers: {
-            ...(await getViewerRequestHeaders()),
-          },
-        })
+        const response = await fetchCoinSummaryShared(
+          await getViewerRequestHeaders(),
+        )
 
         const json = (await response.json()) as {
           error: string | null

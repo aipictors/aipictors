@@ -34,6 +34,7 @@ import {
 } from "~/routes/($lang)._main.posts.$post._index/route"
 import { getJstDate } from "~/utils/jst-date"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { mergeWorkViewerState } from "~/routes/($lang)._main.posts.$post._index/utils/merge-work-viewer-state"
 
 /** 作者の他の作品に出す年齢種別（作品ページと一緒に読む分と同じ） */
 const AUTHOR_WORKS_RATINGS: ("G" | "R15" | "R18" | "R18G")[] = ["G", "R15"]
@@ -59,13 +60,19 @@ export function WorkContainer(props: Props) {
   // 右の列（広告・新着コメント・受賞作品）は PC でしか出ないので、スマホでは取得しない
   const { showDesktop } = useLayoutVariant()
 
+  // 全体を取り直すのは、ローダーで取れない作品と自分の作品（非公開のプロンプトなど）だけ
+  const needsFullWork = props.work === null || isWorkOwner
+
   const { data: workRet } = useQuery(workQuery, {
-    // ログインしていない人には、ローダーの作品と同じものが返るので取り直さない
-    skip:
-      (props.work !== null && authContext.isNotLoggedIn) ||
-      (props.work?.user !== null &&
-        authContext.userId !== props.work?.user.id &&
-        authContext.isLoading),
+    skip: !needsFullWork || (props.work === null && authContext.isLoading),
+    variables: {
+      id: props.post,
+    },
+  })
+
+  // 他の人の作品で閲覧者によって変わるのはここだけ（以前は作者の作品 16 件まで全部取り直していた）
+  const { data: viewerStateRet } = useQuery(workViewerStateQuery, {
+    skip: needsFullWork || authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       id: props.post,
     },
@@ -84,7 +91,8 @@ export function WorkContainer(props: Props) {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
-  const workBase = workRet?.work ?? props.work
+  const workBase =
+    workRet?.work ?? mergeWorkViewerState(props.work, viewerStateRet?.work)
   const likedUsers =
     likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
   const work = workBase ? { ...workBase, likedUsers } : workBase
@@ -396,6 +404,24 @@ const workQuery = graphql(
     }
   }`,
   [workArticleFragment],
+)
+
+const workViewerStateQuery = graphql(
+  `query WorkViewerState($id: ID!) {
+    work(id: $id) {
+      id
+      isLiked
+      isBookmarked
+      isMyRecommended
+      user {
+        id
+        isFollower
+        isFollowee
+        isMuted
+        isBlocked
+      }
+    }
+  }`,
 )
 
 const workLikedUsersQuery = graphql(
