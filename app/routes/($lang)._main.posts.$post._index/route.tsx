@@ -32,7 +32,7 @@ import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 
 const PUBLIC_POST_CACHE_CONTROL =
-  "public, max-age=0, s-maxage=120, stale-while-revalidate=600"
+  "public, max-age=0, s-maxage=300, stale-while-revalidate=600"
 
 /**
  * 予約投稿などで見つからないときは、持ち主なら下書き表示に移す

@@ -55,4 +55,8 @@ User-agent: BLEXBot
 User-agent: serpstatbot
 Disallow: /
 
+# Meta の AI 学習用クローラー（検索や回答からの流入がなく、ページ取得の約 4 割を占めてサーバーの負荷になっていた）
+User-agent: meta-externalagent
+Disallow: /
+
 Sitemap: https://www.aipictors.com/sitemap.xml
