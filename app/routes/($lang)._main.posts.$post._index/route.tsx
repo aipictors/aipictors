@@ -1,31 +1,34 @@
-import { useTranslation } from "~/hooks/use-translation"
+import {
+  type HeadersFunction,
+  json,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+  redirect,
+} from "@remix-run/cloudflare"
+import {
+  isRouteErrorResponse,
+  useLoaderData,
+  useParams,
+  useRouteError,
+} from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
+import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
+import { AppErrorPage } from "~/components/app/app-error-page"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { OwnWorkNotFoundPage } from "~/components/work/own-work-not-found-page"
+import { config, META } from "~/config"
 import { ParamsError } from "~/errors/params-error"
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
+import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
+import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
-import {
-  json,
-  redirect,
-  type HeadersFunction,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react"
-import { OwnWorkNotFoundPage } from "~/components/work/own-work-not-found-page"
-import { AppErrorPage } from "~/components/app/app-error-page"
-import { type FragmentOf, graphql } from "gql.tada"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
-import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
-import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
 import { getJstDate } from "~/utils/jst-date"
-import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
 
 const PUBLIC_POST_CACHE_CONTROL =
   "public, max-age=0, s-maxage=120, stale-while-revalidate=600"
@@ -33,7 +36,7 @@ const PUBLIC_POST_CACHE_CONTROL =
 /**
  * 予約投稿などで見つからないときは、持ち主なら下書き表示に移す
  */
-export function ErrorBoundary () {
+export function ErrorBoundary() {
   const error = useRouteError()
   const params = useParams()
 
@@ -53,7 +56,7 @@ export function ErrorBoundary () {
   )
 }
 
-export function HydrateFallback () {
+export function HydrateFallback() {
   return <AppLoadingPage />
 }
 
@@ -85,6 +88,11 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  // 作者が取れなかった作品を「欠けたまま」出さない（読み直し・古いキャッシュに任せる）
+  if (workResp.errors?.length && !workResp.data.work.user) {
+    throw new Error("作品の作者を取得できませんでした")
+  }
+
   // 非公開の場合はエラー
   if (
     workResp.data.work.accessType === "PRIVATE" ||
@@ -108,7 +116,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
     {
       headers: {
-        "Cache-Control": PUBLIC_POST_CACHE_CONTROL,
+        // 一部が欠けた内容はキャッシュしない
+        "Cache-Control": workResp.errors?.length
+          ? "no-store"
+          : PUBLIC_POST_CACHE_CONTROL,
       },
     },
   )
@@ -214,7 +225,7 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => ({
     loaderHeaders.get("Cache-Control") ?? config.cacheControl.short,
 })
 
-export default function Work () {
+export default function Work() {
   const t = useTranslation()
   const params = useParams()
 
@@ -319,7 +330,8 @@ export default function Work () {
         }
       : undefined,
     thumbnailUrl: data.work.largeThumbnailImageURL || undefined,
-    artMedium: data.work.style === "REAL" ? "AI generated photo" : "AI generated image",
+    artMedium:
+      data.work.style === "REAL" ? "AI generated photo" : "AI generated image",
     artform: "Digital art",
     dateCreated: createdAtIso,
     datePublished: createdAtIso,
@@ -358,10 +370,7 @@ export default function Work () {
     <>
       <AppBreadcrumbScript breadcrumb={breadcrumb} />
       <AppJsonLdScript jsonLd={artwork} />
-      <WorkContainer
-        post={data.post}
-        work={data.work}
-      />
+      <WorkContainer post={data.post} work={data.work} />
     </>
   )
 }

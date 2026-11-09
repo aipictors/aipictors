@@ -7,6 +7,7 @@ import {
 } from "@apollo/client/index"
 import { type ContextSetter, setContext } from "@apollo/client/link/context"
 import { config } from "~/config"
+import { hasTransientGraphQLError } from "~/lib/transient-graphql-error"
 
 const API_TIMEOUT_MS = 10_000
 
@@ -76,7 +77,14 @@ const originalQuery = loaderClient.query.bind(loaderClient)
  * 何も取れなかったときはエラーにする（呼び出し側の errorPolicy によらない）。
  */
 loaderClient.query = (async (options: Parameters<typeof originalQuery>[0]) => {
-  const result = await originalQuery(options)
+  let result = await originalQuery(options)
+  // 一時的な失敗は 1 回だけ取り直す（欠けたままのページを出さない）
+  if (hasTransientGraphQLError(result.errors)) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, 300 + Math.random() * 300),
+    )
+    result = await originalQuery(options)
+  }
   if (!result.errors?.length) {
     return result
   }

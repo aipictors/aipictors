@@ -1,41 +1,45 @@
-import { useTranslation } from "~/hooks/use-translation"
+import {
+  type HeadersFunction,
+  json,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+  redirect,
+} from "@remix-run/cloudflare"
+import {
+  isRouteErrorResponse,
+  useLoaderData,
+  useParams,
+  useRouteError,
+} from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
+import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
+import { AppErrorPage } from "~/components/app/app-error-page"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { SensitiveAgeGate } from "~/components/sensitive/sensitive-age-gate"
+import { SensitiveBlurToggle } from "~/components/sensitive/sensitive-blur"
+import { OwnWorkNotFoundPage } from "~/components/work/own-work-not-found-page"
+import { config, META } from "~/config"
 import { ParamsError } from "~/errors/params-error"
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
+import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
+import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import {
   sensitiveWorkArticleFragment,
   type workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import {
-  redirect,
-  type HeadersFunction,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react"
-import { OwnWorkNotFoundPage } from "~/components/work/own-work-not-found-page"
-import { AppErrorPage } from "~/components/app/app-error-page"
-import { type FragmentOf, graphql } from "gql.tada"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
-import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
-import { config, META } from "~/config"
-import { SensitiveAgeGate } from "~/components/sensitive/sensitive-age-gate"
-import { SensitiveBlurToggle } from "~/components/sensitive/sensitive-blur"
-import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
-import { hasNonIndexableSensitiveTag } from "~/utils/sensitive-tag-filter"
-import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { getJstDate } from "~/utils/jst-date"
-import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
 import { SensitiveWorkContainer } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
-import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
+import { getJstDate } from "~/utils/jst-date"
+import { hasNonIndexableSensitiveTag } from "~/utils/sensitive-tag-filter"
 
 /**
  * 予約投稿などで見つからないときは、持ち主なら下書き表示に移す
  */
-export function ErrorBoundary () {
+export function ErrorBoundary() {
   const error = useRouteError()
   const params = useParams()
 
@@ -120,6 +124,11 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  // 作者が取れなかった作品を「欠けたまま」出さない（読み直し・古いキャッシュに任せる）
+  if (workResp.errors?.length && !workResp.data.work.user) {
+    throw new Error("作品の作者を取得できませんでした")
+  }
+
   // 非公開の場合はエラー
   if (
     workResp.data.work.accessType === "PRIVATE" ||
@@ -140,17 +149,24 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return {
-    post: props.params.post,
-    work: workResp.data.work,
-    workComments: workCommentsResp.data.work.comments,
-    newComments: newComments.data.newComments,
-    awardWorks: awardWorks.data.workAwards,
-  }
+  return json(
+    {
+      post: props.params.post,
+      work: workResp.data.work,
+      workComments: workCommentsResp.data.work.comments,
+      newComments: newComments.data.newComments,
+      awardWorks: awardWorks.data.workAwards,
+    },
+    // 一部が欠けた内容はキャッシュしない
+    workResp.errors?.length || workCommentsResp.errors?.length
+      ? { headers: { "Cache-Control": "no-store" } }
+      : undefined,
+  )
 }
 
-export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneDay,
+export const headers: HeadersFunction = ({ loaderHeaders }) => ({
+  "Cache-Control":
+    loaderHeaders.get("Cache-Control") ?? config.cacheControl.oneDay,
 })
 
 export const meta: MetaFunction = (props) => {
