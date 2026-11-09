@@ -15,7 +15,13 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
+import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useTranslation } from "~/hooks/use-translation"
+import { StickerBulkGrid } from "~/routes/($lang)._main.posts.$post._index/components/sticker-bulk-grid"
+import {
+  StickerDialogOptions,
+  useStickerViewMode,
+} from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog-options"
 import { AddStickerButton } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-button"
 import {
   StickerButton,
@@ -62,6 +68,14 @@ export function StickerDialog(props: Props): React.ReactNode {
   const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)
 
   const [type, setType] = useState("RELATED")
+
+  const { viewMode, toggleViewMode } = useStickerViewMode()
+
+  const [isPinEditing, setIsPinEditing] = useState(false)
+
+  const { pinnedStickers, isPinned, togglePin } = usePinnedStickers({
+    skip: !props.isOpen,
+  })
   const [recentStickerIds, setRecentStickerIds] = useState<string[]>([])
 
   // スクロール位置を保持するためのref
@@ -218,6 +232,22 @@ export function StickerDialog(props: Props): React.ReactNode {
       !replyStickers.some((replySticker) => replySticker.id === sticker.id),
   )
 
+  const onSelectSticker = (sticker: {
+    id: string
+    title: string
+    imageUrl: string | null
+  }) => {
+    if (isPinEditing) {
+      togglePin(sticker)
+      return
+    }
+    if (!props.isTargetUserBlocked) {
+      setRecentStickerIds(recordRecentStickerId(sticker.id))
+      props.onSend(sticker.id, sticker.imageUrl ?? "")
+      props.onClose()
+    }
+  }
+
   const renderStickerSection = (
     title: string,
     sectionStickers: typeof allStickers,
@@ -235,15 +265,10 @@ export function StickerDialog(props: Props): React.ReactNode {
               key={sticker.id}
               imageUrl={sticker.imageUrl ?? ""}
               title={sticker.title}
-              onClick={() => {
-                if (!props.isTargetUserBlocked) {
-                  setRecentStickerIds(recordRecentStickerId(sticker.id))
-                  props.onSend(sticker.id, sticker.imageUrl ?? "")
-                  props.onClose()
-                }
-              }}
+              onClick={() => onSelectSticker(sticker)}
               size={stickerSize}
-              disabled={props.isTargetUserBlocked}
+              disabled={props.isTargetUserBlocked && !isPinEditing}
+              isPinned={isPinned(sticker.id)}
             />
           ))}
         </div>
@@ -265,7 +290,7 @@ export function StickerDialog(props: Props): React.ReactNode {
             )}
           </div>
         )}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Tabs value={type} defaultValue={"RELATED"}>
             <TabsList>
               <TabsTrigger
@@ -296,6 +321,13 @@ export function StickerDialog(props: Props): React.ReactNode {
               <MinusIcon className="w-8" />
             </Button>
           </div>
+          <StickerDialogOptions
+            viewMode={viewMode}
+            onToggleViewMode={toggleViewMode}
+            isPinEditing={isPinEditing}
+            onTogglePinEditing={() => setIsPinEditing((value) => !value)}
+            pinnedCount={pinnedStickers.length}
+          />
         </div>
         <ScrollArea
           ref={scrollAreaRef}
@@ -313,27 +345,38 @@ export function StickerDialog(props: Props): React.ReactNode {
                 {renderStickerSection(t("返信用", "For replies"), replyStickers)}
                 {renderStickerSection(t("その他", "Others"), remainingStickers)}
               </div>
+            ) : viewMode === "BULK" ? (
+              <StickerBulkGrid
+                orderBy="DATE_CREATED"
+                maxCount={maxCount}
+                renderSticker={(sticker) => (
+                  <StickerButton
+                    key={sticker.id}
+                    imageUrl={sticker.imageUrl ?? ""}
+                    title={sticker.title}
+                    onClick={() => onSelectSticker(sticker)}
+                    size={stickerSize}
+                    disabled={props.isTargetUserBlocked && !isPinEditing}
+                    isPinned={isPinned(sticker.id)}
+                  />
+                )}
+              />
             ) : (
               allStickers.map((sticker) => (
                 <StickerButton
                   key={sticker.id}
                   imageUrl={sticker.imageUrl ?? ""}
                   title={sticker.title}
-                  onClick={() => {
-                    if (!props.isTargetUserBlocked) {
-                      setRecentStickerIds(recordRecentStickerId(sticker.id))
-                      props.onSend(sticker.id, sticker.imageUrl ?? "")
-                      props.onClose()
-                    }
-                  }}
+                  onClick={() => onSelectSticker(sticker)}
                   size={stickerSize}
-                  disabled={props.isTargetUserBlocked}
+                  disabled={props.isTargetUserBlocked && !isPinEditing}
+                  isPinned={isPinned(sticker.id)}
                 />
               ))
             )}
           </div>
         </ScrollArea>
-        {type === "CREATED" && (
+        {type === "CREATED" && viewMode === "PAGED" && (
           <div className="mt-1 mb-1">
             <ResponsivePagination
               perPage={maxStickersPage}

@@ -43,8 +43,24 @@ export function WorkCommentList(props: WorkCommentListProps) {
     showCommentsBeforeMore,
     showNewComments,
     stickers,
+    pinnedStickers,
     supportSuccessState,
   } = state
+
+  const onSendQuickSticker = async (stickerId: string) => {
+    try {
+      setRecentStickerIds(recordRecentStickerId(stickerId))
+      await sendComment(comment, stickerId, props.workId, currentSupportDraft)
+    } catch (error) {
+      toast(
+        getApolloErrorMessage(error) ??
+          t(
+            "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
+            "Failed to send the sticker. Please try again later.",
+          ),
+      )
+    }
+  }
 
   return (
     <>
@@ -72,6 +88,20 @@ export function WorkCommentList(props: WorkCommentListProps) {
           isWorkOwnerBlocked={props.isWorkOwnerBlocked}
         />
       </div>
+      {pinnedStickers.length > 0 && !props.isWorkOwnerBlocked && (
+        <div className="flex flex-wrap gap-1">
+          {pinnedStickers.map((sticker) => (
+            <StickerButton
+              key={sticker.id}
+              imageUrl={sticker.imageUrl ?? ""}
+              title={sticker.title}
+              onClick={() => onSendQuickSticker(sticker.id)}
+              size="large"
+              disabled={props.isWorkOwnerBlocked}
+            />
+          ))}
+        </div>
+      )}
       {stickers.length > 0 && !props.isWorkOwnerBlocked && (
         <div className="flex gap-1 overflow-x-auto [scrollbar-width:thin]">
           {stickers.map((sticker) => (
@@ -79,25 +109,7 @@ export function WorkCommentList(props: WorkCommentListProps) {
               key={sticker.id}
               imageUrl={sticker.imageUrl ?? ""}
               title={sticker.title}
-              onClick={async () => {
-                try {
-                  setRecentStickerIds(recordRecentStickerId(sticker.id))
-                  await sendComment(
-                    comment,
-                    sticker.id,
-                    props.workId,
-                    currentSupportDraft,
-                  )
-                } catch (error) {
-                  toast(
-                    getApolloErrorMessage(error) ??
-                      t(
-                        "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
-                        "Failed to send the sticker. Please try again later.",
-                      ),
-                  )
-                }
-              }}
+              onClick={() => onSendQuickSticker(sticker.id)}
               size="x-large"
               disabled={props.isWorkOwnerBlocked}
             />

@@ -360,6 +360,12 @@ export function GenerationTaskEditableCard(props: Props) {
               <p className="text-xs text-muted-foreground">
                 コイン消費なしで同じ条件の再リクエストができます。
               </p>
+              {(props.task.model.type === "GEMINI" ||
+                props.task.model.type === "SD5") && (
+                <p className="text-xs text-muted-foreground">
+                  Nano Banana は Google の安全フィルターで止められることがあります。続けて失敗するときはプロンプトの表現を変えてお試しください。
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <CoinIcon className="h-4 w-4 shrink-0" />

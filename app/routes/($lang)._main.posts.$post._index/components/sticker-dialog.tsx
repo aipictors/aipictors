@@ -15,12 +15,18 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
+import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useTranslation } from "~/hooks/use-translation"
 import { AddStickerButton } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-button"
 import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
+import { StickerBulkGrid } from "~/routes/($lang)._main.posts.$post._index/components/sticker-bulk-grid"
+import {
+  StickerDialogOptions,
+  useStickerViewMode,
+} from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog-options"
 
 type Props = {
   isOpen: boolean
@@ -66,6 +72,14 @@ export function StickerDialog(props: Props) {
 
   const [type, setType] = useState("CREATED")
 
+  const { viewMode, toggleViewMode } = useStickerViewMode()
+
+  const [isPinEditing, setIsPinEditing] = useState(false)
+
+  const { pinnedStickers, isPinned, togglePin } = usePinnedStickers({
+    skip: !props.isOpen,
+  })
+
   // スクロール位置を保持するためのref
   const scrollAreaRef = useRef<React.ElementRef<typeof ScrollArea>>(null)
   const [savedScrollPositions, setSavedScrollPositions] = useState<
@@ -75,7 +89,7 @@ export function StickerDialog(props: Props) {
   const maxStickersPage = 120
 
   const { data: stickers = null, refetch } = useQuery(viewerUserStickersQuery, {
-    skip: !props.isOpen || appContext.isNotLoggedIn,
+    skip: !props.isOpen || appContext.isNotLoggedIn || viewMode === "BULK",
     variables: {
       limit: maxStickersPage,
       offset: createdSortStickerPage * maxStickersPage,
@@ -196,6 +210,31 @@ export function StickerDialog(props: Props) {
   } as const
   const stickerSize = sizeMap[sizeOptions[sizeIndex]]
 
+  const renderSticker = (sticker: {
+    id: string
+    title: string
+    imageUrl: string | null
+  }) => (
+    <StickerButton
+      key={sticker.id}
+      imageUrl={sticker.imageUrl ?? ""}
+      title={sticker.title}
+      onClick={() => {
+        if (isPinEditing) {
+          togglePin(sticker)
+          return
+        }
+        if (!props.isTargetUserBlocked) {
+          props.onSend(sticker.id, sticker.imageUrl ?? "")
+          props.onClose()
+        }
+      }}
+      size={stickerSize}
+      disabled={props.isTargetUserBlocked && !isPinEditing}
+      isPinned={isPinned(sticker.id)}
+    />
+  )
+
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
       <DialogContent className="flex h-[80vh] min-h-[32vw] w-[80vw] min-w-[80vw] flex-col pl-2">
@@ -210,7 +249,7 @@ export function StickerDialog(props: Props) {
             )}
           </div>
         )}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Tabs value={type} defaultValue={"CREATED"}>
             <TabsList>
               <TabsTrigger
@@ -241,6 +280,13 @@ export function StickerDialog(props: Props) {
               <MinusIcon className="w-8" />
             </Button>
           </div>
+          <StickerDialogOptions
+            viewMode={viewMode}
+            onToggleViewMode={toggleViewMode}
+            isPinEditing={isPinEditing}
+            onTogglePinEditing={() => setIsPinEditing((value) => !value)}
+            pinnedCount={pinnedStickers.length}
+          />
         </div>
         <ScrollArea
           ref={scrollAreaRef}
@@ -252,33 +298,31 @@ export function StickerDialog(props: Props) {
                 refetch()
               }}
             />
-            {stickers === null &&
-              Array.from({ length: 24 }).map((_, index) => (
-                <div
-                  // biome-ignore lint/suspicious/noArrayIndexKey: 読み込み中の枠は順番が変わらない
-                  key={index}
-                  className="animate-pulse rounded-md bg-muted"
-                  style={{ width: stickerSize, height: stickerSize }}
-                />
-              ))}
-            {stickers?.viewer?.userStickers?.map((sticker) => (
-              <StickerButton
-                key={sticker.id}
-                imageUrl={sticker.imageUrl ?? ""}
-                title={sticker.title}
-                onClick={() => {
-                  if (!props.isTargetUserBlocked) {
-                    props.onSend(sticker.id, sticker.imageUrl ?? "")
-                    props.onClose()
-                  }
-                }}
-                size={stickerSize}
-                disabled={props.isTargetUserBlocked}
+            {viewMode === "BULK" ? (
+              <StickerBulkGrid
+                orderBy={type === "RELATED" ? "DATE_USED" : "DATE_CREATED"}
+                maxCount={maxCount}
+                renderSticker={renderSticker}
               />
-            ))}
+            ) : (
+              <>
+                {stickers === null &&
+                  Array.from({ length: 24 }).map((_, index) => (
+                    <div
+                      // biome-ignore lint/suspicious/noArrayIndexKey: 読み込み中の枠は順番が変わらない
+                      key={index}
+                      className="animate-pulse rounded-md bg-muted"
+                      style={{ width: stickerSize, height: stickerSize }}
+                    />
+                  ))}
+                {stickers?.viewer?.userStickers?.map((sticker) =>
+                  renderSticker(sticker),
+                )}
+              </>
+            )}
           </div>
         </ScrollArea>
-        {type === "CREATED" && (
+        {type === "CREATED" && viewMode === "PAGED" && (
           <div className="mt-1 mb-1">
             <ResponsivePagination
               perPage={maxStickersPage}

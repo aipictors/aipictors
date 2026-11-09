@@ -28,6 +28,7 @@ import {
   canEditThemeProposalNote,
   ThemeProposalNoteEditDialog,
 } from "~/routes/($lang)._main.themes.proposals._index/components/theme-proposal-note-edit-dialog"
+import { ThemeProposalReportDialog } from "~/routes/($lang)._main.themes.proposals._index/components/theme-proposal-report-dialog"
 
 export type ThemeProposalCardItem = {
   id: string
@@ -199,9 +200,14 @@ export function ThemeProposalCard(props: Props) {
             </Avatar>
             <span className="truncate text-sm">{proposal.proposerName}</span>
           </Link>
-          <span className="shrink-0 text-muted-foreground text-xs">
-            {format(new Date(proposal.createdAt * 1000), "M/d HH:mm")}
-          </span>
+          <div className="flex shrink-0 items-center gap-1">
+            <span className="text-muted-foreground text-xs">
+              {format(new Date(proposal.createdAt * 1000), "M/d HH:mm")}
+            </span>
+            {props.isLoggedIn && !isOwnProposal && (
+              <ThemeProposalReportDialog proposalId={proposal.id} />
+            )}
+          </div>
         </div>
 
         {hasPictorComment && (

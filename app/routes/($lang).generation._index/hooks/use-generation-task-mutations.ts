@@ -100,7 +100,11 @@ export function useGenerationTaskMutations(props: {
         message: "createGeminiTask error",
         details: { name: error.name, message: error.message },
       })
-      showError(error)
+      // 理由を読めるように長めに出す（生成に時間がかかり、画面を見ていないことがある）
+      toast.error(error.message, {
+        duration: 12_000,
+        ...(isDesktop ? {} : { position: "top-center" as const }),
+      })
     },
   })
 

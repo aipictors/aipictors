@@ -1,3 +1,4 @@
+import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { useLocation, useSearchParams } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
@@ -537,9 +538,13 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
+  const { pinnedStickers } = usePinnedStickers()
+
   const stickers = sortStickersByRecent(
     data?.viewer?.userStickers ?? [],
     recentStickerIds,
+  ).filter(
+    (sticker) => !pinnedStickers.some((pinned) => pinned.id === sticker.id),
   )
 
   return {
@@ -597,6 +602,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     showNewComments,
     showNewReplyComments,
     stickers,
+    pinnedStickers,
     supportCoinType,
     supportFreeCoinAmount,
     supportIsAnonymous,

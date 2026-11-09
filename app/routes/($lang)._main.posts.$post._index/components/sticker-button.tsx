@@ -1,4 +1,5 @@
 import { graphql } from "gql.tada"
+import { PinIcon } from "lucide-react"
 import { cn } from "~/lib/utils"
 import { DeleteStickerConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-sticker-confirm-dialog"
 
@@ -10,6 +11,7 @@ type Props = {
   onDelete?: () => void
   size?: "2x-large" | "small" | "medium" | "large" | "x-large"
   disabled?: boolean
+  isPinned?: boolean
 }
 
 /**
@@ -60,6 +62,11 @@ export function StickerButton (props: Props) {
           decoding="async"
         />
       </button>
+      {props.isPinned && (
+        <span className="pointer-events-none absolute top-1 left-1 rounded-full bg-primary p-1 text-primary-foreground">
+          <PinIcon className="size-3" />
+        </span>
+      )}
       {props.onDelete && (
         <DeleteStickerConfirmDialog onDelete={props.onDelete} />
       )}
