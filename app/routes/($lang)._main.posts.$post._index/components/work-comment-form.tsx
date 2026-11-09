@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client/index"
 import { Heart, Loader2Icon, StampIcon } from "lucide-react"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
@@ -6,6 +7,7 @@ import { Checkbox } from "~/components/ui/checkbox"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { prefetchViewerStickers } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import { WorkCommentSupportPanel } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-support-panel"
 import type { WorkCommentListState } from "~/routes/($lang)._main.posts.$post._index/hooks/use-work-comment-list"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -17,6 +19,7 @@ export function WorkCommentForm(
   props: WorkCommentListState & { isWorkOwnerBlocked?: boolean },
 ) {
   const t = useTranslation()
+  const client = useApolloClient()
   const {
     appContext,
     authContext,
@@ -163,6 +166,9 @@ export function WorkCommentForm(
             className="size-9 rounded-full"
             aria-label={t("スタンプを送る", "Send a sticker")}
             onClick={onOpen}
+            onPointerEnter={() => {
+              if (authContext.isLoggedIn) void prefetchViewerStickers(client)
+            }}
           >
             <StampIcon className="size-5" />
           </Button>

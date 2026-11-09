@@ -3,9 +3,7 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
-import { AuthContext } from "~/contexts/auth-context"
-import { useContext, useEffect, useRef, useState } from "react"
-import { useQuery } from "@apollo/client/index"
+import { useEffect, useRef, useState } from "react"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -91,25 +89,9 @@ function RankingWorkCard(props: {
 }
 
 export function RankingWorkList (props: Props) {
-  const appContext = useContext(AuthContext)
-
-  const works = props.awards
-
-  const { data: awardWorks } = useQuery(workAwardsQuery, {
-    skip: appContext.isLoading || appContext.isNotLoggedIn,
-    variables: {
-      offset: 0,
-      limit: 200,
-      where: {
-        year: props.year,
-        month: props.month,
-        ...(props.day && { day: props.day }),
-        ...(props.weekIndex && { weekIndex: props.weekIndex }),
-      },
-    },
-  })
-
-  const workAwards = awardWorks?.workAwards ?? works
+  // 自分がいいねしたかは、いいねボタンが見えている分だけまとめて確かめる
+  // （ログイン中は同じ 200 件を開いたあとにもう一度取り直していた）
+  const workAwards = props.awards
   const featuredAwards = workAwards.slice(0, 3)
 
   // 200 件を一度に描くと、スマホでは HTML が 1.8MB・要素 8,000 個を超えて表示が重かった。
@@ -214,13 +196,4 @@ export const WorkAwardListItemFragment = graphql(
         }
       }
   }`,
-)
-
-const workAwardsQuery = graphql(
-  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
-    workAwards(offset: $offset, limit: $limit, where: $where) {
-      ...WorkAwardListItem
-    }
-  }`,
-  [WorkAwardListItemFragment],
 )

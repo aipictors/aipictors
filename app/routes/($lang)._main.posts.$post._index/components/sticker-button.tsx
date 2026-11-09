@@ -52,7 +52,13 @@ export function StickerButton (props: Props) {
         onClick={props.disabled ? undefined : props.onClick}
         disabled={props.disabled}
       >
-        <img className="m-auto" src={props.imageUrl} alt={props.title} />
+        <img
+          className="m-auto"
+          src={props.imageUrl}
+          alt={props.title}
+          loading="lazy"
+          decoding="async"
+        />
       </button>
       {props.onDelete && (
         <DeleteStickerConfirmDialog onDelete={props.onDelete} />

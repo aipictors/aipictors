@@ -354,56 +354,39 @@ export function usePostImageSubmit(props: Props) {
     try {
       dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-      const smallThumbnail = await resizeThumbnail(
-        formResult.output.thumbnailBase64,
-        400,
-        1200,
-        "webp",
-      )
-
-      dispatch({ type: "SET_PROGRESS", payload: 20 })
-
-      const largeThumbnail = await resizeThumbnail(
-        formResult.output.thumbnailBase64,
-        600,
-        1600,
-        "webp",
-      )
+      // 順番に待たない（1 枚ずつ往復すると画像の数だけ投稿が遅くなる）
+      const [smallThumbnail, largeThumbnail, botGradingImage] =
+        await Promise.all([
+          resizeThumbnail(formResult.output.thumbnailBase64, 400, 1200, "webp"),
+          resizeThumbnail(formResult.output.thumbnailBase64, 600, 1600, "webp"),
+          // AI評価用のJPEG画像
+          resizeImage(formResult.output.thumbnailBase64, 400, 400, "jpeg"),
+        ])
 
       dispatch({ type: "SET_PROGRESS", payload: 30 })
 
+      const [
+        smallThumbnailUrl,
+        largeThumbnailUrl,
+        ogpUrl,
+        botGradingImageUrl,
+        uploadResults,
+      ] = await Promise.all([
+        uploadPublicImage(smallThumbnail.base64, token),
+        uploadPublicImage(largeThumbnail.base64, token),
+        state.ogpBase64 ? uploadPublicImage(state.ogpBase64, token) : "",
+        uploadPublicImage(botGradingImage.base64, token),
+        uploadImages(),
+      ])
+
       // 順に小サムネイル・大サムネイル・OGP（なければ空文字）・AI 評価用・本体の画像
       uploadedImageUrls.push(
-        await uploadPublicImage(smallThumbnail.base64, token),
+        smallThumbnailUrl,
+        largeThumbnailUrl,
+        ogpUrl,
+        botGradingImageUrl,
       )
 
-      dispatch({ type: "SET_PROGRESS", payload: 40 })
-
-      uploadedImageUrls.push(
-        await uploadPublicImage(largeThumbnail.base64, token),
-      )
-
-      dispatch({ type: "SET_PROGRESS", payload: 50 })
-
-      uploadedImageUrls.push(
-        state.ogpBase64 ? await uploadPublicImage(state.ogpBase64, token) : "",
-      )
-
-      dispatch({ type: "SET_PROGRESS", payload: 60 })
-
-      // AI評価用のJPEG画像をアップロード
-      const botGradingImage = await resizeImage(
-        formResult.output.thumbnailBase64,
-        400,
-        400,
-        "jpeg",
-      )
-
-      uploadedImageUrls.push(
-        await uploadPublicImage(botGradingImage.base64, token),
-      )
-
-      const uploadResults = await uploadImages()
       const imageUrls = uploadResults.filter((url) => url !== null)
 
       if (imageUrls.length === 0) {

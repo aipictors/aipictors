@@ -1,4 +1,5 @@
 import text from "~/assets/terms.md?raw"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { graphql } from "gql.tada"
 import { GenerationAdvertisementView } from "~/routes/($lang).generation._index/components/advertisement-view/generation-advertisement-view"
 import { GenerationConfigView } from "~/routes/($lang).generation._index/components/config-view/generation-config-view"
@@ -58,6 +59,12 @@ export default function GenerationPage() {
 
   const context = useGenerationContext()
 
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
   useEffect(() => {
     if (localStorageUserToken !== null) {
       const decoded = jwtDecode(localStorageUserToken)
@@ -80,6 +87,12 @@ export default function GenerationPage() {
 
   return (
     <>
+      {/* PC とスマホで構成が違い、保存した状態（localStorage）でも中身が変わるので、サーバーとの一致が取れない。
+          ブラウザに来てから 1 回だけ描く（以前はスマホ用の HTML を出してから React が全部描き直していた） */}
+      {!isHydrated ? (
+        <AppLoadingPage />
+      ) : (
+        <>
       <GenerationUserModelFromUrl />
       <GenerationView
         settings={
@@ -143,6 +156,8 @@ export default function GenerationPage() {
         menu={<GenerationConfigView />}
         footer={<GenerationFormFooter />}
       />
+        </>
+      )}
       <GenerationSeoSection />
     </>
   )

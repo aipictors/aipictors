@@ -1,8 +1,9 @@
 import { useTranslation } from "~/hooks/use-translation"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
+import {
+  type HeadersFunction,
+  json,
+  type LoaderFunctionArgs,
+  type MetaFunction,
 } from "@remix-run/cloudflare"
 import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
@@ -94,16 +95,19 @@ export async function loader(props: LoaderFunctionArgs) {
       }
     }
 
-    return {
-      rankingFamily,
-      year,
-      month,
-      day,
-      workAwards: null,
-      aiRankings: null,
-      supportReceived,
-      supportSent,
-    }
+    return json(
+      {
+        rankingFamily,
+        year,
+        month,
+        day,
+        workAwards: null,
+        aiRankings: null,
+        supportReceived,
+        supportSent,
+      },
+      { headers: { "Cache-Control": config.cacheControl.oneDay } },
+    )
   }
 
   for (let offset = 0; offset < 7; offset += 1) {
@@ -144,16 +148,20 @@ export async function loader(props: LoaderFunctionArgs) {
     }
   }
 
-  return {
-    rankingFamily,
-    year,
-    month,
-    day,
-    workAwards: workAwardsResp,
-    aiRankings: aiRankingsResp,
-    supportReceived: null,
-    supportSent: null,
-  }
+  // ページ移動（データだけの取得）も拠点のキャッシュから返す（順位は 1 日 1 回しか変わらない）
+  return json(
+    {
+      rankingFamily,
+      year,
+      month,
+      day,
+      workAwards: workAwardsResp,
+      aiRankings: aiRankingsResp,
+      supportReceived: null,
+      supportSent: null,
+    },
+    { headers: { "Cache-Control": config.cacheControl.oneDay } },
+  )
 }
 
 export const headers: HeadersFunction = () => ({

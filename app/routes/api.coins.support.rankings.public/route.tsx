@@ -80,7 +80,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     items?: unknown[]
   }
 
-  return toJsonResponse(
+  const response = toJsonResponse(
     {
       error: null,
       data: {
@@ -92,4 +92,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     },
     200,
   )
+  // 特定の人を推した一覧は、推した直後に反映されるようにブラウザにも残さない
+  if (url.searchParams.has("recipientUserId")) {
+    response.headers.set("cache-control", "no-store")
+  }
+  return response
 }

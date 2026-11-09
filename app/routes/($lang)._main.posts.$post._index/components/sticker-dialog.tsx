@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client/index"
+import { type ApolloClient, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { MinusIcon, PlusIcon } from "lucide-react"
 import { useContext, useEffect, useRef, useState } from "react"
@@ -81,7 +81,9 @@ export function StickerDialog(props: Props) {
       offset: createdSortStickerPage * maxStickersPage,
       orderBy: type === "RELATED" ? "DATE_USED" : "DATE_CREATED",
     },
-    notifyOnNetworkStatusChange: true,
+    // 一度開いたら前回の一覧をすぐ出し、裏で新しくする
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   })
 
   const { data: stickersCount = null } = useQuery(
@@ -97,13 +99,6 @@ export function StickerDialog(props: Props) {
 
   // フォーカスタイムアウト検知
   const isTimeout = useFocusTimeout()
-
-  // ダイアログが開かれた時やログイン状態が変化した時にリフェッチ
-  useEffect(() => {
-    if (props.isOpen && appContext.login && !appContext.isLoading) {
-      refetch()
-    }
-  }, [props.isOpen, appContext.login, appContext.isLoading, refetch])
 
   // フォーカスタイムアウト時の自動リフレッシュ
   useEffect(() => {
@@ -257,6 +252,14 @@ export function StickerDialog(props: Props) {
                 refetch()
               }}
             />
+            {stickers === null &&
+              Array.from({ length: 24 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="animate-pulse rounded-md bg-muted"
+                  style={{ width: stickerSize, height: stickerSize }}
+                />
+              ))}
             {stickers?.viewer?.userStickers?.map((sticker) => (
               <StickerButton
                 key={sticker.id}
@@ -307,6 +310,16 @@ const viewerUserStickersCountQuery = graphql(
     }
   }`,
 )
+
+/** ダイアログの最初のページ（ボタンにマウスを乗せた時点で読み始める） */
+export const prefetchViewerStickers = (client: ApolloClient<object>) =>
+  client
+    .query({
+      query: viewerUserStickersQuery,
+      variables: { limit: 120, offset: 0, orderBy: "DATE_CREATED" },
+      fetchPolicy: "cache-first",
+    })
+    .catch(() => {})
 
 const viewerUserStickersQuery = graphql(
   `query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy, $where: UserStickersWhereInput) {

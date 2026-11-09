@@ -11,7 +11,6 @@ import {
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { config } from "~/config"
 import { ParamsError } from "~/errors/params-error"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
@@ -159,8 +158,9 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 }
 
+// 推した直後に累計へ反映されるように、拠点に置かない
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+  "Cache-Control": "no-store",
 })
 
 export default function UserSupports() {
