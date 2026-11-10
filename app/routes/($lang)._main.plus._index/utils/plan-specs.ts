@@ -74,7 +74,7 @@ export function getPlanSpec(plan: PlanKey) {
     /**
      * 通常生成で1回に作られる枚数
      */
-    imagesPerRequest: isPaid ? 4 : 2,
+    imagesPerRequest: isPaid ? 4 : 1,
     /**
      * 通常生成での1日の目安
      */

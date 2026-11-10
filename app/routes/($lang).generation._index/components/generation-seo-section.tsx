@@ -91,8 +91,8 @@ export function GenerationSeoSection() {
     {
       question: t("無料で使えますか？", "Is it free?"),
       answer: t(
-        "はい。ログインすると毎日100フリーコインが届き、1日10枚まで無料で生成できます（1回2枚まで）。もっと作りたいときは月額480円からのプランで、1回4枚・1日最大200枚まで生成できます。",
-        "Yes. After logging in you get 100 free coins every day, enough for 10 images a day (2 per run). Plans from ¥480/month let you make 4 images per run and up to 200 images a day.",
+        "はい。ログインすると毎日100フリーコインが届き、1日10枚まで無料で生成できます（1回1枚）。もっと作りたいときは月額480円からのプランで、1回4枚・1日最大200枚まで生成できます。",
+        "Yes. After logging in you get 100 free coins every day, enough for 10 images a day (1 per run). Plans from ¥480/month let you make 4 images per run and up to 200 images a day.",
       ),
     },
     {
@@ -363,8 +363,8 @@ export function GenerationSeoSection() {
           <h2 className="font-bold text-lg">{t("料金", "Pricing")}</h2>
           <p>
             {t(
-              "無料：毎日10枚まで（1回2枚）。ライト月額480円（1日50枚）・スタンダード月額1,980円（1日100枚）・プレミアム月額3,980円（1日200枚）は1回4枚、広告の非表示や画像から生成なども使えます。今なら初月半額です。",
-              "Free: 10 images a day (2 per run). Lite ¥480 (50/day), Standard ¥1,980 (100/day) and Premium ¥3,980 (200/day) make 4 per run, with no ads and image-to-image. 50% off your first month.",
+              "無料：毎日10枚まで（1回1枚）。ライト月額480円（1日50枚）・スタンダード月額1,980円（1日100枚）・プレミアム月額3,980円（1日200枚）は1回4枚、広告の非表示や画像から生成なども使えます。今なら初月半額です。",
+              "Free: 10 images a day (1 per run). Lite ¥480 (50/day), Standard ¥1,980 (100/day) and Premium ¥3,980 (200/day) make 4 per run, with no ads and image-to-image. 50% off your first month.",
             )}{" "}
             <Link className="text-primary underline" to="/generation/plans">
               {t("プランを見る", "See plans")}

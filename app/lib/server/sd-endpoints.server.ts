@@ -5,7 +5,6 @@ import { getServerEnvValue } from "~/lib/server/env.server"
  * 環境変数 SD_PROGRESS_ENDPOINTS（カンマ区切り）があればそちらを使う
  */
 const DEFAULT_ENDPOINTS = [
-  "https://a3s24azll1m8ad-8000.proxy.runpod.net",
   "https://8qohsj3lbw0fj4-8000.proxy.runpod.net",
   "https://1ggt33c8h6hzdv-8000.proxy.runpod.net",
 ]

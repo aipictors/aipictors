@@ -49,8 +49,8 @@ export type GenreConfig = {
 }
 
 const FREE_ANSWER: Text = [
-  "はい。ログインすると毎日100フリーコインが届き、1日10枚まで無料で生成できます（1回2枚まで）。アプリのインストールは不要で、スマホ・PCのブラウザからそのまま使えます。",
-  "Yes. After logging in you get 100 free coins every day, enough for 10 images a day (2 per run). No app is needed; it works in mobile and desktop browsers.",
+  "はい。ログインすると毎日100フリーコインが届き、1日10枚まで無料で生成できます（1回1枚）。アプリのインストールは不要で、スマホ・PCのブラウザからそのまま使えます。",
+  "Yes. After logging in you get 100 free coins every day, enough for 10 images a day (1 per run). No app is needed; it works in mobile and desktop browsers.",
 ]
 
 export const GENRE_CONFIGS: Record<GenreKey, GenreConfig> = {

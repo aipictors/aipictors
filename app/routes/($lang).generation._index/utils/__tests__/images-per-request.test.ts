@@ -18,9 +18,9 @@ const base = {
 }
 
 describe("getMaxImagesPerRequest", () => {
-  test("プランで 4 枚・無料で 2 枚", () => {
+  test("プランで 4 枚・無料で 1 枚", () => {
     expect(getMaxImagesPerRequest(base)).toBe(4)
-    expect(getMaxImagesPerRequest({ ...base, isPaidPlan: false })).toBe(2)
+    expect(getMaxImagesPerRequest({ ...base, isPaidPlan: false })).toBe(1)
   })
 
   test("高解像度・画像から・ControlNet・FLUX は 1 枚", () => {

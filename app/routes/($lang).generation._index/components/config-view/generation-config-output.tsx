@@ -226,7 +226,7 @@ export function GenerationConfigOutput(props: Props) {
         )}
         {!images.isPaidPlan && (
           <p className="text-muted-foreground text-xs">
-            {t("無料は2枚まで。", "Free plan: up to 2. ")}
+            {t("無料は1回1枚。", "Free plan: 1 per run. ")}
             <Link
               to="/plus"
               className="text-fuchsia-600 hover:underline dark:text-fuchsia-300"

@@ -20,8 +20,8 @@ export function PlusCoinGuide() {
       label: t("通常生成", "Standard"),
       cost: GENERATION_COIN_COST.standard,
       note: t(
-        `プランは1回4枚＝${GENERATION_COIN_COST.standard * 4}コイン、無料は2枚＝${GENERATION_COIN_COST.standard * free.imagesPerRequest}コイン`,
-        `4 images = ${GENERATION_COIN_COST.standard * 4} coins on plans, 2 = ${GENERATION_COIN_COST.standard * free.imagesPerRequest} on Free`,
+        `プランは1回4枚＝${GENERATION_COIN_COST.standard * 4}コイン、無料は${free.imagesPerRequest}枚＝${GENERATION_COIN_COST.standard * free.imagesPerRequest}コイン`,
+        `4 images = ${GENERATION_COIN_COST.standard * 4} coins on plans, ${free.imagesPerRequest} = ${GENERATION_COIN_COST.standard * free.imagesPerRequest} on Free`,
       ),
     },
     {

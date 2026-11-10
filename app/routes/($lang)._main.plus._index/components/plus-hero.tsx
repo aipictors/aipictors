@@ -68,8 +68,8 @@ export function PlusHero() {
           </h1>
           <p className="mt-4 max-w-2xl text-muted-foreground text-sm leading-relaxed md:text-base">
             {t(
-              `プランに加入すると、1回の生成で4枚（無料は2枚）。毎日のフリーコインも最大${premium.dailyFreeCoins}コインに増えて、1日最大${premium.dailyImages}枚まで生成できます。広告なしで、もっと気軽に創作を楽しめます。`,
-              `Subscribers get 4 images per request (2 on Free) and up to ${premium.dailyFreeCoins} free coins every day — up to ${premium.dailyImages} images a day, ad-free.`,
+              `プランに加入すると、1回の生成で4枚（無料は1枚）。毎日のフリーコインも最大${premium.dailyFreeCoins}コインに増えて、1日最大${premium.dailyImages}枚まで生成できます。広告なしで、もっと気軽に創作を楽しめます。`,
+              `Subscribers get 4 images per request (1 on Free) and up to ${premium.dailyFreeCoins} free coins every day — up to ${premium.dailyImages} images a day, ad-free.`,
             )}
           </p>
           <div className="mt-6 grid max-w-xl grid-cols-3 gap-2">

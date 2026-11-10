@@ -1039,7 +1039,7 @@ export const META: { [key: string]: MetaData } = {
     title: "生成機能について",
     enTitle: "About Generation Feature",
     description:
-      "AipictorsのAI画像生成は毎日10枚まで無料。イラストからリアル系まで、みんなのモデルやLoRAで本格生成できます。無料は1回2枚、ライト・スタンダード・プレミアムプランなら1回のクリックで4枚、1日最大200枚まで生成できます。",
+      "AipictorsのAI画像生成は毎日10枚まで無料。イラストからリアル系まで、みんなのモデルやLoRAで本格生成できます。無料は1回1枚、ライト・スタンダード・プレミアムプランなら1回のクリックで4枚、1日最大200枚まで生成できます。",
     enDescription:
       "Generate AI images on Aipictors for free — 10 images a day, from illustrations to realistic styles. Plans give 4 images per click and up to 200 images a day.",
     image: "{{url}}",
