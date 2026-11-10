@@ -347,7 +347,7 @@ export function FollowRelationView(props: Props) {
       )}
 
       {users !== undefined && params.mode === "simple" && (
-        <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
           {users.map((user) => (
             <RelationRow key={user.id} user={user} kind={kind} />
           ))}
@@ -559,7 +559,7 @@ function RelationRow(props: { user: RelationUser; kind: Kind }) {
 function RelationSkeleton(props: { mode: Mode }) {
   if (props.mode === "simple") {
     return (
-      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
         {Array.from({ length: 12 }, (_, index) => (
           <Skeleton key={index.toString()} className="h-[68px] rounded-lg" />
         ))}
