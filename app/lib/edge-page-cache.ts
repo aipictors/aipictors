@@ -205,8 +205,9 @@ export const createEdgePageCache = (version: string) => {
     if (/\.[a-z0-9]{2,5}$/i.test(url.pathname)) return false
     const isData = url.searchParams.has("_data")
     if (!isData) {
-      const accept = request.headers.get("accept") ?? ""
-      if (!accept.includes("text/html")) return false
+      // クローラーは Accept がない・*/* のことが多い（同じ HTML を返すので共有する）
+      const accept = request.headers.get("accept")
+      if (accept && !/text\/html|\*\/\*/.test(accept)) return false
     }
     return true
   }
