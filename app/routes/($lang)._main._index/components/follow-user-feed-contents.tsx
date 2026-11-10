@@ -1,3 +1,5 @@
+import { FollowFeedPlaceholder } from "~/routes/($lang)._main._index/components/follow-feed-placeholder"
+import { saveFollowFeedSnapshot } from "~/routes/($lang)._main._index/utils/follow-feed-snapshot"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useApolloClient, useQuery } from "@apollo/client/index"
 import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
@@ -66,6 +68,34 @@ function chunkPosts(arr: PostItem[], size: number): PostItem[][] {
   const res: PostItem[][] = []
   for (let i = 0; i < arr.length; i += size) res.push(arr.slice(i, i + size))
   return res
+}
+
+/** 最初のページが届いたら、次に開いたときのために覚えておく */
+function useSaveFollowFeedSnapshot(props: {
+  posts: PostItem[]
+  userId: string | null | undefined
+  isTimelineView: boolean
+}) {
+  const { posts, userId, isTimelineView } = props
+
+  useEffect(() => {
+    if (!userId || posts.length === 0) return
+    saveFollowFeedSnapshot({
+      userId,
+      isTimelineView,
+      items: posts.flatMap((post) => {
+        const work = post.work as
+          | (WorkItem & { smallThumbnailImageURL?: string | null })
+          | null
+          | undefined
+        const thumbnailUrl =
+          work?.largeThumbnailImageURL ?? work?.smallThumbnailImageURL
+        return work && thumbnailUrl
+          ? [{ id: work.id, title: work.title, thumbnailUrl }]
+          : []
+      }),
+    })
+  }, [posts, userId, isTimelineView])
 }
 
 export function FollowUserFeedContents(props: Props) {
@@ -137,6 +167,12 @@ function PaginationMode(props: Props) {
 
   const posts = data?.feed?.posts ?? []
 
+  useSaveFollowFeedSnapshot({
+    posts: currentPage === 0 ? posts : [],
+    userId: authContext.userId,
+    isTimelineView,
+  })
+
   useScrollRestoration("follow-user-pagination", !!posts.length)
 
   const handlePageChange = (page: number) => {
@@ -169,7 +205,7 @@ function PaginationMode(props: Props) {
   ])
 
   if (authContext.isLoading) {
-    return <FollowFeedNotice />
+    return <FollowFeedPlaceholder />
   }
 
   if (
@@ -199,9 +235,7 @@ function PaginationMode(props: Props) {
   return (
     <div className="space-y-4">
       {loading && posts.length === 0 ? (
-        <div className="flex justify-center py-8">
-          <Loader2Icon className={"size-8 animate-spin text-border"} />
-        </div>
+        <FollowFeedPlaceholder />
       ) : (
         <FeedContent
           posts={posts}
@@ -309,6 +343,12 @@ function InfiniteMode(props: Props) {
     errorPolicy: "all",
   })
 
+  useSaveFollowFeedSnapshot({
+    posts: data?.feed?.posts ?? [],
+    userId: authContext.userId,
+    isTimelineView,
+  })
+
   // ─── usePagedInfinite (local store key 付き) ─────────────
   const keyForStore = useMemo(
     () =>
@@ -405,7 +445,7 @@ function InfiniteMode(props: Props) {
 
   // ─── 早期 return (ログイン／空データ系) ──────────────
   if (authContext.isLoading) {
-    return <FollowFeedNotice />
+    return <FollowFeedPlaceholder />
   }
   if (authContext.isNotLoggedIn || !authContext.userId) {
     return (
@@ -413,6 +453,9 @@ function InfiniteMode(props: Props) {
         {t("ログインするとフォローできます", "Log in to follow users")}
       </FollowFeedNotice>
     )
+  }
+  if (flat.length === 0 && loadingFirst) {
+    return <FollowFeedPlaceholder />
   }
   if (flat.length === 0 && !loadingFirst && firstError !== undefined) {
     return <FeedLoadError onRetry={() => refetchFirst()} />

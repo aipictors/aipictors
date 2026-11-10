@@ -1,12 +1,9 @@
-import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { AuthContext } from "~/contexts/auth-context"
 import { FollowingList } from "~/routes/($lang).following._index/components/following-list"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { Suspense, useContext } from "react"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
@@ -29,13 +26,5 @@ export const headers: HeadersFunction = () => ({
 })
 
 export default function FollowingLayout () {
-  const authContext = useContext(AuthContext)
-
-  return (
-    <>
-      <Suspense fallback={<AppLoadingPage />}>
-        {authContext.isLoggedIn && <FollowingList />}
-      </Suspense>
-    </>
-  )
+  return <FollowingList />
 }

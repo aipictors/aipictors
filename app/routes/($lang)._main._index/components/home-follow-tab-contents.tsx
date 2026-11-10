@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react"
 import { TabsContent } from "~/components/ui/tabs"
-import { FollowFeedNotice } from "~/routes/($lang)._main._index/components/follow-feed-notice"
+import { FollowFeedPlaceholder } from "~/routes/($lang)._main._index/components/follow-feed-placeholder"
 import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
 import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
 import type { HomePageState } from "~/routes/($lang)._main._index/hooks/use-home-page-state"
@@ -64,7 +64,7 @@ export function HomeFollowUserTabContent(
       />
 
       {/* コンテンツ */}
-      <Suspense fallback={<FollowFeedNotice />}>
+      <Suspense fallback={<FollowFeedPlaceholder />}>
         <FollowUserFeedContents
           tab={currentTab}
           key={`follow-user-${followUserFeedPage}-${currentTab}`}

@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useContext, useMemo, useSyncExternalStore } from "react"
+import { useContext, useEffect, useMemo, useSyncExternalStore } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import {
   toNormalModeRatings,
@@ -55,6 +55,24 @@ export function setAnonymousR18gEnabled(isEnabled: boolean): void {
   window.dispatchEvent(new Event(ANONYMOUS_R18G_EVENT))
 }
 
+const PREFERENCE_RATING_KEY = "aipictors:preference-rating"
+
+type CachedPreference = {
+  userId: string
+  rating: ViewerRating | null
+}
+
+const readCachedPreference = (userId: string): CachedPreference | null => {
+  try {
+    const cached = JSON.parse(
+      localStorage.getItem(PREFERENCE_RATING_KEY) ?? "null",
+    ) as CachedPreference | null
+    return cached?.userId === userId ? cached : null
+  } catch {
+    return null
+  }
+}
+
 /**
  * ログインユーザの閲覧レーティング設定（設定 > 表示コンテンツ）を一覧のクエリ条件に変換する
  */
@@ -75,14 +93,36 @@ export function useViewerRatings(): Result {
 
   const isLoggedIn = authContext.isLoggedIn
 
+  // 前回の設定で一覧の取得を先に始める（設定の取得を待つと一覧が 1 往復遅れる）
+  const userId = authContext.userId
+  const cachedPreference = useMemo(
+    () => (isLoggedIn && userId ? readCachedPreference(userId) : null),
+    [isLoggedIn, userId],
+  )
+
+  const fetchedRating = data?.userSetting?.preferenceRating
+
+  useEffect(() => {
+    if (!userId || fetchedRating === undefined) return
+    try {
+      localStorage.setItem(
+        PREFERENCE_RATING_KEY,
+        JSON.stringify({ userId, rating: fetchedRating }),
+      )
+    } catch {
+      // 保存できなくても、設定の取得を待つだけ
+    }
+  }, [userId, fetchedRating])
+
   const preferenceRating = isLoggedIn
-    ? (data?.userSetting?.preferenceRating ?? null)
+    ? (fetchedRating ?? (loading ? cachedPreference?.rating : null) ?? null)
     : isAnonymousR18gEnabled
       ? "R18G"
       : null
 
   const isReady =
-    authContext.isNotLoggedIn || (authContext.isLoggedIn && !loading)
+    authContext.isNotLoggedIn ||
+    (authContext.isLoggedIn && (!loading || cachedPreference !== null))
 
   const normalRatings = useMemo(
     () => toNormalModeRatings({ isLoggedIn, preferenceRating }),
