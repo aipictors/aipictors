@@ -750,6 +750,15 @@ export const META: { [key: string]: MetaData } = {
       "Download Aipictors logo materials for media coverage, articles, and promotional purposes.",
     isIndex: true,
   },
+  HELP_WITHDRAWAL: {
+    title: "アカウントの削除（退会）について",
+    enTitle: "How to delete your account",
+    description:
+      "Aipictorsのアカウントと関連データを削除する手順と、削除されるデータ、残るデータを説明します。",
+    enDescription:
+      "How to delete your Aipictors account and related data, and which data is deleted or kept.",
+    isIndex: true,
+  },
   HELP: {
     title: "使い方ガイド",
     enTitle: "User Guide",
