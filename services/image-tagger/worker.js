@@ -7,8 +7,13 @@ import { Container } from "@cloudflare/containers"
  */
 export class ImageTagger extends Container {
   defaultPort = 8510
-  sleepAfter = "45s"
+  sleepAfter = "20s"
   envVars = { THREADS: "1" }
+
+  // app.py は PID 1 の Python で SIGTERM を処理しないので、既定の stop() では止まらず 4GB のまま動き続ける
+  async onActivityExpired() {
+    if (this.ctx.container.running) await this.destroy()
+  }
 
   async fetch(request) {
     await this.startAndWaitForPorts(8510, { portReadyTimeoutMS: 120_000 })
