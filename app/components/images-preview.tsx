@@ -63,7 +63,12 @@ export function ImagesPreview(props: Props): React.ReactNode {
 
   useEffect(() => {
     // SSR した画像はハイドレーション前に読み込み済みのことがある
-    setIsMainImageLoaded(mainImgRef.current?.complete === true)
+    const image =
+      mainImgRef.current ??
+      stageRef.current?.querySelector<HTMLImageElement>(
+        `img[data-stage-url="${CSS.escape(props.thumbnailUrl)}"]`,
+      )
+    setIsMainImageLoaded(image?.complete === true)
   }, [props.thumbnailUrl])
 
   const openPreview = () => {
