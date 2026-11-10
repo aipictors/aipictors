@@ -254,6 +254,11 @@ async function queryWorkIdsByText(props: {
     }
   }
 
+  // 2 文字以下は全件を読むことになるので、候補の範囲より先のページは探さない
+  if (!useFts) {
+    return { ids: [], count: TEXT_SEARCH_COUNT_LIMIT }
+  }
+
   const countSql = useFts
     ? `SELECT count(*) AS c FROM (
              SELECT 1 FROM works w

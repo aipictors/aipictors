@@ -48,11 +48,24 @@ describe("searchWorkIdsByText", () => {
     const { db, calls } = createDb([1, 2, 3])
     await searchWorkIdsByText({
       db,
-      query: "猫",
+      query: "ねこの絵",
       rating: "G",
       offset: 990,
       limit: 30,
     })
     expect(calls.length).toBe(2)
+  })
+
+  test("2 文字以下の深いページは全件を読まない", async () => {
+    const { db, calls } = createDb([1, 2, 3])
+    const result = await searchWorkIdsByText({
+      db,
+      query: "猫",
+      rating: "G",
+      offset: 990,
+      limit: 30,
+    })
+    expect(calls.length).toBe(0)
+    expect(result.ids).toEqual([])
   })
 })
