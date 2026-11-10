@@ -278,7 +278,7 @@ export function StickerDialog(props: Props): React.ReactNode {
 
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
-      <DialogContent className="flex h-[80vh] min-h-[32vw] w-[80vw] min-w-[80vw] flex-col pl-2">
+      <DialogContent className="flex h-[80vh] min-h-[32vw] w-[80vw] min-w-[80vw] flex-col px-2">
         <DialogHeader>
           <DialogTitle>{t("スタンプ", "Stickers")}</DialogTitle>
         </DialogHeader>
@@ -331,9 +331,9 @@ export function StickerDialog(props: Props): React.ReactNode {
         </div>
         <ScrollArea
           ref={scrollAreaRef}
-          className="flex h-[80vh] w-[80vw] flex-wrap overflow-y-auto"
+          className="-mr-2 min-h-0 flex-1 [&_[data-radix-scroll-area-viewport]>div]:!block"
         >
-          <div className="flex h-[80vh] w-[80vw] flex-wrap overflow-y-auto">
+          <div className="flex w-full flex-wrap">
             <AddStickerButton
               onAddedSicker={() => {
                 refetch()
