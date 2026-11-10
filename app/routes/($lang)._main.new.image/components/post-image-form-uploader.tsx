@@ -29,6 +29,7 @@ import { captureVideoThumbnail } from "~/utils/capture-video-thumbnail"
 import { consumeDroppedImageFiles } from "~/utils/dropped-image-files"
 import { formatFileSize, MAX_IMAGE_FILE_SIZE_BYTES, MAX_VIDEO_FILE_SIZE_BYTES } from "~/utils/file-size"
 import { getVideoUploadLimits, type VideoUploadPassType } from "~/utils/video-upload-limit"
+import { getImageItemsSizeText } from "~/utils/image-items-size-text"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
@@ -100,22 +101,8 @@ export function PostImageFormUploader (props: Props) {
 
   const nextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 
-  const selectedFilesSizeText = () => {
-    const totalBytes = props.state.items
-      .map((item) => item.content)
-      .reduce((acc, imageBase64) => {
-        if (!imageBase64) {
-          return acc
-        }
-        const byteLength = new TextEncoder().encode(imageBase64).length
-        return acc + byteLength
-      }, 0)
-
-    if (totalBytes < 1024 * 1024) {
-      return `${(totalBytes / 1024).toFixed(2)} KB`
-    }
-    return `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
-  }
+  const selectedFilesSizeText = () =>
+    getImageItemsSizeText(props.state.items.map((item) => item.content))
 
   const selectedImagesCountText = () => {
     const imageCount = props.state.items.filter((item) => item.content).length

@@ -1,18 +1,22 @@
 import { useState, useEffect } from "react"
+import { toast } from "sonner"
 import { Card, CardContent } from "~/components/ui/card"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { Button } from "~/components/ui/button"
 import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
 import { PostFormItemTitle } from "~/routes/($lang)._main.new.image/components/post-form-item-title"
 import { useTranslation } from "~/hooks/use-translation"
+import { translateText } from "~/utils/translate-text"
 
 type Props = {
   onChangeTitle: (title: string) => void
   onChangeCaption: (caption: string) => void
   title?: string
   caption?: string
-  enTitle?: string
-  enCaption?: string
+  /** 翻訳元の日本語のタイトル */
+  sourceTitle?: string
+  /** 翻訳元の日本語のキャプション */
+  sourceCaption?: string
 }
 
 /**
@@ -35,32 +39,51 @@ export function PostFormItemEnglish (props: Props) {
   }, [props.caption])
 
   const handleTranslate = async () => {
+    const sourceTitle = props.sourceTitle?.trim() ?? ""
+    const sourceCaption = props.sourceCaption?.trim() ?? ""
+    if (!sourceTitle && !sourceCaption) {
+      toast(
+        t(
+          "翻訳する日本語のタイトルかキャプションを入力してください",
+          "Please enter a Japanese title or caption to translate",
+        ),
+      )
+      return
+    }
+
     setIsTranslating(true)
     try {
-      const translateText = async (text: string) => {
-        const encodedText = encodeURIComponent(text)
-        const translateURL = `https://script.google.com/macros/s/AKfycbw1D0NqYxBiJvN00CZLCnoDIpWtK_cib_JDY7sva_Mlwr-XVjabRSWDooBBvVlgZUPU/exec?text=${encodedText}&source=ja&target=en`
-        const response = await fetch(translateURL)
-        const data = await response.json()
-        if (data.text) {
-          return data.text
-        }
-        console.error("Translation error:", data)
-        return ""
-      }
+      const translate = (text: string) =>
+        text
+          ? translateText({
+              text,
+              sourceLanguage: "ja",
+              targetLanguage: "en",
+            })
+          : Promise.resolve("")
+      const [translatedTitle, translatedCaption] = await Promise.all([
+        translate(sourceTitle),
+        translate(sourceCaption),
+      ])
 
-      if (props.title) {
-        const translatedTitle = await translateText(props.title)
+      // 翻訳に失敗した欄は、入力済みの英語を消さない
+      if (translatedTitle) {
         setEnTitle(translatedTitle)
         props.onChangeTitle(translatedTitle)
       }
-      if (props.caption) {
-        const translatedCaption = await translateText(props.caption)
+      if (translatedCaption) {
         setEnCaption(translatedCaption)
         props.onChangeCaption(translatedCaption)
       }
+      if (
+        (sourceTitle && !translatedTitle) ||
+        (sourceCaption && !translatedCaption)
+      ) {
+        toast(t("翻訳に失敗しました", "Failed to translate"))
+      }
     } catch (error) {
       console.error("Translation error:", error)
+      toast(t("翻訳に失敗しました", "Failed to translate"))
     }
     setIsTranslating(false)
   }

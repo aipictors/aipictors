@@ -16,6 +16,7 @@ import {
   getExtractInfoFromBase64,
   getExtractInfoFromPNG,
 } from "~/utils/get-extract-info-from-png"
+import { getImageItemsSizeText } from "~/utils/image-items-size-text"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
@@ -25,22 +26,8 @@ type Props = {
 export function EditImageFormUploader(props: Props) {
   const t = useTranslation()
 
-  const selectedFilesSizeText = () => {
-    const totalBytes = props.state.items
-      .map((item) => item.content)
-      .reduce((acc, imageBase64) => {
-        if (!imageBase64) {
-          return acc
-        }
-        const byteLength = new TextEncoder().encode(imageBase64).length
-        return acc + byteLength
-      }, 0)
-
-    if (totalBytes < 1024 * 1024) {
-      return `${(totalBytes / 1024).toFixed(2)} KB`
-    }
-    return `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
-  }
+  const selectedFilesSizeText = () =>
+    getImageItemsSizeText(props.state.items.map((item) => item.content))
 
   const selectedImagesCountText = () => {
     const imageCount = props.state.items.filter((item) => item.content).length

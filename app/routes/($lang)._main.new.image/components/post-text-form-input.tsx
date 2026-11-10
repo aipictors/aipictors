@@ -502,6 +502,8 @@ export function PostTextFormInput(props: Props) {
         }}
         title={props.state.enTitle}
         caption={props.state.enCaption}
+        sourceTitle={props.state.title}
+        sourceCaption={props.state.caption}
       />
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}

@@ -281,6 +281,8 @@ export function PostAnimationFormInput(props: Props) {
         }}
         title={props.state.enTitle}
         caption={props.state.enCaption}
+        sourceTitle={props.state.title}
+        sourceCaption={props.state.caption}
       />
       <PostFormItemRating
         setRating={(value) => {

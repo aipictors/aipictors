@@ -44,6 +44,7 @@ import { setRenderNow } from "~/utils/render-now"
 import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
 import { serializeJsonLd } from "~/utils/serialize-json-ld"
 import { createSiteJsonLd } from "~/utils/site-json-ld"
+import { isPostEditPath } from "~/utils/is-post-edit-path"
 
 // パフォーマンス監視コンポーネントを遅延読み込み
 const PerformanceMonitor = lazy(() =>
@@ -452,9 +453,11 @@ export function Layout(props: Props): React.ReactNode {
   useEffect(() => {
     if (typeof document === "undefined") return
 
-    const isInNewSubtree =
+    // 投稿画面と編集画面は、その場のドロップゾーンで受ける
+    const isInPostFormPage =
       /^\/(en\/)?(r\/)?new(\/|$)/.test(location.pathname) ||
-      /^\/r\/en\/new(\/|$)/.test(location.pathname)
+      /^\/r\/en\/new(\/|$)/.test(location.pathname) ||
+      isPostEditPath(location.pathname)
 
     const getDropTargetPath = (pathname: string) => {
       const segments = pathname.split("/").filter(Boolean)
@@ -509,7 +512,7 @@ export function Layout(props: Props): React.ReactNode {
     const handleDragEnter = (event: DragEvent) => {
       if (!isFileDragEvent(event)) return
 
-      if (isInNewSubtree) return
+      if (isInPostFormPage) return
 
       dragCounterRef.current += 1
       setIsDraggingFiles(true)
@@ -518,7 +521,7 @@ export function Layout(props: Props): React.ReactNode {
     const handleDragLeave = (event: DragEvent) => {
       if (!isFileDragEvent(event)) return
 
-      if (isInNewSubtree) return
+      if (isInPostFormPage) return
 
       dragCounterRef.current = Math.max(0, dragCounterRef.current - 1)
       if (dragCounterRef.current === 0) {
@@ -535,13 +538,13 @@ export function Layout(props: Props): React.ReactNode {
         event.dataTransfer.dropEffect = "copy"
       }
 
-      if (isInNewSubtree) return
+      if (isInPostFormPage) return
     }
 
     const handleDrop = (event: DragEvent) => {
       if (!isFileDragEvent(event)) return
 
-      if (isInNewSubtree) {
+      if (isInPostFormPage) {
         // 投稿画面側のdropzoneで処理させる（ただしブラウザがファイルを開く挙動は抑止）
         event.preventDefault()
         resetDragging()
