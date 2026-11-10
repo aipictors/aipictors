@@ -1,4 +1,5 @@
 import { toR18FallbackPath } from "~/utils/content-mode"
+import { installWorkThumbnailHints } from "~/utils/work-thumbnail-hint"
 import "react-photo-view/dist/react-photo-view.css"
 
 import {
@@ -410,6 +411,7 @@ export function Layout(props: Props): React.ReactNode {
     isHydrated = true
     setRenderNow(null)
   }, [])
+  useEffect(() => installWorkThumbnailHints(), [])
   const location = useLocation()
   const navigate = useNavigate()
   const [_key, setKey] = useState(

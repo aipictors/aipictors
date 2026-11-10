@@ -110,7 +110,9 @@ const EDGE_VARY_HEADERS = `${EDGE_LOCALE_HEADER}, ${EDGE_LAYOUT_HEADER}, ${EDGE_
 /** 配信のキャッシュで古いものを返す上限（秒） */
 const MAX_EDGE_SWR_SECONDS = 60 * 60 * 24
 
-const WORK_PAGE_PATH = /^\/(?:(?:ja|en)\/)?(?:r\/)?posts\/(\d+)\/?$/
+const WORK_PAGE_PATH = /^\/(?:(?:ja|en)\/)?(?:r\/)?posts\/(\d+)(?:\/|\.data)?$/
+/** 作品ページのデータ（一覧から移動するときの Remix の .data） */
+const WORK_DATA_PATH = /^\/(?:(?:ja|en)\/)?(?:r\/)?posts\/\d+\.data$/
 const DEFAULT_SWR_SECONDS = 300
 
 /**
@@ -189,6 +191,13 @@ export const withoutSharedCache = (response: Response, url?: URL) => {
   return uncached
 }
 
+/**
+ * 作品ページへの移動のデータ。root は端末ごとの値を返すので、root を含まないものだけ共有する
+ */
+export const isSharedWorkData = (url: URL) =>
+  WORK_DATA_PATH.test(url.pathname) &&
+  url.searchParams.get("_routes")?.split(",").includes("root") === false
+
 export const createEdgePageCache = (version: string) => {
   const isCacheableRequest = (request: Request, url: URL) => {
     if (request.method !== "GET") return false
@@ -201,6 +210,7 @@ export const createEdgePageCache = (version: string) => {
     ) {
       return false
     }
+    if (isSharedWorkData(url)) return true
     // 画像やファイル（拡張子つき）は対象外
     if (/\.[a-z0-9]{2,5}$/i.test(url.pathname)) return false
     const isData = url.searchParams.has("_data")

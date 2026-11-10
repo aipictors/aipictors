@@ -9,6 +9,8 @@ type Props = {
   mode?: "dialog" | "page"
   /** メイン画像（workImageURL）の幅÷高さ */
   workImageAspectRatio?: number
+  /** メイン画像が届くまで代わりに出すサムネイル */
+  placeholderUrl?: string
 }
 
 export function WorkImageView (props: Props) {
@@ -43,6 +45,7 @@ export function WorkImageView (props: Props) {
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
           mode={props.mode}
+          placeholderUrl={currentIndex === 0 ? props.placeholderUrl : undefined}
           aspectRatio={
             allImageURLs[currentIndex] === props.workImageURL
               ? props.workImageAspectRatio
@@ -68,6 +71,7 @@ export function WorkImageView (props: Props) {
           thumbnailUrl={props.workImageURL}
           imageURLs={[props.workImageURL]}
           mode={props.mode}
+          placeholderUrl={props.placeholderUrl}
           aspectRatio={props.workImageAspectRatio}
         />
       </div>

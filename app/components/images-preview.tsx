@@ -19,6 +19,8 @@ type Props = {
   mode?: "dialog" | "page" // ダイアログモードかページモードかを指定
   /** 表示中の画像の幅÷高さ。分かれば縮小版を表示する大きさに合わせて選ばせる */
   aspectRatio?: number
+  /** 画像が届くまで代わりに出すサムネイル（同じ比率のもの） */
+  placeholderUrl?: string
   /** 複数枚の作品用。枠の高さを固定し、切り替えてもページが動かないようにする */
   isFixedHeight?: boolean
 }
@@ -335,6 +337,16 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const shownStageUrl = shownStageUrlRef.current
   const isStageImagePending = shownStageUrl !== props.thumbnailUrl
 
+  const placeholderStyle =
+    props.placeholderUrl && !isMainImageLoaded
+      ? {
+          backgroundImage: `url("${props.placeholderUrl}")`,
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "contain",
+        }
+      : undefined
+
   // 今の画像のほか、次の画像を先に読む（押したときにすぐ出せるように）。
   // 開いただけで全部読むと、モバイルで最初の表示より先に何 MB も通信する
   const stageUrls = [...stageVisitedUrls]
@@ -627,6 +639,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
         <div
           ref={stageRef}
           className="group/stage relative flex h-[64vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-muted/60 md:h-[72vh]"
+          style={placeholderStyle}
         >
           {stageUrls.map((url) => {
             const isShown = url === shownStageUrl
@@ -641,10 +654,14 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 srcSet={toResizedImageSrcSet(url, { minWidth: 400 })}
                 sizes={FIXED_STAGE_IMAGE_SIZES}
                 fetchPriority={isShown ? "high" : "low"}
-                onLoad={(event) =>
+                onLoad={(event) => {
+                  if (url === props.thumbnailUrl) setIsMainImageLoaded(true)
                   markStageImageReadyAfterDecode(event.currentTarget, url)
-                }
-                onError={() => markStageImageReady(url)}
+                }}
+                onError={() => {
+                  if (url === props.thumbnailUrl) setIsMainImageLoaded(true)
+                  markStageImageReady(url)
+                }}
                 onTouchStart={handleMainTouchStart}
                 onMouseUp={handleMainMouseUp}
                 onMouseDown={handleMainMouseDown}
@@ -689,7 +706,11 @@ export function ImagesPreview(props: Props): React.ReactNode {
         <div className="relative">
           <div
             className="m-auto flex h-full max-h-[64vh] w-full cursor-pointer justify-center overflow-hidden rounded-2xl bg-zinc-100 object-contain dark:bg-zinc-900"
-            style={isMainImageLoaded ? undefined : { minHeight: "64vh" }}
+            style={
+              isMainImageLoaded
+                ? undefined
+                : { minHeight: "64vh", ...placeholderStyle }
+            }
           >
             <div className="inline-block overflow-hidden text-center">
               <img

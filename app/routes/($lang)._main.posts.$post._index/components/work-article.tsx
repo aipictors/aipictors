@@ -33,6 +33,7 @@ import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/compone
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import { getWorkThumbnailHint } from "~/utils/work-thumbnail-hint"
 import { translateText } from "~/utils/translate-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -193,6 +194,12 @@ export function WorkArticle(props: Props) {
     }
   }
 
+  const workImageAspectRatio =
+    props.work.largeThumbnailImageHeight > 0
+      ? props.work.largeThumbnailImageWidth /
+        props.work.largeThumbnailImageHeight
+      : undefined
+
   return (
     <article className="flex flex-col space-y-4">
       <PostAccessTypeBanner
@@ -208,12 +215,11 @@ export function WorkArticle(props: Props) {
               return subWork.imageUrl ?? ""
             })}
           onSelectedImage={setSelectedImageUrl}
-          workImageAspectRatio={
-            props.work.largeThumbnailImageHeight > 0
-              ? props.work.largeThumbnailImageWidth /
-                props.work.largeThumbnailImageHeight
-              : undefined
-          }
+          workImageAspectRatio={workImageAspectRatio}
+          placeholderUrl={getWorkThumbnailHint(
+            props.work.id,
+            workImageAspectRatio,
+          )}
           mode={props.mode}
         />
       )}

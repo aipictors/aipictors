@@ -3,6 +3,7 @@ import {
   canServeStaleToBot,
   getSwrSeconds,
   isSharedPage,
+  isSharedWorkData,
 } from "~/lib/edge-page-cache"
 
 const shared = (path: string) =>
@@ -49,6 +50,24 @@ describe("isSharedPage", () => {
     ]) {
       expect(shared(path)).toBe(false)
     }
+  })
+})
+
+describe("isSharedWorkData", () => {
+  const data = (path: string) =>
+    isSharedWorkData(new URL(`https://www.aipictors.com${path}`))
+  const routes = "routes/($lang),routes/($lang)._main.posts.$post._index"
+
+  test("root を含まない作品ページのデータは共有する", () => {
+    expect(data(`/posts/123.data?_routes=${encodeURIComponent(routes)}`)).toBe(true)
+    expect(data(`/en/posts/123.data?_routes=${encodeURIComponent(routes)}`)).toBe(true)
+  })
+
+  test("root を含むもの・作品以外は共有しない", () => {
+    expect(data("/posts/123.data")).toBe(false)
+    expect(data("/posts/123.data?_routes=root,routes/x")).toBe(false)
+    expect(data(`/users/1.data?_routes=${encodeURIComponent(routes)}`)).toBe(false)
+    expect(data(`/posts/123?_routes=${encodeURIComponent(routes)}`)).toBe(false)
   })
 })
 
