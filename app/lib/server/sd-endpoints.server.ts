@@ -6,7 +6,7 @@ import { getServerEnvValue } from "~/lib/server/env.server"
  */
 const DEFAULT_ENDPOINTS = [
   "https://8qohsj3lbw0fj4-8000.proxy.runpod.net",
-  "https://1ggt33c8h6hzdv-8000.proxy.runpod.net",
+  "https://7w8xshi0txmagl-8000.proxy.runpod.net",
 ]
 
 export function getSdEndpoints(context: unknown): string[] {
