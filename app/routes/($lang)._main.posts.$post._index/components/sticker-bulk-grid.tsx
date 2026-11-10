@@ -38,7 +38,11 @@ export function StickerBulkGrid(props: Props) {
           setPageCount((count) => count + 1)
         }
       },
-      { rootMargin: "400px" },
+      {
+        // 一覧はダイアログの中でスクロールする。画面全体を基準にすると余白が効かず、一番下に着いてから読み始めて止まる
+        root: sentinel.closest("[data-radix-scroll-area-viewport]"),
+        rootMargin: "800px 0px",
+      },
     )
     observer.observe(sentinel)
     return () => observer.disconnect()
@@ -77,8 +81,8 @@ function StickerBulkPage(props: {
   const stickers = data?.viewer?.userStickers
 
   if (!stickers) {
-    // 読み込み中も場所を取り、次のページを続けて読みに行かないようにする
-    return <div className="h-96 w-full animate-pulse rounded-md bg-muted" />
+    // 読み込み中は先読みの範囲より大きく場所を取り、次のページを続けて読みに行かないようにする
+    return <div className="h-[200vh] w-full animate-pulse rounded-md bg-muted" />
   }
 
   return <>{stickers.map((sticker) => props.renderSticker(sticker))}</>

@@ -20,4 +20,16 @@ describe("スタンプ一覧のスクロール", () => {
       expect(wrapper).not.toContain("w-[80vw]")
     })
   }
+
+  test("一括表示はスクロールする枠を基準に先読みする", () => {
+    const source = readFileSync(
+      "app/routes/($lang)._main.posts.$post._index/components/sticker-bulk-grid.tsx",
+      "utf8",
+    )
+
+    // root を省くと rootMargin が枠に効かず、一番下に着くまで次を読まない
+    expect(source).toContain(
+      'root: sentinel.closest("[data-radix-scroll-area-viewport]")',
+    )
+  })
 })
