@@ -27,6 +27,7 @@ import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { getJstDate } from "~/utils/jst-date"
 import { resizeThumbnail } from "~/utils/resize-image"
+import { resolveEditThumbnailSource } from "~/utils/resolve-edit-thumbnail-source"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadTextFile } from "~/utils/upload-text-file"
@@ -369,12 +370,17 @@ export default function EditText() {
     try {
       dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-      const smallThumbnail = formResult.output.thumbnailBase64.startsWith(
+      const thumbnailSource = await resolveEditThumbnailSource(
+        formResult.output.thumbnailBase64,
+        work,
+      )
+
+      const smallThumbnail = thumbnailSource.startsWith(
         "https://",
       )
         ? null
         : await resizeThumbnail(
-            formResult.output.thumbnailBase64,
+            thumbnailSource,
             400,
             1200,
             "webp",
@@ -382,12 +388,12 @@ export default function EditText() {
 
       dispatch({ type: "SET_PROGRESS", payload: 20 })
 
-      const largeThumbnail = formResult.output.thumbnailBase64.startsWith(
+      const largeThumbnail = thumbnailSource.startsWith(
         "https://",
       )
         ? null
         : await resizeThumbnail(
-            formResult.output.thumbnailBase64,
+            thumbnailSource,
             600,
             1600,
             "webp",
@@ -396,7 +402,7 @@ export default function EditText() {
       dispatch({ type: "SET_PROGRESS", payload: 30 })
 
       const smallThumbnailUrl =
-        formResult.output.thumbnailBase64.startsWith("https://") ||
+        thumbnailSource.startsWith("https://") ||
         smallThumbnail === null
           ? (work.smallThumbnailImageURL ?? "")
           : await uploadPublicImage(
@@ -409,7 +415,7 @@ export default function EditText() {
       uploadedImageUrls.push(smallThumbnailUrl)
 
       const largeThumbnailUrl =
-        formResult.output.thumbnailBase64.startsWith("https://") ||
+        thumbnailSource.startsWith("https://") ||
         largeThumbnail === null
           ? (work.largeThumbnailImageURL ?? "")
           : await uploadPublicImage(
@@ -446,10 +452,10 @@ export default function EditText() {
             3600000 * 9
           : undefined
 
-      const mainImageSha256 = await sha256(formResult.output.thumbnailBase64)
+      const mainImageSha256 = await sha256(thumbnailSource)
 
       const mainImageSize = await getSizeFromBase64(
-        formResult.output.thumbnailBase64,
+        thumbnailSource,
       )
 
       dispatch({ type: "SET_PROGRESS", payload: 70 })
