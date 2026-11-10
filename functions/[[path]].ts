@@ -607,7 +607,41 @@ const createMaintenanceBypassResponse = (
   })
 }
 
+/** Service Binding で直接呼ぶ API（公開 URL 経由だと呼び出しごとにリクエストの料金がかかり、往復も増える） */
+const API_BINDINGS = [
+  { origin: "https://api.aipictors.com/", binding: "AIPICTORS_SYSTEM" },
+  { origin: "https://backend.aipictors.com/", binding: "AIPICTORS_API" },
+] as const
+
+let isApiBindingInstalled = false
+
+/**
+ * ローダーなどの fetch のうち、自前の API 宛てを Service Binding に通す（isolate で 1 回）
+ */
+const installApiBindings = (env: Record<string, unknown>) => {
+  if (isApiBindingInstalled) return
+  const routes = API_BINDINGS.flatMap(({ origin, binding }) => {
+    const service = env[binding] as { fetch: typeof fetch } | undefined
+    return service ? [{ origin, service }] : []
+  })
+  isApiBindingInstalled = true
+  if (routes.length === 0) return
+  const originalFetch = globalThis.fetch
+  globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+    const url =
+      typeof input === "string"
+        ? input
+        : input instanceof URL
+          ? input.href
+          : input.url
+    const route = routes.find(({ origin }) => url.startsWith(origin))
+    return route ? route.service.fetch(input, init) : originalFetch(input, init)
+  }) as typeof fetch
+}
+
 export const onRequest: PagesFunction = async (ctx) => {
+  installApiBindings(ctx.env as unknown as Record<string, unknown>)
+
   // 画像の縮小版は画像の Worker にそのまま渡す（app/utils/resized-image-url.ts）
   const imageResize = (
     ctx.env as unknown as { IMAGE_RESIZE?: { fetch: typeof fetch } }
@@ -698,7 +732,6 @@ export const onRequest: PagesFunction = async (ctx) => {
     }
 
     const url = new URL(ctx.request.url)
-    console.log(`Processing request: ${ctx.request.method} ${url.pathname}`)
 
     // 本番切り分け用: ?__maintenance_debug=1 で判定材料をJSONで返す
     if (url.searchParams.get("__maintenance_debug") === "1") {

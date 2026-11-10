@@ -40,6 +40,15 @@ database_id = "eb97a2cf-7dab-4202-b7c7-a2b87089758d"
 binding = "IMAGE_RESIZE"
 service = "aipictors-image-resize"
 
+# 描画中の GraphQL・API の呼び出しを公開 URL を通さずに届ける（functions/[[path]].ts の installApiBindings）
+[[services]]
+binding = "AIPICTORS_SYSTEM"
+service = "aipictors-system"
+
+[[services]]
+binding = "AIPICTORS_API"
+service = "aipictors-api"
+
 # 一覧ページの HTML を全拠点で共有するキャッシュ（app/lib/edge-page-cache.ts）
 [[kv_namespaces]]
 binding = "PAGE_CACHE"
