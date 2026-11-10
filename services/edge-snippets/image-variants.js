@@ -12,6 +12,19 @@ export default {
         response.headers.set("x-resize", "snippet")
         return response
       }
+      // <img> 以外（クローラー・一括取得）のために Worker を起動して作らない（image-resize-worker と同じ判定）
+      if (request.headers.get("sec-fetch-dest") === null) {
+        const key = path.split("/").slice(3).join("/")
+        return new Response(null, {
+          status: 302,
+          headers: {
+            location: "https://files.aipictors.com/" + key,
+            "cache-control": "no-store",
+            "x-resize": "skip-non-browser",
+            "access-control-allow-origin": "*",
+          },
+        })
+      }
     }
     return fetch(request)
   },

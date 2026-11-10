@@ -335,9 +335,10 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const shownStageUrl = shownStageUrlRef.current
   const isStageImagePending = shownStageUrl !== props.thumbnailUrl
 
-  // 今の画像のほか、前後を先に読む（押したときにすぐ出せるように）
+  // 今の画像のほか、次の画像を先に読む（押したときにすぐ出せるように）。
+  // 開いただけで全部読むと、モバイルで最初の表示より先に何 MB も通信する
   const stageUrls = [...stageVisitedUrls]
-  for (const offset of [1, -1, 2]) {
+  for (const offset of stageVisitedUrls.size > 1 ? [1, -1, 2] : [1]) {
     const url =
       props.imageURLs[
         (props.currentIndex + offset + props.imageURLs.length * 2) %
