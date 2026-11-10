@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { getSdEndpoints } from "~/lib/server/sd-endpoints.server"
+import { getActiveSdEndpoints } from "~/lib/server/sd-endpoints.server"
 
 /**
  * 生成中のタスクの途中経過（進み具合・プレビュー画像）
@@ -68,7 +68,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   }
   const previewId = Number.parseInt(url.searchParams.get("preview") ?? "-1", 10)
 
-  const endpoints = getSdEndpoints(context)
+  const endpoints = await getActiveSdEndpoints(context)
 
   const results = await Promise.all(
     endpoints.map((endpoint) =>

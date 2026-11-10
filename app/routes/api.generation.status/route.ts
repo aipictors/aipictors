@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { getServerEnvValue } from "~/lib/server/env.server"
-import { getSdEndpoints } from "~/lib/server/sd-endpoints.server"
+import { getActiveSdEndpoints } from "~/lib/server/sd-endpoints.server"
 
 /**
  * 画像生成サーバーの稼働状況（生成画面の「混雑状況」用）
@@ -91,7 +91,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
   const cached = await cache?.match(CACHE_KEY).catch(() => undefined)
   if (cached) return cached
 
-  const endpoints = getSdEndpoints(context)
+  const endpoints = await getActiveSdEndpoints(context)
   const [results, waiting] = await Promise.all([
     Promise.all(endpoints.map(isWorking)),
     fetchWaitingCounts(context),
