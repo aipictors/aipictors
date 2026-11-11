@@ -299,10 +299,17 @@ export function WorkContainer(props: Props) {
               minHeight={250}
               fixedSize={{ width: 300, height: 250 }}
               fallback={
-                <PlusUpsellCard className="h-[250px] overflow-hidden" />
+                <PlusUpsellCard
+                  className="h-[250px] overflow-hidden"
+                  source="work_side_unfilled"
+                />
               }
               className="w-full"
             />
+            {/* R15 など Google 広告を出せない作品では、同じ場所にプランの案内を出す */}
+            {!isAdAllowed && !isSubscriptionUser && (
+              <PlusUpsellCard className="w-full" source="work_side_noad" />
+            )}
             <div className="flex w-full flex-col space-y-4">
               <div className="relative grid gap-4">
                 {!isSubscriptionUser &&

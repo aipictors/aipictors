@@ -1,7 +1,8 @@
 import { Link } from "~/lib/app/locale-router"
-import { Check, Clock, Sparkles } from "lucide-react"
+import { Check, Clock, Loader2, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
+import { cn } from "~/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -9,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
+import { usePassCheckout } from "~/hooks/use-pass-checkout"
 import { useTranslation } from "~/hooks/use-translation"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
@@ -72,6 +74,8 @@ export function GenerationCoinShortageDialog (props: Props) {
   const t = useTranslation()
 
   const [isCoinDialogOpen, setIsCoinDialogOpen] = useState(false)
+
+  const checkout = usePassCheckout()
 
   const isFree = props.passType === null
 
@@ -137,14 +141,19 @@ export function GenerationCoinShortageDialog (props: Props) {
           {plans.length > 0 && (
             <div className="space-y-2">
               {plans.map((plan) => (
-                <Link
+                // 押したらそのまま決済へ（以前は /plus に移るだけで、表示 217 回に対してプランのクリックは 4 回だった）
+                <button
+                  type="button"
                   key={plan.type}
-                  to="/plus#plans"
+                  disabled={checkout.isLoading}
                   onClick={() => {
-                    trackGrowthEvent(`shortage_plan_${plan.type}`, source)
-                    props.onOpenChange(false)
+                    trackGrowthEvent(`shortage_checkout_${plan.type}`, source)
+                    void checkout.startCheckout(plan.type)
                   }}
-                  className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted"
+                  className={cn(
+                    "flex w-full items-center justify-between gap-2 rounded-xl border p-3 text-left transition-colors hover:bg-muted disabled:opacity-60",
+                    plan.type === "LITE" && "border-fuchsia-500/60",
+                  )}
                 >
                   <div>
                     <div className="flex items-center gap-2 font-bold">
@@ -183,8 +192,15 @@ export function GenerationCoinShortageDialog (props: Props) {
                         </span>
                       </>
                     )}
+                    <div className="mt-0.5 font-normal text-fuchsia-600 text-xs dark:text-fuchsia-300">
+                      {checkout.isLoadingFor(plan.type) ? (
+                        <Loader2 className="ml-auto size-3 animate-spin" />
+                      ) : (
+                        t("決済へ進む →", "Checkout →")
+                      )}
+                    </div>
                   </div>
-                </Link>
+                </button>
               ))}
               <ul className="space-y-1 pt-1 text-muted-foreground text-xs">
                 <li className="flex items-center gap-1">
@@ -204,7 +220,7 @@ export function GenerationCoinShortageDialog (props: Props) {
 
           <div className="space-y-2">
             {plans.length > 0 && (
-              <Button asChild className="w-full gap-2">
+              <Button asChild variant="ghost" className="w-full gap-2">
                 <Link
                   to="/plus#plans"
                   onClick={() => {
@@ -213,7 +229,7 @@ export function GenerationCoinShortageDialog (props: Props) {
                   }}
                 >
                   <Sparkles className="size-4" />
-                  {t("プランを選ぶ", "Choose a plan")}
+                  {t("プランを詳しく比べる（年払いは2か月分おトク）", "Compare plans (yearly saves 2 months)")}
                 </Link>
               </Button>
             )}

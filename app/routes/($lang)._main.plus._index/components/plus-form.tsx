@@ -25,6 +25,7 @@ import { graphql } from "gql.tada"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
+import type { SubscriptionPause } from "~/routes/api.stripe.subscription-pause/route"
 
 /**
  * Remix v3_singleFetch モードでは、action が Response を返しても
@@ -83,6 +84,8 @@ export function PlusForm () {
   const [isRetentionOpen, setIsRetentionOpen] = useState(false)
   const [cancelReason, setCancelReason] = useState<CancelReason | null>(null)
   const [cancelReasonNote, setCancelReasonNote] = useState("")
+  // 1 か月休止の予約・休止中（解約の代わり）
+  const [pause, setPause] = useState<SubscriptionPause>(null)
   const [isPlanChangePreviewLoading, setIsPlanChangePreviewLoading] = useState(false)
   const [planChangeRequest, setPlanChangeRequest] = useState<{
     passType: "LITE" | "STANDARD" | "PREMIUM"
@@ -91,6 +94,7 @@ export function PlusForm () {
   const [planChangePreview, setPlanChangePreview] = useState<{
     passType: string
     renewalAmountJpy: number | null
+    interval?: "month" | "year"
     chargedNowAmountJpy: number
     prorationDate: number | null
   } | null>(null)
@@ -202,6 +206,76 @@ export function PlusForm () {
       if (error instanceof Error) {
         toast(error.message)
       }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const loadPause = async () => {
+    try {
+      const headers = await withAuthHeader()
+      const response = await fetch("/api/stripe/subscription-pause", { headers })
+      const { json } = await parseActionResponse<{
+        error: string | null
+        data: SubscriptionPause
+      }>(response)
+      setPause(json?.data ?? null)
+    } catch {
+      // 休止の表示が出ないだけ
+    }
+  }
+
+  useEffect(() => {
+    if (data.viewer) void loadPause()
+  }, [data.viewer?.id])
+
+  const onPauseSubscription = async (reason: CancelReason | null) => {
+    setIsSubmitting(true)
+    try {
+      const headers = await withAuthHeader()
+      const response = await fetch("/api/stripe/subscription-pause", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ reason }),
+      })
+      const { ok, json } = await parseActionResponse<{
+        error: string | null
+        data: SubscriptionPause
+      }>(response)
+      if (!ok || json?.error || !json?.data) {
+        toast(json?.error ?? "休止の手続きに失敗しました。時間をおいてもう一度お試しください。")
+        return
+      }
+      setPause(json.data)
+      setIsRetentionOpen(false)
+      toast(
+        `${toDateText(json.data.pausedFrom)} から1か月休止します。${toDateText(json.data.nextBillingAt)} に自動で再開します。`,
+      )
+    } catch (error) {
+      toast(error instanceof Error ? error.message : "休止の手続きに失敗しました。")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const onUnpauseSubscription = async () => {
+    setIsSubmitting(true)
+    try {
+      const headers = await withAuthHeader()
+      const response = await fetch("/api/stripe/subscription-pause", {
+        method: "DELETE",
+        headers,
+      })
+      const { ok, json } = await parseActionResponse<{ error: string | null }>(response)
+      if (!ok || json?.error) {
+        toast(json?.error ?? "休止の取り消しに失敗しました。")
+        return
+      }
+      trackGrowthEvent("pause_undo", "")
+      setPause(null)
+      toast("休止を取り消しました。これまでどおり続きます。")
+    } catch (error) {
+      toast(error instanceof Error ? error.message : "休止の取り消しに失敗しました。")
     } finally {
       setIsSubmitting(false)
     }
@@ -361,6 +435,7 @@ export function PlusForm () {
         data: {
           passType: string
           renewalAmountJpy: number | null
+          interval?: "month" | "year"
           chargedNowAmountJpy: number
           prorationDate: number | null
         } | null
@@ -521,6 +596,12 @@ export function PlusForm () {
             <RetentionSuggestion
               reason={cancelReason}
               passType={currentPass.type}
+              canPause={!isAppStorePass && !isCancelScheduled}
+              isSubmitting={isSubmitting}
+              onPause={() => {
+                trackGrowthEvent("retention_pause", currentPass.type)
+                void onPauseSubscription(cancelReason)
+              }}
               onDowngrade={() => {
                 trackGrowthEvent("retention_lite", currentPass.type)
                 setIsRetentionOpen(false)
@@ -577,7 +658,7 @@ export function PlusForm () {
                       : "今回は即時請求は発生しません。"}
                   </p>
                   <p>
-                    {`次回更新日 ${nextDateText} 以降は、月額 ${planChangePreview?.renewalAmountJpy ?? 0}円 で継続されます。`}
+                    {`次回更新日 ${nextDateText} 以降は、${planChangePreview?.interval === "year" ? "年額" : "月額"} ${planChangePreview?.renewalAmountJpy ?? 0}円 で継続されます。`}
                   </p>
                 </>
               )}
@@ -615,6 +696,13 @@ export function PlusForm () {
       </AlertDialog>
       {currentPass ? (
         <>
+          {pause && (
+            <PauseBanner
+              pause={pause}
+              isSubmitting={isSubmitting}
+              onUnpause={onUnpauseSubscription}
+            />
+          )}
           {/* 解約予約中バナー */}
           {isCancelScheduled && (
             <div className="mb-4 rounded-lg border border-orange-300 bg-orange-50 px-4 py-3 dark:border-orange-700 dark:bg-orange-950/40">
@@ -864,7 +952,17 @@ export function PlusForm () {
           </CardContent>
         </Card>
       ) : (
-        <PlusAbout showUpgradePlansOnly={true} showFreePlan={true} />
+        <>
+          {pause && (
+            <PauseBanner
+              pause={pause}
+              isSubmitting={isSubmitting}
+              onUnpause={onUnpauseSubscription}
+              isPausedNow={true}
+            />
+          )}
+          <PlusAbout showUpgradePlansOnly={true} showFreePlan={true} />
+        </>
       )}
     </>
   )
@@ -913,12 +1011,32 @@ const CANCEL_REASON_OPTIONS: { value: CancelReason; label: string }[] = [
 function RetentionSuggestion(props: {
   reason: CancelReason
   passType: string
+  canPause: boolean
+  isSubmitting: boolean
+  onPause: () => void
   onDowngrade: () => void
 }) {
   const canDowngrade = props.passType === "STANDARD" || props.passType === "PREMIUM"
 
+  // 使わない月がある・1か月だけのつもりだった・料金が気になる人には、解約の代わりに 1 か月休止を出す
+  const pauseCard =
+    props.canPause &&
+    (props.reason === "not_using" || props.reason === "one_month" || props.reason === "price") ? (
+      <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/5 p-3 text-sm">
+        <p className="font-bold">{"解約せずに、来月だけお休みしませんか？"}</p>
+        <p className="mt-1 text-muted-foreground text-xs">
+          {"今の期間の終わりから1か月、請求もプランも止まります（その間は無料プランと同じです）。1か月後に自動で再開し、生成履歴や設定はそのまま残ります。休止はこの画面からいつでも取り消せます。"}
+        </p>
+        <Button size="sm" variant="outline" className="mt-2" disabled={props.isSubmitting} onClick={props.onPause}>
+          {"1か月休止する"}
+        </Button>
+      </div>
+    ) : null
+
   if ((props.reason === "price" || props.reason === "not_using") && canDowngrade) {
     return (
+      <div className="space-y-2">
+      {pauseCard}
       <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-3 text-sm">
         <p className="font-bold">{"ライト（月額480円）に変えるのはいかがですか？"}</p>
         <p className="mt-1 text-muted-foreground text-xs">
@@ -927,6 +1045,7 @@ function RetentionSuggestion(props: {
         <Button size="sm" className="mt-2" onClick={props.onDowngrade}>
           {"ライトに変更する"}
         </Button>
+      </div>
       </div>
     )
   }
@@ -958,11 +1077,50 @@ function RetentionSuggestion(props: {
 
   if (props.reason === "one_month") {
     return (
-      <div className="rounded-lg bg-muted p-3 text-muted-foreground text-xs">
-        {"解約しても期間の終わりまでは使えます。終わる少し前にメールでお知らせするので、続けたくなったらそこから取り消せます。"}
+      <div className="space-y-2">
+        {pauseCard}
+        <div className="rounded-lg bg-muted p-3 text-muted-foreground text-xs">
+          {"解約しても期間の終わりまでは使えます。終わる少し前にメールでお知らせするので、続けたくなったらそこから取り消せます。"}
+        </div>
       </div>
     )
   }
 
-  return null
+  return pauseCard
+}
+
+/**
+ * 1 か月休止の予約中・休止中の案内
+ */
+function PauseBanner(props: {
+  pause: NonNullable<SubscriptionPause>
+  isSubmitting: boolean
+  isPausedNow?: boolean
+  onUnpause: () => void
+}) {
+  const pausedFrom = toDateText(props.pause.pausedFrom)
+  const nextBilling = toDateText(props.pause.nextBillingAt)
+  return (
+    <div className="mb-4 rounded-lg border border-emerald-400 bg-emerald-50 px-4 py-3 dark:border-emerald-700 dark:bg-emerald-950/40">
+      <p className="font-bold text-emerald-800 text-sm dark:text-emerald-300">
+        {props.isPausedNow ? "プランを休止中です" : "1か月休止の予約中"}
+      </p>
+      <p className="mt-0.5 text-emerald-700 text-sm dark:text-emerald-400">
+        {props.isPausedNow
+          ? `${nextBilling} に自動で再開し、そのときに請求します。すぐに戻りたいときは下からプランを選んでください（休止中の契約は自動で止まり、二重には請求されません）。`
+          : `${pausedFrom} から1か月お休みし、${nextBilling} に自動で再開します。それまではこれまでどおり使えます。`}
+      </p>
+      {!props.isPausedNow && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="mt-2"
+          disabled={props.isSubmitting}
+          onClick={props.onUnpause}
+        >
+          {"休止を取り消す（このまま続ける）"}
+        </Button>
+      )}
+    </div>
+  )
 }

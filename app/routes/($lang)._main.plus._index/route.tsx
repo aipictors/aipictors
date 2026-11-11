@@ -91,7 +91,7 @@ export default function Plus () {
           </h2>
           <p className="text-muted-foreground text-sm">
             {t(
-              "すべて月額・税込です。いつでも解約でき、上位プランへの変更は日割りの差額だけで切り替わります。",
+              "すべて税込です。月払いはいつでも解約でき、年払いは2か月分おトクです。上位プランへの変更は日割りの差額だけで切り替わります。",
               "Monthly, tax included. Cancel anytime; upgrades only charge the prorated difference.",
             )}
           </p>

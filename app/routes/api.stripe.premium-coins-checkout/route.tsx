@@ -2,6 +2,8 @@ import type { ActionFunctionArgs } from "@remix-run/cloudflare"
 import { number, object, optional, safeParse, string } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
+import { callAipictorsApi } from "~/lib/server/viewer-api-route.server"
+import { calcOfferBonusCoins, type PremiumCoinOffer } from "~/lib/premium-coins"
 import {
   calcBonusCoins,
   calcCustomPriceYen,
@@ -204,6 +206,23 @@ export async function action({ request, context }: ActionFunctionArgs) {
     coins = pkg.coins
     bonusCoins = pkg.bonusCoins
     priceYen = pkg.priceYen
+  }
+
+  // はじめての購入・プラン加入中の上乗せ（判定に失敗したら上乗せなしで続ける）
+  try {
+    const offer = await callAipictorsApi<PremiumCoinOffer>(
+      context,
+      `/stripe/checkout/premium-coins/offer/${encodeURIComponent(viewer.userId)}`,
+    )
+    if (offer.data) {
+      const extra = calcOfferBonusCoins(coins, {
+        isFirstPurchase: offer.data.isFirstPurchase,
+        passType: offer.data.passType ?? viewer.currentPassType,
+      })
+      bonusCoins += extra.firstPurchase + extra.member
+    }
+  } catch (error) {
+    console.error("premium coin offer check failed", error)
   }
 
   const apiBaseUrl =

@@ -40,6 +40,22 @@ export function PlusFaq () {
       ),
     },
     {
+      id: "yearly",
+      question: t("年払いはありますか？", "Is there a yearly plan?"),
+      answer: t(
+        "はい。月額の10か月分の料金で1年使えます（2か月分おトク）。毎日のフリーコインなどの特典は月払いと同じです。初月半額は月払いだけが対象です。解約すると次の更新日（1年後）まで使え、途中での日割りの返金はありません。",
+        "Yes. Pay for 10 months and use it for a full year (2 months free). Benefits are the same as monthly. The first-month discount applies to monthly plans only. Yearly plans are not refunded pro rata.",
+      ),
+    },
+    {
+      id: "pause",
+      question: t("使わない月だけ止められますか？", "Can I pause for a month?"),
+      answer: t(
+        "はい。月払いの方は、解約の画面から「1か月休止」を選べます。今の期間の終わりから1か月、請求もプランも止まり、1か月後に自動で再開します。休止の予約はこのページから取り消せます。",
+        "Yes. Monthly members can choose a one-month pause instead of cancelling. Billing and benefits stop for one month after the current period, then resume automatically.",
+      ),
+    },
+    {
       id: "coins",
       question: t("コインはどういう仕組みですか？", "How do coins work?"),
       answer: t(

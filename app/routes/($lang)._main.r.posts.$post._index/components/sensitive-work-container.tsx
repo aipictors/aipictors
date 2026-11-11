@@ -4,6 +4,7 @@ import {
   workArticleFragment,
   sensitiveWorkArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
+import { PlusUpsellCard } from "~/components/plus-upsell-card"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
 import { useContext, useMemo } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
@@ -240,6 +241,9 @@ export function SensitiveWorkContainer(props: Props) {
                 />
               </div>
             )}
+            {!isSubscriptionUser && (
+              <PlusUpsellCard source="r_post_mobile" className="md:hidden" />
+            )}
             {workForArticle.user && authContext.isLoggedIn && (
               <WorkLazySection>
                 <FollowSuggestions
@@ -304,6 +308,8 @@ export function SensitiveWorkContainer(props: Props) {
                 {!isSubscriptionUser && (
                   <DlsiteAffiliateCard tags={tags} source="r_post_side" />
                 )}
+                {/* センシティブのページには Google 広告を出せないので、プランの案内を出す（閲覧の多い場所） */}
+                {!isSubscriptionUser && <PlusUpsellCard source="r_post_side" />}
                 {props.newComments && props.newComments.length > 0 && (
                   <HomeNewCommentsSection
                     comments={props.newComments}

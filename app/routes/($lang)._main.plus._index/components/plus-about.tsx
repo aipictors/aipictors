@@ -1,10 +1,11 @@
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { config } from "~/config"
 import { PassPlanList } from "~/routes/($lang)._main.plus._index/components/pass-plan-list"
-import { useMutation } from "@apollo/client/index"
 import { getAnalytics, logEvent } from "firebase/analytics"
-import { graphql } from "gql.tada"
-import { toast } from "sonner"
+import { useState } from "react"
+import { usePassCheckout } from "~/hooks/use-pass-checkout"
+import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
+import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {
   showUpgradePlansOnly?: boolean
@@ -15,42 +16,22 @@ type Props = {
 }
 
 export function PlusAbout (props: Props) {
-  const [mutation, { loading: isLoading }] = useMutation(
-    createPassCheckoutSessionMutation,
-  )
+  const checkout = usePassCheckout()
+
+  const [interval, setBillingInterval] = useState<BillingInterval>("month")
 
   const onSelect = async (passType: IntrospectionEnum<"PassType">) => {
+    if (passType !== "LITE" && passType !== "STANDARD" && passType !== "PREMIUM") return
     try {
       logEvent(getAnalytics(), config.logEvent.select_item, {
         item_list_id: passType,
         items: [{ item_id: passType, item_name: passType }],
       })
-      const result = await mutation({
-        variables: { input: { passType: passType } },
-      })
-      const pageURL = result.data?.createPassCheckoutSession ?? null
-      if (pageURL === null) {
-        console.error("Checkout URL is null. Mutation result:", result)
-        toast("セッションの作成に失敗しました。")
-        return
-      }
-      // Verify URL is valid before redirect
-      if (typeof pageURL !== 'string' || pageURL.length === 0) {
-        console.error("Invalid checkout URL:", pageURL)
-        toast("セッションURLが無効です。")
-        return
-      }
-      console.log("Redirecting to checkout URL:", pageURL)
-      window.location.assign(pageURL)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error("Checkout error:", error)
-        toast(error.message)
-      } else {
-        console.error("Unknown error:", error)
-        toast("エラーが発生しました。")
-      }
+    } catch (_error) {
+      // 計測に失敗しても決済は続ける
     }
+    trackGrowthEvent(`plus_checkout_${passType}`, interval)
+    await checkout.startCheckout(passType, interval)
   }
 
   return (
@@ -61,13 +42,12 @@ export function PlusAbout (props: Props) {
       showFreePlan={props.showFreePlan}
       isLoggedOut={props.isLoggedOut}
       onSelect={onSelect}
-      isLoading={isLoading}
+      isLoading={checkout.isLoading}
+      interval={interval}
+      onIntervalChange={(next) => {
+        trackGrowthEvent("plus_interval", next)
+        setBillingInterval(next)
+      }}
     />
   )
 }
-
-const createPassCheckoutSessionMutation = graphql(
-  `mutation CreatePassCheckoutSession($input: CreatePassCheckoutSessionInput!) {
-    createPassCheckoutSession(input: $input)
-  }`,
-)

@@ -2,6 +2,8 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
 import { PassPlanDescription } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import { useQuery } from "@apollo/client/index"
+import { BillingIntervalToggle } from "~/routes/($lang)._main.plus._index/components/billing-interval-toggle"
+import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import { graphql } from "gql.tada"
 
 type Props = {
@@ -18,6 +20,11 @@ type Props = {
    */
   isLoggedOut?: boolean
   onSelect(passType: IntrospectionEnum<"PassType">): Promise<void>
+  /**
+   * 月払い・年払い（onIntervalChange を渡したときだけ切り替えを出す。加入中の人には出さない）
+   */
+  interval?: BillingInterval
+  onIntervalChange?(interval: BillingInterval): void
 }
 
 export function PassPlanList (props: Props) {
@@ -75,8 +82,19 @@ export function PassPlanList (props: Props) {
     (isFreePlanVisible ? 1 : 0) +
     (["LITE", "STANDARD", "PREMIUM"] as const).filter(isVisible).length
 
+  // 年払いは今どのプランにも入っていない人だけ（加入中は二重の契約になるため）
+  const isIntervalToggleVisible =
+    props.onIntervalChange !== undefined && currentPass === null
+  const interval = isIntervalToggleVisible ? (props.interval ?? "month") : "month"
+
   return (
     <div className="@container">
+      {isIntervalToggleVisible && props.onIntervalChange && (
+        <BillingIntervalToggle
+          value={interval}
+          onChange={props.onIntervalChange}
+        />
+      )}
       <div
         className={cn(
           "grid grid-cols-1 gap-4 pt-3",
@@ -97,6 +115,7 @@ export function PassPlanList (props: Props) {
         {isVisible("LITE") && (
           <PassPlanDescription
             plan="LITE"
+            interval={interval}
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
             isLoggedOut={props.isLoggedOut}
@@ -108,6 +127,7 @@ export function PassPlanList (props: Props) {
           <PassPlanDescription
             isPrimary
             plan="STANDARD"
+            interval={interval}
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
             isLoggedOut={props.isLoggedOut}
@@ -118,6 +138,7 @@ export function PassPlanList (props: Props) {
         {isVisible("PREMIUM") && (
           <PassPlanDescription
             plan="PREMIUM"
+            interval={interval}
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
             isLoggedOut={props.isLoggedOut}

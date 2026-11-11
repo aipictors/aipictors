@@ -1,6 +1,6 @@
 import { Link } from "~/lib/app/locale-router"
 import { Check, Minus, Plus } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Button } from "~/components/ui/button"
@@ -21,9 +21,14 @@ import {
   BONUS_THRESHOLD,
   calcBonusCoins,
   calcCustomPriceYen,
+  calcOfferBonusCoins,
+  FIRST_PURCHASE_BONUS_MAX,
+  MEMBER_BONUS_RATE,
   MIN_CUSTOM_COINS,
   PREMIUM_COIN_PACKAGES,
+  type PremiumCoinOffer,
 } from "~/lib/premium-coins"
+import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type PackageKey = keyof typeof PREMIUM_COIN_PACKAGES
 
@@ -83,6 +88,33 @@ export function PurchasePremiumCoinsDialog(props: {
 
   const open = props.open ?? internalOpen
 
+  // はじめての購入・プラン加入中の上乗せ（決済のときもサーバーで同じ判定をする）
+  const [offer, setOffer] = useState<PremiumCoinOffer | null>(null)
+
+  useEffect(() => {
+    if (!open || offer !== null) return
+    let isCancelled = false
+    ;(async () => {
+      try {
+        const headers = await getViewerRequestHeaders()
+        const response = await fetch("/api/coins/purchase-offer", { headers })
+        const json = (await response.json()) as { data: PremiumCoinOffer | null }
+        if (!isCancelled && json.data) {
+          setOffer(json.data)
+          trackGrowthEvent(
+            "coin_dialog_view",
+            json.data.isFirstPurchase ? "first" : json.data.passType ? "member" : "repeat",
+          )
+        }
+      } catch {
+        // 上乗せの表示が出ないだけ（決済のときにサーバーで付く）
+      }
+    })()
+    return () => {
+      isCancelled = true
+    }
+  }, [open])
+
   const handleOpenChange = (nextOpen: boolean) => {
     if (props.open === undefined) {
       setInternalOpen(nextOpen)
@@ -96,7 +128,12 @@ export function PurchasePremiumCoinsDialog(props: {
 
   const derivedCoins = matchedPackage?.coins ?? coinAmount
 
-  const derivedBonus = matchedPackage?.bonusCoins ?? calcBonusCoins(coinAmount)
+  const offerBonus = calcOfferBonusCoins(matchedPackage?.coins ?? coinAmount, offer)
+
+  const derivedBonus =
+    (matchedPackage?.bonusCoins ?? calcBonusCoins(coinAmount)) +
+    offerBonus.firstPurchase +
+    offerBonus.member
 
   const derivedTotal = derivedCoins + derivedBonus
 
@@ -199,6 +236,37 @@ export function PurchasePremiumCoinsDialog(props: {
         </DialogHeader>
 
         <div className="space-y-4 px-4 py-4 sm:px-6">
+          {offer && (offer.isFirstPurchase || offer.passType) && (
+            <div className="space-y-0.5 rounded-lg border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm">
+              {offer.isFirstPurchase && (
+                <p className="font-bold text-emerald-700 dark:text-emerald-300">
+                  {t(
+                    `はじめての購入は2倍！買った枚数と同じだけおまけ（最大${FIRST_PURCHASE_BONUS_MAX.toLocaleString()}枚）`,
+                    `First purchase doubled: bonus equal to your coins (up to ${FIRST_PURCHASE_BONUS_MAX.toLocaleString()})`,
+                  )}
+                </p>
+              )}
+              {offer.passType && (
+                <p className="text-emerald-700 text-xs dark:text-emerald-300">
+                  {t(
+                    `プラン加入中の特典: いつでも${Math.round(MEMBER_BONUS_RATE * 100)}%おまけ`,
+                    `Member perk: ${Math.round(MEMBER_BONUS_RATE * 100)}% bonus on every purchase`,
+                  )}
+                </p>
+              )}
+            </div>
+          )}
+          {offer && !offer.passType && !offer.isFirstPurchase && (
+            <p className="text-muted-foreground text-xs">
+              {t(
+                `プランに入ると、コインの購入がいつでも${Math.round(MEMBER_BONUS_RATE * 100)}%おまけになります。`,
+                `Members get a ${Math.round(MEMBER_BONUS_RATE * 100)}% bonus on every coin purchase.`,
+              )}{" "}
+              <Link to="/plus" className="underline underline-offset-4">
+                {t("プランを見る", "See plans")}
+              </Link>
+            </p>
+          )}
           <div
             className="grid gap-2 sm:grid-cols-3"
             role="radiogroup"
@@ -206,6 +274,8 @@ export function PurchasePremiumCoinsDialog(props: {
           >
             {PACKAGE_OPTIONS.map((opt) => {
               const isSelected = matchedPackage?.id === opt.id
+              const extra = calcOfferBonusCoins(opt.coins, offer)
+              const bonusCoins = opt.bonusCoins + extra.firstPurchase + extra.member
 
               return (
                 <button
@@ -224,13 +294,13 @@ export function PurchasePremiumCoinsDialog(props: {
                   <span className="min-w-0">
                     <span className="flex items-center gap-1.5 font-bold text-lg tabular-nums">
                       <PremiumCoinIcon className="h-4 w-4 shrink-0" />
-                      {(opt.coins + opt.bonusCoins).toLocaleString()}
+                      {(opt.coins + bonusCoins).toLocaleString()}
                     </span>
-                    {opt.bonusCoins > 0 && (
+                    {bonusCoins > 0 && (
                       <span className="block text-emerald-600 text-xs dark:text-emerald-400">
                         {t(
-                          `${opt.bonusCoins.toLocaleString()} 枚おまけ`,
-                          `${opt.bonusCoins.toLocaleString()} bonus`,
+                          `${bonusCoins.toLocaleString()} 枚おまけ`,
+                          `${bonusCoins.toLocaleString()} bonus`,
                         )}
                       </span>
                     )}

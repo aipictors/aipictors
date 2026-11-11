@@ -55,3 +55,28 @@ export const parsePremiumCoinPackageId = (
     ? (value as PremiumCoinPackageId)
     : null
 }
+/**
+ * コイン購入の上乗せ（aipictors-api の /stripe/checkout/premium-coins/offer で判定）
+ * - はじめての購入: 買った枚数と同じだけおまけ（最大 1,000 枚）。1 回買ってもらうと 2 回目以降も買われやすいため
+ * - プラン加入中: 買った枚数の 20% をおまけ。会員の特典を増やして解約を減らすため
+ */
+export type PremiumCoinOffer = {
+  isFirstPurchase: boolean
+  passType: string | null
+}
+
+export const FIRST_PURCHASE_BONUS_MAX = 1000
+export const MEMBER_BONUS_RATE = 0.2
+
+export const calcOfferBonusCoins = (
+  coins: number,
+  offer: PremiumCoinOffer | null,
+) => {
+  if (!offer) return { firstPurchase: 0, member: 0 }
+  return {
+    firstPurchase: offer.isFirstPurchase
+      ? Math.min(Math.max(0, Math.floor(coins)), FIRST_PURCHASE_BONUS_MAX)
+      : 0,
+    member: offer.passType ? Math.floor(coins * MEMBER_BONUS_RATE) : 0,
+  }
+}

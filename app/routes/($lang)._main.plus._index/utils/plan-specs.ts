@@ -57,6 +57,18 @@ const planPrice = {
 } as const
 
 /**
+ * 年払いの料金（月額の 10 か月分 = 2 か月分おトク。aipictors-api の pricing.ts と同じ）
+ */
+const planYearlyPrice = {
+  FREE: 0,
+  LITE: 4800,
+  STANDARD: 19800,
+  PREMIUM: 39800,
+} as const
+
+export type BillingInterval = "month" | "year"
+
+/**
  * プランごとの特典（表示用）
  * 数値は config.passFeature などから取り、サーバーの判定は変えない
  */
@@ -71,6 +83,7 @@ export function getPlanSpec(plan: PlanKey) {
     name: planName[plan],
     enName: planEnName[plan],
     price: planPrice[plan],
+    yearlyPrice: planYearlyPrice[plan],
     /**
      * 通常生成で1回に作られる枚数
      */

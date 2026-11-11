@@ -6,6 +6,7 @@ import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
+  type BillingInterval,
   getPlanSpec,
   type PlanKey,
 } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
@@ -24,6 +25,10 @@ type Props = {
    */
   isLoggedOut?: boolean
   isLoading: boolean
+  /**
+   * 年払いの料金を出す（省略時は月払い）
+   */
+  interval?: BillingInterval
   onClick(): Promise<void>
 }
 
@@ -45,7 +50,9 @@ export function PassPlanDescription(props: Props) {
   const spec = getPlanSpec(props.plan)
   const isFree = props.plan === "FREE"
   const isButtonVisible = props.isHide !== true
-  const isFirstMonthOffer = useFirstMonthOffer()
+  const isYearly = props.interval === "year" && !isFree
+  // 初月半額は月払いだけ（年払いはクーポンを付けない）
+  const isFirstMonthOffer = useFirstMonthOffer() && !isYearly
 
   return (
     <div
@@ -65,15 +72,34 @@ export function PassPlanDescription(props: Props) {
       <p className="text-muted-foreground text-xs">
         {t(tagline[props.plan][0], tagline[props.plan][1])}
       </p>
-      <p className="mt-3 flex items-baseline gap-1">
-        <span className="font-extrabold text-3xl tracking-tight">
-          {`¥${toMoneyNumberText(spec.price)}`}
-        </span>
-        <span className="text-muted-foreground text-xs">
-          {isFree ? "" : t("/月（税込）", "/mo (tax incl.)")}
-        </span>
-      </p>
-      {!isFree && t("", `${toApproxUsdText(spec.price)}/mo, billed in JPY`) && (
+      {isYearly ? (
+        <>
+          <p className="mt-3 flex items-baseline gap-1">
+            <span className="font-extrabold text-3xl tracking-tight">
+              {`¥${toMoneyNumberText(spec.yearlyPrice)}`}
+            </span>
+            <span className="text-muted-foreground text-xs">
+              {t("/年（税込）", "/yr (tax incl.)")}
+            </span>
+          </p>
+          <p className="mt-1 inline-flex w-fit items-center rounded-full bg-fuchsia-600/10 px-2 py-0.5 font-bold text-fuchsia-700 text-xs dark:text-fuchsia-300">
+            {t(
+              `月¥${toMoneyNumberText(Math.round(spec.yearlyPrice / 12))}・¥${toMoneyNumberText(spec.price * 12 - spec.yearlyPrice)}おトク`,
+              `¥${toMoneyNumberText(Math.round(spec.yearlyPrice / 12))}/mo · save ¥${toMoneyNumberText(spec.price * 12 - spec.yearlyPrice)}`,
+            )}
+          </p>
+        </>
+      ) : (
+        <p className="mt-3 flex items-baseline gap-1">
+          <span className="font-extrabold text-3xl tracking-tight">
+            {`¥${toMoneyNumberText(spec.price)}`}
+          </span>
+          <span className="text-muted-foreground text-xs">
+            {isFree ? "" : t("/月（税込）", "/mo (tax incl.)")}
+          </span>
+        </p>
+      )}
+      {!isFree && !isYearly && t("", `${toApproxUsdText(spec.price)}/mo, billed in JPY`) && (
         <p className="mt-0.5 text-muted-foreground text-xs">
           {t("", `${toApproxUsdText(spec.price)}/mo, billed in JPY`)}
         </p>
@@ -144,7 +170,9 @@ export function PassPlanDescription(props: Props) {
             >
               {props.isDisabled
                 ? t("準備中", "Coming Soon")
-                : t(`${spec.name}に登録する`, `Get ${spec.enName}`)}
+                : isYearly
+                  ? t(`${spec.name}を年払いで登録する`, `Get ${spec.enName} yearly`)
+                  : t(`${spec.name}に登録する`, `Get ${spec.enName}`)}
             </Button>
           )}
         </div>
