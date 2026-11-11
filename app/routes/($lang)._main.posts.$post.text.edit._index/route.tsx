@@ -18,6 +18,7 @@ import {
   PostTextFormPassFragment,
   PostTextFormRecentlyUsedTagsFragment,
 } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
+import { PostTextPreviewDialog } from "~/routes/($lang)._main.new.image/components/post-text-preview-dialog"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
 import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
@@ -568,6 +569,7 @@ export default function EditText() {
   )
 
   const [disabledSubmit, setDisabledSubmit] = React.useState(false)
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
 
   const normalizeText = (value: string) => value.replace(/\s+/g, "")
   const isDirty =
@@ -642,9 +644,21 @@ export default function EditText() {
           isDisabled={disabledSubmit || state.progress !== 0}
           onSubmit={onPost}
           submitLabel="更新する"
+          onPreview={() => setIsPreviewOpen(true)}
           note={isDirty ? "未保存の変更があります" : undefined}
         />
       </div>
+      <PostTextPreviewDialog
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        title={inputState.title}
+        caption={inputState.caption}
+        isCaptionBeforeBody={inputState.isCaptionBeforeBody}
+        md={inputState.md}
+        type={inputState.type === "NOVEL" ? "NOVEL" : "COLUMN"}
+        coverUrl={state.thumbnailBase64 || null}
+        authorName={work?.user?.name}
+      />
       <SuccessCreatedWorkDialog
         isOpen={state.progress === 100}
         title={inputState.title}

@@ -128,30 +128,33 @@ export function WorkMarkdownView(props: Props) {
 
   return (
     <div className="relative m-0">
-      <div className="relative h-64 w-full overflow-hidden rounded-lg md:h-80">
-        <img
-          src={props.thumbnailUrl}
-          alt="Thumbnail Background"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="relative flex h-full w-full items-center justify-center bg-black bg-opacity-40">
-          <button
-            type="button"
-            className="h-3/4 w-3/4 cursor-zoom-in"
-            onClick={() => setZoomedImageUrl(props.thumbnailUrl)}
-            aria-label="表紙を大きく表示"
-          >
-            <img
-              src={props.thumbnailUrl}
-              alt="Thumbnail Foreground"
-              className="h-full w-full object-contain"
-            />
-          </button>
-          <div className="absolute right-4 bottom-4 left-4 rounded-lg bg-black bg-opacity-50 p-4 text-center font-bold text-2xl text-white md:text-4xl">
-            {props.title}
+      {/* 投稿画面のプレビューでカバー画像をまだ選んでいないときは出さない */}
+      {props.thumbnailUrl !== "" && (
+        <div className="relative h-64 w-full overflow-hidden rounded-lg md:h-80">
+          <img
+            src={props.thumbnailUrl}
+            alt="Thumbnail Background"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="relative flex h-full w-full items-center justify-center bg-black bg-opacity-40">
+            <button
+              type="button"
+              className="h-3/4 w-3/4 cursor-zoom-in"
+              onClick={() => setZoomedImageUrl(props.thumbnailUrl)}
+              aria-label="表紙を大きく表示"
+            >
+              <img
+                src={props.thumbnailUrl}
+                alt="Thumbnail Foreground"
+                className="h-full w-full object-contain"
+              />
+            </button>
+            <div className="absolute right-4 bottom-4 left-4 rounded-lg bg-black bg-opacity-50 p-4 text-center font-bold text-2xl text-white md:text-4xl">
+              {props.title}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       {canOpenReader && (
         <button
           type="button"
@@ -185,7 +188,7 @@ export function WorkMarkdownView(props: Props) {
             html={readerHtml}
             title={props.title}
             authorName={props.authorName}
-            coverUrl={props.thumbnailUrl}
+            coverUrl={props.thumbnailUrl || undefined}
             foreword={props.foreword}
             workId={props.workId}
             workType={props.workType ?? "NOVEL"}

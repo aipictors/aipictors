@@ -1164,6 +1164,7 @@ export function BookReader(props: Props): ReactNode {
       role="dialog"
       aria-modal="true"
       aria-label={t("本のように読む", "Book reader")}
+      data-book-reader=""
     >
       <style>{BOOK_READER_CSS}</style>
 

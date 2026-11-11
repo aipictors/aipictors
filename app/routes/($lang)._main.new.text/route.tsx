@@ -6,7 +6,7 @@ import {
   useLoaderData,
   useSearchParams,
 } from "@remix-run/react"
-import React, { useContext, useEffect, useReducer } from "react"
+import React, { useContext, useEffect, useReducer, useState } from "react"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { safeParse } from "valibot"
 import { Button } from "~/components/ui/button"
@@ -19,6 +19,7 @@ import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post
 import { PostFormSubmitBar } from "~/routes/($lang)._main.new.image/components/post-form-submit-bar"
 import { PostTextFormInput } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { PostTextFormUploader } from "~/routes/($lang)._main.new.image/components/post-text-form-uploader"
+import { PostTextPreviewDialog } from "~/routes/($lang)._main.new.image/components/post-text-preview-dialog"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import {
   mergePostFormEvents,
@@ -190,6 +191,8 @@ export default function NewText() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+
   const draft = useTextDraft({
     userId: authContext.userId,
     current: {
@@ -328,6 +331,7 @@ export default function NewText() {
           isLoading={authContext.isLoading}
           isDisabled={state.progress !== 0}
           onSubmit={onPost}
+          onPreview={() => setIsPreviewOpen(true)}
           note={
             draft.savedAt
               ? t("下書きを自動保存しました", "Draft saved")
@@ -335,6 +339,16 @@ export default function NewText() {
           }
         />
       </div>
+      <PostTextPreviewDialog
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        title={inputState.title}
+        caption={inputState.caption}
+        isCaptionBeforeBody={inputState.isCaptionBeforeBody}
+        md={inputState.md}
+        type={inputState.type === "NOVEL" ? "NOVEL" : "COLUMN"}
+        coverUrl={state.thumbnailBase64}
+      />
       <SuccessCreatedWorkDialog
         isOpen={state.progress === 100}
         title={inputState.title}

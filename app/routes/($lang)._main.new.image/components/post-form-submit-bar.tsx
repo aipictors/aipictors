@@ -1,4 +1,4 @@
-import { CheckIcon, CircleIcon, Loader2Icon } from "lucide-react"
+import { CheckIcon, CircleIcon, EyeIcon, Loader2Icon } from "lucide-react"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
@@ -15,6 +15,8 @@ type Props = {
   note?: string
   /** ボタンの文言（既定は「投稿する」） */
   submitLabel?: string
+  /** 渡したときだけ「プレビュー」ボタンを出す */
+  onPreview?: () => void
 }
 
 /**
@@ -54,24 +56,37 @@ export function PostFormSubmitBar(props: Props) {
               <p className="text-[11px] text-muted-foreground">{props.note}</p>
             )}
           </div>
-          {props.isNotLoggedIn ? (
-            <LoginDialogButton
-              className="h-11 shrink-0 rounded-full px-6 font-bold"
-              label={t("ログインして投稿", "Log in to post")}
-            />
-          ) : (
-            <Button
-              type="submit"
-              className="h-11 min-w-32 shrink-0 rounded-full px-6 font-bold"
-              disabled={props.isDisabled || props.isLoading}
-              onClick={props.onSubmit}
-            >
-              {props.isLoading && (
-                <Loader2Icon className="mr-2 size-4 animate-spin" />
-              )}
-              {props.submitLabel ?? t("投稿する", "Post")}
-            </Button>
-          )}
+          <div className="flex shrink-0 items-center gap-2">
+            {props.onPreview && (
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-11 shrink-0 gap-1.5 rounded-full px-3 md:px-5"
+                onClick={props.onPreview}
+              >
+                <EyeIcon className="size-4" />
+                {t("プレビュー", "Preview")}
+              </Button>
+            )}
+            {props.isNotLoggedIn ? (
+              <LoginDialogButton
+                className="h-11 shrink-0 rounded-full px-6 font-bold"
+                label={t("ログインして投稿", "Log in to post")}
+              />
+            ) : (
+              <Button
+                type="submit"
+                className="h-11 min-w-24 shrink-0 rounded-full px-5 font-bold md:min-w-32 md:px-6"
+                disabled={props.isDisabled || props.isLoading}
+                onClick={props.onSubmit}
+              >
+                {props.isLoading && (
+                  <Loader2Icon className="mr-2 size-4 animate-spin" />
+                )}
+                {props.submitLabel ?? t("投稿する", "Post")}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </>
