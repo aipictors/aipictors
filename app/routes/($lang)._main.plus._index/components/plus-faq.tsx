@@ -48,6 +48,14 @@ export function PlusFaq () {
       ),
     },
     {
+      id: "paypay",
+      question: t("PayPayで払えますか？", "Can I pay with PayPay?"),
+      answer: t(
+        "自動更新なしの1か月・1年のパスとプレミアムコインは、PayPayで購入できるようにしています（現在、決済会社の審査中で、審査が終わりしだい決済画面にPayPayが出ます）。自動更新の月払い・年払いはクレジットカードのみです。パスは期限が来ると自動で終わり、期限の前にもう一度買うと期限が延びます。",
+        "Yes. Non-renewing 1-month/1-year passes and premium coins can be paid with PayPay. Auto-renewing plans require a card.",
+      ),
+    },
+    {
       id: "pause",
       question: t("使わない月だけ止められますか？", "Can I pause for a month?"),
       answer: t(

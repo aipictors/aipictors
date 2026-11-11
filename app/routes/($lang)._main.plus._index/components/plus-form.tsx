@@ -26,6 +26,8 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 import type { SubscriptionPause } from "~/routes/api.stripe.subscription-pause/route"
+import { usePrepaidPass } from "~/hooks/use-prepaid-pass"
+import { PrepaidPassPanel } from "~/routes/($lang)._main.plus._index/components/prepaid-pass-panel"
 
 /**
  * Remix v3_singleFetch モードでは、action が Response を返しても
@@ -86,6 +88,8 @@ export function PlusForm () {
   const [cancelReasonNote, setCancelReasonNote] = useState("")
   // 1 か月休止の予約・休止中（解約の代わり）
   const [pause, setPause] = useState<SubscriptionPause>(null)
+  // 自動更新なしのパス（PayPay などの 1 回払い）
+  const prepaid = usePrepaidPass()
   const [isPlanChangePreviewLoading, setIsPlanChangePreviewLoading] = useState(false)
   const [planChangeRequest, setPlanChangeRequest] = useState<{
     passType: "LITE" | "STANDARD" | "PREMIUM"
@@ -472,6 +476,11 @@ export function PlusForm () {
   const isGooglePlayPass = currentPass?.paymentProvider === "GOOGLE_PLAY"
   const isAppStorePass =
     currentPass?.paymentProvider === "APP_STORE" || isGooglePlayPass
+  // 自動更新なしのパスは解約・変更・カードの変更がない（期限が来ると終わる）
+  const isPrepaidPass =
+    currentPass !== null &&
+    prepaid.status?.pass?.passType === currentPass?.type
+  const isManagedElsewhere = isAppStorePass || isPrepaidPass
   const nextPassName = planChangePreview
     ? toPassName(
       (planChangePreview.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS"),
@@ -503,7 +512,7 @@ export function PlusForm () {
 
   useEffect(() => {
     const loadCancellationStatus = async () => {
-      if (!currentPass || isAppStorePass) {
+      if (!currentPass || isAppStorePass || isPrepaidPass) {
         return
       }
 
@@ -596,7 +605,7 @@ export function PlusForm () {
             <RetentionSuggestion
               reason={cancelReason}
               passType={currentPass.type}
-              canPause={!isAppStorePass && !isCancelScheduled}
+              canPause={!isManagedElsewhere && !isCancelScheduled}
               isSubmitting={isSubmitting}
               onPause={() => {
                 trackGrowthEvent("retention_pause", currentPass.type)
@@ -744,7 +753,9 @@ export function PlusForm () {
               <div>
                 <div className="flex">
                   <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm dark:bg-gray-700 dark:text-gray-200">
-                    {isCancelScheduled
+                    {isPrepaidPass
+                      ? "パスの期限"
+                      : isCancelScheduled
                       ? "解約予定日"
                       : isAppStorePass
                         ? "次回の更新日"
@@ -752,7 +763,7 @@ export function PlusForm () {
                   </span>
                   <p>{nextDateText}</p>
                 </div>
-                {!isCancelScheduled && !isAppStorePass && (
+                {!isCancelScheduled && !isManagedElsewhere && (
                   <div className="flex">
                     <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm dark:bg-gray-700 dark:text-gray-200">
                       {"次回の請求額"}
@@ -760,7 +771,7 @@ export function PlusForm () {
                     <p>{`${currentPass.price}円（税込）`}</p>
                   </div>
                 )}
-                {!isCancelScheduled && !isAppStorePass && (
+                {!isCancelScheduled && !isManagedElsewhere && (
                   <div className="flex">
                     <span className="mr-2 mb-2 rounded-full bg-fuchsia-100 px-3 py-1 font-semibold text-fuchsia-800 text-sm dark:bg-fuchsia-900/40 dark:text-fuchsia-200">
                       {"継続ボーナス"}
@@ -777,7 +788,16 @@ export function PlusForm () {
                   </div>
                 )}
               </div>
-              {isAppStorePass ? (
+              {isPrepaidPass ? (
+                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-900 text-sm dark:border-red-900 dark:bg-red-950/30 dark:text-red-100">
+                  <p className="font-bold">
+                    {"自動更新なしのパスをご利用中です"}
+                  </p>
+                  <p className="mt-1 text-xs leading-5">
+                    {`${nextDateText} に自動で終わります。解約の手続きは要りません。続けて使うときは、下からパスを延長してください（期限から1か月・1年延びます）。`}
+                  </p>
+                </div>
+              ) : isAppStorePass ? (
                 <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900 text-sm dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
                   <p className="font-bold">
                     {isGooglePlayPass
@@ -797,7 +817,7 @@ export function PlusForm () {
                   }
                 </p>
               )}
-              {!isCancelScheduled && !isAppStorePass && (
+              {!isCancelScheduled && !isManagedElsewhere && (
                 <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900 text-sm dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
                   <p className="font-bold">
                     {"解約後の確認について"}
@@ -809,7 +829,7 @@ export function PlusForm () {
                   </p>
                 </div>
               )}
-              {!isAppStorePass && (
+              {!isManagedElsewhere && (
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {isCancelScheduled ? (
                   /* 解約予約中 → 取り消しボタンを目立たせる */
@@ -865,7 +885,7 @@ export function PlusForm () {
                 )}
               </div>
               )}
-              {!isAppStorePass && (
+              {!isManagedElsewhere && (
                 <div className="space-y-1">
                   <Button
                     className="w-full"
@@ -902,7 +922,7 @@ export function PlusForm () {
               </CardContent>
             </Card>
           </div>
-          {!isAppStorePass &&
+          {!isManagedElsewhere &&
             (isCancelScheduled || currentPass.type !== "PREMIUM") && (
             <p className="mt-8 mb-1 font-bold">
               {isCancelScheduled
@@ -910,12 +930,15 @@ export function PlusForm () {
                 : "上位のプランにすると、もっと生成できます"}
             </p>
           )}
-          {!isAppStorePass &&
+          {!isManagedElsewhere &&
             (isCancelScheduled || currentPass.type !== "PREMIUM") && (
             <PlusAbout
               showUpgradePlansOnly={!isCancelScheduled}
               treatAsNoCurrentPass={isCancelScheduled}
             />
+          )}
+          {isPrepaidPass && currentPass && (
+            <PrepaidPassPanel onlyPassType={currentPass.type === "TWO_DAYS" ? undefined : currentPass.type} />
           )}
         </>
       ) : unpaidInvoice ? (
@@ -962,6 +985,7 @@ export function PlusForm () {
             />
           )}
           <PlusAbout showUpgradePlansOnly={true} showFreePlan={true} />
+          <PrepaidPassPanel />
         </>
       )}
     </>
