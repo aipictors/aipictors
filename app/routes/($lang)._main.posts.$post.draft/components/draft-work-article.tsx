@@ -95,6 +95,23 @@ export function DraftWorkArticle(props: Props) {
     })
   }
 
+  const displayDescription = t(
+    props.work.description ?? "",
+    props.work.enDescription ?? props.work.description ?? "",
+  )
+
+  // 作品ページと同じく、作者が選べばキャプションを本文の前（前書き）に出す（予約投稿の確認もこの画面）
+  const isCaptionBeforeBody =
+    (props.work.type === "NOVEL" || props.work.type === "COLUMN") &&
+    props.work.isCaptionBeforeBody === true &&
+    displayDescription.trim() !== ""
+
+  const descriptionView = (
+    <p className="overflow-hidden whitespace-pre-wrap break-words">
+      {parseTextWithLinks(displayDescription)}
+    </p>
+  )
+
   return (
     <article className="flex flex-col space-y-4">
       <PostAccessTypeBanner
@@ -119,11 +136,13 @@ export function DraftWorkArticle(props: Props) {
           title={props.work.title}
         />
       )}
+      {isCaptionBeforeBody && descriptionView}
       {props.work.type === "COLUMN" && (
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
           title={props.work.title}
+          foreword={isCaptionBeforeBody ? displayDescription : undefined}
         />
       )}
       {props.work.type === "NOVEL" && (
@@ -131,6 +150,7 @@ export function DraftWorkArticle(props: Props) {
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
           title={props.work.title}
+          foreword={isCaptionBeforeBody ? displayDescription : undefined}
         />
       )}
       <section className="mt-4 flex flex-col space-y-4">
@@ -316,14 +336,7 @@ export function DraftWorkArticle(props: Props) {
             isEditable={props.work.isTagEditable}
           />
         </div>
-        <p className="overflow-hidden whitespace-pre-wrap break-words">
-          {parseTextWithLinks(
-            t(
-              props.work.description ?? "",
-              props.work.enDescription ?? props.work.description ?? "",
-            ),
-          )}
-        </p>
+        {!isCaptionBeforeBody && descriptionView}
         {props.work.promptAccessType === "PRIVATE" &&
           props.work.user !== null &&
           props.work.user.id === appContext.userId && (
@@ -395,6 +408,7 @@ const workArticleFragment = graphql(
     promptAccessType
     rating
     description
+    isCaptionBeforeBody
     isSensitive
     enTitle
     enDescription
