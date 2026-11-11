@@ -142,7 +142,8 @@ export function usePremiumCheckoutConfirmation(args: {
           json.error ||
           (!json.data?.reflected &&
             paymentStatus !== "rate_limited" &&
-            paymentStatus !== "pending")
+            paymentStatus !== "pending" &&
+            paymentStatus !== "unpaid")
         ) {
           throw new Error(
             json.error ??
@@ -163,6 +164,18 @@ export function usePremiumCheckoutConfirmation(args: {
             t(
               "決済は完了しています。現在反映処理が混み合っているため、しばらくしてから残高をご確認ください。",
               "Your payment is complete. Reflection is temporarily delayed due to high load. Please check your balance again shortly.",
+            ),
+          )
+          clearPremiumCheckoutSearchParams()
+          return
+        }
+
+        // コンビニ払いなど後から支払う方法では、決済画面から戻った時点ではまだ払われていない
+        if (!json.data?.reflected && paymentStatus === "unpaid") {
+          setPremiumPurchaseError(
+            t(
+              "コンビニでのお支払いを待っています。お支払い番号は決済画面とメールでお知らせしています。お支払いが確認されると、コインが付きます。",
+              "Waiting for your convenience store payment. Use the payment number shown at checkout and sent by email. Coins are added once payment is confirmed.",
             ),
           )
           clearPremiumCheckoutSearchParams()

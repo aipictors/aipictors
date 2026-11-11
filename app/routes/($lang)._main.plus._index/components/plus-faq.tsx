@@ -56,6 +56,14 @@ export function PlusFaq () {
       ),
     },
     {
+      id: "konbini",
+      question: t("コンビニで払えますか？", "Can I pay at a convenience store?"),
+      answer: t(
+        "自動更新なしの1か月・1年のパスとプレミアムコインは、コンビニ払いで購入できるようにしています（現在、決済会社の審査中で、審査が終わりしだい決済画面にコンビニ払いが出ます）。決済画面とメールでお知らせするお支払い番号で、3日以内にコンビニでお支払いください。お支払いが確認されると、プランやコインが使えるようになります。",
+        "Non-renewing passes and premium coins can be paid at convenience stores in Japan (pending approval). Pay within 3 days using the number shown at checkout; your plan or coins are added once payment is confirmed.",
+      ),
+    },
+    {
       id: "pause",
       question: t("使わない月だけ止められますか？", "Can I pause for a month?"),
       answer: t(

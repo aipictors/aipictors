@@ -24,6 +24,7 @@ export default function PlusSuccess () {
     | { kind: "loading" }
     | { kind: "done"; periodEnd: number | null }
     | { kind: "pending" }
+    | { kind: "unpaid" }
   >({ kind: "loading" })
 
   useEffect(() => {
@@ -38,11 +39,16 @@ export default function PlusSuccess () {
           body: JSON.stringify({ sessionId }),
         })
         const json = (await response.json().catch(() => null)) as {
-          data: { reflected: boolean; periodEnd?: number } | null
+          data: { reflected: boolean; periodEnd?: number; paymentStatus?: string | null } | null
         } | null
         if (isCancelled) return
         if (json?.data?.reflected) {
           setPrepaidState({ kind: "done", periodEnd: json.data.periodEnd ?? null })
+          return
+        }
+        // コンビニ払いなど後から支払う方法では、まだ払われていない。お支払いの確認後に webhook で反映する
+        if (json?.data?.paymentStatus === "unpaid") {
+          setPrepaidState({ kind: "unpaid" })
           return
         }
       } catch {
@@ -69,13 +75,19 @@ export default function PlusSuccess () {
           </div>
           <div className="space-y-2">
             <p className="flex justify-center font-bold text-xl">
-              {"決済に成功しました"}
+              {isPrepaid && prepaidState.kind === "unpaid"
+                ? "お支払いをお待ちしています"
+                : "決済に成功しました"}
             </p>
             {isPrepaid ? (
               prepaidState.kind === "loading" ? (
                 <p className="flex items-center justify-center gap-2 text-sm">
                   <Loader2 className="size-4 animate-spin" />
                   {"プランを反映しています..."}
+                </p>
+              ) : prepaidState.kind === "unpaid" ? (
+                <p className="text-sm">
+                  {"お支払い番号は決済画面とメールでお知らせしています。期限までにコンビニでお支払いください。お支払いが確認されると、プランが使えるようになります。"}
                 </p>
               ) : prepaidState.kind === "done" ? (
                 <p>

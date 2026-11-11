@@ -19,6 +19,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     reflected: boolean
     periodEnd?: number
     passType?: string
+    paymentStatus?: string | null
   }>(context, "/stripe/checkout/prepaid-pass/confirm", {
     method: "POST",
     body: { userId: viewer.userId, sessionId: input.sessionId },
