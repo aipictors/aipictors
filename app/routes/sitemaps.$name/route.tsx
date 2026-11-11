@@ -11,6 +11,7 @@ import {
   SITE_URL,
   toJstDateString,
   toUrlSetXml,
+  getSitemapKv,
   withEdgeCache,
   xmlResponse,
 } from "~/lib/server/sitemap.server"
@@ -218,40 +219,47 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
     // 今日・昨日の分は投稿が増えるので短め、それより前はほとんど変わらないので長めにキャッシュ
     const isRecent =
       jstDayStartSeconds(date) >= jstDayStartSeconds(today) - ONE_DAY
-    return withEdgeCache(request, waitUntil, async () => {
-      const works = await fetchWorksOfDay(date)
-      // その日に投稿した人のユーザーページも載せる（全期間の日付をたどれば、作品のある人は全員入る）
-      const userLogins = [
-        ...new Set(
-          works
-            .map((work) => work.user?.login)
-            .filter((login): login is string => Boolean(login)),
-        ),
-      ]
-      return xmlResponse(
-        toUrlSetXml([
-          ...works.map((work) => ({
-            loc: `${SITE_URL}/posts/${work.id}`,
-            lastmod: new Date(work.createdAt * 1000).toISOString(),
-            images: work.largeThumbnailImageURL
-              ? [
-                  {
-                    loc: work.largeThumbnailImageURL,
-                    title: work.title,
-                    enTitle: work.enTitle ?? undefined,
-                  },
-                ]
-              : undefined,
-          })),
-          ...userLogins.map((login) => ({
-            loc: `${SITE_URL}/users/${encodeURIComponent(login)}`,
-            changefreq: "weekly" as const,
-            priority: 0.5,
-          })),
-        ]),
-        isRecent ? ONE_HOUR : ONE_DAY * 7,
-      )
-    })
+    return withEdgeCache(
+      request,
+      waitUntil,
+      async () => {
+        const works = await fetchWorksOfDay(date)
+        // その日に投稿した人のユーザーページも載せる（全期間の日付をたどれば、作品のある人は全員入る）
+        const userLogins = [
+          ...new Set(
+            works
+              .map((work) => work.user?.login)
+              .filter((login): login is string => Boolean(login)),
+          ),
+        ]
+        return xmlResponse(
+          toUrlSetXml([
+            ...works.map((work) => ({
+              loc: `${SITE_URL}/posts/${work.id}`,
+              lastmod: new Date(work.createdAt * 1000).toISOString(),
+              images: work.largeThumbnailImageURL
+                ? [
+                    {
+                      loc: work.largeThumbnailImageURL,
+                      title: work.title,
+                      enTitle: work.enTitle ?? undefined,
+                    },
+                  ]
+                : undefined,
+            })),
+            ...userLogins.map((login) => ({
+              loc: `${SITE_URL}/users/${encodeURIComponent(login)}`,
+              changefreq: "weekly" as const,
+              priority: 0.5,
+            })),
+          ]),
+          isRecent ? ONE_HOUR : ONE_DAY * 7,
+        )
+      },
+      isRecent
+        ? undefined
+        : { kv: getSitemapKv(context), ttlSeconds: ONE_DAY * 7 },
+    )
   }
 
   throw new Response("Not Found", { status: 404 })

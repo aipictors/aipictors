@@ -137,13 +137,37 @@ export function xmlResponse(xml: string, maxAgeSeconds: number): Response {
 /** 2: 作品のサイトマップに投稿者のユーザーページを追加 4: 呪文まとめ（prompts.xml）を追加 */
 const SITEMAP_CACHE_VERSION = "4"
 
+type SitemapKv = {
+  get(key: string): Promise<string | null>
+  put(
+    key: string,
+    value: string,
+    options: { expirationTtl: number },
+  ): Promise<void>
+}
+
+export type SitemapKvOptions = {
+  /** 全拠点共通の KV（PAGE_CACHE） */
+  kv: SitemapKv | undefined
+  /** KV に置く時間（秒） */
+  ttlSeconds: number
+}
+
+/** loader の context から PAGE_CACHE を取る */
+export const getSitemapKv = (context: unknown): SitemapKv | undefined =>
+  (context as { cloudflare?: { env?: { PAGE_CACHE?: SitemapKv } } })?.cloudflare
+    ?.env?.PAGE_CACHE
+
 /**
- * Workers のキャッシュ（caches.default）を使ってレスポンスを使い回す
+ * Workers のキャッシュ（caches.default）を使ってレスポンスを使い回す。
+ * kv を渡すと全拠点共通の KV にも置く。拠点のキャッシュは拠点ごとなので、検索エンジンが
+ * 別の拠点から過去の日のファイルを読むたびに作り直していた（1 ファイルで API に最大 40 回・D1 を数万行）
  */
 export async function withEdgeCache(
   request: Request,
   waitUntil: ((promise: Promise<unknown>) => void) | undefined,
   create: () => Promise<Response>,
+  kvOptions?: SitemapKvOptions,
 ): Promise<Response> {
   const cacheStorage =
     typeof caches !== "undefined"
@@ -162,13 +186,41 @@ export async function withEdgeCache(
   if (cached) {
     return cached
   }
+  const schedule = async (promise: Promise<unknown>) => {
+    if (waitUntil) {
+      waitUntil(promise)
+    } else {
+      await promise
+    }
+  }
+  const kv = kvOptions?.kv
+  const kvKey = `sitemap:v${SITEMAP_CACHE_VERSION}:${new URL(request.url).pathname}`
+  if (kv) {
+    try {
+      const xml = await kv.get(kvKey)
+      if (xml !== null) {
+        const response = xmlResponse(xml, kvOptions.ttlSeconds)
+        await schedule(cacheStorage.put(cacheKey, response.clone()))
+        return response
+      }
+    } catch {
+      // KV が読めなければ作り直す
+    }
+  }
   const response = await create()
   if (response.status === 200) {
-    const put = cacheStorage.put(cacheKey, response.clone())
-    if (waitUntil) {
-      waitUntil(put)
-    } else {
-      await put
+    await schedule(cacheStorage.put(cacheKey, response.clone()))
+    if (kv && kvOptions) {
+      const body = await response.clone().text()
+      // API が混んで空になったものは全拠点には置かない
+      if (!body.includes("<loc>")) return response
+      await schedule(
+        kv
+          .put(kvKey, body, {
+            expirationTtl: Math.max(60, kvOptions.ttlSeconds),
+          })
+          .catch(() => undefined),
+      )
     }
   }
   return response
