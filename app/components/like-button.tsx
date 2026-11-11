@@ -18,6 +18,8 @@ import { cn } from "~/lib/utils"
 type Props = {
   size?: number
   text?: string
+  /** 指定すると「<countLabel> <いいね数>」を表示し、押したときに数も変わる（text より優先） */
+  countLabel?: string
   textColor?: "black" | "white" | null
   onClick?: (liked: boolean) => void
   defaultLiked?: boolean
@@ -83,6 +85,17 @@ export function LikeButton(props: Props): React.ReactNode {
   const [isLiked, setIsLiked] = useState(props.defaultLiked ?? false)
   const [likedCount, setLikedCount] = useState(props.defaultLikedCount)
 
+  // 保存した数は保存した時点のもの。その後に他の人のいいねで増えていればサーバーの数を使う
+  const restoreLikedCount = (localState: { liked: boolean; count: number }) =>
+    localState.liked
+      ? Math.max(localState.count, props.defaultLikedCount)
+      : props.defaultLikedCount
+
+  const displayText =
+    props.countLabel !== undefined
+      ? `${props.countLabel} ${Math.max(0, likedCount)}`.trim()
+      : props.text
+
   const isSensitive = props.isSensitive ?? /\/r($|\/)/.test(location.pathname)
   const defaultIsAnonymous = isSensitive
 
@@ -91,7 +104,7 @@ export function LikeButton(props: Props): React.ReactNode {
     const localState = getLocalLikeState()
     if (localState !== null) {
       setIsLiked(localState.liked)
-      setLikedCount(localState.count)
+      setLikedCount(restoreLikedCount(localState))
     }
   }, [])
   const [clicked, setClicked] = useState(false)
@@ -101,7 +114,7 @@ export function LikeButton(props: Props): React.ReactNode {
     const localState = getLocalLikeState()
     if (localState !== null) {
       setIsLiked(localState.liked)
-      setLikedCount(localState.count)
+      setLikedCount(restoreLikedCount(localState))
     } else {
       setIsLiked(props.defaultLiked ?? false)
       setLikedCount(props.defaultLikedCount)
@@ -290,9 +303,9 @@ export function LikeButton(props: Props): React.ReactNode {
             )}
             style={{
               height: `${size}px`,
-              minWidth: props.text ? "auto" : `${size}px`,
-              paddingLeft: props.text ? "0" : "0",
-              paddingRight: props.text ? "12px" : "0",
+              minWidth: displayText ? "auto" : `${size}px`,
+              paddingLeft: displayText ? "0" : "0",
+              paddingRight: displayText ? "12px" : "0",
             }}
           >
             <div
@@ -309,8 +322,8 @@ export function LikeButton(props: Props): React.ReactNode {
                 transitionDuration: clicked && isLiked ? "1s" : "0s",
                 backgroundPosition: isLiked ? `-${width}px 0` : "0 0",
                 flexShrink: 0,
-                marginLeft: props.text ? "0" : "0",
-                marginRight: props.text ? "0" : "0",
+                marginLeft: displayText ? "0" : "0",
+                marginRight: displayText ? "0" : "0",
               }}
             >
               <Heart
@@ -327,9 +340,9 @@ export function LikeButton(props: Props): React.ReactNode {
                 stroke={isLiked ? "#E2264D" : "#9CA3AF"}
               />
             </div>
-            {props.text && (
+            {displayText && (
               <span className="whitespace-nowrap font-bold text-gray-700 text-sm dark:text-gray-300">
-                {props.text}
+                {displayText}
               </span>
             )}
           </div>
@@ -351,9 +364,9 @@ export function LikeButton(props: Props): React.ReactNode {
       )}
       style={{
         height: `${size}px`,
-        minWidth: props.text ? "auto" : `${size}px`,
-        paddingLeft: props.text ? "0" : "0",
-        paddingRight: props.text ? "12px" : "0",
+        minWidth: displayText ? "auto" : `${size}px`,
+        paddingLeft: displayText ? "0" : "0",
+        paddingRight: displayText ? "12px" : "0",
       }}
       onClick={handleOnClick}
       type="button"
@@ -373,8 +386,8 @@ export function LikeButton(props: Props): React.ReactNode {
           transitionDuration: clicked && isLiked ? "1s" : "0s",
           backgroundPosition: isLiked ? `-${width}px 0` : "0 0",
           flexShrink: 0,
-          marginLeft: props.text ? "0" : "0",
-          marginRight: props.text ? "0" : "0",
+          marginLeft: displayText ? "0" : "0",
+          marginRight: displayText ? "0" : "0",
         }}
       >
         <Heart
@@ -387,9 +400,9 @@ export function LikeButton(props: Props): React.ReactNode {
           stroke={isLiked ? "#E2264D" : "#9CA3AF"}
         />
       </div>
-      {props.text && (
+      {displayText && (
         <span className="whitespace-nowrap font-bold text-gray-700 text-sm dark:text-gray-300">
-          {props.text}
+          {displayText}
         </span>
       )}
     </button>

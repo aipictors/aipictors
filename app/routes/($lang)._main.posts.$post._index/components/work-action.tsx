@@ -95,7 +95,7 @@ export function WorkAction(props: Props) {
         {props.mode === "dialogLikeOnly" ? (
           // ダイアログ専用のいいねボタン - フル幅対応
           <DialogLikeButton
-            text={`${props.workLikesCount}`}
+            countLabel=""
             defaultLiked={props.defaultLiked}
             defaultLikedCount={props.workLikesCount}
             isSensitive={props.isSensitive}
@@ -109,7 +109,7 @@ export function WorkAction(props: Props) {
           <>
             <LikeButton
               size={40}
-              text={`${props.likeButtonLabel ?? "いいね"} ${props.workLikesCount}`}
+              countLabel={props.likeButtonLabel ?? "いいね"}
               defaultLiked={props.defaultLiked}
               defaultLikedCount={props.workLikesCount}
               isSensitive={props.isSensitive}

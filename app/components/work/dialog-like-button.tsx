@@ -11,6 +11,8 @@ import { cn } from "~/lib/utils"
 
 type Props = {
   text?: string
+  /** 指定すると「<countLabel> <いいね数>」を表示し、押したときに数も変わる（text より優先） */
+  countLabel?: string
   onClick?: (liked: boolean) => void
   defaultLiked?: boolean
   defaultLikedCount: number
@@ -67,6 +69,17 @@ export function DialogLikeButton(props: Props): React.ReactNode {
   // 状態管理
   const [isLiked, setIsLiked] = useState(props.defaultLiked ?? false)
   const [likedCount, setLikedCount] = useState(props.defaultLikedCount)
+
+  // 保存した数は保存した時点のもの。その後に他の人のいいねで増えていればサーバーの数を使う
+  const restoreLikedCount = (localState: { liked: boolean; count: number }) =>
+    localState.liked
+      ? Math.max(localState.count, props.defaultLikedCount)
+      : props.defaultLikedCount
+
+  const displayText =
+    props.countLabel !== undefined
+      ? `${props.countLabel} ${Math.max(0, likedCount)}`.trim()
+      : props.text
   const [clicked, setClicked] = useState(false)
 
   const isSensitive = props.isSensitive ?? /\/r($|\/)/.test(location.pathname)
@@ -76,7 +89,7 @@ export function DialogLikeButton(props: Props): React.ReactNode {
     const localState = getLocalLikeState()
     if (localState !== null) {
       setIsLiked(localState.liked)
-      setLikedCount(localState.count)
+      setLikedCount(restoreLikedCount(localState))
     } else {
       setIsLiked(props.defaultLiked ?? false)
       setLikedCount(props.defaultLikedCount)
@@ -229,8 +242,8 @@ export function DialogLikeButton(props: Props): React.ReactNode {
                 fill="white"
                 stroke="#9CA3AF"
               />
-              {props.text && (
-                <span className="font-medium text-sm">{props.text}</span>
+              {displayText && (
+                <span className="font-medium text-sm">{displayText}</span>
               )}
             </div>
           </div>
@@ -266,7 +279,7 @@ export function DialogLikeButton(props: Props): React.ReactNode {
           fill={isLiked ? "#E2264D" : "transparent"}
           stroke={isLiked ? "#E2264D" : "#9CA3AF"}
         />
-        {props.text && (
+        {displayText && (
           <span
             className={cn(
               "font-medium text-sm transition-colors duration-200",
@@ -275,7 +288,7 @@ export function DialogLikeButton(props: Props): React.ReactNode {
                 : "text-muted-foreground",
             )}
           >
-            {props.text}
+            {displayText}
           </span>
         )}
       </div>
