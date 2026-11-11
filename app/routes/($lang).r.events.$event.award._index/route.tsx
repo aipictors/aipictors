@@ -1,3 +1,4 @@
+import { toSafeUserEventDescriptionHtml } from "~/utils/user-event-description-html"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { useNavigate } from "~/lib/app/locale-router"
@@ -61,7 +62,7 @@ const normalizeOfficialEvent = (event: any): SensitiveAwardEvent => ({
 
 const normalizeUserEvent = (event: any): SensitiveAwardEvent => ({
   id: event.id,
-  description: event.description,
+  description: toSafeUserEventDescriptionHtml(event.description),
   title: event.title,
   slug: event.slug,
   thumbnailImageUrl: event.thumbnailImageUrl,

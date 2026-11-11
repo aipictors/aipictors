@@ -8,6 +8,9 @@ import type {
   UploadedPart,
   UserModel,
   UserModelEditableFields,
+  UserModelPickup,
+  UserModelPickupAdmin,
+  UserModelPickupAdminEntry,
   UserModelImportPreview,
   UserModelImportStatus,
   UserModelListParams,
@@ -402,5 +405,51 @@ export const uploadUserModelPart = (props: {
     }
     props.signal.addEventListener("abort", () => xhr.abort(), { once: true })
     xhr.send(props.blob)
+  })
+}
+
+/**
+ * 今週のピックアップモデル（無ければ null）
+ */
+export const fetchUserModelPickup = async (): Promise<UserModelPickup | null> => {
+  // 誰が見ても同じなので認証を付けない（CDN のキャッシュが効く）
+  const response = await fetch("/api/user-models/pickup")
+  const data = await parseUserModelsResponse<UserModelPickup | null>(response)
+  if (!data?.model) return null
+  return { ...data, model: normalizeUserModel(data.model) }
+}
+
+/**
+ * ピックアップの管理（モデレーターのみ）: 直近の週と候補
+ */
+export const fetchUserModelPickupAdmin = async (
+  weekStart?: string | null,
+): Promise<UserModelPickupAdmin> => {
+  const query = weekStart ? `?weekStart=${encodeURIComponent(weekStart)}` : ""
+  const data = await request<UserModelPickupAdmin>(`/api/admin/user-models/pickups${query}`, {
+    method: "GET",
+    auth: "required",
+  })
+  return {
+    ...data,
+    pickups: (data?.pickups ?? []).map((pickup) => ({
+      ...pickup,
+      model: pickup.model ? normalizeUserModel(pickup.model) : null,
+    })),
+    candidates: data?.candidates ?? [],
+  }
+}
+
+/**
+ * ピックアップの差し替え（modelId 指定）・自動の選び直し（modelId なし）。モデレーターのみ
+ */
+export const updateUserModelPickup = async (input: {
+  weekStart: string
+  modelId: string | null
+}): Promise<UserModelPickupAdminEntry> => {
+  return request<UserModelPickupAdminEntry>("/api/admin/user-models/pickups", {
+    method: "POST",
+    auth: "required",
+    body: JSON.stringify(input),
   })
 }

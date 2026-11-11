@@ -1,3 +1,5 @@
+import { toSafeUserEventDescriptionHtml } from "~/utils/user-event-description-html"
+import { UserEventReportDialog } from "~/routes/($lang).events.$event._index/components/user-event-report-dialog"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -63,6 +65,8 @@ const DEFAULT_EVENT_WORK_RATINGS: IntrospectionEnum<"Rating">[] = [
 ]
 
 type NormalizedEvent = {
+  /** 公式が主催する枠（ピックアップモデルのお題など） */
+  isOfficial?: boolean
   eventSource: "OFFICIAL" | "USER"
   id: string
   slug: string
@@ -140,10 +144,11 @@ const normalizeOfficialEvent = (event: any): NormalizedEvent => ({
 
 const normalizeUserEvent = (event: any): NormalizedEvent => ({
   eventSource: "USER",
+  isOfficial: event.isOfficial === true,
   id: event.id,
   slug: event.slug,
   title: event.title,
-  description: event.description,
+  description: toSafeUserEventDescriptionHtml(event.description),
   thumbnailImageUrl:
     event.thumbnailImageUrl || event.headerImageUrl || "/images/opepnepe.png",
   headerImageUrl:
@@ -578,12 +583,14 @@ export default function EventDetailPage() {
       ? t("開催中", "Ongoing")
       : event.status === "UPCOMING"
         ? t("開催予定", "Upcoming")
-        : t("終了", "Ended")
+        : event.status === "HIDDEN"
+          ? t("運営により非表示", "Hidden by moderators")
+          : t("終了", "Ended")
 
   const eventTypeText =
-    event.eventSource === "USER"
-      ? t("ユーザー企画", "User event")
-      : t("公式イベント", "Official event")
+    event.eventSource === "USER" && !event.isOfficial
+      ? t("ユーザー主催", "User-hosted")
+      : t("公式", "Official")
 
   const ratingBadgeText = getEventRatingBadgeText(event)
 
@@ -833,6 +840,11 @@ export default function EventDetailPage() {
                   </Link>
                 </Button>
               )}
+              {!isOwner &&
+                event.eventSource === "USER" &&
+                authContext.isLoggedIn && (
+                  <UserEventReportDialog eventId={String(event.id)} />
+                )}
             </div>
           </div>
         </div>
@@ -1048,6 +1060,7 @@ const eventDetailQuery = graphql(
       announcementText
       ratings
       isSensitive
+      isOfficial
       userId
       userName
       userIconUrl

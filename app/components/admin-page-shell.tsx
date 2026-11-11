@@ -15,6 +15,7 @@ import {
   Search,
   Shield,
   Boxes,
+  Flag,
   Users,
 } from "lucide-react"
 import { gql, useQuery } from "@apollo/client/index"
@@ -103,9 +104,15 @@ const adminNavItems: readonly AdminNavItem[] = [
   },
   {
     href: "/admin/user-models",
-    title: "モデル通報",
-    description: "通報されたみんなのモデルを確認・非公開",
+    title: "みんなのモデル",
+    description: "週替わりのピックアップ・X の下書き・通報されたモデル",
     icon: Boxes,
+  },
+  {
+    href: "/admin/user-events",
+    title: "ユーザー主催のお題",
+    description: "通報されたお題を確認・非表示",
+    icon: Flag,
   },
 ] as const
 

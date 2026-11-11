@@ -5,6 +5,7 @@ import {
   CalendarIcon,
   ChevronRightIcon,
   CopyIcon,
+  CrownIcon,
   ExternalLinkIcon,
   FlagIcon,
   HardDriveIcon,
@@ -30,6 +31,8 @@ import {
   UserModelRatingBadge,
 } from "~/components/user-models/user-model-badges"
 import { UserModelCard } from "~/components/user-models/user-model-card"
+import { UserModelGenerateFlow } from "~/components/user-models/user-model-generate-flow"
+import { useUserModelPickup } from "~/components/user-models/user-model-pickup-banner"
 import { UserModelDeleteDialog } from "~/components/user-models/user-model-delete-dialog"
 import { UserModelEditDialog } from "~/components/user-models/user-model-edit-dialog"
 import { UserModelReportDialog } from "~/components/user-models/user-model-report-dialog"
@@ -161,6 +164,7 @@ function StatItem(props: {
  */
 export function UserModelDetail(props: Props) {
   const authContext = useContext(AuthContext)
+  const { data: pickup } = useUserModelPickup()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -331,6 +335,12 @@ export function UserModelDetail(props: Props) {
                 className="bg-secondary text-secondary-foreground"
               />
               <UserModelRatingBadge rating={model.rating} />
+              {pickup?.modelId === model.id && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 font-semibold text-[11px] text-white">
+                  <CrownIcon className="size-3" />
+                  今週のピックアップ
+                </span>
+              )}
             </div>
             <h1 className="break-words font-bold text-2xl leading-tight tracking-tight">
               {model.name}
@@ -378,6 +388,18 @@ export function UserModelDetail(props: Props) {
                 <span>まだ生成に使えません</span>
               )}
             </Button>
+            {isReady && (
+              <UserModelGenerateFlow
+                modelId={model.id}
+                isPickup={pickup?.modelId === model.id}
+                pickupEventSlug={
+                  pickup?.modelId === model.id ? pickup.eventSlug : null
+                }
+                pickupEventTag={
+                  pickup?.modelId === model.id ? pickup.eventTag : null
+                }
+              />
+            )}
             {model.kind === "LORA" && (
               <Button
                 variant="outline"

@@ -30,6 +30,7 @@ import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/componen
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { usePostImageDraft } from "~/routes/($lang)._main.new.image/hooks/use-post-image-draft"
 import { usePostImageGenerationResults } from "~/routes/($lang)._main.new.image/hooks/use-post-image-generation-results"
+import { usePickupModelAutoJoin } from "~/routes/($lang)._main.new.image/hooks/use-pickup-model-auto-join"
 import { usePostImageSearchParams } from "~/routes/($lang)._main.new.image/hooks/use-post-image-search-params"
 import { usePostImageSubmit } from "~/routes/($lang)._main.new.image/hooks/use-post-image-submit"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
@@ -221,6 +222,12 @@ export default function NewImage() {
   })
 
   const isPostingRef = useRef(false)
+
+  usePickupModelAutoJoin({
+    generationResults: viewerData?.viewer?.imageGenerationResults,
+    tags: inputState.tags,
+    dispatchInput,
+  })
 
   usePostImageSearchParams({
     searchParams,

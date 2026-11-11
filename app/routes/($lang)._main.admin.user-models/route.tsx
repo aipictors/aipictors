@@ -7,6 +7,7 @@ import { Boxes, ImageOff, Lock, LockOpen } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { AdminPageShell } from "~/components/admin-page-shell"
+import { AdminModelPickupPanel } from "~/routes/($lang)._main.admin.user-models/components/admin-model-pickup-panel"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import {
   AlertDialog,
@@ -62,10 +63,10 @@ export async function loader(_props: LoaderFunctionArgs) {
   return json({})
 }
 
-const pageTitle = "モデル通報"
+const pageTitle = "みんなのモデル（ピックアップ・通報）"
 
 const pageDescription =
-  "利用者から通報された LoRA・チェックポイントを確認し、必要に応じて非公開にします。"
+  "週替わりのピックアップモデルの確認・差し替えと X 投稿の下書き、利用者から通報された LoRA・チェックポイントの確認をします。"
 
 const reportsQueryKey = [...userModelsQueryKeys.all, "admin-reports"] as const
 
@@ -156,6 +157,7 @@ export default function AdminUserModelsPage() {
       description={pageDescription}
       icon={Boxes}
     >
+      <AdminModelPickupPanel />
       {reportsQuery.isLoading ? (
         <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
           <CardContent className="py-8 text-slate-400 text-sm">

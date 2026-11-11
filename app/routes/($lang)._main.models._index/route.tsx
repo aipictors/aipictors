@@ -19,6 +19,7 @@ import { Button } from "~/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { ClientOnly } from "remix-utils/client-only"
 import { UserModelCard } from "~/components/user-models/user-model-card"
+import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
 import { fetchPublicUserModels } from "~/lib/server/user-models.server"
 import { normalizeUserModel } from "~/lib/user-models/client"
 import {
@@ -137,6 +138,8 @@ export default function ModelsPage() {
           </div>
         </div>
       </section>
+
+      <UserModelPickupBanner className="mb-6" />
 
       <Tabs
         value={tab}

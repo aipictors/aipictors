@@ -3,6 +3,7 @@ import type { CSSProperties } from "react"
 import { Suspense } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { TabsContent } from "~/components/ui/tabs"
+import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
 import { HomePromotionWorksSection } from "~/components/work/work-promotion"
 import { useTranslation } from "~/hooks/use-translation"
 import { HomeAwardWorkSection } from "~/routes/($lang)._main._index/components/home-award-work-section"
@@ -90,6 +91,8 @@ export function HomeFeedTabContent(
               updateHomeSectionWorks("recommended", works)
             }
           />
+          {/* 週替わりのピックアップモデル（みんなのモデルの看板） */}
+          <UserModelPickupBanner />
           {/* ログインしている人だけ（未ログインでは中身が取れず、見出しだけ出ていた） */}
           {authContext.isLoggedIn && (
             <div style={offscreenSectionStyle(1000)}>

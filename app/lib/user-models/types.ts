@@ -254,3 +254,51 @@ export type UserModelReportsResult = {
 }
 
 export type UserModelModerationAction = "disable" | "enable"
+
+/**
+ * 週替わりのピックアップモデル（今週の分。月曜 00:00 JST 始まり）
+ */
+export type UserModelPickup = {
+  weekStart: string
+  weekEnd: string
+  modelId: string
+  source: "AUTO" | "ADMIN" | string
+  eventSlug: string | null
+  /** その週のお題のタグ（このタグの作品がランキングに入る） */
+  eventTag: string
+  /** 登録者の表示名 */
+  authorName: string | null
+  model: UserModel
+}
+
+export type UserModelPickupCandidate = {
+  modelId: string
+  name: string
+  userId: string
+  score: number
+  stats: {
+    generations: number
+    users: number
+    kind: string
+    uploaded: boolean
+    ageDays: number
+    samples: number
+    useCount: number
+  }
+  excludedReason: string | null
+}
+
+export type UserModelPickupAdminEntry = Omit<UserModelPickup, "authorName" | "model"> & {
+  score: number | null
+  stats: Record<string, unknown>
+  xDraft: { text: string; images: string[] } | null
+  decidedBy: string | null
+  model: UserModel | null
+}
+
+export type UserModelPickupAdmin = {
+  weekStart: string
+  currentWeekStart: string
+  pickups: UserModelPickupAdminEntry[]
+  candidates: UserModelPickupCandidate[]
+}

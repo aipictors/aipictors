@@ -1,3 +1,4 @@
+import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
 import {
   FolderCogIcon,
   ImageOffIcon,
@@ -291,6 +292,9 @@ export function GenerationModelSection(props: Props) {
           </div>
         </div>
       )}
+
+      {/* 週替わりのピックアップモデル（押すと選択される） */}
+      <UserModelPickupBanner variant="compact" />
     </section>
   )
 }

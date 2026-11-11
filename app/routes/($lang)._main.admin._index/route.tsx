@@ -95,8 +95,13 @@ const quickActions = [
   },
   {
     href: "/admin/user-models",
-    title: "モデル通報",
-    subtitle: "通報されたみんなのモデルを確認・非公開",
+    title: "みんなのモデル",
+    subtitle: "週替わりのピックアップ・X の下書き・通報されたモデル",
+  },
+  {
+    href: "/admin/user-events",
+    title: "ユーザー主催のお題",
+    subtitle: "通報されたお題を確認・非表示",
   },
 ] as const
 

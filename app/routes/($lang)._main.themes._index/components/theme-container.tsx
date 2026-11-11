@@ -26,6 +26,7 @@ import { cn } from "~/lib/utils"
 import { ThemeHero } from "~/routes/($lang)._main.themes._index/components/theme-hero"
 import { ThemeWeekStrip } from "~/routes/($lang)._main.themes._index/components/theme-week-strip"
 import { ThemeProposalCta } from "~/routes/($lang)._main.themes._index/components/theme-proposal-cta"
+import { UserHostedThemesSection } from "~/routes/($lang)._main.themes._index/components/user-hosted-themes-section"
 
 type RecentThemeProposal = {
   id: string
@@ -253,6 +254,8 @@ export function ThemeContainer(props: Props) {
       {!isSensitive && (
         <ThemeProposalCta proposals={props.recentThemeProposals ?? []} />
       )}
+
+      {!isSensitive && <UserHostedThemesSection />}
 
       <Tabs value={tab} onValueChange={handleTabChange} className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
