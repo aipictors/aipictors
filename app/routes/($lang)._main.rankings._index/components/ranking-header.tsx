@@ -6,6 +6,7 @@ import {
   ChevronRightIcon,
   ImageIcon,
   LayoutGridIcon,
+  SproutIcon,
   TrendingUpIcon,
   TrophyIcon,
   UsersIcon,
@@ -498,6 +499,18 @@ export function RankingHeader(props: Props) {
           >
             <TrophyIcon className="h-4 w-4" />
             {t("今日の人気作品", "Today's popular")}
+          </Link>
+          <Link
+            to={
+              pathnamePrefix.startsWith("/r/") ||
+              defaultPathnamePrefix.startsWith("/r/")
+                ? "/r/rankings/rookie"
+                : "/rankings/rookie"
+            }
+            className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-muted-foreground text-xs transition-all duration-200 hover:bg-background hover:text-foreground sm:px-4 sm:text-sm"
+          >
+            <SproutIcon className="h-4 w-4" />
+            {t("ルーキー", "Rookie")}
           </Link>
               </div>
             )}

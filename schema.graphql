@@ -4709,6 +4709,15 @@ type Query {
   """おすすめユーザ"""
   recommendedUsers(limit: Int!, offset: Int!): [UserNode!]!
 
+  """ルーキーランキング（登録から 90 日以内か、通常のランキングに入ったことがない人の作品。デイリー）。date を省くと最新の日"""
+  rookieWorkAwards(
+    """YYYY-MM-DD"""
+    date: String
+    isSensitive: Boolean
+    limit: Int!
+    offset: Int!
+  ): [WorkAwardNode!]!
+
   """1日以内の人気の投稿"""
   sensitiveHotPosts: [PostNode!]!
 

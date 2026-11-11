@@ -732,6 +732,15 @@ export const META: { [key: string]: MetaData } = {
       "100 popular AI illustrations picked every day at noon on Aipictors by likes. You can also browse past days.",
     isIndex: true,
   },
+  ROOKIE_RANKINGS: {
+    title: "ルーキーランキング",
+    enTitle: "Rookie Rankings",
+    description:
+      "Aipictors に来たばかりのクリエイターと、まだランキングに入ったことがないクリエイターの作品だけで競う、毎日のランキングです。",
+    enDescription:
+      "A daily ranking only for new creators and creators who have never made the regular rankings.",
+    isIndex: true,
+  },
   THEMES: {
     title: "お題",
     enTitle: "Themes",
@@ -953,6 +962,15 @@ export const META: { [key: string]: MetaData } = {
       "18歳以上の方向けのAIイラストのランキングです。毎日の人気作品を、作品とクリエイターの両方で見られます。",
     enDescription:
       "Rankings of adult AI illustrations for people aged 18 and over, by work and by creator.",
+    isIndex: true,
+  },
+  SENSITIVE_ROOKIE_RANKINGS: {
+    title: "R18 ルーキーランキング",
+    enTitle: "R18 Rookie Rankings",
+    description:
+      "18歳以上の方向けの、新しいクリエイターとまだランキングに入ったことがないクリエイターの作品だけで競う毎日のランキングです。",
+    enDescription:
+      "A daily adult ranking only for new creators and creators who have never made the regular rankings.",
     isIndex: true,
   },
   SENSITIVE_RANKINGS_DAY: {
