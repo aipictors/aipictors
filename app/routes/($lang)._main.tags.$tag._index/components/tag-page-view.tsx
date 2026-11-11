@@ -19,7 +19,7 @@ import { Button } from "~/components/ui/button"
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "~/lib/app/locale-router"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { TagActionOther } from "~/routes/($lang)._main.tags._index/components/tag-action-other"
 import type { loader } from "~/routes/($lang)._main.tags.$tag._index/route"
@@ -60,22 +60,35 @@ function Chip(props: {
   children: React.ReactNode
   className?: string
   replace?: boolean
-  rel?: string
+  /** リンクではなくボタンにする（クローラーにたどらせない並び替え・絞り込み） */
+  asButton?: boolean
 }) {
+  const className = cn(
+    "inline-flex h-9 shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-3.5 font-medium text-sm transition-colors",
+    props.isActive
+      ? "border-foreground bg-foreground text-background"
+      : "bg-background text-muted-foreground hover:border-foreground/40 hover:text-foreground",
+    props.className,
+  )
+  if (props.asButton) {
+    return (
+      <NavButton
+        to={props.to}
+        replace={props.replace}
+        aria-pressed={props.isActive ?? false}
+        className={className}
+      >
+        {props.children}
+      </NavButton>
+    )
+  }
   return (
     <Link
       to={props.to}
-      rel={props.rel}
       preventScrollReset
       replace={props.replace}
       aria-current={props.isActive ? "true" : undefined}
-      className={cn(
-        "inline-flex h-9 shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-3.5 font-medium text-sm transition-colors",
-        props.isActive
-          ? "border-foreground bg-foreground text-background"
-          : "bg-background text-muted-foreground hover:border-foreground/40 hover:text-foreground",
-        props.className,
-      )}
+      className={className}
     >
       {props.children}
     </Link>
@@ -86,6 +99,30 @@ function Chip(props: {
  * タグページ（/tags/:tag、/r/tags/:tag）
  * 並び順・絞り込み・ページは URL で持ち、サーバーで描画する（共有・検索エンジンのため）
  */
+/**
+ * 押すと移動するボタン。並び替え・絞り込みの組み合わせの URL を HTML のリンクに出さない
+ * （robots.txt を守らない自動ブラウザがリンクをたどって組み合わせを開き、そのたびに DB を読んでいた）
+ */
+function NavButton(
+  props: {
+    to: string
+    replace?: boolean
+    children: React.ReactNode
+  } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onClick">,
+) {
+  const { to, replace, children, ...rest } = props
+  const navigate = useNavigate()
+  return (
+    <button
+      type="button"
+      {...rest}
+      onClick={() => navigate(to, { replace, preventScrollReset: true })}
+    >
+      {children}
+    </button>
+  )
+}
+
 export function TagPageView(props: Props) {
   const t = useTranslation()
   const location = useLocation()
@@ -348,13 +385,11 @@ export function TagPageView(props: Props) {
           {(Object.keys(orderLabels) as TagPageOrderBy[]).map((orderBy) => {
             const isActive = query.orderBy === orderBy
             return (
-              <Link
+              <NavButton
                 key={orderBy}
                 role="tab"
                 aria-selected={isActive}
                 to={hrefWith({ orderBy, sort: "DESC" })}
-                rel="nofollow"
-                preventScrollReset
                 replace
                 className={cn(
                   "shrink-0 rounded-full px-3.5 py-2 font-medium text-sm transition-colors",
@@ -364,7 +399,7 @@ export function TagPageView(props: Props) {
                 )}
               >
                 {orderLabels[orderBy]}
-              </Link>
+              </NavButton>
             )
           })}
         </div>
@@ -376,7 +411,7 @@ export function TagPageView(props: Props) {
                   key={rating}
                   to={hrefWith({ rating })}
                   isActive={query.rating === rating}
-                  rel="nofollow"
+                  asButton
                   replace
                 >
                   {ratingLabels[rating]}
@@ -388,7 +423,7 @@ export function TagPageView(props: Props) {
           <Chip
             to={hrefWith({ hasPrompt: !query.hasPrompt })}
             isActive={query.hasPrompt}
-            rel="nofollow"
+            asButton
             replace
           >
             <SparklesIcon className="size-3.5" />
@@ -576,7 +611,10 @@ export function TagPageView(props: Props) {
                       className="flex min-w-0 items-center gap-2 rounded-lg p-1.5 hover:bg-muted"
                     >
                       <img
-                        src={toResizedImageUrl(withIconUrlFallback(creator.iconUrl), 96)}
+                        src={toResizedImageUrl(
+                          withIconUrlFallback(creator.iconUrl),
+                          96,
+                        )}
                         alt=""
                         loading="lazy"
                         className="size-7 shrink-0 rounded-full object-cover"

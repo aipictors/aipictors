@@ -4,8 +4,7 @@ import {
   parseTagPageQuery,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
 
-const parse = (search: string) =>
-  parseTagPageQuery(new URLSearchParams(search))
+const parse = (search: string) => parseTagPageQuery(new URLSearchParams(search))
 
 describe("isTagPageDefaultView", () => {
   test("並び替え・絞り込みのない一覧（ページ送りを含む）は既定の表示", () => {
