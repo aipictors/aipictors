@@ -1,5 +1,9 @@
 import { config } from "~/config"
-import { buildLocalePath, parseLocalePath } from "~/utils/locale-path"
+import {
+  buildLocalePath,
+  isJaOnlyPath,
+  parseLocalePath,
+} from "~/utils/locale-path"
 import { fetchPublicUserModels } from "~/lib/server/user-models.server"
 import type { UserModel } from "~/lib/user-models/types"
 import { isSuggestableSensitiveTag } from "~/utils/sensitive-tag-filter"
@@ -45,8 +49,8 @@ const escapeXml = (value: string) =>
  */
 const toLocalizedUrls = (url: SitemapUrl) => {
   const path = url.loc.slice(SITE_URL.length) || "/"
-  // R18 のページは英語の検索に広げない
-  if (parseLocalePath(path).isSensitive) {
+  // R18 のページ・日本語だけのページ（解説記事）は英語の検索に広げない
+  if (parseLocalePath(path).isSensitive || isJaOnlyPath(path)) {
     return [{ url, loc: url.loc, alternates: "" }]
   }
   const ja = `${SITE_URL}${buildLocalePath("ja", path)}`
@@ -130,8 +134,8 @@ export function xmlResponse(xml: string, maxAgeSeconds: number): Response {
   })
 }
 
-/** 2: 作品のサイトマップに投稿者のユーザーページを追加 */
-const SITEMAP_CACHE_VERSION = "3"
+/** 2: 作品のサイトマップに投稿者のユーザーページを追加 4: 呪文まとめ（prompts.xml）を追加 */
+const SITEMAP_CACHE_VERSION = "4"
 
 /**
  * Workers のキャッシュ（caches.default）を使ってレスポンスを使い回す

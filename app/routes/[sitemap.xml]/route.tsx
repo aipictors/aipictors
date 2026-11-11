@@ -16,6 +16,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const dates = listWorkSitemapDates(Math.floor(Date.now() / 1000))
     const sitemaps = [
       { loc: `${SITE_URL}/sitemaps/pages.xml` },
+      { loc: `${SITE_URL}/sitemaps/prompts.xml` },
       { loc: `${SITE_URL}/sitemaps/tags.xml` },
       { loc: `${SITE_URL}/sitemaps/sensitive-tags.xml` },
       { loc: `${SITE_URL}/sitemaps/models.xml` },

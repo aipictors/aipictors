@@ -19,6 +19,7 @@ import {
   parseTagPageQuery,
   toRatings,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
+import { findHubTag, toHubTagPath } from "~/lib/seo-hubs/seo-hub-catalog.server"
 import { createMeta } from "~/utils/create-meta"
 import { toListWorks } from "~/utils/to-list-works"
 
@@ -96,6 +97,9 @@ export async function loader(props: LoaderFunctionArgs) {
     isR18Fallback,
     relatedTags: isR18Fallback ? [] : collectRelatedTags(works, tagName),
     creators: isR18Fallback ? [] : collectCreators(works),
+    promptHubPath: findHubTag(tagName, false)
+      ? toHubTagPath(tagName, false)
+      : null,
   }
 }
 

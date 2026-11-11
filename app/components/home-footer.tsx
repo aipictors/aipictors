@@ -127,6 +127,9 @@ export function HomeFooter(): React.ReactNode {
               <Link className="hover:text-foreground" to={createLink("/tags")}>
                 {t("タグをさがす", "Browse tags")}
               </Link>
+              <Link className="hover:text-foreground" to={createLink("/prompts")}>
+                {t("呪文（プロンプト）まとめ", "Prompt collections")}
+              </Link>
               <Link
                 className="hover:text-foreground"
                 to={createLink("/models")}
@@ -249,6 +252,9 @@ export function HomeFooter(): React.ReactNode {
               </Link>
               <Link className="hover:text-foreground" to="/guideline">
                 {t("コインの利用に関するガイドライン", "Coin Guidelines")}
+              </Link>
+              <Link className="hover:text-foreground" to="/guides">
+                {t("作り方ガイド", "Guides (Japanese)")}
               </Link>
               <Link className="hover:text-foreground" to="/help">
                 {"FAQ"}

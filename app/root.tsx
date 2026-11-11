@@ -651,13 +651,17 @@ export function Layout(props: Props): React.ReactNode {
             }}
           />
         )}
-        <link rel="alternate" hrefLang="ja" href={alternateLocaleUrls.ja} />
-        <link rel="alternate" hrefLang="en" href={alternateLocaleUrls.en} />
-        <link
-          rel="alternate"
-          hrefLang="x-default"
-          href={alternateLocaleUrls.xDefault}
-        />
+        {!alternateLocaleUrls.isJaOnly && (
+          <>
+            <link rel="alternate" hrefLang="ja" href={alternateLocaleUrls.ja} />
+            <link rel="alternate" hrefLang="en" href={alternateLocaleUrls.en} />
+            <link
+              rel="alternate"
+              hrefLang="x-default"
+              href={alternateLocaleUrls.xDefault}
+            />
+          </>
+        )}
         {loaderData.isMaintenance && (
           <>
             <title>メンテナンス中 | Aipictors</title>

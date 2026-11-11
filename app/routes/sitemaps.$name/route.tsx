@@ -14,6 +14,14 @@ import {
   withEdgeCache,
   xmlResponse,
 } from "~/lib/server/sitemap.server"
+import { GUIDE_SUMMARIES } from "~/lib/guides/guide-summaries"
+import {
+  HUB_MIN_INDEX_WORKS,
+  listHubModels,
+  listHubTags,
+  toHubModelPath,
+  toHubTagPath,
+} from "~/lib/seo-hubs/seo-hub-catalog.server"
 
 /** よく見られる固定ページ */
 const STATIC_PAGES: {
@@ -67,6 +75,7 @@ const ONE_DAY = 24 * ONE_HOUR
  * - /sitemaps/tags.xml 人気のタグ
  * - /sitemaps/sensitive-tags.xml R18 の人気のタグ（検索に載せられるものだけ）
  * - /sitemaps/models.xml 公式モデル・みんなのモデル
+ * - /sitemaps/prompts.xml 呪文まとめ（キャラ・タグ・モデル、全年齢と R18）と解説記事
  * - /sitemaps/users.xml 作品のあるユーザーのページ（最近投稿した人・ランキング上位）
  * - /sitemaps/works-YYYY-MM-DD.xml その日（JST）に投稿された作品と、投稿した人のユーザーページ
  */
@@ -85,6 +94,41 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
           priority: page.priority,
         })),
       ),
+      ONE_DAY,
+    )
+  }
+
+  if (name === "prompts.xml") {
+    // 同梱の索引から作るので API は読まない。作品の少ないまとめは noindex なので載せない
+    const hubUrls = (isSensitive: boolean) => [
+      ...listHubTags(isSensitive)
+        .filter((tag) => tag.count >= HUB_MIN_INDEX_WORKS)
+        .map((tag) => ({
+          loc: `${SITE_URL}${toHubTagPath(tag.name, isSensitive)}`,
+          changefreq: "weekly" as const,
+          priority: isSensitive ? 0.4 : tag.kind === "tag" ? 0.6 : 0.7,
+        })),
+      ...listHubModels(isSensitive)
+        .filter((model) => model.count >= HUB_MIN_INDEX_WORKS)
+        .map((model) => ({
+          loc: `${SITE_URL}${toHubModelPath(model.name, isSensitive)}`,
+          changefreq: "weekly" as const,
+          priority: isSensitive ? 0.4 : 0.6,
+        })),
+    ]
+    return xmlResponse(
+      toUrlSetXml([
+        { loc: `${SITE_URL}/prompts`, changefreq: "weekly", priority: 0.8 },
+        { loc: `${SITE_URL}/guides`, changefreq: "monthly", priority: 0.6 },
+        ...GUIDE_SUMMARIES.map((guide) => ({
+          loc: `${SITE_URL}/guides/${guide.slug}`,
+          changefreq: "monthly" as const,
+          priority: 0.6,
+        })),
+        ...hubUrls(false),
+        { loc: `${SITE_URL}/r/prompts`, changefreq: "weekly", priority: 0.5 },
+        ...hubUrls(true),
+      ]),
       ONE_DAY,
     )
   }

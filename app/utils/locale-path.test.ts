@@ -25,3 +25,17 @@ describe("buildAlternateLocaleUrls", () => {
     ).toEndWith("/r/posts/2d?page=2")
   })
 })
+
+describe("日本語だけのページ（解説記事）", () => {
+  test("英語の URL でも canonical は日本語にし、hreflang を出さない", () => {
+    const urls = buildAlternateLocaleUrls("/en/guides/prompt-basics", SITE_URL)
+    expect(urls.isJaOnly).toBe(true)
+    expect(urls.canonical).toBe(`${SITE_URL}/guides/prompt-basics`)
+  })
+
+  test("ほかのページは今までどおり", () => {
+    const urls = buildAlternateLocaleUrls("/en/prompts/tags/猫耳", SITE_URL)
+    expect(urls.isJaOnly).toBe(false)
+    expect(urls.canonical).toBe(`${SITE_URL}/en/prompts/tags/猫耳`)
+  })
+})

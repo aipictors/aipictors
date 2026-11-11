@@ -13,6 +13,7 @@ import {
   fetchTagWorksCount,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-data"
 import { parseTagPageQuery } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
+import { findHubTag, toHubTagPath } from "~/lib/seo-hubs/seo-hub-catalog.server"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import {
   isFeaturableSensitiveTag,
@@ -69,6 +70,9 @@ export async function loader(props: LoaderFunctionArgs) {
         !/^r-?18g?$/i.test(related.name),
     ),
     creators: collectCreators(works),
+    promptHubPath: findHubTag(decodedTag, true)
+      ? toHubTagPath(decodedTag, true)
+      : null,
   }
 }
 

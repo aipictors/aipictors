@@ -141,8 +141,22 @@ const toCanonicalSearch = (search: string, pathname = "") => {
  */
 const SENSITIVE_ALIAS_PATHS = new Set(["/generation"])
 
+/**
+ * 日本語だけのページ（解説記事）。英語の URL でも開けるが、canonical は日本語の URL にし、
+ * hreflang で英語版を案内しない
+ */
+const JA_ONLY_PATH = /^\/guides(?:\/|$)/
+
+export const isJaOnlyPath = (pathname: string) => {
+  const { isSensitive, remainder } = parseLocalePath(pathname)
+  return !isSensitive && JA_ONLY_PATH.test(remainder)
+}
+
 const toCanonicalPath = (pathname: string) => {
   const { locale, isSensitive, remainder } = parseLocalePath(pathname)
+  if (isJaOnlyPath(pathname)) {
+    return buildLocalePath("ja", remainder)
+  }
   if (isSensitive && SENSITIVE_ALIAS_PATHS.has(remainder)) {
     return buildLocalePath(locale, remainder === "/" ? "/" : remainder)
   }
@@ -160,6 +174,8 @@ export const buildAlternateLocaleUrls = (
   const enPath = buildLocalePath("en", pathname)
 
   return {
+    /** 日本語だけのページ。hreflang を出さない */
+    isJaOnly: isJaOnlyPath(pathname),
     canonical:
       `${siteUrl}${normalizeLocalePath(pathname)}${normalizedSearch}`,
     ja: `${siteUrl}${jaPath}${normalizedSearch}`,

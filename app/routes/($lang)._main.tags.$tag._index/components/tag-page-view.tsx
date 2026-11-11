@@ -297,7 +297,15 @@ export function TagPageView(props: Props) {
                   )}
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {props.promptHubPath && (
+              <Button asChild variant="outline" className="rounded-full">
+                <Link to={props.promptHubPath}>
+                  <SparklesIcon className="mr-1 size-4" />
+                  {t("呪文まとめ", "Prompts")}
+                </Link>
+              </Button>
+            )}
             <TagFollowButton
               className="w-40"
               tag={props.tag}

@@ -73,6 +73,7 @@ const R18_TWIN_PATHS: RegExp[] = [
   /^\/models\/[^/]+\/?$/,
   /^\/series\/?$/,
   /^\/tags(?:\/[^/]+)?\/?$/,
+  /^\/prompts(?:\/(?:tags|models)\/[^/]+)?\/?$/,
   /^\/themes(?:\/|$)/,
   /^\/users\/[^/]+(?:\/(?:albums|badges|collections|notes|novels|posts|stickers|videos))?\/?$/,
 ]

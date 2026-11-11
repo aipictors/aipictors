@@ -13,6 +13,11 @@ import { type FragmentOf, readFragment } from "gql.tada"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
+import { Link } from "~/lib/app/locale-router"
+import {
+  findHubModel,
+  toHubModelPath,
+} from "~/lib/seo-hubs/seo-hub-catalog.server"
 import { config, META } from "~/config"
 import {
   AiModelArticle,
@@ -65,6 +70,9 @@ export async function loader(props: LoaderFunctionArgs) {
     page: page,
     isR15: r15,
     hasPrompt: hasPrompt,
+    promptHubPath: findHubModel(props.params.model, false)
+      ? toHubModelPath(props.params.model, false)
+      : null,
   }
 }
 
@@ -150,6 +158,19 @@ export default function ModelPage () {
           })),
         })}
       />
+      {data.promptHubPath && (
+        <p className="mb-3 text-sm">
+          <Link
+            to={data.promptHubPath}
+            className="text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          >
+            {t(
+              `${model.name}でよく使われる呪文（プロンプト）のまとめを見る`,
+              `See common prompts for ${model.name}`,
+            )}
+          </Link>
+        </p>
+      )}
       <AiModelArticle
         model={data.data}
         isMoreRatings={data.isR15}
