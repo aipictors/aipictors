@@ -6,9 +6,11 @@ import { cn } from "~/lib/utils"
 const BLUR_KEY = "r18Blur"
 const BLUR_EVENT = "aipictors:r18-blur"
 
+// 以前は localStorage に保存していて、一度押すとずっとぼかしたままになっていた。
+// ぼかしはそのタブの間だけ（sessionStorage）にし、古い保存は消す
 const readIsBlurred = () => {
   try {
-    return localStorage.getItem(BLUR_KEY) === "1"
+    return sessionStorage.getItem(BLUR_KEY) === "1"
   } catch {
     return false
   }
@@ -24,7 +26,7 @@ const subscribeBlur = (onChange: () => void) => {
 }
 
 /**
- * 作品のぼかし（端末ごとに記憶する）
+ * 作品のぼかし（タブを閉じるまで記憶する）
  */
 export function useSensitiveBlur() {
   const isBlurred = useSyncExternalStore(
@@ -35,7 +37,7 @@ export function useSensitiveBlur() {
 
   const setIsBlurred = (next: boolean) => {
     try {
-      localStorage.setItem(BLUR_KEY, next ? "1" : "0")
+      sessionStorage.setItem(BLUR_KEY, next ? "1" : "0")
     } catch {
       // 保存できなくても、このページの間は下の属性で効く
     }
@@ -47,7 +49,7 @@ export function useSensitiveBlur() {
 }
 
 /** ぼかしの設定を、最初の描画より前に反映する */
-const blurScript = `try{if(localStorage.getItem("${BLUR_KEY}")==="1")document.documentElement.setAttribute("data-r18-blur","")}catch(_){}`
+const blurScript = `try{localStorage.removeItem("${BLUR_KEY}");if(sessionStorage.getItem("${BLUR_KEY}")==="1")document.documentElement.setAttribute("data-r18-blur","")}catch(_){}`
 
 /** このページで使うので tailwind.css に入れず、HTML と一緒に届ける */
 const blurStyle = `html[data-r18-blur] #main-content img,html[data-r18-blur] #main-content video,html[data-r18-blur] [role="dialog"] img,html[data-r18-blur] [role="dialog"] video{filter:blur(24px);}`
