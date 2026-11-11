@@ -1,21 +1,33 @@
-import { EditorContent, useEditor } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
-import { Markdown } from "tiptap-markdown"
-import CodeBlock from "@tiptap/extension-code-block"
 import Blockquote from "@tiptap/extension-blockquote"
+import CodeBlock from "@tiptap/extension-code-block"
 import HorizontalRule from "@tiptap/extension-horizontal-rule"
 import Image from "@tiptap/extension-image"
-import { useEffect, useState } from "react"
-import { XIcon } from "lucide-react"
+import { EditorContent, useEditor } from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
+import { BookOpenIcon, XIcon } from "lucide-react"
+import { lazy, Suspense, useEffect, useState } from "react"
+import { Markdown } from "tiptap-markdown"
+import { useTranslation } from "~/hooks/use-translation"
+
+// 本のように読む画面は開いたときにだけ読み込む
+const BookReader = lazy(() =>
+  import("~/components/book-reader/book-reader").then((mod) => ({
+    default: mod.BookReader,
+  })),
+)
 
 type Props = {
   md?: string
   html?: string
   thumbnailUrl: string
   title: string
+  /** 渡したときだけ「本のように読む」を出す（しおり・続きの位置を作品ごとに覚える） */
+  workId?: string
+  workType?: "NOVEL" | "COLUMN"
+  authorName?: string
 }
 
-export function WorkMarkdownView (props: Props) {
+export function WorkMarkdownView(props: Props) {
   const editor = useEditor({
     editable: false,
     editorProps: {
@@ -63,6 +75,28 @@ export function WorkMarkdownView (props: Props) {
     }
   }, [props.md, editor])
 
+  const t = useTranslation()
+
+  // 本のように読む（見開き・縦書き・しおり）。?reader=1 で開いたときは本文が届いたら開く
+  const [isReaderOpen, setIsReaderOpen] = useState(false)
+  const [readerHtml, setReaderHtml] = useState("")
+  const canOpenReader = props.workId !== undefined && Boolean(props.md)
+
+  const openReader = () => {
+    if (!editor) return
+    setReaderHtml(editor.getHTML())
+    setIsReaderOpen(true)
+  }
+
+  useEffect(() => {
+    if (!canOpenReader || !editor || editor.getText() === "") return
+    if (new URLSearchParams(window.location.search).get("reader") === "1") {
+      setReaderHtml(editor.getHTML())
+      setIsReaderOpen(true)
+    }
+    // 本文が入った最初の 1 回だけ
+  }, [canOpenReader, editor, editor?.getText() === ""])
+
   // 挿絵（本文中の画像）をクリックしたら原寸で表示する
   const [zoomedImageUrl, setZoomedImageUrl] = useState<string | null>(null)
 
@@ -109,6 +143,53 @@ export function WorkMarkdownView (props: Props) {
           </div>
         </div>
       </div>
+      {canOpenReader && (
+        <button
+          type="button"
+          onClick={openReader}
+          className="group mt-4 flex w-full items-center gap-4 overflow-hidden rounded-lg border border-amber-900/15 bg-gradient-to-r from-[#fbf6ea] to-[#f3e8d0] px-4 py-3 text-left text-[#3b2f22] shadow-sm transition hover:shadow-md dark:border-amber-100/10 dark:from-[#2a2620] dark:to-[#211d18] dark:text-[#eadfcb]"
+        >
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#b4383a] text-white shadow transition group-hover:scale-105">
+            <BookOpenIcon className="size-5" />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="font-bold text-base">
+              {t("本のように読む", "Read like a book")}
+            </span>
+            <span className="text-xs opacity-75">
+              {props.workType === "NOVEL"
+                ? t(
+                    "縦書き・見開き・しおり・文字の大きさ。折りたたみスマホやタブレットは見開きで",
+                    "Vertical text, two-page spread, bookmarks and text size",
+                  )
+                : t(
+                    "見開き・しおり・文字の大きさ。タブレットや折りたたみスマホにも",
+                    "Two-page spread, bookmarks and text size",
+                  )}
+            </span>
+          </span>
+        </button>
+      )}
+      {isReaderOpen && props.workId !== undefined && (
+        <Suspense fallback={null}>
+          <BookReader
+            html={readerHtml}
+            title={props.title}
+            authorName={props.authorName}
+            coverUrl={props.thumbnailUrl}
+            workId={props.workId}
+            workType={props.workType ?? "NOVEL"}
+            onClose={() => {
+              setIsReaderOpen(false)
+              const url = new URL(window.location.href)
+              if (url.searchParams.has("reader")) {
+                url.searchParams.delete("reader")
+                window.history.replaceState(window.history.state, "", url)
+              }
+            }}
+          />
+        </Suspense>
+      )}
       {/* 本文中の挿絵は長辺 400px までで表示し、クリックで原寸（保存は長辺 1600px）を開く */}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: 画像のクリックだけを拾う（キーボードでは各画像を開かない） */}
       <div

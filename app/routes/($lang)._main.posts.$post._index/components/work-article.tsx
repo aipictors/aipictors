@@ -235,6 +235,9 @@ export function WorkArticle(props: Props) {
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
           title={t(props.work.title, props.work.enTitle || undefined)}
+          workId={props.work.id}
+          workType="COLUMN"
+          authorName={props.work.user?.name}
         />
       )}
       {props.work.type === "NOVEL" && (
@@ -242,6 +245,9 @@ export function WorkArticle(props: Props) {
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
           title={t(props.work.title, props.work.enTitle || undefined)}
+          workId={props.work.id}
+          workType="NOVEL"
+          authorName={props.work.user?.name}
         />
       )}
       <section className="mt-4 flex flex-col space-y-4">
