@@ -196,6 +196,8 @@ const fitPushedImages = (
   step: number,
   columnBlock: number,
   fontSize: number,
+  /** 次の見開きへ送った挿絵（前のページの余白へ戻さない） */
+  breaks: Record<number, number>,
 ): Record<number, number> => {
   const flowRect = flow.getBoundingClientRect()
   const images = Array.from(flow.querySelectorAll("img"))
@@ -207,6 +209,7 @@ const fitPushedImages = (
     )
   images.forEach((image, index) => {
     if (!image.complete || image.naturalWidth === 0) return
+    if (breaks[index] !== undefined) return
     const block = image.closest<HTMLElement>("[data-b]")
     // 段落の先頭にある挿絵だけ（前の段落の続きから見た余白を測る）
     // 間の空行（rb-blank）は次のページの頭に回ることがあるので飛ばす
@@ -231,9 +234,62 @@ const fitPushedImages = (
   return fits
 }
 
-/** 縮める挿絵に大きさを書き込む（ブロック方向。縦書きでは幅、横書きでは高さになる） */
-const applyImageFits = (html: string, fits: Record<number, number>): string => {
-  if (Object.keys(fits).length === 0) return html
+/**
+ * 前の挿絵と同じ画面（見開きなら左右 2 ページ、上下 2 段ならその 2 段）に載ってしまう挿絵の番号を返す。
+ * 挿絵を続けて並べて 1 枚ずつ見せる演出が、見開きで並んで先に見えてしまわないように、その挿絵は次の画面の頭へ送る
+ */
+const findSharedViewImage = (
+  flow: HTMLElement,
+  vertical: boolean,
+  step: number,
+  tiers: number,
+  spread: boolean,
+): number | null => {
+  const flowRect = flow.getBoundingClientRect()
+  const images = Array.from(flow.querySelectorAll("img"))
+  const viewOf = (image: HTMLImageElement) => {
+    const rect = image.getBoundingClientRect()
+    const column = Math.floor(
+      ((vertical ? rect.top - flowRect.top : rect.left - flowRect.left) + 1) /
+        step,
+    )
+    const contentPage = Math.floor(Math.max(0, column) / tiers)
+    // 見開きは扉（0）と本文の 1 ページ目が組になる
+    return spread ? Math.floor((contentPage + 1) / 2) : contentPage
+  }
+  let previousView: number | null = null
+  let previousBlock: Element | null = null
+  for (const [index, image] of images.entries()) {
+    const block = image.closest("[data-b]")
+    const view = viewOf(image)
+    // 同じ段落の中の挿絵どうしは分けられない
+    if (
+      previousView !== null &&
+      view === previousView &&
+      block !== null &&
+      block !== previousBlock &&
+      block.querySelector("img") === image
+    ) {
+      return index
+    }
+    previousView = view
+    previousBlock = block
+  }
+  return null
+}
+
+/**
+ * 縮める挿絵に大きさを書き込む（ブロック方向。縦書きでは幅、横書きでは高さになる）。
+ * 次の画面へ送る挿絵は、段落の前に改ページの印を入れる（数が多いほど先のページへ送る）
+ */
+export const applyImageFits = (
+  html: string,
+  fits: Record<number, number>,
+  breaks: Record<number, number> = {},
+): string => {
+  if (Object.keys(fits).length === 0 && Object.keys(breaks).length === 0) {
+    return html
+  }
   const doc = new DOMParser().parseFromString(
     `<!doctype html><body><div id="root">${html}</div></body>`,
     "text/html",
@@ -244,6 +300,16 @@ const applyImageFits = (html: string, fits: Record<number, number>): string => {
     const size = fits[index]
     if (size !== undefined) {
       image.setAttribute("style", `max-block-size: ${size}px`)
+    }
+    const count = breaks[index] ?? 0
+    const block = image.closest("[data-b]")
+    if (count > 0 && block !== null) {
+      for (let i = 0; i < count; i++) {
+        const marker = doc.createElement("div")
+        marker.className = "rb-view-break"
+        marker.setAttribute("aria-hidden", "true")
+        block.parentNode?.insertBefore(marker, block)
+      }
     }
   })
   return root.innerHTML
@@ -320,6 +386,7 @@ export function BookReader(props: Props): ReactNode {
   const measureRef = useRef<HTMLDivElement>(null)
   const [blockPages, setBlockPages] = useState<number[][]>([])
   const [imageFits, setImageFits] = useState<Record<number, number>>({})
+  const [imageBreaks, setImageBreaks] = useState<Record<number, number>>({})
   const [imageTick, setImageTick] = useState(0)
   const fontSize = FONT_SIZES[settings.fontSize] ?? 17
   // 縦書きで 1 行が長すぎる縦長のページ（開いた折りたたみスマホ・電子ペーパー端末・縦向きのタブレット）は、
@@ -341,6 +408,7 @@ export function BookReader(props: Props): ReactNode {
         geometry.textH,
         vertical,
         tiers,
+        geometry.spread,
         settings.fontSize,
         settings.font,
         settings.lineHeight,
@@ -351,10 +419,11 @@ export function BookReader(props: Props): ReactNode {
   if (fitsKey !== layoutKey) {
     setFitsKey(layoutKey)
     setImageFits({})
+    setImageBreaks({})
   }
   const html = useMemo(
-    () => applyImageFits(book.html, imageFits),
-    [book.html, imageFits],
+    () => applyImageFits(book.html, imageFits, imageBreaks),
+    [book.html, imageFits, imageBreaks],
   )
 
   useLayoutEffect(() => {
@@ -366,6 +435,7 @@ export function BookReader(props: Props): ReactNode {
       step,
       vertical ? geometry.textW : geometry.textH,
       fontSize,
+      imageBreaks,
     )
     const newFits = Object.entries(fits).filter(
       ([index]) => imageFits[Number(index)] === undefined,
@@ -375,6 +445,26 @@ export function BookReader(props: Props): ReactNode {
         ...current,
         ...Object.fromEntries(newFits),
       }))
+      return
+    }
+    // 1 回に 1 ページずつ送り、次の画面の頭に来るまで測り直す（上下 2 段・見開きでも最大 3 回）
+    const shared = findSharedViewImage(
+      flow,
+      vertical,
+      step,
+      tiers,
+      geometry.spread,
+    )
+    if (shared !== null && (imageBreaks[shared] ?? 0) < tiers * 2) {
+      setImageBreaks((current) => ({
+        ...current,
+        [shared]: (current[shared] ?? 0) + 1,
+      }))
+      setImageFits((current) => {
+        if (current[shared] === undefined) return current
+        const { [shared]: _, ...rest } = current
+        return rest
+      })
       return
     }
     setBlockPages(
@@ -390,6 +480,7 @@ export function BookReader(props: Props): ReactNode {
     tiers,
     html,
     imageFits,
+    imageBreaks,
     fontSize,
     settings.fontSize,
     settings.font,

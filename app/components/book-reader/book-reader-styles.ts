@@ -97,6 +97,8 @@ export const BOOK_READER_CSS = `
 .rb-flow > * { margin: 0; }
 .rb-flow p { margin: 0; }
 .rb-flow .rb-blank { display: block; block-size: calc(var(--rb-lh) * 1em); overflow: hidden; }
+/* 挿絵を次の画面へ送る改ページ。続けて並べると何もないページを 1 つ作る */
+.rb-flow .rb-view-break { display: block; block-size: 1px; break-before: column; }
 .rb-compact .rb-flow .rb-blank { block-size: calc(var(--rb-lh) * 0.42em); }
 .rb-flow h1, .rb-flow h2, .rb-flow h3, .rb-flow h4 {
   font-weight: 700;

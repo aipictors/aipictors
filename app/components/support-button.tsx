@@ -78,8 +78,8 @@ const calculateCustomCoinBreakdown = (
 
 /** よく使う枚数。プレミアムは 1 枚 10pt なので少なめ */
 const COIN_OPTIONS: Record<SupportCoinType, readonly number[]> = {
-  FREE: [10, 30, 100, 300],
-  PREMIUM: [1, 3, 10, 30],
+  FREE: [10, 20, 30, 100, 300],
+  PREMIUM: [1, 2, 3, 10, 30],
 }
 
 export function SupportButton({
@@ -464,7 +464,7 @@ export function SupportButton({
 
             {/* 枚数 */}
             <div className="space-y-2">
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 {COIN_OPTIONS[coinType].map((option) => (
                   <Button
                     key={option}
