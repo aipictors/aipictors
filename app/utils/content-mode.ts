@@ -60,6 +60,7 @@ export const isR18Path = (pathname: string) => {
 const R18_TWIN_PATHS: RegExp[] = [
   /^\/posts\/(?:2d|3d|2\.5d)\/?$/,
   /^\/(?:ai-)?rankings(?:\/|$)/,
+  /^\/popular\/?$/,
   /^\/albums\/?$/,
   /^\/search(?:\/|$)/,
   /^\/archive\/?$/,

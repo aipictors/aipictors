@@ -723,6 +723,15 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "View the ranking information of Aipictors",
     isIndex: true,
   },
+  POPULAR_WORKS: {
+    title: "今日の人気作品",
+    enTitle: "Today's Popular Works",
+    description:
+      "Aipictors で毎日お昼に選ばれる、いいねの多いAIイラストの人気作品 100 件です。過去の日の人気作品も見られます。",
+    enDescription:
+      "100 popular AI illustrations picked every day at noon on Aipictors by likes. You can also browse past days.",
+    isIndex: true,
+  },
   THEMES: {
     title: "お題",
     enTitle: "Themes",
@@ -926,6 +935,15 @@ export const META: { [key: string]: MetaData } = {
     description: "{{description}}",
     enDescription: "{{enDescription}}",
     image: "{{url}}",
+    isIndex: true,
+  },
+  SENSITIVE_POPULAR_WORKS: {
+    title: "今日のR18人気作品",
+    enTitle: "Today's Popular R18 Works",
+    description:
+      "18歳以上の方向けの、毎日お昼に選ばれるいいねの多いAIイラストの人気作品です。過去の日の人気作品も見られます。",
+    enDescription:
+      "Popular adult AI illustrations for people aged 18 and over, picked every day at noon by likes.",
     isIndex: true,
   },
   SENSITIVE_RANKINGS: {

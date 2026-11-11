@@ -25,6 +25,7 @@ export function HomeFooter(): React.ReactNode {
       "/posts",
       "/models",
       "/rankings",
+      "/popular",
       "/tags",
       "/themes",
       "/collections",
@@ -157,6 +158,12 @@ export function HomeFooter(): React.ReactNode {
                 to={createLink("/rankings")}
               >
                 {t("ランキング一覧", "All rankings")}
+              </Link>
+              <Link
+                className="hover:text-foreground"
+                to={createLink("/popular")}
+              >
+                {t("今日の人気作品", "Today's popular works")}
               </Link>
             </div>
           </div>

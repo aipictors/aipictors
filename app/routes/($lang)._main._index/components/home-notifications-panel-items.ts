@@ -1,4 +1,5 @@
 import type { NotificationPanelKind } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
+import { toPopularWorksPathFromNotification } from "~/utils/popular-works-date"
 
 export type PanelSupport = {
   freeCoinAmount: number
@@ -119,6 +120,11 @@ export const toRowHref = (item: PanelItem) => {
   }
   if (item.kind === "coin") {
     return item.message?.startsWith("🏅") ? "/achievements" : null
+  }
+  // 「今日の人気作品に選ばれました」は、その日の人気作品の一覧へ
+  if (item.kind === "award") {
+    const popularPath = toPopularWorksPathFromNotification(item.message)
+    if (popularPath !== null) return popularPath
   }
   return item.work ? `/posts/${item.work.id}` : null
 }

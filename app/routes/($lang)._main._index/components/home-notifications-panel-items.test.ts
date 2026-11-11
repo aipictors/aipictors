@@ -123,5 +123,14 @@ test("行のリンク先", () => {
   )
   expect(toRowHref(item({ kind: "coin", message: "コイン" }))).toBeNull()
   expect(toRowHref(item({ work }))).toBe("/posts/9")
+  expect(
+    toRowHref(
+      item({
+        kind: "award",
+        work,
+        message: "今日のR18人気作品に選ばれました！：2026-11-11",
+      }),
+    ),
+  ).toBe("/r/popular?date=2026-11-11")
   expect(toRowHref(item({}))).toBeNull()
 })

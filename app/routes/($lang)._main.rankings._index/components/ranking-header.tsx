@@ -7,6 +7,7 @@ import {
   ImageIcon,
   LayoutGridIcon,
   TrendingUpIcon,
+  TrophyIcon,
   UsersIcon,
 } from "lucide-react"
 import type React from "react"
@@ -21,6 +22,7 @@ import {
   getWeeksInMonth,
   getWeeklyRankingPeriod,
 } from "~/utils/get-weeks-in-month"
+import { toPopularWorksPath } from "~/utils/popular-works-date"
 
 type Props = {
   /** 上の見どころがない日付別のページでは、この日付をページの見出し（h1）にする */
@@ -488,6 +490,15 @@ export function RankingHeader(props: Props) {
             <TrendingUpIcon className="h-4 w-4" />
             {t("AIランキング", "AI Rankings")}
           </Button>
+          <Link
+            to={toPopularWorksPath({
+              isSensitive: pathnamePrefix.startsWith("/r/"),
+            })}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-muted-foreground text-xs transition-all duration-200 hover:bg-background hover:text-foreground sm:px-4 sm:text-sm"
+          >
+            <TrophyIcon className="h-4 w-4" />
+            {t("今日の人気作品", "Today's popular")}
+          </Link>
               </div>
             )}
 

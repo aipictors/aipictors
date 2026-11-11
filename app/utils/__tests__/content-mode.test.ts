@@ -8,6 +8,9 @@ import {
 describe("toR18Path", () => {
   test("一覧は /r のページへ", () => {
     expect(toR18Path("/rankings")).toBe("/r/rankings")
+    expect(toR18Path("/popular", "?date=2026-11-11")).toBe(
+      "/r/popular?date=2026-11-11",
+    )
     expect(toR18Path("/tags/猫", "?page=2")).toBe("/r/tags/猫?page=2")
     expect(toR18Path("/users/foo/posts")).toBe("/r/users/foo/posts")
     expect(toR18Path("/posts/2d")).toBe("/r/posts/2d")
