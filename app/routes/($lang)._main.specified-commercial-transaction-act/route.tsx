@@ -201,7 +201,7 @@ export default function SpecifiedCommercialTransactionActPage () {
           )}
         </p>
         <p className="text-muted-foreground text-xs">
-          {t("最終更新: 2024年12月", "Last updated: December 2024")}
+          {t("最終更新: 2026年11月", "Last updated: November 2026")}
         </p>
       </div>
     </div>
