@@ -13,7 +13,10 @@ import { TEXT_SEARCH_COUNT_LIMIT } from "~/lib/work-text-search-constants"
 type D1Like = {
   prepare(sql: string): {
     bind(...values: unknown[]): {
-      all<T = Record<string, unknown>>(): Promise<{ results: T[] }>
+      all<T = Record<string, unknown>>(): Promise<{
+        results: T[]
+        meta?: { rows_read?: number }
+      }>
       first<T = Record<string, unknown>>(): Promise<T | null>
     }
   }
@@ -94,6 +97,12 @@ const FTS_CACHE_TTL_SECONDS = 60 * 10
 const SHORT_WORD_SCAN_LIMIT = 40_000
 /** 2 文字以下の語の結果は 1 日使い回す（語・年齢・並び順の組み合わせが多く、6 時間だと読み直しが多い） */
 const LIKE_CACHE_TTL_SECONDS = 60 * 60 * 24
+/**
+ * 3 文字以上でも、よく出る語（タグにもある語など）は当たる作品が多く 1 回 20 万行以上読む。
+ * 読んだ行数が多かったものは全拠点共通の KV にも置き、6 時間使い回す
+ */
+const HEAVY_FTS_ROWS = 20_000
+const HEAVY_FTS_CACHE_TTL_SECONDS = 60 * 60 * 6
 
 type SearchCacheKv = {
   get(key: string): Promise<string | null>
@@ -121,19 +130,21 @@ async function cachedSearchIds(props: {
   key: string
   ttlSeconds: number
   kv?: SearchCacheKv | null
-  load: () => Promise<number[]>
+  /** false なら読んだ行数が多かったときだけ KV に置く */
+  shareAll: boolean
+  load: () => Promise<{ ids: number[]; rowsRead: number }>
 }): Promise<number[]> {
   const hash = await toSearchCacheKey(props.key)
   const url = `${SEARCH_CACHE_ORIGIN}${hash}`
   const cache = getEdgeCache()
-  const putEdge = async (body: string) => {
+  const putEdge = async (body: string, ttlSeconds = props.ttlSeconds) => {
     await cache
       ?.put(
         url,
         new Response(body, {
           headers: {
             "content-type": "application/json",
-            "cache-control": `public, max-age=${props.ttlSeconds}`,
+            "cache-control": `public, max-age=${ttlSeconds}`,
           },
         }),
       )
@@ -148,12 +159,20 @@ async function cachedSearchIds(props: {
     await putEdge(shared)
     return JSON.parse(shared) as number[]
   }
-  const ids = await props.load()
+  const { ids, rowsRead } = await props.load()
   const body = JSON.stringify(ids)
-  await putEdge(body)
-  await props.kv
-    ?.put(`text-search:${hash}`, body, { expirationTtl: props.ttlSeconds })
-    .catch(() => undefined)
+  const share = props.shareAll || rowsRead >= HEAVY_FTS_ROWS
+  const ttlSeconds = props.shareAll
+    ? props.ttlSeconds
+    : share
+      ? HEAVY_FTS_CACHE_TTL_SECONDS
+      : props.ttlSeconds
+  await putEdge(body, ttlSeconds)
+  if (share) {
+    await props.kv
+      ?.put(`text-search:${hash}`, body, { expirationTtl: ttlSeconds })
+      .catch(() => undefined)
+  }
   return ids
 }
 
@@ -244,11 +263,15 @@ async function queryWorkIdsByText(props: {
     const ids = await cachedSearchIds({
       key: JSON.stringify([query, props.rating, order]),
       ttlSeconds: useFts ? FTS_CACHE_TTL_SECONDS : LIKE_CACHE_TTL_SECONDS,
-      kv: useFts ? null : props.kv,
-      load: async () =>
-        (await selectIds(TEXT_SEARCH_COUNT_LIMIT, 0)).results.map(
-          (row) => row.id,
-        ),
+      kv: props.kv,
+      shareAll: !useFts,
+      load: async () => {
+        const result = await selectIds(TEXT_SEARCH_COUNT_LIMIT, 0)
+        return {
+          ids: result.results.map((row) => row.id),
+          rowsRead: result.meta?.rows_read ?? 0,
+        }
+      },
     })
     return {
       ids: ids
@@ -278,9 +301,7 @@ async function queryWorkIdsByText(props: {
     props.db
       .prepare(countSql)
       .bind(
-        ...(useFts
-          ? [match, match]
-          : [likePattern, likePattern, likePattern]),
+        ...(useFts ? [match, match] : [likePattern, likePattern, likePattern]),
         ...ratings,
       )
       .first<{ c: number }>(),

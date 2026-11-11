@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { searchWorkIdsByText } from "~/lib/server/work-text-search.server"
 
-const createDb = (ids: number[]) => {
+const createDb = (ids: number[], rowsRead = 0) => {
   const calls: { sql: string; params: unknown[] }[] = []
   const db = {
     prepare(sql: string) {
@@ -14,6 +14,7 @@ const createDb = (ids: number[]) => {
                 results: ids
                   .slice(0, params.at(-2) as number)
                   .map((id) => ({ id })),
+                meta: { rows_read: rowsRead },
               }
             },
             first: async () => {
@@ -67,5 +68,51 @@ describe("searchWorkIdsByText", () => {
     })
     expect(calls.length).toBe(0)
     expect(result.ids).toEqual([])
+  })
+
+  const createKv = () => {
+    const puts: { key: string; ttl: number }[] = []
+    return {
+      puts,
+      kv: {
+        get: async () => null,
+        put: async (
+          key: string,
+          _value: string,
+          options: { expirationTtl: number },
+        ) => {
+          puts.push({ key, ttl: options.expirationTtl })
+        },
+      },
+    }
+  }
+
+  test("3 文字以上で読んだ行数が多い結果は KV に 6 時間置く", async () => {
+    const { db } = createDb([1, 2, 3], 240_000)
+    const { kv, puts } = createKv()
+    await searchWorkIdsByText({
+      db,
+      kv: kv as never,
+      query: "女の子",
+      rating: "G",
+      offset: 0,
+      limit: 30,
+    })
+    expect(puts.length).toBe(1)
+    expect(puts[0].ttl).toBe(60 * 60 * 6)
+  })
+
+  test("3 文字以上で読んだ行数が少ない結果は KV に置かない", async () => {
+    const { db } = createDb([1, 2, 3], 120)
+    const { kv, puts } = createKv()
+    await searchWorkIdsByText({
+      db,
+      kv: kv as never,
+      query: "ねこの絵",
+      rating: "G",
+      offset: 0,
+      limit: 30,
+    })
+    expect(puts.length).toBe(0)
   })
 })
