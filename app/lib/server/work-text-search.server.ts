@@ -80,16 +80,20 @@ export function searchWorkIdsByText(props: {
 }
 
 /**
- * 検索結果の ID をデータセンターの中で使い回す（FTS は 10 分、LIKE の全件読みは 6 時間）。
+ * 検索結果の ID をデータセンターの中で使い回す（FTS は 10 分、LIKE の全件読みは 1 日）。
  * 2 文字以下の語は trigram が使えず、1 回で約 66 万行読む（一覧と件数でページごとに 2 回）。
  * 上位をまとめて 1 回だけ読み、件数とどのページもその結果から返す。
  * LIKE の結果は全拠点共通の KV にも置く（読み直しが高いので）。
  */
 const SEARCH_CACHE_ORIGIN = "https://www.aipictors.com/__cache/text-search/"
 const FTS_CACHE_TTL_SECONDS = 60 * 10
-/** 2 文字以下の語で読む作品の上限（いいね順・投稿日順の上位。全件は 1 回 71 万行） */
-const SHORT_WORD_SCAN_LIMIT = 150_000
-const LIKE_CACHE_TTL_SECONDS = 60 * 60 * 6
+/**
+ * 2 文字以下の語で読む作品の上限（いいね順・投稿日順の上位。全件は 1 回 71 万行）。
+ * 結果は上位 1,000 件までなので、上位 4 万件から探せば足りる（15 万件だと語ごとに 1 回 15 万行で、search DB の読み取りの 6 割だった）
+ */
+const SHORT_WORD_SCAN_LIMIT = 40_000
+/** 2 文字以下の語の結果は 1 日使い回す（語・年齢・並び順の組み合わせが多く、6 時間だと読み直しが多い） */
+const LIKE_CACHE_TTL_SECONDS = 60 * 60 * 24
 
 type SearchCacheKv = {
   get(key: string): Promise<string | null>
