@@ -32,6 +32,7 @@ import { StarRating } from "~/routes/($lang).generation._index/components/task-v
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { GenerationParameters } from "~/routes/($lang).generation._index/types/generation-parameters"
 import type { GenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
+import { toPngParametersText } from "~/routes/($lang).generation._index/utils/png-generation-parameters"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 
@@ -251,6 +252,9 @@ export function GenerationTaskSheetViewContent(props: Props) {
                           src={normalizedImageUrl}
                           data-original={normalizedImageUrl}
                           data-original-raw={originalImageUrl}
+                          data-generation-parameters={toPngParametersText(
+                            props.task,
+                          )}
                           onError={(event) => {
                             const img = event.currentTarget
                             const raw = img.dataset.originalRaw

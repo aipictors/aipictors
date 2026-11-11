@@ -1,5 +1,6 @@
 import { fetchPublic } from "~/utils/fetch-public"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+import { addPngParameters } from "~/routes/($lang).generation._index/utils/png-generation-parameters"
 import { parseCompletedAt } from "~/routes/($lang).generation._index/utils/to-generation-image-file-names"
 
 interface FileObject {
@@ -105,9 +106,15 @@ export async function createImageFiles(props: Props) {
 
       const arrayBuffer = await blob.arrayBuffer()
 
+      const data = new Uint8Array(arrayBuffer)
+      const parameters = imageElement.dataset.generationParameters
+
       files.push({
         name: `${imageId}.${extension}`,
-        data: new Uint8Array(arrayBuffer),
+        data:
+          extension === "png" && parameters
+            ? addPngParameters(data, parameters)
+            : data,
         extension,
         completedAt: parseCompletedAt(imageElement.dataset.completedAt),
       })

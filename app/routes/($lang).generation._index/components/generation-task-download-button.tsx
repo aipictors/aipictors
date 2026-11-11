@@ -46,6 +46,7 @@ export function GenerationTaskDownloadButton(props: Props) {
       await downloadImageFile(name, resolvedUrl, {
         skipGenerativeNormalization: isFallback,
         convertToPng: true,
+        pngParameters: imageElement?.dataset.generationParameters,
       })
     } finally {
       setIsDownloading(false)

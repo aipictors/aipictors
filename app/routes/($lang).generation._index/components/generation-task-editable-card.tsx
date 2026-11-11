@@ -26,6 +26,7 @@ import { ReservedGenerationCard } from "~/routes/($lang).generation._index/compo
 import { useGenerationMaintenance } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
+import { toPngParametersText } from "~/routes/($lang).generation._index/utils/png-generation-parameters"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 const convertToGeminiImageSize = (sizeType: string) => {
@@ -437,6 +438,7 @@ export function GenerationTaskEditableCard(props: Props) {
             data-original={normalizedImageUrl}
             data-original-raw={originalImageUrl}
             data-completed-at={props.task.completedAt ?? undefined}
+            data-generation-parameters={toPngParametersText(props.task)}
             data-generative-raw={
               context.config.taskListThumbnailType === "light"
                 ? originalThumbnailUrl

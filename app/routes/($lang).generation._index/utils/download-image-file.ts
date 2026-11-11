@@ -1,4 +1,5 @@
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+import { addPngParameters } from "~/routes/($lang).generation._index/utils/png-generation-parameters"
 import { fetchPublic } from "~/utils/fetch-public"
 
 type Options = {
@@ -12,6 +13,18 @@ type Options = {
    * 互換用（旧オプション名）。convertToPng と同義。
    */
   convertJpegToPng?: boolean
+  /**
+   * PNG に生成情報が無いときに書き込む生成情報（convertToPng のときだけ使う）
+   */
+  pngParameters?: string
+}
+
+async function withPngParameters(blob: Blob, parameters?: string) {
+  if (!parameters) return blob
+  const data = new Uint8Array(await blob.arrayBuffer())
+  return new Blob([new Uint8Array(addPngParameters(data, parameters))], {
+    type: "image/png",
+  })
 }
 
 function sanitizeFileName(name: string): string {
@@ -132,24 +145,29 @@ export const downloadImageFile = async (
       const safeBaseName = sanitizeFileName(_fileName || "file")
 
       // Prefer HEAD to avoid buffering already-PNG files.
-      try {
-        const headResponse = await fetchPublic(downloadUrl, { method: "HEAD" })
-        const contentType = (headResponse.headers.get("content-type") ?? "")
-          .toLowerCase()
-          .trim()
+      // 生成情報を書き込むときは中身が要るので GET する
+      if (!options?.pngParameters) {
+        try {
+          const headResponse = await fetchPublic(downloadUrl, {
+            method: "HEAD",
+          })
+          const contentType = (headResponse.headers.get("content-type") ?? "")
+            .toLowerCase()
+            .trim()
 
-        if (contentType.startsWith("image/png")) {
-          const linkNode = createDownloadLink(
-            downloadUrl,
-            `${safeBaseName}.png`,
-          )
-          document.body.appendChild(linkNode)
-          linkNode.click()
-          document.body.removeChild(linkNode)
-          return
+          if (contentType.startsWith("image/png")) {
+            const linkNode = createDownloadLink(
+              downloadUrl,
+              `${safeBaseName}.png`,
+            )
+            document.body.appendChild(linkNode)
+            linkNode.click()
+            document.body.removeChild(linkNode)
+            return
+          }
+        } catch {
+          // If HEAD fails, continue with GET-based detection.
         }
-      } catch {
-        // If HEAD fails, continue with GET-based detection.
       }
 
       const response = await fetchPublic(downloadUrl)
@@ -159,7 +177,9 @@ export const downloadImageFile = async (
 
       // Already PNG: just download with .png filename
       if (mime.startsWith("image/png")) {
-        const objectUrl = URL.createObjectURL(blob)
+        const objectUrl = URL.createObjectURL(
+          await withPngParameters(blob, options?.pngParameters),
+        )
         const linkNode = createDownloadLink(objectUrl, `${safeBaseName}.png`)
         document.body.appendChild(linkNode)
         linkNode.click()
@@ -174,7 +194,9 @@ export const downloadImageFile = async (
           ? await convertJpegBlobToPngBlob(blob)
           : await convertImageBlobToPngBlob(blob)
 
-        const objectUrl = URL.createObjectURL(pngBlob)
+        const objectUrl = URL.createObjectURL(
+          await withPngParameters(pngBlob, options?.pngParameters),
+        )
         const linkNode = createDownloadLink(objectUrl, `${safeBaseName}.png`)
         document.body.appendChild(linkNode)
         linkNode.click()
