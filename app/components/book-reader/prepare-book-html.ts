@@ -6,7 +6,8 @@
  * - 中身のない段落（Web 小説によくある 1 行空け）に rb-blank を付ける（詰めるかどうかを設定で選べる）
  * - ルビ「|漢字《かんじ》」「｜漢字《かんじ》」と傍点「《《強調》》」を ruby / em にする
  *   （「輸送船《エルシオン》」のように縦棒のない《》は作者が括弧として使っていることが多いので変えない）
- * - 縦書きで横に並べる 2 桁の半角数字・「!?」「!!」に rb-tcy を付ける（縦中横。横書きでは何もしない）
+ * - 縦書きで横に並べる 1〜2 桁の半角数字・「!?」「!!」・半角の「!」「?」に rb-tcy を付ける（縦中横。横書きでは何もしない）
+ * - 3 桁以上の半角数字は rb-up を付けて 1 字ずつ立てる（そのままだと横に寝る）
  * - “ ” は縦書きだと横向きのまま間が空くので、縦書きでは〝 〟を出す（両方を入れて CSS でどちらかを隠す）
  * - 目次の候補（見出しと、「◆」「第1話」などで始まる短い段落）を集める
  * - 「[改ページ]」「［改ページ］」「[newpage]」を改ページの印（rb-page-break）にする。次の段落は次のページから始まる。
@@ -37,7 +38,8 @@ export type PreparedBook = {
 const RUBY_PATTERN = /[|｜]([^|｜《》\n]{1,30})《([^《》\n]{1,30})》/g
 const EMPHASIS_PATTERN = /《《([^《》\n]{1,60})》》/g
 const TCY_PATTERN =
-  /(?<![0-9A-Za-z.,:])([0-9]{2}|[!?！？]{2})(?![0-9A-Za-z.,:])/g
+  /(?<![0-9A-Za-z.,:])([0-9]{1,2}|[!?！？]{2}|[!?])(?![0-9A-Za-z.,:])/g
+const UPRIGHT_DIGITS_PATTERN = /(?<![0-9A-Za-z.,:])([0-9]{3,})(?![0-9A-Za-z.,:])/g
 const QUOTE_PATTERN = /[“”]/g
 const HEADING_LIKE_PATTERN =
   /^(?:[◆◇■□●○★☆▼▽※【]|第[0-9０-９一二三四五六七八九十百千]+[話章節部幕]|(?:プロローグ|エピローグ|序章|終章|幕間)(?:\s|　|$))/
@@ -165,6 +167,12 @@ const decorateTextNode = (doc: Document, textNode: Text) => {
   pieces = splitBy(pieces, TCY_PATTERN, (match) => {
     const span = doc.createElement("span")
     span.className = "rb-tcy"
+    span.textContent = match[1] ?? ""
+    return span
+  })
+  pieces = splitBy(pieces, UPRIGHT_DIGITS_PATTERN, (match) => {
+    const span = doc.createElement("span")
+    span.className = "rb-up"
     span.textContent = match[1] ?? ""
     return span
   })

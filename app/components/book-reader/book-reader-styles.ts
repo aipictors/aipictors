@@ -178,6 +178,7 @@ export const BOOK_READER_CSS = `
   -webkit-text-combine: horizontal;
   text-combine-upright: all;
 }
+.rb-vertical .rb-flow .rb-up { text-orientation: upright; }
 .rb-vertical .rb-flow pre { writing-mode: horizontal-tb; max-block-size: 100%; overflow: hidden; }
 .rb-eink * { transition: none !important; animation: none !important; }
 @keyframes rb-turn-forward {

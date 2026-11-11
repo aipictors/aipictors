@@ -27,13 +27,22 @@ describe("prepareBookHtml", () => {
     expect(book.html).toContain('<em class="rb-dots">本当に</em>')
   })
 
-  test("2 桁の数字と !? を縦中横にし、3 桁以上や英数字の続きは変えない", () => {
+  test("2 桁の数字と !? を縦中横にし、3 桁以上は 1 字ずつ立て、英数字の続きは変えない", () => {
     const book = prepareBookHtml("<p>12月25日、AU-07M、2026年!?</p>")
     expect(book.html).toContain('<span class="rb-tcy">12</span>月')
     expect(book.html).toContain('<span class="rb-tcy">25</span>日')
     expect(book.html).toContain("AU-07M")
-    expect(book.html).toContain("2026年")
+    expect(book.html).toContain('<span class="rb-up">2026</span>年')
     expect(book.html).toContain('<span class="rb-tcy">!?</span>')
+  })
+
+  test("1 桁の数字と半角の ! ? も縦中横にして寝ないようにする", () => {
+    const book = prepareBookHtml("<p>第1話、残り3人、本当?うそ!、A1、v1.5</p>")
+    expect(book.html).toContain('第<span class="rb-tcy">1</span>話')
+    expect(book.html).toContain('残り<span class="rb-tcy">3</span>人')
+    expect(book.html).toContain('本当<span class="rb-tcy">?</span>うそ<span class="rb-tcy">!</span>')
+    expect(book.html).toContain("A1")
+    expect(book.html).toContain("v1.5")
   })
 
   test("“ ” は横書き用と縦書き用（〝 〟）の両方を入れ、文字数と書き出しには数えない", () => {
