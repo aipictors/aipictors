@@ -9,6 +9,7 @@ import { lazy, Suspense, useEffect, useState } from "react"
 import { Markdown } from "tiptap-markdown"
 import { HidePageBreakMarkers } from "~/components/book-reader/hide-page-break-markers"
 import { useTranslation } from "~/hooks/use-translation"
+import { keepMarkdownIndent } from "~/utils/keep-markdown-indent"
 import { repairMarkdownHardBreaks } from "~/utils/repair-markdown-hard-breaks"
 
 // 本のように読む画面は開いたときにだけ読み込む
@@ -71,13 +72,15 @@ export function WorkMarkdownView(props: Props) {
       // 「[改ページ]」は本のように読む画面のための印なので、ここでは出さない
       HidePageBreakMarkers,
     ],
-    content: repairMarkdownHardBreaks(props.md ?? ""),
+    content: keepMarkdownIndent(repairMarkdownHardBreaks(props.md ?? "")),
   })
 
   // 同じタブで別の作品へ移動すると同じエディタのまま md だけ変わるので、毎回入れ直す
   useEffect(() => {
     if (editor) {
-      editor.commands.setContent(repairMarkdownHardBreaks(props.md || ""))
+      editor.commands.setContent(
+        keepMarkdownIndent(repairMarkdownHardBreaks(props.md || "")),
+      )
     }
   }, [props.md, editor])
 
