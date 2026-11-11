@@ -61,6 +61,8 @@ const COLUMN_GAP = 48
 /** 1 分あたりに読む文字数（残り時間の目安） */
 const CHARS_PER_MINUTE = 500
 const HINT_KEY = "aipictors:book-reader:hint-shown"
+/** 縦書きの 1 行がこの字数を超えるページは上下 2 段に組む */
+const TIER_CHARS = 52
 
 type Geometry = {
   spread: boolean
@@ -184,6 +186,69 @@ const measureBlockPages = (
   return result
 }
 
+/**
+ * 前のページに入りきらず次のページへ送られた挿絵のうち、前のページに十分な余白があるものを、余白に収まる大きさにする
+ * （送られたままだと前のページの後ろ半分が空白になる）。返すのは挿絵の番号と、縮める大きさ（ブロック方向の px）
+ */
+const fitPushedImages = (
+  flow: HTMLElement,
+  vertical: boolean,
+  step: number,
+  columnBlock: number,
+  fontSize: number,
+): Record<number, number> => {
+  const flowRect = flow.getBoundingClientRect()
+  const images = Array.from(flow.querySelectorAll("img"))
+  const fits: Record<number, number> = {}
+  const columnOf = (rect: DOMRect) =>
+    Math.floor(
+      ((vertical ? rect.top - flowRect.top : rect.left - flowRect.left) + 1) /
+        step,
+    )
+  images.forEach((image, index) => {
+    if (!image.complete || image.naturalWidth === 0) return
+    const block = image.closest<HTMLElement>("[data-b]")
+    // 段落の先頭にある挿絵だけ（前の段落の続きから見た余白を測る）
+    // 間の空行（rb-blank）は次のページの頭に回ることがあるので飛ばす
+    let previous = block?.previousElementSibling ?? null
+    while (previous?.classList.contains("rb-blank")) {
+      previous = previous.previousElementSibling
+    }
+    if (!block || !previous || block.firstElementChild !== image) return
+    const imageRect = image.getBoundingClientRect()
+    const previousRects = Array.from(previous.getClientRects())
+    const last = previousRects.at(-1)
+    if (!last) return
+    const imageColumn = columnOf(imageRect)
+    const previousColumn = columnOf(last)
+    if (imageColumn !== previousColumn + 1) return
+    const free = vertical
+      ? last.left - flowRect.left
+      : flowRect.top + columnBlock - last.bottom
+    const size = Math.floor(free - fontSize * 1.6 - 6)
+    if (size >= Math.max(90, columnBlock * 0.2)) fits[index] = size
+  })
+  return fits
+}
+
+/** 縮める挿絵に大きさを書き込む（ブロック方向。縦書きでは幅、横書きでは高さになる） */
+const applyImageFits = (html: string, fits: Record<number, number>): string => {
+  if (Object.keys(fits).length === 0) return html
+  const doc = new DOMParser().parseFromString(
+    `<!doctype html><body><div id="root">${html}</div></body>`,
+    "text/html",
+  )
+  const root = doc.getElementById("root")
+  if (root === null) return html
+  Array.from(root.querySelectorAll("img")).forEach((image, index) => {
+    const size = fits[index]
+    if (size !== undefined) {
+      image.setAttribute("style", `max-block-size: ${size}px`)
+    }
+  })
+  return root.innerHTML
+}
+
 export function BookReader(props: Props): ReactNode {
   const t = useTranslation()
   const { onClose } = props
@@ -254,21 +319,78 @@ export function BookReader(props: Props): ReactNode {
 
   const measureRef = useRef<HTMLDivElement>(null)
   const [blockPages, setBlockPages] = useState<number[][]>([])
+  const [imageFits, setImageFits] = useState<Record<number, number>>({})
   const [imageTick, setImageTick] = useState(0)
-  const step = geometry
-    ? (vertical ? geometry.textH : geometry.textW) + COLUMN_GAP
-    : 1
+  const fontSize = FONT_SIZES[settings.fontSize] ?? 17
+  // 縦書きで 1 行が長すぎる縦長のページ（開いた折りたたみスマホ・電子ペーパー端末・縦向きのタブレット）は、
+  // 新書のように上下 2 段に組む（1 段が 1 つの段組みの列。ページは列を上から 2 つ並べたもの）
+  const tiers =
+    geometry !== null && vertical && geometry.textH / fontSize > TIER_CHARS
+      ? 2
+      : 1
+  const tierGap = Math.round(fontSize * 2)
+  const columnH = geometry
+    ? Math.floor((geometry.textH - tierGap * (tiers - 1)) / tiers)
+    : 0
+  const step = geometry ? (vertical ? columnH : geometry.textW) + COLUMN_GAP : 1
+
+  // 組み方が変わったら挿絵の縮め方を測り直す
+  const layoutKey = geometry
+    ? [
+        geometry.textW,
+        geometry.textH,
+        vertical,
+        tiers,
+        settings.fontSize,
+        settings.font,
+        settings.lineHeight,
+        settings.compactBlankLines,
+      ].join(":")
+    : ""
+  const [fitsKey, setFitsKey] = useState(layoutKey)
+  if (fitsKey !== layoutKey) {
+    setFitsKey(layoutKey)
+    setImageFits({})
+  }
+  const html = useMemo(
+    () => applyImageFits(book.html, imageFits),
+    [book.html, imageFits],
+  )
 
   useLayoutEffect(() => {
     const flow = measureRef.current
     if (flow === null || geometry === null) return
-    setBlockPages(measureBlockPages(flow, vertical, step))
+    const fits = fitPushedImages(
+      flow,
+      vertical,
+      step,
+      vertical ? geometry.textW : geometry.textH,
+      fontSize,
+    )
+    const newFits = Object.entries(fits).filter(
+      ([index]) => imageFits[Number(index)] === undefined,
+    )
+    if (newFits.length > 0) {
+      setImageFits((current) => ({
+        ...current,
+        ...Object.fromEntries(newFits),
+      }))
+      return
+    }
+    setBlockPages(
+      measureBlockPages(flow, vertical, step).map((columns) => [
+        ...new Set(columns.map((column) => Math.floor(column / tiers))),
+      ]),
+    )
     // fontTick・imageTick は書体・挿絵が届いたあとに測り直すためのもの
   }, [
     geometry,
     vertical,
     step,
-    book.html,
+    tiers,
+    html,
+    imageFits,
+    fontSize,
     settings.fontSize,
     settings.font,
     settings.lineHeight,
@@ -289,7 +411,7 @@ export function BookReader(props: Props): ReactNode {
     return () => {
       for (const image of images) image.removeEventListener("load", onLoad)
     }
-  }, [book.html])
+  }, [html])
 
   useEffect(() => {
     const onFontsDone = () => setFontTick((tick) => tick + 1)
@@ -460,6 +582,8 @@ export function BookReader(props: Props): ReactNode {
   /* ───── 表示の切り替え ───── */
 
   const [chromeVisible, setChromeVisible] = useState(true)
+  /** タップした挿絵を画面いっぱいに出す */
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null)
   const [panel, setPanel] = useState<Panel>(null)
   const [hint, setHint] = useState(false)
 
@@ -523,11 +647,12 @@ export function BookReader(props: Props): ReactNode {
       const target = event.target as HTMLElement | null
       if (target?.closest("input, select, textarea")) return
       if (event.key === "Escape") {
-        if (panel !== null) setPanel(null)
+        if (zoomedImage !== null) setZoomedImage(null)
+        else if (panel !== null) setPanel(null)
         else onClose()
         return
       }
-      if (panel !== null) return
+      if (panel !== null || zoomedImage !== null) return
       const forwardKeys = [
         forwardIsLeft ? "ArrowLeft" : "ArrowRight",
         "ArrowDown",
@@ -556,7 +681,16 @@ export function BookReader(props: Props): ReactNode {
     }
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [panel, forwardIsLeft, goForward, goBackward, goTo, totalPages, onClose])
+  }, [
+    panel,
+    zoomedImage,
+    forwardIsLeft,
+    goForward,
+    goBackward,
+    goTo,
+    totalPages,
+    onClose,
+  ])
 
   const pointerRef = useRef<{ x: number; y: number; time: number } | null>(null)
 
@@ -589,6 +723,11 @@ export function BookReader(props: Props): ReactNode {
     }
     if (Math.abs(dx) > 10 || Math.abs(dy) > 10) return
     if (Date.now() - start.time > 600) return
+    const target = event.target as HTMLElement | null
+    if (target instanceof HTMLImageElement && target.closest(".rb-flow")) {
+      setZoomedImage(target.currentSrc || target.src)
+      return
+    }
     const rect = stageRef.current?.getBoundingClientRect()
     if (!rect) return
     const ratio = (event.clientX - rect.left) / rect.width
@@ -650,7 +789,6 @@ export function BookReader(props: Props): ReactNode {
   /* ───── 描画 ───── */
 
   const lineHeight = LINE_HEIGHTS[settings.lineHeight][settings.writing]
-  const fontSize = FONT_SIZES[settings.fontSize] ?? 17
 
   const rootStyle = {
     "--rb-font": FONT_FAMILIES[settings.font],
@@ -663,6 +801,7 @@ export function BookReader(props: Props): ReactNode {
     "--rb-page": palette.page,
     "--rb-text-w": geometry ? `${geometry.textW}px` : "100%",
     "--rb-text-h": geometry ? `${geometry.textH}px` : "100%",
+    "--rb-col-h": geometry ? `${columnH}px` : "100%",
     "--rb-page-block": geometry
       ? `${vertical ? geometry.textW : geometry.textH}px`
       : "100%",
@@ -676,8 +815,8 @@ export function BookReader(props: Props): ReactNode {
       ? {
           writingMode: "vertical-rl",
           width: geometry.textW,
-          height: geometry.textH,
-          columnWidth: geometry.textH,
+          height: columnH,
+          columnWidth: columnH,
           columnGap: COLUMN_GAP,
         }
       : {
@@ -768,27 +907,33 @@ export function BookReader(props: Props): ReactNode {
             >
               {currentChapter && side !== "left" ? currentChapter : props.title}
             </div>
-            <div
-              className="absolute overflow-hidden"
-              style={{
-                left: geometry.padX,
-                top: geometry.padTop,
-                width: geometry.textW,
-                height: geometry.textH,
-              }}
-            >
-              <div
-                className="rb-flow"
-                style={{
-                  ...flowStyle,
-                  transform: vertical
-                    ? `translateY(${-contentPage * step}px)`
-                    : `translateX(${-contentPage * step}px)`,
-                }}
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: tiptap のスキーマを通した本文を DOM で組み直したもの（prepare-book-html.ts）
-                dangerouslySetInnerHTML={{ __html: book.html }}
-              />
-            </div>
+            {(tiers === 2 ? [0, 1] : [0]).map((tier) => {
+              const column = contentPage * tiers + tier
+              return (
+                <div
+                  key={tier}
+                  className="absolute overflow-hidden"
+                  style={{
+                    left: geometry.padX,
+                    top: geometry.padTop + tier * (columnH + tierGap),
+                    width: geometry.textW,
+                    height: vertical ? columnH : geometry.textH,
+                  }}
+                >
+                  <div
+                    className="rb-flow"
+                    style={{
+                      ...flowStyle,
+                      transform: vertical
+                        ? `translateY(${-column * step}px)`
+                        : `translateX(${-column * step}px)`,
+                    }}
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: tiptap のスキーマを通した本文を DOM で組み直したもの（prepare-book-html.ts）
+                    dangerouslySetInnerHTML={{ __html: html }}
+                  />
+                </div>
+              )
+            })}
             <div
               className="absolute right-0 left-0 flex"
               style={{
@@ -881,7 +1026,7 @@ export function BookReader(props: Props): ReactNode {
             className="rb-flow"
             style={{ ...flowStyle, position: "relative" }}
             // biome-ignore lint/security/noDangerouslySetInnerHtml: 上と同じ本文
-            dangerouslySetInnerHTML={{ __html: book.html }}
+            dangerouslySetInnerHTML={{ __html: html }}
           />
         </div>
       )}
@@ -1128,6 +1273,33 @@ export function BookReader(props: Props): ReactNode {
               </span>
             )}
           </div>
+        </div>
+      )}
+
+      {zoomedImage !== null && (
+        <div
+          className="rb-fade-in absolute inset-0 z-[60] flex items-center justify-center bg-black/90 p-2"
+          role="dialog"
+          aria-label={t("挿絵を大きく表示", "Image")}
+          onClick={() => setZoomedImage(null)}
+          onKeyUp={(event) => {
+            if (event.key === "Escape") setZoomedImage(null)
+          }}
+        >
+          <img
+            src={zoomedImage}
+            alt=""
+            className="h-full w-full object-contain"
+          />
+          <button
+            type="button"
+            className="absolute top-3 right-3 rounded-full bg-black/60 p-2 text-white"
+            style={{ marginTop: "env(safe-area-inset-top)" }}
+            onClick={() => setZoomedImage(null)}
+            aria-label={t("閉じる", "Close")}
+          >
+            <XIcon className="size-6" />
+          </button>
         </div>
       )}
 

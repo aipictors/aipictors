@@ -161,8 +161,9 @@ export const BOOK_READER_CSS = `
   break-inside: avoid;
   border-radius: 3px;
 }
-.rb-horizontal .rb-flow img { max-height: calc(var(--rb-text-h) - 1.5em); max-width: 100%; }
-.rb-vertical .rb-flow img { max-width: calc(var(--rb-text-w) - 1.5em); max-height: 100%; }
+/* 挿絵はページの 6 割まで（ページ全体の大きさだと前の文章と同じページに入らず、手前のページが空く。タップで拡大できる） */
+.rb-horizontal .rb-flow img { max-height: calc(var(--rb-text-h) * 0.6); max-width: 100%; cursor: zoom-in; }
+.rb-vertical .rb-flow img { max-width: calc(var(--rb-text-w) * 0.6); max-height: calc(var(--rb-col-h) - 1em); cursor: zoom-in; }
 .rb-vertical .rb-flow { text-orientation: mixed; }
 .rb-vertical .rb-flow .rb-tcy {
   -webkit-text-combine: horizontal;
