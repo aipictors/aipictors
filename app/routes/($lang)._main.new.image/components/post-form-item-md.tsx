@@ -21,6 +21,9 @@ export function PostFormItemMd (props: Props) {
           value={props.value ?? ""}
           onChange={(value) => props.onChange(value)}
         />
+        <p className="text-muted-foreground text-xs">
+          ルビは「|漢字《かんじ》」、傍点は「《《強調》》」。「[改ページ]」だけの行を入れると、本のように読む画面でそこから次のページになります（作品ページには表示されません）
+        </p>
       </CardContent>
     </Card>
   )

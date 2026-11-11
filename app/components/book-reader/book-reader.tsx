@@ -281,6 +281,35 @@ const findSharedViewImage = (
 }
 
 /**
+ * 上下 2 段で組むとき、改ページの印の次の段落が下の段から始まってしまったものの番号（改ページの印の何番目か）を返す。
+ * 改ページは次のページの上の段から始めたいので、その印のあとに改ページを足す
+ */
+const findMisalignedPageBreak = (
+  flow: HTMLElement,
+  vertical: boolean,
+  step: number,
+  tiers: number,
+): number | null => {
+  if (tiers < 2) return null
+  const flowRect = flow.getBoundingClientRect()
+  const markers = Array.from(flow.querySelectorAll(":scope > .rb-page-break"))
+  for (const [index, marker] of markers.entries()) {
+    let next = marker.nextElementSibling
+    while (next?.classList.contains("rb-view-break")) {
+      next = next.nextElementSibling
+    }
+    const rect = next?.getClientRects()[0]
+    if (!rect) continue
+    const column = Math.floor(
+      ((vertical ? rect.top - flowRect.top : rect.left - flowRect.left) + 1) /
+        step,
+    )
+    if (column % tiers !== 0) return index
+  }
+  return null
+}
+
+/**
  * 縮める挿絵に大きさを書き込む（ブロック方向。縦書きでは幅、横書きでは高さになる）。
  * 次の画面へ送る挿絵は、段落の前に改ページの印を入れる（数が多いほど先のページへ送る）
  */
@@ -288,8 +317,14 @@ export const applyImageFits = (
   html: string,
   fits: Record<number, number>,
   breaks: Record<number, number> = {},
+  /** 改ページの印（何番目か）のあとに足す改ページの数 */
+  pageBreakExtras: Record<number, number> = {},
 ): string => {
-  if (Object.keys(fits).length === 0 && Object.keys(breaks).length === 0) {
+  if (
+    Object.keys(fits).length === 0 &&
+    Object.keys(breaks).length === 0 &&
+    Object.keys(pageBreakExtras).length === 0
+  ) {
     return html
   }
   const doc = new DOMParser().parseFromString(
@@ -314,6 +349,17 @@ export const applyImageFits = (
       }
     }
   })
+  Array.from(root.querySelectorAll(":scope > .rb-page-break")).forEach(
+    (pageBreak, index) => {
+      const count = pageBreakExtras[index] ?? 0
+      for (let i = 0; i < count; i++) {
+        const marker = doc.createElement("div")
+        marker.className = "rb-view-break"
+        marker.setAttribute("aria-hidden", "true")
+        pageBreak.parentNode?.insertBefore(marker, pageBreak.nextSibling)
+      }
+    },
+  )
   return root.innerHTML
 }
 
@@ -389,6 +435,9 @@ export function BookReader(props: Props): ReactNode {
   const [blockPages, setBlockPages] = useState<number[][]>([])
   const [imageFits, setImageFits] = useState<Record<number, number>>({})
   const [imageBreaks, setImageBreaks] = useState<Record<number, number>>({})
+  const [pageBreakExtras, setPageBreakExtras] = useState<
+    Record<number, number>
+  >({})
   const [imageTick, setImageTick] = useState(0)
   const fontSize = FONT_SIZES[settings.fontSize] ?? 17
   // 縦書きで 1 行が長すぎる縦長のページ（開いた折りたたみスマホ・電子ペーパー端末・縦向きのタブレット）は、
@@ -422,10 +471,11 @@ export function BookReader(props: Props): ReactNode {
     setFitsKey(layoutKey)
     setImageFits({})
     setImageBreaks({})
+    setPageBreakExtras({})
   }
   const html = useMemo(
-    () => applyImageFits(book.html, imageFits, imageBreaks),
-    [book.html, imageFits, imageBreaks],
+    () => applyImageFits(book.html, imageFits, imageBreaks, pageBreakExtras),
+    [book.html, imageFits, imageBreaks, pageBreakExtras],
   )
 
   useLayoutEffect(() => {
@@ -469,6 +519,14 @@ export function BookReader(props: Props): ReactNode {
       })
       return
     }
+    const misaligned = findMisalignedPageBreak(flow, vertical, step, tiers)
+    if (misaligned !== null && (pageBreakExtras[misaligned] ?? 0) < tiers + 1) {
+      setPageBreakExtras((current) => ({
+        ...current,
+        [misaligned]: (current[misaligned] ?? 0) + 1,
+      }))
+      return
+    }
     setBlockPages(
       measureBlockPages(flow, vertical, step).map((columns) => [
         ...new Set(columns.map((column) => Math.floor(column / tiers))),
@@ -483,6 +541,7 @@ export function BookReader(props: Props): ReactNode {
     html,
     imageFits,
     imageBreaks,
+    pageBreakExtras,
     fontSize,
     settings.fontSize,
     settings.font,

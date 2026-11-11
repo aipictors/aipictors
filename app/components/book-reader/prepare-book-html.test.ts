@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test"
-import { prepareBookHtml } from "~/components/book-reader/prepare-book-html"
+import {
+  isPageBreakText,
+  prepareBookHtml,
+} from "~/components/book-reader/prepare-book-html"
 
 describe("prepareBookHtml", () => {
   test("段落に通し番号を振り、空の段落に印を付け、最後の空行は消す", () => {
@@ -57,6 +60,19 @@ describe("prepareBookHtml", () => {
       { block: 1, text: "◆プロローグ『喪失の蒼穹』", level: 3 },
       { block: 3, text: "第2話 出会い", level: 3 },
     ])
+  })
+
+  test("［改ページ］・[newpage] だけの行は改ページの印にし、文字数に数えない。最後の印は消す", () => {
+    const book = prepareBookHtml(
+      "<p>一</p><p>［改ページ］</p><p>二</p><p> [newpage] </p><p>三</p><p>[改ページ]</p>",
+    )
+    expect(book.html).toBe(
+      '<p data-b="0">一</p><p data-b="1" class="rb-page-break" aria-hidden="true"></p><p data-b="2">二</p>' +
+        '<p data-b="3" class="rb-page-break" aria-hidden="true"></p><p data-b="4">三</p>',
+    )
+    expect(book.charCount).toBe(3)
+    expect(isPageBreakText("改ページ")).toBe(false)
+    expect(isPageBreakText("[改ページ]です")).toBe(false)
   })
 
   test("コードの中は変えない", () => {

@@ -7,6 +7,7 @@ import StarterKit from "@tiptap/starter-kit"
 import { BookOpenIcon, XIcon } from "lucide-react"
 import { lazy, Suspense, useEffect, useState } from "react"
 import { Markdown } from "tiptap-markdown"
+import { isPageBreakText } from "~/components/book-reader/prepare-book-html"
 import { useTranslation } from "~/hooks/use-translation"
 
 // 本のように読む画面は開いたときにだけ読み込む
@@ -74,6 +75,14 @@ export function WorkMarkdownView(props: Props) {
   useEffect(() => {
     if (editor) {
       editor.commands.setContent(props.md || "")
+      // 「[改ページ]」の行は本のように読む画面のための印なので、ここでは出さない
+      for (const paragraph of Array.from(
+        editor.view.dom.querySelectorAll("p"),
+      )) {
+        if (isPageBreakText(paragraph.textContent ?? "")) {
+          paragraph.style.display = "none"
+        }
+      }
     }
   }, [props.md, editor])
 

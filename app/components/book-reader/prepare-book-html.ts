@@ -9,6 +9,7 @@
  * - 縦書きで横に並べる 2 桁の半角数字・「!?」「!!」に rb-tcy を付ける（縦中横。横書きでは何もしない）
  * - “ ” は縦書きだと横向きのまま間が空くので、縦書きでは〝 〟を出す（両方を入れて CSS でどちらかを隠す）
  * - 目次の候補（見出しと、「◆」「第1話」などで始まる短い段落）を集める
+ * - 「[改ページ]」「［改ページ］」「[newpage]」だけの段落を改ページの印（rb-page-break）にする。次の段落は次のページから始まる
  *
  * 文字列の置き換えではなく DOM を組み立てるので、本文の文字が HTML として解釈されることはない
  */
@@ -39,6 +40,12 @@ const TCY_PATTERN =
 const QUOTE_PATTERN = /[“”]/g
 const HEADING_LIKE_PATTERN =
   /^(?:[◆◇■□●○★☆▼▽※【]|第[0-9０-９一二三四五六七八九十百千]+[話章節部幕]|(?:プロローグ|エピローグ|序章|終章|幕間)(?:\s|　|$))/
+
+const PAGE_BREAK_PATTERN = /^[\[［]\s*(?:改ページ|改頁|newpage)\s*[\]］]$/i
+
+/** 改ページの印として書かれた行か（作品ページでは隠し、本のように読む画面では改ページにする） */
+export const isPageBreakText = (text: string) =>
+  PAGE_BREAK_PATTERN.test(text.trim())
 
 const SKIP_TAGS = new Set(["CODE", "PRE", "A", "RUBY", "RT", "SCRIPT", "STYLE"])
 
@@ -175,8 +182,11 @@ export const prepareBookHtml = (html: string): PreparedBook => {
     }
   }
 
-  // 最後の空の段落は余白のページを作るだけなので消す
-  while (root.lastElementChild && isBlank(root.lastElementChild)) {
+  // 最後の空の段落と改ページの印は余白のページを作るだけなので消す
+  const isTrailing = (element: Element) =>
+    isBlank(element) ||
+    (element.tagName === "P" && isPageBreakText(element.textContent ?? ""))
+  while (root.lastElementChild && isTrailing(root.lastElementChild)) {
     root.lastElementChild.remove()
   }
 
@@ -190,6 +200,15 @@ export const prepareBookHtml = (html: string): PreparedBook => {
 
   for (const element of Array.from(root.children)) {
     element.setAttribute("data-b", String(block))
+    if (element.tagName === "P" && isPageBreakText(element.textContent ?? "")) {
+      element.textContent = ""
+      element.className = "rb-page-break"
+      element.setAttribute("aria-hidden", "true")
+      blockCharOffsets.push(charCount)
+      blockExcerpts.push("")
+      block += 1
+      continue
+    }
     const text = textOf(element).replace(/\s+/g, " ").trim()
     if (isBlank(element)) {
       element.classList.add("rb-blank")
