@@ -25,7 +25,7 @@ import { useLoaderData } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { BuildingIcon, InfoIcon, FileTextIcon } from "lucide-react"
+import { BuildingIcon, InfoIcon, FileTextIcon, MapPinIcon } from "lucide-react"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(
@@ -54,8 +54,13 @@ export async function loader(_props: LoaderFunctionArgs) {
     },
     {
       title: "住所",
-      content: "大阪府大阪市北区梅田１丁目２番２号大阪駅前第２ビル１２－１２",
-      enContent: "1-2-2 Osaka Station Building 2 12-12 Umeda Kita-ku",
+      content: "〒530-0001 大阪府大阪市北区梅田1丁目2番2号 大阪駅前第2ビル12-12",
+      enContent: "12-12 Osaka Ekimae Daini Building, 1-2-2 Umeda, Kita-ku, Osaka 530-0001, Japan",
+    },
+    {
+      title: "電話番号",
+      content: "080-4766-8781（平日 10:00〜17:00、土日祝日は休み）",
+      enContent: "+81-80-4766-8781 (Weekdays 10:00-17:00 JST, closed on weekends and holidays)",
     },
     {
       title: "代表取締役",
@@ -141,6 +146,53 @@ export default function SpecifiedCommercialTransactionActPage () {
               </TableBody>
             </Table>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* 所在地（建物の外観と地図） */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-2">
+            <MapPinIcon className="h-5 w-5 text-red-600 dark:text-red-400" />
+            <CardTitle className="text-xl">{t("所在地", "Location")}</CardTitle>
+          </div>
+          <CardDescription>
+            {t(
+              "〒530-0001 大阪府大阪市北区梅田1丁目2番2号 大阪駅前第2ビル12-12",
+              "12-12 Osaka Ekimae Daini Building, 1-2-2 Umeda, Kita-ku, Osaka",
+            )}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 md:grid-cols-2">
+          <figure className="space-y-1">
+            <img
+              src="/images/company/osaka-ekimae-2nd-building.jpg"
+              alt={t("大阪駅前第2ビルの外観", "Osaka Ekimae Daini Building")}
+              width={960}
+              height={720}
+              loading="lazy"
+              className="aspect-[4/3] w-full rounded-md object-cover"
+            />
+            <figcaption className="text-muted-foreground text-xs">
+              {t("大阪駅前第2ビルの外観", "Osaka Ekimae Daini Building")}
+              {" / "}
+              <a
+                href="https://commons.wikimedia.org/wiki/File:Osaka_Ekimae_2nd_Building_2025.JPG"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                {"Photo: Fotointheworld, CC BY 4.0"}
+              </a>
+            </figcaption>
+          </figure>
+          <iframe
+            title={t("所在地の地図", "Map")}
+            src="https://www.google.com/maps?q=%E5%A4%A7%E9%98%AA%E9%A7%85%E5%89%8D%E7%AC%AC2%E3%83%93%E3%83%AB%20%E5%A4%A7%E9%98%AA%E5%BA%9C%E5%A4%A7%E9%98%AA%E5%B8%82%E5%8C%97%E5%8C%BA%E6%A2%85%E7%94%B01-2-2&output=embed"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="aspect-[4/3] w-full rounded-md border-0"
+          />
         </CardContent>
       </Card>
 
