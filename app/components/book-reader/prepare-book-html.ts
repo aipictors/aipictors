@@ -7,6 +7,7 @@
  * - ルビ「|漢字《かんじ》」「｜漢字《かんじ》」と傍点「《《強調》》」を ruby / em にする
  *   （「輸送船《エルシオン》」のように縦棒のない《》は作者が括弧として使っていることが多いので変えない）
  * - 縦書きで横に並べる 2 桁の半角数字・「!?」「!!」に rb-tcy を付ける（縦中横。横書きでは何もしない）
+ * - “ ” は縦書きだと横向きのまま間が空くので、縦書きでは〝 〟を出す（両方を入れて CSS でどちらかを隠す）
  * - 目次の候補（見出しと、「◆」「第1話」などで始まる短い段落）を集める
  *
  * 文字列の置き換えではなく DOM を組み立てるので、本文の文字が HTML として解釈されることはない
@@ -35,6 +36,7 @@ const RUBY_PATTERN = /[|｜]([^|｜《》\n]{1,30})《([^《》\n]{1,30})》/g
 const EMPHASIS_PATTERN = /《《([^《》\n]{1,60})》》/g
 const TCY_PATTERN =
   /(?<![0-9A-Za-z.,:])([0-9]{2}|[!?！？]{2})(?![0-9A-Za-z.,:])/g
+const QUOTE_PATTERN = /[“”]/g
 const HEADING_LIKE_PATTERN =
   /^(?:[◆◇■□●○★☆▼▽※【]|第[0-9０-９一二三四五六七八九十百千]+[話章節部幕]|(?:プロローグ|エピローグ|序章|終章|幕間)(?:\s|　|$))/
 
@@ -76,7 +78,7 @@ const splitBy = (
 
 const decorateTextNode = (doc: Document, textNode: Text) => {
   const text = textNode.data
-  if (!/[|｜《!?！？0-9]/.test(text)) return
+  if (!/[|｜《!?！？0-9“”]/.test(text)) return
 
   let pieces: Piece[] = [{ kind: "text", text }]
   pieces = splitBy(pieces, EMPHASIS_PATTERN, (match) => {
@@ -98,6 +100,17 @@ const decorateTextNode = (doc: Document, textNode: Text) => {
     span.className = "rb-tcy"
     span.textContent = match[1] ?? ""
     return span
+  })
+  pieces = splitBy(pieces, QUOTE_PATTERN, (match) => {
+    const fragment = doc.createDocumentFragment()
+    const horizontal = doc.createElement("span")
+    horizontal.className = "rb-qh"
+    horizontal.textContent = match[0]
+    const vertical = doc.createElement("span")
+    vertical.className = "rb-qv"
+    vertical.textContent = match[0] === "“" ? "〝" : "〟"
+    fragment.append(horizontal, vertical)
+    return fragment
   })
 
   if (pieces.length === 1 && pieces[0]?.kind === "text") return
@@ -128,6 +141,16 @@ const decorate = (doc: Document, root: Element) => {
   const textNodes: Text[] = []
   collectTextNodes(root, textNodes)
   for (const textNode of textNodes) decorateTextNode(doc, textNode)
+}
+
+/** 縦書き用に足した〝 〟を除いた文字（文字数・しおりの書き出しに使う） */
+const textOf = (element: Element) => {
+  if (element.querySelector(".rb-qv") === null) return element.textContent ?? ""
+  const clone = element.cloneNode(true) as Element
+  for (const quote of Array.from(clone.querySelectorAll(".rb-qv"))) {
+    quote.remove()
+  }
+  return clone.textContent ?? ""
 }
 
 const isBlank = (element: Element) =>
@@ -167,7 +190,7 @@ export const prepareBookHtml = (html: string): PreparedBook => {
 
   for (const element of Array.from(root.children)) {
     element.setAttribute("data-b", String(block))
-    const text = (element.textContent ?? "").replace(/\s+/g, " ").trim()
+    const text = textOf(element).replace(/\s+/g, " ").trim()
     if (isBlank(element)) {
       element.classList.add("rb-blank")
     }

@@ -141,7 +141,10 @@ export const BOOK_READER_CSS = `
   break-inside: avoid;
 }
 .rb-flow code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88em; }
+/* サイト共通の CSS が hr に height: 0 を付けるので戻す（縦書きでは height が行の長さになり、＊が 1 文字ずつ折り返して本文に重なる） */
 .rb-flow hr {
+  height: auto;
+  width: auto;
   border: none;
   margin-block: 1.2em;
   text-align: center;
@@ -165,6 +168,7 @@ export const BOOK_READER_CSS = `
 .rb-horizontal .rb-flow img { max-height: calc(var(--rb-text-h) * 0.6); max-width: 100%; cursor: zoom-in; }
 .rb-vertical .rb-flow img { max-width: calc(var(--rb-text-w) * 0.6); max-height: calc(var(--rb-col-h) - 1em); cursor: zoom-in; }
 .rb-vertical .rb-flow { text-orientation: mixed; }
+.rb-horizontal .rb-flow .rb-qv, .rb-vertical .rb-flow .rb-qh { display: none; }
 .rb-vertical .rb-flow .rb-tcy {
   -webkit-text-combine: horizontal;
   text-combine-upright: all;

@@ -33,6 +33,15 @@ describe("prepareBookHtml", () => {
     expect(book.html).toContain('<span class="rb-tcy">!?</span>')
   })
 
+  test("“ ” は横書き用と縦書き用（〝 〟）の両方を入れ、文字数と書き出しには数えない", () => {
+    const book = prepareBookHtml("<p>「“浄化”！」</p>")
+    expect(book.html).toBe(
+      '<p data-b="0">「<span class="rb-qh">“</span><span class="rb-qv">〝</span>浄化<span class="rb-qh">”</span><span class="rb-qv">〟</span>！」</p>',
+    )
+    expect(book.charCount).toBe(7)
+    expect(book.blockExcerpts).toEqual(["「“浄化”！」"])
+  })
+
   test("本文の文字は HTML として解釈しない（< > はそのまま文字）", () => {
     const book = prepareBookHtml("<p>|&lt;b&gt;《&lt;i&gt;》</p>")
     expect(book.html).toContain("<ruby>&lt;b&gt;<rt>&lt;i&gt;</rt></ruby>")
