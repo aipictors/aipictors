@@ -16,7 +16,11 @@ export const normalizeTagQuery = (value?: string | null) => {
     return null
   }
 
-  const normalized = value.trim().replace(/^#+/, "")
+  // 全角の「＃」も外す（スマホの入力では全角になりやすい）
+  const normalized = value
+    .trim()
+    .replace(/^[#＃]+/, "")
+    .trim()
   return normalized.length > 0 ? normalized : null
 }
 

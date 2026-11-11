@@ -12,7 +12,7 @@ import { Input } from "~/components/ui/input"
 import { config } from "~/config"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
-import { useNavigate } from "~/lib/app/locale-router"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { SearchFacetFilters } from "~/routes/($lang)._main.search/components/search-facet-filters"
 import { SearchModeTabs } from "~/routes/($lang)._main.search/components/search-mode-tabs"
 import { SearchOrderFilters } from "~/routes/($lang)._main.search/components/search-order-filters"
@@ -142,6 +142,8 @@ export default function SearchRoute() {
               pagePrefix={pagePrefix}
             />
 
+            <ReadingWorksHint query={data.searchQuery} />
+
             {data.searchQuery && data.textWorksCount !== null && (
               <SearchModeTabs
                 data={data}
@@ -223,4 +225,58 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     },
     ...(isSensitiveMode ? [{ name: "rating", content: "adult" }] : []),
   ]
+}
+
+/** 小説・コラムは「小説」タグが付いていない作品が多いので、種類ごとの一覧へ案内する */
+const READING_WORKS_HINTS = [
+  {
+    words: ["小説", "ノベル", "web小説", "novel", "novels"],
+    path: "/novels",
+    label: ["小説の作品をすべて見る", "See all novels"],
+    note: [
+      "タグに「小説」が付いていない小説も、こちらにまとめて並んでいます",
+      "Includes novels without the tag",
+    ],
+  },
+  {
+    words: ["コラム", "column", "columns"],
+    path: "/notes",
+    label: ["コラムの作品をすべて見る", "See all columns"],
+    note: [
+      "タグに「コラム」が付いていないコラムも、こちらにまとめて並んでいます",
+      "Includes columns without the tag",
+    ],
+  },
+] as const
+
+function ReadingWorksHint(props: { query: string | null }) {
+  const t = useTranslation()
+  const query = props.query?.trim().toLowerCase()
+  if (!query) {
+    return null
+  }
+  const hint = READING_WORKS_HINTS.find((item) =>
+    (item.words as readonly string[]).includes(query),
+  )
+  if (!hint) {
+    return null
+  }
+  return (
+    <Link
+      to={hint.path}
+      className="mb-4 flex items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3 text-sm transition-colors hover:bg-muted"
+    >
+      <span className="min-w-0">
+        <span className="block font-bold">
+          {t(hint.label[0], hint.label[1])}
+        </span>
+        <span className="block text-muted-foreground text-xs">
+          {t(hint.note[0], hint.note[1])}
+        </span>
+      </span>
+      <span aria-hidden="true" className="shrink-0 text-muted-foreground">
+        →
+      </span>
+    </Link>
+  )
 }

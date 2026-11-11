@@ -18,6 +18,8 @@ test("検索語は前後の空白と先頭の # を除く", () => {
   expect(normalizeTagQuery("  ##猫 ")).toBe("猫")
   expect(normalizeTagQuery("   ")).toBeNull()
   expect(normalizeTagQuery("#")).toBeNull()
+  expect(normalizeTagQuery("＃小説")).toBe("小説")
+  expect(normalizeTagQuery("＃＃ 小説")).toBe("小説")
   expect(normalizeTagQuery(null)).toBeNull()
 })
 

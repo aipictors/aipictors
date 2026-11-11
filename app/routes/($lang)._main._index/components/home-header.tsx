@@ -1,7 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { EMPTY_UNREAD_COUNTS } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
 import { useLocation, useNavigation, useSearchParams } from "@remix-run/react"
-import { Link, useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
   ImagePlusIcon,
@@ -28,9 +26,11 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useContentMode } from "~/hooks/use-content-mode"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { HomeHeaderContentToggle } from "~/routes/($lang)._main._index/components/home-header-content-toggle"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
+import { EMPTY_UNREAD_COUNTS } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
 import { debugLog } from "~/utils/debug-logger"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
 import {
@@ -164,7 +164,7 @@ function HomeHeader(props: Props) {
       return
     }
 
-    const sanitizedText = trimmedText.replace(/#/g, "")
+    const sanitizedText = trimmedText.replace(/[#＃]/g, "")
 
     // 禁止文字チェック
     const invalidChars = ["%", "/", "¥"]
@@ -208,10 +208,7 @@ function HomeHeader(props: Props) {
 
     const baseUrl = buildSearchPath(sanitizedText)
     // R18 に切り替えている間は、ヘッダーの検索も R18 で探す
-    const targetUrl = generateSensitiveUrl(
-      baseUrl,
-      isSensitive || isR18Mode,
-    )
+    const targetUrl = generateSensitiveUrl(baseUrl, isSensitive || isR18Mode)
 
     if (shouldShowWarning && !isR18Mode) {
       // Show warning dialog

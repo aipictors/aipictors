@@ -11,7 +11,12 @@ export function buildSearchPath(
   const basePath = rawBasePath.endsWith("/")
     ? rawBasePath.slice(0, -1)
     : rawBasePath
-  const trimmed = searchTerm?.trim() ?? ""
+  // 「#小説」「＃小説」のようにタグの印を付けて入れても、タグ名で探す
+  const trimmed =
+    searchTerm
+      ?.trim()
+      .replace(/^[#＃]+/, "")
+      .trim() ?? ""
   const params = new URLSearchParams(searchParams?.toString() ?? "")
 
   params.delete("q")

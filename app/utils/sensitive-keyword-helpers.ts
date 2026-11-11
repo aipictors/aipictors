@@ -16,7 +16,7 @@ export function analyzeSensitiveSearch(searchText: string): {
   shouldShowWarning: boolean
   sanitizedText: string
 } {
-  const sanitizedText = searchText.replace(/#/g, "").trim()
+  const sanitizedText = searchText.replace(/[#＃]/g, "").trim()
   const isSensitive = isSensitiveKeyword(sanitizedText)
   const shouldShowWarning = isSensitive && !shouldSkipSensitiveWarning()
 
