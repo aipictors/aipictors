@@ -7,14 +7,17 @@
  * 出力: app/lib/seo-hubs/seo-hub-catalog.json（コミットしてデプロイ）
  * - タグは tag_counts（年齢区分ごとの作品数を持つ集計済みの表）を読むだけなので軽い（約 120 万行の読み取り）
  * - モデルは works を service ごとに数える（約 80 万行）。月に 1 回くらい作り直せば十分
+ * - 最後に API で各まとめの呪文付き作品を取り、画面と同じ判定（pickHubPromptWorks）で 6 件以上あるものだけ残す
+ *   （作品は多くても、呪文を公開した「まとめに出せる」作品が少ないと noindex になるので、索引とサイトマップに載せない）
  * 画面の表示時には D1 を読まない（この JSON を同梱する）
  */
 import { spawnSync } from "node:child_process"
 import { writeFileSync } from "node:fs"
 import { join } from "node:path"
 import {
-  isBlockedHubTag,
   isBlockedHubModel,
+  isBlockedHubTag,
+  pickHubPromptWorks,
 } from "../../app/lib/seo-hubs/seo-hub-safety"
 import { isIndexableSensitiveTag } from "../../app/utils/sensitive-tag-filter"
 
@@ -263,16 +266,163 @@ const sensitiveModels = modelRows
   .sort((a, b) => b.r - a.r)
   .map((row) => ({ name: row.name, count: row.r }))
 
+/** 画面（seo-hub-catalog.server.ts の HUB_MIN_*）と同じ基準 */
+const HUB_MIN_INDEX_WORKS = 30
+const HUB_MIN_PROMPT_WORKS = 6
+
+const API = "https://api.aipictors.com/"
+
+const WORK_FIELDS = "id promptAccessType prompt tagNames user { id }"
+
+const graphqlRequest = async (query: string, variables: unknown) => {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const response = await fetch(API, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          // Cloudflare が既定の UA を止めるので付ける
+          "user-agent": "Mozilla/5.0 aipictors-seo-hubs-generator",
+        },
+        body: JSON.stringify({ query, variables }),
+      })
+      if (response.ok) {
+        const json = (await response.json()) as { data?: Record<string, unknown> }
+        if (json.data) return json.data
+      }
+    } catch {
+      // 少し待ってやり直す
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)))
+  }
+  return null
+}
+
+type ApiWork = {
+  id: string
+  promptAccessType: string
+  prompt: string | null
+  tagNames: string[]
+  user: { id: string } | null
+}
+
+const countTagPromptWorks = async (name: string, isSensitive: boolean) => {
+  const where = {
+    tagNames: [name],
+    ratings: isSensitive ? ["R18"] : ["G"],
+    hasPrompt: true,
+    isPromptPublic: true,
+    sort: "DESC",
+    isNowCreatedAt: true,
+    ...(isSensitive && { isSensitive: true }),
+  }
+  const data = await graphqlRequest(
+    `query($popular: WorksWhereInput, $latest: WorksWhereInput) {
+      popular: tagWorks(offset: 0, limit: 64, where: $popular) { ${WORK_FIELDS} }
+      latest: tagWorks(offset: 0, limit: 64, where: $latest) { ${WORK_FIELDS} }
+    }`,
+    {
+      popular: { ...where, orderBy: "LIKES_COUNT" },
+      latest: { ...where, orderBy: "DATE_CREATED" },
+    },
+  )
+  if (!data) return -1
+  const works = new Map<string, ApiWork>()
+  for (const work of [
+    ...((data.popular as ApiWork[]) ?? []),
+    ...((data.latest as ApiWork[]) ?? []),
+  ]) {
+    works.set(work.id, work)
+  }
+  return pickHubPromptWorks([...works.values()], { isSensitive }).length
+}
+
+const countModelPromptWorks = async (name: string, isSensitive: boolean) => {
+  const where = {
+    ratings: isSensitive ? ["R18"] : ["G"],
+    hasPrompt: true,
+    isPromptPublic: true,
+    orderBy: "DATE_CREATED",
+    sort: "DESC",
+    ...(isSensitive && { isSensitive: true }),
+  }
+  const data = await graphqlRequest(
+    `query($search: String!, $where: WorksWhereInput) {
+      aiModel(where: { search: $search }) {
+        first: works(offset: 0, limit: 64, where: $where) { ${WORK_FIELDS} }
+        second: works(offset: 64, limit: 64, where: $where) { ${WORK_FIELDS} }
+      }
+    }`,
+    { search: name, where },
+  )
+  const model = data?.aiModel as { first: ApiWork[]; second: ApiWork[] } | null
+  if (!model) return data ? 0 : -1
+  return pickHubPromptWorks([...model.first, ...model.second], { isSensitive })
+    .length
+}
+
+/** API に負担をかけないように、同時に 4 本まで */
+const mapLimit = async <T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+) => {
+  const results: R[] = []
+  let next = 0
+  await Promise.all(
+    Array.from({ length: limit }, async () => {
+      while (next < items.length) {
+        const index = next++
+        results[index] = await fn(items[index])
+      }
+    }),
+  )
+  return results
+}
+
+const keepIndexable = async <T extends { name: string; count: number }>(
+  label: string,
+  items: T[],
+  count: (name: string) => Promise<number>,
+) => {
+  const candidates = items.filter((item) => item.count >= HUB_MIN_INDEX_WORKS)
+  const counts = await mapLimit(candidates, 4, (item) => count(item.name))
+  // 失敗したもの（混んでいたときのタイムアウトなど）は、少し待って 1 本ずつやり直す
+  for (const [index, value] of counts.entries()) {
+    if (value >= 0) continue
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    counts[index] = await count(candidates[index].name)
+  }
+  const failed = candidates.filter((_, index) => counts[index] < 0)
+  if (failed.length > candidates.length * 0.1) {
+    throw new Error(`${label}: API の失敗が多すぎる（${failed.length}/${candidates.length}）`)
+  }
+  // それでも数えられなかったものは残す（画面で数え直し、少なければ noindex になる）
+  const kept = candidates.filter(
+    (_, index) => counts[index] < 0 || counts[index] >= HUB_MIN_PROMPT_WORKS,
+  )
+  console.log(
+    `${label}: ${kept.length}/${items.length}（数えられなかったもの ${failed.map((item) => item.name).join("・") || "なし"}）`,
+  )
+  return kept
+}
+
 const catalog = {
   generatedAt: new Date().toISOString().slice(0, 10),
-  tags,
-  sensitiveTags,
-  models,
-  sensitiveModels,
+  tags: await keepIndexable("tags", tags, (name) => countTagPromptWorks(name, false)),
+  sensitiveTags: await keepIndexable("R18 tags", sensitiveTags, (name) =>
+    countTagPromptWorks(name, true),
+  ),
+  models: await keepIndexable("models", models, (name) =>
+    countModelPromptWorks(name, false),
+  ),
+  sensitiveModels: await keepIndexable("R18 models", sensitiveModels, (name) =>
+    countModelPromptWorks(name, true),
+  ),
 }
 
 const outPath = join(import.meta.dir, "../../app/lib/seo-hubs/seo-hub-catalog.json")
 writeFileSync(outPath, `${JSON.stringify(catalog, null, 1)}\n`)
 console.log(
-  `tags ${tags.length}（キャラ ${tags.filter((t) => t.kind === "character").length}・作品 ${tags.filter((t) => t.kind === "series").length}）, R18 tags ${sensitiveTags.length}, models ${models.length}, R18 models ${sensitiveModels.length} → ${outPath}`,
+  `tags ${catalog.tags.length}（キャラ ${catalog.tags.filter((t) => t.kind === "character").length}・作品 ${catalog.tags.filter((t) => t.kind === "series").length}）, R18 tags ${catalog.sensitiveTags.length}, models ${catalog.models.length}, R18 models ${catalog.sensitiveModels.length} → ${outPath}`,
 )

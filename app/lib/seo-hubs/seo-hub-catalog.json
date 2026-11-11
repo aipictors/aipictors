@@ -17,11 +17,6 @@
    "kind": "series"
   },
   {
-   "name": "hololive",
-   "count": 1963,
-   "kind": "series"
-  },
-  {
    "name": "原神",
    "count": 1365,
    "kind": "series"
@@ -52,11 +47,6 @@
    "kind": "series"
   },
   {
-   "name": "アルスラーン戦記",
-   "count": 443,
-   "kind": "series"
-  },
-  {
    "name": "ボーカロイド",
    "count": 434,
    "kind": "series"
@@ -72,11 +62,6 @@
    "kind": "character"
   },
   {
-   "name": "けものフレンズ",
-   "count": 406,
-   "kind": "series"
-  },
-  {
    "name": "FGO",
    "count": 368,
    "kind": "series"
@@ -84,16 +69,6 @@
   {
    "name": "ポケモン",
    "count": 290,
-   "kind": "series"
-  },
-  {
-   "name": "サイレンススズカ",
-   "count": 257,
-   "kind": "character"
-  },
-  {
-   "name": "SAO",
-   "count": 255,
    "kind": "series"
   },
   {
@@ -122,28 +97,8 @@
    "kind": "series"
   },
   {
-   "name": "矢澤にこ",
-   "count": 203,
-   "kind": "character"
-  },
-  {
    "name": "艦これ",
    "count": 193,
-   "kind": "series"
-  },
-  {
-   "name": "閃乱カグラ",
-   "count": 188,
-   "kind": "series"
-  },
-  {
-   "name": "ソードアート・オンライン",
-   "count": 183,
-   "kind": "series"
-  },
-  {
-   "name": "デッドオアアライブ",
-   "count": 176,
    "kind": "series"
   },
   {
@@ -172,11 +127,6 @@
    "kind": "character"
   },
   {
-   "name": "戌神ころね",
-   "count": 138,
-   "kind": "character"
-  },
-  {
    "name": "チルノ",
    "count": 133,
    "kind": "character"
@@ -184,11 +134,6 @@
   {
    "name": "アズールレーン",
    "count": 121,
-   "kind": "series"
-  },
-  {
-   "name": "ぶいすぽっ！",
-   "count": 116,
    "kind": "series"
   },
   {
@@ -202,38 +147,8 @@
    "kind": "character"
   },
   {
-   "name": "プリコネR",
-   "count": 105,
-   "kind": "series"
-  },
-  {
-   "name": "香風智乃",
-   "count": 104,
-   "kind": "character"
-  },
-  {
-   "name": "刻晴",
-   "count": 102,
-   "kind": "character"
-  },
-  {
    "name": "甘雨",
    "count": 101,
-   "kind": "character"
-  },
-  {
-   "name": "百鬼あやめ",
-   "count": 97,
-   "kind": "character"
-  },
-  {
-   "name": "アーニャ・メルフィッサ",
-   "count": 97,
-   "kind": "character"
-  },
-  {
-   "name": "さくらみこ",
-   "count": 97,
    "kind": "character"
   },
   {
@@ -242,48 +157,8 @@
    "kind": "series"
   },
   {
-   "name": "大神ミオ",
-   "count": 96,
-   "kind": "character"
-  },
-  {
-   "name": "神里綾華",
-   "count": 94,
-   "kind": "character"
-  },
-  {
-   "name": "ポケットモンスター",
-   "count": 92,
-   "kind": "series"
-  },
-  {
    "name": "霧雨魔理沙",
    "count": 91,
-   "kind": "character"
-  },
-  {
-   "name": "ときのそら",
-   "count": 90,
-   "kind": "character"
-  },
-  {
-   "name": "胡桃",
-   "count": 88,
-   "kind": "character"
-  },
-  {
-   "name": "AZKi",
-   "count": 85,
-   "kind": "character"
-  },
-  {
-   "name": "兎田ぺこら",
-   "count": 83,
-   "kind": "character"
-  },
-  {
-   "name": "八重神子",
-   "count": 80,
    "kind": "character"
   },
   {
@@ -292,73 +167,8 @@
    "kind": "series"
   },
   {
-   "name": "アイドルマスターシャイニーカラーズ",
-   "count": 77,
-   "kind": "series"
-  },
-  {
    "name": "推しの子",
    "count": 76,
-   "kind": "series"
-  },
-  {
-   "name": "しぐれうい",
-   "count": 76,
-   "kind": "character"
-  },
-  {
-   "name": "NIKKE",
-   "count": 75,
-   "kind": "series"
-  },
-  {
-   "name": "ReGLOSS",
-   "count": 74,
-   "kind": "series"
-  },
-  {
-   "name": "風真いろは",
-   "count": 73,
-   "kind": "character"
-  },
-  {
-   "name": "星街すいせい",
-   "count": 73,
-   "kind": "character"
-  },
-  {
-   "name": "五等分の花嫁",
-   "count": 72,
-   "kind": "series"
-  },
-  {
-   "name": "砂狼シロコ",
-   "count": 72,
-   "kind": "character"
-  },
-  {
-   "name": "鬼滅の刃",
-   "count": 70,
-   "kind": "series"
-  },
-  {
-   "name": "ラブライブ!",
-   "count": 69,
-   "kind": "series"
-  },
-  {
-   "name": "セレス・ファウナ",
-   "count": 68,
-   "kind": "character"
-  },
-  {
-   "name": "白上フブキ",
-   "count": 67,
-   "kind": "character"
-  },
-  {
-   "name": "鳴潮",
-   "count": 67,
    "kind": "series"
   },
   {
@@ -367,208 +177,8 @@
    "kind": "series"
   },
   {
-   "name": "ドラゴンボール",
-   "count": 66,
-   "kind": "series"
-  },
-  {
-   "name": "壱百満天原サロメ",
-   "count": 63,
-   "kind": "character"
-  },
-  {
-   "name": "がうる・ぐら",
-   "count": 60,
-   "kind": "character"
-  },
-  {
-   "name": "とある科学の超電磁砲",
-   "count": 58,
-   "kind": "series"
-  },
-  {
-   "name": "月ノ美兎",
-   "count": 58,
-   "kind": "character"
-  },
-  {
-   "name": "艦隊これくしょん",
-   "count": 57,
-   "kind": "series"
-  },
-  {
-   "name": "美少女戦士セーラームーン",
-   "count": 55,
-   "kind": "series"
-  },
-  {
-   "name": "古石ビジュー",
-   "count": 54,
-   "kind": "character"
-  },
-  {
-   "name": "リゼロ",
-   "count": 54,
-   "kind": "series"
-  },
-  {
-   "name": "七詩ムメイ",
-   "count": 54,
-   "kind": "character"
-  },
-  {
-   "name": "御坂美琴",
-   "count": 54,
-   "kind": "character"
-  },
-  {
-   "name": "勝利の女神:NIKKE",
-   "count": 53,
-   "kind": "series"
-  },
-  {
-   "name": "湊あくあ",
-   "count": 51,
-   "kind": "character"
-  },
-  {
-   "name": "プリンセスコネクト!Re:Dive",
-   "count": 49,
-   "kind": "series"
-  },
-  {
-   "name": "マリー・ローズ",
-   "count": 49,
-   "kind": "character"
-  },
-  {
-   "name": "紫咲シオン",
-   "count": 47,
-   "kind": "character"
-  },
-  {
-   "name": "ラブライブ",
-   "count": 45,
-   "kind": "series"
-  },
-  {
-   "name": "シャニマス",
-   "count": 43,
-   "kind": "series"
-  },
-  {
-   "name": "めぐみん",
-   "count": 40,
-   "kind": "character"
-  },
-  {
-   "name": "崩壊スターレイル",
-   "count": 39,
-   "kind": "series"
-  },
-  {
-   "name": "中野三玖",
-   "count": 38,
-   "kind": "character"
-  },
-  {
-   "name": "このすば",
-   "count": 38,
-   "kind": "series"
-  },
-  {
-   "name": "星野アイ",
-   "count": 38,
-   "kind": "character"
-  },
-  {
-   "name": "喜多川海夢",
-   "count": 38,
-   "kind": "character"
-  },
-  {
-   "name": "フワワ・アビスガード",
-   "count": 36,
-   "kind": "character"
-  },
-  {
-   "name": "フリーナ",
-   "count": 36,
-   "kind": "character"
-  },
-  {
-   "name": "音乃瀬奏",
-   "count": 34,
-   "kind": "character"
-  },
-  {
-   "name": "中野二乃",
-   "count": 34,
-   "kind": "character"
-  },
-  {
-   "name": "沙花叉クロヱ",
-   "count": 33,
-   "kind": "character"
-  },
-  {
-   "name": "星川サラ",
-   "count": 31,
-   "kind": "character"
-  },
-  {
-   "name": "リコリス・リコイル",
-   "count": 31,
-   "kind": "series"
-  },
-  {
-   "name": "博衣こより",
-   "count": 30,
-   "kind": "character"
-  },
-  {
-   "name": "こぼ・かなえる",
-   "count": 29,
-   "kind": "character"
-  },
-  {
-   "name": "ハコス・ベールズ",
-   "count": 29,
-   "kind": "character"
-  },
-  {
-   "name": "中野四葉",
-   "count": 28,
-   "kind": "character"
-  },
-  {
-   "name": "ラブライブ!サンシャイン!!",
-   "count": 27,
-   "kind": "series"
-  },
-  {
-   "name": "ピーチ姫",
-   "count": 27,
-   "kind": "character"
-  },
-  {
-   "name": "パヴォリア・レイネ",
-   "count": 27,
-   "kind": "character"
-  },
-  {
-   "name": "天宮こころ",
-   "count": 22,
-   "kind": "character"
-  },
-  {
-   "name": "一伊那尓栖",
-   "count": 22,
-   "kind": "character"
-  },
-  {
    "name": "女の子",
-   "count": 153530,
+   "count": 153531,
    "kind": "tag"
   },
   {
@@ -578,7 +188,7 @@
   },
   {
    "name": "ファンタジー",
-   "count": 29912,
+   "count": 29913,
    "kind": "tag"
   },
   {
@@ -638,7 +248,7 @@
   },
   {
    "name": "着物",
-   "count": 10283,
+   "count": 10284,
    "kind": "tag"
   },
   {
@@ -648,7 +258,7 @@
   },
   {
    "name": "girl",
-   "count": 10055,
+   "count": 10057,
    "kind": "tag"
   },
   {
@@ -663,7 +273,7 @@
   },
   {
    "name": "笑顔",
-   "count": 7962,
+   "count": 7963,
    "kind": "tag"
   },
   {
@@ -678,12 +288,12 @@
   },
   {
    "name": "Fantasy",
-   "count": 7354,
+   "count": 7355,
    "kind": "tag"
   },
   {
    "name": "花",
-   "count": 7233,
+   "count": 7234,
    "kind": "tag"
   },
   {
@@ -768,12 +378,7 @@
   },
   {
    "name": "風景",
-   "count": 5075,
-   "kind": "tag"
-  },
-  {
-   "name": "赤リボン",
-   "count": 5038,
+   "count": 5076,
    "kind": "tag"
   },
   {
@@ -793,7 +398,7 @@
   },
   {
    "name": "黒髪ロング",
-   "count": 4574,
+   "count": 4575,
    "kind": "tag"
   },
   {
@@ -803,7 +408,7 @@
   },
   {
    "name": "眼鏡",
-   "count": 4241,
+   "count": 4242,
    "kind": "tag"
   },
   {
@@ -832,11 +437,6 @@
    "kind": "tag"
   },
   {
-   "name": "金髪ボブ",
-   "count": 3718,
-   "kind": "tag"
-  },
-  {
    "name": "長髪",
    "count": 3711,
    "kind": "tag"
@@ -858,7 +458,7 @@
   },
   {
    "name": "雪",
-   "count": 3601,
+   "count": 3602,
    "kind": "tag"
   },
   {
@@ -868,12 +468,12 @@
   },
   {
    "name": "緑髪",
-   "count": 3544,
+   "count": 3545,
    "kind": "tag"
   },
   {
    "name": "秋",
-   "count": 3541,
+   "count": 3544,
    "kind": "tag"
   },
   {
@@ -948,7 +548,7 @@
   },
   {
    "name": "美女",
-   "count": 3166,
+   "count": 3167,
    "kind": "tag"
   },
   {
@@ -988,7 +588,7 @@
   },
   {
    "name": "星",
-   "count": 2934,
+   "count": 2935,
    "kind": "tag"
   },
   {
@@ -1053,7 +653,7 @@
   },
   {
    "name": "クリスマス",
-   "count": 2605,
+   "count": 2606,
    "kind": "tag"
   },
   {
@@ -1147,11 +747,6 @@
    "kind": "tag"
   },
   {
-   "name": "眼鏡っ娘",
-   "count": 2201,
-   "kind": "tag"
-  },
-  {
    "name": "ピンク目",
    "count": 2187,
    "kind": "tag"
@@ -1198,7 +793,7 @@
   },
   {
    "name": "ドラゴン",
-   "count": 2022,
+   "count": 2023,
    "kind": "tag"
   },
   {
@@ -1268,12 +863,12 @@
   },
   {
    "name": "冒険",
-   "count": 1867,
+   "count": 1868,
    "kind": "tag"
   },
   {
    "name": "巫女",
-   "count": 1849,
+   "count": 1850,
    "kind": "tag"
   },
   {
@@ -1283,12 +878,7 @@
   },
   {
    "name": "二次創作",
-   "count": 1843,
-   "kind": "tag"
-  },
-  {
-   "name": "uniform",
-   "count": 1828,
+   "count": 1844,
    "kind": "tag"
   },
   {
@@ -1302,12 +892,12 @@
    "kind": "tag"
   },
   {
-   "name": "アニメスタイル",
-   "count": 1781,
+   "name": "紅葉",
+   "count": 1783,
    "kind": "tag"
   },
   {
-   "name": "紅葉",
+   "name": "アニメスタイル",
    "count": 1781,
    "kind": "tag"
   },
@@ -1354,11 +944,6 @@
   {
    "name": "お姫様",
    "count": 1701,
-   "kind": "tag"
-  },
-  {
-   "name": "ブレザー",
-   "count": 1673,
    "kind": "tag"
   },
   {
@@ -1462,11 +1047,6 @@
    "kind": "tag"
   },
   {
-   "name": "ストッキング",
-   "count": 1478,
-   "kind": "tag"
-  },
-  {
    "name": "イケメン",
    "count": 1463,
    "kind": "tag"
@@ -1523,7 +1103,7 @@
   },
   {
    "name": "ワンピース",
-   "count": 1394,
+   "count": 1395,
    "kind": "tag"
   },
   {
@@ -1563,7 +1143,7 @@
   },
   {
    "name": "日常",
-   "count": 1315,
+   "count": 1316,
    "kind": "tag"
   },
   {
@@ -1608,12 +1188,12 @@
   },
   {
    "name": "Adventure",
-   "count": 1282,
+   "count": 1283,
    "kind": "tag"
   },
   {
    "name": "sailor uniform",
-   "count": 1270,
+   "count": 1271,
    "kind": "tag"
   },
   {
@@ -1717,11 +1297,6 @@
    "kind": "tag"
   },
   {
-   "name": "魔王",
-   "count": 1171,
-   "kind": "tag"
-  },
-  {
    "name": "女騎士",
    "count": 1167,
    "kind": "tag"
@@ -1757,11 +1332,6 @@
    "kind": "tag"
   },
   {
-   "name": "褐色肌",
-   "count": 1130,
-   "kind": "tag"
-  },
-  {
    "name": "ネクタイ",
    "count": 1125,
    "kind": "tag"
@@ -1774,11 +1344,6 @@
   {
    "name": "メカクレ",
    "count": 1121,
-   "kind": "tag"
-  },
-  {
-   "name": "くま娘",
-   "count": 1120,
    "kind": "tag"
   },
   {
@@ -1814,11 +1379,6 @@
   {
    "name": "キャラクター",
    "count": 1083,
-   "kind": "tag"
-  },
-  {
-   "name": "薔薇",
-   "count": 1080,
    "kind": "tag"
   },
   {
@@ -1948,7 +1508,7 @@
   },
   {
    "name": "朝",
-   "count": 990,
+   "count": 991,
    "kind": "tag"
   },
   {
@@ -2067,11 +1627,6 @@
    "kind": "tag"
   },
   {
-   "name": "黒髪短髪",
-   "count": 916,
-   "kind": "tag"
-  },
-  {
    "name": "friends",
    "count": 914,
    "kind": "tag"
@@ -2097,8 +1652,8 @@
    "kind": "tag"
   },
   {
-   "name": "うちの娘",
-   "count": 900,
+   "name": "電車",
+   "count": 899,
    "kind": "tag"
   },
   {
@@ -2107,23 +1662,8 @@
    "kind": "tag"
   },
   {
-   "name": "電車",
-   "count": 898,
-   "kind": "tag"
-  },
-  {
    "name": "チョコレート",
    "count": 898,
-   "kind": "tag"
-  },
-  {
-   "name": "白雀ちゃん",
-   "count": 897,
-   "kind": "tag"
-  },
-  {
-   "name": "おでこちゃん",
-   "count": 891,
    "kind": "tag"
   },
   {
@@ -2222,13 +1762,8 @@
    "kind": "tag"
   },
   {
-   "name": "うちの子（スズカ）",
-   "count": 853,
-   "kind": "tag"
-  },
-  {
    "name": "神社",
-   "count": 846,
+   "count": 847,
    "kind": "tag"
   },
   {
@@ -2309,11 +1844,6 @@
   {
    "name": "昼",
    "count": 814,
-   "kind": "tag"
-  },
-  {
-   "name": "グル(GL)",
-   "count": 813,
    "kind": "tag"
   },
   {
@@ -2432,11 +1962,6 @@
    "kind": "tag"
   },
   {
-   "name": "ニーハイブーツ",
-   "count": 759,
-   "kind": "tag"
-  },
-  {
    "name": "漫画",
    "count": 756,
    "kind": "tag"
@@ -2452,12 +1977,12 @@
    "kind": "tag"
   },
   {
-   "name": "和室",
-   "count": 752,
+   "name": "風",
+   "count": 753,
    "kind": "tag"
   },
   {
-   "name": "風",
+   "name": "和室",
    "count": 752,
    "kind": "tag"
   },
@@ -2647,11 +2172,6 @@
    "kind": "tag"
   },
   {
-   "name": "もみ家",
-   "count": 696,
-   "kind": "tag"
-  },
-  {
    "name": "ドーナツ",
    "count": 693,
    "kind": "tag"
@@ -2687,13 +2207,13 @@
    "kind": "tag"
   },
   {
-   "name": "キャンドル",
+   "name": "コート",
    "count": 686,
    "kind": "tag"
   },
   {
-   "name": "コート",
-   "count": 685,
+   "name": "キャンドル",
+   "count": 686,
    "kind": "tag"
   },
   {
@@ -2703,16 +2223,11 @@
   },
   {
    "name": "食事",
-   "count": 683,
+   "count": 684,
    "kind": "tag"
   },
   {
    "name": "シャボン玉",
-   "count": 681,
-   "kind": "tag"
-  },
-  {
-   "name": "白い雀",
    "count": 681,
    "kind": "tag"
   },
@@ -2837,17 +2352,7 @@
    "kind": "tag"
   },
   {
-   "name": "一次創作",
-   "count": 640,
-   "kind": "tag"
-  },
-  {
    "name": "黄色",
-   "count": 638,
-   "kind": "tag"
-  },
-  {
-   "name": "スマホ壁紙",
    "count": 638,
    "kind": "tag"
   },
@@ -2877,6 +2382,11 @@
    "kind": "tag"
   },
   {
+   "name": "ジャケット",
+   "count": 629,
+   "kind": "tag"
+  },
+  {
    "name": "ステンドグラス",
    "count": 629,
    "kind": "tag"
@@ -2902,11 +2412,6 @@
    "kind": "tag"
   },
   {
-   "name": "ジャケット",
-   "count": 627,
-   "kind": "tag"
-  },
-  {
    "name": "daily life",
    "count": 627,
    "kind": "tag"
@@ -2923,11 +2428,6 @@
   },
   {
    "name": "タイツ",
-   "count": 623,
-   "kind": "tag"
-  },
-  {
-   "name": "プリーツスカート",
    "count": 623,
    "kind": "tag"
   },
@@ -2977,11 +2477,6 @@
    "kind": "tag"
   },
   {
-   "name": "いぬみみ",
-   "count": 609,
-   "kind": "tag"
-  },
-  {
    "name": "晴天",
    "count": 608,
    "kind": "tag"
@@ -2994,11 +2489,6 @@
   {
    "name": "OnHead",
    "count": 606,
-   "kind": "tag"
-  },
-  {
-   "name": "聖女BLITZ",
-   "count": 605,
    "kind": "tag"
   },
   {
@@ -3097,6 +2587,11 @@
    "kind": "tag"
   },
   {
+   "name": "剣士",
+   "count": 589,
+   "kind": "tag"
+  },
+  {
    "name": "イルミネーション",
    "count": 589,
    "kind": "tag"
@@ -3104,11 +2599,6 @@
   {
    "name": "アニメ少女",
    "count": 589,
-   "kind": "tag"
-  },
-  {
-   "name": "剣士",
-   "count": 588,
    "kind": "tag"
   },
   {
@@ -3128,7 +2618,7 @@
   },
   {
    "name": "カチューシャ",
-   "count": 580,
+   "count": 581,
    "kind": "tag"
   },
   {
@@ -3182,23 +2672,8 @@
    "kind": "tag"
   },
   {
-   "name": "黒髪ツーサイドアップ",
-   "count": 571,
-   "kind": "tag"
-  },
-  {
-   "name": "女の子2人",
-   "count": 569,
-   "kind": "tag"
-  },
-  {
    "name": "暖炉",
    "count": 566,
-   "kind": "tag"
-  },
-  {
-   "name": "クマ娘",
-   "count": 565,
    "kind": "tag"
   },
   {
@@ -3243,11 +2718,6 @@
   },
   {
    "name": "黄金",
-   "count": 558,
-   "kind": "tag"
-  },
-  {
-   "name": "片目隠れ緑髪赤目",
    "count": 558,
    "kind": "tag"
   },
@@ -3337,17 +2807,17 @@
    "kind": "tag"
   },
   {
+   "name": "ロングスカート",
+   "count": 547,
+   "kind": "tag"
+  },
+  {
    "name": "おへそ",
    "count": 546,
    "kind": "tag"
   },
   {
    "name": "yukata",
-   "count": 546,
-   "kind": "tag"
-  },
-  {
-   "name": "ロングスカート",
    "count": 546,
    "kind": "tag"
   },
@@ -3447,21 +2917,6 @@
    "kind": "tag"
   },
   {
-   "name": "魔女見習いと猫",
-   "count": 530,
-   "kind": "tag"
-  },
-  {
-   "name": "ロングブーツ",
-   "count": 528,
-   "kind": "tag"
-  },
-  {
-   "name": "WitchMewCat",
-   "count": 528,
-   "kind": "tag"
-  },
-  {
    "name": "涙目",
    "count": 527,
    "kind": "tag"
@@ -3484,11 +2939,6 @@
   {
    "name": "ビール",
    "count": 526,
-   "kind": "tag"
-  },
-  {
-   "name": "マジックパンク",
-   "count": 525,
    "kind": "tag"
   },
   {
@@ -3547,11 +2997,6 @@
    "kind": "tag"
   },
   {
-   "name": "パンスト",
-   "count": 518,
-   "kind": "tag"
-  },
-  {
    "name": "ショートカット",
    "count": 518,
    "kind": "tag"
@@ -3582,7 +3027,7 @@
   },
   {
    "name": "全裸",
-   "count": 6489
+   "count": 6490
   },
   {
    "name": "黒髪",
@@ -3598,7 +3043,7 @@
   },
   {
    "name": "女性",
-   "count": 4310
+   "count": 4311
   },
   {
    "name": "ヌード",
@@ -3606,7 +3051,7 @@
   },
   {
    "name": "セックス",
-   "count": 3814
+   "count": 3815
   },
   {
    "name": "ツインテール",
@@ -3682,7 +3127,7 @@
   },
   {
    "name": "エロ",
-   "count": 1792
+   "count": 1793
   },
   {
    "name": "水着",
@@ -3777,10 +3222,6 @@
    "count": 1081
   },
   {
-   "name": "金髪碧眼",
-   "count": 1046
-  },
-  {
    "name": "黒髪ロング",
    "count": 1041
   },
@@ -3813,10 +3254,6 @@
    "count": 980
   },
   {
-   "name": "赤リボン",
-   "count": 977
-  },
-  {
    "name": "コスプレ",
    "count": 967
   },
@@ -3826,7 +3263,7 @@
   },
   {
    "name": "可愛い",
-   "count": 941
+   "count": 942
   },
   {
    "name": "褐色",
@@ -3845,16 +3282,12 @@
    "count": 915
   },
   {
-   "name": "版権キャラ",
-   "count": 911
-  },
-  {
    "name": "汗",
    "count": 893
   },
   {
    "name": "白髪",
-   "count": 873
+   "count": 874
   },
   {
    "name": "青髪",
@@ -3881,10 +3314,6 @@
    "count": 823
   },
   {
-   "name": "美乳",
-   "count": 822
-  },
-  {
    "name": "バニーガール",
    "count": 808
   },
@@ -3903,10 +3332,6 @@
   {
    "name": "マイクロビキニ",
    "count": 772
-  },
-  {
-   "name": "顔面騎乗",
-   "count": 767
   },
   {
    "name": "競泳水着",
@@ -3965,10 +3390,6 @@
    "count": 649
   },
   {
-   "name": "金髪ボブ",
-   "count": 644
-  },
-  {
    "name": "くぱぁ",
    "count": 628
   },
@@ -3977,16 +3398,8 @@
    "count": 622
   },
   {
-   "name": "ヒロピン",
-   "count": 614
-  },
-  {
    "name": "ロングヘア",
    "count": 613
-  },
-  {
-   "name": "白い肌",
-   "count": 612
   },
   {
    "name": "アヘ顔",
@@ -4053,14 +3466,6 @@
    "count": 539
   },
   {
-   "name": "まんこ",
-   "count": 533
-  },
-  {
-   "name": "ヒロイン",
-   "count": 532
-  },
-  {
    "name": "目隠し",
    "count": 521
   },
@@ -4070,7 +3475,7 @@
   },
   {
    "name": "夜",
-   "count": 518
+   "count": 519
   },
   {
    "name": "陰毛",
@@ -4089,14 +3494,6 @@
    "count": 508
   },
   {
-   "name": "OppAI",
-   "count": 505
-  },
-  {
-   "name": "ヒモパン",
-   "count": 503
-  },
-  {
    "name": "リボン",
    "count": 499
   },
@@ -4111,10 +3508,6 @@
   {
    "name": "ケモミミ",
    "count": 484
-  },
-  {
-   "name": "金髪ロング",
-   "count": 483
   },
   {
    "name": "アイドル",
@@ -4153,10 +3546,6 @@
    "count": 459
   },
   {
-   "name": "裸靴下",
-   "count": 458
-  },
-  {
    "name": "乱交",
    "count": 449
   },
@@ -4174,10 +3563,6 @@
   },
   {
    "name": "ドレス",
-   "count": 438
-  },
-  {
-   "name": "成人女性",
    "count": 438
   },
   {
@@ -4249,10 +3634,6 @@
    "count": 390
   },
   {
-   "name": "妊娠",
-   "count": 389
-  },
-  {
    "name": "催眠",
    "count": 386
   },
@@ -4281,14 +3662,6 @@
    "count": 376
   },
   {
-   "name": "恥じらい",
-   "count": 376
-  },
-  {
-   "name": "男の娘化",
-   "count": 374
-  },
-  {
    "name": "母乳",
    "count": 370
   },
@@ -4315,10 +3688,6 @@
   {
    "name": "緑髪",
    "count": 359
-  },
-  {
-   "name": "漫画",
-   "count": 355
   },
   {
    "name": "プール",
@@ -4376,7 +3745,7 @@
   },
   {
    "name": "NovelAI",
-   "count": 49612
+   "count": 49615
   },
   {
    "name": "DALL-E3",
@@ -4388,7 +3757,7 @@
   },
   {
    "name": "Chat GPT",
-   "count": 14033
+   "count": 14036
   },
   {
    "name": "blue_pencil-v10",
@@ -4407,10 +3776,6 @@
    "count": 7132
   },
   {
-   "name": "petitcutie_v2",
-   "count": 5636
-  },
-  {
    "name": "animaPencilXL_v310",
    "count": 5419
   },
@@ -4420,7 +3785,7 @@
   },
   {
    "name": "zukiAnimeILL v5.0",
-   "count": 4963
+   "count": 4964
   },
   {
    "name": "ChromaFT_v2",
@@ -4432,7 +3797,7 @@
   },
   {
    "name": "GeminiNanoBanana",
-   "count": 4169
+   "count": 4170
   },
   {
    "name": "blazingDrive",
@@ -4463,10 +3828,6 @@
    "count": 2340
   },
   {
-   "name": "kiwimixXL",
-   "count": 2247
-  },
-  {
    "name": "lametta_v1745_fp16",
    "count": 2044
   },
@@ -4476,11 +3837,7 @@
   },
   {
    "name": "njsmix ultimar",
-   "count": 1949
-  },
-  {
-   "name": "hakoMayD",
-   "count": 1925
+   "count": 1950
   },
   {
    "name": "ShiratakiMix",
@@ -4488,15 +3845,11 @@
   },
   {
    "name": "Gemini",
-   "count": 1754
+   "count": 1755
   },
   {
    "name": "Visionary Illustrious Mix",
    "count": 1666
-  },
-  {
-   "name": "funifunisitai_v10",
-   "count": 1563
   },
   {
    "name": "Days AI (Dayseum)",
@@ -4544,7 +3897,7 @@
   },
   {
    "name": "vxpILXL",
-   "count": 1073
+   "count": 1075
   },
   {
    "name": "asyncsMIX",
@@ -4557,22 +3910,6 @@
   {
    "name": "Dalle-2",
    "count": 977
-  },
-  {
-   "name": "SD2Scream_v20",
-   "count": 947
-  },
-  {
-   "name": "flanimeIllustriousXL",
-   "count": 853
-  },
-  {
-   "name": "pastelMixStylizedAnime",
-   "count": 851
-  },
-  {
-   "name": "spellai",
-   "count": 841
   },
   {
    "name": "WaifuDiffusion",
@@ -4675,10 +4012,6 @@
    "count": 378
   },
   {
-   "name": "Copilot",
-   "count": 376
-  },
-  {
    "name": "ACertainThing",
    "count": 359
   },
@@ -4715,19 +4048,11 @@
    "count": 243
   },
   {
-   "name": "MeituAIPainting",
-   "count": 235
-  },
-  {
    "name": "cielx",
    "count": 213
   },
   {
    "name": "shmRealistic_v3",
-   "count": 210
-  },
-  {
-   "name": "4o Image Generation",
    "count": 210
   },
   {
@@ -4789,24 +4114,16 @@
   {
    "name": "fudukiMixV2",
    "count": 81
-  },
-  {
-   "name": "LumaAI",
-   "count": 75
-  },
-  {
-   "name": "animagineXLv4.0",
-   "count": 69
   }
  ],
  "sensitiveModels": [
   {
    "name": "StableDiffusion",
-   "count": 46018
+   "count": 46019
   },
   {
    "name": "NovelAI",
-   "count": 26238
+   "count": 26239
   },
   {
    "name": "blue_pencil-v10",
@@ -4815,10 +4132,6 @@
   {
    "name": "animagine-xl-3.0",
    "count": 928
-  },
-  {
-   "name": "Grok",
-   "count": 768
   },
   {
    "name": "WaifuDiffusion",
@@ -4833,24 +4146,8 @@
    "count": 587
   },
   {
-   "name": "flux.1 schnell",
-   "count": 579
-  },
-  {
-   "name": "Days AI (Dayseum)",
-   "count": 535
-  },
-  {
-   "name": "AnythingV3",
-   "count": 474
-  },
-  {
    "name": "oneObsession 15Noobai",
    "count": 467
-  },
-  {
-   "name": "DALL-E3",
-   "count": 463
   },
   {
    "name": "animaPencilXL_v310",
@@ -4889,14 +4186,6 @@
    "count": 306
   },
   {
-   "name": "pastelMixStylizedAnime",
-   "count": 292
-  },
-  {
-   "name": "ChromaFT_v3",
-   "count": 250
-  },
-  {
    "name": "vxpILXL",
    "count": 244
   },
@@ -4913,14 +4202,6 @@
    "count": 214
   },
   {
-   "name": "himawarimixV11",
-   "count": 205
-  },
-  {
-   "name": "GeminiNanoBanana",
-   "count": 199
-  },
-  {
    "name": "aamXLAnimeMix",
    "count": 180
   },
@@ -4930,7 +4211,7 @@
   },
   {
    "name": "Visionary Illustrious Mix",
-   "count": 176
+   "count": 177
   },
   {
    "name": "Chat GPT",
@@ -4941,20 +4222,12 @@
    "count": 168
   },
   {
-   "name": "AnythingV5",
-   "count": 161
-  },
-  {
    "name": "lametta_v1604_fp16",
    "count": 144
   },
   {
    "name": "surmix_kawaiiedition",
    "count": 137
-  },
-  {
-   "name": "ChromaFT_v1-pruned",
-   "count": 129
   },
   {
    "name": "funifunisitai_v10",
@@ -4973,28 +4246,12 @@
    "count": 98
   },
   {
-   "name": "Midjourney",
-   "count": 96
-  },
-  {
    "name": "AStyleAdjustOfAnimagineXL",
    "count": 95
   },
   {
-   "name": "MeituAIPainting",
-   "count": 94
-  },
-  {
    "name": "realcartoonRealistic_v14",
    "count": 94
-  },
-  {
-   "name": "shmRealistic_v3",
-   "count": 94
-  },
-  {
-   "name": "animagineXL4.0 Opt",
-   "count": 86
   },
   {
    "name": "linenillustrious",
@@ -5021,24 +4278,12 @@
    "count": 70
   },
   {
-   "name": "animagineXLv4.0",
-   "count": 68
-  },
-  {
    "name": "nextgenmix_r5Bakedvae",
    "count": 65
   },
   {
-   "name": "Rivera",
-   "count": 64
-  },
-  {
    "name": "sweetfruit_melon",
    "count": 58
-  },
-  {
-   "name": "milkteaV2",
-   "count": 57
   },
   {
    "name": "BracingEvoMix_v1",
@@ -5047,10 +4292,6 @@
   {
    "name": "limeremixMOJITO",
    "count": 56
-  },
-  {
-   "name": "Gemini",
-   "count": 54
   }
  ]
 }

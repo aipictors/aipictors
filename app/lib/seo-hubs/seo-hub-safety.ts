@@ -168,3 +168,41 @@ export function isSafeHubWork(
   }
   return isSafeHubPrompt(work.prompt ?? "", options)
 }
+
+type HubPromptWork = {
+  id: string
+  promptAccessType?: string | null
+  prompt?: string | null
+  tagNames?: readonly string[] | null
+  user?: { id: string } | null
+}
+
+/** たくさん投稿する 1 人の呪文で集計が偏らないように、1 人あたりの作品数を絞る */
+export function limitHubWorksPerUser<T extends HubPromptWork>(
+  works: T[],
+  max: number,
+): T[] {
+  const counts = new Map<string, number>()
+  return works.filter((work) => {
+    const userId = work.user?.id ?? `work-${work.id}`
+    const count = counts.get(userId) ?? 0
+    counts.set(userId, count + 1)
+    return count < max
+  })
+}
+
+/** 呪文まとめの集計に使う作品（呪文が公開されていて、まとめに出してよく、1 人 2 作品まで） */
+export function pickHubPromptWorks<T extends HubPromptWork>(
+  works: T[],
+  options: { isSensitive?: boolean } = {},
+): T[] {
+  return limitHubWorksPerUser(
+    works.filter(
+      (work) =>
+        work.promptAccessType === "PUBLIC" &&
+        (work.prompt ?? "").trim().length > 0 &&
+        isSafeHubWork(work, options),
+    ),
+    2,
+  )
+}

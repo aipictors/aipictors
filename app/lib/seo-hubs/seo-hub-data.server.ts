@@ -21,13 +21,15 @@ import {
   isBlockedHubTag,
   isSafeHubPrompt,
   isSafeHubWork,
+  limitHubWorksPerUser,
+  pickHubPromptWorks,
 } from "~/lib/seo-hubs/seo-hub-safety"
 import { toListWorks } from "~/utils/to-list-works"
 
 /**
  * 呪文まとめ（/prompts/tags/:tag・/prompts/models/:model と /r 側）のデータ
  *
- * 1 ページで API に 2〜3 本（作品数・呪文付きの作品・新着）。ページは配信のキャッシュに 1 日載せるので、
+ * 1 ページで API に 3 本（作品数・呪文付きの人気作品・呪文付きの新着）。ページは配信のキャッシュに 1 日載せるので、
  * D1 の読み取りは 1 ページ・1 拠点あたり 1 日 1 回程度
  */
 
@@ -111,24 +113,8 @@ const fetchTagWorks = async (props: {
   return resp.data.tagWorks
 }
 
-const MAX_WORKS_PER_USER = 2
-
-const limitPerUser = (works: HubWork[], max: number) => {
-  const counts = new Map<string, number>()
-  return works.filter((work) => {
-    const userId = work.user?.id ?? `work-${work.id}`
-    const count = counts.get(userId) ?? 0
-    counts.set(userId, count + 1)
-    return count < max
-  })
-}
-
 const ratingsOf = (isSensitive: boolean) =>
   isSensitive ? (["R18"] as const) : (["G"] as const)
-
-/** 呪文を見せてよい作品か（公開設定と中身の両方） */
-const hasVisiblePrompt = (work: HubWork) =>
-  work.promptAccessType === "PUBLIC" && (work.prompt ?? "").trim().length > 0
 
 const toExample = (work: HubWork, isSensitive: boolean) => ({
   workId: work.id,
@@ -161,17 +147,16 @@ const buildHub = (props: {
   const { isSensitive } = props
   const safe = (works: HubWork[]) =>
     works.filter((work) => isSafeHubWork(work, { isSensitive }))
-  // たくさん投稿する 1 人の呪文で集計が偏らないように、1 人 2 作品までにする
-  const promptWorks = limitPerUser(
-    (props.sortByLikes
+  // 1 人 2 作品まで（scripts/seo-hubs/generate.ts も同じ関数で数えて、索引に載せるかを決める）
+  const promptWorks = pickHubPromptWorks(
+    props.sortByLikes
       ? [...props.promptWorks].sort((a, b) => b.likesCount - a.likesCount)
-      : props.promptWorks
-    ).filter((work) => hasVisiblePrompt(work) && isSafeHubWork(work, { isSensitive })),
-    MAX_WORKS_PER_USER,
+      : props.promptWorks,
+    { isSensitive },
   )
   const popular = promptWorks
   const popularIds = new Set(popular.slice(0, 24).map((work) => work.id))
-  const latest = limitPerUser(safe(props.latestWorks), 3)
+  const latest = limitHubWorksPerUser(safe(props.latestWorks), 3)
     .filter((work) => !popularIds.has(work.id))
     .slice(0, 12)
 
@@ -229,15 +214,22 @@ export async function fetchTagHub(props: { tag: string; isSensitive: boolean }) 
       hasPrompt: true,
       limit: 64,
     }),
+    // 新着も呪文付きに絞る。人気上位がまとめに出せない作品ばかりのタグ（猫耳など）でも、集計の母数を確保する
     fetchTagWorks({
       tag,
       isSensitive,
       orderBy: "DATE_CREATED",
-      hasPrompt: false,
-      limit: 24,
+      hasPrompt: true,
+      limit: 64,
     }),
   ])
-  if (worksCount === 0 && promptWorks.length === 0) return null
+  if (worksCount === 0 && promptWorks.length === 0 && latestWorks.length === 0) {
+    return null
+  }
+  const popularIds = new Set(promptWorks.map((work) => work.id))
+  const extraWorks = latestWorks
+    .filter((work) => !popularIds.has(work.id))
+    .sort((a, b) => b.likesCount - a.likesCount)
 
   const kind: HubTagKind = catalogTag?.kind ?? "tag"
   return {
@@ -250,7 +242,8 @@ export async function fetchTagHub(props: { tag: string; isSensitive: boolean }) 
       name: tag,
       isSensitive,
       worksCount,
-      promptWorks,
+      // 人気順の後ろに、新着のうちいいねの多い順を続ける
+      promptWorks: [...promptWorks, ...extraWorks],
       latestWorks,
       sortByLikes: false,
     }),
