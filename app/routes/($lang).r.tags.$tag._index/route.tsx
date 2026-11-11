@@ -12,7 +12,10 @@ import {
   fetchTagWorks,
   fetchTagWorksCount,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-data"
-import { parseTagPageQuery } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
+import {
+  isTagPageDefaultView,
+  parseTagPageQuery,
+} from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
 import { findHubTag, toHubTagPath } from "~/lib/seo-hubs/seo-hub-catalog.server"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import {
@@ -93,8 +96,12 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 
   const tag = decodeURIComponent(props.params.tag ?? "")
 
-  // 未成年を連想させるタグ・実在の人物・R18G に寄ったタグと、作品のないタグは検索エンジンに載せない
-  if (!isIndexableSensitiveTag(tag) || worksCount === 0) {
+  // 未成年を連想させるタグ・実在の人物・R18G に寄ったタグと、作品のないタグ、並び替え・絞り込みの一覧は検索エンジンに載せない
+  if (
+    !isIndexableSensitiveTag(tag) ||
+    worksCount === 0 ||
+    !isTagPageDefaultView(props.data.query)
+  ) {
     return createSensitiveMeta(
       META.SENSITIVE_DEFAULT,
       undefined,

@@ -56,6 +56,17 @@ export function parseTagPageQuery(searchParams: URLSearchParams): TagPageQuery {
   }
 }
 
+/**
+ * 並び替え・絞り込みのない一覧か（ページ送りは問わない）。
+ * 並び替え・絞り込みの組み合わせは検索結果に出さず、リンクもたどらせない
+ * （クローラーが組み合わせを開くたびに DB を読んでいた）
+ */
+export const isTagPageDefaultView = (query: TagPageQuery) =>
+  query.orderBy === "LIKES_COUNT" &&
+  query.sort === "DESC" &&
+  query.rating === "all" &&
+  !query.hasPrompt
+
 export function toRatings(
   rating: TagPageRating,
 ): ("G" | "R15" | "R18" | "R18G")[] {

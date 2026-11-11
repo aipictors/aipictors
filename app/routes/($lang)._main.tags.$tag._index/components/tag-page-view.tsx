@@ -60,10 +60,12 @@ function Chip(props: {
   children: React.ReactNode
   className?: string
   replace?: boolean
+  rel?: string
 }) {
   return (
     <Link
       to={props.to}
+      rel={props.rel}
       preventScrollReset
       replace={props.replace}
       aria-current={props.isActive ? "true" : undefined}
@@ -351,6 +353,7 @@ export function TagPageView(props: Props) {
                 role="tab"
                 aria-selected={isActive}
                 to={hrefWith({ orderBy, sort: "DESC" })}
+                rel="nofollow"
                 preventScrollReset
                 replace
                 className={cn(
@@ -373,6 +376,7 @@ export function TagPageView(props: Props) {
                   key={rating}
                   to={hrefWith({ rating })}
                   isActive={query.rating === rating}
+                  rel="nofollow"
                   replace
                 >
                   {ratingLabels[rating]}
@@ -384,6 +388,7 @@ export function TagPageView(props: Props) {
           <Chip
             to={hrefWith({ hasPrompt: !query.hasPrompt })}
             isActive={query.hasPrompt}
+            rel="nofollow"
             replace
           >
             <SparklesIcon className="size-3.5" />

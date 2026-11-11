@@ -16,6 +16,7 @@ import {
   fetchTagWorksCount,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-data"
 import {
+  isTagPageDefaultView,
   parseTagPageQuery,
   toRatings,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
@@ -130,7 +131,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     {
       ...META.TAGS,
       // 作品のないタグ・R18 のみのタグ・並び替えた一覧は検索結果に出さない
-      isIndex: worksCount > 0 && !isR18Fallback,
+      isIndex: worksCount > 0 && !isR18Fallback && isTagPageDefaultView(query),
     },
     {
       title: `${tag}のAIイラスト・画像 ${worksCount.toLocaleString()}件${pageSuffixJa}`,
