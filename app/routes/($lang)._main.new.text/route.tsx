@@ -6,9 +6,10 @@ import {
   useLoaderData,
   useSearchParams,
 } from "@remix-run/react"
-import React, { useContext, useReducer } from "react"
+import React, { useContext, useEffect, useReducer } from "react"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { safeParse } from "valibot"
+import { Button } from "~/components/ui/button"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -26,6 +27,7 @@ import {
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
 import { usePostTextGenerationResults } from "~/routes/($lang)._main.new.text/hooks/use-post-text-generation-results"
 import { usePostTextSubmit } from "~/routes/($lang)._main.new.text/hooks/use-post-text-submit"
+import { useTextDraft } from "~/routes/($lang)._main.new.text/hooks/use-text-draft"
 import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import {
@@ -188,10 +190,46 @@ export default function NewText() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
+  const draft = useTextDraft({
+    userId: authContext.userId,
+    current: {
+      title: inputState.title,
+      caption: inputState.caption,
+      md: inputState.md,
+      type: inputState.type === "NOVEL" ? "NOVEL" : "COLUMN",
+    },
+  })
+
+  // 投稿できたら書きかけは消す
+  useEffect(() => {
+    if (state.progress === 100) {
+      draft.clear()
+    }
+  }, [state.progress])
+
+  const restoreDraft = () => {
+    const restorable = draft.restorable
+    if (restorable === null) {
+      return
+    }
+    dispatchInput({ type: "SET_TITLE", payload: restorable.title })
+    dispatchInput({ type: "SET_CAPTION", payload: restorable.caption })
+    dispatchInput({ type: "SET_MD", payload: restorable.md })
+    dispatchInput({ type: "SET_TYPE", payload: restorable.type })
+    draft.decide()
+  }
+
+  const isDirty =
+    inputState.title.trim() !== "" ||
+    inputState.caption.trim() !== "" ||
+    inputState.md.trim() !== "" ||
+    state.items.length > 0
+
   useBeforeUnload(
     React.useCallback(
       (event) => {
-        if (state) {
+        // 何も入力していないとき・投稿が済んだあとは確認しない
+        if (isDirty && state.progress !== 100) {
           const confirmationMessage = t(
             "ページ遷移すると変更が消えますが問題無いですか？",
             "Are you sure to leave this page? Changes may be lost.",
@@ -200,7 +238,7 @@ export default function NewText() {
           return confirmationMessage
         }
       },
-      [state, t],
+      [isDirty, state.progress, t],
     ),
   )
 
@@ -228,8 +266,37 @@ export default function NewText() {
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="space-y-4">
         <PostFormHeader type="text" />
-        <PostTextFormUploader state={state} dispatch={dispatch} />
+        {draft.restorable && (
+          <div className="flex flex-col gap-2 rounded-lg border border-primary/40 bg-primary/5 p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="font-medium">
+                {t("書きかけの下書きがあります", "You have an unsaved draft")}
+              </p>
+              <p className="truncate text-muted-foreground text-xs">
+                {draft.restorable.title.trim() ||
+                  draft.restorable.md.replace(/\s+/g, " ").slice(0, 40) ||
+                  t("（タイトルなし）", "(Untitled)")}
+                {" ・ "}
+                {new Date(draft.restorable.savedAt).toLocaleString()}
+              </p>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <Button type="button" size="sm" onClick={restoreDraft}>
+                {t("続きから書く", "Restore")}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={draft.discard}
+              >
+                {t("破棄", "Discard")}
+              </Button>
+            </div>
+          </div>
+        )}
         <PostTextFormInput
+          afterBody={<PostTextFormUploader state={state} dispatch={dispatch} />}
           imageInformation={state.pngInfo}
           state={inputState}
           dispatch={dispatchInput}
@@ -261,6 +328,11 @@ export default function NewText() {
           isLoading={authContext.isLoading}
           isDisabled={state.progress !== 0}
           onSubmit={onPost}
+          note={
+            draft.savedAt
+              ? t("下書きを自動保存しました", "Draft saved")
+              : undefined
+          }
         />
       </div>
       <SuccessCreatedWorkDialog

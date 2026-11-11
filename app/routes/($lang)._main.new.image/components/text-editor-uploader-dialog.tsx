@@ -1,12 +1,12 @@
-import { Card, CardContent } from "~/components/ui/card"
-import { useState } from "react"
-import { uploadPublicImage } from "~/utils/upload-public-image"
-import { Button } from "~/components/ui/button"
-import { toast } from "sonner"
 import { Loader2Icon, XIcon } from "lucide-react"
-import { ScrollArea } from "~/components/ui/scroll-area"
+import { useState } from "react"
+import { toast } from "sonner"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog"
+import { ScrollArea } from "~/components/ui/scroll-area"
 import { useTranslation } from "~/hooks/use-translation"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
 type Props = {
   token: string
@@ -17,7 +17,7 @@ type Props = {
 /**
  * テキスト入力時の画像アップローダー
  */
-export function TextEditorUploaderDialog (props: Props) {
+export function TextEditorUploaderDialog(props: Props) {
   const [imageBase64, setImageBase64] = useState<string | null>(null)
 
   const [isOpen, setIsOpen] = useState(false)
@@ -141,7 +141,7 @@ export function TextEditorUploaderDialog (props: Props) {
   return (
     <Dialog open={isOpen} onOpenChange={(isOpen) => setIsOpen(isOpen)}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
-      <DialogContent className="min-h-[40vw] min-w-[88vw] pl-2">
+      <DialogContent className="z-[110] min-h-[40vw] min-w-[88vw] pl-2">
         <Card>
           <CardContent className="space-y-2 p-4">
             <p className="font-bold text-sm">

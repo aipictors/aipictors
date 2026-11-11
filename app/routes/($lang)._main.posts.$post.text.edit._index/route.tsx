@@ -7,10 +7,10 @@ import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { ModerationFixBanner } from "~/components/moderation/moderation-fix-banner"
-import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { buildCorrectionMessage } from "~/lib/moderation/moderation-report-guide"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
+import { PostFormSubmitBar } from "~/routes/($lang)._main.new.image/components/post-form-submit-bar"
 import {
   PostTextFormAiModelFragment,
   PostTextFormAlbumFragment,
@@ -24,6 +24,7 @@ import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reduce
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { EditTextFormUploader } from "~/routes/($lang)._main.posts.$post.text.edit._index/components/edit-text-form-uploader"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
+import { getReservationDetails } from "~/utils/get-reservation-details"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { getJstDate } from "~/utils/jst-date"
 import { resizeThumbnail } from "~/utils/resize-image"
@@ -31,7 +32,6 @@ import { resolveEditThumbnailSource } from "~/utils/resolve-edit-thumbnail-sourc
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadTextFile } from "~/utils/upload-text-file"
-import { getReservationDetails } from "~/utils/get-reservation-details"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -377,35 +377,20 @@ export default function EditText() {
         work,
       )
 
-      const smallThumbnail = thumbnailSource.startsWith(
-        "https://",
-      )
+      const smallThumbnail = thumbnailSource.startsWith("https://")
         ? null
-        : await resizeThumbnail(
-            thumbnailSource,
-            400,
-            1200,
-            "webp",
-          )
+        : await resizeThumbnail(thumbnailSource, 400, 1200, "webp")
 
       dispatch({ type: "SET_PROGRESS", payload: 20 })
 
-      const largeThumbnail = thumbnailSource.startsWith(
-        "https://",
-      )
+      const largeThumbnail = thumbnailSource.startsWith("https://")
         ? null
-        : await resizeThumbnail(
-            thumbnailSource,
-            600,
-            1600,
-            "webp",
-          )
+        : await resizeThumbnail(thumbnailSource, 600, 1600, "webp")
 
       dispatch({ type: "SET_PROGRESS", payload: 30 })
 
       const smallThumbnailUrl =
-        thumbnailSource.startsWith("https://") ||
-        smallThumbnail === null
+        thumbnailSource.startsWith("https://") || smallThumbnail === null
           ? (work.smallThumbnailImageURL ?? "")
           : await uploadPublicImage(
               smallThumbnail.base64,
@@ -417,8 +402,7 @@ export default function EditText() {
       uploadedImageUrls.push(smallThumbnailUrl)
 
       const largeThumbnailUrl =
-        thumbnailSource.startsWith("https://") ||
-        largeThumbnail === null
+        thumbnailSource.startsWith("https://") || largeThumbnail === null
           ? (work.largeThumbnailImageURL ?? "")
           : await uploadPublicImage(
               largeThumbnail.base64,
@@ -456,9 +440,7 @@ export default function EditText() {
 
       const mainImageSha256 = await sha256(thumbnailSource)
 
-      const mainImageSize = await getSizeFromBase64(
-        thumbnailSource,
-      )
+      const mainImageSize = await getSizeFromBase64(thumbnailSource)
 
       dispatch({ type: "SET_PROGRESS", payload: 70 })
 
@@ -587,17 +569,25 @@ export default function EditText() {
 
   const [disabledSubmit, setDisabledSubmit] = React.useState(false)
 
+  const normalizeText = (value: string) => value.replace(/\s+/g, "")
+  const isDirty =
+    work !== null &&
+    (inputState.title !== (work.title ?? "") ||
+      inputState.caption !== (work.description ?? "") ||
+      normalizeText(inputState.md) !== normalizeText(markdownContent))
+
   useBeforeUnload(
     React.useCallback(
       (event) => {
-        if (state) {
+        // 変更していないとき・更新が済んだあとは確認しない
+        if (isDirty && state.progress !== 100) {
           const confirmationMessage =
             "ページ遷移すると変更が消えますが問題無いですか？"
           event.returnValue = confirmationMessage
           return confirmationMessage
         }
       },
-      [state],
+      [isDirty, state.progress],
     ),
   )
 
@@ -611,8 +601,8 @@ export default function EditText() {
             isTemporaryPrivate={work.adminAccessType === "TEMPORARY_PRIVATE"}
           />
         )}
-        <EditTextFormUploader state={state} dispatch={dispatch} />
         <PostTextFormInput
+          afterBody={<EditTextFormUploader state={state} dispatch={dispatch} />}
           imageInformation={state.pngInfo}
           state={inputState}
           dispatch={dispatchInput}
@@ -638,16 +628,22 @@ export default function EditText() {
           needFix={work?.moderatorReport?.status === "UNHANDLED"}
           mdUrl={work?.mdUrl ?? ""}
         />
-        <div className="h-4" />
-        <Button
-          disabled={disabledSubmit}
-          className="fixed bottom-0 left-0 z-30 ml-0 w-full rounded-none p-0 md:ml-[72px] md:pr-[72px] lg:ml-[224px] lg:pr-[224px] xl:left-auto xl:m-0 xl:max-w-[1200px] xl:pl-[8%]"
-          size={"lg"}
-          type="submit"
-          onClick={onPost}
-        >
-          {"更新"}
-        </Button>
+        <PostFormSubmitBar
+          requirements={[
+            {
+              label: "カバー画像",
+              isDone: state.items.length > 0 || state.thumbnailBase64 !== null,
+            },
+            { label: "タイトル", isDone: inputState.title.trim().length > 0 },
+            { label: "本文", isDone: inputState.md.trim().length > 0 },
+          ]}
+          isNotLoggedIn={authContext.isNotLoggedIn}
+          isLoading={authContext.isLoading}
+          isDisabled={disabledSubmit || state.progress !== 0}
+          onSubmit={onPost}
+          submitLabel="更新する"
+          note={isDirty ? "未保存の変更があります" : undefined}
+        />
       </div>
       <SuccessCreatedWorkDialog
         isOpen={state.progress === 100}

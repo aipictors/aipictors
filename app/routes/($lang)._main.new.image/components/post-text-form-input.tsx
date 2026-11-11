@@ -1,7 +1,7 @@
 import { useLazyQuery, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
-import { type Dispatch, useEffect, useState } from "react"
+import { type Dispatch, type ReactNode, useEffect, useState } from "react"
 import type { InferInput } from "valibot"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
@@ -43,7 +43,9 @@ type Props = {
   recentlyUsedTags: FragmentOf<typeof PostTextFormRecentlyUsedTagsFragment>[]
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
-  themes: { date: string; title: string; id: string; note?: string | null }[] | null
+  themes:
+    | { date: string; title: string; id: string; note?: string | null }[]
+    | null
   events: {
     title: string | null
     description: string | null
@@ -61,6 +63,8 @@ type Props = {
   /** 新規投稿では、たまにしか使わない設定を畳む */
   isAdvancedCollapsed?: boolean
   mdUrl?: string
+  /** 本文のすぐ後に出すもの（カバー画像の選択など） */
+  afterBody?: ReactNode
 }
 
 // 日本時間の日付を計算する関数
@@ -297,12 +301,44 @@ export function PostTextFormInput(props: Props) {
           value={props.state.correctionMessage ?? ""}
         />
       )}
+      <PostFormItemType
+        type={props.state.type ?? "COLUMN"}
+        setType={(type) => {
+          props.dispatch({ type: "SET_TYPE", payload: type })
+        }}
+      />
       <PostFormItemTitle
         onChange={(title) => {
           props.dispatch({ type: "SET_TITLE", payload: title })
         }}
         value={props.state.title}
       />
+      <PostFormItemMd
+        onChange={(value) => {
+          props.dispatch({ type: "SET_MD", payload: value })
+        }}
+        // 編集では保存済みのファイル、新規では入力中の本文（下書きの復元を反映するため）
+        value={props.mdUrl ? markdownContent : props.state.md}
+      />
+      {props.afterBody && (
+        <section className="space-y-2 rounded-lg border p-3 md:p-4">
+          <div>
+            <p className="font-bold text-sm">
+              {t("カバー画像", "Cover image")}
+              <span className="ml-1 font-normal text-muted-foreground text-xs">
+                {t("（必須）", "(required)")}
+              </span>
+            </p>
+            <p className="text-muted-foreground text-xs">
+              {t(
+                "一覧やSNSで共有したときに表示される表紙です",
+                "Shown in lists and when shared on social media",
+              )}
+            </p>
+          </div>
+          {props.afterBody}
+        </section>
+      )}
       <PostFormItemCaption
         setCaption={(caption) => {
           props.dispatch({ type: "SET_CAPTION", payload: caption })
@@ -313,19 +349,6 @@ export function PostTextFormInput(props: Props) {
         isCaptionBeforeBody={props.state.isCaptionBeforeBody}
         onChange={(value) => {
           props.dispatch({ type: "SET_CAPTION_BEFORE_BODY", payload: value })
-        }}
-      />
-      <PostFormItemMd
-        label="本文"
-        onChange={(value) => {
-          props.dispatch({ type: "SET_MD", payload: value })
-        }}
-        value={markdownContent}
-      />
-      <PostFormItemType
-        type={props.state.type ?? "COLUMN"}
-        setType={(type) => {
-          props.dispatch({ type: "SET_TYPE", payload: type })
         }}
       />
       <PostFormItemTags
@@ -500,45 +523,45 @@ export function PostTextFormInput(props: Props) {
           "English version, permissions, related link, promotion and more",
         )}
       >
-      <PostFormItemEnglish
-        onChangeTitle={(title) => {
-          props.dispatch({ type: "SET_EN_TITLE", payload: title })
-        }}
-        onChangeCaption={(caption) => {
-          props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
-        }}
-        title={props.state.enTitle}
-        caption={props.state.enCaption}
-        sourceTitle={props.state.title}
-        sourceCaption={props.state.caption}
-      />
-      <PostFormPermissionSetting
-        isTagEditableChecked={props.state.useTagFeature}
-        onTagEditableChange={(value) => {
-          props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
-        }}
-        isCommentsEditableChecked={props.state.useCommentFeature}
-        onCommentsEditableChange={(value) => {
-          props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
-        }}
-      />
-      <PostFormItemRelatedLink
-        link={props.state.link}
-        onChange={(link) => {
-          props.dispatch({ type: "SET_LINK", payload: link })
-        }}
-      />
-      <PostFormItemAdvertising
-        isSubscribed={
-          props.currentPass?.type === "STANDARD" ||
-          props.currentPass?.type === "PREMIUM"
-        }
-        isChecked={props.state.usePromotionFeature}
-        hasLink={(props.state.link ?? "").trim().length > 0}
-        onChange={(isAd) => {
-          props.dispatch({ type: "ENABLE_PROMOTION_FEATURE", payload: isAd })
-        }}
-      />
+        <PostFormItemEnglish
+          onChangeTitle={(title) => {
+            props.dispatch({ type: "SET_EN_TITLE", payload: title })
+          }}
+          onChangeCaption={(caption) => {
+            props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
+          }}
+          title={props.state.enTitle}
+          caption={props.state.enCaption}
+          sourceTitle={props.state.title}
+          sourceCaption={props.state.caption}
+        />
+        <PostFormPermissionSetting
+          isTagEditableChecked={props.state.useTagFeature}
+          onTagEditableChange={(value) => {
+            props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
+          }}
+          isCommentsEditableChecked={props.state.useCommentFeature}
+          onCommentsEditableChange={(value) => {
+            props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
+          }}
+        />
+        <PostFormItemRelatedLink
+          link={props.state.link}
+          onChange={(link) => {
+            props.dispatch({ type: "SET_LINK", payload: link })
+          }}
+        />
+        <PostFormItemAdvertising
+          isSubscribed={
+            props.currentPass?.type === "STANDARD" ||
+            props.currentPass?.type === "PREMIUM"
+          }
+          isChecked={props.state.usePromotionFeature}
+          hasLink={(props.state.link ?? "").trim().length > 0}
+          onChange={(isAd) => {
+            props.dispatch({ type: "ENABLE_PROMOTION_FEATURE", payload: isAd })
+          }}
+        />
       </PostFormAdvancedSection>
     </div>
   )
