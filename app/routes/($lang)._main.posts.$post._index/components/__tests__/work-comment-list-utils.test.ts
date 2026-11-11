@@ -3,6 +3,8 @@ import {
   calculateCommentSupportDraft,
   clearPremiumCheckoutSearchParams,
   excludeShownComments,
+  SUPPORT_FREE_COIN_STEPS,
+  SUPPORT_PREMIUM_COIN_STEPS,
 } from "../work-comment-list-utils"
 
 test("フリーは 1pt、プレミアムは 10pt で数える", () => {
@@ -46,4 +48,9 @@ test("非表示にしたものも外し、どちらでもないものは順番�
     { id: "1" },
   ])
   expect(excludeShownComments(replies, [], [])).toEqual(replies)
+})
+
+test("コメント欄の推しコインにも 20（フリー）・2（プレミアム）がある（作品の推しコインと同じ枚数を選べる）", () => {
+  expect(SUPPORT_FREE_COIN_STEPS).toContain(20)
+  expect(SUPPORT_PREMIUM_COIN_STEPS).toContain(2)
 })

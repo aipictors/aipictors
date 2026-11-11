@@ -30,8 +30,8 @@ export type PremiumConfirmResponse = {
  * 推しコインのボタンで足す量。よく使われるのは 10〜100pt くらい（プレミアムは 1 枚 10pt）
  * 以前は 100/500/1000 でスマホでは入力が面倒、桁を間違えて多く送ってしまうことがあった
  */
-export const SUPPORT_FREE_COIN_STEPS = [10, 30, 50, 100] as const
-export const SUPPORT_PREMIUM_COIN_STEPS = [1, 3, 5, 10] as const
+export const SUPPORT_FREE_COIN_STEPS = [10, 20, 30, 50, 100] as const
+export const SUPPORT_PREMIUM_COIN_STEPS = [1, 2, 3, 5, 10] as const
 
 /** これ以上の pt を送るときは確認する（桁の間違いを防ぐ） */
 export const SUPPORT_CONFIRM_THRESHOLD_PT = 1000
