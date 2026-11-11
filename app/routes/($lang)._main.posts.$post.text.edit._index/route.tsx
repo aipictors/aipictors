@@ -657,7 +657,6 @@ export default function EditText() {
         md={inputState.md}
         type={inputState.type === "NOVEL" ? "NOVEL" : "COLUMN"}
         coverUrl={state.thumbnailBase64 || null}
-        authorName={work?.user?.name}
       />
       <SuccessCreatedWorkDialog
         isOpen={state.progress === 100}
