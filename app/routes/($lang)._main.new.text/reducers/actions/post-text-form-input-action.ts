@@ -38,6 +38,10 @@ export const vPostTextFormInputAction = union([
     payload: string(),
   }),
   object({
+    type: literal("SET_CAPTION_BEFORE_BODY"),
+    payload: boolean(),
+  }),
+  object({
     type: literal("SET_EN_CAPTION"),
     payload: string(),
   }),
@@ -137,6 +141,7 @@ export const vPostTextFormInputAction = union([
       title: string(),
       enTitle: string(),
       caption: string(),
+      isCaptionBeforeBody: boolean(),
       enCaption: string(),
       themeId: nullable(string()),
       albumId: nullable(string()),

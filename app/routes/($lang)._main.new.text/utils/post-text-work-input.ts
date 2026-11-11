@@ -29,6 +29,7 @@ export const toTextWorkInput = (props: {
     title: form.title,
     entitle: form.enTitle,
     explanation: form.caption,
+    isCaptionBeforeBody: inputState.isCaptionBeforeBody,
     enExplanation: form.enCaption,
     rating: inputState.ratingRestriction,
     prompt: state.pngInfo?.params.prompt ?? null,

@@ -23,6 +23,7 @@ export const vPostTextFormInputState = object({
   aiModelId: nullable(string()),
   albumId: nullable(string()),
   caption: string(),
+  isCaptionBeforeBody: boolean(),
   date: date(),
   enCaption: string(),
   enTitle: string(),

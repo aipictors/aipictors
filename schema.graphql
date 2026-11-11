@@ -1543,6 +1543,9 @@ input CreateWorkInput {
   """Bot採点ランキングに参加するか"""
   isBotGradingRankingEnabled: Boolean
 
+  """キャプションを本文の前（前書き）に表示するか（小説・コラム）。false は本文の後"""
+  isCaptionBeforeBody: Boolean
+
   """コメント許可"""
   isCommentEditable: Boolean!
 
@@ -1863,6 +1866,12 @@ type EmergencyAnnouncementNode {
 
 input FeaturePromptonRequestWhereInput {
   userId: ID!
+}
+
+input FeedEventInput {
+  """IMPRESSION（画面に出た）/ CLICK（開いた）/ HIDE（興味なし）"""
+  type: String!
+  workId: ID!
 }
 
 """フィード"""
@@ -3501,6 +3510,9 @@ type Mutation {
   """コインでアイコン枠を買う（買った枠の ID を返す）"""
   purchaseUserAvatarFrame(input: PurchaseUserAvatarFrameInput!): ID!
 
+  """おすすめ一覧での反応（見た・開いた・興味なし）を記録する。ログインしていなければ何もしない"""
+  recordFeedEvents(events: [FeedEventInput!]!): Boolean!
+
   """キャラクターの表情を再生成する"""
   regenerateCharacterExpression(input: RegenerateCharacterExpressionInput!): CharacterExpressionNode!
 
@@ -3515,6 +3527,9 @@ type Mutation {
 
   """スタンプを報告する"""
   reportSticker(input: ReportStickerInput!): Boolean
+
+  """お題提案を通報する"""
+  reportThemeProposal(comment: String, proposalId: ID!, reason: ReportReason!): Boolean
 
   """ユーザを報告する"""
   reportUser(input: ReportUserInput!): Boolean
@@ -3645,6 +3660,9 @@ type Mutation {
 
   """小説を更新する"""
   updateNovel(input: UpdateNovelInput!): NovelNode!
+
+  """コメント欄に固定するスタンプを、渡した順に置き換える"""
+  updatePinnedStickers(stickerIds: [ID!]!): [StickerNode!]!
 
   """画像生成のタスクの保護を変更する"""
   updateProtectedImageGenerationResult(input: UpdateProtectedImageGenerationResultInput!): ImageGenerationResultNode!
@@ -5630,6 +5648,9 @@ input UpdateWorkInput {
   """Bot採点ランキングに参加するか"""
   isBotGradingRankingEnabled: Boolean
 
+  """キャプションを本文の前（前書き）に表示するか（小説・コラム）。false は本文の後"""
+  isCaptionBeforeBody: Boolean
+
   """コメント許可"""
   isCommentEditable: Boolean!
 
@@ -6390,6 +6411,9 @@ type Viewer {
   """決済履歴"""
   payments: [PaymentNode!]!
 
+  """コメント欄に固定したスタンプ（並び順のまま）"""
+  pinnedStickers: [StickerNode!]!
+
   """自分の投稿"""
   posts(limit: Int!, offset: Int!): [PostNode!]!
 
@@ -6838,6 +6862,9 @@ type WorkNode implements Node {
 
   """Bot採点ランキングに参加するか"""
   isBotGradingRankingEnabled: Boolean!
+
+  """キャプションを本文の前（前書き）に表示するか（小説・コラム）"""
+  isCaptionBeforeBody: Boolean!
 
   """コメント編集許可"""
   isCommentsEditable: Boolean!

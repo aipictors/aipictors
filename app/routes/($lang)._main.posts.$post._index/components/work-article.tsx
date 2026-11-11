@@ -200,6 +200,27 @@ export function WorkArticle(props: Props) {
         props.work.largeThumbnailImageHeight
       : undefined
 
+  // 小説・コラムは作者が選べば、キャプションを本文の前（前書き）に出す
+  const isCaptionBeforeBody =
+    (props.work.type === "NOVEL" || props.work.type === "COLUMN") &&
+    props.work.isCaptionBeforeBody === true &&
+    displayDescription.trim() !== ""
+
+  const descriptionView = (
+    <WorkArticleDescription
+            displayDescription={displayDescription}
+            isDescriptionExpanded={isDescriptionExpanded}
+            isDescriptionLong={isDescriptionLong}
+            isShowingTranslation={isShowingTranslation}
+            isTranslating={isTranslating}
+            onClickTranslate={onClickTranslate}
+            setIsDescriptionExpanded={setIsDescriptionExpanded}
+            shouldShowTranslateLink={shouldShowTranslateLink}
+            translateLinkLabel={translateLinkLabel}
+            translatedDescription={translatedDescription}
+          />
+  )
+
   return (
     <article className="flex flex-col space-y-4">
       <PostAccessTypeBanner
@@ -230,6 +251,7 @@ export function WorkArticle(props: Props) {
           title={t(props.work.title, props.work.enTitle || undefined)}
         />
       )}
+      {isCaptionBeforeBody && descriptionView}
       {props.work.type === "COLUMN" && (
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
@@ -238,6 +260,7 @@ export function WorkArticle(props: Props) {
           workId={props.work.id}
           workType="COLUMN"
           authorName={props.work.user?.name}
+          foreword={isCaptionBeforeBody ? displayDescription : undefined}
         />
       )}
       {props.work.type === "NOVEL" && (
@@ -248,6 +271,7 @@ export function WorkArticle(props: Props) {
           workId={props.work.id}
           workType="NOVEL"
           authorName={props.work.user?.name}
+          foreword={isCaptionBeforeBody ? displayDescription : undefined}
         />
       )}
       <section className="mt-4 flex flex-col space-y-4">
@@ -361,18 +385,7 @@ export function WorkArticle(props: Props) {
             isEditable={props.work.isTagEditable}
           />
         </div>
-        <WorkArticleDescription
-          displayDescription={displayDescription}
-          isDescriptionExpanded={isDescriptionExpanded}
-          isDescriptionLong={isDescriptionLong}
-          isShowingTranslation={isShowingTranslation}
-          isTranslating={isTranslating}
-          onClickTranslate={onClickTranslate}
-          setIsDescriptionExpanded={setIsDescriptionExpanded}
-          shouldShowTranslateLink={shouldShowTranslateLink}
-          translateLinkLabel={translateLinkLabel}
-          translatedDescription={translatedDescription}
-        />
+        {!isCaptionBeforeBody && descriptionView}
         {props.work.relatedUrl !== null &&
           props.work.relatedUrl !== "undefined" &&
           props.work.relatedUrl?.length > 0 && (

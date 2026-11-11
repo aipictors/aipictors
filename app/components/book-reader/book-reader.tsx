@@ -51,6 +51,8 @@ type Props = {
   title: string
   authorName?: string
   coverUrl?: string
+  /** 作者が本文の前に出すと選んだキャプション（扉に前書きとして出す） */
+  foreword?: string
   workId: string
   workType: "NOVEL" | "COLUMN"
   onClose: () => void
@@ -981,6 +983,7 @@ export function BookReader(props: Props): ReactNode {
             palette={palette}
             vertical={vertical}
             charCount={book.charCount}
+            foreword={props.foreword}
             t={t}
           />
         ) : exists ? (
@@ -1501,6 +1504,7 @@ function TitlePage(props: {
   palette: (typeof PALETTES)[ReaderTheme]
   vertical: boolean
   charCount: number
+  foreword?: string
   t: Translate
 }): ReactNode {
   const minutes = Math.max(1, Math.ceil(props.charCount / CHARS_PER_MINUTE))
@@ -1563,6 +1567,21 @@ function TitlePage(props: {
         )}
         {props.vertical ? props.t("・縦書き", " · vertical") : ""}
       </div>
+      {props.foreword && (
+        <div
+          // 扉の中で読めるように、長い前書きはこの枠の中で送る
+          className="max-h-[30%] w-full max-w-md overflow-y-auto whitespace-pre-wrap break-words rounded-md px-4 py-3 text-left text-sm"
+          style={{
+            color: props.palette.text,
+            border: `1px solid ${props.palette.accent}40`,
+            lineHeight: 1.8,
+          }}
+          onClick={(event) => event.stopPropagation()}
+          onKeyDown={(event) => event.stopPropagation()}
+        >
+          {props.foreword}
+        </div>
+      )}
     </div>
   )
 }

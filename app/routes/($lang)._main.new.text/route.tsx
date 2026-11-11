@@ -135,6 +135,7 @@ export default function NewText() {
     aiModelId: "1",
     albumId: null,
     caption: "",
+    isCaptionBeforeBody: false,
     date: new Date(),
     enCaption: "",
     enTitle: "",

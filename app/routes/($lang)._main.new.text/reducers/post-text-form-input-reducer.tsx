@@ -42,6 +42,12 @@ export const postTextFormInputReducer = (
         caption: action.payload,
       }
     }
+    case "SET_CAPTION_BEFORE_BODY": {
+      return {
+        ...state,
+        isCaptionBeforeBody: action.payload,
+      }
+    }
     case "SET_EN_CAPTION": {
       return {
         ...state,
@@ -206,6 +212,7 @@ export const postTextFormInputReducer = (
         tags: action.payload.tags,
         enTitle: action.payload.enTitle,
         caption: action.payload.caption,
+        isCaptionBeforeBody: action.payload.isCaptionBeforeBody,
         enCaption: action.payload.enCaption,
         themeId: action.payload.themeId,
         albumId: action.payload.albumId,

@@ -9,6 +9,7 @@ const inputState = {
   aiModelId: "1",
   albumId: null,
   caption: "",
+  isCaptionBeforeBody: false,
   date: new Date(),
   enCaption: "",
   enTitle: "",
@@ -126,5 +127,15 @@ describe("toTextWorkInput", () => {
         inputState: { ...inputState, useGenerationParams: false },
       }).accessGenerationType,
     ).toBe("PRIVATE")
+  })
+
+  test("キャプションを本文の前に出すかを送る（既定は本文の後）", () => {
+    expect(toTextWorkInput(props).isCaptionBeforeBody).toBe(false)
+    expect(
+      toTextWorkInput({
+        ...props,
+        inputState: { ...inputState, isCaptionBeforeBody: true },
+      }).isCaptionBeforeBody,
+    ).toBe(true)
   })
 })

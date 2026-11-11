@@ -13,6 +13,7 @@ export const workArticleFragment = graphql(
     promptAccessType
     rating
     description
+    isCaptionBeforeBody
     isSensitive
     enTitle
     enDescription
@@ -214,6 +215,7 @@ export const sensitiveWorkArticleFragment = graphql(
     promptAccessType
     rating
     description
+    isCaptionBeforeBody
     isSensitive
     enTitle
     enDescription

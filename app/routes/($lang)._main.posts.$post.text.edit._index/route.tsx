@@ -133,6 +133,7 @@ export default function EditText() {
           aiModelId: work?.workModelId?.toString() ?? "1",
           albumId: work?.album?.id ?? null,
           caption: work?.description ?? "",
+          isCaptionBeforeBody: work?.isCaptionBeforeBody ?? false,
           date: new Date(work?.createdAt * 1000),
           enCaption: work?.enDescription ?? "",
           enTitle: work?.enTitle ?? "",
@@ -242,6 +243,7 @@ export default function EditText() {
     aiModelId: work?.workModelId?.toString() ?? null,
     albumId: work?.album?.id ?? null,
     caption: work?.description ?? "",
+    isCaptionBeforeBody: work?.isCaptionBeforeBody ?? false,
     date: new Date(work?.createdAt ?? new Date()),
     enCaption: work?.enDescription ?? "",
     enTitle: work?.enTitle ?? "",
@@ -485,6 +487,7 @@ export default function EditText() {
             title: formResult.output.title,
             entitle: formResult.output.enTitle,
             explanation: formResult.output.caption,
+            isCaptionBeforeBody: inputState.isCaptionBeforeBody,
             enExplanation: formResult.output.enCaption,
             rating: inputState.ratingRestriction,
             prompt: state.pngInfo?.params.prompt ?? null,
@@ -753,6 +756,7 @@ const workQuery = graphql(
       promptAccessType
       rating
       description
+      isCaptionBeforeBody
       isSensitive
       enTitle
       enDescription

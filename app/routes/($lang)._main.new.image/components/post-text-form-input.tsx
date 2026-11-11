@@ -10,6 +10,7 @@ import { PostFormAdvancedSection } from "~/routes/($lang)._main.new.image/compon
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
 import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
 import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
+import { PostFormItemCaptionPosition } from "~/routes/($lang)._main.new.image/components/post-form-item-caption-position"
 import { PostFormItemDate } from "~/routes/($lang)._main.new.image/components/post-form-item-date"
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
 import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/post-form-item-event"
@@ -307,6 +308,12 @@ export function PostTextFormInput(props: Props) {
           props.dispatch({ type: "SET_CAPTION", payload: caption })
         }}
         caption={props.state.caption}
+      />
+      <PostFormItemCaptionPosition
+        isCaptionBeforeBody={props.state.isCaptionBeforeBody}
+        onChange={(value) => {
+          props.dispatch({ type: "SET_CAPTION_BEFORE_BODY", payload: value })
+        }}
       />
       <PostFormItemMd
         label="本文"

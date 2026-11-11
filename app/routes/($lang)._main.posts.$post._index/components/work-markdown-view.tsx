@@ -25,6 +25,8 @@ type Props = {
   workId?: string
   workType?: "NOVEL" | "COLUMN"
   authorName?: string
+  /** 本文の前に出すキャプション（本のように読む画面では扉に出す） */
+  foreword?: string
 }
 
 export function WorkMarkdownView(props: Props) {
@@ -177,6 +179,7 @@ export function WorkMarkdownView(props: Props) {
             title={props.title}
             authorName={props.authorName}
             coverUrl={props.thumbnailUrl}
+            foreword={props.foreword}
             workId={props.workId}
             workType={props.workType ?? "NOVEL"}
             onClose={() => {
