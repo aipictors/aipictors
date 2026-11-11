@@ -350,6 +350,7 @@ export default function NewText() {
         coverUrl={state.thumbnailBase64}
       />
       <SuccessCreatedWorkDialog
+        isNew
         isOpen={state.progress === 100}
         title={inputState.title}
         description={inputState.caption}

@@ -5,6 +5,7 @@ import { WorkAutoModerationPostNotice } from "~/components/work/work-auto-modera
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { PostNextSteps } from "~/routes/($lang)._main.new.image/components/post-next-steps"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 
 type Props = {
@@ -19,6 +20,8 @@ type Props = {
   accessType: IntrospectionEnum<"AccessType">
   /** 画像の自動判定の結果を出す（画像の作品だけ） */
   showAutoModeration?: boolean
+  /** 新しく投稿した（編集の更新ではない）。「投稿しました」と次の一手を出す */
+  isNew?: boolean
 }
 
 export function SuccessCreatedWorkDialog(props: Props) {
@@ -133,7 +136,7 @@ export function SuccessCreatedWorkDialog(props: Props) {
         }}
         open={props.isOpen}
       >
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <div className="relative h-40 w-full">
             <div
               id="confetti-container"
@@ -150,7 +153,11 @@ export function SuccessCreatedWorkDialog(props: Props) {
             )}
           </div>
           <p className="text-center font-bold">
-            {t("作品が更新されました", "The work has been updated")}
+            {props.isNew
+              ? isReserved()
+                ? t("予約投稿しました", "Your work has been scheduled")
+                : t("作品を投稿しました！", "Your work has been posted!")
+              : t("作品が更新されました", "The work has been updated")}
           </p>
           {props.showAutoModeration && props.isOpen && (
             <WorkAutoModerationPostNotice workId={props.workId} />
@@ -169,6 +176,11 @@ export function SuccessCreatedWorkDialog(props: Props) {
               hashtags={props.shareTags}
             />
           </div>
+          {props.isNew &&
+            props.isOpen &&
+            props.workId !== null &&
+            (props.accessType === "PUBLIC" || props.accessType === "SILENT") &&
+            !isReserved() && <PostNextSteps workId={props.workId} />}
           <Button
             onClick={() => {
               if (typeof document !== "undefined") {
