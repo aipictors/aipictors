@@ -6875,6 +6875,9 @@ type WorkNode implements Node {
   """キャプションを本文の前（前書き）に表示するか（小説・コラム）"""
   isCaptionBeforeBody: Boolean!
 
+  """投稿者の初めての公開作品か（投稿完了画面・新人向けの案内に使う）"""
+  isFirstPost: Boolean!
+
   """コメント編集許可"""
   isCommentsEditable: Boolean!
 
