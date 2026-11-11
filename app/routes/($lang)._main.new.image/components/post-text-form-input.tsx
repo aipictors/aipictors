@@ -33,6 +33,7 @@ import {
   jstDateTimeToWallClockUnixSeconds,
   toJstWallClockUnixSeconds,
 } from "~/utils/jst-date"
+import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -139,8 +140,7 @@ export function PostTextFormInput(props: Props) {
   useEffect(() => {
     // マークダウンファイルの URL からマークダウンを取得する
     if (props.mdUrl) {
-      fetch(props.mdUrl)
-        .then((res) => res.text())
+      fetchMarkdownText(props.mdUrl)
         .then((text) => {
           setMarkdownContent(text)
         })

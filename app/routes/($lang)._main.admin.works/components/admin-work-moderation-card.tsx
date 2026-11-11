@@ -30,6 +30,7 @@ import { ReportDialog } from "~/routes/($lang)._main.posts.$post._index/componen
 import type { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 
 type WorkModerationCardProps = {
   work: WorkItem
@@ -105,8 +106,7 @@ export function WorkModerationCard(props: WorkModerationCardProps) {
     let cancelled = false
     setIsMarkdownLoading(true)
 
-    fetch(detail.mdUrl)
-      .then((res) => res.text())
+    fetchMarkdownText(detail.mdUrl)
       .then((text) => {
         if (!cancelled) {
           setMarkdown(text)

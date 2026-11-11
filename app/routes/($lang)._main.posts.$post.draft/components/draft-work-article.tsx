@@ -25,6 +25,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { toRatingText } from "~/utils/work/to-rating-text"
 import { toStyleText } from "~/utils/work/to-style-text"
+import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -60,8 +61,7 @@ export function DraftWorkArticle(props: Props) {
   useEffect(() => {
     // マークダウンファイルの URL からマークダウンを取得する
     if (props.work.mdUrl) {
-      fetch(props.work.mdUrl)
-        .then((res) => res.text())
+      fetchMarkdownText(props.work.mdUrl)
         .then((text) => {
           setMarkdownContent(text)
         })

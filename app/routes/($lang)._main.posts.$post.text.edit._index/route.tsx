@@ -33,6 +33,7 @@ import { resolveEditThumbnailSource } from "~/utils/resolve-edit-thumbnail-sourc
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadTextFile } from "~/utils/upload-text-file"
+import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -68,8 +69,7 @@ export default function EditText() {
   useEffect(() => {
     // マークダウンファイルの URL からマークダウンを取得する
     if (work?.mdUrl) {
-      fetch(work?.mdUrl)
-        .then((res) => res.text())
+      fetchMarkdownText(work.mdUrl)
         .then((text) => {
           setMarkdownContent(text)
         })

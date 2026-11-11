@@ -36,6 +36,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { getWorkThumbnailHint } from "~/utils/work-thumbnail-hint"
 import { translateText } from "~/utils/translate-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 
 export {
   sensitiveWorkArticleFragment,
@@ -95,8 +96,7 @@ export function WorkArticle(props: Props) {
     // マークダウンファイルの URL からマークダウンを取得する
     if (!props.work.mdUrl) return
     let isCurrent = true
-    fetch(props.work.mdUrl)
-      .then((res) => res.text())
+    fetchMarkdownText(props.work.mdUrl)
       .then((text) => {
         // 先に開いた作品の本文が後から届いても上書きしない
         if (!isCurrent) return
