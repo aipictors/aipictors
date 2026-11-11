@@ -75,6 +75,21 @@ describe("prepareBookHtml", () => {
     expect(isPageBreakText("[改ページ]です")).toBe(false)
   })
 
+  test("挿絵の直後など段落の途中の［改ページ］でも、そこで段落を分けて改ページする（閉じ括弧の書き忘れも）", () => {
+    const book = prepareBookHtml(
+      '<p>とても短気<img src="a.png">[改ページ]</p><p>次の人<img src="b.png">[改ページ<img src="c.png">[改ページ]</p><p>最後</p>',
+    )
+    expect(book.html).toBe(
+      '<p data-b="0">とても短気<img src="a.png" loading="eager" decoding="async"></p>' +
+        '<p data-b="1" class="rb-page-break" aria-hidden="true"></p>' +
+        '<p data-b="2">次の人<img src="b.png" loading="eager" decoding="async"></p>' +
+        '<p data-b="3" class="rb-page-break" aria-hidden="true"></p>' +
+        '<p data-b="4"><img src="c.png" loading="eager" decoding="async"></p>' +
+        '<p data-b="5" class="rb-page-break" aria-hidden="true"></p>' +
+        '<p data-b="6">最後</p>',
+    )
+  })
+
   test("コードの中は変えない", () => {
     const book = prepareBookHtml("<pre><code>|a《b》 12</code></pre>")
     expect(book.html).toBe('<pre data-b="0"><code>|a《b》 12</code></pre>')

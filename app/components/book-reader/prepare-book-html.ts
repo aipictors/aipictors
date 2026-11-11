@@ -9,7 +9,8 @@
  * - 縦書きで横に並べる 2 桁の半角数字・「!?」「!!」に rb-tcy を付ける（縦中横。横書きでは何もしない）
  * - “ ” は縦書きだと横向きのまま間が空くので、縦書きでは〝 〟を出す（両方を入れて CSS でどちらかを隠す）
  * - 目次の候補（見出しと、「◆」「第1話」などで始まる短い段落）を集める
- * - 「[改ページ]」「［改ページ］」「[newpage]」だけの段落を改ページの印（rb-page-break）にする。次の段落は次のページから始まる
+ * - 「[改ページ]」「［改ページ］」「[newpage]」を改ページの印（rb-page-break）にする。次の段落は次のページから始まる。
+ *   段落の途中（挿絵の直後など）に書かれていても、そこで段落を分けて改ページする
  *
  * 文字列の置き換えではなく DOM を組み立てるので、本文の文字が HTML として解釈されることはない
  */
@@ -41,11 +42,70 @@ const QUOTE_PATTERN = /[“”]/g
 const HEADING_LIKE_PATTERN =
   /^(?:[◆◇■□●○★☆▼▽※【]|第[0-9０-９一二三四五六七八九十百千]+[話章節部幕]|(?:プロローグ|エピローグ|序章|終章|幕間)(?:\s|　|$))/
 
-const PAGE_BREAK_PATTERN = /^[\[［]\s*(?:改ページ|改頁|newpage)\s*[\]］]$/i
+/** 改ページの印。閉じ括弧の書き忘れ（「[改ページ」）も印にする（g を付けて使うときは new RegExp(source, "gi") で作り直す） */
+export const PAGE_BREAK_MARKER_PATTERN =
+  /[\[［]\s*(?:改ページ|改頁|newpage)\s*[\]］]?/i
+const PAGE_BREAK_PATTERN = new RegExp(
+  `^${PAGE_BREAK_MARKER_PATTERN.source}$`,
+  "i",
+)
 
 /** 改ページの印として書かれた行か（作品ページでは隠し、本のように読む画面では改ページにする） */
 export const isPageBreakText = (text: string) =>
   PAGE_BREAK_PATTERN.test(text.trim())
+
+/**
+ * 段落の途中にある改ページの印で段落を分ける（印は印だけの段落にする）。
+ * 段落の直下の文字だけを見る（太字などの中に書かれた印はそのまま）
+ */
+const splitPageBreaks = (doc: Document, root: Element) => {
+  const paragraphs = Array.from(root.children).filter(
+    (element) => element.tagName === "P",
+  )
+  for (const paragraph of paragraphs) {
+    const text = paragraph.textContent ?? ""
+    if (!PAGE_BREAK_MARKER_PATTERN.test(text) || isPageBreakText(text)) continue
+    const groups: Node[][] = [[]]
+    for (const child of Array.from(paragraph.childNodes)) {
+      if (child.nodeType !== 3) {
+        groups.at(-1)?.push(child)
+        continue
+      }
+      const pattern = new RegExp(PAGE_BREAK_MARKER_PATTERN.source, "gi")
+      const data = (child as Text).data
+      let last = 0
+      for (
+        let match = pattern.exec(data);
+        match !== null;
+        match = pattern.exec(data)
+      ) {
+        const before = data.slice(last, match.index)
+        if (before !== "") groups.at(-1)?.push(doc.createTextNode(before))
+        groups.push([doc.createTextNode(match[0])], [])
+        last = match.index + match[0].length
+      }
+      const rest = data.slice(last)
+      if (rest !== "") groups.at(-1)?.push(doc.createTextNode(rest))
+    }
+    if (groups.length === 1) continue
+    const replacements = groups
+      .filter((nodes) =>
+        nodes.some(
+          (node) =>
+            node.nodeType !== 3 || (node.textContent ?? "").trim() !== "",
+        ),
+      )
+      .map((nodes) => {
+        const next = doc.createElement("p")
+        for (const node of nodes) next.appendChild(node)
+        return next
+      })
+    for (const replacement of replacements) {
+      paragraph.parentNode?.insertBefore(replacement, paragraph)
+    }
+    paragraph.remove()
+  }
+}
 
 const SKIP_TAGS = new Set(["CODE", "PRE", "A", "RUBY", "RT", "SCRIPT", "STYLE"])
 
@@ -181,6 +241,8 @@ export const prepareBookHtml = (html: string): PreparedBook => {
       blockExcerpts: [],
     }
   }
+
+  splitPageBreaks(doc, root)
 
   // 最後の空の段落と改ページの印は余白のページを作るだけなので消す
   const isTrailing = (element: Element) =>

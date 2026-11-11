@@ -349,8 +349,9 @@ export const applyImageFits = (
       }
     }
   })
-  Array.from(root.querySelectorAll(":scope > .rb-page-break")).forEach(
-    (pageBreak, index) => {
+  Array.from(root.children)
+    .filter((element) => element.classList.contains("rb-page-break"))
+    .forEach((pageBreak, index) => {
       const count = pageBreakExtras[index] ?? 0
       for (let i = 0; i < count; i++) {
         const marker = doc.createElement("div")
@@ -358,8 +359,7 @@ export const applyImageFits = (
         marker.setAttribute("aria-hidden", "true")
         pageBreak.parentNode?.insertBefore(marker, pageBreak.nextSibling)
       }
-    },
-  )
+    })
   return root.innerHTML
 }
 
