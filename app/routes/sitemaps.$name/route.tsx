@@ -258,7 +258,15 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
       },
       isRecent
         ? undefined
-        : { kv: getSitemapKv(context), ttlSeconds: ONE_DAY * 7 },
+        : {
+            kv: getSitemapKv(context),
+            // 30 日より前の日はまず変わらないので KV に 30 日置く（全期間の日付を検索エンジンがたどり、7 日では作り直しが多かった）
+            ttlSeconds:
+              jstDayStartSeconds(date) <
+              jstDayStartSeconds(today) - ONE_DAY * 30
+                ? ONE_DAY * 30
+                : ONE_DAY * 7,
+          },
     )
   }
 
