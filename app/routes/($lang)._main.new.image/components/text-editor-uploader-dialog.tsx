@@ -89,7 +89,8 @@ export function TextEditorUploaderDialog (props: Props) {
     }
 
     // 挿絵はクリックで原寸表示できるので、大きめ（長辺 1600px）で保存する
-    const resizedImage = await resizeImage(file, 1600)
+    // ブラウザが読めない形式（HEIC など）だと失敗するので、何も起きないままにせず知らせる
+    const resizedImage = await resizeImage(file, 1600).catch(() => null)
     if (resizedImage) {
       setImageBase64(resizedImage)
     } else {
@@ -146,7 +147,19 @@ export function TextEditorUploaderDialog (props: Props) {
             <p className="font-bold text-sm">
               {t("本文に差し込む画像", "Image to insert in text")}
             </p>
-            <input type="file" accept="image/*" onChange={handleImageUpload} />
+            {/* 「ファイルを選択」がただの文字に見えて押せると分からないので、ボタンの見た目にする */}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="w-full cursor-pointer text-sm file:mr-3 file:cursor-pointer file:rounded-md file:border file:border-input file:bg-primary file:px-3 file:py-1.5 file:font-medium file:text-primary-foreground file:text-sm"
+            />
+            <p className="text-muted-foreground text-xs">
+              {t(
+                "①「ファイルを選択」で画像を選ぶ ②「画像をアップロード」を押す ③ 下に出た画像を押すと、カーソルの位置に入ります",
+                "1. Choose a file  2. Press Upload Image  3. Click the uploaded image to insert it at the cursor",
+              )}
+            </p>
             <Button
               className="w-full items-center"
               variant={"secondary"}

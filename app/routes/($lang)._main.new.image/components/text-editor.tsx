@@ -26,6 +26,7 @@ import Blockquote from "@tiptap/extension-blockquote"
 import HorizontalRule from "@tiptap/extension-horizontal-rule"
 import { graphql } from "gql.tada"
 import { TextEditorUploaderDialog } from "~/routes/($lang)._main.new.image/components/text-editor-uploader-dialog"
+import { repairMarkdownHardBreaks } from "~/utils/repair-markdown-hard-breaks"
 
 const TextEditor = ({
   value,
@@ -70,15 +71,15 @@ const TextEditor = ({
       Blockquote,
       HorizontalRule,
     ],
-    content: value,
+    content: repairMarkdownHardBreaks(value),
     onUpdate: ({ editor }) => {
-      onChange(editor.storage.markdown.getMarkdown())
+      onChange(repairMarkdownHardBreaks(editor.storage.markdown.getMarkdown()))
     },
   })
 
   useEffect(() => {
     if (editor && editor.getText() === "") {
-      editor.commands.setContent(value)
+      editor.commands.setContent(repairMarkdownHardBreaks(value))
     }
   }, [value, editor])
 
