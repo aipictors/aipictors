@@ -23,6 +23,7 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { useGenerationPlanHint } from "~/routes/($lang).generation._index/hooks/use-generation-plan-hint"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {
@@ -131,6 +132,13 @@ export function GenerationSubmitOperationParts(props: Props) {
     sizeMultiplier
 
   const passType = context.currentPass?.type
+
+  // 無料の人には、生成が終わった直後にプランの案内を 1 行出す（1 日 1 回）
+  useGenerationPlanHint(
+    authContext.isLoggedIn &&
+      !props.isCoinSummaryLoading &&
+      context.currentPass === null,
+  )
 
   // サブスクでない人は拡大後のサイズも 2048×2048 まで
   const isUpscaleDisabled = isUpscaleOverFreeLimit(

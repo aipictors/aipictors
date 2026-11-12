@@ -1,6 +1,11 @@
 import { Link } from "~/lib/app/locale-router"
 import { SparklesIcon, ZapIcon } from "lucide-react"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
+import { useTranslation } from "~/hooks/use-translation"
+import {
+  trackGrowthEvent,
+  trackGrowthEventOnce,
+} from "~/utils/track-growth-event"
 import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"
 import { GenerationQueryContext } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useGenerationProgress } from "~/routes/($lang).generation._index/hooks/use-generation-progress"
@@ -31,6 +36,23 @@ export function InProgressGenerationCard(props: Props) {
   const isStandardOrPremium =
     dataContext.currentPass?.type === "STANDARD" ||
     dataContext.currentPass?.type === "PREMIUM"
+
+  const t = useTranslation()
+
+  const passType = dataContext.currentPass?.type ?? null
+
+  // 無料の人には「プランなら 1 回 4 枚」、ライトの人には順番待ちのときだけ「スタンダード以上は優先」を出す
+  // （優先は生成ワーカーの queue-policy と pass の priority で確かめた: スタンダード・プレミアムが優先、ライトと無料は通常）
+  const hint =
+    dataContext.currentPass === null
+      ? "free"
+      : passType === "LITE" && props.inProgressNormalCount > 0
+        ? "LITE"
+        : null
+
+  useEffect(() => {
+    if (hint !== null) trackGrowthEventOnce("gen_wait_view", hint)
+  }, [hint])
 
   const progress = useGenerationProgress(props.taskNanoid, !props.isCanceling)
 
@@ -115,15 +137,24 @@ export function InProgressGenerationCard(props: Props) {
               }}
             />
           </div>
-          {!isStandardOrPremium && props.inProgressNormalCount > 0 && (
+          {hint !== null && (
             <Link
-              to="/plus"
+              to="/plus#plans"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[11px] text-cyan-200 hover:underline"
+              onClick={() => trackGrowthEvent("gen_wait_click", hint)}
+              className="inline-flex items-center gap-1 text-[11px] text-cyan-200 underline-offset-2 hover:underline"
             >
-              <ZapIcon className="size-3" />
-              優先生成で{props.inProgressNormalCount}人をスキップ
+              <ZapIcon className="size-3 shrink-0" />
+              {hint === "free"
+                ? t(
+                    "プランなら1回で4枚・初月¥240〜",
+                    "Plans: 4 per run, from ¥240",
+                  )
+                : t(
+                    "スタンダード以上は優先して生成",
+                    "Standard+ gets priority",
+                  )}
             </Link>
           )}
           {isStandardOrPremium && props.inProgressNormalCount > 0 && (

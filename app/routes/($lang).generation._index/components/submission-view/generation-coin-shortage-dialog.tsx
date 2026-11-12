@@ -52,6 +52,8 @@ const PLANS = [
   },
 ] as const
 
+const LITE = PLANS[0]
+
 /**
  * 次に毎日のコインが届くまでの時間（日本時間の 0 時）
  */
@@ -119,8 +121,8 @@ export function GenerationCoinShortageDialog (props: Props) {
                       "Welcome back! Rejoin a plan for 4 images per run and up to 200 a day.",
                     )
                   : t(
-                      "続けて作るなら、プランかコインの購入がおすすめです。プランなら1回で4枚まとめて生成できます。今なら初月半額です。",
-                      "Keep creating with a plan or coins. Plans make 4 images per run, and your first month is 50% off.",
+                      "プランなら、このまま続けて作れます。1回で4枚まとめて生成でき、初月は半額です。",
+                      "Keep creating with a plan: 4 images per run, and your first month is 50% off.",
                     )
                 : t(
                     "上のプランにすると、毎日のコインが増えます。コインを買って続けることもできます。",
@@ -138,7 +140,110 @@ export function GenerationCoinShortageDialog (props: Props) {
             </p>
           )}
 
-          {plans.length > 0 && (
+          {isFree && (
+            // 選択肢を並べると選ばれなかったので、いちばん安い入り方（ライト・初月半額）を主役にして、押したらそのまま決済へ進む
+            <div className="space-y-2">
+              <div className="rounded-2xl border-2 border-violet-500 bg-gradient-to-br from-violet-500/10 to-sky-500/10 p-4 dark:border-violet-400">
+                <div className="flex items-end justify-between gap-2">
+                  <div>
+                    <p className="font-bold">
+                      {t("ライトプラン", "Lite plan")}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {t(
+                        `2か月目から${LITE.price}/月（税込）`,
+                        `Then ${LITE.price}/mo (tax incl.)`,
+                      )}
+                    </p>
+                  </div>
+                  <p className="text-right">
+                    <span className="mr-1 rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
+                      {t("初月半額", "50% off")}
+                    </span>
+                    <span className="font-extrabold text-3xl text-fuchsia-600 tracking-tight dark:text-fuchsia-300">
+                      {LITE.firstMonth}
+                    </span>
+                  </p>
+                </div>
+                <ul className="mt-3 grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+                  {[
+                    t("1回で4枚（無料は1枚）", "4 per run (1 on Free)"),
+                    t(
+                      `1日${LITE.perDay}枚（無料は10枚）`,
+                      `${LITE.perDay} a day (10 on Free)`,
+                    ),
+                    t("広告なし", "No ads"),
+                    t("画像から生成", "Image-to-image"),
+                  ].map((text) => (
+                    <li key={text} className="flex items-center gap-1">
+                      <Check className="size-3 shrink-0 text-violet-500" />
+                      {text}
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  disabled={checkout.isLoading}
+                  onClick={() => {
+                    trackGrowthEvent("shortage_checkout_LITE", source)
+                    void checkout.startCheckout("LITE")
+                  }}
+                  className="mt-3 h-11 w-full rounded-xl bg-gradient-to-r from-violet-600 to-sky-500 font-bold text-white shadow-lg shadow-violet-500/25 hover:opacity-95 dark:text-white"
+                >
+                  {checkout.isLoadingFor("LITE") ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    t(
+                      `初月${LITE.firstMonth}で続ける（決済へ）`,
+                      `Continue for ${LITE.firstMonth} (checkout)`,
+                    )
+                  )}
+                </Button>
+                <p className="mt-2 text-center text-muted-foreground text-xs">
+                  {t(
+                    "いつでも解約できます（解約後も更新日まで使えます）",
+                    "Cancel anytime (benefits last until the renewal date).",
+                  )}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {PLANS.filter((plan) => plan.type !== "LITE").map((plan) => (
+                  <button
+                    type="button"
+                    key={plan.type}
+                    disabled={checkout.isLoading}
+                    onClick={() => {
+                      trackGrowthEvent(`shortage_checkout_${plan.type}`, source)
+                      void checkout.startCheckout(plan.type)
+                    }}
+                    className="rounded-xl border p-2.5 text-left transition-colors hover:bg-muted disabled:opacity-60"
+                  >
+                    <span className="flex items-center justify-between gap-1 font-bold text-sm">
+                      {t(plan.name[0], plan.name[1])}
+                      {checkout.isLoadingFor(plan.type) && (
+                        <Loader2 className="size-3 animate-spin" />
+                      )}
+                    </span>
+                    <span className="block text-muted-foreground text-xs">
+                      {t(
+                        `1日${plan.perDay}枚・優先して生成`,
+                        `${plan.perDay}/day, priority queue`,
+                      )}
+                    </span>
+                    <span className="block text-xs">
+                      <span className="font-bold text-fuchsia-600 dark:text-fuchsia-300">
+                        {t(`初月${plan.firstMonth}`, `${plan.firstMonth} 1st mo`)}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {t(`・以降${plan.price}/月`, `, then ${plan.price}/mo`)}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {!isFree && plans.length > 0 && (
             <div className="space-y-2">
               {plans.map((plan) => (
                 // 押したらそのまま決済へ（以前は /plus に移るだけで、表示 217 回に対してプランのクリックは 4 回だった）
@@ -210,8 +315,8 @@ export function GenerationCoinShortageDialog (props: Props) {
                 <li className="flex items-center gap-1">
                   <Check className="size-3" />
                   {t(
-                    "画像から生成・高速生成モードも使えます",
-                    "Image-to-image and fast mode included",
+                    "スタンダード以上は優先して生成され、高速生成モードも使えます",
+                    "Standard and above get priority in the queue and fast mode",
                   )}
                 </li>
               </ul>
@@ -219,40 +324,41 @@ export function GenerationCoinShortageDialog (props: Props) {
           )}
 
           <div className="space-y-2">
-            {plans.length > 0 && (
-              <Button asChild variant="ghost" className="w-full gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
+              {plans.length > 0 && (
                 <Link
                   to="/plus#plans"
                   onClick={() => {
                     trackGrowthEvent("shortage_plans", source)
                     props.onOpenChange(false)
                   }}
+                  className="inline-flex items-center gap-1 text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                 >
-                  <Sparkles className="size-4" />
-                  {t("プランを詳しく比べる（年払いは2か月分おトク）", "Compare plans (yearly saves 2 months)")}
+                  <Sparkles className="size-3.5" />
+                  {t("プランを比べる（年払いあり）", "Compare plans (yearly available)")}
                 </Link>
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                trackGrowthEvent("shortage_coins", source)
-                props.onOpenChange(false)
-                setIsCoinDialogOpen(true)
-              }}
-            >
-              {t(
-                "コインを買って続ける（100コイン80円〜）",
-                "Buy coins to continue (from ¥80)",
               )}
-            </Button>
+              <button
+                type="button"
+                onClick={() => {
+                  trackGrowthEvent("shortage_coins", source)
+                  props.onOpenChange(false)
+                  setIsCoinDialogOpen(true)
+                }}
+                className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
+                {t(
+                  "コインだけ買う（100コイン80円〜）",
+                  "Buy coins only (from ¥80)",
+                )}
+              </button>
+            </div>
             <p className="flex items-center justify-center gap-1 text-muted-foreground text-xs">
               <Clock className="size-3" />
               {isFree
                 ? t(
-                    `あと${next.hours}時間${next.minutes}分で、また100コイン（10枚分）が届きます`,
-                    `100 free coins arrive again in ${next.hours}h ${next.minutes}m`,
+                    `無料のままなら、あと${next.hours}時間${next.minutes}分で100コイン（10枚分）が届きます`,
+                    `Staying on Free? 100 coins arrive again in ${next.hours}h ${next.minutes}m`,
                   )
                 : t(
                     `あと${next.hours}時間${next.minutes}分で、毎日のコインが届きます`,
