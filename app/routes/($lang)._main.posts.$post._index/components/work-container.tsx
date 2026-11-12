@@ -97,9 +97,11 @@ export function WorkContainer(props: Props) {
     likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
   const work = workBase ? { ...workBase, likedUsers } : workBase
 
-  const { data: workCommentsRet, loading: isLoadingComments } = useQuery(
+  // ログイン状態が分かる前に取ると未ログインとして返り、ミュート・ブロックした人のコメントがそのまま出る
+  const { data: workCommentsRet, loading: isFetchingComments } = useQuery(
     workCommentsQuery,
     {
+      skip: authContext.isLoading,
       fetchPolicy: "network-only",
       ssr: false,
       variables: {
@@ -107,6 +109,7 @@ export function WorkContainer(props: Props) {
       },
     },
   )
+  const isLoadingComments = isFetchingComments || authContext.isLoading
 
   const comments = workCommentsRet?.work?.comments ?? []
 
