@@ -10,9 +10,14 @@ import { useContext, useEffect, useState } from "react"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
+import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
 import { getHomeNavigationSections } from "~/routes/($lang)._main._index/components/home-navigation-sections"
 import { HomeMenuNavigationButton } from "~/routes/($lang)._main._index/components/home-menu-navigation-button"
+import {
+  trackGrowthEvent,
+  trackGrowthEventOnce,
+} from "~/utils/track-growth-event"
 
 type Props = {
   title?: string
@@ -54,6 +59,13 @@ export function HomeMenuRouteList({
 
   const t = useTranslation()
   const [isExtraMenuOpen, setIsExtraMenuOpen] = useState(false)
+  const plusStatus = usePlusStatus()
+  const isPlusNavVisible = plusStatus === "guest" || plusStatus === "free"
+
+  // メニューを開いてプランの入口が出た回数（ブラウザを開いている間に 1 回）
+  useEffect(() => {
+    if (isPlusNavVisible) trackGrowthEventOnce("plus_nav_view", "mobile_menu")
+  }, [isPlusNavVisible])
 
   const sensitivePath =
     /\/r($|\/)/.test(location.pathname)
@@ -93,7 +105,11 @@ export function HomeMenuRouteList({
       </div>
 
       {/* Main nav（PC のサイドバーと共通の項目） ------------------- */}
-      {getHomeNavigationSections({ isSensitive, isModerator: !!isModerator }).map(
+      {getHomeNavigationSections({
+        isSensitive,
+        isModerator: !!isModerator,
+        plusStatus,
+      }).map(
         (section) => {
           const isOpen = !section.isCollapsible || isExtraMenuOpen
           return (
@@ -137,7 +153,14 @@ export function HomeMenuRouteList({
                       key={item.key}
                       href={item.href}
                       icon={item.icon}
-                      onClick={closeHeaderMenu}
+                      badge={item.badge ? t(...item.badge) : undefined}
+                      isAccent={item.isAccent}
+                      onClick={() => {
+                        if (item.growthEvent) {
+                          trackGrowthEvent(item.growthEvent, "mobile_menu")
+                        }
+                        closeHeaderMenu()
+                      }}
                     >
                       {t(...item.label)}
                     </HomeMenuNavigationButton>

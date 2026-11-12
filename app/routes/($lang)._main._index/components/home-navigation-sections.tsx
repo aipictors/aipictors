@@ -4,6 +4,7 @@ import {
   BookImageIcon,
   BookOpenIcon,
   BoxesIcon,
+  GemIcon,
   HeartIcon,
   HelpCircleIcon,
   HistoryIcon,
@@ -19,12 +20,14 @@ import {
   RocketIcon,
   SearchIcon,
   Shield,
+  SparklesIcon,
   StampIcon,
   StarIcon,
   TagIcon,
   UsersIcon,
   WandSparklesIcon,
 } from "lucide-react"
+import type { PlusStatus } from "~/hooks/use-plus-status"
 import { toR18Path } from "~/utils/content-mode"
 
 type HomeNavigationItem = {
@@ -34,6 +37,12 @@ type HomeNavigationItem = {
   icon: LucideIcon
   /** 外部サイト */
   isExternal?: boolean
+  /** ラベルの横に出す小さな印（初月半額など） */
+  badge?: [string, string]
+  /** 目立たせる項目（Aipictors+） */
+  isAccent?: boolean
+  /** 押した回数を /api/growth-event で数えるときのイベント名 */
+  growthEvent?: string
 }
 
 type HomeNavigationSection = {
@@ -48,6 +57,8 @@ type HomeNavigationSection = {
 type Options = {
   isSensitive: boolean
   isModerator: boolean
+  /** プランの案内の出し分け（確認中は項目を出さない） */
+  plusStatus?: PlusStatus
 }
 
 /**
@@ -90,6 +101,20 @@ export function getHomeNavigationSections(
           label: ["フォロー新着", "Following"],
           icon: UsersIcon,
         },
+        // プランのページへの入口がユーザーメニューの中にしかなく、ほとんど開かれていなかった
+        ...(options.plusStatus === "guest" || options.plusStatus === "free"
+          ? [
+              {
+                key: "plus",
+                href: "/plus",
+                label: ["Aipictors+", "Aipictors+"] as [string, string],
+                icon: SparklesIcon,
+                badge: ["初月半額", "50% off"] as [string, string],
+                isAccent: true,
+                growthEvent: "plus_nav_click",
+              },
+            ]
+          : []),
       ],
     },
     {
@@ -192,6 +217,17 @@ export function getHomeNavigationSections(
       title: ["その他", "More"],
       isCollapsible: true,
       items: [
+        // 加入中の人には案内を出さず、管理の入口だけ置く
+        ...(options.plusStatus === "member"
+          ? [
+              {
+                key: "plus",
+                href: "/plus",
+                label: ["プランの管理", "Manage plan"] as [string, string],
+                icon: GemIcon,
+              },
+            ]
+          : []),
         {
           key: "releases",
           href: "/releases",

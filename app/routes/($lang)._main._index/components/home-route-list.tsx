@@ -16,10 +16,15 @@ import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
+import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { getHomeNavigationSections } from "~/routes/($lang)._main._index/components/home-navigation-sections"
+import {
+  trackGrowthEvent,
+  trackGrowthEventOnce,
+} from "~/utils/track-growth-event"
 
 type Props = {
   title?: string
@@ -41,6 +46,17 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   const t = useTranslation()
   const { sidebarState, toggleSidebar, minimizeSidebar } = useSidebar()
   const [isExtraMenuOpen, setIsExtraMenuOpen] = useState(false)
+  const plusStatus = usePlusStatus()
+  const isPlusNavVisible =
+    sidebarState !== "minimal" &&
+    (plusStatus === "guest" || plusStatus === "free")
+
+  // PC のメニューにプランの入口が出た回数（ブラウザを開いている間に 1 回。スマホ幅ではメニューが隠れているので数えない）
+  useEffect(() => {
+    if (!isPlusNavVisible) return
+    if (!window.matchMedia("(min-width: 768px)").matches) return
+    trackGrowthEventOnce("plus_nav_view", "sidebar")
+  }, [isPlusNavVisible])
 
   useEffect(() => {
     if (authContext.isLoading || authContext.isNotLoggedIn) {
@@ -117,6 +133,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         {getHomeNavigationSections({
           isSensitive,
           isModerator: !!isModerator,
+          plusStatus,
         }).map((section) => {
           const isOpen = !section.isCollapsible || isExtraMenuOpen
           return (
@@ -152,7 +169,14 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
                     href={item.href}
                     icon={item.icon}
                     isExternal={item.isExternal}
-                    onClick={closeHeaderMenu}
+                    badge={item.badge ? t(...item.badge) : undefined}
+                    isAccent={item.isAccent}
+                    onClick={() => {
+                      if (item.growthEvent) {
+                        trackGrowthEvent(item.growthEvent, "sidebar")
+                      }
+                      closeHeaderMenu()
+                    }}
                   >
                     {t(...item.label)}
                   </SidebarNavigationButton>

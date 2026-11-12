@@ -20,6 +20,10 @@ type Props = {
   className?: string
   /** 外部サイト（別タブで開く） */
   isExternal?: boolean
+  /** ラベルの横に出す小さな印 */
+  badge?: string
+  /** 目立たせる項目（Aipictors+） */
+  isAccent?: boolean
 }
 
 /**
@@ -40,6 +44,8 @@ export function SidebarNavigationButton({
   onClick,
   className,
   isExternal,
+  badge,
+  isAccent,
 }: Props): React.ReactNode {
   const { pathname: rawPathname } = useLocation()
   // 英語のページでも同じ項目を選択中にする
@@ -66,13 +72,20 @@ export function SidebarNavigationButton({
               sidebarItemClassName(sidebarState === "expanded"),
               active
                 ? "bg-primary/10 font-semibold text-primary"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                : isAccent
+                  ? "font-semibold text-violet-700 hover:bg-violet-500/10 dark:text-violet-300"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               className,
             )}
           >
             <Icon className="size-5 shrink-0" />
             {sidebarState === "expanded" && (
               <span className="ml-3 truncate">{children}</span>
+            )}
+            {sidebarState === "expanded" && badge && (
+              <span className="ml-auto shrink-0 rounded-full bg-fuchsia-600 px-1.5 py-0.5 font-bold text-[10px] text-white leading-none">
+                {badge}
+              </span>
             )}
           </Link>
         </TooltipTrigger>

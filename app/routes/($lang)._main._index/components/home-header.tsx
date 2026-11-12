@@ -16,6 +16,7 @@ import { useBoolean } from "usehooks-ts"
 import { AppHeader } from "~/components/app/app-header"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
+import { PlusHeaderLink } from "~/components/plus-entry-notice"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
 import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
 import { Button } from "~/components/ui/button"
@@ -595,6 +596,7 @@ function HomeHeader(props: Props) {
             {/* 生成と投稿は分けて並べる（「作成」の中にまとめると投稿の入口が見つけにくかった） */}
             <div className="hidden shrink-0 items-center gap-2 md:flex">
               <HomeHeaderContentToggle />
+              <PlusHeaderLink />
               <div className="flex items-center gap-1.5">
                 <Button
                   variant="ghost"
