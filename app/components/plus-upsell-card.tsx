@@ -1,7 +1,9 @@
 import { Link } from "~/lib/app/locale-router"
 import { CheckIcon, SparklesIcon } from "lucide-react"
 import { useEffect, useRef } from "react"
+import { TrialTerms } from "~/components/trial-terms"
 import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
+import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -28,7 +30,11 @@ export function PlusUpsellCard(props: Props) {
   const t = useTranslation()
   const lite = getPlanSpec("LITE")
   const premium = getPlanSpec("PREMIUM")
-  const isFirstMonthOffer = useFirstMonthOffer()
+  const liteOffer = useLiteOffer()
+  const isTrial = liteOffer.offer === "trial"
+  // 確認中は、お試しとも初月半額とも書かない
+  const isFirstMonthOffer =
+    useFirstMonthOffer() && liteOffer.offer === "half"
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -57,9 +63,13 @@ export function PlusUpsellCard(props: Props) {
       <p className="flex items-center gap-1 font-bold text-sm">
         <SparklesIcon className="size-4 text-violet-500" />
         {"Aipictors+"}
-        {isFirstMonthOffer && (
+        {(isTrial || isFirstMonthOffer) && (
           <span className="ml-1 rounded-full bg-fuchsia-600 px-2 py-0.5 font-bold text-[10px] text-white">
-            {t("初月半額", "50% off first month")}
+            {isTrial
+              ? liteOffer.isGuest
+                ? t(`はじめての方は${TRIAL_DAYS}日間無料`, `New here? ${TRIAL_DAYS} days free`)
+                : t(`${TRIAL_DAYS}日間無料`, `${TRIAL_DAYS} days free`)
+              : t("初月半額", "50% off first month")}
           </span>
         )}
       </p>
@@ -82,7 +92,8 @@ export function PlusUpsellCard(props: Props) {
           </li>
         ))}
       </ul>
-      <p className="text-muted-foreground text-xs">
+      {isTrial && <TrialTerms isGuest={liteOffer.isGuest} />}
+      <p className={cn("text-muted-foreground text-xs", isTrial && "hidden")}>
         {isFirstMonthOffer
           ? t(
               `ライトは初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}、2か月目から¥${toMoneyNumberText(lite.price)}/月。いつでも解約できます`,
@@ -101,9 +112,17 @@ export function PlusUpsellCard(props: Props) {
           to="/plus#plans"
           onClick={() => {
             if (props.source) trackGrowthEvent("upsell_click", props.source)
+            if (props.source && isTrial) {
+              trackGrowthEvent("trial_click", props.source)
+            }
           }}
         >
-          {t("プランを見る", "See plans")}
+          {isTrial
+            ? t(
+                `ライトを${TRIAL_DAYS}日間無料で試す`,
+                `Try Lite free for ${TRIAL_DAYS} days`,
+              )
+            : t("プランを見る", "See plans")}
         </Link>
       </Button>
     </div>

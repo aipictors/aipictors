@@ -10,7 +10,7 @@ import {
   GENERATION_COIN_COST,
   getPlanSpec,
 } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
-import { USD_PER_JPY } from "~/utils/to-approx-usd-text"
+import { toApproxUsdText, USD_PER_JPY } from "~/utils/to-approx-usd-text"
 
 /**
  * プランのよくある質問
@@ -20,7 +20,20 @@ export function PlusFaq () {
   const free = getPlanSpec("FREE")
   const lite = getPlanSpec("LITE")
 
+  const trialItem = {
+    id: "trial",
+    question: t(
+      "7日間の無料お試しはどういう仕組みですか？",
+      "How does the 7-day free trial work?",
+    ),
+    answer: t(
+      "これまで一度も有料プランに入ったことがない方は、ライト（月払い）を7日間無料で試せます（お1人1回）。申込みにはカードの登録が必要です。7日間は料金がかからず、8日目から ¥480/月（税込）で自動更新されます。お試し中にこのページから解約すれば料金はかからず、お試しの終わりまではそのまま使えます。終了の3日前にメールでお知らせします。同じカードでのお試しは1回だけで、2回目は申込みが取り消され、料金は発生しません。以前プランに入っていた方と、スタンダード・プレミアムの月払いは初月半額です。",
+      `If you've never had a paid plan, you can try Lite (monthly) free for 7 days, once per person. You'll need to enter a card to start. Nothing is charged for 7 days; from day 8 it renews automatically at ¥480/mo (${toApproxUsdText(480)}, tax included, charged in JPY). Cancel from this page during the trial and you won't be charged — you keep access until the trial ends. We email you 3 days before it ends. A card can only be used for one trial; a second attempt is cancelled and nothing is charged. If you've had a plan before, or choose Standard or Premium, you get 50% off the first month instead.`,
+    ),
+  }
+
   const items = [
+    trialItem,
     {
       id: "cancel",
       question: t("解約はいつでもできますか？", "Can I cancel anytime?"),
@@ -128,6 +141,7 @@ export function PlusFaq () {
       question: "What currency am I charged in?",
       answer: `Japanese yen (JPY), tax included. The dollar amounts on this page are estimates at roughly ¥${Math.round(1 / USD_PER_JPY)} to US$1. Your card issuer converts the charge at its own rate and may add a foreign transaction fee, so the amount on your statement can differ slightly.`,
     },
+    trialItem,
     {
       id: "cancel",
       question: "Can I cancel anytime?",
@@ -150,10 +164,11 @@ export function PlusFaq () {
       id: "first-month",
       question: "Who gets the first month at half price?",
       answer:
-        "Anyone who isn't currently on a plan, when choosing a monthly plan — including returning members. The discount is applied automatically at checkout. From the second month you pay the regular price. Yearly plans and non-renewing passes aren't discounted.",
+        "Anyone who isn't currently on a plan, when choosing a monthly plan — including returning members. (If you're eligible for the free trial, Lite starts with the trial instead.) The discount is applied automatically at checkout. From the second month you pay the regular price. Yearly plans and non-renewing passes aren't discounted.",
     },
     ...items.filter(
-      (item) => !["cancel", "paypay", "konbini", "payment"].includes(item.id),
+      (item) =>
+        !["trial", "cancel", "paypay", "konbini", "payment"].includes(item.id),
     ),
   ]
 

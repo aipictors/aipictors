@@ -16,6 +16,7 @@ import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
+import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -47,6 +48,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   const { sidebarState, toggleSidebar, minimizeSidebar } = useSidebar()
   const [isExtraMenuOpen, setIsExtraMenuOpen] = useState(false)
   const plusStatus = usePlusStatus()
+  const liteOffer = useLiteOffer().offer
   const isPlusNavVisible =
     sidebarState !== "minimal" &&
     (plusStatus === "guest" || plusStatus === "free")
@@ -134,6 +136,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
           isSensitive,
           isModerator: !!isModerator,
           plusStatus,
+          liteOffer,
         }).map((section) => {
           const isOpen = !section.isCollapsible || isExtraMenuOpen
           return (

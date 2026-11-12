@@ -4,7 +4,9 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { createTrialCheckout } from "~/lib/trial-api"
 import { rememberCheckoutLocale } from "~/utils/checkout-locale"
+import { trackGrowthEvent } from "~/utils/track-growth-event"
 import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 
 export type CheckoutPassType = "LITE" | "STANDARD" | "PREMIUM"
@@ -55,8 +57,51 @@ export function usePassCheckout() {
     }
   }
 
+  /**
+   * ライトの 7 日間無料お試しの決済画面へ移る（対象かどうかは最後にサーバーが決める。
+   * 対象外だった場合は、初月半額の通常の決済へ進む）
+   */
+  const startTrialCheckout = async () => {
+    setLoadingKey("LITE:month")
+    try {
+      const result = await createTrialCheckout()
+      if (result.kind === "ineligible") {
+        toast(
+          t(
+            "無料お試しの対象外のため、初月半額の決済画面へ進みます。",
+            "You're not eligible for the free trial, so we're taking you to checkout with 50% off your first month.",
+          ),
+        )
+        trackGrowthEvent("trial_ineligible", "checkout")
+        await startCheckout("LITE", "month")
+        return
+      }
+      if (result.kind === "error") {
+        toast(
+          t(
+            "決済画面を開けませんでした。時間をおいてもう一度お試しください。",
+            "We couldn't open checkout. Please try again in a moment.",
+          ),
+        )
+        return
+      }
+      rememberCheckoutLocale()
+      window.location.assign(result.url)
+    } catch (_error) {
+      toast(
+        t(
+          "決済画面を開けませんでした。時間をおいてもう一度お試しください。",
+          "We couldn't open checkout. Please try again in a moment.",
+        ),
+      )
+    } finally {
+      setLoadingKey(null)
+    }
+  }
+
   return {
     startCheckout,
+    startTrialCheckout,
     isLoading: loadingKey !== null,
     isLoadingFor: (passType: CheckoutPassType, interval: BillingInterval = "month") =>
       loadingKey === `${passType}:${interval}`,

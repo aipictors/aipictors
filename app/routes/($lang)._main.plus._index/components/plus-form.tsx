@@ -19,6 +19,8 @@ import { PassBenefitList } from "~/routes/($lang)._main.plus._index/components/p
 import { PassImageGenerationBenefitList } from "~/routes/($lang)._main.plus._index/components/pass-image-generation-benefit-list"
 import { planCtaClassName } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-about"
+import { TrialStatusBanner } from "~/routes/($lang)._main.plus._index/components/trial-status-banner"
+import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { toPassName } from "~/routes/($lang)._main.plus._index/utils/to-pass-name"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -92,6 +94,8 @@ export function PlusForm () {
   const [resumeChecks, setResumeChecks] = useState({ unpaid: false, pause: false })
   // 自動更新なしのパス（PayPay などの 1 回払い）
   const prepaid = usePrepaidPass()
+  // 無料お試し中かどうか（お試し中は、終了日とその後の料金・解約の場所を出す）
+  const { latestTrial } = useLiteOffer()
   const [isPlanChangePreviewLoading, setIsPlanChangePreviewLoading] = useState(false)
   const [planChangeRequest, setPlanChangeRequest] = useState<{
     passType: "LITE" | "STANDARD" | "PREMIUM"
@@ -746,6 +750,15 @@ export function PlusForm () {
               </div>
             </div>
           )}
+          {latestTrial?.status === "trialing" &&
+            currentPass.type === "LITE" &&
+            !isManagedElsewhere && (
+              <TrialStatusBanner
+                trialEnd={latestTrial.trialEnd}
+                isCancelScheduled={isCancelScheduled}
+                cancelAnchorId="plan-cancel"
+              />
+            )}
           <div
             className={cn(
               "justify-between gap-x-6 space-y-4 rounded-3xl border bg-gradient-to-br from-violet-500/10 via-transparent to-sky-500/10 p-5 md:space-y-0 md:p-6",
@@ -850,7 +863,8 @@ export function PlusForm () {
                 ) : (
                   /* 通常時 → 解約ボタン */
                   <Button
-                    className="w-full border-black text-black hover:bg-black/5 dark:border-white dark:bg-transparent dark:text-white dark:hover:bg-white/10"
+                    id="plan-cancel"
+                    className="w-full scroll-mt-24 border-black text-black hover:bg-black/5 dark:border-white dark:bg-transparent dark:text-white dark:hover:bg-white/10"
                     onClick={() => {
                       trackGrowthEvent("retention_view", currentPass.type)
                       setCancelReason(null)

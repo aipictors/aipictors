@@ -5,6 +5,7 @@ import { PlusStickyCta } from "~/routes/($lang)._main.plus._index/components/plu
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
+import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePassCheckout } from "~/hooks/use-pass-checkout"
 import { useTranslation } from "~/hooks/use-translation"
 import {
@@ -15,7 +16,17 @@ import {
   type BillingInterval,
   getPlanSpec,
 } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
-import { trackGrowthEvent } from "~/utils/track-growth-event"
+import {
+  trackGrowthEvent,
+  trackGrowthEventOnce,
+} from "~/utils/track-growth-event"
+
+/** お試しの決済を始めた場所（trial_checkout の src） */
+const TRIAL_SOURCE: Record<string, string> = {
+  plus_checkout: "plus_card",
+  plus_sticky_checkout: "plus_sticky",
+  plus_resume_checkout: "plus_resume",
+}
 
 type Props = {
   showUpgradePlansOnly?: boolean
@@ -41,6 +52,23 @@ export function PlusAbout (props: Props) {
 
   const [interval, setBillingInterval] = useState<BillingInterval>("month")
 
+  // ライトの月払いは、はじめての人には 7 日間無料お試し（それ以外は初月半額）
+  const liteOffer = useLiteOffer()
+
+  const isPlanListForNewMember =
+    props.showStickyCta === true && props.treatAsNoCurrentPass !== true
+
+  // お試しの案内が出た回数・対象外だった回数（ブラウザを開いている間に 1 回）
+  useEffect(() => {
+    if (!isPlanListForNewMember) return
+    if (liteOffer.offer === "trial") {
+      trackGrowthEventOnce("trial_view", liteOffer.isGuest ? "plus_guest" : "plus")
+    }
+    if (liteOffer.offer === "half") {
+      trackGrowthEventOnce("trial_ineligible", "plus")
+    }
+  }, [liteOffer.offer, liteOffer.isGuest, isPlanListForNewMember])
+
   const startCheckout = async (
     passType: "LITE" | "STANDARD" | "PREMIUM",
     billingInterval: BillingInterval,
@@ -53,6 +81,17 @@ export function PlusAbout (props: Props) {
       })
     } catch (_error) {
       // 計測に失敗しても決済は続ける
+    }
+    // お試しの対象の人がライトの月払いを選んだら、お試しの手続きへ
+    if (
+      passType === "LITE" &&
+      billingInterval === "month" &&
+      liteOffer.offer === "trial" &&
+      !liteOffer.isGuest
+    ) {
+      trackGrowthEvent("trial_checkout", TRIAL_SOURCE[event] ?? "plus")
+      await checkout.startTrialCheckout()
+      return
     }
     // plus_checkout_LITE など、前からある名前は変えない（前後で比べるため）。新しい名前は小文字にそろえる
     trackGrowthEvent(
@@ -71,6 +110,9 @@ export function PlusAbout (props: Props) {
 
   const onLoginClick = (passType: "LITE" | "STANDARD" | "PREMIUM", source: string) => {
     savePendingCheckout({ passType, interval })
+    if (passType === "LITE" && interval === "month" && liteOffer.offer === "trial") {
+      trackGrowthEvent("trial_click", `plus_${source}_guest`)
+    }
     trackGrowthEvent(`plus_login_${passType.toLowerCase()}`, source)
   }
 
@@ -79,6 +121,8 @@ export function PlusAbout (props: Props) {
 
   useEffect(() => {
     if (props.canResumeCheckout !== true || hasResumedRef.current) return
+    // お試しにできるかが分かってから進む（はじめての人はお試し、以前入っていた人は初月半額の決済へ）
+    if (liteOffer.offer === "unknown") return
     hasResumedRef.current = true
     const pending = takePendingCheckout()
     if (pending === null) return
@@ -91,7 +135,7 @@ export function PlusAbout (props: Props) {
       ),
     )
     void startCheckout(pending.passType, pending.interval, "plus_resume_checkout")
-  }, [props.canResumeCheckout])
+  }, [props.canResumeCheckout, liteOffer.offer])
 
   return (
     <>

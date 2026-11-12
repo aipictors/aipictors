@@ -10,6 +10,7 @@ import { useContext, useEffect, useState } from "react"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
+import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
 import { getHomeNavigationSections } from "~/routes/($lang)._main._index/components/home-navigation-sections"
@@ -60,6 +61,7 @@ export function HomeMenuRouteList({
   const t = useTranslation()
   const [isExtraMenuOpen, setIsExtraMenuOpen] = useState(false)
   const plusStatus = usePlusStatus()
+  const liteOffer = useLiteOffer().offer
   const isPlusNavVisible = plusStatus === "guest" || plusStatus === "free"
 
   // メニューを開いてプランの入口が出た回数（ブラウザを開いている間に 1 回）
@@ -109,6 +111,7 @@ export function HomeMenuRouteList({
         isSensitive,
         isModerator: !!isModerator,
         plusStatus,
+          liteOffer,
       }).map(
         (section) => {
           const isOpen = !section.isCollapsible || isExtraMenuOpen

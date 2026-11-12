@@ -13,7 +13,9 @@ import {
 } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import { toPassFeatures } from "~/routes/($lang)._main.plus._index/utils/to-pass-features"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
+import { TrialTerms } from "~/components/trial-terms"
 import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
+import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 
 type Props = {
   plan: PlanKey
@@ -58,7 +60,19 @@ export function PassPlanDescription(props: Props) {
   const isButtonVisible = props.isHide !== true
   const isYearly = props.interval === "year" && !isFree
   // 初月半額は月払いだけ（年払いはクーポンを付けない）
-  const isFirstMonthOffer = useFirstMonthOffer() && !isYearly && !isFree
+  // ライトの月払いは、はじめての人には 7 日間無料お試し、以前入っていた人には初月半額
+  const liteOffer = useLiteOffer()
+  const isLiteMonthly = props.plan === "LITE" && !isYearly
+  const isTrialOffer =
+    isLiteMonthly && liteOffer.offer === "trial" && props.isCurrent !== true
+  // 確認中は、お試しとも半額とも書かない（後から切り替わってちらつかないように）
+  const isOfferUnknown = isLiteMonthly && liteOffer.offer === "unknown"
+  const isFirstMonthOffer =
+    useFirstMonthOffer() &&
+    !isYearly &&
+    !isFree &&
+    !isTrialOffer &&
+    !isOfferUnknown
   const firstMonthPrice = toFirstMonthPrice(spec.price)
   // スマホ（1 列）では特典の一覧をたたんで、3 つのプランと登録ボタンがすぐ見えるようにする
   const [isFeatureOpen, setIsFeatureOpen] = useState(false)
@@ -117,6 +131,28 @@ export function PassPlanDescription(props: Props) {
               {t(
                 `1か月あたり ¥${toMoneyNumberText(Math.round(spec.yearlyPrice / 12))}`,
                 `¥${toMoneyNumberText(Math.round(spec.yearlyPrice / 12))}/mo · ${toApproxUsdText(spec.yearlyPrice)}/year`,
+              )}
+            </p>
+          </>
+        ) : isTrialOffer ? (
+          // 無料の期間と、その後の金額を並べて書く
+          <>
+            <p>
+              <span className="inline-block whitespace-nowrap rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
+                {liteOffer.isGuest
+                  ? t("はじめての方は", "New here?")
+                  : t("無料お試し", "Free trial")}
+              </span>
+            </p>
+            <p className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
+              <span className="font-extrabold text-3xl text-fuchsia-600 tracking-tight dark:text-fuchsia-300">
+                {t(`${TRIAL_DAYS}日間無料`, `${TRIAL_DAYS} days free`)}
+              </span>
+            </p>
+            <p className={cn(priceNote, "text-foreground/80")}>
+              {t(
+                `その後 ¥${toMoneyNumberText(spec.price)}/月（税込）`,
+                `then ¥${toMoneyNumberText(spec.price)}/mo (${toApproxUsdText(spec.price)})`,
               )}
             </p>
           </>
@@ -205,15 +241,24 @@ export function PassPlanDescription(props: Props) {
           ) : props.isLoggedOut ? (
             <LoginDialogButton
               description={t(
-                `ログインすると、そのまま${spec.name}の決済画面へ進みます。`,
-                `Log in or create a free account, and we'll take you straight to checkout for ${spec.enName}.`,
+                isTrialOffer
+                  ? `ログインすると、そのまま${spec.name}の無料お試しの手続きへ進みます（以前プランに入っていた方は初月半額になります）。`
+                  : `ログインすると、そのまま${spec.name}の決済画面へ進みます。`,
+                isTrialOffer
+                  ? `Log in or create a free account, and we'll take you straight to your ${spec.enName} free trial. (If you've had a plan before, you'll get 50% off the first month instead.)`
+                  : `Log in or create a free account, and we'll take you straight to checkout for ${spec.enName}.`,
               )}
               triggerChildren={
                 <Button
                   className={planCtaClassName}
                   onClick={() => props.onLoginClick?.()}
                 >
-                  {t("ログインして登録する", `Get ${spec.enName}`)}
+                  {isTrialOffer
+                    ? t(
+                        `${TRIAL_DAYS}日間無料で試す`,
+                        `Start ${TRIAL_DAYS}-day free trial`,
+                      )
+                    : t("ログインして登録する", `Get ${spec.enName}`)}
                 </Button>
               }
             />
@@ -235,6 +280,11 @@ export function PassPlanDescription(props: Props) {
                 t("準備中", "Coming soon")
               ) : isYearly ? (
                 t("年払いで登録する", `Get ${spec.enName} yearly`)
+              ) : isTrialOffer ? (
+                t(
+                  `${TRIAL_DAYS}日間無料で試す`,
+                  `Start ${TRIAL_DAYS}-day free trial`,
+                )
               ) : isFirstMonthOffer ? (
                 t(
                   // PC の 4 列ではボタンが狭いので、プラン名は入れない（カードの見出しにある）
@@ -246,10 +296,15 @@ export function PassPlanDescription(props: Props) {
               )}
             </Button>
           )}
-          {!isFree && !props.isCurrent && (
-            <p className="mt-2 text-center text-[11px] text-muted-foreground">
-              {t("いつでも解約できます", "Cancel anytime")}
-            </p>
+          {isTrialOffer ? (
+            <TrialTerms isGuest={liteOffer.isGuest} className="mt-2" />
+          ) : (
+            !isFree &&
+            !props.isCurrent && (
+              <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                {t("いつでも解約できます", "Cancel anytime")}
+              </p>
+            )
           )}
         </div>
       )}

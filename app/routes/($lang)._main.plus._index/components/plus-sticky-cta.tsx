@@ -2,7 +2,9 @@ import { Loader2Icon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Button } from "~/components/ui/button"
+import { TrialTerms } from "~/components/trial-terms"
 import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
+import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
@@ -32,11 +34,20 @@ const PLANS: PaidPlan[] = ["LITE", "STANDARD", "PREMIUM"]
  */
 export function PlusStickyCta(props: Props) {
   const t = useTranslation()
-  const [plan, setPlan] = useState<PaidPlan>("STANDARD")
+  const liteOffer = useLiteOffer()
+  // お試しの対象の人には、最初からライト（7 日間無料）を選んでおく。それ以外はおすすめのスタンダード
+  const [selectedPlan, setPlan] = useState<PaidPlan | null>(null)
+  const plan =
+    selectedPlan ?? (liteOffer.offer === "trial" ? "LITE" : "STANDARD")
   const [isScrolled, setIsScrolled] = useState(false)
   const isYearly = props.interval === "year"
   // 初月半額は月払いだけ
-  const isFirstMonthOffer = useFirstMonthOffer() && !isYearly
+  const isTrialOffer =
+    plan === "LITE" && !isYearly && liteOffer.offer === "trial"
+  const isOfferUnknown =
+    plan === "LITE" && !isYearly && liteOffer.offer === "unknown"
+  const isFirstMonthOffer =
+    useFirstMonthOffer() && !isYearly && !isTrialOffer && !isOfferUnknown
   const spec = getPlanSpec(plan)
 
   // 最初の案内（ヒーロー）を読んでいる間は出さない
@@ -112,8 +123,12 @@ export function PlusStickyCta(props: Props) {
         {props.isLoggedOut ? (
           <LoginDialogButton
             description={t(
-              `ログインすると、そのまま${spec.name}の決済画面へ進みます。`,
-              `Log in or create a free account, and we'll take you straight to checkout for ${spec.enName}.`,
+              isTrialOffer
+                ? `ログインすると、そのまま${spec.name}の無料お試しの手続きへ進みます（以前プランに入っていた方は初月半額になります）。`
+                : `ログインすると、そのまま${spec.name}の決済画面へ進みます。`,
+              isTrialOffer
+                ? `Log in or create a free account, and we'll take you straight to your ${spec.enName} free trial. (If you've had a plan before, you'll get 50% off the first month instead.)`
+                : `Log in or create a free account, and we'll take you straight to checkout for ${spec.enName}.`,
             )}
             triggerChildren={
               <Button
@@ -121,7 +136,9 @@ export function PlusStickyCta(props: Props) {
                 tabIndex={isScrolled ? 0 : -1}
                 onClick={() => props.onLoginClick(plan)}
               >
-                {t("登録する", "Subscribe")}
+                {isTrialOffer
+                  ? t("無料で試す", "Try free")
+                  : t("登録する", "Subscribe")}
               </Button>
             }
           />
@@ -134,15 +151,22 @@ export function PlusStickyCta(props: Props) {
           >
             {props.isLoading ? (
               <Loader2Icon className="size-4 animate-spin" />
+            ) : isTrialOffer ? (
+              t("無料で試す", "Try free")
             ) : (
               t("登録する", "Subscribe")
             )}
           </Button>
         )}
       </div>
-      <p className="mt-1.5 truncate text-center text-[11px] text-muted-foreground tabular-nums">
-        {priceText}
-      </p>
+      {isTrialOffer ? (
+        // お試しの条件は省略せずに書く（折り返してよい）
+        <TrialTerms isGuest={liteOffer.isGuest} className="mt-1.5" />
+      ) : (
+        <p className="mt-1.5 truncate text-center text-[11px] text-muted-foreground tabular-nums">
+          {priceText}
+        </p>
+      )}
     </div>
   )
 }

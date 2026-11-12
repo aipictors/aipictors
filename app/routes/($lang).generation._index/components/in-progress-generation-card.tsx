@@ -1,6 +1,7 @@
 import { Link } from "~/lib/app/locale-router"
 import { SparklesIcon, ZapIcon } from "lucide-react"
 import { useContext, useEffect } from "react"
+import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   trackGrowthEvent,
@@ -50,9 +51,16 @@ export function InProgressGenerationCard(props: Props) {
         ? "lite"
         : null
 
+  const liteOffer = useLiteOffer().offer
+  // 無料の人で、お試しか初月半額かを確認している間は出さない（出た後に文言が変わらないように）
+  const isHintVisible = hint !== null && !(hint === "free" && liteOffer === "unknown")
+  const isTrialHint = hint === "free" && liteOffer === "trial"
+
   useEffect(() => {
-    if (hint !== null) trackGrowthEventOnce("gen_wait_view", hint)
-  }, [hint])
+    if (!isHintVisible || hint === null) return
+    trackGrowthEventOnce("gen_wait_view", hint)
+    if (isTrialHint) trackGrowthEventOnce("trial_view", "gen_wait")
+  }, [isHintVisible, hint, isTrialHint])
 
   const progress = useGenerationProgress(props.taskNanoid, !props.isCanceling)
 
@@ -145,16 +153,24 @@ export function InProgressGenerationCard(props: Props) {
               }}
             />
           </div>
-          {hint !== null && (
+          {isHintVisible && hint !== null && (
             <Link
               to="/plus#plans"
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackGrowthEvent("gen_wait_click", hint)}
+              onClick={() => {
+                trackGrowthEvent("gen_wait_click", hint)
+                if (isTrialHint) trackGrowthEvent("trial_click", "gen_wait")
+              }}
               className="inline-flex items-center gap-1 text-[11px] text-cyan-200 underline-offset-2 hover:underline"
             >
               <ZapIcon className="size-3 shrink-0" />
-              {hint === "free"
+              {isTrialHint
+                ? t(
+                    `プランなら1回で4枚・ライトは${TRIAL_DAYS}日間無料`,
+                    `4 images per click on a plan — try Lite free for ${TRIAL_DAYS} days`,
+                  )
+                : hint === "free"
                 ? t(
                     "プランなら1回で4枚・初月¥240〜",
                     "4 images per click on a plan, from ¥240",

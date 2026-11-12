@@ -2,6 +2,7 @@ import { useLocation } from "@remix-run/react"
 import { SparklesIcon, XIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toFirstMonthPrice } from "~/hooks/use-first-month-offer"
+import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -56,6 +57,7 @@ function usePlusEntryTarget() {
 export function PlusHeaderLink() {
   const t = useTranslation()
   const isTarget = usePlusEntryTarget()
+  const { offer: liteOffer, isGuest } = useLiteOffer()
 
   useEffect(() => {
     if (!isTarget) return
@@ -74,9 +76,16 @@ export function PlusHeaderLink() {
     >
       <SparklesIcon className="size-4" />
       {"Aipictors+"}
-      <span className="rounded-full bg-fuchsia-600 px-1.5 py-0.5 font-bold text-[10px] text-white leading-none">
-        {t("初月半額", "50% off")}
-      </span>
+      {/* 確認中は印を出さない（お試しか初月半額かが分かってから出す） */}
+      {liteOffer !== "unknown" && liteOffer !== "none" && (
+        <span className="rounded-full bg-fuchsia-600 px-1.5 py-0.5 font-bold text-[10px] text-white leading-none">
+          {liteOffer === "trial"
+            ? isGuest
+              ? t(`初回${TRIAL_DAYS}日間無料`, `New? ${TRIAL_DAYS} days free`)
+              : t(`${TRIAL_DAYS}日間無料`, "Free trial")
+            : t("初月半額", "50% off")}
+        </span>
+      )}
     </Link>
   )
 }
@@ -88,7 +97,9 @@ export function PlusHeaderLink() {
  */
 export function PlusMobileNotice() {
   const t = useTranslation()
-  const isTarget = usePlusEntryTarget()
+  const liteOffer = useLiteOffer()
+  // お試しか初月半額かが分かってから出す（出た後に文言が変わらないように）
+  const isTarget = usePlusEntryTarget() && liteOffer.offer !== "unknown"
   const [isScrolled, setIsScrolled] = useState(false)
   const [isClosed, setIsClosed] = useState(true)
   const lite = getPlanSpec("LITE")
@@ -128,10 +139,20 @@ export function PlusMobileNotice() {
           <span className="truncate">
             <span className="font-bold">{"Aipictors+"}</span>
             <span className="ml-1.5">
-              {t(
-                `初月半額・ライトは初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}`,
-                "Half price first month",
-              )}
+              {liteOffer.offer === "trial"
+                ? liteOffer.isGuest
+                  ? t(
+                      `はじめての方は${TRIAL_DAYS}日間無料`,
+                      `New here? ${TRIAL_DAYS} days free`,
+                    )
+                  : t(
+                      `ライトを${TRIAL_DAYS}日間無料で`,
+                      `Try Lite free for ${TRIAL_DAYS} days`,
+                    )
+                : t(
+                    `初月半額・ライトは初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}`,
+                    "Half price first month",
+                  )}
             </span>
           </span>
           <span className="shrink-0 font-bold text-violet-700 dark:text-violet-300">

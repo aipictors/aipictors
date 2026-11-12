@@ -9,6 +9,7 @@ import { useContext, useEffect } from "react"
 import { Button } from "~/components/ui/button"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
 import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-about"
@@ -91,15 +92,22 @@ export default function Plus () {
     if (plusStatus !== "unknown") trackGrowthEvent("plus_view", plusStatus)
   }, [plusStatus])
 
+  const isTrial = useLiteOffer().offer === "trial"
+
   const assurances = [
     t(
       "いつでもこのページから解約できます。解約後も更新日までは特典を使えます",
       "Cancel anytime from this page. You keep your benefits until the period you paid for ends.",
     ),
-    t(
-      "初月半額は、今プランに入っていない方の月払いが対象です（年払い・自動更新なしのパスは対象外）",
-      "50% off the first month applies to monthly plans, for anyone not currently subscribed.",
-    ),
+    isTrial
+      ? t(
+          "7日間の無料お試しは、はじめてプランに入る方のライト（月払い）が対象です。スタンダード・プレミアムの月払いは初月半額です（年払い・自動更新なしのパスは対象外）",
+          "The 7-day free trial is for Lite (monthly) if you've never had a paid plan. Standard and Premium monthly plans are 50% off the first month. Yearly plans and passes aren't discounted.",
+        )
+      : t(
+          "初月半額は、今プランに入っていない方の月払いが対象です（年払い・自動更新なしのパスは対象外）",
+          "50% off the first month applies to monthly plans, for anyone not currently subscribed.",
+        ),
     t(
       "お支払いは Stripe の決済画面でのクレジットカード決済です",
       "Secure card payment through Stripe. Cards issued outside Japan work too.",

@@ -1,12 +1,17 @@
 import { Button } from "~/components/ui/button"
 import { Link } from "~/lib/app/locale-router"
 import { useNavigate, useSearchParams } from "@remix-run/react"
-import { CheckIcon, Loader2 } from "lucide-react"
+import { CheckIcon, InfoIcon, Loader2 } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { useTranslation } from "~/hooks/use-translation"
+import { clearTrialStatusCache } from "~/hooks/use-lite-offer"
+import { fetchTrialStatus } from "~/lib/trial-api"
 import { takeEnglishReturnPath } from "~/utils/checkout-locale"
+import { toApproxUsdText } from "~/utils/to-approx-usd-text"
+import { toTrialDateText } from "~/utils/to-trial-date-text"
+import { trackGrowthEventOnce } from "~/utils/track-growth-event"
 import { toDateText } from "~/utils/to-date-text"
 
 /**
@@ -77,6 +82,199 @@ export default function PlusSuccess () {
       isCancelled = true
     }
   }, [isPrepaid, authContext.isLoading, authContext.isNotLoggedIn])
+
+  // 無料お試し（?trial=1）: お試しが始まったか、カードの重複などで取り消されたかを確かめる
+  const isTrial = searchParams.get("trial") === "1"
+
+  const [trialState, setTrialState] = useState<
+    | { kind: "loading" }
+    | { kind: "trialing"; trialEnd: number }
+    | { kind: "duplicate_card" }
+    | { kind: "repeat" }
+    | { kind: "pending" }
+  >({ kind: "loading" })
+
+  useEffect(() => {
+    if (!isTrial || authContext.isLoading || authContext.isNotLoggedIn) return
+    let isCancelled = false
+    // 始めた直後より前のお試しの記録（以前のもの）は、今回の結果として扱わない
+    const startedAfter = Date.now() / 1000 - 30 * 60
+    const confirm = async (attempt: number) => {
+      clearTrialStatusCache()
+      const status = await fetchTrialStatus()
+      if (isCancelled) return
+      const latest = status?.latestTrial ?? null
+      if (latest !== null && latest.createdAt >= startedAfter) {
+        if (latest.status === "trialing") {
+          setTrialState({ kind: "trialing", trialEnd: latest.trialEnd })
+          trackGrowthEventOnce("trial_started", "success")
+          return
+        }
+        if (latest.status === "rejected_duplicate_card") {
+          setTrialState({ kind: "duplicate_card" })
+          trackGrowthEventOnce("trial_rejected", "duplicate_card")
+          return
+        }
+        if (latest.status === "rejected_repeat") {
+          setTrialState({ kind: "repeat" })
+          trackGrowthEventOnce("trial_rejected", "repeat")
+          return
+        }
+      }
+      // 反映（Stripe からの通知）はふつう数秒で届く
+      if (attempt < 5) {
+        setTimeout(() => confirm(attempt + 1), 2000)
+      } else {
+        setTrialState({ kind: "pending" })
+      }
+    }
+    confirm(0)
+    return () => {
+      isCancelled = true
+    }
+  }, [isTrial, authContext.isLoading, authContext.isNotLoggedIn])
+
+  if (isTrial) {
+    const isRejected =
+      trialState.kind === "duplicate_card" || trialState.kind === "repeat"
+    const date =
+      trialState.kind === "trialing"
+        ? toTrialDateText(trialState.trialEnd, t.isEnglish)
+        : ""
+    return (
+      <div className="mx-auto w-full max-w-md space-y-6 px-6 pt-12 text-center">
+        <div className="flex w-full justify-center">
+          {trialState.kind === "loading" ? (
+            <Loader2 className="size-10 animate-spin text-violet-500" />
+          ) : isRejected || trialState.kind === "pending" ? (
+            <span className="flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <InfoIcon className="size-8" />
+            </span>
+          ) : (
+            <span className="flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-sky-500 text-white shadow-lg shadow-violet-500/25">
+              <CheckIcon className="size-8" />
+            </span>
+          )}
+        </div>
+        {trialState.kind === "loading" && (
+          <p className="text-sm">
+            {t("お試しの開始を確認しています…", "Confirming your free trial…")}
+          </p>
+        )}
+        {trialState.kind === "trialing" && (
+          <div className="space-y-4">
+            <p className="text-balance font-bold text-xl">
+              {t(
+                "7日間の無料お試しを開始しました",
+                "Your 7-day free trial has started",
+              )}
+            </p>
+            <dl className="grid gap-2 text-left text-sm sm:grid-cols-2">
+              <div className="rounded-xl border bg-card px-3 py-2">
+                <dt className="text-muted-foreground text-xs">
+                  {t("無料の期間", "Free until")}
+                </dt>
+                <dd className="font-bold">{t(`${date} まで`, date)}</dd>
+              </div>
+              <div className="rounded-xl border bg-card px-3 py-2">
+                <dt className="text-muted-foreground text-xs">
+                  {t("その後の料金", "After that")}
+                </dt>
+                <dd className="font-bold">
+                  {t(
+                    `${date} から ¥480/月（税込）`,
+                    `¥480/mo from ${date} (${toApproxUsdText(480)})`,
+                  )}
+                </dd>
+              </div>
+            </dl>
+            <p className="text-left text-sm leading-relaxed">
+              {t(
+                "お試し中に解約すれば料金はかかりません（解約しても、お試しの終わりまで使えます）。解約はプランのページからいつでもできます。終了の3日前にメールでお知らせします。",
+                "Cancel during the trial and you won't be charged — you keep access until the trial ends. You can cancel anytime from the plans page. We'll email you 3 days before the trial ends.",
+              )}
+            </p>
+          </div>
+        )}
+        {trialState.kind === "duplicate_card" && (
+          <div className="space-y-3">
+            <p className="text-balance font-bold text-xl">
+              {t(
+                "無料お試しを開始できませんでした",
+                "We couldn't start your free trial",
+              )}
+            </p>
+            <p className="text-left text-sm leading-relaxed">
+              {t(
+                "このカードは別のアカウントの無料お試しで使われているため、今回の申込みは取り消しました。料金は請求されていません。別のカードでもう一度お試しいただくか、初月半額でプランを始められます。",
+                "This card has already been used for a free trial on another account, so we cancelled this sign-up. You haven't been charged. You can try again with a different card, or start a plan with 50% off the first month.",
+              )}
+            </p>
+          </div>
+        )}
+        {trialState.kind === "repeat" && (
+          <div className="space-y-3">
+            <p className="text-balance font-bold text-xl">
+              {t(
+                "無料お試しは1回だけご利用いただけます",
+                "The free trial can only be used once",
+              )}
+            </p>
+            <p className="text-left text-sm leading-relaxed">
+              {t(
+                "すでにお試しをご利用のため、今回の申込みは取り消しました。料金は請求されていません。",
+                "You've already used your free trial, so we cancelled this sign-up. You haven't been charged.",
+              )}
+            </p>
+          </div>
+        )}
+        {trialState.kind === "pending" && (
+          <div className="space-y-3">
+            <p className="text-balance font-bold text-xl">
+              {t("反映まで少しお待ちください", "Almost there")}
+            </p>
+            <p className="text-left text-sm leading-relaxed">
+              {t(
+                "お申込みは受け付けました。お試しの反映に少し時間がかかっています。数分たってからプランのページをご確認ください。反映されないときは、お問い合わせからご連絡ください。",
+                "We've received your sign-up, but it's taking a little longer than usual to show up. Check the plans page in a few minutes, and contact us if it still isn't there.",
+              )}
+            </p>
+          </div>
+        )}
+        {trialState.kind !== "loading" && (
+          <div className="flex flex-col items-center gap-2">
+            {isRejected ? (
+              <Button asChild className="h-11 w-full rounded-xl">
+                <Link to="/plus#plans" replace>
+                  {t("プランのページに戻る", "Back to plans")}
+                </Link>
+              </Button>
+            ) : (
+              <>
+                <Button asChild className="h-11 w-full rounded-xl">
+                  <Link to="/generation">
+                    {t("さっそく生成する", "Start generating")}
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-11 w-full rounded-xl"
+                >
+                  <Link to="/plus" replace>
+                    {t(
+                      "プランの管理（解約はこちら）",
+                      "Manage plan (cancel here)",
+                    )}
+                  </Link>
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <>

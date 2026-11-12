@@ -10,6 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
+import { TrialTerms } from "~/components/trial-terms"
+import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePassCheckout } from "~/hooks/use-pass-checkout"
 import { useTranslation } from "~/hooks/use-translation"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
@@ -91,8 +93,16 @@ export function GenerationCoinShortageDialog (props: Props) {
       : "free"
     : `pass_${props.passType}`
 
+  // ライトは、はじめての人には 7 日間無料お試し、以前入っていた人には初月半額（確認中はどちらとも書かない）
+  const liteOffer = useLiteOffer().offer
+  const isTrial = isFree && liteOffer === "trial"
+  const isHalf = isFree && liteOffer === "half"
+
   useEffect(() => {
-    if (props.open) trackGrowthEvent("shortage_view", source)
+    if (!props.open) return
+    trackGrowthEvent("shortage_view", source)
+    if (isTrial) trackGrowthEvent("trial_view", "shortage")
+    if (isHalf) trackGrowthEvent("trial_ineligible", "shortage")
   }, [props.open])
 
   const next = toNextGrantText()
@@ -151,7 +161,7 @@ export function GenerationCoinShortageDialog (props: Props) {
           )}
 
           {isFree && (
-            // 選択肢を並べると選ばれなかったので、いちばん安い入り方（ライト・初月半額）を主役にして、押したらそのまま決済へ進む
+            // 選択肢を並べると選ばれなかったので、いちばん始めやすい入り方（ライト。はじめての人は 7 日間無料、以前入っていた人は初月半額）を主役にして、押したらそのまま決済へ進む
             <div className="space-y-3">
               <div className="rounded-2xl border-2 border-violet-500 bg-gradient-to-br from-violet-500/10 to-sky-500/10 p-4 dark:border-violet-400">
                 {/* /plus のプランのカードと同じ並び（印 → 初月の金額 → 2 か月目からの金額） */}
@@ -159,22 +169,45 @@ export function GenerationCoinShortageDialog (props: Props) {
                   <p className="font-bold leading-tight">
                     {t("ライトプラン", "Lite plan")}
                   </p>
-                  <span className="inline-block whitespace-nowrap rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
-                    {t("初月半額", "50% off first month")}
-                  </span>
+                  {(isTrial || isHalf) && (
+                    <span className="inline-block whitespace-nowrap rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
+                      {isTrial
+                        ? t("無料お試し", "Free trial")
+                        : t("初月半額", "50% off first month")}
+                    </span>
+                  )}
                 </div>
                 <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5">
-                  <span className="font-extrabold text-3xl text-fuchsia-600 leading-tight tracking-tight dark:text-fuchsia-300">
-                    {LITE.firstMonth}
-                  </span>
-                  <span className="text-muted-foreground text-sm line-through">
-                    {LITE.price}
-                  </span>
-                  <span className="text-muted-foreground text-xs">
-                    {t(
-                      `2か月目から${LITE.price}/月（税込）`,
-                      `then ${LITE.price}/mo (${toApproxUsdText(480)})`,
+                  <span
+                    className={cn(
+                      "font-extrabold text-3xl leading-tight tracking-tight",
+                      (isTrial || isHalf) &&
+                        "text-fuchsia-600 dark:text-fuchsia-300",
                     )}
+                  >
+                    {isTrial
+                      ? t(`${TRIAL_DAYS}日間無料`, `${TRIAL_DAYS} days free`)
+                      : isHalf
+                        ? LITE.firstMonth
+                        : LITE.price}
+                  </span>
+                  {isHalf && (
+                    <span className="text-muted-foreground text-sm line-through">
+                      {LITE.price}
+                    </span>
+                  )}
+                  <span className="text-foreground/80 text-xs">
+                    {isTrial
+                      ? t(
+                          `その後 ${LITE.price}/月（税込）`,
+                          `then ${LITE.price}/mo (${toApproxUsdText(480)})`,
+                        )
+                      : isHalf
+                        ? t(
+                            `2か月目から${LITE.price}/月（税込）`,
+                            `then ${LITE.price}/mo (${toApproxUsdText(480)})`,
+                          )
+                        : t("/月（税込）", `/mo (${toApproxUsdText(480)})`)}
                   </span>
                 </p>
                 <ul className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
@@ -196,6 +229,11 @@ export function GenerationCoinShortageDialog (props: Props) {
                 <Button
                   disabled={checkout.isLoading}
                   onClick={() => {
+                    if (isTrial) {
+                      trackGrowthEvent("trial_checkout", "shortage")
+                      void checkout.startTrialCheckout()
+                      return
+                    }
                     trackGrowthEvent("shortage_checkout_LITE", source)
                     void checkout.startCheckout("LITE")
                   }}
@@ -206,19 +244,30 @@ export function GenerationCoinShortageDialog (props: Props) {
                       <Loader2 className="size-4 animate-spin" />
                       {t("決済画面へ移動中…", "Opening checkout…")}
                     </>
-                  ) : (
+                  ) : isTrial ? (
+                    t(
+                      `${TRIAL_DAYS}日間無料で続ける`,
+                      `Keep creating — ${TRIAL_DAYS} days free`,
+                    )
+                  ) : isHalf ? (
                     t(
                       `初月${LITE.firstMonth}で続ける`,
                       `Keep creating for ${LITE.firstMonth}`,
                     )
+                  ) : (
+                    t("ライトで続ける", "Keep creating with Lite")
                   )}
                 </Button>
-                <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                  {t(
-                    "いつでも解約できます",
-                    "Cancel anytime · charged in JPY",
-                  )}
-                </p>
+                {isTrial ? (
+                  <TrialTerms className="mt-2" />
+                ) : (
+                  <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                    {t(
+                      "いつでも解約できます",
+                      "Cancel anytime · charged in JPY",
+                    )}
+                  </p>
+                )}
               </div>
               <div>
                 <p className="mb-1.5 text-muted-foreground text-xs">

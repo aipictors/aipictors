@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { toast } from "sonner"
+import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { useTranslation } from "~/hooks/use-translation"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
@@ -17,9 +18,12 @@ export const toJstDateText = (now: Date) =>
  */
 export function useGenerationPlanHint(isEnabled: boolean) {
   const t = useTranslation()
+  const liteOffer = useLiteOffer().offer
 
   useEffect(() => {
-    if (!isEnabled) return
+    // お試しか初月半額かが分かってから出す
+    if (!isEnabled || liteOffer === "unknown" || liteOffer === "none") return
+    const isTrial = liteOffer === "trial"
     const onCompleted = () => {
       const today = toJstDateText(new Date())
       try {
@@ -30,17 +34,24 @@ export function useGenerationPlanHint(isEnabled: boolean) {
         return
       }
       trackGrowthEvent("gen_done_view", "free")
+      if (isTrial) trackGrowthEvent("trial_view", "gen_done")
       toast(
-        t(
-          "生成できました。プランなら同じ1回で4枚まとめて作れます（初月半額）",
-          "Done! On a plan, the same click makes 4 images. Your first month is half price.",
-        ),
+        isTrial
+          ? t(
+              `生成できました。プランなら同じ1回で4枚。ライトは${TRIAL_DAYS}日間無料で試せます（その後 ¥480/月）`,
+              `Done! On a plan, the same click makes 4 images. Try Lite free for ${TRIAL_DAYS} days (then ¥480/mo).`,
+            )
+          : t(
+              "生成できました。プランなら同じ1回で4枚まとめて作れます（初月半額）",
+              "Done! On a plan, the same click makes 4 images. Your first month is half price.",
+            ),
         {
           duration: 8000,
           action: {
             label: t("プランを見る", "See plans"),
             onClick: () => {
               trackGrowthEvent("gen_done_click", "free")
+              if (isTrial) trackGrowthEvent("trial_click", "gen_done")
               window.open(
                 t.isEnglish ? "/en/plus#plans" : "/plus#plans",
                 "_blank",
@@ -54,5 +65,5 @@ export function useGenerationPlanHint(isEnabled: boolean) {
     window.addEventListener("generation:task-completed", onCompleted)
     return () =>
       window.removeEventListener("generation:task-completed", onCompleted)
-  }, [isEnabled, t.isEnglish])
+  }, [isEnabled, t.isEnglish, liteOffer])
 }

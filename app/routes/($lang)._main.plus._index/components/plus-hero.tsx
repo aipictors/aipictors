@@ -7,6 +7,7 @@ import { getPlanSpec } from "~/routes/($lang)._main.plus._index/utils/plan-specs
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
 import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
+import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 
 const sampleImages = [
   "https://assets.aipictors.com/ff478cc0-35ad-12f8-d945-2511b5a49bd8_11zon.webp",
@@ -22,7 +23,10 @@ export function PlusHero() {
   const t = useTranslation()
   const lite = getPlanSpec("LITE")
   const premium = getPlanSpec("PREMIUM")
-  const isFirstMonthOffer = useFirstMonthOffer()
+  const liteOffer = useLiteOffer()
+  const isTrial = liteOffer.offer === "trial"
+  // 確認中は、お試しとも初月半額とも書かない
+  const isFirstMonthOffer = useFirstMonthOffer() && liteOffer.offer === "half"
 
   const points = [
     {
@@ -56,9 +60,19 @@ export function PlusHero() {
             <SparklesIcon className="size-3.5 text-violet-500" />
             {"Aipictors+"}
           </p>
-          {isFirstMonthOffer && (
+          {(isTrial || isFirstMonthOffer) && (
             <p className="ml-2 inline-flex items-center rounded-full bg-fuchsia-600 px-3 py-1 font-bold text-white text-xs">
-              {t("初月半額キャンペーン中", "50% off your first month")}
+              {isTrial
+                ? liteOffer.isGuest
+                  ? t(
+                      `はじめての方はライト${TRIAL_DAYS}日間無料`,
+                      `New here? Try Lite free for ${TRIAL_DAYS} days`,
+                    )
+                  : t(
+                      `ライトを${TRIAL_DAYS}日間無料でお試し`,
+                      `Try Lite free for ${TRIAL_DAYS} days`,
+                    )
+                : t("初月半額キャンペーン中", "50% off your first month")}
             </p>
           )}
           <h1 className="mt-3 font-extrabold text-[26px] leading-tight tracking-tight md:mt-4 md:text-5xl">
@@ -103,7 +117,12 @@ export function PlusHero() {
               className={`${planCtaClassName} sm:w-auto`}
             >
               <a href="#plans">
-                {isFirstMonthOffer
+                {isTrial
+                  ? t(
+                      `プランを選ぶ（ライトは${TRIAL_DAYS}日間無料）`,
+                      `See plans — Lite is free for ${TRIAL_DAYS} days`,
+                    )
+                  : isFirstMonthOffer
                   ? t(
                       `プランを選ぶ（初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}〜）`,
                       `See plans, from ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} for month one`,

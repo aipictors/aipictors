@@ -27,6 +27,7 @@ import {
   UsersIcon,
   WandSparklesIcon,
 } from "lucide-react"
+import type { LiteOffer } from "~/hooks/use-lite-offer"
 import type { PlusStatus } from "~/hooks/use-plus-status"
 import { toR18Path } from "~/utils/content-mode"
 
@@ -59,6 +60,8 @@ type Options = {
   isModerator: boolean
   /** プランの案内の出し分け（確認中は項目を出さない） */
   plusStatus?: PlusStatus
+  /** ライトの特典（お試し・初月半額）。確認中は印を出さない */
+  liteOffer?: LiteOffer
 }
 
 /**
@@ -109,7 +112,15 @@ export function getHomeNavigationSections(
                 href: "/plus",
                 label: ["Aipictors+", "Aipictors+"] as [string, string],
                 icon: SparklesIcon,
-                badge: ["初月半額", "50% off"] as [string, string],
+                badge:
+                  options.liteOffer === "trial"
+                    ? // 未ログインの人には、はじめての人向けだと分かるように書く
+                      options.plusStatus === "guest"
+                      ? (["初回7日間無料", "New? 7 days free"] as [string, string])
+                      : (["7日間無料", "Free trial"] as [string, string])
+                    : options.liteOffer === "half"
+                      ? (["初月半額", "50% off"] as [string, string])
+                      : undefined,
                 isAccent: true,
                 growthEvent: "plus_nav_click",
               },
