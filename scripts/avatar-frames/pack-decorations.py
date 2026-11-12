@@ -6,6 +6,7 @@ python3 scripts/avatar-frames/pack-decorations.py <PNG のフォルダ> public/a
 <slug>.webp: 止まった絵（一覧で使う）
 <slug>.anim.webp: 動く絵（プロフィールと枠選びで使う）
 """
+import json
 import sys
 from pathlib import Path
 
@@ -22,13 +23,15 @@ total = 0
 for folder in sorted(p for p in source.iterdir() if p.is_dir()):
     paths = sorted(folder.glob("*.png"))
     frames = [Image.open(path).convert("RGBA") for path in paths]
+    meta = folder / "meta.json"
+    frame_ms = json.loads(meta.read_text())["frameMs"] if meta.exists() else FRAME_MS
     frames[STATIC_FRAME].save(output / f"{folder.name}.webp", quality=88, method=6)
     small = [f.resize((ANIMATED_SIZE, ANIMATED_SIZE), Image.LANCZOS) for f in frames]
     small[0].save(
         output / f"{folder.name}.anim.webp",
         save_all=True,
         append_images=small[1:],
-        duration=FRAME_MS,
+        duration=frame_ms,
         loop=0,
         quality=72,
         method=4,

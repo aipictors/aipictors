@@ -17,8 +17,10 @@ import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { trackGrowthEvent } from "~/utils/track-growth-event"
 import {
   filterUserAvatarFrames,
+  isPlanExclusiveUserAvatarFrame,
   toUserAvatarFrameAccess,
   toUserAvatarFrameCategory,
   toUserAvatarFramePassLabel,
@@ -155,6 +157,22 @@ function StudioBody(props: Props & { onClose: () => void }) {
       : kindFiltered.filter(
           (frame) => toUserAvatarFrameCategory(frame.slug) === category,
         )
+  // 「すべて」では、プラン限定の枠を先頭にまとめて見出しを付ける
+  const planFrames =
+    category === "all"
+      ? visibleFrames.filter((frame) =>
+          isPlanExclusiveUserAvatarFrame(frame.slug),
+        )
+      : []
+  const otherFrames =
+    planFrames.length === 0
+      ? visibleFrames
+      : visibleFrames.filter(
+          (frame) => !isPlanExclusiveUserAvatarFrame(frame.slug),
+        )
+  const requiredPlanLabel = toUserAvatarFramePassLabel(
+    previewFrame?.requiredPassType as UserAvatarFramePassType,
+  )
   const categories = USER_AVATAR_FRAME_CATEGORIES.filter(
     (item) =>
       item.key === "all" ||
@@ -344,6 +362,45 @@ function StudioBody(props: Props & { onClose: () => void }) {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
+          {planFrames.length > 0 && (
+            <section className="mb-4">
+              <h3 className="mb-2 flex flex-wrap items-baseline gap-x-2 font-medium text-sm">
+                <span className="inline-flex items-center gap-1">
+                  <Crown className="size-3.5 text-amber-500" />
+                  {t("プラン限定", "Plan exclusive")}
+                </span>
+                <span className="font-normal text-muted-foreground text-xs">
+                  {t(
+                    "プランが上がるほど、豪華な枠を選べます",
+                    "Higher plans unlock more luxurious frames",
+                  )}
+                </span>
+              </h3>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
+                {planFrames.map((frame) => (
+                  <FrameTile
+                    key={frame.id}
+                    badge={<FrameBadge frame={frame} {...accessContext} />}
+                    isApplied={props.appliedFrameId === frame.id}
+                    isPreview={previewId === frame.id}
+                    label={frame.name}
+                    onSelect={() => selectPreview(frame.id)}
+                  >
+                    <UserAvatarWithFrame
+                      alt=""
+                      frame={frame}
+                      isAnimated={false}
+                      sizeClassName="size-14"
+                      src={props.iconUrl}
+                    />
+                  </FrameTile>
+                ))}
+              </div>
+              <h3 className="mt-4 font-medium text-sm">
+                {t("そのほかの枠", "More frames")}
+              </h3>
+            </section>
+          )}
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
             {kind !== "COIN" &&
               kind !== "SUBSCRIPTION" &&
@@ -361,7 +418,7 @@ function StudioBody(props: Props & { onClose: () => void }) {
                   />
                 </FrameTile>
               )}
-            {visibleFrames.map((frame) => (
+            {otherFrames.map((frame) => (
               <FrameTile
                 key={frame.id}
                 badge={<FrameBadge frame={frame} {...accessContext} />}
@@ -416,11 +473,16 @@ function StudioBody(props: Props & { onClose: () => void }) {
             </Button>
           ) : previewAccess === "NEEDS_PLAN" ? (
             <Button asChild className="h-11 w-full">
-              <Link to="/plus">
+              <Link
+                to="/plus"
+                onClick={() =>
+                  trackGrowthEvent("frame_plan_click", requiredPlanLabel)
+                }
+              >
                 <Crown className="mr-2 size-4" />
                 {t(
-                  `${toUserAvatarFramePassLabel(previewFrame?.requiredPassType as UserAvatarFramePassType)} プランで使えます`,
-                  `Available on ${toUserAvatarFramePassLabel(previewFrame?.requiredPassType as UserAvatarFramePassType)}`,
+                  `${requiredPlanLabel} プランで使えます。プランを見る`,
+                  `Available on ${requiredPlanLabel}. See plans`,
                 )}
               </Link>
             </Button>

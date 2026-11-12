@@ -967,6 +967,458 @@ const dragon = (t) => {
   ${twinkles(t, [[262, 60, 1.1, 0], [262, 140, 0.9, 0.3], [262, 245, 1, 0.6]], "#ffe27a")}</svg>`
 }
 
+/* ------------------------------------------------------------------ */
+/* プラン限定の枠                                                       */
+/* 同じ意匠（金属の輪・宝石・月桂樹）で、ライト → スタンダード → プレミアムと */
+/* 素材と手数が上がっていく。コインの王冠（縁取りのある絵）と見分けが付くよう、 */
+/* 縁取りの線を使わず、陰影と映り込みで金属と宝石を描く                     */
+/* ------------------------------------------------------------------ */
+
+const PLAN_VIEW = 'viewBox="-60 -60 632 632"'
+
+/** 暗い色 → 明るい色 */
+const METAL = {
+  silver: ["#2b323c", "#5c6876", "#94a1b0", "#cbd4de", "#eef2f6", "#ffffff"],
+  rose: ["#4f2620", "#8f4d40", "#c9826c", "#edb49d", "#ffdccd", "#fff6f1"],
+  gold: ["#3f2702", "#7d5207", "#b9860e", "#e9bd42", "#ffe58c", "#fffadd"],
+  platinum: ["#272f40", "#56647d", "#97a6bd", "#d3dcea", "#f3f7fc", "#ffffff"],
+  onyx: ["#020203", "#0b0b10", "#17171f", "#2b2b38", "#55556a", "#b9b9cf"],
+}
+
+const JEWEL = {
+  sapphire: ["#06164a", "#11389a", "#2c6de2", "#7db3ff", "#e6f1ff"],
+  ruby: ["#3a0310", "#8c0a28", "#d91f4b", "#ff7d96", "#ffe4ea"],
+  diamond: ["#5b7ca8", "#a4c2e6", "#d9e9fa", "#f5faff", "#ffffff"],
+  ice: ["#1d5b8f", "#4c9fd6", "#9fd8f7", "#dff4ff", "#ffffff"],
+  pink: ["#5c1232", "#b3386b", "#ee82aa", "#ffc6da", "#fff1f6"],
+  black: ["#000000", "#0d0d14", "#23232f", "#5a5a72", "#e9e9f7"],
+}
+
+const hexToRgb = (hex) => [1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16))
+
+const mixHex = (a, b, k) => {
+  const [x, y] = [hexToRgb(a), hexToRgb(b)]
+  return `#${x.map((v, i) => Math.round(v + (y[i] - v) * k).toString(16).padStart(2, "0")).join("")}`
+}
+
+/** stops の上の位置 k（0〜1）の色 */
+const ramp = (stops, k) => {
+  const x = Math.min(0.9999, Math.max(0, k)) * (stops.length - 1)
+  const i = Math.floor(x)
+  return mixHex(stops[i], stops[i + 1], x - i)
+}
+
+const pp = (r, deg) => polar(r, deg).join(" ")
+
+/** 左右対称に描く */
+const mirror = (body) => `${body}<g transform="translate(512 0) scale(-1 1)">${body}</g>`
+
+/**
+ * 金属の輪。断面は丸く（中央が明るく、縁が暗い）、角度ごとに映り込みの明るさを変える。
+ * shift を動かすと光沢が流れる
+ */
+const metalBand = (r, w, stops, { shift = 0, lobes = 2, layers = 5, steps = 72, from = 0, to = 360 } = {}) => {
+  const lw = w / layers
+  const step = (to - from) / steps
+  let out = ""
+  for (let j = 0; j < layers; j++) {
+    const rr = r - w / 2 + lw * (j + 0.5)
+    const profile = Math.sin((Math.PI * (j + 0.5)) / layers)
+    for (let i = 0; i < steps; i++) {
+      const a0 = from + i * step
+      const mid = a0 + step / 2
+      const c = 0.5 + 0.5 * Math.cos((lobes * (mid + 45 - shift) * Math.PI) / 180)
+      const fine = 0.5 + 0.5 * Math.cos((lobes * 3 * (mid + 20 - shift * 1.6) * Math.PI) / 180)
+      const k = 0.06 + 0.3 * profile + (0.52 * c ** 2.4 + 0.12 * fine ** 3) * (0.3 + 0.7 * profile)
+      out += `<path d="${arc(f(rr), f(a0), f(Math.min(to, a0 + step + 0.6)))}" stroke="${ramp(stops, k)}" stroke-width="${f(lw + 0.7)}" fill="none"/>`
+    }
+  }
+  return out
+}
+
+/** 粒金（輪の縁に並ぶ小さな金属の粒） */
+const milgrain = (r, size, count, stops, shift = 0) =>
+  Array.from({ length: count }, (_, i) => {
+    const d = (i * 360) / count
+    const [x, y] = polar(r, d)
+    const c = 0.5 + 0.5 * Math.cos((2 * (d + 45 - shift) * Math.PI) / 180)
+    return `<circle cx="${x}" cy="${y}" r="${size}" fill="${ramp(stops, 0.3 + 0.6 * c)}"/><circle cx="${f(x - size * 0.3)}" cy="${f(y - size * 0.3)}" r="${f(size * 0.35)}" fill="${stops[5]}" opacity="${f(0.35 + 0.5 * c)}"/>`
+  }).join("")
+
+/** ブリリアントカットの宝石（上から見た形）。面ごとの明るさが時間でゆらぐ */
+const brilliant = (r, stops, t, phase = 0, n = 8) => {
+  const rt = r * 0.56
+  let out = `<circle r="${f(r)}" fill="${stops[0]}"/>`
+  for (let i = 0; i < n * 2; i++) {
+    const a0 = (i * 180) / n
+    const a1 = ((i + 1) * 180) / n
+    const lit = 0.5 + 0.5 * Math.cos(((a0 + a1) / 2 + 45) * (Math.PI / 180))
+    const shimmer = 0.5 + 0.5 * Math.sin(TAU * (t + phase) + i * 2.4)
+    const k = 0.12 + 0.3 * lit + 0.55 * shimmer ** 2
+    out += `<path d="M${polar(r, a0, 0, 0)}L${polar(r, a1, 0, 0)}L${polar(rt, a1, 0, 0)}L${polar(rt, a0, 0, 0)}Z" fill="${ramp(stops, k)}"/>`
+  }
+  for (let i = 0; i < n; i++) {
+    const a0 = (i * 360) / n
+    const a1 = ((i + 1) * 360) / n
+    const shimmer = 0.5 + 0.5 * Math.sin(TAU * (t + phase) + i * 1.7 + 1)
+    out += `<path d="M0 0L${polar(rt, a0, 0, 0)}L${polar(rt, a1, 0, 0)}Z" fill="${ramp(stops, 0.5 + 0.45 * shimmer)}"/>`
+  }
+  return `${out}<path d="M${polar(rt * 0.9, 285, 0, 0)}L${polar(rt * 0.9, 345, 0, 0)}L${polar(rt * 0.25, 315, 0, 0)}Z" fill="#fff" opacity=".75"/>`
+}
+
+/** 宝石の台座（覆輪）と宝石 */
+const setGem = (x, y, r, metal, jewel, t, phase = 0, squash = 1) =>
+  `<g transform="translate(${f(x)} ${f(y)})"><g transform="scale(${squash} 1)"><circle r="${f(r + 4.6)}" fill="${metal[0]}"/><circle r="${f(r + 3.8)}" fill="url(#bz-${metal[2].slice(1)})"/><circle r="${f(r + 0.9)}" fill="${metal[0]}"/>${brilliant(r, jewel, t, phase)}</g></g>`
+
+/** 台座の金属（左上が明るい） */
+const bezelDef = (metal) =>
+  `<linearGradient id="bz-${metal[2].slice(1)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${metal[5]}"/><stop offset=".45" stop-color="${metal[3]}"/><stop offset="1" stop-color="${metal[1]}"/></linearGradient>`
+
+/** 真珠 */
+const pearl = (x, y, r) =>
+  `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="url(#pearl)"/><circle cx="${f(x - r * 0.32)}" cy="${f(y - r * 0.36)}" r="${f(r * 0.26)}" fill="#fff" opacity=".95"/>`
+
+const PEARL_DEF =
+  '<radialGradient id="pearl" cx=".36" cy=".32" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#f6ecef"/><stop offset=".8" stop-color="#cdb9c6"/><stop offset="1" stop-color="#8f7c8f"/></radialGradient>'
+
+/** 彫金の葉（上半分が明るく、下半分が暗い）。k は光の当たり具合 */
+const metalLeaf = (stops, k = 0.5) =>
+  `<path d="M0 0C10-10 27-11 39 0 27 11 10 10 0 0Z" fill="${stops[0]}"/><path d="M1.5 0C11-8.6 26-9.4 37 0Z" fill="${ramp(stops, 0.5 + 0.42 * k)}"/><path d="M1.5 0C11 8.6 26 9.4 37 0Z" fill="${ramp(stops, 0.24 + 0.3 * k)}"/><path d="M3 0H35" stroke="${ramp(stops, 0.8 + 0.2 * k)}" stroke-width="1" opacity=".8"/>`
+
+/**
+ * 月桂樹の枝。下（180 度）から dir の向きへ上っていく。
+ * flow は光が枝を上っていく位置（0〜1）
+ */
+const laurelBranch = (dir, stops, { r = 251, from = 14, to = 150, pairs = 12, size = 1, flow = 0 } = {}) => {
+  let out = `<path d="${dir > 0 ? arc(r, 180 + from, 180 + to) : arc(r, 180 - to, 180 - from)}" stroke="${stops[1]}" stroke-width="${f(3.4 * size)}" fill="none" stroke-linecap="round"/>`
+  for (let i = pairs - 1; i >= 0; i--) {
+    const d = 180 + dir * (from + ((to - from) * (i + 0.5)) / pairs)
+    const tangent = d - 90 + 90 * dir
+    const s = size * (1 - (0.34 * i) / pairs)
+    const k = 0.5 + 0.5 * Math.sin(TAU * (flow - i / pairs))
+    const [x, y] = polar(r, d)
+    out += place(x, y, tangent - dir * 34, s, metalLeaf(stops, k))
+    out += place(x, y, tangent + dir * 30, s * 0.86, metalLeaf(stops, k * 0.8))
+  }
+  const [tx, ty] = polar(r, 180 + dir * (to + 2))
+  return out + place(tx, ty, 180 + dir * (to + 2) - 90 + 90 * dir, size * 0.62, metalLeaf(stops, 0.7))
+}
+
+/** 唐草の渦（線で描く金属細工） */
+const scroll = (stops, w = 4) => {
+  const d = "M0 0C7-15 31-18 38-3 43 9 32 19 23 14 16 10 19 1 26 3"
+  return `<path d="${d}" stroke="${stops[0]}" stroke-width="${f(w + 2)}" fill="none" stroke-linecap="round"/><path d="${d}" stroke="${stops[3]}" stroke-width="${w}" fill="none" stroke-linecap="round"/><path d="${d}" stroke="${stops[5]}" stroke-width="${f(w * 0.3)}" fill="none" stroke-linecap="round" opacity=".9" transform="translate(-.6 -.9)"/>`
+}
+
+/** 十字に伸びる宝石のきらめき */
+const glint = (x, y, s, opacity, fill = "#fff") =>
+  opacity <= 0.03
+    ? ""
+    : `<g transform="translate(${f(x)} ${f(y)}) scale(${f(s)})" opacity="${f(opacity)}"><path d="M0-24C.8-4 4-.8 24 0 4 .8 .8 4 0 24-.8 4-4 .8-24 0-4-.8-.8-4 0-24Z" fill="${fill}"/><path d="M0-9L2-2 9 0 2 2 0 9-2 2-9 0-2-2Z" fill="#fff" transform="rotate(45)"/></g>`
+
+/** きらめきが順番に光る（phase ごとに 1 回ずつ） */
+const flash = (t, phase) => Math.max(0, wave(t, phase)) ** 3
+
+/** 百合の紋章（フルール・ド・リス） */
+const fleur = (stops) =>
+  `<path d="M0-30C7-20 8-8 3 2H-3C-8-8-7-20 0-30ZM-4 2C-8-10-22-14-25-4-27 4-20 8-16 4-17 10-10 10-5 6ZM4 2C8-10 22-14 25-4 27 4 20 8 16 4 17 10 10 10 5 6ZM-9 4H9V9H-9ZM-3 9H3L5 18H-5Z" fill="${stops[0]}" transform="scale(1.08)"/><path d="M0-30C7-20 8-8 3 2H-3C-8-8-7-20 0-30ZM-4 2C-8-10-22-14-25-4-27 4-20 8-16 4-17 10-10 10-5 6ZM4 2C8-10 22-14 25-4 27 4 20 8 16 4 17 10 10 10 5 6ZM-3 9H3L5 18H-5Z" fill="url(#bz-${stops[2].slice(1)})"/><path d="M-9 4H9V9H-9Z" fill="${stops[4]}"/><path d="M0-26C3-18 3-8 0 0" stroke="${stops[5]}" stroke-width="1.4" fill="none" opacity=".8"/>`
+
+/** 王冠（正面）。輪の上に載る。先と胴に宝石が付く。enamel を渡すと胴を七宝で埋める */
+const tiara = (metal, jewel, t, { centerJewel = jewel, enamel = null, accent = metal } = {}) => {
+  const X = (dx) => f(C + dx)
+  const half = (s) => {
+    const [ex, ey] = polar(237, 39 * s)
+    const e = [ex - C, ey]
+    const t1 = [s * 126, 0]
+    const v12 = [s * 95, 24]
+    const t2 = [s * 65, -34]
+    const v23 = [s * 32, 4]
+    return { e, t1, v12, t2, v23 }
+  }
+  const L = half(-1)
+  const R = half(1)
+  const top = [0, -44]
+  const up = (from, to) => `C${X(from[0] + (to[0] - from[0]) * 0.38)} ${f(from[1])} ${X(to[0] - Math.sign(to[0] - from[0]) * 11)} ${f(to[1] + (from[1] - to[1]) * 0.42)} ${X(to[0])} ${f(to[1])}`
+  const down = (from, to) => `C${X(from[0] + Math.sign(to[0] - from[0]) * 11)} ${f(from[1] + (to[1] - from[1]) * 0.42)} ${X(from[0] + (to[0] - from[0]) * 0.62)} ${f(to[1])} ${X(to[0])} ${f(to[1])}`
+  const d = `M${X(L.e[0])} ${f(L.e[1])}C${X(L.e[0] - 12)} ${f(L.e[1] - 30)} ${X(L.t1[0] - 12)} ${f(L.t1[1] + 30)} ${X(L.t1[0])} ${f(L.t1[1])}${down(L.t1, L.v12)}${up(L.v12, L.t2)}${down(L.t2, L.v23)}${up(L.v23, top)}${down(top, R.v23)}${up(R.v23, R.t2)}${down(R.t2, R.v12)}${up(R.v12, R.t1)}C${X(R.t1[0] + 12)} ${f(R.t1[1] + 30)} ${X(R.e[0] + 12)} ${f(R.e[1] - 30)} ${X(R.e[0])} ${f(R.e[1])}A237 237 0 0 0 ${X(L.e[0])} ${f(L.e[1])}Z`
+  const id = `ti-${metal[2].slice(1)}`
+  const gradients = `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${X(-150)}" y1="0" x2="${X(150)}" y2="0">${[0.28, 0.6, 0.96, 0.5, 0.78, 1, 0.66, 0.46, 0.92, 0.56, 0.28]
+    .map((k, i) => `<stop offset="${i / 10}" stop-color="${ramp(metal, k)}"/>`)
+    .join("")}</linearGradient><linearGradient id="${id}-s" gradientUnits="userSpaceOnUse" x1="0" y1="-50" x2="0" y2="75"><stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient><clipPath id="${id}-c"><path d="${d}"/></clipPath>`
+  const inner = 'transform="translate(256 62) scale(.86 .8) translate(-256 -62)"'
+  const sweep = -190 + ((t * 1.0) % 1) * 520
+  const band = `${ring(229, 0, "none")}<path d="${arc(229, -39.6, 39.6)}" stroke="${metal[0]}" stroke-width="21" fill="none"/>${metalBand(229, 19, metal, { from: -39, to: 39, steps: 26, shift: 45, lobes: 1 })}<path d="${arc(238, -39, 39)}" stroke="${accent[4]}" stroke-width="1.5" fill="none"/><path d="${arc(220, -39, 39)}" stroke="${accent[4]}" stroke-width="1.5" fill="none"/>`
+  const bandStones = Array.from({ length: 13 }, (_, i) => {
+    const a = -33 + i * 5.5
+    const [x, y] = polar(229, a)
+    return i % 2 === 0
+      ? `<g transform="translate(${x} ${y})"><circle r="6.6" fill="${metal[0]}"/>${brilliant(5.5, jewel, t, i * 0.13, 6)}</g>`
+      : `<circle cx="${x}" cy="${y}" r="2.6" fill="${accent[4]}" stroke="${accent[0]}" stroke-width=".8"/>`
+  }).join("")
+  const tipGem = ([dx, y], size, phase) => setGem(C + dx, y + 1, size, metal, jewel, t, phase)
+  return `<defs>${gradients}</defs>
+    <path d="${d}" fill="${metal[0]}" stroke="${metal[0]}" stroke-width="3.4" stroke-linejoin="round"/>
+    <path d="${d}" fill="url(#${id})"/><path d="${d}" fill="url(#${id}-s)"/>
+    ${enamel ? `<path d="${d}" fill="${enamel}" ${inner}/>` : `<path d="${d}" fill="none" stroke="${metal[0]}" stroke-width="1.6" opacity=".5" ${inner}/><path d="${d}" fill="none" stroke="${metal[5]}" stroke-width="1.2" opacity=".85" transform="translate(256 63.5) scale(.86 .8) translate(-256 -62)"/>`}
+    <g clip-path="url(#${id}-c)"><rect x="${f(C + sweep - 16)}" y="-70" width="32" height="170" fill="#fff" opacity=".4" transform="rotate(18 ${f(C + sweep)} 10)" filter="url(#soft)"/></g>
+    ${band}${bandStones}
+    ${[L, R].map((h, i) => `${setGem(C + h.t2[0], 12, 7.5, metal, jewel, t, 0.6 + i * 0.2)}${setGem(C + h.t1[0] * 0.93, 40, 5.5, metal, jewel, t, 0.1 + i * 0.2)}`).join("")}
+    ${setGem(C, 0, 14, metal, centerJewel, t, 0.4, 0.86)}
+    ${tipGem(L.t1, 8.5, 0.2)}${tipGem(R.t1, 8.5, 0.75)}${tipGem(L.t2, 9.5, 0.4)}${tipGem(R.t2, 9.5, 0.9)}${tipGem(top, 11, 0.05)}`
+}
+
+const planDefs = (metals, extra = "") => defs(metals.map(bezelDef).join("") + PEARL_DEF + extra)
+
+/* ---- ライト: 細い輪に小さな宝石 ---- */
+
+const planLiteSilver = (t) => {
+  const m = METAL.silver
+  const shift = wave(t) * 8
+  const side = `${place(...polar(243, 168), 100, 0.86, scroll(m, 3.6))}${place(...polar(240, 150), 78, 0.6, scroll(m, 3.6))}${[
+    [135, 3.6],
+    [129, 2.8],
+    [124, 2],
+  ]
+    .map(([d, r]) => `<circle cx="${polar(236, d)[0]}" cy="${polar(236, d)[1]}" r="${r}" fill="${m[4]}" stroke="${m[0]}" stroke-width=".9"/>`)
+    .join("")}`
+  const top = `${[
+    [0, 5.2],
+    [-7, 3.4],
+    [7, 3.4],
+    [-12.5, 2.2],
+    [12.5, 2.2],
+  ]
+    .map(([d, r]) => `<circle cx="${polar(235 + r * 0.6, d)[0]}" cy="${polar(235 + r * 0.6, d)[1]}" r="${r}" fill="url(#bz-${m[2].slice(1)})" stroke="${m[0]}" stroke-width=".9"/>`)
+    .join("")}`
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([m])}<g filter="url(#ds)">
+    ${ring(220, 15.5, m[0])}${metalBand(220, 14, m, { shift })}
+    ${ring(233.5, 2.2, m[3])}
+    ${mirror(side)}${top}
+    ${setGem(...polar(238, 180), 13, m, JEWEL.sapphire, t, 0)}
+  </g>
+  ${glint(...polar(238, 180), 0.9, flash(t, 0.1))}
+  ${twinkles(t, [[236, 315, 0.9, 0.5], [236, 60, 0.7, 0.8]], "#ffffff")}</svg>`
+}
+
+const planLiteRose = (t) => {
+  const m = METAL.rose
+  const shift = wave(t) * 8
+  const sprig = (flow) => {
+    let out = `<path d="${arc(238, 196, 252)}" stroke="${m[1]}" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    for (let i = 6; i >= 0; i--) {
+      const d = 200 + i * 8
+      const k = 0.5 + 0.5 * Math.sin(TAU * (flow - i / 7))
+      const [x, y] = polar(238, d)
+      out += place(x, y, d - 34, 0.62 - i * 0.03, metalLeaf(m, k))
+      out += place(x, y, d + 30, 0.5 - i * 0.03, metalLeaf(m, k * 0.8))
+    }
+    return `${out}${pearl(...polar(240, 192), 7)}${pearl(...polar(249, 187.5), 4.6)}${pearl(...polar(236, 185.5), 3.6)}`
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([m])}<g filter="url(#ds)">
+    ${ring(220, 14.5, m[0])}${metalBand(220, 13, m, { shift })}
+    ${ring(232.5, 2, m[3])}
+    ${sprig(t)}<g transform="rotate(180 256 256)">${sprig(t + 0.5)}</g>
+    ${setGem(...polar(238, 180), 9, m, JEWEL.pink, t, 0)}${setGem(...polar(238, 0), 9, m, JEWEL.pink, t, 0.5)}
+  </g>
+  ${glint(...polar(238, 0), 0.75, flash(t, 0.6))}
+  ${twinkles(t, [[240, 120, 0.8, 0.2], [240, 300, 0.8, 0.7]], "#fff4ee")}</svg>`
+}
+
+/* ---- スタンダード: 厚い金の輪と月桂樹 ---- */
+
+const planStandardLaurel = (t) => {
+  const m = METAL.gold
+  const shift = wave(t) * 12
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([m])}<g filter="url(#ds)">
+    ${laurelBranch(1, m, { r: 253, size: 1.16, pairs: 11, flow: t })}${laurelBranch(-1, m, { r: 253, size: 1.16, pairs: 11, flow: t })}
+    ${ring(224, 25, m[0])}${metalBand(224, 23, m, { shift })}
+    ${ring(224, 1.4, m[1], 'opacity=".55"')}
+    ${milgrain(237.5, 2.7, 80, m, shift)}
+    ${mirror(place(...polar(252, 171), 96, 0.7, scroll(m, 4)))}
+    ${place(...polar(250, 0), 0, 1.05, fleur(m))}
+    ${setGem(...polar(243, 180), 16, m, JEWEL.ruby, t, 0)}
+  </g>
+  ${glint(...polar(243, 180), 1.1, flash(t, 0.15))}
+  ${twinkles(t, [[262, 300, 1, 0.4], [262, 55, 0.9, 0.65], [258, 250, 0.7, 0.9], [258, 110, 0.7, 0.05]], "#fff3bd")}</svg>`
+}
+
+const planStandardSapphire = (t) => {
+  const m = METAL.gold
+  const shift = wave(t) * 12
+  const rope = Array.from({ length: 90 }, (_, i) => {
+    const d = i * 4
+    const [x, y] = polar(227, d)
+    return `<path d="M-5 0H5" transform="translate(${x} ${y}) rotate(${d - 90 + 62})" stroke="${m[0]}" stroke-width="1.5" opacity=".42" stroke-linecap="round"/>`
+  }).join("")
+  const stone = (d, i) => {
+    const flank = [-1, 1]
+      .map((s) => place(...polar(246, d + s * 9), d - 90 + 90 + (s > 0 ? 0 : 180), 0.62, `<g transform="scale(1 ${-s})">${scroll(m, 4)}</g>`))
+      .join("")
+    return `${flank}${setGem(...polar(240, d), 14.5, m, JEWEL.sapphire, t, i * 0.25)}`
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([m])}<g filter="url(#ds)">
+    ${ring(227, 31, m[0])}${metalBand(227, 29, m, { shift, layers: 6 })}
+    ${rope}
+    ${milgrain(243.5, 2.8, 80, m, shift)}${ring(213.5, 1.6, m[4], 'opacity=".8"')}
+    ${[45, 135, 225, 315].map(stone).join("")}
+    ${place(...polar(256, 0), 0, 1.15, fleur(m))}${setGem(...polar(247, 0), 5.5, m, JEWEL.sapphire, t, 0.5)}
+    ${place(...polar(256, 180), 180, 0.95, fleur(m))}
+    ${[90, 270].map((d) => `<g transform="translate(${pp(249, d)}) rotate(${d})"><path d="M0-13L9 0 0 13-9 0Z" fill="${m[0]}"/><path d="M0-11L7.5 0 0 11-7.5 0Z" fill="url(#bz-${m[2].slice(1)})"/></g>`).join("")}
+  </g>
+  ${[45, 135, 225, 315].map((d, i) => glint(...polar(240, d), 1, flash(t, i * 0.25))).join("")}
+  </svg>`
+}
+
+/* ---- プレミアム: 白金・ダイヤ・王冠・オーロラ ---- */
+
+/** 輪の外へ広がる多色の光（アイコンの内側には出さない） */
+const auroraGlow = (t, colors, { r = 256, w = 42, opacity = 0.8 } = {}) =>
+  `<g mask="url(#behind)"><g filter="url(#aur)">${colors
+    .map((c, i) => {
+      const span = 360 / colors.length
+      const mid = i * span + 20 + wave(t, i / colors.length) * 12
+      const o = opacity * (0.72 + 0.28 * wave(t, 0.25 + i / colors.length))
+      return `<path d="${arc(f(r + wave(t, i * 0.3) * 4), f(mid - span * 0.8), f(mid + span * 0.8))}" stroke="${c}" stroke-width="${w}" fill="none" opacity="${f(o)}"/>`
+    })
+    .join("")}</g></g>`
+
+const AURORA_DEF =
+  '<filter id="aur" filterUnits="userSpaceOnUse" x="-60" y="-60" width="632" height="632"><feGaussianBlur stdDeviation="17"/></filter>'
+
+/** ゆっくり回る光の筋（count は偶数。長短が交互なので 2 本ぶん回ると元に戻る）。先へ行くほど薄くなる */
+const lightRays = (t, count, id, { from = 236, long = 312, short = 286, opacity = 0.9 } = {}) => {
+  const turn = (t * 720) / count
+  return `<g mask="url(#behind)" opacity="${opacity}">${Array.from({ length: count }, (_, i) => {
+    const d = (i * 360) / count + turn
+    const to = i % 2 === 0 ? long : short
+    const half = i % 2 === 0 ? 1.7 : 1.1
+    return `<path d="M${pp(from, d - half)}L${pp(to, d)}L${pp(from, d + half)}Z" fill="url(#${id})"/>`
+  }).join("")}</g>`
+}
+
+const rayDef = (id, color) =>
+  `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="256" cy="256" r="312"><stop offset=".74" stop-color="${color}" stop-opacity=".95"/><stop offset=".88" stop-color="${color}" stop-opacity=".45"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>`
+
+/** 角度で色が移り変わる輪（オーロラ色の七宝）。shift で色が流れる */
+const iridescentBand = (r, w, colors, { shift = 0, layers = 4, steps = 90 } = {}) => {
+  const lw = w / layers
+  let out = ""
+  for (let j = 0; j < layers; j++) {
+    const rr = r - w / 2 + lw * (j + 0.5)
+    const profile = Math.sin((Math.PI * (j + 0.5)) / layers)
+    for (let i = 0; i < steps; i++) {
+      const a0 = (i * 360) / steps
+      const mid = a0 + 180 / steps
+      const pos = ((((mid * 2 + shift + j * 9) % 360) + 360) % 360) / 360
+      const x = pos * colors.length
+      const base = mixHex(colors[Math.floor(x) % colors.length], colors[(Math.floor(x) + 1) % colors.length], x - Math.floor(x))
+      const c = 0.5 + 0.5 * Math.cos((2 * (mid + 45 - shift * 0.4) * Math.PI) / 180)
+      const lit = mixHex(base, "#ffffff", 0.15 + 0.55 * c ** 3 * profile)
+      out += `<path d="${arc(f(rr), f(a0), f(a0 + 360 / steps + 0.6))}" stroke="${mixHex("#141a33", lit, 0.42 + 0.58 * profile)}" stroke-width="${f(lw + 0.7)}" fill="none"/>`
+    }
+  }
+  return out
+}
+
+/** 輪に敷き詰めた小さな宝石（パヴェ） */
+const pave = (r, size, count, metal, jewel, t) =>
+  Array.from({ length: count }, (_, i) => {
+    const d = (i * 360) / count
+    const [x, y] = polar(r, d)
+    const k = 0.5 + 0.5 * Math.sin(TAU * t + i * 2.1)
+    return `<circle cx="${x}" cy="${y}" r="${f(size + 1)}" fill="${metal[0]}"/><circle cx="${x}" cy="${y}" r="${size}" fill="${ramp(jewel, 0.35 + 0.6 * k)}"/><path d="M${f(x - size * 0.7)} ${f(y)}L${x} ${f(y - size * 0.7)}L${f(x + size * 0.7)} ${f(y)}L${x} ${f(y + size * 0.7)}Z" fill="#fff" opacity="${f(0.25 + 0.6 * k)}"/>`
+  }).join("")
+
+const planPremiumCrown = (t) => {
+  const m = METAL.platinum
+  const g = METAL.gold
+  const shift = wave(t) * 12
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([m, g], AURORA_DEF + rayDef("rayW", "#ffffff"))}
+  ${auroraGlow(t, ["#55e6d0", "#6aa6ff", "#b48cff", "#ff9bd8"])}
+  ${lightRays(t, 16, "rayW")}
+  <g filter="url(#ds)">
+    ${laurelBranch(1, m, { r: 253, from: 16, to: 132, pairs: 10, size: 1.08, flow: t })}${laurelBranch(-1, m, { r: 253, from: 16, to: 132, pairs: 10, size: 1.08, flow: t })}
+    ${ring(224, 27, m[0])}${metalBand(224, 25, m, { shift })}
+    ${pave(224, 5.6, 40, m, JEWEL.diamond, t)}
+    ${ring(238.4, 2.8, g[0])}${ring(238.4, 1.9, g[4])}${ring(211.4, 1.8, g[4], 'opacity=".9"')}
+    ${setGem(...polar(246, 180), 16, m, JEWEL.ice, t, 0.3, 0.86)}
+    ${tiara(m, JEWEL.diamond, t, { centerJewel: JEWEL.ice, accent: g })}
+  </g>
+  ${glint(C, 0, 1.3, flash(t, 0))}${glint(C, -43, 0.9, flash(t, 0.35))}
+  ${glint(C - 65, -33, 0.75, flash(t, 0.55))}${glint(C + 65, -33, 0.75, flash(t, 0.8))}
+  ${glint(...polar(246, 180), 1.1, flash(t, 0.5))}
+  ${twinkles(t, [[226, 70, 0.9, 0.15], [226, 250, 0.9, 0.65], [226, 120, 0.8, 0.4], [226, 300, 0.8, 0.9]])}</svg>`
+}
+
+const planPremiumAurora = (t) => {
+  const m = METAL.platinum
+  const shift = wave(t) * 12
+  const colors = ["#3fe0c5", "#4aa3ff", "#8f7bff", "#e58cf0", "#7fd4ff"]
+  const star = `<g transform="translate(${C} 8)">${[45, 135, 225, 315, 90, 270, 180, 0]
+    .map((a) => {
+      const len = a % 90 === 0 ? (a === 0 ? 64 : a === 180 ? 32 : 58) : 36
+      const w = a % 90 === 0 ? 9 : 7
+      return `<path d="M-${w + 1.6} 0L0-${len + 2}L${w + 1.6} 0Z" transform="rotate(${a})" fill="${m[0]}"/><path d="M-${w} 0L0-${len - 2}L0 0Z" transform="rotate(${a})" fill="${m[5]}"/><path d="M${w} 0L0-${len - 2}L0 0Z" transform="rotate(${a})" fill="${m[2]}"/>`
+    })
+    .join("")}</g>`
+  const side = [
+    [24, 11, 249],
+    [35.5, 9, 247],
+    [45.5, 7.2, 245],
+    [54, 5.6, 243],
+    [61.5, 4.2, 241],
+  ]
+    .map(([d, size, r], i) => setGem(...polar(r, d), size, m, i % 2 === 0 ? JEWEL.ice : JEWEL.diamond, t, 0.2 * i))
+    .join("")
+  const dust = Array.from({ length: 10 }, (_, i) => {
+    const d = i * 36 + 12 + t * 36
+    const r = 272 + (i % 3) * 9
+    return sparkle(...polar(r, d), 0.45 + (i % 2) * 0.25, "#ffffff", 0.35 + 0.6 * Math.max(0, wave(t * 2, i * 0.37)))
+  }).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([m], AURORA_DEF + rayDef("rayA", "#d9f6ff"))}
+  ${auroraGlow(t, ["#4fe8cf", "#6aa6ff", "#b98cff", "#ff9bd8", "#58d8ff"], { r: 258, w: 46, opacity: 0.88 })}
+  ${lightRays(t, 24, "rayA", { long: 300, short: 280, opacity: 0.7 })}
+  <g mask="url(#behind)">${dust}</g>
+  <g filter="url(#ds)">
+    ${ring(224, 30, m[0])}${iridescentBand(224, 20, colors, { shift: wave(t) * 40 })}
+    ${metalBand(236.5, 5, m, { shift, layers: 2 })}${metalBand(211.5, 5, m, { shift, layers: 2 })}
+    ${milgrain(241.5, 2.3, 90, m, shift)}
+    ${Array.from({ length: 5 }, (_, i) => mirror(setGem(...polar(224, 78 + i * 20.5), 6.6, m, JEWEL.diamond, t, i * 0.17))).join("")}
+    ${mirror(side)}
+    ${[-1, 1].map((dir) => laurelBranch(dir, m, { r: 252, from: 10, to: 46, pairs: 4, size: 0.8, flow: t })).join("")}
+    ${setGem(...polar(247, 180), 14, m, JEWEL.ice, t, 0.3, 0.86)}
+    ${star}${setGem(C, 8, 19, m, JEWEL.diamond, t, 0)}
+  </g>
+  ${glint(C, 8, 1.7, 0.3 + 0.7 * flash(t, 0))}
+  ${glint(...polar(249, 24), 0.8, flash(t, 0.3))}${glint(...polar(249, -24), 0.8, flash(t, 0.7))}
+  ${glint(...polar(247, 180), 0.9, flash(t, 0.5))}</svg>`
+}
+
+const planPremiumNoir = (t) => {
+  const m = METAL.gold
+  const o = METAL.onyx
+  const shift = wave(t) * 12
+  const inlay = Array.from({ length: 24 }, (_, i) => {
+    const d = i * 15 + 7.5
+    return `<g transform="translate(${pp(225, d)}) rotate(${d})">${i % 2 === 0 ? `<path d="M0-8L5.4 0 0 8-5.4 0Z" fill="url(#bz-${m[2].slice(1)})" stroke="${m[0]}" stroke-width=".7"/>` : `<circle r="2.6" fill="${m[4]}"/>`}</g>`
+  }).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([m, o], AURORA_DEF + rayDef("rayG", "#ffe7a0"))}
+  ${auroraGlow(t, ["#ffd76a", "#ff9f43", "#ffe9a8", "#f6b73c"], { r: 255, w: 38, opacity: 0.62 })}
+  ${lightRays(t, 16, "rayG")}
+  <g filter="url(#ds)">
+    ${laurelBranch(1, m, { r: 254, from: 16, to: 132, pairs: 10, size: 1.08, flow: t })}${laurelBranch(-1, m, { r: 254, from: 16, to: 132, pairs: 10, size: 1.08, flow: t })}
+    ${ring(225, 31, m[0])}${metalBand(225, 24, o, { shift })}
+    ${metalBand(239.5, 5.5, m, { shift, layers: 2 })}${metalBand(212, 4.5, m, { shift, layers: 2 })}
+    ${inlay}
+    ${setGem(...polar(247, 180), 16, m, JEWEL.diamond, t, 0.3, 0.86)}
+    ${tiara(m, JEWEL.diamond, t, { centerJewel: JEWEL.ruby, enamel: o[1] })}
+  </g>
+  ${glint(C, 0, 1.2, flash(t, 0), "#fff6d0")}${glint(C, -43, 0.9, flash(t, 0.35))}
+  ${glint(C - 65, -33, 0.75, flash(t, 0.55))}${glint(C + 65, -33, 0.75, flash(t, 0.8))}
+  ${glint(...polar(247, 180), 1, flash(t, 0.5), "#fff6d0")}
+  ${twinkles(t, [[268, 80, 0.9, 0.15], [268, 250, 0.9, 0.65], [268, 110, 0.8, 0.4], [268, 290, 0.8, 0.9]], "#ffe9a8")}</svg>`
+}
+
 const CANVAS_VIEW_BOX = 'viewBox="-60 -60 632 632"'
 
 const withCanvas = (draw) => (t) =>
@@ -1012,6 +1464,13 @@ const decorations = [
   { slug: "fallen-angel", priceCoins: 1500, category: "fantasy", name: "堕天使の翼", description: "黒い翼と赤く光る輪", draw: fallenAngel },
   { slug: "blue-flames", priceCoins: 1500, category: "element", name: "蒼炎", description: "青く燃えあがる炎", draw: blueFlames },
   { slug: "dragon", priceCoins: 3000, category: "fantasy", name: "昇り龍", description: "アイコンに巻きつく龍と光の玉", draw: dragon },
+  { slug: "plan-lite-silver", requiredPassType: "LITE", frames: 24, frameMs: 150, category: "plan", name: "銀細工の輪", description: "細い銀の輪に唐草とサファイアをひと粒", draw: planLiteSilver },
+  { slug: "plan-lite-rose", requiredPassType: "LITE", frames: 24, frameMs: 150, category: "plan", name: "ローズゴールドの小枝", description: "ローズゴールドの輪に小枝と真珠、ピンクの宝石", draw: planLiteRose },
+  { slug: "plan-standard-laurel", requiredPassType: "STANDARD", frames: 24, frameMs: 150, category: "plan", name: "黄金の月桂冠", description: "彫金の厚い金の輪を月桂樹が囲み、ルビーが光る", draw: planStandardLaurel },
+  { slug: "plan-standard-sapphire", requiredPassType: "STANDARD", frames: 24, frameMs: 150, category: "plan", name: "蒼玉の金環", description: "縄目を刻んだ金の輪に四つのサファイアと百合の紋章", draw: planStandardSapphire },
+  { slug: "plan-premium-crown", requiredPassType: "PREMIUM", frames: 24, frameMs: 150, category: "plan", name: "白金とダイヤの王冠", description: "ダイヤを敷き詰めた白金の輪と王冠、オーロラの光", draw: planPremiumCrown },
+  { slug: "plan-premium-aurora", requiredPassType: "PREMIUM", frames: 24, frameMs: 150, category: "plan", name: "極光の星冠", description: "オーロラ色に移ろう輪と、頂に輝く星のダイヤ", draw: planPremiumAurora },
+  { slug: "plan-premium-noir", requiredPassType: "PREMIUM", frames: 24, frameMs: 150, category: "plan", name: "漆黒と黄金の王冠", description: "漆黒の輪に金の月桂樹と王冠、深紅のルビー", draw: planPremiumNoir },
 ]
 
 export const DECORATIONS = decorations.map((item) => ({

@@ -16,6 +16,7 @@ import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-ab
 import { PlusCoinGuide } from "~/routes/($lang)._main.plus._index/components/plus-coin-guide"
 import { PlusComparisonTable } from "~/routes/($lang)._main.plus._index/components/plus-comparison-table"
 import { PlusFaq } from "~/routes/($lang)._main.plus._index/components/plus-faq"
+import { PlusFrameShowcase } from "~/routes/($lang)._main.plus._index/components/plus-frame-showcase"
 import { PlusForm } from "~/routes/($lang)._main.plus._index/components/plus-form"
 import { PlusHero } from "~/routes/($lang)._main.plus._index/components/plus-hero"
 import { PlusNoteList } from "~/routes/($lang)._main.plus._index/components/plus-note-list"
@@ -159,6 +160,7 @@ export default function Plus () {
         )}
       </section>
       <PlusComparisonTable />
+      <PlusFrameShowcase />
       <PlusCoinGuide />
       <PlusFaq />
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-600 to-sky-500 px-6 py-8 text-center text-white md:py-10">

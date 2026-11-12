@@ -5,7 +5,7 @@
  *
  * <出力先>/<slug>/00.png〜 ができる。WebP にまとめるのは pack-decorations.py
  */
-import { mkdirSync } from "node:fs"
+import { mkdirSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 import { DECORATIONS } from "./decorations.mjs"
 
@@ -30,8 +30,13 @@ const targets =
 for (const item of targets) {
   const dir = join(outputDir, item.slug)
   mkdirSync(dir, { recursive: true })
-  for (let frame = 0; frame < FRAMES; frame++) {
-    const svg = item.draw(frame / FRAMES)
+  // ゆっくり動かす枠は、コマ数と 1 コマの長さを枠ごとに決める（pack-decorations.py が meta.json を読む）
+  const frames = item.frames ?? FRAMES
+  if (item.frameMs) {
+    writeFileSync(join(dir, "meta.json"), JSON.stringify({ frameMs: item.frameMs }))
+  }
+  for (let frame = 0; frame < frames; frame++) {
+    const svg = item.draw(frame / frames)
     await page.setContent(
       `<!doctype html><html><body style="margin:0;background:transparent;width:${SIZE}px;height:${SIZE}px">${svg.replace("<svg ", `<svg width="${SIZE}" height="${SIZE}" `)}</body></html>`,
     )

@@ -137,6 +137,13 @@ export function PlusComparisonTable() {
       value: (spec) => spec.badge,
     },
     {
+      label: t("限定アイコン枠", "Exclusive avatar frames"),
+      value: (spec) =>
+        spec.avatarFrames > 0
+          ? t(`${spec.avatarFrames}種`, `${spec.avatarFrames}`)
+          : false,
+    },
+    {
       label: t("動画投稿（1本 / 1日合計）", "Video uploads (per video / per day)"),
       value: (spec) =>
         t(

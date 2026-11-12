@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import {
   filterUserAvatarFrames,
+  isPlanExclusiveUserAvatarFrame,
   isUserAvatarDecoration,
   toUserAvatarDecorationAnimatedUrl,
   toUserAvatarFrameAccess,
@@ -23,6 +24,12 @@ describe("アイコンの装飾", () => {
     expect(toUserAvatarFrameCategory("deco-unknown-x")).toBe("basic")
   })
 
+  test("プラン限定の枠は slug で見分ける", () => {
+    expect(toUserAvatarFrameCategory("deco-plan-premium-crown")).toBe("plan")
+    expect(isPlanExclusiveUserAvatarFrame("deco-plan-lite-silver")).toBe(true)
+    expect(isPlanExclusiveUserAvatarFrame("deco-fantasy-crown")).toBe(false)
+  })
+
   test("装飾かどうか", () => {
     expect(isUserAvatarDecoration({ frameType: "DECORATION" })).toBe(true)
     expect(isUserAvatarDecoration({ frameType: "GRADIENT" })).toBe(false)
@@ -33,6 +40,15 @@ describe("アイコンの装飾", () => {
 describe("サブスクの枠とコインの枠", () => {
   const plan = { id: "1", slug: "deco-cute-a", requiredPassType: "LITE", priceCoins: null }
   const coin = { id: "2", slug: "deco-wa-b", requiredPassType: "LITE", priceCoins: 500 }
+
+  test("上位プランの枠は、そのプラン以上でないと使えない", () => {
+    const premium = { id: "3", slug: "deco-plan-premium-crown", requiredPassType: "PREMIUM", priceCoins: null }
+    const standard = { id: "4", slug: "deco-plan-standard-laurel", requiredPassType: "STANDARD", priceCoins: null }
+    expect(toUserAvatarFrameAccess(premium, { currentPassType: "STANDARD", ownedFrameIds: [] })).toBe("NEEDS_PLAN")
+    expect(toUserAvatarFrameAccess(premium, { currentPassType: "PREMIUM", ownedFrameIds: [] })).toBe("AVAILABLE")
+    expect(toUserAvatarFrameAccess(standard, { currentPassType: "LITE", ownedFrameIds: [] })).toBe("NEEDS_PLAN")
+    expect(toUserAvatarFrameAccess(standard, { currentPassType: "PREMIUM", ownedFrameIds: [] })).toBe("AVAILABLE")
+  })
 
   test("サブスクの枠はプランの間だけ", () => {
     expect(toUserAvatarFrameAccess(plan, { currentPassType: "LITE", ownedFrameIds: [] })).toBe("AVAILABLE")

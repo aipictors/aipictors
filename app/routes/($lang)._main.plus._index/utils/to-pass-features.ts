@@ -30,6 +30,7 @@ export function toPassFeatures(
       t(`LoRA ${spec.loraModels}個まで`, `Up to ${spec.loraModels} LoRAs`),
       t(`お気に入り履歴 ${spec.favoriteHistories}件`, `${spec.favoriteHistories} saved favorites in history`),
       t(`モデル登録 ${spec.modelSlots}個まで`, `Upload up to ${spec.modelSlots} of your own models`),
+      t(`限定アイコン枠 ${spec.avatarFrames}種`, `${spec.avatarFrames} exclusive avatar frames`),
     ]
   }
 
@@ -46,6 +47,9 @@ export function toPassFeatures(
       t(`LoRA ${spec.loraModels}個まで`, `Up to ${spec.loraModels} LoRAs`),
       t(`お気に入り履歴 ${spec.favoriteHistories}件`, `${spec.favoriteHistories} saved favorites in history`),
       t(`モデル登録 ${spec.modelSlots}個まで`, `Upload up to ${spec.modelSlots} of your own models`),
+      passType === "PREMIUM"
+        ? t(`限定アイコン枠 ${spec.avatarFrames}種（プレミアムだけの王冠の枠 3種）`, `${spec.avatarFrames} exclusive avatar frames, with 3 crown frames only on Premium`)
+        : t(`限定アイコン枠 ${spec.avatarFrames}種（金の枠 2種はスタンダードから）`, `${spec.avatarFrames} exclusive avatar frames, with 2 gold frames from Standard up`),
     ]
   }
 

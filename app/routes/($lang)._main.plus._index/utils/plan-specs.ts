@@ -28,6 +28,17 @@ const GEMINI_WEEKLY_IMAGES = {
   PREMIUM: 40,
 } as const
 
+/**
+ * そのプランで選べるアイコン枠の数（サブスクの枠。core の user_avatar_frames で price_coins が null のもの）
+ * ライトの枠 18（うちプラン限定 2）、スタンダード限定 2、プレミアム限定 3。上のプランは下のプランの枠も使える
+ */
+const AVATAR_FRAME_COUNTS = {
+  FREE: 0,
+  LITE: 18,
+  STANDARD: 20,
+  PREMIUM: 23,
+} as const
+
 const configKey = {
   FREE: "free",
   LITE: "lite",
@@ -108,6 +119,7 @@ export function getPlanSpec(plan: PlanKey) {
     reservation: isStandardOrAbove,
     noAdvertisement: config.passFeature.noAdvertisement[key],
     badge: config.passFeature.badge[key],
+    avatarFrames: AVATAR_FRAME_COUNTS[plan],
     video: getVideoUploadLimits(isPaid ? plan : null),
   }
 }
