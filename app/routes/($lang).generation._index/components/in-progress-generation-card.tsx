@@ -47,7 +47,7 @@ export function InProgressGenerationCard(props: Props) {
     dataContext.currentPass === null
       ? "free"
       : passType === "LITE" && props.inProgressNormalCount > 0
-        ? "LITE"
+        ? "lite"
         : null
 
   useEffect(() => {

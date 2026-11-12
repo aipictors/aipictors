@@ -54,7 +54,13 @@ export function PlusAbout (props: Props) {
     } catch (_error) {
       // 計測に失敗しても決済は続ける
     }
-    trackGrowthEvent(`${event}_${passType}`, billingInterval)
+    // plus_checkout_LITE など、前からある名前は変えない（前後で比べるため）。新しい名前は小文字にそろえる
+    trackGrowthEvent(
+      event === "plus_checkout"
+        ? `${event}_${passType}`
+        : `${event}_${passType.toLowerCase()}`,
+      billingInterval,
+    )
     await checkout.startCheckout(passType, billingInterval)
   }
 
@@ -65,7 +71,7 @@ export function PlusAbout (props: Props) {
 
   const onLoginClick = (passType: "LITE" | "STANDARD" | "PREMIUM", source: string) => {
     savePendingCheckout({ passType, interval })
-    trackGrowthEvent(`plus_login_${passType}`, source)
+    trackGrowthEvent(`plus_login_${passType.toLowerCase()}`, source)
   }
 
   // ログイン前に選んだプランの決済へ、ログイン後そのまま進む
