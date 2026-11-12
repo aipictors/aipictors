@@ -237,7 +237,13 @@ export function AchievementsPage() {
         </Link>
       )}
 
-      {isViewer && <AchievementSettingsCard />}
+      {isViewer && (
+        <AchievementSettingsCard
+          badges={achievements.filter(
+            (item) => item.isUnlocked && !item.isHidden,
+          )}
+        />
+      )}
 
       <AchievementDetailDialog
         achievement={selected}

@@ -99,6 +99,9 @@ type AchievementNode {
 
 """実績の表示設定"""
 type AchievementSettingsNode {
+  """コメントに出すバッジのキー（null はいちばん上のランクのもの）"""
+  commentBadgeKey: String
+
   """コメントの名前の横に出すもの"""
   commentBadgeMode: CommentBadgeMode!
 
@@ -5424,6 +5427,7 @@ input UpdateAccountWebFcmTokenInput {
 }
 
 input UpdateAchievementSettingsInput {
+  commentBadgeKey: String
   commentBadgeMode: CommentBadgeMode
   isHiddenOnProfile: Boolean!
   isUnlockNoticeOff: Boolean!
