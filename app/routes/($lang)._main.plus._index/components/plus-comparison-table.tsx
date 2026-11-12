@@ -1,10 +1,12 @@
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
-import { CheckIcon, MinusIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon, MinusIcon } from "lucide-react"
+import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
   getPlanSpec,
   PLAN_KEYS,
+  type PlanKey,
   type PlanSpec,
 } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
@@ -15,11 +17,21 @@ type Row = {
 }
 
 /**
+ * スマホで最初に見せる行数（月額・枚数・コインなど、選ぶときにまず見る項目）
+ */
+const MOBILE_ROWS = 9
+
+/**
  * 無料とプランの比較表
  */
 export function PlusComparisonTable() {
   const t = useTranslation()
   const specs = PLAN_KEYS.map((plan) => getPlanSpec(plan))
+  // スマホでは 4 プランを横に並べると読めないので、無料と選んだプランの 2 つを並べる
+  const [mobilePlan, setMobilePlan] = useState<PlanKey>("STANDARD")
+  const [isAllRowsOpen, setIsAllRowsOpen] = useState(false)
+  const isHiddenOnMobile = (plan: PlanKey) =>
+    plan !== "FREE" && plan !== mobilePlan
 
   const rows: Row[] = [
     {
@@ -147,11 +159,36 @@ export function PlusComparisonTable() {
           )}
         </p>
       </div>
+      <div
+        role="radiogroup"
+        aria-label={t("無料と比べるプラン", "Plan to compare with Free")}
+        className="flex rounded-full border bg-muted/60 p-1 md:hidden"
+      >
+        {specs
+          .filter((spec) => spec.plan !== "FREE")
+          .map((spec) => (
+            <button
+              key={spec.plan}
+              type="button"
+              role="radio"
+              aria-checked={mobilePlan === spec.plan}
+              onClick={() => setMobilePlan(spec.plan)}
+              className={cn(
+                "flex-1 rounded-full px-2 py-1.5 font-bold text-xs transition-colors",
+                mobilePlan === spec.plan
+                  ? "bg-background text-violet-700 shadow dark:text-violet-300"
+                  : "text-muted-foreground",
+              )}
+            >
+              {t(spec.name, spec.enName)}
+            </button>
+          ))}
+      </div>
       <div className="overflow-x-auto rounded-2xl border">
-        <table className="w-full min-w-[560px] border-collapse text-sm">
+        <table className="w-full table-fixed border-collapse text-sm md:min-w-[560px] md:table-auto">
           <thead>
             <tr className="border-b bg-muted/50">
-              <th className="sticky left-0 z-10 bg-muted px-3 py-3 text-left font-medium text-muted-foreground text-xs">
+              <th className="sticky left-0 z-10 w-[44%] bg-muted px-3 py-3 text-left font-medium text-muted-foreground text-xs md:w-auto">
                 {t("項目", "Feature")}
               </th>
               {specs.map((spec) => (
@@ -160,7 +197,10 @@ export function PlusComparisonTable() {
                   className={cn(
                     "px-2 py-3 text-center font-bold",
                     spec.plan === "STANDARD" &&
-                      "bg-violet-500/10 text-violet-700 dark:text-violet-300",
+                      "md:bg-violet-500/10 md:text-violet-700 md:dark:text-violet-300",
+                    spec.plan === mobilePlan &&
+                      "max-md:bg-violet-500/10 max-md:text-violet-700 max-md:dark:text-violet-300",
+                    isHiddenOnMobile(spec.plan) && "hidden md:table-cell",
                   )}
                 >
                   {t(spec.name, spec.enName)}
@@ -169,8 +209,15 @@ export function PlusComparisonTable() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={row.label} className="border-b last:border-b-0">
+            {rows.map((row, index) => (
+              <tr
+                key={row.label}
+                className={cn(
+                  "border-b last:border-b-0",
+                  // スマホでは主な項目だけ先に見せる
+                  index >= MOBILE_ROWS && !isAllRowsOpen && "hidden md:table-row",
+                )}
+              >
                 <th className="sticky left-0 z-10 bg-background px-3 py-2.5 text-left font-normal text-xs md:text-sm">
                   {row.label}
                 </th>
@@ -180,8 +227,10 @@ export function PlusComparisonTable() {
                     <td
                       key={spec.plan}
                       className={cn(
-                        "whitespace-nowrap px-2 py-2.5 text-center tabular-nums",
-                        spec.plan === "STANDARD" && "bg-violet-500/5",
+                        "px-2 py-2.5 text-center tabular-nums md:whitespace-nowrap",
+                        spec.plan === "STANDARD" && "md:bg-violet-500/5",
+                        spec.plan === mobilePlan && "max-md:bg-violet-500/5",
+                        isHiddenOnMobile(spec.plan) && "hidden md:table-cell",
                       )}
                     >
                       {value === true ? (
@@ -211,6 +260,19 @@ export function PlusComparisonTable() {
           </tbody>
         </table>
       </div>
+      {!isAllRowsOpen && (
+        <button
+          type="button"
+          onClick={() => setIsAllRowsOpen(true)}
+          className="flex w-full items-center justify-center gap-1 rounded-xl border py-2.5 text-muted-foreground text-sm md:hidden"
+        >
+          {t(
+            `すべての項目を見る（全${rows.length}項目）`,
+            `Show all ${rows.length} rows`,
+          )}
+          <ChevronDownIcon className="size-4" />
+        </button>
+      )}
     </section>
   )
 }

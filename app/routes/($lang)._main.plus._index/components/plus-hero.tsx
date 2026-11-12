@@ -5,7 +5,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { planCtaClassName } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import { getPlanSpec } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
-import { useFirstMonthOffer } from "~/hooks/use-first-month-offer"
+import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
 
 const sampleImages = [
   "https://assets.aipictors.com/ff478cc0-35ad-12f8-d945-2511b5a49bd8_11zon.webp",
@@ -45,10 +45,11 @@ export function PlusHero() {
   ]
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-violet-500/15 via-fuchsia-500/5 to-sky-500/15 px-5 py-8 md:px-10 md:py-12">
+    // スマホでは短くして、すぐ下のプランの一覧が最初の画面に入るようにする
+    <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-violet-500/15 via-fuchsia-500/5 to-sky-500/15 px-4 py-5 md:px-10 md:py-12">
       <div className="-top-24 -right-20 pointer-events-none absolute size-72 rounded-full bg-violet-500/25 blur-3xl" />
       <div className="-bottom-24 -left-16 pointer-events-none absolute size-72 rounded-full bg-sky-500/20 blur-3xl" />
-      <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+      <div className="relative grid gap-4 md:gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
         <div>
           <p className="inline-flex items-center gap-1 rounded-full border bg-background/70 px-3 py-1 font-bold text-xs backdrop-blur">
             <SparklesIcon className="size-3.5 text-violet-500" />
@@ -59,20 +60,26 @@ export function PlusHero() {
               {t("初月半額キャンペーン中", "50% off your first month")}
             </p>
           )}
-          <h1 className="mt-4 font-extrabold text-3xl leading-tight tracking-tight md:text-5xl">
+          <h1 className="mt-3 font-extrabold text-[26px] leading-tight tracking-tight md:mt-4 md:text-5xl">
             {t("1回のクリックで", "One click,")}
             <br />
             <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-sky-500 bg-clip-text text-transparent">
               {t("4枚まとめて生成。", "four images at once.")}
             </span>
           </h1>
-          <p className="mt-4 max-w-2xl text-muted-foreground text-sm leading-relaxed md:text-base">
+          <p className="mt-2 text-muted-foreground text-sm md:hidden">
+            {t(
+              `無料は1回1枚・1日${getPlanSpec("FREE").dailyImages}枚。プランなら1回${lite.imagesPerRequest}枚・1日最大${premium.dailyImages}枚、広告なし。`,
+              `Free: 1 per request, ${getPlanSpec("FREE").dailyImages} a day. Plans: ${lite.imagesPerRequest} per request, up to ${premium.dailyImages} a day, ad-free.`,
+            )}
+          </p>
+          <p className="mt-4 hidden max-w-2xl text-muted-foreground text-sm leading-relaxed md:block md:text-base">
             {t(
               `プランに加入すると、1回の生成で4枚（無料は1枚）。毎日のフリーコインも最大${premium.dailyFreeCoins}コインに増えて、1日最大${premium.dailyImages}枚まで生成できます。広告なしで、もっと気軽に創作を楽しめます。`,
               `Subscribers get 4 images per request (1 on Free) and up to ${premium.dailyFreeCoins} free coins every day — up to ${premium.dailyImages} images a day, ad-free.`,
             )}
           </p>
-          <div className="mt-6 grid max-w-xl grid-cols-3 gap-2">
+          <div className="mt-6 hidden max-w-xl grid-cols-3 gap-2 md:grid">
             {points.map((point) => (
               <div
                 key={point.label}
@@ -88,19 +95,26 @@ export function PlusHero() {
               </div>
             ))}
           </div>
-          <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row md:mt-6">
             <Button
               asChild
               size="lg"
               className={`${planCtaClassName} sm:w-auto`}
             >
-              <a href="#plans">{t("プランを選ぶ", "Choose a plan")}</a>
+              <a href="#plans">
+                {isFirstMonthOffer
+                  ? t(
+                      `プランを選ぶ（初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}〜）`,
+                      `Choose a plan (from ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} first month)`,
+                    )
+                  : t("プランを選ぶ", "Choose a plan")}
+              </a>
             </Button>
             <Button
               asChild
               size="lg"
               variant="outline"
-              className="w-full rounded-xl bg-background/70 sm:w-auto"
+              className="hidden w-full rounded-xl bg-background/70 sm:w-auto md:inline-flex"
             >
               <Link to="/generation">
                 {t("まずは無料で生成してみる", "Try generating for free")}

@@ -1,6 +1,7 @@
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { Link } from "~/lib/app/locale-router"
-import { CheckIcon, SparklesIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon, SparklesIcon } from "lucide-react"
+import { useState } from "react"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
@@ -29,7 +30,12 @@ type Props = {
    * 年払いの料金を出す（省略時は月払い）
    */
   interval?: BillingInterval
+  className?: string
   onClick(): Promise<void>
+  /**
+   * 未ログインの人が登録ボタン（ログイン）を押したとき
+   */
+  onLoginClick?(): void
 }
 
 const tagline = {
@@ -52,7 +58,10 @@ export function PassPlanDescription(props: Props) {
   const isButtonVisible = props.isHide !== true
   const isYearly = props.interval === "year" && !isFree
   // 初月半額は月払いだけ（年払いはクーポンを付けない）
-  const isFirstMonthOffer = useFirstMonthOffer() && !isYearly
+  const isFirstMonthOffer = useFirstMonthOffer() && !isYearly && !isFree
+  const firstMonthPrice = toFirstMonthPrice(spec.price)
+  // スマホ（1 列）では特典の一覧をたたんで、3 つのプランと登録ボタンがすぐ見えるようにする
+  const [isFeatureOpen, setIsFeatureOpen] = useState(false)
 
   return (
     <div
@@ -60,6 +69,7 @@ export function PassPlanDescription(props: Props) {
         "relative flex h-full flex-col rounded-2xl border bg-card p-5 text-card-foreground shadow-sm",
         props.isPrimary &&
           "border-2 border-violet-500 shadow-violet-500/15 shadow-xl dark:border-violet-400",
+        props.className,
       )}
     >
       {props.isPrimary && (
@@ -89,28 +99,43 @@ export function PassPlanDescription(props: Props) {
             )}
           </p>
         </>
+      ) : isFirstMonthOffer ? (
+        // 初月の金額と 2 か月目からの金額を並べて書く（半額は初月だけ）
+        <>
+          <p className="mt-3 flex items-baseline gap-1.5">
+            <span className="rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
+              {t("初月半額", "50% off 1st month")}
+            </span>
+            <span className="font-extrabold text-3xl text-fuchsia-600 tracking-tight dark:text-fuchsia-300">
+              {`¥${toMoneyNumberText(firstMonthPrice)}`}
+            </span>
+            <span className="text-muted-foreground text-sm line-through">
+              {`¥${toMoneyNumberText(spec.price)}`}
+            </span>
+          </p>
+          <p className="mt-1 text-muted-foreground text-xs">
+            {t(
+              `2か月目から ¥${toMoneyNumberText(spec.price)}/月（税込）`,
+              `Then ¥${toMoneyNumberText(spec.price)}/mo (tax incl., ${toApproxUsdText(spec.price)}, billed in JPY)`,
+            )}
+          </p>
+        </>
       ) : (
-        <p className="mt-3 flex items-baseline gap-1">
-          <span className="font-extrabold text-3xl tracking-tight">
-            {`¥${toMoneyNumberText(spec.price)}`}
-          </span>
-          <span className="text-muted-foreground text-xs">
-            {isFree ? "" : t("/月（税込）", "/mo (tax incl.)")}
-          </span>
-        </p>
-      )}
-      {!isFree && !isYearly && t("", `${toApproxUsdText(spec.price)}/mo, billed in JPY`) && (
-        <p className="mt-0.5 text-muted-foreground text-xs">
-          {t("", `${toApproxUsdText(spec.price)}/mo, billed in JPY`)}
-        </p>
-      )}
-      {!isFree && isFirstMonthOffer && (
-        <p className="mt-1 inline-flex w-fit items-center rounded-full bg-fuchsia-600/10 px-2 py-0.5 font-bold text-fuchsia-700 text-xs dark:text-fuchsia-300">
-          {t(
-            `初月 ¥${toMoneyNumberText(toFirstMonthPrice(spec.price))}`,
-            `First month ¥${toMoneyNumberText(toFirstMonthPrice(spec.price))} for new members`,
+        <>
+          <p className="mt-3 flex items-baseline gap-1">
+            <span className="font-extrabold text-3xl tracking-tight">
+              {`¥${toMoneyNumberText(spec.price)}`}
+            </span>
+            <span className="text-muted-foreground text-xs">
+              {isFree ? "" : t("/月（税込）", "/mo (tax incl.)")}
+            </span>
+          </p>
+          {!isFree && t.isEnglish && (
+            <p className="mt-0.5 text-muted-foreground text-xs">
+              {`${toApproxUsdText(spec.price)}/mo, billed in JPY`}
+            </p>
           )}
-        </p>
+        </>
       )}
       <div className="mt-4 grid grid-cols-2 gap-2">
         <div
@@ -153,11 +178,14 @@ export function PassPlanDescription(props: Props) {
           ) : props.isLoggedOut ? (
             <LoginDialogButton
               description={t(
-                "プランに登録するにはログインしてください。ログイン後、このページから登録できます。",
-                "Please log in to subscribe. You can subscribe from this page after logging in.",
+                `ログインすると、そのまま${spec.name}の決済画面へ進みます。`,
+                `After you log in, you'll go straight to checkout for ${spec.enName}.`,
               )}
               triggerChildren={
-                <Button className={planCtaClassName}>
+                <Button
+                  className={planCtaClassName}
+                  onClick={() => props.onLoginClick?.()}
+                >
                   {t("ログインして登録する", "Log in to subscribe")}
                 </Button>
               }
@@ -172,12 +200,49 @@ export function PassPlanDescription(props: Props) {
                 ? t("準備中", "Coming Soon")
                 : isYearly
                   ? t(`${spec.name}を年払いで登録する`, `Get ${spec.enName} yearly`)
-                  : t(`${spec.name}に登録する`, `Get ${spec.enName}`)}
+                  : isFirstMonthOffer
+                    ? t(
+                        `初月¥${toMoneyNumberText(firstMonthPrice)}で${spec.name}をはじめる`,
+                        `Start ${spec.enName} for ¥${toMoneyNumberText(firstMonthPrice)}`,
+                      )
+                    : t(`${spec.name}に登録する`, `Get ${spec.enName}`)}
             </Button>
+          )}
+          {!isFree && !props.isCurrent && (
+            <p className="mt-2 flex items-start justify-center gap-1 text-muted-foreground text-xs">
+              <CheckIcon className="mt-0.5 size-3 shrink-0 text-violet-500" />
+              {isYearly
+                ? t(
+                    "解約すると次の更新日（1年後）まで使えます",
+                    "Cancel anytime; benefits last until the yearly renewal date",
+                  )
+                : t(
+                    "いつでも解約できます（更新日まで使えます）",
+                    "Cancel anytime (benefits last until the renewal date)",
+                  )}
+            </p>
           )}
         </div>
       )}
-      <ul className="mt-4 space-y-2 text-sm">
+      <button
+        type="button"
+        aria-expanded={isFeatureOpen}
+        onClick={() => setIsFeatureOpen((prev) => !prev)}
+        className="@xl:hidden mt-3 flex w-full items-center justify-center gap-1 rounded-lg py-1.5 text-muted-foreground text-xs hover:text-foreground"
+      >
+        {isFeatureOpen
+          ? t("特典をたたむ", "Hide benefits")
+          : t("特典をすべて見る", "See all benefits")}
+        <ChevronDownIcon
+          className={cn("size-4 transition-transform", isFeatureOpen && "rotate-180")}
+        />
+      </button>
+      <ul
+        className={cn(
+          "mt-2 @xl:mt-4 space-y-2 text-sm",
+          !isFeatureOpen && "@xl:block hidden",
+        )}
+      >
         {!isFree && (
           <li className="flex items-start gap-2">
             <CheckIcon className="mt-0.5 size-4 shrink-0 text-violet-500" />

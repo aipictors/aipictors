@@ -88,6 +88,8 @@ export function PlusForm () {
   const [cancelReasonNote, setCancelReasonNote] = useState("")
   // 1 か月休止の予約・休止中（解約の代わり）
   const [pause, setPause] = useState<SubscriptionPause>(null)
+  // 未払い・休止がないと確かめられたか（ログイン前に選んだプランの決済を自動で続けてよいかの判定に使う）
+  const [resumeChecks, setResumeChecks] = useState({ unpaid: false, pause: false })
   // 自動更新なしのパス（PayPay などの 1 回払い）
   const prepaid = usePrepaidPass()
   const [isPlanChangePreviewLoading, setIsPlanChangePreviewLoading] = useState(false)
@@ -219,11 +221,14 @@ export function PlusForm () {
     try {
       const headers = await withAuthHeader()
       const response = await fetch("/api/stripe/subscription-pause", { headers })
-      const { json } = await parseActionResponse<{
+      const { ok, json } = await parseActionResponse<{
         error: string | null
         data: SubscriptionPause
       }>(response)
       setPause(json?.data ?? null)
+      if (ok && json && !json.error) {
+        setResumeChecks((prev) => ({ ...prev, pause: true }))
+      }
     } catch {
       // 休止の表示が出ないだけ
     }
@@ -501,6 +506,8 @@ export function PlusForm () {
         }>(response)
         if (ok && !json?.error && json?.data?.hostedInvoiceUrl) {
           setUnpaidInvoice(json.data)
+        } else if (ok && json && !json.error) {
+          setResumeChecks((prev) => ({ ...prev, unpaid: true }))
         }
       } catch {
         // 取得できなくても通常の表示を続ける
@@ -984,7 +991,14 @@ export function PlusForm () {
               isPausedNow={true}
             />
           )}
-          <PlusAbout showUpgradePlansOnly={true} showFreePlan={true} />
+          <PlusAbout
+            showUpgradePlansOnly={true}
+            showFreePlan={true}
+            showStickyCta={true}
+            canResumeCheckout={
+              resumeChecks.unpaid && resumeChecks.pause && pause === null
+            }
+          />
           <PrepaidPassPanel />
         </>
       )}

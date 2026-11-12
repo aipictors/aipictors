@@ -21,6 +21,10 @@ type Props = {
   isLoggedOut?: boolean
   onSelect(passType: IntrospectionEnum<"PassType">): Promise<void>
   /**
+   * 未ログインの人が登録ボタン（ログイン）を押したとき
+   */
+  onLoginClick?(passType: "LITE" | "STANDARD" | "PREMIUM"): void
+  /**
    * 月払い・年払い（onIntervalChange を渡したときだけ切り替えを出す。加入中の人には出さない）
    */
   interval?: BillingInterval
@@ -95,6 +99,7 @@ export function PassPlanList (props: Props) {
           onChange={props.onIntervalChange}
         />
       )}
+      {/* スマホ（1 列）では、おすすめのスタンダード・最安のライト・プレミアム・無料の順に並べる */}
       <div
         className={cn(
           "grid grid-cols-1 gap-4 pt-3",
@@ -107,6 +112,7 @@ export function PassPlanList (props: Props) {
         {isFreePlanVisible && (
           <PassPlanDescription
             plan="FREE"
+            className="@xl:order-none order-4"
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
             onClick={async () => {}}
@@ -120,6 +126,8 @@ export function PassPlanList (props: Props) {
             isHide={props.hideSubmitButton === true}
             isLoggedOut={props.isLoggedOut}
             isCurrent={effectiveCurrentPass?.type === "LITE"}
+            className="@xl:order-none order-2"
+            onLoginClick={() => props.onLoginClick?.("LITE")}
             onClick={() => props.onSelect("LITE")}
           />
         )}
@@ -132,6 +140,8 @@ export function PassPlanList (props: Props) {
             isHide={props.hideSubmitButton === true}
             isLoggedOut={props.isLoggedOut}
             isCurrent={effectiveCurrentPass?.type === "STANDARD"}
+            className="@xl:order-none order-1"
+            onLoginClick={() => props.onLoginClick?.("STANDARD")}
             onClick={() => props.onSelect("STANDARD")}
           />
         )}
@@ -143,6 +153,8 @@ export function PassPlanList (props: Props) {
             isHide={props.hideSubmitButton === true}
             isLoggedOut={props.isLoggedOut}
             isCurrent={effectiveCurrentPass?.type === "PREMIUM"}
+            className="@xl:order-none order-3"
+            onLoginClick={() => props.onLoginClick?.("PREMIUM")}
             onClick={() => props.onSelect("PREMIUM")}
           />
         )}
