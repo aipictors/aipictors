@@ -3,6 +3,8 @@ import { toJsonResponse } from "~/lib/server/json-response.server"
 import { callAipictorsApi, requireViewer } from "~/lib/server/viewer-api-route.server"
 
 export type ReferralSummary = {
+  /** 紹介特典を受け付けているか（止めている間も、これまでの人数とコインは返す） */
+  enabled?: boolean
   code: string
   rewards: { signup: number; action: number; paid: number }
   coinTtlDays: number

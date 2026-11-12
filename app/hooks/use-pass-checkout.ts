@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { createTrialCheckout } from "~/lib/trial-api"
-import { rememberCheckoutLocale } from "~/utils/checkout-locale"
+import { getCheckoutLocale, rememberCheckoutLocale } from "~/utils/checkout-locale"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 
@@ -13,7 +13,7 @@ export type CheckoutPassType = "LITE" | "STANDARD" | "PREMIUM"
 
 /**
  * プランの決済画面（Stripe）へ移る
- * 月払いは GraphQL の createPassCheckoutSession（初月半額の判定は aipictors-api）、年払いは /api/stripe/subscription-checkout
+ * 月払いは GraphQL の createPassCheckoutSession（初月半額の判定は aipictors-api）、年払いと英語のページからの月払いは /api/stripe/subscription-checkout
  * /plus を経由せず、生成画面のダイアログなどからそのまま決済に進めるようにするため
  */
 export function usePassCheckout() {
@@ -29,9 +29,11 @@ export function usePassCheckout() {
   ) => {
     setLoadingKey(`${passType}:${interval}`)
     try {
+      // GraphQL には表示言語を渡せないので、英語のページからの月払いは年払いと同じ口で作る（Stripe の決済画面を英語で出すため）
+      const locale = getCheckoutLocale()
       const url =
-        interval === "year"
-          ? await createYearlyCheckout(passType)
+        interval === "year" || locale === "en"
+          ? await createCheckout(passType, interval, locale)
           : (await mutation({ variables: { input: { passType } } })).data
               ?.createPassCheckoutSession
       if (typeof url !== "string" || url.length === 0) {
@@ -108,12 +110,16 @@ export function usePassCheckout() {
   }
 }
 
-const createYearlyCheckout = async (passType: CheckoutPassType) => {
+const createCheckout = async (
+  passType: CheckoutPassType,
+  interval: BillingInterval,
+  locale: "ja" | "en",
+) => {
   const headers = await getViewerRequestHeaders({ includeJsonContentType: true })
   const response = await fetch("/api/stripe/subscription-checkout", {
     method: "POST",
     headers,
-    body: JSON.stringify({ passType, interval: "year" }),
+    body: JSON.stringify({ passType, interval, locale }),
   })
   const json = (await response.json().catch(() => null)) as {
     error: string | null

@@ -141,3 +141,23 @@ export function buildReferralUrl(
 ): string {
   return `${siteUrl}${locale === "en" ? "/en" : ""}/invite?${REFERRAL_PARAM}=${code}`
 }
+
+// 同じ画面の複数の場所（紹介ページ・下の案内）で使うので、1 回取った結果を使い回す
+let pendingReferralEnabled: Promise<boolean> | null = null
+
+/**
+ * 紹介特典を受け付けているか。確かめられなかったときは受け付けている扱いにする（案内を消さない）
+ */
+export function fetchReferralEnabled(): Promise<boolean> {
+  pendingReferralEnabled =
+    pendingReferralEnabled ??
+    fetch("/api/referral/status")
+      .then(async (response) => {
+        const json = (await response.json().catch(() => null)) as {
+          data: { enabled?: boolean } | null
+        } | null
+        return json?.data?.enabled !== false
+      })
+      .catch(() => true)
+  return pendingReferralEnabled
+}

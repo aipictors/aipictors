@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
+import { getCheckoutLocale } from "~/lib/server/checkout-locale.server"
 import { toJsonResponse } from "~/lib/server/json-response.server"
 import { resolveViewerAndHeaders } from "~/lib/server/backend-api-auth.server"
 
@@ -10,13 +11,18 @@ async function handleRequest(request: Request, context: ActionFunctionArgs["cont
     return resolved.error
   }
 
+  const input = (await request.json().catch(() => ({}))) as { locale?: unknown } | null
+  const locale = getCheckoutLocale(request, input?.locale)
+
   // 契約中のカードを変更する Stripe のページ（カード変更・請求履歴のみ）を開く URL をもらう
   try {
     const apiResponse = await fetch(
       `${resolved.apiBaseUrl}/internal/subscriptions/billing-portal/${resolved.viewer.userId}`,
       {
         method: "POST",
-        headers: resolved.headers,
+        headers: { ...resolved.headers, "Content-Type": "application/json" },
+        // 英語のページから来た人には、Stripe の画面も英語で出す
+        body: JSON.stringify({ locale }),
       },
     )
     const responseText = await apiResponse.text()

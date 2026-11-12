@@ -1,4 +1,5 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare"
+import { getCheckoutLocale } from "~/lib/server/checkout-locale.server"
 import { toJsonResponse } from "~/lib/server/json-response.server"
 import { getApiBaseUrl, getInternalHeaders } from "~/lib/server/coins-api.server"
 import { requireViewer } from "~/lib/server/viewer-api-route.server"
@@ -6,7 +7,9 @@ import { requireViewer } from "~/lib/server/viewer-api-route.server"
 const PASS_TYPES = ["LITE", "STANDARD", "PREMIUM"] as const
 
 /**
- * 年払いの決済画面と、ライトの 7 日間無料お試しの決済画面を作る（ふつうの月払いは GraphQL の createPassCheckoutSession のまま）
+ * 年払いの決済画面と、ライトの 7 日間無料お試しの決済画面を作る
+ * ふつうの月払いは GraphQL の createPassCheckoutSession だが、GraphQL には表示言語を渡せないので、
+ * 英語のページからの月払いはここで作る（interval: "month"。初月半額の判定は aipictors-api で同じ）
  * 加入中の人（アプリのストアでの加入も含む）は二重にならないように断る
  * お試しは body に { passType: "LITE", interval: "month", trial: true }。対象外は 409 で code: "trial_not_eligible"
  * （対象かどうかは先に GET /api/stripe/subscription-trial で分かる）
@@ -22,12 +25,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
     passType?: unknown
     interval?: unknown
     trial?: unknown
+    locale?: unknown
   }
   const passType = PASS_TYPES.find((type) => type === input.passType)
   const isTrial = input.trial === true
   const isValid = isTrial
     ? passType === "LITE" && (input.interval === "month" || input.interval === undefined)
-    : input.interval === "year"
+    : input.interval === "year" || input.interval === "month"
   if (!passType || !isValid) {
     return toJsonResponse({ error: "Invalid request body", data: null }, 400)
   }
@@ -43,7 +47,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
           }
         : {
             error:
-              "すでにプランに加入しています。年払いへの切り替えは、今のプランの解約後にお申し込みください。",
+              input.interval === "month"
+                ? "すでにプランに加入しています。プランの変更は、プランのページから行えます。"
+                : "すでにプランに加入しています。年払いへの切り替えは、今のプランの解約後にお申し込みください。",
             data: null,
           },
       409,
@@ -52,6 +58,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   const requestUrl = new URL(request.url)
   const origin = `${requestUrl.protocol}//${requestUrl.host}`
+  // 英語のページから来た人には、Stripe の決済画面も英語で出す
+  const locale = getCheckoutLocale(request, input.locale)
   const apiResponse = await fetch(
     `${getApiBaseUrl(context)}/stripe/checkout/subscription`,
     {
@@ -59,8 +67,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
       headers: getInternalHeaders(context),
       body: JSON.stringify(
         isTrial
-          ? { userId: viewer.userId, passType, interval: "month", trial: true, origin }
-          : { userId: viewer.userId, passType, interval: "year", origin },
+          ? { userId: viewer.userId, passType, interval: "month", trial: true, origin, locale }
+          : { userId: viewer.userId, passType, interval: input.interval, origin, locale },
       ),
     },
   )

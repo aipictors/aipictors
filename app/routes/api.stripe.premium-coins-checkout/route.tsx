@@ -11,6 +11,7 @@ import {
   PREMIUM_COIN_PACKAGES,
   parsePremiumCoinPackageId,
 } from "~/lib/server/premium-coins.server"
+import { getCheckoutLocale } from "~/lib/server/checkout-locale.server"
 import { toJsonResponse } from "~/lib/server/json-response.server"
 
 const postStripeForm = async (secretKey: string, params: URLSearchParams) => {
@@ -120,6 +121,7 @@ const bodySchema = object({
   customCoins: optional(number()),
   successPath: optional(string()),
   cancelPath: optional(string()),
+  locale: optional(string()),
 })
 
 const toSafeRelativePath = (value: string | undefined) => {
@@ -315,6 +317,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
         origin: appOrigin,
         successPath: successPath ?? undefined,
         cancelPath: cancelPath ?? undefined,
+        // 英語のページから来た人には、Stripe の決済画面も英語で出す
+        locale: getCheckoutLocale(request, parsedBody.output.locale),
       }),
     },
   )

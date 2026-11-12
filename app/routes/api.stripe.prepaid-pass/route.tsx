@@ -1,4 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { getCheckoutLocale } from "~/lib/server/checkout-locale.server"
 import { toJsonResponse } from "~/lib/server/json-response.server"
 import { callAipictorsApi, requireViewer } from "~/lib/server/viewer-api-route.server"
 
@@ -38,6 +39,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const input = (await request.json().catch(() => ({}))) as {
     passType?: unknown
     interval?: unknown
+    locale?: unknown
   }
   const passType = PASS_TYPES.find((type) => type === input.passType)
   const interval = input.interval === "year" ? "year" : input.interval === "month" ? "month" : null
@@ -62,6 +64,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         passType,
         interval,
         origin: `${requestUrl.protocol}//${requestUrl.host}`,
+        locale: getCheckoutLocale(request, input.locale),
       },
     },
   )

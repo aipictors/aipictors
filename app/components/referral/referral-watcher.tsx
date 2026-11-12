@@ -15,6 +15,7 @@ import {
   clearStoredReferral,
   countReferralAttempt,
   dismissReferralBanner,
+  fetchReferralEnabled,
   getReferralDeviceId,
   isReferralBannerDismissed,
   readStoredReferral,
@@ -49,6 +50,8 @@ export function ReferralWatcher() {
   const [hasReferral, setHasReferral] = useState(false)
   const [isDismissed, setIsDismissed] = useState(true)
   const isAttaching = useRef(false)
+  // 紹介特典を受け付けているか（案内を出すときだけ確かめる。確かめるまでは案内を出さない）
+  const [isEnabled, setIsEnabled] = useState<boolean | null>(null)
 
   // リンクから来たときに覚える。ログイン中の人（すでにアカウントがある）は対象外なので覚えない
   useEffect(() => {
@@ -118,6 +121,8 @@ export function ReferralWatcher() {
         }
         return
       }
+      // 受け付けを止めている間は、覚えたままにして次に開いたときにもう一度試す（回数の上限まで）
+      if (result.reason === "disabled") return
       clearStoredReferral()
       setHasReferral(false)
       trackGrowthEvent("ref_attach", result.reason)
@@ -143,13 +148,61 @@ export function ReferralWatcher() {
     }
   }, [authContext.isLoggedIn])
 
-  if (
-    !hasReferral ||
-    isDismissed ||
-    !authContext.isNotLoggedIn ||
-    INVITE_PATH.test(location.pathname)
-  ) {
+  const isBannerTarget =
+    hasReferral &&
+    !isDismissed &&
+    authContext.isNotLoggedIn &&
+    !INVITE_PATH.test(location.pathname)
+
+  useEffect(() => {
+    if (!isBannerTarget || isEnabled !== null) return
+    let isCancelled = false
+    fetchReferralEnabled().then((value) => {
+      if (!isCancelled) setIsEnabled(value)
+    })
+    return () => {
+      isCancelled = true
+    }
+  }, [isBannerTarget, isEnabled])
+
+  if (!isBannerTarget || isEnabled === null) {
     return null
+  }
+
+  const closeButton = (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="size-10 shrink-0 text-muted-foreground"
+      aria-label={t("閉じる", "Close")}
+      onClick={() => {
+        dismissReferralBanner()
+        setIsDismissed(true)
+      }}
+    >
+      <XIcon className="size-4" />
+    </Button>
+  )
+
+  if (!isEnabled) {
+    return (
+      <aside
+        aria-label={t("招待特典", "Invite bonus")}
+        className="fixed inset-x-3 bottom-16 z-40 mx-auto flex max-w-md items-center gap-3 rounded-2xl border bg-background/95 p-3 shadow-xl backdrop-blur md:inset-x-auto md:right-6 md:bottom-6 md:mx-0"
+      >
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <GiftIcon className="size-5" />
+        </span>
+        <p className="min-w-0 flex-1 text-sm leading-snug">
+          {t(
+            "招待特典は、現在は受け付けていません。登録は今までどおり無料でできます。",
+            "The invite bonus isn't available right now. You can still sign up for free.",
+          )}
+        </p>
+        {closeButton}
+      </aside>
+    )
   }
 
   return (
@@ -184,19 +237,7 @@ export function ReferralWatcher() {
           className={cn(referralCtaClassName, "h-10 px-3 text-sm")}
         />
       </div>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="size-10 shrink-0 text-muted-foreground"
-        aria-label={t("閉じる", "Close")}
-        onClick={() => {
-          dismissReferralBanner()
-          setIsDismissed(true)
-        }}
-      >
-        <XIcon className="size-4" />
-      </Button>
+      {closeButton}
     </aside>
   )
 }

@@ -5,7 +5,7 @@ import { callAipictorsApi, requireViewer } from "~/lib/server/viewer-api-route.s
 
 export type ReferralAttachResult = {
   attached: boolean
-  /** attached / already / unknown_code / self / not_new_account / same_device / same_ip / ip_overlap / not_ready */
+  /** attached / already / unknown_code / self / not_new_account / same_device / same_ip / ip_overlap / not_ready / disabled */
   reason: string
   grantedCoins: number
   /** true のときだけ、あとでもう一度試してよい */

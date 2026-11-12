@@ -4,6 +4,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { REFERRAL_REWARDS } from "~/lib/referral/referral-rewards"
 import {
+  fetchReferralEnabled,
   getReferralDeviceId,
   readStoredReferral,
 } from "~/lib/referral/referral-storage"
@@ -32,6 +33,19 @@ export function InvitePage() {
   const [state, setState] = useState<SummaryState>({ kind: "loading" })
   // 紹介リンクから来たか（URL の ref は ReferralWatcher が端末に覚える。少し遅れて読めるようになる）
   const [hasReferral, setHasReferral] = useState(false)
+  // 紹介特典を受け付けているか（未ログインの人は別の口で確かめる。ログイン中は下の内容に含まれる）
+  const [isGuestEnabled, setIsGuestEnabled] = useState(true)
+
+  useEffect(() => {
+    if (!authContext.isNotLoggedIn) return
+    let isCancelled = false
+    fetchReferralEnabled().then((value) => {
+      if (!isCancelled) setIsGuestEnabled(value)
+    })
+    return () => {
+      isCancelled = true
+    }
+  }, [authContext.isNotLoggedIn])
 
   useEffect(() => {
     if (!authContext.isNotLoggedIn) return
@@ -78,8 +92,11 @@ export function InvitePage() {
 
   const rewards = state.kind === "done" ? state.summary.rewards : REFERRAL_REWARDS
   const maxPerFriend = rewards.action + rewards.paid
+  const isEnabled = authContext.isLoggedIn
+    ? state.kind !== "done" || state.summary.enabled !== false
+    : isGuestEnabled
   // 紹介リンクから来た未ログインの人には、招待された側の案内を出す
-  const isInvitedGuest = authContext.isNotLoggedIn && hasReferral
+  const isInvitedGuest = authContext.isNotLoggedIn && hasReferral && isEnabled
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8 pb-12 md:space-y-12">
@@ -117,7 +134,22 @@ export function InvitePage() {
                 )}
           </p>
           <div className="mt-5 md:mt-6">
-            {authContext.isLoggedIn ? (
+            {!isEnabled ? (
+              <div className="max-w-xl rounded-2xl border bg-background/80 p-4 backdrop-blur md:p-5">
+                <p className="font-bold text-base leading-snug">
+                  {t(
+                    "招待特典は、現在は受け付けていません",
+                    "The invite program isn't available right now",
+                  )}
+                </p>
+                <p className="mt-1 text-muted-foreground text-sm leading-relaxed">
+                  {t(
+                    "紹介リンクからの新しい登録と、特典のコインの付与を止めています。これまでに受け取ったコインはそのまま使えます。",
+                    "New sign-ups from invite links and bonus coins are paused. Coins you've already received stay in your balance.",
+                  )}
+                </p>
+              </div>
+            ) : authContext.isLoggedIn ? (
               <InviteLinkPanel
                 code={state.kind === "done" ? state.summary.code : null}
                 isError={state.kind === "error"}

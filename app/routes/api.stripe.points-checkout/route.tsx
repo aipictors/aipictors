@@ -3,6 +3,7 @@ import { object, safeParse, string } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 import { parsePointsPackageId } from "~/lib/server/stripe-points.server"
+import { getCheckoutLocale } from "~/lib/server/checkout-locale.server"
 import { toJsonResponse } from "~/lib/server/json-response.server"
 
 const bodySchema = object({
@@ -92,6 +93,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       userId: viewer.userId,
       points,
       origin: appOrigin,
+      locale: getCheckoutLocale(request),
     }),
   })
 

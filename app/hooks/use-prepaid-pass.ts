@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { AuthContext } from "~/contexts/auth-context"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
-import { rememberCheckoutLocale } from "~/utils/checkout-locale"
+import { getCheckoutLocale, rememberCheckoutLocale } from "~/utils/checkout-locale"
 import type { PrepaidPassStatus } from "~/routes/api.stripe.prepaid-pass/route"
 import type { CheckoutPassType } from "~/hooks/use-pass-checkout"
 import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
@@ -48,7 +48,7 @@ export function usePrepaidPass() {
       const response = await fetch("/api/stripe/prepaid-pass", {
         method: "POST",
         headers,
-        body: JSON.stringify({ passType, interval }),
+        body: JSON.stringify({ passType, interval, locale: getCheckoutLocale() }),
       })
       const json = (await response.json().catch(() => null)) as {
         error: string | null

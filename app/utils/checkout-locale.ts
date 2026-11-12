@@ -32,3 +32,11 @@ export function takeEnglishReturnPath(): string | null {
   if (getPathLocale(pathname) === "en") return null
   return `/en${pathname}${search}`
 }
+
+/**
+ * Stripe の画面（決済・カード変更）を出す言語。今のページが英語（/en）なら "en"
+ * /api/stripe/* の body に locale として渡す（渡さなくても、サーバーが呼び出し元のページから判断する）
+ */
+export function getCheckoutLocale(): "ja" | "en" {
+  return getPathLocale(window.location.pathname)
+}
