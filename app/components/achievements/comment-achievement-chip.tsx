@@ -52,7 +52,7 @@ export function CommentAchievementChip(props: Props) {
   return (
     <Link
       to={`/achievements?user=${props.userId}`}
-      className="inline-flex h-[18px] shrink-0 items-center rounded-full bg-gradient-to-r from-pink-500 via-amber-400 to-sky-400 px-1.5 font-black text-[10px] text-white tabular-nums leading-none shadow-sm transition hover:brightness-110"
+      className="inline-flex h-[18px] shrink-0 items-center rounded-full border bg-muted/60 px-1.5 font-semibold text-[10px] text-muted-foreground tabular-nums leading-none transition hover:bg-muted hover:text-foreground"
       aria-label={t(
         `実績レベル ${props.badge.level}`,
         `Achievement level ${props.badge.level}`,
