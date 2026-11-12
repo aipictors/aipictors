@@ -18,33 +18,41 @@ export function getSdEndpoints(context: unknown): string[] {
   ).slice(0, 8)
 }
 
-const NIGHT_ENDPOINT_KEY = "gpu:night-endpoint"
-const NIGHT_ENDPOINT_CACHE_MS = 60_000
+// cron-gpu-night が KV に書く。夜だけ動く GPU と、無料用の GPU を安いものに置き換えたときの行き先
+const EXTRA_ENDPOINT_KEYS = ["gpu:night-endpoint", "gpu:free-endpoint"]
+const EXTRA_ENDPOINT_CACHE_MS = 60_000
 
-let nightEndpointCache: { url: string | null; at: number } | null = null
+let extraEndpointCache: { urls: string[]; at: number } | null = null
 
 type KvLike = { get(key: string): Promise<string | null> }
 
 /**
- * 夜だけ動く GPU を含めた一覧（cron-gpu-night が KV に書く）。読めなければ常設の分だけ返す
+ * 一時的に動いている GPU を含めた一覧。読めなければ常設の分だけ返す
  */
-export async function getActiveSdEndpoints(context: unknown): Promise<string[]> {
+export async function getActiveSdEndpoints(
+  context: unknown,
+): Promise<string[]> {
   const endpoints = getSdEndpoints(context)
   try {
     if (
-      nightEndpointCache === null ||
-      Date.now() - nightEndpointCache.at > NIGHT_ENDPOINT_CACHE_MS
+      extraEndpointCache === null ||
+      Date.now() - extraEndpointCache.at > EXTRA_ENDPOINT_CACHE_MS
     ) {
       const kv = (context as { cloudflare?: { env?: { PAGE_CACHE?: KvLike } } })
         ?.cloudflare?.env?.PAGE_CACHE
-      nightEndpointCache = {
-        url: (await kv?.get(NIGHT_ENDPOINT_KEY)) ?? null,
+      const urls = await Promise.all(
+        EXTRA_ENDPOINT_KEYS.map(async (key) => (await kv?.get(key)) ?? null),
+      )
+      extraEndpointCache = {
+        urls: urls.filter((url): url is string => url !== null),
         at: Date.now(),
       }
     }
   } catch {
     return endpoints
   }
-  const url = nightEndpointCache.url
-  return url && !endpoints.includes(url) ? [...endpoints, url] : endpoints
+  const extra = extraEndpointCache.urls.filter(
+    (url) => !endpoints.includes(url),
+  )
+  return extra.length > 0 ? [...endpoints, ...new Set(extra)] : endpoints
 }
