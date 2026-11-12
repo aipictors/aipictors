@@ -63,7 +63,10 @@ export function HomePromotionStrip(props: Props) {
             </p>
             <p className="flex items-center justify-between gap-1 text-[11px] text-muted-foreground">
               <span className="truncate">{work.user?.name}</span>
-              <span className="flex shrink-0 items-center gap-0.5 tabular-nums">
+              <span
+                data-list-like-count
+                className="flex shrink-0 items-center gap-0.5 tabular-nums"
+              >
                 <HeartIcon className="size-3 fill-current" />
                 {work.likesCount}
               </span>

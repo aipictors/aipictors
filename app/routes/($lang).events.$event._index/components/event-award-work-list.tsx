@@ -1,5 +1,4 @@
 import { useQuery } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { Heart } from "lucide-react"
 import { useContext } from "react"
@@ -8,6 +7,7 @@ import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -25,7 +25,7 @@ const isSensitiveWork = (work: { rating?: string | null }) => {
 /**
  * イベントランキング作品一覧
  */
-export function EventAwardWorkList (props: Props) {
+export function EventAwardWorkList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: resp } = useQuery(appAwardEventQuery, {
@@ -35,13 +35,19 @@ export function EventAwardWorkList (props: Props) {
     },
   })
 
-  const allAgesWorks = props.eventSource === "OFFICIAL"
-    ? resp?.appEvent?.allAgesAwardWorks ?? props.works.filter((work) => !isSensitiveWork(work))
-    : resp?.userEvent?.allAgesAwardWorks ?? props.works.filter((work) => !isSensitiveWork(work))
+  const allAgesWorks =
+    props.eventSource === "OFFICIAL"
+      ? (resp?.appEvent?.allAgesAwardWorks ??
+        props.works.filter((work) => !isSensitiveWork(work)))
+      : (resp?.userEvent?.allAgesAwardWorks ??
+        props.works.filter((work) => !isSensitiveWork(work)))
 
-  const sensitiveWorks = props.eventSource === "OFFICIAL"
-    ? resp?.appEvent?.sensitiveAwardWorks ?? props.works.filter((work) => isSensitiveWork(work))
-    : resp?.userEvent?.sensitiveAwardWorks ?? props.works.filter((work) => isSensitiveWork(work))
+  const sensitiveWorks =
+    props.eventSource === "OFFICIAL"
+      ? (resp?.appEvent?.sensitiveAwardWorks ??
+        props.works.filter((work) => isSensitiveWork(work)))
+      : (resp?.userEvent?.sensitiveAwardWorks ??
+        props.works.filter((work) => isSensitiveWork(work)))
 
   const t = useTranslation()
 
@@ -95,13 +101,16 @@ export function EventAwardWorkList (props: Props) {
                         workId={work.id}
                         imageUrl={work.smallThumbnailImageURL}
                         subWorksCount={work.subWorksCount}
-                        thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                        thumbnailImagePosition={
+                          work.thumbnailImagePosition ?? 0
+                        }
                         size="lg"
                         imageWidth={work.smallThumbnailImageWidth}
                         imageHeight={work.smallThumbnailImageHeight}
                         ranking={index + 1}
                         shouldMaskSensitive={
-                          !props.revealSensitiveThumbnails && isSensitiveWork(work)
+                          !props.revealSensitiveThumbnails &&
+                          isSensitiveWork(work)
                         }
                       />
                       <div className="absolute right-0 bottom-0">
@@ -123,11 +132,16 @@ export function EventAwardWorkList (props: Props) {
                     <div className="flex items-center justify-between gap-2">
                       <UserNameBadge
                         userId={work.user?.id ?? ""}
-                        userIconImageURL={withIconUrlFallback(work.user?.iconUrl)}
+                        userIconImageURL={withIconUrlFallback(
+                          work.user?.iconUrl,
+                        )}
                         name={work.user?.name ?? ""}
                         width={"lg"}
                       />
-                      <div className="flex items-center space-x-1">
+                      <div
+                        data-list-like-count
+                        className="flex items-center space-x-1"
+                      >
                         <Heart className="size-3 shrink-0 fill-gray-400 text-gray-400" />
                         <span className="text-xs">{work.likesCount}</span>
                       </div>

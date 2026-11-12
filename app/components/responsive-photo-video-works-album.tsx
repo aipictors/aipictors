@@ -1,14 +1,14 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { useTranslation } from "~/hooks/use-translation"
 import { type FragmentOf, graphql } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import SSR from "react-photo-album/ssr"
+import { useTranslation } from "~/hooks/use-translation"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import "react-photo-album/rows.css"
-import { Link } from "~/lib/app/locale-router"
 import { Heart } from "lucide-react"
 import { LikeButton } from "~/components/like-button"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
+import { Link } from "~/lib/app/locale-router"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
@@ -31,7 +31,10 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
             className="max-h-32 overflow-hidden rounded"
           >
             <img
-              src={toResizedImageUrl(props.works[0].smallThumbnailImageURL, 240)}
+              src={toResizedImageUrl(
+                props.works[0].smallThumbnailImageURL,
+                240,
+              )}
               alt={props.works[0].title}
               className="max-h-72 w-full overflow-hidden rounded object-contain"
             />
@@ -107,7 +110,10 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
                       </span>
                     </div>
                     <div className="flex items-center">
-                      <div className="flex items-center space-x-1">
+                      <div
+                        data-list-like-count
+                        className="flex items-center space-x-1"
+                      >
                         <Heart className="size-3 fill-gray-400 text-gray-400" />
                         <span className="text-xs">
                           {photo.context.likesCount}

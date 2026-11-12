@@ -1,17 +1,17 @@
-import { useTranslation } from "~/hooks/use-translation"
 import type { FragmentOf } from "gql.tada"
-import { Link } from "~/lib/app/locale-router"
 import { Heart, Images, MessageCircle } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { OptimizedImage } from "~/components/optimized-image"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { Badge } from "~/components/ui/badge"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { WorkMediaBadge } from "~/components/work-media-badge"
+import { useGridLayout } from "~/hooks/use-grid-layout"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { ReferenceGenerationButton } from "~/routes/($lang)._main._index/components/reference-generation-button"
-import { useGridLayout } from "~/hooks/use-grid-layout"
 import {
   type GridColumnBreakpoint,
   incompleteRowHiddenClassName,
@@ -191,7 +191,10 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                         </span>
                       </div>
                     </Link>
-                    <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                    <div
+                      data-list-like-count
+                      className="flex shrink-0 items-center gap-1 text-muted-foreground"
+                    >
                       <Heart className="size-3 fill-current" />
                       <span className="text-xs tabular-nums">
                         {work.likesCount}
@@ -376,7 +379,10 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                           </span>
                         </div>
                       </Link>
-                      <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                      <div
+                        data-list-like-count
+                        className="flex shrink-0 items-center gap-1 text-muted-foreground"
+                      >
                         <Heart className="size-3 fill-current" />
                         <span className="text-xs tabular-nums">
                           {work.likesCount}

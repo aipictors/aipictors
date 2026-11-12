@@ -1,21 +1,23 @@
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { useState } from "react"
-import { useTheme } from "~/components/theme-provider"
-import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
-import { Separator } from "~/components/ui/separator"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { createMeta } from "~/utils/create-meta"
+import { useState } from "react"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import { useTheme } from "~/components/theme-provider"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
+import { Separator } from "~/components/ui/separator"
+import { Switch } from "~/components/ui/switch"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { config, META } from "~/config"
+import { useListLikeCountHidden } from "~/hooks/use-list-like-count-hidden"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.SETTINGS_COLOR, undefined, props.params.lang)
@@ -40,6 +42,8 @@ export default function SettingColor() {
   const [activeTab, setActiveTab] = useState<string>("sampleTab1")
   const [activePage, setActivePage] = useState<number>(1)
   const { theme, setTheme } = useTheme()
+  const [isListLikeCountHidden, setIsListLikeCountHidden] =
+    useListLikeCountHidden()
 
   const handleTabClick = (value: string) => setActiveTab(value)
 
@@ -120,6 +124,28 @@ export default function SettingColor() {
       <div className="block md:hidden">
         <SettingsHeader title={t("カラーテーマ", "Color Theme")} />
       </div>
+      <label
+        htmlFor="list-like-count"
+        className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border p-3"
+      >
+        <span className="space-y-1">
+          <span className="block font-medium text-sm">
+            {t("作品一覧にいいね数を表示する", "Show like counts in lists")}
+          </span>
+          <span className="block text-muted-foreground text-xs">
+            {t(
+              "オフにすると、新着・お題・検索などの一覧でいいね数を隠します。作品を開いたときやランキングでは表示されます。この端末だけの設定です。",
+              "When off, like counts are hidden in lists such as new works, themes, and search. They still appear when you open a work and in rankings. This setting applies to this device only.",
+            )}
+          </span>
+        </span>
+        <Switch
+          id="list-like-count"
+          checked={!isListLikeCountHidden}
+          onCheckedChange={(isShown) => setIsListLikeCountHidden(!isShown)}
+        />
+      </label>
+      <Separator />
       <RadioGroup
         value={mode}
         name="mode"

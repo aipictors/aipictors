@@ -1,13 +1,15 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { ChevronRightIcon, HeartIcon, ImagesIcon } from "lucide-react"
 import { LikeButton } from "~/components/like-button"
 import { WorkMediaBadge } from "~/components/work-media-badge"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import type { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
-import { toResizedImageSrcSet } from "~/utils/resized-image-url"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
 
 type Work = FragmentOf<typeof HomeWorkFragment>
 
@@ -78,7 +80,10 @@ function UserWorkCard(props: {
           <p className="truncate font-bold text-sm drop-shadow">
             {t(work.title, work.enTitle || work.title)}
           </p>
-          <p className="mt-0.5 flex items-center gap-1 text-white/85 text-xs tabular-nums">
+          <p
+            data-list-like-count
+            className="mt-0.5 flex items-center gap-1 text-white/85 text-xs tabular-nums"
+          >
             <HeartIcon className="size-3 fill-current" />
             {work.likesCount.toLocaleString()}
           </p>

@@ -104,3 +104,8 @@
     transform: translate3d(0, 0, 0);
   }
 }
+
+/* 作品の一覧でいいね数を隠す設定（app/utils/list-like-count-preference.ts） */
+html[data-aip-hide-list-likes] [data-list-like-count] {
+  display: none !important;
+}

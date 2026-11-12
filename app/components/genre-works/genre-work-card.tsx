@@ -1,9 +1,9 @@
-import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { WorkMediaBadge } from "~/components/work-media-badge"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import {
   toResizedImageSrcSet,
@@ -90,7 +90,10 @@ export function GenreWorkCard(props: Props) {
             className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs hover:text-foreground"
           >
             <img
-              src={toResizedImageUrl(withIconUrlFallback(work.user.iconUrl), 96)}
+              src={toResizedImageUrl(
+                withIconUrlFallback(work.user.iconUrl),
+                96,
+              )}
               alt=""
               width={20}
               height={20}
@@ -103,7 +106,10 @@ export function GenreWorkCard(props: Props) {
         ) : (
           <span />
         )}
-        <span className="flex shrink-0 items-center gap-0.5 text-muted-foreground text-xs">
+        <span
+          data-list-like-count
+          className="flex shrink-0 items-center gap-0.5 text-muted-foreground text-xs"
+        >
           <Heart className="size-3 fill-current" />
           {work.likesCount.toLocaleString()}
         </span>

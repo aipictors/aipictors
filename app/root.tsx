@@ -9,10 +9,19 @@ import {
   type MetaFunction,
   redirect,
 } from "@remix-run/cloudflare"
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, type ShouldRevalidateFunction, useLocation, useRouteError, useRouteLoaderData } from "@remix-run/react"
-import { useNavigate } from "~/lib/app/locale-router"
+import {
+  isRouteErrorResponse,
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  type ShouldRevalidateFunction,
+  useLocation,
+  useRouteError,
+  useRouteLoaderData,
+} from "@remix-run/react"
 import { lazy, Suspense, useEffect, useRef, useState } from "react"
-import { replayPendingClick } from "~/lib/replay-pending-click"
 import { PhotoProvider } from "react-photo-view"
 import { AppAnalytics } from "~/components/app/app-analytics"
 import { AppErrorPage } from "~/components/app/app-error-page"
@@ -23,29 +32,31 @@ import { ContextProviders } from "~/components/context-providers"
 import { ProgressBar } from "~/components/progress-bar"
 import { ThemeProvider } from "~/components/theme-provider"
 import { config } from "~/config"
-import { cn } from "~/lib/utils"
-import styles from "~/tailwind.css?url"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
-import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
-import {
-  HEADER_USER_INLINE_SCRIPT,
-  HEADER_USER_INLINE_STYLE,
-} from "~/utils/header-user-snapshot"
-import { PAGE_VIEW_INLINE_SCRIPT, trackPageView } from "~/utils/page-view"
-import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
+import { toLocalePathname, useNavigate } from "~/lib/app/locale-router"
 import {
   hasMaintenanceBypass,
   readMaintenanceFlag,
   SITE_MAINTENANCE_KV_KEY,
 } from "~/lib/maintenance-mode"
+import { replayPendingClick } from "~/lib/replay-pending-click"
+import { cn } from "~/lib/utils"
+import styles from "~/tailwind.css?url"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
 import { type GridLayout, getGridLayout } from "~/utils/grid-layout"
-import { toLocalePathname } from "~/lib/app/locale-router"
+import {
+  HEADER_USER_INLINE_SCRIPT,
+  HEADER_USER_INLINE_STYLE,
+} from "~/utils/header-user-snapshot"
+import { isPostEditPath } from "~/utils/is-post-edit-path"
+import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
+import { LIST_LIKE_COUNT_INLINE_SCRIPT } from "~/utils/list-like-count-preference"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
+import { PAGE_VIEW_INLINE_SCRIPT, trackPageView } from "~/utils/page-view"
 import { setRenderNow } from "~/utils/render-now"
 import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
 import { serializeJsonLd } from "~/utils/serialize-json-ld"
 import { createSiteJsonLd } from "~/utils/site-json-ld"
-import { isPostEditPath } from "~/utils/is-post-edit-path"
 
 // パフォーマンス監視コンポーネントを遅延読み込み
 const PerformanceMonitor = lazy(() =>
@@ -633,6 +644,11 @@ export function Layout(props: Props): React.ReactNode {
           // ヘッダーのアイコンを描画前に決める（app/utils/header-user-snapshot.ts）
           // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
           dangerouslySetInnerHTML={{ __html: HEADER_USER_INLINE_SCRIPT }}
+        />
+        <script
+          // 一覧のいいね数を隠す設定を描画前に反映する（app/utils/list-like-count-preference.ts）
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
+          dangerouslySetInnerHTML={{ __html: LIST_LIKE_COUNT_INLINE_SCRIPT }}
         />
         <script
           // 最初のページ表示を数える（hydration を待たない。app/utils/page-view.ts）

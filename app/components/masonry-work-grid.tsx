@@ -1,5 +1,3 @@
-import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "~/lib/app/locale-router"
 import type { FragmentOf } from "gql.tada"
 import { Eye, Heart, Images } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
@@ -7,6 +5,8 @@ import { LikeButton } from "~/components/like-button"
 import { OptimizedImage } from "~/components/optimized-image"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { Skeleton } from "~/components/ui/skeleton"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -240,7 +240,10 @@ function WorkItem(props: WorkItemProps) {
 
         {/* 統計情報 */}
         <div className="absolute right-2 bottom-2 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <div className="flex items-center gap-1 rounded-full bg-neutral-200/70 px-2 py-1 text-neutral-800 text-xs backdrop-blur-sm dark:bg-white/10 dark:text-white">
+          <div
+            data-list-like-count
+            className="flex items-center gap-1 rounded-full bg-neutral-200/70 px-2 py-1 text-neutral-800 text-xs backdrop-blur-sm dark:bg-white/10 dark:text-white"
+          >
             <Heart className="size-3" />
             <span>{work.likesCount}</span>
           </div>

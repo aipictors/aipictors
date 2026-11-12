@@ -71,7 +71,10 @@ export function SearchResults(props: {
                   {t.workTitle(work.title, work.enTitle)}
                 </Link>
 
-                <div className="flex shrink-0 items-center gap-1 text-muted-foreground text-xs">
+                <div
+                  data-list-like-count
+                  className="flex shrink-0 items-center gap-1 text-muted-foreground text-xs"
+                >
                   <Heart className="size-3.5" />
                   <span>{work.likesCount}</span>
                 </div>

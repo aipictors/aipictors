@@ -1,6 +1,6 @@
 import { type FragmentOf, graphql } from "gql.tada"
-import { Fragment } from "react"
 import { Heart, Images, MessageCircle } from "lucide-react"
+import { Fragment } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { HoverVideoImage } from "~/components/hover-video-image"
 import { LikeButton } from "~/components/like-button"
@@ -195,7 +195,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                             </span>
                           </div>
                         </Link>
-                        <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                        <div
+                          data-list-like-count
+                          className="flex shrink-0 items-center gap-1 text-muted-foreground"
+                        >
                           <Heart className="size-3 fill-current" />
                           <span className="text-xs tabular-nums">
                             {workItem.likesCount}
@@ -447,7 +450,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                               </span>
                             </div>
                           </Link>
-                          <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                          <div
+                            data-list-like-count
+                            className="flex shrink-0 items-center gap-1 text-muted-foreground"
+                          >
                             <Heart className="size-3 fill-current" />
                             <span className="text-xs tabular-nums">
                               {work.likesCount}

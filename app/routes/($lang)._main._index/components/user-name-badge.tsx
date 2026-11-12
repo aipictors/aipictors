@@ -1,6 +1,6 @@
-import { Link } from "~/lib/app/locale-router"
 import { Heart } from "lucide-react"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -19,7 +19,7 @@ type Props = {
 /**
  * ユーザネームとアイコンを表示するコンポーネント
  */
-export function UserNameBadge (props: Props) {
+export function UserNameBadge(props: Props) {
   return (
     <Link
       className="flex max-w-40 flex-col gap-y-2"
@@ -63,7 +63,7 @@ export function UserNameBadge (props: Props) {
         </div>
         {props.likesCount !== undefined && (
           <div className="ml-auto shrink-0 items-center pl-1">
-            <div className="flex items-center space-x-1">
+            <div data-list-like-count className="flex items-center space-x-1">
               <Heart className="size-3 fill-gray-400 text-gray-400" />
               <span className="text-xs">{props.likesCount}</span>
               {props.snapshotLikedCount && (

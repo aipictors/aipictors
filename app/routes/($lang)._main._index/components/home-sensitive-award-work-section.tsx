@@ -1,24 +1,24 @@
+import { useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Heart } from "lucide-react"
+import { useContext } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
-import { AuthContext } from "~/contexts/auth-context"
-import { useQuery } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
-import { type FragmentOf, graphql } from "gql.tada"
-import { useContext } from "react"
-import { Heart } from "lucide-react"
-import { config } from "~/config"
-import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
-import { isFeaturableSensitiveWork } from "~/utils/sensitive-tag-filter"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { useTranslation } from "~/hooks/use-translation"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselPrevious,
   CarouselNext,
+  CarouselPrevious,
 } from "~/components/ui/carousel"
+import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { isFeaturableSensitiveWork } from "~/utils/sensitive-tag-filter"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   title: string
@@ -29,7 +29,7 @@ type Props = {
 /**
  * ランキング作品一覧
  */
-export function HomeSensitiveAwardWorkSection (props: Props) {
+export function HomeSensitiveAwardWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
 
   const year = props.awardDateText.split("/")[0]
@@ -121,7 +121,9 @@ export function HomeSensitiveAwardWorkSection (props: Props) {
                   )}
                 </div>
                 <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                  {work.work ? t.workTitle(work.work.title, work.work.enTitle) : ""}
+                  {work.work
+                    ? t.workTitle(work.work.title, work.work.enTitle)
+                    : ""}
                 </p>
                 <div className="flex max-w-40 items-center justify-between">
                   {work.work?.user?.id && work.work.user.name && (
@@ -135,7 +137,10 @@ export function HomeSensitiveAwardWorkSection (props: Props) {
                     />
                   )}
                   <div className="flex items-center space-x-1">
-                    <div className="flex items-center space-x-1">
+                    <div
+                      data-list-like-count
+                      className="flex items-center space-x-1"
+                    >
                       <Heart className="size-3 fill-gray-400 text-gray-400" />
                       <span className="text-xs">{work.work?.likesCount}</span>
                     </div>

@@ -1,5 +1,5 @@
-import { Link } from "~/lib/app/locale-router"
 import { HeartIcon } from "lucide-react"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   id: string
@@ -43,7 +43,10 @@ export function TextWorkCard(props: Props) {
           </p>
         )}
         {typeof props.likesCount === "number" && (
-          <p className="mt-auto inline-flex items-center gap-1 text-muted-foreground text-xs">
+          <p
+            data-list-like-count
+            className="mt-auto inline-flex items-center gap-1 text-muted-foreground text-xs"
+          >
             <HeartIcon className="size-3.5" />
             {props.likesCount.toLocaleString()}
           </p>

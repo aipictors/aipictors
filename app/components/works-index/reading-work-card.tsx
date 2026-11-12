@@ -1,8 +1,8 @@
-import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "~/lib/app/locale-router"
 import { graphql, type ResultOf } from "gql.tada"
 import { BookOpenIcon, Heart, MessageCircle } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import {
   toResizedImageSrcSet,
   toResizedImageUrl,
@@ -100,7 +100,10 @@ export function ReadingWorkCard(props: Props) {
               className="flex min-w-0 items-center gap-1.5 hover:text-foreground"
             >
               <img
-                src={toResizedImageUrl(withIconUrlFallback(work.user.iconUrl), 96)}
+                src={toResizedImageUrl(
+                  withIconUrlFallback(work.user.iconUrl),
+                  96,
+                )}
                 alt=""
                 width={20}
                 height={20}
@@ -114,7 +117,7 @@ export function ReadingWorkCard(props: Props) {
             <span />
           )}
           <span className="flex shrink-0 items-center gap-2">
-            <span className="flex items-center gap-0.5">
+            <span data-list-like-count className="flex items-center gap-0.5">
               <Heart aria-hidden={true} className="size-3 fill-current" />
               {work.likesCount.toLocaleString()}
             </span>

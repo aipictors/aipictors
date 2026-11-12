@@ -1,22 +1,13 @@
-import {
-  DropdownMenuPortal,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from "~/components/ui/dropdown-menu"
-import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
-import { AuthContext } from "~/contexts/auth-context"
+import { type ApolloClient, useQuery } from "@apollo/client/index"
+import { useLocation, useNavigate } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import {
   CoffeeIcon,
   GemIcon,
   GiftIcon,
   Languages,
   LogOutIcon,
+  MedalIcon,
   MessageCircleIcon,
   MoonIcon,
   SettingsIcon,
@@ -24,28 +15,38 @@ import {
   SunIcon,
   UserCircleIcon,
   UserIcon,
-  MedalIcon,
 } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
 import { CoinIcon } from "~/components/coin-icon"
+import { ListLikeCountMenuItem } from "~/components/list-like-count-menu-item"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import { useTheme } from "~/components/theme-provider"
+import {
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from "~/components/ui/dropdown-menu"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { AuthContext } from "~/contexts/auth-context"
+import { useLocale } from "~/hooks/use-locale"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import {
   getViewerRequestHeaders,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
-import { type ApolloClient, useQuery } from "@apollo/client/index"
-import { useContext, useEffect, useState } from "react"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
-import { useTheme } from "~/components/theme-provider"
-import { useLocation, useNavigate } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
-import { useTranslation } from "~/hooks/use-translation"
-import { useLocale } from "~/hooks/use-locale"
+import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
 import { buildLocalePath } from "~/utils/locale-path"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { ScrollArea } from "~/components/ui/scroll-area"
-import { graphql } from "gql.tada"
 import { userNavigationStyles } from "./user-navigation-styles"
-import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
 
 type Props = {
   onLogout(): void
@@ -440,6 +441,10 @@ function UserNavigationMenuContent(props: Props) {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
+        <ListLikeCountMenuItem
+          className={userNavigationStyles.menuItem}
+          iconClassName={userNavigationStyles.menuIcon}
+        />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className={userNavigationStyles.menuItem}>
             <Languages className={userNavigationStyles.menuIcon} />

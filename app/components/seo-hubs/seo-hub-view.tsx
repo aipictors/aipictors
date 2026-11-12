@@ -29,7 +29,11 @@ import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Props = { data: SeoHubData }
 
-function CopyButton(props: { text: string; label: string; className?: string }) {
+function CopyButton(props: {
+  text: string
+  label: string
+  className?: string
+}) {
   const t = useTranslation()
   const [isCopied, setIsCopied] = useState(false)
   return (
@@ -344,7 +348,10 @@ export function SeoHubView(props: Props) {
           {data.tokens.negative.length > 0 && (
             <div className="space-y-2 pt-2">
               <h3 className="font-semibold text-sm">
-                {t("よく使われるネガティブプロンプト", "Common negative prompts")}
+                {t(
+                  "よく使われるネガティブプロンプト",
+                  "Common negative prompts",
+                )}
               </h3>
               <TokenChips tokens={data.tokens.negative} muted />
             </div>
@@ -406,7 +413,9 @@ export function SeoHubView(props: Props) {
                           {t("モデル", "Model")}: {example.model}
                         </span>
                       )}
-                      ♥ {example.likesCount.toLocaleString()}
+                      <span data-list-like-count>
+                        ♥ {example.likesCount.toLocaleString()}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -558,7 +567,10 @@ export function SeoHubView(props: Props) {
           to={indexPath}
           className="text-muted-foreground underline underline-offset-2 hover:text-foreground"
         >
-          {t("ほかのキャラクター・タグ・モデルの呪文まとめ", "More prompt collections")}
+          {t(
+            "ほかのキャラクター・タグ・モデルの呪文まとめ",
+            "More prompt collections",
+          )}
         </Link>
       </p>
     </div>

@@ -1,17 +1,4 @@
-import { Button } from "~/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-} from "~/components/ui/dropdown-menu"
+import { useLocation, useNavigate } from "@remix-run/react"
 import {
   EllipsisVerticalIcon,
   Languages,
@@ -20,12 +7,26 @@ import {
   SunIcon,
 } from "lucide-react"
 import { useContext } from "react"
-import { AuthContext } from "~/contexts/auth-context"
+import { ListLikeCountMenuItem } from "~/components/list-like-count-menu-item"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { useTheme } from "~/components/theme-provider"
+import { Button } from "~/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu"
+import { AuthContext } from "~/contexts/auth-context"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
-import { useLocation, useNavigate } from "@remix-run/react"
 import { buildLocalePath } from "~/utils/locale-path"
 
 export const HomeHeaderNotLoggedInMenu = () => {
@@ -178,6 +179,7 @@ export const HomeHeaderNotLoggedInMenu = () => {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
+        <ListLikeCountMenuItem iconClassName="mr-2 inline-block w-4" />
         {/* {isSensitiveToggleVisible && <DropdownMenuSeparator />}
         {isSensitiveToggleVisible && (
           <div className="px-2 py-1.5">
