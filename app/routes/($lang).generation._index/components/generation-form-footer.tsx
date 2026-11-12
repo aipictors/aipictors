@@ -13,7 +13,7 @@ export function GenerationFormFooter () {
         {t("利用規約", "Terms of Service")}
       </Link>
       <Link className="text-sm" to="/generation/plans">
-        {t("プラン一覧", "Plan List")}
+        {t("プラン一覧", "Plans")}
       </Link>
       <Link className="text-sm" to="/generation/about">
         {t("生成機能について", "About Image Generation")}

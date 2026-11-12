@@ -19,6 +19,7 @@ import { PlusForm } from "~/routes/($lang)._main.plus._index/components/plus-for
 import { PlusHero } from "~/routes/($lang)._main.plus._index/components/plus-hero"
 import { PlusNoteList } from "~/routes/($lang)._main.plus._index/components/plus-note-list"
 import { createMeta } from "~/utils/create-meta"
+import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import type { Product, WithContext } from "schema-dts"
@@ -93,15 +94,15 @@ export default function Plus () {
   const assurances = [
     t(
       "いつでもこのページから解約できます。解約後も更新日までは特典を使えます",
-      "Cancel anytime from this page; benefits last until the renewal date",
+      "Cancel anytime from this page. You keep your benefits until the period you paid for ends.",
     ),
     t(
       "初月半額は、今プランに入っていない方の月払いが対象です（年払い・自動更新なしのパスは対象外）",
-      "The first-month discount applies to monthly plans for anyone not currently subscribed (not yearly plans or passes)",
+      "50% off the first month applies to monthly plans, for anyone not currently subscribed.",
     ),
     t(
       "お支払いは Stripe の決済画面でのクレジットカード決済です",
-      "You pay by credit card on Stripe's checkout page",
+      "Secure card payment through Stripe. Cards issued outside Japan work too.",
     ),
   ]
 
@@ -118,12 +119,12 @@ export default function Plus () {
           <p className="text-muted-foreground text-sm">
             {t(
               "すべて税込です。月払いはいつでも解約でき、年払いは2か月分おトクです。",
-              "Tax included. Cancel monthly plans anytime; yearly saves 2 months.",
+              "Charged in Japanese yen (JPY), tax included. Dollar amounts are estimates — your card issuer sets the final rate.",
             )}
             <span className="hidden md:inline">
               {t(
                 "上位プランへの変更は日割りの差額だけで切り替わります。",
-                " Upgrades only charge the prorated difference.",
+                " Cancel anytime.",
               )}
             </span>
           </p>
@@ -151,14 +152,14 @@ export default function Plus () {
       <PlusComparisonTable />
       <PlusCoinGuide />
       <PlusFaq />
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-600 via-fuchsia-500 to-sky-500 px-6 py-8 text-center text-white md:py-10">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-600 to-sky-500 px-6 py-8 text-center text-white md:py-10">
         <p className="font-extrabold text-2xl md:text-3xl">
-          {t("1回で4枚、毎日もっと。", "4 images per click, every day.")}
+          {t("1回で4枚、毎日もっと。", "Make more of every click.")}
         </p>
         <p className="mt-2 text-sm text-white/90">
           {t(
             "月額480円から。いつでも解約できます。",
-            "From ¥480/month. Cancel anytime.",
+            `From ¥480 a month (${toApproxUsdText(480)}). Cancel anytime.`,
           )}
         </p>
         <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
@@ -176,7 +177,7 @@ export default function Plus () {
             className="rounded-xl border-white/70 bg-transparent text-white hover:bg-white/10 hover:text-white dark:border-white/70"
           >
             <Link to="/generation/about">
-              {t("生成機能について", "About generation")}
+              {t("生成機能について", "How generation works")}
             </Link>
           </Button>
         </div>
@@ -184,7 +185,7 @@ export default function Plus () {
       {/* 長い注意事項はたたんでおく（開けばすべて読める） */}
       <details className="group rounded-2xl border px-4 py-3">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-2 font-bold text-sm [&::-webkit-details-marker]:hidden">
-          <h2>{t("注意事項（加入期間・解約・返金について）", "Important notes (term, cancellation, refunds)")}</h2>
+          <h2>{t("注意事項（加入期間・解約・返金について）", "The fine print (billing period, cancellation, refunds)")}</h2>
           <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
         </summary>
         <div className="pt-3 text-muted-foreground text-sm">

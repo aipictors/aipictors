@@ -26,7 +26,7 @@ export function BillingIntervalToggle(props: Props) {
     <div className="flex justify-center pb-2">
       <div
         role="radiogroup"
-        aria-label={t("支払い方法", "Billing")}
+        aria-label={t("支払い方法", "Billing period")}
         className="inline-flex rounded-full border bg-muted/60 p-1"
       >
         {options.map((option) => (
@@ -37,7 +37,7 @@ export function BillingIntervalToggle(props: Props) {
             aria-checked={props.value === option.value}
             onClick={() => props.onChange(option.value)}
             className={cn(
-              "flex items-center gap-1.5 rounded-full px-4 py-1.5 font-bold text-sm transition-colors",
+              "flex h-10 items-center gap-1.5 rounded-full px-4 font-bold text-sm transition-colors motion-reduce:transition-none",
               props.value === option.value
                 ? "bg-background text-foreground shadow"
                 : "text-muted-foreground hover:text-foreground",

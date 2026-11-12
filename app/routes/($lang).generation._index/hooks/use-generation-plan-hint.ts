@@ -33,7 +33,7 @@ export function useGenerationPlanHint(isEnabled: boolean) {
       toast(
         t(
           "生成できました。プランなら同じ1回で4枚まとめて作れます（初月半額）",
-          "Done! With a plan, one click makes 4 images (50% off your first month)",
+          "Done! On a plan, the same click makes 4 images. Your first month is half price.",
         ),
         {
           duration: 8000,

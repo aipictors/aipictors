@@ -2,7 +2,9 @@ import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { rememberCheckoutLocale } from "~/utils/checkout-locale"
 import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 
 export type CheckoutPassType = "LITE" | "STANDARD" | "PREMIUM"
@@ -13,6 +15,8 @@ export type CheckoutPassType = "LITE" | "STANDARD" | "PREMIUM"
  * /plus を経由せず、生成画面のダイアログなどからそのまま決済に進めるようにするため
  */
 export function usePassCheckout() {
+  const t = useTranslation()
+
   const [mutation] = useMutation(createPassCheckoutSessionMutation)
 
   const [loadingKey, setLoadingKey] = useState<string | null>(null)
@@ -29,12 +33,23 @@ export function usePassCheckout() {
           : (await mutation({ variables: { input: { passType } } })).data
               ?.createPassCheckoutSession
       if (typeof url !== "string" || url.length === 0) {
-        toast("決済画面を開けませんでした。時間をおいてもう一度お試しください。")
+        toast(
+          t(
+            "決済画面を開けませんでした。時間をおいてもう一度お試しください。",
+            "We couldn't open checkout. Please try again in a moment.",
+          ),
+        )
         return
       }
+      rememberCheckoutLocale()
       window.location.assign(url)
     } catch (error) {
-      toast(error instanceof Error ? error.message : "エラーが発生しました。")
+      toast(
+        t(
+          error instanceof Error ? error.message : "エラーが発生しました。",
+          "Something went wrong. Please try again.",
+        ),
+      )
     } finally {
       setLoadingKey(null)
     }

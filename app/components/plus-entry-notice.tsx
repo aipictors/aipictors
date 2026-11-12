@@ -70,7 +70,7 @@ export function PlusHeaderLink() {
     <Link
       to="/plus"
       onClick={() => trackGrowthEvent("plus_nav_click", "header")}
-      className="hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-full border border-violet-500/40 bg-violet-500/5 px-3 font-semibold text-sm text-violet-700 transition-colors hover:bg-violet-500/15 lg:inline-flex dark:text-violet-300"
+      className="hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-full border border-violet-500/30 bg-violet-500/5 px-3 font-semibold text-sm text-violet-700 transition-colors hover:border-violet-500/50 hover:bg-violet-500/10 motion-reduce:transition-none lg:inline-flex dark:text-violet-300"
     >
       <SparklesIcon className="size-4" />
       {"Aipictors+"}
@@ -117,12 +117,12 @@ export function PlusMobileNotice() {
   if (!isVisible) return null
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-[4.5rem] z-40 flex justify-center px-3 md:hidden">
-      <div className="pointer-events-auto flex max-w-full items-center rounded-full border border-violet-500/40 bg-background/95 shadow-lg shadow-violet-500/20 backdrop-blur">
+    <div className="pointer-events-none fixed inset-x-0 bottom-[4.5rem] z-40 flex justify-center px-3 motion-safe:animate-[fade-in-up_0.3s_ease-out_both] md:hidden">
+      <div className="pointer-events-auto flex max-w-full items-center rounded-full border border-violet-500/30 bg-background/95 shadow-lg shadow-violet-500/15 backdrop-blur">
         <Link
           to="/plus"
           onClick={() => trackGrowthEvent("plus_nav_click", "mobile_notice")}
-          className="flex min-w-0 items-center gap-1.5 py-2 pr-1 pl-3 text-xs"
+          className="flex h-11 min-w-0 items-center gap-1.5 pr-1 pl-3.5 text-xs"
         >
           <SparklesIcon className="size-4 shrink-0 text-violet-500" />
           <span className="truncate">
@@ -130,23 +130,23 @@ export function PlusMobileNotice() {
             <span className="ml-1.5">
               {t(
                 `初月半額・ライトは初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}`,
-                `50% off first month · Lite ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}`,
+                "Half price first month",
               )}
             </span>
           </span>
           <span className="shrink-0 font-bold text-violet-700 dark:text-violet-300">
-            {t("見る", "View")}
+            {t("見る", "See plans")}
           </span>
         </Link>
         <button
           type="button"
-          aria-label={t("この案内を閉じる", "Dismiss")}
+          aria-label={t("この案内を閉じる", "Dismiss this message")}
           onClick={() => {
             rememberDismissed()
             setIsClosed(true)
             trackGrowthEvent("plus_nav_dismiss", "mobile_notice")
           }}
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
         >
           <XIcon className="size-4" />
         </button>

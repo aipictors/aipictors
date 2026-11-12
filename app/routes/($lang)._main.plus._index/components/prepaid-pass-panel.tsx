@@ -31,27 +31,27 @@ export function PrepaidPassPanel(props: Props) {
   const activePass = prepaid.status?.pass ?? null
 
   return (
-    <div className="mt-6 space-y-3 rounded-2xl border border-red-500/30 bg-red-500/5 p-4">
+    <div className="mt-6 space-y-3 rounded-2xl border bg-muted/30 p-4 md:p-5">
       <div>
         <p className="font-bold">
           {activePass
             ? t(
                 `パスを延長する（今の期限: ${toDateText(activePass.periodEnd)}）`,
-                `Extend your pass (expires ${toDateText(activePass.periodEnd)})`,
+                `Extend your pass (ends ${toDateText(activePass.periodEnd)})`,
               )
             : paypay
-              ? t("PayPayでも払えます（自動更新なしのパス）", "Pay with PayPay (non-renewing pass)")
-              : t("自動更新なしで買う（1か月・1年のパス）", "Buy a non-renewing pass")}
+              ? t("PayPayでも払えます（自動更新なしのパス）", "Prefer not to subscribe? Buy a one-time pass")
+              : t("自動更新なしで買う（1か月・1年のパス）", "Prefer not to subscribe? Buy a one-time pass")}
         </p>
         <p className="text-muted-foreground text-xs leading-5">
           {paypay
             ? t(
                 "PayPay・クレジットカードの1回払いで、1か月または1年プランを使えます。自動で更新されないので解約の手続きは要りません。期限が切れる前にもう一度買うと、期限が延びます。初月半額は対象外です。",
-                "Pay once with PayPay or card for 1 month or 1 year. No auto-renewal; buy again to extend. First-month discount not included.",
+                "Pay once for 1 month or 1 year of a plan. It never renews, so there's nothing to cancel — buy another before it ends to extend it. The first-month discount doesn't apply to passes.",
               )
             : t(
                 "クレジットカードの1回払いで、1か月または1年プランを使えます（PayPayは準備中です）。自動で更新されないので解約の手続きは要りません。期限が切れる前にもう一度買うと、期限が延びます。初月半額は対象外です。",
-                "Pay once by card for 1 month or 1 year (PayPay coming soon). No auto-renewal; buy again to extend.",
+                "Pay once for 1 month or 1 year of a plan. It never renews, so there's nothing to cancel — buy another before it ends to extend it. The first-month discount doesn't apply to passes.",
               )}
         </p>
       </div>
@@ -66,7 +66,7 @@ export function PrepaidPassPanel(props: Props) {
                   key={interval}
                   size="sm"
                   variant="outline"
-                  className="w-full justify-between"
+                  className="h-10 w-full justify-between"
                   disabled={prepaid.isLoading}
                   onClick={() => {
                     trackGrowthEvent(`prepaid_checkout_${type}`, interval)

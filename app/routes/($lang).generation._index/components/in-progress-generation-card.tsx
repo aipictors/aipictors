@@ -33,11 +33,11 @@ const RAINBOW =
 export function InProgressGenerationCard(props: Props) {
   const dataContext = useContext(GenerationQueryContext)
 
+  const t = useTranslation()
+
   const isStandardOrPremium =
     dataContext.currentPass?.type === "STANDARD" ||
     dataContext.currentPass?.type === "PREMIUM"
-
-  const t = useTranslation()
 
   const passType = dataContext.currentPass?.type ?? null
 
@@ -62,17 +62,23 @@ export function InProgressGenerationCard(props: Props) {
   const isCompleted = progress?.state === "completed"
 
   const statusLabel = (() => {
-    if (isCompleted) return "仕上げ中…"
-    if (isActive) return `生成中 ${percent}%`
+    if (isCompleted) return t("仕上げ中…", "Finishing up…")
+    if (isActive) return t(`生成中 ${percent}%`, `Generating ${percent}%`)
     if (progress?.state === "queued") {
       return progress.queuePosition
-        ? `まもなく開始（あと${progress.queuePosition}件）`
-        : "まもなく開始"
+        ? t(
+            `まもなく開始（あと${progress.queuePosition}件）`,
+            `Starting soon (${progress.queuePosition} ahead)`,
+          )
+        : t("まもなく開始", "Starting soon")
     }
     if (props.imageGenerationWaitCount > 0) {
-      return `順番待ち（あと${props.imageGenerationWaitCount}件）`
+      return t(
+        `順番待ち（あと${props.imageGenerationWaitCount}件）`,
+        `In the queue (${props.imageGenerationWaitCount} ahead)`,
+      )
     }
-    return "準備中…"
+    return t("準備中…", "Getting ready…")
   })()
 
   return (
@@ -108,7 +114,9 @@ export function InProgressGenerationCard(props: Props) {
         <div className="relative flex items-start justify-between p-2 [&_button]:text-white [&_svg]:drop-shadow">
           <span className="inline-flex items-center gap-1 rounded-full bg-black/45 px-2 py-0.5 font-semibold text-[11px] text-white backdrop-blur-sm">
             <SparklesIcon className="size-3" />
-            {imageCount > 1 ? `${imageCount}枚まとめて` : "1枚"}
+            {imageCount > 1
+              ? t(`${imageCount}枚まとめて`, `${imageCount} images`)
+              : t("1枚", "1 image")}
           </span>
           <GenerationTaskCancelButton
             onCancel={props.onCancel}
@@ -149,18 +157,21 @@ export function InProgressGenerationCard(props: Props) {
               {hint === "free"
                 ? t(
                     "プランなら1回で4枚・初月¥240〜",
-                    "Plans: 4 per run, from ¥240",
+                    "4 images per click on a plan, from ¥240",
                   )
                 : t(
                     "スタンダード以上は優先して生成",
-                    "Standard+ gets priority",
+                    "Standard and Premium go first in the queue",
                   )}
             </Link>
           )}
           {isStandardOrPremium && props.inProgressNormalCount > 0 && (
             <p className="inline-flex items-center gap-1 text-[11px] text-cyan-200">
               <ZapIcon className="size-3" />
-              優先生成：{props.inProgressNormalCount}人をスキップ中
+              {t(
+                `優先生成：${props.inProgressNormalCount}人をスキップ中`,
+                `Priority: ahead of ${props.inProgressNormalCount} in the queue`,
+              )}
             </p>
           )}
         </div>

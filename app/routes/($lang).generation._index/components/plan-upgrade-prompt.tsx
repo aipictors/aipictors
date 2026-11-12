@@ -1,4 +1,5 @@
 import { Crown } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -12,16 +13,18 @@ type Props = {
  * プランアップグレードを促すさりげないUIコンポーネント
  */
 export function PlanUpgradePrompt ({ currentPlan, className }: Props) {
+  const t = useTranslation()
+
   const getUpgradeMessage = (plan?: IntrospectionEnum<"PassType"> | null) => {
     switch (plan) {
       case "LITE":
-        return "スタンダードで50ページまで"
+        return t("スタンダードで50ページまで", "Standard: up to 50 pages")
       case "STANDARD":
-        return "プレミアムで100ページまで"
+        return t("プレミアムで100ページまで", "Premium: up to 100 pages")
       case "PREMIUM":
         return null // プレミアムプランは最上位なので表示しない
       default:
-        return "ライトで30ページまで"
+        return t("ライトで30ページまで", "Lite: up to 30 pages")
     }
   }
 

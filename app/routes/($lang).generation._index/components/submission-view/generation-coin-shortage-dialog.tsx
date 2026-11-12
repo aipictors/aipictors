@@ -13,6 +13,7 @@ import {
 import { usePassCheckout } from "~/hooks/use-pass-checkout"
 import { useTranslation } from "~/hooks/use-translation"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
+import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {
@@ -103,13 +104,22 @@ export function GenerationCoinShortageDialog (props: Props) {
   return (
     <>
       <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-        <DialogContent className="max-w-md">
+        <DialogContent
+          className="max-h-[92dvh] max-w-md overflow-y-auto outline-none focus:outline-none focus-visible:outline-none"
+          onOpenAutoFocus={(event) => {
+            // 開いた直後に最初のボタンへフォーカスの輪が出て、押した後のように見えるのを避ける
+            event.preventDefault()
+            if (event.currentTarget instanceof HTMLElement) {
+              event.currentTarget.focus()
+            }
+          }}
+        >
           <DialogHeader className="pr-6">
-            <DialogTitle className="leading-snug">
+            <DialogTitle className="text-balance leading-snug">
               {isFree && props.affordableImages === 0
                 ? t(
-                    "今日の無料分（10枚）を使い切りました",
-                    "You've used today's 10 free images",
+                    "今日の無料分を使い切りました",
+                    "That's your 10 free images for today",
                   )
                 : t("コインが足りません", "Not enough coins")}
             </DialogTitle>
@@ -118,15 +128,15 @@ export function GenerationCoinShortageDialog (props: Props) {
                 ? props.isExistedPreviousPass
                   ? t(
                       "おかえりなさい！今なら初月半額でプランに戻れます。1回4枚・1日最大200枚まで作れます。",
-                      "Welcome back! Rejoin a plan for 4 images per run and up to 200 a day.",
+                      "Welcome back! Your first month is half price again — 4 images per click, up to 200 a day.",
                     )
                   : t(
-                      "プランなら、このまま続けて作れます。1回で4枚まとめて生成でき、初月は半額です。",
-                      "Keep creating with a plan: 4 images per run, and your first month is 50% off.",
+                      "無料は1日10枚までです。プランなら、このまま続けて作れます。",
+                      "Free covers 10 images a day. A plan lets you keep going right now.",
                     )
                 : t(
                     "上のプランにすると、毎日のコインが増えます。コインを買って続けることもできます。",
-                    "Upgrade for more daily coins, or buy coins to keep going.",
+                    "A higher plan gives you more coins every day. You can also buy coins to keep going.",
                   )}
             </DialogDescription>
           </DialogHeader>
@@ -135,49 +145,51 @@ export function GenerationCoinShortageDialog (props: Props) {
             <p className="rounded-lg bg-muted p-2 text-sm">
               {t(
                 `今のコインで、あと${props.affordableImages}枚作れます。同時生成枚数を${props.affordableImages}枚以下にしてください。`,
-                `You can still make ${props.affordableImages} image(s). Lower the number of images per run.`,
+                `You still have coins for ${props.affordableImages} more. Lower the number of images per click to ${props.affordableImages} or fewer.`,
               )}
             </p>
           )}
 
           {isFree && (
             // 選択肢を並べると選ばれなかったので、いちばん安い入り方（ライト・初月半額）を主役にして、押したらそのまま決済へ進む
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="rounded-2xl border-2 border-violet-500 bg-gradient-to-br from-violet-500/10 to-sky-500/10 p-4 dark:border-violet-400">
-                <div className="flex items-end justify-between gap-2">
-                  <div>
-                    <p className="font-bold">
-                      {t("ライトプラン", "Lite plan")}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      {t(
-                        `2か月目から${LITE.price}/月（税込）`,
-                        `Then ${LITE.price}/mo (tax incl.)`,
-                      )}
-                    </p>
-                  </div>
-                  <p className="text-right">
-                    <span className="mr-1 rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
-                      {t("初月半額", "50% off")}
-                    </span>
-                    <span className="font-extrabold text-3xl text-fuchsia-600 tracking-tight dark:text-fuchsia-300">
-                      {LITE.firstMonth}
-                    </span>
+                {/* /plus のプランのカードと同じ並び（印 → 初月の金額 → 2 か月目からの金額） */}
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-bold leading-tight">
+                    {t("ライトプラン", "Lite plan")}
                   </p>
+                  <span className="inline-block whitespace-nowrap rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
+                    {t("初月半額", "50% off first month")}
+                  </span>
                 </div>
-                <ul className="mt-3 grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+                <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5">
+                  <span className="font-extrabold text-3xl text-fuchsia-600 leading-tight tracking-tight dark:text-fuchsia-300">
+                    {LITE.firstMonth}
+                  </span>
+                  <span className="text-muted-foreground text-sm line-through">
+                    {LITE.price}
+                  </span>
+                  <span className="text-muted-foreground text-xs">
+                    {t(
+                      `2か月目から${LITE.price}/月（税込）`,
+                      `then ${LITE.price}/mo (${toApproxUsdText(480)})`,
+                    )}
+                  </span>
+                </p>
+                <ul className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
                   {[
-                    t("1回で4枚（無料は1枚）", "4 per run (1 on Free)"),
+                    t("1回で4枚まとめて", "4 images per click"),
                     t(
-                      `1日${LITE.perDay}枚（無料は10枚）`,
-                      `${LITE.perDay} a day (10 on Free)`,
+                      `1日${LITE.perDay}枚まで`,
+                      `${LITE.perDay} images a day`,
                     ),
                     t("広告なし", "No ads"),
                     t("画像から生成", "Image-to-image"),
                   ].map((text) => (
-                    <li key={text} className="flex items-center gap-1">
-                      <Check className="size-3 shrink-0 text-violet-500" />
-                      {text}
+                    <li key={text} className="flex items-start gap-1.5">
+                      <Check className="mt-0.5 size-3.5 shrink-0 text-violet-500" />
+                      <span>{text}</span>
                     </li>
                   ))}
                 </ul>
@@ -187,58 +199,70 @@ export function GenerationCoinShortageDialog (props: Props) {
                     trackGrowthEvent("shortage_checkout_LITE", source)
                     void checkout.startCheckout("LITE")
                   }}
-                  className="mt-3 h-11 w-full rounded-xl bg-gradient-to-r from-violet-600 to-sky-500 font-bold text-white shadow-lg shadow-violet-500/25 hover:opacity-95 dark:text-white"
+                  className="mt-4 h-11 w-full rounded-xl bg-gradient-to-r from-violet-600 to-sky-500 font-bold text-white shadow-lg shadow-violet-500/25 hover:opacity-95 active:scale-[0.98] dark:text-white"
                 >
                   {checkout.isLoadingFor("LITE") ? (
-                    <Loader2 className="size-4 animate-spin" />
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      {t("決済画面へ移動中…", "Opening checkout…")}
+                    </>
                   ) : (
                     t(
-                      `初月${LITE.firstMonth}で続ける（決済へ）`,
-                      `Continue for ${LITE.firstMonth} (checkout)`,
+                      `初月${LITE.firstMonth}で続ける`,
+                      `Keep creating for ${LITE.firstMonth}`,
                     )
                   )}
                 </Button>
-                <p className="mt-2 text-center text-muted-foreground text-xs">
+                <p className="mt-2 text-center text-[11px] text-muted-foreground">
                   {t(
-                    "いつでも解約できます（解約後も更新日まで使えます）",
-                    "Cancel anytime (benefits last until the renewal date).",
+                    "いつでも解約できます",
+                    "Cancel anytime · charged in JPY",
                   )}
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                {PLANS.filter((plan) => plan.type !== "LITE").map((plan) => (
-                  <button
-                    type="button"
-                    key={plan.type}
-                    disabled={checkout.isLoading}
-                    onClick={() => {
-                      trackGrowthEvent(`shortage_checkout_${plan.type}`, source)
-                      void checkout.startCheckout(plan.type)
-                    }}
-                    className="rounded-xl border p-2.5 text-left transition-colors hover:bg-muted disabled:opacity-60"
-                  >
-                    <span className="flex items-center justify-between gap-1 font-bold text-sm">
-                      {t(plan.name[0], plan.name[1])}
-                      {checkout.isLoadingFor(plan.type) && (
-                        <Loader2 className="size-3 animate-spin" />
-                      )}
-                    </span>
-                    <span className="block text-muted-foreground text-xs">
-                      {t(
-                        `1日${plan.perDay}枚・優先して生成`,
-                        `${plan.perDay}/day, priority queue`,
-                      )}
-                    </span>
-                    <span className="block text-xs">
-                      <span className="font-bold text-fuchsia-600 dark:text-fuchsia-300">
-                        {t(`初月${plan.firstMonth}`, `${plan.firstMonth} 1st mo`)}
+              <div>
+                <p className="mb-1.5 text-muted-foreground text-xs">
+                  {t("もっと作りたい方に", "Need more?")}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {PLANS.filter((plan) => plan.type !== "LITE").map((plan) => (
+                    <button
+                      type="button"
+                      key={plan.type}
+                      disabled={checkout.isLoading}
+                      onClick={() => {
+                        trackGrowthEvent(
+                          `shortage_checkout_${plan.type}`,
+                          source,
+                        )
+                        void checkout.startCheckout(plan.type)
+                      }}
+                      className="flex h-full flex-col items-start rounded-xl border bg-card p-3 text-left transition-colors hover:border-violet-500/60 hover:bg-muted/60 disabled:opacity-60 motion-reduce:transition-none"
+                    >
+                      <span className="flex w-full items-center justify-between gap-1 font-bold text-sm">
+                        {t(plan.name[0], plan.name[1])}
+                        {checkout.isLoadingFor(plan.type) && (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        )}
                       </span>
-                      <span className="text-muted-foreground">
-                        {t(`・以降${plan.price}/月`, `, then ${plan.price}/mo`)}
+                      <span className="mt-0.5 block text-muted-foreground text-xs">
+                        {t(
+                          `1日${plan.perDay}枚・優先生成`,
+                          `${plan.perDay} a day · priority`,
+                        )}
                       </span>
-                    </span>
-                  </button>
-                ))}
+                      <span className="mt-1.5 block font-bold text-fuchsia-600 text-sm dark:text-fuchsia-300">
+                        {plan.firstMonth}
+                        <span className="ml-1 font-normal text-[11px] text-muted-foreground">
+                          {t("初月", "first month")}
+                        </span>
+                      </span>
+                      <span className="block text-[11px] text-muted-foreground">
+                        {t(`2か月目から${plan.price}/月`, `then ${plan.price}/mo`)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -265,14 +289,14 @@ export function GenerationCoinShortageDialog (props: Props) {
                       {t(plan.name[0], plan.name[1])}
                       {plan.type === "STANDARD" && (
                         <span className="rounded-full bg-fuchsia-600 px-2 py-0.5 font-normal text-white text-xs">
-                          {t("人気", "Popular")}
+                          {t("おすすめ", "Recommended")}
                         </span>
                       )}
                     </div>
                     <div className="text-muted-foreground text-xs">
                       {t(
                         `1日${plan.perDay}枚・1回4枚・広告なし`,
-                        `${plan.perDay}/day, 4 per run, no ads`,
+                        `${plan.perDay} a day · 4 per click · no ads`,
                       )}
                     </div>
                   </div>
@@ -283,7 +307,7 @@ export function GenerationCoinShortageDialog (props: Props) {
                           {plan.firstMonth}
                         </span>
                         <span className="font-normal text-muted-foreground text-xs">
-                          {t("/初月", "/1st mo")}
+                          {t("/初月", " first month")}
                         </span>
                         <div className="font-normal text-muted-foreground text-xs">
                           {t(`2か月目から${plan.price}`, `then ${plan.price}`)}
@@ -301,7 +325,7 @@ export function GenerationCoinShortageDialog (props: Props) {
                       {checkout.isLoadingFor(plan.type) ? (
                         <Loader2 className="ml-auto size-3 animate-spin" />
                       ) : (
-                        t("決済へ進む →", "Checkout →")
+                        t("決済へ進む →", "Go to checkout →")
                       )}
                     </div>
                   </div>
@@ -316,7 +340,7 @@ export function GenerationCoinShortageDialog (props: Props) {
                   <Check className="size-3" />
                   {t(
                     "スタンダード以上は優先して生成され、高速生成モードも使えます",
-                    "Standard and above get priority in the queue and fast mode",
+                    "Standard and Premium get queue priority and fast mode",
                   )}
                 </li>
               </ul>
@@ -324,7 +348,7 @@ export function GenerationCoinShortageDialog (props: Props) {
           )}
 
           <div className="space-y-2">
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 text-sm">
               {plans.length > 0 && (
                 <Link
                   to="/plus#plans"
@@ -332,10 +356,10 @@ export function GenerationCoinShortageDialog (props: Props) {
                     trackGrowthEvent("shortage_plans", source)
                     props.onOpenChange(false)
                   }}
-                  className="inline-flex items-center gap-1 text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                  className="inline-flex min-h-9 items-center gap-1 text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                 >
                   <Sparkles className="size-3.5" />
-                  {t("プランを比べる（年払いあり）", "Compare plans (yearly available)")}
+                  {t("プランを比べる（年払いあり）", "Compare all plans")}
                 </Link>
               )}
               <button
@@ -345,11 +369,11 @@ export function GenerationCoinShortageDialog (props: Props) {
                   props.onOpenChange(false)
                   setIsCoinDialogOpen(true)
                 }}
-                className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                className="min-h-9 text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
               >
                 {t(
                   "コインだけ買う（100コイン80円〜）",
-                  "Buy coins only (from ¥80)",
+                   `Just buy coins (from ¥80, ${toApproxUsdText(80)})`,
                 )}
               </button>
             </div>
@@ -358,11 +382,11 @@ export function GenerationCoinShortageDialog (props: Props) {
               {isFree
                 ? t(
                     `無料のままなら、あと${next.hours}時間${next.minutes}分で100コイン（10枚分）が届きます`,
-                    `Staying on Free? 100 coins arrive again in ${next.hours}h ${next.minutes}m`,
+                    `Or wait: your next 100 free coins arrive in ${next.hours}h ${next.minutes}m`,
                   )
                 : t(
                     `あと${next.hours}時間${next.minutes}分で、毎日のコインが届きます`,
-                    `Daily coins arrive in ${next.hours}h ${next.minutes}m`,
+                    `Your next daily coins arrive in ${next.hours}h ${next.minutes}m`,
                   )}
             </p>
           </div>

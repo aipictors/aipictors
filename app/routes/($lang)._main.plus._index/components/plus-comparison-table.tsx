@@ -35,7 +35,7 @@ export function PlusComparisonTable() {
 
   const rows: Row[] = [
     {
-      label: t("月額（税込）", "Monthly (tax incl.)"),
+      label: t("月額（税込）", "Monthly price"),
       value: (spec) =>
         spec.price > 0
           ? t(
@@ -45,7 +45,7 @@ export function PlusComparisonTable() {
           : `¥${toMoneyNumberText(spec.price)}`,
     },
     {
-      label: t("生成画像の保存期間", "Generated image retention"),
+      label: t("生成画像の保存期間", "How long your images are kept"),
       value: (spec) =>
         ({
           FREE: t("3か月", "3 months"),
@@ -55,7 +55,7 @@ export function PlusComparisonTable() {
         })[spec.plan],
     },
     {
-      label: t("1回の生成枚数", "Images per request"),
+      label: t("1回の生成枚数", "Images per click"),
       value: (spec) =>
         t(`${spec.imagesPerRequest}枚`, `${spec.imagesPerRequest}`),
     },
@@ -68,16 +68,16 @@ export function PlusComparisonTable() {
       value: (spec) => t(`${spec.dailyImages}枚`, `${spec.dailyImages}`),
     },
     {
-      label: t("同時に生成できる数", "Concurrent requests"),
+      label: t("同時に生成できる数", "Generations running at once"),
       value: (spec) =>
         t(`${spec.concurrentTasks}件`, `${spec.concurrentTasks}`),
     },
     {
-      label: t("高解像度（1回1枚）", "High resolution (1 per request)"),
+      label: t("高解像度（1回1枚）", "High resolution (1 per click)"),
       value: () => true,
     },
     {
-      label: t("画像から生成（1回1枚）", "Image to image (1 per request)"),
+      label: t("画像から生成（1回1枚）", "Image-to-image (1 per click)"),
       value: (spec) => spec.imageToImage,
     },
     {
@@ -91,7 +91,7 @@ export function PlusComparisonTable() {
     {
       label: t(
         "Gemini をフリーコインで作れる枚数（週）",
-        "Gemini images on free coins (per week)",
+        "Gemini images on free coins, per week",
       ),
       value: (spec) =>
         spec.geminiWeeklyImages > 0
@@ -111,25 +111,25 @@ export function PlusComparisonTable() {
       value: (spec) => t(`${spec.loraModels}個`, `${spec.loraModels}`),
     },
     {
-      label: t("お気に入り履歴", "Favorite history"),
+      label: t("お気に入り履歴", "Saved favorites in history"),
       value: (spec) =>
         spec.favoriteHistories === 0
           ? false
           : t(`${spec.favoriteHistories}件`, `${spec.favoriteHistories}`),
     },
     {
-      label: t("モデル登録（みんなのモデル）", "Model uploads"),
+      label: t("モデル登録（みんなのモデル）", "Your own model uploads"),
       value: (spec) => t(`${spec.modelSlots}個`, `${spec.modelSlots}`),
     },
     {
-      label: t("広告の非表示", "Ad-free"),
+      label: t("広告の非表示", "No ads"),
       value: (spec) => spec.noAdvertisement,
     },
     {
-      label: t("宣伝作品（広告枠）", "Promotional works (ad space)"),
+      label: t("宣伝作品（広告枠）", "Promote your work on the home page"),
       value: (spec) =>
         spec.plan === "STANDARD" || spec.plan === "PREMIUM"
-          ? t("週1作品・ホームに7日間", "1 per week, on home for 7 days")
+          ? t("週1作品・ホームに7日間", "1 a week, shown for 7 days")
           : false,
     },
     {
@@ -137,7 +137,7 @@ export function PlusComparisonTable() {
       value: (spec) => spec.badge,
     },
     {
-      label: t("動画投稿（1本 / 1日合計）", "Video (per video / daily)"),
+      label: t("動画投稿（1本 / 1日合計）", "Video uploads (per video / per day)"),
       value: (spec) =>
         t(
           `${spec.video.maxDurationSeconds}秒 / ${spec.video.dailyTotalDurationSeconds}秒`,
@@ -155,7 +155,7 @@ export function PlusComparisonTable() {
         <p className="text-muted-foreground text-sm">
           {t(
             "無料でも生成できます。プランに加入すると、生成できる枚数と使える機能が増えます。",
-            "You can generate for free. Plans add more images and features.",
+            "Free is enough to get started. Plans give you more images and more tools.",
           )}
         </p>
       </div>
@@ -174,7 +174,7 @@ export function PlusComparisonTable() {
               aria-checked={mobilePlan === spec.plan}
               onClick={() => setMobilePlan(spec.plan)}
               className={cn(
-                "flex-1 rounded-full px-2 py-1.5 font-bold text-xs transition-colors",
+                "h-10 flex-1 rounded-full px-2 font-bold text-xs transition-colors motion-reduce:transition-none",
                 mobilePlan === spec.plan
                   ? "bg-background text-violet-700 shadow dark:text-violet-300"
                   : "text-muted-foreground",
@@ -195,7 +195,7 @@ export function PlusComparisonTable() {
                 <th
                   key={spec.plan}
                   className={cn(
-                    "px-2 py-3 text-center font-bold",
+                    "px-2 py-3 text-center font-bold md:w-[16%]",
                     spec.plan === "STANDARD" &&
                       "md:bg-violet-500/10 md:text-violet-700 md:dark:text-violet-300",
                     spec.plan === mobilePlan &&
@@ -264,11 +264,11 @@ export function PlusComparisonTable() {
         <button
           type="button"
           onClick={() => setIsAllRowsOpen(true)}
-          className="flex w-full items-center justify-center gap-1 rounded-xl border py-2.5 text-muted-foreground text-sm md:hidden"
+          className="flex h-11 w-full items-center justify-center gap-1 rounded-xl border text-muted-foreground text-sm hover:text-foreground md:hidden"
         >
           {t(
             `すべての項目を見る（全${rows.length}項目）`,
-            `Show all ${rows.length} rows`,
+            `Compare all ${rows.length} features`,
           )}
           <ChevronDownIcon className="size-4" />
         </button>

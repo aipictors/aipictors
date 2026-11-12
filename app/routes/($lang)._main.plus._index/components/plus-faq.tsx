@@ -10,6 +10,7 @@ import {
   GENERATION_COIN_COST,
   getPlanSpec,
 } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
+import { USD_PER_JPY } from "~/utils/to-approx-usd-text"
 
 /**
  * プランのよくある質問
@@ -32,11 +33,11 @@ export function PlusFaq () {
       id: "proration",
       question: t(
         "途中でプランを変えると日割りになりますか？",
-        "Is a plan change prorated?",
+        "What happens if I switch plans?",
       ),
       answer: t(
         "上位のプランへの変更はすぐに切り替わり、残りの期間分を差し引いた日割りの差額だけを決済します（変更前に金額を確認できます）。解約した場合は、期間の途中でも日割りでの返金はありません。",
-        "Upgrades take effect immediately and you only pay the prorated difference (shown before you confirm). Cancellations are not refunded pro rata.",
+        "Upgrades take effect right away, and you only pay the prorated difference for the rest of your current period — we show you the amount before you confirm. If you cancel, the remaining days aren't refunded, but you keep your benefits until the period ends.",
       ),
     },
     {
@@ -44,7 +45,7 @@ export function PlusFaq () {
       question: t("年払いはありますか？", "Is there a yearly plan?"),
       answer: t(
         "はい。月額の10か月分の料金で1年使えます（2か月分おトク）。毎日のフリーコインなどの特典は月払いと同じです。初月半額は月払いだけが対象です。解約すると次の更新日（1年後）まで使え、途中での日割りの返金はありません。",
-        "Yes. Pay for 10 months and use it for a full year (2 months free). Benefits are the same as monthly. The first-month discount applies to monthly plans only. Yearly plans are not refunded pro rata.",
+        "Yes. Yearly plans cost 10 months' worth for a full year, so you get 2 months free. The benefits are identical to monthly. The first-month discount is for monthly plans only, and yearly plans aren't refunded for unused time.",
       ),
     },
     {
@@ -68,7 +69,7 @@ export function PlusFaq () {
       question: t("使わない月だけ止められますか？", "Can I pause for a month?"),
       answer: t(
         "はい。月払いの方は、解約の画面から「1か月休止」を選べます。今の期間の終わりから1か月、請求もプランも止まり、1か月後に自動で再開します。休止の予約はこのページから取り消せます。",
-        "Yes. Monthly members can choose a one-month pause instead of cancelling. Billing and benefits stop for one month after the current period, then resume automatically.",
+        "Yes. If you're on a monthly plan, you can pause for one month instead of cancelling. Billing and benefits stop for a month after your current period, then pick up again automatically. You can undo the pause from this page.",
       ),
     },
     {
@@ -76,15 +77,15 @@ export function PlusFaq () {
       question: t("コインはどういう仕組みですか？", "How do coins work?"),
       answer: t(
         `毎日0時（日本時間）にフリーコインが届きます。通常生成は1枚${GENERATION_COIN_COST.standard}コイン、高解像度は1枚${GENERATION_COIN_COST.highResolution}コイン、画像から生成は1枚${GENERATION_COIN_COST.imageToImage}コインです。使い切れなかったフリーコインはその日のうちに失効し、翌日に繰り越されません。足りないときは購入したプレミアムコインが使われます。`,
-        `Free coins arrive daily at 0:00 JST. Standard images cost ${GENERATION_COIN_COST.standard} coins, high resolution ${GENERATION_COIN_COST.highResolution}, and image to image ${GENERATION_COIN_COST.imageToImage}. Unused free coins expire daily. Purchased premium coins are used when free coins run out.`,
+        `You get free coins every day at midnight Japan time (JST). A standard image costs ${GENERATION_COIN_COST.standard} coins, high resolution ${GENERATION_COIN_COST.highResolution}, and image-to-image ${GENERATION_COIN_COST.imageToImage}. Free coins don't roll over to the next day. If you run out, any premium coins you've bought are used instead.`,
       ),
     },
     {
       id: "four",
-      question: t("「1回で4枚」とはどういうことですか？", "What does \"4 per request\" mean?"),
+      question: t("「1回で4枚」とはどういうことですか？", "What does \"4 images per click\" mean?"),
       answer: t(
         `プランに加入すると、生成ボタンを1回押すだけで${lite.imagesPerRequest}枚まとめて生成されます（無料は${free.imagesPerRequest}枚）。高解像度と画像から生成は、プランに関係なく1回1枚です。`,
-        `With a plan, one click generates ${lite.imagesPerRequest} images (${free.imagesPerRequest} on Free). High resolution and image to image always make 1 image per request.`,
+        `On a plan, pressing Generate once makes ${lite.imagesPerRequest} images from your prompt, so you can pick the best one (Free makes ${free.imagesPerRequest}). High resolution and image-to-image always make 1 image per click.`,
       ),
     },
     {
@@ -92,7 +93,7 @@ export function PlusFaq () {
       question: t("無料でも生成できますか？", "Can I generate for free?"),
       answer: t(
         `はい。無料でも毎日${free.dailyFreeCoins}フリーコイン（通常生成${free.dailyImages}枚分）が届き、みんなのモデルを使って生成できます。`,
-        `Yes. Free users get ${free.dailyFreeCoins} free coins daily (${free.dailyImages} images) and can use community models.`,
+        `Yes. Without paying anything you get ${free.dailyFreeCoins} coins every day — enough for ${free.dailyImages} images — and can use the community models. No card needed.`,
       ),
     },
     {
@@ -108,18 +109,63 @@ export function PlusFaq () {
       question: t("クレジットカードを変更・更新するには？", "How do I change my card?"),
       answer: t(
         "このページの「ご利用中のプラン」にある「お支払いカードを変更する」から、Stripe の画面で新しいカードを登録できます。次回の請求から新しいカードが使われます。",
-        "Use \"Change payment card\" in your current plan section on this page to register a new card on Stripe. It is used from the next billing.",
+        "Once you're subscribed, this page shows a button to change your payment card. It opens Stripe, where you can add a new card; it's used from your next payment.",
       ),
     },
   ]
 
+  // 英語の表示では、海外の人が最初に知りたいこと（海外のカード・請求の通貨・解約・英語で使えるか・R18）を上に置き、
+  // 日本だけの支払い方法（PayPay・コンビニ払い）は出さない
+  const englishItems = [
+    {
+      id: "international",
+      question: "Can I pay with a card issued outside Japan?",
+      answer:
+        "Yes. Payment is handled by Stripe, and cards issued outside Japan are already used here. Stripe's checkout page normally follows your browser's language.",
+    },
+    {
+      id: "currency",
+      question: "What currency am I charged in?",
+      answer: `Japanese yen (JPY), tax included. The dollar amounts on this page are estimates at roughly ¥${Math.round(1 / USD_PER_JPY)} to US$1. Your card issuer converts the charge at its own rate and may add a foreign transaction fee, so the amount on your statement can differ slightly.`,
+    },
+    {
+      id: "cancel",
+      question: "Can I cancel anytime?",
+      answer:
+        "Yes. You can cancel from this page whenever you like. You keep your benefits until the end of the period you've paid for, and you won't be charged again.",
+    },
+    {
+      id: "english",
+      question: "Can I use the generator in English?",
+      answer:
+        "Yes. The generator and this plans page are in English, and you can write your prompts in English. Some parts of the site — a few account screens and text written by other users — are still in Japanese.",
+    },
+    {
+      id: "r18",
+      question: "How is R18 content handled?",
+      answer:
+        "R18 works are kept in a separate R18 section behind an age confirmation, and you switch between All ages and R18 with the toggle in the header. Plans work the same in both — there is no separate R18 plan or extra charge.",
+    },
+    {
+      id: "first-month",
+      question: "Who gets the first month at half price?",
+      answer:
+        "Anyone who isn't currently on a plan, when choosing a monthly plan — including returning members. The discount is applied automatically at checkout. From the second month you pay the regular price. Yearly plans and non-renewing passes aren't discounted.",
+    },
+    ...items.filter(
+      (item) => !["cancel", "paypay", "konbini", "payment"].includes(item.id),
+    ),
+  ]
+
+  const visibleItems = t.isEnglish ? englishItems : items
+
   return (
     <section className="space-y-4">
       <h2 className="font-bold text-xl md:text-2xl">
-        {t("よくある質問", "FAQ")}
+        {t("よくある質問", "Questions, answered")}
       </h2>
       <Accordion type="multiple" className="w-full rounded-2xl border px-4">
-        {items.map((item) => (
+        {visibleItems.map((item) => (
           <AccordionItem
             key={item.id}
             value={item.id}
@@ -135,9 +181,9 @@ export function PlusFaq () {
         ))}
       </Accordion>
       <p className="text-muted-foreground text-xs">
-        {t("そのほかのご質問は", "For other questions, ")}
+        {t("そのほかのご質問は", "Still have a question? ")}
         <Link to="/support/chat" className="underline">
-          {t("お問い合わせ", "contact us")}
+          {t("お問い合わせ", "Contact us")}
         </Link>
         {t("からどうぞ。", ".")}
       </p>

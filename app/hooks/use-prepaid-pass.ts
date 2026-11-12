@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { AuthContext } from "~/contexts/auth-context"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { rememberCheckoutLocale } from "~/utils/checkout-locale"
 import type { PrepaidPassStatus } from "~/routes/api.stripe.prepaid-pass/route"
 import type { CheckoutPassType } from "~/hooks/use-pass-checkout"
 import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
@@ -57,6 +58,7 @@ export function usePrepaidPass() {
         toast(json?.error ?? "決済画面を開けませんでした。")
         return
       }
+      rememberCheckoutLocale()
       window.location.assign(json.data.url)
     } catch (error) {
       toast(error instanceof Error ? error.message : "エラーが発生しました。")

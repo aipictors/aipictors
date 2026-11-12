@@ -4,6 +4,7 @@ import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { planCtaClassName } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import { getPlanSpec } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
+import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
 import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
 
@@ -26,7 +27,7 @@ export function PlusHero() {
   const points = [
     {
       icon: ImagesIcon,
-      label: t("1回の生成", "Per request"),
+      label: t("1回の生成", "Per click"),
       value: t(`${lite.imagesPerRequest}枚`, `${lite.imagesPerRequest} images`),
     },
     {
@@ -36,7 +37,7 @@ export function PlusHero() {
     },
     {
       icon: WalletIcon,
-      label: t("月額", "Monthly"),
+      label: t("月額", `Monthly (${toApproxUsdText(lite.price)})`),
       value: t(
         `¥${toMoneyNumberText(lite.price)}〜`,
         `From ¥${toMoneyNumberText(lite.price)}`,
@@ -61,22 +62,22 @@ export function PlusHero() {
             </p>
           )}
           <h1 className="mt-3 font-extrabold text-[26px] leading-tight tracking-tight md:mt-4 md:text-5xl">
-            {t("1回のクリックで", "One click,")}
+            {t("1回のクリックで", "One click.")}
             <br />
             <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-sky-500 bg-clip-text text-transparent">
-              {t("4枚まとめて生成。", "four images at once.")}
+              {t("4枚まとめて生成。", "Four images.")}
             </span>
           </h1>
           <p className="mt-2 text-muted-foreground text-sm md:hidden">
             {t(
               `無料は1回1枚・1日${getPlanSpec("FREE").dailyImages}枚。プランなら1回${lite.imagesPerRequest}枚・1日最大${premium.dailyImages}枚、広告なし。`,
-              `Free: 1 per request, ${getPlanSpec("FREE").dailyImages} a day. Plans: ${lite.imagesPerRequest} per request, up to ${premium.dailyImages} a day, ad-free.`,
+              `Free gives you 1 image per click, ${getPlanSpec("FREE").dailyImages} a day. Plans give you ${lite.imagesPerRequest} per click, up to ${premium.dailyImages} a day, with no ads.`,
             )}
           </p>
           <p className="mt-4 hidden max-w-2xl text-muted-foreground text-sm leading-relaxed md:block md:text-base">
             {t(
               `プランに加入すると、1回の生成で4枚（無料は1枚）。毎日のフリーコインも最大${premium.dailyFreeCoins}コインに増えて、1日最大${premium.dailyImages}枚まで生成できます。広告なしで、もっと気軽に創作を楽しめます。`,
-              `Subscribers get 4 images per request (1 on Free) and up to ${premium.dailyFreeCoins} free coins every day — up to ${premium.dailyImages} images a day, ad-free.`,
+              `On a plan, every click makes ${lite.imagesPerRequest} images instead of 1, and you can create up to ${premium.dailyImages} images a day. No ads, cancel anytime.`,
             )}
           </p>
           <div className="mt-6 hidden max-w-xl grid-cols-3 gap-2 md:grid">
@@ -105,7 +106,7 @@ export function PlusHero() {
                 {isFirstMonthOffer
                   ? t(
                       `プランを選ぶ（初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}〜）`,
-                      `Choose a plan (from ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} first month)`,
+                      `See plans, from ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} for month one`,
                     )
                   : t("プランを選ぶ", "Choose a plan")}
               </a>
@@ -117,7 +118,7 @@ export function PlusHero() {
               className="hidden w-full rounded-xl bg-background/70 sm:w-auto md:inline-flex"
             >
               <Link to="/generation">
-                {t("まずは無料で生成してみる", "Try generating for free")}
+                {t("まずは無料で生成してみる", "Try it free first")}
               </Link>
             </Button>
           </div>

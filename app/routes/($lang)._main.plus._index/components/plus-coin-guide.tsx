@@ -21,25 +21,25 @@ export function PlusCoinGuide() {
       cost: GENERATION_COIN_COST.standard,
       note: t(
         `プランは1回4枚＝${GENERATION_COIN_COST.standard * 4}コイン、無料は${free.imagesPerRequest}枚＝${GENERATION_COIN_COST.standard * free.imagesPerRequest}コイン`,
-        `4 images = ${GENERATION_COIN_COST.standard * 4} coins on plans, ${free.imagesPerRequest} = ${GENERATION_COIN_COST.standard * free.imagesPerRequest} on Free`,
+        `Plans: 4 images = ${GENERATION_COIN_COST.standard * 4} coins. Free: ${free.imagesPerRequest} image = ${GENERATION_COIN_COST.standard * free.imagesPerRequest} coins`,
       ),
     },
     {
       label: t("高解像度", "High resolution"),
       cost: GENERATION_COIN_COST.highResolution,
-      note: t("1回1枚", "1 image per request"),
+      note: t("1回1枚", "1 image per click"),
     },
     {
-      label: t("画像から生成", "Image to image"),
+      label: t("画像から生成", "Image-to-image"),
       cost: GENERATION_COIN_COST.imageToImage,
-      note: t("1回1枚・ライト以上", "1 image per request, Lite or above"),
+      note: t("1回1枚・ライト以上", "1 image per click · Lite and up"),
     },
     {
       label: "Gemini Nano Banana",
       cost: GENERATION_COIN_COST.nanoBanana,
       note: t(
         "ライト以上・フリーコインで作れる枚数に1日の枠あり",
-        "Lite or above; free coins cover a limited number per day",
+        "Lite and up · weekly limit on free coins",
       ),
     },
     {
@@ -47,7 +47,7 @@ export function PlusCoinGuide() {
       cost: GENERATION_COIN_COST.nanoBanana2,
       note: t(
         "スタンダード以上・フリーコインで作れる枚数に1日の枠あり",
-        "Standard or above; free coins cover a limited number per day",
+        "Standard and up · weekly limit on free coins",
       ),
     },
   ]
@@ -61,7 +61,7 @@ export function PlusCoinGuide() {
         <p className="text-muted-foreground text-sm">
           {t(
             "毎日0時（日本時間）にフリーコインが届き、生成するとその分だけ使われます。使い切れなかったフリーコインはその日のうちに失効します。",
-            "Free coins arrive every day at 0:00 JST and are spent as you generate. Unused free coins expire at the end of the day.",
+            "You get free coins every day at midnight Japan time (JST) and spend them as you generate. They don't roll over, so use them the same day.",
           )}
         </p>
       </div>
@@ -81,7 +81,7 @@ export function PlusCoinGuide() {
               <p className="text-muted-foreground text-xs">
                 {t(
                   `毎日・通常生成${spec.dailyImages}枚分`,
-                  `daily = ${spec.dailyImages} images`,
+                  `a day = ${spec.dailyImages} images`,
                 )}
               </p>
             </div>
@@ -112,13 +112,13 @@ export function PlusCoinGuide() {
       <p className="text-muted-foreground text-xs leading-relaxed">
         {t(
           "Gemini は1枚の費用が高いため、毎日のフリーコインで作れるのは週にライト5枚・スタンダード20枚・プレミアム40枚まで（Nano Banana 2 はその半分。毎週月曜0時に戻ります）。超えた分はプレミアムコインで作れます。ほかのモデルに枠はありません。",
-          "Gemini images cost more to make, so daily free coins cover 5 (Lite), 20 (Standard) or 40 (Premium) per week (half that for Nano Banana 2; resets Monday at midnight JST). Premium coins cover the rest. Other models have no such limit.",
+          "Gemini images cost more to make, so your daily free coins cover a set number each week: 5 on Lite, 20 on Standard, 40 on Premium (half that for Nano Banana 2). The count resets every Monday at midnight JST, and you can use premium coins beyond it. Other models have no weekly limit.",
         )}
       </p>
       <p className="text-muted-foreground text-xs leading-relaxed">
         {t(
           `例：スタンダードなら毎日${standard.dailyFreeCoins}コインで、通常生成を1回4枚×${standard.dailyFreeCoins / (GENERATION_COIN_COST.standard * 4)}回（${standard.dailyImages}枚）できます。生成ではフリーコインが先に使われ、足りない分は購入したプレミアムコインから使われます。`,
-          `Example: Standard gives ${standard.dailyFreeCoins} coins a day — ${standard.dailyFreeCoins / (GENERATION_COIN_COST.standard * 4)} requests of 4 images (${standard.dailyImages} images). Free coins are used first, then purchased premium coins.`,
+          `Example: Standard gives you ${standard.dailyFreeCoins} coins a day — that's ${standard.dailyFreeCoins / (GENERATION_COIN_COST.standard * 4)} clicks of 4 images, or ${standard.dailyImages} images. Free coins are always used first, then any premium coins you've bought.`,
         )}
       </p>
     </section>

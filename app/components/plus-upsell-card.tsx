@@ -6,6 +6,7 @@ import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getPlanSpec } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
+import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
 import {
   trackGrowthEvent,
@@ -49,7 +50,7 @@ export function PlusUpsellCard(props: Props) {
     <div
       ref={ref}
       className={cn(
-        "space-y-3 rounded-2xl border bg-gradient-to-br from-violet-500/10 to-sky-500/10 p-4 text-left text-foreground",
+        "space-y-3 rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 to-sky-500/10 p-4 text-left text-foreground",
         props.className,
       )}
     >
@@ -65,14 +66,14 @@ export function PlusUpsellCard(props: Props) {
       {/* 作品を見ている人にも関係のある特典（広告なし）を先に書く */}
       <ul className="space-y-1.5 text-sm">
         {[
-          t("広告なしで作品を楽しめる", "Browse without ads"),
+          t("広告なしで作品を楽しめる", "Browse with no ads"),
           t(
             `画像生成が1回で${lite.imagesPerRequest}枚（無料は1枚）`,
-            `${lite.imagesPerRequest} images per generation (1 on Free)`,
+            `Generate ${lite.imagesPerRequest} images per click instead of 1`,
           ),
           t(
             `1日${lite.dailyImages}〜${premium.dailyImages}枚まで生成`,
-            `${lite.dailyImages}–${premium.dailyImages} images a day`,
+            `Create ${lite.dailyImages} to ${premium.dailyImages} images a day`,
           ),
         ].map((text) => (
           <li key={text} className="flex items-start gap-1.5">
@@ -85,16 +86,16 @@ export function PlusUpsellCard(props: Props) {
         {isFirstMonthOffer
           ? t(
               `ライトは初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}、2か月目から¥${toMoneyNumberText(lite.price)}/月。いつでも解約できます`,
-              `Lite: ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} first month, then ¥${toMoneyNumberText(lite.price)}/mo. Cancel anytime`,
+              `Lite is ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} for the first month, then ¥${toMoneyNumberText(lite.price)}/mo (${toApproxUsdText(lite.price)}, charged in JPY). Cancel anytime.`,
             )
           : t(
               `ライトは¥${toMoneyNumberText(lite.price)}/月。いつでも解約できます`,
-              `Lite is ¥${toMoneyNumberText(lite.price)}/mo. Cancel anytime`,
+              `Lite is ¥${toMoneyNumberText(lite.price)}/mo (${toApproxUsdText(lite.price)}, charged in JPY). Cancel anytime.`,
             )}
       </p>
       <Button
         asChild
-        className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-sky-500 font-bold text-white hover:opacity-95"
+        className="h-10 w-full rounded-xl bg-gradient-to-r from-violet-600 to-sky-500 font-bold text-white hover:opacity-95 dark:text-white"
       >
         <Link
           to="/plus#plans"

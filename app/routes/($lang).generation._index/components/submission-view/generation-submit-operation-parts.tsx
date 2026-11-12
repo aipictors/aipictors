@@ -192,7 +192,7 @@ export function GenerationSubmitOperationParts(props: Props) {
               >
                 {t(
                   `あと${Math.floor(props.ownedCoinCount / 10)}枚・プランなら1日50枚〜`,
-                  `${Math.floor(props.ownedCoinCount / 10)} left · plans from 50/day`,
+                  `${Math.floor(props.ownedCoinCount / 10)} left today · get 50+ a day`,
                 )}
               </Link>
             )}
