@@ -241,9 +241,6 @@ export function SensitiveWorkContainer(props: Props) {
                 />
               </div>
             )}
-            {!isSubscriptionUser && (
-              <PlusUpsellCard source="r_post_mobile" className="md:hidden" />
-            )}
             {workForArticle.user && authContext.isLoggedIn && (
               <WorkLazySection>
                 <FollowSuggestions

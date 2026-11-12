@@ -1,16 +1,16 @@
 import { Link } from "~/lib/app/locale-router"
-import { SparklesIcon } from "lucide-react"
+import { CheckIcon, SparklesIcon } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import {
-  getPlanSpec,
-  type PlanKey,
-} from "~/routes/($lang)._main.plus._index/utils/plan-specs"
+import { getPlanSpec } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
-import { trackGrowthEvent } from "~/utils/track-growth-event"
+import {
+  trackGrowthEvent,
+  trackGrowthEventOnce,
+} from "~/utils/track-growth-event"
 
 type Props = {
   className?: string
@@ -19,8 +19,6 @@ type Props = {
    */
   source?: string
 }
-
-const plans: PlanKey[] = ["LITE", "STANDARD", "PREMIUM"]
 
 /**
  * ダイアログなどに置く Aipictors+ の小さな案内
@@ -33,13 +31,13 @@ export function PlusUpsellCard(props: Props) {
 
   const ref = useRef<HTMLDivElement>(null)
 
-  // 画面に入ったら 1 回だけ数える
+  // 画面に入ったら数える。作品ページを開くたびに数えると 1 日 1 万回を超えるので、置き場所ごとにブラウザを開いている間 1 回だけ
   useEffect(() => {
     const element = ref.current
     if (!props.source || element === null || !("IntersectionObserver" in window)) return
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        trackGrowthEvent("upsell_view", props.source ?? "")
+        trackGrowthEventOnce("upsell_view", props.source ?? "")
         observer.disconnect()
       }
     })
@@ -57,29 +55,43 @@ export function PlusUpsellCard(props: Props) {
     >
       <p className="flex items-center gap-1 font-bold text-sm">
         <SparklesIcon className="size-4 text-violet-500" />
-        {t(
-          `Aipictors+なら1回で${lite.imagesPerRequest}枚・1日最大${premium.dailyImages}枚`,
-          `Aipictors+: ${lite.imagesPerRequest} per request, up to ${premium.dailyImages}/day`,
+        {"Aipictors+"}
+        {isFirstMonthOffer && (
+          <span className="ml-1 rounded-full bg-fuchsia-600 px-2 py-0.5 font-bold text-[10px] text-white">
+            {t("初月半額", "50% off first month")}
+          </span>
         )}
       </p>
-      <ul className="space-y-1 text-sm">
-        {plans.map((plan) => {
-          const spec = getPlanSpec(plan)
-          return (
-            <li key={plan} className="flex items-baseline justify-between gap-2">
-              <span className="font-medium">
-                {t(spec.name, spec.enName)}
-                <span className="ml-1 text-muted-foreground text-xs">
-                  {`¥${toMoneyNumberText(spec.price)}${t("/月", "/mo")}`}
-                </span>
-              </span>
-              <span className="text-muted-foreground text-xs">
-                {t(`1日${spec.dailyImages}枚まで`, `${spec.dailyImages}/day`)}
-              </span>
-            </li>
-          )
-        })}
+      {/* 作品を見ている人にも関係のある特典（広告なし）を先に書く */}
+      <ul className="space-y-1.5 text-sm">
+        {[
+          t("広告なしで作品を楽しめる", "Browse without ads"),
+          t(
+            `画像生成が1回で${lite.imagesPerRequest}枚（無料は1枚）`,
+            `${lite.imagesPerRequest} images per generation (1 on Free)`,
+          ),
+          t(
+            `1日${lite.dailyImages}〜${premium.dailyImages}枚まで生成`,
+            `${lite.dailyImages}–${premium.dailyImages} images a day`,
+          ),
+        ].map((text) => (
+          <li key={text} className="flex items-start gap-1.5">
+            <CheckIcon className="mt-0.5 size-4 shrink-0 text-violet-500" />
+            <span>{text}</span>
+          </li>
+        ))}
       </ul>
+      <p className="text-muted-foreground text-xs">
+        {isFirstMonthOffer
+          ? t(
+              `ライトは初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}、2か月目から¥${toMoneyNumberText(lite.price)}/月。いつでも解約できます`,
+              `Lite: ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} first month, then ¥${toMoneyNumberText(lite.price)}/mo. Cancel anytime`,
+            )
+          : t(
+              `ライトは¥${toMoneyNumberText(lite.price)}/月。いつでも解約できます`,
+              `Lite is ¥${toMoneyNumberText(lite.price)}/mo. Cancel anytime`,
+            )}
+      </p>
       <Button
         asChild
         className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-sky-500 font-bold text-white hover:opacity-95"
@@ -90,12 +102,7 @@ export function PlusUpsellCard(props: Props) {
             if (props.source) trackGrowthEvent("upsell_click", props.source)
           }}
         >
-          {isFirstMonthOffer
-            ? t(
-                `初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}から・プランを見る`,
-                `From ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} first month`,
-              )
-            : t("プランを見る", "See plans")}
+          {t("プランを見る", "See plans")}
         </Link>
       </Button>
     </div>
