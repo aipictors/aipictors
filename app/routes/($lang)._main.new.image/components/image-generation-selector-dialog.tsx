@@ -1,4 +1,3 @@
-import type { GenerationResultParams } from "~/routes/($lang)._main.new.image/utils/to-generation-image-information"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useState } from "react"
@@ -8,6 +7,7 @@ import { Card } from "~/components/ui/card"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { cn } from "~/lib/utils"
+import type { GenerationResultParams } from "~/routes/($lang)._main.new.image/utils/to-generation-image-information"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 
@@ -94,24 +94,24 @@ export function ImageGenerationSelectorDialog(props: Props) {
         return
       }
 
-      const base64Images = await Promise.all(
-        selectedIds.map(async (id) => {
-          const cached = selectedBase64ById[id]
-          if (cached) return cached
+      // 同時に変換すると展開した画像が重なり、スマートフォンでは投稿画面が落ちるので 1 枚ずつ
+      const base64Images: string[] = []
+      for (const id of selectedIds) {
+        const cached = selectedBase64ById[id]
+        if (cached) {
+          base64Images.push(cached)
+          continue
+        }
 
-          const sourceUrl = selectedSourceUrlsById[id]
-          if (!sourceUrl) {
-            throw new Error("選択画像のURLが見つかりませんでした")
-          }
+        const sourceUrl = selectedSourceUrlsById[id]
+        if (!sourceUrl) {
+          throw new Error("選択画像のURLが見つかりませんでした")
+        }
 
-          const base64Image = await getBase64FromImageUrl(
-            sourceUrl,
-            "image/webp",
-          )
-          setSelectedBase64ById((prev) => ({ ...prev, [id]: base64Image }))
-          return base64Image
-        }),
-      )
+        const base64Image = await getBase64FromImageUrl(sourceUrl, "image/webp")
+        setSelectedBase64ById((prev) => ({ ...prev, [id]: base64Image }))
+        base64Images.push(base64Image)
+      }
 
       props.onSubmit(
         base64Images,

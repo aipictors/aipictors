@@ -13,8 +13,18 @@ export const POST_IMAGE_FORM_DRAFT_STORAGE_KEY = "post-image-form-draft:v1"
 export const POST_IMAGE_MEDIA_DRAFT_DB_NAME = "aipictors-post-drafts"
 export const POST_IMAGE_MEDIA_DRAFT_STORE_NAME = "new-image"
 export const POST_IMAGE_MEDIA_DRAFT_KEY = "media:v1"
-export const BOT_PERSONALITIES = ["female", "male", "robot", "sage", "pictor_chan"]
-export const BOT_GRADING_TYPES = ["COMMENT_ONLY", "SCORE_ONLY", "COMMENT_AND_SCORE"]
+export const BOT_PERSONALITIES = [
+  "female",
+  "male",
+  "robot",
+  "sage",
+  "pictor_chan",
+]
+export const BOT_GRADING_TYPES = [
+  "COMMENT_ONLY",
+  "SCORE_ONLY",
+  "COMMENT_AND_SCORE",
+]
 
 export const normalizeString = (value: unknown, fallback = "") => {
   return typeof value === "string" ? value : fallback
@@ -95,13 +105,13 @@ export const normalizeImageInformation = (value: unknown) => {
 
 export const normalizeBotPersonality = (value: unknown) => {
   return typeof value === "string" && BOT_PERSONALITIES.includes(value)
-    ? value as "female" | "male" | "robot" | "sage" | "pictor_chan"
+    ? (value as "female" | "male" | "robot" | "sage" | "pictor_chan")
     : "pictor_chan"
 }
 
 export const normalizeBotGradingType = (value: unknown) => {
   return typeof value === "string" && BOT_GRADING_TYPES.includes(value)
-    ? value as "COMMENT_ONLY" | "SCORE_ONLY" | "COMMENT_AND_SCORE"
+    ? (value as "COMMENT_ONLY" | "SCORE_ONLY" | "COMMENT_AND_SCORE")
     : "COMMENT_AND_SCORE"
 }
 
@@ -133,7 +143,9 @@ export const loadPostFormDraft = () => {
   }
 
   try {
-    const stored = window.localStorage.getItem(POST_IMAGE_FORM_DRAFT_STORAGE_KEY)
+    const stored = window.localStorage.getItem(
+      POST_IMAGE_FORM_DRAFT_STORAGE_KEY,
+    )
     if (!stored) {
       return null
     }
@@ -168,7 +180,11 @@ export const loadPostFormDraft = () => {
           "ILLUSTRATION",
         ),
         link: normalizeString(draft.link),
-        ratingRestriction: normalizeEnum(vPostRating, draft.ratingRestriction, "G"),
+        ratingRestriction: normalizeEnum(
+          vPostRating,
+          draft.ratingRestriction,
+          "G",
+        ),
         reservationDate: normalizeNullableString(draft.reservationDate),
         reservationTime: normalizeNullableString(draft.reservationTime),
         tags: normalizeTags(draft.tags),
@@ -418,6 +434,19 @@ export const saveBotSettings = (settings: {
   } catch (error) {
     console.warn("Failed to save bot settings:", error)
   }
+}
+
+/**
+ * 保存してある画像の下書きを戻してよいか。
+ *
+ * 生成履歴から投稿しようとしているときに戻すと、選んだ画像が前回の下書きで
+ * 上書きされてしまう（複数選んだのに 1 枚になる）
+ */
+export const shouldRestoreMediaDraft = (params: {
+  hasGenerationParam: boolean
+  currentItemCount: number
+}) => {
+  return !params.hasGenerationParam && params.currentItemCount === 0
 }
 
 /**

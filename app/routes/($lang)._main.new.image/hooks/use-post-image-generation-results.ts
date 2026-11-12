@@ -1,18 +1,18 @@
+import type { ResultOf } from "gql.tada"
 import type { Dispatch } from "react"
 import { useEffect, useRef } from "react"
 import { toast } from "sonner"
-import type { ResultOf } from "gql.tada"
 import type { TranslationFn } from "~/hooks/use-translation"
 import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
 import type { ViewerQuery } from "~/routes/($lang)._main.new.image/utils/new-image-queries"
+import { toGenerationImageInformation } from "~/routes/($lang)._main.new.image/utils/to-generation-image-information"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
 import {
   getExtractInfoFromBase64,
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
-import { toGenerationImageInformation } from "~/routes/($lang)._main.new.image/utils/to-generation-image-information"
 
 type Props = {
   /**
@@ -47,39 +47,38 @@ export function usePostImageGenerationResults(props: Props) {
 
         const results = viewerData.viewer.imageGenerationResults
 
-        const settled = await Promise.allSettled(
-          results.map(async (result) => {
-            const url = result.imageUrl ?? result.thumbnailUrl
-            if (!url) return null
+        // 同時に読むと展開した画像が重なり、スマートフォンでは投稿画面が落ちるので 1 枚ずつ
+        const fulfilled: {
+          base64: string
+          result: (typeof results)[number]
+        }[] = []
+        for (const result of results) {
+          if (cancelled) {
+            return
+          }
+          const url = result.imageUrl ?? result.thumbnailUrl
+          if (!url) continue
+          try {
             const base64 = await createBase64FromImageURL(url)
-            return base64 ? { base64, result } : null
-          }),
-        )
-
-        const fulfilled = settled
-          .filter(
-            (
-              s,
-            ): s is PromiseFulfilledResult<{
-              base64: string
-              result: (typeof results)[number]
-            } | null> => s.status === "fulfilled",
-          )
-          .map((s) => s.value)
-          .filter(
-            (v): v is { base64: string; result: (typeof results)[number] } =>
-              Boolean(v?.base64),
-          )
+            if (base64) {
+              fulfilled.push({ base64, result })
+            }
+          } catch (error) {
+            console.warn("Failed to load generated image", error)
+          }
+        }
 
         if (cancelled) {
           return
         }
 
         if (fulfilled.length === 0) {
+          // やり直せるように、処理済みの印を消しておく
+          processedGenerationKeyRef.current = ""
           toast(
             t(
-              "生成画像の取得に失敗しました（URLのアクセス制限/CORSの可能性があります）",
-              "Failed to load generated images (possible access restriction/CORS)",
+              "生成画像を読み込めませんでした。しばらくしてから、または枚数を減らしてお試しください",
+              "Couldn't load the generated images. Please try again in a moment, or select fewer images.",
             ),
           )
           dispatch({
@@ -87,6 +86,15 @@ export function usePostImageGenerationResults(props: Props) {
             payload: false,
           })
           return
+        }
+
+        if (fulfilled.length < results.length) {
+          toast(
+            t(
+              `${results.length}枚中${fulfilled.length}枚を読み込みました（読み込めなかった画像はあとから追加できます）`,
+              `Loaded ${fulfilled.length} of ${results.length} images (you can add the rest later)`,
+            ),
+          )
         }
 
         const items = fulfilled.map((entry, index) => ({

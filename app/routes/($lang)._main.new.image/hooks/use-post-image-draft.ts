@@ -17,6 +17,7 @@ import {
   saveBotSettings,
   savePostFormDraft,
   savePostMediaDraft,
+  shouldRestoreMediaDraft,
 } from "~/routes/($lang)._main.new.image/utils/post-image-draft"
 
 type Props = {
@@ -25,6 +26,10 @@ type Props = {
   dispatch: Dispatch<PostImageFormAction>
   dispatchInput: Dispatch<PostImageFormInputAction>
   requestedMediaType: "image" | "video"
+  /**
+   * 生成履歴から投稿しようとしている（URL に generation がある）か
+   */
+  hasGenerationParam: boolean
   t: TranslationFn
 }
 
@@ -32,8 +37,19 @@ type Props = {
  * 投稿の下書きを復元・保存する。復元で動画と画像が切り替わるので、選択中の種類もここで持つ
  */
 export function usePostImageDraft(props: Props) {
-  const { state, inputState, dispatch, dispatchInput, requestedMediaType, t } =
-    props
+  const {
+    state,
+    inputState,
+    dispatch,
+    dispatchInput,
+    requestedMediaType,
+    hasGenerationParam,
+    t,
+  } = props
+
+  // 下書きの読み込みが終わる頃には、生成履歴からの画像が入っていることがある
+  const itemCountRef = useRef(state.items.length)
+  itemCountRef.current = state.items.length
 
   const [isInitialized, setIsInitialized] = useState(false)
   const hasStartedDraftRestoreRef = useRef(false)
@@ -90,8 +106,18 @@ export function usePostImageDraft(props: Props) {
           restoredAnything = true
         }
 
-        const mediaDraft = await loadPostMediaDraft()
-        if (mediaDraft && !cancelled) {
+        // 生成履歴から選んだ画像を、前回の下書きで上書きしない
+        const mediaDraft = hasGenerationParam
+          ? null
+          : await loadPostMediaDraft()
+        if (
+          mediaDraft &&
+          !cancelled &&
+          shouldRestoreMediaDraft({
+            hasGenerationParam,
+            currentItemCount: itemCountRef.current,
+          })
+        ) {
           dispatch(mediaDraft)
           setMediaType("image")
           restoredAnything = true

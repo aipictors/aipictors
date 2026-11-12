@@ -1,29 +1,6 @@
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+import { getOrSetCachedDataUrl } from "~/utils/base64-image-cache"
 import { fetchPublic } from "~/utils/fetch-public"
-
-const base64PromiseCache = new Map<string, Promise<string>>()
-
-function getOrSetCached(
-  key: string,
-  factory: () => Promise<string>,
-): Promise<string> {
-  const cached = base64PromiseCache.get(key)
-  if (cached) {
-    return cached
-  }
-
-  // メモリ肥大化を避けるため、上限を超えたら全クリア（投稿画面の一時利用が主）
-  if (base64PromiseCache.size > 256) {
-    base64PromiseCache.clear()
-  }
-
-  const promise = factory().catch((error) => {
-    base64PromiseCache.delete(key)
-    throw error
-  })
-  base64PromiseCache.set(key, promise)
-  return promise
-}
 
 function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -55,7 +32,7 @@ export async function createBase64FromImageURL(
   }
 
   const fetchUrl = getDownloadProxyUrl(imageURL)
-  return await getOrSetCached(fetchUrl, async () => {
+  return await getOrSetCachedDataUrl(fetchUrl, async () => {
     const response = await fetchPublic(fetchUrl, {
       headers: {
         Accept: "image/*,*/*;q=0.8",

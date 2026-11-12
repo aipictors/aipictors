@@ -203,6 +203,7 @@ export default function NewImage() {
     dispatch,
     dispatchInput,
     requestedMediaType,
+    hasGenerationParam: generationNanoids.length > 0,
     t,
   })
 
