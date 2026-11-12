@@ -101,7 +101,7 @@ export function InviteLinkPanel(props: Props) {
           readOnly
           value={url}
           onFocus={(event) => event.currentTarget.select()}
-          className="h-11 w-full min-w-0 flex-1 rounded-xl border bg-background px-3 font-mono text-sm outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+          className="h-11 w-full min-w-0 shrink-0 rounded-xl border bg-background px-3 font-mono text-sm outline-none focus-visible:ring-2 focus-visible:ring-violet-500 sm:w-auto sm:flex-1 sm:shrink"
         />
         <Button
           type="button"
