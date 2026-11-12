@@ -42,8 +42,8 @@ export function InProgressGenerationCard(props: Props) {
 
   const passType = dataContext.currentPass?.type ?? null
 
-  // 無料の人には「プランなら 1 回 4 枚」、ライトの人には順番待ちのときだけ「スタンダード以上は優先」を出す
-  // （優先は生成ワーカーの queue-policy と pass の priority で確かめた: スタンダード・プレミアムが優先、ライトと無料は通常）
+  // 無料の人には「プランなら順番が先・1 回 4 枚」、ライトの人には順番待ちのときだけ「スタンダード以上は最優先」を出す
+  // （順番は生成ワーカーの queue-policy と pass の priority で確かめた: スタンダード・プレミアム → ライト → 無料）
   const hint =
     dataContext.currentPass === null
       ? "free"
@@ -167,19 +167,28 @@ export function InProgressGenerationCard(props: Props) {
               <ZapIcon className="size-3 shrink-0" />
               {isTrialHint
                 ? t(
-                    `プランなら1回で4枚・ライトは${TRIAL_DAYS}日間無料`,
-                    `4 images per click on a plan — try Lite free for ${TRIAL_DAYS} days`,
+                    `プランなら順番が先・1回で4枚（ライトは${TRIAL_DAYS}日間無料）`,
+                    `Skip ahead and get 4 images per click — try Lite free for ${TRIAL_DAYS} days`,
                   )
                 : hint === "free"
                 ? t(
-                    "プランなら1回で4枚・初月¥240〜",
-                    "4 images per click on a plan, from ¥240",
+                    "プランなら順番が先・1回で4枚（初月¥240〜）",
+                    "Skip ahead and get 4 images per click, from ¥240",
                   )
                 : t(
-                    "スタンダード以上は優先して生成",
+                    "スタンダード以上は最優先で生成",
                     "Standard and Premium go first in the queue",
                   )}
             </Link>
+          )}
+          {passType === "LITE" && !isActive && !isCompleted && (
+            <p className="inline-flex items-center gap-1 text-[11px] text-cyan-200">
+              <ZapIcon className="size-3 shrink-0" />
+              {t(
+                "ライト：無料の方より先に生成します",
+                "Lite: you go ahead of free users",
+              )}
+            </p>
           )}
           {isStandardOrPremium && props.inProgressNormalCount > 0 && (
             <p className="inline-flex items-center gap-1 text-[11px] text-cyan-200">

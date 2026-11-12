@@ -217,6 +217,7 @@ export function GenerationCoinShortageDialog (props: Props) {
                       `1日${LITE.perDay}枚まで`,
                       `${LITE.perDay} images a day`,
                     ),
+                    t("無料より先に生成", "Ahead of free users"),
                     t("広告なし", "No ads"),
                     t("画像から生成", "Image-to-image"),
                   ].map((text) => (

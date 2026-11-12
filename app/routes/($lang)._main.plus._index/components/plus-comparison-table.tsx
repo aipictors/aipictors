@@ -19,7 +19,7 @@ type Row = {
 /**
  * スマホで最初に見せる行数（月額・枚数・コインなど、選ぶときにまず見る項目）
  */
-const MOBILE_ROWS = 9
+const MOBILE_ROWS = 10
 
 /**
  * 無料とプランの比較表
@@ -53,6 +53,15 @@ export function PlusComparisonTable() {
           STANDARD: t("1年", "1 year"),
           PREMIUM: t("2年", "2 years"),
         })[spec.plan],
+    },
+    {
+      label: t("生成の順番", "Place in the queue"),
+      value: (spec) =>
+        ({
+          normal: t("通常", "Standard queue"),
+          ahead: t("無料より先", "Ahead of free"),
+          first: t("最優先", "First"),
+        })[spec.queueOrder],
     },
     {
       label: t("1回の生成枚数", "Images per click"),

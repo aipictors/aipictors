@@ -116,6 +116,14 @@ export function getPlanSpec(plan: PlanKey) {
     geminiWeeklyImages: GEMINI_WEEKLY_IMAGES[plan],
     nanoBanana2: isStandardOrAbove,
     fastMode: isStandardOrAbove,
+    /**
+     * 生成の順番（スタンダード以上 → ライト → 無料。aipictors-system の pass.priority と生成ワーカーの queue-policy）
+     */
+    queueOrder: isStandardOrAbove
+      ? ("first" as const)
+      : isPaid
+        ? ("ahead" as const)
+        : ("normal" as const),
     reservation: isStandardOrAbove,
     noAdvertisement: config.passFeature.noAdvertisement[key],
     badge: config.passFeature.badge[key],

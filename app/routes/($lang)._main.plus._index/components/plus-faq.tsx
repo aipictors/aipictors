@@ -102,6 +102,14 @@ export function PlusFaq () {
       ),
     },
     {
+      id: "queue-order",
+      question: t("生成の順番はプランで変わりますか？", "Does my plan change my place in the queue?"),
+      answer: t(
+        "はい。混んでいるときは、スタンダード・プレミアム → ライト → 無料 の順に生成されます。ライトは無料の方より先に、スタンダード以上は最優先で生成されます。長く待っている無料の方の依頼が後回しになり続けないよう、一部の生成枠は待ち時間の長い順に処理しています。",
+        "Yes. When it's busy, images are generated in this order: Standard and Premium, then Lite, then Free. Lite goes ahead of free users, and Standard and above go first. So that free users are never left waiting indefinitely, part of our capacity always serves the longest-waiting requests.",
+      ),
+    },
+    {
       id: "free",
       question: t("無料でも生成できますか？", "Can I generate for free?"),
       answer: t(

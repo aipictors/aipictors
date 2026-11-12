@@ -25,6 +25,7 @@ export function toPassFeatures(
     return [
       t(`1回の生成で${spec.imagesPerRequest}枚`, `${spec.imagesPerRequest === 1 ? "1 image" : `${spec.imagesPerRequest} images`} per click`),
       t(`毎日${spec.dailyFreeCoins}フリーコイン（1日${spec.dailyImages}枚まで）`, `${spec.dailyFreeCoins} free coins every day (${spec.dailyImages} images)`),
+      t("無料の方より先に生成（混んでいるとき）", "Generated ahead of free users when it's busy"),
       t("画像から生成（img2img・部分修正）", "Image-to-image and inpainting"),
       t(`Gemini Nano Banana（フリーコインで週${spec.geminiWeeklyImages}枚まで）`, `Gemini Nano Banana (${spec.geminiWeeklyImages} a week on free coins)`),
       t(`LoRA ${spec.loraModels}個まで`, `Up to ${spec.loraModels} LoRAs`),
@@ -40,6 +41,7 @@ export function toPassFeatures(
       t(`1回の生成で${spec.imagesPerRequest}枚`, `${spec.imagesPerRequest === 1 ? "1 image" : `${spec.imagesPerRequest} images`} per click`),
       t(`毎日${spec.dailyFreeCoins}フリーコイン（1日${spec.dailyImages}枚まで）`, `${spec.dailyFreeCoins} free coins every day (${spec.dailyImages} images)`),
       t(`同時に${spec.concurrentTasks}件まで生成`, `${spec.concurrentTasks} generations running at once`),
+      t("最優先で生成（ライト・無料の方より先）", "First in the queue, ahead of Lite and free users"),
       t("高速生成モード⚡️", "Fast mode ⚡️"),
       t("予約生成機能", "Scheduled generation"),
       t("画像から生成（img2img・部分修正）", "Image-to-image and inpainting"),
