@@ -9,3 +9,20 @@ export function trackGrowthEvent(event: string, source: string) {
     () => {},
   )
 }
+
+/**
+ * 同じ案内の表示を、ブラウザを開いている間に 1 回だけ数える
+ * （どのページにも出る案内をページごとに数えると、アクセス数がそのまま計測のリクエスト数になるため）
+ */
+export function trackGrowthEventOnce(event: string, source: string) {
+  if (typeof window === "undefined") return
+  const key = `growth-event:${event}:${source}`
+  try {
+    if (window.sessionStorage.getItem(key) !== null) return
+    window.sessionStorage.setItem(key, "1")
+  } catch (_error) {
+    // 保存できないときは数えない（毎回送ってしまうため）
+    return
+  }
+  trackGrowthEvent(event, source)
+}
