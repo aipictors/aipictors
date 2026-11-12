@@ -72,7 +72,7 @@ export function HomeFeedTabContent(
         )}
       </Suspense>
       <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-        <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_278px)]">
+        <div className="flex w-full min-w-0 flex-col space-y-8 overflow-hidden md:max-w-[calc(100%_-_278px)]">
           <HomeQuickPreviewBar
             events={data.eventPreviews}
             featuredReleases={data.featuredReleaseList}
@@ -151,7 +151,7 @@ export function HomeFeedTabContent(
             <HomeDeferredSection
               fallback={
                 <HomeWorkSectionPlaceholder
-                  title={t("タグ作品", "Tag Works")}
+                  title={t("注目タグの作品", "Works from trending tags")}
                   variant="cropped"
                 />
               }

@@ -16,6 +16,7 @@ import {
   HomeFollowTagTabContent,
   HomeFollowUserTabContent,
 } from "~/routes/($lang)._main._index/components/home-follow-tab-contents"
+import { HomeGuestHero } from "~/routes/($lang)._main._index/components/home-guest-hero"
 import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeNewTabContent } from "~/routes/($lang)._main._index/components/home-new-tab-content"
 import { HomeNewcomerReactionsCard } from "~/routes/($lang)._main._index/components/home-newcomer-reactions-card"
@@ -88,9 +89,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
         value={currentTab}
         defaultValue={currentTab}
         onValueChange={handleTabChange}
-        className="space-y-6"
+        className="space-y-3"
       >
         <HomeEnglishHero />
+        {currentTab === "home" && <HomeGuestHero />}
         {/* ヘッダー部分: タブ */}
         <div className="-mx-4 bg-background/98 px-4 py-2">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">

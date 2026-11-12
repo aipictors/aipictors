@@ -49,6 +49,10 @@ export function HomeNewUsersWorksSection(props: Props) {
       {workDisplayed.length > 0 && (
         <HomeWorkSection
           title={t("新規クリエイターの初投稿作品", "New creators' first works")}
+          description={t(
+            "はじめて投稿した人の作品です。いいねで応援しよう",
+            "First posts from new creators. Cheer them on with a like",
+          )}
           works={workDisplayed}
           isCropped={true}
           isShowProfile={false}

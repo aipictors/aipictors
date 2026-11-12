@@ -88,6 +88,7 @@ export function HomeQuickPreviewBar(props: Props) {
               to={`/events/${firstEvent.slug}`}
               className="mt-1.5 block rounded-md px-1 py-0.5 transition-colors hover:bg-muted/40"
             >
+              {/* スマホでは題名だけにして（期間・主催者は省く）、作品が早く見えるようにする */}
               <div className="flex items-center gap-1.5 overflow-hidden">
                 <Badge className="shrink-0 px-1.5 py-0 text-[10px]">
                   {firstEvent.status === "ONGOING"
@@ -98,14 +99,14 @@ export function HomeQuickPreviewBar(props: Props) {
                   {t.text(firstEvent.title) || "See the event"}
                 </span>
               </div>
-              <div className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">
+              <div className="mt-0.5 hidden truncate text-[11px] text-muted-foreground md:block">
                 {formatEventDate(firstEvent.startAt)} -{" "}
                 {formatEventDate(firstEvent.endAt)}
                 {firstEvent.tags[0] && t.text(firstEvent.tags[0])
                   ? `${t(" ・ ", " · ")}#${t.text(firstEvent.tags[0])}`
                   : ""}
               </div>
-              <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <div className="mt-0.5 hidden items-center gap-1.5 text-[11px] text-muted-foreground md:flex">
                 <Avatar className="size-4">
                   {firstEvent.userIconUrl && (
                     <AvatarImage
@@ -171,7 +172,7 @@ export function HomeQuickPreviewBar(props: Props) {
                   {t.text(firstRelease.title) || "See the latest news"}
                 </span>
               </div>
-              <div className="mt-0.5 text-[11px] text-muted-foreground">
+              <div className="mt-0.5 hidden text-[11px] text-muted-foreground md:block">
                 {formatReleaseDate(firstRelease.createdAt)}
               </div>
             </Link>

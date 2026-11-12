@@ -1,5 +1,6 @@
+import { LightbulbIcon } from "lucide-react"
 import { useRef } from "react"
-import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
+import { Link } from "~/lib/app/locale-router"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { getJstDate } from "~/utils/jst-date"
@@ -24,7 +25,7 @@ export function HomeTagList (props: Props) {
     <nav aria-label={t("おすすめのタグ", "Recommended tags")}>
       <ul
         ref={drag.ref}
-        className="-mx-1 flex snap-x gap-4 overflow-x-auto overscroll-x-contain px-1 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-1 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-1 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         onPointerDown={drag.onPointerDown}
         onPointerMove={drag.onPointerMove}
         onPointerUp={drag.onPointerUp}
@@ -34,17 +35,17 @@ export function HomeTagList (props: Props) {
       >
         {props.themeTitle && (
           <li className="shrink-0 snap-start">
-            <TagButton
-              link={`/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`}
-              name={
-                t.isEnglish
-                  ? t.tag(props.themeTitle, props.themeEnTitle)
-                    ? `Today's theme: ${t.tag(props.themeTitle, props.themeEnTitle)}`
-                    : "Today's theme"
-                  : `今日のお題「${props.themeTitle}」`
-              }
-              isTagName={true}
-            />
+            <Link
+              to={`/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`}
+              className="flex h-10 items-center gap-1.5 rounded-full bg-linear-to-r from-violet-600 to-fuchsia-500 pr-4 pl-3 font-bold text-sm text-white shadow-sm transition-opacity hover:opacity-90"
+            >
+              <LightbulbIcon className="size-4 shrink-0" />
+              {t.isEnglish
+                ? t.tag(props.themeTitle, props.themeEnTitle)
+                  ? `Today's theme: ${t.tag(props.themeTitle, props.themeEnTitle)}`
+                  : "Today's theme"
+                : `今日のお題「${props.themeTitle}」`}
+            </Link>
           </li>
         )}
         {props.hotTags?.map((tag) => {
@@ -52,11 +53,13 @@ export function HomeTagList (props: Props) {
           if (label === null) return null
           return (
             <li className="shrink-0 snap-start" key={tag.id}>
-              <TagButton
-                link={`/tags/${tag.name}`}
-                name={label}
-                isTagName={true}
-              />
+              <Link
+                to={`/tags/${tag.name}`}
+                className="flex h-10 items-center rounded-full border bg-card px-4 font-medium text-sm transition-colors hover:bg-muted"
+              >
+                <span className="mr-0.5 text-muted-foreground">#</span>
+                {label}
+              </Link>
             </li>
           )
         })}

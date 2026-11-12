@@ -6,6 +6,7 @@ import {
 import React, { useEffect, useRef, useState } from "react"
 import Autoplay from "embla-carousel-autoplay"
 import { type FragmentOf, graphql } from "gql.tada"
+import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import { HomeTagsSectionItem } from "~/routes/($lang)._main._index/components/home-tags-section-item"
 
 type Props = {
@@ -56,9 +57,7 @@ export function HomeTagsSection (props: Props) {
 
   return (
     <>
-      <h2 className="items-center space-x-2 font-bold text-xl">
-        {props.title}
-      </h2>
+      {props.title && <HomeSectionHeading title={props.title} />}
       {isActive ? (
         <Carousel
           opts={{ dragFree: true, loop: true }}

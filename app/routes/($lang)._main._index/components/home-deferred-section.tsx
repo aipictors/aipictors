@@ -1,5 +1,6 @@
 import { Skeleton } from "~/components/ui/skeleton"
 import { useEffect, useRef, useState } from "react"
+import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 
 type HomeDeferredSectionProps = {
   children: React.ReactNode
@@ -69,7 +70,7 @@ export function HomeWorkSectionPlaceholder (
 
   return (
     <section className="space-y-4">
-      <h2 className="text-left font-bold text-xl">{props.title}</h2>
+      <HomeSectionHeading title={props.title} />
       <div
         className={
           props.variant === "cropped"

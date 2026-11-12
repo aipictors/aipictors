@@ -1,25 +1,21 @@
 import { Link } from "~/lib/app/locale-router"
-import { RiQuestionLine } from "@remixicon/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
+import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
 
 type Props = {
   works: FragmentOf<typeof HomeWorkFragment>[]
   title?: string
+  /** 見出しの下に出す短い説明 */
+  description?: React.ReactNode
   tooltip?: string
   link?: string
   isCropped?: boolean
@@ -37,30 +33,23 @@ export function HomeWorkSection(props: Props) {
 
   return (
     <section className={cn(props.title ? "space-y-4" : "gap-y-4")}>
-      <div className="flex items-center justify-between">
-        <h2 className="items-center space-x-2 font-bold text-md">
-          <span className="text-left font-bold text-xl">
-            {props.title && props.title}
-          </span>
-          {props.tooltip && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <RiQuestionLine className="inline h-6 w-auto" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{props.tooltip}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </h2>
-        {props.link && (
-          <Button asChild variant={"secondary"} size={"sm"}>
-            <Link to={props.link}>{t("すべて見る", "All")}</Link>
-          </Button>
-        )}
-      </div>
+      {props.title ? (
+        <HomeSectionHeading
+          title={props.title}
+          description={props.description}
+          tooltip={props.tooltip}
+          link={props.link}
+          linkLabel={t("すべて見る", "All")}
+        />
+      ) : (
+        props.link && (
+          <div className="flex items-center justify-end">
+            <Button asChild variant={"secondary"} size={"sm"}>
+              <Link to={props.link}>{t("すべて見る", "All")}</Link>
+            </Button>
+          </div>
+        )
+      )}
       {props.isCropped ? (
         <HomeCroppedWorkList
           works={props.works}

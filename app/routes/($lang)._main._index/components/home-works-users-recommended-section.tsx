@@ -54,6 +54,10 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
         <HomeRecommendedWorkList
           title={t("ユーザからの推薦", "Recommended by users")}
           works={workDisplayed}
+          description={t(
+            "Aipictors＋の会員が推薦した作品",
+            "Works recommended by Aipictors+ members",
+          )}
           link="/home/recommended"
           // 「More」だけだとリンク先が分からない（Lighthouse の SEO「リンクにわかりやすいテキスト」）
           linkLabel={t("もっと見る", "All recommended")}

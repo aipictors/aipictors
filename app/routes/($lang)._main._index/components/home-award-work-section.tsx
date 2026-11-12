@@ -4,7 +4,6 @@ import { Heart } from "lucide-react"
 import { useContext } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
-import { Button } from "~/components/ui/button"
 import {
   Carousel,
   CarouselContent,
@@ -15,7 +14,7 @@ import {
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "~/lib/app/locale-router"
+import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -64,17 +63,16 @@ export function HomeAwardWorkSection(props: Props) {
 
   return (
     <section className="relative space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="items-center space-x-2 font-bold text-xl">
-          {props.title}
-        </h2>
-        {/* 昨日の日付 // /2024/05/01 */}
-        <Link to={`rankings/${yesterdayStr}`}>
-          <Button variant={"secondary"} size={"sm"}>
-            {t("すべて見る", "All")}
-          </Button>
-        </Link>
-      </div>
+      {/* 昨日の日付 // /2024/05/01 */}
+      <HomeSectionHeading
+        title={props.title}
+        description={t(
+          "きのう人気を集めた作品",
+          "Yesterday's most popular works",
+        )}
+        link={`rankings/${yesterdayStr}`}
+        linkLabel={t("すべて見る", "All")}
+      />
       <Carousel opts={{ dragFree: true, loop: false }}>
         <CarouselContent>
           {workDisplayed.map((work, index) => (

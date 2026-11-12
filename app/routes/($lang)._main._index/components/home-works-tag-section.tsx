@@ -80,7 +80,11 @@ export function HomeWorksTagSection(props: Props) {
   return (
     <>
       <HomeWorkSection
-        title={t("タグ作品", "Tag Works")}
+        title={t("注目タグの作品", "Works from trending tags")}
+        description={[props.tag, props.secondTag]
+          .filter((tag) => tag)
+          .map((tag) => `#${tag}`)
+          .join("  ")}
         works={combinedWorks}
         isCropped={props.isCropped}
         fillRows={true}
