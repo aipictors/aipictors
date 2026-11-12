@@ -114,10 +114,8 @@ export function getHomeNavigationSections(
                 icon: SparklesIcon,
                 badge:
                   options.liteOffer === "trial"
-                    ? // 未ログインの人には、はじめての人向けだと分かるように書く
-                      options.plusStatus === "guest"
-                      ? (["初回7日間無料", "New? 7 days free"] as [string, string])
-                      : (["7日間無料", "Free trial"] as [string, string])
+                    ? // メニューは幅が狭いので短く書く（長いとサービス名が切れる。対象は /plus に書いてある）
+                      (["7日間無料", "Free trial"] as [string, string])
                     : options.liteOffer === "half"
                       ? (["初月半額", "50% off"] as [string, string])
                       : undefined,

@@ -16,8 +16,8 @@ describe("getHomeNavigationSections の Aipictors+", () => {
       expect(rest).toHaveLength(0)
       expect(item.section).toBe("main")
       expect(item.label[0]).toBe("Aipictors+")
-      // 未ログインの人には、はじめての人向けだと分かるように書く
-      expect(item.badge?.[0]).toBe(status === "guest" ? "初回7日間無料" : "7日間無料")
+      // メニューは幅が狭いので短く書く（長いとサービス名が切れる）
+      expect(item.badge?.[0]).toBe("7日間無料")
       expect(item.growthEvent).toBe("plus_nav_click")
     }
     expect(findPlus("free", "half")[0].badge?.[0]).toBe("初月半額")

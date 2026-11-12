@@ -80,10 +80,13 @@ export function SidebarNavigationButton({
           >
             <Icon className="size-5 shrink-0" />
             {sidebarState === "expanded" && (
-              <span className="ml-3 truncate">{children}</span>
+              // 印が付く項目は、名前を縮めない（印の方を縮める）
+              <span className={clsx("ml-3", badge ? "mr-1.5 shrink-0" : "truncate")}>
+                {children}
+              </span>
             )}
             {sidebarState === "expanded" && badge && (
-              <span className="ml-auto shrink-0 rounded-full bg-fuchsia-600 px-1.5 py-0.5 font-bold text-[10px] text-white leading-none">
+              <span className="ml-auto min-w-0 truncate rounded-full bg-fuchsia-600 px-1.5 py-0.5 font-bold text-[10px] text-white leading-none">
                 {badge}
               </span>
             )}

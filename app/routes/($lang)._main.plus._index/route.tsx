@@ -23,6 +23,7 @@ import { createMeta } from "~/utils/create-meta"
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import { InviteLinkRow } from "~/components/invite-link-row"
 import type { Product, WithContext } from "schema-dts"
 
 /**
@@ -190,22 +191,25 @@ export default function Plus () {
           </Button>
         </div>
       </section>
-      {/* 長い注意事項はたたんでおく（開けばすべて読める） */}
-      <details className="group rounded-2xl border px-4 py-3">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 font-bold text-sm [&::-webkit-details-marker]:hidden">
-          <h2>{t("注意事項（加入期間・解約・返金について）", "The fine print (billing period, cancellation, refunds)")}</h2>
-          <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
-        </summary>
-        <div className="pt-3 text-muted-foreground text-sm">
-          <PlusNoteList />
-          <p className="pt-3">
-            {t(
-              "この度はAipictorsをご利用いただき、誠にありがとうございます。",
-              "Thank you for using Aipictors.",
-            )}
-          </p>
-        </div>
-      </details>
+      <div className="space-y-3">
+        {/* 長い注意事項はたたんでおく（開けばすべて読める） */}
+        <details className="group rounded-2xl border px-4 py-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 font-bold text-sm [&::-webkit-details-marker]:hidden">
+            <h2>{t("注意事項（加入期間・解約・返金について）", "The fine print (billing period, cancellation, refunds)")}</h2>
+            <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="pt-3 text-muted-foreground text-sm">
+            <PlusNoteList />
+            <p className="pt-3">
+              {t(
+                "この度はAipictorsをご利用いただき、誠にありがとうございます。",
+                "Thank you for using Aipictors.",
+              )}
+            </p>
+          </div>
+        </details>
+        <InviteLinkRow source="plus" />
+      </div>
     </div>
   )
 }

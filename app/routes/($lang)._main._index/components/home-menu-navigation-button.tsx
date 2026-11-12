@@ -65,9 +65,11 @@ export function HomeMenuNavigationButton({
             )}
           >
             <Icon className="size-5 shrink-0" />
-            <span className="ml-3 inline">{children}</span>
+            <span className={clsx("inline shrink-0", badge ? "ml-2" : "ml-3")}>
+              {children}
+            </span>
             {badge && (
-              <span className="ml-2 shrink-0 rounded-full bg-fuchsia-600 px-1.5 py-0.5 font-bold text-[10px] text-white leading-none">
+              <span className="ml-1.5 min-w-0 truncate rounded-full bg-fuchsia-600 px-1 py-0.5 font-bold text-[10px] text-white leading-none">
                 {badge}
               </span>
             )}

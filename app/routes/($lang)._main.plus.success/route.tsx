@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { useTranslation } from "~/hooks/use-translation"
+import { InviteLinkRow } from "~/components/invite-link-row"
 import { clearTrialStatusCache } from "~/hooks/use-lite-offer"
 import { fetchTrialStatus } from "~/lib/trial-api"
 import { takeEnglishReturnPath } from "~/utils/checkout-locale"
@@ -272,6 +273,7 @@ export default function PlusSuccess () {
             )}
           </div>
         )}
+        {trialState.kind === "trialing" && <InviteLinkRow source="success" />}
       </div>
     )
   }

@@ -21,6 +21,8 @@ import { planCtaClassName } from "~/routes/($lang)._main.plus._index/components/
 import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-about"
 import { TrialStatusBanner } from "~/routes/($lang)._main.plus._index/components/trial-status-banner"
 import { useLiteOffer } from "~/hooks/use-lite-offer"
+import { useTranslation } from "~/hooks/use-translation"
+import { toTrialDateText } from "~/utils/to-trial-date-text"
 import { toPassName } from "~/routes/($lang)._main.plus._index/utils/to-pass-name"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -74,6 +76,11 @@ async function parseActionResponse<T>(response: Response): Promise<{
 }
 
 export function PlusForm () {
+  const t = useTranslation()
+  // 英語の画面では、日付とプラン名を英語にする
+  const toDate = (time: number) => toTrialDateText(time, t.isEnglish)
+  const toName = (type: "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS") =>
+    t.isEnglish ? (PASS_EN_NAME[type] ?? type) : toPassName(type)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCancelScheduled, setIsCancelScheduled] = useState(false)
   // 更新の支払いに失敗して未払いのままの契約（プリペイドカードの残高不足など）
@@ -124,7 +131,7 @@ export function PlusForm () {
   const withAuthHeader = async () => {
     const currentUser = getAuth().currentUser
     if (!currentUser) {
-      throw new Error("ログインが必要です")
+      throw new Error(t("ログインが必要です", "Please log in."))
     }
 
     const idToken = await getIdToken(currentUser)
@@ -151,21 +158,21 @@ export function PlusForm () {
         window.location.href = json.data.url
         return
       }
-      toast(json?.error ?? "お支払い方法の変更画面を開けませんでした。")
+      toast(t(json?.error ?? "お支払い方法の変更画面を開けませんでした。", "We couldn't open the page to change your payment method."))
     } catch {
-      toast("お支払い方法の変更画面を開けませんでした。")
+      toast(t("お支払い方法の変更画面を開けませんでした。", "We couldn't open the page to change your payment method."))
     }
     setIsSubmitting(false)
   }
 
   const onCancelCurrentSubscription = async (reason?: CancelReason) => {
     if (isCancelScheduled) {
-      toast("すでに解約手続き済みです。次回更新日までは利用できます。")
+      toast(t("すでに解約手続き済みです。次回更新日までは利用できます。", "You've already cancelled. You can keep using your plan until the renewal date."))
       return
     }
 
     // 理由を選んだ画面から来たときは、その画面を確認とする
-    if (!reason && !window.confirm("現在のサブスクを解約します。よろしいですか？")) {
+    if (!reason && !window.confirm(t("現在のサブスクを解約します。よろしいですか？", "Cancel your current plan?"))) {
       return
     }
 
@@ -188,18 +195,18 @@ export function PlusForm () {
 
       if (isHtmlWrapped) {
         if (!ok) {
-          toast("解約に失敗しました。")
+          toast(t("解約に失敗しました。", "We couldn't cancel your plan."))
           return
         }
         // Remix が HTML を返したが action は成功済み
         setIsCancelScheduled(true)
         setCancelCompletionMode("requested")
-        toast("解約手続きが完了しました。メールが届かない場合でも、この画面に解約予定日が表示されていれば完了しています。")
+        toast(t("解約手続きが完了しました。メールが届かない場合でも、この画面に解約予定日が表示されていれば完了しています。", "Your plan is cancelled. Even if you don't get an email, the cancellation is complete as long as this page shows an end date."))
         return
       }
 
       if (!ok || json?.error || !json?.data) {
-        toast(json?.error ?? "解約に失敗しました。")
+        toast(t(json?.error ?? "解約に失敗しました。", "We couldn't cancel your plan."))
         return
       }
 
@@ -209,8 +216,8 @@ export function PlusForm () {
       )
       toast(
         json.data.status === "already_canceled"
-          ? "すでに解約手続きは完了しています。キャンセルボタンが表示される場合でも、表示キャッシュの可能性があるためご安心ください。"
-          : "解約手続きが完了しました。メールが届かない場合でも、この画面に解約予定日が表示されていれば完了しています。",
+          ? t("すでに解約手続きは完了しています。キャンセルボタンが表示される場合でも、表示キャッシュの可能性があるためご安心ください。", "Your plan is already cancelled. If you still see a cancel button, it may just be a cached page.")
+          : t("解約手続きが完了しました。メールが届かない場合でも、この画面に解約予定日が表示されていれば完了しています。", "Your plan is cancelled. Even if you don't get an email, the cancellation is complete as long as this page shows an end date."),
       )
     } catch (error) {
       if (error instanceof Error) {
@@ -256,16 +263,19 @@ export function PlusForm () {
         data: SubscriptionPause
       }>(response)
       if (!ok || json?.error || !json?.data) {
-        toast(json?.error ?? "休止の手続きに失敗しました。時間をおいてもう一度お試しください。")
+        toast(t(json?.error ?? "休止の手続きに失敗しました。時間をおいてもう一度お試しください。", "We couldn't pause your plan. Please try again in a moment."))
         return
       }
       setPause(json.data)
       setIsRetentionOpen(false)
       toast(
-        `${toDateText(json.data.pausedFrom)} から1か月休止します。${toDateText(json.data.nextBillingAt)} に自動で再開します。`,
+        t(
+          `${toDateText(json.data.pausedFrom)} から1か月休止します。${toDateText(json.data.nextBillingAt)} に自動で再開します。`,
+          `Your plan pauses for one month from ${toDate(json.data.pausedFrom)} and resumes automatically on ${toDate(json.data.nextBillingAt)}.`,
+        ),
       )
     } catch (error) {
-      toast(error instanceof Error ? error.message : "休止の手続きに失敗しました。")
+      toast(t(error instanceof Error ? error.message : "休止の手続きに失敗しました。", "We couldn't pause your plan."))
     } finally {
       setIsSubmitting(false)
     }
@@ -281,21 +291,21 @@ export function PlusForm () {
       })
       const { ok, json } = await parseActionResponse<{ error: string | null }>(response)
       if (!ok || json?.error) {
-        toast(json?.error ?? "休止の取り消しに失敗しました。")
+        toast(t(json?.error ?? "休止の取り消しに失敗しました。", "We couldn't undo the pause."))
         return
       }
       trackGrowthEvent("pause_undo", "")
       setPause(null)
-      toast("休止を取り消しました。これまでどおり続きます。")
+      toast(t("休止を取り消しました。これまでどおり続きます。", "Pause cancelled. Your plan continues as before."))
     } catch (error) {
-      toast(error instanceof Error ? error.message : "休止の取り消しに失敗しました。")
+      toast(t(error instanceof Error ? error.message : "休止の取り消しに失敗しました。", "We couldn't undo the pause."))
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const onResumeSubscription = async () => {
-    if (!window.confirm("解約を取り消して、サブスクを継続しますか？")) {
+    if (!window.confirm(t("解約を取り消して、サブスクを継続しますか？", "Undo the cancellation and keep your plan?"))) {
       return
     }
 
@@ -314,23 +324,23 @@ export function PlusForm () {
 
       if (isHtmlWrapped) {
         if (!ok) {
-          toast("解約取り消しに失敗しました。")
+          toast(t("解約取り消しに失敗しました。", "We couldn't undo the cancellation."))
           return
         }
         setIsCancelScheduled(false)
         setCancelCompletionMode(null)
-        toast("解約を取り消しました。引き続きご利用いただけます。")
+        toast(t("解約を取り消しました。引き続きご利用いただけます。", "Cancellation undone. Your plan continues."))
         return
       }
 
       if (!ok || json?.error || !json?.data) {
-        toast(json?.error ?? "解約取り消しに失敗しました。")
+        toast(t(json?.error ?? "解約取り消しに失敗しました。", "We couldn't undo the cancellation."))
         return
       }
 
       setIsCancelScheduled(false)
   setCancelCompletionMode(null)
-      toast("解約を取り消しました。引き続きご利用いただけます。")
+      toast(t("解約を取り消しました。引き続きご利用いただけます。", "Cancellation undone. Your plan continues."))
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -372,31 +382,31 @@ export function PlusForm () {
 
       if (isHtmlWrapped) {
         if (!ok) {
-          toast("プラン変更に失敗しました。")
+          toast(t("プラン変更に失敗しました。", "We couldn't change your plan."))
           return
         }
-        toast("プラン変更を受け付けました。")
+        toast(t("プラン変更を受け付けました。", "Your plan change has been received."))
         setTimeout(() => { window.location.reload() }, 1200)
         return
       }
 
       if (!ok || json?.error || !json?.data) {
-        toast(json?.error ?? "プラン変更に失敗しました。")
+        toast(t(json?.error ?? "プラン変更に失敗しました。", "We couldn't change your plan."))
         return
       }
 
       if (json.data.requiresAction) {
         if (json.data.paymentPageUrl) {
-          toast("追加のカード認証が必要です。Stripe の決済画面へ移動します。")
+          toast(t("追加のカード認証が必要です。Stripe の決済画面へ移動します。", "Your card needs extra verification. Taking you to Stripe."))
           window.location.href = json.data.paymentPageUrl
           return
         }
 
-        toast("追加のカード認証が必要ですが、決済画面を開けませんでした。時間をおいて再度お試しください。")
+        toast(t("追加のカード認証が必要ですが、決済画面を開けませんでした。時間をおいて再度お試しください。", "Your card needs extra verification, but we couldn't open the payment page. Please try again in a moment."))
         return
       }
 
-      const nextPassName = toPassName(
+      const nextPassName = toName(
         (json.data.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS") ?? passType,
       )
       const chargedNowAmountJpy = json.data.chargedNowAmountJpy ?? 0
@@ -404,11 +414,17 @@ export function PlusForm () {
 
       if (chargedNowAmountJpy > 0) {
         toast(
-          `プラン変更が完了しました。${nextPassName}に即時変更し、今回 ${chargedNowAmountJpy}円を決済しました。次回以降は月額${renewalAmountJpy}円です。`,
+          t(
+            `プラン変更が完了しました。${nextPassName}に即時変更し、今回 ${chargedNowAmountJpy}円を決済しました。次回以降は月額${renewalAmountJpy}円です。`,
+            `Plan changed. You're now on ${nextPassName} and were charged ¥${chargedNowAmountJpy}. From the next renewal it's ¥${renewalAmountJpy} a month.`,
+          ),
         )
       } else {
         toast(
-          `プラン変更が完了しました。${nextPassName}に変更しました。今回の即時請求はなく、次回以降は月額${renewalAmountJpy}円です。`,
+          t(
+            `プラン変更が完了しました。${nextPassName}に変更しました。今回の即時請求はなく、次回以降は月額${renewalAmountJpy}円です。`,
+            `Plan changed to ${nextPassName}. Nothing was charged now; from the next renewal it's ¥${renewalAmountJpy} a month.`,
+          ),
         )
       }
       setTimeout(() => {
@@ -456,7 +472,7 @@ export function PlusForm () {
 
       if (!ok || json?.error || !json?.data) {
         setIsPlanChangeDialogOpen(false)
-        toast(json?.error ?? "プラン変更内容の確認に失敗しました。")
+        toast(t(json?.error ?? "プラン変更内容の確認に失敗しました。", "We couldn't load the details of the plan change."))
         return
       }
 
@@ -477,9 +493,17 @@ export function PlusForm () {
 
   const currentPass = data.viewer.currentPass
 
-  const nextDateText = currentPass ? toDateText(currentPass.periodEnd) : ""
+  const nextDateText = currentPass ? toDate(currentPass.periodEnd) : ""
 
-  const currentPassName = currentPass ? toPassName(currentPass.type) : ""
+  const currentPassName = currentPass ? toName(currentPass.type) : ""
+
+  // 更新のたびに付く継続ボーナス（プレミアムコイン）
+  const loyaltyCoins =
+    currentPass?.type === "PREMIUM"
+      ? 600
+      : currentPass?.type === "STANDARD"
+        ? 300
+        : 100
 
   // iOS アプリ（App Store）・Android アプリ（Google Play）で買ったプランはウェブ（Stripe）では変更・解約できない
   const isGooglePlayPass = currentPass?.paymentProvider === "GOOGLE_PLAY"
@@ -491,7 +515,7 @@ export function PlusForm () {
     prepaid.status?.pass?.passType === currentPass?.type
   const isManagedElsewhere = isAppStorePass || isPrepaidPass
   const nextPassName = planChangePreview
-    ? toPassName(
+    ? toName(
       (planChangePreview.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS"),
     )
     : ""
@@ -570,10 +594,10 @@ export function PlusForm () {
       <AlertDialog open={isRetentionOpen} onOpenChange={setIsRetentionOpen}>
         <AlertDialogContent className="max-h-[90dvh] overflow-y-auto">
           <AlertDialogHeader>
-            <AlertDialogTitle>{"解約する前に、理由を教えてください"}</AlertDialogTitle>
+            <AlertDialogTitle>{t("解約する前に、理由を教えてください", "Before you go, could you tell us why?")}</AlertDialogTitle>
             <AlertDialogDescription>
               {
-                "これからの改善に使わせていただきます。解約しても、今の期間の終わりまではそのまま使えます。"
+                t("これからの改善に使わせていただきます。解約しても、今の期間の終わりまではそのまま使えます。", "It helps us improve. If you cancel, you keep your plan until the end of the current period.")
               }
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -598,7 +622,7 @@ export function PlusForm () {
                     trackGrowthEvent("cancel_reason", option.value)
                   }}
                 />
-                {option.label}
+                {t(option.label, option.enLabel)}
               </label>
             ))}
             {cancelReason === "other" && (
@@ -607,7 +631,7 @@ export function PlusForm () {
                 onChange={(event) => setCancelReasonNote(event.target.value)}
                 maxLength={500}
                 rows={3}
-                placeholder="よければ詳しく教えてください（任意）"
+                placeholder={t("よければ詳しく教えてください（任意）", "Tell us more if you like (optional)")}
                 className="mt-1 w-full rounded-lg border bg-background px-3 py-2 text-sm"
               />
             )}
@@ -635,7 +659,7 @@ export function PlusForm () {
                 trackGrowthEvent("retention_keep", currentPass?.type ?? "")
               }}
             >
-              {"続ける"}
+              {t("続ける", "Keep my plan")}
             </AlertDialogAction>
             <AlertDialogCancel
               disabled={cancelReason === null || isSubmitting}
@@ -645,7 +669,7 @@ export function PlusForm () {
                 onCancelCurrentSubscription(cancelReason)
               }}
             >
-              {"解約する"}
+              {t("解約する", "Cancel plan")}
             </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -665,20 +689,31 @@ export function PlusForm () {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{"プラン変更の確認"}</AlertDialogTitle>
+            <AlertDialogTitle>{t("プラン変更の確認", "Confirm plan change")}</AlertDialogTitle>
             <AlertDialogDescription className="space-y-3">
               {isPlanChangePreviewLoading || !planChangeRequest ? (
-                <p>{"Stripe の請求内容を確認しています..."}</p>
+                <p>{t("Stripe の請求内容を確認しています...", "Checking the charge with Stripe…")}</p>
               ) : (
                 <>
-                  <p>{`現在の${currentPassName}から${nextPassName}へ、すぐに切り替えます。`}</p>
                   <p>
-                    {planChangePreview?.chargedNowAmountJpy && planChangePreview.chargedNowAmountJpy > 0
-                      ? `今回の即時決済額は ${planChangePreview.chargedNowAmountJpy}円 です。未使用期間分の調整を反映した日割り差額として Stripe で決済します。`
-                      : "今回は即時請求は発生しません。"}
+                    {t(
+                      `現在の${currentPassName}から${nextPassName}へ、すぐに切り替えます。`,
+                      `You'll switch from ${currentPassName} to ${nextPassName} right away.`,
+                    )}
                   </p>
                   <p>
-                    {`次回更新日 ${nextDateText} 以降は、${planChangePreview?.interval === "year" ? "年額" : "月額"} ${planChangePreview?.renewalAmountJpy ?? 0}円 で継続されます。`}
+                    {planChangePreview?.chargedNowAmountJpy && planChangePreview.chargedNowAmountJpy > 0
+                      ? t(
+                          `今回の即時決済額は ${planChangePreview.chargedNowAmountJpy}円 です。未使用期間分の調整を反映した日割り差額として Stripe で決済します。`,
+                          `You'll be charged ¥${planChangePreview.chargedNowAmountJpy} now through Stripe — the prorated difference after crediting your unused time.`,
+                        )
+                      : t("今回は即時請求は発生しません。", "Nothing is charged right now.")}
+                  </p>
+                  <p>
+                    {t(
+                      `次回更新日 ${nextDateText} 以降は、${planChangePreview?.interval === "year" ? "年額" : "月額"} ${planChangePreview?.renewalAmountJpy ?? 0}円 で継続されます。`,
+                      `From your next renewal on ${nextDateText}, it continues at ¥${planChangePreview?.renewalAmountJpy ?? 0} a ${planChangePreview?.interval === "year" ? "year" : "month"}.`,
+                    )}
                   </p>
                 </>
               )}
@@ -686,7 +721,7 @@ export function PlusForm () {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isSubmitting || isPlanChangePreviewLoading}>
-              {"キャンセル"}
+              {t("キャンセル", "Go back")}
             </AlertDialogCancel>
             <AlertDialogAction
               disabled={
@@ -708,8 +743,11 @@ export function PlusForm () {
               }}
             >
               {planChangePreview?.chargedNowAmountJpy && planChangePreview.chargedNowAmountJpy > 0
-                ? `${planChangePreview.chargedNowAmountJpy}円 を決済して変更する`
-                : "この内容で変更する"}
+                ? t(
+                    `${planChangePreview.chargedNowAmountJpy}円 を決済して変更する`,
+                    `Pay ¥${planChangePreview.chargedNowAmountJpy} and change plan`,
+                  )
+                : t("この内容で変更する", "Change plan")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -731,20 +769,23 @@ export function PlusForm () {
                 <div className="flex-1">
                   <p className="font-bold text-orange-800 text-sm dark:text-orange-300">
                     {cancelCompletionMode === "already_canceled"
-                      ? "すでに解約手続きは完了しています"
-                      : "解約予約中"}
+                      ? t("すでに解約手続きは完了しています", "Your plan is already cancelled")
+                      : t("解約予約中", "Cancellation scheduled")}
                   </p>
                   <p className="mt-0.5 text-orange-700 text-sm dark:text-orange-400">
-                    {`${nextDateText} に解約されます。それまでは引き続きご利用いただけます。`}
+                    {t(
+                      `${nextDateText} に解約されます。それまでは引き続きご利用いただけます。`,
+                      `Your plan ends on ${nextDateText}. You can keep using it until then.`,
+                    )}
                   </p>
                   <p className="mt-1 text-orange-600 text-xs dark:text-orange-500">
-                    {"メールが届かない場合でも、この表示と解約予定日が見えていれば解約手続きは完了しています。"}
+                    {t("メールが届かない場合でも、この表示と解約予定日が見えていれば解約手続きは完了しています。", "Even if you don't get an email, the cancellation is complete as long as you see this notice and the end date.")}
                   </p>
                   <p className="mt-1 text-orange-600 text-xs dark:text-orange-500">
-                    {"キャンセルボタンが表示される場合でも、画面表示のキャッシュが残っているだけのことがあります。時間をおいて再表示してください。"}
+                    {t("キャンセルボタンが表示される場合でも、画面表示のキャッシュが残っているだけのことがあります。時間をおいて再表示してください。", "If you still see a cancel button, it may just be a cached page. Reload after a moment.")}
                   </p>
                   <p className="mt-1 text-orange-600 text-xs dark:text-orange-500">
-                    {"解約を取り消したい場合は「解約を取り消す」ボタンを押してください。"}
+                    {t("解約を取り消したい場合は「解約を取り消す」ボタンを押してください。", "To keep your plan after all, press \"Undo cancellation\".")}
                   </p>
                 </div>
               </div>
@@ -767,43 +808,48 @@ export function PlusForm () {
           >
             <div className="flex-1 space-y-4">
               <p className="inline-flex rounded-full bg-gradient-to-r from-violet-600 to-sky-500 px-3 py-1 font-bold text-white text-xs">
-                {"ご利用中のプラン"}
+                {t("ご利用中のプラン", "Your plan")}
               </p>
-              <p className="font-bold text-lg">{`現在、あなたは「${currentPassName}」をご利用中です。`}</p>
+              <p className="font-bold text-lg">{t(
+                  `現在、あなたは「${currentPassName}」をご利用中です。`,
+                  `You're on ${currentPassName}.`,
+                )}</p>
               <div>
                 <div className="flex">
                   <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm dark:bg-gray-700 dark:text-gray-200">
                     {isPrepaidPass
-                      ? "パスの期限"
+                      ? t("パスの期限", "Pass ends")
                       : isCancelScheduled
-                      ? "解約予定日"
+                      ? t("解約予定日", "Ends on")
                       : isAppStorePass
-                        ? "次回の更新日"
-                        : "次回の請求日"}
+                        ? t("次回の更新日", "Next renewal")
+                        : t("次回の請求日", "Next payment")}
                   </span>
                   <p>{nextDateText}</p>
                 </div>
                 {!isCancelScheduled && !isManagedElsewhere && (
                   <div className="flex">
                     <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm dark:bg-gray-700 dark:text-gray-200">
-                      {"次回の請求額"}
+                      {t("次回の請求額", "Next charge")}
                     </span>
-                    <p>{`${currentPass.price}円（税込）`}</p>
+                    <p>
+                      {t(
+                        `${currentPass.price}円（税込）`,
+                        `¥${currentPass.price.toLocaleString()} (tax included)`,
+                      )}
+                    </p>
                   </div>
                 )}
                 {!isCancelScheduled && !isManagedElsewhere && (
                   <div className="flex">
                     <span className="mr-2 mb-2 rounded-full bg-fuchsia-100 px-3 py-1 font-semibold text-fuchsia-800 text-sm dark:bg-fuchsia-900/40 dark:text-fuchsia-200">
-                      {"継続ボーナス"}
+                      {t("継続ボーナス", "Loyalty bonus")}
                     </span>
                     <p className="text-sm">
-                      {`更新のたびに${
-                        currentPass.type === "PREMIUM"
-                          ? 600
-                          : currentPass.type === "STANDARD"
-                            ? 300
-                            : 100
-                      }プレミアムコイン（期限なし）`}
+                      {t(
+                        `更新のたびに${loyaltyCoins}プレミアムコイン（期限なし）`,
+                        `${loyaltyCoins} premium coins at every renewal (never expire)`,
+                      )}
                     </p>
                   </div>
                 )}
@@ -811,40 +857,46 @@ export function PlusForm () {
               {isPrepaidPass ? (
                 <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-900 text-sm dark:border-red-900 dark:bg-red-950/30 dark:text-red-100">
                   <p className="font-bold">
-                    {"自動更新なしのパスをご利用中です"}
+                    {t("自動更新なしのパスをご利用中です", "You're using a one-time pass (no auto-renewal)")}
                   </p>
                   <p className="mt-1 text-xs leading-5">
-                    {`${nextDateText} に自動で終わります。解約の手続きは要りません。続けて使うときは、下からパスを延長してください（期限から1か月・1年延びます）。`}
+                    {t(
+                      `${nextDateText} に自動で終わります。解約の手続きは要りません。続けて使うときは、下からパスを延長してください（期限から1か月・1年延びます）。`,
+                      `It ends automatically on ${nextDateText}, so there's nothing to cancel. To keep going, extend your pass below (adds 1 month or 1 year to the end date).`,
+                    )}
                   </p>
                 </div>
               ) : isAppStorePass ? (
                 <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900 text-sm dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
                   <p className="font-bold">
                     {isGooglePlayPass
-                      ? "このプランは Android アプリ（Google Play）でご購入いただいたものです"
-                      : "このプランは iPhone アプリ（App Store）でご購入いただいたものです"}
+                      ? t("このプランは Android アプリ（Google Play）でご購入いただいたものです", "This plan was purchased in the Android app (Google Play)")
+                      : t("このプランは iPhone アプリ（App Store）でご購入いただいたものです", "This plan was purchased in the iPhone app (App Store)")}
                   </p>
                   <p className="mt-1 text-xs leading-5">
                     {isGooglePlayPass
-                      ? "プランの変更・解約は、Google Play ストアアプリの［プロフィール］→［お支払いと定期購入］→［定期購入］から行えます。お支払いは Google が管理しているため、この画面からは変更・解約できません。"
-                      : "プランの変更・解約は、iPhone の［設定］→［Apple ID］→［サブスクリプション］から行えます。お支払いは Apple が管理しているため、この画面からは変更・解約できません。"}
+                      ? t("プランの変更・解約は、Google Play ストアアプリの［プロフィール］→［お支払いと定期購入］→［定期購入］から行えます。お支払いは Google が管理しているため、この画面からは変更・解約できません。", "To change or cancel, open the Google Play Store app and go to Profile → Payments & subscriptions → Subscriptions. Billing is handled by Google, so it can't be changed or cancelled from this page.")
+                      : t("プランの変更・解約は、iPhone の［設定］→［Apple ID］→［サブスクリプション］から行えます。お支払いは Apple が管理しているため、この画面からは変更・解約できません。", "To change or cancel, open Settings on your iPhone and go to Apple ID → Subscriptions. Billing is handled by Apple, so it can't be changed or cancelled from this page.")}
                   </p>
                 </div>
               ) : (
                 <p>
                   {
-                    "この画面からサブスクのキャンセル・プラン変更・お支払いカードの変更を行えます。"
+                    t("この画面からサブスクのキャンセル・プラン変更・お支払いカードの変更を行えます。", "You can cancel, change your plan, or change your payment card from this page.")
                   }
                 </p>
               )}
               {!isCancelScheduled && !isManagedElsewhere && (
                 <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900 text-sm dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
                   <p className="font-bold">
-                    {"解約後の確認について"}
+                    {t("解約後の確認について", "After you cancel")}
                   </p>
                   <p className="mt-1 text-xs leading-5">
                     {
-                      "解約完了メールが届かない場合でも、この画面に『解約予定日』と解約予約中の案内が表示されていれば手続きは完了しています。キャンセルボタンが一時的に見える場合でも、表示キャッシュの可能性があるためご安心ください。"
+                      t(
+                      "解約完了メールが届かない場合でも、この画面に『解約予定日』と解約予約中の案内が表示されていれば手続きは完了しています。キャンセルボタンが一時的に見える場合でも、表示キャッシュの可能性があるためご安心ください。",
+                      "Even if you don't get a cancellation email, you're done as long as this page shows an end date and the cancellation notice. If a cancel button still appears for a while, it may just be a cached page.",
+                    )
                     }
                   </p>
                 </div>
@@ -858,7 +910,7 @@ export function PlusForm () {
                     onClick={onResumeSubscription}
                     disabled={isSubmitting}
                   >
-                    {"解約を取り消す（継続する）"}
+                    {t("解約を取り消す（継続する）", "Undo cancellation (keep my plan)")}
                   </Button>
                 ) : (
                   /* 通常時 → 解約ボタン */
@@ -874,7 +926,7 @@ export function PlusForm () {
                     disabled={isSubmitting}
                     variant="outline"
                   >
-                    {"サブスクをキャンセルする"}
+                    {t("サブスクをキャンセルする", "Cancel plan")}
                   </Button>
                 )}
                 {!isCancelScheduled && currentPass.type === "LITE" && (
@@ -883,7 +935,7 @@ export function PlusForm () {
                     onClick={() => openPlanChangeDialog("STANDARD", currentPass.type)}
                     disabled={isSubmitting}
                   >
-                    {"スタンダードに変更する"}
+                    {t("スタンダードに変更する", "Switch to Standard")}
                   </Button>
                 )}
                 {!isCancelScheduled && currentPass.type === "LITE" && (
@@ -892,7 +944,7 @@ export function PlusForm () {
                     onClick={() => openPlanChangeDialog("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
-                    {"プレミアムに変更する"}
+                    {t("プレミアムに変更する", "Switch to Premium")}
                   </Button>
                 )}
                 {!isCancelScheduled && currentPass.type === "STANDARD" && (
@@ -901,7 +953,7 @@ export function PlusForm () {
                     onClick={() => openPlanChangeDialog("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
-                    {"プレミアムに変更する"}
+                    {t("プレミアムに変更する", "Switch to Premium")}
                   </Button>
                 )}
               </div>
@@ -914,30 +966,32 @@ export function PlusForm () {
                     disabled={isSubmitting}
                     variant="secondary"
                   >
-                    {"お支払いカードを変更する"}
+                    {t("お支払いカードを変更する", "Change payment card")}
                   </Button>
                   <p className="text-xs opacity-70">
-                    {"カードの有効期限が切れるときや、別のカードに変えたいときはこちら（Stripe の画面に移動します）。次回の請求から新しいカードが使われます。"}
+                    {t("カードの有効期限が切れるときや、別のカードに変えたいときはこちら（Stripe の画面に移動します）。次回の請求から新しいカードが使われます。", "Use this when your card is expiring or you want to switch cards (opens Stripe). The new card is used from your next payment.")}
                   </p>
                 </div>
               )}
             </div>
             <Card className="flex-1">
               <CardHeader>
-                <CardTitle>{`${currentPassName}の特典`}</CardTitle>
+                <CardTitle>
+                  {t(`${currentPassName}の特典`, `What ${currentPassName} includes`)}
+                </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-2">
                 <Separator />
                 <PassBenefitList passType={currentPass.type} />
                 <Separator />
                 <p className="font-bold text-sm opacity-60">
-                  {"画像生成の特典"}
+                  {t("画像生成の特典", "Generation benefits")}
                 </p>
                 <PassImageGenerationBenefitList passType={currentPass.type} />
                 <Separator />
                 <p className="text-xs">
                   {
-                    "本プランは何らかの理由により内容を追加、又は廃止する場合があります。"
+                    t("本プランは何らかの理由により内容を追加、又は廃止する場合があります。", "Plan contents may be added to or discontinued.")
                   }
                 </p>
               </CardContent>
@@ -947,8 +1001,8 @@ export function PlusForm () {
             (isCancelScheduled || currentPass.type !== "PREMIUM") && (
             <p className="mt-8 mb-1 font-bold">
               {isCancelScheduled
-                ? "プランを選び直す"
-                : "上位のプランにすると、もっと生成できます"}
+                ? t("プランを選び直す", "Choose a plan again")
+                : t("上位のプランにすると、もっと生成できます", "Upgrade to generate more")}
             </p>
           )}
           {!isManagedElsewhere &&
@@ -965,17 +1019,20 @@ export function PlusForm () {
       ) : unpaidInvoice ? (
         <Card className="border-amber-500">
           <CardHeader>
-            <CardTitle>{"プランの更新のお支払いが完了していません"}</CardTitle>
+            <CardTitle>{t("プランの更新のお支払いが完了していません", "Your renewal payment didn't go through")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm">
             <p>
-              {`${toPassName(unpaidInvoice.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS")}（${unpaidInvoice.amount.toLocaleString()}円）の更新のお支払いができなかったため、プランが一時停止しています。`}
+              {t(
+                `${toPassName(unpaidInvoice.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS")}（${unpaidInvoice.amount.toLocaleString()}円）の更新のお支払いができなかったため、プランが一時停止しています。`,
+                `We couldn't take the renewal payment for ${toName(unpaidInvoice.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS")} (¥${unpaidInvoice.amount.toLocaleString()}), so your plan is on hold.`,
+              )}
             </p>
             <p>
-              {"下のボタンからお支払いいただくと、すぐにプランが再開されます。カードの残高不足の場合は、別のカードを入力してお支払いいただけます。"}
+              {t("下のボタンからお支払いいただくと、すぐにプランが再開されます。カードの残高不足の場合は、別のカードを入力してお支払いいただけます。", "Pay with the button below and your plan resumes right away. If your card was declined, you can enter a different one.")}
             </p>
             <p className="text-xs opacity-70">
-              {"新しくプランに申し込むと二重の契約になってしまうため、先にこちらからお支払いください。"}
+              {t("新しくプランに申し込むと二重の契約になってしまうため、先にこちらからお支払いください。", "Please pay here first — signing up for a new plan would create a second subscription.")}
             </p>
             <Button
               className="w-full font-bold"
@@ -983,7 +1040,7 @@ export function PlusForm () {
                 window.location.href = unpaidInvoice.hostedInvoiceUrl
               }}
             >
-              {"お支払いを完了する"}
+              {t("お支払いを完了する", "Complete payment")}
             </Button>
             <Button
               className="w-full"
@@ -991,7 +1048,7 @@ export function PlusForm () {
               disabled={isSubmitting}
               variant="outline"
             >
-              {"今後のお支払いカードを変更する"}
+              {t("今後のお支払いカードを変更する", "Change the card for future payments")}
             </Button>
           </CardContent>
         </Card>
@@ -1045,16 +1102,27 @@ type CancelReason =
   | "other_service"
   | "other"
 
+const PASS_EN_NAME: Record<string, string> = {
+  LITE: "Lite",
+  STANDARD: "Standard",
+  PREMIUM: "Premium",
+  TWO_DAYS: "2-day pass",
+}
+
 /** aipictors-api の lib/retention.ts の CANCEL_REASONS と同じ */
-const CANCEL_REASON_OPTIONS: { value: CancelReason; label: string }[] = [
-  { value: "not_using", label: "あまり使わなかった" },
-  { value: "coins", label: "コインが足りなかった" },
-  { value: "price", label: "料金が高い" },
-  { value: "quality", label: "生成の品質・不具合が気になった" },
-  { value: "slow", label: "生成が遅い・待ち時間が長い" },
-  { value: "one_month", label: "1か月だけ使うつもりだった" },
-  { value: "other_service", label: "ほかのサービスに移る" },
-  { value: "other", label: "その他" },
+const CANCEL_REASON_OPTIONS: {
+  value: CancelReason
+  label: string
+  enLabel: string
+}[] = [
+  { value: "not_using", label: "あまり使わなかった", enLabel: "I didn't use it much" },
+  { value: "coins", label: "コインが足りなかった", enLabel: "I ran out of coins" },
+  { value: "price", label: "料金が高い", enLabel: "It's too expensive" },
+  { value: "quality", label: "生成の品質・不具合が気になった", enLabel: "Quality problems or bugs" },
+  { value: "slow", label: "生成が遅い・待ち時間が長い", enLabel: "Generation is slow or the wait is long" },
+  { value: "one_month", label: "1か月だけ使うつもりだった", enLabel: "I only planned to use it for a month" },
+  { value: "other_service", label: "ほかのサービスに移る", enLabel: "I'm moving to another service" },
+  { value: "other", label: "その他", enLabel: "Something else" },
 ]
 
 /**
@@ -1068,6 +1136,7 @@ function RetentionSuggestion(props: {
   onPause: () => void
   onDowngrade: () => void
 }) {
+  const t = useTranslation()
   const canDowngrade = props.passType === "STANDARD" || props.passType === "PREMIUM"
 
   // 使わない月がある・1か月だけのつもりだった・料金が気になる人には、解約の代わりに 1 か月休止を出す
@@ -1075,12 +1144,12 @@ function RetentionSuggestion(props: {
     props.canPause &&
     (props.reason === "not_using" || props.reason === "one_month" || props.reason === "price") ? (
       <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/5 p-3 text-sm">
-        <p className="font-bold">{"解約せずに、来月だけお休みしませんか？"}</p>
+        <p className="font-bold">{t("解約せずに、来月だけお休みしませんか？", "Rather than cancelling, how about taking next month off?")}</p>
         <p className="mt-1 text-muted-foreground text-xs">
-          {"今の期間の終わりから1か月、請求もプランも止まります（その間は無料プランと同じです）。1か月後に自動で再開し、生成履歴や設定はそのまま残ります。休止はこの画面からいつでも取り消せます。"}
+          {t("今の期間の終わりから1か月、請求もプランも止まります（その間は無料プランと同じです）。1か月後に自動で再開し、生成履歴や設定はそのまま残ります。休止はこの画面からいつでも取り消せます。", "Billing and benefits stop for one month after your current period ends (you're on Free during that time). Your plan resumes automatically a month later, and your history and settings stay as they are. You can undo the pause from this page anytime.")}
         </p>
         <Button size="sm" variant="outline" className="mt-2" disabled={props.isSubmitting} onClick={props.onPause}>
-          {"1か月休止する"}
+          {t("1か月休止する", "Pause for 1 month")}
         </Button>
       </div>
     ) : null
@@ -1090,12 +1159,12 @@ function RetentionSuggestion(props: {
       <div className="space-y-2">
       {pauseCard}
       <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-3 text-sm">
-        <p className="font-bold">{"ライト（月額480円）に変えるのはいかがですか？"}</p>
+        <p className="font-bold">{t("ライト（月額480円）に変えるのはいかがですか？", "How about switching to Lite (¥480/mo)?")}</p>
         <p className="mt-1 text-muted-foreground text-xs">
-          {"毎日500コイン（1日50枚）・1回4枚の生成・広告なしを、料金を抑えたまま続けられます。変更前に請求の内容を確認できます。"}
+          {t("毎日500コイン（1日50枚）・1回4枚の生成・広告なしを、料金を抑えたまま続けられます。変更前に請求の内容を確認できます。", "Keep 500 coins a day (50 images), 4 images per click and no ads, for less. You'll see the charge before you confirm.")}
         </p>
         <Button size="sm" className="mt-2" onClick={props.onDowngrade}>
-          {"ライトに変更する"}
+          {t("ライトに変更する", "Switch to Lite")}
         </Button>
       </div>
       </div>
@@ -1105,9 +1174,9 @@ function RetentionSuggestion(props: {
   if (props.reason === "coins") {
     return (
       <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-3 text-sm">
-        <p className="font-bold">{"コインは上のプランにすると毎日の量が増えます"}</p>
+        <p className="font-bold">{t("コインは上のプランにすると毎日の量が増えます", "A higher plan gives you more coins every day")}</p>
         <p className="mt-1 text-muted-foreground text-xs">
-          {"スタンダードは毎日1,000、プレミアムは毎日2,000コインです。続けると更新のたびに継続ボーナス（期限なし）も付きます。プランの変更はこのページの下からできます。"}
+          {t("スタンダードは毎日1,000、プレミアムは毎日2,000コインです。続けると更新のたびに継続ボーナス（期限なし）も付きます。プランの変更はこのページの下からできます。", "Standard gives 1,000 coins a day and Premium 2,000. You also get a loyalty bonus (never expires) at every renewal. You can change plans further down this page.")}
         </p>
       </div>
     )
@@ -1116,12 +1185,12 @@ function RetentionSuggestion(props: {
   if (props.reason === "quality" || props.reason === "slow") {
     return (
       <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-3 text-sm">
-        <p className="font-bold">{"よければ状況を教えてください"}</p>
+        <p className="font-bold">{t("よければ状況を教えてください", "Tell us what happened, if you like")}</p>
         <p className="mt-1 text-muted-foreground text-xs">
-          {"失敗した生成はコインを使わずにやり直せます。直らないときは、お問い合わせから送っていただくとスタッフが確認します。"}
+          {t("失敗した生成はコインを使わずにやり直せます。直らないときは、お問い合わせから送っていただくとスタッフが確認します。", "Failed generations can be retried without spending coins. If the problem continues, contact us and our staff will take a look.")}
         </p>
         <Link to="/support/chat" className="mt-2 inline-block text-sky-600 text-xs underline dark:text-sky-300">
-          {"お問い合わせを開く"}
+          {t("お問い合わせを開く", "Contact us")}
         </Link>
       </div>
     )
@@ -1132,7 +1201,7 @@ function RetentionSuggestion(props: {
       <div className="space-y-2">
         {pauseCard}
         <div className="rounded-lg bg-muted p-3 text-muted-foreground text-xs">
-          {"解約しても期間の終わりまでは使えます。終わる少し前にメールでお知らせするので、続けたくなったらそこから取り消せます。"}
+          {t("解約しても期間の終わりまでは使えます。終わる少し前にメールでお知らせするので、続けたくなったらそこから取り消せます。", "If you cancel, you keep your plan until the period ends. We'll email you shortly before, so you can undo the cancellation if you change your mind.")}
         </div>
       </div>
     )
@@ -1150,17 +1219,24 @@ function PauseBanner(props: {
   isPausedNow?: boolean
   onUnpause: () => void
 }) {
-  const pausedFrom = toDateText(props.pause.pausedFrom)
-  const nextBilling = toDateText(props.pause.nextBillingAt)
+  const t = useTranslation()
+  const pausedFrom = toTrialDateText(props.pause.pausedFrom, t.isEnglish)
+  const nextBilling = toTrialDateText(props.pause.nextBillingAt, t.isEnglish)
   return (
     <div className="mb-4 rounded-lg border border-emerald-400 bg-emerald-50 px-4 py-3 dark:border-emerald-700 dark:bg-emerald-950/40">
       <p className="font-bold text-emerald-800 text-sm dark:text-emerald-300">
-        {props.isPausedNow ? "プランを休止中です" : "1か月休止の予約中"}
+        {props.isPausedNow ? t("プランを休止中です", "Your plan is paused") : t("1か月休止の予約中", "One-month pause scheduled")}
       </p>
       <p className="mt-0.5 text-emerald-700 text-sm dark:text-emerald-400">
         {props.isPausedNow
-          ? `${nextBilling} に自動で再開し、そのときに請求します。すぐに戻りたいときは下からプランを選んでください（休止中の契約は自動で止まり、二重には請求されません）。`
-          : `${pausedFrom} から1か月お休みし、${nextBilling} に自動で再開します。それまではこれまでどおり使えます。`}
+          ? t(
+              `${nextBilling} に自動で再開し、そのときに請求します。すぐに戻りたいときは下からプランを選んでください（休止中の契約は自動で止まり、二重には請求されません）。`,
+              `Your plan resumes automatically on ${nextBilling}, and that's when you're charged. To come back sooner, choose a plan below (the paused subscription stops automatically, so you won't be charged twice).`,
+            )
+          : t(
+              `${pausedFrom} から1か月お休みし、${nextBilling} に自動で再開します。それまではこれまでどおり使えます。`,
+              `Your plan pauses for one month from ${pausedFrom} and resumes automatically on ${nextBilling}. Until then, everything works as usual.`,
+            )}
       </p>
       {!props.isPausedNow && (
         <Button
@@ -1170,7 +1246,7 @@ function PauseBanner(props: {
           disabled={props.isSubmitting}
           onClick={props.onUnpause}
         >
-          {"休止を取り消す（このまま続ける）"}
+          {t("休止を取り消す（このまま続ける）", "Undo pause (keep my plan)")}
         </Button>
       )}
     </div>
