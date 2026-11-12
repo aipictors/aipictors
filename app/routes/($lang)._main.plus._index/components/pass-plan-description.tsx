@@ -205,8 +205,9 @@ export function PassPlanDescription(props: Props) {
                   ? t(`${spec.name}を年払いで登録する`, `Get ${spec.enName} yearly`)
                   : isFirstMonthOffer
                     ? t(
-                        `初月¥${toMoneyNumberText(firstMonthPrice)}で${spec.name}をはじめる`,
-                        `Start ${spec.enName} for ¥${toMoneyNumberText(firstMonthPrice)}`,
+                        // PC の 4 列ではボタンが狭いので、プラン名は入れない（カードの見出しにある）
+                        `初月¥${toMoneyNumberText(firstMonthPrice)}ではじめる`,
+                        `Start for ¥${toMoneyNumberText(firstMonthPrice)}`,
                       )
                     : t(`${spec.name}に登録する`, `Get ${spec.enName}`)}
             </Button>
