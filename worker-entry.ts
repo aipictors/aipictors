@@ -35,6 +35,17 @@ export default {
     ) {
       return purgeWorkPages(request, env, ctx)
     }
+    // 案内の表示・クリックの計測（/api/growth-event）は Cloudflare のアクセス集計で数えるだけなので、
+    // アプリ本体を読み込まずにここで返す（月 100 万回以上あり、1 回 13ms ほど CPU を使っていた）
+    if (
+      request.method === "GET" &&
+      new URL(request.url).pathname === "/api/growth-event"
+    ) {
+      return new Response(null, {
+        status: 204,
+        headers: { "Cache-Control": "no-store" },
+      })
+    }
     const response: Response = await pages.fetch(request, env, ctx)
     // Workers のキャッシュは Cache-Control がないと推定で保存するので、明示したものだけを保存させる
     if (

@@ -50,6 +50,42 @@ Disallow: /new/
 Disallow: /messages
 Disallow: /notifications
 
+# Bing は 1 秒に約 1 ページ読みに来ていて、検索エンジンの巡回の半分を占める（流入は Google の 6 分の 1）。間隔を空けてもらう
+User-agent: bingbot
+Crawl-delay: 2
+Allow: /
+# ログインが必要なページ・個人のページ・API は検索結果に出さない
+Disallow: /api/
+Disallow: /admin
+Disallow: /settings
+Disallow: /my
+Disallow: /new/
+Disallow: /messages
+Disallow: /notifications
+Disallow: /login
+Disallow: /logout
+Disallow: /support/chat
+Disallow: /posts/*/edit
+Disallow: /posts/*/draft
+Disallow: /models/upload
+# 並び替え・絞り込みだけが違う URL（同じ作品の一覧が無数にできるので巡回しない。ページ送りは対象外）
+Disallow: /*?*orderBy=
+Disallow: /*?*sort=
+Disallow: /*?*prompt=
+Disallow: /*?*rating=
+Disallow: /*?*word=
+Disallow: /*?*age_limit=
+Disallow: /*?*work=
+Disallow: /en/api/
+Disallow: /en/admin
+Disallow: /en/settings
+Disallow: /en/my
+Disallow: /en/new/
+Disallow: /en/messages
+Disallow: /en/notifications
+Disallow: /en/login
+Disallow: /en/logout
+
 # SEO 調査ツールのクローラー（検索からの流入には関係がなく、1 日に数万ページ読みに来てサーバーの負荷になっていた）
 User-agent: DataForSeoBot
 User-agent: DotBot
@@ -62,7 +98,9 @@ User-agent: serpstatbot
 Disallow: /
 
 # Meta の AI 学習用クローラー（検索や回答からの流入がなく、ページ取得の約 4 割を占めてサーバーの負荷になっていた）
+# meta-webindexer は Meta AI の検索用で、1 日に約 175 万回（画像を含む）読みに来て流入はなかった
 User-agent: meta-externalagent
+User-agent: meta-webindexer
 Disallow: /
 
 # 監視ツールや AI の学習・データ収集用のクローラー（検索や回答からの流入がなく、1 時間に数百〜千ページ読みに来ていた）
