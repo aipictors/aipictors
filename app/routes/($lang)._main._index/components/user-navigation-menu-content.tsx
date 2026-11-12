@@ -14,6 +14,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import {
   CoffeeIcon,
   GemIcon,
+  GiftIcon,
   Languages,
   LogOutIcon,
   MessageCircleIcon,
@@ -387,6 +388,11 @@ function UserNavigationMenuContent(props: Props) {
           href={getSensitiveLink("/plus")}
           icon={<GemIcon className={userNavigationStyles.menuIcon} />}
           label="Aipictors+"
+        />
+        <MenuItemLink
+          href="/invite"
+          icon={<GiftIcon className={userNavigationStyles.menuIcon} />}
+          label={t("友だちを招待", "Invite friends")}
         />
         <MenuItemLink
           href={getSensitiveLink("/settings")}

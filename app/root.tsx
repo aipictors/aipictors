@@ -61,6 +61,13 @@ const AchievementWatcher = lazy(() =>
   })),
 )
 
+// 紹介リンク（?ref=）を覚えて、登録したあとでひも付ける（画面を出してから読み込む）
+const ReferralWatcher = lazy(() =>
+  import("~/components/referral/referral-watcher").then((mod) => ({
+    default: mod.ReferralWatcher,
+  })),
+)
+
 const MAINTENANCE_STATUS_QUERY = `query MaintenanceStatus {
   maintenanceStatus {
     isMaintenanceModeWeb
@@ -809,6 +816,9 @@ export default function App(): React.ReactNode {
           </Suspense>
           <Suspense fallback={null}>
             <AchievementWatcher />
+          </Suspense>
+          <Suspense fallback={null}>
+            <ReferralWatcher />
           </Suspense>
         </>
       )}
