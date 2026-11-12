@@ -4,6 +4,9 @@ import { SettingsIcon } from "lucide-react"
 import { toast } from "sonner"
 import { Switch } from "~/components/ui/switch"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+
+type CommentBadgeMode = "LEVEL" | "BADGE" | "OFF"
 
 /**
  * 実績の表示設定（他の人に見せない・達成のお知らせを出さない）
@@ -22,6 +25,7 @@ export function AchievementSettingsCard() {
   const save = async (next: {
     isHiddenOnProfile: boolean
     isUnlockNoticeOff: boolean
+    commentBadgeMode: CommentBadgeMode
   }) => {
     try {
       await update({
@@ -69,6 +73,12 @@ export function AchievementSettingsCard() {
     },
   ]
 
+  const commentBadgeModes: { value: CommentBadgeMode; label: string }[] = [
+    { value: "LEVEL", label: t("レベル", "Level") },
+    { value: "BADGE", label: t("バッジ", "Badge") },
+    { value: "OFF", label: t("出さない", "Nothing") },
+  ]
+
   return (
     <section className="space-y-3 rounded-2xl border bg-card p-4">
       <h2 className="flex items-center gap-2 font-bold">
@@ -96,12 +106,54 @@ export function AchievementSettingsCard() {
               void save({
                 isHiddenOnProfile: settings.isHiddenOnProfile,
                 isUnlockNoticeOff: settings.isUnlockNoticeOff,
+                commentBadgeMode: settings.commentBadgeMode,
                 [row.key]: checked,
               })
             }
           />
         </div>
       ))}
+      <div className="space-y-2 border-t pt-3">
+        <p className="font-medium text-sm">
+          {t("コメントの名前の横に出すもの", "Next to my name in comments")}
+        </p>
+        <div className="grid grid-cols-3 gap-1 rounded-xl bg-muted p-1">
+          {commentBadgeModes.map((mode) => (
+            <button
+              key={mode.value}
+              type="button"
+              aria-pressed={settings.commentBadgeMode === mode.value}
+              disabled={loading}
+              onClick={() =>
+                void save({
+                  isHiddenOnProfile: settings.isHiddenOnProfile,
+                  isUnlockNoticeOff: settings.isUnlockNoticeOff,
+                  commentBadgeMode: mode.value,
+                })
+              }
+              className={cn(
+                "rounded-lg px-2 py-1.5 font-medium text-sm transition",
+                settings.commentBadgeMode === mode.value
+                  ? "bg-background shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-muted-foreground text-xs">
+          {settings.isHiddenOnProfile
+            ? t(
+                "「プロフィールに実績を表示しない」がオンのあいだは、コメントにも出ません",
+                "Nothing is shown in comments while achievements are hidden on your profile",
+              )
+            : t(
+                "バッジは、達成した中でいちばん上のランクのものが出ます。押すとあなたの実績ページが開きます",
+                "The badge is your highest-rank achievement. Tapping it opens your achievements page",
+              )}
+        </p>
+      </div>
     </section>
   )
 }
@@ -111,6 +163,7 @@ export const achievementSettingsQuery = graphql(
     achievementSettings {
       isHiddenOnProfile
       isUnlockNoticeOff
+      commentBadgeMode
     }
   }`,
 )
@@ -121,6 +174,7 @@ const updateAchievementSettingsMutation = graphql(
       __typename
       isHiddenOnProfile
       isUnlockNoticeOff
+      commentBadgeMode
     }
   }`,
 )

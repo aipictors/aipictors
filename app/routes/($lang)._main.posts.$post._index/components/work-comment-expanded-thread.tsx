@@ -86,6 +86,7 @@ export function WorkCommentExpandedThread(
         userName={comment.user?.name}
         userIsOfficial={comment.user?.isOfficial}
         userIsModerator={comment.user?.isModerator}
+        userCommentBadge={comment.user?.commentBadge}
         commentId={comment.id}
         onDeleteComment={() => onDeleteComment(comment.id)}
         isWorkOwnerBlocked={props.isWorkOwnerBlocked}
@@ -133,6 +134,7 @@ export function WorkCommentExpandedThread(
             userName={newReply.user?.name}
             userIsOfficial={newReply.user?.isOfficial}
             userIsModerator={newReply.user?.isModerator}
+            userCommentBadge={newReply.user?.commentBadge}
             replyId={newReply.id}
             targetCommentId={comment.id}
             replyToUserName={comment.user?.name}
@@ -182,6 +184,7 @@ export function WorkCommentExpandedThread(
               userName={reply.user?.name}
               userIsOfficial={reply.user?.isOfficial}
               userIsModerator={reply.user?.isModerator}
+              userCommentBadge={reply.user?.commentBadge}
               replyId={reply.id}
               targetCommentId={comment.id}
               replyToUserName={comment.user?.name}

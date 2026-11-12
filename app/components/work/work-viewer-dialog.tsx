@@ -1,3 +1,4 @@
+import type { CommentAchievementBadge } from "~/components/achievements/comment-achievement-chip"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useTranslation } from "~/hooks/use-translation"
 import {
@@ -405,6 +406,14 @@ export function WorkViewerDialog({
                                           user: { iconUrl?: string | null }
                                         }
                                       ).user.iconUrl,
+                                      commentBadge:
+                                        (
+                                          c as {
+                                            user: {
+                                              commentBadge?: CommentAchievementBadge | null
+                                            }
+                                          }
+                                        ).user.commentBadge ?? null,
                                     }
                                   : undefined,
                                 sticker: (
@@ -877,6 +886,16 @@ const WorkCommentFragment =
       borderPadding
     }
     nanoid
+    commentBadge {
+      level
+      achievement {
+        key
+        name
+        enName
+        tier
+        isHidden
+      }
+    }
   }
   sticker {
     id

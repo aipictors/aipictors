@@ -70,6 +70,7 @@ export function WorkCommentThread(
         userName={comment.user?.name}
         userIsOfficial={comment.user?.isOfficial}
         userIsModerator={comment.user?.isModerator}
+        userCommentBadge={comment.user?.commentBadge}
         commentId={comment.id}
         isLiked={comment.isLiked && !canceledCommentIds.includes(comment.id)}
         isMuted={Boolean(comment.isMuted)}
@@ -116,6 +117,7 @@ export function WorkCommentThread(
             userName={newReply.user?.name}
             userIsOfficial={newReply.user?.isOfficial}
             userIsModerator={newReply.user?.isModerator}
+            userCommentBadge={newReply.user?.commentBadge}
             replyId={newReply.id}
             targetCommentId={comment.id}
             replyToUserName={comment.user?.name}
@@ -179,6 +181,7 @@ export function WorkCommentThread(
               userName={reply.user?.name}
               userIsOfficial={reply.user?.isOfficial}
               userIsModerator={reply.user?.isModerator}
+              userCommentBadge={reply.user?.commentBadge}
               replyId={reply.id}
               targetCommentId={comment.id}
               replyToUserName={comment.user?.name}

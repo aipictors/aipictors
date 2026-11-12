@@ -99,6 +99,9 @@ type AchievementNode {
 
 """実績の表示設定"""
 type AchievementSettingsNode {
+  """コメントの名前の横に出すもの"""
+  commentBadgeMode: CommentBadgeMode!
+
   """プロフィール・実績ページで、他の人に実績を見せない"""
   isHiddenOnProfile: Boolean!
 
@@ -905,6 +908,18 @@ type CheckedNotificationTimeNode implements Node {
 
   """種類"""
   type: NotifyCheckedType!
+}
+
+"""コメントの名前の横に出す実績"""
+enum CommentBadgeMode {
+  """いちばん上のランクのバッジ"""
+  BADGE
+
+  """実績レベル"""
+  LEVEL
+
+  """出さない"""
+  OFF
 }
 
 """コメント審査の管理項目"""
@@ -3501,6 +3516,9 @@ type Mutation {
   """お知らせをすべて確認済みにする"""
   markNotificationsAsRead: Boolean!
 
+  """お題（ユーザーイベント）を非表示にする・戻す（運営用）"""
+  moderateUserEvent(eventId: ID!, hidden: Boolean!): Boolean!
+
   """タグをミュートする"""
   muteTag(input: MuteTagInput!): MutedTagNode
 
@@ -4709,6 +4727,9 @@ type Query {
   """おすすめユーザ"""
   recommendedUsers(limit: Int!, offset: Int!): [UserNode!]!
 
+  """通報されたお題・非表示にしたお題（運営用）"""
+  reportedUserEvents(limit: Int): [ReportedUserEvent!]!
+
   """ルーキーランキング（登録から 90 日以内か、通常のランキングに入ったことがない人の作品。デイリー）。date を省くと最新の日"""
   rookieWorkAwards(
     """YYYY-MM-DD"""
@@ -4971,6 +4992,18 @@ input ReportWorkInput {
   comment: String!
   reason: ReportReason!
   workId: ID!
+}
+
+"""通報されたお題（ユーザーイベント）。運営用"""
+type ReportedUserEvent {
+  event: UserEventNode!
+  lastReportedAt: Int
+
+  """新しい順の通報理由（最大 5 件）"""
+  reasons: [String!]
+
+  """通報した人の数"""
+  reportCount: Int
 }
 
 """作品に対してBot採点機能のリクエストを行う"""
@@ -5391,6 +5424,7 @@ input UpdateAccountWebFcmTokenInput {
 }
 
 input UpdateAchievementSettingsInput {
+  commentBadgeMode: CommentBadgeMode
   isHiddenOnProfile: Boolean!
   isUnlockNoticeOff: Boolean!
 }
@@ -5782,6 +5816,15 @@ input UserBadgesWhereInput {
   userId: ID!
 }
 
+"""コメントの名前の横に出す実績"""
+type UserCommentBadgeNode {
+  """バッジを出す設定の人の実績（レベルを出す人は null）"""
+  achievement: AchievementNode
+
+  """実績レベル"""
+  level: Int!
+}
+
 """イベント文面の生成結果"""
 type UserEventContentNode {
   announcementTexts: [String!]!
@@ -5867,6 +5910,9 @@ type UserNode implements Node {
 
   """ブックマーク作品"""
   bookmarkWorks(limit: Int!, offset: Int!, where: UserWorksWhereInput): [WorkNode!]!
+
+  """コメントの名前の横に出す実績（本人が出さない設定・実績を見せない設定・実績なしなら null）"""
+  commentBadge: UserCommentBadgeNode
 
   """作成日"""
   createdAt: Int!
@@ -6875,14 +6921,14 @@ type WorkNode implements Node {
   """キャプションを本文の前（前書き）に表示するか（小説・コラム）"""
   isCaptionBeforeBody: Boolean!
 
-  """投稿者の初めての公開作品か（投稿完了画面・新人向けの案内に使う）"""
-  isFirstPost: Boolean!
-
   """コメント編集許可"""
   isCommentsEditable: Boolean!
 
   """削除済み"""
   isDeleted: Boolean!
+
+  """投稿者の初めての公開作品か（投稿完了画面・新人向けの案内に使う）"""
+  isFirstPost: Boolean!
 
   """生成画像でプロンプト公開作品かどうか"""
   isGeneration: Boolean!

@@ -64,6 +64,7 @@ export function WorkCommentNewList(
             userName={comment.user?.name}
             userIsOfficial={comment.user?.isOfficial}
             userIsModerator={comment.user?.isModerator}
+            userCommentBadge={comment.user?.commentBadge}
             commentId={comment.id}
             isLiked={
               comment.isLiked && !canceledCommentIds.includes(comment.id)

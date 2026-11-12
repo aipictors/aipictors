@@ -1,38 +1,42 @@
-import { useLocation } from "@remix-run/react"
 import { useMutation } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
+import { useLocation } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
   ArrowDownToLine,
+  CornerDownRightIcon,
   Eye,
   EyeOff,
   Heart,
   Loader2Icon,
   Reply,
   ThumbsUpIcon,
-  CornerDownRightIcon,
 } from "lucide-react"
 import React from "react"
 import { toast } from "sonner"
+import {
+  type CommentAchievementBadge,
+  CommentAchievementChip,
+} from "~/components/achievements/comment-achievement-chip"
 import { OfficialBadge } from "~/components/official-badge"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { CommentAppealDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-appeal-dialog"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import { CommentReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-report-dialog"
 import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
-import type { Comment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
+import type { Comment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
-import { toDateTimeText } from "~/utils/to-date-time-text"
 import {
   shouldAutoTranslateComment,
   translateCommentAutomatically,
 } from "~/utils/comment-auto-translate"
 import { parseLocalePath } from "~/utils/locale-path"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -44,6 +48,7 @@ type Props = {
   userName?: string
   userIsOfficial?: boolean
   userIsModerator?: boolean
+  userCommentBadge?: CommentAchievementBadge | null
   text?: string
   createdAt: number
   /** 返信先のコメントを書いた人 */
@@ -296,6 +301,10 @@ export function WorkCommentResponse(props: Props) {
             <OfficialBadge
               isOfficial={props.userIsOfficial}
               isModerator={props.userIsModerator}
+            />
+            <CommentAchievementChip
+              userId={props.userId}
+              badge={props.userCommentBadge}
             />
             <span className="text-muted-foreground text-xs">
               {toDateTimeText(props.createdAt, true)}

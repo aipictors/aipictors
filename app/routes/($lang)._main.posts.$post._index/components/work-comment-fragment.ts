@@ -30,6 +30,16 @@ export const WorkCommentFragment = graphql(
         borderPadding
       }
       nanoid
+      commentBadge {
+        level
+        achievement {
+          key
+          name
+          enName
+          tier
+          isHidden
+        }
+      }
     }
     sticker {
       id
