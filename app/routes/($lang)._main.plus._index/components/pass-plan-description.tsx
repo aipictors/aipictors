@@ -102,10 +102,13 @@ export function PassPlanDescription(props: Props) {
       ) : isFirstMonthOffer ? (
         // 初月の金額と 2 か月目からの金額を並べて書く（半額は初月だけ）
         <>
-          <p className="mt-3 flex items-baseline gap-1.5">
-            <span className="rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
+          {/* PC の 4 列ではカードが狭いので、印は金額の上の行に置く（横に並べると印が折り返す） */}
+          <p className="mt-3">
+            <span className="inline-block whitespace-nowrap rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
               {t("初月半額", "50% off 1st month")}
             </span>
+          </p>
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
             <span className="font-extrabold text-3xl text-fuchsia-600 tracking-tight dark:text-fuchsia-300">
               {`¥${toMoneyNumberText(firstMonthPrice)}`}
             </span>
