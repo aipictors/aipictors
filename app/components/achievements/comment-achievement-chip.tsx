@@ -1,6 +1,17 @@
 import { AchievementBadge } from "~/components/achievements/achievement-badge"
+import { AchievementLevelIcon } from "~/components/achievements/achievement-level-icon"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  ACHIEVEMENT_LEVEL_TIERS,
+  toAchievementLevelTier,
+} from "~/lib/achievements/achievement-level-tier"
 import { Link } from "~/lib/app/locale-router"
+import { cn } from "~/lib/utils"
 
 export type CommentAchievementBadge = {
   level: number
@@ -19,7 +30,8 @@ type Props = {
 }
 
 /**
- * コメントの名前の横に出す実績（実績レベルか、本人が選んだならバッジ）。押すとその人の実績ページへ
+ * コメントの名前の横に出す実績（実績レベルの段階の印か、本人が選んだならバッジ）。
+ * バッジは押すとその人の実績ページへ、レベルの印は押すとレベルと段階の一覧を出す
  */
 export function CommentAchievementChip(props: Props) {
   const t = useTranslation()
@@ -49,17 +61,65 @@ export function CommentAchievementChip(props: Props) {
     )
   }
 
+  const level = props.badge.level
+  const { tier, next, index } = toAchievementLevelTier(level)
+  const tierName = t(tier.name, tier.enName)
+
+  // 段階の印だけを出し、押すとレベルと段階の一覧を見せる（場所を取らず、名前の横がうるさくならないように）
   return (
-    <Link
-      to={`/achievements?user=${props.userId}`}
-      className="inline-flex h-[18px] shrink-0 items-center rounded-full border bg-muted/60 px-1.5 font-semibold text-[10px] text-muted-foreground tabular-nums leading-none transition hover:bg-muted hover:text-foreground"
-      aria-label={t(
-        `実績レベル ${props.badge.level}`,
-        `Achievement level ${props.badge.level}`,
-      )}
-      title={t("実績を見る", "View achievements")}
-    >
-      Lv.{props.badge.level}
-    </Link>
+    <Popover>
+      <PopoverTrigger
+        className="inline-flex size-[22px] shrink-0 items-center justify-center rounded-full transition hover:scale-110 hover:bg-muted"
+        aria-label={t(
+          `実績レベル ${level}（${tierName}）`,
+          `Achievement level ${level} (${tierName})`,
+        )}
+        title={t(`Lv.${level} ${tierName}`, `Lv.${level} ${tierName}`)}
+      >
+        <AchievementLevelIcon tier={tier} size={18} />
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-64 space-y-3 p-3">
+        <div className="flex items-center gap-2.5">
+          <AchievementLevelIcon tier={tier} size={36} />
+          <div className="min-w-0">
+            <p className="font-black text-lg tabular-nums leading-tight">
+              Lv.{level}
+            </p>
+            <p className="text-muted-foreground text-xs">
+              {next
+                ? t(
+                    `${tierName}・Lv.${next.minLevel} で${next.name}`,
+                    `${tierName} · ${next.enName} at Lv.${next.minLevel}`,
+                  )
+                : tierName}
+            </p>
+          </div>
+        </div>
+        <ul className="grid grid-cols-5 gap-1">
+          {ACHIEVEMENT_LEVEL_TIERS.map((item, i) => (
+            <li
+              key={item.key}
+              className={cn(
+                "flex flex-col items-center rounded-md py-1",
+                i === index ? "bg-muted ring-1 ring-border" : "",
+                i > index ? "opacity-45" : "",
+              )}
+              title={t(item.name, item.enName)}
+            >
+              <AchievementLevelIcon tier={item} size={20} />
+              <span className="mt-0.5 text-[9px] text-muted-foreground tabular-nums leading-none">
+                {item.minLevel}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <Link
+          to={`/achievements?user=${props.userId}`}
+          className="block rounded-md border py-1.5 text-center font-medium text-xs transition hover:bg-muted"
+        >
+          {t("実績を見る", "View achievements")}
+        </Link>
+      </PopoverContent>
+    </Popover>
   )
 }
