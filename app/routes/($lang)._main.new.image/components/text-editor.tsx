@@ -265,6 +265,7 @@ const RichTextEditorToolbar = ({
     editor,
     selector: ({ editor }) => ({
       h2: editor.isActive("heading", { level: 2 }),
+      bold: editor.isActive("bold"),
       blockquote: editor.isActive("blockquote"),
       canUndo: editor.can().undo(),
       canRedo: editor.can().redo(),
@@ -343,6 +344,14 @@ const RichTextEditorToolbar = ({
         >
           <Heading2 className="size-4" />
         </ToolButton>
+        <ToolButton
+          label={t("太字", "Bold")}
+          showLabel
+          isActive={active.bold}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+        >
+          <Bold className="size-4" />
+        </ToolButton>
         <ToolButton label={t("ルビ", "Ruby")} showLabel onClick={insertRuby}>
           <span className="text-[10px] leading-none">
             <ruby>
@@ -408,12 +417,6 @@ const RichTextEditorToolbar = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="z-[110]">
-            <DropdownMenuItem
-              onSelect={() => editor.chain().focus().toggleBold().run()}
-            >
-              <Bold className="mr-2 size-4" />
-              {t("太字", "Bold")}
-            </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={() => editor.chain().focus().toggleItalic().run()}
             >
