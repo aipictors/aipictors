@@ -9,6 +9,7 @@ import {
   getPromptFilter,
   getRatingFilter,
   getSearchBasePath,
+  getSearchType,
   getStyleFilter,
   getUserFilter,
   normalizeTagQuery,
@@ -45,6 +46,13 @@ test("絞り込みの値は決まったものだけ受け取る", () => {
   expect(getOrderFilter(null)).toBe("popular")
   expect(getUserFilter("123")).toBe("123")
   expect(getUserFilter("12a")).toBeNull()
+})
+
+test("検索する対象は作品・ユーザー・タグのどれか（既定は作品）", () => {
+  expect(getSearchType("users")).toBe("users")
+  expect(getSearchType("tags")).toBe("tags")
+  expect(getSearchType(null)).toBe("works")
+  expect(getSearchType("posts")).toBe("works")
 })
 
 test("ページ番号は 0 以上の整数にする", () => {

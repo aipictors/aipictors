@@ -1,13 +1,7 @@
-import Blockquote from "@tiptap/extension-blockquote"
-import CodeBlock from "@tiptap/extension-code-block"
-import HorizontalRule from "@tiptap/extension-horizontal-rule"
-import Image from "@tiptap/extension-image"
 import { EditorContent, useEditor } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
 import { BookOpenIcon, XIcon } from "lucide-react"
 import { lazy, Suspense, useEffect, useState } from "react"
-import { Markdown } from "tiptap-markdown"
-import { HidePageBreakMarkers } from "~/components/book-reader/hide-page-break-markers"
+import { createWorkMarkdownExtensions } from "~/components/book-reader/work-markdown-extensions"
 import { useTranslation } from "~/hooks/use-translation"
 import { keepMarkdownIndent } from "~/utils/keep-markdown-indent"
 import { repairMarkdownHardBreaks } from "~/utils/repair-markdown-hard-breaks"
@@ -68,35 +62,7 @@ export function WorkMarkdownView(props: Props) {
     },
     immediatelyRender: false,
     shouldRerenderOnTransaction: false,
-    extensions: [
-      StarterKit.configure({
-        orderedList: {
-          HTMLAttributes: {
-            class: "list-decimal pl-4",
-          },
-        },
-        bulletList: {
-          HTMLAttributes: {
-            class: "list-disc pl-4",
-          },
-        },
-      }),
-      Markdown,
-      Image.configure({
-        inline: true,
-        allowBase64: true,
-      }),
-      CodeBlock.configure({
-        HTMLAttributes: {
-          class: "bg-gray-800 text-white text-sm p-2 rounded-md",
-          languageClassPrefix: "language-",
-        },
-      }),
-      Blockquote,
-      HorizontalRule,
-      // 「[改ページ]」は本のように読む画面のための印なので、ここでは出さない
-      HidePageBreakMarkers,
-    ],
+    extensions: createWorkMarkdownExtensions(),
     content: keepMarkdownIndent(repairMarkdownHardBreaks(props.md ?? "")),
   })
 

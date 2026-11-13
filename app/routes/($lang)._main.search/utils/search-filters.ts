@@ -2,6 +2,8 @@ import type { WorkTextSearchOrder } from "~/lib/server/work-text-search.server"
 import { getLocalePrefix } from "~/routes/($lang)._main._index/utils/content-rating-path"
 
 export type SearchRatingFilter = "G" | "R15" | "R18"
+/** 検索した言葉で何を探すか（作品・ユーザー・タグ） */
+export type SearchType = "works" | "users" | "tags"
 export type SearchStyleFilter = "all" | "ILLUSTRATION" | "REAL"
 export type SearchPromptFilter = "all" | "with" | "without"
 export type SearchOrderFilter = WorkTextSearchOrder
@@ -38,6 +40,9 @@ export const getRatingFilter = (
 /** 検索の URL。R18 の絞り込みは /r/search、全年齢と R-15 は /search に分ける */
 export const getSearchBasePath = (pathname: string, rating: "R18" | "all") =>
   `${getLocalePrefix(pathname)}${rating === "R18" ? "/r" : ""}/search`
+
+export const getSearchType = (value: string | null): SearchType =>
+  value === "users" || value === "tags" ? value : "works"
 
 export const getStyleFilter = (value: string | null): SearchStyleFilter => {
   if (value === "ILLUSTRATION" || value === "REAL") {

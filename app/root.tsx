@@ -630,7 +630,15 @@ export function Layout(props: Props): React.ReactNode {
     <html lang={htmlLang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="viewport"
+          content={
+            // 本のように読むだけの画面は、ノッチの下まで使って余白を env(safe-area-inset-*) で取る
+            /\/posts\/[^/]+\/reader$/.test(location.pathname)
+              ? "width=device-width, initial-scale=1, viewport-fit=cover"
+              : "width=device-width, initial-scale=1"
+          }
+        />
         <Meta />
         <script
           // デプロイで古いチャンクが無くなったときに一度だけ再読み込みする

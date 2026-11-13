@@ -3,7 +3,12 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useLocation } from "@remix-run/react"
+import {
+  type ShouldRevalidateFunction,
+  useLoaderData,
+  useLocation,
+  useSearchParams,
+} from "@remix-run/react"
 import { SearchIcon } from "lucide-react"
 import { type FormEvent, useEffect, useState } from "react"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
@@ -19,10 +24,14 @@ import { SearchOrderFilters } from "~/routes/($lang)._main.search/components/sea
 import { SearchPageHeader } from "~/routes/($lang)._main.search/components/search-page-header"
 import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
 import { SearchSidebar } from "~/routes/($lang)._main.search/components/search-sidebar"
+import { SearchTagsPanel } from "~/routes/($lang)._main.search/components/search-tags-panel"
+import { SearchTypeTabs } from "~/routes/($lang)._main.search/components/search-type-tabs"
+import { SearchUsersPanel } from "~/routes/($lang)._main.search/components/search-users-panel"
 import { searchLoader } from "~/routes/($lang)._main.search/search-loader.server"
 import {
   buildSearchFilterParams,
   getSearchBasePath,
+  getSearchType,
   normalizeTagQuery,
   type SearchFilterChange,
   type SearchRatingFilter,
@@ -34,6 +43,26 @@ export async function loader(props: LoaderFunctionArgs) {
   return searchLoader(props)
 }
 
+/**
+ * 作品・ユーザー・タグの切り替え（?type=）だけのときは読み直さない（ユーザーとタグは画面側で取る）
+ */
+export const shouldRevalidate: ShouldRevalidateFunction = (props) => {
+  if (props.formMethod && props.formMethod !== "GET") {
+    return props.defaultShouldRevalidate
+  }
+  const current = new URLSearchParams(props.currentUrl.search)
+  const next = new URLSearchParams(props.nextUrl.search)
+  current.delete("type")
+  next.delete("type")
+  if (
+    props.currentUrl.pathname === props.nextUrl.pathname &&
+    current.toString() === next.toString()
+  ) {
+    return false
+  }
+  return props.defaultShouldRevalidate
+}
+
 export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
@@ -43,6 +72,11 @@ export default function SearchRoute() {
   const location = useLocation()
   const navigate = useNavigate()
   const t = useTranslation()
+  const [searchParams] = useSearchParams()
+  // 言葉がないときは作品の入口（人気のタグなど）だけ出す
+  const searchType = data.searchQuery
+    ? getSearchType(searchParams.get("type"))
+    : "works"
   const {
     isRateLimitDialogOpen,
     executeSearchWithRateLimit,
@@ -75,6 +109,13 @@ export default function SearchRoute() {
       location.pathname,
       nextRating === "R18" ? "R18" : "all",
     )
+    // 別の言葉で探し直すときは、見ているタブ（ユーザー・タグ）のまま
+    if (
+      searchType !== "works" &&
+      (next === undefined || next.rating !== undefined)
+    ) {
+      nextParams.set("type", searchType)
+    }
 
     executeSearchWithRateLimit(() => {
       // ここで R18 を選ぶ・外すのは、ヘッダーの切り替えと同じ意味にする
@@ -118,8 +159,8 @@ export default function SearchRoute() {
               value={searchText}
               onChange={(event) => setSearchText(event.target.value)}
               placeholder={t(
-                "タグ・タイトル・説明で検索",
-                "Search tags, titles and descriptions",
+                "作品・ユーザー・タグを検索",
+                "Search works, users and tags",
               )}
               className="h-12 border-0 text-base shadow-none focus-visible:ring-0"
             />
@@ -136,39 +177,61 @@ export default function SearchRoute() {
 
         <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_280px] 2xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="min-w-0">
-            <SearchPageHeader
-              data={data}
-              navigateToSearch={navigateToSearch}
-              pagePrefix={pagePrefix}
-            />
+            {data.searchQuery && <SearchTypeTabs type={searchType} />}
 
-            <ReadingWorksHint query={data.searchQuery} />
-
-            {data.searchQuery && data.textWorksCount !== null && (
-              <SearchModeTabs
-                data={data}
-                navigateToSearch={navigateToSearch}
-                textWorksCount={data.textWorksCount}
+            {searchType === "users" && data.searchQuery && (
+              <SearchUsersPanel
+                query={data.searchQuery}
+                isSensitiveMode={data.isSensitiveMode}
+                pagePrefix={pagePrefix}
               />
             )}
 
-            {data.searchQuery && (
-              <SearchOrderFilters
-                data={data}
-                navigateToSearch={navigateToSearch}
+            {searchType === "tags" && data.searchQuery && (
+              <SearchTagsPanel
+                query={data.searchQuery}
+                isSensitiveMode={data.isSensitiveMode}
+                pagePrefix={pagePrefix}
               />
             )}
 
-            <SearchFacetFilters
-              data={data}
-              navigateToSearch={navigateToSearch}
-            />
+            {searchType === "works" && (
+              <>
+                <SearchPageHeader
+                  data={data}
+                  navigateToSearch={navigateToSearch}
+                  pagePrefix={pagePrefix}
+                />
 
-            <SearchResults
-              data={data}
-              navigateToSearch={navigateToSearch}
-              pagePrefix={pagePrefix}
-            />
+                <ReadingWorksHint query={data.searchQuery} />
+
+                {data.searchQuery && data.textWorksCount !== null && (
+                  <SearchModeTabs
+                    data={data}
+                    navigateToSearch={navigateToSearch}
+                    textWorksCount={data.textWorksCount}
+                  />
+                )}
+
+                {data.searchQuery && (
+                  <SearchOrderFilters
+                    data={data}
+                    navigateToSearch={navigateToSearch}
+                  />
+                )}
+
+                <SearchFacetFilters
+                  data={data}
+                  navigateToSearch={navigateToSearch}
+                />
+
+                <SearchResults
+                  data={data}
+                  navigateToSearch={navigateToSearch}
+                  pagePrefix={pagePrefix}
+                />
+              </>
+            )}
           </div>
 
           <SearchSidebar data={data} pagePrefix={pagePrefix} />
