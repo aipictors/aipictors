@@ -48,13 +48,15 @@ export type PictorRunCallbacks = {
   onStart: () => void
   /** 得点が変わった */
   onScore: (score: number, coins: number) => void
-  /** ぶつかって終わった */
-  onGameOver: (score: number, coins: number) => void
+  /** ぶつかって終わった（durationMs = 走っていた時間） */
+  onGameOver: (score: number, coins: number, durationMs: number) => void
 }
 
 export type PictorRunGame = {
   /** 最初から走り直す */
   restart: () => void
+  /** 一時停止（止めている間も画面は描く） */
+  setPaused: (paused: boolean) => void
   dispose: () => void
 }
 
@@ -184,23 +186,42 @@ export async function createPictorRunGame(
   model.traverse((object) => {
     if (object instanceof SkinnedMesh) skinned.push(object)
   })
+  /** 表情（まばたきなど）を持つ顔のメッシュ */
+  let face: SkinnedMesh | null = null
   for (const mesh of skinned) {
     const source = mesh.material as MeshBasicMaterial
+    const isFace = mesh.morphTargetDictionary !== undefined
     const material = track(
-      source.map
-        ? new MeshToonMaterial({ gradientMap, map: source.map })
-        : new MeshToonMaterial({ gradientMap }),
+      new MeshToonMaterial({
+        gradientMap,
+        map: source.map,
+        transparent: isFace,
+        depthWrite: !isFace,
+      }),
     )
     if (source.map) track(source.map)
     source.dispose()
     mesh.material = material
     mesh.frustumCulled = false
     track(mesh.geometry)
+    if (isFace) {
+      face = mesh
+      mesh.renderOrder = 1
+      continue
+    }
 
     const outline = new SkinnedMesh(mesh.geometry, outlineMaterial)
     outline.bind(mesh.skeleton, mesh.bindMatrix)
     outline.frustumCulled = false
     mesh.parent?.add(outline)
+  }
+
+  /** 表情は 0 か 1 で切り替える（途中の値は目のくぼみが透けて見える） */
+  const setExpression = (name: string, on: boolean) => {
+    const index = face?.morphTargetDictionary?.[name]
+    if (face?.morphTargetInfluences && index !== undefined) {
+      face.morphTargetInfluences[index] = on ? 1 : 0
+    }
   }
 
   const mixer = new AnimationMixer(model)
@@ -465,10 +486,13 @@ export async function createPictorRunGame(
   let jumpsLeft = 2
   let flipTime = -1
   let overTime = 0
+  let runTime = 0
+  let paused = false
   /** ぶつかった障害物（はじき飛ばして、転んだ姿が隠れないようにする） */
   let hitObstacle: Obstacle | null = null
   let time = 0
   let currentClip: ClipName = "idle"
+  let untilBlink = 2
   /** 縦長の画面は先が見えにくいので、その分ゆっくり走る */
   let pace = 1
 
@@ -484,6 +508,8 @@ export async function createPictorRunGame(
       coin.mesh.visible = false
     }
     state = "ready"
+    runTime = 0
+    paused = false
     hitObstacle = null
     speed = 0
     distance = 0
@@ -576,6 +602,15 @@ export async function createPictorRunGame(
   }
 
   const animate = (dt: number) => {
+    // 表情: 転んだら「> <」、宙返り中はにっこり、ふだんはときどきまばたき
+    untilBlink -= dt
+    if (untilBlink < -0.12) untilBlink = 1.8 + Math.random() * 3.2
+    const isOver = state === "over"
+    const isFlipping = flipTime >= 0
+    setExpression("Fun", isOver)
+    setExpression("Joy", !isOver && isFlipping)
+    setExpression("Blink", !isOver && !isFlipping && untilBlink < 0)
+
     if (state === "ready") {
       play("idle", 0.2)
     } else if (state === "over") {
@@ -606,6 +641,7 @@ export async function createPictorRunGame(
     time += dt
 
     if (state === "running") {
+      runTime += dt
       speed = Math.min(MAX_SPEED * pace, speed + dt * 0.14 * pace)
       distance += speed * dt * 0.5
 
@@ -667,7 +703,7 @@ export async function createPictorRunGame(
         velocity = 7
         flipTime = -1
         stars.visible = true
-        callbacks.onGameOver(score(), coinCount)
+        callbacks.onGameOver(score(), coinCount, Math.round(runTime * 1000))
       }
     }
 
@@ -783,14 +819,25 @@ export async function createPictorRunGame(
     const dt = Math.min(0.034, (now - last) / 1000)
     last = now
     if (document.hidden) return
-    update(dt)
+    if (!paused) update(dt)
     renderer.render(scene, camera)
   }
 
   const isJumpKey = (event: KeyboardEvent) =>
     event.code === "Space" || event.code === "ArrowUp" || event.code === "KeyW"
+  /** チャットの入力中はキーをゲームに使わない */
+  const isTyping = (event: KeyboardEvent) => {
+    const target = event.target
+    return (
+      target instanceof HTMLElement &&
+      (target.isContentEditable ||
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT")
+    )
+  }
   const onKeyDown = (event: KeyboardEvent) => {
-    if (!isJumpKey(event)) return
+    if (!isJumpKey(event) || isTyping(event) || paused) return
     event.preventDefault()
     if (!event.repeat) press()
   }
@@ -799,6 +846,7 @@ export async function createPictorRunGame(
   }
   const onPointerDown = (event: PointerEvent) => {
     event.preventDefault()
+    if (paused) return
     press()
   }
   window.addEventListener("keydown", onKeyDown)
@@ -812,6 +860,9 @@ export async function createPictorRunGame(
 
   return {
     restart: reset,
+    setPaused: (value) => {
+      paused = value
+    },
     dispose: () => {
       disposed = true
       cancelAnimationFrame(frame)

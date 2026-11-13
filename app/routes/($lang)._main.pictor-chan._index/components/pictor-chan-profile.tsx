@@ -1,3 +1,4 @@
+import { PictorChan3dSection } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-3d-section"
 import { useTranslation } from "~/hooks/use-translation"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
@@ -139,6 +140,9 @@ simple background, white background,ahoge, full body, gravure pose, looking at v
           </div>
         </CardContent>
       </Card>
+
+      {/* ミニゲームと 3D モデルの配布 */}
+      <PictorChan3dSection />
 
       {/* Discordでの交流 */}
       <Card>

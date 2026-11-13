@@ -17,8 +17,8 @@ export const meta: MetaFunction = (props) => {
         "Pictor-chan - Aipictors Mascot Character",
       ),
       description: t(
-        "Aipictorsの公式マスコットキャラクター「ぴくたーちゃん」の紹介ページです。プロフィール、AI生成用プロンプト、LoRAモデルの配布を行っています。",
-        "Introduction page for Pictor-chan, the official mascot character of Aipictors. Features profile, AI generation prompts, and LoRA model distribution.",
+        "Aipictorsの公式マスコットキャラクター「ぴくたーちゃん」の紹介ページです。プロフィール、無料で使える3Dモデル（VRM・FBX・glTF）、ミニゲーム、AI生成用プロンプト、LoRAモデルを公開しています。",
+        "Introduction page for Pictor-chan, the official mascot character of Aipictors. Features her profile, a free 3D model (VRM, FBX, glTF), a mini game, AI generation prompts, and a LoRA model.",
       ),
     },
     undefined,

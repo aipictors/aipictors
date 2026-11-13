@@ -1,6 +1,6 @@
 # ぴくたーちゃんの 3D モデル
 
-404 ページの隠しゲーム（`app/components/pictor-run`）で使う `public/images/pictor-chan/pictor-chan-3d-v2.glb` の作り方。
+404 ページの隠しゲーム（`app/components/pictor-run`）で使う `public/images/pictor-chan/pictor-chan-3d-v3.glb` の作り方。
 Tripo（<https://developers.tripo3d.ai>、`npm install -g tripo-cli`、`tripo login --region ov`）で公式絵から作っている。1 クレジット = $0.01。
 
 | 手順 | コマンド | クレジット |
@@ -16,7 +16,7 @@ Tripo（<https://developers.tripo3d.ai>、`npm install -g tripo-cli`、`tripo lo
 ```sh
 npm i @gltf-transform/core@4
 node strip.mjs model.glb stripped.glb          # 使わない動きと目印の球を外す
-npx @gltf-transform/cli@4 optimize stripped.glb pictor-chan-3d-v2.glb \
+npx @gltf-transform/cli@4 optimize stripped.glb pictor-chan-3d-v3.glb \
   --compress meshopt --texture-compress webp --texture-size 2048 \
   --simplify false --join false --palette false --flatten false --instance false
 ```
@@ -25,3 +25,12 @@ npx @gltf-transform/cli@4 optimize stripped.glb pictor-chan-3d-v2.glb \
 - モデルは +X を向いて出てくる。ゲーム側で向きと大きさ（身長 1・足元 0）をそろえている
 - 動きごとに立ち位置が違う（run だけ前にずれている）ので、ゲーム側で腰の水平位置を固定している
 - 確認用: `blender -b -P inspect_glb.py -- in.glb out_dir`（中身の一覧と 4 方向の絵）、`blender -b -P anim_sheet.py -- in.glb out_dir`（動きごとのコマ）
+
+## v1.0（配布版）
+
+Tripo の出力を Blender で仕上げたもの（表情のシェイプキー 9 種、頂点の結合、ウェイトの直し、向きと大きさの統一、VRM / FBX / GLB / blend の書き出し）。
+手順は `v1/`（`make_dist.sh` でまとめて作り直す。中のパスは作業した Mac のものなので、動かすときは合わせる）、できたものの中身は `MODEL_INFO.md`。
+
+- 配布ファイルは R2 の `assets` バケットの `pictor-chan/3d/v1.0/`（<https://assets.aipictors.com/pictor-chan/3d/v1.0/>）。一覧は `app/lib/pictor-chan/pictor-chan-3d.ts`
+- 利用条件は `app/lib/pictor-chan/pictor-chan-license.ts`（ページ `/pictor-chan/license` と、ZIP に入れる LICENSE.txt の元）
+- ゲーム用は `web/pictor-chan-3d-v3.glb`（表情は `Face` メッシュのモーフ。0 か 1 で切り替える）
