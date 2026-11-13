@@ -80,7 +80,6 @@ export function HoverVideoImage(props: Props): React.ReactNode {
     return (
       <Link
         to={props.to}
-        prefetch="intent"
         className={cn("relative overflow-hidden", props.className)}
       >
         {imageContent}

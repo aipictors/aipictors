@@ -126,7 +126,8 @@ function NeighborLink(props: {
   return (
     <Link
       to={`/posts/${props.work.id}`}
-      prefetch="viewport"
+      // 見えただけでは読みに行かない（作品を開くたびに前後 2 作品を作っていて、ほとんど開かれなかった）
+      prefetch="intent"
       className={cn(
         "group flex min-w-0 items-center gap-2 rounded-xl border bg-card p-2 transition-colors hover:bg-muted",
         isOlder && "flex-row-reverse text-right",
