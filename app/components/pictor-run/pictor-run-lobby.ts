@@ -32,6 +32,67 @@ export const PICTOR_RUN_LOBBY_STAMPS: readonly {
   { icon: "🌙", ja: "またね", en: "See you" },
 ]
 
+/**
+ * ロビーでできる動き（番号を通信で送る。0 = なにもしていない）。
+ * 歩く・跳ぶと、やめる
+ */
+export const PICTOR_RUN_LOBBY_EMOTE = {
+  none: 0,
+  dance: 1,
+  spin: 2,
+  wave: 3,
+  sit: 4,
+} as const
+
+export const PICTOR_RUN_LOBBY_EMOTES: readonly {
+  emote: number
+  icon: string
+  ja: string
+  en: string
+}[] = [
+  {
+    emote: PICTOR_RUN_LOBBY_EMOTE.wave,
+    icon: "🙋",
+    ja: "手をふる",
+    en: "Wave",
+  },
+  {
+    emote: PICTOR_RUN_LOBBY_EMOTE.dance,
+    icon: "💃",
+    ja: "おどる",
+    en: "Dance",
+  },
+  {
+    emote: PICTOR_RUN_LOBBY_EMOTE.spin,
+    icon: "🌀",
+    ja: "くるくる",
+    en: "Spin",
+  },
+  { emote: PICTOR_RUN_LOBBY_EMOTE.sit, icon: "🪑", ja: "すわる", en: "Sit" },
+]
+
+/**
+ * 名前の上に出すステータスの、用意された文。通信では「#番号」で送り、見る人の言語で表示する。
+ * 足すときは末尾に（並びを変えると番号がずれる）。自分で書いた文は、そのまま送る（ログイン中の人だけ）
+ */
+export const PICTOR_RUN_LOBBY_STATUSES: readonly {
+  icon: string
+  ja: string
+  en: string
+}[] = [
+  { icon: "💻", ja: "作業中", en: "Working" },
+  { icon: "🎨", ja: "お絵かき中", en: "Drawing" },
+  { icon: "☕", ja: "休憩中", en: "On a break" },
+  { icon: "🍚", ja: "ごはん中", en: "Eating" },
+  { icon: "💬", ja: "話しかけてOK", en: "Up for a chat" },
+  { icon: "👀", ja: "見てるだけ", en: "Just watching" },
+  { icon: "🚪", ja: "離席中", en: "Away" },
+  { icon: "💤", ja: "ねおち", en: "Asleep" },
+]
+
+/** 自分で書くステータスの長さ */
+export const PICTOR_RUN_LOBBY_STATUS_MAX_LENGTH = 16
+
 /** スタンプを続けて出せる間隔 */
 const STAMP_INTERVAL_MS = 700
 
@@ -48,6 +109,10 @@ export type PictorRunLobbyPeer = {
   y: number
   /** 向いている角度 */
   f: number
+  /** している動き（PICTOR_RUN_LOBBY_EMOTE。0 = なし） */
+  a: number
+  /** ステータス（「#番号」= 用意された文、それ以外 = 自分で書いた文） */
+  st: string | null
 }
 
 export type PictorRunLobbyConnection = {
@@ -57,6 +122,10 @@ export type PictorRunLobbyConnection = {
   move: (x: number, z: number, y: number, f: number) => void
   /** あいさつのスタンプを出す（送れたら true。続けて押したときは false） */
   stamp: (index: number) => boolean
+  /** ロビーでの動き（おどる・すわる など）を知らせる */
+  emote: (emote: number) => void
+  /** ステータスを変える（「#番号」か、自分で書いた文。null で消す） */
+  setStatus: (status: string | null) => void
   close: () => void
 }
 
@@ -65,6 +134,8 @@ export type PictorRunLobbyConnection = {
  */
 export function connectPictorRunLobby(props: {
   mode: PictorRunLobbyMode
+  /** つないだときのステータス */
+  status: string | null
   onPeers: (peers: PictorRunLobbyPeer[]) => void
   /** ほかの人がスタンプを出した */
   onStamp: (c: number, index: number) => void
@@ -72,6 +143,8 @@ export function connectPictorRunLobby(props: {
   const peers = new Map<number, PictorRunLobbyPeer>()
   let socket: WebSocket | null = null
   let mode = props.mode
+  let status = props.status
+  let emote = 0
   let lobbyX = 0
   let lobbyZ = 0
   let closed = false
@@ -108,9 +181,10 @@ export function connectPictorRunLobby(props: {
     socket = ws
     ws.onopen = () => {
       retries = 0
-      ws.send(JSON.stringify({ t: "h", mode, auth, wp }))
+      ws.send(JSON.stringify({ t: "h", mode, auth, wp, st: status }))
       if (mode === "lobby") {
         ws.send(JSON.stringify({ t: "m", mode, x: lobbyX, z: lobbyZ }))
+        if (emote !== 0) ws.send(JSON.stringify({ t: "a", a: emote }))
       }
     }
     ws.onmessage = (event) => {
@@ -126,6 +200,8 @@ export function connectPictorRunLobby(props: {
         y?: number
         f?: number
         s?: number
+        a?: number
+        st?: string | null
       }
       try {
         message = JSON.parse(event.data)
@@ -134,9 +210,15 @@ export function connectPictorRunLobby(props: {
       }
       if (message.t === "w") {
         peers.clear()
-        for (const peer of message.peers ?? []) peers.set(peer.c, peer)
+        for (const peer of message.peers ?? []) {
+          peers.set(peer.c, { ...peer, a: peer.a ?? 0, st: peer.st ?? null })
+        }
       } else if (message.t === "j" && message.p) {
-        peers.set(message.p.c, message.p)
+        peers.set(message.p.c, {
+          ...message.p,
+          a: message.p.a ?? 0,
+          st: message.p.st ?? null,
+        })
       } else if (message.t === "l" && message.c !== undefined) {
         peers.delete(message.c)
       } else if (message.t === "e" && message.c !== undefined) {
@@ -152,8 +234,13 @@ export function connectPictorRunLobby(props: {
           peer.z = message.z ?? peer.z
           peer.y = message.y ?? 0
           peer.f = message.f ?? peer.f
+        } else if (message.t === "a") {
+          peer.a = message.a ?? 0
+        } else if (message.t === "s") {
+          peer.st = message.st ?? null
         } else if (message.t === "m" && message.mode) {
           peer.mode = message.mode
+          peer.a = 0
           peer.x = message.x ?? peer.x
           peer.z = message.z ?? peer.z
           peer.y = 0
@@ -179,6 +266,7 @@ export function connectPictorRunLobby(props: {
   return {
     setMode: (next, x = 0, z = 0) => {
       mode = next
+      emote = 0
       lobbyX = x
       lobbyZ = z
       send({ t: "m", mode: next, x, z })
@@ -198,6 +286,16 @@ export function connectPictorRunLobby(props: {
       lastStampAt = now
       send({ t: "e", s: index })
       return true
+    },
+    emote: (next) => {
+      if (next === emote) return
+      emote = next
+      send({ t: "a", a: next })
+    },
+    setStatus: (next) => {
+      if (next === status) return
+      status = next
+      send({ t: "s", st: next })
     },
     close: () => {
       closed = true

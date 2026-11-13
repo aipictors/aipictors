@@ -55,7 +55,10 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js"
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js"
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js"
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js"
-import { PICTOR_RUN_LOBBY_START } from "~/components/pictor-run/pictor-run-lobby"
+import {
+  PICTOR_RUN_LOBBY_EMOTE,
+  PICTOR_RUN_LOBBY_START,
+} from "~/components/pictor-run/pictor-run-lobby"
 import {
   createPictorRunAudio,
   type PictorRunSound,
@@ -93,6 +96,8 @@ export type PictorRunCallbacks = {
   onLobbyNear: (action: PictorRunLobbyAction | null) => void
   /** ロビーで動いた（x・z = 広場の中の位置、y = 跳んでいる高さ、f = 向いている角度） */
   onLobbyMove: (x: number, z: number, y: number, f: number) => void
+  /** ロビーでの動き（おどる・すわる など）が変わった。歩く・跳ぶと 0 に戻る */
+  onLobbyEmote: (emote: number) => void
 }
 
 /** ロビーの看板でできること */
@@ -109,6 +114,10 @@ export type PictorRunPeer = {
   y: number
   /** 向いている角度 */
   f: number
+  /** している動き（PICTOR_RUN_LOBBY_EMOTE） */
+  emote: number
+  /** 名前の上に出すステータス（走っている人は「走行中」） */
+  status: string | null
 }
 
 /** 持っているアイテム（magnet・star は残りの秒数） */
@@ -150,6 +159,10 @@ export type PictorRunGame = {
   setPeers: (peers: PictorRunPeer[]) => void
   /** ロビーで、頭の上にあいさつのふきだしを出す（key = 相手の番号。自分は null） */
   showStamp: (key: number | null, text: string) => void
+  /** ロビーで、おどる・すわる などの動きをする（0 でやめる） */
+  setLobbyEmote: (emote: number) => void
+  /** ロビーで、自分の頭の上に出すステータス */
+  setLobbyStatus: (text: string | null) => void
   /** 一時停止（止めている間も画面は描く） */
   setPaused: (paused: boolean) => void
   dispose: () => void
@@ -181,6 +194,9 @@ type Coin = { mesh: Mesh; active: boolean; x: number; y: number }
 type Pop = { mesh: Mesh; life: number }
 
 const MODEL_SCALE = 1.75
+/** すわったときに、体を上下させる量（ベンチの上・地面） */
+const SIT_BENCH_LIFT = 0.05
+const SIT_GROUND_LIFT = -0.4
 const GRAVITY = 44
 const JUMP_VELOCITY = 14
 const DOUBLE_JUMP_VELOCITY = 12
@@ -361,6 +377,100 @@ export async function createPictorRunGame(
   fit.updateMatrixWorld(true)
   const point = new Vector3()
   const hipHome = fit.worldToLocal(hip.getWorldPosition(point)).clone()
+
+  // ---- ロビーでの動き（おどる・すわる など）。待ちの動きの上から、骨を回して姿勢を作る
+  const EMOTE_BONES = [
+    "Hip",
+    "Spine01",
+    "L_Upperarm",
+    "R_Upperarm",
+    "L_Forearm",
+    "R_Forearm",
+    "L_Thigh",
+    "R_Thigh",
+    "L_Calf",
+    "R_Calf",
+  ] as const
+  type EmoteBone = (typeof EMOTE_BONES)[number]
+  type Rig = { root: Object3D; bones: Record<EmoteBone, Object3D | null> }
+  const makeRig = (root: Object3D): Rig => {
+    const bones = {} as Record<EmoteBone, Object3D | null>
+    for (const name of EMOTE_BONES) {
+      bones[name] = root.getObjectByName(name) ?? null
+    }
+    return { root, bones }
+  }
+  // モデルの中での向き: 前 = +X、上 = +Y、左手がわ = -Z
+  const AXIS_FORWARD = new Vector3(1, 0, 0)
+  const AXIS_UP = new Vector3(0, 1, 0)
+  const AXIS_SIDE = new Vector3(0, 0, 1)
+  const rigTurn = new Quaternion()
+  const parentTurn = new Quaternion()
+  const twistTurn = new Quaternion()
+  /** 骨を、体から見た軸のまわりに回す（骨ごとの軸の向きに左右されない） */
+  const twist = (rig: Rig, name: EmoteBone, axis: Vector3, angle: number) => {
+    const bone = rig.bones[name]
+    if (!bone?.parent || angle === 0) return
+    rig.root.getWorldQuaternion(rigTurn)
+    bone.parent.getWorldQuaternion(parentTurn)
+    twistTurn.setFromAxisAngle(axis, angle)
+    twistTurn.premultiply(rigTurn).multiply(rigTurn.invert())
+    twistTurn.multiply(parentTurn).premultiply(parentTurn.invert())
+    bone.quaternion.premultiply(twistTurn)
+  }
+  /**
+   * 動きの姿勢を付ける（w = かかり具合 0〜1、bench = ベンチの上）。体を上下させる量を返す。
+   * 腰の回転は全身に効くので、手足のあとに付ける
+   */
+  const poseEmote = (
+    rig: Rig,
+    emote: number,
+    t: number,
+    w: number,
+    bench: boolean,
+  ) => {
+    if (emote === PICTOR_RUN_LOBBY_EMOTE.dance) {
+      const swing = Math.sin(t * 6.6)
+      twist(rig, "L_Upperarm", AXIS_FORWARD, w * (1.05 + 0.6 * swing))
+      twist(rig, "R_Upperarm", AXIS_FORWARD, -w * (1.05 - 0.6 * swing))
+      twist(rig, "L_Forearm", AXIS_FORWARD, w * 0.5)
+      twist(rig, "R_Forearm", AXIS_FORWARD, -w * 0.5)
+      twist(rig, "Spine01", AXIS_FORWARD, w * 0.16 * swing)
+      twist(rig, "Hip", AXIS_UP, w * 0.35 * Math.sin(t * 3.3))
+      return w * 0.1 * Math.abs(Math.sin(t * 6.6))
+    }
+    if (emote === PICTOR_RUN_LOBBY_EMOTE.spin) {
+      twist(rig, "L_Upperarm", AXIS_FORWARD, w * 1.9)
+      twist(rig, "R_Upperarm", AXIS_FORWARD, -w * 1.9)
+      twist(rig, "Hip", AXIS_UP, w * t * 5.4)
+      return w * 0.06 * Math.abs(Math.sin(t * 5.4))
+    }
+    if (emote === PICTOR_RUN_LOBBY_EMOTE.wave) {
+      // 右手を横に上げてから前へ出し（髪にかくれないように）、ひじから先をふる
+      twist(rig, "R_Upperarm", AXIS_FORWARD, -w * 1.1)
+      twist(rig, "R_Upperarm", AXIS_UP, w * 0.75)
+      twist(
+        rig,
+        "R_Forearm",
+        AXIS_FORWARD,
+        -w * (1.0 + 0.45 * Math.sin(t * 10)),
+      )
+      twist(rig, "Spine01", AXIS_FORWARD, -w * 0.06)
+      return 0
+    }
+    if (emote === PICTOR_RUN_LOBBY_EMOTE.sit) {
+      // ベンチでは、ひざから下をおろす。地面では、足を前に投げ出す
+      twist(rig, "L_Thigh", AXIS_SIDE, w * 1.45)
+      twist(rig, "R_Thigh", AXIS_SIDE, w * 1.45)
+      twist(rig, "L_Calf", AXIS_SIDE, -w * (bench ? 1.4 : 0.12))
+      twist(rig, "R_Calf", AXIS_SIDE, -w * (bench ? 1.4 : 0.12))
+      twist(rig, "L_Upperarm", AXIS_FORWARD, -w * 0.3)
+      twist(rig, "R_Upperarm", AXIS_FORWARD, w * 0.3)
+      return w * (bench ? SIT_BENCH_LIFT : SIT_GROUND_LIFT)
+    }
+    return 0
+  }
+  const playerRig = makeRig(model)
 
   /** 位置と、転んだときの回転 */
   const player = new Group()
@@ -1153,6 +1263,17 @@ export async function createPictorRunGame(
   const lobbyStick = { x: 0, z: 0 }
   const lobbyKeys = { left: false, right: false, up: false, down: false }
   let lobbyNear: PictorRunLobbyAction | null = null
+  /** している動き（PICTOR_RUN_LOBBY_EMOTE）と、始めてからの秒数 */
+  let lobbyEmote = 0
+  let emoteTime = 0
+  /** 姿勢に出している動きと、そのかかり具合（やめたあと、なめらかに戻すために持つ） */
+  let emoteShown = 0
+  let emoteWeight = 0
+  let emoteLift = 0
+  /** ベンチのすわる場所（1 脚に 2 人） */
+  const LOBBY_SEATS: { x: number; z: number; f: number }[] = []
+  const isOnBench = (x: number, z: number) =>
+    LOBBY_SEATS.some((seat) => Math.hypot(seat.x - x, seat.z - z) < 0.4)
   const lobbySent = { x: 0, z: 0, y: 0, f: 0 }
   const lobbyAmbient = new AmbientLight(0xfff2f6, lite ? 1.7 : 0.3)
   const lobbySun = new DirectionalLight(0xffead6, lite ? 1.3 : 1.5)
@@ -1293,6 +1414,14 @@ export async function createPictorRunGame(
       )
       bench.rotation.y = angle
       lobbyScene.add(bench)
+      for (const side of [-0.42, 0.42]) {
+        LOBBY_SEATS.push({
+          x: sin * (LOBBY_RADIUS - 1.1) + cos * side,
+          z: cos * (LOBBY_RADIUS - 1.1) - sin * side,
+          // 広場のまん中を向いてすわる
+          f: angle + Math.PI,
+        })
+      }
     } else {
       const lamp = new Group()
       const pole = new Mesh(lampPole, lampMaterial)
@@ -1573,6 +1702,11 @@ export async function createPictorRunGame(
     labelTexture: CanvasTexture
     labelKey: string
     bubble: Bubble
+    rig: Rig
+    emote: number
+    emoteTime: number
+    emoteShown: number
+    emoteWeight: number
     /** つながっている相手の番号（空きは null） */
     peer: number | null
     ghost: boolean
@@ -1609,7 +1743,7 @@ export async function createPictorRunGame(
     const turn = new Group()
     turn.scale.setScalar(MODEL_SCALE * 0.94)
     turn.add(lift)
-    const labelTexture = track(canvasTexture(288, 72, () => {}))
+    const labelTexture = track(canvasTexture(288, 116, () => {}))
     const label = new Sprite(
       track(
         new SpriteMaterial({
@@ -1620,8 +1754,10 @@ export async function createPictorRunGame(
         }),
       ),
     )
-    label.scale.set(1.9, 0.475, 1)
-    label.position.y = 2.15
+    // 上の段 = ステータス、下の段 = 名前。下のふちを頭の上に合わせる
+    label.center.set(0.5, 0)
+    label.scale.set(1.9, (1.9 * 116) / 288, 1)
+    label.position.y = 1.91
     label.renderOrder = 15
     const bubble = makeBubble()
     bubble.sprite.position.y = 2.42
@@ -1656,6 +1792,11 @@ export async function createPictorRunGame(
       labelTexture,
       labelKey: "",
       bubble,
+      rig: makeRig(copy),
+      emote: 0,
+      emoteTime: 0,
+      emoteShown: 0,
+      emoteWeight: 0,
       peer: null,
       ghost: false,
       x: 0,
@@ -1667,31 +1808,72 @@ export async function createPictorRunGame(
       f: 0,
     }
   }
+  /** ステータスの札（走っている人はオレンジ） */
+  const drawStatus = (
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    playing: boolean,
+    top: number,
+  ) => {
+    ctx.font = "800 22px system-ui, sans-serif"
+    let shown = text
+    while (shown.length > 1 && ctx.measureText(shown).width > 250) {
+      shown = `${shown.slice(0, -2)}…`
+    }
+    const width = Math.min(284, ctx.measureText(shown).width + 30)
+    ctx.fillStyle = playing ? "#ff8a1f" : "#fffdf6"
+    roundRect(ctx, (288 - width) / 2, top, width, 38, 19)
+    ctx.fill()
+    ctx.fillStyle = playing ? "#ffffff" : "#1c2340"
+    ctx.textBaseline = "middle"
+    ctx.textAlign = "center"
+    ctx.fillText(shown, 144, top + 20)
+  }
+  /** 自分のステータス（頭の上に出す） */
+  const selfTagTexture = track(canvasTexture(288, 44, () => {}))
+  const selfTag = new Sprite(
+    track(
+      new SpriteMaterial({
+        map: selfTagTexture,
+        transparent: true,
+        depthTest: false,
+        fog: false,
+      }),
+    ),
+  )
+  selfTag.center.set(0.5, 0)
+  selfTag.scale.set(1.9, (1.9 * 44) / 288, 1)
+  selfTag.renderOrder = 15
+  selfTag.visible = false
+  lobbyScene.add(selfTag)
+  let selfStatus: string | null = null
   const drawLabel = (avatar: Avatar, peer: PictorRunPeer) => {
-    const key = `${peer.name}|${peer.iconUrl}|${peer.playing}`
+    const key = `${peer.name}|${peer.iconUrl}|${peer.playing}|${peer.status}`
     if (key === avatar.labelKey) return
     avatar.labelKey = key
+    avatar.bubble.sprite.position.y = peer.status ? 2.74 : 2.42
     const canvas = avatar.labelTexture.image as HTMLCanvasElement
     const ctx = canvas.getContext("2d")
     if (!ctx) return
     const paint = (icon: HTMLImageElement | null) => {
-      ctx.clearRect(0, 0, 288, 72)
+      ctx.clearRect(0, 0, 288, 116)
+      ctx.textBaseline = "middle"
+      if (peer.status) drawStatus(ctx, peer.status, peer.playing, 2)
       ctx.font = "800 26px system-ui, sans-serif"
       let name = peer.name
-      while (name.length > 1 && ctx.measureText(name).width > 170) {
+      while (name.length > 1 && ctx.measureText(name).width > 190) {
         name = `${name.slice(0, -2)}…`
       }
-      const text = peer.playing ? `${name} 🏃` : name
-      const width = Math.min(280, ctx.measureText(text).width + 84)
+      const width = Math.min(280, ctx.measureText(name).width + 84)
       const left = (288 - width) / 2
       ctx.fillStyle = peer.playing
-        ? "rgba(40,48,80,0.55)"
+        ? "rgba(40,48,80,0.6)"
         : "rgba(24,30,64,0.82)"
-      roundRect(ctx, left, 8, width, 56, 28)
+      roundRect(ctx, left, 52, width, 56, 28)
       ctx.fill()
       ctx.save()
       ctx.beginPath()
-      ctx.arc(left + 30, 36, 22, 0, Math.PI * 2)
+      ctx.arc(left + 30, 80, 22, 0, Math.PI * 2)
       ctx.closePath()
       ctx.fillStyle = "#c7d2ee"
       ctx.fill()
@@ -1705,16 +1887,15 @@ export async function createPictorRunGame(
           size,
           size,
           left + 8,
-          14,
+          58,
           44,
           44,
         )
       }
       ctx.restore()
       ctx.fillStyle = "#ffffff"
-      ctx.textBaseline = "middle"
       ctx.textAlign = "left"
-      ctx.fillText(text, left + 60, 38)
+      ctx.fillText(name, left + 60, 82)
       avatar.labelTexture.needsUpdate = true
     }
     paint(null)
@@ -1781,9 +1962,14 @@ export async function createPictorRunGame(
         avatar.turn.rotation.y = avatar.f
         for (const material of avatar.materials) {
           material.transparent = true
-          material.opacity = peer.playing ? 0.38 : 1
+          material.opacity = peer.playing ? 0.45 : 1
           material.depthWrite = true
         }
+      }
+      const emote = peer.playing ? 0 : peer.emote
+      if (emote !== avatar.emote) {
+        avatar.emote = emote
+        avatar.emoteTime = 0
       }
       drawLabel(avatar, peer)
     }
@@ -1801,7 +1987,14 @@ export async function createPictorRunGame(
         Math.hypot(avatar.x - beforeX, avatar.z - beforeZ) /
           Math.max(dt, 0.001) >
         0.5
-      const next = avatar.y > 0.08 ? "jump" : moving ? "run" : "idle"
+      // 走っている人は、その場で走る姿にする
+      const next = avatar.ghost
+        ? "run"
+        : avatar.y > 0.08
+          ? "jump"
+          : moving
+            ? "run"
+            : "idle"
       if (next !== avatar.clip) {
         const action = avatar.actions[next]
         action.reset()
@@ -1814,7 +2007,26 @@ export async function createPictorRunGame(
         avatar.clip = next
       }
       avatar.mixer.update(dt)
-      avatar.root.position.set(avatar.x, avatar.y, avatar.z)
+      // おどる・すわる などの姿勢
+      avatar.emoteTime += dt
+      if (avatar.emote !== 0 && next === "idle") {
+        avatar.emoteShown = avatar.emote
+        avatar.emoteWeight = damp(avatar.emoteWeight, 1, 9, dt)
+      } else {
+        avatar.emoteWeight = damp(avatar.emoteWeight, 0, 12, dt)
+        if (avatar.emoteWeight < 0.02) avatar.emoteShown = 0
+      }
+      const lift =
+        avatar.emoteShown === 0
+          ? 0
+          : poseEmote(
+              avatar.rig,
+              avatar.emoteShown,
+              avatar.emoteTime,
+              avatar.emoteWeight,
+              isOnBench(avatar.targetX, avatar.targetZ),
+            )
+      avatar.root.position.set(avatar.x, avatar.y + lift * 0.94, avatar.z)
       avatar.turn.rotation.y = dampAngle(
         avatar.turn.rotation.y,
         avatar.f,
@@ -1841,6 +2053,15 @@ export async function createPictorRunGame(
     if (strength > 1) {
       inputX /= strength
       inputZ /= strength
+    }
+    // 歩きだしたら、動きをやめる。手をふるのは、少ししたら自分でやめる
+    emoteTime += dt
+    if (
+      lobbyEmote !== 0 &&
+      (strength > 0.2 ||
+        (lobbyEmote === PICTOR_RUN_LOBBY_EMOTE.wave && emoteTime > 2.6))
+    ) {
+      setLobbyEmote(0)
     }
     lobbyVelocity.x = damp(lobbyVelocity.x, inputX * 5.6, 12, dt)
     lobbyVelocity.z = damp(lobbyVelocity.z, inputZ * 5.6, 12, dt)
@@ -1905,6 +2126,41 @@ export async function createPictorRunGame(
     updateAvatars(dt)
   }
   /** 走る道の場面に戻す */
+  const setLobbyEmote = (emote: number) => {
+    if (state !== "lobby" && emote !== 0) return
+    if (emote === lobbyEmote) return
+    if (emote === PICTOR_RUN_LOBBY_EMOTE.sit) {
+      // 近くのベンチがあいていれば、そこへ。なければ、その場の地面にすわる
+      let best: (typeof LOBBY_SEATS)[number] | null = null
+      let bestFar = 1.9
+      for (const seat of LOBBY_SEATS) {
+        const far = Math.hypot(
+          seat.x - lobbyPosition.x,
+          seat.z - lobbyPosition.z,
+        )
+        const taken = avatars.some(
+          (avatar) =>
+            avatar.peer !== null &&
+            !avatar.ghost &&
+            Math.hypot(seat.x - avatar.targetX, seat.z - avatar.targetZ) < 0.3,
+        )
+        if (far < bestFar && !taken) {
+          best = seat
+          bestFar = far
+        }
+      }
+      if (best) {
+        lobbyPosition.x = best.x
+        lobbyPosition.z = best.z
+        lobbyYaw = best.f
+      }
+      lobbyVelocity.x = 0
+      lobbyVelocity.z = 0
+    }
+    lobbyEmote = emote
+    emoteTime = 0
+    callbacks.onLobbyEmote(emote)
+  }
   const leaveLobbyScene = () => {
     if (activeScene === lobbyScene) {
       activeScene = scene
@@ -1912,6 +2168,14 @@ export async function createPictorRunGame(
       shadow.position.z = 0
     }
     selfBubble.sprite.visible = false
+    selfTag.visible = false
+    if (lobbyEmote !== 0) {
+      lobbyEmote = 0
+      callbacks.onLobbyEmote(0)
+    }
+    emoteShown = 0
+    emoteWeight = 0
+    emoteLift = 0
     lobbySpeed = 0
     lobbyVelocity.x = 0
     lobbyVelocity.z = 0
@@ -2034,6 +2298,8 @@ export async function createPictorRunGame(
       return
     }
     if ((state !== "running" && state !== "lobby") || jumpsLeft <= 0) return
+    // 跳ぶと、おどる・すわる などをやめる
+    if (state === "lobby" && lobbyEmote !== 0) setLobbyEmote(0)
     // 土けむりやきらめきは、走る道の上でだけ出す
     const onPath = state === "running"
     if (jumpsLeft === 2 && y <= 0.001) {
@@ -2073,9 +2339,15 @@ export async function createPictorRunGame(
     if (untilBlink < -0.12) untilBlink = 1.8 + Math.random() * 3.2
     const isOver = state === "over"
     const isFlipping = flipTime >= 0
+    // おどっている・手をふっている間も、にっこり
+    const isHappy =
+      isFlipping ||
+      (state === "lobby" &&
+        lobbyEmote !== 0 &&
+        lobbyEmote !== PICTOR_RUN_LOBBY_EMOTE.sit)
     setExpression("Fun", isOver)
-    setExpression("Joy", !isOver && isFlipping)
-    setExpression("Blink", !isOver && !isFlipping && untilBlink < 0)
+    setExpression("Joy", !isOver && isHappy)
+    setExpression("Blink", !isOver && !isHappy && untilBlink < 0)
 
     if (state === "ready") {
       play("idle", 0.2)
@@ -2096,6 +2368,25 @@ export async function createPictorRunGame(
         0.75 + (state === "lobby" ? lobbySpeed : speed) * 0.055
     }
     mixer.update(dt)
+
+    // ロビーでの動き（おどる・すわる など）の姿勢を、待ちの動きの上に付ける
+    if (state === "lobby" && lobbyEmote !== 0 && currentClip === "idle") {
+      emoteShown = lobbyEmote
+      emoteWeight = damp(emoteWeight, 1, 9, dt)
+    } else {
+      emoteWeight = damp(emoteWeight, 0, 12, dt)
+      if (emoteWeight < 0.02) emoteShown = 0
+    }
+    emoteLift =
+      emoteShown === 0
+        ? 0
+        : poseEmote(
+            playerRig,
+            emoteShown,
+            emoteTime,
+            emoteWeight,
+            isOnBench(lobbyPosition.x, lobbyPosition.z),
+          )
 
     // 動きごとに立ち位置がずれているので、腰の位置（水平）をそろえる
     model.position.x = 0
@@ -2360,7 +2651,17 @@ export async function createPictorRunGame(
     if (state === "lobby") {
       player.position.x = lobbyPosition.x
       player.position.z = lobbyPosition.z
-      selfBubble.sprite.position.set(lobbyPosition.x, y + 2.3, lobbyPosition.z)
+      player.position.y = y + emoteLift
+      selfTag.position.set(
+        lobbyPosition.x,
+        y + emoteLift + 1.93,
+        lobbyPosition.z,
+      )
+      selfBubble.sprite.position.set(
+        lobbyPosition.x,
+        y + emoteLift + (selfStatus ? 2.26 : 2.0),
+        lobbyPosition.z,
+      )
       updateBubble(selfBubble)
     }
     if (state === "over") {
@@ -2718,6 +3019,7 @@ void main() {
       activeScene = lobbyScene
       lobbyScene.environment = scene.environment
       lobbyScene.add(player, fxPoints, shadow)
+      selfTag.visible = selfStatus !== null
       clearFx()
       audio.setSong(1)
       assignAvatars()
@@ -2742,6 +3044,17 @@ void main() {
       const avatar = avatars.find((item) => item.peer === key)
       // 走っている人（薄い姿）は、ロビーにいないので出さない
       if (avatar && !avatar.ghost) showBubble(avatar.bubble, text)
+    },
+    setLobbyEmote,
+    setLobbyStatus: (text) => {
+      selfStatus = text
+      const ctx = (selfTagTexture.image as HTMLCanvasElement).getContext("2d")
+      if (ctx) {
+        ctx.clearRect(0, 0, 288, 44)
+        if (text) drawStatus(ctx, text, false, 3)
+        selfTagTexture.needsUpdate = true
+      }
+      selfTag.visible = text !== null && state === "lobby"
     },
     setPaused: (value) => {
       paused = value

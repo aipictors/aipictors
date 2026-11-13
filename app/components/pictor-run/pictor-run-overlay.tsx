@@ -5,6 +5,7 @@ import {
   MessageCircleIcon,
   PauseIcon,
   PlayIcon,
+  TagIcon,
   TrophyIcon,
   Volume2Icon,
   VolumeXIcon,
@@ -33,7 +34,11 @@ import type {
 } from "~/components/pictor-run/pictor-run-game.client"
 import {
   connectPictorRunLobby,
+  PICTOR_RUN_LOBBY_EMOTE,
+  PICTOR_RUN_LOBBY_EMOTES,
   PICTOR_RUN_LOBBY_STAMPS,
+  PICTOR_RUN_LOBBY_STATUS_MAX_LENGTH,
+  PICTOR_RUN_LOBBY_STATUSES,
   PICTOR_RUN_LOBBY_START,
   type PictorRunLobbyConnection,
 } from "~/components/pictor-run/pictor-run-lobby"
@@ -68,6 +73,16 @@ const BEST_KEY = "pictor-run-best"
 const BEST_STAGE_KEY = "pictor-run-best-stage"
 const LITE_KEY = "pictor-run-lite"
 const SOUND_KEY = "pictor-run-sound"
+/** ロビーで名前の上に出すステータス（「#番号」か、自分で書いた文） */
+const STATUS_KEY = "pictor-run-status"
+
+function loadStatus(): string | null {
+  try {
+    return window.localStorage.getItem(STATUS_KEY) || null
+  } catch {
+    return null
+  }
+}
 const PANEL_KEY = "pictor-run-panel"
 const DESKTOP_QUERY = "(min-width: 1024px)"
 const MAX_MESSAGES = 200
@@ -233,6 +248,24 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [lobbyNear, setLobbyNear] = useState<PictorRunLobbyAction | null>(null)
   /** ほかの人の数（ロビーにいる人・いま走っている人） */
   const [crowd, setCrowd] = useState({ lobby: 0, playing: 0 })
+  /** ロビーでしている動き（おどる・すわる など） */
+  const [emote, setEmote] = useState(0)
+  /** ロビーで名前の上に出すステータス */
+  const [status, setStatus] = useState<string | null>(loadStatus)
+  const [isStatusOpen, setIsStatusOpen] = useState(false)
+  const [statusDraft, setStatusDraft] = useState("")
+  /** ステータスの文字（用意された文は、見ている人の言語で） */
+  const toStatusText = (value: string | null) => {
+    if (value === null) return null
+    const preset = /^#(\d+)$/.exec(value)
+    if (!preset) return value
+    const item = PICTOR_RUN_LOBBY_STATUSES[Number(preset[1])]
+    return item ? `${item.icon} ${t(item.ja, item.en)}` : null
+  }
+  const toStatusTextRef = useRef(toStatusText)
+  toStatusTextRef.current = toStatusText
+  const statusRef = useRef(status)
+  statusRef.current = status
   const lobbyRef = useRef<PictorRunLobbyConnection | null>(null)
   const [lite, setLite] = useState(readLite)
   /** 今いるステージ（0 始まりの通し番号） */
@@ -377,6 +410,10 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           onItems: setItems,
           onLobbyNear: setLobbyNear,
           onLobbyMove: (x, z, y, f) => lobbyRef.current?.move(x, z, y, f),
+          onLobbyEmote: (next) => {
+            setEmote(next)
+            lobbyRef.current?.emote(next)
+          },
           onGameOver: (finalScore, finalCoins, durationMs) => {
             const previous = readBest()
             setIsNewBest(finalScore > previous)
@@ -457,8 +494,10 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   // （だれも動いていない間は、サーバー側は眠っていて料金がかからない）
   useEffect(() => {
     if (!isGameReady) return
+    gameRef.current?.setLobbyStatus(toStatusTextRef.current(statusRef.current))
     const connection = connectPictorRunLobby({
       mode: "run",
+      status: statusRef.current,
       onPeers: (peers) => {
         gameRef.current?.setPeers(
           peers.map((peer) => ({
@@ -470,6 +509,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             z: peer.z ?? 0,
             y: peer.y,
             f: peer.f,
+            emote: peer.a,
+            // 走っている人は、薄い姿に「走行中」の札を付けて出す
+            status:
+              peer.mode === "run"
+                ? t("🏃 走行中", "🏃 Running")
+                : toStatusTextRef.current(peer.st),
           })),
         )
         const lobby = peers.filter((peer) => peer.mode === "lobby").length
@@ -641,6 +686,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
 
   const retry = () => {
     if (phaseRef.current === "lobby") lobbyRef.current?.setMode("run")
+    setIsStatusOpen(false)
     gameRef.current?.restart()
     // 遊ぶたびに、飾る作品を選び直す
     gameRef.current?.setArtworks(
@@ -707,6 +753,57 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     gameRef.current?.showStamp(null, text)
     gameRef.current?.playSound("ui")
   }
+  /** ステータスを変える（null で消す）。次に開いたときも同じものを出す */
+  const changeStatus = (next: string | null) => {
+    setStatus(next)
+    setIsStatusOpen(false)
+    try {
+      if (next === null) window.localStorage.removeItem(STATUS_KEY)
+      else window.localStorage.setItem(STATUS_KEY, next)
+    } catch {
+      // 保存できなくても、この回は出せる
+    }
+    lobbyRef.current?.setStatus(next)
+    gameRef.current?.setLobbyStatus(toStatusText(next))
+  }
+  /** おどる・すわる などの動き（もう一度押すとやめる） */
+  const lobbyEmotes = (
+    <ul
+      aria-label={t("動き", "Motions")}
+      className="pointer-events-auto grid w-full max-w-sm grid-cols-4 gap-1 md:flex md:w-auto md:max-w-none md:justify-center md:gap-2"
+    >
+      {PICTOR_RUN_LOBBY_EMOTES.map((item) => {
+        const isOn = emote === item.emote
+        const isSit = item.emote === PICTOR_RUN_LOBBY_EMOTE.sit
+        return (
+          <li key={item.emote} className="min-w-0">
+            <button
+              type="button"
+              aria-pressed={isOn}
+              onClick={(event) => {
+                event.currentTarget.blur()
+                gameRef.current?.setLobbyEmote(isOn ? 0 : item.emote)
+                gameRef.current?.playSound("ui")
+              }}
+              className={cn(
+                "flex h-9 w-full cursor-pointer items-center justify-center gap-0.5 whitespace-nowrap rounded-full px-1 font-bold text-[11px] tracking-tighter shadow-sm transition-transform active:scale-90 md:h-10 md:gap-1 md:px-4 md:text-sm md:tracking-normal",
+                isOn
+                  ? "bg-amber-400 text-slate-900"
+                  : "bg-slate-900/70 text-white hover:bg-slate-900/85",
+              )}
+            >
+              <span aria-hidden="true" className="text-xs md:text-base">
+                {item.icon}
+              </span>
+              <span>
+                {isOn && isSit ? t("立つ", "Stand") : t(item.ja, item.en)}
+              </span>
+            </button>
+          </li>
+        )
+      })}
+    </ul>
+  )
   /** 押すだけで出せる、あいさつのスタンプ */
   const lobbyStamps = (
     <ul
@@ -1290,6 +1387,113 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   )}
                 </span>
               </p>
+              <button
+                type="button"
+                aria-expanded={isStatusOpen}
+                onClick={(event) => {
+                  event.currentTarget.blur()
+                  setStatusDraft(
+                    status !== null && !status.startsWith("#") ? status : "",
+                  )
+                  setIsStatusOpen(!isStatusOpen)
+                }}
+                className="pointer-events-auto flex h-8 max-w-full cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3.5 font-bold text-slate-800 text-xs shadow-sm hover:bg-white"
+              >
+                <TagIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                <span className="truncate">
+                  {toStatusText(status) ??
+                    t("ステータスを付ける", "Set a status")}
+                </span>
+              </button>
+              {isStatusOpen && (
+                <div className="fade-in slide-in-from-top-2 pointer-events-auto w-80 max-w-full animate-in space-y-3 rounded-3xl bg-white/95 p-4 text-left shadow-xl backdrop-blur duration-200">
+                  <p className="font-black text-sm">
+                    {t(
+                      "名前の上に出すステータス",
+                      "Status shown above your name",
+                    )}
+                  </p>
+                  <ul className="grid grid-cols-2 gap-1.5">
+                    {PICTOR_RUN_LOBBY_STATUSES.map((item, index) => (
+                      <li key={item.ja}>
+                        <button
+                          type="button"
+                          aria-pressed={status === `#${index}`}
+                          onClick={() => changeStatus(`#${index}`)}
+                          className={cn(
+                            "flex h-9 w-full cursor-pointer items-center gap-1.5 rounded-full px-3 font-bold text-xs transition-colors",
+                            status === `#${index}`
+                              ? "bg-clear-bright-blue text-white"
+                              : "bg-slate-100 text-slate-800 hover:bg-slate-200",
+                          )}
+                        >
+                          <span aria-hidden="true">{item.icon}</span>
+                          <span className="truncate">
+                            {t(item.ja, item.en)}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  {viewerId !== null ? (
+                    <form
+                      className="flex gap-1.5"
+                      onSubmit={(event) => {
+                        event.preventDefault()
+                        const text = statusDraft.trim()
+                        changeStatus(
+                          text === "" || text.startsWith("#") ? null : text,
+                        )
+                      }}
+                    >
+                      <input
+                        value={statusDraft}
+                        onChange={(event) => setStatusDraft(event.target.value)}
+                        maxLength={PICTOR_RUN_LOBBY_STATUS_MAX_LENGTH}
+                        placeholder={t(
+                          "自分で書く（16 文字まで）",
+                          "Write your own (16 chars)",
+                        )}
+                        aria-label={t(
+                          "ステータスを自分で書く",
+                          "Write your own status",
+                        )}
+                        className="h-9 min-w-0 flex-1 select-text rounded-full border border-slate-300 bg-white px-3 text-sm outline-none focus:border-clear-bright-blue"
+                      />
+                      <button
+                        type="submit"
+                        className="h-9 shrink-0 cursor-pointer rounded-full bg-slate-900 px-4 font-bold text-white text-xs hover:opacity-85"
+                      >
+                        {t("決定", "Set")}
+                      </button>
+                    </form>
+                  ) : (
+                    <p className="text-slate-500 text-xs">
+                      {t(
+                        "ログインすると、自分で書いたステータスも出せます",
+                        "Log in to write your own status",
+                      )}
+                    </p>
+                  )}
+                  <div className="flex justify-between">
+                    <button
+                      type="button"
+                      onClick={() => changeStatus(null)}
+                      disabled={status === null}
+                      className="h-8 cursor-pointer rounded-full px-3 font-bold text-rose-600 text-xs hover:bg-rose-50 disabled:cursor-default disabled:opacity-40"
+                    >
+                      {t("ステータスを消す", "Clear status")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsStatusOpen(false)}
+                      className="h-8 cursor-pointer rounded-full px-3 font-bold text-slate-600 text-xs hover:bg-slate-100"
+                    >
+                      {t("とじる", "Close")}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] flex flex-col items-center gap-3 px-4">
               {lobbyNear && (
@@ -1309,6 +1513,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 </button>
               )}
               {/* スマホでは、スタンプをスティックの上に並べる */}
+              {!isDesktop && lobbyEmotes}
               {!isDesktop && lobbyStamps}
               <div className="flex w-full items-end justify-between gap-3 px-1">
                 <div
@@ -1335,6 +1540,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 </div>
                 {isDesktop && (
                   <div className="flex min-w-0 flex-col items-center gap-2 pb-1">
+                    {lobbyEmotes}
                     {lobbyStamps}
                     <p className="rounded-full bg-white/75 px-4 py-1 text-center font-bold text-xs">
                       {t(
