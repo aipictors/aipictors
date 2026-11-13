@@ -1,0 +1,52 @@
+diff --git a/server.js b/server.js
+index 54545c0be6d8100dba4285e7e108a710d27a2ff3..8c35df792e1f10714331f44ad29c23d9bf173ecd 100644
+--- a/server.js
++++ b/server.js
+@@ -189,9 +189,19 @@ function createStaticHandler(routes, opts) {
+     mapRouteProperties: reactRouter.UNSAFE_mapRouteProperties
+   });
+ }
++const dataRoutesCache = new WeakMap();
+ function createStaticRouter(routes, context, opts = {}) {
+-  let manifest = {};
+-  let dataRoutes = router.UNSAFE_convertRoutesToDataRoutes(routes, reactRouter.UNSAFE_mapRouteProperties, undefined, manifest);
++  // aipictors: 同じルート表なら変換したものを使い回す（ルート照合の結果も使い回せる）
++  let cachedDataRoutes = dataRoutesCache.get(routes);
++  if (!cachedDataRoutes) {
++    let manifest = {};
++    cachedDataRoutes = {
++      manifest,
++      dataRoutes: router.UNSAFE_convertRoutesToDataRoutes(routes, reactRouter.UNSAFE_mapRouteProperties, undefined, manifest)
++    };
++    dataRoutesCache.set(routes, cachedDataRoutes);
++  }
++  let { manifest, dataRoutes } = cachedDataRoutes;
+   // Because our context matches may be from a framework-agnostic set of
+   // routes passed to createStaticHandler(), we update them here with our
+   // newly created/enhanced data routes
+diff --git a/server.mjs b/server.mjs
+index e5b02b6a3c81d7448641b5bc0815c180f277e5f1..e54fa70c7590c8003b98ac5fc19c121b2d4b004b 100644
+--- a/server.mjs
++++ b/server.mjs
+@@ -165,9 +165,19 @@ function createStaticHandler(routes, opts) {
+     mapRouteProperties: UNSAFE_mapRouteProperties
+   });
+ }
++const dataRoutesCache = new WeakMap();
+ function createStaticRouter(routes, context, opts = {}) {
+-  let manifest = {};
+-  let dataRoutes = UNSAFE_convertRoutesToDataRoutes(routes, UNSAFE_mapRouteProperties, undefined, manifest);
++  // aipictors: 同じルート表なら変換したものを使い回す（ルート照合の結果も使い回せる）
++  let cachedDataRoutes = dataRoutesCache.get(routes);
++  if (!cachedDataRoutes) {
++    let manifest = {};
++    cachedDataRoutes = {
++      manifest,
++      dataRoutes: UNSAFE_convertRoutesToDataRoutes(routes, UNSAFE_mapRouteProperties, undefined, manifest)
++    };
++    dataRoutesCache.set(routes, cachedDataRoutes);
++  }
++  let { manifest, dataRoutes } = cachedDataRoutes;
+ 
+   // Because our context matches may be from a framework-agnostic set of
+   // routes passed to createStaticHandler(), we update them here with our

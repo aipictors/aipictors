@@ -1,0 +1,308 @@
+diff --git a/node_modules/@remix-run/router/.bun-tag-9bbb299870974527 b/.bun-tag-9bbb299870974527
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/dist/router.cjs.js b/dist/router.cjs.js
+index 10dcee97b6e6f2c73fdf8bb3bd35def9b7df50b2..f59de029ada0ab776acab98a647cafbd1d2a452f 100644
+--- a/dist/router.cjs.js
++++ b/dist/router.cjs.js
+@@ -758,9 +758,11 @@ function matchRoutesImpl(routes, locationArg, basename, allowPartial) {
+   if (pathname == null) {
+     return null;
+   }
+-  let branches = flattenRoutes(routes);
+-  rankRouteBranches(branches);
++  let branches = getRankedBranches(routes);
+   let matches = null;
++  let decoded = decodePath(pathname);
++  // aipictors: 枝どうしで共有している親のルート（root・($lang)・_main など）の照合結果を、この照合の中で使い回す
++  let prefixMemo = new Map();
+   for (let i = 0; matches == null && i < branches.length; ++i) {
+     // Incoming pathnames are generally encoded from either window.location
+     // or from router.navigate, but we want to match against the unencoded
+@@ -768,11 +770,25 @@ function matchRoutesImpl(routes, locationArg, basename, allowPartial) {
+     // encoded here but there also shouldn't be anything to decode so this
+     // should be a safe operation.  This avoids needing matchRoutes to be
+     // history-aware.
+-    let decoded = decodePath(pathname);
+-    matches = matchRouteBranch(branches[i], decoded, allowPartial);
++    matches = matchRouteBranch(branches[i], decoded, allowPartial, prefixMemo);
+   }
+   return matches;
+ }
++// aipictors: サーバーでは同じルート表を 1 リクエストに 3 回照合するので、並べ替えた枝を使い回す。
++// ブラウザではルート表が後から足されることがあるので毎回作る
++const rankedBranchesCache = typeof document === "undefined" ? new WeakMap() : null;
++function getRankedBranches(routes) {
++  let cached = rankedBranchesCache && rankedBranchesCache.get(routes);
++  if (cached && cached.length === routes.length) {
++    return cached.branches;
++  }
++  let branches = flattenRoutes(routes);
++  rankRouteBranches(branches);
++  if (rankedBranchesCache) {
++    rankedBranchesCache.set(routes, { branches, length: routes.length });
++  }
++  return branches;
++}
+ function convertRouteMatchToUiMatch(match, loaderData) {
+   let {
+     route,
+@@ -929,7 +945,7 @@ function compareIndexes(a, b) {
+   // so they sort equally.
+   0;
+ }
+-function matchRouteBranch(branch, pathname, allowPartial) {
++function matchRouteBranch(branch, pathname, allowPartial, prefixMemo) {
+   if (allowPartial === void 0) {
+     allowPartial = false;
+   }
+@@ -939,7 +955,31 @@ function matchRouteBranch(branch, pathname, allowPartial) {
+   let matchedParams = {};
+   let matchedPathname = "/";
+   let matches = [];
+-  for (let i = 0; i < routesMeta.length; ++i) {
++  let start = 0;
++  if (prefixMemo) {
++    // 親のルートの meta は子の枝で同じものを共有するので、meta ごとに「そこまでの照合結果」を覚えておける
++    let state;
++    for (let i = 0; i < routesMeta.length - 1; ++i) {
++      let memo = prefixMemo.get(routesMeta[i]);
++      if (memo === undefined) break;
++      if (memo === null) return null;
++      state = memo;
++      start = i + 1;
++    }
++    if (state) {
++      Object.assign(matchedParams, state.params);
++      matchedPathname = state.matchedPathname;
++      for (let entry of state.entries) {
++        matches.push({
++          params: matchedParams,
++          pathname: entry.pathname,
++          pathnameBase: entry.pathnameBase,
++          route: entry.route
++        });
++      }
++    }
++  }
++  for (let i = start; i < routesMeta.length; ++i) {
+     let meta = routesMeta[i];
+     let end = i === routesMeta.length - 1;
+     let remainingPathname = matchedPathname === "/" ? pathname : pathname.slice(matchedPathname.length) || "/";
+@@ -957,6 +997,7 @@ function matchRouteBranch(branch, pathname, allowPartial) {
+       }, remainingPathname);
+     }
+     if (!match) {
++      if (prefixMemo && !end) prefixMemo.set(meta, null);
+       return null;
+     }
+     Object.assign(matchedParams, match.params);
+@@ -970,6 +1011,17 @@ function matchRouteBranch(branch, pathname, allowPartial) {
+     if (match.pathnameBase !== "/") {
+       matchedPathname = joinPaths([matchedPathname, match.pathnameBase]);
+     }
++    if (prefixMemo && !end) {
++      prefixMemo.set(meta, {
++        params: Object.assign({}, matchedParams),
++        matchedPathname,
++        entries: matches.map(m => ({
++          pathname: m.pathname,
++          pathnameBase: m.pathnameBase,
++          route: m.route
++        }))
++      });
++    }
+   }
+   return matches;
+ }
+@@ -1071,7 +1123,17 @@ function matchPath(pattern, pathname) {
+     pattern
+   };
+ }
++// aipictors: ルートの数（300 以上）だけ毎回正規表現を作っていたので、パターンごとに使い回す
++const compiledPathCache = new Map();
+ function compilePath(path, caseSensitive, end) {
++  let key = path + "\u0000" + (caseSensitive ? 1 : 0) + (end === false ? 0 : 1);
++  let cached = compiledPathCache.get(key);
++  if (cached) return cached;
++  let compiled = compilePathUncached(path, caseSensitive, end);
++  if (compiledPathCache.size < 5000) compiledPathCache.set(key, compiled);
++  return compiled;
++}
++function compilePathUncached(path, caseSensitive, end) {
+   if (caseSensitive === void 0) {
+     caseSensitive = false;
+   }
+@@ -1291,12 +1353,18 @@ function getToPathname(to) {
+ /**
+  * @private
+  */
+-const joinPaths = paths => paths.join("/").replace(/\/\/+/g, "/");
++const joinPaths = paths => {
++  // aipictors: 「//」がないときは置き換えない（結果は同じ）
++  let joined = paths.join("/");
++  return joined.indexOf("//") === -1 ? joined : joined.replace(/\/\/+/g, "/");
++};
+ 
+ /**
+  * @private
+  */
+-const normalizePathname = pathname => pathname.replace(/\/+$/, "").replace(/^\/*/, "/");
++const normalizePathname = pathname =>
++// aipictors: 先頭が「/」1 つで末尾が「/」でないときはそのまま（結果は同じ）
++pathname.length > 1 && pathname[0] === "/" && pathname[1] !== "/" && pathname[pathname.length - 1] !== "/" ? pathname : pathname.replace(/\/+$/, "").replace(/^\/*/, "/");
+ 
+ /**
+  * @private
+diff --git a/dist/router.js b/dist/router.js
+index 30adc2717390f45210601c1012d6abf9771eca84..e1f33e7300b787c2a50d53bbb0bf9ea4e10538ed 100644
+--- a/dist/router.js
++++ b/dist/router.js
+@@ -526,9 +526,11 @@ function matchRoutesImpl(routes, locationArg, basename, allowPartial) {
+   if (pathname == null) {
+     return null;
+   }
+-  let branches = flattenRoutes(routes);
+-  rankRouteBranches(branches);
++  let branches = getRankedBranches(routes);
+   let matches = null;
++  let decoded = decodePath(pathname);
++  // aipictors: 枝どうしで共有している親のルート（root・($lang)・_main など）の照合結果を、この照合の中で使い回す
++  let prefixMemo = new Map();
+   for (let i = 0; matches == null && i < branches.length; ++i) {
+     // Incoming pathnames are generally encoded from either window.location
+     // or from router.navigate, but we want to match against the unencoded
+@@ -536,11 +538,25 @@ function matchRoutesImpl(routes, locationArg, basename, allowPartial) {
+     // encoded here but there also shouldn't be anything to decode so this
+     // should be a safe operation.  This avoids needing matchRoutes to be
+     // history-aware.
+-    let decoded = decodePath(pathname);
+-    matches = matchRouteBranch(branches[i], decoded, allowPartial);
++    matches = matchRouteBranch(branches[i], decoded, allowPartial, prefixMemo);
+   }
+   return matches;
+ }
++// aipictors: サーバーでは同じルート表を 1 リクエストに 3 回照合するので、並べ替えた枝を使い回す。
++// ブラウザではルート表が後から足されることがあるので毎回作る
++const rankedBranchesCache = typeof document === "undefined" ? new WeakMap() : null;
++function getRankedBranches(routes) {
++  let cached = rankedBranchesCache && rankedBranchesCache.get(routes);
++  if (cached && cached.length === routes.length) {
++    return cached.branches;
++  }
++  let branches = flattenRoutes(routes);
++  rankRouteBranches(branches);
++  if (rankedBranchesCache) {
++    rankedBranchesCache.set(routes, { branches, length: routes.length });
++  }
++  return branches;
++}
+ function convertRouteMatchToUiMatch(match, loaderData) {
+   let {
+     route,
+@@ -690,7 +706,7 @@ function compareIndexes(a, b) {
+   // so they sort equally.
+   0;
+ }
+-function matchRouteBranch(branch, pathname, allowPartial) {
++function matchRouteBranch(branch, pathname, allowPartial, prefixMemo) {
+   if (allowPartial === void 0) {
+     allowPartial = false;
+   }
+@@ -700,7 +716,31 @@ function matchRouteBranch(branch, pathname, allowPartial) {
+   let matchedParams = {};
+   let matchedPathname = "/";
+   let matches = [];
+-  for (let i = 0; i < routesMeta.length; ++i) {
++  let start = 0;
++  if (prefixMemo) {
++    // 親のルートの meta は子の枝で同じものを共有するので、meta ごとに「そこまでの照合結果」を覚えておける
++    let state;
++    for (let i = 0; i < routesMeta.length - 1; ++i) {
++      let memo = prefixMemo.get(routesMeta[i]);
++      if (memo === undefined) break;
++      if (memo === null) return null;
++      state = memo;
++      start = i + 1;
++    }
++    if (state) {
++      Object.assign(matchedParams, state.params);
++      matchedPathname = state.matchedPathname;
++      for (let entry of state.entries) {
++        matches.push({
++          params: matchedParams,
++          pathname: entry.pathname,
++          pathnameBase: entry.pathnameBase,
++          route: entry.route
++        });
++      }
++    }
++  }
++  for (let i = start; i < routesMeta.length; ++i) {
+     let meta = routesMeta[i];
+     let end = i === routesMeta.length - 1;
+     let remainingPathname = matchedPathname === "/" ? pathname : pathname.slice(matchedPathname.length) || "/";
+@@ -718,6 +758,7 @@ function matchRouteBranch(branch, pathname, allowPartial) {
+       }, remainingPathname);
+     }
+     if (!match) {
++      if (prefixMemo && !end) prefixMemo.set(meta, null);
+       return null;
+     }
+     Object.assign(matchedParams, match.params);
+@@ -731,6 +772,17 @@ function matchRouteBranch(branch, pathname, allowPartial) {
+     if (match.pathnameBase !== "/") {
+       matchedPathname = joinPaths([matchedPathname, match.pathnameBase]);
+     }
++    if (prefixMemo && !end) {
++      prefixMemo.set(meta, {
++        params: Object.assign({}, matchedParams),
++        matchedPathname,
++        entries: matches.map(m => ({
++          pathname: m.pathname,
++          pathnameBase: m.pathnameBase,
++          route: m.route
++        }))
++      });
++    }
+   }
+   return matches;
+ }
+@@ -819,7 +871,17 @@ function matchPath(pattern, pathname) {
+     pattern
+   };
+ }
++// aipictors: ルートの数（300 以上）だけ毎回正規表現を作っていたので、パターンごとに使い回す
++const compiledPathCache = new Map();
+ function compilePath(path, caseSensitive, end) {
++  let key = path + "\u0000" + (caseSensitive ? 1 : 0) + (end === false ? 0 : 1);
++  let cached = compiledPathCache.get(key);
++  if (cached) return cached;
++  let compiled = compilePathUncached(path, caseSensitive, end);
++  if (compiledPathCache.size < 5000) compiledPathCache.set(key, compiled);
++  return compiled;
++}
++function compilePathUncached(path, caseSensitive, end) {
+   if (caseSensitive === void 0) {
+     caseSensitive = false;
+   }
+@@ -1027,11 +1089,17 @@ function getToPathname(to) {
+ /**
+  * @private
+  */
+-const joinPaths = paths => paths.join("/").replace(/\/\/+/g, "/");
++const joinPaths = paths => {
++  // aipictors: 「//」がないときは置き換えない（結果は同じ）
++  let joined = paths.join("/");
++  return joined.indexOf("//") === -1 ? joined : joined.replace(/\/\/+/g, "/");
++};
+ /**
+  * @private
+  */
+-const normalizePathname = pathname => pathname.replace(/\/+$/, "").replace(/^\/*/, "/");
++const normalizePathname = pathname =>
++// aipictors: 先頭が「/」1 つで末尾が「/」でないときはそのまま（結果は同じ）
++pathname.length > 1 && pathname[0] === "/" && pathname[1] !== "/" && pathname[pathname.length - 1] !== "/" ? pathname : pathname.replace(/\/+$/, "").replace(/^\/*/, "/");
+ /**
+  * @private
+  */

@@ -1,0 +1,62 @@
+diff --git a/dist/esm/server.js b/dist/esm/server.js
+index 58056423a53d1b24fb995054072778d214f4174d..4c5b04284cd8c1ac97fd2f33765b7e95c692bb92 100644
+--- a/dist/esm/server.js
++++ b/dist/esm/server.js
+@@ -20,6 +20,7 @@ import { StreamTransfer } from './single-fetch.js';
+  * `app/entry.server.js`). This component is used to generate the HTML in the
+  * response from the server.
+  */
++const serverRoutesCache = new WeakMap();
+ function RemixServer({
+   context,
+   url,
+@@ -35,7 +36,17 @@ function RemixServer({
+     criticalCss,
+     serverHandoffString
+   } = context;
+-  let routes = createServerRoutes(manifest.routes, routeModules, context.future, context.isSpaMode);
++  // aipictors: ルート表はビルドごとに決まるので、リクエストごとに作り直さない（描画時のルート照合も使い回せる）
++  let cachedServerRoutes = serverRoutesCache.get(manifest.routes);
++  if (!cachedServerRoutes || cachedServerRoutes.isSpaMode !== context.isSpaMode || cachedServerRoutes.future !== context.future) {
++    cachedServerRoutes = {
++      routes: createServerRoutes(manifest.routes, routeModules, context.future, context.isSpaMode),
++      isSpaMode: context.isSpaMode,
++      future: context.future
++    };
++    serverRoutesCache.set(manifest.routes, cachedServerRoutes);
++  }
++  let routes = cachedServerRoutes.routes;
+ 
+   // Create a shallow clone of `loaderData` we can mutate for partial hydration.
+   // When a route exports a `clientLoader` and a `HydrateFallback`, we want to
+diff --git a/dist/server.js b/dist/server.js
+index cccd9cc33ac9af0b9d8bd3f2ffc9c7a0c3861dbd..03bc4c617e71d1d6a4bdde4a3a620d3bb3f8f63d 100644
+--- a/dist/server.js
++++ b/dist/server.js
+@@ -44,6 +44,7 @@ var React__namespace = /*#__PURE__*/_interopNamespace(React);
+  * `app/entry.server.js`). This component is used to generate the HTML in the
+  * response from the server.
+  */
++const serverRoutesCache = new WeakMap();
+ function RemixServer({
+   context,
+   url,
+@@ -59,7 +60,17 @@ function RemixServer({
+     criticalCss,
+     serverHandoffString
+   } = context;
+-  let routes$1 = routes.createServerRoutes(manifest.routes, routeModules, context.future, context.isSpaMode);
++  // aipictors: ルート表はビルドごとに決まるので、リクエストごとに作り直さない（描画時のルート照合も使い回せる）
++  let cachedServerRoutes = serverRoutesCache.get(manifest.routes);
++  if (!cachedServerRoutes || cachedServerRoutes.isSpaMode !== context.isSpaMode || cachedServerRoutes.future !== context.future) {
++    cachedServerRoutes = {
++      routes: routes.createServerRoutes(manifest.routes, routeModules, context.future, context.isSpaMode),
++      isSpaMode: context.isSpaMode,
++      future: context.future
++    };
++    serverRoutesCache.set(manifest.routes, cachedServerRoutes);
++  }
++  let routes$1 = cachedServerRoutes.routes;
+ 
+   // Create a shallow clone of `loaderData` we can mutate for partial hydration.
+   // When a route exports a `clientLoader` and a `HydrateFallback`, we want to

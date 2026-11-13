@@ -130,6 +130,11 @@
       },
     },
   },
+  "patchedDependencies": {
+    "react-router-dom@6.30.0": "patches/react-router-dom@6.30.0.patch",
+    "@remix-run/react@2.16.6": "patches/@remix-run%2Freact@2.16.6.patch",
+    "@remix-run/router@1.23.0": "patches/@remix-run%2Frouter@1.23.0.patch",
+  },
   "packages": {
     "@0no-co/graphql.web": ["@0no-co/graphql.web@1.1.2", "", { "peerDependencies": { "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" }, "optionalPeers": ["graphql"] }, "sha512-N2NGsU5FLBhT8NZ+3l2YrzZSHITjNXNuDhC4iDiikv0IujaJ0Xc6xIxQZ/Ek3Cb+rgPjnLHYyJm11tInuJn+cw=="],
 

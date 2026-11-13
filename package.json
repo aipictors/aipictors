@@ -147,5 +147,10 @@
     "vite-tsconfig-paths": "^5.0.1",
     "wrangler": "4.159.0"
   },
-  "packageManager": "bun@1.2.2"
+  "packageManager": "bun@1.2.2",
+  "patchedDependencies": {
+    "@remix-run/router@1.23.0": "patches/@remix-run%2Frouter@1.23.0.patch",
+    "@remix-run/react@2.16.6": "patches/@remix-run%2Freact@2.16.6.patch",
+    "react-router-dom@6.30.0": "patches/react-router-dom@6.30.0.patch"
+  }
 }
