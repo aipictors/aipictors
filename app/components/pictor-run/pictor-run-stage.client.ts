@@ -4710,6 +4710,8 @@ void main() {
     applyPalette(distance)
   }
 
+  /** いま飾っている、読み込んだ作品（掛け替えるときに片づける） */
+  let hung: Art[] = []
   const setArtworks = (urls: string[]) => {
     if (urls.length === 0) return
     const loader = new TextureLoader()
@@ -4720,6 +4722,11 @@ void main() {
       pending -= 1
       if (pending > 0 || loaded.length === 0 || disposed) return
       // 読めた作品をまとめて飾る（途中で何度も掛け替えない）
+      for (const art of hung) {
+        art.material.map?.dispose()
+        art.material.dispose()
+      }
+      hung = loaded
       arts = loaded
       nextArt = 0
       for (const framed of framedList) hangNext(framed)

@@ -182,7 +182,8 @@ export async function createPictorRunGame(
   const audio = createPictorRunAudio(options.sound, { lite })
   const renderer = new WebGLRenderer({
     canvas,
-    antialias: !lite,
+    // 輪郭のなめらか化は、仕上げの処理の中でまとめて行う（画面そのものに掛けると二重になって重い）
+    antialias: false,
     alpha: true,
     powerPreference: "high-performance",
   })
@@ -1521,7 +1522,12 @@ export async function createPictorRunGame(
     ? null
     : new ShaderPass({
         name: "PictorRunFilm",
-        uniforms: { tDiffuse: { value: null }, uTime: { value: 0 } },
+        uniforms: {
+          tDiffuse: { value: null },
+          uTime: { value: 0 },
+          uPixel: { value: new Vector2(1, 1) },
+          uSmooth: { value: 1 },
+        },
         vertexShader: `
 varying vec2 vUv;
 void main() {
@@ -1531,9 +1537,31 @@ void main() {
         fragmentShader: `
 uniform sampler2D tDiffuse;
 uniform float uTime;
+uniform vec2 uPixel;
+uniform float uSmooth;
 varying vec2 vUv;
+// 輪郭のぎざぎざを、まわりの色を見てならす（FXAA）
+vec3 smoothEdge() {
+  vec3 m = texture2D( tDiffuse, vUv ).rgb;
+  if ( uSmooth < 0.5 ) return m;
+  vec3 luma = vec3( 0.299, 0.587, 0.114 );
+  float nw = dot( texture2D( tDiffuse, vUv + vec2( -1.0, -1.0 ) * uPixel ).rgb, luma );
+  float ne = dot( texture2D( tDiffuse, vUv + vec2( 1.0, -1.0 ) * uPixel ).rgb, luma );
+  float sw = dot( texture2D( tDiffuse, vUv + vec2( -1.0, 1.0 ) * uPixel ).rgb, luma );
+  float se = dot( texture2D( tDiffuse, vUv + vec2( 1.0, 1.0 ) * uPixel ).rgb, luma );
+  float mid = dot( m, luma );
+  float low = min( mid, min( min( nw, ne ), min( sw, se ) ) );
+  float high = max( mid, max( max( nw, ne ), max( sw, se ) ) );
+  vec2 dir = vec2( -( ( nw + ne ) - ( sw + se ) ), ( nw + sw ) - ( ne + se ) );
+  float reduce = max( ( nw + ne + sw + se ) * 0.03125, 0.0078125 );
+  dir = clamp( dir / ( min( abs( dir.x ), abs( dir.y ) ) + reduce ), -8.0, 8.0 ) * uPixel;
+  vec3 a = 0.5 * ( texture2D( tDiffuse, vUv + dir * ( 1.0 / 3.0 - 0.5 ) ).rgb + texture2D( tDiffuse, vUv + dir * ( 2.0 / 3.0 - 0.5 ) ).rgb );
+  vec3 b = a * 0.5 + 0.25 * ( texture2D( tDiffuse, vUv - dir * 0.5 ).rgb + texture2D( tDiffuse, vUv + dir * 0.5 ).rgb );
+  float lumaB = dot( b, luma );
+  return ( lumaB < low || lumaB > high ) ? a : b;
+}
 void main() {
-  vec3 color = texture2D( tDiffuse, vUv ).rgb;
+  vec3 color = smoothEdge();
   vec2 q = vUv - 0.5;
   color *= mix( 0.7, 1.0, smoothstep( 0.82, 0.3, length( q * vec2( 1.0, 0.9 ) ) ) );
   // 暗いところを少し締める
@@ -1546,14 +1574,16 @@ void main() {
   const composer = film
     ? new EffectComposer(
         renderer,
-        track(new WebGLRenderTarget(2, 2, { type: HalfFloatType, samples: 4 })),
+        // ここで多重サンプリング（MSAA）をすると、細かい画面では 1 コマの半分以上の時間を使うので、しない
+        track(new WebGLRenderTarget(2, 2, { type: HalfFloatType })),
       )
     : null
+  const bloom = new UnrealBloomPass(new Vector2(2, 2), 0.3, 0.6, 0.92)
   /** 仕上げを掛ける（重い端末では、走っている途中でやめる） */
   let post = composer !== null
   if (composer && film) {
     composer.addPass(new RenderPass(scene, camera))
-    composer.addPass(new UnrealBloomPass(new Vector2(2, 2), 0.3, 0.6, 0.92))
+    composer.addPass(bloom)
     composer.addPass(new OutputPass())
     composer.addPass(film)
     track(composer)
@@ -1566,6 +1596,16 @@ void main() {
     renderer.setSize(width, height, false)
     composer?.setPixelRatio(pixelRatio)
     composer?.setSize(width, height)
+    if (composer && film) {
+      // 光のにじみはぼかすものなので、半分の細かさで足りる
+      bloom.setSize((width * pixelRatio) / 2, (height * pixelRatio) / 2)
+      film.uniforms.uPixel.value.set(
+        1 / (width * pixelRatio),
+        1 / (height * pixelRatio),
+      )
+      // 細かい画面（Retina など）は、ならさなくてもぎざぎざが目立たない
+      film.uniforms.uSmooth.value = pixelRatio < 1.75 ? 1 : 0
+    }
     const aspect = width / height
     camera.aspect = aspect
     // 障害物が見えてから跳ぶまでの間が取れるように、縦長の画面ではカメラを引く

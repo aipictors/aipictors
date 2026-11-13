@@ -116,7 +116,8 @@ const toStickerUrl = (value: unknown): string | null => {
   }
 }
 
-const ARTWORKS_COUNT = 12
+// 多めに返して、遊ぶたびにこの中からランダムに選んで飾る
+const ARTWORKS_COUNT = 60
 const FILES_ORIGIN = "https://files.aipictors.com/"
 
 const artworksQuery = `query PictorRunArtworks {

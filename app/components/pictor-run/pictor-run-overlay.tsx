@@ -98,6 +98,16 @@ const toMarkers = (
   return kept
 }
 
+/** 新着の作品の中から、ランダムに count 件を選ぶ */
+const pickArtworks = (urls: string[], count: number) => {
+  const pool = [...urls]
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[pool[i], pool[j]] = [pool[j], pool[i]]
+  }
+  return pool.slice(0, count)
+}
+
 const DEFAULT_SOUND: PictorRunSound = { bgm: 0.6, sfx: 0.8, muted: true }
 
 const toVolume = (value: unknown, fallback: number) =>
@@ -191,6 +201,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [isNewBest, setIsNewBest] = useState(false)
   const [rank, setRank] = useState<number | null>(null)
   const [rankingKey, setRankingKey] = useState(0)
+  /** 額ぶちに飾れる作品（新着。ここから遊ぶたびに選ぶ） */
+  const artworksRef = useRef<string[]>([])
   const [items, setItems] = useState<PictorRunItems>(NO_ITEMS)
   const [lite, setLite] = useState(readLite)
   /** 今いるステージ（0 始まりの通し番号） */
@@ -357,7 +369,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         // 背景の額ぶちに、新しく投稿された作品を飾る（読めなくても遊べる）
         fetchPictorRunArtworks()
           .then((urls) => {
-            if (!cancelled) game.setArtworks(lite ? urls.slice(0, 6) : urls)
+            if (cancelled) return
+            artworksRef.current = urls
+            game.setArtworks(pickArtworks(urls, lite ? 6 : 12))
           })
           .catch(() => {})
       } catch {
@@ -524,6 +538,10 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
 
   const retry = () => {
     gameRef.current?.restart()
+    // 遊ぶたびに、飾る作品を選び直す
+    gameRef.current?.setArtworks(
+      pickArtworks(artworksRef.current, lite ? 6 : 12),
+    )
     setScore(0)
     setCoins(0)
     setStage(0)
