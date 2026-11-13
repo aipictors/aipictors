@@ -4,6 +4,7 @@ import {
   BarChart3,
   Headset,
   Coins,
+  ChevronDown,
   GripVertical,
   History,
   House,
@@ -128,6 +129,8 @@ export function AdminPageShell(props: Props) {
   const authContext = useContext(AuthContext)
   const HeaderIcon = props.icon ?? Shield
   const [menuQuery, setMenuQuery] = useState("")
+  // スマホではメニューを畳んでおき、ページの中身を先に見せる
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useState(320)
   const [isResizing, setIsResizing] = useState(false)
   const dragStateRef = useRef<{ startX: number; startWidth: number }>({
@@ -231,11 +234,26 @@ export function AdminPageShell(props: Props) {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#11182a_0%,#182235_100%)] text-slate-100">
-      <div className="mx-auto flex max-w-[1600px] flex-col gap-6 px-4 py-4 lg:flex-row lg:px-6 lg:py-6">
+      <div className="mx-auto flex max-w-[1600px] flex-col gap-3 px-2 py-2 sm:gap-6 sm:px-4 sm:py-4 lg:flex-row lg:px-6 lg:py-6">
         <aside
-          className="w-full overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/35 p-4 backdrop-blur lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:w-[var(--admin-sidebar-width)] lg:min-w-0 lg:max-w-[480px] lg:overflow-auto"
+          className="w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950/35 p-2 backdrop-blur sm:rounded-[28px] lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:w-[var(--admin-sidebar-width)] lg:min-w-0 lg:max-w-[480px] lg:overflow-auto lg:p-4"
           style={{ "--admin-sidebar-width": `${sidebarWidth}px` } as CSSProperties}
         >
+          <button
+            type="button"
+            aria-expanded={isMenuOpen}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-sm text-slate-200 active:bg-white/10 lg:hidden"
+          >
+            <span className="flex items-center gap-2">
+              <LayoutGrid className="size-4 text-cyan-300" />
+              管理メニュー
+            </span>
+            <ChevronDown
+              className={`size-4 text-slate-400 transition ${isMenuOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+          <div className={isMenuOpen ? "p-2 lg:p-0" : "hidden lg:block"}>
           <div className="space-y-3">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
@@ -307,6 +325,7 @@ export function AdminPageShell(props: Props) {
               </div>
             )}
           </nav>
+          </div>
         </aside>
 
         <button
@@ -318,23 +337,23 @@ export function AdminPageShell(props: Props) {
           <GripVertical className="size-4" />
         </button>
 
-        <main className="flex-1 rounded-[28px] border border-white/10 bg-slate-950/25 p-6 backdrop-blur">
-          <div className="flex flex-col gap-4 border-b border-white/10 pb-6 md:flex-row md:items-center md:justify-between">
+        <main className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-slate-950/25 p-3 backdrop-blur sm:rounded-[28px] sm:p-6">
+          <div className="flex flex-col gap-4 border-b border-white/10 pb-3 sm:pb-6 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <HeaderIcon className="size-7 text-cyan-300" />
-                <h1 className="font-bold text-3xl tracking-tight">{props.title}</h1>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <HeaderIcon className="size-5 text-cyan-300 sm:size-7" />
+                <h1 className="font-bold text-xl tracking-tight sm:text-3xl">{props.title}</h1>
                 <Badge variant="secondary" className="bg-white/10 text-slate-200">
                   noindex
                 </Badge>
               </div>
-              <p className="text-sm text-slate-400">{props.description}</p>
+              <p className="text-xs text-slate-400 sm:text-sm">{props.description}</p>
             </div>
 
             <Button
               asChild
               variant="outline"
-              className="border-cyan-400/25 bg-cyan-500/10 text-cyan-100 hover:bg-cyan-500/20"
+              className="hidden border-cyan-400/25 bg-cyan-500/10 text-cyan-100 hover:bg-cyan-500/20 md:inline-flex"
             >
               <Link to="/">
                 <House className="mr-2 size-4" />
@@ -343,7 +362,7 @@ export function AdminPageShell(props: Props) {
             </Button>
           </div>
 
-          <div className="space-y-6 py-8">{props.children}</div>
+          <div className="space-y-6 py-4 sm:py-8">{props.children}</div>
         </main>
       </div>
     </div>

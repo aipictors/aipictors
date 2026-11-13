@@ -6,7 +6,7 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { Outlet, useLocation } from "@remix-run/react"
 
 const ADMIN_ROUTE_PATTERN =
-  /^\/(?:ja|en)\/admin(?:\/(?:coin-histories|coins|comments|reports|releases(?:\/new)?|user-models|users|works))?(?:\/)?$|^\/admin(?:\/(?:coin-histories|coins|comments|reports|releases(?:\/new)?|user-models|users|works))?(?:\/)?$/
+  /^\/(?:ja|en)\/admin(?:\/(?:analytics|coin-histories|coins|comments|reports|releases(?:\/new)?|user-models|users|works))?(?:\/)?$|^\/admin(?:\/(?:analytics|coin-histories|coins|comments|reports|releases(?:\/new)?|user-models|users|works))?(?:\/)?$/
 
 /**
  * この中で R18 の内容を出す /r のページ（検索・タグ一覧）

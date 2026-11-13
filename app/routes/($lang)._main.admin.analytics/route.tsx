@@ -1,11 +1,10 @@
 import { gql, useQuery } from "@apollo/client/index"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { getAuth, getIdToken } from "firebase/auth"
-import { BarChart3 } from "lucide-react"
+import { BarChart3, ChevronDown } from "lucide-react"
 import { useContext, useEffect, useMemo, useState } from "react"
 import { AdminPageShell } from "~/components/admin-page-shell"
 import { Alert, AlertDescription } from "~/components/ui/alert"
-import { Button } from "~/components/ui/button"
 import {
   Card,
   CardContent,
@@ -41,7 +40,25 @@ const DESCRIPTION =
 const RANGES = [30, 90, 180] as const
 
 const CARD =
-  "rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none"
+  "rounded-2xl border-white/10 bg-white/5 text-slate-100 shadow-none sm:rounded-[28px]"
+
+/** ページ内の移動先（上の帯のボタンと見出し） */
+const SECTIONS = [
+  { id: "pnl", label: "収支" },
+  { id: "members", label: "会員" },
+  { id: "sales", label: "売上" },
+  { id: "generations", label: "生成" },
+  { id: "traffic", label: "アクセス" },
+  { id: "daily", label: "日別" },
+] as const
+
+type SectionId = (typeof SECTIONS)[number]["id"]
+
+const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"]
+
+/** 2026-11-13 → 11/13（金） */
+const shortDay = (day: string) =>
+  `${day.slice(5).replace("-", "/")}（${WEEKDAYS[new Date(`${day}T00:00:00Z`).getUTCDay()]}）`
 
 const COLORS = {
   lite: "#38bdf8",
@@ -166,20 +183,45 @@ export default function AdminAnalyticsPage() {
 
   return (
     <AdminPageShell title={TITLE} description={DESCRIPTION} icon={BarChart3}>
-      <div className="space-y-6">
-        <div className="flex flex-wrap items-center gap-2">
-          {RANGES.map((value) => (
-            <Button
-              key={value}
-              size="sm"
-              variant={value === range ? "default" : "secondary"}
-              onClick={() => setRange(value)}
+      <div className="space-y-5 sm:space-y-6">
+        {/* 期間と見たい所へ移動するボタン。スクロールしても上に残す */}
+        <div className="-mx-3 sticky top-0 z-20 flex items-center gap-2 overflow-x-auto border-white/10 border-b bg-[#141c2e]/95 px-3 py-2 backdrop-blur [scrollbar-width:none] sm:mx-0 sm:rounded-2xl sm:border [&::-webkit-scrollbar]:hidden">
+          <div className="flex shrink-0 rounded-full bg-white/10 p-0.5">
+            {RANGES.map((value) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={value === range}
+                onClick={() => setRange(value)}
+                className={`rounded-full px-3 py-1.5 font-medium text-xs transition ${
+                  value === range
+                    ? "bg-white text-slate-900"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                {value}日
+              </button>
+            ))}
+          </div>
+          <span className="h-5 w-px shrink-0 bg-white/15" />
+          {SECTIONS.map((section) => (
+            <button
+              key={section.id}
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById(`analytics-${section.id}`)
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+              className="shrink-0 rounded-full border border-white/10 px-3 py-1.5 text-slate-200 text-xs transition hover:bg-white/10 active:bg-white/20"
             >
-              {value} 日
-            </Button>
+              {section.label}
+            </button>
           ))}
           {isLoading && (
-            <span className="text-slate-400 text-sm">読み込み中...</span>
+            <span className="shrink-0 text-slate-400 text-xs">
+              読み込み中...
+            </span>
           )}
         </div>
         {error && (
@@ -222,240 +264,271 @@ function AnalyticsBody(props: { data: AnalyticsResponse; range: number }) {
   const hasPrevious = previous.length >= props.range * 0.8
 
   return (
-    <div className="space-y-6">
-      <ProfitSection pnl={props.data.pnl ?? null} days={days} />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi
-          label="有効会員（今）"
-          value={`${formatCount(currentTotal)} 人`}
-          detail={`ライト ${current.subscriptions.LITE}・スタンダード ${current.subscriptions.STANDARD}・プレミアム ${current.subscriptions.PREMIUM}`}
-        />
-        <Kpi
-          label="月額の見込み（今の会員数）"
-          value={formatYen(monthlyRevenue(current.subscriptions))}
-          detail="Web の料金で計算（App Store 分も同じ額で見積もり）"
-        />
-        <Kpi
-          label={`Stripe 売上（${days.length} 日）`}
-          value={formatYen(totals.gross)}
-          detail={`手数料引き後 ${formatYen(totals.net)}・返金 ${formatYen(totals.refunds)}`}
-          change={
-            hasPrevious ? changeRate(totals.gross, previousTotals.gross) : null
-          }
-        />
-        <Kpi
-          label={`コイン売上（${days.length} 日）`}
-          value={formatYen(totals.coinYen)}
-          detail={`${formatCount(totals.coinOrders)} 件・返金 ${totals.coinRefunded} 件`}
-          change={
-            hasPrevious
-              ? changeRate(totals.coinYen, previousTotals.coinYen)
-              : null
-          }
-        />
-        <Kpi
-          label={`新規・終了（${days.length} 日）`}
-          value={`+${totals.started} / -${totals.ended}`}
-          detail={`差し引き ${totals.started - totals.ended >= 0 ? "+" : ""}${totals.started - totals.ended} 人`}
-        />
-        <Kpi
-          label={`ページ表示（${days.length} 日）`}
-          value={formatCount(totals.pv)}
-          detail={
-            totals.pv > 0
-              ? `外からの訪問 ${formatCount(totals.landings)}`
-              : "2026/11/06 から計測（翌日の 00:30 に前日分が入ります）"
-          }
-          change={hasPrevious ? changeRate(totals.pv, previousTotals.pv) : null}
-        />
-        <Kpi
-          label={`生成数（${days.length} 日）`}
-          value={formatCount(totals.generations)}
-          detail={`1 日平均 ${formatCount(totals.generations / days.length)} 枚`}
-          change={
-            hasPrevious
-              ? changeRate(totals.generations, previousTotals.generations)
-              : null
-          }
-        />
-        <Kpi
-          label={`Cloudflare 訪問者（${days.length} 日の平均）`}
-          value={`${formatCount(totals.cfUniques / days.length)} / 日`}
-          detail="ボットを含む参考値"
-        />
-      </div>
+    <div className="space-y-8 sm:space-y-10">
+      <Section id="pnl">
+        <ProfitSection pnl={props.data.pnl ?? null} days={days} />
+      </Section>
 
-      <ChartCard title="有効会員（プラン別・日の終わり）">
-        <AnalyticsChart
-          labels={labels}
-          stacked
-          series={[
-            {
-              label: PLAN_LABELS.LITE,
-              color: COLORS.lite,
-              values: days.map((d) => d.subscriptions?.active.LITE ?? null),
-            },
-            {
-              label: PLAN_LABELS.STANDARD,
-              color: COLORS.standard,
-              values: days.map((d) => d.subscriptions?.active.STANDARD ?? null),
-            },
-            {
-              label: PLAN_LABELS.PREMIUM,
-              color: COLORS.premium,
-              values: days.map((d) => d.subscriptions?.active.PREMIUM ?? null),
-            },
-          ]}
-          format={(value) => `${formatCount(value)} 人`}
-        />
-      </ChartCard>
+      <Section id="members">
+        <KpiGrid>
+          <Kpi
+            label="有効会員（今）"
+            value={`${formatCount(currentTotal)} 人`}
+            detail={`ライト ${current.subscriptions.LITE}・スタンダード ${current.subscriptions.STANDARD}・プレミアム ${current.subscriptions.PREMIUM}`}
+          />
+          <Kpi
+            label="月額の見込み（今の会員数）"
+            value={formatYen(monthlyRevenue(current.subscriptions))}
+            detail="Web の料金で計算（App Store 分も同じ額で見積もり）"
+          />
+          <Kpi
+            label={`新規・終了（${days.length} 日）`}
+            value={`+${totals.started} / -${totals.ended}`}
+            detail={`差し引き ${totals.started - totals.ended >= 0 ? "+" : ""}${totals.started - totals.ended} 人`}
+          />
+        </KpiGrid>
+        <ChartGrid>
+          <ChartCard title="有効会員（プラン別・日の終わり）">
+            <AnalyticsChart
+              labels={labels}
+              stacked
+              series={[
+                {
+                  label: PLAN_LABELS.LITE,
+                  color: COLORS.lite,
+                  values: days.map((d) => d.subscriptions?.active.LITE ?? null),
+                },
+                {
+                  label: PLAN_LABELS.STANDARD,
+                  color: COLORS.standard,
+                  values: days.map(
+                    (d) => d.subscriptions?.active.STANDARD ?? null,
+                  ),
+                },
+                {
+                  label: PLAN_LABELS.PREMIUM,
+                  color: COLORS.premium,
+                  values: days.map(
+                    (d) => d.subscriptions?.active.PREMIUM ?? null,
+                  ),
+                },
+              ]}
+              format={(value) => `${formatCount(value)} 人`}
+            />
+          </ChartCard>
+          <ChartCard title="新規・終了（日別）">
+            <AnalyticsChart
+              type="bar"
+              labels={labels}
+              series={[
+                {
+                  label: "新規",
+                  color: COLORS.users,
+                  values: days.map((d) =>
+                    d.subscriptions
+                      ? d.subscriptions.started.LITE +
+                        d.subscriptions.started.STANDARD +
+                        d.subscriptions.started.PREMIUM
+                      : null,
+                  ),
+                },
+                {
+                  label: "終了",
+                  color: COLORS.premium,
+                  values: days.map((d) => d.subscriptions?.ended ?? null),
+                },
+              ]}
+              format={(value) => `${formatCount(value)} 人`}
+            />
+          </ChartCard>
+        </ChartGrid>
+      </Section>
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        <ChartCard
-          title="Stripe 売上（日別）"
-          description="サブスクとコインの合計。App Store の売上は入りません"
-        >
-          <AnalyticsChart
-            type="bar"
-            labels={labels}
-            series={[
-              {
-                label: "売上",
-                color: COLORS.gross,
-                values: days.map((d) => d.stripe?.gross ?? null),
-              },
-            ]}
-            format={formatYen}
+      <Section id="sales">
+        <KpiGrid>
+          <Kpi
+            label={`Stripe 売上（${days.length} 日）`}
+            value={formatYen(totals.gross)}
+            detail={`手数料引き後 ${formatYen(totals.net)}・返金 ${formatYen(totals.refunds)}`}
+            change={
+              hasPrevious
+                ? changeRate(totals.gross, previousTotals.gross)
+                : null
+            }
           />
-        </ChartCard>
-        <ChartCard title="コイン売上（日別）">
-          <AnalyticsChart
-            type="bar"
-            labels={labels}
-            series={[
-              {
-                label: "コイン",
-                color: COLORS.coins,
-                values: days.map((d) => d.coins?.yen ?? null),
-              },
-            ]}
-            format={formatYen}
+          <Kpi
+            label={`コイン売上（${days.length} 日）`}
+            value={formatYen(totals.coinYen)}
+            detail={`${formatCount(totals.coinOrders)} 件・返金 ${totals.coinRefunded} 件`}
+            change={
+              hasPrevious
+                ? changeRate(totals.coinYen, previousTotals.coinYen)
+                : null
+            }
           />
-        </ChartCard>
-        <ChartCard title="新規・終了（日別）">
-          <AnalyticsChart
-            type="bar"
-            labels={labels}
-            series={[
-              {
-                label: "新規",
-                color: COLORS.users,
-                values: days.map((d) =>
-                  d.subscriptions
-                    ? d.subscriptions.started.LITE +
-                      d.subscriptions.started.STANDARD +
-                      d.subscriptions.started.PREMIUM
-                    : null,
-                ),
-              },
-              {
-                label: "終了",
-                color: COLORS.premium,
-                values: days.map((d) => d.subscriptions?.ended ?? null),
-              },
-            ]}
-            format={(value) => `${formatCount(value)} 人`}
-          />
-        </ChartCard>
-        <ChartCard title="生成数（日別）">
-          <AnalyticsChart
-            labels={labels}
-            series={[
-              {
-                label: "生成枚数",
-                color: COLORS.generations,
-                values: days.map((d) => d.generations?.results ?? null),
-              },
-              {
-                label: "生成した人",
-                color: COLORS.users,
-                values: days.map((d) => d.generations?.users ?? null),
-              },
-            ]}
-          />
-        </ChartCard>
-        <ChartCard
-          title="ページ表示（日別）"
-          description="ブラウザで開いた人の表示（サイトの計測）。Cloudflare のページビューはボットを含む参考値"
-        >
-          <AnalyticsChart
-            labels={labels}
-            series={[
-              {
-                label: "ページ表示",
-                color: COLORS.pv,
-                values: days.map((d) =>
-                  d.cloudflare?.pv.total ? d.cloudflare.pv.total : null,
-                ),
-              },
-              {
-                label: "外からの訪問",
-                color: COLORS.landing,
-                values: days.map((d) =>
-                  d.cloudflare?.pv.total ? d.cloudflare.pv.landings : null,
-                ),
-              },
-              {
-                label: "Cloudflare ページビュー",
-                color: COLORS.cfPageViews,
-                values: days.map((d) => d.cloudflare?.pageViews ?? null),
-              },
-            ]}
-          />
-        </ChartCard>
-        <ChartCard
-          title="Cloudflare 訪問者（日別）"
-          description="IP 単位のユニーク数。ボットを含む参考値"
-        >
-          <AnalyticsChart
-            labels={labels}
-            series={[
-              {
-                label: "訪問者",
-                color: COLORS.cfPageViews,
-                values: days.map((d) => d.cloudflare?.uniques ?? null),
-              },
-            ]}
-          />
-        </ChartCard>
-      </div>
+        </KpiGrid>
+        <ChartGrid>
+          <ChartCard
+            title="Stripe 売上（日別）"
+            description="サブスクとコインの合計。App Store の売上は入りません"
+          >
+            <AnalyticsChart
+              type="bar"
+              labels={labels}
+              series={[
+                {
+                  label: "売上",
+                  color: COLORS.gross,
+                  values: days.map((d) => d.stripe?.gross ?? null),
+                },
+              ]}
+              format={formatYen}
+            />
+          </ChartCard>
+          <ChartCard title="コイン売上（日別）">
+            <AnalyticsChart
+              type="bar"
+              labels={labels}
+              series={[
+                {
+                  label: "コイン",
+                  color: COLORS.coins,
+                  values: days.map((d) => d.coins?.yen ?? null),
+                },
+              ]}
+              format={formatYen}
+            />
+          </ChartCard>
+        </ChartGrid>
+      </Section>
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        <RankingCard
-          title="流入元（外からの訪問）"
-          description="サイトの計測。どこから来て最初のページを開いたか"
-          items={mergeCounts(days, (d) => d.cloudflare?.pv.bySource)}
-          labels={SOURCE_LABELS}
-        />
-        <RankingCard
-          title="見られているページの種類"
-          description="サイトの計測（サイト内の移動も含む）"
-          items={mergeCounts(days, (d) => d.cloudflare?.pv.bySection)}
-          labels={SECTION_LABELS}
-        />
-        <RankingCard
-          title="参照元のサイト（Cloudflare）"
-          description="HTML を開いたときの参照元。(なし) は直接やボットが多い"
-          items={mergeCounts(days, (d) => d.cloudflare?.referers)}
-        />
-        <RankingCard
-          title="国（Cloudflare）"
-          description="HTML を開いた数。海外はボットが多い"
-          items={mergeCounts(days, (d) => d.cloudflare?.countries)}
-        />
-      </div>
+      <Section id="generations">
+        <KpiGrid>
+          <Kpi
+            label={`生成数（${days.length} 日）`}
+            value={formatCount(totals.generations)}
+            detail={`1 日平均 ${formatCount(totals.generations / days.length)} 枚`}
+            change={
+              hasPrevious
+                ? changeRate(totals.generations, previousTotals.generations)
+                : null
+            }
+          />
+        </KpiGrid>
+        <ChartGrid>
+          <ChartCard title="生成数（日別）">
+            <AnalyticsChart
+              labels={labels}
+              series={[
+                {
+                  label: "生成枚数",
+                  color: COLORS.generations,
+                  values: days.map((d) => d.generations?.results ?? null),
+                },
+                {
+                  label: "生成した人",
+                  color: COLORS.users,
+                  values: days.map((d) => d.generations?.users ?? null),
+                },
+              ]}
+            />
+          </ChartCard>
+        </ChartGrid>
+      </Section>
 
-      <DailyTable days={days} />
+      <Section id="traffic">
+        <KpiGrid>
+          <Kpi
+            label={`ページ表示（${days.length} 日）`}
+            value={formatCount(totals.pv)}
+            detail={
+              totals.pv > 0
+                ? `外からの訪問 ${formatCount(totals.landings)}`
+                : "2026/11/06 から計測（翌日の 00:30 に前日分が入ります）"
+            }
+            change={
+              hasPrevious ? changeRate(totals.pv, previousTotals.pv) : null
+            }
+          />
+          <Kpi
+            label={`Cloudflare 訪問者（${days.length} 日の平均）`}
+            value={`${formatCount(totals.cfUniques / days.length)} / 日`}
+            detail="ボットを含む参考値"
+          />
+        </KpiGrid>
+        <ChartGrid>
+          <ChartCard
+            title="ページ表示（日別）"
+            description="ブラウザで開いた人の表示（サイトの計測）。Cloudflare のページビューはボットを含む参考値"
+          >
+            <AnalyticsChart
+              labels={labels}
+              series={[
+                {
+                  label: "ページ表示",
+                  color: COLORS.pv,
+                  values: days.map((d) =>
+                    d.cloudflare?.pv.total ? d.cloudflare.pv.total : null,
+                  ),
+                },
+                {
+                  label: "外からの訪問",
+                  color: COLORS.landing,
+                  values: days.map((d) =>
+                    d.cloudflare?.pv.total ? d.cloudflare.pv.landings : null,
+                  ),
+                },
+                {
+                  label: "Cloudflare ページビュー",
+                  color: COLORS.cfPageViews,
+                  values: days.map((d) => d.cloudflare?.pageViews ?? null),
+                },
+              ]}
+            />
+          </ChartCard>
+          <ChartCard
+            title="Cloudflare 訪問者（日別）"
+            description="IP 単位のユニーク数。ボットを含む参考値"
+          >
+            <AnalyticsChart
+              labels={labels}
+              series={[
+                {
+                  label: "訪問者",
+                  color: COLORS.cfPageViews,
+                  values: days.map((d) => d.cloudflare?.uniques ?? null),
+                },
+              ]}
+            />
+          </ChartCard>
+          <RankingCard
+            title="流入元（外からの訪問）"
+            description="サイトの計測。どこから来て最初のページを開いたか"
+            items={mergeCounts(days, (d) => d.cloudflare?.pv.bySource)}
+            labels={SOURCE_LABELS}
+          />
+          <RankingCard
+            title="見られているページの種類"
+            description="サイトの計測（サイト内の移動も含む）"
+            items={mergeCounts(days, (d) => d.cloudflare?.pv.bySection)}
+            labels={SECTION_LABELS}
+          />
+          <RankingCard
+            title="参照元のサイト（Cloudflare）"
+            description="HTML を開いたときの参照元。(なし) は直接やボットが多い"
+            items={mergeCounts(days, (d) => d.cloudflare?.referers)}
+          />
+          <RankingCard
+            title="国（Cloudflare）"
+            description="HTML を開いた数。海外はボットが多い"
+            items={mergeCounts(days, (d) => d.cloudflare?.countries)}
+          />
+        </ChartGrid>
+      </Section>
+
+      <Section id="daily">
+        <DailyTable days={days} />
+      </Section>
 
       {latestErrors.length > 0 && (
         <Alert className={CARD}>
@@ -465,6 +538,38 @@ function AnalyticsBody(props: { data: AnalyticsResponse; range: number }) {
         </Alert>
       )}
     </div>
+  )
+}
+
+/** 見出しつきのまとまり。上の帯のボタンから飛んでくる */
+function Section(props: { id: SectionId; children: React.ReactNode }) {
+  const label = SECTIONS.find((section) => section.id === props.id)?.label
+  return (
+    <section
+      id={`analytics-${props.id}`}
+      className="scroll-mt-16 space-y-3 sm:space-y-4"
+    >
+      <h2 className="flex items-center gap-2 font-bold text-base sm:text-lg">
+        <span className="h-4 w-1 rounded-full bg-cyan-300" />
+        {label}
+      </h2>
+      {props.children}
+    </section>
+  )
+}
+
+/** スマホでも 2 列で並べて、縦に長くなりすぎないようにする（最後に 1 枚余ったら横いっぱいに） */
+function KpiGrid(props: { children: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-4 [&>*:last-child:nth-child(odd)]:col-span-2 xl:[&>*:last-child:nth-child(odd)]:col-span-1">
+      {props.children}
+    </div>
+  )
+}
+
+function ChartGrid(props: { children: React.ReactNode }) {
+  return (
+    <div className="grid gap-3 sm:gap-6 xl:grid-cols-2">{props.children}</div>
   )
 }
 
@@ -515,9 +620,9 @@ function ProfitSection(props: {
       })
     : null
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {pnl ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <KpiGrid>
           <Kpi
             label={`今日の収支（${updatedAt} 時点）`}
             value={signedYen(pnl.today.profit)}
@@ -547,16 +652,37 @@ function ProfitSection(props: {
                 ? undefined
                 : profitClass(pnl.month.projectedProfit)
             }
+            wide
           />
-          <Card className={CARD}>
-            <CardContent className="space-y-1 py-5 text-sm">
+          <Card className={`${CARD} col-span-2 xl:col-span-1`}>
+            <CardContent className="space-y-1.5 px-4 py-4 text-sm sm:px-6 sm:py-5">
               <p className="text-slate-400 text-xs">今月の費用の内訳</p>
-              {COST_KEYS.map((key) => (
-                <div key={key} className="flex justify-between gap-2">
-                  <span className="text-slate-300">{COST_LABELS[key]}</span>
-                  <span>{formatYen(pnl.month.costs[key] ?? 0)}</span>
-                </div>
-              ))}
+              {COST_KEYS.map((key) => {
+                const value = pnl.month.costs[key] ?? 0
+                return (
+                  <div key={key} className="space-y-0.5">
+                    <div className="flex justify-between gap-2">
+                      <span className="flex items-center gap-1.5 text-slate-300">
+                        <span
+                          className="inline-block size-2 shrink-0 rounded-full"
+                          style={{ background: COLORS[key] }}
+                        />
+                        {COST_LABELS[key]}
+                      </span>
+                      <span className="tabular-nums">{formatYen(value)}</span>
+                    </div>
+                    <div className="h-1 rounded-full bg-white/10">
+                      <div
+                        className="h-1 rounded-full"
+                        style={{
+                          background: COLORS[key],
+                          width: `${pnl.month.costTotal > 0 ? Math.min(100, (value / pnl.month.costTotal) * 100) : 0}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
               <p className="pt-1 text-slate-500 text-xs">
                 1 ドル {pnl.today.fxUsdJpy.toFixed(1)} 円
                 {pnl.month.daysWithCosts < pnl.month.storedDays &&
@@ -564,7 +690,7 @@ function ProfitSection(props: {
               </p>
             </CardContent>
           </Card>
-        </div>
+        </KpiGrid>
       ) : (
         <Alert className={CARD}>
           <AlertDescription className="text-slate-300">
@@ -579,7 +705,7 @@ function ProfitSection(props: {
         </p>
       )}
       {costDays.length > 0 && (
-        <div className="grid gap-6 xl:grid-cols-2">
+        <ChartGrid>
           <ChartCard
             title="収支（日別）"
             description="売上（Stripe の入金。手数料・返金を引いた額）から費用を引いた額。App Store・Google Play の売上は入りません"
@@ -616,7 +742,7 @@ function ProfitSection(props: {
               format={formatYen}
             />
           </ChartCard>
-        </div>
+        </ChartGrid>
       )}
     </div>
   )
@@ -628,24 +754,33 @@ function Kpi(props: {
   detail?: string
   change?: number | null
   valueClassName?: string
+  /** スマホで 2 列分の幅を使う（説明が長いもの） */
+  wide?: boolean
 }) {
   return (
-    <Card className={CARD}>
-      <CardContent className="space-y-1 py-5">
-        <p className="text-slate-400 text-xs">{props.label}</p>
-        <p className={`font-bold text-2xl ${props.valueClassName ?? ""}`}>
+    <Card className={`${CARD} ${props.wide ? "col-span-2 xl:col-span-1" : ""}`}>
+      <CardContent className="space-y-1 px-3.5 py-3.5 sm:px-6 sm:py-5">
+        <p className="text-[11px] text-slate-400 leading-snug sm:text-xs">
+          {props.label}
+        </p>
+        <p
+          className={`font-bold text-xl tabular-nums leading-tight sm:text-2xl ${props.valueClassName ?? ""}`}
+        >
           {props.value}
         </p>
         {props.change !== undefined && props.change !== null && (
           <p
-            className={`text-xs ${props.change >= 0 ? "text-emerald-300" : "text-rose-300"}`}
+            className={`text-[11px] sm:text-xs ${props.change >= 0 ? "text-emerald-300" : "text-rose-300"}`}
           >
-            前の期間から {props.change >= 0 ? "+" : ""}
+            {props.change >= 0 ? "▲" : "▼"} 前の期間から{" "}
+            {props.change >= 0 ? "+" : ""}
             {(props.change * 100).toFixed(1)}%
           </p>
         )}
         {props.detail && (
-          <p className="text-slate-400 text-xs">{props.detail}</p>
+          <p className="text-[11px] text-slate-400 leading-snug sm:text-xs">
+            {props.detail}
+          </p>
         )}
       </CardContent>
     </Card>
@@ -658,19 +793,24 @@ function ChartCard(props: {
   children: React.ReactNode
 }) {
   return (
-    <Card className={CARD}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base">{props.title}</CardTitle>
+    <Card className={`${CARD} min-w-0`}>
+      <CardHeader className="px-4 pt-4 pb-2 sm:px-6 sm:pt-6">
+        <CardTitle className="text-sm sm:text-base">{props.title}</CardTitle>
         {props.description && (
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-slate-400 text-xs sm:text-sm">
             {props.description}
           </CardDescription>
         )}
       </CardHeader>
-      <CardContent>{props.children}</CardContent>
+      <CardContent className="px-3 pb-4 sm:px-6 sm:pb-6">
+        {props.children}
+      </CardContent>
     </Card>
   )
 }
+
+/** スマホで最初に出す件数（残りはボタンで開く） */
+const RANKING_COLLAPSED = 5
 
 function RankingCard(props: {
   title: string
@@ -678,46 +818,166 @@ function RankingCard(props: {
   items: RankedItem[]
   labels?: Record<string, string>
 }) {
+  const [isOpen, setIsOpen] = useState(false)
   const total = props.items.reduce((sum, item) => sum + item.count, 0)
+  const items = props.items.slice(0, 12)
   return (
     <ChartCard title={props.title} description={props.description}>
-      {props.items.length === 0 ? (
+      {items.length === 0 ? (
         <p className="text-slate-400 text-sm">まだ数字がありません。</p>
       ) : (
         <div className="space-y-2">
-          {props.items.slice(0, 12).map((item) => (
-            <div key={item.name} className="space-y-1">
+          {items.map((item, index) => (
+            <div
+              key={item.name}
+              className={`space-y-1 ${index >= RANKING_COLLAPSED && !isOpen ? "hidden sm:block" : ""}`}
+            >
               <div className="flex justify-between gap-2 text-sm">
                 <span className="truncate">
                   {props.labels?.[item.name] ?? item.name}
                 </span>
-                <span className="shrink-0 text-slate-300">
-                  {formatCount(item.count)}（
-                  {total > 0 ? ((item.count / total) * 100).toFixed(1) : 0}%）
+                <span className="shrink-0 text-slate-300 tabular-nums">
+                  {formatCount(item.count)}
+                  <span className="ml-1 text-slate-400 text-xs">
+                    {total > 0 ? ((item.count / total) * 100).toFixed(1) : 0}%
+                  </span>
                 </span>
               </div>
               <div className="h-1.5 rounded-full bg-white/10">
                 <div
                   className="h-1.5 rounded-full bg-sky-400"
                   style={{
-                    width: `${total > 0 ? (item.count / props.items[0].count) * 100 : 0}%`,
+                    width: `${total > 0 ? (item.count / items[0].count) * 100 : 0}%`,
                   }}
                 />
               </div>
             </div>
           ))}
+          {items.length > RANKING_COLLAPSED && (
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-full rounded-full border border-white/10 py-2 text-slate-300 text-xs active:bg-white/10 sm:hidden"
+            >
+              {isOpen
+                ? "閉じる"
+                : `残り ${items.length - RANKING_COLLAPSED} 件を見る`}
+            </button>
+          )}
         </div>
       )}
     </ChartCard>
   )
 }
 
+/** スマホで最初に出す日数（残りはボタンで開く） */
+const DAILY_COLLAPSED = 10
+
 function DailyTable(props: { days: AnalyticsDay[] }) {
-  const rows = [...props.days].reverse().slice(0, 31)
+  const [isOpen, setIsOpen] = useState(false)
+  const rows = [...props.days]
+    .reverse()
+    .slice(0, 31)
+    .map((day) => ({
+      day,
+      active: day.subscriptions
+        ? day.subscriptions.active.LITE +
+          day.subscriptions.active.STANDARD +
+          day.subscriptions.active.PREMIUM
+        : null,
+      started: day.subscriptions
+        ? day.subscriptions.started.LITE +
+          day.subscriptions.started.STANDARD +
+          day.subscriptions.started.PREMIUM
+        : null,
+      profit: day.costs && day.stripe ? day.stripe.net - day.costs.jpy : null,
+    }))
   return (
     <ChartCard title="日別の数字（直近 31 日）">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px] text-right text-xs">
+      {/* スマホ: 1 日 1 行。押すと残りの数字が開く */}
+      <div className="sm:hidden">
+        <div className="grid grid-cols-[1fr_5rem_3rem_3.5rem_1rem] gap-x-2 px-1 pb-1 text-right text-[11px] text-slate-400">
+          <span className="text-left">日付</span>
+          <span>Stripe 売上</span>
+          <span>会員</span>
+          <span>生成</span>
+          <span />
+        </div>
+        {rows.slice(0, isOpen ? rows.length : DAILY_COLLAPSED).map((row) => (
+          <details
+            key={row.day.day}
+            className="group border-white/10 border-t text-xs"
+          >
+            <summary className="grid cursor-pointer list-none grid-cols-[1fr_5rem_3rem_3.5rem_1rem] items-center gap-x-2 px-1 py-2.5 text-right tabular-nums [&::-webkit-details-marker]:hidden">
+              <span className="text-left">{shortDay(row.day.day)}</span>
+              <span>
+                {row.day.stripe ? formatYen(row.day.stripe.gross) : "-"}
+              </span>
+              <span>{row.active ?? "-"}</span>
+              <span>
+                {row.day.generations
+                  ? formatCount(row.day.generations.results)
+                  : "-"}
+              </span>
+              <ChevronDown className="size-3.5 text-slate-500 transition group-open:rotate-180" />
+            </summary>
+            <dl className="mb-2 grid grid-cols-2 gap-x-4 gap-y-1 rounded-xl bg-white/5 px-3 py-2 tabular-nums">
+              {(
+                [
+                  ["収支", row.profit === null ? "-" : signedYen(row.profit)],
+                  ["費用", row.day.costs ? formatYen(row.day.costs.jpy) : "-"],
+                  [
+                    "手数料引き後",
+                    row.day.stripe ? formatYen(row.day.stripe.net) : "-",
+                  ],
+                  [
+                    "コイン",
+                    row.day.coins ? formatYen(row.day.coins.yen) : "-",
+                  ],
+                  ["新規", row.started ?? "-"],
+                  ["終了", row.day.subscriptions?.ended ?? "-"],
+                  [
+                    "ページ表示",
+                    row.day.cloudflare?.pv.total
+                      ? formatCount(row.day.cloudflare.pv.total)
+                      : "-",
+                  ],
+                  [
+                    "外から",
+                    row.day.cloudflare?.pv.total
+                      ? formatCount(row.day.cloudflare.pv.landings)
+                      : "-",
+                  ],
+                  [
+                    "CF 訪問者",
+                    row.day.cloudflare
+                      ? formatCount(row.day.cloudflare.uniques)
+                      : "-",
+                  ],
+                ] as const
+              ).map(([label, value]) => (
+                <div key={label} className="flex justify-between gap-2">
+                  <dt className="text-slate-400">{label}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </details>
+        ))}
+        {rows.length > DAILY_COLLAPSED && (
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="mt-2 w-full rounded-full border border-white/10 py-2 text-slate-300 text-xs active:bg-white/10"
+          >
+            {isOpen
+              ? "閉じる"
+              : `残り ${rows.length - DAILY_COLLAPSED} 日を見る`}
+          </button>
+        )}
+      </div>
+      <div className="hidden overflow-x-auto sm:block">
+        <table className="w-full min-w-[900px] text-right text-xs tabular-nums">
           <thead className="text-slate-400">
             <tr>
               <th className="py-2 text-left font-normal">日付</th>
@@ -734,47 +994,33 @@ function DailyTable(props: { days: AnalyticsDay[] }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((day) => {
-              const active = day.subscriptions
-                ? day.subscriptions.active.LITE +
-                  day.subscriptions.active.STANDARD +
-                  day.subscriptions.active.PREMIUM
-                : null
-              const started = day.subscriptions
-                ? day.subscriptions.started.LITE +
-                  day.subscriptions.started.STANDARD +
-                  day.subscriptions.started.PREMIUM
-                : null
-              return (
-                <tr key={day.day} className="border-white/10 border-t">
-                  <td className="py-1.5 text-left">{day.day}</td>
-                  <td>{active ?? "-"}</td>
-                  <td>{started ?? "-"}</td>
-                  <td>{day.subscriptions?.ended ?? "-"}</td>
-                  <td>{day.stripe ? formatYen(day.stripe.gross) : "-"}</td>
-                  <td>{day.stripe ? formatYen(day.stripe.net) : "-"}</td>
-                  <td>{day.coins ? formatYen(day.coins.yen) : "-"}</td>
-                  <td>
-                    {day.generations
-                      ? formatCount(day.generations.results)
-                      : "-"}
-                  </td>
-                  <td>
-                    {day.cloudflare?.pv.total
-                      ? formatCount(day.cloudflare.pv.total)
-                      : "-"}
-                  </td>
-                  <td>
-                    {day.cloudflare?.pv.total
-                      ? formatCount(day.cloudflare.pv.landings)
-                      : "-"}
-                  </td>
-                  <td>
-                    {day.cloudflare ? formatCount(day.cloudflare.uniques) : "-"}
-                  </td>
-                </tr>
-              )
-            })}
+            {rows.map(({ day, active, started }) => (
+              <tr key={day.day} className="border-white/10 border-t">
+                <td className="py-1.5 text-left">{day.day}</td>
+                <td>{active ?? "-"}</td>
+                <td>{started ?? "-"}</td>
+                <td>{day.subscriptions?.ended ?? "-"}</td>
+                <td>{day.stripe ? formatYen(day.stripe.gross) : "-"}</td>
+                <td>{day.stripe ? formatYen(day.stripe.net) : "-"}</td>
+                <td>{day.coins ? formatYen(day.coins.yen) : "-"}</td>
+                <td>
+                  {day.generations ? formatCount(day.generations.results) : "-"}
+                </td>
+                <td>
+                  {day.cloudflare?.pv.total
+                    ? formatCount(day.cloudflare.pv.total)
+                    : "-"}
+                </td>
+                <td>
+                  {day.cloudflare?.pv.total
+                    ? formatCount(day.cloudflare.pv.landings)
+                    : "-"}
+                </td>
+                <td>
+                  {day.cloudflare ? formatCount(day.cloudflare.uniques) : "-"}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
