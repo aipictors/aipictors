@@ -19,6 +19,24 @@ const BookReader = lazy(() =>
   })),
 )
 
+/**
+ * アプリの中の WebView で「本のように読む」を開いているときだけ、アプリ側に知らせる
+ * （アプリは webview_flutter の JavaScriptChannel を AipictorsApp という名前で入れている）
+ */
+const postToApp = (message: string) => {
+  if (typeof window === "undefined") return
+  const channel = (
+    window as unknown as {
+      AipictorsApp?: { postMessage?: (value: string) => void }
+    }
+  ).AipictorsApp
+  try {
+    channel?.postMessage?.(message)
+  } catch {
+    // アプリ以外（普通のブラウザ）では何もしない
+  }
+}
+
 type Props = {
   md?: string
   html?: string
@@ -102,6 +120,8 @@ export function WorkMarkdownView(props: Props) {
     if (new URLSearchParams(window.location.search).get("reader") === "1") {
       setReaderHtml(editor.getHTML())
       setIsReaderOpen(true)
+      // アプリから開いたときは、読み込み中の表示を消せるように知らせる
+      postToApp("ready")
     }
     // 本文が入った最初の 1 回だけ
   }, [canOpenReader, editor, editor?.getText() === ""])
@@ -194,6 +214,8 @@ export function WorkMarkdownView(props: Props) {
             workType={props.workType ?? "NOVEL"}
             onClose={() => {
               setIsReaderOpen(false)
+              // アプリの中で開いているときは、そのまま画面を閉じてもらう
+              postToApp("close")
               const url = new URL(window.location.href)
               if (url.searchParams.has("reader")) {
                 url.searchParams.delete("reader")
