@@ -108,10 +108,32 @@ export const fetchPictorRunRanking = (period: PictorRunRankingPeriod) =>
 /**
  * 背景の額ぶちに飾る、新しく投稿された作品の画像
  */
-export const fetchPictorRunArtworks = async (): Promise<string[]> => {
+export type PictorRunArtwork = {
+  id: string
+  imageUrl: string
+  title: string
+  likesCount: number
+  userId: string
+  userName: string
+}
+
+export const fetchPictorRunArtworks = async (): Promise<PictorRunArtwork[]> => {
   const response = await fetch("/api/pictor-run/works")
   const json = (await response.json().catch(() => null)) as {
-    data?: { works?: { imageUrl: string }[] }
+    data?: { works?: Partial<PictorRunArtwork>[] }
   } | null
-  return (json?.data?.works ?? []).map((work) => work.imageUrl)
+  return (json?.data?.works ?? []).flatMap((work) =>
+    work.id && work.imageUrl
+      ? [
+          {
+            id: work.id,
+            imageUrl: work.imageUrl,
+            title: work.title ?? "",
+            likesCount: work.likesCount ?? 0,
+            userId: work.userId ?? "",
+            userName: work.userName ?? "",
+          },
+        ]
+      : [],
+  )
 }

@@ -134,7 +134,10 @@ const artworksQuery = `query PictorRunArtworks {
     }
   ) {
     id
+    title
+    likesCount
     smallThumbnailImageURL
+    user { id name }
   }
 }`
 
@@ -150,7 +153,15 @@ async function loadArtworks(graphqlEndpoint: string) {
   if (!response.ok) return []
   const json = (await response.json().catch(() => null)) as {
     data?: {
-      works?: { id?: string; smallThumbnailImageURL?: string | null }[] | null
+      works?:
+        | {
+            id?: string
+            title?: string | null
+            likesCount?: number | null
+            smallThumbnailImageURL?: string | null
+            user?: { id?: string; name?: string | null } | null
+          }[]
+        | null
     }
   } | null
   return (json?.data?.works ?? []).flatMap((work) => {
@@ -160,7 +171,16 @@ async function loadArtworks(graphqlEndpoint: string) {
     }
     // 別のドメインの画像でも絵として貼れるよう、CORS の付く配信元の縮小版を使う
     const key = url.slice(FILES_ORIGIN.length)
-    return [{ id: work.id, imageUrl: `${FILES_ORIGIN}_w/240/${key}` }]
+    return [
+      {
+        id: work.id,
+        imageUrl: `${FILES_ORIGIN}_w/240/${key}`,
+        title: (work.title ?? "").slice(0, 60),
+        likesCount: Number(work.likesCount ?? 0),
+        userId: work.user?.id ?? "",
+        userName: (work.user?.name ?? "").slice(0, 40),
+      },
+    ]
   })
 }
 

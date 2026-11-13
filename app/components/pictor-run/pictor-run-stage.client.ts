@@ -69,8 +69,8 @@ export type PictorRunStage = {
   update: (move: number, dt: number, time: number, distance: number) => void
   /** 走った距離 distance のステージの景色に、すぐ切り替える（0 で最初に戻す） */
   warp: (distance: number) => void
-  /** 額ぶちに飾る作品の画像（読めたものから飾る） */
-  setArtworks: (urls: string[]) => void
+  /** 額ぶちに飾る作品（読めたものから飾る。作者の名前の札も付ける） */
+  setArtworks: (items: PictorRunStageArtwork[]) => void
   /** いまの雨の強さ（0〜1。雨音に使う） */
   rain: () => number
   /** 濡れた路面の映り込みを描くか（重い端末では、走っている途中でやめる） */
@@ -78,7 +78,12 @@ export type PictorRunStage = {
   dispose: () => void
 }
 
+/** 額ぶちに飾る作品 */
+export type PictorRunStageArtwork = { id: string; url: string; author: string }
+
 export type PictorRunStageOptions = {
+  /** 額ぶちに作品を飾った（その回に出てきた作品を、あとで一覧にするため） */
+  onArtworkShown?: (id: string) => void
   /** 軽量モード（置くものを減らし、舞うものを出さない） */
   lite: boolean
   /** 影を落とす */
@@ -3131,12 +3136,19 @@ type Scroller = {
 
 type Slot = { mesh: Mesh; kind: PropKind; theme: number }
 
-type Art = { material: MeshBasicMaterial; shape: number }
+type Art = {
+  material: MeshBasicMaterial
+  shape: number
+  /** 作品の番号（最初から入っている絵にはない） */
+  id?: string
+  /** 作者の名前の札 */
+  plate?: MeshBasicMaterial
+}
 
 /** 光の当たり方を計算する素材（軽量モードは、計算の軽いもの） */
 type Solid = MeshStandardMaterial | MeshLambertMaterial
 
-type Framed = { group: Group; frame: Mesh; painting: Mesh }
+type Framed = { group: Group; frame: Mesh; painting: Mesh; plate: Mesh }
 
 export function createPictorRunStage(
   scene: Scene,
@@ -3628,18 +3640,55 @@ totalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;`,
     framed.frame.geometry = frameGeometries[art.shape]
     framed.painting.material = art.material
     framed.painting.scale.set(w - 0.12, h - 0.12, 1)
+    framed.plate.visible = art.plate !== undefined
+    if (art.plate) {
+      framed.plate.material = art.plate
+      framed.plate.position.y = -h / 2 - 0.25
+    }
   }
   const hangNext = (framed: Framed) => {
-    setArt(framed, arts[nextArt % arts.length])
+    const art = arts[nextArt % arts.length]
+    setArt(framed, art)
     nextArt += 1
+    if (art.id) options.onArtworkShown?.(art.id)
   }
+  const plateGeometry = track(new PlaneGeometry(1.5, 0.273))
+  /** 作者の名前の札（額ぶちの下に付ける） */
+  const makePlate = (author: string) =>
+    track(
+      new MeshBasicMaterial({
+        map: track(
+          canvasTexture(264, 48, (ctx) => {
+            ctx.font = "800 26px system-ui, sans-serif"
+            let name = author
+            while (name.length > 1 && ctx.measureText(name).width > 220) {
+              name = `${name.slice(0, -2)}…`
+            }
+            const width = Math.min(260, ctx.measureText(name).width + 36)
+            ctx.fillStyle = "rgba(20,26,60,0.86)"
+            ctx.beginPath()
+            ctx.roundRect((264 - width) / 2, 2, width, 44, 22)
+            ctx.fill()
+            ctx.fillStyle = "#ffffff"
+            ctx.textAlign = "center"
+            ctx.textBaseline = "middle"
+            ctx.fillText(name, 132, 26)
+          }),
+        ),
+        transparent: true,
+        fog: false,
+      }),
+    )
   const makeFramed = (): Framed => {
     const group = new Group()
     const frame = cast(new Mesh(frameGeometries[0], toonVertexFrame))
     const painting = new Mesh(paintingGeometry, arts[0].material)
     painting.position.z = 0.012
-    group.add(frame, painting)
-    const framed = { group, frame, painting }
+    const plate = new Mesh(plateGeometry, arts[0].material)
+    plate.position.z = 0.03
+    plate.visible = false
+    group.add(frame, painting, plate)
+    const framed = { group, frame, painting, plate }
     hangNext(framed)
     framedList.push(framed)
     return framed
@@ -4914,12 +4963,12 @@ void main() {
 
   /** いま飾っている、読み込んだ作品（掛け替えるときに片づける） */
   let hung: Art[] = []
-  const setArtworks = (urls: string[]) => {
-    if (urls.length === 0) return
+  const setArtworks = (items: PictorRunStageArtwork[]) => {
+    if (items.length === 0) return
     const loader = new TextureLoader()
     loader.setCrossOrigin("anonymous")
     const loaded: Art[] = []
-    let pending = urls.length
+    let pending = items.length
     const settle = () => {
       pending -= 1
       if (pending > 0 || loaded.length === 0 || disposed) return
@@ -4927,15 +4976,17 @@ void main() {
       for (const art of hung) {
         art.material.map?.dispose()
         art.material.dispose()
+        art.plate?.map?.dispose()
+        art.plate?.dispose()
       }
       hung = loaded
       arts = loaded
       nextArt = 0
       for (const framed of framedList) hangNext(framed)
     }
-    for (const url of urls) {
+    for (const item of items) {
       loader.load(
-        url,
+        item.url,
         (texture) => {
           if (disposed) {
             texture.dispose()
@@ -4963,6 +5014,8 @@ void main() {
               new MeshBasicMaterial({ map: texture, fog: false }),
             ),
             shape,
+            id: item.id,
+            plate: item.author ? makePlate(item.author) : undefined,
           })
           settle()
         },

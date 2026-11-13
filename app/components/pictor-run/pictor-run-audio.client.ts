@@ -24,6 +24,7 @@ export type PictorRunSoundName =
   | "ui"
   | "item"
   | "guard"
+  | "hurt"
   | "pass"
 
 export type PictorRunAudio = {
@@ -728,6 +729,9 @@ export function createPictorRunAudio(
     } else if (name === "guard") {
       noise(sfxBus, "highpass", 2400, at, 0.16, 0.3)
       tone(sfxBus, "triangle", 1320, at, 0.2, 0.16, 440)
+    } else if (name === "hurt") {
+      noise(sfxBus, "lowpass", 900, at, 0.18, 0.36)
+      tone(sfxBus, "square", 330, at, 0.22, 0.14, 150)
     } else if (name === "pass") {
       tone(sfxBus, "triangle", 988, at, 0.09, 0.14)
       tone(sfxBus, "triangle", 1319, at + 0.08, 0.16, 0.14)

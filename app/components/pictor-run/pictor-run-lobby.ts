@@ -19,16 +19,17 @@ export type PictorRunLobbyPeer = {
   icon: string | null
   mode: PictorRunLobbyMode
   x: number
+  z: number
   y: number
-  /** 向き（1 = 右、-1 = 左） */
+  /** 向いている角度 */
   f: number
 }
 
 export type PictorRunLobbyConnection = {
   /** ロビーに入った・走りに戻った */
-  setMode: (mode: PictorRunLobbyMode, x?: number) => void
+  setMode: (mode: PictorRunLobbyMode, x?: number, z?: number) => void
   /** ロビーでの自分の位置（動いたときだけ呼ぶ） */
-  move: (x: number, y: number, f: number) => void
+  move: (x: number, z: number, y: number, f: number) => void
   close: () => void
 }
 
@@ -43,6 +44,7 @@ export function connectPictorRunLobby(props: {
   let socket: WebSocket | null = null
   let mode = props.mode
   let lobbyX = 0
+  let lobbyZ = 0
   let closed = false
   let retries = 0
   let retryTimer = 0
@@ -77,7 +79,9 @@ export function connectPictorRunLobby(props: {
     ws.onopen = () => {
       retries = 0
       ws.send(JSON.stringify({ t: "h", mode, auth, wp }))
-      if (mode === "lobby") ws.send(JSON.stringify({ t: "m", mode, x: lobbyX }))
+      if (mode === "lobby") {
+        ws.send(JSON.stringify({ t: "m", mode, x: lobbyX, z: lobbyZ }))
+      }
     }
     ws.onmessage = (event) => {
       if (typeof event.data !== "string" || event.data === "pong") return
@@ -88,6 +92,7 @@ export function connectPictorRunLobby(props: {
         peers?: PictorRunLobbyPeer[]
         mode?: PictorRunLobbyMode
         x?: number
+        z?: number
         y?: number
         f?: number
       }
@@ -108,11 +113,13 @@ export function connectPictorRunLobby(props: {
         if (!peer) return
         if (message.t === "p") {
           peer.x = message.x ?? peer.x
+          peer.z = message.z ?? peer.z
           peer.y = message.y ?? 0
           peer.f = message.f ?? peer.f
         } else if (message.t === "m" && message.mode) {
           peer.mode = message.mode
           peer.x = message.x ?? peer.x
+          peer.z = message.z ?? peer.z
           peer.y = 0
         }
       }
@@ -134,18 +141,20 @@ export function connectPictorRunLobby(props: {
   pingTimer = window.setInterval(() => send("ping"), 40_000)
 
   return {
-    setMode: (next, x = 0) => {
+    setMode: (next, x = 0, z = 0) => {
       mode = next
       lobbyX = x
-      send({ t: "m", mode: next, x })
+      lobbyZ = z
+      send({ t: "m", mode: next, x, z })
     },
-    move: (x, y, f) => {
+    move: (x, z, y, f) => {
       lobbyX = x
+      lobbyZ = z
       const now = Date.now()
       // 1 秒に 6 回まで
       if (now - lastMoveAt < 160) return
       lastMoveAt = now
-      send({ t: "p", x, y, f })
+      send({ t: "p", x, z, y, f })
     },
     close: () => {
       closed = true

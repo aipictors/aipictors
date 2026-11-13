@@ -1,8 +1,7 @@
 import {
   ArmchairIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   ChevronsUpIcon,
+  HeartIcon,
   MessageCircleIcon,
   PauseIcon,
   PlayIcon,
@@ -18,9 +17,11 @@ import {
   fetchPictorRunArtworks,
   fetchPictorRunMessages,
   fetchPictorRunRanking,
+  type PictorRunArtwork,
   type PictorRunMessage,
   submitPictorRunScore,
 } from "~/components/pictor-run/pictor-run-api"
+import { PictorRunArtworks } from "~/components/pictor-run/pictor-run-artworks"
 import type { PictorRunSound } from "~/components/pictor-run/pictor-run-audio.client"
 import { PictorRunChatPanel } from "~/components/pictor-run/pictor-run-chat"
 import type {
@@ -115,13 +116,15 @@ const toMarkers = (
 }
 
 /** 新着の作品の中から、ランダムに count 件を選ぶ */
-const pickArtworks = (urls: string[], count: number) => {
-  const pool = [...urls]
+const pickArtworks = (works: PictorRunArtwork[], count: number) => {
+  const pool = [...works]
   for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
     ;[pool[i], pool[j]] = [pool[j], pool[i]]
   }
-  return pool.slice(0, count)
+  return pool
+    .slice(0, count)
+    .map((work) => ({ id: work.id, url: work.imageUrl, author: work.userName }))
 }
 
 const DEFAULT_SOUND: PictorRunSound = { bgm: 0.6, sfx: 0.8, muted: true }
@@ -218,7 +221,11 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [rank, setRank] = useState<number | null>(null)
   const [rankingKey, setRankingKey] = useState(0)
   /** 額ぶちに飾れる作品（新着。ここから遊ぶたびに選ぶ） */
-  const artworksRef = useRef<string[]>([])
+  const artworksRef = useRef<PictorRunArtwork[]>([])
+  /** この回に額ぶちに出てきた作品（新しい順） */
+  const seenRef = useRef<string[]>([])
+  const [seenWorks, setSeenWorks] = useState<PictorRunArtwork[]>([])
+  const [hearts, setHearts] = useState(3)
   const [items, setItems] = useState<PictorRunItems>(NO_ITEMS)
   /** ロビーで、近くにある看板 */
   const [lobbyNear, setLobbyNear] = useState<PictorRunLobbyAction | null>(null)
@@ -326,7 +333,16 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         )
         if (cancelled) return
         const callbacks: PictorRunCallbacks = {
+          onHearts: setHearts,
+          onArtwork: (id) => {
+            if (phaseRef.current !== "running") return
+            seenRef.current = [
+              id,
+              ...seenRef.current.filter((item) => item !== id),
+            ].slice(0, 10)
+          },
           onStart: () => {
+            seenRef.current = []
             setScore(0)
             setCoins(0)
             setStage(0)
@@ -358,7 +374,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           },
           onItems: setItems,
           onLobbyNear: setLobbyNear,
-          onLobbyMove: (x, y, f) => lobbyRef.current?.move(x, y, f),
+          onLobbyMove: (x, z, y, f) => lobbyRef.current?.move(x, z, y, f),
           onGameOver: (finalScore, finalCoins, durationMs) => {
             const previous = readBest()
             setIsNewBest(finalScore > previous)
@@ -370,6 +386,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 // 保存できなくても遊べる
               }
             }
+            setSeenWorks(
+              seenRef.current.flatMap((id) => {
+                const work = artworksRef.current.find((item) => item.id === id)
+                return work ? [work] : []
+              }),
+            )
             setPhase("over")
             setIsSettingsOpen(false)
             if (finalScore > previous) {
@@ -391,10 +413,10 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         setPhase("ready")
         // 背景の額ぶちに、新しく投稿された作品を飾る（読めなくても遊べる）
         fetchPictorRunArtworks()
-          .then((urls) => {
+          .then((works) => {
             if (cancelled) return
-            artworksRef.current = urls
-            game.setArtworks(pickArtworks(urls, lite ? 6 : 12))
+            artworksRef.current = works
+            game.setArtworks(pickArtworks(works, lite ? 6 : 12))
           })
           .catch(() => {})
       } catch {
@@ -443,6 +465,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             iconUrl: toSignIconUrl(peer.icon),
             playing: peer.mode === "run",
             x: peer.x,
+            z: peer.z ?? 0,
             y: peer.y,
             f: peer.f,
           })),
@@ -595,7 +618,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
 
   const enterLobby = () => {
     gameRef.current?.enterLobby()
-    lobbyRef.current?.setMode("lobby", 0)
+    lobbyRef.current?.setMode("lobby", 0.8, 8)
     setScore(0)
     setCoins(0)
     setStage(0)
@@ -678,24 +701,27 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
       {t("ロビーへ", "Go to lobby")}
     </button>
   )
-  /** 押している間だけ、ロビーでぴくたーちゃんを動かす */
-  const holdButton = (axis: number, label: string, icon: React.ReactNode) => (
-    <button
-      type="button"
-      aria-label={label}
-      onPointerDown={(event) => {
-        event.preventDefault()
-        event.currentTarget.setPointerCapture(event.pointerId)
-        gameRef.current?.setLobbyInput(axis)
-      }}
-      onPointerUp={() => gameRef.current?.setLobbyInput(0)}
-      onPointerCancel={() => gameRef.current?.setLobbyInput(0)}
-      onContextMenu={(event) => event.preventDefault()}
-      className="pointer-events-auto flex size-16 cursor-pointer touch-none items-center justify-center rounded-full bg-white/85 shadow-md backdrop-blur-sm active:scale-95 active:bg-white"
-    >
-      {icon}
-    </button>
-  )
+  /** ロビーで、ぴくたーちゃんを好きな向きに動かすスティック */
+  const moveStick = (event: React.PointerEvent<HTMLDivElement>) => {
+    const pad = event.currentTarget
+    const rect = pad.getBoundingClientRect()
+    const reach = rect.width / 2 - 18
+    let dx = event.clientX - (rect.left + rect.width / 2)
+    let dy = event.clientY - (rect.top + rect.height / 2)
+    const far = Math.hypot(dx, dy)
+    if (far > reach) {
+      dx *= reach / far
+      dy *= reach / far
+    }
+    const knob = pad.firstElementChild as HTMLElement | null
+    if (knob) knob.style.transform = `translate(${dx}px, ${dy}px)`
+    gameRef.current?.setLobbyInput(dx / reach, dy / reach)
+  }
+  const releaseStick = (event: React.PointerEvent<HTMLDivElement>) => {
+    const knob = event.currentTarget.firstElementChild as HTMLElement | null
+    if (knob) knob.style.transform = ""
+    gameRef.current?.setLobbyInput(0, 0)
+  }
 
   const stageName = toPictorRunStageName(stage)
   // シェアすると、得点（ログイン中ならアイコンと名前も）の入ったカードの画像が出る
@@ -858,6 +884,26 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 {coins}
               </span>
             </span>
+            {isPlaying && (
+              <span
+                role="img"
+                aria-label={t(`ハート ${hearts}`, `${hearts} hearts`)}
+                className="flex items-center gap-0.5 rounded-full bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur-sm"
+              >
+                {[0, 1, 2].map((index) => (
+                  <HeartIcon
+                    key={index}
+                    aria-hidden="true"
+                    className={cn(
+                      "size-4 transition-all duration-300 md:size-5",
+                      index < hearts
+                        ? "fill-rose-500 text-rose-500"
+                        : "scale-75 fill-slate-200 text-slate-300",
+                    )}
+                  />
+                ))}
+              </span>
+            )}
           </div>
           {isPlaying && (
             <div className="w-44 rounded-2xl bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur-sm md:w-60">
@@ -1142,8 +1188,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             </p>
             <p className="rounded-full bg-white/70 px-4 py-1 font-bold text-xs md:text-sm">
               {t(
-                "ジャンプでよけよう。空中でもう 1 回押すと 2 段ジャンプ！ 🛡️🧲⭐ のアイテムも出るよ",
-                "Jump to dodge. Press again in mid-air for a double jump! Grab 🛡️🧲⭐ items",
+                "ジャンプでよけよう。空中でもう 1 回押すと 2 段ジャンプ！ ハートは 3 つ、🛡️🧲⭐❤️ のアイテムも出るよ",
+                "Jump to dodge. Press again in mid-air for a double jump! You have 3 hearts. Grab 🛡️🧲⭐❤️ items",
               )}
             </p>
             {best > 0 && (
@@ -1183,8 +1229,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               {isDesktop && (
                 <p className="rounded-full bg-white/75 px-4 py-1 font-bold text-xs">
                   {t(
-                    "A / D・← / → で歩く、スペースでジャンプ、看板の前で Enter",
-                    "A / D or arrows to walk, Space to jump, Enter at a sign",
+                    "WASD・矢印キーで歩く、スペースでジャンプ、看板の前で Enter",
+                    "WASD or arrows to walk, Space to jump, Enter at a sign",
                   )}
                 </p>
               )}
@@ -1208,17 +1254,25 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               </div>
             )}
             <div className="pointer-events-none absolute inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] flex items-end justify-between px-5">
-              <div className="flex gap-3">
-                {holdButton(
-                  -1,
-                  t("左へ", "Left"),
-                  <ChevronLeftIcon aria-hidden="true" className="size-8" />,
-                )}
-                {holdButton(
-                  1,
-                  t("右へ", "Right"),
-                  <ChevronRightIcon aria-hidden="true" className="size-8" />,
-                )}
+              <div
+                role="application"
+                aria-label={t("動かすスティック", "Move stick")}
+                onPointerDown={(event) => {
+                  event.preventDefault()
+                  event.currentTarget.setPointerCapture(event.pointerId)
+                  moveStick(event)
+                }}
+                onPointerMove={(event) => {
+                  if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                    moveStick(event)
+                  }
+                }}
+                onPointerUp={releaseStick}
+                onPointerCancel={releaseStick}
+                onContextMenu={(event) => event.preventDefault()}
+                className="pointer-events-auto flex size-28 cursor-grab touch-none items-center justify-center rounded-full bg-white/35 shadow-md ring-2 ring-white/70 backdrop-blur-sm"
+              >
+                <span className="pointer-events-none size-12 rounded-full bg-white shadow-md transition-transform duration-75" />
               </div>
               <button
                 type="button"
@@ -1345,6 +1399,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 </a>
               </div>
               {lobbyButton}
+              <PictorRunArtworks works={seenWorks} />
             </div>
           </div>
         )}
