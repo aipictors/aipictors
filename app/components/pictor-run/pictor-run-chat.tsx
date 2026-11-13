@@ -1,6 +1,7 @@
 import {
   AtSignIcon,
   CornerDownRightIcon,
+  PaletteIcon,
   ReplyIcon,
   SendIcon,
   SmileIcon,
@@ -30,6 +31,28 @@ const StickerDialog = lazy(() =>
 )
 
 const MAX_LENGTH = 200
+
+const BACKGROUND_KEY = "pictor-run-chat-background"
+
+/** チャット欄の背景（dark = 暗い色なので、名前や時刻を白くする） */
+const BACKGROUNDS: { id: string; color: string; dark: boolean }[] = [
+  { id: "sky", color: "#8fb0d9", dark: false },
+  { id: "white", color: "#f4f5f7", dark: false },
+  { id: "cream", color: "#f3e7d3", dark: false },
+  { id: "pink", color: "#f5c6d6", dark: false },
+  { id: "green", color: "#bfe3c0", dark: false },
+  { id: "navy", color: "#22304f", dark: true },
+  { id: "black", color: "#14161b", dark: true },
+]
+
+const readBackground = () => {
+  try {
+    const saved = window.localStorage.getItem(BACKGROUND_KEY)
+    return BACKGROUNDS.find((item) => item.id === saved) ?? BACKGROUNDS[0]
+  } catch {
+    return BACKGROUNDS[0]
+  }
+}
 
 const ACTION_BUTTON =
   "flex h-7 cursor-pointer items-center gap-1 whitespace-nowrap rounded-full bg-white/90 px-2.5 font-bold text-slate-700 text-xs shadow-sm hover:bg-white"
@@ -124,6 +147,17 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
   const [hasNew, setHasNew] = useState(false)
   /** 押して、返信などのボタンを出している書き込み */
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [background, setBackground] = useState(readBackground)
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false)
+  const changeBackground = (next: (typeof BACKGROUNDS)[number]) => {
+    setBackground(next)
+    setIsPaletteOpen(false)
+    try {
+      window.localStorage.setItem(BACKGROUND_KEY, next.id)
+    } catch {
+      // 覚えられなくても、今は変えられる
+    }
+  }
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000))
 
   useEffect(() => {
@@ -224,8 +258,45 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-[#8fb0d9]">
+    <div
+      className="flex min-h-0 flex-1 flex-col"
+      style={{ backgroundColor: background.color }}
+    >
       <div className="relative min-h-0 flex-1">
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5 rounded-full bg-white/90 p-1 shadow-md">
+          {isPaletteOpen &&
+            BACKGROUNDS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => changeBackground(item)}
+                aria-label={t(
+                  `背景を変える: ${item.id}`,
+                  `Background: ${item.id}`,
+                )}
+                aria-pressed={item.id === background.id}
+                className={cn(
+                  "size-7 cursor-pointer rounded-full border border-slate-300",
+                  item.id === background.id && "ring-2 ring-[#06c755]",
+                )}
+                style={{ backgroundColor: item.color }}
+              />
+            ))}
+          <button
+            type="button"
+            onClick={() => setIsPaletteOpen((value) => !value)}
+            aria-label={t("チャットの背景を変える", "Change chat background")}
+            aria-expanded={isPaletteOpen}
+            title={t("背景を変える", "Change background")}
+            className="flex size-8 cursor-pointer items-center justify-center rounded-full text-slate-600 hover:bg-slate-100"
+          >
+            {isPaletteOpen ? (
+              <XIcon aria-hidden="true" className="size-4" />
+            ) : (
+              <PaletteIcon aria-hidden="true" className="size-4" />
+            )}
+          </button>
+        </div>
         <div
           ref={listRef}
           className="h-full overflow-y-auto overscroll-contain px-2.5 py-3"
@@ -292,7 +363,12 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
                   )}
                 >
                   {!isMine && !isContinued && (
-                    <div className="mb-0.5 max-w-full px-1 text-slate-800">
+                    <div
+                      className={cn(
+                        "mb-0.5 max-w-full px-1",
+                        background.dark ? "text-white" : "text-slate-800",
+                      )}
+                    >
                       <PictorRunUserName user={message.user} />
                     </div>
                   )}
@@ -360,7 +436,12 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
                         />
                       )}
                     </div>
-                    <span className="shrink-0 pb-0.5 text-[10px] text-slate-700 leading-none">
+                    <span
+                      className={cn(
+                        "shrink-0 pb-0.5 text-[10px] leading-none",
+                        background.dark ? "text-white/70" : "text-slate-700",
+                      )}
+                    >
                       {toTimeText(message.createdAt, now, isJa)}
                     </span>
                   </div>

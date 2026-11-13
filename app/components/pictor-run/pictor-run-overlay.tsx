@@ -513,6 +513,36 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   )}&url=${encodeURIComponent("https://www.aipictors.com/pictor-chan")}`
 
   const isPanelOpen = panel !== null
+
+  // スマホで文字を打つとき、キーボードに押されてタブ（チャット・ランキング）が画面の外へ出ないように、
+  // 実際に見えている範囲にチャット欄を収める
+  const [visible, setVisible] = useState<{
+    top: number
+    height: number
+  } | null>(null)
+  useEffect(() => {
+    const viewport = window.visualViewport
+    if (!viewport || isDesktop || !isPanelOpen) {
+      setVisible(null)
+      return
+    }
+    const update = () => {
+      const isKeyboardOpen =
+        viewport.height < window.innerHeight - 120 || viewport.height < 480
+      setVisible(
+        isKeyboardOpen
+          ? { top: viewport.offsetTop, height: viewport.height }
+          : null,
+      )
+    }
+    update()
+    viewport.addEventListener("resize", update)
+    viewport.addEventListener("scroll", update)
+    return () => {
+      viewport.removeEventListener("resize", update)
+      viewport.removeEventListener("scroll", update)
+    }
+  }, [isDesktop, isPanelOpen])
   const stageName = toPictorRunStageName(stage)
   const liteButton = (
     <button
@@ -1044,7 +1074,13 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             isDesktop
               ? "relative h-full w-[380px] shrink-0 border-l"
               : "absolute inset-x-0 bottom-0 h-[82dvh] overflow-hidden rounded-t-3xl",
+            visible && "rounded-none",
           )}
+          style={
+            visible
+              ? { top: visible.top, bottom: "auto", height: visible.height }
+              : undefined
+          }
         >
           <div className="flex items-center gap-1 border-b px-2 py-2">
             {tabs.map((tab) => (

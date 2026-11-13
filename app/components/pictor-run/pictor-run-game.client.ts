@@ -116,8 +116,10 @@ const MODEL_SCALE = 1.75
 const GRAVITY = 44
 const JUMP_VELOCITY = 14
 const DOUBLE_JUMP_VELOCITY = 12
-const START_SPEED = 7
-const MAX_SPEED = 13.5
+/** 走る速さ（ずっと同じ。進んでも速くしない） */
+const RUN_SPEED = 8
+/** この距離（m）まで、障害物の出方が少しずつ手ごわくなる */
+const HARDEST_DISTANCE = 250
 const SPAWN_X = 22
 const DESPAWN_X = -12
 
@@ -768,11 +770,7 @@ export async function createPictorRunGame(
   }
 
   const spawn = () => {
-    const level = clamp(
-      (speed / pace - START_SPEED) / (MAX_SPEED - START_SPEED),
-      0,
-      1,
-    )
+    const level = clamp(distance / HARDEST_DISTANCE, 0, 1)
     const roll = Math.random()
     const x = SPAWN_X * pace
     if (roll < 0.16) {
@@ -804,7 +802,7 @@ export async function createPictorRunGame(
     audio.unlock()
     if (state === "ready") {
       state = "running"
-      speed = START_SPEED * pace
+      speed = RUN_SPEED * pace
       audio.play("start")
       dust(-0.2, 8, 1.2)
       callbacks.onStart()
@@ -883,7 +881,7 @@ export async function createPictorRunGame(
 
     if (state === "running") {
       runTime += dt
-      speed = Math.min(MAX_SPEED * pace, speed + dt * 0.14 * pace)
+      speed = RUN_SPEED * pace
       distance += speed * dt * 0.5
 
       velocity -= GRAVITY * dt
@@ -900,7 +898,7 @@ export async function createPictorRunGame(
       }
       airborne = y > 0.02
       // 走っている間の足元の土けむり
-      untilStep -= dt * (speed / START_SPEED)
+      untilStep -= dt * (speed / RUN_SPEED)
       if (!airborne && untilStep <= 0 && !lite) {
         untilStep = 0.16
         dust(-0.25, 1, 0.5, 0.5)
