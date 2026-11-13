@@ -9,12 +9,15 @@ import {
   Color,
   ConeGeometry,
   CylinderGeometry,
+  DataTexture,
   type DirectionalLight,
   DodecahedronGeometry,
   DoubleSide,
   Euler,
   Fog,
   Group,
+  LinearFilter,
+  LinearMipmapLinearFilter,
   Matrix4,
   Mesh,
   MeshBasicMaterial,
@@ -112,8 +115,38 @@ const xf = (pos: V3, scale: number | V3 = 1, rotation?: V3) =>
       : new Vector3(scale[0], scale[1], scale[2]),
   )
 
+/** 表面の手ざわり（模様の画像のどの色に入れてあるか） */
+const WOOD = 0
+const STONE = 1
+const LEAF = 2
+const PLASTER = 3
+
+type PartShape = "flat" | "pole" | "cone" | "round" | "rock" | "gem"
+
+const hsl = { h: 0, s: 0, l: 0 }
+
+/** 色と形から、木目・石・葉・ぬり壁のどれに見せるかを決める */
+const surfaceOf = (color: Color, shape: PartShape) => {
+  color.getHSL(hsl, SRGBColorSpace)
+  const gray = hsl.s < 0.2 && hsl.l > 0.2 && hsl.l < 0.88
+  if (shape === "rock") return hsl.s < 0.5 ? STONE : PLASTER
+  if (shape === "gem") return PLASTER
+  if (gray) return STONE
+  const brown =
+    hsl.h > 0.02 && hsl.h < 0.13 && hsl.s < 0.72 && hsl.l > 0.15 && hsl.l < 0.66
+  if (brown && shape !== "round") return WOOD
+  if (shape === "round") return LEAF
+  if (shape === "cone" && hsl.h > 0.18 && hsl.h < 0.5) return LEAF
+  return PLASTER
+}
+
 /** 色を頂点に塗った部品（あとで 1 つの形にまとめる） */
-const part = (source: BufferGeometry, color: number, m: Matrix4) => {
+const part = (
+  source: BufferGeometry,
+  color: number,
+  m: Matrix4,
+  shape: PartShape = "flat",
+) => {
   const geometry = source.index ? source.toNonIndexed() : source.clone()
   if (source.index) source.dispose()
   geometry.applyMatrix4(m)
@@ -127,7 +160,182 @@ const part = (source: BufferGeometry, color: number, m: Matrix4) => {
     colors[i * 3 + 2] = c.b
   }
   geometry.setAttribute("color", new BufferAttribute(colors, 3))
+  geometry.setAttribute(
+    "surf",
+    new BufferAttribute(new Float32Array(count).fill(surfaceOf(c, shape)), 1),
+  )
   return geometry
+}
+
+// ---- 模様のもと（くり返しても、つなぎ目が出ないノイズ） ------------------------
+const FIELD = 256
+
+/** なめらかなノイズ。cx・cy = 横・縦のます目の数 */
+const tileNoise = (cx: number, cy: number, seed: number) => {
+  const r = createRandom(seed)
+  const grid = new Float32Array(cx * cy)
+  for (let i = 0; i < grid.length; i++) grid[i] = r()
+  const out = new Float32Array(FIELD * FIELD)
+  for (let y = 0; y < FIELD; y++) {
+    const fy = (y / FIELD) * cy
+    const y0 = Math.floor(fy)
+    const ty = fy - y0
+    const sy = ty * ty * (3 - 2 * ty)
+    const row0 = (y0 % cy) * cx
+    const row1 = ((y0 + 1) % cy) * cx
+    for (let x = 0; x < FIELD; x++) {
+      const fx = (x / FIELD) * cx
+      const x0 = Math.floor(fx)
+      const tx = fx - x0
+      const sx = tx * tx * (3 - 2 * tx)
+      const a = x0 % cx
+      const b = (x0 + 1) % cx
+      const top = grid[row0 + a] + (grid[row0 + b] - grid[row0 + a]) * sx
+      const bottom = grid[row1 + a] + (grid[row1 + b] - grid[row1 + a]) * sx
+      out[y * FIELD + x] = top + (bottom - top) * sy
+    }
+  }
+  return out
+}
+
+/** 細かさのちがうノイズを重ねたもの（0〜1、まん中は 0.5 あたり） */
+const fbm = (cx: number, cy: number, octaves: number, seed: number) => {
+  const out = new Float32Array(FIELD * FIELD)
+  let power = 0.5
+  let total = 0
+  for (let o = 0; o < octaves; o++) {
+    const layer = tileNoise(cx << o, cy << o, seed + o * 17)
+    for (let i = 0; i < out.length; i++) out[i] += layer[i] * power
+    total += power
+    power *= 0.5
+  }
+  for (let i = 0; i < out.length; i++) out[i] /= total
+  return out
+}
+
+/** 石の割れ目や葉のかたまりのもと。いちばん近い点・2 番めに近い点までの遠さ */
+const cells = (count: number, seed: number) => {
+  const r = createRandom(seed)
+  const points = new Float32Array(count * count * 2)
+  for (let i = 0; i < points.length; i++) points[i] = r()
+  const near = new Float32Array(FIELD * FIELD)
+  const edge = new Float32Array(FIELD * FIELD)
+  for (let y = 0; y < FIELD; y++) {
+    const py = (y / FIELD) * count
+    const iy = Math.floor(py)
+    for (let x = 0; x < FIELD; x++) {
+      const px = (x / FIELD) * count
+      const ix = Math.floor(px)
+      let first = 9
+      let second = 9
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const gx = (ix + dx + count) % count
+          const gy = (iy + dy + count) % count
+          const index = (gy * count + gx) * 2
+          const ox = ix + dx + points[index] - px
+          const oy = iy + dy + points[index + 1] - py
+          const d = Math.sqrt(ox * ox + oy * oy)
+          if (d < first) {
+            second = first
+            first = d
+          } else if (d < second) {
+            second = d
+          }
+        }
+      }
+      near[y * FIELD + x] = first
+      edge[y * FIELD + x] = second - first
+    }
+  }
+  return { near, edge }
+}
+
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value))
+
+/**
+ * 道ばたのものに貼る模様。1 枚の画像の 赤 = 木目、緑 = 石、青 = 葉、不透明度 = ぬり壁 に入れる。
+ * 明るさ 0.5 が「そのままの色」で、それより明るい・暗いところが模様になる
+ */
+const createSurfaceTexture = () => {
+  const data = new Uint8Array(FIELD * FIELD * 4)
+  // 木目: たてに流れるすじと、ところどころの節
+  const streak = fbm(20, 2, 3, 41)
+  const wave = fbm(3, 3, 3, 43)
+  // 石: 割れ目と、ざらつき
+  const stone = cells(5, 47)
+  const grit = fbm(12, 12, 4, 53)
+  const blotch = fbm(3, 3, 3, 59)
+  // 葉: 小さなかたまりが重なる
+  const leafA = cells(9, 61)
+  const leafB = cells(17, 67)
+  // ぬり壁: 細かいむらと、雨だれのあと
+  const fine = fbm(10, 10, 5, 71)
+  const drip = fbm(14, 1, 3, 73)
+  for (let i = 0; i < FIELD * FIELD; i++) {
+    const x = (i % FIELD) / FIELD
+    const ring = Math.sin((x * 9 + wave[i] * 2.4) * Math.PI * 2)
+    const wood =
+      0.5 + (streak[i] - 0.5) * 1.1 - Math.max(0, ring) ** 8 * 0.3 + 0.04
+    const crack = 1 - clamp01(stone.edge[i] / 0.07)
+    const rock =
+      0.5 +
+      (grit[i] - 0.5) * 0.9 +
+      (blotch[i] - 0.5) * 0.5 -
+      crack * crack * 0.42
+    const leaf =
+      0.5 +
+      (0.42 - leafA.near[i]) * 0.75 +
+      (0.4 - leafB.near[i]) * 0.5 -
+      (1 - clamp01(leafA.edge[i] / 0.1)) * 0.16
+    const plaster = 0.5 + (fine[i] - 0.5) * 0.8 + (drip[i] - 0.5) * 0.35
+    data[i * 4] = clamp01(wood) * 255
+    data[i * 4 + 1] = clamp01(rock) * 255
+    data[i * 4 + 2] = clamp01(leaf) * 255
+    data[i * 4 + 3] = clamp01(plaster) * 255
+  }
+  const texture = new DataTexture(data, FIELD, FIELD)
+  texture.wrapS = RepeatWrapping
+  texture.wrapT = RepeatWrapping
+  texture.generateMipmaps = true
+  texture.minFilter = LinearMipmapLinearFilter
+  texture.magFilter = LinearFilter
+  texture.needsUpdate = true
+  return texture
+}
+
+/** 描いた絵の明るさに、ノイズでむらを付ける（repeat = 絵の中でノイズをくり返す回数） */
+const shade = (
+  ctx: CanvasRenderingContext2D,
+  field: Float32Array,
+  amount: number,
+  repeat = 1,
+) => {
+  const { width, height } = ctx.canvas
+  const image = ctx.getImageData(0, 0, width, height)
+  const data = image.data
+  for (let y = 0; y < height; y++) {
+    const fy = Math.floor((y / height) * FIELD * repeat) % FIELD
+    for (let x = 0; x < width; x++) {
+      const fx = Math.floor((x / width) * FIELD * repeat) % FIELD
+      const k = 1 + (field[fy * FIELD + fx] - 0.5) * 2 * amount
+      const offset = (y * width + x) * 4
+      data[offset] *= k
+      data[offset + 1] *= k
+      data[offset + 2] *= k
+    }
+  }
+  ctx.putImageData(image, 0, 0)
+}
+
+/** 障害物などの絵に、ざらつきを付ける */
+export function grainCanvas(
+  ctx: CanvasRenderingContext2D,
+  amount: number,
+  seed: number,
+) {
+  shade(ctx, fbm(24, 24, 3, seed), amount)
+  shade(ctx, fbm(3, 3, 3, seed + 5), amount * 0.6)
 }
 
 const join = (parts: BufferGeometry[]) => {
@@ -153,6 +361,7 @@ const cyl = (
     new CylinderGeometry(top, bottom, height, segments),
     color,
     xf(pos, 1, rotation),
+    "pole",
   )
 
 const cone = (
@@ -163,7 +372,12 @@ const cone = (
   segments = 8,
   rotation?: V3,
 ) =>
-  part(new ConeGeometry(radius, height, segments), color, xf(pos, 1, rotation))
+  part(
+    new ConeGeometry(radius, height, segments),
+    color,
+    xf(pos, 1, rotation),
+    "cone",
+  )
 
 const ball = (
   color: number,
@@ -176,6 +390,7 @@ const ball = (
     new SphereGeometry(1, segments, Math.max(6, segments - 4)),
     color,
     xf(pos, scale, rotation),
+    "round",
   )
 
 /** 半球（底は開いている） */
@@ -190,13 +405,14 @@ const dome = (
     new SphereGeometry(1, segments, 6, 0, Math.PI * 2, 0, Math.PI / 2),
     color,
     xf(pos, scale, rotation),
+    "round",
   )
 
 const gem = (color: number, pos: V3, scale: number | V3, rotation?: V3) =>
-  part(new OctahedronGeometry(1), color, xf(pos, scale, rotation))
+  part(new OctahedronGeometry(1), color, xf(pos, scale, rotation), "gem")
 
 const lump = (color: number, pos: V3, scale: number | V3, rotation?: V3) =>
-  part(new DodecahedronGeometry(1), color, xf(pos, scale, rotation))
+  part(new DodecahedronGeometry(1), color, xf(pos, scale, rotation), "rock")
 
 const ring = (
   color: number,
@@ -211,6 +427,7 @@ const ring = (
     new TorusGeometry(radius, tube, 6, 16, arc),
     color,
     xf(pos, scale, rotation),
+    "pole",
   )
 
 /** 三角屋根（x 方向に長い。pos は底の中心） */
@@ -257,6 +474,7 @@ const stick = (
       new CylinderGeometry(radius * taper, radius, length, 6),
       color,
       xf(at(0.5), 1, [tiltX, 0, tiltZ]),
+      "pole",
     ),
     tip: at(1),
   }
@@ -2858,12 +3076,102 @@ export function createPictorRunStage(
   }
   let disposed = false
 
-  const toonVertex = track(
-    new MeshToonMaterial({ vertexColors: true, gradientMap }),
+  // ---- 表面の模様（木目・石・葉・ぬり壁）。軽量モードでは貼らない ----------------
+  const surfaceTexture = lite ? null : track(createSurfaceTexture())
+  /**
+   * 形の向きに合わせて 3 方向から模様を貼り、でこぼこにも見せる。
+   * kind を渡すと全体をその模様にする（渡さなければ、部品ごとの模様）。
+   * ground = 地面に近いところを少し暗くして、置いてある感じを出す
+   */
+  const surfaced = <T extends MeshToonMaterial>(
+    material: T,
+    look: { kind?: number; ground?: boolean; gain?: number; scale?: number },
+  ): T => {
+    if (!surfaceTexture) return material
+    const { kind, ground = false, gain = 1, scale = 1 } = look
+    material.customProgramCacheKey = () =>
+      `surf:${kind ?? "part"}:${ground}:${gain}:${scale}`
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms.surfMap = { value: surfaceTexture }
+      shader.vertexShader = shader.vertexShader
+        .replace(
+          "#include <common>",
+          `#include <common>
+${kind === undefined ? "attribute float surf;" : ""}
+varying vec3 vSurfPos;
+varying vec3 vSurfNormal;
+varying float vSurf;`,
+        )
+        .replace(
+          "#include <begin_vertex>",
+          `#include <begin_vertex>
+vSurfPos = position * vec3( length( modelMatrix[ 0 ].xyz ), length( modelMatrix[ 1 ].xyz ), length( modelMatrix[ 2 ].xyz ) );
+vSurfNormal = normal;
+vSurf = ${kind === undefined ? "surf" : kind.toFixed(1)};`,
+        )
+      shader.fragmentShader = shader.fragmentShader
+        .replace(
+          "#include <common>",
+          `#include <common>
+uniform sampler2D surfMap;
+varying vec3 vSurfPos;
+varying vec3 vSurfNormal;
+varying float vSurf;
+float surfHeight = 0.0;`,
+        )
+        .replace(
+          "#include <color_fragment>",
+          `#include <color_fragment>
+{
+  vec3 sw = abs( vSurfNormal );
+  sw = sw * sw * sw * sw;
+  sw /= sw.x + sw.y + sw.z;
+  float sid = floor( vSurf + 0.5 );
+  // 木目・石・葉・ぬり壁で、模様の大きさ・濃さ・でこぼこの深さを変える
+  vec3 look = sid < 0.5 ? vec3( 1.1, 0.5, 0.03 ) : sid < 1.5 ? vec3( 0.55, 0.5, 0.05 ) : sid < 2.5 ? vec3( 0.75, 0.55, 0.06 ) : vec3( 0.4, 0.3, 0.012 );
+  vec3 sp = vSurfPos * look.x * ${scale.toFixed(3)};
+  vec4 st = texture2D( surfMap, sp.zy ) * sw.x + texture2D( surfMap, sp.xz ) * sw.y + texture2D( surfMap, sp.xy ) * sw.z;
+  float sh = sid < 0.5 ? st.r : sid < 1.5 ? st.g : sid < 2.5 ? st.b : st.a;
+  diffuseColor.rgb *= 1.0 + ( sh - 0.5 ) * 2.0 * look.y * ${gain.toFixed(3)};
+  surfHeight = sh * look.z * ${gain.toFixed(3)};
+  ${ground ? "diffuseColor.rgb *= mix( 0.66, 1.0, smoothstep( 0.0, 0.6, vSurfPos.y ) );" : ""}
+}`,
+        )
+        .replace(
+          "#include <normal_fragment_maps>",
+          `#include <normal_fragment_maps>
+{
+  vec3 sx = dFdx( - vViewPosition );
+  vec3 sy = dFdy( - vViewPosition );
+  vec2 dh = vec2( dFdx( surfHeight ) / max( length( sx ), 0.00001 ), dFdy( surfHeight ) / max( length( sy ), 0.00001 ) );
+  sx = normalize( sx );
+  sy = normalize( sy );
+  vec3 r1 = cross( sy, normal );
+  vec3 r2 = cross( normal, sx );
+  float det = dot( sx, r1 ) * faceDirection;
+  normal = normalize( abs( det ) * normal - sign( det ) * ( dh.x * r1 + dh.y * r2 ) );
+}`,
+        )
+    }
+    return material
+  }
+
+  /** 道ばたのもの */
+  const toonVertex = surfaced(
+    track(new MeshToonMaterial({ vertexColors: true, gradientMap })),
+    { ground: true },
+  )
+  /** 額ぶち（地面から離れているので、足もとの暗さは付けない） */
+  const toonVertexFrame = surfaced(
+    track(new MeshToonMaterial({ vertexColors: true, gradientMap })),
+    {},
   )
   /** 空に浮かぶ額ぶち用（遠くても、かすみで白っぽくしない） */
-  const toonVertexClear = track(
-    new MeshToonMaterial({ vertexColors: true, gradientMap, fog: false }),
+  const toonVertexClear = surfaced(
+    track(
+      new MeshToonMaterial({ vertexColors: true, gradientMap, fog: false }),
+    ),
+    { scale: 0.4 },
   )
   const toonMap = (map: Texture, color = 0xffffff) =>
     track(new MeshToonMaterial({ map, gradientMap, color }))
@@ -3165,7 +3473,7 @@ export function createPictorRunStage(
   }
   const makeFramed = (): Framed => {
     const group = new Group()
-    const frame = cast(new Mesh(frameGeometries[0], toonVertex))
+    const frame = cast(new Mesh(frameGeometries[0], toonVertexFrame))
     const painting = new Mesh(paintingGeometry, arts[0].material)
     painting.position.z = 0.012
     group.add(frame, painting)
@@ -3201,7 +3509,11 @@ export function createPictorRunStage(
     lite ? new SphereGeometry(1, 20, 10) : new SphereGeometry(1, 40, 20),
   )
   const hillMaterials = [0, 1].map(() =>
-    track(new MeshToonMaterial({ color: 0xffffff, gradientMap })),
+    surfaced(track(new MeshToonMaterial({ color: 0xffffff, gradientMap })), {
+      kind: LEAF,
+      gain: 0.5,
+      scale: 0.5,
+    }),
   )
   for (let i = 0; i < 10; i++) {
     const hill = new Mesh(hillGeometry, hillMaterials[i % 2])
@@ -3214,34 +3526,82 @@ export function createPictorRunStage(
   }
 
   // ---- 道・地面・崖・水面（模様は白黒で描いて、ステージの色を掛ける） ----------
+  const mottle = fbm(4, 4, 4, 81)
+  const speckle = fbm(28, 28, 3, 83)
+  /** でこぼこに見せる（軽量モードでは使わない） */
+  const bumpy = (material: MeshToonMaterial, depth: number) => {
+    if (lite) return material
+    material.bumpMap = material.map
+    material.bumpScale = depth
+    return material
+  }
+  // 石だたみ: 石ごとに色がちがい、目地はくぼんで暗い。欠けやひびも入れる
   const pathTexture = track(
-    canvasTexture(256, 256, (ctx) => {
-      ctx.fillStyle = "#f4f4f4"
-      ctx.fillRect(0, 0, 256, 256)
-      const r = createRandom(31)
-      const tones = ["#ffffff", "#ececec", "#f7f7f7", "#e4e4e4", "#fbfbfb"]
-      for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < 4; col++) {
-          const offset = row % 2 === 0 ? 0 : 32
-          ctx.fillStyle = tones[Math.floor(r() * tones.length)]
-          const x = col * 64 + offset
+    canvasTexture(512, 512, (ctx) => {
+      ctx.fillStyle = "#8f8f8f"
+      ctx.fillRect(0, 0, 512, 512)
+      const stone = (
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        seed: number,
+      ) => {
+        const r = createRandom(seed)
+        const tone = 212 + Math.floor(r() * 40)
+        const radius = 9 + r() * 9
+        // 目地に落ちる影
+        ctx.fillStyle = "rgba(60,60,60,0.5)"
+        ctx.beginPath()
+        ctx.roundRect(x + 5, y + 6, w - 7, h - 7, radius)
+        ctx.fill()
+        ctx.fillStyle = `rgb(${tone},${tone},${tone})`
+        ctx.beginPath()
+        ctx.roundRect(x + 4, y + 4, w - 9, h - 9, radius)
+        ctx.fill()
+        // 上のふちは明るく
+        ctx.strokeStyle = "rgba(255,255,255,0.55)"
+        ctx.lineWidth = 2
+        ctx.beginPath()
+        ctx.roundRect(x + 6, y + 6, w - 13, h - 13, radius)
+        ctx.stroke()
+        if (r() < 0.35) {
+          // ひび
+          ctx.strokeStyle = "rgba(70,70,70,0.55)"
+          ctx.lineWidth = 1.5
           ctx.beginPath()
-          ctx.roundRect(x + 3, row * 64 + 3, 58, 58, 9)
-          ctx.fill()
-          if (x + 64 > 256) {
-            ctx.beginPath()
-            ctx.roundRect(x - 256 + 3, row * 64 + 3, 58, 58, 9)
-            ctx.fill()
+          let cx = x + 14 + r() * (w - 28)
+          let cy = y + 8
+          ctx.moveTo(cx, cy)
+          while (cy < y + h - 14) {
+            cx = Math.min(x + w - 12, Math.max(x + 10, cx + (r() - 0.5) * 16))
+            cy += 6 + r() * 10
+            ctx.lineTo(cx, cy)
           }
+          ctx.stroke()
         }
       }
+      for (let row = 0; row < 4; row++) {
+        // 段ごとに石の幅を変える（左右でつながるよう、はみ出す石は反対側にも描く）
+        const widths =
+          row % 2 === 0 ? [150, 106, 128, 128] : [118, 140, 96, 158]
+        let x = row % 2 === 0 ? 0 : -60
+        for (const [index, w] of widths.entries()) {
+          const seed = 31 + row * 10 + index
+          stone(x, row * 128, w, 128, seed)
+          if (x < 0) stone(x + 512, row * 128, w, 128, seed)
+          x += w
+        }
+      }
+      shade(ctx, mottle, 0.16, 2)
+      shade(ctx, speckle, 0.14, 2)
     }),
   )
   pathTexture.wrapS = RepeatWrapping
   pathTexture.wrapT = RepeatWrapping
   const PATH_TILE = 2.4
   pathTexture.repeat.set(90 / PATH_TILE, 1)
-  const pathMaterial = toonMap(pathTexture)
+  const pathMaterial = bumpy(toonMap(pathTexture), 1.2)
   const path = new Mesh(track(new PlaneGeometry(90, 2.4)), pathMaterial)
   path.rotation.x = -Math.PI / 2
   path.position.set(14, 0.004, 0)
@@ -3259,25 +3619,52 @@ export function createPictorRunStage(
     scene.add(curb)
   }
 
+  // 地面: 色むら・小石・短い草や砂のすじ（草原でも砂でも雪でも使えるよう、白黒で描く）
   const groundTexture = track(
-    canvasTexture(256, 256, (ctx) => {
-      ctx.fillStyle = "#ededed"
-      ctx.fillRect(0, 0, 256, 256)
+    canvasTexture(512, 512, (ctx) => {
+      ctx.fillStyle = "#e2e2e2"
+      ctx.fillRect(0, 0, 512, 512)
       const r = createRandom(5)
-      for (let i = 0; i < 420; i++) {
-        ctx.fillStyle = ["#fafafa", "#dedede", "#f3f3f3", "#ffffff"][i % 4]
-        const x = r() * 256
-        const y = r() * 256
+      ctx.lineCap = "round"
+      for (let i = 0; i < 3600; i++) {
+        const x = r() * 512
+        const y = r() * 512
+        const length = 4 + r() * 9
+        const lean = (r() - 0.5) * 5
+        ctx.strokeStyle =
+          i % 3 === 0 ? "rgba(255,255,255,0.6)" : "rgba(95,95,95,0.42)"
+        ctx.lineWidth = 1 + r() * 1.2
+        // はしをまたぐ分は、反対側にも描く
+        for (const dx of [0, -512, 512]) {
+          for (const dy of [0, 512]) {
+            ctx.beginPath()
+            ctx.moveTo(x + dx, y + dy)
+            ctx.lineTo(x + dx + lean, y + dy - length)
+            ctx.stroke()
+          }
+        }
+      }
+      for (let i = 0; i < 90; i++) {
+        const x = 8 + r() * 496
+        const y = 8 + r() * 496
+        const size = 1.5 + r() * 3
+        ctx.fillStyle = "rgba(90,90,90,0.4)"
         ctx.beginPath()
-        ctx.ellipse(x, y, 2 + r() * 5, 1.5 + r() * 2.5, r() * 3, 0, Math.PI * 2)
+        ctx.ellipse(x + 1, y + 1.5, size, size * 0.7, r() * 3, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = "rgba(250,250,250,0.9)"
+        ctx.beginPath()
+        ctx.ellipse(x, y, size, size * 0.7, r() * 3, 0, Math.PI * 2)
         ctx.fill()
       }
+      shade(ctx, mottle, 0.42)
+      shade(ctx, speckle, 0.16, 2)
     }),
   )
   groundTexture.wrapS = RepeatWrapping
   groundTexture.wrapT = RepeatWrapping
   const GROUND_TILE = 4
-  const groundMaterial = toonMap(groundTexture)
+  const groundMaterial = bumpy(toonMap(groundTexture), 0.9)
   groundTexture.repeat.set(90 / GROUND_TILE, 12.5)
   const backGround = new Mesh(track(new PlaneGeometry(90, 50)), groundMaterial)
   backGround.rotation.x = -Math.PI / 2
@@ -3296,39 +3683,61 @@ export function createPictorRunStage(
   frontGround.receiveShadow = shadows
   scene.add(frontGround)
 
+  // 崖: 横に重なる地層と、たてのひび
   const cliffTexture = track(
-    canvasTexture(256, 256, (ctx) => {
-      const g = ctx.createLinearGradient(0, 0, 0, 256)
-      g.addColorStop(0, "#ffffff")
-      g.addColorStop(0.5, "#d6d6d6")
-      g.addColorStop(1, "#9c9c9c")
+    canvasTexture(512, 512, (ctx) => {
+      const g = ctx.createLinearGradient(0, 0, 0, 512)
+      g.addColorStop(0, "#f4f4f4")
+      g.addColorStop(0.5, "#cfcfcf")
+      g.addColorStop(1, "#8e8e8e")
       ctx.fillStyle = g
-      ctx.fillRect(0, 0, 256, 256)
+      ctx.fillRect(0, 0, 512, 512)
       const r = createRandom(17)
-      for (let i = 0; i < 26; i++) {
-        ctx.fillStyle = [
-          "rgba(255,255,255,0.5)",
-          "rgba(0,0,0,0.16)",
-          "rgba(0,0,0,0.08)",
-        ][i % 3]
+      // 地層（左右でつながるよう、波は画像の幅でちょうど一回りさせる）
+      for (let i = 0; i < 15; i++) {
+        const y = 40 + i * 32 + r() * 14
+        const a = 3 + r() * 6
+        const k = 1 + Math.floor(r() * 3)
+        const phase = r() * 6
+        const thick = 6 + r() * 16
+        ctx.fillStyle =
+          i % 2 === 0 ? "rgba(0,0,0,0.13)" : "rgba(255,255,255,0.2)"
         ctx.beginPath()
-        ctx.ellipse(
-          r() * 256,
-          50 + r() * 200,
-          6 + r() * 14,
-          4 + r() * 7,
-          0,
-          0,
-          Math.PI * 2,
-        )
+        for (let x = 0; x <= 512; x += 8) {
+          ctx.lineTo(x, y + Math.sin((x / 512) * Math.PI * 2 * k + phase) * a)
+        }
+        for (let x = 512; x >= 0; x -= 8) {
+          ctx.lineTo(
+            x,
+            y + thick + Math.sin((x / 512) * Math.PI * 2 * k + phase + 1) * a,
+          )
+        }
         ctx.fill()
       }
+      ctx.lineCap = "round"
+      for (let i = 0; i < 26; i++) {
+        let x = 12 + r() * 488
+        let y = 30 + r() * 380
+        ctx.strokeStyle = "rgba(40,40,40,0.4)"
+        ctx.lineWidth = 1 + r() * 1.6
+        ctx.beginPath()
+        ctx.moveTo(x, y)
+        const steps = 3 + Math.floor(r() * 5)
+        for (let n = 0; n < steps; n++) {
+          x = Math.min(506, Math.max(6, x + (r() - 0.5) * 18))
+          y += 8 + r() * 16
+          ctx.lineTo(x, y)
+        }
+        ctx.stroke()
+      }
+      shade(ctx, mottle, 0.3)
+      shade(ctx, speckle, 0.2, 2)
     }),
   )
   cliffTexture.wrapS = RepeatWrapping
   const CLIFF_TILE = 3.2
   cliffTexture.repeat.set(90 / CLIFF_TILE, 1)
-  const cliffMaterial = toonMap(cliffTexture)
+  const cliffMaterial = bumpy(toonMap(cliffTexture), 1.6)
   const cliff = new Mesh(track(new PlaneGeometry(90, 3.2)), cliffMaterial)
   cliff.position.set(14, -1.6, 2.6)
   scene.add(cliff)
@@ -3360,26 +3769,27 @@ export function createPictorRunStage(
   edge.position.set(14, -0.4, 2.61)
   scene.add(edge)
 
+  // 水面: ゆれる光のあみ目
   const waterTexture = track(
-    canvasTexture(256, 256, (ctx) => {
-      ctx.fillStyle = "#e2e2e2"
-      ctx.fillRect(0, 0, 256, 256)
-      ctx.strokeStyle = "rgba(255,255,255,0.9)"
-      ctx.lineWidth = 5
-      ctx.lineCap = "round"
-      const r = createRandom(3)
-      for (let i = 0; i < 16; i++) {
-        const x = 20 + r() * 216
-        const y = 20 + r() * 216
-        ctx.beginPath()
-        ctx.arc(x, y, 14, Math.PI * 1.15, Math.PI * 1.85)
-        ctx.stroke()
+    canvasTexture(FIELD, FIELD, (ctx) => {
+      const a = fbm(4, 4, 3, 91)
+      const b = fbm(6, 6, 3, 97)
+      const image = ctx.createImageData(FIELD, FIELD)
+      for (let i = 0; i < FIELD * FIELD; i++) {
+        const net =
+          (1 - Math.abs(a[i] - 0.5) * 2) * (1 - Math.abs(b[i] - 0.5) * 2)
+        const value = 196 + (a[i] - 0.5) * 50 + clamp01(net * 1.25) ** 10 * 110
+        image.data[i * 4] = value
+        image.data[i * 4 + 1] = value
+        image.data[i * 4 + 2] = value
+        image.data[i * 4 + 3] = 255
       }
+      ctx.putImageData(image, 0, 0)
     }),
   )
   waterTexture.wrapS = RepeatWrapping
   waterTexture.wrapT = RepeatWrapping
-  waterTexture.repeat.set(20, 9)
+  waterTexture.repeat.set(14, 6)
   const waterMaterial = toonMap(waterTexture)
   const water = new Mesh(track(new PlaneGeometry(160, 70)), waterMaterial)
   water.rotation.x = -Math.PI / 2

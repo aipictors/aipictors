@@ -46,6 +46,7 @@ import {
 import {
   canvasTexture,
   createPictorRunStage,
+  grainCanvas,
 } from "~/components/pictor-run/pictor-run-stage.client"
 import { toPictorRunStage } from "~/components/pictor-run/pictor-run-stages"
 
@@ -534,6 +535,7 @@ export async function createPictorRunGame(
       ctx.textAlign = "center"
       ctx.textBaseline = "middle"
       ctx.fillText("404", 64, 68)
+      grainCanvas(ctx, 0.14, 201)
     }),
   )
   const cardTexture = track(
@@ -565,6 +567,7 @@ export async function createPictorRunGame(
       ctx.moveTo(58, 30)
       ctx.lineTo(26, 62)
       ctx.stroke()
+      grainCanvas(ctx, 0.1, 211)
     }),
   )
   const blockGeometry = track(new BoxGeometry(0.95, 0.95, 0.95))
