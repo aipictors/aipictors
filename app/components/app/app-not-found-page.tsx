@@ -1,6 +1,6 @@
 import { useLocation } from "@remix-run/react"
 import { SearchIcon } from "lucide-react"
-import { useState } from "react"
+import { lazy, Suspense, useState } from "react"
 import { AppStatusPageShell } from "~/components/app/app-status-page-shell"
 import { useTranslation } from "~/hooks/use-translation"
 import { getPathLocale } from "~/utils/locale-path"
@@ -10,6 +10,11 @@ import {
   isPictorChanBirthday,
   NOT_FOUND_LINES,
 } from "~/utils/pictor-chan-lines"
+
+/** 隠しゲーム（404 の数字を押すと出る）。押されるまで何も読み込まない */
+const PictorRunOverlay = lazy(
+  () => import("~/components/pictor-run/pictor-run-overlay"),
+)
 
 const POPULAR_TAGS: readonly (readonly [string, string])[] = [
   ["女の子", "Girl"],
@@ -43,6 +48,7 @@ export function AppNotFoundPage (props: Props): React.ReactNode {
   })
   const [lineIndex, setLineIndex] = useState(0)
   const line = lines[lineIndex % lines.length]
+  const [isGameOpen, setIsGameOpen] = useState(false)
 
   const places = [
     { href: "/rankings", label: t("ランキング", "Rankings") },
@@ -75,12 +81,19 @@ export function AppNotFoundPage (props: Props): React.ReactNode {
           />
         </button>
         <div className="flex min-w-0 flex-col items-center gap-3 text-center sm:items-start sm:text-left">
-          <p
+          {/* 見た目はただの数字。押すと隠しゲームが始まる */}
+          <button
+            type="button"
+            style={{ border: 0, padding: 0, cursor: "default" }}
             className="bg-linear-to-r from-orange-500 via-sky-500 to-emerald-500 bg-clip-text font-black text-5xl text-transparent tracking-tight md:text-6xl"
-            aria-hidden="true"
+            aria-label={t(
+              "404（ぴくたーちゃんと遊ぶ）",
+              "404 (play with Pictor-chan)",
+            )}
+            onClick={() => setIsGameOpen(true)}
           >
             404
-          </p>
+          </button>
           <h1 className="font-bold text-xl md:text-2xl">
             {t("ページが見つかりません", "Page not found")}
           </h1>
@@ -161,6 +174,11 @@ export function AppNotFoundPage (props: Props): React.ReactNode {
       >
         {t("トップページへ戻る", "Back to the top page")}
       </a>
+      {isGameOpen && (
+        <Suspense fallback={null}>
+          <PictorRunOverlay onClose={() => setIsGameOpen(false)} />
+        </Suspense>
+      )}
     </AppStatusPageShell>
   )
 }
