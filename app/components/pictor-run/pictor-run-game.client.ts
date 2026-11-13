@@ -4,7 +4,6 @@ import {
   type Bone,
   BoxGeometry,
   type BufferGeometry,
-  CanvasTexture,
   CylinderGeometry,
   DataTexture,
   DirectionalLight,
@@ -22,16 +21,18 @@ import {
   PlaneGeometry,
   Quaternion,
   RedFormat,
-  RepeatWrapping,
   RingGeometry,
   Scene,
   SkinnedMesh,
   SphereGeometry,
-  SRGBColorSpace,
   type Texture,
   WebGLRenderer,
 } from "three"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
+import {
+  canvasTexture,
+  createPictorRunStage,
+} from "~/components/pictor-run/pictor-run-stage.client"
 
 /**
  * 404 ページの隠しゲーム「ぴくたーちゃんラン」の本体。
@@ -72,8 +73,6 @@ type Obstacle = {
 type Coin = { mesh: Mesh; active: boolean; x: number; y: number }
 
 type Pop = { mesh: Mesh; life: number }
-
-type Scenery = { object: Object3D; speed: number; span: number }
 
 const MODEL_SCALE = 1.55
 const GRAVITY = 44
@@ -120,21 +119,6 @@ const clamp = (value: number, min: number, max: number) =>
 const damp = (from: number, to: number, rate: number, dt: number) =>
   from + (to - from) * (1 - Math.exp(-rate * dt))
 
-function canvasTexture(
-  width: number,
-  height: number,
-  draw: (ctx: CanvasRenderingContext2D) => void,
-): CanvasTexture {
-  const canvas = document.createElement("canvas")
-  canvas.width = width
-  canvas.height = height
-  const ctx = canvas.getContext("2d")
-  if (ctx) draw(ctx)
-  const texture = new CanvasTexture(canvas)
-  texture.colorSpace = SRGBColorSpace
-  return texture
-}
-
 function roundRect(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -166,9 +150,10 @@ export async function createPictorRunGame(
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
 
   const scene = new Scene()
-  const camera = new PerspectiveCamera(34, 1, 0.1, 120)
+  const camera = new PerspectiveCamera(34, 1, 0.1, 260)
 
-  scene.add(new AmbientLight(0xffffff, 1.5))
+  const ambient = new AmbientLight(0xffffff, 1.5)
+  scene.add(ambient)
   const sun = new DirectionalLight(0xffffff, 1.65)
   sun.position.set(-3, 7, 6)
   scene.add(sun)
@@ -191,7 +176,11 @@ export async function createPictorRunGame(
   }
 
   const toon = (color: number, map?: Texture) =>
-    track(new MeshToonMaterial({ color, gradientMap, map }))
+    track(
+      map
+        ? new MeshToonMaterial({ color, gradientMap, map })
+        : new MeshToonMaterial({ color, gradientMap }),
+    )
 
   // ---- ぴくたーちゃん -------------------------------------------------------
   const gltf = await new GLTFLoader().loadAsync(modelUrl)
@@ -214,12 +203,13 @@ export async function createPictorRunGame(
   for (const mesh of skinned) {
     const source = mesh.material as MeshBasicMaterial
     const material = track(
-      new MeshToonMaterial({
-        gradientMap,
-        map: source.map,
-        vertexColors: mesh.geometry.hasAttribute("color"),
-        side: source.map ? undefined : DoubleSide,
-      }),
+      source.map
+        ? new MeshToonMaterial({ gradientMap, map: source.map })
+        : new MeshToonMaterial({
+            gradientMap,
+            vertexColors: true,
+            side: DoubleSide,
+          }),
     )
     if (source.map) track(source.map)
     source.dispose()
@@ -287,66 +277,10 @@ export async function createPictorRunGame(
   stars.visible = false
   scene.add(stars)
 
-  // ---- 地面と背景 -----------------------------------------------------------
-  const TILE = 2
-  const groundTexture = track(
-    canvasTexture(128, 128, (ctx) => {
-      ctx.fillStyle = "#bfe9ff"
-      ctx.fillRect(0, 0, 128, 128)
-      ctx.fillStyle = "#a9defa"
-      ctx.fillRect(0, 0, 64, 128)
-      ctx.fillStyle = "#ffffff"
-      ctx.fillRect(0, 0, 128, 10)
-      ctx.fillRect(0, 118, 128, 10)
-    }),
-  )
-  groundTexture.wrapS = RepeatWrapping
-  groundTexture.repeat.set(80 / TILE, 1)
-  const ground = new Mesh(
-    track(new PlaneGeometry(80, 4.4)),
-    toon(0xffffff, groundTexture),
-  )
-  ground.rotation.x = -Math.PI / 2
-  ground.position.set(14, 0, 0)
-  scene.add(ground)
-  const groundSide = new Mesh(
-    track(new BoxGeometry(80, 40, 4.4)),
-    toon(0x7fc4ee),
-  )
-  groundSide.position.set(14, -20.01, 0)
-  scene.add(groundSide)
-
-  const scenery: Scenery[] = []
-  const hillGeometry = track(new SphereGeometry(1, 40, 20))
-  const hillColors = [0xa8e6a1, 0x8fd9a8, 0xbdeeb0]
-  for (let i = 0; i < 9; i++) {
-    const hill = new Mesh(hillGeometry, toon(hillColors[i % 3]))
-    const size = 2.6 + ((i * 37) % 10) * 0.28
-    hill.scale.set(size * 1.5, size, size)
-    hill.position.set(-14 + i * 7.5, -1.4, -7 - (i % 3) * 2.2)
-    scene.add(hill)
-    scenery.push({ object: hill, speed: 0.22, span: 9 * 7.5 })
-  }
-  const cloudGeometry = track(new SphereGeometry(1, 20, 14))
-  const cloudMaterial = track(new MeshBasicMaterial({ color: 0xffffff }))
-  for (let i = 0; i < 6; i++) {
-    const cloud = new Group()
-    for (const [x, y, s] of [
-      [0, 0, 1],
-      [0.9, 0.15, 0.75],
-      [-0.9, 0.05, 0.7],
-      [0.3, 0.45, 0.7],
-    ]) {
-      const puff = new Mesh(cloudGeometry, cloudMaterial)
-      puff.position.set(x, y, 0)
-      puff.scale.set(s, s * 0.72, s * 0.6)
-      cloud.add(puff)
-    }
-    cloud.position.set(-12 + i * 9, 5.6 + ((i * 53) % 7) * 0.32, -15)
-    cloud.scale.setScalar(1 + (i % 3) * 0.3)
-    scene.add(cloud)
-    scenery.push({ object: cloud, speed: 0.07, span: 6 * 9 })
-  }
+  const stage = createPictorRunStage(scene, track, gradientMap, {
+    ambient,
+    sun,
+  })
 
   // ---- 障害物・コイン -------------------------------------------------------
   const blockTexture = track(
@@ -847,11 +781,7 @@ export async function createPictorRunGame(
       if (item.life <= 0) item.mesh.visible = false
     }
 
-    groundTexture.offset.x = (groundTexture.offset.x + move / TILE) % 1
-    for (const item of scenery) {
-      item.object.position.x -= move * item.speed
-      if (item.object.position.x < -22) item.object.position.x += item.span
-    }
+    stage.update(move, dt, time, distance)
 
     // ぴくたーちゃん
     player.position.y = y
