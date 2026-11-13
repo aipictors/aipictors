@@ -21,7 +21,9 @@ import {
   COST_KEYS,
   COST_LABELS,
   changeRate,
+  countryName,
   formatCount,
+  formatPercent,
   formatYen,
   mergeCounts,
   monthlyRevenue,
@@ -31,11 +33,12 @@ import {
   SECTION_LABELS,
   SOURCE_LABELS,
   sumBy,
+  type UsersMonth,
 } from "./analytics-data"
 
 const TITLE = "分析"
 const DESCRIPTION =
-  "収支（売上と Cloudflare・RunPod・Google・xAI・OpenAI の費用）、サブスク・コイン・Stripe の売上、生成数、ページ表示と流入元を日別に見られます。数字は毎日 00:30 に前日分を保存しています。"
+  "収支（売上と Cloudflare・RunPod・Google・xAI・OpenAI の費用）、利用者（登録・ログインした人・日本と海外）、サブスク・コイン・Stripe の売上、生成数、ページ表示と流入元を日別に見られます。数字は毎日 00:30 に前日分を保存しています。"
 
 const RANGES = [30, 90, 180] as const
 
@@ -45,6 +48,7 @@ const CARD =
 /** ページ内の移動先（上の帯のボタンと見出し） */
 const SECTIONS = [
   { id: "pnl", label: "収支" },
+  { id: "users", label: "利用者" },
   { id: "members", label: "会員" },
   { id: "sales", label: "売上" },
   { id: "generations", label: "生成" },
@@ -78,6 +82,11 @@ const COLORS = {
   openai: "#a3e635",
   xai: "#e2e8f0",
   profit: "#34d399",
+  japan: "#f472b6",
+  overseas: "#38bdf8",
+  dau: "#4ade80",
+  wau: "#fbbf24",
+  mau: "#a78bfa",
 }
 
 const viewerQuery = gql`
@@ -267,6 +276,14 @@ function AnalyticsBody(props: { data: AnalyticsResponse; range: number }) {
     <div className="space-y-8 sm:space-y-10">
       <Section id="pnl">
         <ProfitSection pnl={props.data.pnl ?? null} days={days} />
+      </Section>
+
+      <Section id="users">
+        <UsersSection
+          days={days}
+          previous={hasPrevious ? previous : []}
+          months={props.data.months ?? []}
+        />
       </Section>
 
       <Section id="members">
@@ -594,6 +611,367 @@ function summarize(days: AnalyticsDay[]) {
     generations: sumBy(days, (d) => d.generations?.results),
     cfUniques: sumBy(days, (d) => d.cloudflare?.uniques),
   }
+}
+
+/** 2026-11 → 26/11 */
+const shortMonth = (month: string) => month.slice(2).replace("-", "/")
+
+const overseas = (totals: { total: number; jp: number } | null | undefined) =>
+  totals ? totals.total - totals.jp : null
+
+/**
+ * 利用者: 登録者、ログインした人（DAU / WAU / MAU）、投稿やいいねをした人、日本と海外
+ * 登録者とログインはサイト本体の DB、日本と海外は計測（/api/pv）を Cloudflare が国別に数えたもの
+ */
+function UsersSection(props: {
+  days: AnalyticsDay[]
+  previous: AnalyticsDay[]
+  months: UsersMonth[]
+}) {
+  const { days, months } = props
+  const labels = days.map((day) => day.day)
+  const latest = [...days].reverse().find((day) => day.users)
+  const latestLogin = [...days].reverse().find((day) => day.users?.login)
+  const login = latestLogin?.users?.login ?? null
+  const registered = sumBy(days, (d) => d.users?.registered.new)
+  const previousRegistered = sumBy(
+    props.previous,
+    (d) => d.users?.registered.new,
+  )
+  const pvTotal = sumBy(days, (d) => d.cloudflare?.pv.byCountry?.total)
+  const pvJp = sumBy(days, (d) => d.cloudflare?.pv.byCountry?.jp)
+  const visitorDays = days.filter((day) => day.cloudflare?.visitors)
+  const latestVisitors = visitorDays.at(-1)?.cloudflare?.visitors ?? null
+  const monthLabels = months.map((month) => month.month)
+  const thisMonth = months.at(-1)
+
+  if (!latest?.users) {
+    return (
+      <Card className={CARD}>
+        <CardContent className="py-8 text-slate-400 text-sm">
+          まだ利用者の数字がありません。毎日 00:30 に前日分が入ります。
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <div className="space-y-3 sm:space-y-4">
+      <KpiGrid>
+        <Kpi
+          label="登録者（累計）"
+          value={`${formatCount(latest.users.registered.total)} 人`}
+          detail={`${days.length} 日で +${formatCount(registered)} 人（1 日平均 ${formatCount(registered / days.length)} 人）。退会を除く`}
+          change={
+            props.previous.length > 0
+              ? changeRate(registered, previousRegistered)
+              : null
+          }
+        />
+        <Kpi
+          label={
+            latestLogin
+              ? `ログインした人（${shortDay(latestLogin.day)}）`
+              : "ログインした人"
+          }
+          value={login ? `${formatCount(login.dau)} 人` : "-"}
+          detail={
+            login
+              ? `7 日 ${formatCount(login.wau)} 人・30 日 ${formatCount(login.mau)} 人`
+              : "2026/11/13 から記録"
+          }
+        />
+        <Kpi
+          label="月間アクティブ（30 日にログインした人）"
+          value={login ? `${formatCount(login.mau)} 人` : "-"}
+          detail={
+            login
+              ? `登録者の ${formatPercent(login.mau, latest.users.registered.total)}。毎日来る割合（1 日 ÷ 30 日）${formatPercent(login.dau, login.mau)}`
+              : undefined
+          }
+        />
+        <Kpi
+          label={
+            latestVisitors
+              ? "訪問者（最新の日・ブラウザ数）"
+              : `日本と海外（ページ表示・${days.length} 日）`
+          }
+          value={
+            latestVisitors
+              ? `${formatCount(latestVisitors.total)} 人`
+              : pvTotal > 0
+                ? `日本 ${formatPercent(pvJp, pvTotal)}`
+                : "-"
+          }
+          detail={
+            latestVisitors
+              ? `日本 ${formatCount(latestVisitors.jp)}（${formatPercent(latestVisitors.jp, latestVisitors.total)}）・海外 ${formatCount(latestVisitors.total - latestVisitors.jp)}。うちログイン中 ${formatCount(latestVisitors.loggedIn.total)}・初めて ${formatCount(latestVisitors.newcomers.total)}`
+              : pvTotal > 0
+                ? `海外 ${formatPercent(pvTotal - pvJp, pvTotal)}。ブラウザで開いた表示（2026/11/06 から）`
+                : "2026/11/06 から計測"
+          }
+          wide
+        />
+      </KpiGrid>
+      <ChartGrid>
+        <ChartCard
+          title="ログインした人（日別）"
+          description="ログインしてサイトかアプリを開いた人。1 日（DAU）・その日までの 7 日（WAU）・30 日（MAU）。2026/11/13 から記録"
+        >
+          <AnalyticsChart
+            labels={labels}
+            series={[
+              {
+                label: "30 日",
+                color: COLORS.mau,
+                values: days.map((d) => d.users?.login?.mau ?? null),
+              },
+              {
+                label: "7 日",
+                color: COLORS.wau,
+                values: days.map((d) => d.users?.login?.wau ?? null),
+              },
+              {
+                label: "1 日",
+                color: COLORS.dau,
+                values: days.map((d) => d.users?.login?.dau ?? null),
+              },
+            ]}
+            format={(value) => `${formatCount(value)} 人`}
+          />
+        </ChartCard>
+        <ChartCard
+          title="動いた人（日別）"
+          description="投稿した人・いいねした人・生成した人。見るだけの人は入りません"
+        >
+          <AnalyticsChart
+            labels={labels}
+            series={[
+              {
+                label: "いいねした人",
+                color: COLORS.premium,
+                values: days.map((d) => d.users?.likers ?? null),
+              },
+              {
+                label: "投稿した人",
+                color: COLORS.pv,
+                values: days.map((d) => d.users?.posters ?? null),
+              },
+              {
+                label: "生成した人",
+                color: COLORS.generations,
+                values: days.map((d) => d.generations?.users ?? null),
+              },
+            ]}
+            format={(value) => `${formatCount(value)} 人`}
+          />
+        </ChartCard>
+        <ChartCard title="新規登録（日別）">
+          <AnalyticsChart
+            type="bar"
+            labels={labels}
+            series={[
+              {
+                label: "新規登録",
+                color: COLORS.users,
+                values: days.map((d) => d.users?.registered.new ?? null),
+              },
+            ]}
+            format={(value) => `${formatCount(value)} 人`}
+          />
+        </ChartCard>
+        <ChartCard
+          title="日本と海外のページ表示（日別）"
+          description="ブラウザで開いた人の表示を国で分けたもの（2026/11/06 から）。海外には自動で開くプログラムが一部混ざります"
+        >
+          <AnalyticsChart
+            type="bar"
+            stacked
+            labels={labels}
+            series={[
+              {
+                label: "日本",
+                color: COLORS.japan,
+                values: days.map((d) => d.cloudflare?.pv.byCountry?.jp ?? null),
+              },
+              {
+                label: "海外",
+                color: COLORS.overseas,
+                values: days.map((d) => overseas(d.cloudflare?.pv.byCountry)),
+              },
+            ]}
+          />
+        </ChartCard>
+        {visitorDays.length > 0 && (
+          <ChartCard
+            title="訪問者（日別・日本と海外）"
+            description="その日にサイトを開いたブラウザの数（ログインしていない人も含む）。同じ人でもスマホと PC は別に数えます"
+          >
+            <AnalyticsChart
+              type="bar"
+              stacked
+              labels={labels}
+              series={[
+                {
+                  label: "日本",
+                  color: COLORS.japan,
+                  values: days.map((d) => d.cloudflare?.visitors?.jp ?? null),
+                },
+                {
+                  label: "海外",
+                  color: COLORS.overseas,
+                  values: days.map((d) => overseas(d.cloudflare?.visitors)),
+                },
+              ]}
+              format={(value) => `${formatCount(value)} 人`}
+            />
+          </ChartCard>
+        )}
+        {visitorDays.length > 0 && (
+          <ChartCard
+            title="訪問者の内訳（日別）"
+            description="ログイン中の人と、初めて来た人（このブラウザで初めて開いた）"
+          >
+            <AnalyticsChart
+              labels={labels}
+              series={[
+                {
+                  label: "訪問者",
+                  color: COLORS.cfPageViews,
+                  values: days.map(
+                    (d) => d.cloudflare?.visitors?.total ?? null,
+                  ),
+                },
+                {
+                  label: "ログイン中",
+                  color: COLORS.dau,
+                  values: days.map(
+                    (d) => d.cloudflare?.visitors?.loggedIn.total ?? null,
+                  ),
+                },
+                {
+                  label: "初めて",
+                  color: COLORS.landing,
+                  values: days.map(
+                    (d) => d.cloudflare?.visitors?.newcomers.total ?? null,
+                  ),
+                },
+              ]}
+              format={(value) => `${formatCount(value)} 人`}
+            />
+          </ChartCard>
+        )}
+        <RankingCard
+          title={
+            visitorDays.length > 0
+              ? "国（訪問者）"
+              : "国（ブラウザで開いた表示）"
+          }
+          description="サイトの計測を国で分けたもの。下の「国（Cloudflare）」と違い、ボットはほぼ入りません"
+          items={mergeCounts(
+            visitorDays.length > 0 ? visitorDays : days,
+            (d) =>
+              visitorDays.length > 0
+                ? d.cloudflare?.visitors?.countries
+                : d.cloudflare?.pv.byCountry?.countries,
+          ).map((item) => ({ ...item, name: countryName(item.name) }))}
+        />
+      </ChartGrid>
+      {months.length > 0 && (
+        <>
+          <h3 className="pt-2 font-bold text-slate-300 text-sm">
+            サービス開始からの推移（月別）
+          </h3>
+          <ChartGrid>
+            <ChartCard
+              title="登録者（累計）"
+              description="月の終わりの人数。退会を除く"
+            >
+              <AnalyticsChart
+                labels={monthLabels}
+                formatLabel={shortMonth}
+                series={[
+                  {
+                    label: "登録者",
+                    color: COLORS.users,
+                    values: months.map((month) => month.registered.total),
+                  },
+                ]}
+                format={(value) => `${formatCount(value)} 人`}
+              />
+            </ChartCard>
+            <ChartCard
+              title="新規登録（月別）"
+              description={
+                thisMonth
+                  ? `今月（${shortMonth(thisMonth.month)}）は途中までの数字`
+                  : undefined
+              }
+            >
+              <AnalyticsChart
+                type="bar"
+                labels={monthLabels}
+                formatLabel={shortMonth}
+                series={[
+                  {
+                    label: "新規登録",
+                    color: COLORS.users,
+                    values: months.map((month) => month.registered.new),
+                  },
+                ]}
+                format={(value) => `${formatCount(value)} 人`}
+              />
+            </ChartCard>
+            <ChartCard
+              title="動いた人（月別）"
+              description="その月に投稿かいいねをした人。見るだけの人・生成だけの人は入りません（ログインの記録は 2026/11 からなので、長い推移はこの数字で見ます）"
+            >
+              <AnalyticsChart
+                labels={monthLabels}
+                formatLabel={shortMonth}
+                series={[
+                  {
+                    label: "投稿かいいね",
+                    color: COLORS.mau,
+                    values: months.map((month) => month.active),
+                  },
+                  {
+                    label: "いいねした人",
+                    color: COLORS.premium,
+                    values: months.map((month) => month.likers),
+                  },
+                  {
+                    label: "投稿した人",
+                    color: COLORS.pv,
+                    values: months.map((month) => month.posters),
+                  },
+                ]}
+                format={(value) => `${formatCount(value)} 人`}
+              />
+            </ChartCard>
+            <ChartCard title="投稿数・いいね数（月別）">
+              <AnalyticsChart
+                labels={monthLabels}
+                formatLabel={shortMonth}
+                series={[
+                  {
+                    label: "いいね",
+                    color: COLORS.premium,
+                    values: months.map((month) => month.likes),
+                  },
+                  {
+                    label: "投稿",
+                    color: COLORS.pv,
+                    values: months.map((month) => month.posts),
+                  },
+                ]}
+              />
+            </ChartCard>
+          </ChartGrid>
+        </>
+      )}
+    </div>
+  )
 }
 
 const signedYen = (value: number) =>
@@ -954,6 +1332,18 @@ function DailyTable(props: { days: AnalyticsDay[] }) {
                       ? formatCount(row.day.cloudflare.uniques)
                       : "-",
                   ],
+                  [
+                    "ログインした人",
+                    row.day.users?.login
+                      ? formatCount(row.day.users.login.dau)
+                      : "-",
+                  ],
+                  [
+                    "新規登録",
+                    row.day.users
+                      ? formatCount(row.day.users.registered.new)
+                      : "-",
+                  ],
                 ] as const
               ).map(([label, value]) => (
                 <div key={label} className="flex justify-between gap-2">
@@ -977,7 +1367,7 @@ function DailyTable(props: { days: AnalyticsDay[] }) {
         )}
       </div>
       <div className="hidden overflow-x-auto sm:block">
-        <table className="w-full min-w-[900px] text-right text-xs tabular-nums">
+        <table className="w-full min-w-[1020px] text-right text-xs tabular-nums">
           <thead className="text-slate-400">
             <tr>
               <th className="py-2 text-left font-normal">日付</th>
@@ -991,6 +1381,8 @@ function DailyTable(props: { days: AnalyticsDay[] }) {
               <th className="font-normal">ページ表示</th>
               <th className="font-normal">外から</th>
               <th className="font-normal">CF 訪問者</th>
+              <th className="font-normal">ログイン</th>
+              <th className="font-normal">新規登録</th>
             </tr>
           </thead>
           <tbody>
@@ -1018,6 +1410,12 @@ function DailyTable(props: { days: AnalyticsDay[] }) {
                 </td>
                 <td>
                   {day.cloudflare ? formatCount(day.cloudflare.uniques) : "-"}
+                </td>
+                <td>
+                  {day.users?.login ? formatCount(day.users.login.dau) : "-"}
+                </td>
+                <td>
+                  {day.users ? formatCount(day.users.registered.new) : "-"}
                 </td>
               </tr>
             ))}

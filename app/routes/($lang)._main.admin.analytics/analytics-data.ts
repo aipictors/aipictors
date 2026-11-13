@@ -6,6 +6,23 @@ export type PlanCounts = { LITE: number; STANDARD: number; PREMIUM: number }
 
 export type RankedItem = { name: string; count: number }
 
+/** 国別の件数（合計と日本。countries は上位だけ） */
+export type CountryTotals = { total: number; jp: number }
+
+/** 利用者（サイト本体の DB から数える） */
+export type UserCounts = {
+  /** 新規登録と、その時点までの累計（退会を除く） */
+  registered: { new: number; total: number }
+  /** 投稿かいいねをした人 */
+  active: number
+  posters: number
+  likers: number
+  posts: number
+  likes: number
+}
+
+export type UsersMonth = UserCounts & { month: string; updatedAt: number }
+
 export type AnalyticsDay = {
   day: string
   updatedAt: number
@@ -40,8 +57,28 @@ export type AnalyticsDay = {
       landings: number
       bySource: Record<string, number>
       bySection: Record<string, number>
+      /** ブラウザで開いた人の表示の国別（2026/11/06 から） */
+      byCountry?: (CountryTotals & { countries: RankedItem[] }) | null
+      /** うちログイン中の表示 */
+      loggedIn?: CountryTotals | null
     }
+    /** その日の訪問者（ブラウザ数）。計測に印を付けた日から */
+    visitors?:
+      | (CountryTotals & {
+          countries: RankedItem[]
+          loggedIn: CountryTotals
+          weekFirst: CountryTotals
+          monthFirst: CountryTotals
+          newcomers: CountryTotals
+        })
+      | null
   } | null
+  users?:
+    | (UserCounts & {
+        /** ログインしてサイトを開いた人（その日・7 日・30 日） */
+        login: { dau: number; wau: number; mau: number } | null
+      })
+    | null
   costs?: {
     fxUsdJpy: number
     jpy: number
@@ -104,6 +141,8 @@ export type AnalyticsResponse = {
   days: AnalyticsDay[]
   current: { subscriptions: PlanCounts; at: number }
   pnl?: ProfitAndLoss | null
+  /** 利用者の月別（サービス開始から） */
+  months?: UsersMonth[] | null
 }
 
 /** Web（Stripe）の月額。App Store は別料金だが件数が少ないので同じ額で見積もる */
@@ -181,6 +220,22 @@ export const mergeCounts = (
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
 }
+
+/** 国コード（JP など）→ 日本語の国名 */
+export const countryName = (code: string) => {
+  try {
+    return (
+      new Intl.DisplayNames(["ja"], { type: "region" }).of(
+        code.toUpperCase(),
+      ) ?? code
+    )
+  } catch {
+    return code
+  }
+}
+
+export const formatPercent = (value: number, total: number) =>
+  total > 0 ? `${((value / total) * 100).toFixed(1)}%` : "-"
 
 export const formatYen = (value: number) =>
   `¥${Math.round(value).toLocaleString("ja-JP")}`

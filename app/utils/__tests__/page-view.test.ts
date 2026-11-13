@@ -3,6 +3,7 @@ import {
   classifyPath,
   classifyReferrer,
   PAGE_VIEW_INLINE_SCRIPT,
+  visitFlags,
 } from "~/utils/page-view"
 
 /** 埋め込みスクリプトの判定関数を取り出す（送信はしない） */
@@ -23,7 +24,11 @@ const loadInline = () => {
     { referrer: "" },
     { pathname: "/" },
   )
-  return win.__aipPv as { cr: (r: string) => string; cp: (p: string) => string }
+  return win.__aipPv as {
+    cr: (r: string) => string
+    cp: (p: string) => string
+    vf: (last: string | null, today: string) => string
+  }
 }
 
 const referrers = [
@@ -79,8 +84,30 @@ describe("page-view", () => {
     expect(classifyPath("/generation")).toBe("generation")
   })
 
+  test("訪問の印", () => {
+    // 2026-11-09 は月曜
+    expect(visitFlags("2026-11-10", "2026-11-10")).toBe("")
+    expect(visitFlags("2026-11-09", "2026-11-10")).toBe("&d=1")
+    expect(visitFlags("2026-11-08", "2026-11-09")).toBe("&d=1&w=1")
+    expect(visitFlags("2026-10-31", "2026-11-01")).toBe("&d=1&m=1")
+    expect(visitFlags("2026-10-25", "2026-11-02")).toBe("&d=1&w=1&m=1")
+    expect(visitFlags(null, "2026-11-10")).toBe("&d=1&w=1&m=1&n=1")
+    expect(visitFlags("x", "2026-11-10")).toBe("&d=1&w=1&m=1&n=1")
+  })
+
   test("埋め込みスクリプトの判定が同じ", () => {
     const inline = loadInline()
+    for (const [last, today] of [
+      ["2026-11-10", "2026-11-10"],
+      ["2026-11-09", "2026-11-10"],
+      ["2026-11-08", "2026-11-09"],
+      ["2026-10-31", "2026-11-01"],
+      ["2026-10-25", "2026-11-02"],
+      [null, "2026-11-10"],
+      ["x", "2026-11-10"],
+    ] as const) {
+      expect(inline.vf(last, today)).toBe(visitFlags(last, today))
+    }
     for (const referrer of referrers) {
       expect(inline.cr(referrer)).toBe(classifyReferrer(referrer))
     }

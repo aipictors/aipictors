@@ -16,6 +16,8 @@ type Props = {
   /** 系列を積み上げる（プラン別の会員数など） */
   stacked?: boolean
   format?: (value: number) => string
+  /** 横軸と選んだ所の見出し（無ければ日付 2026-11-13 → 11/13）。月別のグラフで使う */
+  formatLabel?: (label: string) => string
   height?: number
   /** 読み上げ用の説明 */
   title?: string
@@ -54,6 +56,7 @@ export function AnalyticsChart(props: Props) {
   const height = props.height ?? (isNarrow ? 190 : 220)
   const format =
     props.format ?? ((value: number) => value.toLocaleString("ja-JP"))
+  const formatLabel = props.formatLabel
   const [hover, setHover] = useState<number | null>(null)
   const count = props.labels.length
   const innerWidth = width - padding.left - padding.right
@@ -159,7 +162,7 @@ export function AnalyticsChart(props: Props) {
               textAnchor="middle"
               className="fill-slate-400 text-[10px]"
             >
-              {label.slice(5)}
+              {formatLabel ? formatLabel(label) : label.slice(5)}
             </text>
           ) : null,
         )}
@@ -219,7 +222,9 @@ export function AnalyticsChart(props: Props) {
           <span
             className={`w-full font-medium tabular-nums sm:w-auto ${hover === null ? "text-slate-400" : "text-slate-100"}`}
           >
-            {(props.labels[shown] ?? "").slice(5).replace("-", "/")}
+            {formatLabel
+              ? formatLabel(props.labels[shown] ?? "")
+              : (props.labels[shown] ?? "").slice(5).replace("-", "/")}
             {hover === null && "（最新）"}
           </span>
         )}
