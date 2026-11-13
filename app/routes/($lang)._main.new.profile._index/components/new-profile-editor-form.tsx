@@ -20,6 +20,9 @@ import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
 import { useNavigate } from "~/lib/app/locale-router"
 import { useTranslation } from "~/hooks/use-translation"
+import { clearLastLoginMethod } from "~/utils/login-flow"
+import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
+import { getAuth, signOut } from "firebase/auth"
 
 /**
  * 新しいプロフィール設定フォーム
@@ -115,6 +118,17 @@ export function NewProfileEditorForm() {
     }
   }
 
+  // 前とは違う方法でログインすると新しいアカウントになるので、選び直せるようにする
+  const onChooseAnotherMethod = async () => {
+    try {
+      await signOut(getAuth())
+      resetCookieLoginToken()
+      clearLastLoginMethod()
+    } catch {
+      toast(t("ログアウトできませんでした。", "Could not log out."))
+    }
+  }
+
   const profileImageSrc =
     profileImage.length > 0 ? profileImage : userInfo?.iconUrl
   const headerImageSrc =
@@ -146,6 +160,30 @@ export function NewProfileEditorForm() {
             "Start by choosing a name. You can change everything later.",
           )}
         </p>
+      </div>
+
+      <div className="space-y-2 rounded-xl border bg-muted/40 p-3 text-sm">
+        <p className="font-medium">
+          {t(
+            "前にAipictorsを使っていた方へ",
+            "Already have an Aipictors account?",
+          )}
+        </p>
+        <p className="text-muted-foreground text-xs">
+          {t(
+            "この画面は、はじめてのログイン方法のときに出ます。前とは違う方法（Google・X・LINE・メール）でログインすると、新しいアカウントになります。前のアカウントに戻るには、ログアウトして前に使った方法を選び直してください。",
+            "This screen appears the first time a login method is used. Logging in a different way (Google, X, LINE, email) creates a new account. To get back to your existing account, log out and choose the method you used before.",
+          )}
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="rounded-lg"
+          onClick={() => void onChooseAnotherMethod()}
+        >
+          {t("ログアウトして選び直す", "Log out and choose again")}
+        </Button>
       </div>
 
       <div className="flex items-center gap-4">

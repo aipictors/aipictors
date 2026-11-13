@@ -1,8 +1,11 @@
 import { describe, expect, test } from "bun:test"
 import {
+  clearLastLoginMethod,
   isInAppBrowser,
+  readLastLoginMethod,
   toSafeNextPath,
   toSocialLoginErrorMessage,
+  writeLastLoginMethod,
 } from "~/utils/login-flow"
 
 const t = (ja: string) => ja
@@ -57,4 +60,30 @@ test("isInAppBrowser", () => {
   expect(
     isInAppBrowser("Mozilla/5.0 (iPhone) AppleWebKit Version/18 Mobile Safari"),
   ).toBe(false)
+})
+
+describe("clearLastLoginMethod", () => {
+  test("違う方法でログインしたあとは、前回の方法を覚えていない", () => {
+    const store = new Map<string, string>()
+    const original = globalThis.localStorage
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      value: {
+        getItem: (key: string) => store.get(key) ?? null,
+        setItem: (key: string, value: string) => store.set(key, value),
+        removeItem: (key: string) => store.delete(key),
+      },
+    })
+    try {
+      writeLastLoginMethod("google")
+      expect(readLastLoginMethod()).toBe("google")
+      clearLastLoginMethod()
+      expect(readLastLoginMethod()).toBeNull()
+    } finally {
+      Object.defineProperty(globalThis, "localStorage", {
+        configurable: true,
+        value: original,
+      })
+    }
+  })
 })

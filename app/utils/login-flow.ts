@@ -74,6 +74,15 @@ export function writeLastLoginMethod(method: LoginMethod) {
   }
 }
 
+/** 違う方法でログインしてしまったとき、「前回」の目印を次のログイン画面に出さない */
+export function clearLastLoginMethod() {
+  try {
+    localStorage.removeItem(LAST_METHOD_KEY)
+  } catch {
+    // 消せなくてもログインには関係ない
+  }
+}
+
 /**
  * SNS ログインの失敗を、次に何をすればいいかが分かる文にする。
  * 自分で閉じたときなど、知らせなくていいものは null
