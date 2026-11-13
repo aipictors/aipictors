@@ -1,14 +1,18 @@
 import {
   AmbientLight,
+  type AnimationAction,
+  AnimationClip,
+  AnimationMixer,
+  Box3,
+  LoopOnce,
+  Vector3,
   BackSide,
-  type Bone,
   BoxGeometry,
   type BufferGeometry,
   CylinderGeometry,
   DataTexture,
   DirectionalLight,
   DoubleSide,
-  Euler,
   Group,
   type Material,
   Mesh,
@@ -19,7 +23,6 @@ import {
   OctahedronGeometry,
   PerspectiveCamera,
   PlaneGeometry,
-  Quaternion,
   RedFormat,
   RingGeometry,
   Scene,
@@ -28,6 +31,7 @@ import {
   type Texture,
   WebGLRenderer,
 } from "three"
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import {
   canvasTexture,
@@ -74,7 +78,7 @@ type Coin = { mesh: Mesh; active: boolean; x: number; y: number }
 
 type Pop = { mesh: Mesh; life: number }
 
-const MODEL_SCALE = 1.55
+const MODEL_SCALE = 1.75
 const GRAVITY = 44
 const JUMP_VELOCITY = 14
 const DOUBLE_JUMP_VELOCITY = 12
@@ -83,35 +87,10 @@ const MAX_SPEED = 13.5
 const SPAWN_X = 22
 const DESPAWN_X = -12
 
-/** 動かす骨（glTF の読み込みで名前の「.」は消える） */
-const BONE_NAMES = [
-  "hips",
-  "spine",
-  "head",
-  "hairBack",
-  "hairSide",
-  "ahoge",
-  "armUL",
-  "armLL",
-  "armUR",
-  "armLR",
-  "legUL",
-  "legLL",
-  "footL",
-  "legUR",
-  "legLR",
-  "footR",
-] as const
+/** モデルに入っている動き */
+const CLIP_NAMES = ["idle", "run", "jump", "fall"] as const
 
-type BoneName = (typeof BONE_NAMES)[number]
-
-type Pose = Record<BoneName, [number, number, number]>
-
-const emptyPose = (): Pose => {
-  const pose = {} as Pose
-  for (const name of BONE_NAMES) pose[name] = [0, 0, 0]
-  return pose
-}
+type ClipName = (typeof CLIP_NAMES)[number]
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value))
@@ -183,8 +162,13 @@ export async function createPictorRunGame(
     )
 
   // ---- ぴくたーちゃん -------------------------------------------------------
-  const gltf = await new GLTFLoader().loadAsync(modelUrl)
+  const loader = new GLTFLoader()
+  loader.setMeshoptDecoder(MeshoptDecoder)
+  const gltf = await loader.loadAsync(modelUrl)
   const model = gltf.scene
+  // 書き出しに混ざっている目印の球は使わない
+  model.getObjectByName("Icosphere")?.removeFromParent()
+
   const outlineMaterial = track(
     new MeshBasicMaterial({ color: 0x1a1f4d, side: BackSide }),
   )
@@ -192,7 +176,7 @@ export async function createPictorRunGame(
   outlineMaterial.onBeforeCompile = (shader) => {
     shader.vertexShader = shader.vertexShader.replace(
       "#include <begin_vertex>",
-      "vec3 transformed = position + normalize( normal ) * 0.0065;",
+      "vec3 transformed = position + normalize( normal ) * 0.0042;",
     )
   }
 
@@ -205,11 +189,7 @@ export async function createPictorRunGame(
     const material = track(
       source.map
         ? new MeshToonMaterial({ gradientMap, map: source.map })
-        : new MeshToonMaterial({
-            gradientMap,
-            vertexColors: true,
-            side: DoubleSide,
-          }),
+        : new MeshToonMaterial({ gradientMap }),
     )
     if (source.map) track(source.map)
     source.dispose()
@@ -223,14 +203,35 @@ export async function createPictorRunGame(
     mesh.parent?.add(outline)
   }
 
-  const bones = {} as Record<BoneName, Bone>
-  const rest = {} as Record<BoneName, Quaternion>
-  for (const name of BONE_NAMES) {
-    const bone = model.getObjectByName(name) as Bone | undefined
-    if (!bone) throw new Error(`bone not found: ${name}`)
-    bones[name] = bone
-    rest[name] = bone.quaternion.clone()
+  const mixer = new AnimationMixer(model)
+  const actions = {} as Record<ClipName, AnimationAction>
+  for (const name of CLIP_NAMES) {
+    const clip = AnimationClip.findByName(gltf.animations, name)
+    if (!clip) throw new Error(`animation not found: ${name}`)
+    actions[name] = mixer.clipAction(clip)
   }
+  actions.fall.setLoop(LoopOnce, 1)
+  actions.fall.clampWhenFinished = true
+  // 跳んでいる間の姿勢は、上がり下がりに合わせてこちらでコマを選ぶ
+  actions.jump.paused = true
+  const hip = model.getObjectByName("Hip")
+  const head = model.getObjectByName("Head")
+  if (!hip || !head) throw new Error("bone not found")
+
+  // 立ち姿で大きさを測って、身長 1・足元 0・正面が手前（+Z）にそろえる
+  actions.idle.play()
+  mixer.update(0)
+  model.updateMatrixWorld(true)
+  const bounds = new Box3().setFromObject(model, true)
+  const fitScale = 1 / (bounds.max.y - bounds.min.y)
+  const fit = new Group()
+  fit.rotation.y = -Math.PI / 2
+  fit.scale.setScalar(fitScale)
+  fit.position.y = -0.5 - bounds.min.y * fitScale
+  fit.add(model)
+  fit.updateMatrixWorld(true)
+  const point = new Vector3()
+  const hipHome = fit.worldToLocal(hip.getWorldPosition(point)).clone()
 
   /** 位置と、転んだときの回転 */
   const player = new Group()
@@ -239,8 +240,7 @@ export async function createPictorRunGame(
   /** 2 段ジャンプの宙返り（腰のあたりを中心に回す） */
   const flip = new Group()
   flip.position.y = 0.5
-  model.position.y = -0.5
-  flip.add(model)
+  flip.add(fit)
   facing.add(flip)
   facing.rotation.y = 0.92
   facing.scale.setScalar(MODEL_SCALE)
@@ -394,8 +394,8 @@ export async function createPictorRunGame(
         object.add(pivot)
         wings.push(pivot)
       }
-      bottom = 1.72
-      top = 2.4
+      bottom = 1.9
+      top = 2.55
       halfWidth = 0.34
     }
     object.visible = false
@@ -465,11 +465,12 @@ export async function createPictorRunGame(
   let jumpsLeft = 2
   let flipTime = -1
   let overTime = 0
+  /** ぶつかった障害物（はじき飛ばして、転んだ姿が隠れないようにする） */
+  let hitObstacle: Obstacle | null = null
   let time = 0
-  let runPhase = 0
+  let currentClip: ClipName = "idle"
   /** 縦長の画面は先が見えにくいので、その分ゆっくり走る */
   let pace = 1
-  const pose = emptyPose()
 
   const score = () => Math.floor(distance) + coinCount * 10
 
@@ -483,6 +484,7 @@ export async function createPictorRunGame(
       coin.mesh.visible = false
     }
     state = "ready"
+    hitObstacle = null
     speed = 0
     distance = 0
     coinCount = 0
@@ -494,7 +496,6 @@ export async function createPictorRunGame(
     flipTime = -1
     overTime = 0
     stars.visible = false
-    player.rotation.z = 0
     player.position.set(0, 0, 0)
     flip.rotation.x = 0
   }
@@ -564,121 +565,41 @@ export async function createPictorRunGame(
     if (state === "running" && velocity > 6) velocity = 6
   }
 
-  const setTarget = (
-    target: Pose,
-    name: BoneName,
-    x: number,
-    yRot = 0,
-    z = 0,
-  ) => {
-    target[name][0] = x
-    target[name][1] = yRot
-    target[name][2] = z
+  const play = (name: ClipName, fade: number) => {
+    if (currentClip === name) return
+    const next = actions[name]
+    next.reset()
+    if (name === "jump") next.paused = true
+    next.crossFadeFrom(actions[currentClip], fade, false)
+    next.play()
+    currentClip = name
   }
 
-  const target = emptyPose()
-  const euler = new Euler()
-  const quaternion = new Quaternion()
-
   const animate = (dt: number) => {
-    for (const name of BONE_NAMES) setTarget(target, name, 0)
-    const airborne = y > 0.02
-    let bob = 0
-    let rate = 22
-
     if (state === "ready") {
-      const breathe = Math.sin(time * 2.2)
-      setTarget(target, "spine", breathe * 0.02)
-      setTarget(
-        target,
-        "head",
-        0,
-        Math.sin(time * 0.9) * 0.12,
-        Math.sin(time * 1.3) * 0.07,
-      )
-      setTarget(target, "armUL", 0.1, 0, 0.12 + breathe * 0.04)
-      setTarget(target, "armUR", 0.1, 0, -0.12 - breathe * 0.04)
-      setTarget(target, "armLL", -0.25)
-      setTarget(target, "armLR", -0.25)
-      setTarget(target, "hairBack", 0.04 * breathe)
-      setTarget(target, "ahoge", 0, 0, Math.sin(time * 2.6) * 0.15)
-      bob = Math.abs(breathe) * 0.008
-      rate = 8
+      play("idle", 0.2)
     } else if (state === "over") {
-      // しりもちをついて目を回す
-      setTarget(target, "legUL", -1.75, 0, 0.3)
-      setTarget(target, "legUR", -1.6, 0, -0.3)
-      setTarget(target, "legLL", 0.2)
-      setTarget(target, "legLR", 0.35)
-      setTarget(target, "armUL", 0.75, 0, 0.55)
-      setTarget(target, "armUR", 0.75, 0, -0.55)
-      setTarget(target, "armLL", -0.3)
-      setTarget(target, "armLR", -0.3)
-      setTarget(target, "spine", 0.1)
-      setTarget(
-        target,
-        "head",
-        0.1,
-        Math.sin(time * 5) * 0.22,
-        Math.cos(time * 5) * 0.14,
-      )
-      setTarget(target, "hairBack", -0.25)
-      setTarget(target, "ahoge", 0, 0, Math.sin(time * 9) * 0.3)
-      rate = 12
-    } else if (airborne) {
-      const rising = velocity > 0
-      setTarget(target, "spine", rising ? 0.08 : 0.2)
-      setTarget(target, "head", rising ? -0.2 : -0.05)
-      setTarget(target, "legUL", rising ? -1.25 : -0.7)
-      setTarget(target, "legLL", rising ? 1.5 : 0.5)
-      setTarget(target, "legUR", rising ? 0.55 : -0.15)
-      setTarget(target, "legLR", rising ? 1.1 : 0.7)
-      setTarget(target, "armUL", 0.9, 0, 0.5)
-      setTarget(target, "armLL", -0.6)
-      setTarget(target, "armUR", -2.5, 0, -0.35)
-      setTarget(target, "armLR", -0.5)
-      const lift = clamp(-velocity * 0.035, -0.25, 0.7)
-      setTarget(target, "hairBack", 0.3 + lift)
-      setTarget(target, "hairSide", 0.15 + lift * 0.6)
-      setTarget(target, "ahoge", 0.2 + lift, 0, 0)
-      rate = 16
+      play("fall", 0.1)
+    } else if (y > 0.02) {
+      play("jump", 0.08)
+      // 踏み切り 0.3 秒 → いちばん高いところ 0.63 秒 → 着地の手前 0.85 秒
+      actions.jump.time =
+        velocity > 0
+          ? 0.63 - 0.33 * clamp(velocity / JUMP_VELOCITY, 0, 1)
+          : 0.63 + 0.22 * clamp(-velocity / 16, 0, 1)
     } else {
-      const p = runPhase
-      const sin = Math.sin(p)
-      const cos = Math.cos(p)
-      setTarget(target, "hips", 0.1, sin * 0.12, cos * 0.03)
-      setTarget(target, "spine", 0.14, -sin * 0.22)
-      setTarget(target, "head", -0.14, sin * 0.08, Math.sin(p * 2) * 0.03)
-      // 足（前に出すとマイナス、ひざは後ろに曲げるとプラス）
-      setTarget(target, "legUL", -sin * 1.0 - 0.15)
-      setTarget(target, "legLL", 0.25 + Math.max(0, -cos) * 1.45)
-      setTarget(target, "footL", Math.max(0, cos) * 0.35)
-      setTarget(target, "legUR", sin * 1.0 - 0.15)
-      setTarget(target, "legLR", 0.25 + Math.max(0, cos) * 1.45)
-      setTarget(target, "footR", Math.max(0, -cos) * 0.35)
-      // 腕は足と逆に振る
-      setTarget(target, "armUL", sin * 1.05, 0, 0.22)
-      setTarget(target, "armLL", -1.15 + sin * 0.25)
-      setTarget(target, "armUR", -sin * 1.05, 0, -0.22)
-      setTarget(target, "armLR", -1.15 - sin * 0.25)
-      setTarget(target, "hairBack", 0.42 + Math.sin(p * 2 + 0.8) * 0.1)
-      setTarget(target, "hairSide", 0.22 + Math.sin(p * 2 + 0.4) * 0.07)
-      setTarget(target, "ahoge", 0.25, 0, Math.sin(p * 2) * 0.22)
-      bob = Math.abs(cos) * 0.035
-      rate = 30
+      play("run", 0.1)
+      actions.run.timeScale = 0.75 + speed * 0.055
     }
+    mixer.update(dt)
 
-    for (const name of BONE_NAMES) {
-      const current = pose[name]
-      const goal = target[name]
-      current[0] = damp(current[0], goal[0], rate, dt)
-      current[1] = damp(current[1], goal[1], rate, dt)
-      current[2] = damp(current[2], goal[2], rate, dt)
-      euler.set(current[0], current[1], current[2])
-      quaternion.setFromEuler(euler)
-      bones[name].quaternion.copy(rest[name]).multiply(quaternion)
-    }
-    model.position.y = -0.5 + bob
+    // 動きごとに立ち位置がずれているので、腰の位置（水平）をそろえる
+    model.position.x = 0
+    model.position.z = 0
+    model.updateMatrixWorld(true)
+    fit.worldToLocal(hip.getWorldPosition(point))
+    model.position.x = hipHome.x - point.x
+    model.position.z = hipHome.z - point.z
   }
 
   const update = (dt: number) => {
@@ -687,7 +608,6 @@ export async function createPictorRunGame(
     if (state === "running") {
       speed = Math.min(MAX_SPEED * pace, speed + dt * 0.14 * pace)
       distance += speed * dt * 0.5
-      runPhase += dt * (7.5 + speed * 0.55)
 
       velocity -= GRAVITY * dt
       y += velocity * dt
@@ -717,12 +637,20 @@ export async function createPictorRunGame(
       obstacle.x -= move
       const hover =
         obstacle.kind === "bug"
-          ? 2.05 + Math.sin(time * 5 + obstacle.x) * 0.1
+          ? 2.22 + Math.sin(time * 5 + obstacle.x) * 0.1
           : 0
       obstacle.object.position.set(obstacle.x, hover, 0)
       for (let i = 0; i < obstacle.wings.length; i++) {
         obstacle.wings[i].rotation.x =
           (i === 0 ? 1 : -1) * (0.2 + Math.sin(time * 38) * 0.6)
+      }
+      if (obstacle === hitObstacle) {
+        const push = Math.min(1, overTime / 0.5)
+        obstacle.x += (1 - push) * dt * 9
+        obstacle.object.position.y += Math.sin(push * Math.PI) * 0.5
+        obstacle.object.rotation.z = -push * 0.35
+      } else {
+        obstacle.object.rotation.z = 0
       }
       if (obstacle.x < DESPAWN_X) {
         obstacle.active = false
@@ -734,6 +662,7 @@ export async function createPictorRunGame(
       const hitY = y + 0.08 < obstacle.top && y + 1.3 > obstacle.bottom
       if (hitX && hitY) {
         state = "over"
+        hitObstacle = obstacle
         overTime = 0
         velocity = 7
         flipTime = -1
@@ -787,14 +716,9 @@ export async function createPictorRunGame(
     player.position.y = y
     if (state === "over") {
       const fall = Math.min(1, overTime / 0.45)
-      player.rotation.z = fall * 0.3
-      player.position.x = -fall * 0.35
-      player.position.y = y - fall * 0.4
-      stars.position.set(
-        player.position.x - 0.35,
-        player.position.y + 1.95,
-        0.2,
-      )
+      player.position.x = -fall * 0.15
+      head.getWorldPosition(stars.position)
+      stars.position.y += 0.55
       for (let i = 0; i < stars.children.length; i++) {
         const a = time * 5 + (i * Math.PI * 2) / 3
         stars.children[i].position.set(

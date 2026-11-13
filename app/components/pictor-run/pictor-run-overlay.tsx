@@ -10,7 +10,7 @@ type Props = Readonly<{
 
 type Phase = "loading" | "ready" | "running" | "over" | "failed"
 
-const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v1.glb"
+const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v2.glb"
 const BEST_KEY = "pictor-run-best"
 
 const readBest = () => {
