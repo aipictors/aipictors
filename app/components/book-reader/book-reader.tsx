@@ -1619,7 +1619,12 @@ function TitlePage(props: {
       )}
       <div
         className="text-xs"
-        style={{ color: props.palette.muted, letterSpacing: "0.08em" }}
+        // 本文と同じ書体にする（端末に日本語の書体が無いと、ここだけ豆腐になることがある）
+        style={{
+          fontFamily: "var(--rb-font)",
+          color: props.palette.muted,
+          letterSpacing: "0.08em",
+        }}
       >
         {props.t(
           `${props.charCount.toLocaleString()}文字・約${minutes}分`,
