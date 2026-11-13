@@ -51,15 +51,22 @@ export type AnalyticsDay = {
   errors: string[]
 }
 
-export type CostKey = "cloudflare" | "runpod" | "google" | "openai"
+export type CostKey = "cloudflare" | "runpod" | "google" | "openai" | "xai"
 
-export const COST_KEYS: CostKey[] = ["runpod", "cloudflare", "google", "openai"]
+export const COST_KEYS: CostKey[] = [
+  "runpod",
+  "cloudflare",
+  "google",
+  "xai",
+  "openai",
+]
 
 export const COST_LABELS: Record<CostKey, string> = {
   runpod: "RunPod（生成 GPU）",
   cloudflare: "Cloudflare",
   google: "Google（Gemini）",
   openai: "OpenAI",
+  xai: "xAI（Grok）",
 }
 
 /** aipictors-api の /internal/analytics/pnl */

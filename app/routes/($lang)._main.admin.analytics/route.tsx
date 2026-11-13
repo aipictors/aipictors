@@ -36,7 +36,7 @@ import {
 
 const TITLE = "分析"
 const DESCRIPTION =
-  "収支（売上と Cloudflare・RunPod・Google・OpenAI の費用）、サブスク・コイン・Stripe の売上、生成数、ページ表示と流入元を日別に見られます。数字は毎日 00:30 に前日分を保存しています。"
+  "収支（売上と Cloudflare・RunPod・Google・xAI・OpenAI の費用）、サブスク・コイン・Stripe の売上、生成数、ページ表示と流入元を日別に見られます。数字は毎日 00:30 に前日分を保存しています。"
 
 const RANGES = [30, 90, 180] as const
 
@@ -59,6 +59,7 @@ const COLORS = {
   cloudflare: "#f97316",
   google: "#60a5fa",
   openai: "#a3e635",
+  xai: "#e2e8f0",
   profit: "#34d399",
 }
 
@@ -601,7 +602,7 @@ function ProfitSection(props: {
           </ChartCard>
           <ChartCard
             title="費用（日別・サービス別）"
-            description="RunPod・OpenAI・Google は請求の実額、Cloudflare は使用量 × 定価（無料枠を日割りで引く）＋契約の日割り"
+            description="RunPod・OpenAI・Google・xAI は請求の実額、Cloudflare は使用量 × 定価（無料枠を日割りで引く）＋契約の日割り"
           >
             <AnalyticsChart
               type="bar"
