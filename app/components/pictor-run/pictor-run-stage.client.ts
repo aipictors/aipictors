@@ -25,6 +25,7 @@ import {
   MeshBasicMaterial,
   MeshLambertMaterial,
   MeshStandardMaterial,
+  MirroredRepeatWrapping,
   type Object3D,
   OctahedronGeometry,
   type PerspectiveCamera,
@@ -3128,7 +3129,7 @@ type Scroller = {
   onWrap?: () => void
 }
 
-type Slot = { mesh: Mesh; kind: PropKind }
+type Slot = { mesh: Mesh; kind: PropKind; theme: number }
 
 type Art = { material: MeshBasicMaterial; shape: number }
 
@@ -3160,6 +3161,8 @@ export function createPictorRunStage(
     scrollers.push({ object, speed, span, min, onWrap })
   }
   let disposed = false
+  /** 遠くの山・雲・丘（背景画がおおっている間は描かない） */
+  const farScenery: Object3D[] = []
 
   // ---- 素材 -----------------------------------------------------------------
   /** 濡れぐあい（0〜1）と、夜に光るものの明るさ。どの素材も同じ値を見る */
@@ -3394,6 +3397,7 @@ totalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;`,
   halo.position.z = -0.2
   sunDisc.add(halo)
   scene.add(sunDisc)
+  farScenery.push(sunDisc)
 
   // 星
   const starCount = lite ? 110 : 220
@@ -3416,7 +3420,9 @@ totalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;`,
       depthWrite: false,
     }),
   )
-  scene.add(new Points(starGeometry, starMaterial))
+  const starPoints = new Points(starGeometry, starMaterial)
+  scene.add(starPoints)
+  farScenery.push(starPoints)
 
   // ---- 遠くの山なみ（2 枚重ね） ---------------------------------------------
   const ridge = (width: number, base: number, peaks: number, seed: number) => {
@@ -3467,6 +3473,7 @@ totalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;`,
       const mesh = new Mesh(geometry, material)
       mesh.position.set(-150 + i * width, -4, z)
       scroll(mesh, speed, width * 3, -260)
+      farScenery.push(mesh)
     }
   }
 
@@ -3505,6 +3512,7 @@ totalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;`,
     )
     cloud.scale.setScalar(1.8 + random() * 2.2)
     scroll(cloud, 0.03 + random() * 0.03, 144, -70)
+    farScenery.push(cloud)
   }
 
   // ---- 額ぶちと絵（今日の作品が読めるまでは、こちらで描いた絵を飾る） ----------
@@ -3645,14 +3653,15 @@ totalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;`,
     const framed = makeFramed()
     framed.frame.castShadow = false
     framed.frame.material = toonVertexClear
-    const size = 2.8 + random() * 2.2
+    // 背景画より手前に浮かべる
+    const size = 1.5 + random() * 1.2
     framed.group.scale.setScalar(size)
     framed.group.rotation.set(0, 0.25 - random() * 0.5, (random() - 0.5) * 0.3)
-    const base = 6.8 + random() * 4.6
+    const base = 4.5 + random() * 2.2
     framed.group.position.set(
       -20 + i * floaterGap + random() * 6,
       base,
-      -20 - random() * 9,
+      -5.5 - random() * 3,
     )
     scroll(framed.group, 0.5, 95, -45, () => hangNext(framed))
     floaters.push({ object: framed.group, base, phase: random() * 6 })
@@ -3677,6 +3686,7 @@ totalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;`,
     hill.position.set(-24 + i * 8.5, -1.5, -13 - random() * 5)
     hill.receiveShadow = shadows
     scroll(hill, 1, 10 * 8.5, -32)
+    farScenery.push(hill)
   }
 
   // ---- 道・地面・崖・水面（模様は白黒で描いて、ステージの色を掛ける） ----------
@@ -3818,7 +3828,10 @@ totalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;`,
   const GROUND_TILE = 4
   const groundMaterial = bumpy(toonMap(groundTexture), 0.9)
   groundTexture.repeat.set(90 / GROUND_TILE, 12.5)
-  const backGround = new Mesh(track(new PlaneGeometry(90, 50)), groundMaterial)
+  const backGround: Mesh = new Mesh(
+    track(new PlaneGeometry(90, 50)),
+    groundMaterial,
+  )
   backGround.rotation.x = -Math.PI / 2
   backGround.position.set(14, 0, -26.3)
   backGround.receiveShadow = shadows
@@ -4179,11 +4192,184 @@ void main() {
     scene.add(rain)
   }
 
+  // ---- 描き込んだ背景画（ステージごとに 1 枚。奥でゆっくり流し、手前の道やものは立体のまま重ねる） ----
+  const BACKDROP_Z = -9.2
+  /** 絵の下のはし。絵の手前の暗い地面は地面の下に沈めて、明るい地面のところで立体の地面とつなぐ */
+  const BACKDROP_BOTTOM = -1.7
+  const BACKDROP_WIDTH = 76
+  /** 道が流れる速さに対する、背景画の流れる速さ */
+  const BACKDROP_SPEED = 0.22
+  type Backdrop = {
+    state: "none" | "loading" | "ready" | "failed"
+    texture: Texture | null
+    /** 絵のいちばん下（地面）の色。立体の地面をこの色にして、絵とつなげる */
+    ground: Color | null
+  }
+  const backdrops: Backdrop[] = THEMES.map(() => ({
+    state: "none",
+    texture: null,
+    ground: null,
+  }))
+  const backdropLoader = new TextureLoader()
+  const loadBackdrop = (index: number) => {
+    const item = backdrops[index]
+    if (item.state !== "none") return
+    item.state = "loading"
+    const name = String(index + 1).padStart(2, "0")
+    backdropLoader.load(
+      `/images/pictor-chan/run/bg/stage-${name}${lite ? "-s" : ""}.webp`,
+      (texture) => {
+        if (disposed || item.state !== "loading") {
+          texture.dispose()
+          return
+        }
+        texture.colorSpace = SRGBColorSpace
+        texture.wrapS = MirroredRepeatWrapping
+        // 絵の地面の色をならして、立体の地面の色にする
+        const canvas = document.createElement("canvas")
+        canvas.width = 32
+        canvas.height = 16
+        const ctx = canvas.getContext("2d", { willReadFrequently: true })
+        if (ctx) {
+          ctx.drawImage(texture.image as CanvasImageSource, 0, 0, 32, 16)
+          // 立体の地面とつながる高さ（下から 2 割弱）の色を取る
+          const data = ctx.getImageData(0, 13, 32, 1).data
+          let r = 0
+          let g = 0
+          let b = 0
+          for (let i = 0; i < 32; i++) {
+            r += data[i * 4]
+            g += data[i * 4 + 1]
+            b += data[i * 4 + 2]
+          }
+          item.ground = new Color().setRGB(
+            r / 32 / 255,
+            g / 32 / 255,
+            b / 32 / 255,
+            SRGBColorSpace,
+          )
+        }
+        item.texture = texture
+        item.state = "ready"
+        // 背の高い木や遠くの建物は、絵に任せる
+        for (const slot of slots) hideForBackdrop(slot)
+      },
+      undefined,
+      () => {
+        // 読めなければ、これまでの立体だけの景色で遊べる
+        item.state = "failed"
+      },
+    )
+  }
+  /** いまのステージと次のステージの絵だけを持つ */
+  const keepBackdrops = (index: number, next: number) => {
+    for (let i = 0; i < backdrops.length; i++) {
+      const item = backdrops[i]
+      if (i === index || i === next || item.state === "none") continue
+      if (item.state === "failed") continue
+      item.texture?.dispose()
+      item.texture = null
+      item.state = "none"
+    }
+  }
+  track({
+    dispose: () => {
+      for (const item of backdrops) item.texture?.dispose()
+    },
+  })
+  const backdropGeometry = track(new PlaneGeometry(1, 1))
+  const backdropPlanes = [0, 1].map((order) => {
+    const material = track(
+      new MeshBasicMaterial({
+        transparent: true,
+        depthWrite: false,
+        fog: false,
+      }),
+    )
+    const mesh = new Mesh(backdropGeometry, material)
+    mesh.renderOrder = -6 + order
+    mesh.visible = false
+    scene.add(mesh)
+    return { mesh, material }
+  })
+  /** 絵のある地面（光の当たり方に左右されない色にして、絵の地面とつなげる） */
+  const paintedGroundMaterial = track(
+    new MeshBasicMaterial({ map: groundTexture, fog: false }),
+  )
+  const backdropView = new Vector3()
+  let backdropScroll = 0
+  /** 次のコマで、絵のまん中が画面のまん中に来るように合わせる（走り始め） */
+  let backdropAlign = true
+  /** いま、絵が景色をすっかりおおっている */
+  let backdropCovers = false
+  const updateBackdrop = (move: number, index: number, t: number) => {
+    const next = (index + 1) % THEMES.length
+    loadBackdrop(index)
+    loadBackdrop(next)
+    keepBackdrops(index, next)
+    // 画面に見えている高さに合わせて、絵の大きさを決める（縦長の画面では空まで見せる）
+    const depth = camera.position.z - BACKDROP_Z
+    camera.getWorldDirection(backdropView)
+    const reach = depth / Math.max(0.2, -backdropView.z)
+    const top =
+      camera.position.y +
+      backdropView.y * reach +
+      reach * Math.tan((camera.fov * Math.PI) / 360) * 1.06
+    const visible = Math.max(6, top - BACKDROP_BOTTOM)
+    const imageHeight = Math.max(visible, 9.8)
+    const imageWidth = imageHeight * 2
+    if (backdropAlign) {
+      // 絵は左右を折り返してつないでいるので、つなぎ目が走り始めの画面に来ないようにする
+      backdropAlign = false
+      const center = camera.position.x + 1.2
+      backdropScroll =
+        (((0.5 - (center - (14 - BACKDROP_WIDTH / 2)) / imageWidth) % 2) + 2) %
+        2
+    }
+    backdropScroll = (backdropScroll + (move * BACKDROP_SPEED) / imageWidth) % 2
+    const a = backdrops[index]
+    const b = backdrops[next]
+    const order = [a, b]
+    for (let i = 0; i < 2; i++) {
+      const plane = backdropPlanes[i]
+      const item = order[i]
+      const shown = item.texture !== null && (i === 0 || t > 0.001)
+      plane.mesh.visible = shown
+      if (!shown || !item.texture) continue
+      if (plane.material.map !== item.texture) {
+        plane.material.map = item.texture
+        plane.material.needsUpdate = true
+      }
+      item.texture.repeat.set(
+        BACKDROP_WIDTH / imageWidth,
+        visible / imageHeight,
+      )
+      item.texture.offset.set(backdropScroll, 0)
+      plane.mesh.scale.set(BACKDROP_WIDTH, visible, 1)
+      plane.mesh.position.set(14, BACKDROP_BOTTOM + visible / 2, BACKDROP_Z)
+      // 次のステージの絵は、色が移るのに合わせて上から重ねていく
+      plane.material.opacity = i === 0 ? (b.texture ? 1 : 1 - t) : t
+      // すっかり見えている絵は、うしろのもの（太陽の光など）をかくす
+      plane.material.depthWrite = plane.material.opacity >= 1
+    }
+    backdropCovers = a.texture !== null && (b.texture !== null || t <= 0.001)
+    for (const object of farScenery) object.visible = !backdropCovers
+    const painted = t < 0.5 ? a.texture !== null : b.texture !== null
+    backGround.material = painted ? paintedGroundMaterial : groundMaterial
+  }
+
   // ---- 道ばたのもの（ステージごとに形を入れ替える） ----------------------------
   /** いま置いていくものが、どのステージのものか */
   let propTheme = 0
   const slots: Slot[] = []
+  /** 背景画のあるステージでは、背の高い木と遠くの建物を置かない（絵に描いてある） */
+  const hideForBackdrop = (slot: Slot) => {
+    if (slot.kind !== "tall" && slot.kind !== "far") return
+    slot.mesh.visible = backdrops[slot.theme].state === "failed"
+  }
   const dress = (slot: Slot) => {
+    slot.theme = propTheme
+    hideForBackdrop(slot)
     const list = propsOf(propTheme)[slot.kind]
     slot.mesh.geometry = list[Math.floor(random() * list.length) % list.length]
     if (slot.kind === "tall" || slot.kind === "mid") {
@@ -4204,7 +4390,7 @@ void main() {
     if (kind !== "small" && kind !== "far") cast(mesh)
     mesh.position.set(x, 0, z)
     mesh.scale.setScalar(scale)
-    const slot = { mesh, kind }
+    const slot = { mesh, kind, theme: 0 }
     dress(slot)
     slots.push(slot)
     scroll(mesh, 1, span, min, () => dress(slot))
@@ -4558,18 +4744,18 @@ void main() {
     if (air.flyer === "fish") {
       flyer.base = 2.5 + random() * 6
       flyer.size = 0.5 + random() * 0.5
-      flyer.mesh.position.z = -5 - random() * 8
+      flyer.mesh.position.z = -4 - random() * 4.5
       flyer.speed = 1 + random() * 1.5
     } else if (air.flyer === "meteor") {
-      flyer.base = 24 + random() * 14
+      flyer.base = 7 + random() * 4
       flyer.size = 1
-      flyer.mesh.position.z = -40 - random() * 20
+      flyer.mesh.position.z = -8.6
       flyer.speed = 16 + random() * 10
       flyer.mesh.position.y = flyer.base
     } else {
-      flyer.base = 9 + random() * 8
-      flyer.size = 0.45 + random() * 0.45
-      flyer.mesh.position.z = -22 - random() * 14
+      flyer.base = 4.6 + random() * 3
+      flyer.size = 0.2 + random() * 0.22
+      flyer.mesh.position.z = -5 - random() * 3.5
       flyer.speed = 2 + random() * 2
     }
     flyer.mesh.scale.set(
@@ -4604,6 +4790,10 @@ void main() {
     skyColors.setXYZ(row * 2 + 1, color.r, color.g, color.b)
   }
 
+  const groundFrom = new Color()
+  const groundTo = new Color()
+  /** この 1 コマで道が流れた長さ（背景画を流すのに使う） */
+  let backdropMove = 0
   const applyPalette = (distance: number) => {
     const position = distance / PICTOR_RUN_STAGE_LENGTH
     const index = Math.floor(position) % THEMES.length
@@ -4669,7 +4859,18 @@ void main() {
     cloudMaterial.opacity = mix(a.cloudAlpha, b.cloudAlpha)
     starMaterial.opacity = mix(a.stars, b.stars)
     lampGlowMaterial.opacity = lampPower * 0.55
-    groundMaterial.color.copy(lerpColor(a.ground, b.ground, t))
+    updateBackdrop(backdropMove, index, t)
+    backdropMove = 0
+    // 背景画があるステージは、絵の地面の色に合わせる
+    const groundA = backdrops[index].ground
+    const groundB = backdrops[(index + 1) % THEMES.length].ground
+    groundFrom.set(a.ground)
+    if (groundA) groundFrom.copy(groundA)
+    groundTo.set(b.ground)
+    if (groundB) groundTo.copy(groundB)
+    groundMaterial.color.copy(groundFrom).lerp(groundTo, t)
+    // 模様（白黒）を掛けても絵と同じ明るさになるよう、少し明るくしておく
+    paintedGroundMaterial.color.copy(groundMaterial.color).multiplyScalar(1.12)
     edgeMaterial.color.copy(groundMaterial.color)
     hillMaterials[0].color.copy(lerpColor(a.hills[0], b.hills[0], t))
     hillMaterials[1].color.copy(lerpColor(a.hills[1], b.hills[1], t))
@@ -4702,6 +4903,7 @@ void main() {
   applyPalette(0)
 
   const warp = (distance: number) => {
+    backdropAlign = true
     propTheme = Math.floor(distance / PICTOR_RUN_STAGE_LENGTH) % THEMES.length
     for (const slot of slots) dress(slot)
     for (const lamp of lampMeshes) lamp.geometry = propsOf(propTheme).lamp
@@ -4795,6 +4997,7 @@ void main() {
       waterTexture.offset.y = (waterTexture.offset.y + dt * 0.03) % 1
 
       shifted = (shifted + move) % 1000
+      backdropMove = move
       if (puddles && rainMaterial) {
         const wet = wetUniform.value
         puddles.visible = reflections && wet > 0.02
