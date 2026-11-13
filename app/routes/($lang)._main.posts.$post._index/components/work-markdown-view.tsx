@@ -115,16 +115,27 @@ export function WorkMarkdownView(props: Props) {
     setIsReaderOpen(true)
   }
 
+  // ?reader=1 で開いたときは、本文が入り次第、本のように読む画面を開く。
+  // 本文は後から届くので、入るまで少しのあいだ待つ（アプリの WebView もこの道を通る）
   useEffect(() => {
-    if (!canOpenReader || !editor || editor.getText() === "") return
-    if (new URLSearchParams(window.location.search).get("reader") === "1") {
+    if (!canOpenReader || !editor) return
+    if (new URLSearchParams(window.location.search).get("reader") !== "1")
+      return
+    let timer = 0
+    const open = () => {
+      if (editor.isDestroyed) return
+      if (editor.getText() === "") {
+        timer = window.setTimeout(open, 200)
+        return
+      }
       setReaderHtml(editor.getHTML())
       setIsReaderOpen(true)
       // アプリから開いたときは、読み込み中の表示を消せるように知らせる
       postToApp("ready")
     }
-    // 本文が入った最初の 1 回だけ
-  }, [canOpenReader, editor, editor?.getText() === ""])
+    open()
+    return () => window.clearTimeout(timer)
+  }, [canOpenReader, editor])
 
   // 挿絵（本文中の画像）をクリックしたら原寸で表示する
   const [zoomedImageUrl, setZoomedImageUrl] = useState<string | null>(null)
