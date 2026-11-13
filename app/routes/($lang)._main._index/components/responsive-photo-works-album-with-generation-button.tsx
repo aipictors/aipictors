@@ -12,6 +12,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { ReferenceGenerationButton } from "~/routes/($lang)._main._index/components/reference-generation-button"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import {
   type GridColumnBreakpoint,
   incompleteRowHiddenClassName,
@@ -417,17 +418,20 @@ function HomeCroppedWorksWithGenerationButton(props: {
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
+  // ほかの作品一覧（HomeCroppedWorks のスマホ表示）と同じ格子・余白・正方形の大きさにする。
+  // 以前は正方形が固定 160px（size="lg"）で、2 列のマスより小さく右と下に余白が出ていた
   return (
-    <div className="grid w-full grid-cols-2 gap-3 pr-2 pb-4">
+    <div className="safari-work-grid grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3">
       {props.works.map((work) => (
-        <div key={work.id} className="flex flex-col space-y-2">
+        <div key={work.id} className="relative flex w-full min-w-0 flex-col">
           <div className="relative">
             <CroppedWorkSquare
               title={t.workTitle(work.title, work.enTitle)}
               workId={work.id}
               imageUrl={work.smallThumbnailImageURL}
               thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-              size="lg"
+              size="auto"
+              media="(max-width: 767.98px)"
               imageWidth={work.smallThumbnailImageWidth}
               imageHeight={work.smallThumbnailImageHeight}
               subWorksCount={work.subWorksCount}
@@ -440,7 +444,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
               hasReferenceButton={true}
               onSelect={props.onSelect}
             />
-            <div className="absolute right-0 bottom-0">
+            <div className="absolute right-2 bottom-2 z-10">
               <LikeButton
                 size={56}
                 targetWorkId={work.id}
@@ -449,46 +453,43 @@ function HomeCroppedWorksWithGenerationButton(props: {
                 defaultLikedCount={0}
                 isBackgroundNone={true}
                 strokeWidth={2}
+                isParticle={true}
               />
             </div>
           </div>
 
-          {props.isShowProfile && (
-            <div className="flex flex-col space-y-1">
+          {props.isShowProfile && work.user && (
+            <>
               {props.onSelect ? (
                 <button
                   type="button"
                   onClick={() => props.onSelect?.(work.id)}
-                  className="cursor-pointer text-left"
+                  className="mt-1.5 min-w-0 cursor-pointer text-left"
                 >
-                  <p className="line-clamp-2 text-sm">
+                  <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-sm">
                     {t.workTitle(work.title, work.enTitle)}
                   </p>
                 </button>
               ) : (
-                <Link to={`/posts/${work.id}`}>
-                  <p className="line-clamp-2 text-sm">
+                <Link className="mt-1.5 min-w-0" to={`/posts/${work.id}`}>
+                  <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-sm">
                     {t.workTitle(work.title, work.enTitle)}
                   </p>
                 </Link>
               )}
-              <Link to={`/users/${work.user?.id}`}>
-                <div className="flex items-center space-x-2">
-                  <UserAvatarWithFrame
-                    alt={work.user?.name ?? ""}
-                    frame={work.user?.avatarFrame}
-                    isAnimated={false}
-                    sizeClassName="size-4"
-                    src={withIconUrlFallback(work.user?.iconUrl)}
-                  />
-                  <span className="truncate text-xs">{work.user?.name}</span>
-                </div>
-              </Link>
-            </div>
+              <UserNameBadge
+                userId={work.user.id}
+                frame={work.user.avatarFrame}
+                userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                name={work.user.name}
+                width={"md"}
+                likesCount={work.likesCount}
+              />
+            </>
           )}
 
-          {/* 参照生成ボタンを追加 */}
-          <div className="w-full">
+          {/* 参照生成ボタン */}
+          <div className="mt-1.5 w-full">
             <ReferenceGenerationButton workId={work.id} className="text-xs" />
           </div>
         </div>
