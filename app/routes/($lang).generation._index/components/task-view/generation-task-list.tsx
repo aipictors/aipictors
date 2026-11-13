@@ -214,6 +214,10 @@ export function GenerationTaskList(props: Props) {
   // いま存在するページ数の約1/3をジャンプ幅にする（最低1ページ）
   const jumpPages = Math.max(1, Math.floor(pageCount / 3))
 
+  // ページが少ないうちは Prev / Next と番号で足りるので、大きく移動するボタンは出さない
+  const isJumpVisible = pageCount > 10
+  const isPageInputVisible = pageCount > 4
+
   const canJumpBack = props.currentPage > 0
   const canJumpForward = props.currentPage < lastPageIndex
 
@@ -350,10 +354,17 @@ export function GenerationTaskList(props: Props) {
         </div>
       )}
 
-      <div className="shrink-0 space-y-3 p-2 pb-4 md:p-4 md:pt-2 md:pb-4">
+      <div className="shrink-0 space-y-2 p-2 pb-3 md:px-4 md:pt-2 md:pb-3">
         {props.protect !== 1 && (
           <>
-            <div className="flex items-center justify-between gap-2">
+            {isPageInputVisible && (
+            <div
+              className={cn(
+                "flex items-center gap-2",
+                isJumpVisible ? "justify-between" : "justify-center",
+              )}
+            >
+              {isJumpVisible && (
               <Button
                 variant="secondary"
                 size="sm"
@@ -370,6 +381,7 @@ export function GenerationTaskList(props: Props) {
               >
                 {t(`-${jumpPages}ページ`, `-${jumpPages} pages`)}
               </Button>
+              )}
 
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground text-xs">
@@ -402,6 +414,7 @@ export function GenerationTaskList(props: Props) {
                 </span>
               </div>
 
+              {isJumpVisible && (
               <Button
                 variant="secondary"
                 size="sm"
@@ -418,7 +431,9 @@ export function GenerationTaskList(props: Props) {
               >
                 {t(`+${jumpPages}ページ`, `+${jumpPages} pages`)}
               </Button>
+              )}
             </div>
+            )}
             <ResponsivePagination
               perPage={perPage}
               maxCount={

@@ -158,7 +158,8 @@ export function GenerationTaskListActions (props: Props) {
   }
 
   return (
-    <div className="flex min-h-9 flex-wrap items-center gap-2 px-2 pb-2 md:px-4">
+    // スマホでも 1 列に収める（折り返さない。幅が足りない分はスライダーが縮む）
+    <div className="flex min-h-9 items-center gap-2 px-2 pb-2 md:px-4">
       <Button
         title={t(
           "複数選んで、まとめてダウンロード・投稿・削除できます",
@@ -167,7 +168,7 @@ export function GenerationTaskListActions (props: Props) {
         onClick={props.onToggleEditMode}
         variant="outline"
         size="sm"
-        className="gap-1"
+        className="shrink-0 gap-1"
       >
         <SquareCheckIcon className="size-4" />
         {t("選択", "Select")}
@@ -184,10 +185,10 @@ export function GenerationTaskListActions (props: Props) {
           }}
         />
       )}
-      <div className="ml-auto flex items-center gap-1">
+      <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-1">
         {/* サムネイルサイズ */}
         <Slider
-          className="color-pink mr-1 w-20 shrink-0 md:w-28"
+          className="color-pink mr-1 w-28 min-w-12 shrink"
           aria-label={t("サムネイルサイズ", "Thumbnail size")}
           title={t("サムネイルサイズ", "Thumbnail size")}
           min={1}
