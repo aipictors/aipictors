@@ -3,6 +3,8 @@ import {
   PauseIcon,
   PlayIcon,
   TrophyIcon,
+  Volume2Icon,
+  VolumeXIcon,
   XIcon,
   ZapIcon,
 } from "lucide-react"
@@ -14,6 +16,7 @@ import {
   type PictorRunMessage,
   submitPictorRunScore,
 } from "~/components/pictor-run/pictor-run-api"
+import type { PictorRunSound } from "~/components/pictor-run/pictor-run-audio.client"
 import { PictorRunChatPanel } from "~/components/pictor-run/pictor-run-chat"
 import type {
   PictorRunCallbacks,
@@ -21,6 +24,7 @@ import type {
 } from "~/components/pictor-run/pictor-run-game.client"
 import { PictorRunRankingPanel } from "~/components/pictor-run/pictor-run-ranking"
 import {
+  PICTOR_RUN_STAGE_LENGTH,
   PICTOR_RUN_STAGES,
   toPictorRunStageName,
 } from "~/components/pictor-run/pictor-run-stages"
@@ -40,6 +44,7 @@ const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v3.glb"
 const BEST_KEY = "pictor-run-best"
 const BEST_STAGE_KEY = "pictor-run-best-stage"
 const LITE_KEY = "pictor-run-lite"
+const SOUND_KEY = "pictor-run-sound"
 const PANEL_KEY = "pictor-run-panel"
 const DESKTOP_QUERY = "(min-width: 1024px)"
 const MAX_MESSAGES = 200
@@ -51,6 +56,39 @@ const readBest = () => {
     return 0
   }
 }
+
+const DEFAULT_SOUND: PictorRunSound = { bgm: 0.6, sfx: 0.8, muted: false }
+
+const toVolume = (value: unknown, fallback: number) =>
+  typeof value === "number" && Number.isFinite(value)
+    ? Math.min(1, Math.max(0, value))
+    : fallback
+
+const readSound = (): PictorRunSound => {
+  try {
+    const saved = JSON.parse(
+      window.localStorage.getItem(SOUND_KEY) ?? "null",
+    ) as Partial<PictorRunSound> | null
+    if (!saved) return DEFAULT_SOUND
+    return {
+      bgm: toVolume(saved.bgm, DEFAULT_SOUND.bgm),
+      sfx: toVolume(saved.sfx, DEFAULT_SOUND.sfx),
+      muted: saved.muted === true,
+    }
+  } catch {
+    return DEFAULT_SOUND
+  }
+}
+
+const isTypingTarget = (target: EventTarget | null) =>
+  target instanceof HTMLElement &&
+  (target.isContentEditable ||
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT")
+
+const HUD_BUTTON =
+  "flex size-11 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow-sm backdrop-blur-sm transition hover:bg-white active:scale-90"
 
 const readBestStage = () => {
   try {
@@ -119,6 +157,14 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [stageBanner, setStageBanner] = useState<number | null>(null)
   /** これまでに着いた、いちばん先のステージ（1 始まり。0 = まだ） */
   const [bestStage, setBestStage] = useState(0)
+  /** 今のステージをどこまで進んだか 0〜1 */
+  const [progress, setProgress] = useState(0)
+  const [sound, setSound] = useState(readSound)
+  const soundRef = useRef(sound)
+  soundRef.current = sound
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  /** 再開までの数（3 → 2 → 1）。すぐ走り出してぶつからないようにする */
+  const [countdown, setCountdown] = useState<number | null>(null)
 
   const [isDesktop, setIsDesktop] = useState(false)
   const [panel, setPanel] = useState<Panel | null>(null)
@@ -195,6 +241,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     setScore(0)
     setCoins(0)
     setStage(0)
+    setProgress(0)
     setRank(null)
 
     void (async () => {
@@ -227,9 +274,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               return nextStage + 1
             })
           },
-          onScore: (nextScore, nextCoins) => {
+          onScore: (nextScore, nextCoins, distance) => {
             setScore(nextScore)
             setCoins(nextCoins)
+            setProgress(
+              (distance % PICTOR_RUN_STAGE_LENGTH) / PICTOR_RUN_STAGE_LENGTH,
+            )
           },
           onGameOver: (finalScore, finalCoins, durationMs) => {
             const previous = readBest()
@@ -243,11 +293,17 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               }
             }
             setPhase("over")
+            setIsSettingsOpen(false)
+            if (finalScore > previous) {
+              // 転んだ音が終わってから、お祝いの音を鳴らす
+              window.setTimeout(() => gameRef.current?.playSound("best"), 1100)
+            }
             submit(finalScore, finalCoins, durationMs)
           },
         }
         const game = await createPictorRunGame(canvas, MODEL_URL, callbacks, {
           lite,
+          sound: soundRef.current,
         })
         if (cancelled) {
           game.dispose()
@@ -278,6 +334,60 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     const timer = window.setTimeout(() => setStageBanner(null), 2600)
     return () => window.clearTimeout(timer)
   }, [stageBanner])
+
+  const changeSound = (next: PictorRunSound) => {
+    setSound(next)
+    gameRef.current?.setSound(next)
+    try {
+      window.localStorage.setItem(SOUND_KEY, JSON.stringify(next))
+    } catch {
+      // 覚えられなくても音量は変えられる
+    }
+  }
+
+  const toggleMute = () => {
+    changeSound({ ...sound, muted: !sound.muted })
+    if (sound.muted) gameRef.current?.playSound("ui")
+  }
+
+  // 別のタブやアプリへ移ったら、走っている途中でも止めておく
+  useEffect(() => {
+    const onLeave = () => {
+      if (phaseRef.current !== "running") return
+      gameRef.current?.setPaused(true)
+      setPhase("paused")
+    }
+    const onVisibility = () => {
+      if (document.hidden) onLeave()
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+    window.addEventListener("blur", onLeave)
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility)
+      window.removeEventListener("blur", onLeave)
+    }
+  }, [])
+
+  // 再開の前に 3・2・1 と数える
+  useEffect(() => {
+    if (countdown === null) return
+    if (phaseRef.current !== "paused") {
+      setCountdown(null)
+      return
+    }
+    if (countdown <= 0) {
+      setCountdown(null)
+      gameRef.current?.setPaused(false)
+      setPhase("running")
+      return
+    }
+    gameRef.current?.playSound("ui")
+    const timer = window.setTimeout(
+      () => setCountdown((value) => (value === null ? null : value - 1)),
+      550,
+    )
+    return () => window.clearTimeout(timer)
+  }, [countdown])
 
   /** 軽量モードを切り替える（画面を作り直すので、走っている途中では切り替えない） */
   const toggleLite = () => {
@@ -354,9 +464,11 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     setScore(0)
     setCoins(0)
     setStage(0)
+    setProgress(0)
     setStageBanner(null)
     setRank(null)
     setPhase("ready")
+    gameRef.current?.playSound("ui")
   }
 
   const pause = () => {
@@ -366,11 +478,31 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   }
 
   const resume = () => {
-    if (phase !== "paused") return
+    if (phase !== "paused" || countdown !== null) return
     if (!isDesktop) setPanel(null)
-    gameRef.current?.setPaused(false)
-    setPhase("running")
+    setIsSettingsOpen(false)
+    setCountdown(3)
   }
+
+  const toggleSettings = () => {
+    // 音量を合わせている間にぶつからないよう、走っている途中なら止める
+    if (!isSettingsOpen) pause()
+    setIsSettingsOpen(!isSettingsOpen)
+  }
+
+  // M = ミュート、P = 一時停止 / 再開
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isTypingTarget(event.target) || event.repeat) return
+      if (event.code === "KeyM") toggleMute()
+      if (event.code === "KeyP") {
+        if (phase === "running") pause()
+        else resume()
+      }
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  })
 
   const shareUrl = `https://x.com/intent/post?text=${encodeURIComponent(
     t(
@@ -403,6 +535,34 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         : t("軽量モード: オフ", "Lite mode: off")}
     </button>
   )
+  const soundButton = (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.currentTarget.blur()
+        toggleMute()
+      }}
+      aria-pressed={!sound.muted}
+      className={cn(
+        "pointer-events-auto flex h-9 cursor-pointer items-center gap-1.5 rounded-full px-4 font-bold text-xs shadow-sm transition-colors",
+        sound.muted
+          ? "bg-slate-700/80 text-white hover:bg-slate-700"
+          : "bg-white/85 text-slate-700 hover:bg-white",
+      )}
+    >
+      {sound.muted ? (
+        <VolumeXIcon aria-hidden="true" className="size-4" />
+      ) : (
+        <Volume2Icon aria-hidden="true" className="size-4" />
+      )}
+      {sound.muted ? t("音: オフ", "Sound: off") : t("音: オン", "Sound: on")}
+    </button>
+  )
+  const isPlaying = phase === "running" || phase === "paused"
+  const sliders: { key: "bgm" | "sfx"; label: string }[] = [
+    { key: "bgm", label: t("BGM", "Music") },
+    { key: "sfx", label: t("効果音", "Sound effects") },
+  ]
   const tabs: { value: Panel; label: string; icon: React.ReactNode }[] = [
     {
       value: "chat",
@@ -436,21 +596,63 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           style={{ width: "100%", height: "100%" }}
         />
 
-        <div className="pointer-events-none absolute top-[max(0.75rem,env(safe-area-inset-top))] left-3 flex items-center gap-2 font-black text-lg tabular-nums md:text-2xl">
-          <span className="rounded-full bg-white/85 px-4 py-1.5 shadow-sm">
-            {score}
-            <span className="ml-1 font-bold text-xs md:text-sm">m</span>
-          </span>
-          <span className="rounded-full bg-white/85 px-4 py-1.5 text-amber-500 shadow-sm">
-            ● {coins}
-          </span>
-          {(phase === "running" || phase === "paused") && (
-            <span className="hidden rounded-full bg-white/85 px-3 py-1.5 font-bold text-xs shadow-sm sm:inline md:text-sm">
-              {t(
-                `ステージ ${stage + 1} ${stageName.ja}`,
-                `Stage ${stage + 1} ${stageName.en}`,
-              )}
+        {/* 画面のはしを少し暗くして、奥行きを出す */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 45%, transparent 58%, rgba(20,24,70,0.26) 100%)",
+          }}
+        />
+        {stageBanner !== null && (
+          <div
+            key={`flash-${stageBanner}`}
+            className="fade-out pointer-events-none absolute inset-0 animate-out bg-white/60 fill-mode-forwards duration-700"
+          />
+        )}
+        {phase === "over" && (
+          <div className="fade-out pointer-events-none absolute inset-0 animate-out bg-rose-500/35 fill-mode-forwards duration-500" />
+        )}
+
+        <div className="pointer-events-none absolute top-[max(0.75rem,env(safe-area-inset-top))] left-3 flex flex-col items-start gap-2">
+          <div className="flex items-center gap-2 font-black text-lg tabular-nums md:text-2xl">
+            <span className="rounded-full bg-white/85 px-4 py-1.5 shadow-sm backdrop-blur-sm">
+              {score}
+              <span className="ml-1 font-bold text-xs md:text-sm">m</span>
             </span>
+            <span className="rounded-full bg-white/85 px-4 py-1.5 text-amber-500 shadow-sm backdrop-blur-sm">
+              ●{" "}
+              <span
+                key={coins}
+                className="zoom-in-150 inline-block animate-in duration-200"
+              >
+                {coins}
+              </span>
+            </span>
+          </div>
+          {isPlaying && (
+            <div className="w-44 rounded-2xl bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur-sm md:w-60">
+              <p className="flex items-baseline justify-between gap-2 font-bold text-[11px] md:text-xs">
+                <span className="truncate">
+                  {t(
+                    `${stage + 1}. ${stageName.ja}`,
+                    `${stage + 1}. ${stageName.en}`,
+                  )}
+                </span>
+                <span className="shrink-0 text-slate-500 tabular-nums">
+                  {t(
+                    `あと ${Math.max(1, Math.ceil((1 - progress) * PICTOR_RUN_STAGE_LENGTH))}m`,
+                    `${Math.max(1, Math.ceil((1 - progress) * PICTOR_RUN_STAGE_LENGTH))}m left`,
+                  )}
+                </span>
+              </p>
+              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-200">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-sky-400 to-amber-400 transition-[width] duration-300"
+                  style={{ width: `${Math.round(progress * 100)}%` }}
+                />
+              </div>
+            </div>
           )}
         </div>
 
@@ -472,7 +674,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         )}
 
         <div className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 flex items-center gap-2">
-          {(phase === "running" || phase === "paused") && (
+          {isPlaying && (
             <button
               type="button"
               onClick={phase === "running" ? pause : resume}
@@ -481,7 +683,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   ? t("一時停止", "Pause")
                   : t("再開", "Resume")
               }
-              className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow-sm transition-colors hover:bg-white"
+              className={HUD_BUTTON}
             >
               {phase === "running" ? (
                 <PauseIcon aria-hidden="true" className="size-5" />
@@ -490,21 +692,40 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               )}
             </button>
           )}
+          <button
+            type="button"
+            onClick={(event) => {
+              event.currentTarget.blur()
+              toggleSettings()
+            }}
+            aria-label={t("音量と設定", "Sound and settings")}
+            aria-expanded={isSettingsOpen}
+            className={cn(HUD_BUTTON, isSettingsOpen && "bg-white")}
+          >
+            {sound.muted ? (
+              <VolumeXIcon aria-hidden="true" className="size-5" />
+            ) : (
+              <Volume2Icon aria-hidden="true" className="size-5" />
+            )}
+          </button>
           {!isPanelOpen && (
             <>
-              <button
-                type="button"
-                onClick={() => changePanel("ranking")}
-                aria-label={t("ランキング", "Ranking")}
-                className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow-sm transition-colors hover:bg-white"
-              >
-                <TrophyIcon aria-hidden="true" className="size-5" />
-              </button>
+              {/* スマホで走っている間は、ボタンを減らして画面を広く使う（ランキングはチャットの中から開ける） */}
+              {(isDesktop || !isPlaying) && (
+                <button
+                  type="button"
+                  onClick={() => changePanel("ranking")}
+                  aria-label={t("ランキング", "Ranking")}
+                  className={HUD_BUTTON}
+                >
+                  <TrophyIcon aria-hidden="true" className="size-5" />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => changePanel("chat")}
                 aria-label={t("チャット", "Chat")}
-                className="relative flex size-11 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow-sm transition-colors hover:bg-white"
+                className={cn(HUD_BUTTON, "relative")}
               >
                 <MessageCircleIcon aria-hidden="true" className="size-5" />
                 {unread > 0 && (
@@ -519,16 +740,129 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             type="button"
             onClick={onClose}
             aria-label={t("とじる", "Close")}
-            className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow-sm transition-colors hover:bg-white"
+            className={HUD_BUTTON}
           >
             <XIcon aria-hidden="true" className="size-5" />
           </button>
         </div>
 
+        {isSettingsOpen && (
+          <>
+            <button
+              type="button"
+              aria-label={t("設定をとじる", "Close settings")}
+              onClick={() => setIsSettingsOpen(false)}
+              className="absolute inset-0 z-10 cursor-default"
+            />
+            <div className="fade-in slide-in-from-top-2 absolute top-[calc(max(0.75rem,env(safe-area-inset-top))+3.25rem)] right-3 z-20 flex w-72 max-w-[calc(100%-1.5rem)] animate-in flex-col gap-3 rounded-3xl bg-white/95 p-4 shadow-xl backdrop-blur duration-200">
+              <div className="flex items-center justify-between">
+                <p className="font-black text-sm">{t("サウンド", "Sound")}</p>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={!sound.muted}
+                  onClick={toggleMute}
+                  className={cn(
+                    "flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3 font-bold text-xs transition-colors",
+                    sound.muted
+                      ? "bg-slate-200 text-slate-600"
+                      : "bg-clear-bright-blue text-white",
+                  )}
+                >
+                  {sound.muted ? (
+                    <VolumeXIcon aria-hidden="true" className="size-4" />
+                  ) : (
+                    <Volume2Icon aria-hidden="true" className="size-4" />
+                  )}
+                  {sound.muted ? t("ミュート中", "Muted") : t("オン", "On")}
+                </button>
+              </div>
+              {sliders.map((slider) => (
+                <label
+                  key={slider.key}
+                  className={cn(
+                    "flex items-center gap-3 font-bold text-xs",
+                    sound.muted && "opacity-50",
+                  )}
+                >
+                  <span className="w-14 shrink-0">{slider.label}</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={5}
+                    value={Math.round(sound[slider.key] * 100)}
+                    onChange={(event) =>
+                      changeSound({
+                        ...sound,
+                        [slider.key]: Number(event.target.value) / 100,
+                      })
+                    }
+                    onPointerUp={() => {
+                      if (slider.key === "sfx") {
+                        gameRef.current?.playSound("coin")
+                      }
+                    }}
+                    className="h-8 min-w-0 flex-1 cursor-pointer accent-sky-500"
+                  />
+                  <span className="w-8 shrink-0 text-right text-slate-500 tabular-nums">
+                    {Math.round(sound[slider.key] * 100)}
+                  </span>
+                </label>
+              ))}
+              <div className="flex items-center justify-between border-t pt-3">
+                <div>
+                  <p className="font-black text-sm">
+                    {t("軽量モード", "Lite mode")}
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    {isPlaying
+                      ? t(
+                          "走っている間は切り替えられません",
+                          "Can't be changed during a run",
+                        )
+                      : t(
+                          "影や細かい演出を減らして軽くします",
+                          "Fewer shadows and effects",
+                        )}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={lite}
+                  disabled={isPlaying}
+                  onClick={toggleLite}
+                  className={cn(
+                    "flex h-8 shrink-0 cursor-pointer items-center gap-1 rounded-full px-3 font-bold text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+                    lite
+                      ? "bg-amber-400 text-slate-900"
+                      : "bg-slate-200 text-slate-600",
+                  )}
+                >
+                  <ZapIcon aria-hidden="true" className="size-4" />
+                  {lite ? t("オン", "On") : t("オフ", "Off")}
+                </button>
+              </div>
+              {isDesktop && (
+                <p className="border-t pt-3 text-[11px] text-slate-500 leading-relaxed">
+                  {t(
+                    "スペース / ↑ / クリック: ジャンプ ・ P: 一時停止 ・ M: ミュート ・ Esc: とじる",
+                    "Space / ↑ / click: jump · P: pause · M: mute · Esc: close",
+                  )}
+                </p>
+              )}
+            </div>
+          </>
+        )}
+
         {phase === "loading" && (
-          <p className="pointer-events-none absolute inset-x-0 top-1/3 text-center font-bold text-lg">
-            {t("よみこみ中…", "Loading…")}
-          </p>
+          <div className="pointer-events-none absolute inset-x-0 top-1/3 flex justify-center">
+            <p className="flex items-center gap-3 rounded-full bg-white/90 px-6 py-3 font-bold shadow-sm">
+              <span className="size-5 animate-spin rounded-full border-[3px] border-sky-200 border-t-sky-500" />
+              {t("よみこみ中…", "Loading…")}
+            </p>
+          </div>
         )}
 
         {phase === "failed" && (
@@ -570,25 +904,45 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 `${PICTOR_RUN_STAGES.length} stages · reached ${Math.min(bestStage, PICTOR_RUN_STAGES.length)}`,
               )}
             </p>
-            {liteButton}
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {soundButton}
+              {liteButton}
+            </div>
           </div>
         )}
 
-        {phase === "paused" && (
+        {phase === "paused" && !isSettingsOpen && countdown === null && (
           <button
             type="button"
             onClick={resume}
-            className="absolute inset-0 flex cursor-pointer items-center justify-center bg-slate-900/25"
+            className="fade-in absolute inset-0 flex animate-in cursor-pointer flex-col items-center justify-center gap-3 bg-slate-900/35 backdrop-blur-[2px] duration-200"
           >
-            <span className="rounded-full bg-white/95 px-8 py-3 font-black text-lg shadow-lg">
-              {t("タップで再開", "Tap to resume")}
+            <span className="font-black text-2xl text-white tracking-widest drop-shadow">
+              {t("一時停止中", "PAUSED")}
+            </span>
+            <span className="flex items-center gap-2 rounded-full bg-white/95 px-8 py-3 font-black text-lg shadow-lg">
+              <PlayIcon aria-hidden="true" className="size-5" />
+              {isDesktop
+                ? t("クリック / P で再開", "Click / P to resume")
+                : t("タップで再開", "Tap to resume")}
             </span>
           </button>
         )}
 
+        {countdown !== null && countdown > 0 && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-slate-900/20">
+            <span
+              key={countdown}
+              className="zoom-in-150 fade-in animate-in font-black text-8xl text-white drop-shadow-[0_4px_0_rgba(29,47,143,0.6)] duration-300 md:text-9xl"
+            >
+              {countdown}
+            </span>
+          </div>
+        )}
+
         {phase === "over" && (
           <div className="absolute inset-x-0 top-[12%] flex justify-center px-6">
-            <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-3xl bg-white/95 px-6 py-5 text-center shadow-lg">
+            <div className="fade-in zoom-in-95 slide-in-from-bottom-4 flex w-full max-w-xs animate-in flex-col items-center gap-3 rounded-3xl bg-white/95 fill-mode-backwards px-6 py-5 text-center shadow-lg backdrop-blur delay-300 duration-300">
               <p className="font-black text-xl">
                 {isNewBest
                   ? t("じこベスト更新！", "New best!")
@@ -610,6 +964,22 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   `Reached stage ${stage + 1}: ${stageName.en}`,
                 )}
               </p>
+              {/* 13 ステージのうち、今回どこまで来たか */}
+              <div aria-hidden="true" className="flex items-center gap-1">
+                {PICTOR_RUN_STAGES.map((item, index) => (
+                  <span
+                    key={item.en}
+                    className={cn(
+                      "rounded-full",
+                      index === stage % PICTOR_RUN_STAGES.length
+                        ? "size-2.5 bg-amber-400 ring-2 ring-amber-200"
+                        : index < stage || stage >= PICTOR_RUN_STAGES.length
+                          ? "size-2 bg-sky-400"
+                          : "size-2 bg-slate-200",
+                    )}
+                  />
+                ))}
+              </div>
               {rank !== null && (
                 <button
                   type="button"
@@ -650,7 +1020,6 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   {t("X でシェア", "Share on X")}
                 </a>
               </div>
-              {liteButton}
             </div>
           </div>
         )}

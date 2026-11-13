@@ -13,6 +13,7 @@ import {
   DodecahedronGeometry,
   DoubleSide,
   Euler,
+  Fog,
   Group,
   Matrix4,
   Mesh,
@@ -20,6 +21,7 @@ import {
   MeshToonMaterial,
   type Object3D,
   OctahedronGeometry,
+  type PerspectiveCamera,
   PlaneGeometry,
   Points,
   PointsMaterial,
@@ -65,6 +67,8 @@ export type PictorRunStageOptions = {
   lite: boolean
   /** 影を落とす */
   shadows: boolean
+  /** かすみの濃さを、カメラの遠さに合わせる */
+  camera: PerspectiveCamera
 }
 
 export function canvasTexture(
@@ -2699,6 +2703,106 @@ const THEMES: Theme[] = [
   },
 ]
 
+type Air = {
+  /** かすみが掛かり始める遠さと、すっかりかすむ遠さ */
+  fog: [number, number]
+  /** もやの濃さ */
+  mist: number
+  /** 光のすじの強さ */
+  shafts: number
+  flyer: "bird" | "fish" | "meteor" | "none"
+  flyerColor: number
+}
+
+/** ステージごとの空気（THEMES と同じ並び） */
+const AIR: Air[] = [
+  {
+    fog: [16, 75],
+    mist: 0.14,
+    shafts: 0.14,
+    flyer: "bird",
+    flyerColor: 0x4a5a8a,
+  },
+  {
+    fog: [14, 60],
+    mist: 0.3,
+    shafts: 0.24,
+    flyer: "bird",
+    flyerColor: 0x9a6a8a,
+  },
+  {
+    fog: [18, 80],
+    mist: 0.12,
+    shafts: 0.1,
+    flyer: "bird",
+    flyerColor: 0xffffff,
+  },
+  {
+    fog: [13, 55],
+    mist: 0.32,
+    shafts: 0.26,
+    flyer: "bird",
+    flyerColor: 0x5a2a2a,
+  },
+  {
+    fog: [11, 40],
+    mist: 0.5,
+    shafts: 0.42,
+    flyer: "none",
+    flyerColor: 0xffffff,
+  },
+  {
+    fog: [12, 46],
+    mist: 0.45,
+    shafts: 0.1,
+    flyer: "none",
+    flyerColor: 0xffffff,
+  },
+  { fog: [13, 50], mist: 0.36, shafts: 0, flyer: "none", flyerColor: 0xffffff },
+  {
+    fog: [15, 65],
+    mist: 0.22,
+    shafts: 0.16,
+    flyer: "bird",
+    flyerColor: 0xff8fb8,
+  },
+  {
+    fog: [13, 52],
+    mist: 0.34,
+    shafts: 0.34,
+    flyer: "bird",
+    flyerColor: 0x3a2020,
+  },
+  {
+    fog: [10, 34],
+    mist: 0.45,
+    shafts: 0.5,
+    flyer: "fish",
+    flyerColor: 0xffa040,
+  },
+  {
+    fog: [11, 40],
+    mist: 0.5,
+    shafts: 0.12,
+    flyer: "none",
+    flyerColor: 0xffffff,
+  },
+  {
+    fog: [16, 80],
+    mist: 0.12,
+    shafts: 0,
+    flyer: "meteor",
+    flyerColor: 0xffffff,
+  },
+  {
+    fog: [13, 55],
+    mist: 0.4,
+    shafts: 0.36,
+    flyer: "bird",
+    flyerColor: 0xf2c14e,
+  },
+]
+
 /** ステージの終わりのこの長さ（m）で、空や地面の色を次のステージへ移す */
 const BLEND_LENGTH = 14
 
@@ -2739,7 +2843,7 @@ export function createPictorRunStage(
   if (THEMES.length !== PICTOR_RUN_STAGES.length) {
     throw new Error("stage count mismatch")
   }
-  const { lite, shadows } = options
+  const { lite, shadows, camera } = options
   const random = createRandom(404)
   const scrollers: Scroller[] = []
   const scroll = (
@@ -2756,6 +2860,10 @@ export function createPictorRunStage(
 
   const toonVertex = track(
     new MeshToonMaterial({ vertexColors: true, gradientMap }),
+  )
+  /** 空に浮かぶ額ぶち用（遠くても、かすみで白っぽくしない） */
+  const toonVertexClear = track(
+    new MeshToonMaterial({ vertexColors: true, gradientMap, fog: false }),
   )
   const toonMap = (map: Texture, color = 0xffffff) =>
     track(new MeshToonMaterial({ map, gradientMap, color }))
@@ -2787,7 +2895,13 @@ export function createPictorRunStage(
   )
   const sky = new Mesh(
     skyGeometry,
-    track(new MeshBasicMaterial({ vertexColors: true, depthWrite: false })),
+    track(
+      new MeshBasicMaterial({
+        vertexColors: true,
+        depthWrite: false,
+        fog: false,
+      }),
+    ),
   )
   sky.position.set(10, 38, -95)
   sky.renderOrder = -10
@@ -2803,7 +2917,9 @@ export function createPictorRunStage(
       ctx.fillRect(0, 0, 128, 128)
     }),
   )
-  const sunMaterial = track(new MeshBasicMaterial({ color: 0xffffff }))
+  const sunMaterial = track(
+    new MeshBasicMaterial({ color: 0xffffff, fog: false }),
+  )
   const sunGlowMaterial = track(
     new MeshBasicMaterial({
       map: glowTexture,
@@ -2811,6 +2927,7 @@ export function createPictorRunStage(
       depthWrite: false,
       blending: AdditiveBlending,
       opacity: 0.7,
+      fog: false,
     }),
   )
   const sunDisc = new Group()
@@ -2818,6 +2935,20 @@ export function createPictorRunStage(
   const sunGlow = new Mesh(track(new PlaneGeometry(26, 26)), sunGlowMaterial)
   sunGlow.position.z = -0.1
   sunDisc.add(sunGlow)
+  // 空いっぱいに広がる、うすい光のにじみ
+  const haloMaterial = track(
+    new MeshBasicMaterial({
+      map: glowTexture,
+      transparent: true,
+      depthWrite: false,
+      blending: AdditiveBlending,
+      opacity: 0.2,
+      fog: false,
+    }),
+  )
+  const halo = new Mesh(track(new PlaneGeometry(96, 96)), haloMaterial)
+  halo.position.z = -0.2
+  sunDisc.add(halo)
   scene.add(sunDisc)
 
   // 星
@@ -2834,6 +2965,7 @@ export function createPictorRunStage(
     new PointsMaterial({
       color: 0xffffff,
       size: 2.2,
+      fog: false,
       sizeAttenuation: false,
       transparent: true,
       opacity: 0,
@@ -2859,8 +2991,12 @@ export function createPictorRunStage(
     shape.lineTo(width, -30)
     return track(new ShapeGeometry(shape))
   }
-  const farMaterial = track(new MeshBasicMaterial({ color: 0xa9cdf5 }))
-  const nearMaterial = track(new MeshBasicMaterial({ color: 0x86b7ec }))
+  const farMaterial = track(
+    new MeshBasicMaterial({ color: 0xa9cdf5, fog: false }),
+  )
+  const nearMaterial = track(
+    new MeshBasicMaterial({ color: 0x86b7ec, fog: false }),
+  )
   for (const [material, z, base, speed, seed] of [
     [farMaterial, -78, 30, 0.012, 11],
     [nearMaterial, -58, 17, 0.03, 23],
@@ -2876,7 +3012,7 @@ export function createPictorRunStage(
 
   // ---- 雲 ---------------------------------------------------------------------
   const cloudMaterial = track(
-    new MeshBasicMaterial({ color: 0xffffff, transparent: true }),
+    new MeshBasicMaterial({ color: 0xffffff, transparent: true, fog: false }),
   )
   const cloudGeometry = track(
     join(
@@ -2978,7 +3114,12 @@ export function createPictorRunStage(
     },
   ]
   let arts: Art[] = paintings.map((draw) => ({
-    material: toonMap(track(canvasTexture(160, 128, draw))),
+    material: track(
+      new MeshBasicMaterial({
+        map: track(canvasTexture(160, 128, draw)),
+        fog: false,
+      }),
+    ),
     shape: 0,
   }))
   let nextArt = 0
@@ -3041,6 +3182,7 @@ export function createPictorRunStage(
   for (let i = 0; i < floaterCount; i++) {
     const framed = makeFramed()
     framed.frame.castShadow = false
+    framed.frame.material = toonVertexClear
     const size = 2.8 + random() * 2.2
     framed.group.scale.setScalar(size)
     framed.group.rotation.set(0, 0.25 - random() * 0.5, (random() - 0.5) * 0.3)
@@ -3065,7 +3207,7 @@ export function createPictorRunStage(
     const hill = new Mesh(hillGeometry, hillMaterials[i % 2])
     const size = 3.2 + random() * 3.4
     // 手前の木が丘にうまらないよう、奥行きはうすくする
-    hill.scale.set(size * (1.5 + random() * 0.6), size, size * 0.8)
+    hill.scale.set(size * (1.5 + random() * 0.6), size, size * 0.45)
     hill.position.set(-24 + i * 8.5, -1.5, -13 - random() * 5)
     hill.receiveShadow = shadows
     scroll(hill, 1, 10 * 8.5, -32)
@@ -3313,8 +3455,9 @@ export function createPictorRunStage(
   for (let i = 0; i < farCount; i++) {
     addSlot(
       "far",
-      -20 + (i * 84) / farCount + random() * 6,
-      -11 - random() * 3,
+      // 最初の画面で、題名のうしろに大きな建物が来ないようにずらす
+      -12 + (i * 84) / farCount + random() * 6,
+      -9.2 - random() * 0.8,
       0.95 + random() * 0.3,
       84,
       -32,
@@ -3330,6 +3473,7 @@ export function createPictorRunStage(
       depthWrite: false,
       blending: AdditiveBlending,
       opacity: 0,
+      fog: false,
     }),
   )
   const lampGlowGeometry = track(new PlaneGeometry(2.4, 2.4))
@@ -3451,6 +3595,7 @@ export function createPictorRunStage(
       map: petalTexture,
       color: 0xffc4dc,
       size: 0.3,
+      fog: false,
       transparent: true,
       depthWrite: false,
       opacity: 0.9,
@@ -3469,6 +3614,182 @@ export function createPictorRunStage(
     particleMaterial.color.set(particle.color)
     particleMaterial.size = particle.dot ? particle.size * 1.8 : particle.size
     particleMaterial.needsUpdate = true
+  }
+
+  // ---- 空気（かすみ・もや・光のすじ・空を横切るもの） ---------------------------
+  const fog = new Fog(0xffffff, 16, 75)
+  scene.fog = fog
+
+  // 奥の景色のすそをぼかす、もや
+  const mistTexture = track(
+    canvasTexture(512, 128, (ctx) => {
+      const image = ctx.createImageData(512, 128)
+      for (let x = 0; x < 512; x++) {
+        const a = (x / 512) * Math.PI * 2
+        const top =
+          34 +
+          20 * Math.sin(a * 2) +
+          11 * Math.sin(a * 5 + 1) +
+          6 * Math.sin(a * 11 + 2)
+        for (let y = 0; y < 128; y++) {
+          const raw = Math.min(1, Math.max(0, ((y - top) / (128 - top)) * 1.5))
+          const offset = (y * 512 + x) * 4
+          image.data[offset] = 255
+          image.data[offset + 1] = 255
+          image.data[offset + 2] = 255
+          image.data[offset + 3] = raw * raw * (3 - 2 * raw) * 255
+        }
+      }
+      ctx.putImageData(image, 0, 0)
+    }),
+  )
+  mistTexture.wrapS = RepeatWrapping
+  mistTexture.repeat.set(2, 1)
+  const mistMaterial = track(
+    new MeshBasicMaterial({
+      map: mistTexture,
+      transparent: true,
+      depthWrite: false,
+      opacity: 0,
+      fog: false,
+    }),
+  )
+  for (const [z, y, height] of (lite
+    ? [[-8.7, 1.5, 5.2]]
+    : [
+        [-8.7, 1.5, 5.2],
+        [-21, 3.4, 9],
+      ]) as V3[]) {
+    const mist = new Mesh(track(new PlaneGeometry(140, height)), mistMaterial)
+    mist.position.set(14, y, z)
+    scene.add(mist)
+  }
+
+  // 木の間からさす光のすじ
+  const shaftMaterial = track(
+    new MeshBasicMaterial({
+      map: track(
+        canvasTexture(64, 256, (ctx) => {
+          const down = ctx.createLinearGradient(0, 0, 0, 256)
+          down.addColorStop(0, "rgba(255,255,255,0.95)")
+          down.addColorStop(1, "rgba(255,255,255,0)")
+          ctx.fillStyle = down
+          ctx.fillRect(0, 0, 64, 256)
+          // 左右のはしをやわらかく消す
+          const side = ctx.createLinearGradient(0, 0, 64, 0)
+          side.addColorStop(0, "rgba(0,0,0,1)")
+          side.addColorStop(0.5, "rgba(0,0,0,0)")
+          side.addColorStop(1, "rgba(0,0,0,1)")
+          ctx.globalCompositeOperation = "destination-out"
+          ctx.fillStyle = side
+          ctx.fillRect(0, 0, 64, 256)
+        }),
+      ),
+      transparent: true,
+      depthWrite: false,
+      blending: AdditiveBlending,
+      opacity: 0,
+      fog: false,
+    }),
+  )
+  let shaftPower = 0
+  if (!lite) {
+    const shaftGeometry = track(new PlaneGeometry(1, 1))
+    for (let i = 0; i < 4; i++) {
+      const shaft = new Mesh(shaftGeometry, shaftMaterial)
+      shaft.scale.set(2.4 + random() * 3, 15, 1)
+      shaft.position.set(-22 + i * 22 + random() * 8, 6.4, -4.5 - random() * 5)
+      shaft.rotation.z = -0.42
+      scroll(shaft, 0.75, 88, -32)
+    }
+  }
+
+  // 空を横切るもの（鳥・魚・流れ星）
+  const birdShape = new Shape()
+  birdShape.moveTo(-1, 0.45)
+  birdShape.lineTo(0, 0)
+  birdShape.lineTo(1, 0.45)
+  birdShape.lineTo(1, 0.3)
+  birdShape.lineTo(0, -0.16)
+  birdShape.lineTo(-1, 0.3)
+  const fishShape = new Shape()
+  fishShape.moveTo(-0.6, 0)
+  fishShape.quadraticCurveTo(-0.2, 0.36, 0.35, 0.05)
+  fishShape.lineTo(0.7, 0.3)
+  fishShape.lineTo(0.7, -0.3)
+  fishShape.lineTo(0.35, -0.05)
+  fishShape.quadraticCurveTo(-0.2, -0.36, -0.6, 0)
+  const flyerGeometries = {
+    bird: track(new ShapeGeometry(birdShape)),
+    fish: track(new ShapeGeometry(fishShape)),
+    meteor: track(new PlaneGeometry(1, 1)),
+  }
+  const flyerMaterial = track(
+    new MeshBasicMaterial({ color: 0xffffff, side: DoubleSide, fog: false }),
+  )
+  const meteorMaterial = track(
+    new MeshBasicMaterial({
+      map: glowTexture,
+      transparent: true,
+      depthWrite: false,
+      blending: AdditiveBlending,
+      fog: false,
+    }),
+  )
+  type Flyer = {
+    mesh: Mesh
+    kind: Air["flyer"]
+    base: number
+    size: number
+    speed: number
+    phase: number
+  }
+  const flyers: Flyer[] = []
+  const dressFlyer = (flyer: Flyer) => {
+    const air = AIR[propTheme]
+    flyer.kind = air.flyer
+    flyer.mesh.visible = air.flyer !== "none"
+    if (air.flyer === "none") return
+    flyer.mesh.geometry = flyerGeometries[air.flyer]
+    flyer.mesh.material =
+      air.flyer === "meteor" ? meteorMaterial : flyerMaterial
+    flyer.mesh.rotation.set(0, 0, air.flyer === "meteor" ? 0.45 : 0)
+    if (air.flyer === "fish") {
+      flyer.base = 2.5 + random() * 6
+      flyer.size = 0.5 + random() * 0.5
+      flyer.mesh.position.z = -5 - random() * 8
+      flyer.speed = 1 + random() * 1.5
+    } else if (air.flyer === "meteor") {
+      flyer.base = 24 + random() * 14
+      flyer.size = 1
+      flyer.mesh.position.z = -40 - random() * 20
+      flyer.speed = 16 + random() * 10
+      flyer.mesh.position.y = flyer.base
+    } else {
+      flyer.base = 9 + random() * 8
+      flyer.size = 0.45 + random() * 0.45
+      flyer.mesh.position.z = -22 - random() * 14
+      flyer.speed = 2 + random() * 2
+    }
+    flyer.mesh.scale.set(
+      air.flyer === "meteor" ? 9 : flyer.size,
+      air.flyer === "meteor" ? 0.4 : flyer.size,
+      1,
+    )
+  }
+  for (let i = 0; i < (lite ? 0 : 5); i++) {
+    const mesh = new Mesh(flyerGeometries.bird, flyerMaterial)
+    mesh.position.x = -30 + i * 19 + random() * 8
+    scene.add(mesh)
+    const flyer: Flyer = {
+      mesh,
+      kind: "bird",
+      base: 10,
+      size: 0.6,
+      speed: 3,
+      phase: random() * 6,
+    }
+    flyers.push(flyer)
   }
 
   // ---- ステージの色 -----------------------------------------------------------
@@ -3517,6 +3838,20 @@ export function createPictorRunStage(
     pathMaterial.color.copy(lerpColor(a.path, b.path, t))
     cliffMaterial.color.copy(lerpColor(a.cliff, b.cliff, t))
     waterMaterial.color.copy(lerpColor(a.water, b.water, t))
+    const airA = AIR[index]
+    const airB = AIR[(index + 1) % AIR.length]
+    fog.color.copy(lerpColor(a.sky[2], b.sky[2], t))
+    fog.color.lerp(lerpColor(a.sky[1], b.sky[1], t), 0.35)
+    // 縦長の画面はカメラを引くので、その分かすみも遠くから掛ける
+    const pull = Math.max(0, camera.position.z - 11.5)
+    fog.near = mix(airA.fog[0], airB.fog[0]) + pull
+    fog.far = mix(airA.fog[1], airB.fog[1]) + pull
+    mistMaterial.color.copy(fog.color)
+    mistMaterial.opacity = mix(airA.mist, airB.mist)
+    shaftMaterial.color.copy(lerpColor(a.sun, b.sun, t))
+    shaftPower = mix(airA.shafts, airB.shafts) * 0.5
+    flyerMaterial.color.copy(lerpColor(airA.flyerColor, airB.flyerColor, t))
+    haloMaterial.color.copy(lerpColor(a.sun, b.sun, t))
     // 沈んで、次の太陽（月）が昇る
     const height =
       t < 0.5
@@ -3532,6 +3867,7 @@ export function createPictorRunStage(
     propTheme = Math.floor(distance / PICTOR_RUN_STAGE_LENGTH) % THEMES.length
     for (const slot of slots) dress(slot)
     for (const lamp of lampMeshes) lamp.geometry = propsOf(propTheme).lamp
+    for (const flyer of flyers) dressFlyer(flyer)
     applyParticle()
     applyPalette(distance)
   }
@@ -3576,7 +3912,9 @@ export function createPictorRunStage(
           }
           // 夜のステージでも絵がよく見えるように、光の当たり方に左右されない素材にする
           loaded.push({
-            material: track(new MeshBasicMaterial({ map: texture })),
+            material: track(
+              new MeshBasicMaterial({ map: texture, fog: false }),
+            ),
             shape,
           })
           settle()
@@ -3610,6 +3948,33 @@ export function createPictorRunStage(
       edgeTexture.offset.x = cliffTexture.offset.x
       waterTexture.offset.x = (waterTexture.offset.x + move / 8 + dt * 0.02) % 1
       waterTexture.offset.y = (waterTexture.offset.y + dt * 0.03) % 1
+
+      mistTexture.offset.x = (mistTexture.offset.x + move / 90 + dt * 0.006) % 1
+      shaftMaterial.opacity = shaftPower * (0.78 + Math.sin(time * 0.7) * 0.22)
+      for (const flyer of flyers) {
+        if (flyer.kind === "none") {
+          // 何も飛ばないステージを抜けたら、また飛ばす
+          if (AIR[propTheme].flyer !== "none") dressFlyer(flyer)
+          continue
+        }
+        const mesh = flyer.mesh
+        mesh.position.x -= move * 0.25 + dt * flyer.speed
+        if (flyer.kind === "meteor") {
+          mesh.position.y -= dt * flyer.speed * 0.48
+        } else {
+          mesh.position.y =
+            flyer.base + Math.sin(time * 0.9 + flyer.phase) * 0.6
+          if (flyer.kind === "bird") {
+            mesh.scale.y = flyer.size * Math.cos(time * 7 + flyer.phase)
+          } else {
+            mesh.rotation.y = Math.sin(time * 6 + flyer.phase) * 0.45
+          }
+        }
+        if (mesh.position.x < -45 || mesh.position.y < -2) {
+          mesh.position.x = 45 + random() * 30
+          dressFlyer(flyer)
+        }
+      }
 
       for (const item of floaters) {
         item.object.position.y =

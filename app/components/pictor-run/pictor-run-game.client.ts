@@ -6,7 +6,9 @@ import {
   BackSide,
   Box3,
   BoxGeometry,
-  type BufferGeometry,
+  BufferAttribute,
+  BufferGeometry,
+  Color,
   CylinderGeometry,
   DataTexture,
   DirectionalLight,
@@ -23,9 +25,11 @@ import {
   PCFSoftShadowMap,
   PerspectiveCamera,
   PlaneGeometry,
+  Points,
   RedFormat,
   RingGeometry,
   Scene,
+  ShaderMaterial,
   SkinnedMesh,
   SphereGeometry,
   type Texture,
@@ -34,6 +38,11 @@ import {
 } from "three"
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
+import {
+  createPictorRunAudio,
+  type PictorRunSound,
+  type PictorRunSoundName,
+} from "~/components/pictor-run/pictor-run-audio.client"
 import {
   canvasTexture,
   createPictorRunStage,
@@ -48,8 +57,8 @@ import { toPictorRunStage } from "~/components/pictor-run/pictor-run-stages"
 export type PictorRunCallbacks = {
   /** 走り始めた */
   onStart: () => void
-  /** 得点が変わった */
-  onScore: (score: number, coins: number) => void
+  /** 得点が変わった（distance = 走った距離 m） */
+  onScore: (score: number, coins: number, distance: number) => void
   /** ステージが変わった（0 始まりの通し番号） */
   onStage: (stage: number) => void
   /** ぶつかって終わった（durationMs = 走っていた時間） */
@@ -59,11 +68,16 @@ export type PictorRunCallbacks = {
 export type PictorRunOptions = {
   /** 軽量モード（影なし・粗めの解像度・置くものを減らす） */
   lite: boolean
+  sound: PictorRunSound
 }
 
 export type PictorRunGame = {
   /** 背景の額ぶちに飾る作品の画像 */
   setArtworks: (urls: string[]) => void
+  /** 音量・ミュートを変える */
+  setSound: (sound: PictorRunSound) => void
+  /** 画面のボタンなどから効果音を鳴らす */
+  playSound: (name: PictorRunSoundName) => void
   /** 最初から走り直す */
   restart: () => void
   /** 一時停止（止めている間も画面は描く） */
@@ -135,6 +149,7 @@ export async function createPictorRunGame(
   options: PictorRunOptions,
 ): Promise<PictorRunGame> {
   const { lite } = options
+  const audio = createPictorRunAudio(options.sound, { lite })
   const renderer = new WebGLRenderer({
     canvas,
     antialias: !lite,
@@ -339,8 +354,171 @@ export async function createPictorRunGame(
     track,
     gradientMap,
     { ambient, sun },
-    { lite, shadows },
+    { lite, shadows, camera },
   )
+
+  // ---- エフェクト（土けむり・きらめき・紙ふぶき） ------------------------------
+  const FX_MAX = lite ? 90 : 260
+  const fxPositions = new Float32Array(FX_MAX * 3)
+  const fxColors = new Float32Array(FX_MAX * 3)
+  const fxSizes = new Float32Array(FX_MAX)
+  const fxAlphas = new Float32Array(FX_MAX)
+  /** 1 つぶごとに: 速さ x・y・z、残りの時間、もとの時間、落ちる強さ、大きさ */
+  const fxState = new Float32Array(FX_MAX * 7)
+  const fxGeometry = track(new BufferGeometry())
+  fxGeometry.setAttribute("position", new BufferAttribute(fxPositions, 3))
+  fxGeometry.setAttribute("aColor", new BufferAttribute(fxColors, 3))
+  fxGeometry.setAttribute("aSize", new BufferAttribute(fxSizes, 1))
+  fxGeometry.setAttribute("aAlpha", new BufferAttribute(fxAlphas, 1))
+  const fxMaterial = track(
+    new ShaderMaterial({
+      uniforms: { uScale: { value: 1 } },
+      vertexShader: `
+        attribute vec3 aColor;
+        attribute float aSize;
+        attribute float aAlpha;
+        uniform float uScale;
+        varying vec3 vColor;
+        varying float vAlpha;
+        void main() {
+          vColor = aColor;
+          vAlpha = aAlpha;
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = aSize * uScale / -mvPosition.z;
+          gl_Position = projectionMatrix * mvPosition;
+        }`,
+      fragmentShader: `
+        varying vec3 vColor;
+        varying float vAlpha;
+        void main() {
+          float alpha = smoothstep(0.5, 0.22, length(gl_PointCoord - 0.5)) * vAlpha;
+          if (alpha < 0.01) discard;
+          gl_FragColor = vec4(vColor, alpha);
+          #include <colorspace_fragment>
+        }`,
+      transparent: true,
+      depthWrite: false,
+    }),
+  )
+  const fxPoints = new Points(fxGeometry, fxMaterial)
+  fxPoints.frustumCulled = false
+  fxPoints.renderOrder = 5
+  scene.add(fxPoints)
+  let fxNext = 0
+  const fxColor = new Color()
+  const emit = (
+    x: number,
+    y: number,
+    z: number,
+    vx: number,
+    vy: number,
+    vz: number,
+    life: number,
+    size: number,
+    color: number,
+    gravity: number,
+  ) => {
+    const i = fxNext
+    fxNext = (fxNext + 1) % FX_MAX
+    fxPositions[i * 3] = x
+    fxPositions[i * 3 + 1] = y
+    fxPositions[i * 3 + 2] = z
+    fxColor.set(color)
+    fxColors[i * 3] = fxColor.r
+    fxColors[i * 3 + 1] = fxColor.g
+    fxColors[i * 3 + 2] = fxColor.b
+    fxState[i * 7] = vx
+    fxState[i * 7 + 1] = vy
+    fxState[i * 7 + 2] = vz
+    fxState[i * 7 + 3] = life
+    fxState[i * 7 + 4] = life
+    fxState[i * 7 + 5] = gravity
+    fxState[i * 7 + 6] = size
+  }
+  /** 軽量モードでは、つぶの数を半分にする */
+  const amount = (count: number) => (lite ? Math.ceil(count / 2) : count)
+  const dust = (x: number, count: number, power: number, size = 1) => {
+    for (let i = 0; i < amount(count); i++) {
+      emit(
+        x + (Math.random() - 0.5) * 0.4,
+        0.08,
+        0.3 + (Math.random() - 0.5) * 0.5,
+        (Math.random() - 0.5) * 2.4 * power - 1,
+        0.4 + Math.random() * 1.3 * power,
+        0,
+        (0.3 + Math.random() * 0.22) * (size < 1 ? 0.7 : 1),
+        (0.24 + Math.random() * 0.2) * size,
+        0xfff6e6,
+        1.5,
+      )
+    }
+  }
+  const sparkle = (x: number, y: number, color: number, count: number) => {
+    for (let i = 0; i < amount(count); i++) {
+      const angle = Math.random() * Math.PI * 2
+      const power = 1.8 + Math.random() * 3.4
+      emit(
+        x,
+        y,
+        0.35,
+        Math.cos(angle) * power,
+        Math.sin(angle) * power + 1,
+        (Math.random() - 0.5) * 2,
+        0.32 + Math.random() * 0.3,
+        0.13 + Math.random() * 0.13,
+        color,
+        6,
+      )
+    }
+  }
+  const CONFETTI = [0xff8a1f, 0x19b5d8, 0xffd84a, 0xff7ab0, 0xffffff, 0x8ae08a]
+  const confetti = () => {
+    for (let i = 0; i < amount(48); i++) {
+      emit(
+        -3 + Math.random() * 15,
+        4.6 + Math.random() * 2.8,
+        -1 + Math.random() * 2.2,
+        (Math.random() - 0.5) * 2.4,
+        -0.6 - Math.random() * 1.8,
+        0,
+        1.5 + Math.random() * 1.1,
+        0.15 + Math.random() * 0.11,
+        CONFETTI[i % CONFETTI.length],
+        2.2,
+      )
+    }
+  }
+  const updateFx = (dt: number, move: number) => {
+    for (let i = 0; i < FX_MAX; i++) {
+      let life = fxState[i * 7 + 3]
+      if (life <= 0) continue
+      life -= dt
+      fxState[i * 7 + 3] = life
+      if (life <= 0) {
+        fxAlphas[i] = 0
+        fxSizes[i] = 0
+        continue
+      }
+      fxState[i * 7 + 1] -= fxState[i * 7 + 5] * dt
+      fxPositions[i * 3] += fxState[i * 7] * dt - move
+      fxPositions[i * 3 + 1] += fxState[i * 7 + 1] * dt
+      fxPositions[i * 3 + 2] += fxState[i * 7 + 2] * dt
+      const k = life / fxState[i * 7 + 4]
+      fxAlphas[i] = Math.min(1, k * 2.2) * 0.85
+      fxSizes[i] = fxState[i * 7 + 6] * (0.55 + 0.45 * k)
+    }
+    fxGeometry.attributes.position.needsUpdate = true
+    fxGeometry.attributes.aColor.needsUpdate = true
+    fxGeometry.attributes.aSize.needsUpdate = true
+    fxGeometry.attributes.aAlpha.needsUpdate = true
+  }
+  const clearFx = () => {
+    for (let i = 0; i < FX_MAX; i++) {
+      fxState[i * 7 + 3] = 0
+      fxAlphas[i] = 0
+      fxSizes[i] = 0
+    }
+  }
 
   // ---- 障害物・コイン -------------------------------------------------------
   const blockTexture = track(
@@ -524,6 +702,16 @@ export async function createPictorRunGame(
   let lastScore = -1
   let lastStage = 0
   let debugNoHit = false
+  /** 宙にいた（着地の土けむりと音を出すため） */
+  let airborne = false
+  /** 跳ぶときにのびて、着地でつぶれる */
+  let stretch = 0
+  let untilStep = 0
+  let coinCombo = 0
+  let lastCoinTime = -10
+  /** ぶつかった瞬間に画面をゆらす強さ・一瞬止める時間 */
+  let shake = 0
+  let freeze = 0
   let untilSpawn = 0
   let y = 0
   let velocity = 0
@@ -561,6 +749,13 @@ export async function createPictorRunGame(
     lastScore = -1
     lastStage = 0
     stage.warp(0)
+    audio.setSong(0)
+    clearFx()
+    airborne = false
+    stretch = 0
+    shake = 0
+    freeze = 0
+    coinCombo = 0
     untilSpawn = 14
     y = 0
     velocity = 0
@@ -615,19 +810,28 @@ export async function createPictorRunGame(
   }
 
   const press = () => {
+    audio.unlock()
     if (state === "ready") {
       state = "running"
       speed = START_SPEED * pace
+      audio.play("start")
+      dust(-0.2, 8, 1.2)
       callbacks.onStart()
       return
     }
     if (state !== "running" || jumpsLeft <= 0) return
     if (jumpsLeft === 2 && y <= 0.001) {
       velocity = JUMP_VELOCITY
+      stretch = 0.2
+      audio.play("jump")
+      dust(-0.1, 6, 1)
     } else {
       velocity = DOUBLE_JUMP_VELOCITY
       flipTime = 0
       jumpsLeft = 1
+      stretch = 0.16
+      audio.play("double")
+      sparkle(0, y + 0.5, 0x7ad0ff, 10)
     }
     jumpsLeft -= 1
   }
@@ -697,6 +901,33 @@ export async function createPictorRunGame(
         y = 0
         velocity = 0
         jumpsLeft = 2
+        if (airborne) {
+          stretch = -0.22
+          audio.play("land")
+          dust(0, 7, 1)
+        }
+      }
+      airborne = y > 0.02
+      // 走っている間の足元の土けむり
+      untilStep -= dt * (speed / START_SPEED)
+      if (!airborne && untilStep <= 0 && !lite) {
+        untilStep = 0.16
+        dust(-0.25, 1, 0.5, 0.5)
+      }
+      if (flipTime >= 0 && !lite) {
+        // 宙返りの光のあと
+        emit(
+          (Math.random() - 0.5) * 0.5,
+          y + 0.5 + Math.random() * 0.8,
+          0.2,
+          -1.5,
+          (Math.random() - 0.5) * 1.5,
+          0,
+          0.4,
+          0.17,
+          Math.random() < 0.5 ? 0x19b5d8 : 0xff8a1f,
+          0,
+        )
       }
       if (flipTime >= 0) {
         flipTime += dt / 0.42
@@ -750,6 +981,13 @@ export async function createPictorRunGame(
         velocity = 7
         flipTime = -1
         stars.visible = true
+        shake = 1
+        freeze = 0.09
+        sparkle(obstacle.x * 0.5, y + 0.9, 0xffffff, 16)
+        sparkle(obstacle.x * 0.5, y + 0.9, 0xffd84a, 8)
+        audio.stop()
+        audio.play("hit")
+        navigator.vibrate?.(60)
         callbacks.onGameOver(score(), coinCount, Math.round(runTime * 1000))
       }
     }
@@ -777,6 +1015,11 @@ export async function createPictorRunGame(
         coin.mesh.visible = false
         coinCount += 1
         pop(coin.x, coin.y)
+        // 続けて取るほど、音が高くなる
+        coinCombo = time - lastCoinTime < 0.7 ? coinCombo + 1 : 0
+        lastCoinTime = time
+        audio.play("coin", coinCombo)
+        sparkle(coin.x, coin.y, 0xffd84a, 6)
       }
     }
 
@@ -794,6 +1037,7 @@ export async function createPictorRunGame(
     }
 
     stage.update(move, dt, time, distance)
+    updateFx(dt, move)
 
     // ぴくたーちゃん
     player.position.y = y
@@ -813,6 +1057,12 @@ export async function createPictorRunGame(
       }
     }
     flip.rotation.x = flipTime >= 0 ? flipTime * Math.PI * 2 : 0
+    stretch = damp(stretch, 0, 11, dt)
+    facing.scale.set(
+      MODEL_SCALE * (1 - stretch * 0.5),
+      MODEL_SCALE * (1 + stretch),
+      MODEL_SCALE * (1 - stretch * 0.5),
+    )
     // 走る前はこちらを向いて待つ
     facing.rotation.y = damp(
       facing.rotation.y,
@@ -830,17 +1080,21 @@ export async function createPictorRunGame(
       const value = score()
       if (value !== lastScore) {
         lastScore = value
-        callbacks.onScore(value, coinCount)
+        callbacks.onScore(value, coinCount, distance)
       }
       const stageNow = toPictorRunStage(distance)
       if (stageNow !== lastStage) {
         lastStage = stageNow
+        audio.setSong(stageNow)
+        audio.play("stage")
+        confetti()
         callbacks.onStage(stageNow)
       }
     }
   }
 
   // ---- 画面 -------------------------------------------------------------------
+  const cameraHome = new Vector3()
   const resize = () => {
     const width = canvas.clientWidth || 1
     const height = canvas.clientHeight || 1
@@ -856,6 +1110,10 @@ export async function createPictorRunGame(
     camera.position.set(lookX - 1.2, (wide ? 2.5 : 4.2) + depth * 0.05, depth)
     camera.lookAt(lookX, wide ? 1.95 : 3.5, 0)
     camera.updateProjectionMatrix()
+    cameraHome.copy(camera.position)
+    // つぶの大きさを、画面の高さに合わせる
+    fxMaterial.uniforms.uScale.value =
+      (height * renderer.getPixelRatio()) / (2 * tan)
   }
   const observer = new ResizeObserver(resize)
   observer.observe(canvas)
@@ -900,7 +1158,18 @@ export async function createPictorRunGame(
     last = now
     if (document.hidden) return
     if (state === "running" && !paused) watchSpeed(elapsed)
-    if (!paused) update(dt)
+    if (!paused) {
+      // ぶつかった瞬間は、ほんの一瞬だけ止める
+      if (freeze > 0) freeze -= dt
+      else update(dt)
+      if (state !== "over") audio.tick()
+    }
+    camera.position.copy(cameraHome)
+    if (shake > 0) {
+      shake = Math.max(0, shake - dt * 2.6)
+      camera.position.x += (Math.random() - 0.5) * shake * 0.5
+      camera.position.y += (Math.random() - 0.5) * shake * 0.4
+    }
     renderer.render(scene, camera)
   }
 
@@ -954,6 +1223,11 @@ export async function createPictorRunGame(
 
   return {
     setArtworks: (urls) => stage.setArtworks(urls),
+    setSound: (sound) => {
+      audio.unlock()
+      audio.set(sound)
+    },
+    playSound: (name) => audio.play(name),
     restart: reset,
     setPaused: (value) => {
       paused = value
@@ -961,6 +1235,7 @@ export async function createPictorRunGame(
     dispose: () => {
       disposed = true
       stage.dispose()
+      audio.dispose()
       cancelAnimationFrame(frame)
       observer.disconnect()
       window.removeEventListener("keydown", onKeyDown)
