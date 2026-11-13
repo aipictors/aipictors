@@ -90,7 +90,7 @@ export function InProgressGenerationCard(props: Props) {
   })()
 
   return (
-    <div className="relative h-full min-h-[160px] overflow-hidden rounded-xl p-[2px]">
+    <div className="relative size-full overflow-hidden rounded-xl p-[2px]">
       {/* 回転する虹色の枠 */}
       <div
         aria-hidden

@@ -15,6 +15,10 @@ type Props = {
    * 選択無効化
    */
   isDisabled: boolean
+  /** ボタンの大きさを決めるとき（枠いっぱいに広げるなど） */
+  className?: string
+  /** 中身の大きさを決めるとき */
+  contentClassName?: string
   onClick?(): void
 }
 
@@ -34,12 +38,16 @@ export function SelectableCardButton (props: Props): React.ReactNode {
           "hover:opacity-80": !props.isSelected,
           "border-primary": props.isSelected,
         },
+        props.className,
       )}
     >
       <div
-        className={cn({
-          "opacity-40": props.isSelected,
-        })}
+        className={cn(
+          {
+            "opacity-40": props.isSelected,
+          },
+          props.contentClassName,
+        )}
       >
         {props.children}
       </div>

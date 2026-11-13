@@ -6,7 +6,7 @@ import { FrownIcon } from "lucide-react"
  */
 export function ErrorResultCard () {
   return (
-    <Card>
+    <Card className="h-full overflow-hidden">
       <div className="flex flex-col gap-y-2 p-4">
         <FrownIcon className="size-6" />
         <span className="text-sm">{"エラーが発生しました"}</span>

@@ -38,48 +38,55 @@ type Props = {
 /**
  * 画像生成タスク
  */
-export function GenerationTaskCard (props: Props) {
+export function GenerationTaskCard(props: Props) {
   return (
-    <div className="relative">
+    // 一覧をそろえるため、どの履歴も正方形の枠に入れる
+    <div className="relative aspect-square min-w-0">
+      {/* 中身は枠いっぱいに重ねる（高さを枠から確実に受け取るため） */}
+      <div className="absolute inset-0">
+        {props.isEditMode && (
+          <GenerationTaskEditableCard
+            onClick={() =>
+              props.onSelectTask(
+                props.task.nanoid ?? "",
+                props.task.status ?? "",
+              )
+            }
+            taskId={props.task.id ?? ""}
+            isSelected={props.selectedTaskIds.includes(props.task.nanoid ?? "")}
+            isSelectDisabled={false}
+            taskNanoid={props.task.nanoid}
+            task={props.task}
+            estimatedSeconds={props.task.estimatedSeconds ?? 0}
+            userToken={props.userToken}
+            optionButtonSize={props.sizeType}
+            rating={props.task.rating ?? 0}
+            isProtected={props.task.isProtected ?? false}
+            onDelete={props.onDelete}
+          />
+        )}
+        {!props.isEditMode && (
+          <GenerationTaskResponsiveCard
+            task={props.task}
+            taskIds={props.taskIds}
+            taskContentPositionType={props.taskContentPositionType}
+            estimatedSeconds={props.task.estimatedSeconds ?? 0}
+            selectedTaskIds={props.selectedTaskIds}
+            sizeType={props.sizeType}
+            isDialog={props.isDialog}
+            userToken={props.userToken}
+            onClick={props.onClick}
+            onCancel={props.onCancel}
+            onRestore={props.onRestore}
+            onSelectTask={props.onSelectTask}
+            onDelete={props.onDelete}
+          />
+        )}
+      </div>
       {props.postedWorkId && (
         <GenerationPostedBadge
           workId={props.postedWorkId}
           isCompact={props.sizeType < 6}
-        />
-      )}
-      {props.isEditMode && (
-        <GenerationTaskEditableCard
-          onClick={() =>
-            props.onSelectTask(props.task.nanoid ?? "", props.task.status ?? "")
-          }
-          taskId={props.task.id ?? ""}
-          isSelected={props.selectedTaskIds.includes(props.task.nanoid ?? "")}
-          isSelectDisabled={false}
-          taskNanoid={props.task.nanoid}
-          task={props.task}
-          estimatedSeconds={props.task.estimatedSeconds ?? 0}
-          userToken={props.userToken}
-          optionButtonSize={props.sizeType}
-          rating={props.task.rating ?? 0}
-          isProtected={props.task.isProtected ?? false}
-          onDelete={props.onDelete}
-        />
-      )}
-      {!props.isEditMode && (
-        <GenerationTaskResponsiveCard
-          task={props.task}
-          taskIds={props.taskIds}
-          taskContentPositionType={props.taskContentPositionType}
-          estimatedSeconds={props.task.estimatedSeconds ?? 0}
-          selectedTaskIds={props.selectedTaskIds}
-          sizeType={props.sizeType}
-          isDialog={props.isDialog}
-          userToken={props.userToken}
-          onClick={props.onClick}
-          onCancel={props.onCancel}
-          onRestore={props.onRestore}
-          onSelectTask={props.onSelectTask}
-          onDelete={props.onDelete}
         />
       )}
     </div>

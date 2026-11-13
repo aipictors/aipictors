@@ -6,7 +6,7 @@ import { Loader2Icon } from "lucide-react"
  */
 export function FallbackTaskCard () {
   return (
-    <Card>
+    <Card className="h-full overflow-hidden">
       <div className="flex flex-col p-4">
         <Loader2Icon className="size-6 animate-spin" />
       </div>

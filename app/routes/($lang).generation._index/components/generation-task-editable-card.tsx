@@ -343,54 +343,62 @@ export function GenerationTaskEditableCard(props: Props) {
   if (!props.task.imageUrl && props.task.status === "ERROR") {
     const isRetrying =
       isRetryingTask || isRetryingFluxTask || isRetryingGeminiTask
+    // 6 列以上で並べているときは枠が小さい
+    const isCompactTile = props.optionButtonSize < 5
+    const isGeminiTask =
+      props.task.model.type === "GEMINI" || props.task.model.type === "SD5"
+    const errorDescription = isGeminiTask
+      ? "コイン消費なしで同じ条件の再リクエストができます。Nano Banana は Google の安全フィルターで止められることがあります。続けて失敗するときはプロンプトの表現を変えてお試しください。"
+      : "画像の生成に失敗しました。コイン消費なしで同じ条件の再リクエストができます。"
 
     return (
-      <div className="grid h-full overflow-hidden rounded-xl border border-destructive/30 bg-card">
+      // 正方形の枠に収める。枠が小さいときは説明を省いて、印とリトライだけにする
+      <div className="flex size-full flex-col overflow-hidden rounded-xl border border-destructive/30 bg-card">
         <SelectableCardButton
           onClick={props.onClick}
           isSelected={props.isSelected}
           isDisabled={props.isSelectDisabled}
+          className="min-h-0 w-full flex-1 overflow-hidden border-0"
+          contentClassName="size-full"
         >
-          <div className="flex h-full min-h-[120px] flex-col justify-between gap-3 p-4 text-left">
-            <div className="space-y-2">
-              <div className="inline-flex w-fit rounded-full bg-destructive/10 px-2 py-1 text-xs font-semibold text-destructive">
-                生成失敗
-              </div>
-              <p className="text-sm font-semibold text-foreground">
-                画像の生成に失敗しました
-              </p>
-              <p className="text-xs text-muted-foreground">
-                コイン消費なしで同じ条件の再リクエストができます。
-              </p>
-              {(props.task.model.type === "GEMINI" ||
-                props.task.model.type === "SD5") && (
-                <p className="text-xs text-muted-foreground">
-                  Nano Banana は Google の安全フィルターで止められることがあります。続けて失敗するときはプロンプトの表現を変えてお試しください。
-                </p>
-              )}
+          <div
+            className="flex size-full flex-col gap-1 overflow-hidden p-2 text-left"
+            title={errorDescription}
+          >
+            <div className="inline-flex w-fit shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 font-semibold text-[11px] text-destructive">
+              生成失敗
             </div>
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <CoinIcon className="h-4 w-4 shrink-0" />
-              <span>0</span>
-            </div>
+            {!isCompactTile && (
+              <p className="line-clamp-4 text-muted-foreground text-xs">
+                {errorDescription}
+              </p>
+            )}
           </div>
         </SelectableCardButton>
-        <div className="flex items-center justify-between gap-2 border-t bg-muted/20 px-4 py-3">
+        <div className="flex shrink-0 items-center justify-between gap-1 border-t bg-muted/20 p-1.5">
           <Button
             type="button"
             size="sm"
-            className="gap-2"
+            className="h-7 min-w-0 gap-1 px-2 text-xs"
             onClick={onRetryTask}
             disabled={isRetrying}
+            title="コイン消費なしで同じ条件で作り直します"
           >
-            <CoinIcon className="h-4 w-4 shrink-0" />
-            <span>{isRetrying ? "リトライ中..." : "0でリトライ"}</span>
+            <CoinIcon className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">
+              {isRetrying
+                ? "リトライ中..."
+                : isCompactTile
+                  ? "0"
+                  : "0でリトライ"}
+            </span>
           </Button>
           {props.isSelectDisabled && (
             <Button
               type="button"
               size="sm"
               variant="ghost"
+              className="h-7 shrink-0 px-2 text-xs"
               onClick={onDeleteTask}
               disabled={isDeletedLoading}
             >
@@ -412,7 +420,7 @@ export function GenerationTaskEditableCard(props: Props) {
 
   return (
     <div
-      className="group relative grid h-full overflow-hidden rounded bg-card p-0"
+      className="group relative size-full overflow-hidden rounded bg-muted/40 p-0"
       onMouseEnter={() => {
         setIsHovered(true)
       }}
@@ -424,12 +432,20 @@ export function GenerationTaskEditableCard(props: Props) {
         onClick={props.onClick}
         isSelected={props.isSelected}
         isDisabled={props.isSelectDisabled}
+        className="block h-full w-full overflow-hidden bg-transparent"
+        contentClassName="size-full"
       >
         {props.task.imageUrl !== "" &&
         props.task.thumbnailUrl !== "" &&
         props.task.thumbnailUrl !== null ? (
           <img
-            className={cn(`generation-image-${props.taskNanoid}`, "m-auto")}
+            // 縦長・横長でも切り取らず、正方形の枠の中に全体を収める
+            className={cn(
+              `generation-image-${props.taskNanoid}`,
+              "size-full object-contain",
+            )}
+            loading="lazy"
+            decoding="async"
             src={
               context.config.taskListThumbnailType === "light"
                 ? toResizedImageUrl(normalizedThumbnailUrl, 480)
@@ -463,7 +479,7 @@ export function GenerationTaskEditableCard(props: Props) {
             alt={"-"}
           />
         ) : (
-          <Skeleton className="h-[120px] w-[240px] rounded-xl" />
+          <Skeleton className="size-full rounded-none" />
         )}
       </SelectableCardButton>
       {/* ダウンロードボタン（PC はカーソルを乗せたとき、スマホは常に表示） */}

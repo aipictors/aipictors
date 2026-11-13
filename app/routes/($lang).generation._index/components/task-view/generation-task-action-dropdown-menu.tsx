@@ -3,31 +3,29 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Loader2, MoreHorizontalIcon } from "lucide-react"
+import { Loader2, Settings2Icon } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   thumbnailType: TaskListThumbnailType
   onChangeThumbnailType(type: TaskListThumbnailType): void
-  onSelectAll(): void
-  onCancelAll(): void
+  /** 以前はこのメニューに一括選択があった（今は「選択」の中にある） */
+  onSelectAll?(): void
+  onCancelAll?(): void
 }
 
 /**
- * その他ボタン
+ * 表示の設定（サムネイルの画質、予約の取り消し）
  */
 export function GenerationTaskActionDropdownMenu (props: Props) {
   const context = useGenerationContext()
@@ -71,80 +69,41 @@ export function GenerationTaskActionDropdownMenu (props: Props) {
         <Button
           variant={"ghost"}
           size={"icon"}
-          title={t("サムネイルサイズ変更など", "Change thumbnail size, etc.")}
+          title={t("表示の設定", "Display settings")}
+          aria-label={t("表示の設定", "Display settings")}
         >
-          <MoreHorizontalIcon className="w-4" />
+          <Settings2Icon className="w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            {t("サムネイル画質", "Thumbnail Quality")}
-          </DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuLabel>
-                {t("画質変更", "Change Quality")}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
-                checked={props.thumbnailType === "light"}
-                onCheckedChange={props.onChangeThumbnailType.bind(
-                  null,
-                  "light",
-                )}
-              >
-                {t("低画質", "Low Quality")}
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={props.thumbnailType === "original"}
-                onCheckedChange={props.onChangeThumbnailType.bind(
-                  null,
-                  "original",
-                )}
-              >
-                {t("高画質", "High Quality")}
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>
+          {t("サムネイルの画質", "Thumbnail quality")}
+        </DropdownMenuLabel>
+        <DropdownMenuCheckboxItem
+          checked={props.thumbnailType === "light"}
+          onCheckedChange={props.onChangeThumbnailType.bind(null, "light")}
+        >
+          {t("低画質（軽い）", "Low (faster)")}
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem
+          checked={props.thumbnailType === "original"}
+          onCheckedChange={props.onChangeThumbnailType.bind(null, "original")}
+        >
+          {t("高画質", "High")}
+        </DropdownMenuCheckboxItem>
         {isEnabledReservedGeneration() && (
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              {t("一括操作", "Bulk Actions")}
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuLabel>{t("項目", "Items")}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <Button
-                  onClick={props.onSelectAll}
-                  variant={"ghost"}
-                  className="w-full text-left"
-                >
-                  {t("一括選択", "Select All")}
-                </Button>
-                <Button
-                  onClick={props.onCancelAll}
-                  variant={"ghost"}
-                  className="w-full text-left"
-                >
-                  {t("一括解除", "Deselect All")}
-                </Button>
-                {!isDeletingReservedTasks ? (
-                  <Button
-                    onClick={onDeleteReservedTasks}
-                    variant={"ghost"}
-                    className="w-full"
-                  >
-                    {t("予約一括削除", "Delete All Reserved")}
-                  </Button>
-                ) : (
-                  <Loader2 className="w-4 animate-spin" />
-                )}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              disabled={isDeletingReservedTasks}
+              onSelect={() => void onDeleteReservedTasks()}
+            >
+              {isDeletingReservedTasks && (
+                <Loader2 className="mr-2 w-4 animate-spin" />
+              )}
+              {t("予約をすべて取り消す", "Cancel all reserved")}
+            </DropdownMenuItem>
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

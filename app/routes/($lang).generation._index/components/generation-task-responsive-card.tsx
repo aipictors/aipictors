@@ -43,12 +43,12 @@ export function GenerationTaskResponsiveCard (props: Props) {
     <>
       <ErrorBoundary key={props.task.id} fallback={<ErrorResultCard />}>
         {showMobile && props.task.status === "RESERVED" && (
-          <div className="block md:hidden">
+          <div className="block h-full md:hidden">
             <ReservedGenerationLinkCard taskNanoid={props.task.nanoid ?? ""} />
           </div>
         )}
         {showMobile && props.task.status !== "RESERVED" && (
-          <div className="block md:hidden">
+          <div className="block h-full md:hidden">
             <GenerationTaskDialogButton
               task={props.task}
               taskIds={props.taskIds}
@@ -61,7 +61,7 @@ export function GenerationTaskResponsiveCard (props: Props) {
           </div>
         )}
         {showDesktop && props.isDialog && (
-          <div className="hidden md:block">
+          <div className="hidden h-full md:block">
             <GenerationTaskDialogButton
               task={props.task}
               taskIds={props.taskIds}
@@ -74,7 +74,7 @@ export function GenerationTaskResponsiveCard (props: Props) {
           </div>
         )}
         {showDesktop && !props.isDialog && (
-          <div className="hidden md:block">
+          <div className="hidden h-full md:block">
             <GenerationTaskButton
               task={props.task}
               userToken={props.userToken}

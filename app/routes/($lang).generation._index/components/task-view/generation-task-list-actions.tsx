@@ -1,6 +1,5 @@
 import { Button } from "~/components/ui/button"
 import { Slider } from "~/components/ui/slider"
-import { Toggle } from "~/components/ui/toggle"
 import { GenerationTasksDeleteButton } from "~/routes/($lang).generation._index/components/generation-tasks-delete-button"
 import { GenerationImageDownloadButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-download-button"
 import { GenerationImagePostButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-upload-button"
@@ -11,7 +10,12 @@ import { GenerationConfigContext } from "~/routes/($lang).generation._index/cont
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { MaximizeIcon, MinimizeIcon, RefreshCwIcon } from "lucide-react"
+import {
+  MaximizeIcon,
+  MinimizeIcon,
+  RefreshCwIcon,
+  SquareCheckIcon,
+} from "lucide-react"
 import { useState, useCallback } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -46,7 +50,6 @@ export function GenerationTaskListActions (props: Props) {
   const [deleteTask] = useMutation(deleteImageGenerationResultMutation)
   const t = useTranslation()
 
-  const [isAllSelected, setIsAllSelected] = useState(false)
   const [isRefreshDisabled, setIsRefreshDisabled] = useState(false)
 
   const state = GenerationConfigContext.useSelector((snap) => {
@@ -101,81 +104,127 @@ export function GenerationTaskListActions (props: Props) {
     send({ type: "OPEN_FULL_HISTORY_LIST" })
   }
 
-  const isEmpty = props.selectedTaskIds.length === 0
+  const selectedCount = props.selectedTaskIds.length
+  const isEmpty = selectedCount === 0
+
+  // 選択中は「選んだものへの操作」だけ、ふだんは「絞り込みと表示」だけを出す（1 列に収める）
+  if (props.isEditMode) {
+    return (
+      <div className="flex min-h-9 flex-wrap items-center gap-2 px-2 pb-2 md:px-4">
+        <Button onClick={props.onToggleEditMode} variant="secondary" size="sm">
+          {t("完了", "Done")}
+        </Button>
+        <Button
+          onClick={isEmpty ? props.onSelectAll : props.onCancelAll}
+          variant="outline"
+          size="sm"
+        >
+          {isEmpty ? t("すべて選択", "Select all") : t("選択を解除", "Clear")}
+        </Button>
+        <span className="text-muted-foreground text-xs">
+          {isEmpty
+            ? t("画像をタップして選択", "Tap images to select")
+            : t(`${selectedCount}件選択中`, `${selectedCount} selected`)}
+        </span>
+        <div className="ml-auto flex items-center gap-1">
+          {/* ダウンロード */}
+          <GenerationImageDownloadButton
+            disabled={false}
+            selectedTaskIds={props.selectedTaskIds}
+            title={t(
+              "選んだ画像をまとめてダウンロード",
+              "Download the selected images",
+            )}
+            isEnable={isEmpty}
+          />
+          {/* 投稿 */}
+          <GenerationImagePostButton
+            disabled={false}
+            selectedTaskIds={props.selectedTaskIds}
+            title={t("選んだ画像をまとめて投稿", "Post the selected images")}
+            isEnable={isEmpty}
+          />
+          {/* 削除 */}
+          <GenerationTasksDeleteButton
+            disabled={false}
+            onDelete={onTrashTasks}
+            isDeletedLoading={isDeletedLoading}
+            title={t("選んだ画像をまとめて削除", "Delete the selected images")}
+            isEnable={isEmpty}
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <>
-      {/* 操作一覧 */}
-      <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
-        <div className="flex w-full items-center space-x-4">
-          <Toggle
-            title={t(
-              "履歴を複数選択してダウンロード、一括削除などを行えます",
-              "Select multiple history items for bulk download, deletion, etc.",
-            )}
-            onClick={props.onToggleEditMode}
-            variant="outline"
-          >
-            {props.isEditMode ? t("解除", "Deselect") : t("選択", "Select")}
-          </Toggle>
-          {props.isEditMode && (
-            <Button
-              title={t("一括選択、解除できます", "Bulk select or deselect")}
-              onClick={() => {
-                setIsAllSelected(!isAllSelected)
-                if (isAllSelected) {
-                  props.onCancelAll()
-                } else {
-                  props.onSelectAll()
-                }
-              }}
-              variant="outline"
-            >
-              {isAllSelected
-                ? t("一括解除", "Deselect All")
-                : t("一括選択", "Select All")}
-            </Button>
-          )}
-          {!props.isEditMode && (
-            <GenerationTaskRatingSelect
-              defaultValue={props.rating}
-              onChange={props.onChangeRating}
-            />
-          )}
-          {props.showCountInput && props.viewCount && (
-            <GenerationTaskCountSelect
-              value={props.viewCount}
-              onChange={(value) => {
-                props.onChangeViewCount(value)
-              }}
-            />
-          )}
-        </div>
+    <div className="flex min-h-9 flex-wrap items-center gap-2 px-2 pb-2 md:px-4">
+      <Button
+        title={t(
+          "複数選んで、まとめてダウンロード・投稿・削除できます",
+          "Select several to download, post or delete them together",
+        )}
+        onClick={props.onToggleEditMode}
+        variant="outline"
+        size="sm"
+        className="gap-1"
+      >
+        <SquareCheckIcon className="size-4" />
+        {t("選択", "Select")}
+      </Button>
+      <GenerationTaskRatingSelect
+        defaultValue={props.rating}
+        onChange={props.onChangeRating}
+      />
+      {props.showCountInput && props.viewCount && (
+        <GenerationTaskCountSelect
+          value={props.viewCount}
+          onChange={(value) => {
+            props.onChangeViewCount(value)
+          }}
+        />
+      )}
+      <div className="ml-auto flex items-center gap-1">
+        {/* サムネイルサイズ */}
+        <Slider
+          className="color-pink mr-1 w-20 shrink-0 md:w-28"
+          aria-label={t("サムネイルサイズ", "Thumbnail size")}
+          title={t("サムネイルサイズ", "Thumbnail size")}
+          min={1}
+          max={9}
+          step={1}
+          value={[props.thumbnailSize]}
+          onValueChange={(value) => props.setThumbnailSize(value[0])}
+        />
+        <GenerationTaskActionDropdownMenu
+          thumbnailType={props.thumbnailType}
+          onChangeThumbnailType={props.onChangeThumbnailType}
+        />
         {/* 履歴全画面表示 */}
         {props.showHistoryExpandButton && (
-          <div className="hidden md:block">
-            <Toggle
-              onClick={openFullHistory}
-              variant={"outline"}
-              title={t(
-                "履歴一覧の全画面モード切替",
-                "Toggle full-screen mode for history list",
-              )}
-            >
-              {state === "HISTORY_LIST_FULL" ? (
-                <MinimizeIcon className="w-4" />
-              ) : (
-                <MaximizeIcon className="w-4" />
-              )}
-            </Toggle>
-          </div>
+          <Button
+            onClick={openFullHistory}
+            variant="ghost"
+            size="icon"
+            className="hidden md:inline-flex"
+            title={t(
+              "履歴一覧の全画面モード切替",
+              "Toggle full-screen mode for history list",
+            )}
+          >
+            {state === "HISTORY_LIST_FULL" ? (
+              <MinimizeIcon className="w-4" />
+            ) : (
+              <MaximizeIcon className="w-4" />
+            )}
+          </Button>
         )}
         {/* 更新ボタン */}
         {props.onRefresh && (
           <Button
             onClick={handleRefresh}
-            variant={"outline"}
-            size={"icon"}
+            variant="ghost"
+            size="icon"
             disabled={isRefreshDisabled}
             title={t("履歴一覧を更新", "Refresh history list")}
           >
@@ -185,57 +234,7 @@ export function GenerationTaskListActions (props: Props) {
           </Button>
         )}
       </div>
-      <div className="flex items-center gap-2 px-2 pb-3 md:px-4 xl:px-4">
-        {/* 削除 */}
-        <GenerationTasksDeleteButton
-          disabled={false}
-          onDelete={onTrashTasks}
-          isDeletedLoading={isDeletedLoading}
-          title={t(
-            "複数選択して一括削除できます。",
-            "You can bulk delete selected items.",
-          )}
-          isEnable={isEmpty}
-        />
-        {/* ダウンロード */}
-        <GenerationImageDownloadButton
-          disabled={false}
-          selectedTaskIds={props.selectedTaskIds}
-          title={t(
-            "複数選択して一括ダウンロードできます。",
-            "You can bulk download selected items.",
-          )}
-          isEnable={isEmpty}
-        />
-        {/* 投稿 */}
-        <GenerationImagePostButton
-          disabled={false}
-          selectedTaskIds={props.selectedTaskIds}
-          title={t(
-            "複数選択して一括投稿できます。",
-            "You can bulk post selected items.",
-          )}
-          isEnable={isEmpty}
-        />
-        <GenerationTaskActionDropdownMenu
-          thumbnailType={props.thumbnailType}
-          onChangeThumbnailType={props.onChangeThumbnailType}
-          onSelectAll={props.onSelectAll}
-          onCancelAll={props.onCancelAll}
-        />
-        {/* サムネイルサイズ */}
-        <Slider
-          className="color-pink ml-auto w-28 shrink-0"
-          aria-label={t("サムネイルサイズ", "Thumbnail size")}
-          title={t("サムネイルサイズ", "Thumbnail size")}
-          min={1}
-          max={9}
-          step={1}
-          value={[props.thumbnailSize]}
-          onValueChange={(value) => props.setThumbnailSize(value[0])}
-        />
-      </div>
-    </>
+    </div>
   )
 }
 

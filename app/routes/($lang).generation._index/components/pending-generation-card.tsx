@@ -16,7 +16,7 @@ export function PendingGenerationCard(props: Props) {
   const t = useTranslation()
 
   return (
-    <div className="relative h-full min-h-[160px] overflow-hidden rounded-xl p-[2px]">
+    <div className="relative size-full overflow-hidden rounded-xl p-[2px]">
       <div
         aria-hidden
         className="-inset-[60%] absolute animate-[spin_3.5s_linear_infinite]"

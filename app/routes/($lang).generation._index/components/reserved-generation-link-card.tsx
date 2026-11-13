@@ -39,7 +39,7 @@ export function ReservedGenerationLinkCard (props: Props) {
 
   return (
     <>
-      <Card className="relative">
+      <Card className="relative h-full overflow-hidden">
         <GenerationTaskCancelButton
           onCancel={() => onCancelReservedTask(props.taskNanoid)}
           isCanceling={isCancelingReservedTask}
