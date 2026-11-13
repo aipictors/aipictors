@@ -6,7 +6,7 @@ import type {
   PictorChanViewer as Viewer,
 } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-viewer.client"
 
-const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v3.glb"
+const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v4.glb"
 
 /**
  * 動く 3D のぴくたーちゃん。読み込むまで（と、通信量を節約する設定のとき）は絵を出す
@@ -82,9 +82,9 @@ export function PictorChanViewer(): React.ReactNode {
     <div className="relative flex h-full w-full flex-col items-center">
       <div className="relative min-h-0 w-full flex-1">
         <img
-          src="/images/pictor-chan/pictor-chan-3d-preview.webp"
+          src="/images/pictor-chan/pictor-chan-3d-preview-2.webp"
           alt={t("ぴくたーちゃんの3Dモデル", "The Pictor-chan 3D model")}
-          width={477}
+          width={495}
           height={900}
           fetchPriority="high"
           decoding="async"

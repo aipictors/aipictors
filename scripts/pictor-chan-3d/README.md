@@ -1,6 +1,6 @@
 # ぴくたーちゃんの 3D モデル
 
-404 ページの隠しゲーム（`app/components/pictor-run`）で使う `public/images/pictor-chan/pictor-chan-3d-v3.glb` の作り方。
+404 ページの隠しゲーム（`app/components/pictor-run`）で使う `public/images/pictor-chan/pictor-chan-3d-v4.glb` の作り方。
 Tripo（<https://developers.tripo3d.ai>、`npm install -g tripo-cli`、`tripo login --region ov`）で公式絵から作っている。1 クレジット = $0.01。
 
 | 手順 | コマンド | クレジット |
@@ -16,7 +16,7 @@ Tripo（<https://developers.tripo3d.ai>、`npm install -g tripo-cli`、`tripo lo
 ```sh
 npm i @gltf-transform/core@4
 node strip.mjs model.glb stripped.glb          # 使わない動きと目印の球を外す
-npx @gltf-transform/cli@4 optimize stripped.glb pictor-chan-3d-v3.glb \
+npx @gltf-transform/cli@4 optimize stripped.glb pictor-chan-3d-v4.glb \
   --compress meshopt --texture-compress webp --texture-size 2048 \
   --simplify false --join false --palette false --flatten false --instance false
 ```
@@ -33,4 +33,4 @@ Tripo の出力を Blender で仕上げたもの（表情のシェイプキー 9
 
 - 配布ファイルは R2 の `assets` バケットの `pictor-chan/3d/v1.0/`（<https://assets.aipictors.com/pictor-chan/3d/v1.0/>）。一覧は `app/lib/pictor-chan/pictor-chan-3d.ts`
 - 利用条件は `app/lib/pictor-chan/pictor-chan-license.ts`（ページ `/pictor-chan/license` と、ZIP に入れる LICENSE.txt の元）
-- ゲーム用は `web/pictor-chan-3d-v3.glb`（表情は `Face` メッシュのモーフ。0 か 1 で切り替える）
+- ゲーム用は `web/pictor-chan-3d-v3.glb`（`public/images/pictor-chan/` には `pictor-chan-3d-v4.glb` の名前で置いている）（表情は `Face` メッシュのモーフ。0 か 1 で切り替える）

@@ -14,7 +14,7 @@ Built 2026-11-14 with Blender 5.3 from the Tripo rigged + animated GLB
 | `textures/PictorChan_Body.png` | 17.3 MB | 4096x4096 base colour, lossless |
 | `textures/PictorChan_Face.png` | 0.35 MB | 1024x1024 RGBA atlas for the expression overlays |
 | `web/pictor-chan-3d-v3.glb` | 1.19 MB | Game version: meshopt + WebP (body 2048), actions `idle` `run` `jump` `fall` |
-| `web/preview.webp` | 61 KB | 477x900, transparent background, 3/4 view |
+| `web/preview.webp` | 64 KB | 495x900, transparent background, 3/4 view |
 | `previews/turnaround.png` `expressions.png` `animations.png` | | Preview sheets |
 
 ## Geometry
@@ -79,12 +79,13 @@ In the FBX the takes are named `PictorChan|Idle` etc.; the exporter also writes 
 
 1. `01_base.py`: import, delete the importer's bone-shape Icosphere, rename, weld vertices split at UV seams (27,503 → 12,791, faces / UVs / normals unchanged), retime keys from 0.8-frame steps at 24 fps to whole frames at 30 fps, rotate to -Y front, scale 1.2006x, apply transforms, scale location curves, make clips in place.
 2. `01c_weights.py`: the Tripo rig gave head and hair vertices small weights on arm / hand / finger bones (up to 0.28). These are removed above the chin (blended in between z = 0.70 and 0.78 m), 3,675 vertices. A fragment of hair that floated above the head in posed frames is fixed by this.
-3. `01b_texfix.py`: a dark navy smear on the skin next to the inner corner of the right eye is painted over with the surrounding skin colour in the body texture.
-4. `02_face_maps.py`, `03_atlas.py`, `04_build_face.py`: front projection of the face (colour, depth, normals), smooth skin surface and skin colour filled in over the eyes and mouth, features drawn, lids built as 5 mm grids with normals continued from the surrounding skin.
-5. `05_finalize.py`, `06_export.py`: `.blend`, GLB (Blender glTF exporter), FBX (Blender FBX exporter, `FBX_SCALE_ALL`, -Z forward, Y up).
-6. `08_vrm.py`: VRM Add-on for Blender (extension id `vrm`, installed from extensions.blender.org), VRM 1.0.
-7. `web.sh`: `gltf-transform optimize --compress meshopt --texture-compress webp --texture-size 2048 --simplify false --join false --palette false --flatten false --instance false`.
-8. `09_previews.py`, `10_assemble.py`: preview renders (EEVEE, sun shadows off).
+3. `01d_idle_arms.py`: in the Tripo `Idle` clip the arms hung straight down inside the torso and skirt (hands not visible). Both upper arms are opened 30° outward about the shoulder on every frame, so the hands rest beside the skirt. Other clips are unchanged.
+4. `01b_texfix.py`: a dark navy smear on the skin next to the inner corner of the right eye is painted over with the surrounding skin colour in the body texture.
+5. `02_face_maps.py`, `03_atlas.py`, `04_build_face.py`: front projection of the face (colour, depth, normals), smooth skin surface and skin colour filled in over the eyes and mouth, features drawn, lids built as 5 mm grids with normals continued from the surrounding skin.
+6. `05_finalize.py`, `06_export.py`: `.blend`, GLB (Blender glTF exporter), FBX (Blender FBX exporter, `FBX_SCALE_ALL`, -Z forward, Y up).
+7. `08_vrm.py`: VRM Add-on for Blender (extension id `vrm`, installed from extensions.blender.org), VRM 1.0.
+8. `web.sh`: `gltf-transform optimize --compress meshopt --texture-compress webp --texture-size 2048 --simplify false --join false --palette false --flatten false --instance false`.
+9. `09_previews.py`, `10_assemble.py`: preview renders (EEVEE, sun shadows off).
 
 ## Verification done
 

@@ -1,6 +1,5 @@
 import {
   ArrowDownIcon,
-  BoxIcon,
   CakeIcon,
   CheckIcon,
   CopyIcon,
@@ -199,11 +198,11 @@ export function PictorChanProfile(): React.ReactNode {
                 {t("ミニゲームであそぶ", "Play the mini game")}
               </button>
               <a
-                href="#model-3d"
+                href="#profile"
                 className="flex h-12 items-center gap-2 rounded-full bg-white/15 px-6 font-bold text-sm backdrop-blur-sm transition-colors hover:bg-white/25"
               >
-                <BoxIcon aria-hidden="true" className="size-5" />
-                {t("3Dモデルを無料でもらう", "Get the free 3D model")}
+                <SparklesIcon aria-hidden="true" className="size-5" />
+                {t("プロフィールを見る", "See her profile")}
               </a>
             </div>
             <dl className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-1 text-xs md:justify-start md:text-sm">
@@ -308,20 +307,6 @@ export function PictorChanProfile(): React.ReactNode {
 
       {/* ミニゲーム */}
       <PictorChanGameSection onPlay={() => setIsGameOpen(true)} />
-
-      {/* 3D モデルの配布 */}
-      <section id="model-3d" className="scroll-mt-20 px-1">
-        <PictorChanReveal>
-          <Heading
-            label="3D MODEL"
-            title={t("3Dモデルを無料で配布中", "Free 3D model")}
-            icon={<BoxIcon aria-hidden="true" className="size-6" />}
-          />
-        </PictorChanReveal>
-        <PictorChanReveal>
-          <PictorChan3dSection />
-        </PictorChanReveal>
-      </section>
 
       {/* 話す・見る */}
       <section className="grid gap-5 px-1 md:grid-cols-2">
@@ -477,6 +462,13 @@ export function PictorChanProfile(): React.ReactNode {
             </a>
           </PictorChanReveal>
         </div>
+      </section>
+
+      {/* 3D モデルの配布（素材のひとつとして、小さく置く） */}
+      <section id="model-3d" className="scroll-mt-20 px-1">
+        <PictorChanReveal>
+          <PictorChan3dSection />
+        </PictorChanReveal>
       </section>
 
       {/* 使うときの約束 */}

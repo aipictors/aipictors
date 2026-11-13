@@ -55,6 +55,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js"
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js"
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js"
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js"
+import { PICTOR_RUN_LOBBY_START } from "~/components/pictor-run/pictor-run-lobby"
 import {
   createPictorRunAudio,
   type PictorRunSound,
@@ -140,13 +141,15 @@ export type PictorRunGame = {
   /** 最初から走り直す */
   restart: () => void
   /** ロビー（休憩場）に入る */
-  enterLobby: () => void
+  enterLobby: (x: number, z: number) => void
   /** ロビーで、画面のスティックから動かす（x = 右が正、z = 手前が正。-1〜1） */
   setLobbyInput: (x: number, z: number) => void
   /** ロビーで、画面のボタンから跳ぶ */
   jump: () => void
   /** ロビーにいる人・いま走っている人 */
   setPeers: (peers: PictorRunPeer[]) => void
+  /** ロビーで、頭の上にあいさつのふきだしを出す（key = 相手の番号。自分は null） */
+  showStamp: (key: number | null, text: string) => void
   /** 一時停止（止めている間も画面は描く） */
   setPaused: (paused: boolean) => void
   dispose: () => void
@@ -1132,13 +1135,15 @@ export async function createPictorRunGame(
 
   // ---- ロビー（休憩場）。丸い広場を、好きな向きに歩ける -----------------------------
   /** 広場の半径 */
-  const LOBBY_RADIUS = 13
+  const LOBBY_RADIUS = 9
+  /** 看板を立てる輪（広場のふちの少し内がわ） */
+  const LOBBY_SIGN_RING = LOBBY_RADIUS - 1.6
   /** まん中の噴水の半径（ぶつかる大きさ） */
   const LOBBY_FOUNTAIN = 2.3
   /** ロビーは、走る道とは別の場面として持つ */
   const lobbyScene = new Scene()
   let activeScene: Scene = scene
-  const lobbyPosition = { x: 0.8, z: 8 }
+  const lobbyPosition = { ...PICTOR_RUN_LOBBY_START }
   const lobbyVelocity = { x: 0, z: 0 }
   /** 歩く速さ（動きの切り替えに使う） */
   let lobbySpeed = 0
@@ -1156,10 +1161,10 @@ export async function createPictorRunGame(
   if (shadows) {
     lobbySun.castShadow = true
     lobbySun.shadow.mapSize.set(2048, 2048)
-    lobbySun.shadow.camera.left = -17
-    lobbySun.shadow.camera.right = 17
-    lobbySun.shadow.camera.top = 17
-    lobbySun.shadow.camera.bottom = -17
+    lobbySun.shadow.camera.left = -(LOBBY_RADIUS + 5)
+    lobbySun.shadow.camera.right = LOBBY_RADIUS + 5
+    lobbySun.shadow.camera.top = LOBBY_RADIUS + 5
+    lobbySun.shadow.camera.bottom = -(LOBBY_RADIUS + 5)
     lobbySun.shadow.camera.near = 1
     lobbySun.shadow.camera.far = 60
     lobbySun.shadow.bias = -0.0006
@@ -1409,7 +1414,7 @@ export async function createPictorRunGame(
     {
       action: "start",
       x: 0,
-      z: -11.2,
+      z: -LOBBY_SIGN_RING,
       icon: "🏃",
       title: "もういちど走る",
       sub: "ここからスタート",
@@ -1417,8 +1422,8 @@ export async function createPictorRunGame(
     },
     {
       action: "ranking",
-      x: -9.3,
-      z: -6.3,
+      x: -LOBBY_SIGN_RING * 0.83,
+      z: -LOBBY_SIGN_RING * 0.56,
       icon: "🏆",
       title: "ランキング",
       sub: "今週の記録を見る",
@@ -1426,8 +1431,8 @@ export async function createPictorRunGame(
     },
     {
       action: "chat",
-      x: 9.3,
-      z: -6.3,
+      x: LOBBY_SIGN_RING * 0.83,
+      z: -LOBBY_SIGN_RING * 0.56,
       icon: "💬",
       title: "チャット",
       sub: "みんなと話す",
@@ -1475,10 +1480,82 @@ export async function createPictorRunGame(
     sign.position.set(item.x, 0, item.z)
     // 広場のまん中のほうへ少し向ける
     sign.rotation.y = Math.atan2(-item.x, 14)
-    // 広い広場なので、遠くからでも読める大きさにする
-    sign.scale.setScalar(1.5)
+    // 広場の向こうがわからでも読める大きさにする
+    sign.scale.setScalar(1.3)
     lobbyScene.add(sign)
   }
+
+  // あいさつのスタンプ（頭の上に、少しの間だけふきだしを出す）
+  type Bubble = { sprite: Sprite; texture: CanvasTexture; shownAt: number }
+  const BUBBLE_SECONDS = 3.2
+  const makeBubble = (): Bubble => {
+    const texture = track(canvasTexture(384, 128, () => {}))
+    const sprite = new Sprite(
+      track(
+        new SpriteMaterial({
+          map: texture,
+          transparent: true,
+          depthTest: false,
+          fog: false,
+        }),
+      ),
+    )
+    // 下のとがった先が、頭の上に来るようにする
+    sprite.center.set(0.5, 0)
+    sprite.renderOrder = 16
+    sprite.visible = false
+    return { sprite, texture, shownAt: -100 }
+  }
+  const showBubble = (bubble: Bubble, text: string) => {
+    const canvas = bubble.texture.image as HTMLCanvasElement
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+    ctx.clearRect(0, 0, 384, 128)
+    ctx.font = "900 40px system-ui, sans-serif"
+    const width = Math.min(376, ctx.measureText(text).width + 56)
+    const left = (384 - width) / 2
+    ctx.fillStyle = "#1c2340"
+    roundRect(ctx, left, 4, width, 92, 46)
+    ctx.fill()
+    ctx.beginPath()
+    ctx.moveTo(192 - 20, 90)
+    ctx.lineTo(192, 126)
+    ctx.lineTo(192 + 20, 90)
+    ctx.closePath()
+    ctx.fill()
+    ctx.fillStyle = "#fffdf6"
+    roundRect(ctx, left + 6, 10, width - 12, 80, 40)
+    ctx.fill()
+    ctx.beginPath()
+    ctx.moveTo(192 - 13, 86)
+    ctx.lineTo(192, 114)
+    ctx.lineTo(192 + 13, 86)
+    ctx.closePath()
+    ctx.fill()
+    ctx.fillStyle = "#1c2340"
+    ctx.textBaseline = "middle"
+    ctx.textAlign = "center"
+    ctx.fillText(text, 192, 52, width - 40)
+    bubble.texture.needsUpdate = true
+    bubble.shownAt = performance.now() / 1000
+    bubble.sprite.visible = true
+  }
+  /** ぽんと出て、消えぎわに薄くなる */
+  const updateBubble = (bubble: Bubble) => {
+    if (!bubble.sprite.visible) return
+    const age = performance.now() / 1000 - bubble.shownAt
+    if (age > BUBBLE_SECONDS) {
+      bubble.sprite.visible = false
+      return
+    }
+    const pop = Math.min(1, age / 0.16)
+    const size = 0.6 + 0.4 * (1 - (1 - pop) * (1 - pop))
+    bubble.sprite.scale.set(2.4 * size, 0.8 * size, 1)
+    bubble.sprite.material.opacity = Math.min(1, (BUBBLE_SECONDS - age) / 0.4)
+  }
+  /** 自分のふきだし（ぴくたーちゃんの頭の上を追う） */
+  const selfBubble = makeBubble()
+  lobbyScene.add(selfBubble.sprite)
 
   // ロビーにいるほかの人・いま走っている人（走っている人は薄い姿で、うしろに立つ）
   const MAX_AVATARS = 10
@@ -1495,6 +1572,7 @@ export async function createPictorRunGame(
     label: Sprite
     labelTexture: CanvasTexture
     labelKey: string
+    bubble: Bubble
     /** つながっている相手の番号（空きは null） */
     peer: number | null
     ghost: boolean
@@ -1545,8 +1623,10 @@ export async function createPictorRunGame(
     label.scale.set(1.9, 0.475, 1)
     label.position.y = 2.15
     label.renderOrder = 15
+    const bubble = makeBubble()
+    bubble.sprite.position.y = 2.42
     const root = new Group()
-    root.add(turn, label)
+    root.add(turn, label, bubble.sprite)
     root.visible = false
     lobbyScene.add(root)
     const avatarMixer = new AnimationMixer(copy)
@@ -1575,6 +1655,7 @@ export async function createPictorRunGame(
       label,
       labelTexture,
       labelKey: "",
+      bubble,
       peer: null,
       ghost: false,
       x: 0,
@@ -1662,6 +1743,7 @@ export async function createPictorRunGame(
       if (avatar.peer !== null && !shown.some((p) => p.key === avatar.peer)) {
         avatar.peer = null
         avatar.root.visible = false
+        avatar.bubble.sprite.visible = false
       }
     }
     for (const peer of shown) {
@@ -1709,6 +1791,7 @@ export async function createPictorRunGame(
   const updateAvatars = (dt: number) => {
     for (const avatar of avatars) {
       if (avatar.peer === null) continue
+      updateBubble(avatar.bubble)
       const beforeX = avatar.x
       const beforeZ = avatar.z
       avatar.x = damp(avatar.x, avatar.targetX, 12, dt)
@@ -1797,7 +1880,7 @@ export async function createPictorRunGame(
     for (const item of LOBBY_SIGNS) {
       if (
         item.action &&
-        Math.hypot(item.x - lobbyPosition.x, item.z - lobbyPosition.z) < 3.4
+        Math.hypot(item.x - lobbyPosition.x, item.z - lobbyPosition.z) < 3
       ) {
         near = item.action
       }
@@ -1828,6 +1911,7 @@ export async function createPictorRunGame(
       scene.add(player, fxPoints, shadow)
       shadow.position.z = 0
     }
+    selfBubble.sprite.visible = false
     lobbySpeed = 0
     lobbyVelocity.x = 0
     lobbyVelocity.z = 0
@@ -2276,6 +2360,8 @@ export async function createPictorRunGame(
     if (state === "lobby") {
       player.position.x = lobbyPosition.x
       player.position.z = lobbyPosition.z
+      selfBubble.sprite.position.set(lobbyPosition.x, y + 2.3, lobbyPosition.z)
+      updateBubble(selfBubble)
     }
     if (state === "over") {
       const fall = Math.min(1, overTime / 0.45)
@@ -2618,14 +2704,14 @@ void main() {
     },
     playSound: (name) => audio.play(name),
     restart: reset,
-    enterLobby: () => {
+    enterLobby: (x, z) => {
       reset()
       state = "lobby"
-      lobbyPosition.x = 0.8
-      lobbyPosition.z = 8
+      lobbyPosition.x = x
+      lobbyPosition.z = z
       lobbyYaw = Math.PI
-      lobbySent.x = 0.8
-      lobbySent.z = 8
+      lobbySent.x = x
+      lobbySent.z = z
       lobbySent.y = 0
       loadLobbySky()
       // ぴくたーちゃんと足元の影を、ロビーの場面へ移す
@@ -2646,6 +2732,16 @@ void main() {
     setPeers: (peers) => {
       peerList = peers
       assignAvatars()
+    },
+    showStamp: (key, text) => {
+      if (state !== "lobby") return
+      if (key === null) {
+        showBubble(selfBubble, text)
+        return
+      }
+      const avatar = avatars.find((item) => item.peer === key)
+      // 走っている人（薄い姿）は、ロビーにいないので出さない
+      if (avatar && !avatar.ghost) showBubble(avatar.bubble, text)
     },
     setPaused: (value) => {
       paused = value

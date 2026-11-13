@@ -33,6 +33,8 @@ import type {
 } from "~/components/pictor-run/pictor-run-game.client"
 import {
   connectPictorRunLobby,
+  PICTOR_RUN_LOBBY_STAMPS,
+  PICTOR_RUN_LOBBY_START,
   type PictorRunLobbyConnection,
 } from "~/components/pictor-run/pictor-run-lobby"
 import { PictorRunRankingPanel } from "~/components/pictor-run/pictor-run-ranking"
@@ -61,7 +63,7 @@ type Phase =
 
 type Panel = "chat" | "ranking"
 
-const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v3.glb"
+const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v4.glb"
 const BEST_KEY = "pictor-run-best"
 const BEST_STAGE_KEY = "pictor-run-best-stage"
 const LITE_KEY = "pictor-run-lite"
@@ -478,6 +480,10 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             : { lobby, playing },
         )
       },
+      onStamp: (c, index) => {
+        const text = toStampText(index)
+        if (text) gameRef.current?.showStamp(c, text)
+      },
     })
     lobbyRef.current = connection
     return () => {
@@ -617,8 +623,11 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   }, [onClose])
 
   const enterLobby = () => {
-    gameRef.current?.enterLobby()
-    lobbyRef.current?.setMode("lobby", 0.8, 8)
+    // 同時に入った人と重ならないように、立つ場所を少しずつずらす
+    const x = PICTOR_RUN_LOBBY_START.x + (Math.random() - 0.5) * 6
+    const z = PICTOR_RUN_LOBBY_START.z + (Math.random() - 0.5) * 1.6
+    gameRef.current?.enterLobby(x, z)
+    lobbyRef.current?.setMode("lobby", x, z)
     setScore(0)
     setCoins(0)
     setStage(0)
@@ -674,6 +683,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
       if (event.code === "Enter" && phase === "lobby" && lobbyNear) {
         runLobbySign(lobbyNear)
       }
+      // ロビーでは、数字キーであいさつのスタンプを出す
+      const digit = /^(?:Digit|Numpad)([1-9])$/.exec(event.code)
+      if (digit && phase === "lobby") sendStamp(Number(digit[1]) - 1)
       if (event.code === "KeyP") {
         if (phase === "running") pause()
         else resume()
@@ -683,6 +695,44 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     return () => window.removeEventListener("keydown", onKeyDown)
   })
 
+  /** スタンプの文字（見ている人の言語で） */
+  const toStampText = (index: number) => {
+    const stamp = PICTOR_RUN_LOBBY_STAMPS[index]
+    return stamp ? `${stamp.icon} ${t(stamp.ja, stamp.en)}` : null
+  }
+  /** ロビーで、あいさつのスタンプを出す（自分の頭の上と、ロビーにいるほかの人の画面に出る） */
+  const sendStamp = (index: number) => {
+    const text = toStampText(index)
+    if (!text || lobbyRef.current?.stamp(index) === false) return
+    gameRef.current?.showStamp(null, text)
+    gameRef.current?.playSound("ui")
+  }
+  /** 押すだけで出せる、あいさつのスタンプ */
+  const lobbyStamps = (
+    <ul
+      aria-label={t("あいさつのスタンプ", "Greeting stamps")}
+      className="pointer-events-auto grid w-full max-w-sm grid-cols-4 gap-1 md:flex md:w-auto md:max-w-none md:flex-wrap md:justify-center md:gap-2"
+    >
+      {PICTOR_RUN_LOBBY_STAMPS.map((stamp, index) => (
+        <li key={stamp.ja} className="min-w-0">
+          <button
+            type="button"
+            onClick={(event) => {
+              event.currentTarget.blur()
+              sendStamp(index)
+            }}
+            title={isDesktop ? `${index + 1}` : undefined}
+            className="flex h-9 w-full cursor-pointer items-center justify-center gap-0.5 whitespace-nowrap rounded-full bg-white/90 px-1 font-bold text-[11px] text-slate-800 tracking-tighter shadow-sm transition-transform hover:bg-white active:scale-90 md:h-10 md:gap-1 md:px-4 md:text-sm md:tracking-normal"
+          >
+            <span aria-hidden="true" className="text-xs md:text-base">
+              {stamp.icon}
+            </span>
+            <span>{t(stamp.ja, stamp.en)}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  )
   /** ロビーの看板を使う */
   const runLobbySign = (action: PictorRunLobbyAction) => {
     if (action === "start") retry()
@@ -814,6 +864,37 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     </button>
   )
   const isPlaying = phase === "running" || phase === "paused"
+  const coinsBadge = (
+    <span className="rounded-full bg-white/85 px-4 py-1.5 text-amber-500 shadow-sm backdrop-blur-sm">
+      ●{" "}
+      <span
+        key={coins}
+        className="zoom-in-150 inline-block animate-in duration-200"
+      >
+        {coins}
+      </span>
+    </span>
+  )
+  const heartsBadge = (
+    <span
+      role="img"
+      aria-label={t(`ハート ${hearts}`, `${hearts} hearts`)}
+      className="flex h-10 items-center gap-0.5 rounded-full bg-white/85 px-3 shadow-sm backdrop-blur-sm md:h-11"
+    >
+      {[0, 1, 2].map((index) => (
+        <HeartIcon
+          key={index}
+          aria-hidden="true"
+          className={cn(
+            "size-5 transition-all duration-300",
+            index < hearts
+              ? "fill-rose-500 text-rose-500"
+              : "scale-75 fill-slate-200 text-slate-300",
+          )}
+        />
+      ))}
+    </span>
+  )
   const sliders: { key: "bgm" | "sfx"; label: string }[] = [
     { key: "bgm", label: t("BGM", "Music") },
     { key: "sfx", label: t("効果音", "Sound effects") },
@@ -870,41 +951,24 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         )}
 
         <div className="pointer-events-none absolute top-[max(0.75rem,env(safe-area-inset-top))] left-3 flex flex-col items-start gap-2">
-          <div className="flex items-center gap-2 font-black text-lg tabular-nums md:text-2xl">
-            <span className="rounded-full bg-white/85 px-4 py-1.5 shadow-sm backdrop-blur-sm">
-              {score}
-              <span className="ml-1 font-bold text-xs md:text-sm">m</span>
-            </span>
-            <span className="rounded-full bg-white/85 px-4 py-1.5 text-amber-500 shadow-sm backdrop-blur-sm">
-              ●{" "}
-              <span
-                key={coins}
-                className="zoom-in-150 inline-block animate-in duration-200"
-              >
-                {coins}
+          {/* ロビーでは、得点とコインは出さない（走っていないので 0 のまま） */}
+          {phase !== "lobby" && (
+            <div className="flex items-center gap-2 font-black text-lg tabular-nums md:text-2xl">
+              <span className="rounded-full bg-white/85 px-4 py-1.5 shadow-sm backdrop-blur-sm">
+                {score}
+                <span className="ml-1 font-bold text-xs md:text-sm">m</span>
               </span>
-            </span>
-            {isPlaying && (
-              <span
-                role="img"
-                aria-label={t(`ハート ${hearts}`, `${hearts} hearts`)}
-                className="flex items-center gap-0.5 rounded-full bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur-sm"
-              >
-                {[0, 1, 2].map((index) => (
-                  <HeartIcon
-                    key={index}
-                    aria-hidden="true"
-                    className={cn(
-                      "size-4 transition-all duration-300 md:size-5",
-                      index < hearts
-                        ? "fill-rose-500 text-rose-500"
-                        : "scale-75 fill-slate-200 text-slate-300",
-                    )}
-                  />
-                ))}
-              </span>
-            )}
-          </div>
+              {isDesktop && coinsBadge}
+              {isPlaying && isDesktop && heartsBadge}
+            </div>
+          )}
+          {/* スマホでは、右上のボタンと重ならないように、ハートとコインを 2 段目に置く */}
+          {!isDesktop && phase !== "lobby" && (
+            <div className="flex items-center gap-2 font-black text-lg tabular-nums">
+              {isPlaying && heartsBadge}
+              {coinsBadge}
+            </div>
+          )}
           {isPlaying && (
             <div className="w-44 rounded-2xl bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur-sm md:w-60">
               <p className="flex items-baseline justify-between gap-2 font-bold text-[11px] md:text-xs">
@@ -1226,17 +1290,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   )}
                 </span>
               </p>
-              {isDesktop && (
-                <p className="rounded-full bg-white/75 px-4 py-1 font-bold text-xs">
-                  {t(
-                    "WASD・矢印キーで歩く、スペースでジャンプ、看板の前で Enter",
-                    "WASD or arrows to walk, Space to jump, Enter at a sign",
-                  )}
-                </p>
-              )}
             </div>
-            {lobbyNear && (
-              <div className="pointer-events-none absolute inset-x-0 bottom-[max(7.5rem,calc(env(safe-area-inset-bottom)+7rem))] flex justify-center px-4">
+            <div className="pointer-events-none absolute inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] flex flex-col items-center gap-3 px-4">
+              {lobbyNear && (
                 <button
                   type="button"
                   onClick={(event) => {
@@ -1251,40 +1307,55 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                       ? t("🏆 ランキングを見る", "🏆 View ranking")
                       : t("💬 チャットをひらく", "💬 Open chat")}
                 </button>
-              </div>
-            )}
-            <div className="pointer-events-none absolute inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] flex items-end justify-between px-5">
-              <div
-                role="application"
-                aria-label={t("動かすスティック", "Move stick")}
-                onPointerDown={(event) => {
-                  event.preventDefault()
-                  event.currentTarget.setPointerCapture(event.pointerId)
-                  moveStick(event)
-                }}
-                onPointerMove={(event) => {
-                  if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+              )}
+              {/* スマホでは、スタンプをスティックの上に並べる */}
+              {!isDesktop && lobbyStamps}
+              <div className="flex w-full items-end justify-between gap-3 px-1">
+                <div
+                  role="application"
+                  aria-label={t("動かすスティック", "Move stick")}
+                  onPointerDown={(event) => {
+                    event.preventDefault()
+                    event.currentTarget.setPointerCapture(event.pointerId)
                     moveStick(event)
-                  }
-                }}
-                onPointerUp={releaseStick}
-                onPointerCancel={releaseStick}
-                onContextMenu={(event) => event.preventDefault()}
-                className="pointer-events-auto flex size-28 cursor-grab touch-none items-center justify-center rounded-full bg-white/35 shadow-md ring-2 ring-white/70 backdrop-blur-sm"
-              >
-                <span className="pointer-events-none size-12 rounded-full bg-white shadow-md transition-transform duration-75" />
+                  }}
+                  onPointerMove={(event) => {
+                    if (
+                      event.currentTarget.hasPointerCapture(event.pointerId)
+                    ) {
+                      moveStick(event)
+                    }
+                  }}
+                  onPointerUp={releaseStick}
+                  onPointerCancel={releaseStick}
+                  onContextMenu={(event) => event.preventDefault()}
+                  className="pointer-events-auto flex size-28 cursor-grab touch-none items-center justify-center rounded-full bg-white/35 shadow-md ring-2 ring-white/70 backdrop-blur-sm"
+                >
+                  <span className="pointer-events-none size-12 rounded-full bg-white shadow-md transition-transform duration-75" />
+                </div>
+                {isDesktop && (
+                  <div className="flex min-w-0 flex-col items-center gap-2 pb-1">
+                    {lobbyStamps}
+                    <p className="rounded-full bg-white/75 px-4 py-1 text-center font-bold text-xs">
+                      {t(
+                        "WASD・矢印キーで歩く、スペースでジャンプ、看板の前で Enter、1〜8 であいさつ",
+                        "WASD or arrows to walk, Space to jump, Enter at a sign, 1-8 to greet",
+                      )}
+                    </p>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  aria-label={t("ジャンプ", "Jump")}
+                  onPointerDown={(event) => {
+                    event.preventDefault()
+                    gameRef.current?.jump()
+                  }}
+                  className="pointer-events-auto flex size-16 cursor-pointer touch-none items-center justify-center rounded-full bg-amber-400/95 shadow-md active:scale-95"
+                >
+                  <ChevronsUpIcon aria-hidden="true" className="size-8" />
+                </button>
               </div>
-              <button
-                type="button"
-                aria-label={t("ジャンプ", "Jump")}
-                onPointerDown={(event) => {
-                  event.preventDefault()
-                  gameRef.current?.jump()
-                }}
-                className="pointer-events-auto flex size-16 cursor-pointer touch-none items-center justify-center rounded-full bg-amber-400/95 shadow-md active:scale-95"
-              >
-                <ChevronsUpIcon aria-hidden="true" className="size-8" />
-              </button>
             </div>
           </>
         )}
