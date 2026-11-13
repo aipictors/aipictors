@@ -2,6 +2,8 @@ import {
   ArmchairIcon,
   ChevronDownIcon,
   ChevronsUpIcon,
+  EyeIcon,
+  EyeOffIcon,
   HeartIcon,
   MessageCircleIcon,
   PauseIcon,
@@ -302,6 +304,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [isShopOpen, setIsShopOpen] = useState(false)
   const [shopSlot, setShopSlot] = useState<PictorRunWardrobeSlot>("head")
   /** ロビーの下のボタン（動き・スタンプ）を出しているか */
+  /** ロビーで、画面のボタンや表示を隠しているか（歩く・跳ぶはできる） */
+  const [isLobbyUiHidden, setIsLobbyUiHidden] = useState(false)
   const [isTrayOpen, setIsTrayOpen] = useState(() => {
     try {
       return window.localStorage.getItem(TRAY_KEY) !== "closed"
@@ -1188,6 +1192,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     </button>
   )
   const isPlaying = phase === "running" || phase === "paused"
+  const hideLobbyUi = phase === "lobby" && isLobbyUiHidden
   const coinsBadge = (
     <span className="rounded-full bg-white/85 px-4 py-1.5 text-amber-500 shadow-sm backdrop-blur-sm">
       ●{" "}
@@ -1355,7 +1360,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           </div>
         )}
 
-        <div className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 flex items-center gap-2">
+        <div
+          className={cn(
+            "absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 flex items-center gap-2",
+            hideLobbyUi && "hidden",
+          )}
+        >
           {isPlaying && (
             <button
               type="button"
@@ -1652,21 +1662,27 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               {isStampTrayOpen && (
                 <ul
                   aria-label={t("あいさつのスタンプ", "Greeting stamps")}
-                  className="fade-in zoom-in-95 grid animate-in grid-cols-4 gap-1 rounded-3xl bg-white/90 p-1.5 shadow-lg backdrop-blur duration-150"
+                  className="fade-in zoom-in-95 grid animate-in grid-cols-2 gap-1 rounded-3xl bg-white/90 p-1.5 shadow-lg backdrop-blur duration-150"
                 >
                   {PICTOR_RUN_LOBBY_STAMPS.map((stamp, index) => (
                     <li key={stamp.ja}>
                       <button
                         type="button"
-                        aria-label={t(stamp.ja, stamp.en)}
-                        title={t(stamp.ja, stamp.en)}
                         onClick={(event) => {
                           event.currentTarget.blur()
                           sendStamp(index)
                         }}
-                        className="flex size-10 cursor-pointer items-center justify-center rounded-full text-xl transition-transform hover:bg-slate-100 active:scale-90"
+                        className="flex h-9 w-full cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 font-bold text-slate-800 text-xs transition-transform hover:bg-slate-100 active:scale-90"
                       >
-                        <span aria-hidden="true">{stamp.icon}</span>
+                        <span aria-hidden="true" className="text-base">
+                          {stamp.icon}
+                        </span>
+                        {t(stamp.ja, stamp.en)}
+                        {isDesktop && (
+                          <span className="ml-auto pl-1 text-[10px] text-slate-400">
+                            {index + 1}
+                          </span>
+                        )}
                       </button>
                     </li>
                   ))}
@@ -1681,13 +1697,16 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   setIsStampTrayOpen(!isStampTrayOpen)
                 }}
                 className={cn(
-                  "flex size-10 cursor-pointer items-center justify-center rounded-full shadow-sm backdrop-blur-sm transition-colors",
+                  "flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3.5 font-black text-xs shadow-sm backdrop-blur-sm transition-colors",
                   isStampTrayOpen
                     ? "bg-white text-slate-900"
-                    : "bg-white/60 text-slate-700 hover:bg-white/85",
+                    : "bg-white/75 text-slate-800 hover:bg-white/90",
                 )}
               >
-                <SmileIcon aria-hidden="true" className="size-5" />
+                <span aria-hidden="true" className="text-base">
+                  👋
+                </span>
+                {t("あいさつ", "Greet")}
               </button>
             </div>
           </>
@@ -1695,8 +1714,40 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
 
         {phase === "lobby" && (
           <>
+            {/* 画面の表示を隠す・戻す（景色やぴくたーちゃんだけを見たいとき用。歩く・跳ぶはできる） */}
+            <button
+              type="button"
+              aria-pressed={isLobbyUiHidden}
+              aria-label={
+                isLobbyUiHidden
+                  ? t("表示を戻す", "Show the UI")
+                  : t("表示を隠す", "Hide the UI")
+              }
+              title={
+                isLobbyUiHidden
+                  ? t("表示を戻す", "Show the UI")
+                  : t("表示を隠す", "Hide the UI")
+              }
+              onClick={(event) => {
+                event.currentTarget.blur()
+                setIsLobbyUiHidden(!isLobbyUiHidden)
+                setIsStatusOpen(false)
+                setIsShopOpen(false)
+              }}
+              className={cn(
+                HUD_BUTTON,
+                "absolute top-[max(0.75rem,env(safe-area-inset-top))] left-3",
+                isLobbyUiHidden && "opacity-50 hover:opacity-100",
+              )}
+            >
+              {isLobbyUiHidden ? (
+                <EyeIcon aria-hidden="true" className="size-5" />
+              ) : (
+                <EyeOffIcon aria-hidden="true" className="size-5" />
+              )}
+            </button>
             {/* 走っている人からのスタンプ */}
-            {toasts.length > 0 && (
+            {toasts.length > 0 && !isLobbyUiHidden && (
               <div className="pointer-events-none absolute top-[max(8.5rem,calc(env(safe-area-inset-top)+7.75rem))] left-3 flex max-w-[70%] flex-col items-start gap-1.5">
                 {toasts.map((toast) => (
                   <p
@@ -1715,7 +1766,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 ))}
               </div>
             )}
-            <div className="pointer-events-none absolute inset-x-0 top-[max(4.75rem,calc(env(safe-area-inset-top)+4rem))] flex flex-col items-center gap-2 px-4 text-center">
+            <div
+              className={cn(
+                "pointer-events-none absolute inset-x-0 top-[max(4.75rem,calc(env(safe-area-inset-top)+4rem))] flex flex-col items-center gap-2 px-4 text-center",
+                isLobbyUiHidden && "hidden",
+              )}
+            >
               <p className="rounded-full bg-slate-900/60 px-4 py-1.5 font-black text-sm text-white md:text-base">
                 ☕ {t("ロビー", "Lobby")}
                 <span className="ml-2 font-bold text-xs md:text-sm">
@@ -1869,9 +1925,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 </button>
               )}
               {/* スマホでは、スタンプをスティックの上に並べる */}
-              {!isDesktop && trayToggle}
-              {!isDesktop && isTrayOpen && lobbyEmotes}
-              {!isDesktop && isTrayOpen && lobbyStamps}
+              {!isDesktop && !isLobbyUiHidden && trayToggle}
+              {!isDesktop && !isLobbyUiHidden && isTrayOpen && lobbyEmotes}
+              {!isDesktop && !isLobbyUiHidden && isTrayOpen && lobbyStamps}
               <div className="flex w-full items-end justify-between gap-3 px-1">
                 <div
                   role="application"
@@ -1895,7 +1951,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 >
                   <span className="pointer-events-none size-12 rounded-full bg-white shadow-md transition-transform duration-75" />
                 </div>
-                {isDesktop && (
+                {isDesktop && !isLobbyUiHidden && (
                   <div className="flex min-w-0 flex-col items-center gap-2 pb-1">
                     {trayToggle}
                     {isTrayOpen && lobbyEmotes}
