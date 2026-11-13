@@ -11,6 +11,13 @@ import { HidePageBreakMarkers } from "~/components/book-reader/hide-page-break-m
 import { useTranslation } from "~/hooks/use-translation"
 import { keepMarkdownIndent } from "~/utils/keep-markdown-indent"
 import { repairMarkdownHardBreaks } from "~/utils/repair-markdown-hard-breaks"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
+
+/** カバー画像の表示幅（枠は横いっぱい、PC は本文の幅まで） */
+const COVER_IMAGE_SIZES = "(min-width: 768px) 768px, 100vw"
 
 // 本のように読む画面は開いたときにだけ読み込む
 const BookReader = lazy(() =>
@@ -162,8 +169,11 @@ export function WorkMarkdownView(props: Props) {
       {/* 投稿画面のプレビューでカバー画像をまだ選んでいないときは出さない */}
       {props.thumbnailUrl !== "" && (
         <div className="relative h-64 w-full overflow-hidden rounded-lg md:h-80">
+          {/* 背景と前景は同じ候補を選ぶので、画像は 1 回だけ読む */}
           <img
-            src={props.thumbnailUrl}
+            src={toResizedImageUrl(props.thumbnailUrl, 1280)}
+            srcSet={toResizedImageSrcSet(props.thumbnailUrl, { minWidth: 480 })}
+            sizes={COVER_IMAGE_SIZES}
             alt="Thumbnail Background"
             className="absolute inset-0 h-full w-full object-cover"
           />
@@ -175,7 +185,11 @@ export function WorkMarkdownView(props: Props) {
               aria-label="表紙を大きく表示"
             >
               <img
-                src={props.thumbnailUrl}
+                src={toResizedImageUrl(props.thumbnailUrl, 1280)}
+                srcSet={toResizedImageSrcSet(props.thumbnailUrl, {
+                  minWidth: 480,
+                })}
+                sizes={COVER_IMAGE_SIZES}
                 alt="Thumbnail Foreground"
                 className="h-full w-full object-contain"
               />
