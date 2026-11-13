@@ -14,6 +14,7 @@ import { fetchUserModelPickup } from "~/lib/user-models/client"
 import { formatCount } from "~/lib/user-models/generation"
 import type { UserModelPickup } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 export const userModelPickupQueryKey = ["user-models", "pickup"] as const
 
@@ -72,7 +73,7 @@ export function UserModelPickupBanner(props: Props) {
       >
         {images[0] && (
           <img
-            src={images[0]}
+            src={toResizedImageUrl(images[0], 88)}
             alt=""
             className="size-11 shrink-0 rounded-lg object-cover"
             loading="lazy"
@@ -117,7 +118,7 @@ export function UserModelPickupBanner(props: Props) {
           {images.slice(0, 3).map((url, index) => (
             <img
               key={url}
-              src={url}
+              src={toResizedImageUrl(url, index === 0 ? 256 : 192)}
               alt={index === 0 ? model.name : ""}
               loading="lazy"
               className={cn(
