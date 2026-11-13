@@ -4,17 +4,26 @@ import {
   PlayIcon,
   TrophyIcon,
   XIcon,
+  ZapIcon,
 } from "lucide-react"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import {
+  fetchPictorRunArtworks,
   fetchPictorRunMessages,
   type PictorRunMessage,
   submitPictorRunScore,
 } from "~/components/pictor-run/pictor-run-api"
 import { PictorRunChatPanel } from "~/components/pictor-run/pictor-run-chat"
-import type { PictorRunGame } from "~/components/pictor-run/pictor-run-game.client"
+import type {
+  PictorRunCallbacks,
+  PictorRunGame,
+} from "~/components/pictor-run/pictor-run-game.client"
 import { PictorRunRankingPanel } from "~/components/pictor-run/pictor-run-ranking"
+import {
+  PICTOR_RUN_STAGES,
+  toPictorRunStageName,
+} from "~/components/pictor-run/pictor-run-stages"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -29,6 +38,8 @@ type Panel = "chat" | "ranking"
 
 const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v3.glb"
 const BEST_KEY = "pictor-run-best"
+const BEST_STAGE_KEY = "pictor-run-best-stage"
+const LITE_KEY = "pictor-run-lite"
 const PANEL_KEY = "pictor-run-panel"
 const DESKTOP_QUERY = "(min-width: 1024px)"
 const MAX_MESSAGES = 200
@@ -39,6 +50,32 @@ const readBest = () => {
   } catch {
     return 0
   }
+}
+
+const readBestStage = () => {
+  try {
+    return Number(window.localStorage.getItem(BEST_STAGE_KEY)) || 0
+  } catch {
+    return 0
+  }
+}
+
+/**
+ * 軽量モードで始めるか。自分で選んだことがあればそれに従い、なければ端末の性能から決める
+ */
+const readLite = () => {
+  try {
+    const saved = window.localStorage.getItem(LITE_KEY)
+    if (saved !== null) return saved === "1"
+  } catch {
+    // 読めなければ端末の性能から決める
+  }
+  const device = navigator as Navigator & { deviceMemory?: number }
+  return (
+    (device.hardwareConcurrency ?? 8) <= 4 ||
+    (device.deviceMemory ?? 8) <= 4 ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  )
 }
 
 const mergeMessages = (
@@ -75,6 +112,13 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [isNewBest, setIsNewBest] = useState(false)
   const [rank, setRank] = useState<number | null>(null)
   const [rankingKey, setRankingKey] = useState(0)
+  const [lite, setLite] = useState(readLite)
+  /** 今いるステージ（0 始まりの通し番号） */
+  const [stage, setStage] = useState(0)
+  /** ステージが変わったときに、しばらく名前を大きく出す */
+  const [stageBanner, setStageBanner] = useState<number | null>(null)
+  /** これまでに着いた、いちばん先のステージ（1 始まり。0 = まだ） */
+  const [bestStage, setBestStage] = useState(0)
 
   const [isDesktop, setIsDesktop] = useState(false)
   const [panel, setPanel] = useState<Panel | null>(null)
@@ -146,6 +190,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     if (!canvas) return
     let cancelled = false
     setBest(readBest())
+    setBestStage(readBestStage())
+    setPhase("loading")
+    setScore(0)
+    setCoins(0)
+    setStage(0)
+    setRank(null)
 
     void (async () => {
       try {
@@ -153,12 +203,29 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           "~/components/pictor-run/pictor-run-game.client"
         )
         if (cancelled) return
-        const game = await createPictorRunGame(canvas, MODEL_URL, {
+        const callbacks: PictorRunCallbacks = {
           onStart: () => {
             setScore(0)
             setCoins(0)
+            setStage(0)
             setRank(null)
             setPhase("running")
+          },
+          onStage: (nextStage) => {
+            setStage(nextStage)
+            setStageBanner(nextStage)
+            setBestStage((current) => {
+              if (nextStage + 1 <= current) return current
+              try {
+                window.localStorage.setItem(
+                  BEST_STAGE_KEY,
+                  String(nextStage + 1),
+                )
+              } catch {
+                // 保存できなくても遊べる
+              }
+              return nextStage + 1
+            })
           },
           onScore: (nextScore, nextCoins) => {
             setScore(nextScore)
@@ -178,6 +245,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             setPhase("over")
             submit(finalScore, finalCoins, durationMs)
           },
+        }
+        const game = await createPictorRunGame(canvas, MODEL_URL, callbacks, {
+          lite,
         })
         if (cancelled) {
           game.dispose()
@@ -185,6 +255,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         }
         gameRef.current = game
         setPhase("ready")
+        // 背景の額ぶちに、新しく投稿された作品を飾る（読めなくても遊べる）
+        fetchPictorRunArtworks()
+          .then((urls) => {
+            if (!cancelled) game.setArtworks(lite ? urls.slice(0, 6) : urls)
+          })
+          .catch(() => {})
       } catch {
         if (!cancelled) setPhase("failed")
       }
@@ -195,7 +271,24 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
       gameRef.current?.dispose()
       gameRef.current = null
     }
-  }, [submit])
+  }, [submit, lite])
+
+  useEffect(() => {
+    if (stageBanner === null) return
+    const timer = window.setTimeout(() => setStageBanner(null), 2600)
+    return () => window.clearTimeout(timer)
+  }, [stageBanner])
+
+  /** 軽量モードを切り替える（画面を作り直すので、走っている途中では切り替えない） */
+  const toggleLite = () => {
+    const next = !lite
+    try {
+      window.localStorage.setItem(LITE_KEY, next ? "1" : "0")
+    } catch {
+      // 覚えられなくても切り替えはできる
+    }
+    setLite(next)
+  }
 
   // チャットを読む（開いている間は 6 秒ごと、閉じている間は 20 秒ごと。別のタブにいる間は読まない）
   useEffect(() => {
@@ -260,6 +353,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     gameRef.current?.restart()
     setScore(0)
     setCoins(0)
+    setStage(0)
+    setStageBanner(null)
     setRank(null)
     setPhase("ready")
   }
@@ -285,6 +380,29 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   )}&url=${encodeURIComponent("https://www.aipictors.com/pictor-chan")}`
 
   const isPanelOpen = panel !== null
+  const stageName = toPictorRunStageName(stage)
+  const liteButton = (
+    <button
+      type="button"
+      onClick={(event) => {
+        // スペースキーで走り始めるときに、このボタンまで押されないようにする
+        event.currentTarget.blur()
+        toggleLite()
+      }}
+      aria-pressed={lite}
+      className={cn(
+        "pointer-events-auto flex h-9 cursor-pointer items-center gap-1.5 rounded-full px-4 font-bold text-xs shadow-sm transition-colors",
+        lite
+          ? "bg-amber-400 text-slate-900 hover:bg-amber-300"
+          : "bg-white/85 text-slate-700 hover:bg-white",
+      )}
+    >
+      <ZapIcon aria-hidden="true" className="size-4" />
+      {lite
+        ? t("軽量モード: オン", "Lite mode: on")
+        : t("軽量モード: オフ", "Lite mode: off")}
+    </button>
+  )
   const tabs: { value: Panel; label: string; icon: React.ReactNode }[] = [
     {
       value: "chat",
@@ -311,6 +429,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     >
       <div className="relative min-w-0 flex-1">
         <canvas
+          // 軽量モードを切り替えたら、描画の設定が変わるので作り直す
+          key={lite ? "lite" : "full"}
           ref={canvasRef}
           className="absolute inset-0 size-full touch-none"
           style={{ width: "100%", height: "100%" }}
@@ -324,7 +444,32 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           <span className="rounded-full bg-white/85 px-4 py-1.5 text-amber-500 shadow-sm">
             ● {coins}
           </span>
+          {(phase === "running" || phase === "paused") && (
+            <span className="hidden rounded-full bg-white/85 px-3 py-1.5 font-bold text-xs shadow-sm sm:inline md:text-sm">
+              {t(
+                `ステージ ${stage + 1} ${stageName.ja}`,
+                `Stage ${stage + 1} ${stageName.en}`,
+              )}
+            </span>
+          )}
         </div>
+
+        {stageBanner !== null && phase === "running" && (
+          <div
+            key={stageBanner}
+            className="fade-in slide-in-from-bottom-2 pointer-events-none absolute inset-x-0 top-[20%] flex animate-in flex-col items-center gap-1 px-6 text-center duration-500"
+          >
+            <p className="rounded-full bg-slate-900/55 px-4 py-1 font-black text-white text-xs tracking-widest md:text-sm">
+              STAGE {stageBanner + 1}
+            </p>
+            <p className="rounded-full bg-slate-900/45 px-6 py-1.5 font-black text-2xl text-white md:px-8 md:py-2 md:text-4xl">
+              {t(
+                toPictorRunStageName(stageBanner).ja,
+                toPictorRunStageName(stageBanner).en,
+              )}
+            </p>
+          </div>
+        )}
 
         <div className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 flex items-center gap-2">
           {(phase === "running" || phase === "paused") && (
@@ -419,6 +564,13 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 {t(`じこベスト ${best} m`, `Best ${best} m`)}
               </p>
             )}
+            <p className="rounded-full bg-white/70 px-4 py-1 font-bold text-xs md:text-sm">
+              {t(
+                `ステージは全 ${PICTOR_RUN_STAGES.length} 種類 ・ ${Math.min(bestStage, PICTOR_RUN_STAGES.length)} 種類まで到達`,
+                `${PICTOR_RUN_STAGES.length} stages · reached ${Math.min(bestStage, PICTOR_RUN_STAGES.length)}`,
+              )}
+            </p>
+            {liteButton}
           </div>
         )}
 
@@ -450,6 +602,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 {t(
                   `コイン ${coins} まい ・ ベスト ${best} m`,
                   `${coins} coins · Best ${best} m`,
+                )}
+              </p>
+              <p className="font-bold text-slate-600 text-sm">
+                {t(
+                  `ステージ ${stage + 1}「${stageName.ja}」まで到達`,
+                  `Reached stage ${stage + 1}: ${stageName.en}`,
                 )}
               </p>
               {rank !== null && (
@@ -492,6 +650,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   {t("X でシェア", "Share on X")}
                 </a>
               </div>
+              {liteButton}
             </div>
           </div>
         )}

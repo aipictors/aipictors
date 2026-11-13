@@ -5,6 +5,9 @@
  * op: messages（チャットを読む）・ranking（ランキングを読む）は未ログインでも使える
  *     post（書き込む）・delete（消す）・score（スコアを送る）はログイン中の本人を確かめる
  * 名前・アイコン・バッジは送られてきた値を使わず、GraphQL から本人のものを取る
+ *
+ * GET /api/pictor-run/works
+ * 背景の額ぶちに飾る、新しく投稿された全年齢の作品（誰が開いても同じなので 5 分キャッシュする）
  */
 import type {
   ActionFunctionArgs,
@@ -113,8 +116,75 @@ const toStickerUrl = (value: unknown): string | null => {
   }
 }
 
-export async function loader(_props: LoaderFunctionArgs): Promise<Response> {
-  return toJson({ error: "Method not allowed", data: null }, 405)
+const ARTWORKS_COUNT = 12
+const FILES_ORIGIN = "https://files.aipictors.com/"
+
+const artworksQuery = `query PictorRunArtworks {
+  works(
+    offset: 0
+    limit: ${ARTWORKS_COUNT}
+    where: {
+      ratings: [G]
+      isSensitive: false
+      isNowCreatedAt: true
+      workType: WORK
+      orderBy: DATE_CREATED
+      isOneWorkPerUser: true
+    }
+  ) {
+    id
+    smallThumbnailImageURL
+  }
+}`
+
+/**
+ * 新しく投稿された全年齢の作品の、小さく縮めた画像
+ */
+async function loadArtworks(graphqlEndpoint: string) {
+  const response = await fetch(graphqlEndpoint, {
+    method: "POST",
+    headers: { "content-type": "application/json", platform: "web" },
+    body: JSON.stringify({ query: artworksQuery }),
+  })
+  if (!response.ok) return []
+  const json = (await response.json().catch(() => null)) as {
+    data?: {
+      works?: { id?: string; smallThumbnailImageURL?: string | null }[] | null
+    }
+  } | null
+  return (json?.data?.works ?? []).flatMap((work) => {
+    const url = work.smallThumbnailImageURL
+    if (!work.id || !url?.startsWith(FILES_ORIGIN) || url.includes("?")) {
+      return []
+    }
+    // 別のドメインの画像でも絵として貼れるよう、CORS の付く配信元の縮小版を使う
+    const key = url.slice(FILES_ORIGIN.length)
+    return [{ id: work.id, imageUrl: `${FILES_ORIGIN}_w/240/${key}` }]
+  })
+}
+
+export async function loader({
+  context,
+  params,
+}: LoaderFunctionArgs): Promise<Response> {
+  if (params.op !== "works") {
+    return toJson({ error: "Method not allowed", data: null }, 405)
+  }
+  const graphqlEndpoint = getServerEnvValue(
+    context,
+    "VITE_GRAPHQL_ENDPOINT_REMIX",
+  )
+  const works = graphqlEndpoint
+    ? await loadArtworks(graphqlEndpoint).catch(() => [])
+    : []
+  return new Response(JSON.stringify({ error: null, data: { works } }), {
+    headers: {
+      "content-type": "application/json",
+      // 取れなかったときは、すぐ取り直せるようにキャッシュしない
+      "cache-control":
+        works.length > 0 ? "public, max-age=300, s-maxage=300" : "no-store",
+    },
+  })
 }
 
 export async function action({

@@ -104,3 +104,14 @@ export const submitPictorRunScore = (props: {
 
 export const fetchPictorRunRanking = (period: PictorRunRankingPeriod) =>
   call<PictorRunRanking>("ranking", { period }, "optional")
+
+/**
+ * 背景の額ぶちに飾る、新しく投稿された作品の画像
+ */
+export const fetchPictorRunArtworks = async (): Promise<string[]> => {
+  const response = await fetch("/api/pictor-run/works")
+  const json = (await response.json().catch(() => null)) as {
+    data?: { works?: { imageUrl: string }[] }
+  } | null
+  return (json?.data?.works ?? []).map((work) => work.imageUrl)
+}

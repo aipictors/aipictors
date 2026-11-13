@@ -3,10 +3,8 @@ import {
   type AnimationAction,
   AnimationClip,
   AnimationMixer,
-  Box3,
-  LoopOnce,
-  Vector3,
   BackSide,
+  Box3,
   BoxGeometry,
   type BufferGeometry,
   CylinderGeometry,
@@ -14,6 +12,7 @@ import {
   DirectionalLight,
   DoubleSide,
   Group,
+  LoopOnce,
   type Material,
   Mesh,
   MeshBasicMaterial,
@@ -21,6 +20,7 @@ import {
   NearestFilter,
   type Object3D,
   OctahedronGeometry,
+  PCFSoftShadowMap,
   PerspectiveCamera,
   PlaneGeometry,
   RedFormat,
@@ -29,6 +29,7 @@ import {
   SkinnedMesh,
   SphereGeometry,
   type Texture,
+  Vector3,
   WebGLRenderer,
 } from "three"
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js"
@@ -37,6 +38,7 @@ import {
   canvasTexture,
   createPictorRunStage,
 } from "~/components/pictor-run/pictor-run-stage.client"
+import { toPictorRunStage } from "~/components/pictor-run/pictor-run-stages"
 
 /**
  * 404 ページの隠しゲーム「ぴくたーちゃんラン」の本体。
@@ -48,11 +50,20 @@ export type PictorRunCallbacks = {
   onStart: () => void
   /** 得点が変わった */
   onScore: (score: number, coins: number) => void
+  /** ステージが変わった（0 始まりの通し番号） */
+  onStage: (stage: number) => void
   /** ぶつかって終わった（durationMs = 走っていた時間） */
   onGameOver: (score: number, coins: number, durationMs: number) => void
 }
 
+export type PictorRunOptions = {
+  /** 軽量モード（影なし・粗めの解像度・置くものを減らす） */
+  lite: boolean
+}
+
 export type PictorRunGame = {
+  /** 背景の額ぶちに飾る作品の画像 */
+  setArtworks: (urls: string[]) => void
   /** 最初から走り直す */
   restart: () => void
   /** 一時停止（止めている間も画面は描く） */
@@ -121,14 +132,21 @@ export async function createPictorRunGame(
   canvas: HTMLCanvasElement,
   modelUrl: string,
   callbacks: PictorRunCallbacks,
+  options: PictorRunOptions,
 ): Promise<PictorRunGame> {
+  const { lite } = options
   const renderer = new WebGLRenderer({
     canvas,
-    antialias: true,
+    antialias: !lite,
     alpha: true,
     powerPreference: "high-performance",
   })
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+  let pixelRatio = Math.min(window.devicePixelRatio || 1, lite ? 1.25 : 2)
+  renderer.setPixelRatio(pixelRatio)
+  /** 影を落とす（重い端末では、走っている途中でやめることがある） */
+  let shadows = !lite
+  renderer.shadowMap.enabled = shadows
+  renderer.shadowMap.type = PCFSoftShadowMap
 
   const scene = new Scene()
   const camera = new PerspectiveCamera(34, 1, 0.1, 260)
@@ -136,8 +154,23 @@ export async function createPictorRunGame(
   const ambient = new AmbientLight(0xffffff, 1.5)
   scene.add(ambient)
   const sun = new DirectionalLight(0xffffff, 1.65)
-  sun.position.set(-3, 7, 6)
-  scene.add(sun)
+  // 光の向きは (-3, 7, 6) のまま、道のあたりを影の範囲の中心にする
+  sun.target.position.set(6, 0, -2)
+  sun.position.set(6 - 9, 21, -2 + 18)
+  scene.add(sun, sun.target)
+  if (shadows) {
+    sun.castShadow = true
+    sun.shadow.mapSize.set(1024, 1024)
+    sun.shadow.camera.left = -17
+    sun.shadow.camera.right = 17
+    sun.shadow.camera.top = 12
+    sun.shadow.camera.bottom = -12
+    sun.shadow.camera.near = 1
+    sun.shadow.camera.far = 60
+    sun.shadow.bias = -0.0006
+    sun.shadow.normalBias = 0.03
+    sun.shadow.intensity = 0.6
+  }
 
   // アニメ調の 3 段階の陰
   const gradientMap = new DataTexture(
@@ -204,6 +237,7 @@ export async function createPictorRunGame(
     mesh.material = material
     mesh.frustumCulled = false
     track(mesh.geometry)
+    mesh.castShadow = shadows && !isFace
     if (isFace) {
       face = mesh
       mesh.renderOrder = 1
@@ -288,6 +322,8 @@ export async function createPictorRunGame(
   )
   shadow.rotation.x = -Math.PI / 2
   shadow.position.y = 0.02
+  // 影を落としている間は、足元の丸い影は出さない
+  shadow.visible = !shadows
   scene.add(shadow)
 
   // 転んだときに頭の上を回る星
@@ -298,10 +334,13 @@ export async function createPictorRunGame(
   stars.visible = false
   scene.add(stars)
 
-  const stage = createPictorRunStage(scene, track, gradientMap, {
-    ambient,
-    sun,
-  })
+  const stage = createPictorRunStage(
+    scene,
+    track,
+    gradientMap,
+    { ambient, sun },
+    { lite, shadows },
+  )
 
   // ---- 障害物・コイン -------------------------------------------------------
   const blockTexture = track(
@@ -379,6 +418,7 @@ export async function createPictorRunGame(
       const count = kind === "tower" ? 2 : 1
       for (let i = 0; i < count; i++) {
         const block = new Mesh(blockGeometry, blockMaterial)
+        block.castShadow = shadows
         block.position.y = 0.475 + i * 0.95
         block.rotation.y = i * 0.2
         object.add(block)
@@ -387,6 +427,7 @@ export async function createPictorRunGame(
       halfWidth = 0.42
     } else if (kind === "card") {
       const card = new Mesh(cardGeometry, cardMaterial)
+      card.castShadow = shadows
       card.position.y = 0.66
       card.rotation.set(-0.08, -0.35, 0.06)
       object.add(card)
@@ -394,6 +435,7 @@ export async function createPictorRunGame(
       halfWidth = 0.36
     } else {
       const body = new Mesh(bugBodyGeometry, bugBodyMaterial)
+      body.castShadow = shadows
       body.scale.set(1.15, 0.9, 0.9)
       object.add(body)
       for (const z of [0.16, -0.16]) {
@@ -480,6 +522,8 @@ export async function createPictorRunGame(
   let distance = 0
   let coinCount = 0
   let lastScore = -1
+  let lastStage = 0
+  let debugNoHit = false
   let untilSpawn = 0
   let y = 0
   let velocity = 0
@@ -515,6 +559,8 @@ export async function createPictorRunGame(
     distance = 0
     coinCount = 0
     lastScore = -1
+    lastStage = 0
+    stage.warp(0)
     untilSpawn = 14
     y = 0
     velocity = 0
@@ -694,6 +740,7 @@ export async function createPictorRunGame(
         continue
       }
       if (state !== "running") continue
+      if (debugNoHit) continue
       const hitX = Math.abs(obstacle.x) < obstacle.halfWidth + 0.26
       const hitY = y + 0.08 < obstacle.top && y + 1.3 > obstacle.bottom
       if (hitX && hitY) {
@@ -785,6 +832,11 @@ export async function createPictorRunGame(
         lastScore = value
         callbacks.onScore(value, coinCount)
       }
+      const stageNow = toPictorRunStage(distance)
+      if (stageNow !== lastStage) {
+        lastStage = stageNow
+        callbacks.onStage(stageNow)
+      }
     }
   }
 
@@ -809,16 +861,45 @@ export async function createPictorRunGame(
   observer.observe(canvas)
   resize()
 
+  // 重い端末では、走っている途中で画面を粗くし、それでも重ければ影をやめる
+  let slowFrames = 0
+  let slowTime = 0
+  const watchSpeed = (elapsed: number) => {
+    if (elapsed > 0.25) return
+    slowFrames += 1
+    slowTime += elapsed
+    if (slowFrames < 90) return
+    const average = slowTime / slowFrames
+    slowFrames = 0
+    slowTime = 0
+    if (average < 1 / 42) return
+    if (pixelRatio > 1.25) {
+      pixelRatio = 1.25
+      renderer.setPixelRatio(pixelRatio)
+      resize()
+    } else if (shadows) {
+      shadows = false
+      sun.castShadow = false
+      shadow.visible = true
+    } else if (pixelRatio > 1) {
+      pixelRatio = 1
+      renderer.setPixelRatio(pixelRatio)
+      resize()
+    }
+  }
+
   let frame = 0
   let last = performance.now()
   let disposed = false
   const loop = (now: number) => {
     if (disposed) return
     frame = requestAnimationFrame(loop)
+    const elapsed = (now - last) / 1000
     // 別のタブから戻ったときに一気に進めない
-    const dt = Math.min(0.034, (now - last) / 1000)
+    const dt = Math.min(0.034, elapsed)
     last = now
     if (document.hidden) return
+    if (state === "running" && !paused) watchSpeed(elapsed)
     if (!paused) update(dt)
     renderer.render(scene, camera)
   }
@@ -858,13 +939,28 @@ export async function createPictorRunGame(
   reset()
   frame = requestAnimationFrame(loop)
 
+  if (import.meta.env.DEV) {
+    // 開発中に、好きなステージをぶつからずに見るための入口
+    Object.assign(window, {
+      __pictorRunDebug: {
+        warp: (value: number) => {
+          distance = value
+          debugNoHit = true
+          stage.warp(value)
+        },
+      },
+    })
+  }
+
   return {
+    setArtworks: (urls) => stage.setArtworks(urls),
     restart: reset,
     setPaused: (value) => {
       paused = value
     },
     dispose: () => {
       disposed = true
+      stage.dispose()
       cancelAnimationFrame(frame)
       observer.disconnect()
       window.removeEventListener("keydown", onKeyDown)
