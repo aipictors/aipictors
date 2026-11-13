@@ -7,8 +7,6 @@ export const loader = async (props: LoaderFunctionArgs) => {
 
   const pathname = url.pathname
 
-  console.log("pathname", pathname)
-
   const redirectMapping: Record<string, string> = {
     "/illust": "/posts/2d",
     "/stamp-space": "/stickers",
