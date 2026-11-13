@@ -1,4 +1,5 @@
 import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import {
   FolderCogIcon,
   ImageOffIcon,
@@ -159,7 +160,7 @@ export function GenerationModelSection(props: Props) {
         >
           {thumbnailUrl ? (
             <img
-              src={thumbnailUrl}
+              src={toResizedImageUrl(thumbnailUrl, 112)}
               alt=""
               className="size-full object-cover"
               draggable={false}
@@ -276,7 +277,7 @@ export function GenerationModelSection(props: Props) {
               >
                 {model.thumbnailImageURL ? (
                   <img
-                    src={model.thumbnailImageURL}
+                    src={toResizedImageUrl(model.thumbnailImageURL, 48)}
                     alt=""
                     className="size-6 shrink-0 rounded-full object-cover"
                     draggable={false}

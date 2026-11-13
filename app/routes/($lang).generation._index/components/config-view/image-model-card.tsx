@@ -1,4 +1,5 @@
 import { Badge } from "~/components/ui/badge"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { CoinIcon } from "~/components/coin-icon"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -89,7 +90,7 @@ export function ImageModelCard(props: Props) {
           className={
             "relative w-full rounded-lg border-2 bg-center bg-cover focus:outline-hidden"
           }
-          src={props.thumbnailImageURL ?? ""}
+          src={toResizedImageUrl(props.thumbnailImageURL, 480) ?? ""}
           alt={props.displayName ?? ""}
           loading="lazy"
           decoding="async"

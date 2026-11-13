@@ -11,6 +11,7 @@ import {
 } from "~/routes/($lang).generation._index/components/config-view/generation-model-library-provider"
 import { SectionHeader } from "~/routes/($lang).generation._index/components/config-view/generation-model-section"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type ItemProps = {
   name: string
@@ -29,7 +30,7 @@ function LoraItem(props: ItemProps) {
         <span className="size-9 shrink-0 overflow-hidden rounded-md bg-muted">
           {props.thumbnailUrl ? (
             <img
-              src={props.thumbnailUrl}
+              src={toResizedImageUrl(props.thumbnailUrl, 72)}
               alt=""
               className="size-full object-cover"
               draggable={false}
