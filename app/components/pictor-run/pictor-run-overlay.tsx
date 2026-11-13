@@ -5,6 +5,7 @@ import {
   MessageCircleIcon,
   PauseIcon,
   PlayIcon,
+  SmileIcon,
   TagIcon,
   TrophyIcon,
   Volume2Icon,
@@ -55,7 +56,22 @@ import { cn } from "~/lib/utils"
 
 type Props = Readonly<{
   onClose: () => void
+  /** 開いたら、走る前の画面ではなくロビーに入る */
+  startInLobby?: boolean
 }>
+
+/** いま走っているほかの人（走っている間の「いまプレイ中」に出す） */
+type Runner = { c: number; name: string; icon: string | null; d: number }
+
+/** 画面のはしに少しの間だけ出す、スタンプの知らせ */
+type StampToast = {
+  id: number
+  name: string
+  icon: string | null
+  text: string
+  /** どこから（「123m」「ロビー」） */
+  where: string
+}
 
 type Phase =
   | "loading"
@@ -105,6 +121,21 @@ const toSignIconUrl = (iconUrl: string | null) => {
   if (!iconUrl?.startsWith(FILES_ORIGIN) || iconUrl.includes("?")) return null
   const key = iconUrl.slice(FILES_ORIGIN.length)
   return key.startsWith("_w/") ? iconUrl : `${FILES_ORIGIN}_w/240/${key}`
+}
+
+/** スタンプの知らせなどに出す、小さな丸いアイコン（ない人は灰色の丸） */
+function PeerIcon(props: { icon: string | null }): React.ReactNode {
+  return props.icon ? (
+    <img
+      src={props.icon}
+      alt=""
+      width={20}
+      height={20}
+      className="size-5 shrink-0 rounded-full object-cover"
+    />
+  ) : (
+    <span className="size-5 shrink-0 rounded-full bg-slate-300" />
+  )
 }
 
 /**
@@ -248,6 +279,24 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [lobbyNear, setLobbyNear] = useState<PictorRunLobbyAction | null>(null)
   /** ほかの人の数（ロビーにいる人・いま走っている人） */
   const [crowd, setCrowd] = useState({ lobby: 0, playing: 0 })
+  const [runners, setRunners] = useState<Runner[]>([])
+  const [toasts, setToasts] = useState<StampToast[]>([])
+  const toastId = useRef(0)
+  /** 走っている間の、スタンプを選ぶ小さな窓 */
+  const [isStampTrayOpen, setIsStampTrayOpen] = useState(false)
+  /** いまの得点（画面の左上に m で出している数字） */
+  const distanceRef = useRef(0)
+  /** スタンプの知らせを出す（4 秒で消える。多いときは新しい 3 つだけ） */
+  const pushToast = (toast: Omit<StampToast, "id">) => {
+    toastId.current += 1
+    const id = toastId.current
+    setToasts((current) => [...current.slice(-2), { ...toast, id }])
+    window.setTimeout(() => {
+      setToasts((current) => current.filter((item) => item.id !== id))
+    }, 4200)
+  }
+  const pushToastRef = useRef(pushToast)
+  pushToastRef.current = pushToast
   /** ロビーでしている動き（おどる・すわる など） */
   const [emote, setEmote] = useState(0)
   /** ロビーで名前の上に出すステータス */
@@ -403,6 +452,11 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           onScore: (nextScore, nextCoins, distance) => {
             setScore(nextScore)
             setCoins(nextCoins)
+            // 画面の左上に出している数字（m）と同じものを知らせる
+            distanceRef.current = nextScore
+            if (phaseRef.current === "running") {
+              lobbyRef.current?.progress(distanceRef.current)
+            }
             setProgress(
               (distance % PICTOR_RUN_STAGE_LENGTH) / PICTOR_RUN_STAGE_LENGTH,
             )
@@ -524,10 +578,36 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             ? current
             : { lobby, playing },
         )
+        // いま走っている人（遠くまで行っている順）
+        const next = peers
+          .filter((peer) => peer.mode === "run")
+          .sort((a, b) => b.d - a.d)
+          .slice(0, 8)
+          .map((peer) => ({
+            c: peer.c,
+            name: peer.name,
+            icon: toSignIconUrl(peer.icon),
+            d: peer.d,
+          }))
+        setRunners((current) =>
+          JSON.stringify(current) === JSON.stringify(next) ? current : next,
+        )
       },
-      onStamp: (c, index) => {
+      onStamp: (peer, index) => {
         const text = toStampText(index)
-        if (text) gameRef.current?.showStamp(c, text)
+        if (!text) return
+        const inLobby = phaseRef.current === "lobby"
+        // ロビーにいる人どうしは、頭の上のふきだしで。それ以外は、画面のはしに名前とアイコン付きで出す
+        if (inLobby && peer.mode === "lobby") {
+          gameRef.current?.showStamp(peer.c, text)
+          return
+        }
+        pushToastRef.current({
+          name: peer.name,
+          icon: toSignIconUrl(peer.icon),
+          text,
+          where: peer.mode === "run" ? `${peer.d}m` : t("ロビー", "Lobby"),
+        })
       },
     })
     lobbyRef.current = connection
@@ -684,6 +764,16 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     gameRef.current?.playSound("ui")
   }
 
+  // ぴくたーちゃんのページの「ロビー」から開いたときは、読み込みが済んだらそのままロビーに入る
+  const enteredLobby = useRef(false)
+  const enterLobbyRef = useRef(enterLobby)
+  enterLobbyRef.current = enterLobby
+  useEffect(() => {
+    if (!props.startInLobby || !isGameReady || enteredLobby.current) return
+    enteredLobby.current = true
+    enterLobbyRef.current()
+  }, [props.startInLobby, isGameReady])
+
   const retry = () => {
     if (phaseRef.current === "lobby") lobbyRef.current?.setMode("run")
     setIsStatusOpen(false)
@@ -731,7 +821,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
       }
       // ロビーでは、数字キーであいさつのスタンプを出す
       const digit = /^(?:Digit|Numpad)([1-9])$/.exec(event.code)
-      if (digit && phase === "lobby") sendStamp(Number(digit[1]) - 1)
+      if (digit && (phase === "lobby" || phase === "running")) {
+        sendStamp(Number(digit[1]) - 1)
+      }
       if (event.code === "KeyP") {
         if (phase === "running") pause()
         else resume()
@@ -746,12 +838,27 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     const stamp = PICTOR_RUN_LOBBY_STAMPS[index]
     return stamp ? `${stamp.icon} ${t(stamp.ja, stamp.en)}` : null
   }
-  /** ロビーで、あいさつのスタンプを出す（自分の頭の上と、ロビーにいるほかの人の画面に出る） */
+  /**
+   * あいさつのスタンプを出す。ロビーでは、自分の頭の上と、ほかの人の画面に出る。
+   * 走っている間は、いまの距離を付けて、ロビーの人と走っている人の画面のはしに出る
+   */
   const sendStamp = (index: number) => {
     const text = toStampText(index)
-    if (!text || lobbyRef.current?.stamp(index) === false) return
-    gameRef.current?.showStamp(null, text)
-    gameRef.current?.playSound("ui")
+    if (!text) return
+    if (phase === "lobby") {
+      if (lobbyRef.current?.stamp(index) === false) return
+      gameRef.current?.showStamp(null, text)
+      gameRef.current?.playSound("ui")
+      return
+    }
+    setIsStampTrayOpen(false)
+    if (lobbyRef.current?.stamp(index, distanceRef.current) === false) return
+    pushToast({
+      name: viewerName ?? t("あなた", "You"),
+      icon: null,
+      text,
+      where: `${distanceRef.current}m`,
+    })
   }
   /** ステータスを変える（null で消す）。次に開いたときも同じものを出す */
   const changeStatus = (next: string | null) => {
@@ -1375,8 +1482,119 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           </div>
         )}
 
+        {isPlaying && (
+          <>
+            {/* 左下: 届いたスタンプと、いま走っているほかの人。押せないので、跳ぶ操作のじゃまにならない */}
+            <div className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 flex max-w-[calc(100%-5rem)] flex-col items-start gap-1.5">
+              {toasts.map((toast) => (
+                <p
+                  key={toast.id}
+                  className="fade-in slide-in-from-left-4 flex max-w-full animate-in items-center gap-1.5 rounded-full bg-slate-900/70 py-1 pr-3 pl-1 text-white text-xs duration-200"
+                >
+                  <PeerIcon icon={toast.icon} />
+                  <span className="truncate font-bold">{toast.name}</span>
+                  <span className="shrink-0 text-white/70 tabular-nums">
+                    {toast.where}
+                  </span>
+                  <span className="shrink-0 rounded-full bg-white px-2 py-0.5 font-black text-slate-900">
+                    {toast.text}
+                  </span>
+                </p>
+              ))}
+              {runners.length > 0 && (
+                <div className="flex max-w-full items-center gap-1.5 rounded-full bg-white/80 py-1 pr-3 pl-2.5 text-slate-800 text-xs shadow-sm backdrop-blur-sm">
+                  <span className="shrink-0 font-black">
+                    🏃{" "}
+                    {t(
+                      `いまプレイ中 ${runners.length}人`,
+                      `${runners.length} playing now`,
+                    )}
+                  </span>
+                  {runners.slice(0, isDesktop ? 4 : 2).map((runner) => (
+                    <span
+                      key={runner.c}
+                      className="flex min-w-0 items-center gap-1"
+                    >
+                      <PeerIcon icon={runner.icon} />
+                      <span className="max-w-20 truncate font-bold">
+                        {runner.name}
+                      </span>
+                      <span className="shrink-0 text-slate-500 tabular-nums">
+                        {runner.d}m
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* 右下: スタンプ。押すと小さな窓が開き、選ぶと閉じる */}
+            <div className="absolute right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] flex flex-col items-end gap-2">
+              {isStampTrayOpen && (
+                <ul
+                  aria-label={t("あいさつのスタンプ", "Greeting stamps")}
+                  className="fade-in zoom-in-95 grid animate-in grid-cols-4 gap-1 rounded-3xl bg-white/90 p-1.5 shadow-lg backdrop-blur duration-150"
+                >
+                  {PICTOR_RUN_LOBBY_STAMPS.map((stamp, index) => (
+                    <li key={stamp.ja}>
+                      <button
+                        type="button"
+                        aria-label={t(stamp.ja, stamp.en)}
+                        title={t(stamp.ja, stamp.en)}
+                        onClick={(event) => {
+                          event.currentTarget.blur()
+                          sendStamp(index)
+                        }}
+                        className="flex size-10 cursor-pointer items-center justify-center rounded-full text-xl transition-transform hover:bg-slate-100 active:scale-90"
+                      >
+                        <span aria-hidden="true">{stamp.icon}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <button
+                type="button"
+                aria-label={t("スタンプを送る", "Send a stamp")}
+                aria-expanded={isStampTrayOpen}
+                onClick={(event) => {
+                  event.currentTarget.blur()
+                  setIsStampTrayOpen(!isStampTrayOpen)
+                }}
+                className={cn(
+                  "flex size-10 cursor-pointer items-center justify-center rounded-full shadow-sm backdrop-blur-sm transition-colors",
+                  isStampTrayOpen
+                    ? "bg-white text-slate-900"
+                    : "bg-white/60 text-slate-700 hover:bg-white/85",
+                )}
+              >
+                <SmileIcon aria-hidden="true" className="size-5" />
+              </button>
+            </div>
+          </>
+        )}
+
         {phase === "lobby" && (
           <>
+            {/* 走っている人からのスタンプ */}
+            {toasts.length > 0 && (
+              <div className="pointer-events-none absolute top-[max(8.5rem,calc(env(safe-area-inset-top)+7.75rem))] left-3 flex max-w-[70%] flex-col items-start gap-1.5">
+                {toasts.map((toast) => (
+                  <p
+                    key={toast.id}
+                    className="fade-in slide-in-from-left-4 flex max-w-full animate-in items-center gap-1.5 rounded-full bg-slate-900/70 py-1 pr-3 pl-1 text-white text-xs duration-200"
+                  >
+                    <PeerIcon icon={toast.icon} />
+                    <span className="truncate font-bold">{toast.name}</span>
+                    <span className="shrink-0 text-white/70 tabular-nums">
+                      🏃 {toast.where}
+                    </span>
+                    <span className="shrink-0 rounded-full bg-white px-2 py-0.5 font-black text-slate-900">
+                      {toast.text}
+                    </span>
+                  </p>
+                ))}
+              </div>
+            )}
             <div className="pointer-events-none absolute inset-x-0 top-[max(4.75rem,calc(env(safe-area-inset-top)+4rem))] flex flex-col items-center gap-2 px-4 text-center">
               <p className="rounded-full bg-slate-900/60 px-4 py-1.5 font-black text-sm text-white md:text-base">
                 ☕ {t("ロビー", "Lobby")}

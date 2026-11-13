@@ -1,4 +1,5 @@
 import {
+  ArmchairIcon,
   ArrowDownIcon,
   CakeIcon,
   CheckIcon,
@@ -15,7 +16,8 @@ import {
   VenusIcon,
   WandSparklesIcon,
 } from "lucide-react"
-import { lazy, Suspense, useState } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
+import { fetchPictorRunLobbyCount } from "~/components/pictor-run/pictor-run-lobby"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -62,7 +64,22 @@ function Heading(props: {
  */
 export function PictorChanProfile(): React.ReactNode {
   const t = useTranslation()
-  const [isGameOpen, setIsGameOpen] = useState(false)
+  /** ミニゲームを開いているか（lobby = ロビーから始める） */
+  const [game, setGame] = useState<"run" | "lobby" | null>(null)
+  const setIsGameOpen = (isOpen: boolean) => setGame(isOpen ? "run" : null)
+  /** いまロビーにいる人数・走っている人数（画面に出てから聞く） */
+  const [crowd, setCrowd] = useState<{ lobby: number; playing: number } | null>(
+    null,
+  )
+  useEffect(() => {
+    let cancelled = false
+    void fetchPictorRunLobbyCount().then((count) => {
+      if (!cancelled) setCrowd(count)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
   const [isCopied, setIsCopied] = useState(false)
 
   const copyPrompt = () => {
@@ -197,6 +214,19 @@ export function PictorChanProfile(): React.ReactNode {
                 <Gamepad2Icon aria-hidden="true" className="size-5" />
                 {t("ミニゲームであそぶ", "Play the mini game")}
               </button>
+              <button
+                type="button"
+                onClick={() => setGame("lobby")}
+                className="flex h-12 cursor-pointer items-center gap-2 rounded-full bg-white/15 px-6 font-bold text-sm backdrop-blur-sm transition-colors hover:bg-white/25"
+              >
+                <ArmchairIcon aria-hidden="true" className="size-5" />
+                {t("ロビーへ", "Go to the lobby")}
+                {crowd !== null && (
+                  <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs tabular-nums">
+                    {t(`${crowd.lobby}人`, `${crowd.lobby}`)}
+                  </span>
+                )}
+              </button>
               <a
                 href="#profile"
                 className="flex h-12 items-center gap-2 rounded-full bg-white/15 px-6 font-bold text-sm backdrop-blur-sm transition-colors hover:bg-white/25"
@@ -306,7 +336,11 @@ export function PictorChanProfile(): React.ReactNode {
       </section>
 
       {/* ミニゲーム */}
-      <PictorChanGameSection onPlay={() => setIsGameOpen(true)} />
+      <PictorChanGameSection
+        onPlay={() => setIsGameOpen(true)}
+        onLobby={() => setGame("lobby")}
+        crowd={crowd}
+      />
 
       {/* 話す・見る */}
       <section className="grid gap-5 px-1 md:grid-cols-2">
@@ -527,9 +561,12 @@ export function PictorChanProfile(): React.ReactNode {
         </PictorChanReveal>
       </section>
 
-      {isGameOpen && (
+      {game !== null && (
         <Suspense fallback={null}>
-          <PictorRunOverlay onClose={() => setIsGameOpen(false)} />
+          <PictorRunOverlay
+            onClose={() => setGame(null)}
+            startInLobby={game === "lobby"}
+          />
         </Suspense>
       )}
     </div>

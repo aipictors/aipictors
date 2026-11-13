@@ -13,6 +13,10 @@ import { PictorChanReveal } from "~/routes/($lang)._main.pictor-chan._index/comp
 
 type Props = Readonly<{
   onPlay: () => void
+  /** ロビーに入る */
+  onLobby: () => void
+  /** いまロビーにいる人数・走っている人数（まだわからない間は null） */
+  crowd: { lobby: number; playing: number } | null
 }>
 
 /**
@@ -150,7 +154,7 @@ export function PictorChanGameSection(props: Props): React.ReactNode {
           ))}
         </ul>
 
-        <div className="mt-9 flex justify-center px-6">
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3 px-6">
           <button
             type="button"
             onClick={props.onPlay}
@@ -159,7 +163,23 @@ export function PictorChanGameSection(props: Props): React.ReactNode {
             <Gamepad2Icon aria-hidden="true" className="size-6" />
             {t("あそぶ", "Play")}
           </button>
+          <button
+            type="button"
+            onClick={props.onLobby}
+            className="flex h-14 cursor-pointer items-center gap-2 rounded-full bg-white/15 px-8 font-black text-base text-white ring-1 ring-white/25 backdrop-blur-sm transition-colors hover:bg-white/25"
+          >
+            <ArmchairIcon aria-hidden="true" className="size-5" />
+            {t("ロビーに入る", "Enter the lobby")}
+          </button>
         </div>
+        {props.crowd !== null && (
+          <p className="mt-3 text-center text-sm text-white/80">
+            {t(
+              `いま ロビーに ${props.crowd.lobby} 人・プレイ中 ${props.crowd.playing} 人`,
+              `${props.crowd.lobby} in the lobby · ${props.crowd.playing} playing now`,
+            )}
+          </p>
+        )}
       </PictorChanReveal>
     </section>
   )

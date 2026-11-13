@@ -7,6 +7,27 @@ import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
  */
 
 const LOBBY_URL = "wss://lobby.aipictors.com/ws"
+const LOBBY_COUNT_URL = "https://lobby.aipictors.com/count"
+
+/**
+ * いまロビーにいる人数と、走っている人数（つながずに、数だけ聞く）
+ */
+export async function fetchPictorRunLobbyCount(): Promise<{
+  lobby: number
+  playing: number
+} | null> {
+  try {
+    const response = await fetch(LOBBY_COUNT_URL)
+    if (!response.ok) return null
+    const json = (await response.json()) as { lobby?: number; playing?: number }
+    return {
+      lobby: Number(json.lobby) || 0,
+      playing: Number(json.playing) || 0,
+    }
+  } catch {
+    return null
+  }
+}
 
 export type PictorRunLobbyMode = "run" | "lobby"
 
@@ -113,6 +134,8 @@ export type PictorRunLobbyPeer = {
   a: number
   /** ステータス（「#番号」= 用意された文、それ以外 = 自分で書いた文） */
   st: string | null
+  /** 走っている人の、いまの距離（m） */
+  d: number
 }
 
 export type PictorRunLobbyConnection = {
@@ -120,8 +143,10 @@ export type PictorRunLobbyConnection = {
   setMode: (mode: PictorRunLobbyMode, x?: number, z?: number) => void
   /** ロビーでの自分の位置（動いたときだけ呼ぶ） */
   move: (x: number, z: number, y: number, f: number) => void
-  /** あいさつのスタンプを出す（送れたら true。続けて押したときは false） */
-  stamp: (index: number) => boolean
+  /** あいさつのスタンプを出す（送れたら true。続けて押したときは false）。走っている間は、いまの距離も付ける */
+  stamp: (index: number, distance?: number) => boolean
+  /** 走っている距離（m）を知らせる（数秒に 1 回だけ送る） */
+  progress: (distance: number) => void
   /** ロビーでの動き（おどる・すわる など）を知らせる */
   emote: (emote: number) => void
   /** ステータスを変える（「#番号」か、自分で書いた文。null で消す） */
@@ -137,8 +162,8 @@ export function connectPictorRunLobby(props: {
   /** つないだときのステータス */
   status: string | null
   onPeers: (peers: PictorRunLobbyPeer[]) => void
-  /** ほかの人がスタンプを出した */
-  onStamp: (c: number, index: number) => void
+  /** ほかの人がスタンプを出した（走っている人のものは、そのときの距離が付く） */
+  onStamp: (peer: PictorRunLobbyPeer, index: number) => void
 }): PictorRunLobbyConnection {
   const peers = new Map<number, PictorRunLobbyPeer>()
   let socket: WebSocket | null = null
@@ -153,6 +178,8 @@ export function connectPictorRunLobby(props: {
   let pingTimer = 0
   let lastMoveAt = 0
   let lastStampAt = 0
+  let lastProgressAt = 0
+  let lastProgress = 0
 
   const emit = () => props.onPeers([...peers.values()])
 
@@ -202,6 +229,7 @@ export function connectPictorRunLobby(props: {
         s?: number
         a?: number
         st?: string | null
+        d?: number
       }
       try {
         message = JSON.parse(event.data)
@@ -211,21 +239,28 @@ export function connectPictorRunLobby(props: {
       if (message.t === "w") {
         peers.clear()
         for (const peer of message.peers ?? []) {
-          peers.set(peer.c, { ...peer, a: peer.a ?? 0, st: peer.st ?? null })
+          peers.set(peer.c, {
+            ...peer,
+            a: peer.a ?? 0,
+            st: peer.st ?? null,
+            d: peer.d ?? 0,
+          })
         }
       } else if (message.t === "j" && message.p) {
         peers.set(message.p.c, {
           ...message.p,
           a: message.p.a ?? 0,
           st: message.p.st ?? null,
+          d: message.p.d ?? 0,
         })
       } else if (message.t === "l" && message.c !== undefined) {
         peers.delete(message.c)
       } else if (message.t === "e" && message.c !== undefined) {
-        if (peers.has(message.c) && typeof message.s === "number") {
-          props.onStamp(message.c, message.s)
-        }
-        return
+        const peer = peers.get(message.c)
+        if (!peer || typeof message.s !== "number") return
+        if (typeof message.d === "number") peer.d = message.d
+        props.onStamp(peer, message.s)
+        if (typeof message.d !== "number") return
       } else if (message.c !== undefined) {
         const peer = peers.get(message.c)
         if (!peer) return
@@ -234,6 +269,8 @@ export function connectPictorRunLobby(props: {
           peer.z = message.z ?? peer.z
           peer.y = message.y ?? 0
           peer.f = message.f ?? peer.f
+        } else if (message.t === "d") {
+          peer.d = message.d ?? 0
         } else if (message.t === "a") {
           peer.a = message.a ?? 0
         } else if (message.t === "s") {
@@ -241,6 +278,7 @@ export function connectPictorRunLobby(props: {
         } else if (message.t === "m" && message.mode) {
           peer.mode = message.mode
           peer.a = 0
+          peer.d = 0
           peer.x = message.x ?? peer.x
           peer.z = message.z ?? peer.z
           peer.y = 0
@@ -267,6 +305,7 @@ export function connectPictorRunLobby(props: {
     setMode: (next, x = 0, z = 0) => {
       mode = next
       emote = 0
+      lastProgress = 0
       lobbyX = x
       lobbyZ = z
       send({ t: "m", mode: next, x, z })
@@ -280,12 +319,29 @@ export function connectPictorRunLobby(props: {
       lastMoveAt = now
       send({ t: "p", x, z, y, f })
     },
-    stamp: (index) => {
+    stamp: (index, distance) => {
       const now = Date.now()
       if (now - lastStampAt < STAMP_INTERVAL_MS) return false
       lastStampAt = now
-      send({ t: "e", s: index })
+      send(
+        distance === undefined
+          ? { t: "e", s: index }
+          : { t: "e", s: index, d: distance },
+      )
       return true
+    },
+    progress: (distance) => {
+      const now = Date.now()
+      if (
+        mode !== "run" ||
+        now - lastProgressAt < 4000 ||
+        Math.abs(distance - lastProgress) < 5
+      ) {
+        return
+      }
+      lastProgressAt = now
+      lastProgress = distance
+      send({ t: "d", d: distance })
     },
     emote: (next) => {
       if (next === emote) return
