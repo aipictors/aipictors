@@ -22,6 +22,9 @@ export type PictorRunSoundName =
   | "stage"
   | "best"
   | "ui"
+  | "item"
+  | "guard"
+  | "pass"
 
 export type PictorRunAudio = {
   /** ボタンを押したときなどに呼んで、音を出せる状態にする */
@@ -717,6 +720,17 @@ export function createPictorRunAudio(
         tone(sfxBus, "triangle", rise[i], at + i * 0.075, 0.24, 0.2)
         tone(sfxBus, "square", rise[i] * 2, at + i * 0.075, 0.1, 0.03)
       }
+    } else if (name === "item") {
+      const rise = [659, 880, 1175, 1568]
+      for (let i = 0; i < rise.length; i++) {
+        tone(sfxBus, "triangle", rise[i], at + i * 0.055, 0.16, 0.2)
+      }
+    } else if (name === "guard") {
+      noise(sfxBus, "highpass", 2400, at, 0.16, 0.3)
+      tone(sfxBus, "triangle", 1320, at, 0.2, 0.16, 440)
+    } else if (name === "pass") {
+      tone(sfxBus, "triangle", 988, at, 0.09, 0.14)
+      tone(sfxBus, "triangle", 1319, at + 0.08, 0.16, 0.14)
     } else if (name === "start") {
       tone(sfxBus, "square", 523, at, 0.09, 0.11)
       tone(sfxBus, "square", 784, at + 0.09, 0.2, 0.11)

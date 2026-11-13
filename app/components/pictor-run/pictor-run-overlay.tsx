@@ -13,6 +13,7 @@ import { createPortal } from "react-dom"
 import {
   fetchPictorRunArtworks,
   fetchPictorRunMessages,
+  fetchPictorRunRanking,
   type PictorRunMessage,
   submitPictorRunScore,
 } from "~/components/pictor-run/pictor-run-api"
@@ -21,6 +22,8 @@ import { PictorRunChatPanel } from "~/components/pictor-run/pictor-run-chat"
 import type {
   PictorRunCallbacks,
   PictorRunGame,
+  PictorRunItems,
+  PictorRunMarker,
 } from "~/components/pictor-run/pictor-run-game.client"
 import { PictorRunRankingPanel } from "~/components/pictor-run/pictor-run-ranking"
 import {
@@ -58,6 +61,42 @@ const readBest = () => {
 }
 
 // 開いたときにいきなり鳴らさない（音を出すボタンを押してもらう）
+const NO_ITEMS: PictorRunItems = { guard: false, magnet: 0, star: 0 }
+
+const FILES_ORIGIN = "https://files.aipictors.com/"
+
+/** 看板に貼れるアイコンの画像（別のドメインでも絵に貼れる、縮小版の配信を使う） */
+const toSignIconUrl = (iconUrl: string | null) => {
+  if (!iconUrl?.startsWith(FILES_ORIGIN) || iconUrl.includes("?")) return null
+  const key = iconUrl.slice(FILES_ORIGIN.length)
+  return key.startsWith("_w/") ? iconUrl : `${FILES_ORIGIN}_w/240/${key}`
+}
+
+/**
+ * 今週のランキングから、走れた地点に立てる看板を作る。
+ * 近すぎる看板は重なるので、順位の高い人を残す
+ */
+const toMarkers = (
+  items: Awaited<ReturnType<typeof fetchPictorRunRanking>>["items"],
+  viewerId: string | null,
+): PictorRunMarker[] => {
+  const kept: PictorRunMarker[] = []
+  for (const item of items) {
+    // 得点 = 走った距離 + コイン 1 枚につき 10
+    const distance = item.score - item.coins * 10
+    if (distance < 10) continue
+    if (kept.some((other) => Math.abs(other.distance - distance) < 3)) continue
+    kept.push({
+      name: item.user.name,
+      iconUrl: toSignIconUrl(item.user.iconUrl),
+      distance,
+      rank: item.rank,
+      isMe: item.user.id === viewerId,
+    })
+  }
+  return kept
+}
+
 const DEFAULT_SOUND: PictorRunSound = { bgm: 0.6, sfx: 0.8, muted: true }
 
 const toVolume = (value: unknown, fallback: number) =>
@@ -151,6 +190,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [isNewBest, setIsNewBest] = useState(false)
   const [rank, setRank] = useState<number | null>(null)
   const [rankingKey, setRankingKey] = useState(0)
+  const [items, setItems] = useState<PictorRunItems>(NO_ITEMS)
   const [lite, setLite] = useState(readLite)
   /** 今いるステージ（0 始まりの通し番号） */
   const [stage, setStage] = useState(0)
@@ -282,6 +322,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               (distance % PICTOR_RUN_STAGE_LENGTH) / PICTOR_RUN_STAGE_LENGTH,
             )
           },
+          onItems: setItems,
           onGameOver: (finalScore, finalCoins, durationMs) => {
             const previous = readBest()
             setIsNewBest(finalScore > previous)
@@ -329,6 +370,27 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
       gameRef.current = null
     }
   }, [submit, lite])
+
+  // 今週の記録の看板（記録を送ったあとは、取り直して立て直す）
+  const isGameReady = phase !== "loading" && phase !== "failed"
+  // biome-ignore lint/correctness/useExhaustiveDependencies: rankingKey が変わったら取り直す
+  useEffect(() => {
+    if (!isGameReady) return
+    let cancelled = false
+    fetchPictorRunRanking("week")
+      .then((ranking) => {
+        if (cancelled) return
+        gameRef.current?.setMarkers(
+          toMarkers(ranking.items, viewerIdRef.current),
+        )
+      })
+      .catch(() => {
+        // 看板が立たなくても遊べる
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isGameReady, rankingKey])
 
   useEffect(() => {
     if (stageBanner === null) return
@@ -688,6 +750,25 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               </div>
             </div>
           )}
+          {isPlaying && (items.guard || items.magnet > 0 || items.star > 0) && (
+            <div className="flex items-center gap-1.5 font-black text-xs tabular-nums md:text-sm">
+              {items.guard && (
+                <span className="rounded-full bg-sky-500 px-3 py-1 text-white shadow-sm">
+                  🛡️ {t("ガード", "Guard")}
+                </span>
+              )}
+              {items.magnet > 0 && (
+                <span className="rounded-full bg-rose-500 px-3 py-1 text-white shadow-sm">
+                  🧲 {items.magnet}
+                </span>
+              )}
+              {items.star > 0 && (
+                <span className="rounded-full bg-amber-400 px-3 py-1 text-slate-900 shadow-sm">
+                  ⭐ {items.star}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {stageBanner !== null && phase === "running" && (
@@ -928,8 +1009,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             </p>
             <p className="rounded-full bg-white/70 px-4 py-1 font-bold text-xs md:text-sm">
               {t(
-                "ジャンプでよけよう。空中でもう 1 回押すと 2 段ジャンプ！",
-                "Jump to dodge. Press again in mid-air for a double jump!",
+                "ジャンプでよけよう。空中でもう 1 回押すと 2 段ジャンプ！ 🛡️🧲⭐ のアイテムも出るよ",
+                "Jump to dodge. Press again in mid-air for a double jump! Grab 🛡️🧲⭐ items",
               )}
             </p>
             {best > 0 && (

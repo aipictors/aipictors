@@ -7,6 +7,7 @@ import {
   BoxGeometry,
   BufferAttribute,
   BufferGeometry,
+  type CanvasTexture,
   Color,
   CylinderGeometry,
   DirectionalLight,
@@ -31,6 +32,8 @@ import {
   ShaderMaterial,
   SkinnedMesh,
   SphereGeometry,
+  Sprite,
+  SpriteMaterial,
   type Texture,
   Vector2,
   Vector3,
@@ -70,6 +73,20 @@ export type PictorRunCallbacks = {
   onStage: (stage: number) => void
   /** ぶつかって終わった（durationMs = 走っていた時間） */
   onGameOver: (score: number, coins: number, durationMs: number) => void
+  /** 持っているアイテムが変わった */
+  onItems: (items: PictorRunItems) => void
+}
+
+/** 持っているアイテム（magnet・star は残りの秒数） */
+export type PictorRunItems = { guard: boolean; magnet: number; star: number }
+
+/** 今週の記録の看板（distance = その人が走れた距離 m） */
+export type PictorRunMarker = {
+  name: string
+  iconUrl: string | null
+  distance: number
+  rank: number
+  isMe: boolean
 }
 
 export type PictorRunOptions = {
@@ -83,6 +100,8 @@ export type PictorRunGame = {
   setArtworks: (urls: string[]) => void
   /** 音量・ミュートを変える */
   setSound: (sound: PictorRunSound) => void
+  /** 今週の記録の看板を立てる */
+  setMarkers: (markers: PictorRunMarker[]) => void
   /** 画面のボタンなどから効果音を鳴らす */
   playSound: (name: PictorRunSoundName) => void
   /** 最初から走り直す */
@@ -95,6 +114,8 @@ export type PictorRunGame = {
 type State = "ready" | "running" | "over"
 
 type ObstacleKind = "block" | "tower" | "card" | "bug"
+
+type ItemKind = "guard" | "magnet" | "star"
 
 type Obstacle = {
   kind: ObstacleKind
@@ -198,6 +219,7 @@ export async function createPictorRunGame(
     sun.shadow.intensity = 0.9
   }
 
+  let disposed = false
   const disposables: { dispose: () => void }[] = []
   const track = <T extends { dispose: () => void }>(item: T): T => {
     disposables.push(item)
@@ -721,6 +743,329 @@ export async function createPictorRunGame(
   /** 縦長の画面は先が見えにくいので、その分ゆっくり走る */
   let pace = 1
 
+  // ---- コインを取ったときの「+1」 ---------------------------------------------
+  const plusTexture = track(
+    canvasTexture(128, 64, (ctx) => {
+      ctx.font = "900 46px system-ui, sans-serif"
+      ctx.textAlign = "center"
+      ctx.textBaseline = "middle"
+      ctx.lineJoin = "round"
+      ctx.strokeStyle = "#7a4a00"
+      ctx.lineWidth = 9
+      ctx.strokeText("+1", 64, 34)
+      ctx.fillStyle = "#ffe35a"
+      ctx.fillText("+1", 64, 34)
+    }),
+  )
+  const pluses: { sprite: Sprite; life: number }[] = []
+  const plus = (x: number, height: number) => {
+    let item = pluses.find((p) => p.life <= 0)
+    if (!item) {
+      const sprite = new Sprite(
+        track(
+          new SpriteMaterial({
+            map: plusTexture,
+            transparent: true,
+            depthTest: false,
+            fog: false,
+          }),
+        ),
+      )
+      sprite.scale.set(0.95, 0.475, 1)
+      sprite.renderOrder = 20
+      scene.add(sprite)
+      item = { sprite, life: 0 }
+      pluses.push(item)
+    }
+    item.life = 1
+    item.sprite.position.set(x, height + 0.35, 0.5)
+    item.sprite.visible = true
+  }
+
+  // ---- アイテム（ガード・マグネット・スター） ------------------------------------
+  const ITEM_LOOK: Record<ItemKind, { color: number; icon: string }> = {
+    guard: { color: 0x4aa8ff, icon: "🛡️" },
+    magnet: { color: 0xff5a6a, icon: "🧲" },
+    star: { color: 0xffd23f, icon: "⭐" },
+  }
+  const ITEM_KINDS: ItemKind[] = ["guard", "magnet", "star"]
+  const bubbleGeometry = track(new SphereGeometry(1, 24, 16))
+  const makeItem = (kind: ItemKind) => {
+    const look = ITEM_LOOK[kind]
+    const group = new Group()
+    const bubble = new Mesh(
+      bubbleGeometry,
+      track(
+        new MeshBasicMaterial({
+          color: look.color,
+          transparent: true,
+          opacity: 0.42,
+          depthWrite: false,
+        }),
+      ),
+    )
+    bubble.scale.setScalar(0.46)
+    const icon = new Sprite(
+      track(
+        new SpriteMaterial({
+          map: track(
+            canvasTexture(96, 96, (ctx) => {
+              ctx.font = "64px system-ui, sans-serif"
+              ctx.textAlign = "center"
+              ctx.textBaseline = "middle"
+              ctx.fillText(look.icon, 48, 52)
+            }),
+          ),
+          transparent: true,
+          fog: false,
+        }),
+      ),
+    )
+    icon.scale.setScalar(0.62)
+    icon.renderOrder = 6
+    group.add(bubble, icon)
+    group.visible = false
+    scene.add(group)
+    return group
+  }
+  const itemObjects = {
+    guard: makeItem("guard"),
+    magnet: makeItem("magnet"),
+    star: makeItem("star"),
+  }
+  /** 道に出ているアイテム（一度に 1 つだけ） */
+  const fieldItem: { kind: ItemKind; x: number; active: boolean } = {
+    kind: "guard",
+    x: 0,
+    active: false,
+  }
+  const ITEM_HEIGHT = 1.85
+  /** 次のアイテムが出るまでの、障害物の回数 */
+  let untilItem = 5
+  let guard = false
+  let magnetTime = 0
+  let starTime = 0
+  /** ガードが割れた直後など、少しの間だけぶつからない */
+  let safeTime = 0
+  let itemsKey = ""
+  const emitItems = () => {
+    const items: PictorRunItems = {
+      guard,
+      magnet: Math.ceil(magnetTime),
+      star: Math.ceil(starTime),
+    }
+    const key = `${items.guard}:${items.magnet}:${items.star}`
+    if (key === itemsKey) return
+    itemsKey = key
+    callbacks.onItems(items)
+  }
+  // ぴくたーちゃんを包む、ガード・スターの光のまく
+  const shieldMaterial = track(
+    new MeshBasicMaterial({
+      color: 0x7ac8ff,
+      transparent: true,
+      opacity: 0.24,
+      depthWrite: false,
+    }),
+  )
+  const shield = new Mesh(bubbleGeometry, shieldMaterial)
+  shield.position.y = 0.85
+  shield.visible = false
+  player.add(shield)
+  const placeItem = (x: number) => {
+    // 持っているものは出さない
+    const kinds = ITEM_KINDS.filter(
+      (kind) =>
+        !(kind === "guard" && guard) &&
+        !(kind === "magnet" && magnetTime > 0) &&
+        !(kind === "star" && starTime > 0),
+    )
+    fieldItem.kind = kinds[Math.floor(Math.random() * kinds.length)] ?? "guard"
+    fieldItem.x = x
+    fieldItem.active = true
+    for (const kind of ITEM_KINDS) {
+      itemObjects[kind].visible = kind === fieldItem.kind
+    }
+  }
+  const takeItem = () => {
+    fieldItem.active = false
+    itemObjects[fieldItem.kind].visible = false
+    if (fieldItem.kind === "guard") guard = true
+    else if (fieldItem.kind === "magnet") magnetTime = 8
+    else starTime = 6
+    audio.play("item")
+    sparkle(0, y + 1, ITEM_LOOK[fieldItem.kind].color, 18)
+    emitItems()
+  }
+  const clearItems = () => {
+    fieldItem.active = false
+    for (const kind of ITEM_KINDS) itemObjects[kind].visible = false
+    untilItem = 5
+    guard = false
+    magnetTime = 0
+    starTime = 0
+    safeTime = 0
+    shield.visible = false
+    emitItems()
+  }
+
+  // ---- 今週の記録の看板（その人が走れた地点に立つ） -------------------------------
+  const signPoleGeometry = track(new CylinderGeometry(0.05, 0.06, 2.4, 8))
+  const signPoleMaterial = solid({ color: 0x9a6a4a }, 0.8)
+  const signBoardGeometry = track(new PlaneGeometry(2.4, 1.2))
+  type Sign = {
+    group: Group
+    texture: CanvasTexture
+    marker: PictorRunMarker | null
+    passed: boolean
+  }
+  const signs: Sign[] = []
+  for (let i = 0; i < 4; i++) {
+    const texture = track(canvasTexture(340, 170, () => {}))
+    const group = new Group()
+    const pole = new Mesh(signPoleGeometry, signPoleMaterial)
+    pole.position.y = 1.2
+    pole.castShadow = shadows
+    const board = new Mesh(
+      signBoardGeometry,
+      track(
+        new MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          fog: false,
+          toneMapped: false,
+        }),
+      ),
+    )
+    board.position.set(0, 2.9, 0.05)
+    group.add(pole, board)
+    group.position.z = -1.48
+    group.rotation.y = 0.12
+    group.visible = false
+    scene.add(group)
+    signs.push({ group, texture, marker: null, passed: false })
+  }
+  const drawSign = (sign: Sign, marker: PictorRunMarker) => {
+    const canvas = sign.texture.image as HTMLCanvasElement
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+    const accent = marker.isMe
+      ? "#2d6cdf"
+      : marker.rank === 1
+        ? "#e0a800"
+        : marker.rank === 2
+          ? "#8e9aab"
+          : marker.rank === 3
+            ? "#c0763a"
+            : "#5a6a8a"
+    const paint = (icon: HTMLImageElement | null) => {
+      ctx.clearRect(0, 0, 340, 170)
+      ctx.fillStyle = accent
+      roundRect(ctx, 2, 2, 336, 166, 26)
+      ctx.fill()
+      ctx.fillStyle = "#fffdf6"
+      roundRect(ctx, 10, 10, 320, 150, 20)
+      ctx.fill()
+      // アイコン
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(72, 85, 52, 0, Math.PI * 2)
+      ctx.closePath()
+      ctx.fillStyle = "#d8dfec"
+      ctx.fill()
+      if (icon) {
+        ctx.clip()
+        const size = Math.min(icon.naturalWidth, icon.naturalHeight)
+        ctx.drawImage(
+          icon,
+          (icon.naturalWidth - size) / 2,
+          (icon.naturalHeight - size) / 2,
+          size,
+          size,
+          20,
+          33,
+          104,
+          104,
+        )
+      }
+      ctx.restore()
+      ctx.strokeStyle = accent
+      ctx.lineWidth = 5
+      ctx.beginPath()
+      ctx.arc(72, 85, 52, 0, Math.PI * 2)
+      ctx.stroke()
+      // 順位・名前・距離
+      ctx.textBaseline = "middle"
+      ctx.textAlign = "left"
+      ctx.fillStyle = accent
+      ctx.font = "900 28px system-ui, sans-serif"
+      ctx.fillText(
+        marker.isMe ? `YOU ・ ${marker.rank}位` : `今週 ${marker.rank}位`,
+        138,
+        38,
+      )
+      ctx.fillStyle = "#2a3350"
+      ctx.font = "800 27px system-ui, sans-serif"
+      let name = marker.name
+      while (name.length > 1 && ctx.measureText(name).width > 180) {
+        name = `${name.slice(0, -2)}…`
+      }
+      ctx.fillText(name, 138, 78)
+      ctx.font = "900 44px system-ui, sans-serif"
+      ctx.fillText(`${Math.floor(marker.distance)} m`, 138, 124)
+      sign.texture.needsUpdate = true
+    }
+    paint(null)
+    if (!marker.iconUrl) return
+    // 別のドメインの画像は、許可（CORS）の付いたものだけ絵に貼れる。読めなければ丸だけにする
+    const image = new Image()
+    image.crossOrigin = "anonymous"
+    image.onload = () => {
+      if (!disposed && sign.marker === marker) paint(image)
+    }
+    image.src = marker.iconUrl
+  }
+  let markers: PictorRunMarker[] = []
+  let nextMarker = 0
+  const resetSigns = () => {
+    for (const sign of signs) {
+      sign.marker = null
+      sign.group.visible = false
+    }
+    // 走り始めのすぐ近くには立てない
+    nextMarker = markers.findIndex((marker) => marker.distance > distance + 4)
+    if (nextMarker < 0) nextMarker = markers.length
+  }
+  const updateSigns = () => {
+    while (
+      nextMarker < markers.length &&
+      (markers[nextMarker].distance - distance) * 2 < 34
+    ) {
+      const sign = signs.find((item) => item.marker === null)
+      if (!sign) break
+      sign.marker = markers[nextMarker]
+      sign.passed = false
+      sign.group.visible = true
+      drawSign(sign, sign.marker)
+      nextMarker += 1
+    }
+    for (const sign of signs) {
+      if (!sign.marker) continue
+      const x = (sign.marker.distance - distance) * 2
+      sign.group.position.x = x
+      if (!sign.passed && x < 0 && state === "running") {
+        // 追いぬいた
+        sign.passed = true
+        sparkle(0, 2.9, 0xffd84a, 12)
+        audio.play("pass")
+      }
+      if (x < DESPAWN_X - 2) {
+        sign.marker = null
+        sign.group.visible = false
+      }
+    }
+  }
+
   const score = () => Math.floor(distance) + coinCount * 10
 
   const reset = () => {
@@ -750,6 +1095,12 @@ export async function createPictorRunGame(
     freeze = 0
     coinCombo = 0
     untilSpawn = 14
+    clearItems()
+    resetSigns()
+    for (const item of pluses) {
+      item.life = 0
+      item.sprite.visible = false
+    }
     y = 0
     velocity = 0
     jumpsLeft = 2
@@ -771,8 +1122,16 @@ export async function createPictorRunGame(
 
   const spawn = () => {
     const level = clamp(distance / HARDEST_DISTANCE, 0, 1)
-    const roll = Math.random()
     const x = SPAWN_X * pace
+    untilItem -= 1
+    if (untilItem <= 0 && !fieldItem.active) {
+      // アイテムだけを置く（跳べば届く高さ）
+      untilItem = 8 + Math.floor(Math.random() * 6)
+      placeItem(x)
+      untilSpawn = 8
+      return
+    }
+    const roll = Math.random()
     if (roll < 0.16) {
       addCoins(x, 5, 0.9, 0)
     } else if (roll < 0.46) {
@@ -963,6 +1322,22 @@ export async function createPictorRunGame(
       if (debugNoHit) continue
       const hitX = Math.abs(obstacle.x) < obstacle.halfWidth + 0.26
       const hitY = y + 0.08 < obstacle.top && y + 1.3 > obstacle.bottom
+      if (hitX && hitY && (guard || starTime > 0 || safeTime > 0)) {
+        // 守られている間は、障害物のほうがはじける
+        if (starTime <= 0 && safeTime <= 0) {
+          guard = false
+          safeTime = 1.2
+          shake = 0.45
+          navigator.vibrate?.(30)
+          emitItems()
+        }
+        obstacle.active = false
+        obstacle.object.visible = false
+        sparkle(obstacle.x, (obstacle.bottom + obstacle.top) / 2, 0xffffff, 14)
+        sparkle(obstacle.x, (obstacle.bottom + obstacle.top) / 2, 0x7ac8ff, 10)
+        audio.play("guard")
+        continue
+      }
       if (hitX && hitY) {
         state = "over"
         hitObstacle = obstacle
@@ -981,9 +1356,56 @@ export async function createPictorRunGame(
       }
     }
 
+    if (state === "running") {
+      magnetTime = Math.max(0, magnetTime - dt)
+      starTime = Math.max(0, starTime - dt)
+      safeTime = Math.max(0, safeTime - dt)
+      emitItems()
+      if (starTime > 0 && !lite && Math.random() < dt * 14) {
+        sparkle(-0.2, y + 0.3 + Math.random() * 1.2, 0xffd23f, 1)
+      }
+    }
+    shield.visible = state === "running" && (guard || starTime > 0)
+    if (shield.visible) {
+      shieldMaterial.color.set(starTime > 0 ? 0xffd23f : 0x7ac8ff)
+      // スターは切れる前に点滅する
+      shieldMaterial.opacity =
+        starTime > 0 && starTime < 1.5 && Math.sin(time * 30) > 0 ? 0.08 : 0.24
+      shield.scale.setScalar(0.98 + Math.sin(time * 6) * 0.03)
+    }
+
+    if (fieldItem.active) {
+      fieldItem.x -= move
+      const object = itemObjects[fieldItem.kind]
+      const height = ITEM_HEIGHT + Math.sin(time * 3) * 0.12
+      object.position.set(fieldItem.x, height, 0)
+      object.children[0].scale.setScalar(0.46 + Math.sin(time * 5) * 0.03)
+      if (fieldItem.x < DESPAWN_X) {
+        fieldItem.active = false
+        object.visible = false
+      } else if (
+        state === "running" &&
+        Math.abs(fieldItem.x) < 0.7 &&
+        Math.abs(height - (y + 0.75)) < 1.05
+      ) {
+        takeItem()
+      }
+    }
+
     for (const coin of coins) {
       if (!coin.active) continue
       coin.x -= move
+      if (magnetTime > 0 && state === "running" && coin.x < 7) {
+        // マグネット: 近くのコインが寄ってくる
+        const dx = -coin.x
+        const dy = y + 0.75 - coin.y
+        const far = Math.hypot(dx, dy)
+        if (far > 0.01) {
+          const pull = Math.min(far, dt * 15)
+          coin.x += (dx / far) * pull
+          coin.y += (dy / far) * pull
+        }
+      }
       coin.mesh.position.set(
         coin.x,
         coin.y + Math.sin(time * 4 + coin.x) * 0.06,
@@ -1004,6 +1426,7 @@ export async function createPictorRunGame(
         coin.mesh.visible = false
         coinCount += 1
         pop(coin.x, coin.y)
+        plus(coin.x, coin.y)
         // 続けて取るほど、音が高くなる
         coinCombo = time - lastCoinTime < 0.7 ? coinCombo + 1 : 0
         lastCoinTime = time
@@ -1024,6 +1447,16 @@ export async function createPictorRunGame(
       )
       if (item.life <= 0) item.mesh.visible = false
     }
+
+    for (const item of pluses) {
+      if (item.life <= 0) continue
+      item.life -= dt * 1.5
+      item.sprite.position.y += dt * 1.4
+      item.sprite.position.x -= move * 0.4
+      item.sprite.material.opacity = Math.min(1, Math.max(0, item.life) * 2.2)
+      if (item.life <= 0) item.sprite.visible = false
+    }
+    updateSigns()
 
     stage.update(move, dt, time, distance)
     updateFx(dt, move)
@@ -1185,7 +1618,6 @@ void main() {
 
   let frame = 0
   let last = performance.now()
-  let disposed = false
   const loop = (now: number) => {
     if (disposed) return
     frame = requestAnimationFrame(loop)
@@ -1259,6 +1691,14 @@ void main() {
           distance = value
           debugNoHit = true
           stage.warp(value)
+          resetSigns()
+        },
+        give: (kind: ItemKind) => {
+          fieldItem.kind = kind
+          takeItem()
+        },
+        setHits: (on: boolean) => {
+          debugNoHit = !on
         },
       },
     })
@@ -1266,6 +1706,10 @@ void main() {
 
   return {
     setArtworks: (urls) => stage.setArtworks(urls),
+    setMarkers: (next) => {
+      markers = [...next].sort((a, b) => a.distance - b.distance)
+      if (state === "ready") resetSigns()
+    },
     setSound: (sound) => {
       audio.unlock()
       audio.set(sound)
