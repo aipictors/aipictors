@@ -3,41 +3,47 @@ import {
   type AnimationAction,
   AnimationClip,
   AnimationMixer,
-  BackSide,
   Box3,
   BoxGeometry,
   BufferAttribute,
   BufferGeometry,
   Color,
   CylinderGeometry,
-  DataTexture,
   DirectionalLight,
   DoubleSide,
   Group,
+  HalfFloatType,
   LoopOnce,
   type Material,
   Mesh,
   MeshBasicMaterial,
-  MeshToonMaterial,
-  NearestFilter,
+  MeshLambertMaterial,
+  MeshStandardMaterial,
+  NeutralToneMapping,
   type Object3D,
   OctahedronGeometry,
   PCFSoftShadowMap,
   PerspectiveCamera,
   PlaneGeometry,
   Points,
-  RedFormat,
   RingGeometry,
   Scene,
   ShaderMaterial,
   SkinnedMesh,
   SphereGeometry,
   type Texture,
+  Vector2,
   Vector3,
   WebGLRenderer,
+  WebGLRenderTarget,
 } from "three"
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js"
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js"
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js"
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js"
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js"
 import {
   createPictorRunAudio,
   type PictorRunSound,
@@ -163,6 +169,8 @@ export async function createPictorRunGame(
   let shadows = !lite
   renderer.shadowMap.enabled = shadows
   renderer.shadowMap.type = PCFSoftShadowMap
+  // 明るすぎるところを自然に丸める（色みは変えない）
+  if (!lite) renderer.toneMapping = NeutralToneMapping
 
   const scene = new Scene()
   const camera = new PerspectiveCamera(34, 1, 0.1, 260)
@@ -176,7 +184,7 @@ export async function createPictorRunGame(
   scene.add(sun, sun.target)
   if (shadows) {
     sun.castShadow = true
-    sun.shadow.mapSize.set(1024, 1024)
+    sun.shadow.mapSize.set(2048, 2048)
     sun.shadow.camera.left = -17
     sun.shadow.camera.right = 17
     sun.shadow.camera.top = 12
@@ -185,31 +193,30 @@ export async function createPictorRunGame(
     sun.shadow.camera.far = 60
     sun.shadow.bias = -0.0006
     sun.shadow.normalBias = 0.03
-    sun.shadow.intensity = 0.6
+    sun.shadow.intensity = 0.9
   }
 
-  // アニメ調の 3 段階の陰
-  const gradientMap = new DataTexture(
-    new Uint8Array([165, 225, 255]),
-    3,
-    1,
-    RedFormat,
-  )
-  gradientMap.minFilter = NearestFilter
-  gradientMap.magFilter = NearestFilter
-  gradientMap.needsUpdate = true
-
-  const disposables: { dispose: () => void }[] = [gradientMap]
+  const disposables: { dispose: () => void }[] = []
   const track = <T extends { dispose: () => void }>(item: T): T => {
     disposables.push(item)
     return item
   }
 
-  const toon = (color: number, map?: Texture) =>
+  /** 光の当たり方を計算する素材（軽量モードは、計算の軽いもの） */
+  const solid = (
+    params: {
+      color?: number
+      map?: Texture | null
+      transparent?: boolean
+      depthWrite?: boolean
+    },
+    roughness = 0.7,
+    metalness = 0,
+  ) =>
     track(
-      map
-        ? new MeshToonMaterial({ color, gradientMap, map })
-        : new MeshToonMaterial({ color, gradientMap }),
+      lite
+        ? new MeshLambertMaterial(params)
+        : new MeshStandardMaterial({ ...params, roughness, metalness }),
     )
 
   // ---- ぴくたーちゃん -------------------------------------------------------
@@ -220,17 +227,6 @@ export async function createPictorRunGame(
   // 書き出しに混ざっている目印の球は使わない
   model.getObjectByName("Icosphere")?.removeFromParent()
 
-  const outlineMaterial = track(
-    new MeshBasicMaterial({ color: 0x1a1f4d, side: BackSide }),
-  )
-  // 法線の向きに少しふくらませた裏面を描いて、ふちどりにする
-  outlineMaterial.onBeforeCompile = (shader) => {
-    shader.vertexShader = shader.vertexShader.replace(
-      "#include <begin_vertex>",
-      "vec3 transformed = position + normalize( normal ) * 0.0042;",
-    )
-  }
-
   const skinned: SkinnedMesh[] = []
   model.traverse((object) => {
     if (object instanceof SkinnedMesh) skinned.push(object)
@@ -240,13 +236,9 @@ export async function createPictorRunGame(
   for (const mesh of skinned) {
     const source = mesh.material as MeshBasicMaterial
     const isFace = mesh.morphTargetDictionary !== undefined
-    const material = track(
-      new MeshToonMaterial({
-        gradientMap,
-        map: source.map,
-        transparent: isFace,
-        depthWrite: !isFace,
-      }),
+    const material = solid(
+      { map: source.map, transparent: isFace, depthWrite: !isFace },
+      0.78,
     )
     if (source.map) track(source.map)
     source.dispose()
@@ -257,13 +249,7 @@ export async function createPictorRunGame(
     if (isFace) {
       face = mesh
       mesh.renderOrder = 1
-      continue
     }
-
-    const outline = new SkinnedMesh(mesh.geometry, outlineMaterial)
-    outline.bind(mesh.skeleton, mesh.bindMatrix)
-    outline.frustumCulled = false
-    mesh.parent?.add(outline)
   }
 
   /** 表情は 0 か 1 で切り替える（途中の値は目のくぼみが透けて見える） */
@@ -353,9 +339,8 @@ export async function createPictorRunGame(
   const stage = createPictorRunStage(
     scene,
     track,
-    gradientMap,
     { ambient, sun },
-    { lite, shadows, camera },
+    { lite, shadows, camera, renderer },
   )
 
   // ---- エフェクト（土けむり・きらめき・紙ふぶき） ------------------------------
@@ -571,11 +556,11 @@ export async function createPictorRunGame(
     }),
   )
   const blockGeometry = track(new BoxGeometry(0.95, 0.95, 0.95))
-  const blockMaterial = toon(0xffffff, blockTexture)
+  const blockMaterial = solid({ color: 0xffffff, map: blockTexture }, 0.6)
   const cardGeometry = track(new BoxGeometry(1.0, 1.25, 0.14))
-  const cardMaterial = toon(0xffffff, cardTexture)
+  const cardMaterial = solid({ color: 0xffffff, map: cardTexture }, 0.5)
   const bugBodyGeometry = track(new SphereGeometry(0.34, 16, 12))
-  const bugBodyMaterial = toon(0x9b6bff)
+  const bugBodyMaterial = solid({ color: 0x9b6bff }, 0.35)
   const bugEyeGeometry = track(new SphereGeometry(0.09, 10, 8))
   const bugEyeMaterial = track(new MeshBasicMaterial({ color: 0xffffff }))
   const bugPupilMaterial = track(new MeshBasicMaterial({ color: 0x2a1a55 }))
@@ -661,7 +646,10 @@ export async function createPictorRunGame(
 
   const coinGeometry = track(new CylinderGeometry(0.27, 0.27, 0.07, 20))
   coinGeometry.rotateX(Math.PI / 2)
-  const coinMaterial = toon(0xffc93c)
+  // コインは金属。空やまわりが映り込む
+  const coinMaterial = solid({ color: 0xffc93c }, 0.3, lite ? 0 : 0.75)
+  // 暗いステージでも見つけやすいように、少しだけ自分でも光らせる
+  coinMaterial.emissive.set(0x6a4400)
   const coins: Coin[] = []
   const takeCoin = (): Coin => {
     let coin = coins.find((item) => !item.active)
@@ -1097,11 +1085,56 @@ export async function createPictorRunGame(
   }
 
   // ---- 画面 -------------------------------------------------------------------
+  // 仕上げ: 強い光のにじみ・画面のふちの暗さ・フィルムのざらつき（軽量モードでは掛けない）
+  const film = lite
+    ? null
+    : new ShaderPass({
+        name: "PictorRunFilm",
+        uniforms: { tDiffuse: { value: null }, uTime: { value: 0 } },
+        vertexShader: `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}`,
+        fragmentShader: `
+uniform sampler2D tDiffuse;
+uniform float uTime;
+varying vec2 vUv;
+void main() {
+  vec3 color = texture2D( tDiffuse, vUv ).rgb;
+  vec2 q = vUv - 0.5;
+  color *= mix( 0.7, 1.0, smoothstep( 0.82, 0.3, length( q * vec2( 1.0, 0.9 ) ) ) );
+  // 暗いところを少し締める
+  color = mix( color, color * color * ( 3.0 - 2.0 * color ), 0.22 );
+  float grain = fract( sin( dot( gl_FragCoord.xy + uTime * 61.0, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 );
+  color += ( grain - 0.5 ) * 0.028;
+  gl_FragColor = vec4( color, 1.0 );
+}`,
+      })
+  const composer = film
+    ? new EffectComposer(
+        renderer,
+        track(new WebGLRenderTarget(2, 2, { type: HalfFloatType, samples: 4 })),
+      )
+    : null
+  /** 仕上げを掛ける（重い端末では、走っている途中でやめる） */
+  let post = composer !== null
+  if (composer && film) {
+    composer.addPass(new RenderPass(scene, camera))
+    composer.addPass(new UnrealBloomPass(new Vector2(2, 2), 0.3, 0.6, 0.92))
+    composer.addPass(new OutputPass())
+    composer.addPass(film)
+    track(composer)
+  }
+
   const cameraHome = new Vector3()
   const resize = () => {
     const width = canvas.clientWidth || 1
     const height = canvas.clientHeight || 1
     renderer.setSize(width, height, false)
+    composer?.setPixelRatio(pixelRatio)
+    composer?.setSize(width, height)
     const aspect = width / height
     camera.aspect = aspect
     // 障害物が見えてから跳ぶまでの間が取れるように、縦長の画面ではカメラを引く
@@ -1122,7 +1155,7 @@ export async function createPictorRunGame(
   observer.observe(canvas)
   resize()
 
-  // 重い端末では、走っている途中で画面を粗くし、それでも重ければ影をやめる
+  // 重い端末では、走っている途中で仕上げと映り込みをやめ、画面を粗くし、それでも重ければ影をやめる
   let slowFrames = 0
   let slowTime = 0
   const watchSpeed = (elapsed: number) => {
@@ -1134,7 +1167,10 @@ export async function createPictorRunGame(
     slowFrames = 0
     slowTime = 0
     if (average < 1 / 42) return
-    if (pixelRatio > 1.25) {
+    if (post) {
+      post = false
+      stage.setReflections(false)
+    } else if (pixelRatio > 1.25) {
       pixelRatio = 1.25
       renderer.setPixelRatio(pixelRatio)
       resize()
@@ -1166,6 +1202,7 @@ export async function createPictorRunGame(
       if (freeze > 0) freeze -= dt
       else update(dt)
       if (state !== "over") audio.tick()
+      audio.setRain(state === "over" ? 0 : stage.rain())
     }
     camera.position.copy(cameraHome)
     if (shake > 0) {
@@ -1173,7 +1210,12 @@ export async function createPictorRunGame(
       camera.position.x += (Math.random() - 0.5) * shake * 0.5
       camera.position.y += (Math.random() - 0.5) * shake * 0.4
     }
-    renderer.render(scene, camera)
+    if (composer && film && post) {
+      film.uniforms.uTime.value = now / 1000
+      composer.render(dt)
+    } else {
+      renderer.render(scene, camera)
+    }
   }
 
   const isJumpKey = (event: KeyboardEvent) =>

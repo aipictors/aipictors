@@ -35,6 +35,8 @@ export type PictorRunAudio = {
   tick: () => void
   /** value = コインを続けて取った数（音が高くなる） */
   play: (name: PictorRunSoundName, value?: number) => void
+  /** 雨音の大きさ（0〜1。0 で止む） */
+  setRain: (level: number) => void
   dispose: () => void
 }
 
@@ -447,6 +449,7 @@ const SILENT: PictorRunAudio = {
   stop: () => {},
   tick: () => {},
   play: () => {},
+  setRain: () => {},
   dispose: () => {},
 }
 
@@ -736,6 +739,34 @@ export function createPictorRunAudio(
     }
   }
 
+  // 雨音: ずっと鳴らすノイズを、雨の強さで上げ下げする（降るステージに来てから作る）
+  let rainGain: GainNode | null = null
+  let rainNow = 0
+  const setRain = (level: number) => {
+    if (disposed || Math.abs(level - rainNow) < 0.02) return
+    rainNow = level
+    if (!rainGain) {
+      if (level <= 0) return
+      const source = ctx.createBufferSource()
+      source.buffer = noiseBuffer
+      source.loop = true
+      const high = ctx.createBiquadFilter()
+      high.type = "highpass"
+      high.frequency.value = 900
+      const low = ctx.createBiquadFilter()
+      low.type = "lowpass"
+      low.frequency.value = 5200
+      rainGain = ctx.createGain()
+      rainGain.gain.value = 0
+      source.connect(high)
+      high.connect(low)
+      low.connect(rainGain)
+      rainGain.connect(sfxBus)
+      source.start()
+    }
+    rainGain.gain.setTargetAtTime(level * 0.09, ctx.currentTime, 0.4)
+  }
+
   const unlock = () => {
     if (disposed || ctx.state === "running") return
     void ctx.resume().catch(() => {})
@@ -760,6 +791,7 @@ export function createPictorRunAudio(
     },
     tick,
     play,
+    setRain,
     dispose: () => {
       disposed = true
       void ctx.close().catch(() => {})

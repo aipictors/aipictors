@@ -1,6 +1,7 @@
 import {
   AdditiveBlending,
   type AmbientLight,
+  BackSide,
   BoxGeometry,
   BufferAttribute,
   BufferGeometry,
@@ -18,19 +19,24 @@ import {
   Group,
   LinearFilter,
   LinearMipmapLinearFilter,
+  LineSegments,
   Matrix4,
   Mesh,
   MeshBasicMaterial,
-  MeshToonMaterial,
+  MeshLambertMaterial,
+  MeshStandardMaterial,
   type Object3D,
   OctahedronGeometry,
   type PerspectiveCamera,
   PlaneGeometry,
+  PMREMGenerator,
+  PointLight,
   Points,
   PointsMaterial,
   Quaternion,
   RepeatWrapping,
-  type Scene,
+  Scene,
+  ShaderMaterial,
   Shape,
   ShapeGeometry,
   SphereGeometry,
@@ -39,7 +45,9 @@ import {
   TextureLoader,
   TorusGeometry,
   Vector3,
+  type WebGLRenderer,
 } from "three"
+import { Reflector } from "three/examples/jsm/objects/Reflector.js"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 import {
   PICTOR_RUN_STAGE_LENGTH,
@@ -62,6 +70,10 @@ export type PictorRunStage = {
   warp: (distance: number) => void
   /** 額ぶちに飾る作品の画像（読めたものから飾る） */
   setArtworks: (urls: string[]) => void
+  /** いまの雨の強さ（0〜1。雨音に使う） */
+  rain: () => number
+  /** 濡れた路面の映り込みを描くか（重い端末では、走っている途中でやめる） */
+  setReflections: (on: boolean) => void
   dispose: () => void
 }
 
@@ -72,6 +84,8 @@ export type PictorRunStageOptions = {
   shadows: boolean
   /** かすみの濃さを、カメラの遠さに合わせる */
   camera: PerspectiveCamera
+  /** 空の光を、ものに映す画像に焼くのに使う */
+  renderer: WebGLRenderer
 }
 
 export function canvasTexture(
@@ -125,6 +139,9 @@ type PartShape = "flat" | "pole" | "cone" | "round" | "rock" | "gem"
 
 const hsl = { h: 0, s: 0, l: 0 }
 
+/** この色の部品は、夜に自分で光らせる（ネオンや溶岩。ステージの形を組み立てる間だけ入れる） */
+let glowing: ReadonlySet<number> | null = null
+
 /** 色と形から、木目・石・葉・ぬり壁のどれに見せるかを決める */
 const surfaceOf = (color: Color, shape: PartShape) => {
   color.getHSL(hsl, SRGBColorSpace)
@@ -164,6 +181,19 @@ const part = (
     "surf",
     new BufferAttribute(new Float32Array(count).fill(surfaceOf(c, shape)), 1),
   )
+  geometry.setAttribute(
+    "glow",
+    new BufferAttribute(
+      new Float32Array(count).fill(glowing?.has(color) ? 1 : 0),
+      1,
+    ),
+  )
+  return geometry
+}
+
+/** 窓や電球など、夜に光る部品にする */
+const lit = (geometry: BufferGeometry, power = 1) => {
+  ;(geometry.getAttribute("glow").array as Float32Array).fill(power)
   return geometry
 }
 
@@ -582,24 +612,27 @@ const lampPost = (pole: number, shade: number, bulb: number, style = 0) => [
   cyl(pole, 0.12, 0.14, 0.12, [0, 0.06, 0]),
   box(pole, [0.5, 0.05, 0.05], [0.22, 2.25, 0]),
   ...(style === 0
-    ? [cone(shade, 0.2, 0.16, [0.44, 2.2, 0]), ball(bulb, LAMP_BULB, 0.13)]
+    ? [
+        cone(shade, 0.2, 0.16, [0.44, 2.2, 0]),
+        lit(ball(bulb, LAMP_BULB, 0.13), 1.6),
+      ]
     : style === 1
       ? // ちょうちん
         [
           cyl(pole, 0.07, 0.07, 0.05, [0.44, 2.2, 0]),
-          ball(shade, [0.44, 2.02, 0], [0.17, 0.2, 0.17]),
           cyl(pole, 0.07, 0.07, 0.05, [0.44, 1.82, 0]),
-          ball(bulb, [0.44, 2.02, 0.12], [0.06, 0.1, 0.06], 6),
+          lit(ball(shade, [0.44, 2.02, 0], [0.17, 0.2, 0.17]), 0.9),
+          lit(ball(bulb, [0.44, 2.02, 0.12], [0.06, 0.1, 0.06], 6), 1.6),
         ]
       : // 結晶
-        [gem(bulb, [0.44, 2.02, 0], [0.13, 0.22, 0.13])]),
+        [lit(gem(bulb, [0.44, 2.02, 0], [0.13, 0.22, 0.13]), 1.6)]),
 ]
 
 const stoneLantern = (stone: number, light: number) => [
   cyl(stone, 0.26, 0.3, 0.12, [0, 0.06, 0], 6),
   cyl(stone, 0.09, 0.11, 0.55, [0, 0.4, 0], 6),
   box(stone, [0.36, 0.06, 0.36], [0, 0.7, 0]),
-  box(light, [0.26, 0.24, 0.26], [0, 0.85, 0]),
+  lit(box(light, [0.26, 0.24, 0.26], [0, 0.85, 0]), 1.4),
   cone(stone, 0.4, 0.26, [0, 1.1, 0], 4, [0, Math.PI / 4, 0]),
   ball(stone, [0, 1.27, 0], 0.07, 6),
 ]
@@ -718,14 +751,13 @@ const building = (
   const rows = Math.floor((height - 0.5) / 0.5)
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      const lit = r() < 0.62
-      parts.push(
-        box(
-          lit ? lights[Math.floor(r() * lights.length)] : 0x1a2050,
-          [0.2, 0.26, 0.04],
-          [(col - (cols - 1) / 2) * 0.38, 0.6 + row * 0.5, depth / 2 + 0.01],
-        ),
+      const on = r() < 0.62
+      const pane = box(
+        on ? lights[Math.floor(r() * lights.length)] : 0x1a2050,
+        [0.2, 0.26, 0.04],
+        [(col - (cols - 1) / 2) * 0.38, 0.6 + row * 0.5, depth / 2 + 0.01],
       )
+      parts.push(on ? lit(pane, 0.7 + r() * 0.6) : pane)
     }
   }
   return parts
@@ -1692,6 +1724,32 @@ const THEMES: Theme[] = [
             ),
           ]),
           box(0xffffff, [0.55, 0.06, 0.42], [0, 1.03, 0]),
+        ]),
+        // 止まっている車
+        join([
+          box(0x3a4a9a, [1.9, 0.32, 0.8], [0, 0.4, 0]),
+          box(0x3a4a9a, [1.02, 0.3, 0.72], [-0.1, 0.7, 0]),
+          box(0x1a2050, [0.94, 0.2, 0.74], [-0.1, 0.7, 0]),
+          box(0x1a2050, [1.04, 0.2, 0.62], [-0.1, 0.7, 0]),
+          box(0x2a3070, [1.94, 0.08, 0.84], [0, 0.27, 0]),
+          ...[-0.6, 0.6].flatMap((x) =>
+            [-0.37, 0.37].flatMap((z) => [
+              cyl(0x1a1a2a, 0.17, 0.17, 0.12, [x, 0.17, z], 12, [
+                Math.PI / 2,
+                0,
+                0,
+              ]),
+              cyl(0xd0d4e8, 0.08, 0.08, 0.13, [x, 0.17, z], 8, [
+                Math.PI / 2,
+                0,
+                0,
+              ]),
+            ]),
+          ),
+          ...[-0.26, 0.26].flatMap((z) => [
+            box(0xfff1a0, [0.04, 0.1, 0.18], [0.96, 0.44, z]),
+            box(0xff5a5a, [0.04, 0.08, 0.18], [-0.96, 0.46, z]),
+          ]),
         ]),
         // 消火栓とごみ箱
         join([
@@ -3021,6 +3079,31 @@ const AIR: Air[] = [
   },
 ]
 
+/** ステージごとの雨の強さと、地面の濡れぐあい（THEMES と同じ並び） */
+const WEATHER: { rain: number; wet: number }[] = [
+  { rain: 0, wet: 0 },
+  { rain: 0, wet: 0 },
+  { rain: 0, wet: 0 },
+  { rain: 0, wet: 0 },
+  { rain: 0.7, wet: 0.85 },
+  { rain: 0, wet: 0 },
+  { rain: 1, wet: 1 },
+  { rain: 0, wet: 0 },
+  { rain: 0.35, wet: 0.7 },
+  { rain: 0, wet: 0 },
+  { rain: 0, wet: 0 },
+  { rain: 0, wet: 0 },
+  { rain: 0, wet: 0 },
+]
+
+/** 夜に自分で光らせる色（ステージの番号ごと） */
+const GLOW: Record<number, ReadonlySet<number>> = {
+  6: new Set([
+    0xff5ab0, 0x7af0ff, 0xfff1a0, 0xff5a5a, 0xffb0e0, 0xbff4ff, 0xffc040,
+  ]),
+  10: new Set([0xff7a2a, 0xffb040, 0xff5a2a, 0xff6a1a]),
+}
+
 /** ステージの終わりのこの長さ（m）で、空や地面の色を次のステージへ移す */
 const BLEND_LENGTH = 14
 
@@ -3047,21 +3130,23 @@ type Scroller = {
 
 type Slot = { mesh: Mesh; kind: PropKind }
 
-type Art = { material: MeshToonMaterial | MeshBasicMaterial; shape: number }
+type Art = { material: MeshBasicMaterial; shape: number }
+
+/** 光の当たり方を計算する素材（軽量モードは、計算の軽いもの） */
+type Solid = MeshStandardMaterial | MeshLambertMaterial
 
 type Framed = { group: Group; frame: Mesh; painting: Mesh }
 
 export function createPictorRunStage(
   scene: Scene,
   track: Track,
-  gradientMap: Texture,
   lights: { ambient: AmbientLight; sun: DirectionalLight },
   options: PictorRunStageOptions,
 ): PictorRunStage {
   if (THEMES.length !== PICTOR_RUN_STAGES.length) {
     throw new Error("stage count mismatch")
   }
-  const { lite, shadows, camera } = options
+  const { lite, shadows, camera, renderer } = options
   const random = createRandom(404)
   const scrollers: Scroller[] = []
   const scroll = (
@@ -3076,70 +3161,127 @@ export function createPictorRunStage(
   }
   let disposed = false
 
-  // ---- 表面の模様（木目・石・葉・ぬり壁）。軽量モードでは貼らない ----------------
+  // ---- 素材 -----------------------------------------------------------------
+  /** 濡れぐあい（0〜1）と、夜に光るものの明るさ。どの素材も同じ値を見る */
+  const wetUniform = { value: 0 }
+  const glowUniform = { value: 0 }
+  const solid = (
+    params: {
+      color?: number
+      map?: Texture
+      vertexColors?: boolean
+      fog?: boolean
+      alphaTest?: number
+      transparent?: boolean
+    },
+    roughness = 0.85,
+  ): Solid =>
+    track(
+      lite
+        ? new MeshLambertMaterial(params)
+        : new MeshStandardMaterial({ ...params, roughness, metalness: 0 }),
+    )
+
+  // 表面の模様（木目・石・葉・ぬり壁）。軽量モードでは貼らない
   const surfaceTexture = lite ? null : track(createSurfaceTexture())
   /**
-   * 形の向きに合わせて 3 方向から模様を貼り、でこぼこにも見せる。
-   * kind を渡すと全体をその模様にする（渡さなければ、部品ごとの模様）。
+   * 素材に、濡れたときのつや・夜の明かり・表面の模様を足す。
+   * kind = "part" は部品ごとの模様、数字は全体をその模様に、"none" は模様なし（絵を貼ってある素材）。
+   * 模様は形の向きに合わせて 3 方向から貼り、でこぼこにも見せる。
    * ground = 地面に近いところを少し暗くして、置いてある感じを出す
    */
-  const surfaced = <T extends MeshToonMaterial>(
+  const surfaced = <T extends Solid>(
     material: T,
-    look: { kind?: number; ground?: boolean; gain?: number; scale?: number },
+    look: {
+      kind?: number | "part" | "none"
+      ground?: boolean
+      gain?: number
+      scale?: number
+    },
   ): T => {
     if (!surfaceTexture) return material
-    const { kind, ground = false, gain = 1, scale = 1 } = look
+    const { kind = "part", ground = false, gain = 1, scale = 1 } = look
+    const byPart = kind === "part"
+    const textured = kind !== "none"
     material.customProgramCacheKey = () =>
-      `surf:${kind ?? "part"}:${ground}:${gain}:${scale}`
+      `surf:${kind}:${ground}:${gain}:${scale}`
     material.onBeforeCompile = (shader) => {
       shader.uniforms.surfMap = { value: surfaceTexture }
+      shader.uniforms.uWet = wetUniform
+      shader.uniforms.uGlow = glowUniform
       shader.vertexShader = shader.vertexShader
         .replace(
           "#include <common>",
           `#include <common>
-${kind === undefined ? "attribute float surf;" : ""}
+${byPart ? "attribute float surf;\nattribute float glow;" : ""}
 varying vec3 vSurfPos;
 varying vec3 vSurfNormal;
-varying float vSurf;`,
+varying float vSurf;
+varying float vGlow;`,
         )
         .replace(
           "#include <begin_vertex>",
           `#include <begin_vertex>
 vSurfPos = position * vec3( length( modelMatrix[ 0 ].xyz ), length( modelMatrix[ 1 ].xyz ), length( modelMatrix[ 2 ].xyz ) );
 vSurfNormal = normal;
-vSurf = ${kind === undefined ? "surf" : kind.toFixed(1)};`,
+vSurf = ${byPart ? "surf" : textured ? (kind as number).toFixed(1) : "0.0"};
+vGlow = ${byPart ? "glow" : "0.0"};`,
         )
       shader.fragmentShader = shader.fragmentShader
         .replace(
           "#include <common>",
           `#include <common>
 uniform sampler2D surfMap;
+uniform float uWet;
+uniform float uGlow;
 varying vec3 vSurfPos;
 varying vec3 vSurfNormal;
 varying float vSurf;
-float surfHeight = 0.0;`,
+varying float vGlow;
+float surfHeight = 0.0;
+float surfRough = -1.0;`,
         )
         .replace(
           "#include <color_fragment>",
           `#include <color_fragment>
-{
+${
+  textured
+    ? `{
   vec3 sw = abs( vSurfNormal );
   sw = sw * sw * sw * sw;
   sw /= sw.x + sw.y + sw.z;
   float sid = floor( vSurf + 0.5 );
-  // 木目・石・葉・ぬり壁で、模様の大きさ・濃さ・でこぼこの深さを変える
-  vec3 look = sid < 0.5 ? vec3( 1.1, 0.5, 0.03 ) : sid < 1.5 ? vec3( 0.55, 0.5, 0.05 ) : sid < 2.5 ? vec3( 0.75, 0.55, 0.06 ) : vec3( 0.4, 0.3, 0.012 );
+  // 木目・石・葉・ぬり壁で、模様の大きさ・濃さ・でこぼこの深さ・つやを変える
+  vec4 look = sid < 0.5 ? vec4( 1.1, 0.5, 0.03, 0.74 ) : sid < 1.5 ? vec4( 0.55, 0.5, 0.05, 0.9 ) : sid < 2.5 ? vec4( 0.75, 0.55, 0.06, 0.8 ) : vec4( 0.4, 0.3, 0.012, 0.62 );
   vec3 sp = vSurfPos * look.x * ${scale.toFixed(3)};
   vec4 st = texture2D( surfMap, sp.zy ) * sw.x + texture2D( surfMap, sp.xz ) * sw.y + texture2D( surfMap, sp.xy ) * sw.z;
   float sh = sid < 0.5 ? st.r : sid < 1.5 ? st.g : sid < 2.5 ? st.b : st.a;
   diffuseColor.rgb *= 1.0 + ( sh - 0.5 ) * 2.0 * look.y * ${gain.toFixed(3)};
   surfHeight = sh * look.z * ${gain.toFixed(3)};
+  surfRough = clamp( look.w + ( 0.5 - sh ) * 0.25, 0.2, 1.0 );
   ${ground ? "diffuseColor.rgb *= mix( 0.66, 1.0, smoothstep( 0.0, 0.6, vSurfPos.y ) );" : ""}
-}`,
+}`
+    : ""
+}
+// 濡れると、色が濃くなる
+diffuseColor.rgb *= mix( 1.0, 0.7, uWet );`,
         )
         .replace(
-          "#include <normal_fragment_maps>",
-          `#include <normal_fragment_maps>
+          "#include <roughnessmap_fragment>",
+          `#include <roughnessmap_fragment>
+if ( surfRough > 0.0 ) roughnessFactor = surfRough;
+// 濡れると、つやが出る
+roughnessFactor *= mix( 1.0, 0.4, uWet );`,
+        )
+        .replace(
+          "#include <emissivemap_fragment>",
+          `#include <emissivemap_fragment>
+totalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;`,
+        )
+      if (!textured) return
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <normal_fragment_maps>",
+        `#include <normal_fragment_maps>
 {
   vec3 sx = dFdx( - vViewPosition );
   vec3 sy = dFdy( - vViewPosition );
@@ -3151,30 +3293,22 @@ float surfHeight = 0.0;`,
   float det = dot( sx, r1 ) * faceDirection;
   normal = normalize( abs( det ) * normal - sign( det ) * ( dh.x * r1 + dh.y * r2 ) );
 }`,
-        )
+      )
     }
     return material
   }
 
   /** 道ばたのもの */
-  const toonVertex = surfaced(
-    track(new MeshToonMaterial({ vertexColors: true, gradientMap })),
-    { ground: true },
-  )
+  const toonVertex = surfaced(solid({ vertexColors: true }), { ground: true })
   /** 額ぶち（地面から離れているので、足もとの暗さは付けない） */
-  const toonVertexFrame = surfaced(
-    track(new MeshToonMaterial({ vertexColors: true, gradientMap })),
-    {},
-  )
+  const toonVertexFrame = surfaced(solid({ vertexColors: true }), {})
   /** 空に浮かぶ額ぶち用（遠くても、かすみで白っぽくしない） */
-  const toonVertexClear = surfaced(
-    track(
-      new MeshToonMaterial({ vertexColors: true, gradientMap, fog: false }),
-    ),
-    { scale: 0.4 },
-  )
-  const toonMap = (map: Texture, color = 0xffffff) =>
-    track(new MeshToonMaterial({ map, gradientMap, color }))
+  const toonVertexClear = surfaced(solid({ vertexColors: true, fog: false }), {
+    scale: 0.4,
+  })
+  /** 絵を貼った素材（地面や立て札） */
+  const toonMap = (map: Texture, roughness = 0.85) =>
+    surfaced(solid({ map, color: 0xffffff }, roughness), { kind: "none" })
   const cast = <T extends Mesh>(mesh: T): T => {
     mesh.castShadow = shadows
     return mesh
@@ -3185,7 +3319,9 @@ float surfHeight = 0.0;`,
   const propsOf = (index: number): ThemeProps => {
     let props = builtProps[index]
     if (!props) {
+      glowing = GLOW[index] ?? null
       props = THEMES[index].build()
+      glowing = null
       for (const kind of ["tall", "mid", "small", "feature", "far"] as const) {
         for (const geometry of props[kind]) track(geometry)
       }
@@ -3299,11 +3435,27 @@ float surfHeight = 0.0;`,
     shape.lineTo(width, -30)
     return track(new ShapeGeometry(shape))
   }
+  // 山はだ: 尾根と谷の明暗。ふもとは空気でかすんで明るい
+  const ridgeTexture = track(
+    canvasTexture(FIELD, FIELD, (ctx) => {
+      const g = ctx.createLinearGradient(0, 0, 0, FIELD)
+      g.addColorStop(0, "#d2d2d2")
+      g.addColorStop(0.55, "#e6e6e6")
+      g.addColorStop(1, "#ffffff")
+      ctx.fillStyle = g
+      ctx.fillRect(0, 0, FIELD, FIELD)
+      shade(ctx, fbm(9, 3, 4, 111), 0.34)
+      shade(ctx, fbm(3, 2, 3, 113), 0.2)
+    }),
+  )
+  ridgeTexture.wrapS = RepeatWrapping
+  // 山の形は幅 150・高さ 0〜40 くらいで作ってある
+  ridgeTexture.repeat.set(4 / 150, 1 / 42)
   const farMaterial = track(
-    new MeshBasicMaterial({ color: 0xa9cdf5, fog: false }),
+    new MeshBasicMaterial({ color: 0xa9cdf5, fog: false, map: ridgeTexture }),
   )
   const nearMaterial = track(
-    new MeshBasicMaterial({ color: 0x86b7ec, fog: false }),
+    new MeshBasicMaterial({ color: 0x86b7ec, fog: false, map: ridgeTexture }),
   )
   for (const [material, z, base, speed, seed] of [
     [farMaterial, -78, 30, 0.012, 11],
@@ -3319,8 +3471,10 @@ float surfHeight = 0.0;`,
   }
 
   // ---- 雲 ---------------------------------------------------------------------
-  const cloudMaterial = track(
-    new MeshBasicMaterial({ color: 0xffffff, transparent: true, fog: false }),
+  // 雲は日の当たる側が明るく、下が少し暗い
+  const cloudMaterial = solid(
+    { color: 0xffffff, transparent: true, fog: false },
+    1,
   )
   const cloudGeometry = track(
     join(
@@ -3509,7 +3663,7 @@ float surfHeight = 0.0;`,
     lite ? new SphereGeometry(1, 20, 10) : new SphereGeometry(1, 40, 20),
   )
   const hillMaterials = [0, 1].map(() =>
-    surfaced(track(new MeshToonMaterial({ color: 0xffffff, gradientMap })), {
+    surfaced(solid({ color: 0xffffff }, 0.95), {
       kind: LEAF,
       gain: 0.5,
       scale: 0.5,
@@ -3529,7 +3683,7 @@ float surfHeight = 0.0;`,
   const mottle = fbm(4, 4, 4, 81)
   const speckle = fbm(28, 28, 3, 83)
   /** でこぼこに見せる（軽量モードでは使わない） */
-  const bumpy = (material: MeshToonMaterial, depth: number) => {
+  const bumpy = <T extends Solid>(material: T, depth: number): T => {
     if (lite) return material
     material.bumpMap = material.map
     material.bumpScale = depth
@@ -3609,9 +3763,7 @@ float surfHeight = 0.0;`,
   scene.add(path)
 
   const curbGeometry = track(new BoxGeometry(90, 0.1, 0.16))
-  const curbMaterial = track(
-    new MeshToonMaterial({ color: 0xffffff, gradientMap }),
-  )
+  const curbMaterial = surfaced(solid({ color: 0xffffff }), { kind: STONE })
   for (const z of [-1.28, 1.28]) {
     const curb = new Mesh(curbGeometry, curbMaterial)
     curb.position.set(14, 0.02, z)
@@ -3745,25 +3897,35 @@ float surfHeight = 0.0;`,
   // 崖の上のふちから垂れる地面
   const edgeTexture = track(
     canvasTexture(256, 64, (ctx) => {
-      ctx.fillStyle = "#e6e6e6"
-      ctx.fillRect(0, 0, 256, 22)
-      for (let i = 0; i < 8; i++) {
-        ctx.beginPath()
-        ctx.arc(16 + i * 32, 22, 16, 0, Math.PI)
-        ctx.fill()
-      }
-      ctx.fillStyle = "#ffffff"
-      for (let i = 0; i < 8; i++) {
-        ctx.beginPath()
-        ctx.arc(32 + i * 32, 11, 11, 0, Math.PI)
-        ctx.fill()
+      // ふぞろいに垂れる草や土
+      const r = createRandom(29)
+      ctx.fillStyle = "#e2e2e2"
+      ctx.fillRect(0, 0, 256, 12)
+      for (let i = 0; i < 70; i++) {
+        const x = r() * 256
+        const width = 3 + r() * 9
+        const length = 8 + r() * r() * 44
+        const tone = 200 + Math.floor(r() * 55)
+        ctx.fillStyle = `rgb(${tone},${tone},${tone})`
+        for (const dx of [0, -256, 256]) {
+          ctx.beginPath()
+          ctx.moveTo(x + dx - width / 2, 10)
+          ctx.quadraticCurveTo(
+            x + dx + (r() - 0.5) * 2,
+            10 + length * 1.1,
+            x + dx + width / 2,
+            10,
+          )
+          ctx.fill()
+        }
       }
     }),
   )
   edgeTexture.wrapS = RepeatWrapping
   edgeTexture.repeat.set(90 / CLIFF_TILE, 1)
-  const edgeMaterial = track(
-    new MeshToonMaterial({ map: edgeTexture, gradientMap, alphaTest: 0.5 }),
+  const edgeMaterial = surfaced(
+    solid({ map: edgeTexture, color: 0xffffff, alphaTest: 0.5 }),
+    { kind: "none" },
   )
   const edge = new Mesh(track(new PlaneGeometry(90, 0.8)), edgeMaterial)
   edge.position.set(14, -0.4, 2.61)
@@ -3790,11 +3952,232 @@ float surfHeight = 0.0;`,
   waterTexture.wrapS = RepeatWrapping
   waterTexture.wrapT = RepeatWrapping
   waterTexture.repeat.set(14, 6)
-  const waterMaterial = toonMap(waterTexture)
+  // 水面は空を映す
+  const waterMaterial = bumpy(toonMap(waterTexture, 0.14), 0.6)
   const water = new Mesh(track(new PlaneGeometry(160, 70)), waterMaterial)
   water.rotation.x = -Math.PI / 2
   water.position.set(14, -3.2, 37.4)
   scene.add(water)
+
+  // ---- 空の光（ものに映る空。ステージの色が変わるたびに焼き直す） ----------------
+  const skyLight = {
+    top: { value: new Color() },
+    mid: { value: new Color() },
+    low: { value: new Color() },
+    ground: { value: new Color() },
+    sunColor: { value: new Color() },
+    sunDir: { value: new Vector3(0, 1, 0) },
+  }
+  const pmrem = lite ? null : new PMREMGenerator(renderer)
+  const skyScene = new Scene()
+  skyScene.add(
+    new Mesh(
+      track(new SphereGeometry(20, 24, 12)),
+      track(
+        new ShaderMaterial({
+          side: BackSide,
+          uniforms: skyLight,
+          vertexShader: `
+varying vec3 vDir;
+void main() {
+  vDir = position;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}`,
+          fragmentShader: `
+uniform vec3 top;
+uniform vec3 mid;
+uniform vec3 low;
+uniform vec3 ground;
+uniform vec3 sunColor;
+uniform vec3 sunDir;
+varying vec3 vDir;
+void main() {
+  vec3 dir = normalize( vDir );
+  vec3 color = mix( low, mid, smoothstep( 0.0, 0.3, dir.y ) );
+  color = mix( color, top, smoothstep( 0.3, 1.0, dir.y ) );
+  color = mix( color, ground * 0.6, smoothstep( 0.0, -0.25, dir.y ) );
+  float facing = max( dot( dir, sunDir ), 0.0 );
+  color += sunColor * ( pow( facing, 180.0 ) * 9.0 + pow( facing, 8.0 ) * 0.35 );
+  gl_FragColor = vec4( color, 1.0 );
+}`,
+        }),
+      ),
+    ),
+  )
+  let skyBaked: { texture: Texture; dispose: () => void } | null = null
+  let skyKey = ""
+  const bakeSky = (key: string) => {
+    if (!pmrem || key === skyKey) return
+    skyKey = key
+    const next = pmrem.fromScene(skyScene, 0, 0.1, 50)
+    scene.environment = next.texture
+    skyBaked?.dispose()
+    skyBaked = next
+  }
+  track({
+    dispose: () => {
+      skyBaked?.dispose()
+      pmrem?.dispose()
+    },
+  })
+  scene.environmentIntensity = 0.8
+  const sunDirection = new Vector3()
+
+  // ---- 雨と、濡れた路面の映り込み ----------------------------------------------
+  let rainLevel = 0
+  /** 走って流れた道の長さ（水たまりを道といっしょに流す） */
+  let shifted = 0
+  let reflections = !lite
+  let puddles: Reflector | null = null
+  let rainMaterial: ShaderMaterial | null = null
+  if (!lite) {
+    // 赤 = 水たまりのできる場所、緑と青 = 水面のゆらぎ
+    const pools = fbm(3, 3, 3, 101)
+    const waveA = fbm(18, 18, 2, 103)
+    const waveB = fbm(18, 18, 2, 107)
+    const maskData = new Uint8Array(FIELD * FIELD * 4)
+    for (let i = 0; i < FIELD * FIELD; i++) {
+      maskData[i * 4] = pools[i] * 255
+      maskData[i * 4 + 1] = waveA[i] * 255
+      maskData[i * 4 + 2] = waveB[i] * 255
+      maskData[i * 4 + 3] = 255
+    }
+    const maskTexture = track(new DataTexture(maskData, FIELD, FIELD))
+    maskTexture.wrapS = RepeatWrapping
+    maskTexture.wrapT = RepeatWrapping
+    maskTexture.magFilter = LinearFilter
+    maskTexture.minFilter = LinearFilter
+    maskTexture.needsUpdate = true
+
+    // 道と手前・奥の地面にうすく重ねて、景色を鏡のように映す
+    puddles = new Reflector(track(new PlaneGeometry(90, 9)), {
+      textureWidth: 960,
+      textureHeight: 540,
+      clipBias: 0.003,
+      multisample: 0,
+      shader: {
+        name: "PictorRunPuddles",
+        uniforms: {
+          color: { value: null },
+          tDiffuse: { value: null },
+          textureMatrix: { value: null },
+          tMask: { value: null },
+          uWet: { value: 0 },
+          uRain: { value: 0 },
+          uTime: { value: 0 },
+          uShift: { value: 0 },
+        },
+        vertexShader: `
+uniform mat4 textureMatrix;
+varying vec4 vMirror;
+varying vec3 vWorld;
+void main() {
+  vMirror = textureMatrix * vec4( position, 1.0 );
+  vec4 world = modelMatrix * vec4( position, 1.0 );
+  vWorld = world.xyz;
+  gl_Position = projectionMatrix * viewMatrix * world;
+}`,
+        fragmentShader: `
+uniform sampler2D tDiffuse;
+uniform sampler2D tMask;
+uniform float uWet;
+uniform float uRain;
+uniform float uTime;
+uniform float uShift;
+varying vec4 vMirror;
+varying vec3 vWorld;
+void main() {
+  vec2 p = vec2( vWorld.x + uShift, vWorld.z );
+  float onPath = 1.0 - smoothstep( 1.15, 1.3, abs( vWorld.z ) );
+  float puddle = smoothstep( 0.6 - uWet * 0.2, 0.74 - uWet * 0.2, texture2D( tMask, p * 0.11 ).r ) * mix( 0.55, 1.0, onPath );
+  vec2 wobble = texture2D( tMask, p * 0.22 + vec2( uTime * 0.02, uTime * 0.012 ) ).gb - 0.5;
+  // 雨つぶの波紋
+  vec2 grid = p * 2.6;
+  vec2 cell = floor( grid );
+  vec2 local = fract( grid ) - 0.5;
+  float seed = fract( sin( dot( cell, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 );
+  float phase = fract( uTime * ( 0.9 + seed * 0.6 ) + seed * 7.0 );
+  float ring = smoothstep( 0.05, 0.0, abs( length( local ) - phase * 0.42 ) ) * ( 1.0 - phase ) * uRain;
+  vec2 bend = wobble * ( 0.008 + 0.014 * ( 1.0 - puddle ) ) + normalize( local + 0.0001 ) * ring * 0.04;
+  vec3 view = normalize( cameraPosition - vWorld );
+  // 浅い角度で見るほど、よく映る
+  float fresnel = mix( 0.3, 1.0, pow( 1.0 - clamp( view.y, 0.0, 1.0 ), 3.0 ) );
+  vec4 uv = vMirror;
+  uv.xy += bend * uv.w;
+  vec3 mirror = texture2DProj( tDiffuse, uv ).rgb;
+  float alpha = uWet * fresnel * mix( mix( 0.06, 0.42, onPath ), 0.92, puddle );
+  gl_FragColor = vec4( mirror + ring * 0.12, alpha );
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}`,
+      },
+    })
+    const puddleMaterial = puddles.material as ShaderMaterial
+    puddleMaterial.uniforms.tMask.value = maskTexture
+    puddleMaterial.transparent = true
+    puddleMaterial.depthWrite = false
+    track(puddleMaterial)
+    track(puddles.getRenderTarget())
+    puddles.rotation.x = -Math.PI / 2
+    puddles.position.set(14, 0.012, -1.9)
+    puddles.visible = false
+    scene.add(puddles)
+
+    // 雨すじ（位置は画面を描くときに計算するので、数が多くても軽い）
+    const streaks = 900
+    const rainPositions = new Float32Array(streaks * 6)
+    const rainEnds = new Float32Array(streaks * 2)
+    const rainSeeds = new Float32Array(streaks * 2)
+    for (let i = 0; i < streaks; i++) {
+      const x = -12 + random() * 42
+      const y = random() * 13
+      const z = -9 + random() * 16
+      const seed = random()
+      for (let end = 0; end < 2; end++) {
+        rainPositions.set([x, y, z], (i * 2 + end) * 3)
+        rainEnds[i * 2 + end] = end
+        rainSeeds[i * 2 + end] = seed
+      }
+    }
+    const rainGeometry = track(new BufferGeometry())
+    rainGeometry.setAttribute("position", new BufferAttribute(rainPositions, 3))
+    rainGeometry.setAttribute("aEnd", new BufferAttribute(rainEnds, 1))
+    rainGeometry.setAttribute("aSeed", new BufferAttribute(rainSeeds, 1))
+    rainMaterial = track(
+      new ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        uniforms: { uTime: { value: 0 }, uRain: { value: 0 } },
+        vertexShader: `
+attribute float aEnd;
+attribute float aSeed;
+uniform float uTime;
+uniform float uRain;
+varying float vAlpha;
+void main() {
+  vec3 p = position;
+  p.y = mod( position.y - uTime * ( 15.0 + aSeed * 9.0 ), 13.0 );
+  p.y += ( 0.35 + aSeed * 0.4 ) * aEnd;
+  // 風で少しななめに降る
+  p.x += ( p.y - 6.0 ) * 0.2;
+  // 弱い雨では、すじの数を減らす
+  vAlpha = step( aSeed, uRain ) * ( 0.25 + aSeed * 0.3 ) * ( 0.4 + 0.6 * aEnd );
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( p, 1.0 );
+}`,
+        fragmentShader: `
+varying float vAlpha;
+void main() {
+  gl_FragColor = vec4( 0.82, 0.88, 1.0, vAlpha );
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}`,
+      }),
+    )
+    const rain = new LineSegments(rainGeometry, rainMaterial)
+    rain.frustumCulled = false
+    rain.renderOrder = 5
+    scene.add(rain)
+  }
 
   // ---- 道ばたのもの（ステージごとに形を入れ替える） ----------------------------
   /** いま置いていくものが、どのステージのものか */
@@ -3888,6 +4271,7 @@ float surfHeight = 0.0;`,
   )
   const lampGlowGeometry = track(new PlaneGeometry(2.4, 2.4))
   const lampMeshes: Mesh[] = []
+  const lampLights: PointLight[] = []
   const lampCount = lite ? 3 : 4
   for (let i = 0; i < lampCount; i++) {
     const lamp = new Group()
@@ -3897,6 +4281,13 @@ float surfHeight = 0.0;`,
     const glow = new Mesh(lampGlowGeometry, lampGlowMaterial)
     glow.position.set(LAMP_BULB[0], LAMP_BULB[1], 0.1)
     lamp.add(glow)
+    if (!lite) {
+      // 夜は、まわりの地面やものを照らす
+      const light = new PointLight(0xffe2a0, 0, 9, 2)
+      light.position.set(LAMP_BULB[0], LAMP_BULB[1] - 0.15, 0.35)
+      lamp.add(light)
+      lampLights.push(light)
+    }
     lamp.position.set(-14 + (i * SPAN) / lampCount, 0, -1.9)
     scroll(lamp, 1, SPAN, -20, () => {
       post.geometry = propsOf(propTheme).lamp
@@ -4232,15 +4623,52 @@ float surfHeight = 0.0;`,
     skyColors.needsUpdate = true
 
     lights.sun.color.copy(lerpColor(a.sunLight, b.sunLight, t))
-    lights.sun.intensity = mix(a.sunPower, b.sunPower)
     lights.ambient.color.copy(lerpColor(a.ambient, b.ambient, t))
-    lights.ambient.intensity = mix(a.ambientPower, b.ambientPower)
+    // 太陽（月）の高さに合わせて、光のさす角度を変える（低いほど影が長い）
+    const elevation =
+      ((20 + 40 * Math.min(1, Math.max(0, mix(a.height, b.height)))) *
+        Math.PI) /
+      180
+    sunDirection.set(
+      -Math.sin(0.46) * Math.cos(elevation),
+      Math.sin(elevation),
+      Math.cos(0.46) * Math.cos(elevation),
+    )
+    lights.sun.position
+      .copy(lights.sun.target.position)
+      .addScaledVector(sunDirection, 28)
+    const lampPower = mix(a.lamp, b.lamp)
+    const weatherA = WEATHER[index]
+    const weatherB = WEATHER[(index + 1) % WEATHER.length]
+    rainLevel = mix(weatherA.rain, weatherB.rain)
+    wetUniform.value = lite ? 0 : mix(weatherA.wet, weatherB.wet)
+    glowUniform.value = lampPower * 2.4
+    for (const light of lampLights) light.intensity = lampPower * 12
+    if (pmrem) {
+      // 空からの光は、焼いた空の画像が受け持つ
+      lights.sun.intensity = mix(a.sunPower, b.sunPower) * 1.5
+      lights.ambient.intensity =
+        mix(a.ambientPower, b.ambientPower) * (0.22 + lampPower * 0.6)
+      skyLight.top.value.copy(lerpColor(a.sky[0], b.sky[0], t))
+      skyLight.mid.value.copy(lerpColor(a.sky[1], b.sky[1], t))
+      skyLight.low.value.copy(lerpColor(a.sky[2], b.sky[2], t))
+      skyLight.ground.value.copy(lerpColor(a.ground, b.ground, t))
+      skyLight.sunColor.value
+        .copy(lights.sun.color)
+        .multiplyScalar(lights.sun.intensity * 0.5)
+      skyLight.sunDir.value.copy(sunDirection)
+      bakeSky(`${index}:${Math.round(t * 5)}`)
+    } else {
+      lights.sun.intensity = mix(a.sunPower, b.sunPower)
+      lights.ambient.intensity = mix(a.ambientPower, b.ambientPower)
+    }
     farMaterial.color.copy(lerpColor(a.far, b.far, t))
     nearMaterial.color.copy(lerpColor(a.near, b.near, t))
     cloudMaterial.color.copy(lerpColor(a.cloud, b.cloud, t))
+    cloudMaterial.emissive.copy(cloudMaterial.color).multiplyScalar(0.35)
     cloudMaterial.opacity = mix(a.cloudAlpha, b.cloudAlpha)
     starMaterial.opacity = mix(a.stars, b.stars)
-    lampGlowMaterial.opacity = mix(a.lamp, b.lamp) * 0.55
+    lampGlowMaterial.opacity = lampPower * 0.55
     groundMaterial.color.copy(lerpColor(a.ground, b.ground, t))
     edgeMaterial.color.copy(groundMaterial.color)
     hillMaterials[0].color.copy(lerpColor(a.hills[0], b.hills[0], t))
@@ -4359,6 +4787,19 @@ float surfHeight = 0.0;`,
       waterTexture.offset.x = (waterTexture.offset.x + move / 8 + dt * 0.02) % 1
       waterTexture.offset.y = (waterTexture.offset.y + dt * 0.03) % 1
 
+      shifted = (shifted + move) % 1000
+      if (puddles && rainMaterial) {
+        const wet = wetUniform.value
+        puddles.visible = reflections && wet > 0.02
+        const uniforms = (puddles.material as ShaderMaterial).uniforms
+        uniforms.uWet.value = wet
+        uniforms.uRain.value = rainLevel
+        uniforms.uTime.value = time
+        uniforms.uShift.value = shifted
+        rainMaterial.uniforms.uTime.value = time
+        rainMaterial.uniforms.uRain.value = rainLevel
+      }
+
       mistTexture.offset.x = (mistTexture.offset.x + move / 90 + dt * 0.006) % 1
       shaftMaterial.opacity = shaftPower * (0.78 + Math.sin(time * 0.7) * 0.22)
       for (const flyer of flyers) {
@@ -4417,6 +4858,10 @@ float surfHeight = 0.0;`,
     },
     warp,
     setArtworks,
+    rain: () => rainLevel,
+    setReflections: (on) => {
+      reflections = on
+    },
     dispose: () => {
       disposed = true
     },
