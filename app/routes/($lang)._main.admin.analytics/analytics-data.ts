@@ -42,12 +42,61 @@ export type AnalyticsDay = {
       bySection: Record<string, number>
     }
   } | null
+  costs?: {
+    fxUsdJpy: number
+    jpy: number
+    items: Partial<Record<CostKey, { jpy: number; usd?: number }>>
+    errors: string[]
+  } | null
   errors: string[]
+}
+
+export type CostKey = "cloudflare" | "runpod" | "google" | "openai"
+
+export const COST_KEYS: CostKey[] = ["runpod", "cloudflare", "google", "openai"]
+
+export const COST_LABELS: Record<CostKey, string> = {
+  runpod: "RunPod（生成 GPU）",
+  cloudflare: "Cloudflare",
+  google: "Google（Gemini）",
+  openai: "OpenAI",
+}
+
+/** aipictors-api の /internal/analytics/pnl */
+export type ProfitAndLoss = {
+  at: number
+  today: {
+    day: string
+    revenue: number
+    costs: Record<CostKey, number>
+    costTotal: number
+    profit: number
+    fxUsdJpy: number
+    errors: string[]
+  }
+  month: {
+    from: string
+    revenue: number
+    costs: Record<CostKey, number>
+    costTotal: number
+    profit: number
+    elapsedDays: number
+    daysInMonth: number
+    daysWithCosts: number
+    storedDays: number
+    projectedProfit: number | null
+  }
+  recent?: {
+    days: number
+    dailyProfit: number | null
+    monthlyProfit: number | null
+  }
 }
 
 export type AnalyticsResponse = {
   days: AnalyticsDay[]
   current: { subscriptions: PlanCounts; at: number }
+  pnl?: ProfitAndLoss | null
 }
 
 /** Web（Stripe）の月額。App Store は別料金だが件数が少ないので同じ額で見積もる */

@@ -19,12 +19,15 @@ import { AnalyticsChart } from "./analytics-chart"
 import {
   type AnalyticsDay,
   type AnalyticsResponse,
+  COST_KEYS,
+  COST_LABELS,
   changeRate,
   formatCount,
   formatYen,
   mergeCounts,
   monthlyRevenue,
   PLAN_LABELS,
+  type ProfitAndLoss,
   type RankedItem,
   SECTION_LABELS,
   SOURCE_LABELS,
@@ -33,7 +36,7 @@ import {
 
 const TITLE = "分析"
 const DESCRIPTION =
-  "サブスク・コイン・Stripe の売上、生成数、ページ表示と流入元を日別に見られます。数字は毎日 00:30 に前日分を保存しています。"
+  "収支（売上と Cloudflare・RunPod・Google・OpenAI の費用）、サブスク・コイン・Stripe の売上、生成数、ページ表示と流入元を日別に見られます。数字は毎日 00:30 に前日分を保存しています。"
 
 const RANGES = [30, 90, 180] as const
 
@@ -52,6 +55,11 @@ const COLORS = {
   cfPageViews: "#94a3b8",
   generations: "#c084fc",
   users: "#4ade80",
+  runpod: "#f472b6",
+  cloudflare: "#f97316",
+  google: "#60a5fa",
+  openai: "#a3e635",
+  profit: "#34d399",
 }
 
 const viewerQuery = gql`
@@ -214,6 +222,7 @@ function AnalyticsBody(props: { data: AnalyticsResponse; range: number }) {
 
   return (
     <div className="space-y-6">
+      <ProfitSection pnl={props.data.pnl ?? null} days={days} />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi
           label="有効会員（今）"
@@ -481,17 +490,150 @@ function summarize(days: AnalyticsDay[]) {
   }
 }
 
+const signedYen = (value: number) =>
+  `${value < 0 ? "-" : value > 0 ? "+" : ""}${formatYen(Math.abs(value))}`
+
+const profitClass = (value: number) =>
+  value >= 0 ? "text-emerald-300" : "text-rose-300"
+
+/**
+ * 収支: 売上（Stripe の手数料・返金を引いた入金）から各サービスの実際の費用を引く
+ * 今日の分と今月の分はページを開いたときに aipictors-api が各社の API に聞く（10 分キャッシュ）
+ */
+function ProfitSection(props: {
+  pnl: ProfitAndLoss | null
+  days: AnalyticsDay[]
+}) {
+  const costDays = props.days.filter((day) => day.costs)
+  const labels = costDays.map((day) => day.day)
+  const { pnl } = props
+  const updatedAt = pnl
+    ? new Date(pnl.at * 1000).toLocaleTimeString("ja-JP", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : null
+  return (
+    <div className="space-y-4">
+      {pnl ? (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Kpi
+            label={`今日の収支（${updatedAt} 時点）`}
+            value={signedYen(pnl.today.profit)}
+            detail={`売上 ${formatYen(pnl.today.revenue)} − 費用 ${formatYen(pnl.today.costTotal)}`}
+            valueClassName={profitClass(pnl.today.profit)}
+          />
+          <Kpi
+            label={`今月の収支（${pnl.month.from.slice(5).replace("-", "/")} から）`}
+            value={signedYen(pnl.month.profit)}
+            detail={`売上 ${formatYen(pnl.month.revenue)} − 費用 ${formatYen(pnl.month.costTotal)}`}
+            valueClassName={profitClass(pnl.month.profit)}
+          />
+          <Kpi
+            label="月末の見込み"
+            value={
+              pnl.month.projectedProfit === null
+                ? "-"
+                : signedYen(pnl.month.projectedProfit)
+            }
+            detail={`今月の ${pnl.month.elapsedDays.toFixed(1)} 日分を ${pnl.month.daysInMonth} 日に伸ばした値${
+              pnl.recent?.monthlyProfit != null
+                ? `。直近 ${pnl.recent.days} 日のペースなら月 ${signedYen(pnl.recent.monthlyProfit)}`
+                : ""
+            }`}
+            valueClassName={
+              pnl.month.projectedProfit === null
+                ? undefined
+                : profitClass(pnl.month.projectedProfit)
+            }
+          />
+          <Card className={CARD}>
+            <CardContent className="space-y-1 py-5 text-sm">
+              <p className="text-slate-400 text-xs">今月の費用の内訳</p>
+              {COST_KEYS.map((key) => (
+                <div key={key} className="flex justify-between gap-2">
+                  <span className="text-slate-300">{COST_LABELS[key]}</span>
+                  <span>{formatYen(pnl.month.costs[key] ?? 0)}</span>
+                </div>
+              ))}
+              <p className="pt-1 text-slate-500 text-xs">
+                1 ドル {pnl.today.fxUsdJpy.toFixed(1)} 円
+                {pnl.month.daysWithCosts < pnl.month.storedDays &&
+                  `・費用は ${pnl.month.storedDays - pnl.month.daysWithCosts} 日分が未集計`}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <Alert className={CARD}>
+          <AlertDescription className="text-slate-300">
+            今日・今月の収支を読み込めませんでした（各社の請求 API
+            の応答待ちか失敗）。日別の数字は下に出ています。
+          </AlertDescription>
+        </Alert>
+      )}
+      {pnl && pnl.today.errors.length > 0 && (
+        <p className="text-amber-300 text-xs">
+          取れなかった費用: {pnl.today.errors.join(" / ")}
+        </p>
+      )}
+      {costDays.length > 0 && (
+        <div className="grid gap-6 xl:grid-cols-2">
+          <ChartCard
+            title="収支（日別）"
+            description="売上（Stripe の入金。手数料・返金を引いた額）から費用を引いた額。App Store・Google Play の売上は入りません"
+          >
+            <AnalyticsChart
+              type="bar"
+              labels={labels}
+              series={[
+                {
+                  label: "収支",
+                  color: COLORS.profit,
+                  values: costDays.map(
+                    (d) => (d.stripe?.net ?? 0) - (d.costs?.jpy ?? 0),
+                  ),
+                },
+              ]}
+              format={signedYen}
+            />
+          </ChartCard>
+          <ChartCard
+            title="費用（日別・サービス別）"
+            description="RunPod・OpenAI・Google は請求の実額、Cloudflare は使用量 × 定価（無料枠を日割りで引く）＋契約の日割り"
+          >
+            <AnalyticsChart
+              type="bar"
+              stacked
+              labels={labels}
+              series={COST_KEYS.map((key) => ({
+                label: COST_LABELS[key],
+                color: COLORS[key],
+                values: costDays.map((d) => d.costs?.items?.[key]?.jpy ?? 0),
+              }))}
+              format={formatYen}
+            />
+          </ChartCard>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Kpi(props: {
   label: string
   value: string
   detail?: string
   change?: number | null
+  valueClassName?: string
 }) {
   return (
     <Card className={CARD}>
       <CardContent className="space-y-1 py-5">
         <p className="text-slate-400 text-xs">{props.label}</p>
-        <p className="font-bold text-2xl">{props.value}</p>
+        <p className={`font-bold text-2xl ${props.valueClassName ?? ""}`}>
+          {props.value}
+        </p>
         {props.change !== undefined && props.change !== null && (
           <p
             className={`text-xs ${props.change >= 0 ? "text-emerald-300" : "text-rose-300"}`}
