@@ -19,10 +19,38 @@ export function getSdEndpoints(context: unknown): string[] {
 }
 
 // cron-gpu-night が KV に書く。夜だけ動く GPU と、無料用の GPU を安いものに置き換えたときの行き先
-const EXTRA_ENDPOINT_KEYS = ["gpu:night-endpoint", "gpu:free-endpoint"]
+const NIGHT_ENDPOINT_KEY = "gpu:night-endpoint"
+const FREE_ENDPOINT_KEY = "gpu:free-endpoint"
 const EXTRA_ENDPOINT_CACHE_MS = 60_000
 
-let extraEndpointCache: { urls: string[]; at: number } | null = null
+let extraEndpointCache: {
+  night: string | null
+  free: string | null
+  at: number
+} | null = null
+
+/**
+ * 常設の一覧に KV の行き先を反映する。
+ * 無料用の GPU の置き換え先は、先頭（無料用の 1 台、生成ワーカーの instance 0）と入れ替える。
+ * 置き換えたあと元の GPU は止めるので、足すと止まった 1 台を数えて「一部停止中」になっていた
+ */
+export function mergeSdEndpoints(
+  endpoints: string[],
+  extra: { night: string | null; free: string | null },
+): string[] {
+  const merged = [...endpoints]
+  if (extra.free !== null && !merged.includes(extra.free)) {
+    if (merged.length > 0) {
+      merged[0] = extra.free
+    } else {
+      merged.push(extra.free)
+    }
+  }
+  if (extra.night !== null && !merged.includes(extra.night)) {
+    merged.push(extra.night)
+  }
+  return merged
+}
 
 type KvLike = { get(key: string): Promise<string | null> }
 
@@ -40,19 +68,16 @@ export async function getActiveSdEndpoints(
     ) {
       const kv = (context as { cloudflare?: { env?: { PAGE_CACHE?: KvLike } } })
         ?.cloudflare?.env?.PAGE_CACHE
-      const urls = await Promise.all(
-        EXTRA_ENDPOINT_KEYS.map(async (key) => (await kv?.get(key)) ?? null),
+      const [night, free] = await Promise.all(
+        [NIGHT_ENDPOINT_KEY, FREE_ENDPOINT_KEY].map(async (key) => {
+          const url = (await kv?.get(key)) ?? null
+          return url === null ? null : url.trim().replace(/\/+$/, "") || null
+        }),
       )
-      extraEndpointCache = {
-        urls: urls.filter((url): url is string => url !== null),
-        at: Date.now(),
-      }
+      extraEndpointCache = { night, free, at: Date.now() }
     }
   } catch {
     return endpoints
   }
-  const extra = extraEndpointCache.urls.filter(
-    (url) => !endpoints.includes(url),
-  )
-  return extra.length > 0 ? [...endpoints, ...new Set(extra)] : endpoints
+  return mergeSdEndpoints(endpoints, extraEndpointCache)
 }
