@@ -643,7 +643,6 @@ function UsersSection(props: {
   const visitorDays = days.filter((day) => day.cloudflare?.visitors)
   const latestVisitors = visitorDays.at(-1)?.cloudflare?.visitors ?? null
   const monthLabels = months.map((month) => month.month)
-  const thisMonth = months.at(-1)
 
   if (!latest?.users) {
     return (
@@ -705,12 +704,11 @@ function UsersSection(props: {
           }
           detail={
             latestVisitors
-              ? `日本 ${formatCount(latestVisitors.jp)}（${formatPercent(latestVisitors.jp, latestVisitors.total)}）・海外 ${formatCount(latestVisitors.total - latestVisitors.jp)}。うちログイン中 ${formatCount(latestVisitors.loggedIn.total)}・初めて ${formatCount(latestVisitors.newcomers.total)}`
+              ? `日本 ${formatCount(latestVisitors.jp)}（${formatPercent(latestVisitors.jp, latestVisitors.total)}）・海外 ${formatCount(latestVisitors.total - latestVisitors.jp)}`
               : pvTotal > 0
-                ? `海外 ${formatPercent(pvTotal - pvJp, pvTotal)}。ブラウザで開いた表示（2026/11/06 から）`
+                ? `海外 ${formatPercent(pvTotal - pvJp, pvTotal)}。ブラウザで開いた表示`
                 : "2026/11/06 から計測"
           }
-          wide
         />
       </KpiGrid>
       <ChartGrid>
@@ -880,7 +878,7 @@ function UsersSection(props: {
       {months.length > 0 && (
         <>
           <h3 className="pt-2 font-bold text-slate-300 text-sm">
-            サービス開始からの推移（月別）
+            サービス開始からの推移（月別。今月は途中までの数字）
           </h3>
           <ChartGrid>
             <ChartCard
@@ -900,14 +898,7 @@ function UsersSection(props: {
                 format={(value) => `${formatCount(value)} 人`}
               />
             </ChartCard>
-            <ChartCard
-              title="新規登録（月別）"
-              description={
-                thisMonth
-                  ? `今月（${shortMonth(thisMonth.month)}）は途中までの数字`
-                  : undefined
-              }
-            >
+            <ChartCard title="新規登録（月別）">
               <AnalyticsChart
                 type="bar"
                 labels={monthLabels}

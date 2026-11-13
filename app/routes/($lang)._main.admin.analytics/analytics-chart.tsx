@@ -192,20 +192,31 @@ export function AnalyticsChart(props: Props) {
                 return rect
               })
             })
-          : stackLines(props.series, props.stacked).map((series) => (
-              <polyline
-                key={series.label}
-                fill="none"
-                stroke={series.color}
-                strokeWidth={2}
-                points={series.values
-                  .map((value, index) =>
-                    value === null ? null : `${x(index)},${y(value)}`,
-                  )
-                  .filter(Boolean)
-                  .join(" ")}
-              />
-            ))}
+          : stackLines(props.series, props.stacked).map((series) => {
+              const points = series.values.flatMap((value, index) =>
+                value === null ? [] : [{ x: x(index), y: y(value) }],
+              )
+              // 1 日分しかないときは線にならないので点で出す（記録を始めたばかりの数字）
+              return points.length === 1 ? (
+                <circle
+                  key={series.label}
+                  cx={points[0].x}
+                  cy={points[0].y}
+                  r={3}
+                  fill={series.color}
+                />
+              ) : (
+                <polyline
+                  key={series.label}
+                  fill="none"
+                  stroke={series.color}
+                  strokeWidth={2}
+                  points={points
+                    .map((point) => `${point.x},${point.y}`)
+                    .join(" ")}
+                />
+              )
+            })}
         {hover !== null && (
           <line
             x1={x(hover)}
