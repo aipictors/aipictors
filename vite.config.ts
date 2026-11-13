@@ -95,6 +95,8 @@ export default defineConfig({
   ],
   define: {
     VITE_VERSION: JSON.stringify(process.env.npm_package_version),
+    // Apollo Client の開発時だけの確認・警告のコードを本番の JS から外す（全ページで読む entry.client が小さくなる）
+    "globalThis.__DEV__": JSON.stringify(process.env.NODE_ENV !== "production"),
   },
   build: {
     rollupOptions: {
