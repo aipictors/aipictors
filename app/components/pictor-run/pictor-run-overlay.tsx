@@ -57,7 +57,8 @@ const readBest = () => {
   }
 }
 
-const DEFAULT_SOUND: PictorRunSound = { bgm: 0.6, sfx: 0.8, muted: false }
+// 開いたときにいきなり鳴らさない（音を出すボタンを押してもらう）
+const DEFAULT_SOUND: PictorRunSound = { bgm: 0.6, sfx: 0.8, muted: true }
 
 const toVolume = (value: unknown, fallback: number) =>
   typeof value === "number" && Number.isFinite(value)
@@ -73,7 +74,7 @@ const readSound = (): PictorRunSound => {
     return {
       bgm: toVolume(saved.bgm, DEFAULT_SOUND.bgm),
       sfx: toVolume(saved.sfx, DEFAULT_SOUND.sfx),
-      muted: saved.muted === true,
+      muted: saved.muted !== false,
     }
   } catch {
     return DEFAULT_SOUND
@@ -535,6 +536,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         : t("軽量モード: オフ", "Lite mode: off")}
     </button>
   )
+  // 音が出ていない間は、大きく目立たせる
   const soundButton = (
     <button
       type="button"
@@ -544,18 +546,20 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
       }}
       aria-pressed={!sound.muted}
       className={cn(
-        "pointer-events-auto flex h-9 cursor-pointer items-center gap-1.5 rounded-full px-4 font-bold text-xs shadow-sm transition-colors",
+        "pointer-events-auto flex cursor-pointer items-center rounded-full font-bold shadow-sm transition-colors",
         sound.muted
-          ? "bg-slate-700/80 text-white hover:bg-slate-700"
-          : "bg-white/85 text-slate-700 hover:bg-white",
+          ? "h-12 gap-2 bg-clear-bright-blue px-6 text-base text-white shadow-lg ring-4 ring-white/70 hover:opacity-90"
+          : "h-9 gap-1.5 bg-white/85 px-4 text-slate-700 text-xs hover:bg-white",
       )}
     >
       {sound.muted ? (
-        <VolumeXIcon aria-hidden="true" className="size-4" />
+        <VolumeXIcon aria-hidden="true" className="size-5" />
       ) : (
         <Volume2Icon aria-hidden="true" className="size-4" />
       )}
-      {sound.muted ? t("音: オフ", "Sound: off") : t("音: オン", "Sound: on")}
+      {sound.muted
+        ? t("音を出す（BGM・効果音）", "Turn sound on")
+        : t("音: オン", "Sound: on")}
     </button>
   )
   const isPlaying = phase === "running" || phase === "paused"
@@ -700,7 +704,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             }}
             aria-label={t("音量と設定", "Sound and settings")}
             aria-expanded={isSettingsOpen}
-            className={cn(HUD_BUTTON, isSettingsOpen && "bg-white")}
+            className={cn(
+              HUD_BUTTON,
+              isSettingsOpen && "bg-white",
+              sound.muted &&
+                "bg-clear-bright-blue text-white hover:bg-clear-bright-blue",
+            )}
           >
             {sound.muted ? (
               <VolumeXIcon aria-hidden="true" className="size-5" />
@@ -904,9 +913,12 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 `${PICTOR_RUN_STAGES.length} stages · reached ${Math.min(bestStage, PICTOR_RUN_STAGES.length)}`,
               )}
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {soundButton}
-              {liteButton}
+            <div className="flex flex-col items-center gap-3">
+              {sound.muted && soundButton}
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {!sound.muted && soundButton}
+                {liteButton}
+              </div>
             </div>
           </div>
         )}
@@ -1030,8 +1042,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           className={cn(
             "flex select-text flex-col bg-white shadow-2xl",
             isDesktop
-              ? "relative h-full w-[360px] shrink-0 border-l"
-              : "absolute inset-x-0 bottom-0 h-[72dvh] rounded-t-3xl",
+              ? "relative h-full w-[380px] shrink-0 border-l"
+              : "absolute inset-x-0 bottom-0 h-[82dvh] overflow-hidden rounded-t-3xl",
           )}
         >
           <div className="flex items-center gap-1 border-b px-2 py-2">
