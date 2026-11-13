@@ -47,6 +47,7 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js"
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js"
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js"
+import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js"
 import {
   createPictorRunAudio,
   type PictorRunSound,
@@ -57,7 +58,10 @@ import {
   createPictorRunStage,
   grainCanvas,
 } from "~/components/pictor-run/pictor-run-stage.client"
-import { toPictorRunStage } from "~/components/pictor-run/pictor-run-stages"
+import {
+  PICTOR_RUN_STAGE_LENGTH,
+  toPictorRunStage,
+} from "~/components/pictor-run/pictor-run-stages"
 
 /**
  * 404 ページの隠しゲーム「ぴくたーちゃんラン」の本体。
@@ -75,6 +79,24 @@ export type PictorRunCallbacks = {
   onGameOver: (score: number, coins: number, durationMs: number) => void
   /** 持っているアイテムが変わった */
   onItems: (items: PictorRunItems) => void
+  /** ロビーで、看板の近くに来た・離れた */
+  onLobbyNear: (action: PictorRunLobbyAction | null) => void
+  /** ロビーで動いた（f = 向き。1 が右） */
+  onLobbyMove: (x: number, y: number, f: number) => void
+}
+
+/** ロビーの看板でできること */
+export type PictorRunLobbyAction = "start" | "ranking" | "chat"
+
+/** ロビーに出すほかの人（playing = いま走っている人。薄い姿でうしろに立つ） */
+export type PictorRunPeer = {
+  key: number
+  name: string
+  iconUrl: string | null
+  playing: boolean
+  x: number
+  y: number
+  f: number
 }
 
 /** 持っているアイテム（magnet・star は残りの秒数） */
@@ -106,12 +128,20 @@ export type PictorRunGame = {
   playSound: (name: PictorRunSoundName) => void
   /** 最初から走り直す */
   restart: () => void
+  /** ロビー（休憩場）に入る */
+  enterLobby: () => void
+  /** ロビーで、画面のボタンから左右に動かす（-1〜1） */
+  setLobbyInput: (axis: number) => void
+  /** ロビーで、画面のボタンから跳ぶ */
+  jump: () => void
+  /** ロビーにいる人・いま走っている人 */
+  setPeers: (peers: PictorRunPeer[]) => void
   /** 一時停止（止めている間も画面は描く） */
   setPaused: (paused: boolean) => void
   dispose: () => void
 }
 
-type State = "ready" | "running" | "over"
+type State = "ready" | "running" | "over" | "lobby"
 
 type ObstacleKind = "block" | "tower" | "card" | "bug"
 
@@ -1067,6 +1097,414 @@ export async function createPictorRunGame(
     }
   }
 
+  // ---- ロビー（休憩場）。ぴくたーちゃんを左右に動かして歩ける -----------------------
+  const LOBBY_MIN = -3
+  const LOBBY_MAX = 22
+  /** ロビーの景色にするステージ（さくら並木のまん中） */
+  const LOBBY_DISTANCE = PICTOR_RUN_STAGE_LENGTH + 30
+  let lobbyX = 0
+  let lobbySpeed = 0
+  let lobbyFacing = 1
+  /** 画面のボタンからの左右（-1〜1） */
+  let lobbyAxis = 0
+  let keyLeft = false
+  let keyRight = false
+  /** ロビーで、カメラを横に動かしている量 */
+  let lobbyCamera = 0
+  let lobbyNear: PictorRunLobbyAction | null = null
+  const lobbySent = { x: 0, y: 0, f: 1 }
+  const lobbyGroup = new Group()
+  lobbyGroup.visible = false
+  scene.add(lobbyGroup)
+  const LOBBY_SIGNS: {
+    action: PictorRunLobbyAction | null
+    x: number
+    icon: string
+    title: string
+    sub: string
+    color: string
+  }[] = [
+    {
+      action: null,
+      x: 1.6,
+      icon: "☕",
+      title: "ロビー",
+      sub: "ひとやすみ",
+      color: "#8a5a3c",
+    },
+    {
+      action: "start",
+      x: 7,
+      icon: "🏃",
+      title: "もういちど走る",
+      sub: "ここからスタート",
+      color: "#ff8a1f",
+    },
+    {
+      action: "ranking",
+      x: 12.5,
+      icon: "🏆",
+      title: "ランキング",
+      sub: "今週の記録を見る",
+      color: "#e0a800",
+    },
+    {
+      action: "chat",
+      x: 18,
+      icon: "💬",
+      title: "チャット",
+      sub: "みんなと話す",
+      color: "#2d6cdf",
+    },
+  ]
+  for (const item of LOBBY_SIGNS) {
+    const texture = track(
+      canvasTexture(340, 170, (ctx) => {
+        ctx.fillStyle = item.color
+        roundRect(ctx, 2, 2, 336, 166, 26)
+        ctx.fill()
+        ctx.fillStyle = "#fffdf6"
+        roundRect(ctx, 10, 10, 320, 150, 20)
+        ctx.fill()
+        ctx.textBaseline = "middle"
+        ctx.textAlign = "center"
+        ctx.font = "76px system-ui, sans-serif"
+        ctx.fillText(item.icon, 68, 90)
+        ctx.textAlign = "left"
+        ctx.fillStyle = "#1c2340"
+        ctx.font = "900 32px system-ui, sans-serif"
+        ctx.fillText(item.title, 126, 66, 196)
+        ctx.fillStyle = "#3a4468"
+        ctx.font = "700 22px system-ui, sans-serif"
+        ctx.fillText(item.sub, 126, 110, 196)
+      }),
+    )
+    const sign = new Group()
+    const pole = new Mesh(signPoleGeometry, signPoleMaterial)
+    pole.position.y = 1.2
+    pole.castShadow = shadows
+    const board = new Mesh(
+      signBoardGeometry,
+      track(
+        new MeshBasicMaterial({ map: texture, transparent: true, fog: false }),
+      ),
+    )
+    board.position.set(0, 2.9, 0.05)
+    sign.add(pole, board)
+    sign.position.set(item.x, 0, -1.48)
+    lobbyGroup.add(sign)
+  }
+
+  // ロビーにいるほかの人・いま走っている人（走っている人は薄い姿で、うしろに立つ）
+  const MAX_AVATARS = 10
+  type Avatar = {
+    root: Group
+    turn: Group
+    fit: Group
+    model: Object3D
+    hip: Object3D | null
+    mixer: AnimationMixer
+    actions: Record<"idle" | "run" | "jump", AnimationAction>
+    clip: "idle" | "run" | "jump"
+    materials: Material[]
+    label: Sprite
+    labelTexture: CanvasTexture
+    labelKey: string
+    /** つながっている相手の番号（空きは null） */
+    peer: number | null
+    ghost: boolean
+    x: number
+    y: number
+    targetX: number
+    targetY: number
+    f: number
+  }
+  const avatars: Avatar[] = []
+  let peerList: PictorRunPeer[] = []
+  const makeAvatar = (): Avatar => {
+    const copy = cloneSkinned(model)
+    const materials: Material[] = []
+    copy.traverse((object) => {
+      if (!(object instanceof SkinnedMesh)) return
+      // 薄さを人ごとに変えられるように、素材は 1 人ずつ持つ
+      const material = track((object.material as Material).clone())
+      object.material = material
+      object.castShadow = false
+      object.frustumCulled = false
+      materials.push(material)
+    })
+    const avatarFit = new Group()
+    avatarFit.rotation.copy(fit.rotation)
+    avatarFit.scale.copy(fit.scale)
+    avatarFit.position.copy(fit.position)
+    avatarFit.add(copy)
+    const lift = new Group()
+    lift.position.y = 0.5
+    lift.add(avatarFit)
+    const turn = new Group()
+    turn.scale.setScalar(MODEL_SCALE * 0.94)
+    turn.add(lift)
+    const labelTexture = track(canvasTexture(288, 72, () => {}))
+    const label = new Sprite(
+      track(
+        new SpriteMaterial({
+          map: labelTexture,
+          transparent: true,
+          depthTest: false,
+          fog: false,
+        }),
+      ),
+    )
+    label.scale.set(1.9, 0.475, 1)
+    label.position.y = 2.15
+    label.renderOrder = 15
+    const root = new Group()
+    root.add(turn, label)
+    root.visible = false
+    scene.add(root)
+    const avatarMixer = new AnimationMixer(copy)
+    const clip = (name: ClipName) => {
+      const found = AnimationClip.findByName(gltf.animations, name)
+      if (!found) throw new Error(`animation not found: ${name}`)
+      return avatarMixer.clipAction(found)
+    }
+    const avatarActions = {
+      idle: clip("idle"),
+      run: clip("run"),
+      jump: clip("jump"),
+    }
+    avatarActions.jump.paused = true
+    avatarActions.idle.play()
+    return {
+      root,
+      turn,
+      fit: avatarFit,
+      model: copy,
+      hip: copy.getObjectByName("Hip") ?? null,
+      mixer: avatarMixer,
+      actions: avatarActions,
+      clip: "idle",
+      materials,
+      label,
+      labelTexture,
+      labelKey: "",
+      peer: null,
+      ghost: false,
+      x: 0,
+      y: 0,
+      targetX: 0,
+      targetY: 0,
+      f: 1,
+    }
+  }
+  const drawLabel = (avatar: Avatar, peer: PictorRunPeer) => {
+    const key = `${peer.name}|${peer.iconUrl}|${peer.playing}`
+    if (key === avatar.labelKey) return
+    avatar.labelKey = key
+    const canvas = avatar.labelTexture.image as HTMLCanvasElement
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+    const paint = (icon: HTMLImageElement | null) => {
+      ctx.clearRect(0, 0, 288, 72)
+      ctx.font = "800 26px system-ui, sans-serif"
+      let name = peer.name
+      while (name.length > 1 && ctx.measureText(name).width > 170) {
+        name = `${name.slice(0, -2)}…`
+      }
+      const text = peer.playing ? `${name} 🏃` : name
+      const width = Math.min(280, ctx.measureText(text).width + 84)
+      const left = (288 - width) / 2
+      ctx.fillStyle = peer.playing
+        ? "rgba(40,48,80,0.55)"
+        : "rgba(24,30,64,0.82)"
+      roundRect(ctx, left, 8, width, 56, 28)
+      ctx.fill()
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(left + 30, 36, 22, 0, Math.PI * 2)
+      ctx.closePath()
+      ctx.fillStyle = "#c7d2ee"
+      ctx.fill()
+      if (icon) {
+        ctx.clip()
+        const size = Math.min(icon.naturalWidth, icon.naturalHeight)
+        ctx.drawImage(
+          icon,
+          (icon.naturalWidth - size) / 2,
+          (icon.naturalHeight - size) / 2,
+          size,
+          size,
+          left + 8,
+          14,
+          44,
+          44,
+        )
+      }
+      ctx.restore()
+      ctx.fillStyle = "#ffffff"
+      ctx.textBaseline = "middle"
+      ctx.textAlign = "left"
+      ctx.fillText(text, left + 60, 38)
+      avatar.labelTexture.needsUpdate = true
+    }
+    paint(null)
+    if (!peer.iconUrl) return
+    const image = new Image()
+    image.crossOrigin = "anonymous"
+    image.onload = () => {
+      if (!disposed && avatar.labelKey === key) paint(image)
+    }
+    image.src = peer.iconUrl
+  }
+  /** いる人に、ぴくたーちゃんを割り当てる（多いときは、ロビーにいる人を先に） */
+  const assignAvatars = () => {
+    const shown =
+      state === "lobby"
+        ? [...peerList]
+            .sort((a, b) => Number(a.playing) - Number(b.playing))
+            .slice(0, MAX_AVATARS)
+        : []
+    for (const avatar of avatars) {
+      if (avatar.peer !== null && !shown.some((p) => p.key === avatar.peer)) {
+        avatar.peer = null
+        avatar.root.visible = false
+      }
+    }
+    for (const peer of shown) {
+      let avatar = avatars.find((item) => item.peer === peer.key)
+      const isNew = !avatar
+      if (!avatar) {
+        avatar = avatars.find((item) => item.peer === null)
+        if (!avatar) {
+          avatar = makeAvatar()
+          avatars.push(avatar)
+        }
+        avatar.peer = peer.key
+        avatar.root.visible = true
+      }
+      // 走っている人は、うしろの決まった場所に薄く立たせる
+      const seat =
+        LOBBY_MIN + 1.5 + ((peer.key % 89) / 89) * (LOBBY_MAX - LOBBY_MIN - 3)
+      avatar.targetX = peer.playing ? seat : clamp(peer.x, LOBBY_MIN, LOBBY_MAX)
+      avatar.targetY = peer.playing ? 0 : clamp(peer.y, 0, 6)
+      if (!peer.playing) avatar.f = peer.f < 0 ? -1 : 1
+      if (isNew || avatar.ghost !== peer.playing) {
+        avatar.ghost = peer.playing
+        avatar.x = avatar.targetX
+        avatar.y = avatar.targetY
+        avatar.root.position.z = peer.playing ? -2.7 : -0.5
+        for (const material of avatar.materials) {
+          material.transparent = true
+          material.opacity = peer.playing ? 0.38 : 1
+          material.depthWrite = true
+        }
+      }
+      drawLabel(avatar, peer)
+    }
+  }
+  const updateAvatars = (dt: number) => {
+    for (const avatar of avatars) {
+      if (avatar.peer === null) continue
+      const before = avatar.x
+      avatar.x = damp(avatar.x, avatar.targetX, 12, dt)
+      avatar.y = damp(avatar.y, avatar.targetY, 16, dt)
+      const moving = Math.abs(avatar.x - before) / Math.max(dt, 0.001) > 0.5
+      const next = avatar.y > 0.08 ? "jump" : moving ? "run" : "idle"
+      if (next !== avatar.clip) {
+        const action = avatar.actions[next]
+        action.reset()
+        if (next === "jump") {
+          action.paused = true
+          action.time = 0.63
+        }
+        action.crossFadeFrom(avatar.actions[avatar.clip], 0.12, false)
+        action.play()
+        avatar.clip = next
+      }
+      avatar.mixer.update(dt)
+      avatar.root.position.x = avatar.x
+      avatar.root.position.y = avatar.y
+      avatar.turn.rotation.y = damp(
+        avatar.turn.rotation.y,
+        (moving ? 0.92 : 0.3) * avatar.f,
+        8,
+        dt,
+      )
+      if (avatar.hip) {
+        // 動きごとに立ち位置がずれているので、腰の位置（水平）をそろえる
+        avatar.model.position.x = 0
+        avatar.model.position.z = 0
+        avatar.model.updateMatrixWorld(true)
+        avatar.fit.worldToLocal(avatar.hip.getWorldPosition(point))
+        avatar.model.position.x = hipHome.x - point.x
+        avatar.model.position.z = hipHome.z - point.z
+      }
+    }
+  }
+  const updateLobby = (dt: number) => {
+    const axis = clamp(
+      (keyRight ? 1 : 0) - (keyLeft ? 1 : 0) + lobbyAxis,
+      -1,
+      1,
+    )
+    lobbySpeed = damp(lobbySpeed, axis * 5.2, 12, dt)
+    lobbyX = clamp(lobbyX + lobbySpeed * dt, LOBBY_MIN, LOBBY_MAX)
+    if (axis !== 0) lobbyFacing = axis > 0 ? 1 : -1
+    velocity -= GRAVITY * dt
+    y += velocity * dt
+    if (y <= 0) {
+      y = 0
+      velocity = 0
+      jumpsLeft = 2
+      if (airborne) {
+        stretch = -0.22
+        audio.play("land")
+        dust(lobbyX, 7, 1)
+      }
+    }
+    airborne = y > 0.02
+    if (flipTime >= 0) {
+      flipTime += dt / 0.42
+      if (flipTime >= 1) flipTime = -1
+    }
+    // 近くの看板（押すと、走り始める・ランキングやチャットを開く）
+    let near: PictorRunLobbyAction | null = null
+    for (const item of LOBBY_SIGNS) {
+      if (item.action && Math.abs(item.x - lobbyX) < 1.4) near = item.action
+    }
+    if (near !== lobbyNear) {
+      lobbyNear = near
+      callbacks.onLobbyNear(near)
+    }
+    // 動いたときだけ、ほかの人へ位置を知らせる
+    if (
+      Math.abs(lobbyX - lobbySent.x) > 0.04 ||
+      Math.abs(y - lobbySent.y) > 0.04 ||
+      lobbyFacing !== lobbySent.f
+    ) {
+      lobbySent.x = lobbyX
+      lobbySent.y = y
+      lobbySent.f = lobbyFacing
+      callbacks.onLobbyMove(lobbyX, y, lobbyFacing)
+    }
+    updateAvatars(dt)
+  }
+  const leaveLobbyScene = () => {
+    lobbyGroup.visible = false
+    lobbySpeed = 0
+    lobbyAxis = 0
+    keyLeft = false
+    keyRight = false
+    if (lobbyNear !== null) {
+      lobbyNear = null
+      callbacks.onLobbyNear(null)
+    }
+    for (const avatar of avatars) {
+      avatar.peer = null
+      avatar.root.visible = false
+    }
+  }
+
   const score = () => Math.floor(distance) + coinCount * 10
 
   const reset = () => {
@@ -1078,6 +1516,7 @@ export async function createPictorRunGame(
       coin.active = false
       coin.mesh.visible = false
     }
+    leaveLobbyScene()
     state = "ready"
     runTime = 0
     paused = false
@@ -1168,26 +1607,27 @@ export async function createPictorRunGame(
       callbacks.onStart()
       return
     }
-    if (state !== "running" || jumpsLeft <= 0) return
+    if ((state !== "running" && state !== "lobby") || jumpsLeft <= 0) return
+    const at = state === "lobby" ? lobbyX : 0
     if (jumpsLeft === 2 && y <= 0.001) {
       velocity = JUMP_VELOCITY
       stretch = 0.2
       audio.play("jump")
-      dust(-0.1, 6, 1)
+      dust(at - 0.1, 6, 1)
     } else {
       velocity = DOUBLE_JUMP_VELOCITY
       flipTime = 0
       jumpsLeft = 1
       stretch = 0.16
       audio.play("double")
-      sparkle(0, y + 0.5, 0x7ad0ff, 10)
+      sparkle(at, y + 0.5, 0x7ad0ff, 10)
     }
     jumpsLeft -= 1
   }
 
   const release = () => {
     // 早く離すと低く跳ぶ
-    if (state === "running" && velocity > 6) velocity = 6
+    if ((state === "running" || state === "lobby") && velocity > 6) velocity = 6
   }
 
   const play = (name: ClipName, fade: number) => {
@@ -1221,9 +1661,12 @@ export async function createPictorRunGame(
         velocity > 0
           ? 0.63 - 0.33 * clamp(velocity / JUMP_VELOCITY, 0, 1)
           : 0.63 + 0.22 * clamp(-velocity / 16, 0, 1)
+    } else if (state === "lobby" && Math.abs(lobbySpeed) < 0.6) {
+      play("idle", 0.15)
     } else {
       play("run", 0.1)
-      actions.run.timeScale = 0.75 + speed * 0.055
+      actions.run.timeScale =
+        0.75 + (state === "lobby" ? Math.abs(lobbySpeed) : speed) * 0.055
     }
     mixer.update(dt)
 
@@ -1285,6 +1728,8 @@ export async function createPictorRunGame(
 
       untilSpawn -= speed * dt
       if (untilSpawn <= 0) spawn()
+    } else if (state === "lobby") {
+      updateLobby(dt)
     } else if (state === "over") {
       overTime += dt
       speed = damp(speed, 0, 30, dt)
@@ -1457,13 +1902,14 @@ export async function createPictorRunGame(
       item.sprite.material.opacity = Math.min(1, Math.max(0, item.life) * 2.2)
       if (item.life <= 0) item.sprite.visible = false
     }
-    updateSigns()
+    if (state !== "lobby") updateSigns()
 
-    stage.update(move, dt, time, distance)
+    stage.update(move, dt, time, state === "lobby" ? LOBBY_DISTANCE : distance)
     updateFx(dt, move)
 
     // ぴくたーちゃん
     player.position.y = y
+    if (state === "lobby") player.position.x = lobbyX
     if (state === "over") {
       const fall = Math.min(1, overTime / 0.45)
       player.position.x = -fall * 0.15
@@ -1489,7 +1935,11 @@ export async function createPictorRunGame(
     // 走る前はこちらを向いて待つ
     facing.rotation.y = damp(
       facing.rotation.y,
-      state === "ready" ? 0.3 : 0.92,
+      state === "ready"
+        ? 0.3
+        : state === "lobby"
+          ? (Math.abs(lobbySpeed) > 0.6 ? 0.92 : 0.3) * lobbyFacing
+          : 0.92,
       7,
       dt,
     )
@@ -1499,7 +1949,7 @@ export async function createPictorRunGame(
 
     animate(dt)
 
-    if (state !== "ready") {
+    if (state === "running" || state === "over") {
       const value = score()
       if (value !== lastScore) {
         lastScore = value
@@ -1675,6 +2125,9 @@ void main() {
       audio.setRain(state === "over" ? 0 : stage.rain())
     }
     camera.position.copy(cameraHome)
+    // ロビーでは、ぴくたーちゃんを追ってカメラを横に動かす
+    lobbyCamera = damp(lobbyCamera, state === "lobby" ? lobbyX : 0, 5, dt)
+    camera.position.x += lobbyCamera
     if (shake > 0) {
       shake = Math.max(0, shake - dt * 2.6)
       camera.position.x += (Math.random() - 0.5) * shake * 0.5
@@ -1702,11 +2155,17 @@ void main() {
     )
   }
   const onKeyDown = (event: KeyboardEvent) => {
+    if (state === "lobby" && !isTyping(event) && !paused) {
+      if (event.code === "ArrowLeft" || event.code === "KeyA") keyLeft = true
+      if (event.code === "ArrowRight" || event.code === "KeyD") keyRight = true
+    }
     if (!isJumpKey(event) || isTyping(event) || paused) return
     event.preventDefault()
     if (!event.repeat) press()
   }
   const onKeyUp = (event: KeyboardEvent) => {
+    if (event.code === "ArrowLeft" || event.code === "KeyA") keyLeft = false
+    if (event.code === "ArrowRight" || event.code === "KeyD") keyRight = false
     if (isJumpKey(event)) release()
   }
   const onPointerDown = (event: PointerEvent) => {
@@ -1756,6 +2215,28 @@ void main() {
     },
     playSound: (name) => audio.play(name),
     restart: reset,
+    enterLobby: () => {
+      reset()
+      state = "lobby"
+      lobbyX = 0
+      lobbyFacing = 1
+      lobbySent.x = 0
+      lobbySent.y = 0
+      lobbyGroup.visible = true
+      stage.warp(LOBBY_DISTANCE)
+      audio.setSong(toPictorRunStage(LOBBY_DISTANCE))
+      assignAvatars()
+    },
+    setLobbyInput: (axis) => {
+      lobbyAxis = clamp(axis, -1, 1)
+    },
+    jump: () => {
+      if (state === "lobby" && !paused) press()
+    },
+    setPeers: (peers) => {
+      peerList = peers
+      assignAvatars()
+    },
     setPaused: (value) => {
       paused = value
     },

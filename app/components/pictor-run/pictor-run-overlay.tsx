@@ -1,4 +1,8 @@
 import {
+  ArmchairIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsUpIcon,
   MessageCircleIcon,
   PauseIcon,
   PlayIcon,
@@ -23,8 +27,13 @@ import type {
   PictorRunCallbacks,
   PictorRunGame,
   PictorRunItems,
+  PictorRunLobbyAction,
   PictorRunMarker,
 } from "~/components/pictor-run/pictor-run-game.client"
+import {
+  connectPictorRunLobby,
+  type PictorRunLobbyConnection,
+} from "~/components/pictor-run/pictor-run-lobby"
 import { PictorRunRankingPanel } from "~/components/pictor-run/pictor-run-ranking"
 import { toPictorRunSharePageUrl } from "~/components/pictor-run/pictor-run-share"
 import {
@@ -40,7 +49,14 @@ type Props = Readonly<{
   onClose: () => void
 }>
 
-type Phase = "loading" | "ready" | "running" | "paused" | "over" | "failed"
+type Phase =
+  | "loading"
+  | "ready"
+  | "running"
+  | "paused"
+  | "over"
+  | "failed"
+  | "lobby"
 
 type Panel = "chat" | "ranking"
 
@@ -204,6 +220,11 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   /** 額ぶちに飾れる作品（新着。ここから遊ぶたびに選ぶ） */
   const artworksRef = useRef<string[]>([])
   const [items, setItems] = useState<PictorRunItems>(NO_ITEMS)
+  /** ロビーで、近くにある看板 */
+  const [lobbyNear, setLobbyNear] = useState<PictorRunLobbyAction | null>(null)
+  /** ほかの人の数（ロビーにいる人・いま走っている人） */
+  const [crowd, setCrowd] = useState({ lobby: 0, playing: 0 })
+  const lobbyRef = useRef<PictorRunLobbyConnection | null>(null)
   const [lite, setLite] = useState(readLite)
   /** 今いるステージ（0 始まりの通し番号） */
   const [stage, setStage] = useState(0)
@@ -336,6 +357,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             )
           },
           onItems: setItems,
+          onLobbyNear: setLobbyNear,
+          onLobbyMove: (x, y, f) => lobbyRef.current?.move(x, y, f),
           onGameOver: (finalScore, finalCoins, durationMs) => {
             const previous = readBest()
             setIsNewBest(finalScore > previous)
@@ -405,6 +428,40 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
       cancelled = true
     }
   }, [isGameReady, rankingKey])
+
+  // ロビーのリアルタイム通信。遊んでいる間もつないでおき、ロビーにいる人から「いま走っている人」として見えるようにする
+  // （だれも動いていない間は、サーバー側は眠っていて料金がかからない）
+  useEffect(() => {
+    if (!isGameReady) return
+    const connection = connectPictorRunLobby({
+      mode: "run",
+      onPeers: (peers) => {
+        gameRef.current?.setPeers(
+          peers.map((peer) => ({
+            key: peer.c,
+            name: peer.name,
+            iconUrl: toSignIconUrl(peer.icon),
+            playing: peer.mode === "run",
+            x: peer.x,
+            y: peer.y,
+            f: peer.f,
+          })),
+        )
+        const lobby = peers.filter((peer) => peer.mode === "lobby").length
+        const playing = peers.length - lobby
+        setCrowd((current) =>
+          current.lobby === lobby && current.playing === playing
+            ? current
+            : { lobby, playing },
+        )
+      },
+    })
+    lobbyRef.current = connection
+    return () => {
+      connection.close()
+      lobbyRef.current = null
+    }
+  }, [isGameReady])
 
   useEffect(() => {
     if (stageBanner === null) return
@@ -536,7 +593,22 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     }
   }, [onClose])
 
+  const enterLobby = () => {
+    gameRef.current?.enterLobby()
+    lobbyRef.current?.setMode("lobby", 0)
+    setScore(0)
+    setCoins(0)
+    setStage(0)
+    setProgress(0)
+    setStageBanner(null)
+    setRank(null)
+    setIsSettingsOpen(false)
+    setPhase("lobby")
+    gameRef.current?.playSound("ui")
+  }
+
   const retry = () => {
+    if (phaseRef.current === "lobby") lobbyRef.current?.setMode("run")
     gameRef.current?.restart()
     // 遊ぶたびに、飾る作品を選び直す
     gameRef.current?.setArtworks(
@@ -576,6 +648,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     const onKeyDown = (event: KeyboardEvent) => {
       if (isTypingTarget(event.target) || event.repeat) return
       if (event.code === "KeyM") toggleMute()
+      if (event.code === "Enter" && phase === "lobby" && lobbyNear) {
+        runLobbySign(lobbyNear)
+      }
       if (event.code === "KeyP") {
         if (phase === "running") pause()
         else resume()
@@ -584,6 +659,43 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
   })
+
+  /** ロビーの看板を使う */
+  const runLobbySign = (action: PictorRunLobbyAction) => {
+    if (action === "start") retry()
+    else changePanel(action)
+  }
+  const lobbyButton = (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.currentTarget.blur()
+        enterLobby()
+      }}
+      className="pointer-events-auto flex h-9 cursor-pointer items-center gap-1.5 rounded-full bg-white/85 px-4 font-bold text-slate-700 text-xs shadow-sm transition-colors hover:bg-white"
+    >
+      <ArmchairIcon aria-hidden="true" className="size-4" />
+      {t("ロビーへ", "Go to lobby")}
+    </button>
+  )
+  /** 押している間だけ、ロビーでぴくたーちゃんを動かす */
+  const holdButton = (axis: number, label: string, icon: React.ReactNode) => (
+    <button
+      type="button"
+      aria-label={label}
+      onPointerDown={(event) => {
+        event.preventDefault()
+        event.currentTarget.setPointerCapture(event.pointerId)
+        gameRef.current?.setLobbyInput(axis)
+      }}
+      onPointerUp={() => gameRef.current?.setLobbyInput(0)}
+      onPointerCancel={() => gameRef.current?.setLobbyInput(0)}
+      onContextMenu={(event) => event.preventDefault()}
+      className="pointer-events-auto flex size-16 cursor-pointer touch-none items-center justify-center rounded-full bg-white/85 shadow-md backdrop-blur-sm active:scale-95 active:bg-white"
+    >
+      {icon}
+    </button>
+  )
 
   const stageName = toPictorRunStageName(stage)
   // シェアすると、得点（ログイン中ならアイコンと名前も）の入ったカードの画像が出る
@@ -1050,9 +1162,77 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               <div className="flex flex-wrap items-center justify-center gap-2">
                 {!sound.muted && soundButton}
                 {liteButton}
+                {lobbyButton}
               </div>
             </div>
           </div>
+        )}
+
+        {phase === "lobby" && (
+          <>
+            <div className="pointer-events-none absolute inset-x-0 top-[max(4.75rem,calc(env(safe-area-inset-top)+4rem))] flex flex-col items-center gap-2 px-4 text-center">
+              <p className="rounded-full bg-slate-900/60 px-4 py-1.5 font-black text-sm text-white md:text-base">
+                ☕ {t("ロビー", "Lobby")}
+                <span className="ml-2 font-bold text-xs md:text-sm">
+                  {t(
+                    `ここに ${crowd.lobby + 1} 人 ・ プレイ中 ${crowd.playing} 人`,
+                    `${crowd.lobby + 1} here · ${crowd.playing} playing`,
+                  )}
+                </span>
+              </p>
+              {isDesktop && (
+                <p className="rounded-full bg-white/75 px-4 py-1 font-bold text-xs">
+                  {t(
+                    "A / D・← / → で歩く、スペースでジャンプ、看板の前で Enter",
+                    "A / D or arrows to walk, Space to jump, Enter at a sign",
+                  )}
+                </p>
+              )}
+            </div>
+            {lobbyNear && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-[max(7.5rem,calc(env(safe-area-inset-bottom)+7rem))] flex justify-center px-4">
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.currentTarget.blur()
+                    runLobbySign(lobbyNear)
+                  }}
+                  className="zoom-in-95 pointer-events-auto h-12 animate-in cursor-pointer rounded-full bg-clear-bright-blue px-7 font-black text-base text-white shadow-lg ring-4 ring-white/70 duration-150 hover:opacity-90"
+                >
+                  {lobbyNear === "start"
+                    ? t("🏃 ここから走る", "🏃 Start running")
+                    : lobbyNear === "ranking"
+                      ? t("🏆 ランキングを見る", "🏆 View ranking")
+                      : t("💬 チャットをひらく", "💬 Open chat")}
+                </button>
+              </div>
+            )}
+            <div className="pointer-events-none absolute inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] flex items-end justify-between px-5">
+              <div className="flex gap-3">
+                {holdButton(
+                  -1,
+                  t("左へ", "Left"),
+                  <ChevronLeftIcon aria-hidden="true" className="size-8" />,
+                )}
+                {holdButton(
+                  1,
+                  t("右へ", "Right"),
+                  <ChevronRightIcon aria-hidden="true" className="size-8" />,
+                )}
+              </div>
+              <button
+                type="button"
+                aria-label={t("ジャンプ", "Jump")}
+                onPointerDown={(event) => {
+                  event.preventDefault()
+                  gameRef.current?.jump()
+                }}
+                className="pointer-events-auto flex size-16 cursor-pointer touch-none items-center justify-center rounded-full bg-amber-400/95 shadow-md active:scale-95"
+              >
+                <ChevronsUpIcon aria-hidden="true" className="size-8" />
+              </button>
+            </div>
+          </>
         )}
 
         {phase === "paused" && !isSettingsOpen && countdown === null && (
@@ -1164,6 +1344,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   {t("X でシェア", "Share on X")}
                 </a>
               </div>
+              {lobbyButton}
             </div>
           </div>
         )}
