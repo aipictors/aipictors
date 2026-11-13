@@ -26,6 +26,7 @@ import type {
   PictorRunMarker,
 } from "~/components/pictor-run/pictor-run-game.client"
 import { PictorRunRankingPanel } from "~/components/pictor-run/pictor-run-ranking"
+import { toPictorRunSharePageUrl } from "~/components/pictor-run/pictor-run-share"
 import {
   PICTOR_RUN_STAGE_LENGTH,
   PICTOR_RUN_STAGES,
@@ -373,7 +374,6 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
 
   // 今週の記録の看板（記録を送ったあとは、取り直して立て直す）
   const isGameReady = phase !== "loading" && phase !== "failed"
-  // biome-ignore lint/correctness/useExhaustiveDependencies: rankingKey が変わったら取り直す
   useEffect(() => {
     if (!isGameReady) return
     let cancelled = false
@@ -567,12 +567,16 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     return () => window.removeEventListener("keydown", onKeyDown)
   })
 
+  const stageName = toPictorRunStageName(stage)
+  // シェアすると、得点（ログイン中ならアイコンと名前も）の入ったカードの画像が出る
   const shareUrl = `https://x.com/intent/post?text=${encodeURIComponent(
     t(
-      `ぴくたーちゃんランで ${score}m 走りました！ #Aipictors #ぴくたーちゃんラン`,
-      `I ran ${score}m in Pictor-chan Run! #Aipictors`,
+      `ぴくたーちゃんランで ${score} 点！（${Math.max(0, score - coins * 10)}m・ステージ ${stage + 1}「${stageName.ja}」） #Aipictors #ぴくたーちゃんラン`,
+      `I scored ${score} in Pictor-chan Run! (${Math.max(0, score - coins * 10)}m, stage ${stage + 1}: ${stageName.en}) #Aipictors`,
     ),
-  )}&url=${encodeURIComponent("https://www.aipictors.com/pictor-chan")}`
+  )}&url=${encodeURIComponent(
+    toPictorRunSharePageUrl({ score, coins, stage, userId: viewerId }),
+  )}`
 
   const isPanelOpen = panel !== null
 
@@ -605,7 +609,6 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
       viewport.removeEventListener("scroll", update)
     }
   }, [isDesktop, isPanelOpen])
-  const stageName = toPictorRunStageName(stage)
   const liteButton = (
     <button
       type="button"
