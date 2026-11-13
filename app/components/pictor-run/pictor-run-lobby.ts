@@ -136,6 +136,8 @@ export type PictorRunLobbyPeer = {
   st: string | null
   /** 走っている人の、いまの距離（m） */
   d: number
+  /** 身につけているもの（きせかえ。encodePictorRunOutfit の形） */
+  w: string
 }
 
 export type PictorRunLobbyConnection = {
@@ -151,6 +153,8 @@ export type PictorRunLobbyConnection = {
   emote: (emote: number) => void
   /** ステータスを変える（「#番号」か、自分で書いた文。null で消す） */
   setStatus: (status: string | null) => void
+  /** 身につけているもの（きせかえ）を知らせる */
+  setOutfit: (outfit: string) => void
   close: () => void
 }
 
@@ -161,6 +165,8 @@ export function connectPictorRunLobby(props: {
   mode: PictorRunLobbyMode
   /** つないだときのステータス */
   status: string | null
+  /** つないだときに身につけているもの */
+  outfit: string
   onPeers: (peers: PictorRunLobbyPeer[]) => void
   /** ほかの人がスタンプを出した（走っている人のものは、そのときの距離が付く） */
   onStamp: (peer: PictorRunLobbyPeer, index: number) => void
@@ -169,6 +175,7 @@ export function connectPictorRunLobby(props: {
   let socket: WebSocket | null = null
   let mode = props.mode
   let status = props.status
+  let outfit = props.outfit
   let emote = 0
   let lobbyX = 0
   let lobbyZ = 0
@@ -208,7 +215,7 @@ export function connectPictorRunLobby(props: {
     socket = ws
     ws.onopen = () => {
       retries = 0
-      ws.send(JSON.stringify({ t: "h", mode, auth, wp, st: status }))
+      ws.send(JSON.stringify({ t: "h", mode, auth, wp, st: status, w: outfit }))
       if (mode === "lobby") {
         ws.send(JSON.stringify({ t: "m", mode, x: lobbyX, z: lobbyZ }))
         if (emote !== 0) ws.send(JSON.stringify({ t: "a", a: emote }))
@@ -230,6 +237,7 @@ export function connectPictorRunLobby(props: {
         a?: number
         st?: string | null
         d?: number
+        w?: string
       }
       try {
         message = JSON.parse(event.data)
@@ -244,6 +252,7 @@ export function connectPictorRunLobby(props: {
             a: peer.a ?? 0,
             st: peer.st ?? null,
             d: peer.d ?? 0,
+            w: peer.w ?? "",
           })
         }
       } else if (message.t === "j" && message.p) {
@@ -252,6 +261,7 @@ export function connectPictorRunLobby(props: {
           a: message.p.a ?? 0,
           st: message.p.st ?? null,
           d: message.p.d ?? 0,
+          w: message.p.w ?? "",
         })
       } else if (message.t === "l" && message.c !== undefined) {
         peers.delete(message.c)
@@ -269,6 +279,8 @@ export function connectPictorRunLobby(props: {
           peer.z = message.z ?? peer.z
           peer.y = message.y ?? 0
           peer.f = message.f ?? peer.f
+        } else if (message.t === "w") {
+          peer.w = message.w ?? ""
         } else if (message.t === "d") {
           peer.d = message.d ?? 0
         } else if (message.t === "a") {
@@ -352,6 +364,11 @@ export function connectPictorRunLobby(props: {
       if (next === status) return
       status = next
       send({ t: "s", st: next })
+    },
+    setOutfit: (next) => {
+      if (next === outfit) return
+      outfit = next
+      send({ t: "w", w: next })
     },
     close: () => {
       closed = true

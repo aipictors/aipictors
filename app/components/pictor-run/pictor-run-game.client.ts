@@ -46,6 +46,10 @@ import {
   Vector3,
   WebGLRenderer,
   WebGLRenderTarget,
+  ConeGeometry,
+  Matrix4,
+  Uint8BufferAttribute,
+  Vector4,
 } from "three"
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
@@ -71,6 +75,11 @@ import {
   type PictorRunStageArtwork,
 } from "~/components/pictor-run/pictor-run-stage.client"
 import { toPictorRunStage } from "~/components/pictor-run/pictor-run-stages"
+import {
+  decodePictorRunOutfit,
+  PICTOR_RUN_WARDROBE_ITEMS,
+  type PictorRunOutfit,
+} from "~/components/pictor-run/pictor-run-wardrobe"
 
 /**
  * 404 ページの隠しゲーム「ぴくたーちゃんラン」の本体。
@@ -101,7 +110,10 @@ export type PictorRunCallbacks = {
 }
 
 /** ロビーの看板でできること */
-export type PictorRunLobbyAction = "start" | "ranking" | "chat"
+export type PictorRunLobbyAction = "start" | "ranking" | "chat" | "shop"
+
+/** ロビーのランキングボードに出す 1 行 */
+export type PictorRunBoardRow = { rank: number; name: string; score: number }
 
 /** ロビーに出すほかの人（playing = いま走っている人。薄い姿でうしろに立つ） */
 export type PictorRunPeer = {
@@ -118,6 +130,8 @@ export type PictorRunPeer = {
   emote: number
   /** 名前の上に出すステータス（走っている人は「走行中」） */
   status: string | null
+  /** 身につけているもの（きせかえ。encodePictorRunOutfit の形） */
+  outfit: string
 }
 
 /** 持っているアイテム（magnet・star は残りの秒数） */
@@ -161,6 +175,14 @@ export type PictorRunGame = {
   showStamp: (key: number | null, text: string) => void
   /** ロビーで、おどる・すわる などの動きをする（0 でやめる） */
   setLobbyEmote: (emote: number) => void
+  /** 自分が身につけるもの（きせかえ）を変える */
+  setOutfit: (outfit: PictorRunOutfit) => void
+  /** ロビーのランキングボードに出す内容 */
+  setRankingBoard: (
+    title: string,
+    empty: string,
+    rows: PictorRunBoardRow[],
+  ) => void
   /** ロビーで、自分の頭の上に出すステータス */
   setLobbyStatus: (text: string | null) => void
   /** 一時停止（止めている間も画面は描く） */
@@ -319,6 +341,119 @@ export async function createPictorRunGame(
   model.traverse((object) => {
     if (object instanceof SkinnedMesh) skinned.push(object)
   })
+
+  // かざりを付ける骨の、立ち姿（動かす前）での位置を覚えておく。
+  // 「立ち姿のぴくたーちゃんの座標 → 骨から見た座標」に直すのに使う
+  const partBoneRest = new Map<string, Matrix4>()
+  model.updateMatrixWorld(true)
+  for (const name of ["Head", "Spine02"]) {
+    const bone = model.getObjectByName(name)
+    let armature = bone?.parent ?? null
+    while (armature && (armature as { isBone?: boolean }).isBone) {
+      armature = armature.parent
+    }
+    if (!bone || !armature) continue
+    partBoneRest.set(
+      name,
+      new Matrix4()
+        .copy(armature.matrixWorld)
+        .invert()
+        .multiply(bone.matrixWorld)
+        .invert(),
+    )
+  }
+
+  // ---- きせかえ（服の色）。体の頂点に「シャツ・スカートかどうか」の印を付けておき、素材ごとに色を変える
+  type Dress = { shirt: { value: Color }; skirt: { value: Vector4 } }
+  /** 素材を、服の色を変えられるものにする（印は頂点の色の r = シャツ、g = スカート） */
+  const dress = (material: Material): Dress => {
+    const uniforms: Dress = {
+      shirt: { value: new Color(1, 1, 1) },
+      skirt: { value: new Vector4(0, 0, 0, 0) },
+    }
+    material.vertexColors = true
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms.uShirt = uniforms.shirt
+      shader.uniforms.uSkirt = uniforms.skirt
+      shader.fragmentShader = shader.fragmentShader
+        .replace(
+          "#include <common>",
+          "#include <common>\nuniform vec3 uShirt;\nuniform vec4 uSkirt;",
+        )
+        .replace(
+          "#include <color_fragment>",
+          [
+            "diffuseColor.rgb *= mix(vec3(1.0), uShirt, vColor.r);",
+            "float dressLight = dot(diffuseColor.rgb, vec3(0.3, 0.5, 0.2));",
+            "diffuseColor.rgb = mix(diffuseColor.rgb, uSkirt.rgb * (0.35 + dressLight * 3.2), vColor.g * uSkirt.a);",
+          ].join("\n"),
+        )
+    }
+    material.customProgramCacheKey = () => "pictor-dress"
+    material.needsUpdate = true
+    return uniforms
+  }
+  let bodyMesh: SkinnedMesh | null = null
+  let bodyDress: Dress | null = null
+  let dressMaskReady = false
+  /** シャツ・スカートの頂点に印を付ける（絵の色と、どの骨に付いているかで見分ける。最初に服の色を変えるときに 1 回だけ） */
+  const prepareDressMask = () => {
+    if (dressMaskReady || !bodyMesh) return
+    dressMaskReady = true
+    const geometry = bodyMesh.geometry
+    const map = (bodyMesh.material as MeshStandardMaterial).map
+    const uv = geometry.getAttribute("uv")
+    const skinIndex = geometry.getAttribute("skinIndex")
+    const skinWeight = geometry.getAttribute("skinWeight")
+    const mask = geometry.getAttribute("color")
+    const image = map?.image as CanvasImageSource | undefined
+    if (!map || !image || !uv || !skinIndex || !skinWeight || !mask) return
+    const SIZE = 1024
+    const canvas = document.createElement("canvas")
+    canvas.width = SIZE
+    canvas.height = SIZE
+    const ctx = canvas.getContext("2d", { willReadFrequently: true })
+    if (!ctx) return
+    ctx.drawImage(image, 0, 0, SIZE, SIZE)
+    const pixels = ctx.getImageData(0, 0, SIZE, SIZE).data
+    const bones = bodyMesh.skeleton.bones.map((bone) => bone.name)
+    const isTorso = bones.map((name) =>
+      /^(Spine0[12]|Waist|[LR]_(Clavicle|Upperarm|UpperarmTwist0[12]))$/.test(
+        name,
+      ),
+    )
+    const isHips = bones.map((name) =>
+      /^(Hip|Pelvis|Waist|Spine01|[LR]_(Thigh|ThighTwist0[12]))$/.test(name),
+    )
+    const at = new Vector2()
+    for (let i = 0; i < uv.count; i++) {
+      // いちばん強く付いている骨
+      let bone = 0
+      let weight = -1
+      for (let k = 0; k < 4; k++) {
+        const value = skinWeight.getComponent(i, k)
+        if (value > weight) {
+          weight = value
+          bone = skinIndex.getComponent(i, k)
+        }
+      }
+      map.transformUv(at.set(uv.getX(i), uv.getY(i)))
+      const x = clamp(Math.floor(at.x * SIZE), 0, SIZE - 1)
+      const y = clamp(Math.floor(at.y * SIZE), 0, SIZE - 1)
+      const r = pixels[(y * SIZE + x) * 4]
+      const g = pixels[(y * SIZE + x) * 4 + 1]
+      const b = pixels[(y * SIZE + x) * 4 + 2]
+      const low = Math.min(r, g, b)
+      const high = Math.max(r, g, b)
+      // 白いシャツ（かげの水色がかった所も含める）
+      const shirt = isTorso[bone] && low > 150 && high - low < 60
+      // 紺のスカート
+      const skirt = isHips[bone] && high < 110 && b >= r
+      mask.setXYZ(i, shirt ? 1 : 0, skirt ? 1 : 0, 0)
+    }
+    mask.needsUpdate = true
+  }
+
   /** 表情（まばたきなど）を持つ顔のメッシュ */
   let face: SkinnedMesh | null = null
   for (const mesh of skinned) {
@@ -337,6 +472,18 @@ export async function createPictorRunGame(
     if (isFace) {
       face = mesh
       mesh.renderOrder = 1
+    } else {
+      bodyMesh = mesh
+      // 服の印（まだ空。服の色を変えるときに付ける）
+      mesh.geometry.setAttribute(
+        "color",
+        new Uint8BufferAttribute(
+          new Uint8Array(mesh.geometry.getAttribute("position").count * 3),
+          3,
+          true,
+        ),
+      )
+      bodyDress = dress(material)
     }
   }
 
@@ -471,6 +618,222 @@ export async function createPictorRunGame(
     return 0
   }
   const playerRig = makeRig(model)
+
+  // ---- きせかえ（かざり）。形は、立ち姿のぴくたーちゃんの座標（身長 1.2・足元 0・前が +Z）で作って、骨に付ける
+  type PartMaker = () => Object3D
+  const partCache = new Map<string, { bone: string; make: PartMaker }>()
+  const shape = (
+    geometry: BufferGeometry,
+    material: Material,
+    x: number,
+    y: number,
+    z: number,
+  ) => {
+    const mesh = new Mesh(geometry, material)
+    mesh.position.set(x, y, z)
+    mesh.castShadow = shadows
+    return mesh
+  }
+  const definePart = (id: string, bone: string, build: () => Object3D[]) => {
+    let template: Object3D[] | null = null
+    partCache.set(id, {
+      bone,
+      make: () => {
+        // 形と素材は最初の 1 回だけ作って、みんなで使い回す
+        template ??= build()
+        const group = new Group()
+        for (const item of template) group.add(item.clone())
+        return group
+      },
+    })
+  }
+  definePart("ribbon", "Head", () => {
+    const red = solid({ color: 0xe8384f }, 0.6)
+    const wing = track(new ConeGeometry(0.075, 0.13, 14))
+    const left = shape(wing, red, -0.065, 0, 0)
+    left.rotation.z = -Math.PI / 2
+    left.scale.z = 0.5
+    const right = shape(wing, red, 0.065, 0, 0)
+    right.rotation.z = Math.PI / 2
+    right.scale.z = 0.5
+    const knot = shape(track(new SphereGeometry(0.035, 12, 10)), red, 0, 0, 0)
+    const group = new Group()
+    group.add(left, right, knot)
+    group.position.set(-0.19, 1.05, 0.06)
+    group.rotation.z = 0.5
+    return [group]
+  })
+  definePart("catears", "Head", () => {
+    const outer = solid({ color: 0x2b3a78 }, 0.8)
+    const inner = solid({ color: 0xffa9c6 }, 0.8)
+    const ear = track(new ConeGeometry(0.075, 0.15, 4))
+    const ears: Object3D[] = []
+    for (const side of [-1, 1]) {
+      const group = new Group()
+      const back = shape(ear, outer, 0, 0, 0)
+      back.rotation.y = Math.PI / 4
+      back.scale.z = 0.55
+      const front = shape(ear, inner, 0, -0.012, 0.02)
+      front.rotation.y = Math.PI / 4
+      front.scale.set(0.62, 0.7, 0.3)
+      group.add(back, front)
+      group.position.set(side * 0.17, 1.1, 0.02)
+      group.rotation.z = -side * 0.32
+      ears.push(group)
+    }
+    return ears
+  })
+  definePart("hat", "Head", () => {
+    const purple = solid({ color: 0x6b3fa0 }, 0.75)
+    const band = solid({ color: 0xffd34d }, 0.5)
+    const group = new Group()
+    group.add(
+      shape(
+        track(new CylinderGeometry(0.27, 0.27, 0.018, 28)),
+        purple,
+        0,
+        0,
+        0,
+      ),
+      shape(track(new ConeGeometry(0.16, 0.36, 24)), purple, 0, 0.18, 0),
+      shape(
+        track(new CylinderGeometry(0.153, 0.162, 0.04, 24)),
+        band,
+        0,
+        0.03,
+        0,
+      ),
+    )
+    group.position.set(0, 1.07, -0.01)
+    group.rotation.x = -0.12
+    return [group]
+  })
+  definePart("halo", "Head", () => {
+    const glow = track(new MeshBasicMaterial({ color: 0xffec8a }))
+    const ring = shape(
+      track(new TorusGeometry(0.14, 0.018, 10, 36)),
+      glow,
+      0,
+      1.3,
+      -0.02,
+    )
+    ring.rotation.x = Math.PI / 2 - 0.15
+    ring.castShadow = false
+    return [ring]
+  })
+  definePart("crown", "Head", () => {
+    const gold = solid({ color: 0xf5c542 }, 0.35, 0.6)
+    const gem = solid({ color: 0xe8384f }, 0.3)
+    const group = new Group()
+    group.add(
+      shape(track(new CylinderGeometry(0.085, 0.075, 0.06, 20)), gold, 0, 0, 0),
+    )
+    const spike = track(new ConeGeometry(0.022, 0.06, 8))
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2
+      group.add(
+        shape(spike, gold, Math.sin(a) * 0.075, 0.055, Math.cos(a) * 0.075),
+      )
+    }
+    group.add(shape(track(new SphereGeometry(0.016, 8, 8)), gem, 0, 0, 0.082))
+    group.position.set(0.1, 1.1, 0.02)
+    group.rotation.z = -0.28
+    return [group]
+  })
+  definePart("bag", "Spine02", () => {
+    const red = solid({ color: 0xc8323c }, 0.55)
+    const dark = solid({ color: 0x8f1f28 }, 0.55)
+    const group = new Group()
+    group.add(
+      shape(track(new BoxGeometry(0.22, 0.24, 0.11)), red, 0, 0, 0),
+      shape(track(new BoxGeometry(0.225, 0.13, 0.03)), dark, 0, 0.06, -0.06),
+      shape(
+        track(new BoxGeometry(0.05, 0.03, 0.012)),
+        solid({ color: 0xf5c542 }, 0.4),
+        0,
+        -0.01,
+        -0.076,
+      ),
+    )
+    group.position.set(0, 0.56, -0.33)
+    return [group]
+  })
+  definePart("wings", "Spine02", () => {
+    const white = solid({ color: 0xffffff }, 0.8)
+    const feather = track(new SphereGeometry(1, 14, 10))
+    const wings: Object3D[] = []
+    for (const side of [-1, 1]) {
+      const group = new Group()
+      for (const [angle, length] of [
+        [0.75, 0.3],
+        [0.3, 0.27],
+        [-0.15, 0.22],
+        [-0.6, 0.16],
+      ]) {
+        const piece = shape(feather, white, 0, 0, 0)
+        piece.scale.set(length / 2, 0.05, 0.016)
+        piece.position.set(
+          (Math.cos(angle) * length) / 2,
+          (Math.sin(angle) * length) / 2,
+          0,
+        )
+        piece.rotation.z = angle
+        group.add(piece)
+      }
+      group.position.set(side * 0.1, 0.66, -0.32)
+      group.scale.x = side
+      group.rotation.y = -side * 0.35
+      wings.push(group)
+    }
+    return wings
+  })
+  /** 服を着せる相手（自分・ほかの人のぴくたーちゃん） */
+  type Wearer = {
+    mesh: SkinnedMesh | null
+    dress: Dress | null
+    parts: Object3D[]
+    key: string
+  }
+  const partMatrix = new Matrix4()
+  const wear = (wearer: Wearer, encoded: string, visible: boolean) => {
+    const key = `${encoded}|${visible}`
+    if (key === wearer.key) return
+    wearer.key = key
+    for (const part of wearer.parts) part.removeFromParent()
+    wearer.parts = []
+    const outfit = decodePictorRunOutfit(visible ? encoded : null)
+    const shirt = PICTOR_RUN_WARDROBE_ITEMS.find((i) => i.id === outfit.shirt)
+    const skirt = PICTOR_RUN_WARDROBE_ITEMS.find((i) => i.id === outfit.skirt)
+    if (shirt || skirt) prepareDressMask()
+    if (wearer.dress) {
+      wearer.dress.shirt.value.set(shirt?.color ?? 0xffffff)
+      const tint = new Color(skirt?.color ?? 0)
+      wearer.dress.skirt.value.set(tint.r, tint.g, tint.b, skirt ? 1 : 0)
+    }
+    const skeleton = wearer.mesh?.skeleton
+    if (!skeleton) return
+    for (const id of [outfit.head, outfit.back]) {
+      const part = id ? partCache.get(id) : undefined
+      if (!part) continue
+      const bone = skeleton.bones.find((item) => item.name === part.bone)
+      const rest = partBoneRest.get(part.bone)
+      if (!bone || !rest) continue
+      // 立ち姿の座標で作った形を、骨から見た位置に直して付ける
+      const object = part.make()
+      object.updateMatrix()
+      partMatrix.copy(rest).multiply(object.matrix)
+      object.matrixAutoUpdate = false
+      object.matrix.copy(partMatrix)
+      bone.add(object)
+      wearer.parts.push(object)
+    }
+  }
+  const playerWearer: Wearer = {
+    mesh: bodyMesh,
+    dress: bodyDress,
+    parts: [],
+    key: "",
+  }
 
   /** 位置と、転んだときの回転 */
   const player = new Group()
@@ -1567,7 +1930,77 @@ export async function createPictorRunGame(
       sub: "みんなと話す",
       color: "#2d6cdf",
     },
+    {
+      action: "shop",
+      x: LOBBY_SIGN_RING * 0.93,
+      z: LOBBY_SIGN_RING * 0.36,
+      icon: "👗",
+      title: "きせかえ",
+      sub: "コインで買う",
+      color: "#d6457f",
+    },
   ]
+  // ランキングボード（今週の上位を、そのまま読める大きさで出す）
+  const BOARD_W = 560
+  const BOARD_H = 470
+  const rankingBoardTexture = track(canvasTexture(BOARD_W, BOARD_H, () => {}))
+  const drawRankingBoard = (
+    title: string,
+    empty: string,
+    rows: PictorRunBoardRow[],
+  ) => {
+    const ctx = (rankingBoardTexture.image as HTMLCanvasElement).getContext(
+      "2d",
+    )
+    if (!ctx) return
+    ctx.clearRect(0, 0, BOARD_W, BOARD_H)
+    ctx.fillStyle = "#e0a800"
+    roundRect(ctx, 2, 2, BOARD_W - 4, BOARD_H - 4, 30)
+    ctx.fill()
+    ctx.fillStyle = "#fffdf6"
+    roundRect(ctx, 12, 12, BOARD_W - 24, BOARD_H - 24, 22)
+    ctx.fill()
+    ctx.fillStyle = "#1c2340"
+    ctx.textBaseline = "middle"
+    ctx.textAlign = "center"
+    ctx.font = "900 38px system-ui, sans-serif"
+    ctx.fillText(title, BOARD_W / 2, 58, BOARD_W - 60)
+    ctx.fillStyle = "#e0a800"
+    ctx.fillRect(40, 92, BOARD_W - 80, 4)
+    if (rows.length === 0) {
+      ctx.fillStyle = "#3a4468"
+      ctx.font = "700 28px system-ui, sans-serif"
+      ctx.fillText(empty, BOARD_W / 2, 250, BOARD_W - 80)
+    }
+    rows.slice(0, 5).forEach((row, index) => {
+      const y = 138 + index * 66
+      if (index % 2 === 0) {
+        ctx.fillStyle = "rgba(224,168,0,0.12)"
+        roundRect(ctx, 30, y - 29, BOARD_W - 60, 58, 16)
+        ctx.fill()
+      }
+      ctx.textAlign = "center"
+      ctx.font = "900 34px system-ui, sans-serif"
+      ctx.fillStyle = ["#d99a00", "#8a94a8", "#b0703a"][index] ?? "#3a4468"
+      ctx.fillText(["🥇", "🥈", "🥉"][index] ?? String(row.rank), 70, y + 2)
+      ctx.textAlign = "left"
+      ctx.fillStyle = "#1c2340"
+      ctx.font = "800 30px system-ui, sans-serif"
+      let name = row.name
+      while (name.length > 1 && ctx.measureText(name).width > 280) {
+        name = `${name.slice(0, -2)}…`
+      }
+      ctx.fillText(name, 112, y + 2)
+      ctx.textAlign = "right"
+      ctx.font = "900 30px system-ui, sans-serif"
+      ctx.fillText(`${row.score} m`, BOARD_W - 44, y + 2)
+    })
+    rankingBoardTexture.needsUpdate = true
+  }
+  drawRankingBoard("🏆", "…", [])
+  const rankingBoardGeometry = track(
+    new PlaneGeometry(2.8, (2.8 * BOARD_H) / BOARD_W),
+  )
   for (const item of LOBBY_SIGNS) {
     const texture = track(
       canvasTexture(340, 170, (ctx) => {
@@ -1594,17 +2027,19 @@ export async function createPictorRunGame(
     const pole = new Mesh(signPoleGeometry, signPoleMaterial)
     pole.position.y = 1.2
     pole.castShadow = shadows
+    // ランキングは、名前の入った大きなボードにする
+    const isBoard = item.action === "ranking"
     const board = new Mesh(
-      signBoardGeometry,
+      isBoard ? rankingBoardGeometry : signBoardGeometry,
       track(
         new MeshBasicMaterial({
-          map: texture,
+          map: isBoard ? rankingBoardTexture : texture,
           transparent: true,
           fog: false,
         }),
       ),
     )
-    board.position.set(0, 2.9, 0.05)
+    board.position.set(0, isBoard ? 3.15 : 2.9, 0.05)
     sign.add(pole, board)
     sign.position.set(item.x, 0, item.z)
     // 広場のまん中のほうへ少し向ける
@@ -1703,6 +2138,7 @@ export async function createPictorRunGame(
     labelKey: string
     bubble: Bubble
     rig: Rig
+    wearer: Wearer
     emote: number
     emoteTime: number
     emoteShown: number
@@ -1723,10 +2159,16 @@ export async function createPictorRunGame(
   const makeAvatar = (): Avatar => {
     const copy = cloneSkinned(model)
     const materials: Material[] = []
+    const wearer: Wearer = { mesh: null, dress: null, parts: [], key: "" }
     copy.traverse((object) => {
       if (!(object instanceof SkinnedMesh)) return
       // 薄さを人ごとに変えられるように、素材は 1 人ずつ持つ
       const material = track((object.material as Material).clone())
+      if (object.morphTargetDictionary === undefined) {
+        // 服の色も人ごとに変える
+        wearer.mesh = object
+        wearer.dress = dress(material)
+      }
       object.material = material
       object.castShadow = false
       object.frustumCulled = false
@@ -1793,6 +2235,7 @@ export async function createPictorRunGame(
       labelKey: "",
       bubble,
       rig: makeRig(copy),
+      wearer,
       emote: 0,
       emoteTime: 0,
       emoteShown: 0,
@@ -1966,6 +2409,8 @@ export async function createPictorRunGame(
           material.depthWrite = true
         }
       }
+      // 走っている人（薄い姿）には、かざりは付けない
+      wear(avatar.wearer, peer.outfit, !peer.playing)
       const emote = peer.playing ? 0 : peer.emote
       if (emote !== avatar.emote) {
         avatar.emote = emote
@@ -3046,6 +3491,17 @@ void main() {
       if (avatar && !avatar.ghost) showBubble(avatar.bubble, text)
     },
     setLobbyEmote,
+    setOutfit: (outfit) => {
+      wear(
+        playerWearer,
+        [outfit.head, outfit.back, outfit.shirt, outfit.skirt]
+          .map((id) => id ?? "")
+          .join(","),
+        true,
+      )
+    },
+    setRankingBoard: (title, empty, rows) =>
+      drawRankingBoard(title, empty, rows),
     setLobbyStatus: (text) => {
       selfStatus = text
       const ctx = (selfTagTexture.image as HTMLCanvasElement).getContext("2d")

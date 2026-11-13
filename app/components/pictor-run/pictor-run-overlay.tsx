@@ -1,10 +1,12 @@
 import {
   ArmchairIcon,
+  ChevronDownIcon,
   ChevronsUpIcon,
   HeartIcon,
   MessageCircleIcon,
   PauseIcon,
   PlayIcon,
+  ShirtIcon,
   SmileIcon,
   TagIcon,
   TrophyIcon,
@@ -50,6 +52,16 @@ import {
   PICTOR_RUN_STAGES,
   toPictorRunStageName,
 } from "~/components/pictor-run/pictor-run-stages"
+import {
+  encodePictorRunOutfit,
+  loadPictorRunWardrobe,
+  PICTOR_RUN_WARDROBE_ITEMS,
+  PICTOR_RUN_WARDROBE_SLOTS,
+  type PictorRunWardrobe,
+  type PictorRunWardrobeItem,
+  type PictorRunWardrobeSlot,
+  savePictorRunWardrobe,
+} from "~/components/pictor-run/pictor-run-wardrobe"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -89,6 +101,8 @@ const BEST_KEY = "pictor-run-best"
 const BEST_STAGE_KEY = "pictor-run-best-stage"
 const LITE_KEY = "pictor-run-lite"
 const SOUND_KEY = "pictor-run-sound"
+/** ロビーの下のボタン（動き・スタンプ）を閉じているか */
+const TRAY_KEY = "pictor-run-lobby-tray"
 /** ロビーで名前の上に出すステータス（「#番号」か、自分で書いた文） */
 const STATUS_KEY = "pictor-run-status"
 
@@ -279,6 +293,22 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [lobbyNear, setLobbyNear] = useState<PictorRunLobbyAction | null>(null)
   /** ほかの人の数（ロビーにいる人・いま走っている人） */
   const [crowd, setCrowd] = useState({ lobby: 0, playing: 0 })
+  /** きせかえ（ためたコイン・買ったもの・身につけているもの） */
+  const [wardrobe, setWardrobe] = useState<PictorRunWardrobe>(
+    loadPictorRunWardrobe,
+  )
+  const wardrobeRef = useRef(wardrobe)
+  wardrobeRef.current = wardrobe
+  const [isShopOpen, setIsShopOpen] = useState(false)
+  const [shopSlot, setShopSlot] = useState<PictorRunWardrobeSlot>("head")
+  /** ロビーの下のボタン（動き・スタンプ）を出しているか */
+  const [isTrayOpen, setIsTrayOpen] = useState(() => {
+    try {
+      return window.localStorage.getItem(TRAY_KEY) !== "closed"
+    } catch {
+      return true
+    }
+  })
   const [runners, setRunners] = useState<Runner[]>([])
   const [toasts, setToasts] = useState<StampToast[]>([])
   const toastId = useRef(0)
@@ -487,6 +517,16 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             )
             setPhase("over")
             setIsSettingsOpen(false)
+            // 集めたコインは、きせかえ用にためる
+            if (finalCoins > 0) {
+              const saved = {
+                ...wardrobeRef.current,
+                coins: wardrobeRef.current.coins + finalCoins,
+              }
+              wardrobeRef.current = saved
+              savePictorRunWardrobe(saved)
+              setWardrobe(saved)
+            }
             if (finalScore > previous) {
               // 転んだ音が終わってから、お祝いの音を鳴らす
               window.setTimeout(() => gameRef.current?.playSound("best"), 1100)
@@ -535,9 +575,24 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         gameRef.current?.setMarkers(
           toMarkers(ranking.items, viewerIdRef.current),
         )
+        gameRef.current?.setRankingBoard(
+          t("🏆 今週のランキング", "🏆 This week's ranking"),
+          t("まだ記録がありません", "No records yet"),
+          ranking.items.slice(0, 5).map((item) => ({
+            rank: item.rank,
+            name: item.user.name,
+            score: item.score,
+          })),
+        )
       })
       .catch(() => {
         // 看板が立たなくても遊べる
+        if (cancelled) return
+        gameRef.current?.setRankingBoard(
+          t("🏆 今週のランキング", "🏆 This week's ranking"),
+          t("いまは読み込めません", "Could not load right now"),
+          [],
+        )
       })
     return () => {
       cancelled = true
@@ -549,9 +604,11 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   useEffect(() => {
     if (!isGameReady) return
     gameRef.current?.setLobbyStatus(toStatusTextRef.current(statusRef.current))
+    gameRef.current?.setOutfit(wardrobeRef.current.outfit)
     const connection = connectPictorRunLobby({
       mode: "run",
       status: statusRef.current,
+      outfit: encodePictorRunOutfit(wardrobeRef.current.outfit),
       onPeers: (peers) => {
         gameRef.current?.setPeers(
           peers.map((peer) => ({
@@ -564,6 +621,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             y: peer.y,
             f: peer.f,
             emote: peer.a,
+            outfit: peer.w,
             // 走っている人は、薄い姿に「走行中」の札を付けて出す
             status:
               peer.mode === "run"
@@ -777,6 +835,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const retry = () => {
     if (phaseRef.current === "lobby") lobbyRef.current?.setMode("run")
     setIsStatusOpen(false)
+    setIsShopOpen(false)
     gameRef.current?.restart()
     // 遊ぶたびに、飾る作品を選び直す
     gameRef.current?.setArtworks(
@@ -873,6 +932,66 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     lobbyRef.current?.setStatus(next)
     gameRef.current?.setLobbyStatus(toStatusText(next))
   }
+  /** きせかえを変える（保存して、自分の姿と、ほかの人の画面に出す） */
+  const changeWardrobe = (next: PictorRunWardrobe) => {
+    wardrobeRef.current = next
+    setWardrobe(next)
+    savePictorRunWardrobe(next)
+    gameRef.current?.setOutfit(next.outfit)
+    lobbyRef.current?.setOutfit(encodePictorRunOutfit(next.outfit))
+  }
+  /** 買う（コインが足りるときだけ）。買ったら、そのまま身につける */
+  const buyItem = (item: PictorRunWardrobeItem) => {
+    if (wardrobe.owned.includes(item.id) || wardrobe.coins < item.price) return
+    changeWardrobe({
+      coins: wardrobe.coins - item.price,
+      owned: [...wardrobe.owned, item.id],
+      outfit: { ...wardrobe.outfit, [item.slot]: item.id },
+    })
+    gameRef.current?.playSound("best")
+  }
+  /** 身につける・はずす */
+  const toggleItem = (item: PictorRunWardrobeItem) => {
+    if (!wardrobe.owned.includes(item.id)) return
+    changeWardrobe({
+      ...wardrobe,
+      outfit: {
+        ...wardrobe.outfit,
+        [item.slot]: wardrobe.outfit[item.slot] === item.id ? null : item.id,
+      },
+    })
+    gameRef.current?.playSound("ui")
+  }
+  const toggleTray = () => {
+    const next = !isTrayOpen
+    setIsTrayOpen(next)
+    try {
+      window.localStorage.setItem(TRAY_KEY, next ? "open" : "closed")
+    } catch {
+      // 覚えられなくても困らない
+    }
+  }
+  /** ロビーの下のボタン（動き・スタンプ）を閉じる・出す */
+  const trayToggle = (
+    <button
+      type="button"
+      aria-expanded={isTrayOpen}
+      onClick={(event) => {
+        event.currentTarget.blur()
+        toggleTray()
+      }}
+      className="pointer-events-auto flex h-8 cursor-pointer items-center gap-1 rounded-full bg-slate-900/60 px-3 font-bold text-white text-xs shadow-sm hover:bg-slate-900/80"
+    >
+      {isTrayOpen ? (
+        <ChevronDownIcon aria-hidden="true" className="size-4" />
+      ) : (
+        <SmileIcon aria-hidden="true" className="size-4" />
+      )}
+      {isTrayOpen
+        ? t("しまう", "Hide")
+        : t("スタンプ・うごき", "Stamps & motions")}
+    </button>
+  )
   /** おどる・すわる などの動き（もう一度押すとやめる） */
   const lobbyEmotes = (
     <ul
@@ -940,6 +1059,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   /** ロビーの看板を使う */
   const runLobbySign = (action: PictorRunLobbyAction) => {
     if (action === "start") retry()
+    else if (action === "shop") setIsShopOpen(true)
     else changePanel(action)
   }
   const lobbyButton = (
@@ -1605,24 +1725,40 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   )}
                 </span>
               </p>
-              <button
-                type="button"
-                aria-expanded={isStatusOpen}
-                onClick={(event) => {
-                  event.currentTarget.blur()
-                  setStatusDraft(
-                    status !== null && !status.startsWith("#") ? status : "",
-                  )
-                  setIsStatusOpen(!isStatusOpen)
-                }}
-                className="pointer-events-auto flex h-8 max-w-full cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3.5 font-bold text-slate-800 text-xs shadow-sm hover:bg-white"
-              >
-                <TagIcon aria-hidden="true" className="size-3.5 shrink-0" />
-                <span className="truncate">
-                  {toStatusText(status) ??
-                    t("ステータスを付ける", "Set a status")}
-                </span>
-              </button>
+              <div className="flex max-w-full items-center gap-1.5">
+                <button
+                  type="button"
+                  aria-expanded={isStatusOpen}
+                  onClick={(event) => {
+                    event.currentTarget.blur()
+                    setStatusDraft(
+                      status !== null && !status.startsWith("#") ? status : "",
+                    )
+                    setIsStatusOpen(!isStatusOpen)
+                  }}
+                  className="pointer-events-auto flex h-8 max-w-full cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3.5 font-bold text-slate-800 text-xs shadow-sm hover:bg-white"
+                >
+                  <TagIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                  <span className="truncate">
+                    {toStatusText(status) ??
+                      t("ステータスを付ける", "Set a status")}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.currentTarget.blur()
+                    setIsShopOpen(true)
+                  }}
+                  className="pointer-events-auto flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3.5 font-bold text-slate-800 text-xs shadow-sm hover:bg-white"
+                >
+                  <ShirtIcon aria-hidden="true" className="size-3.5" />
+                  {t("きせかえ", "Wardrobe")}
+                  <span className="text-amber-600 tabular-nums">
+                    ● {wardrobe.coins}
+                  </span>
+                </button>
+              </div>
               {isStatusOpen && (
                 <div className="fade-in slide-in-from-top-2 pointer-events-auto w-80 max-w-full animate-in space-y-3 rounded-3xl bg-white/95 p-4 text-left shadow-xl backdrop-blur duration-200">
                   <p className="font-black text-sm">
@@ -1727,12 +1863,15 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                     ? t("🏃 ここから走る", "🏃 Start running")
                     : lobbyNear === "ranking"
                       ? t("🏆 ランキングを見る", "🏆 View ranking")
-                      : t("💬 チャットをひらく", "💬 Open chat")}
+                      : lobbyNear === "shop"
+                        ? t("👗 きせかえをひらく", "👗 Open the wardrobe")
+                        : t("💬 チャットをひらく", "💬 Open chat")}
                 </button>
               )}
               {/* スマホでは、スタンプをスティックの上に並べる */}
-              {!isDesktop && lobbyEmotes}
-              {!isDesktop && lobbyStamps}
+              {!isDesktop && trayToggle}
+              {!isDesktop && isTrayOpen && lobbyEmotes}
+              {!isDesktop && isTrayOpen && lobbyStamps}
               <div className="flex w-full items-end justify-between gap-3 px-1">
                 <div
                   role="application"
@@ -1758,8 +1897,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 </div>
                 {isDesktop && (
                   <div className="flex min-w-0 flex-col items-center gap-2 pb-1">
-                    {lobbyEmotes}
-                    {lobbyStamps}
+                    {trayToggle}
+                    {isTrayOpen && lobbyEmotes}
+                    {isTrayOpen && lobbyStamps}
                     <p className="rounded-full bg-white/75 px-4 py-1 text-center font-bold text-xs">
                       {t(
                         "WASD・矢印キーで歩く、スペースでジャンプ、看板の前で Enter、1〜8 であいさつ",
@@ -1782,6 +1922,125 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               </div>
             </div>
           </>
+        )}
+
+        {isShopOpen && phase === "lobby" && (
+          <div className="absolute inset-0 z-20 flex items-end justify-center md:items-center md:justify-end md:p-6">
+            <button
+              type="button"
+              aria-label={t("きせかえをとじる", "Close the wardrobe")}
+              onClick={() => setIsShopOpen(false)}
+              className="absolute inset-0 cursor-default"
+            />
+            <div className="fade-in slide-in-from-bottom-4 relative flex max-h-[62%] w-full animate-in flex-col gap-3 rounded-t-3xl bg-white/95 p-4 shadow-2xl backdrop-blur duration-200 md:max-h-[86%] md:w-96 md:rounded-3xl">
+              <div className="flex items-center justify-between gap-2">
+                <p className="flex items-center gap-2 font-black text-base">
+                  <ShirtIcon aria-hidden="true" className="size-5" />
+                  {t("きせかえ", "Wardrobe")}
+                </p>
+                <p className="rounded-full bg-amber-100 px-3 py-1 font-black text-amber-700 text-sm tabular-nums">
+                  ● {wardrobe.coins}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsShopOpen(false)}
+                  aria-label={t("とじる", "Close")}
+                  className="flex size-9 cursor-pointer items-center justify-center rounded-full hover:bg-slate-100"
+                >
+                  <XIcon aria-hidden="true" className="size-5" />
+                </button>
+              </div>
+              <p className="text-slate-500 text-xs">
+                {t(
+                  "走って集めたコインがたまります。コインと買ったものは、この端末に保存されます。",
+                  "Coins you collect while running add up. Coins and items are saved on this device.",
+                )}
+              </p>
+              <div className="flex gap-1">
+                {PICTOR_RUN_WARDROBE_SLOTS.map((item) => (
+                  <button
+                    key={item.slot}
+                    type="button"
+                    aria-pressed={shopSlot === item.slot}
+                    onClick={() => setShopSlot(item.slot)}
+                    className={cn(
+                      "h-9 flex-1 cursor-pointer rounded-full font-bold text-xs transition-colors",
+                      shopSlot === item.slot
+                        ? "bg-slate-900 text-white"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200",
+                    )}
+                  >
+                    {t(item.ja, item.en)}
+                  </button>
+                ))}
+              </div>
+              <ul className="grid min-h-0 grid-cols-2 gap-2 overflow-y-auto">
+                {PICTOR_RUN_WARDROBE_ITEMS.filter(
+                  (item) => item.slot === shopSlot,
+                ).map((item) => {
+                  const isOwned = wardrobe.owned.includes(item.id)
+                  const isWorn = wardrobe.outfit[item.slot] === item.id
+                  const canBuy = wardrobe.coins >= item.price
+                  return (
+                    <li
+                      key={item.id}
+                      className={cn(
+                        "flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-center",
+                        isWorn
+                          ? "border-clear-bright-blue bg-sky-50"
+                          : "border-slate-200 bg-white",
+                      )}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="flex size-12 items-center justify-center rounded-full text-2xl"
+                        style={
+                          item.color === undefined
+                            ? undefined
+                            : {
+                                backgroundColor: `#${item.color.toString(16).padStart(6, "0")}`,
+                              }
+                        }
+                      >
+                        {item.color === undefined ? item.icon : ""}
+                      </span>
+                      <span className="font-bold text-xs">
+                        {t(item.ja, item.en)}
+                      </span>
+                      {isOwned ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleItem(item)}
+                          className={cn(
+                            "h-8 w-full cursor-pointer rounded-full font-black text-xs",
+                            isWorn
+                              ? "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                              : "bg-clear-bright-blue text-white hover:opacity-90",
+                          )}
+                        >
+                          {isWorn
+                            ? t("はずす", "Take off")
+                            : t("つける", "Wear")}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => buyItem(item)}
+                          disabled={!canBuy}
+                          className="h-8 w-full cursor-pointer rounded-full bg-amber-400 font-black text-slate-900 text-xs tabular-nums hover:bg-amber-300 disabled:cursor-default disabled:bg-slate-100 disabled:text-slate-400"
+                        >
+                          ● {item.price}{" "}
+                          {canBuy
+                            ? t("で買う", "Buy")
+                            : t("たりない", "Not enough")}
+                        </button>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          </div>
         )}
 
         {phase === "paused" && !isSettingsOpen && countdown === null && (
