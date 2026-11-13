@@ -590,6 +590,7 @@ function ProfitSection(props: {
                 {
                   label: "収支",
                   color: COLORS.profit,
+                  negativeColor: "#fb7185",
                   values: costDays.map(
                     (d) => (d.stripe?.net ?? 0) - (d.costs?.jpy ?? 0),
                   ),

@@ -3,6 +3,8 @@ import { useState } from "react"
 export type ChartSeries = {
   label: string
   color: string
+  /** マイナスの値の色（収支など。無ければ color） */
+  negativeColor?: string
   values: (number | null)[]
 }
 
@@ -48,14 +50,29 @@ export function AnalyticsChart(props: Props) {
           series.values.map((value) => value ?? 0),
         )),
   )
+  // マイナスがあるとき（収支など。積み上げでは使わない）は 0 より下も描く
+  const min = props.stacked
+    ? 0
+    : Math.min(
+        0,
+        ...props.series.flatMap((series) =>
+          series.values.map((value) => value ?? 0),
+        ),
+      )
   const niceMax = niceCeil(max)
+  const niceMin = min < 0 ? -niceCeil(-min) : 0
   const x = (index: number) =>
     PADDING.left +
     (count <= 1 ? innerWidth / 2 : (index / (count - 1)) * innerWidth)
   const y = (value: number) =>
-    PADDING.top + innerHeight - (value / niceMax) * innerHeight
+    PADDING.top +
+    innerHeight -
+    ((value - niceMin) / (niceMax - niceMin)) * innerHeight
   const barWidth = Math.max(1, (innerWidth / Math.max(count, 1)) * 0.7)
-  const ticks = [0, 0.25, 0.5, 0.75, 1].map((rate) => niceMax * rate)
+  const ticks =
+    niceMin < 0
+      ? [niceMin, niceMin / 2, 0, niceMax / 2, niceMax]
+      : [0, 0.25, 0.5, 0.75, 1].map((rate) => niceMax * rate)
   const labelStep = Math.max(1, Math.ceil(count / 8))
 
   const onMove = (event: React.MouseEvent<SVGSVGElement>) => {
@@ -117,15 +134,20 @@ export function AnalyticsChart(props: Props) {
               let base = 0
               return props.series.map((series) => {
                 const value = series.values[index] ?? 0
-                const top = props.stacked ? base + value : value
+                const top = props.stacked ? base + value : Math.max(value, 0)
+                const bottom = props.stacked ? base : Math.min(value, 0)
                 const rect = (
                   <rect
                     key={`${label}-${series.label}`}
                     x={x(index) - barWidth / 2}
                     y={y(top)}
                     width={barWidth}
-                    height={Math.max(0, y(props.stacked ? base : 0) - y(top))}
-                    fill={series.color}
+                    height={Math.max(0, y(bottom) - y(top))}
+                    fill={
+                      value < 0 && series.negativeColor
+                        ? series.negativeColor
+                        : series.color
+                    }
                     opacity={hover === null || hover === index ? 0.9 : 0.5}
                   />
                 )
@@ -212,7 +234,8 @@ function niceCeil(value: number) {
   return 10 * power
 }
 
-function compact(value: number) {
+function compact(value: number): string {
+  if (value < 0) return `-${compact(-value)}`
   if (value >= 1_000_000)
     return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`
   if (value >= 10_000) return `${(value / 1000).toFixed(0)}k`
