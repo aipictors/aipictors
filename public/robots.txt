@@ -120,6 +120,20 @@ User-agent: ElevenLabsCrawler
 User-agent: TikTokSpider
 Disallow: /
 
+# 流入のない検索・収集クローラー（Amazon の検索用が 1 日 2 万ページ超、Kakao が 4 千ページ超読みに来ていて、そこからの訪問はなかった）
+User-agent: Amzn-SearchBot
+User-agent: KakaoBot
+User-agent: RiverBot
+User-agent: tphotobot
+User-agent: Polon
+User-agent: Lanai-SearchBot
+User-agent: SofyaBot
+User-agent: Bengentbot
+User-agent: ShapBot
+User-agent: trendictionbot
+User-agent: ExaSearchBot
+Disallow: /
+
 # Apple の検索には入口のページだけを案内する（作品ごとの巡回が全アクセスの 1 割を超えていて、流入はほぼない）
 User-agent: Applebot
 Disallow: /posts/
