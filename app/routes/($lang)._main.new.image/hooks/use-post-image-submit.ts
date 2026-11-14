@@ -73,13 +73,20 @@ export function usePostImageSubmit(props: Props) {
       return []
     }
     const images = state.items.map((item) => item.content)
-    const uploads = images.map((image) => {
-      if (image === null) {
-        return null
+    // 全部を同時に送ると回線を分け合って 1 枚ごとが遅くなり、モバイル通信ではタイムアウトしやすい。
+    // 2 枚ずつ送る
+    const imageUrls: (string | null)[] = new Array(images.length).fill(null)
+    let next = 0
+    const worker = async () => {
+      while (next < images.length) {
+        const index = next++
+        const image = images[index]
+        if (image !== null) {
+          imageUrls[index] = await uploadPublicImage(image, token)
+        }
       }
-      return uploadPublicImage(image, token)
-    })
-    const imageUrls = await Promise.all(uploads)
+    }
+    await Promise.all([worker(), worker()])
     return imageUrls
   }
 
@@ -271,7 +278,9 @@ export function usePostImageSubmit(props: Props) {
         })
 
         if (work.data?.createWork === undefined) {
-          throw new Error(t("作品の投稿に失敗しました", "Failed to post the work"))
+          throw new Error(
+            t("作品の投稿に失敗しました", "Failed to post the work"),
+          )
         }
 
         // 生成履歴に「投稿済み」の印を付ける（失敗しても投稿には関係ない）
@@ -303,7 +312,9 @@ export function usePostImageSubmit(props: Props) {
           toast(error.message)
         }
 
-        await Promise.all(uploadedImageUrls.map((url) => deleteUploadedImage(url)))
+        await Promise.all(
+          uploadedImageUrls.map((url) => deleteUploadedImage(url)),
+        )
         dispatch({ type: "SET_PROGRESS", payload: 0 })
       } finally {
         finishPosting()
@@ -321,7 +332,9 @@ export function usePostImageSubmit(props: Props) {
       if (error instanceof Error) {
         toast(error.message)
       }
-      await Promise.all(uploadedImageUrls.map((url) => deleteUploadedImage(url)))
+      await Promise.all(
+        uploadedImageUrls.map((url) => deleteUploadedImage(url)),
+      )
       dispatch({ type: "SET_PROGRESS", payload: 0 })
       finishPosting()
     }

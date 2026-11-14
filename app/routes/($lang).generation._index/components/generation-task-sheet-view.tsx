@@ -100,9 +100,11 @@ export function GenerationTaskSheetView(props: Props) {
 
     const name = `${new Date().toISOString().replace(/[^0-9]/g, "")}`
 
+    // 生成情報が入っていない PNG（生成サーバーによる）には、生成履歴の内容を書き込む
     downloadImageFile(name, resolvedUrl, {
       skipGenerativeNormalization: isFallback,
       convertToPng: true,
+      pngParameters: imageElement?.dataset.generationParameters,
     })
   }
 
@@ -384,7 +386,11 @@ export function GenerationTaskSheetView(props: Props) {
 
   // Early returns after hooks
   if (displayStatus === "PENDING" || displayStatus === "IN_PROGRESS") {
-    return <InProgressImageGenerationTaskResult task={imageGenerationTask ?? undefined} />
+    return (
+      <InProgressImageGenerationTaskResult
+        task={imageGenerationTask ?? undefined}
+      />
+    )
   }
 
   if (userNanoid === null) return null
