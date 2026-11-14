@@ -134,6 +134,15 @@ export type PictorRunPeer = {
   outfit: string
 }
 
+export type PictorRunResident = {
+  /** 人ごとに決まった負の番号（つないでいる人の番号と重ならない） */
+  key: number
+  name: string
+  iconUrl: string | null
+  status: string | null
+  outfit: string
+}
+
 /** 持っているアイテム（magnet・star は残りの秒数） */
 export type PictorRunItems = { guard: boolean; magnet: number; star: number }
 
@@ -171,6 +180,8 @@ export type PictorRunGame = {
   jump: () => void
   /** ロビーにいる人・いま走っている人 */
   setPeers: (peers: PictorRunPeer[]) => void
+  /** さいきんロビーに来た人（いまはいない）。ロビーがさびしくないように、姿だけ出して動かしておく */
+  setResidents: (residents: PictorRunResident[]) => void
   /** ロビーで、頭の上にあいさつのふきだしを出す（key = 相手の番号。自分は null） */
   showStamp: (key: number | null, text: string) => void
   /** ロビーで、おどる・すわる などの動きをする（0 でやめる） */
@@ -2166,6 +2177,49 @@ export async function createPictorRunGame(
   }
   const avatars: Avatar[] = []
   let peerList: PictorRunPeer[] = []
+  let residentList: PictorRunResident[] = []
+  /** さいきん来た人の居場所（ベンチにすわる・噴水のまわりでおどる など。人数が少ないときだけ出す） */
+  const RESIDENT_MAX = 4
+  const toResidentPeers = (): PictorRunPeer[] => {
+    const live = peerList.filter((peer) => !peer.playing).length
+    const count = Math.max(0, RESIDENT_MAX - live)
+    return residentList.slice(0, count).map((resident, index) => {
+      const base = {
+        key: resident.key,
+        name: resident.name,
+        iconUrl: resident.iconUrl,
+        playing: false,
+        y: 0,
+        status: resident.status,
+        outfit: resident.outfit,
+      }
+      // 0・2 番めはベンチにすわる、1 番めはおどる、3 番めはくるくる回る
+      if (index % 2 === 0) {
+        const seat =
+          LOBBY_SEATS[(index * 3 + 2) % Math.max(1, LOBBY_SEATS.length)]
+        if (seat) {
+          return {
+            ...base,
+            x: seat.x,
+            z: seat.z,
+            f: seat.f,
+            emote: PICTOR_RUN_LOBBY_EMOTE.sit,
+          }
+        }
+      }
+      const angle = index === 1 ? 2.2 : -2.0
+      return {
+        ...base,
+        x: Math.sin(angle) * (LOBBY_FOUNTAIN + 2.2),
+        z: Math.cos(angle) * (LOBBY_FOUNTAIN + 2.2),
+        f: angle,
+        emote:
+          index === 1
+            ? PICTOR_RUN_LOBBY_EMOTE.dance
+            : PICTOR_RUN_LOBBY_EMOTE.spin,
+      }
+    })
+  }
   const makeAvatar = (): Avatar => {
     const copy = cloneSkinned(model)
     const materials: Material[] = []
@@ -2372,7 +2426,7 @@ export async function createPictorRunGame(
   const assignAvatars = () => {
     const shown =
       state === "lobby"
-        ? [...peerList]
+        ? [...peerList, ...toResidentPeers()]
             .sort((a, b) => Number(a.playing) - Number(b.playing))
             .slice(0, MAX_AVATARS)
         : []
@@ -3532,6 +3586,10 @@ void main() {
     },
     setPeers: (peers) => {
       peerList = peers
+      assignAvatars()
+    },
+    setResidents: (residents) => {
+      residentList = residents
       assignAvatars()
     },
     showStamp: (key, text) => {

@@ -140,6 +140,15 @@ export type PictorRunLobbyPeer = {
   w: string
 }
 
+/** さいきんロビーに来た人（いまはつないでいない。ロビーに姿だけ出しておく） */
+export type PictorRunLobbyRecent = {
+  k: string
+  name: string
+  icon: string | null
+  st: string | null
+  w: string
+}
+
 export type PictorRunLobbyConnection = {
   /** ロビーに入った・走りに戻った */
   setMode: (mode: PictorRunLobbyMode, x?: number, z?: number) => void
@@ -168,6 +177,8 @@ export function connectPictorRunLobby(props: {
   /** つないだときに身につけているもの */
   outfit: string
   onPeers: (peers: PictorRunLobbyPeer[]) => void
+  /** さいきんロビーに来た人（つないだときに 1 回届く） */
+  onRecent?: (recent: PictorRunLobbyRecent[]) => void
   /** ほかの人がスタンプを出した（走っている人のものは、そのときの距離が付く） */
   onStamp: (peer: PictorRunLobbyPeer, index: number) => void
 }): PictorRunLobbyConnection {
@@ -228,6 +239,7 @@ export function connectPictorRunLobby(props: {
         c?: number
         p?: PictorRunLobbyPeer
         peers?: PictorRunLobbyPeer[]
+        recent?: PictorRunLobbyRecent[]
         mode?: PictorRunLobbyMode
         x?: number
         z?: number
@@ -244,7 +256,8 @@ export function connectPictorRunLobby(props: {
       } catch {
         return
       }
-      if (message.t === "w") {
+      if (message.t === "w" && message.c === undefined) {
+        props.onRecent?.(message.recent ?? [])
         peers.clear()
         for (const peer of message.peers ?? []) {
           peers.set(peer.c, {

@@ -699,6 +699,21 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           JSON.stringify(current) === JSON.stringify(next) ? current : next,
         )
       },
+      onRecent: (recent) => {
+        gameRef.current?.setResidents(
+          recent
+            // 自分は出さない
+            .filter((item) => item.k !== `u${viewerIdRef.current}`)
+            .map((item, index) => ({
+              key: -1 - index,
+              name: item.name,
+              iconUrl: toSignIconUrl(item.icon),
+              // ステータスは、その人が最後に付けていたもの
+              status: toStatusTextRef.current(item.st),
+              outfit: item.w,
+            })),
+        )
+      },
       onStamp: (peer, index) => {
         const text = toStampText(index)
         if (!text) return
