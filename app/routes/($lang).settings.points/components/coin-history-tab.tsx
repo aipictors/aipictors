@@ -1,4 +1,5 @@
 import { Loader2, RefreshCw } from "lucide-react"
+import { Link } from "~/lib/app/locale-router"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
@@ -218,7 +219,16 @@ export function CoinHistoryTab(props: Props) {
                     )}
                     <div className="min-w-0 flex-1">
                       <p className="break-words text-sm leading-5">
-                        {group.label}
+                        {group.href ? (
+                          <Link
+                            to={group.href}
+                            className="underline-offset-2 hover:underline"
+                          >
+                            {group.label}
+                          </Link>
+                        ) : (
+                          group.label
+                        )}
                         {group.count > 1 && (
                           <span className="ml-1.5 text-muted-foreground text-xs">
                             ×{group.count}

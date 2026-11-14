@@ -84,9 +84,8 @@ export function SupportReceivedSummaryPage() {
   const [activeTab, setActiveTab] = useState("transfers")
   const [supportSummary, setSupportSummary] =
     useState<SupportSummaryResponse["data"]>(null)
-  const [coinSummary, setCoinSummary] = useState<CoinSummaryResponse["data"]>(
-    null,
-  )
+  const [coinSummary, setCoinSummary] =
+    useState<CoinSummaryResponse["data"]>(null)
 
   const { data: receivedCommentsData, loading: isLoadingReceivedComments } =
     useQuery(receivedWorkCommentsQuery, {
@@ -182,7 +181,9 @@ export function SupportReceivedSummaryPage() {
         <div className="space-y-2">
           <p className="flex items-center gap-2 font-semibold text-lg">
             <Inbox className="h-5 w-5 text-emerald-500" />
-            <span>{t("推された累計と交換", "Received support & exchange")}</span>
+            <span>
+              {t("推された累計と交換", "Received support & exchange")}
+            </span>
           </p>
           <p className="text-muted-foreground text-sm leading-6">
             {t(
@@ -192,7 +193,9 @@ export function SupportReceivedSummaryPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <CoinHelpDialog triggerLabel={t("推し・pt とは", "About support and pt")} />
+          <CoinHelpDialog
+            triggerLabel={t("推し・pt とは", "About support and pt")}
+          />
           <Button asChild variant="outline" size="sm">
             <Link to="/help?tab=coins">
               {t("/help のガイド", "Guide on /help")}
@@ -204,7 +207,12 @@ export function SupportReceivedSummaryPage() {
               {t("コイン設定へ戻る", "Back to coins")}
             </Link>
           </Button>
-          <Button onClick={() => void loadData()} variant="outline" size="sm" disabled={isLoading}>
+          <Button
+            onClick={() => void loadData()}
+            variant="outline"
+            size="sm"
+            disabled={isLoading}
+          >
             {isLoading ? t("更新中...", "Refreshing...") : t("更新", "Refresh")}
           </Button>
         </div>
@@ -251,10 +259,16 @@ export function SupportReceivedSummaryPage() {
 
       <AmazonExchangeSection
         premiumBalance={coinSummary?.premiumBalance ?? 0}
-        exchangeablePremiumBalance={coinSummary?.exchangeablePremiumBalance ?? 0}
+        exchangeablePremiumBalance={
+          coinSummary?.exchangeablePremiumBalance ?? 0
+        }
       />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="transfers">
             {t("受け取り履歴", "Received history")}
@@ -281,32 +295,40 @@ export function SupportReceivedSummaryPage() {
                   )}
                 </p>
               ) : (
-                (supportSummary?.recentReceivedTransfers ?? []).map((item, index) => (
-                  <div
-                    key={`${item.createdAt}-${item.senderUserId}-${index}`}
-                    className="flex flex-col gap-1 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div className="min-w-0">
-                      <p className="font-medium text-sm">
-                        {item.coinType === "PREMIUM"
-                          ? t("プレミアム応援を受け取り", "Received premium support")
-                          : t("フリー応援を受け取り", "Received free support")}
-                      </p>
-                      <p className="text-muted-foreground text-xs">
-                        {formatDateTime(item.createdAt)}
-                      </p>
+                (supportSummary?.recentReceivedTransfers ?? []).map(
+                  (item, index) => (
+                    <div
+                      key={`${item.createdAt}-${item.senderUserId}-${index}`}
+                      className="flex flex-col gap-1 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm">
+                          {item.coinType === "PREMIUM"
+                            ? t(
+                                "プレミアム応援を受け取り",
+                                "Received premium support",
+                              )
+                            : t(
+                                "フリー応援を受け取り",
+                                "Received free support",
+                              )}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {formatDateTime(item.createdAt)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm">
+                        <p>
+                          {formatNumber(item.coinAmount)}
+                          {t("コイン", " coins")}
+                        </p>
+                        <p className="font-semibold text-emerald-600 dark:text-emerald-400">
+                          {formatNumber(item.ptAmount)} pt
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm">
-                      <p>
-                        {formatNumber(item.coinAmount)}
-                        {t("コイン", " coins")}
-                      </p>
-                      <p className="font-semibold text-emerald-600 dark:text-emerald-400">
-                        {formatNumber(item.ptAmount)} pt
-                      </p>
-                    </div>
-                  </div>
-                ))
+                  ),
+                )
               )}
             </CardContent>
           </Card>
@@ -338,14 +360,19 @@ export function SupportReceivedSummaryPage() {
                     <div className="flex items-start gap-3">
                       <UserAvatarWithFrame
                         alt={comment.user?.name ?? ""}
-                        frame={(comment.user?.avatarFrame ?? null) as UserAvatarFramePresentation | null}
+                        frame={
+                          (comment.user?.avatarFrame ??
+                            null) as UserAvatarFramePresentation | null
+                        }
                         isAnimated={false}
                         sizeClassName="size-10"
                         src={withIconUrlFallback(comment.user?.iconUrl)}
                       />
                       <div className="min-w-0 flex-1 space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-semibold text-sm">{comment.user?.name}</span>
+                          <span className="font-semibold text-sm">
+                            {comment.user?.name}
+                          </span>
                           <span className="text-muted-foreground text-xs">
                             {formatDateTime(comment.createdAt)}
                           </span>
@@ -372,7 +399,15 @@ export function SupportReceivedSummaryPage() {
                           </Link>
                         )}
 
-                        {comment.text.length > 0 ? (
+                        {comment.isDeleted ? (
+                          // 推しコインは届いたまま。消したコメントの本文は出さない
+                          <p className="text-muted-foreground text-sm">
+                            {t(
+                              "コメントは削除されました（推しは届いています）",
+                              "The comment was deleted (the support was received)",
+                            )}
+                          </p>
+                        ) : comment.text.length > 0 ? (
                           <p className="whitespace-pre-wrap text-sm leading-6">
                             {comment.text}
                           </p>
@@ -466,6 +501,7 @@ const receivedWorkCommentsQuery = graphql(
       id
       createdAt
       text
+      isDeleted
       user {
         id
         name

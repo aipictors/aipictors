@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import {
   formatExpiry,
+  getLedgerHref,
   getLedgerLabel,
   getTodayLedgerStats,
   groupLedgerByDay,
@@ -187,5 +188,37 @@ describe("matchesLedgerFilter", () => {
     ).toBe(true)
     expect(matchesLedgerFilter(row({ kind: "EXPIRE" }), "expired")).toBe(true)
     expect(matchesLedgerFilter(row({ kind: "EXPIRE" }), "all")).toBe(true)
+  })
+})
+
+describe("コメントの推し", () => {
+  const support = (props: Partial<LedgerItem>) =>
+    row({
+      reason: "work-comment-support",
+      source: "work-comment:828636:42:1794659000000",
+      ...props,
+    })
+
+  test("推した作品のページを開ける（コメントを消しても行き先が分かる）", () => {
+    expect(getLedgerHref(support({}))).toBe("/posts/828636")
+    expect(getLedgerHref(row({}))).toBeNull()
+  })
+
+  test("受け取った側の行は「推してもらった」", () => {
+    expect(
+      getLedgerLabel(
+        support({ kind: "GRANT", delta: 3, coinType: "PREMIUM" }),
+        t,
+      ),
+    ).toBe("コメントで推してもらった")
+    expect(getLedgerLabel(support({}), t)).toBe("コメントで推した")
+  })
+
+  test("別の作品への推しは 1 行にまとめない", () => {
+    const days = groupLedgerByDay(
+      [support({ id: 1 }), support({ id: 2, source: "work-comment:1:42:1" })],
+      t,
+    )
+    expect(days[0].groups).toHaveLength(2)
   })
 })

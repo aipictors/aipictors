@@ -21,6 +21,8 @@ type LedgerGroup = {
   coinType: CoinType
   kind: string
   label: string
+  /** 推した作品など、その行に関係するページ */
+  href: string | null
   count: number
   delta: number
   firstAt: number
@@ -178,7 +180,10 @@ export const getLedgerLabel = (row: LedgerItem, t: Translate) => {
   }
 
   if (reason === "work-comment-support") {
-    return t("コメントで推した", "Supported in a comment")
+    // 受け取った側の行も同じ理由で入るので、増えた行は「推してもらった」
+    return row.delta > 0
+      ? t("コメントで推してもらった", "Received support in a comment")
+      : t("コメントで推した", "Supported in a comment")
   }
 
   if (reason === "coin support" || source.startsWith("profile-support:")) {
@@ -223,6 +228,15 @@ export const getLedgerLabel = (row: LedgerItem, t: Translate) => {
   return t("コインを受け取り", "Coins received")
 }
 
+/**
+ * 行に関係するページ。コメントの推しは source が work-comment:<作品 ID>:… なので、その作品を開く
+ * （コメントを消すと推しの行き先が分からなくなっていた）
+ */
+export const getLedgerHref = (row: LedgerItem): string | null => {
+  const match = (row.source ?? "").match(/^work-comment:(\d+):/)
+  return match ? `/posts/${match[1]}` : null
+}
+
 export const matchesLedgerFilter = (row: LedgerItem, filter: LedgerFilter) => {
   if (filter === "all") return true
   if (filter === "expired") return row.kind === "EXPIRE"
@@ -250,13 +264,15 @@ export const groupLedgerByDay = (
     }
 
     const label = getLedgerLabel(row, t)
+    const href = getLedgerHref(row)
     const last = day.groups[day.groups.length - 1]
 
     if (
       last &&
       last.coinType === row.coinType &&
       last.kind === row.kind &&
-      last.label === label
+      last.label === label &&
+      last.href === href
     ) {
       last.count += 1
       last.delta += row.delta
@@ -269,6 +285,7 @@ export const groupLedgerByDay = (
       coinType: row.coinType,
       kind: row.kind,
       label,
+      href,
       count: 1,
       delta: row.delta,
       firstAt: row.createdAt,
