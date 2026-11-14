@@ -78,6 +78,13 @@ export default function EditText() {
   }, [work?.mdUrl])
 
   useEffect(() => {
+    // 本文は作品の読み込み（INITIALIZE）より後に届くことが多い。
+    // 届いたら入力中の本文にも入れる（入れないと、エディタには本文が出ているのに
+    // 本文が空の扱いになって更新・プレビューができない）
+    dispatchInput({ type: "SET_MD", payload: markdownContent })
+  }, [markdownContent])
+
+  useEffect(() => {
     if (work) {
       dispatch({
         type: "INITIALIZE",

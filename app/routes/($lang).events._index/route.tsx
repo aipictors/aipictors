@@ -1,6 +1,12 @@
 import { gql } from "@apollo/client/index"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { Form, type MetaFunction, useLoaderData, useParams } from "@remix-run/react"
+import {
+  Form,
+  type MetaFunction,
+  useLoaderData,
+  useLocation,
+  useParams,
+} from "@remix-run/react"
 import { Link } from "~/lib/app/locale-router"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import {
@@ -747,6 +753,8 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const sort = (urlParams.get("sort")?.trim() ?? "SCHEDULE") as EventSortType
 
+  const tab = urlParams.get("tab") === "official" ? "official" : null
+
   const [resp, ongoingEventsSummaryResp] = await Promise.all([
     loaderClient.query({
       query: eventsQuery,
@@ -819,6 +827,7 @@ export async function loader(props: LoaderFunctionArgs) {
       status,
       ranking,
       sort,
+      tab,
     },
   }
 }
@@ -831,6 +840,8 @@ export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
   const params = useParams()
+
+  const location = useLocation()
 
   const t = useTranslation()
 
@@ -846,9 +857,12 @@ export default function FollowingLayout() {
     (event) => event.status === "ONGOING" || event.status === "UPCOMING",
   )
 
-  // ユーザー企画を最初に見せる（無いときだけ公式）
+  // ユーザー企画を最初に見せる（無いときだけ公式）。ページを移っても選んでいたタブのまま
   const defaultTab =
-    userEvents.length > 0 || officialEvents.length === 0 ? "user" : "official"
+    data.filters.tab ??
+    (userEvents.length > 0 || officialEvents.length === 0 ? "user" : "official")
+
+  const [tab, setTab] = useState(defaultTab)
 
   const hasActiveFilters =
     data.filters.keyword.length > 0 ||
@@ -875,12 +889,19 @@ export default function FollowingLayout() {
       params.set("sort", data.filters.sort)
     }
 
+    if (tab === "official") {
+      params.set("tab", "official")
+    }
+
     if (page > 0) {
       params.set("page", String(page))
     }
 
+    // "." だと /events から見てトップページ（/）を指してしまう
     const query = params.toString()
-    return query.length > 0 ? `?${query}` : "."
+    return query.length > 0
+      ? `${location.pathname}?${query}`
+      : location.pathname
   }
 
   const visiblePages = buildVisiblePages(data.page, data.hasNextPage)
@@ -967,7 +988,7 @@ export default function FollowingLayout() {
         </div>
       </header>
       <FeaturedEventRotator events={featuredEvents} />
-      <Tabs defaultValue={defaultTab} className="space-y-4">
+      <Tabs value={tab} onValueChange={setTab} className="space-y-4">
         <TabsList className="flex h-auto w-full gap-1 rounded-2xl bg-muted p-1">
           <EventCategoryTabTrigger
             value="user"
@@ -1012,6 +1033,9 @@ export default function FollowingLayout() {
             className="grid gap-3 border-t p-4 md:grid-cols-2 xl:grid-cols-[1fr_160px_170px_150px_auto]"
             method="get"
           >
+            {tab === "official" && (
+              <input type="hidden" name="tab" value="official" />
+            )}
             <Input
               name="q"
               aria-label={t("イベントを検索", "Search events")}
@@ -1074,7 +1098,7 @@ export default function FollowingLayout() {
                 variant="secondary"
                 className="w-full rounded-lg md:w-auto"
               >
-                <a href=".">{t("リセット", "Reset")}</a>
+                <a href={location.pathname}>{t("リセット", "Reset")}</a>
               </Button>
             </div>
           </Form>

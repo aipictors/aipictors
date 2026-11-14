@@ -104,13 +104,18 @@ export function WorksSetting(props: Props) {
     setSearchText(props.search)
   }, [props.search])
 
+  // 日本語の変換中（かなを打っている途中）は検索しない。
+  // iPhone の Safari は変換中も入力値が変わるので、「うちゅ」のような途中の文字で検索されていた
+  const [isComposing, setIsComposing] = useState(false)
+
   // 打ち終わってから検索する
   useEffect(() => {
+    if (isComposing) return
     const value = searchText.trim()
     if (value === props.search) return
-    const timer = setTimeout(() => props.setSearch(value), 400)
+    const timer = setTimeout(() => props.setSearch(value), 600)
     return () => clearTimeout(timer)
-  }, [searchText, props.search, props.setSearch])
+  }, [searchText, isComposing, props.search, props.setSearch])
 
   const accessTabs: {
     value: IntrospectionEnum<"AccessType"> | null
@@ -135,6 +140,19 @@ export function WorksSetting(props: Props) {
           type="search"
           value={searchText}
           onChange={(event) => setSearchText(event.target.value)}
+          onCompositionStart={() => setIsComposing(true)}
+          onCompositionEnd={(event) => {
+            setIsComposing(false)
+            setSearchText(event.currentTarget.value)
+          }}
+          onKeyDown={(event) => {
+            // 確定済みの文字で Enter を押したら、待たずに検索する
+            if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+              event.preventDefault()
+              props.setSearch(searchText.trim())
+            }
+          }}
+          enterKeyHint="search"
           placeholder={t(
             "タイトル・説明・タグで探す",
             "Search by title, description or tag",
