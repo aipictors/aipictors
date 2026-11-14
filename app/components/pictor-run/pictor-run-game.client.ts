@@ -1265,6 +1265,8 @@ export async function createPictorRunGame(
   let lastScore = -1
   let lastStage = 0
   let debugNoHit = false
+  /** 開発用: 障害物を自動で跳びこえる（紹介動画の撮影用） */
+  let debugAuto = false
   /** 宙にいた（着地の土けむりと音を出すため） */
   let airborne = false
   /** 跳ぶときにのびて、着地でつぶれる */
@@ -2996,6 +2998,16 @@ export async function createPictorRunGame(
         continue
       }
       if (state !== "running") continue
+      if (
+        debugAuto &&
+        obstacle.kind !== "bug" &&
+        y <= 0.001 &&
+        obstacle.x > 0.2 &&
+        obstacle.x <= speed * (JUMP_VELOCITY / GRAVITY) + 0.05
+      ) {
+        // いちばん高いところが、障害物の真上に来るように跳ぶ
+        press()
+      }
       if (debugNoHit) continue
       const hitX = Math.abs(obstacle.x) < obstacle.halfWidth + 0.26
       const hitY = y + 0.08 < obstacle.top && y + 1.3 > obstacle.bottom
@@ -3542,6 +3554,9 @@ void main() {
           debugNoHit = !on
         },
         distance: () => distance,
+        setAuto: (on: boolean) => {
+          debugAuto = on
+        },
       },
     })
   }
