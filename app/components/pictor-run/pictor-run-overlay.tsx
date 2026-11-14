@@ -69,6 +69,7 @@ import {
 } from "~/components/pictor-run/pictor-run-wardrobe"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { requestAchievementCheck } from "~/lib/achievements/achievement-ui"
 import { cn } from "~/lib/utils"
 
 type Props = Readonly<{
@@ -438,6 +439,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         .then((result) => {
           setRank(result.rank)
           setRankingKey((key) => key + 1)
+          // 隠し実績（はじめて遊んだ・全ステージを走りぬけた）を達成していたら、すぐ演出を出す
+          requestAchievementCheck()
         })
         .catch(() => {
           // ランキングに送れなくても遊べる

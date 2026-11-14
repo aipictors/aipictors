@@ -3706,5 +3706,23 @@
     "icon": "clock",
     "threshold": null,
     "isHidden": true
+  },
+  {
+    "key": "special-pictor-run-play",
+    "category": "SPECIAL",
+    "series": "special-pictor-run-play",
+    "tier": 1,
+    "icon": "footprints",
+    "threshold": null,
+    "isHidden": true
+  },
+  {
+    "key": "special-pictor-run-clear",
+    "category": "SPECIAL",
+    "series": "special-pictor-run-clear",
+    "tier": 4,
+    "icon": "flag",
+    "threshold": null,
+    "isHidden": true
   }
 ]
