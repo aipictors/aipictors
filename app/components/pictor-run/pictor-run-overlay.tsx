@@ -327,6 +327,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   /** 走っている間の、スタンプを選ぶ小さな窓 */
   const [isStampTrayOpen, setIsStampTrayOpen] = useState(false)
   const lastHudAt = useRef(0)
+  /** 走り始めた時刻（途中でやめたときに、走っていた時間を出すのに使う） */
+  const runStartAt = useRef(0)
   const lastHudCoins = useRef(0)
   /** いまの得点（画面の左上に m で出している数字） */
   const distanceRef = useRef(0)
@@ -473,6 +475,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             ].slice(0, 10)
           },
           onStart: () => {
+            runStartAt.current = performance.now()
+            lastHudCoins.current = 0
+            distanceRef.current = 0
             seenRef.current = []
             setScore(0)
             setCoins(0)
@@ -1113,8 +1118,41 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     >
       <ArmchairIcon aria-hidden="true" className="size-4" />
       {t("ロビーへ", "Go to lobby")}
+      <span className="rounded-full bg-slate-900/10 px-1.5 tabular-nums">
+        {t(`${crowd.lobby}人`, `${crowd.lobby}`)}
+      </span>
     </button>
   )
+  /**
+   * 走っている途中でやめて、ロビーへ行く。ここまでの記録とコインは残す
+   * （ランキングに送り、コインはきせかえ用にためる）
+   */
+  const quitToLobby = () => {
+    const finalScore = distanceRef.current
+    const finalCoins = lastHudCoins.current
+    if (finalCoins > 0) {
+      const saved = {
+        ...wardrobeRef.current,
+        coins: wardrobeRef.current.coins + finalCoins,
+      }
+      wardrobeRef.current = saved
+      savePictorRunWardrobe(saved)
+      setWardrobe(saved)
+    }
+    if (finalScore > readBest()) {
+      setBest(finalScore)
+      try {
+        window.localStorage.setItem(BEST_KEY, String(finalScore))
+      } catch {
+        // 保存できなくても遊べる
+      }
+    }
+    submit(finalScore, finalCoins, performance.now() - runStartAt.current)
+    gameRef.current?.setPaused(false)
+    setCountdown(null)
+    setIsStampTrayOpen(false)
+    enterLobby()
+  }
   /** ロビーで、ぴくたーちゃんを好きな向きに動かすスティック */
   const moveStick = (event: React.PointerEvent<HTMLDivElement>) => {
     const pad = event.currentTarget
@@ -1667,6 +1705,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   </span>
                 </p>
               ))}
+              <p className="rounded-full bg-white/80 px-2.5 py-1 font-black text-slate-800 text-xs shadow-sm">
+                ☕ {t(`ロビー ${crowd.lobby}人`, `${crowd.lobby} in the lobby`)}
+              </p>
               {runners.length > 0 && (
                 <div className="flex max-w-full items-center gap-1.5 rounded-full bg-white/80 py-1 pr-3 pl-2.5 text-slate-800 text-xs shadow-sm">
                   <span className="shrink-0 font-black">
@@ -2136,21 +2177,43 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
         )}
 
         {phase === "paused" && !isSettingsOpen && countdown === null && (
-          <button
-            type="button"
-            onClick={resume}
-            className="fade-in absolute inset-0 flex animate-in cursor-pointer flex-col items-center justify-center gap-3 bg-slate-900/35 duration-200"
-          >
-            <span className="font-black text-2xl text-white tracking-widest drop-shadow">
+          <div className="fade-in absolute inset-0 flex animate-in flex-col items-center justify-center gap-3 bg-slate-900/35 duration-200">
+            <button
+              type="button"
+              onClick={resume}
+              aria-label={t("再開", "Resume")}
+              className="absolute inset-0 cursor-pointer"
+            />
+            <span className="pointer-events-none relative font-black text-2xl text-white tracking-widest drop-shadow">
               {t("一時停止中", "PAUSED")}
             </span>
-            <span className="flex items-center gap-2 rounded-full bg-white/95 px-8 py-3 font-black text-lg shadow-lg">
+            <span className="pointer-events-none relative flex items-center gap-2 rounded-full bg-white/95 px-8 py-3 font-black text-lg shadow-lg">
               <PlayIcon aria-hidden="true" className="size-5" />
               {isDesktop
                 ? t("クリック / P で再開", "Click / P to resume")
                 : t("タップで再開", "Tap to resume")}
             </span>
-          </button>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.currentTarget.blur()
+                quitToLobby()
+              }}
+              className="relative mt-3 flex h-11 cursor-pointer items-center gap-2 rounded-full bg-slate-900/70 px-6 font-bold text-sm text-white ring-1 ring-white/40 hover:bg-slate-900/85"
+            >
+              <ArmchairIcon aria-hidden="true" className="size-4" />
+              {t("ここでやめてロビーへ", "Stop here and go to the lobby")}
+              <span className="rounded-full bg-white/20 px-1.5 text-xs tabular-nums">
+                {t(`${crowd.lobby}人`, `${crowd.lobby}`)}
+              </span>
+            </button>
+            <span className="pointer-events-none relative text-white/85 text-xs">
+              {t(
+                "ここまでの記録とコインは残ります",
+                "Your score and coins so far are kept",
+              )}
+            </span>
+          </div>
         )}
 
         {countdown !== null && countdown > 0 && (
