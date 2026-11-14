@@ -41,7 +41,7 @@ export function parsePictorRunShareKey(
 /** カードの画像（card.aipictors.com の Worker で作る。キャッシュがクエリ文字列を見ないので、パスに入れる） */
 export function toPictorRunCardUrl(result: PictorRunShareResult) {
   const user = result.userId ? `/${result.userId}` : ""
-  return `${CARD_ORIGIN}/pictor-run/v2/${result.score}-${result.coins}-${result.stage}${user}.png`
+  return `${CARD_ORIGIN}/pictor-run/v3/${result.score}-${result.coins}-${result.stage}${user}.png`
 }
 
 /** シェアするページ（X などに貼ると、カードの画像が出る） */

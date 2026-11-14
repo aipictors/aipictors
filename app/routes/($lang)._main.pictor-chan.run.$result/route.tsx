@@ -28,12 +28,12 @@ export const meta: MetaFunction = (props) => {
           )
         : t("ぴくたーちゃんラン", "Pictor-chan Run"),
       description: t(
-        "Aipictors のマスコット「ぴくたーちゃん」が走るミニゲーム。ジャンプで障害物をよけて、13 のステージを走りぬけよう。無料ですぐ遊べます。",
-        "A mini game starring Pictor-chan, the Aipictors mascot. Jump over obstacles and run through 13 stages. Free to play.",
+        "Aipictors のマスコット「ぴくたーちゃん」が走るミニゲーム。ジャンプで障害物をよけて、15 のステージを走りぬけよう。無料ですぐ遊べます。",
+        "A mini game starring Pictor-chan, the Aipictors mascot. Jump over obstacles and run through 15 stages. Free to play.",
       ),
       image: result
         ? toPictorRunCardUrl(result)
-        : "https://www.aipictors.com/images/pictor-chan/run/ogp-1.jpg",
+        : "https://www.aipictors.com/images/pictor-chan/run/ogp-2.jpg",
       // 結果ごとに無数にできるページなので、検索には出さない
       isIndex: false,
     },

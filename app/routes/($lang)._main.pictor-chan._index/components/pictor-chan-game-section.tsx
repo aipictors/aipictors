@@ -7,7 +7,10 @@ import {
   TrophyIcon,
   UsersIcon,
 } from "lucide-react"
-import { PICTOR_RUN_STAGES } from "~/components/pictor-run/pictor-run-stages"
+import {
+  PICTOR_RUN_STAGES,
+  toPictorRunStageFile,
+} from "~/components/pictor-run/pictor-run-stages"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { PictorChanReveal } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-reveal"
@@ -23,7 +26,7 @@ type Props = Readonly<{
 }>
 
 /**
- * ミニゲーム「ぴくたーちゃんラン」の紹介（13 ステージの景色が流れる）
+ * ミニゲーム「ぴくたーちゃんラン」の紹介（15 ステージの景色が流れる）
  */
 export function PictorChanGameSection(props: Props): React.ReactNode {
   const t = useTranslation()
@@ -31,7 +34,7 @@ export function PictorChanGameSection(props: Props): React.ReactNode {
   const features: { icon: React.ReactNode; title: string; text: string }[] = [
     {
       icon: <MapIcon aria-hidden="true" className="size-5" />,
-      title: t("全13ステージ", "13 stages"),
+      title: t("全15ステージ", "15 stages"),
       text: t(
         "草原、ネオン街、海の底、星の世界…走るほど景色が変わる",
         "Meadows, a neon city, the sea floor, outer space — the scenery changes as you run",
@@ -81,7 +84,7 @@ export function PictorChanGameSection(props: Props): React.ReactNode {
 
   const stages = PICTOR_RUN_STAGES.map((stage, index) => ({
     ...stage,
-    src: `/images/pictor-chan/run/bg/stage-${String(index + 1).padStart(2, "0")}-t.webp`,
+    src: `/images/pictor-chan/run/bg/stage-${toPictorRunStageFile(stage)}-t.webp`,
   }))
 
   return (
@@ -100,13 +103,13 @@ export function PictorChanGameSection(props: Props): React.ReactNode {
           </h2>
           <p className="mt-3 max-w-xl text-sm text-white/85 leading-relaxed md:text-base">
             {t(
-              "3D のぴくたーちゃんが走るミニゲーム。ジャンプで障害物をよけて、コインを集めながら 13 のステージを走りぬけよう。",
-              "A mini game where 3D Pictor-chan runs. Jump over obstacles, collect coins and run through 13 stages.",
+              "3D のぴくたーちゃんが走るミニゲーム。ジャンプで障害物をよけて、コインを集めながら 15 のステージを走りぬけよう。",
+              "A mini game where 3D Pictor-chan runs. Jump over obstacles, collect coins and run through 15 stages.",
             )}
           </p>
         </div>
 
-        {/* 13 ステージの景色が、横に流れていく */}
+        {/* 15 ステージの景色が、横に流れていく */}
         <div
           className="mt-8 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
           aria-hidden="true"

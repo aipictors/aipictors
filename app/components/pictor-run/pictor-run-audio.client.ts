@@ -1,3 +1,4 @@
+import { inPictorRunStageOrder } from "~/components/pictor-run/pictor-run-stages"
 /**
  * 「ぴくたーちゃんラン」の BGM と効果音。
  * 音はすべてその場で合成するので、読み込むファイルは増えない。
@@ -77,8 +78,8 @@ const MIYAKO = [0, 2, 3, 7, 8]
 /** 陽音階（わらべうたの音階） */
 const YO = [0, 2, 5, 7, 9]
 
-/** ステージと同じ並び */
-const SONGS: Song[] = [
+/** 作った順（PICTOR_RUN_STAGES の id の順） */
+const SONG_DEFS: Song[] = [
   // はじまりの草原
   {
     bpm: 132,
@@ -343,7 +344,50 @@ const SONGS: Song[] = [
     wet: 0.3,
     seed: 131,
   },
+  // じゃがいも畑
+  {
+    bpm: 126,
+    root: 55,
+    scale: MAJOR,
+    prog: [
+      [0, 0],
+      [5, 0],
+      [0, 0],
+      [7, 0],
+    ],
+    lead: "triangle",
+    leadGain: 0.16,
+    bass: "triangle",
+    arp: "square",
+    drums: 2,
+    cutoff: 8000,
+    wet: 0.14,
+    seed: 141,
+  },
+  // Aipictors デジタルワールド
+  {
+    bpm: 138,
+    root: 57,
+    scale: DORIAN,
+    prog: [
+      [0, 1],
+      [5, 0],
+      [10, 0],
+      [7, 1],
+    ],
+    lead: "sawtooth",
+    leadGain: 0.08,
+    bass: "sawtooth",
+    arp: "square",
+    drums: 3,
+    cutoff: 7000,
+    wet: 0.3,
+    seed: 151,
+  },
 ]
+
+/** 走る順に並べ替えたもの */
+const SONGS = inPictorRunStageOrder(SONG_DEFS)
 
 /** 1 小節 = 16 コマ、1 曲 = 8 小節 */
 const BAR = 16

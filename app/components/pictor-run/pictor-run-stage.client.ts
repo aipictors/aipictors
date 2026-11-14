@@ -51,8 +51,10 @@ import {
 import { Reflector } from "three/examples/jsm/objects/Reflector.js"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 import {
+  inPictorRunStageOrder,
   PICTOR_RUN_STAGE_LENGTH,
   PICTOR_RUN_STAGES,
+  toPictorRunStageFile,
 } from "~/components/pictor-run/pictor-run-stages"
 
 /**
@@ -819,7 +821,7 @@ type Theme = {
 }
 
 // ---- ステージごとの色と形 -----------------------------------------------------
-const THEMES: Theme[] = [
+const THEME_DEFS: Theme[] = [
   // はじまりの草原
   {
     sky: [0x4aa8ff, 0x9fd8ff, 0xe8f8ff],
@@ -2983,6 +2985,260 @@ const THEMES: Theme[] = [
       }
     },
   },
+  // じゃがいも畑
+  {
+    sky: [0x4aa0f5, 0x9fd4ff, 0xeaf7ff],
+    sun: 0xfff3c0,
+    sunLight: 0xfffaf0,
+    sunPower: 1.7,
+    ambient: 0xffffff,
+    ambientPower: 1.5,
+    far: 0xb4d4f0,
+    near: 0x8fc0e8,
+    cloud: 0xffffff,
+    cloudAlpha: 1,
+    stars: 0,
+    lamp: 0,
+    height: 0.62,
+    ground: 0x8a5a3c,
+    hills: [0x8fd07a, 0x6fbf78],
+    path: 0xead9b8,
+    cliff: 0x7a4a30,
+    water: 0x58b8f0,
+    particle: {
+      color: 0xffffff,
+      size: 0.22,
+      fall: 0.3,
+      drift: 1.0,
+      dot: false,
+    },
+    build: () => {
+      /** じゃがいもの株（白い花つき） */
+      const plant = () => [
+        ...bush(0x3f9a52, 0x55b266, 0x358a48),
+        ...(
+          [
+            [0.1, 0.62, 0.12],
+            [-0.26, 0.44, 0.16],
+            [0.38, 0.48, 0.1],
+          ] as V3[]
+        ).flatMap((pos) => [
+          ball(0xffffff, pos, [0.07, 0.04, 0.07], 8),
+          ball(0xffd84a, [pos[0], pos[1] + 0.03, pos[2]], 0.025, 6),
+        ]),
+      ]
+      /** じゃがいもの山 */
+      const potatoes = (x: number, y: number, z: number, scale = 1) =>
+        (
+          [
+            [0, 0, 0, 0.13],
+            [0.2, -0.01, 0.06, 0.11],
+            [-0.18, -0.02, 0.04, 0.12],
+            [0.06, 0.12, 0.02, 0.1],
+            [-0.06, -0.02, 0.18, 0.1],
+          ] as const
+        ).map(([px, py, pz, size], index) =>
+          lump(
+            index % 2 === 0 ? 0xd9b46a : 0xc9a055,
+            [x + px * scale, y + py * scale, z + pz * scale],
+            [size * 1.25 * scale, size * scale, size * scale],
+          ),
+        )
+      return {
+        tall: [
+          join(roundTree(0x8a5a40, 0x5fbf6a, 0x4cae60, 0x7ad680)),
+          join(roundTree(0x8a5a40, 0x6fca78, 0x58b86a, 0x8fe090)),
+        ],
+        mid: [
+          join(plant()),
+          // 木箱いっぱいのじゃがいも
+          join([
+            box(0xb9855a, [0.8, 0.42, 0.56], [0, 0.21, 0]),
+            box(0x9a6a44, [0.84, 0.06, 0.6], [0, 0.4, 0]),
+            box(0x9a6a44, [0.84, 0.06, 0.6], [0, 0.12, 0]),
+            ...potatoes(0, 0.5, 0, 1.25),
+          ]),
+          // 麻ぶくろ
+          join([
+            cyl(0xc9ae7a, 0.2, 0.3, 0.6, [0, 0.3, 0], 10),
+            ring(0x8a6a40, 0.2, 0.02, [0, 0.58, 0], [Math.PI / 2, 0, 0]),
+            ...potatoes(0, 0.66, 0, 0.9),
+            ...potatoes(0.45, 0.1, 0.2, 0.9),
+          ]),
+        ],
+        small: [
+          join(plant().map((item) => item.applyMatrix4(xf([0, 0, 0], 0.62)))),
+          join(potatoes(0, 0.1, 0, 1)),
+          join(flowers(0x4fae62, 0xffffff, 0xffd84a)),
+        ],
+        feature: [
+          join(fence(0xb9855a, 0x9a6a44)),
+          // かかし
+          join([
+            cyl(0x9a6a44, 0.04, 0.04, 1.7, [0, 0.85, 0], 6),
+            box(0x9a6a44, [1.2, 0.07, 0.07], [0, 1.2, 0]),
+            box(0x4f8fd8, [0.5, 0.56, 0.2], [0, 1.02, 0]),
+            ball(0xf0d9a8, [0, 1.52, 0], 0.17, 10),
+            cone(0xd9b25a, 0.3, 0.26, [0, 1.76, 0], 10),
+            cyl(0xd9b25a, 0.36, 0.36, 0.03, [0, 1.65, 0], 12),
+          ]),
+          // 「じゃがいも」の立て札
+          join([
+            cyl(0x9a6a44, 0.035, 0.035, 0.7, [0, 0.35, 0], 6),
+            box(0xfff3dc, [0.7, 0.36, 0.05], [0, 0.78, 0]),
+            lump(0xd9b46a, [0, 0.78, 0.04], [0.17, 0.12, 0.03]),
+          ]),
+        ],
+        far: [
+          // 納屋
+          join([
+            box(0xb5523c, [3.6, 2.4, 2.8], [0, 1.2, 0]),
+            prism(0x7a3a2a, 3.9, 1.6, 3.1, [0, 2.4, 0]),
+            box(0xfff3dc, [1.1, 1.5, 0.1], [0, 0.75, 1.42]),
+          ]),
+        ],
+        lamp: join(lampPost(0x7a5a3a, 0x7a5a3a, 0xfff1b0)),
+      }
+    },
+  },
+  // Aipictors デジタルワールド
+  {
+    sky: [0x050a2e, 0x10206a, 0x2a5ad0],
+    sun: 0xcfe8ff,
+    sunLight: 0xa8c8ff,
+    sunPower: 1.1,
+    ambient: 0xc0d4ff,
+    ambientPower: 1.3,
+    far: 0x14267a,
+    near: 0x0e1a58,
+    cloud: 0x3a5ac8,
+    cloudAlpha: 0.5,
+    stars: 0.6,
+    lamp: 1,
+    height: 0.7,
+    ground: 0x16246e,
+    hills: [0x1a2c80, 0x22389a],
+    path: 0x8fa8e8,
+    cliff: 0x101a55,
+    water: 0x1f3fa0,
+    particle: {
+      color: 0x7ae0ff,
+      size: 0.13,
+      fall: -0.25,
+      drift: 0.2,
+      dot: true,
+    },
+    aligned: true,
+    build: () => {
+      const ORANGE = 0xff8a1f
+      const BLUE = 0x4d8dff
+      const TEAL = 0x2fe0c8
+      const PINK = 0xff6fa8
+      /** 作品のカード（光る絵と、下にいいねの印） */
+      const card = (
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        color: number,
+        z = 0,
+      ) => [
+        box(0x1a2a6a, [w + 0.08, h + 0.08, 0.05], [x, y, z]),
+        lit(box(color, [w, h, 0.04], [x, y, z + 0.02]), 1),
+        lit(
+          box(
+            0xffffff,
+            [w * 0.5, 0.04, 0.04],
+            [x - w * 0.2, y - h / 2 - 0.09, z + 0.02],
+          ),
+          0.8,
+        ),
+        lit(
+          ball(PINK, [x + w * 0.38, y - h / 2 - 0.09, z + 0.03], 0.045, 8),
+          1.2,
+        ),
+      ]
+      return {
+        tall: [
+          join(building(1.4, 4.6, 1.2, 0x18267a, [BLUE, TEAL, 0xffffff], 151)),
+          join(building(1.1, 3.4, 1.0, 0x1c2c88, [ORANGE, BLUE], 152)),
+        ],
+        mid: [
+          // 宙に浮かぶ作品のカード
+          join([
+            ...card(0, 1.0, 0.7, 0.5, BLUE),
+            lit(cyl(TEAL, 0.02, 0.02, 0.7, [0, 0.35, 0], 6), 0.6),
+            lit(ring(TEAL, 0.22, 0.02, [0, 0.03, 0], [Math.PI / 2, 0, 0]), 1),
+          ]),
+          join([
+            ...card(0, 0.9, 0.5, 0.66, ORANGE),
+            lit(cyl(BLUE, 0.02, 0.02, 0.56, [0, 0.28, 0], 6), 0.6),
+            lit(ring(BLUE, 0.22, 0.02, [0, 0.03, 0], [Math.PI / 2, 0, 0]), 1),
+          ]),
+          // データのかたまり
+          join([
+            lit(box(TEAL, [0.34, 0.34, 0.34], [0, 0.3, 0], [0.5, 0.6, 0]), 0.9),
+            lit(
+              box(BLUE, [0.2, 0.2, 0.2], [0.34, 0.62, 0.05], [0.3, 0.2, 0.4]),
+              0.9,
+            ),
+            lit(
+              box(ORANGE, [0.14, 0.14, 0.14], [-0.3, 0.7, 0], [0.2, 0.7, 0.1]),
+              1,
+            ),
+          ]),
+        ],
+        small: [
+          join([lit(gem(TEAL, [0, 0.22, 0], [0.12, 0.2, 0.12]), 1.1)]),
+          join([lit(gem(ORANGE, [0, 0.2, 0], [0.1, 0.18, 0.1]), 1.1)]),
+          join([
+            lit(ball(PINK, [0, 0.3, 0], 0.08, 8), 1.2),
+            lit(ball(PINK, [0.11, 0.33, 0], 0.06, 8), 1.2),
+            lit(ball(PINK, [-0.11, 0.33, 0], 0.06, 8), 1.2),
+          ]),
+        ],
+        feature: [
+          // ブラウザの窓（作品の一覧）
+          join([
+            box(0x101c58, [2.3, 1.5, 0.06], [0, 1.15, 0]),
+            lit(box(0xffffff, [2.3, 0.14, 0.07], [0, 1.83, 0]), 0.7),
+            lit(ball(ORANGE, [-1.02, 1.83, 0.04], 0.04, 8), 1.2),
+            lit(ball(TEAL, [-0.9, 1.83, 0.04], 0.04, 8), 1.2),
+            ...[BLUE, ORANGE, TEAL, PINK, TEAL, BLUE].flatMap(
+              (color, index) => [
+                lit(
+                  box(
+                    color,
+                    [0.62, 0.5, 0.04],
+                    [
+                      (index % 3) * 0.72 - 0.72,
+                      1.4 - Math.floor(index / 3) * 0.62,
+                      0.04,
+                    ],
+                  ),
+                  0.9,
+                ),
+              ],
+            ),
+            cyl(0x2a3a8a, 0.04, 0.04, 0.4, [-0.9, 0.2, 0], 6),
+            cyl(0x2a3a8a, 0.04, 0.04, 0.4, [0.9, 0.2, 0], 6),
+          ]),
+          // 「投稿」のゲート
+          join([
+            lit(box(BLUE, [0.08, 1.9, 0.08], [-0.7, 0.95, 0]), 0.9),
+            lit(box(BLUE, [0.08, 1.9, 0.08], [0.7, 0.95, 0]), 0.9),
+            lit(box(ORANGE, [1.6, 0.3, 0.1], [0, 2.0, 0]), 1),
+            lit(cone(0xffffff, 0.1, 0.16, [0, 2.02, 0.07], 3), 1.2),
+          ]),
+        ],
+        far: [
+          join(building(2.6, 7.5, 2.2, 0x14226e, [BLUE, TEAL, ORANGE], 153)),
+          join(building(2.0, 5.5, 1.8, 0x182a80, [0xffffff, BLUE], 154)),
+        ],
+        lamp: join(lampPost(0x2a3a9a, 0x2a3a9a, 0x9fe8ff)),
+      }
+    },
+  },
 ]
 
 type Air = {
@@ -2997,7 +3253,7 @@ type Air = {
 }
 
 /** ステージごとの空気（THEMES と同じ並び） */
-const AIR: Air[] = [
+const AIR_DEFS: Air[] = [
   {
     fog: [16, 75],
     mist: 0.14,
@@ -3083,10 +3339,26 @@ const AIR: Air[] = [
     flyer: "bird",
     flyerColor: 0xf2c14e,
   },
+  // じゃがいも畑
+  {
+    fog: [16, 75],
+    mist: 0.16,
+    shafts: 0.16,
+    flyer: "bird",
+    flyerColor: 0x5a4a3a,
+  },
+  // Aipictors デジタルワールド
+  {
+    fog: [14, 55],
+    mist: 0.3,
+    shafts: 0,
+    flyer: "meteor",
+    flyerColor: 0x9fe8ff,
+  },
 ]
 
 /** ステージごとの雨の強さと、地面の濡れぐあい（THEMES と同じ並び） */
-const WEATHER: { rain: number; wet: number }[] = [
+const WEATHER_DEFS: { rain: number; wet: number }[] = [
   { rain: 0, wet: 0 },
   { rain: 0, wet: 0 },
   { rain: 0, wet: 0 },
@@ -3100,15 +3372,28 @@ const WEATHER: { rain: number; wet: number }[] = [
   { rain: 0, wet: 0 },
   { rain: 0, wet: 0 },
   { rain: 0, wet: 0 },
+  { rain: 0, wet: 0 },
+  { rain: 0, wet: 0.5 },
 ]
 
 /** 夜に自分で光らせる色（ステージの番号ごと） */
-const GLOW: Record<number, ReadonlySet<number>> = {
+const GLOW_DEFS: Record<number, ReadonlySet<number>> = {
   6: new Set([
     0xff5ab0, 0x7af0ff, 0xfff1a0, 0xff5a5a, 0xffb0e0, 0xbff4ff, 0xffc040,
   ]),
   10: new Set([0xff7a2a, 0xffb040, 0xff5a2a, 0xff6a1a]),
+  14: new Set([0xff8a1f, 0x4d8dff, 0x2fe0c8, 0xff6fa8, 0xffffff, 0x9fe8ff]),
 }
+
+// ここまでの表は、作った順（PICTOR_RUN_STAGES の id の順）。ここで、走る順に並べ替える
+const THEMES = inPictorRunStageOrder(THEME_DEFS)
+const AIR = inPictorRunStageOrder(AIR_DEFS)
+const WEATHER = inPictorRunStageOrder(WEATHER_DEFS)
+const GLOW: Record<number, ReadonlySet<number>> = Object.fromEntries(
+  PICTOR_RUN_STAGES.flatMap((stage, index) =>
+    GLOW_DEFS[stage.id - 1] ? [[index, GLOW_DEFS[stage.id - 1]]] : [],
+  ),
+)
 
 /** ステージの終わりのこの長さ（m）で、空や地面の色を次のステージへ移す */
 const BLEND_LENGTH = 14
@@ -3156,7 +3441,7 @@ export function createPictorRunStage(
   lights: { ambient: AmbientLight; sun: DirectionalLight },
   options: PictorRunStageOptions,
 ): PictorRunStage {
-  if (THEMES.length !== PICTOR_RUN_STAGES.length) {
+  if (THEME_DEFS.length !== PICTOR_RUN_STAGES.length) {
     throw new Error("stage count mismatch")
   }
   const { lite, shadows, camera, renderer } = options
@@ -4264,7 +4549,7 @@ void main() {
     const item = backdrops[index]
     if (item.state !== "none") return
     item.state = "loading"
-    const name = String(index + 1).padStart(2, "0")
+    const name = toPictorRunStageFile(PICTOR_RUN_STAGES[index])
     backdropLoader.load(
       `/images/pictor-chan/run/bg/stage-${name}${lite ? "-s" : ""}.webp`,
       (texture) => {

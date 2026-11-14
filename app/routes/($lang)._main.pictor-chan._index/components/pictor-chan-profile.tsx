@@ -240,7 +240,7 @@ export function PictorChanProfile(): React.ReactNode {
               {[
                 [t("誕生日", "Birthday"), t("11月21日", "Nov 21")],
                 [t("好きなもの", "Loves"), t("じゃがいも", "Potatoes")],
-                [t("ミニゲーム", "Mini game"), t("全13ステージ", "13 stages")],
+                [t("ミニゲーム", "Mini game"), t("全15ステージ", "15 stages")],
               ].map(([label, value]) => (
                 <div key={label} className="flex items-baseline gap-2">
                   <dt className="text-white/60">{label}</dt>

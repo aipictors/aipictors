@@ -1,7 +1,10 @@
 import { ArmchairIcon, Gamepad2Icon } from "lucide-react"
 import { lazy, Suspense, useEffect, useState } from "react"
 import { fetchPictorRunLobbyCount } from "~/components/pictor-run/pictor-run-lobby"
-import { PICTOR_RUN_STAGES } from "~/components/pictor-run/pictor-run-stages"
+import {
+  PICTOR_RUN_STAGES,
+  toPictorRunStageFile,
+} from "~/components/pictor-run/pictor-run-stages"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { PictorChanGameSection } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-game-section"
@@ -110,8 +113,8 @@ export function PictorRunLanding(): React.ReactNode {
             </h1>
             <p className="mx-auto max-w-md text-sm text-white/90 leading-relaxed md:mx-0 md:text-base">
               {t(
-                "Aipictors のマスコット「ぴくたーちゃん」が走る、3D のランゲームです。ジャンプで障害物をよけてコインを集め、全 13 ステージを走りぬけよう。",
-                "A 3D endless runner starring Pictor-chan, the Aipictors mascot. Jump over obstacles, collect coins and run through all 13 stages.",
+                "Aipictors のマスコット「ぴくたーちゃん」が走る、3D のランゲームです。ジャンプで障害物をよけてコインを集め、全 15 ステージを走りぬけよう。",
+                "A 3D endless runner starring Pictor-chan, the Aipictors mascot. Jump over obstacles, collect coins and run through all 15 stages.",
               )}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
@@ -175,8 +178,8 @@ export function PictorRunLanding(): React.ReactNode {
             [
               t("遠くまで走る", "Run as far as you can"),
               t(
-                "ハートは 3 つ。80m ごとに景色が変わり、全部で 13 ステージ。記録はランキングにのります。",
-                "You have 3 hearts. The scenery changes every 80 m across 13 stages. Scores go on the ranking.",
+                "ハートは 3 つ。80m ごとに景色が変わり、全部で 15 ステージ。記録はランキングにのります。",
+                "You have 3 hearts. The scenery changes every 80 m across 15 stages. Scores go on the ranking.",
               ),
             ],
           ].map(([title, text], index) => (
@@ -203,7 +206,7 @@ export function PictorRunLanding(): React.ReactNode {
 
       <section className="px-1">
         <h2 className="font-black text-2xl md:text-3xl">
-          {t("全 13 ステージ", "All 13 stages")}
+          {t("全 15 ステージ", "All 15 stages")}
         </h2>
         <ol className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {PICTOR_RUN_STAGES.map((stage, index) => (
@@ -212,7 +215,7 @@ export function PictorRunLanding(): React.ReactNode {
               className="overflow-hidden rounded-2xl border bg-card"
             >
               <img
-                src={`/images/pictor-chan/run/bg/stage-${String(index + 1).padStart(2, "0")}-t.webp`}
+                src={`/images/pictor-chan/run/bg/stage-${toPictorRunStageFile(stage)}-t.webp`}
                 alt={t(
                   `ステージ ${index + 1}「${stage.ja}」の景色`,
                   `Stage ${index + 1}: ${stage.en}`,

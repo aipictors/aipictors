@@ -2281,7 +2281,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   `Reached stage ${stage + 1}: ${stageName.en}`,
                 )}
               </p>
-              {/* 13 ステージのうち、今回どこまで来たか */}
+              {/* 15 ステージのうち、今回どこまで来たか */}
               <div aria-hidden="true" className="flex items-center gap-1">
                 {PICTOR_RUN_STAGES.map((item, index) => (
                   <span

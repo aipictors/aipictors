@@ -13,7 +13,7 @@ import {
 import { createMeta } from "~/utils/create-meta"
 
 const PAGE_URL = "https://www.aipictors.com/pictor-chan/run"
-const IMAGE_URL = "https://www.aipictors.com/images/pictor-chan/run/ogp-1.jpg"
+const IMAGE_URL = "https://www.aipictors.com/images/pictor-chan/run/ogp-2.jpg"
 
 /**
  * ミニゲーム「ぴくたーちゃんラン」のページ（/pictor-chan/run）。
@@ -26,9 +26,9 @@ export const meta: MetaFunction = (props) => {
         "ぴくたーちゃんラン｜無料で遊べる 3D ランゲーム（ブラウザ・スマホ対応）",
       enTitle: "Pictor-chan Run | Free 3D Runner Game in Your Browser",
       description:
-        "ぴくたーちゃんランは、Aipictors のマスコット「ぴくたーちゃん」が走る無料のブラウザゲームです。インストールも登録もなしで、スマホや PC ですぐ遊べます。ジャンプで障害物をよけて全 13 ステージを走り、ランキングやロビーでみんなと遊べます。",
+        "ぴくたーちゃんランは、Aipictors のマスコット「ぴくたーちゃん」が走る無料のブラウザゲームです。インストールも登録もなしで、スマホや PC ですぐ遊べます。ジャンプで障害物をよけて全 15 ステージを走り、ランキングやロビーでみんなと遊べます。",
       enDescription:
-        "Pictor-chan Run is a free 3D runner game starring the Aipictors mascot. No install or sign-up. Run 13 stages and meet others in the lobby.",
+        "Pictor-chan Run is a free 3D runner game starring the Aipictors mascot. No install or sign-up. Run 15 stages and meet others in the lobby.",
       image: IMAGE_URL,
       // 記事ではなく、ゲームそのもののページ（og:type = website）
       isTop: true,
