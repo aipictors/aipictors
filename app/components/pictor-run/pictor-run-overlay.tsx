@@ -271,8 +271,13 @@ const mergeMessages = (
 export default function PictorRunOverlay(props: Props): React.ReactNode {
   const t = useTranslation()
   const auth = useContext(AuthContext)
-  const viewerId = auth.isLoggedIn ? auth.userId : null
-  const viewerName = auth.isLoggedIn ? auth.displayName : null
+  // 開発中だけ: ログインできない確認用のブラウザで、ログイン中の見た目を確かめるための仮の利用者
+  const debugViewer =
+    import.meta.env.DEV && typeof window !== "undefined"
+      ? window.localStorage.getItem("pictor-run-debug-viewer")
+      : null
+  const viewerId = auth.isLoggedIn ? auth.userId : debugViewer
+  const viewerName = auth.isLoggedIn ? auth.displayName : debugViewer
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const gameRef = useRef<PictorRunGame | null>(null)
   const [phase, setPhase] = useState<Phase>("loading")

@@ -22,6 +22,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { PictorChan3dSection } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-3d-section"
+import { PictorChanLobbySection } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-lobby-section"
 import { PictorChanGameSection } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-game-section"
 import { PictorChanReveal } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-reveal"
 import { PictorChanStyles } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-styles"
@@ -334,6 +335,9 @@ export function PictorChanProfile(): React.ReactNode {
           </div>
         </PictorChanReveal>
       </section>
+
+      {/* ロビーの入口（いまいる人数と、新しいチャット） */}
+      <PictorChanLobbySection onLobby={() => setGame("lobby")} crowd={crowd} />
 
       {/* ミニゲーム */}
       <PictorChanGameSection

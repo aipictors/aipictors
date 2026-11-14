@@ -1,6 +1,7 @@
 import {
   AtSignIcon,
   CornerDownRightIcon,
+  KeyboardIcon,
   PaletteIcon,
   ReplyIcon,
   SendIcon,
@@ -23,10 +24,10 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
-/** スタンプ選びは押されたときにだけ読み込む */
-const StickerDialog = lazy(() =>
-  import("~/components/work/sticker-dialog").then((module) => ({
-    default: module.StickerDialog,
+/** スタンプの一覧は押されたときにだけ読み込む */
+const StickerPanel = lazy(() =>
+  import("~/components/pictor-run/pictor-run-sticker-panel").then((module) => ({
+    default: module.PictorRunStickerPanel,
   })),
 )
 
@@ -144,6 +145,11 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isStickerOpen, setIsStickerOpen] = useState(false)
+  /** プレビュー中のスタンプ（もう一度押すと送る） */
+  const [stickerPreview, setStickerPreview] = useState<{
+    id: string
+    url: string
+  } | null>(null)
   const [hasNew, setHasNew] = useState(false)
   /** 押して、返信などのボタンを出している書き込み */
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -369,7 +375,14 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
                         background.dark ? "text-white" : "text-slate-800",
                       )}
                     >
-                      <PictorRunUserName user={message.user} />
+                      <span className="flex min-w-0 items-center gap-1">
+                        <PictorRunUserName user={message.user} />
+                        {message.source === "discord" && (
+                          <span className="shrink-0 rounded bg-[#5865f2] px-1 py-px font-bold text-[10px] text-white leading-tight">
+                            Discord
+                          </span>
+                        )}
+                      </span>
                     </div>
                   )}
                   <div
@@ -504,6 +517,36 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
         )}
       </div>
 
+      {stickerPreview && (
+        <div className="relative h-0">
+          <div className="fade-in zoom-in-95 absolute inset-x-0 bottom-0 flex animate-in items-center justify-center bg-slate-900/45 py-3 duration-150">
+            <button
+              type="button"
+              onClick={() => {
+                const sticker = stickerPreview
+                setStickerPreview(null)
+                void send(sticker)
+              }}
+              aria-label={t("このスタンプを送る", "Send this sticker")}
+              className="cursor-pointer transition-transform active:scale-95"
+            >
+              <img
+                src={stickerPreview.url}
+                alt=""
+                className="size-32 object-contain drop-shadow-lg"
+              />
+            </button>
+            <button
+              type="button"
+              onClick={() => setStickerPreview(null)}
+              aria-label={t("やめる", "Cancel")}
+              className="absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60"
+            >
+              <XIcon aria-hidden="true" className="size-4" />
+            </button>
+          </div>
+        </div>
+      )}
       {props.viewer === null ? (
         <p className="bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-center text-slate-600 text-sm">
           <a
@@ -549,12 +592,36 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
           <div className="flex items-end gap-1.5">
             <button
               type="button"
-              onClick={() => setIsStickerOpen(true)}
-              aria-label={t("スタンプ", "Stickers")}
-              title={t("スタンプ", "Stickers")}
-              className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200"
+              onClick={() => {
+                // LINE と同じ: スタンプの一覧と、文字の入力を切り替える
+                if (isStickerOpen) inputRef.current?.focus()
+                else inputRef.current?.blur()
+                setIsStickerOpen(!isStickerOpen)
+                setStickerPreview(null)
+              }}
+              aria-label={
+                isStickerOpen
+                  ? t("文字を書く", "Keyboard")
+                  : t("スタンプ", "Stickers")
+              }
+              aria-expanded={isStickerOpen}
+              title={
+                isStickerOpen
+                  ? t("文字を書く", "Keyboard")
+                  : t("スタンプ", "Stickers")
+              }
+              className={cn(
+                "flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors",
+                isStickerOpen
+                  ? "bg-[#06c755] text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200",
+              )}
             >
-              <SmileIcon aria-hidden="true" className="size-5" />
+              {isStickerOpen ? (
+                <KeyboardIcon aria-hidden="true" className="size-5" />
+              ) : (
+                <SmileIcon aria-hidden="true" className="size-5" />
+              )}
             </button>
             <textarea
               ref={inputRef}
@@ -564,6 +631,10 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
               placeholder={t("コメントを書く", "Write a comment")}
               aria-label={t("コメント", "Comment")}
               onChange={(event) => setText(event.target.value)}
+              onFocus={() => {
+                setIsStickerOpen(false)
+                setStickerPreview(null)
+              }}
               onKeyDown={(event) => {
                 // 変換を確定する Enter では送らない
                 if (
@@ -586,20 +657,21 @@ export function PictorRunChatPanel(props: Props): React.ReactNode {
               <SendIcon aria-hidden="true" className="size-5" />
             </button>
           </div>
+          {isStickerOpen && (
+            <Suspense
+              fallback={<div className="mt-2 h-60 rounded-xl bg-slate-100" />}
+            >
+              <StickerPanel
+                selected={stickerPreview}
+                onSelect={setStickerPreview}
+                onSend={(sticker) => {
+                  setStickerPreview(null)
+                  void send(sticker)
+                }}
+              />
+            </Suspense>
+          )}
         </form>
-      )}
-
-      {isStickerOpen && (
-        <Suspense fallback={null}>
-          <StickerDialog
-            isOpen={true}
-            onClose={() => setIsStickerOpen(false)}
-            onSend={(stickerId, stickerImageURL) => {
-              setIsStickerOpen(false)
-              void send({ id: stickerId, url: stickerImageURL })
-            }}
-          />
-        </Suspense>
       )}
     </div>
   )

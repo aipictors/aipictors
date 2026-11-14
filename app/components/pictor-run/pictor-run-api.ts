@@ -28,6 +28,8 @@ export type PictorRunMessage = {
     excerpt: string | null
   } | null
   mentions: PictorRunMention[]
+  /** "discord" = Discord のチャンネルで書かれたもの */
+  source?: string | null
   createdAt: number
 }
 
