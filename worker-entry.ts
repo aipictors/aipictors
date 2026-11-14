@@ -27,8 +27,54 @@ const purgeWorkPages = async (
   return new Response(null, { status: 204 })
 }
 
+/** サーバーの設定ファイルなどを探しに来る自動の探索（.env・.php・.git・WordPress の管理画面など） */
+const PROBE_PATH =
+  /(?:\/\.(?:env|git|aws|ssh|svn|hg|htaccess|htpasswd|DS_Store)|\.(?:php\d?|aspx?|jsp|cgi|sql|bak|old|orig|save|swp|ini|ya?ml|log|zip|tar|gz|rar|7z)(?:$|\/)|^\/(?:en\/)?(?:wp-(?!content\/themes\/AISite\/favicons\/)|xmlrpc|cgi-bin\/|phpmyadmin|vendor\/))/i
+
+/** 画像・スクリプトなどのファイル。あるものは Worker より前に静的ファイルとして返るので、ここまで来たものは無い */
+const MISSING_FILE_PATH =
+  /\.(?:png|jpe?g|gif|ico|svg|webp|avif|css|m?js|map|woff2?|ttf|otf|mp4|webm|mp3|wasm)$/i
+
+/** 前のサイトのころのアイコン（ホーム画面に置いたままの端末が取りに来る） */
+const OLD_FAVICON_PATH = /^\/(?:en\/)?wp-content\/themes\/AISite\/favicons\//
+
+/**
+ * 無いファイルと自動の探索には、アプリ本体を読み込まずに返す。
+ * これまでは 1 件ごとに 404 のページを組み立てていて、1 回 0.1〜0.7 秒の CPU を使っていた（1 日 約 3 万件）
+ */
+const answerWithoutApp = (request: Request): Response | null => {
+  if (request.method !== "GET" && request.method !== "HEAD") return null
+  const { pathname } = new URL(request.url)
+  // タグ・ユーザー名・検索の言葉には、どんな文字でも入る（「.php」で終わるタグなど）
+  if (/^\/(?:en\/)?(?:r\/)?(?:tags|users|search)\//.test(pathname)) return null
+  if (OLD_FAVICON_PATH.test(pathname)) {
+    return new Response(null, {
+      status: 301,
+      headers: {
+        Location: "/icon.png",
+        "Cache-Control": "public, max-age=86400",
+      },
+    })
+  }
+  if (
+    PROBE_PATH.test(pathname) ||
+    (MISSING_FILE_PATH.test(pathname) && !/^\/(?:_w|api|__)/.test(pathname))
+  ) {
+    return new Response("Not Found", {
+      status: 404,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "public, max-age=600",
+      },
+    })
+  }
+  return null
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: CacheContext) {
+    const quick = answerWithoutApp(request)
+    if (quick) return quick
     if (
       request.method === "POST" &&
       new URL(request.url).pathname === "/__internal/purge-work"
@@ -48,10 +94,7 @@ export default {
     }
     const response: Response = await pages.fetch(request, env, ctx)
     // Workers のキャッシュは Cache-Control がないと推定で保存するので、明示したものだけを保存させる
-    if (
-      response.headers.has("Cache-Control") ||
-      response.status === 101
-    ) {
+    if (response.headers.has("Cache-Control") || response.status === 101) {
       return response
     }
     const uncached = new Response(response.body, response)
