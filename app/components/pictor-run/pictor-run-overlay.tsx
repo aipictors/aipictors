@@ -327,6 +327,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const toastId = useRef(0)
   /** 走っている間の、スタンプを選ぶ小さな窓 */
   const [isStampTrayOpen, setIsStampTrayOpen] = useState(false)
+  /** いまの速さ（時速 km） */
+  const [kmh, setKmh] = useState(0)
   const lastHudAt = useRef(0)
   /** 走り始めた時刻（途中でやめたときに、走っていた時間を出すのに使う） */
   const runStartAt = useRef(0)
@@ -504,7 +506,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               return nextStage + 1
             })
           },
-          onScore: (nextScore, nextCoins, distance) => {
+          onScore: (nextScore, nextCoins, distance, nextKmh) => {
             // 画面の数字の書きかえは 1 秒に 5 回まで（書きかえのたびに画面全体を組み直すので、重い端末でコマ落ちの元になる）
             const nowMs = performance.now()
             if (
@@ -518,6 +520,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             lastHudCoins.current = nextCoins
             setScore(nextScore)
             setCoins(nextCoins)
+            setKmh(nextKmh)
             // 画面の左上に出している数字（m）と同じものを知らせる
             distanceRef.current = nextScore
             if (phaseRef.current === "running") {
@@ -1412,6 +1415,15 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   style={{ width: `${Math.round(progress * 100)}%` }}
                 />
               </div>
+              <p className="mt-1 flex items-baseline justify-between font-bold text-[11px] text-slate-500 md:text-xs">
+                <span>{t("スピード", "Speed")}</span>
+                <span className="font-black text-slate-800 text-sm tabular-nums md:text-base">
+                  {kmh.toFixed(1)}
+                  <span className="ml-0.5 font-bold text-[10px] text-slate-500 md:text-xs">
+                    km/h
+                  </span>
+                </span>
+              </p>
             </div>
           )}
           {isPlaying && (items.guard || items.magnet > 0 || items.star > 0) && (

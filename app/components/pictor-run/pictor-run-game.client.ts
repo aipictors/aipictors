@@ -90,7 +90,13 @@ export type PictorRunCallbacks = {
   /** 走り始めた */
   onStart: () => void
   /** 得点が変わった（distance = 走った距離 m） */
-  onScore: (score: number, coins: number, distance: number) => void
+  onScore: (
+    score: number,
+    coins: number,
+    distance: number,
+    /** いまの速さ（時速 km。1 秒に進む m × 3.6） */
+    kmh: number,
+  ) => void
   /** ステージが変わった（0 始まりの通し番号） */
   onStage: (stage: number) => void
   /** ぶつかって終わった（durationMs = 走っていた時間） */
@@ -3227,7 +3233,7 @@ export async function createPictorRunGame(
       const value = score()
       if (value !== lastScore) {
         lastScore = value
-        callbacks.onScore(value, coinCount, distance)
+        callbacks.onScore(value, coinCount, distance, speed * 0.5 * 3.6)
       }
       const stageNow = toPictorRunStage(distance)
       if (stageNow !== lastStage) {
