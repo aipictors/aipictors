@@ -226,6 +226,11 @@ const DOUBLE_JUMP_VELOCITY = 12
 const RUN_SPEED = 8
 /** この距離（m）まで、障害物の出方が少しずつ手ごわくなる */
 const HARDEST_DISTANCE = 250
+/**
+ * 走った距離に合わせた速さの倍率。40m ごとに 1% ずつ速くなり、1.5 倍（2000m）で止まる。
+ * （記録を受け付ける側は 1 秒に 7.2m までなので、いちばん速いとき（1 秒に 6m）でも収まる）
+ */
+const speedUp = (distance: number) => 1 + Math.min(0.5, distance / 4000)
 const SPAWN_X = 22
 const DESPAWN_X = -12
 
@@ -2855,7 +2860,8 @@ export async function createPictorRunGame(
 
     if (state === "running") {
       runTime += dt
-      speed = RUN_SPEED * pace
+      // 走るほど、ほんの少しずつ速くなる
+      speed = RUN_SPEED * pace * speedUp(distance)
       distance += speed * dt * 0.5
 
       velocity -= GRAVITY * dt
@@ -3481,6 +3487,7 @@ void main() {
         setHits: (on: boolean) => {
           debugNoHit = !on
         },
+        distance: () => distance,
       },
     })
   }
