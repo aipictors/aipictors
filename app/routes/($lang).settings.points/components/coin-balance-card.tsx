@@ -1,6 +1,7 @@
 import { CoinIcon } from "~/components/coin-icon"
 import { CoinHelpDialog } from "~/components/coin-help-dialog"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import { COIN_CAMPAIGN, isCoinCampaignActive } from "~/lib/premium-coins"
 import { Button } from "~/components/ui/button"
 import { Label } from "~/components/ui/label"
 import { Skeleton } from "~/components/ui/skeleton"
@@ -112,6 +113,14 @@ export function CoinBalanceCard(props: Props) {
         </div>
       )}
 
+      {isCoinCampaignActive() && (
+        <p className="border-t bg-gradient-to-r from-fuchsia-500/10 to-amber-400/10 px-4 py-2 font-bold text-fuchsia-700 text-sm md:px-5 dark:text-fuchsia-300">
+          {t(
+            `${COIN_CAMPAIGN.name}：11月20日まで、コインの購入が${Math.round(COIN_CAMPAIGN.rate * 100)}%増量`,
+            `${COIN_CAMPAIGN.enName}: ${Math.round(COIN_CAMPAIGN.rate * 100)}% extra coins until Nov 20 (JST)`,
+          )}
+        </p>
+      )}
       <div className="flex gap-2 border-t p-3 md:px-5">
         <PurchasePremiumCoinsDialog
           currentBalance={props.summary?.premiumBalance ?? 0}

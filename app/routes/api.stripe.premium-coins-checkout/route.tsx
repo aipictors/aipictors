@@ -6,6 +6,7 @@ import { callAipictorsApi } from "~/lib/server/viewer-api-route.server"
 import { calcOfferBonusCoins, type PremiumCoinOffer } from "~/lib/premium-coins"
 import {
   calcBonusCoins,
+  calcCampaignBonusCoins,
   calcCustomPriceYen,
   MIN_CUSTOM_COINS,
   PREMIUM_COIN_PACKAGES,
@@ -44,12 +45,18 @@ const createPremiumCoinCheckoutDirect = async (props: {
 
   const params = new URLSearchParams()
   params.set("mode", "payment")
-  const successUrl = new URL(props.successPath ?? "/settings/points", props.origin)
+  const successUrl = new URL(
+    props.successPath ?? "/settings/points",
+    props.origin,
+  )
   successUrl.searchParams.set("checkout", "premium-success")
   // Keep Stripe placeholder unescaped so Stripe can substitute the real session id.
   const successUrlWithSessionId = `${successUrl.toString()}&session_id={CHECKOUT_SESSION_ID}`
 
-  const cancelUrl = new URL(props.cancelPath ?? "/settings/points", props.origin)
+  const cancelUrl = new URL(
+    props.cancelPath ?? "/settings/points",
+    props.origin,
+  )
   cancelUrl.searchParams.set("checkout", "premium-cancel")
 
   params.set("success_url", successUrlWithSessionId)
@@ -209,6 +216,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
     bonusCoins = pkg.bonusCoins
     priceYen = pkg.priceYen
   }
+
+  // 期間限定の増量（4 周年前夜祭など。期間はサーバーの時刻で決める）
+  bonusCoins += calcCampaignBonusCoins(coins)
 
   // はじめての購入・プラン加入中の上乗せ（判定に失敗したら上乗せなしで続ける）
   try {

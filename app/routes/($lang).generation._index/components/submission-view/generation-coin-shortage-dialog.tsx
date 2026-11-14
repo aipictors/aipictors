@@ -14,6 +14,7 @@ import { TrialTerms } from "~/components/trial-terms"
 import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePassCheckout } from "~/hooks/use-pass-checkout"
 import { useTranslation } from "~/hooks/use-translation"
+import { COIN_CAMPAIGN, isCoinCampaignActive } from "~/lib/premium-coins"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
@@ -66,7 +67,10 @@ const toNextGrantText = () => {
   const next = new Date(jst)
   next.setDate(next.getDate() + 1)
   next.setHours(0, 0, 0, 0)
-  const minutes = Math.max(0, Math.round((next.getTime() - jst.getTime()) / 60000))
+  const minutes = Math.max(
+    0,
+    Math.round((next.getTime() - jst.getTime()) / 60000),
+  )
   return { hours: Math.floor(minutes / 60), minutes: minutes % 60 }
 }
 
@@ -75,7 +79,7 @@ const toNextGrantText = () => {
  * 以前は「コイン残高が不足しています。」のトーストだけで、続けて作る方法（プラン・コイン購入）を出していなかった。
  * 無料の上限まで使う人は毎日数十人いて、いちばん課金につながりやすい場面なので、ここで選択肢を出す
  */
-export function GenerationCoinShortageDialog (props: Props) {
+export function GenerationCoinShortageDialog(props: Props) {
   const t = useTranslation()
 
   const [isCoinDialogOpen, setIsCoinDialogOpen] = useState(false)
@@ -213,10 +217,7 @@ export function GenerationCoinShortageDialog (props: Props) {
                 <ul className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
                   {[
                     t("1回で4枚まとめて", "4 images per click"),
-                    t(
-                      `1日${LITE.perDay}枚まで`,
-                      `${LITE.perDay} images a day`,
-                    ),
+                    t(`1日${LITE.perDay}枚まで`, `${LITE.perDay} images a day`),
                     t("無料より先に生成", "Ahead of free users"),
                     t("広告なし", "No ads"),
                     t("画像から生成", "Image-to-image"),
@@ -308,7 +309,10 @@ export function GenerationCoinShortageDialog (props: Props) {
                         </span>
                       </span>
                       <span className="block text-[11px] text-muted-foreground">
-                        {t(`2か月目から${plan.price}/月`, `then ${plan.price}/mo`)}
+                        {t(
+                          `2か月目から${plan.price}/月`,
+                          `then ${plan.price}/mo`,
+                        )}
                       </span>
                     </button>
                   ))}
@@ -421,10 +425,15 @@ export function GenerationCoinShortageDialog (props: Props) {
                 }}
                 className="min-h-9 text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
               >
-                {t(
-                  "コインだけ買う（100コイン80円〜）",
-                   `Just buy coins (from ¥80, ${toApproxUsdText(80)})`,
-                )}
+                {isCoinCampaignActive()
+                  ? t(
+                      `コインだけ買う（80円〜・いま${Math.round(COIN_CAMPAIGN.rate * 100)}%増量）`,
+                      `Just buy coins (from ¥80, ${Math.round(COIN_CAMPAIGN.rate * 100)}% extra now)`,
+                    )
+                  : t(
+                      "コインだけ買う（100コイン80円〜）",
+                      `Just buy coins (from ¥80, ${toApproxUsdText(80)})`,
+                    )}
               </button>
             </div>
             <p className="flex items-center justify-center gap-1 text-muted-foreground text-xs">

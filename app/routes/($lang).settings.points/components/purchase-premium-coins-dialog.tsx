@@ -20,7 +20,10 @@ import {
   BONUS_RATE,
   BONUS_THRESHOLD,
   calcBonusCoins,
+  calcCampaignBonusCoins,
   calcCustomPriceYen,
+  COIN_CAMPAIGN,
+  isCoinCampaignActive,
   calcOfferBonusCoins,
   FIRST_PURCHASE_BONUS_MAX,
   MEMBER_BONUS_RATE,
@@ -67,8 +70,9 @@ const clampCoinAmount = (value: number) => {
 
 const getMatchedPackage = (coinAmount: number) => {
   return (
-    Object.values(PREMIUM_COIN_PACKAGES).find((pkg) => pkg.coins === coinAmount) ??
-    null
+    Object.values(PREMIUM_COIN_PACKAGES).find(
+      (pkg) => pkg.coins === coinAmount,
+    ) ?? null
   )
 }
 
@@ -98,12 +102,18 @@ export function PurchasePremiumCoinsDialog(props: {
       try {
         const headers = await getViewerRequestHeaders()
         const response = await fetch("/api/coins/purchase-offer", { headers })
-        const json = (await response.json()) as { data: PremiumCoinOffer | null }
+        const json = (await response.json()) as {
+          data: PremiumCoinOffer | null
+        }
         if (!isCancelled && json.data) {
           setOffer(json.data)
           trackGrowthEvent(
             "coin_dialog_view",
-            json.data.isFirstPurchase ? "first" : json.data.passType ? "member" : "repeat",
+            json.data.isFirstPurchase
+              ? "first"
+              : json.data.passType
+                ? "member"
+                : "repeat",
           )
         }
       } catch {
@@ -128,10 +138,16 @@ export function PurchasePremiumCoinsDialog(props: {
 
   const derivedCoins = matchedPackage?.coins ?? coinAmount
 
-  const offerBonus = calcOfferBonusCoins(matchedPackage?.coins ?? coinAmount, offer)
+  const offerBonus = calcOfferBonusCoins(
+    matchedPackage?.coins ?? coinAmount,
+    offer,
+  )
+
+  const isCampaign = isCoinCampaignActive()
 
   const derivedBonus =
     (matchedPackage?.bonusCoins ?? calcBonusCoins(coinAmount)) +
+    calcCampaignBonusCoins(matchedPackage?.coins ?? coinAmount) +
     offerBonus.firstPurchase +
     offerBonus.member
 
@@ -236,6 +252,28 @@ export function PurchasePremiumCoinsDialog(props: {
         </DialogHeader>
 
         <div className="space-y-4 px-4 py-4 sm:px-6">
+          {isCampaign && (
+            <div className="rounded-lg border border-fuchsia-500/40 bg-gradient-to-r from-fuchsia-500/10 to-amber-400/10 px-3 py-2 text-sm">
+              <p className="font-bold text-fuchsia-700 dark:text-fuchsia-300">
+                {t(
+                  `${COIN_CAMPAIGN.name}：いまだけ全コイン${Math.round(COIN_CAMPAIGN.rate * 100)}%増量`,
+                  `${COIN_CAMPAIGN.enName}: ${Math.round(COIN_CAMPAIGN.rate * 100)}% extra coins on every purchase`,
+                )}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {t(
+                  "11月20日 23:59 まで。ほかのおまけにも重なります。",
+                  "Until Nov 20, 23:59 JST. Stacks with other bonuses.",
+                )}{" "}
+                <Link
+                  to={COIN_CAMPAIGN.eventPath}
+                  className="underline underline-offset-4"
+                >
+                  {t("前夜祭を見る", "About the event")}
+                </Link>
+              </p>
+            </div>
+          )}
           {offer && (offer.isFirstPurchase || offer.passType) && (
             <div className="space-y-0.5 rounded-lg border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm">
               {offer.isFirstPurchase && (
@@ -275,7 +313,11 @@ export function PurchasePremiumCoinsDialog(props: {
             {PACKAGE_OPTIONS.map((opt) => {
               const isSelected = matchedPackage?.id === opt.id
               const extra = calcOfferBonusCoins(opt.coins, offer)
-              const bonusCoins = opt.bonusCoins + extra.firstPurchase + extra.member
+              const bonusCoins =
+                opt.bonusCoins +
+                calcCampaignBonusCoins(opt.coins) +
+                extra.firstPurchase +
+                extra.member
 
               return (
                 <button
@@ -391,7 +433,10 @@ export function PurchasePremiumCoinsDialog(props: {
               )}
             </p>
             <div className="flex flex-wrap gap-x-3 gap-y-1">
-              <Link className="underline underline-offset-4" to="/premium-coins/policy">
+              <Link
+                className="underline underline-offset-4"
+                to="/premium-coins/policy"
+              >
                 {t("プレミアムコイン規約・ポリシー", "Premium Coin Policy")}
               </Link>
               <Link

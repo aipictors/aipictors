@@ -80,3 +80,26 @@ export const calcOfferBonusCoins = (
     member: offer.passType ? Math.floor(coins * MEMBER_BONUS_RATE) : 0,
   }
 }
+
+/**
+ * 期間限定のコイン増量（買った枚数に対する割合のおまけ。ほかのおまけに重なる）
+ * 4 周年（11/21）の前夜祭: 11/15〜11/20（日本時間）は 20% 増量
+ */
+export const COIN_CAMPAIGN = {
+  id: "4th-anniversary-eve",
+  name: "4周年前夜祭",
+  enName: "4th Anniversary Eve",
+  rate: 0.2,
+  // 日本時間の 11/15 0:00 〜 11/21 0:00
+  startAt: Date.UTC(2026, 10, 14, 15),
+  endAt: Date.UTC(2026, 10, 20, 15),
+  eventPath: "/events/before4th",
+} as const
+
+export const isCoinCampaignActive = (now = Date.now()) =>
+  now >= COIN_CAMPAIGN.startAt && now < COIN_CAMPAIGN.endAt
+
+export const calcCampaignBonusCoins = (coins: number, now = Date.now()) =>
+  isCoinCampaignActive(now)
+    ? Math.floor(Math.max(0, Math.floor(coins)) * COIN_CAMPAIGN.rate)
+    : 0
