@@ -344,6 +344,7 @@ export function PictorChanProfile(): React.ReactNode {
         onPlay={() => setIsGameOpen(true)}
         onLobby={() => setGame("lobby")}
         crowd={crowd}
+        showPageLink={true}
       />
 
       {/* 話す・見る */}

@@ -53,6 +53,8 @@ const STATIC_PAGES: {
   { path: "/plus", changefreq: "monthly", priority: 0.4 },
   { path: "/releases", changefreq: "weekly", priority: 0.5 },
   { path: "/about", changefreq: "monthly", priority: 0.5 },
+  { path: "/pictor-chan", changefreq: "weekly", priority: 0.5 },
+  { path: "/pictor-chan/run", changefreq: "weekly", priority: 0.6 },
   { path: "/r", changefreq: "hourly", priority: 0.7 },
   { path: "/r/rankings", changefreq: "daily", priority: 0.6 },
   { path: "/r/popular", changefreq: "daily", priority: 0.5 },

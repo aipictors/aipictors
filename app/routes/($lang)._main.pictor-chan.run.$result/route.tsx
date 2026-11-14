@@ -9,12 +9,12 @@ import {
 } from "~/components/pictor-run/pictor-run-share"
 import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
-import { PictorChanProfile } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-profile"
+import { PictorRunLanding } from "~/routes/($lang)._main.pictor-chan.run._index/components/pictor-run-landing"
 import { createMeta } from "~/utils/create-meta"
 
 /**
  * ミニゲーム「ぴくたーちゃんラン」の結果をシェアするページ。
- * X などに貼ると、得点の入ったカードの画像が出る。中身はぴくたーちゃんのページと同じ（ここからゲームを遊べる）
+ * X などに貼ると、得点の入ったカードの画像が出る。中身はゲームのページ（/pictor-chan/run）と同じ（ここからゲームを遊べる）
  */
 export const meta: MetaFunction = (props) => {
   const t = useTranslation()
@@ -31,7 +31,9 @@ export const meta: MetaFunction = (props) => {
         "Aipictors のマスコット「ぴくたーちゃん」が走るミニゲーム。ジャンプで障害物をよけて、13 のステージを走りぬけよう。無料ですぐ遊べます。",
         "A mini game starring Pictor-chan, the Aipictors mascot. Jump over obstacles and run through 13 stages. Free to play.",
       ),
-      ...(result && { image: toPictorRunCardUrl(result) }),
+      image: result
+        ? toPictorRunCardUrl(result)
+        : "https://www.aipictors.com/images/pictor-chan/run/ogp-1.jpg",
       // 結果ごとに無数にできるページなので、検索には出さない
       isIndex: false,
     },
@@ -49,5 +51,5 @@ export const headers: HeadersFunction = () => ({
 })
 
 export default function PictorChanRunResult() {
-  return <PictorChanProfile />
+  return <PictorRunLanding />
 }

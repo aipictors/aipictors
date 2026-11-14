@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import { PICTOR_RUN_STAGES } from "~/components/pictor-run/pictor-run-stages"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { PictorChanReveal } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-reveal"
 
 type Props = Readonly<{
@@ -17,6 +18,8 @@ type Props = Readonly<{
   onLobby: () => void
   /** いまロビーにいる人数・走っている人数（まだわからない間は null） */
   crowd: { lobby: number; playing: number } | null
+  /** ゲームのページ（/pictor-chan/run）への案内を出す */
+  showPageLink?: boolean
 }>
 
 /**
@@ -172,6 +175,16 @@ export function PictorChanGameSection(props: Props): React.ReactNode {
             {t("ロビーに入る", "Enter the lobby")}
           </button>
         </div>
+        {props.showPageLink && (
+          <p className="mt-4 text-center text-sm">
+            <Link
+              to="/pictor-chan/run"
+              className="font-bold text-white/85 underline"
+            >
+              {t("ぴくたーちゃんランのページを見る", "About Pictor-chan Run")}
+            </Link>
+          </p>
+        )}
         {props.crowd !== null && (
           <p className="mt-3 text-center text-sm text-white/80">
             {t(
