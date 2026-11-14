@@ -12,14 +12,17 @@ import { fetchTrialStatus } from "~/lib/trial-api"
 import { takeEnglishReturnPath } from "~/utils/checkout-locale"
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { toTrialDateText } from "~/utils/to-trial-date-text"
-import { trackGrowthEventOnce } from "~/utils/track-growth-event"
+import {
+  trackGrowthEvent,
+  trackGrowthEventOnce,
+} from "~/utils/track-growth-event"
 import { toDateText } from "~/utils/to-date-text"
 
 /**
  * サブスクの決済を完了した場合のページ
  * 自動更新なしのパス（?prepaid=1&session_id=）のときは、ここで反映を確かめる（webhook でも反映される）
  */
-export default function PlusSuccess () {
+export default function PlusSuccess() {
   const [searchParams] = useSearchParams()
 
   const t = useTranslation()
@@ -50,18 +53,27 @@ export default function PlusSuccess () {
     let isCancelled = false
     const confirm = async (attempt: number) => {
       try {
-        const headers = await getViewerRequestHeaders({ includeJsonContentType: true })
+        const headers = await getViewerRequestHeaders({
+          includeJsonContentType: true,
+        })
         const response = await fetch("/api/stripe/prepaid-pass-confirm", {
           method: "POST",
           headers,
           body: JSON.stringify({ sessionId }),
         })
         const json = (await response.json().catch(() => null)) as {
-          data: { reflected: boolean; periodEnd?: number; paymentStatus?: string | null } | null
+          data: {
+            reflected: boolean
+            periodEnd?: number
+            paymentStatus?: string | null
+          } | null
         } | null
         if (isCancelled) return
         if (json?.data?.reflected) {
-          setPrepaidState({ kind: "done", periodEnd: json.data.periodEnd ?? null })
+          setPrepaidState({
+            kind: "done",
+            periodEnd: json.data.periodEnd ?? null,
+          })
           return
         }
         // コンビニ払いなど後から支払う方法では、まだ払われていない。お支払いの確認後に webhook で反映する
@@ -329,15 +341,19 @@ export default function PlusSuccess () {
             ) : (
               <p>
                 {t(
-                  "この度はAipictors+にご登録ありがとうございます。これからもよろしくお願いします。",
+                  "Aipictors+ へのご登録ありがとうございます。プランはもう使えます。",
                   "Thanks for joining Aipictors+. Your plan is active — every click now makes 4 images.",
                 )}
               </p>
             )}
           </div>
+          {!(isPrepaid && prepaidState.kind === "unpaid") && <FirstSteps />}
           <div className="flex flex-col items-center gap-2">
             <Button asChild className="h-11 w-full rounded-xl">
-              <Link to="/generation">
+              <Link
+                to="/generation"
+                onClick={() => trackGrowthEvent("success_click", "generation")}
+              >
                 {t("さっそく生成する", "Start generating")}
               </Link>
             </Button>
@@ -350,5 +366,57 @@ export default function PlusSuccess () {
         </div>
       </div>
     </>
+  )
+}
+
+/**
+ * 入った直後に、最初にやること（決済のあとは「ありがとうございます」だけで、何が変わったかを伝えていなかった。
+ * 1 か月で解約する人の多くは、入った直後にほとんど生成していない）
+ */
+function FirstSteps() {
+  const t = useTranslation()
+
+  useEffect(() => {
+    trackGrowthEventOnce("success_view", "first_steps")
+  }, [])
+
+  const steps = [
+    [
+      t("生成画面で「同時生成枚数」を4枚に", "Set images per click to 4"),
+      t(
+        "同じ1回で4枚まとめて作れます。気に入った1枚を選ぶだけ。",
+        "One click now makes 4 images. Just pick your favorite.",
+      ),
+    ],
+    [
+      t("コインは毎日0時に届きます", "Coins arrive every day at midnight JST"),
+      t(
+        "その日のうちに使わなかった分は翌日に持ち越せません。毎日少しずつ作るのがお得です。",
+        "Unused daily coins don't carry over, so a little every day goes furthest.",
+      ),
+    ],
+    [
+      t("広告なし・画像から生成も使えます", "No ads, plus image-to-image"),
+      t(
+        "作品のページの広告が消え、手持ちの画像をもとに生成できます。",
+        "Ads are gone from work pages, and you can generate from your own images.",
+      ),
+    ],
+  ]
+
+  return (
+    <ol className="space-y-2 rounded-2xl border bg-card p-4 text-left text-sm">
+      {steps.map(([title, text], index) => (
+        <li key={title} className="flex items-start gap-2.5">
+          <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-violet-600 font-bold text-[11px] text-white">
+            {index + 1}
+          </span>
+          <span>
+            <span className="block font-bold">{title}</span>
+            <span className="block text-muted-foreground text-xs">{text}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
   )
 }

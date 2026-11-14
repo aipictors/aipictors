@@ -42,6 +42,8 @@ export const getViewerRequestSessionId = () => {
 
 export const getViewerRequestHeaders = async (props?: {
   includeJsonContentType?: boolean
+  /** ログインのトークンを取り直す（401 が返ったあとのやり直し用） */
+  forceRefresh?: boolean
 }) => {
   const headers: Record<string, string> = {}
 
@@ -51,7 +53,7 @@ export const getViewerRequestHeaders = async (props?: {
 
   const currentUser = getCurrentFirebaseUser()
   if (currentUser) {
-    const token = await getIdToken(currentUser)
+    const token = await getIdToken(currentUser, props?.forceRefresh === true)
     headers.authorization = `Bearer ${token}`
     return headers
   }
@@ -66,4 +68,22 @@ export const getViewerRequestHeaders = async (props?: {
   }
 
   throw new Error("Login required")
+}
+
+/**
+ * ログイン中の人として POST する。401 が返ったら、トークンを取り直してもう一度だけ送る
+ * （トークンの期限切れ・確認の一時的な失敗で、決済のボタンが効かないことがあった）
+ */
+export const postAsViewer = async (url: string, body: unknown) => {
+  const send = async (forceRefresh: boolean) =>
+    fetch(url, {
+      method: "POST",
+      headers: await getViewerRequestHeaders({
+        includeJsonContentType: true,
+        forceRefresh,
+      }),
+      body: JSON.stringify(body),
+    })
+  const response = await send(false)
+  return response.status === 401 ? send(true) : response
 }

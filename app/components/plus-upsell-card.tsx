@@ -2,7 +2,10 @@ import { Link } from "~/lib/app/locale-router"
 import { CheckIcon, SparklesIcon } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { TrialTerms } from "~/components/trial-terms"
-import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
+import {
+  toFirstMonthPrice,
+  useFirstMonthOffer,
+} from "~/hooks/use-first-month-offer"
 import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
@@ -21,6 +24,11 @@ type Props = {
    * 置き場所（指定すると表示と押した回数を /api/growth-event で数える）
    */
   source?: string
+  /**
+   * create: 「自分でも作れる」を先に伝えて、無料の生成へ案内する
+   * （センシティブの作品のページには Google 広告がなく「広告なし」が響かない。PC で週 2 万回出て、押されたのは 0 回だった）
+   */
+  lead?: "create"
 }
 
 /**
@@ -30,18 +38,24 @@ export function PlusUpsellCard(props: Props) {
   const t = useTranslation()
   const lite = getPlanSpec("LITE")
   const premium = getPlanSpec("PREMIUM")
+  const free = getPlanSpec("FREE")
+  const isCreateLead = props.lead === "create"
   const liteOffer = useLiteOffer()
   const isTrial = liteOffer.offer === "trial"
   // 確認中は、お試しとも初月半額とも書かない
-  const isFirstMonthOffer =
-    useFirstMonthOffer() && liteOffer.offer === "half"
+  const isFirstMonthOffer = useFirstMonthOffer() && liteOffer.offer === "half"
 
   const ref = useRef<HTMLDivElement>(null)
 
   // 画面に入ったら数える。作品ページを開くたびに数えると 1 日 1 万回を超えるので、置き場所ごとにブラウザを開いている間 1 回だけ
   useEffect(() => {
     const element = ref.current
-    if (!props.source || element === null || !("IntersectionObserver" in window)) return
+    if (
+      !props.source ||
+      element === null ||
+      !("IntersectionObserver" in window)
+    )
+      return
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         trackGrowthEventOnce("upsell_view", props.source ?? "")
@@ -67,7 +81,10 @@ export function PlusUpsellCard(props: Props) {
           <span className="ml-1 rounded-full bg-fuchsia-600 px-2 py-0.5 font-bold text-[10px] text-white">
             {isTrial
               ? liteOffer.isGuest
-                ? t(`はじめての方は${TRIAL_DAYS}日間無料`, `New here? ${TRIAL_DAYS} days free`)
+                ? t(
+                    `はじめての方は${TRIAL_DAYS}日間無料`,
+                    `New here? ${TRIAL_DAYS} days free`,
+                  )
                 : t(`${TRIAL_DAYS}日間無料`, `${TRIAL_DAYS} days free`)
               : t("初月半額", "50% off first month")}
           </span>
@@ -75,17 +92,29 @@ export function PlusUpsellCard(props: Props) {
       </p>
       {/* 作品を見ている人にも関係のある特典（広告なし）を先に書く */}
       <ul className="space-y-1.5 text-sm">
-        {[
-          t("広告なしで作品を楽しめる", "Browse with no ads"),
-          t(
-            `画像生成が1回で${lite.imagesPerRequest}枚（無料は1枚）`,
-            `Generate ${lite.imagesPerRequest} images per click instead of 1`,
-          ),
-          t(
-            `1日${lite.dailyImages}〜${premium.dailyImages}枚まで生成`,
-            `Create ${lite.dailyImages} to ${premium.dailyImages} images a day`,
-          ),
-        ].map((text) => (
+        {(isCreateLead
+          ? [
+              t(
+                `こんな画像を自分でも作れます（無料で1日${free.dailyImages}枚）`,
+                `Make images like this yourself — ${free.dailyImages} a day for free`,
+              ),
+              t(
+                `プランなら1回で${lite.imagesPerRequest}枚・1日${lite.dailyImages}〜${premium.dailyImages}枚`,
+                `On a plan: ${lite.imagesPerRequest} per click, ${lite.dailyImages} to ${premium.dailyImages} a day`,
+              ),
+            ]
+          : [
+              t("広告なしで作品を楽しめる", "Browse with no ads"),
+              t(
+                `画像生成が1回で${lite.imagesPerRequest}枚（無料は1枚）`,
+                `Generate ${lite.imagesPerRequest} images per click instead of 1`,
+              ),
+              t(
+                `1日${lite.dailyImages}〜${premium.dailyImages}枚まで生成`,
+                `Create ${lite.dailyImages} to ${premium.dailyImages} images a day`,
+              ),
+            ]
+        ).map((text) => (
           <li key={text} className="flex items-start gap-1.5">
             <CheckIcon className="mt-0.5 size-4 shrink-0 text-violet-500" />
             <span>{text}</span>
@@ -104,9 +133,31 @@ export function PlusUpsellCard(props: Props) {
               `Lite is ¥${toMoneyNumberText(lite.price)}/mo (${toApproxUsdText(lite.price)}, charged in JPY). Cancel anytime.`,
             )}
       </p>
+      {isCreateLead && (
+        <Button
+          asChild
+          className="h-10 w-full rounded-xl bg-gradient-to-r from-violet-600 to-sky-500 font-bold text-white hover:opacity-95 dark:text-white"
+        >
+          <Link
+            to="/generation"
+            onClick={() => {
+              if (props.source) {
+                trackGrowthEvent("upsell_click", `${props.source}_create`)
+              }
+            }}
+          >
+            {t("無料で作ってみる", "Try it free")}
+          </Link>
+        </Button>
+      )}
       <Button
         asChild
-        className="h-10 w-full rounded-xl bg-gradient-to-r from-violet-600 to-sky-500 font-bold text-white hover:opacity-95 dark:text-white"
+        variant={isCreateLead ? "outline" : "default"}
+        className={
+          isCreateLead
+            ? "h-10 w-full rounded-xl font-bold"
+            : "h-10 w-full rounded-xl bg-gradient-to-r from-violet-600 to-sky-500 font-bold text-white hover:opacity-95 dark:text-white"
+        }
       >
         <Link
           to="/plus#plans"

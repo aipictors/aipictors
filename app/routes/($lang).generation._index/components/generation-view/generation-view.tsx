@@ -8,6 +8,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "~/components/ui/resizable"
+import {
+  NewMemberGuide,
+  PlanEndingNotice,
+} from "~/components/plus-member-notice"
 import { GenerationAnnouncementBanner } from "~/routes/($lang).generation._index/components/generation-announcement-banner"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 
@@ -46,6 +50,8 @@ export function GenerationView(props: Props) {
       <div className="flex flex-col space-y-2 pb-44">
         <GenerationAnnouncementBanner />
         <MemberThanksBanner />
+        <PlanEndingNotice variant="banner" />
+        <NewMemberGuide />
         <main className="flex flex-col gap-2 overflow-hidden pb-4 md:flex-row">
           <div className="flex flex-col gap-y-2">
             {props.header}
@@ -66,6 +72,8 @@ export function GenerationView(props: Props) {
       <div className="flex flex-col space-y-2 md:h-[calc(100vh-72px)]">
         <GenerationAnnouncementBanner />
         <MemberThanksBanner />
+        <PlanEndingNotice variant="banner" />
+        <NewMemberGuide />
         <main className="flex h-full flex-col gap-4 overflow-hidden md:flex-row">
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel className="flex flex-col gap-y-2 lg:min-w-80 xl:min-w-80">
@@ -85,13 +93,17 @@ export function GenerationView(props: Props) {
       <div className="flex flex-col space-y-2 md:h-[calc(100vh-72px)]">
         <GenerationAnnouncementBanner />
         <MemberThanksBanner />
+        <PlanEndingNotice variant="banner" />
+        <NewMemberGuide />
         <main className="flex h-full min-h-0 flex-col gap-4 overflow-hidden md:flex-row">
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanelWithMemory
               id="generation-settings-column"
               className="flex min-w-[360px] flex-col"
             >
-              <Suspense fallback={<AppLoadingPage />}>{props.settings}</Suspense>
+              <Suspense fallback={<AppLoadingPage />}>
+                {props.settings}
+              </Suspense>
             </ResizablePanelWithMemory>
             <ResizableHandle withHandle className="mr-3 ml-3" />
             <ResizablePanelWithMemory
@@ -119,7 +131,9 @@ export function GenerationView(props: Props) {
   return (
     <div className="flex flex-col space-y-2 md:h-[calc(100vh-72px)]">
       <GenerationAnnouncementBanner />
-        <MemberThanksBanner />
+      <MemberThanksBanner />
+      <PlanEndingNotice variant="banner" />
+      <NewMemberGuide />
       <main className="flex h-full flex-col gap-4 overflow-hidden md:flex-row">
         <ResizablePanelGroup defaultValue={1} direction="horizontal">
           <ResizablePanelWithMemory

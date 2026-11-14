@@ -306,7 +306,9 @@ export function SensitiveWorkContainer(props: Props) {
                   <DlsiteAffiliateCard tags={tags} source="r_post_side" />
                 )}
                 {/* センシティブのページには Google 広告を出せないので、プランの案内を出す（閲覧の多い場所） */}
-                {!isSubscriptionUser && <PlusUpsellCard source="r_post_side" />}
+                {!isSubscriptionUser && (
+                  <PlusUpsellCard source="r_post_side" lead="create" />
+                )}
                 {props.newComments && props.newComments.length > 0 && (
                   <HomeNewCommentsSection
                     comments={props.newComments}

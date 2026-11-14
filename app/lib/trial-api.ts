@@ -1,4 +1,7 @@
-import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import {
+  getViewerRequestHeaders,
+  postAsViewer,
+} from "~/lib/viewer-request-headers"
 
 /**
  * ライトの 7 日間無料お試しの API（/api/stripe/subscription-trial、/api/stripe/subscription-checkout の trial）
@@ -70,11 +73,10 @@ export type TrialCheckoutResult =
  * お試しの決済画面（Stripe）の URL を作る。対象外（409 trial_not_eligible）は ineligible で返す
  */
 export async function createTrialCheckout(): Promise<TrialCheckoutResult> {
-  const headers = await getViewerRequestHeaders({ includeJsonContentType: true })
-  const response = await fetch("/api/stripe/subscription-checkout", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ passType: "LITE", interval: "month", trial: true }),
+  const response = await postAsViewer("/api/stripe/subscription-checkout", {
+    passType: "LITE",
+    interval: "month",
+    trial: true,
   })
   const json = (await response.json().catch(() => null)) as {
     error: string | null

@@ -3,9 +3,15 @@ import { graphql } from "gql.tada"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
-import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import {
+  hasViewerRequestSession,
+  postAsViewer,
+} from "~/lib/viewer-request-headers"
 import { createTrialCheckout } from "~/lib/trial-api"
-import { getCheckoutLocale, rememberCheckoutLocale } from "~/utils/checkout-locale"
+import {
+  getCheckoutLocale,
+  rememberCheckoutLocale,
+} from "~/utils/checkout-locale"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 
@@ -23,10 +29,25 @@ export function usePassCheckout() {
 
   const [loadingKey, setLoadingKey] = useState<string | null>(null)
 
+  // ログインが切れているときは英語の "Login required" が出ていた
+  const toastLoginRequired = () => {
+    trackGrowthEvent("checkout_login_required", "checkout")
+    toast(
+      t(
+        "ログインが必要です。ログインしてから、もう一度お試しください。",
+        "Please log in, then try again.",
+      ),
+    )
+  }
+
   const startCheckout = async (
     passType: CheckoutPassType,
     interval: BillingInterval = "month",
   ) => {
+    if (!hasViewerRequestSession()) {
+      toastLoginRequired()
+      return
+    }
     setLoadingKey(`${passType}:${interval}`)
     try {
       // GraphQL には表示言語を渡せないので、英語のページからの月払いは年払いと同じ口で作る（Stripe の決済画面を英語で出すため）
@@ -64,6 +85,10 @@ export function usePassCheckout() {
    * 対象外だった場合は、初月半額の通常の決済へ進む）
    */
   const startTrialCheckout = async () => {
+    if (!hasViewerRequestSession()) {
+      toastLoginRequired()
+      return
+    }
     setLoadingKey("LITE:month")
     try {
       const result = await createTrialCheckout()
@@ -105,8 +130,10 @@ export function usePassCheckout() {
     startCheckout,
     startTrialCheckout,
     isLoading: loadingKey !== null,
-    isLoadingFor: (passType: CheckoutPassType, interval: BillingInterval = "month") =>
-      loadingKey === `${passType}:${interval}`,
+    isLoadingFor: (
+      passType: CheckoutPassType,
+      interval: BillingInterval = "month",
+    ) => loadingKey === `${passType}:${interval}`,
   }
 }
 
@@ -115,11 +142,10 @@ const createCheckout = async (
   interval: BillingInterval,
   locale: "ja" | "en",
 ) => {
-  const headers = await getViewerRequestHeaders({ includeJsonContentType: true })
-  const response = await fetch("/api/stripe/subscription-checkout", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ passType, interval, locale }),
+  const response = await postAsViewer("/api/stripe/subscription-checkout", {
+    passType,
+    interval,
+    locale,
   })
   const json = (await response.json().catch(() => null)) as {
     error: string | null

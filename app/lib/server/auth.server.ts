@@ -29,7 +29,14 @@ export const verifyViewerFromGraphQL = async (props: {
   if (cached !== undefined && cached.expiresAt > Date.now()) {
     return cached.viewer
   }
-  const viewer = await fetchVerifiedViewer(props)
+  // GraphQL が一時的に失敗しただけのときは、もう一度だけ確かめる
+  // （決済のボタンを押した人が「ログインしていない」扱いになり、決済画面を開けないことがあった）
+  let result = await fetchVerifiedViewer(props).catch(() => "failed" as const)
+  if (result === "failed") {
+    await new Promise((resolve) => setTimeout(resolve, 250))
+    result = await fetchVerifiedViewer(props).catch(() => "failed" as const)
+  }
+  const viewer = result === "failed" ? null : result
   if (viewer !== null) {
     if (verifiedViewers.size >= VERIFIED_VIEWER_MAX_ENTRIES) {
       verifiedViewers.clear()
@@ -46,7 +53,7 @@ const fetchVerifiedViewer = async (props: {
   graphqlEndpoint: string
   authorization: string
   wpUserId?: string | null
-}): Promise<VerifiedViewer | null> => {
+}): Promise<VerifiedViewer | null | "failed"> => {
   const headers: Record<string, string> = {
     "content-type": "application/json",
     authorization: props.authorization,
@@ -64,10 +71,12 @@ const fetchVerifiedViewer = async (props: {
   })
 
   if (!response.ok) {
-    return null
+    // トークンが無効なとき（401・403）は確かめ直さない
+    return response.status === 401 || response.status === 403 ? null : "failed"
   }
 
   const json = (await response.json()) as {
+    errors?: unknown[]
     data?: {
       viewer?: {
         id?: string | null
@@ -90,7 +99,10 @@ const fetchVerifiedViewer = async (props: {
   const currentPassType = json.data?.viewer?.currentPass?.type ?? null
 
   if (!viewerId || !userId) {
-    return null
+    // viewer を取れずにエラーが返ったときは、一時的な失敗かもしれない
+    return json.data?.viewer == null && (json.errors?.length ?? 0) > 0
+      ? "failed"
+      : null
   }
 
   return { viewerId, userId, isModerator, userEmail, currentPassType }

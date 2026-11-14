@@ -1,6 +1,7 @@
 import { AppContents } from "~/components/app/app-contents"
 import { HomeFooter } from "~/components/home-footer"
 import { PlusMobileNotice } from "~/components/plus-entry-notice"
+import { PlanEndingNotice } from "~/components/plus-member-notice"
 import { SidebarProvider } from "~/components/sidebar-provider"
 import HomeHeader from "~/routes/($lang)._main._index/components/home-header"
 import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
@@ -32,6 +33,7 @@ export function AppCommonLayout(props: Props): React.ReactNode {
         footer={<HomeFooter />}
       />
       <PlusMobileNotice />
+      <PlanEndingNotice variant="floating" />
     </SidebarProvider>
   )
 }
