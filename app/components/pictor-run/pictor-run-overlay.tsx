@@ -222,7 +222,7 @@ const isTypingTarget = (target: EventTarget | null) =>
     target.tagName === "SELECT")
 
 const HUD_BUTTON =
-  "flex size-11 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow-sm backdrop-blur-sm transition hover:bg-white active:scale-90"
+  "flex size-11 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow-sm transition hover:bg-white active:scale-90"
 
 const readBestStage = () => {
   try {
@@ -323,6 +323,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const toastId = useRef(0)
   /** 走っている間の、スタンプを選ぶ小さな窓 */
   const [isStampTrayOpen, setIsStampTrayOpen] = useState(false)
+  const lastHudAt = useRef(0)
+  const lastHudCoins = useRef(0)
   /** いまの得点（画面の左上に m で出している数字） */
   const distanceRef = useRef(0)
   /** スタンプの知らせを出す（4 秒で消える。多いときは新しい 3 つだけ） */
@@ -489,6 +491,17 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             })
           },
           onScore: (nextScore, nextCoins, distance) => {
+            // 画面の数字の書きかえは 1 秒に 5 回まで（書きかえのたびに画面全体を組み直すので、重い端末でコマ落ちの元になる）
+            const nowMs = performance.now()
+            if (
+              nowMs - lastHudAt.current < 200 &&
+              nextCoins === lastHudCoins.current
+            ) {
+              distanceRef.current = nextScore
+              return
+            }
+            lastHudAt.current = nowMs
+            lastHudCoins.current = nextCoins
             setScore(nextScore)
             setCoins(nextCoins)
             // 画面の左上に出している数字（m）と同じものを知らせる
@@ -508,6 +521,8 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             lobbyRef.current?.emote(next)
           },
           onGameOver: (finalScore, finalCoins, durationMs) => {
+            setScore(finalScore)
+            setCoins(finalCoins)
             const previous = readBest()
             setIsNewBest(finalScore > previous)
             if (finalScore > previous) {
@@ -1199,7 +1214,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const isPlaying = phase === "running" || phase === "paused"
   const hideLobbyUi = phase === "lobby" && isLobbyUiHidden
   const coinsBadge = (
-    <span className="rounded-full bg-white/85 px-4 py-1.5 text-amber-500 shadow-sm backdrop-blur-sm">
+    <span className="rounded-full bg-white/85 px-4 py-1.5 text-amber-500 shadow-sm">
       ●{" "}
       <span
         key={coins}
@@ -1213,7 +1228,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     <span
       role="img"
       aria-label={t(`ハート ${hearts}`, `${hearts} hearts`)}
-      className="flex h-10 items-center gap-0.5 rounded-full bg-white/85 px-3 shadow-sm backdrop-blur-sm md:h-11"
+      className="flex h-10 items-center gap-0.5 rounded-full bg-white/85 px-3 shadow-sm md:h-11"
     >
       {[0, 1, 2].map((index) => (
         <HeartIcon
@@ -1288,7 +1303,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           {/* ロビーでは、得点とコインは出さない（走っていないので 0 のまま） */}
           {phase !== "lobby" && (
             <div className="flex items-center gap-2 font-black text-lg tabular-nums md:text-2xl">
-              <span className="rounded-full bg-white/85 px-4 py-1.5 shadow-sm backdrop-blur-sm">
+              <span className="rounded-full bg-white/85 px-4 py-1.5 shadow-sm">
                 {score}
                 <span className="ml-1 font-bold text-xs md:text-sm">m</span>
               </span>
@@ -1304,7 +1319,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             </div>
           )}
           {isPlaying && (
-            <div className="w-44 rounded-2xl bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur-sm md:w-60">
+            <div className="w-44 rounded-2xl bg-white/85 px-3 py-1.5 shadow-sm md:w-60">
               <p className="flex items-baseline justify-between gap-2 font-bold text-[11px] md:text-xs">
                 <span className="truncate">
                   {t(
@@ -1456,7 +1471,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               onClick={() => setIsSettingsOpen(false)}
               className="absolute inset-0 z-10 cursor-default"
             />
-            <div className="fade-in slide-in-from-top-2 absolute top-[calc(max(0.75rem,env(safe-area-inset-top))+3.25rem)] right-3 z-20 flex w-72 max-w-[calc(100%-1.5rem)] animate-in flex-col gap-3 rounded-3xl bg-white/95 p-4 shadow-xl backdrop-blur duration-200">
+            <div className="fade-in slide-in-from-top-2 absolute top-[calc(max(0.75rem,env(safe-area-inset-top))+3.25rem)] right-3 z-20 flex w-72 max-w-[calc(100%-1.5rem)] animate-in flex-col gap-3 rounded-3xl bg-white/95 p-4 shadow-xl duration-200">
               <div className="flex items-center justify-between">
                 <p className="font-black text-sm">{t("サウンド", "Sound")}</p>
                 <button
@@ -1637,7 +1652,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 </p>
               ))}
               {runners.length > 0 && (
-                <div className="flex max-w-full items-center gap-1.5 rounded-full bg-white/80 py-1 pr-3 pl-2.5 text-slate-800 text-xs shadow-sm backdrop-blur-sm">
+                <div className="flex max-w-full items-center gap-1.5 rounded-full bg-white/80 py-1 pr-3 pl-2.5 text-slate-800 text-xs shadow-sm">
                   <span className="shrink-0 font-black">
                     🏃{" "}
                     {t(
@@ -1667,7 +1682,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               {isStampTrayOpen && (
                 <ul
                   aria-label={t("あいさつのスタンプ", "Greeting stamps")}
-                  className="fade-in zoom-in-95 grid animate-in grid-cols-2 gap-1 rounded-3xl bg-white/90 p-1.5 shadow-lg backdrop-blur duration-150"
+                  className="fade-in zoom-in-95 grid animate-in grid-cols-2 gap-1 rounded-3xl bg-white/90 p-1.5 shadow-lg duration-150"
                 >
                   {PICTOR_RUN_LOBBY_STAMPS.map((stamp, index) => (
                     <li key={stamp.ja}>
@@ -1702,7 +1717,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   setIsStampTrayOpen(!isStampTrayOpen)
                 }}
                 className={cn(
-                  "flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3.5 font-black text-xs shadow-sm backdrop-blur-sm transition-colors",
+                  "flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3.5 font-black text-xs shadow-sm transition-colors",
                   isStampTrayOpen
                     ? "bg-white text-slate-900"
                     : "bg-white/75 text-slate-800 hover:bg-white/90",
@@ -1821,7 +1836,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                 </button>
               </div>
               {isStatusOpen && (
-                <div className="fade-in slide-in-from-top-2 pointer-events-auto w-80 max-w-full animate-in space-y-3 rounded-3xl bg-white/95 p-4 text-left shadow-xl backdrop-blur duration-200">
+                <div className="fade-in slide-in-from-top-2 pointer-events-auto w-80 max-w-full animate-in space-y-3 rounded-3xl bg-white/95 p-4 text-left shadow-xl duration-200">
                   <p className="font-black text-sm">
                     {t(
                       "名前の上に出すステータス",
@@ -1952,7 +1967,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
                   onPointerUp={releaseStick}
                   onPointerCancel={releaseStick}
                   onContextMenu={(event) => event.preventDefault()}
-                  className="pointer-events-auto flex size-28 cursor-grab touch-none items-center justify-center rounded-full bg-white/35 shadow-md ring-2 ring-white/70 backdrop-blur-sm"
+                  className="pointer-events-auto flex size-28 cursor-grab touch-none items-center justify-center rounded-full bg-white/35 shadow-md ring-2 ring-white/70"
                 >
                   <span className="pointer-events-none size-12 rounded-full bg-white shadow-md transition-transform duration-75" />
                 </div>
@@ -1993,7 +2008,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
               onClick={() => setIsShopOpen(false)}
               className="absolute inset-0 cursor-default"
             />
-            <div className="fade-in slide-in-from-bottom-4 relative flex max-h-[62%] w-full animate-in flex-col gap-3 rounded-t-3xl bg-white/95 p-4 shadow-2xl backdrop-blur duration-200 md:max-h-[86%] md:w-96 md:rounded-3xl">
+            <div className="fade-in slide-in-from-bottom-4 relative flex max-h-[62%] w-full animate-in flex-col gap-3 rounded-t-3xl bg-white/95 p-4 shadow-2xl duration-200 md:max-h-[86%] md:w-96 md:rounded-3xl">
               <div className="flex items-center justify-between gap-2">
                 <p className="flex items-center gap-2 font-black text-base">
                   <ShirtIcon aria-hidden="true" className="size-5" />
@@ -2108,7 +2123,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
           <button
             type="button"
             onClick={resume}
-            className="fade-in absolute inset-0 flex animate-in cursor-pointer flex-col items-center justify-center gap-3 bg-slate-900/35 backdrop-blur-[2px] duration-200"
+            className="fade-in absolute inset-0 flex animate-in cursor-pointer flex-col items-center justify-center gap-3 bg-slate-900/35 duration-200"
           >
             <span className="font-black text-2xl text-white tracking-widest drop-shadow">
               {t("一時停止中", "PAUSED")}
@@ -2135,7 +2150,7 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
 
         {phase === "over" && (
           <div className="absolute inset-x-0 top-[12%] flex justify-center px-6">
-            <div className="fade-in zoom-in-95 slide-in-from-bottom-4 flex w-full max-w-xs animate-in flex-col items-center gap-3 rounded-3xl bg-white/95 fill-mode-backwards px-6 py-5 text-center shadow-lg backdrop-blur delay-300 duration-300">
+            <div className="fade-in zoom-in-95 slide-in-from-bottom-4 flex w-full max-w-xs animate-in flex-col items-center gap-3 rounded-3xl bg-white/95 fill-mode-backwards px-6 py-5 text-center shadow-lg delay-300 duration-300">
               <p className="font-black text-xl">
                 {isNewBest
                   ? t("じこベスト更新！", "New best!")

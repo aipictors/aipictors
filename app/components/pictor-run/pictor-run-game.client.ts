@@ -272,7 +272,12 @@ export async function createPictorRunGame(
     alpha: true,
     powerPreference: "high-performance",
   })
-  let pixelRatio = Math.min(window.devicePixelRatio || 1, lite ? 1.25 : 2)
+  // スマホやタブレットは画素が細かいわりに描く力が弱いので、細かさの上限を下げる
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
+  let pixelRatio = Math.min(
+    window.devicePixelRatio || 1,
+    lite ? 1.25 : isTouchDevice ? 1.5 : 2,
+  )
   renderer.setPixelRatio(pixelRatio)
   /** 影を落とす（重い端末では、走っている途中でやめることがある） */
   let shadows = !lite
@@ -2122,7 +2127,7 @@ export async function createPictorRunGame(
   lobbyScene.add(selfBubble.sprite)
 
   // ロビーにいるほかの人・いま走っている人（走っている人は薄い姿で、うしろに立つ）
-  const MAX_AVATARS = 10
+  const MAX_AVATARS = lite || isTouchDevice ? 6 : 10
   type Avatar = {
     root: Group
     turn: Group
@@ -2168,6 +2173,9 @@ export async function createPictorRunGame(
         // 服の色も人ごとに変える
         wearer.mesh = object
         wearer.dress = dress(material)
+      } else {
+        // 表情用のメッシュ（ふだんは頭の中にしまってある）は、ほかの人のぶんは描かない（骨の計算が 3 割ほど減る）
+        object.visible = false
       }
       object.material = material
       object.castShadow = false
@@ -3275,33 +3283,70 @@ void main() {
   observer.observe(canvas)
   resize()
 
-  // 重い端末では、走っている途中で仕上げと映り込みをやめ、画面を粗くし、それでも重ければ影をやめる
+  // 重い端末では、動かしている途中で段階的に軽くする:
+  // 1 = 仕上げと映り込みをやめる、2 = 画面を少し粗く、3 = 影をやめる、4〜6 = さらに粗く。
+  // 下げた段階は端末に覚えて、次に開いたときは最初からその軽さで始める（3 日たったら、もう一度きれいな設定から試す）
+  const QUALITY_KEY = "pictor-run-quality"
+  const QUALITY_MAX = 6
+  let quality = 0
+  const setCap = (cap: number) => {
+    if (pixelRatio <= cap) return
+    pixelRatio = cap
+    renderer.setPixelRatio(pixelRatio)
+    resize()
+  }
+  const lowerQuality = (level: number) => {
+    quality = level
+    if (level >= 1 && post) {
+      post = false
+      stage.setReflections(false)
+    }
+    if (level >= 2) setCap(1.25)
+    if (level >= 3 && shadows) {
+      shadows = false
+      sun.castShadow = false
+      lobbySun.castShadow = false
+      shadow.visible = true
+    }
+    if (level >= 4) setCap(1)
+    if (level >= 5) setCap(0.8)
+    if (level >= 6) setCap(0.65)
+  }
+  try {
+    const saved = JSON.parse(
+      window.localStorage.getItem(QUALITY_KEY) ?? "null",
+    ) as { level?: number; at?: number } | null
+    if (
+      saved &&
+      Number.isInteger(saved.level) &&
+      Date.now() - Number(saved.at) < 3 * 86400_000
+    ) {
+      lowerQuality(clamp(Number(saved.level), 0, QUALITY_MAX))
+    }
+  } catch {
+    // 覚えていなければ、きれいな設定から始める
+  }
   let slowFrames = 0
   let slowTime = 0
   const watchSpeed = (elapsed: number) => {
-    if (elapsed > 0.25) return
+    if (elapsed > 0.25 || quality >= QUALITY_MAX) return
     slowFrames += 1
     slowTime += elapsed
-    if (slowFrames < 90) return
+    // 1.5 秒ごとに確かめる（とても重い端末でも、すぐに軽くなるように、コマ数ではなく時間で区切る）
+    if (slowTime < 1.5 || slowFrames < 8) return
     const average = slowTime / slowFrames
     slowFrames = 0
     slowTime = 0
-    if (average < 1 / 42) return
-    if (post) {
-      post = false
-      stage.setReflections(false)
-    } else if (pixelRatio > 1.25) {
-      pixelRatio = 1.25
-      renderer.setPixelRatio(pixelRatio)
-      resize()
-    } else if (shadows) {
-      shadows = false
-      sun.castShadow = false
-      shadow.visible = true
-    } else if (pixelRatio > 1) {
-      pixelRatio = 1
-      renderer.setPixelRatio(pixelRatio)
-      resize()
+    // 1 秒に 48 コマを下回っていたら 1 段階、25 コマも出ていなければ 2 段階軽くする
+    if (average < 1 / 48) return
+    lowerQuality(Math.min(QUALITY_MAX, quality + (average > 1 / 25 ? 2 : 1)))
+    try {
+      window.localStorage.setItem(
+        QUALITY_KEY,
+        JSON.stringify({ level: quality, at: Date.now() }),
+      )
+    } catch {
+      // 覚えられなくても、この回は軽くなる
     }
   }
 
@@ -3315,7 +3360,9 @@ void main() {
     const dt = Math.min(0.034, elapsed)
     last = now
     if (document.hidden) return
-    if (state === "running" && !paused) watchSpeed(elapsed)
+    if ((state === "running" || state === "lobby") && !paused) {
+      watchSpeed(elapsed)
+    }
     if (!paused) {
       // ぶつかった瞬間は、ほんの一瞬だけ止める
       if (freeze > 0) freeze -= dt
