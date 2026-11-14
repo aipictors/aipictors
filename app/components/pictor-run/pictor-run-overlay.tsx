@@ -48,7 +48,10 @@ import {
   type PictorRunLobbyConnection,
 } from "~/components/pictor-run/pictor-run-lobby"
 import { PictorRunRankingPanel } from "~/components/pictor-run/pictor-run-ranking"
-import { toPictorRunSharePageUrl } from "~/components/pictor-run/pictor-run-share"
+import {
+  toPictorRunCardUrl,
+  toPictorRunSharePageUrl,
+} from "~/components/pictor-run/pictor-run-share"
 import {
   PICTOR_RUN_STAGE_LENGTH,
   PICTOR_RUN_STAGES,
@@ -360,6 +363,9 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
   const [lite, setLite] = useState(readLite)
   /** 今いるステージ（0 始まりの通し番号） */
   const [stage, setStage] = useState(0)
+  /** いまのステージ（シェアのカードの URL に使う。画面の stage と同じ値） */
+  const stageRef = useRef(stage)
+  stageRef.current = stage
   /** ステージが変わったときに、しばらく名前を大きく出す */
   const [stageBanner, setStageBanner] = useState<number | null>(null)
   /** これまでに着いた、いちばん先のステージ（1 始まり。0 = まだ） */
@@ -541,6 +547,16 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
             )
             setPhase("over")
             setIsSettingsOpen(false)
+            // シェアのカードの絵を、先に作らせておく（作るのに 2 秒ほどかかり、
+            // X などが取り込みに来たときに間に合わないと、カードが出ないため）
+            if (finalScore > 0) {
+              new Image().src = toPictorRunCardUrl({
+                score: finalScore,
+                coins: finalCoins,
+                stage: stageRef.current,
+                userId: viewerIdRef.current,
+              })
+            }
             // 集めたコインは、きせかえ用にためる
             if (finalCoins > 0) {
               const saved = {

@@ -19,7 +19,7 @@ import { createMeta } from "~/utils/create-meta"
 export const meta: MetaFunction = (props) => {
   const t = useTranslation()
   const result = parsePictorRunShareKey(props.params.result)
-  return createMeta(
+  const tags = createMeta(
     {
       title: result
         ? t(
@@ -40,6 +40,17 @@ export const meta: MetaFunction = (props) => {
     undefined,
     props.params.lang,
   )
+  // 画像の大きさを書いておく（取り込む側が、画像を読む前から大きいカードとして扱える）
+  return [
+    ...tags,
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:image:type", content: result ? "image/png" : "image/jpeg" },
+    {
+      name: "twitter:image:alt",
+      content: t("ぴくたーちゃんランの結果", "Pictor-chan Run result"),
+    },
+  ]
 }
 
 export async function loader(_props: LoaderFunctionArgs) {
