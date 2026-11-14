@@ -39,6 +39,9 @@ import { getRenderNow } from "~/utils/render-now"
 import {
   AppEventCard,
   type EventCardItem,
+  isR18OnlyEvent,
+  R18_COVER_CLASS,
+  R18CoverBadge,
 } from "~/routes/($lang).events._index/components/app-event-card"
 import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
@@ -106,6 +109,7 @@ const normalizeUserEvent = (event: any): EventCardItem => ({
   userId: event.userId,
   userIconUrl: event.userIconUrl ?? null,
   userName: event.userName,
+  isR18Only: isR18OnlyEvent(event.ratings),
 })
 
 const buildUserEventIconMap = async (userIds: string[]) => {
@@ -397,8 +401,11 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
               sizes="(min-width: 1024px) 800px, 100vw"
               fetchPriority="high"
               alt={event.title}
-              className="relative h-full w-full object-contain transition duration-300 group-hover:scale-[1.02]"
+              className={`relative h-full w-full object-contain transition duration-300 group-hover:scale-[1.02] ${
+                event.isR18Only ? R18_COVER_CLASS : ""
+              }`}
             />
+            {event.isR18Only && <R18CoverBadge />}
           </Link>
           {hasMultiple && (
             <>
@@ -1211,6 +1218,7 @@ const eventsQuery = gql`
       participantCount
       userId
       userName
+      ratings
     }
   }
 `

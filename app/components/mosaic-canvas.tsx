@@ -3,6 +3,7 @@ import { useRef, useEffect } from "react"
 const MosaicCanvas = ({
   imageUrl,
   mosaicSize,
+  blockDivisions = 100,
   width,
   height,
   className,
@@ -11,6 +12,8 @@ const MosaicCanvas = ({
 }: {
   imageUrl: string
   mosaicSize?: number
+  /** 長辺をいくつのブロックに分けるか（小さいほど粗い） */
+  blockDivisions?: number
   width?: number
   height?: number
   className?: string
@@ -79,9 +82,9 @@ const MosaicCanvas = ({
         canvas.height = image.height
       }
 
-      // 長辺の1/100をモザイクサイズとする
+      // 長辺の 1/blockDivisions をモザイクサイズとする
       const effectiveMosaicSize = Math.ceil(
-        Math.max(canvas.width, canvas.height) / 100,
+        Math.max(canvas.width, canvas.height) / blockDivisions,
       )
 
       // 画像をcanvasサイズに合わせて描画
@@ -112,7 +115,7 @@ const MosaicCanvas = ({
     }
 
     image.src = imageUrl
-  }, [imageUrl, mosaicSize, width, height]) // 依存配列を確認
+  }, [imageUrl, mosaicSize, blockDivisions, width, height]) // 依存配列を確認
 
   return <canvas className={className} ref={canvasRef} style={style} />
 }

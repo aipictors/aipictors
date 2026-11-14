@@ -1,4 +1,5 @@
 import { type FragmentOf, graphql } from "gql.tada"
+import { isR18Work } from "~/lib/is-r18-work"
 import { Heart, Images, MessageCircle } from "lucide-react"
 import { Fragment } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
@@ -59,9 +60,8 @@ const SQUARE_GRID_CLASS =
 const SQUARE_GRID_SIZES =
   "(min-width: 1536px) 15vw, (min-width: 1280px) 18vw, (min-width: 768px) 23vw, (min-width: 640px) 31vw, 48vw"
 
-const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
-  return work.isSensitive || work.rating === "R18" || work.rating === "R18G"
-}
+const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) =>
+  isR18Work(work)
 
 /**
  * レスポンシブ対応の作品一覧

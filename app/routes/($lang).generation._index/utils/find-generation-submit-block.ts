@@ -121,26 +121,21 @@ export const findGenerationSubmitBlock = (
     }
   }
 
-  if (config.modelType === "FLUX" && config.controlNetImageBase64 !== null) {
+  // FLUX（flux.1 schnell / pro）は提供を終了した。前に選んでいた人が送れないようにする
+  if (config.modelType === "FLUX") {
     return {
-      log: { message: "Blocked: FLUX with ControlNet" },
-      toast: "FLUXモデルはControlNetを使用できません。",
-      isTopCenterOnMobile: true,
-    }
-  }
-
-  if (config.modelType === "FLUX" && config.i2iImageBase64) {
-    return {
-      log: { message: "Blocked: FLUX with IMG2IMG" },
-      toast:
-        "FLUXモデルは画像から生成を一時的に停止しています、申し訳ございません",
+      log: { message: "Blocked: FLUX discontinued" },
+      toast: "FLUXモデルは提供を終了しました。ほかのモデルを選んでください。",
       isTopCenterOnMobile: true,
     }
   }
 
   if (isCustomSizeType(config.sizeType)) {
     const { width, height } = parseGenerationSize(config.sizeType)
-    const scale = config.upscaleSize !== null && config.upscaleSize > 1 ? config.upscaleSize : 1
+    const scale =
+      config.upscaleSize !== null && config.upscaleSize > 1
+        ? config.upscaleSize
+        : 1
     if (
       !isLiteOrStandardOrPremium &&
       width * scale * height * scale > freeGenerationMaxPixels

@@ -28,6 +28,27 @@ export type EventCardItem = {
   userId?: string | null
   userName?: string | null
   userIconUrl?: string | null
+  /** R18 / R18G だけのイベント（全年齢の一覧ではカバー絵をぼかす） */
+  isR18Only?: boolean
+}
+
+/**
+ * 年齢区分が R18 / R18G だけのイベントか（全年齢・R15 の作品も受け付けるイベントは含めない）
+ */
+export const isR18OnlyEvent = (ratings: string[] | null | undefined) =>
+  Array.isArray(ratings) &&
+  ratings.length > 0 &&
+  ratings.every((rating) => rating === "R18" || rating === "R18G")
+
+/** R18 だけのイベントのカバー絵に重ねるぼかし */
+export const R18_COVER_CLASS = "blur-xl scale-110"
+
+export function R18CoverBadge() {
+  return (
+    <span className="pointer-events-none absolute right-2 bottom-2 rounded-full bg-black/70 px-2 py-0.5 font-bold text-[10px] text-white">
+      R18
+    </span>
+  )
 }
 
 type Props = {
@@ -112,12 +133,13 @@ export function AppEventCard(props: Props) {
             <img
               className={`h-full w-full object-cover transition duration-300 group-hover:scale-[1.03] ${
                 isEnded ? "grayscale-[35%]" : ""
-              }`}
+              } ${appEvent.isR18Only ? R18_COVER_CLASS : ""}`}
               src={toResizedImageUrl(appEvent.thumbnailImageUrl, 320)}
               alt={appEvent.title}
               loading="lazy"
               decoding="async"
             />
+            {appEvent.isR18Only && <R18CoverBadge />}
             {isEnded && (
               <span className="absolute top-1.5 left-1.5 rounded-full bg-slate-700 px-2 py-0.5 font-bold text-[10px] text-white">
                 {statusLabel}
@@ -178,7 +200,7 @@ export function AppEventCard(props: Props) {
           <img
             className={`relative h-full w-full object-contain transition duration-300 group-hover:scale-[1.03] ${
               isEnded ? "grayscale-[35%]" : ""
-            }`}
+            } ${appEvent.isR18Only ? R18_COVER_CLASS : ""}`}
             src={toResizedImageUrl(appEvent.thumbnailImageUrl, 480)}
             srcSet={toResizedImageSrcSet(appEvent.thumbnailImageUrl, {
               minWidth: 320,
@@ -188,6 +210,7 @@ export function AppEventCard(props: Props) {
             loading="lazy"
             decoding="async"
           />
+          {appEvent.isR18Only && <R18CoverBadge />}
           <div className="absolute top-2 left-2 flex flex-wrap gap-1.5">
             <span
               className={`rounded-full px-2.5 py-0.5 font-bold text-white text-xs shadow-sm ${

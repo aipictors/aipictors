@@ -49,7 +49,13 @@ export async function loader(props: LoaderFunctionArgs) {
 
     return json(
       {
-        data: result.data,
+        // FLUX（flux.1 schnell / pro）は提供を終了したので、モデルの一覧に出さない
+        data: {
+          ...result.data,
+          imageModels: result.data.imageModels.filter(
+            (model) => model.type !== "FLUX",
+          ),
+        },
         generationMaintenance: toPublicMaintenanceFlag(generationMaintenance),
       },
       // メンテナンス中の画面は拠点のキャッシュに置かない（終わったあとに帯が残らないように）
@@ -73,11 +79,11 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => ({
     loaderHeaders.get("Cache-Control") ?? config.cacheControl.oneDay,
 })
 
-export function HydrateFallback () {
+export function HydrateFallback() {
   return <AppLoadingPage />
 }
 
-export default function GenerationLayout () {
+export default function GenerationLayout() {
   const t = useTranslation()
 
   const data = useLoaderData<typeof loader>()

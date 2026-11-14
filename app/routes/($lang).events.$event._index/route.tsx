@@ -1,4 +1,5 @@
 import { toSafeUserEventDescriptionHtml } from "~/utils/user-event-description-html"
+import { isR18Work } from "~/lib/is-r18-work"
 import { UserEventReportDialog } from "~/routes/($lang).events.$event._index/components/user-event-report-dialog"
 import type {
   HeadersFunction,
@@ -211,7 +212,7 @@ const getStatusBadgeClassName = (status: string) => {
 /**
  * 参加タグをコピーする（タグの表示はタグ検索に飛ぶので、付け忘れたときにコピーしづらかった）
  */
-function EventTagCopyButton (props: { tag: string }) {
+function EventTagCopyButton(props: { tag: string }) {
   const t = useTranslation()
 
   const [isCopied, setIsCopied] = React.useState(false)
@@ -601,7 +602,7 @@ export default function EventDetailPage() {
     event.ratings.some((r) => r === "R18" || r === "R18G") ||
     event.works.some(
       (work: { rating?: string | null; isSensitive?: boolean | null }) =>
-        work.isSensitive || work.rating === "R18" || work.rating === "R18G",
+        isR18Work(work),
     )
 
   const heroImageUrl = event.headerImageUrl || event.thumbnailImageUrl

@@ -60,10 +60,8 @@ describe("findGenerationSubmitBlock", () => {
     ).toEqual({ count: 2 })
     expect(find({ generationCount: 2 }, { passType: "STANDARD" })).toBeNull()
     expect(
-      find(
-        {},
-        { passType: "LITE", inProgressImageGenerationTasksCount: 1 },
-      )?.toast,
+      find({}, { passType: "LITE", inProgressImageGenerationTasksCount: 1 })
+        ?.toast,
     ).toContain("複数枚同時生成")
   })
 
@@ -94,6 +92,12 @@ describe("findGenerationSubmitBlock", () => {
     ).toBeNull()
   })
 
+  test("FLUX は提供を終了したので送れない", () => {
+    expect(find({ modelType: "FLUX" })?.log.message).toBe(
+      "Blocked: FLUX discontinued",
+    )
+  })
+
   test("スマホで上に出すものを分ける", () => {
     expect(
       find({ modelType: "FLUX", controlNetImageBase64: "cn" })
@@ -112,10 +116,8 @@ describe("findGenerationSubmitBlock", () => {
 
   test("先に当たった理由を返す", () => {
     expect(
-      find(
-        { i2iImageBase64: "b", generationCount: 2 },
-        { passType: null },
-      )?.log.message,
+      find({ i2iImageBase64: "b", generationCount: 2 }, { passType: null })?.log
+        .message,
     ).toBe("Blocked: IMG2IMG requires LITE+")
   })
 

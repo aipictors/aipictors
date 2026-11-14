@@ -1,4 +1,5 @@
 import { Link } from "~/lib/app/locale-router"
+import { isR18Work } from "~/lib/is-r18-work"
 import type { FragmentOf } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
@@ -23,9 +24,8 @@ type Props = {
   isMobileOnly?: boolean
 }
 
-const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
-  return work.isSensitive || work.rating === "R18" || work.rating === "R18G"
-}
+const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) =>
+  isR18Work(work)
 
 /**
  * クロップ済み作品一覧
