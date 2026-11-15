@@ -43,8 +43,9 @@ export function EditTextFormUploader (props: Props) {
               </div>
             </div>
           )}
+          {/* 編集でもカバー画像・挿絵を追加・差し替え・外せるようにする（イラストの編集と同じ。以前は並べ替えだけだった） */}
           <PostFormItemDraggableImages
-            isOnlyMove={true}
+            isOnlyMove={false}
             indexList={props.state.indexList}
             items={props.state.items ?? []}
             setItems={(items) => {

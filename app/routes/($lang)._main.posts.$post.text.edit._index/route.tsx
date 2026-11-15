@@ -351,6 +351,12 @@ export default function EditText() {
       return
     }
 
+    // 画像を外せるようになったので、全部外したときは保存前に止める（カバー画像は 1 枚以上いる）
+    if (state.items.length === 0) {
+      toast("カバー画像を1枚以上入れてください")
+      return
+    }
+
     if (formResult.success === false) {
       for (const issue of formResult.issues) {
         toast(issue.message)
