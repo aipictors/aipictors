@@ -275,7 +275,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   }}
                 >
                   <div
-                    className="relative w-full overflow-hidden rounded-lg bg-muted transition-shadow duration-200 hover:shadow-lg"
+                    className="relative w-full overflow-hidden rounded-xl bg-muted transition-shadow duration-200 hover:shadow-lg"
                     style={{ aspectRatio: `${ratio}` }}
                   >
                     {work.isPromotion && (
@@ -475,6 +475,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
             works={props.works}
             priorityCount={props.priorityCount}
             isMobileOnly={true}
+            isMasonry={true}
             isShowProfile={true}
             hasReferenceButton={false}
             onSelect={props.onSelect}

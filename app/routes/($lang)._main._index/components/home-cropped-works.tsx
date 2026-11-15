@@ -7,6 +7,11 @@ import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { cn } from "~/lib/utils"
+import {
+  splitMasonryColumns,
+  toMasonryAspectRatio,
+} from "~/utils/split-masonry-columns"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
@@ -22,6 +27,8 @@ type Props = {
    * スマホ用の一覧だけを出す（親が md:hidden のとき。PC 用の一覧は見えないのに DOM・画像の読み込み・hydration の負担になる）
    */
   isMobileOnly?: boolean
+  /** スマホでアプリと同じ石垣状に並べる（正方形に切り抜かない） */
+  isMasonry?: boolean
 }
 
 const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) =>
@@ -36,6 +43,95 @@ export function HomeCroppedWorks(props: Props) {
 
   if (!props.works || props.works.length === 0) {
     return null
+  }
+
+  const uniqueWorks = props.works.filter(
+    (work, index, self) => self.findIndex((w) => w.id === work.id) === index,
+  )
+
+  const renderMobileItem = (
+    work: FragmentOf<typeof PhotoAlbumWorkFragment>,
+    index: number,
+    aspectRatio?: number,
+  ) => {
+    const square = (
+      <CroppedWorkSquare
+        isInsideInteractive={true}
+        isPriority={index < (props.priorityCount ?? 0)}
+        isLowPriority={
+          props.priorityCount !== undefined && index >= props.priorityCount
+        }
+        media={props.isMobileOnly ? "(max-width: 767.98px)" : undefined}
+        title={t.workTitle(work.title, work.enTitle)}
+        workId={work.id}
+        imageUrl={work.smallThumbnailImageURL}
+        thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+        size="auto"
+        aspectRatio={aspectRatio}
+        imageWidth={work.smallThumbnailImageWidth}
+        imageHeight={work.smallThumbnailImageHeight}
+        subWorksCount={work.subWorksCount}
+        commentsCount={work.commentsCount}
+        isPromptPublic={work.promptAccessType === "PUBLIC"}
+        hasVideoUrl={Boolean(work.url)}
+        isGeneration={work.isGeneration}
+        hasReferenceButton={props.hasReferenceButton}
+        shouldMaskSensitive={
+          props.shouldMaskSensitiveWorks === true && isSensitiveWork(work)
+        }
+      />
+    )
+    const likeButton = (
+      <div className="absolute right-2 bottom-2 z-10">
+        <LikeButton
+          size={56}
+          targetWorkId={work.id}
+          targetWorkOwnerUserId={work.user?.id ?? ""}
+          defaultLiked={work.isLiked}
+          defaultLikedCount={0}
+          isBackgroundNone={true}
+          strokeWidth={2}
+          isParticle={true}
+        />
+      </div>
+    )
+    return (
+      <div key={work.id} className="relative w-full">
+        {props.onSelect ? (
+          <button
+            type="button"
+            onClick={() => props.onSelect?.(work.id)}
+            className={cn(
+              "group relative block w-full overflow-hidden border-none bg-transparent p-0",
+              aspectRatio !== undefined ? "rounded-[14px]" : "rounded-xl",
+            )}
+          >
+            {square}
+            {likeButton}
+          </button>
+        ) : (
+          <Link to={`/posts/${work.id}`} className="relative block">
+            {square}
+            {likeButton}
+          </Link>
+        )}
+        {work.user && props.isShowProfile && (
+          <>
+            <p className="mt-1.5 overflow-hidden text-ellipsis text-nowrap px-0.5 font-bold text-sm">
+              {t.workTitle(work.title, work.enTitle)}
+            </p>
+            <UserNameBadge
+              userId={work.user.id}
+              frame={work.user.avatarFrame}
+              userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+              name={work.user.name}
+              width={"md"}
+              likesCount={work.likesCount}
+            />
+          </>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -105,125 +201,44 @@ export function HomeCroppedWorks(props: Props) {
             ))}
         </section>
       )}
-      {showMobile && (
-        <section className="safari-work-grid grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 md:hidden">
-          {props.works
-            .filter(
-              (work, index, self) =>
-                self.findIndex((w) => w.id === work.id) === index,
-            )
-            .map((work, index) => (
-              <div key={work.id} className="relative w-full">
-                {props.onSelect ? (
-                  <button
-                    type="button"
-                    onClick={() => props.onSelect?.(work.id)}
-                    className="group relative block w-full overflow-hidden rounded-lg border-none bg-transparent p-0"
-                  >
-                    <CroppedWorkSquare
-                      isInsideInteractive={true}
-                      isPriority={index < (props.priorityCount ?? 0)}
-                      isLowPriority={
-                        props.priorityCount !== undefined &&
-                        index >= props.priorityCount
-                      }
-                      media={
-                        props.isMobileOnly ? "(max-width: 767.98px)" : undefined
-                      }
-                      title={t.workTitle(work.title, work.enTitle)}
-                      workId={work.id}
-                      imageUrl={work.smallThumbnailImageURL}
-                      thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                      size="auto"
-                      imageWidth={work.smallThumbnailImageWidth}
-                      imageHeight={work.smallThumbnailImageHeight}
-                      subWorksCount={work.subWorksCount}
-                      commentsCount={work.commentsCount}
-                      isPromptPublic={work.promptAccessType === "PUBLIC"}
-                      hasVideoUrl={Boolean(work.url)}
-                      isGeneration={work.isGeneration}
-                      hasReferenceButton={props.hasReferenceButton}
-                      shouldMaskSensitive={
-                        props.shouldMaskSensitiveWorks === true &&
-                        isSensitiveWork(work)
-                      }
-                    />
-                    <div className="absolute right-2 bottom-2 z-10">
-                      <LikeButton
-                        size={56}
-                        targetWorkId={work.id}
-                        targetWorkOwnerUserId={work.user?.id ?? ""}
-                        defaultLiked={work.isLiked}
-                        defaultLikedCount={0}
-                        isBackgroundNone={true}
-                        strokeWidth={2}
-                        isParticle={true}
-                      />
-                    </div>
-                  </button>
-                ) : (
-                  <Link to={`/posts/${work.id}`} className="relative block">
-                    <CroppedWorkSquare
-                      isPriority={index < (props.priorityCount ?? 0)}
-                      isLowPriority={
-                        props.priorityCount !== undefined &&
-                        index >= props.priorityCount
-                      }
-                      media={
-                        props.isMobileOnly ? "(max-width: 767.98px)" : undefined
-                      }
-                      title={t.workTitle(work.title, work.enTitle)}
-                      isInsideInteractive={true}
-                      workId={work.id}
-                      imageUrl={work.smallThumbnailImageURL}
-                      thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                      size="auto"
-                      imageWidth={work.smallThumbnailImageWidth}
-                      imageHeight={work.smallThumbnailImageHeight}
-                      subWorksCount={work.subWorksCount}
-                      commentsCount={work.commentsCount}
-                      isPromptPublic={work.promptAccessType === "PUBLIC"}
-                      hasVideoUrl={Boolean(work.url)}
-                      isGeneration={work.isGeneration}
-                      hasReferenceButton={props.hasReferenceButton}
-                      shouldMaskSensitive={
-                        props.shouldMaskSensitiveWorks === true &&
-                        isSensitiveWork(work)
-                      }
-                    />
-                    <div className="absolute right-2 bottom-2 z-10">
-                      <LikeButton
-                        size={56}
-                        targetWorkId={work.id}
-                        targetWorkOwnerUserId={work.user?.id ?? ""}
-                        defaultLiked={work.isLiked}
-                        defaultLikedCount={0}
-                        isBackgroundNone={true}
-                        strokeWidth={2}
-                        isParticle={true}
-                      />
-                    </div>
-                  </Link>
-                )}
-                {work.user && props.isShowProfile && (
-                  <>
-                    <p className="mt-1.5 overflow-hidden text-ellipsis text-nowrap font-bold text-sm">
-                      {t.workTitle(work.title, work.enTitle)}
-                    </p>
-                    <UserNameBadge
-                      userId={work.user.id}
-                      frame={work.user.avatarFrame}
-                      userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-                      name={work.user.name}
-                      width={"md"}
-                      likesCount={work.likesCount}
-                    />
-                  </>
+      {showMobile &&
+        (props.isMasonry ? (
+          // アプリと同じ石垣状（縦横比をそのまま、いちばん短い列に足す）
+          <section className="grid grid-cols-2 items-start gap-x-2.5 md:hidden">
+            {splitMasonryColumns(
+              uniqueWorks,
+              2,
+              (work) =>
+                toMasonryAspectRatio(
+                  work.smallThumbnailImageWidth,
+                  work.smallThumbnailImageHeight,
+                ),
+              props.isShowProfile ? 0.28 : 0,
+            ).map((column, columnIndex) => (
+              <div
+                // 列は 2 つで固定
+                // biome-ignore lint/suspicious/noArrayIndexKey: 列の位置そのものが key
+                key={columnIndex}
+                className="flex min-w-0 flex-col gap-y-3.5"
+              >
+                {column.map(({ item, index }) =>
+                  renderMobileItem(
+                    item,
+                    index,
+                    toMasonryAspectRatio(
+                      item.smallThumbnailImageWidth,
+                      item.smallThumbnailImageHeight,
+                    ),
+                  ),
                 )}
               </div>
             ))}
-        </section>
-      )}
+          </section>
+        ) : (
+          <section className="safari-work-grid grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 md:hidden">
+            {uniqueWorks.map((work, index) => renderMobileItem(work, index))}
+          </section>
+        ))}
     </>
   )
 }

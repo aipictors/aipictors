@@ -44,6 +44,10 @@ type Props = {
    * 省略時はスマホ 2 列・PC 240px 前後として扱う
    */
   displayWidth?: string
+  /**
+   * size="auto" で正方形ではなくこの縦横比（幅 / 高さ）の枠に入れる（石垣状の一覧。角も丸くする）
+   */
+  aspectRatio?: number
 }
 
 /** 正方形の表示幅（CSS） */
@@ -58,7 +62,13 @@ const SQUARE_WIDTH: Record<Exclude<Props["size"], "auto">, number> = {
  * 画像の sizes。正方形に切り抜くので、横長の画像は正方形より横にはみ出して表示される（幅 × 縦横比）
  */
 function toSizes(props: Props): string {
-  const ratio = Math.max(1, props.imageWidth / Math.max(1, props.imageHeight))
+  // 枠より横長な分だけ、表示幅より大きく表示される
+  const ratio = Math.max(
+    1,
+    props.imageWidth /
+      Math.max(1, props.imageHeight) /
+      (props.aspectRatio ?? 1),
+  )
   // 各候補の最後の長さだけを倍にする（メディア条件の (min-width: 768px) はそのまま）
   const scale = (value: string) =>
     value
@@ -150,11 +160,19 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
     }
   }
 
-  const cropStyle = computeCropStyle({
-    imageWidth: props.imageWidth,
-    imageHeight: props.imageHeight,
-    thumbnailPosition: props.thumbnailImagePosition,
-  })
+  const cropStyle =
+    props.aspectRatio !== undefined
+      ? {
+          width: "100%",
+          height: "100%",
+          transform: "none",
+          objectFit: "cover" as const,
+        }
+      : computeCropStyle({
+          imageWidth: props.imageWidth,
+          imageHeight: props.imageHeight,
+          thumbnailPosition: props.thumbnailImagePosition,
+        })
 
   const backgroundColor = () => {
     if (props.ranking === 1) return "#d6ba49"
@@ -211,9 +229,24 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
     // padding-bottom 100% で正方形スペースを確保し、その上に絶対配置でサムネイルを載せる
     return (
       <div className={cn("relative", sizeClass)}>
-        <div className="w-full pb-[100%]" />
+        <div
+          className="w-full pb-[100%]"
+          style={
+            props.aspectRatio !== undefined
+              ? { paddingBottom: `${(100 / props.aspectRatio).toFixed(2)}%` }
+              : undefined
+          }
+        />
         <div className="absolute inset-0">
-          <div className="relative block h-full w-full shrink-0 overflow-hidden rounded">
+          <div
+            className={cn(
+              "relative block h-full w-full shrink-0 overflow-hidden",
+              // アプリの作品カードと同じく角を大きめに丸める
+              props.aspectRatio !== undefined
+                ? "rounded-[14px] bg-muted"
+                : "rounded-xl",
+            )}
+          >
             {props.isInsideInteractive ? (
               <div className="block h-full w-full transition-all duration-300 ease-in-out">
                 {mediaContent}
