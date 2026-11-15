@@ -2,6 +2,7 @@ import { graphql } from "gql.tada"
 import { PinIcon } from "lucide-react"
 import { cn } from "~/lib/utils"
 import { DeleteStickerConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-sticker-confirm-dialog"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Props = {
   imageUrl?: string
@@ -17,7 +18,7 @@ type Props = {
 /**
  * スタンプボタン
  */
-export function StickerButton (props: Props) {
+export function StickerButton(props: Props) {
   if (!props.imageUrl) {
     return null
   }
@@ -56,7 +57,7 @@ export function StickerButton (props: Props) {
       >
         <img
           className="m-auto"
-          src={props.imageUrl}
+          src={toResizedImageUrl(props.imageUrl, 240)}
           alt={props.title}
           loading="lazy"
           decoding="async"

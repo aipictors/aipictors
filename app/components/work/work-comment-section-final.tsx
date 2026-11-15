@@ -32,6 +32,7 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { useBoolean } from "usehooks-ts"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Comment = {
   id: string
@@ -101,7 +102,7 @@ type Props = {
 /**
  * 作品コメントセクション（拡張版 - 返信機能とスタンプダウンロード対応）
  */
-export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
+export function WorkCommentSectionEnhanced(props: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
   const t = useTranslation()
@@ -113,7 +114,9 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
   const [showSensitiveIds, setShowSensitiveIds] = useState<string[]>([])
   const [showMutedIds, setShowMutedIds] = useState<string[]>([])
   const [openReplyIds, setOpenReplyIds] = useState<string[]>([])
-  const [latestOpenedReplyId, setLatestOpenedReplyId] = useState<string | null>(null)
+  const [latestOpenedReplyId, setLatestOpenedReplyId] = useState<string | null>(
+    null,
+  )
   const [latestOpenedReplyShouldScroll, setLatestOpenedReplyShouldScroll] =
     useState(false)
   const [newComments, setNewComments] = useState<Comment[]>([])
@@ -258,10 +261,7 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
   }
 
   // 返信の切り替え
-  const toggleReply = (
-    commentId: string,
-    shouldScrollToInput: boolean,
-  ) => {
+  const toggleReply = (commentId: string, shouldScrollToInput: boolean) => {
     if (openReplyIds.includes(commentId)) {
       setOpenReplyIds(openReplyIds.filter((id) => id !== commentId))
       setLatestOpenedReplyId((currentId) => {
@@ -498,14 +498,14 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
                   >
                     <img
                       className="w-32 cursor-pointer transition-transform hover:scale-105"
-                      src={comment.sticker.imageUrl}
+                      src={toResizedImageUrl(comment.sticker.imageUrl, 240)}
                       alt={comment.sticker.title}
                     />
                   </StickerInfoDialog>
                 ) : (
                   <img
                     className="w-32"
-                    src={comment.sticker.imageUrl}
+                    src={toResizedImageUrl(comment.sticker.imageUrl, 240)}
                     alt={comment.sticker.title}
                   />
                 )}

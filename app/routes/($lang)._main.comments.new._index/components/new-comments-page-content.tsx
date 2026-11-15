@@ -25,6 +25,7 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 import { toast } from "sonner"
 import { cn } from "~/lib/utils"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Comment = {
   user: {
@@ -61,7 +62,7 @@ type Props = {
   isSensitive?: boolean
 }
 
-export function NewCommentsPageContent (props: Props) {
+export function NewCommentsPageContent(props: Props) {
   const ratingWhere = props.isSensitive
     ? { isSensitive: true, ratings: ["R18" as const, "R18G" as const] }
     : { isSensitive: false, ratings: ["G" as const, "R15" as const] }
@@ -428,7 +429,7 @@ export function NewCommentsPageContent (props: Props) {
                     {comment.sticker?.imageUrl && (
                       <div className="flex items-center gap-2">
                         <img
-                          src={comment.sticker.imageUrl}
+                          src={toResizedImageUrl(comment.sticker.imageUrl, 240)}
                           alt={comment.sticker.title || "sticker"}
                           className="h-12 w-12 rounded-md object-cover"
                         />

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { recordRecentStickerId } from "~/utils/sticker-recent"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 export type PictorRunSticker = { id: string; url: string }
 
@@ -111,7 +112,7 @@ export function PictorRunStickerPanel(props: Props): React.ReactNode {
                   )}
                 >
                   <img
-                    src={sticker.imageUrl}
+                    src={toResizedImageUrl(sticker.imageUrl, 240)}
                     alt=""
                     loading="lazy"
                     decoding="async"

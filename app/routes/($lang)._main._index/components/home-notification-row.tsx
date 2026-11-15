@@ -94,7 +94,7 @@ export function NotificationRowView(props: {
         )}
         {item.stickerUrl && (
           <img
-            src={item.stickerUrl}
+            src={toResizedImageUrl(item.stickerUrl, 240)}
             alt={t("スタンプ", "Sticker")}
             loading="lazy"
             className={cn(
@@ -222,7 +222,7 @@ function ParentCommentQuote(props: {
       )}
       {stickerUrl && (
         <img
-          src={stickerUrl}
+          src={toResizedImageUrl(stickerUrl, 240)}
           alt={t("スタンプ", "Sticker")}
           loading="lazy"
           className={cn(

@@ -29,6 +29,7 @@ import {
 import { AmazonExchangeSection } from "~/routes/($lang).settings.points/components/amazon-exchange-section"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type ReceivedTransferHistoryItem = {
   senderUserId: string
@@ -420,7 +421,10 @@ export function SupportReceivedSummaryPage() {
                         {comment.sticker?.imageUrl && (
                           <div className="flex items-center gap-2">
                             <img
-                              src={comment.sticker.imageUrl}
+                              src={toResizedImageUrl(
+                                comment.sticker.imageUrl,
+                                240,
+                              )}
                               alt={comment.sticker.title || "sticker"}
                               className="h-14 w-14 rounded-md object-cover"
                             />
