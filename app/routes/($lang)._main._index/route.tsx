@@ -94,7 +94,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
         <HomeEnglishHero />
         {currentTab === "home" && <HomeGuestHero />}
         {/* ヘッダー部分: タブ */}
-        <div className="-mx-4 bg-background/98 px-4 py-2">
+        <div className="-mx-4 bg-background/98 px-4 py-1">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
             <div className="min-w-0 flex-1">
               <AppAnimatedTabs
@@ -150,6 +150,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 ]}
                 value={currentTab}
                 onChange={handleTabChange}
+                variant="pill"
               />
             </div>
           </div>

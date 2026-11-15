@@ -24,7 +24,7 @@ export function HomeSectionHeading(props: Props) {
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="min-w-0">
-        <h2 className="flex items-center gap-2 font-bold text-lg leading-tight md:text-xl">
+        <h2 className="flex items-center gap-2 font-extrabold text-[17px] leading-tight tracking-tight md:text-xl">
           <span
             aria-hidden="true"
             className="h-5 w-1 shrink-0 rounded-full bg-linear-to-b from-sky-400 to-violet-500"
@@ -50,12 +50,13 @@ export function HomeSectionHeading(props: Props) {
         )}
       </div>
       {props.link && props.linkLabel && (
+        // アプリと同じ文字だけのボタン（押せる高さは 40px 取る）
         <Link
           to={props.link}
-          className="flex h-8 shrink-0 items-center gap-0.5 rounded-full border bg-background pr-2 pl-3.5 font-medium text-xs transition-colors hover:bg-muted"
+          className="-mr-2 flex h-10 shrink-0 items-center gap-0.5 rounded-full pr-1.5 pl-3 font-semibold text-[#0170C8] text-sm transition-colors hover:bg-muted dark:text-sky-400"
         >
           {props.linkLabel}
-          <ChevronRightIcon className="size-3.5 text-muted-foreground" />
+          <ChevronRightIcon className="size-4" />
         </Link>
       )}
     </div>

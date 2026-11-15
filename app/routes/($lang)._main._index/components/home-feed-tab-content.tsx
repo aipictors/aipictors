@@ -13,6 +13,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-deferred-section"
 import type { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import { HomeQuickLinks } from "~/routes/($lang)._main._index/components/home-quick-links"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import { HomeSidebar } from "~/routes/($lang)._main._index/components/home-sidebar"
 import { HomeSupportRankingSection } from "~/routes/($lang)._main._index/components/home-support-ranking-section"
@@ -73,6 +74,7 @@ export function HomeFeedTabContent(
       </Suspense>
       <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
         <div className="flex w-full min-w-0 flex-col space-y-8 overflow-hidden md:max-w-[calc(100%_-_278px)]">
+          <HomeQuickLinks />
           <HomeQuickPreviewBar
             events={data.eventPreviews}
             featuredReleases={data.featuredReleaseList}

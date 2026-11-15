@@ -19,6 +19,10 @@ interface AnimatedTabsProps {
   value: string
   onChange: (value: string) => void
   className?: string
+  /**
+   * pill: アプリと同じ丸いタブ（選んだものを塗る。下線は出さない）
+   */
+  variant?: "underline" | "pill"
 }
 
 export function AppAnimatedTabs({
@@ -26,13 +30,16 @@ export function AppAnimatedTabs({
   value,
   onChange,
   className = "",
+  variant = "underline",
 }: AnimatedTabsProps): React.ReactNode {
+  const isPill = variant === "pill"
   const selectedIndex = tabs.findIndex((tab) => tab.value === value)
   const tabRefs = useRef<(HTMLElement | null)[]>([])
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })
 
   useEffect(() => {
     const current = tabRefs.current[selectedIndex]
+    if (isPill) return
     if (current) {
       setIndicatorStyle({
         left: current.offsetLeft,
@@ -42,6 +49,7 @@ export function AppAnimatedTabs({
   }, [selectedIndex])
 
   const handleHover = (index: number) => {
+    if (isPill) return
     const el = tabRefs.current[index]
     if (el) {
       setIndicatorStyle({
@@ -52,6 +60,7 @@ export function AppAnimatedTabs({
   }
 
   const resetIndicator = () => {
+    if (isPill) return
     const current = tabRefs.current[selectedIndex]
     if (current) {
       setIndicatorStyle({
@@ -63,18 +72,30 @@ export function AppAnimatedTabs({
 
   return (
     <div
-      className={`relative w-full cursor-pointer overflow-x-auto border-border border-b ${className}`}
+      className={
+        isPill
+          ? `relative w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`
+          : `relative w-full cursor-pointer overflow-x-auto border-border border-b ${className}`
+      }
     >
-      <div className="relative flex space-x-6">
+      <div
+        className={isPill ? "relative flex gap-2" : "relative flex space-x-6"}
+      >
         {tabs.map((tab, i) => {
           const setTabRef = (el: HTMLElement | null) => {
             tabRefs.current[i] = el
           }
-          const className = `cursor-pointer whitespace-nowrap pb-3 font-medium text-sm transition-colors duration-300 ${
-            value === tab.value
-              ? "text-foreground"
-              : "text-muted-foreground hover:text-foreground"
-          }`
+          const className = isPill
+            ? `inline-flex h-9 shrink-0 cursor-pointer items-center whitespace-nowrap rounded-full px-4 font-bold text-sm transition-colors duration-200 active:scale-95 motion-reduce:transition-none ${
+                value === tab.value
+                  ? "bg-foreground text-background"
+                  : "bg-muted text-foreground/75 hover:text-foreground"
+              }`
+            : `cursor-pointer whitespace-nowrap pb-3 font-medium text-sm transition-colors duration-300 ${
+                value === tab.value
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`
           if (tab.href) {
             return (
               <Link
@@ -108,13 +129,15 @@ export function AppAnimatedTabs({
           )
         })}
         {/* 固定アニメーション下線 */}
-        <div
-          className="absolute bottom-0 h-0.5 bg-foreground transition-all duration-300"
-          style={{
-            left: indicatorStyle.left,
-            width: indicatorStyle.width,
-          }}
-        />
+        {!isPill && (
+          <div
+            className="absolute bottom-0 h-0.5 bg-foreground transition-all duration-300"
+            style={{
+              left: indicatorStyle.left,
+              width: indicatorStyle.width,
+            }}
+          />
+        )}
       </div>
     </div>
   )
