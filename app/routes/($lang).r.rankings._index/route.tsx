@@ -14,11 +14,12 @@ import {
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
+import { getJstDate } from "~/utils/jst-date"
 
 export async function loader(params: LoaderFunctionArgs) {
   // 昨日の日付を取得
-  const yesterday = new Date()
-  yesterday.setDate(yesterday.getDate() - 1)
+  // 日本時間の昨日（サーバーは UTC なので、0〜9 時に 2 日前にならないように）
+  const yesterday = getJstDate(new Date(Date.now() - 24 * 60 * 60 * 1000))
 
   const initialDate = new Date(
     params.params.year && params.params.month && params.params.day

@@ -20,6 +20,7 @@ import {
 import { SupportPeriodRankingList } from "~/routes/($lang)._main.rankings._index/components/support-period-ranking-list"
 import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
+import { getJstDate } from "~/utils/jst-date"
 
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
@@ -33,9 +34,8 @@ export async function loader(props: LoaderFunctionArgs) {
   // }
 
   // 昨日の日付を取得
-  const yesterday = new Date()
-
-  yesterday.setDate(yesterday.getDate() - 1)
+  // 日本時間の昨日（サーバーは UTC なので、0〜9 時に 2 日前にならないように）
+  const yesterday = getJstDate(new Date(Date.now() - 24 * 60 * 60 * 1000))
 
   const initialDate = new Date(
     props.params.year && props.params.month && props.params.day
