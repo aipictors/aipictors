@@ -51,6 +51,47 @@ const rememberGuestOpen = (open: boolean) => {
   }
 }
 
+/**
+ * ログイン中の人の判定も、ページを開き直すたびに聞かないよう端末に 30 分覚えておく
+ * （作品ページなどを開くたびに 1 回ずつ問い合わせていた）。決済のあとは clearTrialStatusCache で消す
+ */
+const VIEWER_STORAGE_KEY = "aipictors-trial-status"
+const VIEWER_REMEMBER_MS = 30 * 60 * 1000
+
+const readViewerStatus = (userId: string): TrialStatus | null => {
+  try {
+    const raw = window.localStorage.getItem(VIEWER_STORAGE_KEY)
+    if (raw === null) return null
+    const value = JSON.parse(raw) as {
+      userId?: unknown
+      until?: unknown
+      status?: TrialStatus
+    }
+    if (
+      value.userId !== userId ||
+      typeof value.until !== "number" ||
+      value.until <= Date.now() ||
+      typeof value.status?.trialDays !== "number"
+    ) {
+      return null
+    }
+    return value.status
+  } catch (_error) {
+    return null
+  }
+}
+
+const rememberViewerStatus = (userId: string, status: TrialStatus) => {
+  try {
+    window.localStorage.setItem(
+      VIEWER_STORAGE_KEY,
+      JSON.stringify({ userId, status, until: Date.now() + VIEWER_REMEMBER_MS }),
+    )
+  } catch (_error) {
+    // 覚えられなければ次のページでまた聞く
+  }
+}
+
 /** お試しを受け付けているか（未ログインの人向け。対象かどうかはログインするまで分からない） */
 export const isTrialOpenForGuest = (status: TrialStatus) =>
   status.eligible !== false && isTrialAsAdvertised(status)
@@ -66,6 +107,8 @@ const load = (key: string) => {
     cache.set(key, value ?? "failed")
     if (key === "guest" && value !== null) {
       rememberGuestOpen(isTrialOpenForGuest(value))
+    } else if (value !== null) {
+      rememberViewerStatus(key, value)
     }
     return value
   })
@@ -77,6 +120,11 @@ const load = (key: string) => {
 export const clearTrialStatusCache = () => {
   cache.clear()
   pending.clear()
+  try {
+    window.localStorage.removeItem(VIEWER_STORAGE_KEY)
+  } catch (_error) {
+    // 消せなくても 30 分で切れる
+  }
 }
 
 export function useLiteOffer(): {
@@ -101,6 +149,10 @@ export function useLiteOffer(): {
         setGuestOpen(remembered)
         return
       }
+    }
+    if (!cache.has(key) && key !== "guest") {
+      const remembered = readViewerStatus(key)
+      if (remembered !== null) cache.set(key, remembered)
     }
     if (cache.has(key)) {
       setVersion((value) => value + 1)
