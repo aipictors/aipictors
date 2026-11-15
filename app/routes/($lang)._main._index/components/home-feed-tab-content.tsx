@@ -13,7 +13,6 @@ import { HomeHotCarousel } from "~/routes/($lang)._main._index/components/home-h
 import { HomeQuickLinks } from "~/routes/($lang)._main._index/components/home-quick-links"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import { HomeSidebar } from "~/routes/($lang)._main._index/components/home-sidebar"
-import { HomeSupportRankingSection } from "~/routes/($lang)._main._index/components/home-support-ranking-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import type { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
@@ -63,7 +62,7 @@ export function HomeFeedTabContent(
             featuredReleases={data.featuredReleaseList}
             releaseList={data.releaseList}
           />
-          {/* ここからアプリのホームと同じ並び: いま人気 → 今日のお題 → ランキング・プラン → 応援ランキング → おすすめ作品 */}
+          {/* ここからアプリのホームと同じ並び: いま人気 → 今日のお題 → ランキング・プラン → おすすめ作品（応援ランキングはランキングのページで見る） */}
           <HomeHotCarousel works={data.hotWorks} />
           <div className="space-y-3">
             {data.dailyTheme && (
@@ -78,10 +77,6 @@ export function HomeFeedTabContent(
           </div>
           {/* クリエイターの宣伝（PR） */}
           <HomePromotionWorksSection />
-          {/* 表示する応援がないときは中身が空になる（空の枠で余白が増えないように隠す） */}
-          <div className="empty:hidden">
-            <HomeSupportRankingSection />
-          </div>
           {/* おすすめ作品（ユーザからの推薦）。サーバーで取った一覧をすぐ出す（スクロールやログイン確認を待たない） */}
           <HomeWorksUsersRecommendedSection
             works={
