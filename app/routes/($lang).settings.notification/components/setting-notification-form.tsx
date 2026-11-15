@@ -1,12 +1,12 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Link } from "~/lib/app/locale-router"
 import { ChevronRight } from "lucide-react"
 import { useContext, useEffect, useId, useState } from "react"
 import { toast } from "sonner"
 import { Switch } from "~/components/ui/switch"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳用フック
+import { Link } from "~/lib/app/locale-router"
 import { SettingsSaveBar } from "~/routes/($lang).settings/components/settings-save-bar"
 import {
   SettingsSection,
@@ -20,6 +20,8 @@ export function SettingNotificationForm() {
   const authContext = useContext(AuthContext)
   const t = useTranslation() // 翻訳フックを使用
   const notifyCommentId = useId()
+  const notifyLikeId = useId()
+  const notifyAnonymousLikeId = useId()
   const allAgeAnonymousId = useId()
   const sensitiveAnonymousId = useId()
 
@@ -34,6 +36,8 @@ export function SettingNotificationForm() {
   const [isNotifyComment, setIsNotifyComment] = useState<boolean>(
     userSetting?.userSetting?.isNotifyComment ?? false,
   )
+  const [isNotifyLike, setIsNotifyLike] = useState(true)
+  const [isNotifyAnonymousLike, setIsNotifyAnonymousLike] = useState(true)
   const [isAllAgeLikeAnonymousByDefault, setIsAllAgeLikeAnonymousByDefault] =
     useState(false)
   const [
@@ -43,6 +47,10 @@ export function SettingNotificationForm() {
 
   useEffect(() => {
     setIsNotifyComment(userSetting?.userSetting?.isNotifyComment ?? false)
+    setIsNotifyLike(userSetting?.userSetting?.isNotifyLike ?? true)
+    setIsNotifyAnonymousLike(
+      userSetting?.userSetting?.isNotifyAnonymousLike ?? true,
+    )
   }, [userSetting])
 
   useEffect(() => {
@@ -59,6 +67,8 @@ export function SettingNotificationForm() {
       variables: {
         input: {
           isNotifyComment: isNotifyComment,
+          isNotifyLike: isNotifyLike,
+          isNotifyAnonymousLike: isNotifyAnonymousLike,
           isAnonymousLikeAllAges: isAllAgeLikeAnonymousByDefault,
           isAnonymousLikeSensitive: isSensitiveLikeAnonymousByDefault,
         },
@@ -82,6 +92,29 @@ export function SettingNotificationForm() {
             checked={isNotifyComment}
             id={notifyCommentId}
             onCheckedChange={setIsNotifyComment}
+          />
+        </SettingsSwitchRow>
+        <SettingsSwitchRow
+          htmlFor={notifyLikeId}
+          title={t("いいねの通知を受け取る", "Receive notifications for likes")}
+        >
+          <Switch
+            checked={isNotifyLike}
+            id={notifyLikeId}
+            onCheckedChange={setIsNotifyLike}
+          />
+        </SettingsSwitchRow>
+        <SettingsSwitchRow
+          htmlFor={notifyAnonymousLikeId}
+          title={t(
+            "匿名いいねの通知を受け取る",
+            "Receive notifications for anonymous likes",
+          )}
+        >
+          <Switch
+            checked={isNotifyAnonymousLike}
+            id={notifyAnonymousLikeId}
+            onCheckedChange={setIsNotifyAnonymousLike}
           />
         </SettingsSwitchRow>
         <Link
@@ -145,6 +178,8 @@ const userSettingQuery = graphql(
       preferenceRating
       featurePromptonRequest
       isNotifyComment
+      isNotifyLike
+      isNotifyAnonymousLike
       isAnonymousLikeAllAges
       isAnonymousLikeSensitive
     }

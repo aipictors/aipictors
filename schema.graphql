@@ -2188,6 +2188,15 @@ enum GenerationAccessType {
   PUBLIC_RESTORABLE
 }
 
+"""Google Play で買ったコイン 1 件"""
+input GooglePlayCoinPurchaseInput {
+  """商品の ID（coins_100 など）"""
+  productId: String!
+
+  """Play Billing の purchaseToken"""
+  purchaseToken: String!
+}
+
 """Google Play の定期購入 1 件"""
 input GooglePlayPurchaseInput {
   """定期購入の ID（pass_lite / pass_standard / pass_premium）"""
@@ -3595,8 +3604,14 @@ type Mutation {
   """ユーザのフォローを解除する"""
   signImageGenerationTerms(input: SignImageGenerationTermsInput!): UserNode!
 
+  """App Store で買ったコインを残高に反映する"""
+  syncAppStoreCoinPurchases(input: SyncAppStoreCoinPurchasesInput!): SyncStoreCoinPurchasesResult!
+
   """App Store の購入（StoreKit の署名付き取引）をプランに反映する"""
   syncAppStoreTransactions(input: SyncAppStoreTransactionsInput!): SyncAppStoreTransactionsResult!
+
+  """Google Play で買ったコインを残高に反映する"""
+  syncGooglePlayCoinPurchases(input: SyncGooglePlayCoinPurchasesInput!): SyncStoreCoinPurchasesResult!
 
   """Google Play の購入（定期購入の purchaseToken）をプランに反映する"""
   syncGooglePlayPurchases(input: SyncGooglePlayPurchasesInput!): SyncAppStoreTransactionsResult!
@@ -5211,6 +5226,14 @@ type SubWorkNode implements Node {
   thumbnailImageId: ID! @deprecated(reason: "廃止")
 }
 
+"""App Store で買ったコインを反映する"""
+input SyncAppStoreCoinPurchasesInput {
+  """
+  StoreKit 2 の Transaction.jwsRepresentation（in_app_purchase の serverVerificationData）
+  """
+  signedTransactions: [String!]!
+}
+
 """App Store の購入を反映する"""
 input SyncAppStoreTransactionsInput {
   """
@@ -5231,10 +5254,25 @@ type SyncAppStoreTransactionsResult {
   periodEnd: Int
 }
 
+"""Google Play で買ったコインを反映する"""
+input SyncGooglePlayCoinPurchasesInput {
+  """購入直後、または未反映の購入"""
+  purchases: [GooglePlayCoinPurchaseInput!]!
+}
+
 """Google Play の購入を反映する"""
 input SyncGooglePlayPurchasesInput {
   """queryPurchasesAsync / 購入直後の Purchase"""
   purchases: [GooglePlayPurchaseInput!]!
+}
+
+"""アプリ内課金のコインを反映した結果"""
+type SyncStoreCoinPurchasesResult {
+  """今回配ったコインの枚数（すでに配ってあるものは 0）"""
+  grantedCoins: Int!
+
+  """反映後のプレミアムコインの残高"""
+  premiumCoinBalance: Int
 }
 
 """タグ"""
@@ -5627,8 +5665,14 @@ input UpdateUserSettingInput {
   """センシティブ画像をぼかす"""
   isBlurSensitiveImage: Boolean
 
+  """匿名いいねの通知を受け取る"""
+  isNotifyAnonymousLike: Boolean
+
   """コメント通知"""
   isNotifyComment: Boolean
+
+  """名前つきのいいねの通知を受け取る"""
+  isNotifyLike: Boolean
 
   """ミュートユーザのコメントを表示する"""
   isShowingMutedUsersComments: Boolean
@@ -6233,8 +6277,14 @@ type UserSettingNode implements Node {
   """コメント投稿がBAN されているかどうか"""
   isCommentBanned: Boolean!
 
+  """匿名いいねの通知を受け取るかどうか"""
+  isNotifyAnonymousLike: Boolean!
+
   """コメント通知するかどうか"""
   isNotifyComment: Boolean!
+
+  """名前つきのいいねの通知を受け取るかどうか"""
+  isNotifyLike: Boolean!
 
   """作品投稿がBAN されているかどうか"""
   isPostBanned: Boolean!
