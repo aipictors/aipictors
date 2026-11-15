@@ -23,9 +23,10 @@ type Props = {
 export function HomeWorksUsersRecommendedSection(props: Props) {
   const appContext = useContext(AuthContext)
 
-  // 推薦作品
+  // 推薦作品。サーバーで取った一覧があればそれを使い、ブラウザでは取り直さない（同じ問い合わせが 2 回になっていた）。
+  // ログイン中の人のいいね済みは LikeButton が自分で確かめる
   const { data: recommendedWorksResp } = useQuery(WorksQuery, {
-    skip: appContext.isLoading,
+    skip: appContext.isLoading || props.works.length > 0,
     variables: {
       offset: 0,
       limit: config.query.homeWorkCount.promotion,
