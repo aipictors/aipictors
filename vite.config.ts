@@ -53,6 +53,30 @@ const fontsourceWoff2Only = (): Plugin => ({
   },
 })
 
+/**
+ * ブラウザでだけ後から読むライブラリ（動画の再生・エラー送信・ファイルのハッシュ）を、サーバーのビルドから外す。
+ * サーバーでは呼ばれないのに Worker に同梱され（合わせて 約 1MB）、Worker が起動するたびに読み込む分の CPU を使っていた
+ */
+const CLIENT_ONLY_DYNAMIC_IMPORT =
+  /import\(\s*"(?:hls\.js|@sentry\/browser|hash-wasm)"\s*\)/g
+
+const stripClientOnlyImportsFromServer = (): Plugin => ({
+  name: "aipictors-strip-client-only-imports-from-server",
+  apply: "build",
+  transform(code, id, options) {
+    if (!options?.ssr || id.includes("/node_modules/")) return null
+    if (!CLIENT_ONLY_DYNAMIC_IMPORT.test(code)) return null
+    CLIENT_ONLY_DYNAMIC_IMPORT.lastIndex = 0
+    return {
+      code: code.replace(
+        CLIENT_ONLY_DYNAMIC_IMPORT,
+        'Promise.reject(new Error("client only"))',
+      ),
+      map: null,
+    }
+  },
+})
+
 declare module "@remix-run/cloudflare" {
   interface Future {
     v3_singleFetch: true
@@ -92,6 +116,7 @@ export default defineConfig({
     tailwindcss(),
     criticalCssSource(),
     fontsourceWoff2Only(),
+    stripClientOnlyImportsFromServer(),
   ],
   define: {
     VITE_VERSION: JSON.stringify(process.env.npm_package_version),
