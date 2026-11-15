@@ -237,7 +237,7 @@ export function PlanEndingNotice(props: EndingProps) {
     return <div className="mx-2 md:mx-0">{body}</div>
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-[4.5rem] z-40 flex justify-center px-3 md:inset-x-auto md:right-4 md:bottom-4 md:px-0">
+    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--aip-tabbar-h,3.75rem)+0.75rem)] z-40 flex justify-center px-3 md:inset-x-auto md:right-4 md:bottom-4 md:px-0">
       <div className="pointer-events-auto w-full max-w-sm">{body}</div>
     </div>
   )

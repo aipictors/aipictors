@@ -360,7 +360,7 @@ function AchievementUnlockToast(props: {
 
   return (
     <output
-      className="pointer-events-none fixed inset-x-0 bottom-20 z-[90] flex justify-center px-3 md:inset-x-auto md:right-6 md:bottom-6"
+      className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--aip-tabbar-h,4.25rem)+0.75rem)] z-[90] flex justify-center px-3 md:inset-x-auto md:right-6 md:bottom-6"
       aria-live="polite"
     >
       <div

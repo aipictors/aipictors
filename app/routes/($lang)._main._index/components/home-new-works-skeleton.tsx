@@ -54,7 +54,7 @@ export function HomeNewWorksSkeleton(props: Props) {
       </div>
 
       {props.isPagination && (
-        <div className="fixed inset-x-0 bottom-0 z-10 flex justify-center border border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="fixed inset-x-0 bottom-[var(--aip-tabbar-h,0px)] z-10 flex justify-center border border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="flex items-center gap-2 rounded-lg bg-background px-3 py-2">
             <Skeleton className="h-8 w-8 rounded-md" />
             <Skeleton className="h-8 w-8 rounded-md" />

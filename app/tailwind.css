@@ -109,3 +109,16 @@
 html[data-aip-hide-list-likes] [data-list-like-count] {
   display: none !important;
 }
+
+/*
+ * スマホの下のタブ（app/components/app/app-mobile-tab-bar.tsx）の高さ。
+ * タブがあるときだけ本文の下に余白を取り、画面下に重ねる案内・ページ送りをタブの上に出す
+ */
+@media (max-width: 767.98px) {
+  html:has(.aip-tabbar) {
+    --aip-tabbar-h: calc(3.5rem + 1px + env(safe-area-inset-bottom));
+  }
+  html:has(.aip-tabbar) body {
+    padding-bottom: var(--aip-tabbar-h);
+  }
+}

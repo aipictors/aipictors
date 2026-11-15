@@ -733,7 +733,7 @@ function HomeHeader(props: Props) {
   )
 }
 
-const viewerUnreadNotificationCountsQuery = graphql(
+export const viewerUnreadNotificationCountsQuery = graphql(
   `query ViewerUnreadNotificationCounts {
     viewer {
       id

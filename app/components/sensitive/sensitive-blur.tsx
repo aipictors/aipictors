@@ -90,7 +90,7 @@ export function SensitiveBlurToggle(): React.ReactNode {
         title={label}
         onClick={() => setIsBlurred(!isBlurred)}
         className={cn(
-          "fixed right-3 bottom-[4.5rem] z-20 flex size-11 items-center justify-center rounded-full border shadow-md transition-colors",
+          "fixed right-3 bottom-[calc(var(--aip-tabbar-h,3.75rem)+0.75rem)] z-20 flex size-11 items-center justify-center rounded-full border shadow-md transition-colors",
           isBlurred
             ? "bg-primary text-primary-foreground"
             : "bg-background/90 text-foreground hover:bg-muted",

@@ -238,7 +238,7 @@ export function WorksList(props: Props) {
 
       {/* 選んでいる間は、どこまでスクロールしても操作できるように固定する */}
       {isSelectable && (
-        <div className="fixed bottom-16 left-1/2 z-30 flex w-max max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-1 rounded-2xl border bg-background/95 p-2 shadow-lg backdrop-blur">
+        <div className="fixed bottom-[calc(var(--aip-tabbar-h,3.25rem)+0.75rem)] left-1/2 z-30 flex w-max max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-1 rounded-2xl border bg-background/95 p-2 shadow-lg backdrop-blur">
           <span className="px-2 font-medium text-sm tabular-nums">
             {t(
               `${selectedIds.length}件を選択中`,

@@ -189,7 +189,7 @@ export function ReferralWatcher() {
     return (
       <aside
         aria-label={t("招待特典", "Invite bonus")}
-        className="fixed inset-x-3 bottom-16 z-40 mx-auto flex max-w-md items-center gap-3 rounded-2xl border bg-background/95 p-3 shadow-xl backdrop-blur md:inset-x-auto md:right-6 md:bottom-6 md:mx-0"
+        className="fixed inset-x-3 bottom-[calc(var(--aip-tabbar-h,3.25rem)+0.75rem)] z-40 mx-auto flex max-w-md items-center gap-3 rounded-2xl border bg-background/95 p-3 shadow-xl backdrop-blur md:inset-x-auto md:right-6 md:bottom-6 md:mx-0"
       >
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
           <GiftIcon className="size-5" />
@@ -208,7 +208,7 @@ export function ReferralWatcher() {
   return (
     <aside
       aria-label={t("招待特典", "Invite bonus")}
-      className="fixed inset-x-3 bottom-16 z-40 mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-violet-500/30 bg-background/95 p-3 shadow-violet-500/20 shadow-xl backdrop-blur md:inset-x-auto md:right-6 md:bottom-6 md:mx-0"
+      className="fixed inset-x-3 bottom-[calc(var(--aip-tabbar-h,3.25rem)+0.75rem)] z-40 mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-violet-500/30 bg-background/95 p-3 shadow-violet-500/20 shadow-xl backdrop-blur md:inset-x-auto md:right-6 md:bottom-6 md:mx-0"
     >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-sky-500 text-white">
         <GiftIcon className="size-5" />

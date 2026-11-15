@@ -251,7 +251,7 @@ function PaginationMode(props: Props) {
       {posts.length > 0 && (
         <>
           <div className="h-8" />
-          <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
+          <div className="-translate-x-1/2 fixed bottom-[var(--aip-tabbar-h,0px)] left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
             <ResponsivePagination
               perPage={PER_PAGE}
               maxCount={1000}

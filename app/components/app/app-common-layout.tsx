@@ -1,4 +1,5 @@
 import { AppContents } from "~/components/app/app-contents"
+import { AppMobileTabBar } from "~/components/app/app-mobile-tab-bar"
 import { HomeFooter } from "~/components/home-footer"
 import { PlusMobileNotice } from "~/components/plus-entry-notice"
 import { PlanEndingNotice } from "~/components/plus-member-notice"
@@ -32,6 +33,7 @@ export function AppCommonLayout(props: Props): React.ReactNode {
         }
         footer={<HomeFooter />}
       />
+      <AppMobileTabBar />
       <PlusMobileNotice />
       <PlanEndingNotice variant="floating" />
     </SidebarProvider>

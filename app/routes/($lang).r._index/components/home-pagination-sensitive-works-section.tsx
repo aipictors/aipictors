@@ -181,7 +181,7 @@ export function HomePaginationSensitiveWorksSection (props: Props) {
       )}
 
       <div className="h-8" />
-      <div className="fixed inset-x-0 bottom-0 z-10 flex justify-center border border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="fixed inset-x-0 bottom-[var(--aip-tabbar-h,0px)] z-10 flex justify-center border border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <ResponsivePagination
           perPage={perPageCount}
           maxCount={1000}

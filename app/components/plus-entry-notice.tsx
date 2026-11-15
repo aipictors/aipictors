@@ -128,7 +128,7 @@ export function PlusMobileNotice() {
   if (!isVisible) return null
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-[4.5rem] z-40 flex justify-center px-3 motion-safe:animate-[fade-in-up_0.3s_ease-out_both] md:hidden">
+    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--aip-tabbar-h,3.75rem)+0.75rem)] z-40 flex justify-center px-3 motion-safe:animate-[fade-in-up_0.3s_ease-out_both] md:hidden">
       <div className="pointer-events-auto flex max-w-full items-center rounded-full border border-violet-500/30 bg-background/95 shadow-lg shadow-violet-500/15 backdrop-blur">
         <Link
           to="/plus"
