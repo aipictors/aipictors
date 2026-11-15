@@ -15,6 +15,10 @@ export type PictorRunShareResult = {
   userId: string | null
 }
 
+/** 得点とコインの上限（サーバーの 1 回の得点の上限 500 万に合わせる） */
+const MAX_SCORE = 5000000
+const MAX_COINS = 5000000
+
 const toNumber = (value: number, max: number) =>
   Math.min(max, Math.max(0, Math.floor(Number.isFinite(value) ? value : 0)))
 
@@ -22,17 +26,17 @@ const toNumber = (value: number, max: number) =>
 export function toPictorRunShareKey(result: PictorRunShareResult) {
   const user =
     result.userId && /^\d+$/.test(result.userId) ? `-u${result.userId}` : ""
-  return `${toNumber(result.score, 200000)}-${toNumber(result.coins, 20000)}-${toNumber(result.stage, 2600)}${user}`
+  return `${toNumber(result.score, MAX_SCORE)}-${toNumber(result.coins, MAX_COINS)}-${toNumber(result.stage, 2600)}${user}`
 }
 
 export function parsePictorRunShareKey(
   key: string | undefined,
 ): PictorRunShareResult | null {
-  const match = key?.match(/^(\d{1,6})-(\d{1,5})-(\d{1,4})(?:-u(\d{1,12}))?$/)
+  const match = key?.match(/^(\d{1,7})-(\d{1,7})-(\d{1,4})(?:-u(\d{1,12}))?$/)
   if (!match) return null
   return {
-    score: toNumber(Number(match[1]), 200000),
-    coins: toNumber(Number(match[2]), 20000),
+    score: toNumber(Number(match[1]), MAX_SCORE),
+    coins: toNumber(Number(match[2]), MAX_COINS),
     stage: toNumber(Number(match[3]), 2600),
     userId: match[4] ?? null,
   }
