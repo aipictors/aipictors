@@ -1,8 +1,14 @@
-import { LayoutGridIcon, PinIcon, RectangleEllipsisIcon } from "lucide-react"
+import {
+  LayoutGridIcon,
+  PinIcon,
+  RectangleEllipsisIcon,
+  Settings2Icon,
+} from "lucide-react"
 import { useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { MAX_PINNED_STICKERS } from "~/hooks/use-pinned-stickers"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 const VIEW_MODE_STORAGE_KEY = "aipictors:sticker-view-mode"
 
@@ -46,7 +52,7 @@ type Props = {
 }
 
 /**
- * スタンプ一覧の「一括表示」「固定の編集」ボタン
+ * スタンプ一覧の「一括表示」「固定の編集」ボタンと、デフォルトのスタンプの設定へのリンク
  */
 export function StickerDialogOptions(props: Props) {
   const t = useTranslation()
@@ -77,6 +83,12 @@ export function StickerDialogOptions(props: Props) {
       >
         <PinIcon className="size-4" />
         {t("固定", "Pin")} {props.pinnedCount}/{MAX_PINNED_STICKERS}
+      </Button>
+      <Button size="sm" variant="ghost" asChild className="gap-1">
+        <Link to="/settings/sticker">
+          <Settings2Icon className="size-4" />
+          {t("スタンプの設定", "Sticker settings")}
+        </Link>
       </Button>
       {props.isPinEditing && (
         <p className="w-full text-muted-foreground text-xs">

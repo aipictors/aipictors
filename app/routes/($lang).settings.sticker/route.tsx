@@ -6,8 +6,9 @@ import type {
 import { Suspense } from "react"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
-import { MyStickersList } from "~/routes/($lang).settings.sticker/components/my-stickers-list"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
+import { DefaultStickersSetting } from "~/routes/($lang).settings.sticker/components/default-stickers-setting"
+import { MyStickersList } from "~/routes/($lang).settings.sticker/components/my-stickers-list"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -28,7 +29,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function SettingSticker () {
+export default function SettingSticker() {
   const t = useTranslation()
 
   return (
@@ -37,6 +38,7 @@ export default function SettingSticker () {
         <SettingsHeader title={t("スタンプ一覧", "Stickers")} />
       </div>
       <div className="space-y-4">
+        <DefaultStickersSetting />
         <Suspense
           fallback={
             <div className="flex min-h-96 items-center justify-center">

@@ -5665,6 +5665,9 @@ input UpdateUserSettingInput {
   """センシティブ画像をぼかす"""
   isBlurSensitiveImage: Boolean
 
+  """既定のスタンプ（ぴくたーちゃんのスタンプ）を表示しない"""
+  isHideDefaultStickers: Boolean
+
   """匿名いいねの通知を受け取る"""
   isNotifyAnonymousLike: Boolean
 
@@ -5673,6 +5676,9 @@ input UpdateUserSettingInput {
 
   """名前つきのいいねの通知を受け取る"""
   isNotifyLike: Boolean
+
+  """以前の既定のスタンプもスタンプの一覧に出す"""
+  isShowLegacyDefaultStickers: Boolean
 
   """ミュートユーザのコメントを表示する"""
   isShowingMutedUsersComments: Boolean
@@ -6280,6 +6286,9 @@ type UserSettingNode implements Node {
   """コメント投稿がBAN されているかどうか"""
   isCommentBanned: Boolean!
 
+  """既定のスタンプ（ぴくたーちゃんのスタンプ）を表示しないかどうか"""
+  isHideDefaultStickers: Boolean!
+
   """匿名いいねの通知を受け取るかどうか"""
   isNotifyAnonymousLike: Boolean!
 
@@ -6291,6 +6300,9 @@ type UserSettingNode implements Node {
 
   """作品投稿がBAN されているかどうか"""
   isPostBanned: Boolean!
+
+  """以前の既定のスタンプもスタンプの一覧に出すかどうか"""
+  isShowLegacyDefaultStickers: Boolean!
 
   """ミュートしているユーザのコメントを表示するかどうか"""
   isShowingMutedUsersComments: Boolean!
@@ -6422,6 +6434,9 @@ type Viewer {
   ※非推奨
   """
   customerPortalURL: String
+
+  """全員が使える既定のスタンプ（スタンプの設定に従う。表示しないなら空、以前の既定のスタンプをオンにしていれば後ろに足す）"""
+  defaultStickers: [StickerNode!]!
 
   """お気に入りのモデル一覧"""
   favoritedImageGenerationModels: [ImageModelNode!]!
