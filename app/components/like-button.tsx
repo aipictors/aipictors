@@ -2,7 +2,6 @@ import { useApolloClient, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Heart } from "lucide-react"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
-import { useLocation } from "react-router-dom"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFollowNudge } from "~/hooks/use-follow-nudge"
@@ -27,6 +26,8 @@ type Props = {
   likedCount?: number
   targetId?: string
   isSensitive?: boolean
+  /** 匿名でいいねするか。指定しなければサーバーが利用者の設定（全年齢・センシティブ）で決める */
+  isAnonymous?: boolean
   targetWorkId: string
   targetWorkOwnerUserId: string
   isBackgroundNone?: boolean
@@ -39,7 +40,6 @@ type Props = {
 
 export function LikeButton(props: Props): React.ReactNode {
   const t = useTranslation()
-  const location = useLocation()
 
   const authContext = useContext(AuthContext)
 
@@ -95,9 +95,6 @@ export function LikeButton(props: Props): React.ReactNode {
     props.countLabel !== undefined
       ? `${props.countLabel} ${Math.max(0, likedCount)}`.trim()
       : props.text
-
-  const isSensitive = props.isSensitive ?? /\/r($|\/)/.test(location.pathname)
-  const defaultIsAnonymous = isSensitive
 
   // クライアントサイドでのみローカルストレージから状態を復元
   useEffect(() => {
@@ -234,7 +231,7 @@ export function LikeButton(props: Props): React.ReactNode {
       return
     }
 
-    await performLike(defaultIsAnonymous)
+    await performLike(props.isAnonymous)
   }
 
   // ショートカットは常に今表示している作品に対して動かす

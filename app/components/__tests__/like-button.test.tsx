@@ -6,7 +6,13 @@ import {
   InMemoryCache,
   Observable,
 } from "@apollo/client/index"
-import { cleanup, render, screen, waitFor } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import { LikeButton } from "~/components/like-button"
 import { AuthContext } from "~/contexts/auth-context"
@@ -18,10 +24,25 @@ const renderButton = (options: {
   defaultLiked?: boolean
   serverLiked?: boolean
   cache?: InMemoryCache
+  isAnonymous?: boolean
+  likeInputs?: Record<string, unknown>[]
 }) => {
   const requests: string[][] = []
   const link = new ApolloLink((operation) => {
-    const ids: string[] = operation.variables.where.ids
+    if (operation.variables.input !== undefined) {
+      options.likeInputs?.push(operation.variables.input)
+      return new Observable((observer) => {
+        observer.next({ data: { createWorkLike: null } })
+        observer.complete()
+      })
+    }
+    const ids: string[] | undefined = operation.variables.where?.ids
+    if (ids === undefined) {
+      return new Observable((observer) => {
+        observer.next({ data: {} })
+        observer.complete()
+      })
+    }
     requests.push(ids)
     return new Observable((observer) => {
       observer.next({
@@ -55,6 +76,7 @@ const renderButton = (options: {
             targetWorkOwnerUserId={options.ownerId ?? "owner"}
             defaultLiked={options.defaultLiked ?? false}
             defaultLikedCount={0}
+            isAnonymous={options.isAnonymous}
           />
         </AuthContext.Provider>
       </ApolloProvider>
@@ -137,5 +159,28 @@ describe("いいねボタンの状態", () => {
     })
     await new Promise((resolve) => setTimeout(resolve, 60))
     expect(requests).toEqual([])
+  })
+})
+
+describe("匿名いいね", () => {
+  test("指定がなければ匿名かどうかを送らず、サーバーの設定に任せる", async () => {
+    const likeInputs: Record<string, unknown>[] = []
+    renderButton({ workId: "2001", userId: "viewer", likeInputs })
+    fireEvent.click(screen.getByRole("button", { name: "いいね" }))
+    await waitFor(() => expect(likeInputs).toEqual([{ workId: "2001" }]))
+  })
+
+  test("作品画面で設定から決めた匿名を送る", async () => {
+    const likeInputs: Record<string, unknown>[] = []
+    renderButton({
+      workId: "2002",
+      userId: "viewer",
+      isAnonymous: true,
+      likeInputs,
+    })
+    fireEvent.click(screen.getByRole("button", { name: "いいね" }))
+    await waitFor(() =>
+      expect(likeInputs).toEqual([{ workId: "2002", isAnonymous: true }]),
+    )
   })
 })

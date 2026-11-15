@@ -95,8 +95,8 @@ export function SettingNotificationForm() {
       <SettingsSection
         title={t("いいねの表示", "Like visibility")}
         description={t(
-          "サムネイルからいいねしたときに使います。作品の詳細では、その都度切り替えられます。",
-          "Applied when liking from thumbnails. On the work page you can switch each time.",
+          "いいねしたときに、作者への通知やいいね一覧で名前を出さないようにします。",
+          "Hides your name in author notifications and like lists when you like a work.",
         )}
       >
         <div className="divide-y">

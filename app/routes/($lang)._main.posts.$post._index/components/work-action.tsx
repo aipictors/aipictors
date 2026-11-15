@@ -23,6 +23,7 @@ type Props = {
   workType: IntrospectionEnum<"WorkType">
   isSensitive?: boolean
   likeButtonLabel?: string
+  isAnonymousLike?: boolean
   bookmarkFolderId: string | null
   workLikesCount: number
   defaultLiked: boolean
@@ -113,6 +114,7 @@ export function WorkAction(props: Props) {
               defaultLiked={props.defaultLiked}
               defaultLikedCount={props.workLikesCount}
               isSensitive={props.isSensitive}
+              isAnonymous={props.isAnonymousLike}
               targetWorkId={props.targetWorkId}
               isBackgroundNone={false}
               targetWorkOwnerUserId={props.targetWorkOwnerUserId}

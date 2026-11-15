@@ -26,6 +26,25 @@ type Props = {
 }
 
 /**
+ * 設定の「いいねの表示」から、この作品へのいいねを匿名にするか。設定をまだ読めていなければ undefined
+ */
+export function isAnonymousLikeBySetting(
+  setting:
+    | {
+        isAnonymousLikeAllAges?: boolean | null
+        isAnonymousLikeSensitive?: boolean | null
+      }
+    | null
+    | undefined,
+  isSensitive: boolean,
+): boolean | undefined {
+  if (!setting) return undefined
+  return isSensitive
+    ? setting.isAnonymousLikeSensitive ?? true
+    : setting.isAnonymousLikeAllAges ?? false
+}
+
+/**
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
  */
 export function WorkActionContainer(props: Props) {
@@ -35,11 +54,12 @@ export function WorkActionContainer(props: Props) {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
   })
 
-  const likeButtonLabel =
-    props.isSensitive ||
-    userSettingData?.userSetting?.isAnonymousLikeAllAges !== true
-      ? "いいね"
-      : "匿名いいね"
+  const isAnonymousLike = isAnonymousLikeBySetting(
+    userSettingData?.userSetting,
+    props.isSensitive === true,
+  )
+
+  const likeButtonLabel = isAnonymousLike === true ? "匿名いいね" : "いいね"
 
   return (
     <WorkAction
@@ -54,6 +74,7 @@ export function WorkActionContainer(props: Props) {
       defaultLiked={props.defaultLiked}
       defaultBookmarked={props.defaultBookmarked}
       likeButtonLabel={likeButtonLabel}
+      isAnonymousLike={isAnonymousLike}
       bookmarkFolderId={props.bookmarkFolderId}
       targetWorkId={props.targetWorkId}
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
@@ -73,6 +94,7 @@ const userSettingQuery = graphql(
     userSetting {
       id
       isAnonymousLikeAllAges
+      isAnonymousLikeSensitive
     }
   }`,
 )

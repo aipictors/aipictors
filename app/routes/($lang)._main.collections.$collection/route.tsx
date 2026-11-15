@@ -7,6 +7,10 @@ import { useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { config } from "~/config"
+import { useQuery } from "@apollo/client/index"
+import { useContext } from "react"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { AuthContext } from "~/contexts/auth-context"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.collection === undefined) {
@@ -52,13 +56,32 @@ export default function Collections () {
 
   const data = useLoaderData<typeof loader>()
 
-  if (data.folderResp === null) {
+  const authContext = useContext(AuthContext)
+
+  // 非公開のフォルダ（ブックマークなど）はサーバーでは取れないので、作成者ならブラウザで取り直す
+  const isViewerQuery = data.folderResp === null && authContext.isLoggedIn
+
+  const { data: viewerResp, loading } = useQuery(folderQuery, {
+    skip: !isViewerQuery,
+    variables: {
+      nanoid: params.collection,
+      offset: data.page * 16,
+      limit: 16,
+    },
+  })
+
+  const folder = data.folderResp ?? viewerResp?.folder ?? null
+
+  if (folder === null) {
+    if (authContext.isLoading || (isViewerQuery && loading)) {
+      return <AppLoadingPage />
+    }
     throw new Response(null, { status: 404 })
   }
 
   return (
     <>
-      <CollectionArticle collection={data.folderResp} page={data.page} />
+      <CollectionArticle collection={folder} page={data.page} />
     </>
   )
 }
