@@ -40,7 +40,9 @@ describe("prepareBookHtml", () => {
     const book = prepareBookHtml("<p>第1話、残り3人、本当?うそ!、A1、v1.5</p>")
     expect(book.html).toContain('第<span class="rb-tcy">1</span>話')
     expect(book.html).toContain('残り<span class="rb-tcy">3</span>人')
-    expect(book.html).toContain('本当<span class="rb-tcy">?</span>うそ<span class="rb-tcy">!</span>')
+    expect(book.html).toContain(
+      '本当<span class="rb-tcy">?</span>うそ<span class="rb-tcy">!</span>',
+    )
     expect(book.html).toContain("A1")
     expect(book.html).toContain("v1.5")
   })
@@ -97,6 +99,28 @@ describe("prepareBookHtml", () => {
         '<p data-b="5" class="rb-page-break" aria-hidden="true"></p>' +
         '<p data-b="6">最後</p>',
     )
+  })
+
+  test("挿絵と［改ページ］だけの段落でも、挿絵は消さずに印だけ改ページにする", () => {
+    const book = prepareBookHtml(
+      '<p>一</p><p>［改ページ］</p><p><img src="a.png"><img src="b.png">［改ページ］</p><p>［改ページ］<img src="c.png"></p><p>二</p>',
+    )
+    expect(book.html).toBe(
+      '<p data-b="0">一</p>' +
+        '<p data-b="1" class="rb-page-break" aria-hidden="true"></p>' +
+        '<p data-b="2"><img src="a.png" loading="eager" decoding="async"><img src="b.png" loading="eager" decoding="async"></p>' +
+        '<p data-b="3" class="rb-page-break" aria-hidden="true"></p>' +
+        '<p data-b="4" class="rb-page-break" aria-hidden="true"></p>' +
+        '<p data-b="5"><img src="c.png" loading="eager" decoding="async"></p>' +
+        '<p data-b="6">二</p>',
+    )
+  })
+
+  test("最後の段落が挿絵と［改ページ］でも、挿絵は消さない", () => {
+    const book = prepareBookHtml(
+      '<p>一</p><p><img src="a.png">［改ページ］</p>',
+    )
+    expect(book.html).toContain('<img src="a.png"')
   })
 
   test("コードの中は変えない", () => {

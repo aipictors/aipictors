@@ -39,7 +39,8 @@ const RUBY_PATTERN = /[|｜]([^|｜《》\n]{1,30})《([^《》\n]{1,30})》/g
 const EMPHASIS_PATTERN = /《《([^《》\n]{1,60})》》/g
 const TCY_PATTERN =
   /(?<![0-9A-Za-z.,:])([0-9]{1,2}|[!?！？]{2}|[!?])(?![0-9A-Za-z.,:])/g
-const UPRIGHT_DIGITS_PATTERN = /(?<![0-9A-Za-z.,:])([0-9]{3,})(?![0-9A-Za-z.,:])/g
+const UPRIGHT_DIGITS_PATTERN =
+  /(?<![0-9A-Za-z.,:])([0-9]{3,})(?![0-9A-Za-z.,:])/g
 const QUOTE_PATTERN = /[“”]/g
 const HEADING_LIKE_PATTERN =
   /^(?:[◆◇■□●○★☆▼▽※【]|第[0-9０-９一二三四五六七八九十百千]+[話章節部幕]|(?:プロローグ|エピローグ|序章|終章|幕間)(?:\s|　|$))/
@@ -56,6 +57,12 @@ const PAGE_BREAK_PATTERN = new RegExp(
 export const isPageBreakText = (text: string) =>
   PAGE_BREAK_PATTERN.test(text.trim())
 
+/** 改ページの印だけの段落か（挿絵などが一緒に入っている段落は、印だけ分けて挿絵を残す） */
+const isPageBreakParagraph = (element: Element) =>
+  element.tagName === "P" &&
+  isPageBreakText(element.textContent ?? "") &&
+  element.querySelector("img, video, iframe") === null
+
 /**
  * 段落の途中にある改ページの印で段落を分ける（印は印だけの段落にする）。
  * 段落の直下の文字だけを見る（太字などの中に書かれた印はそのまま）
@@ -66,7 +73,11 @@ const splitPageBreaks = (doc: Document, root: Element) => {
   )
   for (const paragraph of paragraphs) {
     const text = paragraph.textContent ?? ""
-    if (!PAGE_BREAK_MARKER_PATTERN.test(text) || isPageBreakText(text)) continue
+    if (
+      !PAGE_BREAK_MARKER_PATTERN.test(text) ||
+      isPageBreakParagraph(paragraph)
+    )
+      continue
     const groups: Node[][] = [[]]
     for (const child of Array.from(paragraph.childNodes)) {
       if (child.nodeType !== 3) {
@@ -254,8 +265,7 @@ export const prepareBookHtml = (html: string): PreparedBook => {
 
   // 最後の空の段落と改ページの印は余白のページを作るだけなので消す
   const isTrailing = (element: Element) =>
-    isBlank(element) ||
-    (element.tagName === "P" && isPageBreakText(element.textContent ?? ""))
+    isBlank(element) || isPageBreakParagraph(element)
   while (root.lastElementChild && isTrailing(root.lastElementChild)) {
     root.lastElementChild.remove()
   }
@@ -270,7 +280,7 @@ export const prepareBookHtml = (html: string): PreparedBook => {
 
   for (const element of Array.from(root.children)) {
     element.setAttribute("data-b", String(block))
-    if (element.tagName === "P" && isPageBreakText(element.textContent ?? "")) {
+    if (isPageBreakParagraph(element)) {
       element.textContent = ""
       element.className = "rb-page-break"
       element.setAttribute("aria-hidden", "true")

@@ -20,9 +20,14 @@ export const HidePageBreakMarkers = Extension.create({
             const decorations: Decoration[] = []
             state.doc.descendants((node, pos) => {
               if (node.type.name === "paragraph") {
+                // 挿絵などが一緒に入っている段落は隠さない（印の文字だけ下で隠す）
                 if (
                   node.textContent !== "" &&
-                  isPageBreakText(node.textContent)
+                  isPageBreakText(node.textContent) &&
+                  node.childCount > 0 &&
+                  Array.from({ length: node.childCount }, (_, index) =>
+                    node.child(index),
+                  ).every((child) => child.isText)
                 ) {
                   decorations.push(
                     Decoration.node(pos, pos + node.nodeSize, {
