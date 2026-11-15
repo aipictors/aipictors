@@ -147,13 +147,17 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
     )
   }
 
+  // スマホは押しやすく高さ 36px（外側の余白と合わせて 40px）、PC は今の大きさ
+  // R18 を見ているときは R18 側を色付きにして、どちらか一目で分かるようにする
+  // 描画前は head のスクリプトが html に data-aip-mode を入れる（閲覧ページは hydration を操作まで待つので、その間もずれない）
   const segment = (isActive: boolean) =>
     cn(
-      "flex h-7 items-center rounded-full px-2 font-medium text-xs transition-colors md:px-3",
+      "flex h-9 min-w-11 items-center justify-center rounded-full px-3 font-semibold text-[13px] transition-colors md:h-7 md:min-w-0 md:font-medium md:text-xs",
       isActive
         ? "bg-background text-foreground shadow-sm"
         : "text-foreground/70 hover:text-foreground",
     )
+  const r18Active = "bg-rose-600 text-white shadow-sm hover:text-white"
 
   return (
     <>
@@ -171,7 +175,10 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
         <button
           type="button"
           aria-pressed={!isR18}
-          className={segment(!isR18)}
+          className={cn(
+            segment(!isR18),
+            "[html[data-aip-mode=r18]_&]:bg-transparent [html[data-aip-mode=r18]_&]:text-foreground/70 [html[data-aip-mode=r18]_&]:shadow-none",
+          )}
           onClick={goAllAges}
         >
           {t("全年齢", "All ages")}
@@ -179,7 +186,11 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
         <button
           type="button"
           aria-pressed={isR18}
-          className={segment(isR18)}
+          className={cn(
+            segment(isR18),
+            isR18 && r18Active,
+            "[html[data-aip-mode=r18]_&]:bg-rose-600 [html[data-aip-mode=r18]_&]:text-white [html[data-aip-mode=r18]_&]:shadow-sm",
+          )}
           onClick={onClickR18}
         >
           R18

@@ -19,10 +19,19 @@ export const readContentMode = (): ContentMode => {
   }
 }
 
+/**
+ * html の data-aip-mode（ヘッダーの切り替えの描画前の見た目に使う）を今のモードに合わせる
+ * 最初の値は head のスクリプト（CONTENT_MODE_INLINE_SCRIPT）が入れる
+ */
+const syncContentModeAttribute = () => {
+  document.documentElement.dataset.aipMode = readContentMode()
+}
+
 export const writeContentMode = (mode: ContentMode) => {
   try {
     if (readContentMode() === mode) return
     localStorage.setItem(CONTENT_MODE_KEY, mode)
+    syncContentModeAttribute()
     window.dispatchEvent(new Event(MODE_CHANGE_EVENT))
   } catch {
     // 保存できない環境では URL だけで判断する
@@ -32,12 +41,21 @@ export const writeContentMode = (mode: ContentMode) => {
 export const subscribeContentMode = (listener: () => void) => {
   window.addEventListener(MODE_CHANGE_EVENT, listener)
   // ほかのタブで切り替えたとき
-  window.addEventListener("storage", listener)
+  const onStorage = () => {
+    syncContentModeAttribute()
+    listener()
+  }
+  window.addEventListener("storage", onStorage)
   return () => {
     window.removeEventListener(MODE_CHANGE_EVENT, listener)
-    window.removeEventListener("storage", listener)
+    window.removeEventListener("storage", onStorage)
   }
 }
+
+/**
+ * head に置く: 覚えているモードを html の data-aip-mode に書く（属性なので React の突き合わせには関わらない）
+ */
+export const CONTENT_MODE_INLINE_SCRIPT = `try{document.documentElement.dataset.aipMode=localStorage.getItem("${CONTENT_MODE_KEY}")==="r18"?"r18":"all"}catch(e){}`
 
 const splitLocale = (pathname: string) => {
   const match = pathname.match(/^\/en(?=\/|$)/)

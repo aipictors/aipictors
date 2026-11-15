@@ -1,4 +1,7 @@
-import { toR18FallbackPath } from "~/utils/content-mode"
+import {
+  CONTENT_MODE_INLINE_SCRIPT,
+  toR18FallbackPath,
+} from "~/utils/content-mode"
 import { installWorkThumbnailHints } from "~/utils/work-thumbnail-hint"
 import "react-photo-view/dist/react-photo-view.css"
 
@@ -662,6 +665,11 @@ export function Layout(props: Props): React.ReactNode {
           // ヘッダーのアイコンを描画前に決める（app/utils/header-user-snapshot.ts）
           // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
           dangerouslySetInnerHTML={{ __html: HEADER_USER_INLINE_SCRIPT }}
+        />
+        <script
+          // ヘッダーの「全年齢 / R18」の選択を描画前に決める（app/utils/content-mode.ts）
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
+          dangerouslySetInnerHTML={{ __html: CONTENT_MODE_INLINE_SCRIPT }}
         />
         <script
           // 一覧のいいね数を隠す設定を描画前に反映する（app/utils/list-like-count-preference.ts）
