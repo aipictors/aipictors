@@ -1,9 +1,6 @@
 import { useSearchParams } from "@remix-run/react"
-import {
-  appPillRowClassName,
-  appPillTabClassName,
-} from "~/components/app/app-pill-tab"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import type { SearchType } from "~/routes/($lang)._main.search/utils/search-filters"
 
 /**
@@ -23,7 +20,8 @@ export function SearchTypeTabs(props: { type: SearchType }) {
     <div
       role="tablist"
       aria-label={t("検索する対象", "Search for")}
-      className={`mb-6 ${appPillRowClassName}`}
+      // アプリの検索結果と同じ、下線のタブを横幅いっぱいに 3 つ（PC は左に寄せる）
+      className="mb-4 flex border-b md:mb-6"
     >
       {tabs.map(([type, label]) => (
         <button
@@ -44,9 +42,19 @@ export function SearchTypeTabs(props: { type: SearchType }) {
               { preventScrollReset: true },
             )
           }}
-          className={appPillTabClassName(props.type === type)}
+          className={cn(
+            "relative flex h-12 flex-1 items-center justify-center text-[15px] transition-colors md:w-36 md:flex-none",
+            props.type === type
+              ? "font-extrabold text-foreground"
+              : "font-semibold text-muted-foreground hover:text-foreground",
+          )}
         >
-          {label}
+          <span className="relative inline-flex h-full items-center">
+            {label}
+            {props.type === type && (
+              <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-foreground" />
+            )}
+          </span>
         </button>
       ))}
     </div>

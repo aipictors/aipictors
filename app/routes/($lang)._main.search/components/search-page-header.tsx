@@ -17,16 +17,16 @@ export function SearchPageHeader(props: {
   const { data, navigateToSearch, pagePrefix } = props
 
   return (
-    <div className="mb-7 pb-4 md:pb-5">
+    <div className="mb-4">
       <div>
-        <h1 className="break-words font-bold text-2xl leading-tight md:text-3xl">
+        <h1 className="break-words font-black text-xl leading-tight md:text-2xl">
           {data.searchQuery
             ? `#${data.searchQuery}`
             : data.isSensitiveMode
               ? t("R18 作品検索", "R18 search")
               : t("作品検索", "Search")}
         </h1>
-        <p className="mt-3 text-muted-foreground text-sm md:text-base">
+        <p className="mt-1 text-muted-foreground text-sm">
           {data.searchQuery
             ? t(
                 data.mode === "text"
@@ -46,7 +46,7 @@ export function SearchPageHeader(props: {
         {data.searchQuery && (
           <Link
             to={`${pagePrefix}/tags/${encodeURIComponent(data.searchQuery)}`}
-            className="mt-3 inline-flex items-center gap-1 rounded-full border px-3.5 py-1.5 font-medium text-sm transition-colors hover:bg-muted"
+            className="mt-3 inline-flex h-10 items-center gap-1 rounded-full border px-4 font-semibold text-sm transition-colors hover:bg-muted"
           >
             {t(
               `#${data.searchQuery} のタグページを見る`,
@@ -57,13 +57,13 @@ export function SearchPageHeader(props: {
         )}
       </div>
       {data.relatedTags.length > 0 && (
-        <div className="-mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+        <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
           {data.relatedTags.map((tagName) => (
             <button
               key={tagName}
               type="button"
               onClick={() => navigateToSearch(tagName)}
-              className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full border bg-background px-3 text-muted-foreground text-sm transition-colors hover:border-foreground/40 hover:text-foreground"
+              className="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border bg-background px-4 text-muted-foreground text-sm transition-colors hover:border-foreground/40 hover:text-foreground"
             >
               #{tagName}
             </button>

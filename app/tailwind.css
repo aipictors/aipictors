@@ -161,3 +161,13 @@ html[data-aip-hide-list-likes] [data-list-like-count] {
     font-size: max(16px, 1em);
   }
 }
+
+/* 読み込み中の細い帯（検索の候補） */
+@keyframes aip-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}

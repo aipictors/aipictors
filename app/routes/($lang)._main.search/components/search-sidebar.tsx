@@ -1,8 +1,8 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import type { SearchLoaderData } from "~/routes/($lang)._main.search/search-loader.server"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 /**

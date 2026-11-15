@@ -13,13 +13,14 @@ import {
   isSuggestableSensitiveTag,
 } from "~/utils/sensitive-tag-filter"
 
-const PAGE_SIZE = 40
+export const SEARCH_TAGS_PAGE_SIZE = 40
+const PAGE_SIZE = SEARCH_TAGS_PAGE_SIZE
 
 /**
  * 昔の作品には「ねこ 猫 ぬこ」のように空白でつないだ 1 つのタグや、とても長いタグがあるので一覧から外す
  * （アプリの検索と同じ）
  */
-const isListableTagName = (name: string) => {
+export const isListableTagName = (name: string) => {
   const trimmed = name.trim()
   return (
     trimmed !== "" && trimmed.length <= 40 && trimmed.split(/\s+/).length < 3
@@ -169,7 +170,7 @@ export function SearchTagsPanel(props: {
   )
 }
 
-const searchTagsQuery = graphql(
+export const searchTagsQuery = graphql(
   `query SearchPageTags($offset: Int!, $limit: Int!, $where: TagsWhereInput) {
     tags(offset: $offset, limit: $limit, where: $where) {
       id

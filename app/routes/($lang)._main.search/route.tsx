@@ -9,18 +9,18 @@ import {
   useLocation,
   useSearchParams,
 } from "@remix-run/react"
-import { SearchIcon } from "lucide-react"
-import { type FormEvent, useEffect, useState } from "react"
+import { CompassIcon } from "lucide-react"
+import { useEffect, useState } from "react"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
 import { config } from "~/config"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link, useNavigate } from "~/lib/app/locale-router"
-import { SearchFacetFilters } from "~/routes/($lang)._main.search/components/search-facet-filters"
+import { HomeHeaderContentToggle } from "~/routes/($lang)._main._index/components/home-header-content-toggle"
+import { SearchBox } from "~/routes/($lang)._main.search/components/search-box"
+import { SearchExplore } from "~/routes/($lang)._main.search/components/search-explore"
+import { SearchFilterBar } from "~/routes/($lang)._main.search/components/search-filter-bar"
 import { SearchModeTabs } from "~/routes/($lang)._main.search/components/search-mode-tabs"
-import { SearchOrderFilters } from "~/routes/($lang)._main.search/components/search-order-filters"
 import { SearchPageHeader } from "~/routes/($lang)._main.search/components/search-page-header"
 import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
 import { SearchSidebar } from "~/routes/($lang)._main.search/components/search-sidebar"
@@ -34,9 +34,9 @@ import {
   getSearchType,
   normalizeTagQuery,
   type SearchFilterChange,
-  type SearchRatingFilter,
 } from "~/routes/($lang)._main.search/utils/search-filters"
 import { writeContentMode } from "~/utils/content-mode"
+import { rememberRecentSearch } from "~/utils/recent-searches"
 import { buildSearchPath } from "~/utils/search-route"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -86,6 +86,8 @@ export default function SearchRoute() {
 
   useEffect(() => {
     setSearchText(data.searchQuery ?? "")
+    // 開いた検索を「最近の検索」に残す（タグのリンクから来たときも。アプリと同じ）
+    if (data.searchQuery) rememberRecentSearch(data.searchQuery)
   }, [data.searchQuery])
 
   // 作品・ユーザー・タグへのリンク（R18 の検索からは R18 のページへ）
@@ -124,59 +126,45 @@ export default function SearchRoute() {
     })
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    navigateToSearch(searchText)
-  }
-
   return (
     <>
-      <div className="mx-auto max-w-[1480px] px-3 py-5 md:px-6 md:py-6 lg:px-8">
-        <form
-          onSubmit={handleSubmit}
-          className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-center"
+      <div className="mx-auto max-w-[1480px] px-3 pt-3 pb-5 md:px-6 md:py-6 lg:px-8">
+        {!data.searchQuery && (
+          // アプリの「探す」と同じ見出し
+          <h1 className="mb-3 flex items-center gap-2 font-black text-2xl tracking-tight">
+            <CompassIcon className="size-7 text-[#6D5DF6]" />
+            {data.isSensitiveMode
+              ? t("R18 作品を探す", "Explore R18")
+              : t("探す", "Explore")}
+          </h1>
+        )}
+
+        <div className="mb-4 md:mb-6 md:max-w-3xl">
+          <SearchBox
+            value={searchText}
+            onValueChange={setSearchText}
+            onSubmit={(text) => navigateToSearch(text)}
+            popularTags={data.popularTags}
+            isSensitiveMode={data.isSensitiveMode}
+            trailing={
+              // ヘッダーと同じ切り替え（R18 にするときの年齢の確認も同じ）。検索の中では大きく押しやすく
+              <HomeHeaderContentToggle className="[&>button]:h-10 [&>button]:min-w-12 [&>button]:px-3.5 [&>button]:font-bold [&>button]:text-sm md:[&>button]:h-10 md:[&>button]:font-bold md:[&>button]:text-sm" />
+            }
+          />
+        </div>
+
+        <div
+          className={
+            data.searchQuery
+              ? "grid gap-10 xl:grid-cols-[minmax(0,1fr)_280px] 2xl:grid-cols-[minmax(0,1fr)_300px]"
+              : ""
+          }
         >
-          <label className="sr-only" htmlFor="search-rating-select">
-            {t("年齢指定", "Age rating")}
-          </label>
-          <select
-            id="search-rating-select"
-            className="h-12 rounded-md border bg-background px-4 text-sm lg:w-40"
-            value={data.filters.rating}
-            onChange={(event) => {
-              navigateToSearch(data.searchQuery, {
-                rating: event.target.value as SearchRatingFilter,
-              })
-            }}
-          >
-            <option value="G">{t("全年齢", "All ages")}</option>
-            <option value="R15">R-15</option>
-            <option value="R18">R-18</option>
-          </select>
-
-          <div className="flex flex-1 items-center overflow-hidden rounded-md border bg-background">
-            <Input
-              value={searchText}
-              onChange={(event) => setSearchText(event.target.value)}
-              placeholder={t(
-                "作品・ユーザー・タグを検索",
-                "Search works, users and tags",
-              )}
-              className="h-12 border-0 text-base shadow-none focus-visible:ring-0"
-            />
-            <Button
-              type="submit"
-              size="icon"
-              className="mr-1 size-10 shrink-0"
-              aria-label={t("検索", "Search")}
-            >
-              <SearchIcon className="size-5" />
-            </Button>
-          </div>
-        </form>
-
-        <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_280px] 2xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="min-w-0">
+            {!data.searchQuery && (
+              <SearchExplore data={data} pagePrefix={pagePrefix} />
+            )}
+
             {data.searchQuery && <SearchTypeTabs type={searchType} />}
 
             {searchType === "users" && data.searchQuery && (
@@ -195,7 +183,7 @@ export default function SearchRoute() {
               />
             )}
 
-            {searchType === "works" && (
+            {searchType === "works" && data.searchQuery && (
               <>
                 <SearchPageHeader
                   data={data}
@@ -205,7 +193,7 @@ export default function SearchRoute() {
 
                 <ReadingWorksHint query={data.searchQuery} />
 
-                {data.searchQuery && data.textWorksCount !== null && (
+                {data.textWorksCount !== null && (
                   <SearchModeTabs
                     data={data}
                     navigateToSearch={navigateToSearch}
@@ -213,14 +201,7 @@ export default function SearchRoute() {
                   />
                 )}
 
-                {data.searchQuery && (
-                  <SearchOrderFilters
-                    data={data}
-                    navigateToSearch={navigateToSearch}
-                  />
-                )}
-
-                <SearchFacetFilters
+                <SearchFilterBar
                   data={data}
                   navigateToSearch={navigateToSearch}
                 />
@@ -234,7 +215,9 @@ export default function SearchRoute() {
             )}
           </div>
 
-          <SearchSidebar data={data} pagePrefix={pagePrefix} />
+          {data.searchQuery && (
+            <SearchSidebar data={data} pagePrefix={pagePrefix} />
+          )}
         </div>
       </div>
 
