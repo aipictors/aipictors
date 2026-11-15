@@ -27,7 +27,8 @@ export function GridLayoutToggle(props: Props) {
   return (
     <fieldset
       className={cn(
-        "inline-flex rounded-full border bg-muted/40 p-0.5",
+        // relative: 読み上げ用の legend（絶対配置）が横スクロールの行からはみ出して、スマホでページ全体が横に広がらないように
+        "relative inline-flex rounded-full border bg-muted/40 p-0.5",
         props.className,
       )}
     >
