@@ -31,7 +31,8 @@ export function AppHeader(props: Props): React.ReactNode {
       <header className="fixed z-50 w-full max-w-[100vw] overflow-x-clip">
         <div
           className={cn(
-            "flex w-full min-w-0 flex-wrap items-center justify-between gap-2 bg-none px-3 py-3 md:flex-nowrap md:gap-4 md:px-4 md:py-4",
+            // スマホは高さ 56px。スクロールすると作品の上に重なるので背景を付ける（PC はこれまでどおり）
+            "flex w-full min-w-0 flex-wrap items-center justify-between gap-2 bg-background/95 px-3 py-2 backdrop-blur-md md:flex-nowrap md:gap-4 md:bg-transparent md:px-4 md:py-4 md:backdrop-blur-none",
             "pl-3",
             leftPaddingClass,
           )}

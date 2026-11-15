@@ -17,11 +17,21 @@ html {
  * ヘッダーの高さ
  */
 .h-header {
-  height: 72px;
+  height: 56px;
 }
 
 .h-header-with-announcement {
-  height: 104px;
+  height: 88px;
+}
+
+@media (min-width: 48rem) {
+  .h-header {
+    height: 72px;
+  }
+
+  .h-header-with-announcement {
+    height: 104px;
+  }
 }
 
 .bg-line-theme {
