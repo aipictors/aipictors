@@ -3,6 +3,7 @@ import { CoinIcon } from "~/components/coin-icon"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
 import { Loader2Icon } from "lucide-react"
+import { cn } from "~/lib/utils"
 import { useCallback, useRef, useState } from "react"
 
 const formatCoinAmount = (value: number) => {
@@ -16,6 +17,8 @@ type Props = {
   requestCoinCost: number
   ownedCoinCount: number
   buttonActionCaption: string
+  /** ボタンの見た目の上書き（スマホのアプリと同じ大きな丸いボタン） */
+  className?: string
   onClick(): void | Promise<void>
 }
 
@@ -55,7 +58,7 @@ export function GenerationSubmitButton(props: Props) {
     <div data-generation-submit className="contents">
       <GradientBlueButton
         onClick={handleClick}
-        className="h-11 w-full min-w-0 md:h-12"
+        className={cn("h-11 w-full min-w-0 md:h-12", props.className)}
         size={"lg"}
         disabled={isBusy || props.isDisabled}
         isNoBackground={true}

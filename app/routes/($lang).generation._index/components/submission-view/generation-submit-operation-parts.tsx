@@ -25,6 +25,7 @@ import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { useGenerationPlanHint } from "~/routes/($lang).generation._index/hooks/use-generation-plan-hint"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
+import { cn } from "~/lib/utils"
 
 type Props = {
   /** 1 回の生成で作る枚数 */
@@ -43,6 +44,10 @@ type Props = {
   availableImageGenerationMaxTasksCount: number
   /** 画像生成のメンテナンス中（生成ボタンを押せなくする） */
   isMaintenance?: boolean
+  /**
+   * スマホのアプリと同じ構成（枚数・予約・高解像度は上のカードにあるので、ここは使うコインと生成ボタンだけ）
+   */
+  isMobileApp?: boolean
   onCreateTask: () => void
   onSignTerms: () => void
 }
@@ -151,8 +156,21 @@ export function GenerationSubmitOperationParts(props: Props) {
    */
   const withImageCount = (label: string) => {
     const count = props.imagesPerRequest ?? 1
-    return count > 1 ? t(`${label} ×${count}枚`, `${label} ×${count}`) : label
+    // スマホは 1 枚のときも出して、上の枚数の選択と同じ数が見えるようにする
+    return count > 1 || props.isMobileApp
+      ? t(`${label} ×${count}枚`, `${label} ×${count}`)
+      : label
   }
+
+  /**
+   * スマホの生成ボタン（アプリと同じ大きな丸いボタン）
+   */
+  const mobileSubmitClassName = props.isMobileApp
+    ? "h-14 rounded-full from-[#0170C8] via-[#6D5DF6] to-[#FF5C8A] bg-linear-to-r shadow-[0_8px_20px_rgba(109,93,246,0.35)] dark:from-[#0170C8] dark:to-[#FF5C8A] [&>div]:rounded-full [&_span.truncate]:text-[17px] [&_span.truncate]:font-extrabold"
+    : undefined
+
+  const isCoinShort =
+    !props.isCoinSummaryLoading && props.ownedCoinCount < props.requestCoinCost
 
   return (
     <>
@@ -161,7 +179,48 @@ export function GenerationSubmitOperationParts(props: Props) {
           <GenerationServerStatusBadge />
         </div>
       )}
-      {authContext.isLoggedIn && (
+      {authContext.isLoggedIn && props.isMobileApp && (
+        <div className="flex items-center gap-2 px-1 text-xs leading-none">
+          <span
+            className={cn(
+              "flex min-w-0 items-center gap-1 font-bold",
+              isCoinShort
+                ? "text-pink-600 dark:text-pink-400"
+                : "text-muted-foreground",
+            )}
+          >
+            <CoinIcon className="size-3.5 shrink-0" />
+            <span className="truncate tabular-nums">
+              {props.isCoinSummaryLoading
+                ? t(
+                    `使うコイン ${formatCoinAmount(props.requestCoinCost)}`,
+                    `Uses ${formatCoinAmount(props.requestCoinCost)} coins`,
+                  )
+                : t(
+                    `使うコイン ${formatCoinAmount(props.requestCoinCost)}・残り ${formatCoinAmount(props.ownedCoinCount)}`,
+                    `Uses ${formatCoinAmount(props.requestCoinCost)} · ${formatCoinAmount(props.ownedCoinCount)} left`,
+                  )}
+            </span>
+          </span>
+          {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン） */}
+          {!context.currentPass?.type &&
+            !props.isCoinSummaryLoading &&
+            props.ownedCoinCount < 40 && (
+              <Link
+                to="/plus#plans"
+                onClick={() => trackGrowthEvent("lowcoin_click", "free")}
+                className="shrink-0 rounded-full bg-fuchsia-600 px-3 py-2 font-medium text-[11px] text-white shadow-sm"
+              >
+                {t(
+                  `あと${Math.floor(props.ownedCoinCount / 10)}枚・プランなら1日50枚〜`,
+                  `${Math.floor(props.ownedCoinCount / 10)} left today · get 50+ a day`,
+                )}
+              </Link>
+            )}
+          <GenerationServerStatusBadge className="ml-auto" />
+        </div>
+      )}
+      {authContext.isLoggedIn && !props.isMobileApp && (
         <div className="flex items-center gap-2 px-1 text-[11px] leading-none text-muted-foreground">
           <Link
             to="/settings/points"
@@ -200,86 +259,90 @@ export function GenerationSubmitOperationParts(props: Props) {
         </div>
       )}
       <div className="flex min-w-0 items-center">
-        <div className="flex shrink-0 items-center md:hidden">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                aria-label={t("生成の設定", "Generation settings")}
-                className="mr-2 block md:hidden"
-                size={"icon"}
-                variant={"ghost"}
-              >
-                <SettingsIcon className="m-auto" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <div className="flex items-center p-2">
+        {!props.isMobileApp && (
+          <div className="flex shrink-0 items-center md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <Button
-                  className="mr-2"
+                  aria-label={t("生成の設定", "Generation settings")}
+                  className="mr-2 block md:hidden"
                   size={"icon"}
                   variant={"ghost"}
-                  onClick={onMinusButtonClick}
                 >
-                  <Minus className="m-auto" />
+                  <SettingsIcon className="m-auto" />
                 </Button>
-                <GenerationReserveCountInput
-                  maxCount={props.remainingImageGenerationTasksCount}
-                  onChange={context.changeGenerationCount}
-                  count={context.config.generationCount}
-                />
-                {t("回", "times")}
-                <Button
-                  className="mr-2"
-                  size={"icon"}
-                  variant={"ghost"}
-                  onClick={onPlusButtonClick}
-                >
-                  <Plus className="m-auto" />
-                </Button>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="hidden items-center md:flex">
-            <GenerationReserveCountInput
-              maxCount={props.remainingImageGenerationTasksCount}
-              onChange={context.changeGenerationCount}
-              count={context.config.generationCount}
-            />
-            <div className="mr-2">{t("回", "times")}</div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <div className="flex items-center p-2">
+                  <Button
+                    className="mr-2"
+                    size={"icon"}
+                    variant={"ghost"}
+                    onClick={onMinusButtonClick}
+                  >
+                    <Minus className="m-auto" />
+                  </Button>
+                  <GenerationReserveCountInput
+                    maxCount={props.remainingImageGenerationTasksCount}
+                    onChange={context.changeGenerationCount}
+                    count={context.config.generationCount}
+                  />
+                  {t("回", "times")}
+                  <Button
+                    className="mr-2"
+                    size={"icon"}
+                    variant={"ghost"}
+                    onClick={onPlusButtonClick}
+                  >
+                    <Plus className="m-auto" />
+                  </Button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <div className="hidden items-center md:flex">
+              <GenerationReserveCountInput
+                maxCount={props.remainingImageGenerationTasksCount}
+                onChange={context.changeGenerationCount}
+                count={context.config.generationCount}
+              />
+              <div className="mr-2">{t("回", "times")}</div>
+            </div>
           </div>
-        </div>
+        )}
         {/* 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示 */}
         {(!authContext.isLoggedIn || context.user === null) && (
           <>
-            <div className="mr-2 flex shrink-0 items-center gap-1.5">
-              <Switch
-                onClick={() => {
-                  context.changeUpscaleSize(
-                    context.config.upscaleSize === 2 ? 1 : 2,
-                  )
-                }}
-                checked={context.config.upscaleSize === 2}
-                disabled={isUpscaleDisabled}
-                id="extras-mode"
-              />
-              <div className="text-center leading-3">
-                <Label
-                  htmlFor="extras-mode"
-                  className="block whitespace-nowrap text-center text-xs sm:text-sm"
-                >
-                  {t("高解像度", "High Resolution")}
-                </Label>
-                <Label
-                  htmlFor="extras-mode"
-                  className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
-                >
-                  {t(
-                    `1枚・コイン${sizeMultiplier * 2}倍`,
-                    `1 image, ${sizeMultiplier * 2}x coins`,
-                  )}
-                </Label>
+            {!props.isMobileApp && (
+              <div className="mr-2 flex shrink-0 items-center gap-1.5">
+                <Switch
+                  onClick={() => {
+                    context.changeUpscaleSize(
+                      context.config.upscaleSize === 2 ? 1 : 2,
+                    )
+                  }}
+                  checked={context.config.upscaleSize === 2}
+                  disabled={isUpscaleDisabled}
+                  id="extras-mode"
+                />
+                <div className="text-center leading-3">
+                  <Label
+                    htmlFor="extras-mode"
+                    className="block whitespace-nowrap text-center text-xs sm:text-sm"
+                  >
+                    {t("高解像度", "High Resolution")}
+                  </Label>
+                  <Label
+                    htmlFor="extras-mode"
+                    className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
+                  >
+                    {t(
+                      `1枚・コイン${sizeMultiplier * 2}倍`,
+                      `1 image, ${sizeMultiplier * 2}x coins`,
+                    )}
+                  </Label>
+                </div>
               </div>
-            </div>
+            )}
             <div data-generation-submit className="contents">
               <LoginDialogButton
                 label={t("生成", "Generate")}
@@ -291,7 +354,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                 triggerChildren={
                   <GradientBlueButton
                     onClick={() => {}}
-                    className="w-full text-balance"
+                    className={cn("w-full text-balance", mobileSubmitClassName)}
                     disabled={props.isMaintenance === true}
                     isNoBackground={true}
                   >
@@ -325,7 +388,10 @@ export function GenerationSubmitOperationParts(props: Props) {
                       props.isCreatingTask || props.isMaintenance === true
                     }
                     onClick={() => {}}
-                    className="w-full text-balance"
+                    className={cn(
+                      "w-full text-balance",
+                      props.isMobileApp && "h-14 rounded-full",
+                    )}
                     isNoBackground={true}
                   >
                     {props.isCreatingTask
@@ -340,6 +406,7 @@ export function GenerationSubmitOperationParts(props: Props) {
         {isCurrentPremiumPlan() &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
+              className={mobileSubmitClassName}
               onClick={async () => {
                 await props.onCreateTask()
               }}
@@ -368,36 +435,39 @@ export function GenerationSubmitOperationParts(props: Props) {
         {!isCurrentPremiumPlan() &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <div className="flex w-full min-w-0 items-center gap-3">
-              <div className="flex shrink-0 items-center gap-1.5">
-                <Switch
-                  onClick={() => {
-                    context.changeUpscaleSize(
-                      context.config.upscaleSize === 2 ? 1 : 2,
-                    )
-                  }}
-                  checked={context.config.upscaleSize === 2}
-                  disabled={isUpscaleDisabled}
-                  id="extras-mode"
-                />
-                <div className="text-center leading-3">
-                  <Label
-                    htmlFor="extras-mode"
-                    className="block whitespace-nowrap text-center text-xs sm:text-sm"
-                  >
-                    {t("高解像度", "High Resolution")}
-                  </Label>
-                  <Label
-                    htmlFor="extras-mode"
-                    className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
-                  >
-                    {t(
-                    `1枚・コイン${sizeMultiplier * 2}倍`,
-                    `1 image, ${sizeMultiplier * 2}x coins`,
-                  )}
-                  </Label>
+              {!props.isMobileApp && (
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <Switch
+                    onClick={() => {
+                      context.changeUpscaleSize(
+                        context.config.upscaleSize === 2 ? 1 : 2,
+                      )
+                    }}
+                    checked={context.config.upscaleSize === 2}
+                    disabled={isUpscaleDisabled}
+                    id="extras-mode"
+                  />
+                  <div className="text-center leading-3">
+                    <Label
+                      htmlFor="extras-mode"
+                      className="block whitespace-nowrap text-center text-xs sm:text-sm"
+                    >
+                      {t("高解像度", "High Resolution")}
+                    </Label>
+                    <Label
+                      htmlFor="extras-mode"
+                      className="block whitespace-nowrap text-center text-[10px] sm:text-xs"
+                    >
+                      {t(
+                        `1枚・コイン${sizeMultiplier * 2}倍`,
+                        `1 image, ${sizeMultiplier * 2}x coins`,
+                      )}
+                    </Label>
+                  </div>
                 </div>
-              </div>
+              )}
               <GenerationSubmitButton
+                className={mobileSubmitClassName}
                 onClick={async () => {
                   await props.onCreateTask()
                 }}
@@ -423,7 +493,6 @@ export function GenerationSubmitOperationParts(props: Props) {
               />
             </div>
           )}
-
       </div>
     </>
   )

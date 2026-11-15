@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean, useMediaQuery } from "usehooks-ts"
 import { AppFixedContent } from "~/components/app/app-fixed-content"
@@ -10,6 +10,8 @@ import { useIpAddress } from "~/hooks/use-ip-address"
 import { useNavigate } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
+import { GenerationMobileTabContext } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
+import { publishGenerationCoinSummary } from "~/routes/($lang).generation._index/utils/generation-coin-store"
 import { GenerationCoinShortageDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-coin-shortage-dialog"
 import { GenerationGeminiAllowanceNotice } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-allowance-notice"
 import { GenerationGeminiLimitDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-limit-dialog"
@@ -626,6 +628,14 @@ export function GenerationSubmissionView(props: Props) {
     loadCoinSummary,
   })
 
+  // スマホの見出しのコインにも同じ残高を出す（読み直さない）
+  useEffect(() => {
+    publishGenerationCoinSummary(coinSummary)
+  }, [coinSummary])
+
+  // スマホの「つくる / 履歴」（履歴の間は生成ボタンを出さない。アプリと同じ）
+  const mobileTab = useContext(GenerationMobileTabContext)
+
   // 移動: createTaskCore をコンポーネント内に配置（スコープ修正）
   const createTaskCore = async (
     taskCount: number,
@@ -682,6 +692,7 @@ export function GenerationSubmissionView(props: Props) {
           props.composer &&
             "pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]",
           !isDesktop && isEditingTextField && "hidden",
+          mobileTab?.tab === "history" && "hidden",
         )}
       >
         <div className="space-y-2">
@@ -724,6 +735,7 @@ export function GenerationSubmissionView(props: Props) {
               remainingImageGenerationTasksCount
             }
             isMaintenance={generationMaintenance.enabled}
+            isMobileApp={mobileTab !== null}
             onCreateTask={onCreateTask}
             onSignTerms={onSignTerms}
           />
