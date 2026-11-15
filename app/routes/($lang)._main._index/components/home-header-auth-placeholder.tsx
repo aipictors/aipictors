@@ -28,10 +28,11 @@ export function HomeHeaderAuthPlaceholder() {
         <HomeHeaderAvatarPlaceholder />
       </div>
       <div className="aip-auth-guest items-center gap-0.5 md:ml-1 md:gap-1">
-        <div className="size-9 md:size-10" />
+        {/* PC の「その他」メニューの場所（スマホでは左のメニューにある） */}
+        <div className="hidden md:block md:size-10" />
         <Link
           to="/login"
-          className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary px-3 font-medium text-primary-foreground text-sm md:h-10 md:px-4"
+          className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 font-medium text-primary-foreground text-sm"
         >
           {t("ログイン", "Login")}
         </Link>

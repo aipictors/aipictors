@@ -29,7 +29,12 @@ import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
 import { buildLocalePath } from "~/utils/locale-path"
 
-export const HomeHeaderNotLoggedInMenu = () => {
+type Props = {
+  /** row: 左のメニューの中に、文字つきの行として出す（スマホ） */
+  variant?: "icon" | "row"
+}
+
+export const HomeHeaderNotLoggedInMenu = (props: Props) => {
   const authContext = useContext(AuthContext)
 
   const { theme, setTheme } = useTheme()
@@ -102,14 +107,26 @@ export const HomeHeaderNotLoggedInMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant={"ghost"}
-          size={"icon"}
-          className="size-9 md:size-10"
-          aria-label={t("その他のメニュー", "More")}
-        >
-          <EllipsisVerticalIcon className="w-16" />
-        </Button>
+        {props.variant === "row" ? (
+          <button
+            type="button"
+            className="flex w-full items-center rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:bg-muted/20 hover:text-foreground"
+          >
+            <SettingsIcon className="size-5 shrink-0" />
+            <span className="ml-3">
+              {t("テーマ・言語", "Theme & language")}
+            </span>
+          </button>
+        ) : (
+          <Button
+            variant={"ghost"}
+            size={"icon"}
+            className="size-9 md:size-10"
+            aria-label={t("その他のメニュー", "More")}
+          >
+            <EllipsisVerticalIcon className="w-16" />
+          </Button>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuSub>

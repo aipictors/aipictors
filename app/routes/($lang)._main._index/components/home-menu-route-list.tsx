@@ -14,6 +14,7 @@ import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
 import { getHomeNavigationSections } from "~/routes/($lang)._main._index/components/home-navigation-sections"
+import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { HomeMenuNavigationButton } from "~/routes/($lang)._main._index/components/home-menu-navigation-button"
 import {
   trackGrowthEvent,
@@ -172,6 +173,13 @@ export function HomeMenuRouteList({
             </div>
           )
         },
+      )}
+
+      {/* 未ログインのテーマ・言語（スマホのヘッダーからはここへ移した） */}
+      {authContext.isNotLoggedIn && (
+        <div className="pt-3">
+          <HomeHeaderNotLoggedInMenu variant="row" />
+        </div>
       )}
 
       <div className="pb-4" />

@@ -445,13 +445,13 @@ function HomeHeader(props: Props) {
           </SheetContent>
         </Sheet>
 
-        {/* スマホはアプリと同じく左上にロゴ（ホームへ）。検索は右に置く */}
+        {/* スマホは左上にロゴのアイコンだけ（ホームへ）。文字は右の切り替え・検索の幅を取るので出さない */}
         {!isSearchFormOpen && (
           <Link
             to={getSensitiveLink("/")}
             onClick={() => setSearchText("")}
             aria-label={t("ホーム", "Home")}
-            className="flex h-10 shrink-0 items-center gap-1.5 rounded-lg px-1 md:hidden"
+            className="flex size-10 shrink-0 items-center justify-center rounded-lg md:hidden"
           >
             <img
               src="/icon.svg"
@@ -460,9 +460,6 @@ function HomeHeader(props: Props) {
               width={28}
               height={28}
             />
-            <span className="hidden bg-linear-to-br from-[#0170C8] via-[#6D5DF6] to-[#FF5C8A] bg-clip-text font-black text-[19px] text-transparent tracking-tight min-[400px]:inline">
-              {"Aipictors"}
-            </span>
           </Link>
         )}
         {/* 画像生成画面のロゴ。サイドバーのロゴ（home-route-list）と同じ大きさ・同じ位置にする */}
@@ -636,17 +633,7 @@ function HomeHeader(props: Props) {
               >
                 <Search className="size-[22px]" />
               </Button>
-              {/* 生成と通知は画面下のタブ（app-mobile-tab-bar）にあるので、ここは投稿だけ */}
-              <Button
-                size="icon"
-                // 未ログインでは幅が足りないので出さない（ログインボタンを優先。描画前の判定で隠すのでずれない）
-                className="size-9 rounded-full [html[data-aip-auth=out]_&]:hidden"
-                aria-label={t("作品を投稿", "Post a work")}
-                title={t("作品を投稿", "Post a work")}
-                onClick={() => handleNavigate("/new/image")}
-              >
-                <ImagePlusIcon className="size-[18px]" />
-              </Button>
+              {/* 生成・通知は画面下のタブ、投稿は左のメニュー（作品を投稿）から。右上は切り替え・検索・アカウントだけにする */}
             </div>
           </>
         )}
@@ -697,8 +684,11 @@ function HomeHeader(props: Props) {
           ) : (
             // 未ログイン時のUI
             <div className="flex items-center gap-0.5 md:ml-1 md:gap-1">
-              <HomeHeaderNotLoggedInMenu />
-              <LoginDialogButton className="h-9 px-3 md:h-10 md:px-4" />
+              {/* スマホではテーマ・言語は左のメニューの下にある */}
+              <div className="hidden md:contents">
+                <HomeHeaderNotLoggedInMenu />
+              </div>
+              <LoginDialogButton className="h-10 px-4" />
             </div>
           ))}
 
