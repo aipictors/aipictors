@@ -1,12 +1,4 @@
-import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { CropImageField } from "~/components/crop-image-field"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { OnboardingSteps } from "~/components/onboarding-steps"
-import { LoginPage } from "~/components/page/login-page"
-import { AuthContext } from "~/contexts/auth-context"
-import { DialogWorkFragment } from "~/routes/($lang).my._index/components/select-created-works-dialog"
-import { useQuery, useSuspenseQuery } from "@apollo/client/index"
+import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import {
   ChevronDownIcon,
@@ -14,15 +6,22 @@ import {
   Pencil,
   UserRoundIcon,
 } from "lucide-react"
-import { useContext, useState, useId } from "react"
-import { useMutation } from "@apollo/client/index"
-import { uploadPublicImage } from "~/utils/upload-public-image"
+import { useContext, useId, useState } from "react"
 import { toast } from "sonner"
-import { useNavigate } from "~/lib/app/locale-router"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { CropImageField } from "~/components/crop-image-field"
+import { OnboardingSteps } from "~/components/onboarding-steps"
+import { LoginPage } from "~/components/page/login-page"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { useNavigate } from "~/lib/app/locale-router"
+import { DialogWorkFragment } from "~/routes/($lang).my._index/components/select-created-works-dialog"
+import { logoutFirebase } from "~/utils/auth-session-backup"
 import { clearLastLoginMethod } from "~/utils/login-flow"
 import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
-import { getAuth, signOut } from "firebase/auth"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
 /**
  * 新しいプロフィール設定フォーム
@@ -121,7 +120,7 @@ export function NewProfileEditorForm() {
   // 前とは違う方法でログインすると新しいアカウントになるので、選び直せるようにする
   const onChooseAnotherMethod = async () => {
     try {
-      await signOut(getAuth())
+      await logoutFirebase()
       resetCookieLoginToken()
       clearLastLoginMethod()
     } catch {

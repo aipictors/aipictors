@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from "@apollo/client/index"
 import { isApolloError } from "@apollo/client/errors"
-import { getAuth, signOut } from "firebase/auth"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { AlertTriangle } from "lucide-react"
 import { useId, useState } from "react"
@@ -21,6 +20,7 @@ import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Input } from "~/components/ui/input"
 import { useTranslation } from "~/hooks/use-translation"
+import { logoutFirebase } from "~/utils/auth-session-backup"
 import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
 
 export function WithdrawAccountForm() {
@@ -79,7 +79,7 @@ export function WithdrawAccountForm() {
       resetCookieLoginToken()
 
       try {
-        await signOut(getAuth())
+        await logoutFirebase()
       } catch {
         // Firebase セッションが残っていても、ローカル側の退会処理は完了している。
       }

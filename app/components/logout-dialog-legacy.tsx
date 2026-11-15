@@ -1,3 +1,4 @@
+import { toast } from "sonner"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,9 +9,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog"
+import { logoutFirebase } from "~/utils/auth-session-backup"
 import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
-import { getAuth, signOut } from "firebase/auth"
-import { toast } from "sonner"
 
 type Props = {
   isOpen: boolean
@@ -21,9 +21,9 @@ type Props = {
 /**
  * ログアウト・ダイアログ
  */
-export function LogoutDialogLegacy (props: Props): React.ReactNode {
+export function LogoutDialogLegacy(props: Props): React.ReactNode {
   const handleLogout = async () => {
-    await signOut(getAuth())
+    await logoutFirebase()
     props.onClose()
     resetCookieLoginToken()
     toast("ログアウトしました。")

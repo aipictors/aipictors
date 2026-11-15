@@ -1,14 +1,25 @@
-import { AuthContext } from "~/contexts/auth-context"
-import { config } from "~/config"
-import { debugLog } from "~/utils/debug-logger"
 import {
-  type ParsedToken,
-  type User,
   getAuth,
   getIdTokenResult,
   onAuthStateChanged,
+  onIdTokenChanged,
+  type ParsedToken,
+  type User,
 } from "firebase/auth"
 import { startTransition, useEffect, useState } from "react"
+import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import {
+  clearAuthBackup,
+  clearAuthRestoreAttempt,
+  markAuthRestoreAttempt,
+  readAuthBackup,
+  readAuthRestoreAttempt,
+  restoreAuthBackup,
+  saveAuthBackup,
+  shouldRestoreAuthBackup,
+} from "~/utils/auth-session-backup"
+import { debugLog } from "~/utils/debug-logger"
 import { clearHeaderUserSnapshot } from "~/utils/header-user-snapshot"
 import { withFirebaseAnalytics } from "~/utils/run-after-load-idle"
 
@@ -61,12 +72,15 @@ export function AuthContextProvider(props: Props): React.ReactNode {
     let retryCount = 0
     let retryTimer: ReturnType<typeof setTimeout> | null = null
     let loadingCapTimer: ReturnType<typeof setTimeout> | null = null
+    let restoreTimer: ReturnType<typeof setTimeout> | null = null
 
     const clearTimers = () => {
       if (retryTimer !== null) clearTimeout(retryTimer)
       if (loadingCapTimer !== null) clearTimeout(loadingCapTimer)
+      if (restoreTimer !== null) clearTimeout(restoreTimer)
       retryTimer = null
       loadingCapTimer = null
+      restoreTimer = null
     }
 
     // onAuthStateChanged が返ってこないケース向けのフェイルセーフ。
@@ -118,6 +132,8 @@ export function AuthContextProvider(props: Props): React.ReactNode {
           hasClaims = true
           retryCount = 0
           clearTimers()
+          // トークンを取れた＝ログインは有効。次に消えたときもまた元に戻せるようにする
+          clearAuthRestoreAttempt()
 
           startTransition(() => {
             setClaims({ ...tokenResult.claims })
@@ -184,7 +200,39 @@ export function AuthContextProvider(props: Props): React.ReactNode {
         timestamp: new Date().toISOString(),
       })
 
+      // 自分でログアウトしていない（控えが残っている）のにユーザーが消えたら、控えを書き戻して元に戻す。
+      // 書き戻すと Firebase が気づいてこのリスナーがユーザー付きで呼ばれる。戻らなければ数秒後に未ログインにする
       if (user === null) {
+        const backup = readAuthBackup()
+        if (
+          backup !== null &&
+          shouldRestoreAuthBackup(backup, readAuthRestoreAttempt(), Date.now())
+        ) {
+          debugLog.auth("User disappeared without logout - restoring", {
+            uid: backup.uid,
+          })
+          markAuthRestoreAttempt(backup.uid)
+          startTransition(() => {
+            setCurrentUser(null)
+            setClaims(null)
+            setLoadingState(true)
+          })
+          restoreTimer = setTimeout(() => {
+            restoreTimer = null
+            if (activeUser !== null) return
+            clearAuthBackup()
+            clearHeaderUserSnapshot()
+            startTransition(() => {
+              setCurrentUser(null)
+              setClaims(null)
+              setLoadingState(false)
+            })
+          }, 6000)
+          void restoreAuthBackup(backup, config.firebaseConfig.apiKey)
+          return
+        }
+        // 控えがない（自分でログアウトした）か、書き戻してもまたログアウトした（本当に無効）
+        clearAuthBackup()
         clearHeaderUserSnapshot()
       }
 
@@ -239,6 +287,11 @@ export function AuthContextProvider(props: Props): React.ReactNode {
       fetchClaims(user)
     })
 
+    // トークンが更新されるたびに控えを取り直す（ログアウトでは user が null なので触らない）
+    const unsubscribeToken = onIdTokenChanged(getAuth(), (user) => {
+      if (user !== null) saveAuthBackup(user)
+    })
+
     return () => {
       clearTimeout(initialAuthTimeout)
       clearTimers()
@@ -246,6 +299,7 @@ export function AuthContextProvider(props: Props): React.ReactNode {
       window.removeEventListener("online", retryNow)
       document.removeEventListener("visibilitychange", retryNow)
       unsubscribe()
+      unsubscribeToken()
     }
   }, [])
 

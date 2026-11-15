@@ -1,17 +1,17 @@
-import { AuthContext } from "~/contexts/auth-context"
-import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
-import { config } from "~/config"
-import { getAuth, signOut } from "firebase/auth"
 import { useContext, useEffect } from "react"
+import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { logoutFirebase } from "~/utils/auth-session-backup"
+import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
 
 /**
  * 自動ログアウトフォーム
  */
-export function AutoLogoutForm () {
+export function AutoLogoutForm() {
   const authContext = useContext(AuthContext)
 
   const handleLogout = async () => {
-    await signOut(getAuth())
+    await logoutFirebase()
     resetCookieLoginToken()
     moveTop()
   }
