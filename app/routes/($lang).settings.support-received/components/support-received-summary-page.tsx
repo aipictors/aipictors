@@ -327,7 +327,7 @@ export function SupportReceivedSummaryPage() {
                           const earning =
                             item.coinType === "PREMIUM"
                               ? findCreatorRewardEarning(rewardEarnings, {
-                                  createdAt: item.createdAt,
+                                  createdAt: Number(item.createdAt),
                                 })
                               : null
                           return earning ? (
@@ -336,11 +336,16 @@ export function SupportReceivedSummaryPage() {
                         })()}
                         <SupportTierChip
                           support={{
+                            // API は pt を文字列で返すことがある
                             freeCoinAmount:
-                              item.coinType === "FREE" ? item.coinAmount : 0,
+                              item.coinType === "FREE"
+                                ? Number(item.coinAmount)
+                                : 0,
                             premiumCoinAmount:
-                              item.coinType === "PREMIUM" ? item.coinAmount : 0,
-                            totalPt: item.ptAmount,
+                              item.coinType === "PREMIUM"
+                                ? Number(item.coinAmount)
+                                : 0,
+                            totalPt: Number(item.ptAmount),
                           }}
                         />
                       </div>
