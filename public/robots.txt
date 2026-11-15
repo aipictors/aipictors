@@ -51,8 +51,9 @@ Disallow: /messages
 Disallow: /notifications
 
 # Bing は 1 秒に約 1 ページ読みに来ていて、検索エンジンの巡回の半分を占める（流入は Google の 6 分の 1）。間隔を空けてもらう
+# 2 秒でも作品ページの CPU の 6 割（人の少ない拠点での起動が多い）を占めていたので 10 秒にする
 User-agent: bingbot
-Crawl-delay: 2
+Crawl-delay: 10
 Allow: /
 # ログインが必要なページ・個人のページ・API は検索結果に出さない
 Disallow: /api/
