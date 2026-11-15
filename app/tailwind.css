@@ -162,6 +162,45 @@ html[data-aip-hide-list-likes] [data-list-like-count] {
   }
 }
 
+/* 推しを送ったときの演出（控えめに 1 回。動きを減らす設定では motion-safe で出さない） */
+@keyframes aip-support-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes aip-support-rise {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-56px) scale(1);
+    opacity: 0;
+  }
+}
+@keyframes aip-support-shine {
+  0% {
+    transform: translateX(-120%) skewX(-20deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(420%) skewX(-20deg);
+    opacity: 0;
+  }
+}
+
 /* 読み込み中の細い帯（検索の候補） */
 @keyframes aip-indeterminate {
   0% {
