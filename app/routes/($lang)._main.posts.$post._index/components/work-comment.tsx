@@ -39,7 +39,10 @@ import {
 import { parseLocalePath } from "~/utils/locale-path"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
-import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
+import {
+  isUserAvatarDecoration,
+  type UserAvatarFramePresentation,
+} from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
@@ -283,6 +286,12 @@ export function WorkComment(props: Props) {
           <UserAvatarWithFrame
             alt={props.userName ?? ""}
             frame={props.userAvatarFrame}
+            // アイコンの外にはみ出す装飾は、左端で画面の外に切れないように間を空ける
+            frameClassName={
+              isUserAvatarDecoration(props.userAvatarFrame)
+                ? "ml-2.5"
+                : undefined
+            }
             isAnimated={false}
             sizeClassName="size-10"
             src={props.userIconImageURL}

@@ -88,6 +88,9 @@ export function WorkCommentList(props: WorkCommentListProps) {
           isWorkOwnerBlocked={props.isWorkOwnerBlocked}
         />
       </div>
+      {/* スタンプのボタンのすぐ下に並ぶと押し間違えやすいので、間を空ける */}
+      {(pinnedStickers.length > 0 || stickers.length > 0) &&
+        !props.isWorkOwnerBlocked && <div aria-hidden className="h-4" />}
       {pinnedStickers.length > 0 && !props.isWorkOwnerBlocked && (
         <div className="flex flex-wrap gap-1">
           {pinnedStickers.map((sticker) => (

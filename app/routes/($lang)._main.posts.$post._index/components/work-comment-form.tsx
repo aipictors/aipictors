@@ -10,6 +10,7 @@ import { cn } from "~/lib/utils"
 import { prefetchViewerStickers } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import { WorkCommentSupportPanel } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-support-panel"
 import type { WorkCommentListState } from "~/routes/($lang)._main.posts.$post._index/hooks/use-work-comment-list"
+import { isUserAvatarDecoration } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 /**
@@ -46,6 +47,10 @@ export function WorkCommentForm(
         <UserAvatarWithFrame
           alt={appContext.displayName ?? ""}
           frame={userAvatarFrame}
+          // アイコンの外にはみ出す装飾は、左端で画面の外に切れないように間を空ける
+          frameClassName={
+            isUserAvatarDecoration(userAvatarFrame) ? "ml-2.5" : undefined
+          }
           isAnimated={false}
           sizeClassName="size-10 shrink-0"
           src={withIconUrlFallback(userIcon)}
