@@ -1,3 +1,8 @@
+import {
+  appFilterChipClassName,
+  appPillRowClassName,
+  appPillTabClassName,
+} from "~/components/app/app-pill-tab"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { FilterButton } from "~/routes/($lang)._main.search/components/search-filter-button"
@@ -17,10 +22,7 @@ export function SearchFacetFilters(props: {
   return (
     <div className="mb-6 flex flex-col gap-5 md:mb-8">
       <div
-        className={cn(
-          "flex flex-wrap items-center gap-6 pb-1",
-          data.mode === "text" && "hidden",
-        )}
+        className={cn(appPillRowClassName, data.mode === "text" && "hidden")}
       >
         {(
           [
@@ -29,15 +31,17 @@ export function SearchFacetFilters(props: {
             ["REAL", t("AIフォト", "AI Photo")],
           ] as const
         ).map(([value, label]) => (
-          <FilterButton
+          <button
             key={value}
-            isActive={data.filters.style === value}
+            type="button"
+            aria-pressed={data.filters.style === value}
             onClick={() => {
               navigateToSearch(data.searchQuery, { style: value })
             }}
+            className={appPillTabClassName(data.filters.style === value)}
           >
             {label}
-          </FilterButton>
+          </button>
         ))}
       </div>
 
@@ -65,7 +69,8 @@ export function SearchFacetFilters(props: {
 
         <div
           className={cn(
-            "order-2 flex flex-wrap gap-0 md:order-1",
+            "order-2 md:order-1",
+            appPillRowClassName,
             data.mode === "text" && "invisible",
           )}
         >
@@ -75,22 +80,15 @@ export function SearchFacetFilters(props: {
               ["with", t("プロンプトあり", "With prompt")],
               ["without", t("プロンプトなし", "Without prompt")],
             ] as const
-          ).map(([value, label], index) => (
+          ).map(([value, label]) => (
             <button
               key={value}
               type="button"
+              aria-pressed={data.filters.prompt === value}
               onClick={() => {
                 navigateToSearch(data.searchQuery, { prompt: value })
               }}
-              className={cn(
-                "border px-4 py-3 text-sm transition-colors md:text-base",
-                index === 0 ? "rounded-l-md" : "",
-                index === 2 ? "rounded-r-md" : "",
-                index > 0 ? "-ml-px" : "",
-                data.filters.prompt === value
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border bg-background text-muted-foreground hover:text-foreground",
-              )}
+              className={appFilterChipClassName(data.filters.prompt === value)}
             >
               {label}
             </button>

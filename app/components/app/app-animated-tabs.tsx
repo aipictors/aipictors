@@ -1,4 +1,8 @@
 import { useEffect, useRef, useState } from "react"
+import {
+  appPillRowClassName,
+  appPillTabClassName,
+} from "~/components/app/app-pill-tab"
 import { Link } from "~/lib/app/locale-router"
 
 interface TabItem {
@@ -74,23 +78,21 @@ export function AppAnimatedTabs({
     <div
       className={
         isPill
-          ? `relative w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`
+          ? `relative w-full ${className}`
           : `relative w-full cursor-pointer overflow-x-auto border-border border-b ${className}`
       }
     >
       <div
-        className={isPill ? "relative flex gap-2" : "relative flex space-x-6"}
+        className={
+          isPill ? `relative ${appPillRowClassName}` : "relative flex space-x-6"
+        }
       >
         {tabs.map((tab, i) => {
           const setTabRef = (el: HTMLElement | null) => {
             tabRefs.current[i] = el
           }
           const className = isPill
-            ? `inline-flex h-9 shrink-0 cursor-pointer items-center whitespace-nowrap rounded-full px-4 font-bold text-sm transition-colors duration-200 active:scale-95 motion-reduce:transition-none ${
-                value === tab.value
-                  ? "bg-foreground text-background"
-                  : "bg-muted text-foreground/75 hover:text-foreground"
-              }`
+            ? appPillTabClassName(value === tab.value)
             : `cursor-pointer whitespace-nowrap pb-3 font-medium text-sm transition-colors duration-300 ${
                 value === tab.value
                   ? "text-foreground"

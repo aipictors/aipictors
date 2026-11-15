@@ -269,7 +269,7 @@ export function PostsIndexView(props: Props) {
               <Link
                 key={item.path}
                 to={toPath(item.path)}
-                className="shrink-0 rounded-full border bg-card px-3.5 py-1.5 font-medium text-sm transition hover:bg-muted active:scale-95"
+                className="inline-flex h-10 shrink-0 items-center rounded-full border bg-card px-4 font-medium text-sm transition hover:bg-muted active:scale-95"
               >
                 {t(item.label[0], item.label[1])}
               </Link>

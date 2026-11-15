@@ -1,8 +1,11 @@
 import { useLocation } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
+import {
+  appPillRowClassName,
+  appPillTabClassName,
+} from "~/components/app/app-pill-tab"
 import { useTranslation } from "~/hooks/use-translation"
-import { cn } from "~/lib/utils"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   user: FragmentOf<typeof UserTabsFragment>
@@ -87,11 +90,8 @@ export function UserTabs(props: Props) {
       .find((item) => current.endsWith(item.path))?.path ?? ""
 
   return (
-    <nav
-      aria-label={t("ユーザーページの項目", "Profile sections")}
-      className="border-b"
-    >
-      <ul className="flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <nav aria-label={t("ユーザーページの項目", "Profile sections")}>
+      <ul className={appPillRowClassName}>
         {items
           .filter((item) => item.show)
           .map((item) => {
@@ -103,16 +103,11 @@ export function UserTabs(props: Props) {
                   prefetch="intent"
                   preventScrollReset
                   aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "relative inline-flex px-3 py-3 font-medium text-sm transition-colors",
-                    isActive
-                      ? "text-foreground after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-foreground"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
+                  className={appPillTabClassName(isActive)}
                 >
                   {item.label}
                   {(counts[item.path] ?? 0) > 0 && (
-                    <span className="ml-1 self-center text-muted-foreground text-xs tabular-nums">
+                    <span className="ml-1 font-medium text-xs tabular-nums opacity-70">
                       {counts[item.path]?.toLocaleString()}
                     </span>
                   )}

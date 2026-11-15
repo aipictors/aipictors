@@ -1,6 +1,9 @@
 import { useSearchParams } from "@remix-run/react"
+import {
+  appPillRowClassName,
+  appPillTabClassName,
+} from "~/components/app/app-pill-tab"
 import { useTranslation } from "~/hooks/use-translation"
-import { cn } from "~/lib/utils"
 import type { SearchType } from "~/routes/($lang)._main.search/utils/search-filters"
 
 /**
@@ -20,7 +23,7 @@ export function SearchTypeTabs(props: { type: SearchType }) {
     <div
       role="tablist"
       aria-label={t("検索する対象", "Search for")}
-      className="mb-6 flex border-b"
+      className={`mb-6 ${appPillRowClassName}`}
     >
       {tabs.map(([type, label]) => (
         <button
@@ -41,12 +44,7 @@ export function SearchTypeTabs(props: { type: SearchType }) {
               { preventScrollReset: true },
             )
           }}
-          className={cn(
-            "-mb-px flex-1 border-b-2 px-4 py-3 font-bold text-sm transition-colors sm:flex-none sm:px-8",
-            props.type === type
-              ? "border-foreground text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground",
-          )}
+          className={appPillTabClassName(props.type === type)}
         >
           {label}
         </button>

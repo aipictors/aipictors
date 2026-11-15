@@ -1,3 +1,4 @@
+import { appFilterChipClassName } from "~/components/app/app-pill-tab"
 import { cn } from "~/lib/utils"
 
 export function FilterButton(props: {
@@ -11,12 +12,8 @@ export function FilterButton(props: {
       <button
         type="button"
         onClick={props.onClick}
-        className={cn(
-          "rounded-sm border px-4 py-2 text-sm transition-colors",
-          props.isActive
-            ? "border-foreground bg-foreground text-background"
-            : "border-border bg-background text-muted-foreground hover:text-foreground",
-        )}
+        aria-pressed={props.isActive}
+        className={appFilterChipClassName(props.isActive)}
       >
         {props.children}
       </button>

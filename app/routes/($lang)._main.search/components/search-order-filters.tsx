@@ -1,7 +1,10 @@
 import { useContext } from "react"
+import {
+  appFilterChipClassName,
+  appPillRowClassName,
+} from "~/components/app/app-pill-tab"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import { cn } from "~/lib/utils"
 import type { SearchLoaderData } from "~/routes/($lang)._main.search/search-loader.server"
 import type { SearchFilterChange } from "~/routes/($lang)._main.search/utils/search-filters"
 
@@ -17,11 +20,11 @@ export function SearchOrderFilters(props: {
   const { data, navigateToSearch } = props
 
   return (
-    <div className="mb-5 flex flex-wrap items-center gap-2">
+    <div className={`mb-5 items-center ${appPillRowClassName}`}>
       <div
         role="group"
         aria-label={t("並び順", "Sort order")}
-        className="flex rounded-full bg-muted p-1"
+        className="flex shrink-0 gap-2"
       >
         {(
           [
@@ -37,12 +40,7 @@ export function SearchOrderFilters(props: {
             onClick={() => {
               navigateToSearch(data.searchQuery, { order: value })
             }}
-            className={cn(
-              "whitespace-nowrap rounded-full px-3.5 py-1.5 font-medium text-sm transition-colors",
-              data.filters.order === value
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
+            className={appFilterChipClassName(data.filters.order === value)}
           >
             {label}
           </button>
@@ -58,12 +56,7 @@ export function SearchOrderFilters(props: {
               userId: data.filters.userId ? null : authContext.userId,
             })
           }}
-          className={cn(
-            "h-9 whitespace-nowrap rounded-full border px-3.5 font-medium text-sm transition-colors",
-            data.filters.userId
-              ? "border-foreground bg-foreground text-background"
-              : "border-border bg-background text-muted-foreground hover:text-foreground",
-          )}
+          className={appFilterChipClassName(data.filters.userId !== null)}
         >
           {t("自分の作品のみ", "My works only")}
         </button>

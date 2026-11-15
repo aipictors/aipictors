@@ -44,7 +44,7 @@ export function SearchModeTabs(props: {
           aria-selected={data.mode === mode}
           onClick={() => navigateToSearch(data.searchQuery, { mode })}
           className={cn(
-            "flex-1 whitespace-nowrap rounded-full px-4 py-2 font-medium text-sm transition-colors sm:flex-none",
+            "flex h-10 flex-1 items-center justify-center whitespace-nowrap rounded-full px-4 font-medium text-sm transition-colors sm:flex-none",
             data.mode === mode
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",

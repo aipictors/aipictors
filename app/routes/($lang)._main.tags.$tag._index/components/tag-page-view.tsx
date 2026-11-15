@@ -10,9 +10,14 @@ import {
 import { useContext, useEffect, useMemo, useState } from "react"
 import type { BreadcrumbList, CollectionPage, WithContext } from "schema-dts"
 import { AdSlot } from "~/components/ads/ad-slot"
-import { GridLayoutToggle } from "~/components/grid-layout-toggle"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import {
+  appFilterChipClassName,
+  appPillRowClassName,
+  appPillTabClassName,
+} from "~/components/app/app-pill-tab"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
+import { GridLayoutToggle } from "~/components/grid-layout-toggle"
 import { LinkPagination } from "~/components/link-pagination"
 import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
@@ -64,10 +69,7 @@ function Chip(props: {
   asButton?: boolean
 }) {
   const className = cn(
-    "inline-flex h-9 shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-3.5 font-medium text-sm transition-colors",
-    props.isActive
-      ? "border-foreground bg-foreground text-background"
-      : "bg-background text-muted-foreground hover:border-foreground/40 hover:text-foreground",
+    appFilterChipClassName(props.isActive ?? false),
     props.className,
   )
   if (props.asButton) {
@@ -380,7 +382,7 @@ export function TagPageView(props: Props) {
         <div
           role="tablist"
           aria-label={t("並び順", "Sort")}
-          className="-mx-1 flex gap-1 overflow-x-auto px-1 [scrollbar-width:none]"
+          className={appPillRowClassName}
         >
           {(Object.keys(orderLabels) as TagPageOrderBy[]).map((orderBy) => {
             const isActive = query.orderBy === orderBy
@@ -391,12 +393,7 @@ export function TagPageView(props: Props) {
                 aria-selected={isActive}
                 to={hrefWith({ orderBy, sort: "DESC" })}
                 replace
-                className={cn(
-                  "shrink-0 rounded-full px-3.5 py-2 font-medium text-sm transition-colors",
-                  isActive
-                    ? "bg-muted font-bold text-foreground"
-                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
-                )}
+                className={appPillTabClassName(isActive)}
               >
                 {orderLabels[orderBy]}
               </NavButton>

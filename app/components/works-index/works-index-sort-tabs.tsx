@@ -1,6 +1,9 @@
-import { Link } from "~/lib/app/locale-router"
+import {
+  appPillRowClassName,
+  appPillTabClassName,
+} from "~/components/app/app-pill-tab"
 import { useTranslation } from "~/hooks/use-translation"
-import { cn } from "~/lib/utils"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   label: string
@@ -21,7 +24,7 @@ export function WorksIndexSortTabs(props: Props) {
   return (
     <nav
       aria-label={props.label}
-      className="inline-flex w-fit max-w-full rounded-full border bg-muted/40 p-0.5"
+      className={`w-full sm:w-fit ${appPillRowClassName}`}
     >
       {props.items.map((item) => (
         <Link
@@ -29,12 +32,7 @@ export function WorksIndexSortTabs(props: Props) {
           to={item.href}
           preventScrollReset={true}
           aria-current={item.value === props.current ? "page" : undefined}
-          className={cn(
-            "flex h-8 items-center whitespace-nowrap rounded-full px-3 font-medium text-xs transition-colors",
-            item.value === props.current
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground",
-          )}
+          className={appPillTabClassName(item.value === props.current)}
         >
           {t(item.label[0], item.label[1])}
         </Link>
