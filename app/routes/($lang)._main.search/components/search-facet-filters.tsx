@@ -1,7 +1,6 @@
 import {
   appFilterChipClassName,
   appPillRowClassName,
-  appPillTabClassName,
 } from "~/components/app/app-pill-tab"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -38,7 +37,7 @@ export function SearchFacetFilters(props: {
             onClick={() => {
               navigateToSearch(data.searchQuery, { style: value })
             }}
-            className={appPillTabClassName(data.filters.style === value)}
+            className={appFilterChipClassName(data.filters.style === value)}
           >
             {label}
           </button>
