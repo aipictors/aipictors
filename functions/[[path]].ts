@@ -1133,26 +1133,45 @@ export const onRequest: PagesFunction = async (ctx) => {
   }
 
   let renderedContext: { token: string; script: string } | undefined
+  /**
+   * データの保存が終わるまでリクエストの処理を終わらせない。
+   * データは HTML を送り終える瞬間に取り出すので、そこで waitUntil を呼んでも間に合わないことが多く、
+   * 保存されずに /__ctx でページを丸ごと描画し直していた。描画を始める前に待つものとして登録しておく
+   */
+  let onContextStored: (() => void) | undefined
+  const contextStored = new Promise<void>((resolve) => {
+    onContextStored = resolve
+  })
   const storeContext = (token: string, script: string) => {
     renderedContext = { token, script }
     rememberContext(token, script)
+    const put = caches.default
+      .put(
+        new Request(toContextCacheUrl(token)),
+        new Response(script, {
+          headers: {
+            "Content-Type": "text/javascript; charset=utf-8",
+            // ページのキャッシュ（最大 1 日＋α）より長めに置く
+            "Cache-Control": "public, max-age=172800",
+          },
+        }),
+      )
+      .catch(() => undefined)
+    ctx.waitUntil(put)
+    put.finally(() => onContextStored?.())
+  }
+  /** データを外すページを描画するときだけ呼ぶ（HTML でない応答などで保存がないときは数秒で諦める） */
+  const waitForContextStored = () => {
     ctx.waitUntil(
-      caches.default
-        .put(
-          new Request(toContextCacheUrl(token)),
-          new Response(script, {
-            headers: {
-              "Content-Type": "text/javascript; charset=utf-8",
-              // ページのキャッシュ（最大 1 日＋α）より長めに置く
-              "Cache-Control": "public, max-age=172800",
-            },
-          }),
-        )
-        .catch(() => undefined),
+      Promise.race([
+        contextStored,
+        new Promise((resolve) => setTimeout(resolve, 5000)),
+      ]),
     )
   }
 
   const render = async () => {
+    if (shouldWaitForInteraction(requestUrl.pathname)) waitForContextStored()
     const rendered = await renderWithRetry()
     if (
       rendered.status >= 500 &&
