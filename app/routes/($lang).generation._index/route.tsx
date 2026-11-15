@@ -9,6 +9,7 @@ import { GenerationHeaderView } from "~/routes/($lang).generation._index/compone
 import { GenerationMainView } from "~/routes/($lang).generation._index/components/generation-view/generation-main-view"
 import { GenerationSettingsColumn } from "~/routes/($lang).generation._index/components/generation-view/generation-settings-column"
 import { GenerationUserModelFromUrl } from "~/routes/($lang).generation._index/components/generation-user-model-from-url"
+import { GenerationMobileView } from "~/routes/($lang).generation._index/components/generation-view/generation-mobile-view"
 import { GenerationView } from "~/routes/($lang).generation._index/components/generation-view/generation-view"
 import { GenerationNegativePromptView } from "~/routes/($lang).generation._index/components/negative-prompt-view/generation-negative-prompt-view"
 import { GenerationMobilePromptCard } from "~/routes/($lang).generation._index/components/prompt-view/generation-mobile-prompt-card"
@@ -85,6 +86,29 @@ export default function GenerationPage() {
     context.resetImageInputSetting()
   }, [])
 
+  const aside = (
+    <GenerationAsideView
+      advertisement={<GenerationAdvertisementView />}
+      taskList={
+        <GenerationTaskListView
+          rating={rating}
+          protect={protect}
+          isEditMode={isEditMode}
+          setRating={setRating}
+          setProtect={setProtect}
+          toggleEditMode={toggleEditMode}
+          currentUserToken={context.config.currentUserToken ?? ""}
+        />
+      }
+      taskDetails={<GenerationTaskDetailsView />}
+      workListFromModel={<GenerationWorkListModelView />}
+      communication={<GenerationCommunicationView />}
+      links={<GenerationLinksView />}
+      logs={<GenerationLogsTab />}
+      coinHistory={<GenerationCoinHistoryTab />}
+    />
+  )
+
   return (
     <>
       {/* PC とスマホで構成が違い、保存した状態（localStorage）でも中身が変わるので、サーバーとの一致が取れない。
@@ -93,69 +117,68 @@ export default function GenerationPage() {
         <AppLoadingPage />
       ) : (
         <>
-      <GenerationUserModelFromUrl />
-      <GenerationView
-        settings={
-          <GenerationSettingsColumn
-            promptEditor={<GenerationPromptComposer />}
-            negativePromptEditor={<GenerationNegativePromptView />}
-            config={<GenerationConfigView isStacked />}
-            submission={<GenerationSubmissionView termsText={text} />}
-          />
-        }
-        header={
-          <GenerationHeaderView
-            submission={
-              <GenerationSubmissionView
-                termsText={text}
-                composer={<GenerationMobilePromptComposer />}
-              />
-            }
-          />
-        }
-        main={
-          <GenerationMainView
-            config={<GenerationConfigView isStacked />}
-            settingLanguageUsedForPromptView={
-              <SettingLanguageUsedForPromptView />
-            }
-            promptEditor={<GenerationPromptView />}
-            negativePromptEditor={<GenerationNegativePromptView />}
-            mobilePromptEditor={<GenerationMobilePromptCard />}
-            taskDetails={<GenerationTaskDetailsView />}
-            submissionView={
-              <GenerationHeaderView
+          <GenerationUserModelFromUrl />
+          <GenerationView
+            settings={
+              <GenerationSettingsColumn
+                promptEditor={<GenerationPromptComposer />}
+                negativePromptEditor={<GenerationNegativePromptView />}
+                config={<GenerationConfigView isStacked />}
                 submission={<GenerationSubmissionView termsText={text} />}
               />
             }
-          />
-        }
-        asideHeader={<GenerationSideTabsView />}
-        aside={
-          <GenerationAsideView
-            advertisement={<GenerationAdvertisementView />}
-            taskList={
-              <GenerationTaskListView
-                rating={rating}
-                protect={protect}
-                isEditMode={isEditMode}
-                setRating={setRating}
-                setProtect={setProtect}
-                toggleEditMode={toggleEditMode}
-                currentUserToken={context.config.currentUserToken ?? ""}
+            header={
+              <GenerationHeaderView
+                submission={
+                  <GenerationSubmissionView
+                    termsText={text}
+                    composer={<GenerationMobilePromptComposer />}
+                  />
+                }
               />
             }
-            taskDetails={<GenerationTaskDetailsView />}
-            workListFromModel={<GenerationWorkListModelView />}
-            communication={<GenerationCommunicationView />}
-            links={<GenerationLinksView />}
-            logs={<GenerationLogsTab />}
-            coinHistory={<GenerationCoinHistoryTab />}
+            main={
+              <GenerationMainView
+                config={<GenerationConfigView isStacked />}
+                settingLanguageUsedForPromptView={
+                  <SettingLanguageUsedForPromptView />
+                }
+                promptEditor={<GenerationPromptView />}
+                negativePromptEditor={<GenerationNegativePromptView />}
+                mobilePromptEditor={<GenerationMobilePromptCard />}
+                taskDetails={<GenerationTaskDetailsView />}
+                submissionView={
+                  <GenerationHeaderView
+                    submission={<GenerationSubmissionView termsText={text} />}
+                  />
+                }
+              />
+            }
+            asideHeader={<GenerationSideTabsView />}
+            aside={aside}
+            mobile={
+              <GenerationMobileView
+                form={
+                  <GenerationConfigView
+                    isMobileCards
+                    promptCard={<GenerationMobilePromptCard />}
+                  />
+                }
+                history={aside}
+                submission={
+                  <GenerationSubmissionView
+                    termsText={text}
+                    composer={<GenerationMobilePromptComposer />}
+                  />
+                }
+                footer={<GenerationFormFooter />}
+                coinHistory={<GenerationCoinHistoryTab />}
+                logs={<GenerationLogsTab />}
+              />
+            }
+            menu={<GenerationConfigView />}
+            footer={<GenerationFormFooter />}
           />
-        }
-        menu={<GenerationConfigView />}
-        footer={<GenerationFormFooter />}
-      />
         </>
       )}
       <GenerationSeoSection />

@@ -27,6 +27,10 @@ type Props = {
    * 指定すると PC では「左: 設定 / 右: 結果」の2カラムで表示する（履歴詳細は右カラム）
    */
   settings?: React.ReactNode
+  /**
+   * スマホ（md 未満）の画面。指定するとアプリの生成タブと同じ構成で出す
+   */
+  mobile?: React.ReactNode
 }
 
 /**
@@ -46,6 +50,7 @@ export function GenerationView(props: Props) {
    * スマホの場合リサイザーなし
    */
   if (!useMediaQuery("(min-width: 768px)")) {
+    if (props.mobile) return <>{props.mobile}</>
     return (
       <div className="flex flex-col space-y-2 pb-44">
         <GenerationAnnouncementBanner />

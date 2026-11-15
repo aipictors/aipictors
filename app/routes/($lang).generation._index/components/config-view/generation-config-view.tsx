@@ -48,6 +48,14 @@ type Props = {
    * 2カラムの左列に縦積みするとき（内部スクロールをなくす）
    */
   isStacked?: boolean
+  /**
+   * スマホ: アプリの生成タブと同じく、項目ごとのカードを縦に並べる
+   */
+  isMobileCards?: boolean
+  /**
+   * スマホのカードの並びでモデルの次に出すプロンプト欄
+   */
+  promptCard?: React.ReactNode
 }
 
 export function GenerationConfigView(props: Props) {
@@ -137,6 +145,59 @@ export function GenerationConfigView(props: Props) {
 
   const t = useTranslation()
 
+  const detailsAccordion = (
+    <Accordion type="single" collapsible>
+      <AccordionItem value="setting">
+        <AccordionTrigger className="py-2 hover:no-underline">
+          <div className="text-left">
+            <p className="font-semibold text-sm">
+              {t("詳細設定（描き方・仕上がり）", "Detailed settings")}
+            </p>
+            <p className="mt-0.5 font-normal text-muted-foreground text-xs">
+              {[
+                `CFG ${context.config.scale}`,
+                `Steps ${context.config.steps}`,
+                toGenerationSamplerOptionValue(context.config.sampler),
+                scheduler ?? t("自動", "Auto"),
+                context.config.vae ? `VAE ${context.config.vae}` : null,
+              ]
+                .filter(Boolean)
+                .join("・")}
+            </p>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="space-y-5 pt-1">
+          <GenerationConfigSamplingPresets />
+          <Separator />
+          <GenerationConfigScale
+            value={context.config.scale}
+            onChange={context.updateScale}
+          />
+          <GenerationConfigStep
+            value={context.config.steps}
+            onChange={context.updateSteps}
+          />
+          <GenerationConfigSampler
+            value={context.config.sampler}
+            onChange={context.updateSampler}
+          />
+          <GenerationConfigScheduler
+            value={scheduler}
+            onChange={setScheduler}
+          />
+          <GenerationConfigClipSkip
+            value={context.config.clipSkip}
+            onChange={context.updateClipSkip}
+          />
+          <GenerationConfigVae
+            value={context.config.vae ?? ""}
+            onChange={context.updateVae}
+          />
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  )
+
   const configBody = (
     <>
       <GenerationModelSection
@@ -162,58 +223,85 @@ export function GenerationConfigView(props: Props) {
         onChange={context.updateSeed}
       />
       <Separator />
-      <Accordion type="single" collapsible>
-        <AccordionItem value="setting">
-          <AccordionTrigger className="py-2 hover:no-underline">
-            <div className="text-left">
-              <p className="font-semibold text-sm">
-                {t("詳細設定（描き方・仕上がり）", "Detailed settings")}
-              </p>
-              <p className="mt-0.5 font-normal text-muted-foreground text-xs">
-                {[
-                  `CFG ${context.config.scale}`,
-                  `Steps ${context.config.steps}`,
-                  toGenerationSamplerOptionValue(context.config.sampler),
-                  scheduler ?? t("自動", "Auto"),
-                  context.config.vae ? `VAE ${context.config.vae}` : null,
-                ]
-                  .filter(Boolean)
-                  .join("・")}
-              </p>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-5 pt-1">
-            <GenerationConfigSamplingPresets />
-            <Separator />
-            <GenerationConfigScale
-              value={context.config.scale}
-              onChange={context.updateScale}
-            />
-            <GenerationConfigStep
-              value={context.config.steps}
-              onChange={context.updateSteps}
-            />
-            <GenerationConfigSampler
-              value={context.config.sampler}
-              onChange={context.updateSampler}
-            />
-            <GenerationConfigScheduler
-              value={scheduler}
-              onChange={setScheduler}
-            />
-            <GenerationConfigClipSkip
-              value={context.config.clipSkip}
-              onChange={context.updateClipSkip}
-            />
-            <GenerationConfigVae
-              value={context.config.vae ?? ""}
-              onChange={context.updateVae}
-            />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      {detailsAccordion}
     </>
   )
+
+  const memoAndReset = (
+    <>
+      <GenerationConfigMemoButton
+        onClick={() => {
+          setShowMemoSetting(true)
+        }}
+      />
+      <GenerationConfigMemoSettingDialog
+        memos={
+          memos?.viewer?.currentImageGenerationMemos.map((memo) => ({
+            ...memo,
+            model: {
+              ...memo.model,
+              recommendedPrompt: "",
+            },
+          })) ?? []
+        }
+        refetch={refetch}
+        onClose={() => {
+          setShowMemoSetting(false)
+        }}
+        isOpen={showMemoSetting}
+      />
+      <GenerationConfigResetConfirmDialog onReset={context.reset} />
+    </>
+  )
+
+  if (props.isMobileCards) {
+    return (
+      <GenerationModelLibraryProvider>
+        <div className="flex flex-col gap-3">
+          <GenerationMobileCard>
+            <GenerationModelSection
+              onClickSearchModelWorks={(id: string, name: string) => {
+                context.updateSearchWorksModelIdAndName(id, name)
+                send({ type: "OPEN_WORKS_FROM_MODEL" })
+              }}
+            />
+            <GenerationConfigModelRecommendation />
+          </GenerationMobileCard>
+          {props.promptCard}
+          <GenerationMobileCard>
+            <GenerationLoraSection />
+          </GenerationMobileCard>
+          <GenerationMobileCard>
+            <GenerationConfigOutput modelType={configModelType} part="size" />
+          </GenerationMobileCard>
+          <GenerationMobileCard>
+            <GenerationConfigOutput modelType={configModelType} part="count" />
+            <Separator />
+            <div className="[&_span.text-nowrap]:text-sm">
+              <GenerationConfigCount
+                remainingImageGenerationTasksCount={
+                  remainingImageGenerationTasksCount
+                }
+                setGenerationCount={context.changeGenerationCount}
+                generationCount={context.config.generationCount}
+              />
+            </div>
+          </GenerationMobileCard>
+          <GenerationMobileCard>
+            <GenerationConfigReferenceImage />
+          </GenerationMobileCard>
+          <GenerationMobileCard>
+            <GenerationConfigSeed
+              value={context.config.seed}
+              onChange={context.updateSeed}
+            />
+            {detailsAccordion}
+          </GenerationMobileCard>
+          <div className="flex gap-x-2 px-1">{memoAndReset}</div>
+        </div>
+      </GenerationModelLibraryProvider>
+    )
+  }
 
   return (
     <GenerationModelLibraryProvider>
@@ -244,33 +332,21 @@ export function GenerationConfigView(props: Props) {
           </ScrollArea>
         )}
         <div className="bottom-0 border-t bg-card px-4 py-3 lg:sticky">
-          <div className="flex gap-x-2">
-            <GenerationConfigMemoButton
-              onClick={() => {
-                setShowMemoSetting(true)
-              }}
-            />
-            <GenerationConfigMemoSettingDialog
-              memos={
-                memos?.viewer?.currentImageGenerationMemos.map((memo) => ({
-                  ...memo,
-                  model: {
-                    ...memo.model,
-                    recommendedPrompt: "",
-                  },
-                })) ?? []
-              }
-              refetch={refetch}
-              onClose={() => {
-                setShowMemoSetting(false)
-              }}
-              isOpen={showMemoSetting}
-            />
-            <GenerationConfigResetConfirmDialog onReset={context.reset} />
-          </div>
+          <div className="flex gap-x-2">{memoAndReset}</div>
         </div>
       </GenerationViewCard>
     </GenerationModelLibraryProvider>
+  )
+}
+
+/**
+ * スマホの設定のカード（アプリの生成タブのカードと同じ角丸・枠・影）
+ */
+function GenerationMobileCard(props: { children: React.ReactNode }) {
+  return (
+    <section className="flex flex-col gap-4 rounded-[20px] border bg-card p-3.5 shadow-[0_6px_16px_rgba(0,0,0,0.035)] dark:shadow-none">
+      {props.children}
+    </section>
   )
 }
 

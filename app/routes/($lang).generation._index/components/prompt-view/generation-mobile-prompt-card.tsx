@@ -40,7 +40,7 @@ export function GenerationMobilePromptCard() {
   const negativePromptText = context.config.negativePromptText.trim()
 
   return (
-    <section className="rounded-2xl border bg-card p-3 shadow-sm">
+    <section className="rounded-[20px] border bg-card p-3.5 shadow-[0_6px_16px_rgba(0,0,0,0.035)] dark:shadow-none">
       <div className="flex items-center justify-between gap-2">
         <label htmlFor={promptId} className="font-semibold text-base">
           {isJapanese
