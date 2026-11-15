@@ -54,11 +54,12 @@ const PanelAwardFragment = graphql(
   }`,
 )
 
+// message はここだけ String! で、ほかの種類の message（String）と同じ名前だと一覧の問い合わせ全体が検証で弾かれるので別名で取る
 const PanelRequestFragment = graphql(
   `fragment PanelRequest on RequestNotificationNode @_unmask {
     id
     createdAt
-    message
+    requestMessage: message
     requestId
     user { id name iconUrl }
   }`,

@@ -134,3 +134,19 @@ test("行のリンク先", () => {
   ).toBe("/r/popular?date=2026-11-11")
   expect(toRowHref(item({}))).toBeNull()
 })
+
+test("有料リクエストの通知は別名で取ったメッセージを使う", () => {
+  const [item] = toPanelItems([
+    {
+      __typename: "RequestNotificationNode",
+      id: "r",
+      createdAt: 1,
+      requestMessage: "依頼が届きました",
+      requestId: "5",
+      user,
+    },
+  ])
+  expect(item?.kind).toBe("request")
+  expect(item?.message).toBe("依頼が届きました")
+  expect(item?.requestId).toBe("5")
+})

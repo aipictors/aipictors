@@ -57,6 +57,8 @@ type PanelNode = {
   id: string
   createdAt: number
   message?: string | null
+  /** 有料リクエストの message（別名で取る） */
+  requestMessage?: string | null
   work?: PanelWork | null
   user?: PanelUser | null
   sticker?: { imageUrl?: string | null } | null
@@ -91,7 +93,7 @@ const toPanelItem = (node: PanelNode): PanelItem | null => {
     workId: node.work?.id ?? null,
     work: node.work ?? null,
     user: node.user ?? null,
-    message: node.message ?? null,
+    message: node.message ?? node.requestMessage ?? null,
     stickerUrl: node.sticker?.imageUrl ?? null,
     isNotReplied: kind === "comment" && (node.myReplies?.length ?? 0) === 0,
     support: node.support ?? null,
