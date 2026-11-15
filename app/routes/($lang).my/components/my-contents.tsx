@@ -1,11 +1,11 @@
 import { useLocation } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import {
   BellIcon,
   BookmarkIcon,
   CalendarDaysIcon,
   EyeIcon,
   FolderIcon,
+  HandCoinsIcon,
   HeartIcon,
   HistoryIcon,
   HomeIcon,
@@ -16,6 +16,7 @@ import {
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 
 type Props = Readonly<{
@@ -41,6 +42,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: BookmarkIcon,
   },
   { to: "/my/likes", ja: "いいね", en: "Likes", icon: HeartIcon },
+  { to: "/requests", ja: "リクエスト", en: "Requests", icon: HandCoinsIcon },
   { to: "/my/recommended", ja: "推薦", en: "Recommended", icon: ThumbsUpIcon },
   { to: "/my/views", ja: "閲覧履歴", en: "Views", icon: EyeIcon },
   { to: "/my/events", ja: "イベント", en: "Events", icon: CalendarDaysIcon },

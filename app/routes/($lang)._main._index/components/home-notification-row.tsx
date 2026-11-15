@@ -1,6 +1,7 @@
 import {
   AwardIcon,
   CoinsIcon,
+  HandCoinsIcon,
   HeartIcon,
   type LucideIcon,
   MessageCircleIcon,
@@ -47,6 +48,7 @@ const KIND_STYLES: Record<
   follow: { icon: UserRoundPlusIcon, className: "bg-emerald-500" },
   award: { icon: AwardIcon, className: "bg-amber-500" },
   coin: { icon: CoinsIcon, className: "bg-yellow-500" },
+  request: { icon: HandCoinsIcon, className: "bg-sky-600" },
 }
 
 export function NotificationRowView(props: {
@@ -93,17 +95,21 @@ export function NotificationRowView(props: {
         {support && props.isExpanded ? (
           // 推し付きのコメントは、作品ページと同じ段階の色の帯で目立たせる
           <SupportSuperChatCard support={support}>
-            {item.message && item.kind !== "award" && item.kind !== "coin" && (
-              <p className="whitespace-pre-line break-words text-foreground text-sm leading-relaxed">
-                {item.message}
-              </p>
-            )}
+            {item.message &&
+              item.kind !== "award" &&
+              item.kind !== "coin" &&
+              item.kind !== "request" && (
+                <p className="whitespace-pre-line break-words text-foreground text-sm leading-relaxed">
+                  {item.message}
+                </p>
+              )}
           </SupportSuperChatCard>
         ) : null}
         {!(support && props.isExpanded) &&
           item.message &&
           item.kind !== "award" &&
-          item.kind !== "coin" && (
+          item.kind !== "coin" &&
+          item.kind !== "request" && (
             <p
               className={cn(
                 "whitespace-pre-line break-words leading-relaxed",

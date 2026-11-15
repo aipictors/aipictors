@@ -5,6 +5,7 @@ import {
   CoffeeIcon,
   GemIcon,
   GiftIcon,
+  HandCoinsIcon,
   Languages,
   LogOutIcon,
   MedalIcon,
@@ -360,6 +361,11 @@ function UserNavigationMenuContent(props: Props) {
           href={getSensitiveLink("/my/posts")}
           icon={<SquareKanbanIcon className={userNavigationStyles.menuIcon} />}
           label={t("自分の作品", "My posts")}
+        />
+        <MenuItemLink
+          href={getSensitiveLink("/requests")}
+          icon={<HandCoinsIcon className={userNavigationStyles.menuIcon} />}
+          label={t("リクエスト", "Requests")}
         />
         {featurePromptonRequest &&
           (promptonUser === "" && viewerUserToken ? (

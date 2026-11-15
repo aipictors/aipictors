@@ -48,6 +48,7 @@ export type PanelItem = {
   replyTargetCommentId: string | null
   myReplies: PanelReply[]
   parentComment: PanelParentComment | null
+  requestId?: string | null
 }
 
 /** 通知ノード（種類で持っている項目が違う） */
@@ -63,6 +64,7 @@ type PanelNode = {
   support?: PanelSupport | null
   replyTargetCommentId?: string | null
   comment?: PanelParentComment | null
+  requestId?: string | null
 }
 
 const KIND_BY_TYPENAME: Record<string, NotificationPanelKind> = {
@@ -71,6 +73,7 @@ const KIND_BY_TYPENAME: Record<string, NotificationPanelKind> = {
   WorkCommentReplyNotificationNode: "reply",
   FollowNotificationNode: "follow",
   WorkAwardNotificationNode: "award",
+  RequestNotificationNode: "request",
 }
 
 /** GraphQL の通知ノードを、パネルで扱う形にそろえる */
@@ -95,6 +98,7 @@ const toPanelItem = (node: PanelNode): PanelItem | null => {
     replyTargetCommentId: node.replyTargetCommentId ?? null,
     myReplies: node.myReplies ?? [],
     parentComment: kind === "reply" ? (node.comment ?? null) : null,
+    requestId: node.requestId ?? null,
   }
 }
 
@@ -105,7 +109,7 @@ export const toPanelItems = (nodes: unknown): PanelItem[] =>
     .sort((a, b) => b.createdAt - a.createdAt)
 
 export const TAB_WHERE = {
-  ALL: { excludeCoin: true },
+  ALL: { excludeCoin: true, includeRequests: true },
   COMMENT: { type: "WORK_COMMENT" },
   REPLY: { type: "COMMENT_REPLY" },
   LIKED: { type: "LIKED_WORK" },
@@ -117,6 +121,9 @@ export const TAB_WHERE = {
 export const toRowHref = (item: PanelItem) => {
   if (item.kind === "follow") {
     return item.user ? `/users/${item.user.id}` : null
+  }
+  if (item.kind === "request") {
+    return item.requestId ? `/requests/${item.requestId}` : "/requests"
   }
   if (item.kind === "coin") {
     return item.message?.startsWith("🏅") ? "/achievements" : null

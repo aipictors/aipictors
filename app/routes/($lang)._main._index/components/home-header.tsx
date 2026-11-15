@@ -744,6 +744,7 @@ export const viewerUnreadNotificationCountsQuery = graphql(
         award
         message
         moderation
+        request
       }
     }
   }`,

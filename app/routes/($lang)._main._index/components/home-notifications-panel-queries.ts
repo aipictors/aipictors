@@ -54,6 +54,16 @@ const PanelAwardFragment = graphql(
   }`,
 )
 
+const PanelRequestFragment = graphql(
+  `fragment PanelRequest on RequestNotificationNode @_unmask {
+    id
+    createdAt
+    message
+    requestId
+    user { id name iconUrl }
+  }`,
+)
+
 export const panelNotificationsQuery = graphql(
   `query PanelNotifications($offset: Int!, $limit: Int!, $where: NotificationsWhereInput) {
     viewer {
@@ -65,6 +75,7 @@ export const panelNotificationsQuery = graphql(
         ... on WorkCommentReplyNotificationNode { ...PanelReply }
         ... on FollowNotificationNode { ...PanelFollow }
         ... on WorkAwardNotificationNode { ...PanelAward }
+        ... on RequestNotificationNode { ...PanelRequest }
       }
     }
   }`,
@@ -74,6 +85,7 @@ export const panelNotificationsQuery = graphql(
     PanelReplyFragment,
     PanelFollowFragment,
     PanelAwardFragment,
+    PanelRequestFragment,
   ],
 )
 

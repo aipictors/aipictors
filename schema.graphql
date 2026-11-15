@@ -4031,7 +4031,7 @@ type NotePostNode implements Node {
 }
 
 """通知"""
-union NotificationNode = FollowNotificationNode | LikedWorkNotificationNode | LikedWorksSummaryNotificationNode | WorkAwardNotificationNode | WorkCommentNotificationNode | WorkCommentReplyNotificationNode
+union NotificationNode = FollowNotificationNode | LikedWorkNotificationNode | LikedWorksSummaryNotificationNode | RequestNotificationNode | WorkAwardNotificationNode | WorkCommentNotificationNode | WorkCommentReplyNotificationNode
 
 """通知の種類"""
 enum NotificationType {
@@ -4047,6 +4047,9 @@ enum NotificationType {
   """いいねの集計"""
   LIKED_WORKS_SUMMARY
 
+  """有料リクエスト"""
+  REQUEST
+
   """作品のランキング結果"""
   WORK_AWARD
 
@@ -4057,6 +4060,11 @@ enum NotificationType {
 input NotificationsWhereInput {
   """コインの付与・失効などのお知らせを除く"""
   excludeCoin: Boolean
+
+  """
+  種類を指定しない一覧に有料リクエストの通知（RequestNotificationNode）を含める（古いアプリは知らない種類なので既定は含めない）
+  """
+  includeRequests: Boolean
 
   """コメントの通知を返信済み（true）・未返信（false）で絞る"""
   isReplied: Boolean
@@ -5024,6 +5032,22 @@ type ReportedUserEvent {
   reportCount: Int
 }
 
+"""通知（有料リクエスト）"""
+type RequestNotificationNode implements Node {
+  """時刻"""
+  createdAt: Int!
+  id: ID!
+
+  """メッセージ"""
+  message: String!
+
+  """依頼の ID（/requests/:id）"""
+  requestId: ID!
+
+  """操作した人（自動の処理のときは null）"""
+  user: UserNode
+}
+
 """作品に対してBot採点機能のリクエストを行う"""
 input RequestWorkBotGradingInput {
   """公開設定"""
@@ -5433,6 +5457,9 @@ type UnreadNotificationCountsNode {
   message: Int!
   moderation: Int!
   reply: Int!
+
+  """有料リクエストの通知（まだ確認していない人は全部）"""
+  request: Int!
 }
 
 input UnwatchAlbumInput {

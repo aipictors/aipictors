@@ -639,6 +639,7 @@ const unreadCountsQuery = graphql(
         award
         message
         moderation
+        request
       }
     }
   }`,

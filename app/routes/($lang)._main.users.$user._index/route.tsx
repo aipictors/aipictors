@@ -1,11 +1,12 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
+import { UserRequestPlansSection } from "~/components/requests/user-request-plans-section"
 import { UserModelCard } from "~/components/user-models/user-model-card"
 import { config } from "~/config"
 import { ParamsError } from "~/errors/params-error"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { loaderClient } from "~/lib/loader-client"
 import { fetchPublicUserModels } from "~/lib/server/user-models.server"
 import { normalizeUserModel } from "~/lib/user-models/client"
@@ -152,6 +153,7 @@ export default function UserLayout() {
   return (
     <div className="flex w-full flex-col justify-center pb-10">
       <div className="w-full space-y-10">
+        <UserRequestPlansSection userId={data.user.id} />
         <UserPickupContents
           userPickupWorks={data.user.featuredWorks ?? []}
           userNewWorks={data.user.works ?? []}

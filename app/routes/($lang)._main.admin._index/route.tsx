@@ -79,6 +79,11 @@ const quickActions = [
     subtitle: "毎月の振込の承認キュー・締め・送金",
   },
   {
+    href: "/admin/requests",
+    title: "有料リクエスト",
+    subtitle: "通報・進行中の依頼の確認、強制キャンセル（全額返却）・強制完了",
+  },
+  {
     href: "/admin/releases/new",
     title: "お知らせ追加",
     subtitle: "microCMS と Discord に同時投稿",

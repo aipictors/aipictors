@@ -7,6 +7,7 @@ import {
   BookmarkXIcon,
   BoxesIcon,
   ChevronRight,
+  ClipboardListIcon,
   CoinsIcon,
   EyeIcon,
   Gift,
@@ -71,6 +72,11 @@ export function SettingsNavigation() {
           href: "/settings/creator-rewards",
           icon: BanknoteIcon,
           label: t("クリエイター報酬", "Creator Rewards"),
+        },
+        {
+          href: "/settings/requests",
+          icon: ClipboardListIcon,
+          label: t("リクエストとプラン", "Requests & Plans"),
         },
         ...(data?.viewer?.isAdvertiser
           ? [

@@ -9,6 +9,7 @@ export type NotificationPanelKind =
   | "follow"
   | "award"
   | "coin"
+  | "request"
 
 export type UnreadCounts = {
   liked: number
@@ -18,6 +19,7 @@ export type UnreadCounts = {
   award: number
   message: number
   moderation: number
+  request: number
 }
 
 export const EMPTY_UNREAD_COUNTS: UnreadCounts = {
@@ -28,6 +30,7 @@ export const EMPTY_UNREAD_COUNTS: UnreadCounts = {
   award: 0,
   message: 0,
   moderation: 0,
+  request: 0,
 }
 
 /** ベルの数字（コインの付与・失効は含まない） */
@@ -38,7 +41,8 @@ export const toUnreadTotal = (counts: UnreadCounts) =>
   counts.follow +
   counts.award +
   counts.message +
-  counts.moderation
+  counts.moderation +
+  counts.request
 
 export const toBadgeText = (count: number) =>
   count > 99 ? "99+" : String(count)

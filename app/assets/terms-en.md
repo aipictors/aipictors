@@ -104,6 +104,12 @@ Posting of copyrighted material by others without permission or altering it thro
 - R18 / R18G works and supports made through them are not eligible for Creator Rewards.
 - Supporting your own works with multiple accounts or other people's help, buying coins with stolen payment methods, or obtaining rewards by any other fraudulent means is prohibited. Aipictors may cancel rewards, stop payouts, suspend accounts or take other necessary measures.
 
+# Paid requests
+
+- Users can commission other users (creators) with coins through "Paid requests". The contract for the work is between the requester and the creator; we provide the venue and hold, return and settle the coins.
+- Coins used for a request are held by us and returned in full as coins if the request is declined, expires or is canceled. On completion, the amount after our fee goes to the creator (as creator rewards where eligible).
+- Details, prohibited acts and dispute handling are set out in the [Paid Request Terms](/requests/terms) (Japanese).
+
 # Last updated
 
-November 16, 2026 (added "Paid coins and creator rewards")
+November 16, 2026 (added "Paid coins and creator rewards" and "Paid requests")

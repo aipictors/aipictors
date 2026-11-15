@@ -1,0 +1,292 @@
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
+import {
+  CalendarClock,
+  ChevronLeft,
+  Flag,
+  Images,
+  Pencil,
+  RefreshCcw,
+  ShieldCheck,
+  Users,
+} from "lucide-react"
+import { useContext, useState } from "react"
+import { toast } from "sonner"
+import {
+  CoinPrice,
+  RequestUserChip,
+  type RequestUsers,
+} from "~/components/requests/request-ui"
+import { Button } from "~/components/ui/button"
+import { config, META } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { Link } from "~/lib/app/locale-router"
+import {
+  PLAN_CATEGORY_LABELS,
+  type RequestPlan,
+  requestErrorMessage,
+  requestsPost,
+} from "~/lib/requests-api"
+import { fetchRequestsInternal } from "~/lib/server/requests-api.server"
+import { cn } from "~/lib/utils"
+import { createMeta } from "~/utils/create-meta"
+
+export async function loader({ params, context }: LoaderFunctionArgs) {
+  const id = String(params.plan ?? "")
+  if (!/^\d+$/.test(id)) throw new Response("Not Found", { status: 404 })
+  const data = await fetchRequestsInternal<{
+    plan: RequestPlan
+    users: RequestUsers
+  }>(context, `/plans/${id}`)
+  if (!data?.plan) throw new Response("Not Found", { status: 404 })
+  return data
+}
+
+export const meta: MetaFunction<typeof loader> = (props) =>
+  createMeta(
+    META.REQUEST_PLAN,
+    {
+      title: props.data?.plan.title ?? "",
+      description: (props.data?.plan.description ?? "").slice(0, 120),
+      image: props.data?.plan.sampleImageUrls[0] ?? config.defaultOgpImageUrl,
+    },
+    props.params.lang,
+  )
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneMinute,
+})
+
+export default function RequestPlanPage() {
+  const { plan, users } = useLoaderData<typeof loader>()
+  const auth = useContext(AuthContext)
+  const creator = users[plan.userId]
+  const [imageIndex, setImageIndex] = useState(0)
+  const isOwner = auth.userId === plan.userId
+  const full =
+    plan.activeCount !== undefined && plan.activeCount >= plan.maxActive
+  const canRequest = plan.isAccepting && !full && !isOwner
+
+  const report = async () => {
+    const reason = window.prompt("通報の理由を書いてください")
+    if (!reason) return
+    try {
+      await requestsPost({ op: "report-plan", id: plan.id, reason })
+      toast.success("通報しました。運営が確認します")
+    } catch (error) {
+      toast.error(requestErrorMessage(error))
+    }
+  }
+
+  return (
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-3 pt-3 pb-40 md:px-6 md:pb-12">
+      <Link
+        to="/requests/plans"
+        className="flex w-fit items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
+      >
+        <ChevronLeft className="size-4" />
+        プラン一覧
+      </Link>
+      <div className="grid gap-6 md:grid-cols-[1.1fr_1fr]">
+        <div className="flex flex-col gap-2">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted">
+            {plan.sampleImageUrls[imageIndex] ? (
+              <img
+                src={plan.sampleImageUrls[imageIndex]}
+                alt=""
+                className="size-full object-contain"
+              />
+            ) : (
+              <div className="flex size-full items-center justify-center">
+                <Images className="size-10 text-muted-foreground opacity-40" />
+              </div>
+            )}
+          </div>
+          {plan.sampleImageUrls.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto">
+              {plan.sampleImageUrls.map((url, i) => (
+                <button
+                  key={url}
+                  type="button"
+                  onClick={() => setImageIndex(i)}
+                  className={cn(
+                    "size-16 shrink-0 overflow-hidden rounded-xl border-2",
+                    i === imageIndex
+                      ? "border-foreground"
+                      : "border-transparent opacity-70",
+                  )}
+                >
+                  <img src={url} alt="" className="size-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-muted px-3 py-1 font-bold text-xs">
+              {PLAN_CATEGORY_LABELS[plan.category] ?? plan.category}
+            </span>
+            {plan.allowsR18 && (
+              <span className="rounded-full bg-rose-500 px-2.5 py-1 font-bold text-white text-xs">
+                R18可
+              </span>
+            )}
+            {plan.status === "HIDDEN" && (
+              <span className="rounded-full bg-foreground px-2.5 py-1 font-bold text-background text-xs">
+                非公開
+              </span>
+            )}
+          </div>
+          <h1 className="font-bold text-xl leading-snug md:text-2xl">
+            {plan.title}
+          </h1>
+          <RequestUserChip user={creator} size="md" />
+          <CoinPrice coins={plan.priceCoins} className="text-3xl" />
+
+          <dl className="grid grid-cols-2 gap-2 text-sm">
+            <Spec
+              icon={<CalendarClock className="size-4" />}
+              label="納期"
+              value={`承諾から ${plan.deliveryDays} 日`}
+            />
+            <Spec
+              icon={<Images className="size-4" />}
+              label="枚数"
+              value={`${plan.imageCount} 枚`}
+            />
+            <Spec
+              icon={<RefreshCcw className="size-4" />}
+              label="修正"
+              value={`${plan.revisionCount} 回まで`}
+            />
+            <Spec
+              icon={<Users className="size-4" />}
+              label="受付"
+              value={
+                plan.isAccepting
+                  ? `${plan.activeCount ?? 0} / ${plan.maxActive} 件`
+                  : "停止中"
+              }
+            />
+          </dl>
+
+          <div className="hidden md:block">
+            <RequestActions
+              planId={plan.id}
+              canRequest={canRequest}
+              isOwner={isOwner}
+              full={full}
+              isAccepting={plan.isAccepting}
+            />
+          </div>
+
+          <section className="rounded-2xl bg-muted/50 p-4">
+            <h2 className="mb-2 font-bold text-sm">プランの内容</h2>
+            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
+              {plan.description}
+            </p>
+          </section>
+
+          <section className="flex flex-col gap-1.5 rounded-2xl border p-4 text-muted-foreground text-xs">
+            <p className="flex items-center gap-1.5 font-bold text-foreground text-sm">
+              <ShieldCheck className="size-4" />
+              安心のしくみ
+            </p>
+            <p>
+              ・コインは申し込みのときに預かり、取引が完了するまでクリエイターには渡りません。
+            </p>
+            <p>
+              ・お断り・3
+              日以内に返事がない・納期を過ぎたときは、コインが全額戻ります。
+            </p>
+            <p>・納品から 7 日たつと自動で受け取り完了になります。</p>
+            <Link to="/requests/terms" className="w-fit underline">
+              有料リクエスト規約
+            </Link>
+          </section>
+
+          {!isOwner && auth.isLoggedIn && (
+            <button
+              type="button"
+              onClick={report}
+              className="flex w-fit items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
+            >
+              <Flag className="size-3.5" />
+              このプランを通報
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-[var(--aip-tabbar-h,0px)] z-30 border-t bg-background/95 px-3 py-2.5 backdrop-blur-md md:hidden">
+        <div className="mx-auto flex max-w-lg items-center gap-3">
+          <CoinPrice coins={plan.priceCoins} className="text-xl" />
+          <div className="flex-1">
+            <RequestActions
+              planId={plan.id}
+              canRequest={canRequest}
+              isOwner={isOwner}
+              full={full}
+              isAccepting={plan.isAccepting}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Spec(props: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-2 rounded-xl border px-3 py-2">
+      <span className="text-muted-foreground">{props.icon}</span>
+      <div className="min-w-0">
+        <dt className="text-[11px] text-muted-foreground">{props.label}</dt>
+        <dd className="truncate font-bold">{props.value}</dd>
+      </div>
+    </div>
+  )
+}
+
+function RequestActions(props: {
+  planId: string
+  canRequest: boolean
+  isOwner: boolean
+  full: boolean
+  isAccepting: boolean
+}) {
+  if (props.isOwner) {
+    return (
+      <Button
+        asChild
+        variant="secondary"
+        className="h-12 w-full rounded-full font-bold"
+      >
+        <Link to={`/settings/requests?edit=${props.planId}`}>
+          <Pencil className="mr-1 size-4" />
+          プランを編集する
+        </Link>
+      </Button>
+    )
+  }
+  if (!props.canRequest) {
+    return (
+      <Button disabled className="h-12 w-full rounded-full font-bold">
+        {props.full ? "受付上限に達しています" : "受付停止中"}
+      </Button>
+    )
+  }
+  return (
+    <Button asChild className="h-12 w-full rounded-full font-bold text-base">
+      <Link to={`/requests/new?plan=${props.planId}`}>
+        このプランで依頼する
+      </Link>
+    </Button>
+  )
+}
