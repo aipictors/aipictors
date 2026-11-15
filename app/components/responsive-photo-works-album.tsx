@@ -1,5 +1,4 @@
 import { type FragmentOf, graphql } from "gql.tada"
-import { isR18Work } from "~/lib/is-r18-work"
 import { Heart, Images, MessageCircle } from "lucide-react"
 import { Fragment } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
@@ -13,6 +12,7 @@ import { useGridLayout } from "~/hooks/use-grid-layout"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
+import { isR18Work } from "~/lib/is-r18-work"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
 import {
@@ -480,6 +480,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
             hasReferenceButton={false}
             onSelect={props.onSelect}
             shouldMaskSensitiveWorks={props.shouldMaskSensitiveWorks}
+            renderItemOverlay={props.renderItemOverlay}
           />
         </div>
       )}

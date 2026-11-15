@@ -1,13 +1,14 @@
-import { Link } from "~/lib/app/locale-router"
-import { isR18Work } from "~/lib/is-r18-work"
 import type { FragmentOf } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { WorkPromotionMark } from "~/components/work/work-promotion"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
-import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { Link } from "~/lib/app/locale-router"
+import { isR18Work } from "~/lib/is-r18-work"
 import { cn } from "~/lib/utils"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import {
   splitMasonryColumns,
   toMasonryAspectRatio,
@@ -29,6 +30,8 @@ type Props = {
   isMobileOnly?: boolean
   /** スマホでアプリと同じ石垣状に並べる（正方形に切り抜かない） */
   isMasonry?: boolean
+  /** スマホの作品の画像の上に重ねるもの（おすすめの「興味なし」など。正方形の一覧と同じ） */
+  renderItemOverlay?: (workId: string) => React.ReactNode
 }
 
 const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) =>
@@ -96,7 +99,7 @@ export function HomeCroppedWorks(props: Props) {
       </div>
     )
     return (
-      <div key={work.id} className="relative w-full">
+      <div key={work.id} className="group/item relative w-full">
         {props.onSelect ? (
           <button
             type="button"
@@ -115,6 +118,10 @@ export function HomeCroppedWorks(props: Props) {
             {likeButton}
           </Link>
         )}
+        {work.isPromotion && (
+          <WorkPromotionMark className="absolute top-1.5 left-1.5 z-10" />
+        )}
+        {props.renderItemOverlay?.(work.id)}
         {work.user && props.isShowProfile && (
           <>
             <p className="mt-1.5 overflow-hidden text-ellipsis text-nowrap px-0.5 font-bold text-sm">
