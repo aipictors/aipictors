@@ -1113,46 +1113,28 @@ export const onRequest: PagesFunction = async (ctx) => {
     })
   }
 
-  let renderedContext: { token: string; script: string } | undefined
   /**
-   * データの保存が終わるまでリクエストの処理を終わらせない。
-   * データは HTML を送り終える瞬間に取り出すので、そこで waitUntil を呼んでも間に合わないことが多く、
-   * 保存されずに /__ctx でページを丸ごと描画し直していた。描画を始める前に待つものとして登録しておく
+   * 前の版の HTML（データを /__ctx に外していたもの）を KV から返すときに、そのデータをこの拠点に戻す。
+   * 今の版はデータを HTML に入れるので保存しない
    */
-  let onContextStored: (() => void) | undefined
-  const contextStored = new Promise<void>((resolve) => {
-    onContextStored = resolve
-  })
-  const storeContext = (token: string, script: string) => {
-    renderedContext = { token, script }
+  const restoreContext = (token: string, script: string) => {
     rememberContext(token, script)
-    const put = caches.default
-      .put(
-        new Request(toContextCacheUrl(token)),
-        new Response(script, {
-          headers: {
-            "Content-Type": "text/javascript; charset=utf-8",
-            // ページのキャッシュ（最大 1 日＋α）より長めに置く
-            "Cache-Control": "public, max-age=172800",
-          },
-        }),
-      )
-      .catch(() => undefined)
-    ctx.waitUntil(put)
-    put.finally(() => onContextStored?.())
-  }
-  /** データを外すページを描画するときだけ呼ぶ（HTML でない応答などで保存がないときは数秒で諦める） */
-  const waitForContextStored = () => {
     ctx.waitUntil(
-      Promise.race([
-        contextStored,
-        new Promise((resolve) => setTimeout(resolve, 5000)),
-      ]),
+      caches.default
+        .put(
+          new Request(toContextCacheUrl(token)),
+          new Response(script, {
+            headers: {
+              "Content-Type": "text/javascript; charset=utf-8",
+              "Cache-Control": "public, max-age=172800",
+            },
+          }),
+        )
+        .catch(() => undefined),
     )
   }
 
   const render = async () => {
-    if (shouldWaitForInteraction(requestUrl.pathname)) waitForContextStored()
     const rendered = await renderWithRetry()
     if (
       rendered.status >= 500 &&
@@ -1163,9 +1145,11 @@ export const onRequest: PagesFunction = async (ctx) => {
       return createTemporarilyUnavailablePage(requestUrl.pathname)
     }
     return inlineCriticalCss(
-      deferHydration(rendered, requestUrl.pathname, {
-        storeContext,
-      }),
+      // ローダーのデータは HTML に入れたままにする（/__ctx に外さない）。
+      // 外していたときは /__ctx が保存したデータを見つけられずにページを描き直すことが多く、
+      // 描き直したデータ（ランダムなタグの並び・数）が HTML と食い違って hydration をやり直していた（React #418/#425）。
+      // /__ctx の応答は、キャッシュに残っている古い HTML のために残す
+      deferHydration(rendered, requestUrl.pathname),
       (await loadCriticalCssSource()) as CriticalCssSource,
       { deferStylesheets: shouldWaitForInteraction(requestUrl.pathname) },
     )
@@ -1182,10 +1166,9 @@ export const onRequest: PagesFunction = async (ctx) => {
   }
 
   if (!ADMIN_HOSTNAMES.has(requestUrl.hostname)) {
-    // 全拠点共通の KV にはローダーのデータも一緒に置き、返す拠点に戻す
+    // 前の版が KV に一緒に置いたローダーのデータは、返す拠点に戻す（今の版は置かない）
     return edgePageCache.handle(ctx, render, {
-      get: () =>
-        renderedContext ? JSON.stringify(renderedContext) : undefined,
+      get: () => undefined,
       restore: (value) => {
         const context = JSON.parse(value) as {
           token?: unknown
@@ -1195,7 +1178,7 @@ export const onRequest: PagesFunction = async (ctx) => {
           typeof context.token === "string" &&
           typeof context.script === "string"
         ) {
-          storeContext(context.token, context.script)
+          restoreContext(context.token, context.script)
         }
       },
     })
