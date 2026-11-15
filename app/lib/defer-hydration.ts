@@ -33,17 +33,6 @@ export const shouldWaitForInteraction = (pathname: string): boolean =>
 /** HTML から外したローダーのデータ（Remix の streamController へ渡す script）を置く場所 */
 export const CONTEXT_PATH_PREFIX = "/__ctx/"
 
-/**
- * データを描画してから何ミリ秒たったか（描画した時刻をトークンの先頭に入れている）。分からなければ null
- */
-export const getContextTokenAgeMs = (token: string, now = Date.now()) => {
-  const dot = token.indexOf(".")
-  if (dot <= 0) return null
-  const renderedAt = Number.parseInt(token.slice(0, dot), 36)
-  if (!Number.isFinite(renderedAt)) return null
-  return now - renderedAt
-}
-
 /** HTML から外したデータを、この場で取り直すときのヘッダー（functions/[[path]].ts） */
 export const CONTEXT_ONLY_HEADER = "x-aipictors-context-only"
 
@@ -116,10 +105,7 @@ export const deferHydration = (
   let source = ""
   const extract =
     waitForInteraction && (options.storeContext || options.onContext)
-  // 先頭に描画した時刻を入れる（描画した直後に取りに来たときは、保存が終わるのを少し待つため。functions/[[path]].ts）
-  const contextToken = extract
-    ? `${Date.now().toString(36)}.${crypto.randomUUID()}`
-    : undefined
+  const contextToken = extract ? crypto.randomUUID() : undefined
   const contextScripts: string[] = []
   let inlineSource = ""
 

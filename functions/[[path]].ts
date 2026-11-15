@@ -8,7 +8,6 @@ import {
   CONTEXT_ONLY_PARAM,
   CONTEXT_PATH_PREFIX,
   deferHydration,
-  getContextTokenAgeMs,
   shouldWaitForInteraction,
 } from "../app/lib/defer-hydration"
 import {
@@ -187,9 +186,8 @@ const toContextCacheUrl = (token: string) =>
   `https://www.aipictors.com/__cache/remix-context/${encodeURIComponent(token)}`
 
 /**
- * 描画したばかりのローダーのデータを isolate にも置く。
- * データは HTML を送り終えてから Cache API に保存するので、ログイン中の人がすぐ取りに来ると
- * 保存が間に合わず、ページを丸ごと描画し直していた（/__ctx の半分ほど。描画し直すとデータが HTML と食い違うこともある）
+ * 描画したばかりのローダーのデータを isolate にも置く（同じ isolate に取りに来たときは Cache API を見ずに返す）。
+ * /__ctx の 4 割ほどが Cache API で見つからず、ページを丸ごと描画し直している（描画し直すとデータが HTML と食い違うこともある）
  */
 const recentContexts = new Map<string, string>()
 const RECENT_CONTEXT_LIMIT = 64
@@ -201,10 +199,6 @@ const rememberContext = (token: string, script: string) => {
     if (oldest !== undefined) recentContexts.delete(oldest)
   }
 }
-
-/** 描画した直後のデータが見つからないとき、保存を待つ間隔（合計 0.45 秒まで） */
-const CONTEXT_RETRY_DELAYS_MS = [150, 150, 150]
-const CONTEXT_RETRY_MAX_AGE_MS = 15_000
 
 const findContext = async (token: string): Promise<string | null> => {
   const remembered = recentContexts.get(token)
@@ -695,22 +689,9 @@ export const onRequest: PagesFunction = async (ctx) => {
   // HTML から外したローダーのデータ（app/lib/defer-hydration.ts）
   const earlyUrl = new URL(ctx.request.url)
   if (earlyUrl.pathname.startsWith(CONTEXT_PATH_PREFIX)) {
-    const token = earlyUrl.pathname.slice(CONTEXT_PATH_PREFIX.length)
-    let cached = await findContext(token)
-    // 描画した直後なら、保存が終わるのを少し待つ（待つ間は CPU を使わない）
-    const ageMs = getContextTokenAgeMs(token)
-    if (
-      cached === null &&
-      ageMs !== null &&
-      ageMs >= 0 &&
-      ageMs < CONTEXT_RETRY_MAX_AGE_MS
-    ) {
-      for (const delay of CONTEXT_RETRY_DELAYS_MS) {
-        await new Promise((resolve) => setTimeout(resolve, delay))
-        cached = await findContext(token)
-        if (cached !== null) break
-      }
-    }
+    const cached = await findContext(
+      earlyUrl.pathname.slice(CONTEXT_PATH_PREFIX.length),
+    )
     const contextHeaders = {
       "Content-Type": "text/javascript; charset=utf-8",
       // 配信のキャッシュに置いて、別の拠点でも描画し直さない
