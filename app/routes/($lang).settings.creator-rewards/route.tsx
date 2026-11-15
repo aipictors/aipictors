@@ -26,7 +26,7 @@ export default function SettingsCreatorRewardsPage() {
   return (
     <div className="mx-auto w-full min-w-0 max-w-3xl space-y-4">
       <div className="block md:hidden">
-        <SettingsHeader title={t("クリエイター報酬", "Creator Rewards")} />
+        <SettingsHeader title={t("収益の受け取り", "Rewards payout")} />
       </div>
       <CreatorRewardsPage />
     </div>

@@ -573,7 +573,7 @@ function CreatorRewardsCard(props: ReturnType<typeof useCreatorRewardSummary>) {
     ? {
         title: t("推しの応援を、円で受け取れます", "Receive support as cash"),
         body: t(
-          "全年齢の作品が有料のプレミアムコインで推されると、1,000 コインにつき 500 円を銀行口座へ振り込みます。参加は無料です。",
+          "ファンが買ったコインで作品を推してもらうと、1,000 コインにつき 500 円があなたの口座に振り込まれます。参加は無料です。",
           "Get ¥500 per 1,000 purchased Premium Coins supported on your all-ages works, paid to your bank. Joining is free.",
         ),
         action: t("参加する", "Join"),
@@ -585,8 +585,8 @@ function CreatorRewardsCard(props: ReturnType<typeof useCreatorRewardSummary>) {
             "Register a bank account to get paid",
           ),
           body: t(
-            "Stripe で口座と本人確認を登録すると、締めの日に振り込まれます。",
-            "Register your bank account and identity with Stripe to be paid on each closing day.",
+            "お金を受け取る銀行口座を登録すると、毎月決まった日に自動で振り込まれます。",
+            "Add your bank account to get paid automatically on set days each month.",
           ),
           action: t("口座を登録する", "Register account"),
         }

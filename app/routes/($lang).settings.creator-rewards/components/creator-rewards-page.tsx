@@ -1,6 +1,18 @@
 import { Link, useSearchParams } from "@remix-run/react"
 import { getAuth, getIdToken } from "firebase/auth"
-import { ExternalLinkIcon, Loader2Icon } from "lucide-react"
+import {
+  ArrowRightIcon,
+  BanknoteIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ExternalLinkIcon,
+  IdCardIcon,
+  LandmarkIcon,
+  Loader2Icon,
+  ShieldCheckIcon,
+  SmartphoneIcon,
+} from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Alert, AlertDescription } from "~/components/ui/alert"
@@ -8,6 +20,7 @@ import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
+import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { AuthContext } from "~/contexts/auth-context"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
@@ -19,6 +32,7 @@ import {
   formatCloseDays,
   formatYen,
 } from "~/lib/creator-rewards"
+import { cn } from "~/lib/utils"
 
 const formatDate = (sec: number | null | undefined) =>
   sec
@@ -37,7 +51,7 @@ const authHeaders = async () => {
 }
 
 /**
- * クリエイター報酬（推しの換金）: 参加・明細・Stripe の口座登録
+ * クリエイター報酬（推しの換金）: しくみ・3 ステップ（参加 → 口座の登録 → 自動で振込）・明細。専門用語を使わず、Stripe の名前は安全の説明だけに出す
  */
 export function CreatorRewardsPage() {
   const t = useTranslation()
@@ -98,7 +112,10 @@ export function CreatorRewardsPage() {
                 "口座の登録は準備中です。報酬の記録は続いています",
                 "Bank registration is not open yet. Rewards are still recorded",
               )
-            : t("うまくいきませんでした", "Something went wrong"),
+            : t(
+                "うまくいきませんでした。時間をおいてもう一度押してください。続くときはお問い合わせからご連絡ください",
+                "Something went wrong. Please try again later, or contact us if it keeps happening",
+              ),
       )
     } finally {
       setBusy(null)
@@ -107,7 +124,7 @@ export function CreatorRewardsPage() {
 
   useEffect(() => {
     if (authContext.isLoading || authContext.isNotLoggedIn) return
-    // Stripe の画面から戻ってきたときは口座の状態を取り直す
+    // 口座の登録画面（Stripe）から戻ってきたときは口座の状態を取り直す
     if (searchParams.get("stripe") === "return") {
       post("refresh")
     } else {
@@ -146,221 +163,351 @@ export function CreatorRewardsPage() {
   const c = summary.config
   const yenPer1000 = c.rateMilliyen // 1 枚あたりのミリ円 = 1,000 枚あたりの円
   const profile = summary.profile
+  const closeDaysText = formatCloseDays(c)
+  // いまどこまで進んでいるか（1: 参加する → 2: 振込先を登録する → 3: あとは待つだけ）
+  const step = !summary.joined ? 1 : profile?.payoutReady ? 3 : 2
+  const needsMore = !!profile?.requirements?.disabledReason
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("クリエイター報酬", "Creator Rewards")}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm leading-7">
-          <p>
-            {t(
-              `全年齢（一般・R15）の作品が、有料で購入されたプレミアムコインで推されると、1,000 コインにつき ${yenPer1000} 円の報酬が記録され、銀行口座へ振り込まれます（Stripe を利用）。`,
-              `When your all-ages (G / R15) works are supported with purchased Premium Coins, you earn ¥${yenPer1000} per 1,000 coins, paid to your bank account via Stripe.`,
-            )}
-          </p>
-          <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-            <li>
-              {t(
-                "R18・R18G の作品への推し、無料コイン・おまけのコインは対象外です（今までどおりコインで受け取ります）",
-                "Supports on R18 / R18G works, free coins and bonus coins are not eligible (received as coins as before)",
-              )}
-            </li>
-            <li>
-              {t(
-                `推されてから ${c.holdDays} 日たつと換金できるようになり、毎月 ${formatCloseDays(c)} 日に締めて振り込みます`,
-                `Rewards become available ${c.holdDays} days after the support and are paid on the ${(c.closeDays ?? [c.closeDay]).map((d) => `${d}th`).join(" and ")} of each month`,
-              )}
-            </li>
-            <li>
-              {t(
-                `振込は ${formatYen(c.minYen)} から（未満は繰り越し）、1 か月 ${formatYen(c.maxYen)} まで。振込手数料 ${formatYen(c.feeYen)} を差し引きます`,
-                `Minimum payout ¥${c.minYen.toLocaleString()} (smaller amounts carry over), up to ¥${c.maxYen.toLocaleString()} per month. A ¥${c.feeYen} fee is deducted`,
-              )}
-            </li>
-            {c.newAccountMaxYen && c.newAccountDays && (
-              <li>
-                {t(
-                  `口座の登録（本人確認）から ${c.newAccountDays} 日のあいだは、1 回の振込は ${formatYen(c.newAccountMaxYen)} までです（超えた分は次回に繰り越し）`,
-                  `For the first ${c.newAccountDays} days after verification, each payout is up to ¥${c.newAccountMaxYen.toLocaleString()} (the rest carries over)`,
-                )}
-              </li>
-            )}
-            <li>
-              {t(
-                `個人の方は所得税の源泉徴収（${(c.withholdingPpm / 10000).toFixed(2)}%）を差し引いて当社が納めます`,
-                `For individuals, ${(c.withholdingPpm / 10000).toFixed(2)}% income tax is withheld and paid by us`,
-              )}
-            </li>
-          </ul>
-          <Link
-            to="/creator-rewards/terms"
-            className="text-blue-500 underline-offset-2 hover:underline"
-          >
-            {t("クリエイター報酬規約", "Creator Rewards Terms")}
-          </Link>
-        </CardContent>
-      </Card>
+      {/* しくみを一言で */}
+      <section className="overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-sky-500/5 to-transparent p-5">
+        <p className="inline-flex items-center gap-1.5 font-semibold text-emerald-700 text-xs dark:text-emerald-300">
+          <BanknoteIcon className="size-4" />
+          {t("収益の受け取り", "Rewards payout")}
+        </p>
+        <h2 className="mt-1 font-bold text-xl leading-snug">
+          {t(
+            "推してもらったコインが、お金になって振り込まれます",
+            "Support you receive turns into money in your bank",
+          )}
+        </h2>
+        <div className="mt-4 flex items-center justify-center gap-3 rounded-xl bg-background/80 p-4">
+          <div className="text-center">
+            <PremiumCoinIcon className="mx-auto size-8" />
+            <p className="mt-1 font-bold text-lg tabular-nums">1,000</p>
+            <p className="text-muted-foreground text-xs">
+              {t("買ったコインで推される", "purchased coins")}
+            </p>
+          </div>
+          <ArrowRightIcon className="size-6 shrink-0 text-muted-foreground" />
+          <div className="text-center">
+            <BanknoteIcon className="mx-auto size-8 text-emerald-600" />
+            <p className="mt-1 font-bold text-emerald-700 text-lg tabular-nums dark:text-emerald-300">
+              {formatYen(yenPer1000)}
+            </p>
+            <p className="text-muted-foreground text-xs">
+              {t("あなたの口座へ", "to your bank")}
+            </p>
+          </div>
+        </div>
+        <p className="mt-3 text-muted-foreground text-xs leading-5">
+          {t(
+            "対象は全年齢（一般・R15）の作品への推しで、ファンがお金を払って買ったコインの分です。無料でもらったコインやR18の作品への推しは、今までどおりコインで受け取ります。",
+            "Covers supports on all-ages (G / R15) works paid with coins fans bought. Free coins and supports on R18 works are received as coins as before.",
+          )}
+        </p>
+      </section>
 
       {!c.enabled && (
         <Alert>
           <AlertDescription>
             {t(
-              "クリエイター報酬はいま受け付けを止めています",
+              "いまは受け付けを止めています",
               "Creator rewards are currently paused",
             )}
           </AlertDescription>
         </Alert>
       )}
 
-      {(!summary.joined || profile?.needsNewTerms) && c.enabled && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
-              {profile?.needsNewTerms
-                ? t("規約が更新されました", "The terms have been updated")
-                : t("参加する", "Join")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <p className="text-muted-foreground">
-              {t(
-                "参加すると、参加したあとに受け取った対象の推しが報酬として記録されます（コインの残高には入りません）。報酬の受け取りは 18 歳以上の方に限ります。",
-                "After joining, eligible supports you receive are recorded as rewards (not added to your coin balance). You must be 18 or older.",
+      {/* 受け取れるお金 */}
+      {(summary.joined || summary.earnings.length > 0) && (
+        <section className="space-y-2">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+            <BalanceTile
+              label={t("確認期間中", "Checking")}
+              hint={t(`推されてから${c.holdDays}日`, `${c.holdDays} days`)}
+              value={summary.balances.holdingYen}
+            />
+            <BalanceTile
+              label={t("次の振込に入る", "Next payout")}
+              hint={t(
+                `${formatDate(summary.nextCloseAt)} に締め`,
+                `Closes ${formatDate(summary.nextCloseAt)}`,
               )}
-            </p>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="creator-rewards-agree"
-                checked={agreed}
-                onCheckedChange={(v) => setAgreed(v === true)}
-              />
-              <label htmlFor="creator-rewards-agree">
-                {t(
-                  "クリエイター報酬規約に同意します",
-                  "I agree to the Creator Rewards Terms",
-                )}
-              </label>
-            </div>
-            <Button
-              disabled={!agreed || busy !== null}
-              onClick={() => post("join")}
-            >
-              {busy === "join" && (
-                <Loader2Icon className="mr-1 size-4 animate-spin" />
-              )}
-              {profile?.needsNewTerms
-                ? t("同意して続ける", "Agree and continue")
-                : t("同意して参加する", "Agree and join")}
-            </Button>
-          </CardContent>
-        </Card>
+              value={summary.balances.availableYen}
+              accent
+            />
+            <BalanceTile
+              label={t("振込の準備中", "Processing")}
+              value={summary.balances.inPayoutYen}
+            />
+            <BalanceTile
+              label={t("これまでに振込", "Paid so far")}
+              value={summary.balances.paidYen}
+            />
+          </div>
+        </section>
       )}
 
-      {summary.joined && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
-              {t("振込先の口座", "Bank account")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            {profile?.payoutReady ? (
-              <>
-                <p>
-                  {t(
-                    "口座の登録が済んでいます。",
-                    "Your bank account is registered.",
-                  )}
-                  {profile.taxKind === "INDIVIDUAL" &&
-                    t("（個人：源泉徴収あり）", " (individual: tax withheld)")}
-                  {profile.taxKind === "CORPORATION" &&
-                    t(
-                      "（法人：源泉徴収なし）",
-                      " (corporation: no withholding)",
+      {/* 3 つのステップ */}
+      {c.enabled && (
+        <section className="rounded-2xl border bg-card p-4 md:p-5">
+          <h3 className="font-bold">
+            {t("受け取りまでの 3 ステップ", "3 steps to get paid")}
+          </h3>
+          <ol className="mt-4 space-y-4">
+            <StepItem
+              n={1}
+              state={step > 1 ? "done" : "current"}
+              title={t("参加する（無料）", "Join (free)")}
+            >
+              {step === 1 || profile?.needsNewTerms ? (
+                <div className="space-y-3">
+                  <p className="text-muted-foreground text-sm leading-6">
+                    {profile?.needsNewTerms
+                      ? t(
+                          "ルール（規約）が新しくなりました。確認して同意してください。",
+                          "The terms have been updated. Please review and agree.",
+                        )
+                      : t(
+                          "参加したあとにもらった推しから、お金として記録されます。18歳以上の方が対象です。",
+                          "Supports you receive after joining are recorded as money. You must be 18 or older.",
+                        )}
+                  </p>
+                  <label
+                    htmlFor="creator-rewards-agree"
+                    className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-sm"
+                  >
+                    <Checkbox
+                      id="creator-rewards-agree"
+                      className="mt-0.5"
+                      checked={agreed}
+                      onCheckedChange={(v) => setAgreed(v === true)}
+                    />
+                    <span>
+                      <Link
+                        to="/creator-rewards/terms"
+                        className="text-blue-500 underline underline-offset-2"
+                      >
+                        {t(
+                          "ルール（クリエイター報酬規約）",
+                          "the Creator Rewards Terms",
+                        )}
+                      </Link>
+                      {t(" を読んで同意します", "— I have read and agree")}
+                    </span>
+                  </label>
+                  <Button
+                    size="lg"
+                    className="w-full md:w-auto"
+                    disabled={!agreed || busy !== null}
+                    onClick={() => post("join")}
+                  >
+                    {busy === "join" && (
+                      <Loader2Icon className="mr-1 size-4 animate-spin" />
                     )}
+                    {profile?.needsNewTerms
+                      ? t("同意して続ける", "Agree and continue")
+                      : t("同意して参加する", "Agree and join")}
+                  </Button>
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  {t("参加しています", "You have joined")}
                 </p>
-                <Button
-                  variant="secondary"
-                  disabled={busy !== null}
-                  onClick={() => post("dashboard")}
-                >
-                  {t("口座・本人確認を変更（Stripe）", "Manage on Stripe")}
-                  <ExternalLinkIcon className="ml-1 size-4" />
-                </Button>
-              </>
-            ) : summary.onboardingAvailable ? (
-              <>
-                <p className="text-muted-foreground">
-                  {t(
-                    "振込には Stripe での本人確認と口座の登録が必要です。登録は Stripe の画面で行い、Aipictors は口座番号を保存しません。",
-                    "Payouts require identity verification and bank registration on Stripe. Aipictors does not store your bank details.",
-                  )}
-                </p>
-                {profile?.requirements?.disabledReason && (
-                  <p className="text-destructive">
+              )}
+            </StepItem>
+
+            <StepItem
+              n={2}
+              state={step > 2 ? "done" : step === 2 ? "current" : "todo"}
+              title={t(
+                "お金を受け取る口座を登録する",
+                "Add the bank account to receive money",
+              )}
+            >
+              {step === 3 ? (
+                <div className="space-y-2">
+                  <p className="text-muted-foreground text-sm">
+                    {t("登録が済んでいます", "Your bank account is registered")}
+                    {profile?.taxKind === "INDIVIDUAL" &&
+                      t("（個人）", " (individual)")}
+                    {profile?.taxKind === "CORPORATION" &&
+                      t("（法人）", " (company)")}
+                  </p>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={busy !== null}
+                    onClick={() => post("dashboard")}
+                  >
                     {t(
-                      "Stripe で追加の情報が必要です",
-                      "Stripe needs more information",
+                      "口座や登録内容を変える",
+                      "Change bank account or details",
+                    )}
+                    <ExternalLinkIcon className="ml-1 size-4" />
+                  </Button>
+                </div>
+              ) : step === 2 && summary.onboardingAvailable ? (
+                <div className="space-y-3">
+                  {needsMore && (
+                    <Alert variant="destructive">
+                      <AlertDescription>
+                        {t(
+                          "登録の途中です。下のボタンから続きを入力してください。",
+                          "Registration isn't finished. Continue with the button below.",
+                        )}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  <p className="text-muted-foreground text-sm leading-6">
+                    {t(
+                      "ボタンを押すと入力の画面に進みます。5〜10分ほどで終わります。",
+                      "The button opens a form. It takes about 5–10 minutes.",
                     )}
                   </p>
-                )}
-                <Button
-                  disabled={busy !== null}
-                  onClick={() => post("onboarding")}
-                >
-                  {busy === "onboarding" && (
-                    <Loader2Icon className="mr-1 size-4 animate-spin" />
+                  <div className="rounded-lg bg-muted/50 p-3 text-sm">
+                    <p className="font-semibold">
+                      {t("用意するもの", "What you need")}
+                    </p>
+                    <ul className="mt-2 space-y-1.5">
+                      <NeedItem icon={SmartphoneIcon}>
+                        {t(
+                          "スマホ（電話番号に確認のメッセージが届きます）",
+                          "Your phone (for a text message code)",
+                        )}
+                      </NeedItem>
+                      <NeedItem icon={LandmarkIcon}>
+                        {t(
+                          "銀行口座（通帳かキャッシュカードがあると安心）",
+                          "Your bank account details",
+                        )}
+                      </NeedItem>
+                      <NeedItem icon={IdCardIcon}>
+                        {t(
+                          "本人確認の書類（運転免許証・マイナンバーカードなど）",
+                          "ID (driver's license, My Number card, etc.)",
+                        )}
+                      </NeedItem>
+                    </ul>
+                  </div>
+                  <Button
+                    size="lg"
+                    className="w-full md:w-auto"
+                    disabled={busy !== null}
+                    onClick={() => post("onboarding")}
+                  >
+                    {busy === "onboarding" && (
+                      <Loader2Icon className="mr-1 size-4 animate-spin" />
+                    )}
+                    {profile?.hasAccount
+                      ? t("口座の登録を続ける", "Continue registration")
+                      : t("口座を登録する", "Add bank account")}
+                    <ChevronRightIcon className="ml-1 size-4" />
+                  </Button>
+                  <p className="flex items-start gap-1.5 text-muted-foreground text-xs leading-5">
+                    <ShieldCheckIcon className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+                    {t(
+                      "入力の画面は、世界中で使われている送金サービス「Stripe（ストライプ）」の安全なページです。英語のロゴが出ても大丈夫です。口座番号は Aipictors には保存されません。",
+                      "The form is a secure page by Stripe, a payment service used worldwide. Aipictors never stores your bank number.",
+                    )}
+                  </p>
+                </div>
+              ) : step === 2 ? (
+                <p className="text-muted-foreground text-sm leading-6">
+                  {t(
+                    "口座の登録はもうすぐ始まります。それまでの分もきちんと記録され、登録したあとに振り込まれます。",
+                    "Bank registration opens soon. Rewards until then are recorded and paid after you register.",
                   )}
-                  {profile?.hasAccount
-                    ? t("Stripe で登録を続ける", "Continue on Stripe")
-                    : t("Stripe で口座を登録する", "Register on Stripe")}
-                  <ExternalLinkIcon className="ml-1 size-4" />
-                </Button>
-              </>
-            ) : (
-              <p className="text-muted-foreground">
+                </p>
+              ) : null}
+            </StepItem>
+
+            <StepItem
+              n={3}
+              state={step === 3 ? "current" : "todo"}
+              title={t("あとは待つだけ", "Then just wait")}
+            >
+              <p className="text-muted-foreground text-sm leading-6">
                 {t(
-                  "口座の登録は準備中です。開始したらお知らせします。それまでの報酬も記録され、登録後に振り込まれます。",
-                  "Bank registration is coming soon. Rewards earned until then are recorded and will be paid after you register.",
+                  `毎月 ${closeDaysText} 日にまとめて、自動で口座に振り込みます。手続きはいりません。`,
+                  `Paid automatically on day ${(c.closeDays ?? [c.closeDay]).join(" and ")} of each month. Nothing else to do.`,
                 )}
               </p>
-            )}
-          </CardContent>
-        </Card>
+            </StepItem>
+          </ol>
+        </section>
       )}
 
       {(summary.joined || summary.earnings.length > 0) && (
         <>
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-            <BalanceTile
-              label={t("保留中", "On hold")}
-              value={summary.balances.holdingYen}
-            />
-            <BalanceTile
-              label={t("換金できる", "Available")}
-              value={summary.balances.availableYen}
-            />
-            <BalanceTile
-              label={t("振込の手続き中", "Processing")}
-              value={summary.balances.inPayoutYen}
-            />
-            <BalanceTile
-              label={t("振込済み", "Paid")}
-              value={summary.balances.paidYen}
-            />
-          </div>
-          <p className="text-muted-foreground text-xs">
-            {t(
-              `次の締め: ${formatDate(summary.nextCloseAt)}（その日までに保留が明けた分）`,
-              `Next closing: ${formatDate(summary.nextCloseAt)}`,
-            )}
-          </p>
           <PayoutList payouts={summary.payouts} />
           <EarningList earnings={summary.earnings} />
         </>
       )}
+
+      {/* くわしい条件（たたんでおく） */}
+      <details className="group rounded-2xl border bg-card p-4 text-sm">
+        <summary className="flex cursor-pointer list-none items-center justify-between font-semibold">
+          {t("くわしい条件・よくある質問", "Details & FAQ")}
+          <ChevronDownIcon className="size-4 transition-transform group-open:rotate-180" />
+        </summary>
+        <dl className="mt-3 space-y-3 leading-6">
+          <FaqItem q={t("いつ振り込まれますか？", "When am I paid?")}>
+            {t(
+              `推されてから ${c.holdDays} 日の確認期間のあと、毎月 ${closeDaysText} 日にまとめて振り込みます。`,
+              `After a ${c.holdDays}-day check period, on day ${(c.closeDays ?? [c.closeDay]).join(" and ")} of each month.`,
+            )}
+          </FaqItem>
+          <FaqItem q={t("いくらから振り込まれますか？", "Is there a minimum?")}>
+            {t(
+              `${formatYen(c.minYen)} 以上たまったら振り込みます（それまでは次回に持ち越し）。1か月 ${formatYen(c.maxYen)} までです。`,
+              `Paid once you have ¥${c.minYen.toLocaleString()} or more (otherwise carried over). Up to ¥${c.maxYen.toLocaleString()} per month.`,
+            )}
+            {c.newAccountMaxYen && c.newAccountDays
+              ? t(
+                  `口座を登録してから ${c.newAccountDays} 日のあいだは、1回 ${formatYen(c.newAccountMaxYen)} までです。`,
+                  ` For the first ${c.newAccountDays} days after registering, up to ¥${c.newAccountMaxYen.toLocaleString()} per payout.`,
+                )
+              : ""}
+          </FaqItem>
+          <FaqItem
+            q={t("差し引かれるお金はありますか？", "Are there deductions?")}
+          >
+            {t(
+              `振込のたびに手数料 ${formatYen(c.feeYen)} がかかります。個人の方は、法律で決まった所得税（${(c.withholdingPpm / 10000).toFixed(2)}%）を差し引き、Aipictors が代わりに国へ納めます（源泉徴収）。`,
+              `A ¥${c.feeYen} fee per payout. For individuals, ${(c.withholdingPpm / 10000).toFixed(2)}% income tax is withheld and paid to the government by us.`,
+            )}
+          </FaqItem>
+          <FaqItem q={t("口座の情報は安全ですか？", "Is my bank info safe?")}>
+            {t(
+              "口座や本人確認の情報は、世界中のネットショップで使われている送金サービス Stripe が管理します。Aipictors は口座番号を保存しません。",
+              "Your bank and ID details are kept by Stripe, a payment service used by online shops worldwide. Aipictors never stores your bank number.",
+            )}
+          </FaqItem>
+          <FaqItem
+            q={t(
+              "コインの残高はどうなりますか？",
+              "What about my coin balance?",
+            )}
+          >
+            {t(
+              "お金として記録された分は、コインの残高には入りません。対象外の推しは、今までどおりコインで受け取ります。",
+              "Amounts recorded as money are not added to your coins. Other supports are received as coins as before.",
+            )}
+          </FaqItem>
+        </dl>
+        <Link
+          to="/creator-rewards/terms"
+          className="mt-3 inline-block text-blue-500 underline-offset-2 hover:underline"
+        >
+          {t(
+            "クリエイター報酬規約（ルールの全文）",
+            "Creator Rewards Terms (full text)",
+          )}
+        </Link>
+      </details>
 
       {summary.joined && (
         <div className="text-right">
@@ -372,7 +519,7 @@ export function CreatorRewardsPage() {
               if (
                 window.confirm(
                   t(
-                    "参加をやめると、これからの推しはコインで受け取ります。記録済みの報酬はそのまま振り込まれます。やめますか？",
+                    "参加をやめると、これからの推しはコインで受け取ります。記録済みのお金はそのまま振り込まれます。やめますか？",
                     "After leaving, future supports are received as coins. Recorded rewards are still paid. Leave?",
                   ),
                 )
@@ -389,11 +536,82 @@ export function CreatorRewardsPage() {
   )
 }
 
-function BalanceTile(props: { label: string; value: number }) {
+function StepItem(props: {
+  n: number
+  state: "done" | "current" | "todo"
+  title: string
+  children?: React.ReactNode
+}) {
   return (
-    <div className="rounded-md border p-3">
+    <li className="flex gap-3">
+      <span
+        className={cn(
+          "flex size-8 shrink-0 items-center justify-center rounded-full font-bold text-sm",
+          props.state === "done" && "bg-emerald-600 text-white",
+          props.state === "current" &&
+            "bg-primary text-primary-foreground ring-4 ring-primary/20",
+          props.state === "todo" && "bg-muted text-muted-foreground",
+        )}
+      >
+        {props.state === "done" ? <CheckIcon className="size-4" /> : props.n}
+      </span>
+      <div className="min-w-0 flex-1 space-y-2 pt-1">
+        <p
+          className={cn(
+            "font-semibold",
+            props.state === "todo" && "text-muted-foreground",
+          )}
+        >
+          {props.title}
+        </p>
+        {props.state !== "todo" && props.children}
+      </div>
+    </li>
+  )
+}
+
+function NeedItem(props: {
+  icon: React.ComponentType<{ className?: string }>
+  children: React.ReactNode
+}) {
+  const Icon = props.icon
+  return (
+    <li className="flex items-start gap-2">
+      <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+      <span>{props.children}</span>
+    </li>
+  )
+}
+
+function FaqItem(props: { q: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <dt className="font-semibold">{props.q}</dt>
+      <dd className="text-muted-foreground">{props.children}</dd>
+    </div>
+  )
+}
+
+function BalanceTile(props: {
+  label: string
+  value: number
+  hint?: string
+  accent?: boolean
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-xl border p-3",
+        props.accent && "border-emerald-500/40 bg-emerald-500/5",
+      )}
+    >
       <div className="text-muted-foreground text-xs">{props.label}</div>
-      <div className="font-bold text-lg">{formatYen(props.value)}</div>
+      <div className="font-bold text-lg tabular-nums">
+        {formatYen(props.value)}
+      </div>
+      {props.hint && (
+        <div className="text-[11px] text-muted-foreground">{props.hint}</div>
+      )}
     </div>
   )
 }
@@ -412,7 +630,9 @@ function PayoutList(props: { payouts: CreatorRewardPayout[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{t("振込", "Payouts")}</CardTitle>
+        <CardTitle className="text-base">
+          {t("振込の記録", "Payouts")}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         {props.payouts.map((p) => (
@@ -424,7 +644,7 @@ function PayoutList(props: { payouts: CreatorRewardPayout[] }) {
             <div className="grid grid-cols-2 text-muted-foreground text-xs">
               <span>{t("報酬", "Rewards")}</span>
               <span className="text-right">{formatYen(p.grossYen)}</span>
-              <span>{t("源泉徴収", "Withholding tax")}</span>
+              <span>{t("所得税（源泉徴収）", "Withholding tax")}</span>
               <span className="text-right">-{formatYen(p.withholdingYen)}</span>
               <span>{t("振込手数料", "Fee")}</span>
               <span className="text-right">-{formatYen(p.feeYen)}</span>
@@ -450,16 +670,18 @@ function PayoutList(props: { payouts: CreatorRewardPayout[] }) {
 function EarningList(props: { earnings: CreatorRewardEarning[] }) {
   const t = useTranslation()
   const label: Record<CreatorRewardEarning["status"], string> = {
-    HOLDING: t("保留中", "On hold"),
-    HELD: t("換金できる", "Available"),
-    IN_PAYOUT: t("手続き中", "Processing"),
+    HOLDING: t("確認期間中", "Checking"),
+    HELD: t("次の振込に入る", "Next payout"),
+    IN_PAYOUT: t("振込の準備中", "Processing"),
     PAID: t("振込済み", "Paid"),
     REVERSED: t("取り消し", "Reversed"),
   }
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{t("明細", "History")}</CardTitle>
+        <CardTitle className="text-base">
+          {t("もらった推しの明細", "Rewards history")}
+        </CardTitle>
       </CardHeader>
       <CardContent className="text-sm">
         {props.earnings.length === 0 ? (
@@ -492,7 +714,7 @@ function EarningList(props: { earnings: CreatorRewardEarning[] }) {
                     {formatDate(e.createdAt)}
                     {e.status === "HOLDING" &&
                       t(
-                        ` ・ ${formatDate(e.availableAt)} から換金できます`,
+                        ` ・ ${formatDate(e.availableAt)} に確認期間が終わります`,
                         ` · available from ${formatDate(e.availableAt)}`,
                       )}
                     {e.expectedCloseAt &&
