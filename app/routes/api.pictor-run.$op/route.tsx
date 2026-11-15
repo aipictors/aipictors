@@ -269,7 +269,10 @@ export async function action({
 
   if (op === "ranking") {
     return call("scores/ranking", {
-      period: input.period === "week" ? "week" : "all",
+      period:
+        input.period === "week" || input.period === "total"
+          ? input.period
+          : "all",
       userId: viewer?.userId ?? null,
     })
   }

@@ -33,10 +33,18 @@ export type PictorRunMessage = {
   createdAt: number
 }
 
-export type PictorRunRankingPeriod = "week" | "all"
+/** week = 今週の最高・all = 自己ベスト・total = 累計（全部の回の得点の合計） */
+export type PictorRunRankingPeriod = "week" | "all" | "total"
 
 export type PictorRunRanking = {
-  items: { rank: number; user: PictorRunUser; score: number; coins: number }[]
+  items: {
+    rank: number
+    user: PictorRunUser
+    score: number
+    coins: number
+    /** total のときだけ: 遊んだ回数 */
+    plays?: number
+  }[]
   me: { rank: number; score: number } | null
 }
 

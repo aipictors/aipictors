@@ -11,6 +11,7 @@ import {
   type CanvasTexture,
   CircleGeometry,
   Color,
+  ConeGeometry,
   CylinderGeometry,
   DirectionalLight,
   DoubleSide,
@@ -18,6 +19,7 @@ import {
   HalfFloatType,
   LoopOnce,
   type Material,
+  Matrix4,
   Mesh,
   MeshBasicMaterial,
   MeshLambertMaterial,
@@ -42,14 +44,12 @@ import {
   type Texture,
   TextureLoader,
   TorusGeometry,
+  Uint8BufferAttribute,
   Vector2,
   Vector3,
+  Vector4,
   WebGLRenderer,
   WebGLRenderTarget,
-  ConeGeometry,
-  Matrix4,
-  Uint8BufferAttribute,
-  Vector4,
 } from "three"
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
@@ -60,14 +60,14 @@ import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js"
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js"
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js"
 import {
-  PICTOR_RUN_LOBBY_EMOTE,
-  PICTOR_RUN_LOBBY_START,
-} from "~/components/pictor-run/pictor-run-lobby"
-import {
   createPictorRunAudio,
   type PictorRunSound,
   type PictorRunSoundName,
 } from "~/components/pictor-run/pictor-run-audio.client"
+import {
+  PICTOR_RUN_LOBBY_EMOTE,
+  PICTOR_RUN_LOBBY_START,
+} from "~/components/pictor-run/pictor-run-lobby"
 import {
   canvasTexture,
   createPictorRunStage,
@@ -119,7 +119,13 @@ export type PictorRunCallbacks = {
 export type PictorRunLobbyAction = "start" | "ranking" | "chat" | "shop"
 
 /** ロビーのランキングボードに出す 1 行 */
-export type PictorRunBoardRow = { rank: number; name: string; score: number }
+/** iconUrl は CORS の付いた画像だけ（読めなければ灰色の丸） */
+export type PictorRunBoardRow = {
+  rank: number
+  name: string
+  score: number
+  iconUrl?: string | null
+}
 
 /** ロビーに出すほかの人（playing = いま走っている人。薄い姿でうしろに立つ） */
 export type PictorRunPeer = {
@@ -1973,11 +1979,29 @@ export async function createPictorRunGame(
   const BOARD_W = 560
   const BOARD_H = 470
   const rankingBoardTexture = track(canvasTexture(BOARD_W, BOARD_H, () => {}))
+  /** ボードのアイコン（同じ URL は 1 回だけ読む。読めたら描き直す） */
+  const boardIcons = new Map<string, HTMLImageElement | null>()
+  let boardContent: [string, string, PictorRunBoardRow[]] | null = null
+  const boardIcon = (url: string | null | undefined) => {
+    if (!url) return null
+    if (boardIcons.has(url)) return boardIcons.get(url) ?? null
+    boardIcons.set(url, null)
+    const image = new Image()
+    image.crossOrigin = "anonymous"
+    image.onload = () => {
+      if (disposed) return
+      boardIcons.set(url, image)
+      if (boardContent) drawRankingBoard(...boardContent)
+    }
+    image.src = url
+    return null
+  }
   const drawRankingBoard = (
     title: string,
     empty: string,
     rows: PictorRunBoardRow[],
   ) => {
+    boardContent = [title, empty, rows]
     const ctx = (rankingBoardTexture.image as HTMLCanvasElement).getContext(
       "2d",
     )
@@ -2012,17 +2036,30 @@ export async function createPictorRunGame(
       ctx.font = "900 34px system-ui, sans-serif"
       ctx.fillStyle = ["#d99a00", "#8a94a8", "#b0703a"][index] ?? "#3a4468"
       ctx.fillText(["🥇", "🥈", "🥉"][index] ?? String(row.rank), 70, y + 2)
+      // アイコン（丸く切り抜く）
+      const icon = boardIcon(row.iconUrl)
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(130, y + 1, 22, 0, Math.PI * 2)
+      ctx.closePath()
+      ctx.fillStyle = "#d5dae6"
+      ctx.fill()
+      if (icon) {
+        ctx.clip()
+        ctx.drawImage(icon, 108, y - 21, 44, 44)
+      }
+      ctx.restore()
       ctx.textAlign = "left"
       ctx.fillStyle = "#1c2340"
       ctx.font = "800 30px system-ui, sans-serif"
       let name = row.name
-      while (name.length > 1 && ctx.measureText(name).width > 280) {
+      while (name.length > 1 && ctx.measureText(name).width > 200) {
         name = `${name.slice(0, -2)}…`
       }
-      ctx.fillText(name, 112, y + 2)
+      ctx.fillText(name, 164, y + 2)
       ctx.textAlign = "right"
       ctx.font = "900 30px system-ui, sans-serif"
-      ctx.fillText(`${row.score} m`, BOARD_W - 44, y + 2)
+      ctx.fillText(`${row.score.toLocaleString()} m`, BOARD_W - 44, y + 2, 140)
     })
     rankingBoardTexture.needsUpdate = true
   }

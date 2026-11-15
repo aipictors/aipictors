@@ -25,12 +25,14 @@ import {
   fetchPictorRunRanking,
   type PictorRunArtwork,
   type PictorRunMessage,
+  type PictorRunRanking,
   submitPictorRunScore,
 } from "~/components/pictor-run/pictor-run-api"
 import { PictorRunArtworks } from "~/components/pictor-run/pictor-run-artworks"
 import type { PictorRunSound } from "~/components/pictor-run/pictor-run-audio.client"
 import { PictorRunChatPanel } from "~/components/pictor-run/pictor-run-chat"
 import type {
+  PictorRunBoardRow,
   PictorRunCallbacks,
   PictorRunGame,
   PictorRunItems,
@@ -42,9 +44,9 @@ import {
   PICTOR_RUN_LOBBY_EMOTE,
   PICTOR_RUN_LOBBY_EMOTES,
   PICTOR_RUN_LOBBY_STAMPS,
+  PICTOR_RUN_LOBBY_START,
   PICTOR_RUN_LOBBY_STATUS_MAX_LENGTH,
   PICTOR_RUN_LOBBY_STATUSES,
-  PICTOR_RUN_LOBBY_START,
   type PictorRunLobbyConnection,
 } from "~/components/pictor-run/pictor-run-lobby"
 import { PictorRunRankingPanel } from "~/components/pictor-run/pictor-run-ranking"
@@ -615,38 +617,70 @@ export default function PictorRunOverlay(props: Props): React.ReactNode {
     }
   }, [submit, lite])
 
-  // 今週の記録の看板（記録を送ったあとは、取り直して立て直す）
+  // 今週の記録の看板（記録を送ったあとは、取り直して立て直す）。
+  // ロビーのランキングボードは「今週」と「累計」を 8 秒ごとに切り替えて出す
   const isGameReady = phase !== "loading" && phase !== "failed"
   useEffect(() => {
     if (!isGameReady) return
     let cancelled = false
+    type Board = [string, string, PictorRunBoardRow[]]
+    const toRows = (items: PictorRunRanking["items"]): PictorRunBoardRow[] =>
+      items.slice(0, 5).map((item) => ({
+        rank: item.rank,
+        name: item.user.name,
+        score: item.score,
+        iconUrl: toSignIconUrl(item.user.iconUrl),
+      }))
+    const boards: (Board | null)[] = [null, null]
+    let shown = 0
+    const showBoard = () => {
+      const board = boards[shown] ?? boards[1 - shown]
+      if (board) gameRef.current?.setRankingBoard(...board)
+    }
+    const week = t("🏆 今週のランキング", "🏆 This week's ranking")
+    const total = t("👑 累計ランキング", "👑 Total ranking")
     fetchPictorRunRanking("week")
       .then((ranking) => {
         if (cancelled) return
         gameRef.current?.setMarkers(
           toMarkers(ranking.items, viewerIdRef.current),
         )
-        gameRef.current?.setRankingBoard(
-          t("🏆 今週のランキング", "🏆 This week's ranking"),
+        boards[0] = [
+          week,
           t("まだ記録がありません", "No records yet"),
-          ranking.items.slice(0, 5).map((item) => ({
-            rank: item.rank,
-            name: item.user.name,
-            score: item.score,
-          })),
-        )
+          toRows(ranking.items),
+        ]
+        showBoard()
       })
       .catch(() => {
         // 看板が立たなくても遊べる
         if (cancelled) return
-        gameRef.current?.setRankingBoard(
-          t("🏆 今週のランキング", "🏆 This week's ranking"),
+        boards[0] = [
+          week,
           t("いまは読み込めません", "Could not load right now"),
           [],
-        )
+        ]
+        showBoard()
       })
+    fetchPictorRunRanking("total")
+      .then((ranking) => {
+        if (cancelled) return
+        boards[1] = [
+          total,
+          t("まだ記録がありません", "No records yet"),
+          toRows(ranking.items),
+        ]
+        showBoard()
+      })
+      .catch(() => {})
+    const timer = window.setInterval(() => {
+      if (!boards[1 - shown]) return
+      shown = 1 - shown
+      showBoard()
+    }, 8000)
     return () => {
       cancelled = true
+      window.clearInterval(timer)
     }
   }, [isGameReady, rankingKey])
 
