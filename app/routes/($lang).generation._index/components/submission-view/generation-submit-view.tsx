@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
-import { useNavigate } from "~/lib/app/locale-router"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean, useMediaQuery } from "usehooks-ts"
@@ -8,19 +7,20 @@ import { AppFixedContent } from "~/components/app/app-fixed-content"
 import { VerificationDialog } from "~/components/verification-dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useIpAddress } from "~/hooks/use-ip-address"
+import { useNavigate } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
 import { GenerationCoinShortageDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-coin-shortage-dialog"
+import { GenerationGeminiAllowanceNotice } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-allowance-notice"
+import { GenerationGeminiLimitDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-limit-dialog"
 import {
   GenerationNoticeBanner,
   GenerationNoticeDialog,
   useGenerationMaintenance,
 } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
-import { GenerationGeminiAllowanceNotice } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-allowance-notice"
-import { GenerationGeminiLimitDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-limit-dialog"
-import { useGeminiAllowance } from "~/routes/($lang).generation._index/hooks/use-gemini-allowance"
 import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
+import { useGeminiAllowance } from "~/routes/($lang).generation._index/hooks/use-gemini-allowance"
 import {
   useGenerationCoinSummary,
   useGenerationCoinSummaryRefresh,
@@ -44,9 +44,9 @@ import { findGenerationSubmitBlock } from "~/routes/($lang).generation._index/ut
 import { calcGenerationModelCoinCost } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
 import {
   signImageGenerationTermsMutation,
+  ViewerTokenQuery,
   viewerCurrentPassQuery,
   viewerLineUserIdQuery,
-  ViewerTokenQuery,
   viewerUserQuery,
 } from "~/routes/($lang).generation._index/utils/generation-submit-queries"
 import {
@@ -678,6 +678,7 @@ export function GenerationSubmissionView(props: Props) {
       <AppFixedContent
         position="bottom"
         className={cn(
+          "aip-above-tabbar",
           props.composer &&
             "pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]",
           !isDesktop && isEditingTextField && "hidden",

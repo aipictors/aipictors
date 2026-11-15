@@ -18,13 +18,14 @@ import {
   toBadgeText,
   toUnreadTotal,
 } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
+import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/use-is-editing-text-field"
 import { parseLocalePath } from "~/utils/locale-path"
 
 /**
  * 下のタブを出さないページ（自分の送信ボタンが画面下にあるページ・手続き中のページ）
  */
 const HIDDEN_PATH_PATTERN =
-  /^\/(?:new|plus|settings|support|contact|admin|app|flutter)(?:\/|$)|^\/posts\/[^/]+\/(?:image|animation|text|video)?\.?edit/
+  /^\/(?:new|plus|settings|support|contact|admin|app|flutter|generation\/demonstration)(?:\/|$)|^\/posts\/[^/]+\/(?:image|animation|text|video)?\.?edit/
 
 type TabKey = "home" | "search" | "generation" | "notifications" | "my"
 
@@ -61,6 +62,8 @@ export function AppMobileTabBar() {
   const location = useLocation()
   const authContext = useContext(AuthContext)
   const { showMobile } = useLayoutVariant()
+  // アプリと同じく、キーボードが出ている間は隠す（生成画面の送信欄もこのとき隠れる）
+  const isEditingTextField = useIsEditingTextField()
 
   const { remainder, isSensitive } = parseLocalePath(location.pathname)
 
@@ -126,7 +129,11 @@ export function AppMobileTabBar() {
   return (
     <nav
       aria-label={t("メインメニュー", "Main menu")}
-      className="aip-tabbar fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+      className={cn(
+        "aip-tabbar fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden",
+        // 外すと --aip-tabbar-h が変わって画面が動くので、残したまま見えなくする
+        isEditingTextField && "invisible",
+      )}
     >
       <ul className="mx-auto grid h-14 max-w-lg grid-cols-5">
         {tabs.map((tab) => {

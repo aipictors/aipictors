@@ -1,13 +1,3 @@
-import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { loaderClient } from "~/lib/loader-client"
-import { config, META } from "~/config"
-import HomeHeader from "~/routes/($lang)._main._index/components/home-header"
-import { GenerationConfigProvider } from "~/routes/($lang).generation._index/components/generation-config-provider"
-import {
-  GenerationQueryContextQuery,
-  GenerationQueryProvider,
-} from "~/routes/($lang).generation._index/components/generation-query-provider"
-import { SidebarProvider } from "~/components/sidebar-provider"
 import { isApolloError } from "@apollo/client/errors"
 import {
   type HeadersFunction,
@@ -17,17 +7,28 @@ import {
 } from "@remix-run/cloudflare"
 import { Outlet, useLoaderData } from "@remix-run/react"
 import { Suspense } from "react"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { AppMobileTabBar } from "~/components/app/app-mobile-tab-bar"
+import { SidebarProvider } from "~/components/sidebar-provider"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
-import { createMeta } from "~/utils/create-meta"
+import { loaderClient } from "~/lib/loader-client"
 import {
   GENERATION_MAINTENANCE_KV_KEY,
   readMaintenanceFlag,
   toPublicMaintenanceFlag,
 } from "~/lib/maintenance-mode"
+import HomeHeader from "~/routes/($lang)._main._index/components/home-header"
+import { GenerationConfigProvider } from "~/routes/($lang).generation._index/components/generation-config-provider"
+import {
+  GenerationQueryContextQuery,
+  GenerationQueryProvider,
+} from "~/routes/($lang).generation._index/components/generation-query-provider"
 import {
   GenerationMaintenanceBanner,
   GenerationNoticeProvider,
 } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.GENERATION, undefined, props.params.lang)
@@ -111,6 +112,8 @@ export default function GenerationLayout() {
           </GenerationQueryProvider>
         </Suspense>
       </GenerationNoticeProvider>
+      {/* スマホの下のタブ。送信欄（generation-submit-view）はタブの上に出す */}
+      <AppMobileTabBar />
     </SidebarProvider>
   )
 }

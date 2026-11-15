@@ -121,4 +121,9 @@ html[data-aip-hide-list-likes] [data-list-like-count] {
   html:has(.aip-tabbar) body {
     padding-bottom: var(--aip-tabbar-h);
   }
+  /* 画面下に固定する送信欄（生成画面）。タブのすぐ上に置き、端末の下の余白はタブが取る */
+  html:has(.aip-tabbar) .aip-above-tabbar {
+    bottom: var(--aip-tabbar-h);
+    padding-bottom: 0.75rem;
+  }
 }
