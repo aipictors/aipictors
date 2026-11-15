@@ -1,5 +1,5 @@
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
-import { CheckIcon, PenLine } from "lucide-react"
+import { CheckIcon, PenLine, SquarePlusIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { UserAchievementShowcase } from "~/components/achievements/user-achievement-showcase"
 import { FollowButton } from "~/components/button/follow-button"
@@ -12,6 +12,7 @@ import { Button } from "~/components/ui/button"
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/components/profile-edit-dialog"
@@ -153,17 +154,29 @@ export function UserProfileNameIcon(props: Props) {
         </div>
         <div className="order-3 flex items-center gap-2 md:order-2 md:justify-end md:self-end">
           {isMyPage ? (
-            <ProfileEditDialog
-              triggerChildren={
-                <Button
-                  variant="secondary"
-                  className="h-11 flex-1 gap-1.5 rounded-full font-bold md:flex-none md:px-6"
-                >
-                  <PenLine className="size-4" />
-                  {t("プロフィールを編集", "Edit profile")}
-                </Button>
-              }
-            />
+            <>
+              {/* 下のタブの「マイページ」はここに来るので、投稿の入口を一番目立つボタンにする */}
+              <Button
+                asChild
+                className="h-11 flex-1 gap-1.5 rounded-full font-bold md:flex-none md:px-6"
+              >
+                <Link to="/new/image">
+                  <SquarePlusIcon className="size-4" />
+                  {t("作品を投稿", "Post a work")}
+                </Link>
+              </Button>
+              <ProfileEditDialog
+                triggerChildren={
+                  <Button
+                    variant="secondary"
+                    className="h-11 flex-1 gap-1.5 rounded-full font-bold md:flex-none md:px-6"
+                  >
+                    <PenLine className="size-4" />
+                    {t("プロフィールを編集", "Edit profile")}
+                  </Button>
+                }
+              />
+            </>
           ) : (
             <FollowButton
               targetUserId={user.id}
