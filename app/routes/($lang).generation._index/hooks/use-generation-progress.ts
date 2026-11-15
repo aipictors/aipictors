@@ -14,6 +14,12 @@ type GenerationProgress = {
 const POLL_INTERVAL_MS = 3000
 
 /**
+ * まだ GPU で動いていない（順番待ち）間の間隔。待ちの間は返る内容がほとんど変わらないのに、
+ * 1 回ごとに全 GPU サーバーへ問い合わせていた（Worker へのリクエストの 15% ほど）
+ */
+const WAITING_POLL_INTERVAL_MS = 5000
+
+/**
  * 生成中のタスクの途中経過を取得する（/api/generation/progress を短い間隔で確認）
  * GPU での生成が終わったら "generation:task-completed" イベントを出し、一覧をすぐ更新させる
  */
@@ -33,6 +39,7 @@ export function useGenerationProgress(
     }
     let isCancelled = false
     let timer: ReturnType<typeof setTimeout> | null = null
+    let nextInterval = POLL_INTERVAL_MS
 
     const notifyCompleted = () => {
       if (hasNotifiedRef.current) return
@@ -63,6 +70,10 @@ export function useGenerationProgress(
             if (data.state === "active") {
               wasActiveRef.current = true
             }
+            nextInterval =
+              data.state === "active"
+                ? POLL_INTERVAL_MS
+                : WAITING_POLL_INTERVAL_MS
             // 生成が終わった（または GPU から消えた）ら一覧の更新を促す
             if (
               data.state === "completed" ||
@@ -86,7 +97,7 @@ export function useGenerationProgress(
         }
       }
       if (!isCancelled) {
-        timer = setTimeout(poll, POLL_INTERVAL_MS)
+        timer = setTimeout(poll, nextInterval)
       }
     }
 
