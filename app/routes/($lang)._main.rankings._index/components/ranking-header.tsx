@@ -352,7 +352,13 @@ export function RankingHeader(props: Props) {
     return items
   }
 
-  const carouselItems = generateCarouselItems()
+  // 最近の期間は今日の日付から作るので、表示を引き継いだ（hydration）あとに出す。
+  // サーバー（UTC）とブラウザ（日本時間）・保存済みの HTML と今日で日付がずれると React #418 で作り直しになる
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+  const carouselItems = isMounted ? generateCarouselItems() : []
 
   const handleRankingTypeChange = (type: "works" | "users") => {
     if (props.onRankingTypeChange) {
@@ -569,7 +575,7 @@ export function RankingHeader(props: Props) {
       </div>
 
       {/* 最近の期間 */}
-      <div className={appPillRowClassName}>
+      <div className={cn(appPillRowClassName, "min-h-8")}>
         {carouselItems.map((item) => (
           <Link
             key={item.link}
