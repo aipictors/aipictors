@@ -27,11 +27,16 @@ import { getGenerationSizeMultiplier } from "~/routes/($lang).generation._index/
 
 type Props = {
   modelType: string
+  /**
+   * スマホのカードで分けて出すとき（count = 同時生成枚数だけ、size = 比率と解像度だけ）
+   */
+  part?: "count" | "size"
 }
 
 const sizeButtonClass =
   "flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border text-[11px] transition-colors"
-const sizeButtonOn = "border-foreground/70 bg-background font-semibold shadow-sm"
+const sizeButtonOn =
+  "border-foreground/70 bg-background font-semibold shadow-sm"
 const sizeButtonOff =
   "border-transparent bg-muted/60 text-muted-foreground hover:bg-muted"
 
@@ -161,84 +166,116 @@ export function GenerationConfigOutput(props: Props) {
 
   const countOptions = [1, 2, 3, 4]
 
+  // スマホのカード（アプリと同じ見た目）。PC はそのまま
+  const isCardPart = props.part !== undefined
+
   return (
     <div className="flex flex-col gap-4">
       {/* 同時生成枚数 */}
-      <section className="space-y-2">
-        <div className="flex items-center gap-1.5">
-          <h3 className="font-bold text-sm">
-            {t("同時生成枚数", "Images per generation")}
-          </h3>
-          <CrossPlatformTooltip
-            text={t(
-              "1回の生成で作る枚数です。コインは枚数分かかります。プロンプトを試すときは1枚、本番はまとめて作ると便利です。",
-              "How many images one generation makes. Coins are per image. Try prompts with 1, then make several.",
+      {props.part !== "size" && (
+        <section className="space-y-2">
+          <div className="flex items-center gap-1.5">
+            <h3 className="font-bold text-sm">
+              {t("同時生成枚数", "Images per generation")}
+            </h3>
+            <CrossPlatformTooltip
+              text={t(
+                "1回の生成で作る枚数です。コインは枚数分かかります。プロンプトを試すときは1枚、本番はまとめて作ると便利です。",
+                "How many images one generation makes. Coins are per image. Try prompts with 1, then make several.",
+              )}
+            />
+            {singleOnlyReason && (
+              <span className="ml-auto text-muted-foreground text-xs">
+                {singleOnlyReason}
+              </span>
             )}
-          />
-          {singleOnlyReason && (
-            <span className="ml-auto text-muted-foreground text-xs">
-              {singleOnlyReason}
-            </span>
-          )}
-        </div>
-        <div className="grid grid-cols-4 gap-1 rounded-xl border bg-muted/40 p-1">
-          {countOptions.map((count) => {
-            const isLockedByPlan = count > images.planMax
-            const isDisabled = count > images.max
-            const isSelected = images.count === count
-            return (
-              <button
-                key={count}
-                type="button"
-                disabled={isDisabled}
-                aria-pressed={isSelected}
-                title={
-                  isLockedByPlan
-                    ? t("ライト以上のプランで4枚まで", "Up to 4 with LITE+")
-                    : undefined
-                }
-                onClick={() => {
-                  // 上限を選んだときは「まとめて」（プランや設定が変わっても上限に合わせる）
-                  images.setPreference(count >= images.planMax ? null : count)
-                }}
-                className={cn(
-                  "flex h-9 items-center justify-center gap-1 rounded-lg text-sm transition-colors",
-                  isSelected
-                    ? "bg-background font-semibold text-fuchsia-600 shadow-sm ring-1 ring-fuchsia-500/40 dark:text-fuchsia-300"
-                    : "text-muted-foreground hover:text-foreground",
-                  isDisabled &&
-                    "cursor-not-allowed opacity-40 hover:text-muted-foreground",
+            {isCardPart && !singleOnlyReason && (
+              <span className="ml-auto font-bold text-sm tabular-nums">
+                {t(`${images.count}枚`, `${images.count}`)}
+              </span>
+            )}
+          </div>
+          <div
+            className={cn(
+              "grid grid-cols-4 gap-1 rounded-xl border bg-muted/40 p-1",
+              isCardPart &&
+                "h-12 rounded-2xl border-0 bg-muted p-1 [&>button]:h-10 [&>button]:rounded-xl [&>button]:text-base",
+            )}
+            role="group"
+            aria-label={t("同時生成枚数", "Images per generation")}
+          >
+            {countOptions.map((count) => {
+              const isLockedByPlan = count > images.planMax
+              const isDisabled = count > images.max
+              const isSelected = images.count === count
+              return (
+                <button
+                  key={count}
+                  type="button"
+                  disabled={isDisabled}
+                  aria-pressed={isSelected}
+                  title={
+                    isLockedByPlan
+                      ? t("ライト以上のプランで4枚まで", "Up to 4 with LITE+")
+                      : undefined
+                  }
+                  onClick={() => {
+                    // 上限を選んだときは「まとめて」（プランや設定が変わっても上限に合わせる）
+                    images.setPreference(count >= images.planMax ? null : count)
+                  }}
+                  className={cn(
+                    "flex h-9 items-center justify-center gap-1 rounded-lg text-sm transition-colors",
+                    isSelected
+                      ? isCardPart
+                        ? "bg-linear-to-br from-[#0170C8] via-[#6D5DF6] to-[#FF5C8A] font-bold text-white shadow-sm"
+                        : "bg-background font-semibold text-fuchsia-600 shadow-sm ring-1 ring-fuchsia-500/40 dark:text-fuchsia-300"
+                      : "text-muted-foreground hover:text-foreground",
+                    isDisabled &&
+                      "cursor-not-allowed opacity-40 hover:text-muted-foreground",
+                  )}
+                >
+                  {isLockedByPlan && <LockIcon className="size-3" />}
+                  {t(`${count}枚`, `${count}`)}
+                </button>
+              )
+            })}
+          </div>
+          {/* スマホ: Seed を指定している間は別の枚数を覚えているので、切り替えたときの枚数も見せる */}
+          {isCardPart &&
+            images.isSeedFixed &&
+            images.max > 1 &&
+            images.count !== images.otherCount && (
+              <p className="rounded-lg bg-muted/70 px-2.5 py-2 text-xs leading-relaxed">
+                {t(
+                  `Seed を指定している間の枚数です。Seed をランダムに戻すと${images.otherCount}枚になります`,
+                  `This is the count while a seed is set. With a random seed it is ${images.otherCount}`,
                 )}
-              >
-                {isLockedByPlan && <LockIcon className="size-3" />}
-                {t(`${count}枚`, `${count}`)}
-              </button>
-            )
-          })}
-        </div>
-        {context.config.seed !== -1 && images.count > 1 && (
-          <p className="text-muted-foreground text-xs">
-            {t(
-              `Seed ${context.config.seed}〜${context.config.seed + images.count - 1} で${images.count}枚作ります（1枚目は今のSeedと同じ絵）`,
-              `Makes ${images.count} images with seeds ${context.config.seed}-${context.config.seed + images.count - 1}`,
+              </p>
             )}
-          </p>
-        )}
-        {!images.isPaidPlan && (
-          <p className="text-muted-foreground text-xs">
-            {t("無料は1回1枚。", "Free plan: 1 per run. ")}
-            <Link
-              to="/plus"
-              className="text-fuchsia-600 hover:underline dark:text-fuchsia-300"
-            >
-              {t("プランで4枚まで", "Up to 4 with a plan")}
-            </Link>
-          </p>
-        )}
-      </section>
+          {context.config.seed !== -1 && images.count > 1 && (
+            <p className="text-muted-foreground text-xs">
+              {t(
+                `Seed ${context.config.seed}〜${context.config.seed + images.count - 1} で${images.count}枚作ります（1枚目は今のSeedと同じ絵）`,
+                `Makes ${images.count} images with seeds ${context.config.seed}-${context.config.seed + images.count - 1}`,
+              )}
+            </p>
+          )}
+          {!images.isPaidPlan && (
+            <p className="text-muted-foreground text-xs">
+              {t("無料は1回1枚。", "Free plan: 1 per run. ")}
+              <Link
+                to="/plus"
+                className="text-fuchsia-600 hover:underline dark:text-fuchsia-300"
+              >
+                {t("プランで4枚まで", "Up to 4 with a plan")}
+              </Link>
+            </p>
+          )}
+        </section>
+      )}
 
       {/* 比率 */}
-      {sizeOptions.length > 1 && (
+      {props.part !== "count" && sizeOptions.length > 1 && (
         <section className="space-y-2">
           <h3 className="font-bold text-sm">{t("比率", "Aspect ratio")}</h3>
           <div
@@ -264,7 +301,10 @@ export function GenerationConfigOutput(props: Props) {
                     setIsCustomOpen(false)
                     context.updateSizeType(option.sizeType)
                   }}
-                  className={cn(sizeButtonClass, isSelected ? sizeButtonOn : sizeButtonOff)}
+                  className={cn(
+                    sizeButtonClass,
+                    isSelected ? sizeButtonOn : sizeButtonOff,
+                  )}
                 >
                   <span className="flex h-5 items-center justify-center">
                     <span
@@ -318,7 +358,7 @@ export function GenerationConfigOutput(props: Props) {
       )}
 
       {/* 解像度 */}
-      {currentSize && (
+      {props.part !== "count" && currentSize && (
         <section className="space-y-2">
           <h3 className="font-bold text-sm">{t("解像度", "Resolution")}</h3>
           <div className="grid grid-cols-2 gap-1.5">
@@ -338,7 +378,10 @@ export function GenerationConfigOutput(props: Props) {
                 {currentSize.width}×{currentSize.height}
                 {sizeMultiplier > 1 && (
                   <span className="ml-1">
-                    {t(`・1枚 ${sizeMultiplier}倍`, `· 1 img, ${sizeMultiplier}x`)}
+                    {t(
+                      `・1枚 ${sizeMultiplier}倍`,
+                      `· 1 img, ${sizeMultiplier}x`,
+                    )}
                   </span>
                 )}
               </span>

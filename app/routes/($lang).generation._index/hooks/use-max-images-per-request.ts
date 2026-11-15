@@ -59,6 +59,13 @@ export function useImagesPerRequest() {
     planMax: isPaidPlan ? 4 : 2,
     max,
     count: resolveImagesPerRequest(preference, max),
+    /** Seed を指定しているか（指定中は別に覚えた枚数を使う） */
+    isSeedFixed,
+    /** Seed の指定を切り替えたときに使う枚数（指定中ならランダムに戻したときの枚数） */
+    otherCount: resolveImagesPerRequest(
+      isSeedFixed ? normalPreference : fixedSeedPreference,
+      max,
+    ),
     preference,
     setPreference,
     isPaidPlan,
