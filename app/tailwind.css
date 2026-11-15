@@ -127,3 +127,37 @@ html[data-aip-hide-list-likes] [data-list-like-count] {
     padding-bottom: 0.75rem;
   }
 }
+
+/*
+ * iPhone・iPad の Safari は 16px 未満の入力欄にフォーカスすると画面を拡大する（コメント・検索・チャットなど）。
+ * タッチで操作する端末だけ、文字を打つ欄を 16px 以上にする（拡大を禁止する viewport の指定は使わない）。
+ * @layer の外に書くので、各欄の text-sm などより優先される
+ */
+@media (hover: none) and (pointer: coarse) {
+  /* 大きい文字の欄（作品のタイトルなど）は小さくしない */
+  :is(
+      input:not(
+          [type="checkbox"],
+          [type="radio"],
+          [type="range"],
+          [type="color"],
+          [type="file"],
+          [type="button"],
+          [type="submit"],
+          [type="reset"],
+          [type="image"],
+          [type="hidden"]
+        ),
+      textarea,
+      select,
+      [contenteditable]:not([contenteditable="false"])
+    ):not(
+      [class*="text-lg"],
+      [class*="text-xl"],
+      [class*="text-2xl"],
+      [class*="text-3xl"],
+      [class*="text-4xl"]
+    ) {
+    font-size: max(16px, 1em);
+  }
+}
