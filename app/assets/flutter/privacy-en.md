@@ -11,6 +11,15 @@ Personal information obtained will be managed appropriately and will not be disc
 - When the consent of the person in question has been obtained
 - When disclosure is required by law.
 
+# Creator reward payouts
+
+For Creator Rewards (bank payouts based on supports), we handle personal information as follows.
+
+- Identity, bank account, date of birth and address information is collected and managed directly by our payment provider Stripe (Stripe Japan K.K., Stripe, Inc. and affiliates). We receive from Stripe only what is needed to pay rewards, such as onboarding status, business type (individual / company), contact email and payout records.
+- Purposes: calculating and paying rewards, identity verification, fraud prevention (including checking IP addresses to detect self-support), withholding tax and other tax procedures, and responding to inquiries.
+- Provision to third parties: we provide your member ID, email and payout amounts to Stripe to pay rewards. Stripe may process personal information in the United States and other countries. Stripe protects it under its privacy policy (https://stripe.com/privacy).
+- Where required by law (e.g., payment records submitted to the tax office), we collect and provide your name, address and Individual Number in accordance with the law.
+
 # Use of Cookies
 
 This service uses cookies for advertising distribution and access analysis.
@@ -37,3 +46,8 @@ We are also not responsible for the information and services provided on other s
 
 
 Translated with DeepL.com (free version)
+
+
+# Last updated
+
+November 16, 2026 (added "Creator reward payouts")

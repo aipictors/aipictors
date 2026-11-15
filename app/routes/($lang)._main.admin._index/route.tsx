@@ -74,9 +74,9 @@ const quickActions = [
     subtitle: "ユーザ別の消費・付与・失効を確認",
   },
   {
-    href: "/admin/amazon-exchange",
-    title: "Amazonギフト券交換申請",
-    subtitle: "交換申請にコードを入力して承認",
+    href: "/admin/creator-payouts",
+    title: "クリエイター報酬の振込",
+    subtitle: "毎月の振込の承認キュー・締め・送金",
   },
   {
     href: "/admin/releases/new",

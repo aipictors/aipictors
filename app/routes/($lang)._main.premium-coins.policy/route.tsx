@@ -66,7 +66,7 @@ export default function PremiumCoinsPolicyPage() {
         </h1>
         <p className="text-muted-foreground leading-7">
           {t(
-            "プレミアムコインの有効期限、利用条件、返金方針、応援コインとの関係、ならびに資金決済法上の前払式支払手段に関する表示をまとめています。",
+            "プレミアムコインの有効期限、利用条件、返金方針、推しとクリエイター報酬との関係、ならびに資金決済法上の前払式支払手段に関する表示をまとめています。",
             "This page summarizes Premium Coin expiration, usage conditions, refund handling, support-coin treatment, and prepaid payment instrument disclosures.",
           )}
         </p>
@@ -91,8 +91,8 @@ export default function PremiumCoinsPolicyPage() {
           </p>
           <p>
             {t(
-              "・応援で受け取ったコインのうち、当社指定のものだけが Amazon ギフトカード交換の対象です。",
-              "- Only designated support-received coins are eligible for Amazon gift card exchange.",
+              "・コインを現金やギフト券に換えることはできません（Amazon ギフトカード交換は 2026年11月16日に終了）。全年齢の作品が有料のコインで推されると、運営から投稿者へクリエイター報酬が支払われます。",
+              "- Coins cannot be exchanged for cash or gift cards (Amazon gift card exchange ended on Nov 16, 2026). When all-ages works are supported with purchased coins, Aipictors pays the creator a Creator Reward.",
             )}
           </p>
           <p>

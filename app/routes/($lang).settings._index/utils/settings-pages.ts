@@ -12,6 +12,11 @@ const SETTINGS_PAGES: { href: string; ja: string; en: string }[] = [
     en: "Received Support Coins",
   },
   {
+    href: "/settings/creator-rewards",
+    ja: "クリエイター報酬",
+    en: "Creator Rewards",
+  },
+  {
     href: "/settings/advertisements",
     ja: "広告設定",
     en: "Advertisement Settings",
@@ -32,7 +37,11 @@ const SETTINGS_PAGES: { href: string; ja: string; en: string }[] = [
     en: "Display Content",
   },
   { href: "/settings/color", ja: "カラーテーマ", en: "Color Theme" },
-  { href: "/settings/followed/tags", ja: "お気に入りタグ", en: "Followed Tags" },
+  {
+    href: "/settings/followed/tags",
+    ja: "お気に入りタグ",
+    en: "Followed Tags",
+  },
   { href: "/settings/muted/users", ja: "ユーザミュート", en: "Muted Users" },
   {
     href: "/settings/blocked/users",

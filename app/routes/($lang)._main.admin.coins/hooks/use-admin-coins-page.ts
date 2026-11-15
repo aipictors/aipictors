@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { getAuth, getIdToken } from "firebase/auth"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { AuthContext } from "~/contexts/auth-context"
 import {
@@ -15,8 +15,8 @@ import {
   type ExchangeStatusFilter,
   filterExchangeRequests,
   type OperationType,
-  parseUserIdsText,
   type PlanType,
+  parseUserIdsText,
   type TargetScope,
 } from "~/routes/($lang)._main.admin.coins/utils/admin-coins-utils"
 
@@ -106,11 +106,11 @@ export function useAdminCoinsPage() {
       const headers = await withAuthHeader()
 
       const [pendingResponse, approvedResponse] = await Promise.all([
-        fetch(`/api/admin/amazon-exchange?status=PENDING&limit=100`, {
+        fetch("/api/admin/amazon-exchange?status=PENDING&limit=100", {
           method: "GET",
           headers,
         }),
-        fetch(`/api/admin/amazon-exchange?status=APPROVED&limit=100`, {
+        fetch("/api/admin/amazon-exchange?status=APPROVED&limit=100", {
           method: "GET",
           headers,
         }),
@@ -208,14 +208,6 @@ export function useAdminCoinsPage() {
       setApprovingRequestId(null)
     }
   }
-
-  useEffect(() => {
-    if (!hasPermission) {
-      return
-    }
-
-    void loadExchangeList()
-  }, [hasPermission])
 
   const exchangeRequests = exchangeListData?.requests ?? []
   const pendingExchangeRequests = exchangeRequests.filter(

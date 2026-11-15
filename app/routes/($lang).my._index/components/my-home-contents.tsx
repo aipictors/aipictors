@@ -1,6 +1,4 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useQuery } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
   BookmarkIcon,
@@ -22,15 +20,16 @@ import {
   UsersIcon,
 } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
-import { AmazonExchangeCodesPanel } from "~/components/amazon-exchange-codes-panel"
 import { Skeleton } from "~/components/ui/skeleton"
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { fetchMyUserModels } from "~/lib/user-models/client"
 import type { MyUserModelsResult, UserModel } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 import { SupportRankingSection } from "~/routes/($lang).settings.points/components/support-ranking-section"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type MyEventsPreviewQueryData = {
@@ -476,8 +475,6 @@ export function DashboardHomeContents() {
           </div>
         )}
       </Section>
-
-      <AmazonExchangeCodesPanel className="space-y-3" maxItems={3} />
 
       <SupportRankingSection />
     </div>

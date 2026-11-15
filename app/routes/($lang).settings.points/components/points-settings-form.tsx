@@ -1,7 +1,9 @@
+import { useLocation, useSearchParams } from "@remix-run/react"
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
-import { useLocation, useSearchParams } from "@remix-run/react"
-import { Link, useNavigate } from "~/lib/app/locale-router"
+import { useLocalStorage } from "usehooks-ts"
+import { CreatorRewardsNotice } from "~/components/creator-rewards-notice"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10,17 +12,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   getViewerRequestHeaders,
   getViewerRequestSessionId,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
-import { Button } from "~/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { useLocalStorage } from "usehooks-ts"
-import { useTranslation } from "~/hooks/use-translation"
 import { PREMIUM_COIN_CONFIRM_STORAGE_KEY } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
-import { AmazonExchangeSection } from "~/routes/($lang).settings.points/components/amazon-exchange-section"
 import { CoinBalanceCard } from "~/routes/($lang).settings.points/components/coin-balance-card"
 import { CoinExpiryTab } from "~/routes/($lang).settings.points/components/coin-expiry-tab"
 import {
@@ -35,7 +36,6 @@ import {
   readCoinSummaryCache,
   writeCoinSummaryCache,
 } from "~/routes/($lang).settings.points/utils/coin-summary-cache"
-import { AuthContext } from "~/contexts/auth-context"
 import { normalizeUnixTimestampSeconds } from "~/utils/normalize-unix-timestamp-seconds"
 
 const formatCoinAmount = (value: number) => {
@@ -148,12 +148,12 @@ export function PointsSettingsForm() {
   const [isConfirmingPremiumPurchase, setIsConfirmingPremiumPurchase] =
     useState(false)
   const handledPremiumCheckoutSessionRef = useRef<string | null>(null)
-  const [premiumPurchaseError, setPremiumPurchaseError] = useState<string | null>(
-    null,
-  )
-  const [confirmedPremiumCoins, setConfirmedPremiumCoins] = useState<number | null>(
-    null,
-  )
+  const [premiumPurchaseError, setPremiumPurchaseError] = useState<
+    string | null
+  >(null)
+  const [confirmedPremiumCoins, setConfirmedPremiumCoins] = useState<
+    number | null
+  >(null)
 
   const withAuthHeader = async () => {
     try {
@@ -216,7 +216,10 @@ export function PointsSettingsForm() {
 
     const viewerId = getViewerRequestSessionId()
     if (viewerId) {
-      const cached = readCoinSummaryCache(viewerId, Math.floor(Date.now() / 1000))
+      const cached = readCoinSummaryCache(
+        viewerId,
+        Math.floor(Date.now() / 1000),
+      )
       if (cached) {
         setBalance(cached)
       }
@@ -480,7 +483,7 @@ export function PointsSettingsForm() {
             {t("推し", "Support")}
           </TabsTrigger>
           <TabsTrigger value="exchange" className="h-9 px-1">
-            {t("ギフト券", "Gift cards")}
+            {t("報酬", "Rewards")}
           </TabsTrigger>
         </TabsList>
 
@@ -515,19 +518,7 @@ export function PointsSettingsForm() {
           forceMount
           className="mt-4 data-[state=inactive]:hidden"
         >
-          {visitedTabs.has("exchange") && (
-            <AmazonExchangeSection
-              premiumBalance={balance?.premiumBalance ?? 0}
-              exchangeablePremiumBalance={
-                balance?.exchangeablePremiumBalance ?? 0
-              }
-              lockedExchangePremiumBalance={
-                balance?.lockedExchangePremiumBalance ?? 0
-              }
-              isBalanceLoading={balance === null}
-              onApplied={() => void loadSummary()}
-            />
-          )}
+          {visitedTabs.has("exchange") && <CreatorRewardsNotice />}
         </TabsContent>
       </Tabs>
 

@@ -1,18 +1,17 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Link } from "~/lib/app/locale-router"
 import {
   ArrowLeftIcon,
   CoinsIcon,
-  Gift,
   History,
   Inbox,
   MessageCircle,
 } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { CoinIcon } from "~/components/coin-icon"
 import { CoinHelpDialog } from "~/components/coin-help-dialog"
+import { CoinIcon } from "~/components/coin-icon"
+import { CreatorRewardsNotice } from "~/components/creator-rewards-notice"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { PremiumSupportCoinIcon } from "~/components/support-coin-icons"
 import { Button } from "~/components/ui/button"
@@ -21,15 +20,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import {
   getDevLoginUserId,
   getViewerRequestHeaders,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
-import { AmazonExchangeSection } from "~/routes/($lang).settings.points/components/amazon-exchange-section"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type ReceivedTransferHistoryItem = {
   senderUserId: string
@@ -182,14 +181,12 @@ export function SupportReceivedSummaryPage() {
         <div className="space-y-2">
           <p className="flex items-center gap-2 font-semibold text-lg">
             <Inbox className="h-5 w-5 text-emerald-500" />
-            <span>
-              {t("推された累計と交換", "Received support & exchange")}
-            </span>
+            <span>{t("推された累計", "Received support")}</span>
           </p>
           <p className="text-muted-foreground text-sm leading-6">
             {t(
-              "受け取った応援コインの累計 pt と、フリー / プレミアムの内訳を確認できます。プレミアム受け取り分はこのページから Amazon ギフト券交換を申請できます。",
-              "Review cumulative received support points with free/premium breakdowns. Premium coins received from supporters can be exchanged for Amazon Gift Cards from this page.",
+              "受け取った応援コインの累計 pt と、フリー / プレミアムの内訳を確認できます。全年齢の作品で受け取った有料のプレミアムコインは、クリエイター報酬（銀行振込）の対象になります。",
+              "Review cumulative received support points with free/premium breakdowns. Purchased Premium Coins received on all-ages works are eligible for Creator Rewards (bank payout).",
             )}
           </p>
         </div>
@@ -247,23 +244,9 @@ export function SupportReceivedSummaryPage() {
             `${formatNumber(supportSummary?.cumulativeReceivedPremiumCoins ?? 0)} coins`,
           )}
         />
-        <SummaryCard
-          title={t("交換可能プレミアム", "Exchangeable premium")}
-          value={`${formatNumber(coinSummary?.exchangeablePremiumBalance ?? 0)} coins`}
-          icon={<Gift className="h-4 w-4 text-violet-500" />}
-          detail={t(
-            `申請ロック中 ${formatNumber(coinSummary?.lockedExchangePremiumBalance ?? 0)} コイン`,
-            `${formatNumber(coinSummary?.lockedExchangePremiumBalance ?? 0)} coins locked in pending requests`,
-          )}
-        />
       </div>
 
-      <AmazonExchangeSection
-        premiumBalance={coinSummary?.premiumBalance ?? 0}
-        exchangeablePremiumBalance={
-          coinSummary?.exchangeablePremiumBalance ?? 0
-        }
-      />
+      <CreatorRewardsNotice />
 
       <Tabs
         value={activeTab}

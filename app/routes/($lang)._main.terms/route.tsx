@@ -131,7 +131,7 @@ export default function Terms () {
           )}
         </p>
         <p className="text-muted-foreground text-xs">
-          {t("最終更新: 2024年12月", "Last updated: December 2024")}
+          {t("最終更新: 2026年11月16日", "Last updated: November 16, 2026")}
         </p>
       </div>
     </div>

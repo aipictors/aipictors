@@ -1,8 +1,8 @@
 # Premium Coin Policy and Prepaid Payment Instrument Notice
 
-Last updated: June 16, 2026
+Last updated: November 16, 2026
 
-This page summarizes the usage rules, expiration, refund handling, exchange conditions, and prepaid payment instrument disclosures related to Premium Coins on Aipictors.
+This page summarizes the usage rules, expiration, refund handling, the relationship to Creator Rewards, and prepaid payment instrument disclosures related to Premium Coins on Aipictors.
 
 ## 1. Overview
 
@@ -23,11 +23,12 @@ This page summarizes the usage rules, expiration, refund handling, exchange cond
 - Any unused Premium Coins may expire automatically after the validity period ends.
 - Expired Premium Coins are generally not reissued, refunded, or compensated.
 
-## 4. Relationship to Support Coins
+## 4. Supports and Creator Rewards
 
-- Premium Coins received from other users as support may be tracked separately from purchased Premium Coins.
-- Only Premium Coins that Aipictors designates as exchange-eligible support coins may be used to request Amazon gift card exchange.
-- Purchased Premium Coins are generally not eligible for such exchange.
+- When you support another user's work with Premium Coins, those coins are consumed. Coins and purchase payments are never refunded to supporters.
+- When all-ages (G / R15) works are supported with purchased Premium Coins, Aipictors pays the creator a reward (Creator Rewards) from its own revenue. Rewards are not an exchange or refund of coins. See the [Creator Rewards Terms](/creator-rewards/terms).
+- Creators who join Creator Rewards receive eligible supports as rewards instead of coins. Other supports (free coins, bonus coins, coins given by Aipictors, supports on R18 / R18G works, etc.) are received as coins or support points as before.
+- Premium Coins (purchased or received) cannot be exchanged for cash, Amazon gift cards or other property. Amazon gift card exchange ended on November 16, 2026.
 
 ## 5. Pricing and Contract Formation
 
@@ -45,7 +46,7 @@ This page summarizes the usage rules, expiration, refund handling, exchange cond
 
 - Obtaining or using Premium Coins through unauthorized means
 - Using bots, reverse engineering, exploits, or unauthorized access methods
-- Manipulating support, rankings, or exchange requests through multi-account abuse or other fraudulent conduct
+- Manipulating support or rankings, or fraudulently obtaining Creator Rewards, through multi-account abuse or other fraudulent conduct
 - Any use in violation of law, the terms of service, or public order and morality
 
 ## 8. Prepaid Payment Instrument Disclosure
@@ -70,7 +71,7 @@ To the extent required by applicable law, Aipictors discloses the following info
 
 ### How to Check Remaining Balance
 
-- Users can confirm balances, scheduled expiration, and exchangeable support balances on designated settings or account pages.
+- Users can confirm balances and scheduled expiration on designated settings or account pages.
 
 ### Usage Notes
 
@@ -83,7 +84,7 @@ To the extent required by applicable law, Aipictors discloses the following info
 
 ### Contact Window
 
-- For inquiries regarding balances, exchanges, refunds, or related matters, please contact Aipictors support.
+- For inquiries regarding balances, Creator Rewards, refunds, or related matters, please contact Aipictors support.
 
 ## 9. Policy Updates
 

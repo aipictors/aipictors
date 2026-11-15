@@ -1,8 +1,8 @@
 import { useQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
+  BanknoteIcon,
   BellIcon,
   BookmarkXIcon,
   BoxesIcon,
@@ -20,6 +20,7 @@ import {
   UserXIcon,
 } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { findSettingsPageHref } from "~/routes/($lang).settings._index/utils/settings-pages"
 
@@ -36,43 +37,110 @@ export function SettingsNavigation() {
     {
       title: t("アカウント", "Account"),
       items: [
-        { href: "/settings/profile", icon: UserIcon, label: t("プロフィール", "Profile") },
-        { href: "/settings/account", icon: UserRoundCogIcon, label: t("アカウント設定", "Account Settings") },
-        { href: "/settings/discord", icon: MessagesSquareIcon, label: t("Discord 連携", "Discord") },
+        {
+          href: "/settings/profile",
+          icon: UserIcon,
+          label: t("プロフィール", "Profile"),
+        },
+        {
+          href: "/settings/account",
+          icon: UserRoundCogIcon,
+          label: t("アカウント設定", "Account Settings"),
+        },
+        {
+          href: "/settings/discord",
+          icon: MessagesSquareIcon,
+          label: t("Discord 連携", "Discord"),
+        },
       ],
     },
     {
       title: t("コイン・サポート", "Coins & Support"),
       items: [
-        { href: "/settings/points", icon: CoinsIcon, label: t("コイン", "Coins") },
-        { href: "/settings/support-received", icon: Gift, label: t("応援コイン受け取り", "Received Support Coins") },
+        {
+          href: "/settings/points",
+          icon: CoinsIcon,
+          label: t("コイン", "Coins"),
+        },
+        {
+          href: "/settings/support-received",
+          icon: Gift,
+          label: t("応援コイン受け取り", "Received Support Coins"),
+        },
+        {
+          href: "/settings/creator-rewards",
+          icon: BanknoteIcon,
+          label: t("クリエイター報酬", "Creator Rewards"),
+        },
         ...(data?.viewer?.isAdvertiser
-          ? [{ href: "/settings/advertisements", icon: Radio, label: t("広告設定", "Advertisement Settings") }]
+          ? [
+              {
+                href: "/settings/advertisements",
+                icon: Radio,
+                label: t("広告設定", "Advertisement Settings"),
+              },
+            ]
           : []),
       ],
     },
     {
       title: t("表示・通知", "Display & Notifications"),
       items: [
-        { href: "/settings/notification", icon: BellIcon, label: t("通知・いいね", "Notifications & Likes") },
-        { href: "/settings/restriction", icon: EyeIcon, label: t("表示コンテンツ", "Display Content") },
-        { href: "/settings/color", icon: PaletteIcon, label: t("カラーテーマ", "Color Theme") },
+        {
+          href: "/settings/notification",
+          icon: BellIcon,
+          label: t("通知・いいね", "Notifications & Likes"),
+        },
+        {
+          href: "/settings/restriction",
+          icon: EyeIcon,
+          label: t("表示コンテンツ", "Display Content"),
+        },
+        {
+          href: "/settings/color",
+          icon: PaletteIcon,
+          label: t("カラーテーマ", "Color Theme"),
+        },
       ],
     },
     {
       title: t("フォロー・ミュート", "Follow & Mute"),
       items: [
-        { href: "/settings/followed/tags", icon: TagIcon, label: t("お気に入りタグ", "Followed Tags") },
-        { href: "/settings/muted/users", icon: UserXIcon, label: t("ユーザミュート", "Muted Users") },
-        { href: "/settings/blocked/users", icon: UserXIcon, label: t("ユーザブロック", "Blocked Users") },
-        { href: "/settings/muted/tags", icon: BookmarkXIcon, label: t("タグミュート", "Muted Tags") },
+        {
+          href: "/settings/followed/tags",
+          icon: TagIcon,
+          label: t("お気に入りタグ", "Followed Tags"),
+        },
+        {
+          href: "/settings/muted/users",
+          icon: UserXIcon,
+          label: t("ユーザミュート", "Muted Users"),
+        },
+        {
+          href: "/settings/blocked/users",
+          icon: UserXIcon,
+          label: t("ユーザブロック", "Blocked Users"),
+        },
+        {
+          href: "/settings/muted/tags",
+          icon: BookmarkXIcon,
+          label: t("タグミュート", "Muted Tags"),
+        },
       ],
     },
     {
       title: t("つくったもの", "Your Creations"),
       items: [
-        { href: "/settings/sticker", icon: StickerIcon, label: t("スタンプ", "Stickers") },
-        { href: "/models/library?section=mine", icon: BoxesIcon, label: t("自分のモデル", "My Models") },
+        {
+          href: "/settings/sticker",
+          icon: StickerIcon,
+          label: t("スタンプ", "Stickers"),
+        },
+        {
+          href: "/models/library?section=mine",
+          icon: BoxesIcon,
+          label: t("自分のモデル", "My Models"),
+        },
       ],
     },
   ]

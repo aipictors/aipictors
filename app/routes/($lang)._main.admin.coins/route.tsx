@@ -4,7 +4,6 @@ import { Coins, Shield } from "lucide-react"
 import { AdminPageShell } from "~/components/admin-page-shell"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Card, CardContent } from "~/components/ui/card"
-import { AdminAmazonExchangeCard } from "~/routes/($lang)._main.admin.coins/components/admin-amazon-exchange-card"
 import { AdminCoinsOperationForm } from "~/routes/($lang)._main.admin.coins/components/admin-coins-operation-form"
 import { AdminCoinsSideCards } from "~/routes/($lang)._main.admin.coins/components/admin-coins-side-cards"
 import { useAdminCoinsPage } from "~/routes/($lang)._main.admin.coins/hooks/use-admin-coins-page"
@@ -93,8 +92,6 @@ export default function AdminCoinsPage() {
 
         <AdminCoinsSideCards {...state} />
       </div>
-
-      <AdminAmazonExchangeCard {...state} />
     </AdminPageShell>
   )
 }

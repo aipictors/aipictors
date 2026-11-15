@@ -123,8 +123,8 @@ export function CoinHelpContent (props: Props) {
           </li>
           <li>
             {t(
-              "交換: 応援として受け取った一部プレミアムコインは、条件を満たすと Amazon ギフト券交換に使えます。",
-              "Exchange: some premium coins received through support can be used for Amazon gift card exchange when eligible.",
+              "報酬: クリエイター報酬に参加すると、全年齢の作品が有料のプレミアムコインで推された分が報酬として銀行口座へ振り込まれます（1,000 コインにつき 500 円）。Amazon ギフト券への交換は終了しました。",
+              "Rewards: join Creator Rewards to receive bank payouts for purchased Premium Coins supported on your all-ages works (¥500 per 1,000 coins). Amazon gift card exchange has ended.",
             )}
           </li>
         </ul>
