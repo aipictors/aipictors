@@ -1,4 +1,3 @@
-import { useTranslation } from "~/hooks/use-translation"
 import {
   type HeadersFunction,
   json,
@@ -6,20 +5,19 @@ import {
   type MetaFunction,
 } from "@remix-run/cloudflare"
 import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
-import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { graphql } from "gql.tada"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { config, META } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import { fetchSupportPeriodRanking } from "~/lib/server/support-rankings.server"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { RankingUserList } from "~/routes/($lang)._main.rankings._index/components/ranking-user-list"
-import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import {
   RankingWorkList,
   WorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { SupportPeriodRankingList } from "~/routes/($lang)._main.rankings._index/components/support-period-ranking-list"
-import { AiEvaluationRankingListItemFragment } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
 import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
 
@@ -55,7 +53,6 @@ export async function loader(props: LoaderFunctionArgs) {
   let month = initialDate.getMonth() + 1
   let day = initialDate.getDate()
   let workAwardsResp
-  let aiRankingsResp
   let supportReceived = null
   let supportSent = null
 
@@ -102,7 +99,6 @@ export async function loader(props: LoaderFunctionArgs) {
         month,
         day,
         workAwards: null,
-        aiRankings: null,
         supportReceived,
         supportSent,
       },
@@ -128,22 +124,12 @@ export async function loader(props: LoaderFunctionArgs) {
       },
     }
 
-    ;[workAwardsResp, aiRankingsResp] = await Promise.all([
-      loaderClient.query({
-        query: workAwardsQuery,
-        variables,
-      }),
-      loaderClient.query({
-        query: aiEvaluationWorkRankingsQuery,
-        // AI ランキングはこのページでは上の見どころ（上位 5 件）にしか使わない
-        variables: { ...variables, limit: 5 },
-      }),
-    ])
+    workAwardsResp = await loaderClient.query({
+      query: workAwardsQuery,
+      variables,
+    })
 
-    if (
-      workAwardsResp.data.workAwards.length > 0 ||
-      aiRankingsResp.data.aiEvaluationWorkRankings.length > 0
-    ) {
+    if (workAwardsResp.data.workAwards.length > 0) {
       break
     }
   }
@@ -156,7 +142,6 @@ export async function loader(props: LoaderFunctionArgs) {
       month,
       day,
       workAwards: workAwardsResp,
-      aiRankings: aiRankingsResp,
       supportReceived: null,
       supportSent: null,
     },
@@ -229,26 +214,36 @@ export default function Rankings() {
               name: "AIイラストランキング",
               path: "/rankings",
               lang: params.lang,
-              items: (data.workAwards?.data.workAwards ?? []).flatMap((award) =>
-                award.work
-                  ? [{ name: t.workTitle(award.work.title, award.work.enTitle), path: `/posts/${award.work.id}` }]
-                  : [],
+              items: (data.workAwards?.data.workAwards ?? []).flatMap(
+                (award) =>
+                  award.work
+                    ? [
+                        {
+                          name: t.workTitle(
+                            award.work.title,
+                            award.work.enTitle,
+                          ),
+                          path: `/posts/${award.work.id}`,
+                        },
+                      ]
+                    : [],
               ),
             })}
           />
-          {rankingFamily === "standard" && data.workAwards && data.aiRankings && (
-            <FeaturedRankingsShowcase
-              standardRankings={data.workAwards?.data.workAwards ?? []}
-              aiRankings={data.aiRankings.data.aiEvaluationWorkRankings}
-            />
-          )}
           <RankingHeader
+            isPageHeading
             year={data.year}
             month={data.month}
             day={data.day}
             weekIndex={null}
-            rankingType={isDaily && rankingFamily === "standard" ? rankingType : undefined}
-            onRankingTypeChange={isDaily && rankingFamily === "standard" ? handleRankingTypeChange : undefined}
+            rankingType={
+              isDaily && rankingFamily === "standard" ? rankingType : undefined
+            }
+            onRankingTypeChange={
+              isDaily && rankingFamily === "standard"
+                ? handleRankingTypeChange
+                : undefined
+            }
             rankingFamily={rankingFamily}
             onRankingFamilyChange={handleRankingFamilyChange}
           />
@@ -286,13 +281,4 @@ const workAwardsQuery = graphql(
     }
   }`,
   [WorkAwardListItemFragment],
-)
-
-const aiEvaluationWorkRankingsQuery = graphql(
-  `query AiEvaluationWorkRankingsForShowcase($offset: Int!, $limit: Int!, $where: AiEvaluationWorkRankingsWhereInput!) {
-    aiEvaluationWorkRankings(offset: $offset, limit: $limit, where: $where) {
-      ...AiEvaluationRankingListItem
-    }
-  }`,
-  [AiEvaluationRankingListItemFragment],
 )

@@ -1,27 +1,33 @@
 import { useLocation } from "@remix-run/react"
-import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  CrownIcon,
+  HeartHandshakeIcon,
   ImageIcon,
-  LayoutGridIcon,
+  SparklesIcon,
   SproutIcon,
-  TrendingUpIcon,
   TrophyIcon,
   UsersIcon,
 } from "lucide-react"
 import type React from "react"
 import { useEffect, useState } from "react"
+import {
+  appFilterChipClassName,
+  appPillRowClassName,
+  appPillTabClassName,
+} from "~/components/app/app-pill-tab"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import {
   getLatestPublishedWeeklyPeriod,
+  getWeeklyRankingPeriod,
   getWeekOfMonth,
   getWeeksInMonth,
-  getWeeklyRankingPeriod,
 } from "~/utils/get-weeks-in-month"
 import { toPopularWorksPath } from "~/utils/popular-works-date"
 
@@ -76,15 +82,10 @@ export function RankingHeader(props: Props) {
   const [date, setDate] = useState(
     buildDateInputValue(year, month, props.day ?? 1),
   )
-  const [isDateRailOpen, setIsDateRailOpen] = useState(false)
 
   useEffect(() => {
     setDate(buildDateInputValue(year, month, viewType === "デイリー" ? day : 1))
   }, [year, month, day, viewType])
-
-  useEffect(() => {
-    setIsDateRailOpen(false)
-  }, [viewType, year, month, day, weekIndex])
 
   const buildRankingModePath = (basePathname: string) => {
     if (viewType === "デイリー" && day) {
@@ -353,152 +354,161 @@ export function RankingHeader(props: Props) {
 
   const carouselItems = generateCarouselItems()
 
-  const getQuickSelectChipClassName = (isActive: boolean) =>
-    cn(
-      "snap-start whitespace-nowrap rounded-full border px-4 py-2.5 font-semibold text-sm transition-all duration-200",
-      isActive
-        ? `border-transparent bg-gradient-to-r ${getViewTypeGradient()} text-white shadow-md`
-        : "border-border/50 bg-background/85 text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground",
-    )
-
   const handleRankingTypeChange = (type: "works" | "users") => {
     if (props.onRankingTypeChange) {
       props.onRankingTypeChange(type)
     }
   }
 
-  const getViewTypeIcon = () => {
-    switch (viewType) {
-      case "マンスリー":
-        return <CalendarIcon className="h-5 w-5" />
-      case "デイリー":
-        return <TrendingUpIcon className="h-5 w-5" />
-      case "ウィークリー":
-        return <ImageIcon className="h-5 w-5" />
+  const isWorksActive =
+    !isAiRankingPage &&
+    rankingFamily === "standard" &&
+    props.rankingType !== "users"
+  const canShowUsers =
+    props.day !== null &&
+    props.onRankingTypeChange !== undefined &&
+    rankingFamily === "standard" &&
+    !isAiRankingPage
+
+  const handleWorksClick = () => {
+    if (isAiRankingPage) {
+      navigate(defaultRankingsPath)
+      return
     }
+    if (rankingFamily === "support") {
+      props.onRankingFamilyChange
+        ? props.onRankingFamilyChange("standard")
+        : navigate(defaultRankingsPath)
+      return
+    }
+    handleRankingTypeChange("works")
   }
 
-  const getViewTypeGradient = () => {
-    switch (viewType) {
-      case "マンスリー":
-        return "from-orange-500 to-red-500"
-      case "デイリー":
-        return "from-emerald-500 to-teal-500"
-      case "ウィークリー":
-        return "from-blue-500 to-indigo-500"
-    }
-  }
+  const familyTitle = isAiRankingPage
+    ? t("AI評価ランキング", "AI rankings")
+    : rankingFamily === "support"
+      ? t("推し・貢献度ランキング", "Support rankings")
+      : props.rankingType === "users"
+        ? t("ユーザーランキング", "User rankings")
+        : t("ランキング", "Rankings")
+
+  const periodLabel =
+    viewType === "デイリー" && day
+      ? `${year}年${month}月${day}日`
+      : viewType === "ウィークリー"
+        ? `${year}年${month}月 第${weekIndex}週`
+        : `${year}年${month}月`
+
+  const chipClassName = (isActive: boolean) =>
+    cn(appFilterChipClassName(isActive), "h-9 gap-1.5 px-3.5")
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 lg:px-0">
-      <div className="space-y-4 rounded-[28px] border border-border/40 bg-background/85 p-4 shadow-sm backdrop-blur-sm sm:p-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 font-medium text-muted-foreground text-xs">
-              <LayoutGridIcon className="h-3.5 w-3.5" />
-              <span>{t("ランキングを探す", "Browse rankings")}</span>
-            </div>
-            <div>
-              <Heading className="font-semibold text-foreground text-lg sm:text-xl">
-                {props.isPageHeading && (
-                  <span className="sr-only">
-                    {pathnamePrefix === "/ai-rankings"
-                      ? "AI評価ランキング "
-                      : "ランキング "}
-                  </span>
-                )}
-                {year}年{month.toString().padStart(2, "0")}月
-                {day
-                  ? `${day.toString().padStart(2, "0")}日`
-                  : weekIndex && viewType !== "マンスリー"
-                    ? ` 第${weekIndex}週`
-                    : ""}
-              </Heading>
-              <p className="text-muted-foreground text-sm">
-                通常 / AI / 推し、作品 / ユーザー、日間 / 週間 / 月間をコンパクトに切り替えられます。
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span
-              className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r px-3 py-1.5 font-semibold text-white ${getViewTypeGradient()}`}
-            >
-              {getViewTypeIcon()}
-              <span>
-                {viewType === "マンスリー" && t("月間", "Monthly")}
-                {viewType === "デイリー" && t("日間", "Daily")}
-                {viewType === "ウィークリー" && t("週間", "Weekly")}
-              </span>
+    <div className="mx-auto w-full max-w-6xl space-y-3 pt-2">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span
+            aria-hidden
+            className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#FFE08A] to-[#E2A21B] shadow-[0_6px_16px_-6px_rgba(226,162,27,0.7)]"
+          >
+            <CrownIcon className="size-6 fill-white/40 text-white" />
+          </span>
+          <Heading className="min-w-0 font-black text-xl leading-tight md:text-2xl">
+            {familyTitle}
+            <span className="block truncate font-bold text-muted-foreground text-xs md:text-sm">
+              {periodLabel}
+              {props.day !== null && props.rankingType === "users"
+                ? ` ・ ${t("最高いいね数で順位付け", "Ranked by most likes")}`
+                : ""}
             </span>
-            {props.day !== null && props.rankingType === "users" && (
-              <span className="rounded-full bg-purple-100 px-3 py-1.5 font-medium text-purple-700 dark:bg-purple-950/60 dark:text-purple-200">
-                {t("最高いいね数で順位付け", "Ranked by most likes")}
-              </span>
-            )}
-          </div>
+          </Heading>
         </div>
+        <SensitiveToggle
+          variant="compact"
+          targetUrl={rankingAgeTogglePath}
+          label={isSensitiveRankingPage ? t("全年齢", "All Ages") : "R18"}
+        />
+      </div>
 
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-2">
-            {showRankingFamilyToggle && (
-              <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              props.onRankingFamilyChange
-                ? props.onRankingFamilyChange("standard")
-                : navigate(defaultRankingsPath)
-            }
-            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
-              !isAiRankingPage && rankingFamily === "standard"
-                ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-sm dark:from-slate-200 dark:to-slate-400 dark:text-slate-950"
-                : "text-muted-foreground hover:bg-background hover:text-foreground"
-            }`}
-            disabled={!isAiRankingPage && rankingFamily === "standard"}
+      {/* 期間（アプリと同じ丸いタブ） */}
+      <div className={appPillRowClassName} role="tablist">
+        {(
+          [
+            ["デイリー", t("デイリー", "Daily")],
+            ["ウィークリー", t("ウィークリー", "Weekly")],
+            ["マンスリー", t("マンスリー", "Monthly")],
+          ] as const
+        ).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            aria-selected={viewType === value}
+            onClick={() => {
+              if (viewType !== value) handleViewChange(value)
+            }}
+            className={cn(
+              appPillTabClassName(viewType === value),
+              "flex-1 sm:flex-none",
+            )}
           >
-            <ImageIcon className="h-4 w-4" />
-            {t("通常ランキング", "Standard Rankings")}
-          </Button>
-          {!isAiRankingPage && props.onRankingFamilyChange && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => props.onRankingFamilyChange?.("support")}
-              className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
-                rankingFamily === "support"
-                  ? "bg-gradient-to-r from-amber-500 to-sky-500 text-white shadow-sm"
-                  : "text-muted-foreground hover:bg-background hover:text-foreground"
-              }`}
-              disabled={rankingFamily === "support"}
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* 種類 */}
+      {showRankingFamilyToggle && (
+        <div className={appPillRowClassName}>
+          <button
+            type="button"
+            onClick={handleWorksClick}
+            aria-pressed={isWorksActive}
+            className={chipClassName(isWorksActive)}
+          >
+            <ImageIcon className="size-4" />
+            {t("作品", "Works")}
+          </button>
+          {canShowUsers && (
+            <button
+              type="button"
+              onClick={() => handleRankingTypeChange("users")}
+              aria-pressed={props.rankingType === "users"}
+              className={chipClassName(props.rankingType === "users")}
             >
-              <UsersIcon className="h-4 w-4" />
-              {t("推し・貢献度", "Support Rankings")}
-            </Button>
+              <UsersIcon className="size-4" />
+              {t("ユーザー", "Users")}
+            </button>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(aiRankingsPath)}
-            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
-              isAiRankingPage
-                ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-sm"
-                : "text-muted-foreground hover:bg-background hover:text-foreground"
-            }`}
-            disabled={isAiRankingPage}
+          {!isAiRankingPage && props.onRankingFamilyChange && (
+            <button
+              type="button"
+              onClick={() => props.onRankingFamilyChange?.("support")}
+              aria-pressed={rankingFamily === "support"}
+              className={chipClassName(rankingFamily === "support")}
+            >
+              <HeartHandshakeIcon className="size-4" />
+              {t("推し・貢献度", "Support")}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              if (!isAiRankingPage) navigate(aiRankingsPath)
+            }}
+            aria-pressed={isAiRankingPage}
+            className={chipClassName(isAiRankingPage)}
           >
-            <TrendingUpIcon className="h-4 w-4" />
-            {t("AIランキング", "AI Rankings")}
-          </Button>
+            <SparklesIcon className="size-4" />
+            {t("AI評価", "AI rated")}
+          </button>
           <Link
             to={toPopularWorksPath({
               isSensitive: pathnamePrefix.startsWith("/r/"),
             })}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-muted-foreground text-xs transition-all duration-200 hover:bg-background hover:text-foreground sm:px-4 sm:text-sm"
+            className={chipClassName(false)}
           >
-            <TrophyIcon className="h-4 w-4" />
-            {t("今日の人気作品", "Today's popular")}
+            <TrophyIcon className="size-4" />
+            {t("今日の人気", "Today's popular")}
           </Link>
           <Link
             to={
@@ -507,180 +517,74 @@ export function RankingHeader(props: Props) {
                 ? "/r/rankings/rookie"
                 : "/rankings/rookie"
             }
-            className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-muted-foreground text-xs transition-all duration-200 hover:bg-background hover:text-foreground sm:px-4 sm:text-sm"
+            className={chipClassName(false)}
           >
-            <SproutIcon className="h-4 w-4" />
+            <SproutIcon className="size-4" />
             {t("ルーキー", "Rookie")}
           </Link>
-              </div>
-            )}
+        </div>
+      )}
 
-            {props.day !== null && props.onRankingTypeChange && rankingFamily === "standard" && (
-              <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleRankingTypeChange("works")}
-              className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
-                props.rankingType === "works"
-                  ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm"
-                  : "text-muted-foreground hover:bg-background hover:text-foreground"
-              }`}
-            >
-              <ImageIcon className="h-4 w-4" />
-              {t("作品ランキング", "Work Rankings")}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleRankingTypeChange("users")}
-              className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
-                props.rankingType === "users"
-                  ? "bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white shadow-sm"
-                  : "text-muted-foreground hover:bg-background hover:text-foreground"
-              }`}
-            >
-              <UsersIcon className="h-4 w-4" />
-              {t("ユーザランキング", "User Rankings")}
-            </Button>
-              </div>
-            )}
-
-            <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">
+      {/* 日付（前へ・日付を選ぶ・次へ） */}
+      <div className="flex items-center gap-2">
+        <div className="flex h-11 min-w-0 flex-1 items-center gap-1 rounded-full bg-muted p-1">
           <Button
             variant="ghost"
-            size="sm"
-            onClick={() => handleViewChange("マンスリー")}
-            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
-              viewType === "マンスリー"
-                ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-sm"
-                : "text-muted-foreground hover:bg-background hover:text-foreground"
-            }`}
-            disabled={viewType === "マンスリー"}
+            size="icon"
+            onClick={handlePrevious}
+            aria-label={t("前へ", "Previous")}
+            className="size-9 shrink-0 rounded-full bg-background shadow-sm hover:bg-background/80"
           >
-            <CalendarIcon className="h-4 w-4" />
-            {t("月間", "Monthly")}
+            <ChevronLeftIcon className="size-5" />
           </Button>
+          <label className="relative flex h-9 min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full font-extrabold text-sm">
+            <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
+            <span className="truncate">{periodLabel}</span>
+            <input
+              type="date"
+              value={date}
+              onChange={handleDateChange}
+              aria-label={t("ランキング日付", "Ranking date")}
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              max={new Date().toISOString().split("T")[0]}
+            />
+          </label>
           <Button
             variant="ghost"
-            size="sm"
-            onClick={() => handleViewChange("デイリー")}
-            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
-              viewType === "デイリー"
-                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm"
-                : "text-muted-foreground hover:bg-background hover:text-foreground"
-            }`}
-            disabled={viewType === "デイリー"}
+            size="icon"
+            onClick={handleNext}
+            aria-label={t("次へ", "Next")}
+            className="size-9 shrink-0 rounded-full bg-background shadow-sm hover:bg-background/80"
           >
-            <TrendingUpIcon className="h-4 w-4" />
-            {t("日間", "Daily")}
+            <ChevronRightIcon className="size-5" />
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleViewChange("ウィークリー")}
-            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
-              viewType === "ウィークリー"
-                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-sm"
-                : "text-muted-foreground hover:bg-background hover:text-foreground"
-            }`}
-            disabled={viewType === "ウィークリー"}
-          >
-            <ImageIcon className="h-4 w-4" />
-            {t("週間", "Weekly")}
-          </Button>
-            </div>
-          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleTodayClick}
+          className={cn(appFilterChipClassName(false), "h-11 px-4")}
+        >
+          {t("最新", "Latest")}
+        </button>
+      </div>
 
-          <div className="grid gap-2 lg:grid-cols-[auto_auto_minmax(0,1fr)] lg:items-center">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePrevious}
-                className="h-9 rounded-full border-border/50 bg-background/80 px-3 text-xs backdrop-blur-sm hover:bg-muted/50 sm:px-4 sm:text-sm"
-              >
-                <ChevronLeftIcon className="h-5 w-5" />
-                {t("前へ", "Previous")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleNext}
-                className="h-9 rounded-full border-border/50 bg-background/80 px-3 text-xs backdrop-blur-sm hover:bg-muted/50 sm:px-4 sm:text-sm"
-              >
-                {t("次へ", "Next")}
-                <ChevronRightIcon className="h-5 w-5" />
-              </Button>
-            </div>
-
-            <div className="flex h-9 items-center gap-2 rounded-full border border-border/50 bg-background/80 px-3 backdrop-blur-sm">
-              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-              <input
-                type="date"
-                value={date}
-                onChange={handleDateChange}
-                aria-label={t("ランキング日付", "Ranking date")}
-                className="w-full rounded-lg border-0 bg-transparent px-1 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                max={new Date().toISOString().split("T")[0]}
-              />
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-              <SensitiveToggle
-                variant="compact"
-                targetUrl={rankingAgeTogglePath}
-                label={isSensitiveRankingPage ? t("全年齢", "All Ages") : "R18"}
-              />
-              <Button
-                onClick={handleTodayClick}
-                variant="outline"
-                size="sm"
-                className="h-9 rounded-full border-border/50 bg-background/80 px-4 text-xs backdrop-blur-sm hover:bg-muted/50 sm:text-sm"
-              >
-                {t("最新", "Latest")}
-              </Button>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border/40 bg-muted/20 p-3">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="font-medium text-foreground text-sm">
-                  {t("日付候補", "Recent periods")}
-                </p>
-                <p className="text-muted-foreground text-xs">
-                  {t("最近の候補一覧は必要なときだけ展開できます。", "Expand the recent list only when you need it.")}
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsDateRailOpen((value) => !value)}
-                className="h-8 rounded-full px-3 text-xs"
-              >
-                {isDateRailOpen ? t("閉じる", "Close") : t("表示", "Show")}
-              </Button>
-            </div>
-
-            {isDateRailOpen && (
-              <div className="mt-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none]">
-                <div className="flex min-w-max gap-2 pr-2 touch-pan-x snap-x snap-mandatory">
-                  {carouselItems.map((item) => (
-                    <Link
-                      key={item.link}
-                      to={item.link}
-                      className={getQuickSelectChipClassName(item.border)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+      {/* 最近の期間 */}
+      <div className={appPillRowClassName}>
+        {carouselItems.map((item) => (
+          <Link
+            key={item.link}
+            to={item.link}
+            aria-current={item.border ? "page" : undefined}
+            className={cn(
+              "inline-flex h-8 shrink-0 items-center rounded-full px-3 font-bold text-xs tabular-nums transition-colors",
+              item.border
+                ? "bg-amber-500 text-white"
+                : "bg-muted/60 text-muted-foreground hover:text-foreground",
             )}
-          </div>
-          </div>
+          >
+            {item.name}
+          </Link>
+        ))}
       </div>
     </div>
   )

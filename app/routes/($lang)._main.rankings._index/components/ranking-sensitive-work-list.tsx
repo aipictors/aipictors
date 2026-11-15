@@ -1,13 +1,12 @@
-import { useTranslation } from "~/hooks/use-translation"
-import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { LikeButton } from "~/components/like-button"
+import { useQuery } from "@apollo/client/index"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
-import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
-import { useQuery } from "@apollo/client/index"
-import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import {
+  RankingList,
+  RankingPodium,
+} from "~/components/ranking/ranking-awards-view"
+import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
   awards: FragmentOf<typeof SensitiveWorkAwardListItemFragment>[]
@@ -17,8 +16,7 @@ type Props = {
   weekIndex: number | null
 }
 
-export function RankingSensitiveWorkList (props: Props) {
-  const t = useTranslation()
+export function RankingSensitiveWorkList(props: Props) {
   const appContext = useContext(AuthContext)
 
   const works = props.awards
@@ -41,60 +39,9 @@ export function RankingSensitiveWorkList (props: Props) {
   const workAwards = awardWorks?.workAwards ?? works
 
   return (
-    <div className="flex flex-wrap justify-center gap-x-8 gap-y-8">
-      {workAwards.map((workItem, index) => {
-        return (
-          <div
-            // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
-            key={index}
-            className="relative flex flex-col space-y-2"
-          >
-            {workItem.work && (
-              <>
-                <div className="relative">
-                  <CroppedWorkSquare
-                    title={t.workTitle(workItem.work.title, workItem.work.enTitle)}
-                    workId={workItem.work.id}
-                    subWorksCount={workItem.work.subWorksCount}
-                    imageUrl={workItem.work.smallThumbnailImageURL}
-                    thumbnailImagePosition={
-                      workItem.work.thumbnailImagePosition ?? 0
-                    }
-                    size="md"
-                    imageWidth={workItem.work.smallThumbnailImageWidth}
-                    imageHeight={workItem.work.smallThumbnailImageHeight}
-                    ranking={index + 1}
-                  />
-                  <div className="absolute right-0 bottom-0">
-                    <LikeButton
-                      size={56}
-                      targetWorkId={workItem.work.id}
-                      targetWorkOwnerUserId={workItem.work.user?.id ?? ""}
-                      defaultLiked={workItem.work.isLiked}
-                      defaultLikedCount={0}
-                      isBackgroundNone={true}
-                      strokeWidth={2}
-                    />
-                  </div>
-                </div>
-                <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
-                  {t.workTitle(workItem.work.title, workItem.work.enTitle)}
-                </p>
-                {workItem.work.user && (
-                  <UserNameBadge
-                    userId={workItem.work.user.id}
-                    userIconImageURL={withIconUrlFallback(
-                      workItem.work.user.iconUrl,
-                    )}
-                    name={workItem.work.user.name}
-                    width={"md"}
-                  />
-                )}
-              </>
-            )}
-          </div>
-        )
-      })}
+    <div className="mx-auto max-w-6xl space-y-4 pb-8 md:space-y-6">
+      <RankingPodium items={workAwards} />
+      <RankingList items={workAwards.slice(3)} startRank={4} />
     </div>
   )
 }

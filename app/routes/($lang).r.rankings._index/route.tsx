@@ -6,15 +6,14 @@ import type {
 import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
-import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { loaderClient } from "~/lib/loader-client"
-import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { RankingSensitiveUserListModern } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list-modern"
 import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
+import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 
 export async function loader(params: LoaderFunctionArgs) {
   // 昨日の日付を取得
@@ -74,7 +73,11 @@ export async function loader(params: LoaderFunctionArgs) {
 }
 
 export const meta: MetaFunction = (props) => {
-  return createSensitiveMeta(META.SENSITIVE_RANKINGS, undefined, props.params.lang)
+  return createSensitiveMeta(
+    META.SENSITIVE_RANKINGS,
+    undefined,
+    props.params.lang,
+  )
 }
 
 export const headers: HeadersFunction = () => ({
@@ -114,13 +117,8 @@ export default function Rankings() {
   return (
     <>
       <div className="space-y-6 pb-8">
-        <FeaturedRankingsShowcase
-          standardRankings={data.workAwards?.data.workAwards ?? []}
-          aiRankings={[]}
-          standardSectionTitle="R18ランキング"
-          standardRankLabelPrefix="R18ランキング"
-        />
         <RankingHeader
+          isPageHeading
           year={data.year}
           month={data.month}
           day={data.day}
@@ -131,23 +129,23 @@ export default function Rankings() {
           defaultPathnamePrefix="/r/rankings"
           aiPathnamePrefix="/r/ai-rankings"
         />
-      {rankingType === "users" && isDaily ? (
-        <RankingSensitiveUserListModern
-          year={data.year}
-          month={data.month}
-          day={data.day}
-          awards={[]}
-          weekIndex={null}
-        />
-      ) : (
-        <RankingSensitiveWorkList
-          year={data.year}
-          month={data.month}
-          day={data.day}
-          awards={data.workAwards?.data.workAwards ?? []}
-          weekIndex={null}
-        />
-      )}
+        {rankingType === "users" && isDaily ? (
+          <RankingSensitiveUserListModern
+            year={data.year}
+            month={data.month}
+            day={data.day}
+            awards={[]}
+            weekIndex={null}
+          />
+        ) : (
+          <RankingSensitiveWorkList
+            year={data.year}
+            month={data.month}
+            day={data.day}
+            awards={data.workAwards?.data.workAwards ?? []}
+            weekIndex={null}
+          />
+        )}
       </div>
     </>
   )
