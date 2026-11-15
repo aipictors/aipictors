@@ -30,7 +30,7 @@ export function GenerationAdvertisementView () {
   if (hidden) return null
 
   return (
-    <div className="relative block bg-white sm:hidden">
+    <div className="relative mx-3 mb-2 block rounded-2xl border bg-card px-3 pb-2 sm:hidden">
       {/* 閉じるボタン */}
       <Button
         aria-label={t("閉じる", "Close")}
