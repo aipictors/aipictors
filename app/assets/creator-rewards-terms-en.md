@@ -24,9 +24,9 @@ These terms set out the conditions of the "Creator Rewards" program (the "Progra
 
 ## 4. Holding, closing and payment
 
-1. Rewards are held for 60 days from the support and then become available.
-2. On the 10th of each month we close the rewards that became available by the end of the previous month and transfer them to your Stripe account. Payout to your bank follows Stripe's process.
-3. The minimum payout is ¥3,000 (smaller amounts carry over); the maximum is ¥100,000 per month (the excess carries over).
+1. Rewards are held for 7 days from the support and then become available.
+2. On the 10th and 25th of each month we close the rewards that became available by the previous day and transfer them to your Stripe account. Payout to your bank follows Stripe's process.
+3. The minimum payout is ¥3,000 (smaller amounts carry over); the maximum is ¥100,000 per month across both closings (the excess carries over). For 30 days after your Stripe verification is completed, each payout is limited to ¥30,000 (the excess carries over).
 4. A ¥500 fee is deducted per payout.
 5. For individuals (including sole proprietors) we withhold 10.21% income tax under Japanese law. No withholding applies to corporations. Rewards include consumption tax.
 6. We review first payouts, suspicious cases and other cases as needed before paying, which may delay payment.
@@ -57,4 +57,4 @@ We are not liable for delays or failures of payment caused by system failures of
 
 We may change these terms in accordance with the Civil Code provisions on standard terms, with notice on the Service a reasonable period before the change takes effect.
 
-Established: November 16, 2026
+Established: November 16, 2026 (amended the same day: 7-day holding, closings on the 10th and 25th, and a per-payout limit for the first 30 days)

@@ -24,6 +24,8 @@ export type CreatorRewardEarning = {
   amountYen: number
   status: "HOLDING" | "HELD" | "IN_PAYOUT" | "PAID" | "REVERSED"
   availableAt: number
+  /** 振込予定（最短の締めの日時）。保留中・保留明けのプラスの行だけ。古い API では無い */
+  expectedCloseAt?: number | null
   reversedReason: string | null
   createdAt: number
 }
@@ -59,6 +61,11 @@ export type CreatorRewardSummary = {
     feeYen: number
     withholdingPpm: number
     closeDay: number
+    /** 締めの日（毎月）。古い API では無い */
+    closeDays?: number[]
+    /** 本人確認からこの日数のあいだは 1 回 newAccountMaxYen まで */
+    newAccountDays?: number
+    newAccountMaxYen?: number
     stripeMode: "test" | "live"
   }
   joined: boolean
@@ -90,6 +97,12 @@ export type CreatorRewardSummary = {
   earnings: CreatorRewardEarning[]
   payouts: CreatorRewardPayout[]
 }
+
+/** 締めの日の表示（「10 日・25 日」） */
+export const formatCloseDays = (config: CreatorRewardSummary["config"]) =>
+  (config.closeDays?.length ? config.closeDays : [config.closeDay]).join(
+    " 日・",
+  )
 
 export const formatYen = (value: number) =>
   `${Math.floor(value).toLocaleString("ja-JP")}円`

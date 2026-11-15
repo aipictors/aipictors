@@ -16,6 +16,7 @@ import {
   type CreatorRewardEarning,
   type CreatorRewardPayout,
   type CreatorRewardSummary,
+  formatCloseDays,
   formatYen,
 } from "~/lib/creator-rewards"
 
@@ -168,8 +169,8 @@ export function CreatorRewardsPage() {
             </li>
             <li>
               {t(
-                `推されてから ${c.holdDays} 日たつと換金できるようになり、毎月 ${c.closeDay} 日に締めて振り込みます`,
-                `Rewards become available ${c.holdDays} days after the support and are paid on the ${c.closeDay}th of each month`,
+                `推されてから ${c.holdDays} 日たつと換金できるようになり、毎月 ${formatCloseDays(c)} 日に締めて振り込みます`,
+                `Rewards become available ${c.holdDays} days after the support and are paid on the ${(c.closeDays ?? [c.closeDay]).map((d) => `${d}th`).join(" and ")} of each month`,
               )}
             </li>
             <li>
@@ -178,6 +179,14 @@ export function CreatorRewardsPage() {
                 `Minimum payout ¥${c.minYen.toLocaleString()} (smaller amounts carry over), up to ¥${c.maxYen.toLocaleString()} per month. A ¥${c.feeYen} fee is deducted`,
               )}
             </li>
+            {c.newAccountMaxYen && c.newAccountDays && (
+              <li>
+                {t(
+                  `口座の登録（本人確認）から ${c.newAccountDays} 日のあいだは、1 回の振込は ${formatYen(c.newAccountMaxYen)} までです（超えた分は次回に繰り越し）`,
+                  `For the first ${c.newAccountDays} days after verification, each payout is up to ¥${c.newAccountMaxYen.toLocaleString()} (the rest carries over)`,
+                )}
+              </li>
+            )}
             <li>
               {t(
                 `個人の方は所得税の源泉徴収（${(c.withholdingPpm / 10000).toFixed(2)}%）を差し引いて当社が納めます`,
@@ -344,7 +353,7 @@ export function CreatorRewardsPage() {
           </div>
           <p className="text-muted-foreground text-xs">
             {t(
-              `次の締め: ${formatDate(summary.nextCloseAt)}（その前の月末までに保留が明けた分）`,
+              `次の締め: ${formatDate(summary.nextCloseAt)}（その日までに保留が明けた分）`,
               `Next closing: ${formatDate(summary.nextCloseAt)}`,
             )}
           </p>
@@ -485,6 +494,11 @@ function EarningList(props: { earnings: CreatorRewardEarning[] }) {
                       t(
                         ` ・ ${formatDate(e.availableAt)} から換金できます`,
                         ` · available from ${formatDate(e.availableAt)}`,
+                      )}
+                    {e.expectedCloseAt &&
+                      t(
+                        ` ・ 振込予定 ${formatDate(e.expectedCloseAt)}（最短）`,
+                        ` · payout ${formatDate(e.expectedCloseAt)} (earliest)`,
                       )}
                   </div>
                 </div>

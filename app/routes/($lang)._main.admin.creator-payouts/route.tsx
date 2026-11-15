@@ -371,13 +371,14 @@ export default function AdminCreatorPayoutsPage() {
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <p className="text-muted-foreground">
-            ふだんは毎月 10 日 10:00 に自動で締め、承認済みは毎日 10:00
+            ふだんは毎月 10 日・25 日 10:00 に自動で締め（その日の 0:00
+            までに保留が明けた分）、承認済みは毎日 10:00
             に送金します。試算は書き込みません。
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <Input
               className="w-32"
-              placeholder="2026-12"
+              placeholder="2026-11-25"
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
             />

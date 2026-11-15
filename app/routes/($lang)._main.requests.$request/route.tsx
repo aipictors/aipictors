@@ -629,7 +629,7 @@ function Settlement(props: { request: CoinRequest; isCreator: boolean }) {
       <dl className="grid gap-1 text-sm">
         {s.earnedYen > 0 && (
           <div className="flex justify-between">
-            <dt>報酬（60 日後から振込の対象）</dt>
+            <dt>報酬（7 日後から振込の対象）</dt>
             <dd className="font-bold">{s.earnedYen.toLocaleString()} 円</dd>
           </div>
         )}
