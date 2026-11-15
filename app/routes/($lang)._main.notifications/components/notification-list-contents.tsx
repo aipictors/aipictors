@@ -212,17 +212,15 @@ export function NotificationListContents() {
     <div className="mx-auto w-full max-w-3xl space-y-4 pt-2 pb-24">
       <header className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="font-bold text-2xl">
-            {t("お知らせ", "Notifications")}
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            {totalUnread > 0
-              ? t(
-                  `開いたときの未読 ${totalUnread} 件に色が付いています`,
-                  `${totalUnread} new since your last visit are highlighted`,
-                )
-              : t("新しいお知らせはありません", "You're all caught up")}
-          </p>
+          <h1 className="font-bold text-2xl">{t("通知", "Notifications")}</h1>
+          {totalUnread > 0 && (
+            <p className="text-muted-foreground text-sm">
+              {t(
+                `開いたときの未読 ${totalUnread} 件に色が付いています`,
+                `${totalUnread} new since your last visit are highlighted`,
+              )}
+            </p>
+          )}
         </div>
         <Link
           to="/settings/notification"
@@ -253,7 +251,7 @@ export function NotificationListContents() {
       {/* 種類が見切れないように折り返す */}
       <div
         role="tablist"
-        aria-label={t("お知らせの種類", "Notification type")}
+        aria-label={t("通知の種類", "Notification type")}
         className="flex flex-wrap gap-1.5"
       >
         {tabs.map((item) => {

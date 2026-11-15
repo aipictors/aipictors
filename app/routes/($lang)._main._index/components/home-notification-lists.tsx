@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
-import { FeedLoadError } from "~/components/feed-load-error"
 import { useMemo, useState } from "react"
+import { FeedLoadError } from "~/components/feed-load-error"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -171,8 +171,7 @@ export function RowList(props: {
     return (
       <EmptyState
         text={
-          props.emptyText ??
-          t("まだお知らせはありません", "No notifications yet")
+          props.emptyText ?? t("まだ通知はありません", "No notifications yet")
         }
       />
     )

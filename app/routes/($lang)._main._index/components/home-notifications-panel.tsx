@@ -55,7 +55,7 @@ type Props = {
 }
 
 /**
- * ベルのお知らせパネル
+ * ベルの通知パネル
  */
 export function HomeNotificationsPanel(props: Props) {
   const t = useTranslation()
@@ -119,7 +119,7 @@ export function HomeNotificationsPanel(props: Props) {
   return (
     <div className="flex h-[min(72vh,600px)] flex-col">
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
-        <p className="font-bold text-base">{t("お知らせ", "Notifications")}</p>
+        <p className="font-bold text-base">{t("通知", "Notifications")}</p>
         <Link
           to="/settings/notification"
           onClick={props.onClose}
@@ -134,7 +134,7 @@ export function HomeNotificationsPanel(props: Props) {
       {/* 7 つを横スクロールにすると後ろが見切れて気づけないので、1 行に全部収める */}
       <div
         role="tablist"
-        aria-label={t("お知らせの種類", "Notification type")}
+        aria-label={t("通知の種類", "Notification type")}
         className="grid shrink-0 grid-cols-7 gap-0.5 border-b px-1.5 pb-2"
       >
         {tabs.map((item) => {
