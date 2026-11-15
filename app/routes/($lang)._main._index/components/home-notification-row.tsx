@@ -1,4 +1,3 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import {
   AwardIcon,
   CoinsIcon,
@@ -10,9 +9,17 @@ import {
 } from "lucide-react"
 import { useContext } from "react"
 import { FollowButton } from "~/components/button/follow-button"
-import { SupportCoinBreakdown } from "~/components/support-coin-breakdown"
+import { CreatorRewardBadge } from "~/components/creator-reward-badge"
+import {
+  SupportSuperChatCard,
+  SupportTierChip,
+} from "~/components/support-super-chat"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { AuthContext } from "~/contexts/auth-context"
+import {
+  CreatorRewardEarningsContext,
+  findCreatorRewardEarning,
+} from "~/hooks/use-creator-reward-earnings"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -25,6 +32,7 @@ import type {
   NotificationPanelKind,
   NotificationRow,
 } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -50,6 +58,15 @@ export function NotificationRowView(props: {
   const t = useTranslation()
   const { item, group, isUnread } = props.row
   const href = toRowHref(item)
+  const rewardEarnings = useContext(CreatorRewardEarningsContext)
+  const support = item.support && item.support.totalPt > 0 ? item.support : null
+  const rewardEarning =
+    rewardEarnings && support && support.premiumCoinAmount > 0
+      ? findCreatorRewardEarning(rewardEarnings, {
+          createdAt: item.createdAt,
+          workId: item.workId,
+        })
+      : null
 
   const body = (
     <>
@@ -73,25 +90,33 @@ export function NotificationRowView(props: {
             isExpanded={props.isExpanded}
           />
         )}
-        {item.message && item.kind !== "award" && item.kind !== "coin" && (
-          <p
-            className={cn(
-              "whitespace-pre-line break-words leading-relaxed",
-              props.isExpanded
-                ? "rounded-lg bg-muted/60 px-3 py-2 text-foreground text-sm"
-                : "line-clamp-2 text-muted-foreground text-xs",
+        {support && props.isExpanded ? (
+          // 推し付きのコメントは、作品ページと同じ段階の色の帯で目立たせる
+          <SupportSuperChatCard support={support}>
+            {item.message && item.kind !== "award" && item.kind !== "coin" && (
+              <p className="whitespace-pre-line break-words text-foreground text-sm leading-relaxed">
+                {item.message}
+              </p>
             )}
-          >
-            {item.message}
-          </p>
-        )}
-        {item.support && item.support.totalPt > 0 && (
-          <SupportCoinBreakdown
-            freeCoinAmount={item.support.freeCoinAmount}
-            premiumCoinAmount={item.support.premiumCoinAmount}
-            totalPt={item.support.totalPt}
-          />
-        )}
+          </SupportSuperChatCard>
+        ) : null}
+        {!(support && props.isExpanded) &&
+          item.message &&
+          item.kind !== "award" &&
+          item.kind !== "coin" && (
+            <p
+              className={cn(
+                "whitespace-pre-line break-words leading-relaxed",
+                props.isExpanded
+                  ? "rounded-lg bg-muted/60 px-3 py-2 text-foreground text-sm"
+                  : "line-clamp-2 text-muted-foreground text-xs",
+              )}
+            >
+              {item.message}
+            </p>
+          )}
+        {support && !props.isExpanded && <SupportTierChip support={support} />}
+        {rewardEarning && <CreatorRewardBadge earning={rewardEarning} />}
         {item.stickerUrl && (
           <img
             src={toResizedImageUrl(item.stickerUrl, 240)}

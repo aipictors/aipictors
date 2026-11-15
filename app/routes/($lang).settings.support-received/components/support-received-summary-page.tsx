@@ -11,14 +11,25 @@ import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { CoinHelpDialog } from "~/components/coin-help-dialog"
 import { CoinIcon } from "~/components/coin-icon"
+import {
+  CreatorRewardBadge,
+  CreatorRewardsJoinHint,
+} from "~/components/creator-reward-badge"
 import { CreatorRewardsNotice } from "~/components/creator-rewards-notice"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
-import { PremiumSupportCoinIcon } from "~/components/support-coin-icons"
+import {
+  SupportSuperChatCard,
+  SupportTierChip,
+} from "~/components/support-super-chat"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
+import {
+  findCreatorRewardEarning,
+  useCreatorRewardEarnings,
+} from "~/hooks/use-creator-reward-earnings"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import {
@@ -99,6 +110,12 @@ export function SupportReceivedSummaryPage() {
     })
 
   const receivedComments = receivedCommentsData?.receivedWorkComments ?? []
+
+  // 受け取った推しの報酬（円）。参加していない人には参加の案内を出す
+  const reward = useCreatorRewardEarnings(
+    !authContext.isLoading && !authContext.isNotLoggedIn,
+  )
+  const rewardEarnings = reward.status === "joined" ? reward.earnings : []
 
   const loadData = async () => {
     if (!hasViewerRequestSession()) {
@@ -246,7 +263,11 @@ export function SupportReceivedSummaryPage() {
         />
       </div>
 
-      <CreatorRewardsNotice />
+      {reward.status === "notJoined" ? (
+        <CreatorRewardsJoinHint />
+      ) : reward.status !== "joined" ? (
+        <CreatorRewardsNotice />
+      ) : null}
 
       <Tabs
         value={activeTab}
@@ -301,14 +322,27 @@ export function SupportReceivedSummaryPage() {
                           {formatDateTime(item.createdAt)}
                         </p>
                       </div>
-                      <div className="flex items-center gap-4 text-sm">
-                        <p>
-                          {formatNumber(item.coinAmount)}
-                          {t("コイン", " coins")}
-                        </p>
-                        <p className="font-semibold text-emerald-600 dark:text-emerald-400">
-                          {formatNumber(item.ptAmount)} pt
-                        </p>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                        {(() => {
+                          const earning =
+                            item.coinType === "PREMIUM"
+                              ? findCreatorRewardEarning(rewardEarnings, {
+                                  createdAt: item.createdAt,
+                                })
+                              : null
+                          return earning ? (
+                            <CreatorRewardBadge earning={earning} />
+                          ) : null
+                        })()}
+                        <SupportTierChip
+                          support={{
+                            freeCoinAmount:
+                              item.coinType === "FREE" ? item.coinAmount : 0,
+                            premiumCoinAmount:
+                              item.coinType === "PREMIUM" ? item.coinAmount : 0,
+                            totalPt: item.ptAmount,
+                          }}
+                        />
                       </div>
                     </div>
                   ),
@@ -392,9 +426,17 @@ export function SupportReceivedSummaryPage() {
                             )}
                           </p>
                         ) : comment.text.length > 0 ? (
-                          <p className="whitespace-pre-wrap text-sm leading-6">
-                            {comment.text}
-                          </p>
+                          comment.support && comment.support.totalPt > 0 ? (
+                            <SupportSuperChatCard support={comment.support}>
+                              <p className="whitespace-pre-wrap text-sm leading-6">
+                                {comment.text}
+                              </p>
+                            </SupportSuperChatCard>
+                          ) : (
+                            <p className="whitespace-pre-wrap text-sm leading-6">
+                              {comment.text}
+                            </p>
+                          )
                         ) : (
                           <p className="text-muted-foreground text-sm">
                             {t("スタンプコメント", "Sticker comment")}
@@ -422,21 +464,19 @@ export function SupportReceivedSummaryPage() {
 
                         {comment.support && (
                           <div className="flex flex-wrap items-center gap-2 text-xs">
-                            <span className="rounded-full bg-rose-100 px-2.5 py-1 font-semibold text-rose-700 dark:bg-rose-950/40 dark:text-rose-100">
-                              +{comment.support.totalPt}pt
-                            </span>
-                            {comment.support.freeCoinAmount > 0 && (
-                              <span className="flex items-center gap-1 rounded-full border px-2 py-1">
-                                <CoinIcon className="size-3.5" />
-                                {comment.support.freeCoinAmount}
-                              </span>
-                            )}
-                            {comment.support.premiumCoinAmount > 0 && (
-                              <span className="flex items-center gap-1 rounded-full border px-2 py-1">
-                                <PremiumSupportCoinIcon className="size-3.5" />
-                                {comment.support.premiumCoinAmount}
-                              </span>
-                            )}
+                            <SupportTierChip support={comment.support} />
+                            {(() => {
+                              const earning =
+                                comment.support.premiumCoinAmount > 0
+                                  ? findCreatorRewardEarning(rewardEarnings, {
+                                      createdAt: comment.createdAt,
+                                      workId: comment.work?.id,
+                                    })
+                                  : null
+                              return earning ? (
+                                <CreatorRewardBadge earning={earning} />
+                              ) : null
+                            })()}
                           </div>
                         )}
                       </div>

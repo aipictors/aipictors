@@ -21,8 +21,13 @@ import {
 } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
+import { CreatorRewardsJoinHint } from "~/components/creator-reward-badge"
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
+import {
+  CreatorRewardEarningsContext,
+  useCreatorRewardEarnings,
+} from "~/hooks/use-creator-reward-earnings"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -73,10 +78,7 @@ const toTab = (value: string | null): Tab => {
   return TAB_VALUES.find((tab) => tab === value) ?? "ALL"
 }
 
-const TAB_TO_WHERE: Record<
-  Exclude<Tab, "MESSAGE">,
-  keyof typeof TAB_WHERE
-> = {
+const TAB_TO_WHERE: Record<Exclude<Tab, "MESSAGE">, keyof typeof TAB_WHERE> = {
   ALL: "ALL",
   WORK_COMMENT: "COMMENT",
   COMMENT_REPLY: "REPLY",
@@ -210,7 +212,9 @@ export function NotificationListContents() {
     <div className="mx-auto w-full max-w-3xl space-y-4 pt-2 pb-24">
       <header className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="font-bold text-2xl">{t("お知らせ", "Notifications")}</h1>
+          <h1 className="font-bold text-2xl">
+            {t("お知らせ", "Notifications")}
+          </h1>
           <p className="text-muted-foreground text-sm">
             {totalUnread > 0
               ? t(
@@ -408,6 +412,12 @@ function NotificationHistory(props: {
     return () => observer.disconnect()
   }, [hasMore, isError, loadMore, items.length])
 
+  // プレミアムの推しを受け取っているときだけ、報酬（円）を読みにいく（他の人は問い合わせない）
+  const hasPremiumSupport = items.some(
+    (item) => (item.support?.premiumCoinAmount ?? 0) > 0,
+  )
+  const reward = useCreatorRewardEarnings(hasPremiumSupport)
+
   const emptyText =
     props.replyFilter === "notReplied"
       ? t("未返信のコメントはありません", "No comments waiting for a reply")
@@ -416,7 +426,12 @@ function NotificationHistory(props: {
         : undefined
 
   return (
-    <>
+    <CreatorRewardEarningsContext.Provider
+      value={reward.status === "joined" ? reward.earnings : null}
+    >
+      {reward.status === "notJoined" && (
+        <CreatorRewardsJoinHint className="mx-4 my-2" />
+      )}
       {isError && items.length === 0 ? null : (
         <RowList
           items={items}
@@ -465,7 +480,7 @@ function NotificationHistory(props: {
           )}
         </p>
       )}
-    </>
+    </CreatorRewardEarningsContext.Provider>
   )
 }
 
@@ -583,20 +598,20 @@ function InlineReply(props: { item: PanelItem; onHidden: () => void }) {
         </div>
       ) : (
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="flex items-center gap-1 font-medium text-muted-foreground text-xs hover:text-foreground"
-        >
-          {hasReplied ? (
-            <CheckIcon className="size-3.5 text-emerald-500" />
-          ) : (
-            <ReplyIcon className="size-3.5" />
-          )}
-          {hasReplied
-            ? t("返信済み・もう一度返信する", "Replied. Reply again")
-            : t("返信する", "Reply")}
-        </button>
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="flex items-center gap-1 font-medium text-muted-foreground text-xs hover:text-foreground"
+          >
+            {hasReplied ? (
+              <CheckIcon className="size-3.5 text-emerald-500" />
+            ) : (
+              <ReplyIcon className="size-3.5" />
+            )}
+            {hasReplied
+              ? t("返信済み・もう一度返信する", "Replied. Reply again")
+              : t("返信する", "Reply")}
+          </button>
           <button
             type="button"
             disabled={isHiding}
