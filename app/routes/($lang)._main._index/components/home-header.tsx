@@ -445,17 +445,25 @@ function HomeHeader(props: Props) {
           </SheetContent>
         </Sheet>
 
-        {/* Mobile search toggle (avoid overlap by placing near menu) */}
+        {/* スマホはアプリと同じく左上にロゴ（ホームへ）。検索は右に置く */}
         {!isSearchFormOpen && (
-          <Button
-            className="size-9 md:hidden"
-            onClick={onToggleSearchForm}
-            variant="ghost"
-            size="icon"
-            aria-label={t("検索", "Search")}
+          <Link
+            to={getSensitiveLink("/")}
+            onClick={() => setSearchText("")}
+            aria-label={t("ホーム", "Home")}
+            className="flex h-10 shrink-0 items-center gap-1.5 rounded-lg px-1 md:hidden"
           >
-            <Search className="m-auto w-auto" />
-          </Button>
+            <img
+              src="/icon.svg"
+              className="size-7 rounded-full"
+              alt=""
+              width={28}
+              height={28}
+            />
+            <span className="hidden bg-linear-to-br from-[#0170C8] via-[#6D5DF6] to-[#FF5C8A] bg-clip-text font-black text-[19px] text-transparent tracking-tight min-[400px]:inline">
+              {"Aipictors"}
+            </span>
+          </Link>
         )}
         {/* 画像生成画面のロゴ。サイドバーのロゴ（home-route-list）と同じ大きさ・同じ位置にする */}
         {hasOwnBrand && (
@@ -619,28 +627,26 @@ function HomeHeader(props: Props) {
             </div>
             <div className="flex shrink-0 items-center gap-1 md:hidden">
               <HomeHeaderContentToggle />
-              {/* スマホは幅が足りないので、生成・投稿をアイコンで並べる */}
-              <div className="flex items-center rounded-full bg-muted p-0.5">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 rounded-full hover:bg-background"
-                  aria-label={t("画像を生成", "Generate")}
-                  title={t("画像を生成", "Generate")}
-                  onClick={() => handleNavigate("/generation")}
-                >
-                  <WandSparklesIcon className="size-4" />
-                </Button>
-                <Button
-                  size="icon"
-                  className="size-8 rounded-full"
-                  aria-label={t("作品を投稿", "Post a work")}
-                  title={t("作品を投稿", "Post a work")}
-                  onClick={() => handleNavigate("/new/image")}
-                >
-                  <ImagePlusIcon className="size-4" />
-                </Button>
-              </div>
+              <Button
+                className="size-10 rounded-full"
+                onClick={onToggleSearchForm}
+                variant="ghost"
+                size="icon"
+                aria-label={t("検索", "Search")}
+              >
+                <Search className="size-[22px]" />
+              </Button>
+              {/* 生成と通知は画面下のタブ（app-mobile-tab-bar）にあるので、ここは投稿だけ */}
+              <Button
+                size="icon"
+                // 未ログインでは幅が足りないので出さない（ログインボタンを優先。描画前の判定で隠すのでずれない）
+                className="size-9 rounded-full [html[data-aip-auth=out]_&]:hidden"
+                aria-label={t("作品を投稿", "Post a work")}
+                title={t("作品を投稿", "Post a work")}
+                onClick={() => handleNavigate("/new/image")}
+              >
+                <ImagePlusIcon className="size-[18px]" />
+              </Button>
             </div>
           </>
         )}
@@ -669,18 +675,21 @@ function HomeHeader(props: Props) {
           ) : authContext.isLoggedIn ? (
             // ログイン時のUI（Suspenseでスムーズなローディング）
             <div className="flex shrink-0 items-center gap-1.5">
-              <Suspense
-                fallback={
-                  <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
-                }
-              >
-                <HomeNotificationsMenu
-                  unreadCounts={unreadNotificationCounts}
-                  onMarkedAsRead={() => {
-                    void unreadNotificationData.refetch().catch(() => {})
-                  }}
-                />
-              </Suspense>
+              {/* スマホでは通知は画面下のタブから開く */}
+              <div className="hidden md:contents">
+                <Suspense
+                  fallback={
+                    <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+                  }
+                >
+                  <HomeNotificationsMenu
+                    unreadCounts={unreadNotificationCounts}
+                    onMarkedAsRead={() => {
+                      void unreadNotificationData.refetch().catch(() => {})
+                    }}
+                  />
+                </Suspense>
+              </div>
               <Suspense fallback={<HomeHeaderAvatarPlaceholder />}>
                 <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
               </Suspense>

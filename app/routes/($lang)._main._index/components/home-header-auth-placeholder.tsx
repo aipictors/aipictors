@@ -22,7 +22,7 @@ export function HomeHeaderAuthPlaceholder() {
   return (
     <>
       <div className="aip-auth-user flex shrink-0 items-center gap-1.5">
-        <div className="aip-auth-bell-box flex size-10 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
+        <div className="aip-auth-bell-box hidden size-10 items-center justify-center rounded-full bg-gray-200 md:flex dark:bg-gray-700">
           <BellIcon className="aip-auth-bell size-5" />
         </div>
         <HomeHeaderAvatarPlaceholder />
