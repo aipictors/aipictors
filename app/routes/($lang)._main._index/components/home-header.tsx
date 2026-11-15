@@ -7,6 +7,7 @@ import {
   MenuIcon,
   MoveLeft,
   Search,
+  SquarePlusIcon,
   WandSparklesIcon,
   X,
 } from "lucide-react"
@@ -633,7 +634,21 @@ function HomeHeader(props: Props) {
               >
                 <Search className="size-[22px]" />
               </Button>
-              {/* 生成・通知は画面下のタブ、投稿は左のメニュー（作品を投稿）から。右上は切り替え・検索・アカウントだけにする */}
+              {/* 投稿はログイン中だけ右上に（生成は画面下のタブの真ん中）。確認中は html の data-aip-auth で描画前に出し分ける */}
+              {(authContext.isLoading || authContext.isLoggedIn) && (
+                <Link
+                  to="/new/image"
+                  onClick={() => setSearchText("")}
+                  aria-label={t("作品を投稿", "Post a work")}
+                  title={t("作品を投稿", "Post a work")}
+                  className={cn(
+                    "flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-muted active:scale-95",
+                    authContext.isLoading && "aip-auth-user",
+                  )}
+                >
+                  <SquarePlusIcon className="size-[22px]" />
+                </Link>
+              )}
             </div>
           </>
         )}
