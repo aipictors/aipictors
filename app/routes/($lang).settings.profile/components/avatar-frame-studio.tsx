@@ -21,6 +21,7 @@ import { trackGrowthEvent } from "~/utils/track-growth-event"
 import {
   filterUserAvatarFrames,
   isPlanExclusiveUserAvatarFrame,
+  isSpecialUserAvatarFrame,
   toUserAvatarFrameAccess,
   toUserAvatarFrameCategory,
   toUserAvatarFramePassLabel,
@@ -38,6 +39,8 @@ type AvatarFrameItem = UserAvatarFramePresentation & {
   description?: string | null
   requiredPassType: string
   priceCoins?: number | null
+  /** プレミアムコインだけで買える（無料コインは使えない） */
+  isPremiumCoinsOnly?: boolean | null
 }
 
 type Props = {
@@ -117,6 +120,7 @@ function StudioBody(props: Props & { onClose: () => void }) {
   const [isConfirming, setIsConfirming] = useState(false)
   const [localOwnedIds, setLocalOwnedIds] = useState<string[]>([])
   const [spentCoins, setSpentCoins] = useState(0)
+  const [spentPremiumCoins, setSpentPremiumCoins] = useState(0)
 
   const [purchase, { loading: isPurchasing }] = useMutation(
     purchaseUserAvatarFrameMutation,
@@ -157,7 +161,11 @@ function StudioBody(props: Props & { onClose: () => void }) {
       : kindFiltered.filter(
           (frame) => toUserAvatarFrameCategory(frame.slug) === category,
         )
-  // 「すべて」では、プラン限定の枠を先頭にまとめて見出しを付ける
+  // 「すべて」では、スペシャル・プラン限定の枠を先頭にまとめて見出しを付ける
+  const specialFrames =
+    category === "all"
+      ? visibleFrames.filter((frame) => isSpecialUserAvatarFrame(frame.slug))
+      : []
   const planFrames =
     category === "all"
       ? visibleFrames.filter((frame) =>
@@ -165,11 +173,13 @@ function StudioBody(props: Props & { onClose: () => void }) {
         )
       : []
   const otherFrames =
-    planFrames.length === 0
-      ? visibleFrames
-      : visibleFrames.filter(
-          (frame) => !isPlanExclusiveUserAvatarFrame(frame.slug),
+    category === "all"
+      ? visibleFrames.filter(
+          (frame) =>
+            !isPlanExclusiveUserAvatarFrame(frame.slug) &&
+            !isSpecialUserAvatarFrame(frame.slug),
         )
+      : visibleFrames
   const requiredPlanLabel = toUserAvatarFramePassLabel(
     previewFrame?.requiredPassType as UserAvatarFramePassType,
   )
@@ -190,8 +200,15 @@ function StudioBody(props: Props & { onClose: () => void }) {
             coins.balance.premiumCoinsBalance -
             spentCoins,
         )
+  // スペシャルの枠はプレミアムコインだけで払うので、プレミアムコインの残りだけで比べる
+  const isPremiumOnly = previewFrame?.isPremiumCoinsOnly === true
+  const premiumBalance =
+    coins.balance === null
+      ? null
+      : Math.max(0, coins.balance.premiumCoinsBalance - spentPremiumCoins)
+  const payableBalance = isPremiumOnly ? premiumBalance : balance
   const price = previewFrame?.priceCoins ?? 0
-  const isAffordable = balance !== null && balance >= price
+  const isAffordable = payableBalance !== null && payableBalance >= price
 
   const selectPreview = (frameId: string | null) => {
     setPreviewId(frameId)
@@ -230,6 +247,7 @@ function StudioBody(props: Props & { onClose: () => void }) {
     }
     setLocalOwnedIds((current) => [...current, previewFrame.id])
     setSpentCoins((current) => current + price)
+    if (isPremiumOnly) setSpentPremiumCoins((current) => current + price)
     setIsConfirming(false)
     toast.success(
       t(
@@ -281,6 +299,9 @@ function StudioBody(props: Props & { onClose: () => void }) {
             {previewFrame?.description ??
               t("アイコンをそのまま表示します", "Shows your icon as it is")}
           </DialogDescription>
+          {isPremiumOnly && (
+            <PremiumOnlyLabel className="mt-1.5 sm:justify-center" />
+          )}
           {/* コメント欄など、小さく出たときの見え方 */}
           <div className="mt-2 flex items-center gap-2 sm:justify-center">
             <span className="flex size-10 shrink-0 items-center justify-center">
@@ -362,6 +383,47 @@ function StudioBody(props: Props & { onClose: () => void }) {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
+          {specialFrames.length > 0 && (
+            <section className="mb-4">
+              <h3 className="mb-2 flex flex-wrap items-baseline gap-x-2 font-medium text-sm">
+                <span className="inline-flex items-center gap-1">
+                  <Sparkles className="size-3.5 text-amber-500" />
+                  {t("スペシャル", "Special")}
+                </span>
+                <span className="font-normal text-muted-foreground text-xs">
+                  {t(
+                    "プレミアムコイン限定。いちばん豪華な枠です",
+                    "Premium coins only. Our most luxurious frames",
+                  )}
+                </span>
+              </h3>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
+                {specialFrames.map((frame) => (
+                  <FrameTile
+                    key={frame.id}
+                    badge={<FrameBadge frame={frame} {...accessContext} />}
+                    isApplied={props.appliedFrameId === frame.id}
+                    isPreview={previewId === frame.id}
+                    label={frame.name}
+                    onSelect={() => selectPreview(frame.id)}
+                  >
+                    <UserAvatarWithFrame
+                      alt=""
+                      frame={frame}
+                      isAnimated={false}
+                      sizeClassName="size-14"
+                      src={props.iconUrl}
+                    />
+                  </FrameTile>
+                ))}
+              </div>
+              {planFrames.length === 0 && (
+                <h3 className="mt-4 font-medium text-sm">
+                  {t("そのほかの枠", "More frames")}
+                </h3>
+              )}
+            </section>
+          )}
           {planFrames.length > 0 && (
             <section className="mb-4">
               <h3 className="mb-2 flex flex-wrap items-baseline gap-x-2 font-medium text-sm">
@@ -486,27 +548,39 @@ function StudioBody(props: Props & { onClose: () => void }) {
                 )}
               </Link>
             </Button>
-          ) : balance !== null && !isAffordable ? (
+          ) : payableBalance !== null && !isAffordable ? (
             <div className="space-y-2">
               <p className="text-center text-muted-foreground text-xs">
-                {t(
-                  `あと ${(price - balance).toLocaleString()} コイン足りません（保有 ${balance.toLocaleString()}）`,
-                  `${(price - balance).toLocaleString()} more coins needed (you have ${balance.toLocaleString()})`,
-                )}
+                {isPremiumOnly
+                  ? t(
+                      `プレミアムコインがあと ${(price - payableBalance).toLocaleString()} 枚足りません（保有 ${payableBalance.toLocaleString()}）。無料コインでは買えません`,
+                      `${(price - payableBalance).toLocaleString()} more premium coins needed (you have ${payableBalance.toLocaleString()}). Free coins can't be used`,
+                    )
+                  : t(
+                      `あと ${(price - payableBalance).toLocaleString()} コイン足りません（保有 ${payableBalance.toLocaleString()}）`,
+                      `${(price - payableBalance).toLocaleString()} more coins needed (you have ${payableBalance.toLocaleString()})`,
+                    )}
               </p>
               <Button asChild className="h-11 w-full" variant="secondary">
                 <Link to="/settings/points">
-                  {t("コインを増やす", "Get more coins")}
+                  {isPremiumOnly
+                    ? t("プレミアムコインを買う", "Buy premium coins")
+                    : t("コインを増やす", "Get more coins")}
                 </Link>
               </Button>
             </div>
           ) : isConfirming ? (
             <div className="space-y-2">
               <p className="text-center text-sm tabular-nums">
-                {t(
-                  `${(balance ?? 0).toLocaleString()} → ${((balance ?? 0) - price).toLocaleString()} コイン。ずっと使えます`,
-                  `${(balance ?? 0).toLocaleString()} → ${((balance ?? 0) - price).toLocaleString()} coins. Yours to keep`,
-                )}
+                {isPremiumOnly
+                  ? t(
+                      `プレミアムコイン ${(payableBalance ?? 0).toLocaleString()} → ${((payableBalance ?? 0) - price).toLocaleString()} 枚。無料コインは使いません。ずっと使えます`,
+                      `Premium coins ${(payableBalance ?? 0).toLocaleString()} → ${((payableBalance ?? 0) - price).toLocaleString()}. Free coins aren't used. Yours to keep`,
+                    )
+                  : t(
+                      `${(balance ?? 0).toLocaleString()} → ${((balance ?? 0) - price).toLocaleString()} コイン。ずっと使えます`,
+                      `${(balance ?? 0).toLocaleString()} → ${((balance ?? 0) - price).toLocaleString()} coins. Yours to keep`,
+                    )}
               </p>
               <div className="grid grid-cols-2 gap-2">
                 <Button
@@ -532,14 +606,19 @@ function StudioBody(props: Props & { onClose: () => void }) {
           ) : (
             <Button
               className="h-11 w-full"
-              disabled={balance === null}
+              disabled={payableBalance === null}
               onClick={() => setIsConfirming(true)}
             >
               <PremiumCoinIcon className="mr-2 size-4" />
-              {t(
-                `${price.toLocaleString()} コインで購入`,
-                `Buy for ${price.toLocaleString()} coins`,
-              )}
+              {isPremiumOnly
+                ? t(
+                    `プレミアムコイン ${price.toLocaleString()} 枚で購入`,
+                    `Buy for ${price.toLocaleString()} premium coins`,
+                  )
+                : t(
+                    `${price.toLocaleString()} コインで購入`,
+                    `Buy for ${price.toLocaleString()} coins`,
+                  )}
             </Button>
           )}
         </div>
@@ -562,9 +641,16 @@ function FrameBadge(props: {
         {t("購入済み", "Owned")}
       </span>
     ) : (
-      <span className="inline-flex items-center gap-0.5 tabular-nums">
+      <span
+        className={cn(
+          "inline-flex items-center gap-0.5 tabular-nums",
+          props.frame.isPremiumCoinsOnly &&
+            "font-medium text-amber-600 dark:text-amber-400",
+        )}
+      >
         <PremiumCoinIcon className="size-2.5" />
         {props.frame.priceCoins.toLocaleString()}
+        {props.frame.isPremiumCoinsOnly && t(" 限定", " only")}
       </span>
     )
   }
@@ -580,6 +666,25 @@ function FrameBadge(props: {
         props.frame.requiredPassType as UserAvatarFramePassType,
       )}
     </span>
+  )
+}
+
+/** 「プレミアムコイン限定」の印 */
+function PremiumOnlyLabel(props: { className?: string }) {
+  const t = useTranslation()
+  return (
+    <p
+      className={cn(
+        "flex items-center gap-1 font-medium text-amber-600 text-xs dark:text-amber-400",
+        props.className,
+      )}
+    >
+      <PremiumCoinIcon className="size-3.5" />
+      {t(
+        "プレミアムコイン限定（無料コインは使えません）",
+        "Premium coins only (free coins can't be used)",
+      )}
+    </p>
   )
 }
 

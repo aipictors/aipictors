@@ -5850,6 +5850,9 @@ type UserAvatarFrameNode implements Node {
   description: String
   frameType: String!
   id: ID!
+
+  """プレミアムコインだけで買える枠（無料コインは使えない）"""
+  isPremiumCoinsOnly: Boolean!
   name: String!
   overlayImageUrl: String
 

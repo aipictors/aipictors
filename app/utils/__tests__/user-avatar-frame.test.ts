@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test"
 import {
   filterUserAvatarFrames,
   isPlanExclusiveUserAvatarFrame,
+  isSpecialUserAvatarFrame,
   isUserAvatarDecoration,
   toUserAvatarDecorationAnimatedUrl,
   toUserAvatarFrameAccess,
@@ -28,6 +29,14 @@ describe("アイコンの装飾", () => {
     expect(toUserAvatarFrameCategory("deco-plan-premium-crown")).toBe("plan")
     expect(isPlanExclusiveUserAvatarFrame("deco-plan-lite-silver")).toBe(true)
     expect(isPlanExclusiveUserAvatarFrame("deco-fantasy-crown")).toBe(false)
+  })
+
+  test("スペシャル・スイーツ・かっこいいの枠も slug で分ける", () => {
+    expect(toUserAvatarFrameCategory("deco-special-seraph")).toBe("special")
+    expect(isSpecialUserAvatarFrame("deco-special-jewels")).toBe(true)
+    expect(isSpecialUserAvatarFrame("deco-plan-premium-crown")).toBe(false)
+    expect(toUserAvatarFrameCategory("deco-sweets-shortcake")).toBe("sweets")
+    expect(toUserAvatarFrameCategory("deco-cool-phoenix")).toBe("cool")
   })
 
   test("装飾かどうか", () => {

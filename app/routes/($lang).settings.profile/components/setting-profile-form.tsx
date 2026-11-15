@@ -582,6 +582,7 @@ const profileAvatarFrameSettingsQuery = graphql(
         slug
         requiredPassType
         priceCoins
+        isPremiumCoinsOnly
         frameType
         backgroundStyle
         overlayImageUrl
@@ -596,6 +597,7 @@ const profileAvatarFrameSettingsQuery = graphql(
       description
       requiredPassType
       priceCoins
+      isPremiumCoinsOnly
       frameType
       backgroundStyle
       overlayImageUrl

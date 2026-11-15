@@ -71,10 +71,14 @@ export const toUserAvatarDecorationAnimatedUrl = (url: string) => {
 
 export const USER_AVATAR_FRAME_CATEGORIES = [
   { key: "all", ja: "すべて", en: "All" },
+  // プレミアムコインだけで買える、いちばん豪華な枠
+  { key: "special", ja: "スペシャル", en: "Special" },
   // そのプラン以上でないと使えない枠（ライト → スタンダード → プレミアムで豪華になる）
   { key: "plan", ja: "プラン限定", en: "Plan exclusive" },
-  { key: "nature", ja: "自然", en: "Nature" },
+  { key: "sweets", ja: "スイーツ", en: "Sweets" },
   { key: "cute", ja: "かわいい", en: "Cute" },
+  { key: "cool", ja: "かっこいい", en: "Cool" },
+  { key: "nature", ja: "自然", en: "Nature" },
   { key: "fantasy", ja: "ファンタジー", en: "Fantasy" },
   { key: "element", ja: "炎・氷・宇宙", en: "Elements" },
   { key: "cyber", ja: "サイバー", en: "Cyber" },
@@ -102,6 +106,11 @@ export const toUserAvatarFrameCategory = (
 /** プラン限定の枠（枠選びの画面で先頭にまとめて出す） */
 export const isPlanExclusiveUserAvatarFrame = (slug: string) => {
   return toUserAvatarFrameCategory(slug) === "plan"
+}
+
+/** スペシャルの枠（枠選びの画面でいちばん上にまとめて出す。プレミアムコインだけで買える） */
+export const isSpecialUserAvatarFrame = (slug: string) => {
+  return toUserAvatarFrameCategory(slug) === "special"
 }
 
 type UserAvatarFrameAccess = "AVAILABLE" | "NEEDS_PLAN" | "NEEDS_COINS"
