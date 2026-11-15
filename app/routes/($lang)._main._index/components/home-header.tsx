@@ -424,7 +424,7 @@ function HomeHeader(props: Props) {
               className={
                 props.showPcSheetMenu
                   ? "size-9 rounded-lg hover:bg-muted md:size-10" // PC版でも表示（Buttonのinline-flexを潰さない）
-                  : "size-9 md:hidden" // PC版では非表示
+                  : "size-10 md:hidden" // PC版では非表示
               }
             >
               <MenuIcon className="size-5" />

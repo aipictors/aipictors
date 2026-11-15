@@ -5,6 +5,7 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { useContext, useEffect, useState } from "react"
 import {
   readHeaderUserSnapshot,
@@ -29,6 +30,7 @@ type Props = {
  * 認証情報から最低限のUIを表示し、詳細情報は遅延読み込み
  */
 export function FastUserNavigationMenu(props: Props) {
+  const t = useTranslation()
   const authContext = useContext(AuthContext)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -117,7 +119,8 @@ export function FastUserNavigationMenu(props: Props) {
         <button
           type="button"
           className="rounded-full"
-          aria-label="メニュー"
+          // 左の三本線（メニュー）と区別する
+          aria-label={t("アカウントのメニュー", "Account menu")}
           onPointerEnter={() => prefetchUserNavigationMenu(client)}
           onPointerDown={() => prefetchUserNavigationMenu(client)}
           onFocus={() => prefetchUserNavigationMenu(client)}
