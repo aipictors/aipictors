@@ -26,14 +26,16 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 
 type Props = {
   targetUserId: string
   targetUserName?: string
   targetUserIconUrl?: string | null
-  freeCoinBalance: number
-  premiumCoinBalance: number
+  /** 分かっている残高。渡さないときはボタンに触れたときに取りに行く（ページを開くたびに取らない） */
+  freeCoinBalance?: number
+  premiumCoinBalance?: number
   onSuccess?: () => void
   triggerClassName?: string
   /** profile: マイページ用。目立つボタン 1 つにして、説明はダイアログの中に置く */
@@ -104,12 +106,19 @@ export function SupportButton({
   const [successThankYouMessage, setSuccessThankYouMessage] = useState("")
   const [successTotalPt, setSuccessTotalPt] = useState<number | null>(null)
   const isSubmittingRef = useRef(false)
-  const [currentFreeCoinBalance, setCurrentFreeCoinBalance] =
-    useState(freeCoinBalance)
-  const [currentPremiumCoinBalance, setCurrentPremiumCoinBalance] =
-    useState(premiumCoinBalance)
+  const [currentFreeCoinBalance, setCurrentFreeCoinBalance] = useState(
+    freeCoinBalance ?? 0,
+  )
+  const [currentPremiumCoinBalance, setCurrentPremiumCoinBalance] = useState(
+    premiumCoinBalance ?? 0,
+  )
+  const [isBalanceLoaded, setIsBalanceLoaded] = useState(
+    freeCoinBalance !== undefined,
+  )
 
+  // 推す相手の名前・お礼の文は、ダイアログを開いてから読む（作品ページを開くたびに問い合わせない）
   const { data: targetUserData } = useQuery(targetSupportUserQuery, {
+    skip: !isOpen && !isSuccessOpen,
     variables: {
       userId: targetUserId,
     },
@@ -127,10 +136,12 @@ export function SupportButton({
     )
 
   useEffect(() => {
+    if (freeCoinBalance === undefined) return
     setCurrentFreeCoinBalance(freeCoinBalance)
   }, [freeCoinBalance])
 
   useEffect(() => {
+    if (premiumCoinBalance === undefined) return
     setCurrentPremiumCoinBalance(premiumCoinBalance)
   }, [premiumCoinBalance])
 
@@ -139,10 +150,8 @@ export function SupportButton({
       const headers = await getViewerRequestHeaders({
         includeJsonContentType: true,
       })
-      const res = await fetch("/api/coins/summary", {
-        method: "GET",
-        headers,
-      })
+      // ボタンに触れたときの先読みと押したときの読み直しが重なったら 1 回にまとめる
+      const res = await fetchCoinSummaryShared(headers)
 
       const json = (await res.json()) as {
         error?: string
@@ -158,9 +167,23 @@ export function SupportButton({
 
       setCurrentFreeCoinBalance(json.data.freeBalance ?? 0)
       setCurrentPremiumCoinBalance(json.data.premiumBalance ?? 0)
+      setIsBalanceLoaded(true)
     } catch {
       return
     }
+  }
+
+  /** 残高をまだ知らないときは、ボタンに触れた時点（押す少し前）に取りに行く */
+  const hasPrefetchedBalanceRef = useRef(isBalanceLoaded)
+  const prefetchBalance = () => {
+    if (hasPrefetchedBalanceRef.current) return
+    hasPrefetchedBalanceRef.current = true
+    void reloadBalance()
+  }
+  const prefetchHandlers = {
+    onPointerEnter: prefetchBalance,
+    onPointerDown: prefetchBalance,
+    onFocus: prefetchBalance,
   }
 
   const coinBalance =
@@ -304,6 +327,7 @@ export function SupportButton({
     <>
       {variant === "profile" ? (
         <Button
+          {...prefetchHandlers}
           onClick={() => {
             void reloadBalance()
             setIsOpen(true)
@@ -331,6 +355,7 @@ export function SupportButton({
           </Button>
 
           <Button
+            {...prefetchHandlers}
             onClick={() => {
               void reloadBalance()
               setIsOpen(true)
@@ -453,7 +478,7 @@ export function SupportButton({
                     {item.label}
                   </span>
                   <span className="mt-1 block font-bold text-lg tabular-nums leading-tight">
-                    {item.balance.toLocaleString()}
+                    {isBalanceLoaded ? item.balance.toLocaleString() : "…"}
                   </span>
                   <span className="text-[11px] text-muted-foreground">
                     {item.rate}
@@ -508,7 +533,7 @@ export function SupportButton({
               </div>
             </div>
 
-            {coinBalance === 0 && (
+            {isBalanceLoaded && coinBalance === 0 && (
               <div className="flex items-center justify-between gap-3 rounded-xl bg-muted p-3 text-sm">
                 <span>
                   {coinType === "PREMIUM"

@@ -8,7 +8,6 @@ import { SupportButton } from "~/components/support-button"
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
-import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
 import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
@@ -35,7 +34,6 @@ export function WorkUser(props: Props) {
   const hasViewerSession = hasViewerRequestSession()
 
   const t = useTranslation()
-  const { balance } = useCoinBalance()
   const { data = null } = useQuery(userQuery, {
     skip: appContext.isLoading || appContext.userId === null,
     variables: {
@@ -64,8 +62,7 @@ export function WorkUser(props: Props) {
   const canShowSupportButton =
     (!appContext.isLoading || hasViewerSession) &&
     (!appContext.isNotLoggedIn || hasViewerSession) &&
-    appContext.userId !== props.userId &&
-    balance !== null
+    appContext.userId !== props.userId
   const biography = t(
     props.userBiography ?? "",
     props.userEnBiography && props.userEnBiography.length > 0
@@ -120,8 +117,6 @@ export function WorkUser(props: Props) {
             targetUserId={props.userId}
             targetUserName={props.userName}
             targetUserIconUrl={props.userIconImageURL}
-            freeCoinBalance={balance.freeCoinsBalance}
-            premiumCoinBalance={balance.premiumCoinsBalance}
             variant="profile"
             triggerClassName="h-10 w-full px-3 text-sm"
           />

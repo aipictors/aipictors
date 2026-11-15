@@ -11,7 +11,6 @@ import { SupportButton } from "~/components/support-button"
 import { Button } from "~/components/ui/button"
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { AuthContext } from "~/contexts/auth-context"
-import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
@@ -38,7 +37,6 @@ export function UserProfileNameIcon(props: Props) {
   const user = readFragment(UserProfileIconFragment, props.user)
   const t = useTranslation()
   const authContext = useContext(AuthContext)
-  const { balance } = useCoinBalance()
   const hasViewerSession = hasViewerRequestSession()
 
   const r18WorksCount = props.r18WorksCount ?? 0
@@ -201,8 +199,6 @@ export function UserProfileNameIcon(props: Props) {
               targetUserId={user.id}
               targetUserName={user.name}
               targetUserIconUrl={user.iconUrl}
-              freeCoinBalance={balance?.freeCoinsBalance ?? 0}
-              premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
               variant="profile"
               triggerClassName="px-3 md:px-6"
             />
