@@ -333,7 +333,7 @@ function PlanRow(props: {
           )}
           {plan.allowsR18 && <span className="text-rose-500">R18 可</span>}
         </div>
-        <div className="mt-1 flex flex-wrap items-center gap-1">
+        <div className="mt-1 flex items-center gap-0.5">
           <Button
             size="sm"
             variant="secondary"
@@ -360,7 +360,8 @@ function PlanRow(props: {
           <Button
             size="sm"
             variant="ghost"
-            className="h-8 rounded-full"
+            className="h-8 rounded-full px-2"
+            aria-label={hidden ? "公開する" : "非公開にする"}
             disabled={busy}
             onClick={() =>
               save(
@@ -370,16 +371,19 @@ function PlanRow(props: {
             }
           >
             {hidden ? (
-              <Eye className="mr-1 size-3.5" />
+              <Eye className="size-3.5 sm:mr-1" />
             ) : (
-              <EyeOff className="mr-1 size-3.5" />
+              <EyeOff className="size-3.5 sm:mr-1" />
             )}
-            {hidden ? "公開" : "非公開"}
+            <span className="hidden sm:inline">
+              {hidden ? "公開" : "非公開"}
+            </span>
           </Button>
           <Button
             size="sm"
             variant="ghost"
-            className="h-8 rounded-full text-rose-500"
+            className="h-8 rounded-full px-2 text-rose-500"
+            aria-label="削除"
             disabled={busy}
             onClick={remove}
           >

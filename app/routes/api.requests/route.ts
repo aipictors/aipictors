@@ -54,14 +54,18 @@ const call = async (
   init?: { method?: string; body?: unknown },
 ) =>
   forward(
-    await fetch(`${getApiBaseUrl(context)}/internal/requests${path}`, {
-      method: init?.method ?? "GET",
-      headers: {
-        ...getInternalHeaders(context),
-        "content-type": "application/json",
+    // 一覧・申し込みは aipictors-api の /internal/requests そのもの（末尾に / を付けると 404）
+    await fetch(
+      `${getApiBaseUrl(context)}/internal/requests${path.replace(/^\/(?=\?|$)/, "")}`,
+      {
+        method: init?.method ?? "GET",
+        headers: {
+          ...getInternalHeaders(context),
+          "content-type": "application/json",
+        },
+        body: init?.body === undefined ? undefined : JSON.stringify(init.body),
       },
-      body: init?.body === undefined ? undefined : JSON.stringify(init.body),
-    }),
+    ),
   )
 
 const PLAN_QUERY_KEYS = [
