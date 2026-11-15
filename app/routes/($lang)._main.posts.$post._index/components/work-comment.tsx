@@ -44,6 +44,7 @@ import {
   type UserAvatarFramePresentation,
 } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Props = {
   userId: string
@@ -391,7 +392,7 @@ export function WorkComment(props: Props) {
               <img
                 className="aspect-square w-32 object-contain transition-transform duration-300 group-hover:scale-105"
                 alt=""
-                src={props.stickerImageURL}
+                src={toResizedImageUrl(props.stickerImageURL, 240)}
                 // スタンプは正方形。大きさを先に決めておき、読み込み後にコメント欄が伸びて下がずれないようにする
                 width={128}
                 height={128}
@@ -404,7 +405,7 @@ export function WorkComment(props: Props) {
             <img
               className="aspect-square w-32 object-contain"
               alt=""
-              src={props.stickerImageURL}
+              src={toResizedImageUrl(props.stickerImageURL, 240)}
               width={128}
               height={128}
               loading="lazy"
