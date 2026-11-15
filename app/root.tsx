@@ -54,6 +54,10 @@ import { LIST_LIKE_COUNT_INLINE_SCRIPT } from "~/utils/list-like-count-preferenc
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
 import { PAGE_VIEW_INLINE_SCRIPT, trackPageView } from "~/utils/page-view"
 import { setRenderNow } from "~/utils/render-now"
+import {
+  RESIZED_IMAGE_FALLBACK_SCRIPT,
+  RESIZED_IMAGE_ORIGIN,
+} from "~/utils/resized-image-url"
 import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
 import { serializeJsonLd } from "~/utils/serialize-json-ld"
 import { createSiteJsonLd } from "~/utils/site-json-ld"
@@ -335,6 +339,7 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 export const links: LinksFunction = () => {
   return [
     // 作品画像の置き場所へ先に接続しておく（最初の画像＝LCP の読み込み開始が早くなる）
+    { rel: "preconnect", href: RESIZED_IMAGE_ORIGIN },
     { rel: "preconnect", href: "https://files.aipictors.com" },
     // tailwind.cssのロード
     { rel: "stylesheet", href: styles },
@@ -647,6 +652,11 @@ export function Layout(props: Props): React.ReactNode {
             __html:
               "window.addEventListener('vite:preloadError',function(e){try{if(sessionStorage.getItem('aipictors-chunk-reload'))return;sessionStorage.setItem('aipictors-chunk-reload','1');e.preventDefault();location.reload()}catch(_){}});window.addEventListener('load',function(){setTimeout(function(){try{sessionStorage.removeItem('aipictors-chunk-reload')}catch(_){}},10000)})",
           }}
+        />
+        <script
+          // R2 にまだ無い縮小版の画像を縮小の Worker に切り替える（app/utils/resized-image-url.ts）。<img> より前に置く
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
+          dangerouslySetInnerHTML={{ __html: RESIZED_IMAGE_FALLBACK_SCRIPT }}
         />
         <script
           // ヘッダーのアイコンを描画前に決める（app/utils/header-user-snapshot.ts）

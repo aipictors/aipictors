@@ -1,10 +1,23 @@
 /**
  * files.aipictors.com の画像を、表示サイズに縮小した版の URL にする。
- * 縮小は /_w/<幅>/<キー> の Worker（aipictors-cron の image-resize-worker）が行い、
- * 縮小版は R2 とエッジにキャッシュされる。アニメーション画像などは Worker が元の画像をそのまま返す。
+ *
+ * 縮小版は R2（image-variants）のカスタムドメイン variants.aipictors.com から直接配る
+ * （Worker も Snippet も通らない。キャッシュルールでエッジに 1 年置く）。
+ * まだ作られていない幅は 404 になるので、RESIZED_IMAGE_FALLBACK_SCRIPT が
+ * 縮小の Worker（files.aipictors.com/_w/<幅>/<キー>、aipictors-cron の image-resize-worker）に切り替える。
+ * Worker が作った縮小版は R2 に保存され、次からは variants.aipictors.com で見つかる。
+ * アニメーション画像などは Worker が元の画像をそのまま返す。
  */
 
 const RESIZABLE_ORIGIN = "https://files.aipictors.com/"
+
+/** 縮小版の置き場所（R2 image-variants の公開ドメイン。キーは v2/<幅>/<元のキー>） */
+export const RESIZED_IMAGE_ORIGIN = "https://variants.aipictors.com"
+
+const VARIANT_PREFIX = `${RESIZED_IMAGE_ORIGIN}/v2/`
+
+/** 縮小版を作る Worker のルート */
+const RESIZE_WORKER_PREFIX = `${RESIZABLE_ORIGIN}_w/`
 
 /**
  * 使う幅（Worker 側の WIDTHS に含まれるもの）。
@@ -35,9 +48,31 @@ export function toResizedImageUrl(
   if (!url) return undefined
   if (!isResizable(url)) return url
   const key = url.slice(RESIZABLE_ORIGIN.length)
-  // ページと同じドメインから配る（functions/[[path]].ts が画像の Worker に渡す）
-  return `/_w/${pickWidth(width)}/${key}`
+  return `${VARIANT_PREFIX}${pickWidth(width)}/${key}`
 }
+
+/**
+ * 縮小版の URL が読めなかったときに次に試す URL。
+ * R2 に無い縮小版 → 縮小の Worker（作って返す）→ 元の画像。それ以外は null
+ */
+export function nextResizedImageUrl(url: string): string | null {
+  if (url.startsWith(VARIANT_PREFIX)) {
+    return RESIZE_WORKER_PREFIX + url.slice(VARIANT_PREFIX.length)
+  }
+  if (url.startsWith(RESIZE_WORKER_PREFIX)) {
+    const key = url.slice(RESIZE_WORKER_PREFIX.length).replace(/^\d+\//, "")
+    return RESIZABLE_ORIGIN + key
+  }
+  return null
+}
+
+/**
+ * head に置く: 縮小版の <img>（srcset・<picture> の <source> も）が 404 などで読めなかったら、
+ * nextResizedImageUrl と同じ順で URL を差し替える。
+ * hydration 前の SSR の画像も扱えるように、React ではなく window の capture で受ける。
+ * 差し替えたときはイベントを止める（各コンポーネントの onError は最後の元画像でも読めなかったときだけ動く）
+ */
+export const RESIZED_IMAGE_FALLBACK_SCRIPT = `(function(){var V=${JSON.stringify(VARIANT_PREFIX)},W=${JSON.stringify(RESIZE_WORKER_PREFIX)},O=${JSON.stringify(RESIZABLE_ORIGIN)};function n(u){if(u.indexOf(V)===0)return W+u.slice(V.length);if(u.indexOf(W)===0)return O+u.slice(W.length).replace(/^\\d+\\//,"");return null}addEventListener("error",function(e){var t=e.target;if(!t||t.tagName!=="IMG")return;var u=t.currentSrc||t.src||"",x=n(u);if(!x)return;e.stopImmediatePropagation();var v=u.indexOf(V)===0;function f(el){var s=el.getAttribute("srcset");if(!s)return;if(v){if(s.indexOf(V)>=0)el.setAttribute("srcset",s.split(V).join(W))}else if(s.indexOf(W)>=0)el.removeAttribute("srcset")}var p=t.parentNode;if(p&&p.tagName==="PICTURE")for(var i=0;i<p.children.length;i++)if(p.children[i].tagName==="SOURCE")f(p.children[i]);f(t);var a=t.getAttribute("src")||"";if(!v)t.setAttribute("src",x);else if(a.indexOf(V)===0)t.setAttribute("src",n(a))},true)})()`
 
 /**
  * srcset 用の文字列。maxWidth（元画像の幅）を超える幅は作らない。
