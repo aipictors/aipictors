@@ -194,6 +194,7 @@ export function SensitiveWorkContainer(props: Props) {
                 workForArticle.user ? (
                   <div className="md:hidden">
                     <WorkUser
+                showSupportRewardNote={false}
                       userId={workForArticle.user.id}
                       userLogin={workForArticle.user.login}
                       userName={workForArticle.user.name}
@@ -256,6 +257,7 @@ export function SensitiveWorkContainer(props: Props) {
           {workForArticle.user !== null && (
             <div className="w-full">
               <WorkUser
+                showSupportRewardNote={false}
                 userId={workForArticle.user.id}
                 userName={workForArticle.user.name}
                 userIsOfficial={workForArticle.user.isOfficial}

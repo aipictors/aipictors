@@ -17,7 +17,7 @@ import {
   CommentAchievementChip,
 } from "~/components/achievements/comment-achievement-chip"
 import { OfficialBadge } from "~/components/official-badge"
-import { SupportCoinBreakdown } from "~/components/support-coin-breakdown"
+import { SupportSuperChatCard } from "~/components/support-super-chat"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
@@ -37,6 +37,7 @@ import {
   translateCommentAutomatically,
 } from "~/utils/comment-auto-translate"
 import { parseLocalePath } from "~/utils/locale-path"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
 import {
@@ -44,7 +45,6 @@ import {
   type UserAvatarFramePresentation,
 } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Props = {
   userId: string
@@ -219,6 +219,58 @@ export function WorkComment(props: Props) {
 
   const hasSupport = Boolean(props.support && props.support.totalPt > 0)
 
+  const textBlock = props.text ? (
+    <div className="space-y-2">
+      <p className="overflow-hidden whitespace-pre-wrap break-words text-[15px] leading-relaxed">
+        {props.text}
+      </p>
+      {props.moderationSummary?.moderationStatus === "REJECTED" && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 p-2 text-amber-900 text-xs">
+          <p>
+            {props.moderationSummary.userNotice ??
+              t(
+                "このコメントは審査により他のユーザーには表示されていません。",
+                "This comment is hidden from other users after moderation.",
+              )}
+          </p>
+          {props.moderationSummary.appealedAt && (
+            <p className="mt-1 opacity-80">
+              {t(
+                "異議申し立てを受け付けています。確認をお待ちください。",
+                "Your appeal has been received.",
+              )}
+            </p>
+          )}
+        </div>
+      )}
+      {shouldShowTranslateLink && (
+        <button
+          type="button"
+          onClick={onClickTranslate}
+          disabled={isTranslating}
+          className="text-muted-foreground text-xs underline underline-offset-2 hover:text-foreground disabled:cursor-default disabled:opacity-50"
+        >
+          {isShowingTranslation
+            ? t("原文を表示", "Show original")
+            : translateLinkLabel}
+        </button>
+      )}
+      {isShowingTranslation && (
+        <div className="rounded-md bg-muted p-2">
+          {isTranslating ? (
+            <p className="text-muted-foreground text-xs">
+              {t("翻訳中...", "Translating...")}
+            </p>
+          ) : (
+            <p className="whitespace-pre-wrap break-words text-muted-foreground text-sm">
+              {translatedText}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  ) : null
+
   // ミュートされたコメントの表示
   if (props.isMuted && !showMutedComment) {
     return (
@@ -277,8 +329,9 @@ export function WorkComment(props: Props) {
   return (
     <>
       <div
+        id={`comment-${props.commentId}`}
         className={cn(
-          "flex items-start gap-3",
+          "flex scroll-mt-24 items-start gap-3",
           props.isMuted &&
             "border-gray-300 border-l-2 pl-4 opacity-60 dark:border-gray-700",
         )}
@@ -325,63 +378,13 @@ export function WorkComment(props: Props) {
               </div>
             )}
           </div>
-          {hasSupport && props.support && (
-            <SupportCoinBreakdown
-              freeCoinAmount={props.support.freeCoinAmount}
-              premiumCoinAmount={props.support.premiumCoinAmount}
-              totalPt={props.support.totalPt}
-            />
-          )}
-          {props.text && (
-            <div className="space-y-2">
-              <p className="overflow-hidden whitespace-pre-wrap break-words text-[15px] leading-relaxed">
-                {props.text}
-              </p>
-              {props.moderationSummary?.moderationStatus === "REJECTED" && (
-                <div className="rounded-md border border-amber-200 bg-amber-50 p-2 text-amber-900 text-xs">
-                  <p>
-                    {props.moderationSummary.userNotice ??
-                      t(
-                        "このコメントは審査により他のユーザーには表示されていません。",
-                        "This comment is hidden from other users after moderation.",
-                      )}
-                  </p>
-                  {props.moderationSummary.appealedAt && (
-                    <p className="mt-1 opacity-80">
-                      {t(
-                        "異議申し立てを受け付けています。確認をお待ちください。",
-                        "Your appeal has been received.",
-                      )}
-                    </p>
-                  )}
-                </div>
-              )}
-              {shouldShowTranslateLink && (
-                <button
-                  type="button"
-                  onClick={onClickTranslate}
-                  disabled={isTranslating}
-                  className="text-muted-foreground text-xs underline underline-offset-2 hover:text-foreground disabled:cursor-default disabled:opacity-50"
-                >
-                  {isShowingTranslation
-                    ? t("原文を表示", "Show original")
-                    : translateLinkLabel}
-                </button>
-              )}
-              {isShowingTranslation && (
-                <div className="rounded-md bg-muted p-2">
-                  {isTranslating ? (
-                    <p className="text-muted-foreground text-xs">
-                      {t("翻訳中...", "Translating...")}
-                    </p>
-                  ) : (
-                    <p className="whitespace-pre-wrap break-words text-muted-foreground text-sm">
-                      {translatedText}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
+          {hasSupport && props.support ? (
+            // 推し付きは段階の色の帯＋本文の囲み（スーパーチャットのように通常のコメントより目立たせる）
+            <SupportSuperChatCard support={props.support}>
+              {textBlock}
+            </SupportSuperChatCard>
+          ) : (
+            textBlock
           )}
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link

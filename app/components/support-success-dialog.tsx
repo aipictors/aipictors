@@ -1,6 +1,17 @@
-import { Heart } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog"
+import { HeartHandshake } from "lucide-react"
+import {
+  SupportCoinCounts,
+  SupportSentBurst,
+} from "~/components/support-super-chat"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { getSupportTier } from "~/utils/support-tier"
 
 type Props = {
   open: boolean
@@ -9,18 +20,33 @@ type Props = {
   targetUserIconUrl?: string | null
   targetUserName?: string
   totalPt?: number
+  /** 渡すと段階の色の帯にコインの枚数を大きく出す */
+  freeCoinAmount?: number
+  premiumCoinAmount?: number
 }
 
 export function SupportSuccessDialog(props: Props) {
   const t = useTranslation()
+  const tier = getSupportTier(props.totalPt ?? 0)
+  const hasCounts =
+    props.freeCoinAmount !== undefined || props.premiumCoinAmount !== undefined
 
   return (
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent className="w-[calc(100vw-1rem)] max-w-sm overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-rose-50 via-white to-orange-50 p-0 shadow-2xl dark:from-rose-950 dark:via-slate-900 dark:to-orange-950">
-        <div className="px-6 pt-6 pb-5">
+        <div className="relative px-6 pt-6 pb-5">
+          {props.open && props.totalPt !== undefined && (
+            <SupportSentBurst totalPt={props.totalPt} />
+          )}
           <DialogHeader>
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-rose-500 dark:bg-rose-900/60 dark:text-rose-200">
-              <Heart className="h-7 w-7 fill-current" />
+            <div
+              className={cn(
+                "mx-auto flex h-14 w-14 items-center justify-center rounded-full motion-safe:animate-[aip-support-pop_0.5s_ease-out_both]",
+                tier?.chipClassName ??
+                  "bg-rose-100 text-rose-500 dark:bg-rose-900/60 dark:text-rose-200",
+              )}
+            >
+              <HeartHandshake className="h-7 w-7" />
             </div>
             <DialogTitle className="pt-3 text-center text-lg">
               {t("推しが完了しました", "Support sent")}
@@ -29,8 +55,23 @@ export function SupportSuccessDialog(props: Props) {
 
           <div className="mt-5 space-y-4">
             {props.totalPt !== undefined && (
-              <div className="mx-auto w-fit rounded-full bg-rose-500 px-3 py-1 font-semibold text-sm text-white dark:bg-rose-400 dark:text-slate-950">
-                +{props.totalPt}pt
+              <div
+                className={cn(
+                  "mx-auto flex w-fit items-center gap-3 rounded-full px-4 py-1.5 font-semibold text-sm motion-safe:animate-[aip-support-pop_0.5s_ease-out_0.1s_both]",
+                  tier?.chipClassName ??
+                    "bg-rose-500 text-white dark:bg-rose-400 dark:text-slate-950",
+                )}
+              >
+                {hasCounts && (
+                  <SupportCoinCounts
+                    support={{
+                      freeCoinAmount: props.freeCoinAmount ?? 0,
+                      premiumCoinAmount: props.premiumCoinAmount ?? 0,
+                      totalPt: props.totalPt,
+                    }}
+                  />
+                )}
+                <span className="tabular-nums">+{props.totalPt}pt</span>
               </div>
             )}
 
@@ -43,7 +84,7 @@ export function SupportSuccessDialog(props: Props) {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <Heart className="h-5 w-5 text-rose-400" />
+                  <HeartHandshake className="h-5 w-5 text-rose-400" />
                 )}
               </div>
 

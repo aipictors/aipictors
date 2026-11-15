@@ -14,6 +14,11 @@ import {
   PremiumSupportCoinIcon,
 } from "~/components/support-coin-icons"
 import { SupportSuccessDialog } from "~/components/support-success-dialog"
+import {
+  SupportRewardNote,
+  SupportTierChip,
+  supportAmountButtonClassName,
+} from "~/components/support-super-chat"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import {
@@ -26,8 +31,9 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
-import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
+import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
+import { getSupportTier } from "~/utils/support-tier"
 
 type Props = {
   targetUserId: string
@@ -40,6 +46,8 @@ type Props = {
   triggerClassName?: string
   /** profile: マイページ用。目立つボタン 1 つにして、説明はダイアログの中に置く */
   variant?: "default" | "profile"
+  /** 「クリエイターの報酬につながります」の一言。R18 の作品のページでは false */
+  showRewardNote?: boolean
 }
 
 type CoinBreakdown = {
@@ -93,6 +101,7 @@ export function SupportButton({
   onSuccess,
   triggerClassName,
   variant = "default",
+  showRewardNote = true,
 }: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
@@ -105,6 +114,7 @@ export function SupportButton({
   const [isSuccessOpen, setIsSuccessOpen] = useState(false)
   const [successThankYouMessage, setSuccessThankYouMessage] = useState("")
   const [successTotalPt, setSuccessTotalPt] = useState<number | null>(null)
+  const [successCoins, setSuccessCoins] = useState({ free: 0, premium: 0 })
   const isSubmittingRef = useRef(false)
   const [currentFreeCoinBalance, setCurrentFreeCoinBalance] = useState(
     freeCoinBalance ?? 0,
@@ -303,6 +313,10 @@ export function SupportButton({
 
       setSuccessThankYouMessage(resolvedThankYouMessage)
       setSuccessTotalPt(breakdown.totalPt)
+      setSuccessCoins({
+        free: breakdown.freeCoinsUsed,
+        premium: breakdown.premiumCoinsUsed,
+      })
       setIsSuccessOpen(true)
       setIsOpen(false)
       setIsAnonymous(false)
@@ -491,11 +505,19 @@ export function SupportButton({
             <div className="space-y-2">
               <div className="grid grid-cols-5 gap-2">
                 {COIN_OPTIONS[coinType].map((option) => (
-                  <Button
+                  <button
                     key={option}
                     type="button"
-                    variant={amount === option ? "default" : "outline"}
-                    className="h-11 rounded-xl px-0 font-bold tabular-nums"
+                    aria-pressed={amount === option}
+                    className={cn(
+                      "h-11 rounded-xl px-0",
+                      supportAmountButtonClassName(
+                        getSupportTier(
+                          coinType === "FREE" ? option : option * 10,
+                        ),
+                        amount === option,
+                      ),
+                    )}
                     disabled={isLoading || option > coinBalance}
                     onClick={() => {
                       hasTouchedAmountRef.current = true
@@ -503,7 +525,7 @@ export function SupportButton({
                     }}
                   >
                     {option.toLocaleString()}
-                  </Button>
+                  </button>
                 ))}
               </div>
               <div className="flex items-center gap-2">
@@ -557,6 +579,22 @@ export function SupportButton({
               </div>
             )}
 
+            {breakdown && (
+              // 選んだ枚数の段階の色（コメントやランキングでこの色で目立つ）
+              <div className="flex items-center justify-between gap-2 rounded-xl bg-muted/60 px-3 py-2">
+                <span className="text-muted-foreground text-xs">
+                  {t("この推しの色", "Support color")}
+                </span>
+                <SupportTierChip
+                  support={{
+                    freeCoinAmount: breakdown.freeCoinsUsed,
+                    premiumCoinAmount: breakdown.premiumCoinsUsed,
+                    totalPt: breakdown.totalPt,
+                  }}
+                />
+              </div>
+            )}
+
             <label
               htmlFor="support-anonymous"
               className="flex cursor-pointer items-center gap-2 text-sm"
@@ -569,6 +607,8 @@ export function SupportButton({
               />
               {t("匿名で推す", "Support anonymously")}
             </label>
+
+            {showRewardNote && <SupportRewardNote />}
 
             <Button
               onClick={handleSupport}
@@ -610,6 +650,8 @@ export function SupportButton({
         targetUserName={resolvedTargetUserName}
         thankYouMessage={successThankYouMessage}
         totalPt={successTotalPt ?? undefined}
+        freeCoinAmount={successCoins.free}
+        premiumCoinAmount={successCoins.premium}
       />
     </>
   )

@@ -1,5 +1,4 @@
 import { useQuery } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { useContext, useRef, useState } from "react"
 import { FollowButton } from "~/components/button/follow-button"
@@ -9,10 +8,13 @@ import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 
 type Props = {
+  /** R18 の作品のページでは推しの欄に報酬の一言を出さない */
+  showSupportRewardNote?: boolean
   userId: string
   userLogin: string
   userName: string
@@ -118,6 +120,7 @@ export function WorkUser(props: Props) {
             targetUserName={props.userName}
             targetUserIconUrl={props.userIconImageURL}
             variant="profile"
+            showRewardNote={props.showSupportRewardNote ?? true}
             triggerClassName="h-10 w-full px-3 text-sm"
           />
         )}

@@ -1,4 +1,3 @@
-import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { useLocation, useSearchParams } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
@@ -6,6 +5,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
 import { AuthContext } from "~/contexts/auth-context"
+import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
@@ -19,10 +19,10 @@ import {
   viewerUserQuery,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-queries"
 import {
-  calculateCommentSupportDraft,
-  clearPremiumCheckoutSearchParams,
   type Comment,
   type CommentSupportDraft,
+  calculateCommentSupportDraft,
+  clearPremiumCheckoutSearchParams,
   excludeShownComments,
   fetchCoinSummary,
   type ReplyComment,
@@ -45,6 +45,8 @@ export type WorkCommentListProps = {
   defaultShowCommentCount?: number
   isWorkOwnerBlocked?: boolean
   isLoadingComments?: boolean
+  /** 作品の年齢区分。全年齢（G / R15）のときだけ推しの欄に報酬の一言を出す */
+  workRating?: string | null
 }
 
 /**
@@ -90,6 +92,8 @@ export function useWorkCommentList(props: WorkCommentListProps) {
   const [supportSuccessState, setSupportSuccessState] = useState<{
     message: string
     totalPt: number
+    freeCoinAmount: number
+    premiumCoinAmount: number
   } | null>(null)
   const [isPremiumPurchaseDialogOpen, setIsPremiumPurchaseDialogOpen] =
     useState(false)
@@ -434,6 +438,8 @@ export function useWorkCommentList(props: WorkCommentListProps) {
           setSupportSuccessState({
             message: res.data.createWorkComment.supportThankYouMessage,
             totalPt: confirmedSupportDraft.totalPt,
+            freeCoinAmount: confirmedSupportDraft.freeCoinAmount,
+            premiumCoinAmount: confirmedSupportDraft.premiumCoinAmount,
           })
         }
 
@@ -517,12 +523,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
       return
     }
 
-    sendComment(
-      inputComment,
-      "-1",
-      props.workId,
-      currentSupportDraft,
-    )
+    sendComment(inputComment, "-1", props.workId, currentSupportDraft)
   }
 
   const showCommentsBeforeMore = showComments.slice(
@@ -610,6 +611,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     supportSuccessState,
     userAvatarFrame,
     userIcon,
+    workRating: props.workRating,
   }
 }
 

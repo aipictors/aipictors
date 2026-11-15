@@ -9,6 +9,7 @@ import { WorkCommentExpandedThread } from "~/routes/($lang)._main.posts.$post._i
 import { WorkCommentForm } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-form"
 import { WorkCommentNewList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-new-list"
 import { WorkCommentPremiumResultDialog } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-premium-result-dialog"
+import { WorkCommentSupportStrip } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-support-strip"
 import { WorkCommentThread } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-thread"
 import {
   useWorkCommentList,
@@ -75,6 +76,11 @@ export function WorkCommentList(props: WorkCommentListProps) {
               : showComments.length + (showNewComments?.length ?? 0)}
           </span>
         </h2>
+        <WorkCommentSupportStrip
+          comments={[...(showNewComments ?? []), ...showComments].filter(
+            (item) => !item.isMuted && !item.isSensitive,
+          )}
+        />
         {props.isWorkOwnerBlocked && (
           <div className="rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
             {t(
@@ -205,6 +211,8 @@ export function WorkCommentList(props: WorkCommentListProps) {
         targetUserName={props.workOwnerName ?? t("クリエイター", "Creator")}
         thankYouMessage={supportSuccessState?.message ?? ""}
         totalPt={supportSuccessState?.totalPt}
+        freeCoinAmount={supportSuccessState?.freeCoinAmount}
+        premiumCoinAmount={supportSuccessState?.premiumCoinAmount}
       />
 
       <PurchasePremiumCoinsDialog

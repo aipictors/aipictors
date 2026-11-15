@@ -32,9 +32,9 @@ import {
   newCommentsQuery,
   workCommentsQuery,
 } from "~/routes/($lang)._main.posts.$post._index/route"
+import { mergeWorkViewerState } from "~/routes/($lang)._main.posts.$post._index/utils/merge-work-viewer-state"
 import { getJstDate } from "~/utils/jst-date"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { mergeWorkViewerState } from "~/routes/($lang)._main.posts.$post._index/utils/merge-work-viewer-state"
 
 /** 作者の他の作品に出す年齢種別（作品ページと一緒に読む分と同じ） */
 const AUTHOR_WORKS_RATINGS: ("G" | "R15" | "R18" | "R18G")[] = ["G", "R15"]
@@ -255,6 +255,7 @@ export function WorkContainer(props: Props) {
                   workOwnerId={work.user?.id}
                   workOwnerIconImageURL={work.user?.iconUrl}
                   workOwnerName={work.user?.name}
+                  workRating={work.rating}
                   isWorkOwnerBlocked={work.user?.isBlocked ?? false}
                 />
               </div>

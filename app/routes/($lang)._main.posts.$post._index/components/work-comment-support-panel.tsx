@@ -1,10 +1,17 @@
+import { useContext } from "react"
 import { CoinAmountStepper } from "~/components/coin-amount-stepper"
 import {
   FreeSupportCoinIcon,
   PremiumSupportCoinIcon,
 } from "~/components/support-coin-icons"
+import {
+  SupportRewardNote,
+  SupportSuperChatCard,
+  supportAmountButtonClassName,
+} from "~/components/support-super-chat"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
@@ -12,6 +19,11 @@ import {
   SUPPORT_PREMIUM_COIN_STEPS,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import type { WorkCommentListState } from "~/routes/($lang)._main.posts.$post._index/hooks/use-work-comment-list"
+import {
+  getSupportTier,
+  isCreatorRewardRating,
+  toSupportPt,
+} from "~/utils/support-tier"
 
 /**
  * コメントに付ける推しコインの入力欄
@@ -20,6 +32,8 @@ export function WorkCommentSupportPanel(
   props: Pick<
     WorkCommentListState,
     | "coinBalances"
+    | "comment"
+    | "workRating"
     | "currentFreeSupportCoinAmount"
     | "currentPremiumSupportCoinAmount"
     | "isLoadingCoinSummary"
@@ -34,8 +48,11 @@ export function WorkCommentSupportPanel(
   >,
 ) {
   const t = useTranslation()
+  const authContext = useContext(AuthContext)
   const {
     coinBalances,
+    comment,
+    workRating,
     currentFreeSupportCoinAmount,
     currentPremiumSupportCoinAmount,
     isLoadingCoinSummary,
@@ -48,6 +65,11 @@ export function WorkCommentSupportPanel(
     supportIsAnonymous,
     supportPremiumCoinAmount,
   } = props
+
+  const previewPt = toSupportPt(
+    currentFreeSupportCoinAmount,
+    currentPremiumSupportCoinAmount,
+  )
 
   return (
     <div className="space-y-2.5 rounded-2xl bg-rose-500/5 p-3 ring-1 ring-rose-500/20 md:ml-13">
@@ -119,13 +141,19 @@ export function WorkCommentSupportPanel(
                   ? coinBalances.freeBalance
                   : coinBalances.premiumBalance
               return (
-                <Button
+                <button
                   key={amount}
                   type="button"
-                  size="sm"
-                  variant={current === amount ? "default" : "outline"}
                   aria-pressed={current === amount}
-                  className="h-9 min-w-0 flex-1 rounded-full bg-background px-0 font-bold tabular-nums aria-pressed:bg-primary"
+                  className={cn(
+                    "h-9 min-w-0 flex-1 rounded-full px-0 text-sm",
+                    supportAmountButtonClassName(
+                      getSupportTier(
+                        supportCoinType === "FREE" ? amount : amount * 10,
+                      ),
+                      current === amount,
+                    ),
+                  )}
                   disabled={amount > balance}
                   onClick={() =>
                     setSupportCoinAmount(
@@ -135,7 +163,7 @@ export function WorkCommentSupportPanel(
                   }
                 >
                   {amount}
-                </Button>
+                </button>
               )
             })}
           </div>
@@ -167,6 +195,38 @@ export function WorkCommentSupportPanel(
         />
         {t("匿名で推す", "Support anonymously")}
       </label>
+      {previewPt > 0 && (
+        // 送るとコメントがどう目立つかの見本（段階の色）
+        <div className="space-y-1">
+          <p className="text-[11px] text-muted-foreground">
+            {t(
+              "コメントはこう表示されます",
+              "Your comment will look like this",
+            )}
+          </p>
+          <SupportSuperChatCard
+            support={{
+              freeCoinAmount: currentFreeSupportCoinAmount,
+              premiumCoinAmount: currentPremiumSupportCoinAmount,
+              totalPt: previewPt,
+            }}
+            header={
+              <span className="block truncate font-bold text-xs">
+                {supportIsAnonymous
+                  ? t("匿名", "Anonymous")
+                  : (authContext.displayName ?? t("あなた", "You"))}
+              </span>
+            }
+          >
+            <p className="line-clamp-3 whitespace-pre-wrap break-words text-sm">
+              {comment.trim() === ""
+                ? t("（コメントなしでも送れます）", "(Comment is optional)")
+                : comment}
+            </p>
+          </SupportSuperChatCard>
+        </div>
+      )}
+      {isCreatorRewardRating(workRating) && <SupportRewardNote isWork />}
     </div>
   )
 }
