@@ -16,6 +16,10 @@ interface TabItem {
    * リンク先。あればリンク（a 要素）にする（検索エンジンがたどれる・新しいタブで開ける）
    */
   href?: string
+  /**
+   * リンクを押したとき（preventDefault で移動を止められる）
+   */
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void
 }
 
 interface AnimatedTabsProps {
@@ -106,6 +110,7 @@ export function AppAnimatedTabs({
                 to={tab.href}
                 prefetch="intent"
                 aria-current={value === tab.value ? "page" : undefined}
+                onClick={tab.onClick}
                 onMouseEnter={() => handleHover(i)}
                 onMouseLeave={resetIndicator}
                 className={className}

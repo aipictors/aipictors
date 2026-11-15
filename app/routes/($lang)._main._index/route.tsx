@@ -4,7 +4,7 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
-import { useId } from "react"
+import { useId, useState } from "react"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import { HomeEnglishHero } from "~/components/home-english-hero"
 import { Tabs } from "~/components/ui/tabs"
@@ -20,6 +20,7 @@ import { HomeGuestHero } from "~/routes/($lang)._main._index/components/home-gue
 import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeNewTabContent } from "~/routes/($lang)._main._index/components/home-new-tab-content"
 import { HomeNewcomerReactionsCard } from "~/routes/($lang)._main._index/components/home-newcomer-reactions-card"
+import { HomeRankingTabContent } from "~/routes/($lang)._main._index/components/home-ranking-tab-content"
 import { HomeRecommendedTabContent } from "~/routes/($lang)._main._index/components/home-recommended-tab-content"
 import { homeLoader } from "~/routes/($lang)._main._index/home-loader.server"
 import { useHomePageState } from "~/routes/($lang)._main._index/hooks/use-home-page-state"
@@ -64,6 +65,20 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
   const isLoggedIn = state.authContext.isLoggedIn
 
+  // ランキングはページを移らずタブの中で出す（URL は変えない。サーバーの描画では常に閉じている）
+  const [isRankingOpen, setIsRankingOpen] = useState(false)
+  const shownTab = isRankingOpen ? "ranking" : currentTab
+  /** 今のページのタブを押したときは、移動せずにランキングを閉じるだけ（ページのデータを取り直さない） */
+  const closeRankingOnSameTab =
+    (tab: HomeTab) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+      if (isRankingOpen && tab === currentTab) {
+        event.preventDefault()
+        setIsRankingOpen(false)
+        return
+      }
+      setIsRankingOpen(false)
+    }
+
   if (data === null) {
     return null
   }
@@ -92,7 +107,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
         className="space-y-3"
       >
         <HomeEnglishHero />
-        {currentTab === "home" && <HomeGuestHero />}
+        {currentTab === "home" && !isRankingOpen && <HomeGuestHero />}
         {/* ヘッダー部分: タブ */}
         <div className="-mx-4 bg-background/98 px-4 py-1">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
@@ -103,6 +118,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                     label: t("ホーム", "Home"),
                     value: "home",
                     href: HOME_TAB_PATHS.home,
+                    onClick: closeRankingOnSameTab("home"),
                   },
                   // フォロー中・お気に入りタグはログインしている人だけ（ログインしていないと中身が無い）
                   ...(isLoggedIn || currentTab === "follow-user"
@@ -111,6 +127,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                           label: t("フォロー中", "Following"),
                           value: "follow-user",
                           href: HOME_TAB_PATHS["follow-user"],
+                          onClick: closeRankingOnSameTab("follow-user"),
                           badge:
                             followFeedNew.count > 0 &&
                             currentTab !== "follow-user" ? (
@@ -127,6 +144,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                     label: t("おすすめ", "For you"),
                     value: "recommended",
                     href: HOME_TAB_PATHS.recommended,
+                    onClick: closeRankingOnSameTab("recommended"),
                   },
                   ...(isLoggedIn || currentTab === "follow-tag"
                     ? [
@@ -134,37 +152,49 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                           label: t("お気に入りタグ", "Favorite tags"),
                           value: "follow-tag",
                           href: HOME_TAB_PATHS["follow-tag"],
+                          onClick: closeRankingOnSameTab("follow-tag"),
                         },
                       ]
                     : []),
                   {
                     label: t("ランキング", "Ranking"),
                     value: "ranking",
-                    href: "/rankings",
                   },
                   {
                     label: t("新着", "New"),
                     value: "new",
                     href: HOME_TAB_PATHS.new,
+                    onClick: closeRankingOnSameTab("new"),
                   },
                 ]}
-                value={currentTab}
-                onChange={handleTabChange}
+                value={shownTab}
+                onChange={(tab) => {
+                  if (tab === "ranking") {
+                    setIsRankingOpen(true)
+                    return
+                  }
+                  handleTabChange(tab)
+                }}
                 variant="pill"
               />
             </div>
           </div>
         </div>
-        {/* ---------------------- タブ: ホーム（推薦・ランキングなどの欄） ---------------------- */}
-        <HomeFeedTabContent {...state} data={data} />
-        {/* ---------------------- タブ: おすすめ ---------------------- */}
-        <HomeRecommendedTabContent {...state} data={data} />
-        {/* ---------------------- タブ: 新着・人気 ---------------------- */}
-        <HomeNewTabContent {...state} checkboxId={checkboxId} data={data} />
-        {/* ---------------------- タブ: フォロー中のユーザ ---------------------- */}
-        <HomeFollowUserTabContent {...state} />
-        {/* ---------------------- タブ: お気に入りタグ ---------------------- */}
-        <HomeFollowTagTabContent {...state} />
+        {/* ---------------------- タブ: ランキング（ページを移らずに出す） ---------------------- */}
+        {isRankingOpen && <HomeRankingTabContent />}
+        {/* ランキングを開いている間も、元のタブの中身は消さずに隠す（戻ったときに読み直さない） */}
+        <div className={isRankingOpen ? "hidden" : "contents"}>
+          {/* ---------------------- タブ: ホーム（推薦・ランキングなどの欄） ---------------------- */}
+          <HomeFeedTabContent {...state} data={data} />
+          {/* ---------------------- タブ: おすすめ ---------------------- */}
+          <HomeRecommendedTabContent {...state} data={data} />
+          {/* ---------------------- タブ: 新着・人気 ---------------------- */}
+          <HomeNewTabContent {...state} checkboxId={checkboxId} data={data} />
+          {/* ---------------------- タブ: フォロー中のユーザ ---------------------- */}
+          <HomeFollowUserTabContent {...state} />
+          {/* ---------------------- タブ: お気に入りタグ ---------------------- */}
+          <HomeFollowTagTabContent {...state} />
+        </div>
       </Tabs>
 
       {/* ────────── 作品ダイアログ ────────── */}
