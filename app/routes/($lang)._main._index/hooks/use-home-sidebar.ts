@@ -1,13 +1,13 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import type { FragmentOf } from "gql.tada"
+import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import type { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import {
   homeSidebarQuery,
   randomCustomerAdvertisementQuery,
   updateClickedCountCustomerAdvertisementMutation,
   viewerCurrentPassQuery,
 } from "~/routes/($lang)._main._index/components/home-sidebar-queries"
-import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import type { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import type { HomeLoaderData } from "~/routes/($lang)._main._index/home-loader.server"
 import type { HomeTab } from "~/routes/($lang)._main._index/utils/home-tabs"
 
@@ -42,10 +42,14 @@ export function useHomeSidebar(props: {
   const [updateClickedCountCustomerAdvertisement] = useMutation(
     updateClickedCountCustomerAdvertisementMutation,
   )
+  // 新しいユーザー・コメントはサーバーの一覧（HTML に入っている）があればそれを使い、ブラウザで取り直さない
+  const hasServerSidebarData =
+    (Array.isArray(data.newPostedUsers) && data.newPostedUsers.length > 0) ||
+    (Array.isArray(data.newComments) && data.newComments.length > 0)
   const { data: homeSidebarData, loading: isHomeSidebarLoading } = useQuery(
     homeSidebarQuery,
     {
-      skip: !shouldLoadHomeSidebarQueries,
+      skip: !shouldLoadHomeSidebarQueries || hasServerSidebarData,
       fetchPolicy: "cache-first",
     },
   )

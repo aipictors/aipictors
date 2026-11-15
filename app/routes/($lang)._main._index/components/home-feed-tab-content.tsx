@@ -1,26 +1,20 @@
 import type { FragmentOf } from "gql.tada"
 import type { CSSProperties } from "react"
-import { Suspense } from "react"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { TabsContent } from "~/components/ui/tabs"
 import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
 import { HomePromotionWorksSection } from "~/components/work/work-promotion"
 import { useTranslation } from "~/hooks/use-translation"
-import { HomeAwardWorkSection } from "~/routes/($lang)._main._index/components/home-award-work-section"
+import { HomeDailyThemeCard } from "~/routes/($lang)._main._index/components/home-daily-theme-card"
 import {
   HomeDeferredSection,
   HomeWorkSectionPlaceholder,
 } from "~/routes/($lang)._main._index/components/home-deferred-section"
-import type { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
-import { HomeNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import { HomeHotCarousel } from "~/routes/($lang)._main._index/components/home-hot-carousel"
 import { HomeQuickLinks } from "~/routes/($lang)._main._index/components/home-quick-links"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import { HomeSidebar } from "~/routes/($lang)._main._index/components/home-sidebar"
 import { HomeSupportRankingSection } from "~/routes/($lang)._main._index/components/home-support-ranking-section"
-import { HomeTagList } from "~/routes/($lang)._main._index/components/home-tag-list"
-import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
-import { HomeWorksTagSection } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import type { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type { HomeLoaderData } from "~/routes/($lang)._main._index/home-loader.server"
@@ -61,27 +55,34 @@ export function HomeFeedTabContent(
 
   return (
     <TabsContent value="home" className="m-0 flex flex-col space-y-4">
-      <Suspense fallback={<AppLoadingPage />}>
-        {data.dailyTheme && (
-          <div>
-            <HomeTagList
-              themeTitle={data.dailyTheme.title}
-              themeEnTitle={data.dailyTheme.enTitle}
-              hotTags={data.hotTags}
-            />
-          </div>
-        )}
-      </Suspense>
-      <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-        <div className="flex w-full min-w-0 flex-col space-y-8 overflow-hidden md:max-w-[calc(100%_-_278px)]">
-          <HomeQuickLinks />
+      <div className="block space-y-4 md:flex md:space-x-6 md:space-y-0">
+        <div className="flex w-full min-w-0 flex-col space-y-6 md:max-w-[calc(100%_-_286px)] md:space-y-8">
+          {/* お知らせ（開催中のイベント・サイトのお知らせ）は一番上 */}
           <HomeQuickPreviewBar
             events={data.eventPreviews}
             featuredReleases={data.featuredReleaseList}
             releaseList={data.releaseList}
           />
+          {/* ここからアプリのホームと同じ並び: いま人気 → 今日のお題 → ランキング・プラン → 応援ランキング → おすすめ作品 */}
+          <HomeHotCarousel works={data.hotWorks} />
+          <div className="space-y-3">
+            {data.dailyTheme && (
+              <HomeDailyThemeCard
+                theme={{
+                  ...data.dailyTheme,
+                  firstWork: data.dailyTheme.firstWork ?? null,
+                }}
+              />
+            )}
+            <HomeQuickLinks />
+          </div>
+          {/* クリエイターの宣伝（PR） */}
           <HomePromotionWorksSection />
-          {/* サーバーで取った一覧をすぐ出す（スクロールやログイン確認を待たない） */}
+          {/* 表示する応援がないときは中身が空になる（空の枠で余白が増えないように隠す） */}
+          <div className="empty:hidden">
+            <HomeSupportRankingSection />
+          </div>
+          {/* おすすめ作品（ユーザからの推薦）。サーバーで取った一覧をすぐ出す（スクロールやログイン確認を待たない） */}
           <HomeWorksUsersRecommendedSection
             works={
               data.promotionWorks as FragmentOf<
@@ -119,69 +120,9 @@ export function HomeFeedTabContent(
               </HomeDeferredSection>
             </div>
           )}
-          <div style={offscreenSectionStyle(1400)}>
-            <HomeNewUsersWorksSection
-              works={
-                data.newUserWorks as FragmentOf<
-                  typeof HomeNewUsersWorksFragment
-                >[]
-              }
-              onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-              onWorksLoaded={(works) =>
-                updateHomeSectionWorks("newUsers", works)
-              }
-            />
-          </div>
-          <div style={offscreenSectionStyle(1000)}>
-            <HomeDeferredSection
-              fallback={
-                <HomeWorkSectionPlaceholder
-                  title={t("前日ランキング", "Previous Day Ranking")}
-                  variant="cropped"
-                />
-              }
-            >
-              <HomeAwardWorkSection
-                awardDateText={data.awardDateText}
-                title={t("前日ランキング", "Previous Day Ranking")}
-                awards={[]}
-                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-              />
-            </HomeDeferredSection>
-          </div>
-          <div style={offscreenSectionStyle(1000)}>
-            <HomeDeferredSection
-              fallback={
-                <HomeWorkSectionPlaceholder
-                  title={t("注目タグの作品", "Works from trending tags")}
-                  variant="cropped"
-                />
-              }
-            >
-              <HomeWorksTagSection
-                tag={data.firstTag}
-                works={[]}
-                secondTag={data.secondTag}
-                secondWorks={[]}
-                isCropped={true}
-                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                onWorksLoaded={(works) => updateHomeSectionWorks("tags", works)}
-              />
-            </HomeDeferredSection>
-          </div>
-          <div style={offscreenSectionStyle(280)} className="space-y-4">
-            <HomeTagsSection
-              title={t("人気タグ", "Popular Tags")}
-              tags={data.recommendedTags}
-            />
-          </div>
-          {/* 表示する応援がないときは中身が空になる（空の枠で余白が増えないように隠す） */}
-          <div style={offscreenSectionStyle(1400)} className="empty:hidden">
-            <HomeSupportRankingSection />
-          </div>
         </div>
-        {/* 右カラム（スクロールしても見えるように固定） */}
-        <HomeSidebar {...sidebar} />
+        {/* 右カラム（スクロールしても見えるように固定）。PC だけ新しいユーザー・コメント・人気タグも */}
+        <HomeSidebar {...sidebar} recommendedTags={data.recommendedTags} />
       </div>
     </TabsContent>
   )

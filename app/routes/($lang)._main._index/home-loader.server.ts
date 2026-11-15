@@ -7,11 +7,13 @@ import { config } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
+import {
+  HOME_HOT_WORKS_COUNT,
+  HomeHotWorkFragment,
+} from "~/routes/($lang)._main._index/components/home-hot-carousel"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
-import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
-import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
@@ -53,7 +55,7 @@ const createBaseHomeLoaderData = (props: {
   eventPreviews: [] as HomePreviewEvent[],
   firstTag: props.firstTag,
   featuredReleaseList: props.featuredReleaseList,
-  hotTags: [] as FragmentOf<typeof HomeTagListItemFragment>[],
+  hotWorks: [] as FragmentOf<typeof HomeHotWorkFragment>[],
   importantRelease: props.importantRelease,
   initialNewWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
   initialRecommendedWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
@@ -161,7 +163,6 @@ export async function homeLoader(props: LoaderFunctionArgs) {
           year: now.getFullYear(),
           // 最初に見える一覧と右カラムはサーバーで取ってHTMLに入れる（以前は表示後にログイン確認を待ってから取得していた）
           promotionLimit: config.query.homeWorkCount.promotion,
-          newUserWorksLimit: config.query.homeWorkCount.newUser,
         },
       })
     : null
@@ -275,9 +276,11 @@ export async function homeLoader(props: LoaderFunctionArgs) {
       ...(resultData ?? {}),
       // 一覧に出すだけなので、詳細画面用の項目は HTML に入れない（作品のダイアログは開くときに取り直す）
       promotionWorks: toHomeListWorks(resultData?.promotionWorks),
-      newUserWorks: toHomeListWorks(resultData?.newUserWorks),
       eventPreviews,
-      hotTags: Array.isArray(resultData?.hotTags) ? resultData.hotTags : [],
+      // いま人気のカルーセル（アプリと同じ 10 件）
+      hotWorks: Array.isArray(resultData?.hotWorks)
+        ? resultData.hotWorks.slice(0, HOME_HOT_WORKS_COUNT)
+        : [],
       recommendedTags: Array.isArray(resultData?.recommendedTags)
         ? resultData.recommendedTags
         : [],
@@ -322,7 +325,6 @@ const query = graphql(
     $month: Int!
     $day: Int!
     $promotionLimit: Int!
-    $newUserWorksLimit: Int!
   ) {
     promotionWorks: works(
       offset: 0
@@ -330,13 +332,6 @@ const query = graphql(
       where: { isRecommended: true, sort: DESC, ratings: [G, R15] }
     ) {
       ...HomePromotionWork
-    }
-    newUserWorks(
-      offset: 0
-      limit: $newUserWorksLimit
-      where: { ratings: [G], isNowCreatedAt: true }
-    ) {
-      ...HomeNewUsersWorks
     }
     newPostedUsers(offset: 0, limit: 8) {
       ...HomeNewPostedUsers
@@ -352,9 +347,17 @@ const query = graphql(
       id
       title
       enTitle
+      year
+      month
+      day
+      worksCount
+      firstWork {
+        id
+        smallThumbnailImageURL
+      }
     }
-    hotTags {
-      ...HomeTagListItem
+    hotWorks(where: { isSensitive: false }) {
+      ...HomeHotWork
     }
     recommendedTags: recommendedTags(
       limit: 16
@@ -395,10 +398,9 @@ const query = graphql(
     }
   }`,
   [
-    HomeTagListItemFragment,
+    HomeHotWorkFragment,
     HomeTagFragment,
     HomePromotionWorkFragment,
-    HomeNewUsersWorksFragment,
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
   ],

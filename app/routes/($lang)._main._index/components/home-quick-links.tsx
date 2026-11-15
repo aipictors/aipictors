@@ -4,8 +4,7 @@ import { Link } from "~/lib/app/locale-router"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 /**
- * スマホのホームの、ランキングとプランへの大きな入口（アプリのホームと同じ 2 つ並び）
- * PC は左のメニューに同じ入口があるので出さない
+ * ホームの、ランキングとプランへの大きな入口（アプリのホームと同じ 2 つ並び）
  */
 export function HomeQuickLinks() {
   const t = useTranslation()
@@ -13,7 +12,7 @@ export function HomeQuickLinks() {
   return (
     <nav
       aria-label={t("ランキングとプラン", "Ranking and plans")}
-      className="grid grid-cols-2 gap-2.5 md:hidden"
+      className="grid grid-cols-2 gap-2.5"
     >
       <Link
         to="/rankings"
