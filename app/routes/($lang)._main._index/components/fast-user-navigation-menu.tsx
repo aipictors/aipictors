@@ -15,6 +15,8 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useQuery } from "@apollo/client/index"
 import { viewerBasicUserQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
 import { debugLog } from "~/utils/debug-logger"
+import { closeMenuOnNavigate } from "~/utils/close-menu-on-navigate"
+import { useLocation } from "@remix-run/react"
 
 import UserNavigationMenuContent, {
   prefetchUserNavigationMenu,
@@ -33,6 +35,11 @@ export function FastUserNavigationMenu(props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const [isOpen, setIsOpen] = useState(false)
+  // ページが変わったら閉じる（項目を押したあと、読み込みのあいだ開いたままにしない）
+  const location = useLocation()
+  useEffect(() => {
+    setIsOpen(false)
+  }, [location.pathname, location.search, location.key])
 
   // 基本情報のみ先に取得（キャッシュ優先、モバイル最適化）
   const { data } = useQuery(viewerBasicUserQuery, {
@@ -133,7 +140,9 @@ export function FastUserNavigationMenu(props: Props) {
           />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent
+        onClickCapture={closeMenuOnNavigate(() => setIsOpen(false))}
+      >
         <UserNavigationMenuContent onLogout={props.onLogout} />
       </DropdownMenuContent>
     </DropdownMenu>

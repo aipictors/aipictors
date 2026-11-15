@@ -1,5 +1,6 @@
 import { useLocation } from "@remix-run/react"
 import {
+  BanknoteIcon,
   BellIcon,
   BookmarkIcon,
   CalendarDaysIcon,
@@ -43,6 +44,12 @@ const NAV_ITEMS: NavItem[] = [
   },
   { to: "/my/likes", ja: "いいね", en: "Likes", icon: HeartIcon },
   { to: "/requests", ja: "リクエスト", en: "Requests", icon: HandCoinsIcon },
+  {
+    to: "/settings/creator-rewards",
+    ja: "収益の受け取り",
+    en: "Rewards payout",
+    icon: BanknoteIcon,
+  },
   { to: "/my/recommended", ja: "推薦", en: "Recommended", icon: ThumbsUpIcon },
   { to: "/my/views", ja: "閲覧履歴", en: "Views", icon: EyeIcon },
   { to: "/my/events", ja: "イベント", en: "Events", icon: CalendarDaysIcon },

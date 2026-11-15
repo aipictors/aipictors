@@ -24,6 +24,7 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
+import { closeMenuOnNavigate } from "~/utils/close-menu-on-navigate"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContentMode } from "~/hooks/use-content-mode"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
@@ -321,6 +322,10 @@ function HomeHeader(props: Props) {
   } = useBoolean()
 
   const [isOpen, setIsOpen] = useState(false)
+  // ページが変わったら左のメニューを閉じる
+  useEffect(() => {
+    setIsOpen(false)
+  }, [location.pathname, location.search, location.key])
   const close = () => {
     // マニュアルナビゲーション中フラグを設定
     isManualNavigationRef.current = true
@@ -438,7 +443,11 @@ function HomeHeader(props: Props) {
             )}
             side="left"
           >
-            <ScrollArea className="h-full overflow-x-hidden p-4">
+            <ScrollArea
+              className="h-full overflow-x-hidden p-4"
+              // ロゴ・項目・下のリンクなど、どれを押しても閉じる（同じページの項目を押したときも）
+              onClickCapture={closeMenuOnNavigate(close)}
+            >
               <Suspense fallback={null}>
                 <HomeMenuRouteList onClickMenuItem={close} />
               </Suspense>

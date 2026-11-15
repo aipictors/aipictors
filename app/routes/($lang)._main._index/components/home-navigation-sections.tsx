@@ -1,6 +1,7 @@
 import {
   ActivityIcon,
   AwardIcon,
+  BanknoteIcon,
   BookImageIcon,
   BookOpenIcon,
   BoxesIcon,
@@ -218,6 +219,12 @@ export function getHomeNavigationSections(
           href: link("/stickers"),
           label: ["スタンプ広場", "Stickers"],
           icon: StampIcon,
+        },
+        {
+          key: "creator-rewards",
+          href: "/settings/creator-rewards",
+          label: ["収益の受け取り", "Rewards payout"],
+          icon: BanknoteIcon,
         },
       ],
     },

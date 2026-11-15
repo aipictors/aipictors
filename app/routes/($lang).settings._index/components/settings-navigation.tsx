@@ -71,7 +71,10 @@ export function SettingsNavigation() {
         {
           href: "/settings/creator-rewards",
           icon: BanknoteIcon,
-          label: t("クリエイター報酬", "Creator Rewards"),
+          label: t(
+            "収益の受け取り（クリエイター報酬）",
+            "Rewards payout (Creator Rewards)",
+          ),
         },
         {
           href: "/settings/requests",

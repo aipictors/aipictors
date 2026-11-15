@@ -36,6 +36,29 @@ const loadSummary = () => {
 }
 
 /**
+ * クリエイター報酬のまとめ（マイページの「収益の受け取り」で金額と次にすることを出す）。null は読めなかったとき
+ */
+export const useCreatorRewardSummary = (enabled: boolean) => {
+  const [state, setState] = useState<{
+    isLoading: boolean
+    summary: CreatorRewardSummary | null
+  }>({ isLoading: enabled, summary: null })
+  useEffect(() => {
+    if (!enabled) return
+    let isActive = true
+    void loadSummary().then((summary) => {
+      if (!isActive) return
+      if (summary === null) cache = null
+      setState({ isLoading: false, summary })
+    })
+    return () => {
+      isActive = false
+    }
+  }, [enabled])
+  return state
+}
+
+/**
  * 受け取った推しの報酬（クリエイター側の画面で「報酬 〇〇円（保留中）」を出す）
  * 新しい API は使わず、換金の画面と同じ /api/creator-rewards のまとめを読む。enabled のときだけ読む
  */

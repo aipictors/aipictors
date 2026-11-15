@@ -27,7 +27,6 @@ export const userNavigationStyles = {
     myPage: "w-10 sm:w-12 md:w-16", // マイページ
     dashboard: "w-14 sm:w-18 md:w-24", // ダッシュボード
     myPosts: "w-12 sm:w-16 md:w-20", // 自分の作品
-    support: "w-10 sm:w-12 md:w-16", // 支援管理
     account: "w-10 sm:w-12 md:w-16", // アカウント
     contact: "w-14 sm:w-18 md:w-24", // お問い合わせ
     plus: "w-14 sm:w-18 md:w-24", // Aipictors+

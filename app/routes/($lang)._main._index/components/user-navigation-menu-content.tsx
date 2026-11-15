@@ -2,7 +2,7 @@ import { type ApolloClient, useQuery } from "@apollo/client/index"
 import { useLocation, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
-  CoffeeIcon,
+  BanknoteIcon,
   GemIcon,
   GiftIcon,
   HandCoinsIcon,
@@ -87,12 +87,6 @@ function UserNavigationMenuContent(props: Props) {
     fetchPolicy: "cache-and-network",
   })
 
-  const { data: tokenData } = useQuery(viewerTokenQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-    errorPolicy: "all",
-    fetchPolicy: "cache-and-network",
-  })
-
   useEffect(() => {
     if (!import.meta.env.DEV) return
     if (!viewerError) return
@@ -152,15 +146,11 @@ function UserNavigationMenuContent(props: Props) {
   const t = useTranslation()
   const locale = useLocale()
 
-  const promptonUser = data?.viewer?.user?.promptonUser?.id ?? ""
   const followerCount = data?.viewer?.user?.followersCount ?? 0
   const followCount = data?.viewer?.user?.followCount ?? 0
   const headerImageUrl = data?.viewer?.user.headerImageUrl ?? ""
   const iconUrl = data?.viewer?.user?.iconUrl ?? ""
   const avatarFrame = data?.viewer?.user?.avatarFrame ?? null
-  const featurePromptonRequest =
-    userSetting?.userSetting?.featurePromptonRequest ?? false
-  const viewerUserToken = tokenData?.viewer?.token
   const _isSensitiveToggleVisible =
     typeof window !== "undefined" ? location.pathname !== "/generation" : true
 
@@ -367,20 +357,11 @@ function UserNavigationMenuContent(props: Props) {
           icon={<HandCoinsIcon className={userNavigationStyles.menuIcon} />}
           label={t("リクエスト", "Requests")}
         />
-        {featurePromptonRequest &&
-          (promptonUser === "" && viewerUserToken ? (
-            <MenuItemLink
-              href={`https://prompton.io/integration?token=${viewerUserToken}`}
-              icon={<CoffeeIcon className={userNavigationStyles.menuIcon} />}
-              label={t("支援管理", "Support management")}
-            />
-          ) : (
-            <MenuItemLink
-              href={"https://prompton.io/viewer/requests"}
-              icon={<CoffeeIcon className={userNavigationStyles.menuIcon} />}
-              label={t("支援管理", "Support management")}
-            />
-          ))}
+        <MenuItemLink
+          href={getSensitiveLink("/settings/creator-rewards")}
+          icon={<BanknoteIcon className={userNavigationStyles.menuIcon} />}
+          label={t("収益の受け取り", "Rewards payout")}
+        />
         <MenuItemLink
           href={getSensitiveLink("/settings/account/login")}
           icon={<UserIcon className={userNavigationStyles.menuIcon} />}
@@ -513,17 +494,7 @@ const userSettingQuery = graphql(
       userId
       favoritedImageGenerationModelIds
       preferenceRating
-      featurePromptonRequest
       isNotifyComment
-    }
-  }`,
-)
-
-const viewerTokenQuery = graphql(
-  `query ViewerToken {
-    viewer {
-      id
-      token
     }
   }`,
 )
@@ -547,10 +518,6 @@ const viewerUserQuery = graphql(
           overlayImageUrl
           borderPadding
         }
-        promptonUser {
-          id
-          name
-        }
       }
     }
   }`,
@@ -565,7 +532,7 @@ export function prefetchUserNavigationMenu(client: ApolloClient<object>) {
   // 1 分以内に取ったものはそのまま使う
   if (Date.now() - prefetchedAt < 60_000) return
   prefetchedAt = Date.now()
-  for (const query of [viewerUserQuery, userSettingQuery, viewerTokenQuery]) {
+  for (const query of [viewerUserQuery, userSettingQuery]) {
     client.query({ query, fetchPolicy: "cache-first" }).catch(() => {
       prefetchedAt = 0
     })

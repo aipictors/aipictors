@@ -13,8 +13,8 @@ const SETTINGS_PAGES: { href: string; ja: string; en: string }[] = [
   },
   {
     href: "/settings/creator-rewards",
-    ja: "クリエイター報酬",
-    en: "Creator Rewards",
+    ja: "収益の受け取り（クリエイター報酬）",
+    en: "Rewards payout (Creator Rewards)",
   },
   {
     href: "/settings/requests",

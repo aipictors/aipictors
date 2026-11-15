@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import {
+  BanknoteIcon,
   BookmarkIcon,
   BoxIcon,
   CalendarDaysIcon,
@@ -23,6 +24,7 @@ import { useContext, useEffect, useState } from "react"
 import { Skeleton } from "~/components/ui/skeleton"
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
+import { useCreatorRewardSummary } from "~/hooks/use-creator-reward-earnings"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { fetchMyUserModels } from "~/lib/user-models/client"
@@ -120,6 +122,7 @@ export function DashboardHomeContents() {
 
   const coins = useCoinBalance()
   const models = useMyUserModels(!skip)
+  const rewards = useCreatorRewardSummary(!skip)
 
   const planName = pass?.type
     ? t(...(PASS_NAMES[pass.type] ?? [pass.type, pass.type]))
@@ -244,6 +247,9 @@ export function DashboardHomeContents() {
           )}
         />
       </section>
+
+      {/* 収益の受け取り（推しの報酬）。参加・口座の登録・金額をここから */}
+      <CreatorRewardsCard {...rewards} />
 
       {/* 実績 */}
       <Section title={t("実績", "Stats")}>
@@ -554,6 +560,88 @@ function QuickAction(props: {
       <Icon className="size-4" />
       {props.children}
     </Link>
+  )
+}
+
+function CreatorRewardsCard(props: ReturnType<typeof useCreatorRewardSummary>) {
+  const t = useTranslation()
+  const summary = props.summary
+  if (!props.isLoading && (!summary || !summary.config.enabled)) return null
+  const b = summary?.balances
+  const pendingYen = b ? b.holdingYen + b.availableYen + b.inPayoutYen : 0
+  const step = !summary?.joined
+    ? {
+        title: t("推しの応援を、円で受け取れます", "Receive support as cash"),
+        body: t(
+          "全年齢の作品が有料のプレミアムコインで推されると、1,000 コインにつき 500 円を銀行口座へ振り込みます。参加は無料です。",
+          "Get ¥500 per 1,000 purchased Premium Coins supported on your all-ages works, paid to your bank. Joining is free.",
+        ),
+        action: t("参加する", "Join"),
+      }
+    : !summary.profile?.payoutReady
+      ? {
+          title: t(
+            "口座を登録すると受け取れます",
+            "Register a bank account to get paid",
+          ),
+          body: t(
+            "Stripe で口座と本人確認を登録すると、締めの日に振り込まれます。",
+            "Register your bank account and identity with Stripe to be paid on each closing day.",
+          ),
+          action: t("口座を登録する", "Register account"),
+        }
+      : {
+          title: t("口座の登録は完了しています", "Your bank account is ready"),
+          body: t(
+            `毎月 ${(summary.config.closeDays ?? [summary.config.closeDay]).join("日・")}日に締めて振り込みます。`,
+            `Paid on day ${(summary.config.closeDays ?? [summary.config.closeDay]).join(" and ")} of each month.`,
+          ),
+          action: t("明細を見る", "See details"),
+        }
+  return (
+    <section>
+      <Link
+        to="/settings/creator-rewards"
+        className="group flex flex-col gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 transition-colors hover:bg-emerald-500/10 md:flex-row md:items-center md:justify-between"
+      >
+        <div className="min-w-0 space-y-1">
+          <p className="inline-flex items-center gap-1.5 font-semibold text-emerald-700 text-xs dark:text-emerald-300">
+            <BanknoteIcon className="size-4" />
+            {t("収益の受け取り", "Rewards payout")}
+          </p>
+          {props.isLoading ? (
+            <Skeleton className="h-5 w-48" />
+          ) : (
+            <>
+              <p className="font-bold">{step.title}</p>
+              <p className="text-muted-foreground text-xs leading-5">
+                {step.body}
+              </p>
+            </>
+          )}
+        </div>
+        <div className="flex shrink-0 items-center justify-between gap-4 md:justify-end">
+          {summary?.joined && (
+            <div className="text-right">
+              <p className="font-bold text-xl tabular-nums">
+                {pendingYen.toLocaleString()}
+                <span className="ml-0.5 text-sm">{t("円", " JPY")}</span>
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {t(
+                  `受け取り予定・振込済み ${(b?.paidYen ?? 0).toLocaleString()}円`,
+                  `Pending · paid ${(b?.paidYen ?? 0).toLocaleString()} JPY`,
+                )}
+              </p>
+            </div>
+          )}
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1.5 font-semibold text-sm text-white">
+            {props.isLoading ? t("読み込み中", "Loading") : step.action}
+            <ChevronRightIcon className="size-4" />
+          </span>
+        </div>
+      </Link>
+    </section>
   )
 }
 
