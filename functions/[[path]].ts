@@ -8,6 +8,7 @@ import {
   CONTEXT_ONLY_PARAM,
   CONTEXT_PATH_PREFIX,
   deferHydration,
+  getContextTokenAgeMs,
   shouldWaitForInteraction,
 } from "../app/lib/defer-hydration"
 import {
@@ -184,6 +185,35 @@ const ADMIN_HOSTNAMES = new Set(["admin.aipictors.com"])
 /** HTML から外したローダーのデータの Cache API のキー */
 const toContextCacheUrl = (token: string) =>
   `https://www.aipictors.com/__cache/remix-context/${encodeURIComponent(token)}`
+
+/**
+ * 描画したばかりのローダーのデータを isolate にも置く。
+ * データは HTML を送り終えてから Cache API に保存するので、ログイン中の人がすぐ取りに来ると
+ * 保存が間に合わず、ページを丸ごと描画し直していた（/__ctx の半分ほど。描画し直すとデータが HTML と食い違うこともある）
+ */
+const recentContexts = new Map<string, string>()
+const RECENT_CONTEXT_LIMIT = 64
+
+const rememberContext = (token: string, script: string) => {
+  recentContexts.set(token, script)
+  if (recentContexts.size > RECENT_CONTEXT_LIMIT) {
+    const oldest = recentContexts.keys().next().value
+    if (oldest !== undefined) recentContexts.delete(oldest)
+  }
+}
+
+/** 描画した直後のデータが見つからないとき、保存を待つ間隔（合計 0.45 秒まで） */
+const CONTEXT_RETRY_DELAYS_MS = [150, 150, 150]
+const CONTEXT_RETRY_MAX_AGE_MS = 15_000
+
+const findContext = async (token: string): Promise<string | null> => {
+  const remembered = recentContexts.get(token)
+  if (remembered !== undefined) return remembered
+  const cached = await caches.default
+    .match(new Request(toContextCacheUrl(token)))
+    .catch(() => undefined)
+  return cached ? await cached.text() : null
+}
 
 /**
  * root の loader を通らないもの（API・サイトマップなどの resource route、ファイル）は対象外
@@ -665,17 +695,28 @@ export const onRequest: PagesFunction = async (ctx) => {
   // HTML から外したローダーのデータ（app/lib/defer-hydration.ts）
   const earlyUrl = new URL(ctx.request.url)
   if (earlyUrl.pathname.startsWith(CONTEXT_PATH_PREFIX)) {
-    const cached = await caches.default.match(
-      new Request(
-        toContextCacheUrl(earlyUrl.pathname.slice(CONTEXT_PATH_PREFIX.length)),
-      ),
-    )
+    const token = earlyUrl.pathname.slice(CONTEXT_PATH_PREFIX.length)
+    let cached = await findContext(token)
+    // 描画した直後なら、保存が終わるのを少し待つ（待つ間は CPU を使わない）
+    const ageMs = getContextTokenAgeMs(token)
+    if (
+      cached === null &&
+      ageMs !== null &&
+      ageMs >= 0 &&
+      ageMs < CONTEXT_RETRY_MAX_AGE_MS
+    ) {
+      for (const delay of CONTEXT_RETRY_DELAYS_MS) {
+        await new Promise((resolve) => setTimeout(resolve, delay))
+        cached = await findContext(token)
+        if (cached !== null) break
+      }
+    }
     const contextHeaders = {
       "Content-Type": "text/javascript; charset=utf-8",
       // 配信のキャッシュに置いて、別の拠点でも描画し直さない
       "Cache-Control": "public, max-age=172800",
     }
-    if (cached) return new Response(cached.body, { headers: contextHeaders })
+    if (cached !== null) return new Response(cached, { headers: contextHeaders })
     // HTML を別の拠点で描画したときは、この拠点にデータがないので描画し直す
     const pagePath = earlyUrl.searchParams.get("p")
     if (!pagePath?.startsWith("/") || pagePath.startsWith("//")) {
@@ -1094,6 +1135,7 @@ export const onRequest: PagesFunction = async (ctx) => {
   let renderedContext: { token: string; script: string } | undefined
   const storeContext = (token: string, script: string) => {
     renderedContext = { token, script }
+    rememberContext(token, script)
     ctx.waitUntil(
       caches.default
         .put(
