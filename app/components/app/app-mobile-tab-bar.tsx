@@ -20,12 +20,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
 import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/use-is-editing-text-field"
 import { parseLocalePath } from "~/utils/locale-path"
-
-/**
- * 下のタブを出さないページ（自分の送信ボタンが画面下にあるページ・手続き中のページ）
- */
-const HIDDEN_PATH_PATTERN =
-  /^\/(?:new|plus|settings|support|contact|admin|app|flutter|generation\/demonstration)(?:\/|$)|^\/posts\/[^/]+\/(?:image|animation|text|video)?\.?edit/
+import { isMobileTabBarHiddenPath } from "~/utils/mobile-tab-bar-hidden-path"
 
 type TabKey = "home" | "search" | "generation" | "notifications" | "my"
 
@@ -74,7 +69,7 @@ export function AppMobileTabBar() {
   const counts = unread.data?.viewer?.unreadNotificationCounts
   const unreadTotal = counts ? toUnreadTotal(counts) : 0
 
-  if (!showMobile || HIDDEN_PATH_PATTERN.test(remainder)) {
+  if (!showMobile || isMobileTabBarHiddenPath(remainder)) {
     return null
   }
 
