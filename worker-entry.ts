@@ -1,5 +1,6 @@
 // @ts-ignore - `wrangler pages functions build` が書き出す
 import pages from "./build/worker/index.js"
+import { missingFileCacheControl } from "./app/utils/missing-file-cache-control"
 
 type Env = { INTERNAL_PURGE_TOKEN?: string }
 
@@ -64,7 +65,7 @@ const answerWithoutApp = (request: Request): Response | null => {
       status: 404,
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
-        "Cache-Control": "public, max-age=600",
+        "Cache-Control": missingFileCacheControl(pathname),
       },
     })
   }

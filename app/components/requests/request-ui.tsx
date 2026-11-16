@@ -138,16 +138,24 @@ export function RequestPlanCard(props: {
           <CoinPrice coins={plan.priceCoins} className="text-base" />
           <span className="flex items-center gap-1 text-muted-foreground text-xs">
             <CalendarClock className="size-3.5" />
-            {t(`${plan.deliveryDays}日`, `${plan.deliveryDays} days`)}
+            {t(
+              `${plan.deliveryDays}日`,
+              `${plan.deliveryDays} ${plan.deliveryDays === 1 ? "day" : "days"}`,
+            )}
           </span>
         </div>
         <div className="flex gap-3 text-[11px] text-muted-foreground">
-          <span>{t(`${plan.imageCount}枚`, `${plan.imageCount} images`)}</span>
+          <span>
+            {t(
+              `${plan.imageCount}枚`,
+              `${plan.imageCount} ${plan.imageCount === 1 ? "image" : "images"}`,
+            )}
+          </span>
           <span className="inline-flex items-center gap-0.5">
             <RefreshCcw className="size-3" />
             {t(
               `修正${plan.revisionCount}回`,
-              `${plan.revisionCount} revisions`,
+              `${plan.revisionCount} ${plan.revisionCount === 1 ? "revision" : "revisions"}`,
             )}
           </span>
           {plan.completedCount > 0 && (
