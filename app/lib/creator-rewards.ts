@@ -17,7 +17,7 @@ export const CREATOR_PAYOUT_WITHHOLDING_PERCENT = 10.21
 
 export type CreatorRewardEarning = {
   id: number
-  kind: "SUPPORT" | "CLAWBACK" | "ADJUSTMENT"
+  kind: "SUPPORT" | "REQUEST" | "CLAWBACK" | "ADJUSTMENT"
   workId: string | null
   fromProfile: boolean
   coins: number

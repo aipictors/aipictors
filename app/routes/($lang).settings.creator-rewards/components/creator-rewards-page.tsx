@@ -760,6 +760,8 @@ function EarningList(props: { earnings: CreatorRewardEarning[] }) {
                   <div>
                     {e.kind === "CLAWBACK" ? (
                       t("返金による差し引き", "Refund deduction")
+                    ) : e.kind === "REQUEST" ? (
+                      t("有料リクエスト", "Paid request")
                     ) : e.workId ? (
                       <Link
                         to={`/posts/${e.workId}`}
