@@ -75,11 +75,11 @@ export function HomeHotCarousel(props: {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue
           const index = Number((entry.target as HTMLElement).dataset.hotIndex)
-          // 見えたカードの次の 1 枚まで出しておく
-          setRevealedCount((count) => Math.max(count, index + 2))
+          // 見えた（近づいた）カードまで出す
+          setRevealedCount((count) => Math.max(count, index + 1))
         }
       },
-      { root: scroller, rootMargin: "0px 60% 0px 60%" },
+      { root: scroller, rootMargin: "0px 20% 0px 20%" },
     )
     for (const card of scroller.querySelectorAll("[data-hot-card]")) {
       observer.observe(card)
