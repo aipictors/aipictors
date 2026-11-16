@@ -5,12 +5,17 @@ import {
   FlameIcon,
   HeartIcon,
 } from "lucide-react"
-import { useRef } from "react"
+import { useRouteLoaderData } from "@remix-run/react"
+import { useEffect, useRef, useState } from "react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
-import { toResizedImageSrcSet } from "~/utils/resized-image-url"
+import type { LayoutHint } from "~/utils/layout-hint"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 export const HomeHotWorkFragment = graphql(
@@ -49,6 +54,38 @@ export function HomeHotCarousel(props: {
 }) {
   const t = useTranslation()
   const scrollerRef = useRef<HTMLDivElement>(null)
+  const rootData = useRouteLoaderData("root") as
+    | { layoutHint?: LayoutHint }
+    | undefined
+  // 最初の画面に入る枚数だけ画像を出す（横スクロールの中の lazy は画面の外でも読まれてしまい、
+  // スマホで見えない 3 枚分 200KB ほどを最初に読んでいた）。残りは表示後、近づいたら出す
+  const [revealedCount, setRevealedCount] = useState(
+    rootData?.layoutHint === "mobile" ? 2 : 5,
+  )
+
+  useEffect(() => {
+    const scroller = scrollerRef.current
+    if (!scroller || revealedCount >= props.works.length) return
+    if (!("IntersectionObserver" in window)) {
+      setRevealedCount(props.works.length)
+      return
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
+          const index = Number((entry.target as HTMLElement).dataset.hotIndex)
+          // 見えたカードの次の 1 枚まで出しておく
+          setRevealedCount((count) => Math.max(count, index + 2))
+        }
+      },
+      { root: scroller, rootMargin: "0px 60% 0px 60%" },
+    )
+    for (const card of scroller.querySelectorAll("[data-hot-card]")) {
+      observer.observe(card)
+    }
+    return () => observer.disconnect()
+  }, [revealedCount, props.works.length])
 
   if (props.works.length === 0) return null
 
@@ -97,23 +134,26 @@ export function HomeHotCarousel(props: {
             <Link
               key={work.id}
               data-hot-card
+              data-hot-index={index}
               to={`/posts/${work.id}`}
               className="group relative aspect-[4/5] w-[82%] shrink-0 snap-center overflow-hidden rounded-3xl bg-muted active:scale-[0.98] motion-reduce:transform-none sm:w-[46%] md:snap-start lg:w-[31%] xl:w-[23.5%]"
             >
-              <OptimizedImage
-                src={work.largeThumbnailImageURL}
-                alt={title}
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchPriority={index === 0 ? "high" : "low"}
-                srcSet={toResizedImageSrcSet(work.largeThumbnailImageURL, {
-                  minWidth: 320,
-                  maxWidth: work.largeThumbnailImageWidth ?? undefined,
-                })}
-                sizes="(min-width: 1280px) 260px, (min-width: 1024px) 280px, (min-width: 640px) 46vw, 82vw"
-                width={work.largeThumbnailImageWidth ?? undefined}
-                height={work.largeThumbnailImageHeight ?? undefined}
-                className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
-              />
+              {index < revealedCount && (
+                <OptimizedImage
+                  src={work.largeThumbnailImageURL}
+                  alt={title}
+                  loading={index < 2 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "low"}
+                  srcSet={toResizedImageSrcSet(work.largeThumbnailImageURL, {
+                    minWidth: 320,
+                    maxWidth: work.largeThumbnailImageWidth ?? undefined,
+                  })}
+                  sizes="(min-width: 1280px) 260px, (min-width: 1024px) 280px, (min-width: 640px) 46vw, 82vw"
+                  width={work.largeThumbnailImageWidth ?? undefined}
+                  height={work.largeThumbnailImageHeight ?? undefined}
+                  className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
+                />
+              )}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent from-55% to-black/80" />
               <span
                 className={cn(
@@ -136,7 +176,12 @@ export function HomeHotCarousel(props: {
                   {work.user && (
                     <>
                       <img
-                        src={withIconUrlFallback(work.user.iconUrl)}
+                        src={
+                          toResizedImageUrl(
+                            withIconUrlFallback(work.user.iconUrl),
+                            96,
+                          ) ?? withIconUrlFallback(work.user.iconUrl)
+                        }
                         alt=""
                         loading="lazy"
                         decoding="async"

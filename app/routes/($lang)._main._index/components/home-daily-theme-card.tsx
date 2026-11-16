@@ -45,7 +45,7 @@ export function HomeDailyThemeCard(props: {
       </div>
       {imageUrl ? (
         <img
-          src={toResizedImageUrl(imageUrl, 320) ?? imageUrl}
+          src={toResizedImageUrl(imageUrl, 240) ?? imageUrl}
           alt=""
           loading="lazy"
           decoding="async"
