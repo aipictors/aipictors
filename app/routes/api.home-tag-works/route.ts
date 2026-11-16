@@ -61,22 +61,30 @@ const loadRows = async (now: Date): Promise<HomeTagWorksResponse> => {
   }
   if (tags.length === 0) return { rows: [] }
 
-  const where = (tag: string | undefined) => ({
-    ratings: ["G" as const],
-    isSensitive: false,
-    isNowCreatedAt: true,
-    search: tag ?? tags[0].tag,
-    orderBy: "LIKES_COUNT" as const,
-  })
+  // 新しい作品を出す: お題は同じ言葉のお題が過去にもある（例: 昨年の「ケチャップ」）ので、ここ 3 日の作品を新しい順に。
+  // ほかのタグはこの 30 日の作品をいいね順に（全期間のいいね順だと昔の作品ばかりになる）
+  const where = (row: Omit<HomeTagWorksRow, "works"> | undefined) => {
+    const target = row ?? tags[0]
+    return {
+      ratings: ["G" as const],
+      isSensitive: false,
+      isNowCreatedAt: true,
+      search: target.tag,
+      orderBy: target.isTheme
+        ? ("DATE_CREATED" as const)
+        : ("LIKES_COUNT" as const),
+      createdAtAfter: toDaysAgoIso(target.isTheme ? 3 : 30),
+    }
+  }
   // 4 つのタグを 1 回の問い合わせで取る
   const worksResult = await loaderClient.query({
     query: homeTagWorksQuery,
     variables: {
       limit: WORKS_PER_TAG,
-      where0: where(tags[0]?.tag),
-      where1: where(tags[1]?.tag),
-      where2: where(tags[2]?.tag),
-      where3: where(tags[3]?.tag),
+      where0: where(tags[0]),
+      where1: where(tags[1]),
+      where2: where(tags[2]),
+      where3: where(tags[3]),
     },
   })
   const data = worksResult.data
@@ -88,13 +96,21 @@ const loadRows = async (now: Date): Promise<HomeTagWorksResponse> => {
   }
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/** 日付の切れ目にそろえた N 日前（時刻を丸めて、1 時間のキャッシュの中で同じ問い合わせになるように） */
+const toDaysAgoIso = (days: number) =>
+  new Date(
+    Math.floor(Date.now() / DAY_MS) * DAY_MS - days * DAY_MS,
+  ).toISOString()
+
 export async function loader() {
   const now = getJstDate()
   const hourKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-${now.getHours()}`
 
   const cache = typeof caches === "undefined" ? null : caches.default
   const cacheKey = new Request(
-    `https://www.aipictors.com/__home-tag-works/v1/${hourKey}`,
+    `https://www.aipictors.com/__home-tag-works/v2/${hourKey}`,
   )
   const cached = await cache?.match(cacheKey).catch(() => undefined)
   if (cached) {
