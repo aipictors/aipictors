@@ -43,6 +43,9 @@ const HOME_LIST_OMIT_WORK_KEYS = [
   "style",
   "ogpThumbnailImageUrl",
   "relatedUrl",
+  // 一覧のカードには出さない（長い説明文がそのまま HTML に入っていた）
+  "description",
+  "enDescription",
 ] as const
 
 const HOME_LIST_OMIT_USER_KEYS = [
