@@ -50,7 +50,7 @@ type Props = {
   form: React.ReactNode
   /** 履歴（一覧・詳細・モデルの作品） */
   history: React.ReactNode
-  /** 下に固定の生成ボタン（つくるの間だけ出す） */
+  /** 下に固定の生成ボタン（つくる・履歴のどちらでも出す） */
   submission: React.ReactNode
   footer: React.ReactNode
   coinHistory: React.ReactNode
@@ -170,7 +170,7 @@ export function GenerationMobileView(props: Props) {
         </div>
         <div
           hidden={tab !== "history"}
-          className="min-h-[60vh] overflow-hidden"
+          className="min-h-[60vh] overflow-hidden pb-44"
         >
           {isSubState && (
             <div className="px-3 pb-2">
@@ -281,13 +281,23 @@ function GenerationMobileHeader(props: {
         aria-label={t("コイン", "Coins")}
         className="flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-linear-to-br from-amber-400 to-orange-500 px-3.5 font-black text-sm text-white shadow-[0_4px_12px_rgba(245,158,11,0.35)] active:scale-95"
       >
-        <CoinIcon className="size-4" />
         {coinSummary === null ? (
-          <span className="h-3 w-7 animate-pulse rounded bg-white/40" />
+          <>
+            <CoinIcon className="size-4" />
+            <span className="h-3 w-7 animate-pulse rounded bg-white/40" />
+          </>
         ) : (
-          <span className="tabular-nums">
-            {coinSummary.totalBalance.toLocaleString()}
-          </span>
+          <>
+            {/* フリーとプレミアムは価値が違うので分けて出す */}
+            <CoinIcon className="size-4" />
+            <span className="tabular-nums">
+              {coinSummary.freeBalance.toLocaleString()}
+            </span>
+            <PremiumCoinIcon className="ml-1 size-4" />
+            <span className="tabular-nums">
+              {coinSummary.premiumBalance.toLocaleString()}
+            </span>
+          </>
         )}
       </button>
       <DropdownMenu>

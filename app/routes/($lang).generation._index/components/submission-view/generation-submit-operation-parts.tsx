@@ -20,7 +20,14 @@ import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/
 import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "~/routes/($lang).generation._index/components/submission-view/generation-terms-button"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
+import {
+  HistoryIcon,
+  Loader2Icon,
+  Minus,
+  Plus,
+  SettingsIcon,
+  SlidersHorizontalIcon,
+} from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { useGenerationPlanHint } from "~/routes/($lang).generation._index/hooks/use-generation-plan-hint"
@@ -48,6 +55,14 @@ type Props = {
    * スマホのアプリと同じ構成（枚数・予約・高解像度は上のカードにあるので、ここは使うコインと生成ボタンだけ）
    */
   isMobileApp?: boolean
+  /**
+   * スマホ: 生成ボタンの左に出す「履歴へ」（つくるの間）/「つくる」（履歴の間）のボタン
+   */
+  mobileSwitch?: {
+    target: "create" | "history"
+    runningCount: number
+    onClick: () => void
+  }
   onCreateTask: () => void
   onSignTerms: () => void
 }
@@ -197,10 +212,23 @@ export function GenerationSubmitOperationParts(props: Props) {
                     `Uses ${formatCoinAmount(props.requestCoinCost)} coins`,
                   )
                 : t(
-                    `使うコイン ${formatCoinAmount(props.requestCoinCost)}・残り ${formatCoinAmount(props.ownedCoinCount)}`,
-                    `Uses ${formatCoinAmount(props.requestCoinCost)} · ${formatCoinAmount(props.ownedCoinCount)} left`,
+                    `使うコイン ${formatCoinAmount(props.requestCoinCost)}・残り`,
+                    `Uses ${formatCoinAmount(props.requestCoinCost)} · left`,
                   )}
             </span>
+            {/* フリーとプレミアムは価値が違うので、残りは分けて出す */}
+            {!props.isCoinSummaryLoading && (
+              <>
+                <CoinIcon className="size-3.5 shrink-0" />
+                <span className="tabular-nums">
+                  {formatCoinAmount(props.freeCoinBalance)}
+                </span>
+                <PremiumCoinIcon className="size-3.5 shrink-0" />
+                <span className="tabular-nums">
+                  {formatCoinAmount(props.premiumCoinBalance)}
+                </span>
+              </>
+            )}
           </span>
           {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン） */}
           {!context.currentPass?.type &&
@@ -259,6 +287,28 @@ export function GenerationSubmitOperationParts(props: Props) {
         </div>
       )}
       <div className="flex min-w-0 items-center">
+        {props.mobileSwitch && (
+          <button
+            type="button"
+            onClick={props.mobileSwitch.onClick}
+            className="relative mr-2 flex h-14 shrink-0 flex-col items-center justify-center gap-0.5 rounded-full bg-muted px-4 font-bold text-[11px] text-foreground/80 active:scale-95"
+          >
+            {props.mobileSwitch.target === "history" ? (
+              <HistoryIcon className="size-5" />
+            ) : (
+              <SlidersHorizontalIcon className="size-5" />
+            )}
+            {props.mobileSwitch.target === "history"
+              ? t("履歴", "History")
+              : t("つくる", "Create")}
+            {props.mobileSwitch.target === "history" &&
+              props.mobileSwitch.runningCount > 0 && (
+                <span className="-top-1 -right-1 absolute flex size-5 items-center justify-center rounded-full bg-pink-500 font-black text-[10px] text-white tabular-nums">
+                  {props.mobileSwitch.runningCount}
+                </span>
+              )}
+          </button>
+        )}
         {!props.isMobileApp && (
           <div className="flex shrink-0 items-center md:hidden">
             <DropdownMenu>

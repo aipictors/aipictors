@@ -633,7 +633,7 @@ export function GenerationSubmissionView(props: Props) {
     publishGenerationCoinSummary(coinSummary)
   }, [coinSummary])
 
-  // スマホの「つくる / 履歴」（履歴の間は生成ボタンを出さない。アプリと同じ）
+  // スマホの「つくる / 履歴」（どちらでも生成ボタンを出し、隣のボタンで行き来する）
   const mobileTab = useContext(GenerationMobileTabContext)
 
   // 移動: createTaskCore をコンポーネント内に配置（スコープ修正）
@@ -692,7 +692,6 @@ export function GenerationSubmissionView(props: Props) {
           props.composer &&
             "pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]",
           !isDesktop && isEditingTextField && "hidden",
-          mobileTab?.tab === "history" && "hidden",
         )}
       >
         <div className="space-y-2">
@@ -736,6 +735,20 @@ export function GenerationSubmissionView(props: Props) {
             }
             isMaintenance={generationMaintenance.enabled}
             isMobileApp={mobileTab !== null}
+            mobileSwitch={
+              mobileTab === null
+                ? undefined
+                : {
+                    target: mobileTab.tab === "create" ? "history" : "create",
+                    runningCount:
+                      inProgressImageGenerationTasksCount +
+                      inProgressImageGenerationReservedTasksCount,
+                    onClick: () =>
+                      mobileTab.setTab(
+                        mobileTab.tab === "create" ? "history" : "create",
+                      ),
+                  }
+            }
             onCreateTask={onCreateTask}
             onSignTerms={onSignTerms}
           />
