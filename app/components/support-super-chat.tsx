@@ -4,7 +4,7 @@
  *
  * 推す側の画面では「〇〇円を送る」とは書かない（コインで応援 → 運営がクリエイターに報酬を払う、の建て付け）
  */
-import { BadgeCheck, HeartHandshake, Sparkles } from "lucide-react"
+import { BadgeCheck, Sparkles } from "lucide-react"
 import type { ReactNode } from "react"
 import {
   FreeSupportCoinIcon,
@@ -87,7 +87,7 @@ export function SupportCoinCounts(props: {
 }
 
 /**
- * 推し付きコメントの帯と本文の囲み。children が本文（無ければ帯だけ）
+ * 推し付きコメントの帯と本文の囲み。children が本文とスタンプ（無ければ帯だけ）
  */
 export function SupportSuperChatCard(props: {
   support: SupportAmount
@@ -121,21 +121,14 @@ export function SupportSuperChatCard(props: {
             className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/4 bg-white/25 motion-safe:block opacity-0 motion-safe:animate-[aip-support-shine_1.6s_ease-out_0.3s_1_both]"
           />
         )}
-        <HeartHandshake className="size-4 shrink-0" aria-hidden />
-        <div className="min-w-0 flex-1">
-          {props.header ?? (
-            <span className="font-bold text-xs">
-              {t("推しコインで応援", "Supported with coins")}
-            </span>
-          )}
-        </div>
-        <span className="sr-only">{toLabel(props.support)}</span>
-        <div className="flex shrink-0 flex-col items-end">
-          <SupportCoinCounts support={props.support} />
-          <span className="font-bold text-[10px] tabular-nums opacity-90">
-            {props.support.totalPt.toLocaleString()}pt
-          </span>
-        </div>
+        {/* 帯はコインの枚数だけ（スーパーチャットのように金額が一目で分かる）。pt は読み上げにだけ入れる */}
+        <SupportCoinCounts support={props.support} className="shrink-0" />
+        {props.header && <div className="min-w-0 flex-1">{props.header}</div>}
+        <span className="sr-only">
+          {t("推しコインで応援", "Supported with coins")}
+          {t("・", ", ")}
+          {toLabel(props.support)}
+        </span>
       </div>
       {props.children && <div className="px-3 py-2.5">{props.children}</div>}
     </div>

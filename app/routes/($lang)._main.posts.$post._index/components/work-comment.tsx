@@ -301,6 +301,41 @@ export function WorkComment(props: Props) {
     )
   }
 
+  // スタンプ。推し付きのときは推しの枠の中に出す
+  const stickerBlock = (
+    <>
+      {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
+        <Link
+          className="group block w-32 overflow-hidden"
+          to={`/stickers/${props.stickerId}`}
+          aria-label={t("スタンプ", "Sticker")}
+        >
+          <img
+            className="aspect-square w-32 object-contain transition-transform duration-300 group-hover:scale-105"
+            alt=""
+            src={toResizedImageUrl(props.stickerImageURL, 240)}
+            // スタンプは正方形。大きさを先に決めておき、読み込み後にコメント欄が伸びて下がずれないようにする
+            width={128}
+            height={128}
+            loading="lazy"
+            decoding="async"
+          />
+        </Link>
+      )}
+      {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
+        <img
+          className="aspect-square w-32 object-contain"
+          alt=""
+          src={toResizedImageUrl(props.stickerImageURL, 240)}
+          width={128}
+          height={128}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+    </>
+  )
+
   // センシティブなコメントの表示
   if (props.isSensitive && !showSensitiveComment) {
     return (
@@ -379,41 +414,18 @@ export function WorkComment(props: Props) {
             )}
           </div>
           {hasSupport && props.support ? (
-            // 推し付きは段階の色の帯＋本文の囲み（スーパーチャットのように通常のコメントより目立たせる）
+            // 推し付きは段階の色の帯＋本文の囲み（スーパーチャットのように通常のコメントより目立たせる）。スタンプも枠の中に入れる
             <SupportSuperChatCard support={props.support}>
-              {textBlock}
+              <div className="space-y-2">
+                {textBlock}
+                {stickerBlock}
+              </div>
             </SupportSuperChatCard>
           ) : (
-            textBlock
-          )}
-          {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
-            <Link
-              className="group block w-32 overflow-hidden"
-              to={`/stickers/${props.stickerId}`}
-              aria-label={t("スタンプ", "Sticker")}
-            >
-              <img
-                className="aspect-square w-32 object-contain transition-transform duration-300 group-hover:scale-105"
-                alt=""
-                src={toResizedImageUrl(props.stickerImageURL, 240)}
-                // スタンプは正方形。大きさを先に決めておき、読み込み後にコメント欄が伸びて下がずれないようにする
-                width={128}
-                height={128}
-                loading="lazy"
-                decoding="async"
-              />
-            </Link>
-          )}
-          {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
-            <img
-              className="aspect-square w-32 object-contain"
-              alt=""
-              src={toResizedImageUrl(props.stickerImageURL, 240)}
-              width={128}
-              height={128}
-              loading="lazy"
-              decoding="async"
-            />
+            <>
+              {textBlock}
+              {stickerBlock}
+            </>
           )}
           <div className="-ml-2 flex flex-wrap items-center gap-x-1 text-muted-foreground">
             {props.isWorkOwnerLiked && (
