@@ -5707,6 +5707,9 @@ input UpdateUserSettingInput {
   """以前の既定のスタンプもスタンプの一覧に出す"""
   isShowLegacyDefaultStickers: Boolean
 
+  """プレミアムコインでの推し（応援）を受け取らない"""
+  isRejectPremiumCoinSupport: Boolean
+
   """ミュートユーザのコメントを表示する"""
   isShowingMutedUsersComments: Boolean
 
@@ -6330,6 +6333,9 @@ type UserSettingNode implements Node {
 
   """以前の既定のスタンプもスタンプの一覧に出すかどうか"""
   isShowLegacyDefaultStickers: Boolean!
+
+  """プレミアムコインでの推し（応援）を受け取らないかどうか"""
+  isRejectPremiumCoinSupport: Boolean!
 
   """ミュートしているユーザのコメントを表示するかどうか"""
   isShowingMutedUsersComments: Boolean!

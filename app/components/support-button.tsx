@@ -32,7 +32,10 @@ import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
-import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
+import {
+  type CoinSummarySupportTarget,
+  fetchCoinSummaryShared,
+} from "~/utils/fetch-coin-summary-shared"
 import { getSupportTier } from "~/utils/support-tier"
 
 type Props = {
@@ -125,6 +128,10 @@ export function SupportButton({
   const [isBalanceLoaded, setIsBalanceLoaded] = useState(
     freeCoinBalance !== undefined,
   )
+  // 推す相手の受け取りの状態（残高と同じ応答で受け取る。分かるまではプレミアムも選べる・報酬の一言は出さない）
+  const [supportTarget, setSupportTarget] =
+    useState<CoinSummarySupportTarget | null>(null)
+  const isPremiumAccepted = supportTarget?.premiumAccepted !== false
 
   // 推す相手の名前・お礼の文は、ダイアログを開いてから読む（作品ページを開くたびに問い合わせない）
   const { data: targetUserData } = useQuery(targetSupportUserQuery, {
@@ -161,13 +168,14 @@ export function SupportButton({
         includeJsonContentType: true,
       })
       // ボタンに触れたときの先読みと押したときの読み直しが重なったら 1 回にまとめる
-      const res = await fetchCoinSummaryShared(headers)
+      const res = await fetchCoinSummaryShared(headers, targetUserId)
 
       const json = (await res.json()) as {
         error?: string
         data?: {
           freeBalance?: number
           premiumBalance?: number
+          supportTarget?: CoinSummarySupportTarget
         }
       }
 
@@ -177,6 +185,7 @@ export function SupportButton({
 
       setCurrentFreeCoinBalance(json.data.freeBalance ?? 0)
       setCurrentPremiumCoinBalance(json.data.premiumBalance ?? 0)
+      setSupportTarget(json.data.supportTarget ?? null)
       setIsBalanceLoaded(true)
     } catch {
       return
@@ -226,12 +235,24 @@ export function SupportButton({
     }
     if (hasTouchedAmountRef.current) return
     selectCoinType(
-      currentFreeCoinBalance === 0 && currentPremiumCoinBalance > 0
+      currentFreeCoinBalance === 0 &&
+        currentPremiumCoinBalance > 0 &&
+        isPremiumAccepted
         ? "PREMIUM"
         : "FREE",
     )
     setIsAnonymous(false)
-  }, [isOpen, currentFreeCoinBalance, currentPremiumCoinBalance])
+  }, [
+    isOpen,
+    currentFreeCoinBalance,
+    currentPremiumCoinBalance,
+    isPremiumAccepted,
+  ])
+
+  // 作者がプレミアムコインでの推しを受け取らないときは、選んでいてもフリーコインに戻す
+  useEffect(() => {
+    if (!isPremiumAccepted && coinType === "PREMIUM") selectCoinType("FREE")
+  }, [isPremiumAccepted, coinType])
 
   const handleSupport = async () => {
     if (!canSupport || !breakdown) return
@@ -475,13 +496,15 @@ export function SupportButton({
                   key={item.type}
                   type="button"
                   aria-pressed={coinType === item.type}
-                  disabled={isLoading}
+                  disabled={
+                    isLoading || (item.type === "PREMIUM" && !isPremiumAccepted)
+                  }
                   onClick={() => {
                     hasTouchedAmountRef.current = true
                     selectCoinType(item.type)
                   }}
                   className={cn(
-                    "rounded-2xl border-2 p-3 text-left transition-colors",
+                    "rounded-2xl border-2 p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50",
                     coinType === item.type
                       ? "border-rose-500 bg-rose-500/5"
                       : "border-border hover:bg-muted",
@@ -500,6 +523,14 @@ export function SupportButton({
                 </button>
               ))}
             </div>
+            {!isPremiumAccepted && (
+              <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">
+                {t(
+                  "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
+                  "This creator does not accept support with premium coins. You can support with free coins",
+                )}
+              </p>
+            )}
 
             {/* 枚数 */}
             <div className="space-y-2">
@@ -608,7 +639,10 @@ export function SupportButton({
               {t("匿名で推す", "Support anonymously")}
             </label>
 
-            {showRewardNote && <SupportRewardNote />}
+            {/* 報酬の一言は、作者が報酬に参加していてプレミアムコインを受け取るときだけ */}
+            {showRewardNote &&
+              supportTarget?.rewardJoined === true &&
+              isPremiumAccepted && <SupportRewardNote />}
 
             <Button
               onClick={handleSupport}

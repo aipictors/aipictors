@@ -16,12 +16,12 @@ import {
 } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
+import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
-import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { AuthContext } from "~/contexts/auth-context"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
@@ -34,6 +34,7 @@ import {
   formatYen,
 } from "~/lib/creator-rewards"
 import { cn } from "~/lib/utils"
+import { PremiumCoinSupportSetting } from "~/routes/($lang).settings/components/premium-coin-support-setting"
 
 const formatDate = (sec: number | null | undefined, isEnglish = false) =>
   sec
@@ -535,6 +536,8 @@ export function CreatorRewardsPage() {
           )}
         </Link>
       </details>
+
+      <PremiumCoinSupportSetting />
 
       {summary.joined && (
         <div className="text-right">

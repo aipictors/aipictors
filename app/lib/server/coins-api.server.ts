@@ -8,6 +8,12 @@ type CoinSummary = {
   lockedExchangePremiumBalance: number
   expiredFreeCoins: number
   expiredPremiumCoins: number
+  /** supportTargetUserId を渡したときだけ。推す相手の受け取りの状態 */
+  supportTarget?: {
+    userId: string
+    premiumAccepted: boolean
+    rewardJoined: boolean
+  }
   events: Array<{
     kind: "GRANT" | "CONSUME" | "EXPIRE"
     message: string
@@ -90,7 +96,9 @@ const getRequiredInternalToken = (context: unknown) => {
   return token
 }
 
-export const getInternalHeaders = (context: unknown): Record<string, string> => {
+export const getInternalHeaders = (
+  context: unknown,
+): Record<string, string> => {
   const headers: Record<string, string> = {
     Authorization: `Bearer ${getRequiredInternalToken(context)}`,
     "Content-Type": "application/json",
@@ -136,6 +144,7 @@ export const getCoinSummaryFromApi = async (props: {
   includeExpiringLots?: boolean
   includeLedgerLimit?: number
   includeLedgerOffset?: number
+  supportTargetUserId?: string
 }) => {
   const response = await fetch(
     `${getApiBaseUrl(props.context)}/internal/coins/ensure-initial-grant`,
@@ -149,6 +158,7 @@ export const getCoinSummaryFromApi = async (props: {
         includeExpiringLots: props.includeExpiringLots ?? false,
         includeLedgerLimit: props.includeLedgerLimit,
         includeLedgerOffset: props.includeLedgerOffset,
+        supportTargetUserId: props.supportTargetUserId,
       }),
     },
   )

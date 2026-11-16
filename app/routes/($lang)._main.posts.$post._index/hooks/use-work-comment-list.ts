@@ -29,6 +29,7 @@ import {
   SUPPORT_CONFIRM_THRESHOLD_PT,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import { usePremiumCheckoutConfirmation } from "~/routes/($lang)._main.posts.$post._index/hooks/use-premium-checkout-confirmation"
+import type { CoinSummarySupportTarget } from "~/utils/fetch-coin-summary-shared"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import {
   readRecentStickerIds,
@@ -84,6 +85,9 @@ export function useWorkCommentList(props: WorkCommentListProps) {
   const [supportFreeCoinAmount, setSupportFreeCoinAmount] = useState("0")
   const [supportPremiumCoinAmount, setSupportPremiumCoinAmount] = useState("0")
   const [supportIsAnonymous, setSupportIsAnonymous] = useState(false)
+  // 推す相手の受け取りの状態（推しの欄を開いたときの残高と同じ応答）
+  const [supportTarget, setSupportTarget] =
+    useState<CoinSummarySupportTarget | null>(null)
   const [coinBalances, setCoinBalances] = useState({
     freeBalance: 0,
     premiumBalance: 0,
@@ -261,13 +265,19 @@ export function useWorkCommentList(props: WorkCommentListProps) {
 
     try {
       setIsLoadingCoinSummary(true)
-      const summary = await fetchCoinSummary()
+      const summary = await fetchCoinSummary(props.workOwnerId)
 
       if (summary === null) {
         return
       }
 
       setCoinBalances(summary)
+      setSupportTarget(summary.supportTarget)
+      // 作者がプレミアムコインでの推しを受け取らないなら、プレミアムを選べないようにフリーへ戻す
+      if (summary.supportTarget?.premiumAccepted === false) {
+        setSupportCoinType("FREE")
+        setSupportPremiumCoinAmount("0")
+      }
     } catch {
       return
     } finally {
@@ -609,6 +619,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     supportIsAnonymous,
     supportPremiumCoinAmount,
     supportSuccessState,
+    supportTarget,
     userAvatarFrame,
     userIcon,
     workRating: props.workRating,

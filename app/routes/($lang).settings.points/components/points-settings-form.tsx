@@ -22,6 +22,7 @@ import {
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
 import { PREMIUM_COIN_CONFIRM_STORAGE_KEY } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
+import { PremiumCoinSupportSetting } from "~/routes/($lang).settings/components/premium-coin-support-setting"
 import { CoinBalanceCard } from "~/routes/($lang).settings.points/components/coin-balance-card"
 import { CoinExpiryTab } from "~/routes/($lang).settings.points/components/coin-expiry-tab"
 import {
@@ -518,7 +519,12 @@ export function PointsSettingsForm() {
           forceMount
           className="mt-4 data-[state=inactive]:hidden"
         >
-          {visitedTabs.has("exchange") && <CreatorRewardsNotice />}
+          {visitedTabs.has("exchange") && (
+            <div className="space-y-4">
+              <CreatorRewardsNotice />
+              <PremiumCoinSupportSetting />
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 

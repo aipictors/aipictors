@@ -45,6 +45,7 @@ export function WorkCommentSupportPanel(
     | "supportFreeCoinAmount"
     | "supportIsAnonymous"
     | "supportPremiumCoinAmount"
+    | "supportTarget"
   >,
 ) {
   const t = useTranslation()
@@ -64,7 +65,9 @@ export function WorkCommentSupportPanel(
     supportFreeCoinAmount,
     supportIsAnonymous,
     supportPremiumCoinAmount,
+    supportTarget,
   } = props
+  const isPremiumAccepted = supportTarget?.premiumAccepted !== false
 
   const previewPt = toSupportPt(
     currentFreeSupportCoinAmount,
@@ -94,12 +97,13 @@ export function WorkCommentSupportPanel(
             key={item.type}
             type="button"
             aria-pressed={supportCoinType === item.type}
+            disabled={item.type === "PREMIUM" && !isPremiumAccepted}
             onClick={() => {
               setSupportCoinType(item.type)
               setSupportCoinAmount(item.type, "0")
             }}
             className={cn(
-              "flex min-w-0 items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-xs transition-colors",
+              "flex min-w-0 items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50",
               supportCoinType === item.type
                 ? "bg-background font-bold shadow-sm ring-1 ring-rose-500/50"
                 : "text-muted-foreground hover:bg-background/60",
@@ -113,6 +117,14 @@ export function WorkCommentSupportPanel(
           </button>
         ))}
       </div>
+      {!isPremiumAccepted && (
+        <p className="text-[11px] text-muted-foreground">
+          {t(
+            "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
+            "This creator does not accept support with premium coins. You can support with free coins",
+          )}
+        </p>
+      )}
       {supportCoinType === "PREMIUM" &&
       !isLoadingCoinSummary &&
       coinBalances.premiumBalance === 0 ? (
@@ -226,7 +238,10 @@ export function WorkCommentSupportPanel(
           </SupportSuperChatCard>
         </div>
       )}
-      {isCreatorRewardRating(workRating) && <SupportRewardNote isWork />}
+      {/* 報酬の一言は、全年齢の作品で、作者が報酬に参加していてプレミアムコインを受け取るときだけ */}
+      {isCreatorRewardRating(workRating) &&
+        supportTarget?.rewardJoined === true &&
+        isPremiumAccepted && <SupportRewardNote isWork />}
     </div>
   )
 }

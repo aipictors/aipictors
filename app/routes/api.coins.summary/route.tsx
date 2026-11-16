@@ -16,7 +16,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     return toJsonResponse({ error: "Unauthorized", data: null }, 401)
   }
 
-  const graphqlEndpoint = getServerEnvValue(context, "VITE_GRAPHQL_ENDPOINT_REMIX")
+  const graphqlEndpoint = getServerEnvValue(
+    context,
+    "VITE_GRAPHQL_ENDPOINT_REMIX",
+  )
   if (!graphqlEndpoint) {
     return toJsonResponse(
       { error: "VITE_GRAPHQL_ENDPOINT_REMIX is not configured", data: null },
@@ -38,6 +41,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const searchParams = new URL(request.url).searchParams
     const includeLedger = searchParams.get("includeLedger") === "1"
     const includeExpiringLots = searchParams.get("includeExpiringLots") === "1"
+    // 推す画面: 相手がプレミアムコインで推せるか・報酬に参加中か（数字の ID だけ）
+    const supportTo = searchParams.get("supportTo")
+    const supportTargetUserId =
+      supportTo && /^\d+$/.test(supportTo) ? supportTo : undefined
     const includeLedgerLimitRaw = searchParams.get("includeLedgerLimit")
     const includeLedgerOffsetRaw = searchParams.get("includeLedgerOffset")
     const includeLedgerLimit = includeLedgerLimitRaw
@@ -62,6 +69,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       includeExpiringLots,
       includeLedgerLimit,
       includeLedgerOffset,
+      supportTargetUserId,
     })
 
     if (summary.events.length > 0) {
@@ -76,8 +84,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   } catch (error) {
     return toJsonResponse(
       {
-        error:
-          error instanceof Error ? error.message : "Failed to fetch coins",
+        error: error instanceof Error ? error.message : "Failed to fetch coins",
         data: null,
       },
       502,

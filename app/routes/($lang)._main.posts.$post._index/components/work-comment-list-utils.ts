@@ -1,6 +1,7 @@
 import type { FragmentOf } from "gql.tada"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import type { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
+import type { CoinSummarySupportTarget } from "~/utils/fetch-coin-summary-shared"
 
 // 投稿直後に一覧へ足すコメント。サーバーが返した内容をそのまま使う
 export type Comment = FragmentOf<typeof WorkCommentFragment>
@@ -93,12 +94,15 @@ export const clearPremiumCheckoutSearchParams = () => {
   )
 }
 
-/** コインの残高を取る。取れなければ null */
-export const fetchCoinSummary = async () => {
+/** コインの残高を取る。取れなければ null。supportTargetUserId を渡すと推す相手の状態も同じ応答で受け取る */
+export const fetchCoinSummary = async (supportTargetUserId?: string | null) => {
   const headers = await getViewerRequestHeaders({
     includeJsonContentType: true,
   })
-  const res = await fetch("/api/coins/summary", {
+  const url = supportTargetUserId
+    ? `/api/coins/summary?supportTo=${encodeURIComponent(supportTargetUserId)}`
+    : "/api/coins/summary"
+  const res = await fetch(url, {
     method: "GET",
     headers,
   })
@@ -108,6 +112,7 @@ export const fetchCoinSummary = async () => {
     data?: {
       freeBalance?: number
       premiumBalance?: number
+      supportTarget?: CoinSummarySupportTarget
     }
   }
 
@@ -118,5 +123,6 @@ export const fetchCoinSummary = async () => {
   return {
     freeBalance: json.data.freeBalance ?? 0,
     premiumBalance: json.data.premiumBalance ?? 0,
+    supportTarget: json.data.supportTarget ?? null,
   }
 }
