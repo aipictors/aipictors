@@ -24,6 +24,20 @@ describe("buildAlternateLocaleUrls", () => {
       buildAlternateLocaleUrls("/r/posts/2d", SITE_URL, "?page=2").canonical,
     ).toEndWith("/r/posts/2d?page=2")
   })
+
+  test("イベント一覧は開催予定・終了の切り替えを残す", () => {
+    expect(
+      buildAlternateLocaleUrls(
+        "/events",
+        SITE_URL,
+        "?status=ENDED&page=2&sort=POPULAR",
+      ).canonical,
+    ).toBe(`${SITE_URL}/events?status=ENDED&page=2`)
+    expect(
+      buildAlternateLocaleUrls("/en/events", SITE_URL, "?status=ONGOING")
+        .canonical,
+    ).toBe(`${SITE_URL}/en/events`)
+  })
 })
 
 describe("日本語だけのページ（解説記事）", () => {

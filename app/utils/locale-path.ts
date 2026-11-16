@@ -129,10 +129,16 @@ const toCanonicalSearch = (search: string, pathname = "") => {
   }
   const params = new URLSearchParams(search)
   const page = Number.parseInt(params.get("page") ?? "", 10)
-  if (Number.isFinite(page) && page > 0) {
-    return `?page=${page}`
+  const pageQuery = Number.isFinite(page) && page > 0 ? `page=${page}` : ""
+  // イベント一覧は開催予定・終了で別の一覧なので残す（終了したイベントも検索に残す）
+  const eventStatus = params.get("status")
+  if (
+    /^\/(?:en\/)?events\/?$/.test(pathname) &&
+    (eventStatus === "UPCOMING" || eventStatus === "ENDED")
+  ) {
+    return `?status=${eventStatus}${pageQuery ? `&${pageQuery}` : ""}`
   }
-  return ""
+  return pageQuery ? `?${pageQuery}` : ""
 }
 
 /**
