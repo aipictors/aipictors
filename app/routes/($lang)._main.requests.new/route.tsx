@@ -29,6 +29,7 @@ import { Switch } from "~/components/ui/switch"
 import { Textarea } from "~/components/ui/textarea"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   type CreatorRequestProfile,
@@ -76,6 +77,7 @@ export default function NewRequestPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const auth = useContext(AuthContext)
+  const t = useTranslation()
   const planId = searchParams.get("plan")
   const creatorParam = searchParams.get("creator")
   const target = planId ? `plan-${planId}` : `creator-${creatorParam ?? ""}`
@@ -128,17 +130,22 @@ export default function NewRequestPage() {
             priceCoins: d.priceCoins || Math.max(data.settings.minCoins, 500),
           }))
         } else {
-          setLoadError("リクエスト先が指定されていません")
+          setLoadError(
+            t(
+              "リクエスト先が指定されていません",
+              "No request recipient was specified",
+            ),
+          )
         }
       } catch (error) {
-        if (!canceled) setLoadError(requestErrorMessage(error))
+        if (!canceled) setLoadError(requestErrorMessage(error, t.isEnglish))
       }
     }
     void load()
     return () => {
       canceled = true
     }
-  }, [planId, creatorParam])
+  }, [planId, creatorParam, t.isEnglish])
 
   // 下書きを戻す（1 回だけ）
   useEffect(() => {
@@ -193,7 +200,10 @@ export default function NewRequestPage() {
     }
     if (checkout === "premium-cancel") {
       toast.message(
-        "コインの購入をキャンセルしました。入力はそのまま残っています",
+        t(
+          "コインの購入をキャンセルしました。入力はそのまま残っています",
+          "Coin purchase canceled. Your input has been kept",
+        ),
       )
       clear()
       return
@@ -211,7 +221,12 @@ export default function NewRequestPage() {
           })
         } catch {}
         await reloadBalance()
-        toast.success("コインを購入しました。続けて依頼できます")
+        toast.success(
+          t(
+            "コインを購入しました。続けて依頼できます",
+            "Coins purchased. You can continue with your request",
+          ),
+        )
         clear()
       })()
     }
@@ -273,7 +288,7 @@ export default function NewRequestPage() {
         await reloadBalance()
         setPurchaseOpen(true)
       }
-      toast.error(requestErrorMessage(error))
+      toast.error(requestErrorMessage(error, t.isEnglish))
     } finally {
       setSubmitting(false)
     }
@@ -282,9 +297,14 @@ export default function NewRequestPage() {
   if (auth.isNotLoggedIn) {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-3 px-6 py-16 text-center">
-        <p className="font-bold">リクエストするにはログインしてください</p>
+        <p className="font-bold">
+          {t(
+            "リクエストするにはログインしてください",
+            "Please log in to send a request",
+          )}
+        </p>
         <Button asChild className="rounded-full">
-          <Link to="/login">ログイン</Link>
+          <Link to="/login">{t("ログイン", "Log in")}</Link>
         </Button>
       </div>
     )
@@ -306,9 +326,11 @@ export default function NewRequestPage() {
         className="flex w-fit items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
       >
         <ChevronLeft className="size-4" />
-        戻る
+        {t("戻る", "Back")}
       </button>
-      <h1 className="font-bold text-xl">リクエストする</h1>
+      <h1 className="font-bold text-xl">
+        {t("リクエストする", "New request")}
+      </h1>
 
       {/* 依頼先 */}
       <section className="flex items-center gap-3 rounded-2xl border p-3">
@@ -323,13 +345,20 @@ export default function NewRequestPage() {
         )}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <p className="truncate font-bold text-sm">
-            {plan ? plan.title : "自由リクエスト（金額と内容を自分で決める）"}
+            {plan
+              ? plan.title
+              : t(
+                  "自由リクエスト（金額と内容を自分で決める）",
+                  "Open request (you set the price and details)",
+                )}
           </p>
           <RequestUserChip user={creator} link={false} />
           {plan && (
             <p className="text-muted-foreground text-xs">
-              納期 {plan.deliveryDays} 日・{plan.imageCount} 枚・修正{" "}
-              {plan.revisionCount} 回
+              {t(
+                `納期 ${plan.deliveryDays} 日・${plan.imageCount} 枚・修正 ${plan.revisionCount} 回`,
+                `${plan.deliveryDays}-day delivery · ${plan.imageCount} ${plan.imageCount === 1 ? "image" : "images"} · ${plan.revisionCount} ${plan.revisionCount === 1 ? "revision" : "revisions"}`,
+              )}
             </p>
           )}
         </div>
@@ -342,12 +371,18 @@ export default function NewRequestPage() {
       )}
       {isOwn && (
         <p className="rounded-xl bg-amber-100 p-3 text-amber-900 text-sm dark:bg-amber-500/15 dark:text-amber-200">
-          自分にはリクエストできません
+          {t(
+            "自分にはリクエストできません",
+            "You cannot send a request to yourself",
+          )}
         </p>
       )}
       {closed && !isOwn && (
         <p className="rounded-xl bg-muted p-3 text-sm">
-          いまはリクエストを受け付けていません
+          {t(
+            "いまはリクエストを受け付けていません",
+            "Not accepting requests right now",
+          )}
         </p>
       )}
 
@@ -356,9 +391,12 @@ export default function NewRequestPage() {
         <section className="flex flex-col gap-3 rounded-2xl border p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="font-bold text-sm">金額</p>
+              <p className="font-bold text-sm">{t("金額", "Price")}</p>
               <p className="text-muted-foreground text-xs">
-                {formatCoins(minCoins)} コインから
+                {t(
+                  `${formatCoins(minCoins)} コインから`,
+                  `From ${formatCoins(minCoins, true)} coins`,
+                )}
               </p>
             </div>
             <Input
@@ -394,17 +432,25 @@ export default function NewRequestPage() {
                       "border-foreground bg-foreground text-background",
                   )}
                 >
-                  {formatCoins(n)}
+                  {formatCoins(n, t.isEnglish)}
                 </button>
               ))}
           </div>
           {draft.priceCoins > 0 && draft.priceCoins < minCoins && (
             <p className="text-destructive text-xs">
-              {formatCoins(minCoins)} コイン以上にしてください
+              {t(
+                `${formatCoins(minCoins)} コイン以上にしてください`,
+                `Please enter at least ${formatCoins(minCoins, true)} coins`,
+              )}
             </p>
           )}
           <div>
-            <p className="mb-2 font-bold text-sm">希望の納期（承諾から）</p>
+            <p className="mb-2 font-bold text-sm">
+              {t(
+                "希望の納期（承諾から）",
+                "Preferred delivery (after acceptance)",
+              )}
+            </p>
             <div className="flex gap-2">
               {[7, 14, 30].map((days) => (
                 <button
@@ -420,7 +466,7 @@ export default function NewRequestPage() {
                       : "",
                   )}
                 >
-                  {days} 日
+                  {t(`${days} 日`, `${days} days`)}
                 </button>
               ))}
             </div>
@@ -428,7 +474,10 @@ export default function NewRequestPage() {
           <Input
             value={draft.title}
             maxLength={60}
-            placeholder="タイトル（例: 推しキャラのアイコン）"
+            placeholder={t(
+              "タイトル（例: 推しキャラのアイコン）",
+              "Title (e.g. An icon of my favorite character)",
+            )}
             onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
           />
         </section>
@@ -437,22 +486,30 @@ export default function NewRequestPage() {
       {/* 内容 */}
       <section className="flex flex-col gap-3 rounded-2xl border p-4">
         <div>
-          <p className="font-bold text-sm">リクエストの内容</p>
+          <p className="font-bold text-sm">
+            {t("リクエストの内容", "Request details")}
+          </p>
           <p className="text-muted-foreground text-xs">
-            キャラクター・服装・ポーズ・背景・用途（アイコン・壁紙など）を具体的に書くと伝わりやすいです
+            {t(
+              "キャラクター・服装・ポーズ・背景・用途（アイコン・壁紙など）を具体的に書くと伝わりやすいです",
+              "Describe the character, outfit, pose, background, and use (icon, wallpaper, etc.) in detail so the creator understands",
+            )}
           </p>
         </div>
         <Textarea
           value={draft.body}
           maxLength={3000}
           rows={7}
-          placeholder={
-            "例）\n・水色の髪の女の子、制服\n・笑顔でピース\n・背景は夏の空\n・X のアイコンに使います"
-          }
+          placeholder={t(
+            "例）\n・水色の髪の女の子、制服\n・笑顔でピース\n・背景は夏の空\n・X のアイコンに使います",
+            "e.g.\n• A girl with light blue hair in a school uniform\n• Smiling and making a peace sign\n• Summer sky in the background\n• For my X icon",
+          )}
           onChange={(e) => setDraft((d) => ({ ...d, body: e.target.value }))}
         />
         <div>
-          <p className="mb-2 font-bold text-sm">参考画像（任意）</p>
+          <p className="mb-2 font-bold text-sm">
+            {t("参考画像（任意）", "Reference images (optional)")}
+          </p>
           <RequestImagePicker
             value={draft.referenceImageUrls}
             onChange={(urls) =>
@@ -460,15 +517,20 @@ export default function NewRequestPage() {
             }
             max={4}
             maxSide={1600}
-            label="参考"
+            label={t("参考", "Reference")}
           />
         </div>
         {allowsR18 && (
           <label className="flex items-center justify-between gap-3 rounded-xl bg-muted/50 px-3 py-2.5">
             <span className="text-sm">
-              <span className="font-bold">R18 の内容</span>
+              <span className="font-bold">
+                {t("R18 の内容", "R18 content")}
+              </span>
               <span className="block text-muted-foreground text-xs">
-                R18 のリクエストはクリエイターの報酬（現金）の対象外です
+                {t(
+                  "R18 のリクエストはクリエイターの報酬（現金）の対象外です",
+                  "R18 requests are not eligible for creator rewards (cash)",
+                )}
               </span>
             </span>
             <Switch
@@ -481,53 +543,65 @@ export default function NewRequestPage() {
 
       {/* 支払い */}
       <section className="flex flex-col gap-3 rounded-2xl border p-4">
-        <p className="font-bold text-sm">お支払い（コイン）</p>
+        <p className="font-bold text-sm">
+          {t("お支払い（コイン）", "Payment (coins)")}
+        </p>
         <div className="flex items-center justify-between text-sm">
-          <span>必要なコイン</span>
+          <span>{t("必要なコイン", "Coins required")}</span>
           <CoinPrice coins={price} className="text-lg" />
         </div>
         <div className="flex items-center justify-between text-muted-foreground text-sm">
-          <span>いまの残高</span>
+          <span>{t("いまの残高", "Current balance")}</span>
           <span>
             {balance === null ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
-              <>
-                無料 {formatCoins(balance.free)} ＋ プレミアム{" "}
-                {formatCoins(balance.premium)}
-              </>
+              t(
+                `無料 ${formatCoins(balance.free)} ＋ プレミアム ${formatCoins(balance.premium)}`,
+                `Free ${formatCoins(balance.free, true)} + Premium ${formatCoins(balance.premium, true)}`,
+              )
             )}
           </span>
         </div>
         {balance !== null && shortage === 0 && (
           <p className="flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-2 text-emerald-800 text-xs dark:bg-emerald-500/10 dark:text-emerald-300">
             <CheckCircle2 className="size-4 shrink-0" />
-            足りています。依頼後の残高は {formatCoins(total - price)}{" "}
-            コインです（無料コインから先に使います）
+            {t(
+              `足りています。依頼後の残高は ${formatCoins(total - price)} コインです（無料コインから先に使います）`,
+              `You have enough. Your balance after the request will be ${formatCoins(total - price, true)} coins (free coins are used first)`,
+            )}
           </p>
         )}
         {balance !== null && shortage > 0 && (
           <div className="flex flex-col gap-2 rounded-xl bg-amber-50 p-3 dark:bg-amber-500/10">
             <p className="flex items-center gap-1.5 font-bold text-amber-900 text-sm dark:text-amber-200">
               <AlertCircle className="size-4" />
-              あと {formatCoins(shortage)} コイン足りません
+              {t(
+                `あと ${formatCoins(shortage)} コイン足りません`,
+                `You need ${formatCoins(shortage, true)} more coins`,
+              )}
             </p>
             <p className="text-amber-900/80 text-xs dark:text-amber-200/80">
-              ここで購入できます。書いた内容は保存されるので、購入から戻ったらそのまま依頼できます。
+              {t(
+                "ここで購入できます。書いた内容は保存されるので、購入から戻ったらそのまま依頼できます。",
+                "You can buy them here. Your input is saved, so you can send the request when you come back.",
+              )}
             </p>
             <Button
               type="button"
               className="h-11 rounded-full font-bold"
               onClick={() => setPurchaseOpen(true)}
             >
-              コインを購入する
+              {t("コインを購入する", "Buy coins")}
             </Button>
           </div>
         )}
         <p className="flex items-start gap-1.5 text-muted-foreground text-xs">
           <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
-          コインは取引が完了するまで預かりになります。お断り・3
-          日以内に返事がない・納期を過ぎたときは全額戻ります。
+          {t(
+            "コインは取引が完了するまで預かりになります。お断り・3 日以内に返事がない・納期を過ぎたときは全額戻ります。",
+            "Your coins are held until the request is completed. If it is declined, gets no reply within 3 days, or passes the due date, all your coins are returned.",
+          )}
         </p>
         <label className="flex items-start gap-2 text-sm">
           <Checkbox
@@ -538,10 +612,11 @@ export default function NewRequestPage() {
             className="mt-0.5"
           />
           <span>
+            {t("", "I agree to the ")}
             <Link to="/requests/terms" target="_blank" className="underline">
-              有料リクエスト規約
+              {t("有料リクエスト規約", "Paid Request Terms")}
             </Link>
-            に同意します
+            {t("に同意します", "")}
           </span>
         </label>
       </section>
@@ -549,7 +624,9 @@ export default function NewRequestPage() {
       <div className="fixed inset-x-0 bottom-[var(--aip-tabbar-h,0px)] z-30 border-t bg-background/95 px-3 py-2.5 backdrop-blur-md md:bottom-0">
         <div className="mx-auto flex max-w-2xl items-center gap-3">
           <div className="flex flex-col">
-            <span className="text-[11px] text-muted-foreground">お支払い</span>
+            <span className="text-[11px] text-muted-foreground">
+              {t("お支払い", "Payment")}
+            </span>
             <CoinPrice coins={price} className="text-lg" />
           </div>
           {balance !== null && shortage > 0 ? (
@@ -557,7 +634,7 @@ export default function NewRequestPage() {
               className="h-12 flex-1 rounded-full font-bold text-base"
               onClick={() => setPurchaseOpen(true)}
             >
-              コインを購入して続ける
+              {t("コインを購入して続ける", "Buy coins and continue")}
             </Button>
           ) : (
             <Button
@@ -568,7 +645,7 @@ export default function NewRequestPage() {
               {submitting ? (
                 <Loader2 className="size-5 animate-spin" />
               ) : (
-                "コインで依頼する"
+                t("コインで依頼する", "Request with coins")
               )}
             </Button>
           )}

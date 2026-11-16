@@ -12,12 +12,14 @@ import {
   formatCoins,
   requestsGet,
 } from "~/lib/requests-api"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * マイページのプラン欄: プランの横スクロールのカードと「リクエストする」ボタン。
  * プランも自由リクエストもない人には何も出さない（本人には作る入口だけ小さく出す）
  */
 export function UserRequestPlansSection(props: { userId: string }) {
+  const t = useTranslation()
   const auth = useContext(AuthContext)
   const [profile, setProfile] = useState<
     (CreatorRequestProfile & { users: RequestUsers }) | null
@@ -50,9 +52,17 @@ export function UserRequestPlansSection(props: { userId: string }) {
       >
         <HandCoins className="size-5 shrink-0 text-sky-500" />
         <span className="flex-1">
-          <b>プランを出品してリクエストを受けよう</b>
+          <b>
+            {t(
+              "プランを出品してリクエストを受けよう",
+              "List a plan and receive requests",
+            )}
+          </b>
           <span className="block text-muted-foreground text-xs">
-            コインで依頼が届き、完了すると受け取れます
+            {t(
+              "コインで依頼が届き、完了すると受け取れます",
+              "Requests are paid in coins, which you receive when done",
+            )}
           </span>
         </span>
         <Plus className="size-4 text-muted-foreground" />
@@ -66,10 +76,13 @@ export function UserRequestPlansSection(props: { userId: string }) {
       <div className="flex items-center justify-between gap-2 px-1">
         <h2 className="flex items-center gap-1.5 font-bold text-lg">
           <HandCoins className="size-5 text-sky-500" />
-          リクエスト
+          {t("リクエスト", "Requests")}
           {profile.completedCount > 0 && (
             <span className="font-normal text-muted-foreground text-xs">
-              完了 {profile.completedCount} 件
+              {t(
+                `完了 ${profile.completedCount} 件`,
+                `${profile.completedCount} completed`,
+              )}
             </span>
           )}
         </h2>
@@ -78,7 +91,7 @@ export function UserRequestPlansSection(props: { userId: string }) {
             to="/settings/requests"
             className="flex items-center text-muted-foreground text-sm hover:text-foreground"
           >
-            プランを編集
+            {t("プランを編集", "Edit plans")}
             <ChevronRight className="size-4" />
           </Link>
         ) : (
@@ -86,7 +99,7 @@ export function UserRequestPlansSection(props: { userId: string }) {
             to="/requests/plans"
             className="flex items-center text-muted-foreground text-sm hover:text-foreground"
           >
-            プラン一覧
+            {t("プラン一覧", "All plans")}
             <ChevronRight className="size-4" />
           </Link>
         )}
@@ -108,15 +121,20 @@ export function UserRequestPlansSection(props: { userId: string }) {
       {canFree && (
         <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-sky-500/10 to-indigo-500/10 p-3">
           <div className="min-w-0 flex-1 text-sm">
-            <p className="font-bold">内容を自由に決めてリクエスト</p>
+            <p className="font-bold">
+              {t("内容を自由に決めてリクエスト", "Custom request")}
+            </p>
             <p className="truncate text-muted-foreground text-xs">
               {profile.settings.note ||
-                `${formatCoins(profile.settings.minCoins)} コインから受け付けています`}
+                t(
+                  `${formatCoins(profile.settings.minCoins)} コインから受け付けています`,
+                  `From ${formatCoins(profile.settings.minCoins, true)} coins`,
+                )}
             </p>
           </div>
           <Button asChild className="shrink-0 rounded-full font-bold">
             <Link to={`/requests/new?creator=${props.userId}`}>
-              リクエストする
+              {t("リクエストする", "Request")}
             </Link>
           </Button>
         </div>

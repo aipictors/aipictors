@@ -7,6 +7,7 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
   ExternalLinkIcon,
+  GlobeIcon,
   IdCardIcon,
   LandmarkIcon,
   Loader2Icon,
@@ -34,9 +35,9 @@ import {
 } from "~/lib/creator-rewards"
 import { cn } from "~/lib/utils"
 
-const formatDate = (sec: number | null | undefined) =>
+const formatDate = (sec: number | null | undefined, isEnglish = false) =>
   sec
-    ? new Date(sec * 1000).toLocaleDateString("ja-JP", {
+    ? new Date(sec * 1000).toLocaleDateString(isEnglish ? "en-US" : "ja-JP", {
         timeZone: "Asia/Tokyo",
       })
     : "-"
@@ -61,6 +62,7 @@ export function CreatorRewardsPage() {
   const [summary, setSummary] = useState<CreatorRewardSummary | null>(null)
   const [loadError, setLoadError] = useState(false)
   const [agreed, setAgreed] = useState(false)
+  const [hasJapanBank, setHasJapanBank] = useState(false)
   const [busy, setBusy] = useState<string | null>(null)
 
   const load = async () => {
@@ -194,7 +196,7 @@ export function CreatorRewardsPage() {
           <div className="text-center">
             <BanknoteIcon className="mx-auto size-8 text-emerald-600" />
             <p className="mt-1 font-bold text-emerald-700 text-lg tabular-nums dark:text-emerald-300">
-              {formatYen(yenPer1000)}
+              {formatYen(yenPer1000, t.isEnglish)}
             </p>
             <p className="text-muted-foreground text-xs">
               {t("あなたの口座へ", "to your bank")}
@@ -208,6 +210,8 @@ export function CreatorRewardsPage() {
           )}
         </p>
       </section>
+
+      {!summary.joined && <JapanBankOnlyNotice />}
 
       {!c.enabled && (
         <Alert>
@@ -232,8 +236,8 @@ export function CreatorRewardsPage() {
             <BalanceTile
               label={t("次の振込に入る", "Next payout")}
               hint={t(
-                `${formatDate(summary.nextCloseAt)} に締め`,
-                `Closes ${formatDate(summary.nextCloseAt)}`,
+                `${formatDate(summary.nextCloseAt, t.isEnglish)} に締め`,
+                `Closes ${formatDate(summary.nextCloseAt, t.isEnglish)}`,
               )}
               value={summary.balances.availableYen}
               accent
@@ -298,10 +302,33 @@ export function CreatorRewardsPage() {
                       {t(" を読んで同意します", "— I have read and agree")}
                     </span>
                   </label>
+                  {!summary.joined && (
+                    <label
+                      htmlFor="creator-rewards-japan-bank"
+                      className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-sm"
+                    >
+                      <Checkbox
+                        id="creator-rewards-japan-bank"
+                        className="mt-0.5"
+                        checked={hasJapanBank}
+                        onCheckedChange={(v) => setHasJapanBank(v === true)}
+                      />
+                      <span>
+                        {t(
+                          "日本の銀行口座（円）と日本の住所で登録できます",
+                          "I have a bank account in Japan (JPY) and a Japanese address",
+                        )}
+                      </span>
+                    </label>
+                  )}
                   <Button
                     size="lg"
                     className="w-full md:w-auto"
-                    disabled={!agreed || busy !== null}
+                    disabled={
+                      !agreed ||
+                      (!summary.joined && !hasJapanBank) ||
+                      busy !== null
+                    }
                     onClick={() => post("join")}
                   >
                     {busy === "join" && (
@@ -380,8 +407,8 @@ export function CreatorRewardsPage() {
                       </NeedItem>
                       <NeedItem icon={LandmarkIcon}>
                         {t(
-                          "銀行口座（通帳かキャッシュカードがあると安心）",
-                          "Your bank account details",
+                          "日本の銀行口座（通帳かキャッシュカードがあると安心）",
+                          "A bank account in Japan (JPY) and a Japanese address",
                         )}
                       </NeedItem>
                       <NeedItem icon={IdCardIcon}>
@@ -462,12 +489,12 @@ export function CreatorRewardsPage() {
           </FaqItem>
           <FaqItem q={t("いくらから振り込まれますか？", "Is there a minimum?")}>
             {t(
-              `${formatYen(c.minYen)} 以上たまったら振り込みます（それまでは次回に持ち越し）。1か月 ${formatYen(c.maxYen)} までです。`,
+              `${formatYen(c.minYen, t.isEnglish)} 以上たまったら振り込みます（それまでは次回に持ち越し）。1か月 ${formatYen(c.maxYen, t.isEnglish)} までです。`,
               `Paid once you have ¥${c.minYen.toLocaleString()} or more (otherwise carried over). Up to ¥${c.maxYen.toLocaleString()} per month.`,
             )}
             {c.newAccountMaxYen && c.newAccountDays
               ? t(
-                  `口座を登録してから ${c.newAccountDays} 日のあいだは、1回 ${formatYen(c.newAccountMaxYen)} までです。`,
+                  `口座を登録してから ${c.newAccountDays} 日のあいだは、1回 ${formatYen(c.newAccountMaxYen, t.isEnglish)} までです。`,
                   ` For the first ${c.newAccountDays} days after registering, up to ¥${c.newAccountMaxYen.toLocaleString()} per payout.`,
                 )
               : ""}
@@ -476,7 +503,7 @@ export function CreatorRewardsPage() {
             q={t("差し引かれるお金はありますか？", "Are there deductions?")}
           >
             {t(
-              `振込のたびに手数料 ${formatYen(c.feeYen)} がかかります。個人の方は、法律で決まった所得税（${(c.withholdingPpm / 10000).toFixed(2)}%）を差し引き、Aipictors が代わりに国へ納めます（源泉徴収）。`,
+              `振込のたびに手数料 ${formatYen(c.feeYen, t.isEnglish)} がかかります。個人の方は、法律で決まった所得税（${(c.withholdingPpm / 10000).toFixed(2)}%）を差し引き、Aipictors が代わりに国へ納めます（源泉徴収）。`,
               `A ¥${c.feeYen} fee per payout. For individuals, ${(c.withholdingPpm / 10000).toFixed(2)}% income tax is withheld and paid to the government by us.`,
             )}
           </FaqItem>
@@ -533,6 +560,33 @@ export function CreatorRewardsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * 振込は日本の銀行口座（円）だけ。日本の Stripe からは海外の口座へ送れない（cross-border payouts は米・英・EEA・加・瑞のプラットフォームだけ）。
+ * 海外の方は参加しなければ、推しは今までどおりコインで届く（参加すると全年齢の有料コインの推しが円の報酬になり、口座がないと受け取れない）
+ */
+export function JapanBankOnlyNotice() {
+  const t = useTranslation()
+  return (
+    <Alert>
+      <GlobeIcon className="size-4" />
+      <AlertDescription className="space-y-1 text-sm leading-6">
+        <p className="font-semibold">
+          {t(
+            "振込先は日本の銀行口座（円）だけです",
+            "Payouts are only available to bank accounts in Japan (JPY)",
+          )}
+        </p>
+        <p className="text-muted-foreground">
+          {t(
+            "海外にお住まいで日本の口座がない方は、参加しないでください。参加しなければ、推しはこれまでどおりコインで受け取れます。推し・リクエスト・プランはコインなので、どの国からでも使えます。",
+            "If you live outside Japan and don't have a Japanese bank account, please don't join. Without joining, you keep receiving supports as coins. Supports, requests and plans use coins, so they work from any country.",
+          )}
+        </p>
+      </AlertDescription>
+    </Alert>
   )
 }
 
@@ -598,6 +652,7 @@ function BalanceTile(props: {
   hint?: string
   accent?: boolean
 }) {
+  const t = useTranslation()
   return (
     <div
       className={cn(
@@ -607,7 +662,7 @@ function BalanceTile(props: {
     >
       <div className="text-muted-foreground text-xs">{props.label}</div>
       <div className="font-bold text-lg tabular-nums">
-        {formatYen(props.value)}
+        {formatYen(props.value, t.isEnglish)}
       </div>
       {props.hint && (
         <div className="text-[11px] text-muted-foreground">{props.hint}</div>
@@ -643,21 +698,27 @@ function PayoutList(props: { payouts: CreatorRewardPayout[] }) {
             </div>
             <div className="grid grid-cols-2 text-muted-foreground text-xs">
               <span>{t("報酬", "Rewards")}</span>
-              <span className="text-right">{formatYen(p.grossYen)}</span>
+              <span className="text-right">
+                {formatYen(p.grossYen, t.isEnglish)}
+              </span>
               <span>{t("所得税（源泉徴収）", "Withholding tax")}</span>
-              <span className="text-right">-{formatYen(p.withholdingYen)}</span>
+              <span className="text-right">
+                -{formatYen(p.withholdingYen, t.isEnglish)}
+              </span>
               <span>{t("振込手数料", "Fee")}</span>
-              <span className="text-right">-{formatYen(p.feeYen)}</span>
+              <span className="text-right">
+                -{formatYen(p.feeYen, t.isEnglish)}
+              </span>
               <span className="font-bold text-foreground">
                 {t("振込額", "Net")}
               </span>
               <span className="text-right font-bold text-foreground">
-                {formatYen(p.netYen)}
+                {formatYen(p.netYen, t.isEnglish)}
               </span>
             </div>
             {p.sentAt && (
               <div className="text-muted-foreground text-xs">
-                {t("送金日", "Sent")}: {formatDate(p.sentAt)}
+                {t("送金日", "Sent")}: {formatDate(p.sentAt, t.isEnglish)}
               </div>
             )}
           </div>
@@ -711,22 +772,22 @@ function EarningList(props: { earnings: CreatorRewardEarning[] }) {
                     </span>
                   </div>
                   <div className="text-muted-foreground text-xs">
-                    {formatDate(e.createdAt)}
+                    {formatDate(e.createdAt, t.isEnglish)}
                     {e.status === "HOLDING" &&
                       t(
-                        ` ・ ${formatDate(e.availableAt)} に確認期間が終わります`,
-                        ` · available from ${formatDate(e.availableAt)}`,
+                        ` ・ ${formatDate(e.availableAt, t.isEnglish)} に確認期間が終わります`,
+                        ` · available from ${formatDate(e.availableAt, t.isEnglish)}`,
                       )}
                     {e.expectedCloseAt &&
                       t(
-                        ` ・ 振込予定 ${formatDate(e.expectedCloseAt)}（最短）`,
-                        ` · payout ${formatDate(e.expectedCloseAt)} (earliest)`,
+                        ` ・ 振込予定 ${formatDate(e.expectedCloseAt, t.isEnglish)}（最短）`,
+                        ` · payout ${formatDate(e.expectedCloseAt, t.isEnglish)} (earliest)`,
                       )}
                   </div>
                 </div>
                 <Badge variant="outline">{label[e.status]}</Badge>
                 <span className="w-20 text-right font-medium">
-                  {formatYen(e.amountYen)}
+                  {formatYen(e.amountYen, t.isEnglish)}
                 </span>
               </div>
             ))}

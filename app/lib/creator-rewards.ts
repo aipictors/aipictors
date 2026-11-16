@@ -104,5 +104,8 @@ export const formatCloseDays = (config: CreatorRewardSummary["config"]) =>
     " 日・",
   )
 
-export const formatYen = (value: number) =>
-  `${Math.floor(value).toLocaleString("ja-JP")}円`
+/** 円の表記。英語の画面は ¥1,000 */
+export const formatYen = (value: number, isEnglish = false) =>
+  isEnglish
+    ? `¥${Math.floor(value).toLocaleString("en-US")}`
+    : `${Math.floor(value).toLocaleString("ja-JP")}円`

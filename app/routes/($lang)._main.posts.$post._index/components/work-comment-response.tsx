@@ -425,7 +425,7 @@ export function WorkCommentResponse(props: Props) {
                   }
                   disabled={props.isDisabledCommentLike}
                   className={"h-7 gap-1 px-2 text-xs"}
-                  aria-label="いいね"
+                  aria-label={t("いいね", "Like")}
                 >
                   <ThumbsUpIcon
                     className={cn(
@@ -461,7 +461,7 @@ export function WorkCommentResponse(props: Props) {
                     >
                       <button
                         type="button"
-                        aria-label="スタンプの詳細"
+                        aria-label={t("スタンプの詳細", "Sticker details")}
                         className="inline-flex size-7 items-center justify-center rounded-md hover:bg-muted hover:text-foreground"
                       >
                         <ArrowDownToLine className="size-3.5" />

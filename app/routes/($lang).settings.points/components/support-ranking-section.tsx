@@ -236,10 +236,12 @@ export function SupportRankingSection() {
       }
       const normalizedSummary = normalizeSummaryData(json.data)
       setSummary(normalizedSummary)
-      const nextCandidate = selectedWeekStartDate ?? normalizedSummary?.weekStartDate
-      const next = nextCandidate && isValidWeekStartDate(nextCandidate)
-        ? nextCandidate
-        : (normalizedSummary?.availableWeekStartDates[0] ?? null)
+      const nextCandidate =
+        selectedWeekStartDate ?? normalizedSummary?.weekStartDate
+      const next =
+        nextCandidate && isValidWeekStartDate(nextCandidate)
+          ? nextCandidate
+          : (normalizedSummary?.availableWeekStartDates[0] ?? null)
       if (!next) {
         setReceivedRanking({
           kind: "received",
@@ -481,11 +483,15 @@ function RankingCard({
     const parts = []
 
     if (row.freePtAmount > 0) {
-      parts.push(`${formatNumber(row.freePtAmount)} pt（フリー）`)
+      parts.push(
+        `${formatNumber(row.freePtAmount)} pt${t("（フリー）", " (free)")}`,
+      )
     }
 
     if (row.premiumPtAmount > 0) {
-      parts.push(`${formatNumber(row.premiumPtAmount)} pt（プレミアム）`)
+      parts.push(
+        `${formatNumber(row.premiumPtAmount)} pt${t("（プレミアム）", " (premium)")}`,
+      )
     }
 
     return parts.join(" + ")

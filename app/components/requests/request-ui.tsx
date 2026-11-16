@@ -4,12 +4,13 @@ import { Link } from "~/lib/app/locale-router"
 import {
   type CoinRequest,
   formatCoins,
-  PLAN_CATEGORY_LABELS,
-  REQUEST_STATUS_LABELS,
+  planCategoryLabel,
+  requestStatusLabel,
   type RequestPlan,
   type RequestStatus,
 } from "~/lib/requests-api"
 import { cn } from "~/lib/utils"
+import { useTranslation } from "~/hooks/use-translation"
 
 /** 有料リクエストの画面で使う部品（Web とアプリで同じ見た目: 角の丸いカード・丸いタブ・下に固定のボタン） */
 
@@ -27,6 +28,7 @@ export function RequestUserChip(props: {
   className?: string
   link?: boolean
 }) {
+  const t = useTranslation()
   const size = props.size === "md" ? "size-9" : "size-6"
   const body = (
     <span
@@ -43,7 +45,7 @@ export function RequestUserChip(props: {
         <span className={cn(size, "shrink-0 rounded-full bg-muted")} />
       )}
       <span className="truncate font-medium text-sm">
-        {props.user?.name ?? "ユーザー"}
+        {props.user?.name ?? t("ユーザー", "User")}
       </span>
     </span>
   )
@@ -59,6 +61,7 @@ export function RequestUserChip(props: {
 }
 
 export function CoinPrice(props: { coins: number; className?: string }) {
+  const t = useTranslation()
   return (
     <span
       className={cn(
@@ -67,7 +70,7 @@ export function CoinPrice(props: { coins: number; className?: string }) {
       )}
     >
       <PremiumCoinIcon className="size-4" />
-      {formatCoins(props.coins)}
+      {formatCoins(props.coins, t.isEnglish)}
     </span>
   )
 }
@@ -79,6 +82,7 @@ export function RequestPlanCard(props: {
   compact?: boolean
   showStatus?: boolean
 }) {
+  const t = useTranslation()
   const { plan } = props
   const full =
     plan.activeCount !== undefined && plan.activeCount >= plan.maxActive
@@ -105,21 +109,23 @@ export function RequestPlanCard(props: {
           </div>
         )}
         <span className="absolute top-2 left-2 rounded-full bg-background/90 px-2.5 py-1 font-bold text-[11px] backdrop-blur">
-          {PLAN_CATEGORY_LABELS[plan.category] ?? plan.category}
+          {planCategoryLabel(plan.category, t.isEnglish)}
         </span>
         {plan.allowsR18 && (
           <span className="absolute top-2 right-2 rounded-full bg-rose-500 px-2 py-0.5 font-bold text-[10px] text-white">
-            R18可
+            {t("R18可", "R18 OK")}
           </span>
         )}
         {closed && (
           <span className="absolute inset-x-0 bottom-0 bg-black/60 py-1 text-center font-bold text-white text-xs">
-            {full ? "受付上限に達しています" : "受付停止中"}
+            {full
+              ? t("受付上限に達しています", "Fully booked")
+              : t("受付停止中", "Not accepting")}
           </span>
         )}
         {props.showStatus && plan.status === "HIDDEN" && (
           <span className="absolute inset-0 flex items-center justify-center bg-black/50 font-bold text-sm text-white">
-            非公開
+            {t("非公開", "Hidden")}
           </span>
         )}
       </div>
@@ -132,16 +138,26 @@ export function RequestPlanCard(props: {
           <CoinPrice coins={plan.priceCoins} className="text-base" />
           <span className="flex items-center gap-1 text-muted-foreground text-xs">
             <CalendarClock className="size-3.5" />
-            {plan.deliveryDays}日
+            {t(`${plan.deliveryDays}日`, `${plan.deliveryDays} days`)}
           </span>
         </div>
         <div className="flex gap-3 text-[11px] text-muted-foreground">
-          <span>{plan.imageCount}枚</span>
+          <span>{t(`${plan.imageCount}枚`, `${plan.imageCount} images`)}</span>
           <span className="inline-flex items-center gap-0.5">
             <RefreshCcw className="size-3" />
-            修正{plan.revisionCount}回
+            {t(
+              `修正${plan.revisionCount}回`,
+              `${plan.revisionCount} revisions`,
+            )}
           </span>
-          {plan.completedCount > 0 && <span>実績 {plan.completedCount}件</span>}
+          {plan.completedCount > 0 && (
+            <span>
+              {t(
+                `実績 ${plan.completedCount}件`,
+                `${plan.completedCount} completed`,
+              )}
+            </span>
+          )}
         </div>
       </div>
     </Link>
@@ -165,6 +181,7 @@ const STATUS_COLORS: Record<RequestStatus, string> = {
 }
 
 export function RequestStatusBadge(props: { status: RequestStatus }) {
+  const t = useTranslation()
   return (
     <span
       className={cn(
@@ -172,20 +189,21 @@ export function RequestStatusBadge(props: { status: RequestStatus }) {
         STATUS_COLORS[props.status],
       )}
     >
-      {REQUEST_STATUS_LABELS[props.status]}
+      {requestStatusLabel(props.status, t.isEnglish)}
     </span>
   )
 }
 
-const STEPS: Array<{ key: string; label: string }> = [
-  { key: "PENDING", label: "申し込み" },
-  { key: "ACCEPTED", label: "制作中" },
-  { key: "DELIVERED", label: "納品" },
-  { key: "COMPLETED", label: "完了" },
+const STEPS: Array<{ key: string; label: string; enLabel: string }> = [
+  { key: "PENDING", label: "申し込み", enLabel: "Requested" },
+  { key: "ACCEPTED", label: "制作中", enLabel: "In progress" },
+  { key: "DELIVERED", label: "納品", enLabel: "Delivered" },
+  { key: "COMPLETED", label: "完了", enLabel: "Done" },
 ]
 
 /** 進み具合（申し込み → 制作中 → 納品 → 完了） */
 export function RequestSteps(props: { request: CoinRequest }) {
+  const t = useTranslation()
   const order = ["PENDING", "ACCEPTED", "DELIVERED", "COMPLETED"]
   const status =
     props.request.status === "ADMIN_COMPLETED"
@@ -218,7 +236,7 @@ export function RequestSteps(props: { request: CoinRequest }) {
                   current ? "font-bold" : "text-muted-foreground",
                 )}
               >
-                {step.label}
+                {t(step.label, step.enLabel)}
               </span>
             </div>
             {i < STEPS.length - 1 && (

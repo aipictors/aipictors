@@ -28,6 +28,7 @@ import {
 } from "~/components/ui/select"
 import { getServerEnvValue } from "~/lib/server/env.server"
 import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
+import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
 
 // ────────────────────────────────────────────────────────────────────
@@ -65,6 +66,11 @@ const MONTH_FMT = new Intl.DateTimeFormat("ja-JP", {
   year: "numeric",
   month: "long",
 })
+const MONTH_FMT_EN = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Asia/Tokyo",
+  year: "numeric",
+  month: "short",
+})
 const DATE_FMT = new Intl.DateTimeFormat("ja-JP", {
   timeZone: "Asia/Tokyo",
   month: "2-digit",
@@ -88,9 +94,11 @@ const normalizeWeekStartDate = (value: string | null | undefined) => {
   return isValidWeekStartDate(normalized) ? normalized : null
 }
 
-const formatMonth = (ym: string) =>
+const formatMonth = (ym: string, isEnglish = false) =>
   isValidYearMonth(ym)
-    ? MONTH_FMT.format(new Date(`${ym}-01T00:00:00+09:00`))
+    ? (isEnglish ? MONTH_FMT_EN : MONTH_FMT).format(
+        new Date(`${ym}-01T00:00:00+09:00`),
+      )
     : ym
 
 const formatWeekRange = (weekStartDate: string) => {
@@ -208,7 +216,9 @@ const fetchFromBackend = async (
   }
   if (!json.data) return null
 
-  const normalizedWeekStartDate = normalizeWeekStartDate(json.data.weekStartDate)
+  const normalizedWeekStartDate = normalizeWeekStartDate(
+    json.data.weekStartDate,
+  )
 
   return {
     ...json.data,
@@ -307,6 +317,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 // ────────────────────────────────────────────────────────────────────
 
 export default function CoinRankingsPage() {
+  const t = useTranslation()
   const data = useLoaderData<typeof loader>()
   const [_searchParams, setSearchParams] = useSearchParams()
 
@@ -354,7 +365,9 @@ export default function CoinRankingsPage() {
   const colorClass =
     activeKind === "received" ? "text-amber-500" : "text-sky-500"
   const rankingTitle =
-    activeKind === "received" ? "推しランキング" : "貢献度ランキング"
+    activeKind === "received"
+      ? t("推しランキング", "Support ranking")
+      : t("貢献度ランキング", "Contribution ranking")
 
   return (
     <div className="space-y-6 p-4 md:p-6">
@@ -363,17 +376,23 @@ export default function CoinRankingsPage() {
         <div className="space-y-1">
           <h1 className="flex items-center gap-2 font-bold text-2xl">
             <Trophy className="h-6 w-6 text-amber-500" />
-            推し・貢献度ランキング
+            {t("推し・貢献度ランキング", "Support & Contribution Rankings")}
           </h1>
           <p className="text-muted-foreground text-sm leading-6">
-            フリーコイン 1pt / プレミアムコイン 10pt として週間集計しています。
-            累計とコインの違い、ランキングの見方はヘルプから確認できます。
+            {t(
+              "フリーコイン 1pt / プレミアムコイン 10pt として週間集計しています。累計とコインの違い、ランキングの見方はヘルプから確認できます。",
+              "Weekly totals with free coins at 1 pt and premium coins at 10 pt. See the help for how rankings work.",
+            )}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <CoinHelpDialog triggerLabel="推しランキングとは" />
+          <CoinHelpDialog
+            triggerLabel={t("推しランキングとは", "About rankings")}
+          />
           <Button asChild variant="outline" size="sm">
-            <Link to="/help?tab=coins">/help のガイド</Link>
+            <Link to="/help?tab=coins">
+              {t("/help のガイド", "Help guide")}
+            </Link>
           </Button>
         </div>
       </div>
@@ -385,14 +404,14 @@ export default function CoinRankingsPage() {
           variant={activeKind === "received" ? "default" : "outline"}
           onClick={() => handleKindChange("received")}
         >
-          推しランキング
+          {t("推しランキング", "Support ranking")}
         </Button>
         <Button
           size="sm"
           variant={activeKind === "sent" ? "default" : "outline"}
           onClick={() => handleKindChange("sent")}
         >
-          貢献度ランキング
+          {t("貢献度ランキング", "Contribution ranking")}
         </Button>
       </div>
 
@@ -406,7 +425,7 @@ export default function CoinRankingsPage() {
             <SelectContent>
               {monthKeys.map((ym) => (
                 <SelectItem key={ym} value={ym}>
-                  {formatMonth(ym)}
+                  {formatMonth(ym, t.isEnglish)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -438,7 +457,10 @@ export default function CoinRankingsPage() {
         <CardContent className="space-y-2">
           {displayItems.length === 0 ? (
             <p className="py-8 text-center text-muted-foreground text-sm">
-              この週はまだデータがありません。
+              {t(
+                "この週はまだデータがありません。",
+                "No data for this week yet.",
+              )}
             </p>
           ) : (
             <div className="space-y-2">
@@ -514,7 +536,7 @@ export default function CoinRankingsPage() {
 
       <p className="text-center text-muted-foreground text-xs">
         <Link to="/settings/points" className="hover:underline">
-          自分の推し・貢献度 pt を確認する
+          {t("自分の推し・貢献度 pt を確認する", "See your own pt")}
         </Link>
       </p>
     </div>

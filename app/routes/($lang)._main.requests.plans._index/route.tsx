@@ -23,8 +23,13 @@ import {
 import { Button } from "~/components/ui/button"
 import { config, META } from "~/config"
 import { useContentMode } from "~/hooks/use-content-mode"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
-import { PLAN_CATEGORY_LABELS, type RequestPlan } from "~/lib/requests-api"
+import {
+  PLAN_CATEGORY_LABELS,
+  planCategoryLabel,
+  type RequestPlan,
+} from "~/lib/requests-api"
 import { fetchRequestsInternal } from "~/lib/server/requests-api.server"
 import { cn } from "~/lib/utils"
 import { createMeta } from "~/utils/create-meta"
@@ -33,10 +38,10 @@ export const meta: MetaFunction = (props) =>
   createMeta(META.REQUEST_PLANS, undefined, props.params.lang)
 
 const SORTS = [
-  { value: "popular", label: "人気" },
-  { value: "new", label: "新着" },
-  { value: "price_asc", label: "安い順" },
-  { value: "fast", label: "納期が早い" },
+  { value: "popular", ja: "人気", en: "Popular" },
+  { value: "new", ja: "新着", en: "Newest" },
+  { value: "price_asc", ja: "安い順", en: "Lowest price" },
+  { value: "fast", ja: "納期が早い", en: "Fastest delivery" },
 ]
 const PRICES = [500, 1000, 3000, 10000]
 const DAYS = [3, 7, 14]
@@ -64,6 +69,7 @@ export default function RequestPlansPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigation = useNavigation()
   const contentMode = useContentMode()
+  const t = useTranslation()
   const category = searchParams.get("category") ?? ""
   const sort = searchParams.get("sort") ?? "popular"
   const maxPrice = searchParams.get("maxPrice") ?? ""
@@ -82,15 +88,18 @@ export default function RequestPlansPage() {
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-500 via-indigo-500 to-fuchsia-500 p-5 text-white md:p-8">
         <div className="relative z-10 flex flex-col gap-3 md:max-w-xl">
           <span className="w-fit rounded-full bg-white/20 px-3 py-1 font-bold text-xs backdrop-blur">
-            有料リクエスト
+            {t("有料リクエスト", "Paid requests")}
           </span>
           <h1 className="font-bold text-2xl leading-tight md:text-3xl">
-            好きなクリエイターに
+            {t("好きなクリエイターに", "Get artwork from")}
             <br />
-            コインで描いてもらおう
+            {t("コインで描いてもらおう", "your favorite creators with coins")}
           </h1>
           <p className="text-sm text-white/90">
-            プランを選んで内容を書くだけ。お断り・期限切れのときはコインが全額戻ります。
+            {t(
+              "プランを選んで内容を書くだけ。お断り・期限切れのときはコインが全額戻ります。",
+              "Just pick a plan and describe your request. If it is declined or expires, all your coins are returned.",
+            )}
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
             <Button
@@ -100,7 +109,7 @@ export default function RequestPlansPage() {
             >
               <Link to="/settings/requests">
                 <Plus className="mr-1 size-4" />
-                プランを出品する
+                {t("プランを出品する", "List a plan")}
               </Link>
             </Button>
             <Button
@@ -108,7 +117,7 @@ export default function RequestPlansPage() {
               variant="ghost"
               className="rounded-full font-bold text-white hover:bg-white/15 hover:text-white"
             >
-              <Link to="/requests">依頼の管理</Link>
+              <Link to="/requests">{t("依頼の管理", "Manage requests")}</Link>
             </Button>
           </div>
         </div>
@@ -122,16 +131,16 @@ export default function RequestPlansPage() {
             className={appPillTabClassName(category === "")}
             onClick={() => setParam("category", "")}
           >
-            すべて
+            {t("すべて", "All")}
           </button>
-          {Object.entries(PLAN_CATEGORY_LABELS).map(([value, label]) => (
+          {Object.keys(PLAN_CATEGORY_LABELS).map((value) => (
             <button
               key={value}
               type="button"
               className={appPillTabClassName(category === value)}
               onClick={() => setParam("category", value)}
             >
-              {label}
+              {planCategoryLabel(value, t.isEnglish)}
             </button>
           ))}
         </div>
@@ -145,7 +154,7 @@ export default function RequestPlansPage() {
                 setParam("sort", s.value === "popular" ? "" : s.value)
               }
             >
-              {s.label}
+              {t(s.ja, s.en)}
             </button>
           ))}
           <span className="mx-1 w-px shrink-0 bg-border" />
@@ -158,7 +167,8 @@ export default function RequestPlansPage() {
                 setParam("maxPrice", maxPrice === String(p) ? "" : String(p))
               }
             >
-              <Coins className="size-3.5" />〜{p.toLocaleString()}
+              <Coins className="size-3.5" />〜
+              {p.toLocaleString(t.isEnglish ? "en-US" : "ja-JP")}
             </button>
           ))}
           <span className="mx-1 w-px shrink-0 bg-border" />
@@ -171,7 +181,8 @@ export default function RequestPlansPage() {
                 setParam("maxDays", maxDays === String(d) ? "" : String(d))
               }
             >
-              <CalendarClock className="size-3.5" />〜{d}日
+              <CalendarClock className="size-3.5" />
+              {t(`〜${d}日`, `≤${d} days`)}
             </button>
           ))}
           {contentMode === "r18" && (
@@ -180,7 +191,7 @@ export default function RequestPlansPage() {
               className={appFilterChipClassName(r18)}
               onClick={() => setParam("r18", r18 ? "" : "1")}
             >
-              R18可のみ
+              {t("R18可のみ", "R18 OK only")}
             </button>
           )}
         </div>
@@ -203,12 +214,22 @@ export default function RequestPlansPage() {
       {data.plans.length === 0 && (
         <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed px-6 py-14 text-center">
           <HandCoins className="size-10 text-muted-foreground" />
-          <p className="font-bold">まだ条件に合うプランがありません</p>
+          <p className="font-bold">
+            {t(
+              "まだ条件に合うプランがありません",
+              "No plans match these filters yet",
+            )}
+          </p>
           <p className="text-muted-foreground text-sm">
-            あなたが最初のプランを出品してみませんか？
+            {t(
+              "あなたが最初のプランを出品してみませんか？",
+              "Why not list the first plan yourself?",
+            )}
           </p>
           <Button asChild className="rounded-full font-bold">
-            <Link to="/settings/requests">プランを出品する</Link>
+            <Link to="/settings/requests">
+              {t("プランを出品する", "List a plan")}
+            </Link>
           </Button>
         </div>
       )}
@@ -216,24 +237,39 @@ export default function RequestPlansPage() {
       <section className="grid gap-3 rounded-3xl bg-muted/50 p-5 md:grid-cols-3">
         <HowTo
           step="1"
-          title="プランを選ぶ"
-          body="カテゴリ・価格・納期で探して、見本と内容を確認します。"
+          title={t("プランを選ぶ", "Choose a plan")}
+          body={t(
+            "カテゴリ・価格・納期で探して、見本と内容を確認します。",
+            "Search by category, price, and delivery time, then check the samples and details.",
+          )}
         />
         <HowTo
           step="2"
-          title="内容を書いてコインで依頼"
-          body="コインはいったん預かりになります。足りなければその場で購入できます。"
+          title={t(
+            "内容を書いてコインで依頼",
+            "Describe it and pay with coins",
+          )}
+          body={t(
+            "コインはいったん預かりになります。足りなければその場で購入できます。",
+            "Your coins are held until the request ends. If you don't have enough, you can buy more right there.",
+          )}
         />
         <HowTo
           step="3"
-          title="納品を受け取る"
-          body="納品を確認して「受け取り完了」で取引が完了します。"
+          title={t("納品を受け取る", "Receive the delivery")}
+          body={t(
+            "納品を確認して「受け取り完了」で取引が完了します。",
+            'Check the delivery and press "Confirm receipt" to complete the request.',
+          )}
         />
         <p className="flex items-start gap-2 text-muted-foreground text-xs md:col-span-3">
           <ShieldCheck className="mt-0.5 size-4 shrink-0" />
-          お断り・期限切れ・納期を過ぎたキャンセルのときは、コインが全額戻ります。
+          {t(
+            "お断り・期限切れ・納期を過ぎたキャンセルのときは、コインが全額戻ります。",
+            "If a request is declined, expires, or is canceled after the due date, all your coins are returned.",
+          )}
           <Link to="/requests/terms" className="underline">
-            有料リクエスト規約
+            {t("有料リクエスト規約", "Paid Request Terms")}
           </Link>
         </p>
       </section>

@@ -25,6 +25,7 @@ import { Input } from "~/components/ui/input"
 import { Textarea } from "~/components/ui/textarea"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import {
   type CoinRequest,
@@ -45,6 +46,7 @@ export default function RequestDetailPage() {
   const params = useParams()
   const [searchParams] = useSearchParams()
   const auth = useContext(AuthContext)
+  const t = useTranslation()
   const id = String(params.request ?? "")
   const [request, setRequest] = useState<CoinRequest | null>(null)
   const [users, setUsers] = useState<RequestUsers>({})
@@ -60,9 +62,9 @@ export default function RequestDetailPage() {
       setRequest(data.request)
       setUsers(data.users)
     } catch (e) {
-      setError(requestErrorMessage(e))
+      setError(requestErrorMessage(e, t.isEnglish))
     }
-  }, [id])
+  }, [id, t.isEnglish])
 
   useEffect(() => {
     if (auth.isLoggedIn) void load()
@@ -86,7 +88,7 @@ export default function RequestDetailPage() {
       if (success) toast.success(success)
       return true
     } catch (e) {
-      toast.error(requestErrorMessage(e))
+      toast.error(requestErrorMessage(e, t.isEnglish))
       await load()
       return false
     } finally {
@@ -98,7 +100,7 @@ export default function RequestDetailPage() {
     return (
       <div className="mx-auto max-w-md px-6 py-16 text-center">
         <Button asChild className="rounded-full">
-          <Link to="/login">ログインして見る</Link>
+          <Link to="/login">{t("ログインして見る", "Log in to view")}</Link>
         </Button>
       </div>
     )
@@ -131,18 +133,21 @@ export default function RequestDetailPage() {
         className="flex w-fit items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
       >
         <ChevronLeft className="size-4" />
-        依頼の管理
+        {t("依頼の管理", "Manage requests")}
       </Link>
 
       {searchParams.get("created") === "1" && request.status === "PENDING" && (
         <div className="flex items-start gap-3 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 p-4 text-white">
           <PartyPopper className="size-6 shrink-0" />
           <div>
-            <p className="font-bold">リクエストを送りました</p>
+            <p className="font-bold">
+              {t("リクエストを送りました", "Request sent")}
+            </p>
             <p className="text-sm text-white/90">
-              クリエイターの承諾を待っています（
-              {formatDateTime(request.respondBy)}{" "}
-              まで）。返事がなければコインは全額戻ります。
+              {t(
+                `クリエイターの承諾を待っています（${formatDateTime(request.respondBy)} まで）。返事がなければコインは全額戻ります。`,
+                `Waiting for the creator to accept (until ${formatDateTime(request.respondBy)}). If there is no reply, all your coins are returned.`,
+              )}
             </p>
           </div>
         </div>
@@ -152,10 +157,16 @@ export default function RequestDetailPage() {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-muted-foreground text-xs">
-              {isCreator ? "受けた依頼" : "出した依頼"}・
+              {isCreator
+                ? t("受けた依頼", "Received request")
+                : t("出した依頼", "Sent request")}
+              {t("・", " · ")}
               {request.planTitle
-                ? `プラン「${request.planTitle}」`
-                : "自由リクエスト"}
+                ? t(
+                    `プラン「${request.planTitle}」`,
+                    `Plan "${request.planTitle}"`,
+                  )
+                : t("自由リクエスト", "Open request")}
             </p>
             <h1 className="mt-1 font-bold text-lg leading-snug">
               {request.title}
@@ -166,7 +177,9 @@ export default function RequestDetailPage() {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">
-              {isCreator ? "依頼者" : "クリエイター"}
+              {isCreator
+                ? t("依頼者", "Requester")
+                : t("クリエイター", "Creator")}
             </span>
             <RequestUserChip user={other} />
           </div>
@@ -191,7 +204,7 @@ export default function RequestDetailPage() {
 
       {(request.deliveryImageUrls.length > 0 || request.deliveredWorkId) && (
         <section className="flex flex-col gap-3 rounded-3xl border p-4">
-          <h2 className="font-bold">納品</h2>
+          <h2 className="font-bold">{t("納品", "Delivery")}</h2>
           {request.deliveryMessage && (
             <p className="whitespace-pre-wrap text-sm">
               {request.deliveryMessage}
@@ -201,7 +214,10 @@ export default function RequestDetailPage() {
           {request.deliveryImageUrls.length > 0 && (
             <p className="flex items-center gap-1 text-muted-foreground text-xs">
               <Download className="size-3.5" />
-              画像をタップすると元の大きさで開きます（保存できます）
+              {t(
+                "画像をタップすると元の大きさで開きます（保存できます）",
+                "Tap an image to open it at full size (you can save it)",
+              )}
             </p>
           )}
           {request.deliveredWorkId && (
@@ -209,31 +225,51 @@ export default function RequestDetailPage() {
               to={`/posts/${request.deliveredWorkId}`}
               className="text-sm underline"
             >
-              投稿された作品を見る
+              {t("投稿された作品を見る", "View the posted work")}
             </Link>
           )}
         </section>
       )}
 
       <section className="flex flex-col gap-3 rounded-3xl border p-4">
-        <h2 className="font-bold">リクエストの内容</h2>
+        <h2 className="font-bold">
+          {t("リクエストの内容", "Request details")}
+        </h2>
         <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
           {request.body}
         </p>
         <RequestImageGrid urls={request.referenceImageUrls} />
         <div className="flex flex-wrap gap-2 text-muted-foreground text-xs">
-          <span>納期 {request.deliveryDays} 日</span>
-          <span>修正 残り {request.revisionLeft} 回</span>
+          <span>
+            {t(
+              `納期 ${request.deliveryDays} 日`,
+              `Delivery: ${request.deliveryDays} days`,
+            )}
+          </span>
+          <span>
+            {t(
+              `修正 残り ${request.revisionLeft} 回`,
+              `Revisions left: ${request.revisionLeft}`,
+            )}
+          </span>
           {request.isR18 && (
-            <span className="font-bold text-rose-500">R18（報酬の対象外）</span>
+            <span className="font-bold text-rose-500">
+              {t("R18（報酬の対象外）", "R18 (not eligible for rewards)")}
+            </span>
           )}
-          <span>申し込み {formatDateTime(request.createdAt)}</span>
+          <span>
+            {t(
+              `申し込み ${formatDateTime(request.createdAt)}`,
+              `Applied ${formatDateTime(request.createdAt)}`,
+            )}
+          </span>
         </div>
         {request.escrow && (
           <p className="rounded-xl bg-muted/60 px-3 py-2 text-xs">
-            預かり中のコイン: 無料 {formatCoins(request.escrow.freeCoins)}
-            ・プレミアム {formatCoins(request.escrow.premiumCoins)}
-            （お断り・キャンセル・期限切れのときは同じ内訳で戻ります）
+            {t(
+              `預かり中のコイン: 無料 ${formatCoins(request.escrow.freeCoins)}・プレミアム ${formatCoins(request.escrow.premiumCoins)}（お断り・キャンセル・期限切れのときは同じ内訳で戻ります）`,
+              `Coins held: Free ${formatCoins(request.escrow.freeCoins, true)} · Premium ${formatCoins(request.escrow.premiumCoins, true)} (returned in the same breakdown if declined, canceled, or expired)`,
+            )}
           </p>
         )}
       </section>
@@ -250,29 +286,47 @@ export default function RequestDetailPage() {
         type="button"
         className="flex w-fit items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
         onClick={async () => {
-          const reason = window.prompt("通報の理由（運営だけが見ます）")
+          const reason = window.prompt(
+            t(
+              "通報の理由（運営だけが見ます）",
+              "Reason for reporting (only visible to staff)",
+            ),
+          )
           if (reason)
-            await act("report", { reason }, "通報しました。運営が確認します")
+            await act(
+              "report",
+              { reason },
+              t(
+                "通報しました。運営が確認します",
+                "Reported. Our staff will review it",
+              ),
+            )
         }}
       >
         <Flag className="size-3.5" />
-        この取引を運営に知らせる
+        {t("この取引を運営に知らせる", "Report this request to staff")}
       </button>
     </div>
   )
 }
 
 function Deadline(props: { request: CoinRequest; isCreator: boolean }) {
+  const t = useTranslation()
   const r = props.request
   const line = (() => {
     if (r.status === "PENDING")
       return {
-        label: props.isCreator ? "承諾の期限" : "承諾待ち（期限）",
+        label: props.isCreator
+          ? t("承諾の期限", "Accept by")
+          : t("承諾待ち（期限）", "Awaiting acceptance (deadline)"),
         at: r.respondBy,
       }
-    if (r.status === "ACCEPTED") return { label: "納期", at: r.dueAt }
+    if (r.status === "ACCEPTED") return { label: t("納期", "Due"), at: r.dueAt }
     if (r.status === "DELIVERED")
-      return { label: "自動で受け取り完了", at: r.autoCompleteAt }
+      return {
+        label: t("自動で受け取り完了", "Auto-completes"),
+        at: r.autoCompleteAt,
+      }
     return null
   })()
   if (!line?.at) return null
@@ -290,7 +344,7 @@ function Deadline(props: { request: CoinRequest; isCreator: boolean }) {
         <CalendarClock className="size-4" />
         {line.label} {formatDateTime(line.at)}
       </span>
-      <span className="font-bold">{formatRemaining(line.at)}</span>
+      <span className="font-bold">{formatRemaining(line.at, t.isEnglish)}</span>
     </div>
   )
 }
@@ -309,6 +363,7 @@ function ActionPanel(props: {
   act: ActFn
 }) {
   const { request: r, isCreator, act, busy } = props
+  const t = useTranslation()
   const [mode, setMode] = useState<null | "decline" | "deliver" | "revise">(
     null,
   )
@@ -320,8 +375,11 @@ function ActionPanel(props: {
   if (isCreator && r.status === "PENDING") {
     return (
       <Panel
-        title="リクエストが届きました"
-        body="内容を確認して、承諾かお断りをしてください。お断りするとコインは依頼者に全額戻ります。"
+        title={t("リクエストが届きました", "You received a request")}
+        body={t(
+          "内容を確認して、承諾かお断りをしてください。お断りするとコインは依頼者に全額戻ります。",
+          "Check the details and accept or decline. If you decline, all coins are returned to the requester.",
+        )}
       >
         {mode === "decline" ? (
           <>
@@ -329,7 +387,10 @@ function ActionPanel(props: {
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={3}
-              placeholder="お断りの理由（任意・依頼者に表示されます）"
+              placeholder={t(
+                "お断りの理由（任意・依頼者に表示されます）",
+                "Reason for declining (optional, shown to the requester)",
+              )}
             />
             <div className="flex gap-2">
               <Button
@@ -337,17 +398,21 @@ function ActionPanel(props: {
                 className={btn}
                 onClick={() => setMode(null)}
               >
-                戻る
+                {t("戻る", "Back")}
               </Button>
               <Button
                 variant="destructive"
                 className={btn}
                 disabled={busy !== null}
                 onClick={() =>
-                  act("decline", { reason: text }, "お断りしました")
+                  act(
+                    "decline",
+                    { reason: text },
+                    t("お断りしました", "Request declined"),
+                  )
                 }
               >
-                お断りする
+                {t("お断りする", "Decline")}
               </Button>
             </div>
           </>
@@ -358,19 +423,26 @@ function ActionPanel(props: {
               className={btn}
               onClick={() => setMode("decline")}
             >
-              お断りする
+              {t("お断りする", "Decline")}
             </Button>
             <Button
               className={btn}
               disabled={busy !== null}
               onClick={() =>
-                act("accept", {}, "承諾しました。納期までに納品してください")
+                act(
+                  "accept",
+                  {},
+                  t(
+                    "承諾しました。納期までに納品してください",
+                    "Accepted. Please deliver by the due date",
+                  ),
+                )
               }
             >
               {busy === "accept" ? (
                 <Loader2 className="size-5 animate-spin" />
               ) : (
-                "承諾する"
+                t("承諾する", "Accept")
               )}
             </Button>
           </div>
@@ -383,8 +455,11 @@ function ActionPanel(props: {
     const workId = workUrl.match(/(\d{3,})/)?.[1] ?? null
     return (
       <Panel
-        title="制作中"
-        body="できあがったら画像を納品してください。依頼者が受け取りを完了すると取引完了です。"
+        title={t("制作中", "In progress")}
+        body={t(
+          "できあがったら画像を納品してください。依頼者が受け取りを完了すると取引完了です。",
+          "Deliver the images when they're ready. The request is completed when the requester confirms receipt.",
+        )}
       >
         {mode === "deliver" ? (
           <>
@@ -393,25 +468,34 @@ function ActionPanel(props: {
               onChange={setImages}
               max={10}
               maxSide={4096}
-              label="納品"
+              label={t("納品", "Delivery")}
             />
             <Textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={3}
-              placeholder="メッセージ（任意）"
+              placeholder={t("メッセージ（任意）", "Message (optional)")}
             />
             <Input
               value={workUrl}
               onChange={(e) => setWorkUrl(e.target.value)}
-              placeholder="作品として投稿した場合は作品の URL（任意）"
+              placeholder={t(
+                "作品として投稿した場合は作品の URL（任意）",
+                "URL of the work, if you posted it (optional)",
+              )}
             />
             <p className="text-muted-foreground text-xs">
-              作品として投稿するかは自由です。投稿する場合は
+              {t(
+                "作品として投稿するかは自由です。投稿する場合は",
+                "Posting it as a work is up to you. To post it, use",
+              )}
               <Link to="/new/image" target="_blank" className="mx-1 underline">
-                新規投稿
+                {t("新規投稿", "New post")}
               </Link>
-              で投稿してから URL を入れてください。
+              {t(
+                "で投稿してから URL を入れてください。",
+                "first, then enter the URL.",
+              )}
             </p>
             <div className="flex gap-2">
               <Button
@@ -419,7 +503,7 @@ function ActionPanel(props: {
                 className={btn}
                 onClick={() => setMode(null)}
               >
-                戻る
+                {t("戻る", "Back")}
               </Button>
               <Button
                 className={btn}
@@ -429,7 +513,7 @@ function ActionPanel(props: {
                     await act(
                       "deliver",
                       { imageUrls: images, message: text, workId },
-                      "納品しました",
+                      t("納品しました", "Delivered"),
                     )
                   ) {
                     setMode(null)
@@ -437,7 +521,7 @@ function ActionPanel(props: {
                   }
                 }}
               >
-                納品する
+                {t("納品する", "Deliver")}
               </Button>
             </div>
           </>
@@ -446,7 +530,7 @@ function ActionPanel(props: {
             className={cn(btn, "w-full")}
             onClick={() => setMode("deliver")}
           >
-            納品する
+            {t("納品する", "Deliver")}
           </Button>
         )}
       </Panel>
@@ -456,8 +540,11 @@ function ActionPanel(props: {
   if (!isCreator && r.status === "PENDING") {
     return (
       <Panel
-        title="承諾を待っています"
-        body="承諾されるまでは取り下げられます。取り下げるとコインは全額戻ります。"
+        title={t("承諾を待っています", "Waiting for acceptance")}
+        body={t(
+          "承諾されるまでは取り下げられます。取り下げるとコインは全額戻ります。",
+          "You can withdraw until it is accepted. If you withdraw, all your coins are returned.",
+        )}
       >
         <Button
           variant="secondary"
@@ -465,11 +552,22 @@ function ActionPanel(props: {
           disabled={busy !== null}
           onClick={() =>
             window.confirm(
-              "リクエストを取り下げますか？コインは全額戻ります",
-            ) && act("cancel", {}, "取り下げました。コインを返却しました")
+              t(
+                "リクエストを取り下げますか？コインは全額戻ります",
+                "Withdraw this request? All your coins will be returned",
+              ),
+            ) &&
+            act(
+              "cancel",
+              {},
+              t(
+                "取り下げました。コインを返却しました",
+                "Withdrawn. Your coins have been returned",
+              ),
+            )
           }
         >
-          取り下げる
+          {t("取り下げる", "Withdraw")}
         </Button>
       </Panel>
     )
@@ -478,11 +576,21 @@ function ActionPanel(props: {
   if (!isCreator && r.status === "ACCEPTED") {
     return (
       <Panel
-        title={props.overdue ? "納期を過ぎています" : "制作中です"}
+        title={
+          props.overdue
+            ? t("納期を過ぎています", "Past the due date")
+            : t("制作中です", "In progress")
+        }
         body={
           props.overdue
-            ? "キャンセルするとコインは全額戻ります。納期から 3 日たつと自動でキャンセルされます。"
-            : "納品されたらお知らせします。メッセージでやり取りもできます。"
+            ? t(
+                "キャンセルするとコインは全額戻ります。納期から 3 日たつと自動でキャンセルされます。",
+                "If you cancel, all your coins are returned. It is canceled automatically 3 days after the due date.",
+              )
+            : t(
+                "納品されたらお知らせします。メッセージでやり取りもできます。",
+                "We'll notify you when it's delivered. You can also exchange messages.",
+              )
         }
       >
         {props.overdue && (
@@ -491,10 +599,17 @@ function ActionPanel(props: {
             className={cn(btn, "w-full")}
             disabled={busy !== null}
             onClick={() =>
-              act("cancel", {}, "キャンセルしました。コインを返却しました")
+              act(
+                "cancel",
+                {},
+                t(
+                  "キャンセルしました。コインを返却しました",
+                  "Canceled. Your coins have been returned",
+                ),
+              )
             }
           >
-            キャンセルしてコインを戻す
+            {t("キャンセルしてコインを戻す", "Cancel and get coins back")}
           </Button>
         )}
       </Panel>
@@ -504,8 +619,11 @@ function ActionPanel(props: {
   if (!isCreator && r.status === "DELIVERED") {
     return (
       <Panel
-        title="納品が届きました"
-        body="内容を確認して「受け取り完了」を押してください。7 日たつと自動で完了します。"
+        title={t("納品が届きました", "Delivery received")}
+        body={t(
+          "内容を確認して「受け取り完了」を押してください。7 日たつと自動で完了します。",
+          'Check the delivery and press "Confirm receipt". It completes automatically after 7 days.',
+        )}
       >
         {mode === "revise" ? (
           <>
@@ -513,7 +631,10 @@ function ActionPanel(props: {
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={3}
-              placeholder="直してほしいところを具体的に"
+              placeholder={t(
+                "直してほしいところを具体的に",
+                "Describe exactly what you'd like changed",
+              )}
             />
             <div className="flex gap-2">
               <Button
@@ -521,7 +642,7 @@ function ActionPanel(props: {
                 className={btn}
                 onClick={() => setMode(null)}
               >
-                戻る
+                {t("戻る", "Back")}
               </Button>
               <Button
                 className={btn}
@@ -531,13 +652,13 @@ function ActionPanel(props: {
                     await act(
                       "revise",
                       { message: text },
-                      "修正をお願いしました",
+                      t("修正をお願いしました", "Revision requested"),
                     )
                   )
                     setMode(null)
                 }}
               >
-                修正をお願いする
+                {t("修正をお願いする", "Request a revision")}
               </Button>
             </div>
           </>
@@ -549,7 +670,10 @@ function ActionPanel(props: {
                 className={btn}
                 onClick={() => setMode("revise")}
               >
-                修正をお願いする（残り {r.revisionLeft} 回）
+                {t(
+                  `修正をお願いする（残り ${r.revisionLeft} 回）`,
+                  `Request a revision (${r.revisionLeft} left)`,
+                )}
               </Button>
             )}
             <Button
@@ -557,16 +681,22 @@ function ActionPanel(props: {
               disabled={busy !== null}
               onClick={() =>
                 window.confirm(
-                  "受け取りを完了しますか？完了するとコインがクリエイターに渡ります",
+                  t(
+                    "受け取りを完了しますか？完了するとコインがクリエイターに渡ります",
+                    "Confirm receipt? Once confirmed, the coins go to the creator",
+                  ),
                 ) &&
                 act(
                   "complete",
                   {},
-                  "取引が完了しました。ありがとうございました",
+                  t(
+                    "取引が完了しました。ありがとうございました",
+                    "The request is complete. Thank you!",
+                  ),
                 )
               }
             >
-              受け取り完了
+              {t("受け取り完了", "Confirm receipt")}
             </Button>
           </div>
         )}
@@ -578,18 +708,36 @@ function ActionPanel(props: {
     ["DECLINED", "CANCELED", "EXPIRED", "ADMIN_CANCELED"].includes(r.status)
   ) {
     const reason: Record<string, string> = {
-      DECLINED: "クリエイターがお断りしました。",
-      CANCELED: "依頼は取り下げ・キャンセルされました。",
+      DECLINED: t(
+        "クリエイターがお断りしました。",
+        "The creator declined the request.",
+      ),
+      CANCELED: t(
+        "依頼は取り下げ・キャンセルされました。",
+        "The request was withdrawn or canceled.",
+      ),
       EXPIRED:
         r.closedReason === "overdue"
-          ? "納期を過ぎたため自動でキャンセルされました。"
-          : "期限までに承諾されませんでした。",
-      ADMIN_CANCELED: "運営がキャンセルしました。",
+          ? t(
+              "納期を過ぎたため自動でキャンセルされました。",
+              "It was canceled automatically because the due date passed.",
+            )
+          : t(
+              "期限までに承諾されませんでした。",
+              "It was not accepted before the deadline.",
+            ),
+      ADMIN_CANCELED: t("運営がキャンセルしました。", "Canceled by staff."),
     }
+    const refund = isCreator
+      ? ""
+      : t(
+          `${formatCoins(r.priceCoins)} コインは全額戻っています。`,
+          ` All ${formatCoins(r.priceCoins, true)} coins have been returned.`,
+        )
     return (
       <Panel
-        title="この依頼は終了しました"
-        body={`${reason[r.status]}${isCreator ? "" : `${formatCoins(r.priceCoins)} コインは全額戻っています。`}`}
+        title={t("この依頼は終了しました", "This request has ended")}
+        body={`${reason[r.status]}${refund}`}
       />
     )
   }
@@ -613,46 +761,71 @@ function Panel(props: {
 }
 
 function Settlement(props: { request: CoinRequest; isCreator: boolean }) {
+  const t = useTranslation()
   const s = props.request.settlement
   if (!s) return null
   if (!props.isCreator) {
     return (
       <Panel
-        title="取引が完了しました"
-        body="ご依頼ありがとうございました。納品された画像はいつでもこのページから見られます。"
+        title={t("取引が完了しました", "Request completed")}
+        body={t(
+          "ご依頼ありがとうございました。納品された画像はいつでもこのページから見られます。",
+          "Thank you for your request. You can view the delivered images on this page at any time.",
+        )}
       />
     )
   }
   return (
     <section className="flex flex-col gap-2 rounded-3xl border border-emerald-300 bg-emerald-50 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10">
-      <p className="font-bold">取引が完了しました</p>
+      <p className="font-bold">
+        {t("取引が完了しました", "Request completed")}
+      </p>
       <dl className="grid gap-1 text-sm">
         {s.earnedYen > 0 && (
           <div className="flex justify-between">
-            <dt>報酬（7 日後から振込の対象）</dt>
-            <dd className="font-bold">{s.earnedYen.toLocaleString()} 円</dd>
+            <dt>
+              {t(
+                "報酬（7 日後から振込の対象）",
+                "Reward (eligible for payout after 7 days)",
+              )}
+            </dt>
+            <dd className="font-bold">
+              {t(
+                `${s.earnedYen.toLocaleString("ja-JP")} 円`,
+                `¥${s.earnedYen.toLocaleString("en-US")}`,
+              )}
+            </dd>
           </div>
         )}
         {s.premiumCoins > 0 && (
           <div className="flex justify-between">
-            <dt>プレミアムコイン</dt>
-            <dd className="font-bold">{formatCoins(s.premiumCoins)}</dd>
+            <dt>{t("プレミアムコイン", "Premium coins")}</dt>
+            <dd className="font-bold">
+              {formatCoins(s.premiumCoins, t.isEnglish)}
+            </dd>
           </div>
         )}
         {s.freeCoins > 0 && (
           <div className="flex justify-between">
-            <dt>無料コイン</dt>
-            <dd className="font-bold">{formatCoins(s.freeCoins)}</dd>
+            <dt>{t("無料コイン", "Free coins")}</dt>
+            <dd className="font-bold">
+              {formatCoins(s.freeCoins, t.isEnglish)}
+            </dd>
           </div>
         )}
         <div className="flex justify-between text-muted-foreground text-xs">
-          <dt>手数料（10%）</dt>
-          <dd>{formatCoins(s.feeCoins)} コイン</dd>
+          <dt>{t("手数料（10%）", "Fee (10%)")}</dt>
+          <dd>
+            {t(
+              `${formatCoins(s.feeCoins)} コイン`,
+              `${formatCoins(s.feeCoins, true)} coins`,
+            )}
+          </dd>
         </div>
       </dl>
       {s.earnedYen > 0 && (
         <Link to="/settings/creator-rewards" className="text-sm underline">
-          報酬の明細と振込
+          {t("報酬の明細と振込", "Reward details and payouts")}
         </Link>
       )}
     </section>
@@ -666,6 +839,7 @@ function MessageThread(props: {
   busy: string | null
   act: ActFn
 }) {
+  const t = useTranslation()
   const [text, setText] = useState("")
   const [images, setImages] = useState<string[]>([])
   const [showImages, setShowImages] = useState(false)
@@ -673,7 +847,7 @@ function MessageThread(props: {
   const messages = props.request.messages ?? []
   return (
     <section className="flex flex-col gap-3 rounded-3xl border p-4">
-      <h2 className="font-bold">メッセージ</h2>
+      <h2 className="font-bold">{t("メッセージ", "Messages")}</h2>
       <div className="flex flex-col gap-2">
         {messages.map((m) => {
           if (m.senderUserId === null) {
@@ -682,7 +856,9 @@ function MessageThread(props: {
                 key={m.id}
                 className="mx-auto whitespace-pre-wrap rounded-full bg-muted px-3 py-1 text-center text-[11px] text-muted-foreground"
               >
-                {m.body}・{formatDateTime(m.createdAt)}
+                {m.body}
+                {t("・", " · ")}
+                {formatDateTime(m.createdAt)}
               </p>
             )
           }
@@ -734,19 +910,19 @@ function MessageThread(props: {
           className="shrink-0 rounded-full"
           onClick={() => setShowImages((v) => !v)}
         >
-          画像
+          {t("画像", "Images")}
         </Button>
         <Textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={1}
-          placeholder="メッセージを書く"
+          placeholder={t("メッセージを書く", "Write a message")}
           className="min-h-10 flex-1 resize-none"
         />
         <Button
           size="icon"
           className="shrink-0 rounded-full"
-          aria-label="送る"
+          aria-label={t("送る", "Send")}
           disabled={
             props.busy !== null || (!text.trim() && images.length === 0)
           }
@@ -766,7 +942,10 @@ function MessageThread(props: {
         </Button>
       </div>
       <p className="text-[11px] text-muted-foreground">
-        サイトの外での取引や連絡先の交換は禁止です。
+        {t(
+          "サイトの外での取引や連絡先の交換は禁止です。",
+          "Transactions outside the site and exchanging contact details are prohibited.",
+        )}
       </p>
     </section>
   )

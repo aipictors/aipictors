@@ -155,71 +155,180 @@ export const requestsPost = async <T>(
   )
 }
 
-/** エラーの日本語 */
-export const requestErrorMessage = (error: unknown) => {
+/** エラーの文言（isEnglish で英語） */
+export const requestErrorMessage = (error: unknown, isEnglish = false) => {
   const code = error instanceof RequestsApiError ? error.code : ""
-  const messages: Record<string, string> = {
-    INSUFFICIENT_COINS: "コインが足りません",
-    SELF_REQUEST: "自分にはリクエストできません",
-    PLAN_NOT_FOUND: "このプランは見つかりませんでした",
-    NOT_ACCEPTING: "いまはリクエストを受け付けていません",
-    PRICE_CHANGED: "プランの価格が変わりました。画面を更新してください",
-    FULL: "受付の上限に達しています。しばらくしてからお試しください",
-    TOO_MANY_PENDING: "このクリエイターへの承諾待ちのリクエストが多すぎます",
-    BELOW_MINIMUM: "最低コインより少ない金額です",
-    R18_NOT_ALLOWED: "このクリエイターは R18 のリクエストを受け付けていません",
-    BLOCKED: "このユーザーにはリクエストできません",
-    BODY_REQUIRED: "リクエストの内容を書いてください",
-    INVALID_PRICE: "金額は 100〜100,000 コインで指定してください",
-    INVALID_STATE: "状態が変わりました。画面を更新してください",
-    NOT_OVERDUE: "納期を過ぎるまでキャンセルできません",
-    NO_REVISIONS_LEFT: "修正の回数が残っていません",
-    DELIVERY_REQUIRED: "納品する画像を選んでください",
-    MESSAGE_REQUIRED: "メッセージを書いてください",
-    TITLE_REQUIRED: "タイトルを入れてください",
-    DESCRIPTION_REQUIRED: "説明を入れてください",
-    TOO_MANY_PLANS: "プランは 20 個までです",
-    DISABLED: "リクエストはいま停止中です",
-    Unauthorized: "ログインしてください",
-    REASON_REQUIRED: "理由を書いてください",
+  const messages: Record<string, { ja: string; en: string }> = {
+    INSUFFICIENT_COINS: { ja: "コインが足りません", en: "Not enough coins" },
+    SELF_REQUEST: {
+      ja: "自分にはリクエストできません",
+      en: "You cannot send a request to yourself",
+    },
+    PLAN_NOT_FOUND: {
+      ja: "このプランは見つかりませんでした",
+      en: "This plan could not be found",
+    },
+    NOT_ACCEPTING: {
+      ja: "いまはリクエストを受け付けていません",
+      en: "Not accepting requests right now",
+    },
+    PRICE_CHANGED: {
+      ja: "プランの価格が変わりました。画面を更新してください",
+      en: "The plan price has changed. Please reload the page",
+    },
+    FULL: {
+      ja: "受付の上限に達しています。しばらくしてからお試しください",
+      en: "The request limit has been reached. Please try again later",
+    },
+    TOO_MANY_PENDING: {
+      ja: "このクリエイターへの承諾待ちのリクエストが多すぎます",
+      en: "You have too many pending requests to this creator",
+    },
+    BELOW_MINIMUM: {
+      ja: "最低コインより少ない金額です",
+      en: "The amount is below the minimum coins",
+    },
+    R18_NOT_ALLOWED: {
+      ja: "このクリエイターは R18 のリクエストを受け付けていません",
+      en: "This creator does not accept R18 requests",
+    },
+    BLOCKED: {
+      ja: "このユーザーにはリクエストできません",
+      en: "You cannot send a request to this user",
+    },
+    BODY_REQUIRED: {
+      ja: "リクエストの内容を書いてください",
+      en: "Please describe your request",
+    },
+    INVALID_PRICE: {
+      ja: "金額は 100〜100,000 コインで指定してください",
+      en: "The amount must be between 100 and 100,000 coins",
+    },
+    INVALID_STATE: {
+      ja: "状態が変わりました。画面を更新してください",
+      en: "The status has changed. Please reload the page",
+    },
+    NOT_OVERDUE: {
+      ja: "納期を過ぎるまでキャンセルできません",
+      en: "You cannot cancel until the due date has passed",
+    },
+    NO_REVISIONS_LEFT: {
+      ja: "修正の回数が残っていません",
+      en: "No revisions left",
+    },
+    DELIVERY_REQUIRED: {
+      ja: "納品する画像を選んでください",
+      en: "Please select images to deliver",
+    },
+    MESSAGE_REQUIRED: {
+      ja: "メッセージを書いてください",
+      en: "Please write a message",
+    },
+    TITLE_REQUIRED: {
+      ja: "タイトルを入れてください",
+      en: "Please enter a title",
+    },
+    DESCRIPTION_REQUIRED: {
+      ja: "説明を入れてください",
+      en: "Please enter a description",
+    },
+    TOO_MANY_PLANS: {
+      ja: "プランは 20 個までです",
+      en: "You can have up to 20 plans",
+    },
+    DISABLED: {
+      ja: "リクエストはいま停止中です",
+      en: "Requests are currently paused",
+    },
+    Unauthorized: { ja: "ログインしてください", en: "Please log in" },
+    REASON_REQUIRED: {
+      ja: "理由を書いてください",
+      en: "Please enter a reason",
+    },
   }
-  return messages[code] ?? "うまくいきませんでした。時間をおいてお試しください"
+  const pair = messages[code] ?? {
+    ja: "うまくいきませんでした。時間をおいてお試しください",
+    en: "Something went wrong. Please try again later",
+  }
+  return isEnglish ? pair.en : pair.ja
 }
 
-export const PLAN_CATEGORY_LABELS: Record<string, string> = {
-  ILLUSTRATION: "イラスト",
-  ICON: "アイコン",
-  CHARACTER: "キャラクター",
-  BACKGROUND: "背景",
-  WALLPAPER: "壁紙",
-  OTHER: "その他",
+const PLAN_CATEGORY_TEXT: Record<string, { ja: string; en: string }> = {
+  ILLUSTRATION: { ja: "イラスト", en: "Illustration" },
+  ICON: { ja: "アイコン", en: "Icon" },
+  CHARACTER: { ja: "キャラクター", en: "Character" },
+  BACKGROUND: { ja: "背景", en: "Background" },
+  WALLPAPER: { ja: "壁紙", en: "Wallpaper" },
+  OTHER: { ja: "その他", en: "Other" },
 }
 
-export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
-  PENDING: "承諾待ち",
-  ACCEPTED: "制作中",
-  DELIVERED: "納品済み",
-  COMPLETED: "完了",
-  DECLINED: "お断り",
-  CANCELED: "キャンセル",
-  EXPIRED: "期限切れ",
-  ADMIN_CANCELED: "運営がキャンセル",
-  ADMIN_COMPLETED: "運営が完了",
+const pickLabels = <K extends string>(
+  text: Record<K, { ja: string; en: string }>,
+  lang: "ja" | "en",
+) =>
+  Object.fromEntries(
+    Object.entries<{ ja: string; en: string }>(text).map(([key, value]) => [
+      key,
+      value[lang],
+    ]),
+  ) as Record<K, string>
+
+export const PLAN_CATEGORY_LABELS = pickLabels(PLAN_CATEGORY_TEXT, "ja")
+
+export const PLAN_CATEGORY_LABELS_EN = pickLabels(PLAN_CATEGORY_TEXT, "en")
+
+/** カテゴリの表示名（未知のカテゴリはそのまま） */
+export const planCategoryLabel = (category: string, isEnglish = false) =>
+  (isEnglish ? PLAN_CATEGORY_LABELS_EN : PLAN_CATEGORY_LABELS)[category] ??
+  category
+
+const REQUEST_STATUS_TEXT: Record<RequestStatus, { ja: string; en: string }> = {
+  PENDING: { ja: "承諾待ち", en: "Pending" },
+  ACCEPTED: { ja: "制作中", en: "In progress" },
+  DELIVERED: { ja: "納品済み", en: "Delivered" },
+  COMPLETED: { ja: "完了", en: "Completed" },
+  DECLINED: { ja: "お断り", en: "Declined" },
+  CANCELED: { ja: "キャンセル", en: "Canceled" },
+  EXPIRED: { ja: "期限切れ", en: "Expired" },
+  ADMIN_CANCELED: { ja: "運営がキャンセル", en: "Canceled by staff" },
+  ADMIN_COMPLETED: { ja: "運営が完了", en: "Completed by staff" },
 }
+
+export const REQUEST_STATUS_LABELS = pickLabels(REQUEST_STATUS_TEXT, "ja")
+
+export const REQUEST_STATUS_LABELS_EN = pickLabels(REQUEST_STATUS_TEXT, "en")
+
+export const requestStatusLabel = (status: RequestStatus, isEnglish = false) =>
+  (isEnglish ? REQUEST_STATUS_LABELS_EN : REQUEST_STATUS_LABELS)[status] ??
+  status
 
 export const REQUEST_FEE_RATE = 0.1
 
-export const formatCoins = (n: number) => `${n.toLocaleString("ja-JP")}`
+export const formatCoins = (n: number, isEnglish = false) =>
+  `${n.toLocaleString(isEnglish ? "en-US" : "ja-JP")}`
 
 /** 残り時間（「あと 2 日」「あと 5 時間」「期限切れ」） */
-export const formatRemaining = (unixSeconds: number | null) => {
+export const formatRemaining = (
+  unixSeconds: number | null,
+  isEnglish = false,
+) => {
   if (!unixSeconds) return ""
+  const pick = (text: { ja: string; en: string }) =>
+    isEnglish ? text.en : text.ja
   const diff = unixSeconds - Math.floor(Date.now() / 1000)
-  if (diff <= 0) return "期限を過ぎています"
+  if (diff <= 0) return pick({ ja: "期限を過ぎています", en: "Past due" })
   const days = Math.floor(diff / 86400)
-  if (days >= 1) return `あと ${days} 日`
+  if (days >= 1) {
+    return pick({
+      ja: `あと ${days} 日`,
+      en: `${days} ${days === 1 ? "day" : "days"} left`,
+    })
+  }
   const hours = Math.max(1, Math.floor(diff / 3600))
-  return `あと ${hours} 時間`
+  return pick({
+    ja: `あと ${hours} 時間`,
+    en: `${hours} ${hours === 1 ? "hour" : "hours"} left`,
+  })
 }
 
 export const formatDateTime = (unixSeconds: number | null) => {

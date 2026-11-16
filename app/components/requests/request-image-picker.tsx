@@ -4,6 +4,7 @@ import { ImagePlus, Loader2, X } from "lucide-react"
 import { useRef, useState } from "react"
 import { toast } from "sonner"
 import { uploadPublicImage } from "~/utils/upload-public-image"
+import { useTranslation } from "~/hooks/use-translation"
 
 const viewerTokenQuery = graphql(
   `query RequestImagePickerViewerToken {
@@ -50,6 +51,7 @@ export function RequestImagePicker(props: {
   maxSide?: number
   label?: string
 }) {
+  const t = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(0)
   const { data } = useQuery(viewerTokenQuery)
@@ -68,7 +70,9 @@ export function RequestImagePicker(props: {
         const dataUrl = await toWebpDataUrl(file, props.maxSide ?? 2048)
         urls.push(await uploadPublicImage(dataUrl, data?.viewer?.token))
       } catch {
-        toast.error("画像をアップロードできませんでした")
+        toast.error(
+          t("画像をアップロードできませんでした", "Could not upload the image"),
+        )
       } finally {
         setUploading((n) => n - 1)
       }
@@ -87,7 +91,7 @@ export function RequestImagePicker(props: {
           <img src={url} alt="" className="size-full object-cover" />
           <button
             type="button"
-            aria-label="外す"
+            aria-label={t("外す", "Remove")}
             onClick={() => props.onChange(props.value.filter((u) => u !== url))}
             className="absolute top-1 right-1 flex size-6 items-center justify-center rounded-full bg-black/60 text-white"
           >
@@ -112,7 +116,8 @@ export function RequestImagePicker(props: {
         >
           <ImagePlus className="size-5" />
           <span className="text-[10px]">
-            {props.label ?? "画像"} {props.value.length}/{props.max}
+            {props.label ?? t("画像", "Images")} {props.value.length}/
+            {props.max}
           </span>
         </button>
       )}

@@ -24,9 +24,10 @@ import {
 import { Button } from "~/components/ui/button"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import {
-  PLAN_CATEGORY_LABELS,
+  planCategoryLabel,
   type RequestPlan,
   requestErrorMessage,
   requestsPost,
@@ -64,6 +65,7 @@ export const headers: HeadersFunction = () => ({
 export default function RequestPlanPage() {
   const { plan, users } = useLoaderData<typeof loader>()
   const auth = useContext(AuthContext)
+  const t = useTranslation()
   const creator = users[plan.userId]
   const [imageIndex, setImageIndex] = useState(0)
   const isOwner = auth.userId === plan.userId
@@ -72,13 +74,20 @@ export default function RequestPlanPage() {
   const canRequest = plan.isAccepting && !full && !isOwner
 
   const report = async () => {
-    const reason = window.prompt("通報の理由を書いてください")
+    const reason = window.prompt(
+      t("通報の理由を書いてください", "Please enter the reason for reporting"),
+    )
     if (!reason) return
     try {
       await requestsPost({ op: "report-plan", id: plan.id, reason })
-      toast.success("通報しました。運営が確認します")
+      toast.success(
+        t(
+          "通報しました。運営が確認します",
+          "Reported. Our staff will review it",
+        ),
+      )
     } catch (error) {
-      toast.error(requestErrorMessage(error))
+      toast.error(requestErrorMessage(error, t.isEnglish))
     }
   }
 
@@ -89,7 +98,7 @@ export default function RequestPlanPage() {
         className="flex w-fit items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
       >
         <ChevronLeft className="size-4" />
-        プラン一覧
+        {t("プラン一覧", "Plans")}
       </Link>
       <div className="grid gap-6 md:grid-cols-[1.1fr_1fr]">
         <div className="flex flex-col gap-2">
@@ -130,16 +139,16 @@ export default function RequestPlanPage() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-muted px-3 py-1 font-bold text-xs">
-              {PLAN_CATEGORY_LABELS[plan.category] ?? plan.category}
+              {planCategoryLabel(plan.category, t.isEnglish)}
             </span>
             {plan.allowsR18 && (
               <span className="rounded-full bg-rose-500 px-2.5 py-1 font-bold text-white text-xs">
-                R18可
+                {t("R18可", "R18 OK")}
               </span>
             )}
             {plan.status === "HIDDEN" && (
               <span className="rounded-full bg-foreground px-2.5 py-1 font-bold text-background text-xs">
-                非公開
+                {t("非公開", "Hidden")}
               </span>
             )}
           </div>
@@ -152,26 +161,38 @@ export default function RequestPlanPage() {
           <dl className="grid grid-cols-2 gap-2 text-sm">
             <Spec
               icon={<CalendarClock className="size-4" />}
-              label="納期"
-              value={`承諾から ${plan.deliveryDays} 日`}
+              label={t("納期", "Delivery")}
+              value={t(
+                `承諾から ${plan.deliveryDays} 日`,
+                `${plan.deliveryDays} ${plan.deliveryDays === 1 ? "day" : "days"} after acceptance`,
+              )}
             />
             <Spec
               icon={<Images className="size-4" />}
-              label="枚数"
-              value={`${plan.imageCount} 枚`}
+              label={t("枚数", "Images")}
+              value={t(
+                `${plan.imageCount} 枚`,
+                `${plan.imageCount} ${plan.imageCount === 1 ? "image" : "images"}`,
+              )}
             />
             <Spec
               icon={<RefreshCcw className="size-4" />}
-              label="修正"
-              value={`${plan.revisionCount} 回まで`}
+              label={t("修正", "Revisions")}
+              value={t(
+                `${plan.revisionCount} 回まで`,
+                `Up to ${plan.revisionCount}`,
+              )}
             />
             <Spec
               icon={<Users className="size-4" />}
-              label="受付"
+              label={t("受付", "Slots")}
               value={
                 plan.isAccepting
-                  ? `${plan.activeCount ?? 0} / ${plan.maxActive} 件`
-                  : "停止中"
+                  ? t(
+                      `${plan.activeCount ?? 0} / ${plan.maxActive} 件`,
+                      `${plan.activeCount ?? 0} / ${plan.maxActive}`,
+                    )
+                  : t("停止中", "Paused")
               }
             />
           </dl>
@@ -187,7 +208,9 @@ export default function RequestPlanPage() {
           </div>
 
           <section className="rounded-2xl bg-muted/50 p-4">
-            <h2 className="mb-2 font-bold text-sm">プランの内容</h2>
+            <h2 className="mb-2 font-bold text-sm">
+              {t("プランの内容", "Plan details")}
+            </h2>
             <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
               {plan.description}
             </p>
@@ -196,18 +219,28 @@ export default function RequestPlanPage() {
           <section className="flex flex-col gap-1.5 rounded-2xl border p-4 text-muted-foreground text-xs">
             <p className="flex items-center gap-1.5 font-bold text-foreground text-sm">
               <ShieldCheck className="size-4" />
-              安心のしくみ
+              {t("安心のしくみ", "How you're protected")}
             </p>
             <p>
-              ・コインは申し込みのときに預かり、取引が完了するまでクリエイターには渡りません。
+              {t(
+                "・コインは申し込みのときに預かり、取引が完了するまでクリエイターには渡りません。",
+                "• Your coins are held when you apply and are not passed to the creator until the request is completed.",
+              )}
             </p>
             <p>
-              ・お断り・3
-              日以内に返事がない・納期を過ぎたときは、コインが全額戻ります。
+              {t(
+                "・お断り・3 日以内に返事がない・納期を過ぎたときは、コインが全額戻ります。",
+                "• If the request is declined, gets no reply within 3 days, or passes the due date, all your coins are returned.",
+              )}
             </p>
-            <p>・納品から 7 日たつと自動で受け取り完了になります。</p>
+            <p>
+              {t(
+                "・納品から 7 日たつと自動で受け取り完了になります。",
+                "• Receipt is confirmed automatically 7 days after delivery.",
+              )}
+            </p>
             <Link to="/requests/terms" className="w-fit underline">
-              有料リクエスト規約
+              {t("有料リクエスト規約", "Paid Request Terms")}
             </Link>
           </section>
 
@@ -218,7 +251,7 @@ export default function RequestPlanPage() {
               className="flex w-fit items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
             >
               <Flag className="size-3.5" />
-              このプランを通報
+              {t("このプランを通報", "Report this plan")}
             </button>
           )}
         </div>
@@ -261,6 +294,7 @@ function RequestActions(props: {
   full: boolean
   isAccepting: boolean
 }) {
+  const t = useTranslation()
   if (props.isOwner) {
     return (
       <Button
@@ -270,7 +304,7 @@ function RequestActions(props: {
       >
         <Link to={`/settings/requests?edit=${props.planId}`}>
           <Pencil className="mr-1 size-4" />
-          プランを編集する
+          {t("プランを編集する", "Edit plan")}
         </Link>
       </Button>
     )
@@ -278,14 +312,16 @@ function RequestActions(props: {
   if (!props.canRequest) {
     return (
       <Button disabled className="h-12 w-full rounded-full font-bold">
-        {props.full ? "受付上限に達しています" : "受付停止中"}
+        {props.full
+          ? t("受付上限に達しています", "No slots available")
+          : t("受付停止中", "Not accepting requests")}
       </Button>
     )
   }
   return (
     <Button asChild className="h-12 w-full rounded-full font-bold text-base">
       <Link to={`/requests/new?plan=${props.planId}`}>
-        このプランで依頼する
+        {t("このプランで依頼する", "Request with this plan")}
       </Link>
     </Button>
   )

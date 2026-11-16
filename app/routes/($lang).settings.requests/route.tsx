@@ -30,11 +30,13 @@ import { Switch } from "~/components/ui/switch"
 import { Textarea } from "~/components/ui/textarea"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import {
   type CreatorRequestProfile,
   formatCoins,
   PLAN_CATEGORY_LABELS,
+  planCategoryLabel,
   REQUEST_FEE_RATE,
   type RequestPlan,
   type RequestSettings,
@@ -107,6 +109,7 @@ const toDraft = (plan: RequestPlan): PlanDraft => ({
 /** リクエストとプラン: 自分のプラン（出品メニュー）の作成・編集と、自由リクエストの受付 */
 export default function SettingsRequestsPage() {
   const auth = useContext(AuthContext)
+  const t = useTranslation()
   const [profile, setProfile] = useState<CreatorRequestProfile | null>(null)
   const [draft, setDraft] = useState<PlanDraft | null>(null)
 
@@ -120,9 +123,9 @@ export default function SettingsRequestsPage() {
         }),
       )
     } catch (e) {
-      toast.error(requestErrorMessage(e))
+      toast.error(requestErrorMessage(e, t.isEnglish))
     }
-  }, [auth.userId])
+  }, [auth.userId, t.isEnglish])
 
   useEffect(() => {
     void load()
@@ -132,7 +135,9 @@ export default function SettingsRequestsPage() {
     return (
       <div className="mx-auto max-w-md px-6 py-16 text-center">
         <Button asChild className="rounded-full">
-          <Link to="/login">ログインして設定する</Link>
+          <Link to="/login">
+            {t("ログインして設定する", "Log in to set up")}
+          </Link>
         </Button>
       </div>
     )
@@ -141,20 +146,28 @@ export default function SettingsRequestsPage() {
   return (
     <div className="mx-auto w-full min-w-0 max-w-3xl space-y-5 pb-24">
       <div className="block md:hidden">
-        <SettingsHeader title="リクエストとプラン" />
+        <SettingsHeader title={t("リクエストとプラン", "Requests & Plans")} />
       </div>
 
       <section className="flex flex-col gap-3 rounded-3xl bg-gradient-to-br from-sky-500 to-indigo-500 p-5 text-white">
         <h1 className="font-bold text-xl">
-          プランを出品して、コインで依頼を受けよう
+          {t(
+            "プランを出品して、コインで依頼を受けよう",
+            "List plans and take requests for coins",
+          )}
         </h1>
         <p className="text-sm text-white/90">
-          作ったプランはマイページとプラン一覧に並びます。依頼が完了すると、代金から手数料
-          10% を引いた分を受け取れます（全年齢の依頼で
+          {t(
+            "作ったプランはマイページとプラン一覧に並びます。依頼が完了すると、代金から手数料 10% を引いた分を受け取れます（全年齢の依頼で",
+            "Your plans appear on your profile and the plan list. When a request is completed, you receive the price minus a 10% fee (for all-ages requests, if you have joined ",
+          )}
           <Link to="/settings/creator-rewards" className="underline">
-            クリエイター報酬
+            {t("クリエイター報酬", "Creator Rewards")}
           </Link>
-          に参加していれば、有料コインの分は報酬（円）に）。
+          {t(
+            "に参加していれば、有料コインの分は報酬（円）に）。",
+            ", the paid-coin portion becomes a reward in yen).",
+          )}
         </p>
         <div className="flex flex-wrap gap-2">
           <Button
@@ -163,7 +176,7 @@ export default function SettingsRequestsPage() {
             onClick={() => setDraft(emptyDraft())}
           >
             <Plus className="mr-1 size-4" />
-            プランを作る
+            {t("プランを作る", "Create a plan")}
           </Button>
           <Button
             asChild
@@ -172,7 +185,7 @@ export default function SettingsRequestsPage() {
           >
             <Link to="/requests">
               <Inbox className="mr-1 size-4" />
-              依頼の管理
+              {t("依頼の管理", "Manage requests")}
             </Link>
           </Button>
           <Button
@@ -180,7 +193,9 @@ export default function SettingsRequestsPage() {
             variant="ghost"
             className="rounded-full font-bold text-white hover:bg-white/15 hover:text-white"
           >
-            <Link to="/requests/terms">リクエスト規約</Link>
+            <Link to="/requests/terms">
+              {t("リクエスト規約", "Request terms")}
+            </Link>
           </Button>
         </div>
       </section>
@@ -194,7 +209,7 @@ export default function SettingsRequestsPage() {
           <section className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <h2 className="font-bold">
-                自分のプラン
+                {t("自分のプラン", "My plans")}
                 <span className="ml-1 text-muted-foreground text-sm">
                   {profile.plans.length}/20
                 </span>
@@ -208,7 +223,7 @@ export default function SettingsRequestsPage() {
                 >
                   <Link to={`/users/${auth.login}`}>
                     <Store className="mr-1 size-4" />
-                    マイページで見る
+                    {t("マイページで見る", "View on my profile")}
                   </Link>
                 </Button>
               )}
@@ -220,9 +235,14 @@ export default function SettingsRequestsPage() {
                 className="flex flex-col items-center gap-2 rounded-3xl border border-dashed px-6 py-10 text-center hover:bg-muted/40"
               >
                 <Plus className="size-8 text-muted-foreground" />
-                <span className="font-bold">最初のプランを作る</span>
+                <span className="font-bold">
+                  {t("最初のプランを作る", "Create your first plan")}
+                </span>
                 <span className="text-muted-foreground text-sm">
-                  例: 「アイコン 1 枚 1,000 コイン・納期 7 日・修正 1 回」
+                  {t(
+                    "例: 「アイコン 1 枚 1,000 コイン・納期 7 日・修正 1 回」",
+                    'e.g. "1 icon, 1,000 coins, 7-day delivery, 1 revision"',
+                  )}
                 </span>
               </button>
             ) : (
@@ -263,6 +283,7 @@ function PlanRow(props: {
   onChanged: () => void
 }) {
   const { plan } = props
+  const t = useTranslation()
   const [busy, setBusy] = useState(false)
   const save = async (patch: Partial<PlanDraft>, message: string) => {
     setBusy(true)
@@ -271,7 +292,7 @@ function PlanRow(props: {
       toast.success(message)
       props.onChanged()
     } catch (e) {
-      toast.error(requestErrorMessage(e))
+      toast.error(requestErrorMessage(e, t.isEnglish))
     } finally {
       setBusy(false)
     }
@@ -279,17 +300,20 @@ function PlanRow(props: {
   const remove = async () => {
     if (
       !window.confirm(
-        `プラン「${plan.title}」を削除しますか？（進行中の依頼はそのまま続きます）`,
+        t(
+          `プラン「${plan.title}」を削除しますか？（進行中の依頼はそのまま続きます）`,
+          `Delete the plan "${plan.title}"? (Requests in progress will continue)`,
+        ),
       )
     )
       return
     setBusy(true)
     try {
       await requestsPost({ op: "delete-plan", id: plan.id })
-      toast.success("削除しました")
+      toast.success(t("削除しました", "Deleted"))
       props.onChanged()
     } catch (e) {
-      toast.error(requestErrorMessage(e))
+      toast.error(requestErrorMessage(e, t.isEnglish))
     } finally {
       setBusy(false)
     }
@@ -322,16 +346,23 @@ function PlanRow(props: {
             coins={plan.priceCoins}
             className="text-foreground text-sm"
           />
-          <span>納期 {plan.deliveryDays} 日</span>
-          <span>{PLAN_CATEGORY_LABELS[plan.category] ?? plan.category}</span>
+          <span>
+            {t(
+              `納期 ${plan.deliveryDays} 日`,
+              `${plan.deliveryDays}-day delivery`,
+            )}
+          </span>
+          <span>{planCategoryLabel(plan.category, t.isEnglish)}</span>
           {hidden ? (
-            <span>非公開</span>
+            <span>{t("非公開", "Hidden")}</span>
           ) : plan.isAccepting ? (
-            <span className="text-emerald-600">受付中</span>
+            <span className="text-emerald-600">{t("受付中", "Accepting")}</span>
           ) : (
-            <span>受付停止</span>
+            <span>{t("受付停止", "Paused")}</span>
           )}
-          {plan.allowsR18 && <span className="text-rose-500">R18 可</span>}
+          {plan.allowsR18 && (
+            <span className="text-rose-500">{t("R18 可", "R18 OK")}</span>
+          )}
         </div>
         <div className="mt-1 flex items-center gap-0.5">
           <Button
@@ -342,7 +373,7 @@ function PlanRow(props: {
             onClick={props.onEdit}
           >
             <Pencil className="mr-1 size-3.5" />
-            編集
+            {t("編集", "Edit")}
           </Button>
           <div className="flex items-center gap-1.5 px-2 text-xs">
             <Switch
@@ -351,22 +382,28 @@ function PlanRow(props: {
               onCheckedChange={(v) =>
                 save(
                   { isAccepting: v },
-                  v ? "受付を始めました" : "受付を止めました",
+                  v
+                    ? t("受付を始めました", "Now accepting requests")
+                    : t("受付を止めました", "Stopped accepting requests"),
                 )
               }
             />
-            受付
+            {t("受付", "Accepting")}
           </div>
           <Button
             size="sm"
             variant="ghost"
             className="h-8 rounded-full px-2"
-            aria-label={hidden ? "公開する" : "非公開にする"}
+            aria-label={
+              hidden ? t("公開する", "Publish") : t("非公開にする", "Hide")
+            }
             disabled={busy}
             onClick={() =>
               save(
                 { status: hidden ? "ACTIVE" : "HIDDEN" },
-                hidden ? "公開しました" : "非公開にしました",
+                hidden
+                  ? t("公開しました", "Published")
+                  : t("非公開にしました", "Hidden"),
               )
             }
           >
@@ -376,14 +413,14 @@ function PlanRow(props: {
               <EyeOff className="size-3.5 sm:mr-1" />
             )}
             <span className="hidden sm:inline">
-              {hidden ? "公開" : "非公開"}
+              {hidden ? t("公開", "Publish") : t("非公開", "Hide")}
             </span>
           </Button>
           <Button
             size="sm"
             variant="ghost"
             className="h-8 rounded-full px-2 text-rose-500"
-            aria-label="削除"
+            aria-label={t("削除", "Delete")}
             disabled={busy}
             onClick={remove}
           >
@@ -427,6 +464,7 @@ function PlanEditor(props: {
   onClose: () => void
   onSaved: () => void
 }) {
+  const t = useTranslation()
   const [d, setD] = useState<PlanDraft>(props.draft)
   const [saving, setSaving] = useState(false)
   const set = <K extends keyof PlanDraft>(key: K, value: PlanDraft[K]) =>
@@ -439,10 +477,14 @@ function PlanEditor(props: {
     setSaving(true)
     try {
       await requestsPost({ op: "save-plan", ...d })
-      toast.success(d.planId ? "プランを保存しました" : "プランを公開しました")
+      toast.success(
+        d.planId
+          ? t("プランを保存しました", "Plan saved")
+          : t("プランを公開しました", "Plan published"),
+      )
       props.onSaved()
     } catch (e) {
-      toast.error(requestErrorMessage(e))
+      toast.error(requestErrorMessage(e, t.isEnglish))
     } finally {
       setSaving(false)
     }
@@ -453,24 +495,33 @@ function PlanEditor(props: {
       <DialogContent className="max-h-[92dvh] overflow-y-auto rounded-3xl sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {d.planId ? "プランを編集" : "プランを作る"}
+            {d.planId
+              ? t("プランを編集", "Edit plan")
+              : t("プランを作る", "Create a plan")}
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <label className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-xs">タイトル</span>
+            <span className="text-muted-foreground text-xs">
+              {t("タイトル", "Title")}
+            </span>
             <Input
               value={d.title}
               maxLength={60}
-              placeholder="例: ゆるかわアイコン 1 枚"
+              placeholder={t(
+                "例: ゆるかわアイコン 1 枚",
+                "e.g. 1 cute chibi icon",
+              )}
               onChange={(e) => set("title", e.target.value)}
               className="rounded-xl text-base"
             />
           </label>
           <div className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-xs">カテゴリ</span>
+            <span className="text-muted-foreground text-xs">
+              {t("カテゴリ", "Category")}
+            </span>
             <div className="flex flex-wrap gap-1.5">
-              {Object.entries(PLAN_CATEGORY_LABELS).map(([value, label]) => (
+              {Object.keys(PLAN_CATEGORY_LABELS).map((value) => (
                 <button
                   key={value}
                   type="button"
@@ -482,22 +533,26 @@ function PlanEditor(props: {
                       : "text-muted-foreground",
                   )}
                 >
-                  {label}
+                  {planCategoryLabel(value, t.isEnglish)}
                 </button>
               ))}
             </div>
           </div>
           <label className="flex flex-col gap-1">
             <span className="text-muted-foreground text-xs">
-              説明（できること・できないこと・使い方の範囲）
+              {t(
+                "説明（できること・できないこと・使い方の範囲）",
+                "Description (what you can and can't do, permitted uses)",
+              )}
             </span>
             <Textarea
               value={d.description}
               rows={6}
               maxLength={4000}
-              placeholder={
-                "例:\n・バストアップのアイコンを 1 枚（1024×1024）\n・背景は単色\n・SNS のアイコンに使えます（商用はご相談）\n・実在の人物、他の作品のキャラクターは受けられません"
-              }
+              placeholder={t(
+                "例:\n・バストアップのアイコンを 1 枚（1024×1024）\n・背景は単色\n・SNS のアイコンに使えます（商用はご相談）\n・実在の人物、他の作品のキャラクターは受けられません",
+                "e.g.\n• 1 bust-up icon (1024×1024)\n• Solid color background\n• OK for social media icons (ask about commercial use)\n• No real people or characters from other works",
+              )}
               onChange={(e) => set("description", e.target.value)}
               className="rounded-xl text-base"
             />
@@ -506,62 +561,70 @@ function PlanEditor(props: {
             value={d.sampleImageUrls}
             onChange={(urls) => set("sampleImageUrls", urls)}
             max={4}
-            label="見本の画像（最大 4 枚、1 枚目がカードに出ます）"
+            label={t(
+              "見本の画像（最大 4 枚、1 枚目がカードに出ます）",
+              "Sample images (up to 4; the first appears on the card)",
+            )}
           />
           <div className="grid grid-cols-2 gap-3">
             <NumberField
-              label="価格"
+              label={t("価格", "Price")}
               value={d.priceCoins}
               min={100}
               max={100000}
-              suffix="コイン"
+              suffix={t("コイン", "coins")}
               onChange={(n) => set("priceCoins", n)}
             />
             <NumberField
-              label="納期（承諾から）"
+              label={t("納期（承諾から）", "Delivery (after acceptance)")}
               value={d.deliveryDays}
               min={1}
               max={90}
-              suffix="日"
+              suffix={t("日", "days")}
               onChange={(n) => set("deliveryDays", n)}
             />
             <NumberField
-              label="納品する枚数"
+              label={t("納品する枚数", "Images to deliver")}
               value={d.imageCount}
               min={1}
               max={20}
-              suffix="枚"
+              suffix={t("枚", "images")}
               onChange={(n) => set("imageCount", n)}
             />
             <NumberField
-              label="修正の回数"
+              label={t("修正の回数", "Revisions")}
               value={d.revisionCount}
               min={0}
               max={5}
-              suffix="回"
+              suffix={t("回", "times")}
               onChange={(n) => set("revisionCount", n)}
             />
             <NumberField
-              label="同時に受ける数"
+              label={t("同時に受ける数", "Max active requests")}
               value={d.maxActive}
               min={1}
               max={10}
-              suffix="件"
+              suffix={t("件", "requests")}
               onChange={(n) => set("maxActive", n)}
             />
           </div>
           <p className="rounded-xl bg-muted px-3 py-2 text-sm">
-            完了で受け取る分:{" "}
+            {t("完了で受け取る分:", "You receive on completion:")}{" "}
             <b>
               {Number.isFinite(receive) && receive > 0
-                ? formatCoins(receive)
+                ? formatCoins(receive, t.isEnglish)
                 : "-"}
             </b>{" "}
-            コイン相当（手数料 10% を引いた分）
+            {t(
+              "コイン相当（手数料 10% を引いた分）",
+              "coins' worth (after the 10% fee)",
+            )}
           </p>
           <div className="flex flex-col gap-3 rounded-2xl border p-3">
             <div className="flex items-center justify-between gap-3">
-              <Label htmlFor="plan-accepting">受付中にする</Label>
+              <Label htmlFor="plan-accepting">
+                {t("受付中にする", "Accept requests")}
+              </Label>
               <Switch
                 id="plan-accepting"
                 checked={d.isAccepting}
@@ -570,9 +633,12 @@ function PlanEditor(props: {
             </div>
             <div className="flex items-center justify-between gap-3">
               <Label htmlFor="plan-r18">
-                R18 の依頼も受ける
+                {t("R18 の依頼も受ける", "Also accept R18 requests")}
                 <span className="block font-normal text-muted-foreground text-xs">
-                  R18 の依頼はコインで受け取ります（報酬の対象外）
+                  {t(
+                    "R18 の依頼はコインで受け取ります（報酬の対象外）",
+                    "R18 requests are paid in coins (not eligible for rewards)",
+                  )}
                 </span>
               </Label>
               <Switch
@@ -582,7 +648,9 @@ function PlanEditor(props: {
               />
             </div>
             <div className="flex items-center justify-between gap-3">
-              <Label htmlFor="plan-hidden">非公開にする（下書き）</Label>
+              <Label htmlFor="plan-hidden">
+                {t("非公開にする（下書き）", "Hide (draft)")}
+              </Label>
               <Switch
                 id="plan-hidden"
                 checked={d.status === "HIDDEN"}
@@ -591,11 +659,14 @@ function PlanEditor(props: {
             </div>
           </div>
           <p className="text-muted-foreground text-xs">
-            出品すると
+            {t("出品すると", "By listing, you agree to the ")}
             <Link to="/requests/terms" className="underline">
-              リクエスト規約
+              {t("リクエスト規約", "Request terms")}
             </Link>
-            に同意したことになります。サイトの外でのやり取り・支払いはできません。
+            {t(
+              "に同意したことになります。サイトの外でのやり取り・支払いはできません。",
+              ". Communication and payment outside the site are not allowed.",
+            )}
           </p>
           <Button
             className="h-12 rounded-full font-bold text-base"
@@ -604,10 +675,10 @@ function PlanEditor(props: {
           >
             {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
             {d.planId
-              ? "保存する"
+              ? t("保存する", "Save")
               : d.status === "HIDDEN"
-                ? "下書きで保存"
-                : "公開する"}
+                ? t("下書きで保存", "Save as draft")
+                : t("公開する", "Publish")}
           </Button>
         </div>
       </DialogContent>
@@ -619,6 +690,7 @@ function FreeRequestSettings(props: {
   settings: RequestSettings
   onSaved: () => void
 }) {
+  const t = useTranslation()
   const [s, setS] = useState(props.settings)
   const [saving, setSaving] = useState(false)
   useEffect(() => setS(props.settings), [props.settings])
@@ -626,10 +698,10 @@ function FreeRequestSettings(props: {
     setSaving(true)
     try {
       await requestsPost({ op: "save-settings", ...s })
-      toast.success("保存しました")
+      toast.success(t("保存しました", "Saved"))
       props.onSaved()
     } catch (e) {
-      toast.error(requestErrorMessage(e))
+      toast.error(requestErrorMessage(e, t.isEnglish))
     } finally {
       setSaving(false)
     }
@@ -638,9 +710,14 @@ function FreeRequestSettings(props: {
     <section className="flex flex-col gap-3 rounded-3xl border p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="font-bold">自由リクエストを受け付ける</h2>
+          <h2 className="font-bold">
+            {t("自由リクエストを受け付ける", "Accept open requests")}
+          </h2>
           <p className="text-muted-foreground text-xs">
-            プランにない内容を、依頼する人が金額を決めて送れます。マイページに「リクエストする」ボタンが出ます。
+            {t(
+              "プランにない内容を、依頼する人が金額を決めて送れます。マイページに「リクエストする」ボタンが出ます。",
+              'People can send requests not covered by your plans and set the price themselves. A "Request" button appears on your profile.',
+            )}
           </p>
         </div>
         <Switch
@@ -652,25 +729,28 @@ function FreeRequestSettings(props: {
         <>
           <div className="grid grid-cols-2 gap-3">
             <NumberField
-              label="最低コイン"
+              label={t("最低コイン", "Minimum coins")}
               value={s.minCoins}
               min={100}
               max={100000}
-              suffix="コイン"
+              suffix={t("コイン", "coins")}
               onChange={(n) => setS({ ...s, minCoins: n })}
             />
             <NumberField
-              label="同時に受ける数"
+              label={t("同時に受ける数", "Max active requests")}
               value={s.maxActive}
               min={1}
               max={10}
-              suffix="件"
+              suffix={t("件", "requests")}
               onChange={(n) => setS({ ...s, maxActive: n })}
             />
           </div>
           <label className="flex flex-col gap-1">
             <span className="text-muted-foreground text-xs">
-              依頼する人へのひとこと（受けられる内容など）
+              {t(
+                "依頼する人へのひとこと（受けられる内容など）",
+                "A note for requesters (what you can take on, etc.)",
+              )}
             </span>
             <Textarea
               value={s.note}
@@ -681,7 +761,7 @@ function FreeRequestSettings(props: {
             />
           </label>
           <div className="flex items-center justify-between gap-3">
-            <Label>R18 の依頼も受ける</Label>
+            <Label>{t("R18 の依頼も受ける", "Also accept R18 requests")}</Label>
             <Switch
               checked={s.allowsR18}
               onCheckedChange={(v) => setS({ ...s, allowsR18: v })}
@@ -696,7 +776,7 @@ function FreeRequestSettings(props: {
         onClick={save}
       >
         {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
-        保存する
+        {t("保存する", "Save")}
       </Button>
     </section>
   )

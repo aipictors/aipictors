@@ -37,6 +37,7 @@ import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toEnglishRequestNotification } from "~/utils/request-notification-text"
 
 const KIND_STYLES: Record<
   NotificationPanelKind,
@@ -353,6 +354,14 @@ function RowTitle(props: { item: PanelItem; group: PanelItem[] }) {
         <p className={className}>
           {name}
           {t("さんにフォローされました", " followed you")}
+        </p>
+      )
+    case "request":
+      return (
+        <p className={className}>
+          {t.isEnglish
+            ? toEnglishRequestNotification(item.message)
+            : item.message}
         </p>
       )
     default:
