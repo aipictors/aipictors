@@ -266,14 +266,6 @@ export function HomeFooter(): React.ReactNode {
                 {t("広告掲載", "Advertise")}
               </Link>
               <Link
-                className="text-xs hover:text-foreground"
-                to="https://status.aipictors.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {"Status"}
-              </Link>
-              <Link
                 className="hover:text-foreground"
                 to="https://www.aipictors.com/company/"
                 target="_blank"

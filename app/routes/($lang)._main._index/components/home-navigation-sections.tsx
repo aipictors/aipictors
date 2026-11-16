@@ -1,5 +1,4 @@
 import {
-  ActivityIcon,
   AwardIcon,
   BanknoteIcon,
   BookImageIcon,
@@ -273,13 +272,6 @@ export function getHomeNavigationSections(
           href: "/pictor-chan",
           label: ["ぴくたーちゃん", "Pictor-chan"],
           icon: HeartIcon,
-        },
-        {
-          key: "status",
-          href: "https://status.aipictors.com",
-          label: ["稼働状況", "Status"],
-          icon: ActivityIcon,
-          isExternal: true,
         },
       ],
     },
