@@ -266,20 +266,19 @@ export function NewProfileEditorForm() {
             <p className="font-medium text-sm">
               {t("ヘッダー画像", "Header image")}
             </p>
-            <div className="relative">
+            {/* ユーザーページのヘッダーと同じ 3:1 で切り抜いて見せる */}
+            <div className="relative aspect-[3/1] w-full overflow-hidden rounded-lg bg-muted">
               {headerImageSrc ? (
                 <img
-                  className="h-28 w-full rounded-lg object-cover"
+                  className="absolute inset-0 size-full object-cover"
                   src={headerImageSrc}
                   alt=""
                 />
-              ) : (
-                <div className="h-28 w-full rounded-lg bg-muted" />
-              )}
+              ) : null}
               <CropImageField
                 isHidePreviewImage={false}
                 cropWidth={1200}
-                cropHeight={627}
+                cropHeight={400}
                 onDeleteImage={() => setHeaderImage("")}
                 onCropToBase64={setHeaderImage}
                 fileExtension={"webp"}

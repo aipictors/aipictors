@@ -222,20 +222,21 @@ export function SettingProfileForm() {
   return (
     <div className="space-y-5">
       <section>
-        <div className="relative overflow-hidden rounded-xl">
+        {/* ユーザーページのヘッダー（user-home-header）と同じ比率・切り方で見せる */}
+        <div className="relative aspect-[5/2] w-full overflow-hidden rounded-xl bg-muted md:aspect-[3/1] md:rounded-3xl">
           {headerImageSrc ? (
             <img
-              className="h-36 w-full object-cover sm:h-48"
+              className="absolute inset-0 size-full object-cover"
               src={headerImageSrc}
               alt={t("ヘッダー画像", "Header Image")}
             />
           ) : (
-            <div className="h-36 w-full bg-muted sm:h-48" />
+            <div className="absolute inset-0 bg-muted" />
           )}
           <CropImageField
             isHidePreviewImage={false}
             cropWidth={1200}
-            cropHeight={627}
+            cropHeight={400}
             onDeleteImage={() => {
               setHeaderImage("")
             }}

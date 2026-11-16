@@ -1,3 +1,4 @@
+import { Heart, Loader2Icon } from "lucide-react"
 import { useContext } from "react"
 import { CoinAmountStepper } from "~/components/coin-amount-stepper"
 import {
@@ -34,6 +35,9 @@ export function WorkCommentSupportPanel(
     WorkCommentListState,
     | "coinBalances"
     | "comment"
+    | "currentSupportDraft"
+    | "isCreatingWorkComment"
+    | "onWorkComment"
     | "workRating"
     | "currentFreeSupportCoinAmount"
     | "currentPremiumSupportCoinAmount"
@@ -54,6 +58,9 @@ export function WorkCommentSupportPanel(
   const {
     coinBalances,
     comment,
+    currentSupportDraft,
+    isCreatingWorkComment,
+    onWorkComment,
     workRating,
     currentFreeSupportCoinAmount,
     currentPremiumSupportCoinAmount,
@@ -80,9 +87,64 @@ export function WorkCommentSupportPanel(
     currentPremiumSupportCoinAmount,
   )
 
+  const previewMessage = (
+    <p
+      className={cn(
+        "line-clamp-3 whitespace-pre-wrap break-words text-sm",
+        comment.trim() === "" && "text-muted-foreground",
+      )}
+    >
+      {comment.trim() === ""
+        ? t(
+            "金額とメッセージは公開されます（コメントなしでも送れます）",
+            "The amount and message are public (comment is optional)",
+          )
+        : comment}
+    </p>
+  )
+
+  const needsPremiumPurchase =
+    supportCoinType === "PREMIUM" &&
+    !isLoadingCoinSummary &&
+    coinBalances.premiumBalance === 0
+
   return (
-    <div className="space-y-2.5 rounded-2xl bg-rose-500/5 p-3 ring-1 ring-rose-500/20 md:ml-13">
-      {isRewardTarget && <SupportRewardJoinedBadge />}
+    <div className="space-y-3 rounded-2xl bg-rose-500/5 p-3 ring-1 ring-rose-500/20 md:ml-13">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="flex items-center gap-1.5 font-bold text-sm">
+          <Heart className="size-4 fill-rose-500 text-rose-500" />
+          {t("コインで推す", "Support with coins")}
+        </p>
+        {isRewardTarget && <SupportRewardJoinedBadge />}
+      </div>
+      {/* 送るとコメントがどう表示されるかの見本（YouTube のスーパーサンクスのように、金額とメッセージは公開される） */}
+      {previewPt > 0 ? (
+        <SupportSuperChatCard
+          support={{
+            freeCoinAmount: currentFreeSupportCoinAmount,
+            premiumCoinAmount: currentPremiumSupportCoinAmount,
+            totalPt: previewPt,
+          }}
+          header={
+            <span className="block truncate font-bold text-sm">
+              {supportIsAnonymous
+                ? t("匿名", "Anonymous")
+                : (authContext.displayName ?? t("あなた", "You"))}
+            </span>
+          }
+        >
+          {previewMessage}
+        </SupportSuperChatCard>
+      ) : (
+        <div className="space-y-2 rounded-2xl bg-background/70 px-3 py-2.5 ring-1 ring-border">
+          <span className="block truncate font-bold text-sm">
+            {supportIsAnonymous
+              ? t("匿名", "Anonymous")
+              : (authContext.displayName ?? t("あなた", "You"))}
+          </span>
+          {previewMessage}
+        </div>
+      )}
       <div className="flex items-center gap-1.5">
         {(
           [
@@ -132,18 +194,13 @@ export function WorkCommentSupportPanel(
           )}
         </p>
       )}
-      {supportCoinType === "PREMIUM" &&
-      !isLoadingCoinSummary &&
-      coinBalances.premiumBalance === 0 ? (
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          className="w-full"
-          onClick={() => setIsPremiumPurchaseDialogOpen(true)}
-        >
-          {t("プレミアムコインを購入", "Buy premium coins")}
-        </Button>
+      {needsPremiumPurchase ? (
+        <p className="text-muted-foreground text-xs">
+          {t(
+            "プレミアムコインがありません。購入するとそのまま推せます",
+            "You have no premium coins. Buy some to support",
+          )}
+        </p>
       ) : (
         <div className="space-y-2">
           <div className="flex items-center gap-1.5">
@@ -214,36 +271,40 @@ export function WorkCommentSupportPanel(
         />
         {t("匿名で推す", "Support anonymously")}
       </label>
-      {previewPt > 0 && (
-        // 送るとコメントがどう目立つかの見本（段階の色）
-        <div className="space-y-1">
-          <p className="text-[11px] text-muted-foreground">
-            {t(
-              "コメントはこう表示されます",
-              "Your comment will look like this",
-            )}
-          </p>
-          <SupportSuperChatCard
-            support={{
-              freeCoinAmount: currentFreeSupportCoinAmount,
-              premiumCoinAmount: currentPremiumSupportCoinAmount,
-              totalPt: previewPt,
-            }}
-            header={
-              <span className="block truncate font-bold text-xs">
-                {supportIsAnonymous
-                  ? t("匿名", "Anonymous")
-                  : (authContext.displayName ?? t("あなた", "You"))}
-              </span>
-            }
-          >
-            <p className="line-clamp-3 whitespace-pre-wrap break-words text-sm">
-              {comment.trim() === ""
-                ? t("（コメントなしでも送れます）", "(Comment is optional)")
-                : comment}
-            </p>
-          </SupportSuperChatCard>
-        </div>
+      {/* 送る・買うの大きなボタン（YouTube の「購入して送信」のように、押すと何が起きるか分かる言い方） */}
+      {needsPremiumPurchase ? (
+        <Button
+          type="button"
+          className="h-11 w-full rounded-full font-bold"
+          onClick={() => setIsPremiumPurchaseDialogOpen(true)}
+        >
+          {t("プレミアムコインを購入する", "Buy premium coins")}
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          disabled={currentSupportDraft === null || isCreatingWorkComment}
+          className="h-11 w-full gap-1.5 rounded-full border-0 bg-gradient-to-r from-pink-500 to-rose-500 font-bold text-white hover:opacity-90"
+          onClick={() => void onWorkComment()}
+        >
+          {isCreatingWorkComment ? (
+            <Loader2Icon className="size-4 animate-spin" />
+          ) : currentSupportDraft === null ? (
+            t("金額を選んでください", "Choose an amount")
+          ) : (
+            <>
+              {supportCoinType === "FREE" ? (
+                <FreeSupportCoinIcon className="size-5 rounded-full bg-white/90 p-px" />
+              ) : (
+                <PremiumSupportCoinIcon className="size-5 rounded-full bg-white/90 p-px" />
+              )}
+              {t(
+                `${(supportCoinType === "FREE" ? currentFreeSupportCoinAmount : currentPremiumSupportCoinAmount).toLocaleString()}枚で推して送信`,
+                `Send with ${(supportCoinType === "FREE" ? currentFreeSupportCoinAmount : currentPremiumSupportCoinAmount).toLocaleString()} coins`,
+              )}
+            </>
+          )}
+        </Button>
       )}
       {isRewardTarget && <SupportRewardNote />}
     </div>

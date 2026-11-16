@@ -10,7 +10,7 @@ type Props = {
 
 /**
  * ユーザーページの上部（ヘッダー画像＋プロフィール）
- * ヘッダー画像は本文と同じ幅で、高さを抑える（以前は PC で画面の 1/3 を使っていた）。
+ * ヘッダー画像は本文と同じ幅で、スマホは 5:2・PC は 3:1（設定画面のプレビューと切り抜きも同じ比率。高さの上限で上下が切れないようにする）。
  * 画像は 1 枚だけ読み込む（以前は背景とぼかし用に同じ画像を 2 回描いていた）
  */
 export function UserHomeHeader(props: Props) {
@@ -18,7 +18,7 @@ export function UserHomeHeader(props: Props) {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-0 md:px-8 md:pt-4">
-      <div className="relative aspect-[5/2] max-h-72 w-full overflow-hidden bg-muted md:aspect-[3/1] md:rounded-3xl">
+      <div className="relative aspect-[5/2] w-full overflow-hidden bg-muted md:aspect-[3/1] md:rounded-3xl">
         {user.headerImageUrl ? (
           <img
             src={user.headerImageUrl}

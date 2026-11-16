@@ -4,7 +4,7 @@
  *
  * 推す側の画面では「〇〇円を送る」とは書かない（コインで応援 → 運営がクリエイターに報酬を払う、の建て付け）
  */
-import { BadgeCheck, Sparkles } from "lucide-react"
+import { BadgeCheck, Heart, Sparkles } from "lucide-react"
 import type { ReactNode } from "react"
 import {
   FreeSupportCoinIcon,
@@ -47,15 +47,16 @@ export const useSupportAmountLabel = () => {
 /** コインの枚数を大きく（プレミアムを先に） */
 export function SupportCoinCounts(props: {
   support: SupportAmount
-  size?: "md" | "lg"
+  size?: "sm" | "md" | "lg"
   className?: string
 }) {
   const large = props.size === "lg"
+  const small = props.size === "sm"
   return (
     <span
       className={cn(
         "inline-flex items-center gap-2 font-black tabular-nums leading-none",
-        large ? "text-2xl" : "text-lg",
+        large ? "text-2xl" : small ? "text-sm" : "text-lg",
         props.className,
       )}
       aria-hidden
@@ -65,7 +66,7 @@ export function SupportCoinCounts(props: {
           <PremiumSupportCoinIcon
             className={cn(
               "rounded-full bg-white/90 p-px",
-              large ? "size-6" : "size-5",
+              large ? "size-6" : small ? "size-4" : "size-5",
             )}
           />
           {props.support.premiumCoinAmount.toLocaleString()}
@@ -76,7 +77,7 @@ export function SupportCoinCounts(props: {
           <FreeSupportCoinIcon
             className={cn(
               "rounded-full bg-white/90 p-px",
-              large ? "size-6" : "size-5",
+              large ? "size-6" : small ? "size-4" : "size-5",
             )}
           />
           {props.support.freeCoinAmount.toLocaleString()}
@@ -87,7 +88,8 @@ export function SupportCoinCounts(props: {
 }
 
 /**
- * 推し付きコメントの帯と本文の囲み。children が本文とスタンプ（無ければ帯だけ）
+ * 推し付きコメントの囲み。YouTube のスーパーサンクスのように、うすい段階の色の下地と金額のチップで普通のコメントと分ける。
+ * children が本文とスタンプ（無ければチップだけ）。header はチップの前に出す名前（送る画面の見本）
  */
 export function SupportSuperChatCard(props: {
   support: SupportAmount
@@ -102,35 +104,37 @@ export function SupportSuperChatCard(props: {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl ring-1",
+        "space-y-2 rounded-2xl px-3 py-2.5 ring-1",
         tier.bodyClassName,
         props.className,
       )}
       data-support-tier={tier.level}
     >
-      <div
-        className={cn(
-          "relative flex items-center gap-2 overflow-hidden px-3 py-2",
-          tier.bandClassName,
-        )}
-      >
-        {tier.level >= 4 && (
-          // 高い段階だけ、光が 1 回だけ横切る（動きを減らす設定では出さない）
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/4 bg-white/25 motion-safe:block opacity-0 motion-safe:animate-[aip-support-shine_1.6s_ease-out_0.3s_1_both]"
-          />
-        )}
-        {/* 帯はコインの枚数だけ（スーパーチャットのように金額が一目で分かる）。pt は読み上げにだけ入れる */}
-        <SupportCoinCounts support={props.support} className="shrink-0" />
-        {props.header && <div className="min-w-0 flex-1">{props.header}</div>}
+      <div className="flex min-w-0 items-center gap-2">
+        {props.header && <div className="min-w-0">{props.header}</div>}
+        <span
+          className={cn(
+            "relative inline-flex shrink-0 items-center gap-1 overflow-hidden rounded-full py-0.5 pr-2.5 pl-2",
+            tier.chipClassName,
+          )}
+        >
+          {tier.level >= 4 && (
+            // 高い段階だけ、光が 1 回だけ横切る（動きを減らす設定では出さない）
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/3 bg-white/30 motion-safe:block opacity-0 motion-safe:animate-[aip-support-shine_1.6s_ease-out_0.3s_1_both]"
+            />
+          )}
+          <Heart className="size-3.5 fill-current" aria-hidden />
+          <SupportCoinCounts support={props.support} size="sm" />
+        </span>
         <span className="sr-only">
           {t("推しコインで応援", "Supported with coins")}
           {t("・", ", ")}
           {toLabel(props.support)}
         </span>
       </div>
-      {props.children && <div className="px-3 py-2.5">{props.children}</div>}
+      {props.children}
     </div>
   )
 }
