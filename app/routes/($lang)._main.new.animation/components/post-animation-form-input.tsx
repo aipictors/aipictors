@@ -466,6 +466,8 @@ export function PostAnimationFormInput(props: Props) {
         }}
       />
       <PostFormItemAdvertising
+        previewTitle={props.state.title}
+        previewLink={props.state.link}
         isSubscribed={
           props.currentPass?.type === "STANDARD" ||
           props.currentPass?.type === "PREMIUM"

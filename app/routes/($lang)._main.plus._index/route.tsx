@@ -16,6 +16,7 @@ import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-ab
 import { PlusCoinGuide } from "~/routes/($lang)._main.plus._index/components/plus-coin-guide"
 import { PlusComparisonTable } from "~/routes/($lang)._main.plus._index/components/plus-comparison-table"
 import { PlusFaq } from "~/routes/($lang)._main.plus._index/components/plus-faq"
+import { PlusPromotionShowcase } from "~/routes/($lang)._main.plus._index/components/plus-promotion-showcase"
 import { PlusFrameShowcase } from "~/routes/($lang)._main.plus._index/components/plus-frame-showcase"
 import { PlusForm } from "~/routes/($lang)._main.plus._index/components/plus-form"
 import { PlusHero } from "~/routes/($lang)._main.plus._index/components/plus-hero"
@@ -160,6 +161,7 @@ export default function Plus () {
         )}
       </section>
       <PlusComparisonTable />
+      <PlusPromotionShowcase />
       <PlusFrameShowcase />
       <PlusCoinGuide />
       <PlusFaq />

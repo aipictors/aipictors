@@ -69,6 +69,105 @@ export function WorkPromotionBanner(props: {
 }
 
 /**
+ * ホームの「クリエイターの宣伝」のカード。workId が無いときは見本（投稿画面・案内ページのプレビュー）でリンクにしない
+ */
+export function PromotionWorkCard(props: {
+  workId?: string
+  imageUrl?: string | null
+  title: string
+  userLogin?: string | null
+  userName?: string | null
+  userIconUrl?: string | null
+  relatedUrl?: string | null
+}) {
+  const t = useTranslation()
+  const href = props.workId ? `/posts/${props.workId}` : null
+  const image = props.imageUrl ? (
+    <img
+      src={props.imageUrl}
+      alt={props.title}
+      loading="lazy"
+      decoding="async"
+      className="aspect-[4/3] w-full object-cover"
+    />
+  ) : (
+    <div className="flex aspect-[4/3] w-full items-center justify-center bg-muted text-muted-foreground text-xs">
+      {t("作品の画像", "Your image")}
+    </div>
+  )
+  const user = (
+    <>
+      <img
+        src={toResizedImageUrl(withIconUrlFallback(props.userIconUrl), 96)}
+        alt=""
+        loading="lazy"
+        className="size-5 shrink-0 rounded-full object-cover"
+      />
+      <span className="truncate">{props.userName}</span>
+    </>
+  )
+  const learnMore = (
+    <>
+      {t("詳しく見る", "Learn more")}
+      <ExternalLinkIcon className="size-3" />
+    </>
+  )
+  const learnMoreClassName =
+    "mt-auto flex items-center gap-1 font-medium text-pink-600 text-xs dark:text-pink-400"
+  return (
+    <div className={PROMOTION_FRAME_CLASS}>
+      <div className="flex h-full flex-col overflow-hidden rounded-[11px] bg-card">
+        {href ? (
+          <Link to={href} className="block">
+            {image}
+          </Link>
+        ) : (
+          image
+        )}
+        <div className="flex flex-1 flex-col gap-2 p-3">
+          {href ? (
+            <Link
+              to={href}
+              className="line-clamp-2 font-bold text-sm hover:underline"
+            >
+              {props.title}
+            </Link>
+          ) : (
+            <p className="line-clamp-2 font-bold text-sm">{props.title}</p>
+          )}
+          {props.userName &&
+            (href && props.userLogin ? (
+              <Link
+                to={`/users/${props.userLogin}`}
+                className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs hover:text-foreground"
+              >
+                {user}
+              </Link>
+            ) : (
+              <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs">
+                {user}
+              </span>
+            ))}
+          {isValidUrl(props.relatedUrl) &&
+            (href ? (
+              <a
+                href={props.relatedUrl}
+                target="_blank"
+                rel="sponsored noopener noreferrer"
+                className={cn(learnMoreClassName, "hover:underline")}
+              >
+                {learnMore}
+              </a>
+            ) : (
+              <span className={learnMoreClassName}>{learnMore}</span>
+            ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
  * ホームの宣伝枠（公開から 7 日間の宣伝作品）。なければ何も出さない
  */
 export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
@@ -93,60 +192,24 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
           <WorkPromotionMark />
         </h2>
         <Link
-          to="/plus"
-          className="shrink-0 text-muted-foreground text-xs hover:text-foreground"
+          to="/promotion"
+          className="shrink-0 text-muted-foreground text-xs underline-offset-2 hover:text-foreground hover:underline"
         >
-          {t("宣伝枠について", "About promotions")}
+          {t("宣伝枠について・自分も出す", "About promotions")}
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         {works.map((work) => (
-          <div key={work.id} className={PROMOTION_FRAME_CLASS}>
-            <div className="flex h-full flex-col overflow-hidden rounded-[11px] bg-card">
-              <Link to={`/posts/${work.id}`} className="block">
-                <img
-                  src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
-                  alt={t.workTitle(work.title, work.enTitle)}
-                  loading="lazy"
-                  decoding="async"
-                  className="aspect-[4/3] w-full object-cover"
-                />
-              </Link>
-              <div className="flex flex-1 flex-col gap-2 p-3">
-                <Link
-                  to={`/posts/${work.id}`}
-                  className="line-clamp-2 font-bold text-sm hover:underline"
-                >
-                  {t.workTitle(work.title, work.enTitle)}
-                </Link>
-                {work.user && (
-                  <Link
-                    to={`/users/${work.user.login}`}
-                    className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs hover:text-foreground"
-                  >
-                    <img
-                      src={toResizedImageUrl(withIconUrlFallback(work.user.iconUrl), 96)}
-                      alt=""
-                      loading="lazy"
-                      className="size-5 shrink-0 rounded-full object-cover"
-                    />
-                    <span className="truncate">{work.user.name}</span>
-                  </Link>
-                )}
-                {isValidUrl(work.relatedUrl) && (
-                  <a
-                    href={work.relatedUrl}
-                    target="_blank"
-                    rel="sponsored noopener noreferrer"
-                    className="mt-auto flex items-center gap-1 font-medium text-pink-600 text-xs hover:underline dark:text-pink-400"
-                  >
-                    {t("詳しく見る", "Learn more")}
-                    <ExternalLinkIcon className="size-3" />
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
+          <PromotionWorkCard
+            key={work.id}
+            workId={work.id}
+            imageUrl={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
+            title={t.workTitle(work.title, work.enTitle)}
+            userLogin={work.user?.login}
+            userName={work.user?.name}
+            userIconUrl={work.user?.iconUrl}
+            relatedUrl={work.relatedUrl}
+          />
         ))}
       </div>
     </section>

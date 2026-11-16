@@ -647,6 +647,9 @@ export function PostImageFormInput(props: Props) {
         }}
       />
       <PostFormItemAdvertising
+        previewTitle={props.state.title}
+        previewLink={props.state.link}
+        previewImageUrl={props.imageBase64}
         isSubscribed={
           props.currentPass?.type === "STANDARD" ||
           props.currentPass?.type === "PREMIUM"

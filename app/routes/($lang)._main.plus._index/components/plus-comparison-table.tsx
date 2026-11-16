@@ -2,6 +2,7 @@ import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { CheckIcon, ChevronDownIcon, MinusIcon } from "lucide-react"
 import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import {
   getPlanSpec,
@@ -13,6 +14,8 @@ import { toMoneyNumberText } from "~/utils/to-money-number-text"
 
 type Row = {
   label: string
+  /** 説明のページ（あれば項目名をリンクにする） */
+  href?: string
   value(spec: PlanSpec): string | boolean
 }
 
@@ -136,6 +139,7 @@ export function PlusComparisonTable() {
     },
     {
       label: t("宣伝作品（広告枠）", "Promote your work on the home page"),
+      href: "/promotion",
       value: (spec) =>
         spec.plan === "STANDARD" || spec.plan === "PREMIUM"
           ? t("週1作品・ホームに7日間", "1 a week, shown for 7 days")
@@ -153,7 +157,10 @@ export function PlusComparisonTable() {
           : false,
     },
     {
-      label: t("動画投稿（1本 / 1日合計）", "Video uploads (per video / per day)"),
+      label: t(
+        "動画投稿（1本 / 1日合計）",
+        "Video uploads (per video / per day)",
+      ),
       value: (spec) =>
         t(
           `${spec.video.maxDurationSeconds}秒 / ${spec.video.dailyTotalDurationSeconds}秒`,
@@ -231,11 +238,22 @@ export function PlusComparisonTable() {
                 className={cn(
                   "border-b last:border-b-0",
                   // スマホでは主な項目だけ先に見せる
-                  index >= MOBILE_ROWS && !isAllRowsOpen && "hidden md:table-row",
+                  index >= MOBILE_ROWS &&
+                    !isAllRowsOpen &&
+                    "hidden md:table-row",
                 )}
               >
                 <th className="sticky left-0 z-10 bg-background px-3 py-2.5 text-left font-normal text-xs md:text-sm">
-                  {row.label}
+                  {row.href ? (
+                    <Link
+                      to={row.href}
+                      className="underline decoration-dotted underline-offset-2 hover:text-pink-600"
+                    >
+                      {row.label}
+                    </Link>
+                  ) : (
+                    row.label
+                  )}
                 </th>
                 {specs.map((spec) => {
                   const value = row.value(spec)
