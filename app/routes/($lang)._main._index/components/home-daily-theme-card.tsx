@@ -16,6 +16,8 @@ export function HomeDailyThemeCard(props: {
     day: number
     firstWork?: { smallThumbnailImageURL: string } | null
   }
+  /** R18 のトップ（リンクを /r に） */
+  isSensitive?: boolean
 }) {
   const t = useTranslation()
   const { theme } = props
@@ -23,7 +25,7 @@ export function HomeDailyThemeCard(props: {
   const imageUrl = theme.firstWork?.smallThumbnailImageURL
   return (
     <Link
-      to={`/themes/${theme.year}/${theme.month}/${theme.day}`}
+      to={`${props.isSensitive ? "/r" : ""}/themes/${theme.year}/${theme.month}/${theme.day}`}
       className="flex h-[92px] items-center overflow-hidden rounded-[20px] bg-gradient-to-r from-[#FFE7B0] to-[#FFC2D4] transition-transform active:scale-[0.98] motion-reduce:transform-none dark:from-[#5A3E12] dark:to-[#5A2338]"
     >
       <div className="min-w-0 flex-1 space-y-0.5 px-4">

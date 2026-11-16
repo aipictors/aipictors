@@ -6,7 +6,10 @@ import { trackGrowthEvent } from "~/utils/track-growth-event"
 /**
  * ホームの、ランキングとプランへの大きな入口（アプリのホームと同じ 2 つ並び）
  */
-export function HomeQuickLinks() {
+export function HomeQuickLinks(props: {
+  /** R18 のトップ（ランキングを /r に） */
+  isSensitive?: boolean
+}) {
   const t = useTranslation()
 
   return (
@@ -15,7 +18,7 @@ export function HomeQuickLinks() {
       className="grid grid-cols-2 gap-2.5"
     >
       <Link
-        to="/rankings"
+        to={props.isSensitive ? "/r/rankings" : "/rankings"}
         className="flex h-[52px] items-center gap-2 rounded-2xl bg-amber-500/10 px-3.5 font-extrabold text-sm transition-transform active:scale-[0.97] motion-reduce:transition-none dark:bg-amber-500/20"
       >
         <TrophyIcon className="size-5 shrink-0 text-amber-500" />

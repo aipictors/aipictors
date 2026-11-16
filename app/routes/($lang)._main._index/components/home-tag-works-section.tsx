@@ -20,13 +20,15 @@ const rowClassName =
  * HomeDeferredSection の中に置き、画面に近づいてから /api/home-tag-works（拠点のキャッシュ）を読む。
  * 最初の HTML には入れない
  */
-export function HomeTagWorksSection() {
-  const t = useTranslation()
+export function HomeTagWorksSection(props: {
+  /** R18 のトップ（R18 の作品を出し、リンクを /r に） */
+  isSensitive?: boolean
+}) {
   const [rows, setRows] = useState<HomeTagWorksRow[] | null>(null)
 
   useEffect(() => {
     let isActive = true
-    fetch("/api/home-tag-works")
+    fetch(`/api/home-tag-works${props.isSensitive ? "?sensitive=1" : ""}`)
       .then((response) => (response.ok ? response.json() : { rows: [] }))
       .then((body: HomeTagWorksResponse) => {
         if (isActive) setRows(Array.isArray(body.rows) ? body.rows : [])
@@ -37,7 +39,7 @@ export function HomeTagWorksSection() {
     return () => {
       isActive = false
     }
-  }, [])
+  }, [props.isSensitive])
 
   if (rows === null) return <HomeTagWorksPlaceholder />
   if (rows.length === 0) return null
@@ -45,20 +47,28 @@ export function HomeTagWorksSection() {
   return (
     <section className="space-y-6">
       {rows.map((row) => (
-        <HomeTagWorksRowView key={row.tag} row={row} />
+        <HomeTagWorksRowView
+          key={row.tag}
+          row={row}
+          isSensitive={props.isSensitive}
+        />
       ))}
     </section>
   )
 }
 
-function HomeTagWorksRowView(props: { row: HomeTagWorksRow }) {
+function HomeTagWorksRowView(props: {
+  row: HomeTagWorksRow
+  isSensitive?: boolean
+}) {
   const t = useTranslation()
   const { row } = props
   const label = t.tag(row.tag, row.enTag) ?? row.tag
   const today = getJstDate()
+  const prefix = props.isSensitive ? "/r" : ""
   const link = row.isTheme
-    ? `/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`
-    : `/tags/${encodeURIComponent(row.tag)}`
+    ? `${prefix}/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`
+    : `${prefix}/tags/${encodeURIComponent(row.tag)}`
   return (
     <div className="space-y-2.5">
       <HomeSectionHeading

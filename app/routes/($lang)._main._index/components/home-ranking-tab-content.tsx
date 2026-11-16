@@ -19,8 +19,11 @@ import type {
 
 const PERIODS: HomeRankingPeriod[] = ["daily", "weekly", "monthly"]
 
-/** 一度読んだ期間はタブを切り替えても読み直さない（ページを開いている間） */
-const loadedRankings = new Map<HomeRankingPeriod, HomeRankingResponse>()
+/** 一度読んだ期間はタブを切り替えても読み直さない（ページを開いている間）。全年齢と R18 は別に覚える */
+const loadedRankingsByRating = {
+  all: new Map<HomeRankingPeriod, HomeRankingResponse>(),
+  r18: new Map<HomeRankingPeriod, HomeRankingResponse>(),
+}
 
 const periodTitle = (
   t: ReturnType<typeof useTranslation>,
@@ -43,8 +46,15 @@ const periodTitle = (
  *
  * 選んだときに初めて読む。中身は全員同じなので /api/home-rankings が拠点のキャッシュから返す
  */
-export function HomeRankingTabContent() {
+export function HomeRankingTabContent(props: {
+  /** R18 のトップ（R18 の集計を出し、リンクを /r に） */
+  isSensitive?: boolean
+}) {
   const t = useTranslation()
+  const loadedRankings = props.isSensitive
+    ? loadedRankingsByRating.r18
+    : loadedRankingsByRating.all
+  const rankingsPath = props.isSensitive ? "/r/rankings" : "/rankings"
   const [period, setPeriod] = useState<HomeRankingPeriod>("daily")
   const [rankings, setRankings] = useState(() => new Map(loadedRankings))
   const [failedPeriod, setFailedPeriod] = useState<HomeRankingPeriod | null>(
@@ -56,7 +66,9 @@ export function HomeRankingTabContent() {
     if (loadedRankings.has(period)) return
     let isCancelled = false
     setFailedPeriod(null)
-    fetch(`/api/home-rankings?period=${period}`)
+    fetch(
+      `/api/home-rankings?period=${period}${props.isSensitive ? "&sensitive=1" : ""}`,
+    )
       .then(async (response) => {
         if (!response.ok) throw new Error(String(response.status))
         return (await response.json()) as HomeRankingResponse
@@ -71,7 +83,7 @@ export function HomeRankingTabContent() {
     return () => {
       isCancelled = true
     }
-  }, [period])
+  }, [period, loadedRankings, props.isSensitive])
 
   const labels: Record<HomeRankingPeriod, string> = {
     daily: t("デイリー", "Daily"),
@@ -102,7 +114,7 @@ export function HomeRankingTabContent() {
           </div>
         </div>
         <Link
-          to={ranking?.href ?? "/rankings"}
+          to={ranking?.href ?? rankingsPath}
           className="inline-flex shrink-0 items-center gap-0.5 font-bold text-clear-bright-blue text-sm hover:opacity-80"
         >
           {t("もっと見る", "See all")}
@@ -158,7 +170,7 @@ export function HomeRankingTabContent() {
             {t("読み込みに失敗しました", "Failed to load")}
           </p>
           <Link
-            to="/rankings"
+            to={rankingsPath}
             className="font-bold text-clear-bright-blue text-sm"
           >
             {t("ランキングのページを開く", "Open the rankings page")}

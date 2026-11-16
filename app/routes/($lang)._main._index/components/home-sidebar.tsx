@@ -15,6 +15,8 @@ export function HomeSidebar(
   props: HomePageState["sidebar"] & {
     /** PC の右カラムに控えめに出す人気タグ */
     recommendedTags?: FragmentOf<typeof HomeTagFragment>[]
+    /** R18 のトップ（リンクを /r に） */
+    isSensitive?: boolean
   },
 ) {
   const t = useTranslation()
@@ -86,7 +88,10 @@ export function HomeSidebar(
           )}
         {sidebarNewPostedUsers.length > 0 && (
           <div className="hidden md:block">
-            <HomeNewUsersSection users={sidebarNewPostedUsers} />
+            <HomeNewUsersSection
+              users={sidebarNewPostedUsers}
+              isSensitive={props.isSensitive}
+            />
           </div>
         )}
         {(props.recommendedTags?.length ?? 0) > 0 && (
@@ -98,7 +103,7 @@ export function HomeSidebar(
               {props.recommendedTags?.map((tag) => (
                 <Link
                   key={tag.tagName}
-                  to={`/tags/${encodeURIComponent(tag.tagName)}`}
+                  to={`${props.isSensitive ? "/r" : ""}/tags/${encodeURIComponent(tag.tagName)}`}
                   className="rounded-full bg-muted px-2.5 py-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
                 >
                   #{t(tag.tagName, tag.enTagName || tag.tagName)}
@@ -109,7 +114,10 @@ export function HomeSidebar(
         )}
         {sidebarNewComments.length > 0 && (
           <div className="hidden md:block">
-            <HomeNewCommentsSection comments={sidebarNewComments} />
+            <HomeNewCommentsSection
+              comments={sidebarNewComments}
+              isSensitive={props.isSensitive}
+            />
           </div>
         )}
       </div>

@@ -1,4 +1,3 @@
-import { HomePromotionWorksSection } from "~/components/work/work-promotion"
 import { useMutation, useQuery } from "@apollo/client/index"
 import type {
   HeadersFunction,
@@ -6,54 +5,79 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { useLoaderData, useLocation, useSearchParams } from "@remix-run/react"
-import { Link, useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
-import { Suspense, useContext, useEffect, useMemo, useState } from "react"
+import {
+  type CSSProperties,
+  Suspense,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 import type { BreadcrumbList, CollectionPage, WithContext } from "schema-dts"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
+import { HomePromotionWorksSection } from "~/components/work/work-promotion"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
+import { useNavigate } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
 import { FollowSensitiveTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-tags-feed-contents"
 import { FollowSensitiveUserFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-user-feed-contents"
-import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
+import { HomeDailyThemeCard } from "~/routes/($lang)._main._index/components/home-daily-theme-card"
+import { HomeDeferredSection } from "~/routes/($lang)._main._index/components/home-deferred-section"
+import {
+  HOME_HOT_WORKS_COUNT,
+  HomeHotCarousel,
+  HomeHotWorkFragment,
+} from "~/routes/($lang)._main._index/components/home-hot-carousel"
+import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { HomeNewSensitiveUsersSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-users-section"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
-import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
-import { HomeSensitiveAwardWorkSection } from "~/routes/($lang)._main._index/components/home-sensitive-award-work-section"
-import { HomeSensitiveNewCommentsSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-comments"
-import { HomeSensitiveNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-users-works-section"
-import { HomeSensitiveTagsSection } from "~/routes/($lang)._main._index/components/home-sensitive-tags-section"
+import { HomeQuickLinks } from "~/routes/($lang)._main._index/components/home-quick-links"
+import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
+import { HomeRankingTabContent } from "~/routes/($lang)._main._index/components/home-ranking-tab-content"
 import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
 import { HomeSensitiveWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-users-recommended-section"
-import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
+import { HomeSidebar } from "~/routes/($lang)._main._index/components/home-sidebar"
+import {
+  randomCustomerAdvertisementQuery,
+  updateClickedCountCustomerAdvertisementMutation,
+  viewerCurrentPassQuery,
+} from "~/routes/($lang)._main._index/components/home-sidebar-queries"
+import {
+  HOME_HOT_TAGS_COUNT,
+  HomeTagList,
+  HomeTagListItemFragment,
+} from "~/routes/($lang)._main._index/components/home-tag-list"
+import {
+  HomeTagWorksPlaceholder,
+  HomeTagWorksSection,
+} from "~/routes/($lang)._main._index/components/home-tag-works-section"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
-import { RecommendedFeedContents } from "~/routes/($lang)._main._index/components/recommended-feed-contents"
+import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { RecommendedFeedContents } from "~/routes/($lang)._main._index/components/recommended-feed-contents"
+import { loadHomeReleases } from "~/routes/($lang)._main._index/home-loader.server"
+import { buildHomeEventPreviews } from "~/routes/($lang)._main._index/utils/home-event-previews"
 import { HomeNewUsersSensitiveWorkListSection } from "~/routes/($lang).r._index/components/home-new-user-sensitive-work-list-section"
 import {
   HomePaginationSensitiveWorksSection,
   SensitiveWorksQuery,
 } from "~/routes/($lang).r._index/components/home-pagination-sensitive-works-section"
-import { HomeSensitiveTagList } from "~/routes/($lang).r._index/components/home-sensitive-tag-list"
 import { SensitiveContinueBanner } from "~/routes/($lang).r._index/components/sensitive-continue-banner"
+import { SensitiveDisplaySettings } from "~/routes/($lang).r._index/components/sensitive-display-settings"
 import { SensitiveHomeAbout } from "~/routes/($lang).r._index/components/sensitive-home-about"
-import { SensitiveHomeHeader } from "~/routes/($lang).r._index/components/sensitive-home-header"
-import { SensitiveViewModeToggle } from "~/routes/($lang).r._index/components/sensitive-view-mode-toggle"
 import { SensitiveWorksFilterBar } from "~/routes/($lang).r._index/components/sensitive-works-filter-bar"
-import { getLocalePrefix } from "~/routes/($lang)._main._index/utils/content-rating-path"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { getJstDate } from "~/utils/jst-date"
 import {
@@ -65,32 +89,36 @@ import {
 export const meta: MetaFunction = (props) =>
   createSensitiveMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
 
-// ---------- utils ----------
-const getUtcDateString = (d: Date) =>
-  `${d.getUTCFullYear()}/${`0${d.getUTCMonth() + 1}`.slice(-2)}/${`0${d.getUTCDate()}`.slice(-2)}`
-
 // ---------- loader ----------
+/**
+ * いま人気の R18 は、この日数の作品をいいね順に（hotWorks は isSensitive を付けても全年齢の作品を返すので使わない）
+ */
+const HOT_WORKS_DAYS = 2
+
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/** 日付の切れ目にそろえた N 日前（同じ日のあいだは同じ問い合わせになるように） */
+const toDaysAgoIso = (days: number) =>
+  new Date(
+    Math.floor(Date.now() / DAY_MS) * DAY_MS - days * DAY_MS,
+  ).toISOString()
+
 export async function loader(props: LoaderFunctionArgs) {
   const now = getJstDate()
-  const yesterday = new Date(now.getTime() - 86_400_000)
   const url = new URL(props.request.url)
 
   // 新着タブで開いたときは、ファーストビューの作品もサーバーの HTML に入れる
   const isNewTab = url.searchParams.get("tab") === "new"
 
-  const [{ data }, newWorksResp] = await Promise.all([
+  const [{ data }, newWorksResp, releases] = await Promise.all([
     loaderClient.query({
       query,
       variables: {
-        awardDay: yesterday.getDate(),
-        awardMonth: yesterday.getMonth() + 1,
-        awardYear: yesterday.getFullYear(),
         day: now.getDate(),
         month: now.getMonth() + 1,
         year: now.getFullYear(),
         promotionWorksLimit: config.query.homeWorkCount.promotion,
-        awardWorksLimit: config.query.homeWorkCount.award,
-        newUsersWorksLimit: config.query.homeWorkCount.newUser,
+        hotWorksAfter: toDaysAgoIso(HOT_WORKS_DAYS),
       },
     }),
     isNewTab
@@ -108,30 +136,35 @@ export async function loader(props: LoaderFunctionArgs) {
           },
         })
       : null,
+    // お知らせは全年齢のトップと同じ（作品ではないので年齢区分は関係ない）
+    loadHomeReleases(now.getTime()),
   ])
 
-  const themeTitle = data.dailyTheme?.title ?? null
+  const theme = data.dailyTheme
+  const { appEvents, userEvents, hotWorks, ...homeData } = data
 
   return {
-    ...data,
+    ...homeData,
+    ...releases,
+    eventPreviews: buildHomeEventPreviews(appEvents ?? [], userEvents ?? []),
     // 選んで見せる枠には、ガイドラインに触れそうなタグの作品を出さない
     promotionWorks: data.promotionWorks.filter(isFeaturableSensitiveWork),
-    newUserWorks: data.newUserWorks.filter(isFeaturableSensitiveWork),
-    workAwards: data.workAwards.filter(
-      (award) => award.work && isFeaturableSensitiveWork(award.work),
-    ),
+    // いま人気（R18 の作品だけ。ratings を R18 にしても R18G が返ることがあるので評価でも確かめる）
+    hotWorks: hotWorks
+      .filter(
+        (work) => work.rating === "R18" && isFeaturableSensitiveWork(work),
+      )
+      .slice(0, HOME_HOT_WORKS_COUNT)
+      .map(({ tagNames: _tagNames, ...work }) => work),
     // タグはガイドラインに触れそうなものを除いてから HTML に入れる
-    hotSensitiveTags: data.hotSensitiveTags.filter((tag) =>
-      isFeaturableSensitiveTag(tag.name),
-    ),
+    hotSensitiveTags: data.hotSensitiveTags
+      .filter((tag) => isFeaturableSensitiveTag(tag.name))
+      .slice(0, HOME_HOT_TAGS_COUNT),
     recommendedTags: data.recommendedTags
       .filter((tag) => isFeaturableSensitiveTag(tag.tagName))
       .slice(0, 16),
-    themeTitle:
-      themeTitle !== null && isFeaturableSensitiveTag(themeTitle)
-        ? themeTitle
-        : null,
-    awardDateText: getUtcDateString(yesterday),
+    dailyTheme:
+      theme !== null && isFeaturableSensitiveTag(theme.title) ? theme : null,
     initialNewWorks: newWorksResp?.data.works ?? null,
   }
 }
@@ -158,11 +191,23 @@ const syncQueryParam = (key: string, value: string | null) => {
   )
 }
 
+/**
+ * 画面の外にある一覧は、近づくまでレイアウト・描画を省く（全年齢のトップと同じ）
+ */
+const offscreenSectionStyle = (estimatedHeight: number): CSSProperties => ({
+  contentVisibility: "auto",
+  containIntrinsicHeight: `auto ${estimatedHeight}px`,
+})
+
+/** 新着タブの中の切り替え（全年齢のトップと同じ見た目） */
+const segmentClassName =
+  "h-8 rounded-full px-4 font-medium data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+
 // ---------- component ----------
 /**
- * R18 のトップ。forcedTab があるページ（/r/home）では、ほかのタブは /r へ移動して開く
+ * R18 のトップ。並びと見た目は全年齢のトップ（($lang)._main._index）と同じで、出す作品だけ R18 にする
  */
-export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
+export default function SensitiveHomeIndexPage() {
   const data = useLoaderData<typeof loader>()
   const t = useTranslation()
   const navigate = useNavigate()
@@ -171,10 +216,12 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
   const authContext = useContext(AuthContext)
 
   // ------ local state ------
-  // 最初はホーム（推薦・ランキングなどの欄）。全年齢のトップと同じ
   const [currentTab, setCurrentTab] = useState(
-    props.forcedTab ?? searchParams.get("tab") ?? "home",
+    searchParams.get("tab") ?? "home",
   )
+  // ランキングはページを移らずタブの中で出す（URL は変えない。サーバーの描画では常に閉じている）
+  const [isRankingOpen, setIsRankingOpen] = useState(false)
+  const shownTab = isRankingOpen ? "ranking" : currentTab
   const [workView, setWorkView] = useState(searchParams.get("view") ?? "new")
   const [newWorksPage, setNewWorksPage] = useState(
     Number(searchParams.get("newPage") ?? 0),
@@ -234,7 +281,6 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
 
   // 作品クリック時の処理
   const openWork = (idx: string) => {
-    // displayedWorksのworkのid一致するもの
     const work = displayedWorks.find((w) => w.id === idx)
     if (!work) {
       return
@@ -271,12 +317,6 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
 
   // ------ URL sync helpers ------
   const handleTabChange = (tab: string) => {
-    if (props.forcedTab !== undefined) {
-      if (tab !== props.forcedTab) {
-        navigate(`${getLocalePrefix(location.pathname)}/r?tab=${tab}`)
-      }
-      return
-    }
     setCurrentTab(tab)
     syncQueryParam("tab", tab)
   }
@@ -322,9 +362,19 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
       syncQueryParam(paramKey, String(n))
     }
 
-  // ------ GraphQL for side‐menu ads ------
-  const { data: pass } = useQuery(viewerCurrentPassQuery)
+  // ------ 右カラム（広告）。全年齢のトップと同じく、表示を引き継いだあとに取る ------
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+  const shouldLoadSidebar = isMounted && currentTab === "home"
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {
+    skip: !shouldLoadSidebar,
+    fetchPolicy: "cache-first",
+  })
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
+    skip: !shouldLoadSidebar,
+    fetchPolicy: "cache-first",
     variables: { where: { isSensitive: true, page: "work" } },
   })
   const [updateClicked] = useMutation(
@@ -380,17 +430,24 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
   }
 
   const onResumeNewWorks = (page: number) => {
+    setIsRankingOpen(false)
     handleTabChange("new")
     handleWorkViewChange("new")
     handleNewWorksPageChange(page)
   }
+
+  const isLoggedIn = authContext.isLoggedIn
 
   return (
     <>
       <AppBreadcrumbScript breadcrumb={breadcrumb} />
       <AppJsonLdScript jsonLd={collectionPage} />
       <div className="space-y-4">
-        <SensitiveHomeHeader themeTitle={data.themeTitle} />
+        {/* ページの見出し（全年齢のトップと同じく画面には出さず、検索エンジンと読み上げのために置く） */}
+        <h1 className="sr-only">{pageName}</h1>
+        {data.importantRelease && (
+          <HomeImportantReleaseBanner release={data.importantRelease} />
+        )}
         <SensitiveContinueBanner
           currentPage={
             currentTab === "new" && workView === "new" ? newWorksPage : null
@@ -400,289 +457,299 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
         <Tabs
           value={currentTab}
           onValueChange={handleTabChange}
-          className="space-y-4"
+          className="space-y-3"
         >
-          {/* ---------- TAB HEADER ---------- */}
-          <div className="flex items-center sm:gap-x-2 md:gap-x-4">
-            {/* 全年齢のトップと同じ並び（フォロー中・お気に入りタグはログインしている人だけ） */}
-            <AppAnimatedTabs
-              tabs={[
-                { label: t("ホーム", "Home"), value: "home" },
-                ...(authContext.isLoggedIn || currentTab === "follow-user"
-                  ? [
-                      {
-                        label: t("フォロー中", "Following"),
-                        value: "follow-user",
-                      },
-                    ]
-                  : []),
-                { label: t("おすすめ", "For you"), value: "recommended" },
-                ...(authContext.isLoggedIn || currentTab === "follow-tag"
-                  ? [
-                      {
-                        label: t("お気に入りタグ", "Favorite tags"),
-                        value: "follow-tag",
-                      },
-                    ]
-                  : []),
-                {
-                  label: t("ランキング", "Ranking"),
-                  value: "ranking",
-                  href: "/r/rankings",
-                },
-                { label: t("新着", "New"), value: "new" },
-              ]}
-              value={currentTab}
-              onChange={handleTabChange}
-            />
-          </div>
-
-          {/* ---------- HOME ---------- */}
-          <TabsContent value="home" className="m-0 flex flex-col space-y-4">
-            <HomeSensitiveTagList hotTags={data.hotSensitiveTags} />
-            <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-              <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_278px)]">
-                <HomePromotionWorksSection isSensitive />
-                <HomeSensitiveWorksUsersRecommendedSection
-                  works={data.promotionWorks}
-                />
-                <HomeSensitiveNewUsersWorksSection works={data.newUserWorks} />
-                <HomeSensitiveAwardWorkSection
-                  awardDateText={data.awardDateText}
-                  title={t("前日ランキング", "Previous Day Ranking")}
-                  awards={data.workAwards}
-                />
-                <HomeSensitiveTagsSection
-                  title={t("人気タグ", "Popular Tags")}
-                  tags={data.recommendedTags}
+          {/* ヘッダー部分: タブ（全年齢のトップと同じ並び。右に R18 の表示設定） */}
+          <div className="-mx-4 bg-background/98 px-4 py-1">
+            <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
+              <div className="min-w-0 flex-1">
+                <AppAnimatedTabs
+                  tabs={[
+                    { label: t("ホーム", "Home"), value: "home" },
+                    // フォロー中・お気に入りタグはログインしている人だけ（ログインしていないと中身が無い）
+                    ...(isLoggedIn || currentTab === "follow-user"
+                      ? [
+                          {
+                            label: t("フォロー中", "Following"),
+                            value: "follow-user",
+                          },
+                        ]
+                      : []),
+                    { label: t("おすすめ", "For you"), value: "recommended" },
+                    ...(isLoggedIn || currentTab === "follow-tag"
+                      ? [
+                          {
+                            label: t("お気に入りタグ", "Favorite tags"),
+                            value: "follow-tag",
+                          },
+                        ]
+                      : []),
+                    { label: t("ランキング", "Ranking"), value: "ranking" },
+                    { label: t("新着", "New"), value: "new" },
+                  ]}
+                  value={shownTab}
+                  onChange={(tab) => {
+                    if (tab === "ranking") {
+                      setIsRankingOpen(true)
+                      return
+                    }
+                    // 今のタブを押したときは、ランキングを閉じるだけ
+                    setIsRankingOpen(false)
+                    if (tab !== currentTab) {
+                      handleTabChange(tab)
+                    }
+                  }}
+                  variant="pill"
                 />
               </div>
-              {/* 右カラム（スクロールしても見えるように固定） */}
-              <aside className="flex w-full flex-col space-y-4 md:sticky md:top-20 md:w-[262px] md:max-w-[262px] md:shrink-0 md:self-start">
-                {!isSubscriptionUser &&
-                  advertisements?.randomCustomerAdvertisement && (
-                    <div className="relative border">
-                      <Link
-                        to={advertisements.randomCustomerAdvertisement.url}
-                        target="_blank"
-                        onClick={() => {
-                          const id =
-                            advertisements.randomCustomerAdvertisement?.id
-                          if (!id) return
-                          updateClicked({
-                            variables: {
-                              id,
-                            },
-                          })
+              <SensitiveDisplaySettings isCompact />
+            </div>
+          </div>
+
+          {/* ---------- ランキング（ページを移らずに出す。R18 の集計） ---------- */}
+          {isRankingOpen && <HomeRankingTabContent isSensitive />}
+          {/* ランキングを開いている間も、元のタブの中身は消さずに隠す（戻ったときに読み直さない） */}
+          <div className={isRankingOpen ? "hidden" : "contents"}>
+            {/* ---------- HOME ---------- */}
+            <TabsContent value="home" className="m-0 flex flex-col space-y-4">
+              {/* 今日のお題を先頭にしたタグの横並び */}
+              {(data.dailyTheme || data.hotSensitiveTags.length > 0) && (
+                <HomeTagList
+                  isSensitive
+                  themeTitle={data.dailyTheme?.title}
+                  themeEnTitle={data.dailyTheme?.enTitle}
+                  hotTags={data.hotSensitiveTags}
+                />
+              )}
+              <div className="block space-y-4 md:flex md:space-x-6 md:space-y-0">
+                <div className="flex w-full min-w-0 flex-col space-y-6 md:max-w-[calc(100%_-_286px)] md:space-y-8">
+                  {/* お知らせ（開催中のイベント・サイトのお知らせ）は一番上 */}
+                  <HomeQuickPreviewBar
+                    events={data.eventPreviews}
+                    featuredReleases={data.featuredReleaseList}
+                    releaseList={data.releaseList}
+                  />
+                  {/* クリエイターの宣伝（PR）とユーザからの推薦 */}
+                  <HomePromotionWorksSection isSensitive />
+                  <HomeSensitiveWorksUsersRecommendedSection
+                    works={data.promotionWorks}
+                  />
+                  {/* いま人気 → 今日のお題 → ランキング・プラン */}
+                  <HomeHotCarousel works={data.hotWorks} />
+                  <div className="space-y-3">
+                    {data.dailyTheme && (
+                      // 参加数と先頭の作品は全年齢を含むので出さない
+                      <HomeDailyThemeCard
+                        isSensitive
+                        theme={{
+                          ...data.dailyTheme,
+                          worksCount: null,
+                          firstWork: null,
                         }}
-                      >
-                        <img
-                          src={
-                            advertisements.randomCustomerAdvertisement.imageUrl
-                          }
-                          alt="Advertisement"
-                          loading="lazy"
-                          decoding="async"
-                          fetchPriority="low"
-                          className="h-auto w-full"
-                        />
-                      </Link>
-                      <div className="absolute top-0 right-0">
-                        <CrossPlatformTooltip
-                          text={t(
-                            "提携広告です、広告主様を募集中です。メールまたはDMにてご連絡ください。",
-                            "This is a partnered advertisement. We are accepting new advertisers. Please contact us via email or DM.",
-                          )}
-                        />
-                      </div>
-                    </div>
-                  )}
-                {!isSubscriptionUser && (
-                  <Link to="/generation">
-                    <img
-                      src="https://assets.aipictors.com/Aipictors_01_640.webp"
-                      alt="Aipictors Logo"
-                      width={640}
-                      height={640}
-                      loading="lazy"
-                      decoding="async"
-                      fetchPriority="low"
-                      className="h-auto w-full"
+                      />
+                    )}
+                    <HomeQuickLinks isSensitive />
+                  </div>
+                  {/* タグごとの作品（今日のお題・人気タグ）。画面に近づいてから読む */}
+                  <div style={offscreenSectionStyle(900)}>
+                    <HomeDeferredSection fallback={<HomeTagWorksPlaceholder />}>
+                      <HomeTagWorksSection isSensitive />
+                    </HomeDeferredSection>
+                  </div>
+                </div>
+                {/* 右カラム（スクロールしても見えるように固定）。PC だけ新しいユーザー・コメント・人気タグも */}
+                <HomeSidebar
+                  isSensitive
+                  advertisements={advertisements}
+                  onClickAdvertisement={async () => {
+                    const id = advertisements?.randomCustomerAdvertisement?.id
+                    if (id) await updateClicked({ variables: { id } })
+                  }}
+                  isSubscriptionUser={isSubscriptionUser}
+                  isHomeSidebarLoading={false}
+                  sidebarNewPostedUsers={data.newPostedUsers}
+                  sidebarNewComments={data.newComments}
+                  recommendedTags={data.recommendedTags}
+                />
+              </div>
+              <SensitiveHomeAbout />
+            </TabsContent>
+
+            {/* ---------- おすすめ ---------- */}
+            <TabsContent value="recommended" className="space-y-6">
+              {currentTab === "recommended" && (
+                <>
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="font-bold text-base">
+                      {isLoggedIn
+                        ? t("あなたへのおすすめ", "For you")
+                        : t("いま人気の新着", "Trending new works")}
+                    </h2>
+                    <HomeViewModeToggles
+                      isDialogMode={isDialogMode}
+                      onDialogModeChange={onChangeDialogMode}
                     />
-                  </Link>
-                )}
-                {data.newPostedUsers && (
-                  <HomeNewSensitiveUsersSection users={data.newPostedUsers} />
-                )}
-                {data.newComments?.length > 0 && (
-                  <HomeSensitiveNewCommentsSection
-                    comments={data.newComments}
-                  />
-                )}
-              </aside>
-            </div>
-            <SensitiveHomeAbout />
-          </TabsContent>
-
-          {/* ---------- おすすめ ---------- */}
-          <TabsContent value="recommended" className="m-0">
-            {currentTab === "recommended" && (
-              <RecommendedFeedContents
-                isSensitive
-                initialWorks={[]}
-                onSelect={isDialogMode ? openWork : undefined}
-                updateWorks={updateCurrentWorks}
-              />
-            )}
-          </TabsContent>
-
-          {/* ---------- NEW / NEW-USER ---------- */}
-          <TabsContent value="new" className="flex flex-col space-y-4">
-            {/* toggle buttons */}
-            <div className="flex space-x-2">
-              {[
-                { v: "new", label: t("すべての新着", "All new") },
-                { v: "new-user", label: t("新規クリエイター", "New creators") },
-              ].map(({ v, label }) => (
-                <Button
-                  key={v}
-                  size="sm"
-                  variant={workView === v ? "default" : "secondary"}
-                  aria-pressed={workView === v}
-                  onClick={() => handleWorkViewChange(v)}
-                >
-                  {label}
-                </Button>
-              ))}
-            </div>
-
-            {workView === "new" && (
-              <>
-                <SensitiveWorksFilterBar
-                  workType={workType}
-                  onChangeWorkType={handleWorkTypeChange}
-                  isPromptPublic={isPromptPublic}
-                  onChangeIsPromptPublic={handlePromptChange}
-                  sortType={sortType}
-                  onChangeSortType={handleSortChange}
-                  timeRange={timeRange}
-                  onChangeTimeRange={handleTimeRangeChange}
-                >
-                  <SensitiveViewModeToggle
-                    isPagination={internalIsPagination}
-                    onChangePagination={handlePaginationChange}
-                    isDialogMode={isDialogMode}
-                    onChangeDialogMode={onChangeDialogMode}
-                  />
-                </SensitiveWorksFilterBar>
-
-                <Suspense fallback={<AppLoadingPage />}>
-                  {internalIsPagination ? (
-                    <HomePaginationSensitiveWorksSection
-                      page={newWorksPage}
-                      setPage={handleNewWorksPageChange}
-                      workType={workType}
-                      isPromptPublic={isPromptPublic}
-                      sortType={sortType}
-                      timeRange={timeRange}
-                      isOneWorkPerUser={isOneWorkPerUser}
-                      onSelect={isDialogMode ? openWork : undefined}
-                      updateWorks={updateCurrentWorks}
-                      initialWorks={data.initialNewWorks}
-                    />
-                  ) : (
-                    <HomeSensitiveWorksSection
-                      page={newWorksPage}
-                      setPage={handleNewWorksPageChange}
-                      workType={workType}
-                      isPromptPublic={isPromptPublic}
-                      sortType={sortType}
-                      timeRange={timeRange}
-                      isPagination={false}
-                      onSelect={isDialogMode ? openWork : undefined}
-                      updateWorks={updateCurrentWorks}
-                    />
-                  )}
-                </Suspense>
-              </>
-            )}
-
-            {workView === "new-user" && (
-              <>
-                <SensitiveWorksFilterBar
-                  workType={workType}
-                  onChangeWorkType={handleWorkTypeChange}
-                  isPromptPublic={isPromptPublic}
-                  onChangeIsPromptPublic={handlePromptChange}
-                  sortType={sortType}
-                  onChangeSortType={handleSortChange}
-                >
-                  <SensitiveViewModeToggle
-                    isDialogMode={isDialogMode}
-                    onChangeDialogMode={onChangeDialogMode}
-                  />
-                </SensitiveWorksFilterBar>
-                <Suspense fallback={<AppLoadingPage />}>
-                  <HomeNewUsersSensitiveWorkListSection
-                    workType={workType}
-                    isPromptPublic={isPromptPublic}
-                    sortType={sortType}
-                    isOneWorkPerUser={isOneWorkPerUser}
+                  </div>
+                  <RecommendedFeedContents
+                    isSensitive
+                    initialWorks={[]}
                     onSelect={isDialogMode ? openWork : undefined}
                     updateWorks={updateCurrentWorks}
                   />
-                </Suspense>
-              </>
-            )}
-          </TabsContent>
+                </>
+              )}
+            </TabsContent>
 
-          {/* ---------- FOLLOW USER ---------- */}
-          <TabsContent value="follow-user" className="space-y-4">
-            <SensitiveViewModeToggle
-              isPagination={internalIsPagination}
-              onChangePagination={handlePaginationChange}
-              isDialogMode={isDialogMode}
-              onChangeDialogMode={onChangeDialogMode}
-            />
+            {/* ---------- 新着 / 新規ユーザ ---------- */}
+            <TabsContent value="new" className="flex flex-col space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="inline-flex w-fit flex-wrap gap-0.5 rounded-full border bg-muted/40 p-0.5">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleWorkViewChange("new")}
+                    data-active={workView === "new"}
+                    aria-pressed={workView === "new"}
+                    className={segmentClassName}
+                  >
+                    {t("新着", "New")}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleWorkViewChange("new-user")}
+                    data-active={workView === "new-user"}
+                    aria-pressed={workView === "new-user"}
+                    className={segmentClassName}
+                  >
+                    {t("新規ユーザ", "New Users")}
+                  </Button>
+                </div>
+                <HomeViewModeToggles
+                  isPagination={
+                    workView === "new-user" ? undefined : internalIsPagination
+                  }
+                  onPaginationChange={handlePaginationChange}
+                  isDialogMode={isDialogMode}
+                  onDialogModeChange={onChangeDialogMode}
+                />
+              </div>
 
-            {/* コンテンツ */}
-            <Suspense fallback={<AppLoadingPage />}>
-              <FollowSensitiveUserFeedContents
-                page={followUserFeedPage}
-                setPage={setPageWithParam(
-                  setFollowUserFeedPage,
-                  "followUserPage",
-                )}
+              {workView === "new" && (
+                <>
+                  <SensitiveWorksFilterBar
+                    workType={workType}
+                    onChangeWorkType={handleWorkTypeChange}
+                    isPromptPublic={isPromptPublic}
+                    onChangeIsPromptPublic={handlePromptChange}
+                    sortType={sortType}
+                    onChangeSortType={handleSortChange}
+                    timeRange={timeRange}
+                    onChangeTimeRange={handleTimeRangeChange}
+                  />
+
+                  <Suspense fallback={<AppLoadingPage />}>
+                    {internalIsPagination ? (
+                      <HomePaginationSensitiveWorksSection
+                        page={newWorksPage}
+                        setPage={handleNewWorksPageChange}
+                        workType={workType}
+                        isPromptPublic={isPromptPublic}
+                        sortType={sortType}
+                        timeRange={timeRange}
+                        isOneWorkPerUser={isOneWorkPerUser}
+                        onSelect={isDialogMode ? openWork : undefined}
+                        updateWorks={updateCurrentWorks}
+                        initialWorks={data.initialNewWorks}
+                      />
+                    ) : (
+                      <HomeSensitiveWorksSection
+                        page={newWorksPage}
+                        setPage={handleNewWorksPageChange}
+                        workType={workType}
+                        isPromptPublic={isPromptPublic}
+                        sortType={sortType}
+                        timeRange={timeRange}
+                        isPagination={false}
+                        onSelect={isDialogMode ? openWork : undefined}
+                        updateWorks={updateCurrentWorks}
+                      />
+                    )}
+                  </Suspense>
+                </>
+              )}
+
+              {workView === "new-user" && (
+                <>
+                  <SensitiveWorksFilterBar
+                    workType={workType}
+                    onChangeWorkType={handleWorkTypeChange}
+                    isPromptPublic={isPromptPublic}
+                    onChangeIsPromptPublic={handlePromptChange}
+                    sortType={sortType}
+                    onChangeSortType={handleSortChange}
+                  />
+                  <Suspense fallback={<AppLoadingPage />}>
+                    <HomeNewUsersSensitiveWorkListSection
+                      workType={workType}
+                      isPromptPublic={isPromptPublic}
+                      sortType={sortType}
+                      isOneWorkPerUser={isOneWorkPerUser}
+                      onSelect={isDialogMode ? openWork : undefined}
+                      updateWorks={updateCurrentWorks}
+                    />
+                  </Suspense>
+                </>
+              )}
+            </TabsContent>
+
+            {/* ---------- フォロー中 ---------- */}
+            <TabsContent value="follow-user" className="space-y-4">
+              <HomeViewModeToggles
+                className="justify-end"
                 isPagination={internalIsPagination}
-                onPaginationModeChange={setInternalIsPagination}
-                onSelect={isDialogMode ? openWork : undefined}
-                updateWorks={updateCurrentWorks}
+                onPaginationChange={handlePaginationChange}
+                isDialogMode={isDialogMode}
+                onDialogModeChange={onChangeDialogMode}
               />
-            </Suspense>
-          </TabsContent>
+              <Suspense fallback={<AppLoadingPage />}>
+                <FollowSensitiveUserFeedContents
+                  page={followUserFeedPage}
+                  setPage={setPageWithParam(
+                    setFollowUserFeedPage,
+                    "followUserPage",
+                  )}
+                  isPagination={internalIsPagination}
+                  onPaginationModeChange={setInternalIsPagination}
+                  onSelect={isDialogMode ? openWork : undefined}
+                  updateWorks={updateCurrentWorks}
+                />
+              </Suspense>
+            </TabsContent>
 
-          {/* ---------- FOLLOW TAG ---------- */}
-          <TabsContent value="follow-tag" className="space-y-4">
-            <SensitiveViewModeToggle
-              isPagination={internalIsPagination}
-              onChangePagination={handlePaginationChange}
-              isDialogMode={isDialogMode}
-              onChangeDialogMode={onChangeDialogMode}
-            />
-
-            <Suspense fallback={<AppLoadingPage />}>
-              <FollowSensitiveTagsFeedContents
-                page={followTagFeedPage}
-                setPage={setPageWithParam(
-                  setFollowTagFeedPage,
-                  "followTagPage",
-                )}
+            {/* ---------- お気に入りタグ ---------- */}
+            <TabsContent value="follow-tag" className="space-y-4">
+              <HomeViewModeToggles
+                className="justify-end"
                 isPagination={internalIsPagination}
-                onSelect={isDialogMode ? openWork : undefined}
-                updateWorks={updateCurrentWorks}
+                onPaginationChange={handlePaginationChange}
+                isDialogMode={isDialogMode}
+                onDialogModeChange={onChangeDialogMode}
               />
-            </Suspense>
-          </TabsContent>
+              <Suspense fallback={<AppLoadingPage />}>
+                <FollowSensitiveTagsFeedContents
+                  page={followTagFeedPage}
+                  setPage={setPageWithParam(
+                    setFollowTagFeedPage,
+                    "followTagPage",
+                  )}
+                  isPagination={internalIsPagination}
+                  onSelect={isDialogMode ? openWork : undefined}
+                  updateWorks={updateCurrentWorks}
+                />
+              </Suspense>
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
 
@@ -701,45 +768,37 @@ export function SensitiveHomeIndexPage(props: { forcedTab?: "home" } = {}) {
 }
 
 const query = graphql(
-  `query HomeQuery(
-    # $pastGenerationBefore: String!
+  `query SensitiveHomeQuery(
     $year: Int!
     $month: Int!
     $day: Int!
-    $awardYear: Int!
-    $awardMonth: Int!
-    $awardDay: Int!
-    # $novelWorksLimit: Int!
-    # $novelWorksBefore: String!
-    # $columnWorksLimit: Int!
-    # $columnWorksBefore: String!
-    # $generationWorksLimit: Int!
     $promotionWorksLimit: Int!
-    $awardWorksLimit: Int!
-    $newUsersWorksLimit: Int!
+    $hotWorksAfter: String!
   ) {
     dailyTheme(year: $year, month: $month, day: $day) {
       id
       title
+      enTitle
+      year
+      month
+      day
     }
     hotSensitiveTags {
       ...HomeTagListItem
     }
-    workAwards(
+    hotWorks: works(
       offset: 0
-      limit: $awardWorksLimit
+      limit: 20
       where: {
-        year: $awardYear
-        month: $awardMonth
-        day: $awardDay
+        ratings: [R18]
         isSensitive: true
+        isNowCreatedAt: true
+        orderBy: LIKES_COUNT
+        createdAtAfter: $hotWorksAfter
       }
     ) {
-      ...HomeWorkAward
-      work {
-        id
-        tagNames
-      }
+      ...HomeHotWork
+      tagNames
     }
     recommendedTags: recommendedTags(
       limit: 40
@@ -748,16 +807,6 @@ const query = graphql(
       }
     ) {
       ...HomeTag
-    }
-    newUserWorks: newUserWorks(
-      offset: 0,
-      limit: $newUsersWorksLimit,
-      where: {
-        ratings: [R18],
-      }
-    ) {
-      ...HomeNewUsersWorks
-      tagNames
     }
     newPostedUsers: newPostedUsers(
       offset: 0,
@@ -791,89 +840,42 @@ const query = graphql(
       ...HomePromotionWork
       tagNames
     }
-    # novelWorks: works(
-    #   offset: 0,
-    #   limit: $novelWorksLimit,
-    #   where: {
-    #     ratings: [G, R15],
-    #     workType: NOVEL,
-    #     beforeCreatedAt: $novelWorksBefore
-    #   }
-    # ) {
-    #   ...HomeNovelPost
-    # }
-    # columnWorks: works(
-    #   offset: 0,
-    #   limit: $columnWorksLimit,
-    #   where: {
-    #     ratings: [G, R15],
-    #     workType: COLUMN,
-    #     beforeCreatedAt: $columnWorksBefore
-    #   }
-    # ) {
-    #   ...HomeColumnPost
-    # }
+    appEvents(limit: 12, offset: 0) {
+      id
+      slug
+      title
+      thumbnailImageUrl
+      status
+      startAt
+      endAt
+      tag
+      worksCount
+    }
+    userEvents(limit: 12, offset: 0) {
+      id
+      slug
+      title
+      thumbnailImageUrl
+      headerImageUrl
+      status
+      startAt
+      endAt
+      mainTag
+      tags
+      rankingEnabled
+      entryCount
+      participantCount
+      userId
+      userIconUrl
+      userName
+    }
   }`,
   [
     HomePromotionWorkFragment,
-    // HomeNovelPostFragment,
     HomeTagListItemFragment,
-    // HomeGenerationWorkFragment,
-    HomeWorkAwardFragment,
-    // HomeColumnPostFragment,
+    HomeHotWorkFragment,
     HomeTagFragment,
-    HomeNewUsersWorksFragment,
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
   ],
 )
-
-const viewerCurrentPassQuery = graphql(
-  `query ViewerCurrentPass {
-    viewer {
-      id
-      currentPass {
-        id
-        type
-      }
-    }
-  }`,
-)
-
-export const SideMenuAdvertisementsFragment = graphql(
-  `fragment SideMenuAdvertisementsFields on CustomerAdvertisementNode @_unmask {
-      id
-      imageUrl
-      url
-      displayProbability
-      clickCount
-      impressionCount
-      isSensitive
-      createdAt
-      page
-      startAt
-      endAt
-      isActive
-  }`,
-)
-
-const randomCustomerAdvertisementQuery = graphql(
-  `query RandomCustomerAdvertisement($where: RandomCustomerAdvertisementWhereInput!) {
-    randomCustomerAdvertisement(where: $where) {
-      ...SideMenuAdvertisementsFields
-    }
-  }`,
-  [SideMenuAdvertisementsFragment],
-)
-
-const updateClickedCountCustomerAdvertisementMutation = graphql(
-  `mutation UpdateClickedCountCustomerAdvertisement($id: ID!) {
-    updateClickedCountCustomerAdvertisement(id: $id) {
-      id
-    }
-  }`,
-)
-
-export default function Index() {
-  return <SensitiveHomeIndexPage />
-}

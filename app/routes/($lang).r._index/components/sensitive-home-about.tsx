@@ -18,6 +18,10 @@ export function SensitiveHomeAbout(): React.ReactNode {
     { to: "/r/posts/2d", label: t("R18 イラスト", "R18 illustrations") },
     { to: "/r/posts/3d", label: t("R18 フォト", "R18 photos") },
     { to: "/r/archive", label: t("R18 過去の名作", "R18 past masterpieces") },
+    {
+      to: "/r/ai-rankings",
+      label: t("R18 AI評価ランキング", "R18 AI rankings"),
+    },
     { to: "/guideline", label: t("投稿ガイドライン", "Posting guidelines") },
   ]
 
@@ -28,8 +32,8 @@ export function SensitiveHomeAbout(): React.ReactNode {
       </h2>
       <p className="text-muted-foreground text-sm">
         {t(
-          "Aipictors（AIピクターズ）の、18歳以上の方向けのAIイラストのコーナーです。投稿された作品は新着、ランキング、タグ、シリーズから探せます。ログインすると、クリエイターやタグをフォローして新着を追えます。投稿にはガイドラインが適用され、児童の性的搾取を示唆する内容や実在の人物の無断使用は禁止されています。",
-          "This is the section of Aipictors for people aged 18 and over. Find works through new posts, rankings, tags and series, and log in to follow creators and tags. All posts are subject to our guidelines, which prohibit content suggesting the sexual exploitation of children and unauthorized use of real people.",
+          "Aipictors（AIピクターズ）の、18歳以上の方向けのAIイラストのコーナーです。プロンプトを公開している作品もあります。投稿された作品は新着、ランキング、タグ、シリーズから探せます。ログインすると、クリエイターやタグをフォローして新着を追えます。投稿にはガイドラインが適用され、児童の性的搾取を示唆する内容や実在の人物の無断使用は禁止されています。",
+          "This is the section of Aipictors for people aged 18 and over. Some works have public prompts. Find works through new posts, rankings, tags and series, and log in to follow creators and tags. All posts are subject to our guidelines, which prohibit content suggesting the sexual exploitation of children and unauthorized use of real people.",
         )}
       </p>
       <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">

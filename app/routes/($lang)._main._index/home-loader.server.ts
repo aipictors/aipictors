@@ -99,6 +99,46 @@ const memoizeReleases = async <T>(
   return value
 }
 
+/**
+ * トップの上に出すお知らせ（サイトのお知らせ・重要なお知らせ）。全年齢と R18 のトップで共通
+ */
+export async function loadHomeReleases(nowMs: number) {
+  const [releaseList, featuredReleaseList, latestImportantRelease] =
+    await Promise.all([
+      memoizeReleases("list", () => fetchReleaseList({ limit: 4 })).catch(
+        (): MicroCmsApiReleaseResponse => ({
+          contents: [],
+          totalCount: 0,
+          offset: 0,
+          limit: 4,
+        }),
+      ),
+      memoizeReleases("featured", () => fetchFeaturedTaggedReleases()).catch(
+        (): MicroCmsApiRelease[] => [],
+      ),
+      memoizeReleases("important", () => fetchLatestImportantRelease()).catch(
+        (): MicroCmsApiRelease | null => null,
+      ),
+    ])
+
+  const safeReleaseList =
+    releaseList && Array.isArray(releaseList.contents)
+      ? { ...releaseList, contents: releaseList.contents.map(toReleaseSummary) }
+      : createEmptyReleaseList()
+
+  return {
+    releaseList: safeReleaseList,
+    featuredReleaseList: Array.isArray(featuredReleaseList)
+      ? featuredReleaseList.map(toReleaseSummary)
+      : [],
+    importantRelease:
+      latestImportantRelease &&
+      isImportantReleaseVisible(latestImportantRelease, nowMs)
+        ? toReleaseSummary(latestImportantRelease)
+        : null,
+  }
+}
+
 export async function homeLoader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const legacyTab = url.searchParams.get("tab")
@@ -180,42 +220,13 @@ export async function homeLoader(props: LoaderFunctionArgs) {
     request?.catch(() => {})
   }
 
-  const [releaseList, featuredReleaseList, latestImportantRelease] =
-    await Promise.all([
-      memoizeReleases("list", () => fetchReleaseList({ limit: 4 })).catch(
-        (): MicroCmsApiReleaseResponse => ({
-          contents: [],
-          totalCount: 0,
-          offset: 0,
-          limit: 4,
-        }),
-      ),
-      memoizeReleases("featured", () => fetchFeaturedTaggedReleases()).catch(
-        (): MicroCmsApiRelease[] => [],
-      ),
-      memoizeReleases("important", () => fetchLatestImportantRelease()).catch(
-        (): MicroCmsApiRelease | null => null,
-      ),
-    ])
-
-  const safeReleaseList =
-    releaseList && Array.isArray(releaseList.contents)
-      ? { ...releaseList, contents: releaseList.contents.map(toReleaseSummary) }
-      : createEmptyReleaseList()
+  const releases = await loadHomeReleases(now.getTime())
 
   const baseLoaderData = createBaseHomeLoaderData({
     awardDateText,
     firstTag: randomCategories[0],
     secondTag: randomCategories[1],
-    releaseList: safeReleaseList,
-    featuredReleaseList: Array.isArray(featuredReleaseList)
-      ? featuredReleaseList.map(toReleaseSummary)
-      : [],
-    importantRelease:
-      latestImportantRelease &&
-      isImportantReleaseVisible(latestImportantRelease, now.getTime())
-        ? toReleaseSummary(latestImportantRelease)
-        : null,
+    ...releases,
   })
 
   if (!isHomeRoute) {

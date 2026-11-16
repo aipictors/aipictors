@@ -6,6 +6,8 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   users: FragmentOf<typeof HomeNewPostedUsersFragment>[]
+  /** R18 のページ（リンクを /r に） */
+  isSensitive?: boolean
 }
 
 /**
@@ -23,7 +25,7 @@ export function HomeNewUsersSection(props: Props) {
         return (
           <div key={user.id} className="flex items-center space-x-2">
             <Link
-              to={`/users/${user.login}`}
+              to={`${props.isSensitive ? "/r" : ""}/users/${user.login}`}
               className="flex items-center space-x-2"
             >
               <Avatar>

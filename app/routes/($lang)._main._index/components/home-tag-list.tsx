@@ -12,6 +12,8 @@ type Props = {
   hotTags: FragmentOf<typeof HomeTagListItemFragment>[]
   themeTitle?: string
   themeEnTitle?: string | null
+  /** R18 のトップ（リンクを /r に） */
+  isSensitive?: boolean
 }
 
 /**
@@ -23,6 +25,7 @@ export function HomeTagList (props: Props) {
   const today = getJstDate()
   const t = useTranslation()
   const drag = useMouseDragScroll()
+  const prefix = props.isSensitive ? "/r" : ""
 
   return (
     <nav aria-label={t("おすすめのタグ", "Recommended tags")}>
@@ -39,7 +42,7 @@ export function HomeTagList (props: Props) {
         {props.themeTitle && (
           <li className="shrink-0 snap-start">
             <Link
-              to={`/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`}
+              to={`${prefix}/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`}
               className="flex h-10 items-center gap-1.5 rounded-full bg-linear-to-r from-violet-600 to-fuchsia-500 pr-4 pl-3 font-bold text-sm text-white shadow-sm transition-opacity hover:opacity-90"
             >
               <LightbulbIcon className="size-4 shrink-0" />
@@ -57,7 +60,7 @@ export function HomeTagList (props: Props) {
           return (
             <li className="shrink-0 snap-start" key={tag.id}>
               <Link
-                to={`/tags/${tag.name}`}
+                to={`${prefix}/tags/${tag.name}`}
                 className="flex h-10 items-center rounded-full border bg-card px-4 font-medium text-sm transition-colors hover:bg-muted"
               >
                 <span className="mr-0.5 text-muted-foreground">#</span>

@@ -25,7 +25,10 @@ import { getLocalePrefix } from "~/routes/($lang)._main._index/utils/content-rat
 /**
  * 表示の設定への近道（ぼかし・R18G・ミュート）
  */
-export function SensitiveDisplaySettings(): React.ReactNode {
+export function SensitiveDisplaySettings(props: {
+  /** タブの右に置くとき（スマホではアイコンだけ） */
+  isCompact?: boolean
+}): React.ReactNode {
   const t = useTranslation()
   const location = useLocation()
   const localePrefix = getLocalePrefix(location.pathname)
@@ -60,9 +63,20 @@ export function SensitiveDisplaySettings(): React.ReactNode {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="secondary" size="sm" className="shrink-0 gap-1.5">
+        <Button
+          variant="secondary"
+          size="sm"
+          className={
+            props.isCompact
+              ? "h-9 shrink-0 gap-1.5 rounded-full px-2.5 sm:px-3"
+              : "shrink-0 gap-1.5"
+          }
+          aria-label={t("R18 の表示設定", "R18 display settings")}
+        >
           <SlidersHorizontalIcon className="size-4" />
-          {t("表示設定", "Display")}
+          <span className={props.isCompact ? "hidden sm:inline" : undefined}>
+            {t("表示設定", "Display")}
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-72 space-y-3">

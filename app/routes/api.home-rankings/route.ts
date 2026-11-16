@@ -1,8 +1,8 @@
 /**
  * トップの「ランキング」タブの中身
- * GET /api/home-rankings?period=daily|weekly|monthly
+ * GET /api/home-rankings?period=daily|weekly|monthly（&sensitive=1 で R18 のトップ用）
  *
- * 全員同じ内容（未ログイン扱い・全年齢）なので、拠点のキャッシュに日付ごとに置いて使い回す。
+ * 全員同じ内容（未ログイン扱い・全年齢か R18 のどちらか）なので、拠点のキャッシュに日付ごとに置いて使い回す。
  * タブを開いた人ごとに system へ問い合わせないようにする（順位は 1 日 1 回しか変わらない）
  */
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -34,12 +34,14 @@ type RankingWhere = {
   weekIndex?: number
 }
 
-const toHref = (where: RankingWhere) =>
-  where.day !== undefined
-    ? `/rankings/${where.year}/${where.month}/${where.day}`
+const toHref = (where: RankingWhere, isSensitive: boolean) => {
+  const base = isSensitive ? "/r/rankings" : "/rankings"
+  return where.day !== undefined
+    ? `${base}/${where.year}/${where.month}/${where.day}`
     : where.weekIndex !== undefined
-      ? `/rankings/${where.year}/${where.month}/weeks/${where.weekIndex}`
-      : `/rankings/${where.year}/${where.month}`
+      ? `${base}/${where.year}/${where.month}/weeks/${where.weekIndex}`
+      : `${base}/${where.year}/${where.month}`
+}
 
 /** 集計前で空なら 1 つ前の期間にさかのぼる（ランキングのページと同じ） */
 const candidateWheres = (
@@ -76,20 +78,29 @@ const candidateWheres = (
   })
 }
 
-const loadRanking = async (period: HomeRankingPeriod, now: Date) => {
+const loadRanking = async (
+  period: HomeRankingPeriod,
+  now: Date,
+  isSensitive: boolean,
+) => {
   const wheres = candidateWheres(period, now)
   for (const where of wheres) {
     const result = await loaderClient.query({
       query: homeRankingQuery,
-      variables: { offset: 0, limit: HOME_RANKING_LIMIT, where },
+      variables: {
+        offset: 0,
+        limit: HOME_RANKING_LIMIT,
+        // 全年齢と R18 の集計は別（isSensitive を付けないと全年齢。全年齢の問い合わせは今までどおり）
+        where: isSensitive ? { ...where, isSensitive: true } : where,
+      },
     })
     const items = result.data?.workAwards ?? []
     if (items.length > 0 || where === wheres.at(-1)) {
-      return { period, ...where, href: toHref(where), items }
+      return { period, ...where, href: toHref(where, isSensitive), items }
     }
   }
   const last = wheres[0]
-  return { period, ...last, href: toHref(last), items: [] }
+  return { period, ...last, href: toHref(last, isSensitive), items: [] }
 }
 
 export type HomeRankingResponse = Awaited<ReturnType<typeof loadRanking>>
@@ -97,12 +108,13 @@ export type HomeRankingResponse = Awaited<ReturnType<typeof loadRanking>>
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const period = toPeriod(url.searchParams.get("period"))
+  const isSensitive = url.searchParams.get("sensitive") === "1"
   const now = getJstDate()
   const dateKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
 
   const cache = typeof caches === "undefined" ? null : caches.default
   const cacheKey = new Request(
-    `https://www.aipictors.com/__home-rankings/v1/${period}/${dateKey}`,
+    `https://www.aipictors.com/__home-rankings/v1/${isSensitive ? "r18/" : ""}${period}/${dateKey}`,
   )
   const cached = await cache?.match(cacheKey).catch(() => undefined)
   if (cached) {
@@ -113,7 +125,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   let body: HomeRankingResponse
   try {
-    body = await loadRanking(period, now)
+    body = await loadRanking(period, now, isSensitive)
   } catch {
     return new Response(JSON.stringify({ error: "failed" }), {
       status: 502,
