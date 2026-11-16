@@ -87,7 +87,7 @@ export function EventParticipantStack(props: {
             ? `＋${rest.toLocaleString()}${props.unit ?? ""}`
             : `${icons.length}${props.unit ?? ""}`}
           {props.label && (
-            <span className="ml-0.5 font-normal text-muted-foreground">
+            <span className="whitespace-pre font-normal text-muted-foreground">
               {props.label}
             </span>
           )}
@@ -425,7 +425,7 @@ export function AppEventCard(props: Props) {
                 size="md"
                 unit={t("人", "")}
                 label={
-                  isEnded ? t("が参加", "joined") : t("が参加中", "joining")
+                  isEnded ? t("が参加", " joined") : t("が参加中", " joining")
                 }
               />
             </div>
