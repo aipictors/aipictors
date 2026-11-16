@@ -10,45 +10,33 @@ import {
 import { Link } from "~/lib/app/locale-router"
 import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import {
-  ChevronDown,
-  ChevronLeft,
   ChevronRight,
-  Clock,
   Flame,
   History,
   Plus,
   Search,
   Sparkles,
+  Timer,
 } from "lucide-react"
+import { type ReactNode, useState } from "react"
 import {
-  type MouseEvent as ReactMouseEvent,
-  type ReactNode,
-  type PointerEvent as ReactPointerEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+  appFilterChipClassName,
+  appPillRowClassName,
+  appPillTabClassName,
+} from "~/components/app/app-pill-tab"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
-import { toJstWallClockUnixSeconds } from "~/utils/jst-date"
-import { getRenderNow } from "~/utils/render-now"
+import { cn } from "~/lib/utils"
 import {
   AppEventCard,
   type EventCardItem,
   isR18OnlyEvent,
-  R18_COVER_CLASS,
-  R18CoverBadge,
 } from "~/routes/($lang).events._index/components/app-event-card"
 import { createCollectionJsonLd } from "~/utils/collection-json-ld"
 import { createMeta } from "~/utils/create-meta"
-import {
-  toResizedImageSrcSet,
-  toResizedImageUrl,
-} from "~/utils/resized-image-url"
 
 type EventSortType =
   | "SCHEDULE"
@@ -57,9 +45,25 @@ type EventSortType =
   | "CLOSING_SOON"
   | "NEWEST"
 
+/** 一覧の切り替え（丸いタブ）。ALL はキーワード検索のときだけ */
+type EventStatusTab = "ONGOING" | "UPCOMING" | "ENDED" | "ALL"
+
+type EventKind = "all" | "user" | "official"
+
 const EVENTS_PAGE_LIMIT = 16
 
 const ONGOING_EVENTS_SUMMARY_LIMIT = 200
+
+const toStatusTab = (value: string | null, hasKeyword: boolean) => {
+  if (value === "ONGOING" || value === "UPCOMING" || value === "ENDED") {
+    return value
+  }
+  if (value === "ALL") {
+    return "ALL"
+  }
+  // 何も選んでいないときは開催中（検索したときはすべて）
+  return hasKeyword ? "ALL" : "ONGOING"
+}
 
 const getEventPriority = (status: string) => {
   if (status === "UPCOMING") {
@@ -135,6 +139,9 @@ const buildUserEventIconMap = async (userIds: string[]) => {
   return new Map<string, string | null>(responses)
 }
 
+/**
+ * 開催中は締切が近い順、開催予定は始まる順、終了は新しく終わった順
+ */
 const sortEventsBySchedule = (events: EventCardItem[]) => {
   return [...events].sort((a, b) => {
     const priorityDiff = getEventPriority(a.status) - getEventPriority(b.status)
@@ -147,23 +154,19 @@ const sortEventsBySchedule = (events: EventCardItem[]) => {
       return b.endAt - a.endAt
     }
 
-    return a.startAt - b.startAt
+    if (a.status === "UPCOMING") {
+      return a.startAt - b.startAt
+    }
+
+    return a.endAt - b.endAt
   })
 }
 
 const sortEvents = (events: EventCardItem[], sort: EventSortType) => {
   const copied = [...events]
 
-  if (sort === "SCHEDULE") {
-    return sortEventsBySchedule(copied)
-  }
-
   if (sort === "POPULAR") {
-    return copied.sort((a, b) => {
-      const scoreA = a.entryCount * 3 + a.participantCount * 5
-      const scoreB = b.entryCount * 3 + b.participantCount * 5
-      return scoreB - scoreA
-    })
+    return copied.sort((a, b) => getPopularity(b) - getPopularity(a))
   }
 
   if (sort === "CLOSING_SOON") {
@@ -174,34 +177,11 @@ const sortEvents = (events: EventCardItem[], sort: EventSortType) => {
     return copied.sort((a, b) => b.startAt - a.startAt)
   }
 
-  return copied.sort((a, b) => {
-    const priorityDiff = getEventPriority(a.status) - getEventPriority(b.status)
-
-    if (priorityDiff !== 0) {
-      return priorityDiff
-    }
-
-    if (a.status === "ENDED") {
-      return b.endAt - a.endAt
-    }
-
-    return a.endAt - b.endAt
-  })
+  return sortEventsBySchedule(copied)
 }
 
-const countEventsByStatus = (events: EventCardItem[]) => {
-  return {
-    ongoing: events.filter((event) => event.status === "ONGOING").length,
-    upcoming: events.filter((event) => event.status === "UPCOMING").length,
-    ended: events.filter((event) => event.status === "ENDED").length,
-  }
-}
-
-const countActiveEvents = (events: EventCardItem[]) => {
-  return events.filter(
-    (event) => event.status === "ONGOING" || event.status === "UPCOMING",
-  ).length
-}
+const getPopularity = (event: EventCardItem) =>
+  event.entryCount * 3 + event.participantCount * 5
 
 const buildOngoingEventSummary = (props: {
   officialEvents: Array<{ worksCount?: number | null }>
@@ -221,29 +201,6 @@ const buildOngoingEventSummary = (props: {
     ongoingEventCount,
     ongoingEntryCount,
   }
-}
-
-type EventListSectionProps = {
-  events: EventCardItem[]
-  /**
-   * ユーザー企画タブでは「企画を作る」の案内を出す
-   */
-  showCreateCta?: boolean
-}
-
-const ENDED_EVENTS_INITIAL_LIMIT = 6
-
-const DAY_SECONDS = 60 * 60 * 24
-
-const shuffleEvents = (events: EventCardItem[]) => {
-  const copied = [...events]
-
-  for (let i = copied.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[copied[i], copied[j]] = [copied[j], copied[i]]
-  }
-
-  return copied
 }
 
 const buildVisiblePages = (currentPage: number, hasNextPage: boolean) => {
@@ -268,480 +225,58 @@ const buildVisiblePages = (currentPage: number, hasNextPage: boolean) => {
   return [...pages].filter((page) => page >= 0).sort((a, b) => a - b)
 }
 
-function FeaturedEventRotator(props: { events: EventCardItem[] }) {
-  const t = useTranslation()
-
-  // SSR とハイドレーションで同じ表示にするため、並べ替えはマウント後に行う
-  const [shuffledEvents, setShuffledEvents] = useState(props.events)
-
-  useEffect(() => {
-    // ユーザー企画を先に見せる（それぞれの中は順番をばらす）
-    setShuffledEvents([
-      ...shuffleEvents(props.events.filter((event) => !event.isOfficial)),
-      ...shuffleEvents(props.events.filter((event) => event.isOfficial)),
-    ])
-  }, [props.events])
-
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const swipeStartXRef = useRef<number | null>(null)
-  const didSwipeRef = useRef(false)
-
-  const SWIPE_THRESHOLD = 40
-
-  useEffect(() => {
-    setCurrentIndex(0)
-  }, [shuffledEvents])
-
-  useEffect(() => {
-    if (shuffledEvents.length <= 1) {
-      return
-    }
-
-    const timer = window.setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % shuffledEvents.length)
-    }, 5000)
-
-    return () => window.clearInterval(timer)
-  }, [shuffledEvents])
-
-  if (shuffledEvents.length === 0) {
-    return null
-  }
-
-  const onPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
-    swipeStartXRef.current = event.clientX
-    didSwipeRef.current = false
-  }
-
-  const onPointerUp = (event: ReactPointerEvent<HTMLElement>) => {
-    if (shuffledEvents.length <= 1 || swipeStartXRef.current === null) {
-      swipeStartXRef.current = null
-      return
-    }
-
-    const deltaX = event.clientX - swipeStartXRef.current
-    swipeStartXRef.current = null
-
-    if (Math.abs(deltaX) < SWIPE_THRESHOLD) {
-      return
-    }
-
-    didSwipeRef.current = true
-
-    if (deltaX < 0) {
-      setCurrentIndex((prev) => (prev + 1) % shuffledEvents.length)
-      return
-    }
-
-    setCurrentIndex(
-      (prev) => (prev - 1 + shuffledEvents.length) % shuffledEvents.length,
-    )
-  }
-
-  const onPointerCancel = () => {
-    swipeStartXRef.current = null
-  }
-
-  const onClickCapture = (event: ReactMouseEvent<HTMLElement>) => {
-    if (!didSwipeRef.current) {
-      return
-    }
-
-    event.preventDefault()
-    didSwipeRef.current = false
-  }
-
-  const onClickPrev = () => {
-    setCurrentIndex(
-      (prev) => (prev - 1 + shuffledEvents.length) % shuffledEvents.length,
-    )
-  }
-
-  const onClickNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % shuffledEvents.length)
-  }
-
-  const event = shuffledEvents[currentIndex]
-
-  const hasMultiple = shuffledEvents.length > 1
-
-  const arrowClassName =
-    "absolute top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white shadow-md backdrop-blur-sm transition hover:bg-black/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-
-  return (
-    <section
-      aria-roledescription="carousel"
-      aria-label={t("注目のイベント", "Featured events")}
-      className="touch-pan-y overflow-hidden rounded-2xl border bg-card shadow-sm"
-      onPointerDown={onPointerDown}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerCancel}
-    >
-      <div className="relative md:grid md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <div className="relative">
-          <Link
-            to={`/events/${event.slug}`}
-            className="group relative block aspect-[16/9] overflow-hidden bg-black"
-            onClickCapture={onClickCapture}
-            tabIndex={-1}
-            aria-hidden="true"
-          >
-            <img
-              src={toResizedImageUrl(event.thumbnailImageUrl, 64)}
-              alt=""
-              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl"
-              aria-hidden="true"
-            />
-            {/* いちばん大きく見える画像。元画像を縮小して、JS より先に読む */}
-            <img
-              src={toResizedImageUrl(event.thumbnailImageUrl, 640)}
-              srcSet={toResizedImageSrcSet(event.thumbnailImageUrl, {
-                minWidth: 320,
-              })}
-              sizes="(min-width: 1024px) 800px, 100vw"
-              fetchPriority="high"
-              alt={event.title}
-              className={`relative h-full w-full object-contain transition duration-300 group-hover:scale-[1.02] ${
-                event.isR18Only ? R18_COVER_CLASS : ""
-              }`}
-            />
-            {event.isR18Only && <R18CoverBadge />}
-          </Link>
-          {hasMultiple && (
-            <>
-              <button
-                type="button"
-                className={`${arrowClassName} left-2`}
-                onClick={onClickPrev}
-                aria-label={t("前のイベントへ", "Previous event")}
-              >
-                <ChevronLeft className="size-5" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                className={`${arrowClassName} right-2`}
-                onClick={onClickNext}
-                aria-label={t("次のイベントへ", "Next event")}
-              >
-                <ChevronRight className="size-5" aria-hidden="true" />
-              </button>
-              <div className="-translate-x-1/2 absolute bottom-2 left-1/2 z-10 flex items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
-                {shuffledEvents.map((rotatorEvent, index) => (
-                  <button
-                    key={rotatorEvent.id}
-                    type="button"
-                    className={`h-1.5 rounded-full transition-all ${
-                      index === currentIndex
-                        ? "w-5 bg-white"
-                        : "w-1.5 bg-white/50 hover:bg-white/80"
-                    }`}
-                    aria-label={t(
-                      "{{count}}件目のイベントを表示",
-                      "Show event {{count}}",
-                    ).replace("{{count}}", String(index + 1))}
-                    aria-current={index === currentIndex ? "true" : undefined}
-                    onClick={() => setCurrentIndex(index)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-        <Link
-          to={`/events/${event.slug}`}
-          className="group flex flex-col justify-center gap-2.5 p-4 md:gap-3 md:p-6"
-          onClickCapture={onClickCapture}
-        >
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
-              <Sparkles className="size-3.5" aria-hidden="true" />
-              {t("注目", "Featured")}
-              {hasMultiple && (
-                <span className="tabular-nums">
-                  {currentIndex + 1}/{shuffledEvents.length}
-                </span>
-              )}
-            </span>
-            <span
-              className={`rounded-full px-2.5 py-0.5 font-bold text-white text-xs ${
-                event.status === "ONGOING" ? "bg-rose-600" : "bg-sky-700"
-              }`}
-            >
-              {event.status === "ONGOING"
-                ? t("開催中", "Ongoing")
-                : t("開催予定", "Upcoming")}
-            </span>
-            <span
-              className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${
-                event.isOfficial
-                  ? "border bg-background"
-                  : "bg-violet-700 text-white"
-              }`}
-            >
-              {event.isOfficial
-                ? t("公式イベント", "Official event")
-                : t("ユーザー企画", "User event")}
-            </span>
-          </div>
-          <h2 className="line-clamp-2 font-bold text-xl leading-tight md:text-2xl">
-            {event.title}
-          </h2>
-          <p className="line-clamp-2 text-muted-foreground text-sm leading-relaxed md:line-clamp-3">
-            {event.description
-              .replace(/<[^>]*>/g, " ")
-              .replace(/\s+/g, " ")
-              .trim()}
-          </p>
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="rounded-full bg-muted px-3 py-1">
-              {t("作品", "Entries")}{" "}
-              <span className="font-bold">{event.entryCount}</span>
-            </span>
-            {event.userName && (
-              <span className="truncate text-muted-foreground">
-                {t("主催", "Host")}: {event.userName}
-              </span>
-            )}
-          </div>
-          <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-[#0077d9] px-4 py-2 font-semibold text-sm text-white transition group-hover:bg-[#0068c0] dark:bg-[#0b74c9]">
-            {t("詳しく見る・参加する", "View & join")}
-            <ChevronRight className="size-4" aria-hidden="true" />
-          </span>
-        </Link>
-      </div>
-    </section>
-  )
+const STATUS_TITLES: Record<EventStatusTab, { ja: string; en: string }> = {
+  ONGOING: { ja: "開催中のイベント・企画", en: "Ongoing events" },
+  UPCOMING: { ja: "開催予定のイベント・企画", en: "Upcoming events" },
+  ENDED: { ja: "終了したイベント・企画", en: "Past events" },
+  ALL: { ja: "イベント・企画の検索結果", en: "Event search results" },
 }
 
-/**
- * 「ユーザー企画」の説明と作成への導線
- */
-function CreateEventCta(props: { compact?: boolean }) {
-  const t = useTranslation()
-
-  return (
-    <Link
-      to="/events/new"
-      className={`group flex h-full flex-col justify-center gap-2 rounded-2xl border-2 border-dashed bg-card/50 p-5 transition hover:border-[#0077d9] hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-        props.compact ? "" : "min-h-48 items-center text-center"
-      }`}
-    >
-      <span className="flex size-10 items-center justify-center rounded-full bg-[#0077d9] text-white dark:bg-[#0b74c9]">
-        <Plus className="size-5" aria-hidden="true" />
-      </span>
-      <span className="font-bold text-sm md:text-base">
-        {t("あなたも企画を作ろう", "Host your own event")}
-      </span>
-      <span className="max-w-xs text-muted-foreground text-xs leading-relaxed">
-        {t(
-          "テーマと期間を決めるだけで、だれでもイラスト企画を開けます。参加作品は企画ページにまとまり、ランキングも使えます。",
-          "Pick a theme and dates to host an art event. Entries are collected on your event page, with optional rankings.",
-        )}
-      </span>
-      <span className="font-semibold text-[#0077d9] text-sm group-hover:underline dark:text-sky-400">
-        {t("企画を作る →", "Create an event →")}
-      </span>
-    </Link>
-  )
-}
-
-function SectionHeading(props: {
-  icon: ReactNode
-  title: string
-  muted?: boolean
-  children?: ReactNode
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <h3
-        className={`flex items-center gap-1.5 font-bold text-base md:text-lg ${
-          props.muted ? "text-muted-foreground" : ""
-        }`}
-      >
-        {props.icon}
-        {props.title}
-      </h3>
-      {props.children}
-    </div>
-  )
-}
-
-function EventListSection(props: EventListSectionProps) {
-  const t = useTranslation()
-
-  const [showAllEnded, setShowAllEnded] = useState(false)
-
-  const statusCounts = countEventsByStatus(props.events)
-
-  const activeEvents = props.events.filter(
-    (event) => event.status === "ONGOING" || event.status === "UPCOMING",
-  )
-
-  const endedEvents = props.events.filter((event) => event.status === "ENDED")
-
-  const visibleEndedEvents = showAllEnded
-    ? endedEvents
-    : endedEvents.slice(0, ENDED_EVENTS_INITIAL_LIMIT)
-
-  // 開催中で残り3日以内のもの
-  const nowSeconds = toJstWallClockUnixSeconds(new Date(getRenderNow()))
-  const closingSoonCount = activeEvents.filter(
-    (event) =>
-      event.status === "ONGOING" && event.endAt - nowSeconds <= DAY_SECONDS * 3,
-  ).length
-
-  if (props.events.length === 0) {
-    return (
-      <div className="space-y-4">
-        <div className="rounded-2xl border border-dashed p-10 text-center text-muted-foreground text-sm">
-          {t(
-            "条件に一致するイベントは見つかりませんでした。別のキーワードや状態でお試しください。",
-            "No events matched your filters. Try a different keyword or status.",
-          )}
-        </div>
-        {props.showCreateCta && <CreateEventCta compact />}
-      </div>
-    )
+export const meta: MetaFunction<typeof loader> = (props) => {
+  const data = props.data
+  if (!data) {
+    return createMeta(META.EVENTS, undefined, props.params.lang)
   }
 
-  return (
-    <div className="space-y-8">
-      <section className="space-y-3">
-        <SectionHeading
-          icon={<Flame className="size-5 text-rose-600" aria-hidden="true" />}
-          title={t("開催中・開催予定", "Ongoing & upcoming")}
-        >
-          {statusCounts.ongoing > 0 && (
-            <span className="rounded-full bg-rose-600 px-2 py-0.5 font-semibold text-white text-xs">
-              {t("開催中", "Ongoing")} {statusCounts.ongoing}
-            </span>
-          )}
-          {statusCounts.upcoming > 0 && (
-            <span className="rounded-full bg-sky-700 px-2 py-0.5 font-semibold text-white text-xs">
-              {t("開催予定", "Upcoming")} {statusCounts.upcoming}
-            </span>
-          )}
-          {closingSoonCount > 0 && (
-            <span className="flex items-center gap-1 rounded-full bg-amber-700 px-2 py-0.5 font-semibold text-white text-xs">
-              <Clock className="size-3" aria-hidden="true" />
-              {t("締切間近", "Closing soon")} {closingSoonCount}
-            </span>
-          )}
-        </SectionHeading>
-        {activeEvents.length === 0 ? (
-          props.showCreateCta ? (
-            <div className="space-y-2">
-              <p className="text-muted-foreground text-sm">
-                {t(
-                  "いま開催中・開催予定の企画はありません。最初の企画を作ってみませんか？",
-                  "No ongoing or upcoming events right now. Why not host the first one?",
-                )}
-              </p>
-              <CreateEventCta compact />
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed px-4 py-6 text-center text-muted-foreground text-sm">
-              {t(
-                "いま開催中・開催予定のイベントはありません。",
-                "There are no ongoing or upcoming events right now.",
-              )}
-            </div>
-          )
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-            {activeEvents.map((appEvent) => (
-              <AppEventCard key={appEvent.id} appEvent={appEvent} />
-            ))}
-            {props.showCreateCta && <CreateEventCta />}
-          </div>
-        )}
-      </section>
-      {endedEvents.length > 0 && (
-        <section className="space-y-3">
-          <SectionHeading
-            icon={<History className="size-5" aria-hidden="true" />}
-            title={t("終了したイベント", "Past events")}
-            muted
-          >
-            <span className="rounded-full bg-muted px-2 py-0.5 font-semibold text-muted-foreground text-xs">
-              {statusCounts.ended}
-            </span>
-          </SectionHeading>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-6">
-            {visibleEndedEvents.map((appEvent) => (
-              <AppEventCard
-                key={appEvent.id}
-                appEvent={appEvent}
-                variant="compact"
-              />
-            ))}
-          </div>
-          {endedEvents.length > ENDED_EVENTS_INITIAL_LIMIT && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                variant="outline"
-                className="rounded-full px-6"
-                onClick={() => setShowAllEnded((prev) => !prev)}
-                aria-expanded={showAllEnded}
-              >
-                {showAllEnded
-                  ? t("閉じる", "Show less")
-                  : t(
-                      "もっと見る（あと{{count}}件）",
-                      "Show more ({{count}} more)",
-                    ).replace(
-                      "{{count}}",
-                      String(endedEvents.length - ENDED_EVENTS_INITIAL_LIMIT),
-                    )}
-                <ChevronDown
-                  className={`size-4 transition ${showAllEnded ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                />
-              </Button>
-            </div>
-          )}
-        </section>
-      )}
-    </div>
+  const status = data.filters.status
+  const titles = STATUS_TITLES[status]
+  const events = [...data.events]
+  const names = events
+    .slice(0, 4)
+    .map((event) => event.title)
+    .join("、")
+  const enNames = events
+    .slice(0, 4)
+    .map((event) => event.title)
+    .join(", ")
+  const cover = events.find((event) => !event.isR18Only)?.thumbnailImageUrl
+  const pageSuffix = data.page > 0 ? `（${data.page + 1}ページ）` : ""
+  const enPageSuffix = data.page > 0 ? ` (page ${data.page + 1})` : ""
+
+  return createMeta(
+    META.EVENTS_INDEX,
+    {
+      title:
+        status === "ONGOING"
+          ? `AIイラストのイベント・コンテスト一覧（開催中${data.ongoingSummary.ongoingEventCount}件）${pageSuffix}`
+          : `${titles.ja}${pageSuffix}`,
+      enTitle: `${titles.en} - AI art events & contests${enPageSuffix}`,
+      description: `Aipictors で${
+        status === "ENDED"
+          ? "過去に開催された"
+          : status === "UPCOMING"
+            ? "これから始まる"
+            : "いま参加できる"
+      }AIイラストのイベント・コンテスト・ユーザー企画。${
+        names ? `${names}など。` : ""
+      }タグを付けて投稿するだけで参加でき、ランキングや入賞作品も見られます。`,
+      enDescription: `${titles.en} on Aipictors.${
+        enNames ? ` ${enNames}.` : ""
+      } Join AI art events and contests by posting with the event tag.`,
+      url: cover ?? config.defaultOgpImageUrl,
+    },
+    props.params.lang,
   )
-}
-
-function EventCategoryTabTrigger(props: {
-  value: string
-  title: string
-  description: string
-  activeCount: number
-}) {
-  const t = useTranslation()
-
-  return (
-    <TabsTrigger
-      value={props.value}
-      className="group h-auto flex-1 rounded-xl px-3 py-2 text-left data-[state=active]:bg-background data-[state=active]:shadow-sm md:px-4 md:py-2.5"
-    >
-      <div className="flex w-full items-center justify-between gap-2">
-        <div className="min-w-0 space-y-0.5">
-          <div className="font-bold text-sm leading-tight md:text-base">
-            {props.title}
-          </div>
-          <div className="hidden truncate font-normal text-muted-foreground text-xs sm:block">
-            {props.description}
-          </div>
-        </div>
-        {props.activeCount > 0 && (
-          <div className="flex shrink-0 items-center gap-1 rounded-full bg-muted-foreground/15 px-2 py-0.5 font-semibold text-xs group-data-[state=active]:bg-rose-600 group-data-[state=active]:text-white">
-            <span className="hidden sm:inline">{t("開催", "Live")}</span>
-            {props.activeCount}
-          </div>
-        )}
-      </div>
-    </TabsTrigger>
-  )
-}
-
-export const meta: MetaFunction = (props) => {
-  return createMeta(META.EVENTS, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -754,87 +289,109 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const keyword = urlParams.get("q")?.trim() ?? ""
 
-  const status = urlParams.get("status")?.trim() ?? ""
+  const status = toStatusTab(
+    urlParams.get("status")?.trim() || null,
+    keyword.length > 0,
+  ) as EventStatusTab
 
   const ranking = urlParams.get("ranking")?.trim() ?? "ALL"
 
   const sort = (urlParams.get("sort")?.trim() ?? "SCHEDULE") as EventSortType
 
-  const tab = urlParams.get("tab") === "official" ? "official" : null
+  const tabParam = urlParams.get("tab")
+  const kind: EventKind =
+    tabParam === "official" ? "official" : tabParam === "user" ? "user" : "all"
 
-  const [resp, ongoingEventsSummaryResp] = await Promise.all([
-    loaderClient.query({
-      query: eventsQuery,
-      variables: {
-        offset: page * EVENTS_PAGE_LIMIT,
-        limit: EVENTS_PAGE_LIMIT,
-        appEventWhere: {
-          ...(keyword.length > 0 && { keyword }),
-          ...(status.length > 0 && { status }),
-        },
-        userEventWhere: {
-          ...(keyword.length > 0 && { keyword }),
-          ...(status.length > 0 && { status }),
-          ...(ranking === "RANKING" && { rankingEnabled: true }),
-          ...(ranking === "CASUAL" && { rankingEnabled: false }),
-          ...(sort !== "SCHEDULE" && { sort }),
-        },
+  const statusWhere = status === "ALL" ? {} : { status }
+
+  const resp = await loaderClient.query({
+    query: eventsQuery,
+    variables: {
+      offset: page * EVENTS_PAGE_LIMIT,
+      limit: EVENTS_PAGE_LIMIT,
+      appEventWhere: {
+        ...(keyword.length > 0 && { keyword }),
+        ...statusWhere,
       },
-    }),
-    loaderClient.query({
-      query: ongoingEventsSummaryQuery,
-      variables: {
-        offset: 0,
-        limit: ONGOING_EVENTS_SUMMARY_LIMIT,
-        appEventWhere: {
-          status: "ONGOING",
-        },
-        userEventWhere: {
-          status: "ONGOING",
-        },
+      userEventWhere: {
+        ...(keyword.length > 0 && { keyword }),
+        ...statusWhere,
+        ...(ranking === "RANKING" && { rankingEnabled: true }),
+        ...(ranking === "CASUAL" && { rankingEnabled: false }),
+        ...(sort !== "SCHEDULE" && { sort }),
       },
-    }),
+    },
+  })
+
+  // 開催中の 1 ページ目（絞り込みなし）は、いま取った一覧がそのまま開催中の全件なので数え直さない
+  const isWholeOngoingList =
+    status === "ONGOING" &&
+    page === 0 &&
+    keyword.length === 0 &&
+    ranking === "ALL" &&
+    resp.data.appEvents.length < EVENTS_PAGE_LIMIT &&
+    resp.data.userEvents.length < EVENTS_PAGE_LIMIT
+
+  const [userIconMap, ongoingEventsSummaryResp] = await Promise.all([
+    buildUserEventIconMap(
+      resp.data.userEvents.map((event: any) => event.userId).filter(Boolean),
+    ),
+    isWholeOngoingList
+      ? null
+      : loaderClient.query({
+          query: ongoingEventsSummaryQuery,
+          variables: {
+            offset: 0,
+            limit: ONGOING_EVENTS_SUMMARY_LIMIT,
+            appEventWhere: {
+              status: "ONGOING",
+            },
+            userEventWhere: {
+              status: "ONGOING",
+            },
+          },
+        }),
   ])
 
-  const userIconMap = await buildUserEventIconMap(
-    resp.data.userEvents.map((event: any) => event.userId).filter(Boolean),
+  const userEvents = resp.data.userEvents.map((event: any) =>
+    normalizeUserEvent({
+      ...event,
+      userIconUrl: event.userId
+        ? (userIconMap.get(event.userId) ?? null)
+        : null,
+    }),
   )
 
-  const userEventsWithIcons = resp.data.userEvents.map((event: any) => ({
-    ...event,
-    userIconUrl: event.userId ? (userIconMap.get(event.userId) ?? null) : null,
-  }))
+  const officialEvents = resp.data.appEvents.map(normalizeOfficialEvent)
 
-  const officialEvents = sortEvents(
-    resp.data.appEvents.map(normalizeOfficialEvent),
-    sort,
-  )
-
-  const userEvents = sortEvents(
-    userEventsWithIcons.map(normalizeUserEvent),
-    sort,
-  )
+  const events = sortEvents([...userEvents, ...officialEvents], sort)
 
   const hasNextPage =
     resp.data.appEvents.length === EVENTS_PAGE_LIMIT ||
     resp.data.userEvents.length === EVENTS_PAGE_LIMIT
 
   return {
-    officialEvents,
-    userEvents,
+    events,
     page,
     hasPreviousPage: page > 0,
     hasNextPage,
-    ongoingSummary: buildOngoingEventSummary({
-      officialEvents: ongoingEventsSummaryResp.data.appEvents,
-      userEvents: ongoingEventsSummaryResp.data.userEvents,
-    }),
+    ongoingSummary: buildOngoingEventSummary(
+      ongoingEventsSummaryResp === null
+        ? {
+            officialEvents: resp.data.appEvents,
+            userEvents: resp.data.userEvents,
+          }
+        : {
+            officialEvents: ongoingEventsSummaryResp.data.appEvents,
+            userEvents: ongoingEventsSummaryResp.data.userEvents,
+          },
+    ),
     filters: {
       keyword,
       status,
       ranking,
       sort,
-      tab,
+      kind,
     },
   }
 }
@@ -843,7 +400,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function FollowingLayout() {
+export default function EventsIndexPage() {
   const data = useLoaderData<typeof loader>()
 
   const params = useParams()
@@ -852,133 +409,186 @@ export default function FollowingLayout() {
 
   const t = useTranslation()
 
-  const formatNumberWithCommas = (value: number) => {
-    return value.toLocaleString()
-  }
+  // ユーザー企画・公式の絞り込みは画面の中だけで切り替える（ページを読み直さない）
+  const [kind, setKind] = useState<EventKind>(data.filters.kind)
 
-  const officialEvents = data.officialEvents
+  const status = data.filters.status
 
-  const userEvents = data.userEvents
-
-  const featuredEvents = [...userEvents, ...officialEvents].filter(
-    (event) => event.status === "ONGOING" || event.status === "UPCOMING",
+  const events = data.events.filter((event) =>
+    kind === "all"
+      ? true
+      : kind === "official"
+        ? event.isOfficial
+        : !event.isOfficial,
   )
 
-  // ユーザー企画を最初に見せる（無いときだけ公式）。ページを移っても選んでいたタブのまま
-  const defaultTab =
-    data.filters.tab ??
-    (userEvents.length > 0 || officialEvents.length === 0 ? "user" : "official")
+  // 開催中のいちばん盛り上がっている企画を大きく出す（並びは毎回同じ＝表示の食い違いが出ない）
+  const featuredEvent =
+    status === "ONGOING" && data.page === 0 && events.length > 1
+      ? [...events].sort((a, b) => getPopularity(b) - getPopularity(a))[0]
+      : null
 
-  const [tab, setTab] = useState(defaultTab)
+  const restEvents = featuredEvent
+    ? events.filter((event) => event !== featuredEvent)
+    : events
 
   const hasActiveFilters =
     data.filters.keyword.length > 0 ||
-    data.filters.status.length > 0 ||
     data.filters.ranking !== "ALL" ||
     data.filters.sort !== "SCHEDULE"
 
-  const buildPageHref = (page: number) => {
-    const params = new URLSearchParams()
+  const buildHref = (next: { status?: EventStatusTab; page?: number }) => {
+    const query = new URLSearchParams()
+    const nextStatus = next.status ?? status
 
     if (data.filters.keyword) {
-      params.set("q", data.filters.keyword)
+      query.set("q", data.filters.keyword)
     }
 
-    if (data.filters.status) {
-      params.set("status", data.filters.status)
+    if (nextStatus !== (data.filters.keyword ? "ALL" : "ONGOING")) {
+      query.set("status", nextStatus)
     }
 
     if (data.filters.ranking && data.filters.ranking !== "ALL") {
-      params.set("ranking", data.filters.ranking)
+      query.set("ranking", data.filters.ranking)
     }
 
     if (data.filters.sort && data.filters.sort !== "SCHEDULE") {
-      params.set("sort", data.filters.sort)
+      query.set("sort", data.filters.sort)
     }
 
-    if (tab === "official") {
-      params.set("tab", "official")
+    if (kind === "official") {
+      query.set("tab", "official")
     }
 
+    if (kind === "user") {
+      query.set("tab", "user")
+    }
+
+    const page = next.page ?? 0
     if (page > 0) {
-      params.set("page", String(page))
+      query.set("page", String(page))
     }
 
     // "." だと /events から見てトップページ（/）を指してしまう
-    const query = params.toString()
-    return query.length > 0
-      ? `${location.pathname}?${query}`
+    const search = query.toString()
+    return search.length > 0
+      ? `${location.pathname}?${search}`
       : location.pathname
   }
 
   const visiblePages = buildVisiblePages(data.page, data.hasNextPage)
 
-  if (data === null) {
-    return null
-  }
+  const statusTabs: Array<{
+    value: EventStatusTab
+    label: string
+    icon: ReactNode
+  }> = [
+    {
+      value: "ONGOING",
+      label: t("開催中", "Ongoing"),
+      icon: <Flame className="size-4" aria-hidden="true" />,
+    },
+    {
+      value: "UPCOMING",
+      label: t("もうすぐ", "Coming soon"),
+      icon: <Timer className="size-4" aria-hidden="true" />,
+    },
+    {
+      value: "ENDED",
+      label: t("終了", "Ended"),
+      icon: <History className="size-4" aria-hidden="true" />,
+    },
+  ]
+
+  const kindChips: Array<{ value: EventKind; label: string }> = [
+    { value: "all", label: t("すべて", "All") },
+    { value: "user", label: t("ユーザー企画", "User events") },
+    { value: "official", label: t("公式", "Official") },
+  ]
 
   const selectClassName =
-    "h-10 rounded-lg border bg-background px-3 py-2 text-sm"
+    "h-10 rounded-full border bg-background px-4 py-2 text-sm"
+
+  const statusTitle =
+    params.lang === "en" ? STATUS_TITLES[status].en : STATUS_TITLES[status].ja
+
+  const jsonLdPath =
+    status === "ONGOING" || status === "ALL"
+      ? "/events"
+      : `/events?status=${status}`
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:gap-5">
       <AppJsonLdScript
         jsonLd={createCollectionJsonLd({
-          name: "イベント・企画",
-          path: "/events",
+          name: t("イベント・企画", "Events"),
+          path: jsonLdPath,
           lang: params.lang,
-          items: [...userEvents, ...officialEvents].map((event) => ({
+          items: data.events.map((event) => ({
             name: event.title,
             path: `/events/${event.slug}`,
           })),
         })}
       />
-      <header className="relative overflow-hidden rounded-2xl border bg-linear-to-br from-violet-100 via-sky-50 to-rose-100 p-4 md:p-6 dark:from-violet-950/60 dark:via-sky-950/40 dark:to-rose-950/40">
+      <nav
+        aria-label={t("パンくずリスト", "Breadcrumb")}
+        className="flex items-center gap-1 text-muted-foreground text-xs"
+      >
+        <Link to="/" className="hover:text-foreground hover:underline">
+          {t("ホーム", "Home")}
+        </Link>
+        <ChevronRight className="size-3" aria-hidden="true" />
+        <span aria-current="page" className="text-foreground">
+          {t("イベント・企画", "Events")}
+        </span>
+      </nav>
+      <header className="relative overflow-hidden rounded-3xl bg-linear-to-br from-rose-500 via-fuchsia-500 to-violet-600 p-5 text-white shadow-md md:p-7">
         <div
-          className="-right-10 -top-16 pointer-events-none absolute size-48 rounded-full bg-violet-400/20 blur-3xl md:size-72"
+          className="-right-12 -top-16 pointer-events-none absolute size-56 rounded-full bg-white/20 blur-3xl md:size-80"
           aria-hidden="true"
         />
-        <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6">
-          <div className="min-w-0 space-y-1.5">
-            <h1 className="flex items-center gap-2 font-bold text-xl md:text-3xl">
-              <Sparkles
-                className="size-5 text-violet-600 md:size-7 dark:text-violet-400"
-                aria-hidden="true"
-              />
+        <div
+          className="-bottom-20 -left-10 pointer-events-none absolute size-48 rounded-full bg-amber-300/30 blur-3xl"
+          aria-hidden="true"
+        />
+        <div className="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0 space-y-2">
+            <h1 className="flex items-center gap-2 font-black text-2xl tracking-tight md:text-4xl">
+              <Sparkles className="size-6 md:size-8" aria-hidden="true" />
               {t("イベント・企画", "Events")}
             </h1>
-            <p className="max-w-2xl text-muted-foreground text-xs leading-relaxed md:text-sm">
+            <p className="max-w-2xl text-sm text-white/90 leading-relaxed">
               {t(
-                "ユーザーが主催する企画や公式イベントに、AIイラストで参加しよう。だれでも自分の企画を作れます。",
-                "Join user-hosted and official events with your AI art. Anyone can host their own event.",
+                "テーマに合わせて描いて、タグを付けて投稿するだけ。みんなの作品と並んで、ランキングや入賞を目指そう。",
+                "Create for the theme and post with the tag. Line up with everyone's art and aim for the ranking.",
               )}
             </p>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 pt-0.5 text-xs md:text-sm">
-              <span className="flex items-center gap-1.5">
-                <span className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-rose-500 opacity-60 motion-reduce:animate-none" />
-                  <span className="relative inline-flex size-2 rounded-full bg-rose-600" />
+            <div className="flex flex-wrap gap-2 pt-1 text-xs">
+              <span className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 backdrop-blur-sm">
+                <span className="relative flex size-2" aria-hidden="true">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-white opacity-75 motion-reduce:animate-none" />
+                  <span className="relative inline-flex size-2 rounded-full bg-white" />
                 </span>
                 {t("開催中", "Ongoing")}
-                <span className="font-bold">
-                  {formatNumberWithCommas(
-                    data.ongoingSummary.ongoingEventCount,
-                  )}
+                <span className="font-black text-sm tabular-nums">
+                  {data.ongoingSummary.ongoingEventCount.toLocaleString()}
                 </span>
                 {t("件", "")}
               </span>
-              <span className="text-muted-foreground">
-                {t("参加作品", "Entries")}{" "}
-                <span className="font-bold text-foreground">
-                  {formatNumberWithCommas(
-                    data.ongoingSummary.ongoingEntryCount,
-                  )}
+              <span className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 backdrop-blur-sm">
+                {t("参加作品", "Entries")}
+                <span className="font-black text-sm tabular-nums">
+                  {data.ongoingSummary.ongoingEntryCount.toLocaleString()}
                 </span>
               </span>
             </div>
           </div>
-          <div className="grid shrink-0 grid-cols-2 gap-2 md:flex">
-            <Button asChild className="rounded-full md:h-11 md:px-6">
+          <div className="flex shrink-0 gap-2">
+            <Button
+              asChild
+              className="h-11 flex-1 rounded-full bg-white px-5 font-bold text-fuchsia-700 hover:bg-white/90 md:flex-none dark:bg-white dark:text-fuchsia-700 dark:hover:bg-white/90"
+            >
               <Link to="/events/new">
                 <Plus className="size-4" aria-hidden="true" />
                 {t("企画を作る", "Host an event")}
@@ -987,156 +597,186 @@ export default function FollowingLayout() {
             <Button
               asChild
               variant="outline"
-              className="rounded-full bg-background/80 md:h-11 md:px-6"
+              className="h-11 flex-1 rounded-full border-white/60 bg-white/10 px-5 font-bold text-white hover:bg-white/20 hover:text-white md:flex-none"
             >
               <Link to="/my/events">{t("マイイベント", "My events")}</Link>
             </Button>
           </div>
         </div>
       </header>
-      <FeaturedEventRotator events={featuredEvents} />
-      <Tabs value={tab} onValueChange={setTab} className="space-y-4">
-        <TabsList className="flex h-auto w-full gap-1 rounded-2xl bg-muted p-1">
-          <EventCategoryTabTrigger
-            value="user"
-            title={t("ユーザー企画", "User events")}
-            description={t(
-              "みんなが主催している企画",
-              "Events hosted by the community",
-            )}
-            activeCount={countActiveEvents(userEvents)}
-          />
-          <EventCategoryTabTrigger
-            value="official"
-            title={t("公式イベント", "Official events")}
-            description={t(
-              "Aipictors主催のコンテスト",
-              "Contests hosted by Aipictors",
-            )}
-            activeCount={countActiveEvents(officialEvents)}
-          />
-        </TabsList>
-        <details
-          className="group rounded-2xl border bg-card"
-          open={hasActiveFilters}
+
+      <div className="space-y-2">
+        <nav
+          aria-label={t("開催状態", "Status")}
+          className={appPillRowClassName}
         >
-          <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-medium text-sm [&::-webkit-details-marker]:hidden">
-            <Search
-              className="size-4 text-muted-foreground"
-              aria-hidden="true"
-            />
-            {t("検索・絞り込み", "Search & filter")}
-            {hasActiveFilters && (
-              <span className="rounded-full bg-[#0077d9] px-2 py-0.5 text-white text-xs">
-                {t("絞り込み中", "Filtered")}
-              </span>
-            )}
-            <ChevronDown
-              className="ml-auto size-4 text-muted-foreground transition group-open:rotate-180"
-              aria-hidden="true"
-            />
-          </summary>
-          <Form
-            className="grid gap-3 border-t p-4 md:grid-cols-2 xl:grid-cols-[1fr_160px_170px_150px_auto]"
-            method="get"
-          >
-            {tab === "official" && (
-              <input type="hidden" name="tab" value="official" />
-            )}
-            <Input
-              name="q"
-              aria-label={t("イベントを検索", "Search events")}
-              defaultValue={data.filters.keyword}
-              placeholder={t(
-                "イベント名・主催者・説明・タグで検索",
-                "Search by title, host, description, or tag",
-              )}
-              className="h-10 rounded-lg"
-            />
-            <select
-              name="status"
-              aria-label={t("開催状態", "Status")}
-              defaultValue={data.filters.status}
-              className={selectClassName}
-            >
-              <option value="">{t("すべての状態", "All statuses")}</option>
-              <option value="ONGOING">{t("開催中", "Ongoing")}</option>
-              <option value="UPCOMING">{t("開催予定", "Upcoming")}</option>
-              <option value="ENDED">{t("終了", "Ended")}</option>
-            </select>
-            <select
-              name="ranking"
-              aria-label={t("ランキング条件", "Ranking type")}
-              defaultValue={data.filters.ranking}
-              className={selectClassName}
-            >
-              <option value="ALL">
-                {t("ランキング条件すべて", "All ranking types")}
-              </option>
-              <option value="RANKING">
-                {t("ランキングあり", "Ranking enabled")}
-              </option>
-              <option value="CASUAL">
-                {t("ランキングなし", "No ranking")}
-              </option>
-            </select>
-            <select
-              name="sort"
-              aria-label={t("並び順", "Sort")}
-              defaultValue={data.filters.sort}
-              className={selectClassName}
-            >
-              <option value="SCHEDULE">{t("開催順", "Schedule order")}</option>
-              <option value="ONGOING_FIRST">
-                {t("開催中優先", "Ongoing first")}
-              </option>
-              <option value="POPULAR">{t("人気順", "Popular")}</option>
-              <option value="CLOSING_SOON">
-                {t("締切が近い順", "Closing soon")}
-              </option>
-              <option value="NEWEST">{t("新着順", "Newest")}</option>
-            </select>
-            <div className="flex gap-2">
-              <Button className="w-full rounded-lg md:w-auto" type="submit">
-                {t("検索", "Search")}
-              </Button>
-              <Button
-                asChild
-                variant="secondary"
-                className="w-full rounded-lg md:w-auto"
+          {statusTabs.map((tab) => {
+            const isActive = status === tab.value
+            return (
+              <Link
+                key={tab.value}
+                to={buildHref({ status: tab.value })}
+                preventScrollReset
+                aria-current={isActive ? "page" : undefined}
+                className={cn(appPillTabClassName(isActive), "gap-1.5")}
               >
-                <a href={location.pathname}>{t("リセット", "Reset")}</a>
-              </Button>
-            </div>
-          </Form>
-        </details>
-        <TabsContent value="user" className="m-0">
-          <EventListSection events={userEvents} showCreateCta />
-        </TabsContent>
-        <TabsContent value="official" className="m-0">
-          <EventListSection events={officialEvents} />
-        </TabsContent>
-      </Tabs>
+                {tab.icon}
+                {tab.label}
+                {tab.value === "ONGOING" &&
+                  data.ongoingSummary.ongoingEventCount > 0 && (
+                    <span
+                      className={cn(
+                        "rounded-full px-1.5 font-black text-[11px] tabular-nums leading-5",
+                        isActive
+                          ? "bg-rose-500 text-white"
+                          : "bg-rose-600 text-white",
+                      )}
+                    >
+                      {data.ongoingSummary.ongoingEventCount}
+                    </span>
+                  )}
+              </Link>
+            )
+          })}
+        </nav>
+        <div className={appPillRowClassName}>
+          {kindChips.map((chip) => (
+            <button
+              key={chip.value}
+              type="button"
+              aria-pressed={kind === chip.value}
+              onClick={() => setKind(chip.value)}
+              className={cn(appFilterChipClassName(kind === chip.value), "h-9")}
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <details
+        className="group rounded-2xl border bg-card"
+        open={hasActiveFilters}
+      >
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-medium text-sm [&::-webkit-details-marker]:hidden">
+          <Search className="size-4 text-muted-foreground" aria-hidden="true" />
+          {t("イベントを探す・並べ替え", "Search & sort")}
+          {hasActiveFilters && (
+            <span className="rounded-full bg-[#0077d9] px-2 py-0.5 text-white text-xs">
+              {t("絞り込み中", "Filtered")}
+            </span>
+          )}
+          <ChevronRight
+            className="ml-auto size-4 text-muted-foreground transition group-open:rotate-90"
+            aria-hidden="true"
+          />
+        </summary>
+        <Form
+          className="grid gap-3 border-t p-4 md:grid-cols-[1fr_170px_150px_auto]"
+          method="get"
+        >
+          {status !== "ONGOING" && status !== "ALL" && (
+            <input type="hidden" name="status" value={status} />
+          )}
+          {kind !== "all" && <input type="hidden" name="tab" value={kind} />}
+          <Input
+            name="q"
+            aria-label={t("イベントを検索", "Search events")}
+            defaultValue={data.filters.keyword}
+            placeholder={t(
+              "イベント名・主催者・説明・タグで検索",
+              "Search by title, host, description, or tag",
+            )}
+            className="h-10 rounded-full px-4 text-base md:text-sm"
+          />
+          <select
+            name="ranking"
+            aria-label={t("ランキング条件", "Ranking type")}
+            defaultValue={data.filters.ranking}
+            className={selectClassName}
+          >
+            <option value="ALL">
+              {t("ランキング条件すべて", "All ranking types")}
+            </option>
+            <option value="RANKING">
+              {t("ランキングあり", "Ranking enabled")}
+            </option>
+            <option value="CASUAL">{t("ランキングなし", "No ranking")}</option>
+          </select>
+          <select
+            name="sort"
+            aria-label={t("並び順", "Sort")}
+            defaultValue={data.filters.sort}
+            className={selectClassName}
+          >
+            <option value="SCHEDULE">{t("おすすめ順", "Recommended")}</option>
+            <option value="POPULAR">{t("人気順", "Popular")}</option>
+            <option value="CLOSING_SOON">
+              {t("締切が近い順", "Closing soon")}
+            </option>
+            <option value="NEWEST">{t("新着順", "Newest")}</option>
+          </select>
+          <div className="flex gap-2">
+            <Button className="w-full rounded-full md:w-auto" type="submit">
+              {t("検索", "Search")}
+            </Button>
+            <Button
+              asChild
+              variant="secondary"
+              className="w-full rounded-full md:w-auto"
+            >
+              <a href={location.pathname}>{t("リセット", "Reset")}</a>
+            </Button>
+          </div>
+        </Form>
+      </details>
+
+      <section aria-labelledby="events-list-heading" className="space-y-4">
+        <h2 id="events-list-heading" className="font-bold text-lg md:text-xl">
+          {statusTitle}
+          {data.filters.keyword && (
+            <span className="ml-2 font-normal text-muted-foreground text-sm">
+              「{data.filters.keyword}」
+            </span>
+          )}
+        </h2>
+        {events.length === 0 ? (
+          <EmptyEvents status={status} buildHref={buildHref} />
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+            {featuredEvent && (
+              <div className="sm:col-span-2 lg:col-span-3">
+                <AppEventCard
+                  appEvent={featuredEvent}
+                  variant="featured"
+                  isEager
+                />
+              </div>
+            )}
+            {restEvents.map((appEvent, index) => (
+              <AppEventCard
+                key={`${appEvent.isOfficial ? "official" : "user"}-${appEvent.id}`}
+                appEvent={appEvent}
+                isEager={!featuredEvent && index === 0}
+              />
+            ))}
+            {status !== "ENDED" && <CreateEventCta />}
+          </div>
+        )}
+      </section>
+
       {(data.hasPreviousPage || data.hasNextPage) && (
         <nav
           aria-label={t("ページ", "Pages")}
           className="flex flex-wrap items-center justify-center gap-2 py-2"
         >
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-lg"
-            disabled={!data.hasPreviousPage}
-          >
-            <a
-              aria-disabled={!data.hasPreviousPage}
-              href={
-                data.hasPreviousPage ? buildPageHref(data.page - 1) : undefined
-              }
-            >
-              {t("前へ", "Prev")}
-            </a>
-          </Button>
+          {data.hasPreviousPage && (
+            <Button asChild variant="outline" className="rounded-full">
+              <a href={buildHref({ page: data.page - 1 })}>
+                {t("前へ", "Prev")}
+              </a>
+            </Button>
+          )}
           {visiblePages.map((page, index) => {
             const previousPage = visiblePages[index - 1]
             const shouldRenderGap =
@@ -1152,11 +792,11 @@ export default function FollowingLayout() {
                 <Button
                   asChild
                   variant={page === data.page ? "default" : "outline"}
-                  className="rounded-lg"
+                  className="size-10 rounded-full p-0"
                 >
                   <a
                     aria-current={page === data.page ? "page" : undefined}
-                    href={buildPageHref(page)}
+                    href={buildHref({ page })}
                   >
                     {page + 1}
                   </a>
@@ -1164,22 +804,80 @@ export default function FollowingLayout() {
               </div>
             )
           })}
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-lg"
-            disabled={!data.hasNextPage}
-          >
-            <a
-              aria-disabled={!data.hasNextPage}
-              href={data.hasNextPage ? buildPageHref(data.page + 1) : undefined}
-            >
-              {t("次へ", "Next")}
-            </a>
-          </Button>
+          {data.hasNextPage && (
+            <Button asChild variant="outline" className="rounded-full">
+              <a href={buildHref({ page: data.page + 1 })}>
+                {t("次へ", "Next")}
+              </a>
+            </Button>
+          )}
         </nav>
       )}
     </div>
+  )
+}
+
+function EmptyEvents(props: {
+  status: EventStatusTab
+  buildHref: (next: { status?: EventStatusTab }) => string
+}) {
+  const t = useTranslation()
+
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed px-4 py-12 text-center">
+      <p className="text-muted-foreground text-sm">
+        {props.status === "ONGOING"
+          ? t(
+              "いま開催中のイベントはありません。もうすぐ始まるイベントをのぞいてみよう。",
+              "No events are running right now. Check the upcoming ones.",
+            )
+          : t(
+              "条件に合うイベントは見つかりませんでした。",
+              "No events matched.",
+            )}
+      </p>
+      <div className="flex flex-wrap justify-center gap-2">
+        {props.status !== "UPCOMING" && (
+          <Link
+            to={props.buildHref({ status: "UPCOMING" })}
+            className={appPillTabClassName(false)}
+          >
+            {t("もうすぐ始まるイベント", "Upcoming events")}
+          </Link>
+        )}
+        <Link to="/events/new" className={appPillTabClassName(true)}>
+          <Plus className="mr-1 size-4" aria-hidden="true" />
+          {t("企画を作る", "Host an event")}
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+function CreateEventCta() {
+  const t = useTranslation()
+
+  return (
+    <Link
+      to="/events/new"
+      className="group flex h-full min-h-48 flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed bg-card/50 p-5 text-center transition hover:border-fuchsia-400 hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="flex size-11 items-center justify-center rounded-full bg-linear-to-br from-rose-500 to-violet-600 text-white">
+        <Plus className="size-5" aria-hidden="true" />
+      </span>
+      <span className="font-bold text-sm md:text-base">
+        {t("あなたも企画を作ろう", "Host your own event")}
+      </span>
+      <span className="max-w-xs text-muted-foreground text-xs leading-relaxed">
+        {t(
+          "テーマと期間を決めるだけで、だれでもイラスト企画を開けます。参加作品は企画ページにまとまり、ランキングも使えます。",
+          "Pick a theme and dates to host an art event. Entries are collected on your event page, with optional rankings.",
+        )}
+      </span>
+      <span className="font-semibold text-fuchsia-700 text-sm group-hover:underline dark:text-fuchsia-300">
+        {t("企画を作る →", "Create an event →")}
+      </span>
+    </Link>
   )
 }
 

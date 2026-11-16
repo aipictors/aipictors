@@ -1,7 +1,8 @@
 import { Link } from "~/lib/app/locale-router"
-import { CalendarDays, Clock, ImageIcon, Trophy, Users } from "lucide-react"
+import { CalendarDays, ImageIcon, Sparkles, Trophy, Users } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { useEventDateTimeText } from "~/routes/($lang).events._index/hooks/use-event-date-time-text"
 import { toJstWallClockUnixSeconds } from "~/utils/jst-date"
 import { getRenderNow } from "~/utils/render-now"
@@ -55,8 +56,11 @@ type Props = {
   appEvent: EventCardItem
   /**
    * compact: 終了したイベントなど向けの小さめ表示（スマホでは横並び）
+   * featured: 一覧の先頭の大きなカード（PC では画像と説明を横に並べる）
    */
-  variant?: "default" | "compact"
+  variant?: "default" | "compact" | "featured"
+  /** 画面の最初に見えるカードは画像を先に読む */
+  isEager?: boolean
 }
 
 const DAY_MS = 1000 * 60 * 60 * 24
@@ -107,20 +111,6 @@ export function AppEventCard(props: Props) {
 
   // 締切が近い（残り3日以内）ものは目立たせる
   const isClosingSoon = isOngoing && remainingDays <= 3
-
-  const timingLabel = isOngoing
-    ? remainingDays <= 1
-      ? t("まもなく終了", "Ending soon")
-      : t("あと{{count}}日", "{{count}} days left").replace(
-          "{{count}}",
-          remainingDays.toString(),
-        )
-    : isUpcoming
-      ? t("{{count}}日後に開始", "Starts in {{count}} days").replace(
-          "{{count}}",
-          Math.max(1, daysUntilStart).toString(),
-        )
-      : null
 
   if (props.variant === "compact") {
     return (
@@ -178,104 +168,179 @@ export function AppEventCard(props: Props) {
     )
   }
 
+  const isFeatured = props.variant === "featured"
+
+  // 残り日数は数字を大きく見せる（「あと 5 日」）
+  const countdownNumber = isOngoing
+    ? remainingDays
+    : isUpcoming
+      ? Math.max(1, daysUntilStart)
+      : null
+
   return (
     <Link
-      className="group block h-full w-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="group block h-full w-full rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       to={`/events/${appEvent.slug}`}
     >
       <article
-        className={`group-hover:-translate-y-0.5 flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition duration-200 group-hover:shadow-md ${
-          isEnded ? "opacity-80 group-hover:opacity-100" : ""
-        }`}
+        className={cn(
+          "group-hover:-translate-y-0.5 relative flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-sm transition duration-200 group-hover:shadow-lg motion-reduce:transition-none",
+          isOngoing &&
+            "border-rose-200 shadow-rose-100/60 dark:border-rose-900/70 dark:shadow-none",
+          isEnded && "opacity-85 group-hover:opacity-100",
+          isFeatured && "lg:grid lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]",
+        )}
       >
-        <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+        <div className="relative aspect-[16/9] overflow-hidden bg-muted lg:aspect-auto lg:min-h-full">
           <img
             src={toResizedImageUrl(appEvent.thumbnailImageUrl, 64)}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 h-full w-full scale-110 object-cover opacity-50 blur-xl"
+            className={cn(
+              "absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl",
+              appEvent.isR18Only && R18_COVER_CLASS,
+            )}
             loading="lazy"
             decoding="async"
           />
           <img
-            className={`relative h-full w-full object-contain transition duration-300 group-hover:scale-[1.03] ${
-              isEnded ? "grayscale-[35%]" : ""
-            } ${appEvent.isR18Only ? R18_COVER_CLASS : ""}`}
-            src={toResizedImageUrl(appEvent.thumbnailImageUrl, 480)}
+            className={cn(
+              "relative h-full w-full object-contain transition duration-500 group-hover:scale-[1.03] motion-reduce:transition-none",
+              !isFeatured && "lg:aspect-[16/9]",
+              isEnded && "grayscale-[35%]",
+              appEvent.isR18Only && R18_COVER_CLASS,
+            )}
+            src={toResizedImageUrl(
+              appEvent.thumbnailImageUrl,
+              isFeatured ? 960 : 480,
+            )}
             srcSet={toResizedImageSrcSet(appEvent.thumbnailImageUrl, {
               minWidth: 320,
             })}
-            sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
+            sizes={
+              isFeatured
+                ? "(min-width: 1024px) 720px, 100vw"
+                : "(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
+            }
             alt={appEvent.title}
-            loading="lazy"
+            loading={props.isEager ? "eager" : "lazy"}
+            fetchPriority={props.isEager ? "high" : undefined}
             decoding="async"
           />
           {appEvent.isR18Only && <R18CoverBadge />}
-          <div className="absolute top-2 left-2 flex flex-wrap gap-1.5">
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
             <span
-              className={`rounded-full px-2.5 py-0.5 font-bold text-white text-xs shadow-sm ${
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-3 py-1 font-bold text-white text-xs shadow-sm",
                 isOngoing
                   ? "bg-rose-600"
                   : isUpcoming
                     ? "bg-sky-700"
-                    : "bg-slate-600"
-              }`}
+                    : "bg-slate-600",
+              )}
             >
+              {isOngoing && (
+                <span className="relative flex size-1.5" aria-hidden="true">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-white opacity-75 motion-reduce:animate-none" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-white" />
+                </span>
+              )}
               {statusLabel}
             </span>
             <span
-              className={`rounded-full px-2.5 py-0.5 font-medium text-xs shadow-sm ${
+              className={cn(
+                "rounded-full px-3 py-1 font-bold text-xs shadow-sm",
                 appEvent.isOfficial
                   ? "bg-white/95 text-slate-900"
-                  : "bg-violet-700 text-white"
-              }`}
+                  : "bg-violet-700 text-white",
+              )}
             >
               {appEvent.isOfficial
                 ? t("公式", "Official")
                 : t("ユーザー企画", "User event")}
             </span>
           </div>
-          {timingLabel !== null && (
-            <span
-              className={`absolute right-2 bottom-2 flex items-center gap-1 rounded-full px-2.5 py-0.5 font-semibold text-white text-xs shadow-sm ${
-                isClosingSoon ? "bg-amber-700" : "bg-black/75 backdrop-blur-sm"
-              }`}
-            >
-              <Clock className="size-3" aria-hidden="true" />
-              {timingLabel}
-            </span>
-          )}
         </div>
-        <div className="flex flex-1 flex-col gap-2 p-3">
-          <h3 className="line-clamp-2 font-bold text-sm leading-snug md:text-base">
-            {appEvent.title}
-          </h3>
-          <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
-            <CalendarDays className="size-3.5 shrink-0" aria-hidden="true" />
-            <span>
-              {shortDate(startAt)} 〜 {shortDate(endAt)}
-            </span>
+        <div
+          className={cn(
+            "flex flex-1 flex-col gap-3 p-4",
+            isFeatured && "lg:justify-center lg:gap-4 lg:p-7",
+          )}
+        >
+          <div className="flex items-start gap-3">
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <h3
+                className={cn(
+                  "line-clamp-2 font-bold text-base leading-snug",
+                  isFeatured && "md:text-xl lg:text-2xl",
+                )}
+              >
+                {appEvent.title}
+              </h3>
+              <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                <CalendarDays
+                  className="size-3.5 shrink-0"
+                  aria-hidden="true"
+                />
+                <span>
+                  {shortDate(startAt)} 〜 {shortDate(endAt)}
+                </span>
+              </div>
+            </div>
+            {countdownNumber !== null && (
+              <div
+                className={cn(
+                  "flex shrink-0 flex-col items-center rounded-2xl px-3 py-1.5 text-center leading-none",
+                  isClosingSoon
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                    : isOngoing
+                      ? "bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"
+                      : "bg-sky-50 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300",
+                )}
+              >
+                <span className="font-bold text-[10px]">
+                  {isOngoing ? t("のこり", "Left") : t("開始まで", "Starts in")}
+                </span>
+                {isOngoing && remainingDays <= 0 ? (
+                  <span className="mt-1 font-black text-sm">
+                    {t("今日まで", "Today")}
+                  </span>
+                ) : (
+                  <span className="mt-0.5 font-black text-2xl tabular-nums">
+                    {countdownNumber}
+                    <span className="ml-0.5 font-bold text-[11px]">
+                      {t("日", "d")}
+                    </span>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           {plainDescription.length > 0 && (
-            <p className="line-clamp-2 text-muted-foreground text-xs leading-relaxed">
+            <p
+              className={cn(
+                "line-clamp-2 text-muted-foreground text-xs leading-relaxed",
+                isFeatured && "lg:line-clamp-3 lg:text-sm",
+              )}
+            >
               {plainDescription}
             </p>
           )}
           {appEvent.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 text-xs">
+            <div className="flex flex-wrap gap-1.5 text-xs">
               {appEvent.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="max-w-full truncate rounded-full bg-muted px-2 py-0.5"
+                  className="max-w-full truncate rounded-full bg-muted px-2.5 py-1 font-medium"
                 >
                   #{tag}
                 </span>
               ))}
             </div>
           )}
-          <div className="mt-auto flex items-center justify-between gap-2 border-t pt-2">
-            <div className="flex min-w-0 items-center gap-1.5 text-xs">
-              <Avatar className="size-5">
+          <div className="mt-auto flex items-center justify-between gap-2 border-t pt-3">
+            <div className="flex min-w-0 items-center gap-2 text-xs">
+              <Avatar className="size-6 border">
                 {appEvent.userIconUrl && (
                   <AvatarImage
                     src={withIconUrlFallback(appEvent.userIconUrl)}
@@ -286,27 +351,41 @@ export function AppEventCard(props: Props) {
                   {(appEvent.userName ?? "A").slice(0, 1)}
                 </AvatarFallback>
               </Avatar>
-              <span className="truncate">
+              <span className="truncate font-medium">
                 {appEvent.userName ?? "Aipictors"}
               </span>
             </div>
-            <div className="flex shrink-0 items-center gap-2.5 text-muted-foreground text-xs">
+            <div className="flex shrink-0 items-center gap-3 text-xs">
               <span
                 className="flex items-center gap-1"
-                title={t("作品", "Entries")}
+                title={t("参加作品", "Entries")}
               >
-                <ImageIcon className="size-3.5" aria-hidden="true" />
-                <span className="sr-only">{t("作品", "Entries")}</span>
-                {appEvent.entryCount}
+                <ImageIcon
+                  className="size-3.5 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <span className="font-bold tabular-nums">
+                  {appEvent.entryCount.toLocaleString()}
+                </span>
+                <span className="text-muted-foreground">
+                  {t("作品", "works")}
+                </span>
               </span>
-              {!appEvent.isOfficial && (
+              {!appEvent.isOfficial && appEvent.participantCount > 0 && (
                 <span
                   className="flex items-center gap-1"
                   title={t("参加者", "Participants")}
                 >
-                  <Users className="size-3.5" aria-hidden="true" />
-                  <span className="sr-only">{t("参加者", "Participants")}</span>
-                  {appEvent.participantCount}
+                  <Users
+                    className="size-3.5 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  <span className="font-bold tabular-nums">
+                    {appEvent.participantCount.toLocaleString()}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {t("人", "people")}
+                  </span>
                 </span>
               )}
               {appEvent.rankingEnabled && (
@@ -315,7 +394,7 @@ export function AppEventCard(props: Props) {
                   title={t("ランキングあり", "Ranking enabled")}
                 >
                   <Trophy
-                    className="size-3.5 text-amber-600"
+                    className="size-3.5 text-amber-500"
                     aria-hidden="true"
                   />
                   <span className="sr-only">
@@ -325,6 +404,14 @@ export function AppEventCard(props: Props) {
               )}
             </div>
           </div>
+          {isFeatured && !isEnded && (
+            <span className="hidden h-12 items-center justify-center gap-2 rounded-full bg-linear-to-r from-rose-500 via-fuchsia-500 to-violet-600 font-bold text-sm text-white shadow-md lg:flex">
+              <Sparkles className="size-4" aria-hidden="true" />
+              {isOngoing
+                ? t("見に行く・参加する", "View & join")
+                : t("詳しく見る", "See details")}
+            </span>
+          )}
         </div>
       </article>
     </Link>

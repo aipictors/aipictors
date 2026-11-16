@@ -13,9 +13,9 @@ describe("イベント一覧のページ番号", () => {
     expect(source).not.toContain(': "."')
   })
 
-  test("公式イベントのタブでページを移ってもタブを保つ", () => {
-    expect(source).toContain('params.set("tab", "official")')
-    expect(source).toContain("<Tabs value={tab} onValueChange={setTab}")
+  test("公式・開催状態の絞り込みでページを移っても絞り込みを保つ", () => {
+    expect(source).toContain('query.set("tab", "official")')
+    expect(source).toContain('query.set("status", nextStatus)')
   })
 })
 
