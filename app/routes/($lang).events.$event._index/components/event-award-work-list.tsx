@@ -1,6 +1,12 @@
+import { cn } from "~/lib/utils"
+import {
+  isMedalRank,
+  RANK_MEDAL_STYLES,
+  RankCrown,
+} from "~/components/ranking/ranking-medal"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Heart } from "lucide-react"
+import { Crown, Heart } from "lucide-react"
 import { useContext } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
@@ -67,12 +73,16 @@ export function EventAwardWorkList(props: Props) {
   return (
     <section className="relative space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="items-center space-x-2 font-bold text-md">
-          {"ランキング"}
+        <h2 className="flex items-center gap-2 font-bold text-lg md:text-xl">
+          <Crown
+            className="size-5 fill-[#F5C542] text-[#C98A0C]"
+            aria-hidden="true"
+          />
+          {t("入賞・ランキング", "Awards & ranking")}
         </h2>
         {/* 昨日の日付 // /2024/05/01 */}
         <Link to={`/events/${props.slug}/award`}>
-          <Button variant={"secondary"} size={"sm"}>
+          <Button variant={"secondary"} size={"sm"} className="rounded-full">
             {t("すべて見る", "All")}
           </Button>
         </Link>
@@ -89,13 +99,33 @@ export function EventAwardWorkList(props: Props) {
             </div>
 
             <div className="overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none]">
-              <div className="flex min-w-max gap-3 pr-3">
+              <div className="flex min-w-max items-end gap-3 pr-3">
                 {section.works.map((work, index) => (
                   <div
                     key={`${section.key}-${work.id}-${index.toString()}`}
-                    className="w-32 flex-none space-y-2 sm:w-40"
+                    className={cn(
+                      "flex-none space-y-2",
+                      isMedalRank(index + 1)
+                        ? "w-36 sm:w-48"
+                        : "w-28 self-end sm:w-36",
+                    )}
                   >
-                    <div className="relative">
+                    <div className="flex h-7 items-end justify-center">
+                      <RankCrown
+                        rank={index + 1}
+                        className={index === 0 ? "size-7" : "size-6"}
+                      />
+                    </div>
+                    <div
+                      className={cn(
+                        "relative overflow-hidden rounded-xl",
+                        isMedalRank(index + 1) &&
+                          cn(
+                            "ring-4",
+                            RANK_MEDAL_STYLES[(index + 1) as 1 | 2 | 3].ring,
+                          ),
+                      )}
+                    >
                       <CroppedWorkSquare
                         title={t.workTitle(work.title, work.enTitle)}
                         workId={work.id}

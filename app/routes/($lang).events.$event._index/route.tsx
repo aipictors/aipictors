@@ -6,27 +6,31 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
 import { Link } from "~/lib/app/locale-router"
 import { format } from "date-fns"
 import { graphql } from "gql.tada"
 import {
+  BadgeCheck,
+  BookOpen,
   CalendarDays,
   Check,
   ChevronDown,
-  Clock,
+  ChevronRight,
   Copy,
-  ImageIcon,
+  Crown,
+  Heart,
+  ListChecks,
   Pencil,
   PenLine,
   Share2,
+  Sparkles,
   Trophy,
 } from "lucide-react"
 import React, { useContext, useEffect, useId } from "react"
 import { toast } from "sonner"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Label } from "~/components/ui/label"
 import {
@@ -54,6 +58,16 @@ import {
 } from "~/routes/($lang).events.$event._index/components/event-work-list"
 import type { SortType } from "~/types/sort-type"
 import { createMeta } from "~/utils/create-meta"
+import { toJstDisplayDate } from "~/utils/to-jst-display-date"
+import type { Thing, WithContext } from "schema-dts"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import { appPillTabClassName } from "~/components/app/app-pill-tab"
+import {
+  isMedalRank,
+  RANK_MEDAL_STYLES,
+  RankCrown,
+  RankMedalBadge,
+} from "~/components/ranking/ranking-medal"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 const DEFAULT_WORK_ORDER_BY: IntrospectionEnum<"WorkOrderBy"> = "DATE_CREATED"
@@ -267,7 +281,10 @@ function EventActionShare(props: {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="lg" className="gap-2">
+        <Button
+          variant="outline"
+          className="h-11 gap-2 rounded-full border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+        >
           <Share2 className="size-4" />
           {t("共有", "Share")}
         </Button>
@@ -358,26 +375,6 @@ function CollapsibleDescription(props: { html: string }) {
   )
 }
 
-function EventFact(props: {
-  icon: React.ReactNode
-  label: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex items-start gap-3">
-      <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-foreground/70">
-        {props.icon}
-      </div>
-      <div className="min-w-0">
-        <div className="text-muted-foreground text-xs">{props.label}</div>
-        <div className="font-medium text-sm leading-relaxed">
-          {props.children}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function LinkifiedTextBlock(props: {
   text: string
   className?: string
@@ -424,25 +421,25 @@ function LinkifiedTextBlock(props: {
   )
 }
 
+// startAt / endAt は日本時間の壁時計を UTC として扱った秒。
+// toJstDisplayDate でサーバー（UTC）とブラウザ（JST）のどちらでも同じ文字にする（食い違うと #418）
+const toEventDisplayDate = (time: number) =>
+  toJstDisplayDate((time - 9 * 60 * 60) * 1000)
+
 const formatEventDateTimeText = (
   time: number,
   t: ReturnType<typeof useTranslation>,
 ) => {
-  const date = new Date(time * 1000)
-  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
+  const japanTime = toEventDisplayDate(time)
 
   return t(
-    format(japanTime, "yyyy年MM月dd日 HH時mm分"),
-    format(japanTime, "yyyy/MM/dd HH:mm"),
+    format(japanTime, "yyyy年M月d日 HH:mm"),
+    format(japanTime, "MMM d, yyyy HH:mm"),
   )
 }
 
-const formatEventMonthDayText = (time: number) => {
-  const date = new Date(time * 1000)
-  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
-
-  return format(japanTime, "MM/dd")
-}
+const formatEventYmdText = (time: number) =>
+  format(toEventDisplayDate(time), "yyyy/M/d")
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -502,26 +499,193 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneMinute,
 })
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
   if (!data) {
     return [{ title: "イベントが見つかりませんでした" }]
   }
 
-  const appEvent = (data as { appEvent: NormalizedEvent }).appEvent
+  const appEvent = data.appEvent as NormalizedEvent
 
-  const stripHtmlTags = (str: string) => {
-    return str.replace(/<[^>]*>?/gm, "")
-  }
+  const plainDescription = toPlainText(appEvent.description)
 
-  return createMeta(META.EVENTS_INDEX, {
-    title: appEvent.title,
-    description: stripHtmlTags(appEvent.description),
-    url: appEvent.thumbnailImageUrl,
-  })
+  const period = `${formatEventYmdText(appEvent.startAt)}〜${formatEventYmdText(appEvent.endAt)}`
+
+  const statusText =
+    appEvent.status === "ONGOING"
+      ? "開催中"
+      : appEvent.status === "UPCOMING"
+        ? "開催予定"
+        : "終了"
+
+  const tagText = appEvent.mainTag ? `参加タグ #${appEvent.mainTag}。` : ""
+
+  const meta = createMeta(
+    META.EVENTS_INDEX,
+    {
+      title: `${appEvent.title}（${statusText}・${period}）AIイラストイベント`,
+      enTitle: `${appEvent.title} (${period}) - AI art event`,
+      description: `【${statusText}】${period}開催のAIイラストイベント「${appEvent.title}」。${tagText}参加作品${appEvent.worksCount.toLocaleString()}件。${plainDescription}`,
+      enDescription: `AI art event "${appEvent.title}" (${period}). ${appEvent.worksCount.toLocaleString()} entries. ${plainDescription}`,
+      url: appEvent.thumbnailImageUrl || config.defaultOgpImageUrl,
+    },
+    params.lang,
+  )
+
+  return [
+    ...meta,
+    { property: "og:image:alt", content: appEvent.title },
+    { name: "twitter:image:alt", content: appEvent.title },
+  ]
+}
+
+/** HTML の説明を 1 行の文に（meta・構造化データ用） */
+const toPlainText = (html: string) =>
+  html
+    .replace(/<[^>]*>?/gm, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim()
+
+/** 日本時間の壁時計を UTC として扱った秒 → ISO 8601（+09:00） */
+const toJstIsoString = (time: number) =>
+  new Date(time * 1000).toISOString().replace(/\.\d{3}Z$/, "+09:00")
+
+type EventWork = {
+  id: string
+  title?: string | null
+  enTitle?: string | null
+  smallThumbnailImageURL?: string | null
+  largeThumbnailImageURL?: string | null
+  likesCount?: number | null
+  rating?: string | null
+  isSensitive?: boolean | null
+  user?: {
+    id: string
+    name?: string | null
+    login?: string | null
+    iconUrl?: string | null
+  } | null
+}
+
+/**
+ * 構造化データ（Event・参加作品の ItemList・パンくず）
+ */
+const createEventJsonLd = (props: {
+  event: NormalizedEvent
+  lang?: string
+}): Array<WithContext<Thing>> => {
+  const event = props.event
+  const prefix = props.lang === "en" ? "/en" : ""
+  const pageUrl = `${config.siteURL}${prefix}/events/${event.slug}`
+  const works = (event.works as EventWork[]).filter(
+    (work) => work.rating !== "R18" && work.rating !== "R18G",
+  )
+  const description = toPlainText(event.description).slice(0, 300)
+  const images = [event.headerImageUrl, event.thumbnailImageUrl].filter(
+    (url, index, list): url is string =>
+      typeof url === "string" &&
+      url.startsWith("http") &&
+      list.indexOf(url) === index,
+  )
+
+  const organizer =
+    event.eventSource === "USER" && !event.isOfficial && event.userId
+      ? {
+          "@type": "Person" as const,
+          name: event.userName ?? event.userId,
+          url: `${config.siteURL}${prefix}/users/${event.userId}`,
+        }
+      : {
+          "@type": "Organization" as const,
+          name: "Aipictors",
+          url: `${config.siteURL}${prefix || "/"}`,
+        }
+
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      name: event.title,
+      ...(description.length > 0 && { description }),
+      url: pageUrl,
+      startDate: toJstIsoString(event.startAt),
+      endDate: toJstIsoString(event.endAt),
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      location: {
+        "@type": "VirtualLocation",
+        url: pageUrl,
+      },
+      ...(images.length > 0 && { image: images }),
+      organizer,
+      isAccessibleForFree: true,
+      offers: {
+        "@type": "Offer",
+        url: pageUrl,
+        price: 0,
+        priceCurrency: "JPY",
+        availability:
+          event.status === "ENDED"
+            ? "https://schema.org/SoldOut"
+            : "https://schema.org/InStock",
+        validFrom: toJstIsoString(event.startAt),
+      },
+      ...(event.mainTag && { keywords: event.tags.join(", ") }),
+    },
+    ...(works.length > 0
+      ? [
+          {
+            "@context": "https://schema.org" as const,
+            "@type": "ItemList" as const,
+            name: `${event.title} の参加作品`,
+            numberOfItems: event.worksCount,
+            itemListElement: works.slice(0, 20).map((work, index) => ({
+              "@type": "ListItem" as const,
+              position: index + 1,
+              url: `${config.siteURL}${prefix}/posts/${work.id}`,
+              name: work.title || `${event.title} #${index + 1}`,
+              ...(work.smallThumbnailImageURL && {
+                image: work.smallThumbnailImageURL,
+              }),
+            })),
+          },
+        ]
+      : []),
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Aipictors",
+          item: `${config.siteURL}${prefix || "/"}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: props.lang === "en" ? "Events" : "イベント・企画",
+          item: `${config.siteURL}${prefix}/events`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: event.title,
+          item: pageUrl,
+        },
+      ],
+    },
+  ]
 }
 
 export default function EventDetailPage() {
   const t = useTranslation()
+  const params = useParams()
   const authContext = useContext(AuthContext)
   const data = useLoaderData<typeof loader>()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -579,6 +743,8 @@ export default function EventDetailPage() {
 
   const isEnded = event.status !== "ONGOING" && event.status !== "UPCOMING"
 
+  const isOngoing = event.status === "ONGOING"
+
   const statusText =
     event.status === "ONGOING"
       ? t("開催中", "Ongoing")
@@ -590,7 +756,7 @@ export default function EventDetailPage() {
 
   const eventTypeText =
     event.eventSource === "USER" && !event.isOfficial
-      ? t("ユーザー主催", "User-hosted")
+      ? t("ユーザー企画", "User event")
       : t("公式", "Official")
 
   const ratingBadgeText = getEventRatingBadgeText(event)
@@ -609,16 +775,81 @@ export default function EventDetailPage() {
 
   const postUrl = `/new/image?event=${event.slug}&tag=${encodeURIComponent(event.mainTag)}`
 
+  const works = event.works as EventWork[]
+
+  // 参加者のアイコン（いま読み込んだ作品の投稿者。新しい問い合わせはしない）
+  const participants = works.reduce<NonNullable<EventWork["user"]>[]>(
+    (list, work) => {
+      if (work.user && !list.some((user) => user.id === work.user?.id)) {
+        list.push(work.user)
+      }
+      return list
+    },
+    [],
+  )
+
+  // 作品がこのページに全部載っているときは数えた人数が正確
+  const participantCount =
+    event.participantCount > 0
+      ? event.participantCount
+      : event.worksCount <= works.length
+        ? participants.length
+        : 0
+
+  // 自分の参加作品（ログイン後にわかる。サーバーの描画では出さない）
+  const myWorks =
+    authContext.userId !== null && authContext.userId !== undefined
+      ? works.filter((work) => work.user?.id === authContext.userId)
+      : []
+
+  const hasJoined = myWorks.length > 0
+
+  const hasRanking = event.rankingEnabled && event.awardWorks.length > 0
+
+  // 入賞がまだ無いとき、参加作品がこのページに全部あるならいいねの多い 3 作品に冠を付ける
+  const topLikedWorks =
+    !hasRanking && data.page === 0 && event.worksCount <= works.length
+      ? [...works]
+          .filter(
+            (work) =>
+              (work.likesCount ?? 0) > 0 &&
+              work.rating !== "R18" &&
+              work.rating !== "R18G",
+          )
+          .sort((a, b) => (b.likesCount ?? 0) - (a.likesCount ?? 0))
+          .slice(0, 3)
+      : []
+
+  const pageUrl = `${config.siteURL}${params.lang === "en" ? "/en" : ""}/events/${event.slug}`
+
+  const shareText = hasJoined
+    ? t("「{{title}}」に参加しました！{{tag}}", 'I joined "{{title}}"! {{tag}}')
+        .replace("{{title}}", event.title)
+        .replace("{{tag}}", event.mainTag ? ` #${event.mainTag}` : "")
+    : isEnded
+      ? t(
+          "「{{title}}」の参加作品を見る",
+          'See the entries of "{{title}}"',
+        ).replace("{{title}}", event.title)
+      : t(
+          "AIイラスト企画「{{title}}」開催中！{{tag}} を付けて投稿すると参加できます",
+          'AI art event "{{title}}" is on! Post with {{tag}} to join',
+        )
+          .replace("{{title}}", event.title)
+          .replace("{{tag}}", event.mainTag ? `#${event.mainTag}` : "")
+
+  const xShareUrl = `https://x.com/intent/tweet?${new URLSearchParams({
+    text: shareText,
+    url: pageUrl,
+    hashtags: "Aipictors",
+  }).toString()}`
+
   const countdown = (() => {
     if (event.status === "ONGOING") {
       return {
-        main:
-          event.remainingDays <= 0
-            ? t("本日まで", "Ends today")
-            : t("残り{{count}}日", "{{count}} days left").replace(
-                "{{count}}",
-                event.remainingDays.toString(),
-              ),
+        label: t("締切まで", "Ends in"),
+        number: event.remainingDays > 0 ? event.remainingDays : null,
+        today: t("今日まで", "Ends today"),
         sub: t("{{date}} まで", "Until {{date}}").replace(
           "{{date}}",
           formatEventDateTimeText(event.endAt, t),
@@ -628,7 +859,9 @@ export default function EventDetailPage() {
     }
     if (event.status === "UPCOMING") {
       return {
-        main: t("開催前", "Upcoming"),
+        label: t("開始", "Starts"),
+        number: null,
+        today: t("もうすぐ", "Soon"),
         sub: t("{{date}} から", "From {{date}}").replace(
           "{{date}}",
           formatEventDateTimeText(event.startAt, t),
@@ -637,7 +870,9 @@ export default function EventDetailPage() {
       }
     }
     return {
-      main: t("終了しました", "This event has ended"),
+      label: t("結果", "Result"),
+      number: null,
+      today: t("終了しました", "Ended"),
       sub: t("{{date}} に終了", "Ended {{date}}").replace(
         "{{date}}",
         formatEventDateTimeText(event.endAt, t),
@@ -646,161 +881,224 @@ export default function EventDetailPage() {
     }
   })()
 
-  const hasRanking = event.rankingEnabled && event.awardWorks.length > 0
+  const workSortTabs: Array<{
+    orderBy: IntrospectionEnum<"WorkOrderBy">
+    label: string
+  }> = [
+    { orderBy: "DATE_CREATED", label: t("新着", "Newest") },
+    { orderBy: "LIKES_COUNT", label: t("人気", "Popular") },
+  ]
 
   return (
-    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 pb-8 md:px-6 xl:px-8">
-      {/* ヘッダー: 画像（文字入りの告知画像が多いので切らずに全体を見せる）＋ 要点と参加ボタン */}
-      <section className="overflow-hidden rounded-3xl border bg-card shadow-xs">
+    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-5 px-4 pb-8 md:gap-6 md:px-6 xl:px-8">
+      <AppJsonLdScript
+        jsonLd={createEventJsonLd({ event, lang: params.lang })}
+      />
+      <nav
+        aria-label={t("パンくずリスト", "Breadcrumb")}
+        className="flex min-w-0 items-center gap-1 text-muted-foreground text-xs"
+      >
+        <Link to="/" className="shrink-0 hover:text-foreground hover:underline">
+          {t("ホーム", "Home")}
+        </Link>
+        <ChevronRight className="size-3 shrink-0" aria-hidden="true" />
+        <Link
+          to="/events"
+          className="shrink-0 hover:text-foreground hover:underline"
+        >
+          {t("イベント・企画", "Events")}
+        </Link>
+        <ChevronRight className="size-3 shrink-0" aria-hidden="true" />
+        <span aria-current="page" className="truncate text-foreground">
+          {event.title}
+        </span>
+      </nav>
+
+      {/* ヒーロー: 告知画像（文字入りが多いので切らない）＋ 残り日数・参加ボタン */}
+      <section className="relative overflow-hidden rounded-3xl border bg-zinc-950 text-white shadow-lg">
+        {heroImageUrl && (
+          <img
+            src={heroImageUrl}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 size-full scale-125 object-cover opacity-50 blur-3xl"
+          />
+        )}
+        <div className="absolute inset-0 bg-linear-to-b from-black/10 via-black/30 to-black/70" />
         <div
           className={cn(
-            "grid",
-            heroImageUrl && "lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,1fr)]",
+            "relative grid",
+            heroImageUrl && "lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,1fr)]",
           )}
         >
           {heroImageUrl && (
-            <div className="relative aspect-video overflow-hidden bg-muted lg:aspect-auto lg:min-h-[400px]">
-              <img
-                src={heroImageUrl}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 size-full scale-110 object-cover opacity-60 blur-2xl"
-              />
+            <div className="relative aspect-video lg:aspect-auto lg:min-h-[440px]">
               <img
                 src={heroImageUrl}
                 alt={event.title}
-                className="relative size-full object-contain"
+                className="absolute inset-0 size-full object-contain p-0 lg:p-5"
                 fetchPriority="high"
               />
             </div>
           )}
 
-          <div className="flex flex-col gap-5 p-5 md:p-6">
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className={getStatusBadgeClassName(event.status)}>
-                  {statusText}
-                </Badge>
-                <Badge variant="outline">{eventTypeText}</Badge>
-                {ratingBadgeText && (
-                  <Badge
-                    variant="secondary"
-                    className="bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
-                  >
-                    {ratingBadgeText}
-                  </Badge>
+          <div className="flex flex-col gap-4 p-5 md:p-7">
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className={cn(
+                  "flex items-center gap-1.5 rounded-full px-3 py-1 font-bold text-xs",
+                  getStatusBadgeClassName(event.status),
                 )}
-              </div>
-              <h1 className="text-pretty font-bold text-2xl leading-tight md:text-3xl">
-                {event.title}
-              </h1>
-              {event.eventSource === "USER" && event.userId && (
-                <Link
-                  to={`/users/${event.userId}`}
-                  className="inline-flex items-center gap-2 text-sm hover:underline"
-                >
-                  <Avatar className="size-7 border">
-                    {event.userIconUrl && (
-                      <AvatarImage
-                        src={withIconUrlFallback(event.userIconUrl)}
-                        alt=""
-                      />
-                    )}
-                    <AvatarFallback>
-                      {(event.userName ?? event.userId)
-                        .slice(0, 1)
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-muted-foreground">
-                    {t("主催", "Host")}
+              >
+                {isOngoing && (
+                  <span className="relative flex size-1.5" aria-hidden="true">
+                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-white opacity-75 motion-reduce:animate-none" />
+                    <span className="relative inline-flex size-1.5 rounded-full bg-white" />
                   </span>
-                  <span className="font-medium">
-                    {event.userName ?? event.userId}
-                  </span>
-                </Link>
+                )}
+                {statusText}
+              </span>
+              <span className="rounded-full bg-white/15 px-3 py-1 font-bold text-xs backdrop-blur-sm">
+                {eventTypeText}
+              </span>
+              {ratingBadgeText && (
+                <span className="rounded-full bg-rose-500/90 px-3 py-1 font-bold text-xs">
+                  {ratingBadgeText}
+                </span>
+              )}
+              {hasJoined && (
+                <span className="flex items-center gap-1 rounded-full bg-emerald-500 px-3 py-1 font-bold text-xs shadow-md">
+                  <BadgeCheck className="size-3.5" aria-hidden="true" />
+                  {t("参加済み", "Joined")}
+                </span>
               )}
             </div>
+            <h1 className="text-pretty font-black text-2xl leading-tight tracking-tight md:text-4xl">
+              {event.title}
+            </h1>
+            {event.eventSource === "USER" && event.userId && (
+              <Link
+                to={`/users/${event.userId}`}
+                className="inline-flex w-fit items-center gap-2 text-sm hover:underline"
+              >
+                <Avatar className="size-7 border border-white/40">
+                  {event.userIconUrl && (
+                    <AvatarImage
+                      src={withIconUrlFallback(event.userIconUrl)}
+                      alt=""
+                    />
+                  )}
+                  <AvatarFallback className="text-foreground">
+                    {(event.userName ?? event.userId).slice(0, 1).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-white/70">{t("主催", "Host")}</span>
+                <span className="font-bold">
+                  {event.userName ?? event.userId}
+                </span>
+              </Link>
+            )}
 
-            {/* 残り日数がいちばん大事なので大きく */}
-            <div
-              className={cn(
-                "rounded-2xl border px-4 py-3",
-                countdown.isUrgent
-                  ? "border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/40"
-                  : "bg-muted/40",
-              )}
-            >
+            {/* 残り日数・作品数・参加者数 */}
+            <div className="grid grid-cols-3 gap-2">
               <div
                 className={cn(
-                  "flex items-center gap-2 font-bold text-xl",
-                  countdown.isUrgent && "text-amber-700 dark:text-amber-300",
+                  "col-span-1 flex flex-col justify-center rounded-2xl px-3 py-2.5",
+                  countdown.isUrgent
+                    ? "bg-amber-400 text-amber-950"
+                    : "bg-white/15 backdrop-blur-sm",
                 )}
               >
-                <Clock className="size-5" />
-                {countdown.main}
-              </div>
-              <div className="mt-1 text-muted-foreground text-sm">
-                {countdown.sub}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <EventFact
-                icon={<CalendarDays className="size-4" />}
-                label={t("開催期間", "Period")}
-              >
-                {formatEventMonthDayText(event.startAt)} 〜{" "}
-                {formatEventMonthDayText(event.endAt)}
-              </EventFact>
-              <EventFact
-                icon={<ImageIcon className="size-4" />}
-                label={t("参加作品", "Entries")}
-              >
-                {t("{{count}}作品", "{{count}} works").replace(
-                  "{{count}}",
-                  event.worksCount.toLocaleString(),
-                )}
-                {event.participantCount > 0 && (
-                  <span className="text-muted-foreground">
-                    {" "}
-                    /{" "}
-                    {t("{{count}}人", "{{count}} people").replace(
-                      "{{count}}",
-                      event.participantCount.toLocaleString(),
-                    )}
+                <span className="font-bold text-[11px] opacity-80">
+                  {countdown.label}
+                </span>
+                {countdown.number !== null ? (
+                  <span className="font-black text-3xl tabular-nums leading-tight">
+                    {countdown.number}
+                    <span className="ml-0.5 font-bold text-sm">
+                      {t("日", "d")}
+                    </span>
+                  </span>
+                ) : (
+                  <span className="font-black text-lg leading-tight">
+                    {countdown.today}
                   </span>
                 )}
-              </EventFact>
-              {event.rankingEnabled && (
-                <EventFact
-                  icon={<Trophy className="size-4" />}
-                  label={t("ランキング", "Ranking")}
-                >
-                  {event.rankingType === "LIKES"
-                    ? t("いいね数で決定", "By likes")
-                    : event.rankingType}
-                </EventFact>
-              )}
+              </div>
+              <div className="flex flex-col justify-center rounded-2xl bg-white/15 px-3 py-2.5 backdrop-blur-sm">
+                <span className="font-bold text-[11px] opacity-80">
+                  {t("参加作品", "Entries")}
+                </span>
+                <span className="font-black text-3xl tabular-nums leading-tight">
+                  {event.worksCount.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex flex-col justify-center rounded-2xl bg-white/15 px-3 py-2.5 backdrop-blur-sm">
+                <span className="font-bold text-[11px] opacity-80">
+                  {t("参加者", "Creators")}
+                </span>
+                <span className="font-black text-3xl tabular-nums leading-tight">
+                  {participantCount > 0
+                    ? participantCount.toLocaleString()
+                    : "—"}
+                </span>
+              </div>
             </div>
+            <p className="flex items-center gap-1.5 text-sm text-white/80">
+              <CalendarDays className="size-4 shrink-0" aria-hidden="true" />
+              {formatEventDateTimeText(event.startAt, t)} 〜{" "}
+              {formatEventDateTimeText(event.endAt, t)}
+            </p>
+
+            {participants.length > 0 && (
+              <a
+                href="#event-works"
+                className="flex w-fit items-center gap-3 rounded-full bg-white/10 py-1.5 pr-4 pl-1.5 backdrop-blur-sm transition hover:bg-white/20"
+              >
+                <span className="-space-x-2 flex">
+                  {participants.slice(0, 7).map((user) => (
+                    <Avatar
+                      key={user.id}
+                      className="size-8 border-2 border-zinc-900"
+                    >
+                      <AvatarImage
+                        src={withIconUrlFallback(user.iconUrl)}
+                        alt=""
+                      />
+                      <AvatarFallback className="text-[10px] text-foreground">
+                        {(user.name ?? "?").slice(0, 1)}
+                      </AvatarFallback>
+                    </Avatar>
+                  ))}
+                </span>
+                <span className="font-bold text-sm">
+                  {participantCount > 0
+                    ? (isEnded
+                        ? t("{{count}}人が参加", "{{count}} joined")
+                        : t("{{count}}人が参加中", "{{count}} joining")
+                      ).replace("{{count}}", participantCount.toLocaleString())
+                    : t("みんなが参加中", "People are joining")}
+                </span>
+              </a>
+            )}
 
             {event.tags.length > 0 && (
               <div className="space-y-1.5">
-                <div className="text-muted-foreground text-xs">
+                <div className="text-white/70 text-xs">
                   {t(
-                    "参加タグ（投稿時に付けてください）",
-                    "Entry tags (add when posting)",
+                    "参加タグ（投稿時に付けると参加できます）",
+                    "Entry tags (add when posting to join)",
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {event.tags.map((tag) => (
                     <div
                       key={tag}
-                      className="flex items-center rounded-full bg-muted"
+                      className="flex items-center rounded-full bg-white text-zinc-900"
                     >
                       <Link
                         to={`/tags/${encodeURIComponent(tag)}`}
-                        className="rounded-l-full py-1 pr-1 pl-3 font-medium text-sm transition-colors hover:bg-muted/70"
+                        className="rounded-l-full py-1.5 pr-1 pl-3.5 font-bold text-sm"
                       >
                         #{tag}
                       </Link>
@@ -811,83 +1109,204 @@ export default function EventDetailPage() {
               </div>
             )}
 
-            <div className="mt-auto flex flex-wrap gap-2 pt-1">
+            <div className="mt-auto flex flex-col gap-2 pt-1">
               {!isEnded && (
-                <Button asChild size="lg" className="flex-1 gap-2">
-                  <Link to={postUrl}>
-                    <PenLine className="size-4" />
-                    {t("このイベントに投稿する", "Post to this event")}
-                  </Link>
-                </Button>
+                <Link
+                  to={postUrl}
+                  className="flex h-14 items-center justify-center gap-2 rounded-full bg-linear-to-r from-rose-500 via-fuchsia-500 to-violet-600 whitespace-nowrap px-4 font-black text-[15px] text-white sm:text-base shadow-[0_10px_30px_-8px_rgba(217,70,239,0.7)] transition hover:brightness-110 active:scale-[0.98] motion-reduce:transition-none"
+                >
+                  <PenLine className="size-5" aria-hidden="true" />
+                  {hasJoined
+                    ? t("もう1作品投稿する", "Post another entry")
+                    : t(
+                        "このイベントに参加する（投稿する）",
+                        "Join this event (post)",
+                      )}
+                </Link>
               )}
               {isEnded && hasRanking && (
-                <Button asChild size="lg" className="flex-1 gap-2">
-                  <a href="#event-ranking">
-                    <Trophy className="size-4" />
-                    {t("結果を見る", "See results")}
-                  </a>
-                </Button>
+                <a
+                  href="#event-ranking"
+                  className="flex h-14 items-center justify-center gap-2 rounded-full bg-linear-to-r from-amber-400 to-orange-500 px-6 font-black text-base text-white shadow-md"
+                >
+                  <Trophy className="size-5" aria-hidden="true" />
+                  {t("結果を見る", "See results")}
+                </a>
               )}
-              <EventActionShare
-                slug={event.slug}
-                title={event.title}
-                announcementText={event.announcementText}
-              />
-              {isOwner && event.eventSource === "USER" && (
-                <Button asChild size="lg" variant="outline" className="gap-2">
-                  <Link to={`/events/${event.slug}/edit`}>
-                    <Pencil className="size-4" />
-                    {t("編集", "Edit")}
-                  </Link>
-                </Button>
-              )}
-              {!isOwner &&
-                event.eventSource === "USER" &&
-                authContext.isLoggedIn && (
-                  <UserEventReportDialog eventId={String(event.id)} />
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={xShareUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-black px-4 font-bold text-sm text-white ring-1 ring-white/25 transition hover:bg-zinc-800"
+                >
+                  <XLogo className="size-4" />
+                  {hasJoined
+                    ? t("参加をXで報告", "Share on X")
+                    : t("Xでシェア", "Share on X")}
+                </a>
+                <EventActionShare
+                  slug={event.slug}
+                  title={event.title}
+                  announcementText={event.announcementText}
+                />
+                {isOwner && event.eventSource === "USER" && (
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="h-11 gap-2 rounded-full border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                  >
+                    <Link to={`/events/${event.slug}/edit`}>
+                      <Pencil className="size-4" />
+                      {t("編集", "Edit")}
+                    </Link>
+                  </Button>
                 )}
+                {!isOwner &&
+                  event.eventSource === "USER" &&
+                  authContext.isLoggedIn && (
+                    <UserEventReportDialog eventId={String(event.id)} />
+                  )}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 概要・参加方法: 一覧の前に置くが、長い文は畳む */}
-      {(event.description || event.participationGuide) && (
-        <section
-          className={cn(
-            "grid gap-4",
-            event.description &&
-              event.participationGuide &&
-              "lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,1fr)]",
-          )}
-        >
-          {event.description && (
-            <div className="space-y-3 rounded-3xl border bg-card p-5 md:p-6">
-              <h2 className="font-semibold text-lg">
+      {/* 自分の参加作品（承認欲求: 自分の絵がイベントに並んでいるのを見せる） */}
+      {hasJoined && (
+        <section className="space-y-3 rounded-3xl border border-emerald-200 bg-emerald-50/70 p-4 md:p-5 dark:border-emerald-900 dark:bg-emerald-950/30">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="flex items-center gap-2 font-bold text-base md:text-lg">
+              <BadgeCheck
+                className="size-5 text-emerald-600 dark:text-emerald-400"
+                aria-hidden="true"
+              />
+              {t("あなたの参加作品", "Your entries")}
+              <span className="font-normal text-muted-foreground text-sm">
+                {myWorks.length}
+              </span>
+            </h2>
+            <a
+              href={xShareUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-9 items-center gap-1.5 rounded-full bg-black px-4 font-bold text-white text-xs"
+            >
+              <XLogo className="size-3.5" />
+              {t("参加をXで報告", "Share on X")}
+            </a>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none]">
+            {myWorks.map((work) => (
+              <Link
+                key={work.id}
+                to={`/posts/${work.id}`}
+                className="w-28 shrink-0 space-y-1 sm:w-36"
+              >
+                <div className="aspect-square overflow-hidden rounded-2xl bg-muted ring-2 ring-emerald-400">
+                  {work.smallThumbnailImageURL && (
+                    <img
+                      src={work.smallThumbnailImageURL}
+                      alt={work.title ?? ""}
+                      className={cn(
+                        "size-full object-cover",
+                        !revealSensitiveThumbnails &&
+                          isR18Work(work) &&
+                          "blur-xl",
+                      )}
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+                <p className="truncate font-bold text-xs">
+                  {t.workTitle(work.title ?? "", work.enTitle ?? "")}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 概要・参加方法・ランキング: 区切って読みやすく */}
+      {(event.description ||
+        event.participationGuide ||
+        event.rankingEnabled) && (
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,1fr)]">
+          {event.description ? (
+            <section className="space-y-3 rounded-3xl border bg-card p-5 md:p-6">
+              <h2 className="flex items-center gap-2 font-bold text-lg">
+                <span className="flex size-8 items-center justify-center rounded-full bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300">
+                  <BookOpen className="size-4" aria-hidden="true" />
+                </span>
                 {t("イベント概要", "About this event")}
               </h2>
               <CollapsibleDescription html={event.description} />
-            </div>
+            </section>
+          ) : (
+            <div className="hidden lg:block" />
           )}
-          {event.participationGuide && (
-            <div className="space-y-3 rounded-3xl border bg-card p-5 md:p-6">
-              <h2 className="font-semibold text-lg">
-                {t("参加方法", "How to join")}
-              </h2>
-              <LinkifiedTextBlock
-                text={event.participationGuide}
-                className="text-sm leading-7"
-                linkClassName="break-all font-medium text-sky-600 underline underline-offset-2 hover:text-sky-700"
-              />
-            </div>
-          )}
-        </section>
+          <div className="flex flex-col gap-4">
+            {event.participationGuide && (
+              <section className="space-y-3 rounded-3xl border bg-card p-5 md:p-6">
+                <h2 className="flex items-center gap-2 font-bold text-lg">
+                  <span className="flex size-8 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                    <ListChecks className="size-4" aria-hidden="true" />
+                  </span>
+                  {t("参加方法・ルール", "How to join & rules")}
+                </h2>
+                <LinkifiedTextBlock
+                  text={event.participationGuide}
+                  className="text-sm leading-7"
+                  linkClassName="break-all font-medium text-sky-600 underline underline-offset-2 hover:text-sky-700"
+                />
+              </section>
+            )}
+            {event.rankingEnabled && (
+              <section className="space-y-2 rounded-3xl border border-amber-200 bg-linear-to-br from-amber-50 to-orange-50 p-5 md:p-6 dark:border-amber-900 dark:from-amber-950/40 dark:to-orange-950/30">
+                <h2 className="flex items-center gap-2 font-bold text-lg">
+                  <span className="flex size-8 items-center justify-center rounded-full bg-amber-400 text-white">
+                    <Trophy className="size-4" aria-hidden="true" />
+                  </span>
+                  {t("ランキング・入賞", "Ranking & awards")}
+                </h2>
+                <p className="text-sm leading-7">
+                  {event.rankingType === "LIKES"
+                    ? t(
+                        "いいねが多い作品が上位になります。上位の作品はこのページで王冠付きで紹介されます。",
+                        "Works with the most likes rank highest, shown with crowns on this page.",
+                      )
+                    : t(
+                        "上位の作品はこのページで王冠付きで紹介されます。",
+                        "Top works are shown with crowns on this page.",
+                      )}
+                </p>
+              </section>
+            )}
+            {!event.participationGuide && event.mainTag && (
+              <section className="space-y-2 rounded-3xl border bg-card p-5 md:p-6">
+                <h2 className="flex items-center gap-2 font-bold text-lg">
+                  <span className="flex size-8 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                    <ListChecks className="size-4" aria-hidden="true" />
+                  </span>
+                  {t("参加方法", "How to join")}
+                </h2>
+                <p className="text-sm leading-7">
+                  {t(
+                    "投稿するときにタグ「#{{tag}}」を付けるだけで参加できます。",
+                    "Just add the tag #{{tag}} when you post.",
+                  ).replace("{{tag}}", event.mainTag)}
+                </p>
+              </section>
+            )}
+          </div>
+        </div>
       )}
 
       {hasRanking && (
         <div
           id="event-ranking"
-          className="scroll-mt-20 rounded-3xl border bg-card p-5 md:p-6"
+          className="scroll-mt-20 rounded-3xl border border-amber-200 bg-linear-to-b from-amber-50/80 to-card p-4 md:p-6 dark:border-amber-900/60 dark:from-amber-950/30"
         >
           <EventAwardWorkList
             works={event.awardWorks}
@@ -898,12 +1317,97 @@ export default function EventDetailPage() {
         </div>
       )}
 
+      {topLikedWorks.length > 0 && (
+        <section className="space-y-4 rounded-3xl border border-amber-200 bg-linear-to-b from-amber-50/80 to-card p-4 md:p-6 dark:border-amber-900/60 dark:from-amber-950/30">
+          <h2 className="flex items-center gap-2 font-bold text-lg md:text-xl">
+            <Crown
+              className="size-5 fill-[#F5C542] text-[#C98A0C]"
+              aria-hidden="true"
+            />
+            {t("いいねが多い参加作品", "Most liked entries")}
+          </h2>
+          <ol className="grid grid-cols-3 items-end gap-2 md:gap-4">
+            {[1, 0, 2].map((index) => {
+              const work = topLikedWorks[index]
+              if (!work) return <li key={index} />
+              const rank = index + 1
+              return (
+                <li
+                  key={work.id}
+                  className={cn(
+                    "flex min-w-0 flex-col items-center gap-1.5",
+                    rank === 1 ? "order-2" : rank === 2 ? "order-1" : "order-3",
+                  )}
+                >
+                  <RankCrown
+                    rank={rank}
+                    className={rank === 1 ? "size-8" : "size-6"}
+                  />
+                  <Link
+                    to={`/posts/${work.id}`}
+                    className={cn(
+                      "relative block w-full overflow-hidden rounded-2xl bg-muted ring-4",
+                      isMedalRank(rank) && RANK_MEDAL_STYLES[rank].ring,
+                      isMedalRank(rank) && RANK_MEDAL_STYLES[rank].glow,
+                      rank === 1 ? "aspect-[3/4]" : "aspect-square",
+                    )}
+                  >
+                    {work.smallThumbnailImageURL && (
+                      <img
+                        src={
+                          work.largeThumbnailImageURL ??
+                          work.smallThumbnailImageURL
+                        }
+                        alt={t.workTitle(work.title ?? "", work.enTitle ?? "")}
+                        className="size-full object-cover"
+                        loading="lazy"
+                      />
+                    )}
+                    <RankMedalBadge
+                      rank={rank}
+                      className="absolute top-1.5 left-1.5"
+                    />
+                  </Link>
+                  <p className="w-full truncate text-center font-bold text-xs md:text-sm">
+                    {t.workTitle(work.title ?? "", work.enTitle ?? "")}
+                  </p>
+                  {work.user && (
+                    <Link
+                      to={`/users/${work.user.login ?? work.user.id}`}
+                      className="flex max-w-full items-center gap-1 text-muted-foreground text-xs"
+                    >
+                      <Avatar className="size-5">
+                        <AvatarImage
+                          src={withIconUrlFallback(work.user.iconUrl)}
+                          alt=""
+                        />
+                        <AvatarFallback className="text-[9px]">
+                          {(work.user.name ?? "?").slice(0, 1)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="truncate">{work.user.name}</span>
+                    </Link>
+                  )}
+                  <span className="flex items-center gap-1 font-bold text-rose-600 text-xs dark:text-rose-400">
+                    <Heart
+                      className="size-3.5 fill-current"
+                      aria-hidden="true"
+                    />
+                    {(work.likesCount ?? 0).toLocaleString()}
+                  </span>
+                </li>
+              )
+            })}
+          </ol>
+        </section>
+      )}
+
       <section
         id="event-works"
         className="scroll-mt-20 space-y-4 rounded-3xl border bg-card p-4 md:p-6"
       >
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="font-semibold text-xl md:text-2xl">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-bold text-xl md:text-2xl">
             {t("参加作品", "Entries")}
             <span className="ml-2 font-normal text-base text-muted-foreground">
               {t("{{count}}件", "{{count}}").replace(
@@ -926,16 +1430,15 @@ export default function EventDetailPage() {
               {isEnded
                 ? t("参加作品はありませんでした", "There were no entries")
                 : t(
-                    "まだ参加作品がありません。最初の1作品を投稿してみませんか？",
+                    "まだ参加作品がありません。最初の1作品を投稿して一番乗りしよう！",
                     "No entries yet. Be the first to post!",
                   )}
             </p>
             {!isEnded && (
-              <Button asChild>
-                <Link to={postUrl}>
-                  {t("このイベントに投稿する", "Post to this event")}
-                </Link>
-              </Button>
+              <Link to={postUrl} className={appPillTabClassName(true)}>
+                <PenLine className="mr-1.5 size-4" aria-hidden="true" />
+                {t("このイベントに参加する", "Join this event")}
+              </Link>
             )}
           </div>
         ) : (
@@ -951,6 +1454,7 @@ export default function EventDetailPage() {
             rating={rating}
             sumWorksCount={event.worksCount}
             sortVariant="chips"
+            chipSortTypes={workSortTabs}
             onChangeOrderBy={(orderBy) =>
               updateWorkParams({
                 WorkOrderby: orderBy,
@@ -993,27 +1497,44 @@ export default function EventDetailPage() {
 
       {/* 一覧を見終わったあとにも参加ボタン */}
       {!isEnded && event.works.length > 0 && (
-        <section className="flex flex-col items-center gap-3 rounded-3xl border bg-card px-5 py-8 text-center">
-          <p className="font-semibold text-lg">
-            {t("あなたも参加してみませんか？", "Want to join in?")}
-          </p>
+        <section className="relative flex flex-col items-center gap-3 overflow-hidden rounded-3xl bg-linear-to-br from-rose-500 via-fuchsia-500 to-violet-600 px-5 py-9 text-center text-white">
+          <Sparkles className="size-7" aria-hidden="true" />
+          <h2 className="font-black text-xl">
+            {hasJoined
+              ? t("もう1作品、参加してみよう", "Post one more entry")
+              : t("あなたの作品もここに並べよう", "Put your art here too")}
+          </h2>
           {event.mainTag && (
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-white/90">
               {t(
                 "投稿時にタグ「#{{tag}}」を付けると参加できます",
                 "Add the tag #{{tag}} when posting to join",
               ).replace("{{tag}}", event.mainTag)}
             </p>
           )}
-          <Button asChild size="lg" className="gap-2">
-            <Link to={postUrl}>
-              <PenLine className="size-4" />
-              {t("このイベントに投稿する", "Post to this event")}
-            </Link>
-          </Button>
+          <Link
+            to={postUrl}
+            className="flex h-12 items-center gap-2 rounded-full bg-white px-7 font-black text-fuchsia-700 shadow-md transition hover:bg-white/90"
+          >
+            <PenLine className="size-4" aria-hidden="true" />
+            {t("このイベントに参加する（投稿する）", "Join this event (post)")}
+          </Link>
         </section>
       )}
     </div>
+  )
+}
+
+function XLogo(props: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={props.className}
+      fill="currentColor"
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
   )
 }
 

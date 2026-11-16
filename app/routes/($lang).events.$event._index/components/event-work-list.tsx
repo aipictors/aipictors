@@ -5,6 +5,10 @@ import { ArrowDown, ArrowUp } from "lucide-react"
 import { type ReactNode, useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
+  appPillRowClassName,
+  appPillTabClassName,
+} from "~/components/app/app-pill-tab"
+import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
@@ -52,6 +56,11 @@ type Props = {
   onChangeOrderBy?: (orderBy: IntrospectionEnum<"WorkOrderBy">) => void
   /** 並び替えの右側に置く要素（モザイク切り替えなど） */
   toolbarEnd?: ReactNode
+  /** チップで出す並び順（省略時は新着・いいね・ブックマーク・閲覧数・コメント） */
+  chipSortTypes?: {
+    orderBy: IntrospectionEnum<"WorkOrderBy">
+    label: string
+  }[]
 }
 
 /**
@@ -94,7 +103,7 @@ export function EventWorkList(props: Props) {
   const chipSortTypes: {
     orderBy: IntrospectionEnum<"WorkOrderBy">
     label: string
-  }[] = [
+  }[] = props.chipSortTypes ?? [
     { orderBy: "DATE_CREATED", label: t("新着", "Newest") },
     { orderBy: "LIKES_COUNT", label: t("いいね", "Likes") },
     { orderBy: "BOOKMARKS_COUNT", label: t("ブックマーク", "Bookmarks") },
@@ -106,7 +115,7 @@ export function EventWorkList(props: Props) {
     <div className="space-y-5">
       {!props.isHideSortableSetting && props.sortVariant === "chips" && (
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+          <div className={appPillRowClassName}>
             {chipSortTypes.map((item) => {
               const isActive = props.orderBy === item.orderBy
               return (
@@ -121,12 +130,7 @@ export function EventWorkList(props: Props) {
                     }
                     props.onChangeOrderBy?.(item.orderBy)
                   }}
-                  className={cn(
-                    "inline-flex shrink-0 items-center gap-1 rounded-full border px-3.5 py-1.5 font-medium text-sm transition-colors",
-                    isActive
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border bg-background text-foreground/80 hover:bg-muted",
-                  )}
+                  className={cn(appPillTabClassName(isActive), "gap-1")}
                 >
                   {item.label}
                   {isActive &&
@@ -182,32 +186,34 @@ export function EventWorkList(props: Props) {
         isShowProfile={true}
         shouldMaskSensitiveWorks={!props.revealSensitiveThumbnails}
       />
-      <div className="h-8" />
-      <div className="-translate-x-1/2 fixed bottom-[var(--aip-tabbar-h,0px)] left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
-        <ResponsivePagination
-          maxCount={Number(props.maxCount)}
-          perPage={64}
-          currentPage={props.page}
-          onPageChange={(page: number) => {
-            const params = new URLSearchParams()
-            params.set("page", String(page))
-            params.set("WorkOrderby", props.orderBy)
-            params.set("worksOrderDeskAsc", props.sort)
+      {/* 1 ページに収まるときは出さない（下に固定すると作品に重なっていた） */}
+      {Number(props.maxCount) > 64 && (
+        <div className="pt-2">
+          <ResponsivePagination
+            maxCount={Number(props.maxCount)}
+            perPage={64}
+            currentPage={props.page}
+            onPageChange={(page: number) => {
+              const params = new URLSearchParams()
+              params.set("page", String(page))
+              params.set("WorkOrderby", props.orderBy)
+              params.set("worksOrderDeskAsc", props.sort)
 
-            if (props.workType) {
-              params.set("workType", props.workType)
-            }
+              if (props.workType) {
+                params.set("workType", props.workType)
+              }
 
-            if (props.rating) {
-              params.set("rating", props.rating)
-            }
+              if (props.rating) {
+                params.set("rating", props.rating)
+              }
 
-            // チップ表示のページでは作品一覧の先頭に戻す（ヘッダー画像まで戻らない）
-            const hash = props.sortVariant === "chips" ? "#event-works" : ""
-            navigate(`/events/${props.slug}?${params.toString()}${hash}`)
-          }}
-        />
-      </div>
+              // チップ表示のページでは作品一覧の先頭に戻す（ヘッダー画像まで戻らない）
+              const hash = props.sortVariant === "chips" ? "#event-works" : ""
+              navigate(`/events/${props.slug}?${params.toString()}${hash}`)
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }
