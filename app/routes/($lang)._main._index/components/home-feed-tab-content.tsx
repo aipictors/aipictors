@@ -102,15 +102,7 @@ export function HomeFeedTabContent(
               updateHomeSectionWorks("recommended", works)
             }
           />
-          {/* 週替わりのピックアップモデル（みんなのモデルの看板） */}
-          <UserModelPickupBanner />
-          {/* タグごとの作品（今日のお題・人気タグ）。画面に近づいてから読む */}
-          <div style={offscreenSectionStyle(900)}>
-            <HomeDeferredSection fallback={<HomeTagWorksPlaceholder />}>
-              <HomeTagWorksSection />
-            </HomeDeferredSection>
-          </div>
-          {/* ログインしている人だけ（未ログインでは中身が取れず、見出しだけ出ていた） */}
+          {/* 作品を選んで無料生成（生成への入口なので推薦のすぐ下。ログインしている人だけ: 未ログインでは中身が取れず、見出しだけ出ていた） */}
           {authContext.isLoggedIn && (
             <div style={offscreenSectionStyle(1000)}>
               <HomeDeferredSection
@@ -134,6 +126,14 @@ export function HomeFeedTabContent(
               </HomeDeferredSection>
             </div>
           )}
+          {/* 週替わりのピックアップモデル（みんなのモデルの看板） */}
+          <UserModelPickupBanner />
+          {/* タグごとの作品（今日のお題・人気タグ）。画面に近づいてから読む */}
+          <div style={offscreenSectionStyle(900)}>
+            <HomeDeferredSection fallback={<HomeTagWorksPlaceholder />}>
+              <HomeTagWorksSection />
+            </HomeDeferredSection>
+          </div>
         </div>
         {/* 右カラム（スクロールしても見えるように固定）。PC だけ新しいユーザー・コメント・人気タグも */}
         <HomeSidebar {...sidebar} recommendedTags={data.recommendedTags} />
