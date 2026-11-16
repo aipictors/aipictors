@@ -21,6 +21,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible"
+import { PostFormCharCount } from "~/routes/($lang)._main.new.image/components/post-form-char-count"
 
 // 画像URLのキャッシュ（メモリ内）
 const imageUrlCache = new Map<string, string>()
@@ -335,6 +336,7 @@ export function PostFormItemTitleCaption (props: Props) {
               "border-gray-300": !isTitleFilled,
             })}
           />
+          <PostFormCharCount value={localTitle} max={120} />
         </div>
 
         {/* キャプション入力欄 */}
@@ -356,6 +358,7 @@ export function PostFormItemTitleCaption (props: Props) {
               "border-gray-300": !isCaptionFilled,
             })}
           />
+          <PostFormCharCount value={localCaption} max={3000} />
         </div>
       </CardContent>
     </Card>

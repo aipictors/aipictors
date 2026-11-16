@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { Card, CardContent } from "~/components/ui/card"
+import { PostFormCharCount } from "~/routes/($lang)._main.new.image/components/post-form-char-count"
 
 type Props = {
   label?: string
@@ -61,6 +62,7 @@ export function PostFormItemCaption (props: Props) {
             isFilled ? "border-green-500" : "border-gray-300"
           }`}
         />
+        <PostFormCharCount value={localCaption} max={3000} />
       </CardContent>
     </Card>
   )

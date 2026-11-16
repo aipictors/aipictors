@@ -17,6 +17,17 @@ import {
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog"
 import { Button } from "~/components/ui/button"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
@@ -541,17 +552,39 @@ export default function NewImage() {
           isAdvancedCollapsed
         />
         <div className="flex justify-end">
-          <Button
-            variant="ghost"
-            size="sm"
-            type="button"
-            disabled={state.progress !== 0}
-            onClick={() => {
-              void onResetAllInputs()
-            }}
-          >
-            {t("入力を全てリセット", "Reset all inputs")}
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button"
+                disabled={state.progress !== 0}
+              >
+                {t("入力を全てリセット", "Reset all inputs")}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("確認", "Confirm")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t(
+                    "入力した内容と一時保存のデータがすべて消えます。本当にリセットしますか？",
+                    "All inputs and saved draft data will be cleared. Reset anyway?",
+                  )}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("キャンセル", "Cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    void onResetAllInputs()
+                  }}
+                >
+                  {t("リセット", "Reset")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
         <PostFormSubmitBar
           requirements={[

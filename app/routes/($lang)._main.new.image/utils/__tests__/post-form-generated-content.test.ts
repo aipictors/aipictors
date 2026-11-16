@@ -18,15 +18,18 @@ describe("pickGeneratedTagsToAdd", () => {
     ).toEqual({ tags: ["a"], isLimitReached: false })
   })
 
-  test("10 個までで止める", () => {
+  test("20 個までで止める", () => {
     expect(
-      pickGeneratedTagsToAdd({ tags: ["a", "b", "c"], currentTags: tagsOf(8) }),
+      pickGeneratedTagsToAdd({
+        tags: ["a", "b", "c"],
+        currentTags: tagsOf(18),
+      }),
     ).toEqual({ tags: ["a", "b"], isLimitReached: true })
   })
 
-  test("ちょうど 10 個になったときも上限に達した扱いになる", () => {
+  test("ちょうど 20 個になったときも上限に達した扱いになる", () => {
     expect(
-      pickGeneratedTagsToAdd({ tags: ["a"], currentTags: tagsOf(9) }),
+      pickGeneratedTagsToAdd({ tags: ["a"], currentTags: tagsOf(19) }),
     ).toEqual({ tags: ["a"], isLimitReached: true })
   })
 })

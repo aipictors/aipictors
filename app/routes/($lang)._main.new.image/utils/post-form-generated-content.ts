@@ -12,7 +12,8 @@ export type PostFormGeneratedContent = {
   tagsEn?: string[]
 }
 
-const MAX_TAGS = 10
+/** 1 作品に付けられるタグの数 */
+export const MAX_POST_TAGS = 20
 
 /**
  * 追加するタグを選ぶ（上限まで。今あるタグと同じものは除く）
@@ -25,7 +26,7 @@ export const pickGeneratedTagsToAdd = (props: {
   const added: string[] = []
 
   for (const tag of props.tags) {
-    if (tag.trim() !== "" && currentTagCount + added.length < MAX_TAGS) {
+    if (tag.trim() !== "" && currentTagCount + added.length < MAX_POST_TAGS) {
       // 重複チェック: 既存のタグと重複しないかを確認
       const isDuplicate = props.currentTags.some(
         (existingTag) =>
@@ -40,7 +41,7 @@ export const pickGeneratedTagsToAdd = (props: {
 
   return {
     tags: added,
-    isLimitReached: currentTagCount + added.length >= MAX_TAGS,
+    isLimitReached: currentTagCount + added.length >= MAX_POST_TAGS,
   }
 }
 
@@ -64,7 +65,7 @@ const addGeneratedTags = (props: {
   // 上限に達した場合はユーザーに通知
   if (picked.isLimitReached) {
     toast.warning(
-      "タグの上限は10個までです。一部のタグが追加されませんでした。",
+      `タグの上限は${MAX_POST_TAGS}個までです。一部のタグが追加されませんでした。`,
     )
   }
 }
@@ -111,7 +112,7 @@ export const applyGeneratedContentToPostForm = (props: {
     })
   }
 
-  // タグが設定されている場合はタグを追加（上限10個まで）
+  // タグが設定されている場合はタグを追加（上限まで）
   if (data.tags && data.tags.length > 0) {
     addGeneratedTags({
       tags: data.tags,
@@ -120,7 +121,7 @@ export const applyGeneratedContentToPostForm = (props: {
     })
   }
 
-  // 英語タグが設定されている場合は英語タグを追加（上限10個まで）
+  // 英語タグが設定されている場合は英語タグを追加（上限まで）
   if (data.tagsEn && data.tagsEn.length > 0) {
     addGeneratedTags({
       tags: data.tagsEn,

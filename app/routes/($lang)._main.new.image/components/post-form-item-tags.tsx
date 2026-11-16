@@ -20,6 +20,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible"
+import { MAX_POST_TAGS } from "~/routes/($lang)._main.new.image/utils/post-form-generated-content"
 
 type Props = {
   /** タグ入力欄に初めて触れたときに候補を読み込む */
@@ -201,7 +202,7 @@ export function PostFormItemTags (props: Props) {
           size={"sm"}
           variant={"secondary"}
           onClick={() => {
-            if (props.tags.length >= 10) {
+            if (props.tags.length >= MAX_POST_TAGS) {
               return
             }
             props.onAddTag({
@@ -288,8 +289,8 @@ export function PostFormItemTags (props: Props) {
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-bold text-sm">
             {t(
-              `タグ (${props.tags.length}/10)`,
-              `Tags (${props.tags.length}/10)`,
+              `タグ (${props.tags.length}/${MAX_POST_TAGS})`,
+              `Tags (${props.tags.length}/${MAX_POST_TAGS})`,
             )}
           </p>
           <div className="flex flex-wrap items-center gap-2">
@@ -334,7 +335,7 @@ export function PostFormItemTags (props: Props) {
         <TagInput
           placeholder={t("タグを追加してください", "Add tags")}
           tags={props.tags}
-          maxTags={10}
+          maxTags={MAX_POST_TAGS}
           maxLength={160}
           onFocus={props.onTagInputFocus}
           onTagAdd={handleTagAdd}
@@ -342,7 +343,10 @@ export function PostFormItemTags (props: Props) {
           setTags={() => {}}
           autocompleteOptions={formattedWhiteListTags}
           enableAutocomplete={true}
-          placeholderWhenFull={t("タグは10個までです", "Up to 10 tags allowed")}
+          placeholderWhenFull={t(
+            `タグは${MAX_POST_TAGS}個までです`,
+            `Up to ${MAX_POST_TAGS} tags allowed`,
+          )}
         />
         {suggestions.recentlyUsedTags.length !== 0 && (
           <div className="space-y-2 pt-2">

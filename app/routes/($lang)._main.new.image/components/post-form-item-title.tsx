@@ -3,6 +3,7 @@ import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { useState, useEffect, useRef } from "react"
+import { PostFormCharCount } from "~/routes/($lang)._main.new.image/components/post-form-char-count"
 
 type Props = {
   label?: string
@@ -72,6 +73,7 @@ export function PostFormItemTitle (props: Props) {
             "border-gray-300": !isFilled,
           })}
         />
+        <PostFormCharCount value={localValue} max={120} />
       </CardContent>
     </Card>
   )
