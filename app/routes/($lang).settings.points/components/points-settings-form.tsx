@@ -22,6 +22,7 @@ import {
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
 import { PREMIUM_COIN_CONFIRM_STORAGE_KEY } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
+import { PremiumCoinGenerationSetting } from "~/routes/($lang).settings/components/premium-coin-generation-setting"
 import { PremiumCoinSupportSetting } from "~/routes/($lang).settings/components/premium-coin-support-setting"
 import { CoinBalanceCard } from "~/routes/($lang).settings.points/components/coin-balance-card"
 import { CoinExpiryTab } from "~/routes/($lang).settings.points/components/coin-expiry-tab"
@@ -471,6 +472,8 @@ export function PointsSettingsForm() {
         isPremiumCoinConfirmEnabled={isPremiumCoinConfirmEnabled}
         onPremiumCoinConfirmChange={setIsPremiumCoinConfirmEnabled}
       />
+
+      <PremiumCoinGenerationSetting />
 
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="grid h-11 w-full grid-cols-4">

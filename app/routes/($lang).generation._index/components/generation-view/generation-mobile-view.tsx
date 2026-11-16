@@ -44,6 +44,10 @@ import {
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useGenerationCoinSummaryValue } from "~/routes/($lang).generation._index/utils/generation-coin-store"
+import {
+  PremiumCoinGenerationSwitchRow,
+  usePremiumCoinGenerationSetting,
+} from "~/routes/($lang).settings/components/premium-coin-generation-setting"
 
 type Props = {
   /** つくる（モデル・プロンプト・設定のカード） */
@@ -364,13 +368,22 @@ function GenerationMobileCoinSheet(props: {
 
   const isPaid = context.currentPass?.type != null
 
+  // 「生成にプレミアムコインを使わない」設定（ここでも切り替えられる）
+  const isPremiumCoinGenerationDisabled =
+    usePremiumCoinGenerationSetting().isDisabled
+
   return (
     <div className="flex flex-col gap-3 px-5 pt-1 pb-4">
       <p className="text-muted-foreground text-sm">
-        {t(
-          "生成するとコインを使います。フリーコインから先に使われます。",
-          "Generation uses coins. Free coins are used first.",
-        )}
+        {isPremiumCoinGenerationDisabled
+          ? t(
+              "生成するとコインを使います。プレミアムコインは生成に使いません（フリーコインだけで生成します）。",
+              "Generation uses coins. Premium coins are not used for generation (free coins only).",
+            )
+          : t(
+              "生成するとコインを使います。フリーコインから先に使われます。",
+              "Generation uses coins. Free coins are used first.",
+            )}
       </p>
       <div className="grid grid-cols-2 gap-2.5">
         <div className="rounded-2xl bg-linear-to-br from-amber-400 to-orange-500 p-3.5 text-white">
@@ -397,6 +410,9 @@ function GenerationMobileCoinSheet(props: {
             {t("プラン・購入分", "Plan · purchased")}
           </p>
         </div>
+      </div>
+      <div className="rounded-2xl bg-muted/70 px-3.5">
+        <PremiumCoinGenerationSwitchRow />
       </div>
       <div className="flex items-center justify-between rounded-2xl bg-muted/70 px-3.5 py-3 text-sm">
         <span className="text-muted-foreground">{t("プラン", "Plan")}</span>

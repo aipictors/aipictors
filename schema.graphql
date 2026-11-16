@@ -5735,6 +5735,9 @@ input UpdateUserSettingInput {
   """名前つきのいいねの通知を受け取る"""
   isNotifyLike: Boolean
 
+  """画像生成にプレミアムコインを使わない（フリーコインだけで生成する）"""
+  isDisablePremiumCoinGeneration: Boolean
+
   """プレミアムコインでの推し（応援）を受け取らない"""
   isRejectPremiumCoinSupport: Boolean
 
@@ -6364,6 +6367,9 @@ type UserSettingNode implements Node {
 
   """作品投稿がBAN されているかどうか"""
   isPostBanned: Boolean!
+
+  """画像生成にプレミアムコインを使わない（フリーコインだけで生成する）かどうか"""
+  isDisablePremiumCoinGeneration: Boolean!
 
   """プレミアムコインでの推し（応援）を受け取らないかどうか"""
   isRejectPremiumCoinSupport: Boolean!

@@ -37,6 +37,23 @@ export const normalizeCoinSummary = (
 }
 
 /**
+ * 生成に使えるコイン（「生成にプレミアムコインを使わない」設定ならフリーコインだけ）
+ */
+export const toGenerationCoinBalance = (
+  summary: { freeBalance: number; totalBalance: number },
+  isPremiumCoinGenerationDisabled: boolean,
+) => {
+  return isPremiumCoinGenerationDisabled
+    ? summary.freeBalance
+    : summary.totalBalance
+}
+
+export const PREMIUM_COIN_GENERATION_DISABLED_SHORTAGE_MESSAGE = [
+  "フリーコインが足りません（設定でプレミアムコインを生成に使わないようにしています）。設定 > コイン で変えられます。",
+  "Not enough free coins (premium coins are turned off for generation in your settings). You can change this in Settings > Coins.",
+] as const
+
+/**
  * 大きいサイズの倍率（1.6 メガピクセルごとに 1 倍。サーバーの getImageGenerationSizeMultiplier と同じ）
  * 依頼に載る幅・高さで数える（SD1 の 1.5 倍の補助は含めない）
  */

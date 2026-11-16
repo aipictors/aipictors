@@ -43,7 +43,11 @@ import {
   logWarn,
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import { findGenerationSubmitBlock } from "~/routes/($lang).generation._index/utils/find-generation-submit-block"
-import { calcGenerationModelCoinCost } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
+import {
+  calcGenerationModelCoinCost,
+  PREMIUM_COIN_GENERATION_DISABLED_SHORTAGE_MESSAGE,
+  toGenerationCoinBalance,
+} from "~/routes/($lang).generation._index/utils/generation-submit-coin"
 import {
   signImageGenerationTermsMutation,
   ViewerTokenQuery,
@@ -57,6 +61,8 @@ import {
 } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
 import { requestGenerationTasks } from "~/routes/($lang).generation._index/utils/request-generation-tasks"
 import { uploadPublicImage } from "~/utils/upload-public-image"
+import { usePremiumCoinGenerationSetting } from "~/routes/($lang).settings/components/premium-coin-generation-setting"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   termsText: string
@@ -114,9 +120,15 @@ export function GenerationSubmissionView(props: Props) {
 
   const authContext = useContext(AuthContext)
 
+  const t = useTranslation()
+
   const { coinSummary, loadCoinSummary } = useGenerationCoinSummary({
     isLoggedIn: authContext.isLoggedIn,
   })
+
+  // 「生成にプレミアムコインを使わない」設定なら、残りの判定・表示はフリーコインだけ
+  const isPremiumCoinGenerationDisabled =
+    usePremiumCoinGenerationSetting().isDisabled
 
   const { data: tokenData } = useQuery(ViewerTokenQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -401,6 +413,20 @@ export function GenerationSubmissionView(props: Props) {
       userModelSelection.checkpointModelName ?? model.name
 
     // コインが足りないときは、送る前にプラン・コイン購入の案内を出す
+    if (
+      coinSummary !== null &&
+      isPremiumCoinGenerationDisabled &&
+      coinSummary.freeBalance < requestCoinCost
+    ) {
+      logInfo({
+        source: "GenerationSubmit",
+        message: "Blocked: free coin shortage (premium coins disabled)",
+        details: { requestCoinCost, freeBalance: coinSummary.freeBalance },
+      })
+      toast(t(...PREMIUM_COIN_GENERATION_DISABLED_SHORTAGE_MESSAGE))
+      return
+    }
+
     if (coinSummary !== null && coinSummary.totalBalance < requestCoinCost) {
       logInfo({
         source: "GenerationSubmit",
@@ -423,6 +449,25 @@ export function GenerationSubmissionView(props: Props) {
             allowanceRemaining: geminiAllowance.remaining,
           })
         : null
+
+    if (
+      geminiCoinUse !== null &&
+      isPremiumCoinGenerationDisabled &&
+      geminiCoinUse.premiumUse > 0
+    ) {
+      logInfo({
+        source: "GenerationSubmit",
+        message: "Blocked: gemini allowance (premium coins disabled)",
+        details: { requestCoinCost, remaining: geminiAllowance?.remaining },
+      })
+      toast(
+        t(
+          "今週の Gemini の枠を使い切りました。設定でプレミアムコインを生成に使わないようにしているため、毎週月曜 0 時に枠が戻るまで Gemini では作れません（ほかのモデルは今まで通り使えます）。",
+          "You have used this week's Gemini allowance. Premium coins are turned off for generation in your settings, so Gemini is unavailable until the allowance resets on Monday 0:00 (JST). Other models work as usual.",
+        ),
+      )
+      return
+    }
 
     if (geminiCoinUse !== null && !geminiCoinUse.canGenerate) {
       logInfo({
@@ -621,7 +666,10 @@ export function GenerationSubmissionView(props: Props) {
     Math.max(1, context.config.generationCount)
 
   const isCoinSummaryLoading = authContext.isLoggedIn && coinSummary === null
-  const ownedCoinCount = coinSummary?.totalBalance ?? 0
+  const ownedCoinCount =
+    coinSummary === null
+      ? 0
+      : toGenerationCoinBalance(coinSummary, isPremiumCoinGenerationDisabled)
 
   useGenerationCoinSummaryRefresh({
     isLoggedIn: authContext.isLoggedIn,
@@ -729,6 +777,7 @@ export function GenerationSubmissionView(props: Props) {
             ownedCoinCount={ownedCoinCount}
             freeCoinBalance={coinSummary?.freeBalance ?? 0}
             premiumCoinBalance={coinSummary?.premiumBalance ?? 0}
+            isPremiumCoinGenerationDisabled={isPremiumCoinGenerationDisabled}
             termsText={props.termsText}
             availableImageGenerationMaxTasksCount={
               remainingImageGenerationTasksCount

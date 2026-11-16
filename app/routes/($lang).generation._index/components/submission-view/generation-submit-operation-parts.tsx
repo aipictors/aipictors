@@ -47,6 +47,8 @@ type Props = {
   ownedCoinCount: number
   freeCoinBalance: number
   premiumCoinBalance: number
+  /** 「生成にプレミアムコインを使わない」設定（残りはフリーコインだけで判定する） */
+  isPremiumCoinGenerationDisabled?: boolean
   termsText: string
   availableImageGenerationMaxTasksCount: number
   /** 画像生成のメンテナンス中（生成ボタンを押せなくする） */
@@ -223,10 +225,21 @@ export function GenerationSubmitOperationParts(props: Props) {
                 <span className="tabular-nums">
                   {formatCoinAmount(props.freeCoinBalance)}
                 </span>
-                <PremiumCoinIcon className="size-3.5 shrink-0" />
-                <span className="tabular-nums">
-                  {formatCoinAmount(props.premiumCoinBalance)}
-                </span>
+                {props.isPremiumCoinGenerationDisabled ? (
+                  <span className="truncate font-normal">
+                    {t(
+                      "（プレミアムは生成に使いません）",
+                      "(premium coins not used)",
+                    )}
+                  </span>
+                ) : (
+                  <>
+                    <PremiumCoinIcon className="size-3.5 shrink-0" />
+                    <span className="tabular-nums">
+                      {formatCoinAmount(props.premiumCoinBalance)}
+                    </span>
+                  </>
+                )}
               </>
             )}
           </span>
@@ -262,12 +275,24 @@ export function GenerationSubmitOperationParts(props: Props) {
               {formatCoinAmount(props.freeCoinBalance)}
             </span>
           </div>
-          <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/60 bg-background/95 px-3 py-2 shadow-sm">
-            <PremiumCoinIcon className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">
-              {formatCoinAmount(props.premiumCoinBalance)}
-            </span>
-          </div>
+          {props.isPremiumCoinGenerationDisabled ? (
+            <Link
+              to="/settings/points"
+              className="min-w-0 truncate rounded-full border border-border/60 bg-background/95 px-3 py-2 shadow-sm"
+            >
+              {t(
+                "プレミアムコインは生成に使いません",
+                "Premium coins are not used for generation",
+              )}
+            </Link>
+          ) : (
+            <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/60 bg-background/95 px-3 py-2 shadow-sm">
+              <PremiumCoinIcon className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">
+                {formatCoinAmount(props.premiumCoinBalance)}
+              </span>
+            </div>
+          )}
           {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン） */}
           {!context.currentPass?.type &&
             !props.isCoinSummaryLoading &&

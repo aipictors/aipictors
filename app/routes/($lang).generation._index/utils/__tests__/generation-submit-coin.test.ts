@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test"
 import {
   calcGenerationModelCoinCost,
   normalizeCoinSummary,
+  toGenerationCoinBalance,
 } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
 
 const cost = (
@@ -68,5 +69,13 @@ describe("normalizeCoinSummary", () => {
     const result = normalizeCoinSummary({ ...summary, freeBalance: -5 })
     expect(result?.freeBalance).toBe(0)
     expect(result?.totalBalance).toBe(20)
+  })
+})
+
+describe("toGenerationCoinBalance", () => {
+  test("生成にプレミアムコインを使わない設定ならフリーコインだけで数える", () => {
+    const summary = { freeBalance: 30, totalBalance: 530 }
+    expect(toGenerationCoinBalance(summary, true)).toBe(30)
+    expect(toGenerationCoinBalance(summary, false)).toBe(530)
   })
 })
