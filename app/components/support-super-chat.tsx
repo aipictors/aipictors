@@ -4,7 +4,7 @@
  *
  * 推す側の画面では「〇〇円を送る」とは書かない（コインで応援 → 運営がクリエイターに報酬を払う、の建て付け）
  */
-import { HeartHandshake, Sparkles } from "lucide-react"
+import { BadgeCheck, HeartHandshake, Sparkles } from "lucide-react"
 import type { ReactNode } from "react"
 import {
   FreeSupportCoinIcon,
@@ -193,14 +193,11 @@ export const supportAmountButtonClassName = (
   )
 
 /**
- * 「応援はクリエイターの報酬につながります」の一言。R18 の作品では出さない（報酬の対象外）
+ * 「応援はクリエイターの報酬につながります」の一言。作者が報酬に参加していて全年齢の作品のときだけ出すので、
+ * 条件の括弧書きは付けない（作品のコメントからもプロフィールからも同じ言い方）
  * 送金ではなく、運営がクリエイターに払う報酬であることが分かる言い方にする
  */
-export function SupportRewardNote(props: {
-  /** 作品経由のとき true（作品の年齢区分で出し分ける）。プロフィールからの推しは false */
-  isWork?: boolean
-  className?: string
-}) {
+export function SupportRewardNote(props: { className?: string }) {
   const t = useTranslation()
   return (
     <p
@@ -211,15 +208,10 @@ export function SupportRewardNote(props: {
     >
       <Sparkles className="mt-0.5 size-3.5 shrink-0 text-amber-500" />
       <span>
-        {props.isWork
-          ? t(
-              "購入したプレミアムコインでの応援は、クリエイターの報酬につながります（クリエイター報酬に参加している人・全年齢の作品が対象）。",
-              "Support with purchased Premium Coins helps fund creator rewards (for creators in Creator Rewards, all-ages works only).",
-            )
-          : t(
-              "購入したプレミアムコインでの応援は、条件を満たすとクリエイターの報酬につながります。",
-              "Support with purchased Premium Coins can help fund creator rewards when the conditions are met.",
-            )}{" "}
+        {t(
+          "購入したプレミアムコインでの応援は、条件を満たすとクリエイターの報酬につながります。",
+          "Support with purchased Premium Coins can help fund creator rewards when the conditions are met.",
+        )}{" "}
         <Link
           to="/creator-rewards/terms"
           className="whitespace-nowrap text-foreground underline underline-offset-2"
@@ -228,6 +220,32 @@ export function SupportRewardNote(props: {
         </Link>
       </span>
     </p>
+  )
+}
+
+/**
+ * 「クリエイター報酬に参加しています」の印。推す画面で、報酬に参加している作者だけに出す
+ * （R18 の作品・プレミアムコインを受け取らない作者では出さない）。押すと説明のページへ
+ */
+export function SupportRewardJoinedBadge(props: { className?: string }) {
+  const t = useTranslation()
+  const label = t(
+    "このクリエイターはクリエイター報酬に参加しています",
+    "This creator is part of Creator Rewards",
+  )
+  return (
+    <Link
+      to="/creator-rewards/terms"
+      title={label}
+      aria-label={label}
+      className={cn(
+        "inline-flex w-fit shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-amber-500/10 px-2 py-0.5 font-bold text-[11px] text-amber-700 ring-1 ring-amber-500/30 hover:bg-amber-500/20 dark:text-amber-300",
+        props.className,
+      )}
+    >
+      <BadgeCheck className="size-3.5" />
+      {t("報酬に参加中", "In Creator Rewards")}
+    </Link>
   )
 }
 

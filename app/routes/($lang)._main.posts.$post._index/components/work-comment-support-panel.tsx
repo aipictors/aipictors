@@ -5,6 +5,7 @@ import {
   PremiumSupportCoinIcon,
 } from "~/components/support-coin-icons"
 import {
+  SupportRewardJoinedBadge,
   SupportRewardNote,
   SupportSuperChatCard,
   supportAmountButtonClassName,
@@ -68,6 +69,11 @@ export function WorkCommentSupportPanel(
     supportTarget,
   } = props
   const isPremiumAccepted = supportTarget?.premiumAccepted !== false
+  // 報酬の印と一言は、全年齢の作品で、作者が報酬に参加していてプレミアムコインを受け取るときだけ
+  const isRewardTarget =
+    isCreatorRewardRating(workRating) &&
+    supportTarget?.rewardJoined === true &&
+    isPremiumAccepted
 
   const previewPt = toSupportPt(
     currentFreeSupportCoinAmount,
@@ -76,6 +82,7 @@ export function WorkCommentSupportPanel(
 
   return (
     <div className="space-y-2.5 rounded-2xl bg-rose-500/5 p-3 ring-1 ring-rose-500/20 md:ml-13">
+      {isRewardTarget && <SupportRewardJoinedBadge />}
       <div className="flex items-center gap-1.5">
         {(
           [
@@ -238,10 +245,7 @@ export function WorkCommentSupportPanel(
           </SupportSuperChatCard>
         </div>
       )}
-      {/* 報酬の一言は、全年齢の作品で、作者が報酬に参加していてプレミアムコインを受け取るときだけ */}
-      {isCreatorRewardRating(workRating) &&
-        supportTarget?.rewardJoined === true &&
-        isPremiumAccepted && <SupportRewardNote isWork />}
+      {isRewardTarget && <SupportRewardNote />}
     </div>
   )
 }

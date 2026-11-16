@@ -15,6 +15,7 @@ import {
 } from "~/components/support-coin-icons"
 import { SupportSuccessDialog } from "~/components/support-success-dialog"
 import {
+  SupportRewardJoinedBadge,
   SupportRewardNote,
   SupportTierChip,
   supportAmountButtonClassName,
@@ -132,6 +133,9 @@ export function SupportButton({
   const [supportTarget, setSupportTarget] =
     useState<CoinSummarySupportTarget | null>(null)
   const isPremiumAccepted = supportTarget?.premiumAccepted !== false
+  // 報酬の印と一言は、作者が報酬に参加していてプレミアムコインを受け取るときだけ（R18 の作品のページでは出さない）
+  const isRewardTarget =
+    showRewardNote && supportTarget?.rewardJoined === true && isPremiumAccepted
 
   // 推す相手の名前・お礼の文は、ダイアログを開いてから読む（作品ページを開くたびに問い合わせない）
   const { data: targetUserData } = useQuery(targetSupportUserQuery, {
@@ -451,11 +455,14 @@ export function SupportButton({
                   className="size-10 shrink-0 rounded-full object-cover"
                 />
               )}
-              <span className="min-w-0 flex-1 break-words">
-                {t(
-                  `${resolvedTargetUserName || targetUserId} さんを推す`,
-                  `Support ${resolvedTargetUserName || targetUserId}`,
-                )}
+              <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
+                <span className="break-words">
+                  {t(
+                    `${resolvedTargetUserName || targetUserId} さんを推す`,
+                    `Support ${resolvedTargetUserName || targetUserId}`,
+                  )}
+                </span>
+                {isRewardTarget && <SupportRewardJoinedBadge />}
               </span>
               {variant === "profile" && (
                 <button
@@ -639,10 +646,7 @@ export function SupportButton({
               {t("匿名で推す", "Support anonymously")}
             </label>
 
-            {/* 報酬の一言は、作者が報酬に参加していてプレミアムコインを受け取るときだけ */}
-            {showRewardNote &&
-              supportTarget?.rewardJoined === true &&
-              isPremiumAccepted && <SupportRewardNote />}
+            {isRewardTarget && <SupportRewardNote />}
 
             <Button
               onClick={handleSupport}
