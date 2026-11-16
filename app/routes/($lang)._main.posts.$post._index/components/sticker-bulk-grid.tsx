@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { type ReactNode, useEffect, useRef, useState } from "react"
 import { StickerButtonFragment } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
+import { moveDefaultStickersToEnd } from "~/utils/default-stickers"
 
 const PER_PAGE = 120
 
@@ -82,10 +83,18 @@ function StickerBulkPage(props: {
 
   if (!stickers) {
     // 読み込み中は先読みの範囲より大きく場所を取り、次のページを続けて読みに行かないようにする
-    return <div className="h-[200vh] w-full animate-pulse rounded-md bg-muted" />
+    return (
+      <div className="h-[200vh] w-full animate-pulse rounded-md bg-muted" />
+    )
   }
 
-  return <>{stickers.map((sticker) => props.renderSticker(sticker))}</>
+  return (
+    <>
+      {moveDefaultStickersToEnd(stickers).map((sticker) =>
+        props.renderSticker(sticker),
+      )}
+    </>
+  )
 }
 
 const viewerUserStickersBulkQuery = graphql(

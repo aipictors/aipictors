@@ -27,6 +27,7 @@ import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
+import { moveDefaultStickersToEnd } from "~/utils/default-stickers"
 import {
   readRecentStickerIds,
   recordRecentStickerId,
@@ -220,7 +221,9 @@ export function StickerDialog(props: Props): React.ReactNode {
     120: "2x-large",
   } as const
   const stickerSize = sizeMap[sizeOptions[sizeIndex]]
-  const allStickers = stickers?.viewer?.userStickers ?? []
+  const allStickers = moveDefaultStickersToEnd(
+    stickers?.viewer?.userStickers ?? [],
+  )
   const sortedStickers = sortStickersByRecent(allStickers, recentStickerIds)
   const recentStickers = sortedStickers.slice(0, 24)
   const replyStickers = (replyBookmarkedStickers?.viewer?.bookmarkedStickers ?? []).filter(

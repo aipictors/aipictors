@@ -27,6 +27,7 @@ import {
   StickerDialogOptions,
   useStickerViewMode,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog-options"
+import { moveDefaultStickersToEnd } from "~/utils/default-stickers"
 
 type Props = {
   isOpen: boolean
@@ -315,9 +316,9 @@ export function StickerDialog(props: Props) {
                       style={{ width: stickerSize, height: stickerSize }}
                     />
                   ))}
-                {stickers?.viewer?.userStickers?.map((sticker) =>
-                  renderSticker(sticker),
-                )}
+                {moveDefaultStickersToEnd(
+                  stickers?.viewer?.userStickers ?? [],
+                ).map((sticker) => renderSticker(sticker))}
               </>
             )}
           </div>
