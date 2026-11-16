@@ -75,20 +75,7 @@ export function HomeFeedTabContent(
             featuredReleases={data.featuredReleaseList}
             releaseList={data.releaseList}
           />
-          {/* ここからアプリのホームと同じ並び: いま人気 → 今日のお題 → ランキング・プラン → おすすめ作品（応援ランキングはランキングのページで見る） */}
-          <HomeHotCarousel works={data.hotWorks} />
-          <div className="space-y-3">
-            {data.dailyTheme && (
-              <HomeDailyThemeCard
-                theme={{
-                  ...data.dailyTheme,
-                  firstWork: data.dailyTheme.firstWork ?? null,
-                }}
-              />
-            )}
-            <HomeQuickLinks />
-          </div>
-          {/* クリエイターの宣伝（PR） */}
+          {/* クリエイターの宣伝（PR、有料会員の特典）とユーザからの推薦は、お知らせのすぐ下で一番目立つ位置に */}
           <HomePromotionWorksSection />
           {/* おすすめ作品（ユーザからの推薦）。サーバーで取った一覧をすぐ出す（スクロールやログイン確認を待たない） */}
           <HomeWorksUsersRecommendedSection
@@ -102,7 +89,20 @@ export function HomeFeedTabContent(
               updateHomeSectionWorks("recommended", works)
             }
           />
-          {/* 作品を選んで無料生成（生成への入口なので推薦のすぐ下。ログインしている人だけ: 未ログインでは中身が取れず、見出しだけ出ていた） */}
+          {/* いま人気 → 今日のお題 → ランキング・プラン */}
+          <HomeHotCarousel works={data.hotWorks} />
+          <div className="space-y-3">
+            {data.dailyTheme && (
+              <HomeDailyThemeCard
+                theme={{
+                  ...data.dailyTheme,
+                  firstWork: data.dailyTheme.firstWork ?? null,
+                }}
+              />
+            )}
+            <HomeQuickLinks />
+          </div>
+          {/* 作品を選んで無料生成（生成への入口。ログインしている人だけ: 未ログインでは中身が取れず、見出しだけ出ていた） */}
           {authContext.isLoggedIn && (
             <div style={offscreenSectionStyle(1000)}>
               <HomeDeferredSection
