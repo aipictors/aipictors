@@ -3,6 +3,8 @@ import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 import {
   isUserAvatarDecoration,
   toUserAvatarDecorationAnimatedUrl,
+  toUserAvatarDecorationSrcSet,
+  USER_AVATAR_DECORATION_SCALE,
   type UserAvatarFramePresentation,
 } from "~/utils/user-avatar-frame"
 
@@ -99,6 +101,9 @@ export function UserAvatarWithFrame(props: Props) {
             decoding="async"
             loading="lazy"
             src={props.frame.overlayImageUrl}
+            // 元は 384px。表示の大きさに合った小さい版を選ばせる
+            srcSet={toUserAvatarDecorationSrcSet(props.frame.overlayImageUrl)}
+            sizes={`${Math.ceil(displaySize * USER_AVATAR_DECORATION_SCALE)}px`}
           />
         </picture>
       </div>

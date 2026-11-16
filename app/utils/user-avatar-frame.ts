@@ -19,9 +19,7 @@ const passRankMap: Record<string, number> = {
   PREMIUM: 3,
 }
 
-const getUserAvatarFramePassRank = (
-  passType: UserAvatarFramePassType,
-) => {
+const getUserAvatarFramePassRank = (passType: UserAvatarFramePassType) => {
   if (passType === null || passType === undefined) {
     return 0
   }
@@ -33,8 +31,10 @@ const canUseUserAvatarFrame = (
   currentPassType: UserAvatarFramePassType,
   requiredPassType: UserAvatarFramePassType,
 ) => {
-  return getUserAvatarFramePassRank(currentPassType) >=
+  return (
+    getUserAvatarFramePassRank(currentPassType) >=
     getUserAvatarFramePassRank(requiredPassType)
+  )
 }
 
 export const toUserAvatarFramePassLabel = (
@@ -67,6 +67,24 @@ export const isUserAvatarDecoration = (
 /** 止まった絵（deco/x.webp）の URL から動く絵（deco/x.anim.webp）の URL を作る */
 export const toUserAvatarDecorationAnimatedUrl = (url: string) => {
   return url.replace(/\.webp(?=$|\?)/, ".anim.webp")
+}
+
+/** 装飾はアイコンの何倍の大きさで重ねるか（user-avatar-with-frame の h-[148.4%]） */
+export const USER_AVATAR_DECORATION_SCALE = 1.484
+
+/**
+ * 止まった絵の srcset。元は 384px なので、一覧の小さいアイコンには
+ * scripts/avatar-frames/resize-decorations.py で作った 128px・256px 版を選ばせる。
+ * public/avatar-frames/deco 以外の URL は undefined（元の画像のまま）
+ */
+export const toUserAvatarDecorationSrcSet = (url: string) => {
+  if (!/^\/avatar-frames\/deco\/[\w-]+\.webp(?:\?|$)/.test(url)) {
+    return undefined
+  }
+  return [128, 256]
+    .map((w) => `${url.replace(/\.webp(?=$|\?)/, `.w${w}.webp`)} ${w}w`)
+    .concat(`${url} 384w`)
+    .join(", ")
 }
 
 export const USER_AVATAR_FRAME_CATEGORIES = [
