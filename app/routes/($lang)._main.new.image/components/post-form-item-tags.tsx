@@ -13,6 +13,7 @@ import {
   canUseAiGeneration,
   consumeAiGenerationUsage,
 } from "../utils/ai-generation-usage"
+import { splitPostFormTagSuggestions } from "../utils/post-form-tag-suggestions"
 import { ContentTypeSelector } from "./content-type-selector"
 import {
   Collapsible,
@@ -186,10 +187,34 @@ export function PostFormItemTags (props: Props) {
     [props.tags, props.onRemoveTag],
   )
 
-  const displayTags =
-    props.recentlyUsedTags.length > 0
-      ? props.recentlyUsedTags
-      : props.recommendedTags
+  const suggestions = splitPostFormTagSuggestions({
+    tags: props.tags,
+    recentlyUsedTags: props.recentlyUsedTags,
+    recommendedTags: props.recommendedTags,
+  })
+
+  const renderSuggestedTags = (tags: Tag[]) => (
+    <div className="flex flex-wrap gap-2">
+      {tags.map((tag) => (
+        <Button
+          key={tag.id}
+          size={"sm"}
+          variant={"secondary"}
+          onClick={() => {
+            if (props.tags.length >= 10) {
+              return
+            }
+            props.onAddTag({
+              id: tag.id,
+              text: tag.text,
+            })
+          }}
+        >
+          {tag.text}
+        </Button>
+      ))}
+    </div>
+  )
 
   const handleTagGenerate = async () => {
     if (!props.imageBase64) {
@@ -319,35 +344,26 @@ export function PostFormItemTags (props: Props) {
           enableAutocomplete={true}
           placeholderWhenFull={t("タグは10個までです", "Up to 10 tags allowed")}
         />
+        {suggestions.recentlyUsedTags.length !== 0 && (
+          <div className="space-y-2 pt-2">
+            <p className="font-bold text-muted-foreground text-xs">
+              {t("最近使ったタグ", "Recently used tags")}
+            </p>
+            {renderSuggestedTags(suggestions.recentlyUsedTags)}
+          </div>
+        )}
         <div className="space-y-2 pt-2">
+          <p className="font-bold text-muted-foreground text-xs">
+            {t("おすすめタグ", "Recommended tags")}
+          </p>
           <p className="text-muted-foreground text-xs">
             {t(
               "プロンプト付きの画像を読み込むとおすすめタグが更新されます(Dall-Eなどは非対応)",
               "Recommended tags will be updated when an image with a prompt is loaded (not supported by Dall-E)",
             )}
           </p>
-          {displayTags.length !== 0 && (
-            <div className="flex flex-wrap gap-2">
-              {displayTags.map((tag) => (
-                <Button
-                  key={tag.id}
-                  size={"sm"}
-                  variant={"secondary"}
-                  onClick={() => {
-                    if (props.tags.length >= 10) {
-                      return
-                    }
-                    props.onAddTag({
-                      id: tag.id,
-                      text: tag.text,
-                    })
-                  }}
-                >
-                  {tag.text}
-                </Button>
-              ))}
-            </div>
-          )}
+          {suggestions.recommendedTags.length !== 0 &&
+            renderSuggestedTags(suggestions.recommendedTags)}
         </div>
       </CardContent>
     </Card>
