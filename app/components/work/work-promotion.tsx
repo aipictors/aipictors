@@ -34,11 +34,13 @@ export function WorkPromotionMark(props: { className?: string }) {
 }
 
 /**
- * 作品ページの宣伝の帯。関連リンクがあれば大きなボタンで出す
+ * 作品ページの宣伝の帯。関連リンクがあれば大きなボタンで出す。
+ * isPreview は案内ページなどの見本で、ボタンは見た目だけにして押せないようにする
  */
 export function WorkPromotionBanner(props: {
   relatedUrl?: string | null
   userName?: string
+  isPreview?: boolean
 }) {
   const t = useTranslation()
   const url = isValidUrl(props.relatedUrl) ? props.relatedUrl : null
@@ -56,11 +58,21 @@ export function WorkPromotionBanner(props: {
           </p>
         </div>
         {url && (
-          <Button asChild className="shrink-0">
-            <a href={url} target="_blank" rel="sponsored noopener noreferrer">
-              {t("詳しく見る", "Learn more")}
-              <ExternalLinkIcon className="ml-1 size-4" />
-            </a>
+          <Button
+            asChild
+            className={cn("shrink-0", props.isPreview && "pointer-events-none")}
+          >
+            {props.isPreview ? (
+              <span aria-hidden>
+                {t("詳しく見る", "Learn more")}
+                <ExternalLinkIcon className="ml-1 size-4" />
+              </span>
+            ) : (
+              <a href={url} target="_blank" rel="sponsored noopener noreferrer">
+                {t("詳しく見る", "Learn more")}
+                <ExternalLinkIcon className="ml-1 size-4" />
+              </a>
+            )}
           </Button>
         )}
       </div>

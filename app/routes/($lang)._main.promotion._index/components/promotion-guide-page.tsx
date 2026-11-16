@@ -98,6 +98,7 @@ export function PromotionGuidePage() {
           <WorkPromotionBanner
             userName={t("あなた", "You")}
             relatedUrl="https://example.com"
+            isPreview
           />
         </div>
       </section>
