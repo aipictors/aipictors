@@ -40,6 +40,10 @@ export function WithdrawAccountForm() {
   const [mutation, { loading }] = useMutation(withdrawAccountMutation)
 
   const accountLogin = data?.viewer?.user?.login ?? ""
+  // アプリで買ったプランは Apple / Google が管理しているので、退会しても止まらない
+  const storeProvider = data?.viewer?.currentPass?.paymentProvider
+  const isStorePass =
+    storeProvider === "APP_STORE" || storeProvider === "GOOGLE_PLAY"
   const requiredPrefix = accountLogin.slice(0, Math.min(accountLogin.length, 6))
   const isPrefixMatched =
     requiredPrefix.length > 0 && loginPrefixInput.trim() === requiredPrefix
@@ -121,14 +125,37 @@ export function WithdrawAccountForm() {
         </AlertDescription>
       </Alert>
 
+      {isStorePass && (
+        <Alert variant="destructive">
+          <AlertTriangle className="size-4" />
+          <AlertTitle>
+            {t(
+              "アプリで購入したプランは、先にストアで解約してください",
+              "Cancel your app subscription in the store first",
+            )}
+          </AlertTitle>
+          <AlertDescription>
+            {storeProvider === "APP_STORE"
+              ? t(
+                  "このプランは iPhone アプリ（App Store）で購入されたため、退会しても自動では解約されません。［設定］→［Apple ID］→［サブスクリプション］から解約してから退会してください。",
+                  "This plan was bought in the iPhone app (App Store), so withdrawing won't cancel it. Cancel it in Settings → Apple ID → Subscriptions before withdrawing.",
+                )
+              : t(
+                  "このプランは Android アプリ（Google Play）で購入されたため、退会しても自動では解約されません。Google Play ストアの［お支払いと定期購入］→［定期購入］から解約してから退会してください。",
+                  "This plan was bought in the Android app (Google Play), so withdrawing won't cancel it. Cancel it in Google Play → Payments & subscriptions → Subscriptions before withdrawing.",
+                )}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="space-y-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm">
         <p className="font-semibold text-foreground">
           {t("退会すると元に戻せません", "This action cannot be undone")}
         </p>
         <p className="text-muted-foreground">
           {t(
-            "退会すると、アカウント情報は削除され、作品は非公開になります。スタンプ履歴は残りますが、どのユーザのものかは表示されなくなります。加入中の有料プランは退会と同時に解約され、以降の請求は発生しません。",
-            "Withdrawing removes your account information and makes your works private. Sticker history remains, but it will no longer show which user it belonged to. Any paid plan is canceled at the same time, and you will not be charged again.",
+            "退会すると、アカウント情報は削除され、作品は非公開になります。スタンプ履歴は残りますが、どのユーザのものかは表示されなくなります。ウェブで加入中の有料プランは退会と同時に解約され、以降の請求は発生しません。",
+            "Withdrawing removes your account information and makes your works private. Sticker history remains, but it will no longer show which user it belonged to. Any plan you subscribed to on the web is canceled at the same time, and you will not be charged again.",
           )}
         </p>
         <p className="text-muted-foreground">
@@ -283,6 +310,10 @@ const viewerUserQuery = graphql(
       user {
         id
         login
+      }
+      currentPass {
+        id
+        paymentProvider
       }
     }
   }`,
