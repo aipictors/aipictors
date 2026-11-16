@@ -1,1128 +1,314 @@
 import { useSearchParams } from "@remix-run/react"
-import { useTranslation } from "~/hooks/use-translation"
+import {
+  ArrowRightIcon,
+  ChevronDownIcon,
+  MessageCircleQuestionIcon,
+  SparklesIcon,
+} from "lucide-react"
+import { useEffect } from "react"
+import type { BreadcrumbList, FAQPage, WithContext } from "schema-dts"
+import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { CoinHelpContent } from "~/components/coin-help-content"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { Badge } from "~/components/ui/badge"
-import { Separator } from "~/components/ui/separator"
+import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
+import {
+  HelpFourKoma,
+  helpMangaImageUrl,
+} from "~/routes/($lang)._main.help._index/components/help-four-koma"
+import {
+  HELP_GROUPS,
+  HELP_SECTIONS,
+  type HelpSection,
+  LEGACY_TAB_TO_SECTION,
+} from "~/routes/($lang)._main.help._index/components/help-sections"
 
-const HELP_TABS = [
-  "quickstart",
-  "overview",
-  "registration",
-  "posting",
-  "features",
-  "generation",
-  "community",
-  "pictor-chan",
-  "coins",
-] as const
+const SITE_URL = "https://www.aipictors.com"
 
-type HelpTab = (typeof HELP_TABS)[number]
+const DISCORD_URL = "https://discord.gg/7jA2MmtvtR"
 
-export function HelpArticle () {
+/**
+ * 使い方ガイド。章ごとにぴくたーちゃんの 4 コマ・ポイント・リンク・よくある質問を 1 ページに並べる
+ * （タブで隠すと検索エンジンに読まれないので、全部の章を描いて目次から飛ぶ）
+ */
+export function HelpArticle() {
   const t = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const requestedTab = searchParams.get("tab")
-  const activeTab = HELP_TABS.includes(requestedTab as HelpTab)
-    ? (requestedTab as HelpTab)
-    : "quickstart"
+  const [searchParams] = useSearchParams()
+  const legacyTab = searchParams.get("tab")
 
-  const handleTabChange = (value: string) => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev)
-      if (value === "quickstart") {
-        next.delete("tab")
-      } else {
-        next.set("tab", value)
-      }
-      return next
-    }, { replace: true })
+  // 以前のタブの URL（/help?tab=coins など）は該当の章へ
+  useEffect(() => {
+    const id = legacyTab ? LEGACY_TAB_TO_SECTION[legacyTab] : undefined
+    if (!id) return
+    document.getElementById(id)?.scrollIntoView({ block: "start" })
+  }, [legacyTab])
+
+  const pageUrl = `${SITE_URL}${t.isEnglish ? "/en" : ""}/help`
+  const faqs = HELP_SECTIONS.flatMap((section) => section.faqs)
+  const newSections = HELP_SECTIONS.filter((section) => section.isNew)
+
+  const faqJsonLd: WithContext<FAQPage> = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    inLanguage: t.isEnglish ? "en" : "ja",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: t(faq.q.ja, faq.q.en),
+      acceptedAnswer: { "@type": "Answer", text: t(faq.a.ja, faq.a.en) },
+    })),
+  }
+
+  const breadcrumb: WithContext<BreadcrumbList> = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Aipictors",
+        item: `${SITE_URL}${t.isEnglish ? "/en" : "/"}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: t("使い方ガイド", "User Guide"),
+        item: pageUrl,
+      },
+    ],
   }
 
   return (
-    <div className="container mx-auto max-w-4xl space-y-8 py-8">
-      {/* ヘッダー */}
-      <div className="space-y-4 text-center">
-        <h1 className="font-bold text-3xl">
-          {t("Aipictors 使い方ガイド", "Aipictors User Guide")}
-        </h1>
-        <p className="text-lg text-muted-foreground">
+    <div className="container mx-auto max-w-5xl space-y-10 px-3 py-6 sm:px-6 sm:py-8">
+      <AppBreadcrumbScript breadcrumb={breadcrumb} />
+      <AppJsonLdScript jsonLd={faqJsonLd} />
+
+      {/* ヒーロー */}
+      <header className="relative overflow-hidden rounded-3xl bg-linear-to-br from-orange-100 via-pink-100 to-sky-100 p-5 sm:p-8 dark:from-orange-950 dark:via-pink-950 dark:to-sky-950">
+        <div className="grid items-center gap-6 md:grid-cols-[1.2fr_1fr]">
+          <div className="space-y-4">
+            <p className="font-medium text-orange-600 text-sm dark:text-orange-300">
+              {t(
+                "ぴくたーちゃんの4コマでわかる",
+                "Explained with Pictor-chan comics",
+              )}
+            </p>
+            <h1 className="font-bold text-3xl leading-tight sm:text-4xl">
+              {t("Aipictors 使い方ガイド", "Aipictors User Guide")}
+            </h1>
+            <p className="text-base leading-7 sm:text-lg">
+              {t(
+                "作品の見方・投稿・AI 画像生成から、コインでの推し、クリエイター報酬（換金）、有料リクエスト、宣伝枠まで。Aipictors のすべての機能を、公式キャラクターぴくたーちゃんの 4 コマ漫画でやさしく解説します。",
+                "From browsing, posting and AI image generation to coin support, creator rewards (cash out), paid requests and promotion slots — every Aipictors feature, explained with 4-panel comics starring our mascot Pictor-chan.",
+              )}
+            </p>
+            {newSections.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="flex items-center gap-1 font-bold text-pink-600 text-sm dark:text-pink-300">
+                  <SparklesIcon className="size-4" />
+                  {t("新機能", "New")}
+                </span>
+                {newSections.map((section) => (
+                  <a
+                    key={section.id}
+                    href={`#${section.id}`}
+                    className="rounded-full bg-white/80 px-3 py-1 font-medium text-sm shadow-sm hover:bg-white dark:bg-slate-900/70"
+                  >
+                    {section.emoji} {t(section.title.ja, section.title.en)}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+          <img
+            src={helpMangaImageUrl("hero")}
+            alt={t(
+              "本を持って手をふるぴくたーちゃん",
+              "Pictor-chan waving with a guidebook",
+            )}
+            width={960}
+            height={656}
+            fetchPriority="high"
+            className="w-full rounded-2xl shadow-md"
+          />
+        </div>
+      </header>
+
+      {/* 目次 */}
+      <nav
+        aria-label={t("目次", "Contents")}
+        className="space-y-3 rounded-2xl border bg-card p-4"
+      >
+        <h2 className="font-bold text-lg">{t("目次", "Contents")}</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {HELP_GROUPS.map((group) => (
+            <div key={group.id} className="space-y-1.5">
+              <p className="font-semibold text-muted-foreground text-xs">
+                {t(group.label.ja, group.label.en)}
+              </p>
+              <ul className="flex flex-wrap gap-1.5">
+                {HELP_SECTIONS.filter(
+                  (section) => section.group === group.id,
+                ).map((section) => (
+                  <li key={section.id}>
+                    <a
+                      href={`#${section.id}`}
+                      className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm hover:bg-muted"
+                    >
+                      <span aria-hidden>{section.emoji}</span>
+                      {t(section.title.ja, section.title.en)}
+                      {section.isNew && (
+                        <span className="rounded bg-pink-500 px-1 font-bold text-[10px] text-white leading-4">
+                          NEW
+                        </span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </nav>
+
+      {HELP_SECTIONS.map((section, index) => (
+        <HelpSectionView
+          key={section.id}
+          section={section}
+          isEager={index === 0}
+        />
+      ))}
+
+      {/* よくある質問 */}
+      <section id="faq" className="scroll-mt-20 space-y-4">
+        <h2 className="flex items-center gap-2 font-bold text-2xl">
+          <MessageCircleQuestionIcon className="size-6 text-orange-500" />
+          {t("よくある質問", "FAQ")}
+        </h2>
+        <div className="divide-y rounded-2xl border bg-card">
+          {faqs.map((faq) => (
+            <details key={faq.q.ja} className="group p-4">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold">
+                <h3>{t(faq.q.ja, faq.q.en)}</h3>
+                <ChevronDownIcon className="size-4 shrink-0 transition-transform group-open:rotate-180" />
+              </summary>
+              <p className="mt-2 text-muted-foreground text-sm leading-6">
+                {t(faq.a.ja, faq.a.en)}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* 困ったとき */}
+      <section className="space-y-3 rounded-3xl bg-linear-to-r from-sky-100 to-violet-100 p-6 text-center dark:from-sky-950 dark:to-violet-950">
+        <h2 className="font-bold text-xl">
+          {t("わからないときは", "Still have questions?")}
+        </h2>
+        <p className="text-sm leading-6">
           {t(
-            "Aipictorsの機能や使い方を詳しく説明します",
-            "Learn about Aipictors features and how to use them",
+            "Discord ではぴくたーちゃんと運営が質問や要望に答えています。お問い合わせフォームからも連絡できます。",
+            "Pictor-chan and our team answer questions and requests on Discord. You can also reach us through the contact form.",
           )}
         </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          <Button asChild>
+            <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
+              {t("Discord に参加", "Join Discord")}
+            </a>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link to="/contact">{t("お問い合わせ", "Contact us")}</Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link to="/guides">
+              {t("AI イラストの作り方", "AI art guides")}
+            </Link>
+          </Button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function HelpSectionView(props: { section: HelpSection; isEager: boolean }) {
+  const t = useTranslation()
+  const { section } = props
+
+  return (
+    <section
+      id={section.id}
+      aria-labelledby={`${section.id}-title`}
+      className="scroll-mt-20 space-y-5"
+    >
+      <div className="space-y-2">
+        <h2
+          id={`${section.id}-title`}
+          className="flex flex-wrap items-center gap-2 font-bold text-2xl"
+        >
+          <span aria-hidden>{section.emoji}</span>
+          {t(section.title.ja, section.title.en)}
+          {section.isNew && (
+            <span className="rounded-full bg-pink-500 px-2 py-0.5 font-bold text-white text-xs">
+              NEW
+            </span>
+          )}
+        </h2>
+        <p className="leading-7">{t(section.lead.ja, section.lead.en)}</p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 p-1 text-xs sm:grid-cols-4 sm:text-sm lg:grid-cols-9">
-          <TabsTrigger value="quickstart" className="px-2 py-2 sm:px-4">
-            {t("クイックスタート", "Quick Start")}
-          </TabsTrigger>
-          <TabsTrigger value="overview" className="px-2 py-2 sm:px-4">
-            {t("概要", "Overview")}
-          </TabsTrigger>
-          <TabsTrigger value="registration" className="px-2 py-2 sm:px-4">
-            {t("登録", "Registration")}
-          </TabsTrigger>
-          <TabsTrigger value="posting" className="px-2 py-2 sm:px-4">
-            {t("投稿", "Posting")}
-          </TabsTrigger>
-          <TabsTrigger value="features" className="px-2 py-2 sm:px-4">
-            {t("機能", "Features")}
-          </TabsTrigger>
-          <TabsTrigger value="generation" className="px-2 py-2 sm:px-4">
-            {t("AI生成", "AI Generation")}
-          </TabsTrigger>
-          <TabsTrigger value="community" className="px-2 py-2 sm:px-4">
-            {t("コミュニティ", "Community")}
-          </TabsTrigger>
-          <TabsTrigger value="pictor-chan" className="px-2 py-2 sm:px-4">
-            {t("ぴくたーちゃん", "Pictor-chan")}
-          </TabsTrigger>
-          <TabsTrigger value="coins" className="px-2 py-2 sm:px-4">
-            {t("コイン・推し", "Coins & Support")}
-          </TabsTrigger>
-        </TabsList>
+      <HelpFourKoma
+        title={section.mangaTitle}
+        panels={section.panels}
+        isEager={props.isEager}
+      />
 
-        {/* クイックスタートタブ */}
-        <TabsContent value="quickstart" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                🚀{" "}
-                {t(
-                  "5分で始めるAipictors",
-                  "Get Started with Aipictors in 5 Minutes",
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-6 dark:from-blue-950 dark:to-purple-950">
-                <h3 className="mb-4 font-semibold text-lg">
-                  {t("初めての方へ", "For First-Time Users")}
-                </h3>
-                <p className="mb-4">
-                  {t(
-                    "Aipictorsは登録前でも多くの作品を閲覧できます。まずはサイトを探索して、どんな作品があるかご覧ください。",
-                    "You can browse many works on Aipictors without registering. First, explore the site to see what kind of works are available.",
-                  )}
-                </p>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div className="rounded-lg border bg-white p-4 dark:bg-gray-800">
-                    <h4 className="mb-2 font-medium">
-                      {t("✨ 作品を見てみる", "✨ Browse Works")}
-                    </h4>
-                    <p className="text-muted-foreground text-sm">
-                      {t(
-                        "トップページで最新作品やランキングをチェック",
-                        "Check latest works and rankings on the homepage",
-                      )}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border bg-white p-4 dark:bg-gray-800">
-                    <h4 className="mb-2 font-medium">
-                      {t("🔍 検索してみる", "🔍 Try Searching")}
-                    </h4>
-                    <p className="text-muted-foreground text-sm">
-                      {t(
-                        "興味のあるタグやキーワードで作品を検索",
-                        "Search for works by tags or keywords you're interested in",
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg">
-                  {t("ステップバイステップガイド", "Step-by-Step Guide")}
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3 rounded-lg border p-4">
-                    <Badge variant="outline" className="mt-1">
-                      1
-                    </Badge>
-                    <div>
-                      <h4 className="font-medium">
-                        {t(
-                          "アカウント作成（任意）",
-                          "Create Account (Optional)",
-                        )}
-                      </h4>
-                      <p className="mt-1 text-muted-foreground text-sm">
-                        {t(
-                          "より多くの機能を使いたい場合は、無料でアカウントを作成できます。メールアドレスまたはSNSアカウントで簡単登録。",
-                          "If you want to use more features, you can create a free account. Easy registration with email or SNS account.",
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex cursor-pointer items-start gap-3 rounded-lg border p-4">
-                    <Badge variant="outline" className="mt-1">
-                      2
-                    </Badge>
-                    <Link to="/settings/profile">
-                      <h4 className="cursor-pointer font-medium">
-                        {t("プロフィール設定", "Set Up Profile")}
-                      </h4>
-                      <p className="mt-1 text-muted-foreground text-sm">
-                        {t(
-                          "アバター画像やプロフィール文を設定して、自分らしさを表現しましょう。",
-                          "Set up your avatar and profile description to express your personality.",
-                        )}
-                      </p>
-                    </Link>
-                  </div>
-                  <div className="flex items-start gap-3 rounded-lg border p-4">
-                    <Badge variant="outline" className="mt-1">
-                      3
-                    </Badge>
-                    <div>
-                      <h4 className="font-medium">
-                        {t("作品投稿を始める", "Start Posting Works")}
-                      </h4>
-                      <p className="mt-1 text-muted-foreground text-sm">
-                        {t(
-                          "AI生成した作品や創作物を投稿してみましょう。適切なタグ付けでより多くの人に見てもらえます。",
-                          "Try posting your AI-generated works or creations. Proper tagging helps more people discover your work.",
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 rounded-lg border p-4">
-                    <Badge variant="outline" className="mt-1">
-                      4
-                    </Badge>
-                    <div>
-                      <h4 className="font-medium">
-                        {t("コミュニティ参加", "Join the Community")}
-                      </h4>
-                      <p className="mt-1 text-muted-foreground text-sm">
-                        {t(
-                          "他のユーザーをフォローしたり、いいねやコメントで交流を楽しみましょう。",
-                          "Follow other users and enjoy interacting through likes and comments.",
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-950">
-                <h4 className="mb-2 font-medium text-yellow-800 dark:text-yellow-200">
-                  💡 {t("お役立ちヒント", "Helpful Tips")}
-                </h4>
-                <ul className="space-y-1 text-sm text-yellow-700 dark:text-yellow-300">
-                  <li>
-                    •{" "}
-                    {t(
-                      "投稿前に利用規約とガイドラインを確認しましょう",
-                      "Check the terms of service and guidelines before posting",
-                    )}
-                  </li>
-                  <li>
-                    •{" "}
-                    {t(
-                      "タグは作品の内容を正確に表すものを選びましょう",
-                      "Choose tags that accurately represent your work's content",
-                    )}
-                  </li>
-                  <li>
-                    •{" "}
-                    {t(
-                      "他のユーザーと積極的に交流することで、フォロワーが増えやすくなります",
-                      "Active interaction with other users helps increase followers",
-                    )}
-                  </li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* 概要タブ */}
-        <TabsContent value="overview" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("Aipictorsとは", "What is Aipictors")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p>
-                {t(
-                  "AipictorsはAIイラスト・小説・動画などのクリエイティブコンテンツを投稿・共有できるプラットフォームです。",
-                  "Aipictors is a platform for posting and sharing creative content such as AI illustrations, novels, and videos.",
-                )}
-              </p>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="rounded-lg border p-4 text-center">
-                  <h3 className="mb-2 font-semibold">
-                    {t("AI生成コンテンツ", "AI-Generated Content")}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {t(
-                      "AI技術を使用して作成されたイラスト、小説、動画を投稿・閲覧できます",
-                      "Post and view illustrations, novels, and videos created using AI technology",
-                    )}
-                  </p>
-                </div>
-                <div className="rounded-lg border p-4 text-center">
-                  <h3 className="mb-2 font-semibold">
-                    {t("クリエイター支援", "Creator Support")}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {t(
-                      "クリエイターを支援する機能やコミュニティ機能が充実しています",
-                      "Rich features and community functions to support creators",
-                    )}
-                  </p>
-                </div>
-                <div className="rounded-lg border p-4 text-center">
-                  <h3 className="mb-2 font-semibold">
-                    {t("無料で利用", "Free to Use")}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {t(
-                      "基本機能は無料でご利用いただけます",
-                      "Basic features are available for free",
-                    )}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("主な機能", "Main Features")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary">
-                  {t("作品投稿", "Content Posting")}
-                </Badge>
-                <Badge variant="secondary">
-                  {t("AI画像生成", "AI Image Generation")}
-                </Badge>
-                <Badge variant="secondary">
-                  {t("いいね・コメント", "Likes & Comments")}
-                </Badge>
-                <Badge variant="secondary">
-                  {t("フォロー機能", "Follow Feature")}
-                </Badge>
-                <Badge variant="secondary">
-                  {t("コレクション", "Collections")}
-                </Badge>
-                <Badge variant="secondary">{t("ランキング", "Rankings")}</Badge>
-                <Badge variant="secondary">{t("タグ検索", "Tag Search")}</Badge>
-                <Badge variant="secondary">
-                  {t("プロフィール", "Profile")}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="coins" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {t("コイン・pt・推しのガイド", "Coins, pt and support guide")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground text-sm leading-6">
-                {t(
-                  "フリーコイン、プレミアムコイン、推し pt、累計、ランキングの見方をまとめています。コイン設定ページやランキングページからもこのガイドへ戻れます。",
-                  "This section explains free coins, premium coins, support pt, cumulative totals, and how to read the rankings. You can also come back here from the coin settings and ranking pages.",
-                )}
-              </p>
-              <CoinHelpContent />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* 登録タブ */}
-        <TabsContent value="registration" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {t("ユーザー登録について", "About User Registration")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-950">
-                <h3 className="mb-2 font-semibold text-blue-800 dark:text-blue-200">
-                  {t(
-                    "登録前にお読みください",
-                    "Please Read Before Registration",
-                  )}
-                </h3>
-                <p className="text-blue-700 text-sm dark:text-blue-300">
-                  {t(
-                    "ユーザー登録は無料です。登録することで、作品の投稿、いいね、コメント、フォローなどの機能をご利用いただけます。",
-                    "User registration is free. By registering, you can use features such as posting content, liking, commenting, and following.",
-                  )}
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="font-semibold">
-                  {t(
-                    "登録に必要な情報",
-                    "Required Information for Registration",
-                  )}
-                </h3>
-                <ul className="list-inside list-disc space-y-2 text-sm">
-                  <li>
-                    {t(
-                      "メールアドレスまたはソーシャルアカウント（Google、Twitter、Line）",
-                      "Email address or social account (Google, Twitter、Line)",
-                    )}
-                  </li>
-                  <li>
-                    {t(
-                      "ユーザー名（後で変更可能）",
-                      "Username (can be changed later)",
-                    )}
-                  </li>
-                  <li>
-                    {t(
-                      "年齢確認（18歳以上の場合）",
-                      "Age verification (if 18 or older)",
-                    )}
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="font-semibold">
-                  {t("個人情報の取り扱い", "Personal Information Handling")}
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  {t(
-                    "ご登録いただいた個人情報は、サービスの提供とユーザーサポートのためにのみ使用します。詳細は",
-                    "Personal information provided during registration will only be used for service provision and user support. For details, please see our",
-                  )}
-                  <Link
-                    to="/privacy"
-                    className="ml-1 text-blue-600 hover:underline"
-                  >
-                    {t("プライバシーポリシー", "Privacy Policy")}
-                  </Link>
-                  {t("をご確認ください。", ".")}
-                </p>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <h3 className="font-semibold">
-                  {t("登録手順", "Registration Steps")}
-                </h3>
-                <ol className="list-inside list-decimal space-y-2 text-sm">
-                  <li>
-                    {t(
-                      "右上の「ログイン」ボタンをクリック",
-                      "Click the 'Login' button in the top right",
-                    )}
-                  </li>
-                  <li>
-                    {t(
-                      "Google、Twitter、Lineアカウントでログイン",
-                      "Log in with Google, Twitter, or Discord account",
-                    )}
-                  </li>
-                  <li>
-                    {t("プロフィール情報を設定", "Set up profile information")}
-                  </li>
-                  <li>{t("利用設定を選択", "Select usage preferences")}</li>
-                  <li>{t("登録完了", "Registration complete")}</li>
-                </ol>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* 投稿タブ */}
-        <TabsContent value="posting" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {t("作品の投稿方法", "How to Post Content")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="rounded-lg border p-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("画像投稿", "Image Posting")}
-                  </h3>
-                  <p className="mb-3 text-muted-foreground text-sm">
-                    {t(
-                      "イラスト、写真、AI生成画像などを投稿できます",
-                      "Post illustrations, photos, AI-generated images, etc.",
-                    )}
-                  </p>
-                  <ul className="space-y-1 text-xs">
-                    <li>
-                      •{" "}
-                      {t(
-                        "対応形式: JPEG、PNG、GIF、WEBP、BMP",
-                        "Supported: JPEG、PNG、GIF、WEBP、BMP",
-                      )}
-                    </li>
-                    <li>• {t("最大32MB", "Max 32MB")}</li>
-                    <li>
-                      • {t("複数枚同時投稿可能", "Multiple images allowed")}
-                    </li>
-                  </ul>
-                </div>
-                <div className="rounded-lg border p-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("小説・コラム投稿", "Novel/Column Posting")}
-                  </h3>
-                  <p className="mb-3 text-muted-foreground text-sm">
-                    {t(
-                      "小説、エッセイ、コラムなどのテキスト作品を投稿",
-                      "Post novels, essays, columns and other text content",
-                    )}
-                  </p>
-                  <ul className="space-y-1 text-xs">
-                    <li>
-                      •{" "}
-                      {t(
-                        "Markdownフォーマット対応",
-                        "Markdown format supported",
-                      )}
-                    </li>
-                    <li>• {t("表紙画像設定可能", "Cover image can be set")}</li>
-                    <li>• {t("章分け機能", "Chapter division feature")}</li>
-                  </ul>
-                </div>
-                <div className="rounded-lg border p-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("動画投稿", "Video Posting")}
-                  </h3>
-                  <p className="mb-3 text-muted-foreground text-sm">
-                    {t(
-                      "アニメーション、動画作品を投稿できます",
-                      "Post animations and video content",
-                    )}
-                  </p>
-                  <ul className="space-y-1 text-xs">
-                    <li>
-                      • {t("対応形式: MP4", "Supported: MP4")}
-                    </li>
-                    <li>• {t("最大32MB", "Max 32MB")}</li>
-                    <li>
-                      • {t(
-                        "無料ユーザは30秒/本まで、サブスク加入ユーザは60秒/本まで",
-                        "Free users: up to 30 seconds per video, subscribers: up to 60 seconds per video",
-                      )}
-                    </li>
-                    <li>
-                      • {t(
-                        "1日あたり無料ユーザは合計60秒まで、サブスク加入ユーザは合計180秒まで",
-                        "Per day: free users up to 60 total seconds, subscribers up to 180 total seconds",
-                      )}
-                    </li>
-                    <li>
-                      • {t("サムネイル自動生成", "Auto thumbnail generation")}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <h3 className="font-semibold">
-                  {t("投稿時の設定項目", "Settings When Posting")}
-                </h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <h4 className="mb-2 font-medium">
-                      {t("基本設定", "Basic Settings")}
-                    </h4>
-                    <ul className="space-y-1 text-sm">
-                      <li>• {t("タイトル", "Title")}</li>
-                      <li>• {t("説明文", "Description")}</li>
-                      <li>• {t("タグ", "Tags")}</li>
-                      <li>• {t("年齢制限", "Age Rating")}</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="mb-2 font-medium">
-                      {t("詳細設定", "Advanced Settings")}
-                    </h4>
-                    <ul className="space-y-1 text-sm">
-                      <li>• {t("AIツール情報", "AI Tool Information")}</li>
-                      <li>• {t("プロンプト公開設定", "Prompt Visibility")}</li>
-                      <li>• {t("コメント受付設定", "Comment Settings")}</li>
-                      <li>
-                        • {t("作品公開範囲設定など", "Download Permission")}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* 機能タブ */}
-        <TabsContent value="features" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {t("主要機能の使い方", "How to Use Main Features")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="border-blue-500 border-l-4 pl-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("いいね・ブックマーク", "Likes & Bookmarks")}
-                  </h3>
-                  <div className="space-y-2 text-muted-foreground text-sm">
-                    <p>
-                    {t(
-                      "気に入った作品にいいねを押したり、後で見返すためにブックマークできます。ブックマークはコレクションフォルダで整理可能です。",
-                      "Like favorite works or bookmark them to view later. Bookmarks can be organized in collection folders.",
-                    )}
-                    </p>
-                    <p>
-                      {t(
-                        "全年齢作品は名前表示のいいねが初期選択で、センシティブ作品は匿名いいねが初期選択です。どちらも送信前に切り替えられます。",
-                        "All-ages works default to named likes, while sensitive works default to anonymous likes. You can switch either option before sending.",
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="border-green-500 border-l-4 pl-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("フォロー機能", "Follow Feature")}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {t(
-                      "お気に入りのクリエイターをフォローすると、その人の新しい作品がフィードに表示されます。",
-                      "Follow your favorite creators to see their new works in your feed.",
-                    )}
-                  </p>
-                </div>
-
-                <div className="border-purple-500 border-l-4 pl-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("コメント・スタンプ", "Comments & Stamps")}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {t(
-                      "作品にコメントを投稿したり、スタンプで気軽に反応を示すことができます。",
-                      "Post comments on works or use stamps to show quick reactions.",
-                    )}
-                  </p>
-                </div>
-
-                <div className="border-cyan-500 border-l-4 pl-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("ブロック・ミュート", "Block & Mute")}
-                  </h3>
-                  <div className="space-y-3 text-muted-foreground text-sm">
-                    <div>
-                      <p className="font-medium text-foreground">
-                        {t(
-                          "ブロックした／された場合",
-                          "When Blocked (Either Side)",
-                        )}
-                      </p>
-                      <ul className="mt-1 space-y-1">
-                        <li>
-                          •{" "}
-                          {t(
-                            "お互いの交流が完全に制限されます。",
-                            "All interactions between both parties are completely restricted.",
-                          )}
-                        </li>
-                        <li>
-                          •{" "}
-                          {t(
-                            "作品一覧に、相手の作品が表示されません。",
-                            "The other party's works will not appear in lists.",
-                          )}
-                        </li>
-                        <li>
-                          •{" "}
-                          {t(
-                            "作品ページに直接アクセスしてもいいねができません。",
-                            "Even with direct access to a work page, you cannot like it.",
-                          )}
-                        </li>
-                        <li>
-                          •{" "}
-                          {t(
-                            "コメントができません。",
-                            "Comments are not allowed.",
-                          )}
-                        </li>
-                        <li>
-                          •{" "}
-                          {t(
-                            "フォローはできず、すでにフォロー中の場合は解除されます。",
-                            "Following is not allowed, and existing follows are removed.",
-                          )}
-                        </li>
-                      </ul>
-                      <p className="mt-2">
-                        {t(
-                          "※「見る・反応する」といった行為が双方ともできなくなります。",
-                          "* Both parties can neither view nor interact.",
-                        )}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        {t("ミュートした場合", "When Muted")}
-                      </p>
-                      <ul className="mt-1 space-y-1">
-                        <li>
-                          •{" "}
-                          {t(
-                            "自分の画面上だけで、表示を減らす機能です。",
-                            "This only reduces visibility on your own screen.",
-                          )}
-                        </li>
-                        <li>
-                          •{" "}
-                          {t(
-                            "ミュートしている側のみ、作品一覧やタイムラインでミュートした相手の作品が表示されにくくなります。",
-                            "Only the muting user will see fewer works from muted users in lists and timelines.",
-                          )}
-                        </li>
-                        <li>
-                          •{" "}
-                          {t(
-                            "コメント・新着コメント・スタンプ一覧でも、ミュートした相手の表示が抑制されます。",
-                            "Muted users are also suppressed in comments, new comments, and stamp lists.",
-                          )}
-                        </li>
-                        <li>
-                          •{" "}
-                          {t(
-                            "ミュートされた側には影響はありません。",
-                            "There is no impact on the muted user.",
-                          )}
-                        </li>
-                      </ul>
-                      <p className="mt-2">
-                        {t(
-                          "※ ミュートは表示制御機能です。相手側の投稿や操作そのものを制限する機能ではありません。",
-                          "* Mute is a visibility control. It does not restrict what the muted user can post or do.",
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-red-500 border-l-4 pl-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("タグ検索", "Tag Search")}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {t(
-                      "タグを使って興味のある作品を検索できます。人気のタグやトレンドも確認できます。",
-                      "Search for works of interest using tags. You can also check popular tags and trends.",
-                    )}
-                  </p>
-                </div>
-
-                <div className="border-yellow-500 border-l-4 pl-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("ランキング", "Rankings")}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {t(
-                      "日間・週間・月間の人気作品ランキングを確認できます。新しい作品を発見するのに便利です。",
-                      "Check daily, weekly, and monthly popular work rankings. Useful for discovering new content.",
-                    )}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* AI生成タブ */}
-        <TabsContent value="generation" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {t("AI画像生成機能", "AI Image Generation Feature")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 p-4 dark:from-purple-950 dark:to-pink-950">
-                <h3 className="mb-2 font-semibold">
-                  {t("AI生成機能について", "About AI Generation Feature")}
-                </h3>
-                <p className="text-sm">
-                  {t(
-                    "Aipictorsでは、最新のAI技術を使用して高品質な画像を生成できます。初心者でも簡単にAIイラストを作成できるよう、直感的なインターフェースを提供しています。",
-                    "Aipictors allows you to generate high-quality images using the latest AI technology. We provide an intuitive interface so that even beginners can easily create AI illustrations.",
-                  )}
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="font-semibold">{t("使い方", "How to Use")}</h3>
-                <ol className="list-inside list-decimal space-y-2 text-sm">
-                  <li>
-                    {t(
-                      "ナビゲーションメニューから「AI生成」を選択",
-                      "Select 'AI Generation' from the navigation menu",
-                    )}
-                  </li>
-                  <li>
-                    {t(
-                      "使用したいAIモデルを選択",
-                      "Choose the AI model you want to use",
-                    )}
-                  </li>
-                  <li>
-                    {t(
-                      "プロンプト（指示文）を入力",
-                      "Enter a prompt (instruction text)",
-                    )}
-                  </li>
-                  <li>
-                    {t(
-                      "生成設定（画像サイズ、品質など）を調整",
-                      "Adjust generation settings (image size, quality, etc.)",
-                    )}
-                  </li>
-                  <li>
-                    {t(
-                      "「生成」ボタンをクリック",
-                      "Click the 'Generate' button",
-                    )}
-                  </li>
-                  <li>
-                    {t(
-                      "生成された画像を確認し、気に入ったものを投稿",
-                      "Review the generated images and post the ones you like",
-                    )}
-                  </li>
-                </ol>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="font-semibold">
-                  {t("プロンプトのコツ", "Prompt Tips")}
-                </h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div className="rounded-lg border p-3">
-                    <h4 className="mb-2 font-medium text-green-600">
-                      {t("良い例", "Good Examples")}
-                    </h4>
-                    <ul className="space-y-1 text-xs">
-                      <li>
-                        •{" "}
-                        {t(
-                          "具体的な描写を含める",
-                          "Include specific descriptions",
-                        )}
-                      </li>
-                      <li>
-                        • {t("画風やスタイルを指定", "Specify art style")}
-                      </li>
-                      <li>
-                        •{" "}
-                        {t("色調や雰囲気を明記", "Specify color tone and mood")}
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="rounded-lg border p-3">
-                    <h4 className="mb-2 font-medium text-red-600">
-                      {t("避けるべき", "What to Avoid")}
-                    </h4>
-                    <ul className="space-y-1 text-xs">
-                      <li>• {t("曖昧すぎる表現", "Too vague expressions")}</li>
-                      <li>
-                        • {t("矛盾する指示", "Contradictory instructions")}
-                      </li>
-                      <li>• {t("性的なコンテンツ", "Sexual content")}</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* コミュニティタブ */}
-        <TabsContent value="community" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {t("コミュニティ機能", "Community Features")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="rounded-lg border p-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("作品への反応", "Reactions to Works")}
-                  </h3>
-                  <p className="mb-3 text-muted-foreground text-sm">
-                    {t(
-                      "他のユーザーの作品に対して、いいね、コメント、スタンプで反応できます",
-                      "React to other users' works with likes, comments, and stamps",
-                    )}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline">👍 {t("いいね", "Like")}</Badge>
-                    <Badge variant="outline">
-                      💬 {t("コメント", "Comment")}
-                    </Badge>
-                    <Badge variant="outline">
-                      🎨 {t("スタンプ", "Stamps")}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="rounded-lg border p-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("クリエイター同士の交流", "Creator Interactions")}
-                  </h3>
-                  <p className="mb-3 text-muted-foreground text-sm">
-                    {t(
-                      "フォロー機能を通じて、お気に入りのクリエイターと繋がることができます",
-                      "Connect with your favorite creators through the follow feature",
-                    )}
-                  </p>
-                  <ul className="space-y-1 text-sm">
-                    <li>• {t("フォロー・フォロワー", "Follow・Followers")}</li>
-                    <li>
-                      •{" "}
-                      {t("作品へのコメント交換", "Comment exchanges on works")}
-                    </li>
-                    <li>• {t("コラボレーション", "Collaborations")}</li>
-                  </ul>
-                </div>
-
-                <div className="rounded-lg border p-4">
-                  <h3 className="mb-2 font-semibold">
-                    {t("イベントやコンテスト", "Events and Contests")}
-                  </h3>
-                  <p className="mb-3 text-muted-foreground text-sm">
-                    {t(
-                      "定期的に開催されるイベントやコンテストに参加できます",
-                      "Participate in regularly held events and contests",
-                    )}
-                  </p>
-                  <ul className="space-y-1 text-sm">
-                    <li>
-                      • {t("月間テーマコンテスト", "Monthly theme contests")}
-                    </li>
-                    <li>• {t("季節イベント", "Seasonal events")}</li>
-                    <li>• {t("コラボ企画", "Collaboration projects")}</li>
-                  </ul>
-                </div>
-
-                <div className="rounded-lg border bg-gradient-to-r from-blue-50 to-purple-50 p-4 dark:from-blue-950 dark:to-purple-950">
-                  <h3 className="mb-2 flex items-center gap-2 font-semibold">
-                    <span className="text-blue-600">💬</span>
-                    {t("Discordコミュニティ", "Discord Community")}
-                  </h3>
-                  <p className="mb-3 text-muted-foreground text-sm">
-                    {t(
-                      "Aipictors公式Discordサーバーでリアルタイムに他のクリエイターと交流できます",
-                      "Join the official Aipictors Discord server to interact with other creators in real-time",
-                    )}
-                  </p>
-                  <div className="space-y-2">
-                    <ul className="space-y-1 text-sm">
-                      <li>
-                        •{" "}
-                        {t(
-                          "作品共有・フィードバック",
-                          "Work sharing & feedback",
-                        )}
-                      </li>
-                      <li>
-                        •{" "}
-                        {t(
-                          "技術的な質問・相談",
-                          "Technical questions & consultation",
-                        )}
-                      </li>
-                      <li>
-                        • {t("イベント情報の共有", "Event information sharing")}
-                      </li>
-                    </ul>
-                    <div className="mt-3">
-                      <a
-                        href="https://discord.gg/7jA2MmtvtR"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-sm text-white transition-colors hover:bg-blue-700"
-                      >
-                        <span>🚀</span>
-                        {t("Discordに参加", "Join Discord")}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <h3 className="font-semibold">
-                  {t("コミュニティガイドライン", "Community Guidelines")}
-                </h3>
-                <div className="rounded-lg bg-yellow-50 p-4 dark:bg-yellow-950">
-                  <p className="text-sm">
-                    {t(
-                      "Aipictorsは安全で創造的なコミュニティを目指しています。投稿や交流の際は",
-                      "Aipictors aims to be a safe and creative community. When posting or interacting, please refer to our",
-                    )}
-                    <Link
-                      to="/guideline"
-                      className="mx-1 text-blue-600 hover:underline"
-                    >
-                      {t("コミュニティガイドライン", "Community Guidelines")}
-                    </Link>
-                    {t("をご確認ください。", ".")}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* ぴくたーちゃんタブ */}
-        <TabsContent value="pictor-chan" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {t("ぴくたーちゃん紹介", "Introducing Pictor-chan")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col items-center space-y-4 text-center">
-                <div className="h-32 w-32 overflow-hidden rounded-full bg-gradient-to-r from-orange-400 via-blue-400 to-green-400 p-1">
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-white">
-                    <img
-                      src="https://assets.aipictors.com/pictor-chan-01.webp"
-                      alt="ぴくたーちゃん"
-                      className="h-full w-full rounded-full object-cover"
-                    />
-                  </div>
-                </div>
-                <h3 className="font-bold text-2xl">
-                  <span className="bg-gradient-to-r from-orange-500 via-blue-500 to-green-500 bg-clip-text text-transparent">
-                    ぴくたーちゃん
-                  </span>
-                </h3>
-                <p className="text-muted-foreground">
-                  {t(
-                    "Aipictorsの公式マスコットキャラクター",
-                    "Official mascot character of Aipictors",
-                  )}
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="rounded-lg bg-gradient-to-r from-orange-50 via-blue-50 to-green-50 p-4 dark:from-orange-950 dark:via-blue-950 dark:to-green-950">
-                  <h4 className="mb-2 font-semibold">
-                    {t("プロフィール", "Profile")}
-                  </h4>
-                  <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
-                    <div>
-                      <span className="font-medium">
-                        {t("性別", "Gender")}:
-                      </span>{" "}
-                      {t("女の子", "Girl")}
-                    </div>
-                    <div>
-                      <span className="font-medium">{t("年齢", "Age")}:</span>{" "}
-                      {t("2歳", "2 years old")}
-                    </div>
-                    <div>
-                      <span className="font-medium">
-                        {t("誕生日", "Birthday")}:
-                      </span>{" "}
-                      11月21日
-                    </div>
-                    <div>
-                      <span className="font-medium">
-                        {t("好きな食べ物", "Favorite Food")}:
-                      </span>{" "}
-                      🥔 {t("じゃがいも", "Potato")}
-                    </div>
-                  </div>
-                  <div className="mt-2">
-                    <span className="font-medium">{t("趣味", "Hobby")}:</span>{" "}
-                    {t(
-                      "Aipictorsでみんなの作品を閲覧すること",
-                      "Browsing everyone's works on Aipictors",
-                    )}
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <Link
-                    to="/pictor-chan"
-                    className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 via-blue-500 to-green-500 px-6 py-3 font-medium text-white transition-all hover:scale-105"
-                  >
-                    <span>✨</span>
-                    {t(
-                      "ぴくたーちゃんの詳細ページ",
-                      "Pictor-chan Details Page",
-                    )}
-                    <span>✨</span>
-                  </Link>
-                </div>
-
-                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-950">
-                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                    💡{" "}
-                    {t(
-                      "詳細ページでは、AI生成用のプロンプトやLoRAモデルのダウンロードもできます！",
-                      "On the details page, you can also download AI generation prompts and LoRA models!",
-                    )}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {/* フッター */}
-      <div className="space-y-4 border-t pt-8 text-center">
-        <p className="text-muted-foreground text-sm">
-          {t(
-            "その他ご不明な点がございましたら、お気軽にお問い合わせください。",
-            "If you have any other questions, please feel free to contact us.",
-          )}
-        </p>
-        <div className="flex justify-center space-x-4">
-          <Link to="/contact" className="text-blue-600 text-sm hover:underline">
-            {t("お問い合わせ", "Contact")}
-          </Link>
-          <Link to="/terms" className="text-blue-600 text-sm hover:underline">
-            {t("利用規約", "Terms of Service")}
-          </Link>
-          <Link to="/privacy" className="text-blue-600 text-sm hover:underline">
-            {t("プライバシーポリシー", "Privacy Policy")}
-          </Link>
+      <div className="grid gap-4 md:grid-cols-[1.5fr_1fr]">
+        <div className="space-y-2 rounded-2xl border bg-card p-4">
+          <h3 className="font-semibold">{t("ポイント", "Key points")}</h3>
+          <ul className="space-y-2 text-sm leading-6">
+            {section.points.map((point) => (
+              <li key={point.ja} className="flex gap-2">
+                <span aria-hidden className="text-orange-500">
+                  ●
+                </span>
+                <span>{t(point.ja, point.en)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="space-y-2 rounded-2xl border bg-card p-4">
+          <h3 className="font-semibold">{t("ここから使う", "Go to")}</h3>
+          <ul className="space-y-1.5">
+            {section.links.map((link) => (
+              <li key={link.to}>
+                <Link
+                  to={link.to}
+                  className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-muted"
+                >
+                  {t(link.label.ja, link.label.en)}
+                  <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" />
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-    </div>
+
+      {section.id === "coins" && (
+        <details className="group rounded-2xl border bg-card p-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between font-semibold">
+            {t(
+              "コイン・pt・推しをもっと詳しく",
+              "More about coins, pt & support",
+            )}
+            <ChevronDownIcon className="size-4 transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="mt-4">
+            <CoinHelpContent compact />
+          </div>
+        </details>
+      )}
+    </section>
   )
 }

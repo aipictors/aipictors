@@ -781,12 +781,14 @@ export const META: { [key: string]: MetaData } = {
     isIndex: true,
   },
   HELP: {
-    title: "使い方ガイド",
-    enTitle: "User Guide",
+    title:
+      "使い方ガイド｜ぴくたーちゃんの4コマでわかる投稿・AI生成・推し・換金",
+    enTitle: "User Guide: posting, AI generation, support & creator rewards",
     description:
-      "Aipictorsの使い方を詳しく説明します。初心者の方でも安心してサービスをご利用いただけるよう、機能やコミュニティガイドラインを詳しく解説しています。",
+      "Aipictorsの使い方をぴくたーちゃんの4コマ漫画で解説。作品の投稿・AI画像生成・いいねやコメント・コインでの推しから、クリエイター報酬（換金）・有料リクエスト・宣伝枠などの新機能まで、初めてでもわかります。",
     enDescription:
-      "Learn how to use Aipictors with our comprehensive guide. Detailed explanations of features and community guidelines for beginners and advanced users alike.",
+      "Learn Aipictors with 4-panel comics starring Pictor-chan: posting, AI image generation, likes and comments, coin support, creator rewards (cash out), paid requests and promotion slots.",
+    image: "https://www.aipictors.com/images/help-manga/og.jpg",
     isIndex: true,
   },
   CONTACT: {
@@ -1297,7 +1299,8 @@ export const META: { [key: string]: MetaData } = {
   REQUESTS_TERMS: {
     title: "有料リクエスト規約",
     enTitle: "Paid Request Terms",
-    description: "Aipictors の有料リクエスト（プラン）の規約・禁止事項・トラブルのときの扱い",
+    description:
+      "Aipictors の有料リクエスト（プラン）の規約・禁止事項・トラブルのときの扱い",
     enDescription: "Terms of paid requests on Aipictors",
     isIndex: true,
   },
