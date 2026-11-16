@@ -612,10 +612,7 @@ type FeedContentProps = {
 function FeedContent({
   posts,
   isTimelineView,
-  setIsTimelineView,
-  navigate,
   t,
-  showControls = true,
   _isPagination,
   onSelect,
 }: FeedContentProps) {
@@ -650,22 +647,6 @@ function FeedContent({
 
   return (
     <div className="flex flex-col space-y-4">
-      {showControls && (
-        <div className="mb-4 flex justify-end space-x-2">
-          <Button
-            onClick={() => {
-              navigate("/following")
-            }}
-            variant={"secondary"}
-          >
-            {t("管理", "Manage")}
-          </Button>
-          <Button onClick={() => setIsTimelineView(!isTimelineView)}>
-            {isTimelineView ? t("一覧表示", "List") : t("カード表示", "Cards")}
-          </Button>
-        </div>
-      )}
-
       {isTimelineView ? (
         <div className="m-auto w-full space-y-4">
           {works.map((work) => (

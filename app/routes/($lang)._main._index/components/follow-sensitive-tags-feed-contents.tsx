@@ -6,7 +6,7 @@ import {
 } from "@apollo/client/index"
 import { Link, useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
-import { Loader2Icon, MessageCircleIcon } from "lucide-react"
+import { Loader2Icon, MessageCircleIcon, Settings2Icon } from "lucide-react"
 import {
   Suspense,
   useCallback,
@@ -32,7 +32,7 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { AuthContext } from "~/contexts/auth-context"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
-import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
+import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { useFeedLoadMore } from "~/routes/($lang)._main._index/hooks/use-feed-load-more"
@@ -173,7 +173,7 @@ export function FollowSensitiveTagsFeedContents({
 }: FollowTagsFeedContentsProps) {
   const navigate = useNavigate()
   const t = useTranslation()
-  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
+  const [isTimelineView, setIsTimelineView] = useFollowTimelineView()
 
   /* タグプレビュー取得 */
   const { data: tagData, refetch: refetchFollowedTagsPreview } =
@@ -193,13 +193,12 @@ export function FollowSensitiveTagsFeedContents({
         <Button
           onClick={() => navigate("/settings/followed/tags")}
           variant="secondary"
+          size="icon"
+          className="size-8 rounded-full"
+          aria-label={t("お気に入りタグの管理", "Manage favorite tags")}
+          title={t("お気に入りタグの管理", "Manage favorite tags")}
         >
-          {t("管理", "Manage")}
-        </Button>
-        <Button onClick={() => setIsTimelineView(!isTimelineView)}>
-          {isTimelineView
-            ? t("一覧形式に切り替え", "Switch to List View")
-            : t("タイムライン形式に切り替え", "Switch to Timeline View")}
+          <Settings2Icon className="size-4" />
         </Button>
       </div>
 

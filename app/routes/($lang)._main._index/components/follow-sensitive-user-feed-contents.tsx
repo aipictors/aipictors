@@ -15,13 +15,13 @@ import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { AuthContext } from "~/contexts/auth-context"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
-import { MessageCircleIcon, Loader2Icon } from "lucide-react"
+import { MessageCircleIcon, Loader2Icon, UsersRoundIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
 import { Link, useNavigate } from "~/lib/app/locale-router"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
+import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { cn } from "~/lib/utils"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -100,7 +100,7 @@ function PaginationMode(props: Props) {
   const t = useTranslation()
   const [prevDataKey, setPrevDataKey] = useState<string>("")
 
-  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
+  const [isTimelineView, setIsTimelineView] = useFollowTimelineView()
 
   const currentPage = props.page ?? 0
   const setPage = props.setPage ?? (() => {})
@@ -253,7 +253,7 @@ function InfiniteMode(props: Props) {
   const navigate = useNavigate()
   const t = useTranslation()
 
-  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
+  const [isTimelineView, setIsTimelineView] = useFollowTimelineView()
   const [_prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
   // ─── クエリ & 共通変数 ───────────────────────────────
@@ -506,7 +506,6 @@ type FeedContentProps = {
 function FeedContent({
   posts,
   isTimelineView,
-  setIsTimelineView,
   navigate,
   t,
   showControls = true,
@@ -550,14 +549,13 @@ function FeedContent({
             onClick={() => {
               navigate("/following")
             }}
-            variant={"secondary"}
+            variant="secondary"
+            size="icon"
+            className="size-8 rounded-full"
+            aria-label={t("フォローの管理", "Manage following")}
+            title={t("フォローの管理", "Manage following")}
           >
-            {t("管理", "Manage")}
-          </Button>
-          <Button onClick={() => setIsTimelineView(!isTimelineView)}>
-            {isTimelineView
-              ? t("一覧形式に切り替え", "Switch to List View")
-              : t("タイムライン形式に切り替え", "Switch to Timeline View")}
+            <UsersRoundIcon className="size-4" />
           </Button>
         </div>
       )}

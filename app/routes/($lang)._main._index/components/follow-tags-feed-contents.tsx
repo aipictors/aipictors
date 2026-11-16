@@ -282,17 +282,6 @@ export function FollowTagsFeedContents({
         >
           <Settings2Icon className="size-4" />
         </Button>
-        {selectedTag === null && (
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            className="h-9 shrink-0 rounded-full"
-            onClick={() => setIsTimelineView(!isTimelineView)}
-          >
-            {isTimelineView ? t("一覧表示", "List") : t("カード表示", "Cards")}
-          </Button>
-        )}
       </div>
 
       <Dialog open={isAddTagOpen} onOpenChange={setIsAddTagOpen}>

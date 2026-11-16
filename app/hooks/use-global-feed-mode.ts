@@ -17,15 +17,11 @@ export function useGlobalTimelineView(): [
 
 /**
  * フォロー系フィード（フォロー新着 / お気に入りタグ新着）の表示モード
- * 一覧(新着一覧と同じ) / カード(タイムライン) を切り替え、画面更新後も状態を維持します。
+ * カード（タイムライン）表示は廃止したので、常に一覧（新着一覧と同じ）
  */
 export function useFollowTimelineView(): [
   boolean,
   (isTimeline: boolean) => void,
 ] {
-  return usePersistentState<boolean>(
-    "follow-timeline-view",
-    false, // デフォルトは一覧表示
-    "localStorage",
-  )
+  return [false, () => {}]
 }

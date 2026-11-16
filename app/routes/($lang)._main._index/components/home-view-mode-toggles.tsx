@@ -22,6 +22,8 @@ type Props = {
   isDialogMode?: boolean
   onDialogModeChange?: (isDialogMode: boolean) => void
   className?: string
+  /** 「表示」の前に並べるボタン（フォロー新着の「管理」など） */
+  leading?: React.ReactNode
 }
 
 /**
@@ -105,6 +107,7 @@ export function HomeViewModeToggles(props: Props) {
 
   return (
     <div className={cn("flex items-center gap-1.5", props.className)}>
+      {props.leading}
       <div className="hidden flex-wrap items-center gap-2 sm:flex">
         {controls}
       </div>

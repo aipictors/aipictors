@@ -1,5 +1,8 @@
 import { lazy, Suspense } from "react"
+import { UsersRoundIcon } from "lucide-react"
 import { TabsContent } from "~/components/ui/tabs"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { FollowFeedPlaceholder } from "~/routes/($lang)._main._index/components/follow-feed-placeholder"
 import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
 import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
@@ -52,11 +55,23 @@ export function HomeFollowUserTabContent(
     updateCurrentWorks,
   } = props
 
+  const t = useTranslation()
+
   return (
     <TabsContent value="follow-user" className="space-y-4">
-      {/* 表示の切り替え */}
+      {/* フォローの管理と表示の切り替え（1 行） */}
       <HomeViewModeToggles
         className="justify-end"
+        leading={
+          <Link
+            to="/following"
+            aria-label={t("フォローの管理", "Manage following")}
+            title={t("フォローの管理", "Manage following")}
+            className="flex size-8 items-center justify-center rounded-full border bg-muted/40 text-foreground/80 hover:text-foreground"
+          >
+            <UsersRoundIcon className="size-4" />
+          </Link>
+        }
         isPagination={internalIsPagination}
         onPaginationChange={onChangePaginationMode}
         isDialogMode={isDialogMode}
