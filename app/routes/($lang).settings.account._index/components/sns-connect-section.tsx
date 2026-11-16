@@ -15,6 +15,7 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Separator } from "~/components/ui/separator"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 const viewerUserProvidersQuery = graphql(`
   query ViewerUserProviders {
@@ -22,7 +23,6 @@ const viewerUserProvidersQuery = graphql(`
       id
       user {
         id
-        mailAddress
         userProviders {
           providerId
           providerUserUid
@@ -71,8 +71,8 @@ export function SNSConnectSection() {
   const [isLinking, setIsLinking] = useState(false)
   const userProviders = data?.viewer?.user?.userProviders ?? []
   const currentEmailProvider = userProviders.find((p) => p.providerId === "email")
-  const currentEmail =
-    currentEmailProvider?.providerUserUid ?? data?.viewer?.user?.mailAddress ?? ""
+  // ログイン用のアドレスはメールの連携だけから出す（プロフィールの公開用の連絡先メールとは別）
+  const currentEmail = currentEmailProvider?.providerUserUid ?? ""
   const [emailAddress, setEmailAddress] = useState(currentEmail)
 
   useEffect(() => {
@@ -214,12 +214,26 @@ export function SNSConnectSection() {
 
       <div className="rounded-lg border p-4 space-y-3">
         <div>
-          <h3 className="font-medium">{t("メールアドレス連携", "Email Login")}</h3>
+          <h3 className="font-medium">
+            {t("ログイン用のメールアドレス", "Login email")}
+          </h3>
           <p className="mt-1 text-sm text-gray-600">
             {t(
-              "確認メールのリンクを開くと、そのメールアドレスでログインできるようになります",
-              "Open the verification email link to enable login with that email address",
+              "確認メールのリンクを開くと、そのメールアドレスでログインできるようになります。ログイン用のアドレスはプロフィールには公開されません。",
+              "Open the verification email link to enable login with that email address. Your login email is never shown on your profile.",
             )}
+          </p>
+          <p className="mt-1 text-gray-500 text-xs">
+            {t(
+              "プロフィールに載せる連絡先メールは、プロフィール設定で別に設定できます。",
+              "To show a contact email on your profile, set it separately in Profile settings.",
+            )}{" "}
+            <Link
+              to="/settings/profile"
+              className="whitespace-nowrap underline underline-offset-2"
+            >
+              {t("プロフィール設定", "Profile settings")}
+            </Link>
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -236,8 +250,14 @@ export function SNSConnectSection() {
         </div>
         <p className="text-sm text-gray-500">
           {currentEmail
-            ? t(`現在の連携先: ${currentEmail}`, `Currently linked: ${currentEmail}`)
-            : t("現在は未連携です", "Not linked yet")}
+            ? t(
+                `いまログインに使えるアドレス: ${currentEmail}`,
+                `Current login email: ${currentEmail}`,
+              )
+            : t(
+                "メールでのログインはまだ設定されていません",
+                "Email login isn't set up yet",
+              )}
         </p>
       </div>
 

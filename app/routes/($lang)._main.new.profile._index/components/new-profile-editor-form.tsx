@@ -370,8 +370,8 @@ export function NewProfileEditorForm() {
             />
             <p className="text-muted-foreground text-xs">
               {t(
-                "入力するとプロフィールに表示されます。",
-                "Shown on your profile if you enter one.",
+                "入力するとプロフィールに公開されます。ログイン用のメールアドレスとは別です。",
+                "Shown publicly on your profile if you enter one. This is separate from your login email.",
               )}
             </p>
           </div>

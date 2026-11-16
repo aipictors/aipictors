@@ -6189,7 +6189,7 @@ type UserNode implements Node {
   """ログインID"""
   login: String!
 
-  """MailAddress"""
+  """プロフィールに公開する連絡先メール（ログイン用のメールアドレスとは別。ログイン用と同じアドレスは本人にだけ返す）"""
   mailAddress: String
 
   """表示名"""

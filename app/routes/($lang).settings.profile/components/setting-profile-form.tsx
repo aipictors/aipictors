@@ -400,7 +400,7 @@ export function SettingProfileForm() {
           </div>
           <div className="space-y-1.5">
             <label htmlFor="mail" className="font-medium text-sm">
-              {t("メールアドレス", "Email Address")}
+              {t("公開する連絡先メール（任意）", "Public contact email (optional)")}
             </label>
             <input
               type="email"
@@ -410,6 +410,19 @@ export function SettingProfileForm() {
               value={mail}
               onChange={(e) => setMail(e.target.value)}
             />
+            {/* ログイン用のメールアドレスとは別。ここを変えてもログインには影響しない（ログイン方法はアカウント設定） */}
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              {t(
+                "プロフィールに公開され、誰でも見られます。ログイン用のメールアドレスとは別なので、変更・削除してもログインには影響しません。",
+                "Shown publicly on your profile. This is separate from your login email, so changing or removing it doesn't affect how you log in.",
+              )}{" "}
+              <Link
+                to="/settings/account"
+                className="whitespace-nowrap text-foreground underline underline-offset-2"
+              >
+                {t("ログイン用のメールアドレスはこちら", "Manage your login email")}
+              </Link>
+            </p>
           </div>
           <div className="space-y-1.5">
             <label htmlFor="twitter" className="font-medium text-sm">
