@@ -1,7 +1,7 @@
-import { Link } from "~/lib/app/locale-router"
 import { CalendarDays, ImageIcon, Sparkles, Trophy, Users } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { useEventDateTimeText } from "~/routes/($lang).events._index/hooks/use-event-date-time-text"
 import { toJstWallClockUnixSeconds } from "~/utils/jst-date"
@@ -29,8 +29,72 @@ export type EventCardItem = {
   userId?: string | null
   userName?: string | null
   userIconUrl?: string | null
+  /** 参加者のアイコン（新しい全年齢作品の投稿者、最大 5 人） */
+  participantIcons?: EventParticipantIcon[]
   /** R18 / R18G だけのイベント（全年齢の一覧ではカバー絵をぼかす） */
   isR18Only?: boolean
+}
+
+export type EventParticipantIcon = {
+  id: string
+  name?: string | null
+  iconUrl?: string | null
+}
+
+/**
+ * 重なった丸い参加者アイコンと「＋〇人」
+ */
+export function EventParticipantStack(props: {
+  icons: EventParticipantIcon[]
+  /** 参加者の総数（アイコンに出ない人数を「＋〇人」にする） */
+  participantCount: number
+  max: number
+  size: "sm" | "md"
+  /** 人数の単位（「人」） */
+  unit?: string
+  /** 人数のあとに付ける言葉（「が参加中」） */
+  label?: string
+}) {
+  const icons = props.icons.slice(0, props.max)
+  if (icons.length === 0) return null
+  const rest = Math.max(0, props.participantCount - icons.length)
+  return (
+    <span className="flex min-w-0 items-center gap-1.5">
+      <span
+        className={cn(
+          "flex shrink-0",
+          props.size === "md" ? "-space-x-2" : "-space-x-1.5",
+        )}
+      >
+        {icons.map((icon) => (
+          <img
+            key={icon.id}
+            src={withIconUrlFallback(toResizedImageUrl(icon.iconUrl, 96))}
+            alt=""
+            title={icon.name ?? undefined}
+            loading="lazy"
+            decoding="async"
+            className={cn(
+              "rounded-full border-2 border-card bg-muted object-cover",
+              props.size === "md" ? "size-7" : "size-5",
+            )}
+          />
+        ))}
+      </span>
+      {(rest > 0 || props.label) && (
+        <span className="truncate font-bold text-xs tabular-nums">
+          {rest > 0
+            ? `＋${rest.toLocaleString()}${props.unit ?? ""}`
+            : `${icons.length}${props.unit ?? ""}`}
+          {props.label && (
+            <span className="ml-0.5 font-normal text-muted-foreground">
+              {props.label}
+            </span>
+          )}
+        </span>
+      )}
+    </span>
+  )
 }
 
 /**
@@ -109,6 +173,10 @@ export function AppEventCard(props: Props) {
       ? t("開催予定", "Upcoming")
       : t("終了", "Ended")
 
+  const participantIcons = appEvent.isOfficial
+    ? []
+    : (appEvent.participantIcons ?? [])
+
   // 締切が近い（残り3日以内）ものは目立たせる
   const isClosingSoon = isOngoing && remainingDays <= 3
 
@@ -144,9 +212,19 @@ export function AppEventCard(props: Props) {
               {shortDate(startAt)} 〜 {shortDate(endAt)}
             </div>
             <div className="flex items-center gap-2.5 text-muted-foreground text-xs">
-              <span className="min-w-0 truncate">
-                {appEvent.userName ?? "Aipictors"}
-              </span>
+              {participantIcons.length > 0 ? (
+                <EventParticipantStack
+                  icons={participantIcons}
+                  participantCount={appEvent.participantCount}
+                  max={3}
+                  size="sm"
+                  unit={t("人", "")}
+                />
+              ) : (
+                <span className="min-w-0 truncate">
+                  {appEvent.userName ?? "Aipictors"}
+                </span>
+              )}
               <span
                 className="ml-auto flex shrink-0 items-center gap-1"
                 title={t("作品", "Entries")}
@@ -338,7 +416,26 @@ export function AppEventCard(props: Props) {
               ))}
             </div>
           )}
-          <div className="mt-auto flex items-center justify-between gap-2 border-t pt-3">
+          {participantIcons.length > 0 && (
+            <div className="mt-auto">
+              <EventParticipantStack
+                icons={participantIcons}
+                participantCount={appEvent.participantCount}
+                max={5}
+                size="md"
+                unit={t("人", "")}
+                label={
+                  isEnded ? t("が参加", "joined") : t("が参加中", "joining")
+                }
+              />
+            </div>
+          )}
+          <div
+            className={cn(
+              "flex items-center justify-between gap-2 border-t pt-3",
+              participantIcons.length === 0 && "mt-auto",
+            )}
+          >
             <div className="flex min-w-0 items-center gap-2 text-xs">
               <Avatar className="size-6 border">
                 {appEvent.userIconUrl && (
@@ -371,23 +468,25 @@ export function AppEventCard(props: Props) {
                   {t("作品", "works")}
                 </span>
               </span>
-              {!appEvent.isOfficial && appEvent.participantCount > 0 && (
-                <span
-                  className="flex items-center gap-1"
-                  title={t("参加者", "Participants")}
-                >
-                  <Users
-                    className="size-3.5 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  <span className="font-bold tabular-nums">
-                    {appEvent.participantCount.toLocaleString()}
+              {!appEvent.isOfficial &&
+                appEvent.participantCount > 0 &&
+                participantIcons.length === 0 && (
+                  <span
+                    className="flex items-center gap-1"
+                    title={t("参加者", "Participants")}
+                  >
+                    <Users
+                      className="size-3.5 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <span className="font-bold tabular-nums">
+                      {appEvent.participantCount.toLocaleString()}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {t("人", "people")}
+                    </span>
                   </span>
-                  <span className="text-muted-foreground">
-                    {t("人", "people")}
-                  </span>
-                </span>
-              )}
+                )}
               {appEvent.rankingEnabled && (
                 <span
                   className="flex items-center"

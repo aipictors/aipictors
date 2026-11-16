@@ -7,8 +7,6 @@ import {
   useLocation,
   useParams,
 } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
-import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import {
   ChevronRight,
   Flame,
@@ -19,6 +17,7 @@ import {
   Timer,
 } from "lucide-react"
 import { type ReactNode, useState } from "react"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import {
   appFilterChipClassName,
   appPillRowClassName,
@@ -28,6 +27,7 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { loaderClient } from "~/lib/loader-client"
 import { cn } from "~/lib/utils"
 import {
@@ -113,6 +113,7 @@ const normalizeUserEvent = (event: any): EventCardItem => ({
   userId: event.userId,
   userIconUrl: event.userIconUrl ?? null,
   userName: event.userName,
+  participantIcons: event.participantIcons ?? [],
   isR18Only: isR18OnlyEvent(event.ratings),
 })
 
@@ -914,6 +915,11 @@ const eventsQuery = gql`
       rankingEnabled
       entryCount
       participantCount
+      participantIcons {
+        id
+        name
+        iconUrl
+      }
       userId
       userName
       ratings

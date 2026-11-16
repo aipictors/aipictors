@@ -5920,6 +5920,13 @@ type UserEventContentNode {
   titles: [String!]!
 }
 
+"""イベント参加者のアイコン"""
+type EventParticipantIconNode {
+  iconUrl: String
+  id: ID!
+  name: String
+}
+
 """ユーザーイベント"""
 type UserEventNode implements Node {
   announcementText: String!
@@ -5934,6 +5941,9 @@ type UserEventNode implements Node {
   isSensitive: Boolean!
   mainTag: String!
   participantCount: Int!
+
+  """新しい全年齢作品の投稿者（重複なし・最大 5 人、10 分ごとに更新。R18/R18G 作品の投稿者は含めない）"""
+  participantIcons: [EventParticipantIconNode!]!
 
   """参加方法"""
   participationGuide: String!
