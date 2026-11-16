@@ -14,6 +14,10 @@ import {
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import {
+  HOME_HOT_TAGS_COUNT,
+  HomeTagListItemFragment,
+} from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
@@ -56,6 +60,7 @@ const createBaseHomeLoaderData = (props: {
   firstTag: props.firstTag,
   featuredReleaseList: props.featuredReleaseList,
   hotWorks: [] as FragmentOf<typeof HomeHotWorkFragment>[],
+  hotTags: [] as FragmentOf<typeof HomeTagListItemFragment>[],
   importantRelease: props.importantRelease,
   initialNewWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
   initialRecommendedWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
@@ -270,16 +275,27 @@ export async function homeLoader(props: LoaderFunctionArgs) {
     : []
   const eventPreviews = buildHomeEventPreviews(appEvents, userEvents)
 
+  // イベントは eventPreviews に変換したものだけを HTML に入れる
+  const {
+    appEvents: _appEvents,
+    userEvents: _userEvents,
+    ...homeData
+  } = resultData ?? {}
+
   return json(
     {
       ...baseLoaderData,
-      ...(resultData ?? {}),
+      ...homeData,
       // 一覧に出すだけなので、詳細画面用の項目は HTML に入れない（作品のダイアログは開くときに取り直す）
       promotionWorks: toHomeListWorks(resultData?.promotionWorks),
       eventPreviews,
       // いま人気のカルーセル（アプリと同じ 10 件）
       hotWorks: Array.isArray(resultData?.hotWorks)
         ? resultData.hotWorks.slice(0, HOME_HOT_WORKS_COUNT)
+        : [],
+      // 上のタグの横並び（今日のお題の後ろに並べる）
+      hotTags: Array.isArray(resultData?.hotTags)
+        ? resultData.hotTags.slice(0, HOME_HOT_TAGS_COUNT)
         : [],
       recommendedTags: Array.isArray(resultData?.recommendedTags)
         ? resultData.recommendedTags
@@ -359,6 +375,9 @@ const query = graphql(
     hotWorks(where: { isSensitive: false }) {
       ...HomeHotWork
     }
+    hotTags {
+      ...HomeTagListItem
+    }
     recommendedTags: recommendedTags(
       limit: 16
       where: {
@@ -399,6 +418,7 @@ const query = graphql(
   }`,
   [
     HomeHotWorkFragment,
+    HomeTagListItemFragment,
     HomeTagFragment,
     HomePromotionWorkFragment,
     HomeNewPostedUsersFragment,

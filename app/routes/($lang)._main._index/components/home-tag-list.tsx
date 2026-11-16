@@ -5,6 +5,9 @@ import { graphql, type FragmentOf } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { getJstDate } from "~/utils/jst-date"
 
+/** 上の横並びに出すタグの数（HTML に入るデータを増やしすぎない） */
+export const HOME_HOT_TAGS_COUNT = 24
+
 type Props = {
   hotTags: FragmentOf<typeof HomeTagListItemFragment>[]
   themeTitle?: string

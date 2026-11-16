@@ -13,6 +13,11 @@ import { HomeHotCarousel } from "~/routes/($lang)._main._index/components/home-h
 import { HomeQuickLinks } from "~/routes/($lang)._main._index/components/home-quick-links"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import { HomeSidebar } from "~/routes/($lang)._main._index/components/home-sidebar"
+import { HomeTagList } from "~/routes/($lang)._main._index/components/home-tag-list"
+import {
+  HomeTagWorksPlaceholder,
+  HomeTagWorksSection,
+} from "~/routes/($lang)._main._index/components/home-tag-works-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import type { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
@@ -54,6 +59,14 @@ export function HomeFeedTabContent(
 
   return (
     <TabsContent value="home" className="m-0 flex flex-col space-y-4">
+      {/* 今日のお題を先頭にしたタグの横並び（丸いタブのすぐ下、スマホも PC も） */}
+      {(data.dailyTheme || data.hotTags.length > 0) && (
+        <HomeTagList
+          themeTitle={data.dailyTheme?.title}
+          themeEnTitle={data.dailyTheme?.enTitle}
+          hotTags={data.hotTags}
+        />
+      )}
       <div className="block space-y-4 md:flex md:space-x-6 md:space-y-0">
         <div className="flex w-full min-w-0 flex-col space-y-6 md:max-w-[calc(100%_-_286px)] md:space-y-8">
           {/* お知らせ（開催中のイベント・サイトのお知らせ）は一番上 */}
@@ -91,6 +104,12 @@ export function HomeFeedTabContent(
           />
           {/* 週替わりのピックアップモデル（みんなのモデルの看板） */}
           <UserModelPickupBanner />
+          {/* タグごとの作品（今日のお題・人気タグ）。画面に近づいてから読む */}
+          <div style={offscreenSectionStyle(900)}>
+            <HomeDeferredSection fallback={<HomeTagWorksPlaceholder />}>
+              <HomeTagWorksSection />
+            </HomeDeferredSection>
+          </div>
           {/* ログインしている人だけ（未ログインでは中身が取れず、見出しだけ出ていた） */}
           {authContext.isLoggedIn && (
             <div style={offscreenSectionStyle(1000)}>
