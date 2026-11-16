@@ -227,10 +227,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                 </span>
                 {props.isPremiumCoinGenerationDisabled ? (
                   <span className="truncate font-normal">
-                    {t(
-                      "（プレミアムは生成に使いません）",
-                      "(premium coins not used)",
-                    )}
+                    {t("（フリーのみ）", "(free only)")}
                   </span>
                 ) : (
                   <>
