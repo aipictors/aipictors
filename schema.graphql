@@ -137,6 +137,17 @@ type AchievementSummaryNode {
   unlockedCount: Int!
 }
 
+"""いま出ている自分の宣伝"""
+type ActiveWorkPromotionNode {
+  """宣伝が終わる時刻（UNIX 秒）"""
+  endsAt: Int!
+
+  """コインで買った宣伝（false はプランの宣伝）"""
+  isPurchased: Boolean!
+  slot: WorkPromotionSlot!
+  workId: ID!
+}
+
 """運営による公開設定"""
 enum AdminAccessType {
   """完全非公開"""
@@ -1882,6 +1893,13 @@ type EmergencyAnnouncementNode {
   url: String!
 }
 
+"""イベント参加者のアイコン"""
+type EventParticipantIconNode {
+  iconUrl: String
+  id: ID!
+  name: String
+}
+
 input FeaturePromptonRequestWhereInput {
   userId: ID!
 }
@@ -3540,6 +3558,9 @@ type Mutation {
   """コインでアイコン枠を買う（買った枠の ID を返す）"""
   purchaseUserAvatarFrame(input: PurchaseUserAvatarFrameInput!): ID!
 
+  """プレミアムコインで作品を宣伝枠に出す（今から 7 日間。全年齢と R18 で 1 作品ずつ）"""
+  purchaseWorkPromotion(input: PurchaseWorkPromotionInput!): ActiveWorkPromotionNode!
+
   """おすすめ一覧での反応（見た・開いた・興味なし）を記録する。ログインしていなければ何もしない"""
   recordFeedEvents(events: [FeedEventInput!]!): Boolean!
 
@@ -4476,6 +4497,10 @@ input PurchaseUserAvatarFrameInput {
   frameId: ID!
 }
 
+input PurchaseWorkPromotionInput {
+  workId: ID!
+}
+
 type Query {
   """自分の実績の表示設定"""
   achievementSettings: AchievementSettingsNode
@@ -4720,7 +4745,7 @@ type Query {
   """プロモーション"""
   promotion(id: ID!): PromotionNode
 
-  """公開から 7 日以内の宣伝作品（新しい順）"""
+  """宣伝作品（新しい順）。プランの宣伝は公開から 7 日、コインで買った宣伝は買ってから 7 日"""
   promotionWorks(isSensitive: Boolean, limit: Int!): [WorkNode!]!
 
   """プロモーション"""
@@ -4859,6 +4884,9 @@ type Query {
   """ログイン中のユーザ"""
   viewer: Viewer
 
+  """いま出ている自分の宣伝（全年齢・R18 の枠ごと）"""
+  viewerActiveWorkPromotions: [ActiveWorkPromotionNode!]!
+
   """コインで買ったアイコン枠の ID"""
   viewerOwnedUserAvatarFrameIds: [ID!]!
 
@@ -4885,6 +4913,9 @@ type Query {
 
   """画像ハッシュ値で作品を検索"""
   workByImageHash(imageHash: String!): WorkNode
+
+  """コインで買う宣伝枠の値段と日数"""
+  workPromotionPlan: WorkPromotionPlanNode!
 
   """
   作品
@@ -5704,11 +5735,11 @@ input UpdateUserSettingInput {
   """名前つきのいいねの通知を受け取る"""
   isNotifyLike: Boolean
 
-  """以前の既定のスタンプもスタンプの一覧に出す"""
-  isShowLegacyDefaultStickers: Boolean
-
   """プレミアムコインでの推し（応援）を受け取らない"""
   isRejectPremiumCoinSupport: Boolean
+
+  """以前の既定のスタンプもスタンプの一覧に出す"""
+  isShowLegacyDefaultStickers: Boolean
 
   """ミュートユーザのコメントを表示する"""
   isShowingMutedUsersComments: Boolean
@@ -5918,13 +5949,6 @@ type UserEventContentNode {
   descriptions: [String!]!
   participationGuides: [String!]!
   titles: [String!]!
-}
-
-"""イベント参加者のアイコン"""
-type EventParticipantIconNode {
-  iconUrl: String
-  id: ID!
-  name: String
 }
 
 """ユーザーイベント"""
@@ -6341,11 +6365,11 @@ type UserSettingNode implements Node {
   """作品投稿がBAN されているかどうか"""
   isPostBanned: Boolean!
 
-  """以前の既定のスタンプもスタンプの一覧に出すかどうか"""
-  isShowLegacyDefaultStickers: Boolean!
-
   """プレミアムコインでの推し（応援）を受け取らないかどうか"""
   isRejectPremiumCoinSupport: Boolean!
+
+  """以前の既定のスタンプもスタンプの一覧に出すかどうか"""
+  isShowLegacyDefaultStickers: Boolean!
 
   """ミュートしているユーザのコメントを表示するかどうか"""
   isShowingMutedUsersComments: Boolean!
@@ -7281,6 +7305,18 @@ enum WorkOrderBy {
 
   """作品種別でソート"""
   WORK_TYPE
+}
+
+"""コインで買う宣伝枠の値段（プレミアムコインだけで払う）と日数"""
+type WorkPromotionPlanNode {
+  days: Int!
+  priceCoins: Int!
+}
+
+"""宣伝枠の種類（GENERAL: 全年齢・R15 / SENSITIVE: R18・R18G）"""
+enum WorkPromotionSlot {
+  GENERAL
+  SENSITIVE
 }
 
 """管理者権限で作品の設定を変更する内容"""

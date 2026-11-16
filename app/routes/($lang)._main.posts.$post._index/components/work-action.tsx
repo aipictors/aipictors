@@ -6,6 +6,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { RecommendButton } from "~/routes/($lang)._main.posts.$post._index/components/recommend-button"
 import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post._index/components/work-action-bookmark"
 import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post._index/components/work-editor-button"
+import { WorkPromotionButton } from "~/routes/($lang)._main.posts.$post._index/components/work-promotion-button"
 import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
 import { downloadImageFileAsPng } from "~/routes/($lang).generation._index/utils/download-image-file-as-png"
 import { downloadZipFile } from "~/routes/($lang).generation._index/utils/download-zip-file"
@@ -133,6 +134,14 @@ export function WorkAction(props: Props) {
                 targetWorkId={props.targetWorkId}
                 targetWorkOwnerUserId={props.targetWorkOwnerUserId}
                 type={props.workType}
+              />
+            )}
+            {!props.isHideEditButton && (
+              <WorkPromotionButton
+                workId={props.targetWorkId}
+                ownerUserId={props.targetWorkOwnerUserId}
+                accessType={props.accessType}
+                isSensitive={props.isSensitive}
               />
             )}
             {props.targetWorkOwnerUserId !== appContext.userId && (

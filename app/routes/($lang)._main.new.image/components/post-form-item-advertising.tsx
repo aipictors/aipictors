@@ -23,8 +23,8 @@ export function PostFormItemAdvertising (props: Props) {
         <p className="font-bold text-sm">{t("宣伝作品", "Advertising Work")}</p>
         <p className="text-sm">
           {t(
-            "自分のサービスや作品集を、より多くの人に見てもらえる枠です。スタンダード・プレミアムプランで週に1作品使えます。",
-            "Show your service or portfolio to more people. Available once a week on the Standard and Premium plans.",
+            "自分のサービスや作品集を、より多くの人に見てもらえる枠です。スタンダード・プレミアムプランで週に1作品使えます。プランがなくても、公開した作品のページの「宣伝する」からプレミアムコイン500枚で7日間出せます。",
+            "Show your service or portfolio to more people. Available once a week on the Standard and Premium plans. Without a plan, use “Promote” on a published work's page to feature it for 7 days for 500 premium coins.",
           )}
         </p>
         <ul className="list-disc space-y-1 pl-5 text-sm">
