@@ -10,7 +10,7 @@ import {
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 /**
- * 保存期限が近い画像の左下に出す「あと◯日」（左上は保存ボタン）
+ * 保存期限が近い画像の右上に出す「あと◯日」（左上は保存、左下は評価・投稿済みの印）
  */
 export function GenerationRetentionExpiringChip(props: {
   daysLeft: number
@@ -26,7 +26,7 @@ export function GenerationRetentionExpiringChip(props: {
         "This image is nearing its storage limit. A plan keeps it longer",
       )}
       className={cn(
-        "absolute bottom-1 left-1 z-10 flex items-center gap-0.5 rounded-full bg-amber-500/90 font-bold text-white shadow-sm backdrop-blur-sm",
+        "absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-full bg-amber-500/90 font-bold text-white shadow-sm backdrop-blur-sm",
         props.isCompact
           ? "px-1 py-0.5 text-[9px]"
           : "px-1.5 py-0.5 text-[10px]",
