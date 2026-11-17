@@ -150,3 +150,24 @@ test("有料リクエストの通知は別名で取ったメッセージを使�
   expect(item?.message).toBe("依頼が届きました")
   expect(item?.requestId).toBe("5")
 })
+
+test("いいねの通知は、まとまっているいいねの数を likeCount に持つ", () => {
+  const items = toPanelItems([
+    {
+      __typename: "LikedWorkNotificationNode",
+      id: "a",
+      createdAt: 2,
+      work,
+      user: null,
+      count: 3,
+    },
+    {
+      __typename: "LikedWorkNotificationNode",
+      id: "b",
+      createdAt: 1,
+      work,
+      user,
+    },
+  ])
+  expect(items.map((item) => item.likeCount)).toEqual([3, 1])
+})

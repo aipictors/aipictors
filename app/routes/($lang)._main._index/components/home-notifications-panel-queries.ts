@@ -4,6 +4,7 @@ const PanelLikedFragment = graphql(
   `fragment PanelLiked on LikedWorkNotificationNode @_unmask {
     id
     createdAt
+    count
     work { id title enTitle smallThumbnailImageURL }
     user { id name iconUrl }
   }`,

@@ -1,10 +1,12 @@
 import type { PanelItem } from "~/routes/($lang)._main._index/components/home-notifications-panel-items"
 
-export type LikedUserEntry = Pick<PanelItem, "id" | "createdAt" | "user">
+export type LikedUserEntry = Pick<PanelItem, "id" | "createdAt" | "user"> &
+  Partial<Pick<PanelItem, "likeCount">>
 
 /**
  * まとめたいいねの通知から、いいねした人の一覧を作る（新しい順）。
  * 同じ人が付け直したときは新しいほうだけ残す。匿名のいいねは 1 件ずつ出す
+ * （数件が 1 件の通知にまとまっている匿名いいねは、likeCount の数だけ出す）
  */
 export function toLikedUserEntries(
   group: readonly LikedUserEntry[],
@@ -18,9 +20,12 @@ export function toLikedUserEntries(
       seen.add(item.user.id)
       return true
     })
-    .map((item) => ({
-      id: item.id,
-      createdAt: item.createdAt,
-      user: item.user,
-    }))
+    .flatMap((item) => {
+      const count = item.user ? 1 : Math.max(1, item.likeCount ?? 1)
+      return Array.from({ length: count }, (_, index) => ({
+        id: index === 0 ? item.id : `${item.id}:${index}`,
+        createdAt: item.createdAt,
+        user: item.user,
+      }))
+    })
 }

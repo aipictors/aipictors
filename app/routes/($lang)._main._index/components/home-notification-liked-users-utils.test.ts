@@ -22,4 +22,14 @@ describe("toLikedUserEntries", () => {
     ])
     expect(entries.map((entry) => entry.id)).toEqual(["a", "b", "d"])
   })
+
+  test("まとめて記録された匿名いいねは、その数だけ出す", () => {
+    const entries = toLikedUserEntries([
+      { id: "a", createdAt: 300, user: user("1") },
+      { id: "b", createdAt: 200, user: null, likeCount: 2 },
+      { id: "c", createdAt: 100, user: null },
+    ])
+    expect(entries.map((entry) => entry.id)).toEqual(["a", "b", "b:1", "c"])
+    expect(entries.filter((entry) => entry.user === null).length).toBe(3)
+  })
 })

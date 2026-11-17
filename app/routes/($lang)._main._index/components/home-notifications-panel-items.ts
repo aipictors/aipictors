@@ -49,6 +49,8 @@ export type PanelItem = {
   myReplies: PanelReply[]
   parentComment: PanelParentComment | null
   requestId?: string | null
+  /** いいねの通知 1 件に含まれるいいねの数（匿名いいねは数件が 1 件にまとまることがある。ふつうは 1） */
+  likeCount?: number
 }
 
 /** 通知ノード（種類で持っている項目が違う） */
@@ -67,6 +69,8 @@ type PanelNode = {
   replyTargetCommentId?: string | null
   comment?: PanelParentComment | null
   requestId?: string | null
+  /** いいねの通知にまとまっているいいねの数 */
+  count?: number | null
 }
 
 const KIND_BY_TYPENAME: Record<string, NotificationPanelKind> = {
@@ -101,6 +105,7 @@ const toPanelItem = (node: PanelNode): PanelItem | null => {
     myReplies: node.myReplies ?? [],
     parentComment: kind === "reply" ? (node.comment ?? null) : null,
     requestId: node.requestId ?? null,
+    likeCount: kind === "liked" ? Math.max(1, node.count ?? 1) : 1,
   }
 }
 

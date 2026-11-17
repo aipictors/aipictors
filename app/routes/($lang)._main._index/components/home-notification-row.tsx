@@ -25,6 +25,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { NotificationLikedUsers } from "~/routes/($lang)._main._index/components/home-notification-liked-users"
+import { toLikedUserEntries } from "~/routes/($lang)._main._index/components/home-notification-liked-users-utils"
 import {
   type PanelItem,
   type PanelParentComment,
@@ -214,7 +215,7 @@ export function NotificationRowView(props: {
       >
         {body}
       </Link>
-      {item.kind === "liked" && group.length > 1 && (
+      {item.kind === "liked" && toLikedUserEntries(group).length > 1 && (
         <NotificationLikedUsers group={group} onClose={props.onClose} />
       )}
       {props.footer}
@@ -322,7 +323,11 @@ function RowTitle(props: { item: PanelItem; group: PanelItem[] }) {
       {item.user?.name ?? t("匿名のユーザー", "Someone")}
     </span>
   )
-  const others = group.length - 1
+  // いいねした人の数（同じ人の付け直しは 1 人、まとめて記録された匿名いいねはその数）
+  const others =
+    item.kind === "liked"
+      ? toLikedUserEntries(group).length - 1
+      : group.length - 1
 
   const className = "break-words text-sm leading-snug"
 

@@ -3095,6 +3095,9 @@ input LikedUsersWhereInput {
 
 """通知（いいねされた作品）"""
 type LikedWorkNotificationNode implements Node {
+  """この通知にまとまっているいいねの数（ふつうは 1。匿名いいねは数件を 1 件の通知にまとめて記録することがある）"""
+  count: Int!
+
   """時刻"""
   createdAt: Int!
   id: ID!
