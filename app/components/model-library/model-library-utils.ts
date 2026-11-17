@@ -102,6 +102,14 @@ export const fromUserModel = (
 }
 
 /**
+ * 公式モデルの ID（公式モデルには更新日がないので、新着順は ID の大きい順にする）
+ */
+const officialId = (item: ModelLibraryItem) => {
+  const id = Number(item.officialCheckpoint?.id ?? item.officialLora?.id)
+  return Number.isFinite(id) ? id : 0
+}
+
+/**
  * 手元にある一覧（公式・自分のモデルなど）を検索・絞り込み・並び替えする
  */
 export const filterLibraryItems = (
@@ -133,7 +141,9 @@ export const filterLibraryItems = (
   if (filters.sort === "new") {
     return [...filtered].sort((a, b) => {
       if (a.isNew !== b.isNew) return a.isNew ? -1 : 1
-      return (b.updatedAt ?? 0) - (a.updatedAt ?? 0)
+      const byDate = (b.updatedAt ?? 0) - (a.updatedAt ?? 0)
+      if (byDate !== 0) return byDate
+      return officialId(b) - officialId(a)
     })
   }
   return [...filtered].sort((a, b) => (b.useCount ?? 0) - (a.useCount ?? 0))

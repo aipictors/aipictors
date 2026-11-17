@@ -122,6 +122,31 @@ describe("filterLibraryItems", () => {
     ])
   })
 
+  test("公式モデルの新着順は ID の大きい順（人気順は元の並びのまま）", () => {
+    const loras = ["1", "3", "2"].map((id) =>
+      fromOfficialLora({
+        id,
+        name: `lora${id}`,
+        description: null,
+        thumbnailImageURL: null,
+      }),
+    )
+    const keys = (sort: "popular" | "new") =>
+      filterLibraryItems(loras, { ...defaultModelLibraryFilters, sort }).map(
+        (item) => item.key,
+      )
+    expect(keys("new")).toEqual([
+      "official-lora:lora3",
+      "official-lora:lora2",
+      "official-lora:lora1",
+    ])
+    expect(keys("popular")).toEqual([
+      "official-lora:lora1",
+      "official-lora:lora3",
+      "official-lora:lora2",
+    ])
+  })
+
   test("自分のモデルとお気に入りを判定する", () => {
     expect(items[0].isFavorite).toBe(true)
     expect(items[2].isOwn).toBe(true)
