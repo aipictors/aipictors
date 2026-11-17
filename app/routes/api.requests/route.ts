@@ -90,7 +90,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   // 実績（透かし入りの画像だけ。ログインしなくても見られる）
   if (op === "showcase") {
     const params = new URLSearchParams()
-    for (const key of ["planId", "userId", "limit", "offset"]) {
+    for (const key of ["planId", "userId", "r18", "limit", "offset"]) {
       if (q(key)) params.set(key, q(key))
     }
     return call(context, `/showcase?${params.toString()}`)

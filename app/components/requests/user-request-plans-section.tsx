@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react"
 import {
   RequestShowcaseBadge,
   RequestShowcaseGrid,
+  RequestShowcaseR18Section,
 } from "~/components/requests/request-showcase"
 import {
   RequestPlanCard,
@@ -48,8 +49,14 @@ export function UserRequestPlansSection(props: { userId: string }) {
   const canFree = profile.canFreeRequest && !isOwner
   const showcase = profile.showcase ?? []
   const showcaseCount = profile.showcaseCount ?? showcase.length
+  const showcaseR18Count = profile.showcaseR18Count ?? 0
 
-  if (plans.length === 0 && !profile.canFreeRequest && showcase.length === 0) {
+  if (
+    plans.length === 0 &&
+    !profile.canFreeRequest &&
+    showcase.length === 0 &&
+    showcaseR18Count === 0
+  ) {
     if (!isOwner) return null
     return (
       <Link
@@ -124,13 +131,13 @@ export function UserRequestPlansSection(props: { userId: string }) {
           ))}
         </div>
       )}
-      {showcase.length > 0 && (
+      {(showcase.length > 0 || showcaseR18Count > 0) && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-2 px-1">
             <h3 className="flex items-center gap-1.5 font-bold text-sm">
               {t(
-                `リクエストの実績（${showcaseCount}）`,
-                `Request works (${showcaseCount})`,
+                `リクエストの実績（${showcaseCount + showcaseR18Count}）`,
+                `Request works (${showcaseCount + showcaseR18Count})`,
               )}
               <RequestShowcaseBadge />
             </h3>
@@ -144,7 +151,19 @@ export function UserRequestPlansSection(props: { userId: string }) {
               </Link>
             )}
           </div>
-          <RequestShowcaseGrid items={showcase} users={profile.users} scroll />
+          {showcase.length > 0 && (
+            <RequestShowcaseGrid
+              items={showcase}
+              users={profile.users}
+              scroll
+            />
+          )}
+          <RequestShowcaseR18Section
+            count={showcaseR18Count}
+            userId={props.userId}
+            users={profile.users}
+            scroll
+          />
         </div>
       )}
       {canFree && (

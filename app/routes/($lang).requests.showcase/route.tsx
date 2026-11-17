@@ -9,6 +9,7 @@ import { useEffect, useState } from "react"
 import {
   RequestShowcaseBadge,
   RequestShowcaseGrid,
+  RequestShowcaseR18Section,
 } from "~/components/requests/request-showcase"
 import {
   RequestUserChip,
@@ -24,7 +25,11 @@ import { createMeta } from "~/utils/create-meta"
 
 const PAGE_SIZE = 48
 
-type ShowcaseData = { items: RequestShowcaseItem[]; users: RequestUsers }
+type ShowcaseData = {
+  items: RequestShowcaseItem[]
+  users: RequestUsers
+  counts?: { all: number; r18: number }
+}
 
 /**
  * 実績の一覧: ?planId= でそのプランの実績、?userId= でクリエイターの実績（透かし入りの画像だけ）
@@ -48,6 +53,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     userId: planId ? null : userId,
     items: data?.items ?? [],
     users: data?.users ?? {},
+    r18Count: data?.counts?.r18 ?? 0,
   }
 }
 
@@ -133,7 +139,7 @@ export default function RequestShowcasePage() {
         </p>
       </div>
 
-      {items.length === 0 ? (
+      {items.length === 0 && data.r18Count === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed px-6 py-14 text-center">
           <Images className="size-10 text-muted-foreground" />
           <p className="font-bold">
@@ -147,6 +153,13 @@ export default function RequestShowcasePage() {
           showCreator={data.planId === null && creator === undefined}
         />
       )}
+
+      <RequestShowcaseR18Section
+        count={data.r18Count}
+        planId={data.planId}
+        userId={data.userId}
+        users={users}
+      />
 
       {hasMore && (
         <Button

@@ -314,7 +314,7 @@ export default function RequestDetailPage() {
   )
 }
 
-/** 実績として公開するか（依頼者は許可・取り消し、クリエイターは自分の実績から外せる）。R18 と終わった（完了以外）依頼には出さない */
+/** 実績として公開するか（依頼者は許可・取り消し、クリエイターは自分の実績から外せる）。完了せずに終わった依頼には出さない。R18 は年齢の確認のあとにだけ表示される */
 function ShowcaseSettings(props: {
   request: CoinRequest
   busy: string | null
@@ -332,7 +332,7 @@ function ShowcaseSettings(props: {
     "EXPIRED",
     "ADMIN_CANCELED",
   ].includes(request.status)
-  if (request.isR18 || closedWithoutWork) return null
+  if (closedWithoutWork) return null
   const isCreator = request.role === "CREATOR"
   const allowed = request.showcaseAllowed === true
   const done =

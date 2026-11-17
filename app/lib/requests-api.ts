@@ -42,6 +42,8 @@ export type RequestShowcaseItem = {
   planTitle: string | null
   creatorUserId: string
   imageUrls: string[]
+  /** R18 の依頼（一覧は年齢の確認のあとに r18=1 で読む） */
+  isR18?: boolean
   completedAt: number | null
 }
 
@@ -49,6 +51,8 @@ export type CreatorRequestProfile = {
   /** 新しい実績（12 件まで）と全部の数 */
   showcase?: RequestShowcaseItem[]
   showcaseCount?: number
+  /** R18 の実績の数（中身は年齢の確認のあとに読む） */
+  showcaseR18Count?: number
   plans: RequestPlan[]
   settings: RequestSettings
   activeCount: number

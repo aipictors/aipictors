@@ -35,7 +35,10 @@ import {
   requestsPost,
 } from "~/lib/requests-api"
 import { fetchRequestsInternal } from "~/lib/server/requests-api.server"
-import { RequestShowcaseGrid } from "~/components/requests/request-showcase"
+import {
+  RequestShowcaseGrid,
+  RequestShowcaseR18Section,
+} from "~/components/requests/request-showcase"
 import { cn } from "~/lib/utils"
 import { createMeta } from "~/utils/create-meta"
 
@@ -47,6 +50,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
     users: RequestUsers
     showcase?: RequestShowcaseItem[]
     showcaseCount?: number
+    showcaseR18Count?: number
   }>(context, `/plans/${id}`)
   if (!data?.plan) throw new Response("Not Found", { status: 404 })
   return data
@@ -73,6 +77,7 @@ export default function RequestPlanPage() {
     users,
     showcase = [],
     showcaseCount = 0,
+    showcaseR18Count = 0,
   } = useLoaderData<typeof loader>()
   const auth = useContext(AuthContext)
   const t = useTranslation()
@@ -226,13 +231,13 @@ export default function RequestPlanPage() {
             </p>
           </section>
 
-          {showcase.length > 0 && (
+          {(showcase.length > 0 || showcaseR18Count > 0) && (
             <section className="flex flex-col gap-2">
               <div className="flex items-center justify-between gap-2">
                 <h2 className="font-bold text-sm">
                   {t(
-                    `このプランの実績（${showcaseCount}）`,
-                    `Works from this plan (${showcaseCount})`,
+                    `このプランの実績（${showcaseCount + showcaseR18Count}）`,
+                    `Works from this plan (${showcaseCount + showcaseR18Count})`,
                   )}
                 </h2>
                 {showcaseCount > showcase.length && (
@@ -245,7 +250,14 @@ export default function RequestPlanPage() {
                   </Link>
                 )}
               </div>
-              <RequestShowcaseGrid items={showcase} users={users} />
+              {showcase.length > 0 && (
+                <RequestShowcaseGrid items={showcase} users={users} />
+              )}
+              <RequestShowcaseR18Section
+                count={showcaseR18Count}
+                planId={plan.id}
+                users={users}
+              />
             </section>
           )}
 
