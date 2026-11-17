@@ -59,3 +59,8 @@
 /api/pv
   Cache-Control: no-store
   Content-Type: text/plain
+
+# 課金の案内の表示・クリックの計測（app/utils/track-growth-event.ts。/api/pv と同じく空の静的ファイル）
+/api/growth-event
+  Cache-Control: no-store
+  Content-Type: text/plain

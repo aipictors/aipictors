@@ -1,5 +1,6 @@
 /**
- * 課金の案内の表示・クリックを数える（/api/growth-event へのアクセスを Cloudflare の集計で数える）
+ * 課金の案内の表示・クリックを数える（/api/growth-event へのアクセスを Cloudflare の集計で数える。
+ * public/api/growth-event の空の静的ファイルなので Worker を起動しない）
  * 失敗しても画面の操作には影響させない
  */
 export function trackGrowthEvent(event: string, source: string) {
