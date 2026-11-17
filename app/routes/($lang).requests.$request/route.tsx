@@ -12,6 +12,7 @@ import {
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { RequestImagePicker } from "~/components/requests/request-image-picker"
+import { RequestShowcaseBadge } from "~/components/requests/request-showcase"
 import {
   CoinPrice,
   RequestImageGrid,
@@ -22,6 +23,7 @@ import {
 } from "~/components/requests/request-ui"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
+import { Switch } from "~/components/ui/switch"
 import { Textarea } from "~/components/ui/textarea"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
@@ -274,6 +276,8 @@ export default function RequestDetailPage() {
         )}
       </section>
 
+      <ShowcaseSettings request={request} busy={busy} act={act} />
+
       <MessageThread
         request={request}
         users={users}
@@ -307,6 +311,126 @@ export default function RequestDetailPage() {
         {t("この取引を運営に知らせる", "Report this request to staff")}
       </button>
     </div>
+  )
+}
+
+/** 実績として公開するか（依頼者は許可・取り消し、クリエイターは自分の実績から外せる）。R18 と終わった（完了以外）依頼には出さない */
+function ShowcaseSettings(props: {
+  request: CoinRequest
+  busy: string | null
+  act: (
+    action: string,
+    extra?: Record<string, unknown>,
+    success?: string,
+  ) => Promise<boolean>
+}) {
+  const t = useTranslation()
+  const { request } = props
+  const closedWithoutWork = [
+    "DECLINED",
+    "CANCELED",
+    "EXPIRED",
+    "ADMIN_CANCELED",
+  ].includes(request.status)
+  if (request.isR18 || closedWithoutWork) return null
+  const isCreator = request.role === "CREATOR"
+  const allowed = request.showcaseAllowed === true
+  const done =
+    request.status === "COMPLETED" || request.status === "ADMIN_COMPLETED"
+  // クリエイターには、許可されているときだけ出す
+  if (isCreator && !allowed) return null
+
+  const status = (() => {
+    if (!allowed) return null
+    if (!done) {
+      return t(
+        "取引が完了すると、透かし入りで実績に載ります",
+        "It will be shown with a watermark once the request is completed",
+      )
+    }
+    if (request.showcaseImageUrls === null) {
+      return t(
+        "透かし入りの画像を準備しています（数分かかります）",
+        "Preparing the watermarked image (takes a few minutes)",
+      )
+    }
+    if (request.showcaseImageUrls?.length === 0) {
+      return t(
+        "載せられる画像がありませんでした",
+        "There were no images that could be shown",
+      )
+    }
+    if (request.showcaseHidden) {
+      return t(
+        "クリエイターが実績に載せていません",
+        "The creator has chosen not to show it",
+      )
+    }
+    return t(
+      "プランとクリエイターのページの実績に載っています",
+      "Shown on the plan and the creator's profile",
+    )
+  })()
+
+  return (
+    <section className="flex flex-col gap-3 rounded-2xl border p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="flex flex-wrap items-center gap-2 font-bold text-sm">
+            {t("実績としての公開", "Showing as a work")}
+            <RequestShowcaseBadge />
+          </p>
+          <p className="text-muted-foreground text-xs">
+            {isCreator
+              ? t(
+                  "依頼者が、完成した作品を実績として公開することを許可しています（透かし入り）",
+                  "The requester allows the finished work to be shown (watermarked)",
+                )
+              : t(
+                  "完成した作品を、透かしを入れてクリエイターのプランやマイページの実績に載せてよいか選べます。いつでも変えられます",
+                  "Choose whether the finished work may be shown with a watermark on the creator's plan and profile. You can change this anytime",
+                )}
+          </p>
+        </div>
+        <Switch
+          checked={isCreator ? !request.showcaseHidden : allowed}
+          disabled={props.busy !== null}
+          onCheckedChange={(value) =>
+            isCreator
+              ? props.act(
+                  "showcase-hide",
+                  { hidden: !value },
+                  value
+                    ? t("実績に載せました", "Now shown in your works")
+                    : t("実績から外しました", "Removed from your works"),
+                )
+              : props.act(
+                  "showcase",
+                  { allowed: value },
+                  value
+                    ? t("公開を許可しました", "Permission granted")
+                    : t("許可を取り消しました", "Permission withdrawn"),
+                )
+          }
+        />
+      </div>
+      {status && <p className="text-muted-foreground text-xs">{status}</p>}
+      {allowed &&
+        request.showcaseImageUrls &&
+        request.showcaseImageUrls.length > 0 && (
+          <div className="flex gap-2">
+            {request.showcaseImageUrls.map((url) => (
+              <img
+                key={url}
+                src={url}
+                alt=""
+                className="size-20 rounded-xl bg-muted object-cover"
+                loading="lazy"
+              />
+            ))}
+          </div>
+        )}
+    </section>
   )
 }
 

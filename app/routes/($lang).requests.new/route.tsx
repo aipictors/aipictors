@@ -53,6 +53,8 @@ type Draft = {
   body: string
   referenceImageUrls: string[]
   isR18: boolean
+  /** 完成した作品をクリエイターの実績として公開してよい（透かし入り・全年齢の依頼だけ） */
+  showcaseAllowed: boolean
   priceCoins: number
   deliveryDays: number
   agreed: boolean
@@ -97,6 +99,7 @@ export default function NewRequestPage() {
     body: "",
     referenceImageUrls: [],
     isR18: false,
+    showcaseAllowed: false,
     priceCoins: 0,
     deliveryDays: 14,
     agreed: false,
@@ -275,6 +278,7 @@ export default function NewRequestPage() {
         body: draft.body,
         referenceImageUrls: draft.referenceImageUrls,
         isR18: allowsR18 && draft.isR18,
+        showcaseAllowed: draft.showcaseAllowed && !(allowsR18 && draft.isR18),
         priceCoins: price,
         deliveryDays: draft.deliveryDays,
       })
@@ -536,6 +540,30 @@ export default function NewRequestPage() {
             <Switch
               checked={draft.isR18}
               onCheckedChange={(v) => setDraft((d) => ({ ...d, isR18: v }))}
+            />
+          </label>
+        )}
+        {!(allowsR18 && draft.isR18) && (
+          <label className="flex items-center justify-between gap-3 rounded-xl bg-muted/50 px-3 py-2.5">
+            <span className="text-sm">
+              <span className="font-bold">
+                {t(
+                  "クリエイターの実績として公開してOK",
+                  "OK to show as the creator's work",
+                )}
+              </span>
+              <span className="block text-muted-foreground text-xs">
+                {t(
+                  "完成した作品を、透かしを入れてクリエイターのプランやマイページの実績に載せられます。あとから取り消せます",
+                  "The finished work can be shown with a watermark on the creator's plan and profile. You can change this later",
+                )}
+              </span>
+            </span>
+            <Switch
+              checked={draft.showcaseAllowed}
+              onCheckedChange={(v) =>
+                setDraft((d) => ({ ...d, showcaseAllowed: v }))
+              }
             />
           </label>
         )}

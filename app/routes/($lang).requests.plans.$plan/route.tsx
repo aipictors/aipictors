@@ -7,6 +7,7 @@ import { useLoaderData } from "@remix-run/react"
 import {
   CalendarClock,
   ChevronLeft,
+  ChevronRight,
   Flag,
   Images,
   Pencil,
@@ -29,10 +30,12 @@ import { Link } from "~/lib/app/locale-router"
 import {
   planCategoryLabel,
   type RequestPlan,
+  type RequestShowcaseItem,
   requestErrorMessage,
   requestsPost,
 } from "~/lib/requests-api"
 import { fetchRequestsInternal } from "~/lib/server/requests-api.server"
+import { RequestShowcaseGrid } from "~/components/requests/request-showcase"
 import { cn } from "~/lib/utils"
 import { createMeta } from "~/utils/create-meta"
 
@@ -42,6 +45,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
   const data = await fetchRequestsInternal<{
     plan: RequestPlan
     users: RequestUsers
+    showcase?: RequestShowcaseItem[]
+    showcaseCount?: number
   }>(context, `/plans/${id}`)
   if (!data?.plan) throw new Response("Not Found", { status: 404 })
   return data
@@ -63,7 +68,12 @@ export const headers: HeadersFunction = () => ({
 })
 
 export default function RequestPlanPage() {
-  const { plan, users } = useLoaderData<typeof loader>()
+  const {
+    plan,
+    users,
+    showcase = [],
+    showcaseCount = 0,
+  } = useLoaderData<typeof loader>()
   const auth = useContext(AuthContext)
   const t = useTranslation()
   const creator = users[plan.userId]
@@ -215,6 +225,29 @@ export default function RequestPlanPage() {
               {plan.description}
             </p>
           </section>
+
+          {showcase.length > 0 && (
+            <section className="flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="font-bold text-sm">
+                  {t(
+                    `このプランの実績（${showcaseCount}）`,
+                    `Works from this plan (${showcaseCount})`,
+                  )}
+                </h2>
+                {showcaseCount > showcase.length && (
+                  <Link
+                    to={`/requests/showcase?planId=${plan.id}`}
+                    className="flex items-center text-muted-foreground text-sm hover:text-foreground"
+                  >
+                    {t("すべて見る", "See all")}
+                    <ChevronRight className="size-4" />
+                  </Link>
+                )}
+              </div>
+              <RequestShowcaseGrid items={showcase} users={users} />
+            </section>
+          )}
 
           <section className="flex flex-col gap-1.5 rounded-2xl border p-4 text-muted-foreground text-xs">
             <p className="flex items-center gap-1.5 font-bold text-foreground text-sm">

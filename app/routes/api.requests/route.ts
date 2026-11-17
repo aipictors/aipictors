@@ -16,7 +16,7 @@ import { toJsonResponse as toJson } from "~/lib/server/json-response.server"
 /**
  * 有料リクエストとプラン（aipictors-api の /internal/requests へ、ログインを確かめてから転送する）。Web とアプリが使う
  *
- * GET  /api/requests?op=config | plans | plan&id= | creator&userId= | settings | list&role=&status= | detail&id= | badge | admin-list | admin-detail&id=
+ * GET  /api/requests?op=config | showcase&planId=|userId= | plans | plan&id= | creator&userId= | settings | list&role=&status= | detail&id= | badge | admin-list | admin-detail&id=
  * POST /api/requests { op: "save-plan" | "delete-plan" | "report-plan" | "save-settings" | "apply" | "action" | "admin-action", ... }
  *
  * plans・plan・creator はログインしなくても見られる
@@ -86,6 +86,15 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const q = (key: string) => url.searchParams.get(key) ?? ""
 
   if (op === "config") return call(context, "/config")
+
+  // 実績（透かし入りの画像だけ。ログインしなくても見られる）
+  if (op === "showcase") {
+    const params = new URLSearchParams()
+    for (const key of ["planId", "userId", "limit", "offset"]) {
+      if (q(key)) params.set(key, q(key))
+    }
+    return call(context, `/showcase?${params.toString()}`)
+  }
 
   // ログインしていなくても見られるもの（ログインしていれば本人の非公開のプランも出す）
   if (op === "plans" || op === "plan" || op === "creator") {

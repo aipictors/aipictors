@@ -1,6 +1,10 @@
 import { ChevronRight, HandCoins, Plus } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import {
+  RequestShowcaseBadge,
+  RequestShowcaseGrid,
+} from "~/components/requests/request-showcase"
+import {
   RequestPlanCard,
   type RequestUsers,
 } from "~/components/requests/request-ui"
@@ -15,8 +19,8 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 
 /**
- * マイページのプラン欄: プランの横スクロールのカードと「リクエストする」ボタン。
- * プランも自由リクエストもない人には何も出さない（本人には作る入口だけ小さく出す）
+ * マイページのプラン欄: プランの横スクロールのカード、リクエストの実績（透かし入り・「プランで制作」の印）、「リクエストする」ボタン。
+ * プランも自由リクエストも実績もない人には何も出さない（本人には作る入口だけ小さく出す）
  */
 export function UserRequestPlansSection(props: { userId: string }) {
   const t = useTranslation()
@@ -42,8 +46,10 @@ export function UserRequestPlansSection(props: { userId: string }) {
   if (!profile) return null
   const plans = profile.plans.filter((p) => p.status === "ACTIVE" || isOwner)
   const canFree = profile.canFreeRequest && !isOwner
+  const showcase = profile.showcase ?? []
+  const showcaseCount = profile.showcaseCount ?? showcase.length
 
-  if (plans.length === 0 && !profile.canFreeRequest) {
+  if (plans.length === 0 && !profile.canFreeRequest && showcase.length === 0) {
     if (!isOwner) return null
     return (
       <Link
@@ -116,6 +122,29 @@ export function UserRequestPlansSection(props: { userId: string }) {
               />
             </div>
           ))}
+        </div>
+      )}
+      {showcase.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-2 px-1">
+            <h3 className="flex items-center gap-1.5 font-bold text-sm">
+              {t(
+                `リクエストの実績（${showcaseCount}）`,
+                `Request works (${showcaseCount})`,
+              )}
+              <RequestShowcaseBadge />
+            </h3>
+            {showcaseCount > showcase.length && (
+              <Link
+                to={`/requests/showcase?userId=${props.userId}`}
+                className="flex items-center text-muted-foreground text-sm hover:text-foreground"
+              >
+                {t("すべて見る", "See all")}
+                <ChevronRight className="size-4" />
+              </Link>
+            )}
+          </div>
+          <RequestShowcaseGrid items={showcase} users={profile.users} scroll />
         </div>
       )}
       {canFree && (

@@ -35,7 +35,20 @@ export type RequestSettings = {
   note: string
 }
 
+/** 実績（依頼者が公開を許可した完了済みの依頼）。画像は透かし入りのものだけ */
+export type RequestShowcaseItem = {
+  requestId: string
+  planId: string | null
+  planTitle: string | null
+  creatorUserId: string
+  imageUrls: string[]
+  completedAt: number | null
+}
+
 export type CreatorRequestProfile = {
+  /** 新しい実績（12 件まで）と全部の数 */
+  showcase?: RequestShowcaseItem[]
+  showcaseCount?: number
   plans: RequestPlan[]
   settings: RequestSettings
   activeCount: number
@@ -98,6 +111,12 @@ export type CoinRequest = {
     premiumCoins: number
   } | null
   reportCount?: number
+  /** 依頼者が実績として公開を許可した（透かし入り・全年齢の依頼だけ） */
+  showcaseAllowed?: boolean
+  /** クリエイターが自分の実績に出さないことにした */
+  showcaseHidden?: boolean
+  /** 透かし入りの画像（null = まだ作っていない） */
+  showcaseImageUrls?: string[] | null
   createdAt: number
   updatedAt: number
   messages?: RequestMessage[]

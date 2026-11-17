@@ -7,6 +7,7 @@ describe("リクエストの上のタブ", () => {
     expect(requestsHubTab("/requests/")).toBe("find")
     expect(requestsHubTab("/requests/plans/abc")).toBe("find")
     expect(requestsHubTab("/requests/new")).toBe("find")
+    expect(requestsHubTab("/requests/showcase")).toBe("find")
   })
   test("依頼の一覧と依頼の詳細は「依頼の管理」", () => {
     expect(requestsHubTab("/requests/manage")).toBe("manage")

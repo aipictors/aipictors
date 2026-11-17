@@ -20,7 +20,7 @@ export type RequestsBadge = { received: number; toConfirm: number }
 export const requestsHubTab = (pathname: string): RequestsHubTab | null => {
   const path = pathname.replace(/^\/(?:en|ja|r)(?=\/)/, "").replace(/\/$/, "")
   if (path === "/requests" || path.startsWith("/requests/plans")) return "find"
-  if (path === "/requests/new") return "find"
+  if (path === "/requests/new" || path === "/requests/showcase") return "find"
   if (path === "/requests/my-plans") return "mine"
   if (path === "/requests/terms") return null
   if (path.startsWith("/requests/")) return "manage"

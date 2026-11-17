@@ -1275,6 +1275,15 @@ export const META: { [key: string]: MetaData } = {
     image: "{{image}}",
     isIndex: true,
   },
+  REQUEST_SHOWCASE: {
+    title: "リクエストの実績",
+    enTitle: "Request works",
+    description:
+      "有料リクエストのプランで作られ、依頼者が公開を許可した作品（透かし入り）",
+    enDescription:
+      "Works made through paid request plans, shown with the requester's permission",
+    isIndex: true,
+  },
   REQUESTS: {
     title: "リクエストの管理",
     enTitle: "Requests",
