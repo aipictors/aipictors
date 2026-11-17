@@ -15,6 +15,7 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useQuery } from "@apollo/client/index"
 import { viewerBasicUserQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
 import { debugLog } from "~/utils/debug-logger"
+import { userNavigationStyles } from "~/routes/($lang)._main._index/components/user-navigation-styles"
 import { closeMenuOnNavigate } from "~/utils/close-menu-on-navigate"
 import { useLocation } from "@remix-run/react"
 
@@ -141,6 +142,7 @@ export function FastUserNavigationMenu(props: Props) {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
+        className={userNavigationStyles.menuContent}
         onClickCapture={closeMenuOnNavigate(() => setIsOpen(false))}
       >
         <UserNavigationMenuContent onLogout={props.onLogout} />

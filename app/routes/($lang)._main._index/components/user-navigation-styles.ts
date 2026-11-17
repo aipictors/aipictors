@@ -7,6 +7,10 @@ export const userNavigationStyles = {
   // コンテナの幅（スマホ対応を最優先に調整）
   container: "w-[200px] sm:w-[240px] md:w-[280px]", // スマホでは200px、タブレットでは240px、PCでは280px
 
+  // メニュー全体（画面の高さを超えるときはメニュー内でスクロールし、下のログアウトまで届くようにする）
+  menuContent:
+    "max-h-[var(--radix-dropdown-menu-content-available-height)] overflow-y-auto",
+
   // ユーザー情報セクション
   userName: "h-7 font-bold text-lg truncate", // ユーザー名（省略表示対応）
   userLogin: "h-5 text-muted-foreground text-sm truncate", // @ログイン名（省略表示対応）
