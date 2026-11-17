@@ -71,11 +71,13 @@ const toJstDay = (unixSeconds: number) =>
 
 /**
  * 通知を行にする。新しい順に並んだ一覧の先頭から、種類ごとの未読数の分だけ未読にする。
- * 同じ日の同じ作品へのいいねは 1 行にまとめる
+ * 同じ日の同じ作品へのいいねは 1 行にまとめる。
+ * likedItems（いいねの通知だけを多めに読んだもの）を渡すと、一覧の件数の外にある同じ日の同じ作品へのいいねもまとめに足す
  */
 export function toNotificationRows<T extends RowInput>(
   items: readonly T[],
   unread: UnreadCounts,
+  likedItems: readonly T[] = [],
 ): NotificationRow<T>[] {
   const remaining = { ...unread }
   const rows: NotificationRow<T>[] = []
@@ -102,6 +104,16 @@ export function toNotificationRows<T extends RowInput>(
     }
 
     rows.push({ id: item.id, item, group: [item], isUnread })
+  }
+
+  for (const liked of likedItems) {
+    if (liked.kind !== "liked" || !liked.workId) continue
+    const row = likedRows.get(`${liked.workId}:${toJstDay(liked.createdAt)}`)
+    if (!row || row.group.some((item) => item.id === liked.id)) continue
+    row.group.push(liked)
+  }
+  for (const row of likedRows.values()) {
+    row.group.sort((a, b) => b.createdAt - a.createdAt)
   }
 
   return rows

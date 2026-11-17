@@ -18,6 +18,23 @@ const liked = (id: string, workId: string, createdAt = NOW) => ({
 })
 
 describe("toNotificationRows", () => {
+  test("いいねの通知を別に読んだ分も、同じ日の同じ作品のまとめに足す", () => {
+    const rows = toNotificationRows(
+      [liked("9", "a"), liked("8", "b")],
+      EMPTY_UNREAD_COUNTS,
+      [
+        liked("9", "a"),
+        liked("5", "a", NOW - 120),
+        liked("4", "a", NOW - 60),
+        liked("3", "a", NOW - 86400),
+        liked("2", "c", NOW - 60),
+      ],
+    )
+    expect(rows.map((row) => row.id)).toEqual(["9", "8"])
+    expect(rows[0]?.group.map((item) => item.id)).toEqual(["9", "4", "5"])
+    expect(rows[1]?.group.map((item) => item.id)).toEqual(["8"])
+  })
+
   test("同じ日の同じ作品へのいいねを 1 行にまとめる", () => {
     const rows = toNotificationRows(
       [liked("3", "a"), liked("2", "b"), liked("1", "a", NOW - 60)],

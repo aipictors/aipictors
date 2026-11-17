@@ -28,6 +28,8 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 /** パネルに出す件数（全部は「通知の履歴をすべて見る」で見る） */
 const PANEL_NOTIFICATIONS_LIMIT = 20
+/** まとめたいいねの人数を数えるために読む、いいねの通知の件数（API の上限） */
+const PANEL_LIKED_GROUP_LIMIT = 128
 /** 開き直しただけなら取り直さない間隔 */
 const PANEL_REFRESH_INTERVAL_MS = 60 * 1000
 
@@ -67,6 +69,22 @@ export function NotificationList(props: {
 
   const items = useMemo(() => toPanelItems(data?.viewer?.notifications), [data])
 
+  // パネルの 20 件だけだと、まとめたいいねの人数が少なく出るので、いいねの通知だけを多めに読んで足す
+  const hasLikedRow = items.some((item) => item.kind === "liked")
+  const { data: likedData } = useQuery(panelNotificationsQuery, {
+    variables: {
+      offset: 0,
+      limit: PANEL_LIKED_GROUP_LIMIT,
+      where: TAB_WHERE.LIKED,
+    },
+    fetchPolicy,
+    skip: !hasLikedRow,
+  })
+  const likedItems = useMemo(
+    () => toPanelItems(likedData?.viewer?.notifications),
+    [likedData],
+  )
+
   if (items.length === 0 && !loading && error !== undefined) {
     return <FeedLoadError onRetry={() => refetch()} />
   }
@@ -74,6 +92,7 @@ export function NotificationList(props: {
   return (
     <RowList
       items={items}
+      likedItems={likedItems}
       isLoading={loading && data === undefined}
       unread={props.unread}
       onClose={props.onClose}
@@ -140,6 +159,8 @@ export function CommentList(props: {
 
 export function RowList(props: {
   items: PanelItem[]
+  /** まとめたいいねに足す、いいねの通知（items の件数の外にあるもの） */
+  likedItems?: PanelItem[]
   isLoading: boolean
   unread: UnreadCounts
   onClose: () => void
@@ -159,8 +180,8 @@ export function RowList(props: {
   }
 
   const rows = useMemo(
-    () => toNotificationRows(props.items, props.unread),
-    [props.items, props.unread],
+    () => toNotificationRows(props.items, props.unread, props.likedItems),
+    [props.items, props.unread, props.likedItems],
   )
 
   if (props.isLoading) {
