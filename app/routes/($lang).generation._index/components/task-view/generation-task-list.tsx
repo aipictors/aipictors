@@ -1,5 +1,3 @@
-import { useLayoutVariant } from "~/hooks/use-layout-variant"
-import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useEffect, useMemo, useState } from "react"
@@ -10,6 +8,7 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
@@ -27,12 +26,14 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { usePendingGenerationRequests } from "~/routes/($lang).generation._index/hooks/use-pending-generation-requests"
+import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
+import { isInfoOnlyHistory } from "~/routes/($lang).generation._index/utils/generation-retention"
+import { getMaxPagesByPlan } from "~/routes/($lang).generation._index/utils/get-max-pages-by-plan"
 import {
   toPostedWorkMap,
   toSearchableSeeds,
 } from "~/routes/($lang).generation._index/utils/posted-generations"
-import { getMaxPagesByPlan } from "~/routes/($lang).generation._index/utils/get-max-pages-by-plan"
 
 type Props = {
   rating: number
@@ -145,9 +146,14 @@ export function GenerationTaskList(props: Props) {
     toast("設定を復元しました")
   }
 
+  // 保存期間を過ぎて画像だけ消えた履歴は、生成情報のカードとして出す
+  const currentPlan = queryData.currentPass?.type
+  const nowSeconds = Math.floor(Date.now() / 1000)
+
   const activeTasks = currentTasks.filter((task) => {
-    if (task.isDeleted || (!task.imageUrl && task.status === "DONE"))
-      return false
+    if (task.isDeleted) return false
+    if (!task.imageUrl && task.status === "DONE")
+      return isInfoOnlyHistory(task, currentPlan, nowSeconds)
     return (
       task.status === "PENDING" ||
       task.status === "IN_PROGRESS" ||
@@ -158,7 +164,8 @@ export function GenerationTaskList(props: Props) {
   })
 
   const activeResults = currentResults.filter((result) => {
-    if (!result.imageUrl && result.status === "DONE") return false
+    if (!result.imageUrl && result.status === "DONE")
+      return isInfoOnlyHistory(result, currentPlan, nowSeconds)
     return (
       result.status === "PENDING" ||
       result.status === "IN_PROGRESS" ||
@@ -358,81 +365,81 @@ export function GenerationTaskList(props: Props) {
         {props.protect !== 1 && (
           <>
             {isPageInputVisible && (
-            <div
-              className={cn(
-                "flex items-center gap-2",
-                isJumpVisible ? "justify-between" : "justify-center",
-              )}
-            >
-              {isJumpVisible && (
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={!canJumpBack}
-                title={t(
-                  "履歴を大きく戻す（全ページの約1/3）",
-                  "Jump back in history (~1/3 of pages)",
+              <div
+                className={cn(
+                  "flex items-center gap-2",
+                  isJumpVisible ? "justify-between" : "justify-center",
                 )}
-                onClick={() => {
-                  props.setCurrentPage(
-                    Math.max(0, props.currentPage - jumpPages),
-                  )
-                }}
               >
-                {t(`-${jumpPages}ページ`, `-${jumpPages} pages`)}
-              </Button>
-              )}
+                {isJumpVisible && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={!canJumpBack}
+                    title={t(
+                      "履歴を大きく戻す（全ページの約1/3）",
+                      "Jump back in history (~1/3 of pages)",
+                    )}
+                    onClick={() => {
+                      props.setCurrentPage(
+                        Math.max(0, props.currentPage - jumpPages),
+                      )
+                    }}
+                  >
+                    {t(`-${jumpPages}ページ`, `-${jumpPages} pages`)}
+                  </Button>
+                )}
 
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground text-xs">
-                  {pageInputHint}
-                </span>
-                <Input
-                  className="h-9 w-20 text-center"
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={Math.max(1, pageCount)}
-                  value={pageInput}
-                  onChange={(event) => {
-                    setPageInput(event.target.value)
-                  }}
-                  onBlur={goToPageByInput}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      ;(event.currentTarget as HTMLInputElement).blur()
-                    }
-                  }}
-                  aria-label={t("ページ番号", "Page number")}
-                  title={t(
-                    "ページ番号を入力して移動（フォーカスを外すと移動）",
-                    "Type a page number to jump (moves on blur)",
-                  )}
-                />
-                <span className="text-muted-foreground text-xs">
-                  / {Math.max(1, pageCount)}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-xs">
+                    {pageInputHint}
+                  </span>
+                  <Input
+                    className="h-9 w-20 text-center"
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    max={Math.max(1, pageCount)}
+                    value={pageInput}
+                    onChange={(event) => {
+                      setPageInput(event.target.value)
+                    }}
+                    onBlur={goToPageByInput}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        ;(event.currentTarget as HTMLInputElement).blur()
+                      }
+                    }}
+                    aria-label={t("ページ番号", "Page number")}
+                    title={t(
+                      "ページ番号を入力して移動（フォーカスを外すと移動）",
+                      "Type a page number to jump (moves on blur)",
+                    )}
+                  />
+                  <span className="text-muted-foreground text-xs">
+                    / {Math.max(1, pageCount)}
+                  </span>
+                </div>
+
+                {isJumpVisible && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={!canJumpForward}
+                    title={t(
+                      "履歴を大きく進める（全ページの約1/3）",
+                      "Jump forward in history (~1/3 of pages)",
+                    )}
+                    onClick={() => {
+                      props.setCurrentPage(
+                        Math.min(lastPageIndex, props.currentPage + jumpPages),
+                      )
+                    }}
+                  >
+                    {t(`+${jumpPages}ページ`, `+${jumpPages} pages`)}
+                  </Button>
+                )}
               </div>
-
-              {isJumpVisible && (
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={!canJumpForward}
-                title={t(
-                  "履歴を大きく進める（全ページの約1/3）",
-                  "Jump forward in history (~1/3 of pages)",
-                )}
-                onClick={() => {
-                  props.setCurrentPage(
-                    Math.min(lastPageIndex, props.currentPage + jumpPages),
-                  )
-                }}
-              >
-                {t(`+${jumpPages}ページ`, `+${jumpPages} pages`)}
-              </Button>
-              )}
-            </div>
             )}
             <ResponsivePagination
               perPage={perPage}
@@ -454,8 +461,8 @@ export function GenerationTaskList(props: Props) {
             />
             <p className="mt-2 px-2 text-muted-foreground text-xs">
               {t(
-                "2027年1月1日から、生成画像の保存期間は無料3か月・ライト6か月・スタンダード1年・プレミアム2年になります（保護した画像は消えません）。",
-                "From January 1, 2027, generated images are kept for 3 months on Free, 6 months on Lite, 1 year on Standard and 2 years on Premium. Images you've protected are never deleted.",
+                "2027年1月1日から、生成画像の保存期間は無料3か月・ライト6か月・スタンダード1年・プレミアム2年になります（保護した画像は消えません）。期限を過ぎた画像は30日間グレーで残り、プランに入ると戻せます。そのあと画像は消えますが、生成情報（プロンプト・設定）は履歴に残ります。",
+                "From January 1, 2027, generated images are kept for 3 months on Free, 6 months on Lite, 1 year on Standard and 2 years on Premium. Images you've protected are never deleted. Expired images stay greyed out for 30 days and come back if you join a plan; after that only the prompt and settings remain in your history.",
               )}
             </p>
             <PlanUpgradePrompt currentPlan={queryData.currentPass?.type} />

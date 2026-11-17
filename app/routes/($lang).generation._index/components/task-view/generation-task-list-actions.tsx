@@ -1,13 +1,3 @@
-import { Button } from "~/components/ui/button"
-import { Slider } from "~/components/ui/slider"
-import { GenerationTasksDeleteButton } from "~/routes/($lang).generation._index/components/generation-tasks-delete-button"
-import { GenerationImageDownloadButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-download-button"
-import { GenerationImagePostButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-upload-button"
-import { GenerationTaskActionDropdownMenu } from "~/routes/($lang).generation._index/components/task-view/generation-task-action-dropdown-menu"
-import { GenerationTaskCountSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-count-select"
-import { GenerationTaskRatingSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-rating-select"
-import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
-import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import {
@@ -16,8 +6,23 @@ import {
   RefreshCwIcon,
   SquareCheckIcon,
 } from "lucide-react"
-import { useState, useCallback } from "react"
+import { useCallback, useState } from "react"
+import { Button } from "~/components/ui/button"
+import { Slider } from "~/components/ui/slider"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationTasksDeleteButton } from "~/routes/($lang).generation._index/components/generation-tasks-delete-button"
+import { GenerationImageDownloadButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-download-button"
+import { GenerationImagePostButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-upload-button"
+import {
+  GenerationInfoDownloadButton,
+  GenerationInfoImportButton,
+} from "~/routes/($lang).generation._index/components/task-view/generation-info-file-buttons"
+import { GenerationTaskActionDropdownMenu } from "~/routes/($lang).generation._index/components/task-view/generation-task-action-dropdown-menu"
+import { GenerationTaskCountSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-count-select"
+import { GenerationTaskRatingSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-rating-select"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
+import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
+import type { GenerationInfoSource } from "~/routes/($lang).generation._index/utils/generation-info-file"
 
 type Props = {
   rating: number
@@ -41,12 +46,14 @@ type Props = {
   onSelectAll(): void
   onCancelAll(): void
   onRefresh?(): void
+  /** 生成情報のダウンロードに使う、表示中の履歴 */
+  generationInfoItems?: (GenerationInfoSource & { nanoid?: string | null })[]
 }
 
 /**
  * 履歴の操作
  */
-export function GenerationTaskListActions (props: Props) {
+export function GenerationTaskListActions(props: Props) {
   const [deleteTask] = useMutation(deleteImageGenerationResultMutation)
   const t = useTranslation()
 
@@ -137,6 +144,12 @@ export function GenerationTaskListActions (props: Props) {
             )}
             isEnable={isEmpty}
           />
+          {/* 生成情報（プロンプト・設定）のダウンロードと読み込み */}
+          <GenerationInfoDownloadButton
+            selectedTaskIds={props.selectedTaskIds}
+            items={props.generationInfoItems ?? []}
+          />
+          <GenerationInfoImportButton />
           {/* 投稿 */}
           <GenerationImagePostButton
             disabled={false}

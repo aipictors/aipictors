@@ -1,3 +1,6 @@
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
@@ -12,9 +15,6 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
-import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useCallback, useContext, useEffect, useRef, useState } from "react"
 
 type Props = {
   rating: number
@@ -29,7 +29,7 @@ type Props = {
 /**
  * タスク関連
  */
-export function GenerationTaskListView (props: Props) {
+export function GenerationTaskListView(props: Props) {
   const context = useGenerationContext()
   const authContext = useContext(AuthContext)
 
@@ -384,6 +384,10 @@ export function GenerationTaskListView (props: Props) {
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
+        generationInfoItems={[
+          ...(results?.viewer?.imageGenerationResults ?? []),
+          ...(tasks?.viewer?.imageGenerationTasks ?? []),
+        ]}
         onChangeViewCount={() => {}}
         onSelectAll={onSelectAllTasks}
         onCancelAll={onCancelAllTasks}
