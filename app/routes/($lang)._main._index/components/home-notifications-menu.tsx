@@ -82,9 +82,10 @@ export function HomeNotificationsMenu(props: Props) {
           variant="ghost"
           aria-label={total > 0 ? `通知（未読 ${total} 件）` : "通知"}
           onPointerEnter={prefetch}
-          className="relative shrink-0 rounded-full"
+          className="relative size-10 shrink-0 rounded-full"
         >
-          <BellIcon className="size-5" />
+          {/* スマホはヘッダーのほかのアイコン（検索）と同じ大きさ */}
+          <BellIcon className="size-[22px] md:size-5" />
           {total > 0 && (
             <span className="absolute top-0.5 right-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 font-bold text-[10px] text-white tabular-nums ring-2 ring-background">
               {toBadgeText(total)}

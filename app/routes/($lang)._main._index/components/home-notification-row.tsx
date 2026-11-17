@@ -24,6 +24,7 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
+import { NotificationLikedUsers } from "~/routes/($lang)._main._index/components/home-notification-liked-users"
 import {
   type PanelItem,
   type PanelParentComment,
@@ -33,11 +34,11 @@ import type {
   NotificationPanelKind,
   NotificationRow,
 } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
+import { toEnglishRequestNotification } from "~/utils/request-notification-text"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { toEnglishRequestNotification } from "~/utils/request-notification-text"
 
 const KIND_STYLES: Record<
   NotificationPanelKind,
@@ -213,6 +214,9 @@ export function NotificationRowView(props: {
       >
         {body}
       </Link>
+      {item.kind === "liked" && group.length > 1 && (
+        <NotificationLikedUsers group={group} onClose={props.onClose} />
+      )}
       {props.footer}
     </>
   )

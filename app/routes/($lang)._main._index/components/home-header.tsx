@@ -7,7 +7,6 @@ import {
   MenuIcon,
   MoveLeft,
   Search,
-  SquarePlusIcon,
   WandSparklesIcon,
   X,
 } from "lucide-react"
@@ -24,7 +23,6 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
-import { closeMenuOnNavigate } from "~/utils/close-menu-on-navigate"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContentMode } from "~/hooks/use-content-mode"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
@@ -34,6 +32,7 @@ import { cn } from "~/lib/utils"
 import { HomeHeaderContentToggle } from "~/routes/($lang)._main._index/components/home-header-content-toggle"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { EMPTY_UNREAD_COUNTS } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
+import { closeMenuOnNavigate } from "~/utils/close-menu-on-navigate"
 import { debugLog } from "~/utils/debug-logger"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
 import {
@@ -643,21 +642,6 @@ function HomeHeader(props: Props) {
               >
                 <Search className="size-[22px]" />
               </Button>
-              {/* 投稿はログイン中だけ右上に（生成は画面下のタブの真ん中）。確認中は html の data-aip-auth で描画前に出し分ける */}
-              {(authContext.isLoading || authContext.isLoggedIn) && (
-                <Link
-                  to="/new/image"
-                  onClick={() => setSearchText("")}
-                  aria-label={t("作品を投稿", "Post a work")}
-                  title={t("作品を投稿", "Post a work")}
-                  className={cn(
-                    "flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-muted active:scale-95",
-                    authContext.isLoading && "aip-auth-user",
-                  )}
-                >
-                  <SquarePlusIcon className="size-[22px]" />
-                </Link>
-              )}
             </div>
           </>
         )}
@@ -686,21 +670,19 @@ function HomeHeader(props: Props) {
           ) : authContext.isLoggedIn ? (
             // ログイン時のUI（Suspenseでスムーズなローディング）
             <div className="flex shrink-0 items-center gap-1.5">
-              {/* スマホでは通知は画面下のタブから開く */}
-              <div className="hidden md:contents">
-                <Suspense
-                  fallback={
-                    <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
-                  }
-                >
-                  <HomeNotificationsMenu
-                    unreadCounts={unreadNotificationCounts}
-                    onMarkedAsRead={() => {
-                      void unreadNotificationData.refetch().catch(() => {})
-                    }}
-                  />
-                </Suspense>
-              </div>
+              {/* 通知はスマホでも右上のベルからその場で開く（画面下のタブは投稿） */}
+              <Suspense
+                fallback={
+                  <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+                }
+              >
+                <HomeNotificationsMenu
+                  unreadCounts={unreadNotificationCounts}
+                  onMarkedAsRead={() => {
+                    void unreadNotificationData.refetch().catch(() => {})
+                  }}
+                />
+              </Suspense>
               <Suspense fallback={<HomeHeaderAvatarPlaceholder />}>
                 <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
               </Suspense>

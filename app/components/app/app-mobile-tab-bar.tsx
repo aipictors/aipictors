@@ -1,9 +1,8 @@
-import { useQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
 import {
-  BellIcon,
   HomeIcon,
   SearchIcon,
+  SquarePlusIcon,
   UserRoundIcon,
   WandSparklesIcon,
 } from "lucide-react"
@@ -13,16 +12,11 @@ import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
-import { viewerUnreadNotificationCountsQuery } from "~/routes/($lang)._main._index/components/home-header"
-import {
-  toBadgeText,
-  toUnreadTotal,
-} from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
 import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/use-is-editing-text-field"
 import { parseLocalePath } from "~/utils/locale-path"
 import { isMobileTabBarHiddenPath } from "~/utils/mobile-tab-bar-hidden-path"
 
-type TabKey = "home" | "search" | "generation" | "notifications" | "my"
+type TabKey = "home" | "search" | "generation" | "post" | "my"
 
 const toActiveTab = (remainder: string, myPaths: string[]): TabKey | null => {
   if (
@@ -33,7 +27,7 @@ const toActiveTab = (remainder: string, myPaths: string[]): TabKey | null => {
   }
   if (/^\/(?:search|tags)(?:\/|$)/.test(remainder)) return "search"
   if (/^\/generation(?:\/|$)/.test(remainder)) return "generation"
-  if (/^\/notifications(?:\/|$)/.test(remainder)) return "notifications"
+  if (/^\/new(?:\/|$)/.test(remainder)) return "post"
   if (/^\/my(?:\/|$)/.test(remainder)) return "my"
   if (
     myPaths.some(
@@ -46,10 +40,10 @@ const toActiveTab = (remainder: string, myPaths: string[]): TabKey | null => {
 }
 
 /**
- * スマホの画面下のタブ（アプリと同じ ホーム・探す・生成・通知・マイページ）
+ * スマホの画面下のタブ（ホーム・探す・生成・投稿・マイページ）
  *
  * 片手で届く位置に主な行き先を置く。PC では描画しない（CSS でも md:hidden）。
- * 通知の数はヘッダーが取った結果を Apollo のキャッシュから読むだけで、API は呼ばない。
+ * 生成と投稿を隣に並べる。通知はヘッダーのベルからその場で開く（ページを移らずに確認できる）。
  * 高さは html の --aip-tabbar-h（tailwind.css）で、本文の下の余白と画面下に出す案内の位置に使う
  */
 export function AppMobileTabBar() {
@@ -61,13 +55,6 @@ export function AppMobileTabBar() {
   const isEditingTextField = useIsEditingTextField()
 
   const { remainder, isSensitive } = parseLocalePath(location.pathname)
-
-  const unread = useQuery(viewerUnreadNotificationCountsQuery, {
-    skip: !authContext.isLoggedIn,
-    fetchPolicy: "cache-only",
-  })
-  const counts = unread.data?.viewer?.unreadNotificationCounts
-  const unreadTotal = counts ? toUnreadTotal(counts) : 0
 
   if (!showMobile || isMobileTabBarHiddenPath(remainder)) {
     return null
@@ -108,10 +95,10 @@ export function AppMobileTabBar() {
       icon: WandSparklesIcon,
     },
     {
-      key: "notifications",
-      to: "/notifications",
-      label: t("通知", "Alerts"),
-      icon: BellIcon,
+      key: "post",
+      to: "/new/image",
+      label: t("投稿", "Post"),
+      icon: SquarePlusIcon,
     },
     {
       key: "my",
@@ -160,11 +147,6 @@ export function AppMobileTabBar() {
                       className="size-[22px]"
                       strokeWidth={isActive ? 2.4 : 1.9}
                     />
-                    {tab.key === "notifications" && unreadTotal > 0 && (
-                      <span className="absolute -top-0.5 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 font-bold text-[10px] text-white tabular-nums ring-2 ring-background">
-                        {toBadgeText(unreadTotal)}
-                      </span>
-                    )}
                   </span>
                 )}
                 <span className="max-w-full truncate">{tab.label}</span>
