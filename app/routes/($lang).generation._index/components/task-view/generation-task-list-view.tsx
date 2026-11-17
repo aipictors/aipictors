@@ -15,6 +15,7 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
+import { toRetentionLockedTaskIds } from "~/routes/($lang).generation._index/utils/generation-retention"
 
 type Props = {
   rating: number
@@ -384,6 +385,11 @@ export function GenerationTaskListView(props: Props) {
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
+        retentionLockedTaskIds={toRetentionLockedTaskIds(
+          results?.viewer?.imageGenerationResults ?? [],
+          queryData.currentPass?.type,
+          Math.floor(Date.now() / 1000),
+        )}
         generationInfoItems={[
           ...(results?.viewer?.imageGenerationResults ?? []),
           ...(tasks?.viewer?.imageGenerationTasks ?? []),

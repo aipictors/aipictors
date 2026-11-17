@@ -46,6 +46,8 @@ type Props = {
   onSelectAll(): void
   onCancelAll(): void
   onRefresh?(): void
+  /** 保存期限切れでプランの案内中の履歴（まとめてダウンロード・投稿から外す） */
+  retentionLockedTaskIds?: string[]
   /** 生成情報のダウンロードに使う、表示中の履歴 */
   generationInfoItems?: (GenerationInfoSource & { nanoid?: string | null })[]
 }
@@ -113,6 +115,10 @@ export function GenerationTaskListActions(props: Props) {
 
   const selectedCount = props.selectedTaskIds.length
   const isEmpty = selectedCount === 0
+  // 保存期限切れ（プランで戻せるもの）は画像として使えないので、ダウンロード・投稿から外す（削除と生成情報はできる）
+  const lockedIds = new Set(props.retentionLockedTaskIds ?? [])
+  const usableTaskIds = props.selectedTaskIds.filter((id) => !lockedIds.has(id))
+  const lockedCount = selectedCount - usableTaskIds.length
 
   // 選択中は「選んだものへの操作」だけ、ふだんは「絞り込みと表示」だけを出す（1 列に収める）
   if (props.isEditMode) {
@@ -132,17 +138,22 @@ export function GenerationTaskListActions(props: Props) {
           {isEmpty
             ? t("画像をタップして選択", "Tap images to select")
             : t(`${selectedCount}件選択中`, `${selectedCount} selected`)}
+          {lockedCount > 0 &&
+            t(
+              `（保存期限切れ${lockedCount}件はダウンロード・投稿できません）`,
+              ` (${lockedCount} expired can't be downloaded or posted)`,
+            )}
         </span>
         <div className="ml-auto flex items-center gap-1">
           {/* ダウンロード */}
           <GenerationImageDownloadButton
             disabled={false}
-            selectedTaskIds={props.selectedTaskIds}
+            selectedTaskIds={usableTaskIds}
             title={t(
               "選んだ画像をまとめてダウンロード",
               "Download the selected images",
             )}
-            isEnable={isEmpty}
+            isEnable={usableTaskIds.length === 0}
           />
           {/* 生成情報（プロンプト・設定）のダウンロードと読み込み */}
           <GenerationInfoDownloadButton
@@ -153,9 +164,9 @@ export function GenerationTaskListActions(props: Props) {
           {/* 投稿 */}
           <GenerationImagePostButton
             disabled={false}
-            selectedTaskIds={props.selectedTaskIds}
+            selectedTaskIds={usableTaskIds}
             title={t("選んだ画像をまとめて投稿", "Post the selected images")}
-            isEnable={isEmpty}
+            isEnable={usableTaskIds.length === 0}
           />
           {/* 削除 */}
           <GenerationTasksDeleteButton

@@ -3,6 +3,7 @@ import {
   isInfoOnlyHistory,
   RETENTION_ENFORCE_FROM,
   toRestorePlan,
+  toRetentionLockedTaskIds,
   toRetentionPeriodLabel,
   toRetentionState,
 } from "./generation-retention"
@@ -130,4 +131,53 @@ test("isInfoOnlyHistory: 期限から 30 日過ぎて画像がないものだけ
       now,
     ),
   ).toBe(false)
+})
+
+test("toRetentionLockedTaskIds: プランで戻せる期限切れだけ", () => {
+  const ids = toRetentionLockedTaskIds(
+    [
+      {
+        nanoid: "old",
+        status: "DONE",
+        completedAt: now - 100 * DAY,
+        isProtected: false,
+      },
+      {
+        nanoid: "protected",
+        status: "DONE",
+        completedAt: now - 100 * DAY,
+        isProtected: true,
+      },
+      {
+        nanoid: "new",
+        status: "DONE",
+        completedAt: now - 10 * DAY,
+        isProtected: false,
+      },
+      {
+        nanoid: "pending",
+        status: "PENDING",
+        completedAt: null,
+        isProtected: false,
+      },
+    ],
+    null,
+    now,
+  )
+  expect(ids).toEqual(["old"])
+  // 最上位のプランで戻せないものは止めない（保護できるように）
+  expect(
+    toRetentionLockedTaskIds(
+      [
+        {
+          nanoid: "x",
+          status: "DONE",
+          completedAt: now - 740 * DAY,
+          isProtected: false,
+        },
+      ],
+      "PREMIUM",
+      now,
+    ),
+  ).toEqual([])
 })

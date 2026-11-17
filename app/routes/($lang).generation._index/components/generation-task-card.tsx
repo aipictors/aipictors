@@ -110,6 +110,7 @@ export function GenerationTaskCard(props: Props) {
             rating={props.task.rating ?? 0}
             isProtected={props.task.isProtected ?? false}
             onDelete={props.onDelete}
+            isImageLocked={canRestoreByPlan}
           />
         )}
         {!props.isEditMode && (

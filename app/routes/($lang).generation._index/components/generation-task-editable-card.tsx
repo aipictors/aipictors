@@ -62,6 +62,8 @@ type Props = {
   onClick?(): void
   onCancel?(): void
   onDelete?(taskId: string): void
+  /** 保存期限切れでプランの案内中（画像のダウンロード・拡大を出さない） */
+  isImageLocked?: boolean
 }
 
 /**
@@ -483,7 +485,7 @@ export function GenerationTaskEditableCard(props: Props) {
         )}
       </SelectableCardButton>
       {/* ダウンロードボタン（PC はカーソルを乗せたとき、スマホは常に表示） */}
-      {props.task.imageUrl && (
+      {props.task.imageUrl && !props.isImageLocked && (
         <GenerationTaskDownloadButton
           taskNanoid={props.taskNanoid}
           imageUrl={normalizedImageUrl}
@@ -491,16 +493,19 @@ export function GenerationTaskEditableCard(props: Props) {
         />
       )}
       {/* 拡大ボタン */}
-      {isHovered && props.task.imageUrl && props.task.thumbnailUrl && (
-        <GenerationTaskZoomUpButton
-          taskId={props.taskId}
-          token={props.userToken}
-          size={optionButtonSize(props.optionButtonSize)}
-          setIsHovered={setIsHovered}
-          imageUrl={originalImageUrl}
-          thumbnailUrl={originalThumbnailUrl}
-        />
-      )}
+      {isHovered &&
+        !props.isImageLocked &&
+        props.task.imageUrl &&
+        props.task.thumbnailUrl && (
+          <GenerationTaskZoomUpButton
+            taskId={props.taskId}
+            token={props.userToken}
+            size={optionButtonSize(props.optionButtonSize)}
+            setIsHovered={setIsHovered}
+            imageUrl={originalImageUrl}
+            thumbnailUrl={originalThumbnailUrl}
+          />
+        )}
       {/* お気に入りボタン */}
       {(isHovered || rating !== 0) && props.taskNanoid && (
         <GenerationTaskRatingButton

@@ -121,6 +121,34 @@ export function isInfoOnlyHistory(
   )
 }
 
+/**
+ * 保存期限切れで、上のプランに入るまで画像を使えない履歴の nanoid（まとめてダウンロード・投稿から外す）
+ */
+export function toRetentionLockedTaskIds(
+  tasks: readonly {
+    nanoid?: string | null
+    status?: string | null
+    completedAt?: number | null
+    isProtected?: boolean | null
+  }[],
+  plan: string | null | undefined,
+  nowSeconds: number,
+): string[] {
+  return tasks.flatMap((task) => {
+    if (!task.nanoid || task.status !== "DONE") return []
+    const state = toRetentionState({
+      completedAt: task.completedAt,
+      isProtected: task.isProtected,
+      plan,
+      nowSeconds,
+    })
+    const locked =
+      (state.kind === "expired" || state.kind === "deleted") &&
+      state.restorePlan !== null
+    return locked ? [task.nanoid] : []
+  })
+}
+
 export function toRetentionPlanLabel(
   plan: RetentionPlan,
   isEnglish: boolean,
