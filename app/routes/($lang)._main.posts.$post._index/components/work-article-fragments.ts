@@ -18,6 +18,7 @@ export const workArticleFragment = graphql(
     enTitle
     enDescription
     imageURL
+    imageWidth
     largeThumbnailImageURL
     largeThumbnailImageWidth
     largeThumbnailImageHeight
@@ -220,6 +221,7 @@ export const sensitiveWorkArticleFragment = graphql(
     enTitle
     enDescription
     imageURL
+    imageWidth
     largeThumbnailImageURL
     largeThumbnailImageWidth
     largeThumbnailImageHeight

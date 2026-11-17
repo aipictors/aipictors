@@ -25,17 +25,24 @@ const RESIZE_WORKER_PREFIX = `${RESIZABLE_ORIGIN}_w/`
  */
 const RESIZED_IMAGE_WIDTHS = [96, 240, 480, 640, 800, 1280] as const
 
+/**
+ * 作品ページのメイン画像だけで使う大きい幅（Worker 側の WIDTHS に含まれるもの）。
+ * パソコンで横長の画像を大きく出すと 1280px では足りず引き伸ばされて粗く見えるので、
+ * 元画像の幅が分かっているときだけ、元画像より小さい幅を候補に足す
+ */
+const LARGE_RESIZED_IMAGE_WIDTHS = [1920, 2560] as const
+
 function isResizable(url: string | null | undefined): url is string {
   if (!url?.startsWith(RESIZABLE_ORIGIN)) return false
   const key = url.slice(RESIZABLE_ORIGIN.length)
   return key.length > 0 && !key.startsWith("_w/") && !key.includes("?")
 }
 
-function pickWidth(width: number) {
-  return (
-    RESIZED_IMAGE_WIDTHS.find((w) => w >= width) ??
-    RESIZED_IMAGE_WIDTHS[RESIZED_IMAGE_WIDTHS.length - 1]
-  )
+function pickWidth(
+  width: number,
+  widths: readonly number[] = RESIZED_IMAGE_WIDTHS,
+) {
+  return widths.find((w) => w >= width) ?? widths[widths.length - 1]
 }
 
 /**
@@ -76,21 +83,30 @@ export const RESIZED_IMAGE_FALLBACK_SCRIPT = `(function(){var V=${JSON.stringify
 
 /**
  * srcset 用の文字列。maxWidth（元画像の幅）を超える幅は作らない。
- * 一番大きい候補も元画像ではなく再圧縮版にする（元画像は画質が高く重い）
+ * 一番大きい候補も元画像ではなく再圧縮版にする（元画像は画質が高く重い）。
+ * large は元画像の幅（maxWidth）が分かっている大きい表示用で、1920・2560px も候補にする
  */
 export function toResizedImageSrcSet(
   url: string | null | undefined,
-  options: { minWidth?: number; maxWidth?: number } = {},
+  options: { minWidth?: number; maxWidth?: number; large?: boolean } = {},
 ): string | undefined {
   if (!isResizable(url)) return undefined
   const minWidth = options.minWidth ?? 0
   const maxWidth = options.maxWidth ?? Number.POSITIVE_INFINITY
-  const widths = RESIZED_IMAGE_WIDTHS.filter(
-    (w) => w >= minWidth && w < maxWidth,
-  )
-  const entries = widths.map((w) => `${toResizedImageUrl(url, w)} ${w}w`)
-  if (Number.isFinite(maxWidth)) {
-    entries.push(`${toResizedImageUrl(url, maxWidth)} ${Math.round(maxWidth)}w`)
+  const allWidths: readonly number[] =
+    options.large && Number.isFinite(maxWidth)
+      ? [...RESIZED_IMAGE_WIDTHS, ...LARGE_RESIZED_IMAGE_WIDTHS]
+      : RESIZED_IMAGE_WIDTHS
+  const key = url.slice(RESIZABLE_ORIGIN.length)
+  const toUrl = (w: number) =>
+    `${VARIANT_PREFIX}${pickWidth(w, allWidths)}/${key}`
+  const widths = allWidths.filter((w) => w >= minWidth && w < maxWidth)
+  const entries = widths.map((w) => `${toUrl(w)} ${w}w`)
+  // large で元画像が一番大きい幅より大きいときは、一番大きい縮小版（実際の幅で書いたもの）で終わりにする
+  const isLargerThanAll =
+    options.large === true && maxWidth > allWidths[allWidths.length - 1]
+  if (Number.isFinite(maxWidth) && !isLargerThanAll) {
+    entries.push(`${toUrl(maxWidth)} ${Math.round(maxWidth)}w`)
   }
   return entries.length > 0 ? entries.join(", ") : undefined
 }

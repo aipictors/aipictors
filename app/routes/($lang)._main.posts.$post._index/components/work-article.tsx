@@ -1,8 +1,7 @@
-import type React from "react"
 import { useQuery } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, ShieldAlert } from "lucide-react"
+import type React from "react"
 import { startTransition, useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { OfficialBadge } from "~/components/official-badge"
@@ -11,32 +10,33 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { WorkPromotionBanner } from "~/components/work/work-promotion"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { AiEvaluationDisplay } from "~/routes/($lang)._main.posts.$post._index/components/ai-evaluation-display"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/lazy-work-markdown-view"
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
-import { WorkPromotionBanner } from "~/components/work/work-promotion"
+import { WorkArticleBadges } from "~/routes/($lang)._main.posts.$post._index/components/work-article-badges"
+import { WorkArticleDescription } from "~/routes/($lang)._main.posts.$post._index/components/work-article-description"
 import type {
   userSettingFragment,
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article-fragments"
-import { WorkArticleBadges } from "~/routes/($lang)._main.posts.$post._index/components/work-article-badges"
-import { detectLanguage } from "~/routes/($lang)._main.posts.$post._index/components/work-article-utils"
-import { WorkArticleDescription } from "~/routes/($lang)._main.posts.$post._index/components/work-article-description"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
+import { detectLanguage } from "~/routes/($lang)._main.posts.$post._index/components/work-article-utils"
 import { WorkAuthorFollowButton } from "~/routes/($lang)._main.posts.$post._index/components/work-author-follow-button"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
+import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { getWorkThumbnailHint } from "~/utils/work-thumbnail-hint"
 import { translateText } from "~/utils/translate-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
+import { getWorkThumbnailHint } from "~/utils/work-thumbnail-hint"
 
 export {
   sensitiveWorkArticleFragment,
@@ -208,17 +208,17 @@ export function WorkArticle(props: Props) {
 
   const descriptionView = (
     <WorkArticleDescription
-            displayDescription={displayDescription}
-            isDescriptionExpanded={isDescriptionExpanded}
-            isDescriptionLong={isDescriptionLong}
-            isShowingTranslation={isShowingTranslation}
-            isTranslating={isTranslating}
-            onClickTranslate={onClickTranslate}
-            setIsDescriptionExpanded={setIsDescriptionExpanded}
-            shouldShowTranslateLink={shouldShowTranslateLink}
-            translateLinkLabel={translateLinkLabel}
-            translatedDescription={translatedDescription}
-          />
+      displayDescription={displayDescription}
+      isDescriptionExpanded={isDescriptionExpanded}
+      isDescriptionLong={isDescriptionLong}
+      isShowingTranslation={isShowingTranslation}
+      isTranslating={isTranslating}
+      onClickTranslate={onClickTranslate}
+      setIsDescriptionExpanded={setIsDescriptionExpanded}
+      shouldShowTranslateLink={shouldShowTranslateLink}
+      translateLinkLabel={translateLinkLabel}
+      translatedDescription={translatedDescription}
+    />
   )
 
   return (
@@ -237,6 +237,7 @@ export function WorkArticle(props: Props) {
             })}
           onSelectedImage={setSelectedImageUrl}
           workImageAspectRatio={workImageAspectRatio}
+          workImageWidth={props.work.imageWidth}
           placeholderUrl={getWorkThumbnailHint(
             props.work.id,
             workImageAspectRatio,

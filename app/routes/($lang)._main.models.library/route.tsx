@@ -5,7 +5,6 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { useLoaderData, useSearchParams } from "@remix-run/react"
-import { useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { ClientOnly } from "remix-utils/client-only"
@@ -16,6 +15,7 @@ import type {
 } from "~/components/model-library/model-library-types"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useNavigate } from "~/lib/app/locale-router"
 import { loaderClient } from "~/lib/loader-client"
 import { createMeta } from "~/utils/create-meta"
 
@@ -75,10 +75,9 @@ export default function ModelLibraryPage() {
 
   const [changeRatingModel] = useMutation(updateRatingModelMutation)
 
+  // 公式のチェックポイントと LoRA のお気に入り（同じ generator_parameters の id）
   const favoriteIds =
-    favorites?.viewer?.favoritedImageGenerationModels.map((model) =>
-      Number(model.id),
-    ) ?? []
+    favorites?.userSetting?.favoritedImageGenerationModelIds ?? []
 
   return (
     <div className="h-[calc(100dvh-88px)] min-h-[560px] w-full overflow-hidden rounded-2xl border md:h-[calc(100dvh-104px)]">
@@ -147,11 +146,9 @@ const libraryModelsQuery = graphql(
 
 const viewerFavoritedModelsQuery = graphql(
   `query ModelLibraryFavoritedModels {
-    viewer {
+    userSetting {
       id
-      favoritedImageGenerationModels {
-        id
-      }
+      favoritedImageGenerationModelIds
     }
   }`,
 )

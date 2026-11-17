@@ -30,6 +30,37 @@ test("srcset は元画像の幅までにする", () => {
   )
 })
 
+test("large は元画像の幅が分かれば 1920・2560px の縮小版も候補にする", () => {
+  expect(
+    toResizedImageSrcSet(URL, { minWidth: 800, maxWidth: 2432, large: true }),
+  ).toBe(
+    [
+      `${V}/800/abc-123 800w`,
+      `${V}/1280/abc-123 1280w`,
+      `${V}/1920/abc-123 1920w`,
+      `${V}/2560/abc-123 2432w`,
+    ].join(", "),
+  )
+  // 元画像より大きい幅は作らない
+  expect(
+    toResizedImageSrcSet(URL, { minWidth: 800, maxWidth: 1216, large: true }),
+  ).toBe([`${V}/800/abc-123 800w`, `${V}/1280/abc-123 1216w`].join(", "))
+  // 一番大きい幅より大きい元画像は 2560px までにする
+  expect(
+    toResizedImageSrcSet(URL, { minWidth: 1280, maxWidth: 4000, large: true }),
+  ).toBe(
+    [
+      `${V}/1280/abc-123 1280w`,
+      `${V}/1920/abc-123 1920w`,
+      `${V}/2560/abc-123 2560w`,
+    ].join(", "),
+  )
+  // 元の幅が分からなければ今までどおり 1280px まで
+  expect(toResizedImageSrcSet(URL, { minWidth: 800, large: true })).toBe(
+    [`${V}/800/abc-123 800w`, `${V}/1280/abc-123 1280w`].join(", "),
+  )
+})
+
 test("読めなかったら R2 → 縮小の Worker → 元の画像の順に試す", () => {
   expect(nextResizedImageUrl(`${V}/240/abc-123`)).toBe(`${W}/240/abc-123`)
   expect(nextResizedImageUrl(`${W}/240/abc-123`)).toBe(URL)

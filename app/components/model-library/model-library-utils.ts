@@ -56,7 +56,13 @@ export const fromOfficialCheckpoint = (
   }
 }
 
-export const fromOfficialLora = (model: OfficialLora): ModelLibraryItem => {
+/**
+ * 公式の LoRA。お気に入りは公式のチェックポイントと同じ一覧（同じ generator_parameters の id なので重ならない）
+ */
+export const fromOfficialLora = (
+  model: OfficialLora,
+  favoriteIds: number[] = [],
+): ModelLibraryItem => {
   return {
     key: officialLoraKey(model.name),
     source: "official",
@@ -70,7 +76,7 @@ export const fromOfficialLora = (model: OfficialLora): ModelLibraryItem => {
     updatedAt: null,
     isNew: false,
     isOwn: false,
-    isFavorite: false,
+    isFavorite: favoriteIds.includes(Number(model.id)),
     userModel: null,
     officialCheckpoint: null,
     officialLora: model,

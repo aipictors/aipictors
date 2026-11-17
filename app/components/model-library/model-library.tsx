@@ -1,4 +1,3 @@
-import { useNavigate } from "~/lib/app/locale-router"
 import {
   ClockIcon,
   FileUpIcon,
@@ -70,6 +69,7 @@ import {
 import { UserModelDeleteDialog } from "~/components/user-models/user-model-delete-dialog"
 import { UserModelEditDialog } from "~/components/user-models/user-model-edit-dialog"
 import { AuthContext } from "~/contexts/auth-context"
+import { useNavigate } from "~/lib/app/locale-router"
 import { USER_MODEL_BASE_MODELS } from "~/lib/user-models/constants"
 import { extractDroppedUrl } from "~/lib/user-models/import-utils"
 import type { UserModel, UserModelKind } from "~/lib/user-models/types"
@@ -81,6 +81,7 @@ export type ModelLibraryProps = {
   initialKind?: UserModelKind | null
   officialCheckpoints: OfficialCheckpoint[]
   officialLoras: OfficialLora[]
+  /** お気に入りの公式モデル（チェックポイントと LoRA）の id */
   favoriteOfficialIds?: number[]
   /**
    * 生成画面で最近使った公式モデル
@@ -297,7 +298,9 @@ export function ModelLibrary(props: ModelLibraryProps) {
       ...props.officialCheckpoints.map((model) =>
         fromOfficialCheckpoint(model, favoriteIds),
       ),
-      ...props.officialLoras.map(fromOfficialLora),
+      ...props.officialLoras.map((model) =>
+        fromOfficialLora(model, favoriteIds),
+      ),
     ],
     [props.officialCheckpoints, props.officialLoras, favoriteIds],
   )
@@ -424,11 +427,9 @@ export function ModelLibrary(props: ModelLibraryProps) {
     },
     onToggleFavorite: props.onToggleFavorite
       ? (item) => {
-          if (item.officialCheckpoint) {
-            props.onToggleFavorite?.(
-              item.officialCheckpoint.id,
-              !item.isFavorite,
-            )
+          const model = item.officialCheckpoint ?? item.officialLora
+          if (model) {
+            props.onToggleFavorite?.(model.id, !item.isFavorite)
           }
         }
       : undefined,
@@ -553,8 +554,11 @@ export function ModelLibrary(props: ModelLibraryProps) {
   const sectionCount = (value: ModelLibrarySection): string | null => {
     if (value === "official") return String(officialItems.length)
     if (value === "mine" && mine.data) return String(mine.data.used)
-    if (value === "favorites")
-      return favoriteIds.length > 0 ? String(favoriteIds.length) : null
+    if (value === "favorites") {
+      // 消えたモデルの id も残っていることがあるので、一覧にあるものだけ数える
+      const count = officialItems.filter((item) => item.isFavorite).length
+      return count > 0 ? String(count) : null
+    }
     return null
   }
 

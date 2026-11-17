@@ -5726,6 +5726,9 @@ input UpdateUserSettingInput {
   """センシティブ画像をぼかす"""
   isBlurSensitiveImage: Boolean
 
+  """画像生成にプレミアムコインを使わない（フリーコインだけで生成する）"""
+  isDisablePremiumCoinGeneration: Boolean
+
   """既定のスタンプ（ぴくたーちゃんのスタンプ）を表示しない"""
   isHideDefaultStickers: Boolean
 
@@ -5737,9 +5740,6 @@ input UpdateUserSettingInput {
 
   """名前つきのいいねの通知を受け取る"""
   isNotifyLike: Boolean
-
-  """画像生成にプレミアムコインを使わない（フリーコインだけで生成する）"""
-  isDisablePremiumCoinGeneration: Boolean
 
   """プレミアムコインでの推し（応援）を受け取らない"""
   isRejectPremiumCoinSupport: Boolean
@@ -6356,6 +6356,9 @@ type UserSettingNode implements Node {
   """コメント投稿がBAN されているかどうか"""
   isCommentBanned: Boolean!
 
+  """画像生成にプレミアムコインを使わない（フリーコインだけで生成する）かどうか"""
+  isDisablePremiumCoinGeneration: Boolean!
+
   """既定のスタンプ（ぴくたーちゃんのスタンプ）を表示しないかどうか"""
   isHideDefaultStickers: Boolean!
 
@@ -6370,9 +6373,6 @@ type UserSettingNode implements Node {
 
   """作品投稿がBAN されているかどうか"""
   isPostBanned: Boolean!
-
-  """画像生成にプレミアムコインを使わない（フリーコインだけで生成する）かどうか"""
-  isDisablePremiumCoinGeneration: Boolean!
 
   """プレミアムコインでの推し（応援）を受け取らないかどうか"""
   isRejectPremiumCoinSupport: Boolean!
@@ -6654,7 +6654,12 @@ type Viewer {
   userStickers(limit: Int!, offset: Int!, orderBy: StickerOrderBy, where: UserStickersWhereInput): [StickerNode!]!
 
   """保存したスタンプ総数"""
-  userStickersCount(orderBy: StickerOrderBy, where: UserStickersWhereInput): Int!
+  userStickersCount(
+    """保存していない既定のスタンプも数える（保存日の一覧には既定のスタンプも並ぶので、そのページ数用）"""
+    includesDefaultStickers: Boolean
+    orderBy: StickerOrderBy
+    where: UserStickersWhereInput
+  ): Int!
 
   """本人確認のURL"""
   verificationUrl: String!

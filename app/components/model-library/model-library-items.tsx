@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import {
   CheckIcon,
   ExternalLinkIcon,
@@ -26,6 +25,7 @@ import {
   UserModelRatingBadge,
   UserModelStatusBadge,
 } from "~/components/user-models/user-model-badges"
+import { Link } from "~/lib/app/locale-router"
 import { formatBytes, formatCount } from "~/lib/user-models/generation"
 import { cn } from "~/lib/utils"
 
@@ -161,17 +161,18 @@ function ItemMenu(props: {
             編集
           </DropdownMenuItem>
         )}
-        {item.officialCheckpoint && actions.onToggleFavorite && (
-          <DropdownMenuItem onSelect={() => actions.onToggleFavorite?.(item)}>
-            <StarIcon
-              className={cn(
-                "mr-2 size-4",
-                item.isFavorite && "fill-amber-400 text-amber-400",
-              )}
-            />
-            {item.isFavorite ? "お気に入りから外す" : "お気に入りに追加"}
-          </DropdownMenuItem>
-        )}
+        {(item.officialCheckpoint || item.officialLora) &&
+          actions.onToggleFavorite && (
+            <DropdownMenuItem onSelect={() => actions.onToggleFavorite?.(item)}>
+              <StarIcon
+                className={cn(
+                  "mr-2 size-4",
+                  item.isFavorite && "fill-amber-400 text-amber-400",
+                )}
+              />
+              {item.isFavorite ? "お気に入りから外す" : "お気に入りに追加"}
+            </DropdownMenuItem>
+          )}
         {href && (
           <DropdownMenuItem asChild>
             <Link to={href} {...linkProps}>

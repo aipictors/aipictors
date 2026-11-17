@@ -153,3 +153,15 @@ describe("filterLibraryItems", () => {
     expect(fromUserModel(userModel({}), "other").isOwn).toBe(false)
   })
 })
+
+test("公式の LoRA もお気に入りの id に入っていればお気に入り", () => {
+  const lora = {
+    id: "2",
+    name: "flat1",
+    description: null,
+    thumbnailImageURL: null,
+  }
+  expect(fromOfficialLora(lora, [1, 2]).isFavorite).toBe(true)
+  expect(fromOfficialLora(lora, [1]).isFavorite).toBe(false)
+  expect(fromOfficialLora(lora).isFavorite).toBe(false)
+})

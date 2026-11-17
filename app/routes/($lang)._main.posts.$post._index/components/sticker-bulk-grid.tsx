@@ -2,7 +2,6 @@ import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { type ReactNode, useEffect, useRef, useState } from "react"
 import { StickerButtonFragment } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { moveDefaultStickersToEnd } from "~/utils/default-stickers"
 
 const PER_PAGE = 120
 
@@ -88,13 +87,7 @@ function StickerBulkPage(props: {
     )
   }
 
-  return (
-    <>
-      {moveDefaultStickersToEnd(stickers).map((sticker) =>
-        props.renderSticker(sticker),
-      )}
-    </>
-  )
+  return <>{stickers.map((sticker) => props.renderSticker(sticker))}</>
 }
 
 const viewerUserStickersBulkQuery = graphql(

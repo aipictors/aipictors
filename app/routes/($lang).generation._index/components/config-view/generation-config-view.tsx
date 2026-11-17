@@ -109,16 +109,6 @@ export function GenerationConfigView(props: Props) {
   )
 
   /**
-   * お気に入りのモデル一覧
-   */
-  const { data: favoritedModels } = useQuery(
-    viewerFavoritedImageGenerationModelsQuery,
-    {
-      skip: authContext.isLoading || authContext.isNotLoggedIn,
-    },
-  )
-
-  /**
    * 最大生成枚数
    */
   const availableImageGenerationMaxTasksCount =
@@ -130,13 +120,12 @@ export function GenerationConfigView(props: Props) {
   useEffect(() => {
     if (authContext.isLoading) return
     if (authContext.isNotLoggedIn) return
-    if (favoritedModels === undefined) return
-    const favoritedModelIds =
-      favoritedModels.viewer?.favoritedImageGenerationModels.map((model) =>
-        Number(model.id),
-      ) ?? []
-    context.updateFavoriteModelIds(favoritedModelIds)
-  }, [favoritedModels])
+    if (userSetting === undefined) return
+    // 公式のチェックポイントと LoRA のお気に入り（viewer.favoritedImageGenerationModels はチェックポイントだけ）
+    context.updateFavoriteModelIds(
+      userSetting.userSetting?.favoritedImageGenerationModelIds ?? [],
+    )
+  }, [userSetting])
 
   useEffect(() => {
     // 初期化
@@ -389,19 +378,6 @@ const viewerCurrentImageGenerationMemosQuery = graphql(
         height
         isDeleted
         createdAt
-      }
-    }
-  }`,
-)
-
-const viewerFavoritedImageGenerationModelsQuery = graphql(
-  `query ViewerFavoritedImageGenerationModels {
-    viewer {
-      id
-      favoritedImageGenerationModels {
-        id
-        name
-        type
       }
     }
   }`,

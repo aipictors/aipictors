@@ -18,16 +18,15 @@ import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useTranslation } from "~/hooks/use-translation"
 import { AddStickerButton } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-button"
+import { StickerBulkGrid } from "~/routes/($lang)._main.posts.$post._index/components/sticker-bulk-grid"
 import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { StickerBulkGrid } from "~/routes/($lang)._main.posts.$post._index/components/sticker-bulk-grid"
 import {
   StickerDialogOptions,
   useStickerViewMode,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog-options"
-import { moveDefaultStickersToEnd } from "~/utils/default-stickers"
 
 type Props = {
   isOpen: boolean
@@ -316,9 +315,10 @@ export function StickerDialog(props: Props) {
                       style={{ width: stickerSize, height: stickerSize }}
                     />
                   ))}
-                {moveDefaultStickersToEnd(
-                  stickers?.viewer?.userStickers ?? [],
-                ).map((sticker) => renderSticker(sticker))}
+                {/* 既定のスタンプもサーバーが日付の位置に並べて返す */}
+                {(stickers?.viewer?.userStickers ?? []).map((sticker) =>
+                  renderSticker(sticker),
+                )}
               </>
             )}
           </div>
@@ -352,7 +352,7 @@ const viewerUserStickersCountQuery = graphql(
   `query ViewerUserStickersCount($where: UserStickersWhereInput) {
     viewer {
       id
-      userStickersCount(where: $where)
+      userStickersCount(where: $where, includesDefaultStickers: true)
     }
   }`,
 )

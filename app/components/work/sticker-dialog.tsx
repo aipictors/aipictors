@@ -17,17 +17,16 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useTranslation } from "~/hooks/use-translation"
-import { StickerBulkGrid } from "~/routes/($lang)._main.posts.$post._index/components/sticker-bulk-grid"
-import {
-  StickerDialogOptions,
-  useStickerViewMode,
-} from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog-options"
 import { AddStickerButton } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-button"
+import { StickerBulkGrid } from "~/routes/($lang)._main.posts.$post._index/components/sticker-bulk-grid"
 import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { moveDefaultStickersToEnd } from "~/utils/default-stickers"
+import {
+  StickerDialogOptions,
+  useStickerViewMode,
+} from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog-options"
 import {
   readRecentStickerIds,
   recordRecentStickerId,
@@ -221,17 +220,21 @@ export function StickerDialog(props: Props): React.ReactNode {
     120: "2x-large",
   } as const
   const stickerSize = sizeMap[sizeOptions[sizeIndex]]
-  const allStickers = moveDefaultStickersToEnd(
-    stickers?.viewer?.userStickers ?? [],
-  )
+  // 既定のスタンプもサーバーが日付の位置に並べて返す
+  const allStickers = stickers?.viewer?.userStickers ?? []
   const sortedStickers = sortStickersByRecent(allStickers, recentStickerIds)
   const recentStickers = sortedStickers.slice(0, 24)
-  const replyStickers = (replyBookmarkedStickers?.viewer?.bookmarkedStickers ?? []).filter(
-    (sticker) => !recentStickers.some((recentSticker) => recentSticker.id === sticker.id),
+  const replyStickers = (
+    replyBookmarkedStickers?.viewer?.bookmarkedStickers ?? []
+  ).filter(
+    (sticker) =>
+      !recentStickers.some((recentSticker) => recentSticker.id === sticker.id),
   )
   const remainingStickers = sortedStickers.filter(
     (sticker) =>
-      !recentStickers.some((recentSticker) => recentSticker.id === sticker.id) &&
+      !recentStickers.some(
+        (recentSticker) => recentSticker.id === sticker.id,
+      ) &&
       !replyStickers.some((replySticker) => replySticker.id === sticker.id),
   )
 
@@ -344,8 +347,14 @@ export function StickerDialog(props: Props): React.ReactNode {
             />
             {type === "RELATED" ? (
               <div className="w-full">
-                {renderStickerSection(t("最近使用", "Recently used"), recentStickers)}
-                {renderStickerSection(t("返信用", "For replies"), replyStickers)}
+                {renderStickerSection(
+                  t("最近使用", "Recently used"),
+                  recentStickers,
+                )}
+                {renderStickerSection(
+                  t("返信用", "For replies"),
+                  replyStickers,
+                )}
                 {renderStickerSection(t("その他", "Others"), remainingStickers)}
               </div>
             ) : viewMode === "BULK" ? (
@@ -408,7 +417,7 @@ const viewerUserStickersCountQuery = graphql(
   `query ViewerUserStickersCount($where: UserStickersWhereInput) {
     viewer {
       id
-      userStickersCount(where: $where)
+      userStickersCount(where: $where, includesDefaultStickers: true)
     }
   }`,
 )

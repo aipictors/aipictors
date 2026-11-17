@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { Button } from "~/components/ui/button"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
+import { toWorkImageSizes } from "~/utils/work-image-sizes"
 
 type Props = {
   imageURLs: string[]
@@ -19,27 +20,16 @@ type Props = {
   mode?: "dialog" | "page" // ダイアログモードかページモードかを指定
   /** 表示中の画像の幅÷高さ。分かれば縮小版を表示する大きさに合わせて選ばせる */
   aspectRatio?: number
+  /**
+   * 作品の画像（メイン）の元の幅と縦横比。分かれば 1280px より大きい縮小版も候補にする。
+   * 複数枚の画像は大きさが分からないので、同じ大きさとみなす（多くは同じ設定で作った画像）
+   */
+  imageSizeHint?: { width: number; aspectRatio: number }
   /** 画像が届くまで代わりに出すサムネイル（同じ比率のもの） */
   placeholderUrl?: string
   /** 複数枚の作品用。枠の高さを固定し、切り替えてもページが動かないようにする */
   isFixedHeight?: boolean
 }
-
-/**
- * メイン画像の sizes。縦長の画像は高さ（max-h-[64vh] / md:max-h-[72vh]）で幅が決まるので、
- * 画面幅で選ぶと必要より大きい縮小版を読んでいた
- */
-const toMainImageSizes = (aspectRatio: number | undefined) => {
-  if (!aspectRatio || !Number.isFinite(aspectRatio) || aspectRatio <= 0) {
-    return "(min-width: 768px) 60vw, 100vw"
-  }
-  const ratio = Math.round(aspectRatio * 1000) / 1000
-  return `(min-width: 768px) min(60vw, calc(72vh * ${ratio})), min(100vw, calc(64vh * ${ratio}))`
-}
-
-/** 高さ固定の枠の sizes。縦横比が分からない画像もあるので、枠の高さまでを上限にする */
-const FIXED_STAGE_IMAGE_SIZES =
-  "(min-width: 768px) min(60vw, 72vh), min(100vw, 64vh)"
 
 /** 読み込み後の展開を待つ上限 */
 const STAGE_IMAGE_DECODE_TIMEOUT_MS = 500
@@ -341,6 +331,12 @@ export function ImagesPreview(props: Props): React.ReactNode {
   }
   const shownStageUrl = shownStageUrlRef.current
   const isStageImagePending = shownStageUrl !== props.thumbnailUrl
+
+  // 元の幅が分かれば、パソコンの大きな画面向けに 1920・2560px の縮小版も候補にする
+  const mainImageSrcSetOptions =
+    props.imageSizeHint && props.imageSizeHint.width > 0
+      ? { minWidth: 400, maxWidth: props.imageSizeHint.width, large: true }
+      : { minWidth: 400 }
 
   const placeholderStyle =
     props.placeholderUrl && !isMainImageLoaded
@@ -656,8 +652,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 draggable={false}
                 alt={isShown ? "thumbnail" : ""}
                 src={url}
-                srcSet={toResizedImageSrcSet(url, { minWidth: 400 })}
-                sizes={FIXED_STAGE_IMAGE_SIZES}
+                srcSet={toResizedImageSrcSet(url, mainImageSrcSetOptions)}
+                // 縦横比が分からなければ正方形とみなし、枠の高さまでを上限にする
+                sizes={toWorkImageSizes(props.imageSizeHint?.aspectRatio ?? 1)}
                 fetchPriority={isShown ? "high" : "low"}
                 onLoad={(event) => {
                   if (url === props.thumbnailUrl) setIsMainImageLoaded(true)
@@ -727,10 +724,13 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 src={props.thumbnailUrl}
                 // 原寸の画像（数 MB のこともある）ではなく、画面に合う縮小版を選ばせる。
                 // 拡大表示やダウンロードは原寸のまま
-                srcSet={toResizedImageSrcSet(props.thumbnailUrl, {
-                  minWidth: 400,
-                })}
-                sizes={toMainImageSizes(props.aspectRatio)}
+                srcSet={toResizedImageSrcSet(
+                  props.thumbnailUrl,
+                  mainImageSrcSetOptions,
+                )}
+                sizes={toWorkImageSizes(
+                  props.aspectRatio ?? props.imageSizeHint?.aspectRatio,
+                )}
                 // 作品ページの LCP 画像なので優先して読み込む
                 fetchPriority="high"
                 onLoad={() => setIsMainImageLoaded(true)}
