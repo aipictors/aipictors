@@ -108,6 +108,11 @@ const quickActions = [
     title: "ユーザー主催のお題",
     subtitle: "通報されたお題を確認・非表示",
   },
+  {
+    href: "/admin/ai-models",
+    title: "追加されたモデル",
+    subtitle: "投稿画面で利用者が追加した使用AIの非表示・統合",
+  },
 ] as const
 
 const operationCards = [

@@ -188,6 +188,19 @@ type AdminCoinOperationResult {
   targetCount: Int!
 }
 
+input AdminMergeAiModelInput {
+  """統合する（消える）モデル"""
+  aiModelId: ID!
+
+  """統合先のモデル"""
+  targetAiModelId: ID!
+}
+
+input AdminSetAiModelHiddenInput {
+  aiModelId: ID!
+  isHidden: Boolean!
+}
+
 """作品通報の管理項目"""
 type AdminWorkReportNode implements Node {
   comment: String
@@ -1054,6 +1067,11 @@ type ControlNetContentNode implements Node {
 
 input CreateAccountInput {
   idToken: String!
+}
+
+input CreateAiModelInput {
+  """モデル名（1〜50 文字）"""
+  name: String!
 }
 
 input CreateAlbumInput {
@@ -3294,6 +3312,12 @@ type Mutation {
   """モデレータ向けの一括コイン操作"""
   adminAdjustCoins(expiresAt: Int, freeDelta: Int, planType: String, premiumDelta: Int, targetScope: String!, userIds: [ID!]): AdminCoinOperationResult!
 
+  """利用者が足したモデルを既存のモデルに統合する（運営用）。そのモデルの作品は統合先のモデルに付け替える"""
+  adminMergeAiModel(input: AdminMergeAiModelInput!): UserAddedAiModelNode!
+
+  """利用者が足したモデルを非表示にする・戻す（運営用）"""
+  adminSetAiModelHidden(input: AdminSetAiModelHiddenInput!): UserAddedAiModelNode!
+
   """コメント審査への異議申し立てを送信する"""
   appealCommentModeration(input: AppealCommentModerationInput!): Boolean!
 
@@ -3326,6 +3350,11 @@ type Mutation {
 
   """ユーザの最新メッセージに対してAI自動応答を生成する"""
   createAiMessageResponse: MessageNode!
+
+  """
+  投稿画面の使用AIにモデルを足す（ログインが必要）。同じ名前（大文字小文字・空白・記号の違いを無視）のモデルがあれば作らずにそれを返す。足したモデルはすぐ全員の一覧に出る
+  """
+  createAiModel(input: CreateAiModelInput!): AiModelNode!
 
   """シリーズを作成する"""
   createAlbum(input: CreateAlbumInput!): AlbumNode!
@@ -4525,6 +4554,9 @@ type Query {
 
   """コメント審査の管理件数"""
   adminCommentModerationItemsCount: Int!
+
+  """利用者が足したモデルの一覧（運営用、新しい順）"""
+  adminUserAddedAiModels: [UserAddedAiModelNode!]!
 
   """モデレーター向け作品通報一覧"""
   adminWorkReports(limit: Int!, offset: Int!, onlyUnhandled: Boolean): [AdminWorkReportNode!]!
@@ -5901,6 +5933,24 @@ input UpdateWorkTagsInput {
 input UploadMaterialImageInput {
   """アップロードする画像のURL"""
   imageUrl: String!
+}
+
+"""利用者が投稿画面で足したモデル（運営用）"""
+type UserAddedAiModelNode {
+  """足した日時（JST の 'YYYY-MM-DDTHH:MM:SS'）"""
+  createdAt: String
+  createdByUserId: ID
+  id: ID!
+  isHidden: Boolean!
+  mergedIntoId: ID
+  mergedIntoName: String
+  name: String!
+
+  """作品の service に入る番号"""
+  workModelId: ID!
+
+  """このモデルの作品数（削除済みを除く。非公開も数える）"""
+  worksCount: Int!
 }
 
 input UserAlbumInput {

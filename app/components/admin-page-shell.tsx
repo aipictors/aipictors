@@ -16,6 +16,7 @@ import {
   Search,
   Shield,
   Boxes,
+  Cpu,
   Flag,
   Users,
 } from "lucide-react"
@@ -114,6 +115,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "ユーザー主催のお題",
     description: "通報されたお題を確認・非表示",
     icon: Flag,
+  },
+  {
+    href: "/admin/ai-models",
+    title: "追加されたモデル",
+    description: "投稿画面で利用者が追加した使用AIの非表示・統合",
+    icon: Cpu,
   },
 ] as const
 
