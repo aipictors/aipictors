@@ -6,6 +6,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 import { useTranslation } from "~/hooks/use-translation"
+import { CopyWorkEmbedButton } from "./work-action-copy-embed"
 import { CopyWorkUrlButton } from "./work-action-copy-url"
 import { NoteIntent } from "./work-action-share-note"
 import { PinterestIntent } from "./work-action-share-pinterest"
@@ -38,11 +39,7 @@ export function SharePopover(props: Props) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          size="icon"
-          variant="secondary"
-          aria-label={t("共有", "Share")}
-        >
+        <Button size="icon" variant="secondary" aria-label={t("共有", "Share")}>
           <Share2 />
         </Button>
       </PopoverTrigger>
@@ -56,6 +53,16 @@ export function SharePopover(props: Props) {
           <div className="grid gap-2">
             {/* Copy URL Button */}
             <CopyWorkUrlButton currentUrl={currentUrl} />
+
+            {/* 埋め込みは誰でも見られる作品だけ（限定公開は URL を知っている人だけなので出さない） */}
+            {(props.accessType === "PUBLIC" ||
+              props.accessType === "SILENT") && (
+              <CopyWorkEmbedButton
+                id={props.id}
+                title={props.title}
+                isSensitive={props.isSensitive}
+              />
+            )}
 
             {/* X (旧Twitter) Share Intent */}
             <XIntent

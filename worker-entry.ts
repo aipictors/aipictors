@@ -1,8 +1,13 @@
 // @ts-ignore - `wrangler pages functions build` が書き出す
 import pages from "./build/worker/index.js"
 import { missingFileCacheControl } from "./app/utils/missing-file-cache-control"
+import { handleEmbedRequest } from "./app/lib/work-embed"
 
-type Env = { INTERNAL_PURGE_TOKEN?: string }
+type Env = {
+  INTERNAL_PURGE_TOKEN?: string
+  VITE_GRAPHQL_ENDPOINT_REMIX?: string
+  VITE_GRAPHQL_ENDPOINT?: string
+}
 
 type CacheContext = ExecutionContext & {
   cache?: { purge(options: { tags: string[] }): Promise<unknown> }
@@ -93,6 +98,9 @@ export default {
         headers: { "Cache-Control": "no-store" },
       })
     }
+    // 作品の埋め込みと oEmbed は、アプリ本体を読み込まずに返す（app/lib/work-embed.ts）
+    const embed = await handleEmbedRequest(request, env)
+    if (embed) return embed
     const response: Response = await pages.fetch(request, env, ctx)
     // Workers のキャッシュは Cache-Control がないと推定で保存するので、明示したものだけを保存させる
     if (response.headers.has("Cache-Control") || response.status === 101) {

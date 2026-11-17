@@ -12,6 +12,7 @@ import {
   useRouteError,
 } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
+import { isbot } from "isbot"
 import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
 import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
 import { AppErrorPage } from "~/components/app/app-error-page"
@@ -21,7 +22,6 @@ import { OwnWorkNotFoundPage } from "~/components/work/own-work-not-found-page"
 import { config, META } from "~/config"
 import { ParamsError } from "~/errors/params-error"
 import { useTranslation } from "~/hooks/use-translation"
-import { isbot } from "isbot"
 import { loaderClient } from "~/lib/loader-client"
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
@@ -234,7 +234,20 @@ export const meta: MetaFunction = (props) => {
 
   // メイン画像の先読みは、画面に合う縮小版を選べる Link ヘッダー（app/lib/image-preload-links.ts）で行う。
   // ここで原寸の URL を preload すると、縮小版とは別に原寸も読んでいた
-  return metaTags
+  if (work.work.accessType !== "PUBLIC" && work.work.accessType !== "SILENT") {
+    return metaTags
+  }
+  // URL を貼るだけで埋め込みにするサービス向け（app/lib/work-embed.ts）
+  return [
+    ...metaTags,
+    {
+      tagName: "link",
+      rel: "alternate",
+      type: "application/json+oembed",
+      href: `${config.siteURL}/api/oembed?url=${encodeURIComponent(`${config.siteURL}/posts/${work.work.id}`)}&format=json`,
+      title: work.work.title,
+    },
+  ]
 }
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => ({
