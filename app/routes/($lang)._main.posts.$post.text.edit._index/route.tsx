@@ -726,7 +726,7 @@ const viewerQuery = graphql(
     ) {
       ...PostTextFormAlbum
     }
-    aiModels(offset: 0, limit: 124, where: {}) {
+    aiModels(offset: 0, limit: 300, where: {}) {
       ...PostTextFormAiModel
     }
     dailyThemes(

@@ -1,6 +1,7 @@
 import { type SetStateAction, useState, useEffect } from "react"
 import { Search, XIcon } from "lucide-react"
 import type { AiModel } from "~/routes/($lang)._main.new.image/types/model"
+import { filterAiModels } from "~/routes/($lang)._main.new.image/utils/filter-ai-models"
 import { useTranslation } from "~/hooks/use-translation"
 import { Card, CardContent } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
@@ -51,9 +52,7 @@ export function PostFormItemModel ({ model, models, setModel }: Props) {
   }
 
   // モデル名でソートし、検索語でフィルタリング
-  const filteredModels = models
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .filter((m) => m.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredModels = filterAiModels(models, searchTerm)
 
   return (
     <Card>
