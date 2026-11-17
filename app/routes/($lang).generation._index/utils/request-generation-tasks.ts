@@ -1,7 +1,10 @@
 import { config as appConfig } from "~/config"
 import type { useGenerationTaskMutations } from "~/routes/($lang).generation._index/hooks/use-generation-task-mutations"
 import type { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
-import { logInfo, logWarn } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
+import {
+  logInfo,
+  logWarn,
+} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import {
   convertToGeminiImageSize,
   toFluxTaskInput,

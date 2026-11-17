@@ -1,5 +1,5 @@
-import { ConfigModelButton } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
 import type { Meta, StoryObj } from "@storybook/react"
+import { ConfigModelButton } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
 
 const meta = {
   title: "画像生成/config-modal-button",

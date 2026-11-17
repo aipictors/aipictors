@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react"
 import { Loader2Icon } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { cn } from "~/lib/utils"
 import { logInfo } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 
@@ -15,7 +15,7 @@ type Props = {
   scrollContainerClassName?: string
 }
 
-export function MobilePullToRefresh (props: Props) {
+export function MobilePullToRefresh(props: Props) {
   const thresholdPx = props.thresholdPx ?? 64
   const maxPullPx = props.maxPullPx ?? 96
 

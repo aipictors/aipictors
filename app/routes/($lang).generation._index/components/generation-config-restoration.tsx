@@ -1,4 +1,3 @@
-import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -9,6 +8,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
+import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 
 type Props = {
   children: React.ReactNode

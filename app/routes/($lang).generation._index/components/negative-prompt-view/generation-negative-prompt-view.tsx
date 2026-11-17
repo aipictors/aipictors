@@ -7,8 +7,8 @@ import { GenerationViewCard } from "~/routes/($lang).generation._index/component
 import { NegativePromptsDialogContent } from "~/routes/($lang).generation._index/components/negative-prompt-view/negative-prompts-dialog-content"
 import { PromptTagTextarea } from "~/routes/($lang).generation._index/components/prompt-view/prompt-tag-textarea"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
 import { removeEmptyPromptParts as formatPromptTextForKeyWord } from "~/routes/($lang).generation._index/utils/format-prompt-text"
+import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
 
 export function GenerationNegativePromptView() {
   const context = useGenerationContext()

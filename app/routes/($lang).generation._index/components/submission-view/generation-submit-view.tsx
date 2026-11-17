@@ -7,11 +7,10 @@ import { AppFixedContent } from "~/components/app/app-fixed-content"
 import { VerificationDialog } from "~/components/verification-dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useIpAddress } from "~/hooks/use-ip-address"
+import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
-import { GenerationMobileTabContext } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
-import { publishGenerationCoinSummary } from "~/routes/($lang).generation._index/utils/generation-coin-store"
 import { GenerationCoinShortageDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-coin-shortage-dialog"
 import { GenerationGeminiAllowanceNotice } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-allowance-notice"
 import { GenerationGeminiLimitDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-gemini-limit-dialog"
@@ -22,6 +21,7 @@ import {
 } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
 import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
+import { GenerationMobileTabContext } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
 import { useGeminiAllowance } from "~/routes/($lang).generation._index/hooks/use-gemini-allowance"
 import {
   useGenerationCoinSummary,
@@ -43,6 +43,7 @@ import {
   logWarn,
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import { findGenerationSubmitBlock } from "~/routes/($lang).generation._index/utils/find-generation-submit-block"
+import { publishGenerationCoinSummary } from "~/routes/($lang).generation._index/utils/generation-coin-store"
 import {
   calcGenerationModelCoinCost,
   PREMIUM_COIN_GENERATION_DISABLED_SHORTAGE_MESSAGE,
@@ -60,9 +61,8 @@ import {
   estimatePremiumCoinUse,
 } from "~/routes/($lang).generation._index/utils/premium-coin-confirm"
 import { requestGenerationTasks } from "~/routes/($lang).generation._index/utils/request-generation-tasks"
-import { uploadPublicImage } from "~/utils/upload-public-image"
 import { usePremiumCoinGenerationSetting } from "~/routes/($lang).settings/components/premium-coin-generation-setting"
-import { useTranslation } from "~/hooks/use-translation"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
 type Props = {
   termsText: string

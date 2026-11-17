@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -6,9 +7,8 @@ import {
   DialogHeader,
 } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { GenerationConfigMemoSavingContent } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-saving-contents"
-import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationConfigMemoSavingContent } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-saving-contents"
 
 type Props = {
   refetchMemos: () => void
@@ -17,7 +17,7 @@ type Props = {
 /**
  * 履歴メモ設定ダイアログ
  */
-export function GenerationConfigMemoOperationParts (props: Props) {
+export function GenerationConfigMemoOperationParts(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const closeDialog = () => {

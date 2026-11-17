@@ -1,14 +1,14 @@
+import { MaximizeIcon, MinimizeIcon, XIcon } from "lucide-react"
+import { useState } from "react"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import { Toggle } from "~/components/ui/toggle"
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { GenerationWorkActionDropdownMenu } from "~/routes/($lang).generation._index/components/task-view/generation-work-action-dropdown-menu"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { MaximizeIcon, MinimizeIcon, XIcon } from "lucide-react"
-import { useState } from "react"
-import { Input } from "~/components/ui/input"
-import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   thumbnailSize: number
@@ -22,7 +22,7 @@ type Props = {
 /**
  * 作品一覧の操作
  */
-export function GenerationWorkListActions (props: Props) {
+export function GenerationWorkListActions(props: Props) {
   const context = useGenerationContext()
 
   const state = GenerationConfigContext.useSelector((snap) => {

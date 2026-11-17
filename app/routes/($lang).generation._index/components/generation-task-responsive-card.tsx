@@ -1,4 +1,6 @@
-import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
+import { type FragmentOf, graphql } from "gql.tada"
+import { ErrorBoundary } from "react-error-boundary"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
 import {
   GenerationResultButtonFragment,
@@ -11,9 +13,7 @@ import {
   GenerationTaskDialogButton,
 } from "~/routes/($lang).generation._index/components/generation-task-dialog-button"
 import { ReservedGenerationLinkCard } from "~/routes/($lang).generation._index/components/reserved-generation-link-card"
-import { ErrorBoundary } from "react-error-boundary"
-import { useLayoutVariant } from "~/hooks/use-layout-variant"
-import { graphql, type FragmentOf } from "gql.tada"
+import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 
 type Props = {
   task:
@@ -36,7 +36,7 @@ type Props = {
 /**
  * レスポンシブ対応の画像生成の履歴
  */
-export function GenerationTaskResponsiveCard (props: Props) {
+export function GenerationTaskResponsiveCard(props: Props) {
   const { showDesktop, showMobile } = useLayoutVariant()
 
   return (

@@ -12,7 +12,7 @@ const tabsTriggerClassName =
 /**
  * サイドコンテンツ切替タブ
  */
-export function GenerationSideTabsView () {
+export function GenerationSideTabsView() {
   const context = useGenerationContext()
 
   const { send } = GenerationConfigContext.useActorRef()

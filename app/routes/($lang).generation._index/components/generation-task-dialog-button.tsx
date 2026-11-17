@@ -1,6 +1,7 @@
+import { type FragmentOf, graphql } from "gql.tada"
+import { useState } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
-import { GeminiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/gemini-image-modification-dialog"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
 import {
   EditableGenerationResultCardFragment,
@@ -12,9 +13,8 @@ import {
   GenerationImageResultSheetTaskFragment,
   GenerationTaskSheetView,
 } from "~/routes/($lang).generation._index/components/generation-task-sheet-view"
-import { useState } from "react"
-import { ErrorBoundary } from "react-error-boundary"
-import { graphql, type FragmentOf } from "gql.tada"
+import { GeminiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/gemini-image-modification-dialog"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 type Props = {
@@ -32,7 +32,7 @@ type Props = {
 /**
  * 画像生成の履歴
  */
-export function GenerationTaskDialogButton (props: Props) {
+export function GenerationTaskDialogButton(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const [showAiModificationDialog, setShowAiModificationDialog] =

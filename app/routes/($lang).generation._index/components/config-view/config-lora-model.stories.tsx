@@ -1,5 +1,5 @@
-import { ConfigLoraModel } from "~/routes/($lang).generation._index/components/config-view/config-lora-model"
 import type { Meta, StoryObj } from "@storybook/react"
+import { ConfigLoraModel } from "~/routes/($lang).generation._index/components/config-view/config-lora-model"
 
 const meta = {
   title: "画像生成/config-lora-model",

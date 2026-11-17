@@ -1,5 +1,5 @@
-import { GenerationCancelButton } from "~/routes/($lang).generation._index/components/submission-view/generation-cancel-button"
 import type { Meta, StoryObj } from "@storybook/react"
+import { GenerationCancelButton } from "~/routes/($lang).generation._index/components/submission-view/generation-cancel-button"
 
 const meta = {
   title: "画像生成/generation-cancel-button",

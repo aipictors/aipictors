@@ -1,9 +1,9 @@
+import { ArrowDownToLine, Loader2 } from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { downloadGeneratedImageFiles } from "~/routes/($lang).generation._index/utils/download-generated-image-files"
-import { useState } from "react"
-import { ArrowDownToLine, Loader2 } from "lucide-react"
-import { toast } from "sonner"
 
 type Props = {
   disabled: boolean
@@ -15,7 +15,7 @@ type Props = {
 /**
  * 生成画像のZip形式のダウンロードボタン
  */
-export function GenerationImageDownloadButton (props: Props) {
+export function GenerationImageDownloadButton(props: Props) {
   const _context = useGenerationContext()
 
   const [isLoading, setIsLoading] = useState(false)

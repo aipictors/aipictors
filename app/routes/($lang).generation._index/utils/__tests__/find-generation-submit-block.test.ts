@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
-import { findGenerationSubmitBlock } from "~/routes/($lang).generation._index/utils/find-generation-submit-block"
 import type { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
+import { findGenerationSubmitBlock } from "~/routes/($lang).generation._index/utils/find-generation-submit-block"
 
 const config = (overrides: Partial<GenerationConfigState>) =>
   ({

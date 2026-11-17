@@ -1,6 +1,6 @@
-import { Link } from "~/lib/app/locale-router"
 import { CheckCircle2Icon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 
 type Props = {

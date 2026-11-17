@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -7,7 +8,6 @@ import {
 } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { GenerationConfigMemoUpdateContent } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-update-contents"
-import { useState } from "react"
 
 type Props = {
   memo: any
@@ -17,7 +17,7 @@ type Props = {
 /**
  * 履歴メモ設定ダイアログ
  */
-export function GenerationMemoItemContents (props: Props) {
+export function GenerationMemoItemContents(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const closeDialog = () => {

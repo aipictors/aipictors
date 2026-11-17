@@ -5,11 +5,11 @@ import {
   toGenerationSizeInput,
   toTaskSizeType,
 } from "~/routes/($lang).generation._index/types/generation-size"
-import { getMaxImagesPerRequest } from "~/routes/($lang).generation._index/utils/get-max-images-per-request"
 import {
   calcGenerationModelCoinCost,
   getGenerationSizeMultiplier,
 } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
+import { getMaxImagesPerRequest } from "~/routes/($lang).generation._index/utils/get-max-images-per-request"
 
 describe("幅・高さの指定", () => {
   test("読み取りと依頼の形", () => {

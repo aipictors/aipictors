@@ -57,7 +57,7 @@ const normalizeLedger = (ledger: LedgerItem[]) => {
     .filter((row): row is LedgerItem => row !== null)
 }
 
-export function GenerationCoinHistoryTab () {
+export function GenerationCoinHistoryTab() {
   const t = useTranslation()
   const [items, setItems] = useState<LedgerItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -171,9 +171,12 @@ export function GenerationCoinHistoryTab () {
       includeLedgerLimit: String(limit),
       includeLedgerOffset: String(offset),
     })
-    const response = await fetch(`/api/coins/summary?${searchParams.toString()}`, {
-      headers,
-    })
+    const response = await fetch(
+      `/api/coins/summary?${searchParams.toString()}`,
+      {
+        headers,
+      },
+    )
 
     const json = (await response.json()) as SummaryResponse
 
@@ -260,7 +263,10 @@ export function GenerationCoinHistoryTab () {
         <div className="space-y-2">
           {!hasViewerRequestSession() && (
             <p className="text-muted-foreground text-sm">
-              {t("ログインするとコイン履歴を確認できます", "Sign in to view coin history")}
+              {t(
+                "ログインするとコイン履歴を確認できます",
+                "Sign in to view coin history",
+              )}
             </p>
           )}
           {hasViewerRequestSession() && items.length === 0 && !isLoading && (
@@ -284,7 +290,9 @@ export function GenerationCoinHistoryTab () {
                     {getHistoryDetail(row)}
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    {jstDateTimeFormatter.format(new Date(row.createdAt * 1000))}
+                    {jstDateTimeFormatter.format(
+                      new Date(row.createdAt * 1000),
+                    )}
                   </p>
                 </div>
                 <span
@@ -296,7 +304,8 @@ export function GenerationCoinHistoryTab () {
                 >
                   {row.delta > 0
                     ? `+${formatCoinAmount(row.delta)}`
-                    : `-${formatCoinAmount(Math.abs(row.delta))}`} {t("コイン", "coins")}
+                    : `-${formatCoinAmount(Math.abs(row.delta))}`}{" "}
+                  {t("コイン", "coins")}
                 </span>
               </div>
             </div>

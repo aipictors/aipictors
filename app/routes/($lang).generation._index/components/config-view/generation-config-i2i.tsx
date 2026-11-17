@@ -1,9 +1,9 @@
-import { Link } from "~/lib/app/locale-router"
 import { CropImageField } from "~/components/crop-image-field"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Button } from "~/components/ui/button"
 import { Slider } from "~/components/ui/slider"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
 
@@ -115,7 +115,6 @@ export function GenerationConfigI2i() {
               </div>
 
               <Slider
-
                 aria-label="画像の影響度"
                 className="color-pink w-full"
                 min={CHANGE_STRENGTH_MIN}

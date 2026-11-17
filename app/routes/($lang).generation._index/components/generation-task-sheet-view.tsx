@@ -1,4 +1,3 @@
-import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 import { useMutation } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useCallback, useEffect, useState } from "react"
@@ -22,6 +21,7 @@ import type { GenerationParameters } from "~/routes/($lang).generation._index/ty
 import {
   type GenerationSize,
   parseGenerationSize,
+  toTaskSizeType,
 } from "~/routes/($lang).generation._index/types/generation-size"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 

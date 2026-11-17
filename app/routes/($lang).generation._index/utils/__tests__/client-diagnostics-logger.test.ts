@@ -1,11 +1,11 @@
 // filepath: app/routes/($lang).generation._index/utils/__tests__/client-diagnostics-logger.test.ts
-import { expect, test, beforeEach } from "bun:test"
+import { beforeEach, expect, test } from "bun:test"
 import {
   clearLogs,
   getLogs,
+  logError,
   logInfo,
   logWarn,
-  logError,
 } from "../client-diagnostics-logger"
 
 const STORAGE_KEY = "aipictors:generation:logs"

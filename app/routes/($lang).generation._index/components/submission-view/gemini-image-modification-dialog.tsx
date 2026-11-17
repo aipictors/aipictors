@@ -1,6 +1,9 @@
-import { useState, useEffect, useRef } from "react"
+import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Loader2Icon } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
-import { Textarea } from "~/components/ui/textarea"
 import {
   Dialog,
   DialogContent,
@@ -8,24 +11,21 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { Label } from "~/components/ui/label"
-import { useMutation } from "@apollo/client/index"
-import { toast } from "sonner"
-import { graphql } from "gql.tada"
-import { useTranslation } from "~/hooks/use-translation"
-import { Loader2Icon } from "lucide-react"
-import {
-  logInfo,
-  logWarn,
-  logError,
-} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
-import type { GeminiImageSize } from "~/types/gemini-image-generation"
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet"
+import { Textarea } from "~/components/ui/textarea"
 import { useIpAddress } from "~/hooks/use-ip-address"
+import { useTranslation } from "~/hooks/use-translation"
+import {
+  logError,
+  logInfo,
+  logWarn,
+} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
+import type { GeminiImageSize } from "~/types/gemini-image-generation"
 
 type AiTaskResult = {
   id: string
@@ -270,7 +270,7 @@ const summarizeError = (error: unknown) => {
 /**
  * AI画像修正ダイアログ
  */
-export function GeminiImageModificationDialog (props: Props) {
+export function GeminiImageModificationDialog(props: Props) {
   const [prompt, setPrompt] = useState("")
   const [isCreatingTask, setIsCreatingTask] = useState(false)
   const t = useTranslation()

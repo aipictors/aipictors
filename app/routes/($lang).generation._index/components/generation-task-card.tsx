@@ -73,8 +73,11 @@ export function GenerationTaskCard(props: Props) {
 
   const isExpired = retention.kind === "expired" || retention.kind === "deleted"
   // 上のプランで戻せるものは押してもプランの案内だけ。戻せないもの（最上位のプラン）は開いて保護できる
-  const canRestoreByPlan =
-    retention.kind === "expired" && retention.restorePlan !== null
+  const restorePlan =
+    retention.kind === "expired" || retention.kind === "deleted"
+      ? retention.restorePlan
+      : null
+  const canRestoreByPlan = isExpired && restorePlan !== null
 
   return (
     // 一覧をそろえるため、どの履歴も正方形の枠に入れる
@@ -129,10 +132,8 @@ export function GenerationTaskCard(props: Props) {
       </div>
       {isExpired && (
         <GenerationRetentionExpiredOverlay
-          daysLeft={retention.kind === "expired" ? retention.daysLeft : 1}
-          restorePlan={
-            retention.kind === "expired" ? retention.restorePlan : null
-          }
+          daysLeft={retention.kind === "expired" ? retention.daysLeft : 0}
+          restorePlan={restorePlan}
           isCompact={isCompact}
           isEditMode={props.isEditMode || !canRestoreByPlan}
         />

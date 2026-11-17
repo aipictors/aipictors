@@ -1,10 +1,10 @@
 // filepath: app/routes/($lang).generation._index/components/generation-side-tabs-view/__tests__/generation-logs-tab.test.tsx
 import { expect, test } from "bun:test"
-import { render, screen, act } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router-dom"
-import { GenerationLogsTab } from "../generation-logs-tab"
 import { clearLogs, logInfo } from "../../../utils/client-diagnostics-logger"
+import { GenerationLogsTab } from "../generation-logs-tab"
 
 const renderWithRouter = (
   ui: React.ReactNode,

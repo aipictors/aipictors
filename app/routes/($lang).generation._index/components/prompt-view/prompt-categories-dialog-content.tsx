@@ -1,3 +1,4 @@
+import type { FragmentOf } from "gql.tada"
 import {
   Accordion,
   AccordionContent,
@@ -13,7 +14,6 @@ import {
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { PromptCategoryIcon } from "~/routes/($lang).generation._index/components/prompt-view/prompt-category-icon"
 import type { PromptCategoryContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
-import type { FragmentOf } from "gql.tada"
 
 type Props = {
   selectedPromptIds: string[]
@@ -22,7 +22,7 @@ type Props = {
   onSelect(id: string): void
 }
 
-export function PromptCategoriesDialogContent (props: Props) {
+export function PromptCategoriesDialogContent(props: Props) {
   const defaultOpenCategories = props.promptCategories
     .filter((category) =>
       category.prompts.some((prompt) =>

@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import {
   ArrowLeftRightIcon,
   LockIcon,
@@ -7,10 +6,11 @@ import {
 import { useEffect, useState } from "react"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
+import { GenerationConfigCustomSize } from "~/routes/($lang).generation._index/components/config-view/generation-config-custom-size"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
-import { GenerationConfigCustomSize } from "~/routes/($lang).generation._index/components/config-view/generation-config-custom-size"
 import {
   isCustomSizeType,
   isUpscaleOverFreeLimit,

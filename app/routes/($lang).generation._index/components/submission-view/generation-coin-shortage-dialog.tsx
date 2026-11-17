@@ -1,8 +1,7 @@
-import { Link } from "~/lib/app/locale-router"
 import { Check, Clock, Loader2, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
+import { TrialTerms } from "~/components/trial-terms"
 import { Button } from "~/components/ui/button"
-import { cn } from "~/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -10,11 +9,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { TrialTerms } from "~/components/trial-terms"
 import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePassCheckout } from "~/hooks/use-pass-checkout"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { COIN_CAMPAIGN, isCoinCampaignActive } from "~/lib/premium-coins"
+import { cn } from "~/lib/utils"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { trackGrowthEvent } from "~/utils/track-growth-event"

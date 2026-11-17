@@ -1,10 +1,10 @@
+import { Loader2Icon } from "lucide-react"
+import { useCallback, useRef, useState } from "react"
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { CoinIcon } from "~/components/coin-icon"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
-import { Loader2Icon } from "lucide-react"
 import { cn } from "~/lib/utils"
-import { useCallback, useRef, useState } from "react"
 
 const formatCoinAmount = (value: number) => {
   return value.toLocaleString()

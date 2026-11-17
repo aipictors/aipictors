@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react"
-import { Link } from "~/lib/app/locale-router"
-import { useTranslation } from "~/hooks/use-translation"
-import { Button } from "~/components/ui/button"
 import { XIcon } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 /**
  * 広告（× で閉じると再表示しない）
  */
-export function GenerationAdvertisementView () {
+export function GenerationAdvertisementView() {
   const t = useTranslation()
   const [hidden, setHidden] = useState(false)
 

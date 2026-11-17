@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import { ArrowRight, Check, Clock } from "lucide-react"
 import { useState } from "react"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
@@ -11,6 +10,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
@@ -84,7 +84,10 @@ export function GenerationGeminiLimitDialog(props: Props) {
                       `あと${reset.days > 0 ? `${reset.days}日` : ""}${reset.hours}時間${reset.days > 0 ? "" : `${reset.minutes}分`}（月曜0時）で枠が戻ります`,
                       `Resets in ${reset.days > 0 ? `${reset.days}d ` : ""}${reset.hours}h${reset.days > 0 ? "" : ` ${reset.minutes}m`} (Monday midnight JST)`,
                     )
-                  : t("毎週月曜0時に枠が戻ります", "Resets Monday at midnight JST")}
+                  : t(
+                      "毎週月曜0時に枠が戻ります",
+                      "Resets Monday at midnight JST",
+                    )}
               </span>
             </li>
             <li className="flex items-start gap-2">

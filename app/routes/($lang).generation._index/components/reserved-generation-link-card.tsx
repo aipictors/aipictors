@@ -1,10 +1,10 @@
-import { Card } from "~/components/ui/card"
-import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"
 import { useMutation } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
+import { Card } from "~/components/ui/card"
+import { Link } from "~/lib/app/locale-router"
+import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"
 
 type Props = {
   taskNanoid: string
@@ -13,7 +13,7 @@ type Props = {
 /**
  * 生成予約の履歴
  */
-export function ReservedGenerationLinkCard (props: Props) {
+export function ReservedGenerationLinkCard(props: Props) {
   const [cancelReservedTask, { loading: isCancelingReservedTask }] =
     useMutation(cancelImageGenerationReservedTaskMutation)
 

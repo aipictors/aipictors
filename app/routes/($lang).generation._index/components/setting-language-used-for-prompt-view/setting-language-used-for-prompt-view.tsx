@@ -1,12 +1,12 @@
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useTranslation } from "~/hooks/use-translation"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { useTranslation } from "~/hooks/use-translation"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
 /**
  * プロンプトに使用する言語切り替えタブ
  */
-export function SettingLanguageUsedForPromptView () {
+export function SettingLanguageUsedForPromptView() {
   const context = useGenerationContext()
 
   const t = useTranslation()

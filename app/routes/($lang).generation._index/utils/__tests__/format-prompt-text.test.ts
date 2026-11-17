@@ -1,5 +1,8 @@
-import { formatPromptText, removeEmptyPromptParts } from "~/routes/($lang).generation._index/utils/format-prompt-text"
 import { describe, expect, test } from "bun:test"
+import {
+  formatPromptText,
+  removeEmptyPromptParts,
+} from "~/routes/($lang).generation._index/utils/format-prompt-text"
 
 describe("formatPromptText", () => {
   test("should remove leading and trailing whitespace from each text segment", () => {

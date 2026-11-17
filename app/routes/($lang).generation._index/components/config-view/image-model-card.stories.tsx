@@ -1,5 +1,5 @@
-import { ImageModelCard } from "~/routes/($lang).generation._index/components/config-view/image-model-card"
 import type { Meta, StoryObj } from "@storybook/react"
+import { ImageModelCard } from "~/routes/($lang).generation._index/components/config-view/image-model-card"
 
 const meta = {
   title: "画像生成/image-model-card",

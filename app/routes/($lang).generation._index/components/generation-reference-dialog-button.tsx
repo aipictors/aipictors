@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -9,7 +10,6 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog"
 import { useTranslation } from "~/hooks/use-translation"
-import { useState } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -21,7 +21,7 @@ type Props = {
 /**
  * 参照生成ダイアログ
  */
-export function GenerationReferenceDialog (props: Props) {
+export function GenerationReferenceDialog(props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 

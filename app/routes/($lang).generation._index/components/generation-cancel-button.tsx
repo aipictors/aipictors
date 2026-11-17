@@ -1,5 +1,5 @@
-import { Button } from "~/components/ui/button"
 import { Loader2, XIcon } from "lucide-react"
+import { Button } from "~/components/ui/button"
 
 type Props = {
   onCancel?(): void
@@ -10,7 +10,7 @@ type Props = {
 /**
  * 単一生成タスクのキャンセルボタン
  */
-export function GenerationTaskCancelButton (props: Props) {
+export function GenerationTaskCancelButton(props: Props) {
   return (
     <>
       {props.isCanceling ? (

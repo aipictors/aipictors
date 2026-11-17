@@ -1,11 +1,11 @@
-import { Button } from "~/components/ui/button"
 import { FrownIcon } from "lucide-react"
 import { useCallback } from "react"
+import { Button } from "~/components/ui/button"
 
 /**
  * エラーになった履歴
  */
-export function GenerationTaskError () {
+export function GenerationTaskError() {
   const reloadPage = useCallback(() => {
     window.location.reload()
   }, [])

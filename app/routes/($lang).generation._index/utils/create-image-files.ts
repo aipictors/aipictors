@@ -1,7 +1,7 @@
-import { fetchPublic } from "~/utils/fetch-public"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
 import { addPngParameters } from "~/routes/($lang).generation._index/utils/png-generation-parameters"
 import { parseCompletedAt } from "~/routes/($lang).generation._index/utils/to-generation-image-file-names"
+import { fetchPublic } from "~/utils/fetch-public"
 
 interface FileObject {
   name: string

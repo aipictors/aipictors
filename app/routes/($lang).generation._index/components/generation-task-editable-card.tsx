@@ -1,17 +1,12 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
-import {
-  toGenerationSizeInput,
-  toTaskSizeType,
-} from "~/routes/($lang).generation._index/types/generation-size"
 import { useMutation } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useState } from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
 import { SelectableCardButton } from "~/components/selectable-card-button"
 import { Button } from "~/components/ui/button"
 import { Skeleton } from "~/components/ui/skeleton"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
 import { GenerationTaskDeleteButton } from "~/routes/($lang).generation._index/components/generation-task-delete-button"
 import { GenerationTaskDownloadButton } from "~/routes/($lang).generation._index/components/generation-task-download-button"
@@ -26,8 +21,13 @@ import { ReservedGenerationCard } from "~/routes/($lang).generation._index/compo
 import { useGenerationMaintenance } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
+import {
+  toGenerationSizeInput,
+  toTaskSizeType,
+} from "~/routes/($lang).generation._index/types/generation-size"
 import { toPngParametersText } from "~/routes/($lang).generation._index/utils/png-generation-parameters"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 const convertToGeminiImageSize = (sizeType: string) => {
   switch (sizeType) {

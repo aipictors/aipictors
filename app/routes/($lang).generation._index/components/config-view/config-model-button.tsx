@@ -1,6 +1,6 @@
 import { SearchIcon } from "lucide-react"
-import { Badge } from "~/components/ui/badge"
 import { CoinIcon } from "~/components/coin-icon"
+import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 

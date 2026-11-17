@@ -1,17 +1,17 @@
-import { MemberThanksBanner } from "~/components/member-thanks-banner"
 import { Suspense } from "react"
 import { useMediaQuery } from "usehooks-ts"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { MemberThanksBanner } from "~/components/member-thanks-banner"
+import {
+  NewMemberGuide,
+  PlanEndingNotice,
+} from "~/components/plus-member-notice"
 import { ResizablePanelWithMemory } from "~/components/resizable-panel-with-memory"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "~/components/ui/resizable"
-import {
-  NewMemberGuide,
-  PlanEndingNotice,
-} from "~/components/plus-member-notice"
 import { GenerationAnnouncementBanner } from "~/routes/($lang).generation._index/components/generation-announcement-banner"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 

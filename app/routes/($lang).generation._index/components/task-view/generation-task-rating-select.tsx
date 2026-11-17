@@ -1,3 +1,4 @@
+import { StarIcon } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -6,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import { StarIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
 /**
  * お気に入り（星の数）で絞る
  */
-export function GenerationTaskRatingSelect (props: Props) {
+export function GenerationTaskRatingSelect(props: Props) {
   const t = useTranslation()
 
   return (

@@ -1,5 +1,3 @@
-import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import {
   FolderCogIcon,
   ImageOffIcon,
@@ -10,13 +8,14 @@ import {
 import { CoinIcon } from "~/components/coin-icon"
 import { officialBaseModel } from "~/components/model-library/model-library-utils"
 import { Button } from "~/components/ui/button"
+import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
 import { useTranslation } from "~/hooks/use-translation"
 import { baseModelLabel } from "~/lib/user-models/constants"
 import { cn } from "~/lib/utils"
 import {
   isLiteOnlyModel,
-  isStandardOnlyModel,
   isNoQueueModel,
+  isStandardOnlyModel,
   modelCoinCost,
 } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
 import {
@@ -25,6 +24,7 @@ import {
 } from "~/routes/($lang).generation._index/components/config-view/generation-model-library-provider"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Props = {
   onClickSearchModelWorks(id: string, name: string): void

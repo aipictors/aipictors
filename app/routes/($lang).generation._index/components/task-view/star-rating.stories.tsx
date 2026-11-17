@@ -1,5 +1,5 @@
-import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
 import type { Meta, StoryObj } from "@storybook/react"
+import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
 
 const meta = {
   title: "画像生成/star-rating",

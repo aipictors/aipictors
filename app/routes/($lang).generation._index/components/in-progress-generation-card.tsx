@@ -1,16 +1,16 @@
-import { Link } from "~/lib/app/locale-router"
 import { SparklesIcon, ZapIcon } from "lucide-react"
 import { useContext, useEffect } from "react"
 import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
+import { cn } from "~/lib/utils"
+import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"
+import { GenerationQueryContext } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import { useGenerationProgress } from "~/routes/($lang).generation._index/hooks/use-generation-progress"
 import {
   trackGrowthEvent,
   trackGrowthEventOnce,
 } from "~/utils/track-growth-event"
-import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"
-import { GenerationQueryContext } from "~/routes/($lang).generation._index/contexts/generation-query-context"
-import { useGenerationProgress } from "~/routes/($lang).generation._index/hooks/use-generation-progress"
-import { cn } from "~/lib/utils"
 
 type Props = {
   onCancel?(): void
@@ -53,7 +53,8 @@ export function InProgressGenerationCard(props: Props) {
 
   const liteOffer = useLiteOffer().offer
   // 無料の人で、お試しか初月半額かを確認している間は出さない（出た後に文言が変わらないように）
-  const isHintVisible = hint !== null && !(hint === "free" && liteOffer === "unknown")
+  const isHintVisible =
+    hint !== null && !(hint === "free" && liteOffer === "unknown")
   const isTrialHint = hint === "free" && liteOffer === "trial"
 
   useEffect(() => {
@@ -171,14 +172,14 @@ export function InProgressGenerationCard(props: Props) {
                     `Skip ahead and get 4 images per click — try Lite free for ${TRIAL_DAYS} days`,
                   )
                 : hint === "free"
-                ? t(
-                    "プランなら順番が先・1回で4枚（初月¥240〜）",
-                    "Skip ahead and get 4 images per click, from ¥240",
-                  )
-                : t(
-                    "スタンダード以上は最優先で生成",
-                    "Standard and Premium go first in the queue",
-                  )}
+                  ? t(
+                      "プランなら順番が先・1回で4枚（初月¥240〜）",
+                      "Skip ahead and get 4 images per click, from ¥240",
+                    )
+                  : t(
+                      "スタンダード以上は最優先で生成",
+                      "Standard and Premium go first in the queue",
+                    )}
             </Link>
           )}
           {passType === "LITE" && !isActive && !isCompleted && (

@@ -1,3 +1,6 @@
+import { type FragmentOf, graphql } from "gql.tada"
+import { Suspense } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Skeleton } from "~/components/ui/skeleton"
 import { cn } from "~/lib/utils"
@@ -7,9 +10,6 @@ import {
   GenerationWorkCard,
   GenerationWorkCardFragment,
 } from "~/routes/($lang).generation._index/components/generation-work-card "
-import { graphql, type FragmentOf } from "gql.tada"
-import { Suspense } from "react"
-import { ErrorBoundary } from "react-error-boundary"
 
 type Props = {
   loading: boolean
@@ -21,7 +21,7 @@ type Props = {
 /**
  * 画像生成作品の一覧
  */
-export function GenerationWorkList (props: Props) {
+export function GenerationWorkList(props: Props) {
   if (props.works === undefined && !props.loading) {
     return null
   }
@@ -51,9 +51,7 @@ export function GenerationWorkList (props: Props) {
               work && (
                 <ErrorBoundary key={work.id} fallback={<ErrorResultCard />}>
                   <Suspense fallback={<FallbackTaskCard />}>
-                    <GenerationWorkCard
-                      work={work}
-                    />
+                    <GenerationWorkCard work={work} />
                   </Suspense>
                 </ErrorBoundary>
               ),

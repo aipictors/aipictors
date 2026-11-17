@@ -1,8 +1,8 @@
 import { Crown } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
-import { cn } from "~/lib/utils"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { cn } from "~/lib/utils"
 
 type Props = {
   currentPlan?: IntrospectionEnum<"PassType"> | null
@@ -12,7 +12,7 @@ type Props = {
 /**
  * プランアップグレードを促すさりげないUIコンポーネント
  */
-export function PlanUpgradePrompt ({ currentPlan, className }: Props) {
+export function PlanUpgradePrompt({ currentPlan, className }: Props) {
   const t = useTranslation()
 
   const getUpgradeMessage = (plan?: IntrospectionEnum<"PassType"> | null) => {

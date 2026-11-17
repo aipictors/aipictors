@@ -1,3 +1,4 @@
+import { MoreHorizontalIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
@@ -13,7 +14,6 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { Slider } from "~/components/ui/slider"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { MoreHorizontalIcon } from "lucide-react"
 
 type Props = {
   thumbnailSize: number
@@ -25,7 +25,7 @@ type Props = {
 /**
  * その他ボタン
  */
-export function GenerationWorkActionDropdownMenu (props: Props) {
+export function GenerationWorkActionDropdownMenu(props: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

@@ -1,3 +1,6 @@
+import { useQuery, useSuspenseQuery } from "@apollo/client/index"
+import { graphql, type ResultOf, readFragment } from "gql.tada"
+import { startTransition, useContext, useEffect, useRef } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import {
@@ -12,9 +15,6 @@ import {
   NegativePromptCategoryContextFragment,
   PromptCategoryContextFragment,
 } from "~/routes/($lang).generation._index/contexts/generation-query-context"
-import { useQuery, useSuspenseQuery } from "@apollo/client/index"
-import { graphql, readFragment, type ResultOf } from "gql.tada"
-import { startTransition, useContext, useEffect, useRef } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -23,7 +23,9 @@ type Props = {
 
 const getMsUntilNextJstMidnight = () => {
   const now = new Date()
-  const jstNow = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Tokyo" }))
+  const jstNow = new Date(
+    now.toLocaleString("en-US", { timeZone: "Asia/Tokyo" }),
+  )
   const nextJstMidnight = new Date(jstNow)
   nextJstMidnight.setDate(nextJstMidnight.getDate() + 1)
   nextJstMidnight.setHours(0, 0, 5, 0)
@@ -34,7 +36,7 @@ const getMsUntilNextJstMidnight = () => {
  * エディタに必要なデータを提供する
  * @param props
  */
-export function GenerationQueryProvider (props: Props) {
+export function GenerationQueryProvider(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: currentPassQueryResult } = useSuspenseQuery(CurrentPassQuery, {

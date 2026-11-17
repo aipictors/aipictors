@@ -66,7 +66,7 @@ describe("toRetentionState", () => {
         plan: null,
         nowSeconds: now,
       }),
-    ).toEqual({ kind: "deleted" })
+    ).toEqual({ kind: "deleted", restorePlan: "LITE" })
   })
 
   test("上のプランなら期限内", () => {

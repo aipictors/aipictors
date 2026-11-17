@@ -1,8 +1,8 @@
+import { Loader2Icon } from "lucide-react"
 import { cn } from "~/lib/utils"
+import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"
-import { Loader2Icon } from "lucide-react"
 
 type Props = {
   onCancel?(): void
@@ -15,7 +15,7 @@ type Props = {
 /**
  * 生成予約の履歴
  */
-export function ReservedGenerationCard (props: Props) {
+export function ReservedGenerationCard(props: Props) {
   const _context = useGenerationContext()
   const { send } = GenerationConfigContext.useActorRef()
 

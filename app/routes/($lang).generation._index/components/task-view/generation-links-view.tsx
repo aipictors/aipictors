@@ -1,12 +1,12 @@
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { Link } from "~/lib/app/locale-router"
-import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * リンク
  */
-export function GenerationLinksView () {
+export function GenerationLinksView() {
   const context = useGenerationContext()
   const t = useTranslation()
 

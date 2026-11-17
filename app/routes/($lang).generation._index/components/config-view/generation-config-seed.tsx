@@ -1,3 +1,4 @@
+import { DicesIcon, HelpCircleIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import {
@@ -6,7 +7,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import { DicesIcon, HelpCircleIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
   onChange(value: number): void
 }
 
-export function GenerationConfigSeed (props: Props) {
+export function GenerationConfigSeed(props: Props) {
   const t = useTranslation()
 
   return (

@@ -183,7 +183,11 @@ export function GenerationMobilePromptComposer() {
                 <div className="flex items-center justify-between gap-2">
                   {isNegative || !isJapanese ? (
                     <PromptKeywordsDialogButton type={tab}>
-                      <Button variant={"secondary"} size={"sm"} className="gap-1.5">
+                      <Button
+                        variant={"secondary"}
+                        size={"sm"}
+                        className="gap-1.5"
+                      >
                         <BookTextIcon className="size-4" />
                         {t("キーワードから選ぶ", "Pick keywords")}
                       </Button>
@@ -200,7 +204,9 @@ export function GenerationMobilePromptComposer() {
                     onClick={onReset}
                   >
                     <RotateCcwIcon className="size-4" />
-                    {isNegative ? t("初期値に戻す", "Reset") : t("クリア", "Clear")}
+                    {isNegative
+                      ? t("初期値に戻す", "Reset")
+                      : t("クリア", "Clear")}
                   </Button>
                 </div>
               </div>

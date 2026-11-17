@@ -19,8 +19,18 @@ const sizeOptionsByModelType: Record<
   },
   SDXL: {
     square: ["SD3_1024_1024"],
-    portrait: ["SD3_896_1152", "SD3_832_1216", "CUSTOM_768_1344", "SD3_640_1536"],
-    landscape: ["SD3_1152_896", "SD3_1216_832", "CUSTOM_1344_768", "SD3_1536_640"],
+    portrait: [
+      "SD3_896_1152",
+      "SD3_832_1216",
+      "CUSTOM_768_1344",
+      "SD3_640_1536",
+    ],
+    landscape: [
+      "SD3_1152_896",
+      "SD3_1216_832",
+      "CUSTOM_1344_768",
+      "SD3_1536_640",
+    ],
   },
   FLUX: {
     square: ["SD4_896_896"],

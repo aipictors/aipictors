@@ -1,10 +1,10 @@
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { GenerationWorkLinkButton } from "~/routes/($lang).generation._index/components/generation-work-link-button"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useState } from "react"
 import { toast } from "sonner"
-import { GenerationWorkZoomUpButton } from "~/routes/($lang).generation._index/components/generation-work-zoom-up-button"
-import { type FragmentOf, graphql } from "gql.tada"
 import { GenerationUpdateSettingConfirmDialog } from "~/routes/($lang).generation._index/components/generation-update-setting-confirm-dialog"
+import { GenerationWorkLinkButton } from "~/routes/($lang).generation._index/components/generation-work-link-button"
+import { GenerationWorkZoomUpButton } from "~/routes/($lang).generation._index/components/generation-work-zoom-up-button"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
 type Props = {
   work: FragmentOf<typeof GenerationWorkCardFragment>
@@ -13,11 +13,10 @@ type Props = {
 /**
  * 画像作品カード
  */
-export function GenerationWorkCard (props: Props) {
+export function GenerationWorkCard(props: Props) {
   const [isHovered, setIsHovered] = useState(false)
 
   const context = useGenerationContext()
-
 
   return (
     <div

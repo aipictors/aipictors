@@ -1,5 +1,5 @@
-import type { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
 import { assign, createMachine } from "xstate"
+import type { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
 
 /**
  * 画像生成の状態
@@ -217,25 +217,25 @@ export const generationConfigMachine = createMachine({
       on: {
         ADD_LORA_MODEL: "LORA_MODELS_VIEW",
         CLOSE: "PROMPT_VIEW",
-          OPEN_COIN_HISTORY: "COIN_HISTORY",
-          UPDATE_CONFIG: {
-            actions: assign((props) => {
-              return props.event.value
-            }),
-          },
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
         },
       },
+    },
 
-      COIN_HISTORY: {
-        description: "コイン履歴画面",
-        on: {
-          CLOSE: "PROMPT_VIEW",
-          CLOSE_PREVIEW: "PROMPT_VIEW",
-          OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
-          OPEN_COMMUNICATION: "COMMUNICATION",
-          OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
-          OPEN_LINKS: "LINKS",
-          OPEN_LOGS: "LOGS",
+    COIN_HISTORY: {
+      description: "コイン履歴画面",
+      on: {
+        CLOSE: "PROMPT_VIEW",
+        CLOSE_PREVIEW: "PROMPT_VIEW",
+        OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
+        OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
+        OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
       },
     },
   },

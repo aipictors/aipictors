@@ -1,3 +1,7 @@
+import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Loader2, Settings2Icon } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
@@ -8,13 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
+import { useTranslation } from "~/hooks/use-translation"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
-import { useMutation } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { Loader2, Settings2Icon } from "lucide-react"
-import { toast } from "sonner"
-import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   thumbnailType: TaskListThumbnailType
@@ -27,7 +27,7 @@ type Props = {
 /**
  * 表示の設定（サムネイルの画質、予約の取り消し）
  */
-export function GenerationTaskActionDropdownMenu (props: Props) {
+export function GenerationTaskActionDropdownMenu(props: Props) {
   const context = useGenerationContext()
   const t = useTranslation()
 

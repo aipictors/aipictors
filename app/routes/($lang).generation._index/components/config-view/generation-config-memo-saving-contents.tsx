@@ -1,3 +1,8 @@
+import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Loader2 } from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import {
@@ -9,14 +14,9 @@ import {
 } from "~/components/ui/select"
 import { Textarea } from "~/components/ui/textarea"
 import { config } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
-import { useMutation } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { Loader2 } from "lucide-react"
-import { useState } from "react"
-import { toast } from "sonner"
-import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onClose: () => void
@@ -26,7 +26,7 @@ type Props = {
 /**
  * 履歴メモ保存コンテンツ
  */
-export function GenerationConfigMemoSavingContent (props: Props) {
+export function GenerationConfigMemoSavingContent(props: Props) {
   const context = useGenerationContext()
 
   const [title, setTitle] = useState("設定")

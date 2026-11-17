@@ -1,10 +1,10 @@
+import { useContext, useEffect } from "react"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Slider } from "~/components/ui/slider"
+import { useTranslation } from "~/hooks/use-translation"
 import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
 import { GenerationQueryContext } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useContext, useEffect } from "react"
-import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   remainingImageGenerationTasksCount: number
@@ -15,7 +15,7 @@ type Props = {
 /**
  * 生成回数の設定
  */
-export function GenerationConfigCount (props: Props) {
+export function GenerationConfigCount(props: Props) {
   const context = useGenerationContext()
 
   const dataContext = useContext(GenerationQueryContext)
@@ -37,7 +37,10 @@ export function GenerationConfigCount (props: Props) {
       <div className="gap-x-2">
         <div className="flex items-center gap-x-2">
           <span className="text-nowrap font-bold">
-            {t("続けて生成する回数（予約生成）", "Repeat count (reserved generation)")}
+            {t(
+              "続けて生成する回数（予約生成）",
+              "Repeat count (reserved generation)",
+            )}
           </span>
           <CrossPlatformTooltip
             text={

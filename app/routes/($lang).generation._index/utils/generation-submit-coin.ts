@@ -1,4 +1,5 @@
 import { generationPixelsPerCoinUnit } from "~/routes/($lang).generation._index/types/generation-size"
+
 const standardImageGenerationCoinCost = 10
 const imageEditGenerationCoinCost = 50
 const geminiNanoBananaCoinCost = 50
@@ -87,8 +88,7 @@ export const calcGenerationModelCoinCost = (props: {
   }
 
   const isGeminiModel =
-    props.modelType === "GEMINI" ||
-    normalizedModelKey.includes("gemini")
+    props.modelType === "GEMINI" || normalizedModelKey.includes("gemini")
 
   if (isGeminiModel) {
     const isGemini31 =
@@ -104,10 +104,7 @@ export const calcGenerationModelCoinCost = (props: {
   }
 
   // 高解像度は 1 枚 2 倍（サーバーの lib/image-generation-coins.ts と同じ）
-  const multiplier =
-    props.upscaleSize !== null && props.upscaleSize > 1
-      ? 2
-      : 1
+  const multiplier = props.upscaleSize !== null && props.upscaleSize > 1 ? 2 : 1
 
   return standardImageGenerationCoinCost * multiplier * sizeMultiplier
 }

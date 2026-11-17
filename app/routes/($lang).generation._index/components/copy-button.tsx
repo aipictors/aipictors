@@ -1,5 +1,5 @@
-import { Button } from "~/components/ui/button"
 import { toast } from "sonner"
+import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
@@ -9,7 +9,7 @@ type Props = {
   disabled?: boolean
 }
 
-export function CopyButton (props: Props) {
+export function CopyButton(props: Props) {
   const t = useTranslation()
 
   const copyToClipboard = () => {

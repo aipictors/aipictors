@@ -150,7 +150,10 @@ export function GenerationServerStatusBadge(props: { className?: string }) {
           </p>
         )}
         <p className="text-muted-foreground text-xs">
-          {t(`${checkedTime} 時点・30秒ごとに更新`, `As of ${checkedTime}, updated every 30s`)}
+          {t(
+            `${checkedTime} 時点・30秒ごとに更新`,
+            `As of ${checkedTime}, updated every 30s`,
+          )}
         </p>
       </PopoverContent>
     </Popover>

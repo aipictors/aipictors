@@ -1,3 +1,6 @@
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { useState } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import {
@@ -7,14 +10,11 @@ import {
 import { GenerationWorkListActions } from "~/routes/($lang).generation._index/components/task-view/generation-work-list-actions"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useState } from "react"
 
 /**
  * モデルから作品検索
  */
-export function GenerationWorkListModelView () {
+export function GenerationWorkListModelView() {
   const { send } = GenerationConfigContext.useActorRef()
 
   const context = useGenerationContext()

@@ -1,5 +1,5 @@
-import { fetchPublic } from "~/utils/fetch-public"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+import { fetchPublic } from "~/utils/fetch-public"
 
 interface FileObject {
   name: string

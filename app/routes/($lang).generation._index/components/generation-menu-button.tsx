@@ -1,7 +1,7 @@
-import { Button } from "~/components/ui/button"
 import type { RemixiconComponentType } from "@remixicon/react"
 import type { LucideIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"
+import { Button } from "~/components/ui/button"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
   disabled?: boolean
 }
 
-export function GenerationMenuButton (props: Props) {
+export function GenerationMenuButton(props: Props) {
   return props.isLoading ? (
     <Button
       title={props.title}

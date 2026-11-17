@@ -10,6 +10,7 @@ import {
   SparklesIcon,
 } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
+import { appPillTabClassName } from "~/components/app/app-pill-tab"
 import { CoinIcon } from "~/components/coin-icon"
 import {
   LazyDrawer,
@@ -30,11 +31,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
-import { appPillTabClassName } from "~/components/app/app-pill-tab"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
-import { trackGrowthEvent } from "~/utils/track-growth-event"
 import { GenerationAnnouncementBanner } from "~/routes/($lang).generation._index/components/generation-announcement-banner"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import {
@@ -48,6 +47,7 @@ import {
   PremiumCoinGenerationSwitchRow,
   usePremiumCoinGenerationSetting,
 } from "~/routes/($lang).settings/components/premium-coin-generation-setting"
+import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {
   /** つくる（モデル・プロンプト・設定のカード） */

@@ -1,7 +1,7 @@
-import { Button } from "~/components/ui/button"
-import { cn } from "~/lib/utils"
 import { Loader2Icon, StarIcon } from "lucide-react"
 import { useCallback, useEffect, useRef } from "react"
+import { Button } from "~/components/ui/button"
+import { cn } from "~/lib/utils"
 
 type Props = {
   value: number
@@ -14,7 +14,7 @@ type Props = {
 /**
  * レーティング
  */
-export function StarRating (props: Props) {
+export function StarRating(props: Props) {
   const starOneRef = useRef<HTMLButtonElement>(null)
   const starTwoRef = useRef<HTMLButtonElement>(null)
   const starThreeRef = useRef<HTMLButtonElement>(null)

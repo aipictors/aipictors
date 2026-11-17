@@ -109,10 +109,12 @@ describe("requestGenerationTasks", () => {
   })
 
   test("Gemini のモデルと種類は Gemini のタスクにする", async () => {
-    expect((await run({ modelName: "Gemini 3.1" })).calls[0]?.name).toBe("gemini")
-    expect(
-      (await run({ config: { modelType: "SD5" } })).calls[0]?.name,
-    ).toBe("gemini")
+    expect((await run({ modelName: "Gemini 3.1" })).calls[0]?.name).toBe(
+      "gemini",
+    )
+    expect((await run({ config: { modelType: "SD5" } })).calls[0]?.name).toBe(
+      "gemini",
+    )
     expect(
       (await run({ config: { modelType: "GEMINI" } })).calls[0]?.name,
     ).toBe("gemini")

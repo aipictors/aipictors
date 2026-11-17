@@ -35,8 +35,8 @@ export type RetentionState =
   | { kind: "expiring"; daysLeft: number; restorePlan: RetentionPlan | null }
   /** 期限切れ。画像はまだ残っていて、プランで戻せる */
   | { kind: "expired"; daysLeft: number; restorePlan: RetentionPlan | null }
-  /** 画像は消えた（生成情報だけ残る） */
-  | { kind: "deleted" }
+  /** 画像を消す時期を過ぎた（生成情報だけ残る。片付けが済むまでは画像がまだ見えることがある） */
+  | { kind: "deleted"; restorePlan: RetentionPlan | null }
 
 const toPlan = (plan: string | null | undefined): RetentionPlan =>
   PLANS.includes(plan as RetentionPlan) ? (plan as RetentionPlan) : "FREE"
@@ -70,7 +70,7 @@ export function toRetentionState(props: {
   )
   const deleteAt = expiresAt + RETENTION_GRACE_DAYS * DAY_SECONDS
   const restorePlan = toRestorePlan(props.nowSeconds - props.completedAt, plan)
-  if (props.nowSeconds >= deleteAt) return { kind: "deleted" }
+  if (props.nowSeconds >= deleteAt) return { kind: "deleted", restorePlan }
   if (props.nowSeconds >= expiresAt) {
     return {
       kind: "expired",

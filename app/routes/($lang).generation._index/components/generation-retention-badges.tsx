@@ -10,7 +10,7 @@ import {
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 /**
- * 保存期限が近い画像の左上に出す「あと◯日」
+ * 保存期限が近い画像の左下に出す「あと◯日」（左上は保存ボタン）
  */
 export function GenerationRetentionExpiringChip(props: {
   daysLeft: number
@@ -26,7 +26,7 @@ export function GenerationRetentionExpiringChip(props: {
         "This image is nearing its storage limit. A plan keeps it longer",
       )}
       className={cn(
-        "absolute top-1 left-1 z-10 flex items-center gap-0.5 rounded-full bg-amber-500/90 font-bold text-white shadow-sm backdrop-blur-sm",
+        "absolute bottom-1 left-1 z-10 flex items-center gap-0.5 rounded-full bg-amber-500/90 font-bold text-white shadow-sm backdrop-blur-sm",
         props.isCompact
           ? "px-1 py-0.5 text-[9px]"
           : "px-1.5 py-0.5 text-[10px]",
@@ -42,6 +42,7 @@ export function GenerationRetentionExpiringChip(props: {
  * 保存期限を過ぎた画像に重ねる表示。画像はグレーにして、プランで戻せることを案内する
  */
 export function GenerationRetentionExpiredOverlay(props: {
+  /** 画像を消すまでの日数（0 はもう消す時期を過ぎている） */
   daysLeft: number
   restorePlan: RetentionPlan | null
   isCompact: boolean
@@ -65,10 +66,12 @@ export function GenerationRetentionExpiredOverlay(props: {
       </span>
       {!props.isCompact && (
         <span className="text-[10px] leading-tight opacity-90">
-          {t(
-            `あと${props.daysLeft}日で画像を削除`,
-            `Deleted in ${props.daysLeft} days`,
-          )}
+          {props.daysLeft > 0
+            ? t(
+                `あと${props.daysLeft}日で画像を削除`,
+                `Deleted in ${props.daysLeft} days`,
+              )
+            : t("まもなく画像を削除", "Will be deleted soon")}
         </span>
       )}
       {!props.isEditMode && plan && planLabel && (

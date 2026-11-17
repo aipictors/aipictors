@@ -1,5 +1,5 @@
-import { GenerationImageDialogButton } from "~/routes/($lang).generation._index/components/generation-image-dialog-button"
 import { ZoomIn } from "lucide-react"
+import { GenerationImageDialogButton } from "~/routes/($lang).generation._index/components/generation-image-dialog-button"
 
 type Props = {
   taskId: string
@@ -13,7 +13,7 @@ type Props = {
 /**
  * 画像生成の履歴の画像ズームアップボタン
  */
-export function GenerationTaskZoomUpButton (props: Props) {
+export function GenerationTaskZoomUpButton(props: Props) {
   return (
     <GenerationImageDialogButton
       isAbsolute={true}

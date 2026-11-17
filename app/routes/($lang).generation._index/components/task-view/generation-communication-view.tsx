@@ -1,3 +1,8 @@
+import { useMutation, useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { startTransition } from "react"
+import { toast } from "sonner"
+import { useInterval } from "usehooks-ts"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import {
   MessageListItemFragment,
@@ -5,11 +10,6 @@ import {
 } from "~/routes/($lang)._main.support.chat/components/support-message-list"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { GenerationMessageInput } from "~/routes/($lang).generation._index/components/task-view/generation-message-input"
-import { useMutation, useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { startTransition } from "react"
-import { toast } from "sonner"
-import { useInterval } from "usehooks-ts"
 
 /**
  * 連絡画面

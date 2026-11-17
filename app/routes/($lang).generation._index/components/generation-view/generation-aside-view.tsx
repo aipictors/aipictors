@@ -1,7 +1,7 @@
+import { useCallback, useEffect } from "react"
 import { KeyCodes } from "~/config"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useCallback, useEffect } from "react"
 
 type Props = {
   /**
@@ -41,7 +41,7 @@ type Props = {
 /**
  * 画像生成画面のサイド部分
  */
-export function GenerationAsideView (props: Props) {
+export function GenerationAsideView(props: Props) {
   const context = useGenerationContext()
 
   const state = GenerationConfigContext.useSelector((snap) => {

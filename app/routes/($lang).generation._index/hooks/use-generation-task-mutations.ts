@@ -1,6 +1,9 @@
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
-import { logError, logInfo } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
+import {
+  logError,
+  logInfo,
+} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import {
   createFluxImageGenerationTaskMutation,
   createGeminiImageGenerationTaskMutation,

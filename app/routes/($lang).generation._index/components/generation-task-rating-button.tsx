@@ -1,9 +1,8 @@
-import { cn } from "~/lib/utils"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { StarIcon } from "lucide-react"
-import { Loader2Icon } from "lucide-react"
+import { Loader2Icon, StarIcon } from "lucide-react"
 import { toast } from "sonner"
+import { cn } from "~/lib/utils"
 
 type Props = {
   taskNanoid: string
@@ -15,7 +14,7 @@ type Props = {
 /**
  * 画像生成の履歴のレーティングボタン
  */
-export function GenerationTaskRatingButton (props: Props) {
+export function GenerationTaskRatingButton(props: Props) {
   const [mutation, { loading: isLoading }] = useMutation(
     updateRatingImageGenerationResultMutation,
   )

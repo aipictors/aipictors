@@ -1,5 +1,5 @@
-import { Link } from "~/lib/app/locale-router"
 import { ExternalLinkIcon } from "lucide-react"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   id: string
@@ -9,7 +9,7 @@ type Props = {
 /**
  * 画像生成作品のリンクボタン
  */
-export function GenerationWorkLinkButton (props: Props) {
+export function GenerationWorkLinkButton(props: Props) {
   return (
     <Link
       className="absolute bottom-2 left-2 rounded-full hover:opacity-80"

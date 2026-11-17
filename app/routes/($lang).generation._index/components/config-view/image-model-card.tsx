@@ -1,7 +1,7 @@
-import { Badge } from "~/components/ui/badge"
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { CoinIcon } from "~/components/coin-icon"
+import { Badge } from "~/components/ui/badge"
 import { useTranslation } from "~/hooks/use-translation"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Props = {
   displayName: string | null
@@ -70,11 +70,17 @@ export function ImageModelCard(props: Props) {
       return 50
     }
 
-    if (props.displayName === "GeminiNanoBanana" || props.displayName === "Gemini 2.5") {
+    if (
+      props.displayName === "GeminiNanoBanana" ||
+      props.displayName === "Gemini 2.5"
+    ) {
       return 50
     }
 
-    if (props.displayName === "GeminiNanoBanana2" || props.displayName === "Gemini 3.1") {
+    if (
+      props.displayName === "GeminiNanoBanana2" ||
+      props.displayName === "Gemini 3.1"
+    ) {
       return 100
     }
 

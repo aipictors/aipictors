@@ -1,13 +1,13 @@
 import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { GenerationTaskDetails } from "~/routes/($lang).generation._index/components/task-view/generation-task-details"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
-import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * 生成履歴詳細
  */
-export function GenerationTaskDetailsView () {
+export function GenerationTaskDetailsView() {
   const { send } = GenerationConfigContext.useActorRef()
   const t = useTranslation()
 

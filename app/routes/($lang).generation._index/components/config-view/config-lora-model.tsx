@@ -1,8 +1,8 @@
+import { XIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
 import { Slider } from "~/components/ui/slider"
-import { XIcon } from "lucide-react"
 
 type Props = {
   imageURL: string
@@ -13,7 +13,7 @@ type Props = {
   onDelete(): void
 }
 
-export function ConfigLoraModel (props: Props) {
+export function ConfigLoraModel(props: Props) {
   return (
     <Card>
       <CardContent className="flex items-center space-x-2 p-2">

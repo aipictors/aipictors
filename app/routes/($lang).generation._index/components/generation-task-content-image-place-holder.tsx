@@ -1,5 +1,5 @@
-import { Skeleton } from "~/components/ui/skeleton"
 import { Loader2Icon } from "lucide-react"
+import { Skeleton } from "~/components/ui/skeleton"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
 /**
  * 履歴一覧の履歴シートの中に表示する履歴内容
  */
-export function GenerationTaskContentImagePlaceHolder (props: Props) {
+export function GenerationTaskContentImagePlaceHolder(props: Props) {
   return (
     <Skeleton className={cn(props.className, "relative")}>
       <Loader2Icon

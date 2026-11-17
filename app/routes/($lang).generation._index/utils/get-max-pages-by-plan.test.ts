@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test"
+import { expect, test } from "bun:test"
 import { getMaxPagesByPlan } from "./get-max-pages-by-plan"
 
 test("無料プランは20ページまで", () => {

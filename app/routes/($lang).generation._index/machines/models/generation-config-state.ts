@@ -1,7 +1,7 @@
 import {
-  type InferOutput,
   array,
   boolean,
+  type InferOutput,
   nullable,
   number,
   object,

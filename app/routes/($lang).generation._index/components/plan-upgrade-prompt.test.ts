@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test"
+import { expect, test } from "bun:test"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 // テスト用のモック関数

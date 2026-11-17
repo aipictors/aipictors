@@ -1,5 +1,12 @@
-import { isUpscaleOverFreeLimit } from "~/routes/($lang).generation._index/types/generation-size"
-import { getGenerationSizeMultiplier } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
+import {
+  HistoryIcon,
+  Loader2Icon,
+  Minus,
+  Plus,
+  SettingsIcon,
+  SlidersHorizontalIcon,
+} from "lucide-react"
+import { useContext } from "react"
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { GradientBorderButton } from "~/components/button/gradient-border-button"
 import { CoinIcon } from "~/components/coin-icon"
@@ -14,25 +21,18 @@ import {
 import { Label } from "~/components/ui/label"
 import { Switch } from "~/components/ui/switch"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
-import { GenerationServerStatusBadge } from "~/routes/($lang).generation._index/components/submission-view/generation-server-status-badge"
+import { cn } from "~/lib/utils"
 import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
+import { GenerationServerStatusBadge } from "~/routes/($lang).generation._index/components/submission-view/generation-server-status-badge"
 import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "~/routes/($lang).generation._index/components/submission-view/generation-terms-button"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import {
-  HistoryIcon,
-  Loader2Icon,
-  Minus,
-  Plus,
-  SettingsIcon,
-  SlidersHorizontalIcon,
-} from "lucide-react"
-import { useContext } from "react"
-import { useTranslation } from "~/hooks/use-translation"
 import { useGenerationPlanHint } from "~/routes/($lang).generation._index/hooks/use-generation-plan-hint"
+import { isUpscaleOverFreeLimit } from "~/routes/($lang).generation._index/types/generation-size"
+import { getGenerationSizeMultiplier } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
-import { cn } from "~/lib/utils"
 
 type Props = {
   /** 1 回の生成で作る枚数 */

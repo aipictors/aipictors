@@ -1,10 +1,10 @@
-import { Link } from "~/lib/app/locale-router"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 /**
  * 画像生成
  */
-export function GenerationFormFooter () {
+export function GenerationFormFooter() {
   const t = useTranslation()
 
   return (

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test"
+import { kanaToRomaji } from "~/routes/($lang).generation._index/utils/kana-to-romaji"
 import {
   applyPromptTag,
   findPromptToken,
@@ -7,7 +8,6 @@ import {
   parsePromptTagDictionary,
   searchPromptTags,
 } from "~/routes/($lang).generation._index/utils/prompt-tag-suggestions"
-import { kanaToRomaji } from "~/routes/($lang).generation._index/utils/kana-to-romaji"
 
 const tags = parsePromptTagDictionary(
   [

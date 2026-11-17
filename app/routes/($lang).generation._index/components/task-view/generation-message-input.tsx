@@ -1,8 +1,8 @@
-import { Button } from "~/components/ui/button"
-import { Textarea } from "~/components/ui/textarea"
 import { RiCloseCircleLine } from "@remixicon/react"
 import { Send } from "lucide-react"
 import { useState } from "react"
+import { Button } from "~/components/ui/button"
+import { Textarea } from "~/components/ui/textarea"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
   onSubmit(message: string): void
 }
 
-export function GenerationMessageInput (props: Props) {
+export function GenerationMessageInput(props: Props) {
   const [message, setMessage] = useState("")
   const [selectedImages, setSelectedImages] = useState<string[]>([])
   const t = useTranslation()

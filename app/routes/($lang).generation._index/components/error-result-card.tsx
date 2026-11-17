@@ -1,10 +1,10 @@
-import { Card } from "~/components/ui/card"
 import { FrownIcon } from "lucide-react"
+import { Card } from "~/components/ui/card"
 
 /**
  * エラーになった履歴
  */
-export function ErrorResultCard () {
+export function ErrorResultCard() {
   return (
     <Card className="h-full overflow-hidden">
       <div className="flex flex-col gap-y-2 p-4">

@@ -2,9 +2,9 @@ import { config } from "~/config"
 import { GenerationConfigPersistent } from "~/routes/($lang).generation._index/components/generation-config-persistent"
 import { GenerationConfigRestoration } from "~/routes/($lang).generation._index/components/generation-config-restoration"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
+import { generationConfigMachine } from "~/routes/($lang).generation._index/machines/generation-config-machine"
 import { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
 import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
-import { generationConfigMachine } from "~/routes/($lang).generation._index/machines/generation-config-machine"
 import { restoreGenerationSnapshot } from "~/routes/($lang).generation._index/utils/restore-generation-snapshot"
 
 /**
@@ -26,7 +26,7 @@ type Props = {
  * エディタの設定を提供する
  * @param props
  */
-export function GenerationConfigProvider (props: Props) {
+export function GenerationConfigProvider(props: Props) {
   const modelType = config.generationFeature.defaultImageModelType
 
   const snapshot = readPersistedSnapshot()

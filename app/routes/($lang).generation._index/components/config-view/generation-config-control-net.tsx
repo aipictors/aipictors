@@ -1,3 +1,5 @@
+import { useState } from "react"
+import { useBoolean } from "usehooks-ts"
 import { CropImageField } from "~/components/crop-image-field"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Button } from "~/components/ui/button"
@@ -9,18 +11,16 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "~/components/ui/dialog"
-import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
+import { useTranslation } from "~/hooks/use-translation"
 import { GenerationConfigControlNetDialogContents } from "~/routes/($lang).generation._index/components/config-view/generation-config-control-net-dialog-contents"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
-import { useState } from "react"
-import { useBoolean } from "usehooks-ts"
-import { useTranslation } from "~/hooks/use-translation"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 
 /**
  * ControlNet設定
  */
-export function GenerationConfigControlNet () {
+export function GenerationConfigControlNet() {
   const context = useGenerationContext()
 
   const size = parseGenerationSize(context.config.sizeType)

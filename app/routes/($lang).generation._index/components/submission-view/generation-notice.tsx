@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import { InfoIcon, TriangleAlertIcon, WrenchIcon } from "lucide-react"
 import { createContext, useContext, useEffect, useState } from "react"
 import {
@@ -12,6 +11,7 @@ import {
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import {
   formatMaintenanceEndsAt,
   type PublicMaintenanceFlag,

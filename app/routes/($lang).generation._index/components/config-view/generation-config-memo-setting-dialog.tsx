@@ -19,7 +19,7 @@ type Props = {
 /**
  * 履歴メモ設定ダイアログ
  */
-export function GenerationConfigMemoSettingDialog (props: Props) {
+export function GenerationConfigMemoSettingDialog(props: Props) {
   return (
     <Dialog
       open={props.isOpen}

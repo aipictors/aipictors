@@ -1,12 +1,12 @@
-import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
+import { type FragmentOf, graphql } from "gql.tada"
 import {
   EditableGenerationResultCardFragment,
   EditableGenerationResultCardTaskFragment,
   GenerationTaskEditableCard,
 } from "~/routes/($lang).generation._index/components/generation-task-editable-card"
-import { graphql, type FragmentOf } from "gql.tada"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 
 type Props = {
   task:
@@ -24,7 +24,7 @@ type Props = {
 /**
  * 画像生成の履歴
  */
-export function GenerationTaskButton (props: Props) {
+export function GenerationTaskButton(props: Props) {
   const { send } = GenerationConfigContext.useActorRef()
 
   const context = useGenerationContext()

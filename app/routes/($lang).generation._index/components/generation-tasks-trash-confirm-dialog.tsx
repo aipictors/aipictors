@@ -1,3 +1,4 @@
+import { Trash2Icon } from "lucide-react"
 import { useState } from "react"
 import {
   AlertDialog,
@@ -10,9 +11,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
-import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
-import { Trash2Icon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onDelete: () => void
@@ -20,7 +20,7 @@ type Props = {
   disabled: boolean
 }
 
-export function GenerationTasksTrashConfirmDialog (props: Props) {
+export function GenerationTasksTrashConfirmDialog(props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 

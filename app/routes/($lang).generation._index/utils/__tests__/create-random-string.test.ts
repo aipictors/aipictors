@@ -1,5 +1,5 @@
-import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
 import { describe, expect, test } from "bun:test"
+import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
 
 describe("createRandomString", () => {
   test("should return a random string of the specified length", () => {

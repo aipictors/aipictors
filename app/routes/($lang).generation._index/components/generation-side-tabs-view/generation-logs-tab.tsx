@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react"
-import {
-  getLogs,
-  clearLogs,
-  type LogEntry,
-} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import { Button } from "~/components/ui/button"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  clearLogs,
+  getLogs,
+  type LogEntry,
+} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 
-export function GenerationLogsTab () {
+export function GenerationLogsTab() {
   const t = useTranslation()
   const [logs, setLogs] = useState<LogEntry[]>([])
 

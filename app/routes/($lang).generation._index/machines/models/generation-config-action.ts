@@ -1,7 +1,7 @@
-import { isCustomSizeType } from "~/routes/($lang).generation._index/types/generation-size"
-import { canUseCustomGenerationSize } from "~/routes/($lang).generation._index/utils/generation-size-options"
 import { config } from "~/config"
 import { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
+import { isCustomSizeType } from "~/routes/($lang).generation._index/types/generation-size"
+import { canUseCustomGenerationSize } from "~/routes/($lang).generation._index/utils/generation-size-options"
 
 type Props = {
   maxTasksCount: number

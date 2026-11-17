@@ -1,7 +1,7 @@
-import { toGenerationSizeInput } from "~/routes/($lang).generation._index/types/generation-size"
 import { config as appConfig } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
+import { toGenerationSizeInput } from "~/routes/($lang).generation._index/types/generation-size"
 import type { GeminiImageSize } from "~/types/gemini-image-generation"
 
 /**
@@ -59,8 +59,7 @@ export const toReservedTaskInput = (props: {
     model: props.modelName,
     vae: config.vae ?? "",
     prompt: config.promptText,
-    isPromptGenerationEnabled:
-      config.languageUsedForPrompt === "jp",
+    isPromptGenerationEnabled: config.languageUsedForPrompt === "jp",
     negativePrompt: config.negativePromptText,
     seed: props.seed,
     steps: toGenerationSteps(config.steps),
@@ -96,14 +95,12 @@ export const toFluxTaskInput = (props: {
   return {
     count: 1,
     prompt: props.prompt,
-    isPromptGenerationEnabled:
-      config.languageUsedForPrompt === "jp",
+    isPromptGenerationEnabled: config.languageUsedForPrompt === "jp",
     negativePrompt: config.negativePromptText,
     seed: props.seed,
     steps: toGenerationSteps(config.steps),
     scale: config.scale,
-    sizeType: config
-      .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+    sizeType: config.sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
     modelName: props.modelName,
   }
 }
@@ -156,8 +153,7 @@ export const toImageGenerationTaskInput = (props: {
     model: props.modelName,
     vae: config.vae ?? "",
     prompt: props.prompt,
-    isPromptGenerationEnabled:
-      config.languageUsedForPrompt === "jp",
+    isPromptGenerationEnabled: config.languageUsedForPrompt === "jp",
     negativePrompt: config.negativePromptText,
     seed: props.seed,
     steps: toGenerationSteps(config.steps),
@@ -170,8 +166,7 @@ export const toImageGenerationTaskInput = (props: {
     ),
     type: props.generationType as IntrospectionEnum<"ImageGenerationType">,
     t2tImageUrl: props.i2iFileUrl,
-    t2tDenoisingStrengthSize:
-      config.i2iDenoisingStrengthSize.toString(),
+    t2tDenoisingStrengthSize: config.i2iDenoisingStrengthSize.toString(),
     controlNetImageUrl: props.controlNetImageUrl,
     controlNetWeight: config.controlNetWeight
       ? Number(config.controlNetWeight)

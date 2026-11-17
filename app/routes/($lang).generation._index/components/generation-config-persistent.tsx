@@ -1,11 +1,11 @@
-import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useLayoutEffect } from "react"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 
 type Props = {
   children: React.ReactNode
 }
 
-export function GenerationConfigPersistent (props: Props) {
+export function GenerationConfigPersistent(props: Props) {
   const actor = GenerationConfigContext.useActorRef()
 
   // 子の useEffect（URL で指定したモデルの選択など）より先に購読しておく。

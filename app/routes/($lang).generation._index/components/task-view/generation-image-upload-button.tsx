@@ -1,6 +1,6 @@
-import { Button } from "~/components/ui/button"
 import { FileUp } from "lucide-react"
 import { toast } from "sonner"
+import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { GenerationImageUploadConfirmDialog } from "~/routes/($lang).generation._index/components/task-view/generation-image-upload-confirm-dialog"
 
@@ -14,7 +14,7 @@ type Props = {
 /**
  * 生成画像の投稿ボタン
  */
-export function GenerationImagePostButton (props: Props) {
+export function GenerationImagePostButton(props: Props) {
   const t = useTranslation()
 
   const onClick = async () => {

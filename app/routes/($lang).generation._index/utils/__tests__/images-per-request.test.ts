@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test"
 import {
-  getMaxImagesPerRequest,
-  resolveImagesPerRequest,
-} from "~/routes/($lang).generation._index/utils/get-max-images-per-request"
-import {
   getGenerationSizeOptions,
   toRatioLabel,
 } from "~/routes/($lang).generation._index/utils/generation-size-options"
+import {
+  getMaxImagesPerRequest,
+  resolveImagesPerRequest,
+} from "~/routes/($lang).generation._index/utils/get-max-images-per-request"
 
 const base = {
   modelKey: "lametta",

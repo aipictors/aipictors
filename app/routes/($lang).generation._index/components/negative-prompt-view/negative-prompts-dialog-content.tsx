@@ -1,3 +1,4 @@
+import type { FragmentOf } from "gql.tada"
 import {
   Accordion,
   AccordionContent,
@@ -13,7 +14,6 @@ import {
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { NegativePromptCategoryIcon } from "~/routes/($lang).generation._index/components/negative-prompt-view/negative-prompt-category-icon"
 import type { PromptCategoryContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
-import type { FragmentOf } from "gql.tada"
 
 type Props = {
   selectedNegativePromptIds: string[]
@@ -22,7 +22,7 @@ type Props = {
   onSelect(id: string): void
 }
 
-export function NegativePromptsDialogContent (props: Props) {
+export function NegativePromptsDialogContent(props: Props) {
   const defaultOpenCategories = props.negativePromptCategories
     .filter((category) =>
       category.prompts.some((prompt) =>

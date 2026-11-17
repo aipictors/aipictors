@@ -1,5 +1,4 @@
 import { useParams } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { ChevronDown } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import type {
@@ -12,6 +11,7 @@ import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
 /**

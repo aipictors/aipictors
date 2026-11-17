@@ -1,9 +1,8 @@
-import { cn } from "~/lib/utils"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { LockKeyholeIcon, LockKeyholeOpenIcon } from "lucide-react"
-import { Loader2Icon } from "lucide-react"
+import { Loader2Icon, LockKeyholeIcon, LockKeyholeOpenIcon } from "lucide-react"
 import { toast } from "sonner"
+import { cn } from "~/lib/utils"
 
 export const GenerationResultProtectButtonFragment = graphql(
   `fragment GenerationResultProtectButton on ImageGenerationResultNode @_unmask {

@@ -1,5 +1,5 @@
-import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
 import type { Meta, StoryObj } from "@storybook/react"
+import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
 
 const meta = {
   title: "画像生成/generation-submit-button",
