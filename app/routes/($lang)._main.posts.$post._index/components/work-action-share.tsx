@@ -7,6 +7,8 @@ import {
 } from "~/components/ui/popover"
 import { useTranslation } from "~/hooks/use-translation"
 import { CopyWorkUrlButton } from "./work-action-copy-url"
+import { NoteIntent } from "./work-action-share-note"
+import { PinterestIntent } from "./work-action-share-pinterest"
 import { XIntent } from "./work-action-share-x"
 
 type Props = {
@@ -16,6 +18,8 @@ type Props = {
   id: string
   accessType?: string
   uuid?: string | null
+  imageUrl?: string
+  isSensitive?: boolean
 }
 
 export function SharePopover(props: Props) {
@@ -59,6 +63,18 @@ export function SharePopover(props: Props) {
               url={currentUrl}
               hashtags={["Aipictors", t("AIイラスト", "AIIllust")]}
             />
+
+            {/* note・Pinterest は成人向けの内容を禁止しているので、センシティブな作品では出さない */}
+            {!props.isSensitive && (
+              <>
+                <NoteIntent url={currentUrl} />
+                <PinterestIntent
+                  url={currentUrl}
+                  imageUrl={props.imageUrl}
+                  description={`${props.title} | Aipictors`}
+                />
+              </>
+            )}
           </div>
         </div>
       </PopoverContent>

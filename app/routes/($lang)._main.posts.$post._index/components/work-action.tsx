@@ -158,6 +158,8 @@ export function WorkAction(props: Props) {
               id={props.targetWorkId}
               accessType={props.accessType}
               uuid={props.uuid}
+              imageUrl={props.currentImageUrl}
+              isSensitive={props.isSensitive}
             />
             <WorkActionMenu
               onDownload={onDownload}
