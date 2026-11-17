@@ -319,7 +319,7 @@ export default function NewRequestPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-3 pt-3 pb-44 md:px-6">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-3 pt-4 pb-44 md:px-6">
       <button
         type="button"
         onClick={() => navigate(-1)}

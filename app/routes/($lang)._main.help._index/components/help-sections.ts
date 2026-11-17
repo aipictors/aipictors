@@ -877,12 +877,12 @@ export const HELP_SECTIONS: HelpSection[] = [
     ],
     links: [
       {
-        to: "/requests/plans",
+        to: "/requests",
         label: { ja: "プランを探す", en: "Browse plans" },
       },
       {
-        to: "/settings/requests",
-        label: { ja: "リクエストを受け付ける", en: "Accept requests" },
+        to: "/requests/my-plans",
+        label: { ja: "プランを出品する", en: "List a plan" },
       },
       {
         to: "/requests/terms",

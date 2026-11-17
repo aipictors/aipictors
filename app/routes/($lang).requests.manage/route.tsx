@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client/index"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { ChevronRight, Inbox, Loader2, Settings, Store } from "lucide-react"
+import { ChevronRight, Inbox, Loader2 } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import {
   appFilterChipClassName,
@@ -14,6 +14,7 @@ import {
   RequestUserChip,
   type RequestUsers,
 } from "~/components/requests/request-ui"
+import { useRequestsOutletBadge } from "~/components/requests/requests-hub-nav"
 import { Button } from "~/components/ui/button"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
@@ -67,7 +68,7 @@ export default function RequestsPage() {
   const status = searchParams.get("status") ?? "open"
   const [data, setData] = useState<ListData | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [badge, setBadge] = useState<{ received: number; toConfirm: number }>()
+  const badge = useRequestsOutletBadge()
   useQuery(markRequestNotificationsQuery, {
     skip: !auth.isLoggedIn,
     fetchPolicy: "network-only",
@@ -86,13 +87,6 @@ export default function RequestsPage() {
     }
   }, [auth.isLoggedIn, role, status, t.isEnglish])
 
-  useEffect(() => {
-    if (!auth.isLoggedIn) return
-    requestsGet<{ received: number; toConfirm: number }>({ op: "badge" })
-      .then(setBadge)
-      .catch(() => {})
-  }, [auth.isLoggedIn])
-
   const setParam = (key: string, value: string) => {
     const next = new URLSearchParams(searchParams)
     next.set(key, value)
@@ -102,8 +96,15 @@ export default function RequestsPage() {
 
   if (auth.isNotLoggedIn) {
     return (
-      <div className="mx-auto max-w-md px-6 py-16 text-center">
-        <Button asChild className="rounded-full">
+      <div className="mx-auto flex max-w-md flex-col items-center gap-3 px-6 py-16 text-center">
+        <Inbox className="size-10 text-muted-foreground" />
+        <p className="font-bold">
+          {t(
+            "受けた依頼・出した依頼をここで管理します",
+            "Manage the requests you received and sent here",
+          )}
+        </p>
+        <Button asChild className="rounded-full font-bold">
           <Link to="/login">{t("ログインして見る", "Log in to view")}</Link>
         </Button>
       </div>
@@ -111,25 +112,8 @@ export default function RequestsPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-3 pt-3 pb-24 md:px-6">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="font-bold text-xl">{t("リクエスト", "Requests")}</h1>
-        <div className="flex gap-1">
-          <Button asChild variant="ghost" size="sm" className="rounded-full">
-            <Link to="/requests/plans">
-              <Store className="mr-1 size-4" />
-              {t("プラン一覧", "Plans")}
-            </Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm" className="rounded-full">
-            <Link to="/settings/requests">
-              <Settings className="mr-1 size-4" />
-              {t("受付の設定", "Request settings")}
-            </Link>
-          </Button>
-        </div>
-      </div>
-
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-3 pt-4 pb-24 md:px-6">
+      <h1 className="sr-only">{t("依頼の管理", "My requests")}</h1>
       <div className="grid grid-cols-2 border-b">
         {(
           [
@@ -267,7 +251,7 @@ function EmptyState(props: { role: "received" | "sent" }) {
             )}
           </p>
           <Button asChild className="rounded-full font-bold">
-            <Link to="/settings/requests">
+            <Link to="/requests/my-plans?new=1">
               {t("プランを作る", "Create a plan")}
             </Link>
           </Button>
@@ -284,7 +268,7 @@ function EmptyState(props: { role: "received" | "sent" }) {
             )}
           </p>
           <Button asChild className="rounded-full font-bold">
-            <Link to="/requests/plans">{t("プランを探す", "Find plans")}</Link>
+            <Link to="/requests">{t("プランを探す", "Find plans")}</Link>
           </Button>
         </>
       )}

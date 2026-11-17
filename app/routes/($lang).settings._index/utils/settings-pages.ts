@@ -17,11 +17,6 @@ const SETTINGS_PAGES: { href: string; ja: string; en: string }[] = [
     en: "Rewards payout (Creator Rewards)",
   },
   {
-    href: "/settings/requests",
-    ja: "リクエストとプラン",
-    en: "Requests & Plans",
-  },
-  {
     href: "/settings/advertisements",
     ja: "広告設定",
     en: "Advertisement Settings",

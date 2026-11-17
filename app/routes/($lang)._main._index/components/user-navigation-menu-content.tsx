@@ -353,7 +353,7 @@ function UserNavigationMenuContent(props: Props) {
           label={t("自分の作品", "My posts")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/requests")}
+          href={getSensitiveLink("/requests/manage")}
           icon={<HandCoinsIcon className={userNavigationStyles.menuIcon} />}
           label={t("リクエスト", "Requests")}
         />

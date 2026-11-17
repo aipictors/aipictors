@@ -92,13 +92,13 @@ export default function RequestPlanPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-3 pt-3 pb-40 md:px-6 md:pb-12">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-3 pt-4 pb-40 md:px-6 md:pb-12">
       <Link
-        to="/requests/plans"
+        to="/requests"
         className="flex w-fit items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
       >
         <ChevronLeft className="size-4" />
-        {t("プラン一覧", "Plans")}
+        {t("プランを探す", "Find plans")}
       </Link>
       <div className="grid gap-6 md:grid-cols-[1.1fr_1fr]">
         <div className="flex flex-col gap-2">
@@ -302,7 +302,7 @@ function RequestActions(props: {
         variant="secondary"
         className="h-12 w-full rounded-full font-bold"
       >
-        <Link to={`/settings/requests?edit=${props.planId}`}>
+        <Link to={`/requests/my-plans?edit=${props.planId}`}>
           <Pencil className="mr-1 size-4" />
           {t("プランを編集する", "Edit plan")}
         </Link>

@@ -6,8 +6,10 @@ import type {
 import { useLoaderData, useNavigation, useSearchParams } from "@remix-run/react"
 import {
   CalendarClock,
+  ChevronRight,
   Coins,
   HandCoins,
+  Inbox,
   Plus,
   ShieldCheck,
 } from "lucide-react"
@@ -20,6 +22,7 @@ import {
   RequestPlanCard,
   type RequestUsers,
 } from "~/components/requests/request-ui"
+import { useRequestsOutletBadge } from "~/components/requests/requests-hub-nav"
 import { Button } from "~/components/ui/button"
 import { config, META } from "~/config"
 import { useContentMode } from "~/hooks/use-content-mode"
@@ -64,6 +67,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneMinute,
 })
 
+/** リクエストのトップ: プランを探す */
 export default function RequestPlansPage() {
   const data = useLoaderData<typeof loader>()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -75,6 +79,8 @@ export default function RequestPlansPage() {
   const maxPrice = searchParams.get("maxPrice") ?? ""
   const maxDays = searchParams.get("maxDays") ?? ""
   const r18 = searchParams.get("r18") === "1"
+  const badge = useRequestsOutletBadge()
+  const manageCount = badge ? badge.received + badge.toConfirm : 0
 
   const setParam = (key: string, value: string) => {
     const next = new URLSearchParams(searchParams)
@@ -84,7 +90,7 @@ export default function RequestPlansPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-3 pt-3 pb-24 md:px-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-3 pt-4 pb-24 md:px-6">
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-500 via-indigo-500 to-fuchsia-500 p-5 text-white md:p-8">
         <div className="relative z-10 flex flex-col gap-3 md:max-w-xl">
           <span className="w-fit rounded-full bg-white/20 px-3 py-1 font-bold text-xs backdrop-blur">
@@ -107,9 +113,9 @@ export default function RequestPlansPage() {
               variant="secondary"
               className="rounded-full font-bold"
             >
-              <Link to="/settings/requests">
+              <Link to="/requests/my-plans?new=1">
                 <Plus className="mr-1 size-4" />
-                {t("プランを出品する", "List a plan")}
+                {t("自分のプランを出品する", "List your own plan")}
               </Link>
             </Button>
             <Button
@@ -117,12 +123,28 @@ export default function RequestPlansPage() {
               variant="ghost"
               className="rounded-full font-bold text-white hover:bg-white/15 hover:text-white"
             >
-              <Link to="/requests">{t("依頼の管理", "Manage requests")}</Link>
+              <a href="#how-to">{t("依頼の流れ", "How it works")}</a>
             </Button>
           </div>
         </div>
         <HandCoins className="absolute -right-6 -bottom-8 size-48 text-white/15 md:right-6 md:size-64" />
       </section>
+
+      {manageCount > 0 && (
+        <Link
+          to="/requests/manage"
+          className="flex items-center gap-3 rounded-2xl border border-sky-400/70 bg-sky-500/10 p-3 text-sm hover:bg-sky-500/15"
+        >
+          <Inbox className="size-5 shrink-0 text-sky-500" />
+          <span className="flex-1 font-bold">
+            {t(
+              `対応が必要な依頼が ${manageCount} 件あります`,
+              `${manageCount} request${manageCount === 1 ? "" : "s"} need your action`,
+            )}
+          </span>
+          <ChevronRight className="size-4 text-muted-foreground" />
+        </Link>
+      )}
 
       <div className="flex flex-col gap-2">
         <div className={appPillRowClassName}>
@@ -227,14 +249,17 @@ export default function RequestPlansPage() {
             )}
           </p>
           <Button asChild className="rounded-full font-bold">
-            <Link to="/settings/requests">
+            <Link to="/requests/my-plans?new=1">
               {t("プランを出品する", "List a plan")}
             </Link>
           </Button>
         </div>
       )}
 
-      <section className="grid gap-3 rounded-3xl bg-muted/50 p-5 md:grid-cols-3">
+      <section
+        id="how-to"
+        className="grid scroll-mt-20 gap-3 rounded-3xl bg-muted/50 p-5 md:grid-cols-3"
+      >
         <HowTo
           step="1"
           title={t("プランを選ぶ", "Choose a plan")}

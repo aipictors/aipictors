@@ -43,7 +43,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: BookmarkIcon,
   },
   { to: "/my/likes", ja: "いいね", en: "Likes", icon: HeartIcon },
-  { to: "/requests", ja: "リクエスト", en: "Requests", icon: HandCoinsIcon },
+  { to: "/requests/manage", ja: "リクエスト", en: "Requests", icon: HandCoinsIcon },
   {
     to: "/settings/creator-rewards",
     ja: "収益の受け取り",

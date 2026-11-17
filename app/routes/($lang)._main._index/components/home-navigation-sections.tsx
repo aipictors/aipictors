@@ -5,6 +5,7 @@ import {
   BookOpenIcon,
   BoxesIcon,
   GemIcon,
+  HandCoinsIcon,
   HeartIcon,
   HelpCircleIcon,
   HistoryIcon,
@@ -206,6 +207,13 @@ export function getHomeNavigationSections(
           href: "/new/image",
           label: ["作品を投稿", "Post"],
           icon: ImagePlusIcon,
+        },
+        // リクエストの入口が右上のメニューとマイページにしかなく、プランを探す人がたどり着けなかった
+        {
+          key: "requests",
+          href: "/requests",
+          label: ["リクエスト", "Requests"],
+          icon: HandCoinsIcon,
         },
         {
           key: "models",

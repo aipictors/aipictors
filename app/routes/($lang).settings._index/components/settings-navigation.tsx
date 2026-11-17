@@ -77,7 +77,8 @@ export function SettingsNavigation() {
           ),
         },
         {
-          href: "/settings/requests",
+          // プランの作成はリクエストの「自分のプラン」に移した（設定から探す人のために入口だけ残す）
+          href: "/requests/my-plans",
           icon: ClipboardListIcon,
           label: t("リクエストとプラン", "Requests & Plans"),
         },

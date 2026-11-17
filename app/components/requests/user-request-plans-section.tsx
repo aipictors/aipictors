@@ -47,7 +47,7 @@ export function UserRequestPlansSection(props: { userId: string }) {
     if (!isOwner) return null
     return (
       <Link
-        to="/settings/requests"
+        to="/requests/my-plans?new=1"
         className="mx-1 flex items-center gap-3 rounded-2xl border border-dashed p-3 text-sm hover:bg-muted/40"
       >
         <HandCoins className="size-5 shrink-0 text-sky-500" />
@@ -88,7 +88,7 @@ export function UserRequestPlansSection(props: { userId: string }) {
         </h2>
         {isOwner ? (
           <Link
-            to="/settings/requests"
+            to="/requests/my-plans"
             className="flex items-center text-muted-foreground text-sm hover:text-foreground"
           >
             {t("プランを編集", "Edit plans")}
@@ -96,7 +96,7 @@ export function UserRequestPlansSection(props: { userId: string }) {
           </Link>
         ) : (
           <Link
-            to="/requests/plans"
+            to="/requests"
             className="flex items-center text-muted-foreground text-sm hover:text-foreground"
           >
             {t("プラン一覧", "All plans")}

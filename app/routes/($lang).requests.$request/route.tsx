@@ -127,9 +127,9 @@ export default function RequestDetailPage() {
     now > request.dueAt
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-3 pt-3 pb-28 md:px-6">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-3 pt-4 pb-28 md:px-6">
       <Link
-        to="/requests"
+        to="/requests/manage"
         className="flex w-fit items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
       >
         <ChevronLeft className="size-4" />
