@@ -83,10 +83,10 @@ export function GenerationRetentionExpiredOverlay(props: {
             `Join ${planLabel} (kept for ${toRetentionPeriodLabel(plan, true)}) to bring this image back`,
           )}
           className={cn(
-            "mt-0.5 flex items-center gap-1 rounded-full bg-linear-to-r from-amber-400 to-pink-500 font-bold text-white shadow-md transition-transform active:scale-95",
+            "mt-0.5 flex max-w-full items-center gap-1 whitespace-nowrap rounded-full bg-linear-to-r from-amber-400 to-pink-500 font-bold text-white shadow-md transition-transform active:scale-95",
             props.isCompact
               ? "px-2 py-0.5 text-[10px]"
-              : "px-3 py-1 text-[11px]",
+              : "px-2.5 py-1 text-[10px]",
           )}
         >
           <CrownIcon className="size-3 shrink-0" />
