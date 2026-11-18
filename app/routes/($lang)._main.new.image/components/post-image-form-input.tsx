@@ -362,6 +362,22 @@ export function PostImageFormInput(props: Props) {
         token={props.token ?? null}
         onTagsGenerated={props.onContentGenerated}
       />
+      {props.themes && (
+        <PostFormItemTheme
+          titles={props.themes.map((theme) => ({
+            date: theme.date,
+            title: theme.title,
+            note: theme.note ?? null,
+          }))}
+          targetDate={reservationDate}
+          isLoading={loading}
+          onChange={onChangeTheme}
+          isChecked={
+            props.state.themeId ===
+            props.themes.find((theme) => theme.date === reservationDate)?.id
+          }
+        />
+      )}
       <PostFormItemRating
         rating={props.state.ratingRestriction}
         allowedRatings={allowedRatings}
@@ -386,22 +402,6 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "SET_RESERVATION_TIME", payload: time })
         }}
       />
-      {props.themes && (
-        <PostFormItemTheme
-          titles={props.themes.map((theme) => ({
-            date: theme.date,
-            title: theme.title,
-            note: theme.note ?? null,
-          }))}
-          targetDate={reservationDate}
-          isLoading={loading}
-          onChange={onChangeTheme}
-          isChecked={
-            props.state.themeId ===
-            props.themes.find((theme) => theme.date === reservationDate)?.id
-          }
-        />
-      )}
       {officialEvents.map((event) => (
         <div key={event.slug}>
           <PostFormItemEvent

@@ -330,21 +330,6 @@ export function PostAnimationFormInput(props: Props) {
           props.dispatch({ type: "SET_RESERVATION_TIME", payload: time })
         }}
       />
-      {props.themes && (
-        <PostFormItemTheme
-          titles={props.themes.map((theme) => ({
-            date: theme.date,
-            title: theme.title,
-          }))}
-          targetDate={reservationDate}
-          isLoading={loading}
-          onChange={onChangeTheme}
-          isChecked={
-            props.state.themeId ===
-            props.themes.find((theme) => theme.date === reservationDate)?.id
-          }
-        />
-      )}
       {officialEvents.map((event) => (
         <div key={event.slug}>
           <PostFormItemEvent
@@ -442,6 +427,21 @@ export function PostAnimationFormInput(props: Props) {
           props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
       />
+      {props.themes && (
+        <PostFormItemTheme
+          titles={props.themes.map((theme) => ({
+            date: theme.date,
+            title: theme.title,
+          }))}
+          targetDate={reservationDate}
+          isLoading={loading}
+          onChange={onChangeTheme}
+          isChecked={
+            props.state.themeId ===
+            props.themes.find((theme) => theme.date === reservationDate)?.id
+          }
+        />
+      )}
       <PostFormItemAlbum
         album={props.state.albumId}
         albums={albumOptions()}

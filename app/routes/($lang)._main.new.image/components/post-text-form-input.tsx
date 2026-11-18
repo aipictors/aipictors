@@ -364,6 +364,22 @@ export function PostTextFormInput(props: Props) {
           props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
       />
+      {props.themes && (
+        <PostFormItemTheme
+          titles={props.themes.map((theme) => ({
+            date: theme.date,
+            title: theme.title,
+            note: theme.note ?? null,
+          }))}
+          targetDate={reservationDate}
+          isLoading={loading}
+          onChange={onChangeTheme}
+          isChecked={
+            props.state.themeId ===
+            props.themes.find((theme) => theme.date === reservationDate)?.id
+          }
+        />
+      )}
       {loading && <Loader2Icon className="size-4 animate-spin" />}
       <PostFormItemRating
         rating={props.state.ratingRestriction}
@@ -389,22 +405,6 @@ export function PostTextFormInput(props: Props) {
           props.dispatch({ type: "SET_RESERVATION_TIME", payload: time })
         }}
       />
-      {props.themes && (
-        <PostFormItemTheme
-          titles={props.themes.map((theme) => ({
-            date: theme.date,
-            title: theme.title,
-            note: theme.note ?? null,
-          }))}
-          targetDate={reservationDate}
-          isLoading={loading}
-          onChange={onChangeTheme}
-          isChecked={
-            props.state.themeId ===
-            props.themes.find((theme) => theme.date === reservationDate)?.id
-          }
-        />
-      )}
       {officialEvents.map((event) => (
         <div key={event.slug}>
           <PostFormItemEvent
