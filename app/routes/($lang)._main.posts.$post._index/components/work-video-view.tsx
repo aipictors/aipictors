@@ -1,5 +1,5 @@
-import { Loader2, Play } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { Loader2, Play, Volume2 } from "lucide-react"
+import { type SyntheticEvent, useEffect, useRef, useState } from "react"
 import { Button } from "~/components/ui/button"
 import {
   getCloudflareStreamUid,
@@ -96,6 +96,8 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   // 画面に入ったら音なしで自動再生してループする（Discord の要望）。押して始めたときは音ありで再生する
   const [isAutoPlayback, setIsAutoPlayback] = useState(false)
+  // 自動再生のあと音を出したら、最初から音ありで見られるようにする（ミュート解除とシーク戻しの 2 手間にしない）
+  const [hasStartedWithSound, setHasStartedWithSound] = useState(false)
 
   // null = checking, true = ready, false = not ready yet
   const [streamReady, setStreamReady] = useState<boolean | null>(
@@ -105,6 +107,7 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
   useEffect(() => {
     setHasRequestedPlayback(false)
     setIsAutoPlayback(false)
+    setHasStartedWithSound(false)
     setStreamReady(isStream ? null : true)
     setStreamCheckVersion(0)
   }, [isStream, videoUrl])
@@ -252,6 +255,37 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
     }
   }, [hasRequestedPlayback, hlsUrl, isStream, isAutoPlayback, streamReady])
 
+  const playFromStartWithSound = () => {
+    const video = streamVideoRef.current ?? fileVideoRef.current
+    if (!video) return
+    setHasStartedWithSound(true)
+    video.currentTime = 0
+    video.muted = false
+    void video.play().catch(() => {})
+  }
+
+  // コントロールでミュートを外したときも、1 回目は最初から再生し直す
+  const onVolumeChange = (event: SyntheticEvent<HTMLVideoElement>) => {
+    if (!isAutoPlayback || hasStartedWithSound) return
+    const video = event.currentTarget
+    if (video.muted || video.volume === 0) return
+    setHasStartedWithSound(true)
+    video.currentTime = 0
+    void video.play().catch(() => {})
+  }
+
+  const soundButton =
+    isAutoPlayback && !hasStartedWithSound ? (
+      <button
+        type="button"
+        onClick={playFromStartWithSound}
+        className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-black/65 px-3 py-1.5 font-medium text-sm text-white shadow hover:bg-black/80"
+      >
+        <Volume2 className="size-4" />
+        音ありで最初から再生
+      </button>
+    ) : null
+
   const posterView = (
     <button
       type="button"
@@ -352,10 +386,12 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
             loop
             playsInline
             preload="metadata"
+            onVolumeChange={onVolumeChange}
           >
             <track kind="captions" srcLang="en" label="English" />
           </video>
         </div>
+        {soundButton}
       </div>
     )
   }
@@ -386,9 +422,11 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
         loop
         playsInline
         preload="metadata"
+        onVolumeChange={onVolumeChange}
       >
         <track kind="captions" srcLang="en" label="English" />
       </video>
+      {soundButton}
     </div>
   )
 }
