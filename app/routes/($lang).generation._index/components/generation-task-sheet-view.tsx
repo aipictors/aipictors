@@ -344,8 +344,9 @@ export function GenerationTaskSheetView(props: Props) {
     }
   }, [context])
 
+  // 幅・高さを指定した依頼は sizeType が実際のサイズと合わないので width / height を見る
   const generationSize: GenerationSize = parseGenerationSize(
-    props.task.sizeType,
+    toTaskSizeType(props.task),
   )
 
   const GenerationParameters: GenerationParameters = {

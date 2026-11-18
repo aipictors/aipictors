@@ -81,3 +81,11 @@ describe("コインと枚数（サーバーと同じ）", () => {
     expect(max("CUSTOM_1600_1600")).toBe(1)
   })
 })
+
+test("生成結果の詳細のサイズは、幅・高さを指定した依頼なら実際の幅・高さにする", () => {
+  expect(
+    parseGenerationSize(
+      toTaskSizeType({ sizeType: "SD3_1024_1024", width: 1344, height: 768 }),
+    ),
+  ).toEqual({ width: 1344, height: 768 })
+})
