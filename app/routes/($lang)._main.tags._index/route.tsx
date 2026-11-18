@@ -8,6 +8,7 @@ import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import { TagsIndexView } from "~/routes/($lang)._main.tags._index/components/tags-index-view"
+import { toHotTagThumbnailUrl } from "~/routes/($lang)._main.tags._index/hot-tag-thumbnail"
 import { isR18Path } from "~/utils/content-mode"
 import { createMeta } from "~/utils/create-meta"
 import { isFeaturableSensitiveTag } from "~/utils/sensitive-tag-filter"
@@ -30,7 +31,7 @@ export async function loader(props: LoaderFunctionArgs) {
     .map((tag) => ({
       name: tag.name,
       worksCount: tag.worksCount,
-      thumbnailUrl: tag.firstWork?.smallThumbnailImageURL ?? null,
+      thumbnailUrl: toHotTagThumbnailUrl(tag.firstWork, isSensitive),
     }))
     .filter((tag) => !isSensitive || isFeaturableSensitiveTag(tag.name))
     .slice(0, 12)
@@ -97,6 +98,7 @@ const hotTagsQuery = graphql(`
       worksCount
       firstWork {
         smallThumbnailImageURL
+        rating
       }
     }
     hotSensitiveTags {
@@ -104,6 +106,7 @@ const hotTagsQuery = graphql(`
       worksCount
       firstWork {
         smallThumbnailImageURL
+        rating
       }
     }
     homeTags {

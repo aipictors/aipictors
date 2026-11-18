@@ -27,8 +27,8 @@ import {
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
+import { toAlbumsRating } from "~/routes/($lang).albums._index/albums-rating"
 import { createMeta } from "~/utils/create-meta"
 import { toRatingText } from "~/utils/work/to-rating-text"
 
@@ -44,16 +44,6 @@ const toPage = (value: string | null) => {
   }
 
   return page
-}
-
-const toRating = (
-  value: string | null,
-): IntrospectionEnum<"AlbumRating"> | null => {
-  if (value === "G" || value === "R15" || value === "R18" || value === "R18G") {
-    return value
-  }
-
-  return null
 }
 
 const toOrderBy = (value: string | null): AlbumOrderParam => {
@@ -76,7 +66,7 @@ const toSearch = (value: string | null) => {
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const page = toPage(url.searchParams.get("page"))
-  const rating = toRating(url.searchParams.get("rating"))
+  const rating = toAlbumsRating(url.searchParams.get("rating"))
   const orderBy = toOrderBy(url.searchParams.get("orderBy"))
   const followingOnly = toBooleanSearchFlag(url.searchParams.get("following"))
   const favoritesOnly = toBooleanSearchFlag(url.searchParams.get("favorites"))
@@ -371,7 +361,7 @@ export default function AlbumsIndex() {
 
   const hasFilters =
     data.search !== null ||
-    data.rating !== null ||
+    data.rating !== "G" ||
     data.followingOnly ||
     data.favoritesOnly
 
@@ -484,7 +474,8 @@ export default function AlbumsIndex() {
               value={data.rating ?? "ALL"}
               onValueChange={(value) => {
                 updateSearchParams({
-                  rating: value === "ALL" ? null : value,
+                  // 既定の全年齢は URL に出さない
+                  rating: value === "G" ? null : value,
                   page: null,
                 })
               }}

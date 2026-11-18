@@ -16,6 +16,12 @@ export type TagPageOrderBy = Extract<
 
 export type TagPageRating = "all" | "G" | "R15"
 
+/**
+ * 全年齢のメニューから開くページなので、既定は全年齢（G）だけにする
+ * R15 も混ぜた一覧は「すべて」（rating=all）で開く
+ */
+export const TAG_PAGE_DEFAULT_RATING: TagPageRating = "G"
+
 export type TagPageQuery = {
   page: number
   orderBy: TagPageOrderBy
@@ -51,7 +57,10 @@ export function parseTagPageQuery(searchParams: URLSearchParams): TagPageQuery {
     page,
     orderBy: isOrderBy(orderByValue) ? orderByValue : "LIKES_COUNT",
     sort: searchParams.get("sort") === "ASC" ? "ASC" : "DESC",
-    rating: rating === "G" || rating === "R15" ? rating : "all",
+    rating:
+      rating === "all" || rating === "G" || rating === "R15"
+        ? rating
+        : TAG_PAGE_DEFAULT_RATING,
     hasPrompt: searchParams.get("prompt") === "1",
   }
 }
@@ -64,7 +73,7 @@ export function parseTagPageQuery(searchParams: URLSearchParams): TagPageQuery {
 export const isTagPageDefaultView = (query: TagPageQuery) =>
   query.orderBy === "LIKES_COUNT" &&
   query.sort === "DESC" &&
-  query.rating === "all" &&
+  query.rating === TAG_PAGE_DEFAULT_RATING &&
   !query.hasPrompt
 
 export function toRatings(
@@ -84,7 +93,9 @@ export function toTagPageSearch(query: Partial<TagPageQuery>): string {
     params.set("orderBy", query.orderBy)
   }
   if (query.sort === "ASC") params.set("sort", "ASC")
-  if (query.rating && query.rating !== "all") params.set("rating", query.rating)
+  if (query.rating && query.rating !== TAG_PAGE_DEFAULT_RATING) {
+    params.set("rating", query.rating)
+  }
   if (query.hasPrompt) params.set("prompt", "1")
   if (query.page && query.page > 0) params.set("page", String(query.page))
   const search = params.toString()

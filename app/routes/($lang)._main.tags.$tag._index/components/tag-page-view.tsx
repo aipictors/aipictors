@@ -199,10 +199,13 @@ export function TagPageView(props: Props) {
     COMMENTS_COUNT: t("コメント", "Comments"),
   }
 
+  // R18 では年齢区分で絞らない
+  const isRatingFiltered = !props.isSensitive && query.rating !== "all"
+
   const ratingLabels: Record<TagPageRating, string> = {
-    all: t("すべて", "All"),
     G: t("全年齢", "All ages"),
     R15: "R-15",
+    all: t("すべて", "All"),
   }
 
   const pagePrefix = props.isSensitive ? "/r" : ""
@@ -458,7 +461,7 @@ export function TagPageView(props: Props) {
             {t("作品が見つかりませんでした", "No works found")}
           </p>
           <p className="text-muted-foreground text-sm">
-            {query.hasPrompt || query.rating !== "all"
+            {query.hasPrompt || isRatingFiltered
               ? t(
                   "絞り込みを外すと見つかるかもしれません",
                   "Try removing the filters",
@@ -468,9 +471,16 @@ export function TagPageView(props: Props) {
                   "No works have been posted with this tag yet",
                 )}
           </p>
-          {(query.hasPrompt || query.rating !== "all") && (
+          {(query.hasPrompt || isRatingFiltered) && (
             <Button asChild variant="outline" className="rounded-full">
-              <Link to={basePath} replace>
+              <Link
+                to={
+                  props.isSensitive
+                    ? basePath
+                    : hrefWith({ rating: "all", hasPrompt: false })
+                }
+                replace
+              >
                 {t("絞り込みを外す", "Clear filters")}
               </Link>
             </Button>

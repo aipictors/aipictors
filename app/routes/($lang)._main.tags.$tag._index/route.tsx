@@ -18,6 +18,7 @@ import {
 import {
   isTagPageDefaultView,
   parseTagPageQuery,
+  TAG_PAGE_DEFAULT_RATING,
   toRatings,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
 import { findHubTag, toHubTagPath } from "~/lib/seo-hubs/seo-hub-catalog.server"
@@ -38,7 +39,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const query = parseTagPageQuery(url.searchParams)
   const ratings = toRatings(query.rating)
 
-  // 全年齢・R15 の作品と件数を同時に取る
+  // 選んだ年齢区分（既定は全年齢だけ）の作品と件数を同時に取る
   const [generalWorks, generalCount] = await Promise.all([
     fetchTagWorks({
       tagName,
@@ -56,8 +57,14 @@ export async function loader(props: LoaderFunctionArgs) {
   let worksCount = generalCount
   let isR18Fallback = false
 
-  // 全年齢・R15 の作品がないタグは R18 の作品を表示する（これまでの動作を引き継ぐ）
-  if (generalWorks.length === 0 && query.page === 0 && query.rating === "all") {
+  // 全年齢・R15 の作品がどちらもないタグは R18 の作品を表示する（これまでの動作を引き継ぐ）
+  const shouldShowR18 =
+    generalWorks.length === 0 &&
+    query.page === 0 &&
+    (query.rating === "all" ||
+      (query.rating === TAG_PAGE_DEFAULT_RATING &&
+        (await fetchTagWorksCount(tagName, ["R15"])) === 0))
+  if (shouldShowR18) {
     const [r18Works, r18Count] = await Promise.all([
       fetchTagWorks({
         tagName,

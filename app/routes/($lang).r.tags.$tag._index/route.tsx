@@ -15,6 +15,7 @@ import {
 import {
   isTagPageDefaultView,
   parseTagPageQuery,
+  TAG_PAGE_DEFAULT_RATING,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
 import { findHubTag, toHubTagPath } from "~/lib/seo-hubs/seo-hub-catalog.server"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
@@ -40,10 +41,10 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 
   const url = new URL(props.request.url)
-  // R18 の中では年齢区分で絞らない（URL に残っていても無視する）
+  // R18 の中では年齢区分で絞らない（URL に残っていても無視する）。既定値にして URL に出さない
   const query = {
     ...parseTagPageQuery(url.searchParams),
-    rating: "all" as const,
+    rating: TAG_PAGE_DEFAULT_RATING,
   }
   const ratings: ("R18" | "R18G")[] = ["R18", "R18G"]
 
