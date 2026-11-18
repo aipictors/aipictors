@@ -70,6 +70,21 @@ function writeCachedStreamReady(uid: string) {
   }
 }
 
+/** 動きを減らす設定・通信量を減らす設定の人には自動で再生しない（押したら再生） */
+function canAutoPlay() {
+  if (typeof window === "undefined") return false
+  if (!("IntersectionObserver" in window)) return false
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+    return false
+  }
+  const connection = (
+    navigator as Navigator & {
+      connection?: { saveData?: boolean }
+    }
+  ).connection
+  return connection?.saveData !== true
+}
+
 export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
   const isStream = isCloudflareStreamUrl(videoUrl)
   const uid = getCloudflareStreamUid(videoUrl)
@@ -77,6 +92,10 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
   const [hasRequestedPlayback, setHasRequestedPlayback] = useState(false)
   const [streamCheckVersion, setStreamCheckVersion] = useState(0)
   const streamVideoRef = useRef<HTMLVideoElement>(null)
+  const fileVideoRef = useRef<HTMLVideoElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  // 画面に入ったら音なしで自動再生してループする（Discord の要望）。押して始めたときは音ありで再生する
+  const [isAutoPlayback, setIsAutoPlayback] = useState(false)
 
   // null = checking, true = ready, false = not ready yet
   const [streamReady, setStreamReady] = useState<boolean | null>(
@@ -85,9 +104,50 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
 
   useEffect(() => {
     setHasRequestedPlayback(false)
+    setIsAutoPlayback(false)
     setStreamReady(isStream ? null : true)
     setStreamCheckVersion(0)
   }, [isStream, videoUrl])
+
+  // 動画が半分ほど見えたら読み込みを始める（見えるまでは読み込まない）
+  useEffect(() => {
+    const container = containerRef.current
+    if (hasRequestedPlayback || !container || !canAutoPlay()) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return
+        observer.disconnect()
+        setIsAutoPlayback(true)
+        setHasRequestedPlayback(true)
+      },
+      { threshold: 0.5 },
+    )
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [hasRequestedPlayback, videoUrl])
+
+  // 自動再生のときは画面の外で止め、戻ったら続きから再生する
+  useEffect(() => {
+    const container = containerRef.current
+    if (!isAutoPlayback || !hasRequestedPlayback || !container) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const video = streamVideoRef.current ?? fileVideoRef.current
+        if (!video) return
+        const isVisible = entries.some((entry) => entry.isIntersecting)
+        if (!isVisible && !video.paused) {
+          video.pause()
+          video.dataset.autoPaused = "1"
+        } else if (isVisible && video.dataset.autoPaused === "1") {
+          delete video.dataset.autoPaused
+          void video.play().catch(() => {})
+        }
+      },
+      { threshold: 0.1 },
+    )
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [hasRequestedPlayback, isAutoPlayback, streamReady])
 
   useEffect(() => {
     if (!isStream || !uid) {
@@ -140,11 +200,17 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
   }, [hasRequestedPlayback, isStream, streamCheckVersion, uid])
 
   useEffect(() => {
-    if (!hasRequestedPlayback || !isStream || !hlsUrl || !streamVideoRef.current) {
+    if (
+      !hasRequestedPlayback ||
+      !isStream ||
+      !hlsUrl ||
+      !streamVideoRef.current
+    ) {
       return
     }
 
     const video = streamVideoRef.current
+    video.muted = isAutoPlayback
 
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = hlsUrl
@@ -184,7 +250,7 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
       video.removeAttribute("src")
       video.load()
     }
-  }, [hasRequestedPlayback, hlsUrl, isStream, streamReady])
+  }, [hasRequestedPlayback, hlsUrl, isStream, isAutoPlayback, streamReady])
 
   const posterView = (
     <button
@@ -219,7 +285,10 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
   if (isStream && hlsUrl) {
     if (!hasRequestedPlayback) {
       return (
-        <div className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900">
+        <div
+          ref={containerRef}
+          className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900"
+        >
           {posterView}
         </div>
       )
@@ -227,7 +296,10 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
 
     if (streamReady === null) {
       return (
-        <div className="relative m-0 bg-zinc-100 dark:bg-zinc-900">
+        <div
+          ref={containerRef}
+          className="relative m-0 bg-zinc-100 dark:bg-zinc-900"
+        >
           <div className="mx-auto flex aspect-video w-full max-w-[1280px] items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
           </div>
@@ -237,7 +309,10 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
 
     if (!streamReady) {
       return (
-        <div className="relative m-0 bg-zinc-100 dark:bg-zinc-900">
+        <div
+          ref={containerRef}
+          className="relative m-0 bg-zinc-100 dark:bg-zinc-900"
+        >
           <div className="mx-auto flex aspect-video w-full max-w-[1280px] flex-col items-center justify-center gap-3 text-center">
             <Loader2 className="h-10 w-10 animate-spin text-zinc-400" />
             <p className="font-medium text-sm text-zinc-600 dark:text-zinc-400">
@@ -262,7 +337,10 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
     }
 
     return (
-      <div className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900">
+      <div
+        ref={containerRef}
+        className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900"
+      >
         <div className="mx-auto aspect-video w-full max-w-[1280px]">
           <video
             ref={streamVideoRef}
@@ -270,6 +348,8 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
             controls
             className="h-full w-full"
             autoPlay
+            muted={isAutoPlayback}
+            loop
             playsInline
             preload="metadata"
           >
@@ -282,19 +362,28 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
 
   if (!hasRequestedPlayback) {
     return (
-      <div className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900">
+      <div
+        ref={containerRef}
+        className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900"
+      >
         {posterView}
       </div>
     )
   }
 
   return (
-    <div className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900">
+    <div
+      ref={containerRef}
+      className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900"
+    >
       <video
+        ref={fileVideoRef}
         controls
         className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
         src={videoUrl}
         autoPlay
+        muted={isAutoPlayback}
+        loop
         playsInline
         preload="metadata"
       >
