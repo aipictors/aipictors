@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import {
   applyImageFits,
+  hasPageBreakBetween,
   isSelectingInside,
 } from "~/components/book-reader/book-reader"
 
@@ -63,5 +64,21 @@ describe("isSelectingInside", () => {
     selection.removeAllRanges()
     expect(isSelectingInside(reader, selection)).toBe(false)
     expect(isSelectingInside(null, selection)).toBe(false)
+  })
+})
+
+describe("hasPageBreakBetween", () => {
+  const root = new DOMParser().parseFromString(
+    '<div id="root"><p data-b="0"><img src="a.png"></p><p class="rb-page-break" data-b="1"></p><h3 data-b="2">見出し</h3><p data-b="3"><img src="b.png"></p><p data-b="4"><img src="c.png"></p></div>',
+    "text/html",
+  ).getElementById("root") as HTMLElement
+  const blocks = Array.from(root.children)
+
+  test("あいだに作者の改ページがあれば true（挿絵を次の見開きへ送らない）", () => {
+    expect(hasPageBreakBetween(blocks[0], blocks[3])).toBe(true)
+  })
+
+  test("続けて並べた挿絵のあいだに改ページがなければ false", () => {
+    expect(hasPageBreakBetween(blocks[3], blocks[4])).toBe(false)
   })
 })

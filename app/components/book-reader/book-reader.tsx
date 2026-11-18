@@ -237,6 +237,20 @@ const fitPushedImages = (
 }
 
 /**
+ * 段落 from と to のあいだ（from の後ろから to の前まで）に、作者が書いた改ページの印があるか
+ */
+export const hasPageBreakBetween = (from: Element, to: Element): boolean => {
+  for (
+    let element = from.nextElementSibling;
+    element !== null && element !== to;
+    element = element.nextElementSibling
+  ) {
+    if (element.classList.contains("rb-page-break")) return true
+  }
+  return false
+}
+
+/**
  * 前の挿絵と同じ画面（見開きなら左右 2 ページ、上下 2 段ならその 2 段）に載ってしまう挿絵の番号を返す。
  * 挿絵を続けて並べて 1 枚ずつ見せる演出が、見開きで並んで先に見えてしまわないように、その挿絵は次の画面の頭へ送る
  */
@@ -264,13 +278,16 @@ const findSharedViewImage = (
   for (const [index, image] of images.entries()) {
     const block = image.closest("[data-b]")
     const view = viewOf(image)
-    // 同じ段落の中の挿絵どうしは分けられない
+    // 同じ段落の中の挿絵どうしは分けられない。
+    // あいだに作者の改ページがあるときは、見出しなどと挿絵を作者が区切ったページ割りのままにする
+    // （送ると挿絵の段落だけが次の見開きへ行き、見出しだけのページができていた）
     if (
       previousView !== null &&
       view === previousView &&
       block !== null &&
       block !== previousBlock &&
-      block.querySelector("img") === image
+      block.querySelector("img") === image &&
+      !(previousBlock !== null && hasPageBreakBetween(previousBlock, block))
     ) {
       return index
     }
