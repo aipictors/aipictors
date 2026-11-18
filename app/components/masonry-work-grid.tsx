@@ -7,6 +7,7 @@ import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
+import { splitMasonryBlocks } from "~/utils/split-masonry-columns"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -17,6 +18,16 @@ type Props = {
 type WorkItemProps = {
   work: FragmentOf<typeof PhotoAlbumWorkFragment>
   baseUrl?: string
+  /** 2 列ぶち抜きの横長の作品は、高さを固定せずこの縦横比（幅 / 高さ）の枠にする */
+  wideAspectRatio?: number
+}
+
+/** 列の幅（約 240px）に対する画像の縦横比。WorkItem の高さ 180〜400px に合わせ、横長は 2 列ぶち抜き用に 1.78 まで */
+const toGridAspectRatio = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
+  const width = work.smallThumbnailImageWidth
+  const height = work.smallThumbnailImageHeight
+  if (!(width > 0) || !(height > 0)) return 1
+  return Math.min(Math.max(width / height, 0.6), 1.78)
 }
 
 /**
@@ -96,37 +107,24 @@ export function MasonryWorkGrid(props: Props): React.ReactNode {
     return () => window.removeEventListener("resize", updateColumnCount)
   }, [])
 
-  // 作品をカラムに分散配置（高さを考慮した最適化）
-  const columns = useMemo(() => {
-    const cols: FragmentOf<typeof PhotoAlbumWorkFragment>[][] = Array.from(
-      { length: columnCount },
-      () => [],
-    )
-
-    // カラムの現在の高さを追跡（推定値）
-    const columnHeights = Array.from({ length: columnCount }, () => 0)
-
-    works.forEach((work) => {
-      // 最も高さの低いカラムを選択
-      const shortestColumnIndex = columnHeights.indexOf(
-        Math.min(...columnHeights),
-      )
-      cols[shortestColumnIndex].push(work)
-
-      // 作品の高さを推定してカラムの高さを更新
-      const aspectRatio =
-        work.smallThumbnailImageHeight / work.smallThumbnailImageWidth
-      const estimatedImageHeight = Math.min(
-        Math.max(aspectRatio * 240, 180),
-        400,
-      )
-      // 画像 + gap-3（12px） + 作品情報部分（タイトル + ユーザ情報で約80px）
-      const totalItemHeight = estimatedImageHeight + 12 + 80
-      columnHeights[shortestColumnIndex] += totalItemHeight
-    })
-
-    return cols
-  }, [works, columnCount])
+  // 作品をカラムに分散配置（いちばん短い列に足す）。横長の作品は 2 列ぶち抜きの行にして、縦長ばかり大きく見えないようにする
+  // 画像の下の作品情報（gap 12px + 約 80px）は列の幅 240px に対する割合で足す
+  const blocks = useMemo(
+    () => splitMasonryBlocks(works, columnCount, toGridAspectRatio, 92 / 240),
+    [works, columnCount],
+  )
+  // 最後の列のかたまりは、読み込み中のスケルトンを列ごとに足すので別に描く
+  const lastBlock = blocks[blocks.length - 1]
+  const columns: FragmentOf<typeof PhotoAlbumWorkFragment>[][] = Array.from(
+    { length: columnCount },
+    (_, index) =>
+      lastBlock?.kind === "columns"
+        ? (lastBlock.columns[index] ?? []).map((v) => v.item)
+        : [],
+  )
+  const leadingBlocks =
+    lastBlock?.kind === "columns" ? blocks.slice(0, -1) : blocks
+  const perRow = Math.max(1, Math.floor(columnCount / 2))
 
   // 初期読み込み中（作品がない場合）はフルスケルトンを表示
   if (works.length === 0) {
@@ -134,38 +132,80 @@ export function MasonryWorkGrid(props: Props): React.ReactNode {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-      {columns.map((column) => {
-        // カラムの一意のキーを生成（カラム内の作品IDから）
-        const columnKey =
-          column.length > 0
-            ? `col-${column[0]?.id}-${column.length}`
-            : `empty-col-${Math.random().toString(36).substr(2, 9)}`
-
-        return (
-          <div key={columnKey} className="flex flex-col gap-3">
-            {/* 既存の作品 */}
-            {column.map((work) => (
-              <WorkItem key={work.id} work={work} baseUrl={baseUrl} />
-            ))}
-
-            {/* ローディング中のスケルトンタイル（カラムあたり1個ずつ） */}
-            {isLoadingMore && (
+    <div className="flex flex-col gap-3">
+      {leadingBlocks.map((block) =>
+        block.kind === "wide" ? (
+          <div key={`wide-${block.items[0]?.item.id}`} className="flex gap-3">
+            {block.items.map(({ item }) => (
               <div
-                key={`loading-skeleton-${columnKey}`}
-                className="overflow-hidden rounded-lg bg-card"
+                key={item.id}
+                className="min-w-0 flex-1"
+                // 1 行に入りきらないときも、2 列分より広げない
+                style={
+                  block.items.length < perRow
+                    ? {
+                        maxWidth: `calc((100% - ${(columnCount - 1) * 12}px) * ${2 / columnCount} + 12px)`,
+                      }
+                    : undefined
+                }
               >
-                <Skeleton
-                  className="w-full bg-muted/20"
-                  style={{
-                    height: `${200 + (columns.indexOf(column) % 3) * 100}px`,
-                  }}
+                <WorkItem
+                  work={item}
+                  baseUrl={baseUrl}
+                  wideAspectRatio={toGridAspectRatio(item)}
                 />
               </div>
-            )}
+            ))}
           </div>
-        )
-      })}
+        ) : (
+          <div
+            key={`columns-${block.columns[0]?.[0]?.item.id}`}
+            className="grid grid-cols-2 items-start gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+          >
+            {block.columns.map((column, columnIndex) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: 列の位置そのものが key
+              <div key={columnIndex} className="flex flex-col gap-3">
+                {column.map(({ item }) => (
+                  <WorkItem key={item.id} work={item} baseUrl={baseUrl} />
+                ))}
+              </div>
+            ))}
+          </div>
+        ),
+      )}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        {columns.map((column) => {
+          // カラムの一意のキーを生成（カラム内の作品IDから）
+          const columnKey =
+            column.length > 0
+              ? `col-${column[0]?.id}-${column.length}`
+              : `empty-col-${Math.random().toString(36).substr(2, 9)}`
+
+          return (
+            <div key={columnKey} className="flex flex-col gap-3">
+              {/* 既存の作品 */}
+              {column.map((work) => (
+                <WorkItem key={work.id} work={work} baseUrl={baseUrl} />
+              ))}
+
+              {/* ローディング中のスケルトンタイル（カラムあたり1個ずつ） */}
+              {isLoadingMore && (
+                <div
+                  key={`loading-skeleton-${columnKey}`}
+                  className="overflow-hidden rounded-lg bg-card"
+                >
+                  <Skeleton
+                    className="w-full bg-muted/20"
+                    style={{
+                      height: `${200 + (columns.indexOf(column) % 3) * 100}px`,
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -178,7 +218,7 @@ export function MasonryWorkGrid(props: Props): React.ReactNode {
  */
 function WorkItem(props: WorkItemProps) {
   const t = useTranslation()
-  const { work, baseUrl = "posts/gallery" } = props
+  const { work, baseUrl = "posts/gallery", wideAspectRatio } = props
 
   const aspectRatio =
     work.smallThumbnailImageHeight / work.smallThumbnailImageWidth
@@ -190,7 +230,14 @@ function WorkItem(props: WorkItemProps) {
       className="group relative block overflow-hidden rounded-lg bg-card leading-none shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20"
     >
       {/* 画像コンテナ */}
-      <div className="relative" style={{ height: imageHeight }}>
+      <div
+        className="relative"
+        style={
+          wideAspectRatio !== undefined
+            ? { aspectRatio: `${wideAspectRatio}` }
+            : { height: imageHeight }
+        }
+      >
         {/* ここが重要：block + absolute inset-0 で下余白を完全排除 */}
         <OptimizedImage
           src={work.smallThumbnailImageURL}

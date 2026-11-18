@@ -10,7 +10,7 @@ import { isR18Work } from "~/lib/is-r18-work"
 import { cn } from "~/lib/utils"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import {
-  splitMasonryColumns,
+  splitMasonryBlocks,
   toMasonryAspectRatio,
 } from "~/utils/split-masonry-columns"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -56,6 +56,7 @@ export function HomeCroppedWorks(props: Props) {
     work: FragmentOf<typeof PhotoAlbumWorkFragment>,
     index: number,
     aspectRatio?: number,
+    displayWidth?: string,
   ) => {
     const square = (
       <CroppedWorkSquare
@@ -71,6 +72,7 @@ export function HomeCroppedWorks(props: Props) {
         thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
         size="auto"
         aspectRatio={aspectRatio}
+        displayWidth={displayWidth}
         imageWidth={work.smallThumbnailImageWidth}
         imageHeight={work.smallThumbnailImageHeight}
         subWorksCount={work.subWorksCount}
@@ -210,9 +212,10 @@ export function HomeCroppedWorks(props: Props) {
       )}
       {showMobile &&
         (props.isMasonry ? (
-          // アプリと同じ石垣状（縦横比をそのまま、いちばん短い列に足す）
-          <section className="grid grid-cols-2 items-start gap-x-2.5 md:hidden">
-            {splitMasonryColumns(
+          // アプリと同じ石垣状（縦横比をそのまま、いちばん短い列に足す）。
+          // 横長の作品は 2 列ぶち抜きにして、縦長ばかり大きく見えないようにする
+          <section className="flex flex-col gap-y-3.5 md:hidden">
+            {splitMasonryBlocks(
               uniqueWorks,
               2,
               (work) =>
@@ -221,25 +224,48 @@ export function HomeCroppedWorks(props: Props) {
                   work.smallThumbnailImageHeight,
                 ),
               props.isShowProfile ? 0.28 : 0,
-            ).map((column, columnIndex) => (
-              <div
-                // 列は 2 つで固定
-                // biome-ignore lint/suspicious/noArrayIndexKey: 列の位置そのものが key
-                key={columnIndex}
-                className="flex min-w-0 flex-col gap-y-3.5"
-              >
-                {column.map(({ item, index }) =>
-                  renderMobileItem(
-                    item,
-                    index,
-                    toMasonryAspectRatio(
-                      item.smallThumbnailImageWidth,
-                      item.smallThumbnailImageHeight,
+            ).map((block) =>
+              block.kind === "wide" ? (
+                <div key={`wide-${block.items[0]?.item.id}`}>
+                  {block.items.map(({ item, index }) =>
+                    renderMobileItem(
+                      item,
+                      index,
+                      toMasonryAspectRatio(
+                        item.smallThumbnailImageWidth,
+                        item.smallThumbnailImageHeight,
+                      ),
+                      "100vw",
                     ),
-                  ),
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ) : (
+                <div
+                  key={`columns-${block.columns[0]?.[0]?.item.id}`}
+                  className="grid grid-cols-2 items-start gap-x-2.5"
+                >
+                  {block.columns.map((column, columnIndex) => (
+                    <div
+                      // 列は 2 つで固定
+                      // biome-ignore lint/suspicious/noArrayIndexKey: 列の位置そのものが key
+                      key={columnIndex}
+                      className="flex min-w-0 flex-col gap-y-3.5"
+                    >
+                      {column.map(({ item, index }) =>
+                        renderMobileItem(
+                          item,
+                          index,
+                          toMasonryAspectRatio(
+                            item.smallThumbnailImageWidth,
+                            item.smallThumbnailImageHeight,
+                          ),
+                        ),
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ),
+            )}
           </section>
         ) : (
           <section className="safari-work-grid grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 md:hidden">
