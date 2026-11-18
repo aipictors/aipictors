@@ -1,11 +1,12 @@
-import { Link } from "~/lib/app/locale-router"
 import { Images, MessageCircleIcon } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thumbnail-overlay"
 import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
+import { toThumbnailObjectPosition } from "~/utils/thumbnail-object-position"
 
 type Props = {
   workId: string
@@ -94,85 +95,16 @@ function toSizes(props: Props): string {
  */
 export function CroppedWorkSquare(props: Props): React.ReactNode {
   // 仕様: 常に表示領域は正方形。auto は親グリッドセル幅にフィットして aspect-square。固定サイズは size-* で正方形。
-  // 仕様: 短辺フィット + 長辺方向のみ translate. オーバーレイのズレ防止のためラッパーを正方形サイズそのものにする。
+  // 仕様: 短辺フィット (object-cover) + 長辺方向のみ object-position で位置を合わせる。オーバーレイのズレ防止のためラッパーを正方形サイズそのものにする。
 
-  // 位置値を安全にクランプする (-50% ~ 50% を意図した可動域とする)
-  const clampThumbnailPosition = (value: number) => {
-    if (Number.isNaN(value)) return 0
-    if (value > 50) return 50
-    if (value < -50) return -50
-    return value
+  // 「サムネイルを調整」の位置で切り抜く（石垣状の枠でも同じ割合の位置にする）
+  const cropStyle = {
+    objectPosition: toThumbnailObjectPosition(
+      props.thumbnailImagePosition,
+      props.imageWidth,
+      props.imageHeight,
+    ),
   }
-
-  type CropStyleParams = {
-    imageWidth: number
-    imageHeight: number
-    thumbnailPosition: number
-  }
-
-  // 非常に横長対策: 以前は WIDE_CONTAIN_THRESHOLD 以上で object-fit:contain へ切替えていたが
-  // 「縦幅がフィットせず小さく見える」フィードバックにより撤去。
-  // 将来的に "過度な横拡大" を緩和したい場合は、scaleX で最大表示幅を制限する案を別途実装する。例:
-  //   const MAX_DISPLAY_AR = 1.8; 高さ100%適用後 (実幅AR - MAX_DISPLAY_AR) を縮小率に反映 など。
-  // const WIDE_CONTAIN_THRESHOLD = 1.4
-
-  // サムネイルの中央寄せクロップ風スタイルを計算
-  const computeCropStyle = ({
-    imageWidth,
-    imageHeight,
-    thumbnailPosition,
-  }: CropStyleParams) => {
-    const aspectRatio = imageWidth / imageHeight
-    const clampedPos = clampThumbnailPosition(thumbnailPosition || 0)
-
-    // 横長: 高さ100%固定 (短辺=高さ) -> 幅は aspectRatio * 100% 分溢れる
-    if (aspectRatio > 1) {
-      const overflowRatio = aspectRatio - 1 // 追加で溢れる幅割合
-      const maxTravelPercent = (overflowRatio / 2) * 100
-      const translatePercent = (clampedPos / 50) * maxTravelPercent
-      return {
-        width: `${aspectRatio * 100}%`, // 明示的に幅を指定してoverflow確実化
-        height: "100%",
-        transform: `translateX(${translatePercent}%)`,
-        objectFit: "cover" as const,
-      }
-    }
-
-    // 縦長: 幅100%固定 (短辺=幅) -> 高さは (1/aspectRatio) * 100% 分溢れる
-    if (aspectRatio < 1) {
-      const overflowRatio = 1 / aspectRatio - 1
-      const maxTravelPercent = (overflowRatio / 2) * 100
-      const translatePercent = (clampedPos / 50) * maxTravelPercent
-      return {
-        width: "100%",
-        height: `${(1 / aspectRatio) * 100}%`, // 明示的に高さを指定
-        transform: `translateY(${translatePercent}%)`,
-        objectFit: "cover" as const,
-      }
-    }
-
-    // 正方形
-    return {
-      width: "100%",
-      height: "100%",
-      transform: "none",
-      objectFit: "cover" as const,
-    }
-  }
-
-  const cropStyle =
-    props.aspectRatio !== undefined
-      ? {
-          width: "100%",
-          height: "100%",
-          transform: "none",
-          objectFit: "cover" as const,
-        }
-      : computeCropStyle({
-          imageWidth: props.imageWidth,
-          imageHeight: props.imageHeight,
-          thumbnailPosition: props.thumbnailImagePosition,
-        })
 
   const backgroundColor = () => {
     if (props.ranking === 1) return "#d6ba49"

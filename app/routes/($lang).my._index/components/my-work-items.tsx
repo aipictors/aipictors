@@ -1,5 +1,3 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
   BookmarkIcon,
@@ -27,9 +25,12 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
 import type { SortType } from "~/types/sort-type"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
+import { toThumbnailObjectPosition } from "~/utils/thumbnail-object-position"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 
@@ -47,6 +48,9 @@ export type MyWork = {
   accessType: IntrospectionEnum<"AccessType">
   isPromotion?: boolean | null
   smallThumbnailImageURL: string
+  smallThumbnailImageWidth?: number | null
+  smallThumbnailImageHeight?: number | null
+  thumbnailImagePosition?: number | null
 }
 
 type SharedProps = {
@@ -258,6 +262,13 @@ function Thumbnail(props: { work: MyWork; className?: string }) {
       loading="lazy"
       decoding="async"
       className={cn("bg-muted object-cover", props.className)}
+      style={{
+        objectPosition: toThumbnailObjectPosition(
+          props.work.thumbnailImagePosition,
+          props.work.smallThumbnailImageWidth ?? 0,
+          props.work.smallThumbnailImageHeight ?? 0,
+        ),
+      }}
     />
   )
 }
@@ -572,6 +583,9 @@ export const MyWorkListItemFragment = graphql(
     commentsCount
     viewsCount
     smallThumbnailImageURL
+    smallThumbnailImageWidth
+    smallThumbnailImageHeight
+    thumbnailImagePosition
     likesCount
     rating
     bookmarksCount
