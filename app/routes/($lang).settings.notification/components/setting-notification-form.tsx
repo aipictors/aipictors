@@ -23,6 +23,7 @@ export function SettingNotificationForm() {
   const notifyLikeId = useId()
   const notifyAnonymousLikeId = useId()
   const allAgeAnonymousId = useId()
+  const r15AnonymousId = useId()
   const sensitiveAnonymousId = useId()
 
   const { data: userSetting } = useQuery(userSettingQuery, {
@@ -39,6 +40,8 @@ export function SettingNotificationForm() {
   const [isNotifyLike, setIsNotifyLike] = useState(true)
   const [isNotifyAnonymousLike, setIsNotifyAnonymousLike] = useState(true)
   const [isAllAgeLikeAnonymousByDefault, setIsAllAgeLikeAnonymousByDefault] =
+    useState(false)
+  const [isR15LikeAnonymousByDefault, setIsR15LikeAnonymousByDefault] =
     useState(false)
   const [
     isSensitiveLikeAnonymousByDefault,
@@ -57,6 +60,12 @@ export function SettingNotificationForm() {
     setIsAllAgeLikeAnonymousByDefault(
       userSetting?.userSetting?.isAnonymousLikeAllAges ?? false,
     )
+    // R-15 を選んでいなければ API が全年齢の設定を返す
+    setIsR15LikeAnonymousByDefault(
+      userSetting?.userSetting?.isAnonymousLikeR15 ??
+        userSetting?.userSetting?.isAnonymousLikeAllAges ??
+        false,
+    )
     setIsSensitiveLikeAnonymousByDefault(
       userSetting?.userSetting?.isAnonymousLikeSensitive ?? true,
     )
@@ -70,6 +79,7 @@ export function SettingNotificationForm() {
           isNotifyLike: isNotifyLike,
           isNotifyAnonymousLike: isNotifyAnonymousLike,
           isAnonymousLikeAllAges: isAllAgeLikeAnonymousByDefault,
+          isAnonymousLikeR15: isR15LikeAnonymousByDefault,
           isAnonymousLikeSensitive: isSensitiveLikeAnonymousByDefault,
         },
       },
@@ -147,6 +157,19 @@ export function SettingNotificationForm() {
             />
           </SettingsSwitchRow>
           <SettingsSwitchRow
+            htmlFor={r15AnonymousId}
+            title={t(
+              "R-15 作品のいいねを匿名にする",
+              "Default R-15 likes to anonymous",
+            )}
+          >
+            <Switch
+              checked={isR15LikeAnonymousByDefault}
+              id={r15AnonymousId}
+              onCheckedChange={setIsR15LikeAnonymousByDefault}
+            />
+          </SettingsSwitchRow>
+          <SettingsSwitchRow
             htmlFor={sensitiveAnonymousId}
             title={t(
               "センシティブ作品のいいねを匿名にする",
@@ -181,6 +204,7 @@ const userSettingQuery = graphql(
       isNotifyLike
       isNotifyAnonymousLike
       isAnonymousLikeAllAges
+      isAnonymousLikeR15
       isAnonymousLikeSensitive
     }
   }`,

@@ -319,6 +319,7 @@ export function WorkArticle(props: Props) {
           isRecommended={props.work.isMyRecommended}
           isDisabledShare={false}
           isSensitive={props.work.isSensitive}
+          rating={props.work.rating}
           workType={props.work.type}
           isTargetUserBlocked={Boolean(props.work.user?.isBlocked)}
         />

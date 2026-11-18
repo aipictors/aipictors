@@ -23,4 +23,39 @@ describe("作品画面のいいねを匿名にするか", () => {
     expect(isAnonymousLikeBySetting({}, false)).toBe(false)
     expect(isAnonymousLikeBySetting({}, true)).toBe(true)
   })
+
+  test("R-15 の作品は R-15 の設定を使う（センシティブ扱いでもセンシティブの設定は使わない）", () => {
+    expect(
+      isAnonymousLikeBySetting(
+        { ...setting, isAnonymousLikeR15: false },
+        true,
+        "R15",
+      ),
+    ).toBe(false)
+    expect(
+      isAnonymousLikeBySetting(
+        {
+          isAnonymousLikeAllAges: false,
+          isAnonymousLikeR15: true,
+          isAnonymousLikeSensitive: false,
+        },
+        true,
+        "R15",
+      ),
+    ).toBe(true)
+  })
+
+  test("R-15 の設定がなければ全年齢の設定を使う", () => {
+    expect(isAnonymousLikeBySetting(setting, true, "R15")).toBe(true)
+    expect(
+      isAnonymousLikeBySetting({ isAnonymousLikeSensitive: true }, true, "R15"),
+    ).toBe(false)
+  })
+
+  test("R18・R18G はセンシティブの設定、G は全年齢の設定", () => {
+    const s = { ...setting, isAnonymousLikeR15: true }
+    expect(isAnonymousLikeBySetting(s, true, "R18")).toBe(false)
+    expect(isAnonymousLikeBySetting(s, true, "R18G")).toBe(false)
+    expect(isAnonymousLikeBySetting(s, false, "G")).toBe(true)
+  })
 })

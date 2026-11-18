@@ -191,6 +191,7 @@ export function DraftWorkArticle(props: Props) {
           isRecommended={props.work.isMyRecommended}
           isDisabledShare={true}
           isSensitive={props.work.isSensitive}
+          rating={props.work.rating}
           workType={props.work.type}
         />
         <h1 className="font-bold text-lg">

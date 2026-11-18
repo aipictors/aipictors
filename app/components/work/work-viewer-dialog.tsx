@@ -716,6 +716,7 @@ export function WorkViewerDialog({
               isRecommended={detailFields.isMyRecommended ?? false}
               isDisabledShare={false}
               isSensitive={currentWork.isSensitive}
+              rating={currentWork.rating}
               isTargetUserBlocked={Boolean(detailFields.user?.isBlocked)}
               workType={currentWork.type}
               mode="dialogLikeOnly"

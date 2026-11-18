@@ -5752,6 +5752,9 @@ input UpdateUserSettingInput {
   """全年齢作品へのいいねを匿名にする"""
   isAnonymousLikeAllAges: Boolean
 
+  """R-15 作品へのいいねを匿名にする"""
+  isAnonymousLikeR15: Boolean
+
   """センシティブ作品へのいいねを匿名にする"""
   isAnonymousLikeSensitive: Boolean
 
@@ -6399,6 +6402,9 @@ type UserSettingNode implements Node {
 
   """全年齢作品へのいいねを匿名にするかどうか"""
   isAnonymousLikeAllAges: Boolean!
+
+  """R-15 作品へのいいねを匿名にするかどうか（選んでいなければ全年齢作品の設定）"""
+  isAnonymousLikeR15: Boolean!
 
   """センシティブ作品へのいいねを匿名にするかどうか"""
   isAnonymousLikeSensitive: Boolean!

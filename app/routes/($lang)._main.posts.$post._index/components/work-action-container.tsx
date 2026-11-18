@@ -21,27 +21,38 @@ type Props = {
   workType: string
   isDisabledShare?: boolean
   isSensitive?: boolean
+  rating?: string | null
   isTargetUserBlocked?: boolean
   mode?: "default" | "dialogLikeOnly"
 }
 
 /**
  * 設定の「いいねの表示」から、この作品へのいいねを匿名にするか。設定をまだ読めていなければ undefined
+ * API と同じく R-15 は R-15 の設定（未設定なら全年齢）、R18・R18G はセンシティブの設定を使う
+ * （WorkNode.isSensitive は R-15 でも true なので rating で分ける）
  */
 export function isAnonymousLikeBySetting(
   setting:
     | {
         isAnonymousLikeAllAges?: boolean | null
+        isAnonymousLikeR15?: boolean | null
         isAnonymousLikeSensitive?: boolean | null
       }
     | null
     | undefined,
   isSensitive: boolean,
+  rating?: string | null,
 ): boolean | undefined {
   if (!setting) return undefined
+  if (rating === "G") {
+    return setting.isAnonymousLikeAllAges ?? false
+  }
+  if (rating === "R15") {
+    return setting.isAnonymousLikeR15 ?? setting.isAnonymousLikeAllAges ?? false
+  }
   return isSensitive
-    ? setting.isAnonymousLikeSensitive ?? true
-    : setting.isAnonymousLikeAllAges ?? false
+    ? (setting.isAnonymousLikeSensitive ?? true)
+    : (setting.isAnonymousLikeAllAges ?? false)
 }
 
 /**
@@ -57,6 +68,7 @@ export function WorkActionContainer(props: Props) {
   const isAnonymousLike = isAnonymousLikeBySetting(
     userSettingData?.userSetting,
     props.isSensitive === true,
+    props.rating,
   )
 
   const likeButtonLabel = isAnonymousLike === true ? "匿名いいね" : "いいね"
@@ -94,6 +106,7 @@ const userSettingQuery = graphql(
     userSetting {
       id
       isAnonymousLikeAllAges
+      isAnonymousLikeR15
       isAnonymousLikeSensitive
     }
   }`,
