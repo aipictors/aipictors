@@ -1,5 +1,6 @@
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import {
   Pagination,
   PaginationContent,
@@ -7,6 +8,8 @@ import {
 } from "~/components/ui/pagination"
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { parsePageJump } from "~/utils/parse-page-jump"
 
 type Props = {
   maxCount: number // 最大個数
@@ -17,6 +20,42 @@ type Props = {
   disableScrollToTop?: boolean // ページ変更時のスクロールを無効化
   allowExtendedPagination?: boolean // 100ページまでのページングを許可する
   maxPages?: number // プランベースでの最大ページ数制限
+  showPageJump?: boolean // ページ番号を入れて移る欄を出す
+}
+
+/** ページ番号を入れて移る欄 */
+function PageJumpForm(props: {
+  pageCount: number
+  onJump: (page: number) => void
+}) {
+  const t = useTranslation()
+  const [text, setText] = useState("")
+
+  return (
+    <form
+      className="flex items-center gap-1"
+      onSubmit={(e) => {
+        e.preventDefault()
+        const page = parsePageJump(text, props.pageCount)
+        if (page === null) return
+        props.onJump(page)
+        setText("")
+      }}
+    >
+      <Input
+        type="text"
+        inputMode="numeric"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder={`1-${props.pageCount}`}
+        aria-label={t("移動するページ番号", "Page number")}
+        className="h-9 w-16 text-center"
+      />
+      <Button type="submit" variant="secondary" disabled={!text.trim()}>
+        {t("移動", "Go")}
+      </Button>
+    </form>
+  )
 }
 
 /**
@@ -34,7 +73,7 @@ type Props = {
  * ページ総数が30で、現在ページが28の場合:
  * [Prev] [1] ... [28] [29] ... [30] [Next]
  */
-export function ResponsivePagination ({
+export function ResponsivePagination({
   maxCount,
   perPage,
   currentPage,
@@ -43,6 +82,7 @@ export function ResponsivePagination ({
   disableScrollToTop = false,
   allowExtendedPagination = false,
   maxPages,
+  showPageJump = false,
 }: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
 
@@ -84,6 +124,11 @@ export function ResponsivePagination ({
     return null
   }
 
+  // ページ番号の欄を足すと狭い画面で収まらないので折り返す
+  const contentClassName = showPageJump
+    ? "flex flex-wrap items-center justify-center gap-2"
+    : "flex items-center space-x-2"
+
   const firstPageIndex = 0
   const lastPageIndex = pageCount - 1
 
@@ -104,7 +149,7 @@ export function ResponsivePagination ({
     const allPages = Array.from({ length: pageCount }, (_, i) => i)
     return (
       <Pagination>
-        <PaginationContent className="flex items-center space-x-2">
+        <PaginationContent className={contentClassName}>
           <PaginationItem>
             <Button
               variant="secondary"
@@ -138,6 +183,11 @@ export function ResponsivePagination ({
               Next
             </Button>
           </PaginationItem>
+          {showPageJump && (
+            <PaginationItem>
+              <PageJumpForm pageCount={pageCount} onJump={handlePageChange} />
+            </PaginationItem>
+          )}
         </PaginationContent>
       </Pagination>
     )
@@ -173,7 +223,7 @@ export function ResponsivePagination ({
 
   return (
     <Pagination>
-      <PaginationContent className="flex items-center space-x-2">
+      <PaginationContent className={contentClassName}>
         {/* Prev */}
         <PaginationItem>
           <Button
@@ -252,6 +302,11 @@ export function ResponsivePagination ({
             Next
           </Button>
         </PaginationItem>
+        {showPageJump && (
+          <PaginationItem>
+            <PageJumpForm pageCount={pageCount} onJump={handlePageChange} />
+          </PaginationItem>
+        )}
       </PaginationContent>
     </Pagination>
   )

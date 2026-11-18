@@ -153,8 +153,23 @@ export function HomePaginationWorksSection(props: Props) {
     }
   }, [displayedWorks, props])
 
+  // ページを移る欄（一覧の上と下に同じものを置く）
+  const pagination = (
+    <ResponsivePagination
+      perPage={perPageCount}
+      maxCount={1000}
+      currentPage={props.page}
+      onPageChange={(page) => props.setPage(page)}
+      showPageJump={true}
+    />
+  )
+
   return (
     <div className="space-y-4">
+      {/* 先のページへ行くときに一覧の下までスクロールしなくて済むよう、上にも置く */}
+      {displayedWorks.length > 0 && (
+        <div className="flex justify-center pb-2">{pagination}</div>
+      )}
       {/* 画像 or 全部 */}
       {(props.workType === "WORK" || props.workType === null) && (
         <HomeWorkSection
@@ -186,14 +201,7 @@ export function HomePaginationWorksSection(props: Props) {
       )}
 
       {/* ページ送りは一覧の下に置く（画面下に固定すると作品に重なっていた） */}
-      <div className="flex justify-center border-t pt-4 pb-6">
-        <ResponsivePagination
-          perPage={perPageCount}
-          maxCount={1000}
-          currentPage={props.page}
-          onPageChange={(page) => props.setPage(page)}
-        />
-      </div>
+      <div className="flex justify-center border-t pt-4 pb-6">{pagination}</div>
     </div>
   )
 }
