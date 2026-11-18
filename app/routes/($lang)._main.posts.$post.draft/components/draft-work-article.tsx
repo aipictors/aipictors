@@ -106,6 +106,12 @@ export function DraftWorkArticle(props: Props) {
     props.work.isCaptionBeforeBody === true &&
     displayDescription.trim() !== ""
 
+  // 下書き・非公開・予約投稿でも、作者本人だけは「本のように読む」で確かめられる
+  const isOwner =
+    props.work.user !== null &&
+    props.work.user !== undefined &&
+    appContext.userId === props.work.user.id
+
   const descriptionView = (
     <p className="overflow-hidden whitespace-pre-wrap break-words">
       {parseTextWithLinks(displayDescription)}
@@ -142,6 +148,9 @@ export function DraftWorkArticle(props: Props) {
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
           title={props.work.title}
+          workId={isOwner ? props.work.id : undefined}
+          workType="COLUMN"
+          authorName={props.work.user?.name}
           foreword={isCaptionBeforeBody ? displayDescription : undefined}
         />
       )}
@@ -150,6 +159,9 @@ export function DraftWorkArticle(props: Props) {
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
           title={props.work.title}
+          workId={isOwner ? props.work.id : undefined}
+          workType="NOVEL"
+          authorName={props.work.user?.name}
           foreword={isCaptionBeforeBody ? displayDescription : undefined}
         />
       )}

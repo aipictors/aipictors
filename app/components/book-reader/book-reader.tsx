@@ -363,6 +363,23 @@ export const applyImageFits = (
   return root.innerHTML
 }
 
+/**
+ * 本のように読む画面の中で文字を選んでいるか。
+ * 画面は select-none なので、クリックしても前の画面（編集欄など）の選択は外れずに残る。
+ * それまで数えるとタップもめくりも効かなくなるので、この画面の中の選択だけを見る
+ */
+export const isSelectingInside = (
+  root: Node | null,
+  selection: Selection | null,
+): boolean => {
+  if (root === null || selection === null) return false
+  if (selection.isCollapsed || selection.toString() === "") return false
+  return (
+    (selection.anchorNode !== null && root.contains(selection.anchorNode)) ||
+    (selection.focusNode !== null && root.contains(selection.focusNode))
+  )
+}
+
 export function BookReader(props: Props): ReactNode {
   const t = useTranslation()
   const { onClose } = props
@@ -866,7 +883,7 @@ export function BookReader(props: Props): ReactNode {
     const dx = event.clientX - start.x
     const dy = event.clientY - start.y
     // 文字を選んでいるときはめくらない
-    if ((window.getSelection()?.toString() ?? "") !== "") return
+    if (isSelectingInside(rootRef.current, window.getSelection())) return
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) {
       const swipedLeft = dx < 0
       if (swipedLeft !== forwardIsLeft) goForward()

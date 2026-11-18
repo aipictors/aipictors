@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test"
-import { applyImageFits } from "~/components/book-reader/book-reader"
+import {
+  applyImageFits,
+  isSelectingInside,
+} from "~/components/book-reader/book-reader"
 
 describe("applyImageFits", () => {
   const html =
@@ -23,5 +26,42 @@ describe("applyImageFits", () => {
     expect(applyImageFits(html, { 0: 200 }, {})).toContain(
       '<img src="a.png" style="max-block-size: 200px">',
     )
+  })
+})
+
+describe("isSelectingInside", () => {
+  const setup = () => {
+    document.body.innerHTML =
+      '<div id="editor">編集中の本文</div><div id="reader"><p>本の本文</p></div>'
+    const editor = document.getElementById("editor") as HTMLElement
+    const reader = document.getElementById("reader") as HTMLElement
+    return { editor, reader }
+  }
+
+  const select = (node: Node) => {
+    const selection = window.getSelection() as Selection
+    const range = document.createRange()
+    range.selectNodeContents(node)
+    selection.removeAllRanges()
+    selection.addRange(range)
+    return selection
+  }
+
+  test("編集画面に文字の選択が残っていても、本の画面のタップは止めない", () => {
+    const { editor, reader } = setup()
+    expect(isSelectingInside(reader, select(editor))).toBe(false)
+  })
+
+  test("本の画面の中で文字を選んでいるときだけ止める", () => {
+    const { reader } = setup()
+    expect(isSelectingInside(reader, select(reader))).toBe(true)
+  })
+
+  test("選択が無ければ止めない", () => {
+    const { reader } = setup()
+    const selection = window.getSelection() as Selection
+    selection.removeAllRanges()
+    expect(isSelectingInside(reader, selection)).toBe(false)
+    expect(isSelectingInside(null, selection)).toBe(false)
   })
 })
