@@ -36,6 +36,8 @@ export type HomeTagWorksRow = {
     smallThumbnailImageURL: string
     smallThumbnailImageWidth: number
     smallThumbnailImageHeight: number
+    /** 一覧からいいねするときの作者（自分の作品にはいいねボタンを出さない判定に使う） */
+    user: { id: string } | null
   }[]
 }
 
@@ -153,7 +155,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const cache = typeof caches === "undefined" ? null : caches.default
   const cacheKey = new Request(
-    `https://www.aipictors.com/__home-tag-works/v2/${isSensitive ? "r18/" : ""}${hourKey}`,
+    `https://www.aipictors.com/__home-tag-works/v3/${isSensitive ? "r18/" : ""}${hourKey}`,
   )
   const cached = await cache?.match(cacheKey).catch(() => undefined)
   if (cached) {
@@ -213,6 +215,9 @@ const HomeTagRowWorkFragment = graphql(
     smallThumbnailImageURL
     smallThumbnailImageWidth
     smallThumbnailImageHeight
+    user {
+      id
+    }
   }`,
 )
 

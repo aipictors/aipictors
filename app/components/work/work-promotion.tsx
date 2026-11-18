@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { ExternalLinkIcon, MegaphoneIcon } from "lucide-react"
 import { useContext } from "react"
+import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -91,6 +92,8 @@ export function PromotionWorkCard(props: {
   userName?: string | null
   userIconUrl?: string | null
   relatedUrl?: string | null
+  /** 作者の ID。workId と一緒に渡すと、一覧からそのままいいねできる */
+  userId?: string | null
 }) {
   const t = useTranslation()
   const href = props.workId ? `/posts/${props.workId}` : null
@@ -130,9 +133,23 @@ export function PromotionWorkCard(props: {
     <div className={PROMOTION_FRAME_CLASS}>
       <div className="flex h-full flex-col overflow-hidden rounded-[11px] bg-card">
         {href ? (
-          <Link to={href} className="block">
-            {image}
-          </Link>
+          <div className="relative">
+            <Link to={href} className="block">
+              {image}
+            </Link>
+            {props.workId && props.userId && (
+              <div className="absolute right-0 bottom-0">
+                <LikeButton
+                  size={48}
+                  targetWorkId={props.workId}
+                  targetWorkOwnerUserId={props.userId}
+                  defaultLikedCount={0}
+                  isBackgroundNone={true}
+                  strokeWidth={2}
+                />
+              </div>
+            )}
+          </div>
         ) : (
           image
         )}
@@ -220,6 +237,7 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
             userLogin={work.user?.login}
             userName={work.user?.name}
             userIconUrl={work.user?.iconUrl}
+            userId={work.user?.id}
             relatedUrl={work.relatedUrl}
           />
         ))}

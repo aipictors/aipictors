@@ -7,6 +7,7 @@ import {
 } from "lucide-react"
 import { useRouteLoaderData } from "@remix-run/react"
 import { useEffect, useRef, useState } from "react"
+import { LikeButton } from "~/components/like-button"
 import { OptimizedImage } from "~/components/optimized-image"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -131,74 +132,89 @@ export function HomeHotCarousel(props: {
           const title = t.workTitle(work.title, work.enTitle)
           const isTop = index < 3
           return (
-            <Link
+            <div
               key={work.id}
               data-hot-card
               data-hot-index={index}
-              to={`/posts/${work.id}`}
-              className="group relative aspect-[4/5] w-[82%] shrink-0 snap-center overflow-hidden rounded-3xl bg-muted active:scale-[0.98] motion-reduce:transform-none sm:w-[46%] md:snap-start lg:w-[31%] xl:w-[23.5%]"
+              className="relative aspect-[4/5] w-[82%] shrink-0 snap-center sm:w-[46%] md:snap-start lg:w-[31%] xl:w-[23.5%]"
             >
-              {index < revealedCount && (
-                <OptimizedImage
-                  src={work.largeThumbnailImageURL}
-                  alt={title}
-                  loading={index < 2 ? "eager" : "lazy"}
-                  fetchPriority={index === 0 ? "high" : "low"}
-                  srcSet={toResizedImageSrcSet(work.largeThumbnailImageURL, {
-                    minWidth: 320,
-                    maxWidth: work.largeThumbnailImageWidth ?? undefined,
-                  })}
-                  sizes="(min-width: 1280px) 260px, (min-width: 1024px) 280px, (min-width: 640px) 46vw, 82vw"
-                  width={work.largeThumbnailImageWidth ?? undefined}
-                  height={work.largeThumbnailImageHeight ?? undefined}
-                  className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
-                />
-              )}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent from-55% to-black/80" />
-              <span
-                className={cn(
-                  "absolute top-3 left-3 rounded-full px-2.5 py-1 font-black text-white text-xs tabular-nums backdrop-blur-sm",
-                  isTop ? "bg-[#E2A21B]/90" : "bg-black/50",
-                )}
+              <Link
+                to={`/posts/${work.id}`}
+                className="group relative block size-full overflow-hidden rounded-3xl bg-muted active:scale-[0.98] motion-reduce:transform-none"
               >
-                #{index + 1}
-              </span>
-              {work.rating === "R15" && (
-                <span className="absolute top-3 right-3 rounded-full bg-amber-500/90 px-2 py-0.5 font-bold text-[10px] text-white">
-                  R15
-                </span>
-              )}
-              <div className="absolute inset-x-4 bottom-3.5 space-y-1.5 text-white">
-                <p className="line-clamp-1 font-extrabold text-lg leading-tight drop-shadow">
-                  {title}
-                </p>
-                <div className="flex items-center gap-1.5 text-[13px]">
-                  {work.user && (
-                    <>
-                      <img
-                        src={
-                          toResizedImageUrl(
-                            withIconUrlFallback(work.user.iconUrl),
-                            96,
-                          ) ?? withIconUrlFallback(work.user.iconUrl)
-                        }
-                        alt=""
-                        loading="lazy"
-                        decoding="async"
-                        className="size-[22px] shrink-0 rounded-full bg-white/20 object-cover"
-                      />
-                      <span className="min-w-0 flex-1 truncate text-white/80">
-                        {work.user.name}
-                      </span>
-                    </>
+                {index < revealedCount && (
+                  <OptimizedImage
+                    src={work.largeThumbnailImageURL}
+                    alt={title}
+                    loading={index < 2 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "low"}
+                    srcSet={toResizedImageSrcSet(work.largeThumbnailImageURL, {
+                      minWidth: 320,
+                      maxWidth: work.largeThumbnailImageWidth ?? undefined,
+                    })}
+                    sizes="(min-width: 1280px) 260px, (min-width: 1024px) 280px, (min-width: 640px) 46vw, 82vw"
+                    width={work.largeThumbnailImageWidth ?? undefined}
+                    height={work.largeThumbnailImageHeight ?? undefined}
+                    className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
+                  />
+                )}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent from-55% to-black/80" />
+                <span
+                  className={cn(
+                    "absolute top-3 left-3 rounded-full px-2.5 py-1 font-black text-white text-xs tabular-nums backdrop-blur-sm",
+                    isTop ? "bg-[#E2A21B]/90" : "bg-black/50",
                   )}
-                  <HeartIcon className="ml-auto size-4 shrink-0 fill-pink-500 text-pink-500" />
-                  <span className="font-bold tabular-nums">
-                    {formatCount(work.likesCount)}
+                >
+                  #{index + 1}
+                </span>
+                {work.rating === "R15" && (
+                  <span className="absolute top-3.5 left-16 rounded-full bg-amber-500/90 px-2 py-0.5 font-bold text-[10px] text-white">
+                    R15
                   </span>
+                )}
+                <div className="absolute inset-x-4 bottom-3.5 space-y-1.5 text-white">
+                  <p className="line-clamp-1 font-extrabold text-lg leading-tight drop-shadow">
+                    {title}
+                  </p>
+                  <div className="flex items-center gap-1.5 text-[13px]">
+                    {work.user && (
+                      <>
+                        <img
+                          src={
+                            toResizedImageUrl(
+                              withIconUrlFallback(work.user.iconUrl),
+                              96,
+                            ) ?? withIconUrlFallback(work.user.iconUrl)
+                          }
+                          alt=""
+                          loading="lazy"
+                          decoding="async"
+                          className="size-[22px] shrink-0 rounded-full bg-white/20 object-cover"
+                        />
+                        <span className="min-w-0 flex-1 truncate text-white/80">
+                          {work.user.name}
+                        </span>
+                      </>
+                    )}
+                    <HeartIcon className="ml-auto size-4 shrink-0 fill-pink-500 text-pink-500" />
+                    <span className="font-bold tabular-nums">
+                      {formatCount(work.likesCount)}
+                    </span>
+                  </div>
                 </div>
+              </Link>
+              {/* 一覧からそのままいいね（他の欄と同じ部品。リンクの外に置いて作品ページへ移らないように） */}
+              <div className="absolute top-1.5 right-1.5">
+                <LikeButton
+                  size={48}
+                  targetWorkId={work.id}
+                  targetWorkOwnerUserId={work.user?.id ?? ""}
+                  defaultLikedCount={work.likesCount}
+                  isBackgroundNone={true}
+                  strokeWidth={2}
+                />
               </div>
-            </Link>
+            </div>
           )
         })}
       </div>

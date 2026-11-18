@@ -1,5 +1,6 @@
 import { HeartIcon, LightbulbIcon } from "lucide-react"
 import { useEffect, useState } from "react"
+import { LikeButton } from "~/components/like-button"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -87,28 +88,41 @@ function HomeTagWorksRowView(props: {
               key={work.id}
               className="w-[38%] shrink-0 snap-start sm:w-[26%] md:w-[19%] xl:w-[15.5%]"
             >
-              <Link
-                to={`/posts/${work.id}`}
-                className="group block space-y-1.5"
-              >
-                <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
-                  <img
-                    src={
-                      toResizedImageUrl(work.smallThumbnailImageURL, 240) ??
-                      work.smallThumbnailImageURL
-                    }
-                    alt={title}
-                    loading="lazy"
-                    decoding="async"
-                    className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none"
+              <div className="relative">
+                <Link
+                  to={`/posts/${work.id}`}
+                  className="group block space-y-1.5"
+                >
+                  <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
+                    <img
+                      src={
+                        toResizedImageUrl(work.smallThumbnailImageURL, 240) ??
+                        work.smallThumbnailImageURL
+                      }
+                      alt={title}
+                      loading="lazy"
+                      decoding="async"
+                      className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none"
+                    />
+                    <span className="absolute right-1.5 bottom-1.5 flex items-center gap-0.5 rounded-full bg-black/55 px-1.5 py-0.5 font-bold text-[11px] text-white tabular-nums">
+                      <HeartIcon className="size-3 fill-pink-500 text-pink-500" />
+                      {work.likesCount}
+                    </span>
+                  </div>
+                  <p className="line-clamp-1 font-medium text-xs">{title}</p>
+                </Link>
+                {/* 一覧からそのままいいね（他の欄と同じ部品。リンクの外に置いて作品ページへ移らないように） */}
+                <div className="absolute top-0.5 right-0.5">
+                  <LikeButton
+                    size={40}
+                    targetWorkId={work.id}
+                    targetWorkOwnerUserId={work.user?.id ?? ""}
+                    defaultLikedCount={work.likesCount}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
                   />
-                  <span className="absolute right-1.5 bottom-1.5 flex items-center gap-0.5 rounded-full bg-black/55 px-1.5 py-0.5 font-bold text-[11px] text-white tabular-nums">
-                    <HeartIcon className="size-3 fill-pink-500 text-pink-500" />
-                    {work.likesCount}
-                  </span>
                 </div>
-                <p className="line-clamp-1 font-medium text-xs">{title}</p>
-              </Link>
+              </div>
             </li>
           )
         })}
