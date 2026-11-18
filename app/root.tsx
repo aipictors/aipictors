@@ -46,6 +46,7 @@ import { cn } from "~/lib/utils"
 import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
+import { isInsideFileDropZone } from "~/utils/file-drop-zone"
 import { type GridLayout, getGridLayout } from "~/utils/grid-layout"
 import {
   HEADER_USER_INLINE_SCRIPT,
@@ -567,10 +568,21 @@ export function Layout(props: Props): React.ReactNode {
       }
 
       if (isInPostFormPage) return
+
+      // スタンプ追加などその場で受け取る領域の上では、投稿画面へ移る案内を出さない
+      setIsDraggingFiles(
+        dragCounterRef.current > 0 && !isInsideFileDropZone(event.target),
+      )
     }
 
     const handleDrop = (event: DragEvent) => {
       if (!isFileDragEvent(event)) return
+
+      // その場で受け取る領域へのドロップは、その領域の処理に任せる
+      if (isInsideFileDropZone(event.target)) {
+        resetDragging()
+        return
+      }
 
       if (isInPostFormPage) {
         // 投稿画面側のdropzoneで処理させる（ただしブラウザがファイルを開く挙動は抑止）

@@ -13,6 +13,10 @@ import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  FILE_DROP_ZONE_ATTRIBUTE,
+  pickFirstImageFile,
+} from "~/utils/file-drop-zone"
 
 type Props = {
   isHidePreviewImage: boolean
@@ -37,6 +41,7 @@ export function CropImageField(props: Props): React.ReactNode {
     props.defaultCroppedImage ?? "",
   )
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [isDragOver, setIsDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const inputId = useId()
@@ -98,35 +103,64 @@ export function CropImageField(props: Props): React.ReactNode {
   }, [props.defaultCroppedImage])
 
   /**
+   * 画像を読み込んで切り抜きを開く
+   */
+  const openCropper = useCallback((file: File) => {
+    const reader = new FileReader()
+    reader.addEventListener("load", () => {
+      if (reader.result) {
+        setImage(reader.result.toString() || "")
+        setIsOpen(true)
+        // syadcnのダイアログ上でクロップモーダルが表示されるときに、クロップ領域が正常に描画されるために必要な処理
+        setTimeout(() => {
+          const element = document.querySelector(`.${cropperClassName}`)
+          if (element) {
+            setTimeout(() => {
+              element.classList.remove("mt-1")
+            }, 100)
+            setTimeout(() => {
+              element.classList.add("mt-1")
+            }, 200)
+          }
+        }, 500)
+      }
+    })
+    reader.readAsDataURL(file)
+  }, [])
+
+  /**
    * ファイル選択後の処理
    */
   const onFileChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
-        const reader = new FileReader()
-        reader.addEventListener("load", () => {
-          if (reader.result) {
-            setImage(reader.result.toString() || "")
-            setIsOpen(true)
-            // syadcnのダイアログ上でクロップモーダルが表示されるときに、クロップ領域が正常に描画されるために必要な処理
-            setTimeout(() => {
-              const element = document.querySelector(`.${cropperClassName}`)
-              if (element) {
-                setTimeout(() => {
-                  element.classList.remove("mt-1")
-                }, 100)
-                setTimeout(() => {
-                  element.classList.add("mt-1")
-                }, 200)
-              }
-            }, 500)
-          }
-        })
-        reader.readAsDataURL(e.target.files[0])
+        openCropper(e.target.files[0])
       }
     },
-    [],
+    [openCropper],
   )
+
+  /**
+   * 画像をドラッグ＆ドロップで受け取る
+   */
+  const dropZoneProps = {
+    [FILE_DROP_ZONE_ATTRIBUTE]: "",
+    onDragOver: (e: React.DragEvent<HTMLElement>) => {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = "copy"
+      setIsDragOver(true)
+    },
+    onDragLeave: (e: React.DragEvent<HTMLElement>) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
+      setIsDragOver(false)
+    },
+    onDrop: (e: React.DragEvent<HTMLElement>) => {
+      e.preventDefault()
+      setIsDragOver(false)
+      const file = pickFirstImageFile(e.dataTransfer.files)
+      if (file) openCropper(file)
+    },
+  }
 
   /**
    * クロップしたときの処理
@@ -176,7 +210,10 @@ export function CropImageField(props: Props): React.ReactNode {
             />
           </>
         ) : (
-          <Card className="relative">
+          <Card
+            className={`relative ${isDragOver ? "ring-2 ring-primary" : ""}`}
+            {...dropZoneProps}
+          >
             <img
               className="m-auto max-h-48 max-w-64"
               alt={"croppedImage"}
@@ -234,11 +271,16 @@ export function CropImageField(props: Props): React.ReactNode {
           />
         </>
       ) : (
-        <div className="relative">
-          <div className="rounded-lg border p-4">
+        <div className="relative" {...dropZoneProps}>
+          <div
+            className={`rounded-lg border p-4 ${isDragOver ? "border-primary bg-primary/10" : ""}`}
+          >
             <ArrowUpFromLineIcon className="m-auto size-4 opacity-80" />
             <div className="text-center text-sm opacity-80">
-              {t("画像アップロード", "Upload image")}
+              {t(
+                "画像アップロード（ドラッグ＆ドロップもできます）",
+                "Upload image (or drag and drop)",
+              )}
             </div>
           </div>
           <Input
