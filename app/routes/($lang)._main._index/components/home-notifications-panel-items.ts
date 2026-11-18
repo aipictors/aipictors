@@ -65,6 +65,8 @@ type PanelNode = {
   user?: PanelUser | null
   sticker?: { imageUrl?: string | null } | null
   myReplies?: PanelReply[] | null
+  /** 本人がこのコメントにいいねしたか */
+  isLikedByMe?: boolean | null
   support?: PanelSupport | null
   replyTargetCommentId?: string | null
   comment?: PanelParentComment | null
@@ -99,7 +101,11 @@ const toPanelItem = (node: PanelNode): PanelItem | null => {
     user: node.user ?? null,
     message: node.message ?? node.requestMessage ?? null,
     stickerUrl: node.sticker?.imageUrl ?? null,
-    isNotReplied: kind === "comment" && (node.myReplies?.length ?? 0) === 0,
+    // コメントへのいいね（👍）も返事したものとして扱う
+    isNotReplied:
+      kind === "comment" &&
+      (node.myReplies?.length ?? 0) === 0 &&
+      node.isLikedByMe !== true,
     support: node.support ?? null,
     replyTargetCommentId: node.replyTargetCommentId ?? null,
     myReplies: node.myReplies ?? [],

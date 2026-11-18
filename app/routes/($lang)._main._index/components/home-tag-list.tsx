@@ -1,8 +1,8 @@
+import { type FragmentOf, graphql } from "gql.tada"
 import { LightbulbIcon } from "lucide-react"
 import { useRef } from "react"
-import { Link } from "~/lib/app/locale-router"
-import { graphql, type FragmentOf } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { getJstDate } from "~/utils/jst-date"
 
 /** 上の横並びに出すタグの数（HTML に入るデータを増やしすぎない） */
@@ -21,7 +21,7 @@ type Props = {
  * ブラウザの横スクロールで並べる（以前はカルーセルのライブラリを使っていたが、
  * 開いた直後の初期化でレイアウトの計算をやり直させていて、スマホで重かった）
  */
-export function HomeTagList (props: Props) {
+export function HomeTagList(props: Props) {
   const today = getJstDate()
   const t = useTranslation()
   const drag = useMouseDragScroll()

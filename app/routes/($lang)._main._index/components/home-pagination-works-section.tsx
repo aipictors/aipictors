@@ -107,8 +107,7 @@ export function HomePaginationWorksSection(props: Props) {
   )
 
   const { data: worksResp } = useQuery(WorksQuery, {
-    skip:
-      appContext.isLoading || canUseInitialWorks || !viewerRatings.isReady,
+    skip: appContext.isLoading || canUseInitialWorks || !viewerRatings.isReady,
     errorPolicy: "all",
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-first",

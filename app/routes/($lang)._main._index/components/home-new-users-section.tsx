@@ -1,7 +1,7 @@
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {

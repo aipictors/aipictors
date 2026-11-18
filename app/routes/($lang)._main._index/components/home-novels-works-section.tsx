@@ -1,9 +1,9 @@
-import { useTranslation } from "~/hooks/use-translation"
+import { type FragmentOf, graphql } from "gql.tada"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { LikeButton } from "~/components/like-button"
-import { graphql, type FragmentOf } from "gql.tada"
-import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
+import { useTranslation } from "~/hooks/use-translation"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
@@ -18,7 +18,7 @@ type Props = {
 /**
  * 小説作品一覧
  */
-export function HomeNovelsWorksSection (props: Props) {
+export function HomeNovelsWorksSection(props: Props) {
   const t = useTranslation()
   if (!props.works) {
     return null

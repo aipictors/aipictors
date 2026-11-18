@@ -1,8 +1,8 @@
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -15,7 +15,7 @@ type Props = {
 /**
  * ランキング一覧
  */
-export function HomeAwardWorksSection (props: Props) {
+export function HomeAwardWorksSection(props: Props) {
   const t = useTranslation()
 
   return (
@@ -32,7 +32,11 @@ export function HomeAwardWorksSection (props: Props) {
             >
               <div className="flex h-full items-center space-x-2">
                 <CroppedWorkSquare
-                  title={work.work ? t.workTitle(work.work.title, work.work.enTitle) : undefined}
+                  title={
+                    work.work
+                      ? t.workTitle(work.work.title, work.work.enTitle)
+                      : undefined
+                  }
                   workId={work.work?.id ?? ""}
                   imageUrl={work.work?.smallThumbnailImageURL ?? ""}
                   thumbnailImagePosition={
@@ -44,7 +48,11 @@ export function HomeAwardWorksSection (props: Props) {
                 />
                 <div className="flex flex-col space-y-2">
                   <Link to={`/posts/${work.work?.id}`}>
-                    <p className="font-semibold">{work.work ? t.workTitle(work.work.title, work.work.enTitle) : ""}</p>
+                    <p className="font-semibold">
+                      {work.work
+                        ? t.workTitle(work.work.title, work.work.enTitle)
+                        : ""}
+                    </p>
                   </Link>
                   {work.work?.user && (
                     <Link to={`/users/${work.work?.user.id}`}>

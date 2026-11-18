@@ -6,8 +6,8 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
-import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
+import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import type { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 
 type Props = {

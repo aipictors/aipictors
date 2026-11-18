@@ -1,9 +1,4 @@
-import { FollowFeedPlaceholder } from "~/routes/($lang)._main._index/components/follow-feed-placeholder"
-import { saveFollowFeedSnapshot } from "~/routes/($lang)._main._index/utils/follow-feed-snapshot"
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useApolloClient, useQuery } from "@apollo/client/index"
-import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
-import { Link, useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon, MessageCircleIcon } from "lucide-react"
 import {
@@ -15,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
 import { LikeButton } from "~/components/like-button"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
@@ -29,16 +25,20 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { useTranslation } from "~/hooks/use-translation"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { FollowFeedNotice } from "~/routes/($lang)._main._index/components/follow-feed-notice"
+import { FollowFeedPlaceholder } from "~/routes/($lang)._main._index/components/follow-feed-placeholder"
 import { useFeedLoadMore } from "~/routes/($lang)._main._index/hooks/use-feed-load-more"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
 import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
+import { saveFollowFeedSnapshot } from "~/routes/($lang)._main._index/utils/follow-feed-snapshot"
 import {
   CommentListItemFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -692,7 +692,10 @@ function FeedContent({
                             onClick={() => onSelect(work.id)}
                           >
                             <img
-                              src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
+                              src={toResizedImageUrl(
+                                work.largeThumbnailImageURL,
+                                640,
+                              )}
                               alt={t.workTitle(work.title, work.enTitle)}
                               className="w-full rounded-md"
                             />
@@ -700,7 +703,10 @@ function FeedContent({
                         ) : (
                           <Link to={`/posts/${work.id}`}>
                             <img
-                              src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
+                              src={toResizedImageUrl(
+                                work.largeThumbnailImageURL,
+                                640,
+                              )}
                               alt={t.workTitle(work.title, work.enTitle)}
                               className="w-full rounded-md"
                             />

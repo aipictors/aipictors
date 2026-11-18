@@ -1,3 +1,5 @@
+import { RiQuestionLine } from "@remixicon/react"
+import { type FragmentOf, graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
 import {
@@ -6,13 +8,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import { Link } from "~/lib/app/locale-router"
-import { RiQuestionLine } from "@remixicon/react"
-import { graphql, type FragmentOf } from "gql.tada"
-import { cn } from "~/lib/utils"
-import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
-import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
+import { cn } from "~/lib/utils"
+import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
+import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
 import { ResponsivePhotoWorksAlbumWithGenerationButton } from "~/routes/($lang)._main._index/components/responsive-photo-works-album-with-generation-button"
 
 type Props = {
@@ -30,7 +30,7 @@ type Props = {
  * 生成作品セクション専用のワークセクション
  * 各サムネイル下に参照生成ボタンが表示される
  */
-export function HomeGenerationWorkSection (props: Props) {
+export function HomeGenerationWorkSection(props: Props) {
   const t = useTranslation()
 
   return (

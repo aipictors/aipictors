@@ -1,6 +1,6 @@
-import { Link } from "~/lib/app/locale-router"
 import { AlertTriangle, ChevronRight } from "lucide-react"
 import { containsJapanese, useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import type { MicroCmsApiRelease } from "~/types/micro-cms-release-response"
 import { getReleasePublishedAtMs } from "~/utils/micro-cms-release"
 

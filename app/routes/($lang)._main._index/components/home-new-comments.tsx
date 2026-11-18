@@ -1,8 +1,8 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { ChevronRightIcon } from "lucide-react"
 import { containsJapanese, useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 
@@ -20,8 +20,7 @@ export function HomeNewCommentsSection(props: Props) {
 
   // コメントは毎回翻訳すると翻訳の回数の上限に届くので、英語の画面では日本語のものを出さない
   const comments = readFragment(HomeNewCommentsFragment, props.comments).filter(
-    (comment) =>
-      !t.isEnglish || !containsJapanese(comment.comment?.text ?? ""),
+    (comment) => !t.isEnglish || !containsJapanese(comment.comment?.text ?? ""),
   )
 
   if (comments.length === 0) {

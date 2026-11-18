@@ -1,30 +1,30 @@
+import { useApolloClient, useQuery } from "@apollo/client/index"
+import type { FragmentOf } from "gql.tada"
 import {
   type CSSProperties,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
-  useCallback,
 } from "react"
-import { useApolloClient, useQuery } from "@apollo/client/index"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
+import { WorksQuery } from "~/routes/($lang)._main._index/components/works-pagination-mode"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
-import { useScrollRestoration } from "../hooks/use-scroll-restoration"
 import { usePagedInfinite } from "../hooks/use-paged-infinite"
-import { makeWhere, getPerPage, chunkWorks } from "../utils/works-utils"
-import { WorksRenderer } from "./works-renderer"
-import { WorksLoading } from "./works-loading"
-import { WorksLoadError } from "./works-load-error"
+import { useScrollRestoration } from "../hooks/use-scroll-restoration"
 import type {
-  WorkType,
-  WorkOrderBy,
   ImageStyle,
   WorkItem,
+  WorkOrderBy,
+  WorkType,
 } from "../types/works"
-import { WorksQuery } from "~/routes/($lang)._main._index/components/works-pagination-mode"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import type { FragmentOf } from "gql.tada"
+import { chunkWorks, getPerPage, makeWhere } from "../utils/works-utils"
+import { WorksLoadError } from "./works-load-error"
+import { WorksLoading } from "./works-loading"
+import { WorksRenderer } from "./works-renderer"
 
 interface Props {
   anchorAt: string
@@ -39,7 +39,7 @@ interface Props {
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function WorksInfiniteMode ({ anchorAt, ...rest }: Props) {
+export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
   const client = useApolloClient()
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)

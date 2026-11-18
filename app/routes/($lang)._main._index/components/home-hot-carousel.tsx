@@ -1,3 +1,4 @@
+import { useRouteLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import {
   ChevronLeftIcon,
@@ -5,7 +6,6 @@ import {
   FlameIcon,
   HeartIcon,
 } from "lucide-react"
-import { useRouteLoaderData } from "@remix-run/react"
 import { useEffect, useRef, useState } from "react"
 import { LikeButton } from "~/components/like-button"
 import { OptimizedImage } from "~/components/optimized-image"

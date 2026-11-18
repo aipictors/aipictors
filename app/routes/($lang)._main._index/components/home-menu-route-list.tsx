@@ -1,11 +1,6 @@
-import { useLocation, useNavigation } from "@remix-run/react"
-import { Link, useNavigate } from "~/lib/app/locale-router"
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  Loader2Icon,
-} from "lucide-react"
 import { gql, useLazyQuery } from "@apollo/client/index"
+import { useLocation, useNavigation } from "@remix-run/react"
+import { ChevronDownIcon, ChevronUpIcon, Loader2Icon } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
@@ -13,9 +8,10 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
-import { getHomeNavigationSections } from "~/routes/($lang)._main._index/components/home-navigation-sections"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { HomeMenuNavigationButton } from "~/routes/($lang)._main._index/components/home-menu-navigation-button"
+import { getHomeNavigationSections } from "~/routes/($lang)._main._index/components/home-navigation-sections"
 import {
   trackGrowthEvent,
   trackGrowthEventOnce,
@@ -70,8 +66,7 @@ export function HomeMenuRouteList({
     if (isPlusNavVisible) trackGrowthEventOnce("plus_nav_view", "mobile_menu")
   }, [isPlusNavVisible])
 
-  const sensitivePath =
-    /\/r($|\/)/.test(location.pathname)
+  const sensitivePath = /\/r($|\/)/.test(location.pathname)
 
   const isSensitive = sensitivePath
 
@@ -79,7 +74,6 @@ export function HomeMenuRouteList({
 
   const getSensitiveLink = (path: string) =>
     /^\/r($|\s)/.test(path) ? "" : sensitivePath ? `/r${path}` : path
-
 
   const closeHeaderMenu = () => onClickMenuItem?.()
 
@@ -112,68 +106,66 @@ export function HomeMenuRouteList({
         isSensitive,
         isModerator: !!isModerator,
         plusStatus,
-          liteOffer,
-      }).map(
-        (section) => {
-          const isOpen = !section.isCollapsible || isExtraMenuOpen
-          return (
-            <div key={section.key} className="space-y-0.5">
-              {section.title &&
-                (section.isCollapsible ? (
-                  <button
-                    type="button"
-                    onClick={() => setIsExtraMenuOpen((prev) => !prev)}
-                    className="flex w-full items-center justify-between px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide"
-                    aria-expanded={isExtraMenuOpen}
-                  >
-                    <span>{t(...section.title)}</span>
-                    {isExtraMenuOpen ? (
-                      <ChevronUpIcon className="size-3.5" />
-                    ) : (
-                      <ChevronDownIcon className="size-3.5" />
-                    )}
-                  </button>
-                ) : (
-                  <p className="px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide">
-                    {t(...section.title)}
-                  </p>
-                ))}
-              {isOpen &&
-                section.items.map((item) =>
-                  item.isExternal ? (
-                    <Link
-                      key={item.key}
-                      className="flex items-center rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:bg-muted/20 hover:text-foreground"
-                      to={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={closeHeaderMenu}
-                    >
-                      <item.icon className="size-5 shrink-0" />
-                      <span className="ml-3">{t(...item.label)}</span>
-                    </Link>
+        liteOffer,
+      }).map((section) => {
+        const isOpen = !section.isCollapsible || isExtraMenuOpen
+        return (
+          <div key={section.key} className="space-y-0.5">
+            {section.title &&
+              (section.isCollapsible ? (
+                <button
+                  type="button"
+                  onClick={() => setIsExtraMenuOpen((prev) => !prev)}
+                  className="flex w-full items-center justify-between px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide"
+                  aria-expanded={isExtraMenuOpen}
+                >
+                  <span>{t(...section.title)}</span>
+                  {isExtraMenuOpen ? (
+                    <ChevronUpIcon className="size-3.5" />
                   ) : (
-                    <HomeMenuNavigationButton
-                      key={item.key}
-                      href={item.href}
-                      icon={item.icon}
-                      badge={item.badge ? t(...item.badge) : undefined}
-                      isAccent={item.isAccent}
-                      onClick={() => {
-                        if (item.growthEvent) {
-                          trackGrowthEvent(item.growthEvent, "mobile_menu")
-                        }
-                        closeHeaderMenu()
-                      }}
-                    >
-                      {t(...item.label)}
-                    </HomeMenuNavigationButton>
-                  ),
-                )}
-            </div>
-          )
-        },
-      )}
+                    <ChevronDownIcon className="size-3.5" />
+                  )}
+                </button>
+              ) : (
+                <p className="px-3 pt-4 pb-1 font-semibold text-[11px] text-muted-foreground tracking-wide">
+                  {t(...section.title)}
+                </p>
+              ))}
+            {isOpen &&
+              section.items.map((item) =>
+                item.isExternal ? (
+                  <Link
+                    key={item.key}
+                    className="flex items-center rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:bg-muted/20 hover:text-foreground"
+                    to={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={closeHeaderMenu}
+                  >
+                    <item.icon className="size-5 shrink-0" />
+                    <span className="ml-3">{t(...item.label)}</span>
+                  </Link>
+                ) : (
+                  <HomeMenuNavigationButton
+                    key={item.key}
+                    href={item.href}
+                    icon={item.icon}
+                    badge={item.badge ? t(...item.badge) : undefined}
+                    isAccent={item.isAccent}
+                    onClick={() => {
+                      if (item.growthEvent) {
+                        trackGrowthEvent(item.growthEvent, "mobile_menu")
+                      }
+                      closeHeaderMenu()
+                    }}
+                  >
+                    {t(...item.label)}
+                  </HomeMenuNavigationButton>
+                ),
+              )}
+          </div>
+        )
+      })}
 
       {/* 未ログインのテーマ・言語（スマホのヘッダーからはここへ移した） */}
       {authContext.isNotLoggedIn && (
@@ -195,7 +187,10 @@ export function HomeMenuRouteList({
             >
               <img
                 src="/apple/download.svg"
-                alt={t("App Store からダウンロード", "Download on the App Store")}
+                alt={t(
+                  "App Store からダウンロード",
+                  "Download on the App Store",
+                )}
                 className="h-8 w-auto"
                 width={109}
                 height={40}

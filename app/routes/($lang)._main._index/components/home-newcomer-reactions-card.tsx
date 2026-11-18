@@ -13,8 +13,7 @@ const NEWCOMER_DAYS = 14
 /** 閉じたあと、反応がこの数だけ増えたらまた出す */
 const REOPEN_AFTER = 5
 
-const storageKey = (workId: string) =>
-  `aipictors:newcomer-reactions:${workId}`
+const storageKey = (workId: string) => `aipictors:newcomer-reactions:${workId}`
 
 type Work = {
   id: string
@@ -120,10 +119,7 @@ export function HomeNewcomerReactionsCard() {
           </span>
           <span className="flex items-center gap-1">
             <MessageCircle className="size-4 text-sky-500" />
-            {t(
-              `コメント ${summary.comments}`,
-              `${summary.comments} comments`,
-            )}
+            {t(`コメント ${summary.comments}`, `${summary.comments} comments`)}
           </span>
           {summary.otherWorksCount > 0 && (
             <span className="text-xs opacity-70">

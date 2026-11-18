@@ -1,10 +1,10 @@
-import { useMemo } from "react"
-import { WorksPaginationMode } from "./works-pagination-mode"
-import { WorksInfiniteMode } from "./works-infinite-mode"
-import type { WorkType, WorkOrderBy, ImageStyle } from "../types/works"
-import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import type { FragmentOf } from "gql.tada"
+import { useMemo } from "react"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
+import type { ImageStyle, WorkOrderBy, WorkType } from "../types/works"
+import { WorksInfiniteMode } from "./works-infinite-mode"
+import { WorksPaginationMode } from "./works-pagination-mode"
 
 interface Props {
   isCropped?: boolean
@@ -24,7 +24,7 @@ interface Props {
   isOneWorkPerUser?: boolean
 }
 
-export function HomeWorksSection (props: Props) {
+export function HomeWorksSection(props: Props) {
   const anchorAt = useMemo(() => getAnchorAt(), [])
   const key = `${props.timeRange}-${props.workType}-${props.sortType}-${props.isPagination}`
   const updateWorks = props.updateWorks ?? (() => {})

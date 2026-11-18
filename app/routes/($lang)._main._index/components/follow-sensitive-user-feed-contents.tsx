@@ -1,40 +1,42 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { useQuery, useApolloClient } from "@apollo/client/index"
-import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
-import { graphql, type FragmentOf } from "gql.tada"
+import { useApolloClient, useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Loader2Icon, MessageCircleIcon, UsersRoundIcon } from "lucide-react"
 import {
   Suspense,
+  useCallback,
   useContext,
-  useState,
   useEffect,
   useMemo,
-  useCallback,
   useRef,
+  useState,
 } from "react"
-import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { AuthContext } from "~/contexts/auth-context"
-import { useViewerRatings } from "~/hooks/use-viewer-ratings"
-import { MessageCircleIcon, Loader2Icon, UsersRoundIcon } from "lucide-react"
-import { Button } from "~/components/ui/button"
+import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
 import { LikeButton } from "~/components/like-button"
-import { Link, useNavigate } from "~/lib/app/locale-router"
-import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
-import { cn } from "~/lib/utils"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
+import { AuthContext } from "~/contexts/auth-context"
+import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
+import { Link, useNavigate } from "~/lib/app/locale-router"
+import { cn } from "~/lib/utils"
 import { useFeedLoadMore } from "~/routes/($lang)._main._index/hooks/use-feed-load-more"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
-import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
-import { ResponsivePagination } from "~/components/responsive-pagination"
+import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
+import {
+  CommentListItemFragment,
+  WorkCommentList,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   page: number
@@ -605,7 +607,10 @@ function FeedContent({
                             onClick={() => onSelect(work.id)}
                           >
                             <img
-                              src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
+                              src={toResizedImageUrl(
+                                work.largeThumbnailImageURL,
+                                640,
+                              )}
                               alt={t.workTitle(work.title, work.enTitle)}
                               className="w-full rounded-md"
                             />
@@ -613,7 +618,10 @@ function FeedContent({
                         ) : (
                           <Link to={`/posts/${work.id}`}>
                             <img
-                              src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
+                              src={toResizedImageUrl(
+                                work.largeThumbnailImageURL,
+                                640,
+                              )}
                               alt={t.workTitle(work.title, work.enTitle)}
                               className="w-full rounded-md"
                             />

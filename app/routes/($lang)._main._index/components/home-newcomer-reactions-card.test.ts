@@ -28,17 +28,30 @@ describe("summarizeNewcomerReactions", () => {
       [
         work("3", { likesCount: 4, commentsCount: 1 }),
         work("2", { likesCount: 2, createdAt: now - 20 * DAY }),
-        work("1", { isFirstPost: true, likesCount: 10, commentsCount: 2, createdAt: now - 3 * DAY }),
+        work("1", {
+          isFirstPost: true,
+          likesCount: 10,
+          commentsCount: 2,
+          createdAt: now - 3 * DAY,
+        }),
       ],
       now,
     )
-    expect(summary).toMatchObject({ likes: 14, comments: 3, total: 17, otherWorksCount: 1 })
+    expect(summary).toMatchObject({
+      likes: 14,
+      comments: 3,
+      total: 17,
+      otherWorksCount: 1,
+    })
     expect(summary?.firstPost.id).toBe("1")
   })
 
   test("初投稿が 14 日より前・見つからないときは出さない", () => {
     expect(
-      summarizeNewcomerReactions([work("1", { isFirstPost: true, createdAt: now - 15 * DAY })], now),
+      summarizeNewcomerReactions(
+        [work("1", { isFirstPost: true, createdAt: now - 15 * DAY })],
+        now,
+      ),
     ).toBeNull()
     expect(summarizeNewcomerReactions([work("1")], now)).toBeNull()
   })

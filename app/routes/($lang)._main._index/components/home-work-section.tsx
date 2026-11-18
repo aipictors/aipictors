@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import {
   PhotoAlbumWorkFragment,
@@ -6,10 +5,11 @@ import {
 } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
-import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
+import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 
 type Props = {
   works: FragmentOf<typeof HomeWorkFragment>[]

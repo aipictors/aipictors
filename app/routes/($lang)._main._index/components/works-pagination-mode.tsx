@@ -1,23 +1,23 @@
-import { useContext, useEffect, useMemo } from "react"
-import { useSearchParams } from "@remix-run/react"
-import { useNavigate } from "~/lib/app/locale-router"
 import { useQuery } from "@apollo/client/index"
+import { useSearchParams } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { useContext, useEffect, useMemo } from "react"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { WorksRenderer } from "./works-renderer"
-import { WorksLoading } from "./works-loading"
-import { WorksLoadError } from "./works-load-error"
-import type { WorkType, WorkOrderBy, ImageStyle } from "../types/works"
-import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import { useNavigate } from "~/lib/app/locale-router"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
-import { type FragmentOf, graphql } from "gql.tada"
-import { HomeWorkFragment } from "./home-work-section"
+import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import {
   getPerPage,
   makeWhere,
 } from "~/routes/($lang)._main._index/utils/works-utils"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import type { ImageStyle, WorkOrderBy, WorkType } from "../types/works"
+import { HomeWorkFragment } from "./home-work-section"
+import { WorksLoadError } from "./works-load-error"
+import { WorksLoading } from "./works-loading"
+import { WorksRenderer } from "./works-renderer"
 
 interface Props {
   anchorAt: string
@@ -35,7 +35,7 @@ interface Props {
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function WorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) {
+export function WorksPaginationMode({ anchorAt, onSelect, ...rest }: Props) {
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
   const viewerRatings = useViewerRatings()

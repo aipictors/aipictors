@@ -1,16 +1,16 @@
-import { useContext, useEffect } from "react"
-import { useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
-import { AuthContext } from "~/contexts/auth-context"
-import { WorksRenderer } from "./works-renderer"
-import { WorksLoading } from "./works-loading"
-import { WorksLoadError } from "./works-load-error"
-import type { WorkType, WorkOrderBy, ImageStyle } from "../types/works"
-import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
-import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import { useSearchParams } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { HomeWorkFragment } from "./home-work-section"
+import { useContext, useEffect } from "react"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { AuthContext } from "~/contexts/auth-context"
+import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import type { ImageStyle, WorkOrderBy, WorkType } from "../types/works"
+import { HomeWorkFragment } from "./home-work-section"
+import { WorksLoadError } from "./works-load-error"
+import { WorksLoading } from "./works-loading"
+import { WorksRenderer } from "./works-renderer"
 
 interface Props {
   anchorAt: string
@@ -26,7 +26,7 @@ interface Props {
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function HotWorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) {
+export function HotWorksPaginationMode({ anchorAt, onSelect, ...rest }: Props) {
   const { isLoading: authLoading } = useContext(AuthContext)
 
   const [searchParams] = useSearchParams()

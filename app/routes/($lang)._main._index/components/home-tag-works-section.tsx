@@ -4,11 +4,11 @@ import { LikeButton } from "~/components/like-button"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
+import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import type {
   HomeTagWorksResponse,
   HomeTagWorksRow,
 } from "~/routes/api.home-tag-works/route"
-import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import { getJstDate } from "~/utils/jst-date"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 

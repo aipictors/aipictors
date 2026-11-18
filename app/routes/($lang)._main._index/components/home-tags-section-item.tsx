@@ -8,7 +8,7 @@ type Props = {
   enTagName?: string | null
 }
 
-export function HomeTagsSectionItem (props: Props) {
+export function HomeTagsSectionItem(props: Props) {
   const t = useTranslation()
   const label = t.tag(props.tagName, props.enTagName)
   if (label === null) return null
@@ -21,7 +21,9 @@ export function HomeTagsSectionItem (props: Props) {
           src={props.tagThumbnailUrl}
           // 元画像（100KB 前後）を 196×240 の枠に切り抜いて出すので、縮小版を選ばせる。
           // 横長の画像は高さに合わせて横にはみ出すので、幅は少し大きめ（240px）として選ぶ
-          srcSet={toResizedImageSrcSet(props.tagThumbnailUrl, { minWidth: 240 })}
+          srcSet={toResizedImageSrcSet(props.tagThumbnailUrl, {
+            minWidth: 240,
+          })}
           sizes="240px"
           alt={label}
           width={196}

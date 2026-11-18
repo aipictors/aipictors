@@ -1,10 +1,10 @@
 import type { FragmentOf } from "gql.tada"
 import { useMemo } from "react"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { SensitiveWorksPaginationMode } from "~/routes/($lang).r._index/components/sensitive-works-pagination-mode"
-import { SensitiveWorksInfiniteMode } from "~/routes/($lang).r._index/components/sensitive-works-infinite-mode"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
+import { SensitiveWorksInfiniteMode } from "~/routes/($lang).r._index/components/sensitive-works-infinite-mode"
+import { SensitiveWorksPaginationMode } from "~/routes/($lang).r._index/components/sensitive-works-pagination-mode"
 
 /**
  * 期間指定による createdAt 範囲を計算するヘルパー関数
@@ -65,7 +65,7 @@ type Props = {
 /**
  * トップ画面ホーム作品一覧
  */
-export function HomeSensitiveWorksSection (props: Props) {
+export function HomeSensitiveWorksSection(props: Props) {
   // const appContext = useContext(AuthContext)
 
   // const perPageCount = props.workType === "VIDEO" ? 8 : 32

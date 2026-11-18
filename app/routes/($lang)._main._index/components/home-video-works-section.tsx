@@ -1,8 +1,8 @@
+import { type FragmentOf, graphql } from "gql.tada"
 import {
   PhotoAlbumVideoWorkFragment,
   ResponsivePhotoVideoWorksAlbum,
 } from "~/components/responsive-photo-video-works-album"
-import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
   works: FragmentOf<typeof HomeVideosWorkListItemFragment>[]
@@ -17,7 +17,7 @@ type Props = {
 /**
  * 動画作品一覧
  */
-export function HomeVideosWorksSection (props: Props) {
+export function HomeVideosWorksSection(props: Props) {
   if (props.works.length === 0) {
     return null
   }

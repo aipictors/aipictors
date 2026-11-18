@@ -11,10 +11,7 @@ type Options = {
   startAfterInteraction?: boolean
 }
 
-export function useRotatingHomeEvents<T>(
-  items: T[],
-  options: Options = {},
-) {
+export function useRotatingHomeEvents<T>(items: T[], options: Options = {}) {
   const {
     intervalMs = 2000,
     fadeMs = 240,
@@ -89,7 +86,10 @@ export function getRotatingItems<T>(
     return items
   }
 
-  const rotated = [...items.slice(currentIndex), ...items.slice(0, currentIndex)]
+  const rotated = [
+    ...items.slice(currentIndex),
+    ...items.slice(0, currentIndex),
+  ]
 
   return rotated.slice(0, visibleCount)
 }

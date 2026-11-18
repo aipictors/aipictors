@@ -54,6 +54,19 @@ test("返信済みのコメントは未返信にしない", () => {
   expect(item?.isNotReplied).toBe(false)
 })
 
+test("いいね（👍）したコメントは未返信にしない", () => {
+  const [item] = toPanelItems([
+    {
+      __typename: "WorkCommentNotificationNode",
+      id: "c",
+      createdAt: 2,
+      myReplies: [],
+      isLikedByMe: true,
+    },
+  ])
+  expect(item?.isNotReplied).toBe(false)
+})
+
 test("作品のない入賞はコインのお知らせ、返信だけ返信先を持つ", () => {
   const items = toPanelItems([
     { __typename: "WorkAwardNotificationNode", id: "coin", createdAt: 3 },

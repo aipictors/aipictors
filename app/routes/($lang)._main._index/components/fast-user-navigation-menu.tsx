@@ -1,3 +1,6 @@
+import { useApolloClient, useQuery } from "@apollo/client/index"
+import { useLocation } from "@remix-run/react"
+import { useContext, useEffect, useState } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,23 +9,18 @@ import {
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import { useContext, useEffect, useState } from "react"
+import UserNavigationMenuContent, {
+  prefetchUserNavigationMenu,
+} from "~/routes/($lang)._main._index/components/user-navigation-menu-content"
+import { viewerBasicUserQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
+import { userNavigationStyles } from "~/routes/($lang)._main._index/components/user-navigation-styles"
+import { closeMenuOnNavigate } from "~/utils/close-menu-on-navigate"
+import { debugLog } from "~/utils/debug-logger"
 import {
   readHeaderUserSnapshot,
   saveHeaderUserSnapshot,
 } from "~/utils/header-user-snapshot"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { useQuery } from "@apollo/client/index"
-import { viewerBasicUserQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
-import { debugLog } from "~/utils/debug-logger"
-import { userNavigationStyles } from "~/routes/($lang)._main._index/components/user-navigation-styles"
-import { closeMenuOnNavigate } from "~/utils/close-menu-on-navigate"
-import { useLocation } from "@remix-run/react"
-
-import UserNavigationMenuContent, {
-  prefetchUserNavigationMenu,
-} from "~/routes/($lang)._main._index/components/user-navigation-menu-content"
-import { useApolloClient } from "@apollo/client/index"
 
 type Props = {
   onLogout(): void

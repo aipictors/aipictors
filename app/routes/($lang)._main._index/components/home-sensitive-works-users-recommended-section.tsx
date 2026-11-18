@@ -1,13 +1,13 @@
-import { AuthContext } from "~/contexts/auth-context"
-import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/components/home-recommended-work-list"
-import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/components/home-recommended-work-list"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { isFeaturableSensitiveWork } from "~/utils/sensitive-tag-filter"
 
 type Props = {

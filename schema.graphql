@@ -6882,6 +6882,9 @@ input WorkAwardsWhereInput {
 type WorkCommentNotificationNode implements Node {
   createdAt: Int!
   id: ID!
+
+  """通知を受けた本人がこのコメントにいいねしたか（返事したものとして扱う）"""
+  isLikedByMe: Boolean!
   message: String
   myReplies: [CommentNode!]
 

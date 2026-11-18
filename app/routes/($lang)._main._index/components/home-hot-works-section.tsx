@@ -1,9 +1,9 @@
-import { useMemo } from "react"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import type { FragmentOf } from "gql.tada"
+import { useMemo } from "react"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { HotWorksPaginationMode } from "~/routes/($lang)._main._index/components/hot-works-pagination-mode"
+import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
 
 type Props = {
   isCropped?: boolean
@@ -19,7 +19,7 @@ type Props = {
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function HomeHotWorksSection (props: Props) {
+export function HomeHotWorksSection(props: Props) {
   const anchorAt = useMemo(() => getAnchorAt(), [])
   const key = `hot-${props.workType}-${props.sortType}-${props.isPagination}`
 

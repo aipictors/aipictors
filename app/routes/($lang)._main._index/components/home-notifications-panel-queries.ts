@@ -19,6 +19,7 @@ const PanelCommentFragment = graphql(
     user { id name iconUrl }
     sticker { id imageUrl }
     myReplies { id text sticker { id imageUrl } }
+    isLikedByMe
     support { freeCoinAmount premiumCoinAmount totalPt }
     replyTargetCommentId
   }`,

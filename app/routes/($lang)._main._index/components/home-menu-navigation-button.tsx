@@ -1,6 +1,4 @@
-import { buildLocalePath } from "~/utils/locale-path"
 import { useLocation } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import clsx from "clsx"
 import type { LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
@@ -10,6 +8,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
+import { Link } from "~/lib/app/locale-router"
+import { buildLocalePath } from "~/utils/locale-path"
 
 type Props = {
   href: string

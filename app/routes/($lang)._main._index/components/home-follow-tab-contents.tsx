@@ -1,5 +1,5 @@
-import { lazy, Suspense } from "react"
 import { UsersRoundIcon } from "lucide-react"
+import { lazy, Suspense } from "react"
 import { TabsContent } from "~/components/ui/tabs"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"

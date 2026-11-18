@@ -1,18 +1,18 @@
-import { Link } from "~/lib/app/locale-router"
 import { ChevronRight } from "lucide-react"
+import { ReleaseTagBadge } from "~/components/release-tag-badge"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
-import { ReleaseTagBadge } from "~/components/release-tag-badge"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { useRotatingHomeEvents } from "~/routes/($lang)._main._index/components/use-rotating-home-events"
 import type {
   MicroCmsApiRelease,
   MicroCmsApiReleaseResponse,
 } from "~/types/micro-cms-release-response"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { toJstDisplayDate } from "~/utils/to-jst-display-date"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   events: HomePreviewEvent[]

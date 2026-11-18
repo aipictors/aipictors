@@ -18,7 +18,7 @@ type Props = LegacyProps | ChildrenProps
 /**
  * メニュー項目（共通スタイル使用、レスポンシブ対応）
  */
-export function MenuItemLink (props: Props) {
+export function MenuItemLink(props: Props) {
   if ("children" in props) {
     return (
       <Link to={props.to}>

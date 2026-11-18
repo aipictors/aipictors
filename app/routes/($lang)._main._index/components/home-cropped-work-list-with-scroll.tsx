@@ -1,8 +1,8 @@
-import { useTranslation } from "~/hooks/use-translation"
+import { type FragmentOf, graphql } from "gql.tada"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
-import { graphql, type FragmentOf } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 

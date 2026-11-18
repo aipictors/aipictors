@@ -1,11 +1,11 @@
+import Autoplay from "embla-carousel-autoplay"
+import { type FragmentOf, graphql } from "gql.tada"
+import React, { useEffect, useRef, useState } from "react"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "~/components/ui/carousel"
-import React, { useEffect, useRef, useState } from "react"
-import Autoplay from "embla-carousel-autoplay"
-import { type FragmentOf, graphql } from "gql.tada"
 import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import { HomeTagsSectionItem } from "~/routes/($lang)._main._index/components/home-tags-section-item"
 
@@ -15,7 +15,7 @@ type Props = {
   onSelect?: (index: string) => void
 }
 
-export function HomeTagsSection (props: Props) {
+export function HomeTagsSection(props: Props) {
   const plugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true }),
   )

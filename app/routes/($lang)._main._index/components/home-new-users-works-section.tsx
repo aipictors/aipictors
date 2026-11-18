@@ -1,13 +1,13 @@
-import { AuthContext } from "~/contexts/auth-context"
-import {
-  HomeWorkFragment,
-  HomeWorkSection,
-} from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
 
 type Props = {
   works: FragmentOf<typeof HomeNewUsersWorksFragment>[]

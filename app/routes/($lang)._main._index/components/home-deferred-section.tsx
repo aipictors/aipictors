@@ -1,5 +1,5 @@
-import { Skeleton } from "~/components/ui/skeleton"
 import { useEffect, useRef, useState } from "react"
+import { Skeleton } from "~/components/ui/skeleton"
 import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 
 type HomeDeferredSectionProps = {
@@ -60,12 +60,11 @@ type HomeWorkSectionPlaceholderProps = {
   itemCount?: number
 }
 
-export function HomeWorkSectionPlaceholder (
+export function HomeWorkSectionPlaceholder(
   props: HomeWorkSectionPlaceholderProps,
 ) {
   const items = Array.from({
-    length:
-      props.itemCount ?? (props.variant === "cropped" ? 8 : 6),
+    length: props.itemCount ?? (props.variant === "cropped" ? 8 : 6),
   })
 
   return (

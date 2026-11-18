@@ -5,8 +5,15 @@ const findPlus = (
   plusStatus: "unknown" | "guest" | "free" | "member",
   liteOffer?: "unknown" | "trial" | "half" | "none",
 ) =>
-  getHomeNavigationSections({ isSensitive: false, isModerator: false, plusStatus, liteOffer })
-    .flatMap((section) => section.items.map((item) => ({ ...item, section: section.key })))
+  getHomeNavigationSections({
+    isSensitive: false,
+    isModerator: false,
+    plusStatus,
+    liteOffer,
+  })
+    .flatMap((section) =>
+      section.items.map((item) => ({ ...item, section: section.key })),
+    )
     .filter((item) => item.href === "/plus")
 
 describe("getHomeNavigationSections の Aipictors+", () => {

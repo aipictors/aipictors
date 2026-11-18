@@ -1,10 +1,8 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import {
   useApolloClient,
   useQuery,
   useSuspenseQuery,
 } from "@apollo/client/index"
-import { Link, useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import {
   ChevronRightIcon,
@@ -22,9 +20,9 @@ import {
   useRef,
   useState,
 } from "react"
+import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
 import { LikeButton } from "~/components/like-button"
 import { OptimizedWorkGrid } from "~/components/optimized-work-grid"
-import { FeedLoadError, FeedPageEnd } from "~/components/feed-load-error"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   PhotoAlbumWorkFragment,
@@ -46,6 +44,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { useTranslation } from "~/hooks/use-translation"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { useFeedLoadMore } from "~/routes/($lang)._main._index/hooks/use-feed-load-more"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
@@ -60,6 +59,7 @@ import {
   FollowedTagEditor,
   MAX_FOLLOWED_TAGS,
 } from "~/routes/($lang).settings.followed.tags/components/followed-tag-editor"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -735,7 +735,10 @@ function TimelineView({
                   <div className="relative">
                     <Link to={`/posts/${work.id}`}>
                       <img
-                        src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
+                        src={toResizedImageUrl(
+                          work.largeThumbnailImageURL,
+                          640,
+                        )}
                         alt={t.workTitle(work.title, work.enTitle)}
                         className="w-full rounded-md"
                       />
@@ -748,7 +751,10 @@ function TimelineView({
                       >
                         <Link to={`/posts/${work.id}`}>
                           <img
-                            src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
+                            src={toResizedImageUrl(
+                              work.largeThumbnailImageURL,
+                              640,
+                            )}
                             alt={t.workTitle(work.title, work.enTitle)}
                             className="w-full rounded-md"
                           />
@@ -757,7 +763,10 @@ function TimelineView({
                     ) : (
                       <Link to={`/posts/${work.id}`}>
                         <img
-                          src={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
+                          src={toResizedImageUrl(
+                            work.largeThumbnailImageURL,
+                            640,
+                          )}
                           alt={t.workTitle(work.title, work.enTitle)}
                           className="w-full rounded-md"
                         />

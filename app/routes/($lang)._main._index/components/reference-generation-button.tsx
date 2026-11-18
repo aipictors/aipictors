@@ -1,6 +1,6 @@
+import { ImageIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
-import { ImageIcon } from "lucide-react"
 
 type Props = {
   workId: string
@@ -10,7 +10,7 @@ type Props = {
 /**
  * 参照生成ボタン
  */
-export function ReferenceGenerationButton (props: Props) {
+export function ReferenceGenerationButton(props: Props) {
   const t = useTranslation()
 
   const handleClick = () => {
