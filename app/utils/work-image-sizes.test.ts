@@ -1,4 +1,4 @@
-import { toWorkImageSizes } from "./work-image-sizes"
+import { pickWorkImageSizeHint, toWorkImageSizes } from "./work-image-sizes"
 
 test("パソコンでは左のメニューを除いた幅と、高さから決まる幅の小さい方にする", () => {
   expect(toWorkImageSizes(1.5)).toBe(
@@ -23,4 +23,12 @@ test("計算と小数を入れない（Cloudflare の Early Hints が計算の�
   ]) {
     expect(sizes).not.toMatch(/calc|[*+]|\d\.\d|\s-\s/)
   }
+})
+
+test("メイン画像の大きさの手がかりは 1 枚目にだけ使う", () => {
+  const hint = { width: 864, aspectRatio: 0.5625 }
+  const urls = ["https://example.com/a", "https://example.com/b"]
+  expect(pickWorkImageSizeHint(urls[0], urls, hint)).toBe(hint)
+  expect(pickWorkImageSizeHint(urls[1], urls, hint)).toBeUndefined()
+  expect(pickWorkImageSizeHint(urls[1], urls, undefined)).toBeUndefined()
 })

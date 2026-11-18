@@ -10,7 +10,10 @@ import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { Button } from "~/components/ui/button"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
-import { toWorkImageSizes } from "~/utils/work-image-sizes"
+import {
+  pickWorkImageSizeHint,
+  toWorkImageSizes,
+} from "~/utils/work-image-sizes"
 
 type Props = {
   imageURLs: string[]
@@ -333,10 +336,11 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const isStageImagePending = shownStageUrl !== props.thumbnailUrl
 
   // 元の幅が分かれば、パソコンの大きな画面向けに 1920・2560px の縮小版も候補にする
-  const mainImageSrcSetOptions =
-    props.imageSizeHint && props.imageSizeHint.width > 0
-      ? { minWidth: 400, maxWidth: props.imageSizeHint.width, large: true }
+  const toSrcSetOptions = (hint: Props["imageSizeHint"]) =>
+    hint && hint.width > 0
+      ? { minWidth: 400, maxWidth: hint.width, large: true }
       : { minWidth: 400 }
+  const mainImageSrcSetOptions = toSrcSetOptions(props.imageSizeHint)
 
   const placeholderStyle =
     props.placeholderUrl && !isMainImageLoaded
@@ -644,6 +648,12 @@ export function ImagesPreview(props: Props): React.ReactNode {
         >
           {stageUrls.map((url) => {
             const isShown = url === shownStageUrl
+            // 元の幅・縦横比が分かるのはメイン画像（1 枚目）だけ
+            const sizeHint = pickWorkImageSizeHint(
+              url,
+              props.imageURLs,
+              props.imageSizeHint,
+            )
             return (
               <img
                 key={url}
@@ -652,9 +662,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 draggable={false}
                 alt={isShown ? "thumbnail" : ""}
                 src={url}
-                srcSet={toResizedImageSrcSet(url, mainImageSrcSetOptions)}
-                // 縦横比が分からなければ正方形とみなし、枠の高さまでを上限にする
-                sizes={toWorkImageSizes(props.imageSizeHint?.aspectRatio ?? 1)}
+                srcSet={toResizedImageSrcSet(url, toSrcSetOptions(sizeHint))}
+                // 縦横比が分からない 2 枚目以降は、横長でも粗くならないように幅いっぱいとみなす
+                sizes={toWorkImageSizes(sizeHint?.aspectRatio)}
                 fetchPriority={isShown ? "high" : "low"}
                 onLoad={(event) => {
                   if (url === props.thumbnailUrl) setIsMainImageLoaded(true)

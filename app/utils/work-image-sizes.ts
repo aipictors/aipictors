@@ -22,3 +22,15 @@ export const toWorkImageSizes = (aspectRatio: number | undefined): string => {
   const mobileHeight = `${Math.round(64 * aspectRatio)}vh`
   return `${PC_WIDE} min(80vw, ${pcHeight}), ${PC} min(70vw, ${pcHeight}), min(100vw, ${mobileHeight})`
 }
+
+/**
+ * 複数枚の作品で、画像ごとの大きさの手がかり（元の幅・縦横比）を返す。
+ * 分かっているのはメイン画像（1 枚目）の値だけなので、2 枚目以降には使わない。
+ * 以前は全部の画像に 1 枚目の値を使っていたので、1 枚目が縦長で後ろに横長の画像があると、
+ * 横長の画像も縦長として小さい縮小版（元の幅も 1 枚目の幅まで）が選ばれ、粗く見えていた
+ */
+export const pickWorkImageSizeHint = <T>(
+  url: string,
+  imageURLs: string[],
+  mainImageHint: T | undefined,
+): T | undefined => (url === imageURLs[0] ? mainImageHint : undefined)
