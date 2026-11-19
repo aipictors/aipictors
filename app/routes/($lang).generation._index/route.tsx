@@ -9,6 +9,7 @@ import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { GenerationAdvertisementView } from "~/routes/($lang).generation._index/components/advertisement-view/generation-advertisement-view"
 import { GenerationConfigView } from "~/routes/($lang).generation._index/components/config-view/generation-config-view"
+import { GenerationStylesSection } from "~/routes/($lang).generation._index/components/config-view/generation-styles-section"
 import { GenerationFormFooter } from "~/routes/($lang).generation._index/components/generation-form-footer"
 import { GenerationSeoSection } from "~/routes/($lang).generation._index/components/generation-seo-section"
 import { GenerationCoinHistoryTab } from "~/routes/($lang).generation._index/components/generation-side-tabs-view/generation-coin-history-tab"
@@ -19,7 +20,8 @@ import { GenerationAsideView } from "~/routes/($lang).generation._index/componen
 import { GenerationHeaderView } from "~/routes/($lang).generation._index/components/generation-view/generation-header-view"
 import { GenerationMainView } from "~/routes/($lang).generation._index/components/generation-view/generation-main-view"
 import { GenerationMobileView } from "~/routes/($lang).generation._index/components/generation-view/generation-mobile-view"
-import { GenerationSettingsColumn } from "~/routes/($lang).generation._index/components/generation-view/generation-settings-column"
+import { GenerationSettingsPanel } from "~/routes/($lang).generation._index/components/generation-view/generation-settings-panel"
+import { GenerationThreeColumnView } from "~/routes/($lang).generation._index/components/generation-view/generation-three-column-view"
 import { GenerationView } from "~/routes/($lang).generation._index/components/generation-view/generation-view"
 import { GenerationNegativePromptView } from "~/routes/($lang).generation._index/components/negative-prompt-view/generation-negative-prompt-view"
 import { GenerationMobilePromptCard } from "~/routes/($lang).generation._index/components/prompt-view/generation-mobile-prompt-card"
@@ -118,12 +120,20 @@ export default function GenerationPage() {
         <>
           <GenerationUserModelFromUrl />
           <GenerationView
-            settings={
-              <GenerationSettingsColumn
+            threeColumn={
+              <GenerationThreeColumnView
                 promptEditor={<GenerationPromptComposer />}
                 negativePromptEditor={<GenerationNegativePromptView />}
-                config={<GenerationConfigView isStacked />}
-                submission={<GenerationSubmissionView termsText={text} />}
+                history={aside}
+                taskDetails={<GenerationTaskDetailsView />}
+                panel={
+                  <GenerationSettingsPanel
+                    model={<GenerationConfigView part="model" />}
+                    styles={<GenerationStylesSection />}
+                    settings={<GenerationConfigView part="settings" />}
+                    submission={<GenerationSubmissionView termsText={text} />}
+                  />
+                }
               />
             }
             header={

@@ -31,6 +31,10 @@ type Props = {
    * スマホ（md 未満）の画面。指定するとアプリの生成タブと同じ構成で出す
    */
   mobile?: React.ReactNode
+  /**
+   * PC（md 以上）の 3 カラムの画面。指定すると状態に関わらずこれを出す（中の出し分けは GenerationThreeColumnView）
+   */
+  threeColumn?: React.ReactNode
 }
 
 /**
@@ -70,6 +74,10 @@ export function GenerationView(props: Props) {
         {props.footer}
       </div>
     )
+  }
+
+  if (props.threeColumn) {
+    return <>{props.threeColumn}</>
   }
 
   if (state === "HISTORY_LIST_FULL" || state === "WORK_LIST_FULL") {
