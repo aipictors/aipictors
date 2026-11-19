@@ -17,7 +17,7 @@ type Props = {
 }
 
 /**
- * タブの項目
+ * タブの項目（PC の右パネルとスマホの「つくる」で同じものを使う）
  */
 function usePanelTabItems(): {
   value: GenerationPanelTab
@@ -42,6 +42,47 @@ function usePanelTabItems(): {
       icon: <SlidersHorizontalIcon className="size-4" />,
     },
   ]
+}
+
+/**
+ * スマホの「つくる」のモデル / 画風 / 設定の切り替え（下の内容は GenerationConfigView が出し分ける）
+ */
+export function GenerationMobilePanelTabs() {
+  const t = useTranslation()
+
+  const tabs = usePanelTabItems()
+
+  const [tab, setTab] = useGenerationPanelTab()
+
+  return (
+    <div
+      role="tablist"
+      aria-label={t("生成の設定", "Generation settings")}
+      className="grid grid-cols-3 gap-1 rounded-full bg-muted p-1"
+    >
+      {tabs.map((item) => {
+        const isActive = tab === item.value
+        return (
+          <button
+            key={item.value}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => setTab(item.value)}
+            className={cn(
+              "flex h-11 min-w-0 items-center justify-center gap-1.5 rounded-full font-bold text-sm transition-colors active:scale-95",
+              isActive
+                ? "bg-background text-foreground shadow-xs"
+                : "text-muted-foreground",
+            )}
+          >
+            {item.icon}
+            <span className="truncate">{item.label}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
 }
 
 /**
@@ -91,10 +132,9 @@ export function GenerationSettingsPanel(props: Props) {
         aria-labelledby={`generation-panel-tab-${tab}`}
         className="min-h-0 flex-1 overflow-y-auto px-4 py-4"
       >
-        {/* 設定の部品は描き始めに参照画像などを初期化するので、タブを切り替えても作り直さずに隠す */}
-        <div hidden={tab !== "model"}>{props.model}</div>
-        <div hidden={tab !== "styles"}>{props.styles}</div>
-        <div hidden={tab !== "settings"}>{props.settings}</div>
+        {tab === "model" && props.model}
+        {tab === "styles" && props.styles}
+        {tab === "settings" && props.settings}
       </div>
       <div className="shrink-0 border-t bg-background p-3 [&>div]:border-t-0">
         {props.submission}
