@@ -147,30 +147,41 @@ export function GenerationMobilePromptComposer(props: {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          {/* その場で入力する欄（1〜5 行で伸びる）。タグの候補は欄の下に横並びで出す */}
+          <div data-dock-prompt className="min-w-0 flex-1 py-0.5">
+            <PromptTagTextarea
+              variant="chips"
+              autoResize
+              minHeight="40px"
+              rows={1}
+              aria-label={
+                isJapanese
+                  ? t("プロンプト（日本語）", "Prompt (Japanese)")
+                  : t("プロンプト", "Prompt")
+              }
+              value={context.config.promptText}
+              onValueChange={context.updatePrompt}
+              allowsKanaQuery={!isJapanese}
+              onFocus={() => dock?.setSheet(null)}
+              onBlur={() => context.initPromptWithLoraModel()}
+              maxLength={20000}
+              placeholder={
+                isJapanese
+                  ? t("日本語で書く", "Describe it")
+                  : t("描きたいもの", "Keywords")
+              }
+              className="max-h-[7.75rem] min-h-10 resize-none overflow-y-auto border-0 bg-transparent px-1 py-2 text-base leading-6 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+          </div>
           <button
             type="button"
             aria-haspopup="dialog"
             aria-expanded={isOpen}
-            aria-label={t("プロンプトを編集", "Edit prompt")}
+            aria-label={t("大きく編集", "Expand")}
             onClick={openEditor}
-            className="flex min-h-11 min-w-0 flex-1 items-start gap-1 py-2.5 pr-1 text-left"
+            className="flex size-11 shrink-0 items-center justify-center self-start rounded-full text-muted-foreground active:bg-muted"
           >
-            <span
-              className={cn(
-                "line-clamp-2 min-w-0 flex-1 break-all text-[15px] leading-6",
-                promptText.length === 0 && "text-muted-foreground",
-              )}
-            >
-              {promptText.length > 0
-                ? promptText
-                : isJapanese
-                  ? t(
-                      "描きたいイラストを日本語で",
-                      "Describe your illustration",
-                    )
-                  : t("描きたいものをキーワードで", "Enter keywords")}
-            </span>
-            <Maximize2Icon className="mt-1 size-4 shrink-0 text-muted-foreground" />
+            <Maximize2Icon className="size-4" />
           </button>
         </div>
       )}
@@ -302,8 +313,8 @@ export function GenerationMobilePromptComposer(props: {
                   )}
                   {!isNegative && (
                     // biome-ignore lint/a11y/noLabelWithoutControl: Switch は label の中にある
-                    <label className="ml-auto flex items-center gap-2 text-muted-foreground text-xs">
-                      {t("日本語で入力", "Japanese")}
+                    <label className="ml-auto flex items-center gap-2 whitespace-nowrap text-muted-foreground text-xs">
+                      {t("日本語", "Japanese")}
                       <Switch
                         checked={isJapanese}
                         onCheckedChange={(checked) => {

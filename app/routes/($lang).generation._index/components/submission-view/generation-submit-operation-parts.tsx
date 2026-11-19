@@ -4,6 +4,7 @@ import {
   Loader2Icon,
   Minus,
   Plus,
+  PlusIcon,
   SettingsIcon,
   SlidersHorizontalIcon,
 } from "lucide-react"
@@ -278,7 +279,7 @@ export function GenerationSubmitOperationParts(props: Props) {
    * 下の入力欄の丸い送信ボタン（押したときの確認・ダイアログは大きい生成ボタンと同じ）
    */
   const dockSendClassName =
-    "size-12 w-12 shrink-0 rounded-full p-1 md:h-12 [&>div]:rounded-full"
+    "h-12 w-auto min-w-12 shrink-0 rounded-full p-1 md:h-12 [&>div]:rounded-full"
 
   const dockCaption =
     props.isMaintenance === true
@@ -352,6 +353,15 @@ export function GenerationSubmitOperationParts(props: Props) {
     return (
       <GenerationSubmitButton
         isIconOnly
+        // 足りないときも押すと今までどおり送る前にプラン・コイン購入の案内が開く
+        iconOnlyContent={
+          isCoinShort ? (
+            <>
+              <PlusIcon className="size-4 shrink-0" strokeWidth={2.5} />
+              <span className="text-sm">{t("コイン追加", "Add coins")}</span>
+            </>
+          ) : undefined
+        }
         className={dockSendClassName}
         onClick={async () => {
           await props.onCreateTask()
@@ -369,11 +379,49 @@ export function GenerationSubmitOperationParts(props: Props) {
   if (props.dockInput !== undefined) {
     return (
       <>
-        {authContext.isLoggedIn ? (
-          coinRow
-        ) : (
-          <div className="flex items-center justify-end px-1">
-            <GenerationServerStatusBadge />
+        {/* 残りのコインは細い行で（使うコインは送信ボタンに出す。混み具合は見出しに出す） */}
+        {authContext.isLoggedIn && (
+          <div className="flex min-w-0 items-center gap-2 px-1 text-muted-foreground text-xs leading-none">
+            <button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(new Event(openGenerationCoinSheetEvent))
+              }}
+              aria-label={t("残りのコイン", "Coins left")}
+              // 見た目は細く、押せる範囲は広く
+              className={cn(
+                "after:-inset-y-1.5 after:-inset-x-2 relative flex h-8 min-w-0 items-center gap-1 rounded-full font-semibold after:absolute after:content-['']",
+                isCoinShort && "text-pink-600 dark:text-pink-300",
+              )}
+            >
+              <span>
+                {isCoinShort
+                  ? t("コイン不足", "Not enough")
+                  : t("残り", "Left")}
+              </span>
+              {props.isCoinSummaryLoading ? (
+                <span className="h-3 w-12 animate-pulse rounded bg-foreground/15" />
+              ) : (
+                <>
+                  <CoinIcon className="size-3.5 shrink-0" />
+                  <span className="text-foreground tabular-nums">
+                    {formatCoinAmount(props.freeCoinBalance)}
+                  </span>
+                  {props.isPremiumCoinGenerationDisabled ? (
+                    <span className="truncate font-normal">
+                      {t("（フリーのみ）", "(free only)")}
+                    </span>
+                  ) : (
+                    <>
+                      <PremiumCoinIcon className="ml-1 size-3.5 shrink-0" />
+                      <span className="text-foreground tabular-nums">
+                        {formatCoinAmount(props.premiumCoinBalance)}
+                      </span>
+                    </>
+                  )}
+                </>
+              )}
+            </button>
           </div>
         )}
         <div className="flex min-w-0 items-end gap-2">

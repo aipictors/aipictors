@@ -75,7 +75,7 @@ type Props = {
    * スマホの下の入力欄の形（上にチップから開くシート、下にチップ）。指定すると composer はプロンプト欄として送信ボタンの左に置く
    */
   dock?: {
-    sheet: (maxHeight: number) => React.ReactNode
+    sheet: (sizes: { maxHeight: number; fullHeight: number }) => React.ReactNode
     chips: React.ReactNode
   }
 }
@@ -98,6 +98,11 @@ export function GenerationSubmissionView(props: Props) {
   const isEditingTextField = useIsEditingTextField()
 
   const keyboard = useKeyboardInset()
+
+  const isComposingDockPrompt =
+    isEditingTextField &&
+    typeof document !== "undefined" &&
+    document.activeElement?.closest("[data-dock-prompt]") != null
 
   const {
     isPremiumCoinConfirmEnabled,
@@ -755,14 +760,19 @@ export function GenerationSubmissionView(props: Props) {
           }}
         >
           <div className="space-y-2">
-            {props.dock?.sheet(
+            {props.dock?.sheet({
               // キーボード・チップ・入力欄のぶんを除いた高さまで
-              Math.max(
+              maxHeight: Math.max(
                 200,
-                Math.min(560, (keyboard.viewportHeight || 640) * 0.62) -
+                Math.min(520, (keyboard.viewportHeight || 640) * 0.55) -
                   (keyboard.inset > 0 ? 120 : 0),
               ),
-            )}
+              fullHeight: Math.max(
+                240,
+                (keyboard.viewportHeight || 640) -
+                  (keyboard.inset > 0 ? 220 : 300),
+              ),
+            })}
             {generationNotice !== null && (
               <GenerationNoticeBanner
                 notice={generationNotice}
@@ -819,7 +829,8 @@ export function GenerationSubmissionView(props: Props) {
               onCreateTask={onCreateTask}
               onSignTerms={onSignTerms}
             />
-            {props.dock?.chips}
+            {/* その場でプロンプトを打っている間はチップをしまって、入力欄をキーボードのすぐ上に置く */}
+            {!isComposingDockPrompt && props.dock?.chips}
           </div>
         </div>
       ) : (

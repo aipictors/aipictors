@@ -177,8 +177,8 @@ export default function GenerationPage() {
                     termsText={text}
                     composer={<GenerationMobilePromptComposer variant="dock" />}
                     dock={{
-                      sheet: (maxHeight) => (
-                        <GenerationMobileSheetFrame maxHeight={maxHeight}>
+                      sheet: (sizes) => (
+                        <GenerationMobileSheetFrame {...sizes}>
                           <GenerationConfigView part="mobileSheets" />
                         </GenerationMobileSheetFrame>
                       ),
