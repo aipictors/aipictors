@@ -1,3 +1,4 @@
+import { AI_MODEL_WORKS_PER_PAGE } from "~/routes/($lang)._main.models.$model/ai-model-works-page"
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
@@ -34,8 +35,8 @@ export function AiModelArticle(props: Props) {
     skip: isEmpty || authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       search: model.name,
-      offset: 32 * page,
-      limit: 32,
+      offset: AI_MODEL_WORKS_PER_PAGE * page,
+      limit: AI_MODEL_WORKS_PER_PAGE,
       where: {
         ratings: props.isMoreRatings ? ["G", "R15"] : ["G"],
         isSensitive: false,
@@ -100,7 +101,7 @@ export function AiModelArticle(props: Props) {
         <div className="h-8" />
         <div className="-translate-x-1/2 fixed bottom-[var(--aip-tabbar-h,0px)] left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
           <ResponsivePagination
-            perPage={16}
+            perPage={AI_MODEL_WORKS_PER_PAGE}
             maxCount={model.worksCount}
             currentPage={page}
             onPageChange={(page: number) => setPage(page)}
@@ -116,7 +117,7 @@ export const ModelItemFragment = graphql(
       id
       name
       type
-      worksCount
+      worksCount(where: $where)
       generationModelId
       workModelId
       thumbnailImageURL

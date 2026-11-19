@@ -1,3 +1,4 @@
+import { AI_MODEL_WORKS_PER_PAGE } from "~/routes/($lang)._main.models.$model/ai-model-works-page"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import type { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
@@ -41,8 +42,8 @@ export async function loader(props: LoaderFunctionArgs) {
     query: aiModelQuery,
     variables: {
       search: props.params.model,
-      offset: page * 32,
-      limit: 32,
+      offset: page * AI_MODEL_WORKS_PER_PAGE,
+      limit: AI_MODEL_WORKS_PER_PAGE,
       where: {
         ratings: ratings,
         isSensitive: true,
