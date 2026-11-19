@@ -29,10 +29,10 @@ export type PremiumConfirmResponse = {
 
 /**
  * 推しコインのボタンで足す量。フリーはよく使われる 10〜100 枚くらい。
- * プレミアムは少額の 10 枚と、色の区切り 100・500・1,000・3,000 枚（−/＋ と入力で 1 枚から選べる）
+ * プレミアムは少額の 1〜10 枚（−/＋ と入力で色の区切り 500・1,000・3,000 枚も選べる）
  */
 export const SUPPORT_FREE_COIN_STEPS = [10, 20, 30, 50, 100] as const
-export const SUPPORT_PREMIUM_COIN_STEPS = [10, 100, 500, 1000, 3000] as const
+export const SUPPORT_PREMIUM_COIN_STEPS = [1, 2, 3, 5, 10] as const
 
 /**
  * これ以上の枚数を送るときは確認する（桁の間違いを防ぐ）。

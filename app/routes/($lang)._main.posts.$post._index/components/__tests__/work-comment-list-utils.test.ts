@@ -70,7 +70,7 @@ test("非表示にしたものも外し、どちらでもないものは順番�
   expect(excludeShownComments(replies, [], [])).toEqual(replies)
 })
 
-test("コメント欄の推しコイン: フリーに 20、プレミアムは少額の 10 枚と色の区切り", () => {
+test("コメント欄の推しコイン: フリーに 20、プレミアムは少額の 1・2 枚から", () => {
   expect(SUPPORT_FREE_COIN_STEPS).toContain(20)
-  expect(SUPPORT_PREMIUM_COIN_STEPS).toEqual([10, 100, 500, 1000, 3000])
+  expect(SUPPORT_PREMIUM_COIN_STEPS).toEqual([1, 2, 3, 5, 10])
 })
