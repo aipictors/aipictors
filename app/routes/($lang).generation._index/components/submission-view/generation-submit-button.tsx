@@ -19,10 +19,8 @@ type Props = {
   buttonActionCaption: string
   /** ボタンの見た目の上書き（スマホのアプリと同じ大きな丸いボタン） */
   className?: string
-  /** スマホの下の入力欄の送信ボタン（↑ と使うコインだけを出し、文言は読み上げ用にする） */
+  /** スマホの下の入力欄の丸い送信ボタン（↑ だけを出し、文言は読み上げ用にする） */
   isIconOnly?: boolean
-  /** isIconOnly のときに ↑ の代わりに出す中身（コインが足りないとき「コインを追加」など） */
-  iconOnlyContent?: React.ReactNode
   onClick(): void | Promise<void>
 }
 
@@ -68,17 +66,11 @@ export function GenerationSubmitButton(props: Props) {
         isNoBackground={true}
       >
         {props.isIconOnly ? (
-          <div className="flex h-full items-center justify-center gap-1 px-2.5 font-bold text-[15px] tabular-nums">
+          <div className="flex h-full items-center justify-center">
             {isBusy ? (
               <Loader2Icon className="size-5 animate-spin" />
-            ) : props.iconOnlyContent ? (
-              props.iconOnlyContent
             ) : (
-              <>
-                <ArrowUpIcon className="size-5 shrink-0" strokeWidth={2.5} />
-                <CoinIcon className="ml-0.5 size-4 shrink-0" />
-                {formatCoinAmount(props.requestCoinCost)}
-              </>
+              <ArrowUpIcon className="size-5" strokeWidth={2.5} />
             )}
             <span className="sr-only">
               {isBusy ? t("送信中…", "Sending…") : props.buttonActionCaption}

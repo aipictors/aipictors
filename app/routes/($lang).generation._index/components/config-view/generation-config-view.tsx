@@ -305,11 +305,7 @@ export function GenerationConfigView(props: Props) {
     const sheet = mobileDock?.sheet ?? null
     return (
       <GenerationModelLibraryProvider>
-        {/* シートの上に同じ見出しがあるので、中の見出しの文字は出さない（右の操作は残す） */}
-        <div
-          hidden={sheet !== "model"}
-          className="space-y-4 [&>section:first-child>div:first-child>h3]:hidden"
-        >
+        <div hidden={sheet !== "model"} className="space-y-4">
           <GenerationModelSection
             onClickSearchModelWorks={(id: string, name: string) => {
               context.updateSearchWorksModelIdAndName(id, name)
@@ -319,10 +315,7 @@ export function GenerationConfigView(props: Props) {
           />
           <GenerationConfigModelRecommendation />
         </div>
-        <div
-          hidden={sheet !== "lora"}
-          className="[&>section:first-child>div:first-child>h3]:hidden"
-        >
+        <div hidden={sheet !== "lora"}>
           <GenerationLoraSection />
         </div>
         <div hidden={sheet !== "styles"}>

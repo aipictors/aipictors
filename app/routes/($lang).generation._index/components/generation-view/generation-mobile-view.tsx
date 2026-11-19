@@ -2,11 +2,13 @@ import {
   ArrowLeftIcon,
   CrownIcon,
   EllipsisIcon,
+  ImagesIcon,
   InfoIcon,
   MailIcon,
   ReceiptTextIcon,
   ScrollTextIcon,
   ShoppingCartIcon,
+  SparklesIcon,
 } from "lucide-react"
 import { Suspense, useContext, useEffect, useState } from "react"
 import { CoinIcon } from "~/components/coin-icon"
@@ -34,25 +36,21 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { GenerationAnnouncementBanner } from "~/routes/($lang).generation._index/components/generation-announcement-banner"
-import { GenerationServerStatusBadge } from "~/routes/($lang).generation._index/components/submission-view/generation-server-status-badge"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import {
   GenerationMobileDockContext,
   type GenerationMobileSheetKind,
-  useGenerationMobileDock,
 } from "~/routes/($lang).generation._index/contexts/generation-mobile-dock-context"
 import {
   GenerationMobileTabContext,
   openGenerationCoinSheetEvent,
 } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 import { useGenerationCoinSummaryValue } from "~/routes/($lang).generation._index/utils/generation-coin-store"
 import {
   PremiumCoinGenerationSwitchRow,
   usePremiumCoinGenerationSetting,
 } from "~/routes/($lang).settings/components/premium-coin-generation-setting"
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {
@@ -236,97 +234,20 @@ export function GenerationMobileView(props: Props) {
  */
 function GenerationMobileGuide() {
   const t = useTranslation()
-
-  const context = useGenerationContext()
-
-  const userModelSelection = useUserModelSelection()
-
-  const dock = useGenerationMobileDock()
-
-  const models = context.imageModels.slice(0, 6)
-
-  const steps = [
-    t("書く", "Describe"),
-    t("↑で生成", "Tap ↑"),
-    t("保存・投稿", "Save · post"),
-  ]
-
   return (
-    <div className="flex flex-col gap-5 px-4 pt-4">
-      <div className="space-y-2 text-center">
-        <p className="font-bold text-xl">
-          {t("どんなイラストを描きますか？", "What would you like to draw?")}
-        </p>
-        <ol className="flex items-center justify-center gap-1.5 text-muted-foreground text-xs">
-          {steps.map((step, index) => (
-            <li key={step} className="flex items-center gap-1.5">
-              {index > 0 && <span aria-hidden>›</span>}
-              <span className="whitespace-nowrap rounded-full bg-muted px-2.5 py-1 font-medium text-foreground/80">
-                {index + 1}. {step}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </div>
-      {models.length > 0 && (
-        <section className="space-y-2">
-          <p className="font-semibold text-muted-foreground text-xs">
-            {t("モデルで絵柄が変わります", "Models change the style")}
-          </p>
-          <div className="grid grid-cols-3 gap-2.5">
-            {models.map((model) => {
-              const isSelected =
-                userModelSelection.checkpoint === null &&
-                context.config.modelId === model.id
-              return (
-                <button
-                  key={model.id}
-                  type="button"
-                  aria-pressed={isSelected}
-                  onClick={() => {
-                    // モデルライブラリで公式モデルを選んだときと同じ処理
-                    if (userModelSelection.checkpoint) {
-                      userModelSelection.clearCheckpoint({ restore: false })
-                    }
-                    context.updateModelId(model.id, model.type)
-                    dock?.setSheet(null)
-                  }}
-                  className="group flex min-w-0 flex-col gap-1 text-left"
-                >
-                  <span
-                    className={cn(
-                      "relative block aspect-square overflow-hidden rounded-xl border-2 bg-muted",
-                      isSelected
-                        ? "border-fuchsia-500 dark:border-fuchsia-400"
-                        : "border-transparent",
-                    )}
-                  >
-                    {model.thumbnailImageURL && (
-                      <img
-                        src={toResizedImageUrl(model.thumbnailImageURL, 240)}
-                        alt=""
-                        className="size-full object-cover"
-                        loading="lazy"
-                        draggable={false}
-                      />
-                    )}
-                  </span>
-                  <span
-                    className={cn(
-                      "truncate text-[11px]",
-                      isSelected
-                        ? "font-semibold text-foreground"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    {model.displayName ?? model.name}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </section>
-      )}
+    <div className="flex min-h-[44vh] flex-col items-center justify-center gap-3 px-6 text-center">
+      <span className="flex size-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+        <ImagesIcon className="size-6" />
+      </span>
+      <p className="font-bold text-lg">
+        {t("どんなイラストを描きますか？", "What would you like to draw?")}
+      </p>
+      <p className="text-muted-foreground text-sm leading-6">
+        {t(
+          "下の欄に描きたいものを書いて ↑ で生成。モデルや比率は下のボタンから変えられます。",
+          "Write what you want below and tap ↑. Change the model or size with the buttons.",
+        )}
+      </p>
     </div>
   )
 }
@@ -352,39 +273,65 @@ function GenerationMobileHeader(props: {
 }) {
   const t = useTranslation()
 
+  const coinSummary = useGenerationCoinSummaryValue()
+
   const planLabel = usePlanLabel()
 
   const authContext = useContext(AuthContext)
 
   return (
-    // 縦を空けるため 1 行にまとめる（残りのコインは下の入力欄の上に出している）
-    <div className="flex h-12 items-center gap-2 px-4">
-      <h1 className="flex min-w-0 flex-1 items-baseline gap-2">
-        <span className="shrink-0 font-black text-lg tracking-tight">
+    <div className="flex items-center gap-2 px-4 pt-2 pb-3">
+      {/* 幅が狭いときは見出しとコインが重ならないようにアイコンを省く */}
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[#0170C8] via-[#6D5DF6] to-[#FF5C8A] text-white max-[379px]:hidden">
+        <SparklesIcon className="size-5" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <h1 className="whitespace-nowrap font-black text-lg leading-tight tracking-tight min-[380px]:text-xl">
           {t("画像生成", "Image generation")}
-        </span>
-        <span className="truncate font-semibold text-muted-foreground text-xs">
+        </h1>
+        <p className="truncate font-semibold text-muted-foreground text-xs">
           {planLabel}
-        </span>
-      </h1>
-      <GenerationServerStatusBadge className="shrink-0" />
+        </p>
+      </div>
+      {/* 未ログインは残高が無いので出さない（読み込み中の表示が出たままになっていた） */}
+      {!authContext.isNotLoggedIn && (
+        <button
+          type="button"
+          onClick={props.onOpenCoins}
+          aria-label={t("コイン", "Coins")}
+          className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-linear-to-br from-amber-400 to-orange-500 px-3 font-black text-[13px] text-white shadow-[0_4px_12px_rgba(245,158,11,0.35)] active:scale-95"
+        >
+          {coinSummary === null ? (
+            <>
+              <CoinIcon className="size-4" />
+              <span className="h-3 w-7 animate-pulse rounded bg-white/40" />
+            </>
+          ) : (
+            <>
+              {/* フリーとプレミアムは価値が違うので分けて出す */}
+              <CoinIcon className="size-4" />
+              <span className="tabular-nums">
+                {coinSummary.freeBalance.toLocaleString()}
+              </span>
+              <PremiumCoinIcon className="ml-1 size-4" />
+              <span className="tabular-nums">
+                {coinSummary.premiumBalance.toLocaleString()}
+              </span>
+            </>
+          )}
+        </button>
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
             aria-label={t("その他", "More")}
-            className="-mr-2 flex size-11 shrink-0 items-center justify-center rounded-full text-foreground/80 active:bg-muted"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground/80 active:scale-95"
           >
             <EllipsisIcon className="size-5" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-52">
-          {!authContext.isNotLoggedIn && (
-            <DropdownMenuItem onSelect={props.onOpenCoins}>
-              <CoinIcon className="mr-2 size-4" />
-              {t("コイン（残り・購入）", "Coins")}
-            </DropdownMenuItem>
-          )}
           <DropdownMenuItem onSelect={props.onOpenCoinHistory}>
             <ReceiptTextIcon className="mr-2 size-4" />
             {t("コイン履歴", "Coin history")}
