@@ -189,6 +189,7 @@ export const StickerArticleFragment = graphql(
     usesCount
     likesCount
     accessType
+    isDeleted
     createdAt
     user {
       login

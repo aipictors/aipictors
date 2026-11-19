@@ -58,7 +58,9 @@ export async function loader(props: LoaderFunctionArgs) {
   if (
     sticker === null ||
     sticker === undefined ||
-    sticker.accessType !== "PUBLIC"
+    sticker.accessType !== "PUBLIC" ||
+    // 削除したスタンプも id では取れてしまうので、ページを出さない
+    sticker.isDeleted
   ) {
     throw new Response(null, { status: 404 })
   }
