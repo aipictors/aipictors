@@ -56,10 +56,6 @@ type Props = {
    * スマホのカードの並びでモデルの次に出すプロンプト欄
    */
   promptCard?: React.ReactNode
-  /**
-   * PC の右パネルのタブ: モデル（モデル・LoRA）/ 設定（基本・詳細）だけを出す
-   */
-  part?: "model" | "settings"
 }
 
 export function GenerationConfigView(props: Props) {
@@ -138,9 +134,9 @@ export function GenerationConfigView(props: Props) {
 
   const t = useTranslation()
 
-  const renderDetailsAccordion = (includesSeed = false) => (
+  const detailsAccordion = (
     <Accordion type="single" collapsible>
-      <AccordionItem value="setting" className="border-b-0">
+      <AccordionItem value="setting">
         <AccordionTrigger className="py-2 hover:no-underline">
           <div className="text-left">
             <p className="font-semibold text-sm">
@@ -148,11 +144,6 @@ export function GenerationConfigView(props: Props) {
             </p>
             <p className="mt-0.5 font-normal text-muted-foreground text-xs">
               {[
-                includesSeed
-                  ? context.config.seed === -1
-                    ? t("Seed ランダム", "Seed random")
-                    : `Seed ${context.config.seed}`
-                  : null,
                 `CFG ${context.config.scale}`,
                 `Steps ${context.config.steps}`,
                 toGenerationSamplerOptionValue(context.config.sampler),
@@ -165,15 +156,6 @@ export function GenerationConfigView(props: Props) {
           </div>
         </AccordionTrigger>
         <AccordionContent className="space-y-5 pt-1">
-          {includesSeed && (
-            <>
-              <GenerationConfigSeed
-                value={context.config.seed}
-                onChange={context.updateSeed}
-              />
-              <Separator />
-            </>
-          )}
           <GenerationConfigSamplingPresets />
           <Separator />
           <GenerationConfigScale
@@ -204,8 +186,6 @@ export function GenerationConfigView(props: Props) {
       </AccordionItem>
     </Accordion>
   )
-
-  const detailsAccordion = renderDetailsAccordion()
 
   const configBody = (
     <>
@@ -263,46 +243,6 @@ export function GenerationConfigView(props: Props) {
       <GenerationConfigResetConfirmDialog onReset={context.reset} />
     </>
   )
-
-  if (props.part === "model") {
-    return (
-      <GenerationModelLibraryProvider>
-        <div className="flex flex-col gap-y-5">
-          <GenerationModelSection
-            onClickSearchModelWorks={(id: string, name: string) => {
-              context.updateSearchWorksModelIdAndName(id, name)
-              send({ type: "OPEN_WORKS_FROM_MODEL" })
-            }}
-          />
-          <GenerationConfigModelRecommendation />
-          <Separator />
-          <GenerationLoraSection />
-        </div>
-      </GenerationModelLibraryProvider>
-    )
-  }
-
-  if (props.part === "settings") {
-    return (
-      <GenerationModelLibraryProvider>
-        <div className="flex flex-col gap-y-5">
-          <GenerationConfigOutput modelType={configModelType} />
-          <GenerationConfigCount
-            remainingImageGenerationTasksCount={
-              remainingImageGenerationTasksCount
-            }
-            setGenerationCount={context.changeGenerationCount}
-            generationCount={context.config.generationCount}
-          />
-          <Separator />
-          <GenerationConfigReferenceImage />
-          <Separator />
-          {renderDetailsAccordion(true)}
-          <div className="flex gap-x-2 border-t pt-3">{memoAndReset}</div>
-        </div>
-      </GenerationModelLibraryProvider>
-    )
-  }
 
   if (props.isMobileCards) {
     return (
