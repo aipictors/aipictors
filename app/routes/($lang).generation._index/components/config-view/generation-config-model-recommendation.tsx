@@ -1,7 +1,6 @@
 import { CheckIcon, ChevronDownIcon, SparklesIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   describeRecommendedSettings,
@@ -14,6 +13,7 @@ import {
   addQualityPrompt,
 } from "~/lib/user-models/recommended-prompts"
 import type { UserModelRecommendedSettings } from "~/lib/user-models/types"
+import { ConfigWideButton } from "~/routes/($lang).generation._index/components/config-view/generation-config-parts"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
@@ -155,9 +155,9 @@ export function GenerationConfigModelRecommendation() {
   const hasPrompts = recommended.qualityPrompt || recommended.negativePrompt
 
   return (
-    <div className="space-y-2 rounded-md border border-primary/40 bg-primary/5 p-3">
+    <div className="space-y-2 rounded-lg border bg-muted/40 p-3">
       <p className="flex items-center gap-x-1.5 font-semibold text-sm">
-        <SparklesIcon className="h-4 w-4 shrink-0 text-primary" />
+        <SparklesIcon className="h-4 w-4 shrink-0 text-fuchsia-600 dark:text-fuchsia-300" />
         {t("このモデルのおすすめ設定", "Recommended for this model")}
       </p>
       {summary !== "" && (
@@ -198,10 +198,8 @@ export function GenerationConfigModelRecommendation() {
           )}
         </div>
       )}
-      <Button
-        type="button"
-        size="sm"
-        className="w-full"
+      <ConfigWideButton
+        className="bg-background"
         disabled={isApplied}
         onClick={apply}
       >
@@ -213,7 +211,7 @@ export function GenerationConfigModelRecommendation() {
         ) : (
           t("おすすめ設定を使う", "Use recommended settings")
         )}
-      </Button>
+      </ConfigWideButton>
       <p className="text-[11px] text-muted-foreground">{sourceLabel}</p>
     </div>
   )

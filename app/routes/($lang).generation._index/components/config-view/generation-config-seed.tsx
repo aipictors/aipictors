@@ -1,4 +1,4 @@
-import { DicesIcon, HelpCircleIcon } from "lucide-react"
+import { DicesIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import {
@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip"
 import { useTranslation } from "~/hooks/use-translation"
+import { ConfigSectionHeader } from "~/routes/($lang).generation._index/components/config-view/generation-config-parts"
 
 type Props = {
   value: number
@@ -19,24 +20,13 @@ export function GenerationConfigSeed(props: Props) {
 
   return (
     <div className="flex flex-col gap-y-2">
-      <div className="flex gap-x-2">
-        <span className="font-bold text-sm">{"Seed"}</span>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircleIcon className="w-4" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>
-                {t(
-                  "キャラや構図などを固定したいときに使用します。-1にするとランダムになります。",
-                  "Use this when you want to lock characters or composition. Set to -1 for random.",
-                )}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
+      <ConfigSectionHeader
+        title="Seed"
+        tooltip={t(
+          "キャラや構図などを固定したいときに使用します。-1にするとランダムになります。",
+          "Use this when you want to lock characters or composition. Set to -1 for random.",
+        )}
+      />
       <div className="flex gap-x-2">
         <Input
           type="number"
@@ -54,7 +44,8 @@ export function GenerationConfigSeed(props: Props) {
                 <Button
                   aria-label={t("ランダムなシード", "Random seed")}
                   size={"icon"}
-                  variant={props.value === -1 ? "default" : "secondary"}
+                  variant={"outline"}
+                  className="shrink-0"
                   disabled={props.value === -1}
                   onClick={() => {
                     props.onChange(-1)

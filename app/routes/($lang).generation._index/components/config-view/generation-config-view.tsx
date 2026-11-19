@@ -195,8 +195,9 @@ export function GenerationConfigView(props: Props) {
           send({ type: "OPEN_WORKS_FROM_MODEL" })
         }}
       />
-      <GenerationLoraSection />
       <GenerationConfigModelRecommendation />
+      <Separator />
+      <GenerationLoraSection />
       <Separator />
       <GenerationConfigOutput modelType={configModelType} />
       <GenerationConfigCount
@@ -266,15 +267,13 @@ export function GenerationConfigView(props: Props) {
           <GenerationMobileCard>
             <GenerationConfigOutput modelType={configModelType} part="count" />
             <Separator />
-            <div className="[&_span.text-nowrap]:text-sm">
-              <GenerationConfigCount
-                remainingImageGenerationTasksCount={
-                  remainingImageGenerationTasksCount
-                }
-                setGenerationCount={context.changeGenerationCount}
-                generationCount={context.config.generationCount}
-              />
-            </div>
+            <GenerationConfigCount
+              remainingImageGenerationTasksCount={
+                remainingImageGenerationTasksCount
+              }
+              setGenerationCount={context.changeGenerationCount}
+              generationCount={context.config.generationCount}
+            />
           </GenerationMobileCard>
           <GenerationMobileCard>
             <GenerationConfigReferenceImage />
