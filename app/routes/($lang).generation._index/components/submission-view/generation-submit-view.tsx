@@ -23,6 +23,7 @@ import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation.
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
 import { GenerationMobileTabContext } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
 import { useGeminiAllowance } from "~/routes/($lang).generation._index/hooks/use-gemini-allowance"
+import { useGenerationAutoSubmit } from "~/routes/($lang).generation._index/hooks/use-generation-auto-submit"
 import {
   useGenerationCoinSummary,
   useGenerationCoinSummaryRefresh,
@@ -730,6 +731,17 @@ export function GenerationSubmissionView(props: Props) {
       },
     })
   }
+
+  // かんたん入口で「生成する」を押したあと（未ログインならログインのあと）に、ここで生成を始める
+  useGenerationAutoSubmit({
+    isReady:
+      authContext.isLoggedIn &&
+      context.user !== null &&
+      context.imageModels.length > 0 &&
+      coinSummary !== null &&
+      pass !== undefined,
+    onSubmit: onCreateTask,
+  })
 
   return (
     <>

@@ -27,6 +27,10 @@ import { GenerationMobilePromptComposer } from "~/routes/($lang).generation._ind
 import { GenerationPromptComposer } from "~/routes/($lang).generation._index/components/prompt-view/generation-prompt-composer"
 import { GenerationPromptView } from "~/routes/($lang).generation._index/components/prompt-view/generation-prompt-view"
 import { SettingLanguageUsedForPromptView } from "~/routes/($lang).generation._index/components/setting-language-used-for-prompt-view/setting-language-used-for-prompt-view"
+import {
+  GenerationEntrySkeleton,
+  GenerationSimpleEntry,
+} from "~/routes/($lang).generation._index/components/simple-entry/generation-simple-entry"
 import { GenerationSubmissionView } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-view"
 import { GenerationCommunicationView } from "~/routes/($lang).generation._index/components/task-view/generation-communication-view"
 import { GenerationLinksView } from "~/routes/($lang).generation._index/components/task-view/generation-links-view"
@@ -34,6 +38,7 @@ import { GenerationTaskDetailsView } from "~/routes/($lang).generation._index/co
 import { GenerationTaskListView } from "~/routes/($lang).generation._index/components/task-view/generation-task-list-view"
 import { GenerationWorkListModelView } from "~/routes/($lang).generation._index/components/task-view/generation-works-from-model-view"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationEntryMode } from "~/routes/($lang).generation._index/hooks/use-generation-entry-mode"
 import { getUserToken } from "~/utils/get-user-token"
 import { setUserToken } from "~/utils/set-user-token"
 
@@ -85,6 +90,14 @@ export default function GenerationPage() {
     context.resetImageInputSetting()
   }, [])
 
+  // はじめての人（未ログイン・生成履歴 0 件）には、先にかんたん入口を出す
+  const entry = useGenerationEntryMode()
+
+  const openAdvanced = () => {
+    entry.openAdvanced()
+    window.scrollTo({ top: 0 })
+  }
+
   const aside = (
     <GenerationAsideView
       advertisement={<GenerationAdvertisementView />}
@@ -114,6 +127,10 @@ export default function GenerationPage() {
           ブラウザに来てから 1 回だけ描く（以前はスマホ用の HTML を出してから React が全部描き直していた） */}
       {!isHydrated ? (
         <AppLoadingPage />
+      ) : entry.mode === "loading" ? (
+        <GenerationEntrySkeleton />
+      ) : entry.mode === "simple" ? (
+        <GenerationSimpleEntry onOpenAdvanced={openAdvanced} />
       ) : (
         <>
           <GenerationUserModelFromUrl />
