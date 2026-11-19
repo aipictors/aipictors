@@ -7612,6 +7612,9 @@ input WorksWhereInput {
   """ユーザID"""
   userId: ID
 
+  """このみんなのモデル（ユーザーモデル ID）を使った作品（プロンプトを公開している作品のみ・新しい 1000 件まで）"""
+  userModelId: ID
+
   """作品形式"""
   workType: WorkType
 

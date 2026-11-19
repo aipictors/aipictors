@@ -36,6 +36,7 @@ import { useUserModelPickup } from "~/components/user-models/user-model-pickup-b
 import { UserModelDeleteDialog } from "~/components/user-models/user-model-delete-dialog"
 import { UserModelEditDialog } from "~/components/user-models/user-model-edit-dialog"
 import { UserModelReportDialog } from "~/components/user-models/user-model-report-dialog"
+import { UserModelWorksSection } from "~/routes/($lang)._main.models.u.$id/components/user-model-works-section"
 import { AuthContext } from "~/contexts/auth-context"
 import { describeRecommendedSettings } from "~/lib/generation-sampler"
 import {
@@ -599,6 +600,10 @@ export function UserModelDetail(props: Props) {
             }。`}
         </p>
       </section>
+
+      {model.status === "READY" && (
+        <UserModelWorksSection modelId={model.id} modelRating={model.rating} />
+      )}
 
       {(props.relatedModels?.length ?? 0) > 0 && (
         <section aria-labelledby="related-models-heading" className="mt-10">
