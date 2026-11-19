@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test"
 import { readFileSync } from "node:fs"
 import {
+  AI_MODEL_WORKS_MAX_PAGE,
+  AI_MODEL_WORKS_OFFSET_MAX,
+  AI_MODEL_WORKS_PER_PAGE,
   parseAiModelWorksSearch,
   toAiModelPopularTags,
   toAiModelWorksPageCount,
@@ -60,6 +63,20 @@ describe("モデルの作品一覧のページ送り", () => {
     expect(toAiModelWorksPageCount(0)).toBe(1)
     expect(toAiModelWorksPageCount(32)).toBe(1)
     expect(toAiModelWorksPageCount(87)).toBe(3)
+  })
+
+  test("ページは API の offset の上限までにする", () => {
+    // 上限を超えた offset は丸められ、後ろのページが最後のページと同じ作品のくり返しになる
+    expect(
+      AI_MODEL_WORKS_MAX_PAGE * AI_MODEL_WORKS_PER_PAGE,
+    ).toBeLessThanOrEqual(AI_MODEL_WORKS_OFFSET_MAX)
+    expect(
+      (AI_MODEL_WORKS_MAX_PAGE + 1) * AI_MODEL_WORKS_PER_PAGE,
+    ).toBeGreaterThan(AI_MODEL_WORKS_OFFSET_MAX)
+    expect(toAiModelWorksPageCount(15522)).toBe(AI_MODEL_WORKS_MAX_PAGE + 1)
+    expect(
+      parseAiModelWorksSearch(new URLSearchParams("page=300"), "r15").page,
+    ).toBe(AI_MODEL_WORKS_MAX_PAGE)
   })
 
   test("ページ番号は前後と最初・最後を出して間を省く", () => {

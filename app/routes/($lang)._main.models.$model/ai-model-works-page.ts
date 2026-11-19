@@ -1,6 +1,17 @@
 /** モデルの作品一覧の 1 ページの件数（取得の limit とページ送りの両方で使う） */
 export const AI_MODEL_WORKS_PER_PAGE = 32
 
+/**
+ * API の aiModel.works の offset の上限（64 * 16 = 1024 件）
+ * 上限を超えた offset は上限に丸められるので、これより後ろのページは最後のページと同じ作品になる
+ */
+export const AI_MODEL_WORKS_OFFSET_MAX = 64 * 16
+
+/** ページの上限（0 始まり） */
+export const AI_MODEL_WORKS_MAX_PAGE = Math.floor(
+  AI_MODEL_WORKS_OFFSET_MAX / AI_MODEL_WORKS_PER_PAGE,
+)
+
 /** 並び順（new は投稿日の新しい順、likes はいいねの多い順） */
 export type AiModelWorksSort = "new" | "likes"
 
@@ -24,7 +35,10 @@ export const parseAiModelWorksSearch = (
 ): AiModelWorksSearch => {
   const page = Number.parseInt(searchParams.get("page") ?? "", 10)
   return {
-    page: Number.isFinite(page) && page > 0 ? page : 0,
+    page:
+      Number.isFinite(page) && page > 0
+        ? Math.min(page, AI_MODEL_WORKS_MAX_PAGE)
+        : 0,
     hasPrompt: searchParams.get("prompt") === "1",
     isMoreRatings: searchParams.get(moreRatingsKey) === "1",
     sort: searchParams.get("sort") === "likes" ? "likes" : "new",
@@ -51,9 +65,12 @@ export const toAiModelWorksOrderBy = (sort: AiModelWorksSort) => {
   return sort === "likes" ? ("LIKES_COUNT" as const) : ("DATE_CREATED" as const)
 }
 
-/** ページ数（作品がなくても 1 ページ） */
+/** ページ数（作品がなくても 1 ページ、API でさかのぼれるところまで） */
 export const toAiModelWorksPageCount = (worksCount: number) => {
-  return Math.max(1, Math.ceil(worksCount / AI_MODEL_WORKS_PER_PAGE))
+  return Math.min(
+    AI_MODEL_WORKS_MAX_PAGE + 1,
+    Math.max(1, Math.ceil(worksCount / AI_MODEL_WORKS_PER_PAGE)),
+  )
 }
 
 /**
