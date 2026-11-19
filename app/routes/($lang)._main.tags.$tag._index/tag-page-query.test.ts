@@ -2,6 +2,9 @@ import { describe, expect, test } from "bun:test"
 import {
   isTagPageDefaultView,
   parseTagPageQuery,
+  TAG_PAGE_MAX_PAGE,
+  TAG_PAGE_OFFSET_MAX,
+  TAG_PAGE_SIZE,
   toRatings,
   toTagPageSearch,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
@@ -40,5 +43,21 @@ describe("parseTagPageQuery の年齢区分", () => {
     expect(toTagPageSearch({ rating: "G" })).toBe("")
     expect(toTagPageSearch({ rating: "all" })).toBe("?rating=all")
     expect(toTagPageSearch({ rating: "R15" })).toBe("?rating=R15")
+  })
+})
+
+describe("TAG_PAGE_MAX_PAGE", () => {
+  test("最後のページの offset が API の上限を超えない（超えると前のページと同じ作品がくり返し出る）", () => {
+    expect(TAG_PAGE_MAX_PAGE * TAG_PAGE_SIZE).toBeLessThanOrEqual(
+      TAG_PAGE_OFFSET_MAX,
+    )
+    expect((TAG_PAGE_MAX_PAGE + 1) * TAG_PAGE_SIZE).toBeGreaterThan(
+      TAG_PAGE_OFFSET_MAX,
+    )
+  })
+
+  test("上限より後ろのページの URL は最後のページとして読む", () => {
+    expect(parse("page=60").page).toBe(TAG_PAGE_MAX_PAGE)
+    expect(parse(`page=${TAG_PAGE_MAX_PAGE}`).page).toBe(TAG_PAGE_MAX_PAGE)
   })
 })

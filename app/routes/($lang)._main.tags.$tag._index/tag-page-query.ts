@@ -2,8 +2,13 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 export const TAG_PAGE_SIZE = 32
 
-/** API の offset の上限（2000 件）に合わせたページの上限（0 始まり） */
-export const TAG_PAGE_MAX_PAGE = Math.floor(2000 / TAG_PAGE_SIZE)
+/**
+ * API の tagWorks の offset の上限（64 * 24 = 1536 件）に合わせたページの上限（0 始まり）
+ * 上限を超えた offset は上限に丸められるので、これより後ろのページは最後のページと同じ作品になる
+ */
+export const TAG_PAGE_OFFSET_MAX = 64 * 24
+
+export const TAG_PAGE_MAX_PAGE = Math.floor(TAG_PAGE_OFFSET_MAX / TAG_PAGE_SIZE)
 
 export type TagPageOrderBy = Extract<
   IntrospectionEnum<"WorkOrderBy">,
