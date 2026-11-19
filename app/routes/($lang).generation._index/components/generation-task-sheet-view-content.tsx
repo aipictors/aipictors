@@ -141,14 +141,9 @@ export function GenerationTaskSheetViewContent(props: Props) {
 
   return (
     <>
-      <ScrollArea
-        className={cn(
-          "mx-auto w-full",
-          "md:h-[64vh]", // ← max-height ではなく height に
-        )}
-      >
+      <ScrollArea className={cn("mx-auto h-full w-full", "md:h-full")}>
         <div
-          className={cn("p-4", {
+          className={cn("h-full min-h-0 px-4 pt-4 pb-0", {
             "mx-auto w-full": props.isListFullSize,
             "max-h-[88vh]": props.isScroll,
           })}
@@ -161,7 +156,10 @@ export function GenerationTaskSheetViewContent(props: Props) {
               props.onPrevTask()
             }}
           >
-            <div className="relative bg-gray-100 dark:bg-gray-900">
+            <div
+              className="!h-full relative flex max-h-full min-h-0 items-center justify-center overflow-hidden rounded-xl bg-background px-3 pt-3 pb-0"
+              style={{ height: "100%" }}
+            >
               {/* 前ボタン */}
               {canPrevTask() && (
                 <Button
@@ -178,7 +176,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   <Suspense
                     fallback={
                       <GenerationTaskContentImagePlaceHolder
-                        className={"m-auto max-h-96 max-w-['50vw']"}
+                        className={"m-auto h-full w-full max-w-['50vw']"}
                       />
                     }
                   >
@@ -192,7 +190,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                         thumbnailUrl={originalThumbnailUrl}
                       >
                         <img
-                          className={"m-auto max-h-96"}
+                          className={"h-full w-full object-contain"}
                           src={
                             context.config.taskListThumbnailType === "light"
                               ? normalizedThumbnailUrl
@@ -238,7 +236,9 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   <Suspense
                     fallback={
                       <GenerationTaskContentImagePlaceHolder
-                        className={"m-auto hidden h-72 max-h-96 max-w-['50vw']"}
+                        className={
+                          "m-auto hidden h-full max-w-['50vw'] object-contain"
+                        }
                       />
                     }
                   >
@@ -247,7 +247,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                       props.task.thumbnailUrl && (
                         <img
                           className={cn(
-                            "m-auto hidden h-72 max-h-96",
+                            "m-auto hidden h-full max-h-none w-full object-contain",
                             `generation-image-${props.task.id}`,
                           )}
                           alt={"-"}
@@ -421,7 +421,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
               <p>{extractStringBeforeComma(props.task.model?.name)}</p>
             </div>
           </div>
-          <div className="py-2">
+          <div className="py-0">
             <Separator />
           </div>
           <div className="space-y-2">

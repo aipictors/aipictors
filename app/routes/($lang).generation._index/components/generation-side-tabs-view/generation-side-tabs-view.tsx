@@ -27,7 +27,7 @@ export function GenerationSideTabsView() {
     <>
       {state === "HISTORY_LIST_FULL" || state === "WORK_LIST_FULL" ? (
         <Tabs value={state.toString()} defaultValue={"HISTORY_LIST_FULL"}>
-          <div className="w-full overflow-x-auto">
+          <div className="sticky top-0 z-20 w-full overflow-x-auto bg-background/95 backdrop-blur">
             <TabsList className={tabsListClassName}>
               <TabsTrigger
                 // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
@@ -58,7 +58,7 @@ export function GenerationSideTabsView() {
         </Tabs>
       ) : (
         <Tabs value={state.toString()} defaultValue={"PROMPT_VIEW"}>
-          <div className="w-full overflow-x-auto">
+          <div className="sticky top-0 z-20 w-full overflow-x-auto bg-background/95 backdrop-blur">
             <TabsList className={tabsListClassName}>
               <TabsTrigger
                 // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
