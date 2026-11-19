@@ -4,11 +4,11 @@ import {
   Loader2Icon,
   Minus,
   Plus,
-  PlusIcon,
   SettingsIcon,
   SlidersHorizontalIcon,
 } from "lucide-react"
 import { useContext } from "react"
+import { createPortal } from "react-dom"
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { GradientBorderButton } from "~/components/button/gradient-border-button"
 import { CoinIcon } from "~/components/coin-icon"
@@ -30,7 +30,6 @@ import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/
 import { GenerationServerStatusBadge } from "~/routes/($lang).generation._index/components/submission-view/generation-server-status-badge"
 import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "~/routes/($lang).generation._index/components/submission-view/generation-terms-button"
-import { openGenerationCoinSheetEvent } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationPlanHint } from "~/routes/($lang).generation._index/hooks/use-generation-plan-hint"
 import { isUpscaleOverFreeLimit } from "~/routes/($lang).generation._index/types/generation-size"
@@ -53,6 +52,9 @@ type Props = {
   /** 「生成にプレミアムコインを使わない」設定（残りはフリーコインだけで判定する） */
   isPremiumCoinGenerationDisabled?: boolean
   termsText: string
+  centerSubmitButton?: boolean
+  submitButtonTarget?: HTMLDivElement | null
+  isComposerSubmit?: boolean
   availableImageGenerationMaxTasksCount: number
   /** 画像生成のメンテナンス中（生成ボタンを押せなくする） */
   isMaintenance?: boolean
@@ -68,10 +70,6 @@ type Props = {
     runningCount: number
     onClick: () => void
   }
-  /**
-   * スマホの下の入力欄（指定すると、プロンプト欄の右に丸い送信ボタンを置く形にする）
-   */
-  dockInput?: React.ReactNode
   onCreateTask: () => void
   onSignTerms: () => void
 }
@@ -186,6 +184,81 @@ export function GenerationSubmitOperationParts(props: Props) {
       : label
   }
 
+  if (props.isComposerSubmit) {
+    const target = props.submitButtonTarget
+    if (target === null || target === undefined) return null
+
+    const compactTrigger = (isBusy: boolean) => (
+      <GradientBlueButton
+        onClick={() => {}}
+        aria-label={t("生成", "Generate")}
+        className="size-10 min-w-10 rounded-full p-0 shadow-sm [&>div]:h-full [&>div]:w-full [&>div]:rounded-full"
+        disabled={isBusy || props.isMaintenance === true}
+        isNoBackground={true}
+      >
+        {isBusy ? (
+          <Loader2Icon className="size-4 animate-spin" />
+        ) : (
+          <ArrowUpIcon className="size-4" />
+        )}
+      </GradientBlueButton>
+    )
+
+    let submitAction: React.ReactNode
+    if (!authContext.isLoggedIn || context.user === null) {
+      submitAction = (
+        <div data-generation-submit className="contents">
+          <LoginDialogButton
+            label={t("生成", "Generate")}
+            isLoading={
+              authContext.isLoading ||
+              (authContext.isLoggedIn && context.user === null)
+            }
+            isWidthFull={true}
+            triggerChildren={compactTrigger(
+              authContext.isLoading ||
+                (authContext.isLoggedIn && context.user === null),
+            )}
+          />
+        </div>
+      )
+    } else if (context.user.hasSignedImageGenerationTerms !== true) {
+      submitAction = (
+        <div data-generation-submit className="contents">
+          <GenerationTermsButton
+            termsMarkdownText={props.termsText}
+            isLoading={props.isCreatingTask}
+            onSubmit={props.onSignTerms}
+            triggerChildren={compactTrigger(props.isCreatingTask)}
+          />
+        </div>
+      )
+    } else {
+      submitAction = (
+        <GenerationSubmitButton
+          compact
+          className="size-10 min-w-10 rounded-full p-0 shadow-sm"
+          onClick={props.onCreateTask}
+          isLoading={props.isCreatingTask}
+          isDisabled={context.config.isDisabled || props.isMaintenance === true}
+          isCoinSummaryLoading={props.isCoinSummaryLoading}
+          requestCoinCost={props.requestCoinCost}
+          ownedCoinCount={props.ownedCoinCount}
+          buttonActionCaption={withImageCount(
+            getSubmitButtonLabel(
+              !!context.config.i2iImageBase64,
+              context.config.promptText,
+              context.config.seed,
+              generatingCount,
+            ),
+          )}
+        />
+      )
+    }
+
+    return createPortal(submitAction, target)
+  }
+
   /**
    * スマホの生成ボタン（アプリと同じ大きな丸いボタン）
    */
@@ -196,242 +269,6 @@ export function GenerationSubmitOperationParts(props: Props) {
   const isCoinShort =
     !props.isCoinSummaryLoading && props.ownedCoinCount < props.requestCoinCost
 
-  /**
-   * スマホの残りのコインの行（押すとコインのシート）
-   */
-  const coinRow = (
-    <div className="flex min-w-0 items-center gap-2 px-1 text-xs leading-none">
-      {/* 残りのコイン（押すとコインのシート）。フリーとプレミアムは価値が違うので分けて出す */}
-      <button
-        type="button"
-        onClick={() => {
-          window.dispatchEvent(new Event(openGenerationCoinSheetEvent))
-        }}
-        aria-label={t("残りのコイン", "Coins left")}
-        className={cn(
-          "flex h-9 shrink-0 items-center gap-1 rounded-full px-3 font-bold active:scale-95",
-          isCoinShort
-            ? "bg-pink-500/10 text-pink-600 dark:bg-pink-400/15 dark:text-pink-300"
-            : "bg-muted text-foreground",
-        )}
-      >
-        <span
-          className={cn(
-            "shrink-0 font-semibold",
-            !isCoinShort && "text-muted-foreground",
-          )}
-        >
-          {isCoinShort ? t("不足", "Short") : t("残り", "Left")}
-        </span>
-        {props.isCoinSummaryLoading ? (
-          <span className="h-3 w-12 animate-pulse rounded bg-foreground/15" />
-        ) : (
-          <>
-            <CoinIcon className="size-3.5 shrink-0" />
-            <span className="tabular-nums">
-              {formatCoinAmount(props.freeCoinBalance)}
-            </span>
-            {props.isPremiumCoinGenerationDisabled ? (
-              <span className="truncate font-normal">
-                {t("（フリーのみ）", "(free only)")}
-              </span>
-            ) : (
-              <>
-                <PremiumCoinIcon className="ml-0.5 size-3.5 shrink-0" />
-                <span className="tabular-nums">
-                  {formatCoinAmount(props.premiumCoinBalance)}
-                </span>
-              </>
-            )}
-          </>
-        )}
-      </button>
-      <span
-        className={cn(
-          "shrink-0 tabular-nums",
-          isCoinShort
-            ? "font-bold text-pink-600 dark:text-pink-300"
-            : "text-muted-foreground",
-        )}
-      >
-        {t(
-          `1回 ${formatCoinAmount(props.requestCoinCost)}`,
-          `${formatCoinAmount(props.requestCoinCost)} / run`,
-        )}
-      </span>
-      {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン）。幅が狭いときは残りのコイン（押すとプラン・購入のシート）に任せる */}
-      {!context.currentPass?.type &&
-        !props.isCoinSummaryLoading &&
-        props.ownedCoinCount < 40 && (
-          <Link
-            to="/plus#plans"
-            onClick={() => trackGrowthEvent("lowcoin_click", "free")}
-            className="flex h-9 min-w-0 items-center truncate rounded-full bg-fuchsia-600 px-3 font-medium text-[11px] text-white max-[399px]:hidden"
-          >
-            {t("プランで1日50枚〜", "50+ a day with a plan")}
-          </Link>
-        )}
-      <GenerationServerStatusBadge className="ml-auto shrink-0" />
-    </div>
-  )
-
-  /**
-   * 下の入力欄の丸い送信ボタン（押したときの確認・ダイアログは大きい生成ボタンと同じ）
-   */
-  const dockSendClassName =
-    "h-12 w-auto min-w-12 shrink-0 rounded-full p-1 md:h-12 [&>div]:rounded-full"
-
-  const dockCaption =
-    props.isMaintenance === true
-      ? t("メンテナンス中", "Under maintenance")
-      : withImageCount(
-          getSubmitButtonLabel(
-            !!context.config.i2iImageBase64,
-            context.config.promptText,
-            context.config.seed,
-            generatingCount,
-          ),
-        )
-
-  const renderDockSendButton = () => {
-    // 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示
-    if (!authContext.isLoggedIn || context.user === null) {
-      const isLoading =
-        authContext.isLoading ||
-        (authContext.isLoggedIn && context.user === null)
-      return (
-        <div data-generation-submit className="contents">
-          <LoginDialogButton
-            label={t("生成", "Generate")}
-            isLoading={isLoading}
-            triggerChildren={
-              <GradientBlueButton
-                onClick={() => {}}
-                className={dockSendClassName}
-                disabled={props.isMaintenance === true}
-                isNoBackground={true}
-              >
-                {isLoading ? (
-                  <Loader2Icon className="size-5 animate-spin" />
-                ) : (
-                  <ArrowUpIcon className="size-5" strokeWidth={2.5} />
-                )}
-                <span className="sr-only">{t("生成", "Generate")}</span>
-              </GradientBlueButton>
-            }
-          />
-        </div>
-      )
-    }
-    // 規約の確認
-    if (context.user?.hasSignedImageGenerationTerms !== true) {
-      return (
-        <div data-generation-submit className="contents">
-          <GenerationTermsButton
-            termsMarkdownText={props.termsText}
-            isLoading={props.isCreatingTask}
-            onSubmit={props.onSignTerms}
-            triggerChildren={
-              <GradientBlueButton
-                disabled={props.isCreatingTask || props.isMaintenance === true}
-                onClick={() => {}}
-                className={dockSendClassName}
-                isNoBackground={true}
-              >
-                {props.isCreatingTask ? (
-                  <Loader2Icon className="size-5 animate-spin" />
-                ) : (
-                  <ArrowUpIcon className="size-5" strokeWidth={2.5} />
-                )}
-                <span className="sr-only">{t("生成", "Generate")}</span>
-              </GradientBlueButton>
-            }
-          />
-        </div>
-      )
-    }
-    return (
-      <GenerationSubmitButton
-        isIconOnly
-        // 足りないときも押すと今までどおり送る前にプラン・コイン購入の案内が開く
-        iconOnlyContent={
-          isCoinShort ? (
-            <>
-              <PlusIcon className="size-4 shrink-0" strokeWidth={2.5} />
-              <span className="text-sm">{t("コイン追加", "Add coins")}</span>
-            </>
-          ) : undefined
-        }
-        className={dockSendClassName}
-        onClick={async () => {
-          await props.onCreateTask()
-        }}
-        isLoading={props.isCreatingTask}
-        isDisabled={context.config.isDisabled || props.isMaintenance === true}
-        isCoinSummaryLoading={props.isCoinSummaryLoading}
-        requestCoinCost={props.requestCoinCost}
-        ownedCoinCount={props.ownedCoinCount}
-        buttonActionCaption={dockCaption}
-      />
-    )
-  }
-
-  if (props.dockInput !== undefined) {
-    return (
-      <>
-        {/* 残りのコインは細い行で（使うコインは送信ボタンに出す。混み具合は見出しに出す） */}
-        {authContext.isLoggedIn && (
-          <div className="flex min-w-0 items-center gap-2 px-1 text-muted-foreground text-xs leading-none">
-            <button
-              type="button"
-              onClick={() => {
-                window.dispatchEvent(new Event(openGenerationCoinSheetEvent))
-              }}
-              aria-label={t("残りのコイン", "Coins left")}
-              // 見た目は細く、押せる範囲は広く
-              className={cn(
-                "after:-inset-y-1.5 after:-inset-x-2 relative flex h-8 min-w-0 items-center gap-1 rounded-full font-semibold after:absolute after:content-['']",
-                isCoinShort && "text-pink-600 dark:text-pink-300",
-              )}
-            >
-              <span>
-                {isCoinShort
-                  ? t("コイン不足", "Not enough")
-                  : t("残り", "Left")}
-              </span>
-              {props.isCoinSummaryLoading ? (
-                <span className="h-3 w-12 animate-pulse rounded bg-foreground/15" />
-              ) : (
-                <>
-                  <CoinIcon className="size-3.5 shrink-0" />
-                  <span className="text-foreground tabular-nums">
-                    {formatCoinAmount(props.freeCoinBalance)}
-                  </span>
-                  {props.isPremiumCoinGenerationDisabled ? (
-                    <span className="truncate font-normal">
-                      {t("（フリーのみ）", "(free only)")}
-                    </span>
-                  ) : (
-                    <>
-                      <PremiumCoinIcon className="ml-1 size-3.5 shrink-0" />
-                      <span className="text-foreground tabular-nums">
-                        {formatCoinAmount(props.premiumCoinBalance)}
-                      </span>
-                    </>
-                  )}
-                </>
-              )}
-            </button>
-          </div>
-        )}
-        <div className="flex min-w-0 items-end gap-2">
-          <div className="min-w-0 flex-1">{props.dockInput}</div>
-          <div className="pb-0.5">{renderDockSendButton()}</div>
-        </div>
-      </>
-    )
-  }
-
   return (
     <>
       {!authContext.isLoggedIn && (
@@ -439,7 +276,68 @@ export function GenerationSubmitOperationParts(props: Props) {
           <GenerationServerStatusBadge />
         </div>
       )}
-      {authContext.isLoggedIn && props.isMobileApp && coinRow}
+      {authContext.isLoggedIn && props.isMobileApp && (
+        <div className="flex items-center gap-2 px-1 text-xs leading-none">
+          <span
+            className={cn(
+              "flex min-w-0 items-center gap-1 font-bold",
+              isCoinShort
+                ? "text-pink-600 dark:text-pink-400"
+                : "text-muted-foreground",
+            )}
+          >
+            <CoinIcon className="size-3.5 shrink-0" />
+            <span className="truncate tabular-nums">
+              {props.isCoinSummaryLoading
+                ? t(
+                    `使うコイン ${formatCoinAmount(props.requestCoinCost)}`,
+                    `Uses ${formatCoinAmount(props.requestCoinCost)} coins`,
+                  )
+                : t(
+                    `使うコイン ${formatCoinAmount(props.requestCoinCost)}・残り`,
+                    `Uses ${formatCoinAmount(props.requestCoinCost)} · left`,
+                  )}
+            </span>
+            {/* フリーとプレミアムは価値が違うので、残りは分けて出す */}
+            {!props.isCoinSummaryLoading && (
+              <>
+                <CoinIcon className="size-3.5 shrink-0" />
+                <span className="tabular-nums">
+                  {formatCoinAmount(props.freeCoinBalance)}
+                </span>
+                {props.isPremiumCoinGenerationDisabled ? (
+                  <span className="truncate font-normal">
+                    {t("（フリーのみ）", "(free only)")}
+                  </span>
+                ) : (
+                  <>
+                    <PremiumCoinIcon className="size-3.5 shrink-0" />
+                    <span className="tabular-nums">
+                      {formatCoinAmount(props.premiumCoinBalance)}
+                    </span>
+                  </>
+                )}
+              </>
+            )}
+          </span>
+          {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン） */}
+          {!context.currentPass?.type &&
+            !props.isCoinSummaryLoading &&
+            props.ownedCoinCount < 40 && (
+              <Link
+                to="/plus#plans"
+                onClick={() => trackGrowthEvent("lowcoin_click", "free")}
+                className="shrink-0 rounded-full bg-fuchsia-600 px-3 py-2 font-medium text-[11px] text-white shadow-sm"
+              >
+                {t(
+                  `あと${Math.floor(props.ownedCoinCount / 10)}枚・プランなら1日50枚〜`,
+                  `${Math.floor(props.ownedCoinCount / 10)} left today · get 50+ a day`,
+                )}
+              </Link>
+            )}
+          <GenerationServerStatusBadge className="ml-auto" />
+        </div>
+      )}
       {authContext.isLoggedIn && !props.isMobileApp && (
         <div className="flex items-center gap-2 px-1 text-[11px] text-muted-foreground leading-none">
           <Link
@@ -490,7 +388,12 @@ export function GenerationSubmitOperationParts(props: Props) {
           <GenerationServerStatusBadge className="ml-auto" />
         </div>
       )}
-      <div className="flex min-w-0 items-center">
+      <div
+        className={cn(
+          "flex min-w-0 items-center",
+          props.centerSubmitButton && "flex-col items-center gap-2",
+        )}
+      >
         {props.mobileSwitch && (
           <button
             type="button"
@@ -608,7 +511,11 @@ export function GenerationSubmitOperationParts(props: Props) {
                 triggerChildren={
                   <GradientBlueButton
                     onClick={() => {}}
-                    className={cn("w-full text-balance", mobileSubmitClassName)}
+                    className={cn(
+                      "w-full text-balance",
+                      mobileSubmitClassName,
+                      props.centerSubmitButton && "mx-auto w-full max-w-sm",
+                    )}
                     disabled={props.isMaintenance === true}
                     isNoBackground={true}
                   >
@@ -645,6 +552,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                     className={cn(
                       "w-full text-balance",
                       props.isMobileApp && "h-14 rounded-full",
+                      props.centerSubmitButton && "mx-auto w-full max-w-sm",
                     )}
                     isNoBackground={true}
                   >
@@ -660,7 +568,10 @@ export function GenerationSubmitOperationParts(props: Props) {
         {isCurrentPremiumPlan() &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
-              className={mobileSubmitClassName}
+              className={cn(
+                mobileSubmitClassName,
+                props.centerSubmitButton && "mx-auto w-full max-w-sm",
+              )}
               onClick={async () => {
                 await props.onCreateTask()
               }}
@@ -688,7 +599,12 @@ export function GenerationSubmitOperationParts(props: Props) {
         {/* プレミアム以外（コインが足りないときは送る前にプラン・コイン購入の案内を出すので、ここでは案内しない） */}
         {!isCurrentPremiumPlan() &&
           context.user?.hasSignedImageGenerationTerms === true && (
-            <div className="flex w-full min-w-0 items-center gap-3">
+            <div
+              className={cn(
+                "flex w-full min-w-0 items-center gap-3",
+                props.centerSubmitButton && "flex-col items-center gap-2",
+              )}
+            >
               {!props.isMobileApp && (
                 <div className="flex shrink-0 items-center gap-1.5">
                   <Switch
@@ -721,7 +637,10 @@ export function GenerationSubmitOperationParts(props: Props) {
                 </div>
               )}
               <GenerationSubmitButton
-                className={mobileSubmitClassName}
+                className={cn(
+                  mobileSubmitClassName,
+                  props.centerSubmitButton && "mx-auto w-full max-w-sm",
+                )}
                 onClick={async () => {
                   await props.onCreateTask()
                 }}

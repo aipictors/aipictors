@@ -19,11 +19,8 @@ type Props = {
   buttonActionCaption: string
   /** ボタンの見た目の上書き（スマホのアプリと同じ大きな丸いボタン） */
   className?: string
-  /** スマホの下の入力欄の送信ボタン（↑ と使うコインだけを出し、文言は読み上げ用にする） */
-  isIconOnly?: boolean
-  /** isIconOnly のときに ↑ の代わりに出す中身（コインが足りないとき「コインを追加」など） */
-  iconOnlyContent?: React.ReactNode
   onClick(): void | Promise<void>
+  compact?: boolean
 }
 
 /**
@@ -62,61 +59,51 @@ export function GenerationSubmitButton(props: Props) {
     <div data-generation-submit className="contents">
       <GradientBlueButton
         onClick={handleClick}
-        className={cn("h-11 w-full min-w-0 md:h-12", props.className)}
+        className={cn(
+          props.compact
+            ? "size-10 min-w-10 rounded-full p-0"
+            : "h-11 w-full min-w-0 md:h-12",
+          props.className,
+        )}
         size={"lg"}
         disabled={isBusy || props.isDisabled}
         isNoBackground={true}
       >
-        {props.isIconOnly ? (
-          <div className="flex h-full items-center justify-center gap-1 px-2.5 font-bold text-[15px] tabular-nums">
-            {isBusy ? (
-              <Loader2Icon className="size-5 animate-spin" />
-            ) : props.iconOnlyContent ? (
-              props.iconOnlyContent
-            ) : (
-              <>
-                <ArrowUpIcon className="size-5 shrink-0" strokeWidth={2.5} />
-                <CoinIcon className="ml-0.5 size-4 shrink-0" />
-                {formatCoinAmount(props.requestCoinCost)}
-              </>
-            )}
-            <span className="sr-only">
-              {isBusy ? t("送信中…", "Sending…") : props.buttonActionCaption}
-            </span>
-          </div>
-        ) : (
-          <div className="flex h-full min-w-0 items-center justify-center gap-2 whitespace-nowrap px-1">
-            {isBusy ? (
-              <>
-                <Loader2Icon className="size-4 shrink-0 animate-spin" />
+        <div className="flex h-full min-w-0 items-center justify-center gap-2 whitespace-nowrap px-1">
+          {isBusy ? (
+            <>
+              <Loader2Icon className="size-4 shrink-0 animate-spin" />
+              {!props.compact && (
                 <span className="text-sm md:text-base">
                   {t("送信中…", "Sending…")}
                 </span>
-              </>
-            ) : (
-              <>
-                <span className="min-w-0 truncate font-semibold text-[15px] md:text-lg">
-                  {props.buttonActionCaption}
+              )}
+            </>
+          ) : props.compact ? (
+            <ArrowUpIcon className="size-4" />
+          ) : (
+            <>
+              <span className="min-w-0 truncate font-semibold text-[15px] md:text-lg">
+                {props.buttonActionCaption}
+              </span>
+              <span className="flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-1.5 py-0.5 text-xs tabular-nums max-[359px]:hidden sm:px-2 md:text-sm">
+                <CoinIcon className="size-3.5 shrink-0 md:size-4" />
+                <span>{formatCoinAmount(props.requestCoinCost)}</span>
+                {/* スマホは残高を上の行に出しているので、使う枚数だけにして文言の幅を空ける */}
+                <span className="hidden items-center gap-1 sm:flex">
+                  <span className="opacity-70">/</span>
+                  {props.isCoinSummaryLoading ? (
+                    <Skeleton className="h-3.5 w-8 rounded-sm bg-white/40" />
+                  ) : (
+                    <span className="opacity-90">
+                      {formatCoinAmount(props.ownedCoinCount)}
+                    </span>
+                  )}
                 </span>
-                <span className="flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-1.5 py-0.5 text-xs tabular-nums max-[359px]:hidden sm:px-2 md:text-sm">
-                  <CoinIcon className="size-3.5 shrink-0 md:size-4" />
-                  <span>{formatCoinAmount(props.requestCoinCost)}</span>
-                  {/* スマホは残高を上の行に出しているので、使う枚数だけにして文言の幅を空ける */}
-                  <span className="hidden items-center gap-1 sm:flex">
-                    <span className="opacity-70">/</span>
-                    {props.isCoinSummaryLoading ? (
-                      <Skeleton className="h-3.5 w-8 rounded-sm bg-white/40" />
-                    ) : (
-                      <span className="opacity-90">
-                        {formatCoinAmount(props.ownedCoinCount)}
-                      </span>
-                    )}
-                  </span>
-                </span>
-              </>
-            )}
-          </div>
-        )}
+              </span>
+            </>
+          )}
+        </div>
       </GradientBlueButton>
     </div>
   )

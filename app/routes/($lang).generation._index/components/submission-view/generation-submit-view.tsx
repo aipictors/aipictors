@@ -23,6 +23,7 @@ import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation.
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
 import { GenerationMobileTabContext } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
 import { useGeminiAllowance } from "~/routes/($lang).generation._index/hooks/use-gemini-allowance"
+import { useGenerationAutoSubmit } from "~/routes/($lang).generation._index/hooks/use-generation-auto-submit"
 import {
   useGenerationCoinSummary,
   useGenerationCoinSummaryRefresh,
@@ -33,7 +34,6 @@ import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { useGenerationTaskMutations } from "~/routes/($lang).generation._index/hooks/use-generation-task-mutations"
 import { useIsEditingTextField } from "~/routes/($lang).generation._index/hooks/use-is-editing-text-field"
-import { useKeyboardInset } from "~/routes/($lang).generation._index/hooks/use-keyboard-inset"
 import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
 import { usePremiumCoinConfirm } from "~/routes/($lang).generation._index/hooks/use-premium-coin-confirm"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
@@ -71,13 +71,10 @@ type Props = {
    * スマホで生成ボタンの上に出すプロンプト欄
    */
   composer?: React.ReactNode
-  /**
-   * スマホの下の入力欄の形（上にチップから開くシート、下にチップ）。指定すると composer はプロンプト欄として送信ボタンの左に置く
-   */
-  dock?: {
-    sheet: (sizes: { maxHeight: number; fullHeight: number }) => React.ReactNode
-    chips: React.ReactNode
-  }
+  centerSubmitButton?: boolean
+  onReadyToSubmit?: (submit: (() => Promise<unknown>) | null) => void
+  submitButtonTarget?: HTMLDivElement | null
+  isComposerSubmit?: boolean
 }
 
 export function GenerationSubmissionView(props: Props) {
@@ -96,13 +93,6 @@ export function GenerationSubmissionView(props: Props) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const isEditingTextField = useIsEditingTextField()
-
-  const keyboard = useKeyboardInset()
-
-  const isComposingDockPrompt =
-    isEditingTextField &&
-    typeof document !== "undefined" &&
-    document.activeElement?.closest("[data-dock-prompt]") != null
 
   const {
     isPremiumCoinConfirmEnabled,
@@ -608,6 +598,16 @@ export function GenerationSubmissionView(props: Props) {
     }
   }
 
+  useEffect(() => {
+    if (!props.onReadyToSubmit) return
+    const submit = async () => {
+      if (isCreatingTask) return
+      await onCreateTask()
+    }
+    props.onReadyToSubmit(submit)
+    return () => props.onReadyToSubmit?.(null)
+  }, [props.onReadyToSubmit, onCreateTask, isCreatingTask])
+
   /**
    * 最大生成枚数
    */
@@ -746,165 +746,92 @@ export function GenerationSubmissionView(props: Props) {
     })
   }
 
+  // かんたん入口で「生成する」を押したあと（未ログインならログインのあと）に、ここで生成を始める
+  useGenerationAutoSubmit({
+    isReady:
+      authContext.isLoggedIn &&
+      context.user !== null &&
+      context.imageModels.length > 0 &&
+      coinSummary !== null &&
+      pass !== undefined,
+    onSubmit: onCreateTask,
+  })
+
   return (
     <>
-      {props.dock ? (
-        // スマホの下の入力欄。キーボードが出ているときはキーボードのすぐ上に出す（入力欄が隠れないように）
-        <div
-          className="fixed inset-x-0 z-50 rounded-t-[20px] border-t bg-background px-3 pt-3 pb-2 shadow-[0_-6px_20px_rgba(0,0,0,0.06)] md:hidden dark:shadow-none"
-          style={{
-            bottom:
-              keyboard.inset > 0
-                ? keyboard.inset
-                : "var(--aip-tabbar-h, env(safe-area-inset-bottom))",
-          }}
-        >
-          <div className="space-y-2">
-            {props.dock?.sheet({
-              // キーボード・チップ・入力欄のぶんを除いた高さまで
-              maxHeight: Math.max(
-                200,
-                Math.min(520, (keyboard.viewportHeight || 640) * 0.55) -
-                  (keyboard.inset > 0 ? 120 : 0),
-              ),
-              fullHeight: Math.max(
-                240,
-                (keyboard.viewportHeight || 640) -
-                  (keyboard.inset > 0 ? 220 : 300),
-              ),
-            })}
-            {generationNotice !== null && (
-              <GenerationNoticeBanner
-                notice={generationNotice}
-                onOpen={() => setGenerationNoticeDialogMode("info")}
-              />
-            )}
-            {isGeminiModelSelected && geminiAllowance !== null && (
-              <GenerationGeminiAllowanceNotice
-                allowance={geminiAllowance}
-                coinCost={selectedModelCoinCost}
-                premiumBalance={coinSummary?.premiumBalance ?? 0}
-              />
-            )}
-            <GenerationSubmitOperationParts
-              dockInput={props.composer ?? null}
-              isCreatingTask={isCreatingTask || isSigningTerms}
-              inProgressImageGenerationTasksCount={
-                inProgressImageGenerationTasksCount
-              }
-              inProgressImageGenerationReservedTasksCount={
-                inProgressImageGenerationReservedTasksCount
-              }
-              maxTasksCount={maxTasksCount}
-              remainingImageGenerationTasksCount={
-                remainingImageGenerationTasksCount
-              }
-              isCoinSummaryLoading={isCoinSummaryLoading}
-              requestCoinCost={requestCoinCost}
-              imagesPerRequest={imagesPerRequest}
-              ownedCoinCount={ownedCoinCount}
-              freeCoinBalance={coinSummary?.freeBalance ?? 0}
-              premiumCoinBalance={coinSummary?.premiumBalance ?? 0}
-              isPremiumCoinGenerationDisabled={isPremiumCoinGenerationDisabled}
-              termsText={props.termsText}
-              availableImageGenerationMaxTasksCount={
-                remainingImageGenerationTasksCount
-              }
-              isMaintenance={generationMaintenance.enabled}
-              isMobileApp={mobileTab !== null}
-              mobileSwitch={
-                mobileTab === null
-                  ? undefined
-                  : {
-                      target: mobileTab.tab === "create" ? "history" : "create",
-                      runningCount:
-                        inProgressImageGenerationTasksCount +
-                        inProgressImageGenerationReservedTasksCount,
-                      onClick: () =>
-                        mobileTab.setTab(
-                          mobileTab.tab === "create" ? "history" : "create",
-                        ),
-                    }
-              }
-              onCreateTask={onCreateTask}
-              onSignTerms={onSignTerms}
-            />
-            {/* その場でプロンプトを打っている間はチップをしまって、入力欄をキーボードのすぐ上に置く */}
-            {!isComposingDockPrompt && props.dock?.chips}
-          </div>
-        </div>
-      ) : (
-        <AppFixedContent
-          position="bottom"
-          className={cn(
-            "aip-above-tabbar",
-            props.composer &&
-              "pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]",
-            !isDesktop && isEditingTextField && "hidden",
+      <AppFixedContent
+        position="bottom"
+        className={cn(
+          "aip-above-tabbar",
+          props.composer &&
+            "pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]",
+          !isDesktop && isEditingTextField && "hidden",
+        )}
+      >
+        <div className="space-y-2">
+          {props.composer && (
+            <div className="empty:hidden">{props.composer}</div>
           )}
-        >
-          <div className="space-y-2">
-            {props.composer && (
-              <div className="empty:hidden md:hidden">{props.composer}</div>
-            )}
-            {generationNotice !== null && (
-              <GenerationNoticeBanner
-                notice={generationNotice}
-                onOpen={() => setGenerationNoticeDialogMode("info")}
-              />
-            )}
-            {isGeminiModelSelected && geminiAllowance !== null && (
-              <GenerationGeminiAllowanceNotice
-                allowance={geminiAllowance}
-                coinCost={selectedModelCoinCost}
-                premiumBalance={coinSummary?.premiumBalance ?? 0}
-              />
-            )}
-            <GenerationSubmitOperationParts
-              isCreatingTask={isCreatingTask || isSigningTerms}
-              inProgressImageGenerationTasksCount={
-                inProgressImageGenerationTasksCount
-              }
-              inProgressImageGenerationReservedTasksCount={
-                inProgressImageGenerationReservedTasksCount
-              }
-              maxTasksCount={maxTasksCount}
-              remainingImageGenerationTasksCount={
-                remainingImageGenerationTasksCount
-              }
-              isCoinSummaryLoading={isCoinSummaryLoading}
-              requestCoinCost={requestCoinCost}
-              imagesPerRequest={imagesPerRequest}
-              ownedCoinCount={ownedCoinCount}
-              freeCoinBalance={coinSummary?.freeBalance ?? 0}
-              premiumCoinBalance={coinSummary?.premiumBalance ?? 0}
-              isPremiumCoinGenerationDisabled={isPremiumCoinGenerationDisabled}
-              termsText={props.termsText}
-              availableImageGenerationMaxTasksCount={
-                remainingImageGenerationTasksCount
-              }
-              isMaintenance={generationMaintenance.enabled}
-              isMobileApp={mobileTab !== null}
-              mobileSwitch={
-                mobileTab === null
-                  ? undefined
-                  : {
-                      target: mobileTab.tab === "create" ? "history" : "create",
-                      runningCount:
-                        inProgressImageGenerationTasksCount +
-                        inProgressImageGenerationReservedTasksCount,
-                      onClick: () =>
-                        mobileTab.setTab(
-                          mobileTab.tab === "create" ? "history" : "create",
-                        ),
-                    }
-              }
-              onCreateTask={onCreateTask}
-              onSignTerms={onSignTerms}
+          {generationNotice !== null && (
+            <GenerationNoticeBanner
+              notice={generationNotice}
+              onOpen={() => setGenerationNoticeDialogMode("info")}
             />
-          </div>
-        </AppFixedContent>
-      )}
+          )}
+          {isGeminiModelSelected && geminiAllowance !== null && (
+            <GenerationGeminiAllowanceNotice
+              allowance={geminiAllowance}
+              coinCost={selectedModelCoinCost}
+              premiumBalance={coinSummary?.premiumBalance ?? 0}
+            />
+          )}
+          <GenerationSubmitOperationParts
+            isCreatingTask={isCreatingTask || isSigningTerms}
+            inProgressImageGenerationTasksCount={
+              inProgressImageGenerationTasksCount
+            }
+            inProgressImageGenerationReservedTasksCount={
+              inProgressImageGenerationReservedTasksCount
+            }
+            maxTasksCount={maxTasksCount}
+            remainingImageGenerationTasksCount={
+              remainingImageGenerationTasksCount
+            }
+            isCoinSummaryLoading={isCoinSummaryLoading}
+            requestCoinCost={requestCoinCost}
+            imagesPerRequest={imagesPerRequest}
+            ownedCoinCount={ownedCoinCount}
+            freeCoinBalance={coinSummary?.freeBalance ?? 0}
+            premiumCoinBalance={coinSummary?.premiumBalance ?? 0}
+            isPremiumCoinGenerationDisabled={isPremiumCoinGenerationDisabled}
+            termsText={props.termsText}
+            centerSubmitButton={props.centerSubmitButton}
+            submitButtonTarget={props.submitButtonTarget}
+            isComposerSubmit={props.isComposerSubmit}
+            availableImageGenerationMaxTasksCount={
+              remainingImageGenerationTasksCount
+            }
+            isMaintenance={generationMaintenance.enabled}
+            isMobileApp={mobileTab !== null}
+            mobileSwitch={
+              mobileTab === null
+                ? undefined
+                : {
+                    target: mobileTab.tab === "create" ? "history" : "create",
+                    runningCount:
+                      inProgressImageGenerationTasksCount +
+                      inProgressImageGenerationReservedTasksCount,
+                    onClick: () =>
+                      mobileTab.setTab(
+                        mobileTab.tab === "create" ? "history" : "create",
+                      ),
+                  }
+            }
+            onCreateTask={onCreateTask}
+            onSignTerms={onSignTerms}
+          />
+        </div>
+      </AppFixedContent>
       <GenerationCoinShortageDialog
         open={isCoinShortageOpen}
         onOpenChange={setIsCoinShortageOpen}

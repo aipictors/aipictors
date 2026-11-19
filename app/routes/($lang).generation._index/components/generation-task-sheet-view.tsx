@@ -32,6 +32,7 @@ type Props = {
   isReferenceLink?: boolean
   isScroll?: boolean
   setShowAiModificationDialog?: (show: boolean) => void
+  onReroll?: () => void
 }
 
 /**
@@ -141,6 +142,12 @@ export function GenerationTaskSheetView(props: Props) {
     )
     setScheduler(props.task.scheduler ?? null)
     toast("設定を復元しました")
+  }
+
+  const onReroll = () => {
+    if (!props.onReroll) return
+    onRestore(false)
+    requestAnimationFrame(() => props.onReroll?.())
   }
 
   const onChangeRating = async (taskId: string, rating: number) => {
@@ -414,6 +421,7 @@ export function GenerationTaskSheetView(props: Props) {
       isRatingLoading={isRatingLoading}
       isDeletedLoading={isDeletedLoading}
       onReference={onReference}
+      onReroll={props.onReroll ? onReroll : undefined}
       onPost={onPost}
       onDelete={onDelete}
       onInPaint={onInPaint}

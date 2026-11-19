@@ -31,10 +31,8 @@ import { GenerationConfigVae } from "~/routes/($lang).generation._index/componen
 import { GenerationLoraSection } from "~/routes/($lang).generation._index/components/config-view/generation-lora-section"
 import { GenerationModelLibraryProvider } from "~/routes/($lang).generation._index/components/config-view/generation-model-library-provider"
 import { GenerationModelSection } from "~/routes/($lang).generation._index/components/config-view/generation-model-section"
-import { GenerationStylesSection } from "~/routes/($lang).generation._index/components/config-view/generation-styles-section"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
-import { useGenerationMobileDock } from "~/routes/($lang).generation._index/contexts/generation-mobile-dock-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
@@ -51,10 +49,17 @@ type Props = {
    */
   isStacked?: boolean
   /**
-   * PC の右パネルのタブ: モデル（モデル・LoRA）/ 設定（基本・詳細）だけを出す
-   * mobileSheets: スマホの下のチップから開くシートの中身（開いているものだけ見せる）
+   * スマホ: アプリの生成タブと同じく、項目ごとのカードを縦に並べる
    */
-  part?: "model" | "settings" | "mobileSheets"
+  isMobileCards?: boolean
+  /**
+   * スマホのカードの並びでモデルの次に出すプロンプト欄
+   */
+  promptCard?: React.ReactNode
+  /**
+   * PC の右パネルのタブ: モデル（モデル・LoRA）/ 設定（基本・詳細）だけを出す
+   */
+  part?: "model" | "settings"
 }
 
 export function GenerationConfigView(props: Props) {
@@ -132,8 +137,6 @@ export function GenerationConfigView(props: Props) {
   }, [])
 
   const t = useTranslation()
-
-  const mobileDock = useGenerationMobileDock()
 
   const renderDetailsAccordion = (includesSeed = false) => (
     <Accordion type="single" collapsible>
@@ -301,52 +304,48 @@ export function GenerationConfigView(props: Props) {
     )
   }
 
-  if (props.part === "mobileSheets") {
-    const sheet = mobileDock?.sheet ?? null
+  if (props.isMobileCards) {
     return (
       <GenerationModelLibraryProvider>
-        {/* シートの上に同じ見出しがあるので、中の見出しの文字は出さない（右の操作は残す） */}
-        <div
-          hidden={sheet !== "model"}
-          className="space-y-4 [&>section:first-child>div:first-child>h3]:hidden"
-        >
-          <GenerationModelSection
-            onClickSearchModelWorks={(id: string, name: string) => {
-              context.updateSearchWorksModelIdAndName(id, name)
-              send({ type: "OPEN_WORKS_FROM_MODEL" })
-              mobileDock?.setSheet(null)
-            }}
-          />
-          <GenerationConfigModelRecommendation />
-        </div>
-        <div
-          hidden={sheet !== "lora"}
-          className="[&>section:first-child>div:first-child>h3]:hidden"
-        >
-          <GenerationLoraSection />
-        </div>
-        <div hidden={sheet !== "styles"}>
-          <GenerationStylesSection />
-        </div>
-        <div hidden={sheet !== "size"}>
-          <GenerationConfigOutput modelType={configModelType} part="size" />
-        </div>
-        <div hidden={sheet !== "count"} className="space-y-5">
-          <GenerationConfigOutput modelType={configModelType} part="count" />
-          <Separator />
-          <GenerationConfigCount
-            remainingImageGenerationTasksCount={
-              remainingImageGenerationTasksCount
-            }
-            setGenerationCount={context.changeGenerationCount}
-            generationCount={context.config.generationCount}
-          />
-        </div>
-        <div hidden={sheet !== "settings"} className="space-y-5">
-          <GenerationConfigReferenceImage />
-          <Separator />
-          {renderDetailsAccordion(true)}
-          <div className="flex gap-x-2 border-t pt-3">{memoAndReset}</div>
+        <div className="flex flex-col gap-3">
+          <GenerationMobileCard>
+            <GenerationModelSection
+              onClickSearchModelWorks={(id: string, name: string) => {
+                context.updateSearchWorksModelIdAndName(id, name)
+                send({ type: "OPEN_WORKS_FROM_MODEL" })
+              }}
+            />
+            <GenerationConfigModelRecommendation />
+          </GenerationMobileCard>
+          {props.promptCard}
+          <GenerationMobileCard>
+            <GenerationLoraSection />
+          </GenerationMobileCard>
+          <GenerationMobileCard>
+            <GenerationConfigOutput modelType={configModelType} part="size" />
+          </GenerationMobileCard>
+          <GenerationMobileCard>
+            <GenerationConfigOutput modelType={configModelType} part="count" />
+            <Separator />
+            <GenerationConfigCount
+              remainingImageGenerationTasksCount={
+                remainingImageGenerationTasksCount
+              }
+              setGenerationCount={context.changeGenerationCount}
+              generationCount={context.config.generationCount}
+            />
+          </GenerationMobileCard>
+          <GenerationMobileCard>
+            <GenerationConfigReferenceImage />
+          </GenerationMobileCard>
+          <GenerationMobileCard>
+            <GenerationConfigSeed
+              value={context.config.seed}
+              onChange={context.updateSeed}
+            />
+            {detailsAccordion}
+          </GenerationMobileCard>
+          <div className="flex gap-x-2 px-1">{memoAndReset}</div>
         </div>
       </GenerationModelLibraryProvider>
     )
@@ -385,6 +384,17 @@ export function GenerationConfigView(props: Props) {
         </div>
       </GenerationViewCard>
     </GenerationModelLibraryProvider>
+  )
+}
+
+/**
+ * スマホの設定のカード（アプリの生成タブのカードと同じ角丸・枠・影）
+ */
+function GenerationMobileCard(props: { children: React.ReactNode }) {
+  return (
+    <section className="flex flex-col gap-4 rounded-[20px] border bg-card p-3.5 shadow-[0_6px_16px_rgba(0,0,0,0.035)] dark:shadow-none">
+      {props.children}
+    </section>
   )
 }
 

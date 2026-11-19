@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import { jwtDecode } from "jwt-decode"
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import text from "~/assets/terms.md?raw"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { config } from "~/config"
@@ -19,10 +19,6 @@ import { GenerationUserModelFromUrl } from "~/routes/($lang).generation._index/c
 import { GenerationAsideView } from "~/routes/($lang).generation._index/components/generation-view/generation-aside-view"
 import { GenerationHeaderView } from "~/routes/($lang).generation._index/components/generation-view/generation-header-view"
 import { GenerationMainView } from "~/routes/($lang).generation._index/components/generation-view/generation-main-view"
-import {
-  GenerationMobileChips,
-  GenerationMobileSheetFrame,
-} from "~/routes/($lang).generation._index/components/generation-view/generation-mobile-dock"
 import { GenerationMobileView } from "~/routes/($lang).generation._index/components/generation-view/generation-mobile-view"
 import { GenerationSettingsPanel } from "~/routes/($lang).generation._index/components/generation-view/generation-settings-panel"
 import { GenerationThreeColumnView } from "~/routes/($lang).generation._index/components/generation-view/generation-three-column-view"
@@ -33,6 +29,10 @@ import { GenerationMobilePromptComposer } from "~/routes/($lang).generation._ind
 import { GenerationPromptComposer } from "~/routes/($lang).generation._index/components/prompt-view/generation-prompt-composer"
 import { GenerationPromptView } from "~/routes/($lang).generation._index/components/prompt-view/generation-prompt-view"
 import { SettingLanguageUsedForPromptView } from "~/routes/($lang).generation._index/components/setting-language-used-for-prompt-view/setting-language-used-for-prompt-view"
+import {
+  GenerationEntrySkeleton,
+  GenerationSimpleEntry,
+} from "~/routes/($lang).generation._index/components/simple-entry/generation-simple-entry"
 import { GenerationSubmissionView } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-view"
 import { GenerationCommunicationView } from "~/routes/($lang).generation._index/components/task-view/generation-communication-view"
 import { GenerationLinksView } from "~/routes/($lang).generation._index/components/task-view/generation-links-view"
@@ -40,6 +40,7 @@ import { GenerationTaskDetailsView } from "~/routes/($lang).generation._index/co
 import { GenerationTaskListView } from "~/routes/($lang).generation._index/components/task-view/generation-task-list-view"
 import { GenerationWorkListModelView } from "~/routes/($lang).generation._index/components/task-view/generation-works-from-model-view"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationEntryMode } from "~/routes/($lang).generation._index/hooks/use-generation-entry-mode"
 import { getUserToken } from "~/utils/get-user-token"
 import { setUserToken } from "~/utils/set-user-token"
 
@@ -51,6 +52,29 @@ export default function GenerationPage() {
   const [rating, setRating] = useState(-1)
 
   const [protect, setProtect] = useState(-1)
+
+  const generationSubmitRef = useRef<(() => Promise<unknown>) | null>(null)
+  const [submitButtonTarget, setSubmitButtonTarget] =
+    useState<HTMLDivElement | null>(null)
+  const pendingRerollRef = useRef(false)
+  const registerGenerationSubmit = useCallback(
+    (submit: (() => Promise<unknown>) | null) => {
+      generationSubmitRef.current = submit
+      if (submit && pendingRerollRef.current) {
+        pendingRerollRef.current = false
+        void submit()
+      }
+    },
+    [],
+  )
+  const rerollGeneration = useCallback(() => {
+    const submit = generationSubmitRef.current
+    if (submit) {
+      void submit()
+    } else {
+      pendingRerollRef.current = true
+    }
+  }, [])
 
   const [isEditMode, toggleEditMode] = useState(false)
 
@@ -91,6 +115,14 @@ export default function GenerationPage() {
     context.resetImageInputSetting()
   }, [])
 
+  // はじめての人（未ログイン・生成履歴 0 件）には、先にかんたん入口を出す
+  const entry = useGenerationEntryMode()
+
+  const openAdvanced = () => {
+    entry.openAdvanced()
+    window.scrollTo({ top: 0 })
+  }
+
   const aside = (
     <GenerationAsideView
       advertisement={<GenerationAdvertisementView />}
@@ -120,22 +152,41 @@ export default function GenerationPage() {
           ブラウザに来てから 1 回だけ描く（以前はスマホ用の HTML を出してから React が全部描き直していた） */}
       {!isHydrated ? (
         <AppLoadingPage />
+      ) : entry.mode === "loading" ? (
+        <GenerationEntrySkeleton />
+      ) : entry.mode === "simple" ? (
+        <GenerationSimpleEntry onOpenAdvanced={openAdvanced} />
       ) : (
         <>
           <GenerationUserModelFromUrl />
           <GenerationView
             threeColumn={
               <GenerationThreeColumnView
-                promptEditor={<GenerationPromptComposer />}
+                promptEditor={
+                  <GenerationPromptComposer
+                    showGenerateButton={false}
+                    onSubmitButtonTargetChange={setSubmitButtonTarget}
+                  />
+                }
                 negativePromptEditor={<GenerationNegativePromptView />}
                 history={aside}
-                taskDetails={<GenerationTaskDetailsView />}
+                taskDetails={
+                  <GenerationTaskDetailsView onReroll={rerollGeneration} />
+                }
+                submission={
+                  <GenerationSubmissionView
+                    termsText={text}
+                    centerSubmitButton
+                    isComposerSubmit
+                    submitButtonTarget={submitButtonTarget}
+                    onReadyToSubmit={registerGenerationSubmit}
+                  />
+                }
                 panel={
                   <GenerationSettingsPanel
                     model={<GenerationConfigView part="model" />}
                     styles={<GenerationStylesSection />}
                     settings={<GenerationConfigView part="settings" />}
-                    submission={<GenerationSubmissionView termsText={text} />}
                   />
                 }
               />
@@ -171,19 +222,17 @@ export default function GenerationPage() {
             aside={aside}
             mobile={
               <GenerationMobileView
+                form={
+                  <GenerationConfigView
+                    isMobileCards
+                    promptCard={<GenerationMobilePromptCard />}
+                  />
+                }
                 history={aside}
                 submission={
                   <GenerationSubmissionView
                     termsText={text}
-                    composer={<GenerationMobilePromptComposer variant="dock" />}
-                    dock={{
-                      sheet: (sizes) => (
-                        <GenerationMobileSheetFrame {...sizes}>
-                          <GenerationConfigView part="mobileSheets" />
-                        </GenerationMobileSheetFrame>
-                      ),
-                      chips: <GenerationMobileChips />,
-                    }}
+                    composer={<GenerationMobilePromptComposer />}
                   />
                 }
                 footer={<GenerationFormFooter />}

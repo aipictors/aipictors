@@ -22,11 +22,10 @@ type Props = {
   asideHeader: React.ReactNode
   menu: React.ReactNode
   footer: React.ReactNode
-  /**
-   * PC の左カラム（プロンプトと設定をまとめたもの）。
-   * 指定すると PC では「左: 設定 / 右: 結果」の2カラムで表示する（履歴詳細は右カラム）
-   */
+  /** PC の設定パネル */
   settings?: React.ReactNode
+  /** PC の結果エリア下部に固定するプロンプト・生成操作 */
+  desktopComposer?: React.ReactNode
   /**
    * スマホ（md 未満）の画面。指定するとアプリの生成タブと同じ構成で出す
    */
@@ -111,27 +110,36 @@ export function GenerationView(props: Props) {
         <main className="flex h-full min-h-0 flex-col gap-4 overflow-hidden md:flex-row">
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanelWithMemory
+              id="generation-results-column"
+              className="flex min-w-0 flex-col gap-y-2 lg:min-w-80"
+            >
+              {isMainPreview ? (
+                <Suspense fallback={<AppLoadingPage />}>{props.main}</Suspense>
+              ) : (
+                <>
+                  <div className="mx-2 shrink-0">{props.asideHeader}</div>
+                  <div className="min-h-0 flex-1 overflow-y-auto">
+                    <Suspense fallback={<AppLoadingPage />}>
+                      {props.aside}
+                    </Suspense>
+                  </div>
+                  {props.desktopComposer && (
+                    <div className="shrink-0 border-t bg-background/95 p-3 shadow-[0_-4px_12px_-8px_rgba(0,0,0,0.15)] backdrop-blur">
+                      <div className="mx-auto w-full max-w-4xl">
+                        {props.desktopComposer}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </ResizablePanelWithMemory>
+            <ResizableHandle withHandle className="mr-3 ml-3" />
+            <ResizablePanelWithMemory
               id="generation-settings-column"
               className="flex min-w-[360px] flex-col"
             >
               <Suspense fallback={<AppLoadingPage />}>
                 {props.settings}
-              </Suspense>
-            </ResizablePanelWithMemory>
-            <ResizableHandle withHandle className="mr-3 ml-3" />
-            <ResizablePanelWithMemory
-              id="generation-results-column"
-              className="flex flex-col gap-y-2 lg:min-w-80"
-            >
-              <Suspense fallback={<AppLoadingPage />}>
-                {isMainPreview ? (
-                  props.main
-                ) : (
-                  <>
-                    {props.asideHeader}
-                    {props.aside}
-                  </>
-                )}
               </Suspense>
             </ResizablePanelWithMemory>
           </ResizablePanelGroup>

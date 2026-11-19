@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import { useRef, useState } from "react"
 import { useLocalStorage } from "usehooks-ts"
+import { CoinIcon } from "~/components/coin-icon"
 import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
 import {
@@ -35,19 +36,31 @@ import {
   TAG_SUGGESTIONS_STORAGE_KEY,
 } from "~/routes/($lang).generation._index/components/prompt-view/prompt-tag-textarea"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
 import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
+import { useGenerationCoinSummaryValue } from "~/routes/($lang).generation._index/utils/generation-coin-store"
+import { calcGenerationModelCoinCost } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
 import { requestGenerationSubmit } from "~/routes/($lang).generation._index/utils/request-generation-submit"
+import { usePremiumCoinGenerationSetting } from "~/routes/($lang).settings/components/premium-coin-generation-setting"
 
 const isMac = () => {
   if (typeof navigator === "undefined") return false
   return /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
 }
 
+type Props = {
+  showGenerateButton?: boolean
+  onSubmitButtonTargetChange?: (element: HTMLDivElement | null) => void
+}
+
 /**
  * PC のプロンプト入力欄
  * 画像の追加・タグ候補・拡大編集・キーワード選択・生成をひとまとめにする
  */
-export function GenerationPromptComposer() {
+export function GenerationPromptComposer({
+  showGenerateButton = true,
+  onSubmitButtonTargetChange,
+}: Props) {
   const context = useGenerationContext()
 
   const t = useTranslation()
@@ -64,6 +77,41 @@ export function GenerationPromptComposer() {
   const isJapanese = context.config.languageUsedForPrompt === "jp"
 
   const size = parseGenerationSize(context.config.sizeType)
+  const selectedModel = context.imageModels.find(
+    (model) => model.id === context.config.modelId,
+  )
+  const generationType =
+    context.config.i2iImageBase64 &&
+    (context.currentPass?.type === "LITE" ||
+      context.currentPass?.type === "STANDARD" ||
+      context.currentPass?.type === "PREMIUM" ||
+      context.config.modelType === "GEMINI")
+      ? "IMAGE_TO_IMAGE"
+      : "TEXT_TO_IMAGE"
+  const imagesPerRequest = useImagesPerRequest()
+  const coinCost =
+    calcGenerationModelCoinCost({
+      modelKey:
+        selectedModel?.name ??
+        selectedModel?.id ??
+        context.config.modelId ??
+        "",
+      modelType: context.config.modelType,
+      generationType,
+      upscaleSize: context.config.upscaleSize,
+      sizeType: context.config.sizeType,
+    }) *
+    imagesPerRequest.count *
+    Math.max(1, context.config.generationCount)
+  const coinSummary = useGenerationCoinSummaryValue()
+  const isPremiumCoinGenerationDisabled =
+    usePremiumCoinGenerationSetting().isDisabled
+  const availableCoinBalance =
+    coinSummary === null
+      ? null
+      : isPremiumCoinGenerationDisabled
+        ? coinSummary.freeBalance
+        : coinSummary.totalBalance
 
   const i2iImage = context.config.i2iImageBase64
 
@@ -146,16 +194,22 @@ export function GenerationPromptComposer() {
 
         <div className="min-w-0 flex-1 pt-1">{textarea}</div>
 
-        <Button
-          variant={"ghost"}
-          size={"icon"}
-          className="size-8 shrink-0 text-muted-foreground"
-          title={t("大きく編集", "Expand")}
-          aria-label={t("大きく編集", "Expand")}
-          onClick={() => setIsExpanded(true)}
-        >
-          <Maximize2Icon className="size-4" />
-        </Button>
+        <div className="flex shrink-0 flex-col items-center gap-1">
+          <div
+            ref={onSubmitButtonTargetChange}
+            className="flex size-10 items-center justify-center"
+          />
+          <Button
+            variant={"ghost"}
+            size={"icon"}
+            className="size-7 text-muted-foreground"
+            title={t("大きく編集", "Expand")}
+            aria-label={t("大きく編集", "Expand")}
+            onClick={() => setIsExpanded(true)}
+          >
+            <Maximize2Icon className="size-4" />
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center gap-1 px-2 pb-2">
@@ -230,6 +284,21 @@ export function GenerationPromptComposer() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
+          <span
+            className="flex items-center gap-1 text-muted-foreground text-xs tabular-nums"
+            title={t(
+              "今回使うコイン / 残り",
+              "Coins for this generation / balance",
+            )}
+          >
+            <CoinIcon className="size-3.5 shrink-0" />
+            <span>{coinCost.toLocaleString()}</span>
+            {availableCoinBalance !== null && (
+              <span className="text-muted-foreground/70">
+                / {availableCoinBalance.toLocaleString()}
+              </span>
+            )}
+          </span>
           <span className="hidden text-muted-foreground text-xs xl:inline">
             {shortcutLabel}
           </span>
@@ -240,7 +309,10 @@ export function GenerationPromptComposer() {
             type="button"
             title={t(`生成（${shortcutLabel}）`, `Generate (${shortcutLabel})`)}
             aria-label={t("生成", "Generate")}
-            className="flex size-9 items-center justify-center rounded-full bg-linear-to-tr from-fuchsia-600 to-purple-500 text-white shadow transition-opacity hover:opacity-85 active:scale-95"
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full bg-linear-to-tr from-fuchsia-600 to-purple-500 text-white shadow transition-opacity hover:opacity-85 active:scale-95",
+              !showGenerateButton && "hidden",
+            )}
             onClick={requestGenerationSubmit}
           >
             <ArrowUpIcon className="size-4" />

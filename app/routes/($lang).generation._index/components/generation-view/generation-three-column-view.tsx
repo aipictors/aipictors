@@ -11,6 +11,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { GenerationAnnouncementBanner } from "~/routes/($lang).generation._index/components/generation-announcement-banner"
 import { GenerationCanvasIntro } from "~/routes/($lang).generation._index/components/generation-view/generation-canvas-intro"
+import { GenerationCanvasOutput } from "~/routes/($lang).generation._index/components/generation-view/generation-canvas-output"
 import { GenerationSideNav } from "~/routes/($lang).generation._index/components/generation-view/generation-side-nav"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
@@ -24,7 +25,9 @@ type Props = {
   history: React.ReactNode
   /** 履歴の詳細（中央に大きく出す） */
   taskDetails: React.ReactNode
-  /** 右パネル（Model / Styles / Settings + 生成ボタン） */
+  /** 中央パネル下部の生成操作 */
+  submission: React.ReactNode
+  /** 右パネル（Model / Styles / Settings） */
   panel: React.ReactNode
 }
 
@@ -50,7 +53,7 @@ const pageStates = [
 ]
 
 /**
- * PC の画像生成画面（左: メニュー / 中央: プロンプトと生成結果 / 右: 設定と生成ボタン）
+ * PC の画像生成画面（左: メニュー / 中央: 生成結果・下部入力 / 右: 設定）
  */
 export function GenerationThreeColumnView(props: Props) {
   const t = useTranslation()
@@ -76,15 +79,19 @@ export function GenerationThreeColumnView(props: Props) {
   const showsIntro = isCanvas && authContext.isNotLoggedIn
 
   const pageTitle =
-    state === "WORKS_FROM_MODEL"
-      ? t("作品検索", "Search posts")
-      : state === "COMMUNICATION"
-        ? t("ご意見", "Feedback")
-        : state === "LINKS"
-          ? t("アンケート", "Survey")
-          : state === "LOGS"
-            ? t("ログ", "Logs")
-            : t("コイン履歴", "Coin history")
+    state === "HISTORY_LIST_FULL"
+      ? t("履歴", "History")
+      : state === "WORK_LIST_FULL"
+        ? t("作品検索", "Search posts")
+        : state === "WORKS_FROM_MODEL"
+          ? t("作品検索", "Search posts")
+          : state === "COMMUNICATION"
+            ? t("ご意見", "Feedback")
+            : state === "LINKS"
+              ? t("アンケート", "Survey")
+              : state === "LOGS"
+                ? t("ログ", "Logs")
+                : t("コイン履歴", "Coin history")
 
   const negativePreview = context.config.negativePromptText.trim()
 
@@ -138,20 +145,16 @@ export function GenerationThreeColumnView(props: Props) {
           <div className="flex min-h-0 flex-1 flex-col justify-center overflow-y-auto px-6 py-8">
             <div className="mx-auto w-full max-w-3xl space-y-6">
               <GenerationCanvasIntro />
-              {composer}
             </div>
           </div>
         )}
 
         {isCanvas && !showsIntro && (
-          <>
-            <div className="shrink-0 px-4 pt-3">
-              <div className="mx-auto w-full max-w-5xl">{composer}</div>
-            </div>
-            <div className="flex min-h-0 flex-1 flex-col gap-y-2 overflow-hidden px-4 pt-3 pb-2">
-              <Suspense fallback={<AppLoadingPage />}>{props.history}</Suspense>
-            </div>
-          </>
+          <div className="flex min-h-0 flex-1 flex-col gap-y-2 overflow-hidden px-4 pt-3 pb-2">
+            <Suspense fallback={<AppLoadingPage />}>
+              <GenerationCanvasOutput />
+            </Suspense>
+          </div>
         )}
 
         {isDetail && (
@@ -164,7 +167,7 @@ export function GenerationThreeColumnView(props: Props) {
 
         {(isPage || isFull) && (
           <div className="flex min-h-0 flex-1 flex-col gap-y-2 overflow-hidden px-4 pt-3 pb-2">
-            {isPage && (
+            {(isPage || isFull) && (
               <div className="flex shrink-0 items-center gap-2">
                 <button
                   type="button"
@@ -180,13 +183,20 @@ export function GenerationThreeColumnView(props: Props) {
             <Suspense fallback={<AppLoadingPage />}>{props.history}</Suspense>
           </div>
         )}
+
+        <div className="shrink-0 border-t bg-background/95 px-4 py-3 shadow-[0_-4px_12px_-8px_rgba(0,0,0,0.15)] backdrop-blur">
+          <div className="mx-auto w-full max-w-5xl space-y-2">
+            {composer}
+            <Suspense fallback={<AppLoadingPage />}>
+              {props.submission}
+            </Suspense>
+          </div>
+        </div>
       </main>
 
-      {!isFull && (
-        <div className="flex w-[340px] shrink-0 border-l xl:w-[372px]">
-          <Suspense fallback={<AppLoadingPage />}>{props.panel}</Suspense>
-        </div>
-      )}
+      <div className="flex w-[340px] shrink-0 border-l xl:w-[372px]">
+        <Suspense fallback={<AppLoadingPage />}>{props.panel}</Suspense>
+      </div>
     </div>
   )
 }

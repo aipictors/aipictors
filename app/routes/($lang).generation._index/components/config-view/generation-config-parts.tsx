@@ -60,7 +60,7 @@ export function ConfigHeaderAction(props: React.ComponentProps<typeof Button>) {
       variant="ghost"
       {...props}
       className={cn(
-        "-my-1 h-7 gap-1 px-1.5 font-normal text-muted-foreground text-xs hover:text-foreground max-md:h-10 max-md:px-2 [&_svg]:size-3.5",
+        "-my-1 h-7 gap-1 px-1.5 font-normal text-muted-foreground text-xs hover:text-foreground [&_svg]:size-3.5",
         props.className,
       )}
     />
@@ -76,7 +76,7 @@ export function configChipClass(options: {
   className?: string
 }) {
   return cn(
-    "flex min-h-9 min-w-0 items-center justify-center gap-1 rounded-lg border px-2 text-sm transition-colors max-md:min-h-11",
+    "flex min-h-9 min-w-0 items-center justify-center gap-1 rounded-lg border px-2 text-sm transition-colors",
     options.isSelected
       ? cn(configAccentSelected, "font-semibold")
       : "border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground",

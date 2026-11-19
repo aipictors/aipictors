@@ -9,8 +9,3 @@ export const GenerationMobileTabContext = createContext<{
   tab: GenerationMobileTab
   setTab: (tab: GenerationMobileTab) => void
 } | null>(null)
-
-/**
- * スマホの下の「残りのコイン」を押したときに、見出しと同じコインのシートを開くイベント
- */
-export const openGenerationCoinSheetEvent = "generation:open-coin-sheet"
