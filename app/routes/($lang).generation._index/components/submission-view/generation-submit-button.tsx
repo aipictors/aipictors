@@ -1,4 +1,4 @@
-import { Loader2Icon } from "lucide-react"
+import { ArrowUpIcon, Loader2Icon } from "lucide-react"
 import { useCallback, useRef, useState } from "react"
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { CoinIcon } from "~/components/coin-icon"
@@ -19,6 +19,8 @@ type Props = {
   buttonActionCaption: string
   /** ボタンの見た目の上書き（スマホのアプリと同じ大きな丸いボタン） */
   className?: string
+  /** スマホの下の入力欄の丸い送信ボタン（↑ だけを出し、文言は読み上げ用にする） */
+  isIconOnly?: boolean
   onClick(): void | Promise<void>
 }
 
@@ -63,37 +65,50 @@ export function GenerationSubmitButton(props: Props) {
         disabled={isBusy || props.isDisabled}
         isNoBackground={true}
       >
-        <div className="flex h-full min-w-0 items-center justify-center gap-2 whitespace-nowrap px-1">
-          {isBusy ? (
-            <>
-              <Loader2Icon className="size-4 shrink-0 animate-spin" />
-              <span className="text-sm md:text-base">
-                {t("送信中…", "Sending…")}
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="min-w-0 truncate font-semibold text-[15px] md:text-lg">
-                {props.buttonActionCaption}
-              </span>
-              <span className="flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-1.5 py-0.5 text-xs tabular-nums max-[359px]:hidden sm:px-2 md:text-sm">
-                <CoinIcon className="size-3.5 shrink-0 md:size-4" />
-                <span>{formatCoinAmount(props.requestCoinCost)}</span>
-                {/* スマホは残高を上の行に出しているので、使う枚数だけにして文言の幅を空ける */}
-                <span className="hidden items-center gap-1 sm:flex">
-                  <span className="opacity-70">/</span>
-                  {props.isCoinSummaryLoading ? (
-                    <Skeleton className="h-3.5 w-8 rounded-sm bg-white/40" />
-                  ) : (
-                    <span className="opacity-90">
-                      {formatCoinAmount(props.ownedCoinCount)}
-                    </span>
-                  )}
+        {props.isIconOnly ? (
+          <div className="flex h-full items-center justify-center">
+            {isBusy ? (
+              <Loader2Icon className="size-5 animate-spin" />
+            ) : (
+              <ArrowUpIcon className="size-5" strokeWidth={2.5} />
+            )}
+            <span className="sr-only">
+              {isBusy ? t("送信中…", "Sending…") : props.buttonActionCaption}
+            </span>
+          </div>
+        ) : (
+          <div className="flex h-full min-w-0 items-center justify-center gap-2 whitespace-nowrap px-1">
+            {isBusy ? (
+              <>
+                <Loader2Icon className="size-4 shrink-0 animate-spin" />
+                <span className="text-sm md:text-base">
+                  {t("送信中…", "Sending…")}
                 </span>
-              </span>
-            </>
-          )}
-        </div>
+              </>
+            ) : (
+              <>
+                <span className="min-w-0 truncate font-semibold text-[15px] md:text-lg">
+                  {props.buttonActionCaption}
+                </span>
+                <span className="flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-1.5 py-0.5 text-xs tabular-nums max-[359px]:hidden sm:px-2 md:text-sm">
+                  <CoinIcon className="size-3.5 shrink-0 md:size-4" />
+                  <span>{formatCoinAmount(props.requestCoinCost)}</span>
+                  {/* スマホは残高を上の行に出しているので、使う枚数だけにして文言の幅を空ける */}
+                  <span className="hidden items-center gap-1 sm:flex">
+                    <span className="opacity-70">/</span>
+                    {props.isCoinSummaryLoading ? (
+                      <Skeleton className="h-3.5 w-8 rounded-sm bg-white/40" />
+                    ) : (
+                      <span className="opacity-90">
+                        {formatCoinAmount(props.ownedCoinCount)}
+                      </span>
+                    )}
+                  </span>
+                </span>
+              </>
+            )}
+          </div>
+        )}
       </GradientBlueButton>
     </div>
   )

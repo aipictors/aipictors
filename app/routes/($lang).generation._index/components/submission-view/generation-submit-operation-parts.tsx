@@ -1,4 +1,5 @@
 import {
+  ArrowUpIcon,
   HistoryIcon,
   Loader2Icon,
   Minus,
@@ -66,6 +67,10 @@ type Props = {
     runningCount: number
     onClick: () => void
   }
+  /**
+   * スマホの下の入力欄（指定すると、プロンプト欄の右に丸い送信ボタンを置く形にする）
+   */
+  dockInput?: React.ReactNode
   onCreateTask: () => void
   onSignTerms: () => void
 }
@@ -190,6 +195,195 @@ export function GenerationSubmitOperationParts(props: Props) {
   const isCoinShort =
     !props.isCoinSummaryLoading && props.ownedCoinCount < props.requestCoinCost
 
+  /**
+   * スマホの残りのコインの行（押すとコインのシート）
+   */
+  const coinRow = (
+    <div className="flex min-w-0 items-center gap-2 px-1 text-xs leading-none">
+      {/* 残りのコイン（押すとコインのシート）。フリーとプレミアムは価値が違うので分けて出す */}
+      <button
+        type="button"
+        onClick={() => {
+          window.dispatchEvent(new Event(openGenerationCoinSheetEvent))
+        }}
+        aria-label={t("残りのコイン", "Coins left")}
+        className={cn(
+          "flex h-9 shrink-0 items-center gap-1 rounded-full px-3 font-bold active:scale-95",
+          isCoinShort
+            ? "bg-pink-500/10 text-pink-600 dark:bg-pink-400/15 dark:text-pink-300"
+            : "bg-muted text-foreground",
+        )}
+      >
+        <span
+          className={cn(
+            "shrink-0 font-semibold",
+            !isCoinShort && "text-muted-foreground",
+          )}
+        >
+          {isCoinShort ? t("不足", "Short") : t("残り", "Left")}
+        </span>
+        {props.isCoinSummaryLoading ? (
+          <span className="h-3 w-12 animate-pulse rounded bg-foreground/15" />
+        ) : (
+          <>
+            <CoinIcon className="size-3.5 shrink-0" />
+            <span className="tabular-nums">
+              {formatCoinAmount(props.freeCoinBalance)}
+            </span>
+            {props.isPremiumCoinGenerationDisabled ? (
+              <span className="truncate font-normal">
+                {t("（フリーのみ）", "(free only)")}
+              </span>
+            ) : (
+              <>
+                <PremiumCoinIcon className="ml-0.5 size-3.5 shrink-0" />
+                <span className="tabular-nums">
+                  {formatCoinAmount(props.premiumCoinBalance)}
+                </span>
+              </>
+            )}
+          </>
+        )}
+      </button>
+      <span
+        className={cn(
+          "shrink-0 tabular-nums",
+          isCoinShort
+            ? "font-bold text-pink-600 dark:text-pink-300"
+            : "text-muted-foreground",
+        )}
+      >
+        {t(
+          `1回 ${formatCoinAmount(props.requestCoinCost)}`,
+          `${formatCoinAmount(props.requestCoinCost)} / run`,
+        )}
+      </span>
+      {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン）。幅が狭いときは残りのコイン（押すとプラン・購入のシート）に任せる */}
+      {!context.currentPass?.type &&
+        !props.isCoinSummaryLoading &&
+        props.ownedCoinCount < 40 && (
+          <Link
+            to="/plus#plans"
+            onClick={() => trackGrowthEvent("lowcoin_click", "free")}
+            className="flex h-9 min-w-0 items-center truncate rounded-full bg-fuchsia-600 px-3 font-medium text-[11px] text-white max-[399px]:hidden"
+          >
+            {t("プランで1日50枚〜", "50+ a day with a plan")}
+          </Link>
+        )}
+      <GenerationServerStatusBadge className="ml-auto shrink-0" />
+    </div>
+  )
+
+  /**
+   * 下の入力欄の丸い送信ボタン（押したときの確認・ダイアログは大きい生成ボタンと同じ）
+   */
+  const dockSendClassName =
+    "size-12 w-12 shrink-0 rounded-full p-1 md:h-12 [&>div]:rounded-full"
+
+  const dockCaption =
+    props.isMaintenance === true
+      ? t("メンテナンス中", "Under maintenance")
+      : withImageCount(
+          getSubmitButtonLabel(
+            !!context.config.i2iImageBase64,
+            context.config.promptText,
+            context.config.seed,
+            generatingCount,
+          ),
+        )
+
+  const renderDockSendButton = () => {
+    // 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示
+    if (!authContext.isLoggedIn || context.user === null) {
+      const isLoading =
+        authContext.isLoading ||
+        (authContext.isLoggedIn && context.user === null)
+      return (
+        <div data-generation-submit className="contents">
+          <LoginDialogButton
+            label={t("生成", "Generate")}
+            isLoading={isLoading}
+            triggerChildren={
+              <GradientBlueButton
+                onClick={() => {}}
+                className={dockSendClassName}
+                disabled={props.isMaintenance === true}
+                isNoBackground={true}
+              >
+                {isLoading ? (
+                  <Loader2Icon className="size-5 animate-spin" />
+                ) : (
+                  <ArrowUpIcon className="size-5" strokeWidth={2.5} />
+                )}
+                <span className="sr-only">{t("生成", "Generate")}</span>
+              </GradientBlueButton>
+            }
+          />
+        </div>
+      )
+    }
+    // 規約の確認
+    if (context.user?.hasSignedImageGenerationTerms !== true) {
+      return (
+        <div data-generation-submit className="contents">
+          <GenerationTermsButton
+            termsMarkdownText={props.termsText}
+            isLoading={props.isCreatingTask}
+            onSubmit={props.onSignTerms}
+            triggerChildren={
+              <GradientBlueButton
+                disabled={props.isCreatingTask || props.isMaintenance === true}
+                onClick={() => {}}
+                className={dockSendClassName}
+                isNoBackground={true}
+              >
+                {props.isCreatingTask ? (
+                  <Loader2Icon className="size-5 animate-spin" />
+                ) : (
+                  <ArrowUpIcon className="size-5" strokeWidth={2.5} />
+                )}
+                <span className="sr-only">{t("生成", "Generate")}</span>
+              </GradientBlueButton>
+            }
+          />
+        </div>
+      )
+    }
+    return (
+      <GenerationSubmitButton
+        isIconOnly
+        className={dockSendClassName}
+        onClick={async () => {
+          await props.onCreateTask()
+        }}
+        isLoading={props.isCreatingTask}
+        isDisabled={context.config.isDisabled || props.isMaintenance === true}
+        isCoinSummaryLoading={props.isCoinSummaryLoading}
+        requestCoinCost={props.requestCoinCost}
+        ownedCoinCount={props.ownedCoinCount}
+        buttonActionCaption={dockCaption}
+      />
+    )
+  }
+
+  if (props.dockInput !== undefined) {
+    return (
+      <>
+        {authContext.isLoggedIn ? (
+          coinRow
+        ) : (
+          <div className="flex items-center justify-end px-1">
+            <GenerationServerStatusBadge />
+          </div>
+        )}
+        <div className="flex min-w-0 items-end gap-2">
+          <div className="min-w-0 flex-1">{props.dockInput}</div>
+          <div className="pb-0.5">{renderDockSendButton()}</div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       {!authContext.isLoggedIn && (
@@ -197,81 +391,7 @@ export function GenerationSubmitOperationParts(props: Props) {
           <GenerationServerStatusBadge />
         </div>
       )}
-      {authContext.isLoggedIn && props.isMobileApp && (
-        <div className="flex min-w-0 items-center gap-2 px-1 text-xs leading-none">
-          {/* 残りのコイン（押すとコインのシート）。フリーとプレミアムは価値が違うので分けて出す */}
-          <button
-            type="button"
-            onClick={() => {
-              window.dispatchEvent(new Event(openGenerationCoinSheetEvent))
-            }}
-            aria-label={t("残りのコイン", "Coins left")}
-            className={cn(
-              "flex h-9 shrink-0 items-center gap-1 rounded-full px-3 font-bold active:scale-95",
-              isCoinShort
-                ? "bg-pink-500/10 text-pink-600 dark:bg-pink-400/15 dark:text-pink-300"
-                : "bg-muted text-foreground",
-            )}
-          >
-            <span
-              className={cn(
-                "shrink-0 font-semibold",
-                !isCoinShort && "text-muted-foreground",
-              )}
-            >
-              {isCoinShort ? t("不足", "Short") : t("残り", "Left")}
-            </span>
-            {props.isCoinSummaryLoading ? (
-              <span className="h-3 w-12 animate-pulse rounded bg-foreground/15" />
-            ) : (
-              <>
-                <CoinIcon className="size-3.5 shrink-0" />
-                <span className="tabular-nums">
-                  {formatCoinAmount(props.freeCoinBalance)}
-                </span>
-                {props.isPremiumCoinGenerationDisabled ? (
-                  <span className="truncate font-normal">
-                    {t("（フリーのみ）", "(free only)")}
-                  </span>
-                ) : (
-                  <>
-                    <PremiumCoinIcon className="ml-0.5 size-3.5 shrink-0" />
-                    <span className="tabular-nums">
-                      {formatCoinAmount(props.premiumCoinBalance)}
-                    </span>
-                  </>
-                )}
-              </>
-            )}
-          </button>
-          <span
-            className={cn(
-              "shrink-0 tabular-nums",
-              isCoinShort
-                ? "font-bold text-pink-600 dark:text-pink-300"
-                : "text-muted-foreground",
-            )}
-          >
-            {t(
-              `1回 ${formatCoinAmount(props.requestCoinCost)}`,
-              `${formatCoinAmount(props.requestCoinCost)} / run`,
-            )}
-          </span>
-          {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン）。幅が狭いときは残りのコイン（押すとプラン・購入のシート）に任せる */}
-          {!context.currentPass?.type &&
-            !props.isCoinSummaryLoading &&
-            props.ownedCoinCount < 40 && (
-              <Link
-                to="/plus#plans"
-                onClick={() => trackGrowthEvent("lowcoin_click", "free")}
-                className="flex h-9 min-w-0 items-center truncate rounded-full bg-fuchsia-600 px-3 font-medium text-[11px] text-white max-[399px]:hidden"
-              >
-                {t("プランで1日50枚〜", "50+ a day with a plan")}
-              </Link>
-            )}
-          <GenerationServerStatusBadge className="ml-auto shrink-0" />
-        </div>
-      )}
+      {authContext.isLoggedIn && props.isMobileApp && coinRow}
       {authContext.isLoggedIn && !props.isMobileApp && (
         <div className="flex items-center gap-2 px-1 text-[11px] text-muted-foreground leading-none">
           <Link

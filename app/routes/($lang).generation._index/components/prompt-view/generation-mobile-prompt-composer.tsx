@@ -1,4 +1,14 @@
-import { BookTextIcon, PencilLineIcon, RotateCcwIcon } from "lucide-react"
+import {
+  BanIcon,
+  BookTextIcon,
+  CheckIcon,
+  ImagePlusIcon,
+  LanguagesIcon,
+  Maximize2Icon,
+  PencilLineIcon,
+  PlusIcon,
+  RotateCcwIcon,
+} from "lucide-react"
 import { Suspense, useRef, useState } from "react"
 import {
   LazyDrawer,
@@ -8,11 +18,20 @@ import {
   LazyDrawerTitle,
 } from "~/components/lazy-drawer"
 import { Button } from "~/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu"
+import { Switch } from "~/components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { PromptKeywordsDialogButton } from "~/routes/($lang).generation._index/components/prompt-view/prompt-keywords-dialog-button"
 import { PromptTagTextarea } from "~/routes/($lang).generation._index/components/prompt-view/prompt-tag-textarea"
+import { useGenerationMobileDock } from "~/routes/($lang).generation._index/contexts/generation-mobile-dock-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useIsMobilePromptCardVisible } from "~/routes/($lang).generation._index/hooks/use-mobile-prompt-card-visibility"
 import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
@@ -21,7 +40,14 @@ import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/uti
  * スマホの生成ボタンの上に出すプロンプト欄
  * タップすると下からシートが開いて大きく編集できる
  */
-export function GenerationMobilePromptComposer() {
+export function GenerationMobilePromptComposer(props: {
+  /**
+   * 下に固定の入力欄（チャットのような 2 行の欄。押すと大きく編集する。左に＋のメニュー）
+   */
+  variant?: "dock"
+}) {
+  const dock = useGenerationMobileDock()
+
   const context = useGenerationContext()
 
   const t = useTranslation()
@@ -67,9 +93,88 @@ export function GenerationMobilePromptComposer() {
     context.updatePrompt("")
   }
 
+  const openEditor = () => {
+    setTab("prompt")
+    setHasOpened(true)
+    setIsOpen(true)
+  }
+
   return (
     <>
-      {!isPromptCardVisible && (
+      {props.variant === "dock" && (
+        <div className="flex min-w-0 items-end gap-1 rounded-[22px] border border-input bg-background p-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                aria-label={t("その他の操作", "More")}
+                className="flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+              >
+                <PlusIcon className="size-5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="top" className="w-60">
+              <DropdownMenuItem
+                onSelect={() => {
+                  context.changeLanguageUsedForPrompt(isJapanese ? null : "jp")
+                }}
+              >
+                <LanguagesIcon className="mr-2 size-4" />
+                {t("日本語で入力", "Write in Japanese")}
+                {isJapanese && <CheckIcon className="ml-auto size-4" />}
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => dock?.setSheet("settings")}>
+                <ImagePlusIcon className="mr-2 size-4" />
+                {t("画像から生成・ControlNet", "Image to image · ControlNet")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => {
+                  setTab("negative")
+                  setHasOpened(true)
+                  setIsOpen(true)
+                }}
+              >
+                <BanIcon className="mr-2 size-4" />
+                {t("ネガティブプロンプト", "Negative prompt")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                disabled={context.config.promptText.length === 0}
+                onSelect={() => context.updatePrompt("")}
+              >
+                <RotateCcwIcon className="mr-2 size-4" />
+                {t("プロンプトをクリア", "Clear prompt")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded={isOpen}
+            aria-label={t("プロンプトを編集", "Edit prompt")}
+            onClick={openEditor}
+            className="flex min-h-11 min-w-0 flex-1 items-start gap-1 py-2.5 pr-1 text-left"
+          >
+            <span
+              className={cn(
+                "line-clamp-2 min-w-0 flex-1 break-all text-[15px] leading-6",
+                promptText.length === 0 && "text-muted-foreground",
+              )}
+            >
+              {promptText.length > 0
+                ? promptText
+                : isJapanese
+                  ? t(
+                      "描きたいイラストを日本語で",
+                      "Describe your illustration",
+                    )
+                  : t("描きたいものをキーワードで", "Enter keywords")}
+            </span>
+            <Maximize2Icon className="mt-1 size-4 shrink-0 text-muted-foreground" />
+          </button>
+        </div>
+      )}
+      {props.variant !== "dock" && !isPromptCardVisible && (
         <button
           type="button"
           aria-haspopup="dialog"
@@ -193,9 +298,21 @@ export function GenerationMobilePromptComposer() {
                       </Button>
                     </PromptKeywordsDialogButton>
                   ) : (
-                    <span className="text-muted-foreground text-xs">
-                      {t("日本語で入力中", "Writing in Japanese")}
-                    </span>
+                    <span />
+                  )}
+                  {!isNegative && (
+                    // biome-ignore lint/a11y/noLabelWithoutControl: Switch は label の中にある
+                    <label className="ml-auto flex items-center gap-2 text-muted-foreground text-xs">
+                      {t("日本語で入力", "Japanese")}
+                      <Switch
+                        checked={isJapanese}
+                        onCheckedChange={(checked) => {
+                          context.changeLanguageUsedForPrompt(
+                            checked ? "jp" : null,
+                          )
+                        }}
+                      />
+                    </label>
                   )}
                   <Button
                     variant={"ghost"}

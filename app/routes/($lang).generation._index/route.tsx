@@ -19,6 +19,10 @@ import { GenerationUserModelFromUrl } from "~/routes/($lang).generation._index/c
 import { GenerationAsideView } from "~/routes/($lang).generation._index/components/generation-view/generation-aside-view"
 import { GenerationHeaderView } from "~/routes/($lang).generation._index/components/generation-view/generation-header-view"
 import { GenerationMainView } from "~/routes/($lang).generation._index/components/generation-view/generation-main-view"
+import {
+  GenerationMobileChips,
+  GenerationMobileSheetFrame,
+} from "~/routes/($lang).generation._index/components/generation-view/generation-mobile-dock"
 import { GenerationMobileView } from "~/routes/($lang).generation._index/components/generation-view/generation-mobile-view"
 import { GenerationSettingsPanel } from "~/routes/($lang).generation._index/components/generation-view/generation-settings-panel"
 import { GenerationThreeColumnView } from "~/routes/($lang).generation._index/components/generation-view/generation-three-column-view"
@@ -167,17 +171,19 @@ export default function GenerationPage() {
             aside={aside}
             mobile={
               <GenerationMobileView
-                form={
-                  <GenerationConfigView
-                    isMobileCards
-                    promptCard={<GenerationMobilePromptCard />}
-                  />
-                }
                 history={aside}
                 submission={
                   <GenerationSubmissionView
                     termsText={text}
-                    composer={<GenerationMobilePromptComposer />}
+                    composer={<GenerationMobilePromptComposer variant="dock" />}
+                    dock={{
+                      sheet: (maxHeight) => (
+                        <GenerationMobileSheetFrame maxHeight={maxHeight}>
+                          <GenerationConfigView part="mobileSheets" />
+                        </GenerationMobileSheetFrame>
+                      ),
+                      chips: <GenerationMobileChips />,
+                    }}
                   />
                 }
                 footer={<GenerationFormFooter />}

@@ -2,6 +2,7 @@ import {
   ArrowLeftIcon,
   CrownIcon,
   EllipsisIcon,
+  ImagesIcon,
   InfoIcon,
   MailIcon,
   ReceiptTextIcon,
@@ -10,7 +11,6 @@ import {
   SparklesIcon,
 } from "lucide-react"
 import { Suspense, useContext, useEffect, useState } from "react"
-import { appPillTabClassName } from "~/components/app/app-pill-tab"
 import { CoinIcon } from "~/components/coin-icon"
 import {
   LazyDrawer,
@@ -38,12 +38,14 @@ import { cn } from "~/lib/utils"
 import { GenerationAnnouncementBanner } from "~/routes/($lang).generation._index/components/generation-announcement-banner"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import {
-  type GenerationMobileTab,
+  GenerationMobileDockContext,
+  type GenerationMobileSheetKind,
+} from "~/routes/($lang).generation._index/contexts/generation-mobile-dock-context"
+import {
   GenerationMobileTabContext,
   openGenerationCoinSheetEvent,
 } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useGenerationCoinSummaryValue } from "~/routes/($lang).generation._index/utils/generation-coin-store"
 import {
   PremiumCoinGenerationSwitchRow,
@@ -52,11 +54,9 @@ import {
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {
-  /** つくる（モデル・プロンプト・設定のカード） */
-  form: React.ReactNode
   /** 履歴（一覧・詳細・モデルの作品） */
   history: React.ReactNode
-  /** 下に固定の生成ボタン（つくる・履歴のどちらでも出す） */
+  /** 下に固定の入力欄（プロンプト・送信ボタン・チップ。チップから設定のシートを開く） */
   submission: React.ReactNode
   footer: React.ReactNode
   coinHistory: React.ReactNode
@@ -78,41 +78,33 @@ const asideSubStates = [
 type SheetKind = "coins" | "coinHistory" | "logs"
 
 /**
- * スマホの生成画面（アプリの生成タブと同じ構成）
- * 見出し（コイン）→「つくる / 履歴」→ つくる＝カードを縦に並べ、生成ボタンは下に固定
+ * スマホの生成画面
+ * 上: 見出し（コイン）と生成結果（履歴）/ 下に固定: プロンプト・送信ボタン・設定のチップ（押すとその項目だけのシート）
  */
 export function GenerationMobileView(props: Props) {
   const t = useTranslation()
 
-  const [tab, setTab] = useState<GenerationMobileTab>("create")
+  const authContext = useContext(AuthContext)
 
   const state = GenerationConfigContext.useSelector((snap) => snap.value)
 
   const { send } = GenerationConfigContext.useActorRef()
 
-  const queryData = useGenerationQuery()
-
-  const runningCount =
-    (queryData.userStatus?.inProgressImageGenerationTasksCount ?? 0) +
-    (queryData.userStatus?.inProgressImageGenerationReservedTasksCount ?? 0)
-
   const isSubState = asideSubStates.includes(String(state))
 
-  const changeTab = (next: GenerationMobileTab) => {
-    setTab(next)
-    window.scrollTo({ top: 0 })
-  }
+  // 下の入力欄のチップから開いている設定のシート
+  const [dockSheet, setDockSheet] = useState<GenerationMobileSheetKind | null>(
+    null,
+  )
 
-  // 「このモデルの作品」などは履歴の場所に出すので、履歴に切り替える
-  useEffect(() => {
-    if (isSubState) changeTab("history")
-  }, [isSubState])
-
-  // 生成を頼んだら履歴に移って、送信中・生成中のカードを見せる
+  // 生成を頼んだらシートを閉じて、送信中・生成中のカードを見せる
   useEffect(() => {
     const onSending = (event: Event) => {
       const detail = (event as CustomEvent<{ count?: number }>).detail
-      if ((detail?.count ?? 0) > 0) changeTab("history")
+      if ((detail?.count ?? 0) > 0) {
+        setDockSheet(null)
+        window.scrollTo({ top: 0 })
+      }
     }
     window.addEventListener("generation:task-sending", onSending)
     return () => {
@@ -139,116 +131,124 @@ export function GenerationMobileView(props: Props) {
   }, [])
 
   return (
-    <GenerationMobileTabContext.Provider value={{ tab, setTab: changeTab }}>
-      <div className="flex flex-col pb-4">
-        <GenerationAnnouncementBanner />
-        <MemberThanksBanner />
-        <PlanEndingNotice variant="banner" />
-        <NewMemberGuide />
-        <GenerationMobileHeader
-          onOpenCoins={() => openSheet("coins")}
-          onOpenCoinHistory={() => openSheet("coinHistory")}
-          onOpenLogs={() => openSheet("logs")}
-        />
-        <div className="flex gap-2 px-4 pb-3" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "create"}
-            className={cn(appPillTabClassName(tab === "create"), "h-11")}
-            onClick={() => changeTab("create")}
-          >
-            {t("つくる", "Create")}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "history"}
-            className={cn(appPillTabClassName(tab === "history"), "h-11")}
-            onClick={() => {
-              if (isSubState) send({ type: "CLOSE" })
-              changeTab("history")
-            }}
-          >
-            {runningCount > 0
-              ? t(
-                  `履歴・生成中 ${runningCount}`,
-                  `History · ${runningCount} running`,
-                )
-              : t("履歴", "History")}
-          </button>
-        </div>
-        {/* 切り替えても入力・一覧の状態が消えないよう、両方描いたまま隠す（一覧の読み込みも前と同じ回数） */}
-        <div hidden={tab !== "create"} className="px-3 pb-44">
-          {props.form}
-          <div className="px-1 pt-6">{props.footer}</div>
-        </div>
-        <div
-          hidden={tab !== "history"}
-          className="min-h-[60vh] overflow-hidden pb-44"
-        >
-          {isSubState && (
-            <div className="px-3 pb-2">
-              <button
-                type="button"
-                className="inline-flex h-10 items-center gap-1.5 rounded-full bg-muted px-4 font-bold text-sm"
-                onClick={() => send({ type: "CLOSE" })}
-              >
-                <ArrowLeftIcon className="size-4" />
-                {t("履歴に戻る", "Back to history")}
-              </button>
+    // 送信欄はスマホの形（残りのコイン・丸い送信ボタン）で出す。「つくる / 履歴」の切り替えはもう無いので履歴のまま
+    <GenerationMobileTabContext.Provider
+      value={{ tab: "history", setTab: () => {} }}
+    >
+      <GenerationMobileDockContext.Provider
+        value={{ sheet: dockSheet, setSheet: setDockSheet }}
+      >
+        <div className="flex flex-col pb-64">
+          <GenerationAnnouncementBanner />
+          <MemberThanksBanner />
+          <PlanEndingNotice variant="banner" />
+          <NewMemberGuide />
+          <GenerationMobileHeader
+            onOpenCoins={() => openSheet("coins")}
+            onOpenCoinHistory={() => openSheet("coinHistory")}
+            onOpenLogs={() => openSheet("logs")}
+          />
+          {authContext.isNotLoggedIn && !isSubState ? (
+            <GenerationMobileGuide />
+          ) : (
+            <div className="min-h-[50vh] overflow-hidden">
+              {isSubState && (
+                <div className="px-3 pb-2">
+                  <button
+                    type="button"
+                    className="inline-flex h-11 items-center gap-1.5 rounded-full bg-muted px-4 font-bold text-sm"
+                    onClick={() => send({ type: "CLOSE" })}
+                  >
+                    <ArrowLeftIcon className="size-4" />
+                    {t("履歴に戻る", "Back to history")}
+                  </button>
+                </div>
+              )}
+              {props.history}
             </div>
           )}
-          {props.history}
+          <div className="px-4 pt-6">{props.footer}</div>
+          {/* シートを開いている間は後ろを暗くする（押すと閉じる） */}
+          {dockSheet !== null && (
+            <button
+              type="button"
+              aria-label={t("設定を閉じる", "Close settings")}
+              className="fixed inset-0 z-40 bg-black/40 md:hidden"
+              onClick={() => setDockSheet(null)}
+            />
+          )}
+          {props.submission}
         </div>
-        {props.submission}
-      </div>
-      {hasOpenedSheet && (
-        <Suspense fallback={null}>
-          <LazyDrawer
-            open={sheet !== null}
-            onOpenChange={(open) => {
-              if (!open) setSheet(null)
-            }}
-            shouldScaleBackground={false}
-          >
-            <LazyDrawerContent
-              className={cn(
-                "pb-[env(safe-area-inset-bottom)]",
-                sheet !== "coins" && "h-[85dvh] max-h-[85dvh]",
-              )}
+        {hasOpenedSheet && (
+          <Suspense fallback={null}>
+            <LazyDrawer
+              open={sheet !== null}
+              onOpenChange={(open) => {
+                if (!open) setSheet(null)
+              }}
+              shouldScaleBackground={false}
             >
-              <LazyDrawerTitle className="px-5 pt-3 text-lg">
-                {sheet === "coinHistory"
-                  ? t("コイン履歴", "Coin history")
-                  : sheet === "logs"
-                    ? t("診断ログ", "Diagnostics logs")
-                    : t("コイン", "Coins")}
-              </LazyDrawerTitle>
-              <LazyDrawerDescription className="sr-only">
-                {t("生成で使うコイン", "Coins for generation")}
-              </LazyDrawerDescription>
-              {sheet === "coins" && (
-                <GenerationMobileCoinSheet
-                  onOpenCoinHistory={() => openSheet("coinHistory")}
-                  onClose={() => setSheet(null)}
-                />
-              )}
-              {sheet === "coinHistory" && (
-                <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
-                  {props.coinHistory}
-                </div>
-              )}
-              {sheet === "logs" && (
-                <div className="min-h-0 flex-1 overflow-hidden px-2 pb-4">
-                  {props.logs}
-                </div>
-              )}
-            </LazyDrawerContent>
-          </LazyDrawer>
-        </Suspense>
-      )}
+              <LazyDrawerContent
+                className={cn(
+                  "pb-[env(safe-area-inset-bottom)]",
+                  sheet !== "coins" && "h-[85dvh] max-h-[85dvh]",
+                )}
+              >
+                <LazyDrawerTitle className="px-5 pt-3 text-lg">
+                  {sheet === "coinHistory"
+                    ? t("コイン履歴", "Coin history")
+                    : sheet === "logs"
+                      ? t("診断ログ", "Diagnostics logs")
+                      : t("コイン", "Coins")}
+                </LazyDrawerTitle>
+                <LazyDrawerDescription className="sr-only">
+                  {t("生成で使うコイン", "Coins for generation")}
+                </LazyDrawerDescription>
+                {sheet === "coins" && (
+                  <GenerationMobileCoinSheet
+                    onOpenCoinHistory={() => openSheet("coinHistory")}
+                    onClose={() => setSheet(null)}
+                  />
+                )}
+                {sheet === "coinHistory" && (
+                  <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
+                    {props.coinHistory}
+                  </div>
+                )}
+                {sheet === "logs" && (
+                  <div className="min-h-0 flex-1 overflow-hidden px-2 pb-4">
+                    {props.logs}
+                  </div>
+                )}
+              </LazyDrawerContent>
+            </LazyDrawer>
+          </Suspense>
+        )}
+      </GenerationMobileDockContext.Provider>
     </GenerationMobileTabContext.Provider>
+  )
+}
+
+/**
+ * 未ログインのときに生成結果の場所に出す短い案内
+ */
+function GenerationMobileGuide() {
+  const t = useTranslation()
+  return (
+    <div className="flex min-h-[44vh] flex-col items-center justify-center gap-3 px-6 text-center">
+      <span className="flex size-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+        <ImagesIcon className="size-6" />
+      </span>
+      <p className="font-bold text-lg">
+        {t("どんなイラストを描きますか？", "What would you like to draw?")}
+      </p>
+      <p className="text-muted-foreground text-sm leading-6">
+        {t(
+          "下の欄に描きたいものを書いて ↑ で生成。モデルや比率は下のボタンから変えられます。",
+          "Write what you want below and tap ↑. Change the model or size with the buttons.",
+        )}
+      </p>
+    </div>
   )
 }
 
