@@ -1,23 +1,23 @@
-import { AI_MODEL_WORKS_PER_PAGE } from "~/routes/($lang)._main.models.$model/ai-model-works-page"
-import { graphql, readFragment, type FragmentOf } from "gql.tada"
-import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
-  type PhotoAlbumWorkFragment,
-  ResponsivePhotoWorksAlbum,
-} from "~/components/responsive-photo-works-album"
-import { AiModelHeader } from "~/routes/($lang)._main.models.$model/components/ai-model-header"
-import { useContext, useEffect, useState } from "react"
+  AI_MODEL_WORKS_PER_PAGE,
+  type AiModelWorksSearch,
+  toAiModelWorksOrderBy,
+} from "~/routes/($lang)._main.models.$model/ai-model-works-page"
+import { graphql, readFragment, type FragmentOf } from "gql.tada"
+import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSearchParams } from "@remix-run/react"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
 import { aiModelQuery } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
+import type { AiModelGenerationInfo } from "~/routes/($lang)._main.models.$model/components/ai-model-header"
+import type { AiModelRelatedModel } from "~/routes/($lang)._main.models.$model/components/ai-model-related"
+import { AiModelWorksLayout } from "~/routes/($lang)._main.models.$model/components/ai-model-works-layout"
 
 type Props = {
   model: FragmentOf<typeof ModelSensitiveItemFragment>
-  isMoreRatings: boolean
-  hasPrompt: boolean
-  page: number
+  search: AiModelWorksSearch
+  generation: AiModelGenerationInfo | null
+  relatedModels: AiModelRelatedModel[]
 }
 
 export function AiModelSensitiveArticle(props: Props) {
@@ -25,24 +25,21 @@ export function AiModelSensitiveArticle(props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const [page, setPage] = useState(props.page)
+  const isEmpty = model.worksCount === 0 || model.works.length === 0
 
-  const [_searchParams, setSearchParams] = useSearchParams()
-
-  const isEmpty =
-    model.works === undefined || model.works === null || model.worksCount === 0
-
+  // ログイン中は自分のいいねの状態を付けて取り直す（ローダーは未ログイン扱いで取る）
   const { data } = useQuery(aiModelQuery, {
     skip: isEmpty || authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       search: model.name,
-      offset: AI_MODEL_WORKS_PER_PAGE * page,
+      offset: AI_MODEL_WORKS_PER_PAGE * props.search.page,
       limit: AI_MODEL_WORKS_PER_PAGE,
       where: {
-        ratings: props.isMoreRatings ? ["R18", "R18G"] : ["R18"],
+        ratings: props.search.isMoreRatings ? ["R18", "R18G"] : ["R18"],
         isSensitive: true,
-        hasPrompt: props.hasPrompt,
-        ...(props.hasPrompt && {
+        hasPrompt: props.search.hasPrompt,
+        orderBy: toAiModelWorksOrderBy(props.search.sort),
+        ...(props.search.hasPrompt && {
           isPromptPublic: true,
         }),
       },
@@ -54,53 +51,18 @@ export function AiModelSensitiveArticle(props: Props) {
 
   const works = isEmpty ? [] : (aiModel?.works ?? model.works)
 
-  // URLパラメータの監視と更新
-  useEffect(() => {
-    if (isEmpty) return
-    setSearchParams({
-      page: String(page),
-      prompt: props.hasPrompt ? "1" : "0",
-      r15: props.isMoreRatings ? "1" : "0",
-    })
-  }, [isEmpty, page, props.hasPrompt, props.isMoreRatings, setSearchParams])
-
-  if (isEmpty) {
-    return (
-      <div className="text-center">
-        <p>作品がありません</p>
-      </div>
-    )
-  }
-
   return (
-    <div className="flex flex-col space-y-4">
-      <AiModelHeader
-        name={model.name}
-        thumbnailImageURL={works[0]?.largeThumbnailImageURL ?? null}
-        isMoreRatings={props.isMoreRatings}
-        hasPrompt={props.hasPrompt}
-        worksCount={model.worksCount}
-      />
-      <div className="space-y-4">
-        <ResponsivePhotoWorksAlbum
-          works={
-            works as unknown as FragmentOf<typeof PhotoAlbumWorkFragment>[]
-          }
-          targetRowHeight={240}
-          size="small"
-          isShowProfile={true}
-        />
-        <div className="h-8" />
-        <div className="-translate-x-1/2 fixed bottom-[var(--aip-tabbar-h,0px)] left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
-          <ResponsivePagination
-            perPage={AI_MODEL_WORKS_PER_PAGE}
-            maxCount={model.worksCount}
-            currentPage={page}
-            onPageChange={(page: number) => setPage(page)}
-          />
-        </div>
-      </div>
-    </div>
+    <AiModelWorksLayout
+      name={model.name}
+      thumbnailImageURL={model.thumbnailImageURL}
+      worksCount={model.worksCount}
+      works={works}
+      search={props.search}
+      isSensitive={true}
+      generation={props.generation}
+      relatedModels={props.relatedModels}
+      promptHubPath={null}
+    />
   )
 }
 
