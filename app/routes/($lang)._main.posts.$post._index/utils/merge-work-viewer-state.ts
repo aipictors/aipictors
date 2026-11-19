@@ -2,6 +2,8 @@ type ViewerState = {
   isLiked: boolean
   isBookmarked: boolean
   isMyRecommended: boolean
+  /** ローダーの作品はページのキャッシュ（最大 1 時間ほど）から来るので、いいね数も今の数で上書きする */
+  likesCount?: number
   user?: Record<string, unknown> | null
 }
 
@@ -19,6 +21,9 @@ export const mergeWorkViewerState = <T>(
     isLiked: viewerState.isLiked,
     isBookmarked: viewerState.isBookmarked,
     isMyRecommended: viewerState.isMyRecommended,
+    ...(typeof viewerState.likesCount === "number" && {
+      likesCount: viewerState.likesCount,
+    }),
     user:
       base.user && viewerState.user
         ? { ...base.user, ...viewerState.user }

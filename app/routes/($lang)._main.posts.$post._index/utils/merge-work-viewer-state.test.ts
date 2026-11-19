@@ -7,6 +7,7 @@ const work = {
   isLiked: false,
   isBookmarked: false,
   isMyRecommended: false,
+  likesCount: 1,
   user: { id: "2", name: "作者", isFollowee: false },
 }
 
@@ -26,4 +27,22 @@ test("閲覧者の状態だけを重ね、作品の内容は変えない", () =>
 test("状態が届くまでと作品がないときはそのまま返す", () => {
   expect(mergeWorkViewerState(work, undefined)).toBe(work)
   expect(mergeWorkViewerState(null, null)).toBeNull()
+})
+
+test("いいね数はキャッシュされたページの数ではなく、閲覧者の状態で届いた今の数にする", () => {
+  const merged = mergeWorkViewerState(work, {
+    isLiked: false,
+    isBookmarked: false,
+    isMyRecommended: false,
+    likesCount: 9,
+  })
+  expect(merged.likesCount).toBe(9)
+  // いいね数が届かないときはページの数のまま
+  expect(
+    mergeWorkViewerState(work, {
+      isLiked: false,
+      isBookmarked: false,
+      isMyRecommended: false,
+    }).likesCount,
+  ).toBe(1)
 })

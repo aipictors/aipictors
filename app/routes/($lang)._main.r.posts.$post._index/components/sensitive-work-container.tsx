@@ -384,6 +384,7 @@ const sensitiveWorkViewerStateQuery = graphql(
     work(id: $id) {
       id
       isLiked
+      likesCount
       isBookmarked
       isMyRecommended
       user {

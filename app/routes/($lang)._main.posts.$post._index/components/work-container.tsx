@@ -422,6 +422,7 @@ const workViewerStateQuery = graphql(
     work(id: $id) {
       id
       isLiked
+      likesCount
       isBookmarked
       isMyRecommended
       user {
