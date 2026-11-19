@@ -1,4 +1,5 @@
 import {
+  ArrowUpIcon,
   HistoryIcon,
   Loader2Icon,
   Minus,
@@ -7,6 +8,7 @@ import {
   SlidersHorizontalIcon,
 } from "lucide-react"
 import { useContext } from "react"
+import { createPortal } from "react-dom"
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { GradientBorderButton } from "~/components/button/gradient-border-button"
 import { CoinIcon } from "~/components/coin-icon"
@@ -50,6 +52,9 @@ type Props = {
   /** 「生成にプレミアムコインを使わない」設定（残りはフリーコインだけで判定する） */
   isPremiumCoinGenerationDisabled?: boolean
   termsText: string
+  centerSubmitButton?: boolean
+  submitButtonTarget?: HTMLDivElement | null
+  isComposerSubmit?: boolean
   availableImageGenerationMaxTasksCount: number
   /** 画像生成のメンテナンス中（生成ボタンを押せなくする） */
   isMaintenance?: boolean
@@ -179,6 +184,81 @@ export function GenerationSubmitOperationParts(props: Props) {
       : label
   }
 
+  if (props.isComposerSubmit) {
+    const target = props.submitButtonTarget
+    if (target === null || target === undefined) return null
+
+    const compactTrigger = (isBusy: boolean) => (
+      <GradientBlueButton
+        onClick={() => {}}
+        aria-label={t("生成", "Generate")}
+        className="size-10 min-w-10 rounded-full p-0 shadow-sm [&>div]:h-full [&>div]:w-full [&>div]:rounded-full"
+        disabled={isBusy || props.isMaintenance === true}
+        isNoBackground={true}
+      >
+        {isBusy ? (
+          <Loader2Icon className="size-4 animate-spin" />
+        ) : (
+          <ArrowUpIcon className="size-4" />
+        )}
+      </GradientBlueButton>
+    )
+
+    let submitAction: React.ReactNode
+    if (!authContext.isLoggedIn || context.user === null) {
+      submitAction = (
+        <div data-generation-submit className="contents">
+          <LoginDialogButton
+            label={t("生成", "Generate")}
+            isLoading={
+              authContext.isLoading ||
+              (authContext.isLoggedIn && context.user === null)
+            }
+            isWidthFull={true}
+            triggerChildren={compactTrigger(
+              authContext.isLoading ||
+                (authContext.isLoggedIn && context.user === null),
+            )}
+          />
+        </div>
+      )
+    } else if (context.user.hasSignedImageGenerationTerms !== true) {
+      submitAction = (
+        <div data-generation-submit className="contents">
+          <GenerationTermsButton
+            termsMarkdownText={props.termsText}
+            isLoading={props.isCreatingTask}
+            onSubmit={props.onSignTerms}
+            triggerChildren={compactTrigger(props.isCreatingTask)}
+          />
+        </div>
+      )
+    } else {
+      submitAction = (
+        <GenerationSubmitButton
+          compact
+          className="size-10 min-w-10 rounded-full p-0 shadow-sm"
+          onClick={props.onCreateTask}
+          isLoading={props.isCreatingTask}
+          isDisabled={context.config.isDisabled || props.isMaintenance === true}
+          isCoinSummaryLoading={props.isCoinSummaryLoading}
+          requestCoinCost={props.requestCoinCost}
+          ownedCoinCount={props.ownedCoinCount}
+          buttonActionCaption={withImageCount(
+            getSubmitButtonLabel(
+              !!context.config.i2iImageBase64,
+              context.config.promptText,
+              context.config.seed,
+              generatingCount,
+            ),
+          )}
+        />
+      )
+    }
+
+    return createPortal(submitAction, target)
+  }
+
   /**
    * スマホの生成ボタン（アプリと同じ大きな丸いボタン）
    */
@@ -259,10 +339,10 @@ export function GenerationSubmitOperationParts(props: Props) {
         </div>
       )}
       {authContext.isLoggedIn && !props.isMobileApp && (
-        <div className="flex items-center gap-2 px-1 text-[11px] leading-none text-muted-foreground">
+        <div className="flex items-center gap-2 px-1 text-[11px] text-muted-foreground leading-none">
           <Link
             to="/settings/points"
-            className="shrink-0 rounded-full border border-border/60 bg-background/95 px-3 py-2 text-[11px] font-medium text-foreground/80 shadow-sm"
+            className="shrink-0 rounded-full border border-border/60 bg-background/95 px-3 py-2 font-medium text-[11px] text-foreground/80 shadow-sm"
           >
             詳細
           </Link>
@@ -308,7 +388,12 @@ export function GenerationSubmitOperationParts(props: Props) {
           <GenerationServerStatusBadge className="ml-auto" />
         </div>
       )}
-      <div className="flex min-w-0 items-center">
+      <div
+        className={cn(
+          "flex min-w-0 items-center",
+          props.centerSubmitButton && "flex-col items-center gap-2",
+        )}
+      >
         {props.mobileSwitch && (
           <button
             type="button"
@@ -426,7 +511,11 @@ export function GenerationSubmitOperationParts(props: Props) {
                 triggerChildren={
                   <GradientBlueButton
                     onClick={() => {}}
-                    className={cn("w-full text-balance", mobileSubmitClassName)}
+                    className={cn(
+                      "w-full text-balance",
+                      mobileSubmitClassName,
+                      props.centerSubmitButton && "mx-auto w-full max-w-sm",
+                    )}
                     disabled={props.isMaintenance === true}
                     isNoBackground={true}
                   >
@@ -463,6 +552,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                     className={cn(
                       "w-full text-balance",
                       props.isMobileApp && "h-14 rounded-full",
+                      props.centerSubmitButton && "mx-auto w-full max-w-sm",
                     )}
                     isNoBackground={true}
                   >
@@ -478,7 +568,10 @@ export function GenerationSubmitOperationParts(props: Props) {
         {isCurrentPremiumPlan() &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
-              className={mobileSubmitClassName}
+              className={cn(
+                mobileSubmitClassName,
+                props.centerSubmitButton && "mx-auto w-full max-w-sm",
+              )}
               onClick={async () => {
                 await props.onCreateTask()
               }}
@@ -506,7 +599,12 @@ export function GenerationSubmitOperationParts(props: Props) {
         {/* プレミアム以外（コインが足りないときは送る前にプラン・コイン購入の案内を出すので、ここでは案内しない） */}
         {!isCurrentPremiumPlan() &&
           context.user?.hasSignedImageGenerationTerms === true && (
-            <div className="flex w-full min-w-0 items-center gap-3">
+            <div
+              className={cn(
+                "flex w-full min-w-0 items-center gap-3",
+                props.centerSubmitButton && "flex-col items-center gap-2",
+              )}
+            >
               {!props.isMobileApp && (
                 <div className="flex shrink-0 items-center gap-1.5">
                   <Switch
@@ -539,7 +637,10 @@ export function GenerationSubmitOperationParts(props: Props) {
                 </div>
               )}
               <GenerationSubmitButton
-                className={mobileSubmitClassName}
+                className={cn(
+                  mobileSubmitClassName,
+                  props.centerSubmitButton && "mx-auto w-full max-w-sm",
+                )}
                 onClick={async () => {
                   await props.onCreateTask()
                 }}

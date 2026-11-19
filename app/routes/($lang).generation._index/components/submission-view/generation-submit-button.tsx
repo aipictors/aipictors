@@ -1,4 +1,4 @@
-import { Loader2Icon } from "lucide-react"
+import { ArrowUpIcon, Loader2Icon } from "lucide-react"
 import { useCallback, useRef, useState } from "react"
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { CoinIcon } from "~/components/coin-icon"
@@ -20,6 +20,7 @@ type Props = {
   /** ボタンの見た目の上書き（スマホのアプリと同じ大きな丸いボタン） */
   className?: string
   onClick(): void | Promise<void>
+  compact?: boolean
 }
 
 /**
@@ -58,7 +59,12 @@ export function GenerationSubmitButton(props: Props) {
     <div data-generation-submit className="contents">
       <GradientBlueButton
         onClick={handleClick}
-        className={cn("h-11 w-full min-w-0 md:h-12", props.className)}
+        className={cn(
+          props.compact
+            ? "size-10 min-w-10 rounded-full p-0"
+            : "h-11 w-full min-w-0 md:h-12",
+          props.className,
+        )}
         size={"lg"}
         disabled={isBusy || props.isDisabled}
         isNoBackground={true}
@@ -67,10 +73,14 @@ export function GenerationSubmitButton(props: Props) {
           {isBusy ? (
             <>
               <Loader2Icon className="size-4 shrink-0 animate-spin" />
-              <span className="text-sm md:text-base">
-                {t("送信中…", "Sending…")}
-              </span>
+              {!props.compact && (
+                <span className="text-sm md:text-base">
+                  {t("送信中…", "Sending…")}
+                </span>
+              )}
             </>
+          ) : props.compact ? (
+            <ArrowUpIcon className="size-4" />
           ) : (
             <>
               <span className="min-w-0 truncate font-semibold text-[15px] md:text-lg">

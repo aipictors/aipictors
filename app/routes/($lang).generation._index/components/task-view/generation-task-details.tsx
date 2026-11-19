@@ -7,10 +7,14 @@ import { useCachedImageGenerationResult } from "~/routes/($lang).generation._ind
 import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
+type Props = {
+  onReroll?: () => void
+}
+
 /**
  * 画像生成履歴の詳細
  */
-export function GenerationTaskDetails() {
+export function GenerationTaskDetails(props: Props) {
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)
@@ -30,10 +34,16 @@ export function GenerationTaskDetails() {
       <ScrollArea className="absolute pb-64 md:pb-8">
         <Suspense fallback={<AppLoadingPage />}>
           {imageGenerationTask && (
-            <GenerationTaskSheetView task={imageGenerationTask} />
+            <GenerationTaskSheetView
+              task={imageGenerationTask}
+              onReroll={props.onReroll}
+            />
           )}
           {imageGenerationResult && (
-            <GenerationTaskSheetView task={imageGenerationResult} />
+            <GenerationTaskSheetView
+              task={imageGenerationResult}
+              onReroll={props.onReroll}
+            />
           )}
         </Suspense>
       </ScrollArea>

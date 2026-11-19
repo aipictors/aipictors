@@ -17,6 +17,7 @@ import { useLocalStorage, useMediaQuery } from "usehooks-ts"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
+import { GenerationSidebarRecentHistory } from "~/routes/($lang).generation._index/components/generation-view/generation-sidebar-recent-history"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 
 type NavKey =
@@ -59,8 +60,8 @@ export function GenerationSideNav() {
     false,
   )
 
-  // タブレット幅（1280px 未満）はアイコンだけにする
-  const isWide = useMediaQuery("(min-width: 1280px)")
+  // 十分な横幅があるデスクトップでは、履歴サムネイルも表示する
+  const isWide = useMediaQuery("(min-width: 1100px)")
 
   const isCollapsed = !isWide || isCollapsedSetting
 
@@ -184,6 +185,7 @@ export function GenerationSideNav() {
       <ul className="space-y-0.5">{mainItems.map(renderItem)}</ul>
       <div className="my-3 border-t" />
       <ul className="space-y-0.5">{subItems.map(renderItem)}</ul>
+      <GenerationSidebarRecentHistory isCollapsed={isCollapsed} />
       <div className="mt-auto space-y-0.5">
         <ul className="space-y-0.5">
           {linkItems.map((item) => {

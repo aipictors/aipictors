@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import { jwtDecode } from "jwt-decode"
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import text from "~/assets/terms.md?raw"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { config } from "~/config"
@@ -52,6 +52,29 @@ export default function GenerationPage() {
   const [rating, setRating] = useState(-1)
 
   const [protect, setProtect] = useState(-1)
+
+  const generationSubmitRef = useRef<(() => Promise<unknown>) | null>(null)
+  const [submitButtonTarget, setSubmitButtonTarget] =
+    useState<HTMLDivElement | null>(null)
+  const pendingRerollRef = useRef(false)
+  const registerGenerationSubmit = useCallback(
+    (submit: (() => Promise<unknown>) | null) => {
+      generationSubmitRef.current = submit
+      if (submit && pendingRerollRef.current) {
+        pendingRerollRef.current = false
+        void submit()
+      }
+    },
+    [],
+  )
+  const rerollGeneration = useCallback(() => {
+    const submit = generationSubmitRef.current
+    if (submit) {
+      void submit()
+    } else {
+      pendingRerollRef.current = true
+    }
+  }, [])
 
   const [isEditMode, toggleEditMode] = useState(false)
 
@@ -139,16 +162,31 @@ export default function GenerationPage() {
           <GenerationView
             threeColumn={
               <GenerationThreeColumnView
-                promptEditor={<GenerationPromptComposer />}
+                promptEditor={
+                  <GenerationPromptComposer
+                    showGenerateButton={false}
+                    onSubmitButtonTargetChange={setSubmitButtonTarget}
+                  />
+                }
                 negativePromptEditor={<GenerationNegativePromptView />}
                 history={aside}
-                taskDetails={<GenerationTaskDetailsView />}
+                taskDetails={
+                  <GenerationTaskDetailsView onReroll={rerollGeneration} />
+                }
+                submission={
+                  <GenerationSubmissionView
+                    termsText={text}
+                    centerSubmitButton
+                    isComposerSubmit
+                    submitButtonTarget={submitButtonTarget}
+                    onReadyToSubmit={registerGenerationSubmit}
+                  />
+                }
                 panel={
                   <GenerationSettingsPanel
                     model={<GenerationConfigView part="model" />}
                     styles={<GenerationStylesSection />}
                     settings={<GenerationConfigView part="settings" />}
-                    submission={<GenerationSubmissionView termsText={text} />}
                   />
                 }
               />

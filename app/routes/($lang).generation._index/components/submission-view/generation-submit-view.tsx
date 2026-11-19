@@ -71,6 +71,10 @@ type Props = {
    * スマホで生成ボタンの上に出すプロンプト欄
    */
   composer?: React.ReactNode
+  centerSubmitButton?: boolean
+  onReadyToSubmit?: (submit: (() => Promise<unknown>) | null) => void
+  submitButtonTarget?: HTMLDivElement | null
+  isComposerSubmit?: boolean
 }
 
 export function GenerationSubmissionView(props: Props) {
@@ -594,6 +598,16 @@ export function GenerationSubmissionView(props: Props) {
     }
   }
 
+  useEffect(() => {
+    if (!props.onReadyToSubmit) return
+    const submit = async () => {
+      if (isCreatingTask) return
+      await onCreateTask()
+    }
+    props.onReadyToSubmit(submit)
+    return () => props.onReadyToSubmit?.(null)
+  }, [props.onReadyToSubmit, onCreateTask, isCreatingTask])
+
   /**
    * 最大生成枚数
    */
@@ -791,6 +805,9 @@ export function GenerationSubmissionView(props: Props) {
             premiumCoinBalance={coinSummary?.premiumBalance ?? 0}
             isPremiumCoinGenerationDisabled={isPremiumCoinGenerationDisabled}
             termsText={props.termsText}
+            centerSubmitButton={props.centerSubmitButton}
+            submitButtonTarget={props.submitButtonTarget}
+            isComposerSubmit={props.isComposerSubmit}
             availableImageGenerationMaxTasksCount={
               remainingImageGenerationTasksCount
             }

@@ -4,10 +4,14 @@ import { GenerationViewCard } from "~/routes/($lang).generation._index/component
 import { GenerationTaskDetails } from "~/routes/($lang).generation._index/components/task-view/generation-task-details"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 
+type Props = {
+  onReroll?: () => void
+}
+
 /**
  * 生成履歴詳細
  */
-export function GenerationTaskDetailsView() {
+export function GenerationTaskDetailsView(props: Props) {
   const { send } = GenerationConfigContext.useActorRef()
   const t = useTranslation()
 
@@ -30,7 +34,7 @@ export function GenerationTaskDetailsView() {
         </span>
       </Button>
 
-      <GenerationTaskDetails />
+      <GenerationTaskDetails onReroll={props.onReroll} />
     </GenerationViewCard>
   )
 }

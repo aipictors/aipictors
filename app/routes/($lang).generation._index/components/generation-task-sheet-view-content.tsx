@@ -8,6 +8,8 @@ import {
   LockKeyholeIcon,
   LockKeyholeOpenIcon,
   PenIcon,
+  RotateCw,
+  StarIcon,
 } from "lucide-react"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
@@ -28,7 +30,6 @@ import { GenerationTaskDeleteMemoConfirmDialog } from "~/routes/($lang).generati
 import { GenerationTaskPostConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-post-confirm-dialog"
 import { GeminiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/gemini-image-modification-dialog"
 import { GenerationTaskError } from "~/routes/($lang).generation._index/components/task-view/generation-task-error"
-import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { GenerationParameters } from "~/routes/($lang).generation._index/types/generation-parameters"
 import type { GenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
@@ -53,6 +54,7 @@ type Props = {
   isRatingLoading: boolean
   isDeletedLoading: boolean
   onReference(isSeedWith: boolean): void
+  onReroll?: () => void
   onPost(): void
   onDelete(): void
   onInPaint(): void
@@ -298,6 +300,34 @@ export function GenerationTaskSheetViewContent(props: Props) {
           {props.task.status !== "RESERVED" && (
             <>
               <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
+                <GenerationMenuButton
+                  title={
+                    props.rating > 0
+                      ? t("お気に入りから外す", "Remove from favorites")
+                      : t("お気に入りに追加", "Add to favorites")
+                  }
+                  onClick={() => {
+                    const rating = props.rating > 0 ? 0 : 1
+                    props.setRating(rating)
+                    props.onChangeRating(props.task.nanoid ?? "", rating)
+                  }}
+                  text={t("お気に入り", "Favorite")}
+                  icon={StarIcon}
+                  isLoading={props.isRatingLoading}
+                  className={props.rating > 0 ? "text-yellow-500" : undefined}
+                />
+                <GenerationTaskPostConfirmDialog onPost={props.onPost} />
+                {props.onReroll && (
+                  <GenerationMenuButton
+                    title={t(
+                      "同じ設定で Seed だけ変えて再生成します",
+                      "Generate again with the same settings and a new seed",
+                    )}
+                    onClick={props.onReroll}
+                    text={t("再生成", "Re-roll")}
+                    icon={RotateCw}
+                  />
+                )}
                 <GenerationReferenceDialog
                   onReference={() => {
                     props.onReference(false)
@@ -312,20 +342,26 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 >
                   <GenerationMenuButton
                     title={t(
-                      "同じ情報で生成する",
-                      "Generate with same settings",
+                      "生成設定を再利用する",
+                      "Reuse generation parameters",
                     )}
                     onClick={() => {}}
-                    text={t("再利用", "Reuse")}
+                    text={t("設定を再利用", "Reuse parameters")}
                     icon={ArrowUpRightSquare}
                   />
                 </GenerationReferenceDialog>
-                <GenerationTaskPostConfirmDialog onPost={props.onPost} />
+                <GenerationTaskDeleteMemoConfirmDialog
+                  onDelete={props.onDelete}
+                  isDeletedLoading={props.isDeletedLoading}
+                />
+              </div>
+              <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
                 <GenerationMenuButton
                   title={t("生成情報をコピーする", "Copy generation info")}
                   onClick={() =>
                     props.copyGeneration(props.GenerationParameters)
                   }
+                  text={t("コピー", "Copy")}
                   icon={ClipboardCopy}
                 />
                 {props.task?.imageUrl && (
@@ -338,34 +374,24 @@ export function GenerationTaskSheetViewContent(props: Props) {
                         props.task.imageUrl ?? "",
                       )
                     }
+                    text={t("保存", "Save")}
                     icon={ArrowDownToLine}
                   />
                 )}
                 <GenerationMenuButton
                   title={t("保護する", "Protect image")}
                   onClick={() => props.toggleProtectedImage(props.task.id)}
+                  text={t("保護", "Protect")}
                   icon={
                     props.isProtected ? LockKeyholeIcon : LockKeyholeOpenIcon
                   }
                   isLoading={props.isProtectedLoading}
-                />
-                <GenerationTaskDeleteMemoConfirmDialog
-                  onDelete={props.onDelete}
-                  isDeletedLoading={props.isDeletedLoading}
                 />
               </div>
               <div className="py-2">
                 <Separator />
               </div>
               <div className="my-4 flex justify-end gap-x-2">
-                <StarRating
-                  value={props.rating}
-                  onChange={(value) => {
-                    props.setRating(value)
-                    props.onChangeRating(props.task.nanoid ?? "", value)
-                  }}
-                  isLoading={props.isRatingLoading}
-                />
                 <div className="ml-auto">
                   <GenerationMenuButton
                     title={t(

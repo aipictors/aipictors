@@ -34,6 +34,7 @@ export function GenerationTaskDeleteMemoConfirmDialog(props: Props) {
         <GenerationMenuButton
           title={t("生成履歴を削除する", "Delete generation history")}
           onClick={() => setIsOpen(true)}
+          text={t("削除", "Delete")}
           icon={Trash2}
           isLoading={props.isDeletedLoading}
           disabled={props.isDeletedLoading}
