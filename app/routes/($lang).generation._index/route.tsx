@@ -137,10 +137,14 @@ export default function GenerationPage() {
           <GenerationView
             settings={
               <GenerationSettingsColumn
-                promptEditor={<GenerationPromptComposer />}
                 negativePromptEditor={<GenerationNegativePromptView />}
                 config={<GenerationConfigView isStacked />}
-                submission={<GenerationSubmissionView termsText={text} />}
+              />
+            }
+            desktopComposer={
+              <GenerationSubmissionView
+                termsText={text}
+                composer={<GenerationPromptComposer showGenerateButton={false} />}
               />
             }
             header={

@@ -43,11 +43,15 @@ const isMac = () => {
   return /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
 }
 
+type Props = {
+  showGenerateButton?: boolean
+}
+
 /**
  * PC のプロンプト入力欄
  * 画像の追加・タグ候補・拡大編集・キーワード選択・生成をひとまとめにする
  */
-export function GenerationPromptComposer() {
+export function GenerationPromptComposer({ showGenerateButton = true }: Props) {
   const context = useGenerationContext()
 
   const t = useTranslation()
@@ -240,7 +244,10 @@ export function GenerationPromptComposer() {
             type="button"
             title={t(`生成（${shortcutLabel}）`, `Generate (${shortcutLabel})`)}
             aria-label={t("生成", "Generate")}
-            className="flex size-9 items-center justify-center rounded-full bg-linear-to-tr from-fuchsia-600 to-purple-500 text-white shadow transition-opacity hover:opacity-85 active:scale-95"
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full bg-linear-to-tr from-fuchsia-600 to-purple-500 text-white shadow transition-opacity hover:opacity-85 active:scale-95",
+              !showGenerateButton && "hidden",
+            )}
             onClick={requestGenerationSubmit}
           >
             <ArrowUpIcon className="size-4" />

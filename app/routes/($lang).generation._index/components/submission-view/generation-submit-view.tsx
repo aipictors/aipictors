@@ -756,7 +756,7 @@ export function GenerationSubmissionView(props: Props) {
       >
         <div className="space-y-2">
           {props.composer && (
-            <div className="empty:hidden md:hidden">{props.composer}</div>
+            <div className="empty:hidden">{props.composer}</div>
           )}
           {generationNotice !== null && (
             <GenerationNoticeBanner
