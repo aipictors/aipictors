@@ -13,7 +13,11 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
-import { getSupportTier, type SupportTier } from "~/utils/support-tier"
+import {
+  getSupportTier,
+  SUPPORT_TOP_TIER_LEVEL,
+  type SupportTier,
+} from "~/utils/support-tier"
 
 type SupportAmount = {
   freeCoinAmount: number
@@ -99,7 +103,7 @@ export function SupportSuperChatCard(props: {
 }) {
   const t = useTranslation()
   const toLabel = useSupportAmountLabel()
-  const tier = getSupportTier(props.support.totalPt)
+  const tier = getSupportTier(props.support)
   if (!tier) return <>{props.children}</>
   return (
     <div
@@ -118,7 +122,7 @@ export function SupportSuperChatCard(props: {
             tier.chipClassName,
           )}
         >
-          {tier.level >= 4 && (
+          {tier.level >= SUPPORT_TOP_TIER_LEVEL && (
             // 高い段階だけ、光が 1 回だけ横切る（動きを減らす設定では出さない）
             <span
               aria-hidden
@@ -145,7 +149,7 @@ export function SupportTierChip(props: {
   className?: string
 }) {
   const toLabel = useSupportAmountLabel()
-  const tier = getSupportTier(props.support.totalPt)
+  const tier = getSupportTier(props.support)
   if (!tier) return null
   return (
     <span
@@ -250,10 +254,10 @@ export function SupportRewardJoinedBadge(props: { className?: string }) {
  * 送ったときの演出。コインがふわっと上がって消える（1 回だけ・動きを減らす設定では出さない）
  */
 export function SupportSentBurst(props: {
-  totalPt: number
+  support: { freeCoinAmount: number; premiumCoinAmount: number }
   className?: string
 }) {
-  const tier = getSupportTier(props.totalPt)
+  const tier = getSupportTier(props.support)
   if (!tier) return null
   const count = Math.min(3 + tier.level, 9)
   return (

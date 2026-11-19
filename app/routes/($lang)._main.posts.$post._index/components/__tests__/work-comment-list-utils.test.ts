@@ -3,21 +3,41 @@ import {
   calculateCommentSupportDraft,
   clearPremiumCheckoutSearchParams,
   excludeShownComments,
+  needsSupportConfirm,
   SUPPORT_FREE_COIN_STEPS,
   SUPPORT_PREMIUM_COIN_STEPS,
 } from "../work-comment-list-utils"
 
 test("フリーは 1pt、プレミアムは 10pt で数える", () => {
-  expect(calculateCommentSupportDraft(10, 2, 100, 5)).toEqual({
+  expect(calculateCommentSupportDraft(10, 200, 100, 500)).toEqual({
     freeCoinAmount: 10,
-    premiumCoinAmount: 2,
-    totalPt: 30,
+    premiumCoinAmount: 200,
+    totalPt: 2010,
   })
+})
+
+test("プレミアムは 100 枚単位だけ", () => {
+  expect(calculateCommentSupportDraft(0, 100, 0, 500)).not.toBeNull()
+  expect(calculateCommentSupportDraft(0, 150, 0, 500)).toBeNull()
+  expect(calculateCommentSupportDraft(0, 5, 0, 500)).toBeNull()
+})
+
+test("確認はフリー・プレミアムとも 1,000 枚から", () => {
+  const draft = (free: number, premium: number) => ({
+    freeCoinAmount: free,
+    premiumCoinAmount: premium,
+    totalPt: free + premium * 10,
+  })
+  expect(needsSupportConfirm(draft(0, 100))).toBe(false)
+  expect(needsSupportConfirm(draft(0, 900))).toBe(false)
+  expect(needsSupportConfirm(draft(0, 1000))).toBe(true)
+  expect(needsSupportConfirm(draft(999, 0))).toBe(false)
+  expect(needsSupportConfirm(draft(1000, 0))).toBe(true)
 })
 
 test("残高を超える、合計が 0、整数でない、負の値は null", () => {
   expect(calculateCommentSupportDraft(101, 0, 100, 5)).toBeNull()
-  expect(calculateCommentSupportDraft(0, 6, 100, 5)).toBeNull()
+  expect(calculateCommentSupportDraft(0, 600, 100, 500)).toBeNull()
   expect(calculateCommentSupportDraft(0, 0, 100, 5)).toBeNull()
   expect(calculateCommentSupportDraft(1.5, 0, 100, 5)).toBeNull()
   expect(calculateCommentSupportDraft(-1, 0, 100, 5)).toBeNull()
@@ -50,7 +70,7 @@ test("非表示にしたものも外し、どちらでもないものは順番�
   expect(excludeShownComments(replies, [], [])).toEqual(replies)
 })
 
-test("コメント欄の推しコインにも 20（フリー）・2（プレミアム）がある（作品の推しコインと同じ枚数を選べる）", () => {
+test("コメント欄の推しコイン: フリーに 20、プレミアムは 100 枚単位", () => {
   expect(SUPPORT_FREE_COIN_STEPS).toContain(20)
-  expect(SUPPORT_PREMIUM_COIN_STEPS).toContain(2)
+  expect(SUPPORT_PREMIUM_COIN_STEPS).toEqual([100, 300, 500, 1000, 3000])
 })

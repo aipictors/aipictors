@@ -1,14 +1,15 @@
 /**
- * 推し（コイン付きのコメント・推し）の段階。YouTube のスーパーチャットのように、
- * pt（フリー 1 枚 = 1pt・プレミアム 1 枚 = 10pt）が大きいほど色が濃く・長く上に出る。
+ * 推し（コイン付きのコメント・推し）の段階。YouTube のスーパーチャットのように、色が濃いほど長く上に出る。
+ * フリーコインだけの推しは枚数に関係なくシルバー 1 色、プレミアムコインを含む推しはプレミアムの枚数で
+ * 青 1〜・緑 500〜・黄 1,000〜・赤 3,000 枚〜（プレミアムは 100 枚単位で選ぶ）。
  * アプリ（lib/v2/core/support_tier.dart）と同じ区切り・同じ色にする
  */
-export type SupportTierLevel = 1 | 2 | 3 | 4 | 5 | 6
+export type SupportTierLevel = 0 | 1 | 2 | 3 | 4
 
 export type SupportTier = {
   level: SupportTierLevel
-  /** この段階になる最小の pt */
-  minPt: number
+  /** この段階になる最小のプレミアムコインの枚数（シルバーは 0 = フリーだけ） */
+  minPremium: number
   /** コメント欄の上の「応援の帯」に出しておく時間（投稿からの時間） */
   pinSeconds: number
   /** 帯（見出し）の塗り。文字色も含む */
@@ -21,13 +22,28 @@ export type SupportTier = {
   outlineClassName: string
 }
 
+/** プレミアムコインで推すときの単位（この倍数だけ選べる） */
+export const SUPPORT_PREMIUM_UNIT = 100
+
 const HOUR = 60 * 60
 
 export const SUPPORT_TIERS: readonly SupportTier[] = [
   {
-    level: 1,
-    minPt: 1,
+    level: 0,
+    minPremium: 0,
     pinSeconds: HOUR,
+    bandClassName:
+      "bg-gradient-to-r from-slate-400 to-slate-300 text-slate-900",
+    bodyClassName: "bg-slate-400/10 ring-slate-400/50",
+    chipClassName:
+      "bg-gradient-to-r from-slate-400 to-slate-300 text-slate-900",
+    outlineClassName:
+      "border-slate-400/60 text-slate-600 dark:text-slate-300 hover:bg-slate-400/10",
+  },
+  {
+    level: 1,
+    minPremium: 1,
+    pinSeconds: 3 * HOUR,
     bandClassName: "bg-sky-600 text-white",
     bodyClassName: "bg-sky-500/10 ring-sky-500/40",
     chipClassName: "bg-sky-600 text-white",
@@ -36,17 +52,7 @@ export const SUPPORT_TIERS: readonly SupportTier[] = [
   },
   {
     level: 2,
-    minPt: 20,
-    pinSeconds: 3 * HOUR,
-    bandClassName: "bg-teal-600 text-white",
-    bodyClassName: "bg-teal-500/10 ring-teal-500/40",
-    chipClassName: "bg-teal-600 text-white",
-    outlineClassName:
-      "border-teal-500/50 text-teal-700 dark:text-teal-300 hover:bg-teal-500/10",
-  },
-  {
-    level: 3,
-    minPt: 50,
+    minPremium: 500,
     pinSeconds: 12 * HOUR,
     bandClassName: "bg-emerald-600 text-white",
     bodyClassName: "bg-emerald-500/10 ring-emerald-500/40",
@@ -55,8 +61,8 @@ export const SUPPORT_TIERS: readonly SupportTier[] = [
       "border-emerald-500/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10",
   },
   {
-    level: 4,
-    minPt: 100,
+    level: 3,
+    minPremium: 1000,
     pinSeconds: 24 * HOUR,
     bandClassName: "bg-amber-400 text-amber-950",
     bodyClassName: "bg-amber-400/15 ring-amber-500/50",
@@ -65,18 +71,8 @@ export const SUPPORT_TIERS: readonly SupportTier[] = [
       "border-amber-500/60 text-amber-700 dark:text-amber-300 hover:bg-amber-400/15",
   },
   {
-    level: 5,
-    minPt: 300,
-    pinSeconds: 3 * 24 * HOUR,
-    bandClassName: "bg-orange-600 text-white",
-    bodyClassName: "bg-orange-500/10 ring-orange-500/50",
-    chipClassName: "bg-orange-600 text-white",
-    outlineClassName:
-      "border-orange-500/60 text-orange-700 dark:text-orange-300 hover:bg-orange-500/10",
-  },
-  {
-    level: 6,
-    minPt: 1000,
+    level: 4,
+    minPremium: 3000,
     pinSeconds: 7 * 24 * HOUR,
     bandClassName: "bg-gradient-to-r from-rose-600 to-red-600 text-white",
     bodyClassName: "bg-rose-500/10 ring-rose-500/60",
@@ -86,15 +82,33 @@ export const SUPPORT_TIERS: readonly SupportTier[] = [
   },
 ]
 
-/** pt から段階を決める。0 以下は null（推しなし） */
-export const getSupportTier = (totalPt: number): SupportTier | null => {
-  if (!Number.isFinite(totalPt) || totalPt <= 0) return null
-  let found: SupportTier = SUPPORT_TIERS[0]
+/** いちばん高い段階（光が横切る演出などに使う） */
+export const SUPPORT_TOP_TIER_LEVEL = 4
+
+type SupportCoins = { freeCoinAmount: number; premiumCoinAmount: number }
+
+/** コインの枚数から段階を決める。どちらも 0 なら null（推しなし） */
+export const getSupportTier = (
+  support: SupportCoins | null | undefined,
+): SupportTier | null => {
+  if (!support) return null
+  const free = Number.isFinite(support.freeCoinAmount)
+    ? support.freeCoinAmount
+    : 0
+  const premium = Number.isFinite(support.premiumCoinAmount)
+    ? support.premiumCoinAmount
+    : 0
+  if (premium <= 0) return free > 0 ? SUPPORT_TIERS[0] : null
+  let found: SupportTier = SUPPORT_TIERS[1]
   for (const tier of SUPPORT_TIERS) {
-    if (totalPt >= tier.minPt) found = tier
+    if (tier.minPremium > 0 && premium >= tier.minPremium) found = tier
   }
   return found
 }
+
+/** プレミアムコインで推せる最大の枚数（残高を 100 枚単位で切り捨て） */
+export const toMaxPremiumSupport = (balance: number) =>
+  Math.max(0, Math.floor(balance / SUPPORT_PREMIUM_UNIT) * SUPPORT_PREMIUM_UNIT)
 
 export const toSupportPt = (
   freeCoinAmount: number,
@@ -106,7 +120,7 @@ export const toSupportPt = (
  * 段階ごとの時間内のものを、段階の高い順・新しい順に最大 limit 件
  */
 export const pickPinnedSupports = <
-  T extends { createdAt: number; support?: { totalPt: number } | null },
+  T extends { createdAt: number; support?: SupportCoins | null },
 >(
   comments: readonly T[],
   nowSeconds: number,
@@ -115,7 +129,7 @@ export const pickPinnedSupports = <
   comments
     .map((comment) => ({
       comment,
-      tier: getSupportTier(comment.support?.totalPt ?? 0),
+      tier: getSupportTier(comment.support),
     }))
     .filter(
       (item): item is { comment: T; tier: SupportTier } =>

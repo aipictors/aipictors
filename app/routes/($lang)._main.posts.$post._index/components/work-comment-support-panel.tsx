@@ -24,6 +24,8 @@ import type { WorkCommentListState } from "~/routes/($lang)._main.posts.$post._i
 import {
   getSupportTier,
   isCreatorRewardRating,
+  SUPPORT_PREMIUM_UNIT,
+  toMaxPremiumSupport,
   toSupportPt,
 } from "~/utils/support-tier"
 
@@ -103,10 +105,15 @@ export function WorkCommentSupportPanel(
     </p>
   )
 
+  // プレミアムは 100 枚単位なので、100 枚に届かない残高では選べない
+  const maxPremiumSupport = toMaxPremiumSupport(coinBalances.premiumBalance)
   const needsPremiumPurchase =
     supportCoinType === "PREMIUM" &&
     !isLoadingCoinSummary &&
-    coinBalances.premiumBalance === 0
+    maxPremiumSupport === 0
+  const isPremiumOffUnit =
+    supportCoinType === "PREMIUM" &&
+    currentPremiumSupportCoinAmount % SUPPORT_PREMIUM_UNIT !== 0
 
   return (
     <div className="space-y-3 rounded-2xl bg-rose-500/5 p-3 ring-1 ring-rose-500/20 md:ml-13">
@@ -157,7 +164,7 @@ export function WorkCommentSupportPanel(
             {
               type: "PREMIUM",
               icon: <PremiumSupportCoinIcon className="size-4" />,
-              label: t("プレミアム×10pt", "Premium ×10pt"),
+              label: t("プレミアム（100枚〜）", "Premium (100+)"),
               balance: coinBalances.premiumBalance,
             },
           ] as const
@@ -196,10 +203,15 @@ export function WorkCommentSupportPanel(
       )}
       {needsPremiumPurchase ? (
         <p className="text-muted-foreground text-xs">
-          {t(
-            "プレミアムコインがありません。購入するとそのまま推せます",
-            "You have no premium coins. Buy some to support",
-          )}
+          {coinBalances.premiumBalance === 0
+            ? t(
+                "プレミアムコインがありません。購入するとそのまま推せます",
+                "You have no premium coins. Buy some to support",
+              )
+            : t(
+                "プレミアムコインは100枚から推せます。購入するとそのまま推せます",
+                "Premium Coins can be sent in units of 100. Buy more to support",
+              )}
         </p>
       ) : (
         <div className="space-y-2">
@@ -215,7 +227,7 @@ export function WorkCommentSupportPanel(
               const balance =
                 supportCoinType === "FREE"
                   ? coinBalances.freeBalance
-                  : coinBalances.premiumBalance
+                  : maxPremiumSupport
               return (
                 <button
                   key={amount}
@@ -224,9 +236,11 @@ export function WorkCommentSupportPanel(
                   className={cn(
                     "h-9 min-w-0 flex-1 rounded-full px-0 text-sm",
                     supportAmountButtonClassName(
-                      getSupportTier(
-                        supportCoinType === "FREE" ? amount : amount * 10,
-                      ),
+                      getSupportTier({
+                        freeCoinAmount: supportCoinType === "FREE" ? amount : 0,
+                        premiumCoinAmount:
+                          supportCoinType === "PREMIUM" ? amount : 0,
+                      }),
                       current === amount,
                     ),
                   )}
@@ -238,7 +252,7 @@ export function WorkCommentSupportPanel(
                     )
                   }
                 >
-                  {amount}
+                  {amount.toLocaleString()}
                 </button>
               )
             })}
@@ -252,10 +266,19 @@ export function WorkCommentSupportPanel(
             max={
               supportCoinType === "FREE"
                 ? coinBalances.freeBalance
-                : coinBalances.premiumBalance
+                : maxPremiumSupport
             }
+            unit={supportCoinType === "PREMIUM" ? SUPPORT_PREMIUM_UNIT : 1}
             onChange={(value) => setSupportCoinAmount(supportCoinType, value)}
           />
+          {isPremiumOffUnit && (
+            <p className="text-[11px] text-rose-600 dark:text-rose-400">
+              {t(
+                "プレミアムコインは100枚単位で推せます",
+                "Premium Coins can be sent in units of 100",
+              )}
+            </p>
+          )}
         </div>
       )}
       <label

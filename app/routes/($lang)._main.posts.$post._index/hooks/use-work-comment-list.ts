@@ -25,8 +25,8 @@ import {
   clearPremiumCheckoutSearchParams,
   excludeShownComments,
   fetchCoinSummary,
+  needsSupportConfirm,
   type ReplyComment,
-  SUPPORT_CONFIRM_THRESHOLD_PT,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import { usePremiumCheckoutConfirmation } from "~/routes/($lang)._main.posts.$post._index/hooks/use-premium-checkout-confirmation"
 import type { CoinSummarySupportTarget } from "~/utils/fetch-coin-summary-shared"
@@ -35,6 +35,7 @@ import {
   readRecentStickerIds,
   sortStickersByRecent,
 } from "~/utils/sticker-recent"
+import { SUPPORT_PREMIUM_UNIT } from "~/utils/support-tier"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 export type WorkCommentListProps = {
@@ -333,10 +334,15 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     try {
       if (hasSupportInput && supportDraft === null) {
         toast(
-          t(
-            "推しコイン数が不正です。保有コイン数を確認してください。",
-            "Support coin amounts are invalid.",
-          ),
+          currentPremiumSupportCoinAmount % SUPPORT_PREMIUM_UNIT !== 0
+            ? t(
+                "プレミアムコインは100枚単位で推せます。",
+                "Premium Coins can be sent in units of 100.",
+              )
+            : t(
+                "推しコイン数が不正です。保有コイン数を確認してください。",
+                "Support coin amounts are invalid.",
+              ),
         )
         return
       }
@@ -386,7 +392,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
 
       if (
         supportDraft !== null &&
-        supportDraft.totalPt >= SUPPORT_CONFIRM_THRESHOLD_PT &&
+        needsSupportConfirm(supportDraft) &&
         !window.confirm(
           t(
             `${supportDraft.totalPt.toLocaleString()}pt（フリー ${supportDraft.freeCoinAmount.toLocaleString()}・プレミアム ${supportDraft.premiumCoinAmount.toLocaleString()}）を推しとして送ります。よろしいですか？`,

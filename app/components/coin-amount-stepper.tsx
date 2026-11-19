@@ -13,6 +13,8 @@ type Props = {
   /** 持っているコインの枚数。これより多くは選べない */
   max: number
   onChange: (value: string) => void
+  /** − と ＋ で動かす枚数（プレミアムコインの推しは 100） */
+  unit?: number
   disabled?: boolean
   className?: string
 }
@@ -33,6 +35,9 @@ const toHoldStep = (tick: number) => {
  */
 export function CoinAmountStepper(props: Props) {
   const t = useTranslation()
+  const unit = props.unit ?? 1
+  const unitRef = useRef(unit)
+  unitRef.current = unit
   const amount = Number(props.value) || 0
   const amountRef = useRef(amount)
   amountRef.current = amount
@@ -69,7 +74,7 @@ export function CoinAmountStepper(props: Props) {
     let tick = 0
     const repeat = () => {
       didHoldRef.current = true
-      const next = stepBy(direction, toHoldStep(tick))
+      const next = stepBy(direction, toHoldStep(tick) * unitRef.current)
       tick += 1
       if (next <= 0 || next >= maxRef.current) {
         // 端まで行くとボタンが無効になり、指を離しても click が来ない
@@ -104,7 +109,7 @@ export function CoinAmountStepper(props: Props) {
         didHoldRef.current = false
         return
       }
-      stepBy(direction, 1)
+      stepBy(direction, unitRef.current)
     },
   })
 
@@ -112,8 +117,11 @@ export function CoinAmountStepper(props: Props) {
     <div className={cn("flex items-center gap-2", props.className)}>
       <Button
         {...toStepButtonProps(-1)}
-        aria-label={t("1 枚減らす", "Remove one coin")}
-        title={t("1 枚減らす（長押しで連続）", "Remove one (hold to repeat)")}
+        aria-label={t(`${unit} 枚減らす`, `Remove ${unit}`)}
+        title={t(
+          `${unit} 枚減らす（長押しで連続）`,
+          `Remove ${unit} (hold to repeat)`,
+        )}
         disabled={props.disabled || amount <= 0}
       >
         <Minus className="size-5" />
@@ -140,9 +148,12 @@ export function CoinAmountStepper(props: Props) {
       />
       <Button
         {...toStepButtonProps(1)}
-        aria-label={t("1 枚増やす", "Add one coin")}
-        title={t("1 枚増やす（長押しで連続）", "Add one (hold to repeat)")}
-        disabled={props.disabled || amount >= props.max}
+        aria-label={t(`${unit} 枚増やす`, `Add ${unit}`)}
+        title={t(
+          `${unit} 枚増やす（長押しで連続）`,
+          `Add ${unit} (hold to repeat)`,
+        )}
+        disabled={props.disabled || amount + unit > props.max}
       >
         <Plus className="size-5" />
       </Button>

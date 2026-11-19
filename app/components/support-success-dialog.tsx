@@ -27,7 +27,11 @@ type Props = {
 
 export function SupportSuccessDialog(props: Props) {
   const t = useTranslation()
-  const tier = getSupportTier(props.totalPt ?? 0)
+  const coins = {
+    freeCoinAmount: props.freeCoinAmount ?? 0,
+    premiumCoinAmount: props.premiumCoinAmount ?? 0,
+  }
+  const tier = getSupportTier(coins)
   const hasCounts =
     props.freeCoinAmount !== undefined || props.premiumCoinAmount !== undefined
 
@@ -36,7 +40,7 @@ export function SupportSuccessDialog(props: Props) {
       <DialogContent className="w-[calc(100vw-1rem)] max-w-sm overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-rose-50 via-white to-orange-50 p-0 shadow-2xl dark:from-rose-950 dark:via-slate-900 dark:to-orange-950">
         <div className="relative px-6 pt-6 pb-5">
           {props.open && props.totalPt !== undefined && (
-            <SupportSentBurst totalPt={props.totalPt} />
+            <SupportSentBurst support={coins} />
           )}
           <DialogHeader>
             <div

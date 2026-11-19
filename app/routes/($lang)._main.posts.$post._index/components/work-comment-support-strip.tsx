@@ -40,7 +40,7 @@ export function WorkCommentSupportStrip(props: { comments: StripComment[] }) {
     >
       {pinned.map((comment) => {
         if (!comment.support) return null
-        const tier = getSupportTier(comment.support.totalPt)
+        const tier = getSupportTier(comment.support)
         return (
           <a
             key={comment.id}
