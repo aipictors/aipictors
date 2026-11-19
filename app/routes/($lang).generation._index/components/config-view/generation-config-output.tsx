@@ -4,11 +4,15 @@ import {
   SlidersHorizontalIcon,
 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { GenerationConfigCustomSize } from "~/routes/($lang).generation._index/components/config-view/generation-config-custom-size"
+import {
+  ConfigSectionHeader,
+  configAccentLink,
+  configChipClass,
+} from "~/routes/($lang).generation._index/components/config-view/generation-config-parts"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
 import {
@@ -32,13 +36,6 @@ type Props = {
    */
   part?: "count" | "size"
 }
-
-const sizeButtonClass =
-  "flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border text-[11px] transition-colors"
-const sizeButtonOn =
-  "border-foreground/70 bg-background font-semibold shadow-sm"
-const sizeButtonOff =
-  "border-transparent bg-muted/60 text-muted-foreground hover:bg-muted"
 
 /**
  * 出力の設定（同時生成枚数・比率・解像度）
@@ -166,40 +163,33 @@ export function GenerationConfigOutput(props: Props) {
 
   const countOptions = [1, 2, 3, 4]
 
-  // スマホのカード（アプリと同じ見た目）。PC はそのまま
+  // スマホのカード（タップしやすく少し高くし、選んだ枚数も見出しに出す）
   const isCardPart = props.part !== undefined
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {/* 同時生成枚数 */}
       {props.part !== "size" && (
         <section className="space-y-2">
-          <div className="flex items-center gap-1.5">
-            <h3 className="font-bold text-sm">
-              {t("同時生成枚数", "Images per generation")}
-            </h3>
-            <CrossPlatformTooltip
-              text={t(
-                "1回の生成で作る枚数です。コインは枚数分かかります。プロンプトを試すときは1枚、本番はまとめて作ると便利です。",
-                "How many images one generation makes. Coins are per image. Try prompts with 1, then make several.",
-              )}
-            />
-            {singleOnlyReason && (
-              <span className="ml-auto text-muted-foreground text-xs">
-                {singleOnlyReason}
-              </span>
+          <ConfigSectionHeader
+            title={t("同時生成枚数", "Images per generation")}
+            tooltip={t(
+              "1回の生成で作る枚数です。コインは枚数分かかります。プロンプトを試すときは1枚、本番はまとめて作ると便利です。",
+              "How many images one generation makes. Coins are per image. Try prompts with 1, then make several.",
             )}
-            {isCardPart && !singleOnlyReason && (
-              <span className="ml-auto font-bold text-sm tabular-nums">
-                {t(`${images.count}枚`, `${images.count}`)}
-              </span>
-            )}
-          </div>
+            aside={
+              singleOnlyReason ??
+              (isCardPart && (
+                <span className="font-semibold text-foreground text-sm tabular-nums">
+                  {t(`${images.count}枚`, `${images.count}`)}
+                </span>
+              ))
+            }
+          />
           <div
             className={cn(
-              "grid grid-cols-4 gap-1 rounded-xl border bg-muted/40 p-1",
-              isCardPart &&
-                "h-12 rounded-2xl border-0 bg-muted p-1 [&>button]:h-10 [&>button]:rounded-xl [&>button]:text-base",
+              "grid grid-cols-4 gap-1.5",
+              isCardPart && "[&>button]:min-h-10",
             )}
             role="group"
             aria-label={t("同時生成枚数", "Images per generation")}
@@ -223,16 +213,10 @@ export function GenerationConfigOutput(props: Props) {
                     // 上限を選んだときは「まとめて」（プランや設定が変わっても上限に合わせる）
                     images.setPreference(count >= images.planMax ? null : count)
                   }}
-                  className={cn(
-                    "flex h-9 items-center justify-center gap-1 rounded-lg text-sm transition-colors",
-                    isSelected
-                      ? isCardPart
-                        ? "bg-linear-to-br from-[#0170C8] via-[#6D5DF6] to-[#FF5C8A] font-bold text-white shadow-sm"
-                        : "bg-background font-semibold text-fuchsia-600 shadow-sm ring-1 ring-fuchsia-500/40 dark:text-fuchsia-300"
-                      : "text-muted-foreground hover:text-foreground",
-                    isDisabled &&
-                      "cursor-not-allowed opacity-40 hover:text-muted-foreground",
-                  )}
+                  className={configChipClass({
+                    isSelected,
+                    isDisabled,
+                  })}
                 >
                   {isLockedByPlan && <LockIcon className="size-3" />}
                   {t(`${count}枚`, `${count}`)}
@@ -263,10 +247,7 @@ export function GenerationConfigOutput(props: Props) {
           {!images.isPaidPlan && (
             <p className="text-muted-foreground text-xs">
               {t("無料は1回1枚。", "Free plan: 1 per run. ")}
-              <Link
-                to="/plus"
-                className="text-fuchsia-600 hover:underline dark:text-fuchsia-300"
-              >
+              <Link to="/plus" className={configAccentLink}>
                 {t("プランで4枚まで", "Up to 4 with a plan")}
               </Link>
             </p>
@@ -277,7 +258,7 @@ export function GenerationConfigOutput(props: Props) {
       {/* 比率 */}
       {props.part !== "count" && sizeOptions.length > 1 && (
         <section className="space-y-2">
-          <h3 className="font-bold text-sm">{t("比率", "Aspect ratio")}</h3>
+          <ConfigSectionHeader title={t("比率", "Aspect ratio")} />
           <div
             className="grid gap-1.5"
             style={{
@@ -288,9 +269,9 @@ export function GenerationConfigOutput(props: Props) {
               const isSelected =
                 !isCustom && option.sizeType === context.config.sizeType
               const ratio = option.width / option.height
-              // アイコンの枠（最大 18px）
-              const iconWidth = ratio >= 1 ? 18 : Math.max(7, 18 * ratio)
-              const iconHeight = ratio >= 1 ? Math.max(7, 18 / ratio) : 18
+              // アイコンの枠（最大 14px）
+              const iconWidth = ratio >= 1 ? 14 : Math.max(6, 14 * ratio)
+              const iconHeight = ratio >= 1 ? Math.max(6, 14 / ratio) : 14
               return (
                 <button
                   key={option.sizeType}
@@ -301,14 +282,14 @@ export function GenerationConfigOutput(props: Props) {
                     setIsCustomOpen(false)
                     context.updateSizeType(option.sizeType)
                   }}
-                  className={cn(
-                    sizeButtonClass,
-                    isSelected ? sizeButtonOn : sizeButtonOff,
-                  )}
+                  className={configChipClass({
+                    isSelected,
+                    className: "flex-col gap-0.5 py-1.5 text-xs",
+                  })}
                 >
-                  <span className="flex h-5 items-center justify-center">
+                  <span className="flex h-3.5 items-center justify-center">
                     <span
-                      className="rounded-[3px] border-[1.5px] border-current"
+                      className="rounded-[2px] border-[1.5px] border-current"
                       style={{ width: iconWidth, height: iconHeight }}
                     />
                   </span>
@@ -321,9 +302,12 @@ export function GenerationConfigOutput(props: Props) {
               aria-label={t("縦と横を入れ替える", "Swap width and height")}
               title={t("縦と横を入れ替える", "Swap width and height")}
               onClick={onSwap}
-              className={cn(sizeButtonClass, sizeButtonOff)}
+              className={configChipClass({
+                isSelected: false,
+                className: "flex-col gap-0.5 py-1.5 text-xs",
+              })}
             >
-              <ArrowLeftRightIcon className="size-5" />
+              <ArrowLeftRightIcon className="size-3.5" />
               {t("入替", "Swap")}
             </button>
             {canCustomize && (
@@ -334,12 +318,12 @@ export function GenerationConfigOutput(props: Props) {
                 aria-label={t("幅と高さを指定する", "Set width and height")}
                 title={t("幅と高さを指定する", "Set width and height")}
                 onClick={onToggleCustom}
-                className={cn(
-                  sizeButtonClass,
-                  isCustomPanelOpen ? sizeButtonOn : sizeButtonOff,
-                )}
+                className={configChipClass({
+                  isSelected: isCustomPanelOpen,
+                  className: "flex-col gap-0.5 py-1.5 text-xs",
+                })}
               >
-                <SlidersHorizontalIcon className="size-5" />
+                <SlidersHorizontalIcon className="size-3.5" />
                 {t("指定", "Custom")}
               </button>
             )}
@@ -360,21 +344,19 @@ export function GenerationConfigOutput(props: Props) {
       {/* 解像度 */}
       {props.part !== "count" && currentSize && (
         <section className="space-y-2">
-          <h3 className="font-bold text-sm">{t("解像度", "Resolution")}</h3>
+          <ConfigSectionHeader title={t("解像度", "Resolution")} />
           <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"
               aria-pressed={!isUpscale}
               onClick={() => context.changeUpscaleSize(null)}
-              className={cn(
-                "flex flex-col items-center justify-center rounded-xl border px-2 py-2 transition-colors",
-                !isUpscale
-                  ? "border-foreground/70 bg-background shadow-sm"
-                  : "border-transparent bg-muted/60 text-muted-foreground hover:bg-muted",
-              )}
+              className={configChipClass({
+                isSelected: !isUpscale,
+                className: "flex-col gap-0 py-1.5",
+              })}
             >
-              <span className="font-bold text-sm">{t("標準", "Standard")}</span>
-              <span className="text-muted-foreground text-xs tabular-nums">
+              <span>{t("標準", "Standard")}</span>
+              <span className="font-normal text-muted-foreground text-xs tabular-nums">
                 {currentSize.width}×{currentSize.height}
                 {sizeMultiplier > 1 && (
                   <span className="ml-1">
@@ -399,19 +381,14 @@ export function GenerationConfigOutput(props: Props) {
                   : undefined
               }
               onClick={() => context.changeUpscaleSize(2)}
-              className={cn(
-                "flex flex-col items-center justify-center rounded-xl border px-2 py-2 transition-colors",
-                isUpscale
-                  ? "border-foreground/70 bg-background shadow-sm"
-                  : "border-transparent bg-muted/60 text-muted-foreground hover:bg-muted",
-                (!canUpscale || isUpscaleOverLimit) &&
-                  "cursor-not-allowed opacity-40",
-              )}
+              className={configChipClass({
+                isSelected: isUpscale,
+                isDisabled: !canUpscale || isUpscaleOverLimit,
+                className: "flex-col gap-0 py-1.5",
+              })}
             >
-              <span className="font-bold text-sm">
-                {t("高解像度", "High-res")}
-              </span>
-              <span className="text-muted-foreground text-xs tabular-nums">
+              <span>{t("高解像度", "High-res")}</span>
+              <span className="font-normal text-muted-foreground text-xs tabular-nums">
                 {currentSize.width * 2}×{currentSize.height * 2}
                 <span className="ml-1">
                   {t(
@@ -428,10 +405,7 @@ export function GenerationConfigOutput(props: Props) {
                 "高解像度は拡大後が2048×2048までのサイズで使えます。",
                 "High-res works up to 2048×2048 after upscaling. ",
               )}
-              <Link
-                to="/plus"
-                className="text-fuchsia-600 hover:underline dark:text-fuchsia-300"
-              >
+              <Link to="/plus" className={configAccentLink}>
                 {t("プランならこの上限はありません", "No limit with a plan")}
               </Link>
             </p>

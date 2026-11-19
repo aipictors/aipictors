@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
-import { ArrowRightIcon, CrownIcon, SparklesIcon, TrophyIcon } from "lucide-react"
+import {
+  ArrowRightIcon,
+  CrownIcon,
+  SparklesIcon,
+  TrophyIcon,
+} from "lucide-react"
 import { useContext } from "react"
 import { Button } from "~/components/ui/button"
 import { UserModelAuthor } from "~/components/user-models/user-model-author"
@@ -30,22 +35,20 @@ export function useUserModelPickup() {
   })
 }
 
-const formatWeek = (pickup: UserModelPickup) => {
-  const md = (ymd: string) => `${Number(ymd.slice(5, 7))}/${Number(ymd.slice(8, 10))}`
+export const formatPickupWeek = (pickup: UserModelPickup) => {
+  const md = (ymd: string) =>
+    `${Number(ymd.slice(5, 7))}/${Number(ymd.slice(8, 10))}`
   return `${md(pickup.weekStart)}〜${md(pickup.weekEnd)}`
 }
 
 type Props = {
-  /**
-   * full: ホーム・モデル一覧の看板 / compact: 生成画面の上の 1 行
-   */
-  variant?: "full" | "compact"
   className?: string
 }
 
 /**
- * 週替わりのピックアップモデルの看板。
+ * 週替わりのピックアップモデルの看板（ホーム・モデル一覧）。
  * 「このモデルで生成 → そのまま投稿」の入り口と、その週のお題（ランキング）への導線
+ * 生成画面ではモデル欄のタイルに出す
  */
 export function UserModelPickupBanner(props: Props) {
   const t = useTranslation()
@@ -62,45 +65,6 @@ export function UserModelPickupBanner(props: Props) {
   const images = [model.thumbnailUrl, ...model.sampleImageUrls]
     .filter((url): url is string => typeof url === "string" && url !== "")
     .filter((url, index, list) => list.indexOf(url) === index)
-
-  if (props.variant === "compact") {
-    return (
-      <div
-        className={cn(
-          "flex items-center gap-3 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-pink-500/5 to-transparent p-2 pr-3",
-          props.className,
-        )}
-      >
-        {images[0] && (
-          <img
-            src={toResizedImageUrl(images[0], 88)}
-            alt=""
-            className="size-11 shrink-0 rounded-lg object-cover"
-            loading="lazy"
-          />
-        )}
-        <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1 font-medium text-[11px] text-amber-700 dark:text-amber-300">
-            <CrownIcon className="size-3" />
-            {t("今週のピックアップモデル", "Model of the week")}
-            <span className="text-muted-foreground">{formatWeek(pickup)}</span>
-          </p>
-          <Link
-            to={`/models/u/${model.id}`}
-            className="line-clamp-1 font-semibold text-sm hover:underline"
-          >
-            {model.name}
-          </Link>
-        </div>
-        <Button asChild size="sm" className="shrink-0 rounded-full">
-          <Link to={generateUrl}>
-            <SparklesIcon className="mr-1 size-3.5" />
-            {t("使う", "Use")}
-          </Link>
-        </Button>
-      </div>
-    )
-  }
 
   return (
     <section
@@ -133,7 +97,7 @@ export function UserModelPickupBanner(props: Props) {
             <CrownIcon className="size-3.5" />
             {t("今週のピックアップモデル", "Model of the week")}
             <span className="font-normal text-muted-foreground">
-              {formatWeek(pickup)}
+              {formatPickupWeek(pickup)}
             </span>
           </p>
           <h2 className="line-clamp-2 font-bold text-lg leading-snug md:text-xl">

@@ -1,15 +1,22 @@
 import {
+  CrownIcon,
   FolderCogIcon,
   ImageOffIcon,
   ImagesIcon,
+  LayoutGridIcon,
+  LockIcon,
   PlusIcon,
   XIcon,
 } from "lucide-react"
 import { CoinIcon } from "~/components/coin-icon"
 import { officialBaseModel } from "~/components/model-library/model-library-utils"
 import { Button } from "~/components/ui/button"
-import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
+import {
+  formatPickupWeek,
+  useUserModelPickup,
+} from "~/components/user-models/user-model-pickup-banner"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { baseModelLabel } from "~/lib/user-models/constants"
 import { cn } from "~/lib/utils"
 import {
@@ -18,6 +25,13 @@ import {
   isStandardOnlyModel,
   modelCoinCost,
 } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
+import {
+  ConfigHeaderAction,
+  ConfigSectionHeader,
+  ConfigThumbGrid,
+  ConfigThumbTile,
+  ConfigWideButton,
+} from "~/routes/($lang).generation._index/components/config-view/generation-config-parts"
 import {
   preloadModelLibrary,
   useModelLibraryLauncher,
@@ -48,20 +62,6 @@ const trimModelName = (input: string) => {
   return input
 }
 
-export function SectionHeader(props: {
-  title: React.ReactNode
-  children?: React.ReactNode
-}) {
-  return (
-    <div className="flex min-h-8 items-center justify-between gap-2">
-      <h3 className="font-semibold text-sm">{props.title}</h3>
-      {props.children && (
-        <div className="-mr-2 flex items-center">{props.children}</div>
-      )}
-    </div>
-  )
-}
-
 function Tag(props: { children: React.ReactNode; className?: string }) {
   return (
     <span
@@ -76,13 +76,14 @@ function Tag(props: { children: React.ReactNode; className?: string }) {
 }
 
 /**
- * 生成画面のモデル欄（選択中のモデルと変更・管理・アップロード）
+ * 生成画面のモデル欄（選択中のモデル、すぐ選べるモデルのタイル、モデル一覧・管理・アップロード）
  */
 export function GenerationModelSection(props: Props) {
   const t = useTranslation()
   const context = useGenerationContext()
   const userModelSelection = useUserModelSelection()
   const library = useModelLibraryLauncher()
+  const { data: pickupData } = useUserModelPickup()
 
   const userCheckpoint = userModelSelection.checkpoint
   const officialModel = context.imageModels.find(
@@ -121,129 +122,128 @@ export function GenerationModelSection(props: Props) {
     library.open({ kind: "CHECKPOINT" })
   }
 
+  // 週替わりのピックアップ（押すと選択される。選択中なら選択中のタイルに印を付ける）
+  const pickup = pickupData ?? null
+  const isPickupSelected =
+    pickup !== null && userCheckpoint?.id === pickup.model.id
+  const pickupTitle = pickup
+    ? `${t("今週のピックアップモデル", "Model of the week")} ${formatPickupWeek(pickup)}: ${pickup.model.name}`
+    : undefined
+
   return (
-    <section className="space-y-2">
-      <SectionHeader title={t("モデル", "Model")}>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="h-8 gap-1 px-2 text-muted-foreground text-xs hover:text-foreground"
+    <section className="space-y-2.5">
+      <ConfigSectionHeader title={t("モデル", "Model")}>
+        <ConfigHeaderAction
           onMouseEnter={preloadModelLibrary}
           onFocus={preloadModelLibrary}
           onClick={() => library.open({ section: "mine" })}
         >
-          <FolderCogIcon className="size-3.5" />
+          <FolderCogIcon />
           {t("モデルを管理", "Manage")}
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="h-8 gap-1 px-2 text-primary text-xs hover:text-primary"
+        </ConfigHeaderAction>
+        <ConfigHeaderAction
           onMouseEnter={preloadModelLibrary}
           onFocus={preloadModelLibrary}
           onClick={() =>
             library.open({ section: "mine", startWithUpload: true })
           }
         >
-          <PlusIcon className="size-3.5" />
+          <PlusIcon />
           {t("アップロード", "Upload")}
-        </Button>
-      </SectionHeader>
+        </ConfigHeaderAction>
+      </ConfigSectionHeader>
 
-      <div className="flex items-center gap-3 rounded-xl border bg-background p-2 pr-2.5">
+      {/* 選択中のモデル */}
+      <div className="flex items-center gap-3 rounded-lg border bg-background p-2">
         <button
           type="button"
           onClick={openLibrary}
           onMouseEnter={preloadModelLibrary}
-          className="size-14 shrink-0 overflow-hidden rounded-lg bg-muted"
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
           aria-label={t("モデルを変更", "Change model")}
         >
-          {thumbnailUrl ? (
-            <img
-              src={toResizedImageUrl(thumbnailUrl, 112)}
-              alt=""
-              className="size-full object-cover"
-              draggable={false}
-            />
-          ) : (
-            <span className="flex size-full items-center justify-center text-muted-foreground">
-              <ImageOffIcon className="size-5" />
-            </span>
-          )}
-        </button>
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold text-sm leading-5" title={name}>
-            {name}
-          </p>
-          <div className="mt-1 flex flex-wrap items-center gap-1">
-            <Tag
-              className={cn(
-                userCheckpoint &&
-                  "bg-violet-500/10 text-violet-700 dark:text-violet-300",
-              )}
+          <span className="size-12 shrink-0 overflow-hidden rounded-md bg-muted">
+            {thumbnailUrl ? (
+              <img
+                src={toResizedImageUrl(thumbnailUrl, 96)}
+                alt=""
+                className="size-full object-cover"
+                draggable={false}
+              />
+            ) : (
+              <span className="flex size-full items-center justify-center text-muted-foreground">
+                <ImageOffIcon className="size-5" />
+              </span>
+            )}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span
+              className="block truncate font-semibold text-sm leading-5"
+              title={name}
             >
-              {userCheckpoint
-                ? t("みんなのモデル", "Community")
-                : t("公式", "Official")}
-            </Tag>
-            {baseLabel && <Tag>{baseLabel}</Tag>}
-            {!userCheckpoint && (
-              <Tag className="text-sky-700 dark:text-sky-300">
-                <CoinIcon className="size-3" />
-                {coinCost}
+              {name}
+            </span>
+            <span className="mt-1 flex flex-wrap items-center gap-1">
+              <Tag>
+                {userCheckpoint
+                  ? t("みんなのモデル", "Community")
+                  : t("公式", "Official")}
               </Tag>
-            )}
-            {isLiteOnly && (
-              <Tag className="bg-amber-500/10 text-amber-700 dark:text-amber-400">
-                {isStandardOnlyModel(officialModel?.name)
-                  ? t("STANDARD以上", "STANDARD+")
-                  : t("LITE以上", "LITE+")}
-              </Tag>
-            )}
-            {isNoQueue && <Tag>{t("待ち人数なし", "No queue")}</Tag>}
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-0.5">
-          {userCheckpoint ? (
+              {isPickupSelected && (
+                <Tag className="text-fuchsia-700 dark:text-fuchsia-300">
+                  <CrownIcon className="size-3" />
+                  {t("ピックアップ", "Pickup")}
+                </Tag>
+              )}
+              {baseLabel && <Tag>{baseLabel}</Tag>}
+              {!userCheckpoint && (
+                <Tag>
+                  <CoinIcon className="size-3" />
+                  {coinCost}
+                </Tag>
+              )}
+              {isLiteOnly && (
+                <Tag>
+                  <LockIcon className="size-3" />
+                  {isStandardOnlyModel(officialModel?.name)
+                    ? t("STANDARD以上", "STANDARD+")
+                    : t("LITE以上", "LITE+")}
+                </Tag>
+              )}
+              {isNoQueue && <Tag>{t("待ち人数なし", "No queue")}</Tag>}
+            </span>
+          </span>
+        </button>
+        {userCheckpoint ? (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="size-8 shrink-0 rounded-full text-muted-foreground"
+            onClick={() => userModelSelection.clearCheckpoint()}
+            aria-label={t("公式モデルに戻す", "Back to official model")}
+            title={t("公式モデルに戻す", "Back to official model")}
+          >
+            <XIcon className="size-4" />
+          </Button>
+        ) : (
+          officialModel && (
             <Button
               size="icon"
               variant="ghost"
-              className="size-8 rounded-full text-muted-foreground"
-              onClick={() => userModelSelection.clearCheckpoint()}
-              aria-label={t("公式モデルに戻す", "Back to official model")}
-              title={t("公式モデルに戻す", "Back to official model")}
+              className="size-8 shrink-0 rounded-full text-muted-foreground"
+              onClick={() =>
+                props.onClickSearchModelWorks(
+                  officialModel.id,
+                  officialModel.displayName ?? "",
+                )
+              }
+              aria-label={t("このモデルの作品", "Works with this model")}
+              title={t("このモデルの作品", "Works with this model")}
             >
-              <XIcon className="size-4" />
+              <ImagesIcon className="size-4" />
             </Button>
-          ) : (
-            officialModel && (
-              <Button
-                size="icon"
-                variant="ghost"
-                className="size-8 rounded-full text-muted-foreground"
-                onClick={() =>
-                  props.onClickSearchModelWorks(
-                    officialModel.id,
-                    officialModel.displayName ?? "",
-                  )
-                }
-                aria-label={t("このモデルの作品", "Works with this model")}
-                title={t("このモデルの作品", "Works with this model")}
-              >
-                <ImagesIcon className="size-4" />
-              </Button>
-            )
-          )}
-          <Button
-            size="sm"
-            variant="secondary"
-            className="h-8 rounded-full px-3.5"
-            onClick={openLibrary}
-            onMouseEnter={preloadModelLibrary}
-          >
-            {t("変更", "Change")}
-          </Button>
-        </div>
+          )
+        )}
       </div>
 
       {isLiteOnly && (
@@ -255,47 +255,60 @@ export function GenerationModelSection(props: Props) {
         </p>
       )}
 
-      {recentModels.length > 0 && (
-        <div className="flex items-center gap-2">
-          <span className="shrink-0 text-muted-foreground text-xs">
-            {t("最近", "Recent")}
-          </span>
-          <div className="flex min-w-0 gap-1.5 overflow-x-auto">
-            {recentModels.map((model) => (
-              <button
-                key={model.id}
-                type="button"
-                onClick={() =>
-                  library.selectOfficialModel(
-                    model.id,
-                    model.type,
-                    model.prompts.join(","),
-                  )
-                }
-                className="flex h-8 max-w-40 shrink-0 items-center gap-1.5 rounded-full border bg-background py-0.5 pr-3 pl-0.5 text-xs transition-colors hover:bg-muted"
-                title={model.displayName ?? model.name}
-              >
-                {model.thumbnailImageURL ? (
-                  <img
-                    src={toResizedImageUrl(model.thumbnailImageURL, 48)}
-                    alt=""
-                    className="size-6 shrink-0 rounded-full object-cover"
-                    draggable={false}
-                  />
-                ) : (
-                  <span className="size-6 shrink-0 rounded-full bg-muted" />
-                )}
-                <span className="truncate">
-                  {trimModelName(model.displayName ?? model.name)}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
+      {/* すぐ選べるモデル（選択中・今週のピックアップ・最近） */}
+      {(recentModels.length > 0 || (pickup && !isPickupSelected)) && (
+        <ConfigThumbGrid>
+          <ConfigThumbTile
+            imageUrl={thumbnailUrl}
+            label={name}
+            isSelected
+            badge={isPickupSelected ? "PICKUP" : undefined}
+            title={isPickupSelected ? pickupTitle : name}
+            onClick={openLibrary}
+            onMouseEnter={preloadModelLibrary}
+          />
+          {pickup && !isPickupSelected && (
+            <ConfigThumbTile
+              imageUrl={pickup.model.thumbnailUrl}
+              label={pickup.model.name}
+              badge="PICKUP"
+              title={pickupTitle}
+              render={(className, content) => (
+                <Link
+                  to={`/generation?userModel=${pickup.model.id}`}
+                  className={className}
+                >
+                  {content}
+                </Link>
+              )}
+            />
+          )}
+          {recentModels.map((model) => (
+            <ConfigThumbTile
+              key={model.id}
+              imageUrl={model.thumbnailImageURL ?? null}
+              label={trimModelName(model.displayName ?? model.name)}
+              title={`${t("最近", "Recent")}: ${model.displayName ?? model.name}`}
+              onClick={() =>
+                library.selectOfficialModel(
+                  model.id,
+                  model.type,
+                  model.prompts.join(","),
+                )
+              }
+            />
+          ))}
+        </ConfigThumbGrid>
       )}
 
-      {/* 週替わりのピックアップモデル（押すと選択される） */}
-      <UserModelPickupBanner variant="compact" />
+      <ConfigWideButton
+        onClick={openLibrary}
+        onMouseEnter={preloadModelLibrary}
+        onFocus={preloadModelLibrary}
+      >
+        <LayoutGridIcon />
+        {t("すべてのモデルを見る", "See all models")}
+      </ConfigWideButton>
     </section>
   )
 }
