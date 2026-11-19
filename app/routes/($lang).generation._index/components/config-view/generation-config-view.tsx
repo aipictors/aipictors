@@ -31,9 +31,12 @@ import { GenerationConfigVae } from "~/routes/($lang).generation._index/componen
 import { GenerationLoraSection } from "~/routes/($lang).generation._index/components/config-view/generation-lora-section"
 import { GenerationModelLibraryProvider } from "~/routes/($lang).generation._index/components/config-view/generation-model-library-provider"
 import { GenerationModelSection } from "~/routes/($lang).generation._index/components/config-view/generation-model-section"
+import { GenerationStylesSection } from "~/routes/($lang).generation._index/components/config-view/generation-styles-section"
+import { GenerationMobilePanelTabs } from "~/routes/($lang).generation._index/components/generation-view/generation-settings-panel"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationPanelTab } from "~/routes/($lang).generation._index/hooks/use-generation-panel-tab"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
@@ -137,6 +140,8 @@ export function GenerationConfigView(props: Props) {
   }, [])
 
   const t = useTranslation()
+
+  const [mobilePanelTab] = useGenerationPanelTab()
 
   const renderDetailsAccordion = (includesSeed = false) => (
     <Accordion type="single" collapsible>
@@ -308,44 +313,60 @@ export function GenerationConfigView(props: Props) {
     return (
       <GenerationModelLibraryProvider>
         <div className="flex flex-col gap-3">
-          <GenerationMobileCard>
-            <GenerationModelSection
-              onClickSearchModelWorks={(id: string, name: string) => {
-                context.updateSearchWorksModelIdAndName(id, name)
-                send({ type: "OPEN_WORKS_FROM_MODEL" })
-              }}
-            />
-            <GenerationConfigModelRecommendation />
-          </GenerationMobileCard>
           {props.promptCard}
-          <GenerationMobileCard>
-            <GenerationLoraSection />
-          </GenerationMobileCard>
-          <GenerationMobileCard>
-            <GenerationConfigOutput modelType={configModelType} part="size" />
-          </GenerationMobileCard>
-          <GenerationMobileCard>
-            <GenerationConfigOutput modelType={configModelType} part="count" />
-            <Separator />
-            <GenerationConfigCount
-              remainingImageGenerationTasksCount={
-                remainingImageGenerationTasksCount
-              }
-              setGenerationCount={context.changeGenerationCount}
-              generationCount={context.config.generationCount}
-            />
-          </GenerationMobileCard>
-          <GenerationMobileCard>
-            <GenerationConfigReferenceImage />
-          </GenerationMobileCard>
-          <GenerationMobileCard>
-            <GenerationConfigSeed
-              value={context.config.seed}
-              onChange={context.updateSeed}
-            />
-            {detailsAccordion}
-          </GenerationMobileCard>
-          <div className="flex gap-x-2 px-1">{memoAndReset}</div>
+          <GenerationMobilePanelTabs />
+          {mobilePanelTab === "model" && (
+            <>
+              <GenerationMobileCard>
+                <GenerationModelSection
+                  onClickSearchModelWorks={(id: string, name: string) => {
+                    context.updateSearchWorksModelIdAndName(id, name)
+                    send({ type: "OPEN_WORKS_FROM_MODEL" })
+                  }}
+                />
+                <GenerationConfigModelRecommendation />
+              </GenerationMobileCard>
+              <GenerationMobileCard>
+                <GenerationLoraSection />
+              </GenerationMobileCard>
+            </>
+          )}
+          {mobilePanelTab === "styles" && (
+            <GenerationMobileCard>
+              <GenerationStylesSection />
+            </GenerationMobileCard>
+          )}
+          {mobilePanelTab === "settings" && (
+            <>
+              <GenerationMobileCard>
+                <GenerationConfigOutput
+                  modelType={configModelType}
+                  part="size"
+                />
+              </GenerationMobileCard>
+              <GenerationMobileCard>
+                <GenerationConfigOutput
+                  modelType={configModelType}
+                  part="count"
+                />
+                <Separator />
+                <GenerationConfigCount
+                  remainingImageGenerationTasksCount={
+                    remainingImageGenerationTasksCount
+                  }
+                  setGenerationCount={context.changeGenerationCount}
+                  generationCount={context.config.generationCount}
+                />
+              </GenerationMobileCard>
+              <GenerationMobileCard>
+                <GenerationConfigReferenceImage />
+              </GenerationMobileCard>
+              <GenerationMobileCard>
+                {renderDetailsAccordion(true)}
+              </GenerationMobileCard>
+              <div className="flex gap-x-2 px-1">{memoAndReset}</div>
+            </>
+          )}
         </div>
       </GenerationModelLibraryProvider>
     )

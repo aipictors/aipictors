@@ -28,6 +28,7 @@ import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/
 import { GenerationServerStatusBadge } from "~/routes/($lang).generation._index/components/submission-view/generation-server-status-badge"
 import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "~/routes/($lang).generation._index/components/submission-view/generation-terms-button"
+import { openGenerationCoinSheetEvent } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationPlanHint } from "~/routes/($lang).generation._index/hooks/use-generation-plan-hint"
 import { isUpscaleOverFreeLimit } from "~/routes/($lang).generation._index/types/generation-size"
@@ -197,29 +198,32 @@ export function GenerationSubmitOperationParts(props: Props) {
         </div>
       )}
       {authContext.isLoggedIn && props.isMobileApp && (
-        <div className="flex items-center gap-2 px-1 text-xs leading-none">
-          <span
+        <div className="flex min-w-0 items-center gap-2 px-1 text-xs leading-none">
+          {/* 残りのコイン（押すとコインのシート）。フリーとプレミアムは価値が違うので分けて出す */}
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(new Event(openGenerationCoinSheetEvent))
+            }}
+            aria-label={t("残りのコイン", "Coins left")}
             className={cn(
-              "flex min-w-0 items-center gap-1 font-bold",
+              "flex h-9 shrink-0 items-center gap-1 rounded-full px-3 font-bold active:scale-95",
               isCoinShort
-                ? "text-pink-600 dark:text-pink-400"
-                : "text-muted-foreground",
+                ? "bg-pink-500/10 text-pink-600 dark:bg-pink-400/15 dark:text-pink-300"
+                : "bg-muted text-foreground",
             )}
           >
-            <CoinIcon className="size-3.5 shrink-0" />
-            <span className="truncate tabular-nums">
-              {props.isCoinSummaryLoading
-                ? t(
-                    `使うコイン ${formatCoinAmount(props.requestCoinCost)}`,
-                    `Uses ${formatCoinAmount(props.requestCoinCost)} coins`,
-                  )
-                : t(
-                    `使うコイン ${formatCoinAmount(props.requestCoinCost)}・残り`,
-                    `Uses ${formatCoinAmount(props.requestCoinCost)} · left`,
-                  )}
+            <span
+              className={cn(
+                "shrink-0 font-semibold",
+                !isCoinShort && "text-muted-foreground",
+              )}
+            >
+              {isCoinShort ? t("不足", "Short") : t("残り", "Left")}
             </span>
-            {/* フリーとプレミアムは価値が違うので、残りは分けて出す */}
-            {!props.isCoinSummaryLoading && (
+            {props.isCoinSummaryLoading ? (
+              <span className="h-3 w-12 animate-pulse rounded bg-foreground/15" />
+            ) : (
               <>
                 <CoinIcon className="size-3.5 shrink-0" />
                 <span className="tabular-nums">
@@ -231,7 +235,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                   </span>
                 ) : (
                   <>
-                    <PremiumCoinIcon className="size-3.5 shrink-0" />
+                    <PremiumCoinIcon className="ml-0.5 size-3.5 shrink-0" />
                     <span className="tabular-nums">
                       {formatCoinAmount(props.premiumCoinBalance)}
                     </span>
@@ -239,30 +243,40 @@ export function GenerationSubmitOperationParts(props: Props) {
                 )}
               </>
             )}
+          </button>
+          <span
+            className={cn(
+              "shrink-0 tabular-nums",
+              isCoinShort
+                ? "font-bold text-pink-600 dark:text-pink-300"
+                : "text-muted-foreground",
+            )}
+          >
+            {t(
+              `1回 ${formatCoinAmount(props.requestCoinCost)}`,
+              `${formatCoinAmount(props.requestCoinCost)} / run`,
+            )}
           </span>
-          {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン） */}
+          {/* 無料で残りが少ないときは、プランの案内を小さく出す（1枚 10 コイン）。幅が狭いときは残りのコイン（押すとプラン・購入のシート）に任せる */}
           {!context.currentPass?.type &&
             !props.isCoinSummaryLoading &&
             props.ownedCoinCount < 40 && (
               <Link
                 to="/plus#plans"
                 onClick={() => trackGrowthEvent("lowcoin_click", "free")}
-                className="shrink-0 rounded-full bg-fuchsia-600 px-3 py-2 font-medium text-[11px] text-white shadow-sm"
+                className="flex h-9 min-w-0 items-center truncate rounded-full bg-fuchsia-600 px-3 font-medium text-[11px] text-white max-[399px]:hidden"
               >
-                {t(
-                  `あと${Math.floor(props.ownedCoinCount / 10)}枚・プランなら1日50枚〜`,
-                  `${Math.floor(props.ownedCoinCount / 10)} left today · get 50+ a day`,
-                )}
+                {t("プランで1日50枚〜", "50+ a day with a plan")}
               </Link>
             )}
-          <GenerationServerStatusBadge className="ml-auto" />
+          <GenerationServerStatusBadge className="ml-auto shrink-0" />
         </div>
       )}
       {authContext.isLoggedIn && !props.isMobileApp && (
-        <div className="flex items-center gap-2 px-1 text-[11px] leading-none text-muted-foreground">
+        <div className="flex items-center gap-2 px-1 text-[11px] text-muted-foreground leading-none">
           <Link
             to="/settings/points"
-            className="shrink-0 rounded-full border border-border/60 bg-background/95 px-3 py-2 text-[11px] font-medium text-foreground/80 shadow-sm"
+            className="shrink-0 rounded-full border border-border/60 bg-background/95 px-3 py-2 font-medium text-[11px] text-foreground/80 shadow-sm"
           >
             詳細
           </Link>

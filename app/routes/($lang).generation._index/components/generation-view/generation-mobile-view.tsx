@@ -9,7 +9,7 @@ import {
   ShoppingCartIcon,
   SparklesIcon,
 } from "lucide-react"
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useContext, useEffect, useState } from "react"
 import { appPillTabClassName } from "~/components/app/app-pill-tab"
 import { CoinIcon } from "~/components/coin-icon"
 import {
@@ -31,6 +31,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -39,6 +40,7 @@ import { GenerationConfigContext } from "~/routes/($lang).generation._index/cont
 import {
   type GenerationMobileTab,
   GenerationMobileTabContext,
+  openGenerationCoinSheetEvent,
 } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
@@ -127,6 +129,15 @@ export function GenerationMobileView(props: Props) {
     setSheet(kind)
   }
 
+  // 下の生成ボタンの「残りのコイン」から開く
+  useEffect(() => {
+    const onOpen = () => openSheet("coins")
+    window.addEventListener(openGenerationCoinSheetEvent, onOpen)
+    return () => {
+      window.removeEventListener(openGenerationCoinSheetEvent, onOpen)
+    }
+  }, [])
+
   return (
     <GenerationMobileTabContext.Provider value={{ tab, setTab: changeTab }}>
       <div className="flex flex-col pb-4">
@@ -144,7 +155,7 @@ export function GenerationMobileView(props: Props) {
             type="button"
             role="tab"
             aria-selected={tab === "create"}
-            className={appPillTabClassName(tab === "create")}
+            className={cn(appPillTabClassName(tab === "create"), "h-11")}
             onClick={() => changeTab("create")}
           >
             {t("つくる", "Create")}
@@ -153,7 +164,7 @@ export function GenerationMobileView(props: Props) {
             type="button"
             role="tab"
             aria-selected={tab === "history"}
-            className={appPillTabClassName(tab === "history")}
+            className={cn(appPillTabClassName(tab === "history"), "h-11")}
             onClick={() => {
               if (isSubState) send({ type: "CLOSE" })
               changeTab("history")
@@ -266,50 +277,56 @@ function GenerationMobileHeader(props: {
 
   const planLabel = usePlanLabel()
 
+  const authContext = useContext(AuthContext)
+
   return (
     <div className="flex items-center gap-2 px-4 pt-2 pb-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[#0170C8] via-[#6D5DF6] to-[#FF5C8A] text-white">
+      {/* 幅が狭いときは見出しとコインが重ならないようにアイコンを省く */}
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[#0170C8] via-[#6D5DF6] to-[#FF5C8A] text-white max-[379px]:hidden">
         <SparklesIcon className="size-5" />
       </span>
       <div className="min-w-0 flex-1">
-        <h1 className="font-black text-xl leading-tight tracking-tight">
+        <h1 className="whitespace-nowrap font-black text-lg leading-tight tracking-tight min-[380px]:text-xl">
           {t("画像生成", "Image generation")}
         </h1>
         <p className="truncate font-semibold text-muted-foreground text-xs">
           {planLabel}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={props.onOpenCoins}
-        aria-label={t("コイン", "Coins")}
-        className="flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-linear-to-br from-amber-400 to-orange-500 px-3.5 font-black text-sm text-white shadow-[0_4px_12px_rgba(245,158,11,0.35)] active:scale-95"
-      >
-        {coinSummary === null ? (
-          <>
-            <CoinIcon className="size-4" />
-            <span className="h-3 w-7 animate-pulse rounded bg-white/40" />
-          </>
-        ) : (
-          <>
-            {/* フリーとプレミアムは価値が違うので分けて出す */}
-            <CoinIcon className="size-4" />
-            <span className="tabular-nums">
-              {coinSummary.freeBalance.toLocaleString()}
-            </span>
-            <PremiumCoinIcon className="ml-1 size-4" />
-            <span className="tabular-nums">
-              {coinSummary.premiumBalance.toLocaleString()}
-            </span>
-          </>
-        )}
-      </button>
+      {/* 未ログインは残高が無いので出さない（読み込み中の表示が出たままになっていた） */}
+      {!authContext.isNotLoggedIn && (
+        <button
+          type="button"
+          onClick={props.onOpenCoins}
+          aria-label={t("コイン", "Coins")}
+          className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-linear-to-br from-amber-400 to-orange-500 px-3 font-black text-[13px] text-white shadow-[0_4px_12px_rgba(245,158,11,0.35)] active:scale-95"
+        >
+          {coinSummary === null ? (
+            <>
+              <CoinIcon className="size-4" />
+              <span className="h-3 w-7 animate-pulse rounded bg-white/40" />
+            </>
+          ) : (
+            <>
+              {/* フリーとプレミアムは価値が違うので分けて出す */}
+              <CoinIcon className="size-4" />
+              <span className="tabular-nums">
+                {coinSummary.freeBalance.toLocaleString()}
+              </span>
+              <PremiumCoinIcon className="ml-1 size-4" />
+              <span className="tabular-nums">
+                {coinSummary.premiumBalance.toLocaleString()}
+              </span>
+            </>
+          )}
+        </button>
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
             aria-label={t("その他", "More")}
-            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground/80 active:scale-95"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground/80 active:scale-95"
           >
             <EllipsisIcon className="size-5" />
           </button>

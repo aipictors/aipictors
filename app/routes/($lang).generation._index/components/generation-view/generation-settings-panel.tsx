@@ -17,18 +17,15 @@ type Props = {
 }
 
 /**
- * PC の右パネル（Model / Styles / Settings のタブ + 下に固定の生成ボタン）
+ * タブの項目（PC の右パネルとスマホの「つくる」で同じものを使う）
  */
-export function GenerationSettingsPanel(props: Props) {
+function usePanelTabItems(): {
+  value: GenerationPanelTab
+  label: string
+  icon: React.ReactNode
+}[] {
   const t = useTranslation()
-
-  const [tab, setTab] = useGenerationPanelTab()
-
-  const tabs: {
-    value: GenerationPanelTab
-    label: string
-    icon: React.ReactNode
-  }[] = [
+  return [
     {
       value: "model",
       label: t("モデル", "Model"),
@@ -45,6 +42,58 @@ export function GenerationSettingsPanel(props: Props) {
       icon: <SlidersHorizontalIcon className="size-4" />,
     },
   ]
+}
+
+/**
+ * スマホの「つくる」のモデル / 画風 / 設定の切り替え（下の内容は GenerationConfigView が出し分ける）
+ */
+export function GenerationMobilePanelTabs() {
+  const t = useTranslation()
+
+  const tabs = usePanelTabItems()
+
+  const [tab, setTab] = useGenerationPanelTab()
+
+  return (
+    <div
+      role="tablist"
+      aria-label={t("生成の設定", "Generation settings")}
+      className="grid grid-cols-3 gap-1 rounded-full bg-muted p-1"
+    >
+      {tabs.map((item) => {
+        const isActive = tab === item.value
+        return (
+          <button
+            key={item.value}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => setTab(item.value)}
+            className={cn(
+              "flex h-11 min-w-0 items-center justify-center gap-1.5 rounded-full font-bold text-sm transition-colors active:scale-95",
+              isActive
+                ? "bg-background text-foreground shadow-xs"
+                : "text-muted-foreground",
+            )}
+          >
+            {item.icon}
+            <span className="truncate">{item.label}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+/**
+ * PC の右パネル（Model / Styles / Settings のタブ + 下に固定の生成ボタン）
+ */
+export function GenerationSettingsPanel(props: Props) {
+  const t = useTranslation()
+
+  const [tab, setTab] = useGenerationPanelTab()
+
+  const tabs = usePanelTabItems()
 
   return (
     <aside className="flex h-full min-h-0 w-full flex-col bg-background">
