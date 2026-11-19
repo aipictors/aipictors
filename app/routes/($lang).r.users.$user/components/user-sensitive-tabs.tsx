@@ -1,8 +1,8 @@
 import { useQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
-import { useNavigate } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { useLocale } from "~/hooks/use-locale"
+import { useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { useUserActiveTab } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-active-tab"
 import { useUserTabLabels } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-tab-label"
@@ -11,6 +11,8 @@ import { makeNavigateCallback } from "~/utils/make-navigate-callback"
 
 type Props = {
   user: FragmentOf<typeof UserSensitiveTabsFragment>
+  /** R18 のシリーズの数（hasAlbums は全年齢のシリーズも数えるため） */
+  albumsCount?: number
 }
 
 export function UserSensitiveTabs(props: Props) {
@@ -43,7 +45,7 @@ export function UserSensitiveTabs(props: Props) {
     hasVideoWorks: user.hasSensitiveVideoWorks || actualVideoWorksCount > 0,
     hasColumnWorks: user.hasSensitiveColumnWorks || actualColumnWorksCount > 0,
     hasFolders: user.hasFolders,
-    hasAlbums: user.hasAlbums,
+    hasAlbums: (props.albumsCount ?? 0) > 0,
     hasPublicStickers: user.hasPublicStickers,
     hasBadges: user.hasBadges,
     hasUserEvents: false,

@@ -69,11 +69,12 @@ export function UserAvatarWithFrame(props: Props) {
     )
   }
 
+  // 枠付きは inline-flex。align-top で文字の行の下の余白（アイコンの下の隙間）を作らない
   if (isUserAvatarDecoration(props.frame) && props.frame.overlayImageUrl) {
     return (
       <div
         className={cn(
-          "relative inline-flex shrink-0 rounded-full",
+          "relative inline-flex shrink-0 rounded-full align-top",
           props.sizeClassName,
           props.frameClassName,
         )}
@@ -113,7 +114,7 @@ export function UserAvatarWithFrame(props: Props) {
   return (
     <div
       className={cn(
-        "avatar-frame relative inline-flex shrink-0 rounded-full",
+        "avatar-frame relative inline-flex shrink-0 rounded-full align-top",
         props.sizeClassName,
         props.frameClassName,
       )}

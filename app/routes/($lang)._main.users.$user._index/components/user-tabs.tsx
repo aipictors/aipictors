@@ -13,6 +13,8 @@ type Props = {
   modelsCount?: number
   /** 種類ごとの作品数（hasImageWorks などが実際と合わないことがあるため） */
   worksCounts?: { image: number; novel: number; video: number; column: number }
+  /** 全年齢のシリーズの数（hasAlbums は R18 のシリーズも数えるため） */
+  albumsCount?: number
 }
 
 /**
@@ -32,6 +34,7 @@ export function UserTabs(props: Props) {
     "/notes": props.worksCounts?.column,
     "/videos": props.worksCounts?.video,
     "/models": props.modelsCount,
+    "/albums": props.albumsCount,
   }
 
   const items: Array<{ path: string; label: string; show: boolean }> = [
@@ -61,7 +64,14 @@ export function UserTabs(props: Props) {
       label: t("モデル", "Models"),
       show: (props.modelsCount ?? 0) > 0,
     },
-    { path: "/albums", label: t("シリーズ", "Series"), show: user.hasAlbums },
+    {
+      path: "/albums",
+      label: t("シリーズ", "Series"),
+      show:
+        props.albumsCount === undefined
+          ? user.hasAlbums
+          : props.albumsCount > 0,
+    },
     {
       path: "/events",
       label: t("イベント", "Events"),

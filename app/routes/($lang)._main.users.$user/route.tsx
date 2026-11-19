@@ -72,6 +72,8 @@ export async function loader(props: LoaderFunctionArgs) {
       video: r18WorksCountResult.data.videoWorksCount,
       column: r18WorksCountResult.data.columnWorksCount,
     },
+    // hasAlbums は R18 のシリーズも数えるので、全年齢のシリーズの数でタブを出す
+    albumsCount: r18WorksCountResult.data.albumsCount,
     modelsCount: userModels.models.length,
   }
 }
@@ -163,6 +165,7 @@ export default function UserLayout() {
           user={user}
           modelsCount={data.modelsCount}
           worksCounts={data.worksCounts}
+          albumsCount={data.albumsCount}
         />
         <Outlet />
       </div>
@@ -259,5 +262,6 @@ const UserR18WorksCountQuery = graphql(
     novelWorksCount: worksCount(where: { userId: $userId, workType: NOVEL, ratings: [G, R15], isNowCreatedAt: true })
     videoWorksCount: worksCount(where: { userId: $userId, workType: VIDEO, ratings: [G, R15], isNowCreatedAt: true })
     columnWorksCount: worksCount(where: { userId: $userId, workType: COLUMN, ratings: [G, R15], isNowCreatedAt: true })
+    albumsCount: albumsCount(where: { ownerUserId: $userId, ratings: [G, R15], needInspected: false })
   }`,
 )

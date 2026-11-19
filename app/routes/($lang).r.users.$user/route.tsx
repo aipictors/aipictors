@@ -59,6 +59,8 @@ export async function loader(props: LoaderFunctionArgs) {
   return {
     user: result.data.user,
     r18WorksCount: r18WorksCountResult.data.r18WorksCount,
+    // hasAlbums は全年齢のシリーズも数えるので、R18 のシリーズの数でタブを出す
+    sensitiveAlbumsCount: r18WorksCountResult.data.sensitiveAlbumsCount,
   }
 }
 
@@ -127,7 +129,10 @@ export default function UserLayout() {
         <UserHomeSensitiveMenu user={user} />
       </div>
       <div className="mx-auto w-full max-w-6xl space-y-4 px-4 md:px-8">
-        <UserSensitiveTabs user={user} />
+        <UserSensitiveTabs
+          user={user}
+          albumsCount={data.sensitiveAlbumsCount}
+        />
         <Outlet />
       </div>
     </div>
@@ -167,5 +172,6 @@ const UserQuery = graphql(
 const UserR18WorksCountQuery = graphql(
   `query UserR18WorksCount($userId: ID!) {
     r18WorksCount: worksCount(where: { userId: $userId, ratings: [R18, R18G], isSensitive: true })
+    sensitiveAlbumsCount: albumsCount(where: { ownerUserId: $userId, ratings: [R18, R18G], isSensitive: true, needInspected: false })
   }`,
 )

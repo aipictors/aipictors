@@ -6,6 +6,7 @@ import { useContext } from "react"
 import { Button } from "~/components/ui/button"
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import { createUserTabMeta } from "~/routes/($lang)._main.users.$user/user-tab-meta"
 import {
@@ -58,6 +59,7 @@ export default function UserAlbums() {
   const params = useParams()
   const revalidator = useRevalidator()
   const data = useLoaderData<typeof loader>()
+  const t = useTranslation()
 
   const ownerLogin = params.user
     ? decodeURIComponent(params.user)
@@ -72,23 +74,23 @@ export default function UserAlbums() {
   }
 
   return (
-    <div className="flex flex-col space-y-4">
-      {isOwnAlbumsPage && (
-        <div className="flex justify-end">
+    <UserAlbumList
+      albums={albums}
+      action={
+        isOwnAlbumsPage && (
           <CreateAlbumDialog
             refetch={() => {
               revalidator.revalidate()
             }}
           >
-            <Button className="gap-2">
+            <Button size="sm" className="gap-1.5 rounded-full">
               <PlusIcon className="size-4" />
-              シリーズを作成
+              {t("シリーズを作成", "New series")}
             </Button>
           </CreateAlbumDialog>
-        </div>
-      )}
-      <UserAlbumList albums={albums} />
-    </div>
+        )
+      }
+    />
   )
 }
 
