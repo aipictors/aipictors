@@ -35,7 +35,6 @@ import {
   readRecentStickerIds,
   sortStickersByRecent,
 } from "~/utils/sticker-recent"
-import { SUPPORT_PREMIUM_UNIT } from "~/utils/support-tier"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 export type WorkCommentListProps = {
@@ -334,15 +333,10 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     try {
       if (hasSupportInput && supportDraft === null) {
         toast(
-          currentPremiumSupportCoinAmount % SUPPORT_PREMIUM_UNIT !== 0
-            ? t(
-                "プレミアムコインは100枚単位で推せます。",
-                "Premium Coins can be sent in units of 100.",
-              )
-            : t(
-                "推しコイン数が不正です。保有コイン数を確認してください。",
-                "Support coin amounts are invalid.",
-              ),
+          t(
+            "推しコイン数が不正です。保有コイン数を確認してください。",
+            "Support coin amounts are invalid.",
+          ),
         )
         return
       }

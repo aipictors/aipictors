@@ -37,11 +37,7 @@ import {
   type CoinSummarySupportTarget,
   fetchCoinSummaryShared,
 } from "~/utils/fetch-coin-summary-shared"
-import {
-  getSupportTier,
-  SUPPORT_PREMIUM_UNIT,
-  toMaxPremiumSupport,
-} from "~/utils/support-tier"
+import { getSupportTier } from "~/utils/support-tier"
 
 type Props = {
   targetUserId: string
@@ -75,8 +71,6 @@ const calculateCustomCoinBreakdown = (
 ): CoinBreakdown | null => {
   if (!Number.isInteger(freeCoinAmount) || freeCoinAmount < 0) return null
   if (!Number.isInteger(premiumCoinAmount) || premiumCoinAmount < 0) return null
-  // プレミアムは 100 枚単位
-  if (premiumCoinAmount % SUPPORT_PREMIUM_UNIT !== 0) return null
 
   const totalCoinsUsed = freeCoinAmount + premiumCoinAmount
   if (totalCoinsUsed <= 0) return null
@@ -96,10 +90,10 @@ const calculateCustomCoinBreakdown = (
   }
 }
 
-/** よく使う枚数。プレミアムは 100 枚単位（色の区切り 500・1,000・3,000 枚に合わせる） */
+/** よく使う枚数。プレミアムは少額の 10 枚と、色の区切り 100・500・1,000・3,000 枚（−/＋ と入力で 1 枚から選べる） */
 const COIN_OPTIONS: Record<SupportCoinType, readonly number[]> = {
   FREE: [10, 20, 30, 100, 300],
-  PREMIUM: [100, 300, 500, 1000, 3000],
+  PREMIUM: [10, 100, 500, 1000, 3000],
 }
 
 export function SupportButton({
@@ -215,10 +209,8 @@ export function SupportButton({
     onFocus: prefetchBalance,
   }
 
-  // プレミアムは 100 枚単位なので、選べる上限は残高を 100 枚で切り捨てた数
-  const maxPremiumSupport = toMaxPremiumSupport(currentPremiumCoinBalance)
   const coinBalance =
-    coinType === "FREE" ? currentFreeCoinBalance : maxPremiumSupport
+    coinType === "FREE" ? currentFreeCoinBalance : currentPremiumCoinBalance
   const amount = Number(coinAmount) || 0
 
   const breakdown = calculateCustomCoinBreakdown(
@@ -232,9 +224,7 @@ export function SupportButton({
   const selectCoinType = (nextType: SupportCoinType) => {
     setCoinType(nextType)
     const balance =
-      nextType === "FREE"
-        ? currentFreeCoinBalance
-        : toMaxPremiumSupport(currentPremiumCoinBalance)
+      nextType === "FREE" ? currentFreeCoinBalance : currentPremiumCoinBalance
     const first = COIN_OPTIONS[nextType][0]
     setCoinAmount(String(Math.min(first, balance)))
   }
@@ -250,7 +240,7 @@ export function SupportButton({
     if (hasTouchedAmountRef.current) return
     selectCoinType(
       currentFreeCoinBalance === 0 &&
-        toMaxPremiumSupport(currentPremiumCoinBalance) > 0 &&
+        currentPremiumCoinBalance > 0 &&
         isPremiumAccepted
         ? "PREMIUM"
         : "FREE",
@@ -440,8 +430,8 @@ export function SupportButton({
             </p>
             <p className="text-muted-foreground">
               {t(
-                "フリーコインは 1 coin = 1pt、プレミアムコインは 1 coin = 10pt として反映されます。プレミアムコインは 100 枚単位で推せます。",
-                "Free coins count as 1pt each, and premium coins count as 10pt each. Premium coins can be sent in units of 100.",
+                "フリーコインは 1 coin = 1pt、プレミアムコインは 1 coin = 10pt として反映されます。",
+                "Free coins count as 1pt each, and premium coins count as 10pt each.",
               )}
             </p>
           </div>
@@ -505,7 +495,7 @@ export function SupportButton({
                     icon: <PremiumSupportCoinIcon className="size-5" />,
                     label: t("プレミアム", "Premium"),
                     balance: currentPremiumCoinBalance,
-                    rate: t("100枚から・1枚 = 10pt", "From 100 · 1 = 10pt"),
+                    rate: t("1枚 = 10pt", "1 = 10pt"),
                   },
                 ] as const
               ).map((item) => (
@@ -583,7 +573,6 @@ export function SupportButton({
                   className="min-w-0 flex-1"
                   value={coinAmount}
                   max={coinBalance}
-                  unit={coinType === "PREMIUM" ? SUPPORT_PREMIUM_UNIT : 1}
                   disabled={isLoading}
                   onChange={(value) => {
                     hasTouchedAmountRef.current = true
@@ -606,28 +595,14 @@ export function SupportButton({
               </div>
             </div>
 
-            {coinType === "PREMIUM" && amount % SUPPORT_PREMIUM_UNIT !== 0 && (
-              <p className="text-rose-600 text-xs dark:text-rose-400">
-                {t(
-                  "プレミアムコインは100枚単位で推せます",
-                  "Premium Coins can be sent in units of 100",
-                )}
-              </p>
-            )}
-
             {isBalanceLoaded && coinBalance === 0 && (
               <div className="flex items-center justify-between gap-3 rounded-xl bg-muted p-3 text-sm">
                 <span>
                   {coinType === "PREMIUM"
-                    ? currentPremiumCoinBalance > 0
-                      ? t(
-                          "プレミアムコインは100枚から推せます",
-                          "Premium Coins can be sent in units of 100",
-                        )
-                      : t(
-                          "プレミアムコインがありません",
-                          "You have no premium coins",
-                        )
+                    ? t(
+                        "プレミアムコインがありません",
+                        "You have no premium coins",
+                      )
                     : t("フリーコインがありません", "You have no free coins")}
                 </span>
                 {coinType === "PREMIUM" && (

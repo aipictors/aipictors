@@ -16,10 +16,10 @@ test("フリーは 1pt、プレミアムは 10pt で数える", () => {
   })
 })
 
-test("プレミアムは 100 枚単位だけ", () => {
-  expect(calculateCommentSupportDraft(0, 100, 0, 500)).not.toBeNull()
-  expect(calculateCommentSupportDraft(0, 150, 0, 500)).toBeNull()
-  expect(calculateCommentSupportDraft(0, 5, 0, 500)).toBeNull()
+test("プレミアムは 1 枚から推せる", () => {
+  expect(calculateCommentSupportDraft(0, 1, 0, 500)).not.toBeNull()
+  expect(calculateCommentSupportDraft(0, 5, 0, 500)).not.toBeNull()
+  expect(calculateCommentSupportDraft(0, 150, 0, 500)).not.toBeNull()
 })
 
 test("確認はフリー・プレミアムとも 1,000 枚から", () => {
@@ -70,7 +70,7 @@ test("非表示にしたものも外し、どちらでもないものは順番�
   expect(excludeShownComments(replies, [], [])).toEqual(replies)
 })
 
-test("コメント欄の推しコイン: フリーに 20、プレミアムは 100 枚単位", () => {
+test("コメント欄の推しコイン: フリーに 20、プレミアムは少額の 10 枚と色の区切り", () => {
   expect(SUPPORT_FREE_COIN_STEPS).toContain(20)
-  expect(SUPPORT_PREMIUM_COIN_STEPS).toEqual([100, 300, 500, 1000, 3000])
+  expect(SUPPORT_PREMIUM_COIN_STEPS).toEqual([10, 100, 500, 1000, 3000])
 })

@@ -4,7 +4,6 @@ import {
   isCreatorRewardRating,
   pickPinnedSupports,
   SUPPORT_TIERS,
-  toMaxPremiumSupport,
   toSupportPt,
 } from "~/utils/support-tier"
 
@@ -29,7 +28,7 @@ describe("getSupportTier", () => {
 
   test("プレミアムを含むとプレミアムの枚数で色が決まる", () => {
     expect(getSupportTier(coins(0, 100))?.level).toBe(1)
-    expect(getSupportTier(coins(0, 5))?.level).toBe(1) // 100 枚単位より前の推し
+    expect(getSupportTier(coins(0, 5))?.level).toBe(1)
     expect(getSupportTier(coins(0, 499))?.level).toBe(1)
     expect(getSupportTier(coins(0, 500))?.level).toBe(2)
     expect(getSupportTier(coins(0, 1000))?.level).toBe(3)
@@ -50,13 +49,6 @@ describe("getSupportTier", () => {
       )
     }
   })
-})
-
-test("プレミアムで推せる上限は残高を 100 枚単位で切り捨て", () => {
-  expect(toMaxPremiumSupport(0)).toBe(0)
-  expect(toMaxPremiumSupport(99)).toBe(0)
-  expect(toMaxPremiumSupport(100)).toBe(100)
-  expect(toMaxPremiumSupport(1234)).toBe(1200)
 })
 
 test("toSupportPt はプレミアム 1 枚 10pt", () => {

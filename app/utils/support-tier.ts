@@ -1,7 +1,7 @@
 /**
  * 推し（コイン付きのコメント・推し）の段階。YouTube のスーパーチャットのように、色が濃いほど長く上に出る。
  * フリーコインだけの推しは枚数に関係なくシルバー 1 色、プレミアムコインを含む推しはプレミアムの枚数で
- * 青 1〜・緑 500〜・黄 1,000〜・赤 3,000 枚〜（プレミアムは 100 枚単位で選ぶ）。
+ * 青 1〜・緑 500〜・黄 1,000〜・赤 3,000 枚〜（プレミアムも 1 枚から推せる）。
  * アプリ（lib/v2/core/support_tier.dart）と同じ区切り・同じ色にする
  */
 export type SupportTierLevel = 0 | 1 | 2 | 3 | 4
@@ -21,9 +21,6 @@ export type SupportTier = {
   /** 選んでいない金額ボタンの文字と枠 */
   outlineClassName: string
 }
-
-/** プレミアムコインで推すときの単位（この倍数だけ選べる） */
-export const SUPPORT_PREMIUM_UNIT = 100
 
 const HOUR = 60 * 60
 
@@ -105,10 +102,6 @@ export const getSupportTier = (
   }
   return found
 }
-
-/** プレミアムコインで推せる最大の枚数（残高を 100 枚単位で切り捨て） */
-export const toMaxPremiumSupport = (balance: number) =>
-  Math.max(0, Math.floor(balance / SUPPORT_PREMIUM_UNIT) * SUPPORT_PREMIUM_UNIT)
 
 export const toSupportPt = (
   freeCoinAmount: number,

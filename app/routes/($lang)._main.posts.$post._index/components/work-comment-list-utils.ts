@@ -2,7 +2,6 @@ import type { FragmentOf } from "gql.tada"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import type { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
 import type { CoinSummarySupportTarget } from "~/utils/fetch-coin-summary-shared"
-import { SUPPORT_PREMIUM_UNIT } from "~/utils/support-tier"
 
 // 投稿直後に一覧へ足すコメント。サーバーが返した内容をそのまま使う
 export type Comment = FragmentOf<typeof WorkCommentFragment>
@@ -30,14 +29,14 @@ export type PremiumConfirmResponse = {
 
 /**
  * 推しコインのボタンで足す量。フリーはよく使われる 10〜100 枚くらい。
- * プレミアムは 100 枚単位（色の区切り 500・1,000・3,000 枚に合わせる）
+ * プレミアムは少額の 10 枚と、色の区切り 100・500・1,000・3,000 枚（−/＋ と入力で 1 枚から選べる）
  */
 export const SUPPORT_FREE_COIN_STEPS = [10, 20, 30, 50, 100] as const
-export const SUPPORT_PREMIUM_COIN_STEPS = [100, 300, 500, 1000, 3000] as const
+export const SUPPORT_PREMIUM_COIN_STEPS = [10, 100, 500, 1000, 3000] as const
 
 /**
  * これ以上の枚数を送るときは確認する（桁の間違いを防ぐ）。
- * プレミアムは最小でも 100 枚なので、毎回は聞かず 1,000 枚から
+ * プレミアムのよく使う 100・500 枚で毎回は聞かず、1,000 枚から
  */
 export const SUPPORT_CONFIRM_THRESHOLD_FREE = 1000
 export const SUPPORT_CONFIRM_THRESHOLD_PREMIUM = 1000
@@ -54,8 +53,6 @@ export const calculateCommentSupportDraft = (
 ) => {
   if (!Number.isInteger(freeCoinAmount) || freeCoinAmount < 0) return null
   if (!Number.isInteger(premiumCoinAmount) || premiumCoinAmount < 0) return null
-  // プレミアムは 100 枚単位
-  if (premiumCoinAmount % SUPPORT_PREMIUM_UNIT !== 0) return null
   if (
     freeCoinAmount > freeCoinBalance ||
     premiumCoinAmount > premiumCoinBalance
