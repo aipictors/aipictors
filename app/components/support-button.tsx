@@ -90,10 +90,10 @@ const calculateCustomCoinBreakdown = (
   }
 }
 
-/** よく使う枚数。プレミアムは少額の 1〜3 枚がよく使われる（−/＋ と入力で色の区切り 500・1,000・3,000 枚も選べる） */
+/** よく使う枚数。プレミアムは少額の 1・2 枚と、100 枚・色の区切り 500・1,000 枚（3,000 枚などは −/＋ と入力で選べる） */
 const COIN_OPTIONS: Record<SupportCoinType, readonly number[]> = {
   FREE: [10, 20, 30, 100, 300],
-  PREMIUM: [1, 2, 3, 10, 30],
+  PREMIUM: [1, 2, 100, 500, 1000],
 }
 
 export function SupportButton({
