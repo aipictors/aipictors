@@ -10,7 +10,7 @@ export type SupportTier = {
   level: SupportTierLevel
   /** この段階になる最小のプレミアムコインの枚数（シルバーは 0 = フリーだけ） */
   minPremium: number
-  /** コメント欄の上の「応援の帯」に出しておく時間（投稿からの時間） */
+  /** 段階の長さの目安（帯は時間で消さずにいつも出す） */
   pinSeconds: number
   /** 帯（見出し）の塗り。文字色も含む */
   bandClassName: string
@@ -109,30 +109,26 @@ export const toSupportPt = (
 ) => Math.max(0, freeCoinAmount) + Math.max(0, premiumCoinAmount) * 10
 
 /**
- * コメント欄の上に出しておく推しを選ぶ（読み込んだコメントだけで決める。問い合わせは増やさない）
- * 段階ごとの時間内のものを、段階の高い順・新しい順に最大 limit 件
+ * コメント欄の上の「応援の帯」に並べる推しを選ぶ（読み込んだコメントだけで決める。問い合わせは増やさない）
+ * 時間では消さずにいつも出す。課金額（プレミアムコイン）の多い順・合計 pt の多い順・新しい順に最大 limit 件
  */
 export const pickPinnedSupports = <
   T extends { createdAt: number; support?: SupportCoins | null },
 >(
   comments: readonly T[],
-  nowSeconds: number,
-  limit = 10,
+  limit = 50,
 ): T[] =>
   comments
-    .map((comment) => ({
-      comment,
-      tier: getSupportTier(comment.support),
-    }))
-    .filter(
-      (item): item is { comment: T; tier: SupportTier } =>
-        item.tier !== null &&
-        nowSeconds - item.comment.createdAt < item.tier.pinSeconds &&
-        item.comment.createdAt <= nowSeconds + 60,
-    )
+    .filter((comment) => getSupportTier(comment.support) !== null)
+    .map((comment) => {
+      const premium = Math.max(0, comment.support?.premiumCoinAmount ?? 0)
+      const free = Math.max(0, comment.support?.freeCoinAmount ?? 0)
+      return { comment, premium, pt: toSupportPt(free, premium) }
+    })
     .sort(
       (a, b) =>
-        b.tier.level - a.tier.level ||
+        b.premium - a.premium ||
+        b.pt - a.pt ||
         b.comment.createdAt - a.comment.createdAt,
     )
     .slice(0, limit)

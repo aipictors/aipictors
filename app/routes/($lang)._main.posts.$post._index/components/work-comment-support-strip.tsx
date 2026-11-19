@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { SupportTierChip } from "~/components/support-super-chat"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -18,24 +17,17 @@ type StripComment = {
 }
 
 /**
- * コメント欄の上の「応援の帯」。最近の推し付きコメントを段階の時間だけ上に出す（スーパーチャットのピン留め）
- * 読み込んだコメントだけで決める。時刻はブラウザで決める（サーバーの描画と食い違わないよう、描画後に出す）
+ * コメント欄の上の「応援の帯」。推し付きコメントを時間で消さずにいつも出し、課金額の多い順に左から並べる
+ * 読み込んだコメントだけで決める
  */
 export function WorkCommentSupportStrip(props: { comments: StripComment[] }) {
   const t = useTranslation()
-  const [nowSeconds, setNowSeconds] = useState<number | null>(null)
-
-  useEffect(() => {
-    setNowSeconds(Math.floor(Date.now() / 1000))
-  }, [])
-
-  if (nowSeconds === null) return null
-  const pinned = pickPinnedSupports(props.comments, nowSeconds)
+  const pinned = pickPinnedSupports(props.comments)
   if (pinned.length === 0) return null
 
   return (
     <section
-      aria-label={t("最近の推し", "Recent support")}
+      aria-label={t("推し", "Support")}
       className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]"
     >
       {pinned.map((comment) => {

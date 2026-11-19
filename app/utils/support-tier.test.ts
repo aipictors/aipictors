@@ -65,30 +65,32 @@ describe("pickPinnedSupports", () => {
     support: free + premium === 0 ? null : coins(free, premium),
   })
 
-  test("段階の時間内だけ・段階の高い順・新しい順", () => {
-    const picked = pickPinnedSupports(
-      [
-        c("plain", 10, 0, 0),
-        c("silver-old", 2 * 3600, 300, 0), // 1 時間を過ぎた
-        c("silver-new", 60, 300, 0),
-        c("green", 3600, 0, 500),
-        c("red", 6 * 24 * 3600, 0, 3000),
-        c("red-expired", 8 * 24 * 3600, 0, 3000),
-        c("green-newer", 30, 0, 500),
-      ],
-      now,
-    )
+  test("時間では消さず・課金額の多い順・同じなら pt の多い順・新しい順", () => {
+    const picked = pickPinnedSupports([
+      c("plain", 10, 0, 0),
+      c("silver-old", 30 * 24 * 3600, 300, 0),
+      c("silver-new", 60, 100, 0),
+      c("green", 3600, 0, 500),
+      c("red-old", 90 * 24 * 3600, 0, 3000),
+      c("green-newer", 30, 0, 500),
+      c("green-more-free", 7200, 50, 500),
+      c("blue", 10, 0, 1),
+    ])
     expect(picked.map((x) => x.id)).toEqual([
-      "red",
+      "red-old",
+      "green-more-free",
       "green-newer",
       "green",
+      "blue",
+      "silver-old",
       "silver-new",
     ])
   })
 
   test("件数の上限", () => {
-    const many = Array.from({ length: 20 }, (_, i) => c(`x${i}`, i, 0, 100))
-    expect(pickPinnedSupports(many, now, 5)).toHaveLength(5)
+    const many = Array.from({ length: 80 }, (_, i) => c(`x${i}`, i, 0, 100))
+    expect(pickPinnedSupports(many)).toHaveLength(50)
+    expect(pickPinnedSupports(many, 5)).toHaveLength(5)
   })
 })
 
