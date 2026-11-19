@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { type ReactNode, useEffect, useState } from "react"
 import { ImagesPreview } from "~/components/images-preview"
 import { WorkImageThumbnailCarousel } from "~/routes/($lang)._main.posts.$post._index/components/work-image-thumbnail-carousel"
 
@@ -13,6 +13,8 @@ type Props = {
   workImageWidth?: number
   /** メイン画像が届くまで代わりに出すサムネイル */
   placeholderUrl?: string
+  /** 拡大表示で並べて読めるキャプション */
+  caption?: ReactNode
 }
 
 export function WorkImageView(props: Props) {
@@ -54,6 +56,7 @@ export function WorkImageView(props: Props) {
           mode={props.mode}
           placeholderUrl={currentIndex === 0 ? props.placeholderUrl : undefined}
           imageSizeHint={imageSizeHint}
+          caption={props.caption}
           aspectRatio={
             allImageURLs[currentIndex] === props.workImageURL
               ? props.workImageAspectRatio
@@ -82,6 +85,7 @@ export function WorkImageView(props: Props) {
           placeholderUrl={props.placeholderUrl}
           aspectRatio={props.workImageAspectRatio}
           imageSizeHint={imageSizeHint}
+          caption={props.caption}
         />
       </div>
     )

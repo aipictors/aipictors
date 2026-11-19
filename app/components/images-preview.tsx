@@ -3,13 +3,20 @@ import {
   ChevronRight,
   Keyboard,
   Loader2,
+  ScrollText,
   XIcon,
 } from "lucide-react"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
+import {
+  readViewerCaptionShown,
+  saveViewerCaptionShown,
+} from "~/utils/video-playback-preference"
 import {
   pickWorkImageSizeHint,
   toWorkImageSizes,
@@ -32,6 +39,8 @@ type Props = {
   placeholderUrl?: string
   /** 複数枚の作品用。枠の高さを固定し、切り替えてもページが動かないようにする */
   isFixedHeight?: boolean
+  /** 拡大表示で画像の横（スマホは下）に並べて読めるキャプション。なければ切り替えも出さない */
+  caption?: React.ReactNode
 }
 
 /** 読み込み後の展開を待つ上限 */
@@ -39,6 +48,11 @@ const STAGE_IMAGE_DECODE_TIMEOUT_MS = 500
 
 export function ImagesPreview(props: Props): React.ReactNode {
   const { mode = "page" } = props
+  const t = useTranslation()
+  // 拡大表示でキャプションを並べるか（端末に覚える。Discord の要望: 作品を見ながらキャプションを読みたい）
+  const [isCaptionShown, setIsCaptionShown] = useState(false)
+  const captionPanelRef = useRef<HTMLDivElement>(null)
+  const isCaptionPanelOpen = props.caption !== undefined && isCaptionShown
   const [isOpen, setIsOpen] = useState(false)
   const [scale, setScale] = useState(1)
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
@@ -74,6 +88,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
     startCoord.current = { x: 0, y: 0 }
     prevTranslate.current = { x: 0, y: 0 }
     setShowKeyboardHint(true)
+    setIsCaptionShown(readViewerCaptionShown())
     props.setCurrentIndex(props.imageURLs.indexOf(props.thumbnailUrl))
   }
 
@@ -295,7 +310,20 @@ export function ImagesPreview(props: Props): React.ReactNode {
     }
   }
 
+  const toggleCaption = () => {
+    const next = !isCaptionShown
+    setIsCaptionShown(next)
+    saveViewerCaptionShown(next)
+  }
+
   const handleWheel = (e: WheelEvent) => {
+    // キャプションの欄はスクロールで読めるようにする（拡大縮小しない）
+    if (
+      e.target instanceof Node &&
+      captionPanelRef.current?.contains(e.target)
+    ) {
+      return
+    }
     e.preventDefault()
     const scaleAmount = e.deltaY > 0 ? 0.9 : 1.1
     setScale((prevScale) => Math.min(Math.max(0.1, prevScale * scaleAmount), 4))
@@ -552,11 +580,37 @@ export function ImagesPreview(props: Props): React.ReactNode {
       >
         <XIcon />
       </Button>
+      {props.caption !== undefined && (
+        <Button
+          className="absolute top-4 right-16 z-10 gap-1.5"
+          onClick={toggleCaption}
+          aria-pressed={isCaptionShown}
+          variant={isCaptionShown ? "default" : "secondary"}
+        >
+          <ScrollText className="size-4" />
+          {isCaptionShown
+            ? t("キャプションを隠す", "Hide caption")
+            : t("キャプション", "Caption")}
+        </Button>
+      )}
+      {isCaptionPanelOpen && (
+        <div
+          ref={captionPanelRef}
+          className="absolute inset-x-0 bottom-0 max-h-[38vh] overflow-y-auto whitespace-pre-wrap break-words bg-black/80 px-5 pt-4 pb-16 text-sm text-white leading-relaxed md:inset-x-auto md:top-0 md:right-0 md:max-h-none md:w-80 md:pt-20 md:pb-6"
+        >
+          {props.caption}
+        </div>
+      )}
       <img
         ref={imgRef}
         src={props.imageURLs[props.currentIndex]}
         alt={`image-${props.currentIndex}`}
-        className="max-h-[92vh] max-w-[92vw] cursor-pointer object-contain"
+        className={cn(
+          "max-h-[92vh] max-w-[92vw] cursor-pointer object-contain",
+          // キャプションと重ならないよう、スマホは上に、パソコンは左に寄せる
+          isCaptionPanelOpen &&
+            "mb-[38vh] max-h-[54vh] md:mr-80 md:mb-0 md:max-h-[92vh] md:max-w-[calc(92vw-20rem)]",
+        )}
         style={{
           transform: `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
           transition: isDragging ? "none" : "transform 0.1s ease-out",
@@ -630,7 +684,12 @@ export function ImagesPreview(props: Props): React.ReactNode {
             </Button>
           </div>
 
-          <div className="absolute right-6 bottom-6 text-right text-sm text-white">
+          <div
+            className={cn(
+              "absolute right-6 bottom-6 text-right text-sm text-white",
+              isCaptionPanelOpen && "md:right-[21.5rem]",
+            )}
+          >
             {props.currentIndex + 1}/{props.imageURLs.length}
           </div>
         </>

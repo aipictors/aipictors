@@ -20,7 +20,10 @@ import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
 import { WorkArticleBadges } from "~/routes/($lang)._main.posts.$post._index/components/work-article-badges"
-import { WorkArticleDescription } from "~/routes/($lang)._main.posts.$post._index/components/work-article-description"
+import {
+  parseTextWithLinks,
+  WorkArticleDescription,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-article-description"
 import type {
   userSettingFragment,
   workArticleFragment,
@@ -206,6 +209,12 @@ export function WorkArticle(props: Props) {
     props.work.isCaptionBeforeBody === true &&
     displayDescription.trim() !== ""
 
+  // 画像の拡大表示や動画の下で、作品を見ながら読めるようにするキャプション（下の説明と同じ文）
+  const captionForViewer =
+    displayDescription.trim() !== ""
+      ? parseTextWithLinks(displayDescription)
+      : undefined
+
   const descriptionView = (
     <WorkArticleDescription
       displayDescription={displayDescription}
@@ -243,6 +252,7 @@ export function WorkArticle(props: Props) {
             workImageAspectRatio,
           )}
           mode={props.mode}
+          caption={captionForViewer}
         />
       )}
       {props.work.type === "VIDEO" && (
@@ -250,6 +260,7 @@ export function WorkArticle(props: Props) {
           videoUrl={props.work.url ?? ""}
           posterUrl={props.work.smallThumbnailImageURL}
           title={t(props.work.title, props.work.enTitle || undefined)}
+          caption={captionForViewer}
         />
       )}
       {isCaptionBeforeBody && descriptionView}

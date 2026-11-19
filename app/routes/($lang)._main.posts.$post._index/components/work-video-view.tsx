@@ -1,16 +1,44 @@
-import { Loader2, Play, Volume2 } from "lucide-react"
-import { type SyntheticEvent, useEffect, useRef, useState } from "react"
+import {
+  Loader2,
+  type LucideIcon,
+  Play,
+  PlayCircle,
+  Repeat,
+  ScrollText,
+  Volume2,
+} from "lucide-react"
+import {
+  type ReactNode,
+  type SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import {
   getCloudflareStreamUid,
   isCloudflareStreamUrl,
   toCloudflareStreamHlsUrlFromUid,
 } from "~/utils/cloudflare-stream"
+import {
+  DEFAULT_VIDEO_AUTO_PLAY,
+  DEFAULT_VIDEO_LOOP,
+  readVideoAutoPlay,
+  readVideoLoop,
+  readViewerCaptionShown,
+  saveVideoAutoPlay,
+  saveVideoLoop,
+  saveViewerCaptionShown,
+} from "~/utils/video-playback-preference"
 
 type Props = {
   videoUrl: string
   posterUrl?: string | null
   title?: string
+  /** 動画の下に並べて読めるようにするキャプション（空なら切り替えも出さない） */
+  caption?: ReactNode
 }
 
 const STREAM_READY_CACHE_TTL_MS = 1000 * 60 * 60 * 6
@@ -70,9 +98,10 @@ function writeCachedStreamReady(uid: string) {
   }
 }
 
-/** 動きを減らす設定・通信量を減らす設定の人には自動で再生しない（押したら再生） */
+/** 動きを減らす設定・通信量を減らす設定の人と、自動再生をオフにした人には自動で再生しない（押したら再生） */
 function canAutoPlay() {
   if (typeof window === "undefined") return false
+  if (!readVideoAutoPlay()) return false
   if (!("IntersectionObserver" in window)) return false
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
     return false
@@ -85,7 +114,39 @@ function canAutoPlay() {
   return connection?.saveData !== true
 }
 
-export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
+/** 動画の下の切り替え（自動再生・ループ・キャプション） */
+function VideoToggleButton(props: {
+  icon: LucideIcon
+  label: string
+  isOn: boolean
+  onLabel: string
+  offLabel: string
+  onClick: () => void
+}) {
+  const Icon = props.icon
+  return (
+    <button
+      type="button"
+      aria-pressed={props.isOn}
+      onClick={props.onClick}
+      className={cn(
+        "flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors",
+        props.isOn
+          ? "border-transparent bg-foreground/10 text-foreground"
+          : "border-border text-muted-foreground hover:text-foreground",
+      )}
+    >
+      <Icon className="size-3.5" />
+      {props.label}
+      <span className="font-medium">
+        {props.isOn ? props.onLabel : props.offLabel}
+      </span>
+    </button>
+  )
+}
+
+export function WorkVideoView({ videoUrl, posterUrl, title, caption }: Props) {
+  const t = useTranslation()
   const isStream = isCloudflareStreamUrl(videoUrl)
   const uid = getCloudflareStreamUid(videoUrl)
   const hlsUrl = toCloudflareStreamHlsUrlFromUid(uid)
@@ -98,6 +159,23 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
   const [isAutoPlayback, setIsAutoPlayback] = useState(false)
   // 自動再生のあと音を出したら、最初から音ありで見られるようにする（ミュート解除とシーク戻しの 2 手間にしない）
   const [hasStartedWithSound, setHasStartedWithSound] = useState(false)
+  // 自動再生するか・この動画をループするか・キャプションを並べるかは、その場で切り替えて端末に覚える（Discord の要望）
+  const videoKey = uid ?? videoUrl
+  const [isAutoPlayEnabled, setIsAutoPlayEnabled] = useState(
+    DEFAULT_VIDEO_AUTO_PLAY,
+  )
+  const [isLoop, setIsLoop] = useState(DEFAULT_VIDEO_LOOP)
+  const [isCaptionShown, setIsCaptionShown] = useState(false)
+  const hasCaption = caption !== undefined && caption !== null && caption !== ""
+
+  useEffect(() => {
+    setIsAutoPlayEnabled(readVideoAutoPlay())
+    setIsCaptionShown(readViewerCaptionShown())
+  }, [])
+
+  useEffect(() => {
+    setIsLoop(readVideoLoop(videoKey))
+  }, [videoKey])
 
   // null = checking, true = ready, false = not ready yet
   const [streamReady, setStreamReady] = useState<boolean | null>(
@@ -255,6 +333,29 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
     }
   }, [hasRequestedPlayback, hlsUrl, isStream, isAutoPlayback, streamReady])
 
+  const toggleAutoPlay = () => {
+    const next = !isAutoPlayEnabled
+    setIsAutoPlayEnabled(next)
+    saveVideoAutoPlay(next)
+    // 音なしで自動再生している途中なら、先の場面を見せないように再生ボタンの画面に戻す
+    if (!next && isAutoPlayback && !hasStartedWithSound) {
+      setIsAutoPlayback(false)
+      setHasRequestedPlayback(false)
+    }
+  }
+
+  const toggleLoop = () => {
+    const next = !isLoop
+    setIsLoop(next)
+    saveVideoLoop(videoKey, next)
+  }
+
+  const toggleCaption = () => {
+    const next = !isCaptionShown
+    setIsCaptionShown(next)
+    saveViewerCaptionShown(next)
+  }
+
   const playFromStartWithSound = () => {
     const video = streamVideoRef.current ?? fileVideoRef.current
     if (!video) return
@@ -282,7 +383,7 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
         className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-black/65 px-3 py-1.5 font-medium text-sm text-white shadow hover:bg-black/80"
       >
         <Volume2 className="size-4" />
-        音ありで最初から再生
+        {t("音ありで最初から再生", "Play from start with sound")}
       </button>
     ) : null
 
@@ -291,7 +392,11 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
       type="button"
       onClick={() => setHasRequestedPlayback(true)}
       className="group relative mx-auto aspect-video w-full max-w-[1280px] overflow-hidden bg-zinc-100 dark:bg-zinc-900"
-      aria-label={title ? `${title} を再生` : "動画を再生"}
+      aria-label={
+        title
+          ? t(`${title} を再生`, `Play ${title}`)
+          : t("動画を再生", "Play video")
+      }
     >
       {posterUrl ? (
         <img
@@ -309,14 +414,97 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
             <Play className="ml-1 size-8 fill-current" />
           </div>
           <div className="rounded-full bg-black/65 px-4 py-1.5 font-medium text-sm text-white">
-            再生するまで読み込みません
+            {t("再生するまで読み込みません", "Not loaded until you play")}
           </div>
         </div>
       </div>
     </button>
   )
 
-  if (isStream && hlsUrl) {
+  const renderPlayer = () => {
+    if (isStream && hlsUrl) {
+      if (!hasRequestedPlayback) {
+        return (
+          <div
+            ref={containerRef}
+            className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900"
+          >
+            {posterView}
+          </div>
+        )
+      }
+
+      if (streamReady === null) {
+        return (
+          <div
+            ref={containerRef}
+            className="relative m-0 bg-zinc-100 dark:bg-zinc-900"
+          >
+            <div className="mx-auto flex aspect-video w-full max-w-[1280px] items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+            </div>
+          </div>
+        )
+      }
+
+      if (!streamReady) {
+        return (
+          <div
+            ref={containerRef}
+            className="relative m-0 bg-zinc-100 dark:bg-zinc-900"
+          >
+            <div className="mx-auto flex aspect-video w-full max-w-[1280px] flex-col items-center justify-center gap-3 text-center">
+              <Loader2 className="h-10 w-10 animate-spin text-zinc-400" />
+              <p className="font-medium text-sm text-zinc-600 dark:text-zinc-400">
+                {t("動画の準備中です", "Preparing the video")}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-500">
+                {t(
+                  "再生準備ができるまで 60 秒ごとに確認しています",
+                  "Checking every 60 seconds until it is ready",
+                )}
+              </p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setStreamReady(null)
+                  setStreamCheckVersion((current) => current + 1)
+                }}
+              >
+                {t("再確認する", "Check again")}
+              </Button>
+            </div>
+          </div>
+        )
+      }
+
+      return (
+        <div
+          ref={containerRef}
+          className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900"
+        >
+          <div className="mx-auto aspect-video w-full max-w-[1280px]">
+            <video
+              ref={streamVideoRef}
+              poster={posterUrl ?? undefined}
+              controls
+              className="h-full w-full"
+              autoPlay
+              muted={isAutoPlayback}
+              loop={isLoop}
+              playsInline
+              preload="metadata"
+              onVolumeChange={onVolumeChange}
+            >
+              <track kind="captions" srcLang="en" label="English" />
+            </video>
+          </div>
+          {soundButton}
+        </div>
+      )
+    }
+
     if (!hasRequestedPlayback) {
       return (
         <div
@@ -328,105 +516,66 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
       )
     }
 
-    if (streamReady === null) {
-      return (
-        <div
-          ref={containerRef}
-          className="relative m-0 bg-zinc-100 dark:bg-zinc-900"
-        >
-          <div className="mx-auto flex aspect-video w-full max-w-[1280px] items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
-          </div>
-        </div>
-      )
-    }
-
-    if (!streamReady) {
-      return (
-        <div
-          ref={containerRef}
-          className="relative m-0 bg-zinc-100 dark:bg-zinc-900"
-        >
-          <div className="mx-auto flex aspect-video w-full max-w-[1280px] flex-col items-center justify-center gap-3 text-center">
-            <Loader2 className="h-10 w-10 animate-spin text-zinc-400" />
-            <p className="font-medium text-sm text-zinc-600 dark:text-zinc-400">
-              動画の準備中です
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500">
-              再生準備ができるまで 60 秒ごとに確認しています
-            </p>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                setStreamReady(null)
-                setStreamCheckVersion((current) => current + 1)
-              }}
-            >
-              再確認する
-            </Button>
-          </div>
-        </div>
-      )
-    }
-
     return (
       <div
         ref={containerRef}
         className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900"
       >
-        <div className="mx-auto aspect-video w-full max-w-[1280px]">
-          <video
-            ref={streamVideoRef}
-            poster={posterUrl ?? undefined}
-            controls
-            className="h-full w-full"
-            autoPlay
-            muted={isAutoPlayback}
-            loop
-            playsInline
-            preload="metadata"
-            onVolumeChange={onVolumeChange}
-          >
-            <track kind="captions" srcLang="en" label="English" />
-          </video>
-        </div>
+        <video
+          ref={fileVideoRef}
+          controls
+          className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
+          src={videoUrl}
+          autoPlay
+          muted={isAutoPlayback}
+          loop={isLoop}
+          playsInline
+          preload="metadata"
+          onVolumeChange={onVolumeChange}
+        >
+          <track kind="captions" srcLang="en" label="English" />
+        </video>
         {soundButton}
       </div>
     )
   }
 
-  if (!hasRequestedPlayback) {
-    return (
-      <div
-        ref={containerRef}
-        className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900"
-      >
-        {posterView}
-      </div>
-    )
-  }
-
   return (
-    <div
-      ref={containerRef}
-      className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900"
-    >
-      <video
-        ref={fileVideoRef}
-        controls
-        className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
-        src={videoUrl}
-        autoPlay
-        muted={isAutoPlayback}
-        loop
-        playsInline
-        preload="metadata"
-        onVolumeChange={onVolumeChange}
-      >
-        <track kind="captions" srcLang="en" label="English" />
-      </video>
-      {soundButton}
+    <div className="flex flex-col">
+      {renderPlayer()}
+      <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
+        <VideoToggleButton
+          icon={PlayCircle}
+          label={t("自動再生", "Autoplay")}
+          isOn={isAutoPlayEnabled}
+          onLabel={t("オン", "On")}
+          offLabel={t("オフ", "Off")}
+          onClick={toggleAutoPlay}
+        />
+        <VideoToggleButton
+          icon={Repeat}
+          label={t("ループ", "Loop")}
+          isOn={isLoop}
+          onLabel={t("オン", "On")}
+          offLabel={t("オフ", "Off")}
+          onClick={toggleLoop}
+        />
+        {hasCaption && (
+          <VideoToggleButton
+            icon={ScrollText}
+            label={t("キャプション", "Caption")}
+            isOn={isCaptionShown}
+            onLabel={t("表示", "Shown")}
+            offLabel={t("非表示", "Hidden")}
+            onClick={toggleCaption}
+          />
+        )}
+      </div>
+      {hasCaption && isCaptionShown && (
+        <div className="mt-2 max-h-48 overflow-y-auto whitespace-pre-wrap break-words rounded-lg bg-muted px-3 py-2.5 text-sm leading-relaxed">
+          {caption}
+        </div>
+      )}
     </div>
   )
 }
