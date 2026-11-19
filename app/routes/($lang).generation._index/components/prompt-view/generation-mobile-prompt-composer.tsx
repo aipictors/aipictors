@@ -147,7 +147,8 @@ export function GenerationMobilePromptComposer(props: {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* その場で入力する欄（1〜5 行で伸びる）。タグの候補は欄の下に横並びで出す */}
+          {/* その場で入力する欄（1〜5 行で伸びる）。タグの候補は欄の下に横並びで出す。
+              案内文は1行に収める（折り返すと1行の高さの欄に2行目だけが見えていた） */}
           <div data-dock-prompt className="min-w-0 flex-1 py-0.5">
             <PromptTagTextarea
               variant="chips"
@@ -170,7 +171,7 @@ export function GenerationMobilePromptComposer(props: {
                   ? t("日本語で書く", "Describe it")
                   : t("描きたいもの", "Keywords")
               }
-              className="max-h-[7.75rem] min-h-10 resize-none overflow-y-auto border-0 bg-transparent px-1 py-2 text-base leading-6 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="max-h-[7.75rem] min-h-10 resize-none overflow-y-auto border-0 bg-transparent px-1 py-2 text-base leading-6 shadow-none placeholder:truncate focus-visible:ring-0 focus-visible:ring-offset-0"
             />
           </div>
           <button
