@@ -351,12 +351,13 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     icon={ArrowUpRightSquare}
                   />
                 </GenerationReferenceDialog>
+              </div>
+              {/* 削除は 2 行目の先頭に置く（スマホで 1 行目からあふれ、削除だけが改行されて横が空く） */}
+              <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
                 <GenerationTaskDeleteMemoConfirmDialog
                   onDelete={props.onDelete}
                   isDeletedLoading={props.isDeletedLoading}
                 />
-              </div>
-              <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
                 <GenerationMenuButton
                   title={t("生成情報をコピーする", "Copy generation info")}
                   onClick={() =>
@@ -392,8 +393,10 @@ export function GenerationTaskSheetViewContent(props: Props) {
               <div className="py-2">
                 <Separator />
               </div>
-              <div className="my-4 flex justify-end gap-x-2">
+              <div className="my-4 flex flex-wrap items-start justify-end gap-2">
                 <StarRating
+                  // 星は 5 つを 1 行に保つ（AI修正の説明と並ぶと 3・2 に折り返されていた）
+                  className="flex shrink-0"
                   title={t("お気に入りの星で評価する", "Rate with stars")}
                   value={props.rating}
                   onChange={(value) => {
