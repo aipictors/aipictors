@@ -155,7 +155,10 @@ export default function GenerationPage() {
       ) : entry.mode === "loading" ? (
         <GenerationEntrySkeleton />
       ) : entry.mode === "simple" ? (
-        <GenerationSimpleEntry onOpenAdvanced={openAdvanced} />
+        <GenerationSimpleEntry
+          onOpenAdvanced={openAdvanced}
+          onStartGeneration={() => entry.openAdvanced(false)}
+        />
       ) : (
         <>
           <GenerationUserModelFromUrl />

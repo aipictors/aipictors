@@ -53,7 +53,7 @@ const run = async (
   ]
   for (const name of names) window.addEventListener(name, onEvent)
   let isFinished = false
-  await requestGenerationTasks({
+  const createdCount = await requestGenerationTasks({
     taskCount: props.taskCount ?? 1,
     modelName: props.modelName ?? "model",
     generationType: "TEXT_TO_IMAGE",
@@ -76,7 +76,7 @@ const run = async (
     createReservedTask: fake("reserved") as never,
   })
   for (const name of names) window.removeEventListener(name, onEvent)
-  return { calls, events, isFinished }
+  return { calls, events, isFinished, createdCount }
 }
 
 describe("requestGenerationTasks", () => {
@@ -142,7 +142,7 @@ describe("requestGenerationTasks", () => {
   })
 
   test("送信中・送信後のイベントを出して、最後に後処理を呼ぶ", async () => {
-    const { events, isFinished } = await run()
+    const { events, isFinished, createdCount } = await run()
     expect(events).toEqual([
       "generation:task-sending:1",
       "generation:task-requested:",
@@ -150,5 +150,16 @@ describe("requestGenerationTasks", () => {
       "generation:task-requested:",
     ])
     expect(isFinished).toBe(true)
+    expect(createdCount).toBe(1)
+  })
+
+  test("送れたタスクがないときは作成数 0 を返す", async () => {
+    const { createdCount } = await run({
+      taskCount: 2,
+      modelName: "flux.1 pro",
+      inProgress: 3,
+      maxTasksCount: 3,
+    })
+    expect(createdCount).toBe(0)
   })
 })

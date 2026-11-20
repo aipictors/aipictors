@@ -67,8 +67,8 @@ export function useGenerationEntryMode() {
   /**
    * 詳細画面に切り替える（次からも詳細画面で開く）
    */
-  const openAdvanced = () => {
-    savePrefersAdvancedEntry()
+  const openAdvanced = (remember = true) => {
+    if (remember) savePrefersAdvancedEntry()
     setIsAdvancedChosen(true)
   }
 

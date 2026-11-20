@@ -1,12 +1,8 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { containsJapanese, useTranslation } from "~/hooks/use-translation"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import {
-  clearGenerationPendingPrompt,
-  readGenerationPendingPrompt,
-  savePrefersAdvancedEntry,
-} from "~/routes/($lang).generation._index/utils/generation-simple-entry"
+import { readGenerationPendingPrompt } from "~/routes/($lang).generation._index/utils/generation-simple-entry"
 
 /**
  * かんたん入口のプロンプトを詳細画面のプロンプト欄に入れる。
@@ -47,8 +43,10 @@ export function useGenerationAutoSubmit(props: Props) {
 
   const promptText = context.config.promptText
 
+  const hasSubmittedRef = useRef(false)
+
   useEffect(() => {
-    if (!props.isReady) return
+    if (!props.isReady || hasSubmittedRef.current) return
     const pending = readGenerationPendingPrompt()
     if (pending === null) return
 
@@ -71,9 +69,7 @@ export function useGenerationAutoSubmit(props: Props) {
       return
     }
 
-    clearGenerationPendingPrompt()
-    // 一度生成したら、次からは詳細画面で開く（ログインをはさんだときも）
-    savePrefersAdvancedEntry()
-    props.onSubmit()
+    hasSubmittedRef.current = true
+    void props.onSubmit()
   }, [props.isReady, promptText, hasSignedTerms])
 }

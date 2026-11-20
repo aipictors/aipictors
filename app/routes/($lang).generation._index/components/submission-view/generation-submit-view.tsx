@@ -46,6 +46,11 @@ import {
 import { findGenerationSubmitBlock } from "~/routes/($lang).generation._index/utils/find-generation-submit-block"
 import { publishGenerationCoinSummary } from "~/routes/($lang).generation._index/utils/generation-coin-store"
 import {
+  clearGenerationPendingPrompt,
+  readGenerationPendingPrompt,
+  savePrefersAdvancedEntry,
+} from "~/routes/($lang).generation._index/utils/generation-simple-entry"
+import {
   calcGenerationModelCoinCost,
   PREMIUM_COIN_GENERATION_DISABLED_SHORTAGE_MESSAGE,
   toGenerationCoinBalance,
@@ -706,7 +711,7 @@ export function GenerationSubmissionView(props: Props) {
     generationType: string,
     i2iFileUrl: string,
   ) => {
-    await requestGenerationTasks({
+    const createdCount = await requestGenerationTasks({
       taskCount,
       modelName,
       generationType,
@@ -744,6 +749,12 @@ export function GenerationSubmissionView(props: Props) {
         }
       },
     })
+    // 初回入口は、実際に生成タスクを作れたあとで完了にする。
+    // コイン不足や確認キャンセルでは pending を残し、次回も初回入口を出す。
+    if (createdCount > 0 && readGenerationPendingPrompt() !== null) {
+      clearGenerationPendingPrompt()
+      savePrefersAdvancedEntry()
+    }
   }
 
   // かんたん入口で「生成する」を押したあと（未ログインならログインのあと）に、ここで生成を始める

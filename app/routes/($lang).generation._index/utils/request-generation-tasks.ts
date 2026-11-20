@@ -247,4 +247,5 @@ export const requestGenerationTasks = async (props: Props) => {
     dispatchGenerationEvent("generation:task-requested")
   }
   await onFinished()
+  return createdCount
 }

@@ -33,6 +33,10 @@ type Props = {
    * 詳細画面に切り替える（次からも詳細画面で開く）
    */
   onOpenAdvanced: () => void
+  /**
+   * 入力したプロンプトで生成を始めるため、通常画面へ一時的に切り替える
+   */
+  onStartGeneration: () => void
 }
 
 /**
@@ -99,7 +103,7 @@ export function GenerationSimpleEntry(props: Props) {
       return
     }
 
-    props.onOpenAdvanced()
+    props.onStartGeneration()
   }
 
   const onSelectExample = (example: GenerationSimpleEntryExample) => {
