@@ -5,13 +5,10 @@ import {
   FileTextIcon,
   ImagesIcon,
   type LucideIcon,
-  MessageSquareIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
-  ScrollTextIcon,
   SearchIcon,
   SparklesIcon,
-  VoteIcon,
 } from "lucide-react"
 import { useLocalStorage, useMediaQuery } from "usehooks-ts"
 import { useTranslation } from "~/hooks/use-translation"
@@ -20,14 +17,7 @@ import { cn } from "~/lib/utils"
 import { GenerationSidebarRecentHistory } from "~/routes/($lang).generation._index/components/generation-view/generation-sidebar-recent-history"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 
-type NavKey =
-  | "CREATE"
-  | "HISTORY"
-  | "WORKS"
-  | "COIN_HISTORY"
-  | "LOGS"
-  | "COMMUNICATION"
-  | "LINKS"
+type NavKey = "CREATE" | "HISTORY" | "WORKS" | "COIN_HISTORY"
 
 /**
  * いまの状態に対応する左ナビの項目
@@ -36,14 +26,11 @@ const toNavKey = (state: string): NavKey => {
   if (state === "HISTORY_LIST_FULL") return "HISTORY"
   if (state === "WORKS_FROM_MODEL" || state === "WORK_LIST_FULL") return "WORKS"
   if (state === "COIN_HISTORY") return "COIN_HISTORY"
-  if (state === "LOGS") return "LOGS"
-  if (state === "COMMUNICATION") return "COMMUNICATION"
-  if (state === "LINKS") return "LINKS"
   return "CREATE"
 }
 
 /**
- * 生成画面の左ナビ（以前の右側のタブ「履歴・作品検索・ご意見・アンケート・ログ・コイン履歴」をここに移した）
+ * 生成画面の左ナビ（以前の右側のタブ「履歴・作品検索・コイン履歴」をここに移した。ご意見・アンケート・ログは廃止）
  * 中身の切り替えは今までどおり状態（generation-config-machine）のイベントで行う
  */
 export function GenerationSideNav() {
@@ -97,9 +84,6 @@ export function GenerationSideNav() {
     if (key === "HISTORY") actor.send({ type: "OPEN_FULL_HISTORY_LIST" })
     if (key === "WORKS") actor.send({ type: "OPEN_WORKS_FROM_MODEL" })
     if (key === "COIN_HISTORY") actor.send({ type: "OPEN_COIN_HISTORY" })
-    if (key === "LOGS") actor.send({ type: "OPEN_LOGS" })
-    if (key === "COMMUNICATION") actor.send({ type: "OPEN_COMMUNICATION" })
-    if (key === "LINKS") actor.send({ type: "OPEN_LINKS" })
   }
 
   const mainItems: { key: NavKey; label: string; icon: LucideIcon }[] = [
@@ -111,16 +95,6 @@ export function GenerationSideNav() {
       label: t("コイン履歴", "Coin history"),
       icon: CoinsIcon,
     },
-  ]
-
-  const subItems: { key: NavKey; label: string; icon: LucideIcon }[] = [
-    {
-      key: "COMMUNICATION",
-      label: t("ご意見", "Feedback"),
-      icon: MessageSquareIcon,
-    },
-    { key: "LINKS", label: t("アンケート", "Survey"), icon: VoteIcon },
-    { key: "LOGS", label: t("ログ", "Logs"), icon: ScrollTextIcon },
   ]
 
   const linkItems: { to: string; label: string; icon: LucideIcon }[] = [
@@ -183,8 +157,6 @@ export function GenerationSideNav() {
       )}
     >
       <ul className="space-y-0.5">{mainItems.map(renderItem)}</ul>
-      <div className="my-3 border-t" />
-      <ul className="space-y-0.5">{subItems.map(renderItem)}</ul>
       <GenerationSidebarRecentHistory isCollapsed={isCollapsed} />
       <div className="mt-auto space-y-0.5">
         <ul className="space-y-0.5">

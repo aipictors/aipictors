@@ -5,7 +5,6 @@ import {
   InfoIcon,
   MailIcon,
   ReceiptTextIcon,
-  ScrollTextIcon,
   ShoppingCartIcon,
   SparklesIcon,
 } from "lucide-react"
@@ -28,7 +27,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { useTranslation } from "~/hooks/use-translation"
@@ -58,7 +56,6 @@ type Props = {
   submission: React.ReactNode
   footer: React.ReactNode
   coinHistory: React.ReactNode
-  logs: React.ReactNode
 }
 
 /**
@@ -73,7 +70,7 @@ const asideSubStates = [
   "COIN_HISTORY",
 ]
 
-type SheetKind = "coins" | "coinHistory" | "logs"
+type SheetKind = "coins" | "coinHistory"
 
 /**
  * スマホの生成画面（アプリの生成タブと同じ構成）
@@ -137,7 +134,6 @@ export function GenerationMobileView(props: Props) {
         <GenerationMobileHeader
           onOpenCoins={() => openSheet("coins")}
           onOpenCoinHistory={() => openSheet("coinHistory")}
-          onOpenLogs={() => openSheet("logs")}
         />
         <div className="flex gap-2 px-4 pb-3" role="tablist">
           <button
@@ -210,9 +206,7 @@ export function GenerationMobileView(props: Props) {
               <LazyDrawerTitle className="px-5 pt-3 text-lg">
                 {sheet === "coinHistory"
                   ? t("コイン履歴", "Coin history")
-                  : sheet === "logs"
-                    ? t("診断ログ", "Diagnostics logs")
-                    : t("コイン", "Coins")}
+                  : t("コイン", "Coins")}
               </LazyDrawerTitle>
               <LazyDrawerDescription className="sr-only">
                 {t("生成で使うコイン", "Coins for generation")}
@@ -226,11 +220,6 @@ export function GenerationMobileView(props: Props) {
               {sheet === "coinHistory" && (
                 <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
                   {props.coinHistory}
-                </div>
-              )}
-              {sheet === "logs" && (
-                <div className="min-h-0 flex-1 overflow-hidden px-2 pb-4">
-                  {props.logs}
                 </div>
               )}
             </LazyDrawerContent>
@@ -258,7 +247,6 @@ const usePlanLabel = () => {
 function GenerationMobileHeader(props: {
   onOpenCoins: () => void
   onOpenCoinHistory: () => void
-  onOpenLogs: () => void
 }) {
   const t = useTranslation()
 
@@ -336,14 +324,6 @@ function GenerationMobileHeader(props: {
               <MailIcon className="mr-2 size-4" />
               {t("お問い合わせ", "Contact")}
             </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onSelect={props.onOpenLogs}
-            className="text-muted-foreground"
-          >
-            <ScrollTextIcon className="mr-2 size-4" />
-            {t("診断ログ", "Diagnostics logs")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

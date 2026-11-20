@@ -252,7 +252,6 @@ export function GenerationPage(props: Props) {
                 }
                 footer={<GenerationFormFooter />}
                 coinHistory={<GenerationCoinHistoryTab />}
-                logs={<GenerationLogsTab />}
               />
             }
             menu={<GenerationConfigView />}

@@ -86,39 +86,6 @@ export function GenerationSideTabsView() {
                 // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
                 aria-controls={undefined}
                 onClick={() => {
-                  send({ type: "OPEN_COMMUNICATION" })
-                }}
-                className={tabsTriggerClassName}
-                value="COMMUNICATION"
-              >
-                {t("ご意見", "Feedback")}
-              </TabsTrigger>
-              <TabsTrigger
-                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
-                aria-controls={undefined}
-                onClick={() => {
-                  send({ type: "OPEN_LINKS" })
-                }}
-                className={tabsTriggerClassName}
-                value="LINKS"
-              >
-                {t("アンケート", "Survey")}
-              </TabsTrigger>
-              <TabsTrigger
-                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
-                aria-controls={undefined}
-                onClick={() => {
-                  send({ type: "OPEN_LOGS" })
-                }}
-                className={tabsTriggerClassName}
-                value="LOGS"
-              >
-                {t("ログ", "Logs")}
-              </TabsTrigger>
-              <TabsTrigger
-                // 中身（TabsContent）は別の場所に出すので、存在しない要素を指す aria-controls を付けない
-                aria-controls={undefined}
-                onClick={() => {
                   send({ type: "OPEN_COIN_HISTORY" })
                 }}
                 className={tabsTriggerClassName}
@@ -130,7 +97,6 @@ export function GenerationSideTabsView() {
           </div>
         </Tabs>
       )}
-      {/* ログ内容は aside 側で表示するため、ここでは描画しない */}
     </>
   )
 }
