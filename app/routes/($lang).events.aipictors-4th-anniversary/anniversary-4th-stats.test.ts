@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test"
-import { ANNIVERSARY_4TH_STATS as stats } from "~/routes/($lang).events.aipictors-4th-anniversary/anniversary-4th-stats"
+import {
+  ANNIVERSARY_4TH_STATS as stats,
+  toCumulativeYearly,
+} from "~/routes/($lang).events.aipictors-4th-anniversary/anniversary-4th-stats"
+import { toCumulative } from "~/routes/($lang).events.aipictors-4th-anniversary/components/anniversary-charts"
 
 describe("4 周年の特設ページの数字", () => {
   test("月ごとの推移は 2022-11 から順に並ぶ", () => {
@@ -58,5 +62,20 @@ describe("4 周年の特設ページの数字", () => {
       ...Object.values(stats.tagThumbnails).map((item) => item.thumbnail),
     ]
     for (const url of urls) expect(url).toStartWith("https://")
+  })
+
+  test("グラフと年の表は累計なので、減らない", () => {
+    for (const key of ["works", "registrations"] as const) {
+      const values = toCumulative(
+        stats.monthly.map((item) => ({ month: item.month, value: item[key] })),
+      ).map((point) => point.value)
+      expect([...values].sort((a, b) => a - b)).toEqual(values)
+    }
+    const yearly = toCumulativeYearly(stats.yearly)
+    for (const key of ["works", "registrations"] as const) {
+      const values = yearly.map((item) => item[key])
+      expect([...values].sort((a, b) => a - b)).toEqual(values)
+    }
+    expect(yearly.at(-1)?.generations).toBe(994635 + 1629454)
   })
 })

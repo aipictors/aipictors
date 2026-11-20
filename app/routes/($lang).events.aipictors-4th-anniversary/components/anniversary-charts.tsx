@@ -217,35 +217,39 @@ export function ShareBarsTabs(props: {
 
 export type MonthlyPoint = { month: string; value: number }
 
+/** 月ごとの数 → その月までの累計 */
+export const toCumulative = (points: MonthlyPoint[]): MonthlyPoint[] => {
+  let total = 0
+  return points.map((point) => {
+    total += point.value
+    return { month: point.month, value: total }
+  })
+}
+
 /**
- * 月ごとの縦棒（4 年分）。年の境目に目盛りを付ける
+ * 月ごとの累計の縦棒。年の境目に目盛りを付ける
  */
 export function MonthlyBars(props: {
+  /** 月ごとの数（中で累計にする） */
   points: MonthlyPoint[]
   colorClassName: string
   unit?: string
 }) {
   const t = useTranslation()
   const [hovered, setHovered] = useState<MonthlyPoint | null>(null)
-  const max = Math.max(...props.points.map((point) => point.value), 1)
-  const peak = props.points.reduce<MonthlyPoint | null>(
-    (best, point) => (best === null || point.value > best.value ? point : best),
-    null,
-  )
-  const shown = hovered ?? peak
+  const points = toCumulative(props.points)
+  const max = Math.max(...points.map((point) => point.value), 1)
+  const shown = hovered ?? points[points.length - 1] ?? null
   return (
     <div>
       <div className="mb-2 h-5 text-muted-foreground text-xs">
         {shown && (
           <>
-            {hovered === null && (
-              <span className="mr-1">{t("いちばん多い月", "Peak")}:</span>
-            )}
             <span className="font-bold text-foreground">
               {shown.month.replace("-", "年")}
-              {t("月", "")}
+              {t("月まで", "")}
             </span>{" "}
-            {formatNumber(shown.value)}
+            {t("累計", "Total")} {formatNumber(shown.value)}
             {props.unit ?? ""}
           </>
         )}
@@ -254,7 +258,7 @@ export function MonthlyBars(props: {
         className="flex h-40 items-end gap-px"
         onMouseLeave={() => setHovered(null)}
       >
-        {props.points.map((point) => (
+        {points.map((point) => (
           <button
             key={point.month}
             type="button"
@@ -272,7 +276,7 @@ export function MonthlyBars(props: {
         ))}
       </div>
       <div className="mt-1 flex gap-px text-[10px] text-muted-foreground">
-        {props.points.map((point) => (
+        {points.map((point) => (
           <span key={point.month} className="min-w-0 flex-1 overflow-visible">
             {point.month.endsWith("-01") ? point.month.slice(0, 4) : ""}
           </span>

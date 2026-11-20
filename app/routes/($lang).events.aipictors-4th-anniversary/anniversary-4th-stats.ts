@@ -2453,3 +2453,18 @@ export const ANNIVERSARY_4TH_STATS: Anniversary4thStats = {
     },
   },
 }
+
+/** 年ごとの数 → その年の終わりまでの累計（生成は記録のある年から数える） */
+export const toCumulativeYearly = (items: Anniversary4thStats["yearly"]) => {
+  let works = 0
+  let registrations = 0
+  let generations: number | null = null
+  return items.map((item) => {
+    works += item.works
+    registrations += item.registrations
+    if (item.generations !== null) {
+      generations = (generations ?? 0) + item.generations
+    }
+    return { ...item, works, registrations, generations }
+  })
+}

@@ -34,7 +34,10 @@ import {
   EventWorkList,
   EventWorkListItemFragment,
 } from "~/routes/($lang).events.$event._index/components/event-work-list"
-import { ANNIVERSARY_4TH_STATS } from "~/routes/($lang).events.aipictors-4th-anniversary/anniversary-4th-stats"
+import {
+  ANNIVERSARY_4TH_STATS,
+  toCumulativeYearly,
+} from "~/routes/($lang).events.aipictors-4th-anniversary/anniversary-4th-stats"
 import {
   formatNumber,
   MonthlyBars,
@@ -154,6 +157,9 @@ export default function Aipictors4thAnniversary() {
       .map((item) => item.key),
   )
 
+  // 年ごとの数は年によって減って見えるので、年末までの累計で見せる
+  const cumulativeYearly = toCumulativeYearly(stats.yearly)
+
   const yearTopThumbnail = (year: number) =>
     stats.yearlyTopWorks.find((group) => group.year === year)?.works[0]
       ?.thumbnail
@@ -271,7 +277,7 @@ export default function Aipictors4thAnniversary() {
           />
           <div className="grid gap-4 lg:grid-cols-2">
             <ChartCard
-              title={t("投稿された作品（月ごと）", "Works posted per month")}
+              title={t("投稿された作品（累計）", "Total works posted")}
             >
               <MonthlyBars
                 points={stats.monthly.map((item) => ({
@@ -282,9 +288,7 @@ export default function Aipictors4thAnniversary() {
                 unit={t("作品", " works")}
               />
             </ChartCard>
-            <ChartCard
-              title={t("新しく登録した人（月ごと）", "New members per month")}
-            >
+            <ChartCard title={t("登録した人（累計）", "Total members")}>
               <MonthlyBars
                 points={stats.monthly.map((item) => ({
                   month: item.month,
@@ -297,8 +301,8 @@ export default function Aipictors4thAnniversary() {
             {stats.monthly.some((item) => item.generations !== null) && (
               <ChartCard
                 title={t(
-                  "生成機で作られた画像（月ごと・記録のある2025年7月から）",
-                  "Images made with the generator per month (records since Jul 2025)",
+                  "生成機で作られた画像（累計・記録のある2025年7月から）",
+                  "Total images made with the generator (records since Jul 2025)",
                 )}
                 className="lg:col-span-2"
               >
@@ -320,17 +324,19 @@ export default function Aipictors4thAnniversary() {
               <thead className="bg-muted/50 text-muted-foreground text-xs">
                 <tr>
                   <th className="px-4 py-2 text-left">{t("年", "Year")}</th>
-                  <th className="px-4 py-2 text-right">{t("投稿", "Works")}</th>
                   <th className="px-4 py-2 text-right">
-                    {t("新規登録", "New members")}
+                    {t("作品（累計）", "Works (total)")}
                   </th>
                   <th className="px-4 py-2 text-right">
-                    {t("生成", "Generations")}
+                    {t("登録した人（累計）", "Members (total)")}
+                  </th>
+                  <th className="px-4 py-2 text-right">
+                    {t("生成（累計）", "Generations (total)")}
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {stats.yearly.map((item) => (
+                {cumulativeYearly.map((item) => (
                   <tr key={item.year} className="border-t">
                     <td className="px-4 py-2 font-bold">
                       <span className="flex items-center gap-2">
@@ -362,8 +368,8 @@ export default function Aipictors4thAnniversary() {
             </table>
             <p className="border-t px-4 py-2 text-muted-foreground text-xs">
               {t(
-                "生成の数は、記録が残っている2025年7月からの分です。2026年は11月20日まで（11月は予約投稿を含みます）。",
-                "Generation counts only cover records kept since July 2025. 2026 is through November 20 (November includes scheduled posts).",
+                "各年の終わりまでの累計です。生成の数は、記録が残っている2025年7月からの分です。2026年は11月20日まで（11月は予約投稿を含みます）。",
+                "Running totals at the end of each year. Generation counts only cover records kept since July 2025. 2026 is through November 20 (November includes scheduled posts).",
               )}
             </p>
           </div>
