@@ -1,10 +1,10 @@
 import type { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
-
 import {
   freeGenerationMaxPixels,
   isCustomSizeType,
   parseGenerationSize,
 } from "~/routes/($lang).generation._index/types/generation-size"
+import { findDitModelLabel } from "~/routes/($lang).generation._index/utils/dit-models"
 
 type Props = {
   config: GenerationConfigState
@@ -12,6 +12,10 @@ type Props = {
   generationType: "IMAGE_TO_IMAGE" | "TEXT_TO_IMAGE"
   inProgressImageGenerationTasksCount: number
   maxTasksCount: number
+  /**
+   * 選んでいるモデルのファイル名
+   */
+  modelName?: string | null
 }
 
 /**
@@ -157,6 +161,19 @@ export const findGenerationSubmitBlock = (
       log: { message: "Blocked: HighRes with IMG2IMG" },
       toast:
         "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
+      isTopCenterOnMobile: true,
+    }
+  }
+
+  // Z-Image などの新しい世代のモデルは ControlNet に対応していない（生成サーバーが受け付けない）
+  const ditModelLabel = findDitModelLabel(props.modelName)
+  if (ditModelLabel !== null && config.controlNetImageBase64 !== null) {
+    return {
+      log: {
+        message: "Blocked: ControlNet with DiT model",
+        details: { model: props.modelName },
+      },
+      toast: `${ditModelLabel} では ControlNet（ポーズ・線画などの指定）を使えません。画像を外すか、ほかのモデルを選んでください。`,
       isTopCenterOnMobile: true,
     }
   }

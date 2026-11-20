@@ -29,6 +29,7 @@ import {
   useGenerationCoinSummaryRefresh,
 } from "~/routes/($lang).generation._index/hooks/use-generation-coin-summary"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationFaceFix } from "~/routes/($lang).generation._index/hooks/use-generation-face-fix"
 import { useGenerationNoticeConfirm } from "~/routes/($lang).generation._index/hooks/use-generation-notice-confirm"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
@@ -86,6 +87,8 @@ export function GenerationSubmissionView(props: Props) {
   const context = useGenerationContext()
 
   const [scheduler] = useGenerationScheduler()
+
+  const [faceFix] = useGenerationFaceFix()
 
   const userModelSelection = useUserModelSelection()
 
@@ -217,6 +220,7 @@ export function GenerationSubmissionView(props: Props) {
       scale: context.config.scale,
       sampler: context.config.sampler,
       scheduler: scheduler,
+      faceFix,
       clipSkip: context.config.clipSkip,
       sizeType: context.config
         .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
@@ -367,6 +371,9 @@ export function GenerationSubmissionView(props: Props) {
       generationType,
       inProgressImageGenerationTasksCount,
       maxTasksCount,
+      modelName: context.imageModels.find(
+        (model) => model.id === context.config.modelId,
+      )?.name,
     })
 
     if (submitBlock !== null) {
@@ -718,6 +725,7 @@ export function GenerationSubmissionView(props: Props) {
       i2iFileUrl,
       config: context.config,
       scheduler,
+      faceFix: faceFix && context.config.modelType !== "GEMINI",
       imagesPerRequest,
       inProgressImageGenerationTasksCount,
       maxTasksCount,

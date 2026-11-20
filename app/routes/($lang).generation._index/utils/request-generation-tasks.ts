@@ -34,6 +34,10 @@ type Props = {
   i2iFileUrl: string
   config: GenerationConfigState
   scheduler: string | null
+  /**
+   * 顔の自動修正
+   */
+  faceFix?: boolean
   imagesPerRequest: number
   inProgressImageGenerationTasksCount: number
   maxTasksCount: number
@@ -58,6 +62,7 @@ export const requestGenerationTasks = async (props: Props) => {
     i2iFileUrl,
     config,
     scheduler,
+    faceFix,
     imagesPerRequest,
     inProgressImageGenerationTasksCount,
     maxTasksCount,
@@ -148,6 +153,7 @@ export const requestGenerationTasks = async (props: Props) => {
             modelName,
             seed: seeds[i],
             controlNetImageUrl,
+            faceFix,
           }),
         },
       })
@@ -219,6 +225,7 @@ export const requestGenerationTasks = async (props: Props) => {
           generationType,
           i2iFileUrl,
           controlNetImageUrl,
+          faceFix,
         }),
       },
     })

@@ -135,4 +135,22 @@ describe("findGenerationSubmitBlock", () => {
     ).toBe("Blocked: size over free limit")
     expect(find({ sizeType: "CUSTOM_2496_2496", upscaleSize: 2 })).toBeNull()
   })
+
+  test("Z-Image などの新しい世代のモデルは ControlNet を使えない", () => {
+    const cn = {
+      controlNetImageBase64: "x",
+      controlNetWeight: 1,
+      controlNetModule: "canny",
+    } as Partial<GenerationConfigState>
+    expect(
+      find(cn, { modelName: "z_image_turbo.safetensors" })?.log.message,
+    ).toBe("Blocked: ControlNet with DiT model")
+    expect(
+      find(cn, { modelName: "z_image_turbo.safetensors" })?.toast,
+    ).toContain("Z-Image Turbo")
+    expect(
+      find(cn, { modelName: "animagineXL40_v4Opt.safetensors" }),
+    ).toBeNull()
+    expect(find({}, { modelName: "z_image_turbo.safetensors" })).toBeNull()
+  })
 })

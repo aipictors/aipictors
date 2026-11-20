@@ -51,11 +51,14 @@ export const toReservedTaskInput = (props: {
   modelName: string
   seed: number
   controlNetImageUrl: string | null
+  faceFix?: boolean
 }) => {
   const { config } = props
 
   return {
     count: 1,
+    // 古いサーバーが知らない項目で失敗しないよう、オンのときだけ送る
+    ...(props.faceFix ? { isFaceFixEnabled: true } : {}),
     model: props.modelName,
     vae: config.vae ?? "",
     prompt: config.promptText,
@@ -144,12 +147,14 @@ export const toImageGenerationTaskInput = (props: {
   generationType: string
   i2iFileUrl: string
   controlNetImageUrl: string | null
+  faceFix?: boolean
 }) => {
   const { config } = props
 
   return {
     // 1 回で作る枚数（サーバー側で上限に収める）
     count: props.imagesPerRequest,
+    ...(props.faceFix ? { isFaceFixEnabled: true } : {}),
     model: props.modelName,
     vae: config.vae ?? "",
     prompt: props.prompt,

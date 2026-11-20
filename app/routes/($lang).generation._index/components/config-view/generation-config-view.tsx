@@ -15,6 +15,7 @@ import { toGenerationSamplerOptionValue } from "~/lib/generation-sampler"
 import { toGenerationModelType } from "~/lib/user-models/generation"
 import { GenerationConfigClipSkip } from "~/routes/($lang).generation._index/components/config-view/generation-config-clip-skip"
 import { GenerationConfigCount } from "~/routes/($lang).generation._index/components/config-view/generation-config-count"
+import { GenerationConfigFaceFix } from "~/routes/($lang).generation._index/components/config-view/generation-config-face-fix"
 import { GenerationConfigMemoButton } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-button"
 import { GenerationConfigMemoSettingDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-setting-dialog"
 import { GenerationConfigModelRecommendation } from "~/routes/($lang).generation._index/components/config-view/generation-config-model-recommendation"
@@ -34,6 +35,7 @@ import { GenerationModelSection } from "~/routes/($lang).generation._index/compo
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useGenerationFaceFix } from "~/routes/($lang).generation._index/hooks/use-generation-face-fix"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
@@ -76,6 +78,8 @@ export function GenerationConfigView(props: Props) {
   const userModelSelection = useUserModelSelection()
 
   const [scheduler, setScheduler] = useGenerationScheduler()
+
+  const [faceFix, setFaceFix] = useGenerationFaceFix()
 
   /**
    * 選択中のモデル
@@ -138,6 +142,14 @@ export function GenerationConfigView(props: Props) {
 
   const t = useTranslation()
 
+  /**
+   * 顔の自動修正は自前の生成サーバーで作るモデルだけ（Gemini・FLUX は外のサービス）
+   */
+  const canUseFaceFix =
+    configModelType !== "GEMINI" &&
+    configModelType !== "FLUX" &&
+    configModelType !== "SD5"
+
   const renderDetailsAccordion = (includesSeed = false) => (
     <Accordion type="single" collapsible>
       <AccordionItem value="setting" className="border-b-0">
@@ -158,6 +170,7 @@ export function GenerationConfigView(props: Props) {
                 toGenerationSamplerOptionValue(context.config.sampler),
                 scheduler ?? t("自動", "Auto"),
                 context.config.vae ? `VAE ${context.config.vae}` : null,
+                faceFix && canUseFaceFix ? t("顔の自動修正", "Face fix") : null,
               ]
                 .filter(Boolean)
                 .join("・")}
@@ -171,6 +184,12 @@ export function GenerationConfigView(props: Props) {
                 value={context.config.seed}
                 onChange={context.updateSeed}
               />
+              <Separator />
+            </>
+          )}
+          {canUseFaceFix && (
+            <>
+              <GenerationConfigFaceFix value={faceFix} onChange={setFaceFix} />
               <Separator />
             </>
           )}
