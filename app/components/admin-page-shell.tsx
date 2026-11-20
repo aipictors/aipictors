@@ -19,6 +19,7 @@ import {
   Cpu,
   Flag,
   Users,
+  Wallet,
 } from "lucide-react"
 import { gql, useQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
@@ -49,6 +50,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "分析",
     description: "売上・会員・PV・流入元の推移",
     icon: BarChart3,
+  },
+  {
+    href: "/admin/costs",
+    title: "維持費の内訳",
+    description: "GPU サーバー・サービス別の月の維持費",
+    icon: Wallet,
   },
   {
     href: "/admin/support",

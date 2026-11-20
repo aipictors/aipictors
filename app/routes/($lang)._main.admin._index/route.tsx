@@ -44,6 +44,11 @@ const quickActions = [
     subtitle: "売上・会員・PV・流入元の推移を見る",
   },
   {
+    href: "/admin/costs",
+    title: "維持費の内訳",
+    subtitle: "GPU サーバー・サービス別の月の維持費を見る",
+  },
+  {
     href: "/admin/support",
     title: "お問い合わせ",
     subtitle: "AI から引き継いだ相談に返事する",

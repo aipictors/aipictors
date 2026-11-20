@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "~/components/ui/card"
 import { AuthContext } from "~/contexts/auth-context"
+import { Link } from "~/lib/app/locale-router"
 import { createMeta } from "~/utils/create-meta"
 import { AnalyticsChart } from "./analytics-chart"
 import {
@@ -1052,6 +1053,12 @@ function ProfitSection(props: {
                   </div>
                 )
               })}
+              <Link
+                to="/admin/costs"
+                className="block pt-1 text-sky-300 text-xs hover:underline"
+              >
+                今の構成の維持費の内訳を見る →
+              </Link>
               <p className="pt-1 text-slate-500 text-xs">
                 1 ドル {pnl.today.fxUsdJpy.toFixed(1)} 円
                 {pnl.month.daysWithCosts < pnl.month.storedDays &&
