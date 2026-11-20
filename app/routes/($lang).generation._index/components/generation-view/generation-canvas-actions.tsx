@@ -33,6 +33,7 @@ import { downloadImageFile } from "~/routes/($lang).generation._index/utils/down
 import { openPostPage } from "~/routes/($lang).generation._index/utils/open-post-page"
 import { toPngParametersText } from "~/routes/($lang).generation._index/utils/png-generation-parameters"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
+import { toJstFileTimestamp } from "~/utils/to-jst-file-timestamp"
 
 type Props = {
   /** 中央に出している生成結果の ID */
@@ -83,7 +84,7 @@ export function GenerationCanvasActions(props: Props) {
 
   const imageUrl = normalizeGenerativeFileUrl(task.imageUrl)
 
-  const fileName = `${new Date().toISOString().replace(/[^0-9]/g, "")}`
+  const fileName = toJstFileTimestamp()
 
   const onSave = () => {
     // 生成情報が入っていない PNG（生成サーバーによる）には、生成履歴の内容を書き込む

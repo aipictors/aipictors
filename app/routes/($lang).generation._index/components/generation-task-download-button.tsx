@@ -4,6 +4,7 @@ import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
+import { toJstFileTimestamp } from "~/utils/to-jst-file-timestamp"
 
 type Props = {
   taskNanoid: string | null
@@ -39,7 +40,7 @@ export function GenerationTaskDownloadButton(props: Props) {
     const isFallback = imageElement?.dataset.generativeFallback === "true"
     const resolvedUrl = imageElement?.dataset.original ?? props.imageUrl
 
-    const name = new Date().toISOString().replace(/[^0-9]/g, "")
+    const name = toJstFileTimestamp()
 
     setIsDownloading(true)
     try {

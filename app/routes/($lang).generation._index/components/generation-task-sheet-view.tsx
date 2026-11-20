@@ -25,6 +25,7 @@ import {
 } from "~/routes/($lang).generation._index/types/generation-size"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 import { openPostPage } from "~/routes/($lang).generation._index/utils/open-post-page"
+import { toJstFileTimestamp } from "~/utils/to-jst-file-timestamp"
 
 type Props = {
   task:
@@ -100,7 +101,7 @@ export function GenerationTaskSheetView(props: Props) {
     const resolvedUrl =
       imageElement?.dataset.original ?? imageElement?.src ?? imageUrl
 
-    const name = `${new Date().toISOString().replace(/[^0-9]/g, "")}`
+    const name = toJstFileTimestamp()
 
     // 生成情報が入っていない PNG（生成サーバーによる）には、生成履歴の内容を書き込む
     downloadImageFile(name, resolvedUrl, {
