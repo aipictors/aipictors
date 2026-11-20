@@ -8,7 +8,6 @@ import {
 } from "lucide-react"
 import { useCallback, useState } from "react"
 import { Button } from "~/components/ui/button"
-import { Slider } from "~/components/ui/slider"
 import { useTranslation } from "~/hooks/use-translation"
 import { GenerationTasksDeleteButton } from "~/routes/($lang).generation._index/components/generation-tasks-delete-button"
 import { GenerationImageDownloadButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-download-button"
@@ -20,6 +19,7 @@ import {
 import { GenerationTaskActionDropdownMenu } from "~/routes/($lang).generation._index/components/task-view/generation-task-action-dropdown-menu"
 import { GenerationTaskCountSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-count-select"
 import { GenerationTaskRatingSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-rating-select"
+import { GenerationThumbnailColumnsButtons } from "~/routes/($lang).generation._index/components/task-view/generation-thumbnail-columns-buttons"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import type { GenerationInfoSource } from "~/routes/($lang).generation._index/utils/generation-info-file"
@@ -182,7 +182,7 @@ export function GenerationTaskListActions(props: Props) {
   }
 
   return (
-    // スマホでも 1 列に収める（折り返さない。幅が足りない分はスライダーが縮む）
+    // スマホでも 1 列に収める（折り返さない。スマホでは列数ボタンを ◀ 列数 ▶ だけにする）
     <div className="flex min-h-9 items-center gap-2 px-2 pb-2 md:px-4">
       <Button
         title={t(
@@ -210,16 +210,10 @@ export function GenerationTaskListActions(props: Props) {
         />
       )}
       <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-1">
-        {/* サムネイルサイズ */}
-        <Slider
-          className="color-pink mr-1 w-28 min-w-12 shrink"
-          aria-label={t("サムネイルサイズ", "Thumbnail size")}
-          title={t("サムネイルサイズ", "Thumbnail size")}
-          min={1}
-          max={9}
-          step={1}
-          value={[props.thumbnailSize]}
-          onValueChange={(value) => props.setThumbnailSize(value[0])}
+        {/* 表示列数（◀ 1 2 3 4 ▶） */}
+        <GenerationThumbnailColumnsButtons
+          thumbnailSize={props.thumbnailSize}
+          setThumbnailSize={props.setThumbnailSize}
         />
         <GenerationTaskActionDropdownMenu
           thumbnailType={props.thumbnailType}
