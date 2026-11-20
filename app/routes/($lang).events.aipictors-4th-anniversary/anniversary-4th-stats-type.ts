@@ -64,4 +64,20 @@ export type Anniversary4thStats = {
     value: string
     enValue?: string
   }[]
+  /** 年ごとのいいねが多かった全年齢の作品（1 人 1 作品。目で見て選んだもの） */
+  yearlyTopWorks: {
+    year: number
+    works: {
+      id: string
+      title: string
+      userName: string
+      likes: number
+      thumbnail: string
+      largeThumbnail: string
+    }[]
+  }[]
+  /** モデル名 → サムネイル（生成機の公式サムネ。ないものは代表作品） */
+  modelThumbnails: Record<string, string>
+  /** タグ → 代表作品のサムネイル */
+  tagThumbnails: Record<string, { workId: string; thumbnail: string }>
 }

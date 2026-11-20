@@ -1763,30 +1763,6 @@ export const ANNIVERSARY_4TH_STATS: Anniversary4thStats = {
       enValue: "1,161 days",
     },
     {
-      label: "365日以上続けてログインした人",
-      enLabel: "Members with a 365-day streak",
-      value: "77 人",
-      enValue: "77 people",
-    },
-    {
-      label: "いちばん投稿が多かった月",
-      enLabel: "Busiest month for posts",
-      value: "2023年12月（34,228 作品）",
-      enValue: "2023-12 (34,228 works)",
-    },
-    {
-      label: "いちばん登録が多かった月",
-      enLabel: "Busiest month for sign-ups",
-      value: "2023年5月（8,161 人）",
-      enValue: "2023-05 (8,161 people)",
-    },
-    {
-      label: "いちばんいいねされた作品",
-      enLabel: "Most-liked work",
-      value: "230 いいね",
-      enValue: "230 likes",
-    },
-    {
       label: "いちばん見られた作品",
       enLabel: "Most-viewed work",
       value: "214,474 回",
@@ -1805,4 +1781,675 @@ export const ANNIVERSARY_4TH_STATS: Anniversary4thStats = {
       enValue: "80 models",
     },
   ],
+  yearlyTopWorks: [
+    {
+      year: 2022,
+      works: [
+        {
+          id: "3630",
+          title: "スタンプ案！（基本設定 & Anything編）",
+          userName: "Lu:Na:Clock",
+          likes: 61,
+          thumbnail:
+            "https://files.aipictors.com/14da6390-a400-49d4-87bf-7ea54436310b",
+          largeThumbnail:
+            "https://files.aipictors.com/79b94171-4acf-492b-8de2-3b390a12427f",
+        },
+        {
+          id: "2170",
+          title: "sleeping angels",
+          userName: "chili",
+          likes: 60,
+          thumbnail:
+            "https://files.aipictors.com/9bb7bc37-fde7-4cb4-83a6-67e9c0c121a5",
+          largeThumbnail:
+            "https://files.aipictors.com/381e5024-6538-4ce7-b0c1-5fef808a4e3c",
+        },
+        {
+          id: "2867",
+          title: "うちのメイド姉妹",
+          userName: "呉 春華",
+          likes: 45,
+          thumbnail:
+            "https://files.aipictors.com/453f1286-6a14-462c-9ce9-90139133f04d",
+          largeThumbnail:
+            "https://files.aipictors.com/b2bb5168-6e11-480b-8a10-5d904e4b03a9",
+        },
+        {
+          id: "4696",
+          title: "🍁通りすがりのメープルシロップです",
+          userName: "佐藤91号",
+          likes: 40,
+          thumbnail:
+            "https://files.aipictors.com/9202150c-d917-48aa-8e2e-31fd6576ecf1",
+          largeThumbnail:
+            "https://files.aipictors.com/7e95abef-34f3-4b76-879a-0a59a8afa31a",
+        },
+        {
+          id: "2493",
+          title: "頬をそめる",
+          userName: "水色群青",
+          likes: 32,
+          thumbnail:
+            "https://files.aipictors.com/3bda5140-f53b-4e90-b779-1a4ba38b0188",
+          largeThumbnail:
+            "https://files.aipictors.com/eb9966d9-8cf8-421f-a568-d87ed4748d39",
+        },
+        {
+          id: "4362",
+          title: "肉球ツインテ少女",
+          userName: "ネプティア",
+          likes: 30,
+          thumbnail:
+            "https://files.aipictors.com/68899103-8eb0-436f-86cd-303da4f03797",
+          largeThumbnail:
+            "https://files.aipictors.com/4dbe0654-bcd0-41a1-87f9-38ca3884a1a5",
+        },
+        {
+          id: "2719",
+          title: "葉っぱの子",
+          userName: "porcamiseria",
+          likes: 29,
+          thumbnail:
+            "https://files.aipictors.com/191caf4b-9f67-4c89-b9ba-8c12c659f6f5",
+          largeThumbnail:
+            "https://files.aipictors.com/377c6546-dbb3-4c3e-baa2-135b8afee5f4",
+        },
+        {
+          id: "2701",
+          title: "ちょっとあまやどり",
+          userName: "にししん",
+          likes: 27,
+          thumbnail:
+            "https://files.aipictors.com/32dad9af-9332-4bf5-bff6-d19cd2a9268e",
+          largeThumbnail:
+            "https://files.aipictors.com/ec2ea9eb-7569-4038-bdb0-9da0dd9e2349",
+        },
+      ],
+    },
+    {
+      year: 2023,
+      works: [
+        {
+          id: "18347",
+          title: "宇宙",
+          userName: "なめこ",
+          likes: 230,
+          thumbnail:
+            "https://files.aipictors.com/271471e5-5180-40bd-a1b1-93b3ea8c14ce",
+          largeThumbnail:
+            "https://files.aipictors.com/7b50f7ec-07d4-449f-b91b-fec01baf7820",
+        },
+        {
+          id: "172288",
+          title: "コーヒー淹れてあげるね",
+          userName: "沢渡みかげ＠休止中",
+          likes: 197,
+          thumbnail:
+            "https://files.aipictors.com/61b9d810-9d4a-4b5c-aa1e-ba910e4bb90e",
+          largeThumbnail:
+            "https://files.aipictors.com/52c1dea0-6d91-43e3-94d3-96cb40bcc081",
+        },
+        {
+          id: "186700",
+          title: "おどるにゃん",
+          userName: "Azuki7",
+          likes: 181,
+          thumbnail:
+            "https://files.aipictors.com/60dea5cc-d566-41e2-b77f-324a5c0460b2",
+          largeThumbnail:
+            "https://files.aipictors.com/70625776-f811-4b5a-9061-9a3881c5c014",
+        },
+        {
+          id: "182937",
+          title: "氷使いアリスと弓使いアリス",
+          userName: "Alicia Stuart",
+          likes: 168,
+          thumbnail:
+            "https://files.aipictors.com/52d17e65-3572-4185-81a2-937e89856ebd",
+          largeThumbnail:
+            "https://files.aipictors.com/a26c95e3-6b38-4399-b6cf-baf688c1bc62",
+        },
+        {
+          id: "189172",
+          title: "子供達の色",
+          userName: "AI錬金術士＠クラフ",
+          likes: 162,
+          thumbnail:
+            "https://files.aipictors.com/d0cbc493-28f7-4d2c-b7ae-206961757a4a",
+          largeThumbnail:
+            "https://files.aipictors.com/0b13151c-0894-47c5-abc6-708f2886a9f2",
+        },
+        {
+          id: "189960",
+          title: "グラフィティロリィタ",
+          userName: "なかじ",
+          likes: 160,
+          thumbnail:
+            "https://files.aipictors.com/68480097-287c-4485-acfa-6b11025ca7e2",
+          largeThumbnail:
+            "https://files.aipictors.com/d07617a2-6ba1-4abb-81dc-db9c55bfd471",
+        },
+        {
+          id: "169734",
+          title: "おねーちゃんの分も作るね！",
+          userName: "wanwanwan",
+          likes: 149,
+          thumbnail:
+            "https://files.aipictors.com/e72e4559-28d7-428e-9269-2e45e34e7b16",
+          largeThumbnail:
+            "https://files.aipictors.com/ce4a5b31-1418-455f-99b2-6eaefd62945c",
+        },
+        {
+          id: "212916",
+          title: "スターライトマジック！",
+          userName: "アゲアゲのからあげ",
+          likes: 136,
+          thumbnail:
+            "https://files.aipictors.com/a23dc1cc-074f-4e71-9ddd-d4db8137e2b3",
+          largeThumbnail:
+            "https://files.aipictors.com/f6abf752-834c-406e-bdd5-751dfbb78e6a",
+        },
+      ],
+    },
+    {
+      year: 2024,
+      works: [
+        {
+          id: "269783",
+          title: "ラムネ、いかがですか？",
+          userName: "みやび",
+          likes: 191,
+          thumbnail:
+            "https://files.aipictors.com/56bec3fc-35db-4bb6-adc7-8f1816fea1b9",
+          largeThumbnail:
+            "https://files.aipictors.com/6fce0419-2a2c-4e3e-9d2c-cda0b8fe8ce3",
+        },
+        {
+          id: "281933",
+          title: "ゆめかわレインボー",
+          userName: "沢渡みかげ＠休止中",
+          likes: 178,
+          thumbnail:
+            "https://files.aipictors.com/b402ee73-0b01-4f1a-8595-805d982bdf7b",
+          largeThumbnail:
+            "https://files.aipictors.com/966d3eff-984a-4477-9c75-da69a446202a",
+        },
+        {
+          id: "263933",
+          title: "慈愛のまなざし",
+          userName: "掬月",
+          likes: 175,
+          thumbnail:
+            "https://files.aipictors.com/97d5f46d-db41-4dc7-bab7-195eedc74b0f",
+          largeThumbnail:
+            "https://files.aipictors.com/651c9d81-12ed-4086-aca4-4cb0bcd5fb02",
+        },
+        {
+          id: "345914",
+          title: "なにかを見つけた猫ちゃん",
+          userName: "アゲアゲのからあげ",
+          likes: 159,
+          thumbnail:
+            "https://files.aipictors.com/443c464b-d53d-4a81-bae2-523747b95b19",
+          largeThumbnail:
+            "https://files.aipictors.com/54f75dd5-147a-4f7f-9993-0e13519b899a",
+        },
+        {
+          id: "277544",
+          title: "とある女子の日常",
+          userName: "To_shinobu【母子官能小説専門】",
+          likes: 158,
+          thumbnail:
+            "https://files.aipictors.com/82a183f1-075d-46cc-b9ff-426ce4e4fe34",
+          largeThumbnail:
+            "https://files.aipictors.com/a7e07f85-0621-4bd3-831c-bad2760809f3",
+        },
+        {
+          id: "284294",
+          title: "数えられる羊さんもきっと夢を見る🐏🐑",
+          userName: "あまりりす",
+          likes: 154,
+          thumbnail:
+            "https://files.aipictors.com/156823b8-24e6-414a-897a-fc9d82cdba9b",
+          largeThumbnail:
+            "https://files.aipictors.com/5aadd3b5-1fc8-4006-a18c-c366cb388c06",
+        },
+        {
+          id: "287831",
+          title: "ゲコ～時間",
+          userName: "ころりちゃん",
+          likes: 146,
+          thumbnail:
+            "https://files.aipictors.com/6a3a26c6-0f7f-4b04-8323-6701362a1f9b",
+          largeThumbnail:
+            "https://files.aipictors.com/31985d94-d175-42d1-90dc-6fcb3dd10ec8",
+        },
+        {
+          id: "283722",
+          title: "ケーキと巫女さん妹ら",
+          userName: "さかいきしお",
+          likes: 145,
+          thumbnail:
+            "https://files.aipictors.com/821919fd-6a79-4007-b1ac-5dcfa3e0c1e9",
+          largeThumbnail:
+            "https://files.aipictors.com/5aa72859-2a0c-447b-83d9-d37313e974db",
+        },
+      ],
+    },
+    {
+      year: 2025,
+      works: [
+        {
+          id: "528324",
+          title: "投稿開始1周年になりました！",
+          userName: "うろんうろん -uron uron-",
+          likes: 104,
+          thumbnail:
+            "https://files.aipictors.com/e9b83510-5827-456d-a980-d5aab0b34aef",
+          largeThumbnail:
+            "https://files.aipictors.com/e1a5273c-b693-489e-aad8-fdcf68e2e998",
+        },
+        {
+          id: "531945",
+          title: "記念撮影",
+          userName: "沢渡みかげ＠休止中",
+          likes: 99,
+          thumbnail:
+            "https://files.aipictors.com/f5653680-12dc-47ff-846a-46d82c2003b3",
+          largeThumbnail:
+            "https://files.aipictors.com/1323714c-63e4-4e36-8ee2-ecd5ef007a19",
+        },
+        {
+          id: "601089",
+          title: "見せて貰いますわ！",
+          userName: "五月雨",
+          likes: 96,
+          thumbnail:
+            "https://files.aipictors.com/93078fbb-dc7a-428c-aee7-ea63bc7b11f3",
+          largeThumbnail:
+            "https://files.aipictors.com/a0d39958-0584-4778-90d2-e0646601de69",
+        },
+        {
+          id: "530213",
+          title: "Untitled",
+          userName: "CherryBlossom",
+          likes: 82,
+          thumbnail:
+            "https://files.aipictors.com/be786e64-b46e-4944-9571-36567afe345a",
+          largeThumbnail:
+            "https://files.aipictors.com/fd3eb19f-fb4c-4e70-be3a-0f463d52e1ef",
+        },
+        {
+          id: "546501",
+          title: "ついてきてはいけません",
+          userName: "Jutaro009",
+          likes: 75,
+          thumbnail:
+            "https://files.aipictors.com/fc670018-27c3-43c8-a736-0efbd30cd051",
+          largeThumbnail:
+            "https://files.aipictors.com/5848ba67-7c5d-4cc3-90d9-30b52d590df9",
+        },
+        {
+          id: "538891",
+          title: "コタツでミカン＆お汁粉",
+          userName: "Crabkanicancer",
+          likes: 75,
+          thumbnail:
+            "https://files.aipictors.com/ab2523b5-0651-49c6-a81e-63314f5413f3",
+          largeThumbnail:
+            "https://files.aipictors.com/0b19cb7a-084d-45d1-a952-d37584c503c7",
+        },
+        {
+          id: "534361",
+          title: "狐の影絵",
+          userName: "さかいきしお",
+          likes: 75,
+          thumbnail:
+            "https://files.aipictors.com/bce58763-c009-4139-8693-13f4a36a0930",
+          largeThumbnail:
+            "https://files.aipictors.com/800839e0-9cb1-4294-adf9-1a02f27a1f91",
+        },
+        {
+          id: "546496",
+          title: "舞翅",
+          userName: "なかじ",
+          likes: 71,
+          thumbnail:
+            "https://files.aipictors.com/092f7638-ad54-404c-abf4-35c8302fd437",
+          largeThumbnail:
+            "https://files.aipictors.com/26ce8c3e-2431-41be-8682-9def3a412971",
+        },
+      ],
+    },
+    {
+      year: 2026,
+      works: [
+        {
+          id: "730288",
+          title: "獣耳",
+          userName: "もみ",
+          likes: 137,
+          thumbnail:
+            "https://files.aipictors.com/7283f88a-9015-4d7f-b2e9-73140ace2640",
+          largeThumbnail:
+            "https://files.aipictors.com/d5693ad3-fd02-4324-a337-311d5cced897",
+        },
+        {
+          id: "827660",
+          title: "花園に佇む黒髪の花妖精",
+          userName: "Rhinn",
+          likes: 102,
+          thumbnail:
+            "https://files.aipictors.com/4fabd3dc-1bfc-4ef1-b8e7-f418ee302710",
+          largeThumbnail:
+            "https://files.aipictors.com/c7775930-1502-47b9-84aa-99ac725c4a37",
+        },
+        {
+          id: "828702",
+          title: "白薔薇の魔王様",
+          userName: "みやび",
+          likes: 101,
+          thumbnail:
+            "https://files.aipictors.com/b1820356-902f-4850-8f6d-36dcb6865caa",
+          largeThumbnail:
+            "https://files.aipictors.com/f06dcd41-26f9-4ee4-82a6-93f9327c5f46",
+        },
+        {
+          id: "826963",
+          title: "夜の温室研究室",
+          userName: "eru2",
+          likes: 92,
+          thumbnail:
+            "https://files.aipictors.com/8ddb2a12-8549-41a1-b27e-5035e9619112",
+          largeThumbnail:
+            "https://files.aipictors.com/b407d0fa-4e21-4276-94b9-f3451cfdaf48",
+        },
+        {
+          id: "827601",
+          title: "百人一首002 持統天皇",
+          userName: "HERE&THERE",
+          likes: 91,
+          thumbnail:
+            "https://files.aipictors.com/33bc1e1a-d22b-4ac7-b9ce-d3cb47a96c54",
+          largeThumbnail:
+            "https://files.aipictors.com/f40989b5-4614-40ab-9c9f-909e71dd05bd",
+        },
+        {
+          id: "828798",
+          title: "リトルショーグン、秋の伝統　紅葉で一杯！",
+          userName: "さかいきしお",
+          likes: 90,
+          thumbnail:
+            "https://files.aipictors.com/355a5293-02cc-4b89-b405-00728053b897",
+          largeThumbnail:
+            "https://files.aipictors.com/10408ec2-45e6-469a-bbca-fecf094dbdb2",
+        },
+        {
+          id: "827698",
+          title: "想いを込めて縫うパッチワークの瞬間",
+          userName: "二重まる",
+          likes: 90,
+          thumbnail:
+            "https://files.aipictors.com/3b82474b-00a4-4f34-aca2-e7eab68cdea9",
+          largeThumbnail:
+            "https://files.aipictors.com/1906734f-e0d2-4a4b-957c-d4798cf87cc5",
+        },
+        {
+          id: "742352",
+          title: "追悼の祈り",
+          userName: "tare_koala",
+          likes: 90,
+          thumbnail:
+            "https://files.aipictors.com/cfa623f0-6f78-4bb9-90f8-66ea618a85f4",
+          largeThumbnail:
+            "https://files.aipictors.com/38c7141b-cacb-4f68-a5fe-5e5ff0b284b0",
+        },
+      ],
+    },
+  ],
+  modelThumbnails: {
+    "zukiAnimeILL v5.0": "https://assets.aipictors.com/zukiAnimeILL_v5.webp",
+    "oneObsession 15Noobai":
+      "https://assets.aipictors.com/oneObsession_15Noobai.webp",
+    TanemoMix: "https://assets.aipictors.com/tanemomix_v5.webp",
+    "njsmix ultimar": "https://assets.aipictors.com/njsmix_ultimar.webp",
+    "Visionary Illustrious Mix":
+      "https://assets.aipictors.com/visionaryIllustrious_v3.webp",
+    vxpILXL: "https://assets.aipictors.com/vxpILXL.webp",
+    "meltis vpred": "https://assets.aipictors.com/meltis_vpredV1.webp",
+    "animagineXL4.0 Opt": "https://assets.aipictors.com/animagineXL4.0Opt.webp",
+    petitcutie:
+      "https://files.aipictors.com/738f8edc-056d-4d6c-8028-e9fc270b77bd",
+    linenillustrious: "https://assets.aipictors.com/LinenIllustrious.webp",
+    ChromaFTv2:
+      "https://files.aipictors.com/b0d2fabc-4a8d-4e37-af32-f3d86b557f6a",
+    "mhillustrious v1.0":
+      "https://assets.aipictors.com/45fc6a47-69d1-bbe2-4abe-4593e618a06a.webp",
+    "nijiq v2":
+      "https://files.aipictors.com/64e15e0f-d0da-439b-be6f-ca0d71073c53",
+    lametta: "https://files.aipictors.com/404035d3-88a4-4cd5-b593-950348c96091",
+    aamXLAnimeMix:
+      "https://files.aipictors.com/4ba2a5e9-c10a-4181-ac60-31909067cd57",
+    ProfiteroleMix:
+      "https://files.aipictors.com/f9ded93b-cccd-41b5-baaf-1f50c115b1d0",
+    "kiwimixXL v1":
+      "https://files.aipictors.com/2388d5fa-cd59-422d-a939-e86deb2f98c9",
+    milktea: "https://files.aipictors.com/b37d12d8-db55-467c-85b3-e743d729c839",
+    "animaPencilXL v3.1":
+      "https://files.aipictors.com/346e4b47-28ab-4e7a-998c-7329c0c1dc78",
+    shmRealistic:
+      "https://files.aipictors.com/073f50aa-c46a-4eb2-b9db-3bf8b77a0b80",
+    "Anything XL_xl": "https://assets.aipictors.com/AnythingXL.webp",
+    ChromaFTv4:
+      "https://files.aipictors.com/e0021a4a-f5f2-4747-b9ae-c0e91d99949f",
+    "animagineXLv3.0":
+      "https://files.aipictors.com/ac8092a5-c309-40ee-bc9e-02e7cf5567dc",
+    "4nimaPencilXL": "https://assets.aipictors.com/4nimaPencilXL_v101.webp",
+    bluePencil:
+      "https://files.aipictors.com/699ba3f4-9ba5-4dd2-b3d4-6aac2c48ac07",
+    ChromaXLv1b:
+      "https://files.aipictors.com/6394398e-d6d5-4831-bc43-063eb8bfb9ab",
+    aStyleAdjustOf:
+      "https://files.aipictors.com/3239b9e0-d29b-40ce-8ece-ebcdb19869d3",
+    sweetfruitMelon:
+      "https://files.aipictors.com/d15a974f-7fbf-4bde-bf42-5c381b3d4c8c",
+    "blazingDrive v13md":
+      "https://files.aipictors.com/3e0041fb-395f-497d-b5f0-5a237bc626e0",
+    GeminiNanoBanana: "https://assets.aipictors.com/geminibanana.webp",
+    flanimeIllustriousXL: "https://assets.aipictors.com/00013-313648441.webp",
+    "DALL-E3":
+      "https://www.aipictors.com/wp-content/themes/AISite/images/ui/models/DALL-E3.webp",
+    hotarubreedTypeASemi:
+      "https://files.aipictors.com/fbc485f7-d7e1-4726-8a7d-12dc136d8c17",
+    "ChromaFT v3":
+      "https://files.aipictors.com/f97d4b66-35c5-4aa6-8712-2606d31c82da",
+    sweetfruitCoco:
+      "https://files.aipictors.com/190ac745-2939-4497-9539-5e8e683e95b1",
+    funifunisitai:
+      "https://files.aipictors.com/faea43a2-e4ba-4d47-b156-d68eb5538d95",
+    FlexDreamHK:
+      "https://files.aipictors.com/abdba6ca-f264-40e7-ac28-d7127be2625f",
+    hakoMayD:
+      "https://www.aipictors.com/wp-content/themes/AISite/images/ui/models/hakoMayD.safetensors.webp",
+    surmixKawaiiedition:
+      "https://files.aipictors.com/59916f1d-6ce3-4b99-83ff-942a242568c8",
+    kimix: "https://files.aipictors.com/ec1595c6-3a18-43d1-aee3-21ce78141606",
+    chilledReversemix:
+      "https://files.aipictors.com/46f4313c-0932-4220-b5c6-2d9a1fdf7153",
+    StableDiffusion:
+      "https://files.aipictors.com/a9550ef3-61fe-4404-bd6d-157866419231",
+    NovelAI: "https://files.aipictors.com/e2772b25-ec96-4537-a17c-0488c325c047",
+    CustomModel:
+      "https://files.aipictors.com/b1820356-902f-4850-8f6d-36dcb6865caa",
+    "CustomModel(その他)":
+      "https://files.aipictors.com/b1820356-902f-4850-8f6d-36dcb6865caa",
+  },
+  tagThumbnails: {
+    女の子: {
+      workId: "18347",
+      thumbnail:
+        "https://files.aipictors.com/271471e5-5180-40bd-a1b1-93b3ea8c14ce",
+    },
+    少女: {
+      workId: "249014",
+      thumbnail:
+        "https://files.aipictors.com/49853c76-a9a4-487b-a9df-ba6a81e321bb",
+    },
+    オリジナル: {
+      workId: "259704",
+      thumbnail:
+        "https://files.aipictors.com/c95c0a1f-df27-4d8b-8d13-0b5646e0c1e8",
+    },
+    ファンタジー: {
+      workId: "286606",
+      thumbnail:
+        "https://files.aipictors.com/b56c5c9a-ac04-4411-892c-b1698a3f230c",
+    },
+    黒髪: {
+      workId: "263933",
+      thumbnail:
+        "https://files.aipictors.com/97d5f46d-db41-4dc7-bab7-195eedc74b0f",
+    },
+    金髪: {
+      workId: "169734",
+      thumbnail:
+        "https://files.aipictors.com/e72e4559-28d7-428e-9269-2e45e34e7b16",
+    },
+    ロングヘアー: {
+      workId: "301931",
+      thumbnail:
+        "https://files.aipictors.com/9032ada9-5d4e-474d-a15f-0c9cef7372d1",
+    },
+    制服: {
+      workId: "248226",
+      thumbnail:
+        "https://files.aipictors.com/424308ae-d8c5-4d59-96e8-32edb017152d",
+    },
+    銀髪: {
+      workId: "277152",
+      thumbnail:
+        "https://files.aipictors.com/8d950aa6-8cc8-4885-93bb-b8bbfc9cb39f",
+    },
+    女性: {
+      workId: "323167",
+      thumbnail:
+        "https://files.aipictors.com/d4fb789d-456a-4ddb-a3d3-e42d0f89d0e6",
+    },
+    美少女: {
+      workId: "344040",
+      thumbnail:
+        "https://files.aipictors.com/967f080f-d05c-41e8-a234-c05c7ce3b61c",
+    },
+    猫耳: {
+      workId: "281933",
+      thumbnail:
+        "https://files.aipictors.com/b402ee73-0b01-4f1a-8595-805d982bdf7b",
+    },
+    ツインテール: {
+      workId: "256296",
+      thumbnail:
+        "https://files.aipictors.com/6b9e83f9-f246-49b8-aacf-b26bacf2ca9c",
+    },
+    うちの子: {
+      workId: "301931",
+      thumbnail:
+        "https://files.aipictors.com/9032ada9-5d4e-474d-a15f-0c9cef7372d1",
+    },
+    青目: {
+      workId: "252559",
+      thumbnail:
+        "https://files.aipictors.com/a5a814d9-9d9f-4126-b4c3-bb516b6f1fbb",
+    },
+    猫: {
+      workId: "186700",
+      thumbnail:
+        "https://files.aipictors.com/60dea5cc-d566-41e2-b77f-324a5c0460b2",
+    },
+    着物: {
+      workId: "341183",
+      thumbnail:
+        "https://files.aipictors.com/5ba9424e-706f-4206-9852-be84895e2521",
+    },
+    エルフ: {
+      workId: "738563",
+      thumbnail:
+        "https://files.aipictors.com/09db6966-8f9e-4f16-94e5-cab0bdc87fb0",
+    },
+    girl: {
+      workId: "826963",
+      thumbnail:
+        "https://files.aipictors.com/8ddb2a12-8549-41a1-b27e-5035e9619112",
+    },
+    白髪: {
+      workId: "242233",
+      thumbnail:
+        "https://files.aipictors.com/b7409a27-0375-4d73-9e7e-65c355f356ab",
+    },
+    女子高生: {
+      workId: "327458",
+      thumbnail:
+        "https://files.aipictors.com/43e2cae6-e757-45f1-9908-f980d9d299b0",
+    },
+    青髪: {
+      workId: "188804",
+      thumbnail:
+        "https://files.aipictors.com/17981b60-e90c-405f-bbcb-ef40f96949e4",
+    },
+    笑顔: {
+      workId: "314807",
+      thumbnail:
+        "https://files.aipictors.com/ccb0f7c0-ef1b-4781-b63b-eddb0126a85c",
+    },
+    メイド: {
+      workId: "257927",
+      thumbnail:
+        "https://files.aipictors.com/de90cb20-f312-46f6-8d5b-3645bce4ec05",
+    },
+    Fantasy: {
+      workId: "827660",
+      thumbnail:
+        "https://files.aipictors.com/4fabd3dc-1bfc-4ef1-b8e7-f418ee302710",
+    },
+    かわいい: {
+      workId: "299768",
+      thumbnail:
+        "https://files.aipictors.com/8d68a94d-daab-4cbd-b095-50f84cc1913c",
+    },
+    花: {
+      workId: "326297",
+      thumbnail:
+        "https://files.aipictors.com/660c7902-9929-4193-8c67-e940a7b20be6",
+    },
+    ピンク髪: {
+      workId: "136903",
+      thumbnail:
+        "https://files.aipictors.com/a0002da7-984a-4db1-99a6-279c4b9d8534",
+    },
+    赤目: {
+      workId: "208051",
+      thumbnail:
+        "https://files.aipictors.com/6fbd63ad-9b7b-4e25-81a2-0695b75d3ce2",
+    },
+    アニメ: {
+      workId: "447836",
+      thumbnail:
+        "https://files.aipictors.com/782d1911-558a-4d8b-b77a-759abbe2670c",
+    },
+    anime: {
+      workId: "740669",
+      thumbnail:
+        "https://files.aipictors.com/32cbcd06-752a-44cd-b510-0761c624391c",
+    },
+    オリジナルキャラ: {
+      workId: "459385",
+      thumbnail:
+        "https://files.aipictors.com/b906ced8-66eb-4159-afb0-180c4cd6913d",
+    },
+    KIMONO: {
+      workId: "820251",
+      thumbnail:
+        "https://files.aipictors.com/927cc2ff-d8ea-4d55-835e-c8be0069e244",
+    },
+  },
 }

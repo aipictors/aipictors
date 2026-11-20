@@ -28,20 +28,44 @@ export type ShareItem = { name: string; count: number; share: number }
 /**
  * 横棒の割合グラフ（モデルの利用率など）
  */
-export function ShareBars(props: { items: ShareItem[]; unit?: string }) {
+export function ShareBars(props: {
+  items: ShareItem[]
+  unit?: string
+  /** モデル名 → サムネイルの URL（あれば上位 3 つを大きく出し、各行にも小さく付ける） */
+  thumbnails?: Record<string, string>
+}) {
   const t = useTranslation()
   // 「その他」は大きすぎて棒の長さの基準をくずすので、棒にせず下に書く
   const ranked = props.items.filter((item) => item.name !== OTHER_NAME)
   const other = props.items.find((item) => item.name === OTHER_NAME)
   const max = Math.max(...ranked.map((item) => item.share), 0.0001)
+  const thumbnails = props.thumbnails
   return (
     <div className="space-y-3">
+      {thumbnails && (
+        <TopThree items={ranked.slice(0, 3)} thumbnails={thumbnails} />
+      )}
       <ol className="space-y-2">
         {ranked.map((item, index) => (
-          <li key={item.name} className="grid grid-cols-[1.5rem_1fr] gap-2">
-            <span className="pt-0.5 text-right font-bold text-muted-foreground text-xs tabular-nums">
+          <li
+            key={item.name}
+            className={cn(
+              "grid items-center gap-2",
+              thumbnails
+                ? "grid-cols-[1.5rem_2.5rem_1fr]"
+                : "grid-cols-[1.5rem_1fr]",
+            )}
+          >
+            <span className="text-right font-bold text-muted-foreground text-xs tabular-nums">
               {index + 1}
             </span>
+            {thumbnails && (
+              <Thumb
+                name={item.name}
+                url={thumbnails[item.name]}
+                className="size-10 rounded-lg"
+              />
+            )}
             <div className="min-w-0">
               <div className="flex items-baseline justify-between gap-2 text-sm">
                 <span className="truncate font-medium">{item.name}</span>
@@ -79,12 +103,85 @@ export function ShareBars(props: { items: ShareItem[]; unit?: string }) {
 
 const OTHER_NAME = "その他"
 
+const MEDALS = ["🥇", "🥈", "🥉"]
+
+/** 上位 3 つのモデルを大きなサムネイルで並べる */
+function TopThree(props: {
+  items: ShareItem[]
+  thumbnails: Record<string, string>
+}) {
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {props.items.map((item, index) => (
+        <div
+          key={item.name}
+          className="relative overflow-hidden rounded-xl border bg-muted"
+        >
+          <Thumb
+            name={item.name}
+            url={props.thumbnails[item.name]}
+            className="aspect-square w-full"
+            textClassName="text-3xl"
+          />
+          <span className="absolute top-1 left-1 text-xl drop-shadow">
+            {MEDALS[index]}
+          </span>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2 pt-6 text-white">
+            <div className="truncate font-bold text-xs">{item.name}</div>
+            <div className="font-black text-lg tabular-nums leading-none">
+              {formatShare(item.share)}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/** サムネイル。画像がないものは頭文字を色付きの四角に出す */
+export function Thumb(props: {
+  name: string
+  url: string | undefined
+  className?: string
+  textClassName?: string
+}) {
+  if (props.url) {
+    return (
+      <img
+        src={props.url}
+        alt={props.name}
+        loading="lazy"
+        className={cn("bg-muted object-cover", props.className)}
+      />
+    )
+  }
+  const hue =
+    [...props.name].reduce((sum, char) => sum + char.charCodeAt(0), 0) % 360
+  return (
+    <div
+      aria-hidden
+      className={cn(
+        "flex items-center justify-center font-black text-white",
+        props.className,
+      )}
+      style={{
+        background: `linear-gradient(135deg, hsl(${hue} 70% 55%), hsl(${(hue + 50) % 360} 70% 45%))`,
+      }}
+    >
+      <span className={props.textClassName}>
+        {[...props.name][0]?.toUpperCase()}
+      </span>
+    </div>
+  )
+}
+
 /**
  * タブで切り替える横棒グラフ
  */
 export function ShareBarsTabs(props: {
   tabs: { key: string; label: string; items: ShareItem[] }[]
   unit?: string
+  thumbnails?: Record<string, string>
 }) {
   const [selected, setSelected] = useState(props.tabs[0]?.key ?? "")
   const current =
@@ -109,7 +206,11 @@ export function ShareBarsTabs(props: {
           </button>
         ))}
       </div>
-      <ShareBars items={current.items} unit={props.unit} />
+      <ShareBars
+        items={current.items}
+        unit={props.unit}
+        thumbnails={props.thumbnails}
+      />
     </div>
   )
 }

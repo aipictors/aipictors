@@ -14,6 +14,7 @@ import {
   CpuIcon,
   GlobeIcon,
   HashIcon,
+  HeartIcon,
   ImageIcon,
   LockIcon,
   PartyPopperIcon,
@@ -153,6 +154,10 @@ export default function Aipictors4thAnniversary() {
       .map((item) => item.key),
   )
 
+  const yearTopThumbnail = (year: number) =>
+    stats.yearlyTopWorks.find((group) => group.year === year)?.works[0]
+      ?.thumbnail
+
   const lastYear = (value: number | null, current: number) =>
     value === null || value <= 0
       ? null
@@ -215,6 +220,10 @@ export default function Aipictors4thAnniversary() {
           />
         </div>
       </section>
+
+      <WorkMarquee
+        works={stats.yearlyTopWorks.flatMap((group) => group.works)}
+      />
 
       <div className="container mx-auto max-w-6xl space-y-16 px-4 py-12">
         {/* 大きな数字 */}
@@ -323,7 +332,19 @@ export default function Aipictors4thAnniversary() {
               <tbody>
                 {stats.yearly.map((item) => (
                   <tr key={item.year} className="border-t">
-                    <td className="px-4 py-2 font-bold">{item.year}</td>
+                    <td className="px-4 py-2 font-bold">
+                      <span className="flex items-center gap-2">
+                        {yearTopThumbnail(item.year) && (
+                          <img
+                            src={yearTopThumbnail(item.year)}
+                            alt=""
+                            loading="lazy"
+                            className="size-9 rounded-md object-cover"
+                          />
+                        )}
+                        {item.year}
+                      </span>
+                    </td>
                     <td className="px-4 py-2 text-right tabular-nums">
                       {formatNumber(item.works)}
                     </td>
@@ -348,6 +369,26 @@ export default function Aipictors4thAnniversary() {
           </div>
         </section>
 
+        {/* 年ごとの人気作品 */}
+        {stats.yearlyTopWorks.length > 0 && (
+          <section className="space-y-4">
+            <SectionTitle
+              icon={<HeartIcon className="size-6" />}
+              title={t(
+                "その年いちばん愛された作品",
+                "Most-loved works by year",
+              )}
+            />
+            <p className="text-muted-foreground text-sm">
+              {t(
+                "毎年、いいねがたくさん集まった全年齢の作品です（1人1作品）。",
+                "All-ages works that collected the most likes each year (one per creator).",
+              )}
+            </p>
+            <YearlyTopWorks groups={stats.yearlyTopWorks} />
+          </section>
+        )}
+
         {/* モデルの利用率 */}
         <section className="space-y-4">
           <SectionTitle
@@ -369,6 +410,7 @@ export default function Aipictors4thAnniversary() {
                     items: group.items,
                   }))}
                   unit={t("回", "")}
+                  thumbnails={stats.modelThumbnails}
                 />
               </ChartCard>
             )}
@@ -386,6 +428,7 @@ export default function Aipictors4thAnniversary() {
                     items: group.items,
                   }))}
                   unit={t("作品", "")}
+                  thumbnails={stats.modelThumbnails}
                 />
               </ChartCard>
             )}
@@ -399,7 +442,7 @@ export default function Aipictors4thAnniversary() {
               icon={<HashIcon className="size-6" />}
               title={t("人気のタグ", "Popular tags")}
             />
-            <TagCloud groups={stats.tags} />
+            <TagCloud groups={stats.tags} thumbnails={stats.tagThumbnails} />
           </section>
         )}
 
@@ -481,7 +524,7 @@ export default function Aipictors4thAnniversary() {
               icon={<SparklesIcon className="size-6" />}
               title={t("ちょっとした記録", "Fun facts")}
             />
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               {stats.facts.map((item) => (
                 <div
                   key={item.label}
@@ -704,6 +747,7 @@ function TagCloud(props: {
     enLabel: string
     items: { name: string; count: number }[]
   }[]
+  thumbnails: Record<string, { workId: string; thumbnail: string }>
 }) {
   const t = useTranslation()
   const [selected, setSelected] = useState(props.groups[0]?.key ?? "")
@@ -711,6 +755,12 @@ function TagCloud(props: {
     props.groups.find((item) => item.key === selected) ?? props.groups[0]
   if (group === undefined) return null
   const max = Math.max(...group.items.map((item) => item.count), 1)
+  // 画像のあるタグは上位 8 つまで大きなタイルにし、残りを文字の大きさで並べる
+  const tiles = group.items
+    .filter((item) => props.thumbnails[item.name])
+    .slice(0, 8)
+  const tileNames = new Set(tiles.map((item) => item.name))
+  const rest = group.items.filter((item) => !tileNames.has(item.name))
   return (
     <div className="space-y-4 rounded-2xl border bg-card p-5">
       <div className="flex flex-wrap gap-1.5">
@@ -730,8 +780,37 @@ function TagCloud(props: {
           </button>
         ))}
       </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {tiles.map((item, index) => (
+          <Link
+            key={item.name}
+            to={`/tags/${encodeURIComponent(item.name)}`}
+            className="group relative block aspect-[4/3] overflow-hidden rounded-xl bg-muted"
+          >
+            <img
+              src={props.thumbnails[item.name]?.thumbnail}
+              alt={item.name}
+              loading="lazy"
+              className="size-full object-cover transition duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+            <span className="absolute top-1.5 left-1.5 rounded-full bg-black/50 px-2 py-0.5 font-bold text-white text-xs tabular-nums">
+              {index + 1}
+            </span>
+            <div className="absolute inset-x-0 bottom-0 p-2 text-white">
+              <div className="truncate font-black text-base md:text-lg">
+                #{item.name}
+              </div>
+              <div className="text-white/80 text-xs tabular-nums">
+                {formatNumber(item.count)}
+                {t(" 作品", " works")}
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-        {group.items.map((item) => {
+        {rest.map((item) => {
           const ratio = item.count / max
           return (
             <Link
@@ -749,6 +828,165 @@ function TagCloud(props: {
           )
         })}
       </div>
+    </div>
+  )
+}
+
+type TopWork =
+  (typeof ANNIVERSARY_4TH_STATS.yearlyTopWorks)[number]["works"][number]
+
+/** 年のタブで切り替える人気作品（1 位を大きく、残りを並べる） */
+function YearlyTopWorks(props: {
+  groups: typeof ANNIVERSARY_4TH_STATS.yearlyTopWorks
+}) {
+  const t = useTranslation()
+  const [year, setYear] = useState(props.groups[0]?.year ?? 0)
+  const group =
+    props.groups.find((item) => item.year === year) ?? props.groups[0]
+  if (group === undefined) return null
+  const [first, ...others] = group.works
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-1.5">
+        {props.groups.map((item) => (
+          <button
+            key={item.year}
+            type="button"
+            onClick={() => setYear(item.year)}
+            className={cn(
+              "rounded-full border px-4 py-1.5 font-bold text-sm transition",
+              item.year === group.year
+                ? "border-transparent bg-gradient-to-r from-violet-600 to-pink-500 text-white"
+                : "hover:bg-muted",
+            )}
+          >
+            {item.year}
+          </button>
+        ))}
+      </div>
+      <div className="grid gap-2 md:grid-cols-4 md:grid-rows-2">
+        {first && (
+          <WorkTile
+            work={first}
+            rank={1}
+            className="aspect-square md:col-span-2 md:row-span-2"
+            isLarge
+          />
+        )}
+        <div className="grid grid-cols-2 gap-2 md:contents">
+          {others.slice(0, 4).map((work, index) => (
+            <WorkTile
+              key={work.id}
+              work={work}
+              rank={index + 2}
+              className="aspect-square"
+            />
+          ))}
+        </div>
+      </div>
+      {others.length > 4 && (
+        <div className="grid grid-cols-3 gap-2">
+          {others.slice(4).map((work, index) => (
+            <WorkTile
+              key={work.id}
+              work={work}
+              rank={index + 6}
+              className="aspect-[4/3]"
+            />
+          ))}
+        </div>
+      )}
+      <p className="text-muted-foreground text-xs">
+        {t(
+          "いいねの数は2026年11月20日時点です。",
+          "Like counts as of November 20, 2026.",
+        )}
+      </p>
+    </div>
+  )
+}
+
+function WorkTile(props: {
+  work: TopWork
+  rank: number
+  className?: string
+  isLarge?: boolean
+}) {
+  return (
+    <Link
+      to={`/posts/${props.work.id}`}
+      className={cn(
+        "group relative block overflow-hidden rounded-xl bg-muted",
+        props.className,
+      )}
+    >
+      <img
+        src={props.isLarge ? props.work.largeThumbnail : props.work.thumbnail}
+        alt={props.work.title}
+        loading="lazy"
+        className="size-full object-cover transition duration-300 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+      <span
+        className={cn(
+          "absolute top-2 left-2 rounded-full px-2 py-0.5 font-black text-xs",
+          props.rank === 1
+            ? "bg-amber-400 text-amber-950"
+            : "bg-black/50 text-white",
+        )}
+      >
+        {props.rank === 1 ? "👑 No.1" : `No.${props.rank}`}
+      </span>
+      <div className="absolute inset-x-0 bottom-0 p-2 text-white">
+        <div
+          className={cn(
+            "truncate font-bold",
+            props.isLarge ? "text-lg" : "text-xs",
+          )}
+        >
+          {props.work.title}
+        </div>
+        <div className="flex items-center justify-between gap-2 text-[11px] text-white/80">
+          <span className="truncate">{props.work.userName}</span>
+          <span className="flex shrink-0 items-center gap-0.5 tabular-nums">
+            <HeartIcon className="size-3 fill-current" />
+            {props.work.likes}
+          </span>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+/** ヒーローの下を流れる作品の帯（CSS のアニメーションだけ。動きを減らす設定では止まる） */
+function WorkMarquee(props: { works: TopWork[] }) {
+  if (props.works.length === 0) return null
+  const loop = [...props.works, ...props.works]
+  return (
+    <div className="overflow-hidden border-y bg-gradient-to-r from-violet-950 via-fuchsia-950 to-violet-950 py-3">
+      <div className="flex w-max animate-[anniv4-marquee_120s_linear_infinite] gap-3 motion-reduce:animate-none">
+        {loop.map((work, index) => (
+          <Link
+            key={`${work.id}-${index}`}
+            to={`/posts/${work.id}`}
+            aria-hidden={index >= props.works.length}
+            tabIndex={index >= props.works.length ? -1 : undefined}
+            className="block size-24 shrink-0 overflow-hidden rounded-lg ring-1 ring-white/20 transition hover:ring-white md:size-32"
+          >
+            <img
+              src={work.thumbnail}
+              alt={work.title}
+              loading="lazy"
+              className="size-full object-cover"
+            />
+          </Link>
+        ))}
+      </div>
+      <style>
+        {
+          "@keyframes anniv4-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}"
+        }
+      </style>
     </div>
   )
 }

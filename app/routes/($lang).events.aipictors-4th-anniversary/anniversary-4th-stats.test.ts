@@ -39,4 +39,24 @@ describe("4 周年の特設ページの数字", () => {
       expect(names).not.toContain(name)
     }
   })
+
+  test("年ごとの人気作品は 1 人 1 作品で、画像の URL がある", () => {
+    for (const group of stats.yearlyTopWorks) {
+      expect(group.works.length).toBeGreaterThan(0)
+      const names = group.works.map((work) => work.userName)
+      expect(new Set(names).size).toBe(names.length)
+      for (const work of group.works) {
+        expect(work.thumbnail).toStartWith("https://")
+        expect(work.largeThumbnail).toStartWith("https://")
+      }
+    }
+  })
+
+  test("画像はすべて https の URL", () => {
+    const urls = [
+      ...Object.values(stats.modelThumbnails),
+      ...Object.values(stats.tagThumbnails).map((item) => item.thumbnail),
+    ]
+    for (const url of urls) expect(url).toStartWith("https://")
+  })
 })
