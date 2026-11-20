@@ -153,7 +153,11 @@ export default function Milestone() {
             asChild
             variant={data.selectedTag === null ? "default" : "outline"}
             size="sm"
-            className="h-9 rounded-full bg-background px-4"
+            className={
+              data.selectedTag === null
+                ? "h-9 rounded-full px-4"
+                : "h-9 rounded-full bg-background px-4"
+            }
           >
             <Link to={buildTagSearch(null)}>{t("すべて", "All")}</Link>
           </Button>
