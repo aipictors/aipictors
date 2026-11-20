@@ -13,6 +13,7 @@ import {
   configAccentLink,
   configChipClass,
 } from "~/routes/($lang).generation._index/components/config-view/generation-config-parts"
+import { GenerationOptionExplanation } from "~/routes/($lang).generation._index/components/config-view/generation-option-explanation"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useImagesPerRequest } from "~/routes/($lang).generation._index/hooks/use-max-images-per-request"
 import {
@@ -399,6 +400,19 @@ export function GenerationConfigOutput(props: Props) {
               </span>
             </button>
           </div>
+          {/* 高解像度にしたらどうなるか（公平な見本の画像がないので文字だけ） */}
+          {canUpscale && !isUpscaleOverLimit && (
+            <GenerationOptionExplanation
+              text={t(
+                "高解像度: 縦横2倍の大きさで書き出します。大きく表示したいときや壁紙に。",
+                "High-res: outputs at twice the width and height. For large displays or wallpapers.",
+              )}
+              coin={t(
+                "コインは標準の2倍・1回1枚",
+                "2x the standard coins · 1 image per run",
+              )}
+            />
+          )}
           {isUpscaleOverLimit && canUpscale && (
             <p className="text-muted-foreground text-xs">
               {t(

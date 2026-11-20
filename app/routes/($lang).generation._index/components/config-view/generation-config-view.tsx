@@ -170,7 +170,6 @@ export function GenerationConfigView(props: Props) {
                 toGenerationSamplerOptionValue(context.config.sampler),
                 scheduler ?? t("自動", "Auto"),
                 context.config.vae ? `VAE ${context.config.vae}` : null,
-                faceFix && canUseFaceFix ? t("顔の自動修正", "Face fix") : null,
               ]
                 .filter(Boolean)
                 .join("・")}
@@ -184,12 +183,6 @@ export function GenerationConfigView(props: Props) {
                 value={context.config.seed}
                 onChange={context.updateSeed}
               />
-              <Separator />
-            </>
-          )}
-          {canUseFaceFix && (
-            <>
-              <GenerationConfigFaceFix value={faceFix} onChange={setFaceFix} />
               <Separator />
             </>
           )}
@@ -226,6 +219,13 @@ export function GenerationConfigView(props: Props) {
 
   const detailsAccordion = renderDetailsAccordion()
 
+  /**
+   * 顔の自動修正のカード（詳細設定に埋もれないよう、解像度のすぐ下に出す）
+   */
+  const faceFixCard = canUseFaceFix ? (
+    <GenerationConfigFaceFix value={faceFix} onChange={setFaceFix} />
+  ) : null
+
   const configBody = (
     <>
       <GenerationModelSection
@@ -239,6 +239,7 @@ export function GenerationConfigView(props: Props) {
       <GenerationLoraSection />
       <Separator />
       <GenerationConfigOutput modelType={configModelType} />
+      {faceFixCard}
       <GenerationConfigCount
         remainingImageGenerationTasksCount={remainingImageGenerationTasksCount}
         setGenerationCount={context.changeGenerationCount}
@@ -306,6 +307,7 @@ export function GenerationConfigView(props: Props) {
       <GenerationModelLibraryProvider>
         <div className="flex flex-col gap-y-5">
           <GenerationConfigOutput modelType={configModelType} />
+          {faceFixCard}
           <GenerationConfigCount
             remainingImageGenerationTasksCount={
               remainingImageGenerationTasksCount
@@ -343,6 +345,13 @@ export function GenerationConfigView(props: Props) {
           <GenerationMobileCard>
             <GenerationConfigOutput modelType={configModelType} part="size" />
           </GenerationMobileCard>
+          {canUseFaceFix && (
+            <GenerationConfigFaceFix
+              value={faceFix}
+              onChange={setFaceFix}
+              isMobileCard
+            />
+          )}
           <GenerationMobileCard>
             <GenerationConfigOutput modelType={configModelType} part="count" />
             <Separator />
