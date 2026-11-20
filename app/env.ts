@@ -11,7 +11,6 @@ type Env = {
   VITE_FIREBASE_STORAGE_BUCKET: string
   VITE_GRAPHQL_ENDPOINT: string
   VITE_GRAPHQL_ENDPOINT_REMIX: string
-  VITE_SENTRY_VERSION: string
   VITE_WORKERS_UPLOADER: string
   VITE_WORKERS_TEXT_UPLOADER: string
   VITE_WORKERS_STREAM_UPLOADER?: string
@@ -30,7 +29,6 @@ const envSchema: ReturnType<typeof object> = object({
   VITE_FIREBASE_STORAGE_BUCKET: string(),
   VITE_GRAPHQL_ENDPOINT: string(),
   VITE_GRAPHQL_ENDPOINT_REMIX: string(),
-  VITE_SENTRY_VERSION: string(),
   VITE_WORKERS_UPLOADER: string(),
   VITE_WORKERS_TEXT_UPLOADER: string(),
   VITE_WORKERS_STREAM_UPLOADER: optional(string()),

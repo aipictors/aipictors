@@ -54,11 +54,11 @@ const fontsourceWoff2Only = (): Plugin => ({
 })
 
 /**
- * ブラウザでだけ後から読むライブラリ（動画の再生・エラー送信・ファイルのハッシュ）を、サーバーのビルドから外す。
+ * ブラウザでだけ後から読むライブラリ（動画の再生・ファイルのハッシュ）を、サーバーのビルドから外す。
  * サーバーでは呼ばれないのに Worker に同梱され（合わせて 約 1MB）、Worker が起動するたびに読み込む分の CPU を使っていた
  */
 const CLIENT_ONLY_DYNAMIC_IMPORT =
-  /import\(\s*"(?:hls\.js|@sentry\/browser|hash-wasm)"\s*\)/g
+  /import\(\s*"(?:hls\.js|hash-wasm)"\s*\)/g
 
 const stripClientOnlyImportsFromServer = (): Plugin => ({
   name: "aipictors-strip-client-only-imports-from-server",

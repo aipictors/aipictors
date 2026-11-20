@@ -18,8 +18,6 @@ steps:
   - name: "gcr.io/cloud-builders/docker"
     args:
       - build
-      - --build-arg
-      - "SENTRY_AUTH_TOKEN=$_SENTRY_AUTH_TOKEN"
       - -t
       - $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
       - .
@@ -57,7 +55,6 @@ substitutions:
   _IS_PRODUCTION: "true"
   _TRIGGER_ID: "debug"
   _SERVICE_NAME: "aipictors"
-  _SENTRY_AUTH_TOKEN: ""
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed

@@ -62,7 +62,6 @@ import {
   RESIZED_IMAGE_FALLBACK_SCRIPT,
   RESIZED_IMAGE_ORIGIN,
 } from "~/utils/resized-image-url"
-import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
 import { serializeJsonLd } from "~/utils/serialize-json-ld"
 import { createSiteJsonLd } from "~/utils/site-json-ld"
 
@@ -112,8 +111,6 @@ const defaultRootLoaderData: RootLoaderData = {
 
 let isHydrated = false
 
-let hasInitializedBrowserSentry = false
-
 let maintenanceStatusCache:
   | (RootLoaderData & {
       cachedAt: number
@@ -125,36 +122,6 @@ const getTimeoutSignal = (ms: number): AbortSignal | undefined => {
     timeout?: (timeoutMs: number) => AbortSignal
   }
   return typeof maybe.timeout === "function" ? maybe.timeout(ms) : undefined
-}
-
-const initializeBrowserSentry = () => {
-  if (hasInitializedBrowserSentry) {
-    return
-  }
-
-  if (
-    typeof document === "undefined" ||
-    typeof import.meta.env.VITE_SENTRY_DSN !== "string" ||
-    import.meta.env.VITE_SENTRY_DSN.length === 0
-  ) {
-    return
-  }
-
-  hasInitializedBrowserSentry = true
-
-  // Sentry は初期表示に不要なので、読み込み完了後のアイドル時に読み込む
-  runAfterLoadIdle(() => {
-    import("@sentry/browser")
-      .then(({ init }) => {
-        init({
-          dsn: import.meta.env.VITE_SENTRY_DSN,
-          environment: import.meta.env.VITE_SENTRY_ENVIRONMENT,
-          tracesSampleRate: 0.001,
-          enabled: import.meta.env.PROD,
-        })
-      })
-      .catch(() => {})
-  })
 }
 
 const getMaintenanceStatus = async (): Promise<RootLoaderData> => {
@@ -636,10 +603,6 @@ export function Layout(props: Props): React.ReactNode {
       document.removeEventListener("dragexit", resetDragging, true)
     }
   }, [location.pathname, navigate])
-
-  useEffect(() => {
-    initializeBrowserSentry()
-  }, [])
 
   // hydration のあとにだけ使う CSS の目印（app/theme.css の .like-base-64）
   useEffect(() => {

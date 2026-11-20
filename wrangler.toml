@@ -31,7 +31,7 @@ region = "aws:ap-northeast-1"
 
 [observability]
 enabled = true
-# ログは料金がかかるので 1% だけ残す（例外は Sentry で見る）
+# ログは料金がかかるので 1% だけ残す
 head_sampling_rate = 0.01
 
 # 作品のタイトル・説明の部分一致検索（app/lib/server/work-text-search.server.ts）
