@@ -2,6 +2,27 @@ import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/ge
 import { getOrSetCachedDataUrl } from "~/utils/base64-image-cache"
 import { fetchPublic } from "~/utils/fetch-public"
 
+/** 待ってからやり直す値打ちがあるか（4xx は何度送っても同じ） */
+export function isRetryableImageFetch(result: {
+  status?: number
+  error?: unknown
+}): boolean {
+  if (result.error !== undefined) {
+    // 通信の切断・タイムアウトは TypeError / AbortError になる
+    return true
+  }
+  if (result.status === undefined) {
+    return false
+  }
+  return result.status === 408 || result.status === 429 || result.status >= 500
+}
+
+const RETRY_WAIT_MS = 600
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -33,17 +54,38 @@ export async function createBase64FromImageURL(
 
   const fetchUrl = getDownloadProxyUrl(imageURL)
   return await getOrSetCachedDataUrl(fetchUrl, async () => {
-    const response = await fetchPublic(fetchUrl, {
-      headers: {
-        Accept: "image/*,*/*;q=0.8",
-      },
-    })
+    // モバイル通信では 1 回の失敗で投稿画面に画像が入らなくなるので、一度だけ待ってやり直す
+    for (let attempt = 0; ; attempt++) {
+      const isLastAttempt = attempt >= 1
 
-    if (!response.ok) {
-      throw new Error(`Failed to load image (${response.status})`)
+      let response: Response
+      try {
+        response = await fetchPublic(fetchUrl, {
+          headers: {
+            Accept: "image/*,*/*;q=0.8",
+          },
+        })
+      } catch (error) {
+        if (isLastAttempt || !isRetryableImageFetch({ error })) {
+          throw error
+        }
+        await wait(RETRY_WAIT_MS)
+        continue
+      }
+
+      if (!response.ok) {
+        if (
+          isLastAttempt ||
+          !isRetryableImageFetch({ status: response.status })
+        ) {
+          throw new Error(`Failed to load image (${response.status})`)
+        }
+        await wait(RETRY_WAIT_MS)
+        continue
+      }
+
+      const blob = await response.blob()
+      return await blobToDataUrl(blob)
     }
-
-    const blob = await response.blob()
-    return await blobToDataUrl(blob)
   })
 }
