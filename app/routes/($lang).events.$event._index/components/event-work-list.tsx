@@ -1,19 +1,19 @@
-import { gql, useQuery } from "@apollo/client/index"
-import { useNavigate } from "~/lib/app/locale-router"
+import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { ArrowDown, ArrowUp } from "lucide-react"
 import { type ReactNode, useContext } from "react"
-import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   appPillRowClassName,
   appPillTabClassName,
 } from "~/components/app/app-pill-tab"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { useNavigate } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
 import { EventWorksListSortableSetting } from "~/routes/($lang).events.$event._index/components/event-works-list-sortable-setting"
@@ -36,6 +36,8 @@ type Props = {
   orderBy: IntrospectionEnum<"WorkOrderBy">
   workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
+  /** 年齢区分を指定しないときに出す区分（省略時は R18・R18G も含めたすべて） */
+  defaultRatings?: IntrospectionEnum<"Rating">[]
   sumWorksCount: number
   isHideSortableSetting?: boolean
   setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
@@ -78,7 +80,9 @@ export function EventWorkList(props: Props) {
       offset: props.page * 64,
       limit: 64,
       where: {
-        ratings: props.rating ? [props.rating] : DEFAULT_EVENT_WORK_RATINGS,
+        ratings: props.rating
+          ? [props.rating]
+          : (props.defaultRatings ?? DEFAULT_EVENT_WORK_RATINGS),
         orderBy: props.orderBy,
         sort: props.sort,
       },
@@ -155,7 +159,7 @@ export function EventWorkList(props: Props) {
       {!props.isHideSortableSetting && props.sortVariant !== "chips" && (
         <div className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-background/70 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="font-medium text-foreground/75 text-xs tracking-wide uppercase">
+            <div className="font-medium text-foreground/75 text-xs uppercase tracking-wide">
               {t("並び替え", "Sort")}
             </div>
             <div className="mt-1 text-foreground text-sm">

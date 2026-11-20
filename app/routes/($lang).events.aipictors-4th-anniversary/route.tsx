@@ -12,6 +12,8 @@ import {
   CheckIcon,
   ClockIcon,
   CpuIcon,
+  EyeIcon,
+  EyeOffIcon,
   GlobeIcon,
   HashIcon,
   HeartIcon,
@@ -29,6 +31,7 @@ import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
 import { cn } from "~/lib/utils"
 import {
@@ -165,6 +168,11 @@ export default function Aipictors4thAnniversary() {
   const stats = ANNIVERSARY_4TH_STATS
   const authContext = useContext(AuthContext)
   const [galleryTab, setGalleryTab] = useState<"event" | "prelude">("event")
+  // 記念作品ギャラリーは全年齢と R15 だけを出し、ボタンを押した人にだけ R18・R18G も出す
+  const [isAdultShown, setIsAdultShown] = useState(false)
+  const galleryRatings: IntrospectionEnum<"Rating">[] = isAdultShown
+    ? ["G", "R15", "R18", "R18G"]
+    : ["G", "R15"]
 
   const { data: achievementsData } = useQuery(viewerAchievementsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -761,7 +769,7 @@ export default function Aipictors4thAnniversary() {
               </Button>
             </Link>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <GalleryTab
               isActive={galleryTab === "event"}
               onClick={() => setGalleryTab("event")}
@@ -774,6 +782,28 @@ export default function Aipictors4thAnniversary() {
               label={t("前夜祭", "Prelude")}
               count={data.prelude?.worksCount ?? null}
             />
+            {authContext.isLoggedIn && (
+              <button
+                type="button"
+                aria-pressed={isAdultShown}
+                onClick={() => setIsAdultShown((value) => !value)}
+                className={cn(
+                  "ml-auto inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition",
+                  isAdultShown
+                    ? "border-rose-400 bg-rose-50 font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
+                    : "hover:bg-muted",
+                )}
+              >
+                {isAdultShown ? (
+                  <EyeOffIcon className="size-4" />
+                ) : (
+                  <EyeIcon className="size-4" />
+                )}
+                {isAdultShown
+                  ? t("R18・R18Gを隠す", "Hide R18 / R18G")
+                  : t("R18・R18Gも表示する", "Show R18 / R18G")}
+              </button>
+            )}
           </div>
           {galleryTab === "event" &&
             (data.event?.works && data.event.works.length > 0 ? (
@@ -782,6 +812,7 @@ export default function Aipictors4thAnniversary() {
                 works={data.event.works}
                 count={data.event.worksCount}
                 page={data.page}
+                ratings={galleryRatings}
               />
             ) : (
               <p className="py-12 text-center text-muted-foreground">
@@ -797,6 +828,7 @@ export default function Aipictors4thAnniversary() {
               works={data.prelude.works}
               count={data.prelude.worksCount}
               page={0}
+              ratings={galleryRatings}
             />
           )}
         </section>
@@ -1166,10 +1198,12 @@ function WorkGallery(props: {
   works: React.ComponentProps<typeof EventWorkList>["works"]
   count: number
   page: number
+  ratings: IntrospectionEnum<"Rating">[]
 }) {
   return (
     <EventWorkList
       eventSource="OFFICIAL"
+      defaultRatings={props.ratings}
       works={props.works}
       maxCount={props.count}
       page={props.page}
