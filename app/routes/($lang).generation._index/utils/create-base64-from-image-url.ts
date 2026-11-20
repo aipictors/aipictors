@@ -23,6 +23,19 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+/**
+ * やり直すときは URL も変える。
+ * 一度失敗した画像だけがそのあとも失敗し続けるのは、ブラウザが壊れた応答を
+ * その URL のものとして覚えているためなので、別の URL として取りに行く
+ */
+export function toRetryImageUrl(url: string, attempt: number): string {
+  if (attempt === 0) {
+    return url
+  }
+  const separator = url.includes("?") ? "&" : "?"
+  return `${url}${separator}retry=${attempt}`
+}
+
 function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -60,10 +73,12 @@ export async function createBase64FromImageURL(
 
       let response: Response
       try {
-        response = await fetchPublic(fetchUrl, {
+        response = await fetchPublic(toRetryImageUrl(fetchUrl, attempt), {
           headers: {
             Accept: "image/*,*/*;q=0.8",
           },
+          // 取り込みは毎回取りに行く（壊れた応答を覚えたままにしない）
+          cache: "no-store",
         })
       } catch (error) {
         if (isLastAttempt || !isRetryableImageFetch({ error })) {
