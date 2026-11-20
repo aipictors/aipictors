@@ -1,48 +1,29 @@
 import { useLoaderData } from "@remix-run/react"
 import { Link } from "~/lib/app/locale-router"
 import { createClient as createCmsClient } from "microcms-js-sdk"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { ReleaseItem } from "~/routes/($lang)._main.releases.$id._index/components/release-item"
+import { ReleaseCardView } from "~/components/release/release-card-view"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { ChevronRight } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
+import type {
+  MicroCmsApiRelease,
+  MicroCmsApiReleaseResponse,
+} from "~/types/micro-cms-release-response"
+import { fetchReleaseList } from "~/utils/micro-cms-release"
+import { toReleaseCard } from "~/utils/release-card"
 
-interface Release {
-  id: string
-  title: string
-  description: string
-  thumbnail_url?: {
-    url: string
-  }
-  platform: string[]
-  tag?: string | null
-  createdAt: number
-}
-
-interface ApiResponse {
-  contents: Release[]
-  totalCount: number
-  offset: number
-  limit: number
-}
+/** 本文の下に出す「ほかのお知らせ」の件数 */
+const OTHER_RELEASES_COUNT = 6
 
 export async function loader(props: LoaderFunctionArgs) {
-  const url = new URL(props.request.url)
-  const pageParam = url.searchParams.get("page")
-  const qParam = url.searchParams.get("q")?.trim() ?? ""
-  const limit = 10
-  const page = Math.max(1, Number(pageParam) || 1)
-  const offset = (page - 1) * limit
-
   if (!props.params.id) {
-    // 404
     throw new Response(null, { status: 404 })
   }
 
@@ -51,25 +32,40 @@ export async function loader(props: LoaderFunctionArgs) {
     apiKey: config.cms.microCms.apiKey,
   })
 
-  const data: ApiResponse = await microCmsClient.get({
-    endpoint: `releases?ids=${props.params.id}`,
-  })
+  const [data, list] = await Promise.all([
+    microCmsClient.get<MicroCmsApiReleaseResponse>({
+      endpoint: `releases?ids=${encodeURIComponent(props.params.id)}`,
+    }),
+    fetchReleaseList({ limit: OTHER_RELEASES_COUNT + 1 }),
+  ])
 
-  const list: ApiResponse = await microCmsClient.get({
-    endpoint: `releases?${new URLSearchParams({
-      orders: "-createdAt",
-      limit: String(limit),
-      offset: String(offset),
-      ...(qParam.length > 0 ? { q: qParam } : {}),
-    }).toString()}`,
-  })
+  const release: MicroCmsApiRelease | undefined = data.contents[0]
+
+  // 消したお知らせ・間違った URL は 404（そのままだと画面が真っ白になっていた）
+  if (release === undefined) {
+    throw new Response(null, { status: 404 })
+  }
+
+  const card = toReleaseCard(release)
 
   return {
-    data,
-    list,
-    page,
-    limit,
-    q: qParam,
+    release: {
+      id: release.id,
+      title: release.title,
+      description: release.description,
+      thumbnailUrl: release.thumbnail_url?.url ?? null,
+      platform: release.platform?.[0] ?? "",
+      tag: release.tag ?? null,
+      dateText: card.dateText,
+      isNew: card.isNew,
+      coverUrl: card.coverUrl,
+      excerpt: card.excerpt,
+    },
+    // 一覧と同じカードの形にして、本文は入れない
+    others: list.contents
+      .filter((other) => other.id !== release.id)
+      .slice(0, OTHER_RELEASES_COUNT)
+      .map((other) => toReleaseCard(other)),
   }
 }
 
@@ -78,137 +74,77 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneDay,
 })
 
-export const meta: MetaFunction = (props) => {
-  const response = props.data as { data: ApiResponse }
-
-  const url = !response.data.contents[0].thumbnail_url
-    ? ""
-    : response.data.contents[0].thumbnail_url.url
+export const meta: MetaFunction<typeof loader> = (props) => {
+  const release = props.data?.release
+  if (!release) {
+    return createMeta(META.RELEASE, undefined, props.params.lang)
+  }
 
   return createMeta(
     META.RELEASE,
     {
-      title: `${response.data.contents[0].title}`,
-      enTitle: `${response.data.contents[0].title}`,
-      description: response.data.contents[0].description || "",
-      enDescription: response.data.contents[0].description || "",
-      url: url,
+      title: release.title,
+      enTitle: release.title,
+      description: release.excerpt,
+      enDescription: release.excerpt,
+      url: release.thumbnailUrl ?? release.coverUrl ?? "",
     },
     props.params.lang,
   )
 }
 
-export default function Release () {
+export default function Release() {
   const t = useTranslation()
   const data = useLoaderData<typeof loader>()
-
-  const release: Release = data.data.contents[0]
-
-  const releases: Release[] = data.list.contents
-
-  const totalPages = Math.max(1, Math.ceil(data.list.totalCount / data.limit))
-  const isFirstPage = data.page <= 1
-  const isLastPage = data.page >= totalPages
-
-  const buildSearch = (page: number) => {
-    const params = new URLSearchParams()
-    if (data.q.length > 0) {
-      params.set("q", data.q)
-    }
-    params.set("page", String(page))
-    return `?${params.toString()}`
-  }
-
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  }
+  const { release } = data
 
   return (
-    <div className="container flex flex-col space-y-4">
+    <div className="container flex flex-col gap-10 pt-2 pb-12 md:pt-4">
+      <div className="mx-auto w-full max-w-3xl">
+        <Link
+          to="/releases"
+          className="inline-flex min-h-10 items-center gap-1.5 rounded-full px-3 text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" />
+          {t("お知らせ一覧", "All announcements")}
+        </Link>
+      </div>
+
       <ReleaseItem
         title={release.title}
         description={release.description}
-        thumbnailUrl={release.thumbnail_url ? release.thumbnail_url.url : null}
-        platform={release.platform[0] ?? ""}
+        thumbnailUrl={release.thumbnailUrl}
+        platform={release.platform}
         tag={release.tag}
-        createdAt={release.createdAt}
+        dateText={release.dateText}
+        isNew={release.isNew}
       />
-      <div className="flex flex-col gap-3 border-b p-4 md:flex-row md:items-center md:justify-between">
-        <h2 className="text-lg">{"最新リリース一覧"}</h2>
-        <form method="get" className="flex w-full gap-2 md:w-auto">
-          <Input
-            name="q"
-            defaultValue={data.q}
-            placeholder={t("お知らせ内容で検索", "Search announcements")}
-            className="w-full md:w-72"
-          />
-          <Button type="submit" variant="secondary">
-            {t("検索", "Search")}
-          </Button>
-        </form>
-      </div>
-      {releases.map((release) => (
-        <Link
-          to={`/releases/${release.id}`}
-          key={release.createdAt}
-          className="group flex items-center justify-between gap-4 border-b px-4 py-3"
-        >
-          <div className="flex min-w-0 flex-1 flex-col">
-            <div className="flex items-center gap-2 text-muted-foreground text-xs">
-              <span>{formatDate(release.createdAt)}</span>
-              {release.tag && (
-                <span className="rounded-full bg-muted px-2 py-0.5 text-foreground">
-                  {release.tag}
-                </span>
-              )}
-            </div>
-            <p className="mt-1 line-clamp-1 font-semibold text-sm">
-              {release.title}
-            </p>
+
+      {data.others.length > 0 && (
+        <section className="mx-auto w-full max-w-3xl space-y-3">
+          <div className="flex items-end justify-between gap-3">
+            <h2 className="font-bold text-lg">
+              {t("ほかのお知らせ", "More announcements")}
+            </h2>
+            <Link
+              to="/releases"
+              className="inline-flex items-center gap-1 font-medium text-primary text-sm hover:underline"
+            >
+              {t("すべて見る", "See all")}
+              <ArrowRight className="size-4" />
+            </Link>
           </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
-        </Link>
-      ))}
-      <div className="flex flex-col items-center justify-center gap-3 pb-2">
-        <div className="text-muted-foreground text-xs">
-          {t(
-            `${data.page} / ${totalPages} ページ`,
-            `Page ${data.page} of ${totalPages}`,
-          )}
-        </div>
-        <div className="flex items-center justify-center gap-2">
-          <Button variant="secondary" asChild disabled={isFirstPage}>
-            <Link to={buildSearch(Math.max(1, data.page - 1))}>
-              {t("前へ", "Previous")}
-            </Link>
-          </Button>
-          <Button variant="secondary" asChild disabled={isLastPage}>
-            <Link to={buildSearch(Math.min(totalPages, data.page + 1))}>
-              {t("次へ", "Next")}
-            </Link>
-          </Button>
-        </div>
-        <Button variant="secondary" asChild>
-          <Link
-            to={`/releases${data.q ? `?q=${encodeURIComponent(data.q)}` : ""}`}
-          >
-            {t("一覧へ戻る", "Back to list")}
-          </Link>
-        </Button>
-      </div>
-      <div className="flex items-center justify-center space-x-4">
-        <Link
-          target="_blank"
-          rel="noreferrer"
-          to={"https://github.com/aipictors/aipictors/releases"}
-        >
-          {"GitHub Releases"}
-        </Link>
-      </div>
+          <div className="grid gap-1 rounded-2xl border bg-card p-2 sm:grid-cols-2">
+            {data.others.map((other) => (
+              <ReleaseCardView
+                key={other.id}
+                release={other}
+                variant="compact"
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

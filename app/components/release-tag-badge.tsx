@@ -41,6 +41,7 @@ const RELEASE_TAG_EN: Record<string, string> = {
   アップデート: "Update",
   不具合対応: "Bug fix",
   メンテナンス: "Maintenance",
+  お知らせ: "News",
 }
 
 export function ReleaseTagBadge(props: Props) {
@@ -52,7 +53,10 @@ export function ReleaseTagBadge(props: Props) {
 
     return (
       <Badge variant="secondary" className={props.className}>
-        {t(props.tag, RELEASE_TAG_EN[props.tag] ?? (t.text(props.tag) || "News"))}
+        {t(
+          props.tag,
+          RELEASE_TAG_EN[props.tag] ?? (t.text(props.tag) || "News"),
+        )}
       </Badge>
     )
   }
@@ -62,11 +66,14 @@ export function ReleaseTagBadge(props: Props) {
   return (
     <Badge
       variant="outline"
-      className={cn("inline-flex items-center gap-1", meta.className, props.className)}
+      className={cn(
+        "inline-flex items-center gap-1",
+        meta.className,
+        props.className,
+      )}
     >
       <Icon className="h-3.5 w-3.5" />
       <span>{t(meta.label, RELEASE_TAG_EN[meta.label])}</span>
     </Badge>
   )
 }
-

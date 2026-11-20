@@ -10,12 +10,10 @@ import type {
 import { ReleaseTagBadge } from "~/components/release-tag-badge"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { toJstDisplayDate } from "~/utils/to-jst-display-date"
-import type {
-  MicroCmsApiRelease,
-} from "~/types/micro-cms-release-response"
+import { toReleaseCard } from "~/utils/release-card"
 import { useTranslation } from "~/hooks/use-translation"
-import { ChevronRight } from "lucide-react"
+import { ArrowRight, SearchIcon } from "lucide-react"
+import { ReleaseCardView } from "~/components/release/release-card-view"
 import { PictorChanSays } from "~/components/pictor-chan-says"
 import {
   featuredReleaseTags,
@@ -52,7 +50,9 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   return {
-    data,
+    // 一覧には本文全体を入れず、カードに出す分だけにする
+    releases: data.contents.map((release) => toReleaseCard(release)),
+    totalCount: data.totalCount,
     page,
     limit,
     q: qParam,
@@ -65,7 +65,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function Milestone () {
+export default function Milestone() {
   const t = useTranslation()
 
   const data = useLoaderData<typeof loader>()
@@ -74,10 +74,15 @@ export default function Milestone () {
     return null
   }
 
-  const releases: MicroCmsApiRelease[] = data.data.contents
-  const totalPages = Math.max(1, Math.ceil(data.data.totalCount / data.limit))
+  const { releases } = data
+  const totalPages = Math.max(1, Math.ceil(data.totalCount / data.limit))
   const isFirstPage = data.page <= 1
   const isLastPage = data.page >= totalPages
+  // 絞り込みのない最初のページだけ、最新のお知らせを大きく出す
+  const isFeatured =
+    isFirstPage && data.q.length === 0 && data.selectedTag === null
+  const [featured, ...rest] = releases
+  const gridReleases = isFeatured ? rest : releases
 
   const buildSearch = (page: number) => {
     const params = new URLSearchParams()
@@ -102,77 +107,104 @@ export default function Milestone () {
     return params.toString() ? `?${params.toString()}` : "?"
   }
 
-  const formatDate = (timestamp: number) => {
-    const date = toJstDisplayDate(timestamp)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  }
-
   return (
-    <div className="container flex flex-col space-y-4">
-      <div className="flex flex-col gap-3 border-b p-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="font-bold text-2xl">
-          {t("リリース情報", "Release Information")}
-        </h1>
-        <form method="get" className="flex w-full gap-2 md:w-auto">
-          <Input
-            name="q"
-            defaultValue={data.q}
-            placeholder={t("お知らせ内容で検索", "Search announcements")}
-            aria-label={t("お知らせ内容で検索", "Search announcements")}
-            className="h-11 w-full text-base md:w-72 md:text-sm"
-          />
-          {data.selectedTag && <input type="hidden" name="tag" value={data.selectedTag} />}
-          <Button type="submit" variant="secondary" className="h-11">
-            {t("検索", "Search")}
-          </Button>
-        </form>
-      </div>
-      <div className="flex flex-wrap gap-2 px-4">
-        <Button
-          asChild
-          variant={data.selectedTag === null ? "default" : "outline"}
-          size="sm"
-          className="h-10"
-        >
-          <Link to={buildTagSearch(null)}>{t("すべて", "All")}</Link>
-        </Button>
-        {data.tags.map((tag) => (
-          <Button
-            key={tag}
-            asChild
-            variant={data.selectedTag === tag ? "default" : "outline"}
-            size="sm"
-            className="h-10 px-3 py-1.5"
-          >
-            <Link to={buildTagSearch(tag)}>
-              <ReleaseTagBadge tag={tag} />
-            </Link>
-          </Button>
-        ))}
-      </div>
-      {releases.map((release) => (
-        <Link
-          to={`/releases/${release.id}`}
-          key={release.createdAt}
-          className="group flex items-center justify-between gap-4 border-b px-4 py-3 transition-colors hover:bg-accent/50"
-        >
-          <div className="flex min-w-0 flex-1 flex-col">
-            <div className="flex items-center gap-2 text-muted-foreground text-xs">
-              <span>{formatDate(release.createdAt)}</span>
-              <ReleaseTagBadge tag={release.tag} className="px-1.5 py-0 text-[10px]" />
-            </div>
-            <p className="mt-1 line-clamp-2 font-semibold text-sm md:line-clamp-1">
-              {release.title}
+    <div className="container flex flex-col gap-6 pt-2 pb-12 md:gap-8 md:pt-4">
+      <header className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-sky-50 via-white to-violet-50 px-5 py-6 md:px-8 md:py-8 dark:from-sky-950/40 dark:via-background dark:to-violet-950/40">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-2">
+            <p className="font-bold text-primary text-xs tracking-[0.2em]">
+              NEWS & RELEASES
+            </p>
+            <h1 className="font-black text-2xl text-foreground tracking-tight md:text-3xl">
+              {t("お知らせ", "Announcements")}
+            </h1>
+            <p className="text-foreground/75 text-sm leading-relaxed">
+              {t(
+                "Aipictors の新機能・不具合対応・メンテナンスのお知らせです。",
+                "New features, bug fixes, and maintenance news from Aipictors.",
+              )}
             </p>
           </div>
-          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all group-hover:text-foreground motion-safe:group-hover:translate-x-0.5" />
-        </Link>
-      ))}
+          <form method="get" className="flex w-full gap-2 md:w-80">
+            <div className="relative flex-1">
+              <SearchIcon className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3 size-4 text-muted-foreground" />
+              <Input
+                type="search"
+                name="q"
+                defaultValue={data.q}
+                placeholder={t("お知らせを検索", "Search announcements")}
+                aria-label={t("お知らせ内容で検索", "Search announcements")}
+                className="h-11 rounded-full bg-background pl-9 text-base md:text-sm"
+              />
+            </div>
+            {data.selectedTag && (
+              <input type="hidden" name="tag" value={data.selectedTag} />
+            )}
+            <Button type="submit" className="h-11 rounded-full px-5">
+              {t("検索", "Search")}
+            </Button>
+          </form>
+        </div>
+        <nav
+          aria-label={t("種類で絞り込む", "Filter by type")}
+          className="mt-5 flex flex-wrap gap-2"
+        >
+          <Button
+            asChild
+            variant={data.selectedTag === null ? "default" : "outline"}
+            size="sm"
+            className="h-9 rounded-full bg-background px-4"
+          >
+            <Link to={buildTagSearch(null)}>{t("すべて", "All")}</Link>
+          </Button>
+          {data.tags.map((tag) => (
+            <Button
+              key={tag}
+              asChild
+              variant="outline"
+              size="sm"
+              className={
+                data.selectedTag === tag
+                  ? "h-9 rounded-full px-2 ring-2 ring-primary ring-offset-1 ring-offset-background"
+                  : "h-9 rounded-full bg-background px-2"
+              }
+            >
+              <Link to={buildTagSearch(tag)}>
+                <ReleaseTagBadge tag={tag} className="border-none" />
+              </Link>
+            </Button>
+          ))}
+        </nav>
+      </header>
+
+      {data.q.length > 0 && (
+        <p className="text-foreground/80 text-sm">
+          {t(
+            `「${data.q}」のお知らせ ${data.totalCount}件`,
+            `${data.totalCount} results for "${data.q}"`,
+          )}
+        </p>
+      )}
+
+      {isFeatured && featured && (
+        <ReleaseCardView release={featured} variant="featured" isPriority />
+      )}
+
+      {gridReleases.length > 0 && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+          {gridReleases.map((release, index) => (
+            <ReleaseCardView
+              key={release.id}
+              release={release}
+              variant="grid"
+              isPriority={!isFeatured && index < 3}
+            />
+          ))}
+        </div>
+      )}
+
       {releases.length === 0 && (
-        <div className="flex justify-center rounded-lg border border-dashed px-4 py-10">
+        <div className="flex justify-center rounded-2xl border border-dashed px-4 py-10">
           <PictorChanSays>
             {t(
               "条件に合うお知らせはありませんでした。タグや検索語を変えてみてくださいね！",
@@ -181,8 +213,9 @@ export default function Milestone () {
           </PictorChanSays>
         </div>
       )}
-      <div className="flex flex-col items-center justify-center gap-3 pb-2">
-        <div className="text-muted-foreground text-xs">
+
+      <div className="flex flex-col items-center justify-center gap-3">
+        <div className="text-muted-foreground text-sm tabular-nums">
           {t(
             `${data.page} / ${totalPages} ページ`,
             `Page ${data.page} of ${totalPages}`,
@@ -190,31 +223,51 @@ export default function Milestone () {
         </div>
         <div className="flex items-center justify-center gap-2">
           {isFirstPage ? (
-            <Button variant="secondary" disabled className="h-11">
+            <Button
+              variant="outline"
+              disabled
+              className="h-11 rounded-full px-6"
+            >
               {t("前へ", "Previous")}
             </Button>
           ) : (
-            <Button variant="secondary" asChild className="h-11">
-              <Link to={buildSearch(data.page - 1)}>{t("前へ", "Previous")}</Link>
+            <Button
+              variant="outline"
+              asChild
+              className="h-11 rounded-full px-6"
+            >
+              <Link to={buildSearch(data.page - 1)}>
+                {t("前へ", "Previous")}
+              </Link>
             </Button>
           )}
           {isLastPage ? (
-            <Button variant="secondary" disabled className="h-11">
+            <Button
+              variant="outline"
+              disabled
+              className="h-11 rounded-full px-6"
+            >
               {t("次へ", "Next")}
             </Button>
           ) : (
-            <Button variant="secondary" asChild className="h-11">
+            <Button
+              variant="outline"
+              asChild
+              className="h-11 rounded-full px-6"
+            >
               <Link to={buildSearch(data.page + 1)}>{t("次へ", "Next")}</Link>
             </Button>
           )}
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-4 pb-4">
+
+      <div className="flex flex-wrap items-center justify-center gap-4 border-t pt-6">
         <Link
           to="/roadmap"
-          className="inline-flex min-h-11 items-center rounded-md border px-4 py-2 font-medium text-sm transition-colors hover:bg-accent"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border px-5 py-2 font-medium text-sm transition-colors hover:bg-accent"
         >
           {t("ロードマップを見る", "View Roadmap")}
+          <ArrowRight className="size-4" />
         </Link>
         <Link
           target="_blank"
