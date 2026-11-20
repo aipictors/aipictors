@@ -1,9 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import {
-  isR18Path,
-  toR18FallbackPath,
-  toR18Path,
-} from "~/utils/content-mode"
+import { isR18Path, toR18FallbackPath, toR18Path } from "~/utils/content-mode"
 
 describe("toR18Path", () => {
   test("一覧は /r のページへ", () => {
@@ -14,6 +10,8 @@ describe("toR18Path", () => {
     expect(toR18Path("/tags/猫", "?page=2")).toBe("/r/tags/猫?page=2")
     expect(toR18Path("/users/foo/posts")).toBe("/r/users/foo/posts")
     expect(toR18Path("/posts/2d")).toBe("/r/posts/2d")
+    expect(toR18Path("/novels", "?sort=popular")).toBe("/r/novels?sort=popular")
+    expect(toR18Path("/notes")).toBe("/r/notes")
     expect(toR18Path("/en/themes")).toBe("/en/r/themes")
   })
 
@@ -70,9 +68,7 @@ describe("toR18FallbackPath", () => {
   })
 
   test("R18 ではトップのタブにあるものはタブへ", () => {
-    expect(toR18FallbackPath("/r/follow-user-works")).toBe(
-      "/r?tab=follow-user",
-    )
+    expect(toR18FallbackPath("/r/follow-user-works")).toBe("/r?tab=follow-user")
     expect(toR18FallbackPath("/r/new-works", "?page=2")).toBe(
       "/r?page=2&tab=new",
     )
@@ -88,6 +84,8 @@ describe("toR18FallbackPath", () => {
       "/r/tags/猫",
       "/r/posts/3d",
       "/r/posts/123",
+      "/r/novels",
+      "/r/notes",
       "/r/users/foo",
       "/r/models/12",
       "/about",

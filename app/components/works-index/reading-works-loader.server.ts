@@ -33,9 +33,15 @@ const parseSort = (value: string | null, fallback: ReadingSort): ReadingSort =>
 
 /**
  * 読みもの（小説・コラム）の一覧のデータ
- * 全年齢の作品だけを読む
+ * 全年齢の一覧は全年齢の作品だけ、R18 の一覧（/r/novels・/r/notes）は R18 の作品だけを読む
+ * （R18G は見る人が自分で表示を選ぶものなので、だれにでも同じ HTML を返すこの一覧には出さない）
  */
-export async function loadReadingWorks(kind: ReadingKind, request: Request) {
+export async function loadReadingWorks(
+  kind: ReadingKind,
+  request: Request,
+  options: { isSensitive?: boolean } = {},
+) {
+  const isSensitive = options.isSensitive === true
   const config = READING_CONFIGS[kind]
   const params = new URL(request.url).searchParams
 
@@ -50,8 +56,9 @@ export async function loadReadingWorks(kind: ReadingKind, request: Request) {
       limit: WORKS_INDEX_PER_PAGE,
       where: {
         workType: config.workType,
-        ratings: ["G"],
-        isSensitive: false,
+        ...(isSensitive
+          ? { ratings: ["R18"] as const }
+          : { ratings: ["G"] as const, isSensitive: false }),
         isNowCreatedAt: true,
         orderBy: sort === "popular" ? "LIKES_COUNT" : "DATE_CREATED",
         ...(q === "" ? {} : { search: q }),
@@ -67,17 +74,21 @@ export async function loadReadingWorks(kind: ReadingKind, request: Request) {
     throw new Response(null, { status: 404 })
   }
 
-  const works: ReadingWork[] = result.data.works.map((work) => {
-    const { description, createdAt, ...rest } = work
-    return {
-      ...rest,
-      excerpt: toWorkExcerpt(description),
-      dateText: JST_DATE_FORMAT.format(new Date(createdAt * 1000)),
-    }
-  })
+  const works: ReadingWork[] = result.data.works
+    // ratings を R18 にしても R18G が返ることがあるので評価でも確かめる
+    .filter((work) => !isSensitive || work.rating === "R18")
+    .map((work) => {
+      const { description, createdAt, rating: _rating, ...rest } = work
+      return {
+        ...rest,
+        excerpt: toWorkExcerpt(description),
+        dateText: JST_DATE_FORMAT.format(new Date(createdAt * 1000)),
+      }
+    })
 
   return {
     kind,
+    isSensitive,
     works,
     count,
     page,

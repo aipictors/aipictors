@@ -44,8 +44,15 @@ export function ReadingWorksPage(props: Props) {
 
   const isEnglish = getPathLocale(location.pathname) === "en"
   const localePrefix = isEnglish ? "/en" : ""
-  const toPath = (path: string) => `${localePrefix}${path}`
+  /** 一覧・作品・作者のページ。R18 の一覧では /r のページへつなぐ（全年齢へ移らない） */
+  const toPath = (path: string) =>
+    `${localePrefix}${data.isSensitive ? "/r" : ""}${path}`
   const text = (value: readonly [string, string]) => t(value[0], value[1])
+  const h1 = data.isSensitive ? reading.sensitive.h1 : reading.h1
+  const lead = data.isSensitive ? reading.sensitive.lead : reading.lead
+  const description = data.isSensitive
+    ? reading.sensitive.description
+    : reading.description
 
   const sortParam = data.sort === reading.defaultSort ? null : data.sort
   const toHref = (page: number) =>
@@ -56,13 +63,15 @@ export function ReadingWorksPage(props: Props) {
     reading.defaultSort === "new" ? ["new", "popular"] : ["popular", "new"]
 
   const homeUrl = `${siteConfig.siteURL}${localePrefix}`
-  const pageUrl = `${homeUrl}${reading.path}`
+  /** R18 の一覧のトップ（全年齢は /posts、R18 は /r） */
+  const worksPath = data.isSensitive ? "/r" : "/posts"
+  const pageUrl = `${siteConfig.siteURL}${toPath(reading.path)}`
 
   const collectionPage: WithContext<CollectionPage> = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: text(reading.h1),
-    description: text(reading.description),
+    name: text(h1),
+    description: text(description),
     url: pageUrl,
     inLanguage: isEnglish ? "en" : "ja",
     isPartOf: { "@type": "WebSite", name: "Aipictors", url: `${homeUrl}/` },
@@ -73,7 +82,7 @@ export function ReadingWorksPage(props: Props) {
         "@type": "ListItem",
         position: data.page * WORKS_INDEX_PER_PAGE + index + 1,
         name: t.workTitle(work.title, work.enTitle),
-        url: `${homeUrl}/posts/${work.id}`,
+        url: `${siteConfig.siteURL}${toPath(`/posts/${work.id}`)}`,
       })),
     },
   }
@@ -91,8 +100,10 @@ export function ReadingWorksPage(props: Props) {
       {
         "@type": "ListItem",
         position: 2,
-        name: t("すべての作品", "All works"),
-        item: `${homeUrl}/posts`,
+        name: data.isSensitive
+          ? t("R18 の作品", "R18 works")
+          : t("すべての作品", "All works"),
+        item: `${homeUrl}${worksPath}`,
       },
       {
         "@type": "ListItem",
@@ -109,7 +120,7 @@ export function ReadingWorksPage(props: Props) {
 
       <header className="space-y-2">
         <h1 className="font-black text-xl md:text-2xl">
-          {text(reading.h1)}
+          {text(h1)}
           {data.page > 0 && (
             <span className="ml-2 font-medium text-muted-foreground text-sm">
               {t(`${data.page + 1}ページ目`, `Page ${data.page + 1}`)}
@@ -117,7 +128,7 @@ export function ReadingWorksPage(props: Props) {
           )}
         </h1>
         <p className="text-muted-foreground text-sm leading-relaxed">
-          {text(reading.lead)}
+          {text(lead)}
         </p>
         {data.q === "" && data.page === 0 && (
           <PictorChanHint lines={reading.hints} seed={data.seed} />
@@ -223,10 +234,12 @@ export function ReadingWorksPage(props: Props) {
           <ArrowRightIcon className="size-3.5" />
         </Link>
         <Link
-          to={toPath("/posts")}
+          to={`${localePrefix}${worksPath}`}
           className="flex items-center gap-1 font-medium hover:underline"
         >
-          {t("すべての作品を見る", "See all works")}
+          {data.isSensitive
+            ? t("R18 の作品を見る", "See R18 works")
+            : t("すべての作品を見る", "See all works")}
           <ArrowRightIcon className="size-3.5" />
         </Link>
       </div>

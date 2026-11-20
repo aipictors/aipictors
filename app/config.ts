@@ -625,6 +625,24 @@ export const META: { [key: string]: MetaData } = {
       "A page of adult AI illustrations for people aged 18 and over.",
     isIndex: false,
   },
+  SENSITIVE_NOVELS: {
+    title: "R18 AI小説の一覧",
+    enTitle: "R18 AI Novels",
+    description:
+      "18歳以上の方向けの、成人向けのAI小説の一覧です。新着順・人気順で読めます。",
+    enDescription:
+      "Adult AI novels for people aged 18 and over, sorted by latest or most liked.",
+    isIndex: true,
+  },
+  SENSITIVE_NOTES: {
+    title: "R18 コラムの一覧",
+    enTitle: "R18 Columns",
+    description:
+      "18歳以上の方向けの、成人向けのコラムの一覧です。人気順・新着順で読めます。",
+    enDescription:
+      "Adult columns for people aged 18 and over, sorted by most liked or latest.",
+    isIndex: true,
+  },
   SENSITIVE_HOME_2D: {
     title: "R18 AIイラスト（2D）一覧",
     enTitle: "R18 2D AI Illustrations",

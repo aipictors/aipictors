@@ -19,6 +19,8 @@ type ReadingConfig = {
   description: Text
   searchPlaceholder: Text
   hints: readonly Text[]
+  /** R18 の一覧（/r 付きのパス）で使う文章 */
+  sensitive: { h1: Text; lead: Text; description: Text }
   /** もう一方の読みものへの案内 */
   otherLink: { path: string; label: Text }
 }
@@ -41,7 +43,10 @@ export const READING_CONFIGS: Record<ReadingKind, ReadingConfig> = {
     ],
     searchPlaceholder: ["小説の題名でさがす", "Search novels"],
     hints: [
-      ["今日はどんなお話を読みましょうか？", "What kind of story shall we read today?"],
+      [
+        "今日はどんなお話を読みましょうか？",
+        "What kind of story shall we read today?",
+      ],
       [
         "続きものは、作者さんのページから順番に読めますよ！",
         "You can read a series in order from the author's page!",
@@ -51,6 +56,17 @@ export const READING_CONFIGS: Record<ReadingKind, ReadingConfig> = {
         "Liked a story? Let the author know with a like!",
       ],
     ],
+    sensitive: {
+      h1: ["R18 AI小説の一覧", "R18 AI Novels"],
+      lead: [
+        "18歳以上の方向けの、成人向けのAI小説を読めます。",
+        "Read adult AI novels for people aged 18 and over.",
+      ],
+      description: [
+        "18歳以上の方向けの、成人向けのAI小説の一覧です。新着順・人気順で読めます。",
+        "Adult AI novels for people aged 18 and over, sorted by latest or most liked.",
+      ],
+    },
     otherLink: { path: "/notes", label: ["コラムを読む", "Read columns"] },
   },
   column: {
@@ -84,6 +100,17 @@ export const READING_CONFIGS: Record<ReadingKind, ReadingConfig> = {
         "Older articles may not match today's features. Keep that in mind!",
       ],
     ],
+    sensitive: {
+      h1: ["R18 コラムの一覧", "R18 Columns"],
+      lead: [
+        "18歳以上の方向けの、成人向けのコラムを読めます。",
+        "Read adult columns for people aged 18 and over.",
+      ],
+      description: [
+        "18歳以上の方向けの、成人向けのコラムの一覧です。人気順・新着順で読めます。",
+        "Adult columns for people aged 18 and over, sorted by most liked or latest.",
+      ],
+    },
     otherLink: { path: "/novels", label: ["小説を読む", "Read novels"] },
   },
 }

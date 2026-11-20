@@ -44,3 +44,17 @@ describe("getHomeNavigationSections の Aipictors+", () => {
     expect(findPlus("unknown")).toHaveLength(0)
   })
 })
+
+describe("getHomeNavigationSections の小説・コラム", () => {
+  const findHref = (isSensitive: boolean, key: string) =>
+    getHomeNavigationSections({ isSensitive, isModerator: false })
+      .flatMap((section) => section.items)
+      .find((item) => item.key === key)?.href
+
+  test("全年齢では /novels・/notes、R18 では R18 の一覧へ（R18 でもリンクを消さない）", () => {
+    expect(findHref(false, "novels")).toBe("/novels")
+    expect(findHref(false, "notes")).toBe("/notes")
+    expect(findHref(true, "novels")).toBe("/r/novels")
+    expect(findHref(true, "notes")).toBe("/r/notes")
+  })
+})

@@ -15,6 +15,7 @@ export const ReadingWorkFragment = graphql(
     title
     enTitle
     description
+    rating
     likesCount
     commentsCount
     createdAt
@@ -30,7 +31,7 @@ export const ReadingWorkFragment = graphql(
 
 export type ReadingWork = Omit<
   ResultOf<typeof ReadingWorkFragment>,
-  "description" | "createdAt"
+  "description" | "createdAt" | "rating"
 > & {
   /** 説明の抜粋 */
   excerpt: string

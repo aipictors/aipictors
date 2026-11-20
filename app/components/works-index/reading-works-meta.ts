@@ -8,6 +8,11 @@ const META_KEYS: Record<ReadingKind, string> = {
   column: "NOTES",
 }
 
+const SENSITIVE_META_KEYS: Record<ReadingKind, string> = {
+  novel: "SENSITIVE_NOVELS",
+  column: "SENSITIVE_NOTES",
+}
+
 /**
  * 読みものの一覧のメタ情報
  * - 2 ページ目以降は題名を変える（同じ題名のページを増やさない）
@@ -16,8 +21,10 @@ const META_KEYS: Record<ReadingKind, string> = {
 export const toReadingMeta = (
   kind: ReadingKind,
   data: ReadingWorksData | undefined,
+  options: { isSensitive?: boolean } = {},
 ): MetaData => {
-  const base = META[META_KEYS[kind]] ?? {}
+  const base =
+    META[(options.isSensitive ? SENSITIVE_META_KEYS : META_KEYS)[kind]] ?? {}
   const page = data?.page ?? 0
   const isDefaultList =
     !data?.q &&
