@@ -1342,6 +1342,9 @@ input CreateImageGenerationTaskInput {
   """IPアドレス（任意）"""
   ipaddress: String
 
+  """顔の自動修正（生成した画像の顔を見つけて描き直す。ADetailer 相当）"""
+  isFaceFixEnabled: Boolean
+
   """プロンプト生成を有効にする"""
   isPromptGenerationEnabled: Boolean
 
@@ -1447,6 +1450,9 @@ input CreateReservedImageGenerationTaskInput {
 
   """IPアドレス（任意）"""
   ipaddress: String
+
+  """顔の自動修正（生成した画像の顔を見つけて描き直す。ADetailer 相当）"""
+  isFaceFixEnabled: Boolean
   isPromptGenerationEnabled: Boolean
   model: String!
   negativePrompt: String!
