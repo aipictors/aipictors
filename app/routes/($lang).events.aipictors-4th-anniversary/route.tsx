@@ -80,7 +80,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const pageParam = Number(url.searchParams.get("page") ?? "0")
   const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 0
   const where = {
-    ratings: ["G", "R15"] as ("G" | "R15")[],
+    ratings: ["G"] as "G"[],
     isNowCreatedAt: true,
   }
 
@@ -168,11 +168,14 @@ export default function Aipictors4thAnniversary() {
   const stats = ANNIVERSARY_4TH_STATS
   const authContext = useContext(AuthContext)
   const [galleryTab, setGalleryTab] = useState<"event" | "prelude">("event")
-  // 記念作品ギャラリーは全年齢と R15 だけを出し、ボタンを押した人にだけ R18・R18G も出す
+  // 記念作品ギャラリーは全年齢だけを出し、ボタンを押した人にだけ R15・R18・R18G も出す
+  const [isR15Shown, setIsR15Shown] = useState(false)
   const [isAdultShown, setIsAdultShown] = useState(false)
-  const galleryRatings: IntrospectionEnum<"Rating">[] = isAdultShown
-    ? ["G", "R15", "R18", "R18G"]
-    : ["G", "R15"]
+  const galleryRatings: IntrospectionEnum<"Rating">[] = [
+    "G",
+    ...(isR15Shown ? (["R15"] as const) : []),
+    ...(isAdultShown ? (["R18", "R18G"] as const) : []),
+  ]
 
   const { data: achievementsData } = useQuery(viewerAchievementsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -782,13 +785,33 @@ export default function Aipictors4thAnniversary() {
               label={t("前夜祭", "Prelude")}
               count={data.prelude?.worksCount ?? null}
             />
+            <button
+              type="button"
+              aria-pressed={isR15Shown}
+              onClick={() => setIsR15Shown((value) => !value)}
+              className={cn(
+                "ml-auto inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition",
+                isR15Shown
+                  ? "border-amber-400 bg-amber-50 font-bold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+                  : "hover:bg-muted",
+              )}
+            >
+              {isR15Shown ? (
+                <EyeOffIcon className="size-4" />
+              ) : (
+                <EyeIcon className="size-4" />
+              )}
+              {isR15Shown
+                ? t("R15を隠す", "Hide R15")
+                : t("R15も表示する", "Show R15")}
+            </button>
             {authContext.isLoggedIn && (
               <button
                 type="button"
                 aria-pressed={isAdultShown}
                 onClick={() => setIsAdultShown((value) => !value)}
                 className={cn(
-                  "ml-auto inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition",
+                  "inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition",
                   isAdultShown
                     ? "border-rose-400 bg-rose-50 font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
                     : "hover:bg-muted",
