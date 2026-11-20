@@ -30,4 +30,22 @@ describe("mergeSdEndpoints", () => {
       [FREE, PAID],
     )
   })
+
+  test("有料用の置き換え先は、止めた元の有料用 GPU と入れ替える", () => {
+    const PAID_CHEAP = "https://paidcheap-8000.proxy.runpod.net"
+    expect(
+      mergeSdEndpoints([FREE, PAID], {
+        night: null,
+        free: CHEAP,
+        paid: PAID_CHEAP,
+      }),
+    ).toEqual([CHEAP, PAID_CHEAP])
+    expect(
+      mergeSdEndpoints([FREE, PAID], {
+        night: NIGHT,
+        free: null,
+        paid: PAID_CHEAP,
+      }),
+    ).toEqual([FREE, PAID_CHEAP, NIGHT])
+  })
 })
