@@ -30,6 +30,7 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
+import { openPostPage } from "~/routes/($lang).generation._index/utils/open-post-page"
 import { toPngParametersText } from "~/routes/($lang).generation._index/utils/png-generation-parameters"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
@@ -168,7 +169,7 @@ export function GenerationCanvasActions(props: Props) {
       toast("履歴が見つかりません、画面更新下さい。")
       return
     }
-    window.open(`/new/image?generation=${task.nanoid}`, "_blank")
+    openPostPage(`/new/image?generation=${task.nanoid}`)
   }
 
   const onRestore = (isWithSeed: boolean) => {

@@ -3,6 +3,7 @@ import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { GenerationImageUploadConfirmDialog } from "~/routes/($lang).generation._index/components/task-view/generation-image-upload-confirm-dialog"
+import { openPostPage } from "~/routes/($lang).generation._index/utils/open-post-page"
 
 type Props = {
   disabled: boolean
@@ -19,7 +20,7 @@ export function GenerationImagePostButton(props: Props) {
 
   const onClick = async () => {
     const url = `/new/image?generation=${props.selectedTaskIds.join("%7C")}`
-    window.open(url, "_blank")
+    openPostPage(url)
   }
 
   return props.isEnable ? (

@@ -24,6 +24,7 @@ import {
   toTaskSizeType,
 } from "~/routes/($lang).generation._index/types/generation-size"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
+import { openPostPage } from "~/routes/($lang).generation._index/utils/open-post-page"
 
 type Props = {
   task:
@@ -226,7 +227,7 @@ export function GenerationTaskSheetView(props: Props) {
     }
 
     const url = `/new/image?generation=${taskNanoid}`
-    window.open(url, "_blank")
+    openPostPage(url)
   }
 
   const [deleteTask, { loading: isDeletedLoading }] = useMutation(
