@@ -46,7 +46,15 @@ import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { TextEditorUploaderDialog } from "~/routes/($lang)._main.new.image/components/text-editor-uploader-dialog"
 import { keepMarkdownIndent } from "~/utils/keep-markdown-indent"
+import {
+  BlankLineParagraph,
+  restoreBlankLines,
+} from "~/utils/markdown-blank-lines"
 import { repairMarkdownHardBreaks } from "~/utils/repair-markdown-hard-breaks"
+
+/** 保存済みの本文を入力欄に読み込む形にする */
+const toEditorContent = (md: string) =>
+  restoreBlankLines(keepMarkdownIndent(repairMarkdownHardBreaks(md)))
 
 /** 本文の文字数（空白・改行・改ページの印を除く） */
 const countBodyChars = (text: string) => {
@@ -84,6 +92,8 @@ const TextEditor = ({
     shouldRerenderOnTransaction: false,
     extensions: [
       StarterKit.configure({
+        // 空行を保存で消さない段落に置き換える
+        paragraph: false,
         orderedList: {
           HTMLAttributes: {
             class: "list-decimal pl-4",
@@ -95,6 +105,7 @@ const TextEditor = ({
           },
         },
       }),
+      BlankLineParagraph,
       Markdown,
       Image.configure({
         inline: true,
@@ -109,7 +120,7 @@ const TextEditor = ({
       Blockquote,
       HorizontalRule,
     ],
-    content: keepMarkdownIndent(repairMarkdownHardBreaks(value)),
+    content: toEditorContent(value),
     onUpdate: ({ editor }) => {
       onChange(repairMarkdownHardBreaks(editor.storage.markdown.getMarkdown()))
     },
@@ -117,9 +128,7 @@ const TextEditor = ({
 
   useEffect(() => {
     if (editor?.isEmpty) {
-      editor.commands.setContent(
-        keepMarkdownIndent(repairMarkdownHardBreaks(value)),
-      )
+      editor.commands.setContent(toEditorContent(value))
     }
   }, [value, editor])
 

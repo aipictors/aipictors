@@ -80,7 +80,8 @@ beforeEach(() => {
   globalThis.fetch = (async (input: string, init: RequestInit) => {
     const headers = init.headers as Record<string, string>
     const contentType = headers["Content-Type"]
-    if (contentType === "text/markdown") {
+    // 本文は保存先に書き換えられないよう text/* ではなく application/octet-stream で送る
+    if (contentType === "application/octet-stream") {
       const fileId = new URL(input, "https://uploader.test").searchParams.get("fileid")
       textUploads.push({ fileId, body: await (init.body as Blob).text() })
       if (failTextUpload) {

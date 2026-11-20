@@ -21,8 +21,11 @@ export const uploadTextFile = async (
     // MIME タイプの推定
     const mimeType = (() => {
       switch (extension) {
+        // 保存先（text-uploader）は text/* のファイルの改行をすべて「空白 2 つ + 改行」に、
+        // 行頭の空白を nbsp に書き換えてしまう。本文は入力欄の Markdown のまま保存したいので、text/* で送らない
+        // （改行の印「\」が文字として出たり、更新のたびに空行が増えたりしていた）
         case "md":
-          return "text/markdown"
+          return "application/octet-stream"
         case "txt":
           return "text/plain"
         case "json":
