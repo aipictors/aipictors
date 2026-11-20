@@ -22,13 +22,15 @@ export type GenerationEntryMode = "loading" | "simple" | "advanced"
  * - 「詳細設定で開く」を押した・一度生成した・生成履歴がある人は詳細画面（localStorage に覚える）
  * - 未ログインの人と、生成履歴が 0 件の人はかんたん入口
  * ブラウザに来てから呼ぶ（生成画面はブラウザに来てから描いている）
+ * enabled が false のときは常に詳細画面（/generation/3panel など）
  */
-export function useGenerationEntryMode() {
+export function useGenerationEntryMode(options: { enabled?: boolean } = {}) {
   const authContext = useContext(AuthContext)
 
   // URL のパラメータは読み込んだあとに外されるので、開いたときに 1 回だけ見る
   const [isAdvancedChosen, setIsAdvancedChosen] = useState(() => {
     if (typeof window === "undefined") return true
+    if (options.enabled === false) return true
     return (
       isAdvancedEntryRequested(window.location.search) ||
       readPrefersAdvancedEntry()
