@@ -15,6 +15,7 @@ import {
   GlobeIcon,
   HashIcon,
   HeartIcon,
+  HistoryIcon,
   ImageIcon,
   LockIcon,
   PartyPopperIcon,
@@ -35,6 +36,12 @@ import {
   EventWorkListItemFragment,
 } from "~/routes/($lang).events.$event._index/components/event-work-list"
 import {
+  ANNIVERSARY_4TH_MONTHLY_HIGHLIGHTS,
+  ANNIVERSARY_4TH_WALL_WORKS,
+  ANNIVERSARY_4TH_YEARLY_MORE_WORKS,
+  type Anniversary4thGalleryWork,
+} from "~/routes/($lang).events.aipictors-4th-anniversary/anniversary-4th-gallery"
+import {
   ANNIVERSARY_4TH_STATS,
   toCumulativeYearly,
 } from "~/routes/($lang).events.aipictors-4th-anniversary/anniversary-4th-stats"
@@ -45,6 +52,18 @@ import {
   StackedShare,
   WeekHourHeatmap,
 } from "~/routes/($lang).events.aipictors-4th-anniversary/components/anniversary-charts"
+import {
+  AnniversaryKeyframes,
+  CountUp,
+  FallingConfetti,
+  HeroWorkWall,
+  MonthlyTimeline,
+  Reveal,
+  ScrollProgress,
+  WorkMarqueeRows,
+  WorkMasonry,
+} from "~/routes/($lang).events.aipictors-4th-anniversary/components/anniversary-motion"
+import { findMilestones } from "~/routes/($lang).events.aipictors-4th-anniversary/utils/find-milestones"
 import { createMeta } from "~/utils/create-meta"
 
 const SLUG = "aipictors-4th-anniversary"
@@ -160,6 +179,8 @@ export default function Aipictors4thAnniversary() {
   // 年ごとの数は年によって減って見えるので、年末までの累計で見せる
   const cumulativeYearly = toCumulativeYearly(stats.yearly)
 
+  const milestones = findMilestones(stats.monthly)
+
   const yearTopThumbnail = (year: number) =>
     stats.yearlyTopWorks.find((group) => group.year === year)?.works[0]
       ?.thumbnail
@@ -174,21 +195,60 @@ export default function Aipictors4thAnniversary() {
 
   return (
     <div className="min-h-screen">
-      {/* ヒーロー */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-violet-700 via-fuchsia-600 to-pink-500 text-white">
-        <Confetti />
-        <div className="container relative mx-auto grid items-center gap-8 px-4 py-14 md:grid-cols-[1.1fr_1fr] md:py-20">
-          <div className="space-y-5">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-1.5 font-bold text-sm text-violet-700">
+      <AnniversaryKeyframes />
+      <ScrollProgress />
+      {/* ヒーロー: 4 年分の作品が流れる壁の上にタイトル */}
+      <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-violet-950 text-white md:min-h-[92vh]">
+        <HeroWorkWall works={ANNIVERSARY_4TH_WALL_WORKS.slice(0, 84)} />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-950/85 via-fuchsia-900/55 to-pink-700/45" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(46,16,101,0.75)_80%)]" />
+        <FallingConfetti />
+        <div className="container relative mx-auto grid items-center gap-10 px-4 py-16 md:grid-cols-[1.1fr_1fr] md:py-24">
+          <div className="space-y-6">
+            <span className="inline-flex animate-[anniv4-pop_0.8s_ease-out_both] items-center gap-2 rounded-full bg-white/90 px-4 py-1.5 font-bold text-sm text-violet-700 shadow-lg motion-reduce:animate-none">
               <SparklesIcon className="size-4" />
               Aipictors 4th Anniversary
             </span>
-            <h1 className="font-black text-5xl leading-tight drop-shadow md:text-7xl">
-              4<span className="text-3xl md:text-5xl">{t("周年", "th")}</span>
+            <h1 className="animate-[anniv4-pop_1s_ease-out_0.15s_both] font-black leading-none drop-shadow-2xl motion-reduce:animate-none">
+              <span className="relative inline-block">
+                <span
+                  aria-hidden
+                  className="-inset-6 absolute animate-[anniv4-spin_14s_linear_infinite] rounded-full border-4 border-white/25 border-dashed motion-reduce:animate-none"
+                />
+                <span className="relative animate-[anniv4-shine_4s_linear_infinite] bg-[length:200%_100%] bg-[linear-gradient(90deg,#fde047,#f9a8d4,#a5f3fc,#c4b5fd,#fde047)] bg-clip-text text-[8rem] text-transparent motion-reduce:animate-none md:text-[12rem]">
+                  4
+                </span>
+              </span>
+              <span className="ml-2 text-4xl md:text-6xl">
+                {t("周年", "th")}
+              </span>
               <br />
-              {t("記念祭", "Anniversary")}
+              <span className="text-5xl md:text-7xl">
+                {t("記念祭", "Anniversary")}
+              </span>
             </h1>
-            <p className="font-bold text-xl md:text-2xl">2026.11.21 – 12.06</p>
+            <p className="animate-[anniv4-pop_1s_ease-out_0.3s_both] font-bold text-xl tracking-widest motion-reduce:animate-none md:text-2xl">
+              2026.11.21 – 12.06
+            </p>
+            <div className="grid max-w-lg animate-[anniv4-pop_1s_ease-out_0.45s_both] grid-cols-3 gap-2 motion-reduce:animate-none">
+              {stats.totals
+                .filter((item) =>
+                  ["works", "users", "likes"].includes(item.key),
+                )
+                .map((item) => (
+                  <div
+                    key={item.key}
+                    className="min-w-0 rounded-2xl bg-white/10 p-2.5 ring-1 ring-white/20 backdrop-blur md:p-3"
+                  >
+                    <div className="truncate text-[10px] text-white/75 md:text-[11px]">
+                      {t(item.label, item.enLabel)}
+                    </div>
+                    <div className="font-black text-sm sm:text-lg md:text-2xl">
+                      <CountUp value={item.value} />
+                    </div>
+                  </div>
+                ))}
+            </div>
             <p className="max-w-xl text-white/90 leading-relaxed">
               {t(
                 "2022年に始まったAipictorsは、4周年を迎えました。作品を投稿してくれた方、いいねやコメントで応援してくれた方、生成を楽しんでくれた方、本当にありがとうございます。みんなで積み重ねてきた4年分の記録を、少しだけのぞいてみませんか。",
@@ -199,7 +259,7 @@ export default function Aipictors4thAnniversary() {
               <Link to={`/new/image?tag=${encodeURIComponent(TAG)}`}>
                 <Button
                   size="lg"
-                  className="bg-white font-bold text-fuchsia-700 hover:bg-white/90"
+                  className="bg-white font-bold text-fuchsia-700 shadow-xl transition hover:scale-105 hover:bg-white/90"
                 >
                   <ImageIcon className="mr-2 size-5" />
                   {t("記念作品を投稿する", "Post your artwork")}
@@ -209,7 +269,7 @@ export default function Aipictors4thAnniversary() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white/70 bg-transparent font-bold text-white hover:bg-white/10 hover:text-white"
+                  className="border-white/70 bg-transparent font-bold text-white transition hover:scale-105 hover:bg-white/10 hover:text-white"
                 >
                   <TrophyIcon className="mr-2 size-5" />
                   {t("限定実績を見る", "Limited achievements")}
@@ -217,23 +277,33 @@ export default function Aipictors4thAnniversary() {
               </a>
             </div>
           </div>
-          <img
-            src="/images/events/aipictors-4th-anniversary.webp"
-            alt={t("Aipictors 4周年記念祭", "Aipictors 4th Anniversary")}
-            width={1200}
-            height={630}
-            className="w-full rounded-2xl shadow-2xl ring-4 ring-white/30"
-          />
+          <div className="relative">
+            <div className="-inset-4 absolute rounded-3xl bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 opacity-60 blur-2xl" />
+            <img
+              src="/images/events/aipictors-4th-anniversary.webp"
+              alt={t("Aipictors 4周年記念祭", "Aipictors 4th Anniversary")}
+              width={1200}
+              height={630}
+              className="relative w-full animate-[anniv4-float_6s_ease-in-out_infinite] rounded-2xl shadow-2xl ring-4 ring-white/40 motion-reduce:animate-none"
+            />
+          </div>
         </div>
+        <a
+          href="#numbers"
+          aria-label={t("下へ", "Scroll down")}
+          className="-translate-x-1/2 absolute bottom-5 left-1/2 hidden animate-bounce text-sm text-white/80 motion-reduce:animate-none md:block"
+        >
+          ▼ SCROLL
+        </a>
       </section>
 
-      <WorkMarquee
-        works={stats.yearlyTopWorks.flatMap((group) => group.works)}
-      />
+      <div className="bg-gradient-to-r from-violet-950 via-fuchsia-950 to-violet-950">
+        <WorkMarqueeRows works={ANNIVERSARY_4TH_WALL_WORKS} rows={2} />
+      </div>
 
       <div className="container mx-auto max-w-6xl space-y-16 px-4 py-12">
         {/* 大きな数字 */}
-        <section className="space-y-4">
+        <section id="numbers" className="scroll-mt-20 space-y-4">
           <SectionTitle
             icon={<BarChart3Icon className="size-6" />}
             title={t("4年間でつくったもの", "Four years in numbers")}
@@ -243,30 +313,59 @@ export default function Aipictors4thAnniversary() {
             )}
           />
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {stats.totals.map((item) => (
-              <div
+            {stats.totals.map((item, index) => (
+              <Reveal
                 key={item.key}
-                className="rounded-2xl border bg-card p-4 shadow-sm"
+                delay={(index % 4) * 90}
+                className="group hover:-translate-y-1 relative overflow-hidden rounded-2xl border bg-card p-4 shadow-sm transition hover:shadow-lg"
               >
+                <div className="-right-6 -top-6 absolute size-20 rounded-full bg-gradient-to-br from-fuchsia-400/20 to-violet-400/20 transition duration-500 group-hover:scale-150" />
                 <div className="text-muted-foreground text-xs">
                   {t(item.label, item.enLabel)}
                 </div>
                 <div className="mt-1 bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text font-black text-transparent text-xl tabular-nums md:text-2xl lg:text-3xl">
-                  {item.value >= 100_000_000
-                    ? t(
-                        `${(item.value / 100_000_000).toFixed(2)}億`,
-                        `${Math.round(item.value / 1_000_000)}M`,
-                      )
-                    : formatNumber(item.value)}
+                  {item.value >= 100_000_000 ? (
+                    <CountUp
+                      value={item.value}
+                      format={(value) =>
+                        t(
+                          `${(value / 100_000_000).toFixed(2)}億`,
+                          `${Math.round(value / 1_000_000)}M`,
+                        )
+                      }
+                    />
+                  ) : (
+                    <CountUp value={item.value} />
+                  )}
                 </div>
                 {lastYear(item.lastYear, item.value) && (
                   <div className="mt-1 text-emerald-600 text-xs dark:text-emerald-400">
                     {lastYear(item.lastYear, item.value)}
                   </div>
                 )}
-              </div>
+              </Reveal>
             ))}
           </div>
+        </section>
+
+        {/* 月ごとのいちばん人気の作品 */}
+        <section className="space-y-4">
+          <SectionTitle
+            icon={<HistoryIcon className="size-6" />}
+            title={t("49か月のタイムライン", "49-month timeline")}
+          />
+          <p className="text-muted-foreground text-sm">
+            {t(
+              "2022年11月のはじまりから今月まで、その月にいちばんいいねを集めた全年齢の作品を並べました。横にスワイプしてさかのぼってみてください。",
+              "From our first month in November 2022 to now — the all-ages work with the most likes each month. Swipe to travel through time.",
+            )}
+          </p>
+          <Reveal>
+            <MonthlyTimeline
+              items={ANNIVERSARY_4TH_MONTHLY_HIGHLIGHTS}
+              milestones={milestones}
+            />
+          </Reveal>
         </section>
 
         {/* 月ごとの推移 */}
@@ -391,7 +490,10 @@ export default function Aipictors4thAnniversary() {
                 "All-ages works that collected the most likes each year (one per creator).",
               )}
             </p>
-            <YearlyTopWorks groups={stats.yearlyTopWorks} />
+            <YearlyTopWorks
+              groups={stats.yearlyTopWorks}
+              more={ANNIVERSARY_4TH_YEARLY_MORE_WORKS}
+            />
           </section>
         )}
 
@@ -531,10 +633,12 @@ export default function Aipictors4thAnniversary() {
               title={t("ちょっとした記録", "Fun facts")}
             />
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-              {stats.facts.map((item) => (
-                <div
+              {stats.facts.map((item, index) => (
+                <Reveal
                   key={item.label}
-                  className="rounded-2xl border bg-gradient-to-br from-fuchsia-50 to-violet-50 p-4 dark:from-fuchsia-950/40 dark:to-violet-950/40"
+                  from="zoom"
+                  delay={index * 90}
+                  className="hover:-translate-y-1 rounded-2xl border bg-gradient-to-br from-fuchsia-50 to-violet-50 p-4 transition hover:shadow-lg dark:from-fuchsia-950/40 dark:to-violet-950/40"
                 >
                   <div className="text-muted-foreground text-xs">
                     {t(item.label, item.enLabel)}
@@ -542,7 +646,7 @@ export default function Aipictors4thAnniversary() {
                   <div className="mt-1 font-bold text-xl">
                     {t(item.value, item.enValue ?? item.value)}
                   </div>
-                </div>
+                </Reveal>
               ))}
             </div>
           </section>
@@ -562,17 +666,23 @@ export default function Aipictors4thAnniversary() {
             )}
           </p>
           <div className="grid gap-3 md:grid-cols-3">
-            {LIMITED_ACHIEVEMENTS.map((item) => {
+            {LIMITED_ACHIEVEMENTS.map((item, index) => {
               const isUnlocked = unlockedKeys.has(item.key)
               const isConcealed = item.isSecret && !isUnlocked
               return (
-                <div
+                <Reveal
                   key={item.key}
+                  from="zoom"
+                  delay={index * 120}
                   className={cn(
-                    "flex items-center gap-4 rounded-2xl border bg-card p-4",
+                    "group hover:-translate-y-1 relative flex items-center gap-4 overflow-hidden rounded-2xl border bg-card p-4 transition hover:shadow-xl",
                     isUnlocked && "border-amber-400 ring-2 ring-amber-300/40",
                   )}
                 >
+                  <span
+                    aria-hidden
+                    className="-translate-x-full pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent transition duration-1000 group-hover:translate-x-full dark:via-white/10"
+                  />
                   <AchievementBadge
                     achievementKey={
                       isConcealed ? `hidden-${item.key}` : item.key
@@ -611,7 +721,7 @@ export default function Aipictors4thAnniversary() {
                       )
                     )}
                   </div>
-                </div>
+                </Reveal>
               )
             })}
           </div>
@@ -700,6 +810,43 @@ export default function Aipictors4thAnniversary() {
           </Link>
         </div>
       </div>
+
+      {/* しめくくり */}
+      <section className="relative isolate overflow-hidden bg-gradient-to-br from-violet-950 via-fuchsia-900 to-pink-700 py-16 text-white md:py-24">
+        <FallingConfetti count={24} />
+        <div className="absolute inset-x-0 top-0 opacity-40">
+          <WorkMarqueeRows
+            works={ANNIVERSARY_4TH_WALL_WORKS.slice(72)}
+            rows={1}
+          />
+        </div>
+        <Reveal
+          from="zoom"
+          className="container relative mx-auto max-w-3xl space-y-6 px-4 pt-32 text-center md:pt-40"
+        >
+          <p className="animate-[anniv4-shine_4s_linear_infinite] bg-[length:200%_100%] bg-[linear-gradient(90deg,#fde047,#f9a8d4,#a5f3fc,#c4b5fd,#fde047)] bg-clip-text font-black text-5xl text-transparent motion-reduce:animate-none md:text-7xl">
+            THANK YOU!
+          </p>
+          <p className="text-lg text-white/90 leading-relaxed md:text-xl">
+            {t(
+              "4年間、Aipictorsで描いて、見て、応援してくれたみなさんのおかげで、ここまで来ることができました。5年目も、みんなの「好き」がもっと届く場所にしていきます。これからもよろしくお願いします！",
+              "We made it this far thanks to everyone who created, browsed and cheered on Aipictors over the past four years. In our fifth year we'll keep making this a place where what you love reaches more people. Thank you!",
+            )}
+          </p>
+          <Link
+            to={`/new/image?tag=${encodeURIComponent(TAG)}`}
+            className="inline-block"
+          >
+            <Button
+              size="lg"
+              className="bg-white font-bold text-fuchsia-700 shadow-xl transition hover:scale-105 hover:bg-white/90"
+            >
+              <PartyPopperIcon className="mr-2 size-5" />
+              {t("記念作品でお祝いする", "Celebrate with your artwork")}
+            </Button>
+          </Link>
+        </Reveal>
+      </section>
     </div>
   )
 }
@@ -719,15 +866,20 @@ function SectionTitle(props: {
   note?: string
 }) {
   return (
-    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-      <h2 className="flex items-center gap-2 font-black text-2xl md:text-3xl">
-        <span className="text-fuchsia-500">{props.icon}</span>
-        {props.title}
-      </h2>
-      {props.note && (
-        <span className="text-muted-foreground text-xs">{props.note}</span>
-      )}
-    </div>
+    <Reveal from="left" className="space-y-2">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h2 className="flex items-center gap-2 font-black text-2xl md:text-4xl">
+          <span className="rounded-xl bg-gradient-to-br from-fuchsia-500 to-violet-600 p-1.5 text-white shadow-fuchsia-500/30 shadow-md">
+            {props.icon}
+          </span>
+          {props.title}
+        </h2>
+        {props.note && (
+          <span className="text-muted-foreground text-xs">{props.note}</span>
+        )}
+      </div>
+      <div className="h-1 w-24 rounded-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-transparent" />
+    </Reveal>
   )
 }
 
@@ -737,12 +889,15 @@ function ChartCard(props: {
   children: React.ReactNode
 }) {
   return (
-    <div
-      className={cn("min-w-0 rounded-2xl border bg-card p-5", props.className)}
+    <Reveal
+      className={cn(
+        "min-w-0 rounded-2xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-lg",
+        props.className,
+      )}
     >
       <h3 className="mb-4 font-bold text-sm">{props.title}</h3>
       {props.children}
-    </div>
+    </Reveal>
   )
 }
 
@@ -844,6 +999,7 @@ type TopWork =
 /** 年のタブで切り替える人気作品（1 位を大きく、残りを並べる） */
 function YearlyTopWorks(props: {
   groups: typeof ANNIVERSARY_4TH_STATS.yearlyTopWorks
+  more: { year: number; works: Anniversary4thGalleryWork[] }[]
 }) {
   const t = useTranslation()
   const [year, setYear] = useState(props.groups[0]?.year ?? 0)
@@ -851,6 +1007,8 @@ function YearlyTopWorks(props: {
     props.groups.find((item) => item.year === year) ?? props.groups[0]
   if (group === undefined) return null
   const [first, ...others] = group.works
+  const moreWorks =
+    props.more.find((item) => item.year === group.year)?.works ?? []
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-1.5">
@@ -870,7 +1028,10 @@ function YearlyTopWorks(props: {
           </button>
         ))}
       </div>
-      <div className="grid gap-2 md:grid-cols-4 md:grid-rows-2">
+      <div
+        key={group.year}
+        className="grid animate-[anniv4-pop_0.6s_ease-out_both] gap-2 motion-reduce:animate-none md:grid-cols-4 md:grid-rows-2"
+      >
         {first && (
           <WorkTile
             work={first}
@@ -902,10 +1063,21 @@ function YearlyTopWorks(props: {
           ))}
         </div>
       )}
+      {moreWorks.length > 0 && (
+        <div key={`more-${group.year}`} className="space-y-2 pt-4">
+          <h3 className="font-bold text-sm">
+            {t(
+              `${group.year}年の人気作品をもっと見る`,
+              `More popular works from ${group.year}`,
+            )}
+          </h3>
+          <WorkMasonry works={moreWorks} />
+        </div>
+      )}
       <p className="text-muted-foreground text-xs">
         {t(
-          "いいねの数は2026年11月20日時点です。",
-          "Like counts as of November 20, 2026.",
+          "上位8作品のいいねの数は2026年11月20日時点、続きの作品は11月21日時点です。",
+          "Like counts as of November 20, 2026 for the top 8, and November 21 for the rest.",
         )}
       </p>
     </div>
@@ -961,39 +1133,6 @@ function WorkTile(props: {
         </div>
       </div>
     </Link>
-  )
-}
-
-/** ヒーローの下を流れる作品の帯（CSS のアニメーションだけ。動きを減らす設定では止まる） */
-function WorkMarquee(props: { works: TopWork[] }) {
-  if (props.works.length === 0) return null
-  const loop = [...props.works, ...props.works]
-  return (
-    <div className="overflow-hidden border-y bg-gradient-to-r from-violet-950 via-fuchsia-950 to-violet-950 py-3">
-      <div className="flex w-max animate-[anniv4-marquee_120s_linear_infinite] gap-3 motion-reduce:animate-none">
-        {loop.map((work, index) => (
-          <Link
-            key={`${work.id}-${index}`}
-            to={`/posts/${work.id}`}
-            aria-hidden={index >= props.works.length}
-            tabIndex={index >= props.works.length ? -1 : undefined}
-            className="block size-24 shrink-0 overflow-hidden rounded-lg ring-1 ring-white/20 transition hover:ring-white md:size-32"
-          >
-            <img
-              src={work.thumbnail}
-              alt={work.title}
-              loading="lazy"
-              className="size-full object-cover"
-            />
-          </Link>
-        ))}
-      </div>
-      <style>
-        {
-          "@keyframes anniv4-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}"
-        }
-      </style>
-    </div>
   )
 }
 
@@ -1053,28 +1192,6 @@ function WorkGallery(props: {
       setRating={() => {}}
       setSort={() => {}}
     />
-  )
-}
-
-/** ヒーローの紙吹雪（CSS だけ） */
-function Confetti() {
-  const pieces = Array.from({ length: 28 }, (_, index) => index)
-  const colors = ["#fde047", "#a5f3fc", "#f9a8d4", "#bbf7d0", "#fff", "#c4b5fd"]
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0">
-      {pieces.map((index) => (
-        <span
-          key={index}
-          className="absolute h-3 w-1.5 rounded-sm opacity-80"
-          style={{
-            left: `${(index * 37) % 100}%`,
-            top: `${(index * 53) % 100}%`,
-            backgroundColor: colors[index % colors.length],
-            transform: `rotate(${(index * 47) % 180}deg)`,
-          }}
-        />
-      ))}
-    </div>
   )
 }
 
