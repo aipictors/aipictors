@@ -625,6 +625,10 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: "Purchased premium coins expire 3 months after purchase.",
       },
       {
+        ja: "フリーコインで推されると、受け取った人のフリーコインになります（受け取りから 30 日有効、1 日 300 枚まで。超えた分は pt だけ）。プレミアムコインで推された分はプレミアムコインになります。",
+        en: "Free-coin support becomes the recipient's free coins (valid 30 days, up to 300 a day; beyond that it counts as pt only). Premium-coin support becomes premium coins.",
+      },
+      {
         ja: "推しにはメッセージを付けられます。枚数が多いほどコメント欄で目立つ色になります（スーパーチャットのように）。",
         en: "Add a message when you support. Bigger support gets a more eye-catching color in comments, like a Super Chat.",
       },
@@ -658,8 +662,8 @@ export const HELP_SECTIONS: HelpSection[] = [
           en: "What's the difference between free and premium coins?",
         },
         a: {
-          ja: "フリーコインは毎日やキャンペーンでもらえる無料のコインで、その日のうちに使います。プレミアムコインは購入するコインで、推しでは 1 枚 10pt になり、クリエイターの報酬につながります。",
-          en: "Free coins are given daily or in campaigns and expire the same day. Premium coins are purchased; each counts as 10pt when supporting and becomes creator rewards.",
+          ja: "フリーコインは毎日やキャンペーンでもらえる無料のコインで、毎日の分はその日のうちに使います（フリーコインの推しで受け取った分は 30 日もちます）。プレミアムコインは購入するコインで、推しでは 1 枚 10pt になり、クリエイターの報酬につながります。",
+          en: "Free coins are given daily or in campaigns; the daily ones expire the same day (free coins received as support last 30 days). Premium coins are purchased; each counts as 10pt when supporting and becomes creator rewards.",
         },
       },
     ],
