@@ -30,6 +30,7 @@ import { GenerationTaskDeleteMemoConfirmDialog } from "~/routes/($lang).generati
 import { GenerationTaskPostConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-post-confirm-dialog"
 import { GeminiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/gemini-image-modification-dialog"
 import { GenerationTaskError } from "~/routes/($lang).generation._index/components/task-view/generation-task-error"
+import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { GenerationParameters } from "~/routes/($lang).generation._index/types/generation-parameters"
 import type { GenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
@@ -392,6 +393,15 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 <Separator />
               </div>
               <div className="my-4 flex justify-end gap-x-2">
+                <StarRating
+                  title={t("お気に入りの星で評価する", "Rate with stars")}
+                  value={props.rating}
+                  onChange={(value) => {
+                    props.setRating(value)
+                    props.onChangeRating(props.task.nanoid ?? "", value)
+                  }}
+                  isLoading={props.isRatingLoading}
+                />
                 <div className="ml-auto">
                   <GenerationMenuButton
                     title={t(

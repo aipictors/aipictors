@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils"
 type Props = {
   value: number
   className?: string
+  title?: string
   disabled?: boolean
   isLoading?: boolean
   onChange(value: number): void
@@ -61,7 +62,7 @@ export function StarRating(props: Props) {
   }, [])
 
   return (
-    <div className={props.className}>
+    <div className={props.className} title={props.title}>
       {[starOneRef, starTwoRef, starThreeRef, starFourRef, starFiveRef].map(
         (ref, index) => (
           <Button
