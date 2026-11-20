@@ -10,13 +10,17 @@ type Props = {
  * スワイプエリア
  * childrenで指定された領域についてスマホ、PCでスワイプ操作可能にする
  */
-export function SwipeArea (props: Props): React.ReactNode {
+export function SwipeArea(props: Props): React.ReactNode {
   const [startPosition, setStartPosition] = useState<number | null>(null)
+  const [startVerticalPosition, setStartVerticalPosition] = useState<
+    number | null
+  >(null)
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent<HTMLDivElement>) => {
       const touch = e.touches[0]
       setStartPosition(touch.clientX)
+      setStartVerticalPosition(touch.clientY)
     },
     [],
   )
@@ -28,16 +32,24 @@ export function SwipeArea (props: Props): React.ReactNode {
       const touch = e.changedTouches[0]
       const endPosition = touch.clientX
       const distance = endPosition - startPosition
+      const verticalDistance =
+        startVerticalPosition == null
+          ? 0
+          : touch.clientY - startVerticalPosition
 
-      if (distance > 50) {
-        props.onPrev()
-      } else if (distance < -50) {
-        props.onNext()
+      // 縦に動かしたときは前後に移らない（スクロールのつもりで画像が切り替わるのを防ぐ）
+      if (Math.abs(distance) > Math.abs(verticalDistance)) {
+        if (distance > 50) {
+          props.onPrev()
+        } else if (distance < -50) {
+          props.onNext()
+        }
       }
 
       setStartPosition(null)
+      setStartVerticalPosition(null)
     },
-    [props.onPrev, props.onNext, startPosition],
+    [props.onPrev, props.onNext, startPosition, startVerticalPosition],
   )
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -68,7 +80,8 @@ export function SwipeArea (props: Props): React.ReactNode {
       onTouchEnd={handleTouchEnd}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
-      style={{ touchAction: "none" }} // Prevents scrolling during swipe on touch devices
+      // 画像の上でも縦スクロールできるようにする（none にすると画像の部分で指が止まる）
+      style={{ touchAction: "pan-y" }}
     >
       {props.children}
     </div>
