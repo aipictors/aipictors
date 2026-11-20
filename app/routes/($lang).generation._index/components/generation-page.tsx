@@ -167,6 +167,7 @@ export function GenerationPage(props: Props) {
             threeColumn={
               props.layout === "threeColumn" ? (
                 <GenerationThreeColumnView
+                  onReroll={rerollGeneration}
                   promptEditor={
                     <GenerationPromptComposer
                       showGenerateButton={false}

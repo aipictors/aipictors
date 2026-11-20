@@ -29,6 +29,8 @@ type Props = {
   submission: React.ReactNode
   /** 右パネル（Model / Styles / Settings） */
   panel: React.ReactNode
+  /** 中央の画像の下の「再生成」（同じ設定で Seed だけ変えて生成する） */
+  onReroll?: () => void
 }
 
 /**
@@ -152,7 +154,7 @@ export function GenerationThreeColumnView(props: Props) {
         {isCanvas && !showsIntro && (
           <div className="flex min-h-0 flex-1 flex-col gap-y-2 overflow-hidden px-4 pt-3 pb-2">
             <Suspense fallback={<AppLoadingPage />}>
-              <GenerationCanvasOutput />
+              <GenerationCanvasOutput onReroll={props.onReroll} />
             </Suspense>
           </div>
         )}
