@@ -129,6 +129,10 @@ const SERIES_COLORS: Record<string, [string, string]> = {
   "special-tanabata": ["#93c5fd", "#1e1b4b"],
   "special-halloween": ["#fdba74", "#581c87"],
   "special-christmas": ["#86efac", "#14532d"],
+  // 期間限定（series は "limited" にまとまっているので、キーで色を分ける）
+  "limited-anniversary-4th-visit": ["#f9a8d4", "#9d174d"],
+  "limited-anniversary-4th-post": ["#fde68a", "#b45309"],
+  "limited-anniversary-4th-pioneer": ["#86efac", "#166534"],
 }
 
 /* ------------------------------------------------------------------ */
@@ -356,7 +360,8 @@ function formatThreshold(item: CatalogItem): { value: string; unit: string } {
 function renderBadge(item: CatalogItem, icon: IconNode) {
   const id = item.key.replace(/[^a-z0-9]/g, "")
   const metal = METALS[item.tier] ?? METALS[1]
-  const colors = SERIES_COLORS[item.series] ?? ["#a1a1aa", "#3f3f46"]
+  const colors = SERIES_COLORS[item.series] ??
+    SERIES_COLORS[item.key] ?? ["#a1a1aa", "#3f3f46"]
   const metalId = `m${id}`
   const metalDarkId = `md${id}`
   const fieldId = `f${id}`

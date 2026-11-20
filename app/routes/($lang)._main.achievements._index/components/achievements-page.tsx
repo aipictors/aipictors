@@ -583,12 +583,20 @@ function AchievementSeriesList(props: {
   const groups = useMemo(() => {
     const map = new Map<string, Achievement[]>()
     for (const item of props.achievements) {
-      const groupKey = item.category === "SPECIAL" ? "special" : item.series
+      // 期間限定（series が limited）は特別な実績と分けて、一番下にまとめる
+      const groupKey =
+        item.series === "limited"
+          ? "limited"
+          : item.category === "SPECIAL"
+            ? "special"
+            : item.series
       const list = map.get(groupKey) ?? []
       list.push(item)
       map.set(groupKey, list)
     }
-    return [...map.entries()]
+    return [...map.entries()].sort(
+      ([a], [b]) => Number(a === "limited") - Number(b === "limited"),
+    )
   }, [props.achievements])
 
   // 次の目標が見えるように、各列を横にずらしておく（スマホでは達成済みで埋まって見えないため）
@@ -620,12 +628,14 @@ function AchievementSeriesList(props: {
     <div ref={listRef} className="space-y-4">
       {groups.map(([groupKey, items]) => {
         const label =
-          groupKey === "special"
-            ? { ja: "特別な実績", en: "Special" }
-            : (ACHIEVEMENT_SERIES_LABELS[groupKey] ?? {
-                ja: groupKey,
-                en: groupKey,
-              })
+          groupKey === "limited"
+            ? { ja: "限定実績", en: "Limited" }
+            : groupKey === "special"
+              ? { ja: "特別な実績", en: "Special" }
+              : (ACHIEVEMENT_SERIES_LABELS[groupKey] ?? {
+                  ja: groupKey,
+                  en: groupKey,
+                })
         const unlockedCount = items.filter((item) => item.isUnlocked).length
         const nextIndex = items.findIndex((item) => !item.isUnlocked)
         return (
@@ -638,7 +648,17 @@ function AchievementSeriesList(props: {
             }}
           >
             <div className="mb-3 flex items-baseline justify-between gap-2">
-              <h2 className="font-bold">{t(label.ja, label.en)}</h2>
+              <h2 className="font-bold">
+                {t(label.ja, label.en)}
+                {groupKey === "limited" && (
+                  <span className="ml-2 font-normal text-muted-foreground text-xs">
+                    {t(
+                      "期間中だけ手に入る実績です",
+                      "Only available during special events",
+                    )}
+                  </span>
+                )}
+              </h2>
               <span className="text-muted-foreground text-xs tabular-nums">
                 {unlockedCount} / {items.length}
               </span>
@@ -657,15 +677,17 @@ function AchievementSeriesList(props: {
                     data-next={isNext ? "true" : undefined}
                   >
                     {/* 段のあいだの線 */}
-                    {index > 0 && groupKey !== "special" && (
-                      <span
-                        aria-hidden
-                        className={cn(
-                          "-left-2 absolute top-[38px] h-1 w-3 rounded-full",
-                          item.isUnlocked ? "bg-amber-400" : "bg-muted",
-                        )}
-                      />
-                    )}
+                    {index > 0 &&
+                      groupKey !== "special" &&
+                      groupKey !== "limited" && (
+                        <span
+                          aria-hidden
+                          className={cn(
+                            "-left-2 absolute top-[38px] h-1 w-3 rounded-full",
+                            item.isUnlocked ? "bg-amber-400" : "bg-muted",
+                          )}
+                        />
+                      )}
                     <button
                       type="button"
                       id={`achievement-${item.key}`}

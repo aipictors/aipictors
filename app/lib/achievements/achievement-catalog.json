@@ -3724,5 +3724,32 @@
     "icon": "flag",
     "threshold": null,
     "isHidden": true
+  },
+  {
+    "key": "limited-anniversary-4th-visit",
+    "category": "SPECIAL",
+    "series": "limited",
+    "tier": 3,
+    "icon": "cake",
+    "threshold": null,
+    "isHidden": false
+  },
+  {
+    "key": "limited-anniversary-4th-post",
+    "category": "SPECIAL",
+    "series": "limited",
+    "tier": 4,
+    "icon": "party-popper",
+    "threshold": null,
+    "isHidden": false
+  },
+  {
+    "key": "limited-anniversary-4th-pioneer",
+    "category": "SPECIAL",
+    "series": "limited",
+    "tier": 5,
+    "icon": "sprout",
+    "threshold": null,
+    "isHidden": false
   }
 ]
