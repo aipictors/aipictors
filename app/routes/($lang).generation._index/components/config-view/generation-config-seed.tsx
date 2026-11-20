@@ -44,7 +44,8 @@ export function GenerationConfigSeed(props: Props) {
                 <Button
                   aria-label={t("ランダムなシード", "Random seed")}
                   size={"icon"}
-                  variant={"outline"}
+                  // ランダム（-1）のときは色を付けて、今の状態が見て分かるようにする
+                  variant={props.value === -1 ? "default" : "outline"}
                   className="shrink-0"
                   disabled={props.value === -1}
                   onClick={() => {

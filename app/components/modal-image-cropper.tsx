@@ -1,10 +1,10 @@
-import { Button } from "~/components/ui/button"
-import { Dialog, DialogContent } from "~/components/ui/dialog"
-import { getCroppedImage } from "~/utils/get-cropped-image"
-import getResizedImg from "~/utils/get-resized-image"
 import { lazy, Suspense, useState } from "react"
 import type { Area } from "react-easy-crop"
+import { Button } from "~/components/ui/button"
+import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
+import { getCroppedImage } from "~/utils/get-cropped-image"
+import getResizedImg from "~/utils/get-resized-image"
 
 // 切り抜きを開いたときに読み込む（作品・ユーザーなど多くのページの最初の JS に入っていた）
 const Cropper = lazy(() => import("react-easy-crop"))
@@ -23,7 +23,7 @@ type Props = {
 /**
  * モーダル画像クロップ
  */
-export function ImageCropperModal (props: Props): React.ReactNode {
+export function ImageCropperModal(props: Props): React.ReactNode {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
 
   const [zoom, setZoom] = useState(1)
@@ -88,7 +88,15 @@ export function ImageCropperModal (props: Props): React.ReactNode {
   }
 
   return (
-    <Dialog open={props.isOpen}>
+    // onOpenChange を渡さないと、右上の「✕」・Esc・外側を押しても閉じない
+    <Dialog
+      open={props.isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          props.onClose()
+        }
+      }}
+    >
       <DialogContent>
         <div className="">
           <div className="mb-2 h-[72vh] w-[80vw]">
