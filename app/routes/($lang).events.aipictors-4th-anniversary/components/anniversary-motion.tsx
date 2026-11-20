@@ -127,6 +127,36 @@ export function CountUp(props: {
   )
 }
 
+/**
+ * 画面の外にある間とタブが裏にある間は、中のずっと続くアニメーションを止める
+ * （止める印のクラスは AnniversaryKeyframes にある）
+ */
+function usePauseWhenHidden<T extends HTMLElement>() {
+  const ref = useRef<T>(null)
+  useEffect(() => {
+    const element = ref.current
+    if (element === null || typeof IntersectionObserver === "undefined") return
+    let isOnScreen = true
+    const apply = () => {
+      element.classList.toggle(
+        "anniv4-paused",
+        !isOnScreen || document.visibilityState === "hidden",
+      )
+    }
+    const observer = new IntersectionObserver((entries) => {
+      isOnScreen = entries.some((entry) => entry.isIntersecting)
+      apply()
+    })
+    observer.observe(element)
+    document.addEventListener("visibilitychange", apply)
+    return () => {
+      observer.disconnect()
+      document.removeEventListener("visibilitychange", apply)
+    }
+  }, [])
+  return ref
+}
+
 /** ページの上に出るスクロールの進み具合 */
 export function ScrollProgress() {
   const [progress, setProgress] = useState(0)
@@ -161,12 +191,14 @@ export function ScrollProgress() {
  * ヒーローの背景: 斜めに傾けた作品の列が上下に流れ続ける壁
  */
 export function HeroWorkWall(props: { works: Anniversary4thGalleryWork[] }) {
+  const ref = usePauseWhenHidden<HTMLDivElement>()
   const columnCount = 7
   const columns = Array.from({ length: columnCount }, (_, column) =>
     props.works.filter((_, index) => index % columnCount === column),
   )
   return (
     <div
+      ref={ref}
       aria-hidden
       className="pointer-events-none absolute inset-0 overflow-hidden [perspective:1200px]"
     >
@@ -176,7 +208,7 @@ export function HeroWorkWall(props: { works: Anniversary4thGalleryWork[] }) {
             // biome-ignore lint/suspicious/noArrayIndexKey: 列の並びは変わらない
             key={column}
             className={cn(
-              "flex w-28 shrink-0 flex-col gap-3 md:w-40 md:gap-4",
+              "flex w-28 shrink-0 flex-col gap-3 will-change-transform md:w-40 md:gap-4",
               column % 2 === 0
                 ? "animate-[anniv4-wall-up_70s_linear_infinite]"
                 : "animate-[anniv4-wall-down_80s_linear_infinite]",
@@ -190,7 +222,7 @@ export function HeroWorkWall(props: { works: Anniversary4thGalleryWork[] }) {
                 alt=""
                 loading={index < 4 ? "eager" : "lazy"}
                 decoding="async"
-                className="aspect-[3/4] w-full rounded-xl object-cover shadow-lg"
+                className="aspect-[3/4] w-full rounded-xl object-cover"
               />
             ))}
           </div>
@@ -202,6 +234,7 @@ export function HeroWorkWall(props: { works: Anniversary4thGalleryWork[] }) {
 
 /** 降ってくる紙吹雪とキラキラ（CSS だけ） */
 export function FallingConfetti(props: { count?: number }) {
+  const ref = usePauseWhenHidden<HTMLDivElement>()
   const count = props.count ?? 36
   const colors = [
     "#fde047",
@@ -213,6 +246,7 @@ export function FallingConfetti(props: { count?: number }) {
   ]
   return (
     <div
+      ref={ref}
       aria-hidden
       className="pointer-events-none absolute inset-0 overflow-hidden motion-reduce:hidden"
     >
@@ -251,10 +285,11 @@ export function WorkMarqueeRows(props: {
   works: Anniversary4thGalleryWork[]
   rows?: number
 }) {
+  const ref = usePauseWhenHidden<HTMLDivElement>()
   const rows = props.rows ?? 3
   if (props.works.length === 0) return null
   return (
-    <div className="group/marquee space-y-3 overflow-hidden py-4">
+    <div ref={ref} className="group/marquee space-y-3 overflow-hidden py-4">
       {Array.from({ length: rows }, (_, row) => {
         const works = props.works.filter((_, index) => index % rows === row)
         const loop = [...works, ...works]
@@ -477,9 +512,9 @@ export function AnniversaryKeyframes() {
         "@keyframes anniv4-wall-down{from{transform:translateY(-50%)}to{transform:translateY(0)}}",
         "@keyframes anniv4-fall{0%{transform:translateY(0) rotate(0deg);opacity:0}10%{opacity:.9}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}",
         "@keyframes anniv4-float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-14px) rotate(1deg)}}",
-        "@keyframes anniv4-shine{from{background-position:0% 50%}to{background-position:200% 50%}}",
         "@keyframes anniv4-pop{0%{transform:scale(.6) translateY(30px);opacity:0}70%{transform:scale(1.05);opacity:1}100%{transform:scale(1) translateY(0);opacity:1}}",
         "@keyframes anniv4-spin{to{transform:rotate(360deg)}}",
+        ".anniv4-paused,.anniv4-paused *{animation-play-state:paused!important}",
       ].join("")}
     </style>
   )

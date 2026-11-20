@@ -210,7 +210,7 @@ export default function Aipictors4thAnniversary() {
       <ScrollProgress />
       {/* ヒーロー: 4 年分の作品が流れる壁の上にタイトル */}
       <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-violet-950 text-white md:min-h-[92vh]">
-        <HeroWorkWall works={ANNIVERSARY_4TH_WALL_WORKS.slice(0, 84)} />
+        <HeroWorkWall works={ANNIVERSARY_4TH_WALL_WORKS.slice(0, 63)} />
         <div className="absolute inset-0 bg-gradient-to-br from-violet-950/85 via-fuchsia-900/55 to-pink-700/45" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(46,16,101,0.75)_80%)]" />
         <FallingConfetti />
@@ -220,13 +220,13 @@ export default function Aipictors4thAnniversary() {
               <SparklesIcon className="size-4" />
               Aipictors 4th Anniversary
             </span>
-            <h1 className="animate-[anniv4-pop_1s_ease-out_0.15s_both] font-black leading-none drop-shadow-2xl motion-reduce:animate-none">
+            <h1 className="animate-[anniv4-pop_1s_ease-out_0.15s_both] font-black leading-none motion-reduce:animate-none">
               <span className="relative inline-block">
                 <span
                   aria-hidden
                   className="-inset-6 absolute animate-[anniv4-spin_14s_linear_infinite] rounded-full border-4 border-white/25 border-dashed motion-reduce:animate-none"
                 />
-                <span className="relative animate-[anniv4-shine_4s_linear_infinite] bg-[length:200%_100%] bg-[linear-gradient(90deg,#fde047,#f9a8d4,#a5f3fc,#c4b5fd,#fde047)] bg-clip-text text-[8rem] text-transparent motion-reduce:animate-none md:text-[12rem]">
+                <span className="relative bg-[linear-gradient(90deg,#fde047,#f9a8d4,#a5f3fc,#c4b5fd,#fde047)] bg-clip-text text-[8rem] text-transparent motion-reduce:animate-none md:text-[12rem]">
                   4
                 </span>
               </span>
@@ -249,7 +249,7 @@ export default function Aipictors4thAnniversary() {
                 .map((item) => (
                   <div
                     key={item.key}
-                    className="min-w-0 rounded-2xl bg-white/10 p-2.5 ring-1 ring-white/20 backdrop-blur md:p-3"
+                    className="min-w-0 rounded-2xl bg-violet-950/45 p-2.5 ring-1 ring-white/20 md:p-3"
                   >
                     <div className="truncate text-[10px] text-white/75 md:text-[11px]">
                       {t(item.label, item.enLabel)}
@@ -879,7 +879,7 @@ export default function Aipictors4thAnniversary() {
           from="zoom"
           className="container relative mx-auto max-w-3xl space-y-6 px-4 pt-32 text-center md:pt-40"
         >
-          <p className="animate-[anniv4-shine_4s_linear_infinite] bg-[length:200%_100%] bg-[linear-gradient(90deg,#fde047,#f9a8d4,#a5f3fc,#c4b5fd,#fde047)] bg-clip-text font-black text-5xl text-transparent motion-reduce:animate-none md:text-7xl">
+          <p className="bg-[linear-gradient(90deg,#fde047,#f9a8d4,#a5f3fc,#c4b5fd,#fde047)] bg-clip-text font-black text-5xl text-transparent motion-reduce:animate-none md:text-7xl">
             THANK YOU!
           </p>
           <p className="text-lg text-white/90 leading-relaxed md:text-xl">
