@@ -402,7 +402,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   }}
                   isLoading={props.isRatingLoading}
                 />
-                <div className="ml-auto">
+                <div className="ml-auto flex flex-col items-end gap-1">
                   <GenerationMenuButton
                     title={t(
                       "AIで画像を修正(50コイン消費)する",
@@ -412,6 +412,13 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     text={t("AI修正", "AI Modify")}
                     icon={PenIcon}
                   />
+                  {/* 手や指の崩れなど、部分的に直す機能があることが伝わっていなかった（ご利用アンケート） */}
+                  <p className="text-right text-muted-foreground text-xs">
+                    {t(
+                      "手や指など、気になるところだけ描き直せます",
+                      "Redraw just the part you want, like hands",
+                    )}
+                  </p>
                 </div>
               </div>
               <div className="py-2">

@@ -1,26 +1,26 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog"
 import { useMutation, useQuery } from "@apollo/client/index"
+import { RiGoogleFill } from "@remixicon/react"
 import {
   browserPopupRedirectResolver,
   GoogleAuthProvider,
   getAuth,
   linkWithPopup,
 } from "firebase/auth"
-import { RiGoogleFill } from "@remixicon/react"
-import { toast } from "sonner"
-import { Button } from "~/components/ui/button"
+import { graphql } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
-import { AuthContext } from "~/contexts/auth-context"
+import { toast } from "sonner"
 import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
 import { PlusUpsellCard } from "~/components/plus-upsell-card"
-import { Link } from "~/lib/app/locale-router"
-import { graphql } from "gql.tada"
+import { Button } from "~/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   isOpen: boolean
@@ -97,7 +97,7 @@ function GoogleVerificationButton() {
   )
 }
 
-export function VerificationDialog (props: Props): React.ReactNode {
+export function VerificationDialog(props: Props): React.ReactNode {
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)
@@ -159,8 +159,8 @@ export function VerificationDialog (props: Props): React.ReactNode {
                 <p>{t("認証が失敗いたしました。", "Verification failed.")}</p>
                 <p>
                   {t(
-                    "しばらくしてから再度お試しください。",
-                    "Please try again later.",
+                    "LINE でうまくいかないときは、Google アカウントでも本人確認できます。",
+                    "If LINE does not work, you can also verify with a Google account.",
                   )}
                 </p>
                 <GoogleVerificationButton />
@@ -172,10 +172,7 @@ export function VerificationDialog (props: Props): React.ReactNode {
                   <div className="mt-2 mb-2">
                     <LineLoggedInButton
                       onClick={() => {}}
-                      text={t(
-                        "LINE で本人確認",
-                        "Verify with LINE",
-                      )}
+                      text={t("LINE で本人確認", "Verify with LINE")}
                     />
                   </div>
                 </Link>
@@ -204,6 +201,12 @@ export function VerificationDialog (props: Props): React.ReactNode {
                 </p>
                 <p className="text-left text-sm">
                   {t(
+                    "Google アカウントか LINE の、どちらか 1 つで確認できます（LINE がなくても大丈夫です）。",
+                    "You can verify with either a Google account or LINE (no LINE account needed).",
+                  )}
+                </p>
+                <p className="text-left text-sm">
+                  {t(
                     "認証情報は本人確認のみに使用し、他の用途では一切使用されません。",
                     "Verification information is used only for identity confirmation and will not be used for any other purpose.",
                   )}
@@ -217,10 +220,7 @@ export function VerificationDialog (props: Props): React.ReactNode {
                   <div className="mt-2 mb-2">
                     <LineLoggedInButton
                       onClick={() => {}}
-                      text={t(
-                        "LINE で本人確認",
-                        "Verify with LINE",
-                      )}
+                      text={t("LINE で本人確認", "Verify with LINE")}
                     />
                   </div>
                 </Link>
