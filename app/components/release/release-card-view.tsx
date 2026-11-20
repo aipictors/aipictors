@@ -35,6 +35,9 @@ const TONES = {
   },
 } as const
 
+/**
+ * 表紙（縦長の 4 コマが多いので上を合わせる。真ん中で切るとタイトルが隠れてコマの途中だけになる）
+ */
 function ReleaseCover(props: {
   release: ReleaseCard
   isPriority?: boolean
@@ -57,7 +60,7 @@ function ReleaseCover(props: {
           loading={props.isPriority ? "eager" : "lazy"}
           fetchPriority={props.isPriority ? "high" : "auto"}
           decoding="async"
-          className="size-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.03]"
+          className="size-full object-cover object-top transition-transform duration-500 motion-safe:group-hover:scale-[1.03]"
         />
       ) : (
         <div
