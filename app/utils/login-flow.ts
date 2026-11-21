@@ -12,7 +12,7 @@ export function toSafeNextPath(value: string | null | undefined) {
   if (!value?.startsWith("/") || value.startsWith("//")) return null
   if (value.includes("\\")) return null
   if (
-    /^\/(ja\/|en\/)?(login|new\/profile|new\/settings)(\/|\?|$)/.test(value)
+    /^\/(ja\/|en\/)?(login|new\/profile|new\/settings|new\/tags)(\/|\?|$)/.test(value)
   ) {
     return null
   }

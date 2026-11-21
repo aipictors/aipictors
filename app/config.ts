@@ -1249,6 +1249,13 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Create and manage your user settings",
     isIndex: false,
   },
+  NEW_TAGS: {
+    title: "好きなタグを選ぶ",
+    enTitle: "Pick Your Favorite Tags",
+    description: "Choose tags you like",
+    enDescription: "Choose tags you like on Aipictors",
+    isIndex: false,
+  },
   COMPLETED_SETTINGS: {
     title: "設定完了！",
     enTitle: "Settings Completed!",

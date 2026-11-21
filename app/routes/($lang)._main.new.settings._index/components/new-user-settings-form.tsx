@@ -1,12 +1,13 @@
-import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Loader2Icon, Shield, Eye } from "lucide-react"
+import { BellIcon, CheckIcon } from "lucide-react"
 import { useContext, useEffect, useState, useId } from "react"
 import { toast } from "sonner"
 import { Switch } from "~/components/ui/switch"
 import { Label } from "~/components/ui/label"
+import { OnboardingHero } from "~/components/onboarding-hero"
+import { OnboardingNextButton } from "~/components/onboarding-next-button"
 import { OnboardingSteps } from "~/components/onboarding-steps"
 import { cn } from "~/lib/utils"
 import { useNavigate } from "~/lib/app/locale-router"
@@ -128,7 +129,7 @@ export function NewUserSettingsForm() {
         },
       })
 
-      navigate("/settings/completed")
+      navigate("/new/tags")
     } catch (error) {
       toast(
         error instanceof Error
@@ -178,52 +179,76 @@ export function NewUserSettingsForm() {
     <div className="mx-auto w-full max-w-lg space-y-5 px-3 pt-4 pb-28 md:pt-8">
       <OnboardingSteps current={2} />
 
-      <div className="space-y-1">
-        <h1 className="font-bold text-2xl">
-          {t("表示する作品を選びましょう", "Choose what you see")}
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          {t(
-            "いつでも設定画面から変えられます。",
-            "You can change this anytime in settings.",
-          )}
-        </p>
-      </div>
+      <OnboardingHero
+        pose={isAdult === null ? "wow" : "nice"}
+        line={
+          isAdult === null
+            ? t("見たい作品をえらぼう！", "Pick what you want to see!")
+            : t("ばっちり！", "Got it!")
+        }
+        title={t("表示する作品を選びましょう", "Choose what you see")}
+        description={t(
+          "いつでも設定画面から変えられます。",
+          "You can change this anytime in settings.",
+        )}
+      />
 
       <div className="space-y-2">
         <p className="font-medium text-sm">{t("あなたの年齢", "Your age")}</p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {(
             [
-              [false, t("18歳未満", "Under 18"), Shield],
-              [true, t("18歳以上", "18 or older"), Eye],
+              [
+                false,
+                t("18歳未満", "Under 18"),
+                "🌱",
+                t("全年齢の作品", "All-ages works"),
+              ],
+              [
+                true,
+                t("18歳以上", "18 or older"),
+                "🌙",
+                t("見るものを選べる", "Choose what to see"),
+              ],
             ] as const
-          ).map(([value, label, Icon]) => (
-            <Button
-              key={label}
-              type="button"
-              aria-pressed={isAdult === value}
-              variant={isAdult === value ? "default" : "outline"}
-              onClick={() => handleAgeChange(value)}
-              className="h-12 rounded-xl font-semibold"
-            >
-              <Icon className="mr-2 size-4" />
-              {label}
-            </Button>
-          ))}
+          ).map(([value, label, emoji, sub]) => {
+            const isSelected = isAdult === value
+            return (
+              <button
+                key={label}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => handleAgeChange(value)}
+                className={cn(
+                  "relative flex flex-col items-center gap-1 rounded-2xl border-2 bg-card px-3 py-4 transition-all",
+                  isSelected
+                    ? "scale-[1.02] border-teal-500 bg-teal-50 shadow-md shadow-teal-500/15 dark:bg-teal-950/40"
+                    : "border-border hover:border-teal-300",
+                )}
+              >
+                {isSelected && (
+                  <span className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-teal-500 text-white motion-safe:animate-[aip-support-pop_0.4s_ease-out_both]">
+                    <CheckIcon className="size-3" />
+                  </span>
+                )}
+                <span
+                  className={cn(
+                    "text-3xl transition-transform",
+                    isSelected && "motion-safe:scale-110",
+                  )}
+                >
+                  {emoji}
+                </span>
+                <span className="font-bold">{label}</span>
+                <span className="text-muted-foreground text-xs">{sub}</span>
+              </button>
+            )
+          })}
         </div>
-        {isAdult === false && (
-          <p className="text-muted-foreground text-xs">
-            {t(
-              "全年齢の作品だけを表示します。",
-              "Only all-ages works will be shown.",
-            )}
-          </p>
-        )}
       </div>
 
       {isAdult && (
-        <div className="divide-y rounded-xl border">
+        <div className="divide-y rounded-2xl border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-300">
           <div className="px-4 py-3">
             <p className="font-medium text-sm">
               {t("全年齢の作品に加えて表示するもの", "Also show")}
@@ -257,19 +282,24 @@ export function NewUserSettingsForm() {
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
+      <div className="flex items-center justify-between gap-3 rounded-2xl border px-4 py-3">
         <Label
           htmlFor={notifyCommentId}
-          className="min-w-0 cursor-pointer space-y-0.5"
+          className="flex min-w-0 cursor-pointer items-center gap-3"
         >
-          <span className="block font-semibold">
-            {t("コメントの通知", "Comment notifications")}
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500 dark:bg-orange-950/50">
+            <BellIcon className="size-4" />
           </span>
-          <span className="block font-normal text-muted-foreground text-xs">
-            {t(
-              "作品にコメントがついたら知らせます",
-              "Get notified when someone comments on your work",
-            )}
+          <span className="min-w-0 space-y-0.5">
+            <span className="block font-semibold">
+              {t("コメントの通知", "Comment notifications")}
+            </span>
+            <span className="block font-normal text-muted-foreground text-xs">
+              {t(
+                "作品にコメントがついたら知らせます",
+                "Get notified when someone comments on your work",
+              )}
+            </span>
           </span>
         </Label>
         <Switch
@@ -281,20 +311,15 @@ export function NewUserSettingsForm() {
 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
         <div className="mx-auto max-w-lg">
-          <Button
-            type="button"
+          <OnboardingNextButton
             disabled={isUpdatingUserSetting || isAdult === null}
+            isLoading={isUpdatingUserSetting}
             onClick={onSubmit}
-            className="h-12 w-full rounded-xl font-semibold"
           >
-            {isUpdatingUserSetting ? (
-              <Loader2Icon className="size-5 animate-spin" />
-            ) : isAdult === null ? (
-              t("年齢を選んでください", "Select your age")
-            ) : (
-              t("はじめる", "Get started")
-            )}
-          </Button>
+            {isAdult === null
+              ? t("年齢を選んでください", "Select your age")
+              : t("次へ", "Next")}
+          </OnboardingNextButton>
         </div>
       </div>
     </div>

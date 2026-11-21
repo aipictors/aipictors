@@ -1,208 +1,163 @@
-import { Button } from "~/components/ui/button"
-import { useNavigate } from "~/lib/app/locale-router"
+import { useSearchParams } from "@remix-run/react"
+import {
+  ChevronRightIcon,
+  HashIcon,
+  Palette,
+  Sparkles,
+  Star,
+  Users,
+} from "lucide-react"
+import { ConfettiBurst } from "~/components/confetti-burst"
+import { Link } from "~/lib/app/locale-router"
 import { useTranslation } from "~/hooks/use-translation"
-import { Sparkles, Palette, Users, Star } from "lucide-react"
+import { cn } from "~/lib/utils"
 
 /**
- * 新しい設定完了ページ
+ * 登録が終わったときのページ。紙吹雪でお祝いして、最初にやることを選んでもらう
  */
 export function NewSettingsCompleted() {
-  const navigate = useNavigate()
   const t = useTranslation()
+  const [searchParams] = useSearchParams()
+  const tagCount = Number(searchParams.get("tags") ?? 0)
+
+  const actions = [
+    ...(tagCount > 0
+      ? [
+          {
+            to: "/follow-tag-works",
+            icon: HashIcon,
+            title: t("お気に入りタグの新着を見る", "See your favorite tags"),
+            text: t(
+              `選んだ ${tagCount} 個のタグの新しい作品`,
+              `New works from your ${tagCount} tags`,
+            ),
+            tone: "from-cyan-400 to-teal-500",
+          },
+        ]
+      : []),
+    {
+      to: "/generation",
+      icon: Sparkles,
+      title: t("AIで画像を作ってみる", "Try AI image generation"),
+      text: t(
+        "無料で生成できます。かんたんな言葉からでOK",
+        "Free to start. Simple words are fine",
+      ),
+      tone: "from-violet-400 to-fuchsia-500",
+    },
+    {
+      to: "/new/image",
+      icon: Palette,
+      title: t("作品を投稿してみる", "Post your work"),
+      text: t(
+        "あなたの作品をたくさんの人に見てもらおう",
+        "Share your work with lots of people",
+      ),
+      tone: "from-sky-400 to-blue-500",
+    },
+    {
+      to: "/",
+      icon: Star,
+      title: t("みんなの作品を見る", "Browse works"),
+      text: t("いいねやコメントで交流しよう", "Say hi with likes and comments"),
+      tone: "from-amber-400 to-orange-500",
+    },
+    ...(tagCount > 0
+      ? []
+      : [
+          {
+            to: "/users",
+            icon: Users,
+            title: t("クリエイターを探す", "Discover creators"),
+            text: t(
+              "フォローすると新しい作品がすぐ届きます",
+              "Follow to get their new works first",
+            ),
+            tone: "from-emerald-400 to-teal-500",
+          },
+        ]),
+  ]
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 p-6">
-      {/* 完了メッセージ */}
-      <div className="rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-blue-50 p-8 text-center dark:border-green-600 dark:from-green-900/30 dark:to-blue-900/30">
-        <div className="mb-6 text-6xl">🎉</div>
-        <h1 className="mb-4 font-bold text-3xl text-gray-800 dark:text-gray-100">
-          {t(
-            "設定完了おめでとうございます！",
-            "Congratulations! Setup Complete!",
-          )}
+    <div className="mx-auto w-full max-w-lg space-y-6 px-3 pt-6 pb-12 md:pt-10">
+      <ConfettiBurst />
+
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-100 via-teal-50 to-orange-100 px-5 pt-6 pb-0 text-center dark:from-cyan-950/50 dark:via-teal-950/30 dark:to-orange-950/40">
+        <div className="-top-12 -left-10 pointer-events-none absolute size-40 rounded-full bg-cyan-300/40 blur-3xl" />
+        <div className="-right-10 pointer-events-none absolute bottom-0 size-40 rounded-full bg-orange-300/40 blur-3xl" />
+        <p className="relative font-bold text-sm text-teal-600 tracking-widest dark:text-teal-300 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500">
+          WELCOME!
+        </p>
+        <h1 className="relative mt-1 font-bold text-3xl motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-90 motion-safe:duration-500">
+          {t("準備ができました！", "You're all set!")}
         </h1>
-        <p className="mb-2 text-gray-600 text-lg dark:text-gray-300">
-          {t("Aipictorsへようこそ！", "Welcome to Aipictors!")}
-        </p>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="relative mt-2 text-muted-foreground text-sm">
           {t(
-            "これであなたもAIクリエイターの仲間入りです",
-            "You are now part of the AI creator community",
+            "これであなたもAipictorsの仲間です 🎉",
+            "Welcome to the Aipictors community 🎉",
           )}
         </p>
+        <img
+          src="/images/pictor-chan/gacha-nice.webp"
+          alt=""
+          width={150}
+          height={200}
+          fetchPriority="high"
+          className="relative mx-auto mt-3 h-[180px] w-auto drop-shadow-lg motion-safe:animate-[aip-float_3.2s_ease-in-out_infinite]"
+        />
       </div>
 
-      {/* 次のステップ */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-        <h2 className="mb-6 text-center font-bold text-gray-800 text-xl dark:text-gray-100">
-          {t("さあ、何から始めますか？", "What would you like to do first?")}
+      <div className="space-y-2">
+        <h2 className="font-bold">
+          {t("さあ、何からはじめる？", "What would you like to do first?")}
         </h2>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* AI生成 */}
-          <button
-            type="button"
-            className="group cursor-pointer rounded-lg border border-purple-200 bg-purple-50 p-6 text-left transition-all hover:border-purple-300 hover:bg-purple-100 dark:border-purple-600 dark:bg-purple-900/30 dark:hover:border-purple-500 dark:hover:bg-purple-900/50"
-            onClick={() => navigate("/generation")}
-          >
-            <div className="flex items-start gap-4">
-              <div className="rounded-full bg-purple-500 p-3">
-                <Sparkles className="size-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-2 font-bold text-gray-800 dark:text-gray-100">
-                  {t("AI画像を生成してみる", "Try AI Image Generation")}
-                </h3>
-                <p className="text-gray-600 text-sm dark:text-gray-300">
-                  {t(
-                    "無料でAI画像を生成できます。まずは簡単なプロンプトから始めてみましょう",
-                    "Generate AI images for free. Start with simple prompts",
+        <ul className="space-y-2">
+          {actions.map((action, index) => (
+            <li
+              key={action.to}
+              className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both motion-safe:duration-500"
+              style={{ animationDelay: `${300 + index * 80}ms` }}
+            >
+              <Link
+                to={action.to}
+                className={cn(
+                  "group flex items-center gap-3 rounded-2xl border bg-card p-3 transition-all hover:-translate-y-0.5 hover:shadow-md",
+                  index === 0 && "border-teal-300 dark:border-teal-700",
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-sm",
+                    action.tone,
                   )}
-                </p>
-                <div className="mt-3">
-                  <Button asChild className="group-hover:bg-purple-600">
-                    <span>{t("生成を始める", "Start Generating")}</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </button>
-
-          {/* 作品投稿 */}
-          <button
-            type="button"
-            className="group cursor-pointer rounded-lg border border-blue-200 bg-blue-50 p-6 text-left transition-all hover:border-blue-300 hover:bg-blue-100 dark:border-blue-600 dark:bg-blue-900/30 dark:hover:border-blue-500 dark:hover:bg-blue-900/50"
-            onClick={() => navigate("/new/image")}
-          >
-            <div className="flex items-start gap-4">
-              <div className="rounded-full bg-blue-500 p-3">
-                <Palette className="size-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-2 font-bold text-gray-800 dark:text-gray-100">
-                  {t("作品を投稿してみる", "Try Posting Your Work")}
-                </h3>
-                <p className="text-gray-600 text-sm dark:text-gray-300">
-                  {t(
-                    "あなたの作品を投稿して、たくさんの人に見てもらいましょう",
-                    "Post your work and share it with many people",
-                  )}
-                </p>
-                <div className="mt-3">
-                  <Button asChild className="group-hover:bg-blue-600">
-                    <span>{t("投稿する", "Post Work")}</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </button>
-
-          {/* 作品を楽しむ */}
-          <button
-            type="button"
-            className="group cursor-pointer rounded-lg border border-green-200 bg-green-50 p-6 text-left transition-all hover:border-green-300 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/30 dark:hover:border-green-500 dark:hover:bg-green-900/50"
-            onClick={() => navigate("/")}
-          >
-            <div className="flex items-start gap-4">
-              <div className="rounded-full bg-green-500 p-3">
-                <Star className="size-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-2 font-bold text-gray-800 dark:text-gray-100">
-                  {t("みんなの作品を楽しむ", "Enjoy Everyone's Works")}
-                </h3>
-                <p className="text-gray-600 text-sm dark:text-gray-300">
-                  {t(
-                    "素晴らしいAI作品がたくさん投稿されています。いいねやコメントで交流しましょう",
-                    "Browse amazing AI works and interact with likes and comments",
-                  )}
-                </p>
-                <div className="mt-3">
-                  <Button asChild className="group-hover:bg-green-600">
-                    <span>{t("作品を見る", "Browse Works")}</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </button>
-
-          {/* コミュニティ */}
-          <button
-            type="button"
-            className="group cursor-pointer rounded-lg border border-orange-200 bg-orange-50 p-6 text-left transition-all hover:border-orange-300 hover:bg-orange-100 dark:border-orange-600 dark:bg-orange-900/30 dark:hover:border-orange-500 dark:hover:bg-orange-900/50"
-            onClick={() => navigate("/users")}
-          >
-            <div className="flex items-start gap-4">
-              <div className="rounded-full bg-orange-500 p-3">
-                <Users className="size-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-2 font-bold text-gray-800 dark:text-gray-100">
-                  {t("クリエイターを探す", "Discover Creators")}
-                </h3>
-                <p className="text-gray-600 text-sm dark:text-gray-300">
-                  {t(
-                    "お気に入りのクリエイターをフォローして、新しい作品をいち早くチェックしましょう",
-                    "Follow your favorite creators and stay updated with their latest works",
-                  )}
-                </p>
-                <div className="mt-3">
-                  <Button asChild className="group-hover:bg-orange-600">
-                    <span>{t("探してみる", "Explore")}</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </button>
-        </div>
+                >
+                  <action.icon className="size-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-bold text-sm">
+                    {action.title}
+                  </span>
+                  <span className="block truncate text-muted-foreground text-xs">
+                    {action.text}
+                  </span>
+                </span>
+                <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      {/* ヒント */}
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-600 dark:bg-blue-900/30">
-        <h3 className="mb-4 font-bold text-gray-800 dark:text-gray-100">
-          {t("💡 はじめてのAipictors", "💡 Getting Started Tips")}
-        </h3>
-        <div className="space-y-3 text-gray-700 text-sm dark:text-gray-300">
-          <div className="flex items-start gap-2">
-            <span className="text-blue-500">•</span>
-            <p>
-              {t(
-                "設定はいつでも右上のメニューから変更できます",
-                "You can change settings anytime from the menu in the top right",
-              )}
-            </p>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-blue-500">•</span>
-            <p>
-              {t(
-                "困った時は画面下部のヘルプやお問い合わせをご利用ください",
-                "If you need help, check the help section or contact us at the bottom of the page",
-              )}
-            </p>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-blue-500">•</span>
-            <p>
-              {t(
-                "毎日新しい作品が投稿されるので、ぜひ定期的にチェックしてみてください",
-                "New works are posted daily, so check back regularly for fresh content",
-              )}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 設定変更ボタン */}
-      <div className="text-center">
-        <Button
-          variant="outline"
-          onClick={() => navigate("/settings")}
-          className="text-gray-600 dark:text-gray-300"
-        >
-          {t("設定を変更する", "Change Settings")}
-        </Button>
-      </div>
+      <p className="text-center text-muted-foreground text-xs">
+        {t(
+          "プロフィールや表示設定は、いつでも ",
+          "You can change your profile and display settings anytime in ",
+        )}
+        <Link to="/settings" className="underline underline-offset-2">
+          {t("設定", "Settings")}
+        </Link>
+        {t(" から変えられます。", ".")}
+      </p>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Loader2Icon, PlusIcon, SearchIcon } from "lucide-react"
+import { CheckIcon, Loader2Icon, PlusIcon, SearchIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
@@ -24,6 +24,8 @@ export function FollowedTagEditor(props: Props) {
   const t = useTranslation()
   const [text, setText] = useState("")
   const [search, setSearch] = useState("")
+  /** この画面で足したおすすめは、消さずにチェックを付けて残す */
+  const [addedNames, setAddedNames] = useState<string[]>([])
 
   useEffect(() => {
     const timer = setTimeout(() => setSearch(text.trim()), 250)
@@ -55,6 +57,7 @@ export function FollowedTagEditor(props: Props) {
       await follow({ variables: { input: { tagName: name } } })
       setText("")
       setSearch("")
+      setAddedNames((names) => [...names, name])
       await props.onAdded(name)
       toast(t(`#${name} を追加しました`, `Added #${name}`))
     } catch (e) {
@@ -72,8 +75,12 @@ export function FollowedTagEditor(props: Props) {
     .slice(0, 6)
 
   const recommended = (recommendedData?.recommendedTags ?? [])
-    .filter((tag) => !props.followedNames.includes(tag.tagName))
-    .slice(0, 8)
+    .filter(
+      (tag) =>
+        !props.followedNames.includes(tag.tagName) ||
+        addedNames.includes(tag.tagName),
+    )
+    .slice(0, 12)
 
   return (
     <div className="space-y-3">
@@ -137,39 +144,66 @@ export function FollowedTagEditor(props: Props) {
         </ul>
       )}
 
-      {text.trim().length === 0 && !isFull && recommended.length > 0 && (
+      {text.trim().length === 0 && recommended.length > 0 && (
         <div className="space-y-2">
           <p className="font-medium text-muted-foreground text-xs">
-            {t("押すだけで追加できます", "Tap to add")}
+            {t(
+              "人気のタグ・押すだけで追加できます",
+              "Popular tags · tap to add",
+            )}
           </p>
-          <ul className="grid grid-cols-4 gap-2">
-            {recommended.map((tag) => (
-              <li key={tag.tagName}>
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => add(tag.tagName)}
-                  className={cn(
-                    "group relative block aspect-square w-full overflow-hidden rounded-xl bg-muted",
-                  )}
-                  title={tag.tagName}
-                >
-                  <img
-                    src={toResizedImageUrl(tag.thumbnailUrl, 240)}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="size-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/75 to-transparent px-1.5 pt-5 pb-1 text-center font-bold text-[11px] text-white">
-                    {tag.tagName}
-                  </span>
-                  <span className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/55 text-white">
-                    <PlusIcon className="size-3" />
-                  </span>
-                </button>
-              </li>
-            ))}
+          <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {recommended.map((tag) => {
+              const isAdded = props.followedNames.includes(tag.tagName)
+              return (
+                <li key={tag.tagName}>
+                  <button
+                    type="button"
+                    disabled={loading || isAdded || isFull}
+                    onClick={() => add(tag.tagName)}
+                    aria-pressed={isAdded}
+                    className={cn(
+                      "group relative block aspect-square w-full overflow-hidden rounded-2xl bg-muted ring-offset-2 ring-offset-background transition-all duration-200 disabled:cursor-default",
+                      isAdded
+                        ? "scale-[0.96] ring-4 ring-teal-500"
+                        : "enabled:hover:-translate-y-0.5 enabled:hover:shadow-lg",
+                    )}
+                    title={tag.tagName}
+                  >
+                    <img
+                      src={toResizedImageUrl(tag.thumbnailUrl, 320)}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className={cn(
+                        "size-full object-cover object-top transition-transform duration-500",
+                        !isAdded && "group-hover:scale-110",
+                      )}
+                    />
+                    {isAdded && (
+                      <span className="absolute inset-0 bg-teal-500/25" />
+                    )}
+                    <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/80 to-transparent px-1.5 pt-6 pb-1.5 text-center font-bold text-white text-xs">
+                      #{tag.tagName}
+                    </span>
+                    <span
+                      className={cn(
+                        "absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full text-white",
+                        isAdded
+                          ? "bg-teal-500 motion-safe:animate-[aip-support-pop_0.35s_ease-out_both]"
+                          : "bg-black/45 backdrop-blur-sm",
+                      )}
+                    >
+                      {isAdded ? (
+                        <CheckIcon className="size-3.5" />
+                      ) : (
+                        <PlusIcon className="size-3.5" />
+                      )}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         </div>
       )}

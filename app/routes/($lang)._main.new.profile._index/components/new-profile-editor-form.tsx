@@ -1,15 +1,18 @@
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import {
+  CameraIcon,
+  CheckIcon,
   ChevronDownIcon,
-  Loader2Icon,
-  Pencil,
+  ImagePlusIcon,
   UserRoundIcon,
 } from "lucide-react"
 import { useContext, useId, useState } from "react"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
+import { OnboardingHero } from "~/components/onboarding-hero"
+import { OnboardingNextButton } from "~/components/onboarding-next-button"
 import { OnboardingSteps } from "~/components/onboarding-steps"
 import { LoginPage } from "~/components/page/login-page"
 import { Button } from "~/components/ui/button"
@@ -17,6 +20,7 @@ import { Input } from "~/components/ui/input"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
+import { cn } from "~/lib/utils"
 import { DialogWorkFragment } from "~/routes/($lang).my._index/components/select-created-works-dialog"
 import { logoutFirebase } from "~/utils/auth-session-backup"
 import { clearLastLoginMethod } from "~/utils/login-flow"
@@ -137,7 +141,8 @@ export function NewProfileEditorForm() {
     return <LoginPage />
   }
 
-  const isNameEmpty = userName.trim().length === 0
+  const trimmedName = userName.trim()
+  const isNameEmpty = trimmedName.length === 0
 
   return (
     <form
@@ -149,80 +154,124 @@ export function NewProfileEditorForm() {
     >
       <OnboardingSteps current={1} />
 
-      <div className="space-y-1">
-        <h1 className="font-bold text-2xl">
-          {t("Aipictorsへようこそ！", "Welcome to Aipictors!")}
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          {t(
-            "まずは名前を決めましょう。ほかの項目はあとからいつでも変えられます。",
-            "Start by choosing a name. You can change everything later.",
-          )}
-        </p>
-      </div>
+      <OnboardingHero
+        pose={isNameEmpty ? "wow" : "nice"}
+        line={
+          isNameEmpty
+            ? t("はじめまして！", "Nice to meet you!")
+            : t(`${trimmedName}さん、よろしくね！`, `Hi, ${trimmedName}!`)
+        }
+        title={t("Aipictorsへようこそ！", "Welcome to Aipictors!")}
+        description={t(
+          "あなたのページを作りましょう。名前だけ決めれば、ほかはあとからでOK。",
+          "Let's set up your page. Just pick a name; the rest can wait.",
+        )}
+      />
 
-      <div className="space-y-2 rounded-xl border bg-muted/40 p-3 text-sm">
-        <p className="font-medium">
-          {t(
-            "前にAipictorsを使っていた方へ",
-            "Already have an Aipictors account?",
-          )}
-        </p>
-        <p className="text-muted-foreground text-xs">
-          {t(
-            "この画面は、はじめてのログイン方法のときに出ます。前とは違う方法（Google・X・LINE・メール）でログインすると、新しいアカウントになります。前のアカウントに戻るには、ログアウトして前に使った方法を選び直してください。",
-            "This screen appears the first time a login method is used. Logging in a different way (Google, X, LINE, email) creates a new account. To get back to your existing account, log out and choose the method you used before.",
-          )}
-        </p>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="rounded-lg"
-          onClick={() => void onChooseAnotherMethod()}
-        >
-          {t("ログアウトして選び直す", "Log out and choose again")}
-        </Button>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="relative size-24 shrink-0">
-          {profileImageSrc ? (
+      {/* 入力がそのまま映る、自分のページの見本 */}
+      <div className="overflow-hidden rounded-3xl border bg-card shadow-sm">
+        <div className="relative aspect-[3/1] w-full overflow-hidden bg-gradient-to-r from-cyan-200 via-teal-100 to-orange-200 dark:from-cyan-900 dark:via-teal-900 dark:to-orange-900">
+          {headerImageSrc ? (
             <img
-              className="size-24 rounded-full border bg-muted object-cover"
-              src={profileImageSrc}
+              className="absolute inset-0 size-full object-cover"
+              src={headerImageSrc}
               alt=""
             />
           ) : (
-            <div className="flex size-24 items-center justify-center rounded-full border border-dashed bg-muted text-muted-foreground">
-              <UserRoundIcon className="size-10" />
-            </div>
+            <span className="absolute inset-0 flex items-center justify-center font-medium text-teal-900/50 text-xs dark:text-white/40">
+              {t("ヘッダー画像（任意）", "Header image (optional)")}
+            </span>
           )}
+          <span className="absolute top-2 left-2 rounded-full bg-black/45 px-2 py-0.5 font-semibold text-[10px] text-white backdrop-blur-sm">
+            {t("あなたのページ", "Your page")}
+          </span>
           <CropImageField
             isHidePreviewImage={false}
-            cropWidth={240}
-            cropHeight={240}
-            onDeleteImage={() => setProfileImage("")}
-            onCropToBase64={setProfileImage}
+            cropWidth={1200}
+            cropHeight={400}
+            onDeleteImage={() => setHeaderImage("")}
+            onCropToBase64={setHeaderImage}
             fileExtension={"webp"}
           >
             <Button
               type="button"
               size="icon"
-              aria-label={t("アイコンを変更", "Change icon")}
-              className="absolute right-0 bottom-0 size-8 rounded-full shadow"
+              variant="secondary"
+              aria-label={t("ヘッダー画像を変更", "Change header image")}
+              className="absolute top-2 right-2 size-8 rounded-full shadow"
             >
-              <Pencil className="size-4" />
+              <ImagePlusIcon className="size-4" />
             </Button>
           </CropImageField>
         </div>
-        <div className="min-w-0 flex-1 space-y-1.5">
+
+        <div className="relative px-4 pb-4">
+          <div className="-mt-10 relative size-20">
+            {profileImageSrc ? (
+              <img
+                className="size-20 rounded-full border-4 border-card bg-muted object-cover shadow"
+                src={profileImageSrc}
+                alt=""
+              />
+            ) : (
+              <div className="flex size-20 items-center justify-center rounded-full border-4 border-card bg-gradient-to-br from-cyan-100 to-orange-100 text-teal-600/70 shadow dark:from-cyan-900 dark:to-orange-900">
+                <UserRoundIcon className="size-9" />
+              </div>
+            )}
+            <CropImageField
+              isHidePreviewImage={false}
+              cropWidth={240}
+              cropHeight={240}
+              onDeleteImage={() => setProfileImage("")}
+              onCropToBase64={setProfileImage}
+              fileExtension={"webp"}
+            >
+              <Button
+                type="button"
+                size="icon"
+                aria-label={t("アイコンを変更", "Change icon")}
+                className="-right-1 absolute bottom-0 size-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 text-white shadow hover:opacity-90"
+              >
+                <CameraIcon className="size-4" />
+              </Button>
+            </CropImageField>
+          </div>
+          <p
+            className={cn(
+              "mt-2 truncate font-bold text-xl",
+              isNameEmpty && "text-muted-foreground/50",
+            )}
+          >
+            {isNameEmpty ? t("あなたの名前", "Your name") : trimmedName}
+          </p>
+          <p
+            className={cn(
+              "mt-1 line-clamp-2 whitespace-pre-wrap text-sm",
+              profile.trim().length === 0
+                ? "text-muted-foreground/50"
+                : "text-muted-foreground",
+            )}
+          >
+            {profile.trim().length === 0
+              ? t("自己紹介がここに出ます", "Your bio shows up here")
+              : profile}
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="flex items-end justify-between">
           <label htmlFor={nicknameId} className="font-medium text-sm">
             {t("ニックネーム", "Nickname")}{" "}
             <span className="text-destructive text-xs">
               {t("必須", "Required")}
             </span>
           </label>
+          <span className="text-muted-foreground text-xs tabular-nums">
+            {userName.length} / 32
+          </span>
+        </div>
+        <div className="relative">
           <Input
             id={nicknameId}
             autoFocus
@@ -231,8 +280,13 @@ export function NewProfileEditorForm() {
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             placeholder={t("みんなに表示される名前", "Name shown to everyone")}
-            className="h-12 rounded-xl text-base md:text-sm"
+            className="h-12 rounded-xl pr-11 text-base md:text-sm"
           />
+          {!isNameEmpty && (
+            <span className="-translate-y-1/2 absolute top-1/2 right-3 flex size-6 items-center justify-center rounded-full bg-teal-500 text-white motion-safe:animate-[aip-support-pop_0.4s_ease-out_both]">
+              <CheckIcon className="size-3.5" />
+            </span>
+          )}
         </div>
       </div>
 
@@ -262,44 +316,12 @@ export function NewProfileEditorForm() {
           <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-open:rotate-180" />
         </summary>
         <div className="space-y-4 border-t p-4">
-          <div className="space-y-1.5">
-            <p className="font-medium text-sm">
-              {t("ヘッダー画像", "Header image")}
-            </p>
-            {/* ユーザーページのヘッダーと同じ 3:1 で切り抜いて見せる */}
-            <div className="relative aspect-[3/1] w-full overflow-hidden rounded-lg bg-muted">
-              {headerImageSrc ? (
-                <img
-                  className="absolute inset-0 size-full object-cover"
-                  src={headerImageSrc}
-                  alt=""
-                />
-              ) : null}
-              <CropImageField
-                isHidePreviewImage={false}
-                cropWidth={1200}
-                cropHeight={400}
-                onDeleteImage={() => setHeaderImage("")}
-                onCropToBase64={setHeaderImage}
-                fileExtension={"webp"}
-              >
-                <Button
-                  type="button"
-                  size="icon"
-                  aria-label={t("ヘッダー画像を変更", "Change header image")}
-                  className="absolute top-2 right-2 size-8 rounded-full shadow"
-                >
-                  <Pencil className="size-4" />
-                </Button>
-              </CropImageField>
-            </div>
-            <p className="text-muted-foreground text-xs">
-              {t(
-                "アイコンとヘッダーに R-18 の画像は使えません。",
-                "R-18 images cannot be used for your icon or header.",
-              )}
-            </p>
-          </div>
+          <p className="text-muted-foreground text-xs">
+            {t(
+              "アイコンとヘッダーに R-18 の画像は使えません。",
+              "R-18 images cannot be used for your icon or header.",
+            )}
+          </p>
 
           <div className="space-y-1.5">
             <label htmlFor={enProfileId} className="font-medium text-sm">
@@ -378,20 +400,42 @@ export function NewProfileEditorForm() {
         </div>
       </details>
 
+      <div className="space-y-2 rounded-xl border border-dashed p-3 text-sm">
+        <p className="font-medium">
+          {t(
+            "前にAipictorsを使っていた方へ",
+            "Already have an Aipictors account?",
+          )}
+        </p>
+        <p className="text-muted-foreground text-xs">
+          {t(
+            "この画面は、はじめてのログイン方法のときに出ます。前とは違う方法（Google・X・LINE・メール）でログインすると、新しいアカウントになります。前のアカウントに戻るには、ログアウトして前に使った方法を選び直してください。",
+            "This screen appears the first time a login method is used. Logging in a different way (Google, X, LINE, email) creates a new account. To get back to your existing account, log out and choose the method you used before.",
+          )}
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="rounded-lg"
+          onClick={() => void onChooseAnotherMethod()}
+        >
+          {t("ログアウトして選び直す", "Log out and choose again")}
+        </Button>
+      </div>
+
       {/* スマホでも長いスクロールなしで押せるように、次へは画面の下に固定する */}
       <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
         <div className="mx-auto max-w-lg">
-          <Button
+          <OnboardingNextButton
             type="submit"
             disabled={isUpdating || isNameEmpty}
-            className="h-12 w-full rounded-xl font-semibold"
+            isLoading={isUpdating}
           >
-            {isUpdating ? (
-              <Loader2Icon className="size-5 animate-spin" />
-            ) : (
-              t("次へ", "Next")
-            )}
-          </Button>
+            {isNameEmpty
+              ? t("名前を入れてね", "Enter a name")
+              : t("次へ", "Next")}
+          </OnboardingNextButton>
         </div>
       </div>
     </form>

@@ -24,6 +24,7 @@ describe("toSafeNextPath", () => {
     expect(toSafeNextPath("/login?next=/a")).toBeNull()
     expect(toSafeNextPath("/en/login")).toBeNull()
     expect(toSafeNextPath("/new/profile")).toBeNull()
+    expect(toSafeNextPath("/new/tags")).toBeNull()
     expect(toSafeNextPath("/new/image")).toBe("/new/image")
     expect(toSafeNextPath("/login-help")).toBe("/login-help")
   })

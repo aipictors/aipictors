@@ -210,3 +210,25 @@ html[data-aip-hide-list-likes] [data-list-like-count] {
     transform: translateX(300%);
   }
 }
+
+/* 登録の手順: ぴくたーちゃんがふわふわ浮く・完了の紙吹雪 */
+@keyframes aip-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes aip-confetti {
+  0% {
+    transform: translate3d(0, -5vh, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--aip-drift, 0), 105vh, 0)
+      rotate(var(--aip-spin, 540deg));
+    opacity: 0.8;
+  }
+}
