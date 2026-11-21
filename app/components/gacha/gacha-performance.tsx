@@ -2,12 +2,23 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import {
   type GachaDirection,
   type GachaItem,
+  gachaRarityRank,
   planGachaDirection,
 } from "~/components/gacha/gacha-direction"
+import {
+  detectGachaQuality,
+  type GachaQuality,
+} from "~/components/gacha/gacha-quality"
 import type { GachaStage } from "~/components/gacha/gacha-stage.client"
 import { cn } from "~/lib/utils"
 
-const MODEL_URL = "/images/pictor-chan/pictor-chan-gacha-3d-v1.glb"
+const MODEL_URL: Record<Exclude<GachaQuality, "card">, string> = {
+  full: "/images/pictor-chan/pictor-chan-gacha-3d-v1.glb",
+  // テクスチャを 1024 にした軽いモデル（回線が遅いとき）
+  lite: "/images/pictor-chan/pictor-chan-gacha-3d-v1.lite.glb",
+}
+/** 準備がこの時間を過ぎたら「軽い表示ですぐ見る」を出す */
+const SHOW_LITE_BUTTON_MS = 5000
 const LOADING_IMAGE_URL = "/images/pictor-chan/gacha-loading.webp"
 
 type Props = {
@@ -34,11 +45,22 @@ export function GachaPerformance(props: Props): React.ReactNode {
     "loading" | "playing" | "done" | "fallback"
   >("loading")
   const [progress, setProgress] = useState(0)
+  const [quality, setQuality] = useState<GachaQuality | null>(null)
+  const [canSkipLoading, setCanSkipLoading] = useState(false)
+  /** 準備の途中で 2D に切り替えた */
+  const switchedToCardsRef = useRef(false)
 
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const picked = detectGachaQuality()
+    setQuality(picked)
+    switchedToCardsRef.current = false
+    setCanSkipLoading(false)
+    if (
+      picked === "card" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
       setState("fallback")
       return
     }
@@ -59,6 +81,9 @@ export function GachaPerformance(props: Props): React.ReactNode {
     const timeout = window.setTimeout(() => {
       if (!cancelled && !stageRef.current) setState("fallback")
     }, 30_000)
+    const skipButtonTimer = window.setTimeout(() => {
+      if (!cancelled) setCanSkipLoading(true)
+    }, SHOW_LITE_BUTTON_MS)
     void (async () => {
       try {
         const { createGachaStage } = await import(
@@ -68,7 +93,7 @@ export function GachaPerformance(props: Props): React.ReactNode {
         setProgress(0.15)
         const stage = await createGachaStage({
           canvas,
-          modelUrl: MODEL_URL,
+          modelUrl: MODEL_URL[picked],
           items: props.items,
           direction,
           onProgress: (ratio) => {
@@ -76,7 +101,7 @@ export function GachaPerformance(props: Props): React.ReactNode {
           },
           onComplete: () => setState("done"),
         })
-        if (cancelled) {
+        if (cancelled || switchedToCardsRef.current) {
           stage.dispose()
           return
         }
@@ -90,6 +115,7 @@ export function GachaPerformance(props: Props): React.ReactNode {
     return () => {
       cancelled = true
       window.clearTimeout(timeout)
+      window.clearTimeout(skipButtonTimer)
       stageRef.current?.dispose()
       stageRef.current = null
       canvas.remove()
@@ -102,7 +128,20 @@ export function GachaPerformance(props: Props): React.ReactNode {
         ref={containerRef}
         className={cn("h-full w-full", state === "fallback" && "hidden")}
       />
-      {state === "loading" && <GachaLoading progress={progress} />}
+      {state === "loading" && (
+        <GachaLoading
+          progress={progress}
+          isLite={quality === "lite"}
+          onSkip={
+            canSkipLoading
+              ? () => {
+                  switchedToCardsRef.current = true
+                  setState("fallback")
+                }
+              : undefined
+          }
+        />
+      )}
       {state === "playing" && (
         <button
           type="button"
@@ -145,7 +184,11 @@ const TWINKLES = [
 ]
 
 /** 演出の準備中（ぴくたーちゃんが跳ねて待つ）。progress は 0〜1 */
-function GachaLoading(props: { progress: number }) {
+function GachaLoading(props: {
+  progress: number
+  isLite: boolean
+  onSkip?: () => void
+}) {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-sky-200 via-pink-100 to-violet-200 text-slate-700">
       <style>{LOADING_STYLE}</style>
@@ -205,6 +248,20 @@ function GachaLoading(props: { progress: number }) {
           }}
         />
       </div>
+      {props.isLite && (
+        <div className="mt-3 text-slate-500 text-xs">
+          回線にあわせて軽い表示にしています
+        </div>
+      )}
+      {props.onSkip && (
+        <button
+          type="button"
+          onClick={props.onSkip}
+          className="mt-5 rounded-full bg-white/80 px-5 py-2 font-bold text-slate-700 text-sm shadow"
+        >
+          軽い表示ですぐ見る
+        </button>
+      )}
     </div>
   )
 }
@@ -217,13 +274,53 @@ const RARITY_CLASS: Record<GachaItem["rarity"], string> = {
   UR: "bg-gradient-to-r from-pink-400 via-yellow-300 to-sky-400",
 }
 
-/** 演出なしで結果だけ並べる */
+const CARD_STYLE = `
+@keyframes gacha-card-in { 0% { opacity: 0; transform: translateY(18px) rotateY(90deg) scale(.9) } 60% { opacity: 1; transform: translateY(0) rotateY(-8deg) scale(1.03) } 100% { opacity: 1; transform: none } }
+@keyframes gacha-card-glow { 0%, 100% { box-shadow: 0 0 10px 2px var(--glow) } 50% { box-shadow: 0 0 22px 6px var(--glow) } }
+`
+
+const GLOW: Partial<Record<GachaItem["rarity"], string>> = {
+  SR: "rgba(167,139,250,.45)",
+  SSR: "rgba(251,191,36,.7)",
+  UR: "rgba(244,114,182,.8)",
+}
+
+/** カードを 1 枚ずつめくって並べる（3D を使わない軽い演出。読み込みは景品の絵だけ） */
 function GachaResultList(props: { items: readonly GachaItem[] }) {
+  // 低いレア度から順に出して、SSR・UR は最後に少し間をあける
+  const order = props.items
+    .map((item, index) => ({ item, index }))
+    .sort(
+      (a, b) =>
+        gachaRarityRank(a.item.rarity) - gachaRarityRank(b.item.rarity) ||
+        a.index - b.index,
+    )
+  const delayOf = new Map<string, number>()
+  let delay = 0.2
+  for (const { item } of order) {
+    const rank = gachaRarityRank(item.rarity)
+    delay += rank >= 3 ? 0.6 : 0.12
+    delayOf.set(item.id, delay)
+  }
   return (
-    <div className="absolute inset-0 overflow-y-auto px-4 pt-12 pb-24">
-      <div className="mx-auto grid max-w-xl grid-cols-3 gap-3 sm:grid-cols-5">
+    <div className="absolute inset-0 overflow-y-auto bg-gradient-to-b from-indigo-950 via-violet-950 to-slate-950 px-4 pt-12 pb-24">
+      <style>{CARD_STYLE}</style>
+      <div
+        className="mx-auto grid max-w-xl grid-cols-3 gap-3 sm:grid-cols-5"
+        style={{ perspective: "800px" }}
+      >
         {props.items.map((item) => (
-          <div key={item.id} className="rounded-xl bg-white/10 p-2 text-center">
+          <div
+            key={item.id}
+            className="rounded-xl bg-white/10 p-2 text-center"
+            style={
+              {
+                opacity: 0,
+                "--glow": GLOW[item.rarity] ?? "transparent",
+                animation: `gacha-card-in .5s ${delayOf.get(item.id) ?? 0}s ease-out forwards${GLOW[item.rarity] && gachaRarityRank(item.rarity) >= 3 ? `, gacha-card-glow 1.6s ${(delayOf.get(item.id) ?? 0) + 0.5}s ease-in-out infinite` : ""}`,
+              } as React.CSSProperties
+            }
+          >
             <span
               className={cn(
                 "inline-block rounded-full px-2 font-black text-[11px]",
