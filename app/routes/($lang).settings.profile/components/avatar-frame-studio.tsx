@@ -1,7 +1,15 @@
 import { useMutation } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
-import { Check, Crown, Loader2Icon, Lock, Sparkles } from "lucide-react"
+import {
+  Check,
+  ChevronRight,
+  Crown,
+  Dices,
+  Loader2Icon,
+  Lock,
+  Sparkles,
+} from "lucide-react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
@@ -508,6 +516,28 @@ function StudioBody(props: Props & { onClose: () => void }) {
                   )
                 : t("該当する枠はありません", "No frames found")}
             </p>
+          )}
+          {/* ガチャ限定の枠への入口（一覧の最後に 1 行だけ） */}
+          {kind === "ALL" && (
+            <Link
+              to="/gacha"
+              onClick={() =>
+                trackGrowthEvent("gacha_nav_click", "avatar_frame_studio")
+              }
+              className="mt-4 flex items-center gap-2 rounded-lg border border-dashed px-3 py-2.5 text-muted-foreground text-xs transition-colors hover:bg-muted"
+            >
+              <Dices className="size-4 shrink-0 text-violet-500" />
+              <span className="min-w-0 flex-1">
+                {t(
+                  "ガチャでしか手に入らない枠もあります",
+                  "Some frames are gacha-only",
+                )}
+              </span>
+              <span className="shrink-0 font-medium text-foreground">
+                {t("スペシャル枠ガチャ", "Special frame gacha")}
+              </span>
+              <ChevronRight className="size-3.5 shrink-0" />
+            </Link>
           )}
         </div>
 
