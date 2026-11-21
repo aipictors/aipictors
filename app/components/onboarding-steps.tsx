@@ -3,7 +3,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
 /**
- * 登録の手順（1. プロフィール 2. 表示設定 3. 好きなタグ）
+ * 登録の手順（1. プロフィール 2. 表示設定 3. 好きなタグ・クリエイター）
  * 進んだぶんだけ色の帯が伸びる
  */
 export function OnboardingSteps(props: {
@@ -13,7 +13,7 @@ export function OnboardingSteps(props: {
   const steps = [
     { number: 1, label: t("プロフィール", "Profile") },
     { number: 2, label: t("表示設定", "Display") },
-    { number: 3, label: t("好きなタグ", "Tags") },
+    { number: 3, label: t("好きなもの", "Favorites") },
   ] as const
 
   // 今の手順の途中まで伸ばす（1 → 1/6、2 → 3/6、3 → 5/6）

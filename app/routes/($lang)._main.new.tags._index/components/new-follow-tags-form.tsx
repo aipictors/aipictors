@@ -14,6 +14,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { MAX_FOLLOWED_TAGS } from "~/routes/($lang).settings.followed.tags/components/followed-tag-editor"
+import { RecommendedCreators } from "~/routes/($lang)._main.new.tags._index/components/recommended-creators"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 /** これだけ選ぶとホームの「お気に入りタグ新着」がにぎやかになる目安 */
@@ -28,6 +29,7 @@ export function NewFollowTagsForm() {
   const navigate = useNavigate()
 
   const [selected, setSelected] = useState<string[]>([])
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([])
   const [text, setText] = useState("")
   const [search, setSearch] = useState("")
   const [isSaving, setIsSaving] = useState(false)
@@ -60,6 +62,7 @@ export function NewFollowTagsForm() {
   )
 
   const [follow] = useMutation(followTagMutation)
+  const [followUser] = useMutation(followUserMutation)
 
   if (authContext.isNotLoggedIn) {
     return <LoginPage />
@@ -88,35 +91,42 @@ export function NewFollowTagsForm() {
 
   const onSubmit = async () => {
     if (isSaving) return
-    if (selected.length === 0) {
+    if (selected.length === 0 && selectedUserIds.length === 0) {
       navigate("/settings/completed")
       return
     }
     setIsSaving(true)
     let count = 0
+    let userCount = 0
+    // 1 つ失敗しても残りは登録する
     for (const tagName of selected) {
       try {
         await follow({ variables: { input: { tagName } } })
         count += 1
-      } catch {
-        // 1 つ失敗しても残りは登録する
-      }
+      } catch {}
+    }
+    for (const userId of selectedUserIds) {
+      try {
+        await followUser({ variables: { input: { userId } } })
+        userCount += 1
+      } catch {}
     }
     setIsSaving(false)
-    if (count < selected.length) {
+    if (count < selected.length || userCount < selectedUserIds.length) {
       toast(
         t(
-          "登録できなかったタグがあります。あとで設定から追加できます。",
-          "Some tags could not be added. You can add them later in settings.",
+          "登録できなかったものがあります。あとからでも追加できます。",
+          "Some could not be added. You can add them later.",
         ),
       )
     }
-    navigate(`/settings/completed?tags=${count}`)
+    navigate(`/settings/completed?tags=${count}&follows=${userCount}`)
   }
 
-  const recommended = (recommendedData?.recommendedTags ?? []).filter(
-    (tag) => tag.tagName.length <= 20,
-  )
+  // 下のおすすめのクリエイターまで遠くならないよう 18 個（3 列で 6 段）
+  const recommended = (recommendedData?.recommendedTags ?? [])
+    .filter((tag) => tag.tagName.length <= 20)
+    .slice(0, 18)
   const recommendedNames = recommended.map((tag) => tag.tagName)
 
   const suggestions = (searchData?.tags ?? [])
@@ -130,6 +140,7 @@ export function NewFollowTagsForm() {
   )
 
   const count = selected.length
+  const total = count + selectedUserIds.length
   const line =
     count === 0
       ? t("気になるタグをタップしてね！", "Tap the tags you like!")
@@ -147,10 +158,10 @@ export function NewFollowTagsForm() {
         <OnboardingHero
           pose={count >= GOAL_COUNT ? "nice" : "wow"}
           line={line}
-          title={t("好きなタグを選びましょう", "Pick tags you love")}
+          title={t("好きなものを教えてね", "Tell us what you love")}
           description={t(
-            "選んだタグの新しい作品が、ホームの「お気に入りタグ新着」に届きます。",
-            "New works with these tags will show up in Favorite tags on Home.",
+            "選んだタグやクリエイターの新しい作品が、ホームに届きます。",
+            "New works from the tags and creators you pick will show up on Home.",
           )}
         />
       </div>
@@ -287,6 +298,24 @@ export function NewFollowTagsForm() {
             })}
       </ul>
 
+      <RecommendedCreators
+        tagNames={selected}
+        selectedIds={selectedUserIds}
+        excludeIds={
+          authContext.userId === null ? [] : [authContext.userId.toString()]
+        }
+        onToggle={(userId) =>
+          setSelectedUserIds((ids) =>
+            ids.includes(userId)
+              ? ids.filter((id) => id !== userId)
+              : [...ids, userId],
+          )
+        }
+        onSelectAll={(userIds) =>
+          setSelectedUserIds((ids) => [...ids, ...userIds])
+        }
+      />
+
       <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
         <div className="mx-auto max-w-lg space-y-2">
           <div className="flex items-center gap-2">
@@ -305,7 +334,12 @@ export function NewFollowTagsForm() {
               ))}
             </div>
             <span className="text-muted-foreground text-xs tabular-nums">
-              {t(`${count} 個えらんだ`, `${count} selected`)}
+              {selectedUserIds.length > 0
+                ? t(
+                    `タグ ${count} ・ クリエイター ${selectedUserIds.length}`,
+                    `${count} tags · ${selectedUserIds.length} creators`,
+                  )
+                : t(`${count} 個えらんだ`, `${count} selected`)}
             </span>
             <button
               type="button"
@@ -316,13 +350,13 @@ export function NewFollowTagsForm() {
             </button>
           </div>
           <OnboardingNextButton
-            disabled={isSaving || count === 0}
+            disabled={isSaving || total === 0}
             isLoading={isSaving}
             onClick={onSubmit}
           >
-            {count === 0
-              ? t("タグを選んでね", "Pick some tags")
-              : t(`${count} 個のタグで はじめる`, `Start with ${count} tags`)}
+            {total === 0
+              ? t("タグやクリエイターを選んでね", "Pick tags or creators")
+              : t("これで はじめる", "Let's go")}
           </OnboardingNextButton>
         </div>
       </div>
@@ -363,5 +397,14 @@ const onboardingFollowedTagsQuery = graphql(
 const followTagMutation = graphql(
   `mutation FollowTag($input: FollowTagInput!) {
     followTag(input: $input)
+  }`,
+)
+
+const followUserMutation = graphql(
+  `mutation OnboardingFollowUser($input: FollowUserInput!) {
+    followUser(input: $input) {
+      id
+      isFollowee
+    }
   }`,
 )

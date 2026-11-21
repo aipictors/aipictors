@@ -5,6 +5,7 @@ import {
   Palette,
   Sparkles,
   Star,
+  UserCheckIcon,
   Users,
 } from "lucide-react"
 import { ConfettiBurst } from "~/components/confetti-burst"
@@ -19,8 +20,26 @@ export function NewSettingsCompleted() {
   const t = useTranslation()
   const [searchParams] = useSearchParams()
   const tagCount = Number(searchParams.get("tags") ?? 0)
+  const followCount = Number(searchParams.get("follows") ?? 0)
 
   const actions = [
+    ...(followCount > 0
+      ? [
+          {
+            to: "/follow-user-works",
+            icon: UserCheckIcon,
+            title: t(
+              "フォローした人の新着を見る",
+              "See works from people you follow",
+            ),
+            text: t(
+              `フォローした ${followCount} 人の新しい作品`,
+              `New works from ${followCount} creators`,
+            ),
+            tone: "from-pink-400 to-rose-500",
+          },
+        ]
+      : []),
     ...(tagCount > 0
       ? [
           {
@@ -62,7 +81,7 @@ export function NewSettingsCompleted() {
       text: t("いいねやコメントで交流しよう", "Say hi with likes and comments"),
       tone: "from-amber-400 to-orange-500",
     },
-    ...(tagCount > 0
+    ...(tagCount > 0 || followCount > 0
       ? []
       : [
           {
