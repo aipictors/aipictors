@@ -7,7 +7,7 @@ import {
 import type { GachaStage } from "~/components/gacha/gacha-stage.client"
 import { cn } from "~/lib/utils"
 
-const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v4.glb"
+const PICTOR_URL = "/images/pictor-chan/live2d"
 
 type Props = {
   items: readonly GachaItem[]
@@ -48,7 +48,7 @@ export function GachaPerformance(props: Props): React.ReactNode {
         )
         const stage = await createGachaStage({
           canvas,
-          modelUrl: MODEL_URL,
+          pictorUrl: PICTOR_URL,
           items: props.items,
           direction,
           onComplete: () => setState("done"),

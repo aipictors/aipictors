@@ -1,10 +1,6 @@
 import {
   ACESFilmicToneMapping,
   AdditiveBlending,
-  AnimationClip,
-  AnimationMixer,
-  type Bone,
-  Box3,
   type CanvasTexture,
   Color,
   DirectionalLight,
@@ -12,29 +8,23 @@ import {
   HalfFloatType,
   HemisphereLight,
   IcosahedronGeometry,
-  LoopOnce,
   type Material,
   MathUtils,
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
-  type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
   PointLight,
-  Quaternion,
   Scene,
   ShaderMaterial,
-  SkinnedMesh,
   SRGBColorSpace,
   type Texture,
   Vector2,
   Vector3,
   WebGLRenderer,
 } from "three"
-import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js"
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js"
@@ -47,6 +37,10 @@ import {
   hintOf,
   revealPauseOf,
 } from "~/components/gacha/gacha-direction"
+import {
+  createPictor,
+  type PictorFace,
+} from "~/components/gacha/gacha-pictor.client"
 import {
   CARD_ASPECT,
   createBrush,
@@ -76,7 +70,8 @@ import {
 
 export type GachaStageOptions = {
   canvas: HTMLCanvasElement
-  modelUrl: string
+  /** ぴくたーちゃんのパーツの絵があるフォルダ */
+  pictorUrl: string
   items: readonly GachaItem[]
   direction: GachaDirection
   /** true のときは自分で step を呼ぶ（動画の書き出し用） */
@@ -229,135 +224,27 @@ export async function createGachaStage(
   const sparks = new Sparks(1400)
   scene.add(sparks.points)
 
-  /* ---- ぴくたーちゃん ---- */
-  const loader = new GLTFLoader()
-  loader.setMeshoptDecoder(MeshoptDecoder)
-  const [gltf, images] = await Promise.all([
-    loader.loadAsync(options.modelUrl),
+  /* ---- ぴくたーちゃん（Live2D 風の 2D） ---- */
+  const [pictor, images] = await Promise.all([
+    createPictor(options.pictorUrl),
     Promise.all(items.map((item) => loadImage(item.imageUrl))),
   ])
-  const model = gltf.scene
-  model.getObjectByName("Icosphere")?.removeFromParent()
-  let face: SkinnedMesh | null = null
-  model.traverse((object) => {
-    if (!(object instanceof SkinnedMesh)) return
-    object.frustumCulled = false
-    const source = object.material as MeshBasicMaterial
-    const isFace = object.morphTargetDictionary !== undefined
-    object.material = new MeshBasicMaterial({
-      map: source.map,
-      transparent: isFace,
-      depthWrite: !isFace,
-      toneMapped: false,
-      color: new Color(0.94, 0.94, 0.94),
-    })
-    source.dispose()
-    if (isFace) {
-      face = object
-      object.renderOrder = 1
-    }
-  })
-  const expressions = [
-    "Blink",
-    "Joy",
-    "Fun",
-    "Sorrow",
-    "Surprised",
-    "MouthClosed",
-    "MouthOpen",
-  ]
-  const setFace = (
-    eyes: "open" | "Blink" | "Joy" | "Fun",
-    mouth: "none" | "Surprised" | "MouthOpen" | "MouthClosed",
-  ) => {
-    const target = face as SkinnedMesh | null
-    if (!target?.morphTargetInfluences || !target.morphTargetDictionary) return
-    for (const name of expressions) {
-      const index = target.morphTargetDictionary[name]
-      if (index === undefined) continue
-      target.morphTargetInfluences[index] =
-        name === eyes || name === mouth ? 1 : 0
-    }
-  }
-
-  const mixer = new AnimationMixer(model)
-  const clip = (name: string) => {
-    const found = AnimationClip.findByName(gltf.animations, name)
-    if (!found) throw new Error(`animation not found: ${name}`)
-    return mixer.clipAction(found)
-  }
-  const idle = clip("idle")
-  const jump = clip("jump")
-  jump.setLoop(LoopOnce, 1)
-  jump.clampWhenFinished = true
-  idle.play()
-  mixer.update(0)
-  model.updateMatrixWorld(true)
-  const bounds = new Box3().setFromObject(model, true)
-  const fitScale = 1 / (bounds.max.y - bounds.min.y)
-  const fit = new Group()
-  fit.rotation.y = -Math.PI / 2
-  fit.scale.setScalar(fitScale)
-  fit.position.y = 0.06 - bounds.min.y * fitScale
-  fit.add(model)
-  const actor = new Group()
-  actor.add(fit)
+  const actor = pictor.group
+  actor.scale.setScalar(1.22)
+  actor.position.set(0, 0.1, 0.25)
   scene.add(actor)
-
-  const bone = (name: string) => model.getObjectByName(name) as Bone | undefined
-  const bones = {
-    spine: bone("Spine02"),
-    waist: bone("Waist"),
-    head: bone("Head"),
-    neck: bone("NeckTwist01"),
-    rUpper: bone("R_Upperarm"),
-    rFore: bone("R_Forearm"),
-    rHand: bone("R_Hand"),
-    lUpper: bone("L_Upperarm"),
-    lFore: bone("L_Forearm"),
-    lHand: bone("L_Hand"),
-  }
-  const parentQ = new Quaternion()
-  const addQ = new Quaternion()
-  const axisX = new Vector3(1, 0, 0)
-  const axisY = new Vector3(0, 1, 0)
-  const axisZ = new Vector3(0, 0, 1)
-  /** 骨をワールドの軸で回す（骨ごとに向きがばらばらなので、ワールドの軸で考える） */
-  const rotateWorld = (
-    target: Object3D | undefined,
-    axis: Vector3,
-    angle: number,
-  ) => {
-    if (!target?.parent || angle === 0) return
-    target.parent.getWorldQuaternion(parentQ)
-    addQ.setFromAxisAngle(axis, angle)
-    const local = parentQ.clone().invert().multiply(addQ).multiply(parentQ)
-    target.quaternion.premultiply(local)
-    target.updateMatrixWorld(true)
-  }
-  const worldPos = (target: Object3D | undefined, out = new Vector3()) =>
-    target ? target.getWorldPosition(out) : out.set(0, 0, 0)
-  // 腕を横に上げる向き（右腕は画面の左にある）
-  actor.updateMatrixWorld(true)
-  const rSide = Math.sign(worldPos(bones.rUpper).x) || -1
-  const lSide = -rSide
 
   /** ばねで追いかける姿勢のつまみ（ぬるっと動かす） */
   const poseKeys = [
-    "rSide",
-    "rFwd",
-    "rElbow",
-    "lSide",
-    "lFwd",
-    "lElbow",
-    "headUp",
-    "headRoll",
-    "headYaw",
-    "lean",
-    "twist",
+    "yaw",
+    "pitch",
+    "roll",
+    "bodyRoll",
+    "squash",
+    "sway",
+    "lift",
     "swirl",
-    "wave",
-    "bounce",
+    "aim",
   ] as const
   type PoseKey = (typeof poseKeys)[number]
   type Pose = Record<PoseKey, number>
@@ -365,6 +252,8 @@ export async function createGachaStage(
     Object.fromEntries(poseKeys.map((k) => [k, 0])) as Pose
   const pose = zeroPose()
   const poseVel = zeroPose()
+  const face: PictorFace = { eyeOpen: 1, eyeWide: 0, mouth: 0 }
+  const axisY = new Vector3(0, 1, 0)
 
   const brush = createBrush(HINT_COLORS[direction.hint])
   brush.group.scale.setScalar(0.85)
@@ -613,154 +502,171 @@ export async function createGachaStage(
   let completed = false
   let shake = 0
   let untilBlink = 1.5
-  let jumpUntil = -1
   const tmp = new Vector3()
   const tip = new Vector3()
   const handPos = new Vector3()
-  const forePos = new Vector3()
+  const headPos = new Vector3()
+  const brushDir = new Vector3()
   const camPos = new Vector3()
   const camTarget = new Vector3()
   const orbFrom = new Vector3()
   const easelCenter = new Vector3(0, 1.5, -0.84)
   const crossed = (at: number) => lastTime < at && time >= at
 
-  const playJump = () => {
-    jump.reset()
-    jump.crossFadeFrom(idle, 0.15, false)
-    jump.play()
-    jumpUntil = time + 1.0
+  /** ぴょんと跳ねる時刻（その前にかがんで、着地でつぶれる） */
+  const hops: number[] = []
+  {
+    const intro = seg("intro")
+    if (intro) hops.push(intro.start + 0.55)
+    const cut = seg("cutIn")
+    if (cut) hops.push(cut.start + (cut.end - cut.start) * 0.46)
+    const finale = seg("finale")
+    if (finale && topRank >= 2) {
+      hops.push(finale.start + 0.08)
+      if (topRank >= 3) hops.push(finale.start + 0.68)
+    }
+  }
+  const HOP = 0.42
+  const hopAt = (t: number) => {
+    let hop = 0
+    let squash = 0
+    for (const s of hops) {
+      const k = (t - s) / HOP
+      if (k > 0 && k < 1) hop = Math.max(hop, Math.sin(k * Math.PI) * 0.1)
+      if (k > 0 && k < 0.3) squash -= Math.sin((k / 0.3) * Math.PI) * 0.05
+      const crouch = (t - (s - 0.14)) / 0.14
+      if (crouch > 0 && crouch < 1) squash += Math.sin(crouch * Math.PI) * 0.06
+      const land = (t - (s + HOP)) / 0.2
+      if (land > 0 && land < 1) squash += Math.sin(land * Math.PI) * 0.07
+    }
+    return { hop, squash }
   }
 
   const poseTarget = (t: number): Pose => {
     const p = zeroPose()
     const phase = segmentAt(t).name
+    p.sway = 1
     if (phase === "intro") {
-      // 手を振ってあいさつ
-      const k = progress("intro", t)
-      p.lSide = 1.75 * smooth(k * 3)
-      p.lElbow = 0.5
-      p.wave = smooth(k * 3)
-      p.headRoll = 0.12
-      p.headYaw = 0.1
+      // 首をかしげてあいさつ
+      p.roll = 0.14
+      p.yaw = 0.15
+      p.bodyRoll = 0.04
     } else if (phase === "charge") {
-      // 筆を高く掲げて回す
+      // 筆を頭の上に浮かべて回し、見上げる
       const k = progress("charge", t)
-      p.rFwd = 2.5 * smooth(k * 2.5)
-      p.rSide = 0.35
-      p.rElbow = 0.25
+      p.lift = smooth(k * 2.5)
       p.swirl = smooth(k * 2) * (0.6 + k * 0.6)
-      p.headUp = 0.35 * smooth(k * 2)
-      p.lean = -0.08
-      p.lSide = 0.5
-      p.lElbow = 0.6
-      p.twist = -0.12
+      p.pitch = 0.75 * smooth(k * 2)
+      p.yaw = 0.45 * smooth(k * 2)
+      p.roll = -0.06
+      p.bodyRoll = -0.05
     } else if (phase === "flick") {
-      // キャンバスへ振り下ろす
+      // 体ごと振ってキャンバスへ放つ
       const k = progress("flick", t)
-      p.rFwd = k < 0.35 ? 2.9 : 0.9
-      p.rSide = 0.2
-      p.lean = k < 0.35 ? -0.16 : 0.12
-      p.twist = k < 0.35 ? -0.2 : 0.18
-      p.headUp = 0.25
-      p.lSide = 0.6
+      p.lift = k < 0.35 ? 1.15 : 0.2
+      p.aim = k < 0.35 ? 0 : 1
+      p.bodyRoll = k < 0.35 ? 0.09 : -0.11
+      p.yaw = k < 0.35 ? 0.5 : -0.35
+      p.pitch = k < 0.35 ? 0.6 : 0.4
+      p.roll = k < 0.35 ? 0.05 : -0.1
+      p.squash = k < 0.35 ? 0.03 : -0.02
     } else if (phase === "splash" || phase === "promote") {
-      // 見上げて、うしろのキャンバスを見る
-      p.rFwd = 0.9
-      p.rSide = 0.4
-      p.lSide = 0.6
-      p.headUp = 0.4
-      p.headYaw = 0.25
-      p.twist = 0.25
+      // うしろの上のキャンバスを見上げる
+      p.pitch = 0.95
+      p.yaw = -0.25
+      p.roll = 0.06
+      p.lift = 0.15
       if (phase === "promote") {
-        p.rSide = 1.3
-        p.lSide = 1.3
-        p.lean = -0.14
-        p.headUp = 0.5
+        const k = progress("promote", t)
+        p.pitch = 1
+        p.yaw = 0
+        p.roll = k < 0.62 ? Math.sin(t * 38) * 0.05 * k : 0.16
+        p.squash = k < 0.62 ? 0.04 * k : 0
       }
     } else if (phase === "cutIn") {
-      // びっくり → ばんざい
+      // びっくり → にっこり
       const k = progress("cutIn", t)
-      p.rSide = k < 0.45 ? 1.0 : 0.7
-      p.lSide = k < 0.45 ? 1.0 : 0.7
-      p.rFwd = k < 0.45 ? 0 : 0.9
-      p.lFwd = k < 0.45 ? 0 : 0.9
-      p.rElbow = k < 0.45 ? 0.8 : 1.1
-      p.lElbow = k < 0.45 ? 0.8 : 1.1
-      p.lean = k < 0.45 ? -0.18 : 0
-      p.headRoll = k < 0.45 ? 0 : 0.15
+      p.pitch = k < 0.45 ? 0.15 : 0
+      p.roll = k < 0.45 ? 0 : 0.18
+      p.bodyRoll = k < 0.45 ? 0 : 0.05
+      p.sway = 0.3
     } else if (phase === "finale") {
-      if (topRank >= 2) {
-        p.rSide = 1.5
-        p.lSide = 1.5
-        p.rFwd = 0.5
-        p.lFwd = 0.5
-        p.headUp = 0.25
-      } else {
-        p.lSide = 1.6
-        p.wave = 1
-        p.lElbow = 0.5
-        p.headRoll = 0.15
-      }
+      p.roll = topRank >= 2 ? 0.16 * Math.sin(t * 4) : 0.15
+      p.pitch = topRank >= 2 ? 0.3 : 0
+      p.yaw = 0.1
     } else {
-      p.rSide = 0.4
-      p.lSide = 1.6
-      p.wave = 1
-      p.lElbow = 0.5
+      p.roll = 0.1
+      p.yaw = 0.15
     }
-    p.bounce = 1
     return p
+  }
+
+  const faceTarget = (t: number): PictorFace => {
+    const phase = segmentAt(t).name
+    const blink =
+      untilBlink >= 0 ? 1 : Math.min(1, Math.abs(untilBlink + 0.06) / 0.06)
+    const smile = { eyeOpen: 0, eyeWide: 0, mouth: 1 }
+    if (phase === "cutIn")
+      return progress("cutIn", t) < 0.45
+        ? { eyeOpen: 1, eyeWide: 1, mouth: 0.6 }
+        : smile
+    if (phase === "promote")
+      return progress("promote", t) < 0.62
+        ? { eyeOpen: 1, eyeWide: 0.7, mouth: 0.45 }
+        : smile
+    if (phase === "charge" && progress("charge", t) > 0.55)
+      return { eyeOpen: 0, eyeWide: 0, mouth: 0 }
+    if (phase === "flick") return smile
+    if (phase === "finale" && topRank >= 2) return smile
+    if (phase === "intro") {
+      // 「やっほー」と口を動かす
+      const k = progress("intro", t)
+      return {
+        eyeOpen: blink,
+        eyeWide: 0,
+        mouth: k > 0.25 && k < 0.8 ? Math.max(0, Math.sin(t * 15)) * 0.9 : 0,
+      }
+    }
+    return { eyeOpen: blink, eyeWide: 0, mouth: 0 }
   }
 
   const applyPose = (t: number, dt: number) => {
     const target = poseTarget(t)
     // ばね（減衰つき）で姿勢を追いかける
     for (const k of poseKeys) {
-      const stiffness = k === "rFwd" && inPhase("flick", t) ? 420 : 90
+      const stiffness =
+        (k === "lift" || k === "aim") && inPhase("flick", t) ? 420 : 90
       const damping = 2 * Math.sqrt(stiffness) * 0.85
       const a = (target[k] - pose[k]) * stiffness - poseVel[k] * damping
       poseVel[k] += a * dt
       pose[k] += poseVel[k] * dt
     }
-    const breathe = Math.sin(t * 2.2)
-    rotateWorld(bones.waist, axisX, pose.lean * 0.6)
-    rotateWorld(bones.waist, axisY, pose.twist * 0.6)
-    rotateWorld(bones.spine, axisX, pose.lean * 0.5 + breathe * 0.015)
-    rotateWorld(bones.spine, axisY, pose.twist * 0.5)
-    // 右腕: 前へ上げて、筆で円を描く
-    const swirlA = t * 7
-    rotateWorld(
-      bones.rUpper,
-      axisX,
-      -pose.rFwd - Math.sin(swirlA) * 0.22 * pose.swirl,
+    const nextFace = faceTarget(t)
+    const blend = Math.min(1, dt * 22)
+    face.eyeOpen += (nextFace.eyeOpen - face.eyeOpen) * Math.min(1, dt * 40)
+    face.eyeWide += (nextFace.eyeWide - face.eyeWide) * blend
+    face.mouth += (nextFace.mouth - face.mouth) * blend
+    const { hop, squash } = hopAt(t)
+    pictor.update(
+      t,
+      dt,
+      {
+        yaw: pose.yaw + Math.sin(t * 0.7) * 0.08 * pose.sway,
+        pitch: pose.pitch + Math.sin(t * 2.1 + 1) * 0.04,
+        roll:
+          pose.roll * (1 + 0.25 * Math.sin(t * 1.3 + 0.5)) +
+          0.03 * Math.sin(t * 0.9) * pose.sway,
+        bodyRoll: pose.bodyRoll + Math.sin(t * 1.3) * 0.025 * pose.sway,
+        hop,
+        squash: squash + pose.squash,
+      },
+      face,
     )
-    rotateWorld(
-      bones.rUpper,
-      axisZ,
-      rSide * (pose.rSide + Math.cos(swirlA) * 0.22 * pose.swirl),
-    )
-    rotateWorld(bones.rFore, axisX, -pose.rElbow)
-    // 左腕: 横に上げて、手を振る
-    rotateWorld(bones.lUpper, axisZ, lSide * pose.lSide)
-    rotateWorld(bones.lUpper, axisX, -pose.lFwd)
-    rotateWorld(
-      bones.lFore,
-      axisZ,
-      lSide * (pose.lElbow + Math.sin(t * 9) * 0.45 * pose.wave),
-    )
-    // 頭
-    rotateWorld(bones.head, axisX, -pose.headUp + breathe * 0.01)
-    rotateWorld(
-      bones.head,
-      axisZ,
-      pose.headRoll * Math.sin(t * 1.3 + 0.5) + pose.headRoll * 0.5,
-    )
-    rotateWorld(bones.head, axisY, pose.headYaw * Math.sin(t * 0.9))
-    actor.position.y = Math.max(0, Math.sin(t * 2.2)) * 0.006 * pose.bounce
   }
 
   const cameraAt = (t: number) => {
     const phase = segmentAt(t).name
-    const head = worldPos(bones.head, tmp)
+    const head = pictor.facePoint(headPos)
     if (phase === "intro") {
       const k = smooth(progress("intro", t))
       camPos.set(
@@ -768,7 +674,7 @@ export async function createGachaStage(
         MathUtils.lerp(2.6, 1.0, k),
         MathUtils.lerp(7, 3.3, k),
       )
-      camTarget.set(0, MathUtils.lerp(1.2, 0.72, k), 0)
+      camTarget.set(0, MathUtils.lerp(1.2, 0.8, k), 0)
     } else if (phase === "charge") {
       const k = smooth(progress("charge", t))
       camPos.set(
@@ -776,7 +682,7 @@ export async function createGachaStage(
         MathUtils.lerp(1.0, 0.85, k),
         MathUtils.lerp(3.3, 2.5, k),
       )
-      camTarget.set(0, MathUtils.lerp(0.72, 0.95, k), 0)
+      camTarget.set(0, MathUtils.lerp(0.8, 1.0, k), 0)
     } else if (phase === "flick" || phase === "splash" || phase === "promote") {
       const k = smooth(progress("flick", t) * 0.5 + progress("splash", t) * 0.5)
       camPos.set(
@@ -793,12 +699,12 @@ export async function createGachaStage(
       const k = progress("cutIn", t)
       const z =
         k < 0.45
-          ? MathUtils.lerp(0.75, 0.55, smooth(k / 0.45))
-          : MathUtils.lerp(0.55, 1.6, smooth((k - 0.45) / 0.55))
+          ? MathUtils.lerp(1.15, 0.95, smooth(k / 0.45))
+          : MathUtils.lerp(0.95, 2.0, smooth((k - 0.45) / 0.55))
       camPos.set(head.x + 0.05, head.y + 0.1, head.z + z)
       camTarget.set(
         head.x,
-        head.y + 0.07 - (k < 0.45 ? 0 : 0.1 * smooth((k - 0.45) / 0.55)),
+        head.y + 0.03 - (k < 0.45 ? 0 : 0.24 * smooth((k - 0.45) / 0.55)),
         head.z,
       )
     } else if (phase === "finale") {
@@ -808,7 +714,7 @@ export async function createGachaStage(
         MathUtils.lerp(1.0, 1.15, k),
         MathUtils.lerp(2.6, 3.4, k),
       )
-      camTarget.set(0, MathUtils.lerp(0.75, 0.9, k), 0)
+      camTarget.set(0, MathUtils.lerp(0.82, 0.95, k), 0)
     } else {
       const k = smooth((t - revealStart) / 0.8)
       camPos.lerpVectors(
@@ -890,7 +796,7 @@ export async function createGachaStage(
       flashMat.opacity = 0.6
       shake = 0.02
       sparks.burst(
-        worldPos(bones.head, new Vector3()),
+        pictor.facePoint(new Vector3()),
         direction.top === "UR" ? randomRainbow : colorOf("gold"),
         200,
         2.2,
@@ -899,7 +805,6 @@ export async function createGachaStage(
     }
     const finale = seg("finale")
     if (finale && crossed(finale.start)) {
-      if (topRank >= 2) playJump()
       if (topRank >= 3) {
         shake = 0.06
         flashMat.opacity = 0.7
@@ -938,44 +843,40 @@ export async function createGachaStage(
     }
 
     // ぴくたーちゃん
-    if (jumpUntil > 0 && t >= jumpUntil) {
-      idle.reset()
-      idle.crossFadeFrom(jump, 0.25, false)
-      idle.play()
-      jumpUntil = -1
-    }
-    mixer.update(dt)
-    actor.updateMatrixWorld(true)
-    applyPose(t, Math.min(dt, 1 / 30))
     untilBlink -= dt
     if (untilBlink < -0.12) untilBlink = 1.6 + Math.random() * 2.6
-    const cutK = progress("cutIn", t)
-    if (phase === "cutIn")
-      setFace(
-        cutK < 0.45 ? "open" : "Joy",
-        cutK < 0.45 ? "Surprised" : "MouthOpen",
-      )
-    else if (phase === "promote")
-      setFace(
-        progress("promote", t) < 0.62 ? "open" : "Fun",
-        progress("promote", t) < 0.62 ? "Surprised" : "MouthOpen",
-      )
-    else if (phase === "charge" && progress("charge", t) > 0.55)
-      setFace("Fun", "MouthClosed")
-    else if (phase === "flick") setFace("Joy", "MouthOpen")
-    else if (phase === "finale" && topRank >= 2) setFace("Joy", "MouthOpen")
-    else if (phase === "intro")
-      setFace(untilBlink < 0 ? "Blink" : "open", "MouthOpen")
-    else setFace(untilBlink < 0 ? "Blink" : "open", "MouthClosed")
+    applyPose(t, Math.min(dt, 1 / 30))
+    pictor.setTint(
+      hintColor,
+      phase === "charge" || phase === "flick" || phase === "splash"
+        ? orb.material.uniforms.uIntensity.value * 0.18
+        : phase === "promote"
+          ? 0.22
+          : 0,
+    )
 
-    // 筆（右手に持たせる）
-    worldPos(bones.rHand, handPos)
-    worldPos(bones.rFore, forePos)
-    const dir = tmp.subVectors(handPos, forePos).normalize()
-    brush.group.position.copy(handPos).addScaledVector(dir, 0.02)
-    brush.group.quaternion.setFromUnitVectors(axisY, dir)
-    brush.group.visible = phase !== "reveal" || t < revealStart + 0.6
-    tip.copy(handPos).addScaledVector(dir, 0.2)
+    // 筆（ぴくたーちゃんの横に浮かべる。ためるときは頭の上で回す）
+    pictor.sidePoint(1, handPos)
+    handPos.y += Math.sin(t * 2.3) * 0.02
+    pictor.facePoint(tmp).add(headPos.set(0.24, 0.3, 0.12))
+    handPos.lerp(tmp, pose.lift)
+    handPos.x += Math.cos(t * 7) * 0.07 * pose.swirl
+    handPos.y += Math.sin(t * 7) * 0.05 * pose.swirl
+    handPos.lerp(tmp.set(0.18, 1.2, -0.3), pose.aim * 0.55)
+    brushDir
+      .set(
+        -0.35 + Math.sin(t * 7) * 0.35 * pose.swirl + pose.lift * 0.3,
+        1,
+        0.15,
+      )
+      .normalize()
+    brushDir.lerp(tmp.subVectors(easelCenter, handPos).normalize(), pose.aim)
+    brushDir.normalize()
+    brush.group.position.copy(handPos)
+    brush.group.quaternion.setFromUnitVectors(axisY, brushDir)
+    brush.group.visible =
+      phase !== "cutIn" && (phase !== "reveal" || t < revealStart + 0.6)
+    tip.copy(handPos).addScaledVector(brushDir, 0.2)
 
     // 光の玉: 集める → 飛ぶ → 消える
     const orbU = orb.material.uniforms
@@ -1236,6 +1137,11 @@ export async function createGachaStage(
 
     sparks.update(dt)
     cameraAt(t)
+    // 絵なので、いつもカメラのほうを向かせる
+    actor.rotation.y = Math.atan2(
+      camera.position.x - actor.position.x,
+      camera.position.z - actor.position.z,
+    )
     lastTime = t
   }
 
