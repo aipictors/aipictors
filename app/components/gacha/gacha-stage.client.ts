@@ -56,7 +56,6 @@ import {
   createPlatform,
   createShockwave,
   createSky,
-  createSquintEyes,
   drawBanner,
   drawCardBack,
   drawCardFront,
@@ -119,6 +118,11 @@ const smooth = (x: number) => {
 const easeOutBack = (x: number) => {
   const k = MathUtils.clamp(x, 0, 1) - 1
   return 1 + 2.4 * k * k * k + 1.4 * k * k
+}
+/** 行き過ぎを小さくした easeOutBack（カードがふわっと止まる） */
+const easeOutSoft = (x: number) => {
+  const k = MathUtils.clamp(x, 0, 1) - 1
+  return 1 + 1.6 * k * k * k + 0.6 * k * k
 }
 const easeOutCubic = (x: number) => 1 - (1 - MathUtils.clamp(x, 0, 1)) ** 3
 const RAINBOW = [
@@ -260,8 +264,23 @@ export async function createGachaStage(
       target.morphTargetInfluences[index] =
         name === eyes || name === mouth ? 1 : 0
     }
-    squint.right.visible = eyes === "Fun"
-    squint.left.visible = eyes === "Fun"
+  }
+  // 表情の板は途中の値だと頭の中を通るので混ぜられない。
+  // 目が変わるときは一瞬まばたきを挟んで、切り替わりをなめらかに見せる
+  type Eyes = "open" | "Blink" | "Joy" | "Fun"
+  let wantEyes: Eyes = "open"
+  let eyeSwap = 0
+  const faceTo = (
+    eyes: Eyes,
+    mouth: "none" | "Surprised" | "MouthOpen" | "MouthClosed",
+    dt: number,
+  ) => {
+    if (eyes !== wantEyes) {
+      if (eyes !== "Blink" && wantEyes !== "Blink") eyeSwap = 0.075
+      wantEyes = eyes
+    }
+    eyeSwap = Math.max(0, eyeSwap - dt)
+    setFace(eyeSwap > 0 ? "Blink" : eyes, mouth)
   }
 
   const mixer = new AnimationMixer(model)
@@ -274,6 +293,9 @@ export async function createGachaStage(
   const jump = clip("jump")
   jump.setLoop(LoopOnce, 1)
   jump.clampWhenFinished = true
+  // 待機は少しゆったり。ジャンプは待機と半分ずつ混ぜて、跳ねすぎないようにする
+  idle.timeScale = 0.85
+  const JUMP_WEIGHT = 0.5
   idle.play()
   mixer.update(0)
   model.updateMatrixWorld(true)
@@ -326,32 +348,6 @@ export async function createGachaStage(
   actor.updateMatrixWorld(true)
   const rSide = Math.sign(worldPos(bones.rUpper).x) || -1
   const lSide = -rSide
-
-  // ＞＜の目を頭に付ける（顔の細い線の真上に、太く大きく重ねる）
-  const squint = createSquintEyes()
-  {
-    const head = bones.head
-    if (head) {
-      const headQ = head.getWorldQuaternion(new Quaternion()).invert()
-      const headScale = head.getWorldScale(new Vector3())
-      for (const [mesh, eye, out] of [
-        [squint.right, "R_Eye", rSide],
-        [squint.left, "L_Eye", lSide],
-      ] as const) {
-        const at = worldPos(bone(eye)).add(
-          new Vector3(0.017 * out, -0.024, 0.05),
-        )
-        head.add(mesh)
-        mesh.position.copy(head.worldToLocal(at))
-        mesh.quaternion.copy(headQ)
-        mesh.scale.set(
-          0.046 / headScale.x,
-          0.046 / headScale.y,
-          0.046 / headScale.z,
-        )
-      }
-    }
-  }
 
   /** 指（中指の骨はない）。待機アニメは指を動かさないので、毎コマ元に戻してから曲げる */
   const handOf = (s: "R" | "L") => ({
@@ -495,11 +491,13 @@ export async function createGachaStage(
     front.position.z = 0.002
     back.position.z = -0.002
     const aura = createOrb()
-    aura.mesh.scale.setScalar(2.2)
-    aura.mesh.position.z = -0.05
+    // 後光はカードと一緒に回すと裏返したときに手前へ来るので、カードの外に置いて毎コマ後ろへ付ける
+    aura.material.uniforms.uCore.value = 0.25
+    aura.mesh.visible = false
+    scene.add(aura.mesh)
     aura.material.uniforms.uColor.value.copy(HINT_COLORS[hintOf(item.rarity)])
     aura.material.uniforms.uRainbow.value = item.rarity === "UR" ? 1 : 0
-    group.add(aura.mesh, front, back)
+    group.add(front, back)
     group.visible = false
     scene.add(group)
     return { group, aura, item, home: new Vector3(), size: 1 }
@@ -531,23 +529,26 @@ export async function createGachaStage(
     },
     vertexShader:
       /* glsl */ "varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}",
+    // 文字の下に敷く細い帯。濃い地で文字を読みやすくし、縁の細い光の線とゆっくり流れるつやで上品に見せる
     fragmentShader: /* glsl */ `
       uniform float uTime;uniform float uShow;uniform float uRainbow;uniform vec3 uColor;uniform float uAspect;varying vec2 vUv;
       vec3 hue(float h){return clamp(abs(mod(h*6.0+vec3(0,4,2),6.0)-3.0)-1.0,0.0,1.0);}
       void main(){
-        vec2 p=vUv-0.5;p.x*=uAspect;
-        float d=p.y+0.27+p.x*0.22;
         if(uShow<0.001){discard;}
-        float w=0.16*min(1.0,uShow*2.5)+0.011;
-        float band=1.0-smoothstep(w-0.01,w,abs(d));
-        float edge=(1.0-smoothstep(w,w+0.012,abs(d)))-band;
-        vec3 col=mix(uColor,hue(p.x*0.5-uTime*0.6),uRainbow);
-        float stripes=0.82+0.18*step(0.5,fract((p.x-p.y*0.22)*14.0-uTime*3.0));
-        vec2 c=vec2(p.x,p.y);float ang=atan(c.y,c.x);
-        float lines=step(0.93,fract(sin(floor(ang*60.0)*43758.5+floor(uTime*20.0))*0.5+0.5))*smoothstep(0.25,0.9,length(c))*uShow;
-        vec3 o=col*band*stripes*0.9+vec3(1.0)*edge+vec3(1.0)*lines*0.35;
-        float a=max(band*0.92,max(edge,lines*0.35))*min(1.0,uShow*1.5);
-        gl_FragColor=vec4(o*min(1.0,uShow*1.5),a);
+        vec2 p=vUv-0.5;p.x*=uAspect;
+        float d=p.y+0.30+p.x*0.035;
+        float open=1.0-pow(1.0-min(1.0,uShow*1.6),3.0);
+        float w=0.064*open+0.002;
+        float fadeX=1.0-smoothstep(uAspect*0.25,uAspect*0.5,abs(p.x));
+        float band=1.0-smoothstep(w-0.004,w,abs(d));
+        float line=exp(-pow((abs(d)-w-0.006)/0.0022,2.0));
+        float glow=exp(-pow(max(0.0,abs(d)-w)/0.03,2.0))*(1.0-band);
+        vec3 tint=mix(uColor,mix(hue(p.x*0.35-uTime*0.08),vec3(1.0),0.45),uRainbow);
+        float sheen=exp(-pow((p.x-mix(-1.2,1.2,fract(uTime*0.22)))*3.0,2.0));
+        vec3 base=mix(vec3(0.06,0.04,0.14),tint*0.35,0.35+0.25*sheen);
+        vec3 o=base*band+tint*line*1.1+tint*glow*0.35;
+        float a=(band*0.72+line+glow*0.3)*fadeX*min(1.0,uShow*1.4);
+        gl_FragColor=vec4(o,clamp(a,0.0,1.0));
       }`,
   })
   const band = quad(bandMat)
@@ -601,17 +602,29 @@ export async function createGachaStage(
   if (direction.cutIn) push("cutIn", 2.4)
   push("finale", topRank >= 3 ? 1.5 : topRank >= 2 ? 0.9 : 0.5)
   const revealStart = cursor
-  // カードをめくる時刻
-  const flipAt: number[] = []
+  // カードは 1 枚ずつ飛んできて並び、低いレア度からめくる。SSR 以上は最後に、ためてからめくる
+  const CARD_ENTER_GAP = 0.08
+  const CARD_ENTER_TIME = 0.6
+  const enterAt = items.map((_, i) => revealStart + 0.5 + i * CARD_ENTER_GAP)
+  const flipAt: number[] = new Array(items.length).fill(0)
   {
-    let tf = revealStart + 1.4
-    items.forEach((item) => {
-      const rank = gachaRarityRank(item.rarity)
-      if (rank >= 3) tf += 0.55 // めくる前にためる
-      flipAt.push(tf)
-      tf += items.length === 1 ? 0 : revealPauseOf(item.rarity)
+    const order = items
+      .map((item, i) => ({ i, rank: gachaRarityRank(item.rarity) }))
+      .sort((a, b) =>
+        a.rank >= 3 || b.rank >= 3 ? a.rank - b.rank || a.i - b.i : a.i - b.i,
+      )
+    let tf =
+      revealStart +
+      0.5 +
+      (items.length - 1) * CARD_ENTER_GAP +
+      CARD_ENTER_TIME +
+      0.25
+    order.forEach(({ i, rank }, n) => {
+      if (rank >= 3) tf += rank >= 4 ? 0.75 : 0.55 // めくる前にためる
+      flipAt[i] = tf
+      if (n < order.length - 1) tf += revealPauseOf(items[i].rarity)
     })
-    push("reveal", tf + 0.7 - revealStart)
+    push("reveal", tf + 1.0 - revealStart)
   }
   const duration = cursor
   const segmentAt = (t: number) =>
@@ -648,24 +661,30 @@ export async function createGachaStage(
     const n = cards.length
     const maxH = n === 1 ? viewH * 0.5 : viewH * 0.86
     const maxW = viewW * 0.92
-    let best = { cols: 1, h: 0 }
-    for (let cols = 1; cols <= n; cols++) {
-      const rows = Math.ceil(n / cols)
-      const h = Math.min(
-        (maxH / rows) * 0.9,
-        ((maxW / cols) * 0.9) / CARD_ASPECT,
+    const GAP = 1.12
+    // 行ごとの枚数はできるだけそろえ、余りはまんなかの行に寄せる（10 枚なら 3・4・3 や 5・5）
+    let best = { rows: 1, counts: [n], h: 0 }
+    for (let rows = 1; rows <= n; rows++) {
+      const base = Math.floor(n / rows)
+      const extra = n - base * rows
+      const mid = (rows - 1) / 2
+      const byCenter = Array.from({ length: rows }, (_, r) => r).sort(
+        (a, b) => Math.abs(a - mid) - Math.abs(b - mid) || a - b,
       )
-      if (h > best.h) best = { cols, h }
+      const counts = new Array(rows).fill(base)
+      for (let e = 0; e < extra; e++) counts[byCenter[e]] += 1
+      const cols = Math.max(...counts)
+      const h = Math.min(maxH / rows / GAP, maxW / cols / GAP / CARD_ASPECT)
+      if (h > best.h * 1.001) best = { rows, counts, h }
     }
-    const rows = Math.ceil(n / best.cols)
-    cards.forEach((card, i) => {
-      const row = Math.floor(i / best.cols)
-      const inRow = Math.min(best.cols, n - row * best.cols)
-      const col = i - row * best.cols
-      const x = (col - (inRow - 1) / 2) * best.h * CARD_ASPECT * 1.1
-      const y = ((rows - 1) / 2 - row) * best.h * 1.1
-      card.home.set(x, revealCamera.target.y + y, 1.3)
-      card.size = best.h
+    let i = 0
+    best.counts.forEach((inRow, row) => {
+      for (let col = 0; col < inRow; col++, i++) {
+        const x = (col - (inRow - 1) / 2) * best.h * CARD_ASPECT * GAP
+        const y = ((best.rows - 1) / 2 - row) * best.h * GAP
+        cards[i].home.set(x, revealCamera.target.y + y, 1.3)
+        cards[i].size = best.h
+      }
     })
   }
 
@@ -686,7 +705,7 @@ export async function createGachaStage(
     black.scale.set(aspect, 1, 1)
     flash.scale.set(aspect, 1, 1)
     bandMat.uniforms.uAspect.value = aspect
-    banner.scale.setScalar(Math.min(aspect * 1.95, 2.2))
+    banner.scale.setScalar(Math.min(aspect * 1.55, 1.6))
     layoutCards()
   }
   const resizeObserver =
@@ -701,6 +720,7 @@ export async function createGachaStage(
   let shake = 0
   let untilBlink = 1.5
   let jumpUntil = -1
+  let brushShow = 1
   const tmp = new Vector3()
   const tip = new Vector3()
   const handPos = new Vector3()
@@ -711,11 +731,24 @@ export async function createGachaStage(
   const easelCenter = new Vector3(0, 1.5, -0.84)
   const crossed = (at: number) => lastTime < at && time >= at
 
+  let jumpFrom = -1
   const playJump = () => {
     jump.reset()
-    jump.crossFadeFrom(idle, 0.15, false)
+    jump.setEffectiveWeight(0)
     jump.play()
+    jumpFrom = time
     jumpUntil = time + 1.0
+  }
+  /** ジャンプと待機の混ぜ具合（合計を 1 にして、初期姿勢が混ざらないようにする） */
+  const blendJump = (t: number) => {
+    const w =
+      jumpUntil > 0
+        ? JUMP_WEIGHT *
+          smooth((t - jumpFrom) / 0.15) *
+          (1 - smooth((t - (jumpUntil - 0.3)) / 0.3))
+        : 0
+    jump.setEffectiveWeight(w)
+    idle.setEffectiveWeight(1 - w)
   }
 
   const poseTarget = (t: number): Pose => {
@@ -732,25 +765,33 @@ export async function createGachaStage(
       p.lTwist = 1.2 * k
       p.lGrip = 0.05
     }
-    /** ばんざい（両腕を上へ） */
+    /** ばんざい（両腕を上へ）。UR のときだけ使う */
     const banzai = () => {
-      p.rSide = 2.55
-      p.lSide = 2.55
+      p.rSide = 2.35
+      p.lSide = 2.35
       p.rFwd = 0.35
       p.lFwd = 0.35
       p.rBend = 0.2
       p.lBend = 0.2
       p.lGrip = 0.2
     }
+    /** 力を抜いて立つ */
+    const rest = () => {
+      p.rSide = 0.2
+      p.rElbow = 0.4
+      p.lSide = 0.2
+      p.lElbow = 0.35
+      p.headRoll = 0.06
+    }
     const phase = segmentAt(t).name
     if (phase === "intro") {
-      // 手を振ってあいさつ
+      // 手を振ってあいさつして、筆を掲げる前に手を下ろす
       const k = progress("intro", t)
-      waveLeft(smooth(k * 3))
+      rest()
+      waveLeft(smooth(k * 3) * (1 - smooth((k - 0.72) / 0.28)))
       p.rSide = 0.15
-      p.rElbow = 0.4
-      p.headRoll = 0.12
-      p.headYaw = 0.1
+      p.headRoll = 0.1
+      p.headYaw = 0.08
     } else if (phase === "charge") {
       // 筆を高く掲げて回す
       const k = progress("charge", t)
@@ -770,10 +811,10 @@ export async function createGachaStage(
     } else if (phase === "flick") {
       // キャンバスへ振り下ろす
       const k = progress("flick", t)
-      p.rFwd = k < 0.35 ? 2.9 : 0.9
+      p.rFwd = k < 0.35 ? 2.7 : 0.9
       p.rSide = 0.2
-      p.lean = k < 0.35 ? -0.16 : 0.12
-      p.twist = k < 0.35 ? -0.2 : 0.18
+      p.lean = k < 0.35 ? -0.1 : 0.07
+      p.twist = k < 0.35 ? -0.12 : 0.1
       p.headUp = 0.25
       p.lSide = 0.45
       p.lFwd = 0.2
@@ -791,16 +832,16 @@ export async function createGachaStage(
       if (phase === "promote") {
         // 昇格したら両手をぐっと上げて喜ぶ
         const up = progress("promote", t) >= 0.62
-        p.rSide = up ? 1.9 : 0.5
-        p.lSide = up ? 1.9 : 0.4
+        p.rSide = up ? 1.6 : 0.5
+        p.lSide = up ? 1.6 : 0.4
         p.rFwd = up ? 0.6 : 1.0
         p.lFwd = up ? 0.6 : 0.9
         p.rBend = up ? 0.9 : 0
         p.lBend = up ? 0.9 : 0
         p.lElbow = up ? 0 : 1.4
         p.lGrip = up ? 0.9 : 0.5
-        p.lean = -0.14
-        p.headUp = 0.5
+        p.lean = -0.1
+        p.headUp = 0.45
       }
     } else if (phase === "cutIn") {
       // びっくり（両手を口もとへ）→ ばんざい
@@ -815,27 +856,47 @@ export async function createGachaStage(
         p.rBend = 0.35
         p.lBend = 0.35
         p.lGrip = 0.45
-        p.lean = -0.18
-      } else {
+        p.lean = -0.12
+      } else if (topRank >= 4) {
         banzai()
-        p.headRoll = 0.15
+        p.headRoll = 0.12
+      } else {
+        // SSR は片手をかかげるくらいにとどめる
+        p.rSide = 1.5
+        p.rFwd = 0.5
+        p.rBend = 0.5
+        p.lSide = 0.3
+        p.lFwd = 0.5
+        p.lElbow = 1.4
+        p.lGrip = 0.75
+        p.headRoll = 0.1
       }
     } else if (phase === "finale") {
-      if (topRank >= 2) {
+      const k = progress("finale", t)
+      if (topRank >= 4) {
         banzai()
-        p.rBend = -0.5
-        p.lBend = -0.5
-        p.headUp = 0.25
+        p.rBend = -0.4
+        p.lBend = -0.4
+        p.headUp = 0.2
+      } else if (topRank === 3) {
+        // こぶしをぎゅっと
+        p.rSide = 1.3
+        p.rFwd = 0.6
+        p.rBend = 0.9
+        p.lSide = 0.3
+        p.lFwd = 0.5
+        p.lElbow = 1.4
+        p.lGrip = 0.8
+        p.headUp = 0.15
       } else {
-        waveLeft(1)
+        rest()
+        waveLeft(smooth(k * 2))
         p.rSide = 0.15
-        p.rElbow = 0.4
-        p.headRoll = 0.15
+        p.headRoll = 0.1
       }
     } else {
-      waveLeft(1)
-      p.rSide = 0.3
-      p.rElbow = 0.4
+      // カードを見せている間は静かに立つ
+      rest()
     }
     p.bounce = 1
     return p
@@ -845,8 +906,9 @@ export async function createGachaStage(
     const target = poseTarget(t)
     // ばね（減衰つき）で姿勢を追いかける
     for (const k of poseKeys) {
-      const stiffness = k === "rFwd" && inPhase("flick", t) ? 420 : 90
-      const damping = 2 * Math.sqrt(stiffness) * 0.85
+      // 揺り戻しが出ないように臨界減衰（振り下ろすときだけ速く）
+      const stiffness = k === "rFwd" && inPhase("flick", t) ? 240 : 55
+      const damping = 2 * Math.sqrt(stiffness)
       const a = (target[k] - pose[k]) * stiffness - poseVel[k] * damping
       poseVel[k] += a * dt
       pose[k] += poseVel[k] * dt
@@ -857,16 +919,16 @@ export async function createGachaStage(
     rotateWorld(bones.spine, axisX, pose.lean * 0.5 + breathe * 0.015)
     rotateWorld(bones.spine, axisY, pose.twist * 0.5)
     // 腕は「横へ上げる → 前へ上げる → ひじを前へ曲げる → ひじを上へ曲げる」の順に回す
-    const swirlA = t * 7
+    const swirlA = t * 3.6
     rotateWorld(
       bones.rUpper,
       axisZ,
-      rSide * (pose.rSide + Math.cos(swirlA) * 0.22 * pose.swirl),
+      rSide * (pose.rSide + Math.cos(swirlA) * 0.12 * pose.swirl),
     )
     rotateWorld(
       bones.rUpper,
       axisX,
-      -pose.rFwd - Math.sin(swirlA) * 0.22 * pose.swirl,
+      -pose.rFwd - Math.sin(swirlA) * 0.12 * pose.swirl,
     )
     rotateWorld(bones.rFore, axisX, -pose.rElbow)
     rotateWorld(bones.rFore, axisZ, rSide * pose.rBend)
@@ -884,7 +946,7 @@ export async function createGachaStage(
     rotateWorld(
       bones.lFore,
       axisZ,
-      lSide * (pose.lBend + Math.sin(t * 9) * 0.35 * pose.wave),
+      lSide * (pose.lBend + Math.sin(t * 6) * 0.22 * pose.wave),
     )
     straightenWrist(bones.rFore, hands[0])
     straightenWrist(bones.lFore, hands[1])
@@ -899,9 +961,9 @@ export async function createGachaStage(
     rotateWorld(
       bones.head,
       axisZ,
-      pose.headRoll * Math.sin(t * 1.3 + 0.5) + pose.headRoll * 0.5,
+      pose.headRoll * (0.5 * Math.sin(t * 1.1 + 0.5) + 0.5),
     )
-    rotateWorld(bones.head, axisY, pose.headYaw * Math.sin(t * 0.9))
+    rotateWorld(bones.head, axisY, pose.headYaw * 0.7 * Math.sin(t * 0.8))
     actor.position.y = Math.max(0, Math.sin(t * 2.2)) * 0.006 * pose.bounce
   }
 
@@ -1005,12 +1067,12 @@ export async function createGachaStage(
     if (charge && crossed(charge.start + 0.4)) setTone(shownHint)
     const splash = seg("splash")
     if (splash && crossed(splash.start)) {
-      shake = 0.05
-      sparks.burst(easelCenter, rainbow ? randomRainbow : hintColor, 260, 2.6, {
-        size: 0.06,
+      shake = 0.02
+      sparks.burst(easelCenter, rainbow ? randomRainbow : hintColor, 170, 2.2, {
+        size: 0.05,
         up: 0.2,
       })
-      flashMat.opacity = 0.5
+      flashMat.opacity = 0.25
     }
     const promote = seg("promote")
     if (
@@ -1024,40 +1086,42 @@ export async function createGachaStage(
       setTone(shownHint)
       brush.bristleMaterial.color.copy(colorOf(shownHint))
       brush.bristleMaterial.emissive.copy(colorOf(shownHint))
-      shake = 0.09
-      flashMat.opacity = 0.8
+      shake = 0.04
+      flashMat.opacity = 0.45
       sparks.burst(
         easelCenter,
         shownHint === "rainbow" ? randomRainbow : colorOf(shownHint),
-        420,
-        3.6,
-        { size: 0.07, up: 0.3 },
+        260,
+        3,
+        { size: 0.06, up: 0.3 },
       )
     }
     const cut = seg("cutIn")
     if (cut && crossed(cut.start + (cut.end - cut.start) * 0.45)) {
-      flashMat.opacity = 0.6
-      shake = 0.02
+      // 確定の瞬間。粒は顔にかからないよう頭の後ろから広げる
+      flashMat.opacity = 0.5
+      shake = 0.015
       sparks.burst(
-        worldPos(bones.head, new Vector3()),
+        worldPos(bones.head, new Vector3()).add(tmp.set(0, 0.05, -0.25)),
         direction.top === "UR" ? randomRainbow : colorOf("gold"),
-        200,
-        2.2,
-        { size: 0.03 },
+        150,
+        1.6,
+        { size: 0.025, up: 0.3 },
       )
     }
     const finale = seg("finale")
     if (finale && crossed(finale.start)) {
-      if (topRank >= 2) playJump()
+      // 跳ぶのは UR のときだけ（いちばんの山場）
+      if (topRank >= 4) playJump()
       if (topRank >= 3) {
-        shake = 0.06
-        flashMat.opacity = 0.7
+        shake = topRank >= 4 ? 0.03 : 0.015
+        flashMat.opacity = topRank >= 4 ? 0.4 : 0.25
         sparks.burst(
-          new Vector3(0, 0.2, 0),
+          new Vector3(0, 0.2, -0.3),
           shownHint === "rainbow" ? randomRainbow : hintColor,
-          360,
-          3,
-          { size: 0.06, up: 1.6 },
+          topRank >= 4 ? 240 : 150,
+          2.6,
+          { size: 0.05, up: 1.4 },
         )
       }
     }
@@ -1065,19 +1129,20 @@ export async function createGachaStage(
     cards.forEach((card, i) => {
       const rank = gachaRarityRank(card.item.rarity)
       if (crossed(flipAt[i])) {
+        // 粒はカードの後ろから出して、絵や文字にかぶらないようにする
         if (rank >= 2)
           sparks.burst(
-            card.home,
+            tmp.copy(card.home).setZ(card.home.z - 0.12),
             card.item.rarity === "UR"
               ? randomRainbow
               : colorOf(hintOf(card.item.rarity)),
-            rank >= 3 ? 220 : 60,
-            rank >= 3 ? 2.2 : 1.2,
-            { size: 0.035, up: 0.2 },
+            rank >= 4 ? 170 : rank === 3 ? 110 : 36,
+            rank >= 3 ? 1.6 : 0.9,
+            { size: 0.03, up: 0.1 },
           )
         if (rank >= 3) {
-          flashMat.opacity = Math.max(flashMat.opacity, rank >= 4 ? 0.85 : 0.5)
-          shake = rank >= 4 ? 0.05 : 0.025
+          flashMat.opacity = Math.max(flashMat.opacity, rank >= 4 ? 0.3 : 0.16)
+          shake = rank >= 4 ? 0.015 : 0.008
         }
       }
     })
@@ -1088,34 +1153,35 @@ export async function createGachaStage(
 
     // ぴくたーちゃん
     if (jumpUntil > 0 && t >= jumpUntil) {
-      idle.reset()
-      idle.crossFadeFrom(jump, 0.25, false)
-      idle.play()
+      jump.stop()
       jumpUntil = -1
     }
+    blendJump(t)
     mixer.update(dt)
     actor.updateMatrixWorld(true)
     applyPose(t, Math.min(dt, 1 / 30))
     untilBlink -= dt
     if (untilBlink < -0.12) untilBlink = 1.6 + Math.random() * 2.6
     const cutK = progress("cutIn", t)
+    const blinkOr = (): Eyes => (untilBlink < 0 ? "Blink" : "open")
     if (phase === "cutIn")
-      setFace(
-        cutK < 0.45 ? "open" : "Joy",
+      faceTo(
+        cutK < 0.45 ? blinkOr() : "Joy",
         cutK < 0.45 ? "Surprised" : "MouthOpen",
+        dt,
       )
     else if (phase === "promote")
-      setFace(
+      faceTo(
         progress("promote", t) < 0.62 ? "open" : "Fun",
         progress("promote", t) < 0.62 ? "Surprised" : "MouthOpen",
+        dt,
       )
     else if (phase === "charge" && progress("charge", t) > 0.55)
-      setFace("Fun", "MouthClosed")
-    else if (phase === "flick") setFace("Joy", "MouthOpen")
-    else if (phase === "finale" && topRank >= 2) setFace("Joy", "MouthOpen")
-    else if (phase === "intro")
-      setFace(untilBlink < 0 ? "Blink" : "open", "MouthOpen")
-    else setFace(untilBlink < 0 ? "Blink" : "open", "MouthClosed")
+      faceTo("Fun", "MouthClosed", dt)
+    else if (phase === "flick") faceTo("Joy", "MouthOpen", dt)
+    else if (phase === "finale" && topRank >= 2) faceTo("Joy", "MouthOpen", dt)
+    else if (phase === "intro") faceTo(blinkOr(), "MouthOpen", dt)
+    else faceTo(blinkOr(), "MouthClosed", dt)
 
     // 筆（右手に持たせる）
     // にぎったこぶしの中に柄を通し、人さし指の側へ毛先を出す
@@ -1135,7 +1201,15 @@ export async function createGachaStage(
       .multiplyScalar(0.25)
     brush.group.position.copy(grip).addScaledVector(dir, 0.08)
     brush.group.quaternion.setFromUnitVectors(axisY, dir)
-    brush.group.visible = phase !== "reveal" || t < revealStart + 0.6
+    // 顔のアップ（確定カットイン）では筆が顔の前を横切るので、光にしてしまう
+    const brushWant =
+      phase === "cutIn" || (phase === "reveal" && t > revealStart + 0.3) ? 0 : 1
+    // カットインはカメラが切り替わるのですぐ消し、戻すときはゆっくり
+    if (phase === "cutIn") brushShow = 0
+    brushShow +=
+      (brushWant - brushShow) * Math.min(1, dt * (brushWant ? 6 : 14))
+    brush.group.scale.setScalar(0.85 * Math.max(0.001, brushShow))
+    brush.group.visible = brushShow > 0.02
     tip.copy(brush.group.position).addScaledVector(dir, 0.12)
 
     // 光の玉: 集める → 飛ぶ → 消える
@@ -1170,17 +1244,18 @@ export async function createGachaStage(
       const k = phase === "promote" ? progress("promote", t) : 0
       orb.mesh.scale.setScalar(
         phase === "promote"
-          ? 0.6 +
-              Math.sin(t * 40) * 0.06 * (k < 0.62 ? k : 0) +
-              (k > 0.62 ? 0.8 : 0)
-          : 0.9 * (1 - progress("splash", t)) + 0.3,
+          ? 0.5 +
+              Math.sin(t * 24) * 0.04 * (k < 0.62 ? k : 0) +
+              0.4 * smooth((k - 0.62) / 0.1)
+          : 0.6 * (1 - progress("splash", t)) + 0.3,
       )
+      // キャンバスに当たった光は白く飛ばさず、すぐに絵の具へ譲る
       orbU.uIntensity.value =
         phase === "promote"
           ? k < 0.62
-            ? 0.5 + k
-            : 1.6 - (k - 0.62) * 2
-          : 1 - progress("splash", t) * 0.6
+            ? 0.35 + k * 0.6
+            : Math.max(0, 0.85 - (k - 0.62) * 2.2)
+          : 0.7 * (1 - progress("splash", t) * 0.7)
     } else {
       orbU.uIntensity.value = Math.max(0, orbU.uIntensity.value - dt * 2)
     }
@@ -1214,10 +1289,10 @@ export async function createGachaStage(
       phase === "intro"
         ? smooth(progress("intro", t)) * 0.7
         : phase === "charge"
-          ? 0.7 + progress("charge", t) * 0.8
+          ? 0.6 + progress("charge", t) * 0.45
           : phase === "reveal"
             ? 0.45
-            : 1.1
+            : 0.9
     for (const [mat, k] of [
       [outerMat, 1],
       [innerMat, 1.2],
@@ -1235,8 +1310,8 @@ export async function createGachaStage(
       )
       u.uIntensity.value = glow * k
     }
-    circles.outer.rotation.z = t * 0.25
-    circles.inner.rotation.z = -t * 0.6
+    circles.outer.rotation.z = t * 0.15
+    circles.inner.rotation.z = -t * 0.35
     platform.rimMaterial.emissive.copy(hintColor)
     platform.rimMaterial.emissiveIntensity = 0.2 + glow * 0.3
     for (const [c, target] of [
@@ -1294,7 +1369,7 @@ export async function createGachaStage(
           ? 0.45
           : 0.3
         : phase === "charge"
-          ? progress("charge", t) * 0.3
+          ? progress("charge", t) * 0.15
           : 0,
       Math.min(1, dt * 4),
     )
@@ -1320,44 +1395,54 @@ export async function createGachaStage(
       shock.mesh.rotation.set(0, 0, 0)
       shock.mesh.scale.setScalar(0.2 + easeOutCubic(k) * (atEasel ? 2.6 : 4))
       shock.material.uniforms.uColor.value.copy(hintColor)
-      shock.material.uniforms.uIntensity.value = (1 - k) * 2.5
+      shock.material.uniforms.uIntensity.value = (1 - k) * 1.3
     } else {
       shock.material.uniforms.uIntensity.value = 0
     }
 
     // カード
     cards.forEach((card, i) => {
-      const enter = (t - (revealStart + 0.5 + i * 0.05)) / 0.5
+      const enter = (t - enterAt[i]) / CARD_ENTER_TIME
       card.group.visible = enter > 0
+      card.aura.mesh.visible = card.group.visible
       if (!card.group.visible) return
       const rank = gachaRarityRank(card.item.rarity)
-      const k = easeOutBack(enter)
-      card.group.position.lerpVectors(
-        tmp.set(0, 1.4, -0.6),
-        card.home,
-        Math.min(1, k),
-      )
-      const flipK = MathUtils.clamp((t - flipAt[i]) / 0.42, 0, 1)
+      const move = easeOutCubic(enter)
+      card.group.position.lerpVectors(tmp.set(0, 1.4, -0.6), card.home, move)
+      // 弧を描いて少し手前を通る
+      card.group.position.z += Math.sin(move * Math.PI) * 0.25
+      const flipK = smooth((t - flipAt[i]) / 0.5)
+      const preTime = rank >= 4 ? 0.75 : 0.55
       const pre =
         rank >= 3
-          ? MathUtils.clamp((t - (flipAt[i] - 0.55)) / 0.55, 0, 1) *
-            (flipK > 0 ? 0 : 1)
+          ? smooth((t - (flipAt[i] - preTime)) / preTime) *
+            (t >= flipAt[i] ? 0 : 1)
           : 0
       card.group.rotation.set(
         0,
-        Math.PI * (1 - easeOutCubic(flipK)) + Math.sin(t * 60) * 0.05 * pre,
-        Math.sin(t * 47) * 0.04 * pre,
+        Math.PI * (1 - flipK) + Math.sin(t * 22) * 0.025 * pre,
+        (1 - move) * 0.35 * Math.sign(card.home.x || 1) +
+          Math.sin(t * 17) * 0.015 * pre,
       )
-      const pop = 1 + Math.sin(flipK * Math.PI) * 0.15 + pre * 0.06
+      const pop = 1 + Math.sin(flipK * Math.PI) * 0.07 + pre * 0.04
       card.group.scale.setScalar(
-        card.size * pop * Math.min(1, Math.max(0.01, k)),
+        card.size * pop * Math.max(0.01, easeOutSoft(enter)),
       )
+      // 光の強さ: N はなし、R うっすら、SR → SSR → UR と強く。めくった直後だけ少し明るく
+      card.aura.mesh.position
+        .copy(card.group.position)
+        .setZ(card.group.position.z - 0.08)
+      card.aura.mesh.scale.setScalar(card.group.scale.x * 2.2)
+      const auraBase = [0, 0.12, 0.35, 0.7, 0.9][rank] ?? 0
+      const since = t - flipAt[i]
       const auraU = card.aura.material.uniforms
       auraU.uTime.value = t
       auraU.uIntensity.value =
-        flipK > 0
-          ? (rank >= 3 ? 1.1 : rank === 2 ? 0.55 : 0) * Math.min(1, flipK * 2)
-          : pre * 0.8
+        since > 0
+          ? auraBase *
+            Math.min(1, since * 4) *
+            (0.7 + 0.3 * Math.exp(-since * 2))
+          : pre * 0.6
     })
 
     backdropMat.opacity =
@@ -1367,7 +1452,7 @@ export async function createGachaStage(
     // 画面に重ねるもの
     blackMat.opacity =
       phase === "cutIn"
-        ? Math.min(0.55, progress("cutIn", t) * 4) *
+        ? Math.min(0.22, progress("cutIn", t) * 2) *
           (1 - 0.6 * smooth((progress("cutIn", t) - 0.45) / 0.1)) *
           (1 - smooth((progress("cutIn", t) - 0.85) / 0.15))
         : 0
@@ -1380,21 +1465,24 @@ export async function createGachaStage(
     bandMat.uniforms.uTime.value = t
     bandMat.uniforms.uRainbow.value = direction.top === "UR" ? 1 : 0
     bandMat.uniforms.uColor.value.copy(HINT_COLORS[hintOf(direction.top)])
-    bannerMat.opacity = bandShow
+    // 右からすっと入って止まり、止まっている間もわずかに流れ、左へ抜けながら消える
+    const bannerIn = easeOutCubic((bandK - 0.45) / 0.14)
+    const bannerOut = smooth((bandK - 0.88) / 0.12)
     banner.position.x =
-      (1 - easeOutBack((bandK - 0.45) / 0.12)) * 2.5 * (bandK < 0.45 ? 1 : 1)
-    banner.rotation.z = 0.08
-    banner.position.y = -0.54
+      (1 - bannerIn) * 1.1 - (bandK - 0.45) * 0.12 - bannerOut * 0.25
+    banner.rotation.z = 0.035
+    banner.position.y = -0.6
+    bannerMat.opacity = Math.min(1, bannerIn * 1.4) * (1 - bannerOut)
     flashMat.opacity = Math.max(0, flashMat.opacity - dt * 2.4)
     shake = Math.max(0, shake - dt * 0.12)
     bloom.strength =
       phase === "cutIn"
-        ? 0.9
+        ? 0.55
         : phase === "promote" || phase === "finale"
-          ? 1.0
+          ? 0.75
           : phase === "splash"
-            ? 0.95
-            : 0.8
+            ? 0.7
+            : 0.6
 
     sparks.update(dt)
     cameraAt(t)

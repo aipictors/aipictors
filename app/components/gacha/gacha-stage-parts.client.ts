@@ -13,7 +13,6 @@ import {
   IcosahedronGeometry,
   InstancedMesh,
   Mesh,
-  MeshBasicMaterial,
   MeshStandardMaterial,
   NormalBlending,
   Object3D,
@@ -87,7 +86,7 @@ export function createSky() {
         vec3 d=normalize(vDir);
         vec3 col=mix(uLow,uHigh,smoothstep(-0.04,0.3,d.y));
         // パステルの虹（UR の予兆）
-        col=mix(col,col*(0.7+0.45*hue(d.x*0.35+d.y*0.6+uTime*0.03)),uRainbow*0.7);
+        col=mix(col,col*(0.75+0.35*hue(d.x*0.35+d.y*0.6+uTime*0.02)),uRainbow*0.5);
         // 地平線のもこもこ雲
         vec3 q=vec3(d.x*2.6,d.y*7.0,d.z*2.6)+vec3(uTime*0.012,0.0,0.0);
         float n=fbm(q);
@@ -190,7 +189,7 @@ export function createGlowMaterial(texture: CanvasTexture, solid = false) {
     vertexShader:
       /* glsl */ "varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}",
     fragmentShader: /* glsl */ `
-      uniform sampler2D uMap;uniform vec3 uColor;uniform float uIntensity;uniform float uTime;uniform float uRainbow;varying vec2 vUv;
+      uniform sampler2D uMap;uniform vec3 uColor;uniform float uIntensity;uniform float uTime;uniform float uRainbow;uniform float uCore;varying vec2 vUv;
       vec3 hue(float h){return clamp(abs(mod(h*6.0+vec3(0,4,2),6.0)-3.0)-1.0,0.0,1.0);}
       void main(){
         float a=texture2D(uMap,vUv).a;
@@ -459,10 +458,17 @@ export function createEasel() {
         float drip=smoothstep(0.02,0.0,abs(fract(vUv.x*7.0+0.13)-0.5)-0.12)*step(p.y,0.0)*uProgress*0.35*fbm(vec3(vUv.x*20.0,0.0,0.0));
         float paint=smoothstep(edge+0.01,edge-0.02,r)+smoothstep(0.0,1.0,drip*4.0)*step(r,edge+0.4);
         paint=clamp(paint,0.0,1.0);
-        vec3 pc=mix(uColor,hue(ang/6.2831+r*1.5-uTime*0.3),uRainbow);
-        float swirl=0.75+0.25*sin(r*30.0-uTime*3.0+fbm(vec3(p*6.0,uTime*0.2))*6.0);
-        vec3 lit=pc*swirl*(0.85+1.1*smoothstep(edge-0.08,edge,r)*step(r,edge));
-        col=mix(col,lit*1.05,paint);
+        // 虹は白を混ぜたやわらかい色で、ゆっくり回し、中心にやさしい光を置く（白飛びさせない）
+        float spin=ang/6.2831+r*0.9-uTime*0.1+fbm(vec3(p*3.0,uTime*0.08))*0.15;
+        vec3 rb=mix(hue(spin),vec3(1.0),0.3)*0.9;
+        vec3 pc=mix(uColor,rb,uRainbow);
+        float swirl=mix(0.75+0.25*sin(r*30.0-uTime*3.0+fbm(vec3(p*6.0,uTime*0.2))*6.0),
+          0.9+0.1*sin(r*14.0-uTime*1.1+fbm(vec3(p*4.0,uTime*0.1))*4.0),uRainbow);
+        float rim=smoothstep(edge-0.08,edge,r)*step(r,edge);
+        vec3 lit=pc*swirl*(0.85+mix(1.1,0.25,uRainbow)*rim);
+        float core=exp(-r*r*28.0)*uRainbow*step(r,edge);
+        lit=mix(lit,vec3(1.0,0.98,0.95),core*0.7);
+        col=mix(col,min(lit*1.02,vec3(0.95)),paint);
         col+=vec3(uFlash);
         gl_FragColor=vec4(col,1.0);
       }`,
@@ -537,54 +543,6 @@ export function createPillar(radius: number, height: number) {
   return { mesh, material }
 }
 
-/**
- * ＞＜の目。モデルの表情（Fun）だと線が細くて小さいので、上から太く大きく描く。
- * 前髪に隠れるよう深さは見て、顔より手前に描く
- */
-export function createSquintEyes() {
-  const draw = (pointRight: boolean) => {
-    const canvas = document.createElement("canvas")
-    canvas.width = 256
-    canvas.height = 160
-    const g = canvas.getContext("2d")
-    if (g) {
-      const tip = pointRight ? 228 : 28
-      const back = pointRight ? 34 : 222
-      const bend = pointRight ? -14 : 14
-      g.beginPath()
-      g.moveTo(back, 18)
-      g.quadraticCurveTo((back + tip) / 2 + bend, 58, tip, 80)
-      g.quadraticCurveTo((back + tip) / 2 + bend, 102, back, 142)
-      g.lineCap = "round"
-      g.lineJoin = "round"
-      g.strokeStyle = "#3a2440"
-      g.lineWidth = 24
-      g.stroke()
-    }
-    const texture = new CanvasTexture(canvas)
-    texture.colorSpace = SRGBColorSpace
-    return texture
-  }
-  const make = (pointRight: boolean) =>
-    new Mesh(
-      new PlaneGeometry(1, 0.625),
-      new MeshBasicMaterial({
-        map: draw(pointRight),
-        transparent: true,
-        depthWrite: false,
-        toneMapped: false,
-      }),
-    )
-  // 画面の左に見える目（モデルの右目）が「＞」
-  const right = make(true)
-  const left = make(false)
-  right.renderOrder = 2
-  left.renderOrder = 2
-  right.visible = false
-  left.visible = false
-  return { right, left }
-}
-
 /** 衝撃波の輪 */
 export function createShockwave() {
   const material = new ShaderMaterial({
@@ -620,11 +578,13 @@ export function createOrb() {
       uIntensity: { value: 0 },
       uTime: { value: 0 },
       uRainbow: { value: 0 },
+      /** 真ん中の白い芯の強さ（カードの後光では弱くする） */
+      uCore: { value: 1 },
     },
     vertexShader:
       /* glsl */ "varying vec2 vUv;void main(){vUv=uv;vec4 mv=modelViewMatrix*vec4(0.0,0.0,0.0,1.0);mv.xy+=position.xy*vec2(length(modelMatrix[0].xyz));gl_Position=projectionMatrix*mv;}",
     fragmentShader: /* glsl */ `
-      uniform vec3 uColor;uniform float uIntensity;uniform float uTime;uniform float uRainbow;varying vec2 vUv;
+      uniform vec3 uColor;uniform float uIntensity;uniform float uTime;uniform float uRainbow;uniform float uCore;varying vec2 vUv;
       vec3 hue(float h){return clamp(abs(mod(h*6.0+vec3(0,4,2),6.0)-3.0)-1.0,0.0,1.0);}
       void main(){
         vec2 p=vUv-0.5;float r=length(p)*2.0;float ang=atan(p.y,p.x);
@@ -632,7 +592,7 @@ export function createOrb() {
         float halo=exp(-r*3.2)*(0.7+0.3*sin(ang*8.0+uTime*6.0));
         float rays=pow(max(0.0,cos(ang*4.0+uTime*1.5)),24.0)*exp(-r*1.6);
         vec3 col=mix(uColor,hue(ang/6.2831+uTime*0.5),uRainbow);
-        vec3 c=vec3(1.0)*core*3.0+col*(halo*1.6+rays*2.0);
+        vec3 c=vec3(1.0)*core*1.8*uCore+col*(halo*1.4+rays*1.6);
         float a=clamp(core+halo+rays,0.0,1.0);
         gl_FragColor=vec4(c*uIntensity,a*uIntensity);
       }`,
@@ -971,7 +931,7 @@ export function drawCardFront(item: GachaItem, image: HTMLImageElement | null) {
   g.restore()
   g.textAlign = "center"
   g.textBaseline = "middle"
-  g.font = '800 40px "Hiragino Sans", "Noto Sans JP", sans-serif'
+  g.font = '800 44px "Hiragino Sans", "Noto Sans JP", sans-serif'
   g.fillStyle = "#fff"
   g.shadowColor = "rgba(0,0,0,.6)"
   g.shadowBlur = 8
@@ -1017,34 +977,121 @@ export function drawCardFront(item: GachaItem, image: HTMLImageElement | null) {
 
 export const CARD_ASPECT = CARD_W / CARD_H
 
-/** 文字の板（確定カットインの文字など） */
+/**
+ * 文字の板（確定カットインの文字）。「UR」を大きく真珠色の虚に、「確定」を白と金で添え、
+ * 両側に細い金の飾り線。どの背景でも読めるように濃い縁取りを付ける
+ */
 export function drawBanner(text: string, rarity: GachaRarity) {
+  const W = 2048
+  const H = 512
   const canvas = document.createElement("canvas")
-  canvas.width = 2048
-  canvas.height = 512
+  canvas.width = W
+  canvas.height = H
   const g = canvas.getContext("2d") as CanvasRenderingContext2D
-  g.textAlign = "center"
+  const [head, ...restWords] = text.split(" ")
+  const rest = restWords.join(" ")
+  const headFont =
+    'italic 700 330px "Didot", "Bodoni 72", "Times New Roman", serif'
+  const restFont =
+    '700 190px "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif'
+  g.font = headFont
+  const headW = g.measureText(head).width
+  g.font = restFont
+  const restW = rest ? g.measureText(rest).width : 0
+  const gap = rest ? 50 : 0
+  const left = (W - headW - gap - restW) / 2
+  const cy = H / 2 + 10
+  const GOLD = "#f3d48a"
+  const INK = "rgba(20,10,40,0.92)"
   g.textBaseline = "middle"
-  g.font = '900 italic 250px "Hiragino Sans", "Noto Sans JP", sans-serif'
+  g.textAlign = "left"
   g.lineJoin = "round"
-  g.lineWidth = 46
-  g.strokeStyle = "#1a0b33"
-  g.strokeText(text, 1024, 270)
-  g.lineWidth = 18
-  g.strokeStyle = "#fff"
-  g.strokeText(text, 1024, 270)
-  g.fillStyle =
-    rarity === "UR"
-      ? rainbowGradient(g, 300, 0, 1748, 0)
-      : (() => {
-          const grad = g.createLinearGradient(0, 130, 0, 400)
-          grad.addColorStop(0, "#fff6c8")
-          grad.addColorStop(0.5, "#ffc23d")
-          grad.addColorStop(1, "#ff7a1a")
-          return grad
-        })()
-  g.fillText(text, 1024, 270)
+
+  // 飾り線（文字から外へうすれていく金の線と、先の小さなひし形）
+  const ornament = (from: number, dir: 1 | -1) => {
+    const to = from + dir * 330
+    const line = g.createLinearGradient(from, 0, to, 0)
+    line.addColorStop(0, "rgba(243,212,138,0.95)")
+    line.addColorStop(1, "rgba(243,212,138,0)")
+    g.fillStyle = line
+    g.fillRect(Math.min(from, to), cy - 3, 330, 6)
+    g.fillRect(Math.min(from, to) + (dir > 0 ? 30 : 0), cy + 16, 300, 2)
+    g.fillStyle = GOLD
+    const dx = from + dir * 18
+    g.beginPath()
+    g.moveTo(dx, cy - 16)
+    g.lineTo(dx + 10, cy)
+    g.lineTo(dx, cy + 16)
+    g.lineTo(dx - 10, cy)
+    g.closePath()
+    g.fill()
+  }
+  ornament(left - 40, -1)
+  ornament(left + headW + gap + restW + 40, 1)
+
+  // 文字を別の板に塗ってから、上半分につやを重ねる
+  const fillWithSheen = (
+    word: string,
+    font: string,
+    x: number,
+    fill: CanvasGradient | string,
+  ) => {
+    const layer = document.createElement("canvas")
+    layer.width = W
+    layer.height = H
+    const l = layer.getContext("2d") as CanvasRenderingContext2D
+    l.font = font
+    l.textBaseline = "middle"
+    l.fillStyle = fill
+    l.fillText(word, x, cy)
+    l.globalCompositeOperation = "source-atop"
+    const sheen = l.createLinearGradient(0, cy - 120, 0, cy + 110)
+    sheen.addColorStop(0, "rgba(255,255,255,0.75)")
+    sheen.addColorStop(0.45, "rgba(255,255,255,0.1)")
+    sheen.addColorStop(0.5, "rgba(255,255,255,0)")
+    sheen.addColorStop(1, "rgba(120,80,160,0.18)")
+    l.fillStyle = sheen
+    l.fillRect(0, 0, W, H)
+    g.drawImage(layer, 0, 0)
+  }
+  const outline = (word: string, font: string, x: number) => {
+    g.font = font
+    g.shadowColor =
+      rarity === "UR" ? "rgba(255,190,240,0.75)" : "rgba(255,200,90,0.75)"
+    g.shadowBlur = 40
+    g.lineWidth = 30
+    g.strokeStyle = INK
+    g.strokeText(word, x, cy)
+    g.shadowBlur = 0
+    g.lineWidth = 9
+    g.strokeStyle = GOLD
+    g.strokeText(word, x, cy)
+  }
+
+  const headX = left
+  outline(head, headFont, headX)
+  const headFill = g.createLinearGradient(headX, 0, headX + headW, 0)
+  if (rarity === "UR") {
+    // 白を混ぜた淡い虹（真珠のような色）
+    ;["#ffc4dc", "#ffe2b8", "#fff6c4", "#c8f6dc", "#c2e6ff", "#dccfff"].forEach(
+      (c, i, all) => headFill.addColorStop(i / (all.length - 1), c),
+    )
+  } else {
+    headFill.addColorStop(0, "#fff3c4")
+    headFill.addColorStop(0.5, "#ffd36b")
+    headFill.addColorStop(1, "#f0a530")
+  }
+  fillWithSheen(head, headFont, headX, headFill)
+  if (rest) {
+    const restX = left + headW + gap
+    outline(rest, restFont, restX)
+    const restFill = g.createLinearGradient(0, cy - 75, 0, cy + 75)
+    restFill.addColorStop(0, "#ffffff")
+    restFill.addColorStop(1, "#ffe9b8")
+    fillWithSheen(rest, restFont, restX, restFill)
+  }
   const texture = new CanvasTexture(canvas)
   texture.colorSpace = SRGBColorSpace
+  texture.anisotropy = 4
   return texture
 }
