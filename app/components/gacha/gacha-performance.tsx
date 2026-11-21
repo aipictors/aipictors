@@ -10,6 +10,10 @@ import {
   detectGachaQuality,
   type GachaQuality,
 } from "~/components/gacha/gacha-quality"
+import {
+  renderGachaShareImage,
+  shareGachaResult,
+} from "~/components/gacha/gacha-share"
 import type { GachaStage } from "~/components/gacha/gacha-stage.client"
 import { cn } from "~/lib/utils"
 
@@ -178,7 +182,8 @@ export function GachaPerformance(props: Props): React.ReactNode {
       )}
       {state === "fallback" && <GachaResultList items={props.items} />}
       {(state === "done" || state === "fallback" || state === "done2d") && (
-        <div className="absolute inset-x-0 bottom-[max(16px,env(safe-area-inset-bottom))] flex justify-center gap-3 px-4">
+        <div className="absolute inset-x-0 bottom-[max(16px,env(safe-area-inset-bottom))] flex flex-wrap justify-center gap-3 px-4">
+          <GachaShareButton items={props.items} />
           {props.actions}
           <button
             type="button"
@@ -190,6 +195,45 @@ export function GachaPerformance(props: Props): React.ReactNode {
         </div>
       )}
     </div>
+  )
+}
+
+/** 結果を画像にして共有する。画像は出た時点で作っておく（押した瞬間に共有シートを開くため） */
+function GachaShareButton(props: { items: readonly GachaItem[] }) {
+  const [image, setImage] = useState<Blob | null>(null)
+  const [isReady, setIsReady] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    setIsReady(false)
+    renderGachaShareImage(props.items)
+      .catch(() => null)
+      .then((blob) => {
+        if (cancelled) return
+        setImage(blob)
+        setIsReady(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [props.items])
+
+  return (
+    <button
+      type="button"
+      disabled={!isReady}
+      className="rounded-full bg-gradient-to-r from-pink-500 to-violet-500 px-5 py-2.5 font-bold text-sm text-white shadow-[0_0_16px_rgba(236,72,153,.6)] disabled:opacity-50"
+      onClick={async () => {
+        const result = await shareGachaResult(props.items, image)
+        if (result === "fallback" && image) {
+          setNotice("画像を保存しました")
+          window.setTimeout(() => setNotice(null), 2500)
+        }
+      }}
+    >
+      {notice ?? (isReady ? "結果をシェア" : "画像を準備中…")}
+    </button>
   )
 }
 

@@ -189,12 +189,12 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
       return
     }
     const rank = gachaRarityRank(nextItem.rarity)
-    const firstDelay = flipped === 0 ? 0.45 + items.length * 0.06 : 0
+    const firstDelay = flipped === 0 ? 0.36 + items.length * 0.045 : 0
     if (rank >= 3) {
       // ためる → めくる
       const start = window.setTimeout(
         () => setCharging(true),
-        (firstDelay + 0.35) * 1000,
+        (firstDelay + 0.25) * 1000,
       )
       const flip = window.setTimeout(
         () => {
@@ -203,7 +203,7 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
           setShake((value) => value + 1)
           navigator.vibrate?.(rank >= 4 ? [40, 30, 90] : 40)
         },
-        (firstDelay + 0.35 + (rank >= 4 ? 1.3 : 0.9)) * 1000,
+        (firstDelay + 0.25 + (rank >= 4 ? 1.1 : 0.75)) * 1000,
       )
       return () => {
         window.clearTimeout(start)
@@ -212,7 +212,7 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
     }
     const timer = window.setTimeout(
       () => setFlipped((value) => value + 1),
-      (firstDelay + 0.16) * 1000,
+      (firstDelay + 0.11) * 1000,
     )
     return () => window.clearTimeout(timer)
   }, [phase, dealt, flipped])
@@ -674,7 +674,7 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
       {phase === "cards" && (
         <div
           className={cn(
-            "absolute inset-x-0 top-[max(56px,env(safe-area-inset-top))] bottom-24 flex flex-wrap content-center items-center justify-center gap-2 px-3",
+            "absolute inset-x-0 top-[max(56px,env(safe-area-inset-top))] bottom-36 flex flex-wrap content-center items-center justify-center gap-2 px-3",
             isSingle && "gap-0",
           )}
           style={{ perspective: "900px" }}
@@ -694,7 +694,7 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
                 style={{
                   aspectRatio: "3 / 4.3",
                   animation: dealt
-                    ? `g2d-deal .45s ${index * 0.06}s cubic-bezier(.2,1.3,.4,1) both`
+                    ? `g2d-deal .36s ${index * 0.045}s cubic-bezier(.2,1.3,.4,1) both`
                     : undefined,
                   opacity: dealt ? undefined : 0,
                 }}
@@ -714,7 +714,7 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
                   />
                 )}
                 <div
-                  className="relative h-full w-full transition-transform duration-500"
+                  className="relative h-full w-full transition-transform duration-[380ms]"
                   style={{
                     transformStyle: "preserve-3d",
                     transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
