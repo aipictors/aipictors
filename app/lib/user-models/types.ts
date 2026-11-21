@@ -36,6 +36,8 @@ export type UserModel = {
   thumbnailUrl: string | null
   sampleImageUrls: string[]
   sha256: string
+  /** ヘッダーを除いた本体の sha256（A1111 の Lora hashes）。ピックアップの LoRA だけ入る */
+  addnetHash?: string | null
   sizeBytes: number
   status: UserModelStatus
   useCount: number
@@ -180,9 +182,29 @@ export type UserModelListResult = {
 
 export type MyUserModelsResult = {
   models: UserModel[]
+  /** 1 か月（JST）に登録できる数 */
   limit: number
+  /** 持っているモデルの数 */
   used: number
+  /** 今月登録した数（古い API では無いので used を使う） */
+  usedThisMonth?: number
+  /** 枠が戻る日時（次の月の 1 日 00:00 JST、UNIX 秒） */
+  resetsAt?: number
+  /** 登録したモデルを作者が削除できるか（いまは常に false） */
+  canDelete?: boolean
   planType: "FREE" | "LITE" | "STANDARD" | "PREMIUM" | null
+}
+
+/** 上限と比べる数（今月登録した数） */
+export const monthlyUsedOf = (
+  data: Pick<MyUserModelsResult, "used" | "usedThisMonth">,
+) => data.usedThisMonth ?? data.used
+
+/** 枠が戻る日の表示（例: 12/1） */
+export const formatModelQuotaReset = (resetsAt: number | undefined) => {
+  if (!resetsAt) return "毎月1日"
+  const d = new Date((resetsAt + 9 * 3600) * 1000)
+  return `${d.getUTCMonth() + 1}/${d.getUTCDate()}`
 }
 
 export type UserModelEditableFields = {
@@ -288,7 +310,10 @@ export type UserModelPickupCandidate = {
   excludedReason: string | null
 }
 
-export type UserModelPickupAdminEntry = Omit<UserModelPickup, "authorName" | "model"> & {
+export type UserModelPickupAdminEntry = Omit<
+  UserModelPickup,
+  "authorName" | "model"
+> & {
   score: number | null
   stats: Record<string, unknown>
   xDraft: { text: string; images: string[] } | null

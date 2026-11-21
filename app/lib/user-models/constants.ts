@@ -60,11 +60,12 @@ export const USER_MODEL_PART_SIZE = 50 * 1024 * 1024
 /**
  * プランごとの登録上限（表示用の既定値。実際の上限は API が返す limit）
  */
+/** 1 か月（JST）に登録できる数。枠は毎月 1 日に戻る（登録したモデルは削除できない） */
 export const USER_MODEL_PLAN_LIMITS = {
-  FREE: 1,
-  LITE: 3,
-  STANDARD: 10,
-  PREMIUM: 30,
+  FREE: 2,
+  LITE: 5,
+  STANDARD: 12,
+  PREMIUM: 35,
 } as const
 
 export const baseModelLabel = (value: string): string => {

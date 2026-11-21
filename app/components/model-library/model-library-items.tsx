@@ -181,7 +181,8 @@ function ItemMenu(props: {
             </Link>
           </DropdownMenuItem>
         )}
-        {item.isOwn && (
+        {/* 登録を終えたモデルは削除できない（アップロード中のものだけ中止できる） */}
+        {item.isOwn && item.userModel?.status === "UPLOADING" && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem

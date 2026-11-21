@@ -16,7 +16,7 @@ export function toPassFeatures(
       t(`毎日${spec.dailyFreeCoins}フリーコイン（1日${spec.dailyImages}枚まで）`, `${spec.dailyFreeCoins} free coins every day (${spec.dailyImages} images)`),
       t("みんなのモデルで生成", "All community models"),
       t(`LoRA ${spec.loraModels}個まで`, `Up to ${spec.loraModels} LoRAs`),
-      t(`モデル登録 ${spec.modelSlots}個まで`, `Upload up to ${spec.modelSlots} of your own models`),
+      t(`モデル登録 毎月${spec.modelSlots}個`, `Upload ${spec.modelSlots} of your own models per month`),
     ]
   }
 
@@ -30,7 +30,7 @@ export function toPassFeatures(
       t(`Gemini Nano Banana（フリーコインで週${spec.geminiWeeklyImages}枚まで）`, `Gemini Nano Banana (${spec.geminiWeeklyImages} a week on free coins)`),
       t(`LoRA ${spec.loraModels}個まで`, `Up to ${spec.loraModels} LoRAs`),
       t(`お気に入り履歴 ${spec.favoriteHistories}件`, `${spec.favoriteHistories} saved favorites in history`),
-      t(`モデル登録 ${spec.modelSlots}個まで`, `Upload up to ${spec.modelSlots} of your own models`),
+      t(`モデル登録 毎月${spec.modelSlots}個`, `Upload ${spec.modelSlots} of your own models per month`),
       t(`限定アイコン枠 ${spec.avatarFrames}種`, `${spec.avatarFrames} exclusive avatar frames`),
     ]
   }
@@ -48,7 +48,7 @@ export function toPassFeatures(
       t(`Gemini Nano Banana / Nano Banana 2（フリーコインで週${spec.geminiWeeklyImages}枚まで）`, `Gemini Nano Banana and Nano Banana 2 (${spec.geminiWeeklyImages} a week on free coins)`),
       t(`LoRA ${spec.loraModels}個まで`, `Up to ${spec.loraModels} LoRAs`),
       t(`お気に入り履歴 ${spec.favoriteHistories}件`, `${spec.favoriteHistories} saved favorites in history`),
-      t(`モデル登録 ${spec.modelSlots}個まで`, `Upload up to ${spec.modelSlots} of your own models`),
+      t(`モデル登録 毎月${spec.modelSlots}個`, `Upload ${spec.modelSlots} of your own models per month`),
       passType === "PREMIUM"
         ? t(`限定アイコン枠 ${spec.avatarFrames}種（プレミアムだけの王冠の枠 3種）`, `${spec.avatarFrames} exclusive avatar frames, with 3 crown frames only on Premium`)
         : t(`限定アイコン枠 ${spec.avatarFrames}種（金の枠 2種はスタンダードから）`, `${spec.avatarFrames} exclusive avatar frames, with 2 gold frames from Standard up`),

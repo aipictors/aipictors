@@ -41,11 +41,12 @@ import {
   readResumeCache,
   writeResumeCache,
 } from "~/lib/user-models/resume-cache"
-import type {
-  UploadedPart,
-  UserModel,
-  UserModelEditableFields,
-  UserModelKind,
+import {
+  monthlyUsedOf,
+  type UploadedPart,
+  type UserModel,
+  type UserModelEditableFields,
+  type UserModelKind,
 } from "~/lib/user-models/types"
 import {
   computeFileSha256,
@@ -449,7 +450,7 @@ export function UserModelUploadForm() {
     )
   }
 
-  const used = mine.data?.used ?? 0
+  const used = mine.data ? monthlyUsedOf(mine.data) : 0
   const limit = mine.data?.limit ?? 0
   const isLimitReached = mine.data !== undefined && limit > 0 && used >= limit
 
@@ -639,6 +640,7 @@ export function UserModelUploadForm() {
           <UserModelLimitCard
             used={used}
             limit={limit}
+            resetsAt={mine.data?.resetsAt}
             planType={mine.data.planType}
           />
         )}

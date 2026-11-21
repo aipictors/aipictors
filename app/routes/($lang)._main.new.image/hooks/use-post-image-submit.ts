@@ -3,6 +3,12 @@ import type { Dispatch, MutableRefObject } from "react"
 import { toast } from "sonner"
 import type { SafeParseResult } from "valibot"
 import type { TranslationFn } from "~/hooks/use-translation"
+import {
+  pickupVerifyMessage,
+  verifyPickupByGeneration,
+  verifyPickupByPngInfo,
+} from "~/lib/user-models/pickup-verify"
+import type { UserModelPickup } from "~/lib/user-models/types"
 import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
@@ -41,6 +47,46 @@ type Props = {
   isNotLoggedIn: boolean
   isPostingRef: MutableRefObject<boolean>
   t: TranslationFn
+  /** 今週のピックアップモデル（お題のタグを付けた投稿は、そのモデルで作った画像か確かめる） */
+  pickup?: UserModelPickup | null
+  /** 生成画面から渡された生成結果がピックアップモデルを使っているか */
+  generationUsesPickup?: boolean
+}
+
+/**
+ * ピックアップモデルのお題のタグが付いているとき、そのモデルで作った画像か確かめる（参加できなければ案内の文）
+ * - 生成機から選んだ画像: 生成履歴のプロンプト・モデル名
+ * - アップロードした画像: PNG に書かれたハッシュ（書き換えられる欄ではなく、読み込んだときの元の文）
+ */
+export const getPickupJoinError = (props: {
+  pickup: UserModelPickup | null | undefined
+  tags: PostImageFormInputState["tags"]
+  imageInformation: PostImageFormInputState["imageInformation"]
+  isSelectedGenerationImage: boolean
+  generationUsesPickup?: boolean
+  mediaType: "image" | "video"
+}): string | null => {
+  const { pickup } = props
+  if (!pickup?.eventTag || !pickup.model) return null
+  if (!props.tags.some((tag) => tag.text === pickup.eventTag)) return null
+  if (props.mediaType === "video") return pickupVerifyMessage(pickup, "NO_INFO")
+  if (props.isSelectedGenerationImage) {
+    if (props.generationUsesPickup) return null
+    const params = props.imageInformation?.params
+    if (
+      verifyPickupByGeneration(pickup.model, {
+        prompt: params?.prompt,
+        modelName: params?.model,
+      })
+    ) {
+      return null
+    }
+  }
+  const result = verifyPickupByPngInfo(
+    pickup.model,
+    props.imageInformation?.src ?? null,
+  )
+  return result.ok ? null : pickupVerifyMessage(pickup, result.reason)
 }
 
 /**
@@ -59,6 +105,8 @@ export function usePostImageSubmit(props: Props) {
     isNotLoggedIn,
     isPostingRef,
     t,
+    pickup,
+    generationUsesPickup,
   } = props
 
   const [createWork] = useMutation(CreateWorkMutation)
@@ -152,6 +200,20 @@ export function usePostImageSubmit(props: Props) {
 
     if (eventPeriodError !== null) {
       toast(eventPeriodError)
+      return
+    }
+
+    const pickupJoinError = getPickupJoinError({
+      pickup,
+      tags: inputState.tags,
+      imageInformation: inputState.imageInformation,
+      isSelectedGenerationImage: state.isSelectedGenerationImage,
+      generationUsesPickup,
+      mediaType,
+    })
+
+    if (pickupJoinError !== null) {
+      toast(pickupJoinError, { duration: 10000 })
       return
     }
 

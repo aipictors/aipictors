@@ -131,7 +131,8 @@ export function PlusComparisonTable() {
     },
     {
       label: t("モデル登録（みんなのモデル）", "Your own model uploads"),
-      value: (spec) => t(`${spec.modelSlots}個`, `${spec.modelSlots}`),
+      value: (spec) =>
+        t(`毎月${spec.modelSlots}個`, `${spec.modelSlots} / month`),
     },
     {
       label: t("広告の非表示", "No ads"),

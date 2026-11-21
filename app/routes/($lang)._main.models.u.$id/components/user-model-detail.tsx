@@ -520,23 +520,32 @@ export function UserModelDetail(props: Props) {
           )}
 
           {isOwner && (
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                className="flex-1 rounded-xl"
-                onClick={() => setIsEditOpen(true)}
-              >
-                <PencilIcon className="mr-1.5 size-4" />
-                編集
-              </Button>
-              <Button
-                variant="ghost"
-                className="rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive"
-                onClick={() => setIsDeleteOpen(true)}
-              >
-                <Trash2Icon className="mr-1.5 size-4" />
-                削除
-              </Button>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  className="flex-1 rounded-xl"
+                  onClick={() => setIsEditOpen(true)}
+                >
+                  <PencilIcon className="mr-1.5 size-4" />
+                  編集
+                </Button>
+                {model.status === "UPLOADING" && (
+                  <Button
+                    variant="ghost"
+                    className="rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    onClick={() => setIsDeleteOpen(true)}
+                  >
+                    <Trash2Icon className="mr-1.5 size-4" />
+                    削除
+                  </Button>
+                )}
+              </div>
+              {model.status !== "UPLOADING" && (
+                <p className="text-muted-foreground text-xs">
+                  登録したモデルは削除できません。公開をやめたいときは運営にご連絡ください
+                </p>
+              )}
             </div>
           )}
 

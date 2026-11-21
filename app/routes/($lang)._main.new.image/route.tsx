@@ -7,13 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react"
 import { Loader2Icon } from "lucide-react"
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-} from "react"
+import { useCallback, useContext, useEffect, useReducer, useRef } from "react"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
@@ -41,7 +35,11 @@ import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/componen
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { usePostImageDraft } from "~/routes/($lang)._main.new.image/hooks/use-post-image-draft"
 import { usePostImageGenerationResults } from "~/routes/($lang)._main.new.image/hooks/use-post-image-generation-results"
-import { usePickupModelAutoJoin } from "~/routes/($lang)._main.new.image/hooks/use-pickup-model-auto-join"
+import { useUserModelPickup } from "~/components/user-models/user-model-pickup-banner"
+import {
+  usePickupModelAutoJoin,
+  usesPickupModel,
+} from "~/routes/($lang)._main.new.image/hooks/use-pickup-model-auto-join"
 import { usePostImageSearchParams } from "~/routes/($lang)._main.new.image/hooks/use-post-image-search-params"
 import { usePostImageSubmit } from "~/routes/($lang)._main.new.image/hooks/use-post-image-submit"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
@@ -77,9 +75,8 @@ export default function NewImage() {
   const authContext = useContext(AuthContext)
 
   const [searchParams] = useSearchParams()
-  const requestedMediaType = searchParams.get("media") === "video"
-    ? "video"
-    : "image"
+  const requestedMediaType =
+    searchParams.get("media") === "video" ? "video" : "image"
 
   const ref = searchParams.get("generation")
   const generationNanoids = ref?.split("|").filter(Boolean) ?? []
@@ -235,6 +232,8 @@ export default function NewImage() {
 
   const isPostingRef = useRef(false)
 
+  const { data: pickup } = useUserModelPickup()
+
   usePickupModelAutoJoin({
     generationResults: viewerData?.viewer?.imageGenerationResults,
     tags: inputState.tags,
@@ -281,6 +280,13 @@ export default function NewImage() {
     isNotLoggedIn: authContext.isNotLoggedIn,
     isPostingRef,
     t,
+    pickup,
+    generationUsesPickup:
+      pickup !== undefined &&
+      pickup !== null &&
+      (viewerData?.viewer?.imageGenerationResults ?? []).some((result) =>
+        usesPickupModel(pickup, result),
+      ),
   })
 
   const resetImageSelectionForVideo = () => {
@@ -301,7 +307,10 @@ export default function NewImage() {
     }
 
     dispatch({ type: "SET_VIDEO_FILE", payload: videoFile })
-    dispatch({ type: "SET_VIDEO_DURATION_SECONDS", payload: videoDurationSeconds })
+    dispatch({
+      type: "SET_VIDEO_DURATION_SECONDS",
+      payload: videoDurationSeconds,
+    })
     setMediaType(videoFile ? "video" : requestedMediaType)
   }
 
@@ -574,7 +583,9 @@ export default function NewImage() {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>{t("キャンセル", "Cancel")}</AlertDialogCancel>
+                <AlertDialogCancel>
+                  {t("キャンセル", "Cancel")}
+                </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
                     void onResetAllInputs()
@@ -605,7 +616,7 @@ export default function NewImage() {
       </div>
       <SuccessCreatedWorkDialog
         isNew
-          showAutoModeration
+        showAutoModeration
         isOpen={state.progress === 100}
         title={inputState.title}
         description={inputState.caption}

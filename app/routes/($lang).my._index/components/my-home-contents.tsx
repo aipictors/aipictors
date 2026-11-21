@@ -28,7 +28,11 @@ import { useCreatorRewardSummary } from "~/hooks/use-creator-reward-earnings"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { fetchMyUserModels } from "~/lib/user-models/client"
-import type { MyUserModelsResult, UserModel } from "~/lib/user-models/types"
+import {
+  type MyUserModelsResult,
+  monthlyUsedOf,
+  type UserModel,
+} from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 import { SupportRankingSection } from "~/routes/($lang).settings.points/components/support-ranking-section"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
@@ -224,14 +228,16 @@ export function DashboardHomeContents() {
         <StatusCard
           to="/settings/models"
           icon={BoxIcon}
-          label={t("モデル枠", "Model slots")}
+          label={t("今月のモデル枠", "Model slots this month")}
           isLoading={models.isLoading}
           value={
-            models.data ? `${models.data.used} / ${models.data.limit}` : "-"
+            models.data
+              ? `${monthlyUsedOf(models.data)} / ${models.data.limit}`
+              : "-"
           }
           progress={
             models.data && models.data.limit > 0
-              ? models.data.used / models.data.limit
+              ? monthlyUsedOf(models.data) / models.data.limit
               : undefined
           }
         />

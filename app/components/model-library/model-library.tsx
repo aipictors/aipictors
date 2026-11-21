@@ -72,7 +72,11 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useNavigate } from "~/lib/app/locale-router"
 import { USER_MODEL_BASE_MODELS } from "~/lib/user-models/constants"
 import { extractDroppedUrl } from "~/lib/user-models/import-utils"
-import type { UserModel, UserModelKind } from "~/lib/user-models/types"
+import {
+  monthlyUsedOf,
+  type UserModel,
+  type UserModelKind,
+} from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 
 export type ModelLibraryProps = {
@@ -277,7 +281,7 @@ export function ModelLibrary(props: ModelLibraryProps) {
   const isLimitFull =
     mine.data !== undefined &&
     mine.data.limit > 0 &&
-    mine.data.used >= mine.data.limit
+    monthlyUsedOf(mine.data) >= mine.data.limit
 
   const community = useUserModelsInfinite(
     {
@@ -469,7 +473,7 @@ export function ModelLibrary(props: ModelLibraryProps) {
       return false
     }
     if (isLimitFull) {
-      toast("登録できるモデル数の上限に達しています")
+      toast("今月登録できるモデル数の上限に達しています（毎月1日にリセット）")
       changeSection("mine")
       return false
     }
@@ -807,11 +811,12 @@ export function ModelLibrary(props: ModelLibraryProps) {
         </div>
         {authContext.isLoggedIn && mine.data && (
           <div className="mt-auto hidden border-t px-5 py-4 md:block">
-            <p className="mb-2 font-medium text-xs">登録数</p>
+            <p className="mb-2 font-medium text-xs">今月の登録数</p>
             <ModelLibraryUsageMeter
               compact
-              used={mine.data.used}
+              used={monthlyUsedOf(mine.data)}
               limit={mine.data.limit}
+              resetsAt={mine.data.resetsAt}
               planType={mine.data.planType}
               linkTarget={linkTarget}
             />
@@ -991,8 +996,9 @@ export function ModelLibrary(props: ModelLibraryProps) {
           </div>
           {section === "mine" && authContext.isLoggedIn && mine.data && (
             <ModelLibraryUsageMeter
-              used={mine.data.used}
+              used={monthlyUsedOf(mine.data)}
               limit={mine.data.limit}
+              resetsAt={mine.data.resetsAt}
               planType={mine.data.planType}
               linkTarget={linkTarget}
               className="mb-5 max-w-md rounded-xl border bg-muted/30 px-4 py-3"

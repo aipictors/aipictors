@@ -3,11 +3,15 @@ import { CrownIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Progress } from "~/components/ui/progress"
 import { USER_MODEL_PLAN_LIMITS } from "~/lib/user-models/constants"
+import { formatModelQuotaReset } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 
 type Props = {
+  /** 今月登録した数 */
   used: number
   limit: number
+  /** 枠が戻る日時（UNIX 秒） */
+  resetsAt?: number
   planType: string | null
   className?: string
 }
@@ -20,7 +24,7 @@ const planLabel = (planType: string | null): string => {
 }
 
 /**
- * 登録数 / 上限 と、上限に達したときのプラン案内
+ * 今月の登録数 / 上限 と、上限に達したときのプラン案内
  */
 export function UserModelLimitCard(props: Props) {
   const isFull = props.limit > 0 && props.used >= props.limit
@@ -37,7 +41,7 @@ export function UserModelLimitCard(props: Props) {
       )}
     >
       <div className="flex items-baseline justify-between gap-2">
-        <p className="font-semibold text-sm">登録数</p>
+        <p className="font-semibold text-sm">今月の登録数</p>
         <p className="text-sm tabular-nums">
           <span className="font-bold text-lg">{props.used}</span>
           <span className="text-muted-foreground"> / {props.limit}</span>
@@ -45,15 +49,18 @@ export function UserModelLimitCard(props: Props) {
       </div>
       <Progress value={ratio} className="mt-2 h-1.5" />
       <p className="mt-2 text-muted-foreground text-xs">
-        {planLabel(props.planType)}の上限は {props.limit} 個です
+        {planLabel(props.planType)}は毎月 {props.limit} 個まで登録できます。枠は{" "}
+        {formatModelQuotaReset(props.resetsAt)}{" "}
+        に戻ります。登録したモデルは削除できません
       </p>
       {isFull && (
         <div className="mt-3 space-y-2">
           <p className="text-sm">
-            上限に達しています。不要なモデルを削除するか、プランを変更すると追加できます。
+            今月の上限に達しています。{formatModelQuotaReset(props.resetsAt)}{" "}
+            に枠が戻るか、プランを変更すると追加できます。
           </p>
           <p className="text-muted-foreground text-xs">
-            {`登録できる数：無料 ${USER_MODEL_PLAN_LIMITS.FREE}個・ライト ${USER_MODEL_PLAN_LIMITS.LITE}個・スタンダード ${USER_MODEL_PLAN_LIMITS.STANDARD}個・プレミアム ${USER_MODEL_PLAN_LIMITS.PREMIUM}個`}
+            {`1か月に登録できる数：無料 ${USER_MODEL_PLAN_LIMITS.FREE}個・ライト ${USER_MODEL_PLAN_LIMITS.LITE}個・スタンダード ${USER_MODEL_PLAN_LIMITS.STANDARD}個・プレミアム ${USER_MODEL_PLAN_LIMITS.PREMIUM}個`}
           </p>
           <div className="flex gap-2">
             {canUpgrade && (
@@ -70,7 +77,7 @@ export function UserModelLimitCard(props: Props) {
               variant="outline"
               className="rounded-full"
             >
-              <Link to="/models/library?section=mine">自分のモデルを整理</Link>
+              <Link to="/models/library?section=mine">自分のモデルを見る</Link>
             </Button>
           </div>
         </div>

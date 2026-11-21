@@ -1,4 +1,5 @@
 import { Link } from "~/lib/app/locale-router"
+import { formatModelQuotaReset } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 
 const planName = (planType: string | null): string => {
@@ -9,8 +10,11 @@ const planName = (planType: string | null): string => {
 }
 
 type Props = {
+  /** 今月登録した数 */
   used: number
   limit: number
+  /** 枠が戻る日時（UNIX 秒） */
+  resetsAt?: number
   planType: string | null
   /**
    * サイドバー用の小さい表示
@@ -21,7 +25,7 @@ type Props = {
 }
 
 /**
- * 登録数の使用量（ドライブの容量表示のようなメーター）
+ * 今月の登録数（ドライブの容量表示のようなメーター）。枠は毎月 1 日に戻る
  */
 export function ModelLibraryUsageMeter(props: Props) {
   const ratio =
@@ -45,7 +49,7 @@ export function ModelLibraryUsageMeter(props: Props) {
         aria-valuemin={0}
         aria-valuemax={props.limit}
         aria-valuenow={props.used}
-        aria-label="モデルの登録数"
+        aria-label="今月のモデルの登録数"
       >
         <div
           className={cn(
@@ -67,9 +71,10 @@ export function ModelLibraryUsageMeter(props: Props) {
           )}
         >
           <span className="font-medium text-foreground">
-            {props.used} / {props.limit} モデル
+            今月 {props.used} / {props.limit}
           </span>
-          （{planName(props.planType)}）
+          （{planName(props.planType)}・{formatModelQuotaReset(props.resetsAt)}
+          にリセット）
         </p>
         {canUpgrade && (isFull || isNearFull) && (
           <Link
@@ -86,7 +91,8 @@ export function ModelLibraryUsageMeter(props: Props) {
       </div>
       {isFull && !props.compact && (
         <p className="text-muted-foreground text-xs">
-          上限に達しています。使っていないモデルを削除するか、プランを変えると追加できます。
+          今月の上限に達しています。{formatModelQuotaReset(props.resetsAt)}{" "}
+          に枠が戻るか、プランを変えると追加できます。登録したモデルは削除できません。
         </p>
       )}
     </div>
