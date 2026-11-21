@@ -74,6 +74,7 @@ export function SettingProfileForm() {
   const [sensitiveProfileText, setSensitiveProfileText] = useState("")
   const [sensitiveEnProfileText, setSensitiveEnProfileText] = useState("")
   const [sensitiveLinks, setSensitiveLinks] = useState<string[]>([])
+  const [sensitiveFanzaCircle, setSensitiveFanzaCircle] = useState("")
   const [selectedUserAvatarFrameId, setSelectedUserAvatarFrameId] = useState<
     string | null
   >(null)
@@ -127,6 +128,7 @@ export function SettingProfileForm() {
       setSensitiveProfileText(userInfo.sensitiveProfile?.biography ?? "")
       setSensitiveEnProfileText(userInfo.sensitiveProfile?.enBiography ?? "")
       setSensitiveLinks(userInfo.sensitiveProfile?.links ?? [])
+      setSensitiveFanzaCircle(userInfo.sensitiveProfile?.fanzaCircleId ?? "")
       setSelectedPickupWorks(
         userInfo.featuredWorks?.map((work) => ({
           id: work.id,
@@ -209,6 +211,10 @@ export function SettingProfileForm() {
       ...(nextSensitiveLinks.join("\n") !==
         (savedSensitiveProfile?.links ?? []).join("\n") && {
         sensitiveLinks: nextSensitiveLinks,
+      }),
+      ...(sensitiveFanzaCircle.trim() !==
+        (savedSensitiveProfile?.fanzaCircleId ?? "") && {
+        sensitiveFanzaCircle: sensitiveFanzaCircle.trim(),
       }),
     }
 
@@ -780,6 +786,27 @@ export function SettingProfileForm() {
               )}
             </div>
           </div>
+          <div className="space-y-1.5">
+            <label htmlFor="sensitiveFanzaCircle" className="font-medium text-sm">
+              {t("FANZA の販売作品", "Works on FANZA")}
+            </label>
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              {t(
+                "FANZA 同人のサークルのページ（作品一覧）の URL を入れると、R18 のプロフィールに販売中の作品をサムネイル付きで並べます。",
+                "Enter the URL of your FANZA doujin circle page to show your works for sale on your R18 profile.",
+              )}
+            </p>
+            <input
+              id="sensitiveFanzaCircle"
+              type="text"
+              inputMode="url"
+              className={inputClassName}
+              maxLength={500}
+              placeholder="https://www.dmm.co.jp/dc/doujin/-/list/=/article=maker/id=..."
+              value={sensitiveFanzaCircle}
+              onChange={(e) => setSensitiveFanzaCircle(e.target.value)}
+            />
+          </div>
         </div>
       </SettingsSection>
 
@@ -824,6 +851,7 @@ const userQuery = graphql(
         biography
         enBiography
         links
+        fanzaCircleId
       }
     }
   }`,

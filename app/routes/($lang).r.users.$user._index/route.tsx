@@ -17,6 +17,10 @@ import {
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
 import {
+  UserFanzaItemFragment,
+  UserFanzaItemsSection,
+} from "~/routes/($lang).r.users.$user._index/components/user-fanza-items-section"
+import {
   UserSensitivePickupContents,
   UserSensitivePickupFragment,
 } from "~/routes/($lang).r.users.$user._index/components/user-sensitive-pickup-contents"
@@ -196,6 +200,9 @@ export default function UserLayout() {
             userPickupWorks={data.user.featuredSensitiveWorks ?? []}
             userId={data.user.id}
           />
+          <UserFanzaItemsSection
+            items={data.user.sensitiveProfile?.fanzaItems ?? []}
+          />
           <div className="space-y-4">
             {works.length !== 0 && (
               <HomeWorkSection
@@ -237,6 +244,11 @@ const combinedUserAndWorksQuery = graphql(
     user(id: $userId) {
       id
       ...UserPickup
+      sensitiveProfile {
+        fanzaItems {
+          ...UserFanzaItem
+        }
+      }
     }
     works(offset: $offset, limit: $limit, where: $portfolioWhere) {
       ...HomeWork
@@ -252,6 +264,7 @@ const combinedUserAndWorksQuery = graphql(
     HomeWorkFragment,
     HomeNovelsWorkListItemFragment,
     UserSensitivePickupFragment,
+    UserFanzaItemFragment,
   ],
 )
 

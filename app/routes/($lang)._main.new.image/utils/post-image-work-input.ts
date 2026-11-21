@@ -4,6 +4,7 @@ import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/r
 import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import type { CreateWorkMutation } from "~/routes/($lang)._main.new.image/utils/new-image-queries"
 import type { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
+import { toCreateFanzaUrl } from "~/routes/($lang)._main.new.image/utils/fanza-url-input"
 
 type CreateWorkInput = VariablesOf<typeof CreateWorkMutation>["input"]
 
@@ -52,6 +53,10 @@ export const toVideoWorkInput = (
     pngInfo: null,
     imageStyle: inputState.imageStyle,
     relatedUrl: inputState.link,
+    fanzaUrl: toCreateFanzaUrl(
+      inputState.fanzaUrl,
+      inputState.ratingRestriction,
+    ),
     tags: inputState.tags.map((tag) => tag.text),
     isTagEditable: inputState.useTagFeature,
     isCommentEditable: inputState.useCommentFeature,
@@ -119,6 +124,10 @@ export const toImageWorkInput = (
     pngInfo: inputState.imageInformation?.src ?? null,
     imageStyle: inputState.imageStyle,
     relatedUrl: inputState.link,
+    fanzaUrl: toCreateFanzaUrl(
+      inputState.fanzaUrl,
+      inputState.ratingRestriction,
+    ),
     tags: inputState.tags.map((tag) => tag.text),
     isTagEditable: inputState.useTagFeature,
     isCommentEditable: inputState.useCommentFeature,

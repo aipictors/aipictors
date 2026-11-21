@@ -158,6 +158,7 @@ export const toEditImageInputPayload = (
   },
   imageStyle: work?.style ?? "ILLUSTRATION",
   link: work?.relatedUrl ?? "",
+  fanzaUrl: work ? (work.fanzaUrl ?? "") : undefined,
   ratingRestriction: work?.rating ?? "G",
   reservationDate: getReservationDetails(work?.createdAt ?? 0)
     .reservationDate,

@@ -34,6 +34,7 @@ import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadTextFile } from "~/utils/upload-text-file"
 import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
+import { toUpdateFanzaUrl } from "~/routes/($lang)._main.new.image/utils/fanza-url-input"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -163,6 +164,7 @@ export default function EditText() {
           },
           imageStyle: work?.style ?? "ILLUSTRATION",
           link: work?.relatedUrl ?? "",
+          fanzaUrl: work ? (work.fanzaUrl ?? "") : undefined,
           ratingRestriction: work?.rating ?? "G",
           reservationDate: getReservationDetails(work?.createdAt ?? 0)
             .reservationDate,
@@ -273,6 +275,7 @@ export default function EditText() {
     },
     imageStyle: work?.style ?? "ILLUSTRATION",
     link: work?.relatedUrl ?? "",
+    fanzaUrl: work ? (work.fanzaUrl ?? "") : undefined,
     ratingRestriction: work?.rating ?? "G",
     reservationDate: reservationDate,
     reservationTime: reservationTime,
@@ -498,6 +501,7 @@ export default function EditText() {
             pngInfo: state.pngInfo?.src ?? null,
             imageStyle: inputState.imageStyle,
             relatedUrl: inputState.link,
+            fanzaUrl: toUpdateFanzaUrl(inputState.fanzaUrl),
             tags: inputState.tags.map((tag) => tag.text),
             isTagEditable: inputState.useTagFeature,
             isCommentEditable: inputState.useCommentFeature,
@@ -818,6 +822,7 @@ const workQuery = graphql(
       style
       url
       relatedUrl
+      fanzaUrl
       mdUrl
       user {
         id

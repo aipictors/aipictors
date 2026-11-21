@@ -1578,6 +1578,9 @@ input CreateWorkInput {
 
   """説明"""
   explanation: String
+
+  """FANZA の販売ページの URL（作品のページに「FANZA で販売中」のリンクを出す）"""
+  fanzaUrl: String
   imageHeight: Int!
 
   """テイスト"""
@@ -1922,6 +1925,27 @@ type EventParticipantIconNode {
   iconUrl: String
   id: ID!
   name: String
+}
+
+"""FANZA の販売作品（DMM アフィリエイト API）"""
+type FanzaItemNode {
+  """FANZA の作品 ID"""
+  contentId: String!
+
+  """サムネイル"""
+  imageUrl: String
+
+  """価格（円。例: 880、550~）"""
+  price: String
+
+  """発売日"""
+  releasedAt: String
+
+  """タイトル"""
+  title: String!
+
+  """販売ページ（アフィリエイトリンク）"""
+  url: String!
 }
 
 input FeaturePromptonRequestWhereInput {
@@ -5753,6 +5777,9 @@ input UpdateUserProfileInput {
   """R18 用の紹介（英語）"""
   sensitiveEnBiography: String
 
+  """FANZA 同人のサークル（サークルのページの URL か ID。空文字で消す）。R18 のプロフィールに販売作品を並べる"""
+  sensitiveFanzaCircle: String
+
   """R18 用のヘッダー画像（空文字で消して全年齢のヘッダーを出す）"""
   sensitiveHeaderImageUrl: String
 
@@ -5847,6 +5874,9 @@ input UpdateWorkInput {
 
   """説明"""
   explanation: String
+
+  """FANZA の販売ページの URL（空文字で消す。送らなければそのまま）"""
+  fanzaUrl: String
 
   """作品ID"""
   id: ID!
@@ -6421,6 +6451,12 @@ type UserSensitiveProfileNode {
 
   """R18 用の紹介（英語）"""
   enBiography: String
+
+  """FANZA 同人のサークル（メーカー）ID"""
+  fanzaCircleId: String
+
+  """FANZA 同人の販売作品（新しい順に 20 件まで。サークル未登録・取得できないときは空）"""
+  fanzaItems: [FanzaItemNode!]!
 
   """R18 用のヘッダー画像URL"""
   headerImageUrl: String
@@ -7119,6 +7155,12 @@ type WorkNode implements Node {
 
   """タイトル(英語)"""
   enTitle: String!
+
+  """「FANZA で販売中」のリンク先（アフィリエイトリンク）。R18・R18G の作品だけ"""
+  fanzaLinkUrl: String
+
+  """FANZA の販売ページの URL（作者が登録したもの。編集画面用）"""
+  fanzaUrl: String
 
   """生成情報公開設定"""
   generationAccessType: String!

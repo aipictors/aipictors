@@ -4,6 +4,7 @@ import type { vPostTextForm } from "~/routes/($lang)._main.new.image/validations
 import type { PostTextFormInputState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-input-state"
 import type { PostTextFormState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-state"
 import type { CreateWorkMutation } from "~/routes/($lang)._main.new.text/utils/new-text-queries"
+import { toCreateFanzaUrl } from "~/routes/($lang)._main.new.image/utils/fanza-url-input"
 
 /**
  * 小説・コラムの投稿で送る内容
@@ -44,6 +45,10 @@ export const toTextWorkInput = (props: {
     pngInfo: state.pngInfo?.src ?? null,
     imageStyle: inputState.imageStyle,
     relatedUrl: inputState.link,
+    fanzaUrl: toCreateFanzaUrl(
+      inputState.fanzaUrl,
+      inputState.ratingRestriction,
+    ),
     tags: inputState.tags.map((tag) => tag.text),
     isTagEditable: inputState.useTagFeature,
     isCommentEditable: inputState.useCommentFeature,

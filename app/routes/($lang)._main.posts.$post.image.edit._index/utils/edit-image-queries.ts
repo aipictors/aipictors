@@ -128,6 +128,7 @@ export const workQuery = graphql(
       style
       url
       relatedUrl
+      fanzaUrl
       isBotGradingEnabled
       botEvaluationStatus
       isBotGradingPublic

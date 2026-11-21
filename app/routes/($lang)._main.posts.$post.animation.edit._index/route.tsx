@@ -29,6 +29,7 @@ import React from "react"
 import { getJstDate } from "~/utils/jst-date"
 import { PostImageFormRecentlyUsedTagsFragment } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { getReservationDetails } from "~/utils/get-reservation-details"
+import { toUpdateFanzaUrl } from "~/routes/($lang)._main.new.image/utils/fanza-url-input"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -109,6 +110,7 @@ export default function EditImage () {
           },
           imageStyle: work?.style ?? "ILLUSTRATION",
           link: work?.relatedUrl ?? "",
+          fanzaUrl: work ? (work.fanzaUrl ?? "") : undefined,
           ratingRestriction: work?.rating ?? "G",
           reservationDate: getReservationDetails(work?.createdAt ?? 0)
             .reservationDate,
@@ -359,6 +361,7 @@ export default function EditImage () {
             pngInfo: null,
             imageStyle: work?.style,
             relatedUrl: inputState.link,
+            fanzaUrl: toUpdateFanzaUrl(inputState.fanzaUrl),
             tags: inputState.tags.map((tag) => tag.text),
             isTagEditable: inputState.useTagFeature,
             isCommentEditable: inputState.useCommentFeature,
@@ -649,6 +652,7 @@ const workQuery = graphql(
       url
       streamUid
       relatedUrl
+      fanzaUrl
       user {
         id
         works(offset: 0, limit: 16) {

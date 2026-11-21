@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { Heart, ShieldAlert } from "lucide-react"
+import { Heart, ShieldAlert, ShoppingCartIcon } from "lucide-react"
 import type React from "react"
 import { startTransition, useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
@@ -418,6 +418,18 @@ export function WorkArticle(props: Props) {
               </CardContent>
             </Card>
           )}
+        {props.work.fanzaLinkUrl && (
+          <a
+            href={props.work.fanzaLinkUrl}
+            target="_blank"
+            rel="sponsored noopener noreferrer"
+          >
+            <Button variant={"secondary"} className="w-full gap-2">
+              <ShoppingCartIcon className="size-4" />
+              {t("FANZA で販売中", "On sale at FANZA")}
+            </Button>
+          </a>
+        )}
         {props.work.promptAccessType === "PRIVATE" &&
           props.work.user &&
           props.work.user.id === appContext.userId && (

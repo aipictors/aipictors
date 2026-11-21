@@ -97,6 +97,12 @@ export const postTextFormInputReducer = (
         link: action.payload,
       }
     }
+    case "SET_FANZA_URL": {
+      return {
+        ...state,
+        fanzaUrl: action.payload,
+      }
+    }
     case "ENABLE_TAG_FEATURE": {
       return {
         ...state,
@@ -217,6 +223,7 @@ export const postTextFormInputReducer = (
         themeId: action.payload.themeId,
         albumId: action.payload.albumId,
         link: action.payload.link,
+        fanzaUrl: action.payload.fanzaUrl,
         useTagFeature: action.payload.useTagFeature,
         useCommentFeature: action.payload.useCommentFeature,
         usePromotionFeature: action.payload.usePromotionFeature,

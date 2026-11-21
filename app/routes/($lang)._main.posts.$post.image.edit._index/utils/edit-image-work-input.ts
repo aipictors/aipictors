@@ -4,6 +4,7 @@ import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/r
 import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import type { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import type { EditImageWork } from "~/routes/($lang)._main.posts.$post.image.edit._index/utils/edit-image-form-state"
+import { toUpdateFanzaUrl } from "~/routes/($lang)._main.new.image/utils/fanza-url-input"
 
 /**
  * 作品の更新で送る内容
@@ -59,6 +60,7 @@ export const toUpdateWorkInput = (props: {
   pngInfo: inputState.imageInformation?.src ?? null,
   imageStyle: inputState.imageStyle,
   relatedUrl: inputState.link,
+  fanzaUrl: toUpdateFanzaUrl(inputState.fanzaUrl),
   tags: inputState.tags.map((tag: { text: string }) => tag.text),
   isTagEditable: inputState.useTagFeature,
   isCommentEditable: inputState.useCommentFeature,

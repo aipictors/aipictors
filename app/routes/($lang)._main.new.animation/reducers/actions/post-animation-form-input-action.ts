@@ -10,6 +10,7 @@ import {
   null_,
   nullable,
   object,
+  optional,
   string,
   union,
   type InferInput,
@@ -59,6 +60,10 @@ export const vPostAnimationFormInputAction = union([
   }),
   object({
     type: literal("SET_LINK"),
+    payload: string(),
+  }),
+  object({
+    type: literal("SET_FANZA_URL"),
     payload: string(),
   }),
   object({
@@ -128,6 +133,7 @@ export const vPostAnimationFormInputAction = union([
       themeId: nullable(string()),
       albumId: nullable(string()),
       link: string(),
+      fanzaUrl: optional(string()),
       tags: array(vTag),
       useTagFeature: boolean(),
       useCommentFeature: boolean(),

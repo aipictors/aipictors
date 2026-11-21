@@ -15,6 +15,7 @@ import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/p
 import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
 import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
 import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
+import { PostFormItemFanzaLink } from "~/routes/($lang)._main.new.image/components/post-form-item-fanza-link"
 import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
 import { PostFormItemTags } from "~/routes/($lang)._main.new.image/components/post-form-item-tags"
 import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
@@ -463,6 +464,13 @@ export function PostAnimationFormInput(props: Props) {
         link={props.state.link}
         onChange={(link) => {
           props.dispatch({ type: "SET_LINK", payload: link })
+        }}
+      />
+      <PostFormItemFanzaLink
+        url={props.state.fanzaUrl}
+        rating={props.state.ratingRestriction}
+        onChange={(url) => {
+          props.dispatch({ type: "SET_FANZA_URL", payload: url })
         }}
       />
       <PostFormItemAdvertising

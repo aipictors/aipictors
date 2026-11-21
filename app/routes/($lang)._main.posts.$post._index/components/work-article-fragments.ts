@@ -182,6 +182,7 @@ export const workArticleFragment = graphql(
       isSensitive
     }
     relatedUrl
+    fanzaLinkUrl
     nanoid
     isBotGradingEnabled
     isBotGradingPublic
@@ -384,6 +385,7 @@ export const sensitiveWorkArticleFragment = graphql(
     weeklyRanking
     monthlyRanking
     relatedUrl
+    fanzaLinkUrl
     nanoid
     isPromotion
     isBotGradingEnabled
