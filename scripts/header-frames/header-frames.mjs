@@ -4,6 +4,10 @@
  * 比率はスマホ 5:2（1000×400）と PC 3:1（1200×400）の 2 枚を作る。どちらも高さは 400 で、
  * 角の飾りは同じ大きさ・同じ位置に置き、横に長い分だけ辺が伸びる（引き伸ばさないので絵がゆがまない）。
  * t は 0〜1 のループの位置。最初と最後が同じ絵になるように作る
+ *
+ * 軽くするために 2 枚に分ける。base は止まった絵（ふち・角の飾り・光）、motion は動くものだけ（花びら・粒・きらめき）。
+ * 画面では base の上に motion を重ねる。motion はほとんど透明なので、動く絵でも軽くなる。
+ * layer に "base" / "motion" / "all" を渡す（all は確認用の 1 枚絵）
  */
 import { PARTS } from "../avatar-frames/decorations.mjs"
 
@@ -82,11 +86,15 @@ const baseDefs = (extra = "") => `<defs>
 const svg = (w, rad, body) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${H}"><clipPath id="hclip">${rrect(w, rad, 0, "")}</clipPath><g clip-path="url(#hclip)">${body}</g></svg>`
 
+/** 止まった絵と動く絵のどちらを描くか */
+const layered = (w, rad, layer, defs, base, motion) =>
+  svg(w, rad, `${defs}${layer === "motion" ? "" : base}${layer === "base" ? "" : motion}`)
+
 /* ------------------------------------------------------------------ */
 /* SSR 金蒔絵の夜桜                                                      */
 /* ------------------------------------------------------------------ */
 
-const makie = (t, { w, rad }) => {
+const makie = (t, { w, rad }, layer = "all") => {
   const g = METAL.gold
   const branch = (dir, len, seed) => {
     // dir=1: 左上の角から右へ伸びる / dir=-1: 右下の角から左へ伸びる
@@ -102,7 +110,7 @@ const makie = (t, { w, rad }) => {
       [0.66, 28], [0.8, 22], [0.9, 4], [0.97, 18],
     ]
     const flowers = spots
-      .map(([k, y], i) => place(len * k, y + (r() - 0.5) * 6, i * 31 + wave(t, i / spots.length) * 7, 0.62 + r() * 0.34, blossom()))
+      .map(([k, y], i) => place(len * k, y + (r() - 0.5) * 6, i * 31, 0.62 + r() * 0.34, blossom()))
       .join("")
     const buds = Array.from({ length: 6 }, (_, i) => `<circle cx="${f(len * (0.15 + i * 0.15))}" cy="${f(18 + r() * 30)}" r="4" fill="#ff8fb4" stroke="#c2185b" stroke-width=".8"/>`).join("")
     return `<g transform="${dir > 0 ? "translate(-14 30)" : `translate(${w + 14} ${H - 30}) scale(-1 -1)`}">
@@ -117,7 +125,7 @@ const makie = (t, { w, rad }) => {
   const golds = goldSpots
     .map((s, i) => {
       const [x, y] = perimeter(w, 12, s)
-      return place(x, y, i * 40 + t * 72, i % 3 === 0 ? 0.5 : 0.36, goldBlossom("url(#hmkG)", g[1]))
+      return place(x, y, i * 40, i % 3 === 0 ? 0.5 : 0.36, goldBlossom("url(#hmkG)", g[1]))
     })
     .join("")
   const r = rng(91)
@@ -130,11 +138,12 @@ const makie = (t, { w, rad }) => {
     return place(x0 + Math.sin(TAU * (p + off)) * 18 + p * 30, y, p * 360 + off * 360, 0.75, looseP, `opacity="${f(Math.min(1, Math.sin(Math.PI * p) * 1.4) * 0.9)}"`)
   }).join("")
   const moon = [w - 92, 74]
-  return svg(
+  return layered(
     w,
     rad,
-    `${baseDefs(lg("petal", ["#fff3f7", "#ffc1d6", "#ff8fb4"]) + lg("hmkG", ["#fffadd", "#ffe58c", "#e9bd42", "#b9860e"]) + flowGrad("hmkBand", [g[1], g[3], g[5], g[3], g[2], g[4], g[1]], t, w) + bezelDef(g) + PEARL_DEF + '<radialGradient id="hmkM" cx=".4" cy=".4"><stop offset="0" stop-color="#fffbe8"/><stop offset=".7" stop-color="#ffe7a0"/><stop offset="1" stop-color="#f2c45a"/></radialGradient>')}
-    ${cornerGlow(70, 50, 150, "#ffb3cf", 0.45)}${cornerGlow(w - 70, H - 50, 150, "#ffd76a", 0.4)}
+    layer,
+    baseDefs(lg("petal", ["#fff3f7", "#ffc1d6", "#ff8fb4"]) + lg("hmkG", ["#fffadd", "#ffe58c", "#e9bd42", "#b9860e"]) + flowGrad("hmkBand", [g[1], g[3], g[5], g[3], g[2], g[4], g[1]], 0, w) + bezelDef(g) + PEARL_DEF + '<radialGradient id="hmkM" cx=".4" cy=".4"><stop offset="0" stop-color="#fffbe8"/><stop offset=".7" stop-color="#ffe7a0"/><stop offset="1" stop-color="#f2c45a"/></radialGradient>'),
+    `${cornerGlow(70, 50, 150, "#ffb3cf", 0.45)}${cornerGlow(w - 70, H - 50, 150, "#ffd76a", 0.4)}
     ${cornerRays(t, 0, 0, 100, 170, 8, "#fff0f6", 0.22)}${cornerRays(t, w, H, -80, -10, 8, "#fff3d0", 0.2)}
     <circle cx="${moon[0]}" cy="${moon[1]}" r="44" fill="#fff4c8" opacity=".5" filter="url(#hglow)"/>
     <circle cx="${moon[0]}" cy="${moon[1]}" r="34" fill="url(#hmkM)"/>
@@ -147,8 +156,8 @@ const makie = (t, { w, rad }) => {
       ${golds}
       ${setGem(w / 2, H - 12, 7, g, GEM.pink, t, 0.5)}${setGem(w / 2, 12, 7, g, GEM.pink, t, 0)}
       ${branch(1, 330, 7)}${branch(-1, 250, 13)}
-    </g>
-    ${petals}
+    </g>`,
+    `${petals}
     ${glint(moon[0] - 22, moon[1] - 24, 0.9, flash(t, 0.2))}${glint(w / 2, 12, 0.8, flash(t, 0))}${glint(w / 2, H - 12, 0.8, flash(t, 0.5))}
     ${sparkle(w - 170, 40, 0.9, "#fff0f7", Math.max(0, wave(t, 0.3)))}${sparkle(150, H - 40, 0.9, "#fff0f7", Math.max(0, wave(t, 0.8)))}`,
   )
@@ -158,16 +167,15 @@ const makie = (t, { w, rad }) => {
 /* UR 九尾の白狐                                                        */
 /* ------------------------------------------------------------------ */
 
-const kyubi = (t, { w, rad }) => {
+const kyubi = (t, { w, rad }, layer = "all") => {
   const p = METAL.platinum
   let grads = ""
   const tail = (i, n, x, y, d, s, flip) => {
-    const tip = prismAt(i / 9 + t)
+    const tip = prismAt(i / 9)
     const id = `hky${i}`
     grads += `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="-150"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#fffaf4"/><stop offset=".75" stop-color="${mixHex(tip, "#ffffff", 0.4)}"/><stop offset="1" stop-color="${tip}"/></linearGradient>`
-    const sway = wave(t, i / 9) * 4
     const body = `<g transform="scale(${flip ? -1 : 1} 1)"><path d="M-18 0C-40-30-50-78-34-118-26-138-6-152 14-150 30-148 40-136 34-126 26-134 14-132 12-122 30-110 36-84 30-56 26-32 18-14 18 0Z" fill="url(#${id})" stroke="#a898c8" stroke-width="2" stroke-linejoin="round"/><path d="M-6-14C-20-44-24-80-14-110M8-18C14-46 14-72 8-96M-20-60C-26-74-28-90-24-104" stroke="#e6dcf3" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`
-    return place(x, y, d + sway, s, body)
+    return place(x, y, d, s, body)
   }
   // 九本の尾: 右下に 5 本（左上へ扇形）、左上に 4 本（右下へ扇形）。付け根は角の外に隠して、尾の形が全部見えるようにする
   const br = Array.from({ length: 5 }, (_, i) => tail(i, 5, w + 4, H + 4, -6 - i * 19.5, 1.4, i > 2)).join("")
@@ -184,35 +192,37 @@ const kyubi = (t, { w, rad }) => {
     const k = 0.85 + 0.15 * Math.sin(TAU * (t * 3 + i / 8))
     // 真ん中ほど薄く（ヘッダー画像を邪魔しない）
     const edge = Math.min(1, Math.abs(x - w / 2) / (w * 0.32))
-    return place(x, y, 0, k * 1.5, `<path d="M0-18C8-6 11 6 0 13-11 6-8-6 0-18Z" fill="${c}" opacity=".9"/><path d="M0-8C4-2 5 4 0 8-5 4-4-2 0-8Z" fill="#fff"/>`, `opacity="${f(0.25 + 0.75 * edge)}"`)
+    // ぼかし（filter）は動く絵を重くするので、薄い丸を重ねて光らせる
+    return place(x, y, 0, k * 1.5, `<circle cy="-2" r="20" fill="${c}" opacity=".18"/><circle cy="-2" r="13" fill="${c}" opacity=".25"/><path d="M0-18C8-6 11 6 0 13-11 6-8-6 0-18Z" fill="${c}" opacity=".9"/><path d="M0-8C4-2 5 4 0 8-5 4-4-2 0-8Z" fill="#fff"/>`, `opacity="${f(0.25 + 0.75 * edge)}"`)
   }).join("")
   const corners = [[w - 12, 12], [12, H - 12]].map(([x, y], i) => setGem(x, y, 8, p, GEM.diamond, t, i * 0.5)).join("")
   const stones = [0.2, 0.3, 0.7, 0.8].map((k, i) => setGem(w * k, i < 2 ? H - 12 : 12, 5, p, GEM[["ruby", "topaz", "sapphire", "amethyst"][i]], t, i * 0.2)).join("")
-  const body = `
+  const base = `
     ${cornerGlow(60, 40, 170, prismAt(0.1), 0.5)}${cornerGlow(w - 60, H - 40, 190, prismAt(0.6), 0.5)}
     ${cornerGlow(w - 40, 30, 110, prismAt(0.35), 0.3)}${cornerGlow(40, H - 30, 110, prismAt(0.85), 0.3)}
     ${cornerRays(t, 0, 0, 100, 170, 10, "#ffffff", 0.3)}${cornerRays(t, w, H, -80, -10, 10, "#ffffff", 0.3)}
-    ${risingDust(t, w, 30, "#ffffff", 111)}
     <g filter="url(#hds)">
       ${rrect(w, rad, 10, `fill="none" stroke="${p[0]}" stroke-width="22"`)}
       ${rrect(w, rad, 12, `fill="none" stroke="url(#hkyBand)" stroke-width="10"`)}
       ${rrect(w, rad, 4, `fill="none" stroke="${p[4]}" stroke-width="2"`)}${rrect(w, rad, 20, `fill="none" stroke="${p[4]}" stroke-width="2"`)}
       ${corners}${stones}
       ${tl}${br}
-      ${place(w - 78, H - 74, -14 + wave(t) * 3, 1.15, mask)}
-    </g>
-    <g filter="url(#hglow)">${fires}</g>
+      ${place(w - 78, H - 74, -14, 1.15, mask)}
+    </g>`
+  const motion = `
+    ${risingDust(t, w, 30, "#ffffff", 111)}
+    ${fires}
     ${glint(w - 12, 12, 1.4, 0.3 + 0.7 * flash(t, 0))}${glint(12, H - 12, 1.4, 0.3 + 0.7 * flash(t, 0.5))}
     ${sparkle(w * 0.24, 30, 1, "#fff", Math.max(0, wave(t, 0.1)))}${sparkle(w * 0.76, H - 30, 1, "#fff", Math.max(0, wave(t, 0.6)))}
     ${sparkle(w - 60, H * 0.45, 0.9, "#fff", Math.max(0, wave(t, 0.35)))}${sparkle(60, H * 0.55, 0.9, "#fff", Math.max(0, wave(t, 0.85)))}`
-  return svg(w, rad, `${baseDefs(flowGrad("hkyBand", [...PRISM, PRISM[0]].map((c) => mixHex(c, "#ffffff", 0.25)), t, w) + bezelDef(p) + PEARL_DEF)}${grads}${body}`)
+  return layered(w, rad, layer, `${baseDefs(flowGrad("hkyBand", [...PRISM, PRISM[0]].map((c) => mixHex(c, "#ffffff", 0.25)), 0, w) + bezelDef(p) + PEARL_DEF)}${grads}`, base, motion)
 }
 
 /* ------------------------------------------------------------------ */
 /* UR 星海の王冠                                                        */
 /* ------------------------------------------------------------------ */
 
-const starCrown = (t, { w, rad }) => {
+const starCrown = (t, { w, rad }, layer = "all") => {
   const m = METAL.platinum
   const g = METAL.gold
   const r = rng(41)
@@ -226,10 +236,13 @@ const starCrown = (t, { w, rad }) => {
   const blue = `<circle r="12" fill="url(#hsc2)"/><circle cx="-4" cy="-4" r="3.5" fill="#fff" opacity=".4"/>`
   const pink = `<circle r="9" fill="url(#hsc3)"/>`
   // 星座（角の近く）
-  const constellation = (pts, phase) =>
-    `<path d="M${pts.map((q) => q.join(" ")).join("L")}" stroke="${g[4]}" stroke-width="1.4" fill="none" opacity=".55"/>${pts
+  const constellationLines = (pts) => `<path d="M${pts.map((q) => q.join(" ")).join("L")}" stroke="${g[4]}" stroke-width="1.4" fill="none" opacity=".55"/>`
+  const constellationStars = (pts, phase) =>
+    pts
       .map(([x, y], i) => sparkle(x, y, 0.55 + 0.35 * Math.max(0, wave(t, phase + i / pts.length)), "#fff6c8", 0.6 + 0.4 * Math.max(0, wave(t, phase + i / pts.length))))
-      .join("")}`
+      .join("")
+  const tlStars = [[60, 150], [120, 120], [170, 150], [230, 118], [290, 128]]
+  const brStars = [[w - 280, H - 120], [w - 220, H - 150], [w - 160, H - 128], [w - 120, H - 168], [w - 60, H - 150]]
   const shoot = (() => {
     const k = (t - 0.15) / 0.3
     if (k <= 0 || k >= 1) return ""
@@ -237,38 +250,41 @@ const starCrown = (t, { w, rad }) => {
     const y = 30 + k * 70
     return `<path d="M${f(x)} ${f(y)}L${f(x - 90)} ${f(y - 22)}" stroke="url(#hscTail)" stroke-width="3" stroke-linecap="round" opacity="${f(Math.sin(Math.PI * k))}"/>${sparkle(x, y, 0.8, "#fff", Math.sin(Math.PI * k))}`
   })()
-  const bob = (i) => wave(t, i / 3) * 5
   const crown = `<path d="M-46 14L-52-22-28-2-12-34 0-8 12-34 28-2 52-22 46 14Z" fill="url(#hscCrown)" stroke="${m[1]}" stroke-width="2" stroke-linejoin="round"/><path d="M-46 14H46V24H-46Z" fill="url(#hscCrown)" stroke="${m[1]}" stroke-width="2"/>${[-52, -12, 12, 52].map((x, i) => `<circle cx="${x}" cy="${i === 0 || i === 3 ? -22 : -34}" r="4" fill="${g[4]}" stroke="${g[1]}"/>`).join("")}`
-  const body = `
+  const base = `
     ${cornerGlow(80, 60, 190, "#7b5cff", 0.55)}${cornerGlow(w - 80, H - 60, 200, "#ff6fd0", 0.45)}
     ${cornerGlow(w - 60, 40, 130, "#4fd0ff", 0.35)}${cornerGlow(60, H - 40, 130, "#b98cff", 0.35)}
     ${cornerRays(t, 0, 0, 100, 170, 10, "#e6dcff", 0.3)}${cornerRays(t, w, H, -80, -10, 10, "#ffe6f6", 0.28)}
-    ${risingDust(t, w, 28, "#f0e6ff", 43)}
-    ${constellation([[60, 150], [120, 120], [170, 150], [230, 118], [290, 128]], 0)}
-    ${constellation([[w - 280, H - 120], [w - 220, H - 150], [w - 160, H - 128], [w - 120, H - 168], [w - 60, H - 150]], 0.5)}
-    ${shoot}
+    ${constellationLines(tlStars)}${constellationLines(brStars)}
     <g filter="url(#hds)">
       ${rrect(w, rad, 11, `fill="none" stroke="#0a0730" stroke-width="24"`)}
       ${rrect(w, rad, 12, `fill="none" stroke="url(#hscBand)" stroke-width="14"`)}
       ${rrect(w, rad, 3, `fill="none" stroke="url(#hscMetal)" stroke-width="3"`)}${rrect(w, rad, 21, `fill="none" stroke="url(#hscMetal)" stroke-width="3"`)}
     </g>
-    ${dust}
     <g filter="url(#hds)">
-      ${place(92, 78 + bob(0), -8, 2.6, saturn)}
-      ${place(w - 96, H - 84 + bob(1), 0, 2.4, blue)}
-      ${place(w - 190, 48 + bob(2), 0, 1.7, pink)}
-      ${place(196, 52 + bob(1) * 0.6, -6, 1, crown)}
+      ${place(92, 78, -8, 2.6, saturn)}
+      ${place(w - 96, H - 84, 0, 2.4, blue)}
+      ${place(w - 190, 48, 0, 1.7, pink)}
+      ${place(196, 52, -6, 1, crown)}
       ${setGem(196, 34, 6, m, GEM.amethyst, t, 0.3)}
-      ${place(w - 210, H - 44, wave(t) * 8, 0.9, star5(16, "url(#hscStar)", g[1], 1.4))}
-      ${place(48, H - 60, wave(t, 0.5) * 8, 0.7, star5(16, "url(#hscStar)", g[1], 1.4))}
+      ${place(w - 210, H - 44, 0, 0.9, star5(16, "url(#hscStar)", g[1], 1.4))}
+      ${place(48, H - 60, 0, 0.7, star5(16, "url(#hscStar)", g[1], 1.4))}
       ${setGem(w / 2, 12, 6, m, GEM.amethyst, t, 0)}${setGem(w / 2, H - 12, 6, m, GEM.sapphire, t, 0.5)}
-    </g>
+    </g>`
+  // 帯の中の星くずは、止まった惑星より手前に出るが小さいので目立たない
+  const motion = `
+    ${risingDust(t, w, 28, "#f0e6ff", 43)}
+    ${constellationStars(tlStars, 0)}${constellationStars(brStars, 0.5)}
+    ${shoot}${dust}
     ${glint(196, 34, 1.2, 0.3 + 0.7 * flash(t, 0))}${glint(w / 2, 12, 0.9, flash(t, 0.4))}${glint(w / 2, H - 12, 0.9, flash(t, 0.8))}`
-  return svg(
+  return layered(
     w,
     rad,
-    `${baseDefs(flowGrad("hscBand", ["#0a0730", "#3b1a8a", "#c0389a", "#1e5ad0", "#3b1a8a", "#0a0730"], t, w) + flowGrad("hscMetal", [m[2], m[4], m[5], m[3], m[2]], -t, w) + lg("hscStar", ["#fffadd", "#ffe58c", "#e9bd42"]) + lg("hscCrown", [m[5], m[3], m[2], m[4]], 1, 1) + bezelDef(m) + PEARL_DEF +
-      '<linearGradient id="hscTail" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><radialGradient id="hsc1" cx=".35" cy=".3"><stop offset="0" stop-color="#ffe9c4"/><stop offset="1" stop-color="#d27c35"/></radialGradient><radialGradient id="hsc2" cx=".35" cy=".3"><stop offset="0" stop-color="#bff0ff"/><stop offset="1" stop-color="#2a5fd0"/></radialGradient><radialGradient id="hsc3" cx=".35" cy=".3"><stop offset="0" stop-color="#ffe0f2"/><stop offset="1" stop-color="#c0389a"/></radialGradient>')}${body}`,
+    layer,
+    `${baseDefs(flowGrad("hscBand", ["#0a0730", "#3b1a8a", "#c0389a", "#1e5ad0", "#3b1a8a", "#0a0730"], 0, w) + flowGrad("hscMetal", [m[2], m[4], m[5], m[3], m[2]], 0, w) + lg("hscStar", ["#fffadd", "#ffe58c", "#e9bd42"]) + lg("hscCrown", [m[5], m[3], m[2], m[4]], 1, 1) + bezelDef(m) + PEARL_DEF +
+      '<linearGradient id="hscTail" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><radialGradient id="hsc1" cx=".35" cy=".3"><stop offset="0" stop-color="#ffe9c4"/><stop offset="1" stop-color="#d27c35"/></radialGradient><radialGradient id="hsc2" cx=".35" cy=".3"><stop offset="0" stop-color="#bff0ff"/><stop offset="1" stop-color="#2a5fd0"/></radialGradient><radialGradient id="hsc3" cx=".35" cy=".3"><stop offset="0" stop-color="#ffe0f2"/><stop offset="1" stop-color="#c0389a"/></radialGradient>')}`,
+    base,
+    motion,
   )
 }
 

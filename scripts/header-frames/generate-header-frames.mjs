@@ -3,7 +3,7 @@
  *
  * node scripts/header-frames/generate-header-frames.mjs <puppeteer-core のパス> <PNG の出力先> [slug...]
  *
- * <出力先>/<slug>.<pc|sp>/00.png〜 ができる。WebP にまとめるのは pack-header-frames.py
+ * <出力先>/<slug>.<pc|sp>/base.png（止まった絵）と 00.png〜（動くものだけ）ができる。WebP にまとめるのは pack-header-frames.py
  */
 import { mkdirSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
@@ -26,16 +26,16 @@ for (const item of targets) {
     mkdirSync(dir, { recursive: true })
     writeFileSync(join(dir, "meta.json"), JSON.stringify({ frameMs: item.frameMs }))
     await page.setViewport({ width: size.w, height: size.h })
-    for (let frame = 0; frame < item.frames; frame++) {
-      const svg = item.draw(frame / item.frames, size)
+    const shot = async (svg, name) => {
       await page.setContent(
         `<!doctype html><html><body style="margin:0;background:transparent">${svg.replace("<svg ", `<svg width="${size.w}" height="${size.h}" style="display:block" `)}</body></html>`,
       )
-      await page.screenshot({
-        path: join(dir, `${String(frame).padStart(2, "0")}.png`),
-        omitBackground: true,
-        clip: { x: 0, y: 0, width: size.w, height: size.h },
-      })
+      await page.screenshot({ path: join(dir, name), omitBackground: true, clip: { x: 0, y: 0, width: size.w, height: size.h } })
+    }
+    // 宝石のきらめきなど止まった絵の中の t は、4 コマ目に合わせる
+    await shot(item.draw(4 / item.frames, size, "base"), "base.png")
+    for (let frame = 0; frame < item.frames; frame++) {
+      await shot(item.draw(frame / item.frames, size, "motion"), `${String(frame).padStart(2, "0")}.png`)
     }
     console.log(`${item.slug}.${variant}`)
   }
