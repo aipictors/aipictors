@@ -42,12 +42,16 @@ const httpLink = createHttpLink({
   // },
 })
 
-const contextSetter: ContextSetter = async (_, context) => {
+const contextSetter: ContextSetter = async (operation, context) => {
   return {
     headers: {
       ...context.headers,
       provider: "aipictors",
       platform: "web",
+      // 計測用: API の Workers Logs で問い合わせごとの CPU を集計する（サーバーからの呼び出しだけなので CORS に関係しない）
+      ...(typeof document === "undefined" && operation.operationName
+        ? { "x-aipictors-op": operation.operationName }
+        : {}),
     },
   }
 }
