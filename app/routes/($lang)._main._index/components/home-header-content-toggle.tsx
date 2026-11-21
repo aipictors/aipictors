@@ -24,7 +24,7 @@ import {
   buildAllAgesPath,
   getLocalePrefix,
 } from "~/routes/($lang)._main._index/utils/content-rating-path"
-import { toR18Path, writeContentMode } from "~/utils/content-mode"
+import { toR18SwitchPath, writeContentMode } from "~/utils/content-mode"
 
 const HIDE_KEY = "hideR18Button"
 const AGE_CONFIRMED_KEY = "ageConfirmed"
@@ -76,12 +76,12 @@ export function HomeHeaderContentToggle(props: { className?: string }) {
 
   const goR18 = () => {
     writeContentMode("r18")
-    const target = toR18Path(location.pathname, location.search)
+    const target = toR18SwitchPath(location.pathname, location.search)
     if (target !== null) {
       navigate(target)
       return
     }
-    // /r のページがないところ（生成・設定・作品ページなど）はこのまま。次の移動から R18 になる
+    // /r のページがないところ（生成・設定など）はこのまま。次の移動から R18 になる
     toast(t("R18 に切り替えました", "Switched to R18"))
   }
 

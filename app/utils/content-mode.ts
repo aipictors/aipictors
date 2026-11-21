@@ -134,6 +134,30 @@ export const toR18Path = (pathname: string, search = ""): string | null => {
   return null
 }
 
+/** 作品・小説・コラムの個別ページ（R18 の同じページはない） */
+const WORK_PAGE_PATHS: RegExp[] = [
+  /^\/posts\/(?!(?:2d|2\.5d|3d)\/?$)[^/]+\/?$/,
+  /^\/(?:novels|notes)\/[^/]+\/?$/,
+]
+
+/**
+ * ヘッダーで R18 に切り替えたときの移動先。移動しないときは null
+ * 全年齢の作品ページはそのままだとロゴやメニューが変わらず切り替わったと分からないので、R18 のトップへ
+ */
+export const toR18SwitchPath = (
+  pathname: string,
+  search = "",
+): string | null => {
+  const target = toR18Path(pathname, search)
+  if (target !== null) return target
+  if (isR18Path(pathname)) return null
+  const { localePrefix, path } = splitLocale(pathname)
+  if (WORK_PAGE_PATHS.some((pattern) => pattern.test(path))) {
+    return toR18Path(localePrefix || "/")
+  }
+  return null
+}
+
 /** 全年齢ではページが分かれているが、R18 ではトップのタブにあるもの */
 const R18_TAB_PATHS: Record<string, string> = {
   "/new-works": "new",

@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test"
-import { isR18Path, toR18FallbackPath, toR18Path } from "~/utils/content-mode"
+import {
+  isR18Path,
+  toR18FallbackPath,
+  toR18Path,
+  toR18SwitchPath,
+} from "~/utils/content-mode"
 
 describe("toR18Path", () => {
   test("一覧は /r のページへ", () => {
@@ -98,5 +103,25 @@ describe("toR18FallbackPath", () => {
     for (const path of ["/stickers", "/about", "/settings", "/models", "/my"]) {
       expect(toR18Path(path)).toBeNull()
     }
+  })
+})
+
+describe("toR18SwitchPath", () => {
+  test("/r のページがあるものは toR18Path と同じ", () => {
+    expect(toR18SwitchPath("/rankings")).toBe("/r/rankings")
+    expect(toR18SwitchPath("/")).toBe("/r?tab=new")
+  })
+
+  test("全年齢の作品ページは R18 のトップへ（切り替わったと分かるように）", () => {
+    expect(toR18SwitchPath("/posts/123")).toBe("/r?tab=new")
+    expect(toR18SwitchPath("/novels/abc")).toBe("/r?tab=new")
+    expect(toR18SwitchPath("/notes/abc")).toBe("/r?tab=new")
+    expect(toR18SwitchPath("/en/posts/123")).toBe("/en/r?tab=new")
+  })
+
+  test("生成・設定などはそのまま", () => {
+    expect(toR18SwitchPath("/generation")).toBeNull()
+    expect(toR18SwitchPath("/settings/points")).toBeNull()
+    expect(toR18SwitchPath("/r/posts/123")).toBeNull()
   })
 })
