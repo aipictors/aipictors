@@ -47,6 +47,25 @@ describe("getLedgerLabel", () => {
     expect(
       getLedgerLabel(row({ reason: "coin support", source: "support" }), t),
     ).toBe("ユーザーを推した")
+    // 推してもらった側の行も送った側と同じ理由で入る
+    expect(
+      getLedgerLabel(
+        row({
+          reason: "coin support",
+          source: "profile-support:828636",
+          kind: "GRANT",
+          delta: 100,
+          coinType: "PREMIUM",
+        }),
+        t,
+      ),
+    ).toBe("推してもらった")
+    expect(
+      getLedgerLabel(
+        row({ reason: "coin support", source: "profile-support:828636" }),
+        t,
+      ),
+    ).toBe("ユーザーを推した")
     expect(getLedgerLabel(row({ reason: "work-comment-support" }), t)).toBe(
       "コメントで推した",
     )

@@ -187,7 +187,10 @@ export const getLedgerLabel = (row: LedgerItem, t: Translate) => {
   }
 
   if (reason === "coin support" || source.startsWith("profile-support:")) {
-    return t("ユーザーを推した", "Supported a user")
+    // 受け取った側の行も同じ理由で入るので、増えた行は「推してもらった」
+    return row.delta > 0
+      ? t("推してもらった", "Received support")
+      : t("ユーザーを推した", "Supported a user")
   }
 
   if (reason === "coin support received") {
