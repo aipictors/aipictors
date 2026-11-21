@@ -6,6 +6,7 @@ import {
   gachaRarityRank,
   hintOf,
 } from "~/components/gacha/gacha-direction"
+import { gachaSound } from "~/components/gacha/gacha-sound"
 import { cn } from "~/lib/utils"
 
 /**
@@ -85,7 +86,25 @@ const STYLE = `
 @keyframes g2d-glow { 0%, 100% { box-shadow: 0 0 14px 3px var(--glow) } 50% { box-shadow: 0 0 34px 10px var(--glow) } }
 @keyframes g2d-new { 0% { transform: scale(0) rotate(-30deg) } 70% { transform: scale(1.3) rotate(8deg) } 100% { transform: scale(1) rotate(-8deg) } }
 @keyframes g2d-hue { to { filter: hue-rotate(360deg) } }
+@keyframes g2d-stamp { 0% { transform: translate(-50%, -50%) scale(3.2) rotate(-14deg); opacity: 0 } 18% { transform: translate(-50%, -50%) scale(.9) rotate(-8deg); opacity: 1 } 28% { transform: translate(-50%, -50%) scale(1.08) rotate(-8deg) } 80% { transform: translate(-50%, -50%) scale(1) rotate(-8deg); opacity: 1 } 100% { transform: translate(-50%, -60%) scale(1.1) rotate(-8deg); opacity: 0 } }
+@keyframes g2d-flash { from { opacity: .85 } to { opacity: 0 } }
 `
+
+/** めくったときに弾ける粒の色 */
+const RARITY_SPARK: Record<GachaItem["rarity"], string> = {
+  N: "#e2e8f0",
+  R: "#60a5fa",
+  SR: "#c084fc",
+  SSR: "#fbbf24",
+  UR: "rainbow",
+}
+
+/** めくったときの大きな文字（色で見せたあと、結果として出す） */
+const STAMP_TEXT: Partial<Record<GachaItem["rarity"], string>> = {
+  SR: "SR!",
+  SSR: "SSR!!",
+  UR: "UR!!!",
+}
 
 const GLOW: Record<GachaItem["rarity"], string> = {
   N: "transparent",
@@ -125,6 +144,53 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
   const phaseRef = useRef(phase)
   phaseRef.current = phase
   const rootRef = useRef<HTMLDivElement>(null)
+  const cardRefs = useRef(new Map<number, HTMLDivElement>())
+  /** canvas に粒を出してもらう場所（カードをめくったとき） */
+  const burstQueueRef = useRef<
+    { x: number; y: number; rarity: GachaItem["rarity"] }[]
+  >([])
+  const [stamp, setStamp] = useState<{
+    rarity: GachaItem["rarity"]
+    key: number
+  } | null>(null)
+  const [flash, setFlash] = useState<{ color: string; key: number } | null>(
+    null,
+  )
+
+  /** めくった瞬間: カードから粒が弾け、音が鳴り、SR 以上は大きな文字、SSR 以上は画面が光って跳ねる */
+  const popCard = (index: number, rarity: GachaItem["rarity"]) => {
+    const rank = gachaRarityRank(rarity)
+    const card = cardRefs.current.get(index)
+    const root = rootRef.current
+    if (card && root) {
+      const a = card.getBoundingClientRect()
+      const b = root.getBoundingClientRect()
+      burstQueueRef.current.push({
+        x: a.left - b.left + a.width / 2,
+        y: a.top - b.top + a.height / 2,
+        rarity,
+      })
+    }
+    gachaSound.flip(rank)
+    if (STAMP_TEXT[rarity]) setStamp({ rarity, key: Date.now() })
+    if (rank >= 3) {
+      setFlash({
+        color: rank >= 4 ? "#ffd6f5" : "#fff3c4",
+        key: Date.now(),
+      })
+      root?.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(1.06) translate(-6px, 4px)" },
+          { transform: "scale(.98) translate(6px, -4px)" },
+          { transform: "scale(1.02) translate(-3px, 2px)" },
+          { transform: "scale(1)" },
+        ],
+        { duration: 450, easing: "ease-out" },
+      )
+      navigator.vibrate?.(rank >= 4 ? [40, 30, 90] : 40)
+    }
+  }
 
   // 画面を揺らす（要素を作り直すと canvas が消えるので、Web Animations で揺らす）
   useEffect(() => {
@@ -168,7 +234,12 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
   useEffect(() => {
     if (phase === "cards") return
     const timer = window.setTimeout(nextPhase, PHASE_SECONDS[phase] * 1000)
+    if (phase === "intro") gachaSound.drop()
+    if (phase === "charge") gachaSound.charge(PHASE_SECONDS.charge)
+    if (phase === "promote") gachaSound.promote()
+    if (phase === "cutIn") gachaSound.cutIn()
     if (phase === "burst") {
+      gachaSound.burst(gachaRarityRank(direction.top) >= 3)
       setShake((value) => value + 1)
       navigator.vibrate?.(direction.top === "UR" ? [60, 40, 120] : 50)
     }
@@ -178,7 +249,10 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
   /* ---- カードを配って、1 枚ずつめくる ---- */
   useEffect(() => {
     if (phase !== "cards") return
-    const timer = window.setTimeout(() => setDealt(true), 50)
+    const timer = window.setTimeout(() => {
+      setDealt(true)
+      gachaSound.deal(items.length)
+    }, 50)
     return () => window.clearTimeout(timer)
   }, [phase])
 
@@ -192,18 +266,21 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
     const firstDelay = flipped === 0 ? 0.36 + items.length * 0.045 : 0
     if (rank >= 3) {
       // ためる → めくる
+      const tension = rank >= 4 ? 1.1 : 0.75
       const start = window.setTimeout(
-        () => setCharging(true),
+        () => {
+          setCharging(true)
+          gachaSound.tension(tension)
+        },
         (firstDelay + 0.25) * 1000,
       )
       const flip = window.setTimeout(
         () => {
           setCharging(false)
           setFlipped((value) => value + 1)
-          setShake((value) => value + 1)
-          navigator.vibrate?.(rank >= 4 ? [40, 30, 90] : 40)
+          popCard(nextIndex, nextItem.rarity)
         },
-        (firstDelay + 0.25 + (rank >= 4 ? 1.1 : 0.75)) * 1000,
+        (firstDelay + 0.25 + tension) * 1000,
       )
       return () => {
         window.clearTimeout(start)
@@ -211,7 +288,10 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
       }
     }
     const timer = window.setTimeout(
-      () => setFlipped((value) => value + 1),
+      () => {
+        setFlipped((value) => value + 1)
+        popCard(nextIndex, nextItem.rarity)
+      },
       (firstDelay + 0.11) * 1000,
     )
     return () => window.clearTimeout(timer)
@@ -303,6 +383,51 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
       }
     }
 
+    /** カードをめくった場所から弾ける粒（レア度が高いほど多く・遠くへ） */
+    const spawnPop = (cx: number, cy: number, rarity: GachaItem["rarity"]) => {
+      const rank = gachaRarityRank(rarity)
+      const count = [12, 20, 46, 130, 200][rank]
+      const reach = [160, 220, 380, 700, 900][rank]
+      for (let i = 0; i < count; i++) {
+        const a = Math.random() * Math.PI * 2
+        const speed = reach * (0.3 + Math.random() * 0.7)
+        const kind: Particle["kind"] =
+          rank <= 1
+            ? "spark"
+            : (
+                [
+                  "confetti",
+                  "spark",
+                  "star",
+                  rank >= 3 ? "coin" : "star",
+                ] as const
+              )[Math.floor(Math.random() * 4)]
+        particles.push({
+          x: cx,
+          y: cy,
+          vx: Math.cos(a) * speed,
+          vy: Math.sin(a) * speed - (rank >= 3 ? 220 : 80),
+          life: 0,
+          max: 0.6 + rank * 0.35 + Math.random() * 0.5,
+          size:
+            kind === "spark"
+              ? 2 + Math.random() * (2 + rank)
+              : 5 + Math.random() * 8,
+          spin: (Math.random() - 0.5) * 14,
+          angle: Math.random() * Math.PI,
+          color:
+            RARITY_SPARK[rarity] === "rainbow"
+              ? `hsl(${Math.random() * 360} 95% 65%)`
+              : kind === "coin"
+                ? "#ffd34d"
+                : Math.random() < 0.25
+                  ? "#ffffff"
+                  : RARITY_SPARK[rarity],
+          kind,
+        })
+      }
+    }
+
     const drawStar = (r: number) => {
       g.beginPath()
       for (let i = 0; i < 10; i++) {
@@ -324,6 +449,38 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
         if (current === "promote")
           spawnBurst(w / 2, h * 0.42, direction.promoteTo ?? actual)
         lastPhase = current
+      }
+      for (const pop of burstQueueRef.current.splice(0)) {
+        spawnPop(pop.x, pop.y, pop.rarity)
+      }
+      // カードの場面では、SSR 以上が出ていれば紙吹雪とコインを降らせ続ける
+      if (
+        current === "cards" &&
+        gachaRarityRank(direction.top) >= 3 &&
+        particles.length < 400 &&
+        Math.random() < (direction.top === "UR" ? 0.7 : 0.45)
+      ) {
+        const kind: Particle["kind"] = Math.random() < 0.3 ? "coin" : "confetti"
+        particles.push({
+          x: Math.random() * w,
+          y: -12,
+          vx: (Math.random() - 0.5) * 40,
+          vy: 60 + Math.random() * 60,
+          life: 0,
+          max: 4 + Math.random() * 2,
+          size: 6 + Math.random() * 7,
+          spin: (Math.random() - 0.5) * 10,
+          angle: Math.random() * Math.PI,
+          color:
+            kind === "coin"
+              ? "#ffd34d"
+              : direction.top === "UR"
+                ? `hsl(${Math.random() * 360} 95% 65%)`
+                : Math.random() < 0.5
+                  ? "#fbbf24"
+                  : "#fff3c4",
+          kind,
+        })
       }
       const pt = (now - phaseStartedAt) / 1000
       const t = now / 1000
@@ -670,11 +827,52 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
         </div>
       )}
 
+      {/* SSR 以上をめくった瞬間の光 */}
+      {flash && (
+        <div
+          key={flash.key}
+          className="pointer-events-none absolute inset-0 z-20"
+          style={{
+            background: `radial-gradient(circle, #fff 0%, ${flash.color} 45%, transparent 85%)`,
+            animation: "g2d-flash .5s ease-out both",
+          }}
+        />
+      )}
+
+      {/* めくったときの大きな文字 */}
+      {stamp && (
+        <div
+          key={stamp.key}
+          className={cn(
+            "pointer-events-none absolute top-1/2 left-1/2 z-30 whitespace-nowrap font-black italic tracking-tight",
+            stamp.rarity === "UR"
+              ? "text-[min(26vw,140px)]"
+              : stamp.rarity === "SSR"
+                ? "text-[min(22vw,120px)]"
+                : "text-[min(16vw,84px)]",
+          )}
+          style={{
+            animation: `g2d-stamp ${stamp.rarity === "SR" ? 0.8 : 1.2}s cubic-bezier(.2,1.4,.4,1) both${stamp.rarity === "UR" ? ", g2d-hue 1s linear infinite" : ""}`,
+            color: stamp.rarity === "SR" ? "#e9d5ff" : "#fff7d6",
+            WebkitTextStroke:
+              stamp.rarity === "SR" ? "3px #7c3aed" : "4px #ea580c",
+            textShadow:
+              stamp.rarity === "UR"
+                ? "0 0 24px #ff5fae, 0 0 48px #5fe0ff, 0 6px 0 #9d174d"
+                : stamp.rarity === "SSR"
+                  ? "0 0 24px #fbbf24, 0 6px 0 #9a3412"
+                  : "0 0 18px #a855f7, 0 4px 0 #4c1d95",
+          }}
+        >
+          {STAMP_TEXT[stamp.rarity]}
+        </div>
+      )}
+
       {/* カード */}
       {phase === "cards" && (
         <div
           className={cn(
-            "absolute inset-x-0 top-[max(56px,env(safe-area-inset-top))] bottom-36 flex flex-wrap content-center items-center justify-center gap-2 px-3",
+            "absolute inset-x-0 top-[max(56px,env(safe-area-inset-top))] bottom-[176px] flex flex-wrap content-center items-center justify-center gap-2 px-3",
             isSingle && "gap-0",
           )}
           style={{ perspective: "900px" }}
@@ -687,6 +885,10 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
             return (
               <div
                 key={item.id}
+                ref={(element) => {
+                  if (element) cardRefs.current.set(index, element)
+                  else cardRefs.current.delete(index)
+                }}
                 className={cn(
                   "relative",
                   isSingle ? "w-[min(58vw,240px)]" : "w-[min(29vw,124px)]",

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   type GachaDirection,
   type GachaItem,
@@ -7,193 +7,148 @@ import {
 } from "~/components/gacha/gacha-direction"
 import { GachaPerformance2D } from "~/components/gacha/gacha-performance-2d"
 import {
-  detectGachaQuality,
-  type GachaQuality,
-} from "~/components/gacha/gacha-quality"
-import {
   renderGachaShareImage,
   shareGachaResult,
 } from "~/components/gacha/gacha-share"
-import type { GachaStage } from "~/components/gacha/gacha-stage.client"
+import { gachaSound } from "~/components/gacha/gacha-sound"
 import { cn } from "~/lib/utils"
-
-const MODEL_URL: Record<Exclude<GachaQuality, "card">, string> = {
-  full: "/images/pictor-chan/pictor-chan-gacha-3d-v1.glb",
-  // テクスチャを 1024 にした軽いモデル（回線が遅いとき）
-  lite: "/images/pictor-chan/pictor-chan-gacha-3d-v1.lite.glb",
-}
-/** 準備がこの時間を過ぎたら「軽い表示ですぐ見る」を出す */
-const SHOW_LITE_BUTTON_MS = 5000
-const LOADING_IMAGE_URL = "/images/pictor-chan/gacha-loading.webp"
 
 type Props = {
   items: readonly GachaItem[]
   /** 渡さなければレア度から決める */
   direction?: GachaDirection
   onClose: () => void
-  /** 結果の画面に出すボタン（もう一回引く など） */
-  actions?: React.ReactNode
-  /** auto: 回線に合わせる（遅ければ 2D）。3d / 2d: 決め打ち（管理ページの確認用） */
-  mode?: "auto" | "3d" | "2d"
+  /** 結果の画面の「もう 1 回 / もう 10 連」。渡さなければ出さない */
+  onDrawAgain?: (count: 1 | 10) => void
 }
 
 /**
- * ガチャ演出（全画面）。景品の配列を渡すだけで、どのガチャにも使える。
- * 3D が出せない端末・動きを減らす設定の人には、結果だけを出す
+ * ガチャ演出（全画面、2D）。景品の配列を渡すだけで、どのガチャにも使える。
+ * 動きを減らす設定の人には、結果だけを出す
  */
 export function GachaPerformance(props: Props): React.ReactNode {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const stageRef = useRef<GachaStage | null>(null)
   const direction = useMemo(
     () => props.direction ?? planGachaDirection(props.items),
     [props.direction, props.items],
   )
-  const [state, setState] = useState<
-    "loading" | "playing" | "done" | "fallback" | "playing2d" | "done2d"
-  >("loading")
+  const [state, setState] = useState<"playing" | "done" | "fallback">("playing")
   const [skipSignal, setSkipSignal] = useState(0)
-  const [progress, setProgress] = useState(0)
-  const [quality, setQuality] = useState<GachaQuality | null>(null)
-  const [canSkipLoading, setCanSkipLoading] = useState(false)
-  /** 準備の途中で 2D に切り替えた */
-  const switchedToCardsRef = useRef(false)
+  const [isMuted, setIsMuted] = useState(() => gachaSound.isMuted())
 
   useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-    const mode = props.mode ?? "auto"
-    const picked: GachaQuality =
-      mode === "2d" ? "card" : mode === "3d" ? "full" : detectGachaQuality()
-    setQuality(picked)
-    switchedToCardsRef.current = false
-    setCanSkipLoading(false)
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setState("fallback")
-      return
-    }
-    if (picked === "card") {
-      setState("playing2d")
-      return
-    }
-    let cancelled = false
-    // 演出ごとに新しいキャンバスを作る。前の演出の後片付け（WebGL の文脈を捨てる）が
-    // 同じキャンバスを使う次の演出まで真っ黒にしないように
-    const canvas = document.createElement("canvas")
-    canvas.className = "h-full w-full touch-none"
-    canvas.addEventListener("pointerup", () => stageRef.current?.tap())
-    // 端末の都合で 3D が描けなくなったら、真っ黒のままにせず結果だけ出す
-    canvas.addEventListener("webglcontextlost", () => {
-      if (!cancelled) setState("playing2d")
-    })
-    container.appendChild(canvas)
-    setState("loading")
-    setProgress(0)
-    // 読み込みが終わらないときも結果だけ出す
-    const timeout = window.setTimeout(() => {
-      if (!cancelled && !stageRef.current) setState("playing2d")
-    }, 30_000)
-    const skipButtonTimer = window.setTimeout(() => {
-      if (!cancelled) setCanSkipLoading(true)
-    }, SHOW_LITE_BUTTON_MS)
-    void (async () => {
-      try {
-        const { createGachaStage } = await import(
-          "~/components/gacha/gacha-stage.client"
-        )
-        if (cancelled) return
-        setProgress(0.15)
-        const stage = await createGachaStage({
-          canvas,
-          modelUrl: MODEL_URL[picked],
-          items: props.items,
-          direction,
-          onProgress: (ratio) => {
-            if (!cancelled) setProgress(0.15 + ratio * 0.8)
-          },
-          onComplete: () => setState("done"),
-        })
-        if (cancelled || switchedToCardsRef.current) {
-          stage.dispose()
-          return
-        }
-        stageRef.current = stage
-        setProgress(1)
-        setState("playing")
-      } catch {
-        if (!cancelled) setState("playing2d")
-      }
-    })()
-    return () => {
-      cancelled = true
-      window.clearTimeout(timeout)
-      window.clearTimeout(skipButtonTimer)
-      stageRef.current?.dispose()
-      stageRef.current = null
-      canvas.remove()
-    }
-  }, [props.items, direction, props.mode])
+    setState(
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "fallback"
+        : "playing",
+    )
+  }, [props.items])
+
+  const isDone = state === "done" || state === "fallback"
 
   return (
-    <div className="fixed inset-0 z-[100] select-none bg-black text-white">
-      <div
-        ref={containerRef}
-        className={cn(
-          "h-full w-full",
-          (state === "fallback" ||
-            state === "playing2d" ||
-            state === "done2d") &&
-            "hidden",
-        )}
-      />
-      {state === "loading" && (
-        <GachaLoading
-          progress={progress}
-          isLite={quality === "lite"}
-          onSkip={
-            canSkipLoading
-              ? () => {
-                  switchedToCardsRef.current = true
-                  setState("playing2d")
-                }
-              : undefined
-          }
-        />
-      )}
-      {(state === "playing2d" || state === "done2d") && (
+    <div className="fixed inset-0 z-[100] select-none overflow-hidden bg-black text-white">
+      {state !== "fallback" && (
         <GachaPerformance2D
           items={props.items}
           direction={direction}
           skipSignal={skipSignal}
-          onComplete={() => setState("done2d")}
+          onComplete={() => setState("done")}
         />
       )}
-      {(state === "playing" || state === "playing2d") && (
+      {state === "fallback" && <GachaResultList items={props.items} />}
+      <div className="absolute top-[max(12px,env(safe-area-inset-top))] right-3 flex gap-2">
         <button
           type="button"
-          className="absolute top-[max(12px,env(safe-area-inset-top))] right-3 rounded-full bg-white/15 px-4 py-1.5 font-bold text-sm backdrop-blur"
-          onClick={() =>
-            state === "playing2d"
-              ? setSkipSignal((value) => value + 1)
-              : stageRef.current?.skip()
-          }
+          aria-label={isMuted ? "音を出す" : "音を消す"}
+          className="rounded-full bg-black/40 px-3 py-1.5 font-bold text-sm backdrop-blur"
+          onClick={() => {
+            gachaSound.setMuted(!isMuted)
+            setIsMuted(!isMuted)
+          }}
         >
-          スキップ ≫
+          {isMuted ? "🔇" : "🔊"}
         </button>
-      )}
-      {state === "fallback" && <GachaResultList items={props.items} />}
-      {(state === "done" || state === "fallback" || state === "done2d") && (
-        <div className="absolute inset-x-0 bottom-[max(16px,env(safe-area-inset-bottom))] flex flex-wrap justify-center gap-3 px-4">
-          <GachaShareButton items={props.items} />
-          {props.actions}
+        {state === "playing" && (
           <button
             type="button"
-            className="rounded-full bg-white px-6 py-2.5 font-bold text-black text-sm"
+            className="rounded-full bg-black/40 px-4 py-1.5 font-bold text-sm backdrop-blur"
+            onClick={() => setSkipSignal((value) => value + 1)}
+          >
+            スキップ ≫
+          </button>
+        )}
+      </div>
+      {isDone && (
+        <GachaResultActions
+          items={props.items}
+          onClose={props.onClose}
+          onDrawAgain={props.onDrawAgain}
+        />
+      )}
+    </div>
+  )
+}
+
+const ACTION_STYLE = `
+@keyframes gacha-actions-in { from { transform: translateY(110%) } to { transform: none } }
+@keyframes gacha-again-pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 18px 4px rgba(255,190,60,.65), inset 0 -4px 0 rgba(0,0,0,.18) } 50% { transform: scale(1.04); box-shadow: 0 0 34px 10px rgba(255,120,200,.75), inset 0 -4px 0 rgba(0,0,0,.18) } }
+@keyframes gacha-again-shine { from { transform: translateX(-120%) skewX(-20deg) } to { transform: translateX(320%) skewX(-20deg) } }
+`
+
+/** 結果の画面の下のボタン。暗い帯の上に大きく出して、背景の演出に埋もれないようにする */
+function GachaResultActions(props: {
+  items: readonly GachaItem[]
+  onClose: () => void
+  onDrawAgain?: (count: 1 | 10) => void
+}) {
+  return (
+    <div
+      className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/85 to-transparent px-4 pt-10 pb-[max(16px,env(safe-area-inset-bottom))]"
+      style={{
+        animation: "gacha-actions-in .35s cubic-bezier(.2,1.2,.4,1) both",
+      }}
+    >
+      <style>{ACTION_STYLE}</style>
+      <div className="mx-auto flex max-w-md flex-col gap-2.5">
+        {props.onDrawAgain && (
+          <div className="flex gap-2.5">
+            <button
+              type="button"
+              className="flex-1 rounded-2xl border-2 border-white bg-white py-3.5 font-black text-base text-violet-700 shadow-[inset_0_-4px_0_rgba(0,0,0,.12)] active:translate-y-0.5"
+              onClick={() => props.onDrawAgain?.(1)}
+            >
+              もう 1 回
+            </button>
+            <button
+              type="button"
+              className="relative flex-[1.6] overflow-hidden rounded-2xl border-2 border-yellow-100 bg-gradient-to-r from-amber-300 via-orange-400 to-pink-500 py-3.5 font-black text-lg text-white active:translate-y-0.5"
+              style={{
+                animation: "gacha-again-pulse 1.2s ease-in-out infinite",
+                textShadow: "0 2px 0 rgba(150,40,0,.55)",
+              }}
+              onClick={() => props.onDrawAgain?.(10)}
+            >
+              <span
+                className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-white/45"
+                style={{
+                  animation: "gacha-again-shine 1.8s ease-in-out infinite",
+                }}
+              />
+              <span className="relative">もう 10 連！</span>
+            </button>
+          </div>
+        )}
+        <div className="flex gap-2.5">
+          <GachaShareButton items={props.items} />
+          <button
+            type="button"
+            className="flex-1 rounded-2xl border-2 border-white/60 bg-white/10 py-3 font-bold text-base text-white"
             onClick={props.onClose}
           >
             閉じる
           </button>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -223,7 +178,7 @@ function GachaShareButton(props: { items: readonly GachaItem[] }) {
     <button
       type="button"
       disabled={!isReady}
-      className="rounded-full bg-gradient-to-r from-pink-500 to-violet-500 px-5 py-2.5 font-bold text-sm text-white shadow-[0_0_16px_rgba(236,72,153,.6)] disabled:opacity-50"
+      className="flex-1 rounded-2xl border-2 border-pink-200 bg-gradient-to-r from-pink-500 to-violet-500 py-3 font-bold text-base text-white disabled:opacity-60"
       onClick={async () => {
         const result = await shareGachaResult(props.items, image)
         if (result === "fallback" && image) {
@@ -234,104 +189,6 @@ function GachaShareButton(props: { items: readonly GachaItem[] }) {
     >
       {notice ?? (isReady ? "結果をシェア" : "画像を準備中…")}
     </button>
-  )
-}
-
-const LOADING_STYLE = `
-@keyframes gacha-loading-hop { 0%, 100% { transform: translateY(0) rotate(-2deg) } 50% { transform: translateY(-14px) rotate(2deg) } }
-@keyframes gacha-loading-shadow { 0%, 100% { transform: scaleX(1); opacity: .35 } 50% { transform: scaleX(.7); opacity: .18 } }
-@keyframes gacha-loading-dot { 0%, 80%, 100% { opacity: .25; transform: translateY(0) } 40% { opacity: 1; transform: translateY(-4px) } }
-@keyframes gacha-loading-twinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0) } 50% { opacity: 1; transform: scale(1) rotate(45deg) } }
-`
-
-const TWINKLES = [
-  { left: "18%", top: "22%", delay: "0s", size: 18 },
-  { left: "78%", top: "18%", delay: ".6s", size: 14 },
-  { left: "84%", top: "52%", delay: "1.1s", size: 20 },
-  { left: "12%", top: "58%", delay: "1.6s", size: 12 },
-  { left: "50%", top: "12%", delay: ".3s", size: 10 },
-]
-
-/** 演出の準備中（ぴくたーちゃんが跳ねて待つ）。progress は 0〜1 */
-function GachaLoading(props: {
-  progress: number
-  isLite: boolean
-  onSkip?: () => void
-}) {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-sky-200 via-pink-100 to-violet-200 text-slate-700">
-      <style>{LOADING_STYLE}</style>
-      {TWINKLES.map((twinkle) => (
-        <svg
-          key={twinkle.left + twinkle.top}
-          viewBox="-10 -10 20 20"
-          width={twinkle.size}
-          height={twinkle.size}
-          className="absolute"
-          style={{
-            left: twinkle.left,
-            top: twinkle.top,
-            animation: `gacha-loading-twinkle 2.2s ${twinkle.delay} ease-in-out infinite`,
-          }}
-          aria-hidden="true"
-        >
-          <path
-            d="M0-10C1.2-2.2 2.2-1.2 10 0 2.2 1.2 1.2 2.2 0 10-1.2 2.2-2.2 1.2-10 0-2.2-1.2-1.2-2.2 0-10Z"
-            fill="#fff"
-          />
-        </svg>
-      ))}
-      <div className="relative flex flex-col items-center">
-        <img
-          src={LOADING_IMAGE_URL}
-          alt=""
-          width={150}
-          height={221}
-          className="relative z-10 h-[200px] w-auto drop-shadow-[0_6px_12px_rgba(120,80,160,.25)]"
-          style={{ animation: "gacha-loading-hop 1s ease-in-out infinite" }}
-        />
-        <div
-          className="-mt-3 h-4 w-28 rounded-[50%] bg-violet-900/40"
-          style={{ animation: "gacha-loading-shadow 1s ease-in-out infinite" }}
-        />
-      </div>
-      <div className="mt-6 flex items-center font-bold text-base">
-        ぴくたーちゃんが準備中
-        {[0, 1, 2].map((index) => (
-          <span
-            key={index}
-            className="inline-block"
-            style={{
-              animation: `gacha-loading-dot 1.2s ${index * 0.18}s ease-in-out infinite`,
-            }}
-          >
-            .
-          </span>
-        ))}
-      </div>
-      <div className="mt-4 h-2.5 w-56 overflow-hidden rounded-full bg-white/70 shadow-inner">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-pink-400 via-amber-300 to-sky-400 transition-[width] duration-300"
-          style={{
-            width: `${Math.round(Math.max(0.04, props.progress) * 100)}%`,
-          }}
-        />
-      </div>
-      {props.isLite && (
-        <div className="mt-3 text-slate-500 text-xs">
-          回線にあわせて軽い表示にしています
-        </div>
-      )}
-      {props.onSkip && (
-        <button
-          type="button"
-          onClick={props.onSkip}
-          className="mt-5 rounded-full bg-white/80 px-5 py-2 font-bold text-slate-700 text-sm shadow"
-        >
-          軽い表示ですぐ見る
-        </button>
-      )}
-    </div>
   )
 }
 
