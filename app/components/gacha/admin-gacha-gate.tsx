@@ -38,10 +38,12 @@ export function AdminGachaGate(props: Props) {
   const { data, loading } = useQuery(viewerQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
-  const hasPermission = Boolean(data?.viewer?.isModerator)
+  // 手元の開発サーバー（確認用に共有するとき）はログインなしで見せる。中身は固定の設定と抽選だけ
+  const isDevPreview = import.meta.env.DEV
+  const hasPermission = isDevPreview || Boolean(data?.viewer?.isModerator)
 
   const body = (() => {
-    if (authContext.isLoading || loading) {
+    if (!isDevPreview && (authContext.isLoading || loading)) {
       return (
         <Card className={ADMIN_GACHA_CARD}>
           <CardContent className="py-8 text-slate-400 text-sm">
@@ -50,7 +52,7 @@ export function AdminGachaGate(props: Props) {
         </Card>
       )
     }
-    if (authContext.isNotLoggedIn || !hasPermission) {
+    if (!hasPermission) {
       return (
         <Alert className={ADMIN_GACHA_CARD}>
           <AlertDescription className="text-slate-300">

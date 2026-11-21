@@ -91,6 +91,8 @@ export default defineConfig({
     noExternal: ["react-easy-crop", "tslib"],
   },
   server: {
+    // 手元の開発サーバーを Tailscale などで共有するときだけ、ホスト名を足す（例: DEV_ALLOWED_HOSTS=xxx.ts.net）
+    allowedHosts: process.env.DEV_ALLOWED_HOSTS?.split(","),
     hmr: {
       overlay: false,
     },

@@ -918,8 +918,12 @@ export function drawCardFront(item: GachaItem, image: HTMLImageElement | null) {
   g.setTransform(1, 0, 0, 1, 0, 0)
   g.globalAlpha = 1
   if (image) {
+    // 横長のヘッダー枠もつぶさないように、縦横の比を保って枠の中に収める
     const s = CARD_W * 0.86
-    g.drawImage(image, (CARD_W - s) / 2, CARD_H * 0.42 - s / 2, s, s)
+    const ratio = image.naturalWidth / Math.max(1, image.naturalHeight)
+    const w = ratio >= 1 ? s : s * ratio
+    const h = ratio >= 1 ? s / ratio : s
+    g.drawImage(image, (CARD_W - w) / 2, CARD_H * 0.42 - h / 2, w, h)
   }
   // 下の帯
   const band = g.createLinearGradient(0, CARD_H - 190, 0, CARD_H)

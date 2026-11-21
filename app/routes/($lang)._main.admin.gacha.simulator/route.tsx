@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Dices, RotateCcw } from "lucide-react"
 import { useMemo, useState } from "react"
+import { createPortal } from "react-dom"
 import {
   ADMIN_GACHA_CARD,
   AdminGachaGate,
@@ -13,6 +14,7 @@ import {
 } from "~/components/gacha/admin-gacha-parts"
 import {
   GACHA_RARITIES,
+  type GachaItem,
   type GachaRarity,
 } from "~/components/gacha/gacha-direction"
 import {
@@ -27,6 +29,7 @@ import {
   toEffectiveRates,
   urWithinPullsRatio,
 } from "~/components/gacha/gacha-lottery"
+import { GachaPerformance } from "~/components/gacha/gacha-performance"
 import { GACHA_PRIZES } from "~/components/gacha/gacha-prizes"
 import { Button } from "~/components/ui/button"
 import {
@@ -105,6 +108,11 @@ export default function AdminGachaSimulatorPage() {
   const [mode, setMode] = useState<"single" | "ten">("ten")
   const [summary, setSummary] = useState<GachaSimulationSummary | null>(null)
   const [isRunning, setIsRunning] = useState(false)
+  /** 引いたときに演出を見せる */
+  const [withPerformance, setWithPerformance] = useState(true)
+  const [performanceItems, setPerformanceItems] = useState<GachaItem[] | null>(
+    null,
+  )
 
   const rateTotal = sumRates(settings.rates)
   const isRateValid = Math.abs(rateTotal - 100) < 1e-6
@@ -138,36 +146,45 @@ export default function AdminGachaSimulatorPage() {
 
   const draw = (count: number) => {
     if (!isRateValid) return
-    setSession((current) => {
-      const result = drawGacha({
-        pool,
-        settings,
-        state: current.state,
-        count,
-      })
-      const owned = new Map(current.owned)
-      const urAt = [...current.urAt]
-      result.pulls.forEach((pull, index) => {
-        owned.set(pull.prize.id, (owned.get(pull.prize.id) ?? 0) + 1)
-        if (pull.prize.rarity === "UR") {
-          urAt.push({
-            pull: current.pulls + index + 1,
-            name: pull.prize.name,
-            byPity: pull.byPity,
-          })
-        }
-      })
+    const result = drawGacha({
+      pool,
+      settings,
+      state: session.state,
+      count,
+    })
+    const owned = new Map(session.owned)
+    const urAt = [...session.urAt]
+    const items: GachaItem[] = result.pulls.map((pull, index) => {
+      const isNew = !owned.has(pull.prize.id)
+      owned.set(pull.prize.id, (owned.get(pull.prize.id) ?? 0) + 1)
+      if (pull.prize.rarity === "UR") {
+        urAt.push({
+          pull: session.pulls + index + 1,
+          name: pull.prize.name,
+          byPity: pull.byPity,
+        })
+      }
       return {
-        state: result.state,
-        pulls: current.pulls + count,
-        coins:
-          current.coins +
-          (count >= 10 ? settings.tenCostCoins : settings.singleCostCoins),
-        owned,
-        last: result.pulls,
-        urAt,
+        // 同じ景品が 2 回出てもカードを分ける
+        id: `${session.pulls + index}-${pull.prize.id}`,
+        rarity: pull.prize.rarity,
+        name: pull.prize.name,
+        imageUrl: pull.prize.imageUrl,
+        isNew,
+        note: pull.byPity ? "天井" : pull.byGuarantee ? "確定枠" : undefined,
       }
     })
+    setSession({
+      state: result.state,
+      pulls: session.pulls + count,
+      coins:
+        session.coins +
+        (count >= 10 ? settings.tenCostCoins : settings.singleCostCoins),
+      owned,
+      last: result.pulls,
+      urAt,
+    })
+    if (withPerformance) setPerformanceItems(items)
   }
 
   const runSimulation = () => {
@@ -362,7 +379,7 @@ export default function AdminGachaSimulatorPage() {
         <CardHeader>
           <CardTitle className="text-base">引いてみる</CardTitle>
           <CardDescription className="text-slate-400">
-            ひとりの人が続けて引いたときの様子。天井の数はリセットするまで続きます。
+            ひとりの人が続けて引いたときの様子。「演出を見る」にすると、本番と同じ演出で結果が出ます。天井の数はリセットするまで続きます。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -373,6 +390,16 @@ export default function AdminGachaSimulatorPage() {
             <Button disabled={!isRateValid} onClick={() => draw(10)}>
               10 連
             </Button>
+            <div className="flex items-center gap-2 px-2 text-slate-300 text-sm">
+              <input
+                id="gacha-sim-performance"
+                type="checkbox"
+                checked={withPerformance}
+                onChange={(event) => setWithPerformance(event.target.checked)}
+                className="h-4 w-4"
+              />
+              <label htmlFor="gacha-sim-performance">演出を見る</label>
+            </div>
             <Button
               variant="ghost"
               className="text-slate-300"
@@ -525,6 +552,40 @@ export default function AdminGachaSimulatorPage() {
           )}
         </CardContent>
       </Card>
+      {/* 管理ページの枠の中だと全画面にならない（親の transform で fixed がずれる）ので body に出す */}
+      {performanceItems &&
+        createPortal(
+          <GachaPerformance
+            items={performanceItems}
+            onClose={() => setPerformanceItems(null)}
+            actions={
+              <>
+                <button
+                  type="button"
+                  className="rounded-full bg-white/20 px-5 py-2.5 font-bold text-sm"
+                  onClick={() => {
+                    setPerformanceItems(null)
+                    // 閉じてから次の演出を始める（同じ画面を作り直すため）
+                    window.setTimeout(() => draw(1), 0)
+                  }}
+                >
+                  もう 1 回
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full bg-white/20 px-5 py-2.5 font-bold text-sm"
+                  onClick={() => {
+                    setPerformanceItems(null)
+                    window.setTimeout(() => draw(10), 0)
+                  }}
+                >
+                  もう 10 連
+                </button>
+              </>
+            }
+          />,
+          document.body,
+        )}
     </AdminGachaGate>
   )
 }
