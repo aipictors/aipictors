@@ -130,6 +130,8 @@ const SERIES_COLORS: Record<string, [string, string]> = {
   "special-halloween": ["#fdba74", "#581c87"],
   "special-christmas": ["#86efac", "#14532d"],
   // 期間限定（series は "limited" にまとまっているので、キーで色を分ける）
+  "limited-anniversary-1st": ["#7dd3fc", "#1e3a8a"],
+  "limited-anniversary-2nd": ["#c4b5fd", "#5b21b6"],
   "limited-anniversary-4th-visit": ["#f9a8d4", "#9d174d"],
   "limited-anniversary-4th-post": ["#fde68a", "#b45309"],
   "limited-anniversary-4th-pioneer": ["#86efac", "#166534"],
@@ -331,7 +333,15 @@ function renderIcon(node: IconNode) {
 /* 数のラベル                                                           */
 /* ------------------------------------------------------------------ */
 
+/** しきい値のない実績で、札に出す文字（周年の実績は何周年かを出す） */
+const FIXED_LABELS: Record<string, { value: string; unit: string }> = {
+  "limited-anniversary-1st": { value: "1st", unit: "ANNIVERSARY" },
+  "limited-anniversary-2nd": { value: "2nd", unit: "ANNIVERSARY" },
+}
+
 function formatThreshold(item: CatalogItem): { value: string; unit: string } {
+  const fixed = FIXED_LABELS[item.key]
+  if (fixed !== undefined) return fixed
   const n = item.threshold
   if (n === null) return { value: "", unit: "" }
   if (item.series === "account-age") {
