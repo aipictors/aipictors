@@ -196,6 +196,8 @@ export function LikeButton(props: Props): React.ReactNode {
               ...(isAnonymous !== undefined && { isAnonymous }),
             },
           },
+          // 押した直後にページを再読み込み・移動しても送信を続ける
+          context: { fetchOptions: { keepalive: true } },
         })
         if (!props.isTargetUserBlocked) {
           nudgeFollow(props.targetWorkOwnerUserId)
@@ -208,6 +210,7 @@ export function LikeButton(props: Props): React.ReactNode {
               workId: props.targetWorkId,
             },
           },
+          context: { fetchOptions: { keepalive: true } },
         })
       }
     } catch (error) {

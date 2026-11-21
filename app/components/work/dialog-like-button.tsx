@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client/index"
+import { useApolloClient, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Heart } from "lucide-react"
 import { useCallback, useContext, useEffect, useState } from "react"
@@ -8,6 +8,10 @@ import { KeyCodes } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import {
+  fetchViewerWorkLike,
+  rememberViewerWorkLike,
+} from "~/lib/viewer-work-like"
 
 type Props = {
   text?: string
@@ -31,6 +35,7 @@ export function DialogLikeButton(props: Props): React.ReactNode {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const location = useLocation()
+  const apolloClient = useApolloClient()
 
   const [createWorkLike, { loading: isCreateLoading }] = useMutation(
     createWorkLikeMutation,
@@ -110,6 +115,41 @@ export function DialogLikeButton(props: Props): React.ReactNode {
     }
   }, [props.defaultLiked, props.defaultLikedCount, getLocalLikeState])
 
+  // 一覧から開いた作品は、サーバーで未ログインとして取得していて isLiked が常に false になる。
+  // ここでログイン中のユーザーの状態を確かめる（いいね済みの作品を白いハートで出して、
+  // 押し直しで取り消してしまうのを防ぐ）
+  const viewerUserId = authContext.isLoggedIn ? authContext.userId : null
+  const isOwnWork = authContext.userId === props.targetWorkOwnerUserId
+
+  useEffect(() => {
+    if (!viewerUserId || isOwnWork) return
+    if (props.defaultLiked && getLocalLikeState() === null) return
+    let isCurrent = true
+    fetchViewerWorkLike(apolloClient, viewerUserId, props.targetWorkId).then(
+      (liked) => {
+        if (!isCurrent || liked === null) return
+        setIsLiked(liked)
+        const localState = getLocalLikeState()
+        if (localState !== null && localState.liked !== liked) {
+          localStorage.removeItem(localStorageKey)
+          setLikedCount(props.defaultLikedCount)
+        }
+      },
+    )
+    return () => {
+      isCurrent = false
+    }
+  }, [
+    apolloClient,
+    viewerUserId,
+    isOwnWork,
+    props.targetWorkId,
+    props.defaultLiked,
+    props.defaultLikedCount,
+    getLocalLikeState,
+    localStorageKey,
+  ])
+
   // クリックハンドラー
   const performLike = useCallback(
     async (_isAnonymous?: boolean) => {
@@ -129,6 +169,9 @@ export function DialogLikeButton(props: Props): React.ReactNode {
 
       // ローカルストレージに保存
       setLocalLikeState(newIsLiked, newLikedCount)
+      if (viewerUserId) {
+        rememberViewerWorkLike(viewerUserId, props.targetWorkId, newIsLiked)
+      }
 
       try {
         if (newIsLiked) {
@@ -138,6 +181,8 @@ export function DialogLikeButton(props: Props): React.ReactNode {
                 workId: props.targetWorkId,
               },
             },
+            // 押した直後にページを再読み込み・移動しても送信を続ける
+            context: { fetchOptions: { keepalive: true } },
           })
         } else {
           await deleteWorkLike({
@@ -146,6 +191,7 @@ export function DialogLikeButton(props: Props): React.ReactNode {
                 workId: props.targetWorkId,
               },
             },
+            context: { fetchOptions: { keepalive: true } },
           })
         }
       } catch (error) {
@@ -156,6 +202,9 @@ export function DialogLikeButton(props: Props): React.ReactNode {
           !newIsLiked,
           newIsLiked ? likedCount - 1 : likedCount + 1,
         )
+        if (viewerUserId) {
+          rememberViewerWorkLike(viewerUserId, props.targetWorkId, !newIsLiked)
+        }
         console.error("Failed to update like status:", error)
       }
     },
@@ -164,6 +213,7 @@ export function DialogLikeButton(props: Props): React.ReactNode {
       likedCount,
       clicked,
       props,
+      viewerUserId,
       setLocalLikeState,
       createWorkLike,
       deleteWorkLike,

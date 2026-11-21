@@ -26,11 +26,15 @@ const renderButton = (options: {
   cache?: InMemoryCache
   isAnonymous?: boolean
   likeInputs?: Record<string, unknown>[]
+  likeFetchOptions?: Record<string, unknown>[]
 }) => {
   const requests: string[][] = []
   const link = new ApolloLink((operation) => {
     if (operation.variables.input !== undefined) {
       options.likeInputs?.push(operation.variables.input)
+      options.likeFetchOptions?.push(
+        operation.getContext().fetchOptions ?? {},
+      )
       return new Observable((observer) => {
         observer.next({ data: { createWorkLike: null } })
         observer.complete()
@@ -168,6 +172,15 @@ describe("匿名いいね", () => {
     renderButton({ workId: "2001", userId: "viewer", likeInputs })
     fireEvent.click(screen.getByRole("button", { name: "いいね" }))
     await waitFor(() => expect(likeInputs).toEqual([{ workId: "2001" }]))
+  })
+
+  test("押した直後にページを離れても送信が続くようにする", async () => {
+    const likeFetchOptions: Record<string, unknown>[] = []
+    renderButton({ workId: "2003", userId: "viewer", likeFetchOptions })
+    fireEvent.click(screen.getByRole("button", { name: "いいね" }))
+    await waitFor(() =>
+      expect(likeFetchOptions).toEqual([{ keepalive: true }]),
+    )
   })
 
   test("作品画面で設定から決めた匿名を送る", async () => {
