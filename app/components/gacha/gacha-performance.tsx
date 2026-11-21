@@ -7,7 +7,7 @@ import {
 import type { GachaStage } from "~/components/gacha/gacha-stage.client"
 import { cn } from "~/lib/utils"
 
-const MODEL_URL = "/images/pictor-chan/pictor-chan-3d-v4.glb"
+const MODEL_URL = "/images/pictor-chan/pictor-chan-gacha-3d-v1.glb"
 
 type Props = {
   items: readonly GachaItem[]

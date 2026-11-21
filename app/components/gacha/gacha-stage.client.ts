@@ -294,7 +294,8 @@ export async function createGachaStage(
   mixer.update(0)
   model.updateMatrixWorld(true)
   const bounds = new Box3().setFromObject(model, true)
-  const fitScale = 1 / (bounds.max.y - bounds.min.y)
+  // 頭身が高いモデルなので、少し大きめに立たせる
+  const fitScale = 1.25 / (bounds.max.y - bounds.min.y)
   const fit = new Group()
   fit.rotation.y = -Math.PI / 2
   fit.scale.setScalar(fitScale)
@@ -645,9 +646,10 @@ export async function createGachaStage(
     } else if (phase === "charge") {
       // 筆を高く掲げて回す
       const k = progress("charge", t)
-      p.rFwd = 2.5 * smooth(k * 2.5)
-      p.rSide = 0.35
-      p.rElbow = 0.25
+      // 袖が大きいので、前ではなく横から上げて顔を隠さない
+      p.rFwd = 0.9 * smooth(k * 2.5)
+      p.rSide = 0.3 + 1.9 * smooth(k * 2.5)
+      p.rElbow = 0.35
       p.swirl = smooth(k * 2) * (0.6 + k * 0.6)
       p.headUp = 0.35 * smooth(k * 2)
       p.lean = -0.08
@@ -680,8 +682,8 @@ export async function createGachaStage(
     } else if (phase === "cutIn") {
       // びっくり → ばんざい
       const k = progress("cutIn", t)
-      p.rSide = k < 0.45 ? 1.0 : 0.7
-      p.lSide = k < 0.45 ? 1.0 : 0.7
+      p.rSide = k < 0.45 ? 0.45 : 0.7
+      p.lSide = k < 0.45 ? 0.45 : 0.7
       p.rFwd = k < 0.45 ? 0 : 0.9
       p.lFwd = k < 0.45 ? 0 : 0.9
       p.rElbow = k < 0.45 ? 0.8 : 1.1
@@ -766,17 +768,17 @@ export async function createGachaStage(
       camPos.set(
         Math.sin(k * 0.6 - 0.6) * 1.6,
         MathUtils.lerp(2.6, 1.0, k),
-        MathUtils.lerp(7, 3.3, k),
+        MathUtils.lerp(7, 3.0, k),
       )
-      camTarget.set(0, MathUtils.lerp(1.2, 0.72, k), 0)
+      camTarget.set(0, MathUtils.lerp(1.3, 0.85, k), 0)
     } else if (phase === "charge") {
       const k = smooth(progress("charge", t))
       camPos.set(
         MathUtils.lerp(0, 0.9, k),
         MathUtils.lerp(1.0, 0.85, k),
-        MathUtils.lerp(3.3, 2.5, k),
+        MathUtils.lerp(3.0, 2.3, k),
       )
-      camTarget.set(0, MathUtils.lerp(0.72, 0.95, k), 0)
+      camTarget.set(0, MathUtils.lerp(0.85, 1.08, k), 0)
     } else if (phase === "flick" || phase === "splash" || phase === "promote") {
       const k = smooth(progress("flick", t) * 0.5 + progress("splash", t) * 0.5)
       camPos.set(
@@ -793,12 +795,14 @@ export async function createGachaStage(
       const k = progress("cutIn", t)
       const z =
         k < 0.45
-          ? MathUtils.lerp(0.75, 0.55, smooth(k / 0.45))
-          : MathUtils.lerp(0.55, 1.6, smooth((k - 0.45) / 0.55))
-      camPos.set(head.x + 0.05, head.y + 0.1, head.z + z)
+          ? MathUtils.lerp(0.5, 0.36, smooth(k / 0.45))
+          : MathUtils.lerp(0.36, 1.1, smooth((k - 0.42) / 0.3))
+      // 縦長の画面では横がせまいので、少し引いて顔の横が切れないようにする
+      const portrait = Math.max(1, 0.9 / camera.aspect)
+      camPos.set(head.x + 0.03, head.y + 0.1, head.z + z * portrait)
       camTarget.set(
         head.x,
-        head.y + 0.07 - (k < 0.45 ? 0 : 0.1 * smooth((k - 0.45) / 0.55)),
+        head.y + 0.08 - (k < 0.42 ? 0 : 0.17 * smooth((k - 0.42) / 0.3)),
         head.z,
       )
     } else if (phase === "finale") {
@@ -806,9 +810,9 @@ export async function createGachaStage(
       camPos.set(
         Math.sin(k * 0.8) * 0.8,
         MathUtils.lerp(1.0, 1.15, k),
-        MathUtils.lerp(2.6, 3.4, k),
+        MathUtils.lerp(2.4, 3.2, k),
       )
-      camTarget.set(0, MathUtils.lerp(0.75, 0.9, k), 0)
+      camTarget.set(0, MathUtils.lerp(0.88, 1.0, k), 0)
     } else {
       const k = smooth((t - revealStart) / 0.8)
       camPos.lerpVectors(
