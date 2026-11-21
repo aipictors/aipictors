@@ -110,6 +110,9 @@ export default function AdminGachaSimulatorPage() {
   const [isRunning, setIsRunning] = useState(false)
   /** 引いたときに演出を見せる */
   const [withPerformance, setWithPerformance] = useState(true)
+  const [performanceMode, setPerformanceMode] = useState<"auto" | "3d" | "2d">(
+    "auto",
+  )
   const [performanceItems, setPerformanceItems] = useState<GachaItem[] | null>(
     null,
   )
@@ -399,6 +402,18 @@ export default function AdminGachaSimulatorPage() {
                 className="h-4 w-4"
               />
               <label htmlFor="gacha-sim-performance">演出を見る</label>
+              <select
+                aria-label="演出の種類"
+                value={performanceMode}
+                onChange={(event) =>
+                  setPerformanceMode(event.target.value as "auto" | "3d" | "2d")
+                }
+                className="h-8 rounded-md border border-white/15 bg-slate-900 px-2 text-slate-100 text-xs"
+              >
+                <option value="auto">自動（回線に合わせる）</option>
+                <option value="3d">3D</option>
+                <option value="2d">2D（軽い）</option>
+              </select>
             </div>
             <Button
               variant="ghost"
@@ -557,6 +572,7 @@ export default function AdminGachaSimulatorPage() {
         createPortal(
           <GachaPerformance
             items={performanceItems}
+            mode={performanceMode}
             onClose={() => setPerformanceItems(null)}
             actions={
               <>

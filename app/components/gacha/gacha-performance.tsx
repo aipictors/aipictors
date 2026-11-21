@@ -5,6 +5,7 @@ import {
   gachaRarityRank,
   planGachaDirection,
 } from "~/components/gacha/gacha-direction"
+import { GachaPerformance2D } from "~/components/gacha/gacha-performance-2d"
 import {
   detectGachaQuality,
   type GachaQuality,
@@ -28,6 +29,8 @@ type Props = {
   onClose: () => void
   /** 結果の画面に出すボタン（もう一回引く など） */
   actions?: React.ReactNode
+  /** auto: 回線に合わせる（遅ければ 2D）。3d / 2d: 決め打ち（管理ページの確認用） */
+  mode?: "auto" | "3d" | "2d"
 }
 
 /**
@@ -42,8 +45,9 @@ export function GachaPerformance(props: Props): React.ReactNode {
     [props.direction, props.items],
   )
   const [state, setState] = useState<
-    "loading" | "playing" | "done" | "fallback"
+    "loading" | "playing" | "done" | "fallback" | "playing2d" | "done2d"
   >("loading")
+  const [skipSignal, setSkipSignal] = useState(0)
   const [progress, setProgress] = useState(0)
   const [quality, setQuality] = useState<GachaQuality | null>(null)
   const [canSkipLoading, setCanSkipLoading] = useState(false)
@@ -53,15 +57,18 @@ export function GachaPerformance(props: Props): React.ReactNode {
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
-    const picked = detectGachaQuality()
+    const mode = props.mode ?? "auto"
+    const picked: GachaQuality =
+      mode === "2d" ? "card" : mode === "3d" ? "full" : detectGachaQuality()
     setQuality(picked)
     switchedToCardsRef.current = false
     setCanSkipLoading(false)
-    if (
-      picked === "card" ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setState("fallback")
+      return
+    }
+    if (picked === "card") {
+      setState("playing2d")
       return
     }
     let cancelled = false
@@ -72,14 +79,14 @@ export function GachaPerformance(props: Props): React.ReactNode {
     canvas.addEventListener("pointerup", () => stageRef.current?.tap())
     // 端末の都合で 3D が描けなくなったら、真っ黒のままにせず結果だけ出す
     canvas.addEventListener("webglcontextlost", () => {
-      if (!cancelled) setState("fallback")
+      if (!cancelled) setState("playing2d")
     })
     container.appendChild(canvas)
     setState("loading")
     setProgress(0)
     // 読み込みが終わらないときも結果だけ出す
     const timeout = window.setTimeout(() => {
-      if (!cancelled && !stageRef.current) setState("fallback")
+      if (!cancelled && !stageRef.current) setState("playing2d")
     }, 30_000)
     const skipButtonTimer = window.setTimeout(() => {
       if (!cancelled) setCanSkipLoading(true)
@@ -109,7 +116,7 @@ export function GachaPerformance(props: Props): React.ReactNode {
         setProgress(1)
         setState("playing")
       } catch {
-        if (!cancelled) setState("fallback")
+        if (!cancelled) setState("playing2d")
       }
     })()
     return () => {
@@ -120,13 +127,19 @@ export function GachaPerformance(props: Props): React.ReactNode {
       stageRef.current = null
       canvas.remove()
     }
-  }, [props.items, direction])
+  }, [props.items, direction, props.mode])
 
   return (
     <div className="fixed inset-0 z-[100] select-none bg-black text-white">
       <div
         ref={containerRef}
-        className={cn("h-full w-full", state === "fallback" && "hidden")}
+        className={cn(
+          "h-full w-full",
+          (state === "fallback" ||
+            state === "playing2d" ||
+            state === "done2d") &&
+            "hidden",
+        )}
       />
       {state === "loading" && (
         <GachaLoading
@@ -136,23 +149,35 @@ export function GachaPerformance(props: Props): React.ReactNode {
             canSkipLoading
               ? () => {
                   switchedToCardsRef.current = true
-                  setState("fallback")
+                  setState("playing2d")
                 }
               : undefined
           }
         />
       )}
-      {state === "playing" && (
+      {(state === "playing2d" || state === "done2d") && (
+        <GachaPerformance2D
+          items={props.items}
+          direction={direction}
+          skipSignal={skipSignal}
+          onComplete={() => setState("done2d")}
+        />
+      )}
+      {(state === "playing" || state === "playing2d") && (
         <button
           type="button"
           className="absolute top-[max(12px,env(safe-area-inset-top))] right-3 rounded-full bg-white/15 px-4 py-1.5 font-bold text-sm backdrop-blur"
-          onClick={() => stageRef.current?.skip()}
+          onClick={() =>
+            state === "playing2d"
+              ? setSkipSignal((value) => value + 1)
+              : stageRef.current?.skip()
+          }
         >
           スキップ ≫
         </button>
       )}
       {state === "fallback" && <GachaResultList items={props.items} />}
-      {(state === "done" || state === "fallback") && (
+      {(state === "done" || state === "fallback" || state === "done2d") && (
         <div className="absolute inset-x-0 bottom-[max(16px,env(safe-area-inset-bottom))] flex justify-center gap-3 px-4">
           {props.actions}
           <button
