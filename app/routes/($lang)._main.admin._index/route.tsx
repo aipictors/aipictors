@@ -1,7 +1,6 @@
 import { gql, useQuery } from "@apollo/client/index"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
-import { Link } from "~/lib/app/locale-router"
 import {
   ArrowUpRight,
   Bell,
@@ -17,6 +16,7 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
+import { Link } from "~/lib/app/locale-router"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -77,6 +77,11 @@ const quickActions = [
     href: "/admin/coin-histories",
     title: "コイン履歴",
     subtitle: "ユーザ別の消費・付与・失効を確認",
+  },
+  {
+    href: "/admin/gacha",
+    title: "ガチャ",
+    subtitle: "景品一覧と、確率・天井を変えて引いてみるシミュレーション",
   },
   {
     href: "/admin/creator-payouts",

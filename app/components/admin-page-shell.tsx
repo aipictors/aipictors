@@ -5,6 +5,7 @@ import {
   Headset,
   Coins,
   ChevronDown,
+  Gift,
   GripVertical,
   History,
   House,
@@ -92,6 +93,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "コイン履歴",
     description: "ユーザ別の消費・付与・失効を確認",
     icon: History,
+  },
+  {
+    href: "/admin/gacha",
+    title: "ガチャ",
+    description: "景品一覧と確率・天井のシミュレーション",
+    icon: Gift,
   },
   {
     href: "/admin/releases/new",
