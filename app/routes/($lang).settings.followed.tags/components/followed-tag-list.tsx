@@ -1,11 +1,11 @@
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { ChevronRightIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { FollowedTag } from "~/routes/($lang).settings.followed.tags/components/followed-tag"
 import {

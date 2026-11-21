@@ -13,8 +13,8 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
-import { MAX_FOLLOWED_TAGS } from "~/routes/($lang).settings.followed.tags/components/followed-tag-editor"
 import { RecommendedCreators } from "~/routes/($lang)._main.new.tags._index/components/recommended-creators"
+import { MAX_FOLLOWED_TAGS } from "~/routes/($lang).settings.followed.tags/components/followed-tag-editor"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 /** これだけ選ぶとホームの「お気に入りタグ新着」がにぎやかになる目安 */
