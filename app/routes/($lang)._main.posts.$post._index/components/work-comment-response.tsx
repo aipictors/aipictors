@@ -32,15 +32,15 @@ import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/com
 import type { Comment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import {
-  shouldAutoTranslateComment,
-  translateCommentAutomatically,
-} from "~/utils/comment-auto-translate"
+  shouldAutoTranslate,
+  translateAutomatically,
+} from "~/utils/auto-translate"
 import { parseLocalePath } from "~/utils/locale-path"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type Props = {
   isMine: boolean
@@ -113,15 +113,13 @@ export function WorkCommentResponse(props: Props) {
   const { pathname } = useLocation()
   React.useEffect(() => {
     const { locale, isSensitive } = parseLocalePath(pathname)
-    if (isSensitive || !shouldAutoTranslateComment(props.text, locale)) return
+    if (isSensitive || !shouldAutoTranslate(props.text, locale)) return
     let isCanceled = false
-    void translateCommentAutomatically(props.text ?? "", locale).then(
-      (result) => {
-        if (isCanceled || result.length === 0) return
-        setTranslatedText(result)
-        setIsShowingTranslation(true)
-      },
-    )
+    void translateAutomatically(props.text ?? "", locale).then((result) => {
+      if (isCanceled || result.length === 0) return
+      setTranslatedText(result)
+      setIsShowingTranslation(true)
+    })
     return () => {
       isCanceled = true
     }

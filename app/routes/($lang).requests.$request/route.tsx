@@ -11,6 +11,10 @@ import {
 } from "lucide-react"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
+import {
+  AutoTranslatedInline,
+  AutoTranslatedText,
+} from "~/components/auto-translated-text"
 import { RequestImagePicker } from "~/components/requests/request-image-picker"
 import { RequestShowcaseBadge } from "~/components/requests/request-showcase"
 import {
@@ -237,9 +241,12 @@ export default function RequestDetailPage() {
         <h2 className="font-bold">
           {t("リクエストの内容", "Request details")}
         </h2>
-        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-          {request.body}
-        </p>
+        <div className="flex flex-col gap-1">
+          <AutoTranslatedText
+            text={request.body}
+            className="whitespace-pre-wrap break-words text-sm leading-relaxed"
+          />
+        </div>
         <RequestImageGrid urls={request.referenceImageUrls} />
         <div className="flex flex-wrap gap-2 text-muted-foreground text-xs">
           <span>
@@ -980,7 +987,7 @@ function MessageThread(props: {
                 key={m.id}
                 className="mx-auto whitespace-pre-wrap rounded-full bg-muted px-3 py-1 text-center text-[11px] text-muted-foreground"
               >
-                {m.body}
+                <AutoTranslatedInline text={m.body} />
                 {t("・", " · ")}
                 {formatDateTime(m.createdAt)}
               </p>
@@ -1001,16 +1008,17 @@ function MessageThread(props: {
                   link={false}
                 />
               )}
-              {m.body && (
-                <p
-                  className={cn(
-                    "whitespace-pre-wrap break-words rounded-2xl px-3 py-2 text-sm",
-                    mine ? "bg-primary text-primary-foreground" : "bg-muted",
-                  )}
-                >
-                  {m.body}
-                </p>
-              )}
+              {m.body &&
+                (mine ? (
+                  <p className="whitespace-pre-wrap break-words rounded-2xl bg-primary px-3 py-2 text-primary-foreground text-sm">
+                    {m.body}
+                  </p>
+                ) : (
+                  <AutoTranslatedText
+                    text={m.body}
+                    className="whitespace-pre-wrap break-words rounded-2xl bg-muted px-3 py-2 text-sm"
+                  />
+                ))}
               <RequestImageGrid
                 urls={m.imageUrls}
                 className="w-56 grid-cols-2 sm:grid-cols-2"

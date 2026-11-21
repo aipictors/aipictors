@@ -7,6 +7,7 @@ import {
 } from "lucide-react"
 import { useContext, useState } from "react"
 import { UserAchievementShowcase } from "~/components/achievements/user-achievement-showcase"
+import { AutoTranslationToggle } from "~/components/auto-translated-text"
 import { FollowButton } from "~/components/button/follow-button"
 import { OfficialBadge } from "~/components/official-badge"
 import { OmissionNumber } from "~/components/omission-number"
@@ -15,6 +16,7 @@ import { SupportButton } from "~/components/support-button"
 import { Button } from "~/components/ui/button"
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { AuthContext } from "~/contexts/auth-context"
+import { useAutoTranslation } from "~/hooks/use-auto-translation"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -336,7 +338,10 @@ function UserProfileSensitiveLinks(props: { links: string[] }) {
 function UserProfileBiography(props: { text: string }) {
   const t = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
-  const isLong = props.text.split("\n").length > 4 || props.text.length > 160
+  // 英語の画面では日本語のプロフィール文を自動で英語にする
+  const translation = useAutoTranslation(props.text)
+  const text = translation.text
+  const isLong = text.split("\n").length > 4 || text.length > 160
 
   return (
     <div className="max-w-3xl">
@@ -346,17 +351,22 @@ function UserProfileBiography(props: { text: string }) {
           isLong && !isExpanded && "line-clamp-4",
         )}
       >
-        <UserBiography text={props.text} />
+        <UserBiography text={text} />
       </p>
-      {isLong && (
-        <button
-          type="button"
-          className="mt-1 text-muted-foreground text-xs hover:text-foreground"
-          onClick={() => setIsExpanded((value) => !value)}
-        >
-          {isExpanded ? t("閉じる", "Show less") : t("もっと見る", "Show more")}
-        </button>
-      )}
+      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+        {isLong && (
+          <button
+            type="button"
+            className="text-muted-foreground text-xs hover:text-foreground"
+            onClick={() => setIsExpanded((value) => !value)}
+          >
+            {isExpanded
+              ? t("閉じる", "Show less")
+              : t("もっと見る", "Show more")}
+          </button>
+        )}
+        <AutoTranslationToggle translation={translation} />
+      </div>
     </div>
   )
 }

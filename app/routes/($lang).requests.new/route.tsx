@@ -16,6 +16,7 @@ import {
   useState,
 } from "react"
 import { toast } from "sonner"
+import { AutoTranslatedText } from "~/components/auto-translated-text"
 import { RequestImagePicker } from "~/components/requests/request-image-picker"
 import {
   CoinPrice,
@@ -369,9 +370,12 @@ export default function NewRequestPage() {
         {plan && <CoinPrice coins={plan.priceCoins} className="text-lg" />}
       </section>
       {settings?.note && !plan && (
-        <p className="whitespace-pre-wrap rounded-2xl bg-muted/50 p-3 text-sm">
-          {settings.note}
-        </p>
+        <div className="flex flex-col gap-1 rounded-2xl bg-muted/50 p-3">
+          <AutoTranslatedText
+            text={settings.note}
+            className="whitespace-pre-wrap text-sm"
+          />
+        </div>
       )}
       {isOwn && (
         <p className="rounded-xl bg-amber-100 p-3 text-amber-900 text-sm dark:bg-amber-500/15 dark:text-amber-200">

@@ -1,5 +1,6 @@
 import { ChevronRight, HandCoins, Plus } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
+import { AutoTranslatedText } from "~/components/auto-translated-text"
 import {
   RequestShowcaseBadge,
   RequestShowcaseGrid,
@@ -11,13 +12,13 @@ import {
 } from "~/components/requests/request-ui"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import {
   type CreatorRequestProfile,
   formatCoins,
   requestsGet,
 } from "~/lib/requests-api"
-import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * マイページのプラン欄: プランの横スクロールのカード、リクエストの実績（透かし入り・「プランで制作」の印）、「リクエストする」ボタン。
@@ -172,13 +173,19 @@ export function UserRequestPlansSection(props: { userId: string }) {
             <p className="font-bold">
               {t("内容を自由に決めてリクエスト", "Custom request")}
             </p>
-            <p className="truncate text-muted-foreground text-xs">
-              {profile.settings.note ||
-                t(
+            {profile.settings.note ? (
+              <AutoTranslatedText
+                text={profile.settings.note}
+                className="truncate text-muted-foreground text-xs"
+              />
+            ) : (
+              <p className="truncate text-muted-foreground text-xs">
+                {t(
                   `${formatCoins(profile.settings.minCoins)} コインから受け付けています`,
                   `From ${formatCoins(profile.settings.minCoins, true)} coins`,
                 )}
-            </p>
+              </p>
+            )}
           </div>
           <Button asChild className="shrink-0 rounded-full font-bold">
             <Link to={`/requests/new?creator=${props.userId}`}>

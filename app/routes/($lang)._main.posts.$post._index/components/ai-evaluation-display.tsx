@@ -13,7 +13,9 @@ import {
 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { AutoTranslationToggle } from "~/components/auto-translated-text"
 import { Button } from "~/components/ui/button"
+import { useAutoTranslation } from "~/hooks/use-auto-translation"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { AiEvaluationRadarChart } from "~/routes/($lang)._main.posts.$post._index/components/ai-evaluation-radar-chart"
@@ -212,11 +214,64 @@ function AiEvaluationRetryButton(props: {
 /**
  * AI評価（総合点・作品へのコメント・項目ごとの点）
  */
+/**
+ * AI評価のコメント。英語の画面では日本語のコメントを自動で英語にする
+ */
+function AiEvaluationComment(props: {
+  comment: string
+  name: string
+  avatar: string
+}) {
+  const t = useTranslation()
+  const [isCommentExpanded, setIsCommentExpanded] = useState(false)
+  const translation = useAutoTranslation(props.comment)
+  const comment = translation.text
+  const isCommentLong = comment.length > COMMENT_FOLD_LENGTH
+
+  return (
+    <div className="mt-3 flex items-start gap-2.5">
+      <img
+        src={props.avatar}
+        alt=""
+        className="size-8 shrink-0 rounded-full object-cover"
+        width={32}
+        height={32}
+        loading="lazy"
+        decoding="async"
+      />
+      <div className="min-w-0 flex-1">
+        <p className="font-medium text-xs">{props.name}</p>
+        <p className="mt-0.5 whitespace-pre-wrap break-words text-sm leading-relaxed">
+          {isCommentLong && !isCommentExpanded
+            ? `${comment.substring(0, COMMENT_PREVIEW_LENGTH)}…`
+            : comment}
+        </p>
+        <AutoTranslationToggle translation={translation} className="mt-1" />
+        {isCommentLong && (
+          <button
+            type="button"
+            onClick={() => setIsCommentExpanded((value) => !value)}
+            className="mt-1 flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
+          >
+            {isCommentExpanded ? (
+              <ChevronUp className="size-3" />
+            ) : (
+              <ChevronDown className="size-3" />
+            )}
+            {isCommentExpanded
+              ? t("閉じる", "Close")
+              : t("もっと見る", "Show more")}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export function AiEvaluationDisplay(props: Props) {
   const t = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
   const [isHidden, setIsHidden] = useState(false)
-  const [isCommentExpanded, setIsCommentExpanded] = useState(false)
 
   useEffect(() => {
     setIsHidden(loadAiEvaluationHidden(props.workId))
@@ -406,7 +461,6 @@ export function AiEvaluationDisplay(props: Props) {
     .sort((a, b) => b.score - a.score)
     .slice(0, 2)
   const comment = evaluation.comment
-  const isCommentLong = comment !== null && comment.length > COMMENT_FOLD_LENGTH
 
   return (
     <section
@@ -469,41 +523,7 @@ export function AiEvaluationDisplay(props: Props) {
       </div>
 
       {comment && (
-        <div className="mt-3 flex items-start gap-2.5">
-          <img
-            src={avatar}
-            alt=""
-            className="size-8 shrink-0 rounded-full object-cover"
-            width={32}
-            height={32}
-            loading="lazy"
-            decoding="async"
-          />
-          <div className="min-w-0 flex-1">
-            <p className="font-medium text-xs">{name}</p>
-            <p className="mt-0.5 whitespace-pre-wrap break-words text-sm leading-relaxed">
-              {isCommentLong && !isCommentExpanded
-                ? `${comment.substring(0, COMMENT_PREVIEW_LENGTH)}…`
-                : comment}
-            </p>
-            {isCommentLong && (
-              <button
-                type="button"
-                onClick={() => setIsCommentExpanded((value) => !value)}
-                className="mt-1 flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
-              >
-                {isCommentExpanded ? (
-                  <ChevronUp className="size-3" />
-                ) : (
-                  <ChevronDown className="size-3" />
-                )}
-                {isCommentExpanded
-                  ? t("閉じる", "Close")
-                  : t("もっと見る", "Show more")}
-              </button>
-            )}
-          </div>
-        </div>
+        <AiEvaluationComment comment={comment} name={name} avatar={avatar} />
       )}
 
       {hasScores && (

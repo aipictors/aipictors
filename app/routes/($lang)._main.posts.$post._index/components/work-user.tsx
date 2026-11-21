@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext, useRef, useState } from "react"
+import { AutoTranslatedText } from "~/components/auto-translated-text"
 import { FollowButton } from "~/components/button/follow-button"
 import { OfficialBadge } from "~/components/official-badge"
 import { SupportButton } from "~/components/support-button"
@@ -133,9 +134,12 @@ export function WorkUser(props: Props) {
         />
       )}
       {biography.length > 0 && (
-        <p className="line-clamp-3 whitespace-pre-wrap break-words text-muted-foreground text-sm leading-relaxed">
-          {biography}
-        </p>
+        <div className="space-y-1">
+          <AutoTranslatedText
+            text={biography}
+            className="line-clamp-3 whitespace-pre-wrap break-words text-muted-foreground text-sm leading-relaxed"
+          />
+        </div>
       )}
     </section>
   )

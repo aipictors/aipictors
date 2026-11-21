@@ -18,6 +18,14 @@ import {
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 import {
+  AutoTranslatedInline,
+  AutoTranslatedText,
+} from "~/components/auto-translated-text"
+import {
+  RequestShowcaseGrid,
+  RequestShowcaseR18Section,
+} from "~/components/requests/request-showcase"
+import {
   CoinPrice,
   RequestUserChip,
   type RequestUsers,
@@ -35,10 +43,6 @@ import {
   requestsPost,
 } from "~/lib/requests-api"
 import { fetchRequestsInternal } from "~/lib/server/requests-api.server"
-import {
-  RequestShowcaseGrid,
-  RequestShowcaseR18Section,
-} from "~/components/requests/request-showcase"
 import { cn } from "~/lib/utils"
 import { createMeta } from "~/utils/create-meta"
 
@@ -168,7 +172,7 @@ export default function RequestPlanPage() {
             )}
           </div>
           <h1 className="font-bold text-xl leading-snug md:text-2xl">
-            {plan.title}
+            <AutoTranslatedInline text={plan.title} />
           </h1>
           <RequestUserChip user={creator} size="md" />
           <CoinPrice coins={plan.priceCoins} className="text-3xl" />
@@ -226,9 +230,11 @@ export default function RequestPlanPage() {
             <h2 className="mb-2 font-bold text-sm">
               {t("プランの内容", "Plan details")}
             </h2>
-            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-              {plan.description}
-            </p>
+            <AutoTranslatedText
+              text={plan.description}
+              className="whitespace-pre-wrap break-words text-sm leading-relaxed"
+              toggleClassName="mt-2"
+            />
           </section>
 
           {(showcase.length > 0 || showcaseR18Count > 0) && (

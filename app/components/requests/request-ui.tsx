@@ -1,16 +1,17 @@
 import { CalendarClock, Check, Images, RefreshCcw } from "lucide-react"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import { useAutoTranslation } from "~/hooks/use-auto-translation"
+import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import {
   type CoinRequest,
   formatCoins,
   planCategoryLabel,
-  requestStatusLabel,
   type RequestPlan,
   type RequestStatus,
+  requestStatusLabel,
 } from "~/lib/requests-api"
 import { cn } from "~/lib/utils"
-import { useTranslation } from "~/hooks/use-translation"
 
 /** 有料リクエストの画面で使う部品（Web とアプリで同じ見た目: 角の丸いカード・丸いタブ・下に固定のボタン） */
 
@@ -84,6 +85,8 @@ export function RequestPlanCard(props: {
 }) {
   const t = useTranslation()
   const { plan } = props
+  // 英語の画面では日本語のタイトルを自動で英語にする（カードの中なので切り替えは詳しいページで）
+  const title = useAutoTranslation(plan.title).text
   const full =
     plan.activeCount !== undefined && plan.activeCount >= plan.maxActive
   const closed = !plan.isAccepting || full
@@ -130,9 +133,7 @@ export function RequestPlanCard(props: {
         )}
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3">
-        <p className="line-clamp-2 font-bold text-sm leading-snug">
-          {plan.title}
-        </p>
+        <p className="line-clamp-2 font-bold text-sm leading-snug">{title}</p>
         {props.user && <RequestUserChip user={props.user} link={false} />}
         <div className="mt-auto flex items-center justify-between gap-2 pt-1">
           <CoinPrice coins={plan.priceCoins} className="text-base" />
