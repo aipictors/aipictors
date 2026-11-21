@@ -5,6 +5,7 @@ python3 scripts/avatar-frames/pack-decorations.py <PNG のフォルダ> public/a
 
 <slug>.webp: 止まった絵（一覧で使う）
 <slug>.anim.webp: 動く絵（プロフィールと枠選びで使う）
+<slug>.nopictor.webp / <slug>.nopictor.anim.webp: ぴくたーちゃんを外した版（PICTOR_CHAN=off で書き出したもの）
 """
 import json
 import sys

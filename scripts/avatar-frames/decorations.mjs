@@ -3009,6 +3009,7 @@ const CANVAS_VIEW_BOX = 'viewBox="-60 -60 632 632"'
 const withCanvas = (draw) => (t) =>
   draw(t).replace(/viewBox="[^"]*"( preserveAspectRatio="[^"]*")?/, CANVAS_VIEW_BOX)
 
+/** pictor: ぴくたーちゃんが入っている枠（着ける人が外せる。「なし」版は <slug>.nopictor） */
 /** reserve: 作ってあるが、いまのガチャには入れない枠（UR・SSR は数を絞る。あとのイベントなどで使う） */
 const decorations = [
   { slug: "sakura", category: "nature", name: "満開の桜", description: "枝に咲く桜と、舞い散る花びら", draw: sakura },
@@ -3101,10 +3102,10 @@ const decorations = [
   { slug: "gacha-r-ghosts", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "おばけのパレード", description: "かぼちゃのランタンと、輪をめぐる小さなおばけ", draw: gachaGhosts },
   { slug: "gacha-r-hydrangea", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "雨上がりのあじさい", description: "青と紫のあじさいと、きらめく雨つぶ", draw: gachaHydrangea },
   { slug: "gacha-sr-fireworks", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "夜空の花火", description: "夜色の輪のまわりに次々ひらく花火", draw: gachaFireworks },
-  { slug: "gacha-sr-pictor-paint", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ぴくたーちゃんのお絵かき", description: "絵の具で描いた輪と筆、手をふるぴくたーちゃん", draw: gachaPictorPaint },
+  { slug: "gacha-sr-pictor-paint", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, pictor: true, category: "gacha", name: "ぴくたーちゃんのお絵かき", description: "絵の具で描いた輪と筆、手をふるぴくたーちゃん", draw: gachaPictorPaint },
   { slug: "gacha-ssr-armillary", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "金の天球儀", description: "回る金の円環と星座の目盛り、てっぺんの太陽", draw: gachaArmillary },
-  { slug: "gacha-ssr-pictor-love", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ぴくたーちゃんのだいすき", description: "ハートを抱くぴくたーちゃんと、ローズゴールドのハートの輪", draw: gachaPictorLove },
-  { slug: "gacha-ur-pictor-rainbow", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "きらめくぴくたーちゃん", description: "虹色の輪と星、ふたりのぴくたーちゃん", draw: gachaPictorRainbow },
+  { slug: "gacha-ssr-pictor-love", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, pictor: true, category: "gacha", name: "ぴくたーちゃんのだいすき", description: "ハートを抱くぴくたーちゃんと、ローズゴールドのハートの輪", draw: gachaPictorLove },
+  { slug: "gacha-ur-pictor-rainbow", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, pictor: true, category: "gacha", name: "きらめくぴくたーちゃん", description: "虹色の輪と星、ふたりのぴくたーちゃん", draw: gachaPictorRainbow },
   { slug: "gacha-n-hairline", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ほそ線リング", description: "白い細い二重線と、ゆっくりめぐる小さな粒", draw: gachaHairline },
   { slug: "gacha-n-pencil", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "えんぴつの線", description: "えんぴつで描いた手描きの輪と、小さなえんぴつ", draw: gachaPencil },
   { slug: "gacha-r-one-star", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ひとつ星", description: "細い金の輪に、小さな星がひとつ", draw: gachaOneStar },

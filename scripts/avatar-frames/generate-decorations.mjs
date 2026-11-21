@@ -4,10 +4,12 @@
  * node scripts/avatar-frames/generate-decorations.mjs <puppeteer-core のパス> <PNG の出力先> [slug...]
  *
  * <出力先>/<slug>/00.png〜 ができる。WebP にまとめるのは pack-decorations.py
+ * PICTOR_CHAN=off を付けると、ぴくたーちゃんの入った枠だけを「なし」で描いて <出力先>/<slug>.nopictor/ に出す
  */
 import { mkdirSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 import { DECORATIONS } from "./decorations.mjs"
+import { PICTOR_CHAN_OFF } from "./pictor-chan.mjs"
 
 const [puppeteerPath, outputDir, ...slugs] = process.argv.slice(2)
 const { default: puppeteer } = await import(puppeteerPath)
@@ -22,13 +24,14 @@ const browser = await puppeteer.launch({
 const page = await browser.newPage()
 await page.setViewport({ width: SIZE, height: SIZE })
 
-const targets =
+const targets = (
   slugs.length > 0
     ? DECORATIONS.filter((item) => slugs.includes(item.slug))
     : DECORATIONS
+).filter((item) => !PICTOR_CHAN_OFF || item.pictor)
 
 for (const item of targets) {
-  const dir = join(outputDir, item.slug)
+  const dir = join(outputDir, PICTOR_CHAN_OFF ? `${item.slug}.nopictor` : item.slug)
   mkdirSync(dir, { recursive: true })
   // ゆっくり動かす枠は、コマ数と 1 コマの長さを枠ごとに決める（pack-decorations.py が meta.json を読む）
   const frames = item.frames ?? FRAMES

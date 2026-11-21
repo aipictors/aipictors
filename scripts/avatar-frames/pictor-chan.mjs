@@ -25,8 +25,15 @@ const f = (n) => Number(n.toFixed(2))
 export const pictorOutlineDef = (id = "pcOut", r = 3) =>
   `<filter id="${id}" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB"><feMorphology in="SourceAlpha" operator="dilate" radius="${r}" result="d"/><feFlood flood-color="#fff"/><feComposite in2="d" operator="in" result="o"/><feGaussianBlur in="d" stdDeviation="${r}" result="b"/><feOffset in="b" dy="${f(r * 0.8)}" result="bo"/><feFlood flood-color="#1a1030" flood-opacity=".35"/><feComposite in2="bo" operator="in" result="s"/><feMerge><feMergeNode in="s"/><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`
 
+/**
+ * ぴくたーちゃんは着ける人が外せる（枠のカスタム）。PICTOR_CHAN=off で書き出すと、ぴくたーちゃんだけ描かない
+ * （generate-decorations.mjs・generate-header-frames.mjs が「なし」版を <slug>.nopictor として作る）
+ */
+export const PICTOR_CHAN_OFF = process.env.PICTOR_CHAN === "off"
+
 /** ぴくたーちゃん。(x, y) が足もと、h が高さ */
 export const pictorChan = (name, x, y, h, { rot = 0, filter = "pcOut" } = {}) => {
+  if (PICTOR_CHAN_OFF) return ""
   const [w0, h0] = SIZES[name]
   const w = (w0 * h) / h0
   return `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)})"><image href="${uri(name)}" x="${f(-w / 2)}" y="${f(-h)}" width="${f(w)}" height="${f(h)}" filter="url(#${filter})"/></g>`

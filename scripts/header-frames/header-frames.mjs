@@ -10,7 +10,7 @@
  * layer に "base" / "motion" / "all" を渡す（all は確認用の 1 枚絵）
  */
 import { PARTS } from "../avatar-frames/decorations.mjs"
-import { pictorChan, pictorOutlineDef } from "../avatar-frames/pictor-chan.mjs"
+import { PICTOR_CHAN_OFF, pictorChan, pictorOutlineDef } from "../avatar-frames/pictor-chan.mjs"
 
 const { f, rng, wave, place, sparkle, glint, flash, heart, blossom, looseP, goldBlossom, star5, setGem, bezelDef, PEARL_DEF, METAL, GEM, PRISM, prismAt, mixHex, lg, TAU } = PARTS
 
@@ -462,7 +462,7 @@ const pictorLove = (t, { w, rad }, layer = "all") => {
     })
     .join("")
   const rising = bandFlow(t, w, 10, 71, (x, y, i, k) => place(x, y, 0, 0.3, heart(i % 2 ? "#ff8fb1" : "#ffe6f0"), `opacity="${f(0.3 + 0.7 * k)}"`), 10, 4)
-  const lx = luxe("hplL", t, { w, rad }, m, { inlay: "url(#hplIn)", inlayWidth: 7, corners: [0, 1, 3], cornerJewel: "pink", gems: [[0.15, "ruby"], [0.35, "ruby"], [0.6, "ruby"], [0.9, "ruby"]] })
+  const lx = luxe("hplL", t, { w, rad }, m, { inlay: "url(#hplIn)", inlayWidth: 7, corners: PICTOR_CHAN_OFF ? [0, 1, 2, 3] : [0, 1, 3], cornerJewel: "pink", gems: [[0.15, "ruby"], [0.35, "ruby"], [0.6, "ruby"], [0.9, "ruby"]] })
   const base = `${lx.base}
     <g filter="url(#hds)">
       ${place(w / 2, 13, 0, 0.62, heart("url(#hplH)"))}${hearts}
@@ -482,7 +482,7 @@ const pictorLove = (t, { w, rad }, layer = "all") => {
 
 const pictorRainbow = (t, { w, rad }, layer = "all") => {
   const p = METAL.platinum
-  const lx = luxe("hprL", t, { w, rad }, p, { inlay: "url(#hprBand)", inlayWidth: 8, corners: [0, 1, 3], cornerJewel: "diamond", ur: true, halo: "url(#hprBand)", gems: [[0.11, "ruby"], [0.19, "topaz"], [0.27, "emerald"], [0.35, "sapphire"], [0.5 + 0.2, "amethyst"], [0.5 + 0.3, "pink"], [0.5 + 0.4, "ruby"]] })
+  const lx = luxe("hprL", t, { w, rad }, p, { inlay: "url(#hprBand)", inlayWidth: 8, corners: PICTOR_CHAN_OFF ? [0, 1, 2, 3] : [0, 1, 3], cornerJewel: "diamond", ur: true, halo: "url(#hprBand)", gems: [[0.11, "ruby"], [0.19, "topaz"], [0.27, "emerald"], [0.35, "sapphire"], [0.5 + 0.2, "amethyst"], [0.5 + 0.3, "pink"], [0.5 + 0.4, "ruby"]] })
   const confetti = bandFlow(t, w, 14, 81, (x, y, i, k) => `<rect x="-5" y="-2.5" width="10" height="5" rx="1.5" fill="${prismAt(i / 14)}" transform="translate(${f(x)} ${f(y)}) rotate(${f(t * 720 + i * 40)})" opacity="${f(0.4 + 0.6 * k)}"/>`, 11, 12)
   const stars = [[w * 0.86, 13, 11]]
     .map(([x, y, s], i) => place(x, y, 0, 0.85 + 0.2 * Math.sin(TAU * (t * 2 + i / 6)), star5(s, prismAt(i / 6 + t), "#fff", 2)))
@@ -538,10 +538,10 @@ export const HEADER_FRAMES = [
   { slug: "gacha-ur-star-crown", rarity: "UR", frames: 24, frameMs: 150, name: "星海の王冠", description: "星雲の流れるふちに、角の惑星と小さな白金の王冠", draw: starCrown },
   { slug: "gacha-r-hydrangea", rarity: "R", frames: 24, frameMs: 150, name: "雨上がりのあじさい", description: "角に咲く青と桃色のあじさいと、落ちる雨つぶ", draw: hydrangea },
   { slug: "gacha-sr-fireworks", rarity: "SR", frames: 24, frameMs: 150, name: "夜空の花火", description: "夜色のふちの上で次々ひらく小さな花火", draw: fireworks },
-  { slug: "gacha-sr-pictor-paint", rarity: "SR", frames: 24, frameMs: 150, name: "ぴくたーちゃんのお絵かき", description: "絵の具で描いたふちとパレット、右下で手をふるぴくたーちゃん", draw: pictorPaint },
+  { slug: "gacha-sr-pictor-paint", rarity: "SR", pictor: true, frames: 24, frameMs: 150, name: "ぴくたーちゃんのお絵かき", description: "絵の具で描いたふちとパレット、右下で手をふるぴくたーちゃん", draw: pictorPaint },
   { slug: "gacha-ssr-armillary", rarity: "SSR", frames: 24, frameMs: 150, name: "金の天球儀", description: "角の小さな金の天球儀と太陽、目盛りのふち", draw: armillary },
-  { slug: "gacha-ssr-pictor-love", rarity: "SSR", frames: 24, frameMs: 150, name: "ぴくたーちゃんのだいすき", description: "ローズゴールドのハートのふちと、右下のぴくたーちゃん", draw: pictorLove },
-  { slug: "gacha-ur-pictor-rainbow", rarity: "UR", frames: 24, frameMs: 150, name: "きらめくぴくたーちゃん", description: "虹色のふちと紙吹雪、右下にふたりのぴくたーちゃん", draw: pictorRainbow },
+  { slug: "gacha-ssr-pictor-love", rarity: "SSR", pictor: true, frames: 24, frameMs: 150, name: "ぴくたーちゃんのだいすき", description: "ローズゴールドのハートのふちと、右下のぴくたーちゃん", draw: pictorLove },
+  { slug: "gacha-ur-pictor-rainbow", rarity: "UR", pictor: true, frames: 24, frameMs: 150, name: "きらめくぴくたーちゃん", description: "虹色のふちと紙吹雪、右下にふたりのぴくたーちゃん", draw: pictorRainbow },
   { slug: "gacha-n-hairline", rarity: "N", frames: 24, frameMs: 150, name: "ほそ線リング", description: "白い細い二重線と、ふちをゆっくりめぐる小さな粒", draw: hairline },
   { slug: "gacha-r-one-star", rarity: "R", frames: 24, frameMs: 150, name: "ひとつ星", description: "細い金のふちに、小さな星がひとつ", draw: oneStar },
   { slug: "gacha-sr-silver-moon", rarity: "SR", frames: 24, frameMs: 150, name: "銀の三日月", description: "細い銀のふちに、右上の小さな三日月と星", draw: silverMoon },

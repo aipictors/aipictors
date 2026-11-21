@@ -69,6 +69,39 @@ export const toUserAvatarDecorationAnimatedUrl = (url: string) => {
   return url.replace(/\.webp(?=$|\?)/, ".anim.webp")
 }
 
+/**
+ * ぴくたーちゃんが入っている枠（アイコン枠・ヘッダー枠とも同じ slug）。
+ * 着ける人がカスタムでぴくたーちゃんを外せる。scripts の pictor: true と同じ一覧
+ */
+const PICTOR_CHAN_FRAME_SLUGS = [
+  "gacha-sr-pictor-paint",
+  "gacha-ssr-pictor-love",
+  "gacha-ur-pictor-rainbow",
+]
+
+/** 枠の画像（アイコン枠の deco/<slug>… やヘッダー枠の header-frames/<slug>…）にぴくたーちゃんがいるか */
+export const hasPictorChan = (url: string) => {
+  return PICTOR_CHAN_FRAME_SLUGS.some((slug) => url.includes(`/${slug}.`))
+}
+
+/**
+ * ぴくたーちゃんを外した画像の URL（x.webp → x.nopictor.webp、x.anim.webp → x.nopictor.anim.webp）。
+ * ヘッダー枠の動く絵（x.motion.webp）にはぴくたーちゃんがいないので、そのまま使う。
+ * showPictorChan が true か、ぴくたーちゃんのいない枠なら元の URL のまま
+ */
+export const toFrameImageUrl = (
+  url: string,
+  { showPictorChan = true }: { showPictorChan?: boolean } = {},
+) => {
+  if (showPictorChan || !hasPictorChan(url) || url.includes(".nopictor.")) {
+    return url
+  }
+  if (/\.motion\.webp(?=$|\?)/.test(url)) {
+    return url
+  }
+  return url.replace(/(\.anim)?\.webp(?=$|\?)/, ".nopictor$1.webp")
+}
+
 /** 装飾はアイコンの何倍の大きさで重ねるか（user-avatar-with-frame の h-[148.4%]） */
 export const USER_AVATAR_DECORATION_SCALE = 1.484
 

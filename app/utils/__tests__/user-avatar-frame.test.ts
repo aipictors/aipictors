@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test"
 import {
   filterUserAvatarFrames,
+  hasPictorChan,
   isPlanExclusiveUserAvatarFrame,
   isSpecialUserAvatarFrame,
   isUserAvatarDecoration,
+  toFrameImageUrl,
   toUserAvatarDecorationAnimatedUrl,
   toUserAvatarDecorationSrcSet,
   toUserAvatarFrameAccess,
@@ -168,5 +170,58 @@ describe("装飾の小さい版", () => {
     expect(
       toUserAvatarDecorationSrcSet("/avatar-frames/deco/angel.anim.webp"),
     ).toBeUndefined()
+  })
+})
+
+describe("ぴくたーちゃんを外すカスタム", () => {
+  test("ぴくたーちゃんのいる枠だけを見分ける", () => {
+    expect(
+      hasPictorChan("/avatar-frames/deco/gacha-ssr-pictor-love.webp"),
+    ).toBe(true)
+    expect(
+      hasPictorChan("/header-frames/gacha-ur-pictor-rainbow.pc.webp"),
+    ).toBe(true)
+    expect(hasPictorChan("/avatar-frames/deco/gacha-ur-kyubi.webp")).toBe(false)
+  })
+
+  test("外すと nopictor の画像になる（ヘッダーの動く絵はそのまま）", () => {
+    const off = { showPictorChan: false }
+    expect(
+      toFrameImageUrl(
+        "/avatar-frames/deco/gacha-sr-pictor-paint.webp?v=2",
+        off,
+      ),
+    ).toBe("/avatar-frames/deco/gacha-sr-pictor-paint.nopictor.webp?v=2")
+    expect(
+      toFrameImageUrl(
+        "/avatar-frames/deco/gacha-sr-pictor-paint.anim.webp",
+        off,
+      ),
+    ).toBe("/avatar-frames/deco/gacha-sr-pictor-paint.nopictor.anim.webp")
+    expect(
+      toUserAvatarDecorationAnimatedUrl(
+        toFrameImageUrl("/avatar-frames/deco/gacha-sr-pictor-paint.webp", off),
+      ),
+    ).toBe("/avatar-frames/deco/gacha-sr-pictor-paint.nopictor.anim.webp")
+    expect(
+      toFrameImageUrl("/header-frames/gacha-ssr-pictor-love.sp.webp", off),
+    ).toBe("/header-frames/gacha-ssr-pictor-love.sp.nopictor.webp")
+    expect(
+      toFrameImageUrl(
+        "/header-frames/gacha-ssr-pictor-love.sp.motion.webp",
+        off,
+      ),
+    ).toBe("/header-frames/gacha-ssr-pictor-love.sp.motion.webp")
+  })
+
+  test("着けたまま・ぴくたーちゃんのいない枠は元の URL", () => {
+    expect(
+      toFrameImageUrl("/avatar-frames/deco/gacha-ssr-pictor-love.webp"),
+    ).toBe("/avatar-frames/deco/gacha-ssr-pictor-love.webp")
+    expect(
+      toFrameImageUrl("/avatar-frames/deco/gacha-ur-kyubi.webp", {
+        showPictorChan: false,
+      }),
+    ).toBe("/avatar-frames/deco/gacha-ur-kyubi.webp")
   })
 })
