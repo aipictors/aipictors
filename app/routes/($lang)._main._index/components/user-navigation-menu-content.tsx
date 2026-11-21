@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
   BanknoteIcon,
+  DicesIcon,
   GemIcon,
   GiftIcon,
   HandCoinsIcon,
@@ -376,6 +377,11 @@ function UserNavigationMenuContent(props: Props) {
           href={getSensitiveLink("/plus")}
           icon={<GemIcon className={userNavigationStyles.menuIcon} />}
           label="Aipictors+"
+        />
+        <MenuItemLink
+          href="/gacha"
+          icon={<DicesIcon className={userNavigationStyles.menuIcon} />}
+          label={t("スペシャル枠ガチャ", "Special frame gacha")}
         />
         <MenuItemLink
           href="/invite"

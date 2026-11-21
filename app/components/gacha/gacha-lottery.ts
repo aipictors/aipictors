@@ -1,5 +1,6 @@
 /**
- * ガチャの抽選（レア度の確率・10 連の SR 以上 1 枠確定・天井）。
+ * ガチャの抽選（レア度の確率・10 連の SR 以上 1 枠確定・交換 pt）。
+ * 本番の抽選は aipictors-system（lib/gacha-rules.ts）で行う。ここは管理ページのシミュレーション用で、決まりは gacha-rules.ts と同じ。
  * 乱数は引数で渡すので、テストやシミュレーションで同じ結果を出し直せる。
  * 景品はレア度を決めてから、そのレア度の中で同じ確率で 1 つ選ぶ。
  */
@@ -9,11 +10,12 @@ import {
   gachaRarityRank,
 } from "~/components/gacha/gacha-direction"
 import type { GachaPrize } from "~/components/gacha/gacha-prizes"
+import { GACHA_PRICES } from "~/components/gacha/gacha-rules"
 
 export type GachaSettings = {
   /** レア度ごとの確率（%）。合計 100 */
   rates: Record<GachaRarity, number>
-  /** UR が出ないまま、この回数目を引くと UR が確定する。0 で天井なし */
+  /** 天井: 1 回引くと交換 pt が 1 たまり、この数で好きな景品と交換できる。0 で天井なし */
   pityCount: number
   /** 10 連のうち 1 枠はこのレア度以上が確定。null で確定なし */
   tenPullGuarantee: GachaRarity | null
@@ -29,23 +31,21 @@ export const DEFAULT_GACHA_SETTINGS: GachaSettings = {
   rates: { UR: 0.3, SSR: 2.7, SR: 12, R: 30, N: 55 },
   pityCount: 200,
   tenPullGuarantee: "SR",
-  singleCostCoins: 300,
-  tenCostCoins: 3000,
+  singleCostCoins: GACHA_PRICES.premiumSingle,
+  tenCostCoins: GACHA_PRICES.premiumTen,
   // 10 連で引いたときのひとり平均: 100 回で約 200 個（欲しい SR が 1 つ）、200 回で約 590 個（SSR 1 つ）、
-  // 500 回で約 2,100 個（UR 1 つ）。UR は天井（200 回）があるので、かけらでは遠めにする
+  // 500 回で約 2,100 個（UR 1 つ）。UR は交換 pt（200 回）があるので、かけらでは遠めにする
   duplicateShards: { UR: 300, SSR: 60, SR: 15, R: 4, N: 1 },
   exchangeShards: { UR: 2000, SSR: 450, SR: 120, R: 40, N: 15 },
 }
 
 export type GachaState = {
-  /** 最後に UR が出てから引いた回数 */
-  pullsSinceUr: number
+  /** 交換 pt（1 回引くと 1。交換すると減る。UR が出ても減らない） */
+  exchangePoints: number
 }
 
 export type GachaPull = {
   prize: GachaPrize
-  /** 天井で UR になった */
-  byPity: boolean
   /** 10 連の確定枠で上がった */
   byGuarantee: boolean
 }
@@ -95,23 +95,16 @@ const pickPrize = (
   pool: readonly GachaPrize[],
   rarity: GachaRarity,
   random: Random,
-  /** 渡すと、この中にない景品から選ぶ（全部持っていればふつうに選ぶ） */
-  owned?: ReadonlySet<string>,
 ) => {
-  const sameRarity = pool.filter((prize) => prize.rarity === rarity)
-  const missing = owned
-    ? sameRarity.filter((prize) => !owned.has(prize.id))
-    : []
-  const candidates = missing.length > 0 ? missing : sameRarity
+  const candidates = pool.filter((prize) => prize.rarity === rarity)
   return candidates[
     Math.min(candidates.length - 1, Math.floor(random() * candidates.length))
   ]
 }
 
 /**
- * count 回引く（1 回か 10 連）。state は引いたあとの値を返す。
- * 天井は確定枠より先に見る（天井の UR は確定枠も満たす）。
- * 天井の UR は、owned を渡すとまだ持っていない UR から選ぶ（天井でかぶらないように）
+ * count 回引く（1 回か 10 連）。state は引いたあとの値を返す（交換 pt が count 増える）。
+ * 景品はレア度の中で同じ確率（持っているかどうかは見ない）
  */
 export const drawGacha = (props: {
   pool: readonly GachaPrize[]
@@ -119,22 +112,17 @@ export const drawGacha = (props: {
   state: GachaState
   count: number
   random?: Random
-  owned?: ReadonlySet<string>
 }) => {
   const random = props.random ?? Math.random
   const { settings, pool } = props
   const rates = toEffectiveRates(settings.rates, pool)
-  const hasUr = rates.UR > 0
   const guarantee = props.count >= 10 ? settings.tenPullGuarantee : null
   const guaranteeRates = guarantee
     ? toEffectiveRates(settings.rates, pool, guarantee)
     : null
 
-  let pullsSinceUr = props.state.pullsSinceUr
   const pulls: GachaPull[] = []
   for (let index = 0; index < props.count; index++) {
-    const isPity =
-      hasUr && settings.pityCount > 0 && pullsSinceUr + 1 >= settings.pityCount
     const isLast = index === props.count - 1
     const needsGuarantee =
       guarantee !== null &&
@@ -147,37 +135,25 @@ export const drawGacha = (props: {
 
     let rarity: GachaRarity
     let byGuarantee = false
-    if (isPity) {
-      rarity = "UR"
-    } else if (needsGuarantee) {
+    if (needsGuarantee) {
       rarity = pickRarity(guaranteeRates, random)
       byGuarantee = true
     } else {
       rarity = pickRarity(rates, random)
     }
 
-    pulls.push({
-      prize: pickPrize(
-        pool,
-        rarity,
-        random,
-        isPity
-          ? new Set([
-              ...(props.owned ?? []),
-              ...pulls.map((pull) => pull.prize.id),
-            ])
-          : undefined,
-      ),
-      byPity: isPity,
-      byGuarantee,
-    })
-    pullsSinceUr = rarity === "UR" ? 0 : pullsSinceUr + 1
+    pulls.push({ prize: pickPrize(pool, rarity, random), byGuarantee })
   }
 
-  return { pulls, state: { pullsSinceUr } satisfies GachaState }
+  return {
+    pulls,
+    state: {
+      exchangePoints: props.state.exchangePoints + props.count,
+    } satisfies GachaState,
+  }
 }
 
-/** 景品ひとつあたりの確率（%）。天井と 10 連の確定枠は入れない、1 回引いたときの値 */
+/** 景品ひとつあたりの確率（%）。10 連の確定枠は入れない、1 回引いたときの値 */
 export const toPrizeRates = (
   pool: readonly GachaPrize[],
   rates: Record<GachaRarity, number>,
@@ -210,7 +186,7 @@ export type GachaSimulationSummary = {
   rarityCounts: Record<GachaRarity, number>
   /** UR が 1 つ以上出た人の割合（0〜1） */
   urPlayerRatio: number
-  /** 天井まで行った回数（全員の合計） */
+  /** 交換 pt で交換できた回数（全員の合計。たまった pt を pityCount で割った数） */
   pityHits: number
   /** 最初の UR が出るまでの回数（出た人だけ）。平均と中央値 */
   firstUrPulls: { average: number; median: number } | null
@@ -249,7 +225,7 @@ export const simulateGacha = (props: {
   const firstUrPulls: number[] = []
 
   for (let player = 0; player < props.players; player++) {
-    let state: GachaState = { pullsSinceUr: 0 }
+    let state: GachaState = { exchangePoints: 0 }
     const owned = new Set<string>()
     let pulled = 0
     let firstUr: number | null = null
@@ -262,13 +238,11 @@ export const simulateGacha = (props: {
         state,
         count,
         random,
-        owned,
       })
       state = result.state
       for (const pull of result.pulls) {
         pulled++
         rarityCounts[pull.prize.rarity]++
-        if (pull.byPity) pityHits++
         if (pull.prize.rarity === "UR" && firstUr === null) firstUr = pulled
         if (owned.has(pull.prize.id)) {
           duplicates++
@@ -276,6 +250,9 @@ export const simulateGacha = (props: {
         }
         owned.add(pull.prize.id)
       }
+    }
+    if (props.settings.pityCount > 0) {
+      pityHits += Math.floor(state.exchangePoints / props.settings.pityCount)
     }
     if (firstUr !== null) {
       urPlayers++
@@ -312,18 +289,20 @@ export const simulateGacha = (props: {
 export type GachaPityProgress = {
   /** 天井なし */
   isOff: boolean
-  /** 最後に UR が出てから引いた回数 */
+  /** たまった交換 pt */
   count: number
   pityCount: number
-  /** 次の UR 確定まであと何回（この回数目が UR） */
+  /** 交換できるまであと何回（交換できるときは 0） */
   remaining: number
   /** 0〜1 */
   ratio: number
-  /** 次の 10 連で天井に届く */
+  /** 次の 10 連で交換できるようになる */
   reachesInTen: boolean
+  /** いま交換できる */
+  canExchange: boolean
 }
 
-/** 天井までの進み具合（画面のメーター用） */
+/** 交換 pt の進み具合（画面のメーター用） */
 export const toPityProgress = (
   state: GachaState,
   settings: Pick<GachaSettings, "pityCount">,
@@ -332,22 +311,24 @@ export const toPityProgress = (
   if (pityCount <= 0) {
     return {
       isOff: true,
-      count: state.pullsSinceUr,
+      count: state.exchangePoints,
       pityCount: 0,
       remaining: 0,
       ratio: 0,
       reachesInTen: false,
+      canExchange: false,
     }
   }
-  const count = Math.min(state.pullsSinceUr, pityCount - 1)
-  const remaining = pityCount - count
+  const count = state.exchangePoints
+  const remaining = Math.max(0, pityCount - count)
   return {
     isOff: false,
     count,
     pityCount,
     remaining,
-    ratio: count / pityCount,
-    reachesInTen: remaining <= 10,
+    ratio: Math.min(1, count / pityCount),
+    reachesInTen: remaining > 0 && remaining <= 10,
+    canExchange: remaining === 0,
   }
 }
 

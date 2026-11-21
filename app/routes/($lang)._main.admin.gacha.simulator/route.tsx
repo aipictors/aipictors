@@ -96,11 +96,11 @@ type Session = {
   /** 直前に達成した実績 */
   lastAchievements: GachaAchievement[]
   /** UR が出た回数目 */
-  urAt: { pull: number; name: string; byPity: boolean }[]
+  urAt: { pull: number; name: string }[]
 }
 
 const emptySession = (): Session => ({
-  state: { pullsSinceUr: 0 },
+  state: { exchangePoints: 0 },
   coins: 0,
   balance: START_BALANCE,
   collection: emptyGachaCollection(),
@@ -189,11 +189,6 @@ export default function AdminGachaSimulatorPage() {
       settings,
       state: current.state,
       count,
-      owned: new Set(
-        Object.keys(current.collection.owned).filter(
-          (id) => (current.collection.owned[id] ?? 0) > 0,
-        ),
-      ),
     })
     const applied = applyGachaPulls(current.collection, result.pulls, settings)
     const pulled = current.collection.stats.pulls
@@ -203,11 +198,10 @@ export default function AdminGachaSimulatorPage() {
         urAt.push({
           pull: pulled + index + 1,
           name: pull.prize.name,
-          byPity: pull.byPity,
         })
       }
       const notes = [
-        pull.byPity ? "天井" : pull.byGuarantee ? "確定枠" : null,
+        pull.byGuarantee ? "確定枠" : null,
         pull.shards > 0 ? `かぶり → かけら+${pull.shards}` : null,
       ].filter(Boolean)
       return {
@@ -358,7 +352,7 @@ export default function AdminGachaSimulatorPage() {
           <div className="grid gap-3 sm:grid-cols-4">
             <div className="space-y-1 text-xs">
               <span className="text-slate-400">
-                天井（UR が出ないまま何回目で確定。0 でなし）
+                天井（何回引くと好きな景品と交換できるか。0 でなし）
               </span>
               <Input
                 type="number"
@@ -442,11 +436,11 @@ export default function AdminGachaSimulatorPage() {
             </div>
             <div className="rounded-xl bg-white/5 p-3">
               <div className="text-slate-400 text-xs">
-                天井の前に UR が出る人
+                天井までに UR が 1 つ以上出る人
               </div>
               <div>
                 {settings.pityCount > 0
-                  ? `${formatPercent(urWithinPullsRatio(effective.UR, settings.pityCount - 1) * 100)}`
+                  ? `${formatPercent(urWithinPullsRatio(effective.UR, settings.pityCount) * 100)}`
                   : "-"}
               </div>
             </div>
@@ -466,7 +460,9 @@ export default function AdminGachaSimulatorPage() {
         <CardHeader>
           <CardTitle className="text-base">引いてみる</CardTitle>
           <CardDescription className="text-slate-400">
-            ひとりの人が続けて引いたときの様子。「演出を見る」にすると、本番と同じ演出で結果が出ます。天井の数はリセットするまで続きます。
+            ひとりの人が続けて引いたときの様子。「演出を見る」にすると、本番と同じ演出で結果が出ます。交換
+            pt
+            はリセットするまで続きます（シミュレーションでは交換はできません）。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -545,7 +541,6 @@ export default function AdminGachaSimulatorPage() {
                   <div className="text-xs">{pull.prize.name}</div>
                   <div className="text-[10px] text-slate-400">
                     {PRIZE_KIND_LABEL[pull.prize.kind]}
-                    {pull.byPity && "・天井"}
                     {pull.byGuarantee && "・確定枠"}
                     {pull.isNew ? "・NEW" : `・かぶり→かけら+${pull.shards}`}
                   </div>
@@ -563,7 +558,6 @@ export default function AdminGachaSimulatorPage() {
                     className="rounded-full bg-white/10 px-3 py-1 text-xs"
                   >
                     {item.pull} 回目 {item.name}
-                    {item.byPity && "（天井）"}
                   </li>
                 ))}
               </ul>
@@ -882,7 +876,7 @@ function SummaryView(props: {
           value={formatPercent(summary.urPlayerRatio * 100)}
         />
         <Stat
-          label="天井で UR になった回数（全員）"
+          label="交換 pt で交換できた回数（全員）"
           value={`${summary.pityHits.toLocaleString()} 回`}
         />
         <Stat

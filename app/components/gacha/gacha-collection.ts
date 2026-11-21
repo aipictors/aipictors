@@ -13,8 +13,8 @@ export type GachaStats = {
   tenPulls: number
   /** レア度ごとの出た数 */
   rarityCounts: Record<GachaRarity, number>
-  /** 天井で UR になった回数 */
-  pityUrs: number
+  /** 交換 pt（天井）で景品と交換した回数 */
+  pointExchanges: number
   /** 1 回引きで UR が出た回数 */
   singleUrs: number
   /** 1 回の 10 連で SSR 以上が出た最大の数 */
@@ -36,7 +36,7 @@ export const emptyGachaCollection = (): GachaCollection => ({
     pulls: 0,
     tenPulls: 0,
     rarityCounts: { N: 0, R: 0, SR: 0, SSR: 0, UR: 0 },
-    pityUrs: 0,
+    pointExchanges: 0,
     singleUrs: 0,
     bestTenHighCount: 0,
     exchanges: 0,
@@ -58,14 +58,12 @@ export const applyGachaPulls = (
   const owned = { ...collection.owned }
   const rarityCounts = { ...collection.stats.rarityCounts }
   let shards = collection.shards
-  let pityUrs = collection.stats.pityUrs
   const outcomes: GachaPullOutcome[] = pulls.map((pull) => {
     const count = owned[pull.prize.id] ?? 0
     const gained = count > 0 ? settings.duplicateShards[pull.prize.rarity] : 0
     owned[pull.prize.id] = count + 1
     rarityCounts[pull.prize.rarity]++
     shards += gained
-    if (pull.byPity) pityUrs++
     return { ...pull, isNew: count === 0, shards: gained }
   })
   const isTen = pulls.length >= 10
@@ -80,7 +78,6 @@ export const applyGachaPulls = (
       pulls: collection.stats.pulls + pulls.length,
       tenPulls: collection.stats.tenPulls + (isTen ? 1 : 0),
       rarityCounts,
-      pityUrs,
       singleUrs:
         collection.stats.singleUrs +
         (!isTen && pulls.some((pull) => pull.prize.rarity === "UR") ? 1 : 0),

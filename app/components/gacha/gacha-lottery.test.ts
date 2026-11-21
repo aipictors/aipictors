@@ -6,7 +6,6 @@ import {
   createSeededRandom,
   DEFAULT_GACHA_SETTINGS,
   drawGacha,
-  type GachaSettings,
   simulateGacha,
   sumRates,
   toEffectiveRates,
@@ -66,66 +65,29 @@ describe("確率", () => {
   })
 })
 
-describe("天井", () => {
-  const neverUr: GachaSettings = {
-    ...DEFAULT_GACHA_SETTINGS,
-    rates: { UR: 0.0001, SSR: 0, SR: 0, R: 0, N: 99.9999 },
-    tenPullGuarantee: null,
-  }
-  // UR の抽選に当たらない乱数（いちばん下の N に落ちる）
-  const lowRandom = () => 0.5
-
-  test("天井の回数目で UR が確定し、数え直しになる", () => {
-    const first = drawGacha({
-      pool,
-      settings: { ...neverUr, pityCount: 5 },
-      state: { pullsSinceUr: 0 },
-      count: 10,
-      random: lowRandom,
-    })
-    const pityIndexes = first.pulls
-      .map((pull, index) => (pull.byPity ? index : -1))
-      .filter((index) => index >= 0)
-    expect(pityIndexes).toEqual([4, 9])
-    expect(first.pulls[4].prize.rarity).toBe("UR")
-    expect(first.state.pullsSinceUr).toBe(0)
-  })
-
-  test("前の回からの続きも数える", () => {
+describe("天井（交換 pt）", () => {
+  test("1 回ごとに 1 たまり、UR が出ても減らない", () => {
     const result = drawGacha({
       pool,
-      settings: { ...neverUr, pityCount: 200 },
-      state: { pullsSinceUr: 199 },
-      count: 1,
-      random: lowRandom,
-    })
-    expect(result.pulls[0].byPity).toBe(true)
-    expect(result.pulls[0].prize.rarity).toBe("UR")
-  })
-
-  test("0 なら天井なし", () => {
-    const result = drawGacha({
-      pool,
-      settings: { ...neverUr, pityCount: 0 },
-      state: { pullsSinceUr: 10_000 },
+      settings: DEFAULT_GACHA_SETTINGS,
+      state: { exchangePoints: 195 },
       count: 10,
-      random: lowRandom,
+      random: () => 0,
     })
-    expect(result.pulls.some((pull) => pull.byPity)).toBe(false)
-    expect(result.state.pullsSinceUr).toBe(10_010)
+    expect(result.pulls.every((pull) => pull.prize.rarity === "UR")).toBe(true)
+    expect(result.state.exchangePoints).toBe(205)
   })
 
-  test("200 回引けば必ず UR が 1 つ以上", () => {
+  test("200 回引けば全員 1 回は交換できる", () => {
     const summary = simulateGacha({
       pool,
       settings: DEFAULT_GACHA_SETTINGS,
-      players: 300,
+      players: 50,
       pullsPerPlayer: 200,
       mode: "ten",
       random: createSeededRandom(7),
     })
-    expect(summary.urPlayerRatio).toBe(1)
-    expect(summary.pityHits).toBeGreaterThan(0)
+    expect(summary.pityHits).toBe(50)
   })
 })
 
@@ -136,7 +98,7 @@ describe("10 連", () => {
       const { pulls } = drawGacha({
         pool,
         settings: DEFAULT_GACHA_SETTINGS,
-        state: { pullsSinceUr: 0 },
+        state: { exchangePoints: 0 },
         count: 10,
         random,
       })
@@ -152,7 +114,7 @@ describe("10 連", () => {
     const { pulls } = drawGacha({
       pool,
       settings: DEFAULT_GACHA_SETTINGS,
-      state: { pullsSinceUr: 0 },
+      state: { exchangePoints: 0 },
       count: 1,
       random: () => 0.5,
     })

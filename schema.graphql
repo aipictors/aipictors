@@ -1910,6 +1910,26 @@ enum Direction {
   DESC
 }
 
+input DrawGachaInput {
+  coinType: GachaCoinType!
+
+  """1 か 10（フリーは 1 だけ）"""
+  count: Int!
+
+  """画面に出していた値段。違えば引かない"""
+  expectedCostCoins: Int!
+
+  """押すごとに画面が作る ID（同じ押下を 2 回処理しない）"""
+  requestId: String!
+}
+
+type DrawGachaPayload {
+  costCoins: Int!
+  drawId: ID!
+  pulls: [GachaPullResult!]!
+  state: GachaViewerState!
+}
+
 type EmailLoginResult {
   isNew: Boolean!
   token: String!
@@ -1925,6 +1945,11 @@ type EventParticipantIconNode {
   iconUrl: String
   id: ID!
   name: String
+}
+
+input ExchangeGachaPrizeInput {
+  method: GachaExchangeMethod!
+  prizeId: String!
 }
 
 """FANZA の販売作品（DMM アフィリエイト API）"""
@@ -2189,6 +2214,60 @@ input FollowersWhereInput {
 
 input FollowingUsersWhereInput {
   userId: Int!
+}
+
+enum GachaCoinType {
+  FREE
+  PREMIUM
+}
+
+enum GachaExchangeMethod {
+  POINTS
+  SHARDS
+}
+
+"""プロフィールのヘッダーに重ねる枠（ガチャの景品）。画像は /header-frames/<slug>.<pc|sp>.webp"""
+type GachaHeaderFrameNode {
+  name: String!
+  rarity: String!
+  slug: String!
+}
+
+"""持っているガチャの景品"""
+type GachaOwnedPrize {
+  """出た回数（交換も 1）"""
+  count: Int!
+
+  """icon:<slug> / header:<slug>"""
+  prizeId: String!
+}
+
+type GachaPullResult {
+  """10 連の SR 以上確定の枠で出た"""
+  byGuarantee: Boolean!
+  isNew: Boolean!
+  prizeId: String!
+
+  """かぶりでもらったかけら"""
+  shards: Int!
+}
+
+"""ガチャの自分の状態"""
+type GachaViewerState {
+  """交換 pt（1 回引くと 1。200 で好きな景品と交換）"""
+  exchangePoints: Int!
+
+  """今日フリーコインで引いた回数"""
+  freePullsToday: Int!
+
+  """プレミアムコインの 10 連の 1 日 1 回の半額が使える"""
+  isPremiumDealAvailable: Boolean!
+  ownedPrizes: [GachaOwnedPrize!]!
+  selectedHeaderFrameSlug: String
+
+  """かぶりでたまったかけら"""
+  shards: Int!
+  totalPulls: Int!
 }
 
 enum GeminiImageModel {
@@ -3569,6 +3648,12 @@ type Mutation {
   """作品のスキを削除する"""
   deleteWorkLike(input: DeleteWorkLikeInput!): WorkNode!
 
+  """ガチャを引く（抽選はサーバーで行う）"""
+  drawGacha(input: DrawGachaInput!): DrawGachaPayload!
+
+  """交換 pt かかけらで、まだ持っていない景品をもらう"""
+  exchangeGachaPrize(input: ExchangeGachaPrizeInput!): GachaViewerState!
+
   """タグをフォローする"""
   followTag(input: FollowTagInput!): Boolean!
 
@@ -3677,6 +3762,9 @@ type Mutation {
 
   """モデレータによるコメント審査の承認・却下・差し戻し"""
   reviewCommentModeration(input: ReviewCommentModerationInput!): Boolean!
+
+  """ガチャのヘッダー枠を着ける（slug が null なら外す）"""
+  selectGachaHeaderFrame(input: SelectGachaHeaderFrameInput!): GachaViewerState!
 
   """メール認証リンクを送信する"""
   sendEmailAuthLink(input: SendEmailAuthLinkInput!): Boolean!
@@ -4952,6 +5040,9 @@ type Query {
   """いま出ている自分の宣伝（全年齢・R18 の枠ごと）"""
   viewerActiveWorkPromotions: [ActiveWorkPromotionNode!]!
 
+  """ガチャの自分の状態（未ログインは null）"""
+  viewerGacha: GachaViewerState
+
   """コインで買ったアイコン枠の ID"""
   viewerOwnedUserAvatarFrameIds: [ID!]!
 
@@ -5188,6 +5279,11 @@ input ReviewCommentModerationInput {
   commentId: ID!
   userNotice: String
   violationCategory: String
+}
+
+input SelectGachaHeaderFrameInput {
+  """null で外す"""
+  slug: String
 }
 
 """メール認証リンク送信用Input"""
@@ -6028,6 +6124,9 @@ type UserAvatarFrameNode implements Node {
   frameType: String!
   id: ID!
 
+  """ガチャでだけ手に入る枠（コインでは買えない）"""
+  isGachaOnly: Boolean!
+
   """プレミアムコインだけで買える枠（無料コインは使えない）"""
   isPremiumCoinsOnly: Boolean!
   name: String!
@@ -6205,8 +6304,8 @@ type UserNode implements Node {
   """アルバムを持っているかどうか"""
   hasAlbums: Boolean!
 
-  """バッジを持っているかどうか"""
-  hasBadges: Boolean!
+  """バッジを持っているかどうか（バッジは実績に移したので常に false。古いクライアントのバッジのタブを出さないため）"""
+  hasBadges: Boolean! @deprecated(reason: "バッジは実績（achievements）に移した")
 
   """投稿したコラム作品を持っているかどうか"""
   hasColumnWorks: Boolean!
@@ -6246,6 +6345,9 @@ type UserNode implements Node {
 
   """投稿した動画作品を持っているかどうか"""
   hasVideoWorks: Boolean!
+
+  """着けているヘッダー枠（ガチャの景品）"""
+  headerFrame: GachaHeaderFrameNode
 
   """ヘッダー画像"""
   headerImage: ImageNode @deprecated(reason: "廃止")

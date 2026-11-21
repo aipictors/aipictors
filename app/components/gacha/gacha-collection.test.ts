@@ -22,9 +22,8 @@ import { GACHA_PRIZES, type GachaPrize } from "~/components/gacha/gacha-prizes"
 const pool = GACHA_PRIZES.filter((prize) => prize.inPool)
 const prizeOf = (rarity: GachaPrize["rarity"], index = 0) =>
   pool.filter((prize) => prize.rarity === rarity)[index]
-const pullOf = (prize: GachaPrize, byPity = false) => ({
+const pullOf = (prize: GachaPrize) => ({
   prize,
-  byPity,
   byGuarantee: false,
 })
 
@@ -61,34 +60,37 @@ describe("かぶりとかけら", () => {
 })
 
 describe("天井", () => {
-  test("天井の UR はまだ持っていない UR から選ぶ", () => {
-    const urs = pool.filter((prize) => prize.rarity === "UR")
-    const owned = new Set(urs.slice(0, -1).map((prize) => prize.id))
-    for (let seed = 1; seed <= 30; seed++) {
-      const result = drawGacha({
+  test("引くと交換 pt がたまり、UR が出ても減らない", () => {
+    let state = { exchangePoints: 0 }
+    for (let seed = 1; seed <= 25; seed++) {
+      state = drawGacha({
         pool,
         settings: DEFAULT_GACHA_SETTINGS,
-        state: { pullsSinceUr: DEFAULT_GACHA_SETTINGS.pityCount - 1 },
-        count: 1,
+        state,
+        count: 10,
         random: createSeededRandom(seed),
-        owned,
-      })
-      expect(result.pulls[0].byPity).toBe(true)
-      expect(result.pulls[0].prize.id).toBe(urs.at(-1)!.id)
+      }).state
     }
+    expect(state.exchangePoints).toBe(250)
   })
 
-  test("あと何回で確定かを出す", () => {
+  test("あと何回で交換できるかを出す", () => {
     const settings = { pityCount: 200 }
-    expect(toPityProgress({ pullsSinceUr: 0 }, settings)).toMatchObject({
+    expect(toPityProgress({ exchangePoints: 0 }, settings)).toMatchObject({
       remaining: 200,
       reachesInTen: false,
+      canExchange: false,
     })
-    expect(toPityProgress({ pullsSinceUr: 192 }, settings)).toMatchObject({
+    expect(toPityProgress({ exchangePoints: 192 }, settings)).toMatchObject({
       remaining: 8,
       reachesInTen: true,
     })
-    expect(toPityProgress({ pullsSinceUr: 0 }, { pityCount: 0 }).isOff).toBe(
+    expect(toPityProgress({ exchangePoints: 230 }, settings)).toMatchObject({
+      remaining: 0,
+      canExchange: true,
+      ratio: 1,
+    })
+    expect(toPityProgress({ exchangePoints: 0 }, { pityCount: 0 }).isOff).toBe(
       true,
     )
   })
@@ -114,12 +116,16 @@ describe("実績", () => {
     ])
   })
 
-  test("1 回引きの UR と天井の UR", () => {
-    const after = applyGachaPulls(
+  test("1 回引きの UR と、交換 pt での交換", () => {
+    const pulled = applyGachaPulls(
       emptyGachaCollection(),
-      [pullOf(prizeOf("UR"), true)],
+      [pullOf(prizeOf("UR"))],
       DEFAULT_GACHA_SETTINGS,
     ).collection
+    const after = {
+      ...pulled,
+      stats: { ...pulled.stats, pointExchanges: 1 },
+    }
     const unlocked = GACHA_ACHIEVEMENTS.filter((item) =>
       item.isUnlocked(after, pool),
     ).map((item) => item.key)

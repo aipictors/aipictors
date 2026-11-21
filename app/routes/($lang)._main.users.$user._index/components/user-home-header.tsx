@@ -1,5 +1,6 @@
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import type React from "react"
+import { GachaHeaderFrameOverlay } from "~/components/gacha/gacha-header-frame-overlay"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -41,6 +42,9 @@ export function UserHomeHeader(props: Props) {
             decoding="async"
           />
         )}
+        {user.headerFrame && (
+          <GachaHeaderFrameOverlay slug={user.headerFrame.slug} />
+        )}
       </div>
       <div className="relative z-10 px-4 pt-3 pb-4 md:px-6">
         {props.userIconView}
@@ -54,5 +58,8 @@ export const UserHomeHeaderFragment = graphql(
     id
     headerImageUrl
     iconUrl
+    headerFrame {
+      slug
+    }
   }`,
 )

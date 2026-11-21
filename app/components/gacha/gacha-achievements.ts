@@ -95,10 +95,10 @@ export const GACHA_ACHIEVEMENTS: readonly GachaAchievement[] = [
     isHidden: false,
     name: { ja: "天井まで", en: "Hit the Ceiling" },
     description: {
-      ja: "天井で UR をもらう",
-      en: "Get a UR from the pity counter",
+      ja: "交換 pt で好きな景品と交換する",
+      en: "Trade exchange points for a prize of your choice",
     },
-    isUnlocked: (c) => c.stats.pityUrs >= 1,
+    isUnlocked: (c) => c.stats.pointExchanges >= 1,
   },
   {
     key: "special-gacha-single-ur",

@@ -7,8 +7,8 @@ const STYLE = `
 `
 
 /**
- * 天井（UR 確定）までのメーター。「あと何回で UR 確定か」をいちばん大きく出し、
- * しくみ（UR が出たら数え直し・天井の UR はまだ持っていないもの）を 1 行で添える
+ * 天井（交換 pt）のメーター。「あと何回で好きな景品と交換できるか」をいちばん大きく出し、
+ * しくみ（1 回で 1 pt・UR が出ても減らない）を 1 行で添える
  */
 export function GachaPityMeter(props: {
   progress: GachaPityProgress
@@ -18,7 +18,7 @@ export function GachaPityMeter(props: {
 }) {
   const { progress } = props
   if (progress.isOff) return null
-  const isNear = progress.reachesInTen
+  const isNear = progress.reachesInTen || progress.canExchange
   if (props.compact) {
     // 結果の画面用: 1 行の文字と細いバーだけ
     return (
@@ -28,13 +28,15 @@ export function GachaPityMeter(props: {
           <span className="font-bold">
             {isNear ? (
               <span className="bg-gradient-to-r from-pink-300 via-amber-200 to-sky-300 bg-clip-text text-transparent">
-                {progress.remaining === 1
-                  ? "次の 1 回で UR 確定！"
-                  : `あと ${progress.remaining} 回で UR 確定！`}
+                {progress.canExchange
+                  ? "好きな景品と交換できます！"
+                  : progress.remaining === 1
+                    ? "次の 1 回で好きな景品と交換！"
+                    : `あと ${progress.remaining} 回で好きな景品と交換！`}
               </span>
             ) : (
               <>
-                UR 確定まで あと{" "}
+                好きな景品と交換まで あと{" "}
                 <span className="font-black text-amber-200 text-sm tabular-nums">
                   {progress.remaining}
                 </span>{" "}
@@ -66,13 +68,15 @@ export function GachaPityMeter(props: {
         <span className="font-bold text-sm">
           {isNear ? (
             <span className="bg-gradient-to-r from-pink-300 via-amber-200 to-sky-300 bg-clip-text text-transparent">
-              {progress.remaining === 1
-                ? "次の 1 回で UR 確定！"
-                : `あと ${progress.remaining} 回で UR 確定！次の 10 連で届きます`}
+              {progress.canExchange
+                ? "交換 pt がたまりました！好きな景品（UR も）と交換できます"
+                : progress.remaining === 1
+                  ? "次の 1 回で好きな景品と交換できます！"
+                  : `あと ${progress.remaining} 回で交換！次の 10 連で届きます`}
             </span>
           ) : (
             <>
-              UR 確定まで あと{" "}
+              好きな景品と交換まで あと{" "}
               <span className="font-black text-amber-200 text-lg tabular-nums">
                 {progress.remaining}
               </span>{" "}
@@ -86,9 +90,9 @@ export function GachaPityMeter(props: {
       </div>
       <PityBar ratio={progress.ratio} className="mt-2 h-3" />
       <p className="mt-2 text-[11px] text-white/65 leading-relaxed">
-        UR が出ないまま {progress.pityCount} 回目を引くと、その回は必ず
-        UR（まだ持っていない UR から）。UR が出たら 0 から数え直します。数は 1
-        回引きと 10 連で共通です。
+        1 回引くごとに交換 pt が 1 たまり、{progress.pityCount} pt
+        でラインナップの中から好きな景品（UR も）を 1 つ選んでもらえます。UR
+        が出ても pt は減りません。フリーコインで引いた分も 10 連もたまります。
       </p>
     </div>
   )
