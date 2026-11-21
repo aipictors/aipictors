@@ -11,13 +11,11 @@ import {
   Group,
   HalfFloatType,
   HemisphereLight,
-  IcosahedronGeometry,
   LoopOnce,
   type Material,
   MathUtils,
   Mesh,
   MeshBasicMaterial,
-  MeshStandardMaterial,
   type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
@@ -65,6 +63,12 @@ import {
   Sparks,
   skyTones,
 } from "~/components/gacha/gacha-stage-parts.client"
+import {
+  createBubbles,
+  createClouds,
+  createConfetti,
+  createNeonLines,
+} from "~/components/gacha/gacha-stage-scenery.client"
 
 /**
  * ガチャ演出の舞台（three.js）。景品とレア度を渡すだけで動くので、どのガチャにも使える。
@@ -152,7 +156,7 @@ export async function createGachaStage(
   )
   renderer.outputColorSpace = SRGBColorSpace
   renderer.toneMapping = ACESFilmicToneMapping
-  renderer.toneMappingExposure = 1.05
+  renderer.toneMappingExposure = 1.0
 
   const scene = new Scene()
   const camera = new PerspectiveCamera(36, 1, 0.05, 120)
@@ -166,7 +170,7 @@ export async function createGachaStage(
   const toneTarget = skyTones("base")
   ;[tone.low, tone.high, tone.nebula].forEach((c, i) => c.copy(toneTarget[i]))
 
-  scene.add(new HemisphereLight("#c8b8ff", "#1a0f30", 1.1))
+  scene.add(new HemisphereLight("#ffffff", "#c4cfff", 1.6))
   const key = new DirectionalLight("#fff4e6", 2.2)
   key.position.set(2, 4, 3)
   scene.add(key)
@@ -177,43 +181,20 @@ export async function createGachaStage(
   scene.add(platform.group)
   const circles = createMagicCircles()
   scene.add(circles.outer, circles.inner)
-  const skyCircle = createMagicCircles().outer
-  skyCircle.rotation.set(0, 0, 0)
-  skyCircle.scale.setScalar(4.2)
-  skyCircle.position.set(0, 3.4, -9)
-  scene.add(skyCircle)
   const outerMat = circles.outer.material as ShaderMaterial
   const innerMat = circles.inner.material as ShaderMaterial
-  const skyCircleMat = skyCircle.material as ShaderMaterial
 
   const props = createFloatingProps()
   scene.add(props.group)
 
-  // 遠くに浮かぶ岩
-  const rockMaterial = new MeshStandardMaterial({
-    color: "#2a2045",
-    roughness: 0.9,
-    flatShading: true,
-    emissive: new Color("#3a1d6e"),
-    emissiveIntensity: 0.25,
-  })
-  const rocks: Mesh[] = []
-  for (let i = 0; i < 9; i++) {
-    const rock = new Mesh(
-      new IcosahedronGeometry(0.4 + (i % 3) * 0.35, 0),
-      rockMaterial,
-    )
-    const a = (i / 9) * Math.PI * 2 + 0.3
-    rock.position.set(
-      Math.cos(a) * (7 + (i % 3) * 2),
-      -0.6 + ((i * 1.7) % 3),
-      Math.sin(a) * (7 + (i % 3) * 2) - 2,
-    )
-    rock.scale.set(1, 0.6, 1)
-    rock.rotation.set(i, i * 2, i * 3)
-    scene.add(rock)
-    rocks.push(rock)
-  }
+  const clouds = createClouds()
+  scene.add(clouds.group)
+  const neon = createNeonLines()
+  scene.add(neon.group)
+  const bubbles = createBubbles()
+  scene.add(bubbles.group)
+  const confetti = createConfetti()
+  scene.add(confetti.mesh)
 
   const easel = createEasel()
   easel.group.position.set(0, 1.5, -0.85)
@@ -495,7 +476,7 @@ export async function createGachaStage(
   composer.renderTarget1.texture.type = HalfFloatType
   composer.renderTarget2.texture.type = HalfFloatType
   composer.addPass(new RenderPass(scene, camera))
-  const bloom = new UnrealBloomPass(new Vector2(256, 256), 0.9, 0.55, 0.92)
+  const bloom = new UnrealBloomPass(new Vector2(256, 256), 0.9, 0.55, 1.0)
   composer.addPass(bloom)
   composer.addPass(new OutputPass())
 
@@ -1064,7 +1045,6 @@ export async function createGachaStage(
     for (const [mat, k] of [
       [outerMat, 1],
       [innerMat, 1.2],
-      [skyCircleMat, topRank >= 3 && t > (splash?.start ?? 0) ? 0.5 : 0.18],
     ] as const) {
       const u = mat.uniforms
       u.uTime.value = t
@@ -1081,7 +1061,6 @@ export async function createGachaStage(
     }
     circles.outer.rotation.z = t * 0.25
     circles.inner.rotation.z = -t * 0.6
-    skyCircle.rotation.z = t * 0.08
     platform.rimMaterial.emissive.copy(hintColor)
     platform.rimMaterial.emissiveIntensity = 0.2 + glow * 0.3
     for (const [c, target] of [
@@ -1114,11 +1093,13 @@ export async function createGachaStage(
       prop.object.rotation.y = t * prop.spin.y
       prop.object.rotation.z = t * prop.spin.z
     }
-    rocks.forEach((rock, i) => {
-      rock.position.y += Math.sin(t * 0.4 + i) * 0.0008
-      rock.rotation.y += dt * 0.05
-    })
-    rockMaterial.emissive.copy(tone.nebula)
+    // 背景の飾り
+    const dim = phase === "cutIn" ? 0.35 : 1
+    neon.update(t, dim)
+    bubbles.update(t)
+    confetti.update(t, dt)
+    clouds.update(t)
+    clouds.material.color.copy(tone.nebula).multiplyScalar(dim)
 
     // 光の柱
     const pillarU = pillar.material.uniforms
@@ -1131,12 +1112,13 @@ export async function createGachaStage(
       (phase === "finale" || (phase === "reveal" && topRank >= 3))
     pillarU.uIntensity.value = MathUtils.lerp(
       pillarU.uIntensity.value,
+      // 明るい空の上なので、光の柱は控えめにして人物が白く飛ばないようにする
       pillarOn
         ? topRank >= 3
-          ? 0.9
-          : 0.6
+          ? 0.45
+          : 0.3
         : phase === "charge"
-          ? progress("charge", t) * 0.5
+          ? progress("charge", t) * 0.3
           : 0,
       Math.min(1, dt * 4),
     )

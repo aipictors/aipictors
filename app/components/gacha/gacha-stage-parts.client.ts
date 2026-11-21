@@ -1,6 +1,7 @@
 import {
   AdditiveBlending,
   BackSide,
+  BoxGeometry,
   BufferAttribute,
   BufferGeometry,
   CanvasTexture,
@@ -10,9 +11,11 @@ import {
   DoubleSide,
   Group,
   IcosahedronGeometry,
+  InstancedMesh,
   Mesh,
   MeshStandardMaterial,
-  OctahedronGeometry,
+  NormalBlending,
+  Object3D,
   PlaneGeometry,
   Points,
   RingGeometry,
@@ -40,13 +43,13 @@ export const HINT_COLORS: Record<GachaHint, Color> = {
   rainbow: new Color("#ff7ad9"),
 }
 
-/** 空の色（下・上・星雲） */
+/** 空の色（地平線・真上・雲）。明るいパステルの空にして、予兆の色で染める */
 const SKY_TONES: Record<GachaHint | "base", [string, string, string]> = {
-  base: ["#1a0f3d", "#05030f", "#5b2aa6"],
-  blue: ["#0d2a5c", "#030714", "#2a6fd6"],
-  purple: ["#240c47", "#07030f", "#7a36cc"],
-  gold: ["#3a1c06", "#0a0502", "#b8701c"],
-  rainbow: ["#1f0b38", "#04020c", "#b83f94"],
+  base: ["#ffcdec", "#2fa8ff", "#ffffff"],
+  blue: ["#c6e9ff", "#1f7dff", "#eef8ff"],
+  purple: ["#efc9ff", "#7c4dff", "#fbf0ff"],
+  gold: ["#ffe2a8", "#ff9a1f", "#fff8e8"],
+  rainbow: ["#ffd0ec", "#4fb6ff", "#ffffff"],
 }
 
 export const skyTones = (hint: GachaHint | "base") =>
@@ -61,7 +64,7 @@ float fbm(vec3 p){float v=0.0;float a=0.5;for(int i=0;i<5;i++){v+=a*noise(p);p*=
 vec3 hue(float h){return clamp(abs(mod(h*6.0+vec3(0,4,2),6.0)-3.0)-1.0,0.0,1.0);}
 `
 
-/** 星雲の空（内側から見る球） */
+/** 雲の浮かぶ明るい空（内側から見る球） */
 export function createSky() {
   const material = new ShaderMaterial({
     side: BackSide,
@@ -81,18 +84,24 @@ export function createSky() {
       varying vec3 vDir;${NOISE}
       void main(){
         vec3 d=normalize(vDir);
-        vec3 col=mix(uLow,uHigh,smoothstep(-0.15,0.75,d.y));
-        float n=fbm(d*2.2+vec3(0.0,uTime*0.015,uTime*0.01));
-        float n2=fbm(d*4.5-vec3(uTime*0.02,0.0,0.0)+n);
-        float cloud=smoothstep(0.42,0.85,n2)*(0.55+0.45*n);
-        vec3 neb=mix(uNebula,hue(n*1.3+d.x*0.4+uTime*0.04)*1.2,uRainbow);
-        col+=neb*cloud*0.9;
-        col+=uNebula*pow(max(0.0,1.0-abs(d.y-0.05)*3.0),3.0)*0.25;
-        vec3 g=floor(d*180.0);
+        vec3 col=mix(uLow,uHigh,smoothstep(-0.04,0.3,d.y));
+        // パステルの虹（UR の予兆）
+        col=mix(col,col*(0.7+0.45*hue(d.x*0.35+d.y*0.6+uTime*0.03)),uRainbow*0.7);
+        // 地平線のもこもこ雲
+        vec3 q=vec3(d.x*2.6,d.y*7.0,d.z*2.6)+vec3(uTime*0.012,0.0,0.0);
+        float n=fbm(q);
+        float band=smoothstep(0.14,-0.02,d.y)*smoothstep(-0.35,-0.08,d.y);
+        float cloud=smoothstep(0.38,0.62,n+band*0.35-0.12)*band;
+        vec3 cloudCol=mix(uNebula*0.82,uNebula,smoothstep(0.4,0.75,n));
+        col=mix(col,cloudCol,cloud);
+        // 高いところのうすい雲
+        float w=fbm(vec3(d.x*1.6,d.y*5.0,d.z*1.6)-vec3(uTime*0.008,0.0,0.0));
+        col=mix(col,uNebula,smoothstep(0.58,0.82,w)*smoothstep(0.12,0.4,d.y)*0.35);
+        // きらきら
+        vec3 g=floor(d*140.0);
         float s=hash(g);
-        float star=step(0.985,s)*(0.5+0.5*sin(uTime*(2.0+s*5.0)+s*40.0));
-        col+=vec3(star)*(0.6+cloud);
-        gl_FragColor=vec4(col*uBright,1.0);
+        col+=vec3(step(0.993,s)*max(0.0,sin(uTime*(1.5+s*4.0)+s*40.0)))*0.5*smoothstep(0.0,0.4,d.y);
+        gl_FragColor=vec4(min(col,vec3(0.92))*uBright,1.0);
       }`,
   })
   const mesh = new Mesh(new SphereGeometry(40, 48, 32), material)
@@ -163,11 +172,12 @@ function drawMagicCircle(size: number, runes: string, detail: number) {
   return texture
 }
 
-export function createGlowMaterial(texture: CanvasTexture) {
+export function createGlowMaterial(texture: CanvasTexture, solid = false) {
   return new ShaderMaterial({
     transparent: true,
     depthWrite: false,
-    blending: AdditiveBlending,
+    // 明るい床の上では足し算の光が見えないので、solid は色を塗る
+    blending: solid ? NormalBlending : AdditiveBlending,
     side: DoubleSide,
     uniforms: {
       uMap: { value: texture },
@@ -185,7 +195,7 @@ export function createGlowMaterial(texture: CanvasTexture) {
         float a=texture2D(uMap,vUv).a;
         vec2 p=vUv-0.5;
         vec3 col=mix(uColor,hue(atan(p.y,p.x)/6.2831+uTime*0.2)*1.1,uRainbow);
-        gl_FragColor=vec4(col*a*uIntensity,a);
+        gl_FragColor=${solid ? "vec4(col*(0.55+0.45*uIntensity),a*min(uIntensity,1.0))" : "vec4(col*a*uIntensity,a)"};
       }`,
   })
 }
@@ -195,56 +205,97 @@ export function createMagicCircles() {
     new PlaneGeometry(3.2, 3.2),
     createGlowMaterial(
       drawMagicCircle(1024, "AIPICTORS·ATELIER·ARS·PICTURA·LUX·", 2),
+      true,
     ),
   )
   outer.rotation.x = -Math.PI / 2
   outer.position.y = 0.062
   const inner = new Mesh(
     new PlaneGeometry(1.6, 1.6),
-    createGlowMaterial(drawMagicCircle(512, "✦COLOR✦DREAM✦", 1)),
+    createGlowMaterial(drawMagicCircle(512, "✦COLOR✦DREAM✦", 1), true),
   )
   inner.rotation.x = -Math.PI / 2
   inner.position.y = 0.068
   return { outer, inner }
 }
 
-/** 浮かぶ台座（石の円盤と金の縁） */
+/** 白いステージ（つやのある円盤と、まわりを囲む鍵盤） */
 export function createPlatform() {
   const group = new Group()
-  const stone = new Mesh(
-    new CylinderGeometry(1.45, 1.6, 0.12, 96),
+  const top = new Mesh(
+    new CylinderGeometry(1.45, 1.5, 0.12, 96),
     new MeshStandardMaterial({
-      color: "#221a3d",
-      metalness: 0.35,
-      roughness: 0.32,
+      color: "#f6f7ff",
+      metalness: 0.15,
+      roughness: 0.22,
     }),
   )
-  stone.position.y = 0
   const under = new Mesh(
-    new ConeGeometry(1.6, 0.9, 96, 1, true),
+    new CylinderGeometry(2.3, 2.15, 0.22, 96, 1, true),
     new MeshStandardMaterial({
-      color: "#150f28",
+      color: "#dfe6ff",
       metalness: 0.2,
-      roughness: 0.6,
+      roughness: 0.4,
       side: DoubleSide,
     }),
   )
-  under.rotation.x = Math.PI
-  under.position.y = -0.51
+  under.position.y = -0.14
   const rimMaterial = new MeshStandardMaterial({
-    color: "#e9bd42",
-    metalness: 1,
-    roughness: 0.25,
-    emissive: new Color("#ffb020"),
+    color: "#ffffff",
+    metalness: 0.3,
+    roughness: 0.2,
+    emissive: new Color("#7fe0ff"),
     emissiveIntensity: 0.25,
   })
-  const rim = new Mesh(new TorusGeometry(1.45, 0.025, 12, 128), rimMaterial)
+  const rim = new Mesh(new TorusGeometry(1.48, 0.022, 12, 128), rimMaterial)
   rim.rotation.x = Math.PI / 2
   rim.position.y = 0.06
-  const rim2 = new Mesh(new TorusGeometry(1.6, 0.018, 12, 128), rimMaterial)
+  const rim2 = new Mesh(new TorusGeometry(2.3, 0.02, 12, 160), rimMaterial)
   rim2.rotation.x = Math.PI / 2
-  rim2.position.y = -0.06
-  group.add(stone, under, rim, rim2)
+  rim2.position.y = -0.03
+  group.add(top, under, rim, rim2)
+
+  // 鍵盤（白鍵を輪に並べ、黒鍵を 2 つ・3 つの組で乗せる）
+  const whiteCount = 70
+  const inner = 1.54
+  const outer = 2.26
+  const whiteKeys = new InstancedMesh(
+    new BoxGeometry(1, 0.06, 1),
+    new MeshStandardMaterial({ color: "#ffffff", roughness: 0.25 }),
+    whiteCount,
+  )
+  const blackKeys = new InstancedMesh(
+    new BoxGeometry(1, 0.06, 1),
+    new MeshStandardMaterial({
+      color: "#5a5fa8",
+      roughness: 0.3,
+      metalness: 0.2,
+    }),
+    whiteCount,
+  )
+  const dummy = new Object3D()
+  const step = (Math.PI * 2) / whiteCount
+  let blacks = 0
+  for (let i = 0; i < whiteCount; i++) {
+    const a = i * step
+    const r = (inner + outer) / 2
+    dummy.position.set(Math.cos(a) * r, -0.04, Math.sin(a) * r)
+    dummy.rotation.set(0, -a, 0)
+    dummy.scale.set(outer - inner, 1, r * step * 0.9)
+    dummy.updateMatrix()
+    whiteKeys.setMatrixAt(i, dummy.matrix)
+    // 7 鍵ごとに 2 + 3 の黒鍵（E-F と B-C の間はなし）
+    if (i % 7 === 2 || i % 7 === 6) continue
+    const ab = a + step / 2
+    const rb = outer - (outer - inner) * 0.3
+    dummy.position.set(Math.cos(ab) * rb, -0.005, Math.sin(ab) * rb)
+    dummy.rotation.set(0, -ab, 0)
+    dummy.scale.set((outer - inner) * 0.6, 0.9, rb * step * 0.55)
+    dummy.updateMatrix()
+    blackKeys.setMatrixAt(blacks++, dummy.matrix)
+  }
+  blackKeys.count = blacks
+  group.add(whiteKeys, blackKeys)
   return { group, rimMaterial }
 }
 
@@ -329,22 +380,6 @@ function createPalette() {
   return group
 }
 
-function createCrystal(color: string) {
-  const mesh = new Mesh(
-    new OctahedronGeometry(0.09, 0),
-    new MeshStandardMaterial({
-      color,
-      roughness: 0.1,
-      metalness: 0.2,
-      emissive: new Color(color),
-      emissiveIntensity: 0.9,
-      flatShading: true,
-    }),
-  )
-  mesh.scale.y = 1.7
-  return mesh
-}
-
 export type FloatingProp = {
   object: Group | Mesh
   radius: number
@@ -395,21 +430,6 @@ export function createFloatingProps() {
   ].forEach(([c, a]) => add(createTube(c as string), 2.1, 0.55, a as number))
   add(createPalette(), 2.0, 1.55, 2.9, 1.3)
   add(createPalette(), 2.2, 0.35, 5.9, 1.1)
-  ;[
-    ["#9fe0ff", 0.9],
-    ["#e0a8ff", 2.6],
-    ["#ffe08a", 3.8],
-    ["#a8ffd8", 5.0],
-    ["#ffb3d1", 1.7],
-  ].forEach(([c, a], i) =>
-    add(
-      createCrystal(c as string),
-      2.5 + (i % 2) * 0.4,
-      0.2 + i * 0.35,
-      a as number,
-      1 + (i % 3) * 0.3,
-    ),
-  )
   return { group, props }
 }
 
@@ -488,8 +508,9 @@ export function createPillar(radius: number, height: number) {
   const material = new ShaderMaterial({
     transparent: true,
     depthWrite: false,
-    blending: AdditiveBlending,
-    side: DoubleSide,
+    // 明るい空の上で白く飛ばないよう色を塗り、奥の壁だけ描いて人物にかぶせない
+    blending: NormalBlending,
+    side: BackSide,
     uniforms: {
       uColor: { value: new Color() },
       uIntensity: { value: 0 },
@@ -504,7 +525,7 @@ export function createPillar(radius: number, height: number) {
         float flow=fbm(vec3(vUv.x*8.0,vUv.y*3.0-uTime*1.6,uTime*0.2));
         float a=(1.0-vUv.y)*(0.4+0.8*flow)*smoothstep(0.0,0.08,vUv.y);
         vec3 col=mix(uColor,hue(vUv.y*0.8-uTime*0.3+vUv.x),uRainbow);
-        gl_FragColor=vec4(col*a*uIntensity,a);
+        gl_FragColor=vec4(col*1.15,min(1.0,a*uIntensity*1.4));
       }`,
   })
   const mesh = new Mesh(
