@@ -112,6 +112,24 @@ export default function HelpWithdrawalPage() {
               "Login credentials and links to providers such as Google and X",
             )}
           </li>
+          <li>
+            {t(
+              "退会時のログインID、表示名、メールアドレス、URL、登録日時",
+              "Your login ID, display name, email address, URL, and registration date at the time of withdrawal",
+            )}
+          </li>
+          <li>
+            {t(
+              "R18 用のプロフィール、IP アドレスとの紐付け",
+              "Your R18 profile and the IP addresses linked to your account",
+            )}
+          </li>
+          <li>
+            {t(
+              "Discord との連携、お問い合わせの履歴（連絡先のメールアドレスを含む）",
+              "Your Discord link and your support inquiries (including the contact email address)",
+            )}
+          </li>
         </ul>
       </section>
 
@@ -134,15 +152,21 @@ export default function HelpWithdrawalPage() {
           </li>
           <li>
             {t(
-              "退会の記録として、退会時のログインID、表示名、メールアドレス、URL、登録日時、退会日時を保持します。",
-              "As a record of the withdrawal, we keep the login ID, display name, email address, URL, registration date, and withdrawal date.",
+              "退会の記録として、ユーザー番号と退会日時だけを保持します。氏名・メールアドレスなど、あなたを特定できる情報は含みません。",
+              "As a record of the withdrawal, we keep only your user number and the withdrawal date. It contains no information that identifies you, such as your name or email address.",
+            )}
+          </li>
+          <li>
+            {t(
+              "コインや有料プランの決済の記録は、法令（法人税法など）で保存が義務づけられているため、ユーザー番号とともに7年間保存します。クレジットカードの情報は決済代行会社（Stripe）が管理しており、Aipictors は保持していません。",
+              "Records of coin and plan payments are kept with your user number for 7 years, as required by law (such as the Corporation Tax Act). Credit card details are handled by our payment provider (Stripe); Aipictors does not hold them.",
             )}
           </li>
         </ul>
         <p>
           {t(
-            "上記の残るデータに保持期間の定めはありません。",
-            "There is no fixed retention period for the data listed above.",
+            "退会後に残るデータには、氏名・メールアドレス・ログインIDなど、あなたを特定できる情報は含まれません。",
+            "The data kept after withdrawal does not include information that identifies you, such as your name, email address, or login ID.",
           )}
         </p>
       </section>
