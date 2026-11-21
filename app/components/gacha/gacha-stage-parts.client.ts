@@ -13,6 +13,7 @@ import {
   IcosahedronGeometry,
   InstancedMesh,
   Mesh,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   NormalBlending,
   Object3D,
@@ -534,6 +535,54 @@ export function createPillar(radius: number, height: number) {
   )
   mesh.position.y = height / 2
   return { mesh, material }
+}
+
+/**
+ * ＞＜の目。モデルの表情（Fun）だと線が細くて小さいので、上から太く大きく描く。
+ * 前髪に隠れるよう深さは見て、顔より手前に描く
+ */
+export function createSquintEyes() {
+  const draw = (pointRight: boolean) => {
+    const canvas = document.createElement("canvas")
+    canvas.width = 256
+    canvas.height = 160
+    const g = canvas.getContext("2d")
+    if (g) {
+      const tip = pointRight ? 228 : 28
+      const back = pointRight ? 34 : 222
+      const bend = pointRight ? -14 : 14
+      g.beginPath()
+      g.moveTo(back, 18)
+      g.quadraticCurveTo((back + tip) / 2 + bend, 58, tip, 80)
+      g.quadraticCurveTo((back + tip) / 2 + bend, 102, back, 142)
+      g.lineCap = "round"
+      g.lineJoin = "round"
+      g.strokeStyle = "#3a2440"
+      g.lineWidth = 24
+      g.stroke()
+    }
+    const texture = new CanvasTexture(canvas)
+    texture.colorSpace = SRGBColorSpace
+    return texture
+  }
+  const make = (pointRight: boolean) =>
+    new Mesh(
+      new PlaneGeometry(1, 0.625),
+      new MeshBasicMaterial({
+        map: draw(pointRight),
+        transparent: true,
+        depthWrite: false,
+        toneMapped: false,
+      }),
+    )
+  // 画面の左に見える目（モデルの右目）が「＞」
+  const right = make(true)
+  const left = make(false)
+  right.renderOrder = 2
+  left.renderOrder = 2
+  right.visible = false
+  left.visible = false
+  return { right, left }
 }
 
 /** 衝撃波の輪 */

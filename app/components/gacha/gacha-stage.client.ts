@@ -56,6 +56,7 @@ import {
   createPlatform,
   createShockwave,
   createSky,
+  createSquintEyes,
   drawBanner,
   drawCardBack,
   drawCardFront,
@@ -259,6 +260,8 @@ export async function createGachaStage(
       target.morphTargetInfluences[index] =
         name === eyes || name === mouth ? 1 : 0
     }
+    squint.right.visible = eyes === "Fun"
+    squint.left.visible = eyes === "Fun"
   }
 
   const mixer = new AnimationMixer(model)
@@ -324,14 +327,116 @@ export async function createGachaStage(
   const rSide = Math.sign(worldPos(bones.rUpper).x) || -1
   const lSide = -rSide
 
+  // ＞＜の目を頭に付ける（顔の細い線の真上に、太く大きく重ねる）
+  const squint = createSquintEyes()
+  {
+    const head = bones.head
+    if (head) {
+      const headQ = head.getWorldQuaternion(new Quaternion()).invert()
+      const headScale = head.getWorldScale(new Vector3())
+      for (const [mesh, eye, out] of [
+        [squint.right, "R_Eye", rSide],
+        [squint.left, "L_Eye", lSide],
+      ] as const) {
+        const at = worldPos(bone(eye)).add(
+          new Vector3(0.017 * out, -0.024, 0.05),
+        )
+        head.add(mesh)
+        mesh.position.copy(head.worldToLocal(at))
+        mesh.quaternion.copy(headQ)
+        mesh.scale.set(
+          0.046 / headScale.x,
+          0.046 / headScale.y,
+          0.046 / headScale.z,
+        )
+      }
+    }
+  }
+
+  /** 指（中指の骨はない）。待機アニメは指を動かさないので、毎コマ元に戻してから曲げる */
+  const handOf = (s: "R" | "L") => ({
+    hand: bone(`${s}_Hand`),
+    fingers: ["Index", "Ring", "Pinky"].map((f) =>
+      [1, 2, 3].map((j) => bone(`${s}_${f}${j}`)),
+    ),
+    thumb: [1, 2, 3].map((j) => bone(`${s}_Thumb${j}`)),
+    mirror: s === "R" ? 1 : -1,
+  })
+  const hands = [handOf("R"), handOf("L")]
+  const fingerRest = hands.flatMap((h) =>
+    [...h.fingers.flat(), ...h.thumb].flatMap((b) =>
+      b ? [{ bone: b, rest: b.quaternion.clone() }] : [],
+    ),
+  )
+  const fa = new Vector3()
+  const fb = new Vector3()
+  const across = new Vector3()
+  const palm = new Vector3()
+  const curlAxis = new Vector3()
+  const wristQ = new Quaternion()
+  /** 元の手首は甲の側へ反っているので、前腕のまっすぐ先へ向け直す */
+  const straightenWrist = (
+    fore: Object3D | undefined,
+    h: (typeof hands)[number],
+  ) => {
+    const ring = h.fingers[1][0]
+    if (!fore || !h.hand || !ring) return
+    const foreDir = worldPos(h.hand, fa).sub(worldPos(fore, fb)).normalize()
+    const handDir = worldPos(ring, across).sub(worldPos(h.hand, fb)).normalize()
+    wristQ.setFromUnitVectors(handDir, foreDir)
+    const angle = 2 * Math.acos(Math.min(1, Math.abs(wristQ.w)))
+    if (angle < 1e-4) return
+    curlAxis.set(wristQ.x, wristQ.y, wristQ.z).normalize()
+    if (wristQ.w < 0) curlAxis.negate()
+    rotateWorld(h.hand, curlAxis, angle * 0.85)
+  }
+  /** 指を曲げる（0 = 少し開いた手、1 = にぎりこぶし） */
+  const curlHand = (h: (typeof hands)[number], grip: number) => {
+    const [index, , pinky] = h.fingers
+    if (!h.hand || !index[0] || !pinky[0]) return
+    across
+      .subVectors(worldPos(pinky[0], fa), worldPos(index[0], fb))
+      .normalize()
+    const amount = grip * 1.4
+    for (const chain of h.fingers) {
+      chain.forEach((b, j) => {
+        const from = chain[Math.min(j, 1)]
+        const to = chain[Math.min(j + 1, 2)]
+        if (!b || !from || !to) return
+        const dir = worldPos(to, fa).sub(worldPos(from, fb)).normalize()
+        curlAxis.copy(across).addScaledVector(dir, -across.dot(dir)).normalize()
+        rotateWorld(b, curlAxis, -h.mirror * amount * (j === 0 ? 0.9 : 1.1))
+      })
+    }
+    // 親指は手のひらの方へ倒す
+    palm
+      .subVectors(worldPos(index[0], fa), worldPos(h.hand, fb))
+      .normalize()
+      .cross(across)
+      .normalize()
+    h.thumb.forEach((b, j) => {
+      const from = h.thumb[Math.min(j, 1)]
+      const to = h.thumb[Math.min(j + 1, 2)]
+      if (!b || !from || !to) return
+      const dir = worldPos(to, fa).sub(worldPos(from, fb)).normalize()
+      curlAxis.crossVectors(dir, palm).normalize()
+      rotateWorld(b, curlAxis, -h.mirror * grip * 0.7 * (j === 0 ? 0.6 : 1))
+    })
+  }
+
   /** ばねで追いかける姿勢のつまみ（ぬるっと動かす） */
   const poseKeys = [
     "rSide",
     "rFwd",
     "rElbow",
+    "rBend",
+    "rGrip",
     "lSide",
     "lFwd",
     "lElbow",
+    "lBend",
+    "lTwist",
+    "lGrip",
     "headUp",
     "headRoll",
     "headYaw",
@@ -615,13 +720,35 @@ export async function createGachaStage(
 
   const poseTarget = (t: number): Pose => {
     const p = zeroPose()
+    // 右手はいつも筆をにぎる。左手はふだん軽く指を曲げておく
+    p.rGrip = 1
+    p.lGrip = 0.3
+    /** 左手をひじから立てて、手を振る */
+    const waveLeft = (k: number) => {
+      p.lSide = 1.15 * k
+      p.lFwd = 0.3 * k
+      p.lBend = 1.7 * k
+      p.wave = k
+      p.lTwist = 1.2 * k
+      p.lGrip = 0.05
+    }
+    /** ばんざい（両腕を上へ） */
+    const banzai = () => {
+      p.rSide = 2.55
+      p.lSide = 2.55
+      p.rFwd = 0.35
+      p.lFwd = 0.35
+      p.rBend = 0.2
+      p.lBend = 0.2
+      p.lGrip = 0.2
+    }
     const phase = segmentAt(t).name
     if (phase === "intro") {
       // 手を振ってあいさつ
       const k = progress("intro", t)
-      p.lSide = 1.75 * smooth(k * 3)
-      p.lElbow = 0.5
-      p.wave = smooth(k * 3)
+      waveLeft(smooth(k * 3))
+      p.rSide = 0.15
+      p.rElbow = 0.4
       p.headRoll = 0.12
       p.headYaw = 0.1
     } else if (phase === "charge") {
@@ -634,8 +761,11 @@ export async function createGachaStage(
       p.swirl = smooth(k * 2) * (0.6 + k * 0.6)
       p.headUp = 0.35 * smooth(k * 2)
       p.lean = -0.08
-      p.lSide = 0.5
-      p.lElbow = 0.6
+      // 左手はこぶしを胸の前に
+      p.lSide = 0.3
+      p.lFwd = 0.5
+      p.lElbow = 1.5
+      p.lGrip = 0.75
       p.twist = -0.12
     } else if (phase === "flick") {
       // キャンバスへ振り下ろす
@@ -645,50 +775,67 @@ export async function createGachaStage(
       p.lean = k < 0.35 ? -0.16 : 0.12
       p.twist = k < 0.35 ? -0.2 : 0.18
       p.headUp = 0.25
-      p.lSide = 0.6
+      p.lSide = 0.45
+      p.lFwd = 0.2
+      p.lElbow = 0.6
     } else if (phase === "splash" || phase === "promote") {
       // 見上げて、うしろのキャンバスを見る
       p.rFwd = 0.9
       p.rSide = 0.4
-      p.lSide = 0.6
+      p.lSide = 0.4
+      p.lFwd = 0.3
+      p.lElbow = 0.5
       p.headUp = 0.4
       p.headYaw = 0.25
       p.twist = 0.25
       if (phase === "promote") {
-        p.rSide = 1.3
-        p.lSide = 1.3
+        // 昇格したら両手をぐっと上げて喜ぶ
+        const up = progress("promote", t) >= 0.62
+        p.rSide = up ? 1.9 : 0.5
+        p.lSide = up ? 1.9 : 0.4
+        p.rFwd = up ? 0.6 : 1.0
+        p.lFwd = up ? 0.6 : 0.9
+        p.rBend = up ? 0.9 : 0
+        p.lBend = up ? 0.9 : 0
+        p.lElbow = up ? 0 : 1.4
+        p.lGrip = up ? 0.9 : 0.5
         p.lean = -0.14
         p.headUp = 0.5
       }
     } else if (phase === "cutIn") {
-      // びっくり → ばんざい
+      // びっくり（両手を口もとへ）→ ばんざい
       const k = progress("cutIn", t)
-      p.rSide = k < 0.45 ? 0.45 : 0.7
-      p.lSide = k < 0.45 ? 0.45 : 0.7
-      p.rFwd = k < 0.45 ? 0 : 0.9
-      p.lFwd = k < 0.45 ? 0 : 0.9
-      p.rElbow = k < 0.45 ? 0.8 : 1.1
-      p.lElbow = k < 0.45 ? 0.8 : 1.1
-      p.lean = k < 0.45 ? -0.18 : 0
-      p.headRoll = k < 0.45 ? 0 : 0.15
-    } else if (phase === "finale") {
-      if (topRank >= 2) {
-        p.rSide = 1.5
-        p.lSide = 1.5
+      if (k < 0.45) {
+        p.rSide = -0.15
+        p.lSide = -0.15
         p.rFwd = 0.5
         p.lFwd = 0.5
+        p.rElbow = 2.3
+        p.lElbow = 2.3
+        p.rBend = 0.35
+        p.lBend = 0.35
+        p.lGrip = 0.45
+        p.lean = -0.18
+      } else {
+        banzai()
+        p.headRoll = 0.15
+      }
+    } else if (phase === "finale") {
+      if (topRank >= 2) {
+        banzai()
+        p.rBend = -0.5
+        p.lBend = -0.5
         p.headUp = 0.25
       } else {
-        p.lSide = 1.6
-        p.wave = 1
-        p.lElbow = 0.5
+        waveLeft(1)
+        p.rSide = 0.15
+        p.rElbow = 0.4
         p.headRoll = 0.15
       }
     } else {
-      p.rSide = 0.4
-      p.lSide = 1.6
-      p.wave = 1
-      p.lElbow = 0.5
+      waveLeft(1)
+      p.rSide = 0.3
+      p.rElbow = 0.4
     }
     p.bounce = 1
     return p
@@ -709,27 +856,44 @@ export async function createGachaStage(
     rotateWorld(bones.waist, axisY, pose.twist * 0.6)
     rotateWorld(bones.spine, axisX, pose.lean * 0.5 + breathe * 0.015)
     rotateWorld(bones.spine, axisY, pose.twist * 0.5)
-    // 右腕: 前へ上げて、筆で円を描く
+    // 腕は「横へ上げる → 前へ上げる → ひじを前へ曲げる → ひじを上へ曲げる」の順に回す
     const swirlA = t * 7
-    rotateWorld(
-      bones.rUpper,
-      axisX,
-      -pose.rFwd - Math.sin(swirlA) * 0.22 * pose.swirl,
-    )
     rotateWorld(
       bones.rUpper,
       axisZ,
       rSide * (pose.rSide + Math.cos(swirlA) * 0.22 * pose.swirl),
     )
+    rotateWorld(
+      bones.rUpper,
+      axisX,
+      -pose.rFwd - Math.sin(swirlA) * 0.22 * pose.swirl,
+    )
     rotateWorld(bones.rFore, axisX, -pose.rElbow)
-    // 左腕: 横に上げて、手を振る
+    rotateWorld(bones.rFore, axisZ, rSide * pose.rBend)
     rotateWorld(bones.lUpper, axisZ, lSide * pose.lSide)
     rotateWorld(bones.lUpper, axisX, -pose.lFwd)
+    rotateWorld(bones.lFore, axisX, -pose.lElbow)
+    // 手のひらを前へ向ける（前腕の向きを軸にひねる）
+    if (pose.lTwist !== 0 && bones.lHand && bones.lFore)
+      rotateWorld(
+        bones.lFore,
+        worldPos(bones.lHand, fa).sub(worldPos(bones.lFore, fb)).normalize(),
+        lSide * pose.lTwist,
+      )
+    // 手を振るときは、立てた前腕を左右にゆらす
     rotateWorld(
       bones.lFore,
       axisZ,
-      lSide * (pose.lElbow + Math.sin(t * 9) * 0.45 * pose.wave),
+      lSide * (pose.lBend + Math.sin(t * 9) * 0.35 * pose.wave),
     )
+    straightenWrist(bones.rFore, hands[0])
+    straightenWrist(bones.lFore, hands[1])
+    for (const f of fingerRest) {
+      f.bone.quaternion.copy(f.rest)
+      f.bone.updateMatrixWorld(true)
+    }
+    curlHand(hands[0], pose.rGrip)
+    curlHand(hands[1], pose.lGrip)
     // 頭
     rotateWorld(bones.head, axisX, -pose.headUp + breathe * 0.01)
     rotateWorld(
@@ -954,13 +1118,25 @@ export async function createGachaStage(
     else setFace(untilBlink < 0 ? "Blink" : "open", "MouthClosed")
 
     // 筆（右手に持たせる）
+    // にぎったこぶしの中に柄を通し、人さし指の側へ毛先を出す
     worldPos(bones.rHand, handPos)
     worldPos(bones.rFore, forePos)
+    const [rIndex, , rPinky] = hands[0].fingers
     const dir = tmp.subVectors(handPos, forePos).normalize()
-    brush.group.position.copy(handPos).addScaledVector(dir, 0.02)
+    const out = fb
+      .subVectors(worldPos(rIndex[0], fa), worldPos(rPinky[0], fb))
+      .normalize()
+    dir.multiplyScalar(0.45).add(out).normalize()
+    // 曲げた指の輪のまんなか
+    const grip = worldPos(rIndex[0], fa)
+      .add(worldPos(rIndex[2], forePos))
+      .add(worldPos(rPinky[0], forePos))
+      .add(worldPos(rPinky[2], forePos))
+      .multiplyScalar(0.25)
+    brush.group.position.copy(grip).addScaledVector(dir, 0.08)
     brush.group.quaternion.setFromUnitVectors(axisY, dir)
     brush.group.visible = phase !== "reveal" || t < revealStart + 0.6
-    tip.copy(handPos).addScaledVector(dir, 0.2)
+    tip.copy(brush.group.position).addScaledVector(dir, 0.12)
 
     // 光の玉: 集める → 飛ぶ → 消える
     const orbU = orb.material.uniforms
