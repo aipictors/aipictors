@@ -1,24 +1,24 @@
 import { useMutation, useQuery } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
-import { Pencil, PlusIcon } from "lucide-react"
+import { Pencil, PlusIcon, XIcon } from "lucide-react"
 import { Suspense, useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
-import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
-import { AvatarFrameStudio } from "~/routes/($lang).settings.profile/components/avatar-frame-studio"
-import { SettingsSaveBar } from "~/routes/($lang).settings/components/settings-save-bar"
-import { SettingsSection } from "~/routes/($lang).settings/components/settings-section"
 import { Button } from "~/components/ui/button"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { SelectCreatedSensitiveWorksDialog } from "~/routes/($lang).my._index/components/select-created-sensitive-works-dialog"
 import {
   DialogWorkFragment,
   SelectCreatedWorksDialog,
 } from "~/routes/($lang).my._index/components/select-created-works-dialog"
+import { SettingsSaveBar } from "~/routes/($lang).settings/components/settings-save-bar"
+import { SettingsSection } from "~/routes/($lang).settings/components/settings-section"
+import { AvatarFrameStudio } from "~/routes/($lang).settings.profile/components/avatar-frame-studio"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 
 /**
@@ -29,6 +29,14 @@ const inputClassName =
 
 const textareaClassName =
   "w-full rounded-md border bg-background px-3 py-2 text-base md:text-sm"
+
+/** R18 のプロフィールのリンクの上限（API と同じ） */
+const SENSITIVE_LINKS_LIMIT = 10
+
+const isHttpUrl = (value: string) => /^https?:\/\/\S+$/i.test(value.trim())
+
+const toSensitiveLinksInput = (links: string[]) =>
+  links.map((link) => link.trim()).filter((link) => link.length > 0)
 
 export function SettingProfileForm() {
   const authContext = useContext(AuthContext)
@@ -59,6 +67,13 @@ export function SettingProfileForm() {
   const [profileImage, setProfileImage] = useState("")
   const [headerImage, setHeaderImage] = useState("")
   const [supportThankYouMessage, setSupportThankYouMessage] = useState("")
+  // R18 のプロフィール（R18 のページだけに出す。空の項目は全年齢のプロフィールを出す）
+  const [sensitiveHeaderImage, setSensitiveHeaderImage] = useState("")
+  const [isSensitiveHeaderCleared, setIsSensitiveHeaderCleared] =
+    useState(false)
+  const [sensitiveProfileText, setSensitiveProfileText] = useState("")
+  const [sensitiveEnProfileText, setSensitiveEnProfileText] = useState("")
+  const [sensitiveLinks, setSensitiveLinks] = useState<string[]>([])
   const [selectedUserAvatarFrameId, setSelectedUserAvatarFrameId] = useState<
     string | null
   >(null)
@@ -107,6 +122,11 @@ export function SettingProfileForm() {
       setTwitter(userInfo.twitterAccountId ?? "")
       setGithub(userInfo.githubAccountId ?? "")
       setMail(userInfo.mailAddress ?? "")
+      setSensitiveHeaderImage("")
+      setIsSensitiveHeaderCleared(false)
+      setSensitiveProfileText(userInfo.sensitiveProfile?.biography ?? "")
+      setSensitiveEnProfileText(userInfo.sensitiveProfile?.enBiography ?? "")
+      setSensitiveLinks(userInfo.sensitiveProfile?.links ?? [])
       setSelectedPickupWorks(
         userInfo.featuredWorks?.map((work) => ({
           id: work.id,
@@ -151,43 +171,93 @@ export function SettingProfileForm() {
       ? await uploadPublicImage(profileImage, token?.viewer?.token)
       : null
 
+    const nextSensitiveLinks = toSensitiveLinksInput(sensitiveLinks)
+    const invalidLink = nextSensitiveLinks.find((link) => !isHttpUrl(link))
+    if (invalidLink !== undefined) {
+      toast(
+        t(
+          `R18 のリンクは https:// から始まる URL で入力してください（${invalidLink}）`,
+          `R18 links must be URLs starting with https:// (${invalidLink})`,
+        ),
+      )
+      return
+    }
+
     const headerUrl = headerImage
       ? await uploadPublicImage(headerImage, token?.viewer?.token)
       : null
 
-    await updateProfile({
-      variables: {
-        input: {
-          displayName: userName,
-          biography: profile,
-          enBiography: enProfile,
-          homeUrl: website,
-          instagramAccountId: instagram,
-          twitterAccountId: twitter,
-          githubAccountId: github,
-          mailAddress: mail,
-          ...(iconUrl && {
-            iconUrl: iconUrl,
-          }),
-          ...(headerUrl && {
-            headerImageUrl: headerUrl,
-          }),
-          featuredWorkIds: selectedPickupWorks.map((work) => work.id),
-          featuredSensitiveWorkIds: selectedPickupSensitiveWorks.map(
-            (work) => work.id,
-          ),
-        },
-      },
-      refetchQueries: [
-        {
-          query: userQuery,
-          variables: {
-            userId,
+    const sensitiveHeaderUrl = sensitiveHeaderImage
+      ? await uploadPublicImage(sensitiveHeaderImage, token?.viewer?.token)
+      : null
+
+    // R18 のプロフィールは変えたものだけ送る（変えていなければ書き込まない）
+    const savedSensitiveProfile = userInfo.sensitiveProfile
+    const sensitiveInput = {
+      ...(sensitiveHeaderUrl
+        ? { sensitiveHeaderImageUrl: sensitiveHeaderUrl }
+        : isSensitiveHeaderCleared && savedSensitiveProfile?.headerImageUrl
+          ? { sensitiveHeaderImageUrl: "" }
+          : {}),
+      ...(sensitiveProfileText !== (savedSensitiveProfile?.biography ?? "") && {
+        sensitiveBiography: sensitiveProfileText,
+      }),
+      ...(sensitiveEnProfileText !==
+        (savedSensitiveProfile?.enBiography ?? "") && {
+        sensitiveEnBiography: sensitiveEnProfileText,
+      }),
+      ...(nextSensitiveLinks.join("\n") !==
+        (savedSensitiveProfile?.links ?? []).join("\n") && {
+        sensitiveLinks: nextSensitiveLinks,
+      }),
+    }
+
+    try {
+      await updateProfile({
+        variables: {
+          input: {
+            ...sensitiveInput,
+            displayName: userName,
+            biography: profile,
+            enBiography: enProfile,
+            homeUrl: website,
+            instagramAccountId: instagram,
+            twitterAccountId: twitter,
+            githubAccountId: github,
+            mailAddress: mail,
+            ...(iconUrl && {
+              iconUrl: iconUrl,
+            }),
+            ...(headerUrl && {
+              headerImageUrl: headerUrl,
+            }),
+            featuredWorkIds: selectedPickupWorks.map((work) => work.id),
+            featuredSensitiveWorkIds: selectedPickupSensitiveWorks.map(
+              (work) => work.id,
+            ),
           },
         },
-      ],
-      awaitRefetchQueries: true,
-    })
+        refetchQueries: [
+          {
+            query: userQuery,
+            variables: {
+              userId,
+            },
+          },
+        ],
+        awaitRefetchQueries: true,
+      })
+    } catch (error) {
+      toast(
+        error instanceof Error && error.message.length > 0
+          ? error.message
+          : t(
+              "プロフィールの更新に失敗しました。",
+              "Failed to update profile.",
+            ),
+      )
+      return
+    }
 
     await updateUserSetting({
       variables: {
@@ -208,6 +278,15 @@ export function SettingProfileForm() {
   const headerImageSrc =
     headerImage.length > 0 ? headerImage : userInfo?.headerImageUrl
 
+  const savedSensitiveHeaderImageUrl = isSensitiveHeaderCleared
+    ? null
+    : (userInfo.sensitiveProfile?.headerImageUrl ?? null)
+  const sensitiveHeaderImageSrc =
+    sensitiveHeaderImage.length > 0
+      ? sensitiveHeaderImage
+      : savedSensitiveHeaderImageUrl
+  const hasOwnSensitiveHeader = sensitiveHeaderImageSrc !== null
+
   const currentPassType =
     profileAvatarFrameSettings?.viewer?.currentPass?.type ?? null
   const avatarFrames = profileAvatarFrameSettings?.userAvatarFrames ?? []
@@ -216,8 +295,8 @@ export function SettingProfileForm() {
   const selectedAvatarFrame =
     selectedUserAvatarFrameId === null
       ? null
-      : avatarFrames.find((frame) => frame.id === selectedUserAvatarFrameId) ??
-        savedSelectedAvatarFrame
+      : (avatarFrames.find((frame) => frame.id === selectedUserAvatarFrameId) ??
+        savedSelectedAvatarFrame)
 
   return (
     <div className="space-y-5">
@@ -400,7 +479,10 @@ export function SettingProfileForm() {
           </div>
           <div className="space-y-1.5">
             <label htmlFor="mail" className="font-medium text-sm">
-              {t("公開する連絡先メール（任意）", "Public contact email (optional)")}
+              {t(
+                "公開する連絡先メール（任意）",
+                "Public contact email (optional)",
+              )}
             </label>
             <input
               type="email"
@@ -420,7 +502,10 @@ export function SettingProfileForm() {
                 to="/settings/account"
                 className="whitespace-nowrap text-foreground underline underline-offset-2"
               >
-                {t("ログイン用のメールアドレスはこちら", "Manage your login email")}
+                {t(
+                  "ログイン用のメールアドレスはこちら",
+                  "Manage your login email",
+                )}
               </Link>
             </p>
           </div>
@@ -524,6 +609,180 @@ export function SettingProfileForm() {
         </div>
       </SettingsSection>
 
+      <SettingsSection
+        title={t("R18 のプロフィール", "R18 profile")}
+        description={t(
+          "R18 のページ（年齢確認のあと）だけに出します。全年齢のページには出ません。空の項目は全年齢のプロフィールがそのまま出ます。アイコンと名前は共通です。",
+          "Shown only on your R18 page (after age confirmation), never on the all-ages page. Empty fields fall back to your all-ages profile. Your icon and name are shared.",
+        )}
+      >
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <p className="font-medium text-sm">
+              {t("R18 用のヘッダー画像", "R18 header image")}
+            </p>
+            <div className="relative aspect-[5/2] w-full overflow-hidden rounded-xl bg-muted md:aspect-[3/1] md:rounded-3xl">
+              {hasOwnSensitiveHeader ? (
+                <img
+                  className="absolute inset-0 size-full object-cover"
+                  src={sensitiveHeaderImageSrc ?? undefined}
+                  alt={t("R18 用のヘッダー画像", "R18 header image")}
+                />
+              ) : headerImageSrc ? (
+                <>
+                  <img
+                    className="absolute inset-0 size-full object-cover opacity-40"
+                    src={headerImageSrc}
+                    alt=""
+                  />
+                  <p className="absolute inset-x-0 bottom-2 text-center font-medium text-xs">
+                    {t(
+                      "全年齢と同じヘッダーを出します",
+                      "Uses your all-ages header",
+                    )}
+                  </p>
+                </>
+              ) : (
+                <div className="absolute inset-0 bg-muted" />
+              )}
+              <CropImageField
+                isHidePreviewImage={false}
+                cropWidth={1200}
+                cropHeight={400}
+                onDeleteImage={() => {
+                  setSensitiveHeaderImage("")
+                }}
+                onCropToBase64={(base64: string) => {
+                  setSensitiveHeaderImage(base64)
+                  setIsSensitiveHeaderCleared(false)
+                }}
+                fileExtension={"webp"}
+              >
+                <Button
+                  aria-label={t(
+                    "R18 用のヘッダー画像を変更",
+                    "Change R18 header image",
+                  )}
+                  className="absolute top-2 right-2 size-10 rounded-full p-0"
+                  variant={"secondary"}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+              </CropImageField>
+            </div>
+            {hasOwnSensitiveHeader && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-muted-foreground text-xs"
+                onClick={() => {
+                  setSensitiveHeaderImage("")
+                  setIsSensitiveHeaderCleared(true)
+                }}
+              >
+                {t("全年齢と同じヘッダーに戻す", "Use all-ages header")}
+              </Button>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="sensitiveProfile" className="font-medium text-sm">
+              {t("R18 用のプロフィール", "R18 profile text")}
+            </label>
+            <AutoResizeTextarea
+              id="sensitiveProfile"
+              className={textareaClassName}
+              maxLength={320}
+              placeholder={t(
+                "空のときは全年齢のプロフィールを出します。",
+                "If empty, your all-ages profile is shown.",
+              )}
+              value={sensitiveProfileText}
+              onChange={(e) => setSensitiveProfileText(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="sensitiveEnProfile" className="font-medium text-sm">
+              {t("R18 用の英語プロフィール", "R18 English profile text")}
+            </label>
+            <AutoResizeTextarea
+              id="sensitiveEnProfile"
+              className={textareaClassName}
+              maxLength={640}
+              value={sensitiveEnProfileText}
+              onChange={(e) => setSensitiveEnProfileText(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <p className="font-medium text-sm">
+              {t("R18 用のリンク", "R18 links")}
+            </p>
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              {t(
+                "FANZA・Fantia・FANBOX・DLsite・Ci-en などの URL を 10 件まで。よく使われるサイトはサービス名で表示します。",
+                "Up to 10 URLs such as FANZA, Fantia, FANBOX, DLsite or Ci-en. Popular sites are shown by name.",
+              )}
+            </p>
+            <div className="space-y-2">
+              {sensitiveLinks.map((link, index) => (
+                <div
+                  // 並べ替えはしないので位置で区別する
+                  // biome-ignore lint/suspicious/noArrayIndexKey: 入力欄の位置
+                  key={index}
+                  className="flex items-center gap-2"
+                >
+                  <input
+                    type="url"
+                    inputMode="url"
+                    aria-label={t(
+                      `R18 用のリンク ${index + 1}`,
+                      `R18 link ${index + 1}`,
+                    )}
+                    className={inputClassName}
+                    maxLength={500}
+                    placeholder="https://"
+                    value={link}
+                    onChange={(e) =>
+                      setSensitiveLinks((links) =>
+                        links.map((item, i) =>
+                          i === index ? e.target.value : item,
+                        ),
+                      )
+                    }
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-11 shrink-0"
+                    aria-label={t("このリンクを消す", "Remove this link")}
+                    onClick={() =>
+                      setSensitiveLinks((links) =>
+                        links.filter((_, i) => i !== index),
+                      )
+                    }
+                  >
+                    <XIcon className="size-4" />
+                  </Button>
+                </div>
+              ))}
+              {sensitiveLinks.length < SENSITIVE_LINKS_LIMIT && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="gap-1"
+                  onClick={() => setSensitiveLinks((links) => [...links, ""])}
+                >
+                  <PlusIcon className="size-4" />
+                  {t("リンクを追加", "Add link")}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </SettingsSection>
+
       <Link
         className="block py-2 text-center text-muted-foreground text-sm hover:underline"
         to="/settings/account/login"
@@ -531,10 +790,7 @@ export function SettingProfileForm() {
         {t("ログイン情報を変更する", "Change Login Information")}
       </Link>
 
-      <SettingsSaveBar
-        isSaving={isUpdating}
-        onSave={() => void onSubmit()}
-      />
+      <SettingsSaveBar isSaving={isUpdating} onSave={() => void onSubmit()} />
     </div>
   )
 }
@@ -563,6 +819,12 @@ const userQuery = graphql(
       githubAccountId
       siteURL
       mailAddress
+      sensitiveProfile {
+        headerImageUrl
+        biography
+        enBiography
+        links
+      }
     }
   }`,
   [DialogWorkFragment],

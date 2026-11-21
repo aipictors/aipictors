@@ -116,14 +116,21 @@ export default function UserLayout() {
   // フォロワーなどの最新情報をログインしている場合は取得する
   const user = userRet?.user ?? data.user
   const r18WorksCount = data.r18WorksCount
+  // R18 用に登録したヘッダー・紹介・リンク（未登録の項目はいつものプロフィール）
+  const sensitiveProfile = user.sensitiveProfile ?? null
 
   return (
     <div className="flex w-full flex-col justify-center">
       <div className="relative">
         <UserHomeHeader
           user={user}
+          headerImageUrl={sensitiveProfile?.headerImageUrl}
           userIconView={
-            <UserProfileNameIcon user={user} r18WorksCount={r18WorksCount} />
+            <UserProfileNameIcon
+              user={user}
+              r18WorksCount={r18WorksCount}
+              sensitiveProfile={sensitiveProfile}
+            />
           }
         />
         <UserHomeSensitiveMenu user={user} />
@@ -153,6 +160,12 @@ const UserQuery = graphql(
   `query User($userId: ID!) {
     user(id: $userId) {
       id
+      sensitiveProfile {
+        headerImageUrl
+        biography
+        enBiography
+        links
+      }
       ...UserHomeHeaderFragment
       ...UserProfileIconFragment
       ...UserHomeMenuSensitiveFragment

@@ -1,5 +1,10 @@
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
-import { CheckIcon, PenLine, SquarePlusIcon } from "lucide-react"
+import {
+  CheckIcon,
+  ExternalLinkIcon,
+  PenLine,
+  SquarePlusIcon,
+} from "lucide-react"
 import { useContext, useState } from "react"
 import { UserAchievementShowcase } from "~/components/achievements/user-achievement-showcase"
 import { FollowButton } from "~/components/button/follow-button"
@@ -22,11 +27,18 @@ import { UserBiography } from "~/routes/($lang)._main.users.$user._index/compone
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user._index/components/user-profile-avatar"
 import { UserProfileStatus } from "~/routes/($lang)._main.users.$user._index/components/user-profile-status"
 import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user._index/components/user-subscription-icon"
+import { toProfileLinkServiceName } from "~/utils/profile-link-service"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
   r18WorksCount?: number
+  /** R18 のページだけで渡す R18 用の紹介・リンク（紹介が空ならいつもの紹介を出す） */
+  sensitiveProfile?: {
+    biography: string | null
+    enBiography: string | null
+    links: string[]
+  } | null
 }
 
 /**
@@ -47,12 +59,16 @@ export function UserProfileNameIcon(props: Props) {
     (!authContext.isLoading || hasViewerSession) &&
     (!authContext.isNotLoggedIn || hasViewerSession)
 
+  const sensitiveProfile = props.sensitiveProfile ?? null
+  const biography = sensitiveProfile?.biography || user.biography
+  const enBiography = sensitiveProfile?.biography
+    ? sensitiveProfile.enBiography
+    : user.enBiography
   const biographyText = t(
-    user.biography ?? "",
-    user.enBiography && user.enBiography.length > 0
-      ? user.enBiography
-      : (user.biography ?? ""),
+    biography ?? "",
+    enBiography && enBiography.length > 0 ? enBiography : (biography ?? ""),
   ).trim()
+  const sensitiveLinks = sensitiveProfile?.links ?? []
 
   const externalLinks = [
     user.twitterAccountId
@@ -231,6 +247,9 @@ export function UserProfileNameIcon(props: Props) {
           {biographyText.length > 0 && (
             <UserProfileBiography text={biographyText} />
           )}
+          {sensitiveLinks.length > 0 && (
+            <UserProfileSensitiveLinks links={sensitiveLinks} />
+          )}
         </div>
 
         <div className="flex shrink-0 flex-col gap-3 md:items-end">
@@ -285,6 +304,27 @@ export function UserProfileNameIcon(props: Props) {
         />
       )}
     </div>
+  )
+}
+
+/** R18 用のリンク（Fantia・FANBOX・FANZA など）。サービス名のボタンで並べる */
+function UserProfileSensitiveLinks(props: { links: string[] }) {
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {props.links.map((url) => (
+        <li key={url}>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            className="inline-flex h-8 items-center gap-1.5 rounded-full border bg-background px-3 font-medium text-sm transition-colors hover:bg-muted"
+          >
+            <ExternalLinkIcon className="size-3.5 text-muted-foreground" />
+            {toProfileLinkServiceName(url)}
+          </a>
+        </li>
+      ))}
+    </ul>
   )
 }
 

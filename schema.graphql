@@ -5111,7 +5111,7 @@ type RequestNotificationNode implements Node {
   id: ID!
 
   """メッセージ"""
-  message: String!
+  message: String
 
   """依頼の ID（/requests/:id）"""
   requestId: ID!
@@ -5747,6 +5747,18 @@ input UpdateUserProfileInput {
   """メールアドレス"""
   mailAddress: String
 
+  """R18 用の紹介（空文字で消して全年齢の紹介を出す）"""
+  sensitiveBiography: String
+
+  """R18 用の紹介（英語）"""
+  sensitiveEnBiography: String
+
+  """R18 用のヘッダー画像（空文字で消して全年齢のヘッダーを出す）"""
+  sensitiveHeaderImageUrl: String
+
+  """R18 用のリンク（URL、10 件まで。空の配列で消す）"""
+  sensitiveLinks: [String!]
+
   """X"""
   twitterAccountId: String
 }
@@ -6288,6 +6300,9 @@ type UserNode implements Node {
   """受け取った閲覧数"""
   receivedViewsCount: Int!
 
+  """R18 のプロフィールページ用のヘッダー・紹介・リンク（登録していなければ null）"""
+  sensitiveProfile: UserSensitiveProfileNode
+
   """シェア"""
   shareText: String
 
@@ -6397,6 +6412,21 @@ input UserRankingsWhereInput {
 
   """昇順/降順"""
   sort: Sort
+}
+
+"""R18 のプロフィールページだけで出すプロフィール。null の項目は全年齢のプロフィールを出す"""
+type UserSensitiveProfileNode {
+  """R18 用の紹介"""
+  biography: String
+
+  """R18 用の紹介（英語）"""
+  enBiography: String
+
+  """R18 用のヘッダー画像URL"""
+  headerImageUrl: String
+
+  """R18 用のリンク（Fantia・FANBOX・FANZA などの URL）"""
+  links: [String!]!
 }
 
 """ユーザの設定"""

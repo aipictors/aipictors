@@ -1,11 +1,13 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import type React from "react"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   user: FragmentOf<typeof UserHomeHeaderFragment>
   userIconView: React.ReactNode
+  /** R18 のページで R18 用のヘッダー画像を出すとき（null・未指定はいつものヘッダー） */
+  headerImageUrl?: string | null
 }
 
 /**
@@ -15,13 +17,14 @@ type Props = {
  */
 export function UserHomeHeader(props: Props) {
   const user = readFragment(UserHomeHeaderFragment, props.user)
+  const headerImageUrl = props.headerImageUrl || user.headerImageUrl
 
   return (
     <div className="mx-auto w-full max-w-6xl px-0 md:px-8 md:pt-4">
       <div className="relative aspect-[5/2] w-full overflow-hidden bg-muted md:aspect-[3/1] md:rounded-3xl">
-        {user.headerImageUrl ? (
+        {headerImageUrl ? (
           <img
-            src={user.headerImageUrl}
+            src={headerImageUrl}
             alt=""
             className="absolute inset-0 size-full object-cover"
             width={1200}
