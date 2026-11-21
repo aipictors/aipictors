@@ -33,7 +33,12 @@ import {
 } from "~/lib/viewer-filter-cache"
 
 const singleHttpLink = createHttpLink({
-  uri: config.graphql.endpoint,
+  // 計測用: 問い合わせ名を URL に付ける（API の Workers Logs で問い合わせごとの CPU を集計する。
+  // ヘッダーにすると CORS の許可が要るので URL にする）
+  uri: (operation) =>
+    operation.operationName
+      ? `${config.graphql.endpoint}?op=${encodeURIComponent(operation.operationName)}`
+      : config.graphql.endpoint,
 })
 
 /**
