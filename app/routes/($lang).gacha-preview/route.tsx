@@ -64,7 +64,7 @@ const PATTERNS: {
   {
     label: "1回 N（ふつう）",
     slugs: ["gacha-n-candy"],
-    direction: { cutIn: false, cutInLabel: null, promoteTo: null },
+    direction: { cutIn: false, promoteTo: null },
   },
   {
     label: "1回 SR（紫）",
@@ -73,7 +73,6 @@ const PATTERNS: {
       hint: "purple",
       promoteTo: null,
       cutIn: false,
-      cutInLabel: null,
     },
   },
   {
@@ -83,7 +82,6 @@ const PATTERNS: {
       hint: "purple",
       promoteTo: "gold",
       cutIn: true,
-      cutInLabel: "SSR 確定",
     },
   },
   {
@@ -93,7 +91,6 @@ const PATTERNS: {
       hint: "gold",
       promoteTo: "rainbow",
       cutIn: true,
-      cutInLabel: "UR 確定",
     },
   },
   { label: "10回 ランダム（本番と同じ抽選）", slugs: [] },
@@ -152,7 +149,6 @@ export default function GachaPreview() {
                     hint: "blue",
                     promoteTo: null,
                     cutIn: false,
-                    cutInLabel: null,
                     ...pattern.direction,
                   }
                 : undefined,

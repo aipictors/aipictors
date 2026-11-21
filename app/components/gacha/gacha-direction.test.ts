@@ -42,7 +42,6 @@ describe("planGachaDirection", () => {
     for (const r of [0, 0.5, 0.999]) {
       const direction = planGachaDirection(items("N", "UR"), seq(0.99, r))
       expect(direction.cutIn).toBe(true)
-      expect(direction.cutInLabel).toBe("UR 確定")
     }
   })
 

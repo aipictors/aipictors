@@ -42,10 +42,8 @@ export type GachaDirection = {
   hint: GachaHint
   /** 昇格したあとの色（昇格しないときは null） */
   promoteTo: GachaHint | null
-  /** 確定カットインを出す */
+  /** 確定カットインを出す（文字は出さず、景品の色で見せる） */
   cutIn: boolean
-  /** カットインの文言（例: 「SSR 確定」） */
-  cutInLabel: string | null
 }
 
 /** レア度に見合う色 */
@@ -96,7 +94,6 @@ export function planGachaDirection(
     hint,
     promoteTo: isPromoted && hint !== actual ? actual : null,
     cutIn,
-    cutInLabel: cutIn ? `${top} 確定` : null,
   }
 }
 
