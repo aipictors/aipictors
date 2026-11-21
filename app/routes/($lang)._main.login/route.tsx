@@ -23,10 +23,12 @@ export default function Login() {
         "好きな作品にいいねして、作者をフォロー",
         "Like works and follow creators",
       ),
+      shortText: t("いいね・フォロー", "Like & follow"),
     },
     {
       Icon: WandSparklesIcon,
       text: t("画像生成と作品の投稿", "Generate images and post your works"),
+      shortText: t("画像生成・投稿", "Generate & post"),
     },
     {
       Icon: TrophyIcon,
@@ -34,6 +36,7 @@ export default function Login() {
         "実績のバッジを集めてフリーコインをもらう",
         "Collect achievement badges and earn free coins",
       ),
+      shortText: t("バッジでコイン", "Badges & coins"),
     },
   ]
 
@@ -64,15 +67,29 @@ export default function Login() {
           </ul>
         </div>
       </div>
-      <LoginCard
-        title={t("ログイン・新規登録", "Log in or sign up")}
-        line={t(
-          "今日はどんな作品に会えるでしょう？",
-          "What works will you find today?",
-        )}
-      >
-        <LoginForm />
-      </LoginCard>
+      <div className="flex w-full max-w-md flex-col gap-4">
+        <LoginCard
+          title={t("ログイン・新規登録", "Log in or sign up")}
+          line={t(
+            "今日はどんな作品に会えるでしょう？",
+            "What works will you find today?",
+          )}
+        >
+          <LoginForm />
+        </LoginCard>
+        {/* スマホでは横の説明が出ないので、カードの下に短く出す */}
+        <ul className="grid grid-cols-3 gap-2 lg:hidden">
+          {benefits.map(({ Icon, shortText }) => (
+            <li
+              key={shortText}
+              className="flex flex-col items-center gap-1.5 rounded-xl bg-muted/60 px-2 py-3 text-center text-[11px] text-muted-foreground leading-snug"
+            >
+              <Icon aria-hidden="true" className="size-4 text-foreground" />
+              {shortText}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
