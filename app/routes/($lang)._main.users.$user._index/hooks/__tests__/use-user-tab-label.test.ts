@@ -12,7 +12,6 @@ describe("useUserTabLabels", () => {
       hasUserEvents: true,
       hasFolders: true,
       hasPublicStickers: true,
-      hasBadges: false,
       lang: "ja",
     }
 
@@ -39,7 +38,6 @@ describe("useUserTabLabels", () => {
       hasUserEvents: true,
       hasFolders: false,
       hasPublicStickers: false,
-      hasBadges: false,
       lang: "en",
     }
 
@@ -65,7 +63,6 @@ describe("useUserTabLabels", () => {
       hasUserEvents: false,
       hasFolders: false,
       hasPublicStickers: false,
-      hasBadges: false,
       lang: "ja",
     }
 
@@ -84,7 +81,6 @@ describe("useUserTabLabels", () => {
       hasUserEvents: true,
       hasFolders: true,
       hasPublicStickers: true,
-      hasBadges: true,
       lang: "en",
     }
 
@@ -100,7 +96,6 @@ describe("useUserTabLabels", () => {
       "Events",
       "Collections",
       "Stickers",
-      "Badges",
     ])
   })
 })

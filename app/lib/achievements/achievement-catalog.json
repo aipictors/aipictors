@@ -3726,6 +3726,24 @@
     "isHidden": true
   },
   {
+    "key": "limited-anniversary-1st",
+    "category": "SPECIAL",
+    "series": "limited",
+    "tier": 5,
+    "icon": "cake-slice",
+    "threshold": null,
+    "isHidden": false
+  },
+  {
+    "key": "limited-anniversary-2nd",
+    "category": "SPECIAL",
+    "series": "limited",
+    "tier": 4,
+    "icon": "gift",
+    "threshold": null,
+    "isHidden": false
+  },
+  {
     "key": "limited-anniversary-4th-visit",
     "category": "SPECIAL",
     "series": "limited",

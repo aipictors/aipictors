@@ -87,7 +87,6 @@ export function UserTabs(props: Props) {
       label: t("スタンプ", "Stickers"),
       show: user.hasPublicStickers,
     },
-    { path: "/badges", label: t("バッジ", "Badges"), show: user.hasBadges },
   ]
 
   // /en/users/xxx/posts なども同じに扱う
@@ -142,6 +141,5 @@ export const UserTabsFragment = graphql(`
     hasAlbums
     hasUserEvents
     hasPublicStickers
-    hasBadges
   }
 `)
