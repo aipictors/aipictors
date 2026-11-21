@@ -3004,6 +3004,162 @@ const gachaGoldThread = (t) => {
   </g>${glint(...polar(224.5, 180), 0.6, flash(t, 0.4))}</svg>`
 }
 
+/* ---- 追加の枠（N・R・SR を厚めに、SSR は 1 種だけ） ---- */
+
+const gachaHeartDots = (t) => {
+  const dots = Array.from({ length: 36 }, (_, i) => {
+    if (i % 9 === 0 || i % 9 === 4 || i % 9 === 5) return ""
+    const [x, y] = polar(226, i * 10)
+    return `<circle cx="${x}" cy="${y}" r="3.4" fill="#ff9fc0"/>`
+  }).join("")
+  const hearts = [0, 45, 90, 135, 180, 225, 270, 315]
+    .map((d, i) => place(...polar(226, d), d + wave(t, i / 8) * 8, i % 2 ? 0.62 : 0.85, heart(i % 2 ? "#ffa3c2" : "#ff6f9f")))
+    .join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(226, 12, "#fff", 'opacity=".9"')}${dots}${hearts}
+  </g></svg>`
+}
+
+const gachaCloud = (t) => {
+  const puffs = Array.from({ length: 16 }, (_, i) => {
+    const d = i * 22.5
+    const r = 20 + (i % 3) * 4 + wave(t, i / 16) * 1.5
+    const [x, y] = polar(232 + (i % 2) * 5, d)
+    return `<circle cx="${x}" cy="${y}" r="${f(r)}" fill="#fff"/>`
+  }).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(228, 26, "#e9f4ff")}${puffs}${ring(214, 2.4, "#bcd9f5")}
+  </g>${twinkles(t, [[246, 40, 0.5, 0.1], [244, 200, 0.45, 0.6]], "#fff")}</svg>`
+}
+
+const gachaStitch = (t) => {
+  const [x, y] = polar(226, 0)
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(226, 20, "#f2c9a0")}${ring(226, 20, "none", 'stroke="#c9905c" stroke-width="1.4" opacity=".5"')}
+    ${ring(219, 2, "#fff", 'stroke-dasharray="7 6" stroke-linecap="round"')}${ring(233, 2, "#fff", 'stroke-dasharray="7 6" stroke-linecap="round"')}
+    ${place(x, y, wave(t) * 6, 1, star5(30, "#ffe08a", "#c9905c", 2))}${[120, 240].map((d) => place(...polar(226, d), d, 1, star5(14, "#fff", "#c9905c", 1.4))).join("")}
+  </g></svg>`
+}
+
+const gachaAurora = (t) => {
+  const m = METAL.silver
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([m], AURORA_DEF + lg("gau", ["#0b1840", "#123a6a", "#2a1b5c"], 1, 1))}
+  ${auroraGlow(t, ["#56f0b8", "#5fc8ff", "#b48cff", "#ff8fd0"], { r: 252, w: 38, opacity: 0.6 })}
+  <g filter="url(#ds)">
+    ${ring(226, 20, "url(#gau)")}
+    ${metalBand(237, 3, m, { shift: wave(t) * 12, layers: 2 })}${metalBand(215, 3, m, { shift: wave(t) * 12, layers: 2 })}
+  </g>
+  ${twinkles(t, [[226, 20, 0.7, 0.05], [226, 140, 0.6, 0.4], [226, 260, 0.7, 0.75]], "#e6fdff")}</svg>`
+}
+
+const gachaNecklace = (t) => {
+  const g = METAL.gold
+  const links = Array.from({ length: 60 }, (_, i) => {
+    const d = i * 6
+    const [x, y] = polar(226, d)
+    return `<ellipse cx="${x}" cy="${y}" rx="6.4" ry="4.2" transform="rotate(${d + (i % 2 ? 90 : 0)} ${x} ${y})" fill="none" stroke="${i % 2 ? g[4] : g[3]}" stroke-width="2.8"/>`
+  }).join("")
+  const jewels = [
+    [GEM.sapphire, 300],
+    [GEM.emerald, 330],
+    [GEM.ruby, 30],
+    [GEM.amethyst, 60],
+  ]
+    .map(([j, d], i) => setGem(...polar(226, d), 13, g, j, t, i / 4))
+    .join("")
+  const [px, py] = polar(226, 0)
+  const pendant = `${setGem(px, py - 6, 24, g, GEM.ruby, t, 0.5)}${pearl(px - 40, py + 6, 8)}${pearl(px + 40, py + 6, 8)}`
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([g], AURORA_DEF)}
+    ${auroraGlow(t, ["#ffd36b", "#ffb0c8", "#ffe9a8"], { r: 250, w: 30, opacity: 0.35 })}
+    <g filter="url(#ds)">${ring(226, 7, g[0])}${links}${jewels}${pendant}</g>
+    ${glint(px, py - 6, 1.1, flash(t, 0.2))}${twinkles(t, [[226, 300, 0.6, 0.4], [226, 60, 0.6, 0.8], [232, 180, 0.6, 0.6]])}</svg>`
+}
+
+const berryCharm = `<path d="M0 18C-14 10-16-6-10-12-4-16 4-16 10-12 16-6 14 10 0 18Z" fill="#ff4f6d" stroke="#c22a48" stroke-width="1.4"/><path d="M-9-12L-4-6 0-13 4-6 9-12 4-17-4-17Z" fill="#5fae4c"/>${[[-5, -3], [4, -2], [-1, 5], [6, 6], [-7, 6]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="1.2" ry="1.8" fill="#ffe08a"/>`).join("")}`
+
+const gachaStrawberry = (t) => {
+  const berries = Array.from({ length: 8 }, (_, i) => {
+    const d = i * 45 + 22.5
+    return place(...polar(230, d), d + wave(t, i / 8) * 10, 1.6, berryCharm)
+  }).join("")
+  const flowers = [0, 90, 180, 270].map((d) => place(...polar(228, d), d, 0.55, blossom("#fff", "#ffd36b"))).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(228, 20, "#ffd3de")}${ring(228, 20, "none", 'stroke="#fff" stroke-width="2" stroke-dasharray="1 9" stroke-linecap="round"')}${flowers}${berries}
+  </g></svg>`
+}
+
+const bowKnot = (fill, dark) =>
+  `<path d="M0 0C-8-12-26-16-28-4-30 8-12 10 0 0Z" fill="${fill}" stroke="${dark}" stroke-width="1.4"/><path d="M0 0C8-12 26-16 28-4 30 8 12 10 0 0Z" fill="${fill}" stroke="${dark}" stroke-width="1.4"/><path d="M-2 2L-10 22-4 19 0 24 2 3ZM2 2L10 22 4 19 0 24-2 3Z" fill="${fill}" stroke="${dark}" stroke-width="1.2"/><circle r="5" fill="${dark}"/>`
+
+const gachaBows = (t) => {
+  const colors = [
+    ["#ff9fbf", "#d4567f"],
+    ["#9fd2ff", "#4c8fd0"],
+    ["#ffe08a", "#c99a2a"],
+    ["#c7a8ff", "#8a5fd6"],
+  ]
+  const bows = colors
+    .map(([a, b], i) => {
+      const d = i * 90 + 45
+      return place(...polar(226, d), d + wave(t, i / 4) * 6, 1.55, bowKnot(a, b))
+    })
+    .join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(226, 10, "#fff6f9")}${ring(226, 4, "#ffc2d6")}${bows}
+  </g></svg>`
+}
+
+const colorDrop = (fill) =>
+  `<path d="M0-16C6-6 10 0 10 5A10 10 0 0 1-10 5C-10 0-6-6 0-16Z" fill="${fill}" stroke="#fff" stroke-width="1.6"/><ellipse cx="-3.5" cy="3" rx="2.4" ry="3.6" fill="#fff" opacity=".7"/>`
+
+const gachaRainbowDrops = (t) => {
+  const hues = ["#ff6f8f", "#ffa64d", "#ffd84d", "#6fd88a", "#5fbfff", "#8f86ff", "#d98bff"]
+  const drops = Array.from({ length: 14 }, (_, i) => {
+    const d = i * (360 / 14) + t * (360 / 14)
+    return place(...polar(228, d), 0, 1.35 + 0.15 * wave(t, i / 7), colorDrop(hues[i % 7]))
+  }).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(228, 5, "#fff", 'opacity=".9"')}${drops}
+  </g></svg>`
+}
+
+const gachaMizuhiki = (t) => {
+  const g = METAL.gold
+  const cord = (r, color, phase) => {
+    const pts = Array.from({ length: 145 }, (_, i) => {
+      const d = i * 2.5
+      return polar(r + 4 * Math.sin((d * 12 * Math.PI) / 180 + phase), d).join(" ")
+    })
+    return `<path d="M${pts.join("L")}Z" fill="none" stroke="${color}" stroke-width="3.2"/>`
+  }
+  // 蝶結び（左右の輪と垂れ）。紅・金・白の 3 本をずらして重ねる
+  const loops = (color, o) =>
+    `<g fill="none" stroke="${color}" stroke-width="3.4" stroke-linecap="round" transform="translate(0 ${o})"><path d="M0 0C-14-22-44-24-44-4-44 12-16 10 0 0Z"/><path d="M0 0C14-22 44-24 44-4 44 12 16 10 0 0Z"/><path d="M0 0C-8 14-14 30-22 44M0 0C8 14 14 30 22 44"/></g>`
+  const knot = `${loops("#d81f3c", -4)}${loops(g[3], 0)}${loops("#fff", 4)}<ellipse rx="8" ry="10" fill="#d81f3c" stroke="${g[3]}" stroke-width="2"/>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(226, 22, "#fff8ef")}${cord(222, "#d81f3c", 0)}${cord(230, g[3], Math.PI)}${cord(226, "#fff", Math.PI / 2)}
+    ${place(...polar(234, 0), wave(t) * 4, 1.9, knot)}
+  </g>${glint(...polar(232, 0), 0.6, flash(t, 0.3))}</svg>`
+}
+
+const crystalDrop = (k) =>
+  `<path d="M0 0L7 12 0 30-7 12Z" fill="#e6f6ff" stroke="#9fc8e6" stroke-width="1"/><path d="M0 0L2.5 12 0 30-2.5 12Z" fill="#fff" opacity="${f(0.5 + 0.5 * k)}"/>`
+
+const gachaCrystalDrops = (t) => {
+  const m = METAL.silver
+  // 下半分にだけ、まっすぐ下へ垂れる雫
+  const drops = Array.from({ length: 17 }, (_, i) => {
+    const d = 100 + i * 10
+    const k = Math.max(0, wave(t, i / 17))
+    const len = 1 + 0.6 * Math.sin((i / 16) * Math.PI) * (i % 2 ? 0.6 : 1)
+    return place(...polar(230, d), wave(t, i / 17) * 3, len, crystalDrop(k))
+  }).join("")
+  const beads = Array.from({ length: 24 }, (_, i) => pearl(...polar(229, i * 15 + 7.5), 4.2)).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([m])}<g filter="url(#ds)">
+    ${drops}${ring(226, 5, m[0])}${metalBand(226, 4, m, { shift: wave(t) * 14, layers: 2 })}${beads}
+  </g>${twinkles(t, [[262, 30, 0.6, 0.1], [262, 150, 0.6, 0.45], [262, 270, 0.6, 0.8]], "#e6fdff")}</svg>`
+}
+
 const CANVAS_VIEW_BOX = 'viewBox="-60 -60 632 632"'
 
 const withCanvas = (draw) => (t) =>
@@ -3112,6 +3268,16 @@ const decorations = [
   { slug: "gacha-r-sprig", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "若葉の小枝", description: "生成りの細い輪に、ゆれる若葉の小枝", draw: gachaSprig },
   { slug: "gacha-sr-silver-moon", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "銀の三日月", description: "細い銀の輪に、三日月と小さな星", draw: gachaSilverMoon },
   { slug: "gacha-sr-gold-thread", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "金の細糸と真珠", description: "二本の細い金の糸と、真珠がひと粒", draw: gachaGoldThread },
+  { slug: "gacha-n-heart-dots", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ハートの点線", description: "白い輪にピンクの点線と、四つのハート", draw: gachaHeartDots },
+  { slug: "gacha-n-cloud", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ふわふわ雲", description: "もこもこの白い雲でできた輪", draw: gachaCloud },
+  { slug: "gacha-n-stitch", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "星のステッチ", description: "ステッチの入った布の輪と、てっぺんの星", draw: gachaStitch },
+  { slug: "gacha-r-strawberry", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "いちごミルク", description: "ミルク色の輪にゆれるいちごと白い花", draw: gachaStrawberry },
+  { slug: "gacha-r-bows", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "リボン結び", description: "四色のリボンを結んだ細い輪", draw: gachaBows },
+  { slug: "gacha-r-rainbow-drops", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "虹のしずく", description: "輪をめぐる七色のしずく", draw: gachaRainbowDrops },
+  { slug: "gacha-sr-aurora", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "オーロラ", description: "夜色の輪のまわりに揺れるオーロラ", draw: gachaAurora },
+  { slug: "gacha-sr-mizuhiki", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "紅白の水引", description: "紅・金・白の水引を編んだ輪と、てっぺんの結び", draw: gachaMizuhiki },
+  { slug: "gacha-sr-crystal-drops", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "クリスタルの雫", description: "銀の輪から下がる、光るクリスタルの雫", draw: gachaCrystalDrops },
+  { slug: "gacha-ssr-necklace", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "宝石の首飾り", description: "金の鎖に四色の宝石、ルビーと真珠のペンダント", draw: gachaNecklace },
 ]
 
 export const DECORATIONS = decorations.map((item) => ({

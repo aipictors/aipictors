@@ -823,6 +823,125 @@ const silverMoon = (t, { w, rad }, layer = "all") => {
   )
 }
 
+/* ------------------------------------------------------------------ */
+/* 追加の N・R・SR（アイコン枠の同じ名前の枠とおそろい）                    */
+/* ------------------------------------------------------------------ */
+
+/** 枠の外周に沿って、間隔 gap ごとの点（角はよけない） */
+const alongEdge = (w, inset, gap) => {
+  const total = (w - inset * 2 + H - inset * 2) * 2
+  const n = Math.round(total / gap)
+  return Array.from({ length: n }, (_, i) => perimeter(w, inset, i / n))
+}
+
+/** 四隅と、上下の辺の真ん中（飾りを置く場所）。角は丸めて切れないように corner だけ内側へ */
+const accentPoints = (w, inset, corner = inset + 10) => [
+  [corner, corner],
+  [w - corner, corner],
+  [w - corner, H - corner],
+  [corner, H - corner],
+  [w / 2, inset],
+  [w / 2, H - inset],
+]
+
+const heartDots = (t, { w, rad }, layer = "all") => {
+  const dots = alongEdge(w, 13, 22)
+    .map(([x, y]) => `<circle cx="${f(x)}" cy="${f(y)}" r="2.6" fill="#ff9fc0"/>`)
+    .join("")
+  const hearts = accentPoints(w, 15)
+    .map(([x, y], i) => place(x, y, 0, i < 4 ? 0.62 : 0.5, heart(i % 2 ? "#ffa3c2" : "#ff6f9f")))
+    .join("")
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, 13, `fill="none" stroke="#fff" stroke-width="10" opacity=".92"`)}${dots}${hearts}
+    </g>`
+  const motion = softGlow("hhdG", t, { w, rad }, ["#ffc2d8"], { inset: 13, width: 14, opacity: 0.4 })
+  return layered(w, rad, layer, baseDefs(), base, motion)
+}
+
+const cloudEdge = (t, { w, rad }, layer = "all") => {
+  const puffs = alongEdge(w, 12, 46)
+    .map(([x, y], i) => `<circle cx="${f(x)}" cy="${f(y)}" r="${12 + (i % 3) * 4}" fill="#fff"/>`)
+    .join("")
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, 12, `fill="none" stroke="#e9f4ff" stroke-width="20"`)}${puffs}${rrect(w, rad, 26, `fill="none" stroke="#bcd9f5" stroke-width="2"`)}
+    </g>`
+  const motion = softGlow("hclG", t, { w, rad }, ["#ffffff", "#d6ecff"], { inset: 13, width: 22, opacity: 0.45 })
+  return layered(w, rad, layer, baseDefs(), base, motion)
+}
+
+const stitchEdge = (t, { w, rad }, layer = "all") => {
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, 13, `fill="none" stroke="#f2c9a0" stroke-width="18"`)}
+      ${rrect(w, rad, 7, `fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="8 7" stroke-linecap="round"`)}${rrect(w, rad, 19, `fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="8 7" stroke-linecap="round"`)}
+      ${place(w / 2, 14, 0, 1, star5(22, "#ffe08a", "#c9905c", 2))}${place(w / 2 - 44, 14, 0, 1, star5(10, "#fff", "#c9905c", 1.2))}${place(w / 2 + 44, 14, 0, 1, star5(10, "#fff", "#c9905c", 1.2))}
+    </g>`
+  const motion = softGlow("hstG", t, { w, rad }, ["#fff4dc"], { inset: 13, width: 16, opacity: 0.4 })
+  return layered(w, rad, layer, baseDefs(), base, motion)
+}
+
+const berry = `<path d="M0 18C-14 10-16-6-10-12-4-16 4-16 10-12 16-6 14 10 0 18Z" fill="#ff4f6d" stroke="#c22a48" stroke-width="1.4"/><path d="M-9-12L-4-6 0-13 4-6 9-12 4-17-4-17Z" fill="#5fae4c"/>${[
+  [-5, -3],
+  [4, -2],
+  [-1, 5],
+  [6, 6],
+  [-7, 6],
+]
+  .map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="1.2" ry="1.8" fill="#ffe08a"/>`)
+  .join("")}`
+
+const strawberryEdge = (t, { w, rad }, layer = "all") => {
+  const berries = accentPoints(w, 16)
+    .map(([x, y], i) => place(x, y, i % 2 ? 18 : -18, 1.15, berry))
+    .join("")
+  const flowers = [w / 4, (w * 3) / 4]
+    .flatMap((x) => [place(x, 14, 0, 0.42, blossom("#fff", "#ffd36b")), place(x, H - 14, 0, 0.42, blossom("#fff", "#ffd36b"))])
+    .join("")
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, 13, `fill="none" stroke="#ffd3de" stroke-width="16"`)}${rrect(w, rad, 13, `fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="1 10" stroke-linecap="round"`)}
+      ${flowers}${berries}
+    </g>`
+  const motion = softGlow("hsbG", t, { w, rad }, ["#ffe3ea"], { inset: 13, width: 18, opacity: 0.4 })
+  return layered(w, rad, layer, baseDefs(), base, motion)
+}
+
+const bowKnot = (fill, dark) =>
+  `<path d="M0 0C-8-12-26-16-28-4-30 8-12 10 0 0Z" fill="${fill}" stroke="${dark}" stroke-width="1.4"/><path d="M0 0C8-12 26-16 28-4 30 8 12 10 0 0Z" fill="${fill}" stroke="${dark}" stroke-width="1.4"/><path d="M-2 2L-10 22-4 19 0 24 2 3ZM2 2L10 22 4 19 0 24-2 3Z" fill="${fill}" stroke="${dark}" stroke-width="1.2"/><circle r="5" fill="${dark}"/>`
+
+const bowsEdge = (t, { w, rad }, layer = "all") => {
+  const colors = [
+    ["#ff9fbf", "#d4567f"],
+    ["#9fd2ff", "#4c8fd0"],
+    ["#ffe08a", "#c99a2a"],
+    ["#c7a8ff", "#8a5fd6"],
+  ]
+  const bows = accentPoints(w, 16, 22)
+    .slice(0, 4)
+    .map(([x, y], i) => place(x, y, [-45, 45, 135, -135][i], 0.95, bowKnot(...colors[i])))
+    .join("")
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, 13, `fill="none" stroke="#fff6f9" stroke-width="9"`)}${rrect(w, rad, 13, `fill="none" stroke="#ffc2d6" stroke-width="3.5"`)}${bows}
+    </g>`
+  const motion = softGlow("hbwG", t, { w, rad }, ["#ffe0ec", "#e0f0ff"], { inset: 13, width: 12, opacity: 0.4 })
+  return layered(w, rad, layer, baseDefs(), base, motion)
+}
+
+const auroraEdge = (t, { w, rad }, layer = "all") => {
+  const m = METAL.silver
+  const stars = alongEdge(w, 13, 140)
+    .map(([x, y], i) => place(x, y, 0, 1, star5(i % 2 ? 3.5 : 5, "#fff")))
+    .join("")
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, 13, `fill="none" stroke="url(#hauB)" stroke-width="20"`)}
+      ${rrect(w, rad, 3, `fill="none" stroke="${m[3]}" stroke-width="2.4"`)}${rrect(w, rad, 23, `fill="none" stroke="${m[3]}" stroke-width="2.4"`)}${stars}
+    </g>`
+  const motion = softGlow("hauG", t, { w, rad }, ["#56f0b8", "#5fc8ff", "#b48cff", "#ff8fd0"], {
+    inset: 13,
+    width: 20,
+    opacity: 0.55,
+  })
+  return layered(w, rad, layer, baseDefs(lg("hauB", ["#0b1840", "#123a6a", "#2a1b5c"], 1, 1)), base, motion)
+}
+
 export const HEADER_FRAMES = [
   {
     slug: "gacha-ssr-makie",
@@ -934,5 +1053,59 @@ export const HEADER_FRAMES = [
     name: "銀の三日月",
     description: "細い銀のふちに、右上の小さな三日月と星",
     draw: silverMoon,
+  },
+  {
+    slug: "gacha-n-heart-dots",
+    rarity: "N",
+    frames: 24,
+    frameMs: 150,
+    name: "ハートの点線",
+    description: "白いふちにピンクの点線と、角と上下のハート",
+    draw: heartDots,
+  },
+  {
+    slug: "gacha-n-cloud",
+    rarity: "N",
+    frames: 24,
+    frameMs: 150,
+    name: "ふわふわ雲",
+    description: "もこもこの白い雲でできたふち",
+    draw: cloudEdge,
+  },
+  {
+    slug: "gacha-n-stitch",
+    rarity: "N",
+    frames: 24,
+    frameMs: 150,
+    name: "星のステッチ",
+    description: "ステッチの入った布のふちと、上の真ん中の星",
+    draw: stitchEdge,
+  },
+  {
+    slug: "gacha-r-strawberry",
+    rarity: "R",
+    frames: 24,
+    frameMs: 150,
+    name: "いちごミルク",
+    description: "ミルク色のふちに、角と上下のいちごと白い花",
+    draw: strawberryEdge,
+  },
+  {
+    slug: "gacha-r-bows",
+    rarity: "R",
+    frames: 24,
+    frameMs: 150,
+    name: "リボン結び",
+    description: "四隅に四色のリボンを結んだ細いふち",
+    draw: bowsEdge,
+  },
+  {
+    slug: "gacha-sr-aurora",
+    rarity: "SR",
+    frames: 24,
+    frameMs: 150,
+    name: "オーロラ",
+    description: "夜色のふちを流れるオーロラの光と小さな星",
+    draw: auroraEdge,
   },
 ]
