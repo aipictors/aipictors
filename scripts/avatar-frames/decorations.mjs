@@ -2766,3 +2766,6 @@ export const DECORATIONS = decorations.map((item) => ({
   ...item,
   draw: withCanvas(item.draw),
 }))
+
+/** ヘッダーの枠（scripts/header-frames）でも同じ部品を使う */
+export const PARTS = { f, rng, wave, place, sparkle, glint, flash, blossom, looseP, goldBlossom, star5, setGem, pearl, bezelDef, PEARL_DEF, METAL, GEM, PRISM, prismAt, mixHex, ramp, lg, TAU }
