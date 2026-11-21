@@ -355,7 +355,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
         setIsLoadingCoinSummary(true)
 
         try {
-          const latestSummary = await fetchCoinSummary()
+          const latestSummary = await fetchCoinSummary(props.workOwnerId)
 
           if (latestSummary !== null) {
             setCoinBalances(latestSummary)

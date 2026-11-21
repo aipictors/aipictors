@@ -119,6 +119,8 @@ export const fetchCoinSummary = async (supportTargetUserId?: string | null) => {
     error?: string
     data?: {
       freeBalance?: number
+      /** 推しに使えるフリーコイン（推しで受け取った分を除く）。supportTargetUserId を渡したときだけ */
+      supportFreeBalance?: number
       premiumBalance?: number
       supportTarget?: CoinSummarySupportTarget
     }
@@ -129,7 +131,8 @@ export const fetchCoinSummary = async (supportTargetUserId?: string | null) => {
   }
 
   return {
-    freeBalance: json.data.freeBalance ?? 0,
+    // 推しの欄で使う残高なので、推しに使える分（受け取ったフリーコインは推しに使えない）を優先する
+    freeBalance: json.data.supportFreeBalance ?? json.data.freeBalance ?? 0,
     premiumBalance: json.data.premiumBalance ?? 0,
     supportTarget: json.data.supportTarget ?? null,
   }
