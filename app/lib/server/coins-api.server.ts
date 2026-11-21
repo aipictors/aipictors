@@ -12,6 +12,7 @@ type CoinSummary = {
   supportTarget?: {
     userId: string
     premiumAccepted: boolean
+    freeReceiveAccepted?: boolean
     rewardJoined: boolean
   }
   events: Array<{

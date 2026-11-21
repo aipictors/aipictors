@@ -133,6 +133,7 @@ export function SupportButton({
   const [supportTarget, setSupportTarget] =
     useState<CoinSummarySupportTarget | null>(null)
   const isPremiumAccepted = supportTarget?.premiumAccepted !== false
+  const isFreeReceiveAccepted = supportTarget?.freeReceiveAccepted !== false
   // 報酬の印と一言は、作者が報酬に参加していてプレミアムコインを受け取るときだけ（R18 の作品のページでは出さない）
   const isRewardTarget =
     showRewardNote && supportTarget?.rewardJoined === true && isPremiumAccepted
@@ -535,6 +536,14 @@ export function SupportButton({
                 {t(
                   "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
                   "This creator does not accept support with premium coins. You can support with free coins",
+                )}
+              </p>
+            )}
+            {!isFreeReceiveAccepted && coinType === "FREE" && (
+              <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">
+                {t(
+                  "この作者はフリーコインを受け取らない設定です。推しの pt は届きます",
+                  "This creator does not receive free coins. Your support points are still added",
                 )}
               </p>
             )}

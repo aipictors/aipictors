@@ -5821,6 +5821,9 @@ input UpdateUserSettingInput {
   """名前つきのいいねの通知を受け取る"""
   isNotifyLike: Boolean
 
+  """フリーコインで推されたとき、フリーコインを受け取らない（推しの pt は付く）"""
+  isRejectFreeCoinSupportReceive: Boolean
+
   """プレミアムコインでの推し（応援）を受け取らない"""
   isRejectPremiumCoinSupport: Boolean
 
@@ -6501,6 +6504,9 @@ type UserSettingNode implements Node {
 
   """作品投稿がBAN されているかどうか"""
   isPostBanned: Boolean!
+
+  """フリーコインで推されたとき、フリーコインを受け取らないかどうか（推しの pt は付く）"""
+  isRejectFreeCoinSupportReceive: Boolean!
 
   """プレミアムコインでの推し（応援）を受け取らないかどうか"""
   isRejectPremiumCoinSupport: Boolean!

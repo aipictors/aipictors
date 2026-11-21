@@ -11,13 +11,15 @@ import {
 } from "~/routes/($lang).settings/components/settings-section"
 
 /**
- * プレミアムコインでの推しを受け取らない設定（パロディ作品などでお金に相当するものを受け取りたくない人向け）。
- * オンにすると推す画面でプレミアムコインを選べず、aipictors-api の推しでも断る。アプリと同じ user_settings に保存する
+ * 推しの受け取りの設定（パロディ作品などでお金に相当するものを受け取りたくない人向け）。アプリと同じ user_settings に保存する
+ * - プレミアムコインでの推しを受け取らない: 推す画面でプレミアムコインを選べず、aipictors-api の推しでも断る
+ * - フリーコインを受け取らない: フリーコインで推されても pt だけ付き、コインは届かない（aipictors-api が渡さない）
  */
 export function PremiumCoinSupportSetting() {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
   const switchId = useId()
+  const freeSwitchId = useId()
 
   const { data } = useQuery(premiumCoinSupportSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -33,10 +35,23 @@ export function PremiumCoinSupportSetting() {
   }
 
   const isReject = data?.userSetting?.isRejectPremiumCoinSupport ?? false
+  const isRejectFree = data?.userSetting?.isRejectFreeCoinSupportReceive ?? false
+
+  const save = async (input: {
+    isRejectPremiumCoinSupport?: boolean
+    isRejectFreeCoinSupportReceive?: boolean
+  }) => {
+    try {
+      await updateUserSetting({ variables: { input } })
+      toast(t("保存しました", "Settings saved"))
+    } catch {
+      toast(t("保存できませんでした", "Could not save"))
+    }
+  }
 
   return (
     <SettingsSection
-      title={t("プレミアムコインでの推し", "Support with premium coins")}
+      title={t("推しの受け取り", "Receiving support")}
       description={t(
         "パロディ作品などで、お金に相当するものを受け取りたくないときに使えます。",
         "Use this if you do not want to receive anything equivalent to money, for example for parody works.",
@@ -57,16 +72,29 @@ export function PremiumCoinSupportSetting() {
           checked={isReject}
           disabled={loading || data === undefined}
           id={switchId}
-          onCheckedChange={async (checked) => {
-            try {
-              await updateUserSetting({
-                variables: { input: { isRejectPremiumCoinSupport: checked } },
-              })
-              toast(t("保存しました", "Settings saved"))
-            } catch {
-              toast(t("保存できませんでした", "Could not save"))
-            }
-          }}
+          onCheckedChange={(checked) =>
+            save({ isRejectPremiumCoinSupport: checked })
+          }
+        />
+      </SettingsSwitchRow>
+      <SettingsSwitchRow
+        htmlFor={freeSwitchId}
+        title={t(
+          "推しでフリーコインを受け取らない",
+          "Do not receive free coins from support",
+        )}
+        description={t(
+          "オンにすると、フリーコインで推されても推しの pt だけが付き、フリーコインは届きません。これまでに受け取った分はそのままです。",
+          "When on, support with free coins only adds support points and no free coins are given to you. Coins you already received stay as is.",
+        )}
+      >
+        <Switch
+          checked={isRejectFree}
+          disabled={loading || data === undefined}
+          id={freeSwitchId}
+          onCheckedChange={(checked) =>
+            save({ isRejectFreeCoinSupportReceive: checked })
+          }
         />
       </SettingsSwitchRow>
     </SettingsSection>
@@ -78,6 +106,7 @@ const premiumCoinSupportSettingQuery = graphql(
     userSetting {
       id
       isRejectPremiumCoinSupport
+      isRejectFreeCoinSupportReceive
     }
   }`,
 )
@@ -87,6 +116,7 @@ const updatePremiumCoinSupportSettingMutation = graphql(
     updateUserSetting(input: $input) {
       id
       isRejectPremiumCoinSupport
+      isRejectFreeCoinSupportReceive
     }
   }`,
 )

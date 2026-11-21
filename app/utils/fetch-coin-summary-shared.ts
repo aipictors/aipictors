@@ -5,6 +5,8 @@ export type CoinSummarySupportTarget = {
   userId: string
   /** プレミアムコインで推せる（作者が「プレミアムコインでの推しを受け取らない」にしていない） */
   premiumAccepted: boolean
+  /** フリーコインの推しがコインとして作者に届く（作者が「推しでフリーコインを受け取らない」にしていない）。古い API では無い */
+  freeReceiveAccepted?: boolean
   /** 作者がクリエイター報酬に参加中 */
   rewardJoined: boolean
 }
