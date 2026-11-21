@@ -2270,6 +2270,405 @@ const gachaStarCrown = (t) => {
   ${glint(...polar(248, 180), 1.1, flash(t, 0.5))}</svg>`
 }
 
+/* ---- 追加分（N・R・SR・SSR・UR） ---- */
+
+/** ゆがんだ円（m 回くり返すので 360 / m 回すとつながる） */
+const wobblyRing = (r, amp, m, phase) =>
+  `M${Array.from({ length: 91 }, (_, i) => {
+    const d = i * 4
+    return pp(r + amp * Math.sin((d * m * Math.PI) / 180 + phase) + amp * 0.4 * Math.sin((d * m * 2 * Math.PI) / 180 + phase * 2), d)
+  }).join("L")}Z`
+
+const bow = (fill, dark) =>
+  `<path d="M-3 2L-12 22-6 20-3 25ZM3 2L12 22 6 20 3 25Z" fill="${fill}" stroke="${dark}" stroke-width="1.4" stroke-linejoin="round"/><path d="M0 0C-10-12-28-14-28 0-28 14-10 12 0 0ZM0 0C10-12 28-14 28 0 28 14 10 12 0 0Z" fill="${fill}" stroke="${dark}" stroke-width="1.6"/><path d="M-6-2C-12-6-20-7-22-2M6-2C12-6 20-7 22-2" stroke="${dark}" stroke-opacity=".45" stroke-width="1.2" fill="none"/><circle r="6.5" fill="${dark}"/><circle cx="-2" cy="-2" r="2" fill="#fff" opacity=".6"/>`
+
+/* N */
+
+const gachaGingham = (t) => {
+  const n = 40
+  const rot = t * (720 / n)
+  const stripes = Array.from({ length: n / 2 }, (_, i) => {
+    const a = i * (720 / n) + rot
+    return `<path d="${arc(226, f(a), f(a + 360 / n))}" stroke="#ff8fb1" stroke-opacity=".45" stroke-width="24" fill="none"/>`
+  }).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(226, 24, "#fff")}${stripes}${ring(226, 8, "#ff8fb1", 'stroke-opacity=".45"')}
+    ${ring(238, 1.8, "#ff8fb1")}${ring(214, 1.8, "#ff8fb1")}
+    ${place(...polar(242, 0), wave(t) * 5, 1.6, bow("#ffa9c4", "#e2628c"))}
+  </g></svg>`
+}
+
+const lemonSlice = (r) =>
+  `<circle r="${r}" fill="#ffe066" stroke="#f2b705" stroke-width="2.6"/><circle r="${f(r * 0.78)}" fill="#fff4b8"/>${Array.from({ length: 8 }, (_, i) => `<path d="M0 0L${polar(r * 0.78, i * 45, 0, 0).join(" ")}" stroke="#ffe066" stroke-width="2.2"/>`).join("")}<circle r="${f(r * 0.14)}" fill="#ffe066"/>`
+
+const gachaLemon = (t) => {
+  const slices = Array.from({ length: 8 }, (_, i) => {
+    const d = i * 45 + t * 45
+    return place(...polar(228, d), d * 2, i % 2 ? 0.95 : 1.2, lemonSlice(15))
+  }).join("")
+  const r = rng(51)
+  const fizz = Array.from({ length: 16 }, (_, i) => {
+    const p = (t + r()) % 1
+    const [x, y] = polar(244 + r() * 14, i * 22.5 + 11)
+    return `<circle cx="${x}" cy="${f(y - p * 26)}" r="${f(2.4 + r() * 2.4)}" fill="none" stroke="#fff" stroke-width="1.6" opacity="${f(Math.sin(Math.PI * p))}"/>`
+  }).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs(lg("gnl", ["#d8fbff", "#9fe9e0", "#d8fbff"], 1, 1))}<g filter="url(#ds)">
+    ${ring(226, 22, "url(#gnl)")}${ring(237, 1.6, "#fff")}${ring(215, 1.6, "#fff")}${slices}
+  </g>${fizz}</svg>`
+}
+
+const gachaCrayon = (t) => {
+  const colors = ["#ff6b6b", "#ffb14a", "#ffe04a", "#5fd38a", "#4aa8ff", "#a87bff"]
+  const strokes = colors
+    .map((c, i) => {
+      const rot = t * 45 * (i % 2 ? 1 : -1)
+      const d = wobblyRing(216 + i * 4.4, 1.8, 8, i * 1.7)
+      return `<g transform="rotate(${f(rot)} ${C} ${C})"><path d="${d}" stroke="${c}" stroke-width="6.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/><path d="${d}" stroke="#fff" stroke-width="2" fill="none" stroke-dasharray="2 5" opacity=".45"/></g>`
+    })
+    .join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(226, 34, "#fffdf5")}${strokes}
+  </g></svg>`
+}
+
+/* R */
+
+const cherries = (s = 1) =>
+  `<g transform="scale(${s})"><path d="M0-30C-4-18-10-8-12 2M0-30C4-18 9-8 11 4" stroke="#4f8a2b" stroke-width="2.4" fill="none" stroke-linecap="round"/><g transform="translate(0 -30) rotate(-30)">${leaf("#6cc04a")}</g><circle cx="-12" cy="10" r="10.5" fill="url(#gch)" stroke="#8c0f24" stroke-width="1.2"/><circle cx="11" cy="13" r="10.5" fill="url(#gch)" stroke="#8c0f24" stroke-width="1.2"/><ellipse cx="-15.5" cy="6" rx="3.4" ry="2.2" fill="#fff" opacity=".8"/><ellipse cx="7.5" cy="9" rx="3.4" ry="2.2" fill="#fff" opacity=".8"/></g>`
+
+const gachaCherry = (t) => {
+  const items = Array.from({ length: 8 }, (_, i) => {
+    const d = i * 45
+    return place(...polar(i === 0 ? 256 : 252, d), d + 180 + wave(t, i / 8) * 9, i === 0 ? 1.3 : 0.95, cherries())
+  }).join("")
+  const leaves = Array.from({ length: 16 }, (_, i) => place(...polar(228, i * 22.5 + 11), i * 22.5 + 11 + (i % 2 ? 70 : -70), 0.55, leaf("#7ccf5a"))).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs(lg("gchr", ["#fff1f4", "#ffd0da"], 1, 1) + '<radialGradient id="gch" cx=".35" cy=".3"><stop offset="0" stop-color="#ff8a9c"/><stop offset=".6" stop-color="#e3213f"/><stop offset="1" stop-color="#9c0a24"/></radialGradient>')}<g filter="url(#ds)">
+    ${ring(226, 16, "url(#gchr)")}${ring(226, 16, "none", 'stroke="#f08aa0" stroke-width="1.6"')}${ring(226, 2, "#f08aa0", 'stroke-dasharray="6 6"')}${leaves}${items}
+  </g>${twinkles(t, [[290, 0, 0.8, 0.1], [276, 135, 0.6, 0.55]], "#fff")}</svg>`
+}
+
+const paperPlane = `<path d="M0-20L13 15 0 6Z" fill="#dbe9ff" stroke="#3f72b8" stroke-width="1.6" stroke-linejoin="round"/><path d="M0-20L-13 15 0 6Z" fill="#fff" stroke="#3f72b8" stroke-width="1.6" stroke-linejoin="round"/><path d="M0-20V6" stroke="#3f72b8" stroke-width="1.2"/>`
+
+const gachaPaperPlane = (t) => {
+  const planes = [0, 1]
+    .map((i) => {
+      const d = i * 180 + t * 180
+      return `<path d="${arc(250, f(d - 70), f(d - 10))}" stroke="#fff" stroke-width="3" stroke-dasharray="7 7" stroke-linecap="round" fill="none" opacity=".95"/>${place(...polar(250, d), d + 90, 1.8, paperPlane)}`
+    })
+    .join("")
+  const clouds = [50, 140, 230, 320]
+    .map((d, i) => {
+      const [x, y] = polar(262, d)
+      return place(x, y + wave(t, i / 4) * 3, 0, 0.7, cloud("#fff"))
+    })
+    .join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs(lg("gpp", ["#bfe6ff", "#7cc4ff", "#bfe6ff"], 1, 1))}<g filter="url(#ds)">
+    ${ring(226, 20, "url(#gpp)")}${ring(237, 1.6, "#fff")}${ring(215, 1.6, "#fff")}${clouds}${planes}
+  </g>${twinkles(t, [[280, 90, 0.7, 0.2], [280, 270, 0.7, 0.7]], "#fff")}</svg>`
+}
+
+const ladybug = `<ellipse rx="10" ry="12" fill="#e8322f" stroke="#2a0d0d" stroke-width="1.6"/><path d="M0-12V12" stroke="#2a0d0d" stroke-width="1.4"/><circle cy="-13" r="5.6" fill="#231a1a"/><circle cx="-2" cy="-15" r="1.3" fill="#fff"/><circle cx="2" cy="-15" r="1.3" fill="#fff"/><circle cx="-5" cy="-3" r="2.4" fill="#231a1a"/><circle cx="5" cy="-3" r="2.4" fill="#231a1a"/><circle cx="-4.5" cy="6" r="2.2" fill="#231a1a"/><circle cx="4.5" cy="6" r="2.2" fill="#231a1a"/><ellipse cx="-4" cy="-8" rx="2.4" ry="1.4" fill="#fff" opacity=".55"/>`
+
+const daisy = `${Array.from({ length: 8 }, (_, i) => `<ellipse cy="-8" rx="3.6" ry="7" fill="#fff" stroke="#d8d2c0" stroke-width=".8" transform="rotate(${i * 45})"/>`).join("")}<circle r="4.6" fill="#ffc93c"/>`
+
+const gachaLadybug = (t) => {
+  const leaves = Array.from({ length: 18 }, (_, i) => place(...polar(228, i * 20), i * 20 + (i % 2 ? 65 : -65), 0.62, leaf(i % 3 ? "#6cc04a" : "#8bd66a"))).join("")
+  const flowers = Array.from({ length: 6 }, (_, i) => place(...polar(242, i * 60 + 30), wave(t, i / 6) * 10, 1.25, daisy)).join("")
+  const bugs = [0, 1, 2]
+    .map((i) => {
+      const d = i * 120 + t * 120
+      return place(...polar(226, d), d + 90, 1.5, ladybug)
+    })
+    .join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs(lg("glb", ["#a8e08a", "#5fae46"], 1, 1))}<g filter="url(#ds)">
+    ${ring(226, 10, "url(#glb)")}${leaves}${flowers}${bugs}
+  </g>${twinkles(t, [[270, 0, 0.7, 0.3], [270, 180, 0.6, 0.8]], "#fffbe0")}</svg>`
+}
+
+/* SR */
+
+const jellyfish = (t, phase, hue) => {
+  const pulse = Math.sin(TAU * (t * 2 + phase))
+  const sx = 1 + pulse * 0.08
+  const sy = 1 - pulse * 0.1
+  const tentacles = [-12, -5, 2, 9, 14]
+    .map((x0, i) => {
+      const pts = Array.from({ length: 7 }, (_, j) => `${f(x0 * (1 - j * 0.05) + Math.sin(TAU * (t * 2 + phase) + j * 0.9 + i) * (1.5 + j * 0.9))} ${f(3 + j * 6)}`).join(" ")
+      return `<polyline points="${pts}" stroke="${hue}" stroke-width="${i % 2 ? 1.6 : 2.4}" fill="none" stroke-linecap="round" opacity=".85"/>`
+    })
+    .join("")
+  return `<g filter="url(#glow)">${tentacles}<g transform="scale(${f(sx)} ${f(sy)})"><path d="M-19 2C-20-26 20-26 19 2 13 6 7 0 0 5-7 0-13 6-19 2Z" fill="${hue}" fill-opacity=".55" stroke="#eaffff" stroke-width="1.6"/><path d="M-11-4C-11-16 11-16 11-4" stroke="#fff" stroke-width="1.6" fill="none" opacity=".7"/><ellipse cx="-6" cy="-12" rx="4" ry="2.4" fill="#fff" opacity=".7"/></g></g>`
+}
+
+const gachaJellyfish = (t) => {
+  const hues = ["#7ff0ff", "#ff9fe0", "#b9a4ff", "#7ff0ff", "#ffb8d9", "#9fd8ff"]
+  const jellies = hues
+    .map((h, i) => {
+      const d = i * 60 + 30 + wave(t, i / 6) * 6
+      return place(...polar(268 + Math.sin(TAU * (t + i / 6)) * 5, d), d, i % 2 ? 1.25 : 1.5, jellyfish(t, i / 6, h))
+    })
+    .join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([METAL.silver], AURORA_DEF + lg("gjr", ["#062a4a", "#0e5c82", "#1b3f8a", "#062a4a"], 1, 1))}
+  ${auroraGlow(t, ["#4fe0ff", "#b48cff", "#ff8fd8"], { r: 256, w: 34, opacity: 0.45 })}
+  <g filter="url(#ds)">
+    ${ring(226, 24, "url(#gjr)")}
+    ${metalBand(239, 4, METAL.silver, { shift: wave(t) * 12, layers: 2 })}${metalBand(213, 4, METAL.silver, { shift: wave(t) * 12, layers: 2 })}
+    ${risingDust(t, 14, { r: 214, rise: 22, color: "#bff6ff", spread: 0.8, seed: 61 })}
+  </g>
+  <g mask="url(#behind)">${jellies}</g>
+  ${twinkles(t, [[226, 0, 0.8, 0.1], [226, 120, 0.8, 0.45], [226, 240, 0.8, 0.8]], "#e6fdff")}</svg>`
+}
+
+const lantern = (t, phase, body) => {
+  const k = 0.75 + 0.25 * Math.sin(TAU * (t * 2 + phase))
+  return `<path d="M0-30V-20" stroke="#3a2a1a" stroke-width="1.6"/><ellipse rx="22" ry="25" fill="${body}" opacity="${f(0.35 * k)}" filter="url(#glow2)"/><ellipse rx="15" ry="18" fill="url(#glt)" stroke="#9c2a12" stroke-width="1.2"/>${[-12, -6, 0, 6, 12].map((y) => `<path d="M${f(-Math.sqrt(1 - (y / 18) ** 2) * 15)} ${y}H${f(Math.sqrt(1 - (y / 18) ** 2) * 15)}" stroke="#9c2a12" stroke-width=".9" opacity=".7"/>`).join("")}<ellipse rx="15" ry="18" fill="#fff6c8" opacity="${f(0.25 * k)}"/><rect x="-8" y="-21" width="16" height="5" rx="1.5" fill="#2b1d12"/><rect x="-8" y="16" width="16" height="5" rx="1.5" fill="#2b1d12"/><path d="M0 21V30M-2 30H2" stroke="#e8b93a" stroke-width="2"/>`
+}
+
+const gachaLanterns = (t) => {
+  const g = METAL.gold
+  const lanterns = Array.from({ length: 8 }, (_, i) => {
+    const d = i * 45 + 22.5
+    const [x, y] = polar(258, d)
+    return place(x, y, wave(t, i / 8) * 6, 1.3, lantern(t, i / 8, "#ffb04a"))
+  }).join("")
+  const r = rng(71)
+  const fireflies = Array.from({ length: 18 }, () => {
+    const [x, y] = polar(270 + r() * 30, r() * 360)
+    const ph = r()
+    const k = Math.max(0, Math.sin(TAU * (t + ph)))
+    return `<circle cx="${x}" cy="${y}" r="2.2" fill="#fff3a8" opacity="${f(k)}"/>`
+  }).join("")
+  const waves = Array.from({ length: 24 }, (_, i) => `<path d="${arc(226, i * 15, i * 15 + 15)}" stroke="${g[3]}" stroke-width="1.4" fill="none" opacity=".55"/>`).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([g], AURORA_DEF + lg("gln", ["#1a1240", "#2b1d5c", "#1a1240"], 1, 1) + '<radialGradient id="glt" cx=".45" cy=".4"><stop offset="0" stop-color="#fff2b0"/><stop offset=".55" stop-color="#ff8a3a"/><stop offset="1" stop-color="#d23a1a"/></radialGradient>')}
+  ${auroraGlow(t, ["#ff9a4a", "#ffd36b", "#ff6a8a"], { r: 256, w: 32, opacity: 0.45 })}
+  <g filter="url(#ds)">
+    ${ring(226, 26, "url(#gln)")}${waves}
+    ${Array.from({ length: 36 }, (_, i) => `<path d="${arc(226, i * 10 + t * 20, i * 10 + 5 + t * 20)}" stroke="${g[4]}" stroke-width="2" fill="none" opacity=".35"/>`).join("")}
+    ${metalBand(241, 4, g, { shift: wave(t) * 12, layers: 2 })}${metalBand(211, 4, g, { shift: wave(t) * 12, layers: 2 })}
+    ${arcString()}
+  </g>
+  ${lanterns}${fireflies}
+  ${twinkles(t, [[226, 45, 0.8, 0.2], [226, 225, 0.8, 0.7]], "#fff4c8")}</svg>`
+}
+
+/** 提灯をつなぐ紐 */
+const arcString = () =>
+  Array.from({ length: 8 }, (_, i) => {
+    const a = i * 45 + 22.5
+    const b = a + 45
+    const [x1, y1] = polar(258 - 33, a)
+    const [x2, y2] = polar(258 - 33, b)
+    const [mx, my] = polar(238, a + 22.5)
+    return `<path d="M${x1} ${y1}Q${mx} ${my} ${x2} ${y2}" stroke="#3a2a1a" stroke-width="1.4" fill="none" opacity=".8"/>`
+  }).join("")
+
+const gachaCircuit = (t) => {
+  const s = METAL.silver
+  const r = rng(81)
+  const traces = Array.from({ length: 28 }, (_, i) => {
+    const d = i * (360 / 28) + r() * 4
+    const r1 = 214 + r() * 6
+    const r2 = 232 + r() * 8
+    const bend = d + (r() > 0.5 ? 5 : -5)
+    return `<path d="M${pp(r1, d)}L${pp((r1 + r2) / 2, d)}L${pp((r1 + r2) / 2, bend)}L${pp(r2, bend)}" stroke="#2f6f8f" stroke-width="1.6" fill="none"/><circle cx="${polar(r2, bend)[0]}" cy="${polar(r2, bend)[1]}" r="2.2" fill="#5ad1ff"/>`
+  }).join("")
+  const pulses = [
+    [217, 6, "#5ad1ff", 1],
+    [227, 4, "#ff5ad8", -1],
+    [237, 6, "#5ad1ff", 1],
+  ]
+    .map(([rr, n, c, dir]) =>
+      Array.from({ length: n }, (_, i) => {
+        const a = (i * 360) / n + dir * t * (360 / n)
+        return `<path d="${arc(rr, f(a), f(a + 14))}" stroke="${c}" stroke-width="3.4" stroke-linecap="round" fill="none"/>`
+      }).join(""),
+    )
+    .join("")
+  const chip = `<rect x="-14" y="-10" width="28" height="20" rx="2" fill="#10202e" stroke="#5ad1ff" stroke-width="1.6"/>${[-9, -3, 3, 9].map((x) => `<path d="M${x}-10V-15M${x} 10V15" stroke="#9fb8c8" stroke-width="1.6"/>`).join("")}<rect x="-7" y="-5" width="14" height="10" fill="#5ad1ff" opacity=".35"/>`
+  const chips = [0, 90, 180, 270].map((d, i) => place(...polar(227, d), d, 1, chip.replace('opacity=".35"', `opacity="${f(0.25 + 0.6 * flash(t, i / 4))}"`))).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([s], AURORA_DEF)}
+  ${auroraGlow(t, ["#4fd0ff", "#ff5ad8", "#7b5cff"], { r: 256, w: 32, opacity: 0.45 })}
+  <g filter="url(#ds)">
+    ${ring(227, 34, "#0b1724")}${traces}
+    ${metalBand(245, 4, s, { shift: wave(t) * 12, layers: 2 })}${metalBand(209, 4, s, { shift: wave(t) * 12, layers: 2 })}
+  </g>
+  <g filter="url(#glow)">${pulses}</g>${chips}
+  ${twinkles(t, [[262, 45, 0.8, 0.1], [262, 165, 0.8, 0.45], [262, 285, 0.8, 0.8]], "#e0f8ff")}</svg>`
+}
+
+/* SSR */
+
+const goldBlossom = (fill, core) =>
+  `${[0, 72, 144, 216, 288].map((a) => `<path d="M0 0C-11-8-14-23-7-33-4-37-1-34 0-30 1-34 4-37 7-33 14-23 11-8 0 0Z" transform="rotate(${a})" fill="${fill}" stroke="#7d5207" stroke-width="1"/>`).join("")}<circle r="6.5" fill="${core}"/>${[0, 72, 144, 216, 288].map((a) => `<circle cx="${polar(10, a + 36, 0, 0)[0]}" cy="${polar(10, a + 36, 0, 0)[1]}" r="1.6" fill="#fffadd"/>`).join("")}`
+
+const gachaMakie = (t) => {
+  const g = METAL.gold
+  const blossoms = Array.from({ length: 10 }, (_, i) => {
+    const d = i * 36 + 18
+    return place(...polar(225, d), d + t * 72, i % 2 ? 0.42 : 0.55, goldBlossom("url(#gmkG)", g[1]))
+  }).join("")
+  const stream = [0, 1]
+    .map((k) => `<path d="${wobblyRing(225 + (k ? 7 : -7), 3, 6, k * 2 + t * TAU)}" stroke="${g[4]}" stroke-width="1.4" fill="none" opacity=".75"/>`)
+    .join("")
+  const branch = `<path d="M-120 18C-80 0-40-14 0-18 40-14 80 0 120 18M-60 2C-58-14-50-22-40-28M50 2C52-12 60-20 72-24" stroke="#4a2a14" stroke-width="5" fill="none" stroke-linecap="round"/>${[[-96, 8, 0.7], [-64, -4, 0.85], [-38, -24, 0.65], [-20, -14, 0.95], [16, -16, 0.8], [44, -10, 0.9], [70, -22, 0.65], [98, 8, 0.75], [0, -22, 1.1]].map(([x, y, s], i) => place(x, y, i * 23 + wave(t, i / 9) * 6, s * 0.62, blossom())).join("")}`
+  const r = rng(91)
+  const petals = Array.from({ length: 16 }, () => {
+    const off = r()
+    const p = (t + off) % 1
+    const d = r() * 360
+    const [x0, y0] = polar(250 + r() * 40, d)
+    return place(x0 + Math.sin(TAU * (p + off)) * 10, y0 + p * 70 - 35, p * 360 + off * 360, 0.7, looseP, `opacity="${f(Math.sin(Math.PI * p))}"`)
+  }).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([g, METAL.onyx], AURORA_DEF + rayDef("rayM", "#ffe0ec") + lg("petal", ["#fff3f7", "#ffc1d6", "#ff8fb4"]) + lg("gmkG", ["#fffadd", "#ffe58c", "#e9bd42", "#b9860e"]) + '<radialGradient id="gmkM" cx=".4" cy=".4"><stop offset="0" stop-color="#fffbe8"/><stop offset=".7" stop-color="#ffe7a0"/><stop offset="1" stop-color="#f2c45a"/></radialGradient>')}
+  ${auroraGlow(t, ["#ffb3cf", "#ffd76a", "#ff8fb4", "#fff0b8"], { r: 258, w: 44, opacity: 0.7 })}
+  ${lightRays(t, 18, "rayM", { long: 300, short: 280, opacity: 0.6 })}
+  <circle cx="${polar(270, -32)[0]}" cy="${polar(270, -32)[1]}" r="36" fill="#fff4c8" opacity=".55" filter="url(#glow2)"/>
+  <circle cx="${polar(270, -32)[0]}" cy="${polar(270, -32)[1]}" r="28" fill="url(#gmkM)"/>
+  <g filter="url(#ds)">
+    ${ring(225, 34, METAL.onyx[1])}${metalBand(225, 30, METAL.onyx, { shift: wave(t) * 10, layers: 3 })}
+    ${stream}${blossoms}
+    ${metalBand(243, 6, g, { shift: wave(t) * 12, layers: 2 })}${metalBand(207, 6, g, { shift: wave(t) * 12, layers: 2 })}
+    ${setGem(...polar(244, 180), 12, g, GEM.pink, t, 0.5, 0.9)}
+    ${place(C, 6, 0, 1, branch)}
+  </g>
+  ${petals}
+  ${glint(...polar(244, 180), 1, flash(t, 0.5))}${glint(C, -16, 1.2, flash(t, 0))}
+  ${twinkles(t, [[290, 90, 0.8, 0.25], [290, 270, 0.8, 0.75]], "#fff0f7")}</svg>`
+}
+
+const gachaGlassButterfly = (t) => {
+  const p = METAL.platinum
+  const spots = [[262, 0, 1.15, 0], [258, 52, 0.75, 0.2], [258, -52, 0.75, 0.6], [256, 110, 0.8, 0.35], [256, -110, 0.8, 0.85], [260, 160, 0.7, 0.5], [260, -160, 0.7, 0.1]]
+  const flies = spots
+    .map(([r, d, s, ph], i) => {
+      const bob = Math.sin(TAU * (t + ph)) * 5
+      return place(...polar(r + bob, d), d + Math.sin(TAU * (t + ph)) * 8, s * 1.15, butterfly(t, i % 2 ? "gbfA" : "gbfB", i % 2 ? "gbfC" : "gbfD", ph))
+    })
+    .join("")
+  const vine = Array.from({ length: 12 }, (_, i) => place(...polar(236, i * 30 + 15), i * 30 + 15 + (i % 2 ? 60 : -60), 0.6, leaf(i % 2 ? "#bfe8d8" : "#d8d0ff"))).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([p], AURORA_DEF + rayDef("rayG", "#f0e6ff") +
+    lg("gbfA", ["#c8fff4", "#8fd6ff", "#c9a8ff"], 1, 1) + lg("gbfB", ["#ffe0f4", "#ff9fd8", "#b98cff"], 1, 1) + lg("gbfC", ["#e0fff8", "#9fe9ff"], 1, 1) + lg("gbfD", ["#fff0fa", "#ffc8ec"], 1, 1))}
+  ${auroraGlow(t, ["#9ff0ff", "#d8a8ff", "#ffb8e8", "#a8c8ff"], { r: 258, w: 46, opacity: 0.75 })}
+  ${lightRays(t, 18, "rayG", { long: 300, short: 280, opacity: 0.6 })}
+  <g mask="url(#behind)">${risingDust(t, 12, { r: 240, rise: 70, color: "#f4ecff", seed: 101 })}</g>
+  <g filter="url(#ds)">
+    ${ring(224, 24, p[0])}${iridescentBand(224, 18, ["#c8f6ff", "#e0c8ff", "#ffd0f0", "#c8e0ff"], { shift: wave(t) * 40 })}
+    ${milgrain(238.5, 2.2, 90, p, wave(t) * 12)}${milgrain(209.5, 2, 84, p, wave(t) * 12)}
+    ${vine}
+    ${setGem(...polar(240, 180), 13, p, GEM.amethyst, t, 0.4, 0.88)}
+  </g>
+  <g opacity=".9">${flies}</g>
+  ${glint(...polar(240, 180), 1, flash(t, 0.55))}${glint(...polar(262, 0), 1.2, 0.3 + 0.7 * flash(t, 0))}
+  ${twinkles(t, [[226, 90, 0.8, 0.2], [226, 270, 0.8, 0.7]], "#fff")}</svg>`
+}
+
+const gachaSunMoon = (t) => {
+  const g = METAL.gold
+  const s = METAL.platinum
+  const sunAt = polar(262, -48)
+  const moonAt = polar(262, 48)
+  const sunRays = Array.from({ length: 12 }, (_, i) => `<path d="M-5-30L0-46 5-30Z" fill="${g[3]}" stroke="${g[1]}" stroke-width="1" transform="rotate(${f(i * 30 + t * 30)})"/>`).join("") + Array.from({ length: 12 }, (_, i) => `<path d="M-3-28L0-38 3-28Z" fill="${g[4]}" transform="rotate(${f(i * 30 + 15 - t * 30)})"/>`).join("")
+  const sun = `<circle r="40" fill="#ffd36b" opacity=".45" filter="url(#glow2)"/>${sunRays}<circle r="27" fill="url(#gsmS)" stroke="${g[1]}" stroke-width="1.6"/><circle r="20" fill="none" stroke="${g[5]}" stroke-width="1.2" opacity=".7"/>`
+  const moon = `<circle r="40" fill="#8fb0ff" opacity=".55" filter="url(#glow2)"/><g transform="rotate(-20) scale(1.25)"><path d="M6-26A26 26 0 1 0 6 26A32 32 0 0 1 6-26Z" fill="url(#gsmM)" stroke="#5a6fa8" stroke-width="1.6"/><circle cx="-12" cy="-6" r="3" fill="#9fb0d8" opacity=".5"/><circle cx="-8" cy="10" r="2.2" fill="#9fb0d8" opacity=".5"/></g>`
+  const stars = [[292, 84, 11], [282, 108, 7], [298, 128, 9], [280, 20, 6], [300, 150, 6]].map(([r, d, z], i) => place(...polar(r, d), 0, 0.6 + 0.4 * Math.max(0, wave(t, i / 5)), star5(z, "#f4f7ff", "#7f93d0", 1.2))).join("")
+  const flames = [[288, -78], [284, -104], [292, -126], [278, -18]].map(([r, d], i) => place(...polar(r, d), d, 0.6 + 0.3 * Math.max(0, wave(t, i / 4)), `<path d="M0-12C5-4 7 4 0 10-7 4-5-4 0-12Z" fill="#ffb347"/><path d="M0-6C2-2 3 3 0 6-3 3-2-2 0-6Z" fill="#fff3c4"/>`)).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([g, s], AURORA_DEF + rayDef("raySM", "#fff6e0") +
+    '<radialGradient id="gsmS" cx=".4" cy=".35"><stop offset="0" stop-color="#fffadd"/><stop offset=".6" stop-color="#ffd34a"/><stop offset="1" stop-color="#e08a12"/></radialGradient><radialGradient id="gsmM" cx=".3" cy=".35"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#e4ecff"/><stop offset="1" stop-color="#a8bcf0"/></radialGradient>')}
+  ${auroraGlow(t, ["#ffd36b", "#ffb15c", "#a8b8ff", "#d8e2ff"], { r: 258, w: 46, opacity: 0.7 })}
+  ${lightRays(t, 20, "raySM", { long: 302, short: 282, opacity: 0.6 })}
+  <g filter="url(#ds)">
+    ${ring(224, 28, "#1c1a2e")}
+    ${metalBand(224, 22, g, { shift: wave(t) * 12, from: 180, to: 360 })}${metalBand(224, 22, s, { shift: wave(t) * 12, from: 0, to: 180 })}
+    ${milgrain(238.5, 2.2, 90, g, wave(t) * 12)}${milgrain(209.5, 2, 84, s, wave(t) * 12)}
+    ${setGem(...polar(240, 180), 13, s, GEM.sapphire, t, 0.5, 0.88)}${setGem(...polar(240, 0), 11, g, GEM.topaz, t, 0, 0.88)}
+  </g>
+  ${flames}${stars}
+  ${place(...sunAt, 0, 1.15, sun)}${place(...moonAt, 0, 1, moon)}
+  ${glint(...polar(240, 180), 1, flash(t, 0.5))}${glint(...polar(240, 0), 1, flash(t, 0))}
+  ${twinkles(t, [[226, 90, 0.8, 0.2], [226, 270, 0.8, 0.7]], "#fff")}</svg>`
+}
+
+/* UR */
+
+const prismAt = (k) => {
+  const h = (((k % 1) + 1) % 1) * PRISM.length
+  return mixHex(PRISM[Math.floor(h) % PRISM.length], PRISM[(Math.floor(h) + 1) % PRISM.length], h - Math.floor(h))
+}
+
+const gachaKyubi = (t) => {
+  const p = METAL.platinum
+  const tails = Array.from({ length: 9 }, (_, i) => {
+    const d = 180 + (i - 4) * 23
+    const sway = wave(t, i / 9) * 5
+    const tip = prismAt(i / 9 + t)
+    const id = `gky${i}`
+    const grad = `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="-150"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#fffaf4"/><stop offset=".75" stop-color="${mixHex(tip, "#ffffff", 0.4)}"/><stop offset="1" stop-color="${tip}"/></linearGradient>`
+    // ふさふさの尾。先は外側（中心の尾から離れる向き）へ曲げる
+    const bend = i < 4 ? -1 : i > 4 ? 1 : 0
+    const body = `<g transform="scale(${bend < 0 ? -1 : 1} 1)"><path d="M-18 0C-40-30-50-78-34-118-26-138-6-152 14-150 30-148 40-136 34-126 26-134 14-132 12-122 30-110 36-84 30-56 26-32 18-14 18 0Z" fill="url(#${id})" stroke="#d6cbe6" stroke-width="1.8" stroke-linejoin="round"/><path d="M-6-14C-20-44-24-80-14-110M8-18C14-46 14-72 8-96M-20-60C-26-74-28-90-24-104" stroke="#e6dcf3" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`
+    return { grad, g: place(...polar(218, d), d + sway + bend * 10, i === 4 ? 0.82 : 0.78 - Math.abs(i - 4) * 0.02, body) }
+  })
+  const ear = (side) => `<g transform="translate(${polar(226, side * 36)[0]} ${polar(226, side * 36)[1]}) rotate(${side * 36}) scale(1.7)"><path d="M-22 8L-3-56Q0-62 3-56L22 8Z" fill="#fff" stroke="#a898c8" stroke-width="1.8" stroke-linejoin="round"/><path d="M-12 4L-1-38Q0-41 1-38L12 4Z" fill="url(#gkyE)"/><path d="M-3-56Q0-62 3-56L6-46-6-46Z" fill="${prismAt(t + (side > 0 ? 0.5 : 0))}"/></g>`
+  const fires = Array.from({ length: 6 }, (_, i) => {
+    const d = i * 60 + t * 60
+    const c = prismAt(i / 6 + t)
+    const k = 0.85 + 0.15 * Math.sin(TAU * (t * 3 + i / 6))
+    return place(...polar(292, d), 0, k * 1.6, `<path d="M0-18C8-6 11 6 0 13-11 6-8-6 0-18Z" fill="${c}" opacity=".9"/><path d="M0-8C4-2 5 4 0 8-5 4-4-2 0-8Z" fill="#fff"/>`)
+  }).join("")
+  const stones = Array.from({ length: 5 }, (_, i) => setGem(...polar(224, (i - 2) * 26), i === 2 ? 12 : 7, p, GEM[["ruby", "topaz", "diamond", "sapphire", "amethyst"][i]], t, i * 0.2)).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([p], AURORA_DEF + rayDef("rayK", "#ffffff") + tails.map((x) => x.grad).join("") + lg("gkyE", ["#ffd0ec", "#ff9fd8", "#c9a8ff"]))}
+  ${auroraGlow(t, PRISM, { r: 262, w: 56, opacity: 0.9 })}
+  ${lightRays(t, 32, "rayK", { long: 322, short: 292, opacity: 0.85 })}
+  <g mask="url(#behind)">${risingDust(t, 28, { r: 236, rise: 130, color: "#ffffff", seed: 111 })}</g>
+  <g filter="url(#ds)">
+    <g mask="url(#behind)">${tails.map((x) => x.g).join("")}${ear(-1)}${ear(1)}</g>
+    ${ring(224, 30, p[0])}${iridescentBand(224, 22, PRISM, { shift: t * 360 })}
+    ${milgrain(240.5, 2.4, 96, p, wave(t) * 12)}${milgrain(207.5, 2.2, 90, p, wave(t) * 12)}
+    ${stones}
+    ${Array.from({ length: 2 }, (_, i) => place(...polar(240, 180 + (i ? 30 : -30)), 0, 1, `<circle r="9" fill="#fff" stroke="${p[1]}" stroke-width="1.6"/><path d="M-5 0H5M0-5V5" stroke="${prismAt(t + i * 0.5)}" stroke-width="2.4"/>`)).join("")}
+  </g>
+  <g filter="url(#glow)">${fires}</g>
+  ${glint(...polar(224, 0), 1.6, 0.4 + 0.6 * flash(t, 0))}
+  ${twinkles(t, [[304, 40, 1, 0.1], [304, 320, 1, 0.6], [300, 90, 0.9, 0.35], [300, 270, 0.9, 0.85]], "#fff")}</svg>`
+}
+
+const lotusPetal = (stops, len, w, k) =>
+  `<path d="M0 0C${-w} ${f(-len * 0.3)} ${f(-w * 0.8)} ${f(-len * 0.8)} 0 ${-len}C${f(w * 0.8)} ${f(-len * 0.8)} ${w} ${f(-len * 0.3)} 0 0Z" fill="${ramp(stops, 0.35 + 0.45 * k)}" stroke="${stops[1]}" stroke-width="1.2"/><path d="M0 -4C${f(-w * 0.45)} ${f(-len * 0.35)} ${f(-w * 0.35)} ${f(-len * 0.75)} 0 ${f(-len + 6)}" stroke="${stops[5]}" stroke-width="1.6" fill="none" opacity="${f(0.4 + 0.5 * k)}"/><path d="M0-6V${f(-len + 10)}" stroke="${stops[2]}" stroke-width="1" opacity=".6"/>`
+
+const gachaLotus = (t) => {
+  const p = METAL.platinum
+  const g = METAL.gold
+  const outer = Array.from({ length: 16 }, (_, i) => {
+    const d = i * 22.5
+    const k = 0.5 + 0.5 * Math.sin(TAU * (t - i / 16))
+    return place(...polar(214, d), d + wave(t, i / 16) * 2, 1, lotusPetal(tone(prismAt(i / 16 + t * 0.5)), 92, 22, k))
+  }).join("")
+  const inner = Array.from({ length: 16 }, (_, i) => {
+    const d = i * 22.5 + 11.25
+    const k = 0.5 + 0.5 * Math.sin(TAU * (t - i / 16 - 0.25))
+    return place(...polar(218, d), d, 1, lotusPetal(tone(mixHex(prismAt(i / 16 + t * 0.5 + 0.08), "#ffffff", 0.35)), 64, 17, k))
+  }).join("")
+  const mandala = `<g transform="rotate(${f(t * 30)} ${C} ${C})">${ring(318, 1.4, g[3], 'opacity=".6"')}${Array.from({ length: 24 }, (_, i) => `<circle cx="${polar(318, i * 15)[0]}" cy="${polar(318, i * 15)[1]}" r="${i % 2 ? 2 : 3.4}" fill="${g[4]}" opacity=".85"/>`).join("")}</g>`
+  const topLotus = `${[-60, -30, 30, 60].map((a, i) => `<g transform="rotate(${a})">${lotusPetal(tone(prismAt(i / 4 + t)), 46, 13, 0.6 + 0.4 * flash(t, i / 4))}</g>`).join("")}${[-18, 18].map((a, i) => `<g transform="rotate(${a})">${lotusPetal(tone(mixHex(prismAt(i / 2 + t + 0.3), "#ffffff", 0.3)), 52, 14, 0.8)}</g>`).join("")}${lotusPetal(tone("#ffffff"), 56, 14, 0.9)}`
+  const stones = Array.from({ length: 7 }, (_, i) => setGem(...polar(224, 180 + (i - 3) * 22), i === 3 ? 12 : 7.5, g, GEM[["ruby", "topaz", "emerald", "diamond", "sapphire", "amethyst", "pink"][i]], t, i * 0.13)).join("")
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs([p, g], AURORA_DEF + rayDef("rayL", "#ffffff"))}
+  ${auroraGlow(t, PRISM, { r: 262, w: 56, opacity: 0.9 })}
+  ${lightRays(t, 32, "rayL", { long: 322, short: 292, opacity: 0.8 })}
+  ${mandala}
+  <g mask="url(#behind)">${risingDust(t, 28, { r: 240, rise: 130, color: "#ffffff", seed: 121 })}</g>
+  <g filter="url(#ds)">
+    <g mask="url(#behind)">${outer}${inner}</g>
+    ${ring(224, 28, g[0])}${iridescentBand(224, 20, PRISM, { shift: t * 360 })}
+    ${milgrain(239.5, 2.4, 96, g, wave(t) * 12)}${milgrain(208.5, 2.2, 90, g, wave(t) * 12)}
+    ${stones}
+    ${place(...polar(238, 0), 0, 1, topLotus)}
+    ${setGem(...polar(238, 0), 10, g, GEM.diamond, t, 0, 0.9)}
+  </g>
+  ${orbiters(t, 6, 278, ["#ff9fe0", "#7fe0ff", "#ffe66b"])}
+  ${glint(...polar(238, 0), 1.8, 0.4 + 0.6 * flash(t, 0))}${glint(...polar(224, 180), 1.2, flash(t, 0.5))}
+  ${twinkles(t, [[304, 40, 1, 0.1], [304, 320, 1, 0.6], [296, 140, 0.9, 0.35], [296, 220, 0.9, 0.85]], "#fff")}</svg>`
+}
+
 const CANVAS_VIEW_BOX = 'viewBox="-60 -60 632 632"'
 
 const withCanvas = (draw) => (t) =>
@@ -2347,6 +2746,20 @@ const decorations = [
   { slug: "gacha-ssr-pearl-sea", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "深海の真珠", description: "真珠と貝殻、ゆれる海藻と立ちのぼる泡", draw: gachaPearlSea },
   { slug: "gacha-ur-prism-seraph", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "虹翼の熾天使", description: "虹色に移ろう翼と光の輪、七色の宝石", draw: gachaPrismSeraph },
   { slug: "gacha-ur-star-crown", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "星海の王冠", description: "めぐる惑星と星雲の輪、白金の王冠", draw: gachaStarCrown },
+  { slug: "gacha-n-gingham", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ギンガムチェック", description: "ピンクのチェックの輪と、てっぺんのリボン", draw: gachaGingham },
+  { slug: "gacha-n-lemon", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "レモンソーダ", description: "ソーダ色の輪をめぐる輪切りのレモンと泡", draw: gachaLemon },
+  { slug: "gacha-n-crayon", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "クレヨンの輪", description: "六色のクレヨンでぐるぐる描いた輪", draw: gachaCrayon },
+  { slug: "gacha-r-cherry", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "さくらんぼ", description: "葉の輪にゆれる、ふたつ並びのさくらんぼ", draw: gachaCherry },
+  { slug: "gacha-r-paper-plane", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "紙飛行機", description: "空色の輪を飛ぶ紙飛行機と雲", draw: gachaPaperPlane },
+  { slug: "gacha-r-ladybug", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "てんとう虫のお散歩", description: "葉と花の輪を歩くてんとう虫", draw: gachaLadybug },
+  { slug: "gacha-sr-jellyfish", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "夜光くらげ", description: "深い海の輪をただよう光るくらげ", draw: gachaJellyfish },
+  { slug: "gacha-sr-lanterns", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "夏祭りの提灯", description: "夜空の輪に灯る提灯と蛍", draw: gachaLanterns },
+  { slug: "gacha-sr-circuit", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "電脳回路", description: "回路を走る水色と桃色の光", draw: gachaCircuit },
+  { slug: "gacha-ssr-makie", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "金蒔絵の夜桜", description: "漆黒の輪に金の桜、満月と舞う花びら", draw: gachaMakie },
+  { slug: "gacha-ssr-glass-butterfly", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "硝子の蝶", description: "透きとおる蝶が舞う、白金と虹色の輪", draw: gachaGlassButterfly },
+  { slug: "gacha-ssr-sun-moon", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "日輪と月輪", description: "金の太陽と銀の月、半分ずつの金銀の輪", draw: gachaSunMoon },
+  { slug: "gacha-ur-kyubi", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "九尾の白狐", description: "虹に染まる九本の尾と狐耳、めぐる狐火", draw: gachaKyubi },
+  { slug: "gacha-ur-lotus", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "七彩の蓮華", description: "七色に移ろう蓮の花びらと回る曼荼羅", draw: gachaLotus },
 ]
 
 export const DECORATIONS = decorations.map((item) => ({
