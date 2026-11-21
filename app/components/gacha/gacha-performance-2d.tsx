@@ -120,6 +120,8 @@ type Props = {
   onComplete: () => void
   /** 外から「スキップ」を押されたら増やす */
   skipSignal: number
+  /** 結果の画面で下のボタンの帯が使う高さ（px）。カードをその上に収める */
+  bottomInset?: number
 }
 
 export function GachaPerformance2D(props: Props): React.ReactNode {
@@ -872,10 +874,10 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
       {phase === "cards" && (
         <div
           className={cn(
-            "absolute inset-x-0 top-[max(56px,env(safe-area-inset-top))] bottom-[176px] flex flex-wrap content-center items-center justify-center gap-2 px-3",
+            "absolute inset-x-0 top-[max(56px,env(safe-area-inset-top))] flex flex-wrap content-center items-center justify-center gap-2 px-3",
             isSingle && "gap-0",
           )}
-          style={{ perspective: "900px" }}
+          style={{ perspective: "900px", bottom: props.bottomInset ?? 176 }}
         >
           {items.map((item, index) => {
             const isFlipped = flippedSet.has(index)
@@ -891,7 +893,7 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
                 }}
                 className={cn(
                   "relative",
-                  isSingle ? "w-[min(58vw,240px)]" : "w-[min(29vw,124px)]",
+                  isSingle ? "w-[min(58vw,240px)]" : "w-[min(22vw,100px)]",
                 )}
                 style={{
                   aspectRatio: "3 / 4.3",

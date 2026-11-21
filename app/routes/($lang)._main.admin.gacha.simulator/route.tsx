@@ -2,6 +2,7 @@ import type { MetaFunction } from "@remix-run/cloudflare"
 import { Dices, RotateCcw } from "lucide-react"
 import { useMemo, useState } from "react"
 import { createPortal } from "react-dom"
+import { toast } from "sonner"
 import {
   ADMIN_GACHA_CARD,
   AdminGachaGate,
@@ -13,6 +14,21 @@ import {
   RarityBadge,
 } from "~/components/gacha/admin-gacha-parts"
 import {
+  GACHA_ACHIEVEMENTS,
+  type GachaAchievement,
+  newlyUnlockedGachaAchievements,
+} from "~/components/gacha/gacha-achievements"
+import { GachaCoinShortageDialog } from "~/components/gacha/gacha-coin-shortage-dialog"
+import {
+  applyGachaPulls,
+  completedGachaSets,
+  emptyGachaCollection,
+  exchangeGachaPrize,
+  type GachaCollection,
+  type GachaPullOutcome,
+  ownedPrizeCount,
+} from "~/components/gacha/gacha-collection"
+import {
   GACHA_RARITIES,
   type GachaItem,
   type GachaRarity,
@@ -20,17 +36,18 @@ import {
 import {
   DEFAULT_GACHA_SETTINGS,
   drawGacha,
-  type GachaPull,
   type GachaSettings,
   type GachaSimulationSummary,
   type GachaState,
   simulateGacha,
   sumRates,
   toEffectiveRates,
+  toPityProgress,
   urWithinPullsRatio,
 } from "~/components/gacha/gacha-lottery"
 import { GachaPerformance } from "~/components/gacha/gacha-performance"
-import { GACHA_PRIZES } from "~/components/gacha/gacha-prizes"
+import { GachaPityMeter } from "~/components/gacha/gacha-pity-meter"
+import { GACHA_PRIZES, type GachaPrize } from "~/components/gacha/gacha-prizes"
 import { Button } from "~/components/ui/button"
 import {
   Card,
@@ -64,22 +81,32 @@ const RARITIES_DESC = [...GACHA_RARITIES].reverse()
 /** まとめて試すときの上限（人数 × 回数）。ブラウザが固まらないように */
 const MAX_SIMULATED_PULLS = 5_000_000
 
+/** 試しに引くときの最初の残高（10 連 1 回分） */
+const START_BALANCE = 3000
+
 type Session = {
   state: GachaState
-  pulls: number
   coins: number
-  owned: Map<string, number>
-  last: GachaPull[]
+  /** 試しの残高（足りないときの購入を試すため） */
+  balance: number
+  collection: GachaCollection
+  last: GachaPullOutcome[]
+  /** 直前にもらったかけら */
+  lastShards: number
+  /** 直前に達成した実績 */
+  lastAchievements: GachaAchievement[]
   /** UR が出た回数目 */
   urAt: { pull: number; name: string; byPity: boolean }[]
 }
 
 const emptySession = (): Session => ({
   state: { pullsSinceUr: 0 },
-  pulls: 0,
   coins: 0,
-  owned: new Map(),
+  balance: START_BALANCE,
+  collection: emptyGachaCollection(),
   last: [],
+  lastShards: 0,
+  lastAchievements: [],
   urAt: [],
 })
 
@@ -144,47 +171,104 @@ export default function AdminGachaSimulatorPage() {
     setSummary(null)
   }
 
-  const draw = (count: number) => {
+  /** コインが足りなかった回（買ったらそのまま引く） */
+  const [shortageCount, setShortageCount] = useState<1 | 10 | null>(null)
+
+  const costOf = (count: number) =>
+    count >= 10 ? settings.tenCostCoins : settings.singleCostCoins
+
+  const draw = (count: 1 | 10, current: Session = session) => {
     if (!isRateValid) return
+    const cost = costOf(count)
+    if (current.balance < cost) {
+      setShortageCount(count)
+      return
+    }
     const result = drawGacha({
       pool,
       settings,
-      state: session.state,
+      state: current.state,
       count,
+      owned: new Set(
+        Object.keys(current.collection.owned).filter(
+          (id) => (current.collection.owned[id] ?? 0) > 0,
+        ),
+      ),
     })
-    const owned = new Map(session.owned)
-    const urAt = [...session.urAt]
-    const items: GachaItem[] = result.pulls.map((pull, index) => {
-      const isNew = !owned.has(pull.prize.id)
-      owned.set(pull.prize.id, (owned.get(pull.prize.id) ?? 0) + 1)
+    const applied = applyGachaPulls(current.collection, result.pulls, settings)
+    const pulled = current.collection.stats.pulls
+    const urAt = [...current.urAt]
+    const items: GachaItem[] = applied.outcomes.map((pull, index) => {
       if (pull.prize.rarity === "UR") {
         urAt.push({
-          pull: session.pulls + index + 1,
+          pull: pulled + index + 1,
           name: pull.prize.name,
           byPity: pull.byPity,
         })
       }
+      const notes = [
+        pull.byPity ? "天井" : pull.byGuarantee ? "確定枠" : null,
+        pull.shards > 0 ? `かぶり → かけら+${pull.shards}` : null,
+      ].filter(Boolean)
       return {
         // 同じ景品が 2 回出てもカードを分ける
-        id: `${session.pulls + index}-${pull.prize.id}`,
+        id: `${pulled + index}-${pull.prize.id}`,
         rarity: pull.prize.rarity,
         name: pull.prize.name,
         imageUrl: pull.prize.imageUrl,
-        isNew,
-        note: pull.byPity ? "天井" : pull.byGuarantee ? "確定枠" : undefined,
+        isNew: pull.isNew,
+        note: notes.length > 0 ? notes.join("・") : undefined,
       }
     })
+    const achievements = newlyUnlockedGachaAchievements(
+      current.collection,
+      applied.collection,
+      pool,
+    )
     setSession({
       state: result.state,
-      pulls: session.pulls + count,
-      coins:
-        session.coins +
-        (count >= 10 ? settings.tenCostCoins : settings.singleCostCoins),
-      owned,
-      last: result.pulls,
+      coins: current.coins + cost,
+      balance: current.balance - cost,
+      collection: applied.collection,
+      last: applied.outcomes,
+      lastShards: applied.gainedShards,
+      lastAchievements: achievements,
       urAt,
     })
-    if (withPerformance) setPerformanceItems(items)
+    if (withPerformance) {
+      setPerformanceItems(items)
+    } else {
+      for (const item of achievements) {
+        toast.success(`実績を達成：${item.name.ja}`)
+      }
+    }
+  }
+
+  /** シミュレーションなので決済はせず、買った枚数を残高に足して続けて引く */
+  const purchaseForTest = (coins: number) => {
+    const count = shortageCount
+    const next = { ...session, balance: session.balance + coins }
+    setSession(next)
+    setShortageCount(null)
+    toast.success(
+      `シミュレーションなので決済せずに ${coins.toLocaleString()} コイン足しました（本番は決済画面へ）`,
+    )
+    if (count) draw(count, next)
+  }
+
+  const exchange = (prize: GachaPrize) => {
+    const next = exchangeGachaPrize(session.collection, prize, settings)
+    if (!next) return
+    const achievements = newlyUnlockedGachaAchievements(
+      session.collection,
+      next,
+      pool,
+    )
+    setSession({ ...session, collection: next })
+    toast.success(`かけらで「${prize.name}」と交換しました`)
+    for (const item of achievements) {
+      toast.success(`実績を達成：${item.name.ja}`)
+    }
   }
 
   const runSimulation = () => {
@@ -204,8 +288,11 @@ export default function AdminGachaSimulatorPage() {
   const costPerPull =
     mode === "ten" ? settings.tenCostCoins / 10 : settings.singleCostCoins
   const expectedToUr = expectedPullsToUr(effective.UR, settings.pityCount)
-  const ownedTypes = session.owned.size
-  const duplicates = session.pulls - ownedTypes
+  const collection = session.collection
+  const ownedTypes = ownedPrizeCount(collection, pool)
+  const duplicates =
+    collection.stats.pulls - (ownedTypes - collection.stats.exchanges)
+  const pity = toPityProgress(session.state, settings)
 
   return (
     <AdminGachaGate
@@ -409,23 +496,34 @@ export default function AdminGachaSimulatorPage() {
               リセット
             </Button>
           </div>
+          <GachaPityMeter progress={pity} />
           <div className="grid gap-2 text-sm sm:grid-cols-4">
-            <Stat label="引いた回数" value={`${session.pulls} 回`} />
+            <div className="rounded-xl bg-white/5 p-3">
+              <div className="text-slate-400 text-xs">
+                持っているコイン（試し）
+              </div>
+              <div className="flex items-center gap-2">
+                {session.balance.toLocaleString()} コイン
+                <button
+                  type="button"
+                  className="text-slate-400 text-xs underline"
+                  onClick={() => setSession({ ...session, balance: 0 })}
+                >
+                  0 にする
+                </button>
+              </div>
+            </div>
             <Stat
-              label="使ったコイン"
-              value={`${session.coins.toLocaleString()} コイン`}
-            />
-            <Stat
-              label="天井まで"
-              value={
-                settings.pityCount > 0
-                  ? `あと ${Math.max(0, settings.pityCount - session.state.pullsSinceUr)} 回`
-                  : "天井なし"
-              }
+              label="引いた回数 / 使ったコイン"
+              value={`${collection.stats.pulls} 回・${session.coins.toLocaleString()} コイン`}
             />
             <Stat
               label="集めた種類 / かぶり"
               value={`${ownedTypes} / ${pool.length} 種・かぶり ${duplicates}`}
+            />
+            <Stat
+              label="かけら（かぶりでたまる）"
+              value={`${collection.shards.toLocaleString()} 個`}
             />
           </div>
           {session.last.length > 0 && (
@@ -433,7 +531,7 @@ export default function AdminGachaSimulatorPage() {
               {session.last.map((pull, index) => (
                 <div
                   // 同じ景品が並ぶことがあるので位置もキーに入れる
-                  key={`${session.pulls}-${index}`}
+                  key={`${collection.stats.pulls}-${index}`}
                   className={`flex flex-col items-center gap-1 rounded-xl p-2 text-center ${
                     pull.prize.rarity === "UR"
                       ? "bg-gradient-to-br from-pink-500/30 via-amber-400/30 to-sky-500/30"
@@ -449,7 +547,7 @@ export default function AdminGachaSimulatorPage() {
                     {PRIZE_KIND_LABEL[pull.prize.kind]}
                     {pull.byPity && "・天井"}
                     {pull.byGuarantee && "・確定枠"}
-                    {(session.owned.get(pull.prize.id) ?? 0) > 1 && "・かぶり"}
+                    {pull.isNew ? "・NEW" : `・かぶり→かけら+${pull.shards}`}
                   </div>
                 </div>
               ))}
@@ -473,6 +571,15 @@ export default function AdminGachaSimulatorPage() {
           )}
         </CardContent>
       </Card>
+
+      <ShardExchangeCard
+        pool={pool}
+        collection={collection}
+        settings={settings}
+        onExchange={exchange}
+      />
+
+      <AchievementsCard pool={pool} collection={collection} />
 
       <Card className={ADMIN_GACHA_CARD}>
         <CardHeader>
@@ -563,10 +670,187 @@ export default function AdminGachaSimulatorPage() {
               // 閉じてから次の演出を始める（演出を最初から作り直すため）
               window.setTimeout(() => draw(count), 0)
             }}
+            resultExtra={<ResultExtra session={session} pity={pity} />}
           />,
           document.body,
         )}
+      {shortageCount && (
+        <GachaCoinShortageDialog
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setShortageCount(null)
+          }}
+          balance={session.balance}
+          cost={costOf(shortageCount)}
+          label={shortageCount >= 10 ? "10 連" : "1 回"}
+          bundleCost={settings.tenCostCoins}
+          singleCost={settings.singleCostCoins}
+          onDrawSingle={shortageCount >= 10 ? () => draw(1) : undefined}
+          onPurchase={purchaseForTest}
+        />
+      )}
     </AdminGachaGate>
+  )
+}
+
+/** 演出の結果の画面でボタンの上に出すもの（天井・かけら・達成した実績） */
+function ResultExtra(props: {
+  session: Session
+  pity: ReturnType<typeof toPityProgress>
+}) {
+  const { session } = props
+  return (
+    <div className="space-y-1.5">
+      {session.lastAchievements.length > 0 && (
+        <p className="mx-auto w-fit max-w-full truncate rounded-full bg-gradient-to-r from-amber-300 to-pink-400 px-3 py-1 font-black text-slate-900 text-xs shadow-lg">
+          🏅 実績を達成：
+          {session.lastAchievements.map((item) => item.name.ja).join("・")}
+        </p>
+      )}
+      {session.lastShards > 0 && (
+        <p className="text-center font-bold text-sky-200 text-xs">
+          かぶりはかけらになりました +{session.lastShards}（いま
+          {session.collection.shards.toLocaleString()}
+          。好きな景品と交換できます）
+        </p>
+      )}
+      <GachaPityMeter progress={props.pity} compact />
+    </div>
+  )
+}
+
+/** かけらで、まだ持っていない景品と交換する */
+function ShardExchangeCard(props: {
+  pool: readonly GachaPrize[]
+  collection: GachaCollection
+  settings: GachaSettings
+  onExchange: (prize: GachaPrize) => void
+}) {
+  const [rarity, setRarity] = useState<GachaRarity>("SR")
+  const missing = props.pool.filter(
+    (prize) =>
+      prize.rarity === rarity && (props.collection.owned[prize.id] ?? 0) === 0,
+  )
+  const cost = props.settings.exchangeShards[rarity]
+  return (
+    <Card className={ADMIN_GACHA_CARD}>
+      <CardHeader>
+        <CardTitle className="text-base">
+          かけら交換（いま {props.collection.shards.toLocaleString()} 個）
+        </CardTitle>
+        <CardDescription className="text-slate-400">
+          かぶった景品はかけらになります（
+          {RARITIES_DESC.map(
+            (r) => `${r} ${props.settings.duplicateShards[r]}`,
+          ).join("・")}
+          ）。かけらで、まだ持っていない景品を 1 つ選んでもらえます（
+          {RARITIES_DESC.map(
+            (r) => `${r} ${props.settings.exchangeShards[r]}`,
+          ).join("・")}
+          ）。
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex flex-wrap gap-1.5">
+          {RARITIES_DESC.map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRarity(r)}
+              className={`rounded-full px-1 py-0.5 ${rarity === r ? "ring-2 ring-white" : "opacity-60"}`}
+            >
+              <RarityBadge rarity={r} />
+            </button>
+          ))}
+        </div>
+        {missing.length === 0 ? (
+          <p className="text-slate-400 text-sm">
+            {rarity} は全部持っています。
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {missing.map((prize) => {
+              const canExchange = props.collection.shards >= cost
+              return (
+                <div
+                  key={prize.id}
+                  className="flex flex-col items-center gap-1 rounded-xl bg-white/5 p-2 text-center"
+                >
+                  <PrizeThumbnail prize={prize} size="sm" />
+                  <div className="text-xs">{prize.name}</div>
+                  <div className="text-[10px] text-slate-400">
+                    {PRIZE_KIND_LABEL[prize.kind]}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={canExchange ? "default" : "secondary"}
+                    disabled={!canExchange}
+                    onClick={() => props.onExchange(prize)}
+                    className="h-7 text-xs"
+                  >
+                    かけら {cost} で交換
+                  </Button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+const TIER_LABEL = [
+  "",
+  "ブロンズ",
+  "シルバー",
+  "ゴールド",
+  "プラチナ",
+  "ダイヤモンド",
+  "レジェンド",
+]
+
+/** ガチャの実績と、いまのひとり分の達成状況 */
+function AchievementsCard(props: {
+  pool: readonly GachaPrize[]
+  collection: GachaCollection
+}) {
+  const sets = completedGachaSets(props.collection, props.pool).length
+  return (
+    <Card className={ADMIN_GACHA_CARD}>
+      <CardHeader>
+        <CardTitle className="text-base">ガチャの実績</CardTitle>
+        <CardDescription className="text-slate-400">
+          サイトの実績に足す予定のもの（達成すると無料コイン）。上で引いた分で判定します。隠し実績は達成するまで名前が出ません。おそろい
+          {sets} 組。
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {GACHA_ACHIEVEMENTS.map((item) => {
+            const isUnlocked = item.isUnlocked(props.collection, props.pool)
+            return (
+              <li
+                key={item.key}
+                className={`flex items-start gap-2 rounded-xl p-2.5 text-sm ${isUnlocked ? "bg-amber-400/15" : "bg-white/5 opacity-70"}`}
+              >
+                <span className="text-lg">{isUnlocked ? "🏅" : "🔒"}</span>
+                <span>
+                  <span className="font-bold">{item.name.ja}</span>
+                  <span className="ml-1.5 text-[10px] text-slate-400">
+                    {TIER_LABEL[item.tier]}
+                    {item.isHidden && "・隠し"}
+                  </span>
+                  <span className="block text-slate-400 text-xs">
+                    {item.description.ja}
+                  </span>
+                </span>
+              </li>
+            )
+          })}
+        </ul>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -610,8 +894,8 @@ function SummaryView(props: {
           }
         />
         <Stat
-          label="ひとりのかぶり（平均）"
-          value={`${summary.averageDuplicates.toFixed(1)} 個`}
+          label="ひとりのかぶり・たまるかけら（平均）"
+          value={`${summary.averageDuplicates.toFixed(1)} 個・かけら ${Math.round(summary.averageShards)}`}
         />
         <Stat
           label="持っていない景品（平均）/ 全部そろった人"

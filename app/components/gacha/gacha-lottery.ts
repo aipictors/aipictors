@@ -19,6 +19,10 @@ export type GachaSettings = {
   tenPullGuarantee: GachaRarity | null
   singleCostCoins: number
   tenCostCoins: number
+  /** かぶったときにもらえるかけらの数（レア度ごと） */
+  duplicateShards: Record<GachaRarity, number>
+  /** かけらで景品と交換するときの数（レア度ごと） */
+  exchangeShards: Record<GachaRarity, number>
 }
 
 export const DEFAULT_GACHA_SETTINGS: GachaSettings = {
@@ -27,6 +31,10 @@ export const DEFAULT_GACHA_SETTINGS: GachaSettings = {
   tenPullGuarantee: "SR",
   singleCostCoins: 300,
   tenCostCoins: 3000,
+  // 10 連で引いたときのひとり平均: 100 回で約 200 個（欲しい SR が 1 つ）、200 回で約 590 個（SSR 1 つ）、
+  // 500 回で約 2,100 個（UR 1 つ）。UR は天井（200 回）があるので、かけらでは遠めにする
+  duplicateShards: { UR: 300, SSR: 60, SR: 15, R: 4, N: 1 },
+  exchangeShards: { UR: 2000, SSR: 450, SR: 120, R: 40, N: 15 },
 }
 
 export type GachaState = {
@@ -87,8 +95,14 @@ const pickPrize = (
   pool: readonly GachaPrize[],
   rarity: GachaRarity,
   random: Random,
+  /** 渡すと、この中にない景品から選ぶ（全部持っていればふつうに選ぶ） */
+  owned?: ReadonlySet<string>,
 ) => {
-  const candidates = pool.filter((prize) => prize.rarity === rarity)
+  const sameRarity = pool.filter((prize) => prize.rarity === rarity)
+  const missing = owned
+    ? sameRarity.filter((prize) => !owned.has(prize.id))
+    : []
+  const candidates = missing.length > 0 ? missing : sameRarity
   return candidates[
     Math.min(candidates.length - 1, Math.floor(random() * candidates.length))
   ]
@@ -96,7 +110,8 @@ const pickPrize = (
 
 /**
  * count 回引く（1 回か 10 連）。state は引いたあとの値を返す。
- * 天井は確定枠より先に見る（天井の UR は確定枠も満たす）
+ * 天井は確定枠より先に見る（天井の UR は確定枠も満たす）。
+ * 天井の UR は、owned を渡すとまだ持っていない UR から選ぶ（天井でかぶらないように）
  */
 export const drawGacha = (props: {
   pool: readonly GachaPrize[]
@@ -104,6 +119,7 @@ export const drawGacha = (props: {
   state: GachaState
   count: number
   random?: Random
+  owned?: ReadonlySet<string>
 }) => {
   const random = props.random ?? Math.random
   const { settings, pool } = props
@@ -141,7 +157,17 @@ export const drawGacha = (props: {
     }
 
     pulls.push({
-      prize: pickPrize(pool, rarity, random),
+      prize: pickPrize(
+        pool,
+        rarity,
+        random,
+        isPity
+          ? new Set([
+              ...(props.owned ?? []),
+              ...pulls.map((pull) => pull.prize.id),
+            ])
+          : undefined,
+      ),
       byPity: isPity,
       byGuarantee,
     })
@@ -190,6 +216,8 @@ export type GachaSimulationSummary = {
   firstUrPulls: { average: number; median: number } | null
   /** ひとり当たりのかぶりの数の平均 */
   averageDuplicates: number
+  /** ひとり当たりのかぶりでたまったかけらの平均 */
+  averageShards: number
   /** ひとり当たりの持っていない景品の数の平均（引き終わったとき） */
   averageMissing: number
   /** 全部そろった人の割合（0〜1） */
@@ -215,6 +243,7 @@ export const simulateGacha = (props: {
   let urPlayers = 0
   let pityHits = 0
   let duplicates = 0
+  let shards = 0
   let missing = 0
   let complete = 0
   const firstUrPulls: number[] = []
@@ -233,6 +262,7 @@ export const simulateGacha = (props: {
         state,
         count,
         random,
+        owned,
       })
       state = result.state
       for (const pull of result.pulls) {
@@ -240,7 +270,10 @@ export const simulateGacha = (props: {
         rarityCounts[pull.prize.rarity]++
         if (pull.byPity) pityHits++
         if (pull.prize.rarity === "UR" && firstUr === null) firstUr = pulled
-        if (owned.has(pull.prize.id)) duplicates++
+        if (owned.has(pull.prize.id)) {
+          duplicates++
+          shards += props.settings.duplicateShards[pull.prize.rarity]
+        }
         owned.add(pull.prize.id)
       }
     }
@@ -270,8 +303,51 @@ export const simulateGacha = (props: {
           }
         : null,
     averageDuplicates: duplicates / players,
+    averageShards: shards / players,
     averageMissing: missing / players,
     completeRatio: complete / players,
+  }
+}
+
+export type GachaPityProgress = {
+  /** 天井なし */
+  isOff: boolean
+  /** 最後に UR が出てから引いた回数 */
+  count: number
+  pityCount: number
+  /** 次の UR 確定まであと何回（この回数目が UR） */
+  remaining: number
+  /** 0〜1 */
+  ratio: number
+  /** 次の 10 連で天井に届く */
+  reachesInTen: boolean
+}
+
+/** 天井までの進み具合（画面のメーター用） */
+export const toPityProgress = (
+  state: GachaState,
+  settings: Pick<GachaSettings, "pityCount">,
+): GachaPityProgress => {
+  const pityCount = settings.pityCount
+  if (pityCount <= 0) {
+    return {
+      isOff: true,
+      count: state.pullsSinceUr,
+      pityCount: 0,
+      remaining: 0,
+      ratio: 0,
+      reachesInTen: false,
+    }
+  }
+  const count = Math.min(state.pullsSinceUr, pityCount - 1)
+  const remaining = pityCount - count
+  return {
+    isOff: false,
+    count,
+    pityCount,
+    remaining,
+    ratio: count / pityCount,
+    reachesInTen: remaining <= 10,
   }
 }
 

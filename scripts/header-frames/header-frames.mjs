@@ -1037,8 +1037,8 @@ export const HEADER_FRAMES = [
     draw: hairline,
   },
   {
-    slug: "gacha-r-one-star",
-    rarity: "R",
+    slug: "gacha-n-one-star",
+    rarity: "N",
     frames: 24,
     frameMs: 150,
     name: "ひとつ星",
@@ -1046,8 +1046,8 @@ export const HEADER_FRAMES = [
     draw: oneStar,
   },
   {
-    slug: "gacha-sr-silver-moon",
-    rarity: "SR",
+    slug: "gacha-r-silver-moon",
+    rarity: "R",
     frames: 24,
     frameMs: 150,
     name: "銀の三日月",

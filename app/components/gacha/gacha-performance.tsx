@@ -20,6 +20,8 @@ type Props = {
   onClose: () => void
   /** 結果の画面の「もう 1 回 / もう 10 連」。渡さなければ出さない */
   onDrawAgain?: (count: 1 | 10) => void
+  /** 結果の画面でボタンの上に出すもの（天井のメーター・かけら・実績など） */
+  resultExtra?: React.ReactNode
 }
 
 /**
@@ -52,6 +54,7 @@ export function GachaPerformance(props: Props): React.ReactNode {
           items={props.items}
           direction={direction}
           skipSignal={skipSignal}
+          bottomInset={props.resultExtra ? 260 : 176}
           onComplete={() => setState("done")}
         />
       )}
@@ -83,6 +86,7 @@ export function GachaPerformance(props: Props): React.ReactNode {
           items={props.items}
           onClose={props.onClose}
           onDrawAgain={props.onDrawAgain}
+          extra={props.resultExtra}
         />
       )}
     </div>
@@ -100,6 +104,7 @@ function GachaResultActions(props: {
   items: readonly GachaItem[]
   onClose: () => void
   onDrawAgain?: (count: 1 | 10) => void
+  extra?: React.ReactNode
 }) {
   return (
     <div
@@ -110,6 +115,7 @@ function GachaResultActions(props: {
     >
       <style>{ACTION_STYLE}</style>
       <div className="mx-auto flex max-w-md flex-col gap-2.5">
+        {props.extra}
         {props.onDrawAgain && (
           <div className="flex gap-2.5">
             <button

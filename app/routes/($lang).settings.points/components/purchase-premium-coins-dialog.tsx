@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import { Check, Minus, Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -14,23 +13,25 @@ import {
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { useTranslation } from "~/hooks/use-translation"
-import { cn } from "~/lib/utils"
-import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { Link } from "~/lib/app/locale-router"
 import {
   BONUS_RATE,
   BONUS_THRESHOLD,
+  COIN_CAMPAIGN,
   calcBonusCoins,
   calcCampaignBonusCoins,
   calcCustomPriceYen,
-  COIN_CAMPAIGN,
-  isCoinCampaignActive,
   calcOfferBonusCoins,
   FIRST_PURCHASE_BONUS_MAX,
+  isCoinCampaignActive,
   MEMBER_BONUS_RATE,
   MIN_CUSTOM_COINS,
   PREMIUM_COIN_PACKAGES,
   type PremiumCoinOffer,
 } from "~/lib/premium-coins"
+import { createPremiumCoinCheckoutUrl } from "~/lib/start-premium-coin-checkout"
+import { cn } from "~/lib/utils"
+import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type PackageKey = keyof typeof PREMIUM_COIN_PACKAGES
@@ -84,13 +85,23 @@ export function PurchasePremiumCoinsDialog(props: {
   triggerClassName?: string
   successPath?: string
   cancelPath?: string
+  /** 開いたときに選んでおく枚数（足りない分だけ買うときなど） */
+  initialCoinAmount?: number
 }) {
   const t = useTranslation()
   const [internalOpen, setInternalOpen] = useState(false)
-  const [coinAmount, setCoinAmount] = useState(MIN_CUSTOM_COINS)
+  const [coinAmount, setCoinAmount] = useState(() =>
+    clampCoinAmount(props.initialCoinAmount ?? MIN_CUSTOM_COINS),
+  )
   const [isLoading, setIsLoading] = useState(false)
 
   const open = props.open ?? internalOpen
+
+  useEffect(() => {
+    if (open && props.initialCoinAmount !== undefined) {
+      setCoinAmount(clampCoinAmount(props.initialCoinAmount))
+    }
+  }, [open, props.initialCoinAmount])
 
   // はじめての購入・プラン加入中の上乗せ（決済のときもサーバーで同じ判定をする）
   const [offer, setOffer] = useState<PremiumCoinOffer | null>(null)
@@ -184,41 +195,13 @@ export function PurchasePremiumCoinsDialog(props: {
 
     try {
       setIsLoading(true)
-      const headers = await getViewerRequestHeaders({
-        includeJsonContentType: true,
+      const checkoutUrl = await createPremiumCoinCheckoutUrl({
+        coins: matchedPackage?.coins ?? coinAmount,
+        successPath: props.successPath,
+        cancelPath: props.cancelPath,
       })
-
-      const body: Record<string, unknown> = { packageId: activePackageId }
-      if (activePackageId === "PREMIUM_COINS_CUSTOM") {
-        body.customCoins = coinAmount
-      }
-      if (props.successPath) {
-        body.successPath = props.successPath
-      }
-      if (props.cancelPath) {
-        body.cancelPath = props.cancelPath
-      }
-
-      const response = await fetch("/api/stripe/premium-coins-checkout", {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body),
-      })
-
-      const json = (await response.json()) as {
-        error: string | null
-        data?: { checkoutUrl?: string }
-      }
-
-      if (!response.ok || json.error || !json.data?.checkoutUrl) {
-        throw new Error(
-          json.error ??
-            t("購入セッションの作成に失敗しました", "Failed to start purchase"),
-        )
-      }
-
       handleOpenChange(false)
-      window.location.href = json.data.checkoutUrl
+      window.location.href = checkoutUrl
     } catch (error) {
       toast.error(
         error instanceof Error
