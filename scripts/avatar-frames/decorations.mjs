@@ -2933,11 +2933,83 @@ const gachaPictorRainbow = (t) => {
   ${twinkles(t, [[300, 60, 1, 0.1], [300, 200, 0.9, 0.6], [296, 260, 0.9, 0.35]], "#fff")}</svg>`
 }
 
+
+/* ---- 控えめな枠（細いふちに小さな飾りがひとつ。動きも小さく） ---- */
+
+const gachaHairline = (t) => {
+  const [x, y] = polar(224, t * 360)
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(224, 3.2, "#fff")}${ring(232, 1, "#fff", 'opacity=".55"')}
+    <circle cx="${x}" cy="${y}" r="4.2" fill="#fff"/>
+  </g></svg>`
+}
+
+const gachaPencil = (t) => {
+  const line = (seed, r0) => {
+    const rand = rng(seed)
+    const ph = [rand(), rand(), rand()].map((v) => v * TAU)
+    const pts = Array.from({ length: 121 }, (_, i) => {
+      const d = i * 3.1 - 6
+      const r = r0 + 1.6 * Math.sin((d * 3 * Math.PI) / 180 + ph[0]) + 1.1 * Math.sin((d * 7 * Math.PI) / 180 + ph[1]) + 0.6 * Math.sin((d * 13 * Math.PI) / 180 + ph[2])
+      return polar(r, d).join(" ")
+    })
+    return `<path d="M${pts.join("L")}" fill="none" stroke="#4a4a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>`
+  }
+  const [px, py] = polar(232, 138)
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(224, 7, "#fff", 'opacity=".85"')}${line(11, 224)}${line(29, 226.5)}
+    ${place(px, py, 228 + wave(t) * 2, 0.62, '<path d="M-6-40H6V22L0 36-6 22Z" fill="#ffd36b" stroke="#4a4a52" stroke-width="2" stroke-linejoin="round"/><path d="M-6 22L0 36 6 22Z" fill="#f3d9b5" stroke="#4a4a52" stroke-width="2" stroke-linejoin="round"/><path d="M-2 31L0 36 2 31Z" fill="#4a4a52"/><rect x="-6" y="-50" width="12" height="10" rx="2" fill="#ff9fb5" stroke="#4a4a52" stroke-width="2"/>')}
+  </g></svg>`
+}
+
+const gachaOneStar = (t) => {
+  const m = METAL.gold
+  const k = 0.85 + 0.15 * wave(t)
+  const [x, y] = polar(226, 42)
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs(lg("g1s", [m[4], m[3], m[2]]))}<g filter="url(#ds)">
+    ${ring(222, 4, m[1])}${ring(222, 2.6, m[3])}
+    ${place(x, y, 42, k, star5(19, "url(#g1s)", m[1], 1.4))}
+  </g>${glint(x, y, 0.75, flash(t, 0.15))}</svg>`
+}
+
+const gachaSprig = (t) => {
+  const twig = `<path d="${arc(224, 196, 252)}" stroke="#5f8f4e" stroke-width="2.6" fill="none" stroke-linecap="round"/>${Array.from({ length: 6 }, (_, i) => {
+    const d = 200 + i * 9.5
+    const sway = wave(t, i / 6) * 5
+    const sz = 0.64 - Math.abs(i - 2.5) * 0.05
+    return `${place(...polar(225, d), d - 40 + sway, sz, leaf(i % 2 ? "#8cc672" : "#a8d98d"))}${place(...polar(223, d + 4), d + 220 - sway, sz * 0.9, leaf(i % 2 ? "#a8d98d" : "#8cc672"))}`
+  }).join("")}`
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs()}<g filter="url(#ds)">
+    ${ring(224, 3, "#f4f1e6")}${ring(224, 3, "none", 'stroke="#b9c9a8" stroke-width="1" opacity=".9"')}${twig}
+  </g></svg>`
+}
+
+const gachaSilverMoon = (t) => {
+  const m = METAL.silver
+  const [x, y] = polar(229, 36)
+  const moon = '<path d="M0-18A18 18 0 1 0 0 18A22 22 0 0 1 0-18Z" fill="url(#gsm)" stroke="#5c6876" stroke-width="1.2"/>'
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs(lg("gsm", [m[5], m[4], m[2]], 1, 1))}<g filter="url(#ds)">
+    ${ring(222, 7.5, m[0])}${metalBand(222, 6.4, m)}
+    ${place(x, y, 18 + wave(t) * 4, 1.2, moon)}
+    ${place(...polar(240, 54), 0, 1, star5(5.5, "#fff", m[1], 0.8))}${place(...polar(236, 22), 0, 1, star5(4, "#fff", m[1], 0.8))}
+  </g>${twinkles(t, [[246, 46, 0.55, 0.3], [238, 14, 0.4, 0.75]])}</svg>`
+}
+
+const gachaGoldThread = (t) => {
+  const m = METAL.gold
+  return `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${defs(PEARL_DEF)}<g filter="url(#ds)">
+    ${ring(220, 2.6, m[1])}${metalBand(220, 2, m, { layers: 2 })}
+    ${ring(229, 2.6, m[1])}${metalBand(229, 2, m, { shift: 90, layers: 2 })}
+    ${pearl(...polar(224.5, 180), 8)}${pearl(...polar(225, 166), 4.2)}${pearl(...polar(225, 194), 4.2)}
+  </g>${glint(...polar(224.5, 180), 0.6, flash(t, 0.4))}</svg>`
+}
+
 const CANVAS_VIEW_BOX = 'viewBox="-60 -60 632 632"'
 
 const withCanvas = (draw) => (t) =>
   draw(t).replace(/viewBox="[^"]*"( preserveAspectRatio="[^"]*")?/, CANVAS_VIEW_BOX)
 
+/** reserve: 作ってあるが、いまのガチャには入れない枠（UR・SSR は数を絞る。あとのイベントなどで使う） */
 const decorations = [
   { slug: "sakura", category: "nature", name: "満開の桜", description: "枝に咲く桜と、舞い散る花びら", draw: sakura },
   { slug: "momiji", category: "nature", name: "紅葉の枝", description: "赤と黄金のもみじが舞う秋の枝", draw: momiji },
@@ -3005,10 +3077,10 @@ const decorations = [
   { slug: "gacha-sr-amethyst", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "紫水晶の結晶", description: "銀の輪から伸びるアメジストの結晶", draw: gachaAmethyst },
   { slug: "gacha-sr-constellation", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "星座の輪", description: "夜空の輪をめぐる金の星座", draw: gachaConstellation },
   { slug: "gacha-sr-stained-glass", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ステンドグラス", description: "光が移ろう七色のステンドグラス", draw: gachaStainedGlass },
-  { slug: "gacha-ssr-ice-queen", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "氷晶の女王冠", description: "氷の結晶と白金の王冠、雪とオーロラ", draw: gachaIceQueen },
-  { slug: "gacha-ssr-clockwork", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "時計仕掛けの金環", description: "回る歯車と時計の文字盤、四色の宝石", draw: gachaClockwork },
-  { slug: "gacha-ssr-pearl-sea", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "深海の真珠", description: "真珠と貝殻、ゆれる海藻と立ちのぼる泡", draw: gachaPearlSea },
-  { slug: "gacha-ur-prism-seraph", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "虹翼の熾天使", description: "虹色に移ろう翼と光の輪、七色の宝石", draw: gachaPrismSeraph },
+  { slug: "gacha-ssr-ice-queen", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, reserve: true, category: "gacha", name: "氷晶の女王冠", description: "氷の結晶と白金の王冠、雪とオーロラ", draw: gachaIceQueen },
+  { slug: "gacha-ssr-clockwork", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, reserve: true, category: "gacha", name: "時計仕掛けの金環", description: "回る歯車と時計の文字盤、四色の宝石", draw: gachaClockwork },
+  { slug: "gacha-ssr-pearl-sea", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, reserve: true, category: "gacha", name: "深海の真珠", description: "真珠と貝殻、ゆれる海藻と立ちのぼる泡", draw: gachaPearlSea },
+  { slug: "gacha-ur-prism-seraph", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, reserve: true, category: "gacha", name: "虹翼の熾天使", description: "虹色に移ろう翼と光の輪、七色の宝石", draw: gachaPrismSeraph },
   { slug: "gacha-ur-star-crown", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "星海の王冠", description: "めぐる惑星と星雲の輪、白金の王冠", draw: gachaStarCrown },
   { slug: "gacha-n-gingham", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ギンガムチェック", description: "ピンクのチェックの輪と、てっぺんのリボン", draw: gachaGingham },
   { slug: "gacha-n-lemon", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "レモンソーダ", description: "ソーダ色の輪をめぐる輪切りのレモンと泡", draw: gachaLemon },
@@ -3023,7 +3095,7 @@ const decorations = [
   { slug: "gacha-ssr-glass-butterfly", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "硝子の蝶", description: "透きとおる蝶が舞う、白金と虹色の輪", draw: gachaGlassButterfly },
   { slug: "gacha-ssr-sun-moon", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "日輪と月輪", description: "金の太陽と銀の月、半分ずつの金銀の輪", draw: gachaSunMoon },
   { slug: "gacha-ur-kyubi", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "九尾の白狐", description: "虹に染まる九本の尾と狐耳、めぐる狐火", draw: gachaKyubi },
-  { slug: "gacha-ur-lotus", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "七彩の蓮華", description: "七色に移ろう蓮の花びらと回る曼荼羅", draw: gachaLotus },
+  { slug: "gacha-ur-lotus", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, reserve: true, category: "gacha", name: "七彩の蓮華", description: "七色に移ろう蓮の花びらと回る曼荼羅", draw: gachaLotus },
   { slug: "gacha-n-soap-bubbles", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "シャボン玉", description: "パステルの輪をめぐるシャボン玉", draw: gachaSoapBubbles },
   { slug: "gacha-n-mint-choco", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "チョコミント", description: "ミント色の輪にチョコチップと、とろけるチョコ", draw: gachaMintChoco },
   { slug: "gacha-r-ghosts", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "おばけのパレード", description: "かぼちゃのランタンと、輪をめぐる小さなおばけ", draw: gachaGhosts },
@@ -3033,6 +3105,12 @@ const decorations = [
   { slug: "gacha-ssr-armillary", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "金の天球儀", description: "回る金の円環と星座の目盛り、てっぺんの太陽", draw: gachaArmillary },
   { slug: "gacha-ssr-pictor-love", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ぴくたーちゃんのだいすき", description: "ハートを抱くぴくたーちゃんと、ローズゴールドのハートの輪", draw: gachaPictorLove },
   { slug: "gacha-ur-pictor-rainbow", rarity: "UR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "きらめくぴくたーちゃん", description: "虹色の輪と星、ふたりのぴくたーちゃん", draw: gachaPictorRainbow },
+  { slug: "gacha-n-hairline", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ほそ線リング", description: "白い細い二重線と、ゆっくりめぐる小さな粒", draw: gachaHairline },
+  { slug: "gacha-n-pencil", rarity: "N", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "えんぴつの線", description: "えんぴつで描いた手描きの輪と、小さなえんぴつ", draw: gachaPencil },
+  { slug: "gacha-r-one-star", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "ひとつ星", description: "細い金の輪に、小さな星がひとつ", draw: gachaOneStar },
+  { slug: "gacha-r-sprig", rarity: "R", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "若葉の小枝", description: "生成りの細い輪に、ゆれる若葉の小枝", draw: gachaSprig },
+  { slug: "gacha-sr-silver-moon", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "銀の三日月", description: "細い銀の輪に、三日月と小さな星", draw: gachaSilverMoon },
+  { slug: "gacha-sr-gold-thread", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "金の細糸と真珠", description: "二本の細い金の糸と、真珠がひと粒", draw: gachaGoldThread },
 ]
 
 export const DECORATIONS = decorations.map((item) => ({

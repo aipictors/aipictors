@@ -559,6 +559,43 @@ const pictorRainbow = (t, { w, rad }, layer = "all") => {
   return layered(w, rad, layer, `${baseDefs(flowGrad("hprBand", [...PRISM, PRISM[0]].map((c) => mixHex(c, "#ffffff", 0.2)), 0, w) + bezelDef(p) + pictorOutlineDef("pcOut", 4))}`, base, motion)
 }
 
+/* ------------------------------------------------------------------ */
+/* 控えめな枠（細いふちに小さな飾りがひとつ。アイコン枠の同じ名前のものとそろう）    */
+/* ------------------------------------------------------------------ */
+
+const hairline = (t, { w, rad }, layer = "all") => {
+  const [x, y] = perimeter(w, 12, t)
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, 12, `fill="none" stroke="#fff" stroke-width="3"`)}${rrect(w, rad, 20, `fill="none" stroke="#fff" stroke-width="1" opacity=".55"`)}
+    </g>`
+  const motion = `<circle cx="${f(x)}" cy="${f(y)}" r="4" fill="#fff" filter="url(#hds)"/>`
+  return layered(w, rad, layer, baseDefs(), base, motion)
+}
+
+const oneStar = (t, { w, rad }, layer = "all") => {
+  const g = METAL.gold
+  const x = w - 56
+  const y = 40
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, 12, `fill="none" stroke="${g[1]}" stroke-width="4"`)}${rrect(w, rad, 12, `fill="none" stroke="${g[3]}" stroke-width="2.4"`)}
+    </g>`
+  const motion = `<g filter="url(#hds)">${place(x, y, 12, 0.9 + 0.12 * wave(t), star5(24, "url(#h1s)", g[1], 1.6))}</g>${glint(x, y, 0.8, flash(t, 0.15))}`
+  return layered(w, rad, layer, baseDefs(lg("h1s", [g[4], g[3], g[2]])), base, motion)
+}
+
+const silverMoon = (t, { w, rad }, layer = "all") => {
+  const m = METAL.silver
+  const x = w - 64
+  const y = 46
+  const moon = '<path d="M0-18A18 18 0 1 0 0 18A22 22 0 0 1 0-18Z" fill="url(#hsm)" stroke="#5c6876" stroke-width="1.2"/>'
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, 12, `fill="none" stroke="${m[0]}" stroke-width="7"`)}${rrect(w, rad, 12, `fill="none" stroke="url(#hsmBand)" stroke-width="5"`)}
+      ${place(x, y, 18, 1.7, moon)}${place(x - 52, y - 8, 0, 1, star5(7, "#fff", m[1], 1))}${place(x + 10, y + 46, 0, 1, star5(5, "#fff", m[1], 1))}
+    </g>`
+  const motion = `${sparkle(x - 34, y + 22, 0.55, "#fff", Math.max(0, wave(t, 0.3)))}${sparkle(x - 90, y + 10, 0.45, "#fff", Math.max(0, wave(t, 0.75)))}`
+  return layered(w, rad, layer, baseDefs(lg("hsm", [m[5], m[4], m[2]], 1, 1) + flowGrad("hsmBand", [m[2], m[4], m[5], m[3], m[1]], 0, w)), base, motion)
+}
+
 export const HEADER_FRAMES = [
   { slug: "gacha-ssr-makie", rarity: "SSR", frames: 24, frameMs: 150, name: "金蒔絵の夜桜", description: "漆黒と金のふちに、角から伸びる夜桜の枝と満月", draw: makie },
   { slug: "gacha-ur-kyubi", rarity: "UR", frames: 24, frameMs: 150, name: "九尾の白狐", description: "左上と右下の角から広がる九本の尾と、ふちを流れる狐火", draw: kyubi },
@@ -569,4 +606,7 @@ export const HEADER_FRAMES = [
   { slug: "gacha-ssr-armillary", rarity: "SSR", frames: 24, frameMs: 150, name: "金の天球儀", description: "左上の金の天球儀と右下の太陽、星座の目盛りのふち", draw: armillary },
   { slug: "gacha-ssr-pictor-love", rarity: "SSR", frames: 24, frameMs: 150, name: "ぴくたーちゃんのだいすき", description: "ローズゴールドのハートのふちと、ふたりのぴくたーちゃん", draw: pictorLove },
   { slug: "gacha-ur-pictor-rainbow", rarity: "UR", frames: 24, frameMs: 150, name: "きらめくぴくたーちゃん", description: "虹色のふちと紙吹雪、ふたりのぴくたーちゃん", draw: pictorRainbow },
+  { slug: "gacha-n-hairline", rarity: "N", frames: 24, frameMs: 150, name: "ほそ線リング", description: "白い細い二重線と、ふちをゆっくりめぐる小さな粒", draw: hairline },
+  { slug: "gacha-r-one-star", rarity: "R", frames: 24, frameMs: 150, name: "ひとつ星", description: "細い金のふちに、右上の小さな星がひとつ", draw: oneStar },
+  { slug: "gacha-sr-silver-moon", rarity: "SR", frames: 24, frameMs: 150, name: "銀の三日月", description: "細い銀のふちに、右上の三日月と小さな星", draw: silverMoon },
 ]
