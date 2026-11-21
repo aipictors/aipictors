@@ -121,6 +121,8 @@ function UserWorkCard(props: {
 export function UserWorksSection(props: {
   title: string
   link?: string
+  /** 見出しの右に出すボタン（自分のプロフィールの「編集」など） */
+  action?: React.ReactNode
   children: React.ReactNode
 }) {
   const t = useTranslation()
@@ -131,6 +133,7 @@ export function UserWorksSection(props: {
         <h2 className="font-bold text-lg tracking-tight md:text-xl">
           {props.title}
         </h2>
+        {props.action}
         {props.link && (
           <Link
             to={props.link}

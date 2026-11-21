@@ -2,6 +2,7 @@ import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import {
   CheckIcon,
   ExternalLinkIcon,
+  PencilIcon,
   PenLine,
   SquarePlusIcon,
 } from "lucide-react"
@@ -25,6 +26,7 @@ import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/com
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
 import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
 import { UserBiography } from "~/routes/($lang)._main.users.$user._index/components/user-biography"
+import { UserLoginEditDialog } from "~/routes/($lang)._main.users.$user._index/components/user-login-edit-dialog"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user._index/components/user-profile-avatar"
 import { UserProfileModeSwitch } from "~/routes/($lang)._main.users.$user._index/components/user-profile-mode-switch"
 import { UserProfileStatus } from "~/routes/($lang)._main.users.$user._index/components/user-profile-status"
@@ -167,7 +169,23 @@ export function UserProfileNameIcon(props: Props) {
             <UserSubscriptionIcon passType={user.pass?.type} />
           </div>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 break-all text-muted-foreground text-sm">
-            <span>@{user.login}</span>
+            {isMyPage ? (
+              <UserLoginEditDialog
+                currentLogin={user.login}
+                triggerChildren={
+                  <button
+                    type="button"
+                    className="group inline-flex items-center gap-1 rounded-full py-0.5 pr-1.5 hover:text-foreground"
+                    aria-label={t("ユーザー ID を変更", "Change user ID")}
+                  >
+                    <span>@{user.login}</span>
+                    <PencilIcon className="size-3.5 opacity-60 group-hover:opacity-100" />
+                  </button>
+                }
+              />
+            ) : (
+              <span>@{user.login}</span>
+            )}
             {!isMyPage && user.isFollower && (
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
                 {t("フォローされています", "Follows you")}

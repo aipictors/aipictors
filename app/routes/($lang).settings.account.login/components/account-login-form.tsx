@@ -1,29 +1,17 @@
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { AuthContext } from "~/contexts/auth-context"
-import {
-  useMutation,
-  useSuspenseQuery,
-} from "@apollo/client/index"
 import { isApolloError } from "@apollo/client/errors"
+import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { isValidUserLogin } from "~/utils/is-valid-user-login"
 
-/* ────────────────────────────────
- *  ユーザ ID バリデーション
- *    - 半角英字を 1 文字以上含む
- *    - 使用できる文字は a-z / A-Z / 0-9 / _ / -
- *    - WordPress が弾く記号（空白や @!# など）は不可
- * ──────────────────────────────── */
-const isValidLogin = (login: string): boolean => {
-  const allowedChars = /^[A-Za-z0-9_-]+$/
-  const hasAlphabet = /[A-Za-z]/
-  return allowedChars.test(login) && hasAlphabet.test(login)
-}
+const isValidLogin = isValidUserLogin
 
-export function AccountLoginForm () {
+export function AccountLoginForm() {
   const appContext = useContext(AuthContext)
   const t = useTranslation()
 
