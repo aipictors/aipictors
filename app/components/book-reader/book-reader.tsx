@@ -433,7 +433,15 @@ export function BookReader(props: Props): ReactNode {
     const element = stageRef.current
     if (element === null) return
     const update = () => {
-      setStage({ width: element.clientWidth, height: element.clientHeight })
+      // ノッチ・ホームバーの余白（padding）を除いて測る。含めるとページが上下のバーの下まで伸びて見切れる
+      const box = window.getComputedStyle(element)
+      setStage({
+        width: element.clientWidth,
+        height:
+          element.clientHeight -
+          (Number.parseFloat(box.paddingTop) || 0) -
+          (Number.parseFloat(box.paddingBottom) || 0),
+      })
       setSegments(readHorizontalSegments())
     }
     update()
@@ -1670,7 +1678,9 @@ function TitlePage(props: {
         <div
           // 扉の中で読めるように、長い前書きはこの枠の中で送る
           className="max-h-[30%] w-full max-w-md overflow-y-auto whitespace-pre-wrap break-words rounded-md px-4 py-3 text-left text-sm"
+          // 本文と同じ書体にする（端末に日本語の書体が無いと、前書きだけ豆腐になる。iPhone の Safari で起きていた）
           style={{
+            fontFamily: "var(--rb-font)",
             color: props.palette.text,
             border: `1px solid ${props.palette.accent}40`,
             lineHeight: 1.8,
