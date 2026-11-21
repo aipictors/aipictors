@@ -8,8 +8,6 @@ type CoinSummary = {
   lockedExchangePremiumBalance: number
   expiredFreeCoins: number
   expiredPremiumCoins: number
-  /** supportTargetUserId を渡したときだけ。推しに使えるフリーコイン（推しで受け取った分は推しに使えない） */
-  supportFreeBalance?: number
   /** supportTargetUserId を渡したときだけ。推す相手の受け取りの状態 */
   supportTarget?: {
     userId: string

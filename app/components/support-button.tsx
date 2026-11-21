@@ -132,8 +132,6 @@ export function SupportButton({
   // 推す相手の受け取りの状態（残高と同じ応答で受け取る。分かるまではプレミアムも選べる・報酬の一言は出さない）
   const [supportTarget, setSupportTarget] =
     useState<CoinSummarySupportTarget | null>(null)
-  // 推しで受け取ったフリーコインのうち推しに使えない分（残高に含まれるが、推しには使えない）
-  const [receivedFreeCoinBalance, setReceivedFreeCoinBalance] = useState(0)
   const isPremiumAccepted = supportTarget?.premiumAccepted !== false
   const isFreeReceiveAccepted = supportTarget?.freeReceiveAccepted !== false
   // 報酬の印と一言は、作者が報酬に参加していてプレミアムコインを受け取るときだけ（R18 の作品のページでは出さない）
@@ -181,7 +179,6 @@ export function SupportButton({
         error?: string
         data?: {
           freeBalance?: number
-          supportFreeBalance?: number
           premiumBalance?: number
           supportTarget?: CoinSummarySupportTarget
         }
@@ -191,18 +188,7 @@ export function SupportButton({
         return
       }
 
-      // 推しで受け取ったフリーコインは推しに使えないので、推しに使える分を出す
-      setCurrentFreeCoinBalance(
-        json.data.supportFreeBalance ?? json.data.freeBalance ?? 0,
-      )
-      setReceivedFreeCoinBalance(
-        json.data.supportFreeBalance === undefined
-          ? 0
-          : Math.max(
-              0,
-              (json.data.freeBalance ?? 0) - json.data.supportFreeBalance,
-            ),
-      )
+      setCurrentFreeCoinBalance(json.data.freeBalance ?? 0)
       setCurrentPremiumCoinBalance(json.data.premiumBalance ?? 0)
       setSupportTarget(json.data.supportTarget ?? null)
       setIsBalanceLoaded(true)
@@ -550,14 +536,6 @@ export function SupportButton({
                 {t(
                   "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
                   "This creator does not accept support with premium coins. You can support with free coins",
-                )}
-              </p>
-            )}
-            {receivedFreeCoinBalance > 0 && coinType === "FREE" && (
-              <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">
-                {t(
-                  `推しで受け取ったフリーコイン（${receivedFreeCoinBalance.toLocaleString()} 枚）は推しには使えません。生成などに使えます`,
-                  `Free coins you received from support (${receivedFreeCoinBalance.toLocaleString()}) cannot be used for support. You can use them for generation and more`,
                 )}
               </p>
             )}

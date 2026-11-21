@@ -42,8 +42,8 @@ export function CoinHelpContent (props: Props) {
         </p>
         <p className="text-muted-foreground text-sm leading-6">
           {t(
-            "毎日付与されたフリーコインは当日 24:00 に失効します。フリーコインの推しで受け取ったフリーコインは受け取りから 30 日有効です（1 日 300 枚まで）。生成ではプレミアムコインより先に、期限の近いものから使われます。",
-            "Daily granted free coins expire at 24:00 on the same day. Free coins received as support are valid for 30 days (up to 300 a day). Free coins are consumed before premium coins during generation, soonest-expiring first.",
+            "毎日付与されたフリーコインは当日 24:00 に失効します。フリーコインで推されると、推された枚数の 2/3（切り捨て）が受け取りから 30 日有効のフリーコインとして入ります（1 日 300 枚まで）。受け取ったフリーコインも生成や推しに使えます。生成ではプレミアムコインより先に、期限の近いものから使われます。",
+            "Daily granted free coins expire at 24:00 on the same day. When you are supported with free coins, you receive 2/3 of the amount (rounded down) as free coins valid for 30 days (up to 300 a day). You can use them for generation or to support others. Free coins are consumed before premium coins during generation, soonest-expiring first.",
           )}
         </p>
       </div>

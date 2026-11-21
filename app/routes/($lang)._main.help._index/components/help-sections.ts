@@ -625,8 +625,8 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: "Purchased premium coins expire 3 months after purchase.",
       },
       {
-        ja: "フリーコインで推されると、受け取った人のフリーコインになります（受け取りから 30 日有効、1 日 300 枚まで。超えた分は pt だけ）。プレミアムコインで推された分はプレミアムコインになります。",
-        en: "Free-coin support becomes the recipient's free coins (valid 30 days, up to 300 a day; beyond that it counts as pt only). Premium-coin support becomes premium coins.",
+        ja: "フリーコインで推されると、推された枚数の 2/3（切り捨て）が受け取った人のフリーコインになります（受け取りから 30 日有効、1 日 300 枚まで。超えた分は pt だけ）。受け取ったフリーコインも推しに使えます。プレミアムコインで推された分は、そのままの枚数のプレミアムコインになります。",
+        en: "With free-coin support, 2/3 of the amount (rounded down) becomes the recipient's free coins (valid 30 days, up to 300 a day; beyond that it counts as pt only). Received free coins can be used for support too. Premium-coin support becomes the same number of premium coins.",
       },
       {
         ja: "推しにはメッセージを付けられます。枚数が多いほどコメント欄で目立つ色になります（スーパーチャットのように）。",
