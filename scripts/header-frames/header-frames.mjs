@@ -73,6 +73,71 @@ const layered = (w, rad, layer, defs, base, motion) =>
   svg(w, rad, `${defs}${layer === "motion" ? "" : base}${layer === "base" ? "" : motion}`)
 
 /* ------------------------------------------------------------------ */
+/* SSR・UR の彫金の帯                                                    */
+/* ------------------------------------------------------------------ */
+
+/** 角の唐草の金具（左上の角の形。ほかの角は裏返して使う）。内側へは 40px ほどまで */
+const cornerPiece = (id, m, jewel, t, phase, ur) => {
+  const curl = `M60 5C74 3 84 13 80 24C77 32 65 31 66 23C67 18 73 18 73 22`
+  const metal = (d, wd) => `<path d="${d}" fill="none" stroke="${m[0]}" stroke-width="${wd + 2.6}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="url(#${id}F)" stroke-width="${wd}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${m[5]}" stroke-width="${f(wd * 0.22)}" stroke-linecap="round" opacity=".8" transform="translate(-.6 -.8)"/>`
+  const half = `${metal(curl, 4.6)}${metal("M44 26C50 30 52 36 48 41", 3)}`
+  const plate = `<path d="M0 0H62C56 10 46 14 36 15 32 24 24 32 15 36 14 46 10 56 0 62Z" fill="url(#${id}F)" stroke="${m[0]}" stroke-width="1.8"/><path d="M8 8H50C46 12 40 14 32 14 28 22 22 28 14 32 13 40 11 46 8 50Z" fill="none" stroke="${m[5]}" stroke-width="1" opacity=".7"/>`
+  const small = ur ? `${setGem(50, 9, 3.4, m, GEM.diamond, t, phase + 0.3)}${setGem(9, 50, 3.4, m, GEM.diamond, t, phase + 0.6)}` : `${pearlDot(50, 9, 3.2)}${pearlDot(9, 50, 3.2)}`
+  return `${half}<g transform="matrix(0 1 1 0 0 0)">${half}</g>${plate}${small}${setGem(22, 22, ur ? 10 : 8.5, m, jewel, t, phase)}`
+}
+
+const pearlDot = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fffaf3" stroke="#a8948a" stroke-width=".8"/><circle cx="${f(x - r * 0.3)}" cy="${f(y - r * 0.35)}" r="${f(r * 0.32)}" fill="#fff"/>`
+
+const CORNER_AT = (w) => [
+  "",
+  `translate(${w} 0) scale(-1 1)`,
+  `translate(${w} ${H}) scale(-1 -1)`,
+  `translate(0 ${H}) scale(1 -1)`,
+]
+
+/**
+ * 彫金の帯。inlay は帯の真ん中の象嵌（エナメルや虹色）、corners は唐草の金具を付ける角（0 左上・1 右上・2 右下・3 左下）、
+ * gems は帯に並べる宝石 [位置 0〜1（上の辺は 0〜0.5、下の辺は 0.5〜1）, 宝石]。ur で虹のふちと宝石が増える
+ */
+const luxe = (id, t, { w, rad }, m, { inlay, inlayWidth = 7, corners = [0, 1, 2, 3], cornerJewel, gems = [], ur = false, halo }) => {
+  const c = 13
+  const defs = `${flowGrad(`${id}B`, [m[1], m[3], m[5], m[3], m[2], m[4], m[5], m[2], m[1]], 0, w)}${lg(`${id}F`, [m[5], m[4], m[3], m[2]], 1, 1)}${bezelDef(m)}`
+  const at = CORNER_AT(w)
+  const gemAt = ([k, jewel], i) => {
+    const x = k < 0.5 ? w * (k * 2) : w * ((k - 0.5) * 2)
+    const y = k < 0.5 ? c : H - c
+    return [x, y, jewel, i]
+  }
+  const placed = gems.map(gemAt)
+  const base = `<g filter="url(#hds)">
+      ${rrect(w, rad, c, `fill="none" stroke="${m[0]}" stroke-width="25"`)}
+      ${rrect(w, rad, c, `fill="none" stroke="url(#${id}B)" stroke-width="21"`)}
+      ${rrect(w, rad, c - 8.6, `fill="none" stroke="${m[5]}" stroke-width="1.3" opacity=".9"`)}${rrect(w, rad, c + 8.6, `fill="none" stroke="${m[0]}" stroke-width="1.3" opacity=".75"`)}
+      ${rrect(w, rad, c, `fill="none" stroke="${m[0]}" stroke-width="${inlayWidth + 3}"`)}
+      ${rrect(w, rad, c, `fill="none" stroke="${inlay}" stroke-width="${inlayWidth}"`)}
+      ${rrect(w, rad, c - inlayWidth / 2 - 1, `fill="none" stroke="${m[5]}" stroke-width=".9"`)}${rrect(w, rad, c + inlayWidth / 2 + 1, `fill="none" stroke="${m[4]}" stroke-width=".9"`)}
+      ${rrect(w, rad, c + 15.5, `fill="none" stroke="${m[0]}" stroke-width="4.4" stroke-dasharray="0 7" stroke-linecap="round"`)}
+      ${rrect(w, rad, c + 15.5, `fill="none" stroke="${m[4]}" stroke-width="3" stroke-dasharray="0 7" stroke-linecap="round"`)}
+      ${halo ? rrect(w, rad, 1.6, `fill="none" stroke="${halo}" stroke-width="3.2"`) : ""}
+      ${placed.map(([x, y, jewel, i]) => setGem(x, y, ur ? 6 : 5.4, m, GEM[jewel], t, i / Math.max(1, placed.length))).join("")}
+      ${corners.map((k) => `<g transform="${at[k]}">${cornerPiece(id, m, GEM[cornerJewel], t, k / 4, ur)}</g>`).join("")}
+    </g>`
+  // 帯を流れる光（2 本。pathLength を 1000 にして 1 周で 1000 進める）
+  const sweep = [[130, 15, 0.1], [64, 9, 0.2], [22, 3, ur ? 0.75 : 0.6]]
+    .map(([len, sw, o]) => rrect(w, rad, c, `pathLength="1000" fill="none" stroke="#fff" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${len} ${500 - len}" stroke-dashoffset="${f(-(t * 1000) + len / 2)}" opacity="${o}"`))
+    .join("")
+  const glints = [
+    ...placed.map(([x, y, , i]) => glint(x, y, ur ? 0.75 : 0.6, flash(t, i / Math.max(1, placed.length) + 0.1))),
+    ...corners.map((k) => {
+      const x = k === 1 || k === 2 ? w - 22 : 22
+      const y = k >= 2 ? H - 22 : 22
+      return glint(x, y, ur ? 1.1 : 0.9, flash(t, k / 4 + 0.05))
+    }),
+  ].join("")
+  return { defs, base, motion: `${sweep}${glints}` }
+}
+
+/* ------------------------------------------------------------------ */
 /* SSR 金蒔絵の夜桜                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -103,7 +168,7 @@ const makie = (t, { w, rad }, layer = "all") => {
       ${buds}${flowers}</g>`
   }
   // 金の桜は辺に沿って少しだけ（角に多め）
-  const goldSpots = [0.01, 0.035, 0.12, 0.2, 0.3, 0.42, 0.5, 0.535, 0.62, 0.7, 0.8, 0.92]
+  const goldSpots = [0.058, 0.321, 0.44, 0.558, 0.821, 0.94]
   const golds = goldSpots
     .map((s, i) => {
       const [x, y] = perimeter(w, 12, s)
@@ -111,25 +176,23 @@ const makie = (t, { w, rad }, layer = "all") => {
     })
     .join("")
   const petals = bandFlow(t, w, 14, 91, (x, y, i, k) => place(x, y, t * 360 + i * 47, 0.6, looseP, `opacity="${f(0.5 + 0.5 * k)}"`))
-  const moon = [w - 40, 38]
+  const moon = [w / 2, 14]
+  const lx = luxe("hmkL", t, { w, rad }, g, { inlay: METAL.onyx[1], inlayWidth: 8, corners: [1, 3], cornerJewel: "ruby", gems: [[0.16, "pink"], [0.34, "pink"], [0.66, "pink"], [0.84, "pink"]] })
   return layered(
     w,
     rad,
     layer,
-    baseDefs(lg("petal", ["#fff3f7", "#ffc1d6", "#ff8fb4"]) + lg("hmkG", ["#fffadd", "#ffe58c", "#e9bd42", "#b9860e"]) + flowGrad("hmkBand", [g[1], g[3], g[5], g[3], g[2], g[4], g[1]], 0, w) + bezelDef(g) + PEARL_DEF + '<radialGradient id="hmkM" cx=".4" cy=".4"><stop offset="0" stop-color="#fffbe8"/><stop offset=".7" stop-color="#ffe7a0"/><stop offset="1" stop-color="#f2c45a"/></radialGradient>'),
-    `<g filter="url(#hds)">
-      ${rrect(w, rad, 10, `fill="none" stroke="${METAL.onyx[1]}" stroke-width="22"`)}
-      ${rrect(w, rad, 12, `fill="none" stroke="${METAL.onyx[3]}" stroke-width="6" opacity=".6"`)}
-      ${rrect(w, rad, 4, `fill="none" stroke="url(#hmkBand)" stroke-width="3"`)}
-      ${rrect(w, rad, 20, `fill="none" stroke="url(#hmkBand)" stroke-width="2.4"`)}
+    baseDefs(lg("petal", ["#fff3f7", "#ffc1d6", "#ff8fb4"]) + lg("hmkG", ["#fffadd", "#ffe58c", "#e9bd42", "#b9860e"]) + flowGrad("hmkBand", [g[1], g[3], g[5], g[3], g[2], g[4], g[1]], 0, w) + bezelDef(g) + PEARL_DEF + '<radialGradient id="hmkM" cx=".4" cy=".4"><stop offset="0" stop-color="#fffbe8"/><stop offset=".7" stop-color="#ffe7a0"/><stop offset="1" stop-color="#f2c45a"/></radialGradient>' + lx.defs),
+    `${lx.base}<g filter="url(#hds)">
       ${golds}
-      ${setGem(w / 2, H - 12, 7, g, GEM.pink, t, 0.5)}${setGem(w / 2, 12, 7, g, GEM.pink, t, 0)}
+      ${setGem(w / 2, H - 13, 7, g, GEM.pink, t, 0.5)}
       ${branch(1, 330, 7)}${branch(-1, 250, 13)}
-      <circle cx="${moon[0]}" cy="${moon[1]}" r="20" fill="url(#hmkM)" stroke="${g[2]}" stroke-width="2"/>
-      <circle cx="${moon[0] - 6}" cy="${moon[1] + 4}" r="3.6" fill="#f0cf78" opacity=".45"/><circle cx="${moon[0] + 5}" cy="${moon[1] - 5}" r="2.4" fill="#f0cf78" opacity=".4"/>
+      <circle cx="${moon[0]}" cy="${moon[1]}" r="23" fill="${g[0]}"/><circle cx="${moon[0]}" cy="${moon[1]}" r="21.5" fill="url(#bz-${g[2].slice(1)})"/><circle cx="${moon[0]}" cy="${moon[1]}" r="17" fill="${METAL.onyx[1]}"/>
+      <circle cx="${moon[0]}" cy="${moon[1]}" r="13" fill="url(#hmkM)"/>
+      <circle cx="${moon[0] - 4}" cy="${moon[1] + 3}" r="2.4" fill="#f0cf78" opacity=".45"/><circle cx="${moon[0] + 4}" cy="${moon[1] - 4}" r="1.6" fill="#f0cf78" opacity=".4"/>
     </g>`,
-    `${petals}
-    ${glint(moon[0] - 13, moon[1] - 14, 0.6, flash(t, 0.2))}${glint(w / 2, 12, 0.8, flash(t, 0))}${glint(w / 2, H - 12, 0.8, flash(t, 0.5))}`,
+    `${lx.motion}${petals}
+    ${glint(moon[0] - 8, moon[1] - 8, 0.7, flash(t, 0.2))}${glint(w / 2, H - 13, 0.8, flash(t, 0.5))}`,
   )
 }
 
@@ -165,22 +228,16 @@ const kyubi = (t, { w, rad }, layer = "all") => {
     // ぼかし（filter）は動く絵を重くするので、薄い丸を重ねて光らせる
     return place(x, y, 0, k * 0.7, `<circle cy="-2" r="20" fill="${c}" opacity=".18"/><circle cy="-2" r="13" fill="${c}" opacity=".25"/><path d="M0-18C8-6 11 6 0 13-11 6-8-6 0-18Z" fill="${c}" opacity=".9"/><path d="M0-8C4-2 5 4 0 8-5 4-4-2 0-8Z" fill="#fff"/>`, `opacity="${f(0.25 + 0.75 * edge)}"`)
   }).join("")
-  const corners = [[w - 12, 12], [12, H - 12]].map(([x, y], i) => setGem(x, y, 8, p, GEM.diamond, t, i * 0.5)).join("")
-  const stones = [0.2, 0.3, 0.7, 0.8].map((k, i) => setGem(w * k, i < 2 ? H - 12 : 12, 5, p, GEM[["ruby", "topaz", "sapphire", "amethyst"][i]], t, i * 0.2)).join("")
-  const base = `
+  const lx = luxe("hkyL", t, { w, rad }, p, { inlay: "url(#hkyBand)", inlayWidth: 8, corners: [1, 3], cornerJewel: "diamond", ur: true, halo: "url(#hkyBand)", gems: [[0.2, "ruby"], [0.32, "topaz"], [0.5 + 0.18, "sapphire"], [0.5 + 0.3, "amethyst"], [0.5 + 0.42, "emerald"]] })
+  const base = `${lx.base}
     <g filter="url(#hds)">
-      ${rrect(w, rad, 10, `fill="none" stroke="${p[0]}" stroke-width="22"`)}
-      ${rrect(w, rad, 12, `fill="none" stroke="url(#hkyBand)" stroke-width="10"`)}
-      ${rrect(w, rad, 4, `fill="none" stroke="${p[4]}" stroke-width="2"`)}${rrect(w, rad, 20, `fill="none" stroke="${p[4]}" stroke-width="2"`)}
-      ${corners}${stones}
       ${tl}${br}
       ${place(w - 34, H - 34, -14, 0.5, mask)}
     </g>`
-  const motion = `
+  const motion = `${lx.motion}
     ${fires}
-    ${glint(w - 12, 12, 1.4, 0.3 + 0.7 * flash(t, 0))}${glint(12, H - 12, 1.4, 0.3 + 0.7 * flash(t, 0.5))}
     ${sparkle(w - 12, H * 0.45, 0.7, "#fff", Math.max(0, wave(t, 0.35)))}${sparkle(12, H * 0.55, 0.7, "#fff", Math.max(0, wave(t, 0.85)))}`
-  return layered(w, rad, layer, `${baseDefs(flowGrad("hkyBand", [...PRISM, PRISM[0]].map((c) => mixHex(c, "#ffffff", 0.25)), 0, w) + bezelDef(p) + PEARL_DEF)}${grads}`, base, motion)
+  return layered(w, rad, layer, `${baseDefs(flowGrad("hkyBand", [...PRISM, PRISM[0]].map((c) => mixHex(c, "#ffffff", 0.25)), 0, w) + bezelDef(p) + PEARL_DEF + lx.defs)}${grads}`, base, motion)
 }
 
 /* ------------------------------------------------------------------ */
@@ -192,21 +249,17 @@ const starCrown = (t, { w, rad }, layer = "all") => {
   const g = METAL.gold
   const r = rng(41)
   // 帯の中を流れる星くず（1 周で 1/40 だけ進むので継ぎ目なし）
-  const dust = Array.from({ length: 120 }, () => {
+  const dust = Array.from({ length: 90 }, () => {
     const s = r()
-    const [x, y] = perimeter(w, 12 + (r() - 0.5) * 10, s + t / 40)
+    const [x, y] = perimeter(w, 13 + (r() - 0.5) * 7, s + t / 40)
     return `<circle cx="${f(x)}" cy="${f(y)}" r="${f(0.6 + r() * 1.5)}" fill="#fff" opacity="${f((0.4 + r() * 0.6) * (0.6 + 0.4 * Math.max(0, wave(t, r()))))}"/>`
   }).join("")
   const saturn = `<circle r="15" fill="url(#hsc1)"/><ellipse rx="27" ry="7" fill="none" stroke="#ffe0a8" stroke-width="3.2" transform="rotate(-22)"/>`
   const blue = `<circle r="12" fill="url(#hsc2)"/><circle cx="-4" cy="-4" r="3.5" fill="#fff" opacity=".4"/>`
   const pink = `<circle r="9" fill="url(#hsc3)"/>`
   const crown = `<path d="M-46 14L-52-22-28-2-12-34 0-8 12-34 28-2 52-22 46 14Z" fill="url(#hscCrown)" stroke="${m[1]}" stroke-width="2" stroke-linejoin="round"/><path d="M-46 14H46V24H-46Z" fill="url(#hscCrown)" stroke="${m[1]}" stroke-width="2"/>${[-52, -12, 12, 52].map((x, i) => `<circle cx="${x}" cy="${i === 0 || i === 3 ? -22 : -34}" r="4" fill="${g[4]}" stroke="${g[1]}"/>`).join("")}`
-  const base = `
-    <g filter="url(#hds)">
-      ${rrect(w, rad, 11, `fill="none" stroke="#0a0730" stroke-width="24"`)}
-      ${rrect(w, rad, 12, `fill="none" stroke="url(#hscBand)" stroke-width="14"`)}
-      ${rrect(w, rad, 3, `fill="none" stroke="url(#hscMetal)" stroke-width="3"`)}${rrect(w, rad, 21, `fill="none" stroke="url(#hscMetal)" stroke-width="3"`)}
-    </g>
+  const lx = luxe("hscL", t, { w, rad }, m, { inlay: "url(#hscBand)", inlayWidth: 10, corners: [1, 3], cornerJewel: "amethyst", ur: true, halo: "url(#hscHalo)", gems: [[0.34, "sapphire"], [0.84, "amethyst"], [0.6, "pink"]] })
+  const base = `${lx.base}
     <g filter="url(#hds)">
       ${place(34, 30, -8, 1.3, saturn)}
       ${place(w - 30, H - 30, 0, 1.3, blue)}
@@ -214,17 +267,16 @@ const starCrown = (t, { w, rad }, layer = "all") => {
       ${place(150, 14, 0, 0.5, crown)}
       ${setGem(150, 5, 4, m, GEM.amethyst, t, 0.3)}
       ${place(w - 150, H - 12, 0, 0.6, star5(16, "url(#hscStar)", g[1], 1.4))}
-      ${setGem(w / 2, 12, 6, m, GEM.amethyst, t, 0)}${setGem(w / 2, H - 12, 6, m, GEM.sapphire, t, 0.5)}
     </g>`
   // 帯の中の星くずは、止まった惑星より手前に出るが小さいので目立たない
-  const motion = `
+  const motion = `${lx.motion}
     ${dust}
-    ${glint(150, 5, 0.8, 0.3 + 0.7 * flash(t, 0))}${glint(w / 2, 12, 0.9, flash(t, 0.4))}${glint(w / 2, H - 12, 0.9, flash(t, 0.8))}`
+    ${glint(150, 5, 0.8, 0.3 + 0.7 * flash(t, 0))}`
   return layered(
     w,
     rad,
     layer,
-    `${baseDefs(flowGrad("hscBand", ["#0a0730", "#3b1a8a", "#c0389a", "#1e5ad0", "#3b1a8a", "#0a0730"], 0, w) + flowGrad("hscMetal", [m[2], m[4], m[5], m[3], m[2]], 0, w) + lg("hscStar", ["#fffadd", "#ffe58c", "#e9bd42"]) + lg("hscCrown", [m[5], m[3], m[2], m[4]], 1, 1) + bezelDef(m) + PEARL_DEF +
+    `${baseDefs(flowGrad("hscBand", ["#0a0730", "#3b1a8a", "#c0389a", "#1e5ad0", "#3b1a8a", "#0a0730"], 0, w) + flowGrad("hscMetal", [m[2], m[4], m[5], m[3], m[2]], 0, w) + lg("hscStar", ["#fffadd", "#ffe58c", "#e9bd42"]) + lg("hscCrown", [m[5], m[3], m[2], m[4]], 1, 1) + bezelDef(m) + PEARL_DEF + lx.defs + flowGrad("hscHalo", ["#7b5cff", "#ff6fd0", "#4fd0ff", "#7b5cff"], 0, w) +
       '<radialGradient id="hsc1" cx=".35" cy=".3"><stop offset="0" stop-color="#ffe9c4"/><stop offset="1" stop-color="#d27c35"/></radialGradient><radialGradient id="hsc2" cx=".35" cy=".3"><stop offset="0" stop-color="#bff0ff"/><stop offset="1" stop-color="#2a5fd0"/></radialGradient><radialGradient id="hsc3" cx=".35" cy=".3"><stop offset="0" stop-color="#ffe0f2"/><stop offset="1" stop-color="#c0389a"/></radialGradient>')}`,
     base,
     motion,
@@ -334,26 +386,24 @@ const armillary = (t, { w, rad }, layer = "all") => {
   }
   const ticks = (x0, x1, y) =>
     Array.from({ length: Math.floor((x1 - x0) / 14) }, (_, i) => `<path d="M${x0 + i * 14} ${y - (i % 5 ? 3 : 6)}V${y + (i % 5 ? 3 : 6)}" stroke="${g[3]}" stroke-width="${i % 5 ? 1 : 1.8}"/>`).join("")
-  const zodiac = [0.3, 0.4, 0.5, 0.6, 0.7].map((k, i) => place(w * k, 11, 0, 0.42, star5(14, i % 2 ? g[4] : "#fff", g[1], 1.2))).join("")
+  const zodiac = [0.3, 0.4, 0.5, 0.6, 0.7].map((k, i) => place(w * k, 13, 0, 0.36, star5(14, i % 2 ? g[4] : "#fff", g[1], 1.2))).join("")
   const r = rng(51)
-  const stars = Array.from({ length: 24 }, () => [...perimeter(w, 11, r()), r()])
-  const base = `
+  const stars = Array.from({ length: 14 }, () => [...perimeter(w, 13, r()), r()])
+  const lx = luxe("harL", t, { w, rad }, g, { inlay: "#0d1640", inlayWidth: 10, corners: [1, 3], cornerJewel: "sapphire", gems: [[0.08, "sapphire"], [0.42, "sapphire"], [0.58, "sapphire"], [0.92, "sapphire"]] })
+  const base = `${lx.base}
     <g filter="url(#hds)">
-      ${rrect(w, rad, 11, `fill="none" stroke="#0d1640" stroke-width="24"`)}
-      ${rrect(w, rad, 3, `fill="none" stroke="url(#harBand)" stroke-width="3.4"`)}${rrect(w, rad, 21, `fill="none" stroke="url(#harBand)" stroke-width="3"`)}
-      ${ticks(w * 0.25, w * 0.75, H - 11)}${zodiac}
+      ${ticks(w * 0.3, w * 0.7, H - 13)}${zodiac}
       ${place(46, 40, -10, 0.42, sphere(1))}
       ${place(w - 36, H - 36, 0, 0.6, `<circle r="26" fill="url(#harS)"/>${Array.from({ length: 16 }, (_, i) => `<path d="M0-30L4-40 0-52-4-40Z" fill="${g[4]}" stroke="${g[2]}" stroke-width=".8" transform="rotate(${i * 22.5})"/>`).join("")}<circle r="26" fill="none" stroke="${g[2]}" stroke-width="2"/>`)}
-      ${setGem(w - 12, 12, 7, g, GEM.sapphire, t, 0.2)}${setGem(12, H - 12, 7, g, GEM.sapphire, t, 0.7)}
     </g>`
-  const motion = `
-    ${stars.map(([x, y, ph]) => sparkle(x, y, 0.45, "#fff6c8", Math.max(0, wave(t, ph)))).join("")}
+  const motion = `${lx.motion}
+    ${stars.map(([x, y, ph]) => sparkle(x, y, 0.4, "#fff6c8", Math.max(0, wave(t, ph)))).join("")}
     ${glint(46, 40, 0.7, 0.3 + 0.7 * flash(t, 0))}${glint(w - 36, H - 36, 0.8, 0.3 + 0.7 * flash(t, 0.5))}`
   return layered(
     w,
     rad,
     layer,
-    baseDefs(flowGrad("harBand", [g[2], g[4], g[5], g[3], g[2]], 0, w) + lg("harG", [g[5], g[3], g[2], g[4]], 1, 1) + bezelDef(g) + '<radialGradient id="harGlass" cx=".4" cy=".35"><stop offset="0" stop-color="#3a4cff" stop-opacity=".35"/><stop offset="1" stop-color="#0d1640" stop-opacity=".55"/></radialGradient><radialGradient id="harS" cx=".4" cy=".35"><stop offset="0" stop-color="#fffbe0"/><stop offset=".6" stop-color="#ffd76a"/><stop offset="1" stop-color="#d98a12"/></radialGradient>'),
+    baseDefs(lx.defs + lg("harG", [g[5], g[3], g[2], g[4]], 1, 1) + bezelDef(g) + '<radialGradient id="harGlass" cx=".4" cy=".35"><stop offset="0" stop-color="#3a4cff" stop-opacity=".35"/><stop offset="1" stop-color="#0d1640" stop-opacity=".55"/></radialGradient><radialGradient id="harS" cx=".4" cy=".35"><stop offset="0" stop-color="#fffbe0"/><stop offset=".6" stop-color="#ffd76a"/><stop offset="1" stop-color="#d98a12"/></radialGradient>'),
     base,
     motion,
   )
@@ -405,30 +455,26 @@ const pictorPaint = (t, { w, rad }, layer = "all") => {
 
 const pictorLove = (t, { w, rad }, layer = "all") => {
   const m = METAL.rose
-  const hearts = [0.05, 0.12, 0.2, 0.3, 0.42, 0.5, 0.55, 0.62, 0.7, 0.8, 0.92, 0.97]
+  const hearts = [].map((s) => s)
     .map((s, i) => {
       const [x, y] = perimeter(w, 12, s)
       return place(x, y, (i % 3 - 1) * 14, i % 3 === 0 ? 0.6 : 0.42, heart(i % 2 ? "url(#hplH)" : "url(#hplH2)"))
     })
     .join("")
   const rising = bandFlow(t, w, 10, 71, (x, y, i, k) => place(x, y, 0, 0.3, heart(i % 2 ? "#ff8fb1" : "#ffe6f0"), `opacity="${f(0.3 + 0.7 * k)}"`), 10, 4)
-  const base = `
+  const lx = luxe("hplL", t, { w, rad }, m, { inlay: "url(#hplIn)", inlayWidth: 7, corners: [0, 1, 3], cornerJewel: "pink", gems: [[0.15, "ruby"], [0.35, "ruby"], [0.6, "ruby"], [0.9, "ruby"]] })
+  const base = `${lx.base}
     <g filter="url(#hds)">
-      ${rrect(w, rad, 10, `fill="none" stroke="${m[1]}" stroke-width="22"`)}
-      ${rrect(w, rad, 10, `fill="none" stroke="url(#hplBand)" stroke-width="16"`)}
-      ${rrect(w, rad, 3, `fill="none" stroke="${m[4]}" stroke-width="2"`)}${rrect(w, rad, 19, `fill="none" stroke="${m[4]}" stroke-width="2"`)}
-      ${hearts}
-      ${setGem(w / 2, 10, 7, m, GEM.pink, t, 0)}${setGem(w / 2, H - 10, 7, m, GEM.pink, t, 0.5)}
+      ${place(w / 2, 13, 0, 0.62, heart("url(#hplH)"))}${hearts}
     </g>
     ${pictorChan("love", w - 58, H + 2, 104)}`
-  const motion = `${rising}
-    ${glint(w / 2, 10, 0.9, flash(t, 0))}${glint(w / 2, H - 10, 0.9, flash(t, 0.5))}
-    ${sparkle(w * 0.25, 10, 0.8, "#fff", Math.max(0, wave(t, 0.2)))}${sparkle(w * 0.75, H - 10, 0.8, "#fff", Math.max(0, wave(t, 0.7)))}`
+  const motion = `${lx.motion}${rising}
+    ${glint(w / 2, 9, 0.8, flash(t, 0.35))}`
   return layered(
     w,
     rad,
     layer,
-    baseDefs(flowGrad("hplBand", [m[2], m[4], m[5], m[3], m[2]], 0, w) + bezelDef(m) + pictorOutlineDef("pcOut", 4) + lg("hplH", ["#ffd0e0", "#ff6f9a", "#e2386b"]) + lg("hplH2", ["#ffe6f0", "#ff9fc2", "#ff6f9a"])),
+    baseDefs(lx.defs + flowGrad("hplIn", ["#b3184a", "#e2386b", "#ff8fb1", "#e2386b", "#b3184a"], 0, w) + pictorOutlineDef("pcOut", 4) + lg("hplH", ["#ffd0e0", "#ff6f9a", "#e2386b"]) + lg("hplH2", ["#ffe6f0", "#ff9fc2", "#ff6f9a"])),
     base,
     motion,
   )
@@ -436,24 +482,17 @@ const pictorLove = (t, { w, rad }, layer = "all") => {
 
 const pictorRainbow = (t, { w, rad }, layer = "all") => {
   const p = METAL.platinum
-  const stones = [0.1, 0.22, 0.38, 0.62, 0.78, 0.9].map((k, i) => setGem(w * k, i < 3 ? 12 : H - 12, 6, p, GEM[["ruby", "topaz", "emerald", "sapphire", "amethyst", "pink"][i]], t, i / 6)).join("")
-  const confetti = bandFlow(t, w, 22, 81, (x, y, i, k) => `<rect x="-5" y="-2.5" width="10" height="5" rx="1.5" fill="${prismAt(i / 22)}" transform="translate(${f(x)} ${f(y)}) rotate(${f(t * 720 + i * 40)})" opacity="${f(0.4 + 0.6 * k)}"/>`, 11, 12)
-  const stars = [[w * 0.2, 11, 11], [w * 0.8, H - 11, 11], [w - 14, 60, 9], [w * 0.36, 11, 8], [w * 0.64, H - 11, 8]]
+  const lx = luxe("hprL", t, { w, rad }, p, { inlay: "url(#hprBand)", inlayWidth: 8, corners: [0, 1, 3], cornerJewel: "diamond", ur: true, halo: "url(#hprBand)", gems: [[0.11, "ruby"], [0.19, "topaz"], [0.27, "emerald"], [0.35, "sapphire"], [0.5 + 0.2, "amethyst"], [0.5 + 0.3, "pink"], [0.5 + 0.4, "ruby"]] })
+  const confetti = bandFlow(t, w, 14, 81, (x, y, i, k) => `<rect x="-5" y="-2.5" width="10" height="5" rx="1.5" fill="${prismAt(i / 14)}" transform="translate(${f(x)} ${f(y)}) rotate(${f(t * 720 + i * 40)})" opacity="${f(0.4 + 0.6 * k)}"/>`, 11, 12)
+  const stars = [[w * 0.86, 13, 11]]
     .map(([x, y, s], i) => place(x, y, 0, 0.85 + 0.2 * Math.sin(TAU * (t * 2 + i / 6)), star5(s, prismAt(i / 6 + t), "#fff", 2)))
     .join("")
-  const base = `
-    <g filter="url(#hds)">
-      ${rrect(w, rad, 10, `fill="none" stroke="${p[0]}" stroke-width="22"`)}
-      ${rrect(w, rad, 10, `fill="none" stroke="url(#hprBand)" stroke-width="14"`)}
-      ${rrect(w, rad, 3, `fill="none" stroke="${p[4]}" stroke-width="2"`)}${rrect(w, rad, 18, `fill="none" stroke="${p[4]}" stroke-width="2"`)}
-      ${stones}
-    </g>
+  const base = `${lx.base}
     ${pictorChan("thanks", w - 128, H + 2, 84, { rot: -4 })}
     ${pictorChan("nice", w - 56, H + 2, 104)}`
-  const motion = `
-    ${confetti}${stars}
-    ${glint(w * 0.22, 12, 1, flash(t, 0))}${glint(w * 0.78, H - 12, 1, flash(t, 0.5))}`
-  return layered(w, rad, layer, `${baseDefs(flowGrad("hprBand", [...PRISM, PRISM[0]].map((c) => mixHex(c, "#ffffff", 0.2)), 0, w) + bezelDef(p) + pictorOutlineDef("pcOut", 4))}`, base, motion)
+  const motion = `${lx.motion}
+    ${confetti}${stars}`
+  return layered(w, rad, layer, `${baseDefs(flowGrad("hprBand", [...PRISM, PRISM[0]].map((c) => mixHex(c, "#ffffff", 0.2)), 0, w) + lx.defs + pictorOutlineDef("pcOut", 4))}`, base, motion)
 }
 
 /* ------------------------------------------------------------------ */
