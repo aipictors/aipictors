@@ -10,7 +10,6 @@ import { UserAchievementShowcase } from "~/components/achievements/user-achievem
 import { FollowButton } from "~/components/button/follow-button"
 import { OfficialBadge } from "~/components/official-badge"
 import { OmissionNumber } from "~/components/omission-number"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { SnsIconLink } from "~/components/sns-icon"
 import { SupportButton } from "~/components/support-button"
 import { Button } from "~/components/ui/button"
@@ -25,6 +24,7 @@ import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/compo
 import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
 import { UserBiography } from "~/routes/($lang)._main.users.$user._index/components/user-biography"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user._index/components/user-profile-avatar"
+import { UserProfileModeSwitch } from "~/routes/($lang)._main.users.$user._index/components/user-profile-mode-switch"
 import { UserProfileStatus } from "~/routes/($lang)._main.users.$user._index/components/user-profile-status"
 import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user._index/components/user-subscription-icon"
 import { toProfileLinkServiceName } from "~/utils/profile-link-service"
@@ -33,6 +33,10 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
   r18WorksCount?: number
+  /** 今見ているページ（全年齢か R18 か） */
+  mode?: "all" | "r18"
+  /** R18 用のプロフィールを登録しているか（全年齢のページでは中身は出さず、あることだけ伝える） */
+  hasSensitiveProfile?: boolean
   /** R18 のページだけで渡す R18 用の紹介・リンク（紹介が空ならいつもの紹介を出す） */
   sensitiveProfile?: {
     biography: string | null
@@ -271,14 +275,6 @@ export function UserProfileNameIcon(props: Props) {
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 md:justify-end">
             <UserAchievementShowcase userId={user.id} isOwn={isMyPage} />
-            {r18WorksCount > 0 && (
-              <SensitiveToggle
-                variant="compact"
-                label={`R18（${r18WorksCount >= 100 ? "99+" : r18WorksCount}）`}
-                className="h-6 border-red-200/40 bg-background/30 px-2 text-red-700 text-xs shadow-none dark:border-red-800/40 dark:text-red-300"
-                showStatus={false}
-              />
-            )}
             <div className="flex items-center gap-1 text-muted-foreground">
               {externalLinks.map((link) => (
                 <SnsIconLink
@@ -295,6 +291,14 @@ export function UserProfileNameIcon(props: Props) {
           </div>
         </div>
       </div>
+
+      <UserProfileModeSwitch
+        login={user.login}
+        mode={props.mode ?? "all"}
+        r18WorksCount={r18WorksCount}
+        hasSensitiveProfile={props.hasSensitiveProfile ?? false}
+        isMyPage={isMyPage}
+      />
 
       {isShowingSuggestions && (
         <FollowSuggestions

@@ -4,13 +4,17 @@ import { cn } from "~/lib/utils"
  * 設定のまとまり。見出しと枠
  */
 export function SettingsSection(props: {
+  id?: string
   title?: string
   description?: string
   className?: string
   children: React.ReactNode
 }) {
   return (
-    <section className={cn("space-y-2", props.className)}>
+    <section
+      id={props.id}
+      className={cn("scroll-mt-20 space-y-2", props.className)}
+    >
       {props.title && <h2 className="font-bold text-sm">{props.title}</h2>}
       {props.description && (
         <p className="text-muted-foreground text-xs leading-5">

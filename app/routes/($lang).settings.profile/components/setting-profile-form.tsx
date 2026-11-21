@@ -155,6 +155,19 @@ export function SettingProfileForm() {
     )
   }, [avatarFrameSettingsData])
 
+  // プロフィールの「R18 のプロフィールを作る」から来たら、読み込んだあとに R18 の欄へ移る
+  // （フォームは読み込みまで出ないので、ブラウザの #r18-profile だけでは飛ばない）
+  const hasUserInfo = Boolean(userInfo)
+  useEffect(() => {
+    if (!hasUserInfo || window.location.hash !== "#r18-profile") return
+    const timer = window.setTimeout(() => {
+      document
+        .getElementById("r18-profile")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }, 100)
+    return () => window.clearTimeout(timer)
+  }, [hasUserInfo])
+
   // ローディング状態をフック呼び出し後に確認
   if (loading || authContext.isLoading || authContext.isNotLoggedIn) {
     return <AppLoadingPage />
@@ -616,6 +629,7 @@ export function SettingProfileForm() {
       </SettingsSection>
 
       <SettingsSection
+        id="r18-profile"
         title={t("R18 のプロフィール", "R18 profile")}
         description={t(
           "R18 のページ（年齢確認のあと）だけに出します。全年齢のページには出ません。空の項目は全年齢のプロフィールがそのまま出ます。アイコンと名前は共通です。",
@@ -787,7 +801,10 @@ export function SettingProfileForm() {
             </div>
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="sensitiveFanzaCircle" className="font-medium text-sm">
+            <label
+              htmlFor="sensitiveFanzaCircle"
+              className="font-medium text-sm"
+            >
               {t("FANZA の販売作品", "Works on FANZA")}
             </label>
             <p className="text-muted-foreground text-xs leading-relaxed">

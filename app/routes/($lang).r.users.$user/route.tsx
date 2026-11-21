@@ -18,10 +18,6 @@ import {
   UserHomeHeaderFragment,
 } from "~/routes/($lang)._main.users.$user._index/components/user-home-header"
 import {
-  UserHomeMenuSensitiveFragment,
-  UserHomeSensitiveMenu,
-} from "~/routes/($lang)._main.users.$user._index/components/user-home-sensitive-menu"
-import {
   UserProfileIconFragment,
   UserProfileNameIcon,
 } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
@@ -30,6 +26,7 @@ import {
   UserSensitiveTabsFragment,
 } from "~/routes/($lang).r.users.$user/components/user-sensitive-tabs"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
+import { toHasSensitiveProfile } from "~/utils/has-sensitive-profile"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -128,12 +125,13 @@ export default function UserLayout() {
           userIconView={
             <UserProfileNameIcon
               user={user}
+              mode="r18"
               r18WorksCount={r18WorksCount}
               sensitiveProfile={sensitiveProfile}
+              hasSensitiveProfile={toHasSensitiveProfile(sensitiveProfile)}
             />
           }
         />
-        <UserHomeSensitiveMenu user={user} />
       </div>
       <div className="mx-auto w-full max-w-6xl space-y-4 px-4 md:px-8">
         <UserSensitiveTabs
@@ -168,7 +166,6 @@ const UserQuery = graphql(
       }
       ...UserHomeHeaderFragment
       ...UserProfileIconFragment
-      ...UserHomeMenuSensitiveFragment
       ...UserSensitiveTabsFragment
       ...MetaUserFragment
     }
@@ -176,7 +173,6 @@ const UserQuery = graphql(
   [
     MetaUserFragment,
     UserHomeHeaderFragment,
-    UserHomeMenuSensitiveFragment,
     UserProfileIconFragment,
     UserSensitiveTabsFragment,
   ],

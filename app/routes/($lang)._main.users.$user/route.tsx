@@ -29,6 +29,7 @@ import {
   UserTabsFragment,
 } from "~/routes/($lang)._main.users.$user._index/components/user-tabs"
 import { createMeta } from "~/utils/create-meta"
+import { toHasSensitiveProfile } from "~/utils/has-sensitive-profile"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 const SITE_URL = "https://www.aipictors.com"
@@ -150,6 +151,8 @@ export default function UserLayout() {
 
   const user = userRet?.user ?? data.user
   const metaUser = readFragment(MetaUserFragment, data.user)
+  // R18 用のプロフィールの中身はここでは出さず、あることだけ切り替えに出す
+  const hasSensitiveProfile = toHasSensitiveProfile(user.sensitiveProfile)
 
   return (
     <div className="flex w-full flex-col justify-center">
@@ -157,7 +160,12 @@ export default function UserLayout() {
       <UserHomeHeader
         user={user}
         userIconView={
-          <UserProfileNameIcon user={user} r18WorksCount={data.r18WorksCount} />
+          <UserProfileNameIcon
+            user={user}
+            mode="all"
+            r18WorksCount={data.r18WorksCount}
+            hasSensitiveProfile={hasSensitiveProfile}
+          />
         }
       />
       <div className="mx-auto w-full max-w-6xl space-y-4 px-4 md:px-8">
@@ -241,6 +249,11 @@ const UserQuery = graphql(
   `query User($userId: ID!) {
     user(id: $userId) {
       id
+      sensitiveProfile {
+        headerImageUrl
+        biography
+        links
+      }
       ...UserHomeHeaderFragment
       ...UserProfileIconFragment
       ...UserTabsFragment

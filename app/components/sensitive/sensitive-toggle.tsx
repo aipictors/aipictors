@@ -28,6 +28,11 @@ type Props = {
   showStatus?: boolean
   targetUrl?: string
   label?: string
+  /** 見た目を自分で作るとき（年齢確認のダイアログと移動はそのまま使う） */
+  renderTrigger?: (state: {
+    isR18Mode: boolean
+    onToggle: () => void
+  }) => React.ReactNode
 }
 
 export function SensitiveToggle({
@@ -36,6 +41,7 @@ export function SensitiveToggle({
   showStatus = false,
   targetUrl,
   label,
+  renderTrigger,
 }: Props): React.ReactNode {
   const [isR18Mode, setIsR18Mode] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -157,6 +163,23 @@ export function SensitiveToggle({
   const handleCancel = () => {
     setIsDialogOpen(false)
     setIsRememberChoice(false)
+  }
+
+  if (renderTrigger) {
+    return (
+      <>
+        {renderTrigger({ isR18Mode, onToggle: handleR18ToggleClick })}
+        <ConfirmationDialog
+          isOpen={isDialogOpen}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+          isRememberChoice={isRememberChoice}
+          onRememberChoiceChange={setIsRememberChoice}
+          checkboxId={checkboxId}
+          t={t}
+        />
+      </>
+    )
   }
 
   // コンパクトバリアント - ヘッダー/ナビゲーション用
