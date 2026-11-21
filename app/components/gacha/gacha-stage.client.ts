@@ -84,6 +84,8 @@ export type GachaStageOptions = {
   manual?: boolean
   pixelRatio?: number
   onComplete?: () => void
+  /** ぴくたーちゃんのモデルを読み込んだ割合（0〜1） */
+  onProgress?: (ratio: number) => void
 }
 
 export type GachaStage = {
@@ -217,7 +219,9 @@ export async function createGachaStage(
   const loader = new GLTFLoader()
   loader.setMeshoptDecoder(MeshoptDecoder)
   const [gltf, images] = await Promise.all([
-    loader.loadAsync(options.modelUrl),
+    loader.loadAsync(options.modelUrl, (event) => {
+      if (event.total > 0) options.onProgress?.(event.loaded / event.total)
+    }),
     Promise.all(items.map((item) => loadImage(item.imageUrl))),
   ])
   const model = gltf.scene
