@@ -141,6 +141,28 @@ export function PlusHero() {
               </Link>
             </Button>
           </div>
+          {/* 生成しない人にも特典があることを最初の画面で伝える */}
+          <a
+            href="#coin-uses"
+            className="mt-3 flex flex-wrap items-center gap-1.5 text-xs md:mt-4"
+          >
+            <span className="text-muted-foreground">
+              {t("生成しなくても：", "Even without generating:")}
+            </span>
+            {[
+              t("広告なし", "No ads"),
+              t("認証マーク", "Verified badge"),
+              t("限定アイコン枠", "Exclusive frames"),
+              t("毎日のコインで推し・ガチャ", "Daily coins for support & gacha"),
+            ].map((label) => (
+              <span
+                key={label}
+                className="rounded-full border bg-background/70 px-2 py-0.5 font-medium backdrop-blur"
+              >
+                {label}
+              </span>
+            ))}
+          </a>
         </div>
         <div className="relative mx-auto w-full max-w-md lg:w-72">
           <div className="grid grid-cols-4 gap-1.5 rounded-2xl border bg-background/60 p-1.5 shadow-violet-500/10 shadow-xl backdrop-blur lg:grid-cols-2 lg:gap-2 lg:rounded-3xl lg:p-2">

@@ -13,6 +13,8 @@ import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
 import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-about"
+import { PlusCoinUses } from "~/routes/($lang)._main.plus._index/components/plus-coin-uses"
+import { PlusPersonaBenefits } from "~/routes/($lang)._main.plus._index/components/plus-persona-benefits"
 import { PlusCoinGuide } from "~/routes/($lang)._main.plus._index/components/plus-coin-guide"
 import { PlusComparisonTable } from "~/routes/($lang)._main.plus._index/components/plus-comparison-table"
 import { PlusFaq } from "~/routes/($lang)._main.plus._index/components/plus-faq"
@@ -160,6 +162,8 @@ export default function Plus () {
           </ul>
         )}
       </section>
+      <PlusPersonaBenefits />
+      <PlusCoinUses />
       <PlusComparisonTable />
       <PlusPromotionShowcase />
       <PlusFrameShowcase />
@@ -167,12 +171,12 @@ export default function Plus () {
       <PlusFaq />
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-600 to-sky-500 px-6 py-8 text-center text-white md:py-10">
         <p className="font-extrabold text-2xl md:text-3xl">
-          {t("1回で4枚、毎日もっと。", "Make more of every click.")}
+          {t("生成も、推しも、ガチャも。", "Generate, support, pull. Every day.")}
         </p>
         <p className="mt-2 text-sm text-white/90">
           {t(
-            "月額480円から。いつでも解約できます。",
-            `From ¥480 a month (${toApproxUsdText(480)}). Cancel anytime.`,
+            "毎日コインが届いて、広告も消える。月額480円（1日あたり約16円）から、いつでも解約できます。",
+            `Daily coins, no ads. From ¥480 a month (${toApproxUsdText(480)}). Cancel anytime.`,
           )}
         </p>
         <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
