@@ -8,11 +8,16 @@ import {
   useRef,
   useState,
 } from "react"
+import { toast } from "sonner"
 import { ImageCropperModal } from "~/components/modal-image-cropper"
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  type AnimatedGifOptions,
+  toAnimatedWebpDataUrl,
+} from "~/utils/animated-gif-to-webp"
 import {
   FILE_DROP_ZONE_ATTRIBUTE,
   pickFirstImageFile,
@@ -27,6 +32,11 @@ type Props = {
   onDeleteImage: () => void
   onCrop?: (croppedImage: string) => void
   onCropToBase64?: (croppedImage: string) => void
+  /**
+   * 指定すると、GIF アニメーションは切り抜かずにアニメーションのまま受け取る（スタンプ用）。
+   * canvas で切り抜くと 1 コマ目だけの静止画になってしまう
+   */
+  animatedGif?: AnimatedGifOptions
   children?: React.ReactNode
 }
 
@@ -129,16 +139,44 @@ export function CropImageField(props: Props): React.ReactNode {
   }, [])
 
   /**
+   * 選んだ画像を受け取る。GIF アニメーションは切り抜かずにそのまま使う
+   */
+  const selectFile = async (file: File) => {
+    if (props.animatedGif) {
+      try {
+        const animated = await toAnimatedWebpDataUrl(file, props.animatedGif)
+        if (animated !== null) {
+          onCrop(animated)
+          toast(
+            t(
+              "GIFアニメはアニメーションのまま登録します（切り抜きはできません）",
+              "Animated GIFs are added as they are (cropping is not available)",
+            ),
+          )
+          return
+        }
+      } catch (error) {
+        console.error(error)
+        toast(
+          t(
+            "GIFアニメを読み込めませんでした。小さいサイズのGIFでお試しください",
+            "Failed to load the animated GIF. Please try a smaller GIF",
+          ),
+        )
+        return
+      }
+    }
+    openCropper(file)
+  }
+
+  /**
    * ファイル選択後の処理
    */
-  const onFileChange = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files.length > 0) {
-        openCropper(e.target.files[0])
-      }
-    },
-    [openCropper],
-  )
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      await selectFile(e.target.files[0])
+    }
+  }
 
   /**
    * 画像をドラッグ＆ドロップで受け取る
@@ -158,7 +196,7 @@ export function CropImageField(props: Props): React.ReactNode {
       e.preventDefault()
       setIsDragOver(false)
       const file = pickFirstImageFile(e.dataTransfer.files)
-      if (file) openCropper(file)
+      if (file) void selectFile(file)
     },
   }
 

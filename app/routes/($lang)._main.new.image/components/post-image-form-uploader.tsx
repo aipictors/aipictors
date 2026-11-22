@@ -1,35 +1,46 @@
+import { ImageIcon, VideoIcon } from "lucide-react"
+import { type Dispatch, useEffect } from "react"
+import { useDropzone } from "react-dropzone-esm"
+import { toast } from "sonner"
+import FullScreenContainer from "~/components/full-screen-container"
+import { PaintCanvas } from "~/components/paint-canvas"
+import { Button } from "~/components/ui/button"
+import { config } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
+import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
+import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
+import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
+import { PostFormItemVideo } from "~/routes/($lang)._main.new.image/components/post-form-item-video"
+import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
+import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import {
   type GenerationResultParams,
   toGenerationImageInformation,
 } from "~/routes/($lang)._main.new.image/utils/to-generation-image-information"
-import FullScreenContainer from "~/components/full-screen-container"
-import { useDropzone } from "react-dropzone-esm"
-import { ImageIcon, VideoIcon } from "lucide-react"
-import { Button } from "~/components/ui/button"
-import { cn } from "~/lib/utils"
+import {
+  toAnimatedWebpDataUrl,
+  WORK_ANIMATED_GIF_OPTIONS,
+} from "~/utils/animated-gif-to-webp"
+import { captureVideoThumbnail } from "~/utils/capture-video-thumbnail"
+import { consumeDroppedImageFiles } from "~/utils/dropped-image-files"
+import {
+  formatFileSize,
+  MAX_IMAGE_FILE_SIZE_BYTES,
+  MAX_VIDEO_FILE_SIZE_BYTES,
+} from "~/utils/file-size"
 import {
   getExtractInfoFromBase64,
   getExtractInfoFromPNG,
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
-import { config } from "~/config"
-import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
-import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
-import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
-import { PostFormItemVideo } from "~/routes/($lang)._main.new.image/components/post-form-item-video"
-import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
-import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
-import { type Dispatch, useEffect } from "react"
-import { toast } from "sonner"
-import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
-import { PaintCanvas } from "~/components/paint-canvas"
-import { useTranslation } from "~/hooks/use-translation"
-import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
-import { captureVideoThumbnail } from "~/utils/capture-video-thumbnail"
-import { consumeDroppedImageFiles } from "~/utils/dropped-image-files"
-import { formatFileSize, MAX_IMAGE_FILE_SIZE_BYTES, MAX_VIDEO_FILE_SIZE_BYTES } from "~/utils/file-size"
-import { getVideoUploadLimits, type VideoUploadPassType } from "~/utils/video-upload-limit"
 import { getImageItemsSizeText } from "~/utils/image-items-size-text"
+import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
+import {
+  getVideoUploadLimits,
+  type VideoUploadPassType,
+} from "~/utils/video-upload-limit"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
@@ -55,11 +66,12 @@ type Props = {
   }) => void
 }
 
-export function PostImageFormUploader (props: Props) {
+export function PostImageFormUploader(props: Props) {
   const t = useTranslation()
-  const hasActiveSelection = props.mediaType === "video"
-    ? props.state.videoFile !== null
-    : props.state.items.length > 0
+  const hasActiveSelection =
+    props.mediaType === "video"
+      ? props.state.videoFile !== null
+      : props.state.items.length > 0
   const maxImageSizeLabel = formatFileSize(MAX_IMAGE_FILE_SIZE_BYTES)
   const maxVideoSizeLabel = formatFileSize(MAX_VIDEO_FILE_SIZE_BYTES)
   const videoUploadLimits = getVideoUploadLimits(props.currentPassType)
@@ -99,7 +111,8 @@ export function PostImageFormUploader (props: Props) {
     })
   }
 
-  const nextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+  const nextFrame = () =>
+    new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 
   const selectedFilesSizeText = () =>
     getImageItemsSizeText(props.state.items.map((item) => item.content))
@@ -179,8 +192,10 @@ export function PostImageFormUploader (props: Props) {
       }
 
       try {
-        const dataUrl = await readFileAsDataUrl(file)
-        const webpDataUrl = await toWebpDataUrl(dataUrl)
+        // GIF アニメーションはアニメーションのまま WebP に、それ以外は静止画の WebP にする
+        const webpDataUrl =
+          (await toAnimatedWebpDataUrl(file, WORK_ANIMATED_GIF_OPTIONS)) ??
+          (await toWebpDataUrl(await readFileAsDataUrl(file)))
 
         nextItems.push({
           id: nextItems.length,
@@ -276,7 +291,14 @@ export function PostImageFormUploader (props: Props) {
             applyCapturedVideo(thumbnailUrl)
           })
           .catch(() => {
-            reject(new Error(t("サムネイルの生成に失敗しました", "Failed to generate thumbnail")))
+            reject(
+              new Error(
+                t(
+                  "サムネイルの生成に失敗しました",
+                  "Failed to generate thumbnail",
+                ),
+              ),
+            )
           })
       }
 
@@ -296,7 +318,14 @@ export function PostImageFormUploader (props: Props) {
       }
 
       video.onerror = () => {
-        reject(new Error(t("動画ファイルの読み込みに失敗しました", "Failed to load video file")))
+        reject(
+          new Error(
+            t(
+              "動画ファイルの読み込みに失敗しました",
+              "Failed to load video file",
+            ),
+          ),
+        )
       }
     }).finally(() => {
       URL.revokeObjectURL(video.src)
@@ -559,7 +588,10 @@ export function PostImageFormUploader (props: Props) {
                   })
                 }}
                 setThumbnailBase64={(base64) => {
-                  props.dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
+                  props.dispatch({
+                    type: "SET_THUMBNAIL_BASE64",
+                    payload: base64,
+                  })
                 }}
                 setOgpBase64={(base64) => {
                   props.dispatch({ type: "SET_OGP_BASE64", payload: base64 })
@@ -574,10 +606,15 @@ export function PostImageFormUploader (props: Props) {
               />
             ) : (
               <PostFormItemVideo
-                videoFile={props.state.videoFile ? (props.state.videoFile as File) : null}
+                videoFile={
+                  props.state.videoFile ? (props.state.videoFile as File) : null
+                }
                 currentPassType={props.currentPassType}
                 setThumbnailBase64={(base64) => {
-                  props.dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
+                  props.dispatch({
+                    type: "SET_THUMBNAIL_BASE64",
+                    payload: base64,
+                  })
                 }}
                 setOgpBase64={(base64) => {
                   props.dispatch({ type: "SET_OGP_BASE64", payload: base64 })
@@ -634,7 +671,10 @@ export function PostImageFormUploader (props: Props) {
               onClick={onInputPngInfo}
               className="mr-2 block"
             >
-              {t("画像から生成情報のみ反映", "Apply Information Only from Image")}
+              {t(
+                "画像から生成情報のみ反映",
+                "Apply Information Only from Image",
+              )}
             </Button>
             <Button
               variant={"secondary"}

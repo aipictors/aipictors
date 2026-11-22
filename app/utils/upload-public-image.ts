@@ -24,6 +24,18 @@ export const isRetryableUploadError = (error: unknown) => {
 }
 
 /**
+ * data URL の先頭（data:image/xxx;base64）から形式を決める。
+ * GIF アニメーションを GIF として保存できるように gif も見る
+ */
+export const toUploadImageType = (image: string) => {
+  const header = image.slice(0, Math.max(0, image.indexOf(",")))
+  if (header.includes("jpeg")) return "image/jpeg"
+  if (header.includes("webp")) return "image/webp"
+  if (header.includes("gif")) return "image/gif"
+  return "image/png"
+}
+
+/**
  * 画像アップロード
  * @param image base64形式の画像
  * @param token 認証トークン
@@ -40,11 +52,7 @@ export const uploadPublicImage = async (
 
   try {
     const base64data = image.split(",")[1]
-    const type = (() => {
-      if (image.includes("jpeg")) return "image/jpeg"
-      if (image.includes("webp")) return "image/webp"
-      return "image/png"
-    })()
+    const type = toUploadImageType(image)
 
     const blob = new Blob(
       [Uint8Array.from(atob(base64data), (c) => c.charCodeAt(0))],

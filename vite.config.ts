@@ -1,13 +1,13 @@
-import {
-  vitePlugin as remix,
-  cloudflareDevProxyVitePlugin,
-} from "@remix-run/dev"
-import { defineConfig } from "vite"
-import tsconfigPaths from "vite-tsconfig-paths"
-import tailwindcss from "@tailwindcss/vite"
 import { mkdirSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path"
+import {
+  cloudflareDevProxyVitePlugin,
+  vitePlugin as remix,
+} from "@remix-run/dev"
+import tailwindcss from "@tailwindcss/vite"
 import type { Plugin } from "vite"
+import { defineConfig } from "vite"
+import tsconfigPaths from "vite-tsconfig-paths"
 
 /**
  * クライアントのビルドで出た CSS を build/critical-css-source.json に書き出す。
@@ -54,11 +54,11 @@ const fontsourceWoff2Only = (): Plugin => ({
 })
 
 /**
- * ブラウザでだけ後から読むライブラリ（動画の再生・ファイルのハッシュ）を、サーバーのビルドから外す。
+ * ブラウザでだけ後から読むライブラリ（動画の再生・ファイルのハッシュ・GIF アニメーションの変換）を、サーバーのビルドから外す。
  * サーバーでは呼ばれないのに Worker に同梱され（合わせて 約 1MB）、Worker が起動するたびに読み込む分の CPU を使っていた
  */
 const CLIENT_ONLY_DYNAMIC_IMPORT =
-  /import\(\s*"(?:hls\.js|hash-wasm)"\s*\)/g
+  /import\(\s*"(?:hls\.js|hash-wasm|gifuct-js|wasm-webp\/[^"]+)"\s*\)/g
 
 const stripClientOnlyImportsFromServer = (): Plugin => ({
   name: "aipictors-strip-client-only-imports-from-server",

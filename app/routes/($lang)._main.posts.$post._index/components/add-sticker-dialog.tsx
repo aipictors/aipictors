@@ -19,6 +19,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { StickerPublishFields } from "~/routes/($lang)._main.posts.$post._index/components/sticker-publish-fields"
 import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
+import { STICKER_ANIMATED_GIF_OPTIONS } from "~/utils/animated-gif-to-webp"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { uploadPublicImage } from "~/utils/upload-public-image"
@@ -209,9 +210,16 @@ export function AddStickerDialog(props: Props) {
           cropWidth={512}
           cropHeight={512}
           fileExtension={"png"}
+          animatedGif={STICKER_ANIMATED_GIF_OPTIONS}
           onDeleteImage={onDeleteImage}
           onCrop={onCrop}
         />
+        <p className="text-muted-foreground text-xs">
+          {t(
+            "GIFアニメも登録できます（GIFは切り抜きなしでそのまま使われます）",
+            "Animated GIFs are supported (GIFs are used as they are, without cropping)",
+          )}
+        </p>
         <div className="items-center space-x-2">
           <div className="items-center">
             <Checkbox

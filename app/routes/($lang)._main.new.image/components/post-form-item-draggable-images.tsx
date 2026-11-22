@@ -2,15 +2,19 @@ import { ArrowDownAZIcon, PencilLineIcon, PlusIcon } from "lucide-react"
 import { type ChangeEvent, useEffect, useRef, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
-import type { TSortableItem } from "~/components/drag/sortable-item"
-import { SortableItems } from "~/components/drag/sortable-items"
 import {
   isSortedByFileName,
   sortByFileName,
 } from "~/components/drag/sort-by-file-name"
+import type { TSortableItem } from "~/components/drag/sortable-item"
+import { SortableItems } from "~/components/drag/sortable-items"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import {
+  toAnimatedWebpDataUrl,
+  WORK_ANIMATED_GIF_OPTIONS,
+} from "~/utils/animated-gif-to-webp"
 import { formatFileSize, MAX_IMAGE_FILE_SIZE_BYTES } from "~/utils/file-size"
 import {
   getExtractInfoFromPNG,
@@ -89,6 +93,11 @@ export function PostFormItemDraggableImages(props: Props) {
       img.src = dataUrl
     })
   }
+
+  /** GIF アニメーションはアニメーションのまま WebP に、それ以外は静止画の WebP にする */
+  const toItemDataUrl = async (file: File) =>
+    (await toAnimatedWebpDataUrl(file, WORK_ANIMATED_GIF_OPTIONS)) ??
+    (await toWebpDataUrl(await readFileAsDataUrl(file)))
 
   const nextFrame = () =>
     new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
@@ -265,8 +274,7 @@ export function PostFormItemDraggableImages(props: Props) {
       }
 
       try {
-        const dataUrl = await readFileAsDataUrl(file)
-        const webpDataUrl = await toWebpDataUrl(dataUrl)
+        const webpDataUrl = await toItemDataUrl(file)
         props.items.push({
           id: props.items.length,
           content: webpDataUrl,
@@ -327,7 +335,7 @@ export function PostFormItemDraggableImages(props: Props) {
     }
 
     try {
-      const webpDataUrl = await toWebpDataUrl(await readFileAsDataUrl(file))
+      const webpDataUrl = await toItemDataUrl(file)
       props.onChangeItems(
         props.items.map((item) =>
           item.id === targetId
