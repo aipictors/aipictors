@@ -28,6 +28,15 @@ export type GenerationSubmitBlock = {
    * スマホでは上に出す
    */
   isTopCenterOnMobile?: boolean
+  /**
+   * プランに入れば送れるとき（トーストではなく、プランの案内を出す）
+   */
+  planGate?: {
+    requiredPlan: "LITE" | "STANDARD"
+    title: string
+    description: string
+    source: string
+  }
 }
 
 /**
@@ -64,6 +73,19 @@ export const findGenerationSubmitBlock = (
       },
       toast:
         "Gemini Nano Banana はライト以上、Nano Banana 2 はスタンダード以上のプランで利用できます。",
+      planGate: {
+        requiredPlan:
+          config.modelId === "gemini-3.1-flash-image-preview"
+            ? "STANDARD"
+            : "LITE",
+        title:
+          config.modelId === "gemini-3.1-flash-image-preview"
+            ? "Nano Banana 2 はスタンダード以上で使えます"
+            : "Gemini Nano Banana はライト以上で使えます",
+        description:
+          "プランに入ると、このモデルですぐ生成できます。ほかのモデルは無料のまま使えます。",
+        source: "gemini",
+      },
     }
   }
 
@@ -76,6 +98,13 @@ export const findGenerationSubmitBlock = (
     return {
       log: { message: "Blocked: IMG2IMG requires LITE+" },
       toast: "img2imgはLITE以上のプランでご利用いただけます。",
+      planGate: {
+        requiredPlan: "LITE",
+        title: "画像から生成（img2img）はライト以上で使えます",
+        description:
+          "プランに入ると、選んだ画像からそのまま生成できます。無料のまま作るときは、画像を外してください。",
+        source: "i2i",
+      },
     }
   }
 
@@ -86,6 +115,13 @@ export const findGenerationSubmitBlock = (
         details: { count: config.generationCount },
       },
       toast: "STANDARD以上のプランで生成回数をまとめて指定できます。",
+      planGate: {
+        requiredPlan: "STANDARD",
+        title: "続けて生成（予約生成）はスタンダード以上で使えます",
+        description:
+          "同じ設定で何回も続けて生成できます。無料のまま作るときは、回数を1回にしてください。",
+        source: "repeat",
+      },
     }
   }
 
@@ -97,6 +133,13 @@ export const findGenerationSubmitBlock = (
         details: { inProgressImageGenerationTasksCount },
       },
       toast: "STANDARD以上のプランで複数枚同時生成可能です。",
+      planGate: {
+        requiredPlan: "STANDARD",
+        title: "生成中に次の生成を始めるのはスタンダード以上で使えます",
+        description:
+          "スタンダード以上なら、待たずに続けて生成できます（優先生成つき）。今の生成が終わるのを待てば、無料のままでも次を作れます。",
+        source: "concurrent",
+      },
     }
   }
 
@@ -152,6 +195,13 @@ export const findGenerationSubmitBlock = (
         toast:
           "サブスクに入っていない場合、出力サイズは 2048×2048（約4メガピクセル）までです",
         isTopCenterOnMobile: true,
+        planGate: {
+          requiredPlan: "LITE",
+          title: "このサイズはライト以上で使えます",
+          description:
+            "無料の出力サイズは 2048×2048（約4メガピクセル）までです。プランに入ると、このまま大きいサイズで生成できます。",
+          source: "size",
+        },
       }
     }
   }

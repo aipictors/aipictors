@@ -23,6 +23,7 @@ import {
   parseGenerationSize,
   toCustomSizeType,
 } from "~/routes/($lang).generation._index/types/generation-size"
+import { openGenerationPlanUpgrade } from "~/routes/($lang).generation._index/utils/generation-plan-upgrade-store"
 import {
   canUseCustomGenerationSize,
   findNearestSizeType,
@@ -197,7 +198,9 @@ export function GenerationConfigOutput(props: Props) {
           >
             {countOptions.map((count) => {
               const isLockedByPlan = count > images.planMax
-              const isDisabled = count > images.max
+              // プランで増やせるだけのとき（ほかの設定で 1 枚になっていない）は押せるようにして、プランの案内を出す
+              const isPlanGate = isLockedByPlan && images.max === images.planMax
+              const isDisabled = count > images.max && !isPlanGate
               const isSelected = images.count === count
               return (
                 <button
@@ -211,13 +214,31 @@ export function GenerationConfigOutput(props: Props) {
                       : undefined
                   }
                   onClick={() => {
+                    if (isPlanGate) {
+                      openGenerationPlanUpgrade({
+                        requiredPlan: "LITE",
+                        title: t(
+                          `${count}枚まとめて作るのはライト以上で使えます`,
+                          `Making ${count} at once needs Lite or above`,
+                        ),
+                        description: t(
+                          "プランに入ると、1回の生成で4枚まとめて作れます。",
+                          "With a plan, one click makes up to 4 images.",
+                        ),
+                        source: "images_per_request",
+                      })
+                      return
+                    }
                     // 上限を選んだときは「まとめて」（プランや設定が変わっても上限に合わせる）
                     images.setPreference(count >= images.planMax ? null : count)
                   }}
-                  className={configChipClass({
-                    isSelected,
-                    isDisabled,
-                  })}
+                  className={cn(
+                    configChipClass({
+                      isSelected,
+                      isDisabled,
+                    }),
+                    isPlanGate && "text-muted-foreground",
+                  )}
                 >
                   {isLockedByPlan && <LockIcon className="size-3" />}
                   {t(`${count}枚`, `${count}`)}

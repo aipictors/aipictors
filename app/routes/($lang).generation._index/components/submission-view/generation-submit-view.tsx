@@ -19,6 +19,7 @@ import {
   GenerationNoticeDialog,
   useGenerationMaintenance,
 } from "~/routes/($lang).generation._index/components/submission-view/generation-notice"
+import { GenerationPlanUpgradeDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-plan-upgrade-dialog"
 import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
 import { GenerationMobileTabContext } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
@@ -46,6 +47,7 @@ import {
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import { findGenerationSubmitBlock } from "~/routes/($lang).generation._index/utils/find-generation-submit-block"
 import { publishGenerationCoinSummary } from "~/routes/($lang).generation._index/utils/generation-coin-store"
+import { openGenerationPlanUpgrade } from "~/routes/($lang).generation._index/utils/generation-plan-upgrade-store"
 import {
   clearGenerationPendingPrompt,
   readGenerationPendingPrompt,
@@ -378,6 +380,10 @@ export function GenerationSubmissionView(props: Props) {
 
     if (submitBlock !== null) {
       logWarn({ source: "GenerationSubmit", ...submitBlock.log })
+      if (submitBlock.planGate) {
+        openGenerationPlanUpgrade(submitBlock.planGate)
+        return
+      }
       if (submitBlock.isTopCenterOnMobile && !isDesktop) {
         toast(submitBlock.toast, { position: "top-center" })
       } else {
@@ -865,6 +871,7 @@ export function GenerationSubmissionView(props: Props) {
             : 0
         }
       />
+      <GenerationPlanUpgradeDialog passType={subscription ?? null} />
       <GenerationGeminiLimitDialog
         open={isGeminiLimitOpen}
         onOpenChange={setIsGeminiLimitOpen}

@@ -7,6 +7,7 @@ import { ConfigSectionHeader } from "~/routes/($lang).generation._index/componen
 import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
 import { GenerationQueryContext } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { openGenerationPlanUpgrade } from "~/routes/($lang).generation._index/utils/generation-plan-upgrade-store"
 
 type Props = {
   remainingImageGenerationTasksCount: number
@@ -63,10 +64,35 @@ export function GenerationConfigCount(props: Props) {
       />
       <div
         className={cn(
-          "flex items-center gap-x-3",
+          "relative flex items-center gap-x-3",
           !isStandardOrPremium && "opacity-45",
         )}
       >
+        {/* 使えないときは押せない見た目のままにして、押したらプランの案内を出す（以前は何も起きなかった） */}
+        {!isStandardOrPremium && (
+          <button
+            type="button"
+            className="absolute inset-0 z-10 cursor-pointer"
+            aria-label={t(
+              "続けて生成はスタンダード以上で使えます",
+              "Repeat generation needs Standard or above",
+            )}
+            onClick={() =>
+              openGenerationPlanUpgrade({
+                requiredPlan: "STANDARD",
+                title: t(
+                  "続けて生成（予約生成）はスタンダード以上で使えます",
+                  "Repeat generation needs Standard or above",
+                ),
+                description: t(
+                  "同じ設定で何回も続けて生成できます。生成している間に次の生成も始められます。",
+                  "Run the same settings many times in a row, and start the next one while generating.",
+                ),
+                source: "repeat_setting",
+              })
+            }
+          />
+        )}
         <Slider
           aria-label="生成枚数"
           disabled={!isStandardOrPremium}
