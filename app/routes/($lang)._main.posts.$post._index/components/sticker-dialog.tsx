@@ -2,6 +2,7 @@ import { type ApolloClient, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { MinusIcon, PlusIcon } from "lucide-react"
 import { useContext, useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Button } from "~/components/ui/button"
 import {
@@ -214,6 +215,7 @@ export function StickerDialog(props: Props) {
     id: string
     title: string
     imageUrl: string | null
+    isUsable?: boolean
   }) => (
     <StickerButton
       key={sticker.id}
@@ -224,6 +226,15 @@ export function StickerDialog(props: Props) {
           togglePin(sticker)
           return
         }
+        if (sticker.isUsable === false) {
+          toast(
+            t(
+              "このスタンプは作者が非公開にしたため使えません。「設定 > スタンプ」の「マイスタンプ」から外せます",
+              "This sticker is unavailable because the creator made it private. You can remove it in Settings > Stickers",
+            ),
+          )
+          return
+        }
         if (!props.isTargetUserBlocked) {
           props.onSend(sticker.id, sticker.imageUrl ?? "")
           props.onClose()
@@ -232,6 +243,7 @@ export function StickerDialog(props: Props) {
       size={stickerSize}
       disabled={props.isTargetUserBlocked && !isPinEditing}
       isPinned={isPinned(sticker.id)}
+      isUnusable={sticker.isUsable === false}
     />
   )
 

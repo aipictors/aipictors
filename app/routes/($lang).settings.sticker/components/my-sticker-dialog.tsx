@@ -189,6 +189,15 @@ export function MyStickerDialog(props: Props) {
           </div>
         </div>
 
+        {!props.sticker.isUsable && (
+          <p className="rounded-lg bg-muted px-3 py-2 text-muted-foreground text-sm leading-6">
+            {t(
+              "作者が非公開にしたため、このスタンプはコメントで使えません。不要なら下の「マイスタンプから外す」で整理できます。",
+              "The creator made this sticker private, so it can't be used in comments. You can remove it below if you no longer need it.",
+            )}
+          </p>
+        )}
+
         {view === "publish" && (
           <div className="space-y-3">
             <StickerPublishFields
@@ -256,7 +265,7 @@ export function MyStickerDialog(props: Props) {
                 {t("公開する", "Publish")}
               </Button>
             )}
-            {!isPrivate && (
+            {!isPrivate && props.sticker.isUsable && (
               <>
                 <Button variant="secondary" asChild>
                   <Link to={`/stickers/${props.sticker.id}`}>
@@ -382,6 +391,7 @@ export const MyStickerFragment = graphql(
     downloadsCount
     usesCount
     categories
+    isUsable
   }`,
 )
 

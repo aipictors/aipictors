@@ -1,5 +1,6 @@
 import { graphql } from "gql.tada"
-import { PinIcon } from "lucide-react"
+import { LockIcon, PinIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { DeleteStickerConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-sticker-confirm-dialog"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
@@ -13,12 +14,16 @@ type Props = {
   size?: "2x-large" | "small" | "medium" | "large" | "x-large"
   disabled?: boolean
   isPinned?: boolean
+  /** 作者が非公開にしたなどで使えない（押せるが、薄くして印を付ける） */
+  isUnusable?: boolean
 }
 
 /**
  * スタンプボタン
  */
 export function StickerButton(props: Props) {
+  const t = useTranslation()
+
   if (!props.imageUrl) {
     return null
   }
@@ -54,9 +59,17 @@ export function StickerButton(props: Props) {
         type={"button"}
         onClick={props.disabled ? undefined : props.onClick}
         disabled={props.disabled}
+        title={
+          props.isUnusable
+            ? t(
+                "作者が非公開にしたため使えません",
+                "Unavailable: the creator made it private",
+              )
+            : undefined
+        }
       >
         <img
-          className="m-auto"
+          className={cn("m-auto", props.isUnusable && "opacity-35 grayscale")}
           src={toResizedImageUrl(props.imageUrl, 240)}
           alt={props.title}
           loading="lazy"
@@ -66,6 +79,15 @@ export function StickerButton(props: Props) {
       {props.isPinned && (
         <span className="pointer-events-none absolute top-1 left-1 rounded-full bg-primary p-1 text-primary-foreground">
           <PinIcon className="size-3" />
+        </span>
+      )}
+      {props.isUnusable && (
+        <span className="pointer-events-none absolute right-1 bottom-1 flex items-center gap-0.5 rounded-full bg-background/90 px-1.5 py-0.5 font-medium text-[10px] text-muted-foreground shadow-sm">
+          <LockIcon className="size-2.5" />
+          {props.size !== "small" &&
+            props.size !== "medium" &&
+            props.size !== "large" &&
+            t("使えません", "Unavailable")}
         </span>
       )}
       {props.onDelete && (
@@ -80,5 +102,6 @@ export const StickerButtonFragment = graphql(
     id
     title
     imageUrl
+    isUsable
   }`,
 )

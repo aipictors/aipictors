@@ -5364,6 +5364,9 @@ type StickerNode implements Node {
   """返信用にブックマークしている"""
   isBookmarkedForReply: Boolean!
 
+  """閲覧者がコメントに使えるか（公開中・自分のもの・既定のスタンプ。作者が非公開にしたものは使えない。コメントの投稿と同じ条件）"""
+  isUsable: Boolean!
+
   """削除済み"""
   isDeleted: Boolean!
 

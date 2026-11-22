@@ -12,6 +12,7 @@ export type PinnedSticker = {
   id: string
   title: string
   imageUrl: string | null
+  isUsable?: boolean
 }
 
 type PinnedStickersData = {
@@ -26,6 +27,8 @@ const viewerPinnedStickersQuery = gql`
         id
         title
         imageUrl
+      isUsable
+        isUsable
       }
     }
   }

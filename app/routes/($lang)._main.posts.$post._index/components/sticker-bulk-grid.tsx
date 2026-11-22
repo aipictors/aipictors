@@ -9,6 +9,7 @@ type StickerItem = {
   id: string
   title: string
   imageUrl: string | null
+  isUsable?: boolean
 }
 
 type Props = {

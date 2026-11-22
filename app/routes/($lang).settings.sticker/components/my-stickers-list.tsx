@@ -361,7 +361,10 @@ export function MyStickersList() {
             >
               <div className="relative overflow-hidden rounded-2xl bg-muted/60 transition group-hover:bg-muted">
                 <img
-                  className="aspect-square w-full object-contain p-1.5 transition-transform duration-200 group-hover:scale-105"
+                  className={cn(
+                    "aspect-square w-full object-contain p-1.5 transition-transform duration-200 group-hover:scale-105",
+                    !sticker.isUsable && "opacity-35 grayscale",
+                  )}
                   src={toResizedImageUrl(sticker.imageUrl, 240) ?? ""}
                   alt={toStickerTitle(sticker.title)}
                   width={240}
@@ -372,6 +375,14 @@ export function MyStickersList() {
                 {tab === "PRIVATE_CREATED" && (
                   <span className="absolute top-1.5 left-1.5 rounded-full bg-background/90 p-1">
                     <LockIcon className="size-3" />
+                  </span>
+                )}
+                {!sticker.isUsable && (
+                  <span className="absolute inset-x-1.5 bottom-1.5 flex items-center justify-center gap-1 rounded-full bg-background/90 px-2 py-0.5 font-medium text-[11px] text-muted-foreground">
+                    <LockIcon className="size-3 shrink-0" />
+                    <span className="truncate">
+                      {t("非公開になり使えません", "Private · unavailable")}
+                    </span>
                   </span>
                 )}
               </div>

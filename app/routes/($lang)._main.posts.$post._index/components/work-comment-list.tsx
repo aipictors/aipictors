@@ -104,9 +104,21 @@ export function WorkCommentList(props: WorkCommentListProps) {
               key={sticker.id}
               imageUrl={sticker.imageUrl ?? ""}
               title={sticker.title}
-              onClick={() => onSendQuickSticker(sticker.id)}
+              onClick={() => {
+                if (sticker.isUsable === false) {
+                  toast(
+                    t(
+                      "このスタンプは作者が非公開にしたため使えません。「設定 > スタンプ」の「マイスタンプ」から外せます",
+                      "This sticker is unavailable because the creator made it private. You can remove it in Settings > Stickers",
+                    ),
+                  )
+                  return
+                }
+                onSendQuickSticker(sticker.id)
+              }}
               size="large"
               disabled={props.isWorkOwnerBlocked}
+              isUnusable={sticker.isUsable === false}
             />
           ))}
         </div>
@@ -118,9 +130,21 @@ export function WorkCommentList(props: WorkCommentListProps) {
               key={sticker.id}
               imageUrl={sticker.imageUrl ?? ""}
               title={sticker.title}
-              onClick={() => onSendQuickSticker(sticker.id)}
+              onClick={() => {
+                if (sticker.isUsable === false) {
+                  toast(
+                    t(
+                      "このスタンプは作者が非公開にしたため使えません。「設定 > スタンプ」の「マイスタンプ」から外せます",
+                      "This sticker is unavailable because the creator made it private. You can remove it in Settings > Stickers",
+                    ),
+                  )
+                  return
+                }
+                onSendQuickSticker(sticker.id)
+              }}
               size="x-large"
               disabled={props.isWorkOwnerBlocked}
+              isUnusable={sticker.isUsable === false}
             />
           ))}
         </div>
