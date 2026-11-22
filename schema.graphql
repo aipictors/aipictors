@@ -5342,7 +5342,7 @@ type StickerNode implements Node {
   """閲覧の種類"""
   accessType: AccessType!
 
-  """カテゴリ"""
+  """タグ（作者が自由に付ける）"""
   categories: [String!]!
   createdAt: Int!
 
@@ -5364,9 +5364,6 @@ type StickerNode implements Node {
   """返信用にブックマークしている"""
   isBookmarkedForReply: Boolean!
 
-  """閲覧者がコメントに使えるか（公開中・自分のもの・既定のスタンプ。作者が非公開にしたものは使えない。コメントの投稿と同じ条件）"""
-  isUsable: Boolean!
-
   """削除済み"""
   isDeleted: Boolean!
 
@@ -5375,6 +5372,9 @@ type StickerNode implements Node {
 
   """いいねしている"""
   isLiked: Boolean!
+
+  """閲覧者がコメントに使えるか（公開中・自分のもの・既定のスタンプ。作者が非公開にしたものは使えない。コメントの投稿と同じ条件）"""
+  isUsable: Boolean!
 
   """いいね数"""
   likesCount: Int!
@@ -5417,7 +5417,7 @@ type StickerViewerNode implements Node {
 }
 
 input StickersWhereInput {
-  """カテゴリ"""
+  """タグ（どれか 1 つが付いているもの。今は先頭の 1 つだけ見る）"""
   categories: [String!]
 
   """作成者"""
@@ -6398,7 +6398,7 @@ type UserNode implements Node {
   """ミュートしている"""
   isMuted: Boolean!
 
-  """公式アカウント（運営のユーザID 1 だけ）かどうか"""
+  """公式アカウント（運営・アプリ審査・ぴくたーちゃんbot）かどうか。青いバッジの表示用で、権限には使わない"""
   isOfficial: Boolean!
 
   """作品投稿がBANされているかどうか"""
@@ -6658,6 +6658,9 @@ type UserStatusNode {
 input UserStickersWhereInput {
   """カテゴリ"""
   categories: [String!]
+
+  """コメントに使えるか（true: 公開中・既定・自分のもの、false: 作者が非公開にしたものなど）。未指定はどちらも"""
+  isUsable: Boolean
 
   """スタンプの保存状態"""
   savedTypes: [StickerSavedType!]

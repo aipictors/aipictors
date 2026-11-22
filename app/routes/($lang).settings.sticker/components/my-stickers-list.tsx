@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import {
   DownloadIcon,
@@ -26,6 +25,7 @@ import {
 import { Skeleton } from "~/components/ui/skeleton"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-dialog"
 import {
@@ -117,6 +117,17 @@ export function MyStickersList() {
 
   const search = searchParams.get("q") ?? ""
   const sort = searchParams.get("sort") === "used" ? "used" : "added"
+  // 使える・使えないの絞り込み（作者が非公開にしたものがあるのは追加したスタンプだけ）
+  const usableParam = searchParams.get("usable")
+  const usable: "all" | "yes" | "no" =
+    tab !== "DOWNLOADED"
+      ? "all"
+      : usableParam === "yes"
+        ? "yes"
+        : usableParam === "no"
+          ? "no"
+          : "all"
+  const unusableCount = counts?.unusableCount ?? 0
   const page = Math.max(
     Number.parseInt(searchParams.get("page") ?? "0") || 0,
     0,
@@ -166,6 +177,7 @@ export function MyStickersList() {
       where: {
         savedTypes: [tab],
         ...(search !== "" && { search }),
+        ...(usable !== "all" && { isUsable: usable === "yes" }),
       },
     },
   })
@@ -253,7 +265,7 @@ export function MyStickersList() {
             type="button"
             role="tab"
             aria-selected={tab === item.value}
-            onClick={() => updateParams({ tab: item.param })}
+            onClick={() => updateParams({ tab: item.param, usable: null })}
             className={cn(
               "flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 font-medium text-sm transition-colors",
               tab === item.value
@@ -273,8 +285,8 @@ export function MyStickersList() {
         {t(currentTab.hintJa, currentTab.hintEn)}
       </p>
 
-      <div className="flex gap-2">
-        <div className="relative min-w-0 flex-1">
+      <div className="flex flex-wrap gap-2">
+        <div className="relative basis-full sm:min-w-48 sm:flex-1 sm:basis-0">
           <SearchIcon className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3 size-4 text-muted-foreground" />
           <Input
             type="search"
@@ -292,7 +304,7 @@ export function MyStickersList() {
           }
         >
           <SelectTrigger
-            className="h-10 w-36 shrink-0"
+            className="h-10 flex-1 sm:w-36 sm:flex-none"
             aria-label={t("並び順", "Sort")}
           >
             <SelectValue />
@@ -306,7 +318,71 @@ export function MyStickersList() {
             </SelectItem>
           </SelectContent>
         </Select>
+        {tab === "DOWNLOADED" && (
+          <Select
+            value={usable}
+            onValueChange={(value) =>
+              updateParams({ usable: value === "all" ? null : value })
+            }
+          >
+            <SelectTrigger
+              className="h-10 flex-1 sm:w-44 sm:flex-none"
+              aria-label={t("使えるかで絞り込む", "Filter by usability")}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("すべて", "All")}</SelectItem>
+              <SelectItem value="yes">{t("使えるもの", "Usable")}</SelectItem>
+              <SelectItem value="no">
+                {t(
+                  `使えないもの（${unusableCount.toLocaleString()}）`,
+                  `Unusable (${unusableCount.toLocaleString()})`,
+                )}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        )}
       </div>
+
+      {/* 使えなくなったスタンプをまとめて見る入口（多く追加している人ほど一覧に埋もれるため） */}
+      {tab === "DOWNLOADED" && usable === "all" && unusableCount > 0 && (
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/5 px-3 py-2.5 text-sm">
+          <LockIcon className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+          <p className="min-w-0 flex-1">
+            {t(
+              `作者が非公開にして使えなくなったスタンプが ${unusableCount.toLocaleString()} 個あります`,
+              `${unusableCount.toLocaleString()} stickers can no longer be used because their creators made them private`,
+            )}
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 shrink-0 rounded-full"
+            onClick={() => updateParams({ usable: "no" })}
+          >
+            {t("まとめて見る", "View them")}
+          </Button>
+        </div>
+      )}
+      {usable === "no" && (
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border bg-muted/50 px-3 py-2.5 text-sm">
+          <p className="min-w-0 flex-1 text-muted-foreground">
+            {t(
+              "使えなくなったスタンプだけを表示しています。開いて「マイスタンプから外す」で整理できます",
+              "Showing only stickers you can no longer use. Open one and remove it from My Stickers to tidy up",
+            )}
+          </p>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-8 shrink-0 rounded-full"
+            onClick={() => updateParams({ usable: null })}
+          >
+            {t("すべて表示に戻す", "Show all")}
+          </Button>
+        </div>
+      )}
 
       {stickers === undefined && (
         <div className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-4 md:grid-cols-5">
@@ -325,15 +401,22 @@ export function MyStickersList() {
                   `「${search}」に合うスタンプはありません`,
                   `No stickers match "${search}"`,
                 )
-              : tab === "DOWNLOADED"
+              : usable === "no"
                 ? t(
-                    "まだ追加したスタンプはありません",
-                    "You have not added any stickers yet",
+                    "使えなくなったスタンプはありません",
+                    "No unusable stickers",
                   )
-                : t(
-                    "このタブのスタンプはまだありません",
-                    "No stickers here yet",
-                  )}
+                : usable === "yes"
+                  ? t("使えるスタンプはありません", "No usable stickers")
+                  : tab === "DOWNLOADED"
+                    ? t(
+                        "まだ追加したスタンプはありません",
+                        "You have not added any stickers yet",
+                      )
+                    : t(
+                        "このタブのスタンプはまだありません",
+                        "No stickers here yet",
+                      )}
           </p>
           {search === "" && tab === "DOWNLOADED" && (
             <Button variant="secondary" className="rounded-full" asChild>
@@ -454,6 +537,7 @@ const countsQuery = graphql(
       downloadedCount: userStickersCount(where: { savedTypes: [DOWNLOADED] })
       privateCount: userStickersCount(where: { savedTypes: [PRIVATE_CREATED] })
       publicCount: userStickersCount(where: { savedTypes: [PUBLIC_CREATED] })
+      unusableCount: userStickersCount(where: { savedTypes: [DOWNLOADED], isUsable: false })
     }
   }`,
 )
