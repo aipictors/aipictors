@@ -68,6 +68,7 @@ import {
 } from "~/components/user-models/use-user-models"
 import { UserModelDeleteDialog } from "~/components/user-models/user-model-delete-dialog"
 import { UserModelEditDialog } from "~/components/user-models/user-model-edit-dialog"
+import { UserModelLimitUpgradeDialog } from "~/components/user-models/user-model-limit-upgrade-dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useNavigate } from "~/lib/app/locale-router"
 import { USER_MODEL_BASE_MODELS } from "~/lib/user-models/constants"
@@ -77,6 +78,7 @@ import {
   type UserModel,
   type UserModelKind,
 } from "~/lib/user-models/types"
+import { useUserModelUploads } from "~/lib/user-models/upload-queue"
 import { cn } from "~/lib/utils"
 
 export type ModelLibraryProps = {
@@ -283,6 +285,29 @@ export function ModelLibrary(props: ModelLibraryProps) {
     mine.data.limit > 0 &&
     monthlyUsedOf(mine.data) >= mine.data.limit
 
+  const [isLimitDialogOpen, setIsLimitDialogOpen] = useState(false)
+
+  // アップロードが登録数の上限で止まったら、その場でプランの案内を出す（1 つのジョブにつき 1 回）
+  const uploadJobs = useUserModelUploads()
+  // 開く前に止まっていたジョブでは出さない（ライブラリを開き直すたびに出てしまうため）
+  const limitNotifiedJobIds = useRef<Set<string> | null>(null)
+  if (limitNotifiedJobIds.current === null) {
+    limitNotifiedJobIds.current = new Set(
+      uploadJobs.filter((job) => job.isLimitExceeded).map((job) => job.id),
+    )
+  }
+  useEffect(() => {
+    const notified = limitNotifiedJobIds.current
+    if (notified === null) return
+    const stopped = uploadJobs.filter(
+      (job) => job.isLimitExceeded && !notified.has(job.id),
+    )
+    if (stopped.length === 0) return
+    for (const job of stopped) notified.add(job.id)
+    mine.refetch()
+    setIsLimitDialogOpen(true)
+  }, [uploadJobs])
+
   const community = useUserModelsInfinite(
     {
       kind: filters.kind,
@@ -473,8 +498,8 @@ export function ModelLibrary(props: ModelLibraryProps) {
       return false
     }
     if (isLimitFull) {
-      toast("今月登録できるモデル数の上限に達しています（毎月1日にリセット）")
-      changeSection("mine")
+      // トーストだけでは続ける方法が分からないので、プランの案内（そのまま決済へ進める）を出す
+      setIsLimitDialogOpen(true)
       return false
     }
     return true
@@ -1027,6 +1052,10 @@ export function ModelLibrary(props: ModelLibraryProps) {
 
       <ModelLibraryUploadPanel
         isInDialog={isDialog}
+        onShowPlans={() => {
+          mine.refetch()
+          setIsLimitDialogOpen(true)
+        }}
         className={cn("absolute right-4 bottom-4", props.footer && "bottom-20")}
       />
 
@@ -1038,8 +1067,25 @@ export function ModelLibrary(props: ModelLibraryProps) {
         }}
         onStarted={() => changeSection("mine")}
         onImported={() => mine.refetch()}
+        onLimitExceeded={() => {
+          setImportUrl(null)
+          mine.refetch()
+          setIsLimitDialogOpen(true)
+        }}
         linkTarget={linkTarget}
       />
+
+      {mine.data && (
+        <UserModelLimitUpgradeDialog
+          open={isLimitDialogOpen}
+          onOpenChange={setIsLimitDialogOpen}
+          used={monthlyUsedOf(mine.data)}
+          limit={mine.data.limit}
+          resetsAt={mine.data.resetsAt}
+          planType={mine.data.planType}
+          linkTarget={linkTarget}
+        />
+      )}
 
       <ModelLibraryUploadDialog
         file={pendingFiles[0] ?? null}

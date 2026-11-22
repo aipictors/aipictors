@@ -1,5 +1,3 @@
-import { useModelImageUploader } from "~/components/user-models/use-image-uploader"
-import { Link } from "~/lib/app/locale-router"
 import {
   AlertTriangleIcon,
   CheckCircle2Icon,
@@ -27,6 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
+import { useModelImageUploader } from "~/components/user-models/use-image-uploader"
+import { Link } from "~/lib/app/locale-router"
 import {
   previewUserModelImport,
   UserModelsApiError,
@@ -64,6 +64,10 @@ type Props = {
    * 取り込みが終わったとき
    */
   onImported?(): void
+  /**
+   * 登録数の上限に達していたとき（渡すと、エラー文の代わりにプランの案内を出せる）
+   */
+  onLimitExceeded?(): void
   /**
    * リンクを別タブで開く（生成画面のダイアログ内など）
    */
@@ -143,7 +147,9 @@ export function ModelLibraryImportDialog(props: Props) {
           ? e.message
           : "モデルの情報を取得できませんでした",
       )
-      setIsLimitExceeded(e instanceof UserModelsApiError && e.status === 403)
+      const isLimit = e instanceof UserModelsApiError && e.status === 403
+      setIsLimitExceeded(isLimit)
+      if (isLimit && props.onLimitExceeded) props.onLimitExceeded()
     } finally {
       if (requestRef.current === requestId) setIsChecking(false)
     }
@@ -173,7 +179,9 @@ export function ModelLibraryImportDialog(props: Props) {
       kind: preview.kind,
       sizeBytes: preview.sizeBytes,
       fileName: preview.filename,
-      thumbnailUrl: preview.thumbnailUrl ? undefined : (thumbnailUrl ?? undefined),
+      thumbnailUrl: preview.thumbnailUrl
+        ? undefined
+        : (thumbnailUrl ?? undefined),
       onComplete: (job) => {
         toast(`「${job.name}」を取り込みました。マイモデルから使えます`)
         props.onImported?.()
@@ -186,7 +194,8 @@ export function ModelLibraryImportDialog(props: Props) {
     props.onOpenChange(false)
   }
 
-  const isThumbnailMissing = preview !== null && !preview.thumbnailUrl && !thumbnailUrl
+  const isThumbnailMissing =
+    preview !== null && !preview.thumbnailUrl && !thumbnailUrl
 
   const licenseNote = preview
     ? licenseNoteText(preview.licenseAllowsOtherServices)

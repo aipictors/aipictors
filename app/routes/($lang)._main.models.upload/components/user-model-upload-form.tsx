@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   CheckCircle2Icon,
@@ -20,8 +19,10 @@ import {
   userModelsQueryKeys,
 } from "~/components/user-models/use-user-models"
 import { UserModelLimitCard } from "~/components/user-models/user-model-limit-card"
+import { UserModelLimitUpgradeDialog } from "~/components/user-models/user-model-limit-upgrade-dialog"
 import { UserModelMetadataFields } from "~/components/user-models/user-model-metadata-fields"
 import { AuthContext } from "~/contexts/auth-context"
+import { Link } from "~/lib/app/locale-router"
 import {
   abortUserModelUpload,
   completeUserModelUpload,
@@ -126,6 +127,7 @@ export function UserModelUploadForm() {
   const [phase, setPhase] = useState<Phase>({ type: "idle" })
   const [isDragging, setIsDragging] = useState(false)
   const [limitError, setLimitError] = useState<string | null>(null)
+  const [isLimitDialogOpen, setIsLimitDialogOpen] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const hashAbortRef = useRef<AbortController | null>(null)
@@ -359,6 +361,7 @@ export function UserModelUploadForm() {
       if (error instanceof UserModelsApiError && error.isLimitExceeded) {
         setLimitError(error.message)
         mine.refetch()
+        setIsLimitDialogOpen(true)
         return
       }
       toast(
@@ -481,12 +484,13 @@ export function UserModelUploadForm() {
     phase.type === "idle"
 
   const submitLabel = (() => {
+    // 上限のときは押すとプランの案内が出るので、先にそれを伝える
+    if (isLimitReached) return "今月の上限です・プランを上げて続ける"
     if (!file) return "ファイルを選択してください"
     if (isTooLarge) return "ファイルが大きすぎます"
     if (hash.type === "hashing") return `ファイルを確認中… ${hashPercent}%`
     if (fields.name.trim() === "") return "名前を入力してください"
     if (isUploadingImage) return "画像をアップロード中…"
-    if (isLimitReached) return "登録数の上限に達しています"
     return "アップロードして公開"
   })()
 
@@ -642,14 +646,30 @@ export function UserModelUploadForm() {
             limit={limit}
             resetsAt={mine.data?.resetsAt}
             planType={mine.data.planType}
+            onUpgrade={() => setIsLimitDialogOpen(true)}
+          />
+        )}
+
+        {mine.data && (
+          <UserModelLimitUpgradeDialog
+            open={isLimitDialogOpen}
+            onOpenChange={setIsLimitDialogOpen}
+            used={used}
+            limit={limit}
+            resetsAt={mine.data.resetsAt}
+            planType={mine.data.planType}
           />
         )}
 
         {limitError && (
           <div className="rounded-2xl border border-amber-500/50 bg-amber-500/5 p-4 text-sm">
             <p>{limitError}</p>
-            <Button asChild size="sm" className="mt-2 rounded-full">
-              <Link to="/plus">プランを見る</Link>
+            <Button
+              size="sm"
+              className="mt-2 rounded-full"
+              onClick={() => setIsLimitDialogOpen(true)}
+            >
+              プランを上げて続ける
             </Button>
           </div>
         )}
@@ -727,8 +747,17 @@ export function UserModelUploadForm() {
               <Button
                 size="lg"
                 className="h-12 w-full rounded-xl font-bold text-base"
-                disabled={!canSubmit}
-                onClick={onSubmit}
+                // 上限のときも押せるようにして、押したらプランの案内を出す（以前は押せないだけだった）
+                disabled={
+                  !canSubmit && !(isLimitReached && phase.type === "idle")
+                }
+                onClick={() => {
+                  if (isLimitReached) {
+                    setIsLimitDialogOpen(true)
+                    return
+                  }
+                  onSubmit()
+                }}
               >
                 {hash.type === "hashing" ? (
                   <Loader2Icon className="mr-2 size-4 animate-spin" />

@@ -1,7 +1,7 @@
-import { Link } from "~/lib/app/locale-router"
 import { CrownIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Progress } from "~/components/ui/progress"
+import { Link } from "~/lib/app/locale-router"
 import { USER_MODEL_PLAN_LIMITS } from "~/lib/user-models/constants"
 import { formatModelQuotaReset } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
@@ -13,6 +13,8 @@ type Props = {
   /** 枠が戻る日時（UNIX 秒） */
   resetsAt?: number
   planType: string | null
+  /** 渡すと「プランを見る」で /plus に移らず、プランの案内（そのまま決済へ進める）を開く */
+  onUpgrade?(): void
   className?: string
 }
 
@@ -63,7 +65,17 @@ export function UserModelLimitCard(props: Props) {
             {`1か月に登録できる数：無料 ${USER_MODEL_PLAN_LIMITS.FREE}個・ライト ${USER_MODEL_PLAN_LIMITS.LITE}個・スタンダード ${USER_MODEL_PLAN_LIMITS.STANDARD}個・プレミアム ${USER_MODEL_PLAN_LIMITS.PREMIUM}個`}
           </p>
           <div className="flex gap-2">
-            {canUpgrade && (
+            {canUpgrade && props.onUpgrade && (
+              <Button
+                size="sm"
+                className="rounded-full"
+                onClick={props.onUpgrade}
+              >
+                <CrownIcon className="mr-1 size-4" />
+                プランを上げて続ける
+              </Button>
+            )}
+            {canUpgrade && !props.onUpgrade && (
               <Button asChild size="sm" className="rounded-full">
                 <Link to="/plus">
                   <CrownIcon className="mr-1 size-4" />

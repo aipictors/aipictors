@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   AlertCircleIcon,
@@ -14,6 +13,7 @@ import {
 import { useEffect, useRef, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { userModelsQueryKeys } from "~/components/user-models/use-user-models"
+import { Link } from "~/lib/app/locale-router"
 import { formatBytes, formatDuration } from "~/lib/user-models/generation"
 import {
   cancelUserModelUpload,
@@ -68,7 +68,11 @@ const statusText = (job: UploadJob): string => {
   }
 }
 
-function JobRow(props: { job: UploadJob; modelHrefTarget?: string }) {
+function JobRow(props: {
+  job: UploadJob
+  modelHrefTarget?: string
+  onShowPlans?(): void
+}) {
   const { job } = props
   const percent = uploadJobPercent(job)
   const isActive = isActiveUploadStatus(job.status)
@@ -104,7 +108,16 @@ function JobRow(props: { job: UploadJob; modelHrefTarget?: string }) {
         >
           {statusText(job)}
         </p>
-        {job.isLimitExceeded && (
+        {job.isLimitExceeded && props.onShowPlans && (
+          <button
+            type="button"
+            onClick={props.onShowPlans}
+            className="mt-1 inline-block font-medium text-primary text-xs hover:underline"
+          >
+            プランを上げて続ける
+          </button>
+        )}
+        {job.isLimitExceeded && !props.onShowPlans && (
           <Link
             to="/plus"
             target={props.modelHrefTarget}
@@ -203,6 +216,10 @@ type Props = {
    * ダイアログ内に出すとき（リンクを別タブで開く）
    */
   isInDialog?: boolean
+  /**
+   * 登録数の上限で止まったジョブの「プランを上げて続ける」（渡さないときは /plus へのリンク）
+   */
+  onShowPlans?(): void
   className?: string
 }
 
@@ -296,6 +313,7 @@ export function ModelLibraryUploadPanel(props: Props) {
               key={job.id}
               job={job}
               modelHrefTarget={props.isInDialog ? "_blank" : undefined}
+              onShowPlans={props.onShowPlans}
             />
           ))}
         </ul>
