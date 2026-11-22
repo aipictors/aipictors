@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { useSearchParams } from "@remix-run/react"
-import { Loader2, Megaphone, Plus, ShieldCheck } from "lucide-react"
+import { EyeOff, Loader2, Megaphone, Plus, ShieldCheck } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import {
   appFilterChipClassName,
@@ -8,6 +8,10 @@ import {
   appPillTabClassName,
 } from "~/components/app/app-pill-tab"
 import { OpenRequestCard } from "~/components/requests/open-request-ui"
+import {
+  readAgeConfirmed,
+  writeAgeConfirmed,
+} from "~/components/requests/request-showcase"
 import type { RequestUsers } from "~/components/requests/request-ui"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
@@ -16,6 +20,8 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { type OpenRequest, openRequestsGet } from "~/lib/open-requests-api"
 import { cn } from "~/lib/utils"
+import { HomeHeaderContentToggle } from "~/routes/($lang)._main._index/components/home-header-content-toggle"
+import { writeContentMode } from "~/utils/content-mode"
 
 export const meta: MetaFunction = () => [
   { title: "募集リクエスト | Aipictors" },
@@ -51,6 +57,15 @@ export default function OpenRequestsPage() {
   const isMine = tab === "requested" || tab === "proposed"
   const [requests, setRequests] = useState<OpenRequest[] | null>(null)
   const [users, setUsers] = useState<RequestUsers>({})
+  // R18 の募集は年齢を確かめてから読む（null = まだ読めていない）。
+  // ヘッダーやこのページの切り替えで確認したときも、モードが変わったときに読み直す
+  const [ageOk, setAgeOk] = useState<boolean | null>(null)
+  const showsR18 = !isMine && contentMode === "r18"
+  const needsAgeGate = showsR18 && ageOk === false
+
+  useEffect(() => {
+    setAgeOk(readAgeConfirmed())
+  }, [contentMode])
 
   const setParam = (key: string, value: string) => {
     const next = new URLSearchParams(searchParams)
@@ -61,6 +76,7 @@ export default function OpenRequestsPage() {
 
   useEffect(() => {
     if (isMine && !auth.isLoggedIn) return
+    if (showsR18 && ageOk !== true) return
     let alive = true
     setRequests(null)
     openRequestsGet<{ requests: OpenRequest[]; users: RequestUsers }>({
@@ -84,7 +100,7 @@ export default function OpenRequestsPage() {
     return () => {
       alive = false
     }
-  }, [tab, sort, contentMode, auth.isLoggedIn, isMine])
+  }, [tab, sort, contentMode, auth.isLoggedIn, isMine, showsR18, ageOk])
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-3 pt-4 pb-24 md:px-6">
@@ -128,21 +144,25 @@ export default function OpenRequestsPage() {
       </section>
 
       <div className="flex flex-col gap-2">
-        <div className={appPillRowClassName}>
-          {TABS.filter((item) => !("login" in item) || auth.isLoggedIn).map(
-            (item) => (
-              <button
-                key={item.value}
-                type="button"
-                className={appPillTabClassName(tab === item.value)}
-                onClick={() =>
-                  setParam("tab", item.value === "open" ? "" : item.value)
-                }
-              >
-                {t(item.ja, item.en)}
-              </button>
-            ),
-          )}
+        <div className="flex items-center gap-2">
+          <div className={cn(appPillRowClassName, "min-w-0 flex-1")}>
+            {TABS.filter((item) => !("login" in item) || auth.isLoggedIn).map(
+              (item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  className={appPillTabClassName(tab === item.value)}
+                  onClick={() =>
+                    setParam("tab", item.value === "open" ? "" : item.value)
+                  }
+                >
+                  {t(item.ja, item.en)}
+                </button>
+              ),
+            )}
+          </div>
+          {/* 全年齢 / R18 の募集の切り替え（ヘッダーと同じもの。R18 にするときは年齢を確認する） */}
+          {!isMine && <HomeHeaderContentToggle className="shrink-0" />}
         </div>
         {!isMine && (
           <div className={appPillRowClassName}>
@@ -162,7 +182,38 @@ export default function OpenRequestsPage() {
         )}
       </div>
 
-      {requests === null ? (
+      {needsAgeGate ? (
+        <div className="flex flex-col items-center gap-3 rounded-3xl border border-rose-400/50 border-dashed bg-rose-500/5 px-6 py-12 text-center">
+          <EyeOff className="size-10 text-rose-500" />
+          <p className="font-bold">
+            {t("R18 の募集を表示します", "Showing R18 requests")}
+          </p>
+          <p className="text-muted-foreground text-sm">
+            {t(
+              "18 歳以上であることを確認してから表示します。あなたは 18 歳以上ですか？",
+              "Shown after confirming you are 18 or older. Are you 18 or older?",
+            )}
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button
+              variant="secondary"
+              className="rounded-full"
+              onClick={() => writeContentMode("all")}
+            >
+              {t("いいえ（全年齢に戻る）", "No (back to all ages)")}
+            </Button>
+            <Button
+              className="rounded-full font-bold"
+              onClick={() => {
+                writeAgeConfirmed(false)
+                setAgeOk(true)
+              }}
+            >
+              {t("はい、18 歳以上です", "Yes, I am 18+")}
+            </Button>
+          </div>
+        </div>
+      ) : requests === null ? (
         <div className="flex justify-center py-16">
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
