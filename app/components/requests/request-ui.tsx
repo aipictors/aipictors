@@ -7,6 +7,7 @@ import {
   type CoinRequest,
   formatCoins,
   planCategoryLabel,
+  planImageUrls,
   type RequestPlan,
   type RequestStatus,
   requestStatusLabel,
@@ -90,6 +91,7 @@ export function RequestPlanCard(props: {
   const full =
     plan.activeCount !== undefined && plan.activeCount >= plan.maxActive
   const closed = !plan.isAccepting || full
+  const cover = planImageUrls(plan)[0]
   return (
     <Link
       to={`/requests/plans/${plan.id}`}
@@ -99,9 +101,9 @@ export function RequestPlanCard(props: {
       )}
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-        {plan.sampleImageUrls[0] ? (
+        {cover ? (
           <img
-            src={plan.sampleImageUrls[0]}
+            src={cover}
             alt=""
             loading="lazy"
             className="size-full object-cover transition-transform duration-300 group-hover:scale-105"

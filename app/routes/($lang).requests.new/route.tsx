@@ -35,6 +35,7 @@ import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   type CreatorRequestProfile,
   formatCoins,
+  planImageUrls,
   type RequestCoinType,
   type RequestPlan,
   RequestsApiError,
@@ -360,9 +361,9 @@ export default function NewRequestPage() {
 
       {/* 依頼先 */}
       <section className="flex items-center gap-3 rounded-2xl border p-3">
-        {plan?.sampleImageUrls[0] ? (
+        {plan && planImageUrls(plan)[0] ? (
           <img
-            src={plan.sampleImageUrls[0]}
+            src={planImageUrls(plan)[0]}
             alt=""
             className="size-16 shrink-0 rounded-xl object-cover"
           />

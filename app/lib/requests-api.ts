@@ -24,9 +24,17 @@ export type RequestPlan = {
   orderCount: number
   completedCount: number
   activeCount?: number
+  /** 見本の画像がないときだけ: クリエイターの新しい投稿作品（公開中・全年齢）のサムネイル */
+  workImageUrls?: string[]
   createdAt: number
   updatedAt: number
 }
+
+/** プランに出す画像: 見本の画像、なければクリエイターの投稿作品のサムネイル */
+export const planImageUrls = (plan: RequestPlan) =>
+  plan.sampleImageUrls.length > 0
+    ? plan.sampleImageUrls
+    : (plan.workImageUrls ?? [])
 
 /** リクエストを払うコイン（1 つの依頼はどちらか一方） */
 export type RequestCoinType = "FREE" | "PREMIUM"

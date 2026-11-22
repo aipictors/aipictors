@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { RequestImagePicker } from "~/components/requests/request-image-picker"
 import { CoinPrice } from "~/components/requests/request-ui"
 import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,6 @@ import {
 } from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
-import { Checkbox } from "~/components/ui/checkbox"
 import { Switch } from "~/components/ui/switch"
 import { Textarea } from "~/components/ui/textarea"
 import { config, META } from "~/config"
@@ -30,6 +30,7 @@ import {
   formatCoins,
   PLAN_CATEGORY_LABELS,
   planCategoryLabel,
+  planImageUrls,
   REQUEST_FEE_RATE,
   type RequestPlan,
   type RequestSettings,
@@ -344,9 +345,9 @@ function PlanRow(props: {
         to={`/requests/plans/${plan.id}`}
         className="size-20 shrink-0 overflow-hidden rounded-xl bg-muted"
       >
-        {plan.sampleImageUrls[0] && (
+        {planImageUrls(plan)[0] && (
           <img
-            src={plan.sampleImageUrls[0]}
+            src={planImageUrls(plan)[0]}
             alt=""
             className="size-full object-cover"
             loading="lazy"

@@ -37,6 +37,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import {
   planCategoryLabel,
+  planImageUrls,
   type RequestPlan,
   type RequestShowcaseItem,
   requestErrorMessage,
@@ -66,7 +67,9 @@ export const meta: MetaFunction<typeof loader> = (props) =>
     {
       title: props.data?.plan.title ?? "",
       description: (props.data?.plan.description ?? "").slice(0, 120),
-      image: props.data?.plan.sampleImageUrls[0] ?? config.defaultOgpImageUrl,
+      image:
+        (props.data?.plan ? planImageUrls(props.data.plan)[0] : undefined) ??
+        config.defaultOgpImageUrl,
     },
     props.params.lang,
   )
@@ -87,6 +90,7 @@ export default function RequestPlanPage() {
   const t = useTranslation()
   const creator = users[plan.userId]
   const [imageIndex, setImageIndex] = useState(0)
+  const images = planImageUrls(plan)
   const isOwner = auth.userId === plan.userId
   const full =
     plan.activeCount !== undefined && plan.activeCount >= plan.maxActive
@@ -122,9 +126,9 @@ export default function RequestPlanPage() {
       <div className="grid gap-6 md:grid-cols-[1.1fr_1fr]">
         <div className="flex flex-col gap-2">
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted">
-            {plan.sampleImageUrls[imageIndex] ? (
+            {images[imageIndex] ? (
               <img
-                src={plan.sampleImageUrls[imageIndex]}
+                src={images[imageIndex]}
                 alt=""
                 className="size-full object-contain"
               />
@@ -134,9 +138,17 @@ export default function RequestPlanPage() {
               </div>
             )}
           </div>
-          {plan.sampleImageUrls.length > 1 && (
+          {plan.sampleImageUrls.length === 0 && images.length > 0 && (
+            <p className="text-muted-foreground text-xs">
+              {t(
+                "見本の画像がないため、クリエイターの投稿作品を表示しています",
+                "No samples yet, so the creator's posted works are shown",
+              )}
+            </p>
+          )}
+          {images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto">
-              {plan.sampleImageUrls.map((url, i) => (
+              {images.map((url, i) => (
                 <button
                   key={url}
                   type="button"
