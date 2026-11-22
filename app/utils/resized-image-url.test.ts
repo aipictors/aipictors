@@ -1,6 +1,7 @@
 import {
   nextResizedImageUrl,
   RESIZED_IMAGE_FALLBACK_SCRIPT,
+  toCoverImageSizes,
   toResizedImageSrcSet,
   toResizedImageUrl,
 } from "./resized-image-url"
@@ -154,4 +155,23 @@ test("縮小の Worker でも読めなければ元の画像にし、その次は
   img.currentSrc = URL
   expect(fireError(img)).toBe(false)
   expect(fireError(element("LINK", {}))).toBe(false)
+})
+
+test("切り抜く枠より横長の絵は、描かれる幅の分だけ sizes を広げる", () => {
+  const entries = [
+    { media: "(min-width: 768px)", width: "300px", aspectRatio: 1 },
+    { width: "50vw", aspectRatio: 0.8 },
+  ]
+  // 16:9 の絵を正方形と 4:5 の枠に置く
+  expect(toCoverImageSizes(entries, 16 / 9)).toBe(
+    "(min-width: 768px) calc(300px * 1.78), calc(50vw * 2.22)",
+  )
+  // 縦長の絵は幅で合うのでそのまま
+  expect(toCoverImageSizes(entries, 2 / 3)).toBe(
+    "(min-width: 768px) 300px, 50vw",
+  )
+  // 比が分からないときもそのまま
+  expect(toCoverImageSizes(entries, null)).toBe(
+    "(min-width: 768px) 300px, 50vw",
+  )
 })

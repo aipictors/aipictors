@@ -82,6 +82,32 @@ export function nextResizedImageUrl(url: string): string | null {
 export const RESIZED_IMAGE_FALLBACK_SCRIPT = `(function(){var V=${JSON.stringify(VARIANT_PREFIX)},W=${JSON.stringify(RESIZE_WORKER_PREFIX)},O=${JSON.stringify(RESIZABLE_ORIGIN)};function n(u){if(u.indexOf(V)===0)return W+u.slice(V.length);if(u.indexOf(W)===0)return O+u.slice(W.length).replace(/^\\d+\\//,"");return null}addEventListener("error",function(e){var t=e.target;if(!t||t.tagName!=="IMG")return;var u=t.currentSrc||t.src||"",x=n(u);if(!x)return;e.stopImmediatePropagation();var v=u.indexOf(V)===0;function f(el){var s=el.getAttribute("srcset");if(!s)return;if(v){if(s.indexOf(V)>=0)el.setAttribute("srcset",s.split(V).join(W))}else if(s.indexOf(W)>=0)el.removeAttribute("srcset")}var p=t.parentNode;if(p&&p.tagName==="PICTURE")for(var i=0;i<p.children.length;i++)if(p.children[i].tagName==="SOURCE")f(p.children[i]);f(t);var a=t.getAttribute("src")||"";if(!v)t.setAttribute("src",x);else if(a.indexOf(V)===0)t.setAttribute("src",n(a))},true)})()`
 
 /**
+ * object-cover で枠いっぱいに切り抜くときの sizes。
+ * 枠より横長の絵は高さで合わせるので、描かれる幅は枠の幅より広くなる。
+ * 枠の幅のままだと小さい候補が選ばれて引き伸ばされ、ぼけて見えるので、その分を掛ける。
+ * entries は狭い画面の指定を最後に置く（sizes と同じ順。最後の media は無視する）
+ */
+export function toCoverImageSizes(
+  entries: { media?: string; width: string; aspectRatio: number }[],
+  imageAspectRatio: number | null | undefined,
+): string {
+  return entries
+    .map((entry, index) => {
+      const scale =
+        imageAspectRatio && imageAspectRatio > 0
+          ? Math.max(1, imageAspectRatio / entry.aspectRatio)
+          : 1
+      const width =
+        scale > 1.05
+          ? `calc(${entry.width} * ${Math.round(scale * 100) / 100})`
+          : entry.width
+      const isLast = index === entries.length - 1
+      return entry.media && !isLast ? `${entry.media} ${width}` : width
+    })
+    .join(", ")
+}
+
+/**
  * srcset 用の文字列。maxWidth（元画像の幅）を超える幅は作らない。
  * 一番大きい候補も元画像ではなく再圧縮版にする（元画像は画質が高く重い）。
  * large は元画像の幅（maxWidth）が分かっている大きい表示用で、1920・2560px も候補にする

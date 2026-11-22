@@ -7,22 +7,37 @@ import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import type { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import {
+  toCoverImageSizes,
   toResizedImageSrcSet,
   toResizedImageUrl,
 } from "~/utils/resized-image-url"
 
 type Work = FragmentOf<typeof HomeWorkFragment>
 
+/** ピックアップは元の画像の大きさも取る（サムネイルは短い辺が 600px で、大きく出すと足りない） */
+type FeaturedWork = Work & { imageWidth?: number | null }
+
+/** 枠の大きさ（画面幅ごと）。広い画面の指定を先に、一番狭い画面を最後に書く */
+type CardSize = { media?: string; width: string; aspectRatio: number }
+
+/** マイページの中身の最大幅（max-w-6xl から左右の余白を引いたもの） */
+const CONTENT_MAX = 1088
+
 /**
  * マイページの作品カード。作者は見れば分かるので出さず、絵を大きく見せる
  * タイトルは PC では乗せたときに、スマホでは常に出す
  */
 function UserWorkCard(props: {
-  work: Work
-  sizes: string
+  work: FeaturedWork
+  sizes: CardSize[]
   className?: string
   isPriority?: boolean
-  /** 大きく見せるカード。サムネイルでは足りないので元の画像から縮小する */
+  /**
+   * 元の画像から縮小する（ピックアップ）。
+   * 600px のサムネイルを Retina や横長の絵の切り抜きで広げるとぼけるため。枚数が少ないので変換の費用は小さい
+   */
+  isOriginalSource?: boolean
+  /** 枠いっぱいに表示する大きいカード。1920px 以上の縮小版も候補にする */
   isLarge?: boolean
   /** 全体を切らずに見せる（横長の枠に縦長の絵を置くとき）。余白はぼかした同じ絵で埋める */
   isContained?: boolean
@@ -30,6 +45,15 @@ function UserWorkCard(props: {
   const t = useTranslation()
   const work = props.work
   const hasVideo = Boolean(work.url || work.streamUid)
+  const imageAspectRatio =
+    work.largeThumbnailImageWidth > 0 && work.largeThumbnailImageHeight > 0
+      ? work.largeThumbnailImageWidth / work.largeThumbnailImageHeight
+      : null
+  // 全体を見せるときは枠に収まるので切り抜きの分は要らない
+  const sizes = toCoverImageSizes(
+    props.sizes,
+    props.isContained ? null : imageAspectRatio,
+  )
 
   return (
     <article
@@ -55,14 +79,18 @@ function UserWorkCard(props: {
         <img
           src={work.largeThumbnailImageURL}
           srcSet={
-            props.isLarge
-              ? toResizedImageSrcSet(work.imageURL, { minWidth: 480 })
+            props.isOriginalSource
+              ? toResizedImageSrcSet(work.imageURL, {
+                  minWidth: 240,
+                  maxWidth: work.imageWidth || undefined,
+                  large: props.isLarge,
+                })
               : toResizedImageSrcSet(work.largeThumbnailImageURL, {
                   minWidth: 240,
                   maxWidth: work.largeThumbnailImageWidth,
                 })
           }
-          sizes={props.sizes}
+          sizes={sizes}
           alt=""
           width={work.largeThumbnailImageWidth}
           height={work.largeThumbnailImageHeight}
@@ -158,7 +186,11 @@ export function UserWorksGrid(props: { works: Work[] }) {
           key={work.id}
           work={work}
           className="aspect-[4/5]"
-          sizes="(min-width: 1024px) 280px, (min-width: 640px) 33vw, 50vw"
+          sizes={[
+            { media: "(min-width: 1024px)", width: "280px", aspectRatio: 0.8 },
+            { media: "(min-width: 640px)", width: "33vw", aspectRatio: 0.8 },
+            { width: "50vw", aspectRatio: 0.8 },
+          ]}
         />
       ))}
     </div>
@@ -191,11 +223,63 @@ const toFeaturedLayout = (count: number) => {
       count === 2 && "md:aspect-square",
     ),
     hasLead: isOdd || count === 2,
+    leadSizes: toFeaturedLeadSizes(count),
+    itemSizes: toFeaturedItemSizes(count),
   }
 }
 
+const MD = "(min-width: 768px)"
+
+/** 1 枚目の枠。toFeaturedLayout の leadClassName と合わせる */
+const toFeaturedLeadSizes = (count: number): CardSize[] => {
+  if (count === 1) {
+    return [
+      { media: MD, width: `min(100vw, ${CONTENT_MAX}px)`, aspectRatio: 21 / 9 },
+      { width: "100vw", aspectRatio: 1 },
+    ]
+  }
+  if (count === 2) {
+    return [
+      { media: MD, width: `min(50vw, ${CONTENT_MAX / 2}px)`, aspectRatio: 1 },
+      { width: "50vw", aspectRatio: 0.8 },
+    ]
+  }
+  if (count === 3) {
+    return [
+      {
+        media: MD,
+        width: `min(67vw, ${Math.round((CONTENT_MAX * 2) / 3)}px)`,
+        aspectRatio: 1,
+      },
+      { width: "100vw", aspectRatio: 1 },
+    ]
+  }
+  if (count === 5) {
+    return [
+      { media: MD, width: `min(50vw, ${CONTENT_MAX / 2}px)`, aspectRatio: 1 },
+      { width: "100vw", aspectRatio: 1 },
+    ]
+  }
+  return toFeaturedItemSizes(count)
+}
+
+/** 2 枚目以降の枠。toFeaturedLayout の itemClassName と合わせる */
+const toFeaturedItemSizes = (count: number): CardSize[] => {
+  const columns = count >= 4 ? 4 : Math.max(count, 1)
+  const isSquareOnDesktop = count <= 3 || count === 5
+  const isSquareOnMobile = count === 1 || count === 3 || count === 5
+  return [
+    {
+      media: MD,
+      width: `min(${Math.round(100 / columns)}vw, ${Math.round(CONTENT_MAX / columns)}px)`,
+      aspectRatio: isSquareOnDesktop ? 1 : 0.8,
+    },
+    { width: "50vw", aspectRatio: isSquareOnMobile ? 1 : 0.8 },
+  ]
+}
+
 /** 注目作品。1 枚を大きく見せる */
-export function UserFeaturedWorks(props: { works: Work[] }) {
+export function UserFeaturedWorks(props: { works: FeaturedWork[] }) {
   const layout = toFeaturedLayout(props.works.length)
 
   return (
@@ -208,12 +292,11 @@ export function UserFeaturedWorks(props: { works: Work[] }) {
             work={work}
             className={isLead ? layout.leadClassName : layout.itemClassName}
             isPriority={isLead}
+            isOriginalSource
             isLarge={layout.hasLead && isLead}
             isContained={props.works.length === 1}
             sizes={
-              layout.hasLead && isLead
-                ? "(min-width: 768px) 620px, 100vw"
-                : "(min-width: 768px) 300px, 50vw"
+              layout.hasLead && isLead ? layout.leadSizes : layout.itemSizes
             }
           />
         )

@@ -92,6 +92,7 @@ export const UserSensitivePickupFragment = graphql(
     featuredSensitiveWorks {
       ...HomeWork
       smallThumbnailImageURL
+      imageWidth
     }
     works(limit: 8, offset: 0, where: {
       isSensitive: true

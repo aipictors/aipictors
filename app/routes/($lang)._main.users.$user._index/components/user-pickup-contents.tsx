@@ -126,6 +126,7 @@ export const UserPickupFragment = graphql(
     featuredWorks {
       ...HomeWork
       smallThumbnailImageURL
+      imageWidth
     }
     works(limit: 8, offset: 0, where: {
       ratings:[G, R15]
