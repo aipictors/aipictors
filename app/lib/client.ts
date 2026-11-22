@@ -25,6 +25,11 @@ import { getMainDefinition } from "@apollo/client/utilities"
 import { getApps } from "firebase/app"
 import { getAuth, getIdToken } from "firebase/auth"
 import { config } from "~/config"
+import {
+  DEVICE_SIGNAL_HEADER,
+  getDeviceSignal,
+  shouldAttachDeviceSignal,
+} from "~/lib/device-signal"
 import { retryQueryLink } from "~/lib/retry-query-link"
 import { typePolicies } from "~/lib/type-policies"
 import {
@@ -68,7 +73,7 @@ const httpLink = split(
   singleHttpLink,
 )
 
-const contextSetter: ContextSetter = async (_, context) => {
+const contextSetter: ContextSetter = async (operation, context) => {
   if (getApps().length === 0) {
     return {
       headers: { ...context.headers, platform: "web" },
@@ -82,13 +87,21 @@ const contextSetter: ContextSetter = async (_, context) => {
     }
   }
 
-  const token = await getIdToken(currentUser)
+  const [token, deviceSignal] = await Promise.all([
+    getIdToken(currentUser),
+    shouldAttachDeviceSignal(operation.operationName)
+      ? getDeviceSignal()
+      : null,
+  ])
 
   return {
     headers: {
       ...context.headers,
       authorization: `Bearer ${token}`,
       platform: "web",
+      ...(deviceSignal !== null
+        ? { [DEVICE_SIGNAL_HEADER]: deviceSignal }
+        : {}),
     },
   }
 }
