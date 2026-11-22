@@ -165,6 +165,11 @@ export default function RequestPlanPage() {
                 {t("R18可", "R18 OK")}
               </span>
             )}
+            {plan.premiumOnly && (
+              <span className="rounded-full bg-fuchsia-600 px-2.5 py-1 font-bold text-white text-xs">
+                {t("プレミアムコインのみ", "Premium coins only")}
+              </span>
+            )}
             {plan.status === "HIDDEN" && (
               <span className="rounded-full bg-foreground px-2.5 py-1 font-bold text-background text-xs">
                 {t("非公開", "Hidden")}

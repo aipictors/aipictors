@@ -35,6 +35,7 @@ import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   type CreatorRequestProfile,
   formatCoins,
+  type RequestCoinType,
   type RequestPlan,
   RequestsApiError,
   requestErrorMessage,
@@ -94,6 +95,8 @@ export default function NewRequestPage() {
     premium: number
   } | null>(null)
   const [purchaseOpen, setPurchaseOpen] = useState(false)
+  /** 依頼する人が選んだ払い方（null = まだ選んでいない。残高から決める） */
+  const [coinChoice, setCoinChoice] = useState<RequestCoinType | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [draft, setDraft] = useState<Draft>({
     title: "",
@@ -242,8 +245,25 @@ export default function NewRequestPage() {
   const price = plan ? plan.priceCoins : draft.priceCoins
   const minCoins = settings?.minCoins ?? 100
   const allowsR18 = plan ? plan.allowsR18 : (settings?.allowsR18 ?? false)
-  const total = balance ? balance.free + balance.premium : 0
-  const shortage = balance ? Math.max(0, price - total) : 0
+  // 1 つの依頼はフリーコインかプレミアムコインのどちらか一方で払う（混ぜない）
+  const premiumOnly = plan ? plan.premiumOnly : (settings?.premiumOnly ?? false)
+  const coinType: RequestCoinType = premiumOnly
+    ? "PREMIUM"
+    : (coinChoice ??
+      (balance !== null && balance.free >= price ? "FREE" : "PREMIUM"))
+  const payable = balance
+    ? coinType === "FREE"
+      ? balance.free
+      : balance.premium
+    : 0
+  const shortage = balance ? Math.max(0, price - payable) : 0
+  /** プレミアムコインで払うときに足りない分（購入の案内に使う） */
+  const premiumShortage = balance ? Math.max(0, price - balance.premium) : 0
+  const openPurchase = () => {
+    // 購入するのはプレミアムコインなので、払い方もプレミアムにする
+    if (!premiumOnly) setCoinChoice("PREMIUM")
+    setPurchaseOpen(true)
+  }
   const isOwn = auth.userId !== null && auth.userId === creatorId
   const closed = plan
     ? !plan.isAccepting || (plan.activeCount ?? 0) >= plan.maxActive
@@ -282,6 +302,7 @@ export default function NewRequestPage() {
         showcaseAllowed: draft.showcaseAllowed,
         priceCoins: price,
         deliveryDays: draft.deliveryDays,
+        coinType,
       })
       window.localStorage.removeItem(draftKey(target))
       navigate(`/requests/${data.requestId}?created=1`)
@@ -291,7 +312,7 @@ export default function NewRequestPage() {
         error.code === "INSUFFICIENT_COINS"
       ) {
         await reloadBalance()
-        setPurchaseOpen(true)
+        openPurchase()
       }
       toast.error(requestErrorMessage(error, t.isEnglish))
     } finally {
@@ -584,50 +605,116 @@ export default function NewRequestPage() {
           <span>{t("必要なコイン", "Coins required")}</span>
           <CoinPrice coins={price} className="text-lg" />
         </div>
-        <div className="flex items-center justify-between text-muted-foreground text-sm">
-          <span>{t("いまの残高", "Current balance")}</span>
-          <span>
-            {balance === null ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              t(
-                `無料 ${formatCoins(balance.free)} ＋ プレミアム ${formatCoins(balance.premium)}`,
-                `Free ${formatCoins(balance.free, true)} + Premium ${formatCoins(balance.premium, true)}`,
-              )
+        {premiumOnly && (
+          <p className="rounded-xl bg-fuchsia-50 px-3 py-2 text-fuchsia-900 text-xs dark:bg-fuchsia-500/10 dark:text-fuchsia-200">
+            {t(
+              "このクリエイターはプレミアムコインのみで受け付けています。",
+              "This creator only accepts premium coins.",
             )}
-          </span>
+          </p>
+        )}
+        <div
+          role="radiogroup"
+          aria-label={t("払うコイン", "Pay with")}
+          className="grid grid-cols-2 gap-2"
+        >
+          {(["FREE", "PREMIUM"] as const).map((type) => {
+            const disabled = type === "FREE" && premiumOnly
+            const selected = coinType === type
+            const amount =
+              balance === null
+                ? null
+                : type === "FREE"
+                  ? balance.free
+                  : balance.premium
+            return (
+              <button
+                key={type}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                disabled={disabled}
+                onClick={() => setCoinChoice(type)}
+                className={cn(
+                  "flex flex-col items-start gap-0.5 rounded-xl border-2 px-3 py-2 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                  selected
+                    ? "border-primary bg-primary/5"
+                    : "border-transparent bg-muted/50",
+                )}
+              >
+                <span className="font-bold text-sm">
+                  {type === "FREE"
+                    ? t("フリーコインで払う", "Pay with free coins")
+                    : t("プレミアムコインで払う", "Pay with premium coins")}
+                </span>
+                <span className="text-muted-foreground text-xs">
+                  {amount === null ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    t(
+                      `残高 ${formatCoins(amount)}`,
+                      `Balance ${formatCoins(amount, true)}`,
+                    )
+                  )}
+                </span>
+              </button>
+            )
+          })}
         </div>
+        <p className="text-muted-foreground text-xs">
+          {t(
+            "1 つのリクエストは、フリーコインかプレミアムコインのどちらか一方で払います（混ぜて払うことはできません）。",
+            "Each request is paid with either free coins or premium coins, not a mix of both.",
+          )}
+        </p>
         {balance !== null && shortage === 0 && (
           <p className="flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-2 text-emerald-800 text-xs dark:bg-emerald-500/10 dark:text-emerald-300">
             <CheckCircle2 className="size-4 shrink-0" />
-            {t(
-              `足りています。依頼後の残高は ${formatCoins(total - price)} コインです（無料コインから先に使います）`,
-              `You have enough. Your balance after the request will be ${formatCoins(total - price, true)} coins (free coins are used first)`,
-            )}
+            {coinType === "FREE"
+              ? t(
+                  `足りています。依頼後のフリーコインは ${formatCoins(payable - price)} です`,
+                  `You have enough. You'll have ${formatCoins(payable - price, true)} free coins left`,
+                )
+              : t(
+                  `足りています。依頼後のプレミアムコインは ${formatCoins(payable - price)} です`,
+                  `You have enough. You'll have ${formatCoins(payable - price, true)} premium coins left`,
+                )}
           </p>
         )}
         {balance !== null && shortage > 0 && (
           <div className="flex flex-col gap-2 rounded-xl bg-amber-50 p-3 dark:bg-amber-500/10">
             <p className="flex items-center gap-1.5 font-bold text-amber-900 text-sm dark:text-amber-200">
               <AlertCircle className="size-4" />
-              {t(
-                `あと ${formatCoins(shortage)} コイン足りません`,
-                `You need ${formatCoins(shortage, true)} more coins`,
-              )}
+              {coinType === "FREE"
+                ? t(
+                    `フリーコインがあと ${formatCoins(shortage)} 足りません`,
+                    `You need ${formatCoins(shortage, true)} more free coins`,
+                  )
+                : t(
+                    `プレミアムコインがあと ${formatCoins(shortage)} 足りません`,
+                    `You need ${formatCoins(shortage, true)} more premium coins`,
+                  )}
             </p>
             <p className="text-amber-900/80 text-xs dark:text-amber-200/80">
-              {t(
-                "ここで購入できます。書いた内容は保存されるので、購入から戻ったらそのまま依頼できます。",
-                "You can buy them here. Your input is saved, so you can send the request when you come back.",
-              )}
+              {coinType === "FREE" && premiumShortage === 0
+                ? t(
+                    "プレミアムコインなら足りています。上でプレミアムコインを選んでください。",
+                    "You have enough premium coins. Choose premium coins above.",
+                  )
+                : t(
+                    "プレミアムコインをここで購入できます。書いた内容は保存されるので、購入から戻ったらそのまま依頼できます。",
+                    "You can buy premium coins here. Your input is saved, so you can send the request when you come back.",
+                  )}
             </p>
-            <Button
-              type="button"
-              className="h-11 rounded-full font-bold"
-              onClick={() => setPurchaseOpen(true)}
-            >
-              {t("コインを購入する", "Buy coins")}
-            </Button>
+            {!(coinType === "FREE" && premiumShortage === 0) && (
+              <Button
+                type="button"
+                className="h-11 rounded-full font-bold"
+                onClick={openPurchase}
+              >
+                {t("プレミアムコインを購入する", "Buy premium coins")}
+              </Button>
+            )}
           </div>
         )}
         <p className="flex items-start gap-1.5 text-muted-foreground text-xs">
@@ -663,10 +750,10 @@ export default function NewRequestPage() {
             </span>
             <CoinPrice coins={price} className="text-lg" />
           </div>
-          {balance !== null && shortage > 0 ? (
+          {balance !== null && shortage > 0 && premiumShortage > 0 ? (
             <Button
               className="h-12 flex-1 rounded-full font-bold text-base"
-              onClick={() => setPurchaseOpen(true)}
+              onClick={openPurchase}
             >
               {t("コインを購入して続ける", "Buy coins and continue")}
             </Button>

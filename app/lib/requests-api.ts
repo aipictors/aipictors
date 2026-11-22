@@ -18,6 +18,8 @@ export type RequestPlan = {
   maxActive: number
   isAccepting: boolean
   allowsR18: boolean
+  /** プレミアムコインだけで受け付ける（フリーコインでは申し込めない） */
+  premiumOnly: boolean
   status: "ACTIVE" | "HIDDEN" | "DELETED"
   orderCount: number
   completedCount: number
@@ -26,11 +28,16 @@ export type RequestPlan = {
   updatedAt: number
 }
 
+/** リクエストを払うコイン（1 つの依頼はどちらか一方） */
+export type RequestCoinType = "FREE" | "PREMIUM"
+
 export type RequestSettings = {
   userId: string
   acceptsFreeRequests: boolean
   minCoins: number
   allowsR18: boolean
+  /** 自由リクエストをプレミアムコインだけで受け付ける */
+  premiumOnly: boolean
   maxActive: number
   note: string
 }
@@ -183,6 +190,10 @@ export const requestErrorMessage = (error: unknown, isEnglish = false) => {
   const code = error instanceof RequestsApiError ? error.code : ""
   const messages: Record<string, { ja: string; en: string }> = {
     INSUFFICIENT_COINS: { ja: "コインが足りません", en: "Not enough coins" },
+    PREMIUM_ONLY: {
+      ja: "このリクエストはプレミアムコインのみで受け付けています",
+      en: "This creator only accepts premium coins for this request",
+    },
     SELF_REQUEST: {
       ja: "自分にはリクエストできません",
       en: "You cannot send a request to yourself",

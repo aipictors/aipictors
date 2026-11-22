@@ -18,6 +18,7 @@ import {
 } from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
+import { Checkbox } from "~/components/ui/checkbox"
 import { Switch } from "~/components/ui/switch"
 import { Textarea } from "~/components/ui/textarea"
 import { config, META } from "~/config"
@@ -63,6 +64,7 @@ type PlanDraft = {
   maxActive: number
   isAccepting: boolean
   allowsR18: boolean
+  premiumOnly: boolean
   status: "ACTIVE" | "HIDDEN"
 }
 
@@ -78,6 +80,7 @@ const emptyDraft = (): PlanDraft => ({
   maxActive: 3,
   isAccepting: true,
   allowsR18: false,
+  premiumOnly: false,
   status: "ACTIVE",
 })
 
@@ -94,6 +97,7 @@ const toDraft = (plan: RequestPlan): PlanDraft => ({
   maxActive: plan.maxActive,
   isAccepting: plan.isAccepting,
   allowsR18: plan.allowsR18,
+  premiumOnly: plan.premiumOnly,
   status: plan.status === "HIDDEN" ? "HIDDEN" : "ACTIVE",
 })
 
@@ -373,6 +377,11 @@ function PlanRow(props: {
           {plan.allowsR18 && (
             <span className="text-rose-500">{t("R18 可", "R18 OK")}</span>
           )}
+          {plan.premiumOnly && (
+            <span className="text-fuchsia-600 dark:text-fuchsia-400">
+              {t("プレミアムコインのみ", "Premium coins only")}
+            </span>
+          )}
         </div>
         <div className="mt-1 flex items-center gap-0.5">
           <Button
@@ -630,6 +639,11 @@ function PlanEditor(props: {
               "coins' worth (after the 10% fee)",
             )}
           </p>
+          <PremiumOnlyField
+            id="plan-premium-only"
+            checked={d.premiumOnly}
+            onChange={(v) => set("premiumOnly", v)}
+          />
           <div className="flex flex-col gap-3 rounded-2xl border p-3">
             <div className="flex items-center justify-between gap-3">
               <Label htmlFor="plan-accepting">
@@ -777,6 +791,11 @@ function FreeRequestSettings(props: {
               onCheckedChange={(v) => setS({ ...s, allowsR18: v })}
             />
           </div>
+          <PremiumOnlyField
+            id="free-request-premium-only"
+            checked={s.premiumOnly}
+            onChange={(v) => setS({ ...s, premiumOnly: v })}
+          />
         </>
       )}
       <Button
@@ -789,5 +808,49 @@ function FreeRequestSettings(props: {
         {t("保存する", "Save")}
       </Button>
     </section>
+  )
+}
+
+/**
+ * 受け取るコインの条件。チェックするとプレミアムコインのみ、しなければフリーコインかプレミアムコインのどちらか
+ * （1 つの依頼で 2 つを混ぜて払うことはできない）
+ */
+function PremiumOnlyField(props: {
+  id: string
+  checked: boolean
+  onChange: (value: boolean) => void
+}) {
+  const t = useTranslation()
+  return (
+    <div className="flex flex-col gap-2 rounded-2xl border p-3">
+      <p className="font-bold text-sm">
+        {t("受け取るコイン", "Coins you accept")}
+      </p>
+      <label
+        htmlFor={props.id}
+        className="flex cursor-pointer items-start gap-2"
+      >
+        <Checkbox
+          id={props.id}
+          checked={props.checked}
+          onCheckedChange={(v) => props.onChange(v === true)}
+          className="mt-0.5"
+        />
+        <span className="text-sm">
+          {t("プレミアムコインのみ", "Premium coins only")}
+          <span className="block text-muted-foreground text-xs">
+            {props.checked
+              ? t(
+                  "購入したプレミアムコインでの依頼だけを受け付けます。全年齢の依頼は報酬（円）になります。",
+                  "Only requests paid with premium coins. All-ages requests become rewards in yen.",
+                )
+              : t(
+                  "フリーコインかプレミアムコインのどちらか一方で支払われます（混ぜて支払うことはできません）。フリーコインの分はフリーコインで受け取ります。",
+                  "Paid with either free coins or premium coins, never both. Free-coin requests are received as free coins.",
+                )}
+          </span>
+        </span>
+      </label>
+    </div>
   )
 }

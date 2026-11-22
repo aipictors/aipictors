@@ -175,8 +175,8 @@ export function PlusCoinUses() {
       tone: "text-emerald-500 bg-emerald-500/10",
       title: { ja: "リクエスト（依頼）", en: "Paid requests" },
       body: {
-        ja: "クリエイターのプランからコインで作品を依頼。お断り・期限切れならコインは全額戻ります。",
-        en: "Commission a work with coins from a creator's menu. Declined or expired? You get every coin back.",
+        ja: "クリエイターのプランからコインで作品を依頼。フリーかプレミアムのどちらか一方で払います（「プレミアムコインのみ」のプランもあります）。お断り・期限切れなら全額戻ります。",
+        en: "Commission a work from a creator's menu, paid with either free or premium coins (some plans take premium only). Declined or expired? You get every coin back.",
       },
       coins: "both",
       to: "/requests",
