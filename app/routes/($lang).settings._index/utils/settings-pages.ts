@@ -57,6 +57,10 @@ const toSettingsPath = (pathname: string) => {
   return index < 0 ? pathname : pathname.slice(index).replace(/\/+$/, "")
 }
 
+/** 設定のトップ（/settings。スマホではメニューを出す） */
+export const isSettingsIndexPath = (pathname: string) =>
+  toSettingsPath(pathname) === "/settings"
+
 /** 今のページの項目を探す。/settings（PC では通知を出す）は通知、/settings/account/login はアカウント設定 */
 export const findSettingsPage = (pathname: string) => {
   const path = toSettingsPath(pathname)
