@@ -98,18 +98,32 @@ test("押した瞬間にフォロー中になる（サーバの返事を待た�
   expect(modify).toHaveBeenCalledTimes(1)
 })
 
-test("解除は確認を出さずにすぐ解除し、元に戻すを出す", async () => {
+test("解除は確認のダイアログを出し、「解除する」で解除して元に戻すを出す", async () => {
   renderButton(true)
   fireEvent.click(screen.getByLabelText("フォロー中（押すと解除）"))
+  // 押しただけでは解除しない
+  expect(calls).toHaveLength(0)
+  expect(screen.getByText("フォローを解除しますか？")).toBeTruthy()
+  fireEvent.click(screen.getByText("解除する"))
   expect(screen.getByText("フォローする")).toBeTruthy()
   expect(calls.map((c) => c.name)).toEqual(["UnfollowUser"])
   expect(toastDefault).toHaveBeenCalled()
+})
+
+test("確認のダイアログでキャンセルしたら解除しない", async () => {
+  renderButton(true)
+  fireEvent.click(screen.getByLabelText("フォロー中（押すと解除）"))
+  fireEvent.click(screen.getByText("キャンセル"))
+  await flush()
+  expect(calls).toHaveLength(0)
+  expect(screen.getByText("フォロー中")).toBeTruthy()
 })
 
 test("返事を待つ間に連打しても、1 件ずつ送って最後に押した状態になる", async () => {
   renderButton(false)
   fireEvent.click(screen.getByText("フォローする"))
   fireEvent.click(screen.getByLabelText("フォロー中（押すと解除）"))
+  fireEvent.click(screen.getByText("解除する"))
   fireEvent.click(screen.getByText("フォローする"))
   // 最初の 1 件の返事が来るまで次は送らない
   expect(calls).toHaveLength(1)
@@ -124,6 +138,7 @@ test("フォロー→解除と押したら、フォローの返事のあとに�
   renderButton(false)
   fireEvent.click(screen.getByText("フォローする"))
   fireEvent.click(screen.getByLabelText("フォロー中（押すと解除）"))
+  fireEvent.click(screen.getByText("解除する"))
   await act(async () => calls[0]?.resolve())
   await flush()
   expect(calls.map((c) => c.name)).toEqual(["FollowUser", "UnfollowUser"])

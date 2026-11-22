@@ -14,6 +14,16 @@ import {
 } from "react"
 import { toast } from "sonner"
 import { LoginDialogButton } from "~/components/login-dialog-button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { requestAchievementCheck } from "~/lib/achievements/achievement-ui"
@@ -196,7 +206,7 @@ function useOptimisticFollow(props: {
 
 /**
  * フォロー
- * 押すとすぐに切り替わる。解除は確認を出さず、すぐ解除して「元に戻す」を出す
+ * フォローは押すとすぐに切り替わる。解除は確認のダイアログを出し、「解除する」で解除して「元に戻す」を出す
  */
 export function FollowButton(props: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
@@ -223,7 +233,15 @@ export function FollowButton(props: Props): React.ReactNode {
     setFollow(true)
   }
 
+  /** 解除の確認ダイアログ（間違えて押して解除してしまうのを防ぐ） */
+  const [isUnfollowConfirmOpen, setIsUnfollowConfirmOpen] = useState(false)
+
   const onUnFollow = () => {
+    setIsUnfollowConfirmOpen(true)
+  }
+
+  const onConfirmUnFollow = () => {
+    setIsUnfollowConfirmOpen(false)
     setFollow(false)
     toast(
       props.targetUserName
@@ -304,9 +322,54 @@ export function FollowButton(props: Props): React.ReactNode {
     return null
   }
 
-  return isFollow
-    ? enhanceTriggerNode(unFollowTriggerNode, { onPress: onUnFollow })
-    : enhanceTriggerNode(triggerNode, { onPress: onFollow })
+  if (!isFollow) {
+    return enhanceTriggerNode(triggerNode, { onPress: onFollow })
+  }
+
+  return (
+    <>
+      {enhanceTriggerNode(unFollowTriggerNode, { onPress: onUnFollow })}
+      {/* ダイアログは別の場所に描かれるが、押したときの React のイベントは親（カードのリンクなど）まで伝わるので止める */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: イベントを止めるだけの入れ物 */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: イベントを止めるだけの入れ物 */}
+      <span className="contents" onClick={(event) => event.stopPropagation()}>
+        <AlertDialog
+          open={isUnfollowConfirmOpen}
+          onOpenChange={setIsUnfollowConfirmOpen}
+        >
+          <AlertDialogContent className="max-w-sm rounded-2xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {props.targetUserName
+                  ? t(
+                      `${props.targetUserName}さんのフォローを解除しますか？`,
+                      `Unfollow ${props.targetUserName}?`,
+                    )
+                  : t("フォローを解除しますか？", "Unfollow this user?")}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {t(
+                  "新しい作品がフォロー新着に届かなくなります。",
+                  "Their new works will no longer appear in your following feed.",
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2 sm:gap-0">
+              <AlertDialogCancel className="rounded-full">
+                {t("キャンセル", "Cancel")}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={onConfirmUnFollow}
+              >
+                {t("解除する", "Unfollow")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </span>
+    </>
+  )
 }
 
 const followUserMutation = graphql(
