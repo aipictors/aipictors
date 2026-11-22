@@ -10,6 +10,7 @@ import {
   initializeAuth,
 } from "firebase/auth"
 import { apolloClient } from "~/lib/client"
+import { toForegroundNotification } from "~/utils/foreground-push-notification"
 import {
   runAfterLoadIdle,
   withFirebaseAnalytics,
@@ -45,25 +46,20 @@ function initializeFirebaseIfNeeded() {
       // Messagingは読み込み完了後のアイドル時に初期化
       runAfterLoadIdle(async () => {
         try {
-          const { getMessaging, onMessage, getToken } = await import(
+          const { getMessaging, onMessage } = await import(
             "firebase/messaging"
           )
           const messaging = getMessaging(getApp())
           onMessage(messaging, (payload) => {
-            getToken(messaging, {
-              vapidKey: config.fcm.vapidKey,
-            }).then((_token) => {
-              navigator.serviceWorker.ready.then((registration) => {
-                if (payload.data === undefined) return
-                registration.showNotification(payload.data.title, {
-                  body: payload.data.body,
-                  icon: payload.data.icon,
-                  data: payload.data,
-                  // @ts-ignore https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/showNotification#image
-                  image: payload.data.imageUrl,
-                  tag: payload.data.tag,
-                })
-              })
+            // 画面を開いている間はブラウザが自動で出さないので、こちらで出す
+            const notification = toForegroundNotification(payload)
+            if (notification === null) return
+            void navigator.serviceWorker.ready.then((registration) => {
+              registration.showNotification(
+                notification.title,
+                // @ts-ignore image は型に無い https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/showNotification#image
+                notification.options,
+              )
             })
           })
         } catch (error) {
