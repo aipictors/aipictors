@@ -123,8 +123,8 @@ export default function RequestPlanPage() {
         <ChevronLeft className="size-4" />
         {t("プランを探す", "Find plans")}
       </Link>
-      <div className="grid gap-6 md:grid-cols-[1.1fr_1fr]">
-        <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[1.1fr_1fr]">
+        <div className="flex min-w-0 flex-col gap-2">
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted">
             {images[imageIndex] ? (
               <img
