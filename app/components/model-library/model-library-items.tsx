@@ -42,6 +42,27 @@ export type ModelLibraryItemActions = {
    * 公開ページを別タブで開く（ダイアログ内）
    */
   openInNewTab: boolean
+  /**
+   * 今のモデルで効くか（効かない LoRA に印を付ける）
+   */
+  isUsableWithCurrentModel?(item: ModelLibraryItem): boolean | null
+}
+
+/**
+ * 今のモデルで効かない LoRA の印
+ */
+function UnusableMark(props: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-md bg-amber-500 px-1.5 py-0.5 font-medium text-[10px] text-white leading-none",
+        props.className,
+      )}
+      title="種類の違うモデルを選んでいるため、このLoRAは効きません"
+    >
+      今のモデルでは効きません
+    </span>
+  )
 }
 
 export const libraryItemHref = (item: ModelLibraryItem): string | null => {
@@ -246,11 +267,17 @@ export function ModelLibraryGridItem(props: ItemProps) {
           item={item}
           className={cn("aspect-square w-full", isUnavailable && "opacity-50")}
         />
-        {item.baseLabel && (
-          <span className="absolute bottom-2 left-2 inline-flex items-center rounded-md bg-black/55 px-1.5 py-0.5 font-medium text-[10px] text-white leading-none backdrop-blur-sm">
-            {item.baseLabel}
-          </span>
-        )}
+        <span className="absolute bottom-2 left-2 flex flex-wrap items-center gap-1">
+          {item.baseLabel && (
+            <span className="inline-flex items-center rounded-md bg-black/55 px-1.5 py-0.5 font-medium text-[10px] text-white leading-none backdrop-blur-sm">
+              {item.baseLabel}
+            </span>
+          )}
+          {item.kind === "LORA" &&
+            actions.isUsableWithCurrentModel?.(item) === false && (
+              <UnusableMark />
+            )}
+        </span>
       </button>
       <div className="pointer-events-none absolute top-2 left-2 flex flex-wrap gap-1">
         {item.isNew && (
@@ -364,6 +391,10 @@ export function ModelLibraryListItem(props: ItemProps) {
             {item.baseLabel && <span>{item.baseLabel}</span>}
             {item.sizeBytes ? <span>{formatBytes(item.sizeBytes)}</span> : null}
           </span>
+          {item.kind === "LORA" &&
+            props.actions.isUsableWithCurrentModel?.(item) === false && (
+              <UnusableMark className="mt-1" />
+            )}
           {item.isOwn &&
             item.userModel &&
             item.userModel.status !== "READY" && (

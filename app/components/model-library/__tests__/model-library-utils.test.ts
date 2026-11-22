@@ -94,7 +94,11 @@ describe("filterLibraryItems", () => {
       ...defaultModelLibraryFilters,
       baseModel: "SD1.5",
     })
-    expect(sd15.map((item) => item.key)).toEqual(["official-checkpoint:1"])
+    // 公式 LoRA も SD1.5 用かどうかで絞り込める
+    expect(sd15.map((item) => item.key)).toEqual([
+      "official-checkpoint:1",
+      "official-lora:flat1",
+    ])
   })
 
   test("名前・説明・タグ・トリガーワードで検索する", () => {

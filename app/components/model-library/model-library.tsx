@@ -103,6 +103,10 @@ export type ModelLibraryProps = {
    */
   onUse?(item: ModelLibraryItem): void
   /**
+   * 今のモデルで効くか（生成画面で LoRA が効かない組み合わせに印を付ける）。分からなければ null
+   */
+  isUsableWithCurrentModel?(item: ModelLibraryItem): boolean | null
+  /**
    * 開いたらすぐにファイル選択を出す
    */
   startWithUpload?: boolean
@@ -464,6 +468,7 @@ export function ModelLibrary(props: ModelLibraryProps) {
       : undefined,
     isSelected: (item) => selectedKeys.includes(item.key),
     openInNewTab: isDialog,
+    isUsableWithCurrentModel: props.isUsableWithCurrentModel,
   }
 
   const onActivate = (item: ModelLibraryItem) => {

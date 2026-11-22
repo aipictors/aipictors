@@ -9,8 +9,22 @@ import type {
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { parseUserLoraName } from "~/lib/user-models/generation"
-import type { UserModelKind } from "~/lib/user-models/types"
+import {
+  type CheckpointLoraFamily,
+  isLoraUsableWith,
+  officialLoraFamily,
+  userModelLoraFamily,
+} from "~/lib/user-models/lora-compat"
+import type { UserModel, UserModelKind } from "~/lib/user-models/types"
+import {
+  GenerationLoraSwitchDialog,
+  type PendingModelSwitch,
+} from "~/routes/($lang).generation._index/components/config-view/generation-lora-switch-dialog"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import {
+  imageModelLoraFamily,
+  useLoraCompatibility,
+} from "~/routes/($lang).generation._index/hooks/use-lora-compatibility"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 
 const ModelLibraryDialog = lazy(
@@ -42,11 +56,16 @@ type ContextValue = {
    * 公式チェックポイントを選ぶ（推奨プロンプトの設定・みんなのモデルの解除も行う）
    */
   selectOfficialModel(id: string, type: string, prompt: string): void
+  /**
+   * みんなのモデルのチェックポイントを選ぶ（LoRA が効かなくなるときは確認する）
+   */
+  selectUserCheckpoint(model: UserModel): void
 }
 
 const ModelLibraryLauncherContext = createContext<ContextValue>({
   open: () => {},
   selectOfficialModel: () => {},
+  selectUserCheckpoint: () => {},
 })
 
 export function useModelLibraryLauncher() {
@@ -81,12 +100,57 @@ export function GenerationModelLibraryProvider(props: Props) {
     setIsOpen(true)
   }
 
-  const selectOfficialModel = (id: string, type: string) => {
-    // 公式モデルを選んだらみんなのモデルの選択は外す
-    if (userModelSelection.checkpoint) {
-      userModelSelection.clearCheckpoint({ restore: false })
+  const loraCompat = useLoraCompatibility()
+
+  const [pendingSwitch, setPendingSwitch] = useState<PendingModelSwitch | null>(
+    null,
+  )
+
+  /**
+   * 選択中の LoRA が効かないモデルへ切り替えるときは、LoRA を外すか確認してから切り替える
+   */
+  const switchWithLoraCheck = (props: {
+    modelName: string
+    family: CheckpointLoraFamily | null
+    apply(): void
+  }) => {
+    const unusable = loraCompat.unusableWith(props.family)
+    if (props.family === null || unusable.length === 0) {
+      props.apply()
+      return
     }
-    context.updateModelId(id, type)
+    setPendingSwitch({
+      modelName: props.modelName,
+      family: props.family,
+      loraNames: unusable.map((lora) => lora.displayName),
+      removeLoras: () => {
+        for (const lora of unusable) context.changeLoraModel(lora.name)
+      },
+      apply: props.apply,
+    })
+  }
+
+  const selectOfficialModel = (id: string, type: string) => {
+    const model = context.imageModels.find((item) => item.id === id)
+    switchWithLoraCheck({
+      modelName: model?.displayName ?? model?.name ?? "",
+      family: model ? imageModelLoraFamily(model) : null,
+      apply: () => {
+        // 公式モデルを選んだらみんなのモデルの選択は外す
+        if (userModelSelection.checkpoint) {
+          userModelSelection.clearCheckpoint({ restore: false })
+        }
+        context.updateModelId(id, type)
+      },
+    })
+  }
+
+  const selectUserCheckpoint = (model: UserModel) => {
+    switchWithLoraCheck({
+      modelName: model.name,
+      family: userModelLoraFamily(model.baseModel),
+      apply: () => userModelSelection.selectCheckpoint(model),
+    })
   }
 
   const loraNames = context.promptLoraModels.map((text) => text.split(":")[0])
@@ -109,7 +173,7 @@ export function GenerationModelLibraryProvider(props: Props) {
           item.officialCheckpoint.type,
         )
       } else if (item.userModel) {
-        userModelSelection.selectCheckpoint(item.userModel)
+        selectUserCheckpoint(item.userModel)
       }
       setIsOpen(false)
       return
@@ -155,8 +219,14 @@ export function GenerationModelLibraryProvider(props: Props) {
   const loraCount = loraNames.length
 
   return (
-    <ModelLibraryLauncherContext.Provider value={{ open, selectOfficialModel }}>
+    <ModelLibraryLauncherContext.Provider
+      value={{ open, selectOfficialModel, selectUserCheckpoint }}
+    >
       {props.children}
+      <GenerationLoraSwitchDialog
+        pending={pendingSwitch}
+        onClose={() => setPendingSwitch(null)}
+      />
       {hasOpened && (
         <Suspense fallback={null}>
           <ModelLibraryDialog
@@ -180,6 +250,14 @@ export function GenerationModelLibraryProvider(props: Props) {
             }
             selectedKeys={selectedKeys}
             onUse={onUse}
+            isUsableWithCurrentModel={(item) =>
+              isLoraUsableWith(
+                item.officialLora
+                  ? officialLoraFamily(item.officialLora.name)
+                  : userModelLoraFamily(item.userModel?.baseModel),
+                loraCompat.checkpointFamily,
+              )
+            }
             footer={
               loraCount > 0 || options.kind === "LORA" ? (
                 <div className="flex shrink-0 items-center justify-between gap-3 border-t bg-background px-4 py-3 md:px-5">

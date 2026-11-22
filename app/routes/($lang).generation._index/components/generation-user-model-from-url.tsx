@@ -2,7 +2,19 @@ import { useSearchParams } from "@remix-run/react"
 import { useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useUserModel } from "~/components/user-models/use-user-models"
+import {
+  isLoraUsableWith,
+  type LoraFamily,
+  loraFamilyLabel,
+  officialLoraFamily,
+  userModelLoraFamily,
+} from "~/lib/user-models/lora-compat"
+import type { UserModelBaseModel } from "~/lib/user-models/types"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import {
+  imageModelLoraFamily,
+  pickLoraRecommendedModels,
+} from "~/routes/($lang).generation._index/hooks/use-lora-compatibility"
 import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 
 /**
@@ -21,6 +33,55 @@ export function GenerationUserModelFromUrl() {
   const appliedOfficialRef = useRef<string | null>(null)
 
   const { data: model, error } = useUserModel(userModelId)
+
+  /**
+   * URL から足した LoRA が今のモデルで効かないときは、合うモデルに切り替える
+   * （LoRA のページの「このモデルで生成」から来た人が、効かない組み合わせのまま生成しないように）
+   */
+  const switchModelForLora = (props: {
+    loraName: string
+    family: LoraFamily | null
+    baseModel: UserModelBaseModel | null
+  }) => {
+    if (props.family === null) return
+    const current = context.imageModels.find(
+      (item) => item.id === context.config.modelId,
+    )
+    const currentFamily = selection.checkpoint
+      ? userModelLoraFamily(selection.checkpoint.baseModel)
+      : current
+        ? imageModelLoraFamily(current)
+        : null
+    if (isLoraUsableWith(props.family, currentFamily) !== false) return
+    const [next] = pickLoraRecommendedModels({
+      imageModels: context.imageModels,
+      family: props.family,
+      preferredBase: props.baseModel,
+      recentIds: context.config.modelIds.map(String),
+      favoriteIds: context.config.favoriteModelIds.map(String),
+      limit: 1,
+    })
+    if (!next) return
+    const previousCheckpoint = selection.checkpoint
+    if (previousCheckpoint) {
+      selection.clearCheckpoint({ restore: false })
+    }
+    context.updateModelId(next.id, next.type)
+    toast(
+      `LoRA「${props.loraName}」は ${loraFamilyLabel(props.family)} 用なので、モデルを「${next.displayName ?? next.name}」に切り替えました`,
+      {
+        position: "top-center",
+        duration: 8000,
+        action:
+          current && !previousCheckpoint
+            ? {
+                label: "元に戻す",
+                onClick: () => context.updateModelId(current.id, current.type),
+              }
+            : undefined,
+      },
+    )
+  }
 
   const removeParams = (names: string[]) => {
     const next = new URLSearchParams(searchParams)
@@ -51,6 +112,11 @@ export function GenerationUserModelFromUrl() {
     } else if (!selection.selectedLoraIds.includes(model.id)) {
       selection.toggleLora(model)
       toast(`LoRA「${model.name}」を追加しました`, { position: "top-center" })
+      switchModelForLora({
+        loraName: model.name,
+        family: userModelLoraFamily(model.baseModel),
+        baseModel: model.baseModel,
+      })
     }
     removeParams(["userModel"])
   }, [model, context.imageModels.length])
@@ -98,6 +164,11 @@ export function GenerationUserModelFromUrl() {
           )
           toast(`LoRA「${lora.name}」を追加しました`, {
             position: "top-center",
+          })
+          switchModelForLora({
+            loraName: lora.name,
+            family: officialLoraFamily(lora.name),
+            baseModel: null,
           })
         }
       }

@@ -8,6 +8,7 @@ import type {
   OfficialLora,
 } from "~/components/model-library/model-library-types"
 import { baseModelLabel } from "~/lib/user-models/constants"
+import { officialLoraFamily } from "~/lib/user-models/lora-compat"
 import type { UserModel, UserModelBaseModel } from "~/lib/user-models/types"
 
 /**
@@ -63,14 +64,17 @@ export const fromOfficialLora = (
   model: OfficialLora,
   favoriteIds: number[] = [],
 ): ModelLibraryItem => {
+  // 公式 LoRA は SD1.5 用が大半（SDXL 用は lora-compat の一覧）
+  const loraBaseModel: UserModelBaseModel =
+    officialLoraFamily(model.name) === "SDXL" ? "SDXL" : "SD1.5"
   return {
     key: officialLoraKey(model.name),
     source: "official",
     kind: "LORA",
     name: model.name,
     thumbnailUrl: model.thumbnailImageURL || null,
-    baseLabel: null,
-    baseModel: null,
+    baseLabel: baseModelLabel(loraBaseModel),
+    baseModel: loraBaseModel,
     sizeBytes: null,
     useCount: null,
     updatedAt: null,
