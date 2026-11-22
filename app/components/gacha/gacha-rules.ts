@@ -24,12 +24,11 @@ export const GACHA_PRICES = {
   premiumTen: 2000,
   /** プレミアムコインの 10 連、1 日 1 回目は半額 */
   premiumDailyTen: 1000,
-  /** フリーコインは 1 回ずつ。1 日 1 回目はお得 */
-  freeFirst: 100,
-  freeSingle: 300,
+  /** フリーコインは 1 日 1 回だけ、1 回 500 */
+  free: 500,
 } as const
 
-export const GACHA_FREE_DAILY_LIMIT = 10
+export const GACHA_FREE_DAILY_LIMIT = 1
 
 /** 1 回引くと 1 たまり、この数で好きな景品を 1 つ選んでもらえる（天井） */
 export const GACHA_EXCHANGE_POINTS = 200
@@ -101,9 +100,7 @@ export const toGachaPrice = (props: {
   if (props.coinType === "FREE") {
     if (props.count !== 1) return null
     if (props.freePullsToday >= GACHA_FREE_DAILY_LIMIT) return null
-    return props.freePullsToday === 0
-      ? { costCoins: GACHA_PRICES.freeFirst, isDeal: true }
-      : { costCoins: GACHA_PRICES.freeSingle, isDeal: false }
+    return { costCoins: GACHA_PRICES.free, isDeal: false }
   }
   if (props.count === 1) {
     return { costCoins: GACHA_PRICES.premiumSingle, isDeal: false }

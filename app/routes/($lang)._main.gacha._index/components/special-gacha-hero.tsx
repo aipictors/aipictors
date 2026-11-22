@@ -103,7 +103,7 @@ export function SpecialGachaHero(props: {
                 </li>
               )}
               {props.isFreeFirstAvailable && (
-                <li>フリーコイン {GACHA_PRICES.freeFirst} 枚で 1 回</li>
+                <li>今日のフリーコインの 1 回（{GACHA_PRICES.free} 枚）</li>
               )}
             </ul>
           </div>

@@ -197,8 +197,8 @@ export function SpecialGachaPage() {
         <div className="rounded-3xl border bg-card p-6 text-center">
           <p className="font-bold text-lg">ログインしてガチャを引こう</p>
           <p className="mt-1 text-muted-foreground text-sm">
-            毎日 1 回目はフリーコイン {GACHA_PRICES.freeFirst}{" "}
-            枚、プレミアムコインの 10 連は 1 日 1 回半額です
+            フリーコイン {GACHA_PRICES.free} 枚で 1 日 1 回、プレミアムコインの
+            10 連は 1 日 1 回半額です
           </p>
           <div className="mx-auto mt-4 w-fit">
             <LoginDialogButton label="ログインして引く" />
@@ -244,8 +244,8 @@ export function SpecialGachaPage() {
             title="フリーで 1 回"
             icon={<CoinIcon className="size-5" />}
             cost={freePrice?.costCoins ?? null}
-            originalCost={freePrice?.isDeal ? GACHA_PRICES.freeSingle : null}
-            badge={freePrice?.isDeal ? "1 日 1 回目お得" : null}
+            originalCost={null}
+            badge={freePrice === null ? null : "1 日 1 回"}
             sub={`今日 ${freePullsToday} / ${GACHA_FREE_DAILY_LIMIT} 回`}
             disabledLabel={freePrice === null ? "今日は終わり" : null}
             isLoading={isDrawing}

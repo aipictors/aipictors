@@ -109,8 +109,8 @@ export function PlusPersonaBenefits() {
           en: `${toMoneyNumberText(lite.dailyFreeCoins)}–${toMoneyNumberText(premium.dailyFreeCoins)} free coins every day for support and requests`,
         },
         {
-          ja: `限定枠ガチャを毎日${toDailyGachaPulls(lite.dailyFreeCoins)}〜${toDailyGachaPulls(premium.dailyFreeCoins)}回引ける分のコイン（無料は1回）`,
-          en: `Enough coins for ${toDailyGachaPulls(lite.dailyFreeCoins)}–${toDailyGachaPulls(premium.dailyFreeCoins)} gacha pulls a day (1 on Free)`,
+          ja: `毎日のフリーコインで限定枠ガチャを1日${toDailyGachaPulls(lite.dailyFreeCoins)}回引ける`,
+          en: `Daily free coins cover ${toDailyGachaPulls(lite.dailyFreeCoins)} limited-frame gacha pull a day`,
         },
         {
           ja: `プラン限定のアイコン枠（ライト${lite.avatarFrames}種〜プレミアム${premium.avatarFrames}種）と認証マーク`,

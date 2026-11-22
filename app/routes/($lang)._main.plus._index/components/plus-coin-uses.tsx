@@ -26,14 +26,9 @@ import {
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
-/** その日のフリーコインでガチャを何回引けるか（1 回目はお得、2 回目から通常、1 日の上限あり） */
-export const toDailyGachaPulls = (coins: number) => {
-  if (coins < GACHA_PRICES.freeFirst) return 0
-  const more = Math.floor(
-    (coins - GACHA_PRICES.freeFirst) / GACHA_PRICES.freeSingle,
-  )
-  return Math.min(GACHA_FREE_DAILY_LIMIT, 1 + more)
-}
+/** その日のフリーコインでガチャを何回引けるか（1 日の上限あり） */
+export const toDailyGachaPulls = (coins: number) =>
+  Math.min(GACHA_FREE_DAILY_LIMIT, Math.floor(coins / GACHA_PRICES.free))
 
 const PANELS: [HelpMangaPanel, HelpMangaPanel, HelpMangaPanel, HelpMangaPanel] =
   [
@@ -136,8 +131,8 @@ export function PlusCoinUses() {
       tone: "text-amber-500 bg-amber-500/10",
       title: { ja: "スペシャル枠ガチャ", en: "Frame gacha" },
       body: {
-        ja: `ガチャでしか出ない限定アイコン枠。フリーコインなら1日1回目は${GACHA_PRICES.freeFirst}コイン、2回目から${GACHA_PRICES.freeSingle}コイン（1日${GACHA_FREE_DAILY_LIMIT}回まで）。`,
-        en: `Gacha-only avatar frames. With free coins, your first pull each day is ${GACHA_PRICES.freeFirst} coins, then ${GACHA_PRICES.freeSingle} (up to ${GACHA_FREE_DAILY_LIMIT} a day).`,
+        ja: `ガチャでしか出ない限定アイコン枠。フリーコインなら${GACHA_PRICES.free}コインで1日${GACHA_FREE_DAILY_LIMIT}回まで（プレミアムコインなら何回でも）。`,
+        en: `Gacha-only avatar frames. With free coins it's ${GACHA_PRICES.free} coins, up to ${GACHA_FREE_DAILY_LIMIT} pull a day (unlimited with premium coins).`,
       },
       coins: "both",
       to: "/gacha",

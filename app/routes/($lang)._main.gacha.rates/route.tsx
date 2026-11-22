@@ -75,9 +75,8 @@ export default function GachaRatesRoute() {
             <tr>
               <th>フリーコイン（無償）で 1 回</th>
               <td>
-                1 日 1 回目 {GACHA_PRICES.freeFirst} 枚、2 回目から{" "}
-                {GACHA_PRICES.freeSingle} 枚（1 日 {GACHA_FREE_DAILY_LIMIT}{" "}
-                回まで。10 連はありません）
+                {GACHA_PRICES.free} 枚（1 日 {GACHA_FREE_DAILY_LIMIT} 回まで。10
+                連はありません）
               </td>
             </tr>
           </tbody>
