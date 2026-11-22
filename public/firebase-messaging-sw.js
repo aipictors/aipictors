@@ -1,10 +1,21 @@
 self.addEventListener("notificationclick", (event) => {
   event.notification.close()
-  const message = event.notification.data.FCM_MSG
+  const message = event.notification.data?.FCM_MSG
     ? event.notification.data.FCM_MSG
     : event.notification
-  if (typeof message.data.link !== "string") return
-  event.waitUntil(clients.openWindow(message.data.link))
+  const link = message.data?.link ?? message.data?.url
+  if (typeof link !== "string") return
+  const url = new URL(link, self.location.origin).href
+  event.waitUntil(
+    clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((windowClients) => {
+        // 同じページを開いていればそのタブに切り替える
+        const opened = windowClients.find((client) => client.url === url)
+        if (opened) return opened.focus()
+        return clients.openWindow(url)
+      }),
+  )
 })
 
 importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js")
@@ -22,12 +33,30 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging()
 
+/** 開いているタブに、ベルの未読の数を取り直してもらう */
+const notifyOpenTabs = () =>
+  clients
+    .matchAll({ type: "window", includeUncontrolled: true })
+    .then((windowClients) => {
+      for (const client of windowClients) {
+        client.postMessage({ type: "aipictors:push-received" })
+      }
+    })
+
 messaging.onBackgroundMessage((payload) => {
-  self.registration.showNotification(payload.data.title, {
-    body: payload.data.body,
-    icon: payload.data.icon,
-    image: payload.data.imageUrl,
-    data: payload.data,
-    tag: payload.data.tag,
-  })
+  const tabs = notifyOpenTabs()
+  // notification つきのもの（リクエストのお知らせ）は Firebase が自動で出すので、ここでは出さない
+  if (payload.notification) return tabs
+  const data = payload.data ?? {}
+  if (typeof data.title !== "string" || data.title === "") return tabs
+  return Promise.all([
+    tabs,
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: data.icon,
+      image: data.imageUrl,
+      data: { ...data, link: data.link ?? data.url },
+      tag: data.tag,
+    }),
+  ])
 })

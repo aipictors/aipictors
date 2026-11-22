@@ -1,8 +1,14 @@
 /**
+ * プッシュが届いたときに window へ流すイベント（開いている画面: context-providers の onMessage、
+ * ほかのタブ・裏のタブ: サービスワーカーからの postMessage を home-header が受けて流す）
+ */
+export const PUSH_RECEIVED_EVENT = "aipictors:push-received"
+
+/**
  * 画面を開いている間に届いたプッシュを、サービスワーカーで出せる形にする。
  *
  * FCM の送信側は通知の文面を `notification`（リクエストのお知らせ: aipictors-api
- * src/lib/coin-requests/notify.ts）か `data`（アプリ向けの古い形）のどちらかで送る。
+ * src/lib/coin-requests/notify.ts）か `data`（サイトの通知: aipictors-system lib/web-push.ts）のどちらかで送る。
  * `data` だけを見ていると、`notification` で送られたものがタイトルなしで出てしまう。
  * 押したときに開く URL は、サービスワーカーの notificationclick が `data.link` を見るので
  * `data.url` や fcmOptions の link からそろえておく。

@@ -1,6 +1,3 @@
-import { AuthContextProvider } from "~/components/auth-context-provider"
-import { AutoLoginProvider } from "~/components/auto-login-provider"
-import { config } from "~/config"
 import { ApolloProvider } from "@apollo/client/index"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { getApp, getApps, initializeApp } from "firebase/app"
@@ -9,8 +6,14 @@ import {
   indexedDBLocalPersistence,
   initializeAuth,
 } from "firebase/auth"
+import { AuthContextProvider } from "~/components/auth-context-provider"
+import { AutoLoginProvider } from "~/components/auto-login-provider"
+import { config } from "~/config"
 import { apolloClient } from "~/lib/client"
-import { toForegroundNotification } from "~/utils/foreground-push-notification"
+import {
+  PUSH_RECEIVED_EVENT,
+  toForegroundNotification,
+} from "~/utils/foreground-push-notification"
 import {
   runAfterLoadIdle,
   withFirebaseAnalytics,
@@ -46,11 +49,11 @@ function initializeFirebaseIfNeeded() {
       // Messagingは読み込み完了後のアイドル時に初期化
       runAfterLoadIdle(async () => {
         try {
-          const { getMessaging, onMessage } = await import(
-            "firebase/messaging"
-          )
+          const { getMessaging, onMessage } = await import("firebase/messaging")
           const messaging = getMessaging(getApp())
           onMessage(messaging, (payload) => {
+            // ベルの未読の数を取り直す（home-header）
+            window.dispatchEvent(new Event(PUSH_RECEIVED_EVENT))
             // 画面を開いている間はブラウザが自動で出さないので、こちらで出す
             const notification = toForegroundNotification(payload)
             if (notification === null) return

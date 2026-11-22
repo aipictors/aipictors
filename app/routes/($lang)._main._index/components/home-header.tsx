@@ -34,6 +34,7 @@ import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/compone
 import { EMPTY_UNREAD_COUNTS } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
 import { closeMenuOnNavigate } from "~/utils/close-menu-on-navigate"
 import { debugLog } from "~/utils/debug-logger"
+import { PUSH_RECEIVED_EVENT } from "~/utils/foreground-push-notification"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
 import {
   buildSearchPath,
@@ -264,19 +265,44 @@ function HomeHeader(props: Props) {
 
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
 
-  // 開きっぱなしのタブに戻ってきたら、未読の数を取り直す
+  // 開いたままの画面でも未読の数が増えるようにする
+  // - プッシュが届いたら（このタブ: onMessage、ほかのタブ: サービスワーカーからの知らせ）すぐ取り直す
+  // - 見えている間は数分おきに取り直す（隠れているタブでは取らない）
+  // - 隠れていたタブに戻ってきたら取り直す
   useEffect(() => {
     if (!authContext.isLoggedIn || authContext.isLoading) return
     let lastFetchedAt = Date.now()
-    const onVisibilityChange = () => {
-      if (document.visibilityState !== "visible") return
-      if (Date.now() - lastFetchedAt < 60 * 1000) return
+    const refetch = (minIntervalMs: number) => {
+      if (Date.now() - lastFetchedAt < minIntervalMs) return
       lastFetchedAt = Date.now()
       void unreadNotificationData.refetch().catch(() => {})
     }
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "visible") return
+      refetch(60 * 1000)
+    }
+    const onPushReceived = () => {
+      // 通知の書き込みがプッシュより少し遅れることがあるので、少し待つ
+      window.setTimeout(() => refetch(3 * 1000), 1500)
+    }
+    const onServiceWorkerMessage = (event: MessageEvent) => {
+      if (event.data?.type === PUSH_RECEIVED_EVENT) onPushReceived()
+    }
+    const timer = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return
+      refetch(UNREAD_POLL_INTERVAL_MS - 5 * 1000)
+    }, UNREAD_POLL_INTERVAL_MS)
     document.addEventListener("visibilitychange", onVisibilityChange)
+    window.addEventListener(PUSH_RECEIVED_EVENT, onPushReceived)
+    navigator.serviceWorker?.addEventListener("message", onServiceWorkerMessage)
     return () => {
+      window.clearInterval(timer)
       document.removeEventListener("visibilitychange", onVisibilityChange)
+      window.removeEventListener(PUSH_RECEIVED_EVENT, onPushReceived)
+      navigator.serviceWorker?.removeEventListener(
+        "message",
+        onServiceWorkerMessage,
+      )
     }
   }, [
     authContext.isLoggedIn,
@@ -737,6 +763,9 @@ function HomeHeader(props: Props) {
     </AppHeader>
   )
 }
+
+/** 画面が見えている間に未読の数を取り直す間隔 */
+const UNREAD_POLL_INTERVAL_MS = 3 * 60 * 1000
 
 export const viewerUnreadNotificationCountsQuery = graphql(
   `query ViewerUnreadNotificationCounts {
