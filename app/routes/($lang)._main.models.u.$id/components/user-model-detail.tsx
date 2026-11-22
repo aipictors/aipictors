@@ -58,6 +58,7 @@ import {
 import type { UserModel } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 import { UserModelWorksSection } from "~/routes/($lang)._main.models.u.$id/components/user-model-works-section"
+import { dedupeModelImages } from "~/utils/dedupe-model-images"
 
 type Props = {
   id: string
@@ -203,11 +204,9 @@ export function UserModelDetail(props: Props) {
   }
 
   const isOwner = authContext.isLoggedIn && authContext.userId === model.userId
-  const images = Array.from(
-    new Set(
-      [model.thumbnailUrl, ...model.sampleImageUrls].filter(
-        (url): url is string => typeof url === "string" && url.length > 0,
-      ),
+  const images = dedupeModelImages(
+    [model.thumbnailUrl, ...model.sampleImageUrls].filter(
+      (url): url is string => typeof url === "string" && url.length > 0,
     ),
   )
   const mainImage = activeImage ?? images[0] ?? null
