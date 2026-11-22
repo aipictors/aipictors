@@ -60,8 +60,7 @@ export function MyStickerDialog(props: Props) {
   const currentTitle = toStickerTitle(props.sticker.title)
 
   const [title, setTitle] = useState(currentTitle)
-  const [genre, setGenre] = useState("CHARACTER")
-  const [tag, setTag] = useState("")
+  const [tags, setTags] = useState<string[]>(props.sticker.categories)
 
   const [updateSticker, { loading: isUpdating }] = useMutation(
     updateStickerMutation,
@@ -78,7 +77,6 @@ export function MyStickerDialog(props: Props) {
     input: {
       accessType: IntrospectionEnum<"StickerAccessType">
       title?: string
-      genre?: IntrospectionEnum<"StickerGenre">
       categories?: string[]
     },
     message: string,
@@ -104,16 +102,11 @@ export function MyStickerDialog(props: Props) {
       toast(t("タイトルを入力してください", "Please enter a title"))
       return
     }
-    if (tag === "") {
-      toast(t("タグを選択してください", "Please select a tag"))
-      return
-    }
     await update(
       {
         accessType: "PUBLIC",
         title: title.trim(),
-        genre: genre as IntrospectionEnum<"StickerGenre">,
-        categories: [tag],
+        categories: tags,
       },
       t("公開しました", "Published"),
     )
@@ -128,8 +121,12 @@ export function MyStickerDialog(props: Props) {
       {
         accessType: isPrivate ? "PRIVATE" : "PUBLIC",
         title: title.trim(),
+        // タグは公開するときに使うので、公開中のものだけ編集する
+        ...(!isPrivate && { categories: tags }),
       },
-      t("タイトルを変更しました", "Title updated"),
+      isPrivate
+        ? t("タイトルを変更しました", "Title updated")
+        : t("保存しました", "Saved"),
     )
   }
 
@@ -196,11 +193,9 @@ export function MyStickerDialog(props: Props) {
           <div className="space-y-3">
             <StickerPublishFields
               title={title}
-              genre={genre}
-              tag={tag}
+              tags={tags}
               onChangeTitle={setTitle}
-              onChangeGenre={setGenre}
-              onChangeTag={setTag}
+              onChangeTags={setTags}
             />
             <p className="text-muted-foreground text-xs leading-5">
               {t(
@@ -230,6 +225,15 @@ export function MyStickerDialog(props: Props) {
               placeholder={t("タイトル", "Title")}
               aria-label={t("タイトル", "Title")}
             />
+            {!isPrivate && (
+              <StickerPublishFields
+                isTagsOnly
+                title={title}
+                tags={tags}
+                onChangeTitle={setTitle}
+                onChangeTags={setTags}
+              />
+            )}
             <div className="grid grid-cols-2 gap-2">
               <Button variant="secondary" onClick={() => setView("detail")}>
                 {t("戻る", "Back")}
@@ -269,7 +273,9 @@ export function MyStickerDialog(props: Props) {
             {isCreated && (
               <Button variant="secondary" onClick={() => setView("rename")}>
                 <PencilIcon className="mr-1.5 size-4" />
-                {t("タイトルを変更", "Change title")}
+                {isPrivate
+                  ? t("タイトルを変更", "Change title")
+                  : t("タイトル・タグを編集", "Edit title and tags")}
               </Button>
             )}
             {props.tab === "PUBLIC_CREATED" && (
@@ -375,6 +381,7 @@ export const MyStickerFragment = graphql(
     imageUrl
     downloadsCount
     usesCount
+    categories
   }`,
 )
 

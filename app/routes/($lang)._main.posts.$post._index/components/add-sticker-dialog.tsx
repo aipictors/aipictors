@@ -22,7 +22,6 @@ import {
 } from "~/components/ui/dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
 import { StickerPublishFields } from "~/routes/($lang)._main.posts.$post._index/components/sticker-publish-fields"
 import { STICKER_ANIMATED_GIF_OPTIONS } from "~/utils/animated-gif-to-webp"
@@ -50,9 +49,7 @@ export function AddStickerDialog(props: Props) {
 
   const [title, setTitle] = useState("")
 
-  const [genre, setGenre] = useState("CHARACTER")
-
-  const [tag, setTag] = useState("")
+  const [tags, setTags] = useState<string[]>([])
 
   const [internalOpen, setInternalOpen] = useState<boolean>(false)
 
@@ -89,8 +86,7 @@ export function AddStickerDialog(props: Props) {
   const resetForm = () => {
     setImageBase64("")
     setTitle("")
-    setGenre("CHARACTER")
-    setTag("")
+    setTags([])
     setIsPublic(false)
   }
 
@@ -136,11 +132,6 @@ export function AddStickerDialog(props: Props) {
       return
     }
 
-    if (isPublic && tag === "") {
-      toast(t("タグを選択してください", "Please select a tag"))
-      return
-    }
-
     const uploadedImageUrl = await uploadPublicImage(
       imageBase64,
       token?.viewer?.token,
@@ -156,10 +147,7 @@ export function AddStickerDialog(props: Props) {
         variables: {
           input: {
             title: isPublic ? title.trim() : null,
-            genre: isPublic
-              ? (genre as IntrospectionEnum<"StickerGenre">)
-              : null,
-            categories: isPublic ? [tag] : null,
+            categories: isPublic ? tags : null,
             imageUrl: uploadedImageUrl,
             accessType: isPublic ? "PUBLIC" : "PRIVATE",
           },
@@ -200,7 +188,7 @@ export function AddStickerDialog(props: Props) {
     }
   }
 
-  const missingPublishField = isPublic && (title.trim() === "" || tag === "")
+  const missingPublishField = isPublic && title.trim() === ""
 
   const isBusy = isSubmitting || isLoading || isCreatingUserSticker
 
@@ -209,8 +197,8 @@ export function AddStickerDialog(props: Props) {
       ? t("画像を選んでください", "Choose an image")
       : missingPublishField
         ? t(
-            "公開するにはタイトルとタグを選んでください",
-            "Add a title and a tag to publish",
+            "公開するにはタイトルを入力してください",
+            "Add a title to publish",
           )
         : null
 
@@ -365,11 +353,9 @@ export function AddStickerDialog(props: Props) {
                 <StickerPublishFields
                   className="rounded-xl border bg-muted/30 p-4"
                   title={title}
-                  genre={genre}
-                  tag={tag}
+                  tags={tags}
                   onChangeTitle={setTitle}
-                  onChangeGenre={setGenre}
-                  onChangeTag={setTag}
+                  onChangeTags={setTags}
                 />
               )}
             </div>

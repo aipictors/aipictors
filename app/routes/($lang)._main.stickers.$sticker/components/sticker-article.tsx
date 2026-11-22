@@ -111,6 +111,20 @@ export function StickerArticle (props: Props) {
               {props.sticker.user.name}
             </Link>
           </div>
+          {props.sticker.categories.length > 0 && (
+            <ul className="flex flex-wrap gap-1.5">
+              {props.sticker.categories.map((tag) => (
+                <li key={tag}>
+                  <Link
+                    to={`/stickers/search/${encodeURIComponent(tag)}`}
+                    className="block rounded-full bg-muted px-3 py-1 text-sm hover:bg-muted/70"
+                  >
+                    #{tag}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
           <dl className="flex flex-wrap gap-x-5 gap-y-1 text-muted-foreground text-sm">
             <div className="flex items-center gap-1.5">
               <DownloadIcon className="size-4" />
@@ -191,6 +205,7 @@ export const StickerArticleFragment = graphql(
     accessType
     isDeleted
     createdAt
+    categories
     user {
       login
       name

@@ -4925,6 +4925,9 @@ type Query {
     ratings: [Rating!]
   ): [WorkNode!]!
 
+  """スタンプのおすすめタグ（投稿の画面の候補。公開スタンプでよく使われるタグ、足りなければ既定の候補）"""
+  recommendedStickerTags(limit: Int): [String!]!
+
   """推奨タグ一覧（ログインユーザ関係なく）"""
   recommendedTags(limit: Int!, where: RecommendedTagsWhereInput!): [RecommendedTagNode!]!
 
