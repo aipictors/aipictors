@@ -1,8 +1,10 @@
-import { graphql } from "gql.tada"
-import { BlockedUser } from "./blocked-user"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
-import { AuthContext } from "~/contexts/auth-context"
+import { graphql } from "gql.tada"
+import { UserXIcon } from "lucide-react"
 import { useContext } from "react"
+import { AuthContext } from "~/contexts/auth-context"
+import { SettingsEmptyState } from "~/routes/($lang).settings/components/settings-section"
+import { BlockedUser } from "./blocked-user"
 
 type BlockedUserType = {
   id: string
@@ -11,7 +13,7 @@ type BlockedUserType = {
   iconUrl: string | null
 }
 
-export function BlockedUserList () {
+export function BlockedUserList() {
   const appContext = useContext(AuthContext)
 
   const { data = null, refetch } = useSuspenseQuery(viewerBlockedUsersQuery, {
@@ -38,11 +40,13 @@ export function BlockedUserList () {
   return (
     <>
       {blockedUsers.length === 0 && (
-        <div className="rounded bg-info p-4">
-          <p>{"ブロックしているユーザはいません"}</p>
-        </div>
+        <SettingsEmptyState
+          icon={<UserXIcon />}
+          title="ブロックしているユーザはいません"
+          description="ユーザーページの「…」からブロックすると、ここに並びます。"
+        />
       )}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {blockedUsers.map((user) => (
           <BlockedUser
             key={user.id}

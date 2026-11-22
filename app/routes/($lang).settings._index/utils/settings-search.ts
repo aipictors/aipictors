@@ -81,6 +81,19 @@ const PAGES: Page[] = [
         keywords: ["わく", "枠", "フレーム", "ガチャ", "frame", "gacha"],
       },
       {
+        ja: "ヘッダー枠",
+        en: "Header Frame",
+        keywords: [
+          "へっだーわく",
+          "わく",
+          "枠",
+          "フレーム",
+          "ガチャ",
+          "header frame",
+          "gacha",
+        ],
+      },
+      {
         ja: "R18 のプロフィール",
         en: "R18 profile",
         keywords: ["センシティブ", "FANZA", "ファンザ", "sensitive", "adult"],

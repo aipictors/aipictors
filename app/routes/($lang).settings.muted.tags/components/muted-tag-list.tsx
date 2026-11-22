@@ -1,14 +1,16 @@
+import { useMutation, useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { BookmarkXIcon } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
 import type { Tag } from "~/components/tag/tag-input"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { AuthContext } from "~/contexts/auth-context"
-import { MutedTag } from "~/routes/($lang).settings.muted.tags/components/muted-tag"
-import { useMutation, useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useContext, useEffect, useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { SettingsEmptyState } from "~/routes/($lang).settings/components/settings-section"
+import { MutedTag } from "~/routes/($lang).settings.muted.tags/components/muted-tag"
 
-export function MutedTagList () {
+export function MutedTagList() {
   const appContext = useContext(AuthContext)
 
   const t = useTranslation()
@@ -84,9 +86,14 @@ export function MutedTagList () {
         </div>
       </div>
       {data?.viewer?.mutedTags.length === 0 && (
-        <div className="rounded bg-info p-4">
-          <p>{t("ミュートしているタグはありません", "No muted tags")}</p>
-        </div>
+        <SettingsEmptyState
+          icon={<BookmarkXIcon />}
+          title={t("ミュートしているタグはありません", "No muted tags")}
+          description={t(
+            "上の欄にタグを入れて追加すると、そのタグの作品が見えなくなります。",
+            "Add a tag above to hide works with that tag.",
+          )}
+        />
       )}
       <div>
         {data?.viewer?.mutedTags.map((mutedTag) => (

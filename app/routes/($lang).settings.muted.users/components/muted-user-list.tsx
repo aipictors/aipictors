@@ -1,11 +1,13 @@
-import { AuthContext } from "~/contexts/auth-context"
-import { MutedUser } from "~/routes/($lang).settings.muted.users/components/muted-user"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
+import { UserXIcon } from "lucide-react"
 import { useContext } from "react"
+import { AuthContext } from "~/contexts/auth-context"
+import { SettingsEmptyState } from "~/routes/($lang).settings/components/settings-section"
+import { MutedUser } from "~/routes/($lang).settings.muted.users/components/muted-user"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
-export function MutedUserList () {
+export function MutedUserList() {
   const appContext = useContext(AuthContext)
 
   const { data = null, refetch } = useSuspenseQuery(viewerMutedUsersQuery, {
@@ -29,11 +31,13 @@ export function MutedUserList () {
   return (
     <>
       {data?.viewer?.mutedUsers.length === 0 && (
-        <div className="rounded bg-info p-4">
-          <p>{"ミュートしているユーザはいません"}</p>
-        </div>
+        <SettingsEmptyState
+          icon={<UserXIcon />}
+          title="ミュートしているユーザはいません"
+          description="ユーザーページの「…」からミュートすると、ここに並びます。"
+        />
       )}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {data?.viewer?.mutedUsers.map((user) => (
           <MutedUser
             key={user.id}

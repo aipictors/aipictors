@@ -1,6 +1,6 @@
-import { Link } from "~/lib/app/locale-router"
 import { ChevronLeftIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   title: string
@@ -13,7 +13,7 @@ export function SettingsHeader(props: Props) {
   const t = useTranslation()
 
   return (
-    <div className="relative flex h-12 items-center border-b">
+    <div className="relative mb-1 flex h-12 items-center border-b">
       <Link
         to="/settings"
         aria-label={t("設定へ戻る", "Back to settings")}
@@ -21,7 +21,7 @@ export function SettingsHeader(props: Props) {
       >
         <ChevronLeftIcon className="size-5" />
       </Link>
-      <h1 className="pointer-events-none absolute inset-x-12 truncate text-center font-bold">
+      <h1 className="pointer-events-none absolute inset-x-14 truncate text-center font-bold">
         {props.title}
       </h1>
     </div>

@@ -1,6 +1,18 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Pencil, PlusIcon, XIcon } from "lucide-react"
+import {
+  ExternalLinkIcon,
+  FrameIcon,
+  ImageIcon,
+  LinkIcon,
+  Pencil,
+  PlusIcon,
+  ShieldAlertIcon,
+  SparklesIcon,
+  StarIcon,
+  UserRoundIcon,
+  XIcon,
+} from "lucide-react"
 import { Suspense, useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
@@ -18,19 +30,33 @@ import {
   SelectCreatedWorksDialog,
 } from "~/routes/($lang).my._index/components/select-created-works-dialog"
 import { SettingsSaveBar } from "~/routes/($lang).settings/components/settings-save-bar"
-import { SettingsSection } from "~/routes/($lang).settings/components/settings-section"
+import {
+  SettingsField,
+  SettingsSection,
+} from "~/routes/($lang).settings/components/settings-section"
 import { AvatarFrameStudio } from "~/routes/($lang).settings.profile/components/avatar-frame-studio"
 import { HeaderFrameSetting } from "~/routes/($lang).settings.profile/components/header-frame-setting"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { uploadPublicImage } from "~/utils/upload-public-image"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 /**
  * プロフィール設定フォーム
  */
 const inputClassName =
-  "h-11 w-full rounded-md border bg-background px-3 text-base md:text-sm"
+  "h-11 w-full rounded-lg border bg-background px-3 text-base shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/20 md:text-sm"
 
 const textareaClassName =
-  "w-full rounded-md border bg-background px-3 py-2 text-base md:text-sm"
+  "min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-base leading-6 shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/20 md:text-sm"
+
+/** プロフィールの中の移動（長いページなので、上から各まとまりへ飛べるようにする） */
+const PROFILE_SECTIONS = [
+  { id: "profile-frames", ja: "枠", en: "Frames" },
+  { id: "profile-basic", ja: "基本情報", en: "Basics" },
+  { id: "profile-links", ja: "リンク", en: "Links" },
+  { id: "profile-pickups", ja: "ピックアップ", en: "Pickups" },
+  { id: "r18-profile", ja: "R18", en: "R18" },
+] as const
 
 /** R18 のプロフィールのリンクの上限（API と同じ） */
 const SENSITIVE_LINKS_LIMIT = 10
@@ -323,9 +349,9 @@ export function SettingProfileForm() {
 
   return (
     <div className="space-y-5">
-      <section>
-        {/* ユーザーページのヘッダー（user-home-header）と同じ比率・切り方で見せる */}
-        <div className="relative aspect-[5/2] w-full overflow-hidden rounded-xl bg-muted md:aspect-[3/1] md:rounded-3xl">
+      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+        {/* ユーザーページのヘッダー（user-home-header）と同じ比率・切り方・枠で見せる */}
+        <div className="relative aspect-[5/2] w-full overflow-hidden bg-muted md:aspect-[3/1]">
           {headerImageSrc ? (
             <img
               className="absolute inset-0 size-full object-cover"
@@ -333,7 +359,12 @@ export function SettingProfileForm() {
               alt={t("ヘッダー画像", "Header Image")}
             />
           ) : (
-            <div className="absolute inset-0 bg-muted" />
+            // ユーザーページと同じく、ヘッダー画像がなければアイコンの色を広げる
+            <img
+              className="absolute inset-0 size-full scale-125 object-cover opacity-80 blur-3xl saturate-150"
+              src={toResizedImageUrl(withIconUrlFallback(profileImageSrc), 96)}
+              alt=""
+            />
           )}
           {headerFrameSlug && (
             <GachaHeaderFrameOverlay slug={headerFrameSlug} />
@@ -350,15 +381,20 @@ export function SettingProfileForm() {
           >
             <Button
               aria-label={t("ヘッダー画像を変更", "Change header image")}
-              className="absolute top-2 right-2 size-10 rounded-full p-0"
+              className="absolute top-3 right-3 z-10 h-9 gap-1.5 rounded-full bg-background/85 px-3 shadow-sm backdrop-blur-sm hover:bg-background"
               variant={"secondary"}
             >
-              <Pencil className="size-4" />
+              <ImageIcon className="size-4" />
+              <span className="text-xs">
+                {headerImageSrc
+                  ? t("ヘッダーを変更", "Change header")
+                  : t("ヘッダーを追加", "Add header")}
+              </span>
             </Button>
           </CropImageField>
         </div>
-        <div className="-mt-12 ml-4 flex items-end gap-3">
-          <div className="relative size-24 shrink-0">
+        <div className="relative z-10 flex flex-wrap items-end gap-x-4 gap-y-2 px-4 pb-4 md:px-5">
+          <div className="-mt-10 md:-mt-12 relative size-24 shrink-0">
             <UserAvatarWithFrame
               alt={t("プロフィール画像", "Profile Image")}
               frame={selectedAvatarFrame}
@@ -384,62 +420,118 @@ export function SettingProfileForm() {
             >
               <Button
                 aria-label={t("プロフィール画像を変更", "Change profile image")}
-                className="absolute right-0 bottom-0 z-10 size-9 rounded-full p-0 shadow-sm"
+                className="absolute right-0 bottom-0 z-10 size-9 rounded-full border-2 border-card p-0 shadow-sm"
                 variant={"secondary"}
               >
                 <Pencil className="size-4" />
               </Button>
             </CropImageField>
           </div>
+          <div className="min-w-0 flex-1 pb-1">
+            <p className="truncate font-bold text-lg leading-tight">
+              {userName || t("ニックネーム未設定", "No nickname")}
+            </p>
+            <p className="truncate text-muted-foreground text-sm">
+              @{userInfo.login}
+            </p>
+          </div>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="mb-1 rounded-full"
+          >
+            <Link
+              to={`/users/${userInfo.login}`}
+              aria-label={t("プロフィールを見る", "View profile")}
+            >
+              {/* スマホは名前が切れないよう「見る」だけにする */}
+              <span className="sm:hidden">{t("見る", "View")}</span>
+              <span className="hidden sm:inline">
+                {t("プロフィールを見る", "View profile")}
+              </span>
+              <ExternalLinkIcon className="ml-1.5 size-3.5" />
+            </Link>
+          </Button>
         </div>
-        <p className="mt-3 text-muted-foreground text-xs">
+        <p className="border-t bg-muted/30 px-4 py-2.5 text-muted-foreground text-xs md:px-5">
           {t(
-            "プロフィール画像やヘッダー画像にR-18画像は掲載できません。",
-            "R-18 images cannot be used for profile or header images.",
+            "プロフィール画像やヘッダー画像にR-18画像は掲載できません。画像は保存すると反映されます。",
+            "R-18 images cannot be used for profile or header images. Images apply when you save.",
           )}
         </p>
       </section>
 
-      <SettingsSection
-        title={t("ヘッダー枠", "Header Frame")}
-        description={t(
-          "ヘッダー画像のふちを飾る枠です。スペシャル枠ガチャで手に入ります。選ぶとすぐ反映されます。",
-          "Frames that decorate the edge of your header. Get them from the special frame gacha. Changes apply right away.",
-        )}
+      <nav
+        aria-label={t("プロフィールの項目", "Profile sections")}
+        className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]"
       >
-        <HeaderFrameSetting
-          headerImageSrc={headerImageSrc}
-          onSelectedChange={setHeaderFrameSlug}
-        />
-      </SettingsSection>
+        {PROFILE_SECTIONS.map((item) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            onClick={(event) => {
+              event.preventDefault()
+              document
+                .getElementById(item.id)
+                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }}
+            className="shrink-0 rounded-full border bg-card px-3.5 py-1.5 font-medium text-xs shadow-xs transition-colors hover:bg-muted"
+          >
+            {t(item.ja, item.en)}
+          </a>
+        ))}
+      </nav>
+
+      <div id="profile-frames" className="grid scroll-mt-24 gap-5">
+        <SettingsSection
+          icon={<SparklesIcon />}
+          title={t("アイコン枠", "Avatar Frame")}
+          description={t(
+            "サブスクの枠はプランの間使えます。コインの枠は一度買えばずっと使えます。選ぶとすぐ反映されます。",
+            "Plan frames are available while subscribed. Coin frames are yours to keep once purchased. Changes apply right away.",
+          )}
+        >
+          <AvatarFrameStudio
+            appliedFrame={selectedAvatarFrame}
+            appliedFrameId={selectedUserAvatarFrameId}
+            currentPassType={currentPassType}
+            frames={avatarFrames}
+            iconUrl={profileImageSrc}
+            ownedFrameIds={
+              profileAvatarFrameSettings?.viewerOwnedUserAvatarFrameIds ?? []
+            }
+            userName={userName}
+            onApplied={setSelectedUserAvatarFrameId}
+          />
+        </SettingsSection>
+
+        <SettingsSection
+          icon={<FrameIcon />}
+          title={t("ヘッダー枠", "Header Frame")}
+          description={t(
+            "ヘッダー画像のふちを飾ります。R18 のページのヘッダーにも重なります。選ぶとすぐ反映されます。",
+            "Decorates the edge of your header, including on your R18 page. Changes apply right away.",
+          )}
+        >
+          <HeaderFrameSetting
+            headerImageSrc={headerImageSrc}
+            onSelectedChange={setHeaderFrameSlug}
+          />
+        </SettingsSection>
+      </div>
 
       <SettingsSection
-        title={t("アイコン枠", "Avatar Frame")}
-        description={t(
-          "サブスクの枠はプランの間使えます。コインの枠は一度買えばずっと使えます。選ぶとすぐ反映されます。",
-          "Plan frames are available while subscribed. Coin frames are yours to keep once purchased. Changes apply right away.",
-        )}
+        id="profile-basic"
+        icon={<UserRoundIcon />}
+        title={t("基本情報", "Basic Info")}
       >
-        <AvatarFrameStudio
-          appliedFrame={selectedAvatarFrame}
-          appliedFrameId={selectedUserAvatarFrameId}
-          currentPassType={currentPassType}
-          frames={avatarFrames}
-          iconUrl={profileImageSrc}
-          ownedFrameIds={
-            profileAvatarFrameSettings?.viewerOwnedUserAvatarFrameIds ?? []
-          }
-          userName={userName}
-          onApplied={setSelectedUserAvatarFrameId}
-        />
-      </SettingsSection>
-
-      <SettingsSection title={t("基本情報", "Basic Info")}>
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label htmlFor="nickname" className="font-medium text-sm">
-              {t("ニックネーム", "Nickname")}
-            </label>
+        <div className="space-y-5">
+          <SettingsField
+            htmlFor="nickname"
+            label={t("ニックネーム", "Nickname")}
+            count={{ value: userName.length, max: 32 }}
+          >
             <input
               type="text"
               id="nickname"
@@ -448,11 +540,12 @@ export function SettingProfileForm() {
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
             />
-          </div>
-          <div className="space-y-1.5">
-            <label htmlFor="profile" className="font-medium text-sm">
-              {t("プロフィール", "Profile")}
-            </label>
+          </SettingsField>
+          <SettingsField
+            htmlFor="profile"
+            label={t("プロフィール", "Profile")}
+            count={{ value: profile.length, max: 320 }}
+          >
             <AutoResizeTextarea
               id="profile"
               className={textareaClassName}
@@ -460,11 +553,16 @@ export function SettingProfileForm() {
               value={profile}
               onChange={(e) => setProfile(e.target.value)}
             />
-          </div>
-          <div className="space-y-1.5">
-            <label htmlFor="enProfile" className="font-medium text-sm">
-              {t("英語プロフィール", "English Profile")}
-            </label>
+          </SettingsField>
+          <SettingsField
+            htmlFor="enProfile"
+            label={t("英語プロフィール", "English Profile")}
+            count={{ value: enProfile.length, max: 640 }}
+            hint={t(
+              "英語で見ている人に出します。空なら日本語のプロフィールを出します。",
+              "Shown to people browsing in English. If empty, your Japanese profile is shown.",
+            )}
+          >
             <AutoResizeTextarea
               id="enProfile"
               className={textareaClassName}
@@ -472,14 +570,16 @@ export function SettingProfileForm() {
               value={enProfile}
               onChange={(e) => setEnProfile(e.target.value)}
             />
-          </div>
-          <div className="space-y-1.5">
-            <label
-              htmlFor="supportThankYouMessage"
-              className="font-medium text-sm"
-            >
-              {t("推されたときの感謝コメント", "Support thank-you message")}
-            </label>
+          </SettingsField>
+          <SettingsField
+            htmlFor="supportThankYouMessage"
+            label={t("推されたときの感謝コメント", "Support thank-you message")}
+            count={{ value: supportThankYouMessage.length, max: 120 }}
+            hint={t(
+              "推しの完了画面と、推し付きコメントを送ったあとに表示します。",
+              "Shown after someone supports you, including support comments.",
+            )}
+          >
             <AutoResizeTextarea
               id="supportThankYouMessage"
               className={textareaClassName}
@@ -491,17 +591,15 @@ export function SettingProfileForm() {
               value={supportThankYouMessage}
               onChange={(e) => setSupportThankYouMessage(e.target.value)}
             />
-            <p className="text-muted-foreground text-xs leading-5">
-              {t(
-                "推しの完了画面と、推し付きコメントを送ったあとに表示します。",
-                "Shown after someone supports you, including support comments.",
-              )}
-            </p>
-          </div>
+          </SettingsField>
         </div>
       </SettingsSection>
 
-      <SettingsSection title={t("リンク・連絡先", "Links & Contact")}>
+      <SettingsSection
+        id="profile-links"
+        icon={<LinkIcon />}
+        title={t("リンク・連絡先", "Links & Contact")}
+      >
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <label htmlFor="website" className="font-medium text-sm">
@@ -594,6 +692,8 @@ export function SettingProfileForm() {
       </SettingsSection>
 
       <SettingsSection
+        id="profile-pickups"
+        icon={<StarIcon />}
         title={t("ピックアップ作品", "Pickups")}
         description={t(
           "プロフィールの上の方に出す作品です。それぞれ 3 つまで選べます。",
@@ -650,6 +750,7 @@ export function SettingProfileForm() {
 
       <SettingsSection
         id="r18-profile"
+        icon={<ShieldAlertIcon />}
         title={t("R18 のプロフィール", "R18 profile")}
         description={t(
           "R18 のページ（年齢確認のあと）だけに出します。全年齢のページには出ません。空の項目は全年齢のプロフィールがそのまま出ます。アイコンと名前は共通です。",
