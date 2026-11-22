@@ -27,7 +27,7 @@ export async function loader(_props: LoaderFunctionArgs) {
   })
 }
 
-export default function NewCommentsPage () {
+export default function NewCommentsPage() {
   const data = useLoaderData<typeof loader>()
 
   if (!data) {
@@ -35,7 +35,10 @@ export default function NewCommentsPage () {
   }
 
   return (
-    <NewCommentsPageContent initialComments={data.newComments as never[]} />
+    <NewCommentsPageContent
+      initialComments={data.newComments as never[]}
+      initialFilter="text-only"
+    />
   )
 }
 

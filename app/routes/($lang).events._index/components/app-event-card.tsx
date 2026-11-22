@@ -269,7 +269,13 @@ export function AppEventCard(props: Props) {
           isFeatured && "lg:grid lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]",
         )}
       >
-        <div className="relative aspect-[16/9] overflow-hidden bg-muted lg:aspect-auto lg:min-h-full">
+        {/* 16:9 の枠に収める（縦長のカバー絵でカードが縦に伸びないように）。featured だけ PC で横の高さに合わせる */}
+        <div
+          className={cn(
+            "relative aspect-[16/9] overflow-hidden bg-muted",
+            isFeatured && "lg:aspect-auto lg:min-h-full",
+          )}
+        >
           <img
             src={toResizedImageUrl(appEvent.thumbnailImageUrl, 64)}
             alt=""
@@ -284,7 +290,6 @@ export function AppEventCard(props: Props) {
           <img
             className={cn(
               "relative h-full w-full object-contain transition duration-500 group-hover:scale-[1.03] motion-reduce:transition-none",
-              !isFeatured && "lg:aspect-[16/9]",
               isEnded && "grayscale-[35%]",
               appEvent.isR18Only && R18_COVER_CLASS,
             )}
