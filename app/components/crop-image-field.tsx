@@ -37,6 +37,11 @@ type Props = {
    * canvas で切り抜くと 1 コマ目だけの静止画になってしまう
    */
   animatedGif?: AnimatedGifOptions
+  /**
+   * children を渡したときに、その要素へ画像のドラッグ＆ドロップも受け付ける。
+   * ドラッグ中は data-drag-over="true" が付く
+   */
+  isChildrenDropZone?: boolean
   children?: React.ReactNode
 }
 
@@ -73,9 +78,31 @@ export function CropImageField(props: Props): React.ReactNode {
     fileInputRef.current.click()
   }, [])
 
-  type TriggerProps = {
-    onClick?: (e: React.MouseEvent<HTMLElement>) => void
-    onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void
+  type TriggerProps = Pick<
+    React.HTMLAttributes<HTMLElement>,
+    "onClick" | "onKeyDown" | "onDragOver" | "onDragLeave" | "onDrop"
+  > & { "data-drag-over"?: boolean }
+
+  /**
+   * 画像をドラッグ＆ドロップで受け取る
+   */
+  const dropZoneProps = {
+    [FILE_DROP_ZONE_ATTRIBUTE]: "",
+    onDragOver: (e: React.DragEvent<HTMLElement>) => {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = "copy"
+      setIsDragOver(true)
+    },
+    onDragLeave: (e: React.DragEvent<HTMLElement>) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
+      setIsDragOver(false)
+    },
+    onDrop: (e: React.DragEvent<HTMLElement>) => {
+      e.preventDefault()
+      setIsDragOver(false)
+      const file = pickFirstImageFile(e.dataTransfer.files)
+      if (file) void selectFile(file)
+    },
   }
 
   const triggerNode = props.children ? (
@@ -86,6 +113,9 @@ export function CropImageField(props: Props): React.ReactNode {
         const originalOnKeyDown = child.props.onKeyDown
 
         return cloneElement(child, {
+          ...(props.isChildrenDropZone
+            ? { ...dropZoneProps, "data-drag-over": isDragOver }
+            : {}),
           onClick: (e: React.MouseEvent<HTMLElement>) => {
             originalOnClick?.(e)
             openFilePicker()
@@ -176,28 +206,6 @@ export function CropImageField(props: Props): React.ReactNode {
     if (e.target.files && e.target.files.length > 0) {
       await selectFile(e.target.files[0])
     }
-  }
-
-  /**
-   * 画像をドラッグ＆ドロップで受け取る
-   */
-  const dropZoneProps = {
-    [FILE_DROP_ZONE_ATTRIBUTE]: "",
-    onDragOver: (e: React.DragEvent<HTMLElement>) => {
-      e.preventDefault()
-      e.dataTransfer.dropEffect = "copy"
-      setIsDragOver(true)
-    },
-    onDragLeave: (e: React.DragEvent<HTMLElement>) => {
-      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
-      setIsDragOver(false)
-    },
-    onDrop: (e: React.DragEvent<HTMLElement>) => {
-      e.preventDefault()
-      setIsDragOver(false)
-      const file = pickFirstImageFile(e.dataTransfer.files)
-      if (file) void selectFile(file)
-    },
   }
 
   /**

@@ -1,7 +1,8 @@
+import { ZoomInIcon, ZoomOutIcon } from "lucide-react"
 import { lazy, Suspense, useState } from "react"
 import type { Area } from "react-easy-crop"
 import { Button } from "~/components/ui/button"
-import { Dialog, DialogContent } from "~/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { getCroppedImage } from "~/utils/get-cropped-image"
 import getResizedImg from "~/utils/get-resized-image"
@@ -97,53 +98,59 @@ export function ImageCropperModal(props: Props): React.ReactNode {
         }
       }}
     >
-      <DialogContent>
-        <div className="">
-          <div className="mb-2 h-[72vh] w-[80vw]">
-            <Suspense fallback={null}>
-              <Cropper
-                classes={{
-                  containerClassName: `mb-16 mt-1 ${props.cropContainerClassName}`,
-                }}
-                image={props.src}
-                crop={crop}
-                zoom={zoom}
-                aspect={aspectRatio}
-                onCropChange={setCrop}
-                onCropComplete={onCropComplete}
-                onZoomChange={setZoom}
-                showGrid={false}
-                objectFit="contain"
-              />
-            </Suspense>
-          </div>
-          <div className="absolute bottom-4 left-4 flex items-center">
-            <div className="flex items-center">
-              <input
-                type="range"
-                value={zoom}
-                min={1}
-                max={3}
-                step={0.1}
-                aria-labelledby="Zoom"
-                onChange={(e) => {
-                  setZoom(Number(e.target.value))
-                }}
-                className="ml-2"
-              />
-            </div>
-            <div className="ml-2 flex items-center">
-              <Button
-                variant={"secondary"}
-                className="ml-2"
-                onClick={props.onClose}
-              >
-                {"キャンセル"}
-              </Button>
-              <Button className="ml-2" onClick={onSubmit}>
-                {"切り抜く"}
-              </Button>
-            </div>
+      <DialogContent className="flex w-[calc(100%-1.5rem)] max-w-3xl flex-col gap-3 p-4 sm:p-5">
+        <DialogTitle className="pr-10 text-base">
+          {"画像を切り抜く"}
+        </DialogTitle>
+        <div className="relative h-[min(60dvh,560px)] w-full overflow-hidden rounded-lg bg-muted">
+          <Suspense fallback={null}>
+            <Cropper
+              classes={{
+                containerClassName: `mt-1 ${props.cropContainerClassName ?? ""}`,
+              }}
+              image={props.src}
+              crop={crop}
+              zoom={zoom}
+              aspect={aspectRatio}
+              onCropChange={setCrop}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+              showGrid={false}
+              objectFit="contain"
+            />
+          </Suspense>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <label className="flex flex-1 items-center gap-2 text-muted-foreground text-xs">
+            <ZoomOutIcon className="size-4 shrink-0" />
+            <input
+              type="range"
+              value={zoom}
+              min={1}
+              max={3}
+              step={0.1}
+              aria-label="Zoom"
+              onChange={(e) => {
+                setZoom(Number(e.target.value))
+              }}
+              className="w-full accent-primary"
+            />
+            <ZoomInIcon className="size-4 shrink-0" />
+          </label>
+          <div className="flex gap-2">
+            <Button
+              variant={"ghost"}
+              className="flex-1 sm:flex-none"
+              onClick={props.onClose}
+            >
+              {"キャンセル"}
+            </Button>
+            <Button
+              className="flex-[2] sm:min-w-32 sm:flex-none"
+              onClick={onSubmit}
+            >
+              {"切り抜く"}
+            </Button>
           </div>
         </div>
       </DialogContent>
