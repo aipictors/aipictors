@@ -7,6 +7,7 @@ import {
   getMaxImagesPerRequest,
   resolveImagesPerRequest,
 } from "~/routes/($lang).generation._index/utils/get-max-images-per-request"
+import { isLiteDayTrialActive } from "~/routes/($lang).generation._index/utils/lite-day-trial"
 
 /**
  * いまの設定で 1 回に作れる枚数の上限と、実際に作る枚数
@@ -33,6 +34,13 @@ export function useImagesPerRequest() {
   const isPaidPlan =
     passType === "LITE" || passType === "STANDARD" || passType === "PREMIUM"
 
+  // ライト1日体験中は、その日だけライトと同じく 1 回 4 枚まで（画像から生成はプランの人だけ）
+  const isLiteDayTrial = isLiteDayTrialActive(
+    context.liteDayTrial,
+    context.currentPass !== null,
+  )
+  const canBatch = isPaidPlan || isLiteDayTrial
+
   const selectedModel = context.imageModels.find((model) => {
     return model.id === context.config.modelId
   })
@@ -50,13 +58,13 @@ export function useImagesPerRequest() {
     generationType,
     upscaleSize: context.config.upscaleSize,
     hasControlNet: context.config.controlNetImageBase64 !== null,
-    isPaidPlan,
+    isPaidPlan: canBatch,
     sizeType: context.config.sizeType,
   })
 
   return {
     /** プランでの上限（無料 2・ライト以上 4） */
-    planMax: isPaidPlan ? 4 : 2,
+    planMax: canBatch ? 4 : 2,
     max,
     count: resolveImagesPerRequest(preference, max),
     /** Seed を指定しているか（指定中は別に覚えた枚数を使う） */
@@ -69,5 +77,7 @@ export function useImagesPerRequest() {
     preference,
     setPreference,
     isPaidPlan,
+    /** ライト1日体験中 */
+    isLiteDayTrial,
   }
 }

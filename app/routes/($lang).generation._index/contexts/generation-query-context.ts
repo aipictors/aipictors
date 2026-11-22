@@ -15,6 +15,8 @@ type Context = {
     typeof ImageGenerationEngineStatusContextFragment
   > | null
   userStatus: FragmentOf<typeof ImageGenerationUserStatusContextFragment> | null
+  /** カード登録なしの「ライト1日体験」の状態 */
+  liteDayTrial: FragmentOf<typeof LiteDayTrialContextFragment> | null
 }
 
 export const GenerationQueryContext = createContext<Context>({
@@ -27,6 +29,7 @@ export const GenerationQueryContext = createContext<Context>({
   user: null,
   engineStatus: null,
   userStatus: null,
+  liteDayTrial: null,
 })
 
 export const ImageModelContextFragment = graphql(
@@ -150,5 +153,13 @@ export const ImageGenerationUserStatusContextFragment = graphql(
     imageGenerationWaitCount
     availableImageGenerationLoraModelsCount
     availableConsecutiveImageGenerationsCount
+  }`,
+)
+
+export const LiteDayTrialContextFragment = graphql(
+  `fragment LiteDayTrialContextFragment on LiteDayTrialNode @_unmask {
+    status
+    trialDate
+    endsAt
   }`,
 )

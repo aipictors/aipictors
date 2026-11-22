@@ -266,7 +266,15 @@ export function GenerationConfigOutput(props: Props) {
               )}
             </p>
           )}
-          {!images.isPaidPlan && (
+          {images.isLiteDayTrial && (
+            <p className="text-fuchsia-700 text-xs dark:text-fuchsia-300">
+              {t(
+                "ライト1日体験中：今日の24時まで1回4枚まで作れます",
+                "Lite day pass: up to 4 per run until midnight (JST)",
+              )}
+            </p>
+          )}
+          {!images.isPaidPlan && !images.isLiteDayTrial && (
             <p className="text-muted-foreground text-xs">
               {t("無料は1回1枚。", "Free plan: 1 per run. ")}
               <Link to="/plus" className={configAccentLink}>

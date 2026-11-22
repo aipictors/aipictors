@@ -15,6 +15,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { COIN_CAMPAIGN, isCoinCampaignActive } from "~/lib/premium-coins"
 import { cn } from "~/lib/utils"
+import { LiteDayTrialCard } from "~/routes/($lang).generation._index/components/submission-view/lite-day-trial-card"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
@@ -30,6 +31,10 @@ type Props = {
   totalBalance: number
   /** 今のコインで作れる枚数（枚数を減らせば作れるとき） */
   affordableImages: number
+  /** カード登録なしの「ライト1日体験」の状態（available なら案内の主役にする） */
+  liteDayTrialStatus?: string | null
+  /** ライト1日体験を始めたとき */
+  onLiteDayTrialStarted?: () => void
 }
 
 const PLANS = [
@@ -102,9 +107,16 @@ export function GenerationCoinShortageDialog(props: Props) {
   const isTrial = isFree && liteOffer === "trial"
   const isHalf = isFree && liteOffer === "half"
 
+  // 今日の無料分を使い切った人で、ライト1日体験をまだ使っていなければ、それを主役にする（カード登録が要らない）
+  const isDayPassOffer =
+    isFree &&
+    props.affordableImages === 0 &&
+    props.liteDayTrialStatus === "available"
+
   useEffect(() => {
     if (!props.open) return
     trackGrowthEvent("shortage_view", source)
+    if (isDayPassOffer) trackGrowthEvent("lite_day_view", source)
     if (isTrial) trackGrowthEvent("trial_view", "shortage")
     if (isHalf) trackGrowthEvent("trial_ineligible", "shortage")
   }, [props.open])
@@ -138,20 +150,25 @@ export function GenerationCoinShortageDialog(props: Props) {
                 : t("コインが足りません", "Not enough coins")}
             </DialogTitle>
             <DialogDescription>
-              {isFree
-                ? props.isExistedPreviousPass
-                  ? t(
-                      "おかえりなさい！今なら初月半額でプランに戻れます。1回4枚・1日最大200枚まで作れます。",
-                      "Welcome back! Your first month is half price again — 4 images per click, up to 200 a day.",
-                    )
+              {isDayPassOffer
+                ? t(
+                    "カード登録なしで、今日だけライトプランを無料で試せます。",
+                    "Try the Lite plan free for today — no card needed.",
+                  )
+                : isFree
+                  ? props.isExistedPreviousPass
+                    ? t(
+                        "おかえりなさい！今なら初月半額でプランに戻れます。1回4枚・1日最大200枚まで作れます。",
+                        "Welcome back! Your first month is half price again — 4 images per click, up to 200 a day.",
+                      )
+                    : t(
+                        "無料は1日10枚までです。プランなら、このまま続けて作れます。",
+                        "Free covers 10 images a day. A plan lets you keep going right now.",
+                      )
                   : t(
-                      "無料は1日10枚までです。プランなら、このまま続けて作れます。",
-                      "Free covers 10 images a day. A plan lets you keep going right now.",
-                    )
-                : t(
-                    "上のプランにすると、毎日のコインが増えます。コインを買って続けることもできます。",
-                    "A higher plan gives you more coins every day. You can also buy coins to keep going.",
-                  )}
+                      "上のプランにすると、毎日のコインが増えます。コインを買って続けることもできます。",
+                      "A higher plan gives you more coins every day. You can also buy coins to keep going.",
+                    )}
             </DialogDescription>
           </DialogHeader>
 
@@ -164,7 +181,52 @@ export function GenerationCoinShortageDialog(props: Props) {
             </p>
           )}
 
-          {isFree && (
+          {isDayPassOffer && (
+            <div className="space-y-2">
+              <LiteDayTrialCard
+                source={source}
+                onStarted={() => {
+                  props.onOpenChange(false)
+                  props.onLiteDayTrialStarted?.()
+                }}
+              />
+              {/* カードを登録してよい人には、今までどおりそのままプランへ */}
+              <button
+                type="button"
+                disabled={checkout.isLoading}
+                onClick={() => {
+                  if (isTrial) {
+                    trackGrowthEvent("trial_checkout", "shortage_daypass")
+                    void checkout.startTrialCheckout()
+                    return
+                  }
+                  trackGrowthEvent(
+                    "shortage_checkout_LITE",
+                    `${source}_daypass`,
+                  )
+                  void checkout.startCheckout("LITE")
+                }}
+                className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl border bg-card px-3 py-2 text-sm transition-colors hover:border-violet-500/60 hover:bg-muted/60 disabled:opacity-60 motion-reduce:transition-none"
+              >
+                {checkout.isLoadingFor("LITE") && (
+                  <Loader2 className="size-3.5 animate-spin" />
+                )}
+                {isTrial
+                  ? t(
+                      `ずっと使うなら：ライト ${TRIAL_DAYS}日間無料`,
+                      `Keep it: Lite, ${TRIAL_DAYS} days free`,
+                    )
+                  : isHalf
+                    ? t(
+                        `ずっと使うなら：ライト 初月${LITE.firstMonth}`,
+                        `Keep it: Lite, ${LITE.firstMonth} first month`,
+                      )
+                    : t("ずっと使うなら：ライトプラン", "Keep it: Lite plan")}
+              </button>
+            </div>
+          )}
+
+          {isFree && !isDayPassOffer && (
             // 選択肢を並べると選ばれなかったので、いちばん始めやすい入り方（ライト。はじめての人は 7 日間無料、以前入っていた人は初月半額）を主役にして、押したらそのまま決済へ進む
             <div className="space-y-3">
               <div className="rounded-2xl border-2 border-violet-500 bg-gradient-to-br from-violet-500/10 to-sky-500/10 p-4 dark:border-violet-400">

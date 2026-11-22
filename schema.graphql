@@ -3311,6 +3311,20 @@ input LinkUserProviderInput {
   providerUserUid: String!
 }
 
+"""カード登録なしの「ライト1日体験」（1 人 1 回、その日の 24:00 までライトと同じ使い方で生成できる）"""
+type LiteDayTrialNode {
+  """体験の終わり（その日の 24:00 JST、UNIX 秒）"""
+  endsAt: Int
+
+  """
+  available: 始められる / active: 今日体験中 / used: 以前使った / ineligible: プランに入っている・受け付けを止めている
+  """
+  status: String!
+
+  """体験した日（JST の YYYY-MM-DD）"""
+  trialDate: String
+}
+
 type LoginResult {
   token: String!
 }
@@ -3581,6 +3595,12 @@ type Mutation {
 
   """パスのチェックアウトのURLを作成する"""
   createPassCheckoutSession(input: CreatePassCheckoutSessionInput): String!
+
+  """カード登録なしの「ライト1日体験」を始める（1人1回）"""
+  startLiteDayTrial(
+    """どこから始めたか（計測用）"""
+    source: String
+  ): LiteDayTrialNode!
 
   """推薦作品を作成する"""
   createRecommendedWork(input: CreateRecommendedWorkInput!): WorkNode!
@@ -6920,6 +6940,9 @@ type Viewer {
 
   """過去にパス情報が存在したかどうか"""
   isExistedPreviousPass: Boolean!
+
+  """カード登録なしの「ライト1日体験」の状態（取れなければ null）"""
+  liteDayTrial: LiteDayTrialNode
 
   """モデレーターかどうか"""
   isModerator: Boolean!

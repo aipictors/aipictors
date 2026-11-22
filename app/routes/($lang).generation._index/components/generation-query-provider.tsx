@@ -12,6 +12,7 @@ import {
   ImageGenerationUserStatusContextFragment,
   ImageLoraModelContextFragment,
   ImageModelContextFragment,
+  LiteDayTrialContextFragment,
   NegativePromptCategoryContextFragment,
   PromptCategoryContextFragment,
 } from "~/routes/($lang).generation._index/contexts/generation-query-context"
@@ -61,6 +62,11 @@ export function GenerationQueryProvider(props: Props) {
   const user = readFragment(
     ImageGenerationUserContextFragment,
     currentPassQueryResult?.viewer?.user,
+  )
+
+  const liteDayTrial = readFragment(
+    LiteDayTrialContextFragment,
+    currentPassQueryResult?.viewer?.liteDayTrial,
   )
 
   const userStatus = readFragment(
@@ -195,6 +201,7 @@ export function GenerationQueryProvider(props: Props) {
         userStatus: userStatus ?? null,
         currentPass: currentPass ?? null,
         user: user ?? null,
+        liteDayTrial: liteDayTrial ?? null,
       }}
     >
       {props.children}
@@ -212,9 +219,16 @@ const CurrentPassQuery = graphql(
       user {
         ...ImageGenerationUserContextFragment
       }
+      liteDayTrial {
+        ...LiteDayTrialContextFragment
+      }
     }
   }`,
-  [CurrentPassContextFragment, ImageGenerationUserContextFragment],
+  [
+    CurrentPassContextFragment,
+    ImageGenerationUserContextFragment,
+    LiteDayTrialContextFragment,
+  ],
 )
 
 const StatusQuery = graphql(

@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
+import {
+  useApolloClient,
+  useMutation,
+  useQuery,
+  useSuspenseQuery,
+} from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -22,6 +27,7 @@ import {
 import { GenerationPlanUpgradeDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-plan-upgrade-dialog"
 import { GenerationPremiumCoinConfirmDialog } from "~/routes/($lang).generation._index/components/submission-view/generation-premium-coin-confirm-dialog"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
+import { LiteDayTrialFollowupDialog } from "~/routes/($lang).generation._index/components/submission-view/lite-day-trial-followup-dialog"
 import { GenerationMobileTabContext } from "~/routes/($lang).generation._index/contexts/generation-mobile-tab-context"
 import { useGeminiAllowance } from "~/routes/($lang).generation._index/hooks/use-gemini-allowance"
 import { useGenerationAutoSubmit } from "~/routes/($lang).generation._index/hooks/use-generation-auto-submit"
@@ -134,6 +140,8 @@ export function GenerationSubmissionView(props: Props) {
   const [isPremiumCoinForGemini, setIsPremiumCoinForGemini] = useState(false)
 
   const authContext = useContext(AuthContext)
+
+  const apolloClient = useApolloClient()
 
   const t = useTranslation()
 
@@ -857,6 +865,7 @@ export function GenerationSubmissionView(props: Props) {
           />
         </div>
       </AppFixedContent>
+      <LiteDayTrialFollowupDialog />
       <GenerationCoinShortageDialog
         open={isCoinShortageOpen}
         onOpenChange={setIsCoinShortageOpen}
@@ -870,6 +879,13 @@ export function GenerationSubmissionView(props: Props) {
               )
             : 0
         }
+        liteDayTrialStatus={context.liteDayTrial?.status ?? null}
+        onLiteDayTrialStarted={() => {
+          // 体験中は 1 回 4 枚・コインはライトの分まで増える。プランの扱いとコインの残りを取り直す
+          void apolloClient.refetchQueries({ include: ["CurrentPassQuery"] })
+          loadCoinSummary().catch(() => {})
+          window.dispatchEvent(new Event("generation:task-requested"))
+        }}
       />
       <GenerationPlanUpgradeDialog passType={subscription ?? null} />
       <GenerationGeminiLimitDialog
