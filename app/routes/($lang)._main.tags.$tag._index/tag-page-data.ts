@@ -8,9 +8,7 @@ import { TAG_PAGE_SIZE } from "~/routes/($lang)._main.tags.$tag._index/tag-page-
  * タグページの作品の取得（全年齢 /tags/:tag と R18 /r/tags/:tag で共通）
  */
 
-type TagWork = NonNullable<
-  Awaited<ReturnType<typeof fetchTagWorks>>
->[number]
+type TagWork = NonNullable<Awaited<ReturnType<typeof fetchTagWorks>>>[number]
 
 export async function fetchTagWorks(props: {
   tagName: string
@@ -52,23 +50,36 @@ export async function fetchTagWorksCount(
 }
 
 /**
- * 一覧に出ている作品のタグから、よく一緒に付けられているタグを数える
+ * 一覧に出ている作品のタグから、よく一緒に付けられているタグを数える（英語名は作品の enTagNames から）
  */
-export const collectRelatedTags = (works: TagWork[], tagName: string) => {
+export const collectRelatedTags = (
+  works: Pick<TagWork, "tagNames" | "enTagNames">[],
+  tagName: string,
+) => {
   const counts = new Map<string, number>()
+  const enNames = new Map<string, string>()
   const current = tagName.toLowerCase()
   for (const work of works) {
-    for (const name of new Set(work.tagNames)) {
+    const seen = new Set<string>()
+    work.tagNames.forEach((name, index) => {
       const trimmed = name.trim()
-      if (trimmed.length === 0 || trimmed.toLowerCase() === current) continue
+      if (trimmed.length === 0 || trimmed.toLowerCase() === current) return
+      const enName = work.enTagNames?.[index]?.trim()
+      if (enName && !enNames.has(trimmed)) enNames.set(trimmed, enName)
+      if (seen.has(trimmed)) return
+      seen.add(trimmed)
       counts.set(trimmed, (counts.get(trimmed) ?? 0) + 1)
-    }
+    })
   }
   return Array.from(counts.entries())
     .filter(([, count]) => count >= 2 || works.length < 8)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 24)
-    .map(([name, count]) => ({ name, count }))
+    .map(([name, count]) => ({
+      name,
+      enName: enNames.get(name) ?? null,
+      count,
+    }))
 }
 
 /**
@@ -103,6 +114,7 @@ const tagPageWorksQuery = graphql(
     tagWorks(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
       tagNames
+      enTagNames
       createdAt
     }
   }`,
@@ -114,4 +126,3 @@ const tagPageWorksCountQuery = graphql(
     tagWorksCount(where: $where)
   }`,
 )
-

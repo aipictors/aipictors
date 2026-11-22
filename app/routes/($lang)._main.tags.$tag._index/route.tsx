@@ -22,6 +22,7 @@ import {
   toRatings,
 } from "~/routes/($lang)._main.tags.$tag._index/tag-page-query"
 import { findHubTag, toHubTagPath } from "~/lib/seo-hubs/seo-hub-catalog.server"
+import { createContentText } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
 import { toListWorks } from "~/utils/to-list-works"
 
@@ -85,20 +86,24 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 
   // 英語の検索で見つかるように、英語のページのタイトルと見出しは英語名にする
-  const enTagName =
-    props.params.lang === "en" && !isR18Fallback
-      ? await loaderClient
-          .query({
-            query: tagEnNameQuery,
-            variables: { name: tagName },
-          })
-          .then((result) => result.data.tagEnName ?? null)
-          .catch(() => null)
-      : null
+  const storedEnTagName = isR18Fallback
+    ? null
+    : await loaderClient
+        .query({
+          query: tagEnNameQuery,
+          variables: { name: tagName },
+        })
+        .then((result) => result.data.tagEnName ?? null)
+        .catch(() => null)
+  const enTagName = props.params.lang === "en" ? storedEnTagName : null
 
   return {
     tag: tagName,
     enTagName,
+    // 英語名のないタグ（訳さない語・まだ訳していないもの）は英語版を案内しない（root の hreflang）
+    hasEnglishVersion:
+      !isR18Fallback &&
+      createContentText(true).tag(tagName, storedEnTagName) !== null,
     works: toListWorks(works),
     worksCount,
     query,
@@ -133,12 +138,23 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     .slice(0, 4)
     .map((related) => `#${related.name}`)
     .join(" ")
+  const enRelatedText = relatedTags
+    .map((related) => createContentText(true).tag(related.name, related.enName))
+    .filter((name): name is string => name !== null)
+    .slice(0, 4)
+    .map((name) => `#${name}`)
+    .join(" ")
 
   const meta = createMeta(
     {
       ...META.TAGS,
-      // 作品のないタグ・R18 のみのタグ・並び替えた一覧は検索結果に出さない
-      isIndex: worksCount > 0 && !isR18Fallback && isTagPageDefaultView(query),
+      // 作品のないタグ・R18 のみのタグ・並び替えた一覧は検索結果に出さない。
+      // 英語のページは英語名のあるタグだけ（英語名のないタグは日本語のページと中身が同じになる。未成年を示す語は訳さない）
+      isIndex:
+        worksCount > 0 &&
+        !isR18Fallback &&
+        isTagPageDefaultView(query) &&
+        (lang !== "en" || props.data.hasEnglishVersion),
     },
     {
       title: `${tag}のAIイラスト・画像 ${worksCount.toLocaleString()}件${pageSuffixJa}`,
@@ -147,7 +163,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
         relatedText ? `${relatedText} など関連タグの作品や、` : ""
       }プロンプト付きの作品も探せます。AI画像投稿・生成サイト Aipictors（AIピクターズ）`,
       enDescription: `Browse ${worksCount.toLocaleString()} AI illustrations and images tagged "${enTag}" on Aipictors${
-        relatedText ? `, with related tags like ${relatedText}` : ""
+        enRelatedText ? `, with related tags like ${enRelatedText}` : ""
       }. Many works include their prompts and generation settings.`,
       url:
         coverWork?.largeThumbnailImageURL ??

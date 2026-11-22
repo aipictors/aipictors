@@ -21,6 +21,7 @@ import {
   ScrollRestoration,
   type ShouldRevalidateFunction,
   useLocation,
+  useMatches,
   useRouteError,
   useRouteLoaderData,
 } from "@remix-run/react"
@@ -408,6 +409,7 @@ export function Layout(props: Props): React.ReactNode {
   useEffect(() => installWorkThumbnailHints(), [])
   const location = useLocation()
   const navigate = useNavigate()
+  const matches = useMatches()
   const [_key, setKey] = useState(
     typeof window !== "undefined" ? location.pathname : "/",
   )
@@ -420,6 +422,14 @@ export function Layout(props: Props): React.ReactNode {
     location.pathname,
     config.siteURL,
     location.search,
+  )
+  // 英語版のないページ（英語名のないタグなど）は loader が hasEnglishVersion: false を返す。hreflang を出さない
+  const hasNoEnglishVersion = matches.some(
+    (match) =>
+      typeof match.data === "object" &&
+      match.data !== null &&
+      "hasEnglishVersion" in match.data &&
+      match.data.hasEnglishVersion === false,
   )
 
   useEffect(() => {
@@ -675,7 +685,7 @@ export function Layout(props: Props): React.ReactNode {
             }}
           />
         )}
-        {!alternateLocaleUrls.isJaOnly && (
+        {!alternateLocaleUrls.isJaOnly && !hasNoEnglishVersion && (
           <>
             <link rel="alternate" hrefLang="ja" href={alternateLocaleUrls.ja} />
             <link rel="alternate" hrefLang="en" href={alternateLocaleUrls.en} />

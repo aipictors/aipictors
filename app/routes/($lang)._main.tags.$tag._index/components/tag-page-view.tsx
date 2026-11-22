@@ -214,17 +214,26 @@ export function TagPageView(props: Props) {
   const homeUrl = locale === "en" ? `${config.siteURL}/en` : config.siteURL
   const tagsUrl = `${homeUrl}${pagePrefix}/tags`
   const pageUrl = `${homeUrl}${pagePrefix}/tags/${encodeURIComponent(props.tag)}`
+  // 英語の画面のタグ名（英語名がなければ元の名前）
+  const tagLabel = (locale === "en" && props.enTagName) || props.tag
+  // 関連タグも英語の画面では英語名にする。全年齢は英語名のないタグを出さない（R18 は訳さないので元の名前）
+  const relatedTags = props.relatedTags.flatMap((related) => {
+    const label =
+      t.tag(related.name, related.enName) ??
+      (props.isSensitive ? related.name : null)
+    return label === null ? [] : [{ ...related, label }]
+  })
 
   const jsonLd: WithContext<CollectionPage> = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: props.isSensitive
-      ? t(`${props.tag}のR18 AIイラスト`, `${props.tag} R18 AI art`)
-      : t(`${props.tag}のAIイラスト・画像`, `${props.tag} AI art`),
+      ? t(`${props.tag}のR18 AIイラスト`, `${tagLabel} R18 AI art`)
+      : t(`${props.tag}のAIイラスト・画像`, `${tagLabel} AI art`),
     url: pageUrl,
     inLanguage: locale,
     ...(props.isSensitive && { isFamilyFriendly: false }),
-    about: { "@type": "Thing", name: props.tag },
+    about: { "@type": "Thing", name: tagLabel },
     isPartOf: { "@type": "WebSite", name: "Aipictors", url: homeUrl },
     mainEntity: {
       "@type": "ItemList",
@@ -250,12 +259,12 @@ export function TagPageView(props: Props) {
         name: t("タグ", "Tags"),
         item: tagsUrl,
       },
-      { "@type": "ListItem", position: 3, name: props.tag, item: pageUrl },
+      { "@type": "ListItem", position: 3, name: tagLabel, item: pageUrl },
     ],
   }
 
   const topWork = props.works[0]
-  const relatedNames = props.relatedTags.slice(0, 5).map((tag) => tag.name)
+  const relatedNames = relatedTags.slice(0, 5).map((tag) => tag.label)
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-5 pb-10">
@@ -276,7 +285,7 @@ export function TagPageView(props: Props) {
           {t("タグ", "Tags")}
         </Link>
         <ChevronRightIcon className="size-3 shrink-0" />
-        <span className="truncate text-foreground">{props.tag}</span>
+        <span className="truncate text-foreground">{tagLabel}</span>
       </nav>
 
       {/* ヘッダー */}
@@ -361,7 +370,7 @@ export function TagPageView(props: Props) {
       </header>
 
       {/* 関連タグ */}
-      {props.relatedTags.length > 0 && (
+      {relatedTags.length > 0 && (
         <section aria-labelledby="related-tags-heading" className="space-y-2">
           <h2
             id="related-tags-heading"
@@ -370,10 +379,10 @@ export function TagPageView(props: Props) {
             {t("関連タグ", "Related tags")}
           </h2>
           <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
-            {props.relatedTags.map((related) => (
+            {relatedTags.map((related) => (
               <Chip key={related.name} to={tagHref(related.name)}>
                 <span className="text-muted-foreground/70">#</span>
-                {related.name}
+                {related.label}
               </Chip>
             ))}
           </div>
@@ -545,7 +554,7 @@ export function TagPageView(props: Props) {
             <h2 id="tag-about-heading" className="font-bold text-lg">
               {t(
                 `「${props.tag}」の${props.isSensitive ? "R18 " : ""}AIイラストについて`,
-                `About "${props.tag}" AI art`,
+                `About "${tagLabel}" AI art`,
               )}
             </h2>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -559,9 +568,9 @@ export function TagPageView(props: Props) {
                     ? `一緒に付けられることが多いタグは${relatedNames.map((name) => `「${name}」`).join("")}です。`
                     : ""
                 }プロンプトが公開されている作品では、使われたモデルや生成の設定も確認できます。`,
-                `Aipictors hosts ${props.worksCount.toLocaleString()} AI illustrations and images tagged "${props.tag}".${
+                `Aipictors hosts ${props.worksCount.toLocaleString()} AI illustrations and images tagged "${tagLabel}".${
                   topWork
-                    ? ` A popular one right now is "${topWork.enTitle || topWork.title}"${topWork.user ? ` by ${topWork.user.name}` : ""}.`
+                    ? ` A popular one right now is "${t.workTitle(topWork.title, topWork.enTitle)}"${topWork.user ? ` by ${topWork.user.name}` : ""}.`
                     : ""
                 }${
                   relatedNames.length > 0

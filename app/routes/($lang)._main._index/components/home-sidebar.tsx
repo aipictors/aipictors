@@ -100,15 +100,22 @@ export function HomeSidebar(
               {t("人気タグ", "Popular tags")}
             </h2>
             <div className="flex flex-wrap gap-1.5">
-              {props.recommendedTags?.map((tag) => (
-                <Link
-                  key={tag.tagName}
-                  to={`${props.isSensitive ? "/r" : ""}/tags/${encodeURIComponent(tag.tagName)}`}
-                  className="rounded-full bg-muted px-2.5 py-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
-                >
-                  #{t(tag.tagName, tag.enTagName || tag.tagName)}
-                </Link>
-              ))}
+              {props.recommendedTags?.map((tag) => {
+                // 英語の画面で英語名のないタグは出さない（R18 は訳さないので元の名前）
+                const label =
+                  t.tag(tag.tagName, tag.enTagName) ??
+                  (props.isSensitive ? tag.tagName : null)
+                if (label === null) return null
+                return (
+                  <Link
+                    key={tag.tagName}
+                    to={`${props.isSensitive ? "/r" : ""}/tags/${encodeURIComponent(tag.tagName)}`}
+                    className="rounded-full bg-muted px-2.5 py-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
+                  >
+                    #{label}
+                  </Link>
+                )
+              })}
             </div>
           </section>
         )}

@@ -138,13 +138,14 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 
   if (name === "tags.xml") {
     return withEdgeCache(request, waitUntil, async () => {
-      const tagNames = await fetchSitemapTagNames()
+      const tags = await fetchSitemapTagNames()
       return xmlResponse(
         toUrlSetXml(
-          tagNames.map((tagName) => ({
-            loc: `${SITE_URL}/tags/${encodeURIComponent(tagName)}`,
+          tags.map((tag) => ({
+            loc: `${SITE_URL}/tags/${encodeURIComponent(tag.name)}`,
             changefreq: "daily",
             priority: 0.7,
+            hasEnglish: tag.hasEnglish,
           })),
         ),
         ONE_DAY,

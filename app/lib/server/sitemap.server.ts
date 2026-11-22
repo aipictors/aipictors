@@ -6,6 +6,7 @@ import {
 } from "~/utils/locale-path"
 import { fetchPublicUserModels } from "~/lib/server/user-models.server"
 import type { UserModel } from "~/lib/user-models/types"
+import { createContentText } from "~/hooks/use-translation"
 import { isSuggestableSensitiveTag } from "~/utils/sensitive-tag-filter"
 
 /**
@@ -31,6 +32,8 @@ type SitemapUrl = {
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly"
   priority?: number
   images?: { loc: string; title?: string; enTitle?: string }[]
+  /** false なら英語の URL を載せない（英語名のないタグのページなど、英語版が日本語版と同じ中身のもの） */
+  hasEnglish?: boolean
 }
 
 const escapeXml = (value: string) =>
@@ -50,7 +53,11 @@ const escapeXml = (value: string) =>
 const toLocalizedUrls = (url: SitemapUrl) => {
   const path = url.loc.slice(SITE_URL.length) || "/"
   // R18 のページ・日本語だけのページ（解説記事）は英語の検索に広げない
-  if (parseLocalePath(path).isSensitive || isJaOnlyPath(path)) {
+  if (
+    parseLocalePath(path).isSensitive ||
+    isJaOnlyPath(path) ||
+    url.hasEnglish === false
+  ) {
     return [{ url, loc: url.loc, alternates: "" }]
   }
   const ja = `${SITE_URL}${buildLocalePath("ja", path)}`
@@ -371,33 +378,46 @@ export async function fetchWorksOfDay(date: string): Promise<SitemapWork[]> {
 const recommendedTagsQuery = `query SitemapTags($limit: Int!, $where: RecommendedTagsWhereInput!) {
   recommendedTags(limit: $limit, where: $where) {
     tagName
+    enTagName
   }
 }`
 
 const hotTagsQuery = `query SitemapHotTags {
-  hotTags { name }
-  homeTags { name }
+  hotTags { name enName }
+  homeTags { name enName }
 }`
 
-export async function fetchSitemapTagNames(): Promise<string[]> {
+/**
+ * 人気のタグ。hasEnglish は英語のページを載せられるか（英語名がある・名前が英語）。
+ * 英語名のないタグ（未成年を示す語など訳さないもの・まだ訳していないもの）は日本語のページだけ
+ */
+export async function fetchSitemapTagNames(): Promise<
+  { name: string; hasEnglish: boolean }[]
+> {
   const [recommended, hot] = await Promise.all([
-    graphqlRequest<{ recommendedTags: { tagName: string }[] }>(
-      recommendedTagsQuery,
-      { limit: 5000, where: { isSensitive: false } },
-    ),
     graphqlRequest<{
-      hotTags: { name: string }[]
-      homeTags: { name: string }[]
+      recommendedTags: { tagName: string; enTagName: string | null }[]
+    }>(recommendedTagsQuery, { limit: 5000, where: { isSensitive: false } }),
+    graphqlRequest<{
+      hotTags: { name: string; enName: string | null }[]
+      homeTags: { name: string; enName: string | null }[]
     }>(hotTagsQuery, {}),
   ])
-  const names = [
-    ...(hot?.hotTags ?? []).map((tag) => tag.name),
-    ...(hot?.homeTags ?? []).map((tag) => tag.name),
-    ...(recommended?.recommendedTags ?? []).map((tag) => tag.tagName),
-  ]
-  return Array.from(
-    new Set(names.map((name) => name.trim()).filter((name) => name.length > 0)),
-  )
+  const toEnglish = createContentText(true).tag
+  const tags = new Map<string, boolean>()
+  for (const [name, enName] of [
+    ...(hot?.hotTags ?? []).map((tag) => [tag.name, tag.enName] as const),
+    ...(hot?.homeTags ?? []).map((tag) => [tag.name, tag.enName] as const),
+    ...(recommended?.recommendedTags ?? []).map(
+      (tag) => [tag.tagName, tag.enTagName] as const,
+    ),
+  ]) {
+    const trimmed = name.trim()
+    if (trimmed.length === 0) continue
+    const hasEnglish = toEnglish(trimmed, enName) !== null
+    tags.set(trimmed, (tags.get(trimmed) ?? false) || hasEnglish)
+  }
+  return Array.from(tags, ([name, hasEnglish]) => ({ name, hasEnglish }))
 }
 
 const hotSensitiveTagsQuery = `query SitemapHotSensitiveTags {

@@ -9,11 +9,13 @@ import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { getPathLocale } from "~/utils/locale-path"
 
+type TagName = { name: string; enName: string | null }
+
 type Props = {
   isSensitive: boolean
-  hotTags: { name: string; worksCount: number; thumbnailUrl: string | null }[]
-  popularTags: { name: string; thumbnailUrl: string | null }[]
-  commonTags: string[]
+  hotTags: (TagName & { worksCount: number; thumbnailUrl: string | null })[]
+  popularTags: (TagName & { thumbnailUrl: string | null })[]
+  commonTags: TagName[]
 }
 
 function TagImageCard(props: {
@@ -60,6 +62,17 @@ export function TagsIndexView(props: Props) {
   const locale = getPathLocale(location.pathname)
   const [text, setText] = useState("")
 
+  // 英語の画面ではタグを英語名で出す。全年齢の一覧は英語名のないタグを出さない（R18 は訳さないので日本語のまま）
+  const withLabel = <T extends TagName>(tags: T[]) =>
+    tags.flatMap((tag) => {
+      const label =
+        t.tag(tag.name, tag.enName) ?? (props.isSensitive ? tag.name : null)
+      return label === null ? [] : [{ ...tag, label }]
+    })
+  const hotTags = withLabel(props.hotTags)
+  const popularTags = withLabel(props.popularTags)
+  const commonTags = withLabel(props.commonTags)
+
   const tagPath = (name: string) =>
     `${props.isSensitive ? "/r" : ""}/tags/${encodeURIComponent(name)}`
 
@@ -78,14 +91,12 @@ export function TagsIndexView(props: Props) {
     url: `${homeUrl}/tags`,
     mainEntity: {
       "@type": "ItemList",
-      itemListElement: [...props.hotTags, ...props.popularTags].map(
-        (tag, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          name: tag.name,
-          url: `${homeUrl}/tags/${encodeURIComponent(tag.name)}`,
-        }),
-      ),
+      itemListElement: [...hotTags, ...popularTags].map((tag, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: tag.label,
+        url: `${homeUrl}/tags/${encodeURIComponent(tag.name)}`,
+      })),
     },
   }
 
@@ -136,7 +147,10 @@ export function TagsIndexView(props: Props) {
             </Button>
           </form>
           <p className="text-muted-foreground text-xs">
-            {t("タイトルや説明からも探したいときは", "To search titles too, use ")}
+            {t(
+              "タイトルや説明からも探したいときは",
+              "To search titles too, use ",
+            )}
             <Link to="/search" className="text-primary hover:underline">
               {t("作品検索", "Search")}
             </Link>
@@ -146,7 +160,7 @@ export function TagsIndexView(props: Props) {
       </header>
 
       {/* いま増えているタグ */}
-      {props.hotTags.length > 0 && (
+      {hotTags.length > 0 && (
         <section aria-labelledby="hot-tags-heading" className="space-y-4">
           <div className="flex items-end justify-between">
             <h2
@@ -161,11 +175,11 @@ export function TagsIndexView(props: Props) {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-            {props.hotTags.map((tag, index) => (
+            {hotTags.map((tag, index) => (
               <TagImageCard
                 key={tag.name}
                 to={tagPath(tag.name)}
-                name={tag.name}
+                name={tag.label}
                 thumbnailUrl={tag.thumbnailUrl}
                 isPriority={index < 6}
                 caption={t(
@@ -179,17 +193,20 @@ export function TagsIndexView(props: Props) {
       )}
 
       {/* 人気のタグ */}
-      {props.popularTags.length > 0 && (
+      {popularTags.length > 0 && (
         <section aria-labelledby="popular-tags-heading" className="space-y-4">
-          <h2 id="popular-tags-heading" className="font-bold text-lg md:text-xl">
+          <h2
+            id="popular-tags-heading"
+            className="font-bold text-lg md:text-xl"
+          >
             {t("人気のタグ", "Popular tags")}
           </h2>
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:gap-3 lg:grid-cols-6 xl:grid-cols-8">
-            {props.popularTags.map((tag) => (
+            {popularTags.map((tag) => (
               <TagImageCard
                 key={tag.name}
                 to={tagPath(tag.name)}
-                name={tag.name}
+                name={tag.label}
                 thumbnailUrl={tag.thumbnailUrl}
               />
             ))}
@@ -198,20 +215,20 @@ export function TagsIndexView(props: Props) {
       )}
 
       {/* よく使われるタグ */}
-      {props.commonTags.length > 0 && (
+      {commonTags.length > 0 && (
         <section aria-labelledby="common-tags-heading" className="space-y-4">
           <h2 id="common-tags-heading" className="font-bold text-lg md:text-xl">
             {t("定番のタグ", "Common tags")}
           </h2>
           <div className="flex flex-wrap gap-2">
-            {props.commonTags.map((name) => (
+            {commonTags.map((tag) => (
               <Link
-                key={name}
-                to={tagPath(name)}
+                key={tag.name}
+                to={tagPath(tag.name)}
                 className="inline-flex h-9 items-center rounded-full border bg-background px-4 font-medium text-sm transition-colors hover:border-foreground/40"
               >
                 <span className="mr-0.5 text-muted-foreground">#</span>
-                {name}
+                {tag.label}
               </Link>
             ))}
           </div>

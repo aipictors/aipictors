@@ -10,6 +10,7 @@ import { loaderClient } from "~/lib/loader-client"
 import { TagsIndexView } from "~/routes/($lang)._main.tags._index/components/tags-index-view"
 import { toHotTagThumbnailUrl } from "~/routes/($lang)._main.tags._index/hot-tag-thumbnail"
 import { isR18Path } from "~/utils/content-mode"
+import { createContentText } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
 import { isFeaturableSensitiveTag } from "~/utils/sensitive-tag-filter"
 
@@ -30,6 +31,7 @@ export async function loader(props: LoaderFunctionArgs) {
   )
     .map((tag) => ({
       name: tag.name,
+      enName: tag.enName ?? null,
       worksCount: tag.worksCount,
       thumbnailUrl: toHotTagThumbnailUrl(tag.firstWork, isSensitive),
     }))
@@ -40,7 +42,11 @@ export async function loader(props: LoaderFunctionArgs) {
   const popularTags = popularResp.data.recommendedTags
     .filter((tag) => !hotNames.has(tag.tagName))
     .filter((tag) => !isSensitive || isFeaturableSensitiveTag(tag.tagName))
-    .map((tag) => ({ name: tag.tagName, thumbnailUrl: tag.thumbnailUrl }))
+    .map((tag) => ({
+      name: tag.tagName,
+      enName: tag.enTagName ?? null,
+      thumbnailUrl: tag.thumbnailUrl,
+    }))
 
   const usedNames = new Set([
     ...hotNames,
@@ -49,14 +55,15 @@ export async function loader(props: LoaderFunctionArgs) {
   const commonTags = isSensitive
     ? []
     : hotResp.data.homeTags
-        .map((tag) => tag.name)
-        .filter((name) => !usedNames.has(name))
+        .filter((tag) => !usedNames.has(tag.name))
+        .map((tag) => ({ name: tag.name, enName: tag.enName ?? null }))
 
   return { isSensitive, hotTags, popularTags, commonTags }
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": "public, max-age=0, s-maxage=300, stale-while-revalidate=600",
+  "Cache-Control":
+    "public, max-age=0, s-maxage=300, stale-while-revalidate=600",
 })
 
 export const meta: MetaFunction<typeof loader> = (props) => {
@@ -67,6 +74,14 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   ]
     .slice(0, 6)
     .join("・")
+  const enSample = [
+    ...(props.data?.hotTags ?? []),
+    ...(props.data?.popularTags ?? []),
+  ]
+    .map((tag) => createContentText(true).tag(tag.name, tag.enName))
+    .filter((name): name is string => name !== null)
+    .slice(0, 6)
+    .join(", ")
   return createMeta(
     { ...META.TAGS, isIndex: !isSensitive },
     {
@@ -75,8 +90,9 @@ export const meta: MetaFunction<typeof loader> = (props) => {
       description: `AIイラストを人気のタグ・いま増えているタグから探せます。${
         sample ? `${sample}など、` : ""
       }タグごとにAIイラスト・AI画像の一覧を見られます。`,
-      enDescription:
-        "Browse AI illustrations by popular and trending tags on Aipictors.",
+      enDescription: `Browse AI illustrations by popular and trending tags on Aipictors${
+        !isSensitive && enSample ? `, such as ${enSample}` : ""
+      }.`,
       url:
         props.data?.hotTags?.[0]?.thumbnailUrl ??
         props.data?.popularTags?.[0]?.thumbnailUrl ??
@@ -95,6 +111,7 @@ const hotTagsQuery = graphql(`
   query TagsIndexHotTags {
     hotTags {
       name
+      enName
       worksCount
       firstWork {
         smallThumbnailImageURL
@@ -103,6 +120,7 @@ const hotTagsQuery = graphql(`
     }
     hotSensitiveTags {
       name
+      enName
       worksCount
       firstWork {
         smallThumbnailImageURL
@@ -111,6 +129,7 @@ const hotTagsQuery = graphql(`
     }
     homeTags {
       name
+      enName
     }
   }
 `)
@@ -119,6 +138,7 @@ const popularTagsQuery = graphql(`
   query TagsIndexPopularTags($limit: Int!, $where: RecommendedTagsWhereInput!) {
     recommendedTags(limit: $limit, where: $where) {
       tagName
+      enTagName
       thumbnailUrl
     }
   }
