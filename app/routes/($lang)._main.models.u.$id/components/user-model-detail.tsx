@@ -1,4 +1,3 @@
-import { Link, useNavigate } from "~/lib/app/locale-router"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   AlertTriangleIcon,
@@ -18,6 +17,7 @@ import {
 } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
+import { LinkifiedText } from "~/components/linkified-text"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Button } from "~/components/ui/button"
 import {
@@ -31,13 +31,13 @@ import {
   UserModelRatingBadge,
 } from "~/components/user-models/user-model-badges"
 import { UserModelCard } from "~/components/user-models/user-model-card"
-import { UserModelGenerateFlow } from "~/components/user-models/user-model-generate-flow"
-import { useUserModelPickup } from "~/components/user-models/user-model-pickup-banner"
 import { UserModelDeleteDialog } from "~/components/user-models/user-model-delete-dialog"
 import { UserModelEditDialog } from "~/components/user-models/user-model-edit-dialog"
+import { UserModelGenerateFlow } from "~/components/user-models/user-model-generate-flow"
+import { useUserModelPickup } from "~/components/user-models/user-model-pickup-banner"
 import { UserModelReportDialog } from "~/components/user-models/user-model-report-dialog"
-import { UserModelWorksSection } from "~/routes/($lang)._main.models.u.$id/components/user-model-works-section"
 import { AuthContext } from "~/contexts/auth-context"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { describeRecommendedSettings } from "~/lib/generation-sampler"
 import {
   baseModelLabel,
@@ -57,6 +57,7 @@ import {
 } from "~/lib/user-models/import-utils"
 import type { UserModel } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
+import { UserModelWorksSection } from "~/routes/($lang)._main.models.u.$id/components/user-model-works-section"
 
 type Props = {
   id: string
@@ -320,7 +321,7 @@ export function UserModelDetail(props: Props) {
             <section className="mt-2 hidden rounded-2xl border p-5 lg:block">
               <h2 className="mb-2 font-semibold">説明</h2>
               <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-                {model.description}
+                <LinkifiedText text={model.description} />
               </p>
             </section>
           )}
@@ -514,7 +515,7 @@ export function UserModelDetail(props: Props) {
             <section className="rounded-2xl border p-4 lg:hidden">
               <h2 className="mb-2 font-semibold text-sm">説明</h2>
               <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-                {model.description}
+                <LinkifiedText text={model.description} />
               </p>
             </section>
           )}

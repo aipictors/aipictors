@@ -74,7 +74,8 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+  "Cache-Control":
+    "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
 })
 
 const isSensitiveRating = (rating: string) =>
@@ -130,7 +131,13 @@ export default function UserModelPage() {
   if (!model) {
     return (
       <ClientOnly fallback={<div className="min-h-screen" />}>
-        {() => <UserModelDetail id={params.id ?? ""} initialModel={null} />}
+        {() => (
+          <UserModelDetail
+            key={params.id}
+            id={params.id ?? ""}
+            initialModel={null}
+          />
+        )}
       </ClientOnly>
     )
   }
@@ -202,10 +209,14 @@ export default function UserModelPage() {
     <>
       {model.status === "READY" && !isSensitiveRating(model.rating) && (
         <AppJsonLdScript
-          jsonLd={jsonLd as unknown as Parameters<typeof AppJsonLdScript>[0]["jsonLd"]}
+          jsonLd={
+            jsonLd as unknown as Parameters<typeof AppJsonLdScript>[0]["jsonLd"]
+          }
         />
       )}
+      {/* 別のモデルへ移ったとき、選んでいた画像などの状態を前のモデルから持ち越さない */}
       <UserModelDetail
+        key={params.id}
         id={params.id ?? ""}
         initialModel={model}
         relatedModels={data.relatedModels}
