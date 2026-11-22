@@ -181,7 +181,7 @@ function ShowcaseDialog(props: {
 const AGE_CONFIRMED_KEY = "ageConfirmed"
 const AGE_CONFIRMED_SESSION_KEY = "ageConfirmedSession"
 
-const readAgeConfirmed = () => {
+export const readAgeConfirmed = () => {
   try {
     return (
       localStorage.getItem(AGE_CONFIRMED_KEY) === "true" ||
@@ -192,7 +192,7 @@ const readAgeConfirmed = () => {
   }
 }
 
-const writeAgeConfirmed = (remember: boolean) => {
+export const writeAgeConfirmed = (remember: boolean) => {
   try {
     if (remember) localStorage.setItem(AGE_CONFIRMED_KEY, "true")
     else sessionStorage.setItem(AGE_CONFIRMED_SESSION_KEY, "true")

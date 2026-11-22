@@ -1,6 +1,7 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { UserOpenRequestAwardsSection } from "~/components/requests/user-open-request-awards-section"
 import { UserRequestPlansSection } from "~/components/requests/user-request-plans-section"
 import { UserModelCard } from "~/components/user-models/user-model-card"
 import { config } from "~/config"
@@ -154,6 +155,7 @@ export default function UserLayout() {
     <div className="flex w-full flex-col justify-center pb-10">
       <div className="w-full space-y-10">
         <UserRequestPlansSection userId={data.user.id} />
+        <UserOpenRequestAwardsSection userId={data.user.id} />
         <UserPickupContents
           userPickupWorks={data.user.featuredWorks ?? []}
           userNewWorks={data.user.works ?? []}

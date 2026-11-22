@@ -13,6 +13,12 @@ describe("リクエストの上のタブ", () => {
     expect(requestsHubTab("/requests/manage")).toBe("manage")
     expect(requestsHubTab("/requests/123")).toBe("manage")
   })
+  test("募集の一覧・作成・詳細は「募集」", () => {
+    expect(requestsHubTab("/requests/open")).toBe("open")
+    expect(requestsHubTab("/requests/open/new")).toBe("open")
+    expect(requestsHubTab("/requests/open/12")).toBe("open")
+    expect(requestsHubTab("/en/requests/open/12")).toBe("open")
+  })
   test("自分のプラン、規約はどれでもない", () => {
     expect(requestsHubTab("/requests/my-plans")).toBe("mine")
     expect(requestsHubTab("/requests/terms")).toBeNull()

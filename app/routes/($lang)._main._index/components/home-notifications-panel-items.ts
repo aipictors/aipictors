@@ -1,3 +1,4 @@
+import { requestNotificationPath } from "~/lib/open-requests-api"
 import type { NotificationPanelKind } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
 import { toPopularWorksPathFromNotification } from "~/utils/popular-works-date"
 
@@ -136,7 +137,7 @@ export const toRowHref = (item: PanelItem) => {
     return item.user ? `/users/${item.user.id}` : null
   }
   if (item.kind === "request") {
-    return item.requestId ? `/requests/${item.requestId}` : "/requests/manage"
+    return requestNotificationPath(item.requestId)
   }
   if (item.kind === "coin") {
     return item.message?.startsWith("🏅") ? "/achievements" : null

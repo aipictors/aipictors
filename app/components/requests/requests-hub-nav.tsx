@@ -1,5 +1,12 @@
 import { useLocation, useOutletContext } from "@remix-run/react"
-import { Inbox, type LucideIcon, Plus, Search, Store } from "lucide-react"
+import {
+  Inbox,
+  type LucideIcon,
+  Megaphone,
+  Plus,
+  Search,
+  Store,
+} from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
@@ -8,7 +15,7 @@ import { Link } from "~/lib/app/locale-router"
 import { requestsGet } from "~/lib/requests-api"
 import { cn } from "~/lib/utils"
 
-export type RequestsHubTab = "find" | "manage" | "mine"
+export type RequestsHubTab = "find" | "open" | "manage" | "mine"
 
 /** 対応が必要な依頼の数（受けた依頼の返事・納品待ち＋出した依頼の受け取り確認待ち） */
 export type RequestsBadge = { received: number; toConfirm: number }
@@ -21,6 +28,9 @@ export const requestsHubTab = (pathname: string): RequestsHubTab | null => {
   const path = pathname.replace(/^\/(?:en|ja|r)(?=\/)/, "").replace(/\/$/, "")
   if (path === "/requests" || path.startsWith("/requests/plans")) return "find"
   if (path === "/requests/new" || path === "/requests/showcase") return "find"
+  if (path === "/requests/open" || path.startsWith("/requests/open/")) {
+    return "open"
+  }
   if (path === "/requests/my-plans") return "mine"
   if (path === "/requests/terms") return null
   if (path.startsWith("/requests/")) return "manage"
@@ -58,8 +68,8 @@ export function useRequestsOutletBadge(): RequestsBadge | null {
 }
 
 /**
- * リクエストの上のタブ（探す / 依頼の管理 / 自分のプラン）
- * スマホは 3 等分の下線タブ、PC は左に丸いタブ・右に「プランを出品する」
+ * リクエストの上のタブ（プランを探す / 募集 / 依頼の管理 / 自分のプラン）
+ * スマホは 4 等分の下線タブ、PC は左に丸いタブ・右に「プランを出品する」（募集のタブでは「募集する」）
  */
 export function RequestsHubNav(props: { badge: RequestsBadge | null }) {
   const t = useTranslation()
@@ -82,6 +92,12 @@ export function RequestsHubNav(props: { badge: RequestsBadge | null }) {
       icon: Search,
     },
     {
+      value: "open",
+      to: "/requests/open",
+      label: t("募集", "Open calls"),
+      icon: Megaphone,
+    },
+    {
       value: "manage",
       to: "/requests/manage",
       label: t("依頼の管理", "My requests"),
@@ -101,7 +117,7 @@ export function RequestsHubNav(props: { badge: RequestsBadge | null }) {
       aria-label={t("リクエスト", "Requests")}
       className="mx-auto flex w-full max-w-6xl items-center gap-3 px-3 md:px-6 md:pt-2"
     >
-      <div className="grid flex-1 grid-cols-3 border-b md:flex md:flex-none md:gap-2 md:border-b-0">
+      <div className="grid flex-1 grid-cols-4 border-b md:flex md:flex-none md:gap-2 md:border-b-0">
         {tabs.map((tab) => {
           const isActive = active === tab.value
           const Icon = tab.icon
@@ -111,7 +127,7 @@ export function RequestsHubNav(props: { badge: RequestsBadge | null }) {
               to={tab.to}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "relative flex items-center justify-center gap-1.5 py-3 font-bold text-sm transition-colors",
+                "relative flex items-center justify-center gap-1.5 py-3 font-bold text-xs transition-colors sm:text-sm",
                 "md:h-10 md:rounded-full md:px-4 md:py-0",
                 isActive
                   ? "text-foreground md:bg-foreground md:text-background"
@@ -133,10 +149,17 @@ export function RequestsHubNav(props: { badge: RequestsBadge | null }) {
         })}
       </div>
       <Button asChild className="ml-auto hidden rounded-full font-bold md:flex">
-        <Link to="/requests/my-plans?new=1">
-          <Plus className="mr-1 size-4" />
-          {t("プランを出品する", "List a plan")}
-        </Link>
+        {active === "open" ? (
+          <Link to="/requests/open/new">
+            <Plus className="mr-1 size-4" />
+            {t("募集する", "Post a request")}
+          </Link>
+        ) : (
+          <Link to="/requests/my-plans?new=1">
+            <Plus className="mr-1 size-4" />
+            {t("プランを出品する", "List a plan")}
+          </Link>
+        )}
       </Button>
     </nav>
   )
