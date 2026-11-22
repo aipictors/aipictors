@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
+import { GachaHeaderFrameOverlay } from "~/components/gacha/gacha-header-frame-overlay"
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
@@ -19,6 +20,7 @@ import {
 import { SettingsSaveBar } from "~/routes/($lang).settings/components/settings-save-bar"
 import { SettingsSection } from "~/routes/($lang).settings/components/settings-section"
 import { AvatarFrameStudio } from "~/routes/($lang).settings.profile/components/avatar-frame-studio"
+import { HeaderFrameSetting } from "~/routes/($lang).settings.profile/components/header-frame-setting"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 
 /**
@@ -75,6 +77,8 @@ export function SettingProfileForm() {
   const [sensitiveEnProfileText, setSensitiveEnProfileText] = useState("")
   const [sensitiveLinks, setSensitiveLinks] = useState<string[]>([])
   const [sensitiveFanzaCircle, setSensitiveFanzaCircle] = useState("")
+  // 着けているヘッダー枠（ヘッダー枠の欄が読み込み・変更のたびに知らせる）
+  const [headerFrameSlug, setHeaderFrameSlug] = useState<string | null>(null)
   const [selectedUserAvatarFrameId, setSelectedUserAvatarFrameId] = useState<
     string | null
   >(null)
@@ -331,6 +335,9 @@ export function SettingProfileForm() {
           ) : (
             <div className="absolute inset-0 bg-muted" />
           )}
+          {headerFrameSlug && (
+            <GachaHeaderFrameOverlay slug={headerFrameSlug} />
+          )}
           <CropImageField
             isHidePreviewImage={false}
             cropWidth={1200}
@@ -392,6 +399,19 @@ export function SettingProfileForm() {
           )}
         </p>
       </section>
+
+      <SettingsSection
+        title={t("ヘッダー枠", "Header Frame")}
+        description={t(
+          "ヘッダー画像のふちを飾る枠です。スペシャル枠ガチャで手に入ります。選ぶとすぐ反映されます。",
+          "Frames that decorate the edge of your header. Get them from the special frame gacha. Changes apply right away.",
+        )}
+      >
+        <HeaderFrameSetting
+          headerImageSrc={headerImageSrc}
+          onSelectedChange={setHeaderFrameSlug}
+        />
+      </SettingsSection>
 
       <SettingsSection
         title={t("アイコン枠", "Avatar Frame")}
