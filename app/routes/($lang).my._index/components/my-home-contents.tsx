@@ -145,8 +145,9 @@ export function DashboardHomeContents() {
           }
         />
         <div className="flex flex-col gap-4 px-4 pb-4 md:flex-row md:items-end md:justify-between md:px-6">
-          <div className="-mt-10 flex items-end gap-3 md:-mt-12">
-            <div className="size-20 shrink-0 overflow-hidden rounded-full border-4 border-card bg-muted md:size-24">
+          {/* アイコンだけをヘッダー画像に重ね、名前は必ず画像の下に置く（スマホで名前が画像と重なって読みにくかった） */}
+          <div className="flex items-end gap-3">
+            <div className="-mt-10 size-20 shrink-0 overflow-hidden rounded-full border-4 border-card bg-muted md:-mt-12 md:size-24">
               {user ? (
                 <img
                   src={toResizedImageUrl(withIconUrlFallback(user.iconUrl), 96)}
