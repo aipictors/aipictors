@@ -34,6 +34,8 @@ export async function loader(props: LoaderFunctionArgs) {
         ratings: ["R18", "R18G"],
         isSensitive: true,
         needInspected: false,
+        // 作品がすべて削除・非公開のシリーズは除く（タブの数字と同じ条件）
+        hasWorks: true,
       },
     },
   })

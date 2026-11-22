@@ -1,5 +1,4 @@
 import { useQuery } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { ChevronRightIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
@@ -8,6 +7,7 @@ import {
   PublicAlbumListItemFragment,
 } from "~/components/album/public-album-list"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   albumId: string
@@ -55,6 +55,7 @@ export function AlbumOwnerSeries(props: Props) {
         ownerUserId: props.ownerUserId,
         ratings: props.isAdultSeries ? ["R18", "R18G"] : ["G", "R15"],
         needInspected: false,
+        hasWorks: true,
       },
     },
   })

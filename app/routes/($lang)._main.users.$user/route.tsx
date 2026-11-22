@@ -275,6 +275,6 @@ const UserR18WorksCountQuery = graphql(
     novelWorksCount: worksCount(where: { userId: $userId, workType: NOVEL, ratings: [G, R15], isNowCreatedAt: true })
     videoWorksCount: worksCount(where: { userId: $userId, workType: VIDEO, ratings: [G, R15], isNowCreatedAt: true })
     columnWorksCount: worksCount(where: { userId: $userId, workType: COLUMN, ratings: [G, R15], isNowCreatedAt: true })
-    albumsCount: albumsCount(where: { ownerUserId: $userId, ratings: [G, R15], needInspected: false })
+    albumsCount: albumsCount(where: { ownerUserId: $userId, ratings: [G, R15], needInspected: false, hasWorks: true })
   }`,
 )

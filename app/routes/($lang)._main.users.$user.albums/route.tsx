@@ -40,6 +40,8 @@ export async function loader(props: LoaderFunctionArgs) {
         ownerUserId: userIdResp.data.user.id,
         ratings: ["G", "R15"],
         needInspected: false,
+        // 作品がすべて削除・非公開のシリーズは除く（タブの数字と同じ条件）
+        hasWorks: true,
       },
     },
   })

@@ -427,6 +427,9 @@ enum AlbumWorkOrderBy {
 }
 
 input AlbumsWhereInput {
+  """公開している作品があるシリーズのみ（ownerUserId を指定したときだけ使える。作品がすべて削除・非公開のシリーズを除く）"""
+  hasWorks: Boolean
+
   """フォロー中ユーザのシリーズのみ"""
   isFollowing: Boolean
 

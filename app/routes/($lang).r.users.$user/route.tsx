@@ -181,6 +181,6 @@ const UserQuery = graphql(
 const UserR18WorksCountQuery = graphql(
   `query UserR18WorksCount($userId: ID!) {
     r18WorksCount: worksCount(where: { userId: $userId, ratings: [R18, R18G], isSensitive: true })
-    sensitiveAlbumsCount: albumsCount(where: { ownerUserId: $userId, ratings: [R18, R18G], isSensitive: true, needInspected: false })
+    sensitiveAlbumsCount: albumsCount(where: { ownerUserId: $userId, ratings: [R18, R18G], isSensitive: true, needInspected: false, hasWorks: true })
   }`,
 )
