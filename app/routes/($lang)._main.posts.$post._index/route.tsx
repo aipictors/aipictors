@@ -30,6 +30,13 @@ import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._ind
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
+import {
+  applyWorkLocalization,
+  fetchWorkLocalization,
+  hasWorkLocalization,
+  parseAcceptLanguage,
+  pickWorkLanguage,
+} from "~/utils/work-localization"
 
 const PUBLIC_POST_CACHE_CONTROL =
   "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
@@ -126,17 +133,36 @@ export async function loader(props: LoaderFunctionArgs) {
     return redirect(`/r/posts/${props.params.post}`)
   }
 
+  // 多言語の作品は、見る人の言語の画像・タイトル・説明にする（app/utils/work-localization.ts）。
+  // ブラウザの言語で中身が変わるので、配信のキャッシュには置かない
+  const localization = hasWorkLocalization(workResp.data.work)
+    ? await fetchWorkLocalization(workResp.data.work.id)
+    : null
+  const work = localization
+    ? applyWorkLocalization(
+        workResp.data.work,
+        localization,
+        pickWorkLanguage(
+          localization,
+          props.params.lang === "en" ? "en" : "ja",
+          parseAcceptLanguage(props.request.headers.get("accept-language")),
+        ),
+      )
+    : workResp.data.work
+
   return json(
     {
       post: props.params.post,
-      work: workResp.data.work,
+      work,
     },
     {
       headers: {
         // 一部が欠けた内容はキャッシュしない
         "Cache-Control": workResp.errors?.length
           ? "no-store"
-          : PUBLIC_POST_CACHE_CONTROL,
+          : localization
+            ? "private, max-age=0"
+            : PUBLIC_POST_CACHE_CONTROL,
       },
     },
   )

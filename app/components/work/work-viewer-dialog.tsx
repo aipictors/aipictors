@@ -1,6 +1,7 @@
 import type { CommentAchievementBadge } from "~/components/achievements/comment-achievement-chip"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useTranslation } from "~/hooks/use-translation"
+import { useLocalizedWork } from "~/hooks/use-localized-work"
 import {
   type ComponentProps,
   useCallback,
@@ -268,6 +269,9 @@ export function WorkViewerDialog({
     // キャッシュにない場合はAPIからのデータまたは基本データを使用
     return (data?.work as typeof work) ?? work
   }, [work, workDataCache, data])
+
+  // 多言語の作品は、ブラウザの言語の画像・タイトル・説明にする
+  const localizedWork = useLocalizedWork(currentWork)
 
   // ────────── index が末尾なら自動ロード ──────────
   useEffect(() => {
@@ -555,7 +559,7 @@ export function WorkViewerDialog({
                     isBookmarked: false,
                     isInCollection: false,
                     isMyRecommended: false,
-                    ...currentWork,
+                    ...(localizedWork ?? currentWork),
                     likedUsers: (detailFields.likedUsers ?? []).map((user) => ({
                       avatarFrame: null,
                       ...user,
