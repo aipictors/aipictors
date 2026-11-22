@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test"
+import { readdirSync } from "node:fs"
+import { join } from "node:path"
 import {
   filterUserAvatarFrames,
   hasPictorChan,
@@ -170,6 +172,19 @@ describe("装飾の小さい版", () => {
     expect(
       toUserAvatarDecorationSrcSet("/avatar-frames/deco/angel.anim.webp"),
     ).toBeUndefined()
+  })
+
+  test("public の装飾はすべて 128px・256px 版がある（ないとコメント欄などの小さいアイコンで枠がリンク切れになる）", () => {
+    const folder = join(import.meta.dir, "../../../public/avatar-frames/deco")
+    const names = new Set(readdirSync(folder))
+    const missing = [...names]
+      .filter((name) => /^[\w-]+\.webp$/.test(name))
+      .flatMap((name) =>
+        [128, 256]
+          .map((w) => name.replace(/\.webp$/, `.w${w}.webp`))
+          .filter((small) => !names.has(small)),
+      )
+    expect(missing).toEqual([])
   })
 })
 
