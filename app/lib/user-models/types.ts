@@ -182,11 +182,17 @@ export type UserModelListResult = {
 
 export type MyUserModelsResult = {
   models: UserModel[]
-  /** 1 か月（JST）に登録できる数 */
-  limit: number
+  /** 個数の上限はないので null（以前の API では 1 か月に登録できる数） */
+  limit: number | null
+  /** 1 か月（JST）に登録できる合計サイズ（バイト） */
+  limitBytes?: number
+  /** 今月登録したファイルの合計サイズ（バイト） */
+  usedBytesThisMonth?: number
+  /** 今月あと登録できるサイズ（バイト） */
+  remainingBytes?: number
   /** 持っているモデルの数 */
   used: number
-  /** 今月登録した数（古い API では無いので used を使う） */
+  /** 今月登録した数 */
   usedThisMonth?: number
   /** 枠が戻る日時（次の月の 1 日 00:00 JST、UNIX 秒） */
   resetsAt?: number
@@ -195,10 +201,21 @@ export type MyUserModelsResult = {
   planType: "FREE" | "LITE" | "STANDARD" | "PREMIUM" | null
 }
 
-/** 上限と比べる数（今月登録した数） */
+/** 上限と比べる量（今月登録したファイルの合計サイズ、バイト） */
 export const monthlyUsedOf = (
-  data: Pick<MyUserModelsResult, "used" | "usedThisMonth">,
-) => data.usedThisMonth ?? data.used
+  data: Pick<MyUserModelsResult, "usedBytesThisMonth">,
+) => data.usedBytesThisMonth ?? 0
+
+/** 今月登録できる合計サイズ（バイト）。古い API で無いときは 0（上限なし扱い） */
+export const monthlyLimitOf = (data: Pick<MyUserModelsResult, "limitBytes">) =>
+  data.limitBytes ?? 0
+
+/** 枠の表示（例: 10GB、2.35GB、350MB） */
+export const formatModelQuotaBytes = (bytes: number) => {
+  const gb = bytes / 1024 ** 3
+  if (gb >= 1 || bytes === 0) return `${Number(gb.toFixed(2))}GB`
+  return `${Math.max(1, Math.round(bytes / 1024 ** 2))}MB`
+}
 
 /** 枠が戻る日の表示（例: 12/1） */
 export const formatModelQuotaReset = (resetsAt: number | undefined) => {

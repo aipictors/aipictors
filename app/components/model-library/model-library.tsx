@@ -74,6 +74,7 @@ import { useNavigate } from "~/lib/app/locale-router"
 import { USER_MODEL_BASE_MODELS } from "~/lib/user-models/constants"
 import { extractDroppedUrl } from "~/lib/user-models/import-utils"
 import {
+  monthlyLimitOf,
   monthlyUsedOf,
   type UserModel,
   type UserModelKind,
@@ -286,8 +287,8 @@ export function ModelLibrary(props: ModelLibraryProps) {
   const myModels = mine.data?.models ?? []
   const isLimitFull =
     mine.data !== undefined &&
-    mine.data.limit > 0 &&
-    monthlyUsedOf(mine.data) >= mine.data.limit
+    monthlyLimitOf(mine.data) > 0 &&
+    monthlyUsedOf(mine.data) >= monthlyLimitOf(mine.data)
 
   const [isLimitDialogOpen, setIsLimitDialogOpen] = useState(false)
 
@@ -841,11 +842,11 @@ export function ModelLibrary(props: ModelLibraryProps) {
         </div>
         {authContext.isLoggedIn && mine.data && (
           <div className="mt-auto hidden border-t px-5 py-4 md:block">
-            <p className="mb-2 font-medium text-xs">今月の登録数</p>
+            <p className="mb-2 font-medium text-xs">今月の登録容量</p>
             <ModelLibraryUsageMeter
               compact
               used={monthlyUsedOf(mine.data)}
-              limit={mine.data.limit}
+              limit={monthlyLimitOf(mine.data)}
               resetsAt={mine.data.resetsAt}
               planType={mine.data.planType}
               linkTarget={linkTarget}
@@ -1027,7 +1028,7 @@ export function ModelLibrary(props: ModelLibraryProps) {
           {section === "mine" && authContext.isLoggedIn && mine.data && (
             <ModelLibraryUsageMeter
               used={monthlyUsedOf(mine.data)}
-              limit={mine.data.limit}
+              limit={monthlyLimitOf(mine.data)}
               resetsAt={mine.data.resetsAt}
               planType={mine.data.planType}
               linkTarget={linkTarget}
@@ -1085,7 +1086,7 @@ export function ModelLibrary(props: ModelLibraryProps) {
           open={isLimitDialogOpen}
           onOpenChange={setIsLimitDialogOpen}
           used={monthlyUsedOf(mine.data)}
-          limit={mine.data.limit}
+          limit={monthlyLimitOf(mine.data)}
           resetsAt={mine.data.resetsAt}
           planType={mine.data.planType}
           linkTarget={linkTarget}

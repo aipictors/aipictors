@@ -58,14 +58,15 @@ export const USER_MODEL_MAX_BYTES: Record<UserModelKind, number> = {
 export const USER_MODEL_PART_SIZE = 50 * 1024 * 1024
 
 /**
- * プランごとの登録上限（表示用の既定値。実際の上限は API が返す limit）
+ * プランごとの登録上限（表示用の既定値。実際の上限は API が返す limitBytes）
+ * 1 か月（JST）に登録できるファイルの合計サイズ（GB）。個数は無制限。
+ * 枠は毎月 1 日に戻る（登録したモデルは削除できない）
  */
-/** 1 か月（JST）に登録できる数。枠は毎月 1 日に戻る（登録したモデルは削除できない） */
 export const USER_MODEL_PLAN_LIMITS = {
-  FREE: 2,
-  LITE: 5,
-  STANDARD: 12,
-  PREMIUM: 35,
+  FREE: 10,
+  LITE: 30,
+  STANDARD: 60,
+  PREMIUM: 150,
 } as const
 
 export const baseModelLabel = (value: string): string => {

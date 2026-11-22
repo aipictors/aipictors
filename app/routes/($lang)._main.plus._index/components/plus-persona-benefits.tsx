@@ -57,8 +57,8 @@ export function PlusPersonaBenefits() {
           en: "Image-to-image, inpainting and Gemini Nano Banana",
         },
         {
-          ja: `LoRA を最大${standard.loraModels}個、モデル登録は毎月最大${premium.modelSlots}個`,
-          en: `Up to ${standard.loraModels} LoRAs and ${premium.modelSlots} model uploads a month`,
+          ja: `LoRA を最大${standard.loraModels}個、モデル登録は毎月最大${premium.modelSlots}GB`,
+          en: `Up to ${standard.loraModels} LoRAs and ${premium.modelSlots}GB of model uploads a month`,
         },
       ],
     },

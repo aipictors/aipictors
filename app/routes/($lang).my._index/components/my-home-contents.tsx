@@ -29,7 +29,9 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { fetchMyUserModels } from "~/lib/user-models/client"
 import {
+  formatModelQuotaBytes,
   type MyUserModelsResult,
+  monthlyLimitOf,
   monthlyUsedOf,
   type UserModel,
 } from "~/lib/user-models/types"
@@ -229,16 +231,16 @@ export function DashboardHomeContents() {
         <StatusCard
           to="/settings/models"
           icon={BoxIcon}
-          label={t("今月のモデル枠", "Model slots this month")}
+          label={t("今月のモデル枠", "Model storage this month")}
           isLoading={models.isLoading}
           value={
             models.data
-              ? `${monthlyUsedOf(models.data)} / ${models.data.limit}`
+              ? `${formatModelQuotaBytes(monthlyUsedOf(models.data))} / ${formatModelQuotaBytes(monthlyLimitOf(models.data))}`
               : "-"
           }
           progress={
-            models.data && models.data.limit > 0
-              ? monthlyUsedOf(models.data) / models.data.limit
+            models.data && monthlyLimitOf(models.data) > 0
+              ? monthlyUsedOf(models.data) / monthlyLimitOf(models.data)
               : undefined
           }
         />

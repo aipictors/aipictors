@@ -1,5 +1,8 @@
 import { Link } from "~/lib/app/locale-router"
-import { formatModelQuotaReset } from "~/lib/user-models/types"
+import {
+  formatModelQuotaBytes,
+  formatModelQuotaReset,
+} from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 
 const planName = (planType: string | null): string => {
@@ -10,8 +13,9 @@ const planName = (planType: string | null): string => {
 }
 
 type Props = {
-  /** 今月登録した数 */
+  /** 今月登録したファイルの合計サイズ（バイト） */
   used: number
+  /** 今月登録できる合計サイズ（バイト） */
   limit: number
   /** 枠が戻る日時（UNIX 秒） */
   resetsAt?: number
@@ -25,7 +29,7 @@ type Props = {
 }
 
 /**
- * 今月の登録数（ドライブの容量表示のようなメーター）。枠は毎月 1 日に戻る
+ * 今月登録したモデルの合計サイズ（ドライブの容量表示のようなメーター）。枠は毎月 1 日に戻る
  */
 export function ModelLibraryUsageMeter(props: Props) {
   const ratio =
@@ -35,7 +39,8 @@ export function ModelLibraryUsageMeter(props: Props) {
         ? 1
         : 0
   const isFull = props.limit > 0 && props.used >= props.limit
-  const isNearFull = !isFull && props.limit > 0 && props.limit - props.used <= 1
+  // 残りが 1 割を切ったら知らせる
+  const isNearFull = !isFull && props.limit > 0 && ratio >= 0.9
   const canUpgrade = props.planType !== "PREMIUM"
 
   return (
@@ -49,7 +54,7 @@ export function ModelLibraryUsageMeter(props: Props) {
         aria-valuemin={0}
         aria-valuemax={props.limit}
         aria-valuenow={props.used}
-        aria-label="今月のモデルの登録数"
+        aria-label="今月のモデルの登録容量"
       >
         <div
           className={cn(
@@ -71,7 +76,8 @@ export function ModelLibraryUsageMeter(props: Props) {
           )}
         >
           <span className="font-medium text-foreground">
-            今月 {props.used} / {props.limit}
+            今月 {formatModelQuotaBytes(props.used)} /{" "}
+            {formatModelQuotaBytes(props.limit)}
           </span>
           （{planName(props.planType)}・{formatModelQuotaReset(props.resetsAt)}
           にリセット）

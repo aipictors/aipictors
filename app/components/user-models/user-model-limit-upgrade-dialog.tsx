@@ -12,15 +12,19 @@ import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePassCheckout } from "~/hooks/use-pass-checkout"
 import { Link } from "~/lib/app/locale-router"
 import { USER_MODEL_PLAN_LIMITS } from "~/lib/user-models/constants"
-import { formatModelQuotaReset } from "~/lib/user-models/types"
+import {
+  formatModelQuotaBytes,
+  formatModelQuotaReset,
+} from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** 今月登録した数 */
+  /** 今月登録したファイルの合計サイズ（バイト） */
   used: number
+  /** 今月登録できる合計サイズ（バイト） */
   limit: number
   /** 枠が戻る日時（UNIX 秒） */
   resetsAt?: number
@@ -47,7 +51,7 @@ const PLANS = [
 ] as const
 
 /**
- * モデルの登録数が今月の上限に達しているときの案内
+ * モデルの登録容量が今月の上限に達しているとき（ファイルが残りに収まらないとき）の案内
  * 以前はアップロードのボタンを押してもトーストだけ（アップロード画面ではボタンが押せないだけ）で、
  * 続ける方法が分からなかったので、上のプランを並べて押したらそのまま決済へ進めるようにする
  */
@@ -88,7 +92,9 @@ export function UserModelLimitUpgradeDialog(props: Props) {
       >
         <DialogHeader className="pr-6">
           <DialogTitle className="text-balance leading-snug">
-            今月のモデル登録数の上限です（{props.used} / {props.limit}）
+            今月のモデル登録容量の上限です（
+            {formatModelQuotaBytes(props.used)} /{" "}
+            {formatModelQuotaBytes(props.limit)}）
           </DialogTitle>
           <DialogDescription>
             {plans.length > 0
@@ -133,8 +139,8 @@ export function UserModelLimitUpgradeDialog(props: Props) {
                       )}
                     </div>
                     <div className="text-muted-foreground text-xs">
-                      モデルを毎月 {USER_MODEL_PLAN_LIMITS[plan.type]}{" "}
-                      個まで登録
+                      モデルを毎月 {USER_MODEL_PLAN_LIMITS[plan.type]}GB
+                      まで登録（個数は無制限）
                     </div>
                   </div>
                   <div className="text-right font-bold">

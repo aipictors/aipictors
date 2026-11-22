@@ -43,6 +43,7 @@ import {
   writeResumeCache,
 } from "~/lib/user-models/resume-cache"
 import {
+  monthlyLimitOf,
   monthlyUsedOf,
   type UploadedPart,
   type UserModel,
@@ -454,8 +455,12 @@ export function UserModelUploadForm() {
   }
 
   const used = mine.data ? monthlyUsedOf(mine.data) : 0
-  const limit = mine.data?.limit ?? 0
-  const isLimitReached = mine.data !== undefined && limit > 0 && used >= limit
+  const limit = mine.data ? monthlyLimitOf(mine.data) : 0
+  // 今月の容量を使い切ったか、選んだファイルが残りに収まらない
+  const isLimitReached =
+    mine.data !== undefined &&
+    limit > 0 &&
+    (used >= limit || (file !== null && used + file.size > limit))
 
   const progress =
     phase.type === "uploading" || phase.type === "paused"
@@ -644,6 +649,7 @@ export function UserModelUploadForm() {
           <UserModelLimitCard
             used={used}
             limit={limit}
+            fileBytes={file?.size}
             resetsAt={mine.data?.resetsAt}
             planType={mine.data.planType}
             onUpgrade={() => setIsLimitDialogOpen(true)}

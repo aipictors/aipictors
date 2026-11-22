@@ -6,7 +6,7 @@ import { ModelLibraryUploadPanel } from "~/components/model-library/model-librar
 import { Button } from "~/components/ui/button"
 import { useMyUserModels } from "~/components/user-models/use-user-models"
 import { AuthContext } from "~/contexts/auth-context"
-import { monthlyUsedOf } from "~/lib/user-models/types"
+import { monthlyLimitOf, monthlyUsedOf } from "~/lib/user-models/types"
 
 /**
  * アップロードページの「URL から追加」。取り込みの進み具合は右下のパネルに出す
@@ -22,9 +22,11 @@ export function UserModelImportCallout() {
       return
     }
     const used = mine.data ? monthlyUsedOf(mine.data) : 0
-    const limit = mine.data?.limit ?? 0
+    const limit = mine.data ? monthlyLimitOf(mine.data) : 0
     if (mine.data && limit > 0 && used >= limit) {
-      toast("今月登録できるモデル数の上限に達しています（毎月1日にリセット）")
+      toast(
+        "今月登録できるモデルの容量の上限に達しています（毎月1日にリセット）",
+      )
       return
     }
     setIsOpen(true)

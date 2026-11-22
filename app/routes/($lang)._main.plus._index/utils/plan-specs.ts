@@ -110,6 +110,9 @@ export function getPlanSpec(plan: PlanKey) {
     concurrentTasks: config.passFeature.imageGenerationTasksCount[key],
     loraModels: config.passFeature.imageGenerationLoraModelsCount[key],
     favoriteHistories: config.passFeature.imageGenerationHistoriesCount[key],
+    /**
+     * 毎月登録できるモデルの合計サイズ（GB、個数は無制限）
+     */
     modelSlots: USER_MODEL_PLAN_LIMITS[plan],
     imageToImage: isPaid,
     nanoBanana: isPaid,
