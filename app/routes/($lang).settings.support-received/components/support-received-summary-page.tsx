@@ -39,7 +39,7 @@ import {
 } from "~/lib/viewer-request-headers"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type ReceivedTransferHistoryItem = {
   senderUserId: string
@@ -389,7 +389,7 @@ export function SupportReceivedSummaryPage() {
                         }
                         isAnimated={false}
                         sizeClassName="size-10"
-                        src={withIconUrlFallback(comment.user?.iconUrl)}
+                        src={toIconImageUrl(comment.user?.iconUrl)}
                       />
                       <div className="min-w-0 flex-1 space-y-2">
                         <div className="flex flex-wrap items-center gap-2">

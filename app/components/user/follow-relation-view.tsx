@@ -27,7 +27,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Kind = "following" | "followers"
 
@@ -445,7 +445,7 @@ function RelationIdentity(props: {
         frame={user.avatarFrame}
         isAnimated={false}
         sizeClassName="size-11"
-        src={withIconUrlFallback(user.iconUrl)}
+        src={toIconImageUrl(user.iconUrl)}
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">

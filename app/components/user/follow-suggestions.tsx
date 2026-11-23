@@ -9,7 +9,7 @@ import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   /**
@@ -91,7 +91,7 @@ export function FollowSuggestions(props: Props) {
                 alt={user.name}
                 frame={null}
                 sizeClassName="size-8"
-                src={withIconUrlFallback(user.iconUrl)}
+                src={toIconImageUrl(user.iconUrl)}
               />
               <span className="min-w-0 truncate font-bold text-xs">
                 {user.name}

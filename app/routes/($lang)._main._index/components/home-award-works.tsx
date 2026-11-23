@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<
@@ -60,7 +60,7 @@ export function HomeAwardWorksSection(props: Props) {
                         <Avatar className="size-8">
                           <AvatarImage
                             className="size-8 rounded-full"
-                            src={withIconUrlFallback(work.work?.user?.iconUrl)}
+                            src={toIconImageUrl(work.work?.user?.iconUrl)}
                             alt="icon"
                           />
                           <AvatarFallback />

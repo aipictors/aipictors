@@ -11,7 +11,7 @@ import {
 import { PictorRunUserName } from "~/components/pictor-run/pictor-run-user"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = Readonly<{
   viewerId: string | null
@@ -135,7 +135,7 @@ export function PictorRunRankingPanel(props: Props): React.ReactNode {
                 className="flex min-w-0 cursor-pointer items-center gap-2 rounded-xl px-1 py-1.5 text-left hover:bg-slate-900/5"
               >
                 <img
-                  src={withIconUrlFallback(item.user.iconUrl)}
+                  src={toIconImageUrl(item.user.iconUrl)}
                   alt=""
                   width={32}
                   height={32}
@@ -246,7 +246,7 @@ function RankingUserSheet(props: {
             className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-2xl text-left disabled:cursor-default"
           >
             <img
-              src={withIconUrlFallback(item.user.iconUrl)}
+              src={toIconImageUrl(item.user.iconUrl)}
               alt=""
               width={56}
               height={56}
@@ -403,7 +403,7 @@ function OpenUserPageDialog(props: {
         className="zoom-in-95 fade-in relative w-full max-w-xs animate-in space-y-4 rounded-3xl bg-white p-5 text-center shadow-2xl duration-150"
       >
         <img
-          src={withIconUrlFallback(user.iconUrl)}
+          src={toIconImageUrl(user.iconUrl)}
           alt=""
           width={64}
           height={64}

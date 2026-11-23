@@ -38,7 +38,7 @@ import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/compone
 import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { getWorkThumbnailHint } from "~/utils/work-thumbnail-hint"
 
 export {
@@ -483,7 +483,7 @@ export function WorkArticle(props: Props) {
                   frame={props.work.user.avatarFrame}
                   isAnimated={false}
                   sizeClassName="size-10"
-                  src={withIconUrlFallback(props.work.user.iconUrl)}
+                  src={toIconImageUrl(props.work.user.iconUrl)}
                 />
                 <span>{props.work.user.name}</span>
               </Link>

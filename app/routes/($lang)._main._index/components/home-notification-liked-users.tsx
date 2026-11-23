@@ -8,7 +8,7 @@ import { toLikedUserEntries } from "~/routes/($lang)._main._index/components/hom
 import type { PanelItem } from "~/routes/($lang)._main._index/components/home-notifications-panel-items"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 /**
  * まとめたいいねの通知（「◯◯さんほか◯人が作品にいいねしました」）の下に出す折りたたみ。
@@ -51,7 +51,7 @@ export function NotificationLikedUsers(props: {
               <>
                 <Avatar className="size-7">
                   <AvatarImage
-                    src={withIconUrlFallback(entry.user?.iconUrl)}
+                    src={toIconImageUrl(entry.user?.iconUrl)}
                     alt=""
                     className="object-cover"
                   />

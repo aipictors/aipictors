@@ -2,7 +2,7 @@ import { graphql } from "gql.tada"
 import { Card } from "~/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Link } from "~/lib/app/locale-router"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { useQuery } from "@apollo/client/index"
 import { Loader2, Trophy, Heart, TrendingUp } from "lucide-react"
@@ -175,7 +175,7 @@ export function RankingUserList (_props: Props) {
                     <Avatar className="h-16 w-16 ring-2 ring-purple-200 ring-offset-2 transition-all duration-300 hover:ring-purple-400">
                       <AvatarImage
                         resizeWidth={240}
-                        src={withIconUrlFallback(userRanking.user.iconUrl)}
+                        src={toIconImageUrl(userRanking.user.iconUrl)}
                         alt={userRanking.user.name || userRanking.user.login}
                       />
                       <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 font-bold text-white">

@@ -3,7 +3,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import type { SearchLoaderData } from "~/routes/($lang)._main.search/search-loader.server"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 /**
  * 検索の右カラム（人気のタグ、人気ランキング）
@@ -63,7 +63,7 @@ export function SearchSidebar(props: {
                 <div className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
                   <Avatar className="size-5">
                     <AvatarImage
-                      src={withIconUrlFallback(work.user?.iconUrl)}
+                      src={toIconImageUrl(work.user?.iconUrl)}
                       alt={work.user?.name ?? ""}
                     />
                     <AvatarFallback>

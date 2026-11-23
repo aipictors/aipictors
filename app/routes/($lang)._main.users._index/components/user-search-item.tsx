@@ -5,7 +5,7 @@ import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { LikeButton } from "~/components/like-button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   user: FragmentOf<typeof UserSearchListItemFragment>
@@ -33,7 +33,7 @@ export function UserSearchItem (props: Props) {
             isAnimated={false}
             frameClassName="mt-2 mr-2"
             sizeClassName="size-10"
-            src={withIconUrlFallback(props.user.iconUrl)}
+            src={toIconImageUrl(props.user.iconUrl)}
           />
         </Link>
         <div className="w-full md:w-48">

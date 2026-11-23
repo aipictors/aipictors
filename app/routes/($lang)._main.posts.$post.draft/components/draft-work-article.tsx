@@ -22,7 +22,7 @@ import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/compone
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/lazy-work-markdown-view"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { toRatingText } from "~/utils/work/to-rating-text"
 import { toStyleText } from "~/utils/work/to-style-text"
 import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
@@ -388,7 +388,7 @@ export function DraftWorkArticle(props: Props) {
                   frame={props.work.user.avatarFrame}
                   isAnimated={false}
                   sizeClassName="size-10"
-                  src={withIconUrlFallback(props.work.user.iconUrl)}
+                  src={toIconImageUrl(props.work.user.iconUrl)}
                 />
                 <span>{props.work.user.name}</span>
               </Link>

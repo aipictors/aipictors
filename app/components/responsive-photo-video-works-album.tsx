@@ -9,7 +9,7 @@ import { LikeButton } from "~/components/like-button"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
 import { Link } from "~/lib/app/locale-router"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
@@ -100,7 +100,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
                       <Avatar className="size-4">
                         <AvatarImage
                           className="size-4 rounded-full"
-                          src={withIconUrlFallback(photo.context.user?.iconUrl)}
+                          src={toIconImageUrl(photo.context.user?.iconUrl)}
                           alt={photo.context.user?.name}
                         />
                         <AvatarFallback />

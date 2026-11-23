@@ -8,7 +8,7 @@ import {
   verifyViewerFromGraphQL,
 } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
-import type { UserModel } from "~/lib/user-models/types"
+import type { UserModel, UserModelPickup } from "~/lib/user-models/types"
 
 type RouteContext =
   | LoaderFunctionArgs["context"]
@@ -308,5 +308,28 @@ export async function fetchPublicUserModels(
     }
   } catch {
     return { models: [], hasMore: false }
+  }
+}
+
+/**
+ * 今週のピックアップモデル（サーバーで描画するとき用。読み込み後に看板が出て下の内容がずれないように）。
+ * 取れなければ undefined（ブラウザで取り直す）、ピックアップが無ければ null
+ */
+export async function fetchUserModelPickupForRender(
+  context: RouteContext,
+): Promise<UserModelPickup | null | undefined> {
+  const target = resolveApiTarget(context)
+  if ("error" in target) return undefined
+  try {
+    const response = await fetch(
+      `${target.apiBaseUrl}/internal/user-model-pickups`,
+      { headers: target.headers },
+    )
+    if (!response.ok) return undefined
+    const json = (await response.json()) as { data?: UserModelPickup | null }
+    const data = json.data ?? null
+    return data?.model ? data : null
+  } catch {
+    return undefined
   }
 }

@@ -2,7 +2,7 @@ import { Card } from "~/components/ui/card"
 import { Link } from "~/lib/app/locale-router"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   name: string
@@ -25,7 +25,7 @@ export function WorkLikedUser (props: Props) {
             isAnimated={false}
             frameClassName="m-auto"
             sizeClassName="size-10"
-            src={withIconUrlFallback(props.iconUrl)}
+            src={toIconImageUrl(props.iconUrl)}
           />
           <span className="max-w-12 overflow-hidden text-ellipsis">
             {props.name}

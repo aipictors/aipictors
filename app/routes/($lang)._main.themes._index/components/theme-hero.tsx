@@ -14,6 +14,7 @@ import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getJstDate } from "~/utils/jst-date"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type ThemeHeroTheme = {
   id: string
@@ -81,9 +82,11 @@ export function ThemeHero(props: Props) {
     >
       {backgroundUrl && (
         <img
-          src={backgroundUrl}
+          // ぼかして薄く敷くだけなので小さい縮小版で足りる（元画像だと 40KB 前後を待つ）
+          src={toResizedImageUrl(backgroundUrl, 240)}
           alt=""
           aria-hidden="true"
+          decoding="async"
           className="-z-10 absolute inset-0 size-full scale-110 object-cover opacity-35 blur-2xl"
         />
       )}

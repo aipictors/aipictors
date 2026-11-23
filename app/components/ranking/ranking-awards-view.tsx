@@ -10,7 +10,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 /**
  * ランキングの 1 件（作品ランキングのページ・R18・トップのランキングタブで共通の形）
@@ -57,7 +57,7 @@ function RankingUserLine(props: {
       )}
     >
       <img
-        src={withIconUrlFallback(props.user.iconUrl)}
+        src={toIconImageUrl(props.user.iconUrl)}
         alt=""
         loading="lazy"
         decoding="async"
@@ -126,7 +126,9 @@ function PodiumCard(props: { item: RankingAwardItem; rank: 1 | 2 | 3 }) {
         <OptimizedImage
           src={imageUrl}
           alt={title}
-          loading="lazy"
+          // 表彰台はページの一番上に出る（一番大きく見える絵なので遅延させない）
+          loading="eager"
+          fetchPriority={props.rank === 1 ? "high" : undefined}
           srcSet={toResizedImageSrcSet(imageUrl, {
             minWidth: 240,
             maxWidth:

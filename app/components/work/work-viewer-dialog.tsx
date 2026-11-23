@@ -25,7 +25,7 @@ import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react"
 import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentSectionEnhanced } from "~/components/work/work-comment-section-final"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl, withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 
 // ───────────────── Types ─────────────────
@@ -494,7 +494,7 @@ export function WorkViewerDialog({
           >
             <Avatar className="size-8">
               <AvatarImage
-                src={withIconUrlFallback(currentWork.user?.iconUrl)}
+                src={toIconImageUrl(currentWork.user?.iconUrl)}
               />
               <AvatarFallback />
             </Avatar>

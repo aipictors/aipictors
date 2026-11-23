@@ -47,7 +47,7 @@ import {
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
 import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
 import { buildLocalePath } from "~/utils/locale-path"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { userNavigationStyles } from "./user-navigation-styles"
 
 type Props = {
@@ -265,9 +265,7 @@ function UserNavigationMenuContent(props: Props) {
             frame={avatarFrame}
             frameClassName="border-2 border-white"
             sizeClassName="h-12 w-12 cursor-pointer"
-            src={withIconUrlFallback(
-              iconUrl || authContext.avatarPhotoURL || "",
-            )}
+            src={toIconImageUrl(iconUrl || authContext.avatarPhotoURL || "")}
           />
         </Link>
       </div>

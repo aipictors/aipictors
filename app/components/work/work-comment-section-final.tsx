@@ -24,7 +24,7 @@ import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { useTranslation } from "~/hooks/use-translation"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { toast } from "sonner"
 import { cn } from "~/lib/utils"
@@ -452,7 +452,7 @@ export function WorkCommentSectionEnhanced(props: Props): React.ReactNode {
               frame={comment.user?.avatarFrame}
               isAnimated={false}
               sizeClassName="size-10"
-              src={withIconUrlFallback(comment.user?.iconUrl)}
+              src={toIconImageUrl(comment.user?.iconUrl)}
             />
           </Link>
 
@@ -471,7 +471,7 @@ export function WorkCommentSectionEnhanced(props: Props): React.ReactNode {
                 <div className="relative">
                   <Avatar className="size-4">
                     <AvatarImage
-                      src={withIconUrlFallback(props.workOwnerIconImageURL)}
+                      src={toIconImageUrl(props.workOwnerIconImageURL)}
                       alt=""
                     />
                     <AvatarFallback />
@@ -638,7 +638,7 @@ export function WorkCommentSectionEnhanced(props: Props): React.ReactNode {
                 frame={userAvatarFrame}
                 isAnimated={false}
                 sizeClassName="size-10"
-                src={withIconUrlFallback(userIcon)}
+                src={toIconImageUrl(userIcon)}
               />
               <AutoResizeTextarea
                 onChange={(event) => setComment(event.target.value)}

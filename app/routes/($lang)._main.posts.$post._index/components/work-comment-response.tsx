@@ -40,7 +40,7 @@ import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   isMine: boolean
@@ -400,7 +400,7 @@ export function WorkCommentResponse(props: Props) {
               <div className="relative">
                 <Avatar className="relative size-4">
                   <AvatarImage
-                    src={withIconUrlFallback(props.workOwnerIconImageURL)}
+                    src={toIconImageUrl(props.workOwnerIconImageURL)}
                     alt=""
                   />
                   <AvatarFallback />

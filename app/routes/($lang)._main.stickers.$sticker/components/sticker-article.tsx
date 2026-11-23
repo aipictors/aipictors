@@ -9,7 +9,7 @@ import { Button } from "~/components/ui/button"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { AuthContext } from "~/contexts/auth-context"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { toResizedImageSrcSet, toResizedImageUrl } from "~/utils/resized-image-url"
@@ -103,7 +103,7 @@ export function StickerArticle (props: Props) {
               <Avatar className="size-7">
                 <AvatarImage
                   className="size-7 rounded-full"
-                  src={withIconUrlFallback(props.sticker.user.iconUrl)}
+                  src={toIconImageUrl(props.sticker.user.iconUrl)}
                   alt=""
                 />
                 <AvatarFallback />

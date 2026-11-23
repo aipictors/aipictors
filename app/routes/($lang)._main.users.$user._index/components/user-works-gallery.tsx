@@ -178,13 +178,18 @@ export function UserWorksSection(props: {
 }
 
 /** 同じ大きさで並べる一覧 */
-export function UserWorksGrid(props: { works: Work[] }) {
+export function UserWorksGrid(props: {
+  works: Work[]
+  /** ページの一番上に出るとき、最初の何枚を待たずに読むか（一番大きく見える絵を遅延させない） */
+  priorityCount?: number
+}) {
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:gap-3 lg:grid-cols-4">
-      {props.works.map((work) => (
+      {props.works.map((work, index) => (
         <UserWorkCard
           key={work.id}
           work={work}
+          isPriority={index < (props.priorityCount ?? 0)}
           className="aspect-[4/5]"
           sizes={[
             { media: "(min-width: 1024px)", width: "280px", aspectRatio: 0.8 },

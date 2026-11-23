@@ -16,7 +16,7 @@ import { Separator } from "~/components/ui/separator"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { useTranslation } from "~/hooks/use-translation"
 import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: {
@@ -348,7 +348,7 @@ export function WorkAuthorWorksSection(props: {
               frame={props.user.avatarFrame}
               isAnimated={false}
               sizeClassName="size-8 shrink-0"
-              src={withIconUrlFallback(props.user.iconUrl)}
+              src={toIconImageUrl(props.user.iconUrl)}
             />
             <h2 className="truncate font-bold text-base">
               {t(`${props.user.name} の作品`, `More from ${props.user.name}`)}

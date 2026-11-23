@@ -36,7 +36,7 @@ import {
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   page: number
@@ -571,7 +571,7 @@ function FeedContent({
                   <Avatar>
                     <AvatarImage
                       className="rounded-full"
-                      src={withIconUrlFallback(work.user?.iconUrl)}
+                      src={toIconImageUrl(work.user?.iconUrl)}
                       alt=""
                     />
                     <AvatarFallback />

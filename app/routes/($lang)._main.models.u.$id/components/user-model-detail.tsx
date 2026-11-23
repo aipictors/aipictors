@@ -1,5 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query"
 import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
+import {
   AlertTriangleIcon,
   CalendarIcon,
   ChevronRightIcon,
@@ -274,13 +278,16 @@ export function UserModelDetail(props: Props) {
             {mainImage ? (
               <>
                 <img
-                  src={mainImage}
+                  // ぼかして敷くだけなので小さい縮小版
+                  src={toResizedImageUrl(mainImage, 240)}
                   alt=""
                   aria-hidden
                   className="absolute inset-0 size-full scale-110 object-cover opacity-40 blur-2xl"
                 />
                 <img
-                  src={mainImage}
+                  src={toResizedImageUrl(mainImage, 1280)}
+                  srcSet={toResizedImageSrcSet(mainImage, { minWidth: 480 })}
+                  sizes="(min-width: 1024px) calc(100vw - 460px), 100vw"
                   alt={`${model.name}のサンプル画像`}
                   fetchPriority="high"
                   className="relative max-h-full max-w-full object-contain"

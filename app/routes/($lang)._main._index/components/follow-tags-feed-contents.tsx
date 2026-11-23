@@ -61,7 +61,7 @@ import {
 } from "~/routes/($lang).settings.followed.tags/components/followed-tag-editor"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 /* -----------------------------------------------------------------
  * Constants & helpers
@@ -714,7 +714,7 @@ function TimelineView({
               <Avatar>
                 <AvatarImage
                   className="rounded-full"
-                  src={withIconUrlFallback(work.user?.iconUrl)}
+                  src={toIconImageUrl(work.user?.iconUrl)}
                   alt=""
                 />
                 <AvatarFallback />

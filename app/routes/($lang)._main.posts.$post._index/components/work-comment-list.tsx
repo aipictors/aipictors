@@ -156,6 +156,7 @@ export function WorkCommentList(props: WorkCommentListProps) {
           (showNewComments?.length ?? 0) === 0 && (
             // 届く前に場所を取っておく（下の一覧が押し下げられないように）
             <div
+              role="status"
               className="space-y-5"
               aria-label={t("コメントを読み込み中", "Loading comments")}
             >

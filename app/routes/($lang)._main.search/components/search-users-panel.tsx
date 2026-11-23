@@ -9,7 +9,7 @@ import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 const PAGE_SIZE = 20
 
@@ -111,7 +111,7 @@ export function SearchUsersPanel(props: {
                   frame={user.avatarFrame}
                   isAnimated={false}
                   sizeClassName="size-12"
-                  src={withIconUrlFallback(user.iconUrl)}
+                  src={toIconImageUrl(user.iconUrl)}
                 />
               </Link>
               <Link

@@ -21,7 +21,7 @@ import {
   SQUARE_GRID_BREAKPOINTS,
 } from "~/utils/grid-layout"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -188,7 +188,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                               frame={workItem.user.avatarFrame}
                               isAnimated={false}
                               sizeClassName="size-5"
-                              src={withIconUrlFallback(workItem.user.iconUrl)}
+                              src={toIconImageUrl(workItem.user.iconUrl)}
                             />
                             <span className="truncate text-muted-foreground text-xs">
                               {workItem.user.name}
@@ -443,7 +443,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                                 frame={work.user.avatarFrame}
                                 isAnimated={false}
                                 sizeClassName="size-5"
-                                src={withIconUrlFallback(work.user.iconUrl)}
+                                src={toIconImageUrl(work.user.iconUrl)}
                               />
                               <span className="truncate text-muted-foreground text-xs">
                                 {work.user.name}

@@ -68,7 +68,7 @@ import {
   RankCrown,
   RankMedalBadge,
 } from "~/components/ranking/ranking-medal"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 const DEFAULT_WORK_ORDER_BY: IntrospectionEnum<"WorkOrderBy"> = "DATE_CREATED"
 
@@ -984,7 +984,7 @@ export default function EventDetailPage() {
                 <Avatar className="size-7 border border-white/40">
                   {event.userIconUrl && (
                     <AvatarImage
-                      src={withIconUrlFallback(event.userIconUrl)}
+                      src={toIconImageUrl(event.userIconUrl)}
                       alt=""
                     />
                   )}
@@ -1061,10 +1061,7 @@ export default function EventDetailPage() {
                       key={user.id}
                       className="size-8 border-2 border-zinc-900"
                     >
-                      <AvatarImage
-                        src={withIconUrlFallback(user.iconUrl)}
-                        alt=""
-                      />
+                      <AvatarImage src={toIconImageUrl(user.iconUrl)} alt="" />
                       <AvatarFallback className="text-[10px] text-foreground">
                         {(user.name ?? "?").slice(0, 1)}
                       </AvatarFallback>
@@ -1378,7 +1375,7 @@ export default function EventDetailPage() {
                     >
                       <Avatar className="size-5">
                         <AvatarImage
-                          src={withIconUrlFallback(work.user.iconUrl)}
+                          src={toIconImageUrl(work.user.iconUrl)}
                           alt=""
                         />
                         <AvatarFallback className="text-[9px]">

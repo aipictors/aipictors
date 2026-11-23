@@ -5,7 +5,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { getSupportTier, pickPinnedSupports } from "~/utils/support-tier"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type StripComment = {
   id: string
@@ -99,7 +99,7 @@ export function WorkCommentSupportStrip(props: { comments: StripComment[] }) {
           const body = (
             <>
               <img
-                src={withIconUrlFallback(comment.user?.iconUrl)}
+                src={toIconImageUrl(comment.user?.iconUrl)}
                 alt=""
                 className="size-7 shrink-0 rounded-full object-cover"
                 loading="lazy"

@@ -6,7 +6,7 @@ import {
 } from "~/components/pictor-run/pictor-run-api"
 import { useTranslation } from "~/hooks/use-translation"
 import { PictorChanReveal } from "~/routes/($lang)._main.pictor-chan._index/components/pictor-chan-reveal"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = Readonly<{
   /** ロビーに入る */
@@ -118,7 +118,7 @@ export function PictorChanLobbySection(props: Props): React.ReactNode {
                     className="flex min-w-0 items-start gap-2"
                   >
                     <img
-                      src={withIconUrlFallback(message.user.iconUrl)}
+                      src={toIconImageUrl(message.user.iconUrl)}
                       alt=""
                       width={32}
                       height={32}

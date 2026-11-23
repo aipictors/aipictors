@@ -2,7 +2,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   users: FragmentOf<typeof HomeNewPostedUsersFragment>[]
@@ -31,7 +31,7 @@ export function HomeNewUsersSection(props: Props) {
               <Avatar>
                 <AvatarImage
                   className="rounded-full"
-                  src={withIconUrlFallback(user.iconUrl)}
+                  src={toIconImageUrl(user.iconUrl)}
                   alt=""
                 />
                 <AvatarFallback />

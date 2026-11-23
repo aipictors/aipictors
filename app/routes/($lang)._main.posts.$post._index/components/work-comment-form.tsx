@@ -11,7 +11,7 @@ import { prefetchViewerStickers } from "~/routes/($lang)._main.posts.$post._inde
 import { WorkCommentSupportPanel } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-support-panel"
 import type { WorkCommentListState } from "~/routes/($lang)._main.posts.$post._index/hooks/use-work-comment-list"
 import { isUserAvatarDecoration } from "~/utils/user-avatar-frame"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 /**
  * コメントの入力欄（推し、隠し付き、スタンプのボタンを含む）
@@ -53,7 +53,7 @@ export function WorkCommentForm(
           }
           isAnimated={false}
           sizeClassName="size-10 shrink-0"
-          src={withIconUrlFallback(userIcon)}
+          src={toIconImageUrl(userIcon)}
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-stretch gap-3">

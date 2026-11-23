@@ -8,7 +8,7 @@ import { StampIcon } from "lucide-react"
 import { graphql } from "gql.tada"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { useTranslation } from "~/hooks/use-translation"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
@@ -114,7 +114,7 @@ export function WorkCommentInput (props: Props): React.ReactNode {
             frame={avatarFrame}
             isAnimated={false}
             sizeClassName="size-10"
-            src={withIconUrlFallback(iconUrl)}
+            src={toIconImageUrl(iconUrl)}
           />
           <AutoResizeTextarea
             onChange={(event) => {

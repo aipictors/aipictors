@@ -12,7 +12,7 @@ import type {
   MicroCmsApiReleaseResponse,
 } from "~/types/micro-cms-release-response"
 import { toJstDisplayDate } from "~/utils/to-jst-display-date"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   events: HomePreviewEvent[]
@@ -110,7 +110,7 @@ export function HomeQuickPreviewBar(props: Props) {
                 <Avatar className="size-4">
                   {firstEvent.userIconUrl && (
                     <AvatarImage
-                      src={withIconUrlFallback(firstEvent.userIconUrl)}
+                      src={toIconImageUrl(firstEvent.userIconUrl)}
                       alt=""
                     />
                   )}

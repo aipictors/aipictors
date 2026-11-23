@@ -78,7 +78,11 @@ export function UserPickupContents(props: Props) {
       )}
       {newWorkDisplayed && newWorkDisplayed.length > 0 && (
         <UserWorksSection title={t("最新", "Latest")} link={props.worksLink}>
-          <UserWorksGrid works={newWorkDisplayed} />
+          <UserWorksGrid
+            works={newWorkDisplayed}
+            // ピックアップが無いときは最新が一番上に来る
+            priorityCount={(workDisplayed?.length ?? 0) > 0 ? 0 : 2}
+          />
         </UserWorksSection>
       )}
     </>

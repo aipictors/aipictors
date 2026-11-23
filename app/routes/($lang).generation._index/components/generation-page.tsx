@@ -5,7 +5,9 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import text from "~/assets/terms.md?raw"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
-import { useNavigate } from "~/lib/app/locale-router"
+import { PrefetchPageLinks, useLocation } from "@remix-run/react"
+import { toLocalePathname, useNavigate } from "~/lib/app/locale-router"
+import { getPathLocale } from "~/utils/locale-path"
 import { GenerationAdvertisementView } from "~/routes/($lang).generation._index/components/advertisement-view/generation-advertisement-view"
 import { GenerationConfigView } from "~/routes/($lang).generation._index/components/config-view/generation-config-view"
 import { GenerationStylesSection } from "~/routes/($lang).generation._index/components/config-view/generation-styles-section"
@@ -157,7 +159,11 @@ export function GenerationPage(props: Props) {
       {!isHydrated ? (
         <AppLoadingPage />
       ) : entry.mode === "loading" ? (
-        <GenerationEntrySkeleton />
+        <>
+          <GenerationEntrySkeleton />
+          {/* はじめての人かどうか調べている間に、移る先（/generation/home）の JS と作例を先に読んでおく */}
+          {props.withEntry ? <GenerationHomePrefetch /> : null}
+        </>
       ) : entry.mode === "simple" ? (
         <GenerationHomeRedirect />
       ) : (
@@ -260,6 +266,15 @@ export function GenerationPage(props: Props) {
         </>
       )}
     </>
+  )
+}
+
+function GenerationHomePrefetch() {
+  const { pathname } = useLocation()
+  return (
+    <PrefetchPageLinks
+      page={toLocalePathname(getPathLocale(pathname), "/generation/home")}
+    />
   )
 }
 

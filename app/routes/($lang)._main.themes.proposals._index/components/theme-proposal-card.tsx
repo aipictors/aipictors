@@ -23,7 +23,7 @@ import {
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import {
   canEditThemeProposalNote,
   ThemeProposalNoteEditDialog,
@@ -191,7 +191,7 @@ export function ThemeProposalCard(props: Props) {
             <Avatar className="size-7">
               <AvatarImage
                 resizeWidth={64}
-                src={withIconUrlFallback(proposal.proposerIconUrl)}
+                src={toIconImageUrl(proposal.proposerIconUrl)}
                 alt=""
               />
               <AvatarFallback className="text-[10px]">

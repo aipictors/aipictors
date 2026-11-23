@@ -24,7 +24,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 /** パネルに出す件数（全部は「通知の履歴をすべて見る」で見る） */
 const PANEL_NOTIFICATIONS_LIMIT = 20
@@ -272,7 +272,7 @@ export function MessageList(props: {
           )}
           <Avatar className="size-10 shrink-0">
             <AvatarImage
-              src={withIconUrlFallback(message.user.iconUrl)}
+              src={toIconImageUrl(message.user.iconUrl)}
               alt=""
               className="object-cover"
             />

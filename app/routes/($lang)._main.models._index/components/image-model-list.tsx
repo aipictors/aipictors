@@ -1,6 +1,7 @@
 import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"
 
 type Props = {
@@ -31,7 +32,7 @@ export function ImageModelList (props: Props) {
           >
             <Link to={`/models/${imageModel.modelName}`}>
               <img
-                src={imageModel.thumbnailImageURL ?? ""}
+                src={toResizedImageUrl(imageModel.thumbnailImageURL, 480) ?? ""}
                 alt={imageModel.displayName}
                 loading="lazy"
                 decoding="async"

@@ -40,7 +40,7 @@ import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/c
 import { downloadImageFileAsPng } from "~/routes/($lang).generation._index/utils/download-image-file-as-png"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -593,7 +593,7 @@ function WorkDetailsPanel(props: {
               <Avatar className="size-12">
                 <AvatarImage
                   resizeWidth={240}
-                  src={withIconUrlFallback(work.user.iconUrl)}
+                  src={toIconImageUrl(work.user.iconUrl)}
                   alt={work.user.name}
                 />
                 <AvatarFallback>{work.user.name?.charAt(0)}</AvatarFallback>

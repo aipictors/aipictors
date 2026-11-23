@@ -39,7 +39,7 @@ import { toEnglishRequestNotification } from "~/utils/request-notification-text"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 const KIND_STYLES: Record<
   NotificationPanelKind,
@@ -297,7 +297,7 @@ function RowLeading(props: { item: PanelItem; group: PanelItem[] }) {
     <span className="relative size-10 shrink-0">
       <Avatar className="size-10">
         <AvatarImage
-          src={withIconUrlFallback(users[0]?.iconUrl)}
+          src={toIconImageUrl(users[0]?.iconUrl)}
           alt=""
           className="object-cover"
         />

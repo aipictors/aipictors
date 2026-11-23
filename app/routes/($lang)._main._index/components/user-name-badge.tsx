@@ -3,7 +3,7 @@ import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   userId: string
@@ -43,7 +43,7 @@ export function UserNameBadge(props: Props) {
               "size-6": props.width === "md",
               "size-8": props.width === "lg",
             })}
-            src={withIconUrlFallback(props.userIconImageURL)}
+            src={toIconImageUrl(props.userIconImageURL)}
           />
           <p
             className={cn("min-w-0 overflow-hidden text-ellipsis text-nowrap", {

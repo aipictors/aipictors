@@ -36,7 +36,11 @@ import {
   toGenerationHomeWorksWhere,
 } from "~/routes/($lang).generation.home/utils/home-works-where"
 import { toHomeExamplePrompt } from "~/routes/($lang).generation.home/utils/to-home-example-prompt"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 export const GenerationHomeWorkFragment = graphql(
   `fragment GenerationHomeWork on WorkNode @_unmask {
@@ -396,7 +400,7 @@ export function GenerationHomeView(props: Props) {
 
       {/* 作例（高さの違う画像を詰めて並べる） */}
       <ul className="mt-3 columns-2 gap-3 sm:columns-3 lg:columns-4 xl:columns-5">
-        {works.map((work) => (
+        {works.map((work, index) => (
           <li key={work.id} className="mb-3 break-inside-avoid">
             <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
               <button
@@ -405,11 +409,19 @@ export function GenerationHomeView(props: Props) {
                 className="group relative block w-full overflow-hidden bg-muted text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <img
-                  src={work.largeThumbnailImageURL}
+                  src={toResizedImageUrl(work.largeThumbnailImageURL, 480)}
+                  srcSet={toResizedImageSrcSet(work.largeThumbnailImageURL, {
+                    minWidth: 240,
+                    maxWidth: work.largeThumbnailImageWidth,
+                  })}
+                  // 2〜5 列の段組み
+                  sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                   alt={work.title}
                   width={work.largeThumbnailImageWidth}
                   height={work.largeThumbnailImageHeight}
-                  loading="lazy"
+                  // 最初に見える数枚は待たずに読む（一番大きく見える絵なので遅延させない）
+                  loading={index < 6 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : undefined}
                   decoding="async"
                   className="block h-auto w-full transition-transform duration-300 group-hover:scale-[1.03]"
                 />
@@ -422,7 +434,7 @@ export function GenerationHomeView(props: Props) {
                 {work.user ? (
                   <>
                     <img
-                      src={withIconUrlFallback(work.user.iconUrl)}
+                      src={toIconImageUrl(work.user.iconUrl)}
                       alt=""
                       width={20}
                       height={20}

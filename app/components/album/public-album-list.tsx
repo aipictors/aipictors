@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { toRatingText } from "~/utils/work/to-rating-text"
 
 type Props = {
@@ -88,10 +88,7 @@ function PublicAlbumCard(props: {
             className="flex min-w-0 items-center gap-1.5 text-xs hover:underline"
           >
             <Avatar className="size-6">
-              <AvatarImage
-                src={withIconUrlFallback(album.user.iconUrl)}
-                alt=""
-              />
+              <AvatarImage src={toIconImageUrl(album.user.iconUrl)} alt="" />
               <AvatarFallback className="text-[10px]">
                 {album.user.name.slice(0, 1)}
               </AvatarFallback>

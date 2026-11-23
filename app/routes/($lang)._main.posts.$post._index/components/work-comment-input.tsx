@@ -12,7 +12,7 @@ import type { Comment } from "~/routes/($lang)._main.posts.$post._index/componen
 import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-fragment"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
@@ -196,7 +196,7 @@ export function ReplyCommentInput (props: Props) {
             frame={avatarFrame}
             isAnimated={false}
             sizeClassName="size-8 shrink-0"
-            src={withIconUrlFallback(iconUrl)}
+            src={toIconImageUrl(iconUrl)}
           />
           <AutoResizeTextarea
             onChange={(event) => {

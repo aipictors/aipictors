@@ -9,6 +9,10 @@ import {
 import { formatCount } from "~/lib/user-models/generation"
 import type { UserModel } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
 
 type Props = {
   model: UserModel
@@ -36,9 +40,16 @@ export function UserModelCard(props: Props) {
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
         {model.thumbnailUrl ? (
           <img
-            src={model.thumbnailUrl}
+            src={toResizedImageUrl(model.thumbnailUrl, 480)}
+            srcSet={toResizedImageSrcSet(model.thumbnailUrl, {
+              minWidth: 240,
+              maxWidth: 800,
+            })}
+            // 一覧は 2〜6 列（元画像は 1MB 前後のこともあるので縮小版を選ばせる）
+            sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
             alt={model.name}
             loading="lazy"
+            decoding="async"
             draggable={false}
             className={cn(
               "size-full object-cover transition-transform duration-300 group-hover:scale-[1.04]",

@@ -4,7 +4,7 @@ import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { Card } from "~/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
@@ -147,7 +147,7 @@ export function RankingSensitiveUserList (props: Props) {
                     <Avatar className="h-16 w-16 ring-2 ring-purple-200 ring-offset-2 transition-all duration-300 hover:ring-purple-400">
                       <AvatarImage
                         resizeWidth={240}
-                        src={withIconUrlFallback(userRanking.user?.iconUrl)}
+                        src={toIconImageUrl(userRanking.user?.iconUrl)}
                         alt={userRanking.user?.name || userRanking.user?.login}
                       />
                       <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 font-bold text-white">

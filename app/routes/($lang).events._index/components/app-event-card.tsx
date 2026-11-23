@@ -10,7 +10,7 @@ import {
   toResizedImageSrcSet,
   toResizedImageUrl,
 } from "~/utils/resized-image-url"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 export type EventCardItem = {
   id: string
@@ -69,7 +69,7 @@ export function EventParticipantStack(props: {
         {icons.map((icon) => (
           <img
             key={icon.id}
-            src={withIconUrlFallback(toResizedImageUrl(icon.iconUrl, 96))}
+            src={toIconImageUrl(icon.iconUrl, 96)}
             alt=""
             title={icon.name ?? undefined}
             loading="lazy"
@@ -440,7 +440,7 @@ export function AppEventCard(props: Props) {
               <Avatar className="size-6 border">
                 {appEvent.userIconUrl && (
                   <AvatarImage
-                    src={withIconUrlFallback(appEvent.userIconUrl)}
+                    src={toIconImageUrl(appEvent.userIconUrl)}
                     alt=""
                   />
                 )}

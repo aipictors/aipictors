@@ -36,7 +36,7 @@ import {
   toResizedImageSrcSet,
   toResizedImageUrl,
 } from "~/utils/resized-image-url"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 // 編集は持ち主だけが使うので、ほかの人のページでは読まない
 const AlbumArticleEditorDialog = lazy(() =>
@@ -176,7 +176,7 @@ export function AlbumArticleHeader(props: Props) {
               >
                 <Avatar className="size-8 shrink-0">
                   <AvatarImage
-                    src={withIconUrlFallback(album.user.iconUrl)}
+                    src={toIconImageUrl(album.user.iconUrl)}
                     alt=""
                   />
                   <AvatarFallback>{album.user.name.slice(0, 1)}</AvatarFallback>

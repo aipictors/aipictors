@@ -20,7 +20,7 @@ import {
   readHeaderUserSnapshot,
   saveHeaderUserSnapshot,
 } from "~/utils/header-user-snapshot"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   onLogout(): void
@@ -135,7 +135,7 @@ export function FastUserNavigationMenu(props: Props) {
             alt={displayName || "User"}
             frame={avatarFrame}
             sizeClassName="h-10 w-10 cursor-pointer"
-            src={withIconUrlFallback(iconUrl)}
+            src={toIconImageUrl(iconUrl)}
           />
         </button>
       </DropdownMenuTrigger>

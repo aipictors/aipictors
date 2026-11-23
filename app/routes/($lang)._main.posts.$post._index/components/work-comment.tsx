@@ -44,7 +44,10 @@ import {
   isUserAvatarDecoration,
   type UserAvatarFramePresentation,
 } from "~/utils/user-avatar-frame"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import {
+  toIconImageUrl,
+  withIconUrlFallback,
+} from "~/utils/with-icon-url-fallback"
 
 type Props = {
   userId: string
@@ -430,7 +433,7 @@ export function WorkComment(props: Props) {
               <div className="relative">
                 <Avatar className="relative size-4">
                   <AvatarImage
-                    src={withIconUrlFallback(props.workOwnerIconImageURL)}
+                    src={toIconImageUrl(props.workOwnerIconImageURL)}
                     alt=""
                   />
                   <AvatarFallback />

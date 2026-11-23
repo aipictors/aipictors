@@ -4,7 +4,7 @@ import SSR from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
 import { Link } from "~/lib/app/locale-router"
 import { LikeButton } from "~/components/like-button"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl, withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
@@ -71,7 +71,7 @@ export function TagReferencedWorkSection (props: Props) {
                     <Avatar className="size-6">
                       <AvatarImage
                         className="size-6 rounded-full"
-                        src={withIconUrlFallback(photo.userIcon)}
+                        src={toIconImageUrl(photo.userIcon)}
                         alt=""
                       />
                       <AvatarFallback />

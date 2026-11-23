@@ -17,7 +17,10 @@ import {
   type GridColumnBreakpoint,
   incompleteRowHiddenClassName,
 } from "~/utils/grid-layout"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import {
+  toIconImageUrl,
+  withIconUrlFallback,
+} from "~/utils/with-icon-url-fallback"
 
 /** PC で正方形に並べるときの列数: md:4 / xl:5 / 2xl:6（スマホは下の 2 列の一覧） */
 const DESKTOP_SQUARE_BREAKPOINTS: GridColumnBreakpoint[] = [
@@ -185,7 +188,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                           frame={work.user?.avatarFrame}
                           isAnimated={false}
                           sizeClassName="size-5"
-                          src={withIconUrlFallback(work.user?.iconUrl)}
+                          src={toIconImageUrl(work.user?.iconUrl)}
                         />
                         <span className="truncate text-muted-foreground text-xs">
                           {work.user?.name}
@@ -373,7 +376,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                             frame={work.user?.avatarFrame}
                             isAnimated={false}
                             sizeClassName="size-5"
-                            src={withIconUrlFallback(work.user?.iconUrl)}
+                            src={toIconImageUrl(work.user?.iconUrl)}
                           />
                           <span className="truncate text-muted-foreground text-xs">
                             {work.user?.name}

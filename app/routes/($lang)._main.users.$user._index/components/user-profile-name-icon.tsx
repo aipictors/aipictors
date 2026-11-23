@@ -32,7 +32,7 @@ import { UserProfileModeSwitch } from "~/routes/($lang)._main.users.$user._index
 import { UserProfileStatus } from "~/routes/($lang)._main.users.$user._index/components/user-profile-status"
 import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user._index/components/user-subscription-icon"
 import { toProfileLinkServiceName } from "~/utils/profile-link-service"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
@@ -151,7 +151,7 @@ export function UserProfileNameIcon(props: Props) {
           <UserProfileAvatar
             alt={user.name}
             frame={user.avatarFrame}
-            src={withIconUrlFallback(user.iconUrl)}
+            src={toIconImageUrl(user.iconUrl)}
             size="auto"
           />
           <UserProfileStatus statusText={user.statusText} isOwn={isMyPage} />

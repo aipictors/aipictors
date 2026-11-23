@@ -20,7 +20,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { ClientOnly } from "remix-utils/client-only"
 import { UserModelCard } from "~/components/user-models/user-model-card"
 import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
-import { fetchPublicUserModels } from "~/lib/server/user-models.server"
+import {
+  fetchPublicUserModels,
+  fetchUserModelPickupForRender,
+} from "~/lib/server/user-models.server"
 import { normalizeUserModel } from "~/lib/user-models/client"
 import {
   type UserModelBrowserFilters,
@@ -37,7 +40,7 @@ import type {
  * モデルの一覧
  */
 export async function loader(props: LoaderFunctionArgs) {
-  const [resp, userModels] = await Promise.all([
+  const [resp, userModels, pickup] = await Promise.all([
     loaderClient.query({
       query: imageModelsQuery,
       variables: {
@@ -47,11 +50,16 @@ export async function loader(props: LoaderFunctionArgs) {
     }),
     // みんなのモデルの最初のページ（サーバーで描画して検索エンジンにも見えるようにする）
     fetchPublicUserModels(props.context, { sort: "popular", limit: 24 }),
+    fetchUserModelPickupForRender(props.context),
   ])
 
   return {
     imageModels: resp.data.imageModels,
     userModels: userModels.models.map(normalizeUserModel),
+    pickup:
+      pickup === undefined || pickup === null
+        ? pickup
+        : { ...pickup, model: normalizeUserModel(pickup.model) },
   }
 }
 
@@ -139,7 +147,7 @@ export default function ModelsPage() {
         </div>
       </section>
 
-      <UserModelPickupBanner className="mb-6" />
+      <UserModelPickupBanner className="mb-6" initialPickup={data.pickup} />
 
       <Tabs
         value={tab}

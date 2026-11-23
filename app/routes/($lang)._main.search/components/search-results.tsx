@@ -18,7 +18,7 @@ import {
   splitMasonryColumns,
   toMasonryAspectRatio,
 } from "~/utils/split-masonry-columns"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 /**
  * 検索結果の一覧（キーワードがなければ人気のタグ）
@@ -98,7 +98,7 @@ export function SearchResults(props: {
         >
           <Avatar className="size-6">
             <AvatarImage
-              src={withIconUrlFallback(work.user.iconUrl)}
+              src={toIconImageUrl(work.user.iconUrl)}
               alt={work.user.name}
             />
             <AvatarFallback>{work.user.name.slice(0, 1)}</AvatarFallback>

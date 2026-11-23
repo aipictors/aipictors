@@ -3,7 +3,7 @@ import { LightbulbIcon } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type RecentThemeProposal = {
   id: string
@@ -64,7 +64,7 @@ export function ThemeProposalCta(props: Props) {
                   <Avatar className="size-5">
                     <AvatarImage
                       resizeWidth={64}
-                      src={withIconUrlFallback(proposal.proposerIconUrl)}
+                      src={toIconImageUrl(proposal.proposerIconUrl)}
                       alt=""
                     />
                     <AvatarFallback className="text-[9px]">

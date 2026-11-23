@@ -26,12 +26,14 @@ export const userModelPickupQueryKey = ["user-models", "pickup"] as const
 /**
  * 今週のピックアップモデル（週に 1 回しか変わらないので 10 分使い回す）
  */
-export function useUserModelPickup() {
+export function useUserModelPickup(initialPickup?: UserModelPickup | null) {
   return useQuery({
     queryKey: userModelPickupQueryKey,
     queryFn: fetchUserModelPickup,
     staleTime: 10 * 60 * 1000,
     retry: false,
+    // サーバーで取れたときは最初から出す（読み込み後に看板が出て下がずれないように）
+    ...(initialPickup !== undefined ? { initialData: initialPickup } : {}),
   })
 }
 
@@ -43,6 +45,8 @@ export const formatPickupWeek = (pickup: UserModelPickup) => {
 
 type Props = {
   className?: string
+  /** サーバーで取ったピックアップ（undefined ならブラウザで取る） */
+  initialPickup?: UserModelPickup | null
 }
 
 /**
@@ -52,7 +56,7 @@ type Props = {
  */
 export function UserModelPickupBanner(props: Props) {
   const t = useTranslation()
-  const { data: pickup } = useUserModelPickup()
+  const { data: pickup } = useUserModelPickup(props.initialPickup)
   const authContext = useContext(AuthContext)
 
   if (!pickup) {

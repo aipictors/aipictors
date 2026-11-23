@@ -1,6 +1,6 @@
 import { CommentAchievementChip } from "~/components/achievements/comment-achievement-chip"
 import type { PictorRunUser } from "~/components/pictor-run/pictor-run-api"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type AvatarProps = Readonly<{
   user: PictorRunUser
@@ -13,7 +13,7 @@ type AvatarProps = Readonly<{
 export function PictorRunAvatar(props: AvatarProps): React.ReactNode {
   const image = (
     <img
-      src={withIconUrlFallback(props.user.iconUrl)}
+      src={toIconImageUrl(props.user.iconUrl)}
       alt=""
       width={props.size}
       height={props.size}
