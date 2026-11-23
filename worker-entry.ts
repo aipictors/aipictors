@@ -77,8 +77,26 @@ const answerWithoutApp = (request: Request): Response | null => {
   return null
 }
 
+/** Firebase のログイン画面（/__/auth/*）を置いている Firebase Hosting */
+const FIREBASE_AUTH_ORIGIN = "https://kwkjsui8ghyt93ai5feb.firebaseapp.com"
+
+/**
+ * Google・X ログインの画面をこのサイトのドメインで中継する。
+ * firebaseapp.com のままだと別サイト扱いになり、iPhone の Safari・Chrome などは保存領域を切り離すため
+ * 「missing initial state」でログインできなかった。authDomain をこのサイトにして同じドメインで動かす
+ */
+const proxyFirebaseAuth = (request: Request): Promise<Response> | null => {
+  const url = new URL(request.url)
+  if (!url.pathname.startsWith("/__/auth/")) return null
+  return fetch(
+    new Request(`${FIREBASE_AUTH_ORIGIN}${url.pathname}${url.search}`, request),
+  )
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: CacheContext) {
+    const auth = proxyFirebaseAuth(request)
+    if (auth) return auth
     const quick = answerWithoutApp(request)
     if (quick) return quick
     if (
