@@ -306,7 +306,7 @@ function UserNavigationMenuContent(props: Props) {
           </div>
         </div>
         <Link
-          to={getSensitiveLink("/settings/points")}
+          to="/settings/points"
           className="mt-5 flex flex-col items-start gap-2 hover:underline"
         >
           <div className="flex items-center gap-2">
@@ -331,48 +331,49 @@ function UserNavigationMenuContent(props: Props) {
       </div>
 
       <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
+        {/* R18 版があるのはユーザーページだけ。ダッシュボードや設定などは /r を付けずに直接開く（/r/my などは /my へ転送し直していた） */}
         <MenuItemLink
           href={getSensitiveLink(myPagePath)}
           icon={<UserCircleIcon className={userNavigationStyles.menuIcon} />}
           label={t("マイページ", "My page")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/my")}
+          href="/my"
           icon={<SquareKanbanIcon className={userNavigationStyles.menuIcon} />}
           label={t("ダッシュボード", "Dashboard")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/achievements")}
+          href="/achievements"
           icon={<MedalIcon className={userNavigationStyles.menuIcon} />}
           label={t("実績", "Achievements")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/my/posts")}
+          href="/my/posts"
           icon={<SquareKanbanIcon className={userNavigationStyles.menuIcon} />}
           label={t("自分の作品", "My posts")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/requests/manage")}
+          href="/requests/manage"
           icon={<HandCoinsIcon className={userNavigationStyles.menuIcon} />}
           label={t("リクエスト", "Requests")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/settings/creator-rewards")}
+          href="/settings/creator-rewards"
           icon={<BanknoteIcon className={userNavigationStyles.menuIcon} />}
           label={t("収益の受け取り", "Rewards payout")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/settings/account/login")}
+          href="/settings/account/login"
           icon={<UserIcon className={userNavigationStyles.menuIcon} />}
           label={t("アカウント", "Account")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/support/chat")}
+          href="/support/chat"
           icon={<MessageCircleIcon className={userNavigationStyles.menuIcon} />}
           label={t("お問い合わせ", "Contact")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/plus")}
+          href="/plus"
           icon={<GemIcon className={userNavigationStyles.menuIcon} />}
           label="Aipictors+"
         />
@@ -387,7 +388,7 @@ function UserNavigationMenuContent(props: Props) {
           label={t("友だちを招待", "Invite friends")}
         />
         <MenuItemLink
-          href={getSensitiveLink("/settings")}
+          href="/settings"
           icon={<SettingsIcon className={userNavigationStyles.menuIcon} />}
           label={t("設定", "Settings")}
         />
@@ -423,7 +424,7 @@ function UserNavigationMenuContent(props: Props) {
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
               <MenuItemLink
-                href={getSensitiveLink("/settings/color")}
+                href="/settings/color"
                 icon={
                   <SettingsIcon className={userNavigationStyles.menuIcon} />
                 }

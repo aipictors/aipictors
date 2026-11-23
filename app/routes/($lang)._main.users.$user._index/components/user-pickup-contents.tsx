@@ -56,10 +56,13 @@ export function UserPickupContents(props: Props) {
 
   const refetch = () => (isSensitive ? refetchSensitive() : refetchAll())
 
-  const workDisplayed =
+  // サーバーはピックアップの年齢制限を見ないので、R18 のページには R18・R18G、全年齢のページにはそれ以外だけを出す
+  // （編集の初期値もこれなので、混ざっていたものは次に保存したときに外れる）
+  const workDisplayed = (
     (isSensitive
       ? sensitiveWorkRes?.user?.featuredSensitiveWorks
       : workRes?.user?.featuredWorks) ?? props.userPickupWorks
+  ).filter((work) => isSensitiveRating(work.rating) === isSensitive)
 
   const newWorkDisplayed =
     (isSensitive ? sensitiveWorkRes?.user?.works : workRes?.user?.works) ??
@@ -115,6 +118,10 @@ export function UserPickupContents(props: Props) {
       )}
     </>
   )
+}
+
+function isSensitiveRating(rating: string | null | undefined) {
+  return rating === "R18" || rating === "R18G"
 }
 
 /**
