@@ -19,6 +19,11 @@ type Props = {
   userId: string
   /** 作品一覧（画像）へのリンク */
   worksLink: string
+  /**
+   * R18 のページ（/r/users/:user）。R18 のピックアップ（featuredSensitiveWorks）と R18 の最新作品を出す。
+   * 初期値も UserSensitivePickupFragment で取ったものを渡す
+   */
+  isSensitive?: boolean
 }
 
 export function UserPickupContents(props: Props) {
@@ -28,16 +33,37 @@ export function UserPickupContents(props: Props) {
 
   const isMyPage = authContext.userId === props.userId
 
-  const { data: workRes, refetch } = useQuery(userQuery, {
-    skip: authContext.isLoading,
+  const isSensitive = props.isSensitive === true
+
+  const pickupKind = isSensitive ? "sensitive" : "all"
+
+  const { data: workRes, refetch: refetchAll } = useQuery(userQuery, {
+    skip: authContext.isLoading || isSensitive,
     variables: {
       userId: props.userId,
     },
   })
 
-  const workDisplayed = workRes?.user?.featuredWorks ?? props.userPickupWorks
+  const { data: sensitiveWorkRes, refetch: refetchSensitive } = useQuery(
+    userSensitiveQuery,
+    {
+      skip: authContext.isLoading || !isSensitive,
+      variables: {
+        userId: props.userId,
+      },
+    },
+  )
 
-  const newWorkDisplayed = workRes?.user?.works ?? props.userNewWorks
+  const refetch = () => (isSensitive ? refetchSensitive() : refetchAll())
+
+  const workDisplayed =
+    (isSensitive
+      ? sensitiveWorkRes?.user?.featuredSensitiveWorks
+      : workRes?.user?.featuredWorks) ?? props.userPickupWorks
+
+  const newWorkDisplayed =
+    (isSensitive ? sensitiveWorkRes?.user?.works : workRes?.user?.works) ??
+    props.userNewWorks
 
   return (
     <>
@@ -47,7 +73,7 @@ export function UserPickupContents(props: Props) {
           action={
             isMyPage && (
               <UserPickupEditDialog
-                kind="all"
+                kind={pickupKind}
                 currentWorks={workDisplayed}
                 onSaved={() => refetch()}
                 triggerChildren={
@@ -69,10 +95,12 @@ export function UserPickupContents(props: Props) {
       ) : (
         isMyPage && (
           <UserPickupEditDialog
-            kind="all"
+            kind={pickupKind}
             currentWorks={[]}
             onSaved={() => refetch()}
-            triggerChildren={<UserPickupEmptyButton />}
+            triggerChildren={
+              <UserPickupEmptyButton isSensitive={isSensitive} />
+            }
           />
         )
       )}
@@ -139,6 +167,36 @@ export const UserPickupFragment = graphql(
     }
   }`,
   [HomeWorkFragment],
+)
+
+/**
+ * R18 のページのピックアップと最新作品（R18 の作品だけ）
+ */
+export const UserSensitivePickupFragment = graphql(
+  `fragment UserSensitivePickup on UserNode @_unmask {
+    featuredSensitiveWorks {
+      ...HomeWork
+      smallThumbnailImageURL
+      imageWidth
+    }
+    works(limit: 8, offset: 0, where: {
+      isSensitive: true
+    }) {
+      ...HomeWork
+    }
+  }`,
+  [HomeWorkFragment],
+)
+
+const userSensitiveQuery = graphql(
+  `query UserSensitivePickup(
+    $userId: ID!,
+  ) {
+    user(id: $userId) {
+      ...UserSensitivePickup
+    }
+  }`,
+  [UserSensitivePickupFragment],
 )
 
 const userQuery = graphql(

@@ -15,6 +15,8 @@ type Props = {
   maxCount: number
   sort: UserWorksSort
   login: string
+  /** R18 のページ（/r/users/:user）。R18・R18G の作品だけを出す */
+  isSensitive?: boolean
 }
 
 /**
@@ -33,7 +35,7 @@ export function UserNoteList(props: Props) {
       limit: 32,
       where: {
         userId,
-        ratings: ["G", "R15"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         workType: "COLUMN",
         isNowCreatedAt: true,
         ...(props.sort === "popular"
@@ -49,7 +51,7 @@ export function UserNoteList(props: Props) {
     <UserWorksTabLayout
       title={t("コラム", "Columns")}
       count={props.maxCount}
-      basePath={`/users/${encodeURIComponent(props.login)}/notes`}
+      basePath={`${props.isSensitive ? "/r" : ""}/users/${encodeURIComponent(props.login)}/notes`}
       page={props.page}
       perPage={32}
       sort={props.sort}

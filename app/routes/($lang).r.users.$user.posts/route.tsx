@@ -1,12 +1,15 @@
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useLoaderData, useParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { parseUserWorksListParams } from "~/components/user-works/user-works-tab-layout"
+import { config } from "~/config"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import { UserPostsItemFragment } from "~/routes/($lang).r.users.$user.posts/components/user-sensitive-post-list"
-import { UserSensitivePostList } from "~/routes/($lang).r.users.$user.posts/components/user-sensitive-post-list"
-import { config } from "~/config"
+import { createUserTabMeta } from "~/routes/($lang)._main.users.$user/user-tab-meta"
+import {
+  UserPostList,
+  UserPostsItemFragment,
+} from "~/routes/($lang)._main.users.$user.posts/components/user-post-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -24,13 +27,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const url = new URL(props.request.url)
-
-  const page = url.searchParams.get("page")
-    ? Number.parseInt(url.searchParams.get("page") as string) > 100
-      ? 0
-      : Number.parseInt(url.searchParams.get("page") as string)
-    : 0
+  const { page, sort, orderWhere } = parseUserWorksListParams(props.request.url)
 
   const worksResp = await loaderClient.query({
     query: userPostsQuery,
@@ -42,6 +39,7 @@ export async function loader(props: LoaderFunctionArgs) {
         ratings: ["R18", "R18G"],
         workType: "WORK",
         isNowCreatedAt: true,
+        ...orderWhere,
       },
     },
   })
@@ -50,6 +48,8 @@ export async function loader(props: LoaderFunctionArgs) {
     works: worksResp.data.works,
     maxCount: worksResp.data.worksCount,
     page,
+    sort,
+    login: decodeURIComponent(props.params.user),
   }
 }
 
@@ -57,7 +57,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneMinute,
 })
 
-export default function UserPosts () {
+export default function UserPosts() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -68,10 +68,13 @@ export default function UserPosts () {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserSensitivePostList
+      <UserPostList
         works={data.works}
         page={data.page}
         maxCount={data.maxCount}
+        sort={data.sort}
+        login={data.login}
+        isSensitive
       />
     </div>
   )
@@ -94,3 +97,7 @@ export const userPostsQuery = graphql(
   }`,
   [UserPostsItemFragment],
 )
+
+export const meta = createUserTabMeta("画像作品", "Images", {
+  isSensitive: true,
+})

@@ -13,20 +13,34 @@ type Props = {
   modelsCount?: number
   /** 種類ごとの作品数（hasImageWorks などが実際と合わないことがあるため） */
   worksCounts?: { image: number; novel: number; video: number; column: number }
-  /** 全年齢のシリーズの数（hasAlbums は R18 のシリーズも数えるため） */
+  /** 表示しているページの年齢区分のシリーズの数（hasAlbums は全年齢と R18 の両方を数えるため） */
   albumsCount?: number
+  /**
+   * R18 のページ（/r/users/:user）。行き先を /r にし、作品の有無は R18 の作品で見る。
+   * R18 のページがないイベント・モデルは出さない
+   */
+  isSensitive?: boolean
 }
 
 /**
  * ユーザーページの切り替え（作品の種類・シリーズ・モデルなど）
- * 検索エンジンがたどれるように、ボタンではなくリンクにする
+ * 検索エンジンがたどれるように、ボタンではなくリンクにする。全年齢と R18 のページで同じ見た目
  */
 export function UserTabs(props: Props) {
   const user = readFragment(UserTabsFragment, props.user)
   const t = useTranslation()
   const location = useLocation()
 
-  const base = `/users/${encodeURIComponent(user.login)}`
+  const isSensitive = props.isSensitive === true
+
+  const base = `${isSensitive ? "/r" : ""}/users/${encodeURIComponent(user.login)}`
+
+  const hasWorks = {
+    image: isSensitive ? user.hasSensitiveImageWorks : user.hasImageWorks,
+    novel: isSensitive ? user.hasSensitiveNovelWorks : user.hasNovelWorks,
+    video: isSensitive ? user.hasSensitiveVideoWorks : user.hasVideoWorks,
+    column: isSensitive ? user.hasSensitiveColumnWorks : user.hasColumnWorks,
+  }
 
   const counts: Record<string, number | undefined> = {
     "/posts": props.worksCounts?.image,
@@ -42,27 +56,27 @@ export function UserTabs(props: Props) {
     {
       path: "/posts",
       label: t("画像", "Images"),
-      show: user.hasImageWorks || (props.worksCounts?.image ?? 0) > 0,
+      show: hasWorks.image || (props.worksCounts?.image ?? 0) > 0,
     },
     {
       path: "/novels",
       label: t("小説", "Novels"),
-      show: user.hasNovelWorks || (props.worksCounts?.novel ?? 0) > 0,
+      show: hasWorks.novel || (props.worksCounts?.novel ?? 0) > 0,
     },
     {
       path: "/notes",
       label: t("コラム", "Columns"),
-      show: user.hasColumnWorks || (props.worksCounts?.column ?? 0) > 0,
+      show: hasWorks.column || (props.worksCounts?.column ?? 0) > 0,
     },
     {
       path: "/videos",
       label: t("動画", "Videos"),
-      show: user.hasVideoWorks || (props.worksCounts?.video ?? 0) > 0,
+      show: hasWorks.video || (props.worksCounts?.video ?? 0) > 0,
     },
     {
       path: "/models",
       label: t("モデル", "Models"),
-      show: (props.modelsCount ?? 0) > 0,
+      show: !isSensitive && (props.modelsCount ?? 0) > 0,
     },
     {
       path: "/albums",
@@ -75,7 +89,7 @@ export function UserTabs(props: Props) {
     {
       path: "/events",
       label: t("イベント", "Events"),
-      show: user.hasUserEvents,
+      show: !isSensitive && user.hasUserEvents,
     },
     {
       path: "/collections",
@@ -137,6 +151,10 @@ export const UserTabsFragment = graphql(`
     hasNovelWorks
     hasVideoWorks
     hasColumnWorks
+    hasSensitiveImageWorks
+    hasSensitiveNovelWorks
+    hasSensitiveVideoWorks
+    hasSensitiveColumnWorks
     hasFolders
     hasAlbums
     hasUserEvents
