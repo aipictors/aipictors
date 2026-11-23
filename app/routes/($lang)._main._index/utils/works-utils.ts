@@ -23,7 +23,15 @@ export function getPerPage(workType: HomeWorksProps["workType"]) {
   return workType === "VIDEO" ? PER_VID : PER_IMG
 }
 
-function getTimeRangeDates(range: HomeWorksProps["timeRange"] = "ALL") {
+/**
+ * 期間の絞り込み（新着一覧の「今日・昨日・先週」）。全年齢・R18、無限スクロール・ページ送りで共通。
+ * 「先週」は先週の月曜 0:00〜今週の月曜 0:00（過去 7 日ではない）
+ */
+export function getTimeRangeDates(range: HomeWorksProps["timeRange"] = "ALL"): {
+  createdAtAfter: string | null
+  createdAtBefore: string | null
+  isNowCreatedAt?: boolean
+} {
   const today0 = startOfDay(new Date())
 
   switch (range) {

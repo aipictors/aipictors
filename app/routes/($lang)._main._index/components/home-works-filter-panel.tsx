@@ -179,7 +179,7 @@ export function HomeWorksFilterPanel(
                   : timeRange === "YESTERDAY"
                     ? t("昨日", "Yesterday")
                     : timeRange === "WEEK"
-                      ? t("週間", "Week")
+                      ? t("先週", "Last week")
                       : t("全期間", "All time")}
               </SelectValue>
             </SelectTrigger>
@@ -189,7 +189,7 @@ export function HomeWorksFilterPanel(
               <SelectItem value="YESTERDAY">
                 {t("昨日", "Yesterday")}
               </SelectItem>
-              <SelectItem value="WEEK">{t("週間", "Week")}</SelectItem>
+              <SelectItem value="WEEK">{t("先週", "Last week")}</SelectItem>
             </SelectContent>
           </Select>
 

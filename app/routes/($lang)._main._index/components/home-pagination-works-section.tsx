@@ -5,6 +5,7 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
+import { getTimeRangeDates } from "~/routes/($lang)._main._index/utils/works-utils"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
   HomeNovelsWorkListItemFragment,
@@ -18,48 +19,6 @@ import {
   HomeWorkFragment,
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
-
-/**
- * 期間指定による createdAt 範囲を計算するヘルパー関数
- */
-function getTimeRangeDates(timeRange: string) {
-  // 実際のロジックは要件に応じて JST に合わせるなど調整してください
-  const now = new Date()
-  now.setHours(0, 0, 0, 0) // 当日 0:00 に合わせる
-
-  switch (timeRange) {
-    case "TODAY": {
-      // 本日: 当日 0:00 以降
-      return {
-        createdAtAfter: now.toISOString(),
-        createdAtBefore: null,
-      }
-    }
-    case "YESTERDAY": {
-      // 昨日: 昨日の 0:00 〜 本日の 0:00
-      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-      return {
-        createdAtAfter: yesterday.toISOString(),
-        createdAtBefore: now.toISOString(),
-      }
-    }
-    case "WEEK": {
-      // 1週間: 7日前の 0:00 〜
-      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-      return {
-        createdAtAfter: weekAgo.toISOString(),
-        createdAtBefore: null,
-      }
-    }
-    default: {
-      // ALL (全期間) の場合は指定なし
-      return {
-        createdAtAfter: null,
-        createdAtBefore: null,
-      }
-    }
-  }
-}
 
 type Props = {
   isCropped?: boolean
@@ -101,7 +60,7 @@ export function HomePaginationWorksSection(props: Props) {
   // 1ページあたりの件数（映像は少なめに）
   const perPageCount = props.workType === "VIDEO" ? 8 : 32
 
-  // 期間指定から createdAtAfter/before を算出
+  // 期間指定から createdAtAfter/before を算出（無限スクロールと同じ。「先週」は先週の月〜日）
   const { createdAtAfter, createdAtBefore } = getTimeRangeDates(
     props.timeRange || "ALL",
   )

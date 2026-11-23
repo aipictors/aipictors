@@ -276,14 +276,12 @@ export function GenreNewWorks(props: Props) {
     COLUMN: t("コラム", "Column"),
   }
 
-  // 全年齢の一覧は「先週（月〜日）」、R18 の一覧は「過去 7 日」で絞る（works-utils / home-sensitive-works-section）
+  // 「先週」は全年齢・R18 とも先週の月〜日（works-utils の getTimeRangeDates）
   const timeRangeLabels: Record<(typeof TIME_RANGES)[number], string> = {
     ALL: t("全期間", "All time"),
     TODAY: t("今日", "Today"),
     YESTERDAY: t("昨日", "Yesterday"),
-    WEEK: props.genre.isSensitive
-      ? t("7日間", "7 days")
-      : t("先週", "Last week"),
+    WEEK: t("先週", "Last week"),
   }
 
   return (

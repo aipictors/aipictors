@@ -19,48 +19,7 @@ import {
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
-
-/**
- * 期間指定による createdAt 範囲を計算するヘルパー関数
- */
-function getTimeRangeDates(timeRange: string) {
-  // 実際のロジックは要件に応じて JST に合わせるなど調整してください
-  const now = new Date()
-  now.setHours(0, 0, 0, 0) // 当日 0:00 に合わせる
-
-  switch (timeRange) {
-    case "TODAY": {
-      // 本日: 当日 0:00 以降
-      return {
-        createdAtAfter: now.toISOString(),
-        createdAtBefore: null,
-      }
-    }
-    case "YESTERDAY": {
-      // 昨日: 昨日の 0:00 〜 本日の 0:00
-      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-      return {
-        createdAtAfter: yesterday.toISOString(),
-        createdAtBefore: now.toISOString(),
-      }
-    }
-    case "WEEK": {
-      // 1週間: 7日前の 0:00 〜
-      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-      return {
-        createdAtAfter: weekAgo.toISOString(),
-        createdAtBefore: null,
-      }
-    }
-    default: {
-      // ALL (全期間) の場合は指定なし
-      return {
-        createdAtAfter: null,
-        createdAtBefore: null,
-      }
-    }
-  }
-}
+import { getTimeRangeDates } from "~/routes/($lang)._main._index/utils/works-utils"
 
 type Props = {
   isCropped?: boolean
@@ -81,14 +40,14 @@ type Props = {
 /**
  * トップ画面ホーム作品一覧（画像・小説・動画）
  */
-export function HomePaginationSensitiveWorksSection (props: Props) {
+export function HomePaginationSensitiveWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
   const viewerRatings = useViewerRatings()
 
   // 1ページあたりの件数（映像は少なめに）
   const perPageCount = props.workType === "VIDEO" ? 8 : 32
 
-  // 期間指定から createdAtAfter/before を算出
+  // 期間指定から createdAtAfter/before を算出（無限スクロールと同じ。「先週」は先週の月〜日）
   const { createdAtAfter, createdAtBefore } = getTimeRangeDates(
     props.timeRange || "ALL",
   )
@@ -173,11 +132,7 @@ export function HomePaginationSensitiveWorksSection (props: Props) {
       )}
       {/* 動画 */}
       {props.workType === "VIDEO" && (
-        <HomeVideosWorksSection
-          title={""}
-          works={works}
-          isAutoPlay={true}
-        />
+        <HomeVideosWorksSection title={""} works={works} isAutoPlay={true} />
       )}
 
       <div className="h-8" />

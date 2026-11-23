@@ -84,7 +84,7 @@ export function SensitiveWorksFilterBar(props: Props): React.ReactNode {
               <SelectItem value="YESTERDAY">
                 {t("昨日", "Yesterday")}
               </SelectItem>
-              <SelectItem value="WEEK">{t("週間", "Week")}</SelectItem>
+              <SelectItem value="WEEK">{t("先週", "Last week")}</SelectItem>
             </SelectContent>
           </Select>
         )}
