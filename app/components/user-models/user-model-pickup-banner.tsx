@@ -56,7 +56,10 @@ type Props = {
  */
 export function UserModelPickupBanner(props: Props) {
   const t = useTranslation()
-  const { data: pickup } = useUserModelPickup(props.initialPickup)
+  const { data } = useUserModelPickup(props.initialPickup)
+  // サーバーの QueryClient はリクエストをまたいで 1 つなので、initialData は先に作られた空の項目に負けることがある。
+  // 取れていないうちはサーバーで取った分をそのまま使う
+  const pickup = data ?? props.initialPickup
   const authContext = useContext(AuthContext)
 
   if (!pickup) {
