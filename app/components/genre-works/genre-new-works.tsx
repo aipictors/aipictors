@@ -268,12 +268,31 @@ export function GenreNewWorks(props: Props) {
     COMMENTS_COUNT: t("コメント順", "Most comments"),
   }
 
+  const workTypeLabels: Record<WorkType | "ALL", string> = {
+    ALL: t("すべての種類", "All types"),
+    WORK: t("画像", "Image"),
+    VIDEO: t("動画", "Video"),
+    NOVEL: t("小説", "Novel"),
+    COLUMN: t("コラム", "Column"),
+  }
+
+  // 全年齢の一覧は「先週（月〜日）」、R18 の一覧は「過去 7 日」で絞る（works-utils / home-sensitive-works-section）
+  const timeRangeLabels: Record<(typeof TIME_RANGES)[number], string> = {
+    ALL: t("全期間", "All time"),
+    TODAY: t("今日", "Today"),
+    YESTERDAY: t("昨日", "Yesterday"),
+    WEEK: props.genre.isSensitive
+      ? t("7日間", "7 days")
+      : t("先週", "Last week"),
+  }
+
   return (
     <section
+      id="genre-new"
       aria-labelledby="genre-new-heading"
-      className="scroll-mt-20 space-y-4"
+      className="scroll-mt-20 space-y-4 md:scroll-mt-24"
     >
-      <div ref={topRef} className="scroll-mt-20" />
+      <div ref={topRef} className="scroll-mt-20 md:scroll-mt-24" />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
           id="genre-new-heading"
@@ -288,60 +307,44 @@ export function GenreNewWorks(props: Props) {
         />
       </div>
 
-      {/* 絞り込み */}
-      <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-card p-2">
+      {/* 絞り込み（スマホは 1 行で横に滑らせる。縦に伸びて一覧が画面の下へ押し出されないように） */}
+      <div className="-mx-3 flex items-center gap-2 overflow-x-auto overscroll-x-contain border-y bg-card px-3 py-2 [mask-image:linear-gradient(to_right,black_85%,transparent)] [scrollbar-width:none] md:mx-0 md:flex-wrap md:overflow-visible md:rounded-xl md:border md:px-2 md:[mask-image:none] [&::-webkit-scrollbar]:hidden">
         <SlidersHorizontalIcon
           aria-hidden={true}
-          className="ml-1 hidden size-4 text-muted-foreground sm:block"
+          className="ml-1 hidden size-4 shrink-0 text-muted-foreground md:block"
         />
-        <fieldset className="inline-flex rounded-full border bg-muted/40 p-0.5">
-          <legend className="sr-only">{t("並び順", "Sort")}</legend>
-          {SORT_TYPES.map((value) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={sortType === value}
-              onClick={() => onChangeSort(value)}
-              className={cn(
-                "h-8 rounded-full px-3 font-medium text-xs transition-colors",
-                sortType === value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {sortLabels[value]}
-            </button>
-          ))}
-        </fieldset>
+        <SegmentedButtons
+          legend={t("並び順", "Sort")}
+          options={SORT_TYPES.map((value) => ({
+            value,
+            label: sortLabels[value],
+          }))}
+          value={sortType}
+          onChange={onChangeSort}
+        />
+        <SegmentedButtons
+          legend={t("期間", "Period")}
+          options={TIME_RANGES.map((value) => ({
+            value,
+            label: timeRangeLabels[value],
+          }))}
+          value={timeRange}
+          onChange={onChangeTimeRange}
+        />
         <Select value={workType ?? "ALL"} onValueChange={onChangeWorkType}>
           <SelectTrigger
             aria-label={t("種類", "Type")}
-            className="h-9 w-auto min-w-24 rounded-full text-xs"
+            className="h-9 w-auto min-w-24 shrink-0 rounded-full text-xs"
           >
-            <SelectValue />
+            {/* hydration の前から選んでいる種類を出す（中身を渡さないと開くまで空になる） */}
+            <SelectValue>{workTypeLabels[workType ?? "ALL"]}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">
-              {t("すべての種類", "All types")}
-            </SelectItem>
-            <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
-            <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
-            <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
-            <SelectItem value="COLUMN">{t("コラム", "Column")}</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={timeRange} onValueChange={onChangeTimeRange}>
-          <SelectTrigger
-            aria-label={t("期間", "Period")}
-            className="h-9 w-auto min-w-24 rounded-full text-xs"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{t("全期間", "All time")}</SelectItem>
-            <SelectItem value="TODAY">{t("今日", "Today")}</SelectItem>
-            <SelectItem value="YESTERDAY">{t("昨日", "Yesterday")}</SelectItem>
-            <SelectItem value="WEEK">{t("先週", "Last week")}</SelectItem>
+            {(["ALL", ...WORK_TYPES] as const).map((value) => (
+              <SelectItem key={value} value={value}>
+                {workTypeLabels[value]}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <button
@@ -349,7 +352,7 @@ export function GenreNewWorks(props: Props) {
           aria-pressed={isPromptPublic === true}
           onClick={onTogglePrompt}
           className={cn(
-            "h-9 rounded-full border px-3 font-medium text-xs transition-colors",
+            "h-9 shrink-0 whitespace-nowrap rounded-full border px-3 font-medium text-xs transition-colors",
             isPromptPublic
               ? "border-foreground bg-foreground text-background"
               : "bg-background text-muted-foreground hover:text-foreground",
@@ -361,7 +364,7 @@ export function GenreNewWorks(props: Props) {
           <button
             type="button"
             onClick={onReset}
-            className="h-9 rounded-full px-2 text-muted-foreground text-xs underline-offset-2 hover:underline"
+            className="h-9 shrink-0 whitespace-nowrap rounded-full px-2 text-muted-foreground text-xs underline-offset-2 hover:underline"
           >
             {t("条件をクリア", "Clear")}
           </button>
@@ -425,5 +428,35 @@ export function GenreNewWorks(props: Props) {
         </div>
       )}
     </section>
+  )
+}
+
+/** 並び順・期間の切り替え（押したものが白く浮く） */
+function SegmentedButtons<T extends string>(props: {
+  legend: string
+  options: readonly { value: T; label: string }[]
+  value: string
+  onChange: (value: T) => void
+}) {
+  return (
+    <fieldset className="inline-flex shrink-0 rounded-full border bg-muted/40 p-0.5">
+      <legend className="sr-only">{props.legend}</legend>
+      {props.options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          aria-pressed={props.value === option.value}
+          onClick={() => props.onChange(option.value)}
+          className={cn(
+            "h-8 whitespace-nowrap rounded-full px-3 font-medium text-xs transition-colors",
+            props.value === option.value
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {option.label}
+        </button>
+      ))}
+    </fieldset>
   )
 }

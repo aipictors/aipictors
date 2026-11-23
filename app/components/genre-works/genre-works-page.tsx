@@ -3,6 +3,8 @@ import { Link } from "~/lib/app/locale-router"
 import {
   ArrowRightIcon,
   ChevronRightIcon,
+  CircleHelpIcon,
+  SparklesIcon,
   HashIcon,
   ImagePlusIcon,
   TrophyIcon,
@@ -206,13 +208,19 @@ export function GenreWorksPage(props: Props) {
         }
       />
 
-      <GenreHero
-        genre={genre}
-        works={data.heroWorks}
-        covers={data.covers}
-        toPath={toPath}
-        toSharedPath={toSharedPath}
-      />
+      <div className="flex min-w-0 flex-col gap-3">
+        <GenreHero
+          genre={genre}
+          works={data.heroWorks}
+          covers={data.covers}
+          toPath={toPath}
+          toSharedPath={toSharedPath}
+        />
+        <GenreJumpNav
+          sectionKeys={genre.sectionOrder.filter((key) => sections[key])}
+          toPath={toPath}
+        />
+      </div>
 
       {genre.sectionOrder.map((key) => sections[key])}
 
@@ -225,8 +233,9 @@ export function GenreWorksPage(props: Props) {
       <GenreHowTo genre={genre} toPath={toPath} toSharedPath={toSharedPath} />
 
       <section
+        id="genre-about"
         aria-labelledby="genre-about-heading"
-        className="grid gap-6 rounded-2xl border bg-card p-5 text-sm leading-relaxed md:grid-cols-2 md:p-7"
+        className="grid scroll-mt-20 gap-6 rounded-2xl border bg-card p-5 text-sm leading-relaxed md:scroll-mt-24 md:grid-cols-2 md:p-7"
       >
         <div className="space-y-3">
           <h2 id="genre-about-heading" className="font-bold text-lg">
@@ -309,8 +318,9 @@ function GenreSection(props: {
 }) {
   return (
     <section
+      id={props.id}
       aria-labelledby={`${props.id}-heading`}
-      className="min-w-0 space-y-4"
+      className="min-w-0 scroll-mt-20 space-y-4 md:scroll-mt-24"
     >
       <div className="flex items-end justify-between gap-3">
         <div className="min-w-0 space-y-1">
@@ -396,7 +406,7 @@ function GenreHero(props: {
           </h1>
           <p
             className={cn(
-              "text-muted-foreground text-sm leading-relaxed md:text-base",
+              "line-clamp-3 text-muted-foreground text-sm leading-relaxed md:line-clamp-none md:text-base",
               isFilmstrip && "max-w-3xl",
             )}
           >
@@ -408,8 +418,9 @@ function GenreHero(props: {
             toPath={props.toPath}
             isSensitive={genre.isSensitive}
           />
-          <div className="flex flex-wrap gap-2">
-            <Button asChild className="h-11 rounded-full px-5">
+          {/* スマホでも 1 行に収める（投稿は短い文言にする） */}
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:flex-wrap">
+            <Button asChild className="h-10 rounded-full px-4 md:h-11 md:px-5">
               <Link to={props.toSharedPath("/generation")}>
                 <WandSparklesIcon className="mr-1.5 size-4" />
                 {t("このテイストを作る", "Make your own")}
@@ -418,11 +429,14 @@ function GenreHero(props: {
             <Button
               asChild
               variant="outline"
-              className="h-11 rounded-full bg-background/60 px-5"
+              className="h-10 rounded-full bg-background/60 px-4 md:h-11 md:px-5"
             >
               <Link to={props.toPath("/new/image")}>
                 <ImagePlusIcon className="mr-1.5 size-4" />
-                {t("作品を投稿", "Post a work")}
+                <span className="sm:hidden">{t("投稿", "Post")}</span>
+                <span className="hidden sm:inline">
+                  {t("作品を投稿", "Post a work")}
+                </span>
               </Link>
             </Button>
           </div>
@@ -527,6 +541,85 @@ function GenreHeroImages(props: {
         )
       })}
     </ul>
+  )
+}
+
+/**
+ * ページ内の見出しへ飛ぶ帯と、ランキング・タグ一覧への入口
+ * 新着一覧はページの下の方にあるので、ファーストビューから 1 回で行けるようにする
+ */
+function GenreJumpNav(props: {
+  sectionKeys: readonly GenreSectionKey[]
+  toPath: (path: string) => string
+}) {
+  const t = useTranslation()
+
+  const sectionLabels: Record<GenreSectionKey, string> = {
+    ranking: t("今週の人気", "Popular"),
+    classics: t("名作", "Classics"),
+    tastes: t("タグ", "Tags"),
+  }
+
+  // ページの並びと同じ順
+  const anchors = [
+    ...props.sectionKeys.map((key) => ({
+      id: `genre-${key}`,
+      label: sectionLabels[key],
+      icon: { ranking: TrophyIcon, classics: HeartIcon, tastes: HashIcon }[key],
+    })),
+    { id: "genre-new", label: t("新着作品", "New works"), icon: SparklesIcon },
+    {
+      id: "genre-howto",
+      label: t("作り方", "How to"),
+      icon: WandSparklesIcon,
+    },
+    {
+      id: "genre-about",
+      label: t("よくある質問", "FAQ"),
+      icon: CircleHelpIcon,
+    },
+  ]
+
+  const chipClassName =
+    "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border bg-background px-3.5 font-medium text-xs transition-colors hover:border-foreground/40 md:text-sm"
+
+  return (
+    <nav aria-label={t("このページの内容", "On this page")}>
+      <ul className="-mx-3 flex gap-2 overflow-x-auto overscroll-x-contain px-3 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0 [&::-webkit-scrollbar]:hidden">
+        {anchors.map((anchor) => (
+          <li key={anchor.id} className="shrink-0">
+            <a href={`#${anchor.id}`} className={chipClassName}>
+              <anchor.icon
+                aria-hidden={true}
+                className="size-3.5 text-muted-foreground"
+              />
+              {anchor.label}
+            </a>
+          </li>
+        ))}
+        <li
+          aria-hidden={true}
+          className="mx-1 w-px shrink-0 self-stretch bg-border"
+        />
+        <li className="shrink-0">
+          <Link to={props.toPath("/rankings")} className={chipClassName}>
+            <TrophyIcon
+              aria-hidden={true}
+              className="size-3.5 text-amber-500"
+            />
+            {t("ランキング", "Rankings")}
+            <ArrowRightIcon aria-hidden={true} className="size-3.5" />
+          </Link>
+        </li>
+        <li className="shrink-0">
+          <Link to={props.toPath("/tags")} className={chipClassName}>
+            <HashIcon aria-hidden={true} className="size-3.5 text-sky-500" />
+            {t("タグ一覧", "All tags")}
+            <ArrowRightIcon aria-hidden={true} className="size-3.5" />
+          </Link>
+        </li>
+      </ul>
+    </nav>
   )
 }
 
@@ -676,8 +769,9 @@ function GenreHowTo(props: {
 
   return (
     <section
+      id="genre-howto"
       aria-labelledby="genre-howto-heading"
-      className="relative overflow-hidden rounded-2xl border bg-card p-5 md:p-7"
+      className="relative scroll-mt-20 overflow-hidden rounded-2xl border bg-card p-5 md:scroll-mt-24 md:p-7"
     >
       <div
         className={cn(
@@ -711,30 +805,30 @@ function GenreHowTo(props: {
           ))}
         </ol>
         {genre.samplePrompts.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="font-bold text-sm">
-            {t("プロンプトを試す", "Try a prompt")}
-          </h3>
-          <ul className="grid gap-2 md:grid-cols-3">
-            {genre.samplePrompts.map((sample) => (
-              <li key={sample.prompt} className="min-w-0">
-                <Link
-                  to={`${props.toSharedPath("/generation")}?prompts=${encodeURIComponent(sample.prompt)}`}
-                  rel="nofollow"
-                  className="group flex h-full flex-col gap-1.5 rounded-xl border bg-background/70 p-3 transition-colors hover:border-foreground/40"
-                >
-                  <span className="flex items-center justify-between gap-2 font-semibold text-sm">
-                    {text(sample.label)}
-                    <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                  </span>
-                  <code className="line-clamp-2 break-words font-mono text-[11px] text-muted-foreground">
-                    {sample.prompt}
-                  </code>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <div className="space-y-2">
+            <h3 className="font-bold text-sm">
+              {t("プロンプトを試す", "Try a prompt")}
+            </h3>
+            <ul className="grid gap-2 md:grid-cols-3">
+              {genre.samplePrompts.map((sample) => (
+                <li key={sample.prompt} className="min-w-0">
+                  <Link
+                    to={`${props.toSharedPath("/generation")}?prompts=${encodeURIComponent(sample.prompt)}`}
+                    rel="nofollow"
+                    className="group flex h-full flex-col gap-1.5 rounded-xl border bg-background/70 p-3 transition-colors hover:border-foreground/40"
+                  >
+                    <span className="flex items-center justify-between gap-2 font-semibold text-sm">
+                      {text(sample.label)}
+                      <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                    <code className="line-clamp-2 break-words font-mono text-[11px] text-muted-foreground">
+                      {sample.prompt}
+                    </code>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
         <div className="flex flex-wrap gap-2">
           <Button asChild className="h-11 rounded-full px-5">
