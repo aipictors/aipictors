@@ -1,5 +1,9 @@
 import type { PostAnimationFormInputAction } from "~/routes/($lang)._main.new.animation/reducers/actions/post-animation-form-input-action"
 import type { PostAnimationFormInputState } from "~/routes/($lang)._main.new.animation/reducers/states/post-animation-form-input-state"
+import {
+  nextThemeIdForReservationDate,
+  toJstDateString,
+} from "~/utils/post-reservation-theme"
 
 export const postAnimationFormInputReducer = (
   state: PostAnimationFormInputState,
@@ -146,11 +150,19 @@ export const postAnimationFormInputReducer = (
       }
     }
     case "SET_RESERVATION_DATE": {
+      // お題はその日ごとなので、日付が変わったときだけ選択を外す
+      const themeId = nextThemeIdForReservationDate({
+        themeId: state.themeId,
+        previousDate: state.reservationDate,
+        nextDate: action.payload,
+        todayDate: toJstDateString(),
+      })
+
       if (action.payload === null) {
         return {
           ...state,
           reservationDate: null,
-          themeId: null,
+          themeId,
         }
       }
 
@@ -165,13 +177,13 @@ export const postAnimationFormInputReducer = (
           ...state,
           reservationDate: action.payload,
           date: changeDate,
-          themeId: null,
+          themeId,
         }
       }
       return {
         ...state,
         reservationDate: action.payload,
-        themeId: null,
+        themeId,
       }
     }
     case "SET_RESERVATION_TIME": {

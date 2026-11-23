@@ -1,5 +1,9 @@
 import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
+import {
+  nextThemeIdForReservationDate,
+  toJstDateString,
+} from "~/utils/post-reservation-theme"
 
 export const postImageFormInputReducer = (
   state: PostImageFormInputState,
@@ -154,11 +158,19 @@ export const postImageFormInputReducer = (
       }
     }
     case "SET_RESERVATION_DATE": {
+      // お題はその日ごとなので、日付が変わったときだけ選択を外す
+      const themeId = nextThemeIdForReservationDate({
+        themeId: state.themeId,
+        previousDate: state.reservationDate,
+        nextDate: action.payload,
+        todayDate: toJstDateString(),
+      })
+
       if (action.payload === null) {
         return {
           ...state,
           reservationDate: null,
-          themeId: null,
+          themeId,
         }
       }
 
@@ -173,13 +185,13 @@ export const postImageFormInputReducer = (
           ...state,
           reservationDate: action.payload,
           date: changeDate,
-          themeId: null,
+          themeId,
         }
       }
       return {
         ...state,
         reservationDate: action.payload,
-        themeId: null,
+        themeId,
       }
     }
     case "SET_RESERVATION_TIME": {

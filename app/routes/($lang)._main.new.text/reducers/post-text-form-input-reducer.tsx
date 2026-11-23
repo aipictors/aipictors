@@ -1,5 +1,9 @@
 import type { PostTextFormInputAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-input-action"
 import type { PostTextFormInputState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-input-state"
+import {
+  nextThemeIdForReservationDate,
+  toJstDateString,
+} from "~/utils/post-reservation-theme"
 
 export const postTextFormInputReducer = (
   state: PostTextFormInputState,
@@ -158,11 +162,19 @@ export const postTextFormInputReducer = (
       }
     }
     case "SET_RESERVATION_DATE": {
+      // お題はその日ごとなので、日付が変わったときだけ選択を外す
+      const themeId = nextThemeIdForReservationDate({
+        themeId: state.themeId,
+        previousDate: state.reservationDate,
+        nextDate: action.payload,
+        todayDate: toJstDateString(),
+      })
+
       if (action.payload === null) {
         return {
           ...state,
           reservationDate: null,
-          themeId: null,
+          themeId,
         }
       }
 
@@ -177,13 +189,13 @@ export const postTextFormInputReducer = (
           ...state,
           reservationDate: action.payload,
           date: changeDate,
-          themeId: null,
+          themeId,
         }
       }
       return {
         ...state,
         reservationDate: action.payload,
-        themeId: null,
+        themeId,
       }
     }
     case "SET_RESERVATION_TIME": {

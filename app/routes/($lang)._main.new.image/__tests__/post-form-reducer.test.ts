@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test"
+import { toJstDateString } from "~/utils/post-reservation-theme"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 
@@ -42,6 +43,75 @@ describe("SET_RESERVATION_DATE", () => {
     const action = {
       type: "SET_RESERVATION_DATE",
       payload: "2022-01-01",
+    } as const
+
+    const newState = postImageFormInputReducer(state, action)
+
+    expect(newState.themeId).toBe(null)
+  })
+
+  test("今日の日付を入れただけならお題の選択が残る", () => {
+    const state = {
+      ...initialState,
+      themeId: "1",
+    }
+
+    const action = {
+      type: "SET_RESERVATION_DATE",
+      payload: toJstDateString(),
+    } as const
+
+    const newState = postImageFormInputReducer(state, action)
+
+    expect(newState.themeId).toBe("1")
+    expect(newState.reservationDate).toBe(toJstDateString())
+  })
+
+  test("同じ日付を選び直してもお題の選択が残る", () => {
+    const state = {
+      ...initialState,
+      themeId: "1",
+      reservationDate: "2222-01-01",
+    }
+
+    const action = {
+      type: "SET_RESERVATION_DATE",
+      payload: "2222-01-01",
+    } as const
+
+    const newState = postImageFormInputReducer(state, action)
+
+    expect(newState.themeId).toBe("1")
+  })
+
+  test("今日を選んだあとに予約を消してもお題の選択が残る", () => {
+    const state = {
+      ...initialState,
+      themeId: "1",
+      reservationDate: toJstDateString(),
+    }
+
+    const action = {
+      type: "SET_RESERVATION_DATE",
+      payload: null,
+    } as const
+
+    const newState = postImageFormInputReducer(state, action)
+
+    expect(newState.themeId).toBe("1")
+    expect(newState.reservationDate).toBe(null)
+  })
+
+  test("別の日の予約を消すとお題の選択が外れる", () => {
+    const state = {
+      ...initialState,
+      themeId: "1",
+      reservationDate: "2222-01-01",
+    }
+
+    const action = {
+      type: "SET_RESERVATION_DATE",
+      payload: null,
     } as const
 
     const newState = postImageFormInputReducer(state, action)
