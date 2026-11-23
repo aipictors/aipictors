@@ -6558,6 +6558,39 @@ input UserRankingsWhereInput {
   sort: Sort
 }
 
+"""ユーザー検索の並び順"""
+enum UserSearchOrderBy {
+  """活動期間（最初の投稿からの長さ）"""
+  ACTIVITY_PERIOD
+
+  """入賞数"""
+  AWARDS_COUNT
+
+  """もらったコメント数"""
+  COMMENTS_COUNT
+
+  """フォロワー数"""
+  FOLLOWERS_COUNT
+
+  """もらったいいね数"""
+  LIKES_COUNT
+
+  """最終ログイン"""
+  LOGGED_IN_AT
+
+  """活動日数（ログイン日数）"""
+  LOGGED_IN_DAYS
+
+  """おすすめ（そのまま一致 → 作品あり → 最近ログイン）"""
+  RELEVANCE
+
+  """作品の閲覧数"""
+  VIEWS_COUNT
+
+  """投稿数"""
+  WORKS_COUNT
+}
+
 """R18 のプロフィールページだけで出すプロフィール。null の項目は全年齢のプロフィールを出す"""
 type UserSensitiveProfileNode {
   """R18 用の紹介"""
@@ -6694,7 +6727,21 @@ input UserWorksWhereInput {
 }
 
 input UsersWhereInput {
+  """search があるとき、最初の投稿からこの日数以上たった人だけ"""
+  minActivityDays: Int
+
+  """search があるとき、入賞数がこれ以上の人だけ"""
+  minAwardsCount: Int
+
+  """search があるとき、投稿数がこれ以上の人だけ"""
+  minWorksCount: Int
+
+  """search があるときの並び順（既定はおすすめ）"""
+  orderBy: UserSearchOrderBy
   search: String
+
+  """orderBy の向き（既定は DESC）"""
+  sort: Sort
 }
 
 """ログイン中のユーザ"""
