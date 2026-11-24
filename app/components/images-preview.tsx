@@ -66,9 +66,10 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const mainImgRef = useRef<HTMLImageElement>(null)
   // 画像の読み込みが終わるまで表示領域を確保し、読み込み後のレイアウトシフトを防ぐ
   const [isMainImageLoaded, setIsMainImageLoaded] = useState(false)
-  // サーバーの HTML に入れた画像は JS より先に読み始めているので、読み込み中でも隠さない。
-  // 画面の移動で後から出す画像は、届くまで隠して代わりに小さい版を出す
-  // （縮小版がまだ無いと 404 → 縮小の Worker に切り替わる間、リンク切れの印が一瞬出ていた）
+  // 縮小版がまだ無い画像は 404 → 縮小の Worker に切り替わって届くまで数秒かかり、その間
+  // リンク切れの印が一瞬出たあと大きい枠が空のまま（下の小さいサムネイルだけ）になっていた。
+  // 届くまでは同じ絵の小さい版を枠いっぱいに出し、画面の移動で後から出す画像は隠しておく。
+  // サーバーの HTML に入れた画像は JS より先に読み始めているので隠さない（小さい版はその下に敷く）
   const isHydrated = useHydrated()
   const [serverRenderedUrl] = useState(() =>
     isHydrated ? null : props.thumbnailUrl,
@@ -375,6 +376,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const isShownStageImageReady = stageReadyUrls.has(shownStageUrl)
   const isStageImagePending =
     shownStageUrl !== props.thumbnailUrl || !isShownStageImageReady
+  const isStagePreviewShown =
+    !isShownStageImageReady ||
+    (shownStageUrl === props.thumbnailUrl && !isMainImageLoaded)
 
   // 元の幅が分かれば、パソコンの大きな画面向けに 1920・2560px の縮小版も候補にする
   const toSrcSetOptions = (hint: Props["imageSizeHint"]) =>
@@ -384,7 +388,8 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const mainImageSrcSetOptions = toSrcSetOptions(props.imageSizeHint)
 
   // 大きい画像が届くまで枠いっぱいに出す小さい版。一覧で押したサムネイルが無ければ、
-  // 下のサムネイルの列と同じ縮小版（すぐ届く・同じ URL なので 1 回の通信で済む）
+  // 下のサムネイルの列と同じ縮小版（すぐ届く・同じ URL なので 1 回の通信で済む）。
+  // 読み込み中・Worker に切り替え中の大きい画像は alt を空にして、リンク切れの印を出さない
   const previewUrl =
     props.placeholderUrl ?? toResizedImageUrl(props.thumbnailUrl, 160)
   const previewImage =
@@ -724,7 +729,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
           ref={stageRef}
           className="group/stage relative flex h-[64vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-muted/60 md:h-[72vh]"
         >
-          {!isShownStageImageReady && previewImage}
+          {isStagePreviewShown && previewImage}
           {stageUrls.map((url) => {
             const isCurrent = url === shownStageUrl
             const isShown = isCurrent && stageReadyUrls.has(url)
@@ -740,7 +745,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 data-stage-url={url}
                 className={`absolute inset-0 size-full cursor-zoom-in object-contain ${isShown ? "" : "invisible"}`}
                 draggable={false}
-                alt={isShown ? "thumbnail" : ""}
+                alt={isShown && !isStagePreviewShown ? "thumbnail" : ""}
                 src={url}
                 srcSet={toResizedImageSrcSet(url, toSrcSetOptions(sizeHint))}
                 // 縦横比が分からない 2 枚目以降は、横長でも粗くならないように幅いっぱいとみなす
@@ -800,7 +805,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
             className="relative m-auto flex h-full max-h-[64vh] w-full cursor-pointer justify-center overflow-hidden rounded-2xl bg-zinc-100 object-contain dark:bg-zinc-900"
             style={isMainImageLoaded ? undefined : { minHeight: "64vh" }}
           >
-            {isMainImageHidden && previewImage}
+            {!isMainImageLoaded && previewImage}
             <div className="relative inline-block overflow-hidden text-center">
               <img
                 ref={mainImgRef}
@@ -810,7 +815,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 )}
                 draggable={false}
                 key={props.thumbnailUrl}
-                alt="thumbnail"
+                alt={isMainImageLoaded ? "thumbnail" : ""}
                 src={props.thumbnailUrl}
                 // 原寸の画像（数 MB のこともある）ではなく、画面に合う縮小版を選ばせる。
                 // 拡大表示やダウンロードは原寸のまま
