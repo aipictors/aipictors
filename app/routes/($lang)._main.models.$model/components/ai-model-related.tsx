@@ -4,7 +4,7 @@ import { useTranslation } from "~/hooks/use-translation"
 
 export type AiModelRelatedModel = {
   id: string
-  /** /models/<名前> の名前 */
+  /** /models/<名前> の名前（作品のモデルがまだ無い生成機のモデルは空。そのときは表示名のページへ） */
   modelName: string
   displayName: string
   type: string
@@ -64,7 +64,7 @@ export function AiModelRelated(props: Props) {
             {props.models.map((model) => (
               <li key={model.id} className="w-28 shrink-0 snap-start md:w-32">
                 <Link
-                  to={`${prefix}/models/${encodeURIComponent(model.modelName)}`}
+                  to={`${prefix}/models/${encodeURIComponent(model.modelName || model.displayName)}`}
                   className="group flex flex-col gap-1"
                 >
                   <div className="aspect-square overflow-hidden rounded-xl border bg-muted">

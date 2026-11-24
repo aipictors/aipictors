@@ -1,0 +1,3367 @@
+[
+ {
+  "generatorId": 1,
+  "source": {
+   "kind": "aipictors",
+   "url": null,
+   "label": "Aipictors"
+  },
+  "links": [],
+  "creator": null,
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": null,
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "Aipictors 独自の SD1.5 系モデルです。アニメ風のイラストを描くためのモデルとして登録されています。公開元の詳しい説明はありません。",
+   "features": [
+    "Aipictors 独自モデル",
+    "アニメ風のイラスト向け",
+    "SD1.5 ベース"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An Aipictors-original model based on SD1.5, listed for anime-style illustration. No detailed description from a public source is available.",
+   "features": [
+    "Aipictors original model",
+    "Anime-style illustration",
+    "SD1.5 base"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 2,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/zzzAI19/ChromaFT",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "zzzAI19",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v2",
+  "publishedAt": "2023-08-14",
+  "triggerWords": [],
+  "ja": {
+   "summary": "zzzAI19 さんが追加学習で作ったイラスト向けモデル ChromaFT の v2 です。Stable Diffusion 1.5 系のモデルで、作者のブログにサンプル画像が公開されています。",
+   "features": [
+    "追加学習（ファインチューニング）で作られたモデル",
+    "全年齢向けの描写を重視した版として公開",
+    "イラスト調の出力"
+   ],
+   "tips": [
+    "作者は「((masterpiece)) (best quality) (beautiful detailed eyes) (ultra-detailed) (finely detailed) (highres)」のような品質タグを使っています",
+    "ネガティブには lowres, bad anatomy, bad hands, worst quality, low quality などの一般的なタグを並べています"
+   ]
+  },
+  "en": {
+   "summary": "ChromaFT v2 is an illustration model made by zzzAI19 through fine-tuning. It is an SD 1.5 model, and sample images are posted on the author's blog.",
+   "features": [
+    "Created by fine-tuning",
+    "Released as the all-ages-oriented version",
+    "Illustration-style output"
+   ],
+   "tips": [
+    "The author uses quality tags like \"((masterpiece)) (best quality) (beautiful detailed eyes) (ultra-detailed) (finely detailed) (highres)\"",
+    "The author's negative prompt lists common tags such as lowres, bad anatomy, bad hands, worst quality, low quality"
+   ]
+  }
+ },
+ {
+  "generatorId": 3,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/Lasorco/lametta",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "Lasorco",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1745",
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "Lasorco さんが個人の普段使い向けにマージしたアニメ調のモデルです。頭身低めでデフォルメの強い女の子のキャラクターを描くように調整されています。目のハイライトが残るように気を配ってマージされています。",
+   "features": [
+    "頭身低めでデフォルメの効いたキャラクター",
+    "目のハイライトがしっかり残る",
+    "丸い目の可愛らしい顔立ち",
+    "女の子のキャラクターに特化（それ以外は苦手）"
+   ],
+   "tips": [
+    "サンプラーは何でも使えますが、作者は DPM++ 2M Karras で調整しています",
+    "プロンプトは短めから始めて、必要なものを足していく使い方がおすすめです",
+    "ネガティブプロンプトは \"(low quality, worst quality:1.4)\" が推奨です",
+    "Hires.fix で色味が崩れるときは Hires steps を 0（自動）か 10 以上にしてみてください"
+   ]
+  },
+  "en": {
+   "summary": "An anime-style merge made by Lasorco for their own everyday use. It is tuned toward strongly stylized girl characters with short, chibi-like proportions, and merged carefully to keep highlights in the eyes.",
+   "features": [
+    "Short, stylized character proportions",
+    "Keeps bright highlights in the eyes",
+    "Cute, round-eyed faces",
+    "Focused on girl characters; other subjects are not its strength"
+   ],
+   "tips": [
+    "Any sampler works, but the author tuned it with DPM++ 2M Karras",
+    "Short prompts work best; start small and add what you need",
+    "Recommended negative prompt: \"(low quality, worst quality:1.4)\"",
+    "If colors break with Hires.fix, set Hires steps to 0 (auto) or 10 or more"
+   ]
+  }
+ },
+ {
+  "generatorId": 4,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/112054?modelVersionId=135644",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "tlano",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v2.0",
+  "publishedAt": "2023-08-07",
+  "triggerWords": [
+   "FURRY"
+  ],
+  "ja": {
+   "summary": "ファーリー（獣人）キャラクターのイラスト向けに調整されたマージモデルです。作者は tlano さんです。v2.0 は sdhk、fluffyrock、DreamShaper 8 に、iroiro-lora や作者の Tora-NijiFurry LoRA を組み合わせて作られています。",
+   "features": [
+    "獣人キャラクターのイラストが得意",
+    "「furry」タグを使う前提で調整されている",
+    "sdhk・fluffyrock・DreamShaper 8 などをマージ",
+    "作者自身の Tora-NijiFurry LoRA を取り込んでいる"
+   ],
+   "tips": [
+    "プロンプトに「furry」を入れて使います。このタグなしの出力はあまりテストされていないそうです。"
+   ]
+  },
+  "en": {
+   "summary": "A merged model tuned for furry (anthro) character illustrations, made by tlano. Version 2.0 combines sdhk, fluffyrock and DreamShaper 8 with iroiro-lora and the author's own Tora-NijiFurry LoRA.",
+   "features": [
+    "Focused on furry / anthro character art",
+    "Tuned with the \"furry\" tag in mind",
+    "Merge of sdhk, fluffyrock, DreamShaper 8 and more",
+    "Includes the author's Tora-NijiFurry LoRA"
+   ],
+   "tips": [
+    "Include \"furry\" in your prompt; output without that tag is not well tested."
+   ]
+  }
+ },
+ {
+  "generatorId": 5,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/616632?modelVersionId=689333",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "ochiusa",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1.0",
+  "publishedAt": "2024-08-02",
+  "triggerWords": [],
+  "ja": {
+   "summary": "ochiusa さんが公開している SD1.5 系のアニメ調モデルです。Civitai では「UsaChoMix Second edition」として公開されています。UsaChoMix を、落書き風の表現を抜いて丁寧な絵柄に寄せたものです。",
+   "features": [
+    "アニメ調のイラスト",
+    "UsaChoMix の派生版",
+    "落書き風のタッチを抑えた、ていねいな絵柄",
+    "女性・男性どちらのキャラクターも想定"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An SD1.5 anime-style model by ochiusa, published on Civitai as \"UsaChoMix Second edition\". It is a cleaner take on UsaChoMix without the graffiti-like style.",
+   "features": [
+    "Anime-style illustration",
+    "Derived from UsaChoMix",
+    "Neater look without the graffiti style",
+    "Tagged for both female and male characters"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 6,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/600100?modelVersionId=670698",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "ochiusa",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1.0",
+  "publishedAt": "2024-07-25",
+  "triggerWords": [],
+  "ja": {
+   "summary": "ochiusa さんが公開したアニメ調のモデルです（Civitai 名: UsaChoMix）。約100枚の画像で学習した、かわいらしいデフォルメ寄りの絵柄のモデルです。",
+   "features": [
+    "アニメ調のイラスト",
+    "かわいらしい、デフォルメ寄りの絵柄",
+    "約100枚の画像で学習"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An anime-style model released by ochiusa (listed on Civitai as UsaChoMix). It was trained on about 100 images and leans toward a cute, stylized look.",
+   "features": [
+    "Anime-style illustrations",
+    "Cute, stylized character look",
+    "Trained on about 100 images"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 7,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/15037?modelVersionId=18512",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "cheesedaddy",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "3.5 FP16",
+  "publishedAt": "2023-03-04",
+  "triggerWords": [],
+  "ja": {
+   "summary": "cheesedaddy さんによる風景向けの SD 1.5 マージモデルです。自作のマージにオフセットノイズモデルを組み合わせています。この 3.5 はファンタジー寄りの風景が得意なバージョンです。",
+   "features": [
+    "風景・背景の描写向け",
+    "オフセットノイズで明暗の幅が出やすい",
+    "3.5 はファンタジー風景が得意（2.0 はリアル寄り）"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "A landscape-focused SD 1.5 merge by cheesedaddy, combined with an offset-noise model. Version 3.5 leans toward fantasy scenery.",
+   "features": [
+    "Made for landscapes and scenery",
+    "Offset noise for a wider range of light and dark",
+    "3.5 is better at fantasy (2.0 is better at realism)"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 8,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/85137?modelVersionId=125324",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "Celsia",
+  "baseModel": null,
+  "license": "CreativeML Open RAIL-M",
+  "versionName": null,
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "風景や景色の画像に特化したモデルです。作者は Celsia（旧名 CellyOcillus）さんで、Civitai のページは現在「Landscape Realistic Pro」という名前で公開されています。",
+   "features": [
+    "風景・背景の生成に特化",
+    "テキストだけで景色を描かせられる",
+    "ネガティブプロンプトで不要な要素を抑えられる"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "A model focused on landscape and scenery images, by Celsia (formerly CellyOcillus). Its Civitai page is now published under the name \"Landscape Realistic Pro\".",
+   "features": [
+    "Specialized in landscapes and backgrounds",
+    "Generates scenery from simple text prompts",
+    "Negative prompts help remove unwanted elements"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 9,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/123476?modelVersionId=134694",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "Tanorika",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "KawaiiEdition",
+  "publishedAt": "2023-08-06",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Tanorika さんが公開している SD1.5 系のマージモデル「SurMix」の KawaiiEdition です。多くのモデルを混ぜたアニメ調のモデルで、このバージョンは可愛らしい顔立ちが描きやすくなっています。",
+   "features": [
+    "アニメ調のイラスト",
+    "多数のモデルをマージ",
+    "可愛らしい顔の形が得意"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "The KawaiiEdition of SurMix, an SD1.5 merge model by Tanorika. It blends many models into an anime style, and this version is tuned for cuter face shapes.",
+   "features": [
+    "Anime-style illustration",
+    "Merge of many models",
+    "Good at cute face shapes"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 10,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/120366?modelVersionId=130878",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "gaaaaaaaaaaaash",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1.0",
+  "publishedAt": "2023-08-01",
+  "triggerWords": [],
+  "ja": {
+   "summary": "gaaaaaaaaaaaash さんのマージモデル KiMiX. です。作者が自作した LoRA を混ぜて作られていて、目が大きめに描かれるのが特徴です。",
+   "features": [
+    "自作 LoRA を混ぜたマージモデル",
+    "目が大きめのキャラクター",
+    "イラスト調の出力"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "KiMiX. is a merge model by gaaaaaaaaaaaash, built by mixing in the author's own LoRAs. Characters tend to be drawn with fairly large eyes.",
+   "features": [
+    "Merge that includes the author's own LoRAs",
+    "Characters with larger eyes",
+    "Illustration-style output"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 11,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/77751?modelVersionId=139168",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "meeeetia",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "R5-BakedVAE",
+  "publishedAt": "2023-08-17",
+  "triggerWords": [],
+  "ja": {
+   "summary": "meeeetia さんによるアニメ調のマージモデルです。とても短いプロンプトでも質のよいイラストが出せるのが特徴です。R5 は以前の R2.8 より柔軟になっています。",
+   "features": [
+    "アニメ調の女の子のイラスト",
+    "短いプロンプトでも整った絵が出やすい",
+    "R2.8 より柔軟な R5",
+    "VAE 焼き込み版"
+   ],
+   "tips": [
+    "ネガティブプロンプトは \"worst quality, bad quality\" を重み 1.6〜2.0 で使うのがおすすめです"
+   ]
+  },
+  "en": {
+   "summary": "An anime-style merge by meeeetia. It can produce good-quality illustrations from very short prompts, and R5 is more flexible than the earlier R2.8.",
+   "features": [
+    "Anime-style girl illustrations",
+    "Good results from short prompts",
+    "R5 is more flexible than R2.8",
+    "VAE baked in"
+   ],
+   "tips": [
+    "Recommended negative: \"worst quality, bad quality\" at a weight of 1.6–2.0"
+   ]
+  }
+ },
+ {
+  "generatorId": 12,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/sazyou-roukaku/chilled_remix",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "sazyou_roukaku（佐城郎画）",
+  "baseModel": null,
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v2",
+  "publishedAt": "2023-05-21",
+  "triggerWords": [],
+  "ja": {
+   "summary": "セミリアル系のマージモデル「chilled_remix」のサブモデルとして作られた reversemix です。作者は佐城郎画（sazyou_roukaku）さんです。real-max、fantasticmix、DreamShaper、epiCRealism、diamondCoalMix などをマージしています。",
+   "features": [
+    "chilled_remix のサブモデルとして作られたセミリアル系",
+    "LoRA なしでは顔のリアル感がやや控えめ",
+    "自然な文章のプロンプトにも強い",
+    "v2 は fp16・VAE 焼き込み版のみ配布"
+   ],
+   "tips": [
+    "Clip skip 2 が推奨です。",
+    "VAE は焼き込み済みです。",
+    "「high resolution」は背景や質感に効果があるそうです。high quality などのクオリティ語はあまり効かないとのことです。",
+    "作者は (symmetrical clear eyes:1.3) を必ず入れているそうです。"
+   ]
+  },
+  "en": {
+   "summary": "reversemix is the companion model to the semi-realistic merge chilled_remix, made by sazyou_roukaku. It merges real-max, fantasticmix, DreamShaper, epiCRealism, diamondCoalMix and others.",
+   "features": [
+    "Semi-realistic sibling of chilled_remix",
+    "Faces look less realistic without LoRAs",
+    "Handles natural-language prompts well",
+    "v2 is distributed only as fp16 with a baked-in VAE"
+   ],
+   "tips": [
+    "Clip skip 2 is recommended.",
+    "The VAE is baked in.",
+    "\"high resolution\" helps backgrounds and texture; quality words like \"high quality\" have little effect according to the author.",
+    "The author always adds (symmetrical clear eyes:1.3)."
+   ]
+  }
+ },
+ {
+  "generatorId": 13,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/79083?modelVersionId=107812",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "blue_pen5805",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v10",
+  "publishedAt": "2023-07-01",
+  "triggerWords": [],
+  "ja": {
+   "summary": "blue_pen5805 さんによる SD1.5 系のアニメ調モデル「blue_pencil」の v10 です。扱いやすさと、何でも描けることをコンセプトにしています。このバージョンは「かわいい」絵柄に寄せています。",
+   "features": [
+    "アニメ調のイラスト",
+    "扱いやすさを重視",
+    "人物から動物まで幅広く描ける",
+    "v10 は可愛い寄りの絵柄"
+   ],
+   "tips": [
+    "作者は VAE に ClearVAE をすすめています",
+    "同梱の VAE は壊れているため、VAE は必ず別に指定するよう案内されています"
+   ]
+  },
+  "en": {
+   "summary": "Version v10 of blue_pencil, an SD1.5 anime-style model by blue_pen5805. Its concept is easy to use and able to generate anything; this version leans cute.",
+   "features": [
+    "Anime-style illustration",
+    "Designed to be easy to use",
+    "Covers a wide range of subjects",
+    "v10 has a cuter look"
+   ],
+   "tips": [
+    "The author recommends ClearVAE",
+    "The bundled VAE is broken, so always set a VAE separately"
+   ]
+  }
+ },
+ {
+  "generatorId": 14,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/sazyou-roukaku/BracingEvoMix",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "sazyou_roukaku",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1",
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "佐城郎画（sazyou_roukaku）さんによる SD1.5 系のマージモデル BracingEvoMix の v1 です。シリーズはフォトリアルな人物、特にアジア系の顔を多様に描けることを重視しています。",
+   "features": [
+    "写実寄りの人物表現",
+    "アジア系の顔のバリエーションが豊富（作者評価、v2）",
+    "自然な文章のプロンプトにもある程度反応（作者評価、v2）",
+    "ライセンス上、生成画像の商用利用やマージの共有も OK とされています"
+   ],
+   "tips": [
+    "v2 の説明では Clip skip 2 が推奨されています",
+    "v2 の推奨ネガティブは (worst quality:2), (low quality:1.4), (long neck:2) などがベースです",
+    "背景をくっきり出したいときは、ネガティブに (depth of field, bokeh, blurry, blurry background:1.4) を入れます"
+   ]
+  },
+  "en": {
+   "summary": "BracingEvoMix v1 is an SD 1.5 merge by sazyou_roukaku. The series focuses on photorealistic people, with a wide variety of Asian faces.",
+   "features": [
+    "Photorealistic portraits",
+    "Wide variety of Asian faces (author's rating, v2)",
+    "Reasonable response to natural-language prompts (author's rating, v2)",
+    "License allows selling generated images and sharing merges"
+   ],
+   "tips": [
+    "For v2, the author recommends Clip skip 2",
+    "The v2 base negative prompt includes (worst quality:2), (low quality:1.4), (long neck:2)",
+    "Add (depth of field, bokeh, blurry, blurry background:1.4) to the negative prompt for a sharper background"
+   ]
+  }
+ },
+ {
+  "generatorId": 15,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/109027?modelVersionId=117448",
+   "label": "Civitai"
+  },
+  "links": [
+   {
+    "label": "Hugging Face",
+    "url": "https://huggingface.co/teasan/milktea"
+   }
+  ],
+  "creator": "teasan",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1",
+  "publishedAt": "2023-07-14",
+  "triggerWords": [],
+  "ja": {
+   "summary": "teasan さんによるイラスト寄りのマージモデルです。ミルクティーのように柔らかく、甘く、ふわっとした雰囲気の絵が得意です。「美人」より「可愛い」に振り切った画風です。",
+   "features": [
+    "柔らかくふんわりした雰囲気",
+    "コントラスト低めで全体的に白っぽい色調（意図的な仕様）",
+    "「可愛い」路線のキャラクター",
+    "白さを抑えた mild 版も別に公開されています"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An illustration-focused merge by teasan. It draws soft, sweet, fluffy pictures, like milk tea, and aims fully at cute rather than beautiful.",
+   "features": [
+    "Soft, fluffy mood",
+    "Low contrast and an intentionally whitish palette",
+    "Cute-style characters",
+    "A less white \"mild\" variant is also available separately"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 16,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/105573?modelVersionId=113269",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "LanLan696969",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1.0",
+  "publishedAt": "2023-07-08",
+  "triggerWords": [],
+  "ja": {
+   "summary": "フォトリアルな画像を目指して作られたモデルです。作者は LanLan696969 さんで、SD 1.5 をベースにしています。",
+   "features": [
+    "写真のようなリアル系の画像が得意",
+    "人物のポートレートに向いている",
+    "幅広い用途で使える安定感を目指している"
+   ],
+   "tips": [
+    "作者の設定：ステップ 28 以上、CFG 7（6〜8）、Clip skip 2。",
+    "サンプラーは Euler、Euler a、DPM++ 2M Karras、DPM++ SDE Karras。",
+    "解像度は 512×768 または 768×512。",
+    "Hires.fix は R-ESRGAN 4x+ か 4x-UltraSharp で 2 倍、Hires ステップ 15、Denoising 0.2〜0.5。"
+   ]
+  },
+  "en": {
+   "summary": "A model aiming for robust photorealistic images, made by LanLan696969 on an SD 1.5 base.",
+   "features": [
+    "Photorealistic output",
+    "Well suited to portraits",
+    "Built to be a capable all-round realistic model"
+   ],
+   "tips": [
+    "Author's settings: 28+ steps, CFG 7 (6–8), Clip skip 2.",
+    "Samplers: Euler, Euler a, DPM++ 2M Karras, DPM++ SDE Karras.",
+    "Size: 512×768 or 768×512.",
+    "Hires fix: R-ESRGAN 4x+ or 4x-UltraSharp, 2×, 15 hires steps, denoising 0.2–0.5."
+   ]
+  }
+ },
+ {
+  "generatorId": 17,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/108882?modelVersionId=117289",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "Yuno779",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "prt",
+  "publishedAt": "2023-07-14",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Yuno779 さんが公開している SD1.5 系のモデルで、頭の大きいデフォルメの可愛い絵柄（大头可爱风）を描きます。原神の QQ グループでよく使われるスタンプ画像1枚だけで学習されています。",
+   "features": [
+    "頭が大きいデフォルメ絵柄",
+    "スタンプのような可愛いタッチ",
+    "1枚の画像から学習",
+    "アニメ調"
+   ],
+   "tips": [
+    "学習画像が小さいため、高解像度補助（Hires.fix）はあまりおすすめされていません"
+   ]
+  },
+  "en": {
+   "summary": "An SD1.5 model by Yuno779 that draws a cute, big-headed chibi style. It was trained on a single image, a sticker commonly used in a Genshin Impact QQ group.",
+   "features": [
+    "Big-head chibi style",
+    "Cute, sticker-like look",
+    "Trained on a single image",
+    "Anime style"
+   ],
+   "tips": [
+    "Hires.fix is not really recommended, since the training image was small"
+   ]
+  }
+ },
+ {
+  "generatorId": 18,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/50696?modelVersionId=94654",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "lchxi",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "Omega-fp16",
+  "publishedAt": "2023-06-12",
+  "triggerWords": [
+   "chibi"
+  ],
+  "ja": {
+   "summary": "lchxi さんによる、ちびキャラ（Q版）専用のモデル QteaMix の最終版 Omega です。新しい素材で学習・融合し直したもので、安定したちびキャラを大きなサイズでも出せます。",
+   "features": [
+    "安定したちびキャラ（デフォルメ）表現",
+    "線がはっきりしていて、平面的な塗り",
+    "いろいろな解像度・縦横比に対応（1280×1280 程度まで）",
+    "「1boy」で男性キャラも簡単に出せる",
+    "ネガティブプロンプトが少なくても崩れにくい"
+   ],
+   "tips": [
+    "トリガーワード「chibi」を使えます",
+    "作者推奨のネガティブは embedding の verybadimagenegative_v1.3 です"
+   ]
+  },
+  "en": {
+   "summary": "Omega is the final version of QteaMix by lchxi, a model dedicated to chibi characters. It was retrained and re-merged with new material and produces stable chibi figures even at large sizes.",
+   "features": [
+    "Stable chibi (super-deformed) characters",
+    "Bold lines with flat coloring",
+    "Works at many resolutions and aspect ratios (up to about 1280×1280)",
+    "Male characters come out easily with \"1boy\"",
+    "Holds up well even with few negative prompts"
+   ],
+   "tips": [
+    "Use the trigger word \"chibi\"",
+    "The author recommends the verybadimagenegative_v1.3 negative embedding"
+   ]
+  }
+ },
+ {
+  "generatorId": 19,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/137909?modelVersionId=152311",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "br_d",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "_V01c",
+  "publishedAt": "2023-08-31",
+  "triggerWords": [],
+  "ja": {
+   "summary": "br_d さんによる写真風のリアル系マージモデルです。この _V01c が最初のリリースです。",
+   "features": [
+    "写真のようなリアル寄りの描写",
+    "人物の生成向け",
+    "VAE は焼き込まれていません"
+   ],
+   "tips": [
+    "推奨 VAE は vae-ft-mse-840000-ema-pruned です"
+   ]
+  },
+  "en": {
+   "summary": "A photo-style realistic merge by br_d. _V01c is its first release.",
+   "features": [
+    "Photo-like, realistic look",
+    "Suited to people",
+    "No baked VAE"
+   ],
+   "tips": [
+    "Recommended VAE: vae-ft-mse-840000-ema-pruned"
+   ]
+  }
+ },
+ {
+  "generatorId": 20,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/104626?modelVersionId=127821",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "den2",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v2.0",
+  "publishedAt": "2023-07-28",
+  "triggerWords": [],
+  "ja": {
+   "summary": "アニメ調のキャラクターイラスト向けのマージモデルです。作者は den2 さんで、NovelAI モデルが入っていない（入っているリスクをできるだけ下げた）モデルを目指して作られました。v2.0 は LittleStepMix_A とのマージと色味調整で、柔らかい線のイラストが出せます。",
+   "features": [
+    "アニメ調のキャラクターイラストが得意",
+    "v2.0 は太い主線が抑えられ、柔らかい雰囲気",
+    "自然光を意識して、色調をやや青みがかった方向に調整",
+    "1 人のキャラクターが出しやすい。複数人・男性・背景メインは苦手",
+    "マージ過程や使用 LoRA を公開し、透明性を重視"
+   ],
+   "tips": [
+    "Clip skip 2 が推奨です。VAE は不要です。",
+    "顔が崩れるときは ADetailer の使用がすすめられています。",
+    "danbooru 形式のタグが効きやすく、それ以外のタグ（色指定など）は効きにくいそうです。"
+   ]
+  },
+  "en": {
+   "summary": "A merged model for anime-style character illustrations by den2, built to avoid (or minimize the risk of) containing the NovelAI model. v2.0 adds a merge with LittleStepMix_A and a color adjustment for softer linework.",
+   "features": [
+    "Anime-style character illustrations",
+    "v2.0 tones down thick outlines for a softer look",
+    "Slightly bluish palette to suggest natural light",
+    "Good at single characters; weaker at groups, male characters and background-focused scenes",
+    "Merge process and LoRAs are disclosed for transparency"
+   ],
+   "tips": [
+    "Clip skip 2 recommended; no separate VAE needed.",
+    "If faces break down, ADetailer is recommended.",
+    "Danbooru tags work best; other tags (such as color words) are weaker."
+   ]
+  }
+ },
+ {
+  "generatorId": 21,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/129402?modelVersionId=150655",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "RSTR",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v2.0",
+  "publishedAt": "2023-08-29",
+  "triggerWords": [],
+  "ja": {
+   "summary": "RSTR さんによる SD1.5 系のアニメ調モデル「PetitCutie」の v2.0 です。「カワイイ」とダイナミックな構図の両立をめざして作られています。v2.0 では線が細くなり、手の描写も少し良くなりました。",
+   "features": [
+    "可愛いキャラクター",
+    "ダイナミックな構図",
+    "細めの線",
+    "手の描写を少し改善"
+   ],
+   "tips": [
+    "作者によると v2.0 は v1.5 の完全な上位版ではないそうです"
+   ]
+  },
+  "en": {
+   "summary": "Version 2.0 of PetitCutie, an SD1.5 anime-style model by RSTR, made to combine kawaii characters with dynamic composition. v2.0 has thinner lines and slightly better hands.",
+   "features": [
+    "Cute characters",
+    "Dynamic composition",
+    "Thinner lines",
+    "Slightly improved hands"
+   ],
+   "tips": [
+    "According to the author, v2.0 is not strictly better than v1.5"
+   ]
+  }
+ },
+ {
+  "generatorId": 22,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/99040?modelVersionId=140498",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "stella221125",
+  "baseModel": "SD 2.1 768",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "v2.0",
+  "publishedAt": "2023-08-14",
+  "triggerWords": [],
+  "ja": {
+   "summary": "stella221125 さんによる SD2.1 系のセミリアル（半写実）モデル Scream-SemiRealistic の v2.0 です。hakoMayD と WaifuDiffusion 1.5 Beta 2 Frosty Aesthetic をマージしています。",
+   "features": [
+    "アニメと写実の中間のセミリアルな絵柄",
+    "SD2.1（768）ベース",
+    "NovelAI のリークモデルを含まない",
+    "v2.0 は Fair AI Public License 1.0-SD 以外の制限なし"
+   ],
+   "tips": [
+    "SD2 系のため、SD1 用の LoRA や embedding は使えません",
+    "作者はネガティブ embedding の Mayng と ParaNegative をすすめています"
+   ]
+  },
+  "en": {
+   "summary": "Scream-SemiRealistic v2.0 is a semi-realistic SD 2.1 model by stella221125. It merges hakoMayD with WaifuDiffusion 1.5 Beta 2 Frosty Aesthetic.",
+   "features": [
+    "Semi-realistic style between anime and photo",
+    "Based on SD 2.1 (768)",
+    "Contains no NovelAI leak",
+    "v2.0 has no restrictions beyond the Fair AI Public License 1.0-SD"
+   ],
+   "tips": [
+    "As an SD2 model, it does not work with SD1 LoRAs or embeddings",
+    "The author recommends the Mayng and ParaNegative negative embeddings"
+   ]
+  }
+ },
+ {
+  "generatorId": 23,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/72668?modelVersionId=77394",
+   "label": "Civitai"
+  },
+  "links": [
+   {
+    "label": "Hugging Face",
+    "url": "https://huggingface.co/852wa/hakoMay/tree/main"
+   }
+  ],
+  "creator": "hakoniwa",
+  "baseModel": "SD 2.1 768",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "v1.0",
+  "publishedAt": "2023-05-22",
+  "triggerWords": [],
+  "ja": {
+   "summary": "hakoniwa さんによる SD 2.1 系のモデルです。WD 1.5 beta 2 から作られた hakoA をさらに追加学習しています。優しい雰囲気のイラストが得意です。",
+   "features": [
+    "優しいタッチのイラスト",
+    "SD 2.1（768）系",
+    "hakoMay シリーズ（A〜D）のうち D 版"
+   ],
+   "tips": [
+    "ネガティブ埋め込み Mayng と、ESRGAN や R-ESRGAN などのアップスケーラーを使った Hires.fix がおすすめです"
+   ]
+  },
+  "en": {
+   "summary": "An SD 2.1-series model by hakoniwa, made by further training hakoA, which was fine-tuned from WD 1.5 beta 2. It produces illustrations with a gentle feel.",
+   "features": [
+    "Gentle illustration style",
+    "SD 2.1 (768) based",
+    "The D variant of the hakoMay series (A–D)"
+   ],
+   "tips": [
+    "Use the Mayng negative embedding and Hires.fix with an upscaler such as ESRGAN or R-ESRGAN"
+   ]
+  }
+ },
+ {
+  "generatorId": 24,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/73218?modelVersionId=77933",
+   "label": "Civitai"
+  },
+  "links": [
+   {
+    "label": "Hugging Face",
+    "url": "https://huggingface.co/852wa/hakoMay/tree/main"
+   }
+  ],
+  "creator": "hakoniwa",
+  "baseModel": "SD 1.5",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "v1.0",
+  "publishedAt": "2023-05-22",
+  "triggerWords": [],
+  "ja": {
+   "summary": "hakoD をもとに追加学習したモデルで、男の子のイラストが出やすい傾向があります。作者は hakoniwa さんです。女の子向けの hakoMay A〜D シリーズの関連モデルです。",
+   "features": [
+    "男の子キャラクターのイラストが得意",
+    "hakoD から追加学習",
+    "hakoMay シリーズの一つ"
+   ],
+   "tips": [
+    "ネガティブプロンプトに「sepia」を入れ、Mayng のネガティブ埋め込みを使うのがおすすめとされています。"
+   ]
+  },
+  "en": {
+   "summary": "A model further trained from hakoD that tends to produce illustrations of boys, made by hakoniwa. It belongs to the hakoMay family, whose A–D models focus on girls.",
+   "features": [
+    "Leans toward boy characters",
+    "Further trained from hakoD",
+    "Part of the hakoMay series"
+   ],
+   "tips": [
+    "Add \"sepia\" to the negative prompt and use the Mayng negative embedding."
+   ]
+  }
+ },
+ {
+  "generatorId": 80,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/113985?modelVersionId=123179",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "nadenade_sitai",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1.0",
+  "publishedAt": "2023-07-22",
+  "triggerWords": [],
+  "ja": {
+   "summary": "nadenade_sitai さんが公開している SD1.5 系のアニメ調マージモデルです。lametta、cuteyukimix、manmaruMix などのモデルと、目や線に関する LoRA を組み合わせています。",
+   "features": [
+    "アニメ調のイラスト",
+    "lametta・cuteyukimix・manmaruMix などをマージ",
+    "目の描き方や太めの線の LoRA を使用"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An SD1.5 anime-style merge by nadenade_sitai, combining models such as lametta, cuteyukimix and manmaruMix with LoRAs for eyes and bold lines.",
+   "features": [
+    "Anime-style illustration",
+    "Merges lametta, cuteyukimix, manmaruMix and others",
+    "Uses eye and bold-line LoRAs"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 91,
+  "source": {
+   "kind": "aipictors",
+   "url": null,
+   "label": "Aipictors"
+  },
+  "links": [],
+  "creator": null,
+  "baseModel": null,
+  "license": "CreativeML Open RAIL-M",
+  "versionName": null,
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "Stable Diffusion 1.x 系のモデルです。配布元の情報が見つからないため、詳しい特徴はわかっていません。",
+   "features": [
+    "SD1 系のモデル"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An SD 1.x-family model. No source page is known, so its detailed characteristics are unclear.",
+   "features": [
+    "SD1-family model"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 92,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/15464?modelVersionId=97207",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "rerorerorero",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "SSS",
+  "publishedAt": "2023-06-16",
+  "triggerWords": [
+   "mecha musume",
+   "mechanical parts",
+   "robot joints",
+   "headgear"
+  ],
+  "ja": {
+   "summary": "メカ娘（機械のパーツを身につけたアニメ調の女の子）を描くためのモデルです。原案は搞事德·乔斯达さんで、Civitai では rerorerorero さんが公開しています。",
+   "features": [
+    "アニメ調のメカ娘・サイボーグ風キャラクター",
+    "メカの配色テーマを選べる",
+    "ヘッドギアは付けても外してもよい",
+    "キャラクター LoRA と組み合わせやすい"
+   ],
+   "tips": [
+    "SSS 版では super_robot_joints も試せます"
+   ]
+  },
+  "en": {
+   "summary": "A model for drawing mecha musume: anime-style girls fitted with mechanical parts. The original idea is by 搞事德·乔斯达, and it was released on Civitai by rerorerorero.",
+   "features": [
+    "Anime-style mecha girls and cyborg-like characters",
+    "You can choose a color theme for the mecha",
+    "Headgear is optional",
+    "Works well with character LoRAs"
+   ],
+   "tips": [
+    "In the SSS version you can also try super_robot_joints"
+   ]
+  }
+ },
+ {
+  "generatorId": 646,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/zzzAI19/ChromaFT",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "zzzAI19",
+  "baseModel": null,
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v3",
+  "publishedAt": "2023-10-24",
+  "triggerWords": [],
+  "ja": {
+   "summary": "追加学習（ファインチューニング）で作られたイラスト向けモデルです。作者は zzzAI19 さんです。ChromaFT は全年齢向けの描写を重視した版です。",
+   "features": [
+    "追加学習で作られたモデル",
+    "全年齢向けの描写を重視した版",
+    "作例は作者のブログで公開されている"
+   ],
+   "tips": [
+    "作者のポジティブプロンプト例：((masterpiece)) (best quality) (beautiful detailed eyes) (ultra-detailed) (finely detailed) (highres)",
+    "ネガティブには lowres、bad anatomy、bad hands、((worst quality))、((low quality)) などと bad-hands-5 を使っているそうです。"
+   ]
+  },
+  "en": {
+   "summary": "An illustration model created through fine-tuning by zzzAI19. ChromaFT is the edition focused on all-ages depictions.",
+   "features": [
+    "Created by fine-tuning",
+    "All-ages-oriented edition",
+    "Sample images are on the author's blog"
+   ],
+   "tips": [
+    "Author's positive prompt: ((masterpiece)) (best quality) (beautiful detailed eyes) (ultra-detailed) (finely detailed) (highres)",
+    "Negative prompt uses terms like lowres, bad anatomy, bad hands, ((worst quality)), ((low quality)) plus bad-hands-5."
+   ]
+  }
+ },
+ {
+  "generatorId": 647,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/185319?modelVersionId=208034",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "RSTR",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1.0",
+  "publishedAt": "2023-11-01",
+  "triggerWords": [],
+  "ja": {
+   "summary": "RSTR さんによる SD1.5 系のアニメ調モデルです。可愛いジト目が特徴です。PetitCutie v2.0 や PuniMIX などのモデルに、目の表現の LoRA を組み合わせて作られています。",
+   "features": [
+    "可愛いジト目",
+    "アニメ調のイラスト",
+    "PetitCutie v2.0・qteamix・PuniMIX をマージ",
+    "目の表現の LoRA を多く使用"
+   ],
+   "tips": [
+    "安定しやすい Euler a がおすすめです",
+    "できれば Hires.fix を使うよう案内されています",
+    "VAE は入っていないので、好みのものを使います"
+   ]
+  },
+  "en": {
+   "summary": "An SD1.5 anime-style model by RSTR, known for cute jitome (half-closed, deadpan) eyes. It merges PetitCutie v2.0, PuniMIX and others with several eye LoRAs.",
+   "features": [
+    "Cute jitome eyes",
+    "Anime-style illustration",
+    "Merges PetitCutie v2.0, qteamix and PuniMIX",
+    "Several eye LoRAs merged in"
+   ],
+   "tips": [
+    "Euler a is recommended for stability",
+    "Use Hires.fix if possible",
+    "No VAE is included; use any you like"
+   ]
+  }
+ },
+ {
+  "generatorId": 648,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/191070?modelVersionId=214600",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "JujoHotaru",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v1.0a",
+  "publishedAt": "2023-11-06",
+  "triggerWords": [],
+  "ja": {
+   "summary": "JujoHotaru（十条蛍）さんの「かわいさ」を追求したマージモデル HotaruBreed シリーズの Type A です。半写実の 2.5D 風の絵柄で、作者が独自に学習した多数の LoRA を混ぜて色味や目の形、画質を調整しています。",
+   "features": [
+    "半写実（2.5D）風のかわいい絵柄",
+    "独自 LoRA のマージで、細かい瞳や輪郭、ざらつきの少ない画質",
+    "背景が細かく描き込まれる",
+    "作者の目・口・表情 LoRA と相性がよい"
+   ],
+   "tips": [
+    "推奨: CFG 7〜10、Clip skip 1〜2、ステップ 30〜50",
+    "サンプラーは DPM++ 2M SDE Karras / DPM++ 3M SDE Karras",
+    "主に 512×512、800×600、640×960、1024×768 でテストされています",
+    "ネガティブ embedding は EasyNegative / EasyNegativeV2 / SimpleNegative、ネガティブに「bad face」"
+   ]
+  },
+  "en": {
+   "summary": "Type A of JujoHotaru's HotaruBreed series, merge models that pursue \"kawaii\" cuteness. It has a semi-realistic 2.5D style, and many of the author's own LoRAs are merged in to tune color, eye shape, and image quality.",
+   "features": [
+    "Cute semi-realistic 2.5D style",
+    "Merged custom LoRAs for detailed pupils, clean outlines, and less grain",
+    "Highly detailed backgrounds",
+    "Tuned to work with the author's eye, mouth, and expression LoRAs"
+   ],
+   "tips": [
+    "Recommended: CFG 7–10, Clip skip 1–2, 30–50 steps",
+    "Samplers: DPM++ 2M SDE Karras / DPM++ 3M SDE Karras",
+    "Mainly tested at 512×512, 800×600, 640×960, and 1024×768",
+    "Negative embeddings: EasyNegative / EasyNegativeV2 / SimpleNegative, plus \"bad face\" in the negative prompt"
+   ]
+  }
+ },
+ {
+  "generatorId": 649,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/191337?modelVersionId=214913",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "JujoHotaru",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v1.0a",
+  "publishedAt": "2023-11-06",
+  "triggerWords": [],
+  "ja": {
+   "summary": "JujoHotaru さんの「HotaruBreed」シリーズのうち、標準的な 2D イラスト向けの Type B です。「可愛さ」を追求して、多数のモデルを階層マージしています。作者が学習させた LoRA を混ぜ込み、色味や目の形、画質を整えています。",
+   "features": [
+    "標準的な 2D イラストの画風",
+    "瞳や輪郭の細かい描写、粒子ノイズの軽減",
+    "背景まで細かく描き込まれる",
+    "作者の LoRA（目・口・表情）と相性がよい",
+    "v1.0〜v7.0 は ClearVAE 1.0 を焼き込み済み"
+   ],
+   "tips": [
+    "CFG 7〜10、Clip skip 1〜2、ステップ数 30〜50 が推奨です",
+    "サンプラーは DPM++ 2M SDE Karras か DPM++ 3M SDE Karras がおすすめです",
+    "主に 512x512、800x600、640x960、1024x768 で検証されています",
+    "ネガティブには EasyNegative / EasyNegativeV2 / SimpleNegative と \"bad face\" がおすすめです"
+   ]
+  },
+  "en": {
+   "summary": "Type B of JujoHotaru's HotaruBreed series, aimed at general-purpose 2D illustration. It is a block merge of many models pursuing cuteness, with the author's own LoRAs mixed in to tune color, eye shape, and image quality.",
+   "features": [
+    "General-purpose 2D illustration style",
+    "Finely detailed pupils and outlines, less grain noise",
+    "Highly detailed backgrounds",
+    "Tuned to work well with the author's eye, mouth, and expression LoRAs",
+    "v1.0–v7.0 include ClearVAE 1.0"
+   ],
+   "tips": [
+    "Recommended: CFG 7–10, Clip skip 1–2, 30–50 steps",
+    "Sampler: DPM++ 2M SDE Karras or DPM++ 3M SDE Karras",
+    "Mainly tested at 512x512, 800x600, 640x960, and 1024x768",
+    "Negative: EasyNegative / EasyNegativeV2 / SimpleNegative plus \"bad face\""
+   ]
+  }
+ },
+ {
+  "generatorId": 650,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/191357?modelVersionId=214931",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "JujoHotaru",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v1.0a",
+  "publishedAt": "2023-11-06",
+  "triggerWords": [],
+  "ja": {
+   "summary": "「かわいさ」を追求した HotaruBreed シリーズのうち、ややアニメ塗り寄りの Type C です。作者は JujoHotaru さんで、多数のモデルの階層マージに独自学習の LoRA を組み合わせて作られています。",
+   "features": [
+    "ややアニメ塗りのイラスト",
+    "独自 LoRA で色味・陰影・目の形・瞳の質感を調整",
+    "背景の描き込みが細かい",
+    "作者の LoRA（目・口・表情など）と相性がよい"
+   ],
+   "tips": [
+    "CFG 7〜10、Clip skip 1〜2、ステップ 30〜50 が推奨です。",
+    "サンプラーは DPM++ 2M SDE Karras か DPM++ 3M SDE Karras。",
+    "解像度は 512×512、800×600、640×960、1024×768 で主にテストされています。",
+    "v1.0 には ClearVAE 1.0 が焼き込まれているので、外部 VAE は不要です。"
+   ]
+  },
+  "en": {
+   "summary": "Type C of the HotaruBreed series, which pursues a cute \"kawaii\" look; this type has a semi-anime coloring style. Made by JujoHotaru by block-merging many models and adding self-trained LoRAs.",
+   "features": [
+    "Semi-anime painting style",
+    "Self-trained LoRAs tune color, shading, eye shape and pupil detail",
+    "Highly detailed backgrounds",
+    "Works well with the author's eye, mouth and expression LoRAs"
+   ],
+   "tips": [
+    "CFG 7–10, Clip skip 1–2, 30–50 steps.",
+    "Sampler: DPM++ 2M SDE Karras or DPM++ 3M SDE Karras.",
+    "Mainly tested at 512×512, 800×600, 640×960 and 1024×768.",
+    "v1.0 has ClearVAE 1.0 baked in, so no external VAE is needed."
+   ]
+  }
+ },
+ {
+  "generatorId": 651,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/191365?modelVersionId=214938",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "JujoHotaru",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v1.0a",
+  "publishedAt": "2023-11-06",
+  "triggerWords": [],
+  "ja": {
+   "summary": "JujoHotaru さんによる「HotaruBreed」シリーズの Type D（アニメ塗り）です。多くのモデルを階層マージした SD1.5 系モデルで、可愛さを追求しています。作者が自分で学習させた LoRA を多く混ぜて、色味や目の形、画質を整えています。",
+   "features": [
+    "モダンなアニメ塗り",
+    "可愛さを重視",
+    "背景も細かく描ける",
+    "作者の目・口・表情 LoRA と相性がよい"
+   ],
+   "tips": [
+    "推奨設定：CFG 7〜10、Clip skip 1〜2、30〜50 ステップ",
+    "サンプラーは DPM++ 2M SDE Karras か DPM++ 3M SDE Karras",
+    "v1.0 系は ClearVAE が焼き込み済みなので、別の VAE は不要です",
+    "ネガティブには EasyNegative などの埋め込みがすすめられています"
+   ]
+  },
+  "en": {
+   "summary": "Type D (modern anime style) of JujoHotaru's HotaruBreed series, an SD1.5 hierarchical merge pursuing cuteness. Many of the author's own LoRAs are merged in to tune color, eye shape and quality.",
+   "features": [
+    "Modern anime coloring",
+    "Focused on cuteness",
+    "Highly detailed backgrounds",
+    "Works well with the author's eye, mouth and expression LoRAs"
+   ],
+   "tips": [
+    "Recommended: CFG 7-10, Clip skip 1-2, 30-50 steps",
+    "Sampler: DPM++ 2M SDE Karras or DPM++ 3M SDE Karras",
+    "v1.0-era versions have ClearVAE baked in, so no external VAE is needed",
+    "Negative embeddings such as EasyNegative are suggested"
+   ]
+  }
+ },
+ {
+  "generatorId": 652,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/191394?modelVersionId=214967",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "JujoHotaru",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v1.0a",
+  "publishedAt": "2023-11-06",
+  "triggerWords": [],
+  "ja": {
+   "summary": "JujoHotaru（十条蛍）さんの「かわいさ」を追求したマージモデル HotaruBreed シリーズの Type E です。クラシックなアニメ調の絵柄で、作者が独自に学習した多数の LoRA を混ぜて色味や目の形、画質を調整しています。",
+   "features": [
+    "クラシックなアニメ調の絵柄",
+    "独自 LoRA のマージで、細かい瞳や輪郭、ざらつきの少ない画質",
+    "背景が細かく描き込まれる",
+    "作者の目・口・表情 LoRA と相性がよい"
+   ],
+   "tips": [
+    "推奨: CFG 7〜10、Clip skip 1〜2、ステップ 30〜50",
+    "サンプラーは DPM++ 2M SDE Karras / DPM++ 3M SDE Karras",
+    "主に 512×512、800×600、640×960、1024×768 でテストされています",
+    "ネガティブ embedding は EasyNegative / EasyNegativeV2 / SimpleNegative、ネガティブに「bad face」"
+   ]
+  },
+  "en": {
+   "summary": "Type E of JujoHotaru's HotaruBreed series, merge models that pursue \"kawaii\" cuteness. It has a classic anime style, and many of the author's own LoRAs are merged in to tune color, eye shape, and image quality.",
+   "features": [
+    "Classic anime style",
+    "Merged custom LoRAs for detailed pupils, clean outlines, and less grain",
+    "Highly detailed backgrounds",
+    "Tuned to work with the author's eye, mouth, and expression LoRAs"
+   ],
+   "tips": [
+    "Recommended: CFG 7–10, Clip skip 1–2, 30–50 steps",
+    "Samplers: DPM++ 2M SDE Karras / DPM++ 3M SDE Karras",
+    "Mainly tested at 512×512, 800×600, 640×960, and 1024×768",
+    "Negative embeddings: EasyNegative / EasyNegativeV2 / SimpleNegative, plus \"bad face\" in the negative prompt"
+   ]
+  }
+ },
+ {
+  "generatorId": 653,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/JosefJilek/loliDiffusion",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "JosefJilek",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v0.13.0",
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "JosefJilek さんによる、萌え系のアニメキャラクターの生成を改善することを目指したマージモデルです。v0.13 系は、前の版から安定性を少し改善したバージョンです。",
+   "features": [
+    "萌え系のアニメ調キャラクター",
+    "可愛らしいデフォルメ寄りの画風",
+    "複数のアニメ系モデルをマージ"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "A merge by JosefJilek that aims to improve the generation of moe-style anime characters. The v0.13 series brings slight stability improvements over earlier versions.",
+   "features": [
+    "Moe-style anime characters",
+    "Cute, stylized look",
+    "Merged from several anime models"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 654,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/JosefJilek/loliDiffusion",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "JosefJilek",
+  "baseModel": null,
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v0.13.0 (10th-Heaven v3)",
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "アニメ調の「萌え」系キャラクターをきれいに描くことを目指したマージモデルのシリーズです。作者は JosefJilek さんです。このモデルは v0.13 系の一つです。",
+   "features": [
+    "アニメ調のかわいらしい絵柄",
+    "複数のアニメ系モデルをマージして作られている",
+    "v0.13 系はモデルの安定性を少し改善"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "A series of merged models aimed at drawing cute \"moe\" anime-style characters, made by JosefJilek. This model is one of the v0.13 releases.",
+   "features": [
+    "Cute anime art style",
+    "Built by merging several anime models",
+    "v0.13 slightly improves model stability"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 655,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/JosefJilek/loliDiffusion",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "JosefJilek",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v0.13.0 AOM3-A3",
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "JosefJilek さんの「Moe Diffusion」プロジェクトのモデルで、萌え系のアニメキャラクターを描くことを目的にしています。SD1.5 系のマージモデルで、v0.13 では安定性が少し上がっています。",
+   "features": [
+    "萌え系のアニメ絵柄",
+    "可愛らしいデフォルメ寄りのキャラクター",
+    "SD1.5 系のマージモデル"
+   ],
+   "tips": [
+    "品質タグ（masterpiece, best quality など）とタグ形式のプロンプトの例が公開されています"
+   ]
+  },
+  "en": {
+   "summary": "A model from JosefJilek's Moe Diffusion project, which aims to improve generation of moe-style anime characters. It is an SD1.5 merge; v0.13 brought slight stability improvements.",
+   "features": [
+    "Moe anime style",
+    "Cute, stylized characters",
+    "SD1.5 merge model"
+   ],
+   "tips": [
+    "The author shares tag-style prompt examples with quality tags such as masterpiece, best quality"
+   ]
+  }
+ },
+ {
+  "generatorId": 659,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/249614?modelVersionId=281664",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "kagami_kami_m",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v1.0",
+  "publishedAt": "2024-01-01",
+  "triggerWords": [],
+  "ja": {
+   "summary": "kagami_kami_m さんによる、人物を人形（ドール）のような姿に描く 2.5D 系のモデルです。1950年代の日本で流行した「トランジスタグラマー」が名前の由来です。",
+   "features": [
+    "人形のようなかわいい人物表現",
+    "写実寄りの 2.5D 風",
+    "VAE（840000）を内蔵"
+   ],
+   "tips": [
+    "推奨: CFG 3〜6、ステップ 12〜20",
+    "サンプラーは UniPC または Restart",
+    "Hires fix（8 ステップ）の併用がすすめられています"
+   ]
+  },
+  "en": {
+   "summary": "A 2.5D model by kagami_kami_m that renders people as doll-like figures. The name comes from \"Transistor Glamour,\" a body-type trend in 1950s Japan.",
+   "features": [
+    "Cute, doll-like people",
+    "Photorealistic-leaning 2.5D look",
+    "VAE (840000) baked in"
+   ],
+   "tips": [
+    "Recommended: CFG 3–6, 12–20 steps",
+    "Samplers: UniPC or Restart",
+    "The author suggests using Hires fix (8 steps)"
+   ]
+  }
+ },
+ {
+  "generatorId": 662,
+  "source": {
+   "kind": "aipictors",
+   "url": null,
+   "label": "Aipictors"
+  },
+  "links": [],
+  "creator": null,
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": null,
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "SD 1.5 系のモデルです。作者や配布元の情報は見つかっていません。",
+   "features": [
+    "SD 1.5 系"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An SD 1.5-based model. No information about its author or original source has been found.",
+   "features": [
+    "SD 1.5 based"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 664,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/119012?modelVersionId=245614",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "blue_pen5805",
+  "baseModel": "SDXL 1.0",
+  "license": null,
+  "versionName": "v2.0.0",
+  "publishedAt": "2023-12-01",
+  "triggerWords": [],
+  "ja": {
+   "summary": "多くのモデルをマージして作られた SDXL のアニメ系モデルです。作者は blue_pen5805 さんです。v2.0.0 は安定版の一つで、安定性が上がり、少しアニメ寄りになりました。",
+   "features": [
+    "多数のモデルをマージした SDXL モデル",
+    "アニメ調の女性キャラクターに向いている",
+    "v2.0.0 は安定性が向上し、ややアニメ寄り"
+   ],
+   "tips": [
+    "高品質なアニメイラストには、同じ作者の anima_pencil-XL のほうが向いていると作者は書いています。"
+   ]
+  },
+  "en": {
+   "summary": "An SDXL anime model made by merging many models, by blue_pen5805. v2.0.0 is one of the stable versions, with better stability and a slightly more anime look.",
+   "features": [
+    "SDXL merge of many models",
+    "Suited to anime-style female characters",
+    "v2.0.0 improves stability and leans slightly more anime"
+   ],
+   "tips": [
+    "The author notes that their anima_pencil-XL is better for high-quality anime illustrations."
+   ]
+  }
+ },
+ {
+  "generatorId": 665,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/260267?modelVersionId=293564",
+   "label": "Civitai"
+  },
+  "links": [
+   {
+    "label": "Hugging Face",
+    "url": "https://huggingface.co/cagliostrolab/animagine-xl-3.0"
+   }
+  ],
+  "creator": "CagliostroLab",
+  "baseModel": "SDXL 1.0",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "v3.0",
+  "publishedAt": "2024-01-10",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Cagliostro Research Lab が開発した、SDXL ベースのアニメ特化モデル「Animagine XL 3.0」です。Animagine XL 2.0 をもとに学習し、手の描写やアニメの概念の理解、プロンプトの読み取りが改善されています。",
+   "features": [
+    "アニメ絵に特化",
+    "有名アニメのキャラクター知識が豊富",
+    "手の描写を改善",
+    "タグでの指示に強い"
+   ],
+   "tips": [
+    "プロンプトは「1girl/1boy、キャラクター名、作品名、その他」の順に書くのがおすすめです"
+   ]
+  },
+  "en": {
+   "summary": "Animagine XL 3.0, an SDXL-based anime model by Cagliostro Research Lab. Fine-tuned from Animagine XL 2.0, it improves hand anatomy, anime concept knowledge and prompt understanding.",
+   "features": [
+    "Specialized in anime art",
+    "Broad knowledge of anime characters",
+    "Improved hand anatomy",
+    "Responds well to tag prompts"
+   ],
+   "tips": [
+    "Order tags as: 1girl/1boy, character name, series, then everything else"
+   ]
+  }
+ },
+ {
+  "generatorId": 667,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/267733?modelVersionId=310331",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "RSTR",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v2.0",
+  "publishedAt": "2024-01-24",
+  "triggerWords": [],
+  "ja": {
+   "summary": "RSTR さんが JitQ をもとに学習させた、Nijijourney のようなかわいい絵柄を目指したアニメ調モデル NijiQ の v2.0 です。",
+   "features": [
+    "Nijijourney 風のかわいいアニメ調",
+    "JitQ をベースに追加学習",
+    "eye-turime、hanme、KawaiiTech-20 の LoRA をマージ",
+    "VAE 内蔵（好きな VAE に変更も可）"
+   ],
+   "tips": [
+    "少ないデータで学習しているため、出力に偏りが出ることがあると作者が説明しています"
+   ]
+  },
+  "en": {
+   "summary": "NijiQ v2.0 by RSTR is an anime model trained from JitQ to reproduce a cute, Nijijourney-like style.",
+   "features": [
+    "Cute, Nijijourney-like anime style",
+    "Further trained from JitQ",
+    "Merged LoRAs: eye-turime, hanme, KawaiiTech-20",
+    "VAE included (you can switch to another)"
+   ],
+   "tips": [
+    "The author notes it was trained on a small dataset, so outputs may show some bias"
+   ]
+  }
+ },
+ {
+  "generatorId": 668,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/263085?modelVersionId=296612",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "kitarz",
+  "baseModel": "SDXL 1.0",
+  "license": null,
+  "versionName": "v1.0",
+  "publishedAt": "2024-01-12",
+  "triggerWords": [],
+  "ja": {
+   "summary": "kitarz さんが Animagine XL V3 をごくわずかに調整したアニメ調の SDXL モデルです。学習とマージで画風を少し変えています。権利やライセンスは元モデルの Cagliostrolab に帰属すると説明されています。",
+   "features": [
+    "Animagine XL V3 ベースのアニメ調",
+    "黒い輪郭線を控えめに",
+    "色味を調整"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "A very slight style adjustment of Animagine XL V3 by kitarz, made through training and merging. The author states that all rights, including the license, remain with Cagliostrolab.",
+   "features": [
+    "Anime style based on Animagine XL V3",
+    "Reduced black outlines",
+    "Adjusted colors"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 669,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/264709?modelVersionId=298479",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "changkiwi",
+  "baseModel": "SDXL 1.0",
+  "license": null,
+  "versionName": "V1",
+  "publishedAt": "2024-01-14",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Animagine XL をベースに、LoRA で作者独自の「kiwi スタイル」に寄せた SDXL のアニメ系モデルです。作者は changkiwi さんです。",
+   "features": [
+    "Animagine XL ベース",
+    "LoRA で kiwi スタイルに調整",
+    "アニメ調のかわいいキャラクターやデフォルメに向いている"
+   ],
+   "tips": [
+    "ネガティブ埋め込みは unaestheticXL、negativeXL、Aissist XL がすすめられています。"
+   ]
+  },
+  "en": {
+   "summary": "An SDXL anime model based on Animagine XL and adjusted toward the author's \"kiwi style\" with LoRAs, made by changkiwi.",
+   "features": [
+    "Based on Animagine XL",
+    "Tuned to kiwi style with LoRAs",
+    "Suited to cute anime characters and chibi"
+   ],
+   "tips": [
+    "Recommended embeddings: unaestheticXL, negativeXL, Aissist XL."
+   ]
+  }
+ },
+ {
+  "generatorId": 670,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/269232?modelVersionId=303526",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "Lykon",
+  "baseModel": "SDXL 1.0",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "v1.0",
+  "publishedAt": "2024-01-18",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Lykon さんによる SDXL ベースのアニメモデル「AAM XL (Anime Mix)」です。SD1.5 の AAM AnyLoRA Anime Mix を SDXL で作り直したもので、アニメのスクリーンショット風の絵柄が得意です。DreamShaper Anime をもとに、AAM のデータで追加学習しています。",
+   "features": [
+    "アニメのスクリーンショット風",
+    "いろいろなアニメ絵柄のミックス",
+    "風景やファンタジーも描ける",
+    "キャラクター LoRA の学習元にも使える"
+   ],
+   "tips": [
+    "推奨：CFG 5〜7（8 以下）、20〜30 ステップ、Euler a",
+    "SD1.5 用の LoRA や埋め込みは使えません"
+   ]
+  },
+  "en": {
+   "summary": "AAM XL (Anime Mix) by Lykon, an SDXL take on AAM AnyLoRA Anime Mix with an anime-screencap look. It is fine-tuned from DreamShaper Anime on the AAM dataset.",
+   "features": [
+    "Anime screencap style",
+    "Mix of anime styles",
+    "Handles landscapes and fantasy",
+    "Usable as a base for character LoRAs"
+   ],
+   "tips": [
+    "Recommended: CFG 5-7 (no higher than 8), 20-30 steps, Euler a",
+    "SD1.5 LoRAs and embeddings do not work"
+   ]
+  }
+ },
+ {
+  "generatorId": 671,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/121083?modelVersionId=291921",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "br_d",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "_V13md",
+  "publishedAt": "2024-01-09",
+  "triggerWords": [],
+  "ja": {
+   "summary": "br_d さんによるアニメ調のマージモデル Blazing Drive の V13md です。このバージョンでは手指をきれいにしたり、目の光の描き方に力を入れたりしています。",
+   "features": [
+    "アニメ調のキャラクターイラスト",
+    "手指の描写を改善（V13md）",
+    "目のハイライト表現に注力（V13md）",
+    "VAE は内蔵していません"
+   ],
+   "tips": [
+    "推奨 VAE は vae-ft-mse-840000-ema-pruned です"
+   ]
+  },
+  "en": {
+   "summary": "Blazing Drive V13md is an anime merge model by br_d. This version cleans up hands and fingers and focuses on the light in the eyes.",
+   "features": [
+    "Anime-style character illustrations",
+    "Improved hands and fingers (V13md)",
+    "More attention to eye highlights (V13md)",
+    "No baked VAE"
+   ],
+   "tips": [
+    "Recommended VAE: vae-ft-mse-840000-ema-pruned"
+   ]
+  }
+ },
+ {
+  "generatorId": 672,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/94809?modelVersionId=322874",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "7whitefire7",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "V14",
+  "publishedAt": "2024-02-01",
+  "triggerWords": [],
+  "ja": {
+   "summary": "7whitefire7 さんによる、リアルさを少し加えたカートゥーン調のマージモデルです。さまざまな人種や見た目の人物を描き分けられることを目標に作られています。RealCartoon シリーズの土台になっているモデルです。",
+   "features": [
+    "リアル寄りのカートゥーン・2.5D 調",
+    "人物の見た目に幅が出やすい",
+    "LoRA と組み合わせやすい",
+    "VAE（vae-ft-mse-840000-ema-pruned）を焼き込み済み"
+   ],
+   "tips": [
+    "ネガティブに easynegative や badhandv4 を入れるのがおすすめです",
+    "作者によると V14 は高齢の人物はあまり得意ではありません"
+   ]
+  },
+  "en": {
+   "summary": "A cartoon-style merge with a realistic touch by 7whitefire7. It aims for variety in people of different ethnicities and looks, and is the base of the whole RealCartoon series.",
+   "features": [
+    "Cartoon / 2.5D look with a realistic touch",
+    "Variety in human appearance",
+    "Designed to work well with LoRAs",
+    "VAE (vae-ft-mse-840000-ema-pruned) baked in"
+   ],
+   "tips": [
+    "easynegative and badhandv4 are recommended in the negative prompt",
+    "The author notes V14 is not great at very old subjects"
+   ]
+  }
+ },
+ {
+  "generatorId": 673,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/5414?modelVersionId=6297",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "andite",
+  "baseModel": null,
+  "license": null,
+  "versionName": "Pastel-Mix [Pruned FP16]",
+  "publishedAt": "2023-01-27",
+  "triggerWords": [],
+  "ja": {
+   "summary": "パステル画のような筆致をまねたスタイライズド系のアニメモデルです。作者は andite さんで、LoRA をモデルにマージする手法も取り入れて作られています。",
+   "features": [
+    "パステル調の筆致を持つアニメイラスト",
+    "鮮やかでカラフルな色づかい",
+    "LoRA をモデルにまとめてマージしている"
+   ],
+   "tips": [
+    "サンプラー DPM++ 2M Karras、ステップ 20、CFG 7 が推奨です。",
+    "Hires.fix は Latent アップスケーラーで、Hires ステップ 20、Denoising 0.6 が作者のおすすめです。他のアップスケーラーだとパステルの筆致がなめらかになりがちです。",
+    "プロンプトの先頭に「mksks style」を入れると、パステル調が強まります（任意）。"
+   ]
+  },
+  "en": {
+   "summary": "A stylized anime model that imitates pastel-like brushwork, made by andite. It also explores merging LoRAs directly into the model.",
+   "features": [
+    "Anime illustrations with pastel-style brushwork",
+    "Vivid, colorful palette",
+    "LoRAs merged into the checkpoint"
+   ],
+   "tips": [
+    "Sampler DPM++ 2M Karras, 20 steps, CFG 7.",
+    "Hires fix with the Latent upscaler, 20 hires steps, denoising 0.6; other upscalers tend to smooth out the pastel brushwork.",
+    "Optionally start the prompt with \"mksks style\" to strengthen the pastel look."
+   ]
+  }
+ },
+ {
+  "generatorId": 674,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/114807?modelVersionId=277570",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "asyncforai414",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v6",
+  "publishedAt": "2023-12-28",
+  "triggerWords": [],
+  "ja": {
+   "summary": "asyncforai414 さんが公開している SD1.5 系のマージモデル「Async's MIX」の v6 です。2D から 2.5D のアニメ調イラストを描けます。",
+   "features": [
+    "アニメ調のイラスト",
+    "2D〜2.5D の絵柄",
+    "マージモデル"
+   ],
+   "tips": [
+    "Clip skip 2",
+    "作者の例：DPM++ SDE Karras、25 ステップ、CFG 7、512×768"
+   ]
+  },
+  "en": {
+   "summary": "Version 6 of Async's MIX, an SD1.5 merge model by asyncforai414 for anime-style images ranging from 2D to 2.5D.",
+   "features": [
+    "Anime-style illustration",
+    "2D to 2.5D looks",
+    "Merge model"
+   ],
+   "tips": [
+    "Clip skip 2",
+    "Author's example: DPM++ SDE Karras, 25 steps, CFG 7, 512x768"
+   ]
+  }
+ },
+ {
+  "generatorId": 675,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/nondesuno/LimeREmix_MOJITO",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "nondesuno",
+  "baseModel": null,
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v4.0",
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "nondesuno さんが Hugging Face で公開している LimeREmix MOJITO です。配布ページに説明がほとんどないため、詳しい特徴はわかっていません。",
+   "features": [
+    "SD1 系のモデル"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "LimeREmix MOJITO, published on Hugging Face by nondesuno. The page has almost no description, so its detailed characteristics are unclear.",
+   "features": [
+    "SD1-family model"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 690,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/zzzAI19/ChromaFT",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "zzzAI19",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "v4",
+  "publishedAt": "2024-02-24",
+  "triggerWords": [],
+  "ja": {
+   "summary": "zzzAI19 さんが追加学習（ファインチューニング）で作ったアニメ調のモデルです。ChromaFT は全年齢向けの描写を重視した版です。",
+   "features": [
+    "追加学習によるアニメ調イラスト",
+    "全年齢向けの描写を重視",
+    "目元などの細かい描き込み"
+   ],
+   "tips": [
+    "作者はポジティブに \"((masterpiece)) (best quality) (beautiful detailed eyes) (ultra-detailed) (finely detailed) (highres)\" を使っています",
+    "ネガティブには \"((worst quality)) ((low quality))\" や bad-hands-5 などを入れています"
+   ]
+  },
+  "en": {
+   "summary": "An anime-style model fine-tuned by zzzAI19. ChromaFT is the version focused on all-ages depictions.",
+   "features": [
+    "Anime-style illustration via fine-tuning",
+    "Focused on all-ages depictions",
+    "Fine detail, especially around the eyes"
+   ],
+   "tips": [
+    "The author uses the positive prompt \"((masterpiece)) (best quality) (beautiful detailed eyes) (ultra-detailed) (finely detailed) (highres)\"",
+    "Their negative includes \"((worst quality)) ((low quality))\" and bad-hands-5"
+   ]
+  }
+ },
+ {
+  "generatorId": 691,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/zzzAI19/ChromaXL",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "zzzAI19",
+  "baseModel": "Animagine XL 3.0",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "v1b",
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "animagine-xl-3.0 をベースに追加学習した SDXL のアニメ系モデルです。作者は zzzAI19 さんです。",
+   "features": [
+    "animagine-xl-3.0 ベースの追加学習モデル",
+    "アニメ調のイラスト向け",
+    "利用条件は animagine-xl-3.0 に準じる"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An SDXL anime model fine-tuned from animagine-xl-3.0 by zzzAI19.",
+   "features": [
+    "Fine-tuned from animagine-xl-3.0",
+    "Aimed at anime-style illustration",
+    "Usage terms follow animagine-xl-3.0"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 692,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/97744?modelVersionId=357360",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "7whitefire7",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M",
+  "versionName": "V14",
+  "publishedAt": "2024-02-23",
+  "triggerWords": [],
+  "ja": {
+   "summary": "7whitefire7 さんによる SD1.5 系モデルで、RealCartoon3D から枝分かれしたものです。背景や人物をよりリアルに見せることをねらい、アニメっぽさやカートゥーンっぽさを抑えています。",
+   "features": [
+    "リアル寄りの 2.5D",
+    "RealCartoon3D の派生",
+    "背景や人物をリアルに描写",
+    "さまざまな絵柄に対応"
+   ],
+   "tips": [
+    "作者の設定：512×768、Euler a、Clip skip 2",
+    "Hires.fix は 1.5〜2 倍の拡大がよいそうです"
+   ]
+  },
+  "en": {
+   "summary": "An SD1.5 branch of RealCartoon3D by 7whitefire7. It aims for more realistic backgrounds and people, steering away from the anime, cartoon and overly perfect look.",
+   "features": [
+    "Realistic 2.5D look",
+    "Branch of RealCartoon3D",
+    "More realistic people and backgrounds",
+    "Handles a variety of styles"
+   ],
+   "tips": [
+    "Author's settings: 512x768, Euler a, Clip skip 2",
+    "For Hires.fix, an upscale of 1.5-2x works well"
+   ]
+  }
+ },
+ {
+  "generatorId": 693,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/223261?modelVersionId=347642",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "SHM_AI",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v3",
+  "publishedAt": "2024-02-17",
+  "triggerWords": [],
+  "ja": {
+   "summary": "SHM_AI さんによる、アジア系の人物を写実的に描くモデル SHM Realistic の v3 です。4000枚以上の光と影の素材を取り込み、ライティングと顔立ちを改善しています。",
+   "features": [
+    "写実的なアジア系の人物",
+    "4000枚以上の光と影の素材で、ライティングを強化",
+    "顔の形をさらに調整"
+   ],
+   "tips": [
+    "推奨サンプラー: Euler a、Euler、DPM++ SDE Karras",
+    "推奨: ステップ 20〜40、CFG 6〜10、Clip skip 2"
+   ]
+  },
+  "en": {
+   "summary": "SHM Realistic v3 by SHM_AI is a photorealistic model for Asian portraits. It incorporates over 4,000 light-and-shadow images to improve lighting and facial features.",
+   "features": [
+    "Photorealistic Asian people",
+    "Stronger lighting from 4,000+ light-and-shadow images",
+    "Further refined face shapes"
+   ],
+   "tips": [
+    "Recommended samplers: Euler a, Euler, DPM++ SDE Karras",
+    "Recommended: 20–40 steps, CFG 6–10, Clip skip 2"
+   ]
+  }
+ },
+ {
+  "generatorId": 696,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/79083?modelVersionId=126261",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "blue_pen5805",
+  "baseModel": "SD 1.5",
+  "license": "CreativeML Open RAIL-M Addendum",
+  "versionName": "EX",
+  "publishedAt": "2023-07-26",
+  "triggerWords": [],
+  "ja": {
+   "summary": "blue_pen5805 さんによる blue_pencil シリーズの SD 1.5 モデルです。「使いやすく、何でも描ける」がコンセプトです。EX はおまけとして公開された版です。",
+   "features": [
+    "扱いやすいアニメ調イラスト",
+    "人物から動物まで幅広く描ける",
+    "EX はおまけ版"
+   ],
+   "tips": [
+    "内蔵の VAE は壊れているため、必ず VAE を指定してください（ClearVAE 推奨）"
+   ]
+  },
+  "en": {
+   "summary": "An SD 1.5 model from blue_pen5805's blue_pencil series, built around the idea of being easy to use and able to generate anything. EX is a bonus release.",
+   "features": [
+    "Easy-to-use anime-style illustration",
+    "Handles a wide range of subjects, from people to animals",
+    "EX is a bonus version"
+   ],
+   "tips": [
+    "The included VAE is broken, so always set a VAE (ClearVAE is recommended)"
+   ]
+  }
+ },
+ {
+  "generatorId": 697,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/261336?modelVersionId=465206",
+   "label": "Civitai"
+  },
+  "links": [
+   {
+    "label": "Hugging Face",
+    "url": "https://huggingface.co/bluepen5805/anima_pencil-XL"
+   }
+  ],
+  "creator": "blue_pen5805",
+  "baseModel": "SDXL 1.0",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "v3.1.0",
+  "publishedAt": "2024-04-24",
+  "triggerWords": [],
+  "ja": {
+   "summary": "blue_pencil-XL と ANIMAGINE XL 3.0 / 3.1 を組み合わせた SDXL のアニメ系モデルです。作者は blue_pen5805 さんです。v3.1.0 は v3.0.0 に Neta Art XL 1.0 などをマージしています。",
+   "features": [
+    "簡単・シンプルに高品質なアニメイラストが出せる",
+    "その分、絵柄のバリエーションはやや少なめ",
+    "blue_pencil-XL と ANIMAGINE XL のマージ",
+    "v3.1.0 は Neta Art XL 1.0 と自作の QualitySlider を使用"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An SDXL anime model that combines blue_pencil-XL with ANIMAGINE XL 3.0 / 3.1, made by blue_pen5805. v3.1.0 merges v3.0.0 with Neta Art XL 1.0 and more.",
+   "features": [
+    "Easy, simple, high-quality anime illustrations",
+    "Slight trade-off in style variety",
+    "Merge of blue_pencil-XL and ANIMAGINE XL",
+    "v3.1.0 uses Neta Art XL 1.0 and a self-made QualitySlider"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 699,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/131611?modelVersionId=367026",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "min__san",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v11",
+  "publishedAt": "2024-02-29",
+  "triggerWords": [],
+  "ja": {
+   "summary": "min__san さんによる SD1.5 系のアニメ調マージモデル「HimawariMix」の v11 です。さまざまなモデルを混ぜていて、背景や細かい部分の描写が得意です。VAE が内蔵されています。",
+   "features": [
+    "アニメ調のイラスト",
+    "背景や細部の描写が得意",
+    "VAE 内蔵",
+    "多くのモデルをマージ"
+   ],
+   "tips": [
+    "VAE が内蔵されているので、別に用意しなくても使えます"
+   ]
+  },
+  "en": {
+   "summary": "Version 11 of HimawariMix, an SD1.5 anime-style merge by min__san. It blends various models, renders backgrounds and fine details well, and has a built-in VAE.",
+   "features": [
+    "Anime-style illustration",
+    "Strong backgrounds and details",
+    "Built-in VAE",
+    "Merge of many models"
+   ],
+   "tips": [
+    "The VAE is built in, so no separate VAE is required"
+   ]
+  }
+ },
+ {
+  "generatorId": 700,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/109027?modelVersionId=181555",
+   "label": "Civitai"
+  },
+  "links": [
+   {
+    "label": "Hugging Face",
+    "url": "https://huggingface.co/teasan/milktea"
+   }
+  ],
+  "creator": "teasan",
+  "baseModel": "SD 1.5",
+  "license": null,
+  "versionName": "v2",
+  "publishedAt": "2023-10-13",
+  "triggerWords": [],
+  "ja": {
+   "summary": "teasan さんのマージモデル milktea です。ミルクティーのように柔らかく、甘く、ふんわりしたイラストが得意で、「美人」よりも「可愛い」に振り切った絵柄です。",
+   "features": [
+    "柔らかくふんわりしたイラスト調",
+    "全体にコントラストが低め",
+    "あえて白っぽい色味（白すぎる人向けに mild 版もあり）",
+    "「可愛い」路線のキャラクター"
+   ],
+   "tips": [
+    "詳しい設定や作例は作者の Hugging Face ページに載っています"
+   ]
+  },
+  "en": {
+   "summary": "milktea is a merge model by teasan. It excels at soft, sweet, fluffy illustrations like milk tea, aiming fully for \"cute\" rather than \"beautiful.\"",
+   "features": [
+    "Soft, fluffy illustration style",
+    "Low overall contrast",
+    "Intentionally whitish palette (a \"mild\" version exists if it's too white)",
+    "Cute-oriented characters"
+   ],
+   "tips": [
+    "Detailed settings and examples are on the author's Hugging Face page"
+   ]
+  }
+ },
+ {
+  "generatorId": 701,
+  "source": {
+   "kind": "aipictors",
+   "url": null,
+   "label": "Aipictors"
+  },
+  "links": [],
+  "creator": null,
+  "baseModel": "SDXL",
+  "license": null,
+  "versionName": null,
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "イラスト向けの SDXL 系モデルです。作者や配布元の情報は見つかっていません。",
+   "features": [
+    "SDXL 系",
+    "イラスト向け"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An SDXL-based model for illustrations. No information about its author or original source has been found.",
+   "features": [
+    "SDXL based",
+    "For illustrations"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 702,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/Kotajiro/fuduki_mix",
+   "label": "Hugging Face"
+  },
+  "links": [],
+  "creator": "Kotajiro",
+  "baseModel": "SDXL",
+  "license": "CreativeML Open RAIL++-M",
+  "versionName": "v2.0",
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "リアル系の SDXL ベースモデルです。作者は Kotajiro さんです。",
+   "features": [
+    "写実的な画像向けの SDXL モデル",
+    "日本語と英語で説明が用意されている",
+    "実在の人物に似せた画像を無断で公開することは禁止されている"
+   ],
+   "tips": [
+    "サンプラーは DPM++ 2M SDE Karras、ステップ 30〜40 が推奨です。",
+    "解像度は 1152×896 が推奨です。"
+   ]
+  },
+  "en": {
+   "summary": "A realistic SDXL base model made by Kotajiro.",
+   "features": [
+    "SDXL model for realistic images",
+    "Documentation in Japanese and English",
+    "Publishing look-alikes of real people without consent is prohibited"
+   ],
+   "tips": [
+    "Sampler DPM++ 2M SDE Karras, 30–40 steps.",
+    "Recommended resolution: 1152×896."
+   ]
+  }
+ },
+ {
+  "generatorId": 704,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/399873?modelVersionId=546178",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "kblueleaf",
+  "baseModel": "SDXL 1.0",
+  "license": null,
+  "versionName": "rev2",
+  "publishedAt": "2024-06-02",
+  "triggerWords": [],
+  "ja": {
+   "summary": "kblueleaf さんによる SDXL ベースのアニメモデル「Kohaku XL Epsilon」です。Kohaku XL シリーズの5作目で、520万枚のデータセットを家庭用の機材で LyCORIS 学習しています。多くの絵師の画風を覚えていて、複数の画風タグを混ぜても安定しやすくなっています。",
+   "features": [
+    "アニメ絵に特化",
+    "多くの画風タグに対応",
+    "複数の画風を組み合わせやすい",
+    "PVC フィギュア風も描ける（rev2 以降）",
+    "フルオープンソース"
+   ],
+   "tips": [
+    "プロンプトは「人数、キャラクター、作品、絵師、一般タグ、品質・年代・メタ・レーティングタグ」の順がすすめられています",
+    "1024×1024 より少し大きめの解像度と Hires.fix がおすすめです"
+   ]
+  },
+  "en": {
+   "summary": "Kohaku XL Epsilon by kblueleaf, the fifth major release in the Kohaku XL series. It is an SDXL anime model LyCORIS-tuned on a 5.2M-image dataset with consumer hardware, and knows many artist styles that stay stable when combined.",
+   "features": [
+    "Anime-focused",
+    "Knows many artist styles",
+    "Stable when mixing artist tags",
+    "Can produce a PVC figure look (rev2 and later)",
+    "Fully open source"
+   ],
+   "tips": [
+    "Suggested tag order: count, character, series, artists, general tags, then quality/year/meta/rating tags",
+    "A resolution slightly above 1024x1024 plus Hires.fix is recommended"
+   ]
+  }
+ },
+ {
+  "generatorId": 706,
+  "source": {
+   "kind": "huggingface",
+   "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
+   "label": "Hugging Face"
+  },
+  "links": [
+   {
+    "label": "Black Forest Labs",
+    "url": "https://blackforestlabs.ai/"
+   }
+  ],
+  "creator": "Black Forest Labs",
+  "baseModel": "FLUX.1",
+  "license": "Apache 2.0",
+  "versionName": null,
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "Black Forest Labs の画像生成モデル FLUX.1 schnell です。少ないステップで速く生成できる版で、Apache 2.0 ライセンスで公開されています。",
+   "features": [
+    "高速生成向けの FLUX.1 シリーズ",
+    "Apache 2.0 ライセンス"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "FLUX.1 schnell is an image generation model from Black Forest Labs. It is the fast variant of FLUX.1 and is released under the Apache 2.0 license.",
+   "features": [
+    "Speed-oriented member of the FLUX.1 family",
+    "Apache 2.0 license"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 707,
+  "source": {
+   "kind": "official",
+   "url": "https://blackforestlabs.ai/",
+   "label": "Black Forest Labs"
+  },
+  "links": [],
+  "creator": "Black Forest Labs",
+  "baseModel": "FLUX.1",
+  "license": null,
+  "versionName": null,
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "Black Forest Labs の画像生成モデル FLUX.1 の pro 版です。",
+   "features": [
+    "FLUX.1 シリーズの pro 版"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "The pro version of FLUX.1, an image generation model by Black Forest Labs.",
+   "features": [
+    "Pro version of the FLUX.1 family"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 708,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/949488?modelVersionId=1765723",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "ZU_KI",
+  "baseModel": "Illustrious",
+  "license": null,
+  "versionName": "v5.0",
+  "publishedAt": "2025-05-16",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Illustrious 系のアニメイラスト向けモデルです。作者は ZU_KI さんです。v5.0 では細部の描写、光と影、指の安定性が改善されています。",
+   "features": [
+    "アニメ調のイラストが得意",
+    "v5.0 は細部と光影の表現が向上",
+    "指の崩れが出にくくなった"
+   ],
+   "tips": [
+    "クオリティタグ例：masterpiece, best quality, amazing quality, very aesthetic, absurdres",
+    "ネガティブ例：lowres, bad quality, worst quality, bad anatomy, sketch, jpeg artifacts, blurry, watermark など",
+    "作者は CFG 3〜12、ステップ 30 を目安に挙げています。"
+   ]
+  },
+  "en": {
+   "summary": "An Illustrious-based anime illustration model by ZU_KI. v5.0 brings better details, improved lighting and shadows, and more stable fingers.",
+   "features": [
+    "Anime-style illustrations",
+    "v5.0 improves detail, lighting and shadows",
+    "More stable fingers"
+   ],
+   "tips": [
+    "Quality tags: masterpiece, best quality, amazing quality, very aesthetic, absurdres",
+    "Negative example: lowres, bad quality, worst quality, bad anatomy, sketch, jpeg artifacts, blurry, watermark, etc.",
+    "The author suggests CFG 3–12 and 30 steps."
+   ]
+  }
+ },
+ {
+  "generatorId": 710,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1070739?modelVersionId=1774915",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "VXP",
+  "baseModel": "SDXL 1.0",
+  "license": null,
+  "versionName": "v1.88",
+  "publishedAt": "2025-05-11",
+  "triggerWords": [],
+  "ja": {
+   "summary": "VXP さんによる Illustrious 系の SDXL モデル「VXP_IL_XL」の v1.88 です。アニメ調の画像向けに調整されていますが、「realistic, photorealistic」などのプロンプトで写実的な絵も描けます。このバージョンでは背景が良くなり、ノイズが減りました。",
+   "features": [
+    "アニメ調のキャラクター",
+    "プロンプト次第で写実寄りにもできる",
+    "背景の描写を改善",
+    "ノイズが少ない"
+   ],
+   "tips": [
+    "推奨：DPM++ SDE・Karras、15 ステップ（12〜20）、CFG 4（3〜6）",
+    "品質プロンプト例：masterpiece, best quality, amazing quality, absurdres, very aesthetic"
+   ]
+  },
+  "en": {
+   "summary": "Version 1.88 of VXP_IL_XL, an Illustrious-based SDXL model by VXP. It is tuned for anime-style images but can go realistic with prompts like \"realistic, photorealistic\". This version improves backgrounds and reduces noise.",
+   "features": [
+    "Anime-style characters",
+    "Can shift to realistic via prompts",
+    "Better backgrounds",
+    "Less noise"
+   ],
+   "tips": [
+    "Suggested: DPM++ SDE with Karras, 15 steps (12-20), CFG 4 (3-6)",
+    "Quality prompt: masterpiece, best quality, amazing quality, absurdres, very aesthetic"
+   ]
+  }
+ },
+ {
+  "generatorId": 712,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1188071?modelVersionId=1408658",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "CagliostroLab",
+  "baseModel": "SDXL 1.0",
+  "license": "CreativeML Open RAIL++-M",
+  "versionName": "v4 Opt",
+  "publishedAt": "2025-02-13",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Cagliostro Research Lab によるアニメ特化の SDXL モデル Animagine XL 4.0 の改良版（Opt）です。SDXL 1.0 から約840万枚のアニメ風画像で学び直したモデルに、追加データでさらに調整を加えています。",
+   "features": [
+    "アニメ調のイラストに特化",
+    "約840万枚の画像で SDXL 1.0 から再学習（2025年1月7日時点の知識）",
+    "Opt 版は安定性・体のバランス・色の鮮やかさを改善",
+    "ノイズや破綻が少なめ",
+    "キャラクター名・作品名のタグで描き分けやすい"
+   ],
+   "tips": [
+    "プロンプトは「1girl/1boy, キャラ名, 作品名, レーティング, その他, 品質タグ」の順がすすめられています",
+    "品質タグは最後に「masterpiece, high score, great score, absurdres」",
+    "推奨: CFG 4〜7（5 推奨）、ステップ 25〜28（28 推奨）、サンプラー Euler a",
+    "ネガティブ例: lowres, bad anatomy, bad hands, worst quality, low quality, low score, bad score, watermark など"
+   ]
+  },
+  "en": {
+   "summary": "Animagine XL 4.0 Opt is the optimized release of Cagliostro Research Lab's anime-focused SDXL model. It was retrained from SDXL 1.0 on about 8.4M anime-style images, then refined further with additional data.",
+   "features": [
+    "Specialized in anime-style art",
+    "Retrained from SDXL 1.0 on ~8.4M images (knowledge cut-off January 7, 2025)",
+    "Opt improves stability, anatomy, and color saturation",
+    "Less noise and fewer artifacts",
+    "Responds well to character and series tags"
+   ],
+   "tips": [
+    "Recommended prompt order: 1girl/1boy, character, series, rating, everything else, then quality tags",
+    "End with \"masterpiece, high score, great score, absurdres\"",
+    "Recommended: CFG 4–7 (5), 25–28 steps (28), Euler a sampler",
+    "Negative example: lowres, bad anatomy, bad hands, worst quality, low quality, low score, bad score, watermark"
+   ]
+  }
+ },
+ {
+  "generatorId": 713,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/543580?modelVersionId=604429",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "RSTR",
+  "baseModel": "SDXL 1.0",
+  "license": null,
+  "versionName": "v1.0",
+  "publishedAt": "2024-06-28",
+  "triggerWords": [],
+  "ja": {
+   "summary": "RSTR さんによる、Animagine XL 3.1 をベースにしたアニメ調の SDXL モデルです。JitQ の出力と複数の LoRA を使って調整されています。LCM LoRA を含んでいるため、少ないステップで生成できます。",
+   "features": [
+    "Animagine XL 3.1 ベースのアニメ調",
+    "JitQ の出力と複数の LoRA で調整",
+    "LCM LoRA 入りで少ないステップで生成できる"
+   ],
+   "tips": [
+    "ステップ数 8〜15、CFG 1〜2.5 に設定してください"
+   ]
+  },
+  "en": {
+   "summary": "An anime-style SDXL model by RSTR, based on Animagine XL 3.1 and tuned with JitQ outputs and several LoRAs. It includes an LCM LoRA, so it generates in few steps.",
+   "features": [
+    "Anime style based on Animagine XL 3.1",
+    "Tuned with JitQ outputs and multiple LoRAs",
+    "Includes LCM LoRA for low step counts"
+   ],
+   "tips": [
+    "Use 8–15 steps and CFG 1–2.5"
+   ]
+  }
+ },
+ {
+  "generatorId": 714,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/9409?modelVersionId=384264",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "Yuno779",
+  "baseModel": "SDXL 1.0",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "XL",
+  "publishedAt": "2024-03-10",
+  "triggerWords": [],
+  "ja": {
+   "summary": "「万象熔炉」の SDXL 版で、Anything XL β4 にあたるアニメ系のマージモデルです。作者は Yuno779 さんです。aingdiffusionXL、animagineXL V3、cutecore_xl、kohakuXL Delta、BAXL、Pony V6 をマージしています。",
+   "features": [
+    "SDXL のアニメ系マージモデル",
+    "マージのレシピが公開されている",
+    "年代タグで新旧のアニメ絵柄に寄せられる",
+    "幅広い解像度に対応"
+   ],
+   "tips": [
+    "プロンプトは「特殊タグ → 作者名 → キャラ名・作品名 → クオリティ・メタ・レーティング → その他タグ」の順に書くのがおすすめです。",
+    "年代タグ：newest（2021〜2024）、recent（2018〜2020）、mid（2015〜2017）、early（2011〜2014）、old（2005〜2010）。",
+    "クオリティタグは masterpiece、best quality などが使えます。",
+    "全年齢向けにしたいときはレーティングタグ「safe」を使えます。"
+   ]
+  },
+  "en": {
+   "summary": "The SDXL edition of \"万象熔炉\" (Anything XL), corresponding to Anything XL β4, made by Yuno779. It merges aingdiffusionXL, animagineXL V3, cutecore_xl, kohakuXL Delta, BAXL and Pony V6.",
+   "features": [
+    "SDXL anime merge model",
+    "Merge recipe is published",
+    "Year tags steer toward modern or retro anime styles",
+    "Works across a wide range of resolutions"
+   ],
+   "tips": [
+    "Recommended prompt order: special tags, artist, character name and series, quality/meta/rating, then other tags.",
+    "Year tags: newest (2021–2024), recent (2018–2020), mid (2015–2017), early (2011–2014), old (2005–2010).",
+    "Quality tags such as masterpiece and best quality can adjust output.",
+    "Use the rating tag \"safe\" for general content."
+   ]
+  }
+ },
+ {
+  "generatorId": 717,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1037883?modelVersionId=1919246",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "VisionaryAI_Studio",
+  "baseModel": "Illustrious",
+  "license": null,
+  "versionName": "VisionaryIllustriousV3",
+  "publishedAt": "2025-06-19",
+  "triggerWords": [],
+  "ja": {
+   "summary": "VisionaryAI_Studio さんによる Illustrious ベースのマージモデル「Visionary Illustrious Mix」の V3 です。アニメの絵柄をくっきり、きれいに仕上げることをめざしています。作者が作った LoRA もマージされています。",
+   "features": [
+    "アニメ調のイラスト",
+    "くっきりした仕上がり",
+    "Illustrious ベース",
+    "作者の LoRA をマージ"
+   ],
+   "tips": [
+    "V3 の推奨：28 ステップ、CFG 3.5、Euler a"
+   ]
+  },
+  "en": {
+   "summary": "V3 of Visionary Illustrious Mix, an Illustrious-based merge by VisionaryAI_Studio aiming for sharp, clean anime aesthetics. The author's own LoRAs are merged in.",
+   "features": [
+    "Anime-style illustration",
+    "Sharp, clean finish",
+    "Illustrious base",
+    "Author's LoRAs merged in"
+   ],
+   "tips": [
+    "Recommended for V3: 28 steps, CFG 3.5, Euler a"
+   ]
+  }
+ },
+ {
+  "generatorId": 718,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1627597?modelVersionId=1842140",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "zzzai19492",
+  "baseModel": "SDXL 1.0",
+  "license": null,
+  "versionName": "v1.0",
+  "publishedAt": "2025-05-28",
+  "triggerWords": [],
+  "ja": {
+   "summary": "zzzai19492 さんによる、Illustrious-xl 2.0 をベースにしたアニメ調モデルです。DALL·E 3 で作った AI イラスト 17000 枚を使って、1536×1536 の解像度で追加学習しています。",
+   "features": [
+    "Illustrious-xl 2.0 ベースのアニメ調",
+    "1536×1536 の高解像度で学習",
+    "ロングヘアの女の子のキャラクターが得意",
+    "フリルの多い衣装や制服の描写が得意"
+   ],
+   "tips": [
+    "学習解像度が 1536×1536 なので、大きめの解像度が想定されています"
+   ]
+  },
+  "en": {
+   "summary": "An anime model by zzzai19492 based on Illustrious-xl 2.0. It was further trained at 1536×1536 on 17,000 AI illustrations made with DALL·E 3.",
+   "features": [
+    "Anime style based on Illustrious-xl 2.0",
+    "Trained at a high 1536×1536 resolution",
+    "Good at girls with long hair",
+    "Good at frilly outfits and uniforms"
+   ],
+   "tips": [
+    "Trained at 1536×1536, so it is designed for larger resolutions"
+   ]
+  }
+ },
+ {
+  "generatorId": 719,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1205141?modelVersionId=1357130",
+   "label": "Civitai"
+  },
+  "links": [
+   {
+    "label": "Hugging Face",
+    "url": "https://huggingface.co/bluepen5805/4nima_pencil-XL"
+   }
+  ],
+  "creator": "blue_pen5805",
+  "baseModel": "SDXL 1.0",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "v1.0.1",
+  "publishedAt": "2025-02-01",
+  "triggerWords": [],
+  "ja": {
+   "summary": "blue_pen5805 さんによる、Animagine XL 4.0 をベースにしたアニメ調の SDXL マージモデルです。anima_pencil-XL、Neta-Noob、illustrious_pencil-XL などを sd-mecha で組み合わせています。",
+   "features": [
+    "Animagine XL 4.0 ベースのアニメ調",
+    "pencil シリーズや Neta-Noob をマージ",
+    "マージレシピが公開されている"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An anime-style SDXL merge by blue_pen5805, based on Animagine XL 4.0. It combines anima_pencil-XL, Neta-Noob, illustrious_pencil-XL and others using sd-mecha.",
+   "features": [
+    "Anime style based on Animagine XL 4.0",
+    "Merges the pencil series and Neta-Noob",
+    "Merge recipe is published"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 720,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1715577?modelVersionId=1941414",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "uraoto",
+  "baseModel": "Illustrious",
+  "license": null,
+  "versionName": "v1.0",
+  "publishedAt": "2025-06-25",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Conceptor をベースに、作者好みの絵柄をマージした Illustrious 系モデルです。作者は uraoto さんです。CottonNoob とは絵柄が異なるため、LinenIllustrious という新しい名前で公開されています。",
+   "features": [
+    "躍動感のある構図や描き込みの多い背景が得意",
+    "抽象的なタグへの反応がよい（Conceptor の特徴）",
+    "オリジナルキャラクターの制作に向いている",
+    "指はやや不安定なことがある"
+   ],
+   "tips": [
+    "サンプラー Euler a、CFG 5、ステップ 24〜30 が推奨です。",
+    "クオリティタグ：masterpiece, highres, absurdres, newest",
+    "ネガティブ：worst quality, bad quality, normal quality, bad anatomy, bad hands, error, watermark, username, censored"
+   ]
+  },
+  "en": {
+   "summary": "An Illustrious-family model based on Conceptor and merged with the author's favorite designs, made by uraoto. Its look differs from CottonNoob, so it was released under the new name LinenIllustrious.",
+   "features": [
+    "Dynamic compositions and dense backgrounds",
+    "Responsive to abstract tags (a Conceptor trait)",
+    "Well suited to original characters",
+    "Fingers can be a little unstable"
+   ],
+   "tips": [
+    "Sampler Euler a, CFG 5, 24–30 steps.",
+    "Quality tags: masterpiece, highres, absurdres, newest",
+    "Negative: worst quality, bad quality, normal quality, bad anatomy, bad hands, error, watermark, username, censored"
+   ]
+  }
+ },
+ {
+  "generatorId": 721,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1318945?modelVersionId=1972020",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "maxfeifei8",
+  "baseModel": "NoobAI",
+  "license": null,
+  "versionName": "15_NoobAI",
+  "publishedAt": "2025-07-04",
+  "triggerWords": [],
+  "ja": {
+   "summary": "maxfeifei8 さんによる「One obsession」の 1.5 版（NoobAI）です。NoobAI に Illustrious を 20% 混ぜたモデルで、前の版より絵画らしさを取り戻しています。LoRA や複雑なタグがなくても描きやすく、初心者にも扱いやすいとされています。",
+   "features": [
+    "絵画らしいアニメ調",
+    "光と影、暗い部分の表現が得意",
+    "少し 3D 感がある",
+    "画風タグとの相性がよい",
+    "シンプルなプロンプトでも使いやすい"
+   ],
+   "tips": [
+    "Euler a は整った仕上がり、Euler はラフな絵画らしさが出るそうです"
+   ]
+  },
+  "en": {
+   "summary": "Version 1.5 (NoobAI) of One obsession by maxfeifei8: NoobAI with 20% Illustrious mixed in, bringing back a more painterly feel than the previous version. It is meant to give good results without LoRAs or complex tags.",
+   "features": [
+    "Painterly anime style",
+    "Strong light, shadow and dark areas",
+    "A slight 3D feel",
+    "Works well with art-style tags",
+    "Beginner-friendly with simple prompts"
+   ],
+   "tips": [
+    "Euler a gives a neater result; Euler gives a looser, painterly feel"
+   ]
+  }
+ },
+ {
+  "generatorId": 722,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1544647?modelVersionId=1951859",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "Rin_x0",
+  "baseModel": "Illustrious",
+  "license": null,
+  "versionName": "v1.6",
+  "publishedAt": "2025-06-28",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Rin_x0 さんによる Illustrious ベースのモデル RIN Flanime Illustrious です。きれいな線と鮮やかな色の、フラットなアニメ調イラストに特化しています。",
+   "features": [
+    "フラットなアニメ塗り",
+    "すっきりした線と鮮やかな色",
+    "v1.6 で目・指などの細部を改善"
+   ],
+   "tips": [
+    "「flat color」タグでフラットな塗りが強まります",
+    "推奨: Clip skip 2、ステップ 20〜40、CFG 3〜7、サンプラー Euler / Euler a / DPM++ 2M (Karras)",
+    "解像度は 1024×1024、832×1152、1152×832 などがすすめられています",
+    "ポジティブ「masterpiece, best quality」、ネガティブ「lowres, bad quality, worst quality, worst detail, username, signature」"
+   ]
+  },
+  "en": {
+   "summary": "RIN Flanime Illustrious by Rin_x0 is an Illustrious-based model focused on high-quality flat anime art with clean lines and vibrant colors.",
+   "features": [
+    "Flat anime coloring",
+    "Clean lines and vibrant colors",
+    "v1.6 improves small details like eyes and fingers"
+   ],
+   "tips": [
+    "Add the \"flat color\" tag to strengthen the flat style",
+    "Recommended: Clip skip 2, 20–40 steps, CFG 3–7, Euler / Euler a / DPM++ 2M (Karras)",
+    "Suggested resolutions include 1024×1024, 832×1152, and 1152×832",
+    "Positive: \"masterpiece, best quality\"; negative: \"lowres, bad quality, worst quality, worst detail, username, signature\""
+   ]
+  }
+ },
+ {
+  "generatorId": 723,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1234698?modelVersionId=1653405",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "morisoba777783",
+  "baseModel": "NoobAI",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "vpred v1",
+  "publishedAt": "2025-04-12",
+  "triggerWords": [],
+  "ja": {
+   "summary": "morisoba777783 さんによる NoobAI 系のアニメ調モデルです。v-prediction（vpred）版ですが、通常の epred モデルに近い挙動をすることもあると説明されています。可愛らしく、ちょうどよい色合いの絵が特徴です。",
+   "features": [
+    "可愛らしいアニメ調のキャラクター",
+    "ほどよい色合い",
+    "NoobAI ベースの vpred モデル"
+   ],
+   "tips": [
+    "作例は Euler a・Karras・28 ステップ・CFG 6 で作られています",
+    "推奨ネガティブ: lowres, bad quality, worst quality, bad hands, bad anatomy, artistic error, sketch"
+   ]
+  },
+  "en": {
+   "summary": "A NoobAI-based anime model by morisoba777783. It is a v-prediction model, though the author notes it may behave a bit like an epred model. Its style is cute with just the right shading.",
+   "features": [
+    "Cute anime-style characters",
+    "Balanced colors and shading",
+    "NoobAI-based vpred model"
+   ],
+   "tips": [
+    "Samples use Euler a, Karras, 28 steps, CFG 6",
+    "Recommended negative: lowres, bad quality, worst quality, bad hands, bad anatomy, artistic error, sketch"
+   ]
+  }
+ },
+ {
+  "generatorId": 724,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1073485?modelVersionId=1884942",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "ffgos",
+  "baseModel": "Illustrious",
+  "license": null,
+  "versionName": "UltimaR",
+  "publishedAt": "2025-06-09",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Illustrious 系のかわいいアニメ調モデル NJSmix のバージョン UltimaR です。作者は ffgos さんです。",
+   "features": [
+    "かわいいアニメ調のイラスト向け",
+    "Illustrious ベース",
+    "描き込みの多い背景も指定しやすい"
+   ],
+   "tips": [
+    "ADetailer の使用がすすめられています。",
+    "作者のベースプロンプト例：masterpiece, HDR, UHD, 4k, high resolution, detailed background, absurdres, super fine illustration など",
+    "ネガティブには SimplePositiveXLv3 と poorly_detailed, jpeg_artifacts, worst_quality, bad_quality が挙げられています。"
+   ]
+  },
+  "en": {
+   "summary": "The UltimaR version of NJSmix, a cute anime-style Illustrious model made by ffgos.",
+   "features": [
+    "Cute anime-style illustrations",
+    "Illustrious base",
+    "Handles detailed backgrounds"
+   ],
+   "tips": [
+    "ADetailer is recommended.",
+    "Author's base prompt: masterpiece, HDR, UHD, 4k, high resolution, detailed background, absurdres, super fine illustration, etc.",
+    "Negative: SimplePositiveXLv3, poorly_detailed, jpeg_artifacts, worst_quality, bad_quality."
+   ]
+  }
+ },
+ {
+  "generatorId": 725,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1297977?modelVersionId=1929473",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "suteo",
+  "baseModel": "Illustrious",
+  "license": null,
+  "versionName": "v5",
+  "publishedAt": "2025-06-22",
+  "triggerWords": [],
+  "ja": {
+   "summary": "suteo さんによる Illustrious 系の SDXL マージモデル「TanemoMix」の v5 です。RouWei・NoobAI・Illustrious をもとにしたイプシロン予測のモデルで、v5 では RouWei v0.80 がマージされています。",
+   "features": [
+    "アニメ調のイラスト",
+    "RouWei v0.80 をマージ",
+    "イプシロン予測（Epsilon-pred）",
+    "VAE 内蔵（v1.01 以降）"
+   ],
+   "tips": [
+    "推奨サイズ 1536×1536",
+    "サンプラー Euler a、CFG 3（1.5〜5）",
+    "v5 のネガティブ例：worst quality, low quality, watermark"
+   ]
+  },
+  "en": {
+   "summary": "Version 5 of TanemoMix, an Illustrious-family SDXL merge by suteo. It is an epsilon-prediction model based on RouWei, NoobAI and Illustrious; v5 merges in RouWei v0.80.",
+   "features": [
+    "Anime-style illustration",
+    "RouWei v0.80 merged in",
+    "Epsilon-prediction",
+    "Baked VAE (since v1.01)"
+   ],
+   "tips": [
+    "Recommended size: 1536x1536",
+    "Sampler Euler a, CFG 3 (1.5-5)",
+    "v5 negative prompt example: worst quality, low quality, watermark"
+   ]
+  }
+ },
+ {
+  "generatorId": 726,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1553716?modelVersionId=1979664",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "ccooccoo",
+  "baseModel": "SDXL 1.0",
+  "license": null,
+  "versionName": "v4.0",
+  "publishedAt": "2025-07-06",
+  "triggerWords": [],
+  "ja": {
+   "summary": "ccooccoo さんが Animagine XL 4.0（Anim4gine）と自作モデルをマージした SDXL のアニメ調モデル coamixXL の v4.0 です。",
+   "features": [
+    "Animagine XL 4.0 ベースのマージ",
+    "アニメ調のイラスト"
+   ],
+   "tips": [
+    "作者は、このモデルで生成した画像を非商用に限るとしています"
+   ]
+  },
+  "en": {
+   "summary": "coamixXL v4.0 by ccooccoo is an SDXL anime model that merges Animagine XL 4.0 (Anim4gine) with the author's own model.",
+   "features": [
+    "Merge based on Animagine XL 4.0",
+    "Anime-style illustrations"
+   ],
+   "tips": [
+    "The author states that images generated with this model are for non-commercial use only"
+   ]
+  }
+ },
+ {
+  "generatorId": 727,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1586012?modelVersionId=1794770",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "muhuan",
+  "baseModel": "Illustrious",
+  "license": null,
+  "versionName": "v1.0",
+  "publishedAt": "2025-05-16",
+  "triggerWords": [],
+  "ja": {
+   "summary": "muhuan さんによる Illustrious ベースの SDXL 系モデルです。配布元には詳しい説明がありません。",
+   "features": [
+    "Illustrious ベース",
+    "イラスト向け"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "An Illustrious-based SDXL model by muhuan. The original page gives no further details.",
+   "features": [
+    "Based on Illustrious",
+    "For illustrations"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 728,
+  "source": {
+   "kind": "official",
+   "url": "https://deepmind.google/models/gemini-image/",
+   "label": "Google DeepMind"
+  },
+  "links": [],
+  "creator": "Google",
+  "baseModel": null,
+  "license": null,
+  "versionName": null,
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "Google の Gemini による画像生成モデル（通称 Nano Banana）です。",
+   "features": [
+    "Google の Gemini 画像生成モデル"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "Google's Gemini image generation model, nicknamed Nano Banana.",
+   "features": [
+    "Gemini image generation model by Google"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 729,
+  "source": {
+   "kind": "official",
+   "url": "https://deepmind.google/models/gemini-image/",
+   "label": "Google DeepMind"
+  },
+  "links": [],
+  "creator": "Google",
+  "baseModel": null,
+  "license": null,
+  "versionName": null,
+  "publishedAt": null,
+  "triggerWords": [],
+  "ja": {
+   "summary": "Google の Gemini の画像生成モデル「Nano Banana 2」です。詳しい仕様は公式ページをご覧ください。",
+   "features": [
+    "Google の Gemini 画像生成モデル"
+   ],
+   "tips": []
+  },
+  "en": {
+   "summary": "Nano Banana 2, Google's Gemini image generation model. See the official page for details.",
+   "features": [
+    "Gemini image generation model by Google"
+   ],
+   "tips": []
+  }
+ },
+ {
+  "generatorId": 730,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/2168935?modelVersionId=2442439",
+   "label": "Civitai"
+  },
+  "links": [
+   {
+    "label": "Hugging Face",
+    "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+   }
+  ],
+  "creator": "Tongyi-MAI",
+  "baseModel": "Z-Image Turbo",
+  "license": "Apache 2.0",
+  "versionName": "Turbo",
+  "publishedAt": "2025-11-26",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Tongyi-MAI が開発した 60 億パラメータの画像生成モデル Z-Image を、少ないステップで生成できるよう蒸留した版です。写実的な画像が得意で、文章で書いた指示にもよく従います。",
+   "features": [
+    "8 ステップ程度で生成できる蒸留モデル",
+    "写実的な画像に強い",
+    "英語・中国語の文字を画像内に描ける",
+    "文章での指示に忠実",
+    "Apache 2.0 ライセンス"
+   ],
+   "tips": [
+    "Aipictors ではステップ数・CFG は自動（9 ステップ・CFG 1）です",
+    "LoRA・ControlNet は使えません"
+   ]
+  },
+  "en": {
+   "summary": "Z-Image Turbo is a distilled version of Tongyi-MAI's 6B-parameter Z-Image model, built to generate in very few steps. It is strong at photorealistic images and follows written instructions closely.",
+   "features": [
+    "Distilled model that generates in about 8 steps",
+    "Strong photorealism",
+    "Renders English and Chinese text in images",
+    "Follows natural-language instructions well",
+    "Apache 2.0 license"
+   ],
+   "tips": [
+    "On Aipictors, steps and CFG are set automatically (9 steps, CFG 1)",
+    "LoRA and ControlNet are not available"
+   ]
+  }
+ },
+ {
+  "generatorId": 731,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/846917?modelVersionId=3406798",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "Raelina",
+  "baseModel": "Illustrious",
+  "license": "Fair AI Public License 1.0-SD",
+  "versionName": "v12.0",
+  "publishedAt": "2026-10-30",
+  "triggerWords": [],
+  "ja": {
+   "summary": "Raelina さんが Illustrious XL をもとに追加学習したアニメ調のモデルです。元モデルの彩度の高すぎる発色やノイズを抑え、整ったバランスのよい絵を目指しています。ゲームやアニメの新しい作品・キャラクターも学習しています。",
+   "features": [
+    "彩度過多やノイズを抑えた落ち着いた仕上がり",
+    "原神、崩壊：スターレイル、ゼンレスゾーンゼロ、鳴潮、ウマ娘などのキャラクターを学習",
+    "v12 で崩壊3rd と「名探偵プリキュア！」を追加",
+    "品質タグ・美的タグに対応"
+   ],
+   "tips": [
+    "ポジティブに \"masterpiece, best quality\"、ネガティブに \"bad quality, worst quality, jpeg artifacts, sketch, bad hands, bad feet, signature, watermark\" がおすすめです",
+    "ステップ 25 以上、CFG 5〜7、サンプラーは Euler a か DPM++ 2M Karras が推奨です",
+    "標準解像度は 832x1216、1024x1024、1216x832 などです",
+    "Hires.fix は 4x Foolhardy Remacri、10〜15 ステップ、Denoise 0.1〜0.3 が推奨です"
+   ]
+  },
+  "en": {
+   "summary": "An anime model by Raelina, fine-tuned from Illustrious XL. It aims to reduce the base model's oversaturation and artifact noise for a more polished, balanced output, and adds knowledge of newer game and anime series and characters.",
+   "features": [
+    "Less oversaturation and noise than the base model",
+    "Trained on characters from Genshin Impact, Honkai: Star Rail, Zenless Zone Zero, Wuthering Waves, Umamusume and more",
+    "v12 adds Honkai Impact 3rd and Meitantei Precure!",
+    "Supports quality and aesthetic tags"
+   ],
+   "tips": [
+    "Positive: \"masterpiece, best quality\"; negative: \"bad quality, worst quality, jpeg artifacts, sketch, bad hands, bad feet, signature, watermark\"",
+    "25+ steps, CFG 5–7, sampler Euler a or DPM++ 2M Karras",
+    "Standard resolutions include 832x1216, 1024x1024, and 1216x832",
+    "Hires.fix: 4x Foolhardy Remacri, 10–15 steps, denoise 0.1–0.3"
+   ]
+  }
+ },
+ {
+  "generatorId": 732,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/1360673?modelVersionId=3482805",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "AI_beret",
+  "baseModel": "Illustrious",
+  "license": null,
+  "versionName": "v12.0",
+  "publishedAt": "2026-11-21",
+  "triggerWords": [],
+  "ja": {
+   "summary": "日本人風の女性を出しやすく調整した、Illustrious 系の写実寄り SDXL モデルです。作者は AI_beret さんです。v12.0 ではベースモデルの一部と LoRA が見直されました。",
+   "features": [
+    "日本人風の女性の写実的な画像が得意",
+    "Illustrious ベースのリアル系モデル",
+    "v12.0 でベースモデルと LoRA を一部見直し"
+   ],
+   "tips": [
+    "プロンプトに「photo realistic」を入れるのがおすすめです。",
+    "参考設定：サンプラー Euler a、ステップ 30、CFG 7。"
+   ]
+  },
+  "en": {
+   "summary": "A realism-leaning SDXL model on the Illustrious family, tuned to make Japanese-looking women easier to generate, made by AI_beret. v12.0 revises parts of the base model and LoRAs.",
+   "features": [
+    "Realistic images of Japanese-looking women",
+    "Illustrious-based realistic model",
+    "v12.0 revises the base mix and LoRAs"
+   ],
+   "tips": [
+    "Adding \"photo realistic\" to the prompt is recommended.",
+    "Reference settings: Euler a, 30 steps, CFG 7."
+   ]
+  }
+ },
+ {
+  "generatorId": 733,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/3005406?modelVersionId=3409867",
+   "label": "Civitai"
+  },
+  "links": [
+   {
+    "label": "Hugging Face",
+    "url": "https://huggingface.co/OpenMOSS-Team/MOSS-Image"
+   }
+  ],
+  "creator": "OpenMOSS",
+  "baseModel": "MOSS Image",
+  "license": "Apache-2.0",
+  "versionName": "SFT",
+  "publishedAt": "2026-10-16",
+  "triggerWords": [],
+  "ja": {
+   "summary": "OpenMOSS チームが開発した、50億パラメータの新しい世代の画像生成モデル（DiT）です。文章での長いプロンプトに強く、画像内の文字やレイアウトの指定が得意です。イラストから写実まで描けます。Civitai のページはミラーで、このバージョンは生成向けの SFT 版です。",
+   "features": [
+    "画像の中の文字をきれいに描ける",
+    "レイアウトの指定に強い",
+    "長い文章プロンプトやタグ、JSON レイアウトに対応",
+    "512px〜2K、好きな縦横比",
+    "Apache-2.0 で商用利用可"
+   ],
+   "tips": [
+    "サンプラーは自動（er_sde）で、LoRA・ControlNet は使えません",
+    "プロンプトは英語がすすめられています。中国語なども使えます",
+    "描きたい文字は引用符で囲み、改行で区切ると伝わりやすいです",
+    "短いプロンプトのときは CFG を上げるよう案内されています"
+   ]
+  },
+  "en": {
+   "summary": "MOSS Image is a 5B-parameter text-to-image DiT from the OpenMOSS team, built for accurate in-image text, layout control and long prompts. It handles both illustration and realistic images. The Civitai page is a mirror; this is the SFT version recommended for generation.",
+   "features": [
+    "Accurate text inside images",
+    "Strong layout control",
+    "Accepts long natural-language prompts, tags or a JSON layout",
+    "512px to 2K at any aspect ratio",
+    "Apache 2.0, commercial use allowed"
+   ],
+   "tips": [
+    "The sampler is set automatically (er_sde); LoRA and ControlNet are not available",
+    "English prompts are recommended; Chinese and other languages also work",
+    "Put text you want rendered in quotes and separate with line breaks",
+    "Raise CFG for short prompts"
+   ]
+  }
+ },
+ {
+  "generatorId": 734,
+  "source": {
+   "kind": "civitai",
+   "url": "https://civitai.com/models/3016339?modelVersionId=3471611",
+   "label": "Civitai"
+  },
+  "links": [],
+  "creator": "J1B",
+  "baseModel": "MOSS Image",
+  "license": null,
+  "versionName": "V3 - Believe What You See",
+  "publishedAt": "2026-11-17",
+  "triggerWords": [],
+  "ja": {
+   "summary": "J1B さんが MOSS Image を写実向けに調整したモデル Jib Mix Moss Realistic の V3 です。8 ステップ用の LoRA がマージ済みで、少ないステップでシャープな写真風の画像を作れます。",
+   "features": [
+    "シャープで写実的な写真風の画像",
+    "V3 はライティングが自然になり、白飛びが減少",
+    "V3 は顔のバリエーションが増加",
+    "V2 以降はアマチュア写真のような雰囲気、粒状ノイズを軽減"
+   ],
+   "tips": [
+    "Aipictors ではステップ数・CFG は自動（9 ステップ・CFG 1）です",
+    "LoRA・ControlNet は使えません",
+    "プロンプト内の他の画風の指定は無視されることがあります"
+   ]
+  },
+  "en": {
+   "summary": "Jib Mix Moss Realistic V3 is J1B's realism-tuned version of MOSS Image. An 8-step LoRA is merged in, so it produces sharp, photo-like images in few steps.",
+   "features": [
+    "Sharp, realistic photo-style images",
+    "V3 has more natural, less overexposed lighting",
+    "V3 gives more varied faces",
+    "Since V2: amateur-photo feel and reduced grain"
+   ],
+   "tips": [
+    "On Aipictors, steps and CFG are set automatically (9 steps, CFG 1)",
+    "LoRA and ControlNet are not available",
+    "It may ignore other art styles named in the prompt"
+   ]
+  }
+ }
+]

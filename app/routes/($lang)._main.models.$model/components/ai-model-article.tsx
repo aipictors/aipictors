@@ -10,6 +10,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
 import type { AiModelGenerationInfo } from "~/routes/($lang)._main.models.$model/components/ai-model-header"
 import type { AiModelRelatedModel } from "~/routes/($lang)._main.models.$model/components/ai-model-related"
+import type { ModelDetail } from "~/lib/model-details/model-detail"
 import { AiModelWorksLayout } from "~/routes/($lang)._main.models.$model/components/ai-model-works-layout"
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
   search: AiModelWorksSearch
   generation: AiModelGenerationInfo | null
   relatedModels: AiModelRelatedModel[]
+  detail: ModelDetail | null
   promptHubPath: string | null
 }
 
@@ -61,6 +63,7 @@ export function AiModelArticle(props: Props) {
       isSensitive={false}
       generation={props.generation}
       relatedModels={props.relatedModels}
+      detail={props.detail}
       promptHubPath={props.promptHubPath}
     />
   )

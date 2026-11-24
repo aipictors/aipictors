@@ -6,6 +6,9 @@ import {
 } from "~/routes/($lang)._main.models.$model/ai-model-works-page"
 import { findAiModelImageModels } from "~/routes/($lang)._main.models.$model/ai-model-image-models"
 import { toAiModelPageText } from "~/routes/($lang)._main.models.$model/ai-model-seo"
+import { resolveAiModelFallback } from "~/routes/($lang)._main.models.$model/ai-model-fallback.server"
+import { AiModelWorksLayout } from "~/routes/($lang)._main.models.$model/components/ai-model-works-layout"
+import { findModelDetail } from "~/lib/model-details/model-details.server"
 import { useTranslation } from "~/hooks/use-translation"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
@@ -71,7 +74,27 @@ export async function loader(props: LoaderFunctionArgs) {
   ])
 
   if (!resp.data.aiModel) {
-    throw new Response(null, { status: 404 })
+    // 作品のモデルが無い名前: 生成機の番号・表示名なら正しいページへ移し、作品のまだ無い生成機のモデルは紹介のページを出す
+    const current = await resolveAiModelFallback({
+      request: props.request,
+      param: props.params.model,
+      imageModels,
+      isSensitive: false,
+      lang: props.params.lang,
+    })
+    const imageModel = findAiModelImageModels(
+      imageModels,
+      { name: current.displayName, generationModelId: current.id },
+      12,
+    )
+    return {
+      data: null,
+      search: search,
+      generation: current,
+      relatedModels: imageModel.related,
+      promptHubPath: null,
+      detail: findModelDetail(current.id),
+    }
   }
 
   const model = readFragment(ModelItemFragment, resp.data.aiModel)
@@ -86,6 +109,7 @@ export async function loader(props: LoaderFunctionArgs) {
     promptHubPath: findHubModel(props.params.model, false)
       ? toHubModelPath(props.params.model, false)
       : null,
+    detail: findModelDetail(imageModel.current?.id ?? model.generationModelId),
   }
 }
 
@@ -96,6 +120,15 @@ export const headers: HeadersFunction = () => ({
 export const meta: MetaFunction<typeof loader> = (props) => {
   if (!props.data) {
     return [{ title: "モデル作品一覧" }]
+  }
+
+  if (props.data.data === null) {
+    return props.data.generation
+      ? toGeneratorModelMeta(
+          { generation: props.data.generation, detail: props.data.detail },
+          props.params.lang,
+        )
+      : [{ title: "モデル作品一覧" }]
   }
 
   const model = readFragment(ModelItemFragment, props.data.data)
@@ -136,9 +169,9 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     props.params.lang,
   )
 
-  // 作品のないページ（範囲外のページ・作品のないモデル）は検索結果に出さない
+  // 作品のないページ（範囲外のページ・作品のないモデル）は検索結果に出さない。作品がまだ無くても紹介のある 1 ページ目は出す
   const robots =
-    model.works.length === 0
+    model.works.length === 0 && (props.data.detail === null || page > 0)
       ? [{ name: "robots", content: "noindex, follow" }]
       : []
 
@@ -170,6 +203,44 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 }
 
 /**
+ * 作品のモデルがまだ無い生成機のモデルのページの meta（紹介文から作る）
+ */
+const toGeneratorModelMeta = (
+  data: {
+    generation: { displayName: string; type: string; explanation: string; thumbnailImageURL: string | null }
+    detail: { ja: { summary: string }; en: { summary: string } } | null
+  },
+  lang: string | undefined,
+) => {
+  const name = data.generation.displayName
+  const isEn = lang === "en"
+  const summary =
+    (isEn ? data.detail?.en.summary : data.detail?.ja.summary) ??
+    (isEn ? "" : data.generation.explanation)
+  const title = isEn
+    ? `${name} - ${data.generation.type} model: features, settings & AI art`
+    : `${name}（${data.generation.type}モデル）の特徴・推奨設定・作例`
+  const description = (
+    summary.length > 0
+      ? summary
+      : isEn
+        ? `${name} is a ${data.generation.type} model you can use on the Aipictors generator.`
+        : `${name}は Aipictors の生成機で使える${data.generation.type}モデルです。`
+  ).slice(0, 160)
+  return createMeta(
+    META.MODEL,
+    {
+      title: title,
+      enTitle: title,
+      description: description,
+      enDescription: description,
+      url: data.generation.thumbnailImageURL ?? "",
+    },
+    lang,
+  )
+}
+
+/**
  * モデルの詳細
  */
 export default function ModelPage() {
@@ -182,8 +253,25 @@ export default function ModelPage() {
 
   const data = useLoaderData<typeof loader>()
 
+  // 作品のモデルがまだ無い生成機のモデル: 紹介と「このモデルで生成」を出す
   if (data.data === null) {
-    throw new ParamsError()
+    if (data.generation === null) {
+      throw new ParamsError()
+    }
+    return (
+      <AiModelWorksLayout
+        name={data.generation.displayName}
+        thumbnailImageURL={data.generation.thumbnailImageURL}
+        worksCount={0}
+        works={[]}
+        search={data.search}
+        isSensitive={false}
+        generation={data.generation}
+        relatedModels={data.relatedModels}
+        promptHubPath={null}
+        detail={data.detail}
+      />
+    )
   }
 
   // ページを変えた URL は canonical が別なので、そのページの作品だけを載せる
@@ -214,6 +302,7 @@ export default function ModelPage() {
         generation={data.generation}
         relatedModels={data.relatedModels}
         promptHubPath={data.promptHubPath}
+        detail={data.detail}
       />
     </>
   )

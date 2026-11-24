@@ -30,7 +30,9 @@ export function ImageModelList (props: Props) {
             key={imageModel.id}
             className="overflow-hidden rounded-lg border shadow-lg"
           >
-            <Link to={`/models/${imageModel.modelName}`}>
+            <Link
+              to={`/models/${encodeURIComponent(imageModel.modelName || imageModel.displayName)}`}
+            >
               <img
                 src={toResizedImageUrl(imageModel.thumbnailImageURL, 480) ?? ""}
                 alt={imageModel.displayName}

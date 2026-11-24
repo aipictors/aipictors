@@ -22,6 +22,8 @@ import {
   type AiModelRelatedModel,
   AiModelRelated,
 } from "~/routes/($lang)._main.models.$model/components/ai-model-related"
+import { AiModelDetailSection } from "~/routes/($lang)._main.models.$model/components/ai-model-detail-section"
+import type { ModelDetail } from "~/lib/model-details/model-detail"
 import { AiModelWorksPagination } from "~/routes/($lang)._main.models.$model/components/ai-model-works-pagination"
 import { AiModelWorksToolbar } from "~/routes/($lang)._main.models.$model/components/ai-model-works-toolbar"
 
@@ -35,6 +37,8 @@ type Props = {
   generation: AiModelGenerationInfo | null
   relatedModels: AiModelRelatedModel[]
   promptHubPath: string | null
+  /** 生成機のモデルの紹介（Civitai などの情報をもとにした文） */
+  detail?: ModelDetail | null
 }
 
 /**
@@ -54,6 +58,16 @@ export function AiModelWorksLayout(props: Props) {
     props.search.isMoreRatings ||
     props.search.sort !== "new"
 
+  // 作品がまだ無いモデルは紹介を見出しのすぐ下に、作品があるモデルは一覧の下に出す
+  const isDetailFirst = props.worksCount === 0 && !isFiltered
+
+  const detailSection = props.detail ? (
+    <AiModelDetailSection
+      name={props.generation?.displayName ?? props.name}
+      detail={props.detail}
+    />
+  ) : null
+
   return (
     <div className="flex flex-col gap-4">
       <AiModelHeader
@@ -68,6 +82,7 @@ export function AiModelWorksLayout(props: Props) {
         generation={props.generation}
         promptHubPath={props.promptHubPath}
       />
+      {isDetailFirst && detailSection}
       <AiModelWorksToolbar
         basePath={basePath}
         moreRatingsKey={moreRatingsKey}
@@ -124,6 +139,7 @@ export function AiModelWorksLayout(props: Props) {
         search={props.search}
         pageCount={pageCount}
       />
+      {!isDetailFirst && detailSection}
       <AiModelRelated
         name={props.name}
         tags={toAiModelPopularTags(props.works, 16)}

@@ -8,9 +8,12 @@ import { findAiModelImageModels } from "~/routes/($lang)._main.models.$model/ai-
 import { toAiModelPageText } from "~/routes/($lang)._main.models.$model/ai-model-seo"
 import { aiModelImageModelsQuery } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 import { ParamsError } from "~/errors/params-error"
+import { resolveAiModelFallback } from "~/routes/($lang)._main.models.$model/ai-model-fallback.server"
+import { findModelDetail } from "~/lib/model-details/model-details.server"
 import { loaderClient } from "~/lib/loader-client"
-import type {
-  HeadersFunction,
+import {
+  redirect,
+  type HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
@@ -62,7 +65,18 @@ export async function loader(props: LoaderFunctionArgs) {
   ])
 
   if (!resp.data.aiModel) {
-    throw new Response(null, { status: 404 })
+    // 生成機の番号・表示名は正しい名前の R18 のページへ。作品のまだ無い生成機のモデルは全年齢の紹介のページへ
+    const current = await resolveAiModelFallback({
+      request: props.request,
+      param: props.params.model,
+      imageModels,
+      isSensitive: true,
+      lang: props.params.lang,
+    })
+    throw redirect(
+      `${props.params.lang === "en" ? "/en" : ""}/models/${encodeURIComponent(current.displayName)}`,
+      301,
+    )
   }
 
   const model = readFragment(ModelSensitiveItemFragment, resp.data.aiModel)
@@ -74,6 +88,7 @@ export async function loader(props: LoaderFunctionArgs) {
     search: search,
     generation: imageModel.current,
     relatedModels: imageModel.related,
+    detail: findModelDetail(imageModel.current?.id ?? model.generationModelId),
   }
 }
 
@@ -137,6 +152,7 @@ export default function ModelPage() {
         search={data.search}
         generation={data.generation}
         relatedModels={data.relatedModels}
+        detail={data.detail}
       />
     </>
   )

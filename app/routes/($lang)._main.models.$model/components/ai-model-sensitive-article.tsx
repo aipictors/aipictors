@@ -11,6 +11,7 @@ import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/compon
 import { aiModelQuery } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 import type { AiModelGenerationInfo } from "~/routes/($lang)._main.models.$model/components/ai-model-header"
 import type { AiModelRelatedModel } from "~/routes/($lang)._main.models.$model/components/ai-model-related"
+import type { ModelDetail } from "~/lib/model-details/model-detail"
 import { AiModelWorksLayout } from "~/routes/($lang)._main.models.$model/components/ai-model-works-layout"
 
 type Props = {
@@ -18,6 +19,7 @@ type Props = {
   search: AiModelWorksSearch
   generation: AiModelGenerationInfo | null
   relatedModels: AiModelRelatedModel[]
+  detail: ModelDetail | null
 }
 
 export function AiModelSensitiveArticle(props: Props) {
@@ -61,6 +63,7 @@ export function AiModelSensitiveArticle(props: Props) {
       isSensitive={true}
       generation={props.generation}
       relatedModels={props.relatedModels}
+      detail={props.detail}
       promptHubPath={null}
     />
   )
