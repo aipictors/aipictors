@@ -3,6 +3,7 @@ import { ExpansionTransition } from "~/components/expansion-transition"
 import { SupportSuccessDialog } from "~/components/support-success-dialog"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
+import { CommentReactionsProvider } from "~/routes/($lang)._main.posts.$post._index/components/comment-reactions"
 import { StickerButton } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import { WorkCommentExpandedThread } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-expanded-thread"
@@ -63,8 +64,14 @@ export function WorkCommentList(props: WorkCommentListProps) {
     }
   }
 
+  // リアクションはコメントと返信の分をまとめて読む
+  const reactionCommentIds = showComments.flatMap((item) => [
+    item.id,
+    ...(item.responses?.map((reply) => reply.id) ?? []),
+  ])
+
   return (
-    <>
+    <CommentReactionsProvider commentIds={reactionCommentIds}>
       <div className="space-y-4">
         <h2 className="flex items-baseline gap-2 font-bold text-base">
           {t("コメント", "Comments")}
@@ -250,6 +257,6 @@ export function WorkCommentList(props: WorkCommentListProps) {
       />
 
       <WorkCommentPremiumResultDialog {...state} />
-    </>
+    </CommentReactionsProvider>
   )
 }

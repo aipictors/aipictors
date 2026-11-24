@@ -26,6 +26,7 @@ import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { CommentAppealDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-appeal-dialog"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
+import { CommentReactions } from "~/routes/($lang)._main.posts.$post._index/components/comment-reactions"
 import { CommentReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-report-dialog"
 import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
@@ -441,6 +442,7 @@ export function WorkCommentResponse(props: Props) {
                 </Button>
               </div>
             }
+            <CommentReactions commentId={props.replyId} isMine={props.isMine} />
             {props.isMine ? (
               isDeleteLoading ? (
                 <Loader2Icon className="mr-2 size-4 animate-spin" />
