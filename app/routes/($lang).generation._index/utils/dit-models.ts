@@ -5,6 +5,9 @@
  */
 const DIT_MODELS = [
   { pattern: /^z[_-]?image[_-]?turbo$/i, label: "Z-Image Turbo" },
+  // MOSS Image（OpenMOSS）と派生の Jib Mix Moss（Civitai）
+  { pattern: /^moss[_-]image$/i, label: "MOSS Image" },
+  { pattern: /^moss[_-]jibmix[_-]v3$/i, label: "Jib Mix Moss" },
   // animagine・animaPencil などの SDXL モデルと区別するため、名前全体で見る
   { pattern: /^anima([_-](turbo|base|aesthetic))?$/i, label: "Anima" },
 ] as const
