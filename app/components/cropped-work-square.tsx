@@ -242,10 +242,10 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
 
             <div
               className={cn(
-                "absolute z-10",
-                props.commentsCount !== undefined && props.commentsCount !== 0
-                  ? "right-1"
-                  : "left-1",
+                // いいねボタンが右下にあるので、プロンプト公開などのバッジは左下に固定する（右に寄せると重なって押しづらい）。
+                // 順位の丸があるときはその右に並べる
+                "pointer-events-none absolute z-10",
+                props.ranking ? "left-9" : "left-1",
                 props.hasReferenceButton ? "bottom-12" : "bottom-2",
               )}
             >
@@ -325,10 +325,10 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
 
       <div
         className={cn(
-          "absolute z-10",
-          props.commentsCount !== undefined && props.commentsCount !== 0
-            ? "right-1"
-            : "left-1",
+          // いいねボタンが右下にあるので、プロンプト公開などのバッジは左下に固定する（右に寄せると重なって押しづらい）。
+          // 順位の丸があるときはその右に並べる
+          "pointer-events-none absolute z-10",
+          props.ranking ? "left-9" : "left-1",
           props.hasReferenceButton ? "bottom-12" : "bottom-2",
         )}
       >
