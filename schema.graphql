@@ -2255,7 +2255,6 @@ type GachaPullResult {
   shards: Int!
 }
 
-"""ガチャの自分の状態"""
 type GachaRarityRate {
   """10 連の確定枠の確率（%）"""
   guaranteed: Float!
@@ -2298,6 +2297,7 @@ type GachaUniquePrize {
   slug: String!
 }
 
+"""ガチャの自分の状態"""
 type GachaViewerState {
   """交換 pt（1 回引くと 1。200 で好きな景品と交換）"""
   exchangePoints: Int!
@@ -3596,12 +3596,6 @@ type Mutation {
   """パスのチェックアウトのURLを作成する"""
   createPassCheckoutSession(input: CreatePassCheckoutSessionInput): String!
 
-  """カード登録なしの「ライト1日体験」を始める（1人1回）"""
-  startLiteDayTrial(
-    """どこから始めたか（計測用）"""
-    source: String
-  ): LiteDayTrialNode!
-
   """推薦作品を作成する"""
   createRecommendedWork(input: CreateRecommendedWorkInput!): WorkNode!
 
@@ -3839,6 +3833,12 @@ type Mutation {
 
   """ユーザのフォローを解除する"""
   signImageGenerationTerms(input: SignImageGenerationTermsInput!): UserNode!
+
+  """カード登録なしの「ライト1日体験」を始める（1人1回）"""
+  startLiteDayTrial(
+    """どこから始めたか（計測用）"""
+    source: String
+  ): LiteDayTrialNode!
 
   """App Store で買ったコインを残高に反映する"""
   syncAppStoreCoinPurchases(input: SyncAppStoreCoinPurchasesInput!): SyncStoreCoinPurchasesResult!
@@ -4855,6 +4855,12 @@ type Query {
   """フォロー中ユーザ"""
   followingUsers(limit: Int!, offset: Int!, where: FollowingUsersWhereInput!): [UserNode!]!
 
+  """いまの提供割合（UUR の残り数で変わる。ログインなしで読める）"""
+  gachaRates: GachaRates!
+
+  """UUR（世界で 1 人だけが持てる景品）と持ち主の一覧（ログインなしで読める）"""
+  gachaUniquePrizes: [GachaUniquePrize!]!
+
   """ホームのタグ"""
   homeTags: [TagNode!]!
 
@@ -5107,12 +5113,6 @@ type Query {
 
   """いま出ている自分の宣伝（全年齢・R18 の枠ごと）"""
   viewerActiveWorkPromotions: [ActiveWorkPromotionNode!]!
-
-  """いまの提供割合（UUR の残り数で変わる。ログインなしで読める）"""
-  gachaRates: GachaRates!
-
-  """UUR（世界で 1 人だけが持てる景品）と持ち主の一覧（ログインなしで読める）"""
-  gachaUniquePrizes: [GachaUniquePrize!]!
 
   """ガチャの自分の状態（未ログインは null）"""
   viewerGacha: GachaViewerState
@@ -6941,9 +6941,6 @@ type Viewer {
   """過去にパス情報が存在したかどうか"""
   isExistedPreviousPass: Boolean!
 
-  """カード登録なしの「ライト1日体験」の状態（取れなければ null）"""
-  liteDayTrial: LiteDayTrialNode
-
   """モデレーターかどうか"""
   isModerator: Boolean!
 
@@ -6958,6 +6955,9 @@ type Viewer {
 
   """LINEアカウントID"""
   lineUserId: String
+
+  """カード登録なしの「ライト1日体験」の状態（取れなければ null）"""
+  liteDayTrial: LiteDayTrialNode
 
   """メッセージのスレッド"""
   messageThread(threadId: ID!): MessageThreadNode
