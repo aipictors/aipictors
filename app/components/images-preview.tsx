@@ -9,10 +9,14 @@ import {
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
+import { useHydrated } from "remix-utils/use-hydrated"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { toResizedImageSrcSet } from "~/utils/resized-image-url"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
 import {
   readViewerCaptionShown,
   saveViewerCaptionShown,
@@ -62,6 +66,13 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const mainImgRef = useRef<HTMLImageElement>(null)
   // 画像の読み込みが終わるまで表示領域を確保し、読み込み後のレイアウトシフトを防ぐ
   const [isMainImageLoaded, setIsMainImageLoaded] = useState(false)
+  // サーバーの HTML に入れた画像は JS より先に読み始めているので、読み込み中でも隠さない。
+  // 画面の移動で後から出す画像は、届くまで隠して代わりに小さい版を出す
+  // （縮小版がまだ無いと 404 → 縮小の Worker に切り替わる間、リンク切れの印が一瞬出ていた）
+  const isHydrated = useHydrated()
+  const [serverRenderedUrl] = useState(() =>
+    isHydrated ? null : props.thumbnailUrl,
+  )
   const startCoord = useRef({ x: 0, y: 0 })
   const prevTranslate = useRef({ x: 0, y: 0 })
   const lastTap = useRef(0)
@@ -348,7 +359,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
   // 枠に出す画像は重ねておき、読み込みと展開が終わったものの表示を切り替えるだけにする。
   // 1 枚の src を変えると、読み込み中に消えたり画像の大きさに合わせて伸び縮みしたりする
   const [stageReadyUrls, setStageReadyUrls] = useState(
-    () => new Set([props.thumbnailUrl]),
+    () => new Set(serverRenderedUrl === null ? [] : [serverRenderedUrl]),
   )
   const [stageVisitedUrls, setStageVisitedUrls] = useState(
     () => new Set([props.thumbnailUrl]),
@@ -361,7 +372,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
     shownStageUrlRef.current = props.thumbnailUrl
   }
   const shownStageUrl = shownStageUrlRef.current
-  const isStageImagePending = shownStageUrl !== props.thumbnailUrl
+  const isShownStageImageReady = stageReadyUrls.has(shownStageUrl)
+  const isStageImagePending =
+    shownStageUrl !== props.thumbnailUrl || !isShownStageImageReady
 
   // 元の幅が分かれば、パソコンの大きな画面向けに 1920・2560px の縮小版も候補にする
   const toSrcSetOptions = (hint: Props["imageSizeHint"]) =>
@@ -370,15 +383,22 @@ export function ImagesPreview(props: Props): React.ReactNode {
       : { minWidth: 400 }
   const mainImageSrcSetOptions = toSrcSetOptions(props.imageSizeHint)
 
-  const placeholderStyle =
-    props.placeholderUrl && !isMainImageLoaded
-      ? {
-          backgroundImage: `url("${props.placeholderUrl}")`,
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "contain",
-        }
-      : undefined
+  // 大きい画像が届くまで枠いっぱいに出す小さい版。一覧で押したサムネイルが無ければ、
+  // 下のサムネイルの列と同じ縮小版（すぐ届く・同じ URL なので 1 回の通信で済む）
+  const previewUrl =
+    props.placeholderUrl ?? toResizedImageUrl(props.thumbnailUrl, 160)
+  const previewImage =
+    previewUrl && previewUrl !== props.thumbnailUrl ? (
+      <img
+        aria-hidden
+        alt=""
+        src={previewUrl}
+        draggable={false}
+        className="pointer-events-none absolute inset-0 size-full object-contain"
+      />
+    ) : null
+  const isMainImageHidden =
+    !isMainImageLoaded && props.thumbnailUrl !== serverRenderedUrl
 
   // 今の画像のほか、次の画像を先に読む（押したときにすぐ出せるように）。
   // 開いただけで全部読むと、モバイルで最初の表示より先に何 MB も通信する
@@ -703,10 +723,11 @@ export function ImagesPreview(props: Props): React.ReactNode {
         <div
           ref={stageRef}
           className="group/stage relative flex h-[64vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-muted/60 md:h-[72vh]"
-          style={placeholderStyle}
         >
+          {!isShownStageImageReady && previewImage}
           {stageUrls.map((url) => {
-            const isShown = url === shownStageUrl
+            const isCurrent = url === shownStageUrl
+            const isShown = isCurrent && stageReadyUrls.has(url)
             // 元の幅・縦横比が分かるのはメイン画像（1 枚目）だけ
             const sizeHint = pickWorkImageSizeHint(
               url,
@@ -724,7 +745,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 srcSet={toResizedImageSrcSet(url, toSrcSetOptions(sizeHint))}
                 // 縦横比が分からない 2 枚目以降は、横長でも粗くならないように幅いっぱいとみなす
                 sizes={toWorkImageSizes(sizeHint?.aspectRatio)}
-                fetchPriority={isShown ? "high" : "low"}
+                fetchPriority={isCurrent ? "high" : "low"}
                 onLoad={(event) => {
                   if (url === props.thumbnailUrl) setIsMainImageLoaded(true)
                   markStageImageReadyAfterDecode(event.currentTarget, url)
@@ -776,17 +797,17 @@ export function ImagesPreview(props: Props): React.ReactNode {
       <div className="flex flex-col space-y-4">
         <div className="relative">
           <div
-            className="m-auto flex h-full max-h-[64vh] w-full cursor-pointer justify-center overflow-hidden rounded-2xl bg-zinc-100 object-contain dark:bg-zinc-900"
-            style={
-              isMainImageLoaded
-                ? undefined
-                : { minHeight: "64vh", ...placeholderStyle }
-            }
+            className="relative m-auto flex h-full max-h-[64vh] w-full cursor-pointer justify-center overflow-hidden rounded-2xl bg-zinc-100 object-contain dark:bg-zinc-900"
+            style={isMainImageLoaded ? undefined : { minHeight: "64vh" }}
           >
-            <div className="inline-block overflow-hidden text-center">
+            {isMainImageHidden && previewImage}
+            <div className="relative inline-block overflow-hidden text-center">
               <img
                 ref={mainImgRef}
-                className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain md:max-h-[72vh] dark:bg-zinc-900"
+                className={cn(
+                  "m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain md:max-h-[72vh] dark:bg-zinc-900",
+                  isMainImageHidden && "invisible",
+                )}
                 draggable={false}
                 key={props.thumbnailUrl}
                 alt="thumbnail"
