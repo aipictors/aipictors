@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import {
   isAdvancedEntryRequested,
@@ -55,7 +55,12 @@ export function useGenerationEntryMode(options: { enabled?: boolean } = {}) {
     if (hasGenerated) savePrefersAdvancedEntry()
   }, [hasGenerated])
 
-  const mode = ((): GenerationEntryMode => {
+  // 一度詳細画面を出したら、開いている間はかんたん入口に戻さない。
+  // はじめての生成が成功すると保存したプロンプトを消すので、そのあと履歴（まだ 0 件のキャッシュ）で
+  // 判定し直すと /generation/home に戻されていた
+  const hasShownAdvancedRef = useRef(false)
+
+  const decidedMode = ((): GenerationEntryMode => {
     if (isAdvancedChosen) return "advanced"
     if (authContext.isLoading) return "loading"
     if (authContext.isNotLoggedIn) return "simple"
@@ -65,6 +70,12 @@ export function useGenerationEntryMode(options: { enabled?: boolean } = {}) {
     if (generatedCount === undefined) return "loading"
     return generatedCount > 0 ? "advanced" : "simple"
   })()
+
+  if (decidedMode === "advanced") hasShownAdvancedRef.current = true
+
+  const mode: GenerationEntryMode = hasShownAdvancedRef.current
+    ? "advanced"
+    : decidedMode
 
   /**
    * 詳細画面に切り替える（次からも詳細画面で開く）
