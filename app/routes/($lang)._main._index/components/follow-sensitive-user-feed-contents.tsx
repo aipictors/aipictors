@@ -334,7 +334,10 @@ function InfiniteMode(props: Props) {
     [isTimelineView, authContext.userId, viewerRatings.sensitiveRatings],
   )
   const { pages, appendPage, appendPages, replaceFirstPage, flat } =
-    usePagedInfinite<PostItem>(initialPages, keyForStore)
+    usePagedInfinite<PostItem>(initialPages, keyForStore, {
+      // 開いたままの画面で 1 ページ分より多く新着が増えたときに、間の作品が抜けないように読み直す
+      resetOnFirstPageDisconnect: true,
+    })
 
   // ─── 初回 / クエリ更新時のページ反映 ──────────────────
   const firstIdsRef = useRef<string>("")

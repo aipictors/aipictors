@@ -523,7 +523,10 @@ function InfiniteMode({
     ratings: feedPostsWhere.ratings.join("-"),
   })
   const { pages, appendPage, appendPages, replaceFirstPage, flat } =
-    usePagedInfinite<PostItem>(initialPages, storeKey)
+    usePagedInfinite<PostItem>(initialPages, storeKey, {
+      // 開いたままの画面で 1 ページ分より多く新着が増えたときに、間の作品が抜けないように読み直す
+      resetOnFirstPageDisconnect: true,
+    })
 
   /* useRef で “前回の先頭ページ ID 群” を保持 */
   const firstIdsRef = useRef<string>("")

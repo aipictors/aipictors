@@ -9,6 +9,33 @@ type ObjectWithId = {
 interface UsePagedInfiniteOptions<T extends ObjectWithId> {
   idKey?: keyof T
   debug?: boolean
+  /**
+   * 取り直した 1 ページ目が前の 1 ページ目とつながらないときに、
+   * 保存しておいた 2 ページ目以降を捨てる（間の作品が抜けて見えなくなるのを防ぐ）
+   */
+  resetOnFirstPageDisconnect?: boolean
+}
+
+/**
+ * 取り直した 1 ページ目が、保存しておいた 1 ページ目とつながらなくなったかどうか。
+ *
+ * 新しい順の一覧は 2 ページ目以降をそのまま覚えているので、開いたままの画面に
+ * 1 ページ分より多く新着が増えると、1 ページ目と 2 ページ目の間の作品が抜ける。
+ * 同じ作品が 1 つも残っていなければ、つながっていないと判断する。
+ */
+export function isFirstPageDisconnected<T extends ObjectWithId>(props: {
+  pages: T[][]
+  nextFirstPage: T[]
+  idKey?: keyof T
+}): boolean {
+  const idKey = props.idKey ?? ("id" as keyof T)
+  const previousFirstPage = props.pages[0]
+  if (props.pages.length < 2) return false
+  if (!previousFirstPage?.length) return false
+  if (props.nextFirstPage.length === 0) return false
+  return !props.nextFirstPage.some((item) =>
+    previousFirstPage.some((previous) => previous[idKey] === item[idKey]),
+  )
 }
 
 export function usePagedInfinite<T extends ObjectWithId>(
@@ -16,7 +43,11 @@ export function usePagedInfinite<T extends ObjectWithId>(
   storageKey?: string,
   options: UsePagedInfiniteOptions<T> = {},
 ) {
-  const { idKey = "id" as keyof T, debug = false } = options
+  const {
+    idKey = "id" as keyof T,
+    debug = false,
+    resetOnFirstPageDisconnect = false,
+  } = options
   const STORAGE_ID = storageKey ? `homeWorks-pages:${storageKey}` : undefined
 
   const [pages, _setPages] = useState<T[][]>(() => {
@@ -172,6 +203,16 @@ export function usePagedInfinite<T extends ObjectWithId>(
   const replaceFirstPage = useCallback(
     (page1: T[]) => {
       setPages((prev) => {
+        if (
+          resetOnFirstPageDisconnect &&
+          isFirstPageDisconnected({ pages: prev, nextFirstPage: page1, idKey })
+        ) {
+          if (debug) {
+            console.log("[usePagedInfinite] Dropped disconnected stale pages")
+          }
+          return [page1]
+        }
+
         const otherPagesIds = new Set<T[keyof T]>()
         for (let i = 1; i < prev.length; i++) {
           for (const item of prev[i]) {
@@ -196,7 +237,7 @@ export function usePagedInfinite<T extends ObjectWithId>(
         return [deduplicated, ...prev.slice(1)]
       })
     },
-    [idKey, debug, setPages],
+    [idKey, debug, resetOnFirstPageDisconnect, setPages],
   )
 
   const setPagesDirect = useCallback(
