@@ -4,12 +4,12 @@ import { SupportSuccessDialog } from "~/components/support-success-dialog"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { CommentReactionsProvider } from "~/routes/($lang)._main.posts.$post._index/components/comment-reactions"
-import { StickerButton } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import { WorkCommentExpandedThread } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-expanded-thread"
 import { WorkCommentForm } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-form"
 import { WorkCommentNewList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-new-list"
 import { WorkCommentPremiumResultDialog } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-premium-result-dialog"
+import { WorkCommentQuickStickers } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-quick-stickers"
 import { WorkCommentSupportStrip } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-support-strip"
 import { WorkCommentThread } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-thread"
 import {
@@ -101,60 +101,14 @@ export function WorkCommentList(props: WorkCommentListProps) {
           isWorkOwnerBlocked={props.isWorkOwnerBlocked}
         />
       </div>
-      {/* スタンプのボタンのすぐ下に並ぶと押し間違えやすいので、間を空ける */}
-      {(pinnedStickers.length > 0 || stickers.length > 0) &&
-        !props.isWorkOwnerBlocked && <div aria-hidden className="h-4" />}
-      {pinnedStickers.length > 0 && !props.isWorkOwnerBlocked && (
-        <div className="flex flex-wrap gap-1">
-          {pinnedStickers.map((sticker) => (
-            <StickerButton
-              key={sticker.id}
-              imageUrl={sticker.imageUrl ?? ""}
-              title={sticker.title}
-              onClick={() => {
-                if (sticker.isUsable === false) {
-                  toast(
-                    t(
-                      "このスタンプは作者が非公開にしたため使えません。「設定 > スタンプ」の「マイスタンプ」から外せます",
-                      "This sticker is unavailable because the creator made it private. You can remove it in Settings > Stickers",
-                    ),
-                  )
-                  return
-                }
-                onSendQuickSticker(sticker.id)
-              }}
-              size="large"
-              disabled={props.isWorkOwnerBlocked}
-              isUnusable={sticker.isUsable === false}
-            />
-          ))}
-        </div>
-      )}
-      {stickers.length > 0 && !props.isWorkOwnerBlocked && (
-        <div className="flex gap-1 overflow-x-auto [scrollbar-width:thin]">
-          {stickers.map((sticker) => (
-            <StickerButton
-              key={sticker.id}
-              imageUrl={sticker.imageUrl ?? ""}
-              title={sticker.title}
-              onClick={() => {
-                if (sticker.isUsable === false) {
-                  toast(
-                    t(
-                      "このスタンプは作者が非公開にしたため使えません。「設定 > スタンプ」の「マイスタンプ」から外せます",
-                      "This sticker is unavailable because the creator made it private. You can remove it in Settings > Stickers",
-                    ),
-                  )
-                  return
-                }
-                onSendQuickSticker(sticker.id)
-              }}
-              size="x-large"
-              disabled={props.isWorkOwnerBlocked}
-              isUnusable={sticker.isUsable === false}
-            />
-          ))}
-        </div>
+      {!props.isWorkOwnerBlocked && (
+        <WorkCommentQuickStickers
+          pinnedStickers={pinnedStickers}
+          recentStickers={stickers}
+          disabled={state.isCreatingWorkComment}
+          onSend={(stickerId) => void onSendQuickSticker(stickerId)}
+          onOpenAll={state.onOpen}
+        />
       )}
 
       <div className="mt-6 space-y-5 overflow-y-auto">
