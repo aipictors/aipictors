@@ -15,6 +15,7 @@ import {
   GACHA_EXCHANGE_POINTS,
   GACHA_EXCHANGE_SHARDS,
   GACHA_POOL,
+  isUniqueGachaPrize,
 } from "~/components/gacha/gacha-rules"
 import { Button } from "~/components/ui/button"
 import {
@@ -63,10 +64,16 @@ export function SpecialGachaCollection(props: {
     applyGachaAvatarFrameMutation,
   )
 
-  const prizes = GACHA_POOL.filter((prize) => prize.kind === kind).sort(
+  // UUR（世界で 1 人だけ）はコンプリートの数に入れず、持っているときだけ並べる
+  const collectable = GACHA_POOL.filter((prize) => !isUniqueGachaPrize(prize))
+  const prizes = GACHA_POOL.filter(
+    (prize) =>
+      prize.kind === kind &&
+      (!isUniqueGachaPrize(prize) || owned.has(prize.id)),
+  ).sort(
     (a, b) => RARITIES_DESC.indexOf(a.rarity) - RARITIES_DESC.indexOf(b.rarity),
   )
-  const ownedCount = GACHA_POOL.filter((prize) => owned.has(prize.id)).length
+  const ownedCount = collectable.filter((prize) => owned.has(prize.id)).length
   const selectedIconFrameId =
     frames.data?.userSetting?.selectedUserAvatarFrame?.id ?? null
   const iconFrameIdOf = (prize: GachaPrize) =>
@@ -127,7 +134,7 @@ export function SpecialGachaCollection(props: {
         <h2 className="font-black text-lg">
           コレクション{" "}
           <span className="font-bold text-muted-foreground text-sm">
-            {ownedCount} / {GACHA_POOL.length}
+            {ownedCount} / {collectable.length}
           </span>
         </h2>
         <span className="text-muted-foreground text-xs">
@@ -244,6 +251,12 @@ function PrizeDialog(props: {
           >
             {props.isWearing ? "外す" : "着ける"}
           </Button>
+        ) : isUniqueGachaPrize(props.prize) ? (
+          <p className="text-center text-muted-foreground text-xs">
+            UUR
+            は世界でひとりだけの枠です。ガチャで最初に当てた人だけが持てて、交換
+            pt・かけらでは交換できません
+          </p>
         ) : (
           <div className="space-y-2">
             <Button

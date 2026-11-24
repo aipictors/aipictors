@@ -3,6 +3,7 @@ import type { GachaPrize } from "~/components/gacha/gacha-prizes"
 
 /** レア度の札の色 */
 export const RARITY_BADGE: Record<GachaRarity, string> = {
+  UUR: "bg-[linear-gradient(110deg,#0b0b14_0%,#3b2a06_30%,#f8e7a8_50%,#3b2a06_70%,#0b0b14_100%)] text-amber-50 ring-1 ring-amber-200 shadow-[0_0_8px_rgba(253,230,138,.7)]",
   UR: "bg-gradient-to-r from-pink-400 via-amber-300 to-sky-400 text-slate-900",
   SSR: "bg-amber-400 text-slate-900",
   SR: "bg-violet-400 text-slate-900",

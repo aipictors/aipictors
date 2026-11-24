@@ -30,6 +30,7 @@ import {
   drawGachaMutation,
   viewerGachaQuery,
 } from "~/routes/($lang)._main.gacha._index/components/special-gacha-queries"
+import { SpecialGachaUniquePrizes } from "~/routes/($lang)._main.gacha._index/components/special-gacha-unique-prizes"
 
 export type SpecialGachaState = {
   exchangePoints: number
@@ -101,6 +102,8 @@ export function SpecialGachaPage() {
     shards: number
   } | null>(null)
   const [shortage, setShortage] = useState<{ count: 1 | 10 } | null>(null)
+  /** UUR を当てたら獲得者の一覧を読み直す */
+  const [uniqueKey, setUniqueKey] = useState(0)
 
   const state: SpecialGachaState | null = override ?? data?.viewerGacha ?? null
   const freeBalance =
@@ -176,6 +179,15 @@ export function SpecialGachaPage() {
         shards: payload.pulls.reduce((sum, pull) => sum + pull.shards, 0),
       })
       setPerformanceItems(toGachaItems(payload.drawId, payload.pulls))
+      if (
+        payload.pulls.some((pull) =>
+          GACHA_PRIZES.some(
+            (prize) => prize.id === pull.prizeId && prize.rarity === "UUR",
+          ),
+        )
+      ) {
+        setUniqueKey((value) => value + 1)
+      }
     } catch (error) {
       const code = toGraphQLCode(error)
       if (code === "GACHA_INSUFFICIENT_COINS" && coinType === "PREMIUM") {
@@ -204,6 +216,7 @@ export function SpecialGachaPage() {
             <LoginDialogButton label="ログインして引く" />
           </div>
         </div>
+        <SpecialGachaUniquePrizes />
         <SpecialGachaLineup />
         <RatesLink />
       </div>
@@ -282,6 +295,7 @@ export function SpecialGachaPage() {
         )}
       </section>
 
+      <SpecialGachaUniquePrizes key={uniqueKey} />
       {state && (
         <SpecialGachaCollection
           state={state}

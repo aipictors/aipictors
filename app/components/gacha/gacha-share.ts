@@ -21,6 +21,7 @@ const FRAME_COLORS: Record<GachaRarity, string[]> = {
   SR: ["#f0abfc", "#7c3aed"],
   SSR: ["#fef08a", "#fbbf24", "#f97316"],
   UR: ["#f472b6", "#fde047", "#38bdf8", "#a78bfa"],
+  UUR: ["#f8e7a8", "#ffffff", "#a5f3fc", "#f8e7a8"],
 }
 
 const BADGE_COLOR: Record<GachaRarity, string> = {
@@ -29,6 +30,7 @@ const BADGE_COLOR: Record<GachaRarity, string> = {
   SR: "#7c3aed",
   SSR: "#f59e0b",
   UR: "#ec4899",
+  UUR: "#1c1405",
 }
 
 const loadImage = (url: string) =>

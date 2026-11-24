@@ -37,13 +37,24 @@ const HINT_COLOR: Record<GachaHint, string> = {
   purple: "#b76bff",
   gold: "#ffc53d",
   rainbow: "#ff7ad9",
+  legend: "#fff4d0",
 }
 
 const rainbowAt = (t: number, offset = 0) =>
   `hsl(${(((t * 240 + offset) % 360) + 360) % 360} 100% 65%)`
 
+/** UUR の白金の光（白・金・淡い水色を行き来する） */
+const legendAt = (t: number, offset = 0) => {
+  const k = Math.sin(t * 5 + offset / 40)
+  return `hsl(${48 + 150 * Math.max(0, -k) ** 3} ${70 + 30 * Math.abs(k)}% ${82 + 12 * k}%)`
+}
+
 const colorOf = (hint: GachaHint, t: number, offset = 0) =>
-  hint === "rainbow" ? rainbowAt(t, offset) : HINT_COLOR[hint]
+  hint === "rainbow"
+    ? rainbowAt(t, offset)
+    : hint === "legend"
+      ? legendAt(t, offset)
+      : HINT_COLOR[hint]
 
 type Particle = {
   x: number
@@ -65,6 +76,7 @@ const RARITY_FRAME: Record<GachaItem["rarity"], string> = {
   SR: "from-fuchsia-300 to-violet-600",
   SSR: "from-yellow-200 via-amber-400 to-orange-500",
   UR: "from-pink-400 via-yellow-300 to-sky-400",
+  UUR: "from-amber-100 via-white to-amber-300",
 }
 
 const RARITY_BADGE: Record<GachaItem["rarity"], string> = {
@@ -73,6 +85,7 @@ const RARITY_BADGE: Record<GachaItem["rarity"], string> = {
   SR: "bg-violet-600",
   SSR: "bg-gradient-to-r from-amber-300 to-orange-500 text-black",
   UR: "bg-gradient-to-r from-pink-400 via-yellow-300 to-sky-400 text-black",
+  UUR: "bg-gradient-to-r from-zinc-950 via-amber-700 to-zinc-950 text-amber-50 ring-1 ring-amber-200",
 }
 
 const STYLE = `
@@ -88,6 +101,7 @@ const STYLE = `
 @keyframes g2d-hue { to { filter: hue-rotate(360deg) } }
 @keyframes g2d-stamp { 0% { transform: translate(-50%, -50%) scale(3.2) rotate(-14deg); opacity: 0 } 18% { transform: translate(-50%, -50%) scale(.9) rotate(-8deg); opacity: 1 } 28% { transform: translate(-50%, -50%) scale(1.08) rotate(-8deg) } 80% { transform: translate(-50%, -50%) scale(1) rotate(-8deg); opacity: 1 } 100% { transform: translate(-50%, -60%) scale(1.1) rotate(-8deg); opacity: 0 } }
 @keyframes g2d-flash { from { opacity: .85 } to { opacity: 0 } }
+@keyframes g2d-sheen { from { background-position: 0% 50% } to { background-position: 200% 50% } }
 `
 
 /** めくったときに弾ける粒の色 */
@@ -97,6 +111,7 @@ const RARITY_SPARK: Record<GachaItem["rarity"], string> = {
   SR: "#c084fc",
   SSR: "#fbbf24",
   UR: "rainbow",
+  UUR: "legend",
 }
 
 /** めくったときの大きな文字（色で見せたあと、結果として出す） */
@@ -104,6 +119,7 @@ const STAMP_TEXT: Partial<Record<GachaItem["rarity"], string>> = {
   SR: "SR!",
   SSR: "SSR!!",
   UR: "UR!!!",
+  UUR: "UUR!!!!",
 }
 
 const GLOW: Record<GachaItem["rarity"], string> = {
@@ -112,6 +128,7 @@ const GLOW: Record<GachaItem["rarity"], string> = {
   SR: "rgba(192,132,252,.7)",
   SSR: "rgba(251,191,36,.9)",
   UR: "rgba(244,114,182,.95)",
+  UUR: "rgba(255,244,208,1)",
 }
 
 type Props = {
@@ -177,7 +194,7 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
     if (STAMP_TEXT[rarity]) setStamp({ rarity, key: Date.now() })
     if (rank >= 3) {
       setFlash({
-        color: rank >= 4 ? "#ffd6f5" : "#fff3c4",
+        color: rank >= 5 ? "#ffffff" : rank >= 4 ? "#ffd6f5" : "#fff3c4",
         key: Date.now(),
       })
       root?.animate(
@@ -190,7 +207,9 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
         ],
         { duration: 450, easing: "ease-out" },
       )
-      navigator.vibrate?.(rank >= 4 ? [40, 30, 90] : 40)
+      navigator.vibrate?.(
+        rank >= 5 ? [60, 30, 60, 30, 160] : rank >= 4 ? [40, 30, 90] : 40,
+      )
     }
   }
 
@@ -243,7 +262,13 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
     if (phase === "burst") {
       gachaSound.burst(gachaRarityRank(direction.top) >= 3)
       setShake((value) => value + 1)
-      navigator.vibrate?.(direction.top === "UR" ? [60, 40, 120] : 50)
+      navigator.vibrate?.(
+        direction.top === "UUR"
+          ? [80, 40, 80, 40, 200]
+          : direction.top === "UR"
+            ? [60, 40, 120]
+            : 50,
+      )
     }
     return () => window.clearTimeout(timer)
   }, [phase])
@@ -351,7 +376,13 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
 
     const spawnBurst = (cx: number, cy: number, hint: GachaHint) => {
       const count =
-        direction.top === "UR" ? 260 : direction.top === "SSR" ? 200 : 140
+        direction.top === "UUR"
+          ? 380
+          : direction.top === "UR"
+            ? 260
+            : direction.top === "SSR"
+              ? 200
+              : 140
       for (let i = 0; i < count; i++) {
         const a = Math.random() * Math.PI * 2
         const speed = 260 + Math.random() * 900
@@ -418,13 +449,17 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
           spin: (Math.random() - 0.5) * 14,
           angle: Math.random() * Math.PI,
           color:
-            RARITY_SPARK[rarity] === "rainbow"
-              ? `hsl(${Math.random() * 360} 95% 65%)`
-              : kind === "coin"
-                ? "#ffd34d"
-                : Math.random() < 0.25
-                  ? "#ffffff"
-                  : RARITY_SPARK[rarity],
+            RARITY_SPARK[rarity] === "legend"
+              ? Math.random() < 0.5
+                ? "#ffffff"
+                : `hsl(${40 + Math.random() * 16} 100% ${70 + Math.random() * 20}%)`
+              : RARITY_SPARK[rarity] === "rainbow"
+                ? `hsl(${Math.random() * 360} 95% 65%)`
+                : kind === "coin"
+                  ? "#ffd34d"
+                  : Math.random() < 0.25
+                    ? "#ffffff"
+                    : RARITY_SPARK[rarity],
           kind,
         })
       }
@@ -460,7 +495,8 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
         current === "cards" &&
         gachaRarityRank(direction.top) >= 3 &&
         particles.length < 400 &&
-        Math.random() < (direction.top === "UR" ? 0.7 : 0.45)
+        Math.random() <
+          (direction.top === "UUR" ? 0.95 : direction.top === "UR" ? 0.7 : 0.45)
       ) {
         const kind: Particle["kind"] = Math.random() < 0.3 ? "coin" : "confetti"
         particles.push({
@@ -476,11 +512,15 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
           color:
             kind === "coin"
               ? "#ffd34d"
-              : direction.top === "UR"
-                ? `hsl(${Math.random() * 360} 95% 65%)`
-                : Math.random() < 0.5
-                  ? "#fbbf24"
-                  : "#fff3c4",
+              : direction.top === "UUR"
+                ? Math.random() < 0.5
+                  ? "#ffffff"
+                  : "#f8e7a8"
+                : direction.top === "UR"
+                  ? `hsl(${Math.random() * 360} 95% 65%)`
+                  : Math.random() < 0.5
+                    ? "#fbbf24"
+                    : "#fff3c4",
           kind,
         })
       }
@@ -803,10 +843,13 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
             className="absolute inset-x-[-20%] h-[34%]"
             style={{
               background:
-                direction.top === "UR"
-                  ? "linear-gradient(90deg,#ff5fae,#ffd84d,#5fe0ff,#b88cff,#ff5fae)"
-                  : `linear-gradient(90deg,${topColor},#fff3c4,${topColor})`,
-              animation: `g2d-cutin ${PHASE_SECONDS.cutIn}s cubic-bezier(.2,.9,.3,1) both${direction.top === "UR" ? ", g2d-hue 1.2s linear infinite" : ""}`,
+                direction.top === "UUR"
+                  ? "linear-gradient(100deg,#05040a 0%,#3b2a06 22%,#f8e7a8 40%,#ffffff 50%,#f8e7a8 60%,#3b2a06 78%,#05040a 100%)"
+                  : direction.top === "UR"
+                    ? "linear-gradient(90deg,#ff5fae,#ffd84d,#5fe0ff,#b88cff,#ff5fae)"
+                    : `linear-gradient(90deg,${topColor},#fff3c4,${topColor})`,
+              backgroundSize: direction.top === "UUR" ? "200% 100%" : undefined,
+              animation: `g2d-cutin ${PHASE_SECONDS.cutIn}s cubic-bezier(.2,.9,.3,1) both${direction.top === "UR" ? ", g2d-hue 1.2s linear infinite" : direction.top === "UUR" ? ", g2d-sheen .9s linear infinite" : ""}`,
               boxShadow: `0 0 40px 10px ${topColor}`,
             }}
           >
@@ -847,23 +890,31 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
           key={stamp.key}
           className={cn(
             "pointer-events-none absolute top-1/2 left-1/2 z-30 whitespace-nowrap font-black italic tracking-tight",
-            stamp.rarity === "UR"
-              ? "text-[min(26vw,140px)]"
-              : stamp.rarity === "SSR"
-                ? "text-[min(22vw,120px)]"
-                : "text-[min(16vw,84px)]",
+            stamp.rarity === "UUR"
+              ? "text-[min(24vw,150px)]"
+              : stamp.rarity === "UR"
+                ? "text-[min(26vw,140px)]"
+                : stamp.rarity === "SSR"
+                  ? "text-[min(22vw,120px)]"
+                  : "text-[min(16vw,84px)]",
           )}
           style={{
-            animation: `g2d-stamp ${stamp.rarity === "SR" ? 0.8 : 1.2}s cubic-bezier(.2,1.4,.4,1) both${stamp.rarity === "UR" ? ", g2d-hue 1s linear infinite" : ""}`,
+            animation: `g2d-stamp ${stamp.rarity === "SR" ? 0.8 : stamp.rarity === "UUR" ? 2 : 1.2}s cubic-bezier(.2,1.4,.4,1) both${stamp.rarity === "UR" ? ", g2d-hue 1s linear infinite" : ""}`,
             color: stamp.rarity === "SR" ? "#e9d5ff" : "#fff7d6",
             WebkitTextStroke:
-              stamp.rarity === "SR" ? "3px #7c3aed" : "4px #ea580c",
+              stamp.rarity === "SR"
+                ? "3px #7c3aed"
+                : stamp.rarity === "UUR"
+                  ? "4px #1c1405"
+                  : "4px #ea580c",
             textShadow:
-              stamp.rarity === "UR"
-                ? "0 0 24px #ff5fae, 0 0 48px #5fe0ff, 0 6px 0 #9d174d"
-                : stamp.rarity === "SSR"
-                  ? "0 0 24px #fbbf24, 0 6px 0 #9a3412"
-                  : "0 0 18px #a855f7, 0 4px 0 #4c1d95",
+              stamp.rarity === "UUR"
+                ? "0 0 18px #fff, 0 0 42px #f8e7a8, 0 0 80px #fde68a, 0 7px 0 #3b2a06"
+                : stamp.rarity === "UR"
+                  ? "0 0 24px #ff5fae, 0 0 48px #5fe0ff, 0 6px 0 #9d174d"
+                  : stamp.rarity === "SSR"
+                    ? "0 0 24px #fbbf24, 0 6px 0 #9a3412"
+                    : "0 0 18px #a855f7, 0 4px 0 #4c1d95",
           }}
         >
           {STAMP_TEXT[stamp.rarity]}
@@ -972,7 +1023,7 @@ export function GachaPerformance2D(props: Props): React.ReactNode {
                         "--glow": GLOW[item.rarity],
                         animation:
                           isFlipped && rank >= 2
-                            ? `g2d-glow 1.4s ease-in-out infinite${rank >= 4 ? ", g2d-hue 2s linear infinite" : ""}`
+                            ? `g2d-glow 1.4s ease-in-out infinite${rank === 4 ? ", g2d-hue 2s linear infinite" : ""}`
                             : undefined,
                       } as React.CSSProperties
                     }

@@ -8,7 +8,8 @@
  * 予告の色は一番上のレア度より上には絶対にならない（ぬか喜びさせない）
  */
 
-export type GachaRarity = "N" | "R" | "SR" | "SSR" | "UR"
+/** UUR: 世界で 1 人だけが持てる景品（最初に当てた人だけ。取られたらガチャから抜ける） */
+export type GachaRarity = "N" | "R" | "SR" | "SSR" | "UR" | "UUR"
 
 export const GACHA_RARITIES: readonly GachaRarity[] = [
   "N",
@@ -16,13 +17,14 @@ export const GACHA_RARITIES: readonly GachaRarity[] = [
   "SR",
   "SSR",
   "UR",
+  "UUR",
 ]
 
 export const gachaRarityRank = (rarity: GachaRarity) =>
   GACHA_RARITIES.indexOf(rarity)
 
-/** 予告の色 */
-export type GachaHint = "blue" | "purple" | "gold" | "rainbow"
+/** 予告の色（legend は UUR だけの白金の光） */
+export type GachaHint = "blue" | "purple" | "gold" | "rainbow" | "legend"
 
 export type GachaItem = {
   id: string
@@ -48,13 +50,20 @@ export type GachaDirection = {
 
 /** レア度に見合う色 */
 export const hintOf = (rarity: GachaRarity): GachaHint => {
+  if (rarity === "UUR") return "legend"
   if (rarity === "UR") return "rainbow"
   if (rarity === "SSR") return "gold"
   if (rarity === "SR") return "purple"
   return "blue"
 }
 
-const HINTS: readonly GachaHint[] = ["blue", "purple", "gold", "rainbow"]
+const HINTS: readonly GachaHint[] = [
+  "blue",
+  "purple",
+  "gold",
+  "rainbow",
+  "legend",
+]
 
 /**
  * 演出の確率（あとから調整しやすいように 1 か所にまとめる）
@@ -70,6 +79,8 @@ export const GACHA_DIRECTION_RATES: Record<
   SR: { promote: 0.2, cutIn: 0 },
   SSR: { promote: 0.3, cutIn: 0.5 },
   UR: { promote: 0.4, cutIn: 1 },
+  // UUR は虹で始まって白金に化けることが多い（UR だと思わせてから）
+  UUR: { promote: 0.6, cutIn: 1 },
 }
 
 export function planGachaDirection(
@@ -99,6 +110,7 @@ export function planGachaDirection(
 
 /** カードの並び順: 引いた順のまま。演出の待ち時間（秒）はレア度が高いほど長い */
 export const revealPauseOf = (rarity: GachaRarity) => {
+  if (rarity === "UUR") return 2.2
   if (rarity === "UR") return 1.1
   if (rarity === "SSR") return 0.8
   if (rarity === "SR") return 0.35

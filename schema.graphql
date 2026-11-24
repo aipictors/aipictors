@@ -2256,6 +2256,48 @@ type GachaPullResult {
 }
 
 """ガチャの自分の状態"""
+type GachaRarityRate {
+  """10 連の確定枠の確率（%）"""
+  guaranteed: Float!
+
+  """ふつうの枠の確率（%）"""
+  normal: Float!
+
+  """UUR / UR / SSR / SR / R / N"""
+  rarity: String!
+}
+
+"""いまの提供割合（取られた UUR を外した実際の値）"""
+type GachaRates {
+  rarityRates: [GachaRarityRate!]!
+
+  """まだ誰も持っていない UUR の数"""
+  remainingUniquePrizes: Int!
+  totalUniquePrizes: Int!
+
+  """UUR ひとつあたりの確率（%）"""
+  uniquePrizeRate: Float!
+}
+
+"""UUR（世界で 1 人だけが持てる景品）と持ち主"""
+type GachaUniquePrize {
+  """当てた日時（ISO 8601）"""
+  claimedAt: String
+  imageUrl: String!
+
+  """誰かが当てた"""
+  isClaimed: Boolean!
+
+  """当てた人が退会している"""
+  isOwnerWithdrawn: Boolean!
+  name: String!
+
+  """当てた人（まだ誰も持っていない・退会したときは null）"""
+  owner: UserNode
+  prizeId: String!
+  slug: String!
+}
+
 type GachaViewerState {
   """交換 pt（1 回引くと 1。200 で好きな景品と交換）"""
   exchangePoints: Int!
@@ -5045,6 +5087,12 @@ type Query {
 
   """いま出ている自分の宣伝（全年齢・R18 の枠ごと）"""
   viewerActiveWorkPromotions: [ActiveWorkPromotionNode!]!
+
+  """いまの提供割合（UUR の残り数で変わる。ログインなしで読める）"""
+  gachaRates: GachaRates!
+
+  """UUR（世界で 1 人だけが持てる景品）と持ち主の一覧（ログインなしで読める）"""
+  gachaUniquePrizes: [GachaUniquePrize!]!
 
   """ガチャの自分の状態（未ログインは null）"""
   viewerGacha: GachaViewerState

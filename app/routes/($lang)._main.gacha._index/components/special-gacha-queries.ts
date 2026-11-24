@@ -107,3 +107,44 @@ export const applyGachaAvatarFrameMutation = graphql(
     }
   }`,
 )
+
+/** UUR（世界で 1 人だけが持てる景品）と持ち主（ログインなしで読める） */
+export const gachaUniquePrizesQuery = graphql(
+  `query GachaUniquePrizes {
+    gachaUniquePrizes {
+      prizeId
+      slug
+      name
+      imageUrl
+      isClaimed
+      claimedAt
+      isOwnerWithdrawn
+      owner {
+        id
+        login
+        name
+        iconUrl
+      }
+    }
+  }`,
+)
+
+/** いまの提供割合（UUR の残り数で変わる） */
+export const gachaRatesQuery = graphql(
+  `query GachaRates {
+    gachaRates {
+      remainingUniquePrizes
+      totalUniquePrizes
+      uniquePrizeRate
+      rarityRates {
+        rarity
+        normal
+        guaranteed
+      }
+    }
+    gachaUniquePrizes {
+      prizeId
+      isClaimed
+    }
+  }`,
+)

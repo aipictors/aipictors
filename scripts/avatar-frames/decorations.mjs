@@ -3160,6 +3160,331 @@ const gachaCrystalDrops = (t) => {
   </g>${twinkles(t, [[262, 30, 0.6, 0.1], [262, 150, 0.6, 0.45], [262, 270, 0.6, 0.8]], "#e6fdff")}</svg>`
 }
 
+/* ------------------------------------------------------------------ */
+/* UUR（世界で 1 人だけが持てる枠）                                      */
+/* UR より一段上に見せる共通の部品: 太い二重の輪、輪を一周する光の走り、   */
+/* 外を回る細い光の輪、てっぺんで回る光芒、コマ数を増やした滑らかな動き     */
+/* ------------------------------------------------------------------ */
+
+/** 面ごとに明暗を付けた星（tips 本の先。偶数番が長い）。宝石や金属の多面体に見える */
+const facetStar = (tips, long, short, inner, stops, t, phase = 0) => {
+  let out = ""
+  for (let i = 0; i < tips; i++) {
+    const d = (i * 360) / tips
+    const tip = polar(i % 2 === 0 ? long : short, d, 0, 0)
+    const left = polar(inner, d - 180 / tips, 0, 0)
+    const right = polar(inner, d + 180 / tips, 0, 0)
+    const lit = 0.5 + 0.5 * Math.cos(((d + 45) * Math.PI) / 180)
+    const sh = 0.5 + 0.5 * Math.sin(TAU * (t + phase) + i * 1.3)
+    out += `<path d="M0 0L${left}L${tip}Z" fill="${ramp(stops, 0.3 + 0.35 * lit + 0.35 * sh ** 2)}"/>`
+    out += `<path d="M0 0L${tip}L${right}Z" fill="${ramp(stops, 0.08 + 0.28 * lit + 0.22 * sh ** 2)}"/>`
+  }
+  return out
+}
+
+/** 中心から放つ光芒（長短が交互なので 2 本ぶん回ると元に戻る）。アイコンの内側には出さない */
+const uurBurst = (x, y, t, id, { r = 110, n = 16, opacity = 0.9 } = {}) => {
+  const turn = (t * 720) / n
+  return `<g mask="url(#behind)"><g transform="translate(${f(x)} ${f(y)})" opacity="${opacity}">${Array.from({ length: n }, (_, i) => {
+    const d = (i * 360) / n + turn
+    const len = i % 2 === 0 ? r : r * 0.6
+    const half = i % 2 === 0 ? 9 : 6
+    return `<path d="M${polar(half, d - 90, 0, 0)}L${polar(len, d, 0, 0)}L${polar(half, d + 90, 0, 0)}Z" fill="url(#${id})"/>`
+  }).join("")}<circle r="${f(r * 0.45)}" fill="url(#${id})" opacity=".85"/></g></g>`
+}
+
+const burstDef = (id, color, r = 110) =>
+  `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="${r}"><stop offset="0" stop-color="${color}"/><stop offset=".3" stop-color="${color}" stop-opacity=".75"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>`
+
+/** 輪の上を一周する光（heads 本の彗星） */
+const uurSweep = (t, r, w, color, { heads = 2, tail = 80 } = {}) =>
+  Array.from({ length: heads }, (_, h) => {
+    const head = t * 360 + (h * 360) / heads
+    const trail = Array.from({ length: 16 }, (_, j) => {
+      const a1 = head - (j * tail) / 16
+      return `<path d="${arc(r, f(a1 - tail / 16 - 0.6), f(a1))}" stroke="${color}" stroke-width="${f(w * (1 - j / 22))}" fill="none" opacity="${f(0.6 * (1 - j / 16) ** 1.7)}"/>`
+    }).join("")
+    return trail + glint(...polar(r, head), 1.05, 0.95)
+  }).join("")
+
+/** 外を回る細い光の輪（点線と 4 つのひし形） */
+const uurHalo = (t, r, color, opacity = 0.8) => {
+  const period = 12
+  const turn = ((period * 4) / (TAU * (r - 8))) * 360 * t
+  const diamonds = [45, 135, 225, 315]
+    .map((d) => {
+      const [x, y] = polar(r, d - t * 90)
+      return `<path d="M${x} ${f(y - 9)}L${f(x + 4.5)} ${y}L${x} ${f(y + 9)}L${f(x - 4.5)} ${y}Z" fill="${color}"/>`
+    })
+    .join("")
+  return `<g mask="url(#behind)" opacity="${opacity}">${ring(r, 1.6, color)}<circle cx="${C}" cy="${C}" r="${r - 8}" fill="none" stroke="${color}" stroke-width="4" stroke-dasharray="2.5 ${period - 2.5}" opacity=".7" transform="rotate(${f(turn)} ${C} ${C})"/>${diamonds}</g>`
+}
+
+const uurSvg = (metals, extra, body) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" ${PLAN_VIEW}>${planDefs(metals, AURORA_DEF + extra)}${body}</svg>`
+
+/* 白金と星 */
+const gachaUurStellar = (t) => {
+  const p = METAL.platinum
+  const g = METAL.gold
+  const [tx, ty] = polar(236, 0)
+  const outlinedStar = (long, short, inner, stops, phase) =>
+    `<g transform="scale(1.08)">${facetStar(8, long, short, inner, [p[0], p[0], p[0], p[0], p[0], p[0]], t)}</g>${facetStar(8, long, short, inner, stops, t, phase)}`
+  const minis = [90, 180, 270]
+    .map((d, i) => place(...polar(226, d), t * 90, 0.7, `${outlinedStar(30, 20, 12, p, i * 0.25)}<circle r="5" fill="#fff"/>`))
+    .join("")
+  const crownStars = [
+    [-34, 26, 0.6],
+    [34, 26, 0.6],
+    [-18, 40, 0.3],
+    [18, 40, 0.3],
+  ]
+    .map(([d, size, phase]) => place(...polar(240, d), d + wave(t, phase) * 8, 1, `${outlinedStar(size, size * 0.66, size * 0.42, p, phase)}${setGem(0, 0, size * 0.26, p, GEM.diamond, t, phase)}`))
+    .join("")
+  return uurSvg(
+    [p, g],
+    rayDef("rayUs", "#ffffff") + burstDef("buUs", "#fff8e0", 120),
+    `${auroraGlow(t, ["#ffffff", "#dfe9ff", "#fff1c2", "#e6dcff", "#d4f3ff"], { r: 266, w: 62, opacity: 0.95 })}
+  ${lightRays(t, 40, "rayUs", { long: 334, short: 298, opacity: 0.9 })}
+  <g mask="url(#behind)">${risingDust(t, 36, { r: 236, rise: 140, color: "#ffffff", seed: 71 })}</g>
+  ${uurHalo(t, 290, "#ffffff")}
+  <g filter="url(#ds)">
+    ${ring(226, 44, p[0])}
+    ${metalBand(241, 11, p, { shift: wave(t) * 30, layers: 3 })}${metalBand(211, 11, p, { shift: wave(t) * 30, layers: 3 })}
+    ${pave(226, 4.6, 56, p, GEM.diamond, t)}
+    ${milgrain(250, 2.4, 112, g, t * 180)}${milgrain(202, 2.2, 96, g, t * 180)}
+    ${minis}
+  </g>
+  ${uurSweep(t, 226, 40, "#ffffff")}
+  ${uurBurst(tx, ty, t, "buUs", { r: 150 })}
+  <g filter="url(#ds)">
+    <path d="${arc(258, -40, 40)}" stroke="${g[1]}" stroke-width="5" fill="none"/><path d="${arc(258, -40, 40)}" stroke="${g[3]}" stroke-width="2.6" fill="none"/>
+    ${crownStars}
+  </g>
+  <g filter="url(#ds)" transform="translate(${tx} ${ty})">
+    <g transform="rotate(${f(t * 45)})">${outlinedStar(80, 52, 30, p, 0)}</g>
+    <g transform="rotate(${f(22.5 + t * 45)})">${facetStar(8, 42, 30, 18, g, t, 0.5)}</g>
+    ${setGem(0, 0, 17, p, GEM.diamond, t)}
+  </g>
+  ${orbiters(t, 8, 304, ["#ffffff", "#ffe9a8", "#cfe3ff", "#ffffff"])}
+  ${glint(tx, ty, 2.2, 0.45 + 0.55 * flash(t, 0))}
+  ${[90, 180, 270].map((d, i) => glint(...polar(226, d), 1, flash(t, 0.25 + i * 0.25))).join("")}
+  ${twinkles(t, [[312, 30, 1.1, 0.1], [312, 330, 1.1, 0.6], [300, 130, 1, 0.35], [300, 230, 1, 0.85]], "#fff")}`,
+  )
+}
+
+/* 黒曜と金 */
+const gachaUurObsidian = (t) => {
+  const g = METAL.gold
+  const o = METAL.onyx
+  const [tx, ty] = polar(234, 0)
+  const tongues = Array.from({ length: 30 }, (_, i) => {
+    const d = i * 12
+    const len = 0.75 + 0.45 * (0.5 + 0.5 * Math.sin(TAU * (t * 2 + i * 0.37)))
+    return place(...polar(240, d), d, 1, `<path transform="scale(${f(0.9 + 0.2 * (i % 3))} ${f(len)})" d="M-10 0C-10-22-3-38 0-58 3-38 10-22 10 0Z" fill="url(#obF)"/>`)
+  }).join("")
+  const scrolls = Array.from({ length: 12 }, (_, i) => {
+    const d = i * 30 + 15
+    return `${place(...polar(226, d - 6), d + 90, 0.42, scroll(g, 4))}${place(...polar(226, d + 6), d - 90, 0.42, `<g transform="scale(1 -1)">${scroll(g, 4)}</g>`)}`
+  }).join("")
+  const stones = [45, 135, 225, 315].map((d, i) => setGem(...polar(226, d), 9, g, GEM.black, t, i * 0.25)).join("")
+  const crest = [-1, 1]
+    .map((s) => `${place(...polar(250, s * 22), s * 22 - 120 * s, 1.5, `<g transform="scale(${s} 1)">${scroll(g, 4.6)}</g>`)}${place(...polar(244, s * 40), s * 40, 0.9, `<g transform="scale(${s} 1)">${scroll(g, 4.4)}</g>`)}${setGem(...polar(250, s * 31), 7, g, GEM.black, t, 0.3)}`)
+    .join("")
+  return uurSvg(
+    [g, o],
+    rayDef("rayUo", "#ffd36b") + burstDef("buUo", "#ffcf5a", 120) +
+      '<linearGradient id="obF" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9d1f"/><stop offset=".55" stop-color="#ffd65a" stop-opacity=".8"/><stop offset="1" stop-color="#fff3c4" stop-opacity="0"/></linearGradient>',
+    `${auroraGlow(t, ["#ffcf5a", "#ff9a3d", "#ffe08a", "#c07a1a", "#ffeab0"], { r: 264, w: 58, opacity: 0.85 })}
+  <g mask="url(#behind)" filter="url(#glow)">${tongues}</g>
+  ${lightRays(t, 36, "rayUo", { long: 330, short: 296, opacity: 0.75 })}
+  <g mask="url(#behind)">${risingDust(t, 34, { r: 238, rise: 150, color: "#ffd36b", seed: 83 })}</g>
+  ${uurHalo(t, 290, "#ffd36b")}
+  <g filter="url(#ds)">
+    ${ring(226, 48, "#000")}
+    ${metalBand(226, 32, o, { shift: wave(t) * 24, layers: 4 })}
+    ${metalBand(245, 8, g, { shift: wave(t) * 24, layers: 2 })}${metalBand(207, 8, g, { shift: wave(t) * 24, layers: 2 })}
+    ${milgrain(251, 2.2, 110, g, t * 180)}
+    ${scrolls}${stones}
+  </g>
+  ${uurSweep(t, 226, 32, "#ffe08a")}
+  ${uurBurst(tx, ty, t, "buUo", { r: 150 })}
+  <g filter="url(#ds)">${crest}</g>
+  <g filter="url(#ds)" transform="translate(${tx} ${ty})">
+    <g transform="rotate(${f(t * 30)})"><g transform="scale(1.07)">${facetStar(12, 76, 52, 22, [g[0], g[0], g[0], g[0], g[0], g[0]], t)}</g>${facetStar(12, 76, 52, 22, g, t)}</g>
+    <circle r="33" fill="${g[0]}"/><circle r="31" fill="url(#bz-${g[2].slice(1)})"/>
+    ${brilliant(26, GEM.black, t)}
+  </g>
+  ${orbiters(t, 8, 304, ["#ffd36b", "#fff3c4", "#ff9d1f", "#ffe08a"])}
+  ${glint(tx, ty, 2.1, 0.45 + 0.55 * flash(t, 0), "#fff3c4")}
+  ${[45, 135, 225, 315].map((d, i) => glint(...polar(226, d), 0.85, flash(t, 0.2 + i * 0.2), "#fff3c4")).join("")}`,
+  )
+}
+
+/* 極光 */
+const AURORA_UUR = ["#3dffb5", "#39d0ff", "#8a6bff", "#ff6bd6", "#3dffb5"]
+
+const gachaUurAurora = (t) => {
+  const p = METAL.platinum
+  const [tx, ty] = polar(236, 0)
+  const colorAt = (k) => {
+    const x = (((k % 1) + 1) % 1) * (AURORA_UUR.length - 1)
+    return mixHex(AURORA_UUR[Math.floor(x)], AURORA_UUR[Math.floor(x) + 1], x - Math.floor(x))
+  }
+  const curtain = (blur) =>
+    Array.from({ length: 48 }, (_, i) => {
+      const d = i * 7.5 + wave(t, i / 12) * 2
+      const len = 40 + 46 * (0.5 + 0.5 * Math.sin(TAU * (t + (i * 3) / 48))) + 22 * (0.5 + 0.5 * Math.sin(TAU * (2 * t - (i * 5) / 48)))
+      const c = colorAt(i / 48 - t)
+      const w = blur ? 3.2 : 1.1
+      return `<path d="M${pp(232, d - w)}L${pp(232 + len, d - w * 0.6)}L${pp(232 + len, d + w * 0.6)}L${pp(232, d + w)}Z" fill="${c}" opacity="${blur ? 0.85 : 0.9}"/>`
+    }).join("")
+  const crystal = (h, w, stops) =>
+    `<path d="M0 0L${-w} ${f(-h * 0.2)}L${-w * 0.8} ${f(-h * 0.8)}L0 ${-h}Z" fill="${stops[3]}"/><path d="M0 0L${w} ${f(-h * 0.2)}L${w * 0.8} ${f(-h * 0.8)}L0 ${-h}Z" fill="${stops[1]}"/><path d="M0-3L0 ${f(-h + 4)}" stroke="#fff" stroke-width="1.6" opacity=".85"/>`
+  const stars = (() => {
+    const r = rng(97)
+    return Array.from({ length: 70 }, () => {
+      const [x, y] = polar(214 + r() * 26, r() * 360 + t * 30)
+      return `<circle cx="${x}" cy="${y}" r="${f(0.7 + r() * 1.5)}" fill="#fff" opacity="${f(0.35 + 0.65 * Math.abs(Math.sin(TAU * t + r() * 6)))}"/>`
+    }).join("")
+  })()
+  const prismStops = (k) => [mixHex("#06122a", colorAt(k), 0.35), mixHex("#06122a", colorAt(k), 0.7), colorAt(k), mixHex(colorAt(k), "#ffffff", 0.45), mixHex(colorAt(k), "#ffffff", 0.8), "#ffffff"]
+  return uurSvg(
+    [p],
+    rayDef("rayUa", "#c9fff0") + burstDef("buUa", "#b8fff0", 120) +
+      '<radialGradient id="auF" gradientUnits="userSpaceOnUse" cx="256" cy="256" r="340"><stop offset=".66" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><filter id="auS" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter><mask id="auM" maskUnits="userSpaceOnUse" x="-60" y="-60" width="632" height="632"><rect x="-60" y="-60" width="632" height="632" fill="url(#auF)"/></mask>',
+    `${auroraGlow(t, ["#3dffb5", "#39d0ff", "#8a6bff", "#ff6bd6", "#9fffe0"], { r: 266, w: 60, opacity: 0.85 })}
+  <g mask="url(#behind)"><g mask="url(#auM)"><g filter="url(#auS)">${curtain(true)}</g>${curtain(false)}</g></g>
+  ${lightRays(t, 32, "rayUa", { long: 326, short: 296, opacity: 0.55 })}
+  ${uurHalo(t, 292, "#d8fff4")}
+  <g filter="url(#ds)">
+    ${ring(226, 44, "#050b1f")}
+    ${iridescentBand(226, 34, ["#3dffb5", "#39d0ff", "#8a6bff", "#ff6bd6"], { shift: wave(t) * 60 })}
+    ${metalBand(246, 5, p, { shift: wave(t) * 20, layers: 2 })}${metalBand(206, 5, p, { shift: wave(t) * 20, layers: 2 })}
+    ${milgrain(250, 2, 104, p, t * 180)}
+  </g>
+  ${stars}
+  ${uurSweep(t, 226, 34, "#eafffa")}
+  ${uurBurst(tx, ty, t, "buUa", { r: 150 })}
+  <g filter="url(#ds)">
+    ${[[-30, 40, 0.5], [30, 40, 0.5], [-17, 62, 0.25], [17, 62, 0.25], [0, 86, 0]]
+      .map(([d, h, k]) => place(...polar(236, d * 0.75), d, 1.25, crystal(h, h * 0.26, prismStops(t + k))))
+      .join("")}
+  </g>
+  <g filter="url(#ds)" transform="translate(${tx} ${ty})">
+    <g transform="rotate(${f(-t * 45)})">${facetStar(8, 50, 34, 20, prismStops(t), t)}</g>
+    <g transform="rotate(${f(22.5 + t * 45)})">${facetStar(8, 36, 22, 9, prismStops(t + 0.5), t, 0.5)}</g>
+    ${setGem(0, 0, 11, p, GEM.diamond, t)}
+  </g>
+  ${orbiters(t, 8, 304, ["#3dffb5", "#ff6bd6", "#39d0ff", "#c7b8ff"])}
+  ${glint(tx, ty, 2.1, 0.45 + 0.55 * flash(t, 0), "#eafffa")}
+  ${twinkles(t, [[316, 40, 1.1, 0.15], [316, 320, 1.1, 0.65], [304, 140, 1, 0.4], [304, 220, 1, 0.9]], "#eafffa")}`,
+  )
+}
+
+/* 深紅の薔薇と金細工 */
+const CRIMSON = ["#1a0006", "#4d0014", "#8c0a28", "#d01f45", "#ff6d86", "#ffd2db"]
+
+const gachaUurCrimsonRose = (t) => {
+  const g = METAL.gold
+  const [tx, ty] = polar(238, 0)
+  const roseAt = (d, s, phase) => place(...polar(250, d), d + wave(t, phase) * 4, s, rose("#7a0620", "#c8102e", "#ff5a76"))
+  const petals = Array.from({ length: 16 }, (_, i) => {
+    const p = (t + i / 16) % 1
+    const d = i * 22.5 + 8
+    const [x, y] = polar(250 + p * 70, d + p * 24)
+    return place(x, y, p * 360 + i * 40, 0.9, '<path d="M0-12C-8-8-9 3-1 12 0 10 0 10 1 12 9 3 8-8 0-12Z" fill="url(#crP)"/>', `opacity="${f(Math.sin(Math.PI * p))}"`)
+  }).join("")
+  const rubies = [60, 300, 120, 240].map((d, i) => setGem(...polar(226, d), 8, g, GEM.ruby, t, i * 0.25)).join("")
+  return uurSvg(
+    [g],
+    rayDef("rayUr", "#ffc2cc") + burstDef("buUr", "#ffb0bf", 120) + lg("crP", ["#ff6d86", "#a3002a"]),
+    `${auroraGlow(t, ["#ff2d55", "#ff7a59", "#ffd27a", "#c2185b", "#ff4d6d"], { r: 264, w: 60, opacity: 0.85 })}
+  ${lightRays(t, 36, "rayUr", { long: 330, short: 296, opacity: 0.7 })}
+  <g mask="url(#behind)">${petals}</g>
+  ${uurHalo(t, 292, "#ffd27a")}
+  <g filter="url(#ds)">
+    ${laurelBranch(1, g, { r: 256, from: 18, to: 150, pairs: 11, size: 1.05, flow: t })}${laurelBranch(-1, g, { r: 256, from: 18, to: 150, pairs: 11, size: 1.05, flow: t })}
+    ${ring(226, 44, CRIMSON[0])}
+    ${metalBand(226, 30, CRIMSON, { shift: wave(t) * 24, layers: 4 })}
+    ${metalBand(244, 7, g, { shift: wave(t) * 24, layers: 2 })}${metalBand(208, 7, g, { shift: wave(t) * 24, layers: 2 })}
+    ${milgrain(249, 2.2, 110, g, t * 180)}${milgrain(203, 2, 96, g, t * 180)}
+    ${rubies}
+    ${roseAt(180, 0.75, 0.5)}${roseAt(162, 0.5, 0.3)}${roseAt(198, 0.5, 0.7)}
+    ${roseAt(-21, 0.9, 0.2)}${roseAt(21, 0.9, 0.8)}${roseAt(-38, 0.6, 0.4)}${roseAt(38, 0.6, 0.6)}
+  </g>
+  ${uurSweep(t, 226, 30, "#ffd2db")}
+  ${uurBurst(tx, ty - 10, t, "buUr", { r: 150 })}
+  <g filter="url(#ds)">
+    ${place(tx, ty - 44, 0, 1.45, fleur(g))}
+    ${place(tx, ty, wave(t) * 3, 1.5, rose("#7a0620", "#c8102e", "#ff5a76"))}
+  </g>
+  ${orbiters(t, 8, 304, ["#ffd27a", "#ff6d86", "#fff0c8", "#ff2d55"])}
+  ${glint(tx, ty - 50, 1.8, 0.45 + 0.55 * flash(t, 0), "#fff0c8")}
+  ${[60, 300, 120, 240].map((d, i) => glint(...polar(226, d), 0.8, flash(t, 0.2 + i * 0.2))).join("")}
+  ${twinkles(t, [[316, 50, 1, 0.15], [316, 310, 1, 0.65]], "#fff0c8")}`,
+  )
+}
+
+/* 氷晶 */
+const ICE_METAL = ["#0b2246", "#1d4f8f", "#4c9fd6", "#9fd8f7", "#dff4ff", "#ffffff"]
+
+const gachaUurGlacier = (t) => {
+  const p = METAL.platinum
+  const [tx, ty] = polar(238, 0)
+  const shard = (len, w, k) => {
+    const L = f(len)
+    return `<path d="M0 0L${-w} 0L${-w} ${f(-len * 0.74)}L0 ${-L}Z" fill="${ramp(GEM.ice, 0.45 + 0.5 * k)}" opacity=".95"/><path d="M0 0L${w} 0L${w} ${f(-len * 0.74)}L0 ${-L}Z" fill="${ramp(GEM.ice, 0.15 + 0.35 * k)}" opacity=".95"/><path d="M0-2V${f(-len + 4)}" stroke="#fff" stroke-width="1.4" opacity="${f(0.5 + 0.5 * k)}"/>`
+  }
+  const shards = Array.from({ length: 28 }, (_, i) => {
+    const d = (i * 360) / 28
+    const big = i % 7 === 0
+    const len = big ? 84 : 34 + 26 * ((i * 5) % 3) / 2
+    const k = 0.5 + 0.5 * Math.sin(TAU * (t - i / 28))
+    return place(...polar(236, d), d + (i % 2 ? 6 : -6), 1, shard(len, big ? 11 : 7, k))
+  }).join("")
+  const snowfall = (() => {
+    const r = rng(113)
+    return Array.from({ length: 22 }, (_, i) => {
+      const d = r() * 360
+      const off = r()
+      const q = (t + off) % 1
+      const [x, y] = polar(250 + r() * 50, d)
+      const s = 0.18 + r() * 0.16
+      return place(x + Math.sin(TAU * (q + off)) * 8, y + q * 70 - 35, q * 120, s, i % 3 === 0 ? snowflake("#ffffff") : '<circle r="9" fill="#fff"/>', `opacity="${f(Math.sin(Math.PI * q))}"`)
+    }).join("")
+  })()
+  return uurSvg(
+    [p],
+    rayDef("rayUg", "#dff4ff") + burstDef("buUg", "#c9f0ff", 120),
+    `${auroraGlow(t, ["#5ec8ff", "#9fe8ff", "#ffffff", "#3a7bff", "#c9f3ff"], { r: 266, w: 60, opacity: 0.9 })}
+  ${lightRays(t, 40, "rayUg", { long: 332, short: 298, opacity: 0.8 })}
+  <g mask="url(#behind)">${snowfall}</g>
+  ${uurHalo(t, 292, "#dff4ff")}
+  <g filter="url(#ds)">
+    <g mask="url(#behind)">${shards}</g>
+    ${ring(226, 44, ICE_METAL[0])}
+    ${metalBand(226, 32, ICE_METAL, { shift: wave(t) * 24, layers: 4 })}
+    ${metalBand(246, 6, p, { shift: wave(t) * 24, layers: 2 })}${metalBand(206, 6, p, { shift: wave(t) * 24, layers: 2 })}
+    ${pave(226, 3.6, 60, p, GEM.sapphire, t)}
+    ${[90, 180, 270].map((d, i) => setGem(...polar(226, d), 9, p, GEM.ice, t, i * 0.3)).join("")}
+  </g>
+  ${uurSweep(t, 226, 32, "#ffffff")}
+  ${uurBurst(tx, ty, t, "buUg", { r: 150 })}
+  <g filter="url(#ds)">${[-1, 1].map((s) => place(...polar(240, s * 16), s * 22, 1, shard(70, 9, 0.6)) + place(...polar(240, s * 30), s * 40, 1, shard(48, 7, 0.4))).join("")}</g>
+  <g filter="url(#ds)" transform="translate(${tx} ${ty})">
+    <g transform="rotate(${f(t * 60)})"><g transform="scale(1.07)">${facetStar(6, 66, 66, 22, [ICE_METAL[0], ICE_METAL[0], ICE_METAL[0], ICE_METAL[0], ICE_METAL[0], ICE_METAL[0]], t)}</g>${facetStar(6, 66, 66, 22, GEM.ice.concat(["#ffffff"]), t)}</g>
+    <g transform="rotate(${f(30 - t * 60)}) scale(1.5)">${snowflake(ICE_METAL[1])}</g>
+    <g transform="rotate(${f(30 - t * 60)}) scale(1.42)" filter="url(#glow)">${snowflake("#ffffff")}</g>
+    ${setGem(0, 0, 12, p, GEM.sapphire, t)}
+  </g>
+  ${orbiters(t, 8, 304, ["#ffffff", "#9fe8ff", "#5ec8ff", "#dff4ff"])}
+  ${glint(tx, ty, 2.2, 0.45 + 0.55 * flash(t, 0), "#eaf8ff")}
+  ${[90, 180, 270].map((d, i) => glint(...polar(226, d), 1, flash(t, 0.25 + i * 0.25))).join("")}
+  ${twinkles(t, [[316, 30, 1.1, 0.1], [316, 330, 1.1, 0.6], [304, 130, 1, 0.35], [304, 230, 1, 0.85]], "#eaf8ff")}`,
+  )
+}
+
 const CANVAS_VIEW_BOX = 'viewBox="-60 -60 632 632"'
 
 const withCanvas = (draw) => (t) =>
@@ -3278,6 +3603,12 @@ const decorations = [
   { slug: "gacha-sr-mizuhiki", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "紅白の水引", description: "紅・金・白の水引を編んだ輪と、てっぺんの結び", draw: gachaMizuhiki },
   { slug: "gacha-sr-crystal-drops", rarity: "SR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "クリスタルの雫", description: "銀の輪から下がる、光るクリスタルの雫", draw: gachaCrystalDrops },
   { slug: "gacha-ssr-necklace", rarity: "SSR", frames: 24, frameMs: 150, gachaOnly: true, category: "gacha", name: "宝石の首飾り", description: "金の鎖に四色の宝石、ルビーと真珠のペンダント", draw: gachaNecklace },
+  // UUR: 世界で 1 人だけが持てる枠（ガチャで最初に当てた人だけ。交換 pt・かけらでは交換できない）
+  { slug: "gacha-uur-stellar", rarity: "UUR", frames: 32, frameMs: 110, gachaOnly: true, category: "gacha", name: "天穹の白金星", description: "ダイヤを敷きつめた白金の二重の輪と、てっぺんで回る白金の八芒星", draw: gachaUurStellar },
+  { slug: "gacha-uur-obsidian", rarity: "UUR", frames: 32, frameMs: 110, gachaOnly: true, category: "gacha", name: "黒曜の金環", description: "金の唐草を刻んだ黒曜の輪と、燃えあがる金の炎、黒いダイヤの日輪", draw: gachaUurObsidian },
+  { slug: "gacha-uur-aurora", rarity: "UUR", frames: 32, frameMs: 110, gachaOnly: true, category: "gacha", name: "極光の帳", description: "ゆらめく極光のカーテンと星をめぐらせた七彩の輪、光の結晶", draw: gachaUurAurora },
+  { slug: "gacha-uur-crimson-rose", rarity: "UUR", frames: 32, frameMs: 110, gachaOnly: true, category: "gacha", name: "紅薔薇の金冠", description: "深紅の輪に咲く薔薇と金の月桂樹、舞い散る花びらと百合の紋章", draw: gachaUurCrimsonRose },
+  { slug: "gacha-uur-glacier", rarity: "UUR", frames: 32, frameMs: 110, gachaOnly: true, category: "gacha", name: "蒼氷の結晶陣", description: "輪から突きだす氷の結晶と、回る雪の結晶、蒼玉を敷いた氷の輪", draw: gachaUurGlacier },
 ]
 
 export const DECORATIONS = decorations.map((item) => ({

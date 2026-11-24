@@ -28,15 +28,16 @@ export type GachaSettings = {
 }
 
 export const DEFAULT_GACHA_SETTINGS: GachaSettings = {
-  rates: { UR: 0.3, SSR: 2.7, SR: 12, R: 30, N: 55 },
+  // UUR（世界で 1 人だけ）は 1 人ぶんのシミュレーションでは扱わない（本番は 0.05% を N から引く）
+  rates: { UUR: 0, UR: 0.3, SSR: 2.7, SR: 12, R: 30, N: 55 },
   pityCount: 200,
   tenPullGuarantee: "SR",
   singleCostCoins: GACHA_PRICES.premiumSingle,
   tenCostCoins: GACHA_PRICES.premiumTen,
   // 10 連で引いたときのひとり平均: 100 回で約 200 個（欲しい SR が 1 つ）、200 回で約 590 個（SSR 1 つ）、
   // 500 回で約 2,100 個（UR 1 つ）。UR は交換 pt（200 回）があるので、かけらでは遠めにする
-  duplicateShards: { UR: 300, SSR: 60, SR: 15, R: 4, N: 1 },
-  exchangeShards: { UR: 2000, SSR: 450, SR: 120, R: 40, N: 15 },
+  duplicateShards: { UUR: 0, UR: 300, SSR: 60, SR: 15, R: 4, N: 1 },
+  exchangeShards: { UUR: 0, UR: 2000, SSR: 450, SR: 120, R: 40, N: 15 },
 }
 
 export type GachaState = {

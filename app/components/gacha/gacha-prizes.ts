@@ -17,6 +17,58 @@ export type GachaPrize = {
 
 export const GACHA_PRIZES: readonly GachaPrize[] = [
   {
+    id: "icon:gacha-uur-aurora",
+    kind: "ICON_FRAME",
+    slug: "gacha-uur-aurora",
+    rarity: "UUR",
+    name: "極光の帳",
+    description: "ゆらめく極光のカーテンと星をめぐらせた七彩の輪、光の結晶",
+    imageUrl: "/avatar-frames/deco/gacha-uur-aurora.webp",
+    inPool: true,
+  },
+  {
+    id: "icon:gacha-uur-crimson-rose",
+    kind: "ICON_FRAME",
+    slug: "gacha-uur-crimson-rose",
+    rarity: "UUR",
+    name: "紅薔薇の金冠",
+    description: "深紅の輪に咲く薔薇と金の月桂樹、舞い散る花びらと百合の紋章",
+    imageUrl: "/avatar-frames/deco/gacha-uur-crimson-rose.webp",
+    inPool: true,
+  },
+  {
+    id: "icon:gacha-uur-glacier",
+    kind: "ICON_FRAME",
+    slug: "gacha-uur-glacier",
+    rarity: "UUR",
+    name: "蒼氷の結晶陣",
+    description: "輪から突きだす氷の結晶と、回る雪の結晶、蒼玉を敷いた氷の輪",
+    imageUrl: "/avatar-frames/deco/gacha-uur-glacier.webp",
+    inPool: true,
+  },
+  {
+    id: "icon:gacha-uur-obsidian",
+    kind: "ICON_FRAME",
+    slug: "gacha-uur-obsidian",
+    rarity: "UUR",
+    name: "黒曜の金環",
+    description:
+      "金の唐草を刻んだ黒曜の輪と、燃えあがる金の炎、黒いダイヤの日輪",
+    imageUrl: "/avatar-frames/deco/gacha-uur-obsidian.webp",
+    inPool: true,
+  },
+  {
+    id: "icon:gacha-uur-stellar",
+    kind: "ICON_FRAME",
+    slug: "gacha-uur-stellar",
+    rarity: "UUR",
+    name: "天穹の白金星",
+    description:
+      "ダイヤを敷きつめた白金の二重の輪と、てっぺんで回る白金の八芒星",
+    imageUrl: "/avatar-frames/deco/gacha-uur-stellar.webp",
+    inPool: true,
+  },
+  {
     id: "header:gacha-ur-kyubi",
     kind: "HEADER_FRAME",
     slug: "gacha-ur-kyubi",

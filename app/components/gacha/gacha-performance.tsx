@@ -81,6 +81,7 @@ export function GachaPerformance(props: Props): React.ReactNode {
           </button>
         )}
       </div>
+      {isDone && <GachaUniqueAnnouncement items={props.items} />}
       {isDone && (
         <GachaResultActions
           items={props.items}
@@ -204,6 +205,7 @@ const RARITY_CLASS: Record<GachaItem["rarity"], string> = {
   SR: "bg-gradient-to-r from-violet-400 to-violet-700",
   SSR: "bg-gradient-to-r from-amber-300 to-orange-500",
   UR: "bg-gradient-to-r from-pink-400 via-yellow-300 to-sky-400",
+  UUR: "bg-gradient-to-r from-zinc-950 via-amber-700 to-zinc-950 text-amber-50 ring-1 ring-amber-200",
 }
 
 const CARD_STYLE = `
@@ -215,6 +217,7 @@ const GLOW: Partial<Record<GachaItem["rarity"], string>> = {
   SR: "rgba(167,139,250,.45)",
   SSR: "rgba(251,191,36,.7)",
   UR: "rgba(244,114,182,.8)",
+  UUR: "rgba(255,244,208,.95)",
 }
 
 /** カードを 1 枚ずつめくって並べる（3D を使わない軽い演出。読み込みは景品の絵だけ） */
@@ -275,6 +278,77 @@ function GachaResultList(props: { items: readonly GachaItem[] }) {
             )}
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+const ANNOUNCE_STYLE = `
+@keyframes gacha-announce-in { 0% { transform: translateY(-120%) } 70% { transform: translateY(6%) } 100% { transform: none } }
+@keyframes gacha-announce-sheen { from { background-position: 0% 50% } to { background-position: 200% 50% } }
+@keyframes gacha-announce-ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+`
+
+/**
+ * UUR を当てたときの全体告知風の帯（結果の画面の上、7 秒で引っ込む）。
+ * 世界でひとりだけの枠なので、ガチャのページに名前が載ることもここで伝える
+ */
+function GachaUniqueAnnouncement(props: { items: readonly GachaItem[] }) {
+  const won = props.items.filter((item) => item.rarity === "UUR")
+  const [isOpen, setIsOpen] = useState(true)
+  // カードの上に重なるので、しばらくしたら引っ込める（押しても閉じる）
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIsOpen(false), 7000)
+    return () => window.clearTimeout(timer)
+  }, [])
+  if (won.length === 0 || !isOpen) return null
+  const names = won.map((item) => `「${item.name}」`).join("")
+  const ticker = `世界でひとりだけの UUR ${names} を獲得しました　★　`
+  return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: 押すと閉じる（閉じなくても結果の操作はできる）
+    // biome-ignore lint/a11y/noStaticElementInteractions: 同上
+    <div
+      className="absolute inset-x-0 top-0 z-[5] px-3 pt-[max(52px,calc(env(safe-area-inset-top)+44px))]"
+      style={{
+        animation: "gacha-announce-in .7s cubic-bezier(.2,1.3,.4,1) both",
+      }}
+      onClick={() => setIsOpen(false)}
+    >
+      <style>{ANNOUNCE_STYLE}</style>
+      <div
+        className="mx-auto max-w-xl overflow-hidden rounded-2xl p-[2px] shadow-[0_0_40px_rgba(253,230,138,.55)]"
+        style={{
+          background:
+            "linear-gradient(110deg,#f8e7a8,#ffffff,#a5f3fc,#f0abfc,#f8e7a8)",
+          backgroundSize: "200% 100%",
+          animation: "gacha-announce-sheen 3s linear infinite",
+        }}
+      >
+        <div className="rounded-[14px] bg-[#07060d]/95 px-4 py-3 text-center">
+          <div className="flex items-center justify-center gap-2 font-black text-[11px] text-amber-200 tracking-widest">
+            <span aria-hidden>📣</span>
+            全体のお知らせ
+          </div>
+          <p className="mt-1 font-black text-base leading-snug sm:text-lg">
+            世界でひとりだけの UUR
+            <br />
+            <span className="bg-gradient-to-r from-amber-100 via-white to-amber-200 bg-clip-text text-transparent">
+              {names}
+            </span>
+            があなたのものになりました
+          </p>
+          <p className="mt-1 text-[11px] text-white/70">
+            ガチャのページに獲得者として名前が載ります
+          </p>
+          <div className="mt-2 overflow-hidden whitespace-nowrap border-amber-200/30 border-t pt-1.5 font-bold text-[11px] text-amber-100/80">
+            <div
+              className="inline-block"
+              style={{ animation: "gacha-announce-ticker 9s linear infinite" }}
+            >
+              {ticker.repeat(4)}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -13,7 +13,7 @@ import { DECORATIONS } from "../avatar-frames/decorations.mjs"
 import { HEADER_FRAMES } from "../header-frames/header-frames.mjs"
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..")
-const RANK = { UR: 0, SSR: 1, SR: 2, R: 3, N: 4 }
+const RANK = { UUR: -1, UR: 0, SSR: 1, SR: 2, R: 3, N: 4 }
 
 const prizes = [
   ...DECORATIONS.filter((item) => item.gachaOnly).map((item) => ({

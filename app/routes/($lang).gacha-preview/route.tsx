@@ -18,6 +18,8 @@ export const meta: MetaFunction = () => [
 ]
 
 const FRAMES: Record<string, [GachaRarity, string]> = {
+  "gacha-uur-stellar": ["UUR", "天穹の白金星"],
+  "gacha-uur-crimson-rose": ["UUR", "紅薔薇の金冠"],
   "gacha-ur-prism-seraph": ["UR", "虹翼の熾天使"],
   "gacha-ur-star-crown": ["UR", "星海の王冠"],
   "gacha-ssr-ice-queen": ["SSR", "氷晶の女王冠"],
@@ -93,12 +95,31 @@ const PATTERNS: {
       cutIn: true,
     },
   },
+  {
+    label: "1回 UUR（虹→白金に昇格＋確定）",
+    slugs: ["gacha-uur-stellar"],
+    direction: {
+      hint: "rainbow",
+      promoteTo: "legend",
+      cutIn: true,
+    },
+  },
+  {
+    label: "10回 UUR（白金＋確定）",
+    slugs: [...TEN, "gacha-uur-crimson-rose"],
+    direction: {
+      hint: "legend",
+      promoteTo: null,
+      cutIn: true,
+    },
+  },
   { label: "10回 ランダム（本番と同じ抽選）", slugs: [] },
 ]
 
 const randomSlugs = () => {
   const pool = Object.keys(FRAMES)
   const weight: Record<GachaRarity, number> = {
+    UUR: 0,
     UR: 1,
     SSR: 4,
     SR: 15,
@@ -136,8 +157,8 @@ export default function GachaPreview() {
               pattern.slugs.length > 0 ? pattern.slugs : randomSlugs(),
             )
             const top = items.reduce((a, b) =>
-              ["N", "R", "SR", "SSR", "UR"].indexOf(b.rarity) >
-              ["N", "R", "SR", "SSR", "UR"].indexOf(a.rarity)
+              ["N", "R", "SR", "SSR", "UR", "UUR"].indexOf(b.rarity) >
+              ["N", "R", "SR", "SSR", "UR", "UUR"].indexOf(a.rarity)
                 ? b
                 : a,
             ).rarity

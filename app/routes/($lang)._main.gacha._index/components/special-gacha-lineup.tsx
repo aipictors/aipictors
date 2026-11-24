@@ -17,10 +17,12 @@ export function SpecialGachaLineup() {
   const urs = GACHA_POOL.filter(
     (prize) => prize.rarity === "UR" && prize.kind === "ICON_FRAME",
   )
-  const counts = (["UR", "SSR", "SR", "R", "N"] as const).map((rarity) => ({
-    rarity,
-    count: GACHA_POOL.filter((prize) => prize.rarity === rarity).length,
-  }))
+  const counts = (["UUR", "UR", "SSR", "SR", "R", "N"] as const).map(
+    (rarity) => ({
+      rarity,
+      count: GACHA_POOL.filter((prize) => prize.rarity === rarity).length,
+    }),
+  )
   return (
     <section className="space-y-4 rounded-3xl border bg-card p-4 sm:p-6">
       <style>{STYLE}</style>
@@ -57,10 +59,17 @@ export function SpecialGachaLineup() {
             className="flex items-center gap-1 rounded-full bg-muted px-2 py-1"
           >
             <RarityBadge rarity={item.rarity} />
-            {item.count} 種・{formatGachaRate(GACHA_RATES[item.rarity])}
+            {item.count} 種・{item.rarity === "UUR" ? "合計 " : ""}
+            {formatGachaRate(GACHA_RATES[item.rarity])}
           </li>
         ))}
       </ul>
+      <p className="text-center text-[11px] text-muted-foreground">
+        UUR は取られた枠が抜け、残りの枠で合計{" "}
+        {formatGachaRate(GACHA_RATES.UUR)} を分けます（全部取られたら 0% で、N
+        は {formatGachaRate(GACHA_RATES.N + GACHA_RATES.UUR)}
+        ）。いまの割合は提供割合のページで見られます
+      </p>
     </section>
   )
 }

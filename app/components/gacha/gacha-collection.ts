@@ -35,7 +35,7 @@ export const emptyGachaCollection = (): GachaCollection => ({
   stats: {
     pulls: 0,
     tenPulls: 0,
-    rarityCounts: { N: 0, R: 0, SR: 0, SSR: 0, UR: 0 },
+    rarityCounts: { N: 0, R: 0, SR: 0, SSR: 0, UR: 0, UUR: 0 },
     pointExchanges: 0,
     singleUrs: 0,
     bestTenHighCount: 0,
