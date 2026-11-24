@@ -1,6 +1,7 @@
 import {
   ChevronLeft,
   ChevronRight,
+  EyeOff,
   Keyboard,
   Loader2,
   ScrollText,
@@ -57,6 +58,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const [isCaptionShown, setIsCaptionShown] = useState(false)
   const captionPanelRef = useRef<HTMLDivElement>(null)
   const isCaptionPanelOpen = props.caption !== undefined && isCaptionShown
+  // 拡大表示のボタン（閉じる・キャプション・前後・枚数）を隠して絵だけにする。画像か背景を押すと戻る
+  // （Discord の要望: キャプションの切り替えボタンが絵の上に被る）
+  const [isControlsHidden, setIsControlsHidden] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [scale, setScale] = useState(1)
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
@@ -101,6 +105,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
     prevTranslate.current = { x: 0, y: 0 }
     setShowKeyboardHint(true)
     setIsCaptionShown(readViewerCaptionShown())
+    setIsControlsHidden(false)
     props.setCurrentIndex(props.imageURLs.indexOf(props.thumbnailUrl))
   }
 
@@ -243,6 +248,8 @@ export function ImagesPreview(props: Props): React.ReactNode {
         } else {
           prevImage()
         }
+      } else if (isControlsHidden) {
+        setIsControlsHidden(false)
       } else {
         openPreview()
       }
@@ -317,6 +324,8 @@ export function ImagesPreview(props: Props): React.ReactNode {
           } else {
             prevImage()
           }
+        } else if (isControlsHidden) {
+          setIsControlsHidden(false)
         }
       }
     }
@@ -532,6 +541,11 @@ export function ImagesPreview(props: Props): React.ReactNode {
         dragStartedRef.current = false
         return
       }
+      // ボタンを隠しているときは、閉じずにボタンを戻す
+      if (isControlsHidden) {
+        setIsControlsHidden(false)
+        return
+      }
       closePreview()
     }
   }
@@ -598,30 +612,49 @@ export function ImagesPreview(props: Props): React.ReactNode {
       className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-black/90"
       onClick={handleBackgroundClick}
     >
-      <Button
-        className="absolute top-4 right-4 z-10"
-        onClick={closePreview}
-        size={"icon"}
-      >
-        <XIcon />
-      </Button>
-      {props.caption !== undefined && (
-        <Button
-          className="absolute top-4 right-16 z-10 gap-1.5"
-          onClick={toggleCaption}
-          aria-pressed={isCaptionShown}
-          variant={isCaptionShown ? "default" : "secondary"}
-        >
-          <ScrollText className="size-4" />
-          {isCaptionShown
-            ? t("キャプションを隠す", "Hide caption")
-            : t("キャプション", "Caption")}
-        </Button>
+      {!isControlsHidden && (
+        <div className="absolute top-4 right-4 z-10 flex flex-row-reverse items-center gap-2">
+          <Button onClick={closePreview} size={"icon"}>
+            <XIcon />
+          </Button>
+          {props.caption !== undefined && (
+            <Button
+              className="gap-1.5"
+              onClick={toggleCaption}
+              aria-pressed={isCaptionShown}
+              variant={isCaptionShown ? "default" : "secondary"}
+            >
+              <ScrollText className="size-4" />
+              {isCaptionShown
+                ? t("キャプションを隠す", "Hide caption")
+                : t("キャプション", "Caption")}
+            </Button>
+          )}
+          <Button
+            variant="secondary"
+            size={"icon"}
+            onClick={() => setIsControlsHidden(true)}
+            aria-label={t(
+              "ボタンを隠す（画像を押すと戻ります）",
+              "Hide buttons (tap the image to show them again)",
+            )}
+            title={t(
+              "ボタンを隠す（画像を押すと戻ります）",
+              "Hide buttons (tap the image to show them again)",
+            )}
+          >
+            <EyeOff className="size-4" />
+          </Button>
+        </div>
       )}
       {isCaptionPanelOpen && (
         <div
           ref={captionPanelRef}
-          className="absolute inset-x-0 bottom-0 max-h-[38vh] overflow-y-auto whitespace-pre-wrap break-words bg-black/80 px-5 pt-4 pb-16 text-sm text-white leading-relaxed md:inset-x-auto md:top-0 md:right-0 md:max-h-none md:w-80 md:pt-20 md:pb-6"
+          className={cn(
+            "absolute inset-x-0 bottom-0 max-h-[38vh] overflow-y-auto whitespace-pre-wrap break-words bg-black/80 px-5 pt-4 pb-16 text-sm text-white leading-relaxed md:inset-x-auto md:top-0 md:right-0 md:max-h-none md:w-80 md:pt-20 md:pb-6",
+            // ボタンを隠しているときは、ボタンの分の余白を詰める
+            isControlsHidden && "pb-4 md:pt-6",
+          )}
         >
           {props.caption}
         </div>
@@ -651,7 +684,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
         onMouseMove={handleMouseMove}
         onTouchEndCapture={handleDoubleTap}
       />
-      {props.imageURLs.length > 1 && (
+      {props.imageURLs.length > 1 && !isControlsHidden && (
         <>
           {showKeyboardHint && (
             <div className="absolute top-6 left-6 hidden items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm md:flex">

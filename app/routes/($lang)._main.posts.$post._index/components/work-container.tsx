@@ -1,7 +1,8 @@
 import { useMutation, useQuery } from "@apollo/client/index"
+import { useLocation } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ChevronRightIcon } from "lucide-react"
-import { useContext, useMemo } from "react"
+import { useContext, useEffect, useMemo, useRef } from "react"
 import { AdSlot } from "~/components/ads/ad-slot"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { PlusUpsellCard } from "~/components/plus-upsell-card"
@@ -63,29 +64,39 @@ export function WorkContainer(props: Props) {
   // 全体を取り直すのは、ローダーで取れない作品と自分の作品（非公開のプロンプトなど）だけ
   const needsFullWork = props.work === null || isWorkOwner
 
-  const { data: workRet } = useQuery(workQuery, {
+  // 前に開いた作品に戻ったときも、いいね数などを取り直す（キャッシュの分を先に出す）
+  const { data: workRet, refetch: refetchWork } = useQuery(workQuery, {
     skip: !needsFullWork || (props.work === null && authContext.isLoading),
+    fetchPolicy: "cache-and-network",
     variables: {
       id: props.post,
     },
   })
 
   // 他の人の作品で閲覧者によって変わるのはここだけ（以前は作者の作品 16 件まで全部取り直していた）
-  const { data: viewerStateRet } = useQuery(workViewerStateQuery, {
-    skip: needsFullWork || authContext.isLoading || authContext.isNotLoggedIn,
-    variables: {
-      id: props.post,
+  // ページのデータ（いいね数を含む）は拠点で長くキャッシュしているので、ログイン中はいいね数もここで取り直す
+  const { data: viewerStateRet, refetch: refetchViewerState } = useQuery(
+    workViewerStateQuery,
+    {
+      skip: needsFullWork || authContext.isLoading || authContext.isNotLoggedIn,
+      fetchPolicy: "cache-and-network",
+      variables: {
+        id: props.post,
+      },
     },
-  })
+  )
 
   // SSRではlikedUsersが空で返るため、作品オーナーの場合はネットワークから再取得する
-  const { data: likedUsersData } = useQuery(workLikedUsersQuery, {
-    skip: !isWorkOwner,
-    fetchPolicy: "network-only",
-    variables: {
-      id: props.post,
+  const { data: likedUsersData, refetch: refetchLikedUsers } = useQuery(
+    workLikedUsersQuery,
+    {
+      skip: !isWorkOwner,
+      fetchPolicy: "network-only",
+      variables: {
+        id: props.post,
+      },
     },
-  })
+  )
 
   const { data: userSetting } = useQuery(userSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -98,18 +109,35 @@ export function WorkContainer(props: Props) {
   const work = workBase ? { ...workBase, likedUsers } : workBase
 
   // ログイン状態が分かる前に取ると未ログインとして返り、ミュート・ブロックした人のコメントがそのまま出る
-  const { data: workCommentsRet, loading: isFetchingComments } = useQuery(
-    workCommentsQuery,
-    {
-      skip: authContext.isLoading,
-      fetchPolicy: "network-only",
-      ssr: false,
-      variables: {
-        workId: props.post,
-      },
+  const {
+    data: workCommentsRet,
+    loading: isFetchingComments,
+    refetch: refetchComments,
+  } = useQuery(workCommentsQuery, {
+    skip: authContext.isLoading,
+    fetchPolicy: "network-only",
+    ssr: false,
+    variables: {
+      workId: props.post,
     },
-  )
+  })
   const isLoadingComments = isFetchingComments || authContext.isLoading
+
+  // 開いている作品の通知などから同じ作品へ移ったときは画面が作り直されないので、コメントといいねを取り直す
+  // （Discord の要望: 通知から飛ぶと、届いたコメントが再読み込みするまで出ない）
+  const { key: locationKey } = useLocation()
+  const shownLocationRef = useRef({ key: locationKey, post: props.post })
+  useEffect(() => {
+    const shown = shownLocationRef.current
+    shownLocationRef.current = { key: locationKey, post: props.post }
+    // 別の作品へ移ったときは変数が変わるので、それぞれの問い合わせが取り直す
+    if (shown.key === locationKey || shown.post !== props.post) return
+    if (authContext.isLoading) return
+    void refetchComments().catch(() => {})
+    if (needsFullWork) void refetchWork().catch(() => {})
+    else if (authContext.isLoggedIn) void refetchViewerState().catch(() => {})
+    if (isWorkOwner) void refetchLikedUsers().catch(() => {})
+  }, [locationKey])
 
   const comments = workCommentsRet?.work?.comments ?? []
 
