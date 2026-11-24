@@ -7,7 +7,7 @@ const STYLE = `
 `
 
 /**
- * 天井（交換 pt）のメーター。「あと何回で好きな景品と交換できるか」をいちばん大きく出し、
+ * 天井（交換 pt）のメーター。「あと何回で好きな景品（UUR 以外）と交換できるか」をいちばん大きく出し、
  * しくみ（1 回で 1 pt・UR が出ても減らない）を 1 行で添える
  */
 export function GachaPityMeter(props: {
@@ -29,14 +29,14 @@ export function GachaPityMeter(props: {
             {isNear ? (
               <span className="bg-gradient-to-r from-pink-300 via-amber-200 to-sky-300 bg-clip-text text-transparent">
                 {progress.canExchange
-                  ? "好きな景品と交換できます！"
+                  ? "好きな景品（UUR 以外）と交換できます！"
                   : progress.remaining === 1
-                    ? "次の 1 回で好きな景品と交換！"
-                    : `あと ${progress.remaining} 回で好きな景品と交換！`}
+                    ? "次の 1 回で好きな景品（UUR 以外）と交換！"
+                    : `あと ${progress.remaining} 回で好きな景品（UUR 以外）と交換！`}
               </span>
             ) : (
               <>
-                好きな景品と交換まで あと{" "}
+                好きな景品（UUR 以外）と交換まで あと{" "}
                 <span className="font-black text-amber-200 text-sm tabular-nums">
                   {progress.remaining}
                 </span>{" "}
@@ -69,14 +69,14 @@ export function GachaPityMeter(props: {
           {isNear ? (
             <span className="bg-gradient-to-r from-pink-300 via-amber-200 to-sky-300 bg-clip-text text-transparent">
               {progress.canExchange
-                ? "交換 pt がたまりました！好きな景品（UR も）と交換できます"
+                ? "交換 pt がたまりました！好きな景品（UUR 以外。UR も）と交換できます"
                 : progress.remaining === 1
-                  ? "次の 1 回で好きな景品と交換できます！"
+                  ? "次の 1 回で好きな景品（UUR 以外）と交換できます！"
                   : `あと ${progress.remaining} 回で交換！次の 10 連で届きます`}
             </span>
           ) : (
             <>
-              好きな景品と交換まで あと{" "}
+              好きな景品（UUR 以外）と交換まで あと{" "}
               <span className="font-black text-amber-200 text-lg tabular-nums">
                 {progress.remaining}
               </span>{" "}
@@ -91,8 +91,9 @@ export function GachaPityMeter(props: {
       <PityBar ratio={progress.ratio} className="mt-2 h-3" />
       <p className="mt-2 text-[11px] text-white/65 leading-relaxed">
         1 回引くごとに交換 pt が 1 たまり、{progress.pityCount} pt
-        でラインナップの中から好きな景品（UR も）を 1 つ選んでもらえます。UR
-        が出ても pt は減りません。フリーコインで引いた分も 10 連もたまります。
+        でラインナップの中から好きな景品（UUR 以外。UR も）を 1
+        つ選んでもらえます。UR が出ても pt
+        は減りません。フリーコインで引いた分も 10 連もたまります。
       </p>
     </div>
   )
