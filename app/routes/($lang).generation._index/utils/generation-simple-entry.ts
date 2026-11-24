@@ -138,3 +138,11 @@ export function clearGenerationPendingPrompt() {
   if (typeof window === "undefined") return
   removeStorage(session, GENERATION_PENDING_PROMPT_STORAGE_KEY)
 }
+
+/**
+ * /generation の HTML に置く: ログインの印が何もない人（HEADER_USER_INLINE_SCRIPT が data-aip-auth="out" にする）は、
+ * 生成画面の JS を読む前に /generation/home へ移す（useGenerationEntryMode と同じ条件。ログイン待ちのプロンプトがあれば移さない）。
+ * これまでは JS を読んで描いてから移っていて、はじめての人の表示が 10 秒近くかかっていた。
+ * 検索エンジンのクローラーは移さない（/generation のページとして読んでもらう）
+ */
+export const GENERATION_ENTRY_REDIRECT_SCRIPT = `(function(){try{if(document.documentElement.dataset.aipAuth!=="out"||/bot|crawl|spider|slurp|inspectiontool|mediapartners/i.test(navigator.userAgent))return;if(localStorage.getItem(${JSON.stringify(GENERATION_ENTRY_MODE_STORAGE_KEY)})==="advanced"||sessionStorage.getItem(${JSON.stringify(GENERATION_PENDING_PROMPT_STORAGE_KEY)}))return;var p=new URLSearchParams(location.search);if(p.get("mode")==="advanced"||${JSON.stringify(ADVANCED_SEARCH_PARAM_NAMES)}.some(function(n){return p.has(n)}))return;var h=location.pathname.replace(/\\/generation\\/?$/,"/generation/home");if(h!==location.pathname)location.replace(h)}catch(e){}})()`

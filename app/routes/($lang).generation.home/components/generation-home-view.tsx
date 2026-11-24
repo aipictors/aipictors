@@ -419,8 +419,14 @@ export function GenerationHomeView(props: Props) {
                   alt={work.title}
                   width={work.largeThumbnailImageWidth}
                   height={work.largeThumbnailImageHeight}
-                  // 最初に見える数枚は待たずに読む（一番大きく見える絵なので遅延させない）
-                  loading={index < 6 ? "eager" : "lazy"}
+                  // 最初に見える数枚は待たずに読む（一番大きく見える絵なので遅延させない）。
+                  // 段組みは上から順に詰めるので、スマホ（2 列）の右の列の先頭は半分あたりの絵
+                  loading={
+                    index < 6 ||
+                    Math.abs(index - Math.floor(works.length / 2)) <= 1
+                      ? "eager"
+                      : "lazy"
+                  }
                   fetchPriority={index === 0 ? "high" : undefined}
                   decoding="async"
                   className="block h-auto w-full transition-transform duration-300 group-hover:scale-[1.03]"

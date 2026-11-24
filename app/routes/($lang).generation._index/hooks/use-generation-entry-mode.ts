@@ -24,6 +24,10 @@ export type GenerationEntryMode = "loading" | "simple" | "advanced"
  * ブラウザに来てから呼ぶ（生成画面はブラウザに来てから描いている）
  * enabled が false のときは常に詳細画面（/generation/3panel など）
  */
+const isSurelyLoggedOut = () =>
+  typeof document !== "undefined" &&
+  document.documentElement.dataset.aipAuth === "out"
+
 export function useGenerationEntryMode(options: { enabled?: boolean } = {}) {
   const authContext = useContext(AuthContext)
 
@@ -62,6 +66,15 @@ export function useGenerationEntryMode(options: { enabled?: boolean } = {}) {
 
   const decidedMode = ((): GenerationEntryMode => {
     if (isAdvancedChosen) return "advanced"
+    // ログインの印（Cookie・アイコンの控え・生成のトークン）が何もない人は、Firebase の確認を待たずにかんたん入口へ。
+    // はじめて来た人は確認に数秒かかり、その間 /generation/home に移れずにいた（HEADER_USER_INLINE_SCRIPT が書く）
+    if (
+      authContext.isLoading &&
+      isSurelyLoggedOut() &&
+      readGenerationPendingPrompt() === null
+    ) {
+      return "simple"
+    }
     if (authContext.isLoading) return "loading"
     if (authContext.isNotLoggedIn) return "simple"
     if (hasPendingPrompt) return "advanced"

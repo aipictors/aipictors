@@ -3,6 +3,7 @@ import { LockIcon } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 type StripTheme = {
   id: string
@@ -99,7 +100,8 @@ export function ThemeWeekStrip(props: Props) {
             {thumbnail && (
               <>
                 <img
-                  src={thumbnail}
+                  // カードは 128〜144px 幅なので 240px の縮小版で足りる（元画像だと 1 枚 20〜60KB）
+                  src={toResizedImageUrl(thumbnail, 240)}
                   alt=""
                   loading="lazy"
                   className="absolute inset-0 size-full object-cover opacity-80 transition group-hover:scale-105"
