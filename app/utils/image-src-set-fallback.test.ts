@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test"
 import {
   isSrcSetDisabled,
   markSrcSetFailed,
+  toSettledImageState,
 } from "~/utils/image-src-set-fallback"
 
 const a = "https://example.com/a.webp"
@@ -23,5 +24,23 @@ describe("markSrcSetFailed", () => {
     const first = new Set<string>()
     markSrcSetFailed(first, a)
     expect(first.has(a)).toBe(false)
+  })
+})
+
+describe("toSettledImageState", () => {
+  test("読み込み中は pending", () => {
+    expect(toSettledImageState({ complete: false, naturalWidth: 0 })).toBe(
+      "pending",
+    )
+  })
+  test("中身があれば loaded", () => {
+    expect(toSettledImageState({ complete: true, naturalWidth: 800 })).toBe(
+      "loaded",
+    )
+  })
+  test("complete でも幅 0（404 などで失敗）は failed", () => {
+    expect(toSettledImageState({ complete: true, naturalWidth: 0 })).toBe(
+      "failed",
+    )
   })
 })

@@ -20,3 +20,19 @@ export const isSrcSetDisabled = (
   current: ReadonlySet<string>,
   url: string,
 ): boolean => current.has(url)
+
+/**
+ * ハイドレーション前に読み終わった（または失敗した）画像の状態。
+ *
+ * img.complete は「読み込みに失敗した」ときも true になる。縮小版が 404 で失敗していても
+ * onError はハイドレーション前だと呼ばれないので、complete だけで「読み終わり」とすると
+ * 枠の高さと下敷きの小さい版が外れ、絵の場所が帯のように潰れたまま更新するまで戻らなかった。
+ * 中身の幅が 0 のものは失敗として扱う。
+ */
+export const toSettledImageState = (image: {
+  complete: boolean
+  naturalWidth: number
+}): "pending" | "loaded" | "failed" => {
+  if (!image.complete) return "pending"
+  return image.naturalWidth > 0 ? "loaded" : "failed"
+}

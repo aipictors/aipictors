@@ -17,6 +17,7 @@ import { cn } from "~/lib/utils"
 import {
   isSrcSetDisabled,
   markSrcSetFailed,
+  toSettledImageState,
 } from "~/utils/image-src-set-fallback"
 import {
   toResizedImageSrcSet,
@@ -102,7 +103,17 @@ export function ImagesPreview(props: Props): React.ReactNode {
       stageRef.current?.querySelector<HTMLImageElement>(
         `img[data-stage-url="${CSS.escape(props.thumbnailUrl)}"]`,
       )
-    setIsMainImageLoaded(image?.complete === true)
+    const state = image ? toSettledImageState(image) : "pending"
+    if (
+      state === "failed" &&
+      !isSrcSetDisabled(srcSetFailedUrls, props.thumbnailUrl)
+    ) {
+      // 縮小版が 404 でハイドレーション前に失敗していた。元の画像で出し直す
+      disableSrcSet(props.thumbnailUrl)
+      setIsMainImageLoaded(false)
+      return
+    }
+    setIsMainImageLoaded(state !== "pending")
   }, [props.thumbnailUrl])
 
   const openPreview = () => {
@@ -463,8 +474,16 @@ export function ImagesPreview(props: Props): React.ReactNode {
       ) ?? []
     for (const image of images) {
       const url = image.dataset.stageUrl
-      if (url && image.complete && !stageReadyUrls.has(url)) {
+      if (!url || stageReadyUrls.has(url)) continue
+      const state = toSettledImageState(image)
+      if (state === "loaded") {
         markStageImageReadyAfterDecode(image, url)
+      } else if (
+        state === "failed" &&
+        !isSrcSetDisabled(srcSetFailedUrls, url)
+      ) {
+        // ハイドレーション前に縮小版で失敗していたものは元の画像で出し直す
+        disableSrcSet(url)
       }
     }
   }, [stageUrls.length])
