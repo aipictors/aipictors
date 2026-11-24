@@ -15,6 +15,10 @@ import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
+  isSrcSetDisabled,
+  markSrcSetFailed,
+} from "~/utils/image-src-set-fallback"
+import {
   toResizedImageSrcSet,
   toResizedImageUrl,
 } from "~/utils/resized-image-url"
@@ -70,6 +74,13 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const mainImgRef = useRef<HTMLImageElement>(null)
   // 画像の読み込みが終わるまで表示領域を確保し、読み込み後のレイアウトシフトを防ぐ
   const [isMainImageLoaded, setIsMainImageLoaded] = useState(false)
+  // 縮小版がまだ無い画像（404）は srcSet を外して元の画像で出し直す
+  const [srcSetFailedUrls, setSrcSetFailedUrls] = useState<ReadonlySet<string>>(
+    () => new Set<string>(),
+  )
+  const disableSrcSet = (url: string) => {
+    setSrcSetFailedUrls((current) => markSrcSetFailed(current, url))
+  }
   // 縮小版がまだ無い画像は 404 → 縮小の Worker に切り替わって届くまで数秒かかり、その間
   // リンク切れの印が一瞬出たあと大きい枠が空のまま（下の小さいサムネイルだけ）になっていた。
   // 届くまでは同じ絵の小さい版を枠いっぱいに出し、画面の移動で後から出す画像は隠しておく。
@@ -774,13 +785,17 @@ export function ImagesPreview(props: Props): React.ReactNode {
             )
             return (
               <img
-                key={url}
+                key={`${url}-${isSrcSetDisabled(srcSetFailedUrls, url) ? "original" : "resized"}`}
                 data-stage-url={url}
                 className={`absolute inset-0 size-full cursor-zoom-in object-contain ${isShown ? "" : "invisible"}`}
                 draggable={false}
                 alt={isShown && !isStagePreviewShown ? "thumbnail" : ""}
                 src={url}
-                srcSet={toResizedImageSrcSet(url, toSrcSetOptions(sizeHint))}
+                srcSet={
+                  isSrcSetDisabled(srcSetFailedUrls, url)
+                    ? undefined
+                    : toResizedImageSrcSet(url, toSrcSetOptions(sizeHint))
+                }
                 // 縦横比が分からない 2 枚目以降は、横長でも粗くならないように幅いっぱいとみなす
                 sizes={toWorkImageSizes(sizeHint?.aspectRatio)}
                 fetchPriority={isCurrent ? "high" : "low"}
@@ -789,6 +804,11 @@ export function ImagesPreview(props: Props): React.ReactNode {
                   markStageImageReadyAfterDecode(event.currentTarget, url)
                 }}
                 onError={() => {
+                  // 縮小版がまだ無いだけのことがあるので、まず元の画像で試す
+                  if (!isSrcSetDisabled(srcSetFailedUrls, url)) {
+                    disableSrcSet(url)
+                    return
+                  }
                   if (url === props.thumbnailUrl) setIsMainImageLoaded(true)
                   markStageImageReady(url)
                 }}
@@ -847,22 +867,34 @@ export function ImagesPreview(props: Props): React.ReactNode {
                   isMainImageHidden && "invisible",
                 )}
                 draggable={false}
-                key={props.thumbnailUrl}
+                key={`${props.thumbnailUrl}-${isSrcSetDisabled(srcSetFailedUrls, props.thumbnailUrl) ? "original" : "resized"}`}
                 alt={isMainImageLoaded ? "thumbnail" : ""}
                 src={props.thumbnailUrl}
                 // 原寸の画像（数 MB のこともある）ではなく、画面に合う縮小版を選ばせる。
                 // 拡大表示やダウンロードは原寸のまま
-                srcSet={toResizedImageSrcSet(
-                  props.thumbnailUrl,
-                  mainImageSrcSetOptions,
-                )}
+                srcSet={
+                  isSrcSetDisabled(srcSetFailedUrls, props.thumbnailUrl)
+                    ? undefined
+                    : toResizedImageSrcSet(
+                        props.thumbnailUrl,
+                        mainImageSrcSetOptions,
+                      )
+                }
                 sizes={toWorkImageSizes(
                   props.aspectRatio ?? props.imageSizeHint?.aspectRatio,
                 )}
                 // 作品ページの LCP 画像なので優先して読み込む
                 fetchPriority="high"
                 onLoad={() => setIsMainImageLoaded(true)}
-                onError={() => setIsMainImageLoaded(true)}
+                onError={() => {
+                  // 縮小版がまだ無いときは元の画像で試す。ここで「読み込み終わり」にすると
+                  // 枠の高さも下敷きの小さい版も外れ、画像が帯のように潰れて更新するまで戻らなかった
+                  if (!isSrcSetDisabled(srcSetFailedUrls, props.thumbnailUrl)) {
+                    disableSrcSet(props.thumbnailUrl)
+                    return
+                  }
+                  setIsMainImageLoaded(true)
+                }}
                 onTouchStart={handleMainTouchStart}
                 onMouseUp={handleMainMouseUp}
                 onMouseDown={handleMainMouseDown}
