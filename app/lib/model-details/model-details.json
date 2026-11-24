@@ -259,32 +259,30 @@
  {
   "generatorId": 8,
   "source": {
-   "kind": "civitai",
-   "url": "https://civitai.com/models/85137?modelVersionId=125324",
-   "label": "Civitai"
+   "kind": "aipictors",
+   "url": null,
+   "label": "Aipictors"
   },
   "links": [],
-  "creator": "Celsia",
-  "baseModel": null,
-  "license": "CreativeML Open RAIL-M",
+  "creator": null,
+  "baseModel": "SD 1.5",
+  "license": null,
   "versionName": null,
   "publishedAt": null,
   "triggerWords": [],
   "ja": {
-   "summary": "風景や景色の画像に特化したモデルです。作者は Celsia（旧名 CellyOcillus）さんで、Civitai のページは現在「Landscape Realistic Pro」という名前で公開されています。",
+   "summary": "ChineseLandscapeArt は、中国の山水画のような風景を描くための SD1.5 系のモデルとして登録されています。配布元の詳しい説明は確認できていません。",
    "features": [
-    "風景・背景の生成に特化",
-    "テキストだけで景色を描かせられる",
-    "ネガティブプロンプトで不要な要素を抑えられる"
+    "風景・背景向け",
+    "SD1.5 ベース"
    ],
    "tips": []
   },
   "en": {
-   "summary": "A model focused on landscape and scenery images, by Celsia (formerly CellyOcillus). Its Civitai page is now published under the name \"Landscape Realistic Pro\".",
+   "summary": "ChineseLandscapeArt is listed as an SD1.5 model for Chinese ink-style landscape scenery. Details from the original distributor could not be confirmed.",
    "features": [
-    "Specialized in landscapes and backgrounds",
-    "Generates scenery from simple text prompts",
-    "Negative prompts help remove unwanted elements"
+    "For landscapes and backgrounds",
+    "SD1.5 base"
    ],
    "tips": []
   }
@@ -908,7 +906,7 @@
    }
   ],
   "creator": "hakoniwa",
-  "baseModel": "SD 1.5",
+  "baseModel": "SD 2.1",
   "license": "Fair AI Public License 1.0-SD",
   "versionName": "v1.0",
   "publishedAt": "2023-05-22",
