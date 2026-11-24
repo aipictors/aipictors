@@ -25,6 +25,11 @@ import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/h
 import { RecommendedFeedShelf } from "~/routes/($lang)._main._index/components/recommended-feed-shelf"
 import { useFeedEvents } from "~/routes/($lang)._main._index/hooks/use-feed-events"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
+import {
+  pickRecommendedFeedSnapshot,
+  readRecommendedFeedSnapshot,
+  saveRecommendedFeedSnapshot,
+} from "~/routes/($lang)._main._index/utils/recommended-feed-snapshot"
 
 export const RECOMMENDED_PER_PAGE = 32
 
@@ -97,13 +102,49 @@ export function RecommendedFeedContents(props: Props) {
   const [hasNext, setHasNext] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
-  // あなた向けの並びが届くまでは、サーバーで取った一覧を出しておく
   const personalWorks = data?.recommendedFeedWorks
+  const userId = authContext.userId
+  const ratingsKey = ratings.join(",")
+
+  // 前回のあなた向けの一覧（届くまで全員向けの一覧を出して、届いたら全部入れ替わるのを避ける）。
+  // 出したらこの回は入れ替えない
+  const [snapshotWorks, setSnapshotWorks] = useState<Work[] | null>(null)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ログインが分かったときに 1 回だけ
+  useEffect(() => {
+    if (isSensitive) return
+    if (!isPersonal || userId === null) {
+      if (authContext.isNotLoggedIn) setSnapshotWorks(null)
+      return
+    }
+    if (snapshotWorks !== null || personalWorks !== undefined) return
+    const works = pickRecommendedFeedSnapshot(
+      readRecommendedFeedSnapshot<Work>(),
+      { userId, ratingsKey, now: Date.now() },
+    )
+    if (works !== null) setSnapshotWorks(works)
+  }, [isSensitive, isPersonal, userId, ratingsKey, authContext.isNotLoggedIn])
+
+  // 取り直した並びは次に開いたときのために覚えておく
+  useEffect(() => {
+    if (isSensitive || !isPersonal || userId === null) return
+    if (personalWorks === undefined || personalWorks.length === 0) return
+    saveRecommendedFeedSnapshot({
+      userId,
+      ratingsKey,
+      savedAt: Date.now(),
+      works: personalWorks,
+    })
+  }, [isSensitive, isPersonal, userId, ratingsKey, personalWorks])
+
+  const isShowingSnapshot = !isSensitive && isPersonal && snapshotWorks !== null
+
+  // あなた向けの並びが届くまでは、サーバーで取った一覧（または前回の一覧）を出しておく
   const isUsingInitial = isSensitive
     ? !isPersonal
-    : !isPersonal || personalWorks === undefined
-  const baseWorks =
-    isSensitive || !isUsingInitial
+    : !isPersonal || (personalWorks === undefined && !isShowingSnapshot)
+  const baseWorks = isShowingSnapshot
+    ? (snapshotWorks ?? NO_WORKS)
+    : isSensitive || !isUsingInitial
       ? (personalWorks ?? NO_WORKS)
       : props.initialWorks
 
