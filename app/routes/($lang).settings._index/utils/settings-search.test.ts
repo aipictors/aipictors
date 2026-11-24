@@ -33,6 +33,12 @@ describe("設定の検索", () => {
     expect(firstHref("dark")).toBe("/settings/color")
     expect(firstJa("アイコン枠")).toBe("アイコン枠")
     expect(firstHref("振込")).toBe("/settings/creator-rewards")
+    expect(firstHref("受け取り拒否")).toBe(
+      "/settings/support-received#receive-setting",
+    )
+    expect(firstHref("受け取らない")).toBe(
+      "/settings/support-received#receive-setting",
+    )
   })
 
   test("言い換えでも見つかる", () => {

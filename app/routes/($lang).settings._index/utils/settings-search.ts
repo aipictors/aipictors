@@ -216,6 +216,33 @@ const PAGES: Page[] = [
       "support",
       "tip",
     ],
+    itemHrefs: {
+      "推しの受け取り（受け取り拒否）":
+        "/settings/support-received#receive-setting",
+    },
+    items: [
+      {
+        ja: "推しの受け取り（受け取り拒否）",
+        en: "Receiving support (decline coins)",
+        keywords: [
+          "拒否",
+          "きょひ",
+          "受け取り拒否",
+          "受け取らない",
+          "うけとらない",
+          "受け付けない",
+          "うけつけない",
+          "コインを受け取らない",
+          "推しを止める",
+          "パロディ",
+          "ぱろでぃ",
+          "reject",
+          "decline",
+          "refuse",
+          "opt out",
+        ],
+      },
+    ],
   },
   {
     href: "/settings/creator-rewards",

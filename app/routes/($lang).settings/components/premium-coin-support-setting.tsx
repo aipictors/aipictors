@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useContext, useId } from "react"
+import { HandCoins } from "lucide-react"
+import { useContext, useEffect, useId } from "react"
 import { toast } from "sonner"
 import { Switch } from "~/components/ui/switch"
 import { AuthContext } from "~/contexts/auth-context"
@@ -9,6 +10,7 @@ import {
   SettingsSection,
   SettingsSwitchRow,
 } from "~/routes/($lang).settings/components/settings-section"
+import { toSupportReceiveStatus } from "~/routes/($lang).settings/utils/support-receive-status"
 
 /**
  * 推しの受け取りの設定（パロディ作品などでお金に相当するものを受け取りたくない人向け）。アプリと同じ user_settings に保存する
@@ -16,7 +18,10 @@ import {
  * - プレミアムコインでの推しを受け取らない: 推す画面でプレミアムコインを選べず、aipictors-api の推しでも断る
  * - フリーコインを受け取らない: フリーコインで推されても pt だけ付き、コインは届かない（aipictors-api が渡さない）
  */
-export function PremiumCoinSupportSetting() {
+export function PremiumCoinSupportSetting(props: {
+  /** ページ内リンク（設定の検索から #receive-setting で飛ぶ） */
+  id?: string
+}) {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
   const switchId = useId()
@@ -32,6 +37,15 @@ export function PremiumCoinSupportSetting() {
     { refetchQueries: [premiumCoinSupportSettingQuery] },
   )
 
+  const isLoaded = data !== undefined
+
+  // 設定の検索などから #receive-setting で来たとき、読み込んで欄が出てからそこまで動かす
+  useEffect(() => {
+    if (!isLoaded || !props.id) return
+    if (window.location.hash !== `#${props.id}`) return
+    document.getElementById(props.id)?.scrollIntoView({ block: "start" })
+  }, [isLoaded, props.id])
+
   if (authContext.isNotLoggedIn) {
     return null
   }
@@ -40,6 +54,12 @@ export function PremiumCoinSupportSetting() {
   const isRejectFree =
     data?.userSetting?.isRejectFreeCoinSupportReceive ?? false
   const isRejectAll = data?.userSetting?.isRejectCoinSupport ?? false
+
+  const status = toSupportReceiveStatus({
+    isRejectAll,
+    isRejectPremium: isReject,
+    isRejectFree,
+  })
 
   const save = async (input: {
     isRejectCoinSupport?: boolean
@@ -56,12 +76,26 @@ export function PremiumCoinSupportSetting() {
 
   return (
     <SettingsSection
-      title={t("推しの受け取り", "Receiving support")}
+      id={props.id}
+      icon={<HandCoins />}
+      title={t("推しの受け取り（受け取り拒否）", "Receiving support")}
       description={t(
-        "パロディ作品などで、お金に相当するものを受け取りたくないときに使えます。",
-        "Use this if you do not want to receive anything equivalent to money, for example for parody works.",
+        "推し（コイン）を受け取らないようにできます。パロディ作品などで、お金に相当するものを受け取りたくないときに使えます。",
+        "You can stop receiving support (coins). Use this if you do not want to receive anything equivalent to money, for example for parody works.",
       )}
     >
+      {data !== undefined && (
+        <p
+          className={
+            status.level === "open"
+              ? "mb-3 rounded-lg bg-emerald-500/10 px-3 py-2 text-emerald-700 text-sm dark:text-emerald-300"
+              : "mb-3 rounded-lg bg-amber-500/10 px-3 py-2 text-amber-700 text-sm dark:text-amber-300"
+          }
+        >
+          {t("いまの状態: ", "Current: ")}
+          <span className="font-semibold">{t(status.ja, status.en)}</span>
+        </p>
+      )}
       <SettingsSwitchRow
         htmlFor={allSwitchId}
         title={t("推しを受け付けない", "Do not accept support")}

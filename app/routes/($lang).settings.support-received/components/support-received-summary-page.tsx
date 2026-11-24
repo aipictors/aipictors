@@ -3,6 +3,7 @@ import { graphql } from "gql.tada"
 import {
   ArrowLeftIcon,
   CoinsIcon,
+  HandCoins,
   History,
   Inbox,
   MessageCircle,
@@ -37,6 +38,7 @@ import {
   getViewerRequestHeaders,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
+import { PremiumCoinSupportSetting } from "~/routes/($lang).settings/components/premium-coin-support-setting"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
@@ -217,6 +219,12 @@ export function SupportReceivedSummaryPage() {
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm">
+            <a href="#receive-setting">
+              <HandCoins className="h-4 w-4" />
+              {t("受け取りの設定（拒否）", "Receiving settings")}
+            </a>
+          </Button>
+          <Button asChild variant="outline" size="sm">
             <Link to="/settings/points">
               <ArrowLeftIcon className="h-4 w-4" />
               {t("コイン設定へ戻る", "Back to coins")}
@@ -268,6 +276,8 @@ export function SupportReceivedSummaryPage() {
       ) : reward.status !== "joined" ? (
         <CreatorRewardsNotice />
       ) : null}
+
+      <PremiumCoinSupportSetting id="receive-setting" />
 
       <Tabs
         value={activeTab}
