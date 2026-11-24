@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test"
-import { toRequestUploadPlan } from "~/utils/request-upload-plan"
+import {
+  toRequestRawUploadType,
+  toRequestUploadPlan,
+} from "~/utils/request-upload-plan"
 
 const MB = 1024 * 1024
 
@@ -34,6 +37,34 @@ describe("リクエストの画像欄に選んだファイルの送り方", () =
     )
     expect(toRequestUploadPlan({ type: "video/mp4", size: MB }, false)).toBe(
       "unsupported",
+    )
+  })
+})
+
+describe("type が空のファイル（一部の端末の動画）", () => {
+  test("拡張子が mp4・mov・webm なら納品では動画としてそのまま送る", () => {
+    for (const name of ["a.mp4", "b.MOV", "c.webm"]) {
+      expect(toRequestUploadPlan({ type: "", size: MB, name }, true)).toBe(
+        "raw",
+      )
+    }
+  })
+
+  test("静止画だけの欄では送れない扱いにする", () => {
+    expect(
+      toRequestUploadPlan({ type: "", size: MB, name: "a.mp4" }, false),
+    ).toBe("unsupported")
+  })
+
+  test("送るときの Content-Type を拡張子から決める", () => {
+    expect(toRequestRawUploadType({ type: "", name: "a.MOV" })).toBe(
+      "video/quicktime",
+    )
+    expect(toRequestRawUploadType({ type: "", name: "a.webm" })).toBe(
+      "video/webm",
+    )
+    expect(toRequestRawUploadType({ type: "video/mp4", name: "x" })).toBe(
+      "video/mp4",
     )
   })
 })

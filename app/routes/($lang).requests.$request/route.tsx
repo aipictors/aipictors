@@ -1081,6 +1081,8 @@ function MessageThread(props: {
   const [showImages, setShowImages] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
   const messages = props.request.messages ?? []
+  // クリエイターは納品のあとでも GIF アニメ・動画をメッセージで渡せる（納品済みだと納品欄が出ないため）
+  const canSendMotion = props.request.role === "CREATOR"
   return (
     <section
       className="flex flex-col gap-3 rounded-3xl border p-4"
@@ -1207,7 +1209,22 @@ function MessageThread(props: {
         <div ref={endRef} />
       </div>
       {showImages && (
-        <RequestImagePicker value={images} onChange={setImages} max={4} />
+        <>
+          <RequestImagePicker
+            value={images}
+            onChange={setImages}
+            max={4}
+            allowMotion={canSendMotion}
+          />
+          {canSendMotion && (
+            <p className="text-[11px] text-muted-foreground">
+              {t(
+                "GIFアニメ・動画（mp4 / webm / mov、32MBまで）もそのまま送れます。納品のあとに追加で渡したいときにも使えます。",
+                "GIF animations and videos (mp4 / webm / mov, up to 32MB) are sent as they are, e.g. to add files after delivery.",
+              )}
+            </p>
+          )}
+        </>
       )}
       <div className="flex items-end gap-2">
         <Button

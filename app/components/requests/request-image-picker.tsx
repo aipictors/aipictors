@@ -8,6 +8,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
   REQUEST_VIDEO_TYPES,
+  toRequestRawUploadType,
   toRequestUploadPlan,
 } from "~/utils/request-upload-plan"
 import {
@@ -78,6 +79,22 @@ export function RequestImagePicker(props: {
     const room = props.max - props.value.length
     const allowMotion = props.allowMotion ?? false
     const all = Array.from(files)
+    if (
+      all.some((f) => toRequestUploadPlan(f, allowMotion) === "unsupported")
+    ) {
+      // これまでは何も言わずに外していて、送れたのか分からなかった
+      toast.error(
+        allowMotion
+          ? t(
+              "送れるのは画像・GIFアニメ・動画（mp4 / webm / mov）です",
+              "Only images, GIF animations and videos (mp4 / webm / mov) can be sent",
+            )
+          : t(
+              "この欄には画像だけ添付できます（動画は不可）",
+              "Only images can be attached here (no videos)",
+            ),
+      )
+    }
     if (all.some((f) => toRequestUploadPlan(f, allowMotion) === "too-large")) {
       toast.error(
         t(
@@ -98,7 +115,11 @@ export function RequestImagePicker(props: {
     for (const file of picked) {
       try {
         if (toRequestUploadPlan(file, allowMotion) === "raw") {
-          urls.push(await uploadPublicFile(file, data?.viewer?.token))
+          const blob =
+            file.type === ""
+              ? new Blob([file], { type: toRequestRawUploadType(file) })
+              : file
+          urls.push(await uploadPublicFile(blob, data?.viewer?.token))
         } else {
           const dataUrl = await toWebpDataUrl(file, props.maxSide ?? 2048)
           urls.push(await uploadPublicImage(dataUrl, data?.viewer?.token))
