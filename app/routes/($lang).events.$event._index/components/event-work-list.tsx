@@ -31,6 +31,8 @@ type Props = {
   maxCount: number
   page: number
   slug: string
+  /** ページ送りの移動先（R18 版は "/r/events"） */
+  basePath?: string
   eventSource: "OFFICIAL" | "USER"
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
@@ -213,7 +215,9 @@ export function EventWorkList(props: Props) {
 
               // チップ表示のページでは作品一覧の先頭に戻す（ヘッダー画像まで戻らない）
               const hash = props.sortVariant === "chips" ? "#event-works" : ""
-              navigate(`/events/${props.slug}?${params.toString()}${hash}`)
+              navigate(
+                `${props.basePath ?? "/events"}/${props.slug}?${params.toString()}${hash}`,
+              )
             }}
           />
         </div>

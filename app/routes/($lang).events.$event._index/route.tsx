@@ -79,6 +79,16 @@ const DEFAULT_EVENT_WORK_RATINGS: IntrospectionEnum<"Rating">[] = [
   "R18G",
 ]
 
+/** R18 版（/r/events/…）で出す作品の区分 */
+const SENSITIVE_EVENT_WORK_RATINGS: IntrospectionEnum<"Rating">[] = [
+  "R18",
+  "R18G",
+]
+
+/** R18 版のイベントページか（/r/events/… も同じ画面で、作品だけ R18・R18G にする） */
+const isSensitiveEventPath = (pathname: string) =>
+  /^(\/en)?\/r\/events\//.test(pathname)
+
 type NormalizedEvent = {
   /** 公式が主催する枠（ピックアップモデルのお題など） */
   isOfficial?: boolean
@@ -444,7 +454,11 @@ const formatEventYmdText = (time: number) =>
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
 
-  const urlParams = new URL(props.request.url).searchParams
+  const url = new URL(props.request.url)
+
+  const urlParams = url.searchParams
+
+  const isSensitivePage = isSensitiveEventPath(url.pathname)
 
   const pageParam = urlParams.get("page")
 
@@ -462,7 +476,16 @@ export async function loader(props: LoaderFunctionArgs) {
     ? (urlParams.get("worksOrderDeskAsc") as SortType)
     : "DESC"
 
-  const rating = urlParams.get("rating") as IntrospectionEnum<"Rating"> | null
+  const ratingParam = urlParams.get(
+    "rating",
+  ) as IntrospectionEnum<"Rating"> | null
+
+  const defaultRatings = isSensitivePage
+    ? SENSITIVE_EVENT_WORK_RATINGS
+    : DEFAULT_EVENT_WORK_RATINGS
+
+  const rating =
+    ratingParam && defaultRatings.includes(ratingParam) ? ratingParam : null
 
   const eventsResp = await loaderClient.query({
     query: eventDetailQuery,
@@ -471,7 +494,7 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: page * 64,
       slug: event,
       where: {
-        ratings: rating ? [rating] : DEFAULT_EVENT_WORK_RATINGS,
+        ratings: rating ? [rating] : defaultRatings,
         isNowCreatedAt: true,
         orderBy,
         sort,
@@ -492,6 +515,7 @@ export async function loader(props: LoaderFunctionArgs) {
       ? normalizeOfficialEvent(appEvent)
       : normalizeUserEvent(userEvent),
     page,
+    isSensitivePage,
   }
 }
 
@@ -733,6 +757,8 @@ export default function EventDetailPage() {
 
   const revealSwitchId = useId()
 
+  const isSensitivePage = data.isSensitivePage
+
   const [revealSensitiveThumbnails, setRevealSensitiveThumbnails] =
     usePersistentState<boolean>("event-sensitive-thumbnails-revealed", false)
 
@@ -763,13 +789,14 @@ export default function EventDetailPage() {
 
   // R18/R18G を含みうるとき（対象年齢の指定外でも付いている作品がある）だけモザイク切り替えを出す
   const canContainSensitiveWorks =
-    !event.ratings ||
-    event.ratings.length === 0 ||
-    event.ratings.some((r) => r === "R18" || r === "R18G") ||
-    event.works.some(
-      (work: { rating?: string | null; isSensitive?: boolean | null }) =>
-        isR18Work(work),
-    )
+    !isSensitivePage &&
+    (!event.ratings ||
+      event.ratings.length === 0 ||
+      event.ratings.some((r) => r === "R18" || r === "R18G") ||
+      event.works.some(
+        (work: { rating?: string | null; isSensitive?: boolean | null }) =>
+          isR18Work(work),
+      ))
 
   const heroImageUrl = event.headerImageUrl || event.thumbnailImageUrl
 
@@ -1309,7 +1336,9 @@ export default function EventDetailPage() {
             works={event.awardWorks}
             slug={event.slug}
             eventSource={event.eventSource}
-            revealSensitiveThumbnails={revealSensitiveThumbnails}
+            revealSensitiveThumbnails={
+              isSensitivePage || revealSensitiveThumbnails
+            }
           />
         </div>
       )}
@@ -1416,7 +1445,11 @@ export default function EventDetailPage() {
           {event.slug && (
             <SensitiveToggle
               variant="compact"
-              targetUrl={`/r/events/${event.slug}`}
+              targetUrl={
+                isSensitivePage
+                  ? `/events/${event.slug}`
+                  : `/r/events/${event.slug}`
+              }
             />
           )}
         </div>
@@ -1441,6 +1474,12 @@ export default function EventDetailPage() {
         ) : (
           <EventWorkList
             works={event.works}
+            basePath={isSensitivePage ? "/r/events" : "/events"}
+            defaultRatings={
+              isSensitivePage
+                ? SENSITIVE_EVENT_WORK_RATINGS
+                : DEFAULT_EVENT_WORK_RATINGS
+            }
             maxCount={event.worksCount}
             page={data.page}
             slug={event.slug}
@@ -1487,7 +1526,9 @@ export default function EventDetailPage() {
             onClickDateSortButton={sortBy("DATE_CREATED")}
             onClickWorkTypeSortButton={sortBy("WORK_TYPE")}
             onClickIsPromotionSortButton={sortBy("IS_PROMOTION")}
-            revealSensitiveThumbnails={revealSensitiveThumbnails}
+            revealSensitiveThumbnails={
+              isSensitivePage || revealSensitiveThumbnails
+            }
           />
         )}
       </section>
