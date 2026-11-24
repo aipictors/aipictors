@@ -160,34 +160,32 @@
  {
   "generatorId": 5,
   "source": {
-   "kind": "civitai",
-   "url": "https://civitai.com/models/616632?modelVersionId=689333",
-   "label": "Civitai"
+   "kind": "aipictors",
+   "url": null,
+   "label": "Aipictors"
   },
   "links": [],
-  "creator": "ochiusa",
+  "creator": null,
   "baseModel": "SD 1.5",
   "license": "CreativeML Open RAIL-M",
-  "versionName": "v1.0",
-  "publishedAt": "2024-08-02",
+  "versionName": null,
+  "publishedAt": null,
   "triggerWords": [],
   "ja": {
-   "summary": "ochiusa さんが公開している SD1.5 系のアニメ調モデルです。Civitai では「UsaChoMix Second edition」として公開されています。UsaChoMix を、落書き風の表現を抜いて丁寧な絵柄に寄せたものです。",
+   "summary": "sweetfruitCoco は SD1.5 系のアニメ調モデルです。やわらかい色づかいの、かわいらしいキャラクターのイラスト向けとして登録されています。配布元の詳しい説明は確認できていません。",
    "features": [
-    "アニメ調のイラスト",
-    "UsaChoMix の派生版",
-    "落書き風のタッチを抑えた、ていねいな絵柄",
-    "女性・男性どちらのキャラクターも想定"
+    "アニメ調のイラスト向け",
+    "やわらかい色づかい",
+    "SD1.5 ベース"
    ],
    "tips": []
   },
   "en": {
-   "summary": "An SD1.5 anime-style model by ochiusa, published on Civitai as \"UsaChoMix Second edition\". It is a cleaner take on UsaChoMix without the graffiti-like style.",
+   "summary": "sweetfruitCoco is an SD1.5 anime-style model, listed for cute character illustrations with soft colors. Details from the original distributor could not be confirmed.",
    "features": [
     "Anime-style illustration",
-    "Derived from UsaChoMix",
-    "Neater look without the graffiti style",
-    "Tagged for both female and male characters"
+    "Soft coloring",
+    "SD1.5 base"
    ],
    "tips": []
   }
@@ -195,32 +193,32 @@
  {
   "generatorId": 6,
   "source": {
-   "kind": "civitai",
-   "url": "https://civitai.com/models/600100?modelVersionId=670698",
-   "label": "Civitai"
+   "kind": "aipictors",
+   "url": null,
+   "label": "Aipictors"
   },
   "links": [],
-  "creator": "ochiusa",
+  "creator": null,
   "baseModel": "SD 1.5",
   "license": "CreativeML Open RAIL-M",
-  "versionName": "v1.0",
-  "publishedAt": "2024-07-25",
+  "versionName": null,
+  "publishedAt": null,
   "triggerWords": [],
   "ja": {
-   "summary": "ochiusa さんが公開したアニメ調のモデルです（Civitai 名: UsaChoMix）。約100枚の画像で学習した、かわいらしいデフォルメ寄りの絵柄のモデルです。",
+   "summary": "sweetfruitMelon は SD1.5 系のアニメ調モデルです。やわらかい色づかいの、かわいらしいキャラクターのイラスト向けとして登録されています。配布元の詳しい説明は確認できていません。",
    "features": [
-    "アニメ調のイラスト",
-    "かわいらしい、デフォルメ寄りの絵柄",
-    "約100枚の画像で学習"
+    "アニメ調のイラスト向け",
+    "やわらかい色づかい",
+    "SD1.5 ベース"
    ],
    "tips": []
   },
   "en": {
-   "summary": "An anime-style model released by ochiusa (listed on Civitai as UsaChoMix). It was trained on about 100 images and leans toward a cute, stylized look.",
+   "summary": "sweetfruitMelon is an SD1.5 anime-style model, listed for cute character illustrations with soft colors. Details from the original distributor could not be confirmed.",
    "features": [
-    "Anime-style illustrations",
-    "Cute, stylized character look",
-    "Trained on about 100 images"
+    "Anime-style illustration",
+    "Soft coloring",
+    "SD1.5 base"
    ],
    "tips": []
   }
