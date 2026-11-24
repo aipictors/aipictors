@@ -27,6 +27,8 @@
     "@apollo/client": "^3.11.4",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/sortable": "^9.0.0",
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
     "@fontsource-variable/m-plus-2": "^5.0.18",
     "@fontsource/m-plus-rounded-1c": "^5.2.10",
     "@fontsource/noto-sans-jp": "^5.2.9",

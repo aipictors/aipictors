@@ -16,6 +16,7 @@ import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
+import { EmojiPickerPopover } from "~/components/emoji-picker-popover"
 
 type Props = {
   targetCommentId: string
@@ -212,6 +213,10 @@ export function ReplyCommentInput (props: Props) {
                 onComment()
               }
             }}
+          />
+          <EmojiPickerPopover
+            disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+            onSelect={(emoji) => setComment((prev) => prev + emoji)}
           />
           <div>
             <Button
