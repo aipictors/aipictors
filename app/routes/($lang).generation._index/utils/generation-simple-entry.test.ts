@@ -85,8 +85,8 @@ const runEntryRedirect = (options: {
   userAgent?: string
   local?: Record<string, string>
   session?: Record<string, string>
-}) => {
-  let replaced: string | null = null
+}): string | null => {
+  const replaced: { url: string | null } = { url: null }
   const storage = (items: Record<string, string> = {}) => ({
     getItem: (key: string) => items[key] ?? null,
   })
@@ -103,14 +103,14 @@ const runEntryRedirect = (options: {
       pathname: options.pathname ?? "/generation",
       search: options.search ?? "",
       replace: (url: string) => {
-        replaced = url
+        replaced.url = url
       },
     },
     { userAgent: options.userAgent ?? "Mozilla/5.0 (iPhone)" },
     storage(options.local),
     storage(options.session),
   )
-  return replaced
+  return replaced.url
 }
 
 describe("GENERATION_ENTRY_REDIRECT_SCRIPT", () => {
