@@ -229,8 +229,8 @@ export default function RequestDetailPage() {
             <p className="flex items-center gap-1 text-muted-foreground text-xs">
               <Download className="size-3.5" />
               {t(
-                "画像をタップすると元の大きさで開きます（保存できます）",
-                "Tap an image to open it at full size (you can save it)",
+                "画像・動画をタップすると元のファイルで開きます（保存できます）",
+                "Tap an image or video to open the original file (you can save it)",
               )}
             </p>
           )}
@@ -596,7 +596,7 @@ function ActionPanel(props: {
       <Panel
         title={t("制作中", "In progress")}
         body={t(
-          "できあがったら画像を納品してください。依頼者が受け取りを完了すると取引完了です。",
+          "できあがったら画像（GIFアニメ・動画も可）を納品してください。依頼者が受け取りを完了すると取引完了です。",
           "Deliver the images when they're ready. The request is completed when the requester confirms receipt.",
         )}
       >
@@ -608,7 +608,14 @@ function ActionPanel(props: {
               max={10}
               maxSide={4096}
               label={t("納品", "Delivery")}
+              allowMotion
             />
+            <p className="text-muted-foreground text-xs">
+              {t(
+                "GIFアニメ・動画（mp4 / webm / mov、32MBまで）も、そのままの形式で納品できます。",
+                "GIF animations and videos (mp4 / webm / mov, up to 32MB) are delivered as they are.",
+              )}
+            </p>
             <Textarea
               value={text}
               onChange={(e) => setText(e.target.value)}

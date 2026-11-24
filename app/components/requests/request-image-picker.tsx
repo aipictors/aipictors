@@ -3,9 +3,17 @@ import { graphql } from "gql.tada"
 import { ImagePlus, Loader2, X } from "lucide-react"
 import { type DragEvent, useRef, useState } from "react"
 import { toast } from "sonner"
+import { RequestMediaThumb } from "~/components/requests/request-media-thumb"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { uploadPublicImage } from "~/utils/upload-public-image"
+import {
+  REQUEST_VIDEO_TYPES,
+  toRequestUploadPlan,
+} from "~/utils/request-upload-plan"
+import {
+  uploadPublicFile,
+  uploadPublicImage,
+} from "~/utils/upload-public-image"
 
 const viewerTokenQuery = graphql(
   `query RequestImagePickerViewerToken {
@@ -44,7 +52,8 @@ const toWebpDataUrl = (file: File, maxSide: number) =>
 
 /**
  * 画像を選んでその場でアップロードする（URL の配列を持つ）。参考画像・見本・納品・メッセージで使う。
- * ボタンで選ぶほか、画像ファイルを枠にドラッグ＆ドロップしても追加できる
+ * ボタンで選ぶほか、画像ファイルを枠にドラッグ＆ドロップしても追加できる。
+ * allowMotion（納品）のときは GIF アニメと動画（mp4・webm・mov）を変換せずにそのまま送る
  */
 export function RequestImagePicker(props: {
   value: string[]
@@ -52,6 +61,7 @@ export function RequestImagePicker(props: {
   max: number
   maxSide?: number
   label?: string
+  allowMotion?: boolean
 }) {
   const t = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -66,16 +76,33 @@ export function RequestImagePicker(props: {
   const onFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return
     const room = props.max - props.value.length
-    const picked = Array.from(files)
-      .filter((f) => f.type.startsWith("image/"))
+    const allowMotion = props.allowMotion ?? false
+    const all = Array.from(files)
+    if (all.some((f) => toRequestUploadPlan(f, allowMotion) === "too-large")) {
+      toast.error(
+        t(
+          "GIFアニメ・動画は32MBまでです",
+          "GIF animations and videos must be 32MB or smaller",
+        ),
+      )
+    }
+    const picked = all
+      .filter((f) => {
+        const plan = toRequestUploadPlan(f, allowMotion)
+        return plan === "convert" || plan === "raw"
+      })
       .slice(0, room)
     if (picked.length === 0) return
     setUploading(picked.length)
     const urls: string[] = []
     for (const file of picked) {
       try {
-        const dataUrl = await toWebpDataUrl(file, props.maxSide ?? 2048)
-        urls.push(await uploadPublicImage(dataUrl, data?.viewer?.token))
+        if (toRequestUploadPlan(file, allowMotion) === "raw") {
+          urls.push(await uploadPublicFile(file, data?.viewer?.token))
+        } else {
+          const dataUrl = await toWebpDataUrl(file, props.maxSide ?? 2048)
+          urls.push(await uploadPublicImage(dataUrl, data?.viewer?.token))
+        }
       } catch {
         toast.error(
           t("画像をアップロードできませんでした", "Could not upload the image"),
@@ -117,7 +144,7 @@ export function RequestImagePicker(props: {
           key={url}
           className="relative size-20 overflow-hidden rounded-xl bg-muted"
         >
-          <img src={url} alt="" className="size-full object-cover" />
+          <RequestMediaThumb url={url} />
           <button
             type="button"
             aria-label={t("外す", "Remove")}
@@ -156,7 +183,11 @@ export function RequestImagePicker(props: {
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept={
+          props.allowMotion
+            ? ["image/*", ...REQUEST_VIDEO_TYPES].join(",")
+            : "image/*"
+        }
         multiple
         hidden
         onChange={(e) => void onFiles(e.target.files)}

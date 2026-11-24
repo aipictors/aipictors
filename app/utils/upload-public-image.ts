@@ -45,19 +45,34 @@ export const uploadPublicImage = async (
   image: string,
   token: string | undefined | null,
 ): Promise<string> => {
+  const base64data = image.split(",")[1]
+  const type = toUploadImageType(image)
+  const blob = new Blob(
+    [Uint8Array.from(atob(base64data), (c) => c.charCodeAt(0))],
+    { type },
+  )
+  return uploadPublicFile(blob, token)
+}
+
+/** 画像の置き場に送れるファイルの大きさの上限（置き場の Worker と同じ 32MB） */
+export const MAX_UPLOAD_FILE_BYTES = 32 * 1024 * 1024
+
+/**
+ * ファイルをそのまま画像の置き場に送る（変換しない）。
+ * 納品の GIF アニメ・動画のように、形式を保ったまま渡したいときに使う
+ * @returns アップロードしたファイルの URL
+ */
+export const uploadPublicFile = async (
+  blob: Blob,
+  token: string | undefined | null,
+): Promise<string> => {
   if (token === null || token === undefined)
     throw new Error(
       "ログイン情報が正しく取得できていません、画面更新もしくはログインしなおしてください",
     )
 
   try {
-    const base64data = image.split(",")[1]
-    const type = toUploadImageType(image)
-
-    const blob = new Blob(
-      [Uint8Array.from(atob(base64data), (c) => c.charCodeAt(0))],
-      { type },
-    )
+    const type = blob.type || "application/octet-stream"
 
     const endpoint = config.uploader.uploadImage
     const timeoutMs = toImageUploadTimeoutMs(blob.size)

@@ -1,5 +1,6 @@
 import { CalendarClock, Check, Images, RefreshCcw } from "lucide-react"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import { RequestMediaThumb } from "~/components/requests/request-media-thumb"
 import { useAutoTranslation } from "~/hooks/use-auto-translation"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -265,7 +266,7 @@ export function RequestSteps(props: { request: CoinRequest }) {
   )
 }
 
-/** 画像の並び（タップで大きく） */
+/** 画像の並び（タップで大きく。納品の GIF アニメ・動画もそのまま開く） */
 export function RequestImageGrid(props: {
   urls: string[]
   className?: string
@@ -283,12 +284,7 @@ export function RequestImageGrid(props: {
           rel="noreferrer"
           className="block aspect-square overflow-hidden rounded-xl bg-muted"
         >
-          <img
-            src={url}
-            alt=""
-            loading="lazy"
-            className="size-full object-cover"
-          />
+          <RequestMediaThumb url={url} lazy />
         </a>
       ))}
     </div>
