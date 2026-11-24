@@ -141,6 +141,21 @@ const WORK_PAGE_PATHS: RegExp[] = [
 ]
 
 /**
+ * この R18 のページを開いたことを「R18 に切り替えた」として覚えるかどうか。
+ *
+ * 個別の作品・小説・コラムのページは、作品の年齢区分に合わせてサーバーが /posts から
+ * /r/posts へ振り分けるので、本人が切り替えたわけではない。これを覚えてしまうと、
+ * 全年齢で見ていた人が R18 の作品を 1 つ開いただけでサイト全体が R18 のままになり、
+ * サイドバーのフォロー新着やプロフィールが R18 側に飛んでいた。
+ */
+export const isR18ModeSwitchPath = (pathname: string): boolean => {
+  if (!isR18Path(pathname)) return false
+  const { path } = splitLocale(pathname)
+  const pathWithoutR18 = path.replace(/^\/r/, "") || "/"
+  return !WORK_PAGE_PATHS.some((pattern) => pattern.test(pathWithoutR18))
+}
+
+/**
  * ヘッダーで R18 に切り替えたときの移動先。移動しないときは null
  * 全年齢の作品ページはそのままだとロゴやメニューが変わらず切り替わったと分からないので、R18 のトップへ
  */

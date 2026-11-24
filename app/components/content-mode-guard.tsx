@@ -2,6 +2,7 @@ import { useLocation } from "@remix-run/react"
 import { useNavigate } from "~/lib/app/locale-router"
 import { useEffect, useLayoutEffect, useRef } from "react"
 import {
+  isR18ModeSwitchPath,
   isR18Path,
   readContentMode,
   toR18Path,
@@ -29,7 +30,10 @@ export function ContentModeGuard() {
     isFirstRenderRef.current = false
 
     if (isR18Path(location.pathname)) {
-      writeContentMode("r18")
+      // 個別の作品ページはサーバーが年齢区分で振り分けただけなので、切り替えとして覚えない
+      if (isR18ModeSwitchPath(location.pathname)) {
+        writeContentMode("r18")
+      }
       return
     }
 

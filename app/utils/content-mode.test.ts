@@ -1,10 +1,35 @@
 import { afterEach, describe, expect, test } from "bun:test"
 import {
   CONTENT_MODE_INLINE_SCRIPT,
+  isR18ModeSwitchPath,
   readContentMode,
   subscribeContentMode,
   writeContentMode,
 } from "~/utils/content-mode"
+
+describe("R18 に切り替えたと覚えるページ（isR18ModeSwitchPath）", () => {
+  test("R18 の一覧・トップは覚える", () => {
+    expect(isR18ModeSwitchPath("/r")).toBe(true)
+    expect(isR18ModeSwitchPath("/r/")).toBe(true)
+    expect(isR18ModeSwitchPath("/r/users/foo")).toBe(true)
+    expect(isR18ModeSwitchPath("/r/posts/2d")).toBe(true)
+    expect(isR18ModeSwitchPath("/en/r/rankings")).toBe(true)
+  })
+
+  test("個別の作品・小説・コラムは覚えない（サーバーが年齢区分で振り分けただけ）", () => {
+    expect(isR18ModeSwitchPath("/r/posts/123456")).toBe(false)
+    expect(isR18ModeSwitchPath("/r/posts/123456/")).toBe(false)
+    expect(isR18ModeSwitchPath("/r/novels/123456")).toBe(false)
+    expect(isR18ModeSwitchPath("/r/notes/123456")).toBe(false)
+    expect(isR18ModeSwitchPath("/en/r/posts/123456")).toBe(false)
+  })
+
+  test("全年齢のページは覚えない", () => {
+    expect(isR18ModeSwitchPath("/")).toBe(false)
+    expect(isR18ModeSwitchPath("/posts/123456")).toBe(false)
+    expect(isR18ModeSwitchPath("/requests")).toBe(false)
+  })
+})
 
 afterEach(() => {
   localStorage.clear()
