@@ -108,7 +108,11 @@ export function UserPickupContents(props: Props) {
         )
       )}
       {newWorkDisplayed && newWorkDisplayed.length > 0 && (
-        <UserWorksSection title={t("最新", "Latest")} link={props.worksLink}>
+        <UserWorksSection
+          title={t("最新", "Latest")}
+          link={props.worksLink}
+          hasGridLayoutToggle
+        >
           <UserWorksGrid
             works={newWorkDisplayed}
             // ピックアップが無いときは最新が一番上に来る

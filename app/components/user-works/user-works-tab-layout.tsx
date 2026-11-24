@@ -1,5 +1,6 @@
 import { Link } from "~/lib/app/locale-router"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { GridLayoutToggle } from "~/components/grid-layout-toggle"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
@@ -41,6 +42,8 @@ type Props = {
   page: number
   perPage: number
   sort: UserWorksSort
+  /** 並び替えの横にサムネイルの並べ方（正方形／元の比率）の切り替えを出す（画像の一覧） */
+  hasGridLayoutToggle?: boolean
   children: React.ReactNode
 }
 
@@ -65,28 +68,31 @@ export function UserWorksTabLayout(props: Props) {
             {t("件", "")}
           </span>
         </h2>
-        <div className="inline-flex rounded-full border bg-muted/40 p-0.5 text-sm">
-          {(
-            [
-              ["new", t("新しい順", "Newest")],
-              ["popular", t("人気順", "Popular")],
-            ] as const
-          ).map(([value, label]) => (
-            <Link
-              key={value}
-              to={toHref(props.basePath, 0, value)}
-              preventScrollReset
-              aria-current={props.sort === value ? "page" : undefined}
-              className={cn(
-                "rounded-full px-3 py-1 transition-colors",
-                props.sort === value
-                  ? "bg-background font-medium text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {label}
-            </Link>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          {props.hasGridLayoutToggle && <GridLayoutToggle />}
+          <div className="inline-flex rounded-full border bg-muted/40 p-0.5 text-sm">
+            {(
+              [
+                ["new", t("新しい順", "Newest")],
+                ["popular", t("人気順", "Popular")],
+              ] as const
+            ).map(([value, label]) => (
+              <Link
+                key={value}
+                to={toHref(props.basePath, 0, value)}
+                preventScrollReset
+                aria-current={props.sort === value ? "page" : undefined}
+                className={cn(
+                  "rounded-full px-3 py-1 transition-colors",
+                  props.sort === value
+                    ? "bg-background font-medium text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 

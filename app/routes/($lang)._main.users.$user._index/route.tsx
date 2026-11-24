@@ -166,6 +166,7 @@ export default function UserLayout() {
           <UserWorksSection
             title={t("人気の作品", "Popular")}
             link={`${basePath}/posts`}
+            hasGridLayoutToggle
           >
             <UserWorksGrid works={popularWorks} />
           </UserWorksSection>

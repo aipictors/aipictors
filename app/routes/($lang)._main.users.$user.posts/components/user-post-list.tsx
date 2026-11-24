@@ -58,6 +58,7 @@ export function UserPostList(props: Props) {
       page={props.page}
       perPage={32}
       sort={props.sort}
+      hasGridLayoutToggle
     >
       <ResponsivePhotoWorksAlbum
         works={works as unknown as FragmentOf<typeof PhotoAlbumWorkFragment>[]}

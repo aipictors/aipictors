@@ -1,7 +1,9 @@
 import type { FragmentOf } from "gql.tada"
 import { ChevronRightIcon, HeartIcon, ImagesIcon } from "lucide-react"
+import { GridLayoutToggle } from "~/components/grid-layout-toggle"
 import { LikeButton } from "~/components/like-button"
 import { WorkMediaBadge } from "~/components/work-media-badge"
+import { useGridLayout } from "~/hooks/use-grid-layout"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -31,6 +33,7 @@ function UserWorkCard(props: {
   work: FeaturedWork
   sizes: CardSize[]
   className?: string
+  style?: React.CSSProperties
   isPriority?: boolean
   /**
    * 元の画像から縮小する（ピックアップ）。
@@ -61,6 +64,7 @@ function UserWorkCard(props: {
         "group hover:-translate-y-0.5 relative isolate overflow-hidden rounded-2xl bg-muted shadow-sm ring-1 ring-border/40 transition duration-300 hover:shadow-xl",
         props.className,
       )}
+      style={props.style}
     >
       <Link
         to={`/posts/${work.id}`}
@@ -151,6 +155,8 @@ export function UserWorksSection(props: {
   link?: string
   /** 見出しの右に出すボタン（自分のプロフィールの「編集」など） */
   action?: React.ReactNode
+  /** 見出しの右にサムネイルの並べ方（正方形／元の比率）の切り替えを出す（UserWorksGrid の一覧） */
+  hasGridLayoutToggle?: boolean
   children: React.ReactNode
 }) {
   const t = useTranslation()
@@ -162,6 +168,9 @@ export function UserWorksSection(props: {
           {props.title}
         </h2>
         {props.action}
+        {props.hasGridLayoutToggle && (
+          <GridLayoutToggle className="ml-auto shrink-0" />
+        )}
         {props.link && (
           <Link
             to={props.link}
@@ -177,12 +186,59 @@ export function UserWorksSection(props: {
   )
 }
 
-/** 同じ大きさで並べる一覧 */
+/** 元の比率で並べるときの行の高さ（スマホ・PC） */
+const JUSTIFIED_ROW_HEIGHT = { mobile: 150, desktop: 240 }
+
+/**
+ * 同じ大きさで並べる一覧。利用者が「元の比率」を選んでいるときは、絵を切らずに行の高さをそろえて並べる
+ * （サイト全体の一覧と同じ設定。app/hooks/use-grid-layout.ts）
+ */
 export function UserWorksGrid(props: {
   works: Work[]
   /** ページの一番上に出るとき、最初の何枚を待たずに読むか（一番大きく見える絵を遅延させない） */
   priorityCount?: number
 }) {
+  const { gridLayout } = useGridLayout()
+
+  if (gridLayout === "justified") {
+    return (
+      // 各カードの flex-grow / flex-basis を縦横比に比例させると、同じ行のカードは同じ高さになる
+      // （responsive-photo-works-album.tsx と同じやり方）。最後の行は after で伸ばさずに左に寄せる
+      <div className="flex flex-wrap gap-2 [--row-h:150px] after:block after:grow-[1000000] after:content-[''] md:gap-3 md:[--row-h:240px]">
+        {props.works.map((work, index) => {
+          const width = work.largeThumbnailImageWidth || 1
+          const height = work.largeThumbnailImageHeight || 1
+          // 極端に縦長・横長の絵で行が崩れないよう縦横比を制限する
+          const ratio = Math.min(Math.max(width / height, 0.5), 2.4)
+          return (
+            <UserWorkCard
+              key={work.id}
+              work={work}
+              isPriority={index < (props.priorityCount ?? 0)}
+              className="min-w-0"
+              style={{
+                aspectRatio: `${ratio}`,
+                flexGrow: ratio * 100,
+                flexBasis: `calc(var(--row-h) * ${ratio})`,
+              }}
+              sizes={[
+                {
+                  media: MD,
+                  width: `${Math.round(ratio * JUSTIFIED_ROW_HEIGHT.desktop * 1.4)}px`,
+                  aspectRatio: ratio,
+                },
+                {
+                  width: `${Math.round(ratio * JUSTIFIED_ROW_HEIGHT.mobile * 1.4)}px`,
+                  aspectRatio: ratio,
+                },
+              ]}
+            />
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:gap-3 lg:grid-cols-4">
       {props.works.map((work, index) => (
