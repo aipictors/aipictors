@@ -1,5 +1,6 @@
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import type React from "react"
+import { useEffect, useRef, useState } from "react"
 import { GachaHeaderFrameOverlay } from "~/components/gacha/gacha-header-frame-overlay"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -19,12 +20,26 @@ type Props = {
 export function UserHomeHeader(props: Props) {
   const user = readFragment(UserHomeHeaderFragment, props.user)
   const headerImageUrl = props.headerImageUrl || user.headerImageUrl
+  // 読めないヘッダー画像（消えたファイル・画像でない中身）はリンク切れの印を出さず、アイコンの背景に切り替える
+  const [brokenUrl, setBrokenUrl] = useState<string | null>(null)
+  const headerRef = useRef<HTMLImageElement>(null)
+  // SSR の画像はハイドレーションの前に読み込みに失敗していることがある（onError が届かない）ので、読み終わった画像の幅も見る
+  useEffect(() => {
+    const img = headerRef.current
+    if (img?.complete && img.naturalWidth === 0 && headerImageUrl) {
+      setBrokenUrl(headerImageUrl)
+    }
+  }, [headerImageUrl])
+  const showHeaderImage =
+    Boolean(headerImageUrl) && brokenUrl !== headerImageUrl
 
   return (
     <div className="mx-auto w-full max-w-6xl px-0 md:px-8 md:pt-4">
       <div className="relative aspect-[5/2] w-full overflow-hidden bg-muted md:aspect-[3/1] md:rounded-3xl">
-        {headerImageUrl ? (
+        {showHeaderImage && headerImageUrl ? (
           <img
+            ref={headerRef}
+            onError={() => setBrokenUrl(headerImageUrl)}
             src={headerImageUrl}
             alt=""
             className="absolute inset-0 size-full object-cover"
@@ -34,7 +49,7 @@ export function UserHomeHeader(props: Props) {
             decoding="async"
           />
         ) : (
-          // ヘッダー画像がない人は、アイコンの色を広げて背景にする
+          // ヘッダー画像がない・読めない人は、アイコンの色を広げて背景にする
           <img
             src={toResizedImageUrl(withIconUrlFallback(user.iconUrl), 96)}
             alt=""
