@@ -5,7 +5,7 @@ import type {
 } from "@remix-run/cloudflare"
 import { useSearchParams } from "@remix-run/react"
 import { Eye, EyeOff, Loader2, Pencil, Plus, Store, Trash2 } from "lucide-react"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { RequestImagePicker } from "~/components/requests/request-image-picker"
 import { CoinPrice } from "~/components/requests/request-ui"
@@ -39,6 +39,7 @@ import {
   requestsPost,
 } from "~/lib/requests-api"
 import { cn } from "~/lib/utils"
+import { toDraftKey } from "~/routes/($lang).requests.my-plans/utils/plan-draft"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) =>
@@ -487,6 +488,25 @@ function PlanEditor(props: {
   const t = useTranslation()
   const [d, setD] = useState<PlanDraft>(props.draft)
   const [saving, setSaving] = useState(false)
+  // 書きかけの内容があるかどうか（開いたときの内容と比べる）
+  const openedDraft = useRef(toDraftKey(props.draft))
+  const isChanged = toDraftKey(d) !== openedDraft.current
+
+  // 書きかけのまま閉じるときは一度たずねる（枠の外を押しただけで消えていた）
+  const close = () => {
+    if (
+      isChanged &&
+      !window.confirm(
+        t(
+          "書きかけのプランは保存されません。閉じますか？",
+          "Your plan is not saved yet. Close anyway?",
+        ),
+      )
+    ) {
+      return
+    }
+    props.onClose()
+  }
   const set = <K extends keyof PlanDraft>(key: K, value: PlanDraft[K]) =>
     setD((prev) => ({ ...prev, [key]: value }))
   const receive = Math.floor(
@@ -511,8 +531,14 @@ function PlanEditor(props: {
   }
 
   return (
-    <Dialog open onOpenChange={(open) => !open && props.onClose()}>
-      <DialogContent className="max-h-[92dvh] overflow-y-auto rounded-3xl sm:max-w-lg">
+    <Dialog open onOpenChange={(open) => !open && close()}>
+      <DialogContent
+        className="max-h-[92dvh] overflow-y-auto rounded-3xl sm:max-w-lg"
+        // 書きかけがあるときは、枠の外を押しても閉じない（押し間違いで内容が消えていた）
+        onInteractOutside={(event) => {
+          if (isChanged) event.preventDefault()
+        }}
+      >
         <DialogHeader>
           <DialogTitle>
             {d.planId
