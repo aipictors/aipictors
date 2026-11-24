@@ -95,6 +95,8 @@ export type RequestMessage = {
   /** 相手が付けたリアクション（1 人 1 つ。古い API では無い） */
   reactions?: { userId: string; emoji: string }[]
   createdAt: number
+  /** 送った人が送信を取り消した日時（当事者には本文・画像が届かない。古い API では無い） */
+  deletedAt?: number | null
 }
 
 /** メッセージに付けられるリアクション（aipictors-api の MESSAGE_REACTIONS と同じ） */
@@ -292,6 +294,14 @@ export const requestErrorMessage = (error: unknown, isEnglish = false) => {
       en: "Requests are currently paused",
     },
     Unauthorized: { ja: "ログインしてください", en: "Please log in" },
+    CANNOT_UNSEND: {
+      ja: "納品と修正のお願いは取り消せません",
+      en: "Deliveries and revision requests can't be unsent",
+    },
+    MESSAGE_NOT_FOUND: {
+      ja: "メッセージが見つかりません",
+      en: "Message not found",
+    },
     REASON_REQUIRED: {
       ja: "理由を書いてください",
       en: "Please enter a reason",

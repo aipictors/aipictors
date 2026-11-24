@@ -9,6 +9,7 @@ import {
   PartyPopper,
   Send,
   SmilePlus,
+  Undo2,
 } from "lucide-react"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -1054,6 +1055,19 @@ function MessageReactions(props: {
   )
 }
 
+/** 送信を取り消せるメッセージか（納品と修正のお願いは依頼の記録なので取り消せない。aipictors-api の unsend と同じ判定） */
+const canUnsend = (request: CoinRequest, message: RequestMessage) => {
+  if (message.deletedAt) return false
+  if (message.body.startsWith("修正をお願いしました\n")) return false
+  const isDelivery =
+    message.senderUserId === request.creatorUserId &&
+    request.deliveredAt !== null &&
+    message.createdAt === request.deliveredAt &&
+    JSON.stringify(message.imageUrls) ===
+      JSON.stringify(request.deliveryImageUrls)
+  return !isDelivery
+}
+
 function MessageThread(props: {
   request: CoinRequest
   users: RequestUsers
@@ -1093,6 +1107,27 @@ function MessageThread(props: {
             )
           }
           const mine = m.senderUserId === props.viewerId
+          if (m.deletedAt) {
+            return (
+              <p
+                key={m.id}
+                className={cn(
+                  "max-w-[85%] rounded-2xl border border-dashed px-3 py-2 text-muted-foreground text-xs",
+                  mine ? "self-end" : "self-start",
+                )}
+              >
+                {mine
+                  ? t(
+                      "メッセージの送信を取り消しました",
+                      "You unsent a message",
+                    )
+                  : t(
+                      "メッセージの送信が取り消されました",
+                      "This message was unsent",
+                    )}
+              </p>
+            )
+          }
           return (
             <div
               key={m.id}
@@ -1131,6 +1166,33 @@ function MessageThread(props: {
                 <span className="text-[10px] text-muted-foreground">
                   {formatDateTime(m.createdAt)}
                 </span>
+                {mine && canUnsend(props.request, m) && (
+                  <button
+                    type="button"
+                    disabled={props.busy !== null}
+                    aria-label={t("送信を取り消す", "Unsend")}
+                    title={t("送信を取り消す", "Unsend")}
+                    onClick={() => {
+                      if (
+                        confirm(
+                          t(
+                            "このメッセージの送信を取り消しますか？相手の画面からも消えます",
+                            "Unsend this message? It will also disappear for the other person.",
+                          ),
+                        )
+                      ) {
+                        void props.act(
+                          "unsend",
+                          { messageId: m.id },
+                          t("送信を取り消しました", "Message unsent"),
+                        )
+                      }
+                    }}
+                    className="flex size-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <Undo2 className="size-3.5" />
+                  </button>
+                )}
                 <MessageReactions
                   message={m}
                   mine={mine}
