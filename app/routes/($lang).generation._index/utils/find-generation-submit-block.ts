@@ -215,6 +215,20 @@ export const findGenerationSubmitBlock = (
     }
   }
 
+  // SD2 のモデル（SD2Scream・hakoMayD・hakoMayBoy）は ControlNet に対応していない。
+  // 生成サーバーにある ControlNet は SD1.5・SDXL 用だけなので、送るとエラーになる
+  if (config.modelType === "SD2" && config.controlNetImageBase64 !== null) {
+    return {
+      log: {
+        message: "Blocked: ControlNet with SD2 model",
+        details: { model: props.modelName ?? null },
+      },
+      toast:
+        "SD2 のモデルでは ControlNet（ポーズ・線画などの指定）を使えません。画像を外すか、ほかのモデルを選んでください。",
+      isTopCenterOnMobile: true,
+    }
+  }
+
   // Z-Image などの新しい世代のモデルは ControlNet に対応していない（生成サーバーが受け付けない）
   const ditModelLabel = findDitModelLabel(props.modelName)
   if (ditModelLabel !== null && config.controlNetImageBase64 !== null) {

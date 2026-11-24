@@ -153,4 +153,27 @@ describe("findGenerationSubmitBlock", () => {
     ).toBeNull()
     expect(find({}, { modelName: "z_image_turbo.safetensors" })).toBeNull()
   })
+
+  test("SD2 のモデルは ControlNet を使えない", () => {
+    const cn = {
+      controlNetImageBase64: "x",
+      controlNetWeight: 1,
+      controlNetModule: "canny",
+    } as Partial<GenerationConfigState>
+    expect(
+      find(
+        { ...cn, modelType: "SD2", sizeType: "SD2_768_768" },
+        { modelName: "hakoMayD.safetensors" },
+      )?.log.message,
+    ).toBe("Blocked: ControlNet with SD2 model")
+    // 画像を付けなければ SD2 でも生成できる
+    expect(
+      find(
+        { modelType: "SD2", sizeType: "SD2_768_768" },
+        { modelName: "hakoMayD.safetensors" },
+      ),
+    ).toBeNull()
+    // SD1.5 は今までどおり ControlNet を使える
+    expect(find(cn, { modelName: "hakoMayD.safetensors" })).toBeNull()
+  })
 })
