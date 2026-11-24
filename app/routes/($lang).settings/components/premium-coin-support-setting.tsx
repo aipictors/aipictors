@@ -12,6 +12,7 @@ import {
 
 /**
  * 推しの受け取りの設定（パロディ作品などでお金に相当するものを受け取りたくない人向け）。アプリと同じ user_settings に保存する
+ * - 推しを受け付けない: プレミアム・フリーとも推せない（推す画面に出さず、aipictors-api の推しでも断る）
  * - プレミアムコインでの推しを受け取らない: 推す画面でプレミアムコインを選べず、aipictors-api の推しでも断る
  * - フリーコインを受け取らない: フリーコインで推されても pt だけ付き、コインは届かない（aipictors-api が渡さない）
  */
@@ -20,6 +21,7 @@ export function PremiumCoinSupportSetting() {
   const t = useTranslation()
   const switchId = useId()
   const freeSwitchId = useId()
+  const allSwitchId = useId()
 
   const { data } = useQuery(premiumCoinSupportSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -35,9 +37,12 @@ export function PremiumCoinSupportSetting() {
   }
 
   const isReject = data?.userSetting?.isRejectPremiumCoinSupport ?? false
-  const isRejectFree = data?.userSetting?.isRejectFreeCoinSupportReceive ?? false
+  const isRejectFree =
+    data?.userSetting?.isRejectFreeCoinSupportReceive ?? false
+  const isRejectAll = data?.userSetting?.isRejectCoinSupport ?? false
 
   const save = async (input: {
+    isRejectCoinSupport?: boolean
     isRejectPremiumCoinSupport?: boolean
     isRejectFreeCoinSupportReceive?: boolean
   }) => {
@@ -58,6 +63,21 @@ export function PremiumCoinSupportSetting() {
       )}
     >
       <SettingsSwitchRow
+        htmlFor={allSwitchId}
+        title={t("推しを受け付けない", "Do not accept support")}
+        description={t(
+          "オンにすると、プレミアムコイン・フリーコインとも、だれもあなたを推せなくなります。これまでに受け取った分はそのままです。",
+          "When on, nobody can support you with premium or free coins. Support you already received stays as is.",
+        )}
+      >
+        <Switch
+          checked={isRejectAll}
+          disabled={loading || data === undefined}
+          id={allSwitchId}
+          onCheckedChange={(checked) => save({ isRejectCoinSupport: checked })}
+        />
+      </SettingsSwitchRow>
+      <SettingsSwitchRow
         htmlFor={switchId}
         title={t(
           "プレミアムコインでの推しを受け取らない",
@@ -70,7 +90,7 @@ export function PremiumCoinSupportSetting() {
       >
         <Switch
           checked={isReject}
-          disabled={loading || data === undefined}
+          disabled={loading || data === undefined || isRejectAll}
           id={switchId}
           onCheckedChange={(checked) =>
             save({ isRejectPremiumCoinSupport: checked })
@@ -90,7 +110,7 @@ export function PremiumCoinSupportSetting() {
       >
         <Switch
           checked={isRejectFree}
-          disabled={loading || data === undefined}
+          disabled={loading || data === undefined || isRejectAll}
           id={freeSwitchId}
           onCheckedChange={(checked) =>
             save({ isRejectFreeCoinSupportReceive: checked })
@@ -105,6 +125,7 @@ const premiumCoinSupportSettingQuery = graphql(
   `query PremiumCoinSupportSetting {
     userSetting {
       id
+      isRejectCoinSupport
       isRejectPremiumCoinSupport
       isRejectFreeCoinSupportReceive
     }
@@ -115,6 +136,7 @@ const updatePremiumCoinSupportSettingMutation = graphql(
   `mutation UpdatePremiumCoinSupportSetting($input: UpdateUserSettingInput!) {
     updateUserSetting(input: $input) {
       id
+      isRejectCoinSupport
       isRejectPremiumCoinSupport
       isRejectFreeCoinSupportReceive
     }

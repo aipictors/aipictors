@@ -11,6 +11,7 @@ type CoinSummary = {
   /** supportTargetUserId を渡したときだけ。推す相手の受け取りの状態 */
   supportTarget?: {
     userId: string
+    supportAccepted?: boolean
     premiumAccepted: boolean
     freeReceiveAccepted?: boolean
     rewardJoined: boolean

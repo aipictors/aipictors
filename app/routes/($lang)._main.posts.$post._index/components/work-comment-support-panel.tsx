@@ -83,6 +83,18 @@ export function WorkCommentSupportPanel(
     supportTarget?.rewardJoined === true &&
     isPremiumAccepted
 
+  // 作者が「推しを受け付けない」設定のときは、枚数を選ぶ欄の代わりにその旨だけ出す
+  if (supportTarget?.supportAccepted === false) {
+    return (
+      <div className="rounded-2xl bg-muted p-3 text-muted-foreground text-sm md:ml-13">
+        {t(
+          "この作者は推しを受け付けていません",
+          "This creator does not accept support",
+        )}
+      </div>
+    )
+  }
+
   const previewPt = toSupportPt(
     currentFreeSupportCoinAmount,
     currentPremiumSupportCoinAmount,

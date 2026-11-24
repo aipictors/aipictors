@@ -132,6 +132,8 @@ export function SupportButton({
   // 推す相手の受け取りの状態（残高と同じ応答で受け取る。分かるまではプレミアムも選べる・報酬の一言は出さない）
   const [supportTarget, setSupportTarget] =
     useState<CoinSummarySupportTarget | null>(null)
+  // 作者が「推しを受け付けない」設定のとき（古い API では supportAccepted が無いので受け付ける扱い）
+  const isSupportRejected = supportTarget?.supportAccepted === false
   const isPremiumAccepted = supportTarget?.premiumAccepted !== false
   const isFreeReceiveAccepted = supportTarget?.freeReceiveAccepted !== false
   // 報酬の印と一言は、作者が報酬に参加していてプレミアムコインを受け取るときだけ（R18 の作品のページでは出さない）
@@ -479,204 +481,216 @@ export function SupportButton({
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4">
-            {/* 使うコイン */}
-            <div className="grid grid-cols-2 gap-2">
-              {(
-                [
-                  {
-                    type: "FREE",
-                    icon: <FreeSupportCoinIcon className="size-5" />,
-                    label: t("フリーコイン", "Free coins"),
-                    balance: currentFreeCoinBalance,
-                    rate: t("1枚 = 1pt", "1 = 1pt"),
-                  },
-                  {
-                    type: "PREMIUM",
-                    icon: <PremiumSupportCoinIcon className="size-5" />,
-                    label: t("プレミアム", "Premium"),
-                    balance: currentPremiumCoinBalance,
-                    rate: t("1枚 = 10pt", "1 = 10pt"),
-                  },
-                ] as const
-              ).map((item) => (
-                <button
-                  key={item.type}
-                  type="button"
-                  aria-pressed={coinType === item.type}
-                  disabled={
-                    isLoading || (item.type === "PREMIUM" && !isPremiumAccepted)
-                  }
-                  onClick={() => {
-                    hasTouchedAmountRef.current = true
-                    selectCoinType(item.type)
-                  }}
-                  className={cn(
-                    "rounded-2xl border-2 p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50",
-                    coinType === item.type
-                      ? "border-rose-500 bg-rose-500/5"
-                      : "border-border hover:bg-muted",
-                  )}
-                >
-                  <span className="flex items-center gap-1.5 font-medium text-xs">
-                    {item.icon}
-                    {item.label}
-                  </span>
-                  <span className="mt-1 block font-bold text-lg tabular-nums leading-tight">
-                    {isBalanceLoaded ? item.balance.toLocaleString() : "…"}
-                  </span>
-                  <span className="text-[11px] text-muted-foreground">
-                    {item.rate}
-                  </span>
-                </button>
-              ))}
-            </div>
-            {!isPremiumAccepted && (
-              <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">
-                {t(
-                  "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
-                  "This creator does not accept support with premium coins. You can support with free coins",
-                )}
-              </p>
-            )}
-            {!isFreeReceiveAccepted && coinType === "FREE" && (
-              <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">
-                {t(
-                  "この作者はフリーコインを受け取らない設定です。推しの pt は届きます",
-                  "This creator does not receive free coins. Your support points are still added",
-                )}
-              </p>
-            )}
-
-            {/* 枚数 */}
-            <div className="space-y-2">
-              <div className="grid grid-cols-5 gap-2">
-                {COIN_OPTIONS[coinType].map((option) => (
+          {isSupportRejected ? (
+            <p className="rounded-xl bg-muted p-4 text-muted-foreground text-sm">
+              {t(
+                "この作者は推しを受け付けていません",
+                "This creator does not accept support",
+              )}
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {/* 使うコイン */}
+              <div className="grid grid-cols-2 gap-2">
+                {(
+                  [
+                    {
+                      type: "FREE",
+                      icon: <FreeSupportCoinIcon className="size-5" />,
+                      label: t("フリーコイン", "Free coins"),
+                      balance: currentFreeCoinBalance,
+                      rate: t("1枚 = 1pt", "1 = 1pt"),
+                    },
+                    {
+                      type: "PREMIUM",
+                      icon: <PremiumSupportCoinIcon className="size-5" />,
+                      label: t("プレミアム", "Premium"),
+                      balance: currentPremiumCoinBalance,
+                      rate: t("1枚 = 10pt", "1 = 10pt"),
+                    },
+                  ] as const
+                ).map((item) => (
                   <button
-                    key={option}
+                    key={item.type}
                     type="button"
-                    aria-pressed={amount === option}
-                    className={cn(
-                      "h-11 rounded-xl px-0",
-                      supportAmountButtonClassName(
-                        getSupportTier({
-                          freeCoinAmount: coinType === "FREE" ? option : 0,
-                          premiumCoinAmount:
-                            coinType === "PREMIUM" ? option : 0,
-                        }),
-                        amount === option,
-                      ),
-                    )}
-                    disabled={isLoading || option > coinBalance}
+                    aria-pressed={coinType === item.type}
+                    disabled={
+                      isLoading ||
+                      (item.type === "PREMIUM" && !isPremiumAccepted)
+                    }
                     onClick={() => {
                       hasTouchedAmountRef.current = true
-                      setCoinAmount(String(option))
+                      selectCoinType(item.type)
                     }}
+                    className={cn(
+                      "rounded-2xl border-2 p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+                      coinType === item.type
+                        ? "border-rose-500 bg-rose-500/5"
+                        : "border-border hover:bg-muted",
+                    )}
                   >
-                    {option.toLocaleString()}
+                    <span className="flex items-center gap-1.5 font-medium text-xs">
+                      {item.icon}
+                      {item.label}
+                    </span>
+                    <span className="mt-1 block font-bold text-lg tabular-nums leading-tight">
+                      {isBalanceLoaded ? item.balance.toLocaleString() : "…"}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">
+                      {item.rate}
+                    </span>
                   </button>
                 ))}
               </div>
-              <div className="flex items-center gap-2">
-                <CoinAmountStepper
-                  className="min-w-0 flex-1"
-                  value={coinAmount}
-                  max={coinBalance}
-                  disabled={isLoading}
-                  onChange={(value) => {
-                    hasTouchedAmountRef.current = true
-                    setCoinAmount(value)
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="shrink-0 text-xs"
-                  disabled={isLoading || coinBalance === 0}
-                  onClick={() => {
-                    hasTouchedAmountRef.current = true
-                    setCoinAmount(String(coinBalance))
-                  }}
-                >
-                  {t("全部", "Max")}
-                </Button>
-              </div>
-            </div>
+              {!isPremiumAccepted && (
+                <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">
+                  {t(
+                    "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
+                    "This creator does not accept support with premium coins. You can support with free coins",
+                  )}
+                </p>
+              )}
+              {!isFreeReceiveAccepted && coinType === "FREE" && (
+                <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">
+                  {t(
+                    "この作者はフリーコインを受け取らない設定です。推しの pt は届きます",
+                    "This creator does not receive free coins. Your support points are still added",
+                  )}
+                </p>
+              )}
 
-            {isBalanceLoaded && coinBalance === 0 && (
-              <div className="flex items-center justify-between gap-3 rounded-xl bg-muted p-3 text-sm">
-                <span>
-                  {coinType === "PREMIUM"
-                    ? t(
-                        "プレミアムコインがありません",
-                        "You have no premium coins",
-                      )
-                    : t("フリーコインがありません", "You have no free coins")}
-                </span>
-                {coinType === "PREMIUM" && (
+              {/* 枚数 */}
+              <div className="space-y-2">
+                <div className="grid grid-cols-5 gap-2">
+                  {COIN_OPTIONS[coinType].map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      aria-pressed={amount === option}
+                      className={cn(
+                        "h-11 rounded-xl px-0",
+                        supportAmountButtonClassName(
+                          getSupportTier({
+                            freeCoinAmount: coinType === "FREE" ? option : 0,
+                            premiumCoinAmount:
+                              coinType === "PREMIUM" ? option : 0,
+                          }),
+                          amount === option,
+                        ),
+                      )}
+                      disabled={isLoading || option > coinBalance}
+                      onClick={() => {
+                        hasTouchedAmountRef.current = true
+                        setCoinAmount(String(option))
+                      }}
+                    >
+                      {option.toLocaleString()}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <CoinAmountStepper
+                    className="min-w-0 flex-1"
+                    value={coinAmount}
+                    max={coinBalance}
+                    disabled={isLoading}
+                    onChange={(value) => {
+                      hasTouchedAmountRef.current = true
+                      setCoinAmount(value)
+                    }}
+                  />
                   <Button
                     type="button"
+                    variant="ghost"
                     size="sm"
-                    variant="secondary"
-                    className="shrink-0"
-                    onClick={() => setShowCoinPurchase(true)}
+                    className="shrink-0 text-xs"
+                    disabled={isLoading || coinBalance === 0}
+                    onClick={() => {
+                      hasTouchedAmountRef.current = true
+                      setCoinAmount(String(coinBalance))
+                    }}
                   >
-                    {t("購入する", "Buy")}
+                    {t("全部", "Max")}
                   </Button>
-                )}
+                </div>
               </div>
-            )}
 
-            {breakdown && (
-              // 選んだ枚数の段階の色（コメントやランキングでこの色で目立つ）
-              <div className="flex items-center justify-between gap-2 rounded-xl bg-muted/60 px-3 py-2">
-                <span className="text-muted-foreground text-xs">
-                  {t("この推しの色", "Support color")}
-                </span>
-                <SupportTierChip
-                  support={{
-                    freeCoinAmount: breakdown.freeCoinsUsed,
-                    premiumCoinAmount: breakdown.premiumCoinsUsed,
-                    totalPt: breakdown.totalPt,
-                  }}
-                />
-              </div>
-            )}
-
-            <label
-              htmlFor="support-anonymous"
-              className="flex cursor-pointer items-center gap-2 text-sm"
-            >
-              <Checkbox
-                id="support-anonymous"
-                checked={isAnonymous}
-                onCheckedChange={(checked) => setIsAnonymous(checked === true)}
-                disabled={isLoading}
-              />
-              {t("匿名で推す", "Support anonymously")}
-            </label>
-
-            {isRewardTarget && <SupportRewardNote />}
-
-            <Button
-              onClick={handleSupport}
-              disabled={!canSupport || isLoading}
-              className="h-12 w-full gap-1.5 rounded-full border-0 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 font-bold text-base text-white hover:opacity-90"
-            >
-              {isLoading ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <HeartHandshake className="size-5" />
+              {isBalanceLoaded && coinBalance === 0 && (
+                <div className="flex items-center justify-between gap-3 rounded-xl bg-muted p-3 text-sm">
+                  <span>
+                    {coinType === "PREMIUM"
+                      ? t(
+                          "プレミアムコインがありません",
+                          "You have no premium coins",
+                        )
+                      : t("フリーコインがありません", "You have no free coins")}
+                  </span>
+                  {coinType === "PREMIUM" && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      className="shrink-0"
+                      onClick={() => setShowCoinPurchase(true)}
+                    >
+                      {t("購入する", "Buy")}
+                    </Button>
+                  )}
+                </div>
               )}
-              {breakdown
-                ? t(
-                    `${breakdown.totalPt.toLocaleString()}pt 推す`,
-                    `Send ${breakdown.totalPt.toLocaleString()}pt`,
-                  )
-                : t("枚数を選んでください", "Choose an amount")}
-            </Button>
-          </div>
+
+              {breakdown && (
+                // 選んだ枚数の段階の色（コメントやランキングでこの色で目立つ）
+                <div className="flex items-center justify-between gap-2 rounded-xl bg-muted/60 px-3 py-2">
+                  <span className="text-muted-foreground text-xs">
+                    {t("この推しの色", "Support color")}
+                  </span>
+                  <SupportTierChip
+                    support={{
+                      freeCoinAmount: breakdown.freeCoinsUsed,
+                      premiumCoinAmount: breakdown.premiumCoinsUsed,
+                      totalPt: breakdown.totalPt,
+                    }}
+                  />
+                </div>
+              )}
+
+              <label
+                htmlFor="support-anonymous"
+                className="flex cursor-pointer items-center gap-2 text-sm"
+              >
+                <Checkbox
+                  id="support-anonymous"
+                  checked={isAnonymous}
+                  onCheckedChange={(checked) =>
+                    setIsAnonymous(checked === true)
+                  }
+                  disabled={isLoading}
+                />
+                {t("匿名で推す", "Support anonymously")}
+              </label>
+
+              {isRewardTarget && <SupportRewardNote />}
+
+              <Button
+                onClick={handleSupport}
+                disabled={!canSupport || isLoading}
+                className="h-12 w-full gap-1.5 rounded-full border-0 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 font-bold text-base text-white hover:opacity-90"
+              >
+                {isLoading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <HeartHandshake className="size-5" />
+                )}
+                {breakdown
+                  ? t(
+                      `${breakdown.totalPt.toLocaleString()}pt 推す`,
+                      `Send ${breakdown.totalPt.toLocaleString()}pt`,
+                    )
+                  : t("枚数を選んでください", "Choose an amount")}
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 

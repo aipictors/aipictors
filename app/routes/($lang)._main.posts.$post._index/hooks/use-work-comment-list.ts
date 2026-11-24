@@ -273,6 +273,11 @@ export function useWorkCommentList(props: WorkCommentListProps) {
 
       setCoinBalances(summary)
       setSupportTarget(summary.supportTarget)
+      // 作者が推しを受け付けないなら、選んでいた枚数を外してコメントだけ送れるようにする
+      if (summary.supportTarget?.supportAccepted === false) {
+        setSupportFreeCoinAmount("0")
+        setSupportPremiumCoinAmount("0")
+      }
       // 作者がプレミアムコインでの推しを受け取らないなら、プレミアムを選べないようにフリーへ戻す
       if (summary.supportTarget?.premiumAccepted === false) {
         setSupportCoinType("FREE")

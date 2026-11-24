@@ -3,6 +3,8 @@ const inFlight = new Map<string, Promise<Response>>()
 /** 推す相手の状態（/api/coins/summary?supportTo= のときだけ返る） */
 export type CoinSummarySupportTarget = {
   userId: string
+  /** 推しを受け付けている（作者が「推しを受け付けない」にしていない）。古い API では無い */
+  supportAccepted?: boolean
   /** プレミアムコインで推せる（作者が「プレミアムコインでの推しを受け取らない」にしていない） */
   premiumAccepted: boolean
   /** フリーコインの推しがコインとして作者に届く（作者が「推しでフリーコインを受け取らない」にしていない）。古い API では無い */
