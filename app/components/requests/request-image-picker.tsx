@@ -1,10 +1,11 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { ImagePlus, Loader2, X } from "lucide-react"
-import { useRef, useState } from "react"
+import { type DragEvent, useRef, useState } from "react"
 import { toast } from "sonner"
-import { uploadPublicImage } from "~/utils/upload-public-image"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
 const viewerTokenQuery = graphql(
   `query RequestImagePickerViewerToken {
@@ -42,7 +43,8 @@ const toWebpDataUrl = (file: File, maxSide: number) =>
   })
 
 /**
- * 画像を選んでその場でアップロードする（URL の配列を持つ）。参考画像・見本・納品・メッセージで使う
+ * 画像を選んでその場でアップロードする（URL の配列を持つ）。参考画像・見本・納品・メッセージで使う。
+ * ボタンで選ぶほか、画像ファイルを枠にドラッグ＆ドロップしても追加できる
  */
 export function RequestImagePicker(props: {
   value: string[]
@@ -54,7 +56,12 @@ export function RequestImagePicker(props: {
   const t = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(0)
+  const [dragging, setDragging] = useState(false)
   const { data } = useQuery(viewerTokenQuery)
+
+  const canAdd = props.value.length + uploading < props.max
+  const hasFiles = (e: DragEvent) =>
+    Array.from(e.dataTransfer.types).includes("Files")
 
   const onFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return
@@ -82,7 +89,29 @@ export function RequestImagePicker(props: {
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div
+      className={cn(
+        "-m-1 flex flex-wrap gap-2 rounded-2xl p-1 transition-colors",
+        dragging && "bg-primary/10 outline-dashed outline-2 outline-primary",
+      )}
+      onDragOver={(e) => {
+        if (!hasFiles(e)) return
+        e.preventDefault()
+        e.dataTransfer.dropEffect = canAdd ? "copy" : "none"
+        if (canAdd) setDragging(true)
+      }}
+      onDragLeave={(e) => {
+        // 子の要素へ移っただけのときは枠の色を消さない
+        if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
+        setDragging(false)
+      }}
+      onDrop={(e) => {
+        if (!hasFiles(e)) return
+        e.preventDefault()
+        setDragging(false)
+        if (canAdd) void onFiles(e.dataTransfer.files)
+      }}
+    >
       {props.value.map((url) => (
         <div
           key={url}
@@ -108,7 +137,7 @@ export function RequestImagePicker(props: {
           <Loader2 className="size-5 animate-spin text-muted-foreground" />
         </div>
       ))}
-      {props.value.length + uploading < props.max && (
+      {canAdd && (
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
@@ -118,6 +147,9 @@ export function RequestImagePicker(props: {
           <span className="text-[10px]">
             {props.label ?? t("画像", "Images")} {props.value.length}/
             {props.max}
+          </span>
+          <span className="hidden text-[9px] leading-none md:block">
+            {t("ドロップ可", "or drop")}
           </span>
         </button>
       )}

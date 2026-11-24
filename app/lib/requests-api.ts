@@ -92,8 +92,13 @@ export type RequestMessage = {
   senderUserId: string | null
   body: string
   imageUrls: string[]
+  /** 相手が付けたリアクション（1 人 1 つ。古い API では無い） */
+  reactions?: { userId: string; emoji: string }[]
   createdAt: number
 }
+
+/** メッセージに付けられるリアクション（aipictors-api の MESSAGE_REACTIONS と同じ） */
+export const REQUEST_MESSAGE_REACTIONS = ["👍", "❤️", "🙏", "😊", "🎉", "👀"]
 
 export type CoinRequest = {
   id: string
@@ -198,6 +203,10 @@ export const requestErrorMessage = (error: unknown, isEnglish = false) => {
   const code = error instanceof RequestsApiError ? error.code : ""
   const messages: Record<string, { ja: string; en: string }> = {
     INSUFFICIENT_COINS: { ja: "コインが足りません", en: "Not enough coins" },
+    INVALID_REACTION: {
+      ja: "このリアクションは使えません",
+      en: "This reaction is not available",
+    },
     PREMIUM_ONLY: {
       ja: "このリクエストはプレミアムコインのみで受け付けています",
       en: "This creator only accepts premium coins for this request",

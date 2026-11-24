@@ -8,6 +8,7 @@ import {
   Loader2,
   PartyPopper,
   Send,
+  SmilePlus,
 } from "lucide-react"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -27,6 +28,11 @@ import {
 } from "~/components/requests/request-ui"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover"
 import { Switch } from "~/components/ui/switch"
 import { Textarea } from "~/components/ui/textarea"
 import { META } from "~/config"
@@ -38,6 +44,8 @@ import {
   formatCoins,
   formatDateTime,
   formatRemaining,
+  REQUEST_MESSAGE_REACTIONS,
+  type RequestMessage,
   requestErrorMessage,
   requestsGet,
   requestsPost,
@@ -963,6 +971,82 @@ function Settlement(props: { request: CoinRequest; isCreator: boolean }) {
   )
 }
 
+/**
+ * メッセージのリアクション。相手のメッセージには 👍 などを 1 つ付けられ（もう一度押すと外す）、自分のメッセージには相手が付けたものが出る
+ */
+function MessageReactions(props: {
+  message: RequestMessage
+  mine: boolean
+  viewerId: string | null
+  busy: string | null
+  act: ActFn
+}) {
+  const t = useTranslation()
+  const [open, setOpen] = useState(false)
+  const reactions = props.message.reactions ?? []
+  const myEmoji =
+    reactions.find((r) => r.userId === props.viewerId)?.emoji ?? null
+  const react = (emoji: string) => {
+    setOpen(false)
+    void props.act("react", {
+      messageId: props.message.id,
+      emoji: emoji === myEmoji ? "" : emoji,
+    })
+  }
+  return (
+    <div className="flex items-center gap-1">
+      {reactions.map((r) => (
+        <button
+          key={r.userId}
+          type="button"
+          disabled={props.mine || props.busy !== null}
+          onClick={() => react(r.emoji)}
+          aria-label={
+            r.userId === props.viewerId
+              ? t("リアクションを外す", "Remove reaction")
+              : t("リアクション", "Reaction")
+          }
+          className={cn(
+            "rounded-full border px-1.5 text-xs leading-5",
+            r.userId === props.viewerId && "border-primary bg-primary/10",
+          )}
+        >
+          {r.emoji}
+        </button>
+      ))}
+      {!props.mine && (
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              disabled={props.busy !== null}
+              aria-label={t("リアクションする", "React")}
+              className="flex size-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              <SmilePlus className="size-3.5" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="flex w-auto gap-1 rounded-full p-1">
+            {REQUEST_MESSAGE_REACTIONS.map((emoji) => (
+              <button
+                key={emoji}
+                type="button"
+                onClick={() => react(emoji)}
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-full text-lg hover:bg-muted",
+                  emoji === myEmoji && "bg-primary/10",
+                )}
+              >
+                {emoji}
+              </button>
+            ))}
+          </PopoverContent>
+        </Popover>
+      )}
+    </div>
+  )
+}
+
 function MessageThread(props: {
   request: CoinRequest
   users: RequestUsers
@@ -977,7 +1061,15 @@ function MessageThread(props: {
   const endRef = useRef<HTMLDivElement>(null)
   const messages = props.request.messages ?? []
   return (
-    <section className="flex flex-col gap-3 rounded-3xl border p-4">
+    <section
+      className="flex flex-col gap-3 rounded-3xl border p-4"
+      // 画像ファイルをメッセージ欄へドラッグしたら画像の枠を開く（枠にドロップして添付）
+      onDragEnter={(e) => {
+        if (Array.from(e.dataTransfer.types).includes("Files")) {
+          setShowImages(true)
+        }
+      }}
+    >
       <h2 className="font-bold">{t("メッセージ", "Messages")}</h2>
       <div className="flex flex-col gap-2">
         {messages.map((m) => {
@@ -1023,9 +1115,23 @@ function MessageThread(props: {
                 urls={m.imageUrls}
                 className="w-56 grid-cols-2 sm:grid-cols-2"
               />
-              <span className="text-[10px] text-muted-foreground">
-                {formatDateTime(m.createdAt)}
-              </span>
+              <div
+                className={cn(
+                  "flex items-center gap-1",
+                  mine && "flex-row-reverse",
+                )}
+              >
+                <span className="text-[10px] text-muted-foreground">
+                  {formatDateTime(m.createdAt)}
+                </span>
+                <MessageReactions
+                  message={m}
+                  mine={mine}
+                  viewerId={props.viewerId}
+                  busy={props.busy}
+                  act={props.act}
+                />
+              </div>
             </div>
           )
         })}
