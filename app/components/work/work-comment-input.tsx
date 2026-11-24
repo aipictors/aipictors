@@ -15,7 +15,6 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { useBoolean } from "usehooks-ts"
 import { StickerDialog } from "~/components/work/sticker-dialog"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
-import { EmojiPickerPopover } from "~/components/emoji-picker-popover"
 
 type Props = {
   targetCommentId: string
@@ -121,13 +120,8 @@ export function WorkCommentInput (props: Props): React.ReactNode {
             onChange={(event) => {
               setComment(event.target.value)
             }}
-            value={comment}
             placeholder={t("コメントする", "Add a comment")}
             disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-          />
-          <EmojiPickerPopover
-            disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-            onSelect={(emoji) => setComment((prev) => prev + emoji)}
           />
           <div>
             <Button

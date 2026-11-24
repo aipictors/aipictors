@@ -12,7 +12,6 @@ import { WorkCommentSupportPanel } from "~/routes/($lang)._main.posts.$post._ind
 import type { WorkCommentListState } from "~/routes/($lang)._main.posts.$post._index/hooks/use-work-comment-list"
 import { isUserAvatarDecoration } from "~/utils/user-avatar-frame"
 import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
-import { EmojiPickerPopover } from "~/components/emoji-picker-popover"
 
 /**
  * コメントの入力欄（推し、隠し付き、スタンプのボタンを含む）
@@ -165,10 +164,6 @@ export function WorkCommentForm(
               {t("推す", "Support")}
             </Button>
           )}
-          <EmojiPickerPopover
-            disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-            onSelect={(emoji) => setComment((prev) => prev + emoji)}
-          />
           <Button
             disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
             variant="secondary"

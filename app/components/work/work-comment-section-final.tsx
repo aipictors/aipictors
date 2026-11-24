@@ -33,7 +33,6 @@ import { useBoolean } from "usehooks-ts"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { EmojiPickerPopover } from "~/components/emoji-picker-popover"
 
 type Comment = {
   id: string
@@ -647,10 +646,6 @@ export function WorkCommentSectionEnhanced(props: Props): React.ReactNode {
                 placeholder={t("コメントする", "Add a comment")}
                 disabled={!authContext.isLoggedIn}
                 className="flex-1"
-              />
-              <EmojiPickerPopover
-                disabled={!authContext.isLoggedIn}
-                onSelect={(emoji) => setComment((prev) => prev + emoji)}
               />
               <Button
                 disabled={!authContext.isLoggedIn}
