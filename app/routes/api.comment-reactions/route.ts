@@ -1,4 +1,5 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare"
+import { IS_COMMENT_REACTION_ENABLED } from "~/lib/comment-reactions-enabled"
 import { toJsonResponse } from "~/lib/server/json-response.server"
 import {
   callAipictorsApi,
@@ -15,6 +16,9 @@ export type CommentReactionMap = Record<string, CommentReactionEntry[]>
  *
  * POST { op: "list", commentIds } … ログインなしで読める
  * POST { op: "react", commentId, emoji } … ログインが要る。emoji が空なら外す
+ *
+ * リアクションを一旦廃止中（IS_COMMENT_REACTION_ENABLED = false）の間は
+ * list は空、react は 404。戻すときは lib/comment-reactions-enabled.ts を true にする
  */
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== "POST") {
@@ -25,6 +29,16 @@ export async function action({ request, context }: ActionFunctionArgs) {
     commentIds?: unknown
     commentId?: unknown
     emoji?: unknown
+  }
+
+  if (!IS_COMMENT_REACTION_ENABLED) {
+    if (input.op === "list") {
+      return toJsonResponse({ error: null, data: {} }, 200)
+    }
+    return toJsonResponse(
+      { error: "Comment reactions are disabled", data: null },
+      404,
+    )
   }
 
   if (input.op === "list") {

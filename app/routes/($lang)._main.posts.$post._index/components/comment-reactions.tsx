@@ -14,6 +14,7 @@ import {
 } from "~/components/ui/popover"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { IS_COMMENT_REACTION_ENABLED } from "~/lib/comment-reactions-enabled"
 import { cn } from "~/lib/utils"
 import { postAsViewer } from "~/lib/viewer-request-headers"
 import type {
@@ -47,6 +48,8 @@ export function CommentReactionsProvider(props: {
   const idsKey = Array.from(new Set(props.commentIds)).sort().join(",")
 
   useEffect(() => {
+    // 一旦廃止中は読みにも行かない（lib/comment-reactions-enabled.ts）
+    if (!IS_COMMENT_REACTION_ENABLED) return
     if (idsKey === "") return
     let canceled = false
     fetch("/api/comment-reactions", {
@@ -96,6 +99,9 @@ export function CommentReactionsProvider(props: {
     }
   }
 
+  // 廃止中は箱を置かない（CommentReactions は context が無いと何も出さない）
+  if (!IS_COMMENT_REACTION_ENABLED) return <>{props.children}</>
+
   return (
     <CommentReactionsContext.Provider
       value={{ reactions, busyCommentId, react }}
@@ -117,6 +123,7 @@ export function CommentReactions(props: {
   const state = useContext(CommentReactionsContext)
   const authContext = useContext(AuthContext)
   const [open, setOpen] = useState(false)
+  if (!IS_COMMENT_REACTION_ENABLED) return null
   if (state === null) return null
 
   const entries = state.reactions[props.commentId] ?? []
