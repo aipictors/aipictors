@@ -259,8 +259,6 @@ const PAGES: Page[] = [
           "推しを隠す",
           "推しランキング",
           "おしらんきんぐ",
-          "推し合い",
-          "おしあい",
           "hide",
           "hide support",
           "support ranking",

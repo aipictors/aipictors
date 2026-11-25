@@ -13,7 +13,7 @@ import {
 } from "~/routes/($lang).settings/components/settings-section"
 
 /**
- * 推し・推しランキングを自分の画面に出さない設定（推し合いの空気がつらい人向け）。アプリと同じ user_settings に保存する
+ * 推し・推しランキングを自分の画面に出さない設定。アプリと同じ user_settings に保存する
  * - 表示だけの設定。推しの受け付け（PremiumCoinSupportSetting の「推しを受け付けない」）とは別で、記録・報酬も変わらない
  * - 読むのは ~/hooks/use-hide-coin-support（同じクエリなので保存すると画面全体にすぐ反映される）
  */
