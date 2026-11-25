@@ -31,6 +31,7 @@ import { CommentReportDialog } from "~/routes/($lang)._main.posts.$post._index/c
 import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import type { Comment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
+import { useIsReportedComment } from "~/routes/($lang)._main.posts.$post._index/hooks/use-reported-comment"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import {
   shouldAutoTranslate,
@@ -96,6 +97,8 @@ export function WorkCommentResponse(props: Props) {
     deleteCommentMutation,
   )
 
+  const isReportedByViewer = useIsReportedComment(props.replyId)
+  const [showReportedComment, setShowReportedComment] = React.useState(false)
   const [openReplyInput, setOpenReplyInput] = React.useState(false)
   const [showMutedComment, setShowMutedComment] = React.useState(false)
   const [showSensitiveComment, setShowSensitiveComment] = React.useState(false)
@@ -209,6 +212,26 @@ export function WorkCommentResponse(props: Props) {
         ),
       )
     }
+  }
+
+  // 自分が通報したコメントは畳む（表示ボタンで見られる）
+  if (isReportedByViewer && !showReportedComment) {
+    return (
+      <div className="flex items-center space-x-4 rounded-lg border p-2 pl-16">
+        <EyeOff className="size-5 text-gray-400" />
+        <p className="flex-1 text-sm">
+          {t("報告した返信です", "You reported this reply")}
+        </p>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setShowReportedComment(true)}
+        >
+          <Eye className="mr-2 size-4" />
+          {t("表示", "Show")}
+        </Button>
+      </div>
+    )
   }
 
   // ミュートされたコメントの表示

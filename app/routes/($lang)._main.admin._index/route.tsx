@@ -59,6 +59,11 @@ const quickActions = [
     subtitle: "報告と異議申し立てを確認",
   },
   {
+    href: "/admin/moderation",
+    title: "BAN状況",
+    subtitle: "自動の非表示・違反の回数・停止中の人を確認、解除",
+  },
+  {
     href: "/admin/users",
     title: "ユーザBAN管理",
     subtitle: "コメントBAN・投稿BANを切替",

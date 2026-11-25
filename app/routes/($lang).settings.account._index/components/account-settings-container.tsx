@@ -1,7 +1,8 @@
-import { Link } from "~/lib/app/locale-router"
 import { ChevronRight, KeyRoundIcon, LinkIcon, SmileIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
+import { AccountModerationStatus } from "~/routes/($lang).settings.account._index/components/account-moderation-status"
 import { SNSConnectSection } from "~/routes/($lang).settings.account._index/components/sns-connect-section"
 
 export function AccountSettingsContainer() {
@@ -9,6 +10,7 @@ export function AccountSettingsContainer() {
 
   return (
     <div className="space-y-8">
+      <AccountModerationStatus />
       <div className="rounded-lg border bg-card">
         <Link
           to="/settings/account/login"

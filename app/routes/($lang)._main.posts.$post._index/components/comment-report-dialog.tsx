@@ -1,11 +1,8 @@
-import { useMutation, gql } from "@apollo/client/index"
+import { gql, useMutation } from "@apollo/client/index"
 import { FlagIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
-import { AuthContext } from "~/contexts/auth-context"
-import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
-import { cn } from "~/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -24,6 +21,10 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { Textarea } from "~/components/ui/textarea"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { markCommentReported } from "~/routes/($lang)._main.posts.$post._index/hooks/use-reported-comment"
 
 type Props = {
   commentId: string
@@ -61,10 +62,11 @@ export function CommentReportDialog(props: Props) {
         },
       })
 
+      markCommentReported(props.commentId)
       toast(
         t(
-          "コメントを報告しました。ご協力ありがとうございます。",
-          "The comment has been reported. Thank you.",
+          "コメントを報告しました。あなたの画面では非表示にしました。ご協力ありがとうございます。",
+          "The comment has been reported and hidden on your screen. Thank you.",
         ),
       )
       setReason("")

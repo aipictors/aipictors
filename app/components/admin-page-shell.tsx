@@ -19,6 +19,7 @@ import {
   Boxes,
   Cpu,
   Flag,
+  Gavel,
   Users,
   Wallet,
 } from "lucide-react"
@@ -69,6 +70,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "コメント審査",
     description: "通報・異議申し立ての確認",
     icon: MessageSquareWarning,
+  },
+  {
+    href: "/admin/moderation",
+    title: "BAN状況",
+    description: "自動の非表示・違反・停止の確認と解除",
+    icon: Gavel,
   },
   {
     href: "/admin/users",
