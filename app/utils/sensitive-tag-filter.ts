@@ -56,6 +56,16 @@ const MINOR_TERMS = [
   "ツルペタ",
   "援交",
   "援助交際",
+  // 学校・きょうだいを示す語（R18 では未成年の設定に使われることが多い）
+  "クラスメイト",
+  "同級生",
+  "図書委員",
+  "部活",
+  "修学旅行",
+  "妹",
+  "兄チャン",
+  "ジュニア",
+  "cutie",
   "loli",
   "shota",
   "child",
@@ -138,6 +148,10 @@ const includesAny = (text: string, terms: string[]) =>
 /** 「ロリ」は「カロリー」などを巻き込まないように見る */
 const hasLoliTerm = (text: string) => /(^|[^カ])ロリ/.test(text)
 
+/** 語の中で見る短い語（前後が英字でないときだけ。「jkl」などを巻き込まない。cutie_jr_nude の jr など） */
+const MINOR_TEXT_WORD_PATTERN =
+  /(^|[^a-z])(jk|jc|js|jy|jr|minor|teen|teens|kid|kids)([^a-z]|$)/
+
 /**
  * 未成年を連想させるタグ
  */
@@ -145,6 +159,7 @@ export function isMinorRelatedTag(tag: string): boolean {
   const text = normalizeTag(tag)
   return (
     MINOR_EXACT_TERMS.has(text) ||
+    MINOR_TEXT_WORD_PATTERN.test(tag.normalize("NFKC").toLowerCase()) ||
     hasLoliTerm(text) ||
     MINOR_AGE_PATTERN.test(text) ||
     includesAny(text, MINOR_TERMS)
@@ -239,10 +254,6 @@ export function isFeaturableSensitiveWork(work: {
 export function hasNonIndexableSensitiveTag(tagNames: string[]): boolean {
   return tagNames.some((tagName) => !isIndexableSensitiveTag(tagName))
 }
-
-/** 文中で見る短い語（前後が英字でないときだけ。「jkl」などを巻き込まない） */
-const MINOR_TEXT_WORD_PATTERN =
-  /(^|[^a-z])(jk|jc|js|jy|minor|teen|teens|kid|kids)([^a-z]|$)/
 
 /**
  * タイトル・説明文などの文に未成年を連想させる語があるか。

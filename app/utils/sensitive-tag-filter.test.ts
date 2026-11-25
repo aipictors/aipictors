@@ -23,6 +23,10 @@ describe("isMinorRelatedTag", () => {
     "10歳",
     "17才",
     "Loli",
+    "クラスメイト",
+    "cutie_jr_nude",
+    "teen_girl",
+    "義妹",
   ])("%s は対象", (tag) => {
     expect(isMinorRelatedTag(tag)).toBe(true)
   })
