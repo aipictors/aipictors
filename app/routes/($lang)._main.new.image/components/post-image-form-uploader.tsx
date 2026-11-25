@@ -758,6 +758,7 @@ export function PostImageFormUploader(props: Props) {
             }
             imageUrl={props.state.editTargetImageBase64}
             isMosaicMode={true}
+            isAutoMosaic={true}
             isShowSubmitButton={true}
             onSubmit={(base64: string) => {
               props.dispatch({

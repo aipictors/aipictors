@@ -1,22 +1,27 @@
-import type React from "react"
-import { useEffect, useRef, useState } from "react"
-import { Button } from "~/components/ui/button"
 import {
   BrushIcon,
   EraserIcon,
+  FilterIcon,
   LassoIcon,
+  Loader2Icon,
   MoveIcon,
-  RotateCwIcon,
   RotateCcwIcon,
+  RotateCwIcon,
+  SparklesIcon,
+  XIcon,
   ZoomInIcon,
   ZoomOutIcon,
-  FilterIcon,
-  XIcon,
 } from "lucide-react"
-import { Slider } from "~/components/ui/slider"
-import { cn } from "~/lib/utils"
-import MosaicCanvas from "~/components/mosaic-canvas"
+import type React from "react"
+import { useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 import { ImageFilterPanel } from "~/components/image-filter-panel"
+import MosaicCanvas from "~/components/mosaic-canvas"
+import { Button } from "~/components/ui/button"
+import { Slider } from "~/components/ui/slider"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { detectAutoMosaic } from "~/utils/auto-mosaic"
 import { applyImageFilter, type FilterType } from "~/utils/image-filter-utils"
 
 type Props = {
@@ -39,6 +44,7 @@ type Props = {
   setBackImageBase64?(value: string): void
   extension?: string // 保存する拡張子
   onChangeMosaicMode?(isMosaicMode: boolean): void // モザイクモードの切り替え
+  isAutoMosaic?: boolean // 自動モザイク（ベータ）のボタンを出す（モザイクモードのみ）
 }
 
 // Canvas 描画状態を保存するためのインターフェース
@@ -51,7 +57,7 @@ interface CanvasState {
 /**
  * ペイント機能を提供する、ツールバーも提供する
  */
-export function PaintCanvas (props: Props): React.ReactNode {
+export function PaintCanvas(props: Props): React.ReactNode {
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const brushCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const assistedCanvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -141,6 +147,12 @@ export function PaintCanvas (props: Props): React.ReactNode {
 
   // モザイクが適用されたかを追跡
   const [isMosaicApplied, setIsMosaicApplied] = useState<boolean>(false)
+
+  const t = useTranslation()
+
+  // 自動モザイク（ベータ）
+  const [isAutoMosaicRunning, setIsAutoMosaicRunning] = useState(false)
+  const [isAutoMosaicNipples, setIsAutoMosaicNipples] = useState(false)
 
   // Canvas 描画状態の配列
   const [canvasStates, setCanvasStates] = useState<CanvasState[]>([])
@@ -951,6 +963,59 @@ export function PaintCanvas (props: Props): React.ReactNode {
     }
   }, [props.imageUrl])
 
+  // 性器などを検出して、形に沿ってモザイクをかける（消しゴムと同じく上の画像を抜いて下のモザイクを見せる）
+  const handleAutoMosaic = async () => {
+    const imageCanvas = imageCanvasRef.current
+    if (!imageCanvas || !props.imageUrl || isAutoMosaicRunning) return
+    setIsAutoMosaicRunning(true)
+    try {
+      const image = new Image()
+      image.crossOrigin = "Anonymous"
+      await new Promise<void>((resolve, reject) => {
+        image.onload = () => resolve()
+        image.onerror = () => reject(new Error("image load failed"))
+        image.src = props.imageUrl ?? ""
+      })
+      const result = await detectAutoMosaic(image, {
+        includeNipples: isAutoMosaicNipples,
+      })
+      if (result.detections.length === 0) {
+        toast(
+          t(
+            "モザイクが必要な所は見つかりませんでした。必要な所は手でかけてください",
+            "Nothing to mosaic was found. Please add mosaics by hand if needed",
+          ),
+        )
+        return
+      }
+      const ctx = imageCanvas.getContext("2d")
+      if (!ctx) return
+      ctx.save()
+      ctx.globalCompositeOperation = "destination-out"
+      ctx.drawImage(result.mask, 0, 0, imageCanvas.width, imageCanvas.height)
+      ctx.restore()
+      setIsMosaicApplied(true)
+      canvasStates.splice(stateIndex + 1)
+      saveCanvasState(imageCanvas)
+      toast(
+        t(
+          `${result.detections.length} か所にモザイクをかけました。足りない所は手で足してください`,
+          `Applied mosaic to ${result.detections.length} area(s). Please check and add more by hand if needed`,
+        ),
+      )
+    } catch (error) {
+      console.error(error)
+      toast.error(
+        t(
+          "自動モザイクに失敗しました。手でかけてください",
+          "Auto mosaic failed. Please add mosaics by hand",
+        ),
+      )
+    } finally {
+      setIsAutoMosaicRunning(false)
+    }
+  }
+
   return (
     <section className="relative h-[100%] w-[100%] bg-gray-900">
       <div className="flex h-[100%] w-[100%]">
@@ -1201,7 +1266,7 @@ export function PaintCanvas (props: Props): React.ReactNode {
         <div className="flex flex-1 flex-col md:flex-row">
           <div
             className={cn(
-              "flex h-[100%] flex-1 items-center justify-center overflow-hidden bg-gray-700",
+              "relative flex h-[100%] flex-1 items-center justify-center overflow-hidden bg-gray-700",
               tool === "select" && "cursor-grab",
               (tool === "select" || props.isMosaicMode) &&
                 isPanning &&
@@ -1248,6 +1313,41 @@ export function PaintCanvas (props: Props): React.ReactNode {
             onTouchEnd={handlePanEnd}
             onContextMenu={(e) => e.preventDefault()}
           >
+            {props.isMosaicMode && props.isAutoMosaic && props.imageUrl && (
+              <div
+                className="-translate-x-1/2 absolute top-2 left-1/2 z-10 flex items-center gap-2 rounded-full bg-gray-900/90 px-2 py-1 text-white shadow-lg"
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                onWheel={(e) => e.stopPropagation()}
+              >
+                <Button
+                  size="sm"
+                  className="h-8 rounded-full bg-blue-600 text-white hover:bg-blue-700"
+                  disabled={isAutoMosaicRunning || isFilterPanelOpen}
+                  onClick={handleAutoMosaic}
+                >
+                  {isAutoMosaicRunning ? (
+                    <Loader2Icon className="mr-1 size-4 animate-spin" />
+                  ) : (
+                    <SparklesIcon className="mr-1 size-4" />
+                  )}
+                  {isAutoMosaicRunning
+                    ? t("検出中…", "Detecting…")
+                    : t("自動モザイク", "Auto mosaic")}
+                  <span className="ml-1 rounded bg-white/20 px-1 text-[10px]">
+                    β
+                  </span>
+                </Button>
+                <label className="flex cursor-pointer items-center gap-1 pr-1 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={isAutoMosaicNipples}
+                    onChange={(e) => setIsAutoMosaicNipples(e.target.checked)}
+                  />
+                  {t("乳首も", "Nipples")}
+                </label>
+              </div>
+            )}
             <div
               className="relative"
               style={{
