@@ -1,0 +1,82 @@
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import policyMarkdownEnText from "~/assets/fan-works-policy-en.md?raw"
+import policyMarkdownText from "~/assets/fan-works-policy.md?raw"
+import { AppMarkdown } from "~/components/app/app-markdown"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { config, META } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
+import { createMeta } from "~/utils/create-meta"
+
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.FAN_WORKS_POLICY, undefined, props.params.lang)
+}
+
+export async function loader(_props: LoaderFunctionArgs) {
+  return {}
+}
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
+
+/**
+ * 二次創作と収益化についての運営の考え方（禁止はしない・権利者のガイドラインの確認は投稿者の責任）
+ */
+export default function FanWorksPolicyPage() {
+  const t = useTranslation()
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-8 px-4 py-8">
+      <div className="space-y-3">
+        <h1 className="font-bold text-3xl tracking-tight">
+          {t(
+            "二次創作と収益化についての運営の考え方",
+            "Fan works and earnings: our position",
+          )}
+        </h1>
+        <p className="text-muted-foreground leading-7">
+          {t(
+            "二次創作の投稿や、推し・クリエイター報酬との関係について、運営の立場をまとめています。",
+            "How Aipictors treats fan works, and how they relate to support and Creator Rewards.",
+          )}
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("要点", "In short")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm leading-7">
+          <p>
+            {t(
+              "・二次創作の投稿や、推しなどで収益を得ることを、運営は一律には禁止しません。",
+              "- We do not ban fan works, or earning from them through support, across the board.",
+            )}
+          </p>
+          <p>
+            {t(
+              "・二次創作や収益化をしてよいかは権利者が決めます。ガイドラインを確認して従うのは投稿者の責任です。",
+              "- Rights holders decide whether fan works and earnings are allowed. Checking and following their guidelines is the poster's responsibility.",
+            )}
+          </p>
+          <p>
+            {t(
+              "・推し合いへの参加や、特定の考え方への同調を求めることはありません。苦手なものは設定で表示しないようにできます。",
+              "- You are never expected to join in supporting each other or to share any view. You can hide what you don't want to see in settings.",
+            )}
+          </p>
+        </CardContent>
+      </Card>
+
+      <div className="prose prose-slate dark:prose-invert max-w-none">
+        <AppMarkdown isDemotedHeading>
+          {t(policyMarkdownText, policyMarkdownEnText)}
+        </AppMarkdown>
+      </div>
+    </div>
+  )
+}

@@ -764,6 +764,10 @@ export const HELP_SECTIONS: HelpSection[] = [
         to: "/creator-rewards/terms",
         label: { ja: "クリエイター報酬規約", en: "Creator reward terms" },
       },
+      {
+        to: "/fan-works-policy",
+        label: { ja: "二次創作と収益化", en: "Fan works and earnings" },
+      },
     ],
     faqs: [
       {

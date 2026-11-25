@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "~/components/ui/alert"
 import { AlertTriangle, CheckCircle, XCircle, Info } from "lucide-react"
 import { Separator } from "~/components/ui/separator"
 
-export function GuidelineArticle () {
+export function GuidelineArticle() {
   const t = useTranslation()
 
   return (
@@ -606,7 +606,7 @@ export function GuidelineArticle () {
             "These guidelines may be updated as needed. Please check the latest version.",
           )}
         </p>
-        <div className="flex justify-center space-x-4">
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
           <Link to="/contact" className="text-blue-600 text-sm hover:underline">
             {t("お問い合わせ", "Contact")}
           </Link>
@@ -615,6 +615,12 @@ export function GuidelineArticle () {
           </Link>
           <Link to="/help" className="text-blue-600 text-sm hover:underline">
             {t("使い方ガイド", "User Guide")}
+          </Link>
+          <Link
+            to="/fan-works-policy"
+            className="text-blue-600 text-sm hover:underline"
+          >
+            {t("二次創作と収益化", "Fan works and earnings")}
           </Link>
         </div>
       </div>

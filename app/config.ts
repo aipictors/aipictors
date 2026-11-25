@@ -1162,6 +1162,15 @@ export const META: { [key: string]: MetaData } = {
       "View information based on the Specified Commercial Transaction Law",
     isIndex: true,
   },
+  FAN_WORKS_POLICY: {
+    title: "二次創作と収益化についての運営の考え方",
+    enTitle: "Fan works and earnings: our position",
+    description:
+      "二次創作の投稿と推し・クリエイター報酬についての Aipictors 運営の立場",
+    enDescription:
+      "How Aipictors treats fan works and earnings from support and Creator Rewards",
+    isIndex: true,
+  },
   PREMIUM_COINS_POLICY: {
     title: "プレミアムコイン規約・ポリシー",
     enTitle: "Premium Coin Policy",
