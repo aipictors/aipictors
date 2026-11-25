@@ -1,10 +1,14 @@
 import {
+  type CollisionDetection,
   closestCenter,
   DndContext,
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
+  type DropAnimation,
+  defaultDropAnimationSideEffects,
   MouseSensor,
+  pointerWithin,
   TouchSensor,
   useSensor,
   useSensors,
@@ -19,6 +23,10 @@ import { useCallback, useRef, useState } from "react"
 import { ImageItem } from "~/components/drag/image-item"
 import type { TSortableItem } from "~/components/drag/sortable-item"
 import { SortableItem } from "~/components/drag/sortable-item"
+import {
+  renumberSortableItems,
+  toSortableKey,
+} from "~/components/drag/sortable-key"
 
 type Props = {
   items: TSortableItem[]
@@ -53,18 +61,37 @@ export const commitSortableOrder = (
   setItems: (items: TSortableItem[]) => void,
 ) => {
   setIndexList(moved.map((item) => item.id))
-  setItems(moved.map((item, index) => ({ ...item, id: index })))
+  setItems(renumberSortableItems(moved))
+}
+
+/**
+ * 指の下にある画像を置き先にする。画像のすき間では一番近い画像にする
+ * （近さだけで決めると、少し動かすたびに置き先が変わって周りが動き回る）
+ */
+const collisionDetection: CollisionDetection = (args) => {
+  const within = pointerWithin(args)
+  return within.length > 0 ? within : closestCenter(args)
+}
+
+/** 離したとき、持っている画像を置いた場所へ短く収める */
+const dropAnimation: DropAnimation = {
+  duration: 180,
+  easing: "cubic-bezier(0.2, 0, 0, 1)",
+  sideEffects: defaultDropAnimationSideEffects({
+    styles: { active: { opacity: "0" } },
+  }),
 }
 
 /**
  * 指定された要素をドラッグで並び替えできるようにする
  * - 動かしている間は見た目（transform）だけ動かし、離したときに 1 回だけ並びを確定する
  *   （前は指が他の画像に重なるたびに投稿フォーム全体と下書きの保存が走って重かった）
+ * - ドラッグの id は並べ替えても変わらない目印（sortKey）。id は並びで振り直すので使わない
  * - ふだんは画像の上でもスクロールでき、スマートフォンは長押し、PC は 5px 動かすと持ち上げる
  * - 並べ替えモードでは、触ってすぐ持ち上げる（スクロールは画像の外で）
  */
 export function SortableItems(props: Props): React.ReactNode {
-  const [activeId, setActiveId] = useState<number | null>(null)
+  const [activeKey, setActiveKey] = useState<string | null>(null)
   const isReorderMode = props.isReorderMode ?? false
 
   const sensors = useSensors(
@@ -81,18 +108,22 @@ export function SortableItems(props: Props): React.ReactNode {
   latest.current = props
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(Number(event.active.id))
+    setActiveKey(String(event.active.id))
     // 持ち上げたことが分かるように短く震わせる（対応している端末だけ）
     navigator.vibrate?.(10)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
-    setActiveId(null)
+    setActiveKey(null)
     const { active, over } = event
     if (!over || active.id === over.id) return
 
-    const activeIndex = props.items.findIndex((item) => item.id === active.id)
-    const overIndex = props.items.findIndex((item) => item.id === over.id)
+    const activeIndex = props.items.findIndex(
+      (item) => toSortableKey(item) === active.id,
+    )
+    const overIndex = props.items.findIndex(
+      (item) => toSortableKey(item) === over.id,
+    )
     if (activeIndex === -1 || overIndex === -1) return
 
     commitSortableOrder(
@@ -112,9 +143,7 @@ export function SortableItems(props: Props): React.ReactNode {
         .map((id) => (id > deletedId ? id - 1 : id)),
     )
     setItems(
-      items
-        .filter((item) => item.id !== deletedId)
-        .map((item, index) => ({ ...item, id: index })),
+      renumberSortableItems(items.filter((item) => item.id !== deletedId)),
     )
   }, [])
 
@@ -150,21 +179,34 @@ export function SortableItems(props: Props): React.ReactNode {
   }, [])
 
   const activeItem =
-    activeId === null
+    activeKey === null
       ? undefined
-      : props.items.find((item) => item.id === activeId)
+      : props.items.find((item) => toSortableKey(item) === activeKey)
 
   const itemSize = props.itemSize ?? 112
+  // まだ並べ替えていない画像が（モザイクなどで）作り直されたら、同じ場所・同じ id の目印を引き継ぐ
+  const previousKeys = useRef<{ id: number; key: string }[]>([])
+  const sortableKeys = props.items.map((item, index) => {
+    const previous = previousKeys.current[index]
+    return toSortableKey(
+      item,
+      previous?.id === item.id ? previous.key : undefined,
+    )
+  })
+  previousKeys.current = props.items.map((item, index) => ({
+    id: item.id,
+    key: sortableKeys[index],
+  }))
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={collisionDetection}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setActiveId(null)}
+      onDragCancel={() => setActiveKey(null)}
     >
-      <SortableContext items={props.items} strategy={rectSortingStrategy}>
+      <SortableContext items={sortableKeys} strategy={rectSortingStrategy}>
         {/* 1 枚の大きさから列の数を決め、列の幅いっぱいに並べる。下には指を置ける余白を残す */}
         <div
           className="grid w-full gap-2 px-2 pt-2 pb-6 md:gap-3"
@@ -174,8 +216,9 @@ export function SortableItems(props: Props): React.ReactNode {
         >
           {props.items.map((item, index) => (
             <SortableItem
-              key={item.id}
+              key={sortableKeys[index]}
               item={item}
+              sortKey={sortableKeys[index]}
               size={itemSize}
               position={props.items.length > 1 ? index + 1 : undefined}
               isReorderMode={isReorderMode}
@@ -198,7 +241,7 @@ export function SortableItems(props: Props): React.ReactNode {
         </div>
       </SortableContext>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={dropAnimation}>
         {activeItem ? (
           <ImageItem item={activeItem} size={itemSize} isDragging />
         ) : null}

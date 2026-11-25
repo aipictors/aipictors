@@ -15,6 +15,8 @@ import { cn } from "~/lib/utils"
 // ドラッグ可能なアイテムの型
 export type TSortableItem = {
   id: number
+  /** 並べ替えても変わらない目印（toSortableKey で付ける。投稿には含めない） */
+  sortKey?: string
   content: string | null // 画像のURLなど
   isContentEdited?: boolean // コンテンツが編集されたかどうか
   fileName?: string | null // アップロードしたファイルの名前（並べ替えの目印。投稿には含めない）
@@ -33,6 +35,8 @@ export type TSortableItem = {
 
 type Props = {
   item: TSortableItem
+  /** 並べ替えても変わらない目印（ドラッグの id） */
+  sortKey: string
   /** 1 辺の大きさの目安（px。実際は列の幅いっぱい）。ボタンの大きさを決める */
   size: number
   /** 何枚目か（1 枚だけのときは出さない） */
@@ -102,8 +106,15 @@ export const toOverlayButtonSize = (size: number) => {
  * ドラッグ可能なアイテム
  * 並べ替え中は CSS の transform で動かすだけにして、投稿フォームの状態は離したときに 1 回だけ変える
  */
+/** 並びが変わったときに周りの画像が動く速さ（短く・最後をゆっくり） */
+const SORT_TRANSITION = {
+  duration: 200,
+  easing: "cubic-bezier(0.2, 0, 0, 1)",
+}
+
 export const SortableItem = memo(function SortableItem({
   item,
+  sortKey,
   size,
   position,
   isReorderMode = false,
@@ -126,11 +137,12 @@ export const SortableItem = memo(function SortableItem({
   const {
     attributes,
     isDragging,
+    isSorting,
     listeners,
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id: item.id })
+  } = useSortable({ id: sortKey, transition: SORT_TRANSITION })
 
   if (!item.content) {
     return null
@@ -151,11 +163,13 @@ export const SortableItem = memo(function SortableItem({
           ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
           : undefined,
         transition,
-        opacity: isDragging ? 0.35 : 1,
-        zIndex: isDragging ? 1 : undefined,
       }}
     >
       <div className="relative">
+        {/* 持ち上げている間は、置く場所を点線の枠で見せる */}
+        {isDragging && (
+          <div className="pointer-events-none absolute inset-0 z-10 rounded-xl border-2 border-blue-400 border-dashed bg-blue-500/15" />
+        )}
         <div
           // ふだんは画像の上でもスクロールできるようにする（並べ替えモードだけ触ってすぐ動かす）
           className={cn(
@@ -163,6 +177,7 @@ export const SortableItem = memo(function SortableItem({
             isReorderMode ? "touch-none" : "touch-manipulation",
             isReorderMode &&
               "rounded-xl ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent",
+            isDragging && "opacity-30",
             className,
           )}
           style={style}
@@ -172,7 +187,8 @@ export const SortableItem = memo(function SortableItem({
         >
           <ImageItem item={item} size={size} />
         </div>
-        {position !== undefined && (
+        {/* 動かしている間は番号が実際の並びとずれるので隠す */}
+        {position !== undefined && !isSorting && (
           <span
             className={cn(
               "pointer-events-none absolute flex items-center justify-center rounded-full bg-black/60 font-bold text-white shadow-md ring-1 ring-white/20 backdrop-blur-sm",
@@ -185,7 +201,7 @@ export const SortableItem = memo(function SortableItem({
             {position}
           </span>
         )}
-        {isReorderMode ? (
+        {isDragging ? null : isReorderMode ? (
           <>
             <span
               className={cn(

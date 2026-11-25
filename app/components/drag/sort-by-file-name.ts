@@ -1,4 +1,5 @@
 import type { TSortableItem } from "~/components/drag/sortable-item"
+import { renumberSortableItems } from "~/components/drag/sortable-key"
 
 /** 番号は数として比べる（2.png が 10.png より前） */
 const compareFileNames = (a: string, b: string) =>
@@ -16,7 +17,7 @@ const fileNameOrder = (a: TSortableItem, b: TSortableItem) => {
  * ファイル名順に並べ替える（id は並びに合わせて振り直す）
  */
 export const sortByFileName = (items: TSortableItem[]): TSortableItem[] =>
-  [...items].sort(fileNameOrder).map((item, index) => ({ ...item, id: index }))
+  renumberSortableItems([...items].sort(fileNameOrder))
 
 export const isSortedByFileName = (items: TSortableItem[]) =>
   items.every(
