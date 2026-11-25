@@ -21,7 +21,7 @@ import {
  * - 読むのは ~/hooks/use-hide-coin-support（同じクエリなので保存すると画面全体にすぐ反映される）
  */
 export function HideCoinSupportSetting(props: {
-  /** ページ内リンク（設定の検索から #hide-coin-support で飛ぶ） */
+  /** ページ内リンク（#hide-coin-support） */
   id?: string
 }) {
   const authContext = useContext(AuthContext)
@@ -39,7 +39,7 @@ export function HideCoinSupportSetting(props: {
 
   const isLoaded = data !== undefined
 
-  // 設定のメニュー（同じページにいるときも）や作品ページのトーストから #hide-coin-support で来たら、ここまで動かす
+  // #hide-coin-support 付きで来たら、ここまで動かす
   const location = useLocation()
   useEffect(() => {
     if (!isLoaded || !props.id) return
@@ -68,21 +68,21 @@ export function HideCoinSupportSetting(props: {
     <SettingsSection
       id={props.id}
       icon={<EyeOff />}
-      title={t("推し・推しランキングの表示", "Support display")}
+      title={t("推しの表示", "Oshi display")}
       description={t(
         "推し（コインでの応援）や推しランキングを見たくないときに、あなたの画面から隠せます。",
-        "Hide support (coins) and support rankings from your own screens.",
+        "Hide Oshi (support with coins) and Oshi rankings from your own screens.",
       )}
     >
       <SettingsSwitchRow
         htmlFor={switchId}
         title={t(
           "推し・推しランキングを表示しない",
-          "Hide support and support rankings",
+          "Hide Oshi and Oshi rankings",
         )}
         description={t(
-          "推しに関する表示（推すボタン、コメントの推し、推しの帯、推しの数、推しランキング、推しの通知など）をすべてあなたの画面から消します。推しだけのコメントは出さず、本文のある推し付きコメントは普通のコメントとして本文だけ出します。ほかの人の画面は変わりません。推しを受け付けるかどうかは上の設定のままで、これまでに受け取った推しの記録や報酬も消えません。",
-          "Removes everything about support from your screens (support buttons, support on comments, the support strip, support counts, support rankings, support notifications and more). Support-only comments are hidden, and comments with text show just the text like a normal comment. Other people's screens do not change. Whether you accept support follows the setting above, and support you already received and its rewards stay as is.",
+          "推しに関する表示（推すボタン、コメントの推し、推しの帯、推しの数、推しランキング、推しの通知など）をすべてあなたの画面から消します。推しだけのコメントは出さず、本文のある推し付きコメントは普通のコメントとして本文だけ出します。ほかの人の画面は変わりません。推しを受け付けるかどうか（応援コイン受け取りの設定）はそのままで、これまでに受け取った推しの記録や報酬も消えません。",
+          "Removes everything about Oshi from your screens (Oshi buttons, Oshi on comments, the Oshi strip, Oshi counts, Oshi rankings, Oshi notifications and more). Oshi-only comments are hidden, and comments with text show just the text like a normal comment. Other people's screens do not change. Whether you accept Oshi (Received Support Coins settings) stays as is, and Oshi you already received and its rewards stay as is.",
         )}
       >
         <Switch

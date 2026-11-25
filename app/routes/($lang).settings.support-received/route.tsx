@@ -3,10 +3,13 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { lazy, Suspense } from "react"
+import { useLocation } from "@remix-run/react"
+import { lazy, Suspense, useEffect } from "react"
 import { ClientOnly } from "remix-utils/client-only"
+import { OSHI_DISPLAY_SETTING_PATH } from "~/components/hide-coin-support-button"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
+import { useNavigate } from "~/lib/app/locale-router"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 import { createMeta } from "~/utils/create-meta"
 
@@ -31,6 +34,15 @@ export const headers: HeadersFunction = () => ({
 
 export default function SettingSupportReceived() {
   const t = useTranslation()
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  // 推しの表示は独立したページに移した。以前の案内（#hide-coin-support）で来た人はそちらへ送る
+  // （# はサーバーに届かないのでブラウザで判定する）
+  useEffect(() => {
+    if (location.hash !== "#hide-coin-support") return
+    navigate(OSHI_DISPLAY_SETTING_PATH, { replace: true })
+  }, [location.hash, navigate])
 
   return (
     <div className="w-full space-y-4">

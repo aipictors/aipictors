@@ -1,6 +1,6 @@
 import { ChevronRightIcon, Trophy } from "lucide-react"
 import { useEffect, useState } from "react"
-import { HideCoinSupportMenu } from "~/components/hide-coin-support-menu"
+import { HideCoinSupportButton } from "~/components/hide-coin-support-button"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
@@ -99,7 +99,7 @@ function UserSupportRankingSectionContent(props: Props) {
           <Trophy className="size-5 text-rose-500" />
           {t("推してくれている人", "Top supporters")}
         </h2>
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 items-center gap-2">
           <Link
             to={`/users/${props.targetUserLogin}/supports`}
             className="flex shrink-0 items-center text-muted-foreground text-sm transition-colors hover:text-foreground"
@@ -108,7 +108,7 @@ function UserSupportRankingSectionContent(props: Props) {
             <ChevronRightIcon className="size-4" />
           </Link>
           {/* その場で推しを表示しない設定にする入口 */}
-          <HideCoinSupportMenu />
+          <HideCoinSupportButton isShortOnMobile />
         </div>
       </div>
 

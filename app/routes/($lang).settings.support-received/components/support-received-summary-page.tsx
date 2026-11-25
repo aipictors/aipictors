@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import {
   ArrowLeftIcon,
+  ChevronRightIcon,
   CoinsIcon,
   EyeOff,
   HandCoins,
@@ -13,6 +14,7 @@ import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { CoinHelpDialog } from "~/components/coin-help-dialog"
 import { CoinIcon } from "~/components/coin-icon"
+import { OSHI_DISPLAY_SETTING_PATH } from "~/components/hide-coin-support-button"
 import {
   CreatorRewardBadge,
   CreatorRewardsJoinHint,
@@ -39,7 +41,6 @@ import {
   getViewerRequestHeaders,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
-import { HideCoinSupportSetting } from "~/routes/($lang).settings/components/hide-coin-support-setting"
 import { PremiumCoinSupportSetting } from "~/routes/($lang).settings/components/premium-coin-support-setting"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
@@ -227,10 +228,11 @@ export function SupportReceivedSummaryPage() {
             </a>
           </Button>
           <Button asChild variant="outline" size="sm">
-            <a href="#hide-coin-support">
+            {/* 推しの表示（推しを表示しない）は独立したページに移した */}
+            <Link to={OSHI_DISPLAY_SETTING_PATH}>
               <EyeOff className="h-4 w-4" />
-              {t("推しの表示（隠す）", "Hide support")}
-            </a>
+              {t("推しの表示", "Oshi display")}
+            </Link>
           </Button>
           <Button asChild variant="outline" size="sm">
             <Link to="/settings/points">
@@ -287,7 +289,19 @@ export function SupportReceivedSummaryPage() {
 
       <PremiumCoinSupportSetting id="receive-setting" />
 
-      <HideCoinSupportSetting id="hide-coin-support" />
+      <Link
+        to={OSHI_DISPLAY_SETTING_PATH}
+        className="flex items-center gap-2 rounded-xl border border-dashed px-4 py-3 text-sm transition-colors hover:bg-muted/60"
+      >
+        <EyeOff className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+        <span className="min-w-0 flex-1">
+          {t(
+            "推し・推しランキングを表示しない設定（推しの表示）はこちら",
+            "Hide Oshi and Oshi rankings (Oshi display) is here",
+          )}
+        </span>
+        <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" />
+      </Link>
 
       <Tabs
         value={activeTab}

@@ -1,6 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { HideCoinSupportMenu } from "~/components/hide-coin-support-menu"
 import { SupportTierChip } from "~/components/support-super-chat"
 import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
@@ -171,8 +170,6 @@ function WorkCommentSupportStripContent(props: { comments: StripComment[] }) {
           </>
         )}
       </div>
-      {/* その場で推しを表示しない設定にする入口（小さく端に） */}
-      <HideCoinSupportMenu />
     </section>
   )
 }

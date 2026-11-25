@@ -43,10 +43,9 @@ const SETTINGS_PAGES: {
     href: "/settings/support-received",
     ja: "応援コイン受け取り",
     en: "Received Support Coins",
-    descriptionJa:
-      "推してもらったコインと応援してくれた人・推しの受け取りと表示",
+    descriptionJa: "推してもらったコインと応援してくれた人・推しの受け取り",
     descriptionEn:
-      "Coins you received, the people who supported you, and support settings",
+      "Coins you received, the people who supported you, and receiving settings",
   },
   {
     href: "/settings/creator-rewards",
@@ -82,6 +81,13 @@ const SETTINGS_PAGES: {
     en: "Display Content",
     descriptionJa: "見る作品の年齢制限と表示のしかた",
     descriptionEn: "Age ratings and how works are shown to you",
+  },
+  {
+    href: "/settings/oshi-display",
+    ja: "推しの表示",
+    en: "Oshi display",
+    descriptionJa: "推し・推しランキングをあなたの画面に表示しないようにできます",
+    descriptionEn: "Hide Oshi and Oshi rankings on your screens",
   },
   {
     href: "/settings/color",

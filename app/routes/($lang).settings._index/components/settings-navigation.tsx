@@ -121,10 +121,10 @@ export function SettingsNavigation() {
           label: t("表示コンテンツ", "Display Content"),
         },
         {
-          // 推しを見たくない人が「応援コイン受け取り」の中から探さなくて済むよう、表示のまとまりにも入口を置く
-          href: "/settings/support-received#hide-coin-support",
+          // 推しを見たくない人が「応援コイン受け取り」の中から探さなくて済むよう、独立した項目にする
+          href: "/settings/oshi-display",
           icon: EyeOffIcon,
-          label: t("推し・推しランキングの表示", "Support display"),
+          label: t("推しの表示", "Oshi display"),
         },
         {
           href: "/settings/color",

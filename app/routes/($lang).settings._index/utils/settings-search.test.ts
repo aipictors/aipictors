@@ -40,19 +40,19 @@ describe("設定の検索", () => {
       "/settings/support-received#receive-setting",
     )
     for (const query of [
+      "推しの表示",
+      "推し表示設定",
       "推しを隠す",
       "推しランキング",
       "推しコメント",
       "推しを表示しない",
+      "hide oshi",
       "hide support",
     ]) {
-      expect(firstHref(query)).toBe(
-        "/settings/support-received#hide-coin-support",
-      )
+      expect(firstHref(query)).toBe("/settings/oshi-display")
     }
-    expect(searchSettings("推し").map((e) => e.href)).toContain(
-      "/settings/support-received#hide-coin-support",
-    )
+    expect(firstHref("推し")).toBe("/settings/oshi-display")
+    expect(firstHref("oshi")).toBe("/settings/oshi-display")
   })
 
   test("言い換えでも見つかる", () => {

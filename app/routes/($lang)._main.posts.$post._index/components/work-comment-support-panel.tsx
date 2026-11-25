@@ -1,7 +1,7 @@
 import { Heart, XIcon } from "lucide-react"
 import { useContext } from "react"
 import { CoinAmountStepper } from "~/components/coin-amount-stepper"
-import { HideCoinSupportMenu } from "~/components/hide-coin-support-menu"
+import { HideCoinSupportButton } from "~/components/hide-coin-support-button"
 import {
   FreeSupportCoinIcon,
   PremiumSupportCoinIcon,
@@ -87,9 +87,9 @@ export function WorkCommentSupportPanel(
         {t("コインで推す", "Support with coins")}
         {isRewardTarget && <SupportRewardJoinedBadge />}
       </p>
-      <div className="-mr-1 flex shrink-0 items-center">
+      <div className="-mr-1 flex shrink-0 items-center gap-1">
         {/* その場で推しを表示しない設定にする入口 */}
-        <HideCoinSupportMenu />
+        <HideCoinSupportButton isShortOnMobile />
         <button
           type="button"
           onClick={props.onClose}

@@ -1,4 +1,5 @@
 import { EyeOff } from "lucide-react"
+import { OSHI_DISPLAY_SETTING_PATH } from "~/components/hide-coin-support-button"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -23,7 +24,7 @@ export function HiddenCoinSupportNotice(props: { className?: string }) {
         )}
       </p>
       <Link
-        to="/settings/support-received#hide-coin-support"
+        to={OSHI_DISPLAY_SETTING_PATH}
         className="text-primary text-sm underline-offset-4 hover:underline"
       >
         {t("表示の設定を変える", "Change this setting")}
