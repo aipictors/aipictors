@@ -23,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
 import { Button } from "~/components/ui/button"
+import { useUserModelPickup } from "~/components/user-models/user-model-pickup-banner"
 import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -33,13 +34,12 @@ import { PostFormSubmitBar } from "~/routes/($lang)._main.new.image/components/p
 import { PostImageFormInput } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
-import { usePostImageDraft } from "~/routes/($lang)._main.new.image/hooks/use-post-image-draft"
-import { usePostImageGenerationResults } from "~/routes/($lang)._main.new.image/hooks/use-post-image-generation-results"
-import { useUserModelPickup } from "~/components/user-models/user-model-pickup-banner"
 import {
   usePickupModelAutoJoin,
   usesPickupModel,
 } from "~/routes/($lang)._main.new.image/hooks/use-pickup-model-auto-join"
+import { usePostImageDraft } from "~/routes/($lang)._main.new.image/hooks/use-post-image-draft"
+import { usePostImageGenerationResults } from "~/routes/($lang)._main.new.image/hooks/use-post-image-generation-results"
 import { usePostImageSearchParams } from "~/routes/($lang)._main.new.image/hooks/use-post-image-search-params"
 import { usePostImageSubmit } from "~/routes/($lang)._main.new.image/hooks/use-post-image-submit"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
@@ -63,6 +63,7 @@ import {
   INITIAL_POST_IMAGE_FORM_MEDIA_STATE,
 } from "~/routes/($lang)._main.new.image/utils/post-image-draft"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
+import { isSensitivePrompt } from "~/utils/auto-mosaic"
 import { createMeta } from "~/utils/create-meta"
 import type { PNGInfo } from "~/utils/get-extract-info-from-png"
 import { getJstDate } from "~/utils/jst-date"
@@ -532,6 +533,11 @@ export default function NewImage() {
             onInputFiles={onInputFiles}
             token={currentViewer?.token}
             onContentGenerated={onContentGenerated}
+            isSensitiveHint={
+              inputState.ratingRestriction === "R18" ||
+              inputState.ratingRestriction === "R18G" ||
+              isSensitivePrompt(inputState.imageInformation?.params.prompt)
+            }
           />
         </div>
         <PostImageFormInput

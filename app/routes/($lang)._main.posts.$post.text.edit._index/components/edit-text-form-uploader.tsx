@@ -1,15 +1,14 @@
-import FullScreenContainer from "~/components/full-screen-container"
-import { cn } from "~/lib/utils"
-import { getExtractInfoFromBase64 } from "~/utils/get-extract-info-from-png"
-import { config } from "~/config"
-import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
-import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
-import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
 import type { Dispatch } from "react"
+import { MosaicEditor } from "~/components/mosaic-editor"
+import { config } from "~/config"
+import { cn } from "~/lib/utils"
+import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
+import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
+import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
 import type { PostTextFormAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
 import type { PostTextFormState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-state"
-import { PaintCanvas } from "~/components/paint-canvas"
+import { getExtractInfoFromBase64 } from "~/utils/get-extract-info-from-png"
 import { getImageItemsSizeText } from "~/utils/image-items-size-text"
 
 type Props = {
@@ -17,7 +16,7 @@ type Props = {
   state: PostTextFormState
 }
 
-export function EditTextFormUploader (props: Props) {
+export function EditTextFormUploader(props: Props) {
   const selectedFilesSizeText = () =>
     getImageItemsSizeText(props.state.items.map((item) => item.content))
 
@@ -155,30 +154,22 @@ export function EditTextFormUploader (props: Props) {
         }}
       />
       {props.state.editTargetImageBase64 !== null && (
-        <FullScreenContainer
+        <MosaicEditor
+          imageUrl={props.state.editTargetImageBase64}
+          isAutoMosaic={true}
+          onSubmit={(base64: string) => {
+            props.dispatch({
+              type: "SET_EDITED_IMAGE",
+              payload: { base64 },
+            })
+          }}
           onClose={() => {
             props.dispatch({
               type: "SET_EDIT_TARGET_IMAGE_BASE64",
               payload: null,
             })
           }}
-          enabledScroll={props.state.isDrawing}
-        >
-          <PaintCanvas
-            onChangeSetDrawing={(isDrawing: boolean) =>
-              props.dispatch({ type: "SET_IS_DRAWING", payload: isDrawing })
-            }
-            imageUrl={props.state.editTargetImageBase64}
-            isMosaicMode={true}
-            isShowSubmitButton={true}
-            onSubmit={(base64: string) => {
-              props.dispatch({
-                type: "SET_EDITED_IMAGE",
-                payload: { base64 },
-              })
-            }}
-          />
-        </FullScreenContainer>
+        />
       )}
     </div>
   )

@@ -1,7 +1,6 @@
 import type { Dispatch } from "react"
 import { toast } from "sonner"
-import FullScreenContainer from "~/components/full-screen-container"
-import { PaintCanvas } from "~/components/paint-canvas"
+import { MosaicEditor } from "~/components/mosaic-editor"
 import { Button } from "~/components/ui/button"
 import { config } from "~/config"
 import { cn } from "~/lib/utils"
@@ -202,30 +201,22 @@ export function PostTextFormUploader(props: Props) {
         }}
       />
       {props.state.editTargetImageBase64 !== null && (
-        <FullScreenContainer
+        <MosaicEditor
+          imageUrl={props.state.editTargetImageBase64}
+          isAutoMosaic={true}
+          onSubmit={(base64: string) => {
+            props.dispatch({
+              type: "SET_EDITED_IMAGE",
+              payload: { base64 },
+            })
+          }}
           onClose={() => {
             props.dispatch({
               type: "SET_EDIT_TARGET_IMAGE_BASE64",
               payload: null,
             })
           }}
-          enabledScroll={props.state.isDrawing}
-        >
-          <PaintCanvas
-            onChangeSetDrawing={(isDrawing: boolean) =>
-              props.dispatch({ type: "SET_IS_DRAWING", payload: isDrawing })
-            }
-            imageUrl={props.state.editTargetImageBase64}
-            isMosaicMode={true}
-            isShowSubmitButton={true}
-            onSubmit={(base64: string) => {
-              props.dispatch({
-                type: "SET_EDITED_IMAGE",
-                payload: { base64 },
-              })
-            }}
-          />
-        </FullScreenContainer>
+        />
       )}
     </div>
   )

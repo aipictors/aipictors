@@ -272,3 +272,118 @@ function dilate(src: Uint8Array, width: number, height: number, r: number) {
   }
   return dst
 }
+
+/** 画像を読み込む（キャンバスに描いて読み出せるよう crossOrigin を付ける） */
+export function loadMosaicImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.crossOrigin = "Anonymous"
+    image.onload = () => resolve(image)
+    image.onerror = () => reject(new Error("image load failed"))
+    image.src = src
+  })
+}
+
+/**
+ * 画像全体をピクセル化したキャンバス（長辺の 1/blockDivisions のマスを平均色で塗る。MosaicCanvas と同じ）
+ */
+export function createPixelatedCanvas(
+  source: HTMLImageElement | HTMLCanvasElement,
+  blockDivisions = 100,
+): HTMLCanvasElement {
+  const width = source.width
+  const height = source.height
+  const canvas = document.createElement("canvas")
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext("2d", { willReadFrequently: true })
+  if (ctx === null) throw new Error("canvas is not supported")
+  ctx.drawImage(source, 0, 0, width, height)
+  const block = Math.max(1, Math.ceil(Math.max(width, height) / blockDivisions))
+  const data = ctx.getImageData(0, 0, width, height).data
+  for (let y = 0; y < height; y += block) {
+    for (let x = 0; x < width; x += block) {
+      let r = 0
+      let g = 0
+      let b = 0
+      let count = 0
+      const yEnd = Math.min(y + block, height)
+      const xEnd = Math.min(x + block, width)
+      for (let yy = y; yy < yEnd; yy++) {
+        for (let xx = x; xx < xEnd; xx++) {
+          const i = (yy * width + xx) * 4
+          r += data[i]
+          g += data[i + 1]
+          b += data[i + 2]
+          count++
+        }
+      }
+      ctx.fillStyle = `rgb(${r / count}, ${g / count}, ${b / count})`
+      ctx.fillRect(x, y, xEnd - x, yEnd - y)
+    }
+  }
+  return canvas
+}
+
+/** マスクの不透明な所だけピクセル化した画像を残したレイヤー */
+export function createMaskedMosaicLayer(
+  pixelated: HTMLCanvasElement,
+  mask: HTMLCanvasElement,
+): HTMLCanvasElement {
+  const layer = document.createElement("canvas")
+  layer.width = pixelated.width
+  layer.height = pixelated.height
+  const ctx = layer.getContext("2d")
+  if (ctx === null) throw new Error("canvas is not supported")
+  ctx.drawImage(mask, 0, 0, layer.width, layer.height)
+  ctx.globalCompositeOperation = "source-in"
+  ctx.drawImage(pixelated, 0, 0)
+  return layer
+}
+
+/** GIF・アニメーション WebP（キャンバスに描くと動きが消える） */
+export function isAnimatedImageDataUrl(src: string) {
+  if (src.startsWith("data:image/gif")) return true
+  if (!src.startsWith("data:image/webp")) return false
+  try {
+    const start = src.indexOf(",") + 1
+    return atob(src.slice(start, start + 400)).includes("ANIM")
+  } catch {
+    return false
+  }
+}
+
+/**
+ * 1 枚に自動モザイクをかける（見つからなければ dataUrl は null）
+ */
+export async function autoMosaicImage(
+  src: string,
+  options: { includeNipples?: boolean } = {},
+): Promise<{ dataUrl: string | null; count: number }> {
+  const image = await loadMosaicImage(src)
+  const result = await detectAutoMosaic(image, options)
+  if (result.detections.length === 0) return { dataUrl: null, count: 0 }
+  const canvas = document.createElement("canvas")
+  canvas.width = image.width
+  canvas.height = image.height
+  const ctx = canvas.getContext("2d")
+  if (ctx === null) throw new Error("canvas is not supported")
+  ctx.drawImage(image, 0, 0)
+  ctx.drawImage(
+    createMaskedMosaicLayer(createPixelatedCanvas(image), result.mask),
+    0,
+    0,
+  )
+  return {
+    dataUrl: canvas.toDataURL("image/webp"),
+    count: result.detections.length,
+  }
+}
+
+const SENSITIVE_PROMPT_PATTERN =
+  /\b(nsfw|nude|nudity|naked|nipples?|pussy|penis|vagina|vulva|sex|cum|cock|dick|explicit|uncensored|fellatio|anus|genitals?)\b|全裸|性器|ヌード/i
+
+/** 生成情報のプロンプトが R18 らしいか（手元の文字を見るだけ） */
+export function isSensitivePrompt(prompt: string | null | undefined) {
+  return prompt ? SENSITIVE_PROMPT_PATTERN.test(prompt) : false
+}
