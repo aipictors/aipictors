@@ -18,7 +18,7 @@ import {
   WorkByImageHashQuery,
 } from "~/routes/($lang)._main.new.image/utils/new-image-queries"
 import {
-  applyPostAutoMosaic,
+  finalizePostMosaic,
   isAutoMosaicRating,
 } from "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
 import {
@@ -31,6 +31,10 @@ import {
   toImageWorkInput,
   toVideoWorkInput,
 } from "~/routes/($lang)._main.new.image/utils/post-image-work-input"
+import {
+  readPostMosaicSelfApplied,
+  readPostMosaicSettings,
+} from "~/routes/($lang)._main.new.image/utils/post-mosaic-store"
 import type { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
@@ -420,7 +424,7 @@ export function usePostImageSubmit(props: Props) {
 
     dispatch({ type: "SET_PROGRESS", payload: 5 })
 
-    // R18 / R18G は投稿する前に自動でモザイクをかける（性器・肛門。乳首は対象外）
+    // R18 / R18G: プレビューでかけたモザイクを確かめて仕上げる（性器・肛門。乳首は対象外）
     let imageContents = state.items.map((item) => item.content)
     let thumbnailBase64 = formResult.output.thumbnailBase64
     let ogpBase64 = state.ogpBase64
@@ -428,10 +432,13 @@ export function usePostImageSubmit(props: Props) {
 
     if (isAutoMosaicRating(inputState.ratingRestriction)) {
       setStage({ kind: "mosaic", done: 0, total: 0, preview: null })
-      const mosaicked = await applyPostAutoMosaic({
-        contents: imageContents,
+      const isSelfApplied = readPostMosaicSelfApplied()
+      const mosaicked = await finalizePostMosaic({
+        items: state.items,
         thumbnailBase64,
         ogpBase64,
+        isSelfApplied,
+        settings: readPostMosaicSettings(),
         onProgress: (progress) => {
           setStage({ kind: "mosaic", ...progress })
           // 5〜25% をモザイクの進み具合に使う
@@ -448,6 +455,21 @@ export function usePostImageSubmit(props: Props) {
           t(
             `${mosaicked.failedCount}枚に自動モザイクをかけられませんでした。このまま投稿しますか？\n（キャンセルして、各画像の鉛筆ボタンから手でかけることもできます）`,
             `Auto mosaic failed on ${mosaicked.failedCount} image(s). Post anyway?\n(Cancel to add mosaics by hand with the pencil button)`,
+          ),
+        )
+      ) {
+        setStage({ kind: "idle" })
+        dispatch({ type: "SET_PROGRESS", payload: 0 })
+        finishPosting()
+        return
+      }
+      // 自分でかけ済み: 検出は回していて、隠れていないように見える所があれば確かめる
+      if (
+        mosaicked.warningCount > 0 &&
+        !window.confirm(
+          t(
+            `${mosaicked.warningCount}枚で、性器などが隠れていないように見える所が見つかりました。このまま投稿しますか？\n（キャンセルして、⚠の画像を鉛筆ボタンで直すか、「⚠の画像に自動でかける」を押してください。修正が足りない作品は非公開になることがあります）`,
+            `${mosaicked.warningCount} image(s) may have uncensored areas. Post anyway?\n(Cancel to fix the images marked ⚠. Works without sufficient censoring may be hidden)`,
           ),
         )
       ) {

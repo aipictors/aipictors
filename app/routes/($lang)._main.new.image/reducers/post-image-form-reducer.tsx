@@ -117,6 +117,23 @@ export const postImageFormReducer = (
         ogpBase64: null,
       }
     }
+    case "REPLACE_ITEM": {
+      const { from, item: next } = action.payload
+      const index = state.items.findIndex(
+        (item) => item.id === next.id && item.content === from,
+      )
+      if (index === -1) return state
+      const items = [...state.items]
+      items[index] = next
+      const isThumbnail = state.thumbnailBase64 === from
+      return {
+        ...state,
+        items,
+        thumbnailBase64: isThumbnail ? next.content : state.thumbnailBase64,
+        // OGP は前のサムネイルから切り出したものなので、作り直してもらう
+        ogpBase64: isThumbnail && state.ogpBase64 ? "" : state.ogpBase64,
+      }
+    }
     case "SET_ITEMS": {
       return {
         ...state,

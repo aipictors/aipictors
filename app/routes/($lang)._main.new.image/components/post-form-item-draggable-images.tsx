@@ -41,6 +41,8 @@ type Props = {
   submitText?: string
   /** 空のときの枠をテーマの色で出す（暗い背景の上に置かないとき） */
   isThemedEmptyState?: boolean
+  /** 画像の下に出す小さな表示（自動モザイクの状態） */
+  renderItemFooter?: (item: TSortableItem) => React.ReactNode
 }
 
 /**
@@ -433,6 +435,7 @@ export function PostFormItemDraggableImages(props: Props) {
           }
           setItems={props.setItems}
           setIndexList={props.setIndexList}
+          renderItemFooter={props.renderItemFooter}
           optionalButton={<PencilLineIcon className="size-4" />}
           optionalButtonLabel={t("モザイク・描き込みで直す", "Mosaic / draw")}
           onClickOptionButton={(index) => {

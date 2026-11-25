@@ -42,7 +42,12 @@ type Detection = {
 export type AutoMosaicResult = {
   /** 画像と同じ大きさ。モザイクをかける所だけ不透明 */
   mask: HTMLCanvasElement
-  detections: { label: AutoMosaicLabel; score: number }[]
+  /** box は元の画像の座標 [x1, y1, x2, y2] */
+  detections: {
+    label: AutoMosaicLabel
+    score: number
+    box: [number, number, number, number]
+  }[]
 }
 
 let sessionPromise: Promise<{
@@ -103,14 +108,20 @@ const iou = (a: Detection["box"], b: Detection["box"]) => {
  */
 export async function detectAutoMosaic(
   image: HTMLImageElement | HTMLCanvasElement,
-  options: { includeNipples?: boolean; minScore?: number } = {},
+  options: {
+    includeNipples?: boolean
+    minScore?: number
+    /** 対象の分類を直接指定する（includeNipples より優先） */
+    labels?: AutoMosaicLabel[]
+  } = {},
 ): Promise<AutoMosaicResult> {
   const { ort, session } = await loadSession()
 
   const width = image.width
   const height = image.height
   const targets = new Set<AutoMosaicLabel>(
-    options.includeNipples ? [...GENITAL_LABELS, "nipple"] : GENITAL_LABELS,
+    options.labels ??
+      (options.includeNipples ? [...GENITAL_LABELS, "nipple"] : GENITAL_LABELS),
   )
   const minScore = options.minScore ?? 0.25
 
@@ -263,7 +274,16 @@ export async function detectAutoMosaic(
 
   return {
     mask: maskCanvas,
-    detections: detections.map((d) => ({ label: d.label, score: d.score })),
+    detections: detections.map((d) => ({
+      label: d.label,
+      score: d.score,
+      box: [
+        Math.max(0, (d.box[0] - padX) / ratio),
+        Math.max(0, (d.box[1] - padY) / ratio),
+        Math.min(width, (d.box[2] - padX) / ratio),
+        Math.min(height, (d.box[3] - padY) / ratio),
+      ],
+    })),
   }
 }
 
@@ -357,6 +377,227 @@ export function createPixelatedCanvas(
   small.height = 0
   return canvas
 }
+
+/** 隠し方: モザイク・黒線（黒塗り）・白抜き（白塗り）・ぼかし */
+export type MosaicStyle = "mosaic" | "black" | "white" | "blur"
+
+export const MOSAIC_STYLES: MosaicStyle[] = ["mosaic", "black", "white", "blur"]
+
+/** 濃さの段階（1 がいちばん弱い。弱くても規約の「拡大しても形が分からない」を満たす強さにしてある） */
+export const MOSAIC_STRENGTH_MIN = 1
+export const MOSAIC_STRENGTH_MAX = 5
+
+/** モザイク: 長辺をいくつのマスに割るか（1 = 今までと同じ長辺の 1/100） */
+const MOSAIC_DIVISIONS = [100, 75, 55, 40, 30]
+/** ぼかし: いったん長辺を何 px まで縮めるか（小さいほど強い） */
+const BLUR_LONG_SIDES = [48, 36, 28, 20, 14]
+
+export const isMosaicStyle = (value: unknown): value is MosaicStyle =>
+  typeof value === "string" && MOSAIC_STYLES.includes(value as MosaicStyle)
+
+/** 濃さを変えられる隠し方（黒線・白抜きは塗りつぶすだけ） */
+export const hasMosaicStrength = (style: MosaicStyle) =>
+  style === "mosaic" || style === "blur"
+
+const clampStrength = (strength: number) =>
+  Math.min(
+    MOSAIC_STRENGTH_MAX,
+    Math.max(MOSAIC_STRENGTH_MIN, Math.round(strength) || 1),
+  )
+
+/** なめらかに縮める（一気に縮めると粗くなるので半分ずつ） */
+function downscale(
+  source: HTMLImageElement | HTMLCanvasElement,
+  width: number,
+  height: number,
+) {
+  let current: HTMLImageElement | HTMLCanvasElement = source
+  let w = source.width
+  let h = source.height
+  while (w / 2 > width && h / 2 > height) {
+    w = Math.round(w / 2)
+    h = Math.round(h / 2)
+    current = drawScaled(current, w, h)
+  }
+  return drawScaled(current, width, height)
+}
+
+function drawScaled(
+  source: HTMLImageElement | HTMLCanvasElement,
+  width: number,
+  height: number,
+) {
+  const canvas = document.createElement("canvas")
+  canvas.width = Math.max(1, width)
+  canvas.height = Math.max(1, height)
+  const ctx = canvas.getContext("2d")
+  if (ctx === null) throw new Error("canvas is not supported")
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = "high"
+  ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
+  return canvas
+}
+
+/** 画像全体をぼかしたキャンバス（ctx.filter は古い Safari で効かないので、縮めて広げる） */
+function createBlurredCanvas(
+  source: HTMLImageElement | HTMLCanvasElement,
+  longSide: number,
+) {
+  const ratio = longSide / Math.max(source.width, source.height)
+  const small = downscale(
+    source,
+    Math.max(1, Math.round(source.width * ratio)),
+    Math.max(1, Math.round(source.height * ratio)),
+  )
+  // 一気に広げると菱形の模様が出るので 2 段で広げる
+  const middle = drawScaled(small, small.width * 4, small.height * 4)
+  return drawScaled(middle, source.width, source.height)
+}
+
+/**
+ * 画像全体に隠し方をかけたキャンバス（マスクの所だけ切り抜いて重ねる）
+ */
+export function createMosaicEffectCanvas(
+  source: HTMLImageElement | HTMLCanvasElement,
+  style: MosaicStyle,
+  strength: number,
+): HTMLCanvasElement {
+  const level = clampStrength(strength) - 1
+  if (style === "mosaic") {
+    return createPixelatedCanvas(source, MOSAIC_DIVISIONS[level])
+  }
+  if (style === "blur") {
+    return createBlurredCanvas(source, BLUR_LONG_SIDES[level])
+  }
+  const canvas = document.createElement("canvas")
+  canvas.width = source.width
+  canvas.height = source.height
+  const ctx = canvas.getContext("2d")
+  if (ctx === null) throw new Error("canvas is not supported")
+  ctx.fillStyle = style === "black" ? "#000" : "#fff"
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  return canvas
+}
+
+/** 元の画像にマスクの範囲だけ隠し方をかけた画像 */
+export function renderMosaicCanvas(
+  source: HTMLImageElement | HTMLCanvasElement,
+  mask: HTMLCanvasElement,
+  style: MosaicStyle,
+  strength: number,
+): HTMLCanvasElement {
+  const canvas = document.createElement("canvas")
+  canvas.width = source.width
+  canvas.height = source.height
+  const ctx = canvas.getContext("2d")
+  if (ctx === null) throw new Error("canvas is not supported")
+  ctx.drawImage(source, 0, 0)
+  const effect = createMosaicEffectCanvas(source, style, strength)
+  ctx.drawImage(createMaskedMosaicLayer(effect, mask), 0, 0)
+  effect.width = 0
+  effect.height = 0
+  return canvas
+}
+
+/** マスクに何か描いてあるか */
+export function isMaskEmpty(mask: HTMLCanvasElement) {
+  const small = downscale(
+    mask,
+    Math.min(mask.width, 256),
+    Math.min(mask.height, 256),
+  )
+  const ctx = small.getContext("2d", { willReadFrequently: true })
+  if (ctx === null) return true
+  const data = ctx.getImageData(0, 0, small.width, small.height).data
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i] > 0) return false
+  }
+  return true
+}
+
+/**
+ * 検出した範囲がもう隠れているか（「自分でかけ済み」の確認に使う）
+ *
+ * 線画のような細い線（左右か上下の両隣より明るい・暗い 1 点）がどれだけ残っているかを数える。
+ * モザイクはマスの中が同じ色、ぼかしはなだらか、黒塗り・白塗りは 1 色なので、細い線はほとんど無い。
+ * 隠していない絵は輪郭や陰影の線が残る
+ * @returns 細い線の点の割合（0〜1）。マスクが空なら 0
+ */
+export function measureMaskDetail(
+  source: HTMLImageElement | HTMLCanvasElement,
+  mask: HTMLCanvasElement,
+  /** この範囲（元の画像の座標）だけ数える */
+  box?: [number, number, number, number],
+) {
+  const ratio = Math.min(1, 768 / Math.max(source.width, source.height))
+  const width = Math.max(1, Math.round(source.width * ratio))
+  const height = Math.max(1, Math.round(source.height * ratio))
+  const imageCtx = downscale(source, width, height).getContext("2d", {
+    willReadFrequently: true,
+  })
+  const maskCtx = downscale(mask, width, height).getContext("2d", {
+    willReadFrequently: true,
+  })
+  if (imageCtx === null || maskCtx === null) return 0
+  const pixels = imageCtx.getImageData(0, 0, width, height).data
+  const maskPixels = maskCtx.getImageData(0, 0, width, height).data
+
+  const luminance = new Float32Array(width * height)
+  for (let p = 0; p < luminance.length; p++) {
+    luminance[p] =
+      pixels[p * 4] * 0.299 +
+      pixels[p * 4 + 1] * 0.587 +
+      pixels[p * 4 + 2] * 0.114
+  }
+
+  const threshold = 20
+  const isLine = (center: number, a: number, b: number) => {
+    const da = center - a
+    const db = center - b
+    return (
+      (da > threshold && db > threshold) || (da < -threshold && db < -threshold)
+    )
+  }
+
+  const x1 = Math.max(1, Math.floor((box?.[0] ?? 0) * ratio))
+  const y1 = Math.max(1, Math.floor((box?.[1] ?? 0) * ratio))
+  const x2 = Math.min(width - 1, Math.ceil((box?.[2] ?? source.width) * ratio))
+  const y2 = Math.min(
+    height - 1,
+    Math.ceil((box?.[3] ?? source.height) * ratio),
+  )
+
+  // 範囲の縁（隠した所と隠していない所の境目の輪郭）は数えない。縁から r 点内側だけを見る
+  const r = 3
+  const isMasked = (p: number) => maskPixels[p * 4 + 3] >= 128
+  const isInside = (p: number) =>
+    isMasked(p) &&
+    isMasked(Math.max(0, p - r)) &&
+    isMasked(Math.min(luminance.length - 1, p + r)) &&
+    isMasked(Math.max(0, p - r * width)) &&
+    isMasked(Math.min(luminance.length - 1, p + r * width))
+
+  let total = 0
+  let lines = 0
+  for (let y = y1; y < y2; y++) {
+    for (let x = x1; x < x2; x++) {
+      const p = y * width + x
+      if (!isInside(p)) continue
+      total++
+      const c = luminance[p]
+      if (
+        isLine(c, luminance[p - 1], luminance[p + 1]) ||
+        isLine(c, luminance[p - width], luminance[p + width])
+      ) {
+        lines++
+      }
+    }
+  }
+  return total === 0 ? 0 : lines / total
+}
+
+/** これより細い線が多ければ「隠れていない」とみなす（試した画像で決めた値） */
+export const UNHIDDEN_DETAIL_RATIO = 0.035
 
 /** マスクの不透明な所だけピクセル化した画像を残したレイヤー */
 export function createMaskedMosaicLayer(

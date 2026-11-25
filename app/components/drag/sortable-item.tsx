@@ -13,6 +13,16 @@ export type TSortableItem = {
   isContentEdited?: boolean // コンテンツが編集されたかどうか
   fileName?: string | null // アップロードしたファイルの名前（並べ替えの目印。投稿には含めない）
   generationNanoid?: string | null // 生成履歴から選んだ画像の nanoid（生成履歴の「投稿済み」の印に使う）
+  /** 投稿画面でかけたモザイク。content はかけた後の画像で、元の画像・範囲（PNG）・種類・濃さを持っておく */
+  mosaic?: {
+    source: string
+    /** 範囲（PNG の data URL）。空文字はモザイクを全部外したとき */
+    mask: string
+    style: "mosaic" | "black" | "white" | "blur"
+    strength: number
+    /** 自動でかけたまま（手で直していない） */
+    isAuto: boolean
+  } | null
 }
 
 type Props = {
@@ -28,6 +38,8 @@ type Props = {
   optionalButton?: React.ReactNode
   optionalButtonLabel?: string
   onClickOptionButton?: (id: number) => void
+  /** 画像の下に出す小さな表示（自動モザイクの状態など） */
+  footer?: React.ReactNode
 } & Omit<HTMLAttributes<HTMLDivElement>, "onClick">
 
 /** 画像の上のボタン（四隅で同じ大きさ・同じ見た目にそろえる） */
@@ -48,6 +60,7 @@ export const SortableItem = memo(function SortableItem({
   optionalButton,
   optionalButtonLabel,
   onClickOptionButton,
+  footer,
   className,
   style,
   ...props
@@ -128,6 +141,7 @@ export const SortableItem = memo(function SortableItem({
           </button>
         )}
       </div>
+      {footer}
       {item.fileName && (
         <FileNameLabel
           fileName={item.fileName}

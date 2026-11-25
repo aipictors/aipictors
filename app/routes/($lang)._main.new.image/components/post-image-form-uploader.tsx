@@ -1,7 +1,14 @@
-import { ImageIcon, VideoIcon } from "lucide-react"
-import { type Dispatch, useEffect } from "react"
+import {
+  AlertTriangleIcon,
+  ImageIcon,
+  Loader2Icon,
+  ShieldCheckIcon,
+  VideoIcon,
+} from "lucide-react"
+import { type Dispatch, useCallback, useEffect } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
+import type { TSortableItem } from "~/components/drag/sortable-item"
 import { MosaicEditor } from "~/components/mosaic-editor"
 import { Button } from "~/components/ui/button"
 import { config } from "~/config"
@@ -13,8 +20,13 @@ import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/co
 import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
 import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
 import { PostFormItemVideo } from "~/routes/($lang)._main.new.image/components/post-form-item-video"
+import {
+  type PostMosaicBadge,
+  usePostAutoMosaic,
+} from "~/routes/($lang)._main.new.image/hooks/use-post-auto-mosaic"
 import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
+import { maskToDataUrl } from "~/routes/($lang)._main.new.image/utils/post-mosaic-store"
 import {
   type GenerationResultParams,
   toGenerationImageInformation,
@@ -57,7 +69,7 @@ type Props = {
   ) => void
   onInputFiles?: (files: FileList) => void
   token?: string | undefined | null
-  /** 年齢種別が R18 / R18G。一括の自動モザイクはこのときだけ出す */
+  /** 年齢種別が R18 / R18G。自動モザイクはこのときだけ */
   isSensitiveHint?: boolean
   onContentGenerated?: (data: {
     title?: string
@@ -78,6 +90,69 @@ export function PostImageFormUploader(props: Props) {
   const maxImageSizeLabel = formatFileSize(MAX_IMAGE_FILE_SIZE_BYTES)
   const maxVideoSizeLabel = formatFileSize(MAX_VIDEO_FILE_SIZE_BYTES)
   const videoUploadLimits = getVideoUploadLimits(props.currentPassType)
+
+  const mosaic = usePostAutoMosaic({
+    items: props.state.items,
+    isEnabled: props.mediaType === "image" && props.isSensitiveHint === true,
+    dispatch: props.dispatch,
+  })
+
+  const editTargetItem =
+    props.state.editTargetImageBase64 === null
+      ? null
+      : (props.state.items.find(
+          (item) => item.content === props.state.editTargetImageBase64,
+        ) ?? null)
+
+  const renderMosaicBadge = useCallback(
+    (badge: PostMosaicBadge) => {
+      if (badge === null) return null
+      const base =
+        "mt-1 flex items-center justify-center gap-1 rounded-full px-2 py-0.5 text-[11px] leading-4"
+      if (badge.kind === "pending") {
+        return (
+          <div className={cn(base, "bg-white/10 text-zinc-300")}>
+            <Loader2Icon className="size-3 animate-spin" />
+            {t("確認中", "Checking")}
+          </div>
+        )
+      }
+      if (badge.kind === "applied") {
+        return (
+          <div className={cn(base, "bg-emerald-600/80 text-white")}>
+            <ShieldCheckIcon className="size-3" />
+            {badge.isAuto
+              ? t("自動モザイク", "Auto mosaic")
+              : t("モザイク済み", "Mosaicked")}
+          </div>
+        )
+      }
+      if (badge.kind === "warning") {
+        return (
+          <div className={cn(base, "bg-amber-500 font-bold text-black")}>
+            <AlertTriangleIcon className="size-3" />
+            {t("隠れていないかも", "May be uncensored")}
+          </div>
+        )
+      }
+      if (badge.kind === "failed") {
+        return (
+          <div className={cn(base, "bg-red-600/80 text-white")}>
+            {t("確認できませんでした", "Check failed")}
+          </div>
+        )
+      }
+      return (
+        <div className={cn(base, "bg-white/10 text-zinc-400")}>
+          {t("モザイク不要", "No mosaic needed")}
+        </div>
+      )
+    },
+    [t],
+  )
+
+  const renderItemFooter = (item: TSortableItem) =>
+    renderMosaicBadge(mosaic.getBadge(item))
 
   const nextFrame = () =>
     new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
@@ -545,12 +620,7 @@ export function PostImageFormUploader(props: Props) {
             {props.mediaType === "image" &&
               props.state.items.length !== 0 &&
               props.isSensitiveHint && (
-                <PostFormAutoMosaicBar
-                  items={props.state.items}
-                  setItems={(items) => {
-                    props.dispatch({ type: "SET_ITEMS", payload: items })
-                  }}
-                />
+                <PostFormAutoMosaicBar mosaic={mosaic} />
               )}
             {props.mediaType === "image" ? (
               <PostFormItemDraggableImages
@@ -592,6 +662,7 @@ export function PostImageFormUploader(props: Props) {
                   })
                 }}
                 onInputFiles={props.onInputFiles}
+                renderItemFooter={renderItemFooter}
               />
             ) : (
               <PostFormItemVideo
@@ -733,7 +804,15 @@ export function PostImageFormUploader(props: Props) {
       )}
       {props.state.editTargetImageBase64 !== null && (
         <MosaicEditor
-          imageUrl={props.state.editTargetImageBase64}
+          // モザイクをかけた画像は、元の画像と範囲を開いて直す（種類・濃さも変えられる）
+          imageUrl={
+            editTargetItem?.mosaic?.source ?? props.state.editTargetImageBase64
+          }
+          initialMask={editTargetItem?.mosaic?.mask || null}
+          initialStyle={editTargetItem?.mosaic?.style ?? mosaic.settings.style}
+          initialStrength={
+            editTargetItem?.mosaic?.strength ?? mosaic.settings.strength
+          }
           isAutoMosaic={true}
           isR18={props.isSensitiveHint}
           onSubmit={(base64: string) => {
@@ -742,6 +821,42 @@ export function PostImageFormUploader(props: Props) {
               payload: { base64 },
             })
           }}
+          onSubmitMosaic={
+            editTargetItem === null || editTargetItem.content === null
+              ? undefined
+              : async (result) => {
+                  const from = editTargetItem.content
+                  const source =
+                    editTargetItem.mosaic?.source ?? editTargetItem.content
+                  if (from === null || source === null) return
+                  const mask = result.isEmpty
+                    ? ""
+                    : await maskToDataUrl(result.mask)
+                  props.dispatch({
+                    type: "REPLACE_ITEM",
+                    payload: {
+                      from,
+                      item: {
+                        ...editTargetItem,
+                        // 全部消したら元の画像に戻す（自動でかけ直さないよう、外したことを覚えておく）
+                        content: result.isEmpty ? source : result.dataUrl,
+                        isContentEdited: true,
+                        mosaic: {
+                          source,
+                          mask,
+                          style: result.style,
+                          strength: result.strength,
+                          isAuto: false,
+                        },
+                      },
+                    },
+                  })
+                  props.dispatch({
+                    type: "SET_EDIT_TARGET_IMAGE_BASE64",
+                    payload: null,
+                  })
+                }
+          }
           onClose={() => {
             props.dispatch({
               type: "SET_EDIT_TARGET_IMAGE_BASE64",

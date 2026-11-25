@@ -24,19 +24,42 @@ import { cn } from "~/lib/utils"
 import {
   canvasToWebpDataUrl,
   createMaskedMosaicLayer,
-  createPixelatedCanvas,
+  createMosaicEffectCanvas,
   detectAutoMosaic,
+  hasMosaicStrength,
   loadMosaicImage,
+  MOSAIC_STRENGTH_MAX,
+  MOSAIC_STRENGTH_MIN,
+  MOSAIC_STYLES,
+  type MosaicStyle,
   preloadAutoMosaic,
 } from "~/utils/auto-mosaic"
 
+export type MosaicEditorResult = {
+  /** 元の画像にモザイクをかけた画像（WebP の data URL） */
+  dataUrl: string
+  /** かけた範囲（画像と同じ大きさ。かける所だけ不透明） */
+  mask: HTMLCanvasElement
+  /** 範囲が空（全部消した） */
+  isEmpty: boolean
+  style: MosaicStyle
+  strength: number
+}
+
 type Props = {
+  /** 元の画像（モザイクをかける前） */
   imageUrl: string
   onSubmit(dataUrl: string): void
+  /** 範囲・種類・濃さも受け取る（あとから直せるように）。あれば onSubmit より先に呼ぶ */
+  onSubmitMosaic?(result: MosaicEditorResult): void
   onClose(): void
+  /** 前にかけた範囲（data URL かキャンバス）。この上から足したり消したりできる */
+  initialMask?: string | HTMLCanvasElement | null
+  initialStyle?: MosaicStyle
+  initialStrength?: number
   /** 自動モザイク（ベータ）のボタンを出す */
   isAutoMosaic?: boolean
-  /** 年齢種別が R18 / R18G（投稿時に自動でモザイクがかかる旨を出す。胸部の選択はこのときだけ） */
+  /** 年齢種別が R18 / R18G（自動モザイクの胸部の選択はこのときだけ） */
   isR18?: boolean
 }
 
@@ -48,11 +71,14 @@ type Point = { x: number; y: number }
 type Operation =
   | { type: "brush" | "eraser"; width: number; points: Point[] }
   | { type: "lasso"; points: Point[] }
-  | { type: "layer"; layer: HTMLCanvasElement }
+  /** 範囲をまとめて足す（自動モザイク・前にかけた範囲）。mask はかける所だけ不透明 */
+  | { type: "layer"; mask: HTMLCanvasElement }
 
 type View = { scale: number; x: number; y: number }
 
 const BRUSH_SIZE_KEY = "mosaic-editor-brush-size"
+const STYLE_KEY = "mosaic-editor-style"
+const STRENGTH_KEY = "mosaic-editor-strength"
 const TOOL_KEY = "mosaic-editor-tool"
 const MIN_SCALE = 0.05
 const MAX_SCALE = 8
@@ -63,10 +89,49 @@ const readNumber = (key: string, fallback: number) => {
   return Number.isFinite(value) && value > 0 ? value : fallback
 }
 
+const readStyle = (): MosaicStyle => {
+  if (typeof window === "undefined") return "mosaic"
+  const value = localStorage.getItem(STYLE_KEY)
+  return MOSAIC_STYLES.includes(value as MosaicStyle)
+    ? (value as MosaicStyle)
+    : "mosaic"
+}
+
 const readTool = (): Tool => {
   if (typeof window === "undefined") return "brush"
   const value = localStorage.getItem(TOOL_KEY)
   return value === "lasso" || value === "eraser" ? value : "brush"
+}
+
+/** 範囲（data URL かキャンバス）を画像と同じ大きさのキャンバスに */
+async function toMaskCanvas(
+  mask: string | HTMLCanvasElement,
+  width: number,
+  height: number,
+) {
+  const canvas = document.createElement("canvas")
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return canvas
+  const source = typeof mask === "string" ? await loadMosaicImage(mask) : mask
+  ctx.drawImage(source, 0, 0, width, height)
+  return canvas
+}
+
+/** 何も描いていないキャンバスか（小さく縮めて調べる） */
+function isCanvasEmpty(canvas: HTMLCanvasElement) {
+  const small = document.createElement("canvas")
+  small.width = Math.min(canvas.width, 256)
+  small.height = Math.min(canvas.height, 256)
+  const ctx = small.getContext("2d", { willReadFrequently: true })
+  if (!ctx) return false
+  ctx.drawImage(canvas, 0, 0, small.width, small.height)
+  const data = ctx.getImageData(0, 0, small.width, small.height).data
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i] > 0) return false
+  }
+  return true
 }
 
 /**
@@ -83,7 +148,10 @@ export function MosaicEditor(props: Props): React.ReactNode {
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const imageRef = useRef<HTMLImageElement | null>(null)
-  const pixelatedRef = useRef<HTMLCanvasElement | null>(null)
+  // 画像全体に今の種類・濃さをかけたもの（塗った所だけ見せる）
+  const effectRef = useRef<HTMLCanvasElement | null>(null)
+  // 前にかけた範囲（戻すでは消えない。消すツールで消せる）
+  const baseOperationsRef = useRef<Operation[]>([])
 
   const [isMounted, setIsMounted] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -92,6 +160,19 @@ export function MosaicEditor(props: Props): React.ReactNode {
   const [brushSize, setBrushSize] = useState(() =>
     readNumber(BRUSH_SIZE_KEY, 32),
   )
+  const [style, setStyle] = useState<MosaicStyle>(
+    () => props.initialStyle ?? readStyle(),
+  )
+  const [strength, setStrength] = useState(
+    () =>
+      props.initialStrength ??
+      Math.min(
+        MOSAIC_STRENGTH_MAX,
+        Math.max(MOSAIC_STRENGTH_MIN, readNumber(STRENGTH_KEY, 1)),
+      ),
+  )
+  // 種類・濃さを変えたか（塗っていなくても完了で反映する）
+  const [isSettingsChanged, setIsSettingsChanged] = useState(false)
   const [view, setView] = useState<View>({ scale: 1, x: 0, y: 0 })
   const viewRef = useRef(view)
   viewRef.current = view
@@ -161,6 +242,11 @@ export function MosaicEditor(props: Props): React.ReactNode {
     if (tool !== "move") localStorage.setItem(TOOL_KEY, tool)
   }, [tool])
 
+  useEffect(() => {
+    localStorage.setItem(STYLE_KEY, style)
+    localStorage.setItem(STRENGTH_KEY, String(strength))
+  }, [style, strength])
+
   /** 画面に収まる大きさにする */
   const fitView = useCallback(() => {
     const viewport = viewportRef.current
@@ -183,14 +269,21 @@ export function MosaicEditor(props: Props): React.ReactNode {
     let isCancelled = false
     setIsLoading(true)
     loadMosaicImage(props.imageUrl)
-      .then((image) => {
+      .then(async (image) => {
+        const initialMask = props.initialMask
+          ? await toMaskCanvas(props.initialMask, image.width, image.height)
+          : null
         if (isCancelled) return
         imageRef.current = image
-        pixelatedRef.current = createPixelatedCanvas(image)
+        effectRef.current = createMosaicEffectCanvas(image, style, strength)
         patternRef.current = null
+        baseOperationsRef.current = initialMask
+          ? [{ type: "layer", mask: initialMask }]
+          : []
         setSize({ width: image.width, height: image.height })
         setOperations([])
         setRedoStack([])
+        setIsSettingsChanged(false)
         setIsLoading(false)
       })
       .catch(() => {
@@ -203,14 +296,29 @@ export function MosaicEditor(props: Props): React.ReactNode {
     }
   }, [props.imageUrl])
 
-  // キャンバスの大きさが決まったら元の画像を描いて全体を表示する
+  // キャンバスの大きさが決まったら元の画像と前にかけた範囲を描いて全体を表示する
   useEffect(() => {
     const base = baseCanvasRef.current
     const image = imageRef.current
     if (!base || !image || size.width === 0) return
     base.getContext("2d")?.drawImage(image, 0, 0)
+    redrawOverlay(operations)
     fitView()
   }, [size, fitView])
+
+  // 種類・濃さを変えたら、かけた所を描き直す
+  const isFirstEffectRef = useRef(true)
+  useEffect(() => {
+    if (isFirstEffectRef.current) {
+      isFirstEffectRef.current = false
+      return
+    }
+    const image = imageRef.current
+    if (!image) return
+    effectRef.current = createMosaicEffectCanvas(image, style, strength)
+    patternRef.current = null
+    redrawOverlay(operations)
+  }, [style, strength])
 
   useEffect(() => {
     window.addEventListener("resize", fitView)
@@ -230,22 +338,33 @@ export function MosaicEditor(props: Props): React.ReactNode {
     return pattern
   }
 
-  /** 1 つの操作を層に描く */
+  /**
+   * 1 つの操作を層に描く
+   * @param paint "mask" のときは範囲だけ（白で）描く。完了のときに範囲を作るのに使う
+   */
   const drawOperation = (
     ctx: CanvasRenderingContext2D,
     operation: Operation,
     from = 0,
+    paint: "effect" | "mask" = "effect",
   ) => {
-    const pixelated = pixelatedRef.current
-    if (!pixelated) return
+    const effect = effectRef.current
+    if (!effect) return
     ctx.save()
     if (operation.type === "layer") {
       ctx.globalCompositeOperation = "source-over"
-      ctx.drawImage(operation.layer, 0, 0)
+      if (paint === "mask") {
+        ctx.drawImage(operation.mask, 0, 0)
+      } else {
+        const layer = createMaskedMosaicLayer(effect, operation.mask)
+        ctx.drawImage(layer, 0, 0)
+        layer.width = 0
+        layer.height = 0
+      }
       ctx.restore()
       return
     }
-    const pattern = getPattern(ctx, pixelated)
+    const pattern = paint === "mask" ? "#fff" : getPattern(ctx, effect)
     if (pattern === null) {
       ctx.restore()
       return
@@ -294,7 +413,9 @@ export function MosaicEditor(props: Props): React.ReactNode {
     const ctx = overlay?.getContext("2d")
     if (!overlay || !ctx) return
     ctx.clearRect(0, 0, overlay.width, overlay.height)
-    for (const operation of list) drawOperation(ctx, operation)
+    for (const operation of [...baseOperationsRef.current, ...list]) {
+      drawOperation(ctx, operation)
+    }
   }
 
   const commitOperation = (operation: Operation) => {
@@ -572,8 +693,7 @@ export function MosaicEditor(props: Props): React.ReactNode {
 
   const runAutoMosaic = async () => {
     const image = imageRef.current
-    const pixelated = pixelatedRef.current
-    if (!image || !pixelated || isAutoRunning) return
+    if (!image || isAutoRunning) return
     setIsAutoRunning(true)
     try {
       const result = await detectAutoMosaic(image, {
@@ -588,10 +708,7 @@ export function MosaicEditor(props: Props): React.ReactNode {
         )
         return
       }
-      const operation: Operation = {
-        type: "layer",
-        layer: createMaskedMosaicLayer(pixelated, result.mask),
-      }
+      const operation: Operation = { type: "layer", mask: result.mask }
       const ctx = overlayCanvasRef.current?.getContext("2d")
       if (ctx) drawOperation(ctx, operation)
       commitOperation(operation)
@@ -620,7 +737,7 @@ export function MosaicEditor(props: Props): React.ReactNode {
     const image = imageRef.current
     const overlay = overlayCanvasRef.current
     if (!image || !overlay || isSubmitting) return
-    if (operations.length === 0) {
+    if (operations.length === 0 && !isSettingsChanged) {
       props.onClose()
       return
     }
@@ -633,7 +750,26 @@ export function MosaicEditor(props: Props): React.ReactNode {
     ctx.drawImage(overlay, 0, 0)
     setIsSubmitting(true)
     try {
-      props.onSubmit(await canvasToWebpDataUrl(canvas))
+      const dataUrl = await canvasToWebpDataUrl(canvas)
+      if (props.onSubmitMosaic) {
+        const mask = document.createElement("canvas")
+        mask.width = image.width
+        mask.height = image.height
+        const maskCtx = mask.getContext("2d")
+        if (!maskCtx) return
+        for (const operation of [...baseOperationsRef.current, ...operations]) {
+          drawOperation(maskCtx, operation, 0, "mask")
+        }
+        props.onSubmitMosaic({
+          dataUrl,
+          mask,
+          isEmpty: isCanvasEmpty(mask),
+          style,
+          strength,
+        })
+        return
+      }
+      props.onSubmit(dataUrl)
     } catch (error) {
       console.error(error)
       toast.error(t("画像を書き出せませんでした", "Failed to export the image"))
@@ -670,6 +806,13 @@ export function MosaicEditor(props: Props): React.ReactNode {
     },
   ]
 
+  const styles: { value: MosaicStyle; label: string }[] = [
+    { value: "mosaic", label: t("モザイク", "Mosaic") },
+    { value: "black", label: t("黒線", "Black") },
+    { value: "white", label: t("白抜き", "White") },
+    { value: "blur", label: t("ぼかし", "Blur") },
+  ]
+
   const hint =
     tool === "lasso"
       ? t("なぞって囲んだ所にモザイク", "Draw around an area to mosaic it")
@@ -694,6 +837,11 @@ export function MosaicEditor(props: Props): React.ReactNode {
         </Button>
         <div className="flex-1 truncate font-bold text-sm">
           {t("モザイク", "Mosaic")}
+          {baseOperationsRef.current.length > 0 && (
+            <span className="ml-2 font-normal text-xs text-zinc-400">
+              {t("消すで範囲を減らせます", "Erase to shrink the area")}
+            </span>
+          )}
         </div>
         <Button
           variant="ghost"
@@ -840,14 +988,6 @@ export function MosaicEditor(props: Props): React.ReactNode {
             )}
           </div>
         )}
-        {props.isR18 && !isLoading && (
-          <p className="-translate-x-1/2 pointer-events-none absolute top-16 left-1/2 w-max max-w-[90%] rounded-full bg-emerald-600/90 px-3 py-1 text-center text-white text-xs shadow">
-            {t(
-              "R18 作品は投稿するときにも自動でモザイクがかかります",
-              "R18 works are also mosaicked automatically when posting",
-            )}
-          </p>
-        )}
 
         {/* 拡大・縮小・全体・比較 */}
         <div
@@ -894,8 +1034,61 @@ export function MosaicEditor(props: Props): React.ReactNode {
         </div>
       </div>
 
-      {/* 下: ブラシの太さとツール */}
+      {/* 下: 種類・濃さ、ブラシの太さとツール */}
       <div className="shrink-0 border-zinc-800 border-t bg-zinc-900 pb-[env(safe-area-inset-bottom)]">
+        <div className="mx-auto flex max-w-xl flex-wrap items-center gap-x-3 gap-y-1 px-3 pt-2">
+          <div
+            className="flex shrink-0 rounded-full bg-zinc-800 p-0.5"
+            role="group"
+            aria-label={t("隠し方", "Style")}
+          >
+            {styles.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                aria-pressed={style === item.value}
+                onClick={() => {
+                  setStyle(item.value)
+                  setIsSettingsChanged(true)
+                }}
+                className={cn(
+                  "h-8 rounded-full px-3 text-xs transition-colors",
+                  style === item.value
+                    ? "bg-white font-bold text-zinc-900"
+                    : "text-zinc-300 hover:text-white",
+                )}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          {hasMosaicStrength(style) ? (
+            <div className="flex min-w-40 flex-1 items-center gap-2">
+              <span className="shrink-0 text-xs text-zinc-400">
+                {t("濃さ", "Strength")}
+              </span>
+              <Slider
+                value={[strength]}
+                onValueChange={(value) => {
+                  setStrength(value[0])
+                  setIsSettingsChanged(true)
+                }}
+                aria-label={t("濃さ", "Strength")}
+                min={MOSAIC_STRENGTH_MIN}
+                max={MOSAIC_STRENGTH_MAX}
+                step={1}
+                className="flex-1"
+              />
+              <span className="w-4 shrink-0 text-right text-xs text-zinc-300">
+                {strength}
+              </span>
+            </div>
+          ) : (
+            <span className="flex-1 text-xs text-zinc-500">
+              {t("塗りつぶします", "Solid fill")}
+            </span>
+          )}
+        </div>
         <div className="mx-auto flex h-12 max-w-xl items-center gap-3 px-4">
           {isBrushTool ? (
             <>

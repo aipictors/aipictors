@@ -35,6 +35,8 @@ type Props = {
   /** 左下のボタンを押したとき（何枚目か） */
   onClickOptionButton?: (index: number) => void
   dummyEnableDragItem?: React.ReactNode // アイテム一覧に並び替えできないダミーアイテム
+  /** 画像の下に出す小さな表示 */
+  renderItemFooter?: (item: TSortableItem) => React.ReactNode
 }
 
 /**
@@ -137,6 +139,7 @@ export function SortableItems(props: Props): React.ReactNode {
               optionalButton={props.optionalButton}
               optionalButtonLabel={props.optionalButtonLabel}
               onClickOptionButton={clickOption}
+              footer={props.renderItemFooter?.(item)}
             />
           ))}
           {props.dummyEnableDragItem && <div>{props.dummyEnableDragItem}</div>}

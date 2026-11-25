@@ -32,6 +32,14 @@ export const vPostImageFormAction = union([
     }),
   }),
   object({
+    /** 1 枚だけ差し替える（モザイクの自動・編集）。いまの画像が from のときだけ差し替え、サムネイルも合わせる */
+    type: literal("REPLACE_ITEM"),
+    payload: object({
+      from: string(),
+      item: vSortableItem,
+    }),
+  }),
+  object({
     type: literal("SET_EDIT_TARGET_IMAGE_BASE64"),
     payload: nullable(string()),
   }),
