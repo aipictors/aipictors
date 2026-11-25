@@ -6,6 +6,10 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
+import {
+  originalOnlyWhere,
+  useHomeOriginalOnly,
+} from "~/routes/($lang)._main._index/hooks/use-original-only"
 import { useNavigate } from "~/lib/app/locale-router"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
@@ -51,9 +55,14 @@ export function WorksPaginationMode({ anchorAt, onSelect, ...rest }: Props) {
     }
   }, [currentPage, rest.page, rest.setPage])
 
+  const { isOriginalOnly } = useHomeOriginalOnly()
+
   const where = useMemo(
-    () => makeWhere(rest, anchorAt, viewerRatings.normalRatings),
-    [rest, anchorAt, viewerRatings.normalRatings],
+    () => ({
+      ...makeWhere(rest, anchorAt, viewerRatings.normalRatings),
+      ...originalOnlyWhere(isOriginalOnly),
+    }),
+    [rest, anchorAt, viewerRatings.normalRatings, isOriginalOnly],
   )
 
   const { data, loading, error, refetch } = useQuery(WorksQuery, {

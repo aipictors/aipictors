@@ -25,6 +25,8 @@ import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/h
 import { RecommendedFeedShelf } from "~/routes/($lang)._main._index/components/recommended-feed-shelf"
 import { useFeedEvents } from "~/routes/($lang)._main._index/hooks/use-feed-events"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
+import { useHomeOriginalOnly } from "~/routes/($lang)._main._index/hooks/use-original-only"
+import { isOriginalWork } from "~/routes/($lang)._main._index/utils/original-work-tags"
 import {
   pickRecommendedFeedSnapshot,
   readRecommendedFeedSnapshot,
@@ -157,14 +159,21 @@ export function RecommendedFeedContents(props: Props) {
 
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set())
 
+  // おすすめの並びはサーバーでタグを絞れないので、「オリジナルのみ」はここで絞る
+  const { isOriginalOnly } = useHomeOriginalOnly()
+
+  /** 読み込んだ件数（続きを読む位置。絞り込んで減った後の数ではない） */
+  const loadedCount = baseWorks.length + extraWorks.length
+
   const works = useMemo(() => {
     const seen = new Set<string>()
     return [...baseWorks, ...extraWorks].filter((work) => {
       if (seen.has(work.id) || hiddenIds.has(work.id)) return false
+      if (isOriginalOnly && !isOriginalWork(work.tagNames)) return false
       seen.add(work.id)
       return true
     })
-  }, [baseWorks, extraWorks, hiddenIds])
+  }, [baseWorks, extraWorks, hiddenIds, isOriginalOnly])
 
   // 見た・開いた・興味なしを記録して、おすすめの並べ替えと学習に使う
   const feedEvents = useFeedEvents()
@@ -230,6 +239,12 @@ export function RecommendedFeedContents(props: Props) {
         <HomeGuestJoinCard />
       ) : null
     }
+    // 棚（フォロー新着・お気に入りタグ新着）は「オリジナルのみ」で絞っていないので、オンのときは出さない
+    if (isOriginalOnly) {
+      return position === SHELF_AT[0] && authContext.isNotLoggedIn ? (
+        <HomeGuestJoinCard />
+      ) : null
+    }
     if (position === SHELF_AT[0]) {
       return (
         <>
@@ -266,7 +281,7 @@ export function RecommendedFeedContents(props: Props) {
       const result = await client.query({
         query: recommendedFeedWorksQuery,
         variables: {
-          offset: works.length,
+          offset: loadedCount,
           limit: RECOMMENDED_PER_PAGE,
           ratings:
             isUsingInitial || ratings.length === 0 ? guestRatings : ratings,
@@ -285,14 +300,14 @@ export function RecommendedFeedContents(props: Props) {
     isLoadingMore,
     hasNext,
     client,
-    works.length,
+    loadedCount,
     isUsingInitial,
     ratings,
     guestRatings,
   ])
 
   const sentinelRef = useInfiniteScroll(() => void loadMore(), {
-    hasNext: hasNext && works.length > 0,
+    hasNext: hasNext && loadedCount > 0,
     loading: isLoadingMore,
   })
 
@@ -301,6 +316,26 @@ export function RecommendedFeedContents(props: Props) {
     isSensitive && error === undefined && personalWorks === undefined
   if (works.length === 0 && (loading || isWaitingSensitive)) {
     return <HomeNewWorksSkeleton view="new" isPagination={false} />
+  }
+
+  // 「オリジナルのみ」で読み込んだ分に 1 件も無いときは、続きを読みながら待つ
+  if (works.length === 0 && isOriginalOnly && loadedCount > 0 && !error) {
+    return (
+      <div>
+        <p className="py-10 text-center text-muted-foreground text-sm">
+          {hasNext
+            ? t(
+                "オリジナル系のタグが付いた作品を探しています…",
+                "Looking for works with original tags…",
+              )
+            : t(
+                "ここ3日のおすすめに、オリジナル系のタグが付いた作品はありません",
+                "No recommended works with original tags in the last 3 days",
+              )}
+        </p>
+        <div ref={sentinelRef} className="h-10" />
+      </div>
+    )
   }
 
   if (works.length === 0) {

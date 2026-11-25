@@ -33,7 +33,9 @@ import { useFeedLoadMore } from "~/routes/($lang)._main._index/hooks/use-feed-lo
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
 import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
+import { useHomeOriginalOnly } from "~/routes/($lang)._main._index/hooks/use-original-only"
 import { saveFollowFeedSnapshot } from "~/routes/($lang)._main._index/utils/follow-feed-snapshot"
+import { isOriginalWork } from "~/routes/($lang)._main._index/utils/original-work-tags"
 import {
   CommentListItemFragment,
   WorkCommentList,
@@ -640,12 +642,26 @@ function FeedContent({
     }))
   }
 
-  const works = posts
+  const { isOriginalOnly } = useHomeOriginalOnly()
+
+  const allWorks = posts
     .filter((post): post is PostItem & { work: WorkItem } => post?.work != null)
     .map((post) => post.work)
+  // フォロー新着はサーバーでタグを絞れないので、「オリジナルのみ」はここで絞る
+  const works = isOriginalOnly
+    ? allWorks.filter((work) => isOriginalWork(work.tagNames))
+    : allWorks
 
   if (works.length === 0) {
-    return null
+    // 続けて表示ではページごとに出ると並んでしまうので、ページ送りのときだけ書く
+    return isOriginalOnly && allWorks.length > 0 && _isPagination ? (
+      <p className="py-10 text-center text-muted-foreground text-sm">
+        {t(
+          "ここまでの作品に、オリジナル系のタグが付いたものはありません",
+          "No works with original tags here",
+        )}
+      </p>
+    ) : null
   }
 
   return (

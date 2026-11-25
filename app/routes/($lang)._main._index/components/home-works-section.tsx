@@ -1,6 +1,7 @@
 import type { FragmentOf } from "gql.tada"
 import { useMemo } from "react"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { useHomeOriginalOnly } from "~/routes/($lang)._main._index/hooks/use-original-only"
 import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
 import type { ImageStyle, WorkOrderBy, WorkType } from "../types/works"
 import { WorksInfiniteMode } from "./works-infinite-mode"
@@ -26,7 +27,8 @@ interface Props {
 
 export function HomeWorksSection(props: Props) {
   const anchorAt = useMemo(() => getAnchorAt(), [])
-  const key = `${props.timeRange}-${props.workType}-${props.sortType}-${props.isPagination}`
+  const { isOriginalOnly } = useHomeOriginalOnly()
+  const key = `${props.timeRange}-${props.workType}-${props.sortType}-${props.isPagination}-${isOriginalOnly}`
   const updateWorks = props.updateWorks ?? (() => {})
 
   return (

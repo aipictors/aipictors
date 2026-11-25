@@ -20,10 +20,18 @@ import { HomeGuestHero } from "~/routes/($lang)._main._index/components/home-gue
 import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeNewTabContent } from "~/routes/($lang)._main._index/components/home-new-tab-content"
 import { HomeNewcomerReactionsCard } from "~/routes/($lang)._main._index/components/home-newcomer-reactions-card"
+import {
+  HomeOriginalOnlyNotice,
+  HomeOriginalOnlyToggle,
+} from "~/routes/($lang)._main._index/components/home-original-only-toggle"
 import { HomeRankingTabContent } from "~/routes/($lang)._main._index/components/home-ranking-tab-content"
 import { HomeRecommendedTabContent } from "~/routes/($lang)._main._index/components/home-recommended-tab-content"
 import { homeLoader } from "~/routes/($lang)._main._index/home-loader.server"
 import { useHomePageState } from "~/routes/($lang)._main._index/hooks/use-home-page-state"
+import {
+  HomeOriginalOnlyContext,
+  useOriginalOnlyState,
+} from "~/routes/($lang)._main._index/hooks/use-original-only"
 import {
   HOME_TAB_PATHS,
   type HomeTab,
@@ -45,6 +53,16 @@ type HomeIndexPageProps = {
 }
 
 export function HomeIndexPage(props: HomeIndexPageProps = {}) {
+  // 「オリジナルのみ」はホームのタブの中の一覧で共有する
+  const originalOnly = useOriginalOnlyState()
+  return (
+    <HomeOriginalOnlyContext.Provider value={originalOnly}>
+      <HomeIndexPageContent {...props} />
+    </HomeOriginalOnlyContext.Provider>
+  )
+}
+
+function HomeIndexPageContent(props: HomeIndexPageProps) {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -178,7 +196,31 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 variant="pill"
               />
             </div>
+            <HomeOriginalOnlyToggle />
           </div>
+          {/* 「オリジナルのみ」が効かないタブでは、そう書いておく */}
+          {(isRankingOpen ||
+            currentTab === "home" ||
+            currentTab === "follow-tag") && (
+            <HomeOriginalOnlyNotice
+              text={
+                isRankingOpen
+                  ? t(
+                      "ランキングは「オリジナルのみ」の対象外です",
+                      'Ranking is not filtered by "Originals only"',
+                    )
+                  : currentTab === "follow-tag"
+                    ? t(
+                        "お気に入りタグの新着は「オリジナルのみ」の対象外です",
+                        'Favorite tags are not filtered by "Originals only"',
+                      )
+                    : t(
+                        "ホームの欄は「オリジナルのみ」の対象外です（新着・おすすめ・フォロー中で絞り込めます）",
+                        'Home sections are not filtered by "Originals only" (use New, For you or Following)',
+                      )
+              }
+            />
+          )}
         </div>
         {/* ---------------------- タブ: ランキング（ページを移らずに出す） ---------------------- */}
         {isRankingOpen && <HomeRankingTabContent />}

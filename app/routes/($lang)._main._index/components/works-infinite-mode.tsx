@@ -11,6 +11,10 @@ import {
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
+import {
+  originalOnlyWhere,
+  useHomeOriginalOnly,
+} from "~/routes/($lang)._main._index/hooks/use-original-only"
 import { WorksQuery } from "~/routes/($lang)._main._index/components/works-pagination-mode"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { usePagedInfinite } from "../hooks/use-paged-infinite"
@@ -45,9 +49,14 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
   const { isLoading: authLoading } = useContext(AuthContext)
   const viewerRatings = useViewerRatings()
 
+  const { isOriginalOnly } = useHomeOriginalOnly()
+
   const where = useMemo(
-    () => makeWhere(rest, anchorAt, viewerRatings.normalRatings),
-    [rest, anchorAt, viewerRatings.normalRatings],
+    () => ({
+      ...makeWhere(rest, anchorAt, viewerRatings.normalRatings),
+      ...originalOnlyWhere(isOriginalOnly),
+    }),
+    [rest, anchorAt, viewerRatings.normalRatings, isOriginalOnly],
   )
   const keyForStore = useMemo(() => JSON.stringify(where), [where])
 
