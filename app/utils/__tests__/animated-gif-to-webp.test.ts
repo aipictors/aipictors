@@ -3,6 +3,7 @@ import { deflateSync, inflateSync } from "node:zlib"
 import {
   composeGifFrames,
   type GifFrame,
+  isAnimatedGifBytes,
   isAnimatedPngBytes,
   isAnimatedWebpBytes,
   isGifBytes,
@@ -363,5 +364,31 @@ describe("toCropRect", () => {
       width: 900,
       height: 300,
     })
+  })
+})
+
+describe("isAnimatedGifBytes", () => {
+  /** 1×1 の GIF（グローバルの色表 2 色）を frames コマ */
+  const gif = (frames: number) => {
+    const header = concat(
+      ascii("GIF89a"),
+      Uint8Array.from([1, 0, 1, 0, 0x80, 0, 0]),
+      new Uint8Array(6),
+    )
+    const gce = Uint8Array.from([0x21, 0xf9, 4, 0, 10, 0, 0, 0])
+    const image = Uint8Array.from([
+      0x2c, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 2, 0x4c, 0x01, 0,
+    ])
+    return concat(
+      header,
+      ...Array.from({ length: frames }, () => concat(gce, image)),
+      Uint8Array.from([0x3b]),
+    )
+  }
+
+  test("2 コマ以上の GIF だけをアニメーションとみなす（1 コマの GIF は静止画）", () => {
+    expect(isAnimatedGifBytes(gif(1))).toBe(false)
+    expect(isAnimatedGifBytes(gif(2))).toBe(true)
+    expect(isAnimatedGifBytes(ascii("RIFF....WEBP"))).toBe(false)
   })
 })

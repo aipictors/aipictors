@@ -18,6 +18,7 @@ import { LoginPage } from "~/components/page/login-page"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { AuthContext } from "~/contexts/auth-context"
+import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -36,6 +37,18 @@ import { uploadPublicImage } from "~/utils/upload-public-image"
  */
 export function NewProfileEditorForm() {
   const t = useTranslation()
+  // アイコン・ヘッダーのアニメーションは Aipictors+ の特典（サーバーでも確かめる）
+  const isAnimatedProfileAllowed = usePlusStatus() === "member"
+  const animatedProfileLocked = isAnimatedProfileAllowed
+    ? undefined
+    : {
+        message: t(
+          "動くアイコン・ヘッダー（GIF・APNG・アニメーション WebP）は Aipictors+ の特典です。今回は静止画として登録します",
+          "Animated icons and headers (GIF, APNG, animated WebP) are an Aipictors+ perk. This image will be added as a still image",
+        ),
+        actionLabel: t("プランを見る", "See plans"),
+        onAction: () => window.open("/plus", "_blank", "noopener"),
+      }
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
 
@@ -193,7 +206,12 @@ export function NewProfileEditorForm() {
             isHidePreviewImage={false}
             cropWidth={1200}
             cropHeight={400}
-            animatedGif={PROFILE_HEADER_ANIMATED_OPTIONS}
+            animatedGif={
+              isAnimatedProfileAllowed
+                ? PROFILE_HEADER_ANIMATED_OPTIONS
+                : undefined
+            }
+            animatedLocked={animatedProfileLocked}
             onDeleteImage={() => setHeaderImage("")}
             onCropToBase64={setHeaderImage}
             fileExtension={"webp"}
@@ -227,7 +245,12 @@ export function NewProfileEditorForm() {
               isHidePreviewImage={false}
               cropWidth={240}
               cropHeight={240}
-              animatedGif={PROFILE_ICON_ANIMATED_OPTIONS}
+              animatedGif={
+                isAnimatedProfileAllowed
+                  ? PROFILE_ICON_ANIMATED_OPTIONS
+                  : undefined
+              }
+              animatedLocked={animatedProfileLocked}
               onDeleteImage={() => setProfileImage("")}
               onCropToBase64={setProfileImage}
               fileExtension={"webp"}

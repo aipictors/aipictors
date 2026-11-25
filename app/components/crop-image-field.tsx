@@ -16,6 +16,7 @@ import { Input } from "~/components/ui/input"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   type AnimatedGifOptions,
+  isAnimatedImageFile,
   toAnimatedWebpDataUrl,
 } from "~/utils/animated-gif-to-webp"
 import {
@@ -38,6 +39,15 @@ type Props = {
    * canvas で切り抜くと 1 コマ目だけの静止画になってしまう
    */
   animatedGif?: AnimatedGifOptions
+  /**
+   * アニメーション画像を使えないとき（アイコン・ヘッダーのアニメーションは有料プランの特典）。
+   * アニメーション画像を選ぶと案内を出し、静止画として切り抜きの画面を開く
+   */
+  animatedLocked?: {
+    message: string
+    actionLabel: string
+    onAction: () => void
+  }
   /**
    * children を渡したときに、その要素へ画像のドラッグ＆ドロップも受け付ける。
    * ドラッグ中は data-drag-over="true" が付く
@@ -173,6 +183,18 @@ export function CropImageField(props: Props): React.ReactNode {
    * 選んだ画像を受け取る。アニメーション画像は切り抜きの画面を出さずにそのまま使う
    */
   const selectFile = async (file: File) => {
+    if (
+      props.animatedLocked &&
+      (await isAnimatedImageFile(file).catch(() => false))
+    ) {
+      const locked = props.animatedLocked
+      toast(locked.message, {
+        duration: 8000,
+        action: { label: locked.actionLabel, onClick: locked.onAction },
+      })
+      openCropper(file)
+      return
+    }
     if (props.animatedGif) {
       try {
         const animated = await toAnimatedWebpDataUrl(file, props.animatedGif)

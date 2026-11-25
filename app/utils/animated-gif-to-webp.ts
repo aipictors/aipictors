@@ -505,11 +505,48 @@ const blobToDataUrl = (blob: Blob) =>
     reader.readAsDataURL(blob)
   })
 
-/** アニメーション画像（GIF・APNG・アニメーション WebP）か、先頭だけ読んで調べる */
+/**
+ * GIF に 2 コマ以上あるか（画像の区切りを、拡張ブロックとデータを飛ばしながら数える。
+ * 先頭だけでも 2 コマ目の区切りまで届けば分かる。サーバーの lib/animated-profile-image.ts と同じ）
+ */
+export const isAnimatedGifBytes = (bytes: Uint8Array) => {
+  if (!isGifBytes(bytes) || bytes.length < 13) return false
+  let offset = 13
+  if (bytes[10] & 0x80) offset += 3 * 2 ** ((bytes[10] & 0x07) + 1)
+  let frames = 0
+  const skipSubBlocks = () => {
+    while (offset < bytes.length) {
+      const size = bytes[offset]
+      offset += 1
+      if (size === 0) return
+      offset += size
+    }
+  }
+  while (offset < bytes.length) {
+    const marker = bytes[offset]
+    if (marker === 0x2c) {
+      frames += 1
+      if (frames >= 2) return true
+      const localFlags = bytes[offset + 9]
+      offset += 10
+      if (localFlags & 0x80) offset += 3 * 2 ** ((localFlags & 0x07) + 1)
+      offset += 1
+      skipSubBlocks()
+    } else if (marker === 0x21) {
+      offset += 2
+      skipSubBlocks()
+    } else {
+      return false
+    }
+  }
+  return false
+}
+
+/** アニメーション画像（2 コマ以上の GIF・APNG・アニメーション WebP）か、先頭だけ読んで調べる */
 export const isAnimatedImageFile = async (file: Blob) => {
   const header = new Uint8Array(await file.slice(0, 256 * 1024).arrayBuffer())
   return (
-    isGifBytes(header) ||
+    isAnimatedGifBytes(header) ||
     isAnimatedWebpBytes(header) ||
     isAnimatedPngBytes(header)
   )

@@ -22,8 +22,9 @@ import { GachaHeaderFrameOverlay } from "~/components/gacha/gacha-header-frame-o
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
+import { usePlusStatus } from "~/hooks/use-plus-status"
 import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "~/lib/app/locale-router"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import { SelectCreatedSensitiveWorksDialog } from "~/routes/($lang).my._index/components/select-created-sensitive-works-dialog"
 import {
   DialogWorkFragment,
@@ -73,6 +74,19 @@ const toSensitiveLinksInput = (links: string[]) =>
 export function SettingProfileForm() {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
+  const navigate = useNavigate()
+  // アイコン・ヘッダーのアニメーションは Aipictors+ の特典（いたずら対策。サーバーでも確かめる）
+  const isAnimatedProfileAllowed = usePlusStatus() === "member"
+  const animatedProfileLocked = isAnimatedProfileAllowed
+    ? undefined
+    : {
+        message: t(
+          "動くアイコン・ヘッダー（GIF・APNG・アニメーション WebP）は Aipictors+ の特典です。今回は静止画として登録します",
+          "Animated icons and headers (GIF, APNG, animated WebP) are an Aipictors+ perk. This image will be added as a still image",
+        ),
+        actionLabel: t("プランを見る", "See plans"),
+        onAction: () => navigate("/plus"),
+      }
 
   const userId = authContext.userId?.toString() ?? ""
 
@@ -377,7 +391,12 @@ export function SettingProfileForm() {
             isHidePreviewImage={false}
             cropWidth={1200}
             cropHeight={400}
-            animatedGif={PROFILE_HEADER_ANIMATED_OPTIONS}
+            animatedGif={
+              isAnimatedProfileAllowed
+                ? PROFILE_HEADER_ANIMATED_OPTIONS
+                : undefined
+            }
+            animatedLocked={animatedProfileLocked}
             onDeleteImage={() => {
               setHeaderImage("")
             }}
@@ -411,7 +430,12 @@ export function SettingProfileForm() {
               isHidePreviewImage={false}
               cropWidth={240}
               cropHeight={240}
-              animatedGif={PROFILE_ICON_ANIMATED_OPTIONS}
+              animatedGif={
+                isAnimatedProfileAllowed
+                  ? PROFILE_ICON_ANIMATED_OPTIONS
+                  : undefined
+              }
+              animatedLocked={animatedProfileLocked}
               onDeleteImage={() => {
                 setProfileImage("")
               }}
@@ -464,6 +488,23 @@ export function SettingProfileForm() {
           {t(
             "プロフィール画像やヘッダー画像にR-18画像は掲載できません。画像は保存すると反映されます。",
             "R-18 images cannot be used for profile or header images. Images apply when you save.",
+          )}{" "}
+          {isAnimatedProfileAllowed ? (
+            t(
+              "Aipictors+ の特典で、GIF・APNG・アニメーション WebP の動くアイコン・ヘッダーにできます。",
+              "As an Aipictors+ perk, you can use animated GIF, APNG or WebP icons and headers.",
+            )
+          ) : (
+            <>
+              {t(
+                "動くアイコン・ヘッダー（GIF など）は ",
+                "Animated icons and headers (GIF, etc.) are an ",
+              )}
+              <Link to="/plus" className="underline underline-offset-2">
+                Aipictors+
+              </Link>
+              {t(" の特典です。", " perk.")}
+            </>
           )}
         </p>
       </section>
@@ -796,7 +837,12 @@ export function SettingProfileForm() {
                 isHidePreviewImage={false}
                 cropWidth={1200}
                 cropHeight={400}
-                animatedGif={PROFILE_HEADER_ANIMATED_OPTIONS}
+                animatedGif={
+                  isAnimatedProfileAllowed
+                    ? PROFILE_HEADER_ANIMATED_OPTIONS
+                    : undefined
+                }
+                animatedLocked={animatedProfileLocked}
                 onDeleteImage={() => {
                   setSensitiveHeaderImage("")
                 }}
