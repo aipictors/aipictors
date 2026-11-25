@@ -5,6 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   ACHIEVEMENT_LEVEL_TIERS,
@@ -24,6 +25,10 @@ export type CommentAchievementBadge = {
   } | null
 }
 
+/** 推しの実績（supports-sent・supports-received・support-pt-sent・support-pt-received） */
+export const isSupportAchievementKey = (key: string | null | undefined) =>
+  key != null && /^supports?-/.test(key)
+
 type Props = {
   userId: string
   badge?: CommentAchievementBadge | null
@@ -35,10 +40,15 @@ type Props = {
  */
 export function CommentAchievementChip(props: Props) {
   const t = useTranslation()
+  const isHideCoinSupport = useHideCoinSupport()
 
   if (!props.badge) return null
 
-  const achievement = props.badge.achievement
+  // 推しを表示しない設定の人には、推しの実績のバッジの代わりにレベルの印を出す
+  const achievement =
+    isHideCoinSupport && isSupportAchievementKey(props.badge.achievement?.key)
+      ? null
+      : props.badge.achievement
 
   if (achievement !== null) {
     const name = t(achievement.name, achievement.enName)

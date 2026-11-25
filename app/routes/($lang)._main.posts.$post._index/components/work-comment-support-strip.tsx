@@ -1,5 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { HideCoinSupportMenu } from "~/components/hide-coin-support-menu"
 import { SupportTierChip } from "~/components/support-super-chat"
 import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
@@ -90,78 +91,88 @@ function WorkCommentSupportStripContent(props: { comments: StripComment[] }) {
   }
 
   return (
-    <section aria-label={t("推し", "Support")} className="group -mx-1 relative">
-      <div
-        ref={scrollRef}
-        onScroll={update}
-        className="flex snap-x gap-2 overflow-x-auto overscroll-x-contain scroll-smooth px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {pinned.map((comment) => {
-          if (!comment.support) return null
-          const tier = getSupportTier(comment.support)
-          const userId = comment.user?.id
-          const className = cn(
-            "flex max-w-60 shrink-0 snap-start items-center gap-2 rounded-full py-1 pr-1 pl-1 ring-1 transition-opacity hover:opacity-80",
-            tier?.bodyClassName,
-          )
-          const body = (
-            <>
-              <img
-                src={toIconImageUrl(comment.user?.iconUrl)}
-                alt=""
-                className="size-7 shrink-0 rounded-full object-cover"
-                loading="lazy"
-                draggable={false}
-              />
-              <span className="min-w-0 truncate font-medium text-xs">
-                {comment.user?.name ?? ""}
+    <section
+      aria-label={t("推し", "Support")}
+      className="-mx-1 flex items-center gap-1"
+    >
+      <div className="group relative min-w-0 flex-1">
+        <div
+          ref={scrollRef}
+          onScroll={update}
+          className="flex snap-x gap-2 overflow-x-auto overscroll-x-contain scroll-smooth px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {pinned.map((comment) => {
+            if (!comment.support) return null
+            const tier = getSupportTier(comment.support)
+            const userId = comment.user?.id
+            const className = cn(
+              "flex max-w-60 shrink-0 snap-start items-center gap-2 rounded-full py-1 pr-1 pl-1 ring-1 transition-opacity hover:opacity-80",
+              tier?.bodyClassName,
+            )
+            const body = (
+              <>
+                <img
+                  src={toIconImageUrl(comment.user?.iconUrl)}
+                  alt=""
+                  className="size-7 shrink-0 rounded-full object-cover"
+                  loading="lazy"
+                  draggable={false}
+                />
+                <span className="min-w-0 truncate font-medium text-xs">
+                  {comment.user?.name ?? ""}
+                </span>
+                <SupportTierChip
+                  support={comment.support}
+                  className="shrink-0"
+                />
+              </>
+            )
+            return userId ? (
+              <Link
+                key={comment.id}
+                to={`/users/${userId}`}
+                title={comment.user?.name ?? undefined}
+                className={className}
+              >
+                {body}
+              </Link>
+            ) : (
+              <span key={comment.id} className={className}>
+                {body}
               </span>
-              <SupportTierChip support={comment.support} className="shrink-0" />
-            </>
-          )
-          return userId ? (
-            <Link
-              key={comment.id}
-              to={`/users/${userId}`}
-              title={comment.user?.name ?? undefined}
-              className={className}
+            )
+          })}
+        </div>
+        {/* 端が隠れているときだけ、ぼかしと左右のボタンを出す（ボタンはマウスのある端末だけ） */}
+        {canLeft && (
+          <>
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-background to-transparent" />
+            <button
+              type="button"
+              aria-label={t("前へ", "Previous")}
+              onClick={() => scrollByPage(-1)}
+              className="-translate-y-1/2 absolute top-1/2 left-0 hidden size-7 items-center justify-center rounded-full border bg-background/90 shadow-sm hover:bg-accent [@media(hover:hover)]:flex"
             >
-              {body}
-            </Link>
-          ) : (
-            <span key={comment.id} className={className}>
-              {body}
-            </span>
-          )
-        })}
+              <ChevronLeftIcon className="size-4" />
+            </button>
+          </>
+        )}
+        {canRight && (
+          <>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent" />
+            <button
+              type="button"
+              aria-label={t("次へ", "Next")}
+              onClick={() => scrollByPage(1)}
+              className="-translate-y-1/2 absolute top-1/2 right-0 hidden size-7 items-center justify-center rounded-full border bg-background/90 shadow-sm hover:bg-accent [@media(hover:hover)]:flex"
+            >
+              <ChevronRightIcon className="size-4" />
+            </button>
+          </>
+        )}
       </div>
-      {/* 端が隠れているときだけ、ぼかしと左右のボタンを出す（ボタンはマウスのある端末だけ） */}
-      {canLeft && (
-        <>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-background to-transparent" />
-          <button
-            type="button"
-            aria-label={t("前へ", "Previous")}
-            onClick={() => scrollByPage(-1)}
-            className="-translate-y-1/2 absolute top-1/2 left-0 hidden size-7 items-center justify-center rounded-full border bg-background/90 shadow-sm hover:bg-accent [@media(hover:hover)]:flex"
-          >
-            <ChevronLeftIcon className="size-4" />
-          </button>
-        </>
-      )}
-      {canRight && (
-        <>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent" />
-          <button
-            type="button"
-            aria-label={t("次へ", "Next")}
-            onClick={() => scrollByPage(1)}
-            className="-translate-y-1/2 absolute top-1/2 right-0 hidden size-7 items-center justify-center rounded-full border bg-background/90 shadow-sm hover:bg-accent [@media(hover:hover)]:flex"
-          >
-            <ChevronRightIcon className="size-4" />
-          </button>
-        </>
-      )}
+      {/* その場で推しを表示しない設定にする入口（小さく端に） */}
+      <HideCoinSupportMenu />
     </section>
   )
 }

@@ -1,6 +1,7 @@
 import { Heart, XIcon } from "lucide-react"
 import { useContext } from "react"
 import { CoinAmountStepper } from "~/components/coin-amount-stepper"
+import { HideCoinSupportMenu } from "~/components/hide-coin-support-menu"
 import {
   FreeSupportCoinIcon,
   PremiumSupportCoinIcon,
@@ -86,14 +87,18 @@ export function WorkCommentSupportPanel(
         {t("コインで推す", "Support with coins")}
         {isRewardTarget && <SupportRewardJoinedBadge />}
       </p>
-      <button
-        type="button"
-        onClick={props.onClose}
-        aria-label={t("推しをやめる", "Cancel support")}
-        className="-mr-1 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-      >
-        <XIcon className="size-4" />
-      </button>
+      <div className="-mr-1 flex shrink-0 items-center">
+        {/* その場で推しを表示しない設定にする入口 */}
+        <HideCoinSupportMenu />
+        <button
+          type="button"
+          onClick={props.onClose}
+          aria-label={t("推しをやめる", "Cancel support")}
+          className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <XIcon className="size-4" />
+        </button>
+      </div>
     </div>
   )
 

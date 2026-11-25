@@ -39,7 +39,18 @@ describe("設定の検索", () => {
     expect(firstHref("受け取らない")).toBe(
       "/settings/support-received#receive-setting",
     )
-    expect(firstHref("推しを隠す")).toBe(
+    for (const query of [
+      "推しを隠す",
+      "推しランキング",
+      "推しコメント",
+      "推しを表示しない",
+      "hide support",
+    ]) {
+      expect(firstHref(query)).toBe(
+        "/settings/support-received#hide-coin-support",
+      )
+    }
+    expect(searchSettings("推し").map((e) => e.href)).toContain(
       "/settings/support-received#hide-coin-support",
     )
   })

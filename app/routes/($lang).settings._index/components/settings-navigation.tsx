@@ -10,6 +10,7 @@ import {
   ClipboardListIcon,
   CoinsIcon,
   EyeIcon,
+  EyeOffIcon,
   Gift,
   MessagesSquareIcon,
   PaletteIcon,
@@ -118,6 +119,12 @@ export function SettingsNavigation() {
           href: "/settings/restriction",
           icon: EyeIcon,
           label: t("表示コンテンツ", "Display Content"),
+        },
+        {
+          // 推しを見たくない人が「応援コイン受け取り」の中から探さなくて済むよう、表示のまとまりにも入口を置く
+          href: "/settings/support-received#hide-coin-support",
+          icon: EyeOffIcon,
+          label: t("推し・推しランキングの表示", "Support display"),
         },
         {
           href: "/settings/color",

@@ -3,6 +3,7 @@ import { graphql } from "gql.tada"
 import {
   ArrowLeftIcon,
   CoinsIcon,
+  EyeOff,
   HandCoins,
   History,
   Inbox,
@@ -223,6 +224,12 @@ export function SupportReceivedSummaryPage() {
             <a href="#receive-setting">
               <HandCoins className="h-4 w-4" />
               {t("受け取りの設定（拒否）", "Receiving settings")}
+            </a>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <a href="#hide-coin-support">
+              <EyeOff className="h-4 w-4" />
+              {t("推しの表示（隠す）", "Hide support")}
             </a>
           </Button>
           <Button asChild variant="outline" size="sm">

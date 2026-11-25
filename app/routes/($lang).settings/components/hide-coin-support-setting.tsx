@@ -1,11 +1,14 @@
 import { useMutation, useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
+import { useLocation } from "@remix-run/react"
 import { EyeOff } from "lucide-react"
 import { useContext, useEffect, useId } from "react"
 import { toast } from "sonner"
 import { Switch } from "~/components/ui/switch"
 import { AuthContext } from "~/contexts/auth-context"
-import { hideCoinSupportQuery } from "~/hooks/use-hide-coin-support"
+import {
+  hideCoinSupportQuery,
+  updateHideCoinSupportSettingMutation,
+} from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   SettingsSection,
@@ -36,11 +39,13 @@ export function HideCoinSupportSetting(props: {
 
   const isLoaded = data !== undefined
 
+  // 設定のメニュー（同じページにいるときも）や作品ページのトーストから #hide-coin-support で来たら、ここまで動かす
+  const location = useLocation()
   useEffect(() => {
     if (!isLoaded || !props.id) return
-    if (window.location.hash !== `#${props.id}`) return
+    if (location.hash !== `#${props.id}`) return
     document.getElementById(props.id)?.scrollIntoView({ block: "start" })
-  }, [isLoaded, props.id])
+  }, [isLoaded, props.id, location.hash, location.key])
 
   if (authContext.isNotLoggedIn) {
     return null
@@ -63,7 +68,7 @@ export function HideCoinSupportSetting(props: {
     <SettingsSection
       id={props.id}
       icon={<EyeOff />}
-      title={t("推しの表示", "Support display")}
+      title={t("推し・推しランキングの表示", "Support display")}
       description={t(
         "推し（コインでの応援）や推しランキングを見たくないときに、あなたの画面から隠せます。",
         "Hide support (coins) and support rankings from your own screens.",
@@ -76,8 +81,8 @@ export function HideCoinSupportSetting(props: {
           "Hide support and support rankings",
         )}
         description={t(
-          "オンにすると、作品ページの推すボタンや推しの欄、推しランキング、推しの通知などがあなたの画面に出なくなります。ほかの人の画面は変わりません。推しを受け付けるかどうかは上の設定のままで、これまでに受け取った推しの記録や報酬も消えません。",
-          "When on, support buttons, support sections on posts, support rankings and support notifications are hidden on your screens. Other people's screens do not change. Whether you accept support follows the setting above, and support you already received and its rewards stay as is.",
+          "推しに関する表示（推すボタン、コメントの推し、推しの帯、推しの数、推しランキング、推しの通知など）をすべてあなたの画面から消します。推しだけのコメントは出さず、本文のある推し付きコメントは普通のコメントとして本文だけ出します。ほかの人の画面は変わりません。推しを受け付けるかどうかは上の設定のままで、これまでに受け取った推しの記録や報酬も消えません。",
+          "Removes everything about support from your screens (support buttons, support on comments, the support strip, support counts, support rankings, support notifications and more). Support-only comments are hidden, and comments with text show just the text like a normal comment. Other people's screens do not change. Whether you accept support follows the setting above, and support you already received and its rewards stay as is.",
         )}
       >
         <Switch
@@ -90,12 +95,3 @@ export function HideCoinSupportSetting(props: {
     </SettingsSection>
   )
 }
-
-const updateHideCoinSupportSettingMutation = graphql(
-  `mutation UpdateHideCoinSupportSetting($input: UpdateUserSettingInput!) {
-    updateUserSetting(input: $input) {
-      id
-      isHideCoinSupport
-    }
-  }`,
-)

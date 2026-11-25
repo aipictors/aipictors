@@ -219,7 +219,7 @@ const PAGES: Page[] = [
     itemHrefs: {
       "推しの受け取り（受け取り拒否）":
         "/settings/support-received#receive-setting",
-      "推しの表示（推し・推しランキングを表示しない）":
+      "推し・推しランキングの表示（推しを表示しない）":
         "/settings/support-received#hide-coin-support",
     },
     items: [
@@ -245,9 +245,17 @@ const PAGES: Page[] = [
         ],
       },
       {
-        ja: "推しの表示（推し・推しランキングを表示しない）",
-        en: "Hide support and support rankings",
+        ja: "推し・推しランキングの表示（推しを表示しない）",
+        en: "Support & support ranking display (hide support)",
         keywords: [
+          "推しを表示しない",
+          "推しを非表示",
+          "推しコメント",
+          "推しの帯",
+          "推すボタン",
+          "推しの通知",
+          "推しの数",
+          "おしこめんと",
           "表示しない",
           "ひょうじしない",
           "非表示",
