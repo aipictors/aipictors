@@ -28,6 +28,8 @@ export type PostMosaicDetection = {
   count: number
   /** 見つかった範囲のうち、隠れていないように見える数（「自分でかけ済み」の確認に使う） */
   unhiddenCount: number
+  /** 見つかった範囲のうち一番高い確からしさ（0〜1。見つからなければ 0） */
+  maxScore: number
 }
 
 export type PostMosaicSettings = { style: MosaicStyle; strength: number }
@@ -85,6 +87,7 @@ export function requestPostMosaicDetection(source: string) {
     mask: null,
     count: 0,
     unhiddenCount: 0,
+    maxScore: 0,
   })
   notify()
   queue = queue.then(async () => {
@@ -103,6 +106,10 @@ export function requestPostMosaicDetection(source: string) {
         mask: result.detections.length > 0 ? result.mask : null,
         count: result.detections.length,
         unhiddenCount,
+        maxScore: Math.max(
+          0,
+          ...result.detections.map((detection) => detection.score),
+        ),
       })
     } catch (error) {
       console.error(error)
@@ -111,6 +118,7 @@ export function requestPostMosaicDetection(source: string) {
         mask: null,
         count: 0,
         unhiddenCount: 0,
+        maxScore: 0,
       })
     }
     notify()

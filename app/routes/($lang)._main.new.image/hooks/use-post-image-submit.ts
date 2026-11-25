@@ -18,6 +18,7 @@ import {
   WorkByImageHashQuery,
 } from "~/routes/($lang)._main.new.image/utils/new-image-queries"
 import {
+  countSensitivePostImages,
   finalizePostMosaic,
   isAutoMosaicRating,
 } from "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
@@ -61,6 +62,8 @@ type Props = {
   generationUsesPickup?: boolean
   /** 投稿の段階が変わったとき（処理中・完了の表示に使う） */
   onStageChange?: (stage: PostStage) => void
+  /** 全年齢・R15 の画像に性器が写っていて、R18 に変えて投稿するとき */
+  onRatingChangeToR18?: () => void
 }
 
 /** 投稿の段階（処理中・完了の画面に出す） */
@@ -71,6 +74,8 @@ export type PostStage =
       done: number
       total: number
       preview: string | null
+      /** 全年齢・R15 の投稿で、性器が写っていないか確かめている */
+      isChecking?: boolean
     }
   | { kind: "upload" }
   | { kind: "create" }
@@ -80,6 +85,8 @@ export type PostStage =
       mosaicImageCount: number | null
       /** 投稿した作品のサムネイル（モザイク後） */
       thumbnail: string | null
+      /** 性器が写っていたので、全年齢・R15 から R18 に変えて投稿した */
+      isRatingChangedToR18?: boolean
     }
 
 /**
@@ -137,6 +144,7 @@ export function usePostImageSubmit(props: Props) {
     pickup,
     generationUsesPickup,
     onStageChange,
+    onRatingChangeToR18,
   } = props
 
   const setStage = (stage: PostStage) => onStageChange?.(stage)
@@ -424,15 +432,63 @@ export function usePostImageSubmit(props: Props) {
 
     dispatch({ type: "SET_PROGRESS", payload: 5 })
 
+    // 全年齢・R15: 性器・肛門が写っていたら、R18 に変えて自動でモザイクをかけるか聞く
+    // （年齢種別を選び忘れて、モザイクなしで投稿されてしまうのを防ぐ）
+    let postInputState = inputState
+    let isRatingChangedToR18 = false
+    if (!isAutoMosaicRating(inputState.ratingRestriction)) {
+      setStage({
+        kind: "mosaic",
+        done: 0,
+        total: 0,
+        preview: null,
+        isChecking: true,
+      })
+      const sensitiveCount = await countSensitivePostImages(
+        state.items,
+        (progress) =>
+          setStage({ kind: "mosaic", ...progress, isChecking: true }),
+      )
+      if (sensitiveCount > 0) {
+        if (
+          window.confirm(
+            t(
+              `${sensitiveCount}枚に性器などが写っているようです。年齢種別を「R-18」に変えて、自動でモザイクをかけて投稿しますか？\n（キャンセルすると、全年齢のまま投稿するか選べます）`,
+              `${sensitiveCount} image(s) seem to show genitals. Change the age rating to R-18 and post with an automatic mosaic?\n(Cancel to choose whether to post with the current rating)`,
+            ),
+          )
+        ) {
+          postInputState = { ...inputState, ratingRestriction: "R18" }
+          isRatingChangedToR18 = true
+          onRatingChangeToR18?.()
+        } else if (
+          !window.confirm(
+            t(
+              "今の年齢種別のまま、モザイクなしで投稿しますか？\n（性器が写っている作品を全年齢で投稿すると、非公開になることがあります）",
+              "Post with the current age rating and no mosaic?\n(Works showing genitals posted as all ages may be hidden)",
+            ),
+          )
+        ) {
+          setStage({ kind: "idle" })
+          dispatch({ type: "SET_PROGRESS", payload: 0 })
+          finishPosting()
+          return
+        }
+      }
+    }
+
     // R18 / R18G: プレビューでかけたモザイクを確かめて仕上げる（性器・肛門。乳首は対象外）
     let imageContents = state.items.map((item) => item.content)
     let thumbnailBase64 = formResult.output.thumbnailBase64
     let ogpBase64 = state.ogpBase64
     let mosaicImageCount: number | null = null
 
-    if (isAutoMosaicRating(inputState.ratingRestriction)) {
+    if (isAutoMosaicRating(postInputState.ratingRestriction)) {
       setStage({ kind: "mosaic", done: 0, total: 0, preview: null })
-      const isSelfApplied = readPostMosaicSelfApplied()
+      // R18 に変えたばかりの投稿は「自分でかけ済み」の設定を使わず、自動でかける
+      const isSelfApplied = isRatingChangedToR18
+        ? false
+        : readPostMosaicSelfApplied()
       const mosaicked = await finalizePostMosaic({
         items: state.items,
         thumbnailBase64,
@@ -505,7 +561,12 @@ export function usePostImageSubmit(props: Props) {
       uploadedWorkId: string,
       uploadedWorkUuid: string | null,
     ) => {
-      setStage({ kind: "done", mosaicImageCount, thumbnail: thumbnailBase64 })
+      setStage({
+        kind: "done",
+        mosaicImageCount,
+        thumbnail: thumbnailBase64,
+        isRatingChangedToR18,
+      })
       dispatch({
         type: "MARK_AS_DONE",
         payload: { uploadedWorkId, uploadedWorkUuid },
@@ -585,8 +646,8 @@ export function usePostImageSubmit(props: Props) {
 
       prepared = {
         reservedAt: toPostReservedAt(
-          inputState.reservationDate,
-          inputState.reservationTime,
+          postInputState.reservationDate,
+          postInputState.reservationTime,
         ),
         mainImageSha256: await sha256(thumbnailBase64),
         mainImageSize: await getSizeFromBase64(thumbnailBase64),
@@ -605,7 +666,7 @@ export function usePostImageSubmit(props: Props) {
     const performPost = async (retryCount = 0): Promise<void> => {
       try {
         console.log(
-          `[投稿処理] リトライ回数: ${retryCount}, rating: ${inputState.ratingRestriction}`,
+          `[投稿処理] リトライ回数: ${retryCount}, rating: ${postInputState.ratingRestriction}`,
         )
 
         // 前回の createWork は応答が返らなかっただけで届いていることがある。
@@ -632,7 +693,7 @@ export function usePostImageSubmit(props: Props) {
           variables: {
             input: toImageWorkInput({
               form: formResult.output,
-              inputState,
+              inputState: postInputState,
               state,
               ...prepared,
               uploadedImageUrls,

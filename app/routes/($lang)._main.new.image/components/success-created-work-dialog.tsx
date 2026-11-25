@@ -34,6 +34,8 @@ type Props = {
   showAutoModeration?: boolean
   /** 新しく投稿した（編集の更新ではない）。「投稿しました」と次の一手を出す */
   isNew?: boolean
+  /** 性器が写っていたので、全年齢・R15 から R18 に変えて投稿した */
+  isRatingChangedToR18?: boolean
   /** 投稿時に自動でモザイクをかけた画像の枚数（R18 の投稿だけ。null なら出さない） */
   mosaicImageCount?: number | null
 }
@@ -190,6 +192,11 @@ export function SuccessCreatedWorkDialog(props: Props) {
               <div className="flex items-start gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs leading-5">
                 <ShieldCheckIcon className="mt-0.5 size-4 shrink-0 text-emerald-600" />
                 <p>
+                  {props.isRatingChangedToR18 &&
+                    t(
+                      "性器などが写っていたため、年齢種別を「R-18」にして投稿しました。",
+                      "Genitals were detected, so the work was posted as R-18. ",
+                    )}
                   {props.mosaicImageCount > 0
                     ? t(
                         `${props.mosaicImageCount}枚に自動でモザイクをかけて投稿しました。`,

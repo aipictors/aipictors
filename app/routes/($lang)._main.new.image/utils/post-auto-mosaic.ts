@@ -36,6 +36,41 @@ export const isAutoMosaicRating = (rating: string | null | undefined) =>
   rating === "R18" || rating === "R18G"
 
 /**
+ * 全年齢・R15 の投稿で「性器が写っている」とみなす確からしさ。
+ * R18 の投稿（0.25 以上でかける）より高くして、見間違いで R18 を勧めないようにする
+ */
+export const SENSITIVE_RATING_MIN_SCORE = 0.4
+
+/**
+ * 全年齢・R15 の投稿の直前に、性器・肛門が写っている画像を数える（ブラウザの中だけで処理する）。
+ * 検出できなかった画像・アニメーション画像は数えない
+ */
+export async function countSensitivePostImages(
+  items: TSortableItem[],
+  onProgress?: (progress: PostAutoMosaicProgress) => void,
+): Promise<number> {
+  const sources = items.flatMap((item) => {
+    const source = getItemMosaicSource(item)
+    return source && canPostMosaic(source) ? [source] : []
+  })
+  if (sources.length === 0) return 0
+  await waitPostMosaicDetections(sources, (done, total) => {
+    onProgress?.({
+      done,
+      total,
+      preview: sources[Math.min(done, sources.length - 1)] ?? null,
+    })
+  })
+  return sources.filter((source) => {
+    const detection = getPostMosaicDetection(source)
+    return (
+      detection?.status === "done" &&
+      detection.maxScore >= SENSITIVE_RATING_MIN_SCORE
+    )
+  }).length
+}
+
+/**
  * 投稿の直前に、プレビューでかけたモザイクを確かめて仕上げる（ブラウザの中だけで処理する）
  * - 検出がまだ終わっていない画像は待つ
  * - 自動でかけるとき: まだかかっていない画像にかける。別に選んだサムネイル・OGP にもかける

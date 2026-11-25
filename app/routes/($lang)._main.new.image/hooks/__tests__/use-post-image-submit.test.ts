@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, expect, mock, test } from "bun:test"
 
-type CreateWorkArgs = { variables: { input: { imageUrls: string[] } } }
+type CreateWorkArgs = {
+  variables: { input: { imageUrls: string[]; rating?: string } }
+}
 
 const toastMock = mock((_message: string) => {})
 const createWork = mock(
@@ -52,6 +54,39 @@ mock.module("~/routes/($lang)._main.new.image/utils/post-image-draft", () => ({
   ...draftModule,
   clearPersistedPostDrafts: async () => {},
 }))
+
+let sensitiveCount = 0
+const autoMosaicModule = await import(
+  "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
+)
+mock.module("~/routes/($lang)._main.new.image/utils/post-auto-mosaic", () => ({
+  ...autoMosaicModule,
+  countSensitivePostImages: async () => sensitiveCount,
+  finalizePostMosaic: async (input: {
+    items: { content: string | null }[]
+    thumbnailBase64: string
+    ogpBase64: string | null
+  }) => ({
+    contents: input.items.map((item) => item.content),
+    thumbnailBase64: input.thumbnailBase64,
+    ogpBase64: input.ogpBase64,
+    mosaicImageCount: 1,
+    failedCount: 0,
+    warningCount: 0,
+  }),
+}))
+let confirmAnswers: boolean[] = []
+const confirmMessages: string[] = []
+const fakeConfirm = (message?: string) => {
+  confirmMessages.push(message ?? "")
+  return confirmAnswers.shift() ?? false
+}
+// 他のテストのファイルと同じ window を使うので、confirm だけ差し替えて戻す
+const realWindow = Reflect.get(globalThis, "window") as
+  | (Window & typeof globalThis)
+  | undefined
+const realConfirm = realWindow?.confirm
+let ratingChangeCount = 0
 
 const { usePostImageSubmit } = await import(
   "~/routes/($lang)._main.new.image/hooks/use-post-image-submit"
@@ -107,6 +142,9 @@ const post = async () => {
     isNotLoggedIn: false,
     isPostingRef,
     t: (ja: string) => ja,
+    onRatingChangeToR18: () => {
+      ratingChangeCount += 1
+    },
   } as unknown as Props)
   await onPost()
   await flushRetries()
@@ -118,6 +156,14 @@ const doneActions = () =>
 
 beforeEach(() => {
   actions = []
+  sensitiveCount = 0
+  confirmAnswers = []
+  confirmMessages.length = 0
+  ratingChangeCount = 0
+  if (realWindow) realWindow.confirm = fakeConfirm
+  else
+    globalThis.window = { confirm: fakeConfirm } as unknown as Window &
+      typeof globalThis
   uploadCount = 0
   failUploadAt = null
   toastMock.mockClear()
@@ -155,6 +201,8 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  if (realWindow && realConfirm) realWindow.confirm = realConfirm
+  else if (!realWindow) Reflect.deleteProperty(globalThis, "window")
   globalThis.fetch = realFetch
   globalThis.setTimeout = realSetTimeout
   console.log = realConsole.log
@@ -259,4 +307,41 @@ test("同じハッシュが他人の作品なら投稿済みにせず、断ら�
   expect(doneActions()).toHaveLength(0)
   expect(createWork).toHaveBeenCalledTimes(4)
   expect(toastMock).toHaveBeenCalledWith("同じ画像が既に投稿されています")
+})
+
+test("全年齢で性器が写っていて「R18 にする」を選ぶと、R18 にして投稿する", async () => {
+  sensitiveCount = 1
+  confirmAnswers = [true]
+  await post()
+
+  expect(confirmMessages).toHaveLength(1)
+  expect(ratingChangeCount).toBe(1)
+  expect(createWork).toHaveBeenCalledTimes(1)
+  expect(createWork.mock.calls[0][0].variables.input.rating).toBe("R18")
+})
+
+test("全年齢で性器が写っていて、R18 にせず全年齢のままも選ばなければ投稿しない", async () => {
+  sensitiveCount = 1
+  confirmAnswers = [false, false]
+  const isPostingRef = await post()
+
+  expect(confirmMessages).toHaveLength(2)
+  expect(createWork).not.toHaveBeenCalled()
+  expect(isPostingRef.current).toBe(false)
+})
+
+test("全年齢のまま投稿するを選ぶと、全年齢で投稿する", async () => {
+  sensitiveCount = 1
+  confirmAnswers = [false, true]
+  await post()
+
+  expect(ratingChangeCount).toBe(0)
+  expect(createWork.mock.calls[0][0].variables.input.rating).toBe("G")
+})
+
+test("性器が写っていなければ聞かずに全年齢で投稿する", async () => {
+  await post()
+
+  expect(confirmMessages).toHaveLength(0)
+  expect(createWork.mock.calls[0][0].variables.input.rating).toBe("G")
 })

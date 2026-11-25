@@ -289,6 +289,9 @@ export default function NewImage() {
 
   const onPost = usePostImageSubmit({
     onStageChange: setPostStage,
+    onRatingChangeToR18: () => {
+      dispatchInput({ type: "SET_RATING_RESTRICTION", payload: "R18" })
+    },
     state,
     inputState,
     dispatch,
@@ -652,6 +655,9 @@ export default function NewImage() {
         mosaicImageCount={
           postStage.kind === "done" ? postStage.mosaicImageCount : null
         }
+        isRatingChangedToR18={
+          postStage.kind === "done" && postStage.isRatingChangedToR18 === true
+        }
         workId={state.uploadedWorkId}
         uuid={state.uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
@@ -662,7 +668,7 @@ export default function NewImage() {
         progress={state.progress}
         isOpen={state.progress !== 0 && state.progress !== 100}
         stage={postStage}
-        isAutoMosaic={isAutoMosaicPost}
+        isAutoMosaic={isAutoMosaicPost || postStage.kind === "mosaic"}
       />
     </div>
   )
