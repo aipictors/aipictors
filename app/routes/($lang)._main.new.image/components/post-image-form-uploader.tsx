@@ -40,6 +40,7 @@ import {
 } from "~/utils/get-extract-info-from-png"
 import { getImageItemsSizeText } from "~/utils/image-items-size-text"
 import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
+import { toPostImageDataUrl } from "~/utils/to-post-image-data-url"
 import {
   getVideoUploadLimits,
   type VideoUploadPassType,
@@ -59,7 +60,7 @@ type Props = {
   ) => void
   onInputFiles?: (files: FileList) => void
   token?: string | undefined | null
-  /** R18 らしい（年齢種別・プロンプト）。一括の自動モザイクを出す目安 */
+  /** 年齢種別が R18 / R18G。一括の自動モザイクはこのときだけ出す */
   isSensitiveHint?: boolean
   onContentGenerated?: (data: {
     title?: string
@@ -83,41 +84,6 @@ export function PostImageFormUploader(props: Props) {
   const maxImageSizeLabel = formatFileSize(MAX_IMAGE_FILE_SIZE_BYTES)
   const maxVideoSizeLabel = formatFileSize(MAX_VIDEO_FILE_SIZE_BYTES)
   const videoUploadLimits = getVideoUploadLimits(props.currentPassType)
-
-  const readFileAsDataUrl = (file: File) => {
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        if (typeof event.target?.result === "string") {
-          resolve(event.target.result)
-          return
-        }
-        reject(new Error("Failed to read image"))
-      }
-      reader.onerror = () => reject(new Error("Failed to read image"))
-      reader.readAsDataURL(file)
-    })
-  }
-
-  const toWebpDataUrl = (dataUrl: string) => {
-    return new Promise<string>((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => {
-        const canvas = document.createElement("canvas")
-        canvas.width = img.width
-        canvas.height = img.height
-        const ctx = canvas.getContext("2d")
-        if (!ctx) {
-          reject(new Error("Failed to get canvas context"))
-          return
-        }
-        ctx.drawImage(img, 0, 0)
-        resolve(canvas.toDataURL("image/webp"))
-      }
-      img.onerror = () => reject(new Error("Failed to load image"))
-      img.src = dataUrl
-    })
-  }
 
   const nextFrame = () =>
     new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
@@ -201,9 +167,13 @@ export function PostImageFormUploader(props: Props) {
 
       try {
         // GIF アニメーションはアニメーションのまま WebP に、それ以外は静止画の WebP にする
-        const webpDataUrl =
-          (await toAnimatedWebpDataUrl(file, WORK_ANIMATED_GIF_OPTIONS)) ??
-          (await toWebpDataUrl(await readFileAsDataUrl(file)))
+        const animatedDataUrl = await toAnimatedWebpDataUrl(
+          file,
+          WORK_ANIMATED_GIF_OPTIONS,
+        )
+        const stillImage =
+          animatedDataUrl === null ? await toPostImageDataUrl(file) : null
+        const webpDataUrl = animatedDataUrl ?? stillImage?.dataUrl ?? ""
 
         nextItems.push({
           id: nextItems.length,
@@ -223,14 +193,21 @@ export function PostImageFormUploader(props: Props) {
           })
           props.dispatch({ type: "SET_OGP_BASE64", payload: "" })
 
-          const img = new Image()
-          img.onload = () => {
+          if (stillImage !== null) {
             props.dispatch({
               type: "SET_IS_THUMBNAIL_LANDSCAPE",
-              payload: img.width > img.height,
+              payload: stillImage.width > stillImage.height,
             })
+          } else {
+            const img = new Image()
+            img.onload = () => {
+              props.dispatch({
+                type: "SET_IS_THUMBNAIL_LANDSCAPE",
+                payload: img.width > img.height,
+              })
+            }
+            img.src = nextItems[0].content
           }
-          img.src = nextItems[0].content
         }
 
         // UIスレッドを譲ってフリーズを軽減
@@ -549,7 +526,7 @@ export function PostImageFormUploader(props: Props) {
                   <div className="flex">{selectedImagesCountText()}</div>
                   <div className="flex">{selectedFilesSizeText()}</div>
                 </div>
-                {!autoMosaicBar.isVisible && (
+                {props.isSensitiveHint && !autoMosaicBar.isVisible && (
                   <button
                     type="button"
                     onClick={() => autoMosaicBar.setVisibility("on")}

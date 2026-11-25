@@ -63,7 +63,6 @@ import {
   INITIAL_POST_IMAGE_FORM_MEDIA_STATE,
 } from "~/routes/($lang)._main.new.image/utils/post-image-draft"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
-import { isSensitivePrompt } from "~/utils/auto-mosaic"
 import { createMeta } from "~/utils/create-meta"
 import type { PNGInfo } from "~/utils/get-extract-info-from-png"
 import { getJstDate } from "~/utils/jst-date"
@@ -535,8 +534,7 @@ export default function NewImage() {
             onContentGenerated={onContentGenerated}
             isSensitiveHint={
               inputState.ratingRestriction === "R18" ||
-              inputState.ratingRestriction === "R18G" ||
-              isSensitivePrompt(inputState.imageInformation?.params.prompt)
+              inputState.ratingRestriction === "R18G"
             }
           />
         </div>

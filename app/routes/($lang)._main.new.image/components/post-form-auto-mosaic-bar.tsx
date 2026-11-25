@@ -11,9 +11,10 @@ const VISIBILITY_KEY = "post-auto-mosaic-bar"
 type Visibility = "auto" | "on" | "off"
 
 /**
- * 一括の自動モザイクを出すかどうか
- * - auto（既定）: R18 らしいとき（年齢種別・プロンプト）だけ出す
- * - on / off: 投稿者が選んだとおり
+ * 一括の自動モザイクを出すかどうか。年齢種別が R18 / R18G のときだけ出す
+ * （全年齢の投稿では「表示する」にしていても出さない）
+ * - auto / on: 出す
+ * - off: 投稿者が「表示しない」にした
  */
 export function useAutoMosaicBarVisibility(isSensitiveHint: boolean) {
   const [visibility, setVisibilityState] = useState<Visibility>("auto")
@@ -29,8 +30,7 @@ export function useAutoMosaicBarVisibility(isSensitiveHint: boolean) {
     else localStorage.setItem(VISIBILITY_KEY, value)
   }
 
-  const isVisible =
-    visibility === "on" || (visibility === "auto" && isSensitiveHint)
+  const isVisible = isSensitiveHint && visibility !== "off"
 
   return { isVisible, setVisibility }
 }

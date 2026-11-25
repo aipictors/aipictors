@@ -21,6 +21,7 @@ import {
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
 import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
+import { toPostImageDataUrl } from "~/utils/to-post-image-data-url"
 
 type Props = {
   indexList: number[]
@@ -59,45 +60,10 @@ export function PostFormItemDraggableImages(props: Props) {
   // ドラッグ中して画像一覧にホバー中かどうか
   const [isHovered, setIsHovered] = useState(false)
 
-  const readFileAsDataUrl = (file: File) => {
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        if (typeof event.target?.result === "string") {
-          resolve(event.target.result)
-          return
-        }
-        reject(new Error("Failed to read image"))
-      }
-      reader.onerror = () => reject(new Error("Failed to read image"))
-      reader.readAsDataURL(file)
-    })
-  }
-
-  const toWebpDataUrl = (dataUrl: string) => {
-    return new Promise<string>((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => {
-        const canvas = document.createElement("canvas")
-        canvas.width = img.width
-        canvas.height = img.height
-        const ctx = canvas.getContext("2d")
-        if (!ctx) {
-          reject(new Error("Failed to get canvas context"))
-          return
-        }
-        ctx.drawImage(img, 0, 0)
-        resolve(canvas.toDataURL("image/webp"))
-      }
-      img.onerror = () => reject(new Error("Failed to load image"))
-      img.src = dataUrl
-    })
-  }
-
   /** GIF アニメーションはアニメーションのまま WebP に、それ以外は静止画の WebP にする */
   const toItemDataUrl = async (file: File) =>
     (await toAnimatedWebpDataUrl(file, WORK_ANIMATED_GIF_OPTIONS)) ??
-    (await toWebpDataUrl(await readFileAsDataUrl(file)))
+    (await toPostImageDataUrl(file)).dataUrl
 
   const nextFrame = () =>
     new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))

@@ -223,10 +223,12 @@ export async function toAnimatedWebpDataUrl(
   file: Blob,
   options: AnimatedGifOptions,
 ): Promise<string | null> {
-  const buffer = await file.arrayBuffer()
-  if (!isGifBytes(new Uint8Array(buffer, 0, Math.min(6, buffer.byteLength)))) {
+  // GIF でなければ全体は読まない（スマートフォンで大きな写真を選んだとき遅くなる）
+  const header = new Uint8Array(await file.slice(0, 6).arrayBuffer())
+  if (!isGifBytes(header)) {
     return null
   }
+  const buffer = await file.arrayBuffer()
 
   if (buffer.byteLength > MAX_GIF_BYTES) {
     throw new Error("GIF アニメーションが大きすぎます")

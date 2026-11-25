@@ -2,13 +2,19 @@
  * data URL の中身のバイト数を返す。投稿済みの画像の URL などは大きさが分からないので null
  */
 export const getDataUrlByteLength = (content: string): number | null => {
-  const matched = content.match(/^data:[^,]*;base64,(.*)$/s)
-  if (!matched) {
+  // 数 MB の文字列を入力のたびにコピーしないよう、長さだけで数える
+  if (!content.startsWith("data:")) {
     return null
   }
-  const base64 = matched[1].replace(/\s/g, "")
-  const padding = base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0
-  return (base64.length * 3) / 4 - padding
+  const comma = content.indexOf(",")
+  if (comma === -1 || !content.slice(0, comma).endsWith(";base64")) {
+    return null
+  }
+  const end = content.trimEnd().length
+  const length = end - comma - 1
+  const padding =
+    content[end - 1] === "=" ? (content[end - 2] === "=" ? 2 : 1) : 0
+  return (length * 3) / 4 - padding
 }
 
 /**
