@@ -1,5 +1,6 @@
 import { Check, Loader2, Sparkles } from "lucide-react"
 import { useEffect, useRef } from "react"
+import { PlanChangeConfirm } from "~/components/plan-upsell/member-limit-upsell"
 import { TrialTerms } from "~/components/trial-terms"
 import {
   Dialog,
@@ -9,6 +10,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
+import { useMemberPlanChange } from "~/hooks/use-member-plan-change"
 import { usePassCheckout } from "~/hooks/use-pass-checkout"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -74,6 +76,15 @@ export function GenerationPlanUpgradeDialog(props: Props) {
 
   const checkout = usePassCheckout()
 
+  // 加入中の人は新しく契約せず、今の契約を変える（二重の契約にならないように。今日の請求額を見せてから）
+  const memberPassType =
+    props.passType === "LITE" ||
+    props.passType === "STANDARD" ||
+    props.passType === "PREMIUM"
+      ? props.passType
+      : null
+  const change = useMemberPlanChange(memberPassType)
+
   const isFree =
     props.passType === null ||
     !PLANS.some((plan) => plan.type === props.passType)
@@ -93,7 +104,10 @@ export function GenerationPlanUpgradeDialog(props: Props) {
   const userKind = isFree ? "free" : `pass_${props.passType}`
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) {
+      change.reset()
+      return
+    }
     trackGrowthEvent(`plan_gate_view_${source}`, userKind)
   }, [isOpen, source])
 
@@ -127,103 +141,122 @@ export function GenerationPlanUpgradeDialog(props: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-2">
-          {plans.map((plan, index) => {
-            const isTrialPlan = isTrial && plan.type === "LITE"
-            return (
-              <button
-                type="button"
-                key={plan.type}
-                disabled={checkout.isLoading}
-                onClick={() => {
-                  trackGrowthEvent(
-                    `plan_gate_checkout_${plan.type}`,
-                    `${source}:${userKind}`,
-                  )
-                  if (isTrialPlan) {
-                    trackGrowthEvent("trial_checkout", "plan_gate")
-                    void checkout.startTrialCheckout()
-                    return
-                  }
-                  void checkout.startCheckout(plan.type)
-                }}
-                className={cn(
-                  "flex w-full items-center justify-between gap-2 rounded-xl border p-3 text-left transition-colors hover:bg-muted disabled:opacity-60",
-                  index === 0 && "border-2 border-violet-500/70",
-                )}
-              >
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-1.5 font-bold">
-                    {t(plan.name[0], plan.name[1])}
-                    {index === 0 && (
-                      <span className="rounded-full bg-violet-600 px-2 py-0.5 font-normal text-white text-xs">
-                        {t("これで使えます", "Unlocks this")}
-                      </span>
-                    )}
-                    {isTrialPlan && (
-                      <span className="rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
-                        {t(`${TRIAL_DAYS}日間無料`, `${TRIAL_DAYS} days free`)}
-                      </span>
-                    )}
-                  </div>
-                  <ul className="mt-1 space-y-0.5 text-muted-foreground text-xs">
-                    {plan.features.map((feature) => (
-                      <li key={feature[0]} className="flex items-start gap-1">
-                        <Check className="mt-0.5 size-3 shrink-0 text-violet-500" />
-                        {t(feature[0], feature[1])}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="shrink-0 text-right font-bold">
-                  {isTrialPlan ? (
-                    <>
-                      <span className="text-fuchsia-600 dark:text-fuchsia-300">
-                        {t("無料", "Free")}
-                      </span>
-                      <div className="font-normal text-muted-foreground text-xs">
-                        {t(`その後${plan.price}/月`, `then ${plan.price}/mo`)}
-                      </div>
-                    </>
-                  ) : isFree ? (
-                    <>
-                      <span className="text-fuchsia-600 dark:text-fuchsia-300">
-                        {plan.firstMonth}
-                      </span>
-                      <span className="font-normal text-muted-foreground text-xs">
-                        {t("/初月", " first month")}
-                      </span>
-                      <div className="font-normal text-muted-foreground text-xs">
-                        {t(`2か月目から${plan.price}`, `then ${plan.price}`)}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {plan.price}
-                      <span className="font-normal text-muted-foreground text-xs">
-                        {t("/月", "/mo")}
-                      </span>
-                    </>
+        {memberPassType !== null && change.preview !== null ? (
+          <PlanChangeConfirm
+            change={change}
+            currentPassType={memberPassType}
+            source={`plan_gate_${source}`}
+          />
+        ) : (
+          <div className="space-y-2">
+            {plans.map((plan, index) => {
+              const isTrialPlan = isTrial && plan.type === "LITE"
+              return (
+                <button
+                  type="button"
+                  key={plan.type}
+                  disabled={checkout.isLoading}
+                  onClick={() => {
+                    trackGrowthEvent(
+                      `plan_gate_checkout_${plan.type}`,
+                      `${source}:${userKind}`,
+                    )
+                    if (isTrialPlan) {
+                      trackGrowthEvent("trial_checkout", "plan_gate")
+                      void checkout.startTrialCheckout()
+                      return
+                    }
+                    if (memberPassType !== null) {
+                      void change.loadPreview(plan.type, `plan_gate_${source}`)
+                      return
+                    }
+                    void checkout.startCheckout(plan.type)
+                  }}
+                  className={cn(
+                    "flex w-full items-center justify-between gap-2 rounded-xl border p-3 text-left transition-colors hover:bg-muted disabled:opacity-60",
+                    index === 0 && "border-2 border-violet-500/70",
                   )}
-                  <div className="mt-0.5 font-normal text-fuchsia-600 text-xs dark:text-fuchsia-300">
-                    {checkout.isLoadingFor(plan.type) ? (
-                      <Loader2 className="ml-auto size-3 animate-spin" />
-                    ) : (
-                      t("決済へ進む →", "Checkout →")
-                    )}
+                >
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5 font-bold">
+                      {t(plan.name[0], plan.name[1])}
+                      {index === 0 && (
+                        <span className="rounded-full bg-violet-600 px-2 py-0.5 font-normal text-white text-xs">
+                          {t("これで使えます", "Unlocks this")}
+                        </span>
+                      )}
+                      {isTrialPlan && (
+                        <span className="rounded-md bg-fuchsia-600 px-1.5 py-0.5 font-bold text-white text-xs">
+                          {t(
+                            `${TRIAL_DAYS}日間無料`,
+                            `${TRIAL_DAYS} days free`,
+                          )}
+                        </span>
+                      )}
+                    </div>
+                    <ul className="mt-1 space-y-0.5 text-muted-foreground text-xs">
+                      {plan.features.map((feature) => (
+                        <li key={feature[0]} className="flex items-start gap-1">
+                          <Check className="mt-0.5 size-3 shrink-0 text-violet-500" />
+                          {t(feature[0], feature[1])}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
-              </button>
-            )
-          })}
-          {isTrial && plans.some((plan) => plan.type === "LITE") ? (
-            <TrialTerms />
-          ) : (
-            <p className="text-center text-[11px] text-muted-foreground">
-              {t("いつでも解約できます", "Cancel anytime")}
-            </p>
-          )}
-        </div>
+                  <div className="shrink-0 text-right font-bold">
+                    {isTrialPlan ? (
+                      <>
+                        <span className="text-fuchsia-600 dark:text-fuchsia-300">
+                          {t("無料", "Free")}
+                        </span>
+                        <div className="font-normal text-muted-foreground text-xs">
+                          {t(`その後${plan.price}/月`, `then ${plan.price}/mo`)}
+                        </div>
+                      </>
+                    ) : isFree ? (
+                      <>
+                        <span className="text-fuchsia-600 dark:text-fuchsia-300">
+                          {plan.firstMonth}
+                        </span>
+                        <span className="font-normal text-muted-foreground text-xs">
+                          {t("/初月", " first month")}
+                        </span>
+                        <div className="font-normal text-muted-foreground text-xs">
+                          {t(`2か月目から${plan.price}`, `then ${plan.price}`)}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {plan.price}
+                        <span className="font-normal text-muted-foreground text-xs">
+                          {t("/月", "/mo")}
+                        </span>
+                      </>
+                    )}
+                    <div className="mt-0.5 font-normal text-fuchsia-600 text-xs dark:text-fuchsia-300">
+                      {checkout.isLoadingFor(plan.type) ||
+                      (memberPassType !== null &&
+                        change.loading === "preview") ? (
+                        <Loader2 className="ml-auto size-3 animate-spin" />
+                      ) : memberPassType !== null ? (
+                        t("プランを変更 →", "Switch plan →")
+                      ) : (
+                        t("決済へ進む →", "Checkout →")
+                      )}
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
+            {isTrial && plans.some((plan) => plan.type === "LITE") ? (
+              <TrialTerms />
+            ) : (
+              <p className="text-center text-[11px] text-muted-foreground">
+                {t("いつでも解約できます", "Cancel anytime")}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-wrap items-center justify-center gap-x-4 text-sm">
           <Link

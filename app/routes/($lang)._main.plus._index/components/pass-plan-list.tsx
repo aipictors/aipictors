@@ -31,7 +31,7 @@ type Props = {
   onIntervalChange?(interval: BillingInterval): void
 }
 
-export function PassPlanList (props: Props) {
+export function PassPlanList(props: Props) {
   const { data } = useQuery(viewerCurrentPassQuery, {
     skip: props.isLoggedOut === true,
   })
@@ -89,7 +89,9 @@ export function PassPlanList (props: Props) {
   // 年払いは今どのプランにも入っていない人だけ（加入中は二重の契約になるため）
   const isIntervalToggleVisible =
     props.onIntervalChange !== undefined && currentPass === null
-  const interval = isIntervalToggleVisible ? (props.interval ?? "month") : "month"
+  const interval = isIntervalToggleVisible
+    ? (props.interval ?? "month")
+    : "month"
 
   return (
     <div className="@container">
@@ -143,6 +145,11 @@ export function PassPlanList (props: Props) {
             className="@xl:order-none order-1"
             onLoginClick={() => props.onLoginClick?.("STANDARD")}
             onClick={() => props.onSelect("STANDARD")}
+            onShowYearly={
+              isIntervalToggleVisible && props.onIntervalChange
+                ? () => props.onIntervalChange?.("year")
+                : undefined
+            }
           />
         )}
         {isVisible("PREMIUM") && (
@@ -156,6 +163,11 @@ export function PassPlanList (props: Props) {
             className="@xl:order-none order-3"
             onLoginClick={() => props.onLoginClick?.("PREMIUM")}
             onClick={() => props.onSelect("PREMIUM")}
+            onShowYearly={
+              isIntervalToggleVisible && props.onIntervalChange
+                ? () => props.onIntervalChange?.("year")
+                : undefined
+            }
           />
         )}
       </div>

@@ -1,6 +1,11 @@
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { Link } from "~/lib/app/locale-router"
-import { CheckIcon, ChevronDownIcon, Loader2Icon, SparklesIcon } from "lucide-react"
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  Loader2Icon,
+  SparklesIcon,
+} from "lucide-react"
 import { useEffect, useState } from "react"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Button } from "~/components/ui/button"
@@ -14,7 +19,10 @@ import {
 import { toPassFeatures } from "~/routes/($lang)._main.plus._index/utils/to-pass-features"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
 import { TrialTerms } from "~/components/trial-terms"
-import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
+import {
+  toFirstMonthPrice,
+  useFirstMonthOffer,
+} from "~/hooks/use-first-month-offer"
 import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 
 type Props = {
@@ -38,6 +46,10 @@ type Props = {
    * 未ログインの人が登録ボタン（ログイン）を押したとき
    */
   onLoginClick?(): void
+  /**
+   * 年払いの表示に切り替える（渡したときだけ、月払いの表示に年払いの 1 か月あたりを添える）
+   */
+  onShowYearly?(): void
 }
 
 const tagline = {
@@ -74,6 +86,12 @@ export function PassPlanDescription(props: Props) {
     !isTrialOffer &&
     !isOfferUnknown
   const firstMonthPrice = toFirstMonthPrice(spec.price)
+  const yearlyPerMonth = Math.round(spec.yearlyPrice / 12)
+  // 月払いの表示でも、スタンダード・プレミアムは年払いの 1 か月あたりを添える（年払いは解約も少ない）
+  const isYearlyHintVisible =
+    !isYearly &&
+    props.onShowYearly !== undefined &&
+    (props.plan === "STANDARD" || props.plan === "PREMIUM")
   // スマホ（1 列）では特典の一覧をたたんで、3 つのプランと登録ボタンがすぐ見えるようにする
   const [isFeatureOpen, setIsFeatureOpen] = useState(false)
 
@@ -119,18 +137,25 @@ export function PassPlanDescription(props: Props) {
                 )}
               </span>
             </p>
+            {/* 月払いと比べやすいよう、1 か月あたりを大きく出して年額を添える */}
             <p className="mt-1 flex flex-wrap items-baseline gap-x-1">
+              <span className="text-muted-foreground text-xs">
+                {t("1か月あたり", "")}
+              </span>
               <span className="font-extrabold text-3xl tracking-tight">
-                {`¥${toMoneyNumberText(spec.yearlyPrice)}`}
+                {`¥${toMoneyNumberText(yearlyPerMonth)}`}
+              </span>
+              <span className="text-muted-foreground text-sm line-through">
+                {`¥${toMoneyNumberText(spec.price)}`}
               </span>
               <span className="text-muted-foreground text-xs">
-                {t("/年（税込）", "/year")}
+                {t("", "/mo")}
               </span>
             </p>
             <p className={priceNote}>
               {t(
-                `1か月あたり ¥${toMoneyNumberText(Math.round(spec.yearlyPrice / 12))}`,
-                `¥${toMoneyNumberText(Math.round(spec.yearlyPrice / 12))}/mo · ${toApproxUsdText(spec.yearlyPrice)}/year`,
+                `年 ¥${toMoneyNumberText(spec.yearlyPrice)}（税込）をまとめてお支払い`,
+                `¥${toMoneyNumberText(spec.yearlyPrice)} billed yearly · ${toApproxUsdText(spec.yearlyPrice)}/year`,
               )}
             </p>
           </>
@@ -198,6 +223,24 @@ export function PassPlanDescription(props: Props) {
           </>
         )}
       </div>
+      {isYearlyHintVisible && (
+        <button
+          type="button"
+          onClick={() => props.onShowYearly?.()}
+          className="mt-2 flex w-full items-center justify-between gap-2 rounded-lg border border-fuchsia-500/40 border-dashed px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-fuchsia-500/10"
+        >
+          <span>
+            {t("年払いなら1か月あたり", "Yearly: ")}
+            <span className="font-bold text-fuchsia-700 dark:text-fuchsia-300">
+              {`¥${toMoneyNumberText(yearlyPerMonth)}`}
+            </span>
+            {t("", "/mo")}
+          </span>
+          <span className="whitespace-nowrap text-muted-foreground">
+            {t("2か月分おトク →", "2 months free →")}
+          </span>
+        </button>
+      )}
       <div className="mt-4 grid grid-cols-2 gap-2">
         <div
           className={cn(
@@ -229,7 +272,11 @@ export function PassPlanDescription(props: Props) {
       {isButtonVisible && (
         <div className="mt-4">
           {isFree ? (
-            <Button asChild variant="outline" className="h-11 w-full rounded-xl">
+            <Button
+              asChild
+              variant="outline"
+              className="h-11 w-full rounded-xl"
+            >
               <Link to="/generation">
                 {t("無料で生成してみる", "Start for free")}
               </Link>
@@ -328,13 +375,16 @@ export function PassPlanDescription(props: Props) {
         className={cn(
           "@xl:mt-5 mt-3 space-y-2 @xl:border-t @xl:pt-4 text-sm",
           !isFeatureOpen && "@xl:block hidden",
-          isFeatureOpen && "motion-safe:animate-[fade-in-up_0.25s_ease-out_both]",
+          isFeatureOpen &&
+            "motion-safe:animate-[fade-in-up_0.25s_ease-out_both]",
         )}
       >
         {!isFree && (
           <li className="flex items-start gap-2">
             <CheckIcon className="mt-0.5 size-4 shrink-0 text-violet-500" />
-            <span>{t("広告の非表示・認証マーク", "No ads, plus a verified badge")}</span>
+            <span>
+              {t("広告の非表示・認証マーク", "No ads, plus a verified badge")}
+            </span>
           </li>
         )}
         {toPassFeatures(props.plan, t).map((feature) => (

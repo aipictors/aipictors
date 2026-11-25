@@ -1,3 +1,4 @@
+import { useStandardUpgradeOffer } from "~/hooks/use-member-plan-change"
 import { Link } from "~/lib/app/locale-router"
 import { getAuth, getIdToken } from "firebase/auth"
 import { Button } from "~/components/ui/button"
@@ -114,6 +115,8 @@ export function PlusForm () {
     interval?: "month" | "year"
     chargedNowAmountJpy: number
     prorationDate: number | null
+    // ライト → スタンダードの初月割引（請求日がその日に変わる）
+    upgradeOffer?: { firstMonthYen: number; regularYen: number } | null
   } | null>(null)
   const { data } = useSuspenseQuery<{
     viewer: {
@@ -127,6 +130,13 @@ export function PlusForm () {
       } | null
     } | null
   }>(viewerCurrentPassQuery, {})
+
+  // ライト（Stripe）の人がスタンダードへ上げるときの初月割引（初月 ¥980。対象かどうかはプラン変更のときにサーバーが決める）
+  const standardUpgradeOffer = useStandardUpgradeOffer(
+    data.viewer?.currentPass?.type === "LITE" &&
+      data.viewer.currentPass.paymentProvider !== "APP_STORE" &&
+      data.viewer.currentPass.paymentProvider !== "GOOGLE_PLAY",
+  )
 
   const withAuthHeader = async () => {
     const currentUser = getAuth().currentUser
@@ -701,6 +711,23 @@ export function PlusForm () {
                       `You'll switch from ${currentPassName} to ${nextPassName} right away.`,
                     )}
                   </p>
+                  {planChangePreview?.upgradeOffer ? (
+                    <>
+                      <p className="font-bold text-fuchsia-700 dark:text-fuchsia-300">
+                        {t(
+                          `ライトの方だけの初月 ¥${planChangePreview.upgradeOffer.firstMonthYen.toLocaleString("ja-JP")} が適用されます。`,
+                          `Lite members get the first month for ¥${planChangePreview.upgradeOffer.firstMonthYen.toLocaleString("en-US")}.`,
+                        )}
+                      </p>
+                      <p>
+                        {t(
+                          `今回の決済額は ${planChangePreview.chargedNowAmountJpy}円 です（${currentPassName}の残りの日数分を差し引き済み）。今日から1か月が新しい期間になり、その後は月額 ${planChangePreview.upgradeOffer.regularYen}円 で継続されます。`,
+                          `You'll be charged ¥${planChangePreview.chargedNowAmountJpy} now (unused ${currentPassName} days credited). Your new month starts today, then it's ¥${planChangePreview.upgradeOffer.regularYen} a month.`,
+                        )}
+                      </p>
+                    </>
+                  ) : (
+                  <>
                   <p>
                     {planChangePreview?.chargedNowAmountJpy && planChangePreview.chargedNowAmountJpy > 0
                       ? t(
@@ -715,6 +742,8 @@ export function PlusForm () {
                       `From your next renewal on ${nextDateText}, it continues at ¥${planChangePreview?.renewalAmountJpy ?? 0} a ${planChangePreview?.interval === "year" ? "year" : "month"}.`,
                     )}
                   </p>
+                  </>
+                  )}
                 </>
               )}
             </AlertDialogDescription>
@@ -935,7 +964,12 @@ export function PlusForm () {
                     onClick={() => openPlanChangeDialog("STANDARD", currentPass.type)}
                     disabled={isSubmitting}
                   >
-                    {t("スタンダードに変更する", "Switch to Standard")}
+                    {standardUpgradeOffer && !isManagedElsewhere
+                      ? t(
+                          `スタンダードに変更する（初月¥${standardUpgradeOffer.firstMonthYen.toLocaleString("ja-JP")}）`,
+                          `Switch to Standard (¥${standardUpgradeOffer.firstMonthYen.toLocaleString("en-US")} first month)`,
+                        )
+                      : t("スタンダードに変更する", "Switch to Standard")}
                   </Button>
                 )}
                 {!isCancelScheduled && currentPass.type === "LITE" && (

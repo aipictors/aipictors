@@ -48,6 +48,16 @@ export function PlusComparisonTable() {
           : `¥${toMoneyNumberText(spec.price)}`,
     },
     {
+      label: t("年払い（1か月あたり）", "Yearly (per month)"),
+      value: (spec) =>
+        spec.yearlyPrice > 0
+          ? t(
+              `¥${toMoneyNumberText(Math.round(spec.yearlyPrice / 12))}（年¥${toMoneyNumberText(spec.yearlyPrice)}）`,
+              `¥${toMoneyNumberText(Math.round(spec.yearlyPrice / 12))} (¥${toMoneyNumberText(spec.yearlyPrice)}/yr)`,
+            )
+          : "—",
+    },
+    {
       label: t("生成画像の保存期間", "How long your images are kept"),
       value: (spec) =>
         ({

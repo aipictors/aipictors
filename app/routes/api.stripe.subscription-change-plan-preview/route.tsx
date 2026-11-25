@@ -112,6 +112,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
             renewalAmountJpy: number
             chargedNowAmountJpy: number
             prorationDate: number
+            interval?: "month" | "year"
+            upgradeOffer?: {
+              offer: string
+              firstMonthYen: number
+              regularYen: number
+            } | null
           } | null
         }
       } catch {
@@ -141,6 +147,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
           renewalAmountJpy: apiJson?.data?.renewalAmountJpy ?? null,
           chargedNowAmountJpy: apiJson?.data?.chargedNowAmountJpy ?? 0,
           prorationDate: apiJson?.data?.prorationDate ?? null,
+          interval: apiJson?.data?.interval ?? "month",
+          // ライト → スタンダードの初月割引を当てるとき（請求日がその日に変わる）
+          upgradeOffer: apiJson?.data?.upgradeOffer ?? null,
         },
       },
       200,
