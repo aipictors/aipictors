@@ -65,8 +65,8 @@ export default function FanWorksPolicyPage() {
           </p>
           <p>
             {t(
-              "・推し合いへの参加や、特定の考え方への同調を求めることはありません。苦手なものは設定で表示しないようにできます。",
-              "- You are never expected to join in supporting each other or to share any view. You can hide what you don't want to see in settings.",
+              "・推しを使うことや、特定の考え方への同調を求めることはありません。苦手なものは設定で表示しないようにできます。",
+              "- You are never expected to use Oshi or to share any view. You can hide what you don't want to see in settings.",
             )}
           </p>
         </CardContent>
