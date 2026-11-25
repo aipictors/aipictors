@@ -11,7 +11,6 @@ import { WorkCommentForm } from "~/routes/($lang)._main.posts.$post._index/compo
 import { WorkCommentNewList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-new-list"
 import { WorkCommentPremiumResultDialog } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-premium-result-dialog"
 import { WorkCommentQuickStickers } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-quick-stickers"
-import { WorkCommentSupportStrip } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-support-strip"
 import { WorkCommentThread } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-thread"
 import {
   useWorkCommentList,
@@ -92,10 +91,9 @@ export function WorkCommentList(props: WorkCommentListProps) {
                 : showComments.length + (showNewComments?.length ?? 0)}
             </span>
           </h2>
-          {/* 推しの帯があるときだけ、すぐ上の見出しの右に「推しを非表示」（その場で推しを表示しない設定にする） */}
+          {/* 推し付きコメントがあるときだけ、見出しの右に「推しを非表示」（その場で推しを表示しない設定にする）。推した人の一覧（応援の帯）は出さない（オーナー依頼） */}
           {hasSupportStrip && <HideCoinSupportButton />}
         </div>
-        <WorkCommentSupportStrip comments={supportStripComments} />
         {props.isWorkOwnerBlocked && (
           <div className="rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
             {t(
