@@ -138,18 +138,15 @@ export function PassPlanDescription(props: Props) {
               </span>
             </p>
             {/* 月払いと比べやすいよう、1 か月あたりを大きく出して年額を添える */}
-            <p className="mt-1 flex flex-wrap items-baseline gap-x-1">
-              <span className="text-muted-foreground text-xs">
-                {t("1か月あたり", "")}
-              </span>
+            <p className="mt-1 text-muted-foreground text-xs">
+              {t("1か月あたり", "Per month")}
+            </p>
+            <p className="flex flex-wrap items-baseline gap-x-1.5">
               <span className="font-extrabold text-3xl tracking-tight">
                 {`¥${toMoneyNumberText(yearlyPerMonth)}`}
               </span>
               <span className="text-muted-foreground text-sm line-through">
                 {`¥${toMoneyNumberText(spec.price)}`}
-              </span>
-              <span className="text-muted-foreground text-xs">
-                {t("", "/mo")}
               </span>
             </p>
             <p className={priceNote}>
@@ -224,19 +221,20 @@ export function PassPlanDescription(props: Props) {
         )}
       </div>
       {isYearlyHintVisible && (
+        // PC の 4 列ではカードが狭いので 2 行に分けて書く（1 行に並べると細かく折り返していた）
         <button
           type="button"
           onClick={() => props.onShowYearly?.()}
-          className="mt-2 flex w-full items-center justify-between gap-2 rounded-lg border border-fuchsia-500/40 border-dashed px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-fuchsia-500/10"
+          className="mt-2 block w-full rounded-lg border border-fuchsia-500/40 border-dashed px-2.5 py-1.5 text-left text-xs leading-snug transition-colors hover:bg-fuchsia-500/10"
         >
-          <span>
-            {t("年払いなら1か月あたり", "Yearly: ")}
+          <span className="block">
+            {t("年払いなら月あたり ", "Yearly: ")}
             <span className="font-bold text-fuchsia-700 dark:text-fuchsia-300">
               {`¥${toMoneyNumberText(yearlyPerMonth)}`}
             </span>
             {t("", "/mo")}
           </span>
-          <span className="whitespace-nowrap text-muted-foreground">
+          <span className="block text-[11px] text-muted-foreground">
             {t("2か月分おトク →", "2 months free →")}
           </span>
         </button>
