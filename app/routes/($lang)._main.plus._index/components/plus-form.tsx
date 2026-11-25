@@ -1187,7 +1187,7 @@ function RetentionSuggestion(props: {
       <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-3 text-sm">
         <p className="font-bold">{t("よければ状況を教えてください", "Tell us what happened, if you like")}</p>
         <p className="mt-1 text-muted-foreground text-xs">
-          {t("失敗した生成はコインを使わずにやり直せます。直らないときは、お問い合わせから送っていただくとスタッフが確認します。", "Failed generations can be retried without spending coins. If the problem continues, contact us and our staff will take a look.")}
+          {t("失敗した生成はコインを使わずにやり直せます。直らないときは、Discord でご相談ください。", "Failed generations can be retried without spending coins. If the problem continues, please ask us on Discord.")}
         </p>
         <Link to="/support/chat" className="mt-2 inline-block text-sky-600 text-xs underline dark:text-sky-300">
           {t("お問い合わせを開く", "Contact us")}

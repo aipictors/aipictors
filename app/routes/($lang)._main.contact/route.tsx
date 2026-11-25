@@ -79,8 +79,8 @@ export default function Contact () {
             </CardTitle>
             <CardDescription>
               {t(
-                "AI があなたのプランやコインの状況を見てすぐにお答えします。解決しないときはスタッフが同じチャットでお返事します（Discord は不要です）",
-                "Our AI answers right away using your plan and coin status. If it can't help, our staff replies in the same chat (no Discord needed).",
+                "AI があなたのプランやコインの状況を見てすぐにお答えします。AI で解決できないことは Discord でご相談ください",
+                "Our AI answers right away using your plan and coin status. If it can't help, please ask us on Discord.",
               )}
             </CardDescription>
           </CardHeader>
