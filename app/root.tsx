@@ -263,8 +263,9 @@ export const loader = async ({
 
     const r18Fallback = toR18FallbackPath(url.pathname, url.search)
 
+    // 行き先はパスだけで決まるので恒久的な転送にする（検索エンジンが元の URL を残さないように）
     if (r18Fallback !== null) {
-      throw redirect(r18Fallback, 302)
+      throw redirect(r18Fallback, 301)
     }
   }
 

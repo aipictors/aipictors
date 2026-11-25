@@ -28,6 +28,17 @@ describe("checkLocaleRedirect", () => {
     expect(result?.status).toBe(302)
   })
 
+  test("/ja/… と末尾のスラッシュは恒久的な転送（301）で正規の URL へ", () => {
+    for (const [url, location] of [
+      ["http://example.com/ja/posts/1", "/posts/1"],
+      ["http://example.com/posts/1/", "/posts/1"],
+    ]) {
+      const result = checkLocaleRedirect(createMockRequest(url))
+      expect(result?.status).toBe(301)
+      expect(result?.headers.Location).toBe(location)
+    }
+  })
+
   test("日本語ブラウザ設定でリダイレクトされない", () => {
     const request = createMockRequest("http://example.com/", {
       "Accept-Language": "ja-JP,ja;q=0.9",

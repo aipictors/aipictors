@@ -3,7 +3,6 @@ import {
   json,
   type LoaderFunctionArgs,
   type MetaFunction,
-  redirect,
 } from "@remix-run/cloudflare"
 import {
   isRouteErrorResponse,
@@ -28,6 +27,7 @@ import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/component
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
+import { redirectToWorkRatingPath } from "~/utils/work-rating-redirect"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import {
@@ -130,7 +130,7 @@ export async function loader(props: LoaderFunctionArgs) {
     workResp.data.work.rating === "R18" ||
     workResp.data.work.rating === "R18G"
   ) {
-    return redirect(`/r/posts/${props.params.post}`)
+    return redirectToWorkRatingPath(props.params.lang, true, props.params.post)
   }
 
   // 多言語の作品は、見る人の言語の画像・タイトル・説明にする（app/utils/work-localization.ts）。

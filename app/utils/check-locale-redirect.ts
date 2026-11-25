@@ -31,9 +31,11 @@ export function checkLocaleRedirect(request: Request): LocaleRedirect | null {
   const pathname = url.pathname
   const normalizedPathname = normalizeLocalePath(pathname)
 
+  // /ja/… や末尾のスラッシュは、どの人にも同じ URL へ移すので恒久的な転送にする
+  // （一時的な転送だと検索エンジンが元の URL を残し、評価がまとまらない）
   if (pathname !== normalizedPathname) {
     return {
-      status: 302,
+      status: 301,
       headers: {
         Location: `${normalizedPathname}${url.search}`,
       },

@@ -1,9 +1,9 @@
+import { redirectToWorkRatingPath } from "~/utils/work-rating-redirect"
 import {
   type HeadersFunction,
   json,
   type LoaderFunctionArgs,
   type MetaFunction,
-  redirect,
 } from "@remix-run/cloudflare"
 import {
   isRouteErrorResponse,
@@ -145,7 +145,7 @@ export async function loader(props: LoaderFunctionArgs) {
     workResp.data.work.rating === "G" ||
     workResp.data.work.rating === "R15"
   ) {
-    return redirect(`/posts/${props.params.post}`)
+    return redirectToWorkRatingPath(props.params.lang, false, props.params.post)
   }
 
   if (workCommentsResp.data.work === null) {
