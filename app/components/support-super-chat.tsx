@@ -10,6 +10,7 @@ import {
   FreeSupportCoinIcon,
   PremiumSupportCoinIcon,
 } from "~/components/support-coin-icons"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -104,7 +105,9 @@ export function SupportSuperChatCard(props: {
   const t = useTranslation()
   const toLabel = useSupportAmountLabel()
   const tier = getSupportTier(props.support)
-  if (!tier) return <>{props.children}</>
+  // 推しを表示しない設定の人には、囲みと金額を付けずに本文だけ出す
+  const isHideCoinSupport = useHideCoinSupport()
+  if (!tier || isHideCoinSupport) return <>{props.children}</>
   return (
     <div
       className={cn(

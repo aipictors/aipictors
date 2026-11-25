@@ -10,11 +10,11 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
 import { useLoaderData, useSearchParams } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { Trophy } from "lucide-react"
 import { useMemo, useState } from "react"
 import { CoinHelpDialog } from "~/components/coin-help-dialog"
 import { CoinIcon } from "~/components/coin-icon"
+import { HiddenCoinSupportNotice } from "~/components/hidden-coin-support-notice"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Button } from "~/components/ui/button"
@@ -26,9 +26,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { getServerEnvValue } from "~/lib/server/env.server"
 import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
-import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
 
 // ────────────────────────────────────────────────────────────────────
@@ -317,6 +319,19 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 // ────────────────────────────────────────────────────────────────────
 
 export default function CoinRankingsPage() {
+  // 推しを表示しない設定の人には、ランキングの代わりに設定のお知らせを出す
+  const isHideCoinSupport = useHideCoinSupport()
+  if (isHideCoinSupport) {
+    return (
+      <div className="p-4 md:p-6">
+        <HiddenCoinSupportNotice />
+      </div>
+    )
+  }
+  return <CoinRankingsPageContent />
+}
+
+function CoinRankingsPageContent() {
   const t = useTranslation()
   const data = useLoaderData<typeof loader>()
   const [_searchParams, setSearchParams] = useSearchParams()

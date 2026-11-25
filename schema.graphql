@@ -196,6 +196,16 @@ input AdminMergeAiModelInput {
   targetAiModelId: ID!
 }
 
+"""自動モデレーションの概要"""
+type AdminModerationOverviewNode {
+  actionStats: [ModerationActionStatNode!]
+  activeCommentRestrictions: Int
+  activePostRestrictions: Int
+  policy: [ModerationPolicyStepNode!]
+  strikeTtlDays: Int
+  usersWithActiveStrikes: Int
+}
+
 input AdminSetAiModelHiddenInput {
   aiModelId: ID!
   isHidden: Boolean!
@@ -3406,6 +3416,46 @@ input MilestonesWhereInput {
   repository: String!
 }
 
+"""自動・運営の対応の記録"""
+type ModerationActionNode {
+  """
+  HIDE: コメントを非表示 / UNHIDE: 再表示 / HIDE_WORK: 作品を非公開 / STRIKE: 違反に数えた / STRIKE_REVOKED: 違反を取り消し / RESTRICT: 停止 / LIFT: 停止を解除
+  """
+  action: String
+  actorUserId: ID
+  category: String
+  categoryLabel: String
+  createdAt: Int
+  detail: String
+  id: ID
+
+  """AUTO_RULE / AUTO_AI / REPORTS / MODERATOR"""
+  source: String
+  targetId: ID
+
+  """COMMENT / WORK / USER"""
+  targetType: String
+  user: UserNode
+  userId: ID
+}
+
+"""対応の件数"""
+type ModerationActionStatNode {
+  action: String
+  last7d: Int
+  last24h: Int
+  source: String
+}
+
+"""違反の回数と停止の長さ"""
+type ModerationPolicyStepNode {
+  kind: String
+  label: String
+
+  """この回数以上で"""
+  strikeCount: Int
+}
+
 """モデレーターによる通知一覧"""
 type ModerationReportNode implements Node {
   """作成日"""
@@ -3474,6 +3524,58 @@ input ModerationReportsWhereInput {
 
   """ユーザID"""
   userId: ID
+}
+
+"""コメント・投稿の停止（BAN）"""
+type ModerationRestrictionNode {
+  createdAt: Int
+
+  """停止が終わる時刻。null は運営が解除するまで"""
+  endsAt: Int
+  id: ID
+
+  """今かかっているか"""
+  isActive: Boolean
+
+  """COMMENT: コメント / POST: 作品の投稿"""
+  kind: String
+  liftedAt: Int
+  reason: String
+
+  """AUTO: 自動 / MODERATOR: 運営"""
+  source: String
+  startsAt: Int
+
+  """停止を決めたときの有効な違反の数（自動のときだけ）"""
+  strikeCount: Int
+  user: UserNode
+  userId: ID
+}
+
+"""違反（ストライク）。90 日で失効"""
+type ModerationStrikeNode {
+  category: String
+  categoryLabel: String
+  createdAt: Int
+  expiresAt: Int
+  id: ID
+  isActive: Boolean
+
+  """COMMENT: コメント / POST: 作品の投稿"""
+  kind: String
+  reason: String
+  revokedAt: Int
+
+  """AUTO_RULE: ルール / AUTO_AI: AI / MODERATOR: 運営"""
+  source: String
+  targetId: ID
+
+  """COMMENT / WORK"""
+  targetType: String
+  userId: ID
+
+  """何回分として数えるか（重い違反は 2）"""
+  weight: Int
 }
 
 type Mutation {
@@ -3731,6 +3833,9 @@ type Mutation {
   """プロフィールを初期設定したかどうか"""
   isInitializedUserProfile: Boolean!
 
+  """停止を解除する（運営）"""
+  liftModerationRestriction(id: ID!): Boolean!
+
   """SNSプロバイダーをユーザーに紐付ける"""
   linkUserProvider(input: LinkUserProviderInput!): UserProviderNode!
 
@@ -3816,11 +3921,25 @@ type Mutation {
   """運営からの修正依頼に対応したと返す"""
   respondModerationReport(id: ID!, message: String): Boolean!
 
+  """コメント・投稿を期間を決めて停止する（運営）"""
+  restrictUserByModerator(
+    """停止する日数。省略は運営が解除するまで"""
+    days: Int
+
+    """COMMENT / POST"""
+    kind: String!
+    reason: String!
+    userId: ID!
+  ): Boolean!
+
   """できなかったAI評価をやり直す（作者のみ）"""
   retryWorkBotGrading(workId: ID!): Boolean!
 
   """モデレータによるコメント審査の承認・却下・差し戻し"""
   reviewCommentModeration(input: ReviewCommentModerationInput!): Boolean!
+
+  """違反を取り消す（運営）。届かなくなった自動の停止も解除する"""
+  revokeModerationStrike(id: ID!): Boolean!
 
   """ガチャのヘッダー枠を着ける（slug が null なら外す）"""
   selectGachaHeaderFrame(input: SelectGachaHeaderFrameInput!): GachaViewerState!
@@ -4738,8 +4857,20 @@ type Query {
   """コメント審査の管理件数"""
   adminCommentModerationItemsCount: Int!
 
+  """自動・運営の対応の記録（運営）"""
+  adminModerationActions(limit: Int, offset: Int, userId: ID): [ModerationActionNode!]!
+
+  """自動モデレーションの概要（運営）"""
+  adminModerationOverview: AdminModerationOverviewNode!
+
+  """停止（BAN）の一覧（運営）"""
+  adminModerationRestrictions(limit: Int, offset: Int, onlyActive: Boolean): [ModerationRestrictionNode!]!
+
   """利用者が足したモデルの一覧（運営用、新しい順）"""
   adminUserAddedAiModels: [UserAddedAiModelNode!]!
+
+  """ユーザーの違反と停止の状況（運営）"""
+  adminUserModeration(userId: ID!): UserModerationStatusNode!
 
   """モデレーター向け作品通報一覧"""
   adminWorkReports(limit: Int!, offset: Int!, onlyUnhandled: Boolean): [AdminWorkReportNode!]!
@@ -5116,6 +5247,9 @@ type Query {
 
   """ガチャの自分の状態（未ログインは null）"""
   viewerGacha: GachaViewerState
+
+  """自分の違反と停止の状況"""
+  viewerModerationStatus: UserModerationStatusNode
 
   """コインで買ったアイコン枠の ID"""
   viewerOwnedUserAvatarFrameIds: [ID!]!
@@ -5982,6 +6116,9 @@ input UpdateUserSettingInput {
   """画像生成にプレミアムコインを使わない（フリーコインだけで生成する）"""
   isDisablePremiumCoinGeneration: Boolean
 
+  """自分の画面に推し（応援）・推しランキングを表示しない（推しの受け付けとは別。記録・報酬は変わらない）"""
+  isHideCoinSupport: Boolean
+
   """既定のスタンプ（ぴくたーちゃんのスタンプ）を表示しない"""
   isHideDefaultStickers: Boolean
 
@@ -6296,6 +6433,25 @@ input UserEventsWhereInput {
 input UserFolderInput {
   isSensitive: Boolean
   search: String
+}
+
+"""ユーザーの違反と停止の状況（本人は自分の分、運営は全員の分を見られる）"""
+type UserModerationStatusNode {
+  """今かかっているコメントの停止"""
+  commentRestriction: ModerationRestrictionNode
+
+  """有効なコメントの違反の数（重い違反は 2）"""
+  commentStrikeCount: Int
+  policy: [ModerationPolicyStepNode!]
+
+  """今かかっている投稿の停止"""
+  postRestriction: ModerationRestrictionNode
+
+  """有効な投稿の違反の数（重い違反は 2）"""
+  postStrikeCount: Int
+  restrictions: [ModerationRestrictionNode!]
+  strikes: [ModerationStrikeNode!]
+  userId: ID
 }
 
 """ユーザ"""
@@ -6704,6 +6860,9 @@ type UserSettingNode implements Node {
 
   """画像生成にプレミアムコインを使わない（フリーコインだけで生成する）かどうか"""
   isDisablePremiumCoinGeneration: Boolean!
+
+  """自分の画面に推し（応援）・推しランキングを表示しないかどうか（推しの受け付けとは別）"""
+  isHideCoinSupport: Boolean!
 
   """既定のスタンプ（ぴくたーちゃんのスタンプ）を表示しないかどうか"""
   isHideDefaultStickers: Boolean!

@@ -1,14 +1,9 @@
-import { Link } from "~/lib/app/locale-router"
 import { Award } from "lucide-react"
 import { useContext, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import {
-  getDevLoginUserId,
-  getViewerRequestHeaders,
-} from "~/lib/viewer-request-headers"
 import {
   Select,
   SelectContent,
@@ -17,7 +12,13 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { AuthContext } from "~/contexts/auth-context"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
+import {
+  getDevLoginUserId,
+  getViewerRequestHeaders,
+} from "~/lib/viewer-request-headers"
 
 type SupportRankingItem = {
   rank: number
@@ -155,6 +156,13 @@ const formatNumber = (v: number) => v.toLocaleString()
 const formatRank = (rank: number | null) => (rank === null ? "-" : `#${rank}`)
 
 export function SupportRankingSection() {
+  // 推しを表示しない設定の人には出さない（読みにも行かない）
+  const isHideCoinSupport = useHideCoinSupport()
+  if (isHideCoinSupport) return null
+  return <SupportRankingSectionContent />
+}
+
+function SupportRankingSectionContent() {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 

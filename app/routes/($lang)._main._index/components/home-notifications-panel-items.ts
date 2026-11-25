@@ -122,6 +122,26 @@ export const toPanelItems = (nodes: unknown): PanelItem[] =>
     .filter((item) => item !== null)
     .sort((a, b) => b.createdAt - a.createdAt)
 
+/**
+ * 推し由来の通知（推しを表示しない設定の人には出さない）
+ * - 本文もスタンプもない、推しだけのコメント
+ * - 推しについてのコインのお知らせ
+ * 本文のあるコメントは残す（推しの印だけ行の側で外す）
+ */
+export const isCoinSupportNotification = (item: PanelItem) => {
+  if (item.kind === "comment" || item.kind === "reply") {
+    return (
+      (item.support?.totalPt ?? 0) > 0 &&
+      (item.message ?? "").trim().length === 0 &&
+      item.stickerUrl === null
+    )
+  }
+  if (item.kind === "coin") {
+    return /推し|推され|応援/.test(item.message ?? "")
+  }
+  return false
+}
+
 export const TAB_WHERE = {
   ALL: { excludeCoin: true, includeRequests: true },
   COMMENT: { type: "WORK_COMMENT" },

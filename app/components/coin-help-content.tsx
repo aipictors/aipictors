@@ -1,16 +1,18 @@
-import { Link } from "~/lib/app/locale-router"
 import { CircleDollarSign, Sparkles, TrendingUp, Wallet } from "lucide-react"
 import { CoinIcon } from "~/components/coin-icon"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Badge } from "~/components/ui/badge"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   compact?: boolean
 }
 
-export function CoinHelpContent (props: Props) {
+export function CoinHelpContent(props: Props) {
   const t = useTranslation()
+  const isHideCoinSupport = useHideCoinSupport()
   const sectionClassName = props.compact
     ? "space-y-2 rounded-lg border p-4"
     : "space-y-3 rounded-xl border p-5"
@@ -87,7 +89,12 @@ export function CoinHelpContent (props: Props) {
       <div className={sectionClassName}>
         <p className="flex items-center gap-2 font-semibold">
           <TrendingUp className="h-4 w-4 shrink-0 text-sky-500" />
-          <span>{t("推しランキング・貢献度ランキングとは", "What are support and contribution rankings?")}</span>
+          <span>
+            {t(
+              "推しランキング・貢献度ランキングとは",
+              "What are support and contribution rankings?",
+            )}
+          </span>
         </p>
         <p className="text-sm leading-6">
           {t(
@@ -145,18 +152,22 @@ export function CoinHelpContent (props: Props) {
           >
             {t("推された累計と交換", "Received support & exchange")}
           </Link>
-          <Link
-            className="underline underline-offset-4"
-            to="/coin-rankings?kind=received"
-          >
-            {t("推しランキング", "Support ranking")}
-          </Link>
-          <Link
-            className="underline underline-offset-4"
-            to="/coin-rankings?kind=sent"
-          >
-            {t("貢献度ランキング", "Contribution ranking")}
-          </Link>
+          {!isHideCoinSupport && (
+            <>
+              <Link
+                className="underline underline-offset-4"
+                to="/coin-rankings?kind=received"
+              >
+                {t("推しランキング", "Support ranking")}
+              </Link>
+              <Link
+                className="underline underline-offset-4"
+                to="/coin-rankings?kind=sent"
+              >
+                {t("貢献度ランキング", "Contribution ranking")}
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>

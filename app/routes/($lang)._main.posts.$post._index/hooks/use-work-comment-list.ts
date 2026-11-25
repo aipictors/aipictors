@@ -5,6 +5,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
 import { AuthContext } from "~/contexts/auth-context"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
@@ -25,6 +26,7 @@ import {
   clearPremiumCheckoutSearchParams,
   excludeShownComments,
   fetchCoinSummary,
+  isSupportOnlyComment,
   needsSupportConfirm,
   type ReplyComment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
@@ -123,8 +125,13 @@ export function useWorkCommentList(props: WorkCommentListProps) {
 
   const [hideCommentIds, setHideCommentIds] = useState<string[]>([])
 
+  // 推しを表示しない設定の人には、本文もスタンプも返信もない推しだけのコメントを出さない
+  const isHideCoinSupport = useHideCoinSupport()
+
   const showComments = props.comments.filter(
-    (comment) => !hideCommentIds.includes(comment.id),
+    (comment) =>
+      !hideCommentIds.includes(comment.id) &&
+      !(isHideCoinSupport && isSupportOnlyComment(comment)),
   )
 
   const authContext = useContext(AuthContext)

@@ -20,6 +20,7 @@ import {
 } from "~/components/app/app-pill-tab"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { Button } from "~/components/ui/button"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link, useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -50,6 +51,8 @@ type Props = {
 
 export function RankingHeader(props: Props) {
   const t = useTranslation()
+  // 推しを表示しない設定の人には「推し・貢献度」の切り替えを出さない
+  const isHideCoinSupport = useHideCoinSupport()
 
   const year = props.year
   const month = props.month
@@ -485,17 +488,19 @@ export function RankingHeader(props: Props) {
               {t("ユーザー", "Users")}
             </button>
           )}
-          {!isAiRankingPage && props.onRankingFamilyChange && (
-            <button
-              type="button"
-              onClick={() => props.onRankingFamilyChange?.("support")}
-              aria-pressed={rankingFamily === "support"}
-              className={chipClassName(rankingFamily === "support")}
-            >
-              <HeartHandshakeIcon className="size-4" />
-              {t("推し・貢献度", "Support")}
-            </button>
-          )}
+          {!isAiRankingPage &&
+            props.onRankingFamilyChange &&
+            !isHideCoinSupport && (
+              <button
+                type="button"
+                onClick={() => props.onRankingFamilyChange?.("support")}
+                aria-pressed={rankingFamily === "support"}
+                className={chipClassName(rankingFamily === "support")}
+              >
+                <HeartHandshakeIcon className="size-4" />
+                {t("推し・貢献度", "Support")}
+              </button>
+            )}
           <button
             type="button"
             onClick={() => {

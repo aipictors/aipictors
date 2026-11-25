@@ -25,6 +25,7 @@ import { Skeleton } from "~/components/ui/skeleton"
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useCreatorRewardSummary } from "~/hooks/use-creator-reward-earnings"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { fetchMyUserModels } from "~/lib/user-models/client"
@@ -574,8 +575,11 @@ function QuickAction(props: {
 
 function CreatorRewardsCard(props: ReturnType<typeof useCreatorRewardSummary>) {
   const t = useTranslation()
+  const isHideCoinSupport = useHideCoinSupport()
   const summary = props.summary
   if (!props.isLoading && (!summary || !summary.config.enabled)) return null
+  // 推しを表示しない設定の人には、参加していない報酬（推しの換金）の案内は出さない。参加済みなら残高があるので出す
+  if (isHideCoinSupport && !summary?.joined) return null
   const b = summary?.balances
   const pendingYen = b ? b.holdingYen + b.availableYen + b.inPayoutYen : 0
   const step = !summary?.joined

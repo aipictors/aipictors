@@ -1,6 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { SupportTierChip } from "~/components/support-super-chat"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -28,6 +29,13 @@ type StripComment = {
  * 読み込んだコメントだけで決める。横にスクロールでき（PC はホイールと左右のボタンでも）、押すと推した人のページへ
  */
 export function WorkCommentSupportStrip(props: { comments: StripComment[] }) {
+  // 推しを表示しない設定の人には出さない
+  const isHideCoinSupport = useHideCoinSupport()
+  if (isHideCoinSupport) return null
+  return <WorkCommentSupportStripContent comments={props.comments} />
+}
+
+function WorkCommentSupportStripContent(props: { comments: StripComment[] }) {
   const t = useTranslation()
   const pinned = pickPinnedSupports(props.comments)
   const scrollRef = useRef<HTMLDivElement>(null)

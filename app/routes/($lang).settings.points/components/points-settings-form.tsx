@@ -3,6 +3,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useLocalStorage } from "usehooks-ts"
 import { CreatorRewardsNotice } from "~/components/creator-rewards-notice"
+import { HiddenCoinSupportNotice } from "~/components/hidden-coin-support-notice"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -14,8 +15,10 @@ import {
 } from "~/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { AuthContext } from "~/contexts/auth-context"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link, useNavigate } from "~/lib/app/locale-router"
+import { cn } from "~/lib/utils"
 import {
   getViewerRequestHeaders,
   getViewerRequestSessionId,
@@ -122,6 +125,7 @@ const toCoinTab = (value: string | null): CoinTab => {
 
 export function PointsSettingsForm() {
   const t = useTranslation()
+  const isHideCoinSupport = useHideCoinSupport()
   const [isPremiumCoinConfirmEnabled, setIsPremiumCoinConfirmEnabled] =
     useLocalStorage(PREMIUM_COIN_CONFIRM_STORAGE_KEY, true, {
       initializeWithValue: false,
@@ -476,16 +480,23 @@ export function PointsSettingsForm() {
       <PremiumCoinGenerationSetting />
 
       <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <TabsList className="grid h-11 w-full grid-cols-4">
+        <TabsList
+          className={cn(
+            "grid h-11 w-full",
+            isHideCoinSupport ? "grid-cols-3" : "grid-cols-4",
+          )}
+        >
           <TabsTrigger value="history" className="h-9 px-1">
             {t("履歴", "History")}
           </TabsTrigger>
           <TabsTrigger value="expiry" className="h-9 px-1">
             {t("有効期限", "Expiry")}
           </TabsTrigger>
-          <TabsTrigger value="support" className="h-9 px-1">
-            {t("推し", "Support")}
-          </TabsTrigger>
+          {!isHideCoinSupport && (
+            <TabsTrigger value="support" className="h-9 px-1">
+              {t("推し", "Support")}
+            </TabsTrigger>
+          )}
           <TabsTrigger value="exchange" className="h-9 px-1">
             {t("報酬", "Rewards")}
           </TabsTrigger>
@@ -515,7 +526,12 @@ export function PointsSettingsForm() {
           forceMount
           className="mt-4 data-[state=inactive]:hidden"
         >
-          {visitedTabs.has("support") && <CoinSupportTab />}
+          {/* 推しを表示しない設定の人には推しのタブを出さない（?tab=support で来たときはお知らせ） */}
+          {isHideCoinSupport ? (
+            <HiddenCoinSupportNotice />
+          ) : (
+            visitedTabs.has("support") && <CoinSupportTab />
+          )}
         </TabsContent>
         <TabsContent
           value="exchange"

@@ -9,6 +9,7 @@ import {
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { prefetchViewerStickers } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
@@ -51,8 +52,11 @@ export function WorkCommentForm(
   } = props
 
   const isDisabled = !authContext.isLoggedIn || props.isWorkOwnerBlocked
+  // 推しを表示しない設定の人には「推す」と推しの欄を出さない
+  const isHideCoinSupport = useHideCoinSupport()
+  const canSupport = !isOwnWork && !isHideCoinSupport
   const isSupportVisible =
-    isSupportOpen && !props.isWorkOwnerBlocked && !isOwnWork
+    isSupportOpen && !props.isWorkOwnerBlocked && canSupport
   const canSend = comment.trim().length > 0 || currentSupportDraft !== null
 
   const toggleSupport = () => {
@@ -142,7 +146,7 @@ export function WorkCommentForm(
                 {t("スタンプ", "Sticker")}
               </span>
             </button>
-            {!isOwnWork && (
+            {canSupport && (
               <button
                 type="button"
                 disabled={isDisabled}

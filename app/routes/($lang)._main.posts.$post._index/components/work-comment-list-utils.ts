@@ -11,6 +11,18 @@ export type ReplyComment = Comment & {
   replyTargetId: string
 }
 
+/** 本文もスタンプも返信もない、推しだけのコメント（推しを表示しない設定の人には出さない） */
+export const isSupportOnlyComment = (comment: {
+  text?: string | null
+  sticker?: unknown
+  support?: { totalPt: number } | null
+  responses?: unknown[] | null
+}) =>
+  (comment.support?.totalPt ?? 0) > 0 &&
+  (comment.text ?? "").trim().length === 0 &&
+  !comment.sticker &&
+  (comment.responses?.length ?? 0) === 0
+
 export type CommentSupportDraft = {
   freeCoinAmount: number
   premiumCoinAmount: number

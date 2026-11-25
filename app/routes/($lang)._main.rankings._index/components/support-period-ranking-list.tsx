@@ -1,7 +1,9 @@
-import { Link } from "~/lib/app/locale-router"
 import { Trophy } from "lucide-react"
+import { HiddenCoinSupportNotice } from "~/components/hidden-coin-support-notice"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
+import { Link } from "~/lib/app/locale-router"
 import type { SupportPeriodRankingData } from "~/lib/server/support-rankings.server"
 
 const formatNumber = (value: number) => value.toLocaleString()
@@ -93,7 +95,9 @@ function RankingColumn(props: ColumnProps) {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className={`shrink-0 font-bold text-sm ${props.colorClass}`}>
+                  <p
+                    className={`shrink-0 font-bold text-sm ${props.colorClass}`}
+                  >
                     {formatNumber(row.ptAmount)} pt
                   </p>
                   <p className="text-muted-foreground text-[11px]">
@@ -114,6 +118,10 @@ export function SupportPeriodRankingList(props: {
   sentRanking: SupportPeriodRankingData | null
   periodLabel: string
 }) {
+  // 推しを表示しない設定の人には、ランキングの代わりに設定のお知らせを出す
+  const isHideCoinSupport = useHideCoinSupport()
+  if (isHideCoinSupport) return <HiddenCoinSupportNotice />
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-amber-200/40 bg-gradient-to-br from-amber-50/80 via-background to-sky-50/80 p-4 dark:border-amber-900/40 dark:from-amber-950/20 dark:to-sky-950/20">
@@ -124,7 +132,8 @@ export function SupportPeriodRankingList(props: {
           <div>
             <h3 className="font-semibold text-lg">推し・貢献度ランキング</h3>
             <p className="mt-1 text-muted-foreground text-sm">
-              フリーコイン 1pt / プレミアムコイン 10pt で換算した {props.periodLabel} の集計です。
+              フリーコイン 1pt / プレミアムコイン 10pt で換算した{" "}
+              {props.periodLabel} の集計です。
             </p>
           </div>
         </div>

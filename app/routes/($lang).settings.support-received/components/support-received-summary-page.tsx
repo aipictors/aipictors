@@ -38,6 +38,7 @@ import {
   getViewerRequestHeaders,
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
+import { HideCoinSupportSetting } from "~/routes/($lang).settings/components/hide-coin-support-setting"
 import { PremiumCoinSupportSetting } from "~/routes/($lang).settings/components/premium-coin-support-setting"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
@@ -278,6 +279,8 @@ export function SupportReceivedSummaryPage() {
       ) : null}
 
       <PremiumCoinSupportSetting id="receive-setting" />
+
+      <HideCoinSupportSetting id="hide-coin-support" />
 
       <Tabs
         value={activeTab}

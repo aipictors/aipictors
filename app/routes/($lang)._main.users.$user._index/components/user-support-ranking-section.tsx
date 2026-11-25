@@ -1,8 +1,9 @@
-import { Link } from "~/lib/app/locale-router"
 import { ChevronRightIcon, Trophy } from "lucide-react"
 import { useEffect, useState } from "react"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 type SupportRankingItem = {
   rank: number
@@ -32,11 +33,20 @@ type ApiResponse = {
 
 const formatNumber = (value: number) => value.toLocaleString()
 
-export function UserSupportRankingSection(props: {
+type Props = {
   targetUserId: string
   targetUserLogin: string
   limit?: number
-}) {
+}
+
+export function UserSupportRankingSection(props: Props) {
+  // 推しを表示しない設定の人には出さない（読みにも行かない）
+  const isHideCoinSupport = useHideCoinSupport()
+  if (isHideCoinSupport) return null
+  return <UserSupportRankingSectionContent {...props} />
+}
+
+function UserSupportRankingSectionContent(props: Props) {
   const t = useTranslation()
   const limit = props.limit ?? 5
   const [items, setItems] = useState<SupportRankingItem[]>([])

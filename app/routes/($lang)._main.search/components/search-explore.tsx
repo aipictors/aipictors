@@ -15,6 +15,7 @@ import {
   TrophyIcon,
   WandSparklesIcon,
 } from "lucide-react"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import type { SearchLoaderData } from "~/routes/($lang)._main.search/search-loader.server"
@@ -47,12 +48,16 @@ export function SearchExplore(props: {
   pagePrefix: string
 }) {
   const t = useTranslation()
+  const isHideCoinSupport = useHideCoinSupport()
   const { data, pagePrefix } = props
 
   return (
     <div className="space-y-7">
       <nav aria-label={t("探す", "Explore")} className="flex flex-wrap gap-1.5">
-        {EXPLORE_LINKS.map(([Icon, ja, en, path]) => (
+        {EXPLORE_LINKS.filter(
+          // 推しを表示しない設定の人には推しランキングの入口を出さない
+          ([, , , path]) => !(isHideCoinSupport && path === "/coin-rankings"),
+        ).map(([Icon, ja, en, path]) => (
           <Link
             key={path}
             to={data.isSensitiveMode ? (toR18Path(path) ?? path) : path}

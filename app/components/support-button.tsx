@@ -29,6 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
@@ -96,7 +97,14 @@ const COIN_OPTIONS: Record<SupportCoinType, readonly number[]> = {
   PREMIUM: [1, 2, 100, 500, 1000],
 }
 
-export function SupportButton({
+export function SupportButton(props: Props) {
+  // 推しを表示しない設定の人には推すボタンを出さない
+  const isHideCoinSupport = useHideCoinSupport()
+  if (isHideCoinSupport) return null
+  return <SupportButtonContent {...props} />
+}
+
+function SupportButtonContent({
   targetUserId,
   targetUserName,
   targetUserIconUrl,

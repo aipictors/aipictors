@@ -43,8 +43,10 @@ const SETTINGS_PAGES: {
     href: "/settings/support-received",
     ja: "応援コイン受け取り",
     en: "Received Support Coins",
-    descriptionJa: "推してもらったコインと応援してくれた人",
-    descriptionEn: "Coins you received and the people who supported you",
+    descriptionJa:
+      "推してもらったコインと応援してくれた人・推しの受け取りと表示",
+    descriptionEn:
+      "Coins you received, the people who supported you, and support settings",
   },
   {
     href: "/settings/creator-rewards",

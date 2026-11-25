@@ -2,11 +2,13 @@ import { useQuery } from "@apollo/client/index"
 import { useMemo, useState } from "react"
 import { FeedLoadError } from "~/components/feed-load-error"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { NotificationRowView } from "~/routes/($lang)._main._index/components/home-notification-row"
 import {
+  isCoinSupportNotification,
   type PanelItem,
   TAB_WHERE,
   toPanelItems,
@@ -171,6 +173,7 @@ export function RowList(props: {
   emptyText?: string
 }) {
   const t = useTranslation()
+  const isHideCoinSupport = useHideCoinSupport()
 
   const sectionLabels: Record<NotificationSection, string> = {
     today: t("今日", "Today"),
@@ -180,8 +183,16 @@ export function RowList(props: {
   }
 
   const rows = useMemo(
-    () => toNotificationRows(props.items, props.unread, props.likedItems),
-    [props.items, props.unread, props.likedItems],
+    () =>
+      toNotificationRows(
+        // 推しを表示しない設定の人には、推し由来の通知を出さない
+        isHideCoinSupport
+          ? props.items.filter((item) => !isCoinSupportNotification(item))
+          : props.items,
+        props.unread,
+        props.likedItems,
+      ),
+    [props.items, props.unread, props.likedItems, isHideCoinSupport],
   )
 
   if (props.isLoading) {

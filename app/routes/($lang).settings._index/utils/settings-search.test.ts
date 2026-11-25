@@ -39,6 +39,12 @@ describe("設定の検索", () => {
     expect(firstHref("受け取らない")).toBe(
       "/settings/support-received#receive-setting",
     )
+    expect(firstHref("推しを隠す")).toBe(
+      "/settings/support-received#hide-coin-support",
+    )
+    expect(firstHref("推し合い")).toBe(
+      "/settings/support-received#hide-coin-support",
+    )
   })
 
   test("言い換えでも見つかる", () => {

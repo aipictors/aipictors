@@ -21,6 +21,7 @@ import {
   CreatorRewardEarningsContext,
   findCreatorRewardEarning,
 } from "~/hooks/use-creator-reward-earnings"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -64,7 +65,12 @@ export function NotificationRowView(props: {
   const { item, group, isUnread } = props.row
   const href = toRowHref(item)
   const rewardEarnings = useContext(CreatorRewardEarningsContext)
-  const support = item.support && item.support.totalPt > 0 ? item.support : null
+  // 推しを表示しない設定の人には、推しの帯・印・報酬を出さない（本文はそのまま）
+  const isHideCoinSupport = useHideCoinSupport()
+  const support =
+    !isHideCoinSupport && item.support && item.support.totalPt > 0
+      ? item.support
+      : null
   const rewardEarning =
     rewardEarnings && support && support.premiumCoinAmount > 0
       ? findCreatorRewardEarning(rewardEarnings, {

@@ -28,6 +28,7 @@ import {
   CreatorRewardEarningsContext,
   useCreatorRewardEarnings,
 } from "~/hooks/use-creator-reward-earnings"
+import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -411,9 +412,11 @@ function NotificationHistory(props: {
   }, [hasMore, isError, loadMore, items.length])
 
   // プレミアムの推しを受け取っているときだけ、報酬（円）を読みにいく（他の人は問い合わせない）
-  const hasPremiumSupport = items.some(
-    (item) => (item.support?.premiumCoinAmount ?? 0) > 0,
-  )
+  // 推しを表示しない設定の人は読まない（報酬の案内も出さない）
+  const isHideCoinSupport = useHideCoinSupport()
+  const hasPremiumSupport =
+    !isHideCoinSupport &&
+    items.some((item) => (item.support?.premiumCoinAmount ?? 0) > 0)
   const reward = useCreatorRewardEarnings(hasPremiumSupport)
 
   const emptyText =
@@ -427,7 +430,7 @@ function NotificationHistory(props: {
     <CreatorRewardEarningsContext.Provider
       value={reward.status === "joined" ? reward.earnings : null}
     >
-      {reward.status === "notJoined" && (
+      {reward.status === "notJoined" && !isHideCoinSupport && (
         <CreatorRewardsJoinHint className="mx-4 my-2" />
       )}
       {isError && items.length === 0 ? null : (
