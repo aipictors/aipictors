@@ -2,7 +2,7 @@
  * POST /api/support/:op
  *
  * お問い合わせ（サポートチャット）。ログイン中の本人を確かめてから aipictors-api の /internal/support を呼ぶ
- * op: thread（今のお問い合わせ）・messages（送る・AI が答える）・escalate（Discord の案内）・feedback・resolve・unread
+ * op: thread（今のお問い合わせ）・messages（送る・AI が答える）・escalate（Discord の案内）・feedback・resolve・unread・report-generation（アプリの生成画像の報告）
  * 有人の窓口はないので、AI で解決できないものは Discord を案内する
  */
 import type {
@@ -24,6 +24,7 @@ const OPS = new Set([
   "feedback",
   "resolve",
   "unread",
+  "report-generation",
 ])
 
 /**
@@ -180,6 +181,19 @@ export async function action({
     userName:
       typeof input.userName === "string"
         ? input.userName.slice(0, 80)
+        : undefined,
+    // 生成画像の報告（report-generation）
+    reason:
+      typeof input.reason === "string" ? input.reason.slice(0, 32) : undefined,
+    nanoid:
+      typeof input.nanoid === "string" ? input.nanoid.slice(0, 64) : undefined,
+    imageUrl:
+      typeof input.imageUrl === "string"
+        ? input.imageUrl.slice(0, 500)
+        : undefined,
+    detail:
+      typeof input.detail === "string"
+        ? input.detail.slice(0, 1000)
         : undefined,
     userId: viewer.userId,
     passType: viewer.currentPassType,
