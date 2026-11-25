@@ -82,7 +82,7 @@ const ONE_DAY = 24 * ONE_HOUR
  * - /sitemaps/prompts.xml 呪文まとめ（キャラ・タグ・モデル、全年齢と R18）と解説記事
  * - /sitemaps/users.xml 作品のあるユーザーのページ（最近投稿した人・ランキング上位）
  * - /sitemaps/works-YYYY-MM-DD.xml その日（JST）に投稿された作品と、投稿した人のユーザーページ
- * - /sitemaps/sensitive-works-YYYY-MM-DD.xml その日（JST）に投稿された R18 の作品（検索に載せられるものだけ）
+ * - /sitemaps/r-works-YYYY-MM-DD.xml その日（JST）に投稿された R18 の作品（検索に載せられるものだけ）
  */
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
   const name = params.name ?? ""
@@ -218,7 +218,7 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
   }
 
   const sensitiveWorksMatch = name.match(
-    /^sensitive-works-(\d{4}-\d{2}-\d{2})\.xml$/,
+    /^r-works-(\d{4}-\d{2}-\d{2})\.xml$/,
   )
   if (sensitiveWorksMatch && isValidSitemapDate(sensitiveWorksMatch[1])) {
     const date = sensitiveWorksMatch[1]
