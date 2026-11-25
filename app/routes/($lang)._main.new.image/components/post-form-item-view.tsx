@@ -1,7 +1,7 @@
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { Card, CardContent } from "~/components/ui/card"
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   accessType: IntrospectionEnum<"AccessType">
@@ -11,7 +11,7 @@ type Props = {
 /**
  * 公開モード入力
  */
-export function PostFormItemView (props: Props) {
+export function PostFormItemView(props: Props) {
   const t = useTranslation()
 
   return (
@@ -27,10 +27,26 @@ export function PostFormItemView (props: Props) {
         >
           {(
             [
-              { value: "PUBLIC", id: "view-public", label: t("公開", "Public") },
-              { value: "PRIVATE", id: "view-archive", label: t("非公開", "Private") },
-              { value: "LIMITED", id: "view-limited", label: t("限定公開", "Limited") },
-              { value: "SILENT", id: "view-silent", label: t("新着非公開", "Silent") },
+              {
+                value: "PUBLIC",
+                id: "view-public",
+                label: t("公開", "Public"),
+              },
+              {
+                value: "PRIVATE",
+                id: "view-archive",
+                label: t("非公開", "Private"),
+              },
+              {
+                value: "LIMITED",
+                id: "view-limited",
+                label: t("限定公開", "Limited"),
+              },
+              {
+                value: "SILENT",
+                id: "view-silent",
+                label: t("新着非公開", "Silent"),
+              },
               { value: "DRAFT", id: "view-draft", label: t("下書き", "Draft") },
             ] as const
           ).map((option) => (

@@ -1,27 +1,27 @@
-import { useState, useEffect, useRef } from "react"
-import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { Card, CardContent } from "~/components/ui/card"
-import { Input } from "~/components/ui/input"
-import { Button } from "~/components/ui/button"
-import { Sparkles, Loader2Icon, Settings } from "lucide-react"
-import { cn } from "~/lib/utils"
-import { useTranslation } from "~/hooks/use-translation"
-import { toast } from "sonner"
-import { uploadPublicImage } from "~/utils/upload-public-image"
-import { sha256 } from "~/utils/sha256"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import {
-  canUseAiGeneration,
-  consumeAiGenerationUsage,
-} from "../utils/ai-generation-usage"
-import { ContentTypeSelector } from "./content-type-selector"
+import { Loader2Icon, Settings, Sparkles } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible"
+import { Input } from "~/components/ui/input"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { PostFormCharCount } from "~/routes/($lang)._main.new.image/components/post-form-char-count"
+import { sha256 } from "~/utils/sha256"
+import { uploadPublicImage } from "~/utils/upload-public-image"
+import {
+  canUseAiGeneration,
+  consumeAiGenerationUsage,
+} from "../utils/ai-generation-usage"
+import { ContentTypeSelector } from "./content-type-selector"
 
 // 画像URLのキャッシュ（メモリ内）
 const imageUrlCache = new Map<string, string>()
@@ -63,7 +63,7 @@ type Props = {
 /**
  * タイトル（必須）・キャプション統合入力コンポーネント
  */
-export function PostFormItemTitleCaption (props: Props) {
+export function PostFormItemTitleCaption(props: Props) {
   const t = useTranslation()
   const [localTitle, setLocalTitle] = useState(props.title || "")
   const [localCaption, setLocalCaption] = useState(props.caption || "")

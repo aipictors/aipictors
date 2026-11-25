@@ -1,18 +1,18 @@
-import { vFile } from "~/routes/($lang)._main.new.image/validations/file"
-import { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
-import { vSortableItem } from "~/routes/($lang)._main.new.image/validations/sortable-item"
 import {
   array,
   boolean,
+  type InferInput,
   literal,
-  optional,
   nullable,
   number,
   object,
+  optional,
   string,
   union,
-  type InferInput,
 } from "valibot"
+import { vFile } from "~/routes/($lang)._main.new.image/validations/file"
+import { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
+import { vSortableItem } from "~/routes/($lang)._main.new.image/validations/sortable-item"
 
 export type PostImageFormAction = InferInput<typeof vPostImageFormAction>
 

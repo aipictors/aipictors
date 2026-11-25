@@ -1,26 +1,26 @@
-import { useMemo, useCallback, useState } from "react"
+import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Hash, Loader2Icon, Settings } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
+import { toast } from "sonner"
 import { type Tag, TagInput } from "~/components/tag/tag-input"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/components/ui/collapsible"
 import { useTranslation } from "~/hooks/use-translation"
-import { Hash, Loader2Icon, Settings } from "lucide-react"
-import { toast } from "sonner"
-import { useMutation } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { uploadPublicImage } from "~/utils/upload-public-image"
+import { MAX_POST_TAGS } from "~/routes/($lang)._main.new.image/utils/post-form-generated-content"
 import { sha256 } from "~/utils/sha256"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 import {
   canUseAiGeneration,
   consumeAiGenerationUsage,
 } from "../utils/ai-generation-usage"
 import { splitPostFormTagSuggestions } from "../utils/post-form-tag-suggestions"
 import { ContentTypeSelector } from "./content-type-selector"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "~/components/ui/collapsible"
-import { MAX_POST_TAGS } from "~/routes/($lang)._main.new.image/utils/post-form-generated-content"
 
 type Props = {
   /** タグ入力欄に初めて触れたときに候補を読み込む */
@@ -64,7 +64,7 @@ const GenerateImageContentMutation = graphql(
 /**
  * タグ入力
  */
-export function PostFormItemTags (props: Props) {
+export function PostFormItemTags(props: Props) {
   const t = useTranslation()
   const whiteListTags = props.whiteListTags
   const [isGenerating, setIsGenerating] = useState(false)

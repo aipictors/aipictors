@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test"
+import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
 import {
   applyGeneratedContentToPostForm,
   pickGeneratedTagsToAdd,
 } from "~/routes/($lang)._main.new.image/utils/post-form-generated-content"
-import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
 
 const tagsOf = (count: number) =>
   Array.from({ length: count }, (_, i) => ({ id: String(i), text: `tag${i}` }))

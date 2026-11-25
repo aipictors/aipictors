@@ -1,3 +1,4 @@
+import { Card, CardContent } from "~/components/ui/card"
 import {
   Select,
   SelectContent,
@@ -6,9 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import type { Album } from "~/routes/($lang)._main.new.image/types/album"
-import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
+import type { Album } from "~/routes/($lang)._main.new.image/types/album"
 
 type Props = {
   album: string | null
@@ -19,7 +19,7 @@ type Props = {
 /**
  * シリーズ入力
  */
-export function PostFormItemAlbum (props: Props) {
+export function PostFormItemAlbum(props: Props) {
   const t = useTranslation()
   const hasAlbums = props.albums.length > 0
 
@@ -36,12 +36,11 @@ export function PostFormItemAlbum (props: Props) {
         >
           <SelectTrigger className="w-full">
             <SelectValue
-              placeholder={hasAlbums
-                ? t("シリーズを選択", "Select a series")
-                : t(
-                    "利用可能なシリーズがありません",
-                    "No series available",
-                  )}
+              placeholder={
+                hasAlbums
+                  ? t("シリーズを選択", "Select a series")
+                  : t("利用可能なシリーズがありません", "No series available")
+              }
             />
           </SelectTrigger>
           <SelectContent>

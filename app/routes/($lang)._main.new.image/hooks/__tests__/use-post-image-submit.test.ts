@@ -3,9 +3,11 @@ import { afterEach, beforeEach, expect, mock, test } from "bun:test"
 type CreateWorkArgs = { variables: { input: { imageUrls: string[] } } }
 
 const toastMock = mock((_message: string) => {})
-const createWork = mock(async (_args: CreateWorkArgs): Promise<unknown> => ({
-  data: { createWork: { id: "new", uuid: "new-uuid" } },
-}))
+const createWork = mock(
+  async (_args: CreateWorkArgs): Promise<unknown> => ({
+    data: { createWork: { id: "new", uuid: "new-uuid" } },
+  }),
+)
 const checkWorkByImageHash = mock(
   async (): Promise<{ data?: unknown; error?: Error }> => ({
     data: { workByImageHash: null },
@@ -27,8 +29,16 @@ mock.module("@apollo/client/index", () => ({
 const resizeModule = await import("~/utils/resize-image")
 mock.module("~/utils/resize-image", () => ({
   ...resizeModule,
-  resizeThumbnail: async () => ({ base64: "data:image/webp;base64,AAAA", width: 1, height: 1 }),
-  resizeImage: async () => ({ base64: "data:image/jpeg;base64,AAAA", width: 1, height: 1 }),
+  resizeThumbnail: async () => ({
+    base64: "data:image/webp;base64,AAAA",
+    width: 1,
+    height: 1,
+  }),
+  resizeImage: async () => ({
+    base64: "data:image/jpeg;base64,AAAA",
+    width: 1,
+    height: 1,
+  }),
 }))
 const sizeModule = await import("~/utils/get-size-from-base64")
 mock.module("~/utils/get-size-from-base64", () => ({
@@ -103,7 +113,8 @@ const post = async () => {
   return isPostingRef
 }
 
-const doneActions = () => actions.filter((action) => action.type === "MARK_AS_DONE")
+const doneActions = () =>
+  actions.filter((action) => action.type === "MARK_AS_DONE")
 
 beforeEach(() => {
   actions = []
@@ -121,15 +132,24 @@ beforeEach(() => {
   console.log = () => {}
   console.error = () => {}
   globalThis.setTimeout = ((handler: () => void, ms?: number) =>
-    realSetTimeout(handler, ms === 45_000 ? ms : 0)) as unknown as typeof setTimeout
+    realSetTimeout(
+      handler,
+      ms === 45_000 ? ms : 0,
+    )) as unknown as typeof setTimeout
   globalThis.fetch = (async () => {
     uploadCount += 1
     if (uploadCount === failUploadAt) {
-      return Response.json({ error: "upload failed", data: null }, { status: 500 })
+      return Response.json(
+        { error: "upload failed", data: null },
+        { status: 500 },
+      )
     }
     return Response.json({
       error: null,
-      data: { fileId: `f${uploadCount}`, url: `https://images.test/${uploadCount}` },
+      data: {
+        fileId: `f${uploadCount}`,
+        url: `https://images.test/${uploadCount}`,
+      },
     })
   }) as unknown as typeof fetch
 })
@@ -193,7 +213,9 @@ test("前回の createWork で自分の作品ができていたらリトライ�
     throw new Error("response lost")
   })
   checkWorkByImageHash.mockImplementation(async () => ({
-    data: { workByImageHash: { id: "made", uuid: "made-uuid", user: { id: "1" } } },
+    data: {
+      workByImageHash: { id: "made", uuid: "made-uuid", user: { id: "1" } },
+    },
   }))
 
   await post()
@@ -227,7 +249,9 @@ test("同じハッシュが他人の作品なら投稿済みにせず、断ら�
     throw new Error("同じ画像が既に投稿されています")
   })
   checkWorkByImageHash.mockImplementation(async () => ({
-    data: { workByImageHash: { id: "other", uuid: "other-uuid", user: { id: "2" } } },
+    data: {
+      workByImageHash: { id: "other", uuid: "other-uuid", user: { id: "2" } },
+    },
   }))
 
   await post()

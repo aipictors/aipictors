@@ -1,6 +1,6 @@
-import { Checkbox } from "~/components/ui/checkbox"
-import { Card, CardContent } from "~/components/ui/card"
 import { useEffect, useState } from "react"
+import { Card, CardContent } from "~/components/ui/card"
+import { Checkbox } from "~/components/ui/checkbox"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 /**
  * 許可設定
  */
-export function PostFormPermissionSetting (props: Props) {
+export function PostFormPermissionSetting(props: Props) {
   const [isTagEditableChecked, setIsTagEditableChecked] = useState(
     props.isTagEditableChecked,
   )

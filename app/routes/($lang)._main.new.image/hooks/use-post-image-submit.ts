@@ -17,12 +17,16 @@ import {
   LinkWorkToGenerationsMutation,
   WorkByImageHashQuery,
 } from "~/routes/($lang)._main.new.image/utils/new-image-queries"
-import { clearPersistedPostDrafts } from "~/routes/($lang)._main.new.image/utils/post-image-draft"
+import {
+  applyPostAutoMosaic,
+  isAutoMosaicRating,
+} from "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
 import {
   type EventOption,
   getPostEventPeriodError,
   toPostReservedAt,
 } from "~/routes/($lang)._main.new.image/utils/post-form-event"
+import { clearPersistedPostDrafts } from "~/routes/($lang)._main.new.image/utils/post-image-draft"
 import {
   toImageWorkInput,
   toVideoWorkInput,
@@ -51,7 +55,28 @@ type Props = {
   pickup?: UserModelPickup | null
   /** 生成画面から渡された生成結果がピックアップモデルを使っているか */
   generationUsesPickup?: boolean
+  /** 投稿の段階が変わったとき（処理中・完了の表示に使う） */
+  onStageChange?: (stage: PostStage) => void
 }
+
+/** 投稿の段階（処理中・完了の画面に出す） */
+export type PostStage =
+  | { kind: "idle" }
+  | {
+      kind: "mosaic"
+      done: number
+      total: number
+      preview: string | null
+    }
+  | { kind: "upload" }
+  | { kind: "create" }
+  | {
+      kind: "done"
+      /** 自動でモザイクをかけた画像の枚数（R18 のみ） */
+      mosaicImageCount: number | null
+      /** 投稿した作品のサムネイル（モザイク後） */
+      thumbnail: string | null
+    }
 
 /**
  * ピックアップモデルのお題のタグが付いているとき、そのモデルで作った画像か確かめる（参加できなければ案内の文）
@@ -107,7 +132,10 @@ export function usePostImageSubmit(props: Props) {
     t,
     pickup,
     generationUsesPickup,
+    onStageChange,
   } = props
+
+  const setStage = (stage: PostStage) => onStageChange?.(stage)
 
   const [createWork] = useMutation(CreateWorkMutation)
   const [linkWorkToGenerations] = useMutation(LinkWorkToGenerationsMutation)
@@ -116,11 +144,10 @@ export function usePostImageSubmit(props: Props) {
     fetchPolicy: "network-only",
   })
 
-  const uploadImages = async () => {
+  const uploadImages = async (images: (string | null)[]) => {
     if (userId === null) {
       return []
     }
-    const images = state.items.map((item) => item.content)
     // 全部を同時に送ると回線を分け合って 1 枚ごとが遅くなり、モバイル通信ではタイムアウトしやすい。
     // 2 枚ずつ送る
     const imageUrls: (string | null)[] = new Array(images.length).fill(null)
@@ -245,6 +272,7 @@ export function usePostImageSubmit(props: Props) {
       const uploadedImageUrls: string[] = []
 
       try {
+        setStage({ kind: "upload" })
         dispatch({ type: "SET_PROGRESS", payload: 10 })
 
         const smallThumbnail = await resizeThumbnail(
@@ -319,6 +347,7 @@ export function usePostImageSubmit(props: Props) {
           )
         }
 
+        setStage({ kind: "create" })
         const work = await createWork({
           variables: {
             input: toVideoWorkInput({
@@ -358,6 +387,11 @@ export function usePostImageSubmit(props: Props) {
           }).catch(() => {})
         }
 
+        setStage({
+          kind: "done",
+          mosaicImageCount: null,
+          thumbnail: formResult.output.thumbnailBase64,
+        })
         dispatch({
           type: "MARK_AS_DONE",
           payload: {
@@ -367,8 +401,6 @@ export function usePostImageSubmit(props: Props) {
         })
 
         await clearPersistedPostDrafts()
-
-        toast(t("作品を投稿しました", "Work has been posted"))
       } catch (error) {
         if (error instanceof Error) {
           toast(error.message)
@@ -378,6 +410,7 @@ export function usePostImageSubmit(props: Props) {
           uploadedImageUrls.map((url) => deleteUploadedImage(url)),
         )
         dispatch({ type: "SET_PROGRESS", payload: 0 })
+        setStage({ kind: "idle" })
       } finally {
         finishPosting()
       }
@@ -386,6 +419,50 @@ export function usePostImageSubmit(props: Props) {
     }
 
     dispatch({ type: "SET_PROGRESS", payload: 5 })
+
+    // R18 / R18G は投稿する前に自動でモザイクをかける（性器・肛門。乳首は対象外）
+    let imageContents = state.items.map((item) => item.content)
+    let thumbnailBase64 = formResult.output.thumbnailBase64
+    let ogpBase64 = state.ogpBase64
+    let mosaicImageCount: number | null = null
+
+    if (isAutoMosaicRating(inputState.ratingRestriction)) {
+      setStage({ kind: "mosaic", done: 0, total: 0, preview: null })
+      const mosaicked = await applyPostAutoMosaic({
+        contents: imageContents,
+        thumbnailBase64,
+        ogpBase64,
+        onProgress: (progress) => {
+          setStage({ kind: "mosaic", ...progress })
+          // 5〜25% をモザイクの進み具合に使う
+          const ratio = progress.total > 0 ? progress.done / progress.total : 1
+          dispatch({
+            type: "SET_PROGRESS",
+            payload: Math.max(5, Math.round(5 + ratio * 20)),
+          })
+        },
+      })
+      if (
+        mosaicked.failedCount > 0 &&
+        !window.confirm(
+          t(
+            `${mosaicked.failedCount}枚に自動モザイクをかけられませんでした。このまま投稿しますか？\n（キャンセルして、各画像の鉛筆ボタンから手でかけることもできます）`,
+            `Auto mosaic failed on ${mosaicked.failedCount} image(s). Post anyway?\n(Cancel to add mosaics by hand with the pencil button)`,
+          ),
+        )
+      ) {
+        setStage({ kind: "idle" })
+        dispatch({ type: "SET_PROGRESS", payload: 0 })
+        finishPosting()
+        return
+      }
+      imageContents = mosaicked.contents
+      thumbnailBase64 = mosaicked.thumbnailBase64
+      ogpBase64 = mosaicked.ogpBase64
+      mosaicImageCount = mosaicked.mosaicImageCount
+    }
+
+    setStage({ kind: "upload" })
 
     const MAX_RETRIES = 3
     const uploadedImageUrls: string[] = []
@@ -398,6 +475,7 @@ export function usePostImageSubmit(props: Props) {
         uploadedImageUrls.map((url) => deleteUploadedImage(url)),
       )
       dispatch({ type: "SET_PROGRESS", payload: 0 })
+      setStage({ kind: "idle" })
       finishPosting()
     }
 
@@ -405,6 +483,7 @@ export function usePostImageSubmit(props: Props) {
       uploadedWorkId: string,
       uploadedWorkUuid: string | null,
     ) => {
+      setStage({ kind: "done", mosaicImageCount, thumbnail: thumbnailBase64 })
       dispatch({
         type: "MARK_AS_DONE",
         payload: { uploadedWorkId, uploadedWorkUuid },
@@ -412,7 +491,6 @@ export function usePostImageSubmit(props: Props) {
 
       await clearPersistedPostDrafts()
 
-      toast(t("作品を投稿しました", "Work has been posted"))
       finishPosting()
     }
 
@@ -427,18 +505,18 @@ export function usePostImageSubmit(props: Props) {
     >
 
     try {
-      dispatch({ type: "SET_PROGRESS", payload: 10 })
+      dispatch({ type: "SET_PROGRESS", payload: 30 })
 
       // 順番に待たない（1 枚ずつ往復すると画像の数だけ投稿が遅くなる）
       const [smallThumbnail, largeThumbnail, botGradingImage] =
         await Promise.all([
-          resizeThumbnail(formResult.output.thumbnailBase64, 400, 1200, "webp"),
-          resizeThumbnail(formResult.output.thumbnailBase64, 600, 1600, "webp"),
+          resizeThumbnail(thumbnailBase64, 400, 1200, "webp"),
+          resizeThumbnail(thumbnailBase64, 600, 1600, "webp"),
           // AI評価用のJPEG画像
-          resizeImage(formResult.output.thumbnailBase64, 400, 400, "jpeg"),
+          resizeImage(thumbnailBase64, 400, 400, "jpeg"),
         ])
 
-      dispatch({ type: "SET_PROGRESS", payload: 30 })
+      dispatch({ type: "SET_PROGRESS", payload: 45 })
 
       // 順に小サムネイル・大サムネイル・OGP（なければ空文字）・AI 評価用
       const [thumbnails, images] = await Promise.all([
@@ -446,11 +524,11 @@ export function usePostImageSubmit(props: Props) {
           [
             smallThumbnail.base64,
             largeThumbnail.base64,
-            state.ogpBase64,
+            ogpBase64,
             botGradingImage.base64,
           ].map((base64) => (base64 ? uploadPublicImage(base64, token) : "")),
         ),
-        uploadImages()
+        uploadImages(imageContents)
           .then((value) => ({ ok: true as const, value }))
           .catch((reason: unknown) => ({ ok: false as const, reason })),
       ])
@@ -488,15 +566,14 @@ export function usePostImageSubmit(props: Props) {
           inputState.reservationDate,
           inputState.reservationTime,
         ),
-        mainImageSha256: await sha256(formResult.output.thumbnailBase64),
-        mainImageSize: await getSizeFromBase64(
-          formResult.output.thumbnailBase64,
-        ),
+        mainImageSha256: await sha256(thumbnailBase64),
+        mainImageSize: await getSizeFromBase64(thumbnailBase64),
         smallThumbnail,
         largeThumbnail,
       }
 
       dispatch({ type: "SET_PROGRESS", payload: 70 })
+      setStage({ kind: "create" })
     } catch (error) {
       await failPost(error)
       return

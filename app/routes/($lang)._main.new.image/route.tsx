@@ -7,7 +7,14 @@ import {
   useSearchParams,
 } from "@remix-run/react"
 import { Loader2Icon } from "lucide-react"
-import { useCallback, useContext, useEffect, useReducer, useRef } from "react"
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
@@ -41,6 +48,7 @@ import {
 import { usePostImageDraft } from "~/routes/($lang)._main.new.image/hooks/use-post-image-draft"
 import { usePostImageGenerationResults } from "~/routes/($lang)._main.new.image/hooks/use-post-image-generation-results"
 import { usePostImageSearchParams } from "~/routes/($lang)._main.new.image/hooks/use-post-image-search-params"
+import type { PostStage } from "~/routes/($lang)._main.new.image/hooks/use-post-image-submit"
 import { usePostImageSubmit } from "~/routes/($lang)._main.new.image/hooks/use-post-image-submit"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
@@ -49,6 +57,7 @@ import {
   UserEventsQuery,
   ViewerQuery,
 } from "~/routes/($lang)._main.new.image/utils/new-image-queries"
+import { isAutoMosaicRating } from "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
 import {
   mergePostFormEvents,
   type RawEventOption,
@@ -63,6 +72,7 @@ import {
   INITIAL_POST_IMAGE_FORM_MEDIA_STATE,
 } from "~/routes/($lang)._main.new.image/utils/post-image-draft"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
+import { preloadAutoMosaic } from "~/utils/auto-mosaic"
 import { createMeta } from "~/utils/create-meta"
 import type { PNGInfo } from "~/utils/get-extract-info-from-png"
 import { getJstDate } from "~/utils/jst-date"
@@ -268,7 +278,17 @@ export default function NewImage() {
     thumbnailBase64: state.thumbnailBase64,
   })
 
+  const [postStage, setPostStage] = useState<PostStage>({ kind: "idle" })
+  const isAutoMosaicPost =
+    mediaType === "image" && isAutoMosaicRating(inputState.ratingRestriction)
+
+  // R18 を選んだら、投稿時の自動モザイクの部品（約 17MB）を先に読んでおく
+  useEffect(() => {
+    if (isAutoMosaicPost) preloadAutoMosaic()
+  }, [isAutoMosaicPost])
+
   const onPost = usePostImageSubmit({
+    onStageChange: setPostStage,
     state,
     inputState,
     dispatch,
@@ -624,7 +644,14 @@ export default function NewImage() {
         isOpen={state.progress === 100}
         title={inputState.title}
         description={inputState.caption}
-        imageBase64={state.thumbnailBase64}
+        imageBase64={
+          postStage.kind === "done" && postStage.thumbnail
+            ? postStage.thumbnail
+            : state.thumbnailBase64
+        }
+        mosaicImageCount={
+          postStage.kind === "done" ? postStage.mosaicImageCount : null
+        }
         workId={state.uploadedWorkId}
         uuid={state.uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
@@ -634,6 +661,8 @@ export default function NewImage() {
       <CreatingWorkDialog
         progress={state.progress}
         isOpen={state.progress !== 0 && state.progress !== 100}
+        stage={postStage}
+        isAutoMosaic={isAutoMosaicPost}
       />
     </div>
   )

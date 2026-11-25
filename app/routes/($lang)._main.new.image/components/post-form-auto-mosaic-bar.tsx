@@ -1,44 +1,23 @@
-import { Loader2Icon, SparklesIcon, Undo2Icon } from "lucide-react"
+import {
+  Loader2Icon,
+  ShieldCheckIcon,
+  SparklesIcon,
+  Undo2Icon,
+} from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import type { TSortableItem } from "~/components/drag/sortable-item"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
-import { autoMosaicImage, isAnimatedImageDataUrl } from "~/utils/auto-mosaic"
-
-const VISIBILITY_KEY = "post-auto-mosaic-bar"
-
-type Visibility = "auto" | "on" | "off"
-
-/**
- * 一括の自動モザイクを出すかどうか。年齢種別が R18 / R18G のときだけ出す
- * （全年齢の投稿では「表示する」にしていても出さない）
- * - auto / on: 出す
- * - off: 投稿者が「表示しない」にした
- */
-export function useAutoMosaicBarVisibility(isSensitiveHint: boolean) {
-  const [visibility, setVisibilityState] = useState<Visibility>("auto")
-
-  useEffect(() => {
-    const stored = localStorage.getItem(VISIBILITY_KEY)
-    if (stored === "on" || stored === "off") setVisibilityState(stored)
-  }, [])
-
-  const setVisibility = (value: Visibility) => {
-    setVisibilityState(value)
-    if (value === "auto") localStorage.removeItem(VISIBILITY_KEY)
-    else localStorage.setItem(VISIBILITY_KEY, value)
-  }
-
-  const isVisible = isSensitiveHint && visibility !== "off"
-
-  return { isVisible, setVisibility }
-}
+import {
+  autoMosaicImage,
+  isAnimatedImageDataUrl,
+  preloadAutoMosaic,
+} from "~/utils/auto-mosaic"
 
 type Props = {
   items: TSortableItem[]
   setItems(items: TSortableItem[]): void
-  onHide(): void
 }
 
 /**
@@ -47,7 +26,6 @@ type Props = {
  */
 export function PostFormAutoMosaicBar(props: Props) {
   const t = useTranslation()
-  const [isNipples, setIsNipples] = useState(false)
   const [progress, setProgress] = useState<{
     done: number
     total: number
@@ -60,6 +38,11 @@ export function PostFormAutoMosaicBar(props: Props) {
 
   const itemsRef = useRef(props.items)
   itemsRef.current = props.items
+
+  // 帯が出たら（R18 の投稿）検出の部品を先に読んでおく。押してから読むと 1 枚目がとても遅い
+  useEffect(() => {
+    preloadAutoMosaic()
+  }, [])
 
   const targets = props.items.filter(
     (item) => item.content !== null && !isAnimatedImageDataUrl(item.content),
@@ -75,9 +58,7 @@ export function PostFormAutoMosaicBar(props: Props) {
     for (const [index, item] of targets.entries()) {
       if (item.content === null) continue
       try {
-        const result = await autoMosaicImage(item.content, {
-          includeNipples: isNipples,
-        })
+        const result = await autoMosaicImage(item.content)
         if (result.dataUrl !== null) {
           before.set(item.id, item.content)
           after.set(item.id, result.dataUrl)
@@ -142,70 +123,62 @@ export function PostFormAutoMosaicBar(props: Props) {
   }
 
   return (
-    <div className="mx-2 mb-3 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-white">
-      <div className="min-w-0 flex-1 basis-48 text-xs leading-5">
-        <div className="font-bold">
-          {t(
-            "センシティブ作品向け: 自動モザイク",
-            "For sensitive works: auto mosaic",
-          )}
-          <span className="ml-1 rounded bg-white/20 px-1 text-[10px]">β</span>
-        </div>
-        <div className="text-zinc-400">
-          {t(
-            "性器を見つけて、形に沿ってモザイクをかけます。見落としもあるので最後は確かめてください",
-            "Finds genitals and mosaics them along their shape. It can miss some, so please check",
-          )}
+    <div className="mx-2 mb-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-2.5 text-white">
+      <div className="flex items-start gap-2.5">
+        <ShieldCheckIcon className="mt-0.5 size-5 shrink-0 text-emerald-400" />
+        <div className="min-w-0 flex-1 text-xs leading-5">
+          <p className="font-bold text-sm">
+            {t(
+              "R18 作品は投稿するときに自動でモザイクがかかります",
+              "R18 works are mosaicked automatically when you post",
+            )}
+          </p>
+          <p className="text-zinc-300">
+            {t(
+              "性器・肛門を見つけて、形に沿ってモザイクをかけます（乳首は対象外です）。自動でモザイクをかけた作品を、モザイクの不足を理由に運営が非公開にすることは基本的にありません。",
+              "Genitals and anus are detected and mosaicked along their shape (nipples are not included). Works mosaicked automatically are generally not hidden by moderators for insufficient mosaic.",
+            )}
+          </p>
+          <p className="text-zinc-400">
+            {t(
+              "GIF・動画は対象外です。手で足したいときは各画像の鉛筆ボタンから。",
+              "GIFs and videos are not included. To add more by hand, use the pencil button on each image.",
+            )}
+          </p>
         </div>
       </div>
-      <label className="flex cursor-pointer items-center gap-1.5 text-xs">
-        <input
-          type="checkbox"
-          className="size-4"
-          checked={isNipples}
-          onChange={(e) => setIsNipples(e.target.checked)}
-        />
-        {t("乳首も", "Nipples")}
-      </label>
-      {lastResult !== null && progress === null && (
+      <div className="mt-2 flex flex-wrap items-center justify-end gap-2">
+        {lastResult !== null && progress === null && (
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-8 rounded-full"
+            onClick={undo}
+          >
+            <Undo2Icon className="mr-1 size-4" />
+            {t("元に戻す", "Undo")}
+          </Button>
+        )}
         <Button
           size="sm"
-          variant="secondary"
-          className="h-9 rounded-full"
-          onClick={undo}
+          variant="outline"
+          className="h-8 rounded-full border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+          disabled={progress !== null || targets.length === 0}
+          onClick={run}
         >
-          <Undo2Icon className="mr-1 size-4" />
-          {t("元に戻す", "Undo")}
+          {progress !== null ? (
+            <Loader2Icon className="mr-1 size-4 animate-spin" />
+          ) : (
+            <SparklesIcon className="mr-1 size-4" />
+          )}
+          {progress !== null
+            ? t(
+                `モザイク処理中 ${progress.done}/${progress.total}`,
+                `Mosaicking ${progress.done}/${progress.total}`,
+              )
+            : t("先にかけて仕上がりを見る", "Preview the mosaic now")}
         </Button>
-      )}
-      <Button
-        size="sm"
-        className="h-9 rounded-full bg-blue-600 text-white hover:bg-blue-700"
-        disabled={progress !== null || targets.length === 0}
-        onClick={run}
-      >
-        {progress !== null ? (
-          <Loader2Icon className="mr-1 size-4 animate-spin" />
-        ) : (
-          <SparklesIcon className="mr-1 size-4" />
-        )}
-        {progress !== null
-          ? t(
-              `処理中 ${progress.done}/${progress.total}`,
-              `Processing ${progress.done}/${progress.total}`,
-            )
-          : t(
-              `${targets.length}枚に一括でモザイク`,
-              `Mosaic all ${targets.length}`,
-            )}
-      </Button>
-      <button
-        type="button"
-        className="text-xs text-zinc-400 underline-offset-2 hover:underline"
-        onClick={props.onHide}
-      >
-        {t("表示しない", "Hide")}
-      </button>
+      </div>
     </div>
   )
 }

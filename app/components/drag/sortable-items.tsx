@@ -2,10 +2,9 @@ import {
   closestCenter,
   DndContext,
   type DragEndEvent,
-  type DragOverEvent,
   DragOverlay,
   type DragStartEvent,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
@@ -16,7 +15,7 @@ import {
   SortableContext,
 } from "@dnd-kit/sortable"
 import type React from "react"
-import { useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { ImageItem } from "~/components/drag/image-item"
 import type { TSortableItem } from "~/components/drag/sortable-item"
 import { SortableItem } from "~/components/drag/sortable-item"
@@ -30,147 +29,123 @@ type Props = {
   isFileNameEditable?: boolean
   /** 画像ごとの差し替えボタンを押したとき */
   onReplace?: (id: number) => void
+  /** 左下のボタンの中身（アイコン） */
   optionalButton?: React.ReactNode
-  onClickOptionButton?: (id: number) => void
+  optionalButtonLabel?: string
+  /** 左下のボタンを押したとき（何枚目か） */
+  onClickOptionButton?: (index: number) => void
   dummyEnableDragItem?: React.ReactNode // アイテム一覧に並び替えできないダミーアイテム
 }
 
 /**
  * 指定された要素をドラッグで並び替えできるようにする
+ * - 動かしている間は見た目（transform）だけ動かし、離したときに 1 回だけ並びを確定する
+ *   （前は指が他の画像に重なるたびに投稿フォーム全体と下書きの保存が走って重かった）
+ * - スマートフォンは長押しで持ち上げる（そのままスクロールもできる）。PC は 5px 動かすと持ち上げる
  */
 export function SortableItems(props: Props): React.ReactNode {
-  const [activeItem, setActiveItem] = useState<TSortableItem>()
-  const [isDragging, setIsDragging] = useState(false)
+  const [activeId, setActiveId] = useState<number | null>(null)
 
-  // TouchSensor を優先して長押し／スワイプでドラッグ開始できるように
   const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 150, // 長押し 150ms 後にドラッグ開始
-        tolerance: 5, // 5px 移動でドラッグ開始
-      },
+      activationConstraint: { delay: 180, tolerance: 8 },
     }),
-    useSensor(PointerSensor),
   )
 
+  // 子に渡す関数を毎回作り直さない（画像の数が多いと描き直しが重い）
+  const latest = useRef(props)
+  latest.current = props
+
   const handleDragStart = (event: DragStartEvent) => {
-    const { active } = event
-    setActiveItem(props.items.find((item) => item.id === active.id))
-    setIsDragging(true)
-  }
-
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event
-    if (!over) return
-
-    const activeIndex = props.items.findIndex((item) => item.id === active.id)
-    const overIndex = props.items.findIndex((item) => item.id === over.id)
-
-    if (activeIndex !== overIndex) {
-      const newItems = arrayMove(props.items, activeIndex, overIndex)
-      props.setItems(newItems)
-      props.setIndexList(newItems.map((item) => item.id))
-    }
+    setActiveId(Number(event.active.id))
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null)
     const { active, over } = event
-    if (!over) return
+    if (!over || active.id === over.id) return
 
     const activeIndex = props.items.findIndex((item) => item.id === active.id)
     const overIndex = props.items.findIndex((item) => item.id === over.id)
-    const newItems =
-      activeIndex !== overIndex
-        ? arrayMove<TSortableItem>(props.items, activeIndex, overIndex)
-        : props.items
+    if (activeIndex === -1 || overIndex === -1) return
 
-    setActiveItem(undefined)
-    setIsDragging(false)
-
-    // アイテムの id をインデックスに合わせて振り直し
-    props.setItems(
-      newItems.map((item, index) => ({
-        ...item,
-        id: index,
-      })),
-    )
-    changeIndexList(activeIndex, overIndex)
+    const moved = arrayMove(props.items, activeIndex, overIndex)
+    props.setIndexList(moved.map((item) => item.id))
+    // アイテムの id を並び順に振り直す
+    props.setItems(moved.map((item, index) => ({ ...item, id: index })))
   }
 
-  const changeIndexList = (activeIndex: number, overIndex: number) => {
-    const newIds = props.items
-      .map((item) => item.id)
-      .map((id) => {
-        if (id === activeIndex) return overIndex
-        if (id === overIndex) return activeIndex
-        return id
-      })
-    props.setIndexList(newIds)
-  }
-
-  const deleteIndex = (deletedId: number) => {
+  const deleteItem = useCallback((deletedId: number) => {
+    const { items, setIndexList, setItems } = latest.current
     // deletedId 以降はひとつ前に詰める
-    const draftIds = props.items
-      .map((item) => item.id)
-      .filter((id) => id !== deletedId)
-      .map((id) => (id > deletedId ? id - 1 : id))
-    props.setIndexList(draftIds)
-
-    // items の各 id を振り直す
-    const newItems = props.items.filter((item) => item.id !== deletedId)
-    props.setItems(
-      newItems.map((item, index) => ({
-        ...item,
-        id: index,
-      })),
+    setIndexList(
+      items
+        .map((item) => item.id)
+        .filter((id) => id !== deletedId)
+        .map((id) => (id > deletedId ? id - 1 : id)),
     )
-  }
+    setItems(
+      items
+        .filter((item) => item.id !== deletedId)
+        .map((item, index) => ({ ...item, id: index })),
+    )
+  }, [])
+
+  const renameFile = useCallback((id: number, fileName: string) => {
+    const { items, setItems } = latest.current
+    setItems(
+      items.map((current) =>
+        current.id === id ? { ...current, fileName } : current,
+      ),
+    )
+  }, [])
+
+  const replace = useCallback((id: number) => {
+    latest.current.onReplace?.(id)
+  }, [])
+
+  const clickOption = useCallback((id: number) => {
+    const index = latest.current.items.findIndex((item) => item.id === id)
+    if (index !== -1) latest.current.onClickOptionButton?.(index)
+  }, [])
+
+  const activeItem =
+    activeId === null
+      ? undefined
+      : props.items.find((item) => item.id === activeId)
 
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
+      onDragCancel={() => setActiveId(null)}
     >
       <SortableContext items={props.items} strategy={rectSortingStrategy}>
-        <div className="flex w-full flex-wrap justify-center gap-4">
+        <div className="flex w-full flex-wrap justify-center gap-3 md:gap-4">
           {props.items.map((item, index) => (
             <SortableItem
               key={item.id}
-              className="touch-none" // タッチアクションを無効化
               item={item}
               position={props.items.length > 1 ? index + 1 : undefined}
-              onRenameFile={
-                props.isFileNameEditable
-                  ? (fileName) => {
-                      props.setItems(
-                        props.items.map((current) =>
-                          current.id === item.id
-                            ? { ...current, fileName }
-                            : current,
-                        ),
-                      )
-                    }
-                  : undefined
-              }
-              onReplace={props.onReplace}
+              onRenameFile={props.isFileNameEditable ? renameFile : undefined}
+              onReplace={props.onReplace ? replace : undefined}
               isDeletable={props.isDeletable}
-              onDelete={deleteIndex}
+              onDelete={deleteItem}
               optionalButton={props.optionalButton}
-              onClickOptionButton={props.onClickOptionButton}
+              optionalButtonLabel={props.optionalButtonLabel}
+              onClickOptionButton={clickOption}
             />
           ))}
           {props.dummyEnableDragItem && <div>{props.dummyEnableDragItem}</div>}
         </div>
       </SortableContext>
 
-      {isDragging && (
-        <DragOverlay adjustScale style={{ transformOrigin: "0 0" }}>
-          {activeItem ? <ImageItem item={activeItem} isDragging /> : null}
-        </DragOverlay>
-      )}
+      <DragOverlay>
+        {activeItem ? <ImageItem item={activeItem} isDragging /> : null}
+      </DragOverlay>
     </DndContext>
   )
 }

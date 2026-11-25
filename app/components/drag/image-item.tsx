@@ -1,5 +1,6 @@
 import { type CSSProperties, forwardRef, type HTMLAttributes } from "react"
 import type { TSortableItem } from "~/components/drag/sortable-item"
+import { cn } from "~/lib/utils"
 
 type Props = {
   item: TSortableItem
@@ -8,37 +9,37 @@ type Props = {
 } & HTMLAttributes<HTMLDivElement>
 
 /**
- * 画像アイテム
+ * 画像アイテム（正方形に切り抜いて表示）
  */
 export const ImageItem = forwardRef<HTMLDivElement, Props>(
-  ({ item, isOpacityEnabled, isDragging, style, ...props }, ref) => {
+  ({ item, isOpacityEnabled, isDragging, style, className, ...props }, ref) => {
     if (!item.content) {
       return null
     }
 
     const styles: CSSProperties = {
-      opacity: isOpacityEnabled ? "0.4" : "1",
+      opacity: isOpacityEnabled ? 0.4 : 1,
       cursor: isDragging ? "grabbing" : "grab",
-      lineHeight: "0.5",
-      transform: isDragging ? "scale(1.05)" : "scale(1)",
       ...style,
     }
 
     return (
-      <div ref={ref} style={styles} {...props}>
+      <div
+        ref={ref}
+        style={styles}
+        className={cn(
+          "size-28 overflow-hidden rounded-xl bg-zinc-700 ring-1 ring-white/10 md:size-32",
+          isDragging && "scale-105 shadow-2xl ring-2 ring-blue-400",
+          className,
+        )}
+        {...props}
+      >
         <img
           draggable={false}
           src={item.content}
-          alt={`${item.id}`}
-          className="size-24 object-fill md:h-32 md:w-32"
-          style={{
-            borderRadius: "8px",
-            boxShadow: isDragging
-              ? "none"
-              : "rgb(63 63 68 / 5%) 0px 0px 0px 1px, rgb(34 33 81 / 15%) 0px 1px 3px 0px",
-            maxWidth: "100%",
-            objectFit: "cover",
-          }}
+          alt=""
+          decoding="async"
+          className="size-full select-none object-cover"
         />
       </div>
     )

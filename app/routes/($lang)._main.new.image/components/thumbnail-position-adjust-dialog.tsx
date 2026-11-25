@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -6,8 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
-import { Button } from "~/components/ui/button"
-import { useEffect, useRef, useState } from "react"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -20,7 +20,18 @@ type Props = {
   setThumbnailPosY(value: number): void
 }
 
-export function ThumbnailPositionAdjustDialog (props: Props) {
+/** 画像の大きさに対する % の位置を、枠からはみ出さない範囲に収める */
+const clampTranslate = (
+  value: number,
+  imageSize: number,
+  frameSize: number,
+) => {
+  if (imageSize <= 0 || imageSize <= frameSize) return 0
+  const min = -((imageSize - frameSize) / imageSize) * 100
+  return Math.min(0, Math.max(min, value))
+}
+
+export function ThumbnailPositionAdjustDialog(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [translate, setTranslate] = useState<{ x: number; y: number }>({
     x: 0,
@@ -81,29 +92,28 @@ export function ThumbnailPositionAdjustDialog (props: Props) {
     const image = imageRef.current
     if (!container || !image) return
 
-    const containerRect = container.getBoundingClientRect()
-    const imageRect = image.getBoundingClientRect()
+    // translate の % は画像自身の大きさに対する割合。枠（境界線を除いた内側）からはみ出さないように止める
+    const containerWidth = container.clientWidth
+    const containerHeight = container.clientHeight
+    const imageWidth = image.offsetWidth
+    const imageHeight = image.offsetHeight
 
     if (props.isThumbnailLandscape) {
       setTranslate((prev) => ({
         ...prev,
-        x: calculateNewTranslate(
-          prev.x,
-          (deltaX / containerRect.width) * 100,
-          containerRect,
-          imageRect,
-          "x",
+        x: clampTranslate(
+          prev.x + (deltaX / imageWidth) * 100,
+          imageWidth,
+          containerWidth,
         ),
       }))
     } else {
       setTranslate((prev) => ({
         ...prev,
-        y: calculateNewTranslate(
-          prev.y,
-          (deltaY / containerRect.height) * 100,
-          containerRect,
-          imageRect,
-          "y",
+        y: clampTranslate(
+          prev.y + (deltaY / imageHeight) * 100,
+          imageHeight,
+          containerHeight,
         ),
       }))
     }
@@ -113,37 +123,6 @@ export function ThumbnailPositionAdjustDialog (props: Props) {
     if (isSquare) return
     setIsDragging(false)
     ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
-  }
-
-  const calculateNewTranslate = (
-    prevTranslate: number,
-    delta: number,
-    containerRect: DOMRect,
-    imageRect: DOMRect,
-    axis: "x" | "y",
-  ) => {
-    let newTranslate = prevTranslate + delta
-
-    if (axis === "x") {
-      const maxTranslate = 0
-      const minTranslate =
-        -((imageRect.width - containerRect.width) / containerRect.width) * 100
-      newTranslate = Math.max(
-        Math.min(newTranslate, maxTranslate),
-        minTranslate,
-      )
-    } else {
-      const maxTranslate = 0
-      const minTranslate =
-        -((imageRect.height - containerRect.height) / containerRect.height) *
-        100
-      newTranslate = Math.max(
-        Math.min(newTranslate, maxTranslate),
-        minTranslate,
-      )
-    }
-
-    return newTranslate
   }
 
   const onSubmit = () => {
@@ -172,7 +151,7 @@ export function ThumbnailPositionAdjustDialog (props: Props) {
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
+            onPointerCancel={handlePointerUp}
           >
             <img
               ref={imageRef}

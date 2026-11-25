@@ -1,10 +1,22 @@
+import {
+  CheckIcon,
+  ExternalLinkIcon,
+  PlusIcon,
+  ShieldCheckIcon,
+} from "lucide-react"
 import { useEffect } from "react"
 import { Button } from "~/components/ui/button"
-import { Dialog, DialogContent } from "~/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "~/components/ui/dialog"
 import { WorkAutoModerationPostNotice } from "~/components/work/work-auto-moderation"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { cn } from "~/lib/utils"
 import { PostNextSteps } from "~/routes/($lang)._main.new.image/components/post-next-steps"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 
@@ -22,6 +34,8 @@ type Props = {
   showAutoModeration?: boolean
   /** 新しく投稿した（編集の更新ではない）。「投稿しました」と次の一手を出す */
   isNew?: boolean
+  /** 投稿時に自動でモザイクをかけた画像の枚数（R18 の投稿だけ。null なら出さない） */
+  mosaicImageCount?: number | null
 }
 
 export function SuccessCreatedWorkDialog(props: Props) {
@@ -136,29 +150,90 @@ export function SuccessCreatedWorkDialog(props: Props) {
         }}
         open={props.isOpen}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
-          <div className="relative h-40 w-full">
+        <DialogContent className="max-h-[90dvh] gap-4 overflow-y-auto rounded-2xl">
+          <div className="-mx-6 -mt-6 relative overflow-hidden rounded-t-2xl bg-gradient-to-b from-sky-500/15 to-transparent px-6 pt-8 pb-2">
             <div
               id="confetti-container"
-              className="relative h-40 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900"
+              className="pointer-events-none absolute inset-0 overflow-hidden"
             />
-            {props.imageBase64 && (
-              <Link to={link()}>
-                <img
-                  className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 size-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
-                  src={props.imageBase64}
-                  alt="work-image"
-                />
-              </Link>
-            )}
+            <div className="relative mx-auto w-fit">
+              {props.imageBase64 ? (
+                <Link to={link()}>
+                  <img
+                    className="size-32 rounded-2xl object-cover shadow-lg ring-4 ring-background transition-opacity hover:opacity-90"
+                    src={props.imageBase64}
+                    alt=""
+                  />
+                </Link>
+              ) : (
+                <div className="size-32 rounded-2xl bg-muted" />
+              )}
+              <span className="-right-2 -bottom-2 absolute flex size-9 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ring-4 ring-background">
+                <CheckIcon className="size-5" strokeWidth={3} />
+              </span>
+            </div>
           </div>
-          <p className="text-center font-bold">
-            {props.isNew
-              ? isReserved()
-                ? t("予約投稿しました", "Your work has been scheduled")
-                : t("作品を投稿しました！", "Your work has been posted!")
-              : t("作品が更新されました", "The work has been updated")}
-          </p>
+          <div className="space-y-1 text-center">
+            <DialogTitle className="font-bold text-xl">
+              {props.isNew
+                ? isReserved()
+                  ? t("予約投稿しました", "Your work has been scheduled")
+                  : t("作品を投稿しました！", "Your work has been posted!")
+                : t("作品が更新されました", "The work has been updated")}
+            </DialogTitle>
+            <DialogDescription className="line-clamp-1 text-muted-foreground text-sm">
+              {props.title}
+            </DialogDescription>
+          </div>
+          {props.mosaicImageCount !== undefined &&
+            props.mosaicImageCount !== null && (
+              <div className="flex items-start gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs leading-5">
+                <ShieldCheckIcon className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+                <p>
+                  {props.mosaicImageCount > 0
+                    ? t(
+                        `${props.mosaicImageCount}枚に自動でモザイクをかけて投稿しました。`,
+                        `Mosaic was applied automatically to ${props.mosaicImageCount} image(s).`,
+                      )
+                    : t(
+                        "自動モザイクで確認しました（モザイクが必要な所は見つかりませんでした）。",
+                        "Checked with auto mosaic (nothing needed a mosaic).",
+                      )}
+                </p>
+              </div>
+            )}
+          <div
+            className={cn(
+              "mt-1 grid gap-2",
+              props.isNew ? "grid-cols-2" : "grid-cols-1",
+            )}
+          >
+            {props.isNew && (
+              <Button
+                variant="secondary"
+                className="h-11 rounded-xl"
+                onClick={() => {
+                  if (typeof document !== "undefined") {
+                    window.location.href = window.location.pathname
+                  }
+                }}
+              >
+                <PlusIcon className="mr-1.5 size-4" />
+                {t("続けて投稿", "Post another")}
+              </Button>
+            )}
+            <Button
+              className="h-11 rounded-xl font-bold"
+              onClick={() => {
+                if (typeof document !== "undefined") {
+                  window.location.href = link()
+                }
+              }}
+            >
+              <ExternalLinkIcon className="mr-1.5 size-4" />
+              {t("作品を見る", "View work")}
+            </Button>
+          </div>
           {props.showAutoModeration && props.isOpen && (
             <WorkAutoModerationPostNotice workId={props.workId} />
           )}
@@ -181,16 +256,6 @@ export function SuccessCreatedWorkDialog(props: Props) {
             props.workId !== null &&
             (props.accessType === "PUBLIC" || props.accessType === "SILENT") &&
             !isReserved() && <PostNextSteps workId={props.workId} />}
-          <Button
-            onClick={() => {
-              if (typeof document !== "undefined") {
-                window.location.href = link()
-              }
-            }}
-            className="mt-2"
-          >
-            {t("閉じる", "Close")}
-          </Button>
         </DialogContent>
       </Dialog>
     </>

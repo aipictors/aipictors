@@ -1,8 +1,8 @@
-import { Input } from "~/components/ui/input"
+import { useEffect, useRef, useState } from "react"
 import { Card, CardContent } from "~/components/ui/card"
+import { Input } from "~/components/ui/input"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { useState, useEffect, useRef } from "react"
 import { PostFormCharCount } from "~/routes/($lang)._main.new.image/components/post-form-char-count"
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 /**
  * タイトル入力
  */
-export function PostFormItemTitle (props: Props) {
+export function PostFormItemTitle(props: Props) {
   const [localValue, setLocalValue] = useState(props.value || "")
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)

@@ -1,11 +1,11 @@
 import { useLazyQuery, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { type Dispatch, useEffect, useState } from "react"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { InferInput } from "valibot"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳フックの使用
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { PostFormAdvancedSection } from "~/routes/($lang)._main.new.image/components/post-form-advanced-section"
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
 import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
@@ -13,11 +13,11 @@ import { PostFormItemBotGrading } from "~/routes/($lang)._main.new.image/compone
 import { PostFormItemDate } from "~/routes/($lang)._main.new.image/components/post-form-item-date"
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
 import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/post-form-item-event"
+import { PostFormItemFanzaLink } from "~/routes/($lang)._main.new.image/components/post-form-item-fanza-link"
 import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
 import { PostFormItemGenerationParams } from "~/routes/($lang)._main.new.image/components/post-form-item-generation-params"
 import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
 import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
-import { PostFormItemFanzaLink } from "~/routes/($lang)._main.new.image/components/post-form-item-fanza-link"
 import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
 import { PostFormItemTags } from "~/routes/($lang)._main.new.image/components/post-form-item-tags"
 import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
@@ -29,18 +29,18 @@ import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 import type { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
 import { AiEvaluationSection } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/ai-evaluation-section"
-import { getVideoUploadLimits } from "~/utils/video-upload-limit"
 import {
   jstDateTimeToWallClockUnixSeconds,
   toJstWallClockUnixSeconds,
 } from "~/utils/jst-date"
+import { getVideoUploadLimits } from "~/utils/video-upload-limit"
 
 // AI評価セクション用のprops型
 type AiEvaluationProps = {
   workId: string
   isAlreadyRequested?: boolean
   isAlreadyEvaluated?: boolean
-    evaluationStatus?: string | null
+  evaluationStatus?: string | null
   isBotGradingEnabled?: boolean
   currentBotGradingPublic?: boolean
   currentBotGradingRankingEnabled?: boolean
@@ -60,7 +60,9 @@ type Props = {
   recentlyUsedTags: FragmentOf<typeof PostImageFormRecentlyUsedTagsFragment>[]
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
-  themes: { date: string; title: string; id: string; note?: string | null }[] | null
+  themes:
+    | { date: string; title: string; id: string; note?: string | null }[]
+    | null
   events: {
     title: string | null
     description: string | null
@@ -132,7 +134,9 @@ export function PostImageFormInput(props: Props) {
   const t = useTranslation() // 翻訳対応
   const mediaType = props.mediaType ?? "image"
   const isVideoPost = mediaType === "video"
-  const videoUploadLimits = getVideoUploadLimits(props.currentPass?.type ?? null)
+  const videoUploadLimits = getVideoUploadLimits(
+    props.currentPass?.type ?? null,
+  )
   const jstDate = getJSTDate()
   const reservationDate = props.state.reservationDate || jstDate
   const [isUserEventsVisible, setIsUserEventsVisible] = useState(false)
@@ -408,7 +412,9 @@ export function PostImageFormInput(props: Props) {
           <PostFormItemEvent
             eventName={event.title ?? null}
             eventDescription={event.description ?? null}
-            thumbnailImageUrl={event.thumbnailImageUrl ?? event.headerImageUrl ?? null}
+            thumbnailImageUrl={
+              event.thumbnailImageUrl ?? event.headerImageUrl ?? null
+            }
             eventTag={event.tag ?? null}
             ratings={event.ratings ?? null}
             startAt={event.startAt ?? 0}
@@ -461,7 +467,9 @@ export function PostImageFormInput(props: Props) {
                   <PostFormItemEvent
                     eventName={event.title ?? null}
                     eventDescription={event.description ?? null}
-                    thumbnailImageUrl={event.thumbnailImageUrl ?? event.headerImageUrl ?? null}
+                    thumbnailImageUrl={
+                      event.thumbnailImageUrl ?? event.headerImageUrl ?? null
+                    }
                     eventTag={event.tag ?? null}
                     ratings={event.ratings ?? null}
                     startAt={event.startAt ?? 0}
@@ -557,116 +565,116 @@ export function PostImageFormInput(props: Props) {
           "English version, permissions, AI evaluation, related link, promotion and more",
         )}
       >
-      <PostFormItemEnglish
-        onChangeTitle={(title) => {
-          props.dispatch({ type: "SET_EN_TITLE", payload: title })
-        }}
-        onChangeCaption={(caption) => {
-          props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
-        }}
-        title={props.state.enTitle}
-        caption={props.state.enCaption}
-        sourceTitle={props.state.title}
-        sourceCaption={props.state.caption}
-      />
-      <PostFormPermissionSetting
-        isTagEditableChecked={props.state.useTagFeature}
-        onTagEditableChange={(value) => {
-          props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
-        }}
-        isCommentsEditableChecked={props.state.useCommentFeature}
-        onCommentsEditableChange={(value) => {
-          props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
-        }}
-      />
-      {/* AI評価セクション - 編集モードでは専用コンポーネントを使用、新規投稿では標準コンポーネントを使用 */}
-      {!isVideoPost && props.isEditMode && props.aiEvaluationProps ? (
-        <AiEvaluationSection
-          workId={props.aiEvaluationProps.workId}
-          isAlreadyRequested={props.aiEvaluationProps.isAlreadyRequested}
-          isAlreadyEvaluated={props.aiEvaluationProps.isAlreadyEvaluated}
-          evaluationStatus={props.aiEvaluationProps.evaluationStatus}
-          isBotGradingEnabled={props.aiEvaluationProps.isBotGradingEnabled}
-          currentBotGradingPublic={
-            props.aiEvaluationProps.currentBotGradingPublic
-          }
-          currentBotGradingRankingEnabled={
-            props.aiEvaluationProps.currentBotGradingRankingEnabled
-          }
-          smallThumbnailImageURL={
-            props.aiEvaluationProps.smallThumbnailImageURL
-          }
-          userToken={props.aiEvaluationProps.userToken}
-          onChangeBotGradingPublic={
-            props.aiEvaluationProps.onChangeBotGradingPublic
-          }
-          onChangeBotGradingRankingEnabled={
-            props.aiEvaluationProps.onChangeBotGradingRankingEnabled
-          }
+        <PostFormItemEnglish
+          onChangeTitle={(title) => {
+            props.dispatch({ type: "SET_EN_TITLE", payload: title })
+          }}
+          onChangeCaption={(caption) => {
+            props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
+          }}
+          title={props.state.enTitle}
+          caption={props.state.enCaption}
+          sourceTitle={props.state.title}
+          sourceCaption={props.state.caption}
         />
-      ) : !isVideoPost ? (
-        <PostFormItemBotGrading
-          isBotGradingEnabled={props.state.isBotGradingEnabled}
-          isBotGradingPublic={props.state.isBotGradingPublic}
-          isBotGradingRankingEnabled={props.state.isBotGradingRankingEnabled}
-          botPersonality={props.state.botPersonality}
-          botGradingType={props.state.botGradingType}
-          isEditMode={props.isEditMode}
-          onChangeBotGradingEnabled={(enabled) => {
-            props.dispatch({
-              type: "SET_BOT_GRADING_ENABLED",
-              payload: enabled,
-            })
+        <PostFormPermissionSetting
+          isTagEditableChecked={props.state.useTagFeature}
+          onTagEditableChange={(value) => {
+            props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
           }}
-          onChangeBotGradingPublic={(isPublic) => {
-            props.dispatch({
-              type: "SET_BOT_GRADING_PUBLIC",
-              payload: isPublic,
-            })
-          }}
-          onChangeBotGradingRankingEnabled={(enabled) => {
-            props.dispatch({
-              type: "SET_BOT_GRADING_RANKING_ENABLED",
-              payload: enabled,
-            })
-          }}
-          onChangeBotPersonality={(personality) => {
-            props.dispatch({
-              type: "SET_BOT_PERSONALITY",
-              payload: personality,
-            })
-          }}
-          onChangeBotGradingType={(type) => {
-            props.dispatch({ type: "SET_BOT_GRADING_TYPE", payload: type })
+          isCommentsEditableChecked={props.state.useCommentFeature}
+          onCommentsEditableChange={(value) => {
+            props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
           }}
         />
-      ) : null}
-      <PostFormItemRelatedLink
-        link={props.state.link}
-        onChange={(link) => {
-          props.dispatch({ type: "SET_LINK", payload: link })
-        }}
-      />
-      <PostFormItemFanzaLink
-        url={props.state.fanzaUrl}
-        rating={props.state.ratingRestriction}
-        onChange={(url) => {
-          props.dispatch({ type: "SET_FANZA_URL", payload: url })
-        }}
-      />
-      <PostFormItemAdvertising
-        previewTitle={props.state.title}
-        previewLink={props.state.link}
-        isSubscribed={
-          props.currentPass?.type === "STANDARD" ||
-          props.currentPass?.type === "PREMIUM"
-        }
-        isChecked={props.state.usePromotionFeature}
-        hasLink={(props.state.link ?? "").trim().length > 0}
-        onChange={(isAd) => {
-          props.dispatch({ type: "ENABLE_PROMOTION_FEATURE", payload: isAd })
-        }}
-      />
+        {/* AI評価セクション - 編集モードでは専用コンポーネントを使用、新規投稿では標準コンポーネントを使用 */}
+        {!isVideoPost && props.isEditMode && props.aiEvaluationProps ? (
+          <AiEvaluationSection
+            workId={props.aiEvaluationProps.workId}
+            isAlreadyRequested={props.aiEvaluationProps.isAlreadyRequested}
+            isAlreadyEvaluated={props.aiEvaluationProps.isAlreadyEvaluated}
+            evaluationStatus={props.aiEvaluationProps.evaluationStatus}
+            isBotGradingEnabled={props.aiEvaluationProps.isBotGradingEnabled}
+            currentBotGradingPublic={
+              props.aiEvaluationProps.currentBotGradingPublic
+            }
+            currentBotGradingRankingEnabled={
+              props.aiEvaluationProps.currentBotGradingRankingEnabled
+            }
+            smallThumbnailImageURL={
+              props.aiEvaluationProps.smallThumbnailImageURL
+            }
+            userToken={props.aiEvaluationProps.userToken}
+            onChangeBotGradingPublic={
+              props.aiEvaluationProps.onChangeBotGradingPublic
+            }
+            onChangeBotGradingRankingEnabled={
+              props.aiEvaluationProps.onChangeBotGradingRankingEnabled
+            }
+          />
+        ) : !isVideoPost ? (
+          <PostFormItemBotGrading
+            isBotGradingEnabled={props.state.isBotGradingEnabled}
+            isBotGradingPublic={props.state.isBotGradingPublic}
+            isBotGradingRankingEnabled={props.state.isBotGradingRankingEnabled}
+            botPersonality={props.state.botPersonality}
+            botGradingType={props.state.botGradingType}
+            isEditMode={props.isEditMode}
+            onChangeBotGradingEnabled={(enabled) => {
+              props.dispatch({
+                type: "SET_BOT_GRADING_ENABLED",
+                payload: enabled,
+              })
+            }}
+            onChangeBotGradingPublic={(isPublic) => {
+              props.dispatch({
+                type: "SET_BOT_GRADING_PUBLIC",
+                payload: isPublic,
+              })
+            }}
+            onChangeBotGradingRankingEnabled={(enabled) => {
+              props.dispatch({
+                type: "SET_BOT_GRADING_RANKING_ENABLED",
+                payload: enabled,
+              })
+            }}
+            onChangeBotPersonality={(personality) => {
+              props.dispatch({
+                type: "SET_BOT_PERSONALITY",
+                payload: personality,
+              })
+            }}
+            onChangeBotGradingType={(type) => {
+              props.dispatch({ type: "SET_BOT_GRADING_TYPE", payload: type })
+            }}
+          />
+        ) : null}
+        <PostFormItemRelatedLink
+          link={props.state.link}
+          onChange={(link) => {
+            props.dispatch({ type: "SET_LINK", payload: link })
+          }}
+        />
+        <PostFormItemFanzaLink
+          url={props.state.fanzaUrl}
+          rating={props.state.ratingRestriction}
+          onChange={(url) => {
+            props.dispatch({ type: "SET_FANZA_URL", payload: url })
+          }}
+        />
+        <PostFormItemAdvertising
+          previewTitle={props.state.title}
+          previewLink={props.state.link}
+          isSubscribed={
+            props.currentPass?.type === "STANDARD" ||
+            props.currentPass?.type === "PREMIUM"
+          }
+          isChecked={props.state.usePromotionFeature}
+          hasLink={(props.state.link ?? "").trim().length > 0}
+          onChange={(isAd) => {
+            props.dispatch({ type: "ENABLE_PROMOTION_FEATURE", payload: isAd })
+          }}
+        />
       </PostFormAdvancedSection>
     </div>
   )

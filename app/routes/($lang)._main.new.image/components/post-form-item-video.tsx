@@ -2,16 +2,19 @@ import { useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
-import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
-import { captureVideoThumbnail } from "~/utils/capture-video-thumbnail"
 import { cn } from "~/lib/utils"
 import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
+import { captureVideoThumbnail } from "~/utils/capture-video-thumbnail"
 import {
   isCloudflareStreamUrl,
   toCloudflareStreamEmbedUrl,
 } from "~/utils/cloudflare-stream"
 import { formatFileSize, MAX_VIDEO_FILE_SIZE_BYTES } from "~/utils/file-size"
-import { getVideoUploadLimits, type VideoUploadPassType } from "~/utils/video-upload-limit"
+import { notifyRejectedFiles } from "~/utils/notify-rejected-files"
+import {
+  getVideoUploadLimits,
+  type VideoUploadPassType,
+} from "~/utils/video-upload-limit"
 
 type Props = {
   videoFile: File | null

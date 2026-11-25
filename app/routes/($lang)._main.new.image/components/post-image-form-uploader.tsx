@@ -1,4 +1,4 @@
-import { ImageIcon, SparklesIcon, VideoIcon } from "lucide-react"
+import { ImageIcon, VideoIcon } from "lucide-react"
 import { type Dispatch, useEffect } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
@@ -8,10 +8,7 @@ import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
-import {
-  PostFormAutoMosaicBar,
-  useAutoMosaicBarVisibility,
-} from "~/routes/($lang)._main.new.image/components/post-form-auto-mosaic-bar"
+import { PostFormAutoMosaicBar } from "~/routes/($lang)._main.new.image/components/post-form-auto-mosaic-bar"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
 import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
@@ -73,9 +70,6 @@ type Props = {
 }
 
 export function PostImageFormUploader(props: Props) {
-  const autoMosaicBar = useAutoMosaicBarVisibility(
-    props.isSensitiveHint ?? false,
-  )
   const t = useTranslation()
   const hasActiveSelection =
     props.mediaType === "video"
@@ -526,20 +520,6 @@ export function PostImageFormUploader(props: Props) {
                   <div className="flex">{selectedImagesCountText()}</div>
                   <div className="flex">{selectedFilesSizeText()}</div>
                 </div>
-                {props.isSensitiveHint && !autoMosaicBar.isVisible && (
-                  <button
-                    type="button"
-                    onClick={() => autoMosaicBar.setVisibility("on")}
-                    className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs text-zinc-300 transition hover:bg-zinc-700"
-                    title={t(
-                      "自動モザイク（ベータ）を表示",
-                      "Show auto mosaic (beta)",
-                    )}
-                  >
-                    <SparklesIcon className="size-3.5" />
-                    <span>{t("自動モザイク", "Auto mosaic")}</span>
-                  </button>
-                )}
                 <button
                   type="button"
                   onClick={openVideoPicker}
@@ -564,13 +544,12 @@ export function PostImageFormUploader(props: Props) {
             )}
             {props.mediaType === "image" &&
               props.state.items.length !== 0 &&
-              autoMosaicBar.isVisible && (
+              props.isSensitiveHint && (
                 <PostFormAutoMosaicBar
                   items={props.state.items}
                   setItems={(items) => {
                     props.dispatch({ type: "SET_ITEMS", payload: items })
                   }}
-                  onHide={() => autoMosaicBar.setVisibility("off")}
                 />
               )}
             {props.mediaType === "image" ? (
@@ -756,6 +735,7 @@ export function PostImageFormUploader(props: Props) {
         <MosaicEditor
           imageUrl={props.state.editTargetImageBase64}
           isAutoMosaic={true}
+          isR18={props.isSensitiveHint}
           onSubmit={(base64: string) => {
             props.dispatch({
               type: "SET_EDITED_IMAGE",

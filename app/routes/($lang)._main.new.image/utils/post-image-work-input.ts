@@ -1,10 +1,10 @@
-import type { InferOutput } from "valibot"
 import type { VariablesOf } from "gql.tada"
+import type { InferOutput } from "valibot"
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
+import { toCreateFanzaUrl } from "~/routes/($lang)._main.new.image/utils/fanza-url-input"
 import type { CreateWorkMutation } from "~/routes/($lang)._main.new.image/utils/new-image-queries"
 import type { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
-import { toCreateFanzaUrl } from "~/routes/($lang)._main.new.image/utils/fanza-url-input"
 
 type CreateWorkInput = VariablesOf<typeof CreateWorkMutation>["input"]
 
@@ -105,21 +105,14 @@ export const toImageWorkInput = (
     enExplanation: form.enCaption,
     rating: inputState.ratingRestriction || "G",
     prompt: inputState.imageInformation?.params.prompt ?? null,
-    negativePrompt:
-      inputState.imageInformation?.params.negativePrompt ?? null,
-    seed:
-      inputState.imageInformation?.params.seed?.toString() ?? null,
-    sampler:
-      inputState.imageInformation?.params.sampler?.toString() ?? null,
-    strength:
-      inputState.imageInformation?.params.strength?.toString() ??
-      null,
-    noise:
-      inputState.imageInformation?.params.noise?.toString() ?? null,
+    negativePrompt: inputState.imageInformation?.params.negativePrompt ?? null,
+    seed: inputState.imageInformation?.params.seed?.toString() ?? null,
+    sampler: inputState.imageInformation?.params.sampler?.toString() ?? null,
+    strength: inputState.imageInformation?.params.strength?.toString() ?? null,
+    noise: inputState.imageInformation?.params.noise?.toString() ?? null,
     modelName: inputState.imageInformation?.params.model ?? null,
     modelHash:
-      inputState.imageInformation?.params.modelHash?.toString() ??
-      null,
+      inputState.imageInformation?.params.modelHash?.toString() ?? null,
     otherGenerationParams: null,
     pngInfo: inputState.imageInformation?.src ?? null,
     imageStyle: inputState.imageStyle,
@@ -150,13 +143,11 @@ export const toImageWorkInput = (
     largeThumbnailImageWidth: props.largeThumbnail.width,
     largeThumbnailImageHeight: props.largeThumbnail.height,
     videoUrl: null,
-    ogpImageUrl:
-      uploadedImageUrls[2] !== "" ? uploadedImageUrls[2] : null,
+    ogpImageUrl: uploadedImageUrls[2] !== "" ? uploadedImageUrls[2] : null,
     imageHeight: props.mainImageSize.height,
     imageWidth: props.mainImageSize.width,
     accessGenerationType:
-      state.isSelectedGenerationImage &&
-      inputState.useGenerationParams
+      state.isSelectedGenerationImage && inputState.useGenerationParams
         ? "PUBLIC_RESTORABLE"
         : inputState.useGenerationParams
           ? "PUBLIC"

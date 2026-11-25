@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Card, CardContent } from "~/components/ui/card"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
+import { useTranslation } from "~/hooks/use-translation"
 import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
 import { PostFormItemTitle } from "~/routes/($lang)._main.new.image/components/post-form-item-title"
-import { useTranslation } from "~/hooks/use-translation"
 import { translateText } from "~/utils/translate-text"
 
 type Props = {
@@ -22,7 +22,7 @@ type Props = {
 /**
  * 公開モード入力
  */
-export function PostFormItemEnglish (props: Props) {
+export function PostFormItemEnglish(props: Props) {
   const t = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
   const [enTitle, setEnTitle] = useState(props.title || "")

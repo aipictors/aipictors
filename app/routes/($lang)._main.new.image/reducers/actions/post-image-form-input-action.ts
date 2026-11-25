@@ -1,11 +1,7 @@
-import { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
-import { vPostGenerationParamAccessType } from "~/routes/($lang)._main.new.image/validations/post-generation-params-access-type"
-import { vPostAccessType } from "~/routes/($lang)._main.new.image/validations/post-access-type"
-import { vPostRating } from "~/routes/($lang)._main.new.image/validations/post-rating"
-import { vTag } from "~/routes/($lang)._main.new.image/validations/post-tag"
 import {
   array,
   boolean,
+  type InferInput,
   instance,
   literal,
   null_,
@@ -14,8 +10,12 @@ import {
   optional,
   string,
   union,
-  type InferInput,
 } from "valibot"
+import { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
+import { vPostAccessType } from "~/routes/($lang)._main.new.image/validations/post-access-type"
+import { vPostGenerationParamAccessType } from "~/routes/($lang)._main.new.image/validations/post-generation-params-access-type"
+import { vPostRating } from "~/routes/($lang)._main.new.image/validations/post-rating"
+import { vTag } from "~/routes/($lang)._main.new.image/validations/post-tag"
 
 export type PostImageFormInputAction = InferInput<
   typeof vPostImageFormInputAction

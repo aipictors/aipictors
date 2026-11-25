@@ -1,5 +1,5 @@
-import { Button } from "~/components/ui/button"
 import { XIcon } from "lucide-react"
+import { Button } from "~/components/ui/button"
 
 type Props = {
   onDelete: () => void
@@ -9,7 +9,7 @@ type Props = {
 /**
  * 動画アイテム
  */
-export function VideoItem (props: Props) {
+export function VideoItem(props: Props) {
   return (
     <div className="relative m-auto w-64">
       <video

@@ -1,3 +1,4 @@
+import { Card, CardContent } from "~/components/ui/card"
 import {
   Select,
   SelectContent,
@@ -5,9 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   imageStyle: IntrospectionEnum<"ImageStyle">
@@ -17,7 +17,7 @@ type Props = {
 /**
  * テイスト入力
  */
-export function PostFormItemTaste (props: Props) {
+export function PostFormItemTaste(props: Props) {
   const t = useTranslation()
 
   return (

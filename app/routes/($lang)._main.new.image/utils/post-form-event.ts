@@ -78,8 +78,7 @@ export const getPostEventPeriodError = (props: {
 
   const outOfPeriodEvent = selectedEvents.find((event) => {
     return (
-      publishAtUnixSeconds < event.startAt ||
-      publishAtUnixSeconds > event.endAt
+      publishAtUnixSeconds < event.startAt || publishAtUnixSeconds > event.endAt
     )
   })
 

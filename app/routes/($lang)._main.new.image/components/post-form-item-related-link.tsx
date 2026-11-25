@@ -1,5 +1,5 @@
-import { Input } from "~/components/ui/input"
 import { Card, CardContent } from "~/components/ui/card"
+import { Input } from "~/components/ui/input"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 /**
  * 関連リンク入力
  */
-export function PostFormItemRelatedLink (props: Props) {
+export function PostFormItemRelatedLink(props: Props) {
   const t = useTranslation()
 
   return (

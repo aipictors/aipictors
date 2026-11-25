@@ -14,11 +14,11 @@ import { PostFormItemCaptionPosition } from "~/routes/($lang)._main.new.image/co
 import { PostFormItemDate } from "~/routes/($lang)._main.new.image/components/post-form-item-date"
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
 import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/post-form-item-event"
+import { PostFormItemFanzaLink } from "~/routes/($lang)._main.new.image/components/post-form-item-fanza-link"
 import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
 import { PostFormItemMd } from "~/routes/($lang)._main.new.image/components/post-form-item-md"
 import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
 import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
-import { PostFormItemFanzaLink } from "~/routes/($lang)._main.new.image/components/post-form-item-fanza-link"
 import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
 import { PostFormItemTags } from "~/routes/($lang)._main.new.image/components/post-form-item-tags"
 import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
@@ -30,11 +30,11 @@ import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/comp
 import type { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
 import type { PostTextFormInputAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-input-action"
 import type { PostTextFormInputState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-input-state"
+import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 import {
   jstDateTimeToWallClockUnixSeconds,
   toJstWallClockUnixSeconds,
 } from "~/utils/jst-date"
-import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null

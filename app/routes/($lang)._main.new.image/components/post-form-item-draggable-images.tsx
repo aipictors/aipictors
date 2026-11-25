@@ -433,20 +433,12 @@ export function PostFormItemDraggableImages(props: Props) {
           }
           setItems={props.setItems}
           setIndexList={props.setIndexList}
-          optionalButton={
-            <Button
-              className="absolute bottom-2 left-2 size-6 md:h-8 md:w-8"
-              size={"icon"}
-              title={t("モザイク・描き込みで直す", "Mosaic / draw")}
-              aria-label={t("モザイク・描き込みで直す", "Mosaic / draw")}
-              onClick={() => {}}
-            >
-              <PencilLineIcon className="size-4 md:h-6 md:w-6" />
-            </Button>
-          }
+          optionalButton={<PencilLineIcon className="size-4" />}
+          optionalButtonLabel={t("モザイク・描き込みで直す", "Mosaic / draw")}
           onClickOptionButton={(index) => {
-            if (props.onMosaicButtonClick && props.items[index].content) {
-              props.onMosaicButtonClick(props.items[index].content)
+            const content = props.items[index]?.content
+            if (props.onMosaicButtonClick && content) {
+              props.onMosaicButtonClick(content)
             }
           }}
           dummyEnableDragItem={
@@ -463,9 +455,10 @@ export function PostFormItemDraggableImages(props: Props) {
                     inputElement.click()
                   }
                 }}
-                className="flex size-32 cursor-pointer items-center justify-center rounded-md bg-zinc-600 hover:opacity-80 dark:bg-zinc-700"
+                className="flex size-28 cursor-pointer items-center justify-center rounded-xl border-2 border-white/25 border-dashed bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white md:size-32"
+                aria-label={t("画像を追加", "Add images")}
               >
-                <PlusIcon className="size-12" />
+                <PlusIcon className="size-10" />
               </button>
             )
           }

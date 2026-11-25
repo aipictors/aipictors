@@ -1,9 +1,10 @@
 import { useSortable } from "@dnd-kit/sortable"
 import { RefreshCwIcon, XIcon } from "lucide-react"
-import { type HTMLAttributes, useState } from "react"
+import { type HTMLAttributes, memo } from "react"
 import { FileNameLabel } from "~/components/drag/file-name-label"
 import { ImageItem } from "~/components/drag/image-item"
-import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 // ドラッグ可能なアイテムの型
 export type TSortableItem = {
@@ -18,104 +19,125 @@ type Props = {
   item: TSortableItem
   /** 何枚目か（1 枚だけのときは出さない） */
   position?: number
-  onRenameFile?: (fileName: string) => void
+  onRenameFile?: (id: number, fileName: string) => void
   /** この画像だけ別の画像に入れ替える（順番はそのまま） */
   onReplace?: (id: number) => void
   isDeletable?: boolean
   onDelete?: (id: number) => void
+  /** 左下のボタン（モザイク・描き込みなど）の中身 */
   optionalButton?: React.ReactNode
+  optionalButtonLabel?: string
   onClickOptionButton?: (id: number) => void
-} & HTMLAttributes<HTMLDivElement>
+} & Omit<HTMLAttributes<HTMLDivElement>, "onClick">
+
+/** 画像の上のボタン（四隅で同じ大きさ・同じ見た目にそろえる） */
+export const imageOverlayButtonClassName =
+  "absolute flex size-8 items-center justify-center rounded-full bg-black/60 text-white shadow-md ring-1 ring-white/20 backdrop-blur-sm transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 active:scale-95"
 
 /**
  * ドラッグ可能なアイテム
- * @param props
+ * 並べ替え中は CSS の transform で動かすだけにして、投稿フォームの状態は離したときに 1 回だけ変える
  */
-export function SortableItem({
+export const SortableItem = memo(function SortableItem({
   item,
   position,
   onRenameFile,
   onReplace,
+  isDeletable,
+  onDelete,
+  optionalButton,
+  optionalButtonLabel,
+  onClickOptionButton,
+  className,
+  style,
   ...props
 }: Props): React.ReactNode {
-  const [isDeleted, _setIsDeleted] = useState(false)
+  const t = useTranslation()
+  const {
+    attributes,
+    isDragging,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: item.id })
 
-  const { attributes, isDragging, listeners, setNodeRef } = useSortable({
-    id: item.id,
-  })
-
-  if (!item.content || isDeleted) {
+  if (!item.content) {
     return null
   }
 
-  const style = {
-    opacity: isDragging ? 0.5 : 1, // ドラッグ時に透明度を変更
-  }
-
   return (
-    <div className="w-24 md:w-32">
+    <div
+      ref={setNodeRef}
+      className="w-28 md:w-32"
+      style={{
+        transform: transform
+          ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+          : undefined,
+        transition,
+        opacity: isDragging ? 0.35 : 1,
+        zIndex: isDragging ? 1 : undefined,
+      }}
+    >
       <div className="relative">
         <div
-          className="relative"
-          ref={setNodeRef}
-          style={{ ...style, ...props.style }} // 既存のスタイルプロップとマージ
+          className={cn("touch-none", className)}
+          style={style}
           {...attributes}
           {...listeners}
-          {...props} // propsをスプレッドして他の属性を適用
+          {...props}
         >
           <ImageItem item={item} />
         </div>
         {position !== undefined && (
-          <span className="pointer-events-none absolute top-2 left-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-black/70 px-1 font-medium text-[11px] text-white leading-none">
+          <span className="pointer-events-none absolute top-1.5 left-1.5 flex size-8 items-center justify-center rounded-full bg-black/60 font-bold text-white text-xs shadow-md ring-1 ring-white/20 backdrop-blur-sm">
             {position}
           </span>
         )}
-        {props.isDeletable && (
-          <Button
-            className="absolute top-2 right-2 size-6 md:h-8 md:w-8"
-            size={"icon"}
-            title="この画像を外す"
-            aria-label="この画像を外す"
-            onClick={() => {
-              if (props.onDelete) {
-                props.onDelete(item.id)
-              }
-              // setIsDeleted(true)
-            }}
+        {isDeletable && (
+          <button
+            type="button"
+            className={cn(imageOverlayButtonClassName, "top-1.5 right-1.5")}
+            title={t("この画像を外す", "Remove this image")}
+            aria-label={t("この画像を外す", "Remove this image")}
+            onClick={() => onDelete?.(item.id)}
           >
-            <XIcon className="size-4 md:h-6 md:w-6" />
-          </Button>
+            <XIcon className="size-4" />
+          </button>
+        )}
+        {optionalButton && (
+          <button
+            type="button"
+            className={cn(imageOverlayButtonClassName, "bottom-1.5 left-1.5")}
+            title={optionalButtonLabel}
+            aria-label={optionalButtonLabel}
+            onClick={() => onClickOptionButton?.(item.id)}
+          >
+            {optionalButton}
+          </button>
         )}
         {onReplace && (
-          <Button
+          <button
             type="button"
-            className="absolute right-2 bottom-2 size-6 md:h-8 md:w-8"
-            size={"icon"}
-            title="この画像を差し替える"
-            aria-label="この画像を差し替える"
+            className={cn(imageOverlayButtonClassName, "right-1.5 bottom-1.5")}
+            title={t("この画像を差し替える", "Replace this image")}
+            aria-label={t("この画像を差し替える", "Replace this image")}
             onClick={() => onReplace(item.id)}
           >
-            <RefreshCwIcon className="size-4 md:h-5 md:w-5" />
-          </Button>
-        )}
-        {props.optionalButton && (
-          // biome-ignore lint/complexity/useOptionalChain: Intentional (readability)
-          // biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only)
-          <div
-            onClick={() => {
-              if (props.onClickOptionButton) {
-                props.onClickOptionButton(item.id)
-              }
-            }}
-            className="absolute bottom-2 left-2"
-          >
-            {props.optionalButton}
-          </div>
+            <RefreshCwIcon className="size-4" />
+          </button>
         )}
       </div>
       {item.fileName && (
-        <FileNameLabel fileName={item.fileName} onRename={onRenameFile} />
+        <FileNameLabel
+          fileName={item.fileName}
+          onRename={
+            onRenameFile
+              ? (fileName) => onRenameFile(item.id, fileName)
+              : undefined
+          }
+        />
       )}
     </div>
   )
-}
+})

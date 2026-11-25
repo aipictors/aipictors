@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, test } from "bun:test"
+import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
+import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import {
   createInitialPostImageFormInputState,
   hasPersistablePostInput,
@@ -16,8 +18,6 @@ import {
   saveBotSettings,
   savePostFormDraft,
 } from "~/routes/($lang)._main.new.image/utils/post-image-draft"
-import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
-import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 
 beforeEach(() => {
   window.localStorage.clear()
@@ -94,7 +94,8 @@ describe("AI 評価の設定", () => {
 })
 
 describe("下書きとして残すものがあるか", () => {
-  const emptyInput = createInitialPostImageFormInputState() as PostImageFormInputState
+  const emptyInput =
+    createInitialPostImageFormInputState() as PostImageFormInputState
 
   test("初期の入力は残さない", () => {
     expect(hasPersistablePostInput(emptyInput)).toBe(false)
@@ -130,9 +131,9 @@ describe("下書きとして残すものがあるか", () => {
       videoDurationSeconds: null,
     }
     expect(hasPersistablePostMedia(emptyMedia)).toBe(false)
-    expect(
-      hasPersistablePostMedia({ ...emptyMedia, thumbnailPosX: 1 }),
-    ).toBe(true)
+    expect(hasPersistablePostMedia({ ...emptyMedia, thumbnailPosX: 1 })).toBe(
+      true,
+    )
     expect(
       hasPersistablePostMedia({
         ...emptyMedia,

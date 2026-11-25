@@ -1,4 +1,4 @@
-import { union, literal } from "valibot"
+import { literal, union } from "valibot"
 
 export const vPostType = union([
   literal("COLUMN"),

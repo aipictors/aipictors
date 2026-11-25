@@ -13,7 +13,11 @@ const base = {
 
 describe("英語のタイトル・キャプションの上限", () => {
   test("自動翻訳で長くなった英語があっても保存できる", () => {
-    const long = { ...base, enTitle: "a".repeat(359), enCaption: "a".repeat(3252) }
+    const long = {
+      ...base,
+      enTitle: "a".repeat(359),
+      enCaption: "a".repeat(3252),
+    }
     expect(safeParse(vPostImageForm, long).success).toBe(true)
     expect(safeParse(vPostTextForm, { ...long, md: "本文" }).success).toBe(true)
   })
@@ -28,7 +32,10 @@ describe("英語のタイトル・キャプションの上限", () => {
   })
 
   test("日本語のタイトルは 120 文字のまま", () => {
-    const result = safeParse(vPostImageForm, { ...base, title: "あ".repeat(121) })
+    const result = safeParse(vPostImageForm, {
+      ...base,
+      title: "あ".repeat(121),
+    })
     expect(result.success).toBe(false)
     expect(result.issues?.[0].message).toBe(
       "タイトルは120文字以内で入力してください",

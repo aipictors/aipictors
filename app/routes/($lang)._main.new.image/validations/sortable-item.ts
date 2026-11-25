@@ -1,4 +1,4 @@
-import { object, number, nullable, string, optional, boolean } from "valibot"
+import { boolean, nullable, number, object, optional, string } from "valibot"
 
 /**
  * ドラッグ可能なアイテムの型を定義

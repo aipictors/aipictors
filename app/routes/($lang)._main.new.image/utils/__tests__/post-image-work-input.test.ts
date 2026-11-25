@@ -75,7 +75,8 @@ describe("toImageWorkInput", () => {
 
   test("サムネイルの位置は縦長か横長かで決まる", () => {
     expect(
-      toImageWorkInput({ ...common, uploadedImageUrls: urls }).thumbnailPosition,
+      toImageWorkInput({ ...common, uploadedImageUrls: urls })
+        .thumbnailPosition,
     ).toBe(22)
     expect(
       toImageWorkInput({

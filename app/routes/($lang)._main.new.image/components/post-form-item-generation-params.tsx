@@ -1,11 +1,11 @@
-import { Input } from "~/components/ui/input"
-import { Textarea } from "~/components/ui/textarea"
-import type { PNGInfo } from "~/utils/get-extract-info-from-png"
-import { Card, CardContent } from "~/components/ui/card"
 import { useState } from "react"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
+import { Input } from "~/components/ui/input"
+import { Textarea } from "~/components/ui/textarea"
 import { useTranslation } from "~/hooks/use-translation" // useTranslationをインポート
+import type { PNGInfo } from "~/utils/get-extract-info-from-png"
 
 type Props = {
   pngInfo: PNGInfo | null
@@ -15,7 +15,7 @@ type Props = {
 /**
  * 生成パラメータ入力
  */
-export function PostFormItemGenerationParams (props: Props) {
+export function PostFormItemGenerationParams(props: Props) {
   const t = useTranslation() // 翻訳フックの使用
 
   const handleChange = (field: keyof PNGInfo["params"], value: string) => {

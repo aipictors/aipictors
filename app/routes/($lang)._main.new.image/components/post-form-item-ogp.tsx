@@ -1,6 +1,6 @@
-import { OgpDialog } from "~/routes/($lang)._main.new.image/components/ogp-dialog"
 import { useEffect, useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { OgpDialog } from "~/routes/($lang)._main.new.image/components/ogp-dialog"
 
 type Props = {
   imageBase64: string
@@ -11,7 +11,7 @@ type Props = {
 /**
  * OGPフォーム
  */
-export function PostFormItemOgp (props: Props) {
+export function PostFormItemOgp(props: Props) {
   const defaultImageUrl =
     "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/none-select-og.jpg"
 

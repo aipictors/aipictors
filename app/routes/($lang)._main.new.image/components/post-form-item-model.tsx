@@ -1,25 +1,25 @@
-import { type SetStateAction, useState, useEffect } from "react"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2Icon, PlusIcon, Search, XIcon } from "lucide-react"
+import { type SetStateAction, useEffect, useState } from "react"
 import { toast } from "sonner"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
+import { Input } from "~/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
+import { useTranslation } from "~/hooks/use-translation"
 import type { AiModel } from "~/routes/($lang)._main.new.image/types/model"
 import {
   canAddAiModel,
   filterAiModels,
 } from "~/routes/($lang)._main.new.image/utils/filter-ai-models"
-import { useTranslation } from "~/hooks/use-translation"
-import { Card, CardContent } from "~/components/ui/card"
-import { Input } from "~/components/ui/input"
-import { Button } from "~/components/ui/button"
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "~/components/ui/select"
 
 type Props = {
   model: string | null

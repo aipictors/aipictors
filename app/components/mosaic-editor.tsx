@@ -22,10 +22,12 @@ import { Slider } from "~/components/ui/slider"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
+  canvasToWebpDataUrl,
   createMaskedMosaicLayer,
   createPixelatedCanvas,
   detectAutoMosaic,
   loadMosaicImage,
+  preloadAutoMosaic,
 } from "~/utils/auto-mosaic"
 
 type Props = {
@@ -34,6 +36,8 @@ type Props = {
   onClose(): void
   /** 自動モザイク（ベータ）のボタンを出す */
   isAutoMosaic?: boolean
+  /** 年齢種別が R18 / R18G（投稿時に自動でモザイクがかかる旨を出す。胸部の選択はこのときだけ） */
+  isR18?: boolean
 }
 
 type Tool = "brush" | "lasso" | "eraser" | "move"
@@ -97,11 +101,31 @@ export function MosaicEditor(props: Props): React.ReactNode {
   const [isComparing, setIsComparing] = useState(false)
   const [isAutoRunning, setIsAutoRunning] = useState(false)
   const [isAutoNipples, setIsAutoNipples] = useState(false)
-  const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null)
+  // ブラシの丸の位置。動かすたびに画面全体を描き直さないよう、位置は直接書き換える
+  const [isCursorVisible, setIsCursorVisible] = useState(false)
+  const cursorRef = useRef<HTMLDivElement | null>(null)
+  const cursorPointRef = useRef<Point | null>(null)
+  // ピクセル化した画像の塗りの模様（塗るたびに作り直さない）
+  const patternRef = useRef<{
+    ctx: CanvasRenderingContext2D
+    source: HTMLCanvasElement
+    pattern: CanvasPattern
+  } | null>(null)
   const [isSpacePressed, setIsSpacePressed] = useState(false)
 
   // 進行中の操作（ポインタ）
   const pointersRef = useRef(new Map<number, Point>())
+
+  const placeCursor = (element: HTMLDivElement | null, point: Point | null) => {
+    if (!element || !point) return
+    element.style.transform = `translate(${point.x}px, ${point.y}px)`
+  }
+
+  const setCursor = (point: Point | null) => {
+    cursorPointRef.current = point
+    placeCursor(cursorRef.current, point)
+    setIsCursorVisible(point !== null)
+  }
   const gestureRef = useRef<
     | { kind: "none" }
     | { kind: "draw"; pointerId: number; operation: Operation }
@@ -123,6 +147,11 @@ export function MosaicEditor(props: Props): React.ReactNode {
       document.body.style.overflow = overflow
     }
   }, [])
+
+  // 自動モザイクを押したときすぐ動くよう、検出の部品を先に読んでおく
+  useEffect(() => {
+    if (props.isAutoMosaic) preloadAutoMosaic()
+  }, [props.isAutoMosaic])
 
   useEffect(() => {
     localStorage.setItem(BRUSH_SIZE_KEY, String(brushSize))
@@ -158,6 +187,7 @@ export function MosaicEditor(props: Props): React.ReactNode {
         if (isCancelled) return
         imageRef.current = image
         pixelatedRef.current = createPixelatedCanvas(image)
+        patternRef.current = null
         setSize({ width: image.width, height: image.height })
         setOperations([])
         setRedoStack([])
@@ -187,6 +217,19 @@ export function MosaicEditor(props: Props): React.ReactNode {
     return () => window.removeEventListener("resize", fitView)
   }, [fitView])
 
+  const getPattern = (
+    ctx: CanvasRenderingContext2D,
+    source: HTMLCanvasElement,
+  ) => {
+    const cached = patternRef.current
+    if (cached && cached.ctx === ctx && cached.source === source) {
+      return cached.pattern
+    }
+    const pattern = ctx.createPattern(source, "no-repeat")
+    if (pattern !== null) patternRef.current = { ctx, source, pattern }
+    return pattern
+  }
+
   /** 1 つの操作を層に描く */
   const drawOperation = (
     ctx: CanvasRenderingContext2D,
@@ -202,7 +245,7 @@ export function MosaicEditor(props: Props): React.ReactNode {
       ctx.restore()
       return
     }
-    const pattern = ctx.createPattern(pixelated, "no-repeat")
+    const pattern = getPattern(ctx, pixelated)
     if (pattern === null) {
       ctx.restore()
       return
@@ -534,7 +577,7 @@ export function MosaicEditor(props: Props): React.ReactNode {
     setIsAutoRunning(true)
     try {
       const result = await detectAutoMosaic(image, {
-        includeNipples: isAutoNipples,
+        includeNipples: props.isR18 === true && isAutoNipples,
       })
       if (result.detections.length === 0) {
         toast(
@@ -571,10 +614,12 @@ export function MosaicEditor(props: Props): React.ReactNode {
     }
   }
 
-  const submit = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const submit = async () => {
     const image = imageRef.current
     const overlay = overlayCanvasRef.current
-    if (!image || !overlay) return
+    if (!image || !overlay || isSubmitting) return
     if (operations.length === 0) {
       props.onClose()
       return
@@ -586,7 +631,17 @@ export function MosaicEditor(props: Props): React.ReactNode {
     if (!ctx) return
     ctx.drawImage(image, 0, 0)
     ctx.drawImage(overlay, 0, 0)
-    props.onSubmit(canvas.toDataURL("image/webp"))
+    setIsSubmitting(true)
+    try {
+      props.onSubmit(await canvasToWebpDataUrl(canvas))
+    } catch (error) {
+      console.error(error)
+      toast.error(t("画像を書き出せませんでした", "Failed to export the image"))
+    } finally {
+      canvas.width = 0
+      canvas.height = 0
+      setIsSubmitting(false)
+    }
   }
 
   const isPanMode = tool === "move" || isSpacePressed
@@ -664,9 +719,10 @@ export function MosaicEditor(props: Props): React.ReactNode {
         </Button>
         <Button
           className="ml-1 h-10 rounded-full bg-blue-600 px-5 font-bold text-white hover:bg-blue-700"
-          onClick={submit}
-          disabled={isLoading}
+          onClick={() => void submit()}
+          disabled={isLoading || isSubmitting}
         >
+          {isSubmitting && <Loader2Icon className="mr-1 size-4 animate-spin" />}
           {t("完了", "Done")}
         </Button>
       </div>
@@ -721,16 +777,24 @@ export function MosaicEditor(props: Props): React.ReactNode {
         </div>
 
         {/* ブラシの大きさの丸 */}
-        {isBrushTool && !isPanMode && cursor !== null && !isLoading && (
+        {isBrushTool && !isPanMode && isCursorVisible && !isLoading && (
           <div
-            className="pointer-events-none absolute rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.6)]"
-            style={{
-              width: brushSize,
-              height: brushSize,
-              left: cursor.x - brushSize / 2,
-              top: cursor.y - brushSize / 2,
+            ref={(element) => {
+              cursorRef.current = element
+              placeCursor(element, cursorPointRef.current)
             }}
-          />
+            className="pointer-events-none absolute top-0 left-0"
+          >
+            <div
+              className="rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.6)]"
+              style={{
+                width: brushSize,
+                height: brushSize,
+                marginLeft: -brushSize / 2,
+                marginTop: -brushSize / 2,
+              }}
+            />
+          </div>
         )}
 
         {isLoading && (
@@ -763,16 +827,26 @@ export function MosaicEditor(props: Props): React.ReactNode {
                 β
               </span>
             </Button>
-            <label className="flex cursor-pointer items-center gap-1.5 whitespace-nowrap text-xs">
-              <input
-                type="checkbox"
-                className="size-4"
-                checked={isAutoNipples}
-                onChange={(e) => setIsAutoNipples(e.target.checked)}
-              />
-              {t("乳首も", "Nipples")}
-            </label>
+            {props.isR18 && (
+              <label className="flex cursor-pointer items-center gap-1.5 whitespace-nowrap text-xs">
+                <input
+                  type="checkbox"
+                  className="size-4"
+                  checked={isAutoNipples}
+                  onChange={(e) => setIsAutoNipples(e.target.checked)}
+                />
+                {t("胸部も", "Chest too")}
+              </label>
+            )}
           </div>
+        )}
+        {props.isR18 && !isLoading && (
+          <p className="-translate-x-1/2 pointer-events-none absolute top-16 left-1/2 w-max max-w-[90%] rounded-full bg-emerald-600/90 px-3 py-1 text-center text-white text-xs shadow">
+            {t(
+              "R18 作品は投稿するときにも自動でモザイクがかかります",
+              "R18 works are also mosaicked automatically when posting",
+            )}
+          </p>
         )}
 
         {/* 拡大・縮小・全体・比較 */}

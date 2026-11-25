@@ -1,5 +1,5 @@
-import { Checkbox } from "~/components/ui/checkbox"
 import { Card, CardContent } from "~/components/ui/card"
+import { Checkbox } from "~/components/ui/checkbox"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -13,13 +13,15 @@ type Props = {
 /**
  * お題入力
  */
-export function PostFormItemTheme (props: Props) {
+export function PostFormItemTheme(props: Props) {
   if (!props.titles) {
     return null
   }
 
   // Extract the title(s) that match the target date
-  const matchingThemes = props.titles.filter((item) => item.date === props.targetDate)
+  const matchingThemes = props.titles.filter(
+    (item) => item.date === props.targetDate,
+  )
   const matchingTitles = matchingThemes.map((item) => item.title)
   const matchingNotes = matchingThemes
     .map((item) => item.note?.trim())

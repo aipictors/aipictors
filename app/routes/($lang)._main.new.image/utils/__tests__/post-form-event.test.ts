@@ -42,7 +42,11 @@ describe("mergePostFormEvents", () => {
       userEvents: [user],
       selectedUserEvent: selected,
     })
-    expect(events.map((event) => event.slug)).toEqual(["app", "selected", "user"])
+    expect(events.map((event) => event.slug)).toEqual([
+      "app",
+      "selected",
+      "user",
+    ])
   })
 
   test("slug かタグが同じなら足さない", () => {

@@ -1,8 +1,8 @@
-import { Link } from "~/lib/app/locale-router"
 import { useEffect, useState } from "react"
 import type { Tag } from "~/components/tag/tag-input"
 import { Card, CardContent } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
+import { Link } from "~/lib/app/locale-router"
 import { toJstWallClockUnixSeconds } from "~/utils/jst-date"
 
 type Props = {
@@ -103,7 +103,8 @@ export function PostFormItemEvent(props: Props) {
         <div className="rounded-md bg-muted/40 px-3 py-2 text-xs">
           <div className="font-medium">開催期間</div>
           <div className="mt-1">
-            {formatEventDateTime(props.startAt)} ～ {formatEventDateTime(props.endAt)}
+            {formatEventDateTime(props.startAt)} ～{" "}
+            {formatEventDateTime(props.endAt)}
           </div>
         </div>
         {isBeforeStart && (
@@ -143,7 +144,9 @@ export function PostFormItemEvent(props: Props) {
                     <div
                       className="line-clamp-3 font-medium text-xs"
                       // biome-ignore lint/security/noDangerouslySetInnerHtml: eventDescription is pre-formatted HTML content
-                      dangerouslySetInnerHTML={{ __html: props.eventDescription }}
+                      dangerouslySetInnerHTML={{
+                        __html: props.eventDescription,
+                      }}
                     />
                   )}
                 </div>

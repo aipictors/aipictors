@@ -42,12 +42,15 @@ async function toDataUrlWithFormat(
       return await blobToDataUrl(blob)
     }
     ctx.drawImage(image, 0, 0)
-    const converted = canvas.toDataURL(format, 1.0)
-    // toDataURL は対応していない形式だと PNG を返す。元の画像より重くなるので使わない
-    if (!converted.startsWith(`data:${format}`)) {
+    // toDataURL は書き出しが終わるまで画面が止まるので toBlob で書き出す
+    const converted = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, format, 1.0),
+    )
+    // 対応していない形式だと PNG になる。元の画像より重くなるので使わない
+    if (converted === null || converted.type !== format) {
       return await blobToDataUrl(blob)
     }
-    return converted
+    return await blobToDataUrl(converted)
   } finally {
     image.close()
     // 画素の領域をすぐ解放する

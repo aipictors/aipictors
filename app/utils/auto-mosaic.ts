@@ -70,6 +70,21 @@ const loadSession = () => {
   return sessionPromise
 }
 
+/**
+ * 検出の部品（wasm 約 11MB・モデル 5.9MB）を先に読み始める。押してから読むと 1 回目がとても遅い。
+ * データ節約モードの端末では読まない
+ */
+export function preloadAutoMosaic() {
+  if (typeof window === "undefined") return
+  const connection = (
+    navigator as Navigator & { connection?: { saveData?: boolean } }
+  ).connection
+  if (connection?.saveData) return
+  loadSession().catch(() => {
+    // 押したときにもう一度読む
+  })
+}
+
 const iou = (a: Detection["box"], b: Detection["box"]) => {
   const x1 = Math.max(a[0], b[0])
   const y1 = Math.max(a[1], b[1])
@@ -286,6 +301,8 @@ export function loadMosaicImage(src: string): Promise<HTMLImageElement> {
 
 /**
  * 画像全体をピクセル化したキャンバス（長辺の 1/blockDivisions のマスを平均色で塗る。MosaicCanvas と同じ）
+ * マスごとに fillRect すると数千回の描画になって遅いので、平均色を 1 マス 1 画素の小さな画像に書き、
+ * ぼかさずに引き伸ばす（仕上がりは同じ）
  */
 export function createPixelatedCanvas(
   source: HTMLImageElement | HTMLCanvasElement,
@@ -301,27 +318,43 @@ export function createPixelatedCanvas(
   ctx.drawImage(source, 0, 0, width, height)
   const block = Math.max(1, Math.ceil(Math.max(width, height) / blockDivisions))
   const data = ctx.getImageData(0, 0, width, height).data
-  for (let y = 0; y < height; y += block) {
-    for (let x = 0; x < width; x += block) {
-      let r = 0
-      let g = 0
-      let b = 0
-      let count = 0
-      const yEnd = Math.min(y + block, height)
-      const xEnd = Math.min(x + block, width)
-      for (let yy = y; yy < yEnd; yy++) {
-        for (let xx = x; xx < xEnd; xx++) {
-          const i = (yy * width + xx) * 4
-          r += data[i]
-          g += data[i + 1]
-          b += data[i + 2]
-          count++
-        }
-      }
-      ctx.fillStyle = `rgb(${r / count}, ${g / count}, ${b / count})`
-      ctx.fillRect(x, y, xEnd - x, yEnd - y)
+  const columns = Math.ceil(width / block)
+  const rows = Math.ceil(height / block)
+
+  // マスごとの色の合計（1 行ずつ足していく）
+  const sums = new Float64Array(columns * rows * 3)
+  const counts = new Uint32Array(columns * rows)
+  for (let y = 0; y < height; y++) {
+    const rowOffset = Math.floor(y / block) * columns
+    let i = y * width * 4
+    for (let x = 0; x < width; x++, i += 4) {
+      const cell = rowOffset + Math.floor(x / block)
+      sums[cell * 3] += data[i]
+      sums[cell * 3 + 1] += data[i + 1]
+      sums[cell * 3 + 2] += data[i + 2]
+      counts[cell]++
     }
   }
+
+  const small = document.createElement("canvas")
+  small.width = columns
+  small.height = rows
+  const smallCtx = small.getContext("2d")
+  if (smallCtx === null) throw new Error("canvas is not supported")
+  const averages = smallCtx.createImageData(columns, rows)
+  for (let cell = 0; cell < counts.length; cell++) {
+    const count = counts[cell] || 1
+    averages.data[cell * 4] = Math.round(sums[cell * 3] / count)
+    averages.data[cell * 4 + 1] = Math.round(sums[cell * 3 + 1] / count)
+    averages.data[cell * 4 + 2] = Math.round(sums[cell * 3 + 2] / count)
+    averages.data[cell * 4 + 3] = 255
+  }
+  smallCtx.putImageData(averages, 0, 0)
+
+  ctx.imageSmoothingEnabled = false
+  ctx.drawImage(small, 0, 0, columns * block, rows * block)
+  small.width = 0
+  small.height = 0
   return canvas
 }
 
@@ -375,9 +408,31 @@ export async function autoMosaicImage(
     0,
   )
   return {
-    dataUrl: canvas.toDataURL("image/webp"),
+    dataUrl: await canvasToWebpDataUrl(canvas),
     count: result.detections.length,
   }
+}
+
+/**
+ * キャンバスを WebP の data URL にする。toDataURL は書き出しが終わるまで画面が止まるので toBlob を使う
+ * （WebP を書き出せないブラウザでは PNG になるのは toDataURL と同じ）
+ */
+export function canvasToWebpDataUrl(canvas: HTMLCanvasElement) {
+  return new Promise<string>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob === null) {
+        reject(new Error("Failed to encode image"))
+        return
+      }
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (typeof reader.result === "string") resolve(reader.result)
+        else reject(new Error("Failed to read image"))
+      }
+      reader.onerror = () => reject(new Error("Failed to read image"))
+      reader.readAsDataURL(blob)
+    }, "image/webp")
+  })
 }
 
 const SENSITIVE_PROMPT_PATTERN =

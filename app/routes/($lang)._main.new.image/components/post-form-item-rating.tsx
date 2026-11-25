@@ -1,9 +1,9 @@
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { Link } from "~/lib/app/locale-router"
-import { Card, CardContent } from "~/components/ui/card"
-import { useTranslation } from "~/hooks/use-translation"
 import { useId } from "react"
+import { Card, CardContent } from "~/components/ui/card"
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   rating: IntrospectionEnum<"Rating">
@@ -43,7 +43,7 @@ const ratingOptions = [
   },
 ] as const
 
-export function PostFormItemRating (props: Props) {
+export function PostFormItemRating(props: Props) {
   const t = useTranslation()
   const gId = useId()
   const r15Id = useId()

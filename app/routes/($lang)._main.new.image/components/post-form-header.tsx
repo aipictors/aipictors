@@ -1,13 +1,13 @@
-import { FileText, Film, Image } from "lucide-react"
-import { cn } from "~/lib/utils"
-import { useTranslation } from "~/hooks/use-translation"
 import { useLocation } from "@remix-run/react"
+import { FileText, Film, Image } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   type: "image" | "animation" | "text" | "media"
 }
 
-export function PostFormHeader (props: Props) {
+export function PostFormHeader(props: Props) {
   const t = useTranslation()
   const location = useLocation()
 

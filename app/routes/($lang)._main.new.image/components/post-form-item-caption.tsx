@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { Card, CardContent } from "~/components/ui/card"
 import { PostFormCharCount } from "~/routes/($lang)._main.new.image/components/post-form-char-count"
@@ -12,7 +12,7 @@ type Props = {
 /**
  * キャプション入力
  */
-export function PostFormItemCaption (props: Props) {
+export function PostFormItemCaption(props: Props) {
   const [localCaption, setLocalCaption] = useState(props.caption || "")
 
   const isFilled = localCaption.trim() !== ""
