@@ -53,6 +53,31 @@ type Props = {
   caption?: React.ReactNode
 }
 
+type ZoomView = { scale: number; x: number; y: number }
+
+type Gesture = {
+  kind: "pan" | "pinch"
+  startPoint: { x: number; y: number }
+  startView: ZoomView
+  startTime: number
+  /** 2 本指を使った（タップ・スワイプとして扱わない） */
+  isMulti: boolean
+  isMoved: boolean
+  /** 画像の外（背景）を押した */
+  isOnBackground: boolean
+  startDistance?: number
+  startMidpoint?: { x: number; y: number }
+}
+
+const INITIAL_VIEW: ZoomView = { scale: 1, x: 0, y: 0 }
+const MAX_SCALE = 6
+const DOUBLE_TAP_SCALE = 2.5
+const DOUBLE_TAP_MS = 300
+const DOUBLE_TAP_DISTANCE = 40
+const TAP_DURATION_MS = 350
+const TAP_MOVE_LIMIT = 10
+const SWIPE_DISTANCE = 50
+
 /** 読み込み後の展開を待つ上限 */
 const STAGE_IMAGE_DECODE_TIMEOUT_MS = 500
 
@@ -67,9 +92,15 @@ export function ImagesPreview(props: Props): React.ReactNode {
   // （Discord の要望: キャプションの切り替えボタンが絵の上に被る）
   const [isControlsHidden, setIsControlsHidden] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
-  const [scale, setScale] = useState(1)
-  const [translate, setTranslate] = useState({ x: 0, y: 0 })
-  const [isDragging, setIsDragging] = useState(false)
+  // 拡大表示の拡大率と位置（画面の px）。transform は translate → scale の順で、中心を基準にする
+  const [view, setViewState] = useState<ZoomView>(INITIAL_VIEW)
+  const viewRef = useRef<ZoomView>(INITIAL_VIEW)
+  const setView = (next: ZoomView) => {
+    viewRef.current = next
+    setViewState(next)
+  }
+  // 指・マウスで動かしている間はアニメーションを切る
+  const [isGesturing, setIsGesturing] = useState(false)
   const [showKeyboardHint, setShowKeyboardHint] = useState(true)
   const imgRef = useRef<HTMLImageElement>(null)
   const mainImgRef = useRef<HTMLImageElement>(null)
@@ -91,10 +122,11 @@ export function ImagesPreview(props: Props): React.ReactNode {
     isHydrated ? null : props.thumbnailUrl,
   )
   const startCoord = useRef({ x: 0, y: 0 })
-  const prevTranslate = useRef({ x: 0, y: 0 })
-  const lastTap = useRef(0)
-  const dragMovedRef = useRef(false)
-  const dragStartedRef = useRef(false)
+  // 拡大表示の上に置いている指（マウス）
+  const pointersRef = useRef(new Map<number, { x: number; y: number }>())
+  const gestureRef = useRef<Gesture | null>(null)
+  const lastTapRef = useRef<{ time: number; x: number; y: number } | null>(null)
+  const singleTapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     // SSR した画像はハイドレーション前に読み込み済みのことがある
@@ -116,15 +148,22 @@ export function ImagesPreview(props: Props): React.ReactNode {
     setIsMainImageLoaded(state !== "pending")
   }, [props.thumbnailUrl])
 
+  const resetGesture = () => {
+    setView(INITIAL_VIEW)
+    setIsGesturing(false)
+    pointersRef.current.clear()
+    gestureRef.current = null
+    lastTapRef.current = null
+    if (singleTapTimerRef.current !== null) {
+      clearTimeout(singleTapTimerRef.current)
+      singleTapTimerRef.current = null
+    }
+  }
+
   const openPreview = () => {
     setIsOpen(true)
-    setTranslate({ x: 0, y: 0 })
-    setScale(1)
-    setIsDragging(false)
-    dragMovedRef.current = false
-    dragStartedRef.current = false
+    resetGesture()
     startCoord.current = { x: 0, y: 0 }
-    prevTranslate.current = { x: 0, y: 0 }
     setShowKeyboardHint(true)
     setIsCaptionShown(readViewerCaptionShown())
     setIsControlsHidden(false)
@@ -133,13 +172,8 @@ export function ImagesPreview(props: Props): React.ReactNode {
 
   const closePreview = () => {
     setIsOpen(false)
-    setScale(1)
-    setTranslate({ x: 0, y: 0 })
-    setIsDragging(false)
-    dragMovedRef.current = false
-    dragStartedRef.current = false
+    resetGesture()
     startCoord.current = { x: 0, y: 0 }
-    prevTranslate.current = { x: 0, y: 0 }
   }
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -196,6 +230,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
 
   const nextImage = () => {
     setShowKeyboardHint(false)
+    setView(INITIAL_VIEW)
     if (props.currentIndex < props.imageURLs.length - 1) {
       props.setCurrentIndex(props.currentIndex + 1)
     } else {
@@ -206,6 +241,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
 
   const prevImage = () => {
     setShowKeyboardHint(false)
+    setView(INITIAL_VIEW)
     if (props.currentIndex > 0) {
       props.setCurrentIndex(props.currentIndex - 1)
     } else {
@@ -214,143 +250,283 @@ export function ImagesPreview(props: Props): React.ReactNode {
     }
   }
 
+  /**
+   * 拡大表示の画像の、拡大前の中心（画面の座標）。表示中の大きさ（getBoundingClientRect）は
+   * 描画が指の動きより 1 コマ遅れるので使わず、transform の影響を受けない配置から求める
+   * （拡大表示の外枠は画面全体に fixed で置いている）
+   */
+  const toBaseCenter = () => {
+    const img = imgRef.current
+    if (!img) {
+      return { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+    }
+    return {
+      x: img.offsetLeft + img.offsetWidth / 2,
+      y: img.offsetTop + img.offsetHeight / 2,
+    }
+  }
+
+  /** 画像の端より外へは動かしすぎないようにする。等倍以下は真ん中に戻す */
+  const clampView = (next: ZoomView): ZoomView => {
+    if (next.scale <= 1) return INITIAL_VIEW
+    const img = imgRef.current
+    if (!img) return next
+    const maxX = (img.offsetWidth * next.scale - img.offsetWidth) / 2
+    const maxY = (img.offsetHeight * next.scale - img.offsetHeight) / 2
+    return {
+      scale: next.scale,
+      x: Math.min(Math.max(next.x, -maxX), maxX),
+      y: Math.min(Math.max(next.y, -maxY), maxY),
+    }
+  }
+
+  /** 画面の point の位置を動かさずに拡大率を scale にする */
+  const zoomAt = (
+    scale: number,
+    point: { x: number; y: number },
+    base: ZoomView = viewRef.current,
+  ): ZoomView => {
+    const center = toBaseCenter()
+    const ratio = scale / base.scale
+    return {
+      scale,
+      x: point.x - center.x - (point.x - center.x - base.x) * ratio,
+      y: point.y - center.y - (point.y - center.y - base.y) * ratio,
+    }
+  }
+
+  const zoomStep = (factor: number) => {
+    const current = viewRef.current
+    const scale = Math.min(Math.max(current.scale * factor, 1), MAX_SCALE)
+    const center = toBaseCenter()
+    setView(clampView(zoomAt(scale, center)))
+  }
+
   const increaseScale = () => {
-    setScale((prevScale) => Math.min(prevScale * 1.1, 4))
+    zoomStep(1.1)
   }
 
   const decreaseScale = () => {
-    setScale((prevScale) => Math.max(prevScale * 0.9, 0.1))
+    zoomStep(0.9)
   }
 
-  const handleDoubleClick = () => {
-    setScale((prevScale) => (prevScale === 1 ? 2 : 1))
-    setTranslate({ x: 0, y: 0 })
+  /** ダブルタップ・ダブルクリック: 押した所を中心に拡大し、拡大中なら元に戻す */
+  const toggleZoomAt = (point: { x: number; y: number }) => {
+    if (viewRef.current.scale > 1.01) {
+      setView(INITIAL_VIEW)
+      return
+    }
+    setView(clampView(zoomAt(DOUBLE_TAP_SCALE, point)))
   }
 
-  const handleDoubleTap = (e: React.TouchEvent<HTMLImageElement>) => {
-    const currentTime = Date.now()
-    const tapLength = currentTime - lastTap.current
+  const toDistance = (
+    a: { x: number; y: number },
+    b: { x: number; y: number },
+  ) => Math.hypot(a.x - b.x, a.y - b.y) || 1
 
-    // ダブルタップの間隔を少し広げ、誤検知を防ぐ
-    if (tapLength < 300 && tapLength > 50) {
-      e.preventDefault()
-      handleDoubleClick()
+  const toMidpoint = (
+    a: { x: number; y: number },
+    b: { x: number; y: number },
+  ) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 })
+
+  /** 今置いている指の数に合わせて、ピンチかドラッグを始め直す */
+  const restartGesture = (isMulti: boolean) => {
+    const points = [...pointersRef.current.values()]
+    const previous = gestureRef.current
+    if (points.length >= 2) {
+      gestureRef.current = {
+        kind: "pinch",
+        startDistance: toDistance(points[0], points[1]),
+        startMidpoint: toMidpoint(points[0], points[1]),
+        startView: viewRef.current,
+        startTime: previous?.startTime ?? Date.now(),
+        startPoint: previous?.startPoint ?? points[0],
+        isMulti: true,
+        isMoved: true,
+        isOnBackground: false,
+      }
+    } else if (points.length === 1) {
+      gestureRef.current = {
+        kind: "pan",
+        startPoint: points[0],
+        startView: viewRef.current,
+        startTime: previous?.startTime ?? Date.now(),
+        isMulti,
+        isMoved: previous?.isMoved ?? false,
+        isOnBackground: previous?.isOnBackground ?? false,
+      }
+    } else {
+      gestureRef.current = null
+    }
+  }
+
+  const handleViewerPointerDown: React.PointerEventHandler<HTMLDivElement> = (
+    e,
+  ) => {
+    // ボタンとキャプションは普通に押したり読んだりできるようにする
+    if (
+      e.target instanceof Element &&
+      (e.target.closest("button") ||
+        captionPanelRef.current?.contains(e.target))
+    ) {
+      return
+    }
+    if (e.pointerType === "mouse" && e.button !== 0) return
+    e.preventDefault()
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // すでに離された指など。捕まえられなくても動かせる
+    }
+    const isFirst = pointersRef.current.size === 0
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    if (isFirst) {
+      gestureRef.current = {
+        kind: "pan",
+        startPoint: { x: e.clientX, y: e.clientY },
+        startView: viewRef.current,
+        startTime: Date.now(),
+        isMulti: false,
+        isMoved: false,
+        isOnBackground: e.target === e.currentTarget,
+      }
+    } else {
+      restartGesture(true)
+    }
+    setIsGesturing(true)
+  }
+
+  const handleViewerPointerMove: React.PointerEventHandler<HTMLDivElement> = (
+    e,
+  ) => {
+    if (!pointersRef.current.has(e.pointerId)) return
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    const gesture = gestureRef.current
+    if (!gesture) return
+    const points = [...pointersRef.current.values()]
+
+    if (
+      gesture.kind === "pinch" &&
+      gesture.startDistance !== undefined &&
+      gesture.startMidpoint !== undefined &&
+      points.length >= 2
+    ) {
+      const { startDistance, startMidpoint } = gesture
+      const distance = toDistance(points[0], points[1])
+      const midpoint = toMidpoint(points[0], points[1])
+      // 指を寄せすぎたときは少しだけ縮んで見せ、離したら等倍に戻す
+      const scale = Math.min(
+        Math.max((gesture.startView.scale * distance) / startDistance, 0.6),
+        MAX_SCALE,
+      )
+      const zoomed = zoomAt(scale, startMidpoint, gesture.startView)
+      setView({
+        scale,
+        x: zoomed.x + midpoint.x - startMidpoint.x,
+        y: zoomed.y + midpoint.y - startMidpoint.y,
+      })
+      return
     }
 
-    // 最後のタップ時間を更新
-    lastTap.current = currentTime
-  }
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    dragMovedRef.current = false
-    if (scale !== 1) {
-      dragStartedRef.current = true
-      setIsDragging(true)
-      startCoord.current = { x: e.clientX, y: e.clientY }
-      prevTranslate.current = { ...translate }
-    } else {
-      dragStartedRef.current = false
-      startCoord.current = { x: e.clientX, y: e.clientY }
-      prevTranslate.current = { ...translate }
+    if (gesture.kind === "pan") {
+      const deltaX = e.clientX - gesture.startPoint.x
+      const deltaY = e.clientY - gesture.startPoint.y
+      if (
+        Math.abs(deltaX) > TAP_MOVE_LIMIT ||
+        Math.abs(deltaY) > TAP_MOVE_LIMIT
+      ) {
+        gesture.isMoved = true
+      }
+      // 拡大中は画像を動かす。等倍のときは左右のスワイプとして離したときに判定する
+      if (gesture.startView.scale > 1) {
+        setView({
+          scale: gesture.startView.scale,
+          x: gesture.startView.x + deltaX,
+          y: gesture.startView.y + deltaY,
+        })
+      }
     }
   }
 
-  const handleMouseUp: React.MouseEventHandler<HTMLImageElement> = (e) => {
-    if (isDragging) {
-      setIsDragging(false)
-      dragStartedRef.current = false
-    } else {
-      const deltaX = e.clientX - startCoord.current.x
-      const swipeDistance = Math.abs(deltaX)
+  const handleViewerPointerUp: React.PointerEventHandler<HTMLDivElement> = (
+    e,
+  ) => {
+    if (!pointersRef.current.has(e.pointerId)) return
+    pointersRef.current.delete(e.pointerId)
+    const gesture = gestureRef.current
 
-      if (swipeDistance > 50) {
-        // Adjust threshold as needed
-        if (deltaX < 0) {
-          nextImage()
-        } else {
-          prevImage()
-        }
-      } else if (isControlsHidden) {
-        setIsControlsHidden(false)
+    if (pointersRef.current.size > 0) {
+      // ピンチの途中で 1 本離したら、残りの指でそのまま動かせるようにする
+      restartGesture(true)
+      return
+    }
+
+    gestureRef.current = null
+    setIsGesturing(false)
+    setView(clampView(viewRef.current))
+    if (!gesture || e.type === "pointercancel") return
+
+    const point = { x: e.clientX, y: e.clientY }
+    const deltaX = point.x - gesture.startPoint.x
+    const deltaY = point.y - gesture.startPoint.y
+
+    // 等倍のまま左右に払ったら前後の画像へ
+    if (
+      !gesture.isMulti &&
+      gesture.startView.scale <= 1 &&
+      Math.abs(deltaX) > SWIPE_DISTANCE &&
+      Math.abs(deltaX) > Math.abs(deltaY)
+    ) {
+      lastTapRef.current = null
+      if (deltaX < 0) {
+        nextImage()
       } else {
-        openPreview()
+        prevImage()
       }
-
-      // Reset translation
-      setTranslate({ x: 0, y: 0 })
+      return
     }
-  }
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging && imgRef.current) {
-      const deltaX = e.clientX - startCoord.current.x
-      const deltaY = e.clientY - startCoord.current.y
-      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
-        dragMovedRef.current = true
+    const isTap =
+      !gesture.isMulti &&
+      !gesture.isMoved &&
+      Date.now() - gesture.startTime < TAP_DURATION_MS
+    if (!isTap) {
+      lastTapRef.current = null
+      return
+    }
+
+    const lastTap = lastTapRef.current
+    if (
+      lastTap &&
+      Date.now() - lastTap.time < DOUBLE_TAP_MS &&
+      toDistance(lastTap, point) < DOUBLE_TAP_DISTANCE
+    ) {
+      // ダブルタップ・ダブルクリック
+      lastTapRef.current = null
+      if (singleTapTimerRef.current !== null) {
+        clearTimeout(singleTapTimerRef.current)
+        singleTapTimerRef.current = null
       }
-      setTranslate({
-        x: prevTranslate.current.x + deltaX,
-        y: prevTranslate.current.y + deltaY,
-      })
+      toggleZoomAt(point)
+      return
     }
-  }
 
-  const handleTouchStart: React.TouchEventHandler<HTMLImageElement> = (e) => {
-    dragMovedRef.current = false
-    if (scale !== 1) {
-      setIsDragging(true) // ドラッグ開始
+    lastTapRef.current = { time: Date.now(), ...point }
+    // 1 回だけのタップは、2 回目が来ないのを待ってから扱う（背景なら閉じる・隠したボタンを戻す）
+    const isOnBackground = gesture.isOnBackground
+    if (singleTapTimerRef.current !== null) {
+      clearTimeout(singleTapTimerRef.current)
     }
-    startCoord.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-    prevTranslate.current = { ...translate }
-  }
-
-  const handleTouchMove: React.TouchEventHandler<HTMLImageElement> = (e) => {
-    e.preventDefault() // タッチスクロールのデフォルト動作を無効化
-
-    if (isDragging) {
-      const deltaX = e.touches[0].clientX - startCoord.current.x
-      const deltaY = e.touches[0].clientY - startCoord.current.y
-      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
-        dragMovedRef.current = true
+    singleTapTimerRef.current = setTimeout(() => {
+      singleTapTimerRef.current = null
+      if (isControlsHidden) {
+        setIsControlsHidden(false)
+        return
       }
-      setTranslate({
-        x: prevTranslate.current.x + deltaX,
-        y: prevTranslate.current.y + deltaY,
-      })
-    }
-  }
-
-  const handleTouchEnd: React.TouchEventHandler<HTMLImageElement> = (e) => {
-    if (isDragging && e.changedTouches.length === 1 && scale === 1) {
-      setIsDragging(false) // ドラッグ終了
-      const deltaX = e.changedTouches[0].clientX - startCoord.current.x
-      const swipeDistance = Math.abs(deltaX)
-
-      if (swipeDistance > 50) {
-        if (deltaX < 0) {
-          nextImage()
-        } else {
-          prevImage()
-        }
+      if (isOnBackground && viewRef.current.scale <= 1) {
+        closePreview()
       }
-
-      setTranslate({ x: 0, y: 0 })
-    } else {
-      if (!isDragging) {
-        const deltaX = e.changedTouches[0].clientX - startCoord.current.x
-        const swipeDistance = Math.abs(deltaX)
-
-        if (swipeDistance > 50) {
-          if (deltaX < 0) {
-            nextImage()
-          } else {
-            prevImage()
-          }
-        } else if (isControlsHidden) {
-          setIsControlsHidden(false)
-        }
-      }
-    }
+    }, DOUBLE_TAP_MS)
   }
 
   const toggleCaption = () => {
@@ -368,8 +544,13 @@ export function ImagesPreview(props: Props): React.ReactNode {
       return
     }
     e.preventDefault()
-    const scaleAmount = e.deltaY > 0 ? 0.9 : 1.1
-    setScale((prevScale) => Math.min(Math.max(0.1, prevScale * scaleAmount), 4))
+    const factor = e.deltaY > 0 ? 0.9 : 1.1
+    const scale = Math.min(
+      Math.max(viewRef.current.scale * factor, 1),
+      MAX_SCALE,
+    )
+    // マウスの位置を中心に拡大縮小する
+    setView(clampView(zoomAt(scale, { x: e.clientX, y: e.clientY })))
   }
 
   const adjustImageSize = () => {
@@ -504,7 +685,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
     return () => {
       document.removeEventListener("wheel", handleWheel)
     }
-  }, [isOpen, scale])
+  }, [isOpen])
 
   useEffect(() => {
     if (isOpen && imgRef.current) {
@@ -525,61 +706,6 @@ export function ImagesPreview(props: Props): React.ReactNode {
     }
   }, [isOpen])
 
-  useEffect(() => {
-    if (!isOpen) {
-      return
-    }
-
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!isDragging) {
-        return
-      }
-
-      const deltaX = e.clientX - startCoord.current.x
-      const deltaY = e.clientY - startCoord.current.y
-
-      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
-        dragMovedRef.current = true
-      }
-
-      setTranslate({
-        x: prevTranslate.current.x + deltaX,
-        y: prevTranslate.current.y + deltaY,
-      })
-    }
-
-    const handleGlobalMouseUp = () => {
-      if (isDragging) {
-        setIsDragging(false)
-      }
-    }
-
-    window.addEventListener("mousemove", handleGlobalMouseMove)
-    window.addEventListener("mouseup", handleGlobalMouseUp)
-
-    return () => {
-      window.removeEventListener("mousemove", handleGlobalMouseMove)
-      window.removeEventListener("mouseup", handleGlobalMouseUp)
-    }
-  }, [isOpen, isDragging])
-
-  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      if (isDragging || dragMovedRef.current || dragStartedRef.current) {
-        setIsDragging(false)
-        dragMovedRef.current = false
-        dragStartedRef.current = false
-        return
-      }
-      // ボタンを隠しているときは、閉じずにボタンを戻す
-      if (isControlsHidden) {
-        setIsControlsHidden(false)
-        return
-      }
-      closePreview()
-    }
-  }
-
   const handleMainTouchEnd: React.TouchEventHandler<HTMLDivElement> = (e) => {
     const deltaX = e.changedTouches[0].clientX - startCoord.current.x
     const _deltaY = e.changedTouches[0].clientY - startCoord.current.y
@@ -593,26 +719,19 @@ export function ImagesPreview(props: Props): React.ReactNode {
         prevImage()
       }
     }
-
-    // Reset translation
-    setTranslate({ x: 0, y: 0 })
   }
 
   const handleMainTouchStart: React.TouchEventHandler<HTMLImageElement> = (
     e,
   ) => {
-    dragMovedRef.current = false
     startCoord.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
     }
-    prevTranslate.current = { ...translate }
   }
 
   const handleMainMouseDown = (e: React.MouseEvent) => {
-    dragMovedRef.current = false
     startCoord.current = { x: e.clientX, y: e.clientY }
-    prevTranslate.current = { ...translate }
   }
 
   const handleMainMouseUp: React.MouseEventHandler<HTMLDivElement> = (e) => {
@@ -629,18 +748,19 @@ export function ImagesPreview(props: Props): React.ReactNode {
     } else {
       openPreview()
     }
-
-    // Reset translation
-    setTranslate({ x: 0, y: 0 })
   }
 
   const previewOverlay = isOpen ? (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard navigation required
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-black/90"
-      onClick={handleBackgroundClick}
+      // ピンチ・ダブルタップはブラウザのページ拡大ではなく、ここで画像を拡大縮小する。
+      // 指が画像の外にはみ出してもピンチできるよう、画面全体で受け取る
+      className="fixed inset-0 z-[1000] flex touch-none flex-col items-center justify-center bg-black/90"
+      onPointerDown={handleViewerPointerDown}
+      onPointerMove={handleViewerPointerMove}
+      onPointerUp={handleViewerPointerUp}
+      onPointerCancel={handleViewerPointerUp}
     >
       {!isControlsHidden && (
         <div className="absolute top-4 right-4 z-10 flex flex-row-reverse items-center gap-2">
@@ -681,7 +801,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
         <div
           ref={captionPanelRef}
           className={cn(
-            "absolute inset-x-0 bottom-0 max-h-[38vh] overflow-y-auto whitespace-pre-wrap break-words bg-black/80 px-5 pt-4 pb-16 text-sm text-white leading-relaxed md:inset-x-auto md:top-0 md:right-0 md:max-h-none md:w-80 md:pt-20 md:pb-6",
+            "absolute inset-x-0 bottom-0 max-h-[38vh] touch-pan-y overflow-y-auto whitespace-pre-wrap break-words bg-black/80 px-5 pt-4 pb-16 text-sm text-white leading-relaxed md:inset-x-auto md:top-0 md:right-0 md:max-h-none md:w-80 md:pt-20 md:pb-6",
             // ボタンを隠しているときは、ボタンの分の余白を詰める
             isControlsHidden && "pb-4 md:pt-6",
           )}
@@ -694,25 +814,21 @@ export function ImagesPreview(props: Props): React.ReactNode {
         src={props.imageURLs[props.currentIndex]}
         alt={`image-${props.currentIndex}`}
         className={cn(
-          "max-h-[92vh] max-w-[92vw] cursor-pointer object-contain",
+          "max-h-[92vh] max-w-[92vw] object-contain",
+          view.scale > 1 ? "cursor-grab" : "cursor-zoom-in",
+          isGesturing && view.scale > 1 && "cursor-grabbing",
           // キャプションと重ならないよう、スマホは上に、パソコンは左に寄せる
           isCaptionPanelOpen &&
             "mb-[38vh] max-h-[54vh] md:mr-80 md:mb-0 md:max-h-[92vh] md:max-w-[calc(92vw-20rem)]",
         )}
         style={{
-          transform: `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
-          transition: isDragging ? "none" : "transform 0.1s ease-out",
+          transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})`,
+          transition: isGesturing ? "none" : "transform 0.15s ease-out",
           userSelect: "none",
+          WebkitUserSelect: "none",
+          WebkitTouchCallout: "none",
         }}
         draggable={false}
-        onDoubleClick={handleDoubleClick}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-        onTouchEndCapture={handleDoubleTap}
       />
       {props.imageURLs.length > 1 && !isControlsHidden && (
         <>
