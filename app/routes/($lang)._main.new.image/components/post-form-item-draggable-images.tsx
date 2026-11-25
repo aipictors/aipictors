@@ -1,4 +1,13 @@
-import { ArrowDownAZIcon, PencilLineIcon, PlusIcon } from "lucide-react"
+import {
+  ArrowDownAZIcon,
+  ArrowLeftRightIcon,
+  CheckIcon,
+  PencilLineIcon,
+  PlusIcon,
+  Repeat2Icon,
+  ZoomInIcon,
+  ZoomOutIcon,
+} from "lucide-react"
 import { type ChangeEvent, useEffect, useRef, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
@@ -7,8 +16,12 @@ import {
   sortByFileName,
 } from "~/components/drag/sort-by-file-name"
 import type { TSortableItem } from "~/components/drag/sortable-item"
-import { SortableItems } from "~/components/drag/sortable-items"
+import {
+  commitSortableOrder,
+  SortableItems,
+} from "~/components/drag/sortable-items"
 import { Button } from "~/components/ui/button"
+import { Slider } from "~/components/ui/slider"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
@@ -45,6 +58,15 @@ type Props = {
   renderItemFooter?: (item: TSortableItem) => React.ReactNode
 }
 
+/** 画像一覧の 1 枚の大きさ（px）。生成履歴と同じく端末に覚えておく */
+export const POST_IMAGE_ITEM_SIZES = [60, 76, 112, 150] as const
+
+const ITEM_SIZE_KEY = "post-image-item-size"
+
+/** スマートフォンは 1 行に 4 枚並ぶ大きさ、PC は今まで通りの大きさから始める */
+const toDefaultItemSizeIndex = () =>
+  typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 2
+
 /**
  * ドラッグ可能な複数画像選択
  * @param props
@@ -61,6 +83,31 @@ export function PostFormItemDraggableImages(props: Props) {
 
   // ドラッグ中して画像一覧にホバー中かどうか
   const [isHovered, setIsHovered] = useState(false)
+
+  // 一覧の 1 枚の大きさ（サーバーの描画では既定の大きさ。開いたら端末に覚えた大きさにする）
+  const [itemSizeIndex, setItemSizeIndex] = useState(2)
+  useEffect(() => {
+    const stored = Number(localStorage.getItem(ITEM_SIZE_KEY))
+    setItemSizeIndex(
+      localStorage.getItem(ITEM_SIZE_KEY) !== null &&
+        Number.isInteger(stored) &&
+        POST_IMAGE_ITEM_SIZES[stored] !== undefined
+        ? stored
+        : toDefaultItemSizeIndex(),
+    )
+  }, [])
+  const changeItemSize = (index: number) => {
+    const next = Math.min(POST_IMAGE_ITEM_SIZES.length - 1, Math.max(0, index))
+    setItemSizeIndex(next)
+    localStorage.setItem(ITEM_SIZE_KEY, String(next))
+  }
+  const itemSize = POST_IMAGE_ITEM_SIZES[itemSizeIndex]
+
+  // 並べ替えモード（触ってすぐ動かせる・◀ ▶ で 1 つずつ動かせる）
+  const [isReorderMode, setIsReorderMode] = useState(false)
+  useEffect(() => {
+    if (props.items.length < 2) setIsReorderMode(false)
+  }, [props.items.length])
 
   /** GIF アニメーションはアニメーションのまま WebP に、それ以外は静止画の WebP にする */
   const toItemDataUrl = async (file: File) =>
@@ -401,28 +448,114 @@ export function PostFormItemDraggableImages(props: Props) {
             )}
           </button>
         )}
-        {hasFileNames && (
-          <div className="flex justify-end px-2 pt-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              disabled={isSortedByFileName(props.items)}
-              onClick={() => {
-                const sorted = sortByFileName(props.items)
-                props.setItems(sorted)
-                props.setIndexList(sorted.map((item) => item.id))
-              }}
-            >
-              <ArrowDownAZIcon className="mr-1.5 size-4" />
-              {isSortedByFileName(props.items)
-                ? t("ファイル名順です", "Sorted by file name")
-                : t("ファイル名順に並べる", "Sort by file name")}
-            </Button>
+        {props.items.length !== 0 && (
+          <div className="flex flex-wrap items-center gap-2 px-2 pt-2">
+            {props.items.length >= 2 && (
+              <Button
+                type="button"
+                variant={isReorderMode ? "default" : "secondary"}
+                size="sm"
+                className="h-9"
+                aria-pressed={isReorderMode}
+                onClick={() => setIsReorderMode((value) => !value)}
+              >
+                {isReorderMode ? (
+                  <CheckIcon className="mr-1.5 size-4" />
+                ) : (
+                  <ArrowLeftRightIcon className="mr-1.5 size-4" />
+                )}
+                {isReorderMode
+                  ? t("並べ替えを終える", "Done")
+                  : t("並べ替え", "Reorder")}
+              </Button>
+            )}
+            {hasFileNames && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-9"
+                disabled={isSortedByFileName(props.items)}
+                onClick={() => {
+                  const sorted = sortByFileName(props.items)
+                  props.setItems(sorted)
+                  props.setIndexList(sorted.map((item) => item.id))
+                }}
+              >
+                <ArrowDownAZIcon className="mr-1.5 size-4" />
+                {isSortedByFileName(props.items)
+                  ? t("ファイル名順です", "Sorted by file name")
+                  : t("ファイル名順に並べる", "Sort by file name")}
+              </Button>
+            )}
+            {isReorderMode && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-9"
+                onClick={() => {
+                  commitSortableOrder(
+                    [...props.items].reverse(),
+                    props.setIndexList,
+                    props.setItems,
+                  )
+                }}
+              >
+                <Repeat2Icon className="mr-1.5 size-4" />
+                {t("逆の順にする", "Reverse")}
+              </Button>
+            )}
+            <div className="ml-auto flex items-center gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-9"
+                onClick={() => changeItemSize(itemSizeIndex - 1)}
+                disabled={itemSizeIndex === 0}
+                aria-label={t("小さく表示", "Smaller")}
+              >
+                <ZoomOutIcon className="size-5" />
+              </Button>
+              <Slider
+                className="w-16 sm:w-24"
+                min={0}
+                max={POST_IMAGE_ITEM_SIZES.length - 1}
+                step={1}
+                value={[itemSizeIndex]}
+                onValueChange={(value) => changeItemSize(value[0])}
+                aria-label={t("画像の大きさ", "Thumbnail size")}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-9"
+                onClick={() => changeItemSize(itemSizeIndex + 1)}
+                disabled={itemSizeIndex === POST_IMAGE_ITEM_SIZES.length - 1}
+                aria-label={t("大きく表示", "Larger")}
+              >
+                <ZoomInIcon className="size-5" />
+              </Button>
+            </div>
+            <p className="w-full text-muted-foreground text-xs">
+              {isReorderMode
+                ? t(
+                    "画像を指やマウスでそのまま動かすか、◀ ▶ で1つずつ動かせます。スクロールは画像の外で",
+                    "Drag an image, or use ◀ ▶ to move it one step. Scroll outside the images",
+                  )
+                : t(
+                    "並べ替えは「並べ替え」を押すか、画像を長押し（PCはドラッグ）",
+                    "To reorder, tap Reorder or long-press an image (drag on PC)",
+                  )}
+            </p>
           </div>
         )}
         <SortableItems
           items={props.items}
+          itemSize={itemSize}
+          isReorderMode={isReorderMode}
           isDeletable={!props.isOnlyMove}
           isFileNameEditable={true}
           onReplace={
@@ -458,10 +591,10 @@ export function PostFormItemDraggableImages(props: Props) {
                     inputElement.click()
                   }
                 }}
-                className="flex size-28 cursor-pointer items-center justify-center rounded-xl border-2 border-white/25 border-dashed bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white md:size-32"
+                className="flex size-full cursor-pointer items-center justify-center rounded-xl border-2 border-white/25 border-dashed bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white"
                 aria-label={t("画像を追加", "Add images")}
               >
-                <PlusIcon className="size-10" />
+                <PlusIcon className={itemSize >= 112 ? "size-10" : "size-6"} />
               </button>
             )
           }

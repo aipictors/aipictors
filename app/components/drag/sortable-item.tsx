@@ -1,5 +1,11 @@
 import { useSortable } from "@dnd-kit/sortable"
-import { RefreshCwIcon, XIcon } from "lucide-react"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  GripIcon,
+  RefreshCwIcon,
+  XIcon,
+} from "lucide-react"
 import { type HTMLAttributes, memo } from "react"
 import { FileNameLabel } from "~/components/drag/file-name-label"
 import { ImageItem } from "~/components/drag/image-item"
@@ -27,8 +33,16 @@ export type TSortableItem = {
 
 type Props = {
   item: TSortableItem
+  /** 1 辺の大きさの目安（px。実際は列の幅いっぱい）。ボタンの大きさを決める */
+  size: number
   /** 何枚目か（1 枚だけのときは出さない） */
   position?: number
+  /** 並べ替えモード（どこを触ってもすぐ動かせる。◀ ▶ を出し、ほかのボタンは隠す） */
+  isReorderMode?: boolean
+  isFirst?: boolean
+  isLast?: boolean
+  /** 1 つ前（-1）・後ろ（1）へ動かす */
+  onMove?: (id: number, offset: -1 | 1) => void
   onRenameFile?: (id: number, fileName: string) => void
   /** この画像だけ別の画像に入れ替える（順番はそのまま） */
   onReplace?: (id: number) => void
@@ -44,7 +58,45 @@ type Props = {
 
 /** 画像の上のボタン（四隅で同じ大きさ・同じ見た目にそろえる） */
 export const imageOverlayButtonClassName =
-  "absolute flex size-8 items-center justify-center rounded-full bg-black/60 text-white shadow-md ring-1 ring-white/20 backdrop-blur-sm transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 active:scale-95"
+  "absolute flex items-center justify-center rounded-full bg-black/60 text-white shadow-md ring-1 ring-white/20 backdrop-blur-sm transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 active:scale-95"
+
+/**
+ * 画像の大きさに合わせたボタンの大きさ。小さい画像では画像が隠れないようにボタンを小さくし、
+ * いちばん小さいときは外すボタンだけにする（直す・差し替えは大きくすると出る）
+ */
+export const toOverlayButtonSize = (size: number) => {
+  if (size >= 112) {
+    return {
+      button: "size-8",
+      icon: "size-4",
+      top: "top-1.5",
+      bottom: "bottom-1.5",
+      left: "left-1.5",
+      right: "right-1.5",
+      isCompact: false,
+    }
+  }
+  if (size >= 76) {
+    return {
+      button: "size-6",
+      icon: "size-3.5",
+      top: "top-1",
+      bottom: "bottom-1",
+      left: "left-1",
+      right: "right-1",
+      isCompact: false,
+    }
+  }
+  return {
+    button: "size-5",
+    icon: "size-3",
+    top: "top-0.5",
+    bottom: "bottom-0.5",
+    left: "left-0.5",
+    right: "right-0.5",
+    isCompact: true,
+  }
+}
 
 /**
  * ドラッグ可能なアイテム
@@ -52,7 +104,12 @@ export const imageOverlayButtonClassName =
  */
 export const SortableItem = memo(function SortableItem({
   item,
+  size,
   position,
+  isReorderMode = false,
+  isFirst,
+  isLast,
+  onMove,
   onRenameFile,
   onReplace,
   isDeletable,
@@ -79,10 +136,16 @@ export const SortableItem = memo(function SortableItem({
     return null
   }
 
+  const buttonSize = toOverlayButtonSize(size)
+  const insetTop = buttonSize.top
+  const insetBottom = buttonSize.bottom
+  const insetLeft = buttonSize.left
+  const insetRight = buttonSize.right
+  const buttonClassName = cn(imageOverlayButtonClassName, buttonSize.button)
+
   return (
     <div
       ref={setNodeRef}
-      className="w-28 md:w-32"
       style={{
         transform: transform
           ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
@@ -94,55 +157,114 @@ export const SortableItem = memo(function SortableItem({
     >
       <div className="relative">
         <div
-          className={cn("touch-none", className)}
+          // ふだんは画像の上でもスクロールできるようにする（並べ替えモードだけ触ってすぐ動かす）
+          className={cn(
+            "select-none",
+            isReorderMode ? "touch-none" : "touch-manipulation",
+            isReorderMode &&
+              "rounded-xl ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent",
+            className,
+          )}
           style={style}
           {...attributes}
           {...listeners}
           {...props}
         >
-          <ImageItem item={item} />
+          <ImageItem item={item} size={size} />
         </div>
         {position !== undefined && (
-          <span className="pointer-events-none absolute top-1.5 left-1.5 flex size-8 items-center justify-center rounded-full bg-black/60 font-bold text-white text-xs shadow-md ring-1 ring-white/20 backdrop-blur-sm">
+          <span
+            className={cn(
+              "pointer-events-none absolute flex items-center justify-center rounded-full bg-black/60 font-bold text-white shadow-md ring-1 ring-white/20 backdrop-blur-sm",
+              buttonSize.button,
+              buttonSize.isCompact ? "text-[10px]" : "text-xs",
+              insetTop,
+              insetLeft,
+            )}
+          >
             {position}
           </span>
         )}
-        {isDeletable && (
-          <button
-            type="button"
-            className={cn(imageOverlayButtonClassName, "top-1.5 right-1.5")}
-            title={t("この画像を外す", "Remove this image")}
-            aria-label={t("この画像を外す", "Remove this image")}
-            onClick={() => onDelete?.(item.id)}
-          >
-            <XIcon className="size-4" />
-          </button>
-        )}
-        {optionalButton && (
-          <button
-            type="button"
-            className={cn(imageOverlayButtonClassName, "bottom-1.5 left-1.5")}
-            title={optionalButtonLabel}
-            aria-label={optionalButtonLabel}
-            onClick={() => onClickOptionButton?.(item.id)}
-          >
-            {optionalButton}
-          </button>
-        )}
-        {onReplace && (
-          <button
-            type="button"
-            className={cn(imageOverlayButtonClassName, "right-1.5 bottom-1.5")}
-            title={t("この画像を差し替える", "Replace this image")}
-            aria-label={t("この画像を差し替える", "Replace this image")}
-            onClick={() => onReplace(item.id)}
-          >
-            <RefreshCwIcon className="size-4" />
-          </button>
+        {isReorderMode ? (
+          <>
+            <span
+              className={cn(
+                "pointer-events-none absolute flex items-center justify-center rounded-full bg-blue-500/90 text-white shadow-md",
+                buttonSize.button,
+                insetTop,
+                insetRight,
+              )}
+            >
+              <GripIcon className={buttonSize.icon} />
+            </span>
+            <div
+              className={cn(
+                "absolute inset-x-0 flex justify-between px-1",
+                insetBottom,
+              )}
+            >
+              <button
+                type="button"
+                className={cn(buttonClassName, "static disabled:opacity-30")}
+                disabled={isFirst}
+                title={t("前へ", "Move earlier")}
+                aria-label={t("前へ", "Move earlier")}
+                onClick={() => onMove?.(item.id, -1)}
+              >
+                <ChevronLeftIcon className={buttonSize.icon} />
+              </button>
+              <button
+                type="button"
+                className={cn(buttonClassName, "static disabled:opacity-30")}
+                disabled={isLast}
+                title={t("後ろへ", "Move later")}
+                aria-label={t("後ろへ", "Move later")}
+                onClick={() => onMove?.(item.id, 1)}
+              >
+                <ChevronRightIcon className={buttonSize.icon} />
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {isDeletable && (
+              <button
+                type="button"
+                className={cn(buttonClassName, insetTop, insetRight)}
+                title={t("この画像を外す", "Remove this image")}
+                aria-label={t("この画像を外す", "Remove this image")}
+                onClick={() => onDelete?.(item.id)}
+              >
+                <XIcon className={buttonSize.icon} />
+              </button>
+            )}
+            {optionalButton && !buttonSize.isCompact && (
+              <button
+                type="button"
+                className={cn(buttonClassName, insetBottom, insetLeft)}
+                title={optionalButtonLabel}
+                aria-label={optionalButtonLabel}
+                onClick={() => onClickOptionButton?.(item.id)}
+              >
+                {optionalButton}
+              </button>
+            )}
+            {onReplace && !buttonSize.isCompact && (
+              <button
+                type="button"
+                className={cn(buttonClassName, insetBottom, insetRight)}
+                title={t("この画像を差し替える", "Replace this image")}
+                aria-label={t("この画像を差し替える", "Replace this image")}
+                onClick={() => onReplace(item.id)}
+              >
+                <RefreshCwIcon className={buttonSize.icon} />
+              </button>
+            )}
+          </>
         )}
       </div>
       {footer}
-      {item.fileName && (
+      {item.fileName && size >= 76 && (
         <FileNameLabel
           fileName={item.fileName}
           onRename={

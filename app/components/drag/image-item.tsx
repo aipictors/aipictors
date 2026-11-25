@@ -6,13 +6,18 @@ type Props = {
   item: TSortableItem
   isOpacityEnabled?: boolean
   isDragging?: boolean
+  /** 並べた枠の幅いっぱいの正方形にする（なければ 112px、PC は 128px） */
+  size?: number
 } & HTMLAttributes<HTMLDivElement>
 
 /**
  * 画像アイテム（正方形に切り抜いて表示）
  */
 export const ImageItem = forwardRef<HTMLDivElement, Props>(
-  ({ item, isOpacityEnabled, isDragging, style, className, ...props }, ref) => {
+  (
+    { item, isOpacityEnabled, isDragging, size, style, className, ...props },
+    ref,
+  ) => {
     if (!item.content) {
       return null
     }
@@ -28,7 +33,8 @@ export const ImageItem = forwardRef<HTMLDivElement, Props>(
         ref={ref}
         style={styles}
         className={cn(
-          "size-28 overflow-hidden rounded-xl bg-zinc-700 ring-1 ring-white/10 md:size-32",
+          "overflow-hidden rounded-xl bg-zinc-700 ring-1 ring-white/10",
+          size ? "aspect-square w-full" : "size-28 md:size-32",
           isDragging && "scale-105 shadow-2xl ring-2 ring-blue-400",
           className,
         )}
@@ -39,7 +45,7 @@ export const ImageItem = forwardRef<HTMLDivElement, Props>(
           src={item.content}
           alt=""
           decoding="async"
-          className="size-full select-none object-cover"
+          className="size-full select-none object-cover [-webkit-touch-callout:none]"
         />
       </div>
     )

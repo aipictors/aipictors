@@ -37,21 +37,42 @@ type Props = {
   dummyEnableDragItem?: React.ReactNode // アイテム一覧に並び替えできないダミーアイテム
   /** 画像の下に出す小さな表示 */
   renderItemFooter?: (item: TSortableItem) => React.ReactNode
+  /** 1 枚の大きさ（px） */
+  itemSize?: number
+  /**
+   * 並べ替えモード。画像のどこを触ってもすぐ動かせ、◀ ▶ で 1 つずつ動かせる
+   * （外す・直す・差し替えのボタンは隠す）
+   */
+  isReorderMode?: boolean
+}
+
+/** 並びを確定する（id は並びに合わせて振り直す） */
+export const commitSortableOrder = (
+  moved: TSortableItem[],
+  setIndexList: (value: number[]) => void,
+  setItems: (items: TSortableItem[]) => void,
+) => {
+  setIndexList(moved.map((item) => item.id))
+  setItems(moved.map((item, index) => ({ ...item, id: index })))
 }
 
 /**
  * 指定された要素をドラッグで並び替えできるようにする
  * - 動かしている間は見た目（transform）だけ動かし、離したときに 1 回だけ並びを確定する
  *   （前は指が他の画像に重なるたびに投稿フォーム全体と下書きの保存が走って重かった）
- * - スマートフォンは長押しで持ち上げる（そのままスクロールもできる）。PC は 5px 動かすと持ち上げる
+ * - ふだんは画像の上でもスクロールでき、スマートフォンは長押し、PC は 5px 動かすと持ち上げる
+ * - 並べ替えモードでは、触ってすぐ持ち上げる（スクロールは画像の外で）
  */
 export function SortableItems(props: Props): React.ReactNode {
   const [activeId, setActiveId] = useState<number | null>(null)
+  const isReorderMode = props.isReorderMode ?? false
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, {
-      activationConstraint: { delay: 180, tolerance: 8 },
+      activationConstraint: isReorderMode
+        ? { distance: 4 }
+        : { delay: 300, tolerance: 6 },
     }),
   )
 
@@ -61,6 +82,8 @@ export function SortableItems(props: Props): React.ReactNode {
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(Number(event.active.id))
+    // 持ち上げたことが分かるように短く震わせる（対応している端末だけ）
+    navigator.vibrate?.(10)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -72,10 +95,11 @@ export function SortableItems(props: Props): React.ReactNode {
     const overIndex = props.items.findIndex((item) => item.id === over.id)
     if (activeIndex === -1 || overIndex === -1) return
 
-    const moved = arrayMove(props.items, activeIndex, overIndex)
-    props.setIndexList(moved.map((item) => item.id))
-    // アイテムの id を並び順に振り直す
-    props.setItems(moved.map((item, index) => ({ ...item, id: index })))
+    commitSortableOrder(
+      arrayMove(props.items, activeIndex, overIndex),
+      props.setIndexList,
+      props.setItems,
+    )
   }
 
   const deleteItem = useCallback((deletedId: number) => {
@@ -91,6 +115,19 @@ export function SortableItems(props: Props): React.ReactNode {
       items
         .filter((item) => item.id !== deletedId)
         .map((item, index) => ({ ...item, id: index })),
+    )
+  }, [])
+
+  /** 1 つ前・後ろへ動かす（並べ替えモードの ◀ ▶） */
+  const moveItem = useCallback((id: number, offset: -1 | 1) => {
+    const { items, setIndexList, setItems } = latest.current
+    const index = items.findIndex((item) => item.id === id)
+    const nextIndex = index + offset
+    if (index === -1 || nextIndex < 0 || nextIndex >= items.length) return
+    commitSortableOrder(
+      arrayMove(items, index, nextIndex),
+      setIndexList,
+      setItems,
     )
   }, [])
 
@@ -117,6 +154,8 @@ export function SortableItems(props: Props): React.ReactNode {
       ? undefined
       : props.items.find((item) => item.id === activeId)
 
+  const itemSize = props.itemSize ?? 112
+
   return (
     <DndContext
       sensors={sensors}
@@ -126,12 +165,23 @@ export function SortableItems(props: Props): React.ReactNode {
       onDragCancel={() => setActiveId(null)}
     >
       <SortableContext items={props.items} strategy={rectSortingStrategy}>
-        <div className="flex w-full flex-wrap justify-center gap-3 md:gap-4">
+        {/* 1 枚の大きさから列の数を決め、列の幅いっぱいに並べる。下には指を置ける余白を残す */}
+        <div
+          className="grid w-full gap-2 px-2 pt-2 pb-6 md:gap-3"
+          style={{
+            gridTemplateColumns: `repeat(auto-fill, minmax(${itemSize}px, 1fr))`,
+          }}
+        >
           {props.items.map((item, index) => (
             <SortableItem
               key={item.id}
               item={item}
+              size={itemSize}
               position={props.items.length > 1 ? index + 1 : undefined}
+              isReorderMode={isReorderMode}
+              isFirst={index === 0}
+              isLast={index === props.items.length - 1}
+              onMove={moveItem}
               onRenameFile={props.isFileNameEditable ? renameFile : undefined}
               onReplace={props.onReplace ? replace : undefined}
               isDeletable={props.isDeletable}
@@ -142,12 +192,16 @@ export function SortableItems(props: Props): React.ReactNode {
               footer={props.renderItemFooter?.(item)}
             />
           ))}
-          {props.dummyEnableDragItem && <div>{props.dummyEnableDragItem}</div>}
+          {props.dummyEnableDragItem && !isReorderMode && (
+            <div className="aspect-square">{props.dummyEnableDragItem}</div>
+          )}
         </div>
       </SortableContext>
 
       <DragOverlay>
-        {activeItem ? <ImageItem item={activeItem} isDragging /> : null}
+        {activeItem ? (
+          <ImageItem item={activeItem} size={itemSize} isDragging />
+        ) : null}
       </DragOverlay>
     </DndContext>
   )
