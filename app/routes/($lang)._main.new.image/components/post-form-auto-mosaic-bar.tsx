@@ -111,8 +111,8 @@ export function PostFormAutoMosaicBar(props: Props) {
           {!isSelfApplied && (
             <p className="text-zinc-400">
               {t(
-                "性器・肛門を見つけて形に沿ってかけます（乳首は対象外・GIF は対象外）。自動でかけた作品を、モザイクの不足を理由に運営が非公開にすることは基本的にありません。",
-                "Genitals and anus are detected and covered along their shape (not nipples or GIFs). Works mosaicked automatically are generally not hidden for insufficient mosaic.",
+                "性器・肛門を見つけて形に沿ってかけます（乳首は対象外・アニメーション画像は対象外）。自動でかけた作品を、モザイクの不足を理由に運営が非公開にすることは基本的にありません。",
+                "Genitals and anus are detected and covered along their shape (not nipples or animated images). Works mosaicked automatically are generally not hidden for insufficient mosaic.",
               )}
             </p>
           )}

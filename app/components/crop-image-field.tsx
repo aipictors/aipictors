@@ -33,7 +33,8 @@ type Props = {
   onCrop?: (croppedImage: string) => void
   onCropToBase64?: (croppedImage: string) => void
   /**
-   * 指定すると、GIF アニメーションは切り抜かずにアニメーションのまま受け取る（スタンプ用）。
+   * 指定すると、アニメーション画像（GIF・APNG・アニメーション WebP）は切り抜きの画面を出さずに
+   * アニメーションのまま受け取る（スタンプ・プロフィール用。crop があれば中央を自動で切り抜く）。
    * canvas で切り抜くと 1 コマ目だけの静止画になってしまう
    */
   animatedGif?: AnimatedGifOptions
@@ -169,7 +170,7 @@ export function CropImageField(props: Props): React.ReactNode {
   }, [])
 
   /**
-   * 選んだ画像を受け取る。GIF アニメーションは切り抜かずにそのまま使う
+   * 選んだ画像を受け取る。アニメーション画像は切り抜きの画面を出さずにそのまま使う
    */
   const selectFile = async (file: File) => {
     if (props.animatedGif) {
@@ -178,10 +179,15 @@ export function CropImageField(props: Props): React.ReactNode {
         if (animated !== null) {
           onCrop(animated)
           toast(
-            t(
-              "GIFアニメはアニメーションのまま登録します（切り抜きはできません）",
-              "Animated GIFs are added as they are (cropping is not available)",
-            ),
+            props.animatedGif.crop
+              ? t(
+                  "アニメーション画像は動きを残すため、中央を自動で切り抜いて登録します",
+                  "Animated images keep their animation; the center is cropped automatically",
+                )
+              : t(
+                  "アニメーション画像はアニメーションのまま登録します（切り抜きはできません）",
+                  "Animated images are added as they are (cropping is not available)",
+                ),
           )
           return
         }
@@ -189,8 +195,8 @@ export function CropImageField(props: Props): React.ReactNode {
         console.error(error)
         toast(
           t(
-            "GIFアニメを読み込めませんでした。小さいサイズのGIFでお試しください",
-            "Failed to load the animated GIF. Please try a smaller GIF",
+            "アニメーション画像を読み込めませんでした。小さいサイズの画像でお試しください",
+            "Failed to load the animated image. Please try a smaller image",
           ),
         )
         return

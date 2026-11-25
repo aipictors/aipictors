@@ -36,6 +36,10 @@ import {
 } from "~/routes/($lang).settings/components/settings-section"
 import { AvatarFrameStudio } from "~/routes/($lang).settings.profile/components/avatar-frame-studio"
 import { HeaderFrameSetting } from "~/routes/($lang).settings.profile/components/header-frame-setting"
+import {
+  PROFILE_HEADER_ANIMATED_OPTIONS,
+  PROFILE_ICON_ANIMATED_OPTIONS,
+} from "~/utils/animated-gif-to-webp"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -373,6 +377,7 @@ export function SettingProfileForm() {
             isHidePreviewImage={false}
             cropWidth={1200}
             cropHeight={400}
+            animatedGif={PROFILE_HEADER_ANIMATED_OPTIONS}
             onDeleteImage={() => {
               setHeaderImage("")
             }}
@@ -406,6 +411,7 @@ export function SettingProfileForm() {
               isHidePreviewImage={false}
               cropWidth={240}
               cropHeight={240}
+              animatedGif={PROFILE_ICON_ANIMATED_OPTIONS}
               onDeleteImage={() => {
                 setProfileImage("")
               }}
@@ -790,6 +796,7 @@ export function SettingProfileForm() {
                 isHidePreviewImage={false}
                 cropWidth={1200}
                 cropHeight={400}
+                animatedGif={PROFILE_HEADER_ANIMATED_OPTIONS}
                 onDeleteImage={() => {
                   setSensitiveHeaderImage("")
                 }}

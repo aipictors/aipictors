@@ -196,10 +196,7 @@ export function AddStickerDialog(props: Props) {
     imageBase64 === ""
       ? t("画像を選んでください", "Choose an image")
       : missingPublishField
-        ? t(
-            "公開するにはタイトルを入力してください",
-            "Add a title to publish",
-          )
+        ? t("公開するにはタイトルを入力してください", "Add a title to publish")
         : null
 
   return (
@@ -292,13 +289,13 @@ export function AddStickerDialog(props: Props) {
               {imageBase64 === "" ? (
                 <p className="text-center text-muted-foreground text-xs leading-relaxed">
                   {t(
-                    "PNG・JPG・WebP・GIFアニメ",
-                    "PNG, JPG, WebP or animated GIF",
+                    "PNG・JPG・WebP・アニメーション（GIF / APNG / WebP）",
+                    "PNG, JPG, WebP or animated GIF / APNG / WebP",
                   )}
                   <br />
                   {t(
-                    "正方形に切り抜きます（GIFはそのまま）",
-                    "Cropped to a square (GIFs are kept as is)",
+                    "正方形に切り抜きます（アニメーションはそのまま）",
+                    "Cropped to a square (animations are kept as is)",
                   )}
                 </p>
               ) : (

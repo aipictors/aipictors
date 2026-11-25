@@ -22,6 +22,10 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { DialogWorkFragment } from "~/routes/($lang).my._index/components/select-created-works-dialog"
+import {
+  PROFILE_HEADER_ANIMATED_OPTIONS,
+  PROFILE_ICON_ANIMATED_OPTIONS,
+} from "~/utils/animated-gif-to-webp"
 import { logoutFirebase } from "~/utils/auth-session-backup"
 import { clearLastLoginMethod } from "~/utils/login-flow"
 import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
@@ -189,6 +193,7 @@ export function NewProfileEditorForm() {
             isHidePreviewImage={false}
             cropWidth={1200}
             cropHeight={400}
+            animatedGif={PROFILE_HEADER_ANIMATED_OPTIONS}
             onDeleteImage={() => setHeaderImage("")}
             onCropToBase64={setHeaderImage}
             fileExtension={"webp"}
@@ -222,6 +227,7 @@ export function NewProfileEditorForm() {
               isHidePreviewImage={false}
               cropWidth={240}
               cropHeight={240}
+              animatedGif={PROFILE_ICON_ANIMATED_OPTIONS}
               onDeleteImage={() => setProfileImage("")}
               onCropToBase64={setProfileImage}
               fileExtension={"webp"}

@@ -10,16 +10,27 @@ export const REQUEST_VIDEO_TYPES = [
 /**
  * リクエストの画像欄に選ばれたファイルをどう送るか。
  * - convert: 静止画として webp に縮めて送る
- * - raw: 変換せずにそのまま送る（納品の GIF アニメ・動画）
+ * - raw: 変換せずにそのまま送る（納品の GIF・APNG・WebP のアニメーション・動画）
  * - too-large: そのまま送るには大きすぎる
  * - unsupported: 送れない形式
  * allowMotion は納品の欄だけ true（メッセージや参考画像はこれまでどおり静止画）
  */
 export const toRequestUploadPlan = (
-  file: { type: string; size: number; name?: string },
+  file: {
+    type: string
+    size: number
+    name?: string
+    /** PNG・WebP のうちアニメーションのもの（isAnimatedImageFile で先に調べる） */
+    isAnimated?: boolean
+  },
   allowMotion: boolean,
 ): "convert" | "raw" | "too-large" | "unsupported" => {
-  const isGif = file.type === "image/gif"
+  const isGif =
+    file.type === "image/gif" ||
+    (file.isAnimated === true &&
+      (file.type === "image/png" ||
+        file.type === "image/apng" ||
+        file.type === "image/webp"))
   const isVideo =
     REQUEST_VIDEO_TYPES.includes(file.type) ||
     // 端末によっては動画の type が空になるので、拡張子でも見分ける

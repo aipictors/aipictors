@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { RequestMediaThumb } from "~/components/requests/request-media-thumb"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { isAnimatedImageFile } from "~/utils/animated-gif-to-webp"
 import {
   REQUEST_VIDEO_TYPES,
   toRequestRawUploadType,
@@ -54,7 +55,7 @@ const toWebpDataUrl = (file: File, maxSide: number) =>
 /**
  * 画像を選んでその場でアップロードする（URL の配列を持つ）。参考画像・見本・納品・メッセージで使う。
  * ボタンで選ぶほか、画像ファイルを枠にドラッグ＆ドロップしても追加できる。
- * allowMotion（納品）のときは GIF アニメと動画（mp4・webm・mov）を変換せずにそのまま送る
+ * allowMotion（納品）のときは GIF・APNG・WebP のアニメーションと動画（mp4・webm・mov）を変換せずにそのまま送る
  */
 export function RequestImagePicker(props: {
   value: string[]
@@ -78,7 +79,16 @@ export function RequestImagePicker(props: {
     if (!files || files.length === 0) return
     const room = props.max - props.value.length
     const allowMotion = props.allowMotion ?? false
-    const all = Array.from(files)
+    // PNG・WebP は type では静止画と見分けられないので、納品の欄では中身を見てアニメーションか調べる
+    const all = await Promise.all(
+      Array.from(files).map(async (file) => {
+        const isAnimated =
+          allowMotion &&
+          ["image/png", "image/apng", "image/webp"].includes(file.type) &&
+          (await isAnimatedImageFile(file).catch(() => false))
+        return Object.assign(file, { isAnimated })
+      }),
+    )
     if (
       all.some((f) => toRequestUploadPlan(f, allowMotion) === "unsupported")
     ) {
@@ -86,8 +96,8 @@ export function RequestImagePicker(props: {
       toast.error(
         allowMotion
           ? t(
-              "送れるのは画像・GIFアニメ・動画（mp4 / webm / mov）です",
-              "Only images, GIF animations and videos (mp4 / webm / mov) can be sent",
+              "送れるのは画像・アニメーション画像（GIF / APNG / WebP）・動画（mp4 / webm / mov）です",
+              "Only images, animated images (GIF / APNG / WebP) and videos (mp4 / webm / mov) can be sent",
             )
           : t(
               "この欄には画像だけ添付できます（動画は不可）",
@@ -98,8 +108,8 @@ export function RequestImagePicker(props: {
     if (all.some((f) => toRequestUploadPlan(f, allowMotion) === "too-large")) {
       toast.error(
         t(
-          "GIFアニメ・動画は32MBまでです",
-          "GIF animations and videos must be 32MB or smaller",
+          "アニメーション画像・動画は32MBまでです",
+          "Animated images and videos must be 32MB or smaller",
         ),
       )
     }

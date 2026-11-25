@@ -31,6 +31,20 @@ describe("リクエストの画像欄に選んだファイルの送り方", () =
     )
   })
 
+  test("納品ではアニメーションの PNG・WebP もそのまま送る（メッセージ欄では静止画）", () => {
+    for (const type of ["image/png", "image/webp"]) {
+      expect(
+        toRequestUploadPlan({ type, size: MB, isAnimated: true }, true),
+      ).toBe("raw")
+      expect(
+        toRequestUploadPlan({ type, size: 33 * MB, isAnimated: true }, true),
+      ).toBe("too-large")
+      expect(
+        toRequestUploadPlan({ type, size: MB, isAnimated: true }, false),
+      ).toBe("convert")
+    }
+  })
+
   test("メッセージ・参考画像の欄では GIF は静止画にし、動画は送れない", () => {
     expect(toRequestUploadPlan({ type: "image/gif", size: MB }, false)).toBe(
       "convert",

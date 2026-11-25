@@ -597,7 +597,7 @@ function ActionPanel(props: {
       <Panel
         title={t("制作中", "In progress")}
         body={t(
-          "できあがったら画像（GIFアニメ・動画も可）を納品してください。依頼者が受け取りを完了すると取引完了です。",
+          "できあがったら画像（アニメーション画像・動画も可）を納品してください。依頼者が受け取りを完了すると取引完了です。",
           "Deliver the images when they're ready. The request is completed when the requester confirms receipt.",
         )}
       >
@@ -613,8 +613,8 @@ function ActionPanel(props: {
             />
             <p className="text-muted-foreground text-xs">
               {t(
-                "GIFアニメ・動画（mp4 / webm / mov、32MBまで）も、そのままの形式で納品できます。",
-                "GIF animations and videos (mp4 / webm / mov, up to 32MB) are delivered as they are.",
+                "アニメーション画像（GIF / APNG / WebP）・動画（mp4 / webm / mov、32MBまで）も、そのままの形式で納品できます。",
+                "Animated images (GIF / APNG / WebP) and videos (mp4 / webm / mov, up to 32MB) are delivered as they are.",
               )}
             </p>
             <Textarea
@@ -1219,8 +1219,8 @@ function MessageThread(props: {
           {canSendMotion && (
             <p className="text-[11px] text-muted-foreground">
               {t(
-                "GIFアニメ・動画（mp4 / webm / mov、32MBまで）もそのまま送れます。納品のあとに追加で渡したいときにも使えます。",
-                "GIF animations and videos (mp4 / webm / mov, up to 32MB) are sent as they are, e.g. to add files after delivery.",
+                "アニメーション画像（GIF / APNG / WebP）・動画（mp4 / webm / mov、32MBまで）もそのまま送れます。納品のあとに追加で渡したいときにも使えます。",
+                "Animated images (GIF / APNG / WebP) and videos (mp4 / webm / mov, up to 32MB) are sent as they are, e.g. to add files after delivery.",
               )}
             </p>
           )}
