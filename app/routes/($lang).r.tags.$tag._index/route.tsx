@@ -110,13 +110,18 @@ export const meta: MetaFunction<typeof loader> = (props) => {
     )
   }
 
+  const countText = worksCount.toLocaleString()
+
   return createSensitiveMeta(
     META.TAGS,
     {
-      title: `${tag}のR18 AIイラスト（${worksCount}件）`,
-      enTitle: `${tag} R18 AI Illustrations (${worksCount})`,
-      description: `「${tag}」タグが付いた18歳以上の方向けのAIイラスト一覧です（${worksCount}件）。人気順や新着順で探せて、プロンプトを公開している作品もあります。`,
-      enDescription: `${worksCount} adult AI illustrations tagged "${tag}", for people aged 18 and over. Sort by popularity or date and see prompts where they are public.`,
+      // 「〇〇 エロ」「〇〇 エロ画像」で探されることが多いので、その語もタイトルに入れる
+      title: /エロ|えろ/.test(tag)
+        ? `${tag}のR18 AIイラスト・画像（${countText}件）`
+        : `${tag}のエロ画像・R18 AIイラスト（${countText}件）`,
+      enTitle: `${tag} R18 AI Illustrations (${countText})`,
+      description: `「${tag}」タグのR18 AIイラスト・AIエロ画像を${countText}件掲載（18歳以上の方向け）。人気順・新着順で探せて、プロンプト（呪文）を公開している作品もあります。`,
+      enDescription: `${countText} adult AI illustrations tagged "${tag}", for people aged 18 and over. Sort by popularity or date and see prompts where they are public.`,
     },
     props.params.lang,
   )

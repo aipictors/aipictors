@@ -24,6 +24,7 @@ import {
 import { findHubTag, toHubTagPath } from "~/lib/seo-hubs/seo-hub-catalog.server"
 import { createContentText } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
+import { isMinorRelatedTag } from "~/utils/sensitive-tag-filter"
 import { toListWorks } from "~/utils/to-list-works"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -134,11 +135,15 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   const lang = props.params.lang === "en" ? "en" : "ja"
   const pageSuffixJa = query.page > 0 ? `（${query.page + 1}ページ目）` : ""
   const pageSuffixEn = query.page > 0 ? ` (page ${query.page + 1})` : ""
-  const relatedText = relatedTags
+  // 検索結果に出る説明文には、未成年を連想させるタグ名（JC など）を並べない
+  const describableTags = relatedTags.filter(
+    (related) => !isMinorRelatedTag(related.name),
+  )
+  const relatedText = describableTags
     .slice(0, 4)
     .map((related) => `#${related.name}`)
     .join(" ")
-  const enRelatedText = relatedTags
+  const enRelatedText = describableTags
     .map((related) => createContentText(true).tag(related.name, related.enName))
     .filter((name): name is string => name !== null)
     .slice(0, 4)

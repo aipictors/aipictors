@@ -54,6 +54,6 @@ test("説明の URL だけをリンクにする", () => {
     </p>,
   )
   expect(html).toBe(
-    '<p>前 <a target="_blank" rel="noopener noreferrer" class="text-blue-500" href="https://example.com/a">https://example.com/a</a> 中 <a target="_blank" rel="noopener noreferrer" class="text-blue-500" href="http://example.com/b">http://example.com/b</a></p>',
+    '<p>前 <a target="_blank" rel="noopener noreferrer nofollow ugc" class="text-blue-500" href="https://example.com/a">https://example.com/a</a> 中 <a target="_blank" rel="noopener noreferrer nofollow ugc" class="text-blue-500" href="http://example.com/b">http://example.com/b</a></p>',
   )
 })

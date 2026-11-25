@@ -22,6 +22,10 @@ AIPICTORS_API_BASE_URL = "https://backend.aipictors.com"
 [cache]
 enabled = true
 
+# 毎時、直近の作品の URL を IndexNow に送る（worker-entry.ts の scheduled）
+[triggers]
+crons = ["10 * * * *"]
+
 # Worker は東京で動かす（配信のキャッシュ・静的ファイルは今まで通り利用者の近くで返る）。
 # 海外の拠点（主にクローラー）では isolate が冷えていて、1 回ごとにアプリ本体の読み込みから始まり
 # 平均 60〜250ms の CPU を使っていた（日本の拠点は 16ms）。拠点ごとの Cache API も東京の 1 か所にまとまり、

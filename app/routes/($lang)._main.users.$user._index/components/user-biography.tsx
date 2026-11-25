@@ -32,7 +32,7 @@ export function UserBiography(props: Props) {
           key={index.toString()}
           to={urls[index]}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener noreferrer nofollow ugc"
         >
           {urls[index]}
         </Link>,

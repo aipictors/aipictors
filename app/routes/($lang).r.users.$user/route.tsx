@@ -78,20 +78,26 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   }
 
   const user = readFragment(MetaUserFragment, props.data.user)
-
-  const worksCountText = user.worksCount > 0 ? ` (${user.worksCount}作品)` : ""
+  const login = user.login
+  const r18WorksCount = props.data.r18WorksCount
+  const countText = r18WorksCount.toLocaleString()
 
   const iconUrl = user.iconUrl !== null ? withIconUrlFallback(user.iconUrl) : ""
 
   return createSensitiveMeta(
-    META.USERS,
+    // R18 の作品がないページは全年齢のページと中身が変わらないので検索エンジンに載せない
+    { ...META.USERS, isIndex: r18WorksCount > 0 },
     {
-      title: `${user.name}のセンシティブマイページ${worksCountText}`,
-      enTitle: `${user.name}'s page${worksCountText}`,
-      description:
-        user.biography ||
-        "Aipictorsのセンシティブマイページです、AIイラストなどの作品一覧を閲覧することができます",
-      enDescription: `This is ${user.name}'s sensitive page on Aipictors, where you can view a list of AI illustrations and other works`,
+      title:
+        r18WorksCount > 0
+          ? `${user.name}（@${login}）のR18 AIイラスト・作品一覧（${countText}作品）`
+          : `${user.name}（@${login}）のR18作品`,
+      enTitle:
+        r18WorksCount > 0
+          ? `${user.name} (@${login}) - R18 AI illustrations (${countText} works)`
+          : `${user.name} (@${login}) - R18 works`,
+      description: `${user.name}（@${login}）さんがAipictorsに投稿した18歳以上の方向けのAIイラスト・AI画像の一覧です（${countText}作品）。人気の作品やプロンプトを見られます。`,
+      enDescription: `${countText} adult AI illustrations and images posted by ${user.name} (@${login}) on Aipictors, for people aged 18 and over.`,
       url: user.headerImageUrl ?? iconUrl,
     },
     props.params.lang,
@@ -155,6 +161,7 @@ export default function UserLayout() {
 const MetaUserFragment = graphql(
   `fragment MetaUserFragment on UserNode {
     worksCount
+    login
     name
     biography
     headerImageUrl

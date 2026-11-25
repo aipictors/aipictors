@@ -33,8 +33,11 @@ import {
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { SensitiveWorkContainer } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
+import {
+  isIndexableSensitiveWork,
+  isSuggestableSensitiveTag,
+} from "~/utils/sensitive-tag-filter"
 import { getJstDate } from "~/utils/jst-date"
-import { hasNonIndexableSensitiveTag } from "~/utils/sensitive-tag-filter"
 
 /**
  * 予約投稿などで見つからないときは、持ち主なら下書き表示に移す
@@ -180,39 +183,49 @@ export const meta: MetaFunction = (props) => {
   const baseUrl = `${config.siteURL}${localePrefix}`
   const pageUrl = `${baseUrl}/r/posts/${encodeURIComponent(props.params.post ?? work.work.id)}`
 
-  const userPart =
-    props.params.lang === "en"
-      ? work.work.user
-        ? ` - ${work.work.user?.name}`
-        : ""
-      : work.work.user
-        ? ` - ${work.work.user?.name}の作品`
-        : ""
+  const isEn = props.params.lang === "en"
+  const workTitle =
+    isEn && work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title
+  const userName = work.work.user?.name ?? ""
+  const userPart = work.work.user
+    ? isEn
+      ? ` - R18 AI art by ${userName}`
+      : ` - ${userName}のR18 AIイラスト`
+    : ""
 
-  // R18G の作品と、未成年を連想させるタグなどが付いた作品は検索エンジンに載せない
-  const isIndex =
-    work.work.rating !== "R18G" &&
-    !hasNonIndexableSensitiveTag(work.work.tagNames)
+  // R18G の作品と、未成年を連想させるタグ・タイトル・説明の作品などは検索エンジンに載せない
+  const isIndex = isIndexableSensitiveWork({
+    rating: work.work.rating,
+    title: `${work.work.title} ${work.work.enTitle} ${work.work.description ?? ""}`,
+    tagNames: work.work.tagNames,
+  })
+
+  // 説明のない作品は、タイトル・作者・タグから説明を作る（以前は全作品が同じ定型文だった）
+  const describableTags = work.work.tagNames
+    .filter((tagName) => isSuggestableSensitiveTag(tagName))
+    .slice(0, 5)
+  const fallbackDescription = isEn
+    ? `"${workTitle}" is an adult AI illustration${userName ? ` by ${userName}` : ""} on Aipictors, for people aged 18 and over.${
+        describableTags.length > 0
+          ? ` Tags: ${describableTags.map((tag) => `#${tag}`).join(" ")}.`
+          : ""
+      }`
+    : `「${work.work.title}」は${userName ? `${userName}さんが` : ""}Aipictorsに投稿した18歳以上の方向けのAIイラストです。${
+        describableTags.length > 0
+          ? `タグ: ${describableTags.map((tag) => `#${tag}`).join(" ")}。`
+          : ""
+      }プロンプトや関連作品も見られます。`
+  const description = isEn
+    ? work.work.enDescription || work.work.description || fallbackDescription
+    : work.work.description || fallbackDescription
 
   return createSensitiveMeta(
     { ...META.POSTS, isIndex },
     {
-      title: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
-      enTitle: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
-      description:
-        props.params.lang === "en"
-          ? work.work.enDescription ||
-            work.work.description ||
-            "Aipictors work page"
-          : work.work.description ||
-            "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
-      enDescription:
-        props.params.lang === "en"
-          ? work.work.enDescription ||
-            work.work.description ||
-            "Aipictors work page"
-          : work.work.description ||
-            "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
+      title: `${workTitle}${userPart}`,
+      enTitle: `${workTitle}${userPart}`,
+      description,
+      enDescription: description,
       url: config.defaultSensitiveOgpImageUrl,
       pageUrl,
     },

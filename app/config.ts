@@ -608,10 +608,10 @@ export const META: { [key: string]: MetaData } = {
     isIndex: true,
   },
   HOME_SENSITIVE: {
-    title: "R18 AIイラスト｜新着・ランキング・人気タグ",
-    enTitle: "R18 AI Illustrations: New Works, Rankings and Popular Tags",
+    title: "R18 AIイラスト・AIエロ画像｜新着・ランキング・人気タグ",
+    enTitle: "R18 AI Illustrations & Hentai AI Art: New, Rankings, Tags",
     description:
-      "18歳以上の方向けの成人向けAIイラスト投稿コーナーです。新着作品、デイリーランキング、人気タグ、シリーズからAIイラストを探せます。プロンプトを公開している作品もあります。",
+      "18歳以上の方向けの成人向けAIイラスト・AIエロ画像の投稿コーナーです。新着作品、デイリーランキング、人気タグ、シリーズから探せて、プロンプト（呪文）を公開している作品もあります。",
     enDescription:
       "Adult AI illustrations for people aged 18 and over. Browse new works, daily rankings, popular tags and series, many with their prompts.",
     isIndex: true,

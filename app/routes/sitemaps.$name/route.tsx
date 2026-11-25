@@ -16,6 +16,7 @@ import {
   xmlResponse,
 } from "~/lib/server/sitemap.server"
 import { GUIDE_SUMMARIES } from "~/lib/guides/guide-summaries"
+import { isIndexableSensitiveWork } from "~/utils/sensitive-tag-filter"
 import {
   HUB_MIN_INDEX_WORKS,
   listHubModels,
@@ -81,6 +82,7 @@ const ONE_DAY = 24 * ONE_HOUR
  * - /sitemaps/prompts.xml 呪文まとめ（キャラ・タグ・モデル、全年齢と R18）と解説記事
  * - /sitemaps/users.xml 作品のあるユーザーのページ（最近投稿した人・ランキング上位）
  * - /sitemaps/works-YYYY-MM-DD.xml その日（JST）に投稿された作品と、投稿した人のユーザーページ
+ * - /sitemaps/sensitive-works-YYYY-MM-DD.xml その日（JST）に投稿された R18 の作品（検索に載せられるものだけ）
  */
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
   const name = params.name ?? ""
@@ -213,6 +215,46 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
         ONE_DAY / 2,
       )
     })
+  }
+
+  const sensitiveWorksMatch = name.match(
+    /^sensitive-works-(\d{4}-\d{2}-\d{2})\.xml$/,
+  )
+  if (sensitiveWorksMatch && isValidSitemapDate(sensitiveWorksMatch[1])) {
+    const date = sensitiveWorksMatch[1]
+    const today = toJstDateString(Math.floor(Date.now() / 1000))
+    const isRecent =
+      jstDayStartSeconds(date) >= jstDayStartSeconds(today) - ONE_DAY
+    return withEdgeCache(
+      request,
+      waitUntil,
+      async () => {
+        // R18G・未成年を連想させるタグやタイトルの作品は作品ページも noindex なので載せない。
+        // 成人向けの画像は検索の画像に広げないよう、画像は載せない
+        const works = (
+          await fetchWorksOfDay(date, { isSensitive: true })
+        ).filter((work) => isIndexableSensitiveWork(work))
+        return xmlResponse(
+          toUrlSetXml(
+            works.map((work) => ({
+              loc: `${SITE_URL}/r/posts/${work.id}`,
+              lastmod: new Date(work.createdAt * 1000).toISOString(),
+            })),
+          ),
+          isRecent ? ONE_HOUR : ONE_DAY * 7,
+        )
+      },
+      isRecent
+        ? undefined
+        : {
+            kv: getSitemapKv(context),
+            ttlSeconds:
+              jstDayStartSeconds(date) <
+              jstDayStartSeconds(today) - ONE_DAY * 30
+                ? ONE_DAY * 30
+                : ONE_DAY * 7,
+          },
+    )
   }
 
   const worksMatch = name.match(/^works-(\d{4}-\d{2}-\d{2})\.xml$/)

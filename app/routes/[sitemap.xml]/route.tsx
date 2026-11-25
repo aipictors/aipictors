@@ -24,6 +24,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       ...dates.map((date) => ({
         loc: `${SITE_URL}/sitemaps/works-${date}.xml`,
       })),
+      ...dates.map((date) => ({
+        loc: `${SITE_URL}/sitemaps/sensitive-works-${date}.xml`,
+      })),
     ]
     return xmlResponse(toSitemapIndexXml(sitemaps), 60 * 60)
   })

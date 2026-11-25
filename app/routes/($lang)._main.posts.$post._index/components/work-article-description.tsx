@@ -11,7 +11,7 @@ export const parseTextWithLinks = (text: string) => {
       return (
         <a
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener noreferrer nofollow ugc"
           className="text-blue-500"
           key={index.toString()}
           href={part}

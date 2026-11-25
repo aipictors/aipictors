@@ -105,7 +105,8 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   const enBiography = toDescription(user.enBiography || user.biography || "")
 
   return createMeta(
-    META.USERS,
+    // 作品のないプロフィールは検索エンジンに載せない（自己紹介に宣伝やリンクだけを書いたアカウントが検索に出ていた）
+    { ...META.USERS, isIndex: user.worksCount > 0 },
     {
       title:
         user.worksCount > 0

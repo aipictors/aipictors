@@ -409,7 +409,7 @@ export function WorkArticle(props: Props) {
                   <a
                     href={props.work.relatedUrl}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener noreferrer nofollow ugc"
                     className="text-blue-500"
                   >
                     {props.work.relatedUrl}

@@ -289,6 +289,8 @@ type SitemapWork = {
   enTitle?: string | null
   createdAt: number
   largeThumbnailImageURL: string
+  rating?: string | null
+  tagNames?: string[] | null
   user: { login: string } | null
 }
 
@@ -305,10 +307,29 @@ const dayWorksQuery = `query SitemapDayWorks($offset: Int!, $limit: Int!, $where
   }
 }`
 
+/** R18 は検索エンジンに載せられる作品だけを選ぶので、年齢区分とタグも取る */
+const daySensitiveWorksQuery = `query SitemapDaySensitiveWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+  works(offset: $offset, limit: $limit, where: $where) {
+    id
+    title
+    enTitle
+    createdAt
+    largeThumbnailImageURL
+    rating
+    tagNames
+    user {
+      login
+    }
+  }
+}`
+
 /**
- * その日（JST）に投稿された全年齢・R15 の公開作品
+ * その日（JST）に投稿された公開作品。既定は全年齢・R15、isSensitive なら R18（R18G は除く）
  */
-export async function fetchWorksOfDay(date: string): Promise<SitemapWork[]> {
+export async function fetchWorksOfDay(
+  date: string,
+  options: { isSensitive?: boolean } = {},
+): Promise<SitemapWork[]> {
   const dayStart = jstDayStartSeconds(date)
   const dayEnd = dayStart + 24 * 60 * 60
   const now = Math.floor(Date.now() / 1000)
@@ -334,16 +355,21 @@ export async function fetchWorksOfDay(date: string): Promise<SitemapWork[]> {
       offset += waveSize * PAGE_SIZE
       const pages = await Promise.all(
         offsets.map((pageOffset) =>
-          graphqlRequest<{ works: SitemapWork[] }>(dayWorksQuery, {
-            offset: pageOffset,
-            limit: PAGE_SIZE,
-            where: {
-              ratings: ["G", "R15"],
-              beforeCreatedAt: before,
-              orderBy: "DATE_CREATED",
-              sort: "DESC",
+          graphqlRequest<{ works: SitemapWork[] }>(
+            options.isSensitive ? daySensitiveWorksQuery : dayWorksQuery,
+            {
+              offset: pageOffset,
+              limit: PAGE_SIZE,
+              where: {
+                ...(options.isSensitive
+                  ? { ratings: ["R18"], isSensitive: true }
+                  : { ratings: ["G", "R15"] }),
+                beforeCreatedAt: before,
+                orderBy: "DATE_CREATED",
+                sort: "DESC",
+              },
             },
-          }),
+          ),
         ),
       )
       for (const page of pages) {

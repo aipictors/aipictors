@@ -2,6 +2,7 @@
 import pages from "./build/worker/index.js"
 import { missingFileCacheControl } from "./app/utils/missing-file-cache-control"
 import { handleEmbedRequest } from "./app/lib/work-embed"
+import { submitRecentWorksToIndexNow } from "./app/lib/indexnow"
 
 type Env = {
   INTERNAL_PURGE_TOKEN?: string
@@ -94,6 +95,15 @@ const proxyFirebaseAuth = (request: Request): Promise<Response> | null => {
 }
 
 export default {
+  /** 毎時、直近の作品の URL を IndexNow に送る（wrangler.toml の triggers） */
+  async scheduled(_event: unknown, env: Env, ctx: ExecutionContext) {
+    const endpoint =
+      env.VITE_GRAPHQL_ENDPOINT_REMIX ?? env.VITE_GRAPHQL_ENDPOINT ?? null
+    if (!endpoint) return
+    ctx.waitUntil(
+      submitRecentWorksToIndexNow(endpoint, Math.floor(Date.now() / 1000)),
+    )
+  },
   async fetch(request: Request, env: Env, ctx: CacheContext) {
     const auth = proxyFirebaseAuth(request)
     if (auth) return auth

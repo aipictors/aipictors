@@ -119,7 +119,7 @@ function UserModelSource(props: { model: UserModel }) {
             <a
               href={model.sourceUrl}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow ugc"
               className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
             >
               {sourceSiteName(model.sourceUrl)} で見る

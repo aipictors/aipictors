@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test"
 import {
+  hasMinorRelatedText,
   hasNonIndexableSensitiveTag,
   isIndexableSensitiveTag,
+  isIndexableSensitiveWork,
   isMinorRelatedTag,
   isR18gRelatedTag,
   isRealPersonRelatedTag,
@@ -73,5 +75,51 @@ describe("タグの出し分け", () => {
     expect(hasNonIndexableSensitiveTag(["メイド", "幼女"])).toBe(true)
     expect(hasNonIndexableSensitiveTag(["メイド", "猫"])).toBe(false)
     expect(hasNonIndexableSensitiveTag([])).toBe(false)
+  })
+})
+
+describe("hasMinorRelatedText", () => {
+  test.each([
+    "放課後のJK",
+    "ＪＣと先生",
+    "ロリ巨乳",
+    "14歳の夏",
+    "my kid sister",
+    "魔法少女",
+    "スクール水着",
+  ])("%s は対象", (text) => {
+    expect(hasMinorRelatedText(text)).toBe(true)
+  })
+
+  test.each(["熟女の休日", "OL のお姉さん", "jkl", "カロリー計算", "20歳"])(
+    "%s は対象外",
+    (text) => {
+      expect(hasMinorRelatedText(text)).toBe(false)
+    },
+  )
+})
+
+describe("isIndexableSensitiveWork", () => {
+  test("R18G・載せられないタグ・タイトルの語で判定する", () => {
+    expect(
+      isIndexableSensitiveWork({
+        rating: "R18",
+        title: "熟女",
+        tagNames: ["熟女"],
+      }),
+    ).toBe(true)
+    expect(
+      isIndexableSensitiveWork({ rating: "R18G", title: "熟女", tagNames: [] }),
+    ).toBe(false)
+    expect(
+      isIndexableSensitiveWork({
+        rating: "R18",
+        title: "熟女",
+        tagNames: ["ロリ"],
+      }),
+    ).toBe(false)
+    expect(
+      isIndexableSensitiveWork({ rating: "R18", title: "JK", tagNames: [] }),
+    ).toBe(false)
   })
 })

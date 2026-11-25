@@ -239,3 +239,39 @@ export function isFeaturableSensitiveWork(work: {
 export function hasNonIndexableSensitiveTag(tagNames: string[]): boolean {
   return tagNames.some((tagName) => !isIndexableSensitiveTag(tagName))
 }
+
+/** 文中で見る短い語（前後が英字でないときだけ。「jkl」などを巻き込まない） */
+const MINOR_TEXT_WORD_PATTERN =
+  /(^|[^a-z])(jk|jc|js|jy|minor|teen|teens|kid|kids)([^a-z]|$)/
+
+/**
+ * タイトル・説明文などの文に未成年を連想させる語があるか。
+ * R18 の作品を検索エンジン・サイトマップ・IndexNow に載せるかの判断に使う（迷う語は含める）
+ */
+export function hasMinorRelatedText(text: string): boolean {
+  const normalized = normalizeTag(text)
+  // 英単語の区切りを見るため、空白を残した形でも見る
+  const spaced = text.normalize("NFKC").toLowerCase()
+  return (
+    hasLoliTerm(normalized) ||
+    MINOR_AGE_PATTERN.test(normalized) ||
+    MINOR_TEXT_WORD_PATTERN.test(spaced) ||
+    normalized.includes("少女") ||
+    includesAny(normalized, MINOR_TERMS)
+  )
+}
+
+/**
+ * R18 の作品ページを検索エンジンに載せてよいか（R18G・載せられないタグ・タイトルに未成年を連想させる語のあるものは除く）
+ */
+export function isIndexableSensitiveWork(work: {
+  rating?: string | null
+  title?: string | null
+  tagNames?: readonly string[] | null
+}): boolean {
+  return (
+    work.rating !== "R18G" &&
+    !hasNonIndexableSensitiveTag([...(work.tagNames ?? [])]) &&
+    !hasMinorRelatedText(work.title ?? "")
+  )
+}
