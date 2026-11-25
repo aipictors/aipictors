@@ -68,6 +68,9 @@ function UnusableMark(props: { className?: string }) {
 export const libraryItemHref = (item: ModelLibraryItem): string | null => {
   if (item.userModel) return `/models/u/${item.userModel.id}`
   if (item.officialCheckpoint) return `/models/${item.officialCheckpoint.id}`
+  if (item.officialLora) {
+    return `/models/lora/${encodeURIComponent(item.officialLora.name)}`
+  }
   return null
 }
 

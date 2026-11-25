@@ -1,0 +1,2799 @@
+[
+  {
+    "name": "detail_tweaker_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/122359?modelVersionId=135867",
+      "label": "Civitai"
+    },
+    "creator": "w4r10ck",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0",
+    "publishedAt": "2023-08-07",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.5,
+      "min": -3.0,
+      "max": 3.0
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/detail_tweaker_xl/0.webp",
+      "https://assets.aipictors.com/loras/detail_tweaker_xl/1.webp",
+      "https://assets.aipictors.com/loras/detail_tweaker_xl/2.webp",
+      "https://assets.aipictors.com/loras/detail_tweaker_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ディテール調整（Detail Tweaker XL）",
+      "description": "画像の描き込み量を増やしたり減らしたりできるスライダーです。",
+      "summary": "SDXL用のディテール調整LoRAです。プラスの強さで描き込みが増え、マイナスの強さで描き込みが減ります。トリガーワードは必要ありません。",
+      "features": [
+        "強さだけで描き込み量を調整できます",
+        "マイナス値で細部を減らし、すっきりした絵にできます",
+        "対応する強さの範囲は -3〜3 です"
+      ],
+      "tips": [
+        "まずは強さ 1.5 から試し、結果を見ながら調整してください",
+        "合う強さはプロンプトやステップ数によって変わります",
+        "描き込みを減らしたいときはマイナスの値を使います"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可・作者のクレジット表記が必要）"
+    },
+    "en": {
+      "displayName": "Detail Tweaker XL",
+      "description": "A slider that increases or reduces the amount of detail.",
+      "summary": "A detail tweaker for SDXL. Positive weights add detail and negative weights remove it. No trigger word is needed.",
+      "features": [
+        "Controls detail level with weight alone",
+        "Negative weights give a cleaner, simpler look",
+        "Works in the -3 to 3 weight range"
+      ],
+      "tips": [
+        "Start at 1.5 and adjust from there",
+        "The best weight depends on your prompt and step count",
+        "Use a negative weight to reduce detail"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed; credit required)"
+    }
+  },
+  {
+    "name": "masterpiece_quality_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/929497?modelVersionId=2247497",
+      "label": "Civitai"
+    },
+    "creator": "motimalu",
+    "baseModel": "Illustrious",
+    "versionName": "v3.0 [illustrious]",
+    "publishedAt": "2025-09-24",
+    "triggerWords": ["masterpiece, best quality, very aesthetic"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/masterpiece_quality_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/masterpiece_quality_ilxl/1.webp"
+    ],
+    "imagesByAipictors": true,
+    "ja": {
+      "displayName": "高品質タグ強化（Aesthetic Quality Modifiers - Masterpiece）",
+      "description": "品質タグ「masterpiece」系の効果を強める絵柄LoRAです。",
+      "summary": "作者が手作業で評価した画像のうち、masterpiece と評価したものだけで学習したLoRAです。品質タグと組み合わせて、見栄えのよい仕上がりを狙います。このバージョンは Illustrious v0.1 で学習されています。",
+      "features": [
+        "高評価の画像だけを集めたデータで学習",
+        "品質タグ masterpiece, best quality, very aesthetic と組み合わせて使う",
+        "アニメ系の絵柄向け"
+      ],
+      "tips": [
+        "プロンプトに masterpiece, best quality, very aesthetic を入れてください",
+        "このバージョンでは、品質タグをプロンプトの最後に置く書き方が推奨されています"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Aesthetic Quality Modifiers - Masterpiece",
+      "description": "Strengthens the effect of masterpiece-style quality tags.",
+      "summary": "Trained only on images the creator manually rated as masterpiece. Use it together with quality tags for a more polished look. This version was trained on Illustrious v0.1.",
+      "features": [
+        "Trained on a curated set of top-rated images",
+        "Pairs with the tags masterpiece, best quality, very aesthetic",
+        "Aimed at anime-style images"
+      ],
+      "tips": [
+        "Add masterpiece, best quality, very aesthetic to your prompt",
+        "For this version, placing the quality tags at the end of the prompt is recommended"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "micro_details_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1377820?modelVersionId=3206748",
+      "label": "Civitai"
+    },
+    "creator": "UnholyDesiresStudio",
+    "baseModel": "Illustrious",
+    "versionName": "v7.0_Illustrious",
+    "publishedAt": "2026-08-22",
+    "triggerWords": ["addmicrodetails"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/micro_details_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/micro_details_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/micro_details_ilxl/2.webp",
+      "https://assets.aipictors.com/loras/micro_details_ilxl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "細部ディテール追加（Add Micro Details）",
+      "description": "細かな描き込みを足して、画像の情報量を増やすLoRAです。",
+      "summary": "画像に細かなディテールを加えるコンセプトLoRAです。アニメ調にもリアル調にも使えます。説明は短く、推奨設定が中心です。",
+      "features": [
+        "細部の描き込みを増やす",
+        "アニメ調・リアル調の両方に対応",
+        "トリガーワード addmicrodetails を使用"
+      ],
+      "tips": [
+        "プロンプトに addmicrodetails を入れてください",
+        "推奨設定はステップ数 25〜40、CFG 5〜7 です",
+        "合う強さは画像によって変わるので、いくつか試してください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Add Micro Details",
+      "description": "Adds fine micro details to your images.",
+      "summary": "A concept LoRA that adds fine details to images. It works with both anime and realistic styles. The source mainly lists recommended settings.",
+      "features": [
+        "Adds fine detail",
+        "Works with anime and realistic styles",
+        "Uses the trigger word addmicrodetails"
+      ],
+      "tips": [
+        "Include addmicrodetails in your prompt",
+        "Recommended: 25-40 steps, CFG 5-7",
+        "The best strength varies, so try a few values"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "citron_chaos_style_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/362745?modelVersionId=3416861",
+      "label": "Civitai"
+    },
+    "creator": "CitronLegacy",
+    "baseModel": "Illustrious",
+    "versionName": "Citron Chaos IL",
+    "publishedAt": "2026-10-19",
+    "triggerWords": [
+      "c1tr0nCh0s",
+      "spot color, greyscale, monochrome",
+      "foreshortening, dynamic pose"
+    ],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/citron_chaos_style_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/citron_chaos_style_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/citron_chaos_style_ilxl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "シトロン・カオス画風（Citron Chaos Style）",
+      "description": "ダイナミックなポーズと遠近感が特徴の、スポットカラー調の画風LoRAです。",
+      "summary": "動きのあるポーズと強い遠近法（フォアショートニング）で学習した画風LoRAです。モノクロにアクセントカラーを入れたスポットカラー表現と相性がよい構成です。",
+      "features": [
+        "ダイナミックなポーズと遠近感を学習",
+        "モノクロ＋スポットカラーの表現",
+        "トリガーワード c1tr0nCh0s で画風を呼び出す"
+      ],
+      "tips": [
+        "プロンプトに c1tr0nCh0s を入れてください",
+        "spot color, greyscale, monochrome, foreshortening, dynamic pose などを組み合わせると画風が出やすくなります"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Citron Chaos Style",
+      "description": "An art style LoRA with dynamic poses, foreshortening and spot color.",
+      "summary": "A style LoRA trained on dynamic poses and foreshortening. It suits a monochrome look with spot color accents.",
+      "features": [
+        "Trained on dynamic poses and foreshortening",
+        "Monochrome with spot color accents",
+        "Triggered with c1tr0nCh0s"
+      ],
+      "tips": [
+        "Add c1tr0nCh0s to your prompt",
+        "Mix in tags like spot color, greyscale, monochrome, foreshortening, dynamic pose"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "character_design_sheet_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/100435?modelVersionId=1096293",
+      "label": "Civitai"
+    },
+    "creator": "YeiYeiArt",
+    "baseModel": "Illustrious",
+    "versionName": "-Illustrious XL-",
+    "publishedAt": "2024-11-24",
+    "triggerWords": [
+      "CharacterDesignIllustrious",
+      "reference sheet, simple white background, (color guide:1.2), (multiple views), (full body), dynamic pose"
+    ],
+    "weight": {
+      "recommended": 0.8,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/character_design_sheet_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/character_design_sheet_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/character_design_sheet_ilxl/2.webp",
+      "https://assets.aipictors.com/loras/character_design_sheet_ilxl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "キャラクターデザインシート（Character Design Sheet）",
+      "description": "1枚に複数アングルとカラーパレットを並べたキャラ設定画を作るLoRAです。",
+      "summary": "白背景に、キャラクターを複数の視点で描き、カラーパレットも添えた設定画（リファレンスシート）を作るためのLoRAです。画風LoRAとの組み合わせもしやすいとされています。縦長の画像で結果がよくなる傾向があります。",
+      "features": [
+        "全身・顔のアップなど複数の視点を1枚に配置",
+        "キャラクターの配色をまとめたカラーパレットを表示",
+        "画風LoRAと組み合わせやすい",
+        "縦長の解像度（768×1024など）と相性がよい"
+      ],
+      "tips": [
+        "トリガーワード CharacterDesignIllustrious の後に reference sheet, simple white background, (color guide:1.2), (multiple views), (full body), dynamic pose を続け、その後にキャラクターの特徴を書くのがおすすめです",
+        "強さは 0.8 が推奨されています（画風LoRAと合わせやすくなります）",
+        "Blue, green, red のように色を個別に書くと、配色に反映されやすくなります",
+        "顔の補正（ADetailer）との併用もすすめられています"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Character Design Sheet",
+      "description": "Creates character reference sheets with multiple views and a color palette.",
+      "summary": "A LoRA for character reference sheets on a white background, showing the character from several angles along with a color palette. It is said to mix well with style LoRAs, and vertical images tend to give better results.",
+      "features": [
+        "Multiple views such as full body and face close-up",
+        "Includes a color palette swatch",
+        "Mixes well with style LoRAs",
+        "Works well with vertical resolutions like 768x1024"
+      ],
+      "tips": [
+        "Start with CharacterDesignIllustrious, reference sheet, simple white background, (color guide:1.2), (multiple views), (full body), dynamic pose, then describe the character",
+        "Recommended strength is 0.8",
+        "List colors separately (e.g. Blue, green, red) so they show up in the design",
+        "Using ADetailer for faces is recommended"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "extremely_detailed_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/229213?modelVersionId=383563",
+      "label": "Civitai"
+    },
+    "creator": "ntc",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v2.0",
+    "publishedAt": "2024-03-09",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": -1.0,
+      "max": 1.0
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/extremely_detailed_xl/0.webp",
+      "https://assets.aipictors.com/loras/extremely_detailed_xl/1.webp",
+      "https://assets.aipictors.com/loras/extremely_detailed_xl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "超高精細（Extremely Detailed スライダー）",
+      "description": "画像全体の描き込みを強めるスライダーです。トリガー不要です。",
+      "summary": "画像全体をより細かく描き込むスライダーLoRAです。トリガーワードは必要ありません。強さの範囲は -1〜1 で、マイナス側も修正されています。",
+      "features": [
+        "画像全体の描き込み量を上げる",
+        "トリガーワード不要",
+        "強さ -1〜1 で調整できるスライダー"
+      ],
+      "tips": [
+        "サンプル画像は強さ 1 で作られています",
+        "マイナスの強さにすると描き込みを控えめにできます"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Extremely Detailed",
+      "description": "A no-trigger slider that makes everything more detailed.",
+      "summary": "A slider LoRA that makes the whole image more detailed. No trigger word is needed. It works in the -1 to 1 range, with a fixed negative side.",
+      "features": [
+        "Increases overall detail",
+        "No trigger word needed",
+        "Slider with a -1 to 1 range"
+      ],
+      "tips": [
+        "The examples use strength 1",
+        "Use a negative weight for less detail"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "perfect_eyes_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/118427?modelVersionId=128461",
+      "label": "Civitai"
+    },
+    "creator": "Deizor",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0",
+    "publishedAt": "2023-07-29",
+    "triggerWords": ["perfecteyes", "green eyes", "blue eyes", "brown eyes"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/perfect_eyes_xl/0.webp",
+      "https://assets.aipictors.com/loras/perfect_eyes_xl/1.webp",
+      "https://assets.aipictors.com/loras/perfect_eyes_xl/2.webp",
+      "https://assets.aipictors.com/loras/perfect_eyes_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "きれいな目（Perfect Eyes XL）",
+      "description": "目のディテールと色をきれいに描くための目LoRAです。",
+      "summary": "目をきれいに描くためのSDXL用LoRAです。特にインペイント（部分修正）で力を発揮します。目の色の指定にも対応しています。",
+      "features": [
+        "目の描写を強化",
+        "インペイントでの使用が得意",
+        "緑・青・茶・グレー・ヘーゼルなどの目の色に対応",
+        "片目・両目のアップにも対応"
+      ],
+      "tips": [
+        "プロンプトに perfecteyes を入れてください",
+        "両目なら「[色] eyes, perfecteyes」、片目なら「[色] eye, close up, perfecteyes」のように書きます",
+        "extreme close up も使えます。heterochromia（オッドアイ）は成功率が低めです"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Perfect Eyes XL",
+      "description": "An eye LoRA for clean, detailed eyes.",
+      "summary": "An SDXL LoRA for better-looking eyes. It works best when inpainting and understands eye color prompts.",
+      "features": [
+        "Improves eye rendering",
+        "Best used for inpainting",
+        "Supports green, blue, brown, grey, hazel eye colors",
+        "Handles single-eye and two-eye close-ups"
+      ],
+      "tips": [
+        "Include perfecteyes in your prompt",
+        "For two eyes: \"[color] eyes, perfecteyes\"; for one eye: \"[color] eye, close up, perfecteyes\"",
+        "extreme close up also works; heterochromia works only some of the time"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "detailed_eyes_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/120723?modelVersionId=145907",
+      "label": "Civitai"
+    },
+    "creator": "bdsqlsz",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v3.0",
+    "publishedAt": "2023-08-22",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/detailed_eyes_xl/0.webp",
+      "https://assets.aipictors.com/loras/detailed_eyes_xl/1.webp",
+      "https://assets.aipictors.com/loras/detailed_eyes_xl/2.webp",
+      "https://assets.aipictors.com/loras/detailed_eyes_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "目の描き込み強化（DetailedEyes XL）",
+      "description": "目・顔・肌の描き込みを増やすLoRAです。アニメ系にも使えます。",
+      "summary": "目のディテールを中心に、顔や肌の描き込みも加えるLoRAです。SDXL系のモデル全般に合うように作られており、アニメ系モデルにも使えます。このバージョンでは目のディテールがさらに強化されています。",
+      "features": [
+        "目のディテールを強化",
+        "顔と肌の描き込みも追加",
+        "アニメ系を含むSDXLモデル全般で使える",
+        "手の崩れの修正も意識して作られている"
+      ],
+      "tips": [
+        "トリガーワードは必要ありません",
+        "プロンプトが75トークンを超えると効果が弱まります"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可・作者のクレジット表記が必要）"
+    },
+    "en": {
+      "displayName": "DetailedEyes XL",
+      "description": "Adds detail to eyes, face and skin.",
+      "summary": "A LoRA that adds detail mainly to the eyes, as well as the face and skin. It is designed to fit any SDXL model, including anime models. This version adds more eye detail.",
+      "features": [
+        "Enhances eye detail",
+        "Adds face and skin detail",
+        "Works with SDXL models, including anime",
+        "Also aims to fix bad hands"
+      ],
+      "tips": [
+        "No trigger word needed",
+        "The effect weakens when the prompt exceeds 75 tokens"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed; credit required)"
+    }
+  },
+  {
+    "name": "usunuri_style_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/176554?modelVersionId=1552087",
+      "label": "Civitai"
+    },
+    "creator": "EWIGKEIT0",
+    "baseModel": "Illustrious",
+    "versionName": "USNR_STYLE_ILL_V1.0",
+    "publishedAt": "2025-03-19",
+    "triggerWords": ["usnr"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/usunuri_style_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/usunuri_style_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/usunuri_style_ilxl/2.webp",
+      "https://assets.aipictors.com/loras/usunuri_style_ilxl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "薄塗り（USNR STYLE）",
+      "description": "淡く薄い塗りのイラスト調にする画風LoRAです。",
+      "summary": "薄塗りの画風を再現するIllustrious用LoRAです。トリガーワード usnr で画風を呼び出します。",
+      "features": [
+        "淡い薄塗りの画風",
+        "アニメ調の女の子のイラスト向け",
+        "トリガーワード usnr で使用"
+      ],
+      "tips": [
+        "プロンプトに usnr を入れてください",
+        "推奨設定はサンプラー DPM++ 2M SDE、スケジューラー SGM Uniform、CFG 4〜6 です"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可・作者のクレジット表記が必要）"
+    },
+    "en": {
+      "displayName": "USNR Style (Usunuri)",
+      "description": "A soft, lightly painted (usunuri) art style.",
+      "summary": "An Illustrious LoRA for the usunuri (light, thin coloring) art style. Use the trigger word usnr.",
+      "features": [
+        "Soft, thin-coat coloring",
+        "Suited to anime-style illustrations",
+        "Triggered with usnr"
+      ],
+      "tips": [
+        "Add usnr to your prompt",
+        "Recommended: DPM++ 2M SDE sampler, SGM Uniform schedule, CFG 4-6"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed; credit required)"
+    }
+  },
+  {
+    "name": "atsunuri_style_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/176915?modelVersionId=1711464",
+      "label": "Civitai"
+    },
+    "creator": "EWIGKEIT0",
+    "baseModel": "Illustrious",
+    "versionName": "ATNR_STYLE_ILL_V1.1",
+    "publishedAt": "2025-04-26",
+    "triggerWords": ["atnr"],
+    "weight": {
+      "recommended": 0.9,
+      "min": 0.8,
+      "max": 0.9
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/atsunuri_style_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/atsunuri_style_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/atsunuri_style_ilxl/2.webp",
+      "https://assets.aipictors.com/loras/atsunuri_style_ilxl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "厚塗り（ATNR STYLE）",
+      "description": "絵の具を重ねたような厚塗りの画風LoRAです。",
+      "summary": "厚塗りの画風を再現するIllustrious用LoRAです。トリガーワード atnr で画風を呼び出します。強さは 0.8〜0.9 が推奨されています。",
+      "features": [
+        "重ね塗りの厚塗り画風",
+        "リアル寄りのイラストにも合う",
+        "トリガーワード atnr で使用"
+      ],
+      "tips": [
+        "プロンプトに atnr を入れてください",
+        "強さは 0.8〜0.9 が推奨です",
+        "推奨設定はサンプラー DPM++ 2M SDE、スケジューラー SGM Uniform、CFG 4〜6 です"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可・作者のクレジット表記が必要）"
+    },
+    "en": {
+      "displayName": "ATNR Style (Atsunuri)",
+      "description": "A thickly painted (atsunuri) art style.",
+      "summary": "An Illustrious LoRA for the atsunuri (thick, layered painting) art style. Use the trigger word atnr. Recommended strength is 0.8-0.9.",
+      "features": [
+        "Thick, layered painting style",
+        "Also suits semi-realistic illustrations",
+        "Triggered with atnr"
+      ],
+      "tips": [
+        "Add atnr to your prompt",
+        "Use a strength of 0.8-0.9",
+        "Recommended: DPM++ 2M SDE sampler, SGM Uniform schedule, CFG 4-6"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed; credit required)"
+    }
+  },
+  {
+    "name": "logo_redmond_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/124609?modelVersionId=177492",
+      "label": "Civitai"
+    },
+    "creator": "artificialguybr",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v2.0",
+    "publishedAt": "2023-10-07",
+    "triggerWords": ["logo", "logoredmaf"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/logo_redmond_xl/0.webp",
+      "https://assets.aipictors.com/loras/logo_redmond_xl/1.webp",
+      "https://assets.aipictors.com/loras/logo_redmond_xl/2.webp",
+      "https://assets.aipictors.com/loras/logo_redmond_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ロゴデザイン（Logo.Redmond）",
+      "description": "さまざまなテーマのロゴを生成するLoRAです。",
+      "summary": "ロゴの生成に特化したSDXL用LoRAです。幅広いテーマのロゴを作れます。うまくいくまで何回か生成が必要なこともあります。",
+      "features": [
+        "さまざまなテーマのロゴを生成",
+        "detailed / minimalist / colorful / black and white などで雰囲気を調整できる",
+        "1024×1024 での生成が推奨"
+      ],
+      "tips": [
+        "プロンプトに logo や logoredmaf を入れてください",
+        "シンプルなプロンプトがすすめられています",
+        "解像度は 1024×1024 がおすすめです"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Logo.Redmond",
+      "description": "Generates logos in a wide range of themes.",
+      "summary": "An SDXL LoRA specialized in logos, able to create them across many themes. It may take a few generations to get a good result.",
+      "features": [
+        "Generates logos in many themes",
+        "Control the look with tags like detailed, minimalist, colorful, black and white",
+        "Best at 1024x1024"
+      ],
+      "tips": [
+        "Use logo or logoredmaf in your prompt",
+        "Simple prompts are recommended",
+        "Generate at 1024x1024"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "flat_color_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1132089?modelVersionId=1311848",
+      "label": "Civitai"
+    },
+    "creator": "motimalu",
+    "baseModel": "Illustrious",
+    "versionName": "v2.0 [Illustrious]",
+    "publishedAt": "2025-01-21",
+    "triggerWords": ["flat color", "no lineart"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": ["https://assets.aipictors.com/loras/flat_color_ilxl/0.webp"],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "フラットカラー（Flat Color）",
+      "description": "線画なし・ベタ塗りの平面的な画風にするLoRAです。",
+      "summary": "線画が見えず、ベタ塗りで奥行きの少ない画像で学習した画風LoRAです。このバージョンは Illustrious XL 0.1 で学習されています。",
+      "features": [
+        "線画のないフラットな塗り",
+        "奥行きを抑えた平面的な表現",
+        "背景色の指定と相性がよい"
+      ],
+      "tips": [
+        "flat color, no lineart をプロンプトに入れてください",
+        "blending, negative space, {色} background などのタグもすすめられています"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Flat Color",
+      "description": "A flat-color style without visible lineart.",
+      "summary": "A style LoRA trained on images with no visible lineart, flat colors and little depth. This version was trained on Illustrious XL 0.1.",
+      "features": [
+        "Flat coloring without lineart",
+        "Minimal depth for a graphic look",
+        "Works well with a colored background tag"
+      ],
+      "tips": [
+        "Add flat color, no lineart to your prompt",
+        "Recommended extra tags: blending, negative space, {color} background"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "lighting_slider_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1280702?modelVersionId=1444863",
+      "label": "Civitai"
+    },
+    "creator": "Mraclet",
+    "baseModel": "Illustrious",
+    "versionName": "Illustrious",
+    "publishedAt": "2025-02-21",
+    "triggerWords": ["dark", "late night", "blue hour"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/lighting_slider_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/lighting_slider_ilxl/1.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "明るさ・暗さスライダー（Lighting / Darkness Slider）",
+      "description": "光源の明るさを強めたり弱めたりして、画面の明暗を調整するスライダーです。",
+      "summary": "画像内の光源を明るく、または暗くして、自然な明るさの調整ができるスライダーLoRAです。効きが強いので、少しずつ調整するのがおすすめです。",
+      "features": [
+        "光源の明るさを自然に調整",
+        "暗い場面づくりに強い",
+        "照明を表す言葉と組み合わせて使う"
+      ],
+      "tips": [
+        "blue hour や late night、dark、dimly lit など照明を表す言葉をプロンプトに入れてください",
+        "暗くしたいときは、dark 系の言葉と一緒に強さ -0.5〜-1 を試してください",
+        "暗い場面で目が青くなりやすいので、目の色を指定するとよいです"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Lighting / Darkness Slider",
+      "description": "A slider that makes light sources brighter or darker.",
+      "summary": "A slider LoRA that makes light sources brighter or darker for natural brightness control. It is potent, so adjust in small steps.",
+      "features": [
+        "Natural control over light intensity",
+        "Good for dark scenes",
+        "Used together with lighting words"
+      ],
+      "tips": [
+        "Add lighting words such as blue hour, late night, dark or dimly lit",
+        "For darker images, try -0.5 to -1 with a dark-related word",
+        "Dark scenes can turn eyes blue, so specify the eye color"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "dynamic_pose_slider_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/438059?modelVersionId=1607510",
+      "label": "Civitai"
+    },
+    "creator": "N4Talent",
+    "baseModel": "Illustrious",
+    "versionName": "Illustrious/NoobAI (both)",
+    "publishedAt": "2025-04-01",
+    "triggerWords": ["dynamic pose, foreshortening, extreme perspective"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": 4.0
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/dynamic_pose_slider_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/dynamic_pose_slider_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/dynamic_pose_slider_ilxl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ダイナミックポーズ・スライダー（Dynamic Poses Slider）",
+      "description": "ポーズに動きを出し、より大胆なアングルにするスライダーです。",
+      "summary": "ポーズをよりダイナミックにし、極端なアングルを出しやすくするスライダーLoRAです。Illustrious と NoobAI の両方で動作確認されています。",
+      "features": [
+        "ポーズの動きを強める",
+        "大胆なアングル・遠近感を出しやすい",
+        "Illustrious・NoobAI 両対応"
+      ],
+      "tips": [
+        "トリガーワードは不要ですが、dynamic pose, foreshortening, extreme perspective を入れると効きやすくなります",
+        "強さは 1〜4 程度まで使えます",
+        "強くしすぎると色が平坦になりやすいので、そのときは強さを下げてください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Dynamic Poses Slider",
+      "description": "A slider for more dynamic poses and extreme angles.",
+      "summary": "A slider LoRA that makes poses more dynamic and angles more extreme. Tested on both Illustrious and NoobAI.",
+      "features": [
+        "Makes poses more dynamic",
+        "Encourages extreme angles and perspective",
+        "Works on Illustrious and NoobAI"
+      ],
+      "tips": [
+        "No trigger needed, but dynamic pose, foreshortening, extreme perspective can help",
+        "Strengths of 1 to 4 can work",
+        "Too much strength flattens colors, so lower it if that happens"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "hand_detail_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/260852?modelVersionId=294259",
+      "label": "Civitai"
+    },
+    "creator": "batchofcookies",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v2.0",
+    "publishedAt": "2024-01-11",
+    "triggerWords": ["hand"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": ["https://assets.aipictors.com/loras/hand_detail_xl/0.webp"],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "手のディテール（Hand Detail XL）",
+      "description": "手の描き込みを増やすためのLoRAです。",
+      "summary": "手のディテールを増やすために学習したLoRAです。このバージョンは、強すぎる場合に備えて用意された一つ前の学習段階のものです。",
+      "features": ["手の描き込みを増やす", "効きがやや穏やかなバージョン"],
+      "tips": ["プロンプトに hand を入れてください"],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Hand Detail XL",
+      "description": "Adds more detail to hands.",
+      "summary": "A LoRA trained to add detail to hands. This version is an earlier epoch, offered in case the main version is too strong for some models.",
+      "features": ["Adds hand detail", "A milder version"],
+      "tips": ["Include hand in your prompt"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "cyberpunk_anime_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/128568?modelVersionId=379278",
+      "label": "Civitai"
+    },
+    "creator": "CN_Signal",
+    "baseModel": "SDXL 1.0",
+    "versionName": "SDXL v2.0 light version",
+    "publishedAt": "2024-03-07",
+    "triggerWords": ["anime", "cyberpunk"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/cyberpunk_anime_xl/0.webp",
+      "https://assets.aipictors.com/loras/cyberpunk_anime_xl/1.webp",
+      "https://assets.aipictors.com/loras/cyberpunk_anime_xl/2.webp",
+      "https://assets.aipictors.com/loras/cyberpunk_anime_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "サイバーパンクアニメ（Cyberpunk Anime Style）",
+      "description": "サイバーパンク風のアニメ画風にするLoRAです。",
+      "summary": "サイバーパンクの雰囲気を持つアニメ画風のLoRAです。このバージョンは軽量版です。",
+      "features": ["サイバーパンク風のアニメ画風", "軽量版のバージョン"],
+      "tips": ["プロンプトに anime, cyberpunk を入れてください"],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可・作者のクレジット表記が必要）"
+    },
+    "en": {
+      "displayName": "Cyberpunk Anime Style",
+      "description": "A cyberpunk anime art style.",
+      "summary": "An anime art style LoRA with a cyberpunk feel. This is the light version.",
+      "features": ["Cyberpunk anime style", "Light version"],
+      "tips": ["Add anime, cyberpunk to your prompt"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed; credit required)"
+    }
+  },
+  {
+    "name": "color_temp_slider_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1093089?modelVersionId=1227713",
+      "label": "Civitai"
+    },
+    "creator": "Akiseki",
+    "baseModel": "Illustrious",
+    "versionName": "color_temp",
+    "publishedAt": "2025-01-01",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": -2.0,
+      "max": 2.0
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/color_temp_slider_ilxl/0.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "色温度スライダー（Color Temperature Slider）",
+      "description": "画像の色温度を暖色寄り・寒色寄りに調整するスライダーです。",
+      "summary": "画像の色温度を調整するスライダーLoRAです。画面が暖色に寄りすぎるときの補正用として作られました。トリガーワードは必要ありません。",
+      "features": [
+        "プラスで寒色寄り、マイナスで暖色寄りになる",
+        "トリガーワード不要",
+        "強さ -2〜2 で調整できる"
+      ],
+      "tips": [
+        "プラスの強さで青っぽく、マイナスの強さで暖かい色味になります",
+        "強さを大きくすると構図が変わることがあるので注意してください",
+        "合う強さはベースモデルによって変わります"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Color Temperature Slider",
+      "description": "A slider that shifts image color temperature warmer or cooler.",
+      "summary": "A slider LoRA for color temperature, made to correct images that look too warm. No trigger word is needed.",
+      "features": [
+        "Positive is cooler, negative is warmer",
+        "No trigger word needed",
+        "Adjustable from -2 to 2"
+      ],
+      "tips": [
+        "Positive weights make images colder; negative weights make them warmer",
+        "Large weights may change the composition",
+        "The right weight depends on your base model"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "realistic_filter_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1003513?modelVersionId=1124771",
+      "label": "Civitai"
+    },
+    "creator": "yomama123556778",
+    "baseModel": "Illustrious",
+    "versionName": "IL v1.0",
+    "publishedAt": "2024-12-03",
+    "triggerWords": ["realistic"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/realistic_filter_ilxl/0.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "リアル寄せフィルター（Realistic Filter）",
+      "description": "アニメ寄りの顔をリアル寄りに近づけるLoRAです。",
+      "summary": "リアルな画像生成を助けるLoRAです。2.5D系のモデルで顔がアニメ寄りになりやすいとき、よりリアルな方向へ寄せることができます。ほかのチェックポイントでも使えますが、結果は変わります。",
+      "features": [
+        "アニメ・2.5D寄りの絵柄をリアル方向に寄せる",
+        "顔の描写を写実的にしやすい",
+        "Illustrious や NoobAI のモデルでも使える"
+      ],
+      "tips": [
+        "プロンプトに realistic を入れてください",
+        "モデルによって効き方が違うので、強さを調整してください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Realistic Filter",
+      "description": "Shifts anime-leaning results toward realism.",
+      "summary": "A LoRA that helps with realistic generation. When a 2.5D model makes faces look too anime-like, it shifts the balance toward realism. It also works on other checkpoints, with varying results.",
+      "features": [
+        "Pushes anime or 2.5D looks toward realism",
+        "Makes faces more realistic",
+        "Also usable with Illustrious and NoobAI models"
+      ],
+      "tips": [
+        "Include realistic in your prompt",
+        "Adjust the weight, since results vary by model"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "zoom_slider_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/213307?modelVersionId=240274",
+      "label": "Civitai"
+    },
+    "creator": "_Envy_",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0",
+    "publishedAt": "2023-11-26",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": -1.25,
+      "max": 1.25
+    },
+    "images": ["https://assets.aipictors.com/loras/zoom_slider_xl/0.webp"],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ズームスライダー（Envy Zoom Slider XL）",
+      "description": "人物の寄り・引きを調整するスライダーです。",
+      "summary": "人物のポートレートで、ズームインとズームアウトを調整するスライダーLoRAです。強さ 1.0 で顔のアップ、-1.0 で全身が目安です。アニメ調にも写真調にも使えます。",
+      "features": [
+        "プラスで顔に寄り、マイナスで全身を写す",
+        "アニメ調・写真調の両方に対応",
+        "人物向けに学習"
+      ],
+      "tips": [
+        "強さ 1.0 で顔のアップ、-1.0 で全身ショットが目安です",
+        "±1.25 程度まで使えることが多いです",
+        "動物や風景ではテストされていません"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Envy Zoom Slider XL",
+      "description": "A slider that zooms in or out on characters.",
+      "summary": "A slider LoRA that zooms in and out on character portraits. Around 1.0 gives a face close-up and -1.0 a full-body shot. Works with anime and photorealistic images.",
+      "features": [
+        "Positive zooms in, negative zooms out",
+        "Works with anime and photorealistic styles",
+        "Trained with humans in mind"
+      ],
+      "tips": [
+        "1.0 is a close-up of the face, -1.0 is a full-body shot",
+        "Values up to about +/-1.25 usually work",
+        "Not tested on animals or scenery"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "anime_eyes_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1826240?modelVersionId=2066663",
+      "label": "Civitai"
+    },
+    "creator": "holjavbek",
+    "baseModel": "Illustrious",
+    "versionName": "V1",
+    "publishedAt": "2025-07-31",
+    "triggerWords": ["perfect eyes"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/anime_eyes_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/anime_eyes_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/anime_eyes_ilxl/2.webp",
+      "https://assets.aipictors.com/loras/anime_eyes_ilxl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "アニメの目（Perfect Anime Eyes）",
+      "description": "アニメ調の目をきれいに描くための目LoRAです。",
+      "summary": "Illustrious向けの、アニメ調の目をきれいに描くLoRAです。説明は短いです。",
+      "features": ["アニメ調の目を整える", "Illustrious向け"],
+      "tips": ["プロンプトに perfect eyes を入れてください"],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Perfect Anime Eyes",
+      "description": "Cleaner anime-style eyes.",
+      "summary": "An Illustrious LoRA for cleaner anime-style eyes. The source description is very short.",
+      "features": ["Improves anime eyes", "Made for Illustrious"],
+      "tips": ["Include perfect eyes in your prompt"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "retro_scifi_anime_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/912942?modelVersionId=1021743",
+      "label": "Civitai"
+    },
+    "creator": "zura_janai",
+    "baseModel": "Illustrious",
+    "versionName": "IllustriousXL",
+    "publishedAt": "2024-11-03",
+    "triggerWords": ["retro_artstyle, retro, cyberpunk"],
+    "weight": {
+      "recommended": 0.8,
+      "min": 0.7,
+      "max": 1.0
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/retro_scifi_anime_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/retro_scifi_anime_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/retro_scifi_anime_ilxl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "90年代レトロSFアニメ（Retro Sci-fi 90's Anime）",
+      "description": "90年代のレトロなSFアニメ風の画風LoRAです。",
+      "summary": "90年代のSFアニメを思わせるレトロな画風のLoRAです。サイバーパンクの雰囲気とも相性がよい作りです。",
+      "features": [
+        "90年代アニメ風のレトロな画風",
+        "サイバーパンク調の世界観に合う"
+      ],
+      "tips": [
+        "プロンプトに retro_artstyle, retro, cyberpunk を入れてください",
+        "強さは 0.7〜1 がよく、まずは 0.8 から試すのがおすすめです"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Retro Sci-fi 90's Anime Style",
+      "description": "A retro 90s sci-fi anime art style.",
+      "summary": "A retro art style LoRA reminiscent of 90s sci-fi anime, with a cyberpunk feel.",
+      "features": ["Retro 90s anime look", "Fits cyberpunk settings"],
+      "tips": [
+        "Add retro_artstyle, retro, cyberpunk to your prompt",
+        "Weights of 0.7-1 work well; start at 0.8"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "add_more_details_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/390892?modelVersionId=436121",
+      "label": "Civitai"
+    },
+    "creator": "n0utis",
+    "baseModel": "SDXL 1.0",
+    "versionName": "pony/XL V1",
+    "publishedAt": "2024-04-08",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/add_more_details_xl/0.webp",
+      "https://assets.aipictors.com/loras/add_more_details_xl/1.webp",
+      "https://assets.aipictors.com/loras/add_more_details_xl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "描き込み追加（Add More Details）",
+      "description": "強さに応じて描き込みと色味を足すLoRAです。",
+      "summary": "強さに応じて、画像に細部の描き込みと色味を加えるLoRAです。主に風景向けに作られていますが、ほかの題材にも効きます。推奨の強さは決まっておらず、狙う仕上がりに合わせて調整します。",
+      "features": [
+        "描き込みと色味を加える",
+        "風景向けだが、ほかの題材にも使える",
+        "アニメ調・リアル調どちらにも対応"
+      ],
+      "tips": [
+        "トリガーワードは必要ありません",
+        "推奨の強さは特になく、仕上がりを見ながら調整してください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Add More Details",
+      "description": "Adds detail and color depending on the weight.",
+      "summary": "A LoRA that adds detail and color depending on the weight. It is designed mainly for landscapes but also works on other subjects. There is no set recommended weight.",
+      "features": [
+        "Adds detail and color",
+        "Made for landscapes, works on other subjects too",
+        "Works with anime and realistic styles"
+      ],
+      "tips": [
+        "No trigger word needed",
+        "No fixed weight; experiment to get the look you want"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "lineart_manga_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/127018?modelVersionId=177544",
+      "label": "Civitai"
+    },
+    "creator": "artificialguybr",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v2.0",
+    "publishedAt": "2023-10-07",
+    "triggerWords": ["lineart", "LineAniAF"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/lineart_manga_xl/0.webp",
+      "https://assets.aipictors.com/loras/lineart_manga_xl/1.webp",
+      "https://assets.aipictors.com/loras/lineart_manga_xl/2.webp",
+      "https://assets.aipictors.com/loras/lineart_manga_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "マンガ線画（LineAni.Redmond）",
+      "description": "マンガのような線画スタイルにするLoRAです。",
+      "summary": "マンガの線画スタイルを生成するSDXL用LoRAです。いろいろな線画表現に対応しています。うまくいくまで何回か生成が必要なこともあります。",
+      "features": [
+        "マンガ風の線画スタイル",
+        "detailed / minimalist / colorful / black and white などで雰囲気を調整できる"
+      ],
+      "tips": [
+        "プロンプトに lineart や LineAniAF を入れてください",
+        "よい結果が出るまで何回か生成してみてください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "LineAni.Redmond",
+      "description": "A manga lineart style.",
+      "summary": "An SDXL LoRA for manga-style lineart, covering a range of line styles. It may take a few generations to get a good result.",
+      "features": [
+        "Manga lineart style",
+        "Control the look with tags like detailed, minimalist, colorful, black and white"
+      ],
+      "tips": [
+        "Use lineart or LineAniAF in your prompt",
+        "Try a few generations for the best result"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "glossy_eye_detail_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1300857?modelVersionId=2552350",
+      "label": "Civitai"
+    },
+    "creator": "jhonny09",
+    "baseModel": "Illustrious",
+    "versionName": "Glossy EyeDetail",
+    "publishedAt": "2025-12-31",
+    "triggerWords": ["stylized_glossy_eyedetail", "glossy eyes"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/glossy_eye_detail_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/glossy_eye_detail_ilxl/1.webp"
+    ],
+    "imagesByAipictors": true,
+    "ja": {
+      "displayName": "ツヤのある目（Glossy Eye Detail）",
+      "description": "目にツヤと細かなディテールを加える目LoRAです。",
+      "summary": "目のディテールを強めるLoRAの、ツヤのある目のバージョンです。このバージョンは実験段階とされています。",
+      "features": ["目にツヤと描き込みを加える", "顔のアップで効果が出やすい"],
+      "tips": [
+        "プロンプトに stylized_glossy_eyedetail や glossy eyes を入れてください",
+        "クローズアップの構図がおすすめです"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Glossy Eye Detail",
+      "description": "Adds glossy, detailed eyes.",
+      "summary": "The glossy-eyes version of an eye detail LoRA. This version is described as experimental.",
+      "features": ["Adds gloss and detail to eyes", "Works best in close-ups"],
+      "tips": [
+        "Use stylized_glossy_eyedetail or glossy eyes in your prompt",
+        "Close-up shots give the best results"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "chiaroscuro_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/633300?modelVersionId=708019",
+      "label": "Civitai"
+    },
+    "creator": "ntc",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0",
+    "publishedAt": "2024-08-10",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/chiaroscuro_xl/0.webp",
+      "https://assets.aipictors.com/loras/chiaroscuro_xl/1.webp",
+      "https://assets.aipictors.com/loras/chiaroscuro_xl/2.webp",
+      "https://assets.aipictors.com/loras/chiaroscuro_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "明暗コントラスト（Dramatic Chiaroscuro スライダー）",
+      "description": "劇的な明暗（キアロスクーロ）とフラットな照明を切り替えるスライダーです。",
+      "summary": "照明の雰囲気を調整するスライダーLoRAです。プラスでドラマチックな明暗のある照明、マイナスで均一でフラットな照明になります。トリガーワードは必要ありません。",
+      "features": [
+        "プラスで強い明暗のある照明",
+        "マイナスで均一な照明",
+        "トリガーワード不要"
+      ],
+      "tips": [
+        "プラスの強さでドラマチックに、マイナスの強さで平坦な明るさになります"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Dramatic Chiaroscuro Lighting",
+      "description": "A slider between flat lighting and dramatic chiaroscuro.",
+      "summary": "A slider LoRA for lighting mood. Positive weights give dramatic chiaroscuro lighting; negative weights give flat, even illumination. No trigger word is needed.",
+      "features": [
+        "Positive: dramatic light and shadow",
+        "Negative: flat, even light",
+        "No trigger word needed"
+      ],
+      "tips": [
+        "Use positive weights for drama and negative weights for even lighting"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "stickers_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/144142?modelVersionId=160130",
+      "label": "Civitai"
+    },
+    "creator": "artificialguybr",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0 SDXL",
+    "publishedAt": "2023-09-12",
+    "triggerWords": ["Stickers", "Sticker"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/stickers_xl/0.webp",
+      "https://assets.aipictors.com/loras/stickers_xl/1.webp",
+      "https://assets.aipictors.com/loras/stickers_xl/2.webp",
+      "https://assets.aipictors.com/loras/stickers_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ステッカー（Stickers.Redmond）",
+      "description": "ステッカー風のイラストを作るLoRAです。",
+      "summary": "ステッカー風の画像を生成するためのSDXL用LoRAです。大きなデータセットで学習されています。",
+      "features": ["ステッカー風のイラストを生成", "SDXL 1.0 ベースで学習"],
+      "tips": ["プロンプトに Stickers または Sticker を入れてください"],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Stickers.Redmond",
+      "description": "Creates sticker-style images.",
+      "summary": "An SDXL LoRA for sticker-style images, fine-tuned on a large dataset.",
+      "features": ["Generates sticker-style art", "Based on SDXL 1.0"],
+      "tips": ["Add Stickers or Sticker to your prompt"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "darker_than_dark_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/653604?modelVersionId=1095977",
+      "label": "Civitai"
+    },
+    "creator": "Nicows",
+    "baseModel": "Illustrious",
+    "versionName": "Illustrious",
+    "publishedAt": "2024-11-24",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 0.5,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/darker_than_dark_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/darker_than_dark_ilxl/1.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "暗さ・コントラスト強化（Darker Than Dark）",
+      "description": "画面に暗さやコントラストを加えるLoRAです。",
+      "summary": "画像に暗さやコントラストを加えるLoRAです。主にアニメ画像で学習されています。強さを上げるほど暗くなります。",
+      "features": [
+        "暗さ・コントラストを加える",
+        "夜の場面などに向く",
+        "アニメ画像中心で学習"
+      ],
+      "tips": [
+        "強さは 0.5 がおすすめで、もっと暗くしたいときは上げてください",
+        "dark, night, day などのタグと組み合わせて調整できます",
+        "黒背景の指定が役立つこともありますが、シンプルなプロンプトがすすめられています"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Darker Than Dark",
+      "description": "Adds darkness and contrast.",
+      "summary": "A LoRA that adds darkness or contrast, trained mostly on anime images. Higher strength makes images darker.",
+      "features": [
+        "Adds darkness and contrast",
+        "Suits night scenes",
+        "Trained mostly on anime images"
+      ],
+      "tips": [
+        "Start at 0.5 and increase for more darkness",
+        "Play with tags like dark, night, day",
+        "A black background can help, but keep the prompt simple"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "wedding_dress_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/593612?modelVersionId=2583131",
+      "label": "Civitai"
+    },
+    "creator": "bolero537",
+    "baseModel": "Illustrious",
+    "versionName": "v2.2 illustrious",
+    "publishedAt": "2026-01-18",
+    "triggerWords": ["wedding dress,bridal veil,elbow gloves"],
+    "weight": {
+      "recommended": 0.8,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/wedding_dress_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/wedding_dress_ilxl/1.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ウェディングドレス（Wedding Dress）",
+      "description": "ウェディングドレス姿を描きやすくする衣装LoRAです。",
+      "summary": "ウェディングドレスを描くための衣装LoRAです。ベールや長い手袋と組み合わせた花嫁衣装を描きやすくなります。",
+      "features": [
+        "ウェディングドレスの衣装",
+        "ブライダルベール・ロンググローブにも対応"
+      ],
+      "tips": [
+        "プロンプトに wedding dress, bridal veil, elbow gloves を入れてください",
+        "強さは 0.8 前後が推奨です"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Wedding Dress",
+      "description": "A clothing LoRA for wedding dresses.",
+      "summary": "A clothing LoRA for wedding dresses, including bridal veils and elbow gloves.",
+      "features": [
+        "Wedding dress outfit",
+        "Supports bridal veil and elbow gloves"
+      ],
+      "tips": [
+        "Add wedding dress, bridal veil, elbow gloves to your prompt",
+        "Recommended strength is around 0.8"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "aether_cloud_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/141029?modelVersionId=156328",
+      "label": "Civitai"
+    },
+    "creator": "joachim_s",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0",
+    "publishedAt": "2023-09-06",
+    "triggerWords": ["cloud that looks like"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/aether_cloud_xl/0.webp",
+      "https://assets.aipictors.com/loras/aether_cloud_xl/1.webp",
+      "https://assets.aipictors.com/loras/aether_cloud_xl/2.webp",
+      "https://assets.aipictors.com/loras/aether_cloud_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "雲のかたち（Aether Cloud）",
+      "description": "動物や人物などを雲でできたような姿で描くLoRAです。",
+      "summary": "雲のテクスチャで被写体を表現するLoRAです。動物や人物などで学習されており、「雲でできた○○」のような絵を作れます。",
+      "features": [
+        "被写体を雲のテクスチャで表現",
+        "動物・人物などに対応",
+        "ネガティブプロンプトなしでも基本的な絵が作れる"
+      ],
+      "tips": [
+        "「cloud that looks like ○○」の形でプロンプトを書いてください",
+        "強さ 1 が基準です。上げると雲らしさが増し、下げると形がはっきりします"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Aether Cloud",
+      "description": "Renders subjects as if made of clouds.",
+      "summary": "A cloud-texture LoRA trained on animals, people and more, for images of subjects made of clouds.",
+      "features": [
+        "Renders subjects with a cloud texture",
+        "Works on animals, people and objects",
+        "Basic results without negative prompts"
+      ],
+      "tips": [
+        "Prompt with \"cloud that looks like ...\"",
+        "1 is a good base; higher gives more cloud, lower keeps clearer features"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "glow_neon_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/310235?modelVersionId=348189",
+      "label": "Civitai"
+    },
+    "creator": "Cybernella",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0",
+    "publishedAt": "2024-02-17",
+    "triggerWords": ["glowneon", "glowing", "sparks", "lightning"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/glow_neon_xl/0.webp",
+      "https://assets.aipictors.com/loras/glow_neon_xl/1.webp",
+      "https://assets.aipictors.com/loras/glow_neon_xl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ネオン発光（GlowNeon XL）",
+      "description": "ネオンのような光る表現を加えるLoRAです。",
+      "summary": "ネオンのように光るエフェクトやディテールを加え、強調するLoRAです。近未来的、神秘的、魔法のような光の表現に向いています。",
+      "features": [
+        "ネオン風の発光エフェクトを加える",
+        "近未来・神秘的・魔法の光の表現に向く",
+        "火花や稲妻の表現にも使える"
+      ],
+      "tips": [
+        "プロンプトに glowneon を入れ、glowing, sparks, lightning なども組み合わせてください",
+        "強さは 1 が推奨です。控えめ・強めにしたいときは調整してください",
+        "CFG やサンプラーはベースモデルの推奨設定に合わせてください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "GlowNeon XL",
+      "description": "Adds glowing neon light effects.",
+      "summary": "A LoRA that creates and exaggerates glowing neon light effects. It suits futuristic, mystical or magical lighting.",
+      "features": [
+        "Adds neon glow effects",
+        "Fits futuristic, mystical or magical scenes",
+        "Also handles sparks and lightning"
+      ],
+      "tips": [
+        "Use glowneon, plus glowing, sparks, lightning as needed",
+        "Recommended weight is 1; adjust for a subtler or stronger look",
+        "Follow your base model's CFG/sampler settings"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "coloring_book_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/136348?modelVersionId=177996",
+      "label": "Civitai"
+    },
+    "creator": "artificialguybr",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v2.0",
+    "publishedAt": "2023-10-07",
+    "triggerWords": ["Coloring Book", "ColoringBookAF"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/coloring_book_xl/0.webp",
+      "https://assets.aipictors.com/loras/coloring_book_xl/1.webp",
+      "https://assets.aipictors.com/loras/coloring_book_xl/2.webp",
+      "https://assets.aipictors.com/loras/coloring_book_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ぬりえ（ColoringBook.Redmond）",
+      "description": "白黒の線だけで描いたぬりえ風の画像を作るLoRAです。",
+      "summary": "ぬりえ風の白黒線画を生成するためのSDXL用LoRAです。大きなデータセットで学習されています。",
+      "features": ["ぬりえ風の白黒線画を生成", "SDXL 1.0 ベースで学習"],
+      "tips": ["プロンプトに Coloring Book や ColoringBookAF を入れてください"],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "ColoringBook.Redmond",
+      "description": "Creates coloring book style images.",
+      "summary": "An SDXL LoRA for black-and-white coloring book images, fine-tuned on a large dataset.",
+      "features": ["Coloring book line art", "Based on SDXL 1.0"],
+      "tips": ["Add Coloring Book or ColoringBookAF to your prompt"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "great_lighting_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/228974?modelVersionId=258416",
+      "label": "Civitai"
+    },
+    "creator": "ntc",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0",
+    "publishedAt": "2023-12-10",
+    "triggerWords": ["great lighting"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/great_lighting_xl/0.webp",
+      "https://assets.aipictors.com/loras/great_lighting_xl/1.webp",
+      "https://assets.aipictors.com/loras/great_lighting_xl/2.webp",
+      "https://assets.aipictors.com/loras/great_lighting_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "きれいな照明（Great Lighting スライダー）",
+      "description": "画像の照明をよりきれいにするスライダーです。",
+      "summary": "画像に印象的な照明を加えるスライダーLoRAです。説明は短めです。",
+      "features": ["照明の印象を強める", "スライダー形式で強さを調整"],
+      "tips": [
+        "プロンプトに great lighting を入れてください",
+        "サンプル画像は強さ 4 で作られています"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Great Lighting",
+      "description": "A slider for better lighting.",
+      "summary": "A slider LoRA that gives images great lighting. The source description is short.",
+      "features": ["Improves lighting", "Adjust the effect with strength"],
+      "tips": [
+        "Include great lighting in your prompt",
+        "The examples use strength 4"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "anime_enhancer_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/348852?modelVersionId=497695",
+      "label": "Civitai"
+    },
+    "creator": "n0utis",
+    "baseModel": "SDXL 1.0",
+    "versionName": "pony/XL V4",
+    "publishedAt": "2024-05-10",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/anime_enhancer_xl/0.webp",
+      "https://assets.aipictors.com/loras/anime_enhancer_xl/1.webp",
+      "https://assets.aipictors.com/loras/anime_enhancer_xl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "アニメ品質向上（Anime Enhancer）",
+      "description": "アニメ調の画像の品質を高めるLoRAです。",
+      "summary": "アニメ・カートゥーン系の画像の品質を高めるLoRAです。品質系のタグと組み合わせることで効果が出ます。",
+      "features": [
+        "アニメ調の品質を底上げ",
+        "アニメ・カートゥーン系に対応",
+        "品質タグと組み合わせて使う"
+      ],
+      "tips": [
+        "detailed eyes, detailed face, raytracing, highly detailed, anime style, absurd, masterpiece などのタグの効き方が変わるので、組み合わせて試してください",
+        "サンプルでは強さ 1.0 と 1.5 が使われています"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Anime Enhancer",
+      "description": "Boosts the quality of anime-style images.",
+      "summary": "A quality booster for anime and cartoon images. It works together with quality-related tags.",
+      "features": [
+        "Boosts anime image quality",
+        "Works with anime and cartoon styles",
+        "Pairs with quality tags"
+      ],
+      "tips": [
+        "It changes how tags like detailed eyes, detailed face, raytracing, highly detailed, anime style, absurd, masterpiece behave, so try combinations",
+        "The examples use strengths 1.0 and 1.5"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "clear_hands_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/132884?modelVersionId=155932",
+      "label": "Civitai"
+    },
+    "creator": "FrostyForest",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v2.0",
+    "publishedAt": "2023-09-05",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 2.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/clear_hands_xl/0.webp",
+      "https://assets.aipictors.com/loras/clear_hands_xl/1.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "手の修正（ClearHandsXL）",
+      "description": "キャラや背景を変えずに手を修正し、描き込みを増やすLoRAです。",
+      "summary": "キャラクターや背景を変えずに、手の部分を修正して描き込みを増やすLoRAです。このバージョンでは手の修正効果が大きく改善されています。",
+      "features": [
+        "手の崩れを修正",
+        "手のディテールを強化",
+        "キャラクターや背景への影響が少ない"
+      ],
+      "tips": [
+        "トリガーワードは必要ありません",
+        "強さは 2 が推奨です",
+        "推奨設定はサンプラー DPM++ 2M SDE Karras、ステップ数 30 以上です"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "ClearHandsXL",
+      "description": "Fixes and details hands without changing the rest of the image.",
+      "summary": "A LoRA that fixes hands and adds hand detail without changing the character or background. This version greatly improves the fix.",
+      "features": [
+        "Fixes broken hands",
+        "Adds hand detail",
+        "Little effect on character and background"
+      ],
+      "tips": [
+        "No trigger word needed",
+        "Recommended strength is 2",
+        "Recommended: DPM++ 2M SDE Karras, 30+ steps"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "flat_style_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/358538?modelVersionId=400751",
+      "label": "Civitai"
+    },
+    "creator": "2vXpSwA7",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0",
+    "publishedAt": "2024-03-19",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": ["https://assets.aipictors.com/loras/flat_style_xl/0.webp"],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "フラット化（flat SDXL）",
+      "description": "画像を平面的にしたり、マイナスで描き込みを増やしたりできるLoRAです。",
+      "summary": "SD1.5で作られた flat LoRA のSDXL版です。普通に使うと画像が平面的になり、マイナスの強さにすると細部の描き込みが増えます。",
+      "features": [
+        "プラスの強さで平面的な画像になる",
+        "マイナスの強さで描き込みが増える",
+        "SD1.5版と同じ使い方"
+      ],
+      "tips": [
+        "トリガーワードは必要ありません",
+        "描き込みを増やしたいときはマイナスの強さを使います"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "flat SDXL",
+      "description": "Flattens the image, or adds detail at negative weights.",
+      "summary": "The SDXL version of the creator's flat LoRA for SD1.5. Used normally it flattens the image; at negative weights it enhances detail.",
+      "features": [
+        "Positive weights flatten the image",
+        "Negative weights add detail",
+        "Used the same way as the SD1.5 version"
+      ],
+      "tips": ["No trigger word needed", "Use a negative weight to add detail"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "tshirt_design_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/133031?modelVersionId=178022",
+      "label": "Civitai"
+    },
+    "creator": "artificialguybr",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v2.0",
+    "publishedAt": "2023-10-07",
+    "triggerWords": ["T shirt design", "TshirtDesignAF"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/tshirt_design_xl/0.webp",
+      "https://assets.aipictors.com/loras/tshirt_design_xl/1.webp",
+      "https://assets.aipictors.com/loras/tshirt_design_xl/2.webp",
+      "https://assets.aipictors.com/loras/tshirt_design_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "Tシャツデザイン（TShirtDesign.Redmond）",
+      "description": "Tシャツにプリントするようなグラフィックデザインを作るLoRAです。",
+      "summary": "Tシャツ用のデザイン画像を生成するSDXL用LoRAです。大きなデータセットで学習されています。うまくいくまで何回か生成が必要なこともあります。",
+      "features": [
+        "Tシャツ向けのグラフィックデザインを生成",
+        "detailed / minimalist / colorful / black and white などで雰囲気を調整できる"
+      ],
+      "tips": [
+        "プロンプトに T shirt design や TshirtDesignAF を入れてください",
+        "よい結果が出るまで何回か生成してみてください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "TShirtDesign.Redmond",
+      "description": "Creates T-shirt graphic designs.",
+      "summary": "An SDXL LoRA for T-shirt design images, fine-tuned on a large dataset. It may take a few generations to get a good result.",
+      "features": [
+        "Generates T-shirt graphics",
+        "Control the look with tags like detailed, minimalist, colorful, black and white"
+      ],
+      "tips": [
+        "Use T shirt design or TshirtDesignAF in your prompt",
+        "Try a few generations for the best result"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "voxel_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/118536?modelVersionId=128609",
+      "label": "Civitai"
+    },
+    "creator": "fictiverse",
+    "baseModel": "SDXL 1.0",
+    "versionName": "Voxel XL v1.0",
+    "publishedAt": "2023-07-29",
+    "triggerWords": ["voxel style"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/voxel_xl/0.webp",
+      "https://assets.aipictors.com/loras/voxel_xl/1.webp",
+      "https://assets.aipictors.com/loras/voxel_xl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ボクセル（Voxel XL）",
+      "description": "ブロックを積み上げたようなボクセル風の画風にするLoRAです。",
+      "summary": "ボクセル（立方体のブロック）で作ったような画風を強めるSDXL用LoRAです。",
+      "features": ["ボクセル風の3D表現", "SDXL用"],
+      "tips": ["プロンプトに voxel style を入れてください"],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Voxel XL",
+      "description": "A voxel art style.",
+      "summary": "An SDXL LoRA that enhances a voxel (blocky 3D) art style.",
+      "features": ["Voxel-style 3D look", "Made for SDXL"],
+      "tips": ["Add voxel style to your prompt"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "ps1_graphics_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/129556?modelVersionId=147912",
+      "label": "Civitai"
+    },
+    "creator": "veryvanya",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v2.0",
+    "publishedAt": "2023-08-25",
+    "triggerWords": ["ps1 style"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/ps1_graphics_xl/0.webp",
+      "https://assets.aipictors.com/loras/ps1_graphics_xl/1.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "PS1風グラフィック（PS1 Graphics）",
+      "description": "90年代の初代プレイステーション風の3Dグラフィックにするスタイルです。",
+      "summary": "90年代中盤〜後半の初代プレイステーションのゲーム画面のような、懐かしい3Dグラフィックを再現するLoRAです。どの解像度でも生成できます。",
+      "features": [
+        "初代PS風のローポリ3Dグラフィック",
+        "レトロゲームの懐かしい雰囲気",
+        "解像度を問わず使える"
+      ],
+      "tips": [
+        "プロンプトに必ず ps1 style を入れてください",
+        "(game screenshot), (computer generated image) を加えると質感が出やすくなります",
+        "CFG 7 で確認されています。より高い値も試してみてください",
+        "ピクセルアート系のLoRAと組み合わせると、より本物らしくなることがあります"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "PS1 Graphics",
+      "description": "A 90s PlayStation 1 style game graphics look.",
+      "summary": "A LoRA that recreates the nostalgic look of mid-to-late 90s PlayStation 1 game graphics. It can generate at any resolution.",
+      "features": [
+        "Low-poly PS1-era 3D graphics",
+        "Nostalgic retro game feel",
+        "Works at any resolution"
+      ],
+      "tips": [
+        "Always include ps1 style",
+        "(game screenshot), (computer generated image) can add substance",
+        "Tested at CFG 7; try higher values",
+        "Pairing with a pixel art LoRA can look more authentic"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "painterly_style_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1478417?modelVersionId=1676714",
+      "label": "Civitai"
+    },
+    "creator": "motimalu",
+    "baseModel": "Illustrious",
+    "versionName": "v1.1 [Illustrious]",
+    "publishedAt": "2025-04-18",
+    "triggerWords": [
+      "painterly",
+      "impasto",
+      "brushstroke",
+      "impressionism",
+      "oil painting \\(medium\\)",
+      "chiaroscuro"
+    ],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/painterly_style_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/painterly_style_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/painterly_style_ilxl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "絵画調（Impasto, Impressionism, Chiaroscuro）",
+      "description": "厚塗り・印象派・明暗法など、油絵らしい絵画調にするLoRAです。",
+      "summary": "絵画らしさを感じさせる画風を学んだLoRAです。印象派、インパスト（厚塗り）、キアロスクーロ（明暗法）の考え方が中心です。このバージョンは Illustrious XL 0.1 で学習されています。",
+      "features": [
+        "印象派風の短く見える筆致",
+        "絵の具を厚く盛ったインパストの質感",
+        "強い明暗で立体感を出すキアロスクーロ"
+      ],
+      "tips": [
+        "painterly, brushstroke, impressionism, impasto, oil painting \\(medium\\) などのタグを入れてください",
+        "明暗を強めたいときは chiaroscuro, dark, candle, black theme が使えます",
+        "ネガティブプロンプトに worst quality や low quality、sketch を入れると絵画らしさが消えやすいので、最小限にするのがすすめられています"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Impasto, Impressionism, Chiaroscuro - Painterly Styles",
+      "description": "A painterly style covering impasto, impressionism and chiaroscuro.",
+      "summary": "A study of painterly styles focused on impressionism, impasto and chiaroscuro. This version was trained on Illustrious XL 0.1.",
+      "features": [
+        "Short, visible impressionist brushstrokes",
+        "Thick impasto paint texture",
+        "Strong light-dark chiaroscuro"
+      ],
+      "tips": [
+        "Use tags like painterly, brushstroke, impressionism, impasto, oil painting \\(medium\\)",
+        "For light-dark effects add chiaroscuro, dark, candle, black theme",
+        "Keep the negative prompt minimal; worst quality, low quality or sketch tend to suppress painterly looks"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "alphonse_mucha_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/63072?modelVersionId=153680",
+      "label": "Civitai"
+    },
+    "creator": "Kappa_Neuro",
+    "baseModel": "SDXL 1.0",
+    "versionName": "SD XL",
+    "publishedAt": "2023-09-02",
+    "triggerWords": ["Alphonse Mucha Style page"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/alphonse_mucha_xl/0.webp",
+      "https://assets.aipictors.com/loras/alphonse_mucha_xl/1.webp",
+      "https://assets.aipictors.com/loras/alphonse_mucha_xl/2.webp",
+      "https://assets.aipictors.com/loras/alphonse_mucha_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ミュシャ風（Alphonse Mucha Style）",
+      "description": "アール・ヌーヴォーの画家ミュシャ風の装飾的な画風LoRAです。",
+      "summary": "アール・ヌーヴォーを代表する画家、アルフォンス・ミュシャの画風を再現するLoRAです。流れるような線と、植物などの装飾的なモチーフが特徴です。",
+      "features": [
+        "流れるような線と装飾的な構図",
+        "植物や模様を使ったアール・ヌーヴォー調",
+        "ポスターのような仕上がり"
+      ],
+      "tips": ["プロンプトに Alphonse Mucha Style page を入れてください"],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可・作者のクレジット表記が必要）"
+    },
+    "en": {
+      "displayName": "Alphonse Mucha Style",
+      "description": "An Art Nouveau style inspired by Alphonse Mucha.",
+      "summary": "A LoRA for the style of Art Nouveau artist Alphonse Mucha, known for flowing lines and ornamental botanical motifs.",
+      "features": [
+        "Flowing lines and ornamental compositions",
+        "Art Nouveau patterns and botanical motifs",
+        "Poster-like finish"
+      ],
+      "tips": ["Include Alphonse Mucha Style page in your prompt"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed; credit required)"
+    }
+  },
+  {
+    "name": "crowd_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/230182?modelVersionId=395430",
+      "label": "Civitai"
+    },
+    "creator": "ntc",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v2.0",
+    "publishedAt": "2024-03-16",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/crowd_xl/0.webp",
+      "https://assets.aipictors.com/loras/crowd_xl/1.webp",
+      "https://assets.aipictors.com/loras/crowd_xl/2.webp",
+      "https://assets.aipictors.com/loras/crowd_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "群衆（Crowd of People スライダー）",
+      "description": "背景に人混みを加えるスライダーです。トリガー不要です。",
+      "summary": "画像に人の群れを呼び出すスライダーLoRAです。強さ 0〜1 で調整します。トリガーワードは必要ありません。",
+      "features": [
+        "人混み・群衆を背景に加える",
+        "トリガーワード不要",
+        "強さ 0〜1 で調整"
+      ],
+      "tips": ["強さ 0〜1 の範囲で、人の多さを調整してください"],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Crowd of People",
+      "description": "A no-trigger slider that adds a crowd of people.",
+      "summary": "A slider LoRA that summons a crowd of people. It uses a 0 to 1 scale and needs no trigger word.",
+      "features": [
+        "Adds crowds to the scene",
+        "No trigger word needed",
+        "0 to 1 scale"
+      ],
+      "tips": ["Adjust the crowd size within the 0 to 1 range"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "ancient_greek_clothes_noobai",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1086368?modelVersionId=1219955",
+      "label": "Civitai"
+    },
+    "creator": "motimalu",
+    "baseModel": "NoobAI",
+    "versionName": "v1.0 [noobai-e-pred-1.1]",
+    "publishedAt": "2024-12-30",
+    "triggerWords": [
+      "ancient greek clothes",
+      "greco-roman clothes",
+      "gladiator sandals",
+      "laurel crown",
+      "armlet",
+      "gold choker"
+    ],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/ancient_greek_clothes_noobai/0.webp",
+      "https://assets.aipictors.com/loras/ancient_greek_clothes_noobai/1.webp",
+      "https://assets.aipictors.com/loras/ancient_greek_clothes_noobai/2.webp",
+      "https://assets.aipictors.com/loras/ancient_greek_clothes_noobai/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "古代ギリシャ衣装（Ancient Greek Clothes）",
+      "description": "古代ギリシャ・ローマ風の衣装を描きやすくするLoRAです。",
+      "summary": "古代ギリシャやギリシャ・ローマ風の衣装の表現を強めるLoRAです。このバージョンは NoobAI-XL Epsilon-pred 1.1 で学習されています。",
+      "features": [
+        "古代ギリシャ・ローマ風の衣装",
+        "グラディエーターサンダルや月桂冠などの小物にも対応",
+        "Illustrious / NoobAI 系向け"
+      ],
+      "tips": [
+        "ancient greek clothes, greco-roman clothes, gladiator sandals, laurel crown, armlet, gold choker などのタグを使ってください",
+        "品質タグ masterpiece, best quality, very awa, absurdres を最後に置く書き方がすすめられています"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Ancient Greek Clothes",
+      "description": "A clothing concept for ancient Greek and Greco-Roman outfits.",
+      "summary": "A LoRA that enhances ancient Greek and Greco-Roman clothing concepts. This version was trained on NoobAI-XL Epsilon-pred 1.1.",
+      "features": [
+        "Ancient Greek / Greco-Roman outfits",
+        "Accessories such as gladiator sandals and laurel crowns",
+        "For Illustrious / NoobAI models"
+      ],
+      "tips": [
+        "Use tags like ancient greek clothes, greco-roman clothes, gladiator sandals, laurel crown, armlet, gold choker",
+        "The suggested structure ends with masterpiece, best quality, very awa, absurdres"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "lighting_shadow_noobai",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/2048299?modelVersionId=2574319",
+      "label": "Civitai"
+    },
+    "creator": "shuluo14",
+    "baseModel": "NoobAI",
+    "versionName": "cknoob",
+    "publishedAt": "2026-01-10",
+    "triggerWords": ["shuluo"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/lighting_shadow_noobai/0.webp",
+      "https://assets.aipictors.com/loras/lighting_shadow_noobai/1.webp",
+      "https://assets.aipictors.com/loras/lighting_shadow_noobai/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "光と影の強化（Lighting）",
+      "description": "光と影の表現を強め、細部も少し引き締めるLoRAです。",
+      "summary": "光と影の表現を強めるLoRAです。前のバージョンで画面が暗くなる問題があったため、学習方法を変えて作り直されました。光の表現がよくなり、細部の描写も少し向上しています。",
+      "features": [
+        "光と影の表現を強化",
+        "画面が暗くなりにくいよう改良",
+        "細部の描写も少し向上"
+      ],
+      "tips": [
+        "プロンプトに shuluo を入れてください",
+        "rim light, backlight, dappled sunlight, cinematic lighting, light rays, golden hour lighting などの光のタグと組み合わせると効果的です"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Lighting",
+      "description": "Enhances light and shadow.",
+      "summary": "A LoRA that enhances light and shadow. It was retrained with a new approach to fix darkening in the earlier version, giving better lighting and slightly better detail.",
+      "features": [
+        "Stronger light and shadow",
+        "Reworked to avoid darkening",
+        "Slightly better detail"
+      ],
+      "tips": [
+        "Add shuluo to your prompt",
+        "Combine with lighting tags like rim light, backlight, dappled sunlight, cinematic lighting, light rays, golden hour lighting"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "fantasy_knights_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/126751?modelVersionId=1057477",
+      "label": "Civitai"
+    },
+    "creator": "HailoKnight",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v5.0",
+    "publishedAt": "2024-11-16",
+    "triggerWords": ["hkstyle"],
+    "weight": {
+      "recommended": 0.85,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/fantasy_knights_xl/0.webp",
+      "https://assets.aipictors.com/loras/fantasy_knights_xl/1.webp",
+      "https://assets.aipictors.com/loras/fantasy_knights_xl/2.webp",
+      "https://assets.aipictors.com/loras/fantasy_knights_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "ファンタジー騎士（XL Fantasy Knights）",
+      "description": "鎧と剣を身につけたファンタジーの騎士を描くLoRAです。",
+      "summary": "ファンタジー風の騎士を描くためのLoRAです。細かく描き込まれた鎧の騎士の画像で学習されています。剣があってもなくても使えます。",
+      "features": [
+        "描き込まれた鎧のファンタジー騎士",
+        "剣あり・なしどちらにも対応",
+        "ダークファンタジーの雰囲気にも合う"
+      ],
+      "tips": [
+        "プロンプトに hkstyle を入れ、holding sword や wearing armor も加えるとよい結果になりやすいです",
+        "強さは 0.85 が使われています",
+        "兜を外したいときは、ネガティブに helmet を入れるか髪型を書いてください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可・作者のクレジット表記が必要）"
+    },
+    "en": {
+      "displayName": "XL Fantasy Knights",
+      "description": "Fantasy knights in detailed armor.",
+      "summary": "A LoRA for fantasy knights, trained on highly detailed images of armored knights. It works with or without swords.",
+      "features": [
+        "Detailed armored fantasy knights",
+        "Works with or without swords",
+        "Fits dark fantasy scenes"
+      ],
+      "tips": [
+        "Use hkstyle, and add holding sword or wearing armor for best results",
+        "The creator uses a weight of 0.85",
+        "To remove the helmet, add helmet to the negative prompt or describe the hair"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed; credit required)"
+    }
+  },
+  {
+    "name": "film_photo_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/158945?modelVersionId=518040",
+      "label": "Civitai"
+    },
+    "creator": "lsed22998",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1.0",
+    "publishedAt": "2024-05-20",
+    "triggerWords": [
+      "film photography style",
+      "light grain",
+      "medium grain",
+      "heavy grain"
+    ],
+    "weight": {
+      "recommended": 0.8,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/film_photo_xl/0.webp",
+      "https://assets.aipictors.com/loras/film_photo_xl/1.webp",
+      "https://assets.aipictors.com/loras/film_photo_xl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "フィルム写真風（Film Photography Style）",
+      "description": "35mmフィルムで撮ったような写真風にするLoRAです。",
+      "summary": "35mmや中判のフィルム写真で学習した、フィルム写真風のLoRAです。フィルムの粒子感（グレイン）の強さも指定できます。",
+      "features": [
+        "フィルム写真らしい色と質感",
+        "粒子感を light / medium / heavy で調整",
+        "写真系モデルと相性がよい"
+      ],
+      "tips": [
+        "プロンプトに film photography style を入れ、粒子感は light grain / medium grain / heavy grain で指定してください",
+        "強さは 0.8 が推奨です",
+        "1024×1024、自然文のプロンプト、DPM++ 2M Karras・30ステップ以上がすすめられています",
+        "アップスケールすると粒子感が損なわれることがあります"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Film Photography Style",
+      "description": "A 35mm film photography look.",
+      "summary": "A LoRA trained on 35mm and medium format film photos for a film photography look, with adjustable film grain.",
+      "features": [
+        "Film-like color and texture",
+        "Grain control with light, medium or heavy",
+        "Pairs well with photorealistic models"
+      ],
+      "tips": [
+        "Use film photography style, and light grain / medium grain / heavy grain for grain",
+        "Recommended strength is 0.8",
+        "Recommended: 1024x1024, natural language prompts, DPM++ 2M Karras, 30+ steps",
+        "Upscaling may degrade the grain"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "cinematic_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/120663?modelVersionId=131991",
+      "label": "Civitai"
+    },
+    "creator": "KandooAI",
+    "baseModel": "SDXL 1.0",
+    "versionName": "Version 2",
+    "publishedAt": "2023-08-02",
+    "triggerWords": [
+      "Movie Still",
+      "Film Still",
+      "Cinematic",
+      "Cinematic Shot",
+      "Cinematic Lighting"
+    ],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/cinematic_xl/0.webp",
+      "https://assets.aipictors.com/loras/cinematic_xl/1.webp",
+      "https://assets.aipictors.com/loras/cinematic_xl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "映画風（Juggernaut Cinematic XL）",
+      "description": "映画のワンシーンのような照明と雰囲気にするLoRAです。",
+      "summary": "映画のワンシーンのような雰囲気を強めるLoRAです。映画的な照明が出やすくなり、肌の質感も少し向上します。このバージョンは前のものより安定しています。",
+      "features": [
+        "映画のスチルのような画づくり",
+        "映画的な照明を強める",
+        "肌の質感が少し向上"
+      ],
+      "tips": [
+        "Movie Still, Film Still, Cinematic, Cinematic Shot, Cinematic Lighting などをプロンプトに入れてください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可・作者のクレジット表記が必要）"
+    },
+    "en": {
+      "displayName": "Juggernaut Cinematic XL",
+      "description": "A cinematic movie-still look.",
+      "summary": "A LoRA that strengthens a cinematic, movie-still look, with better cinematic lighting and slightly better skin texture. This version is more stable than the first.",
+      "features": [
+        "Movie-still style images",
+        "Stronger cinematic lighting",
+        "Slightly better skin texture"
+      ],
+      "tips": [
+        "Add words like Movie Still, Film Still, Cinematic, Cinematic Shot, Cinematic Lighting"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed; credit required)"
+    }
+  },
+  {
+    "name": "touch_of_realism_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1705430?modelVersionId=1934796",
+      "label": "Civitai"
+    },
+    "creator": "Huslyo123",
+    "baseModel": "SDXL 1.0",
+    "versionName": "V2",
+    "publishedAt": "2025-06-23",
+    "triggerWords": ["touch-of-realismV2"],
+    "weight": {
+      "recommended": 0.5,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/touch_of_realism_xl/0.webp",
+      "https://assets.aipictors.com/loras/touch_of_realism_xl/1.webp",
+      "https://assets.aipictors.com/loras/touch_of_realism_xl/2.webp",
+      "https://assets.aipictors.com/loras/touch_of_realism_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "写真らしさ（Touch of Realism）",
+      "description": "レンズの描写を加えて、写真らしい見た目に近づけるLoRAです。",
+      "summary": "作者がカメラで撮影した写真で学習した、控えめな写真風LoRAです。なめらかな光、奥行きの分離、被写体のシャープさ、自然なレンズのボケなどを加えます。",
+      "features": [
+        "自然な被写界深度とボケ",
+        "なめらかな光とハイライトのフレア",
+        "ポートレート・動物・植物・風景に向く"
+      ],
+      "tips": [
+        "プロンプトに touch-of-realismV2 を入れてください",
+        "強さは 0.5 がおすすめです",
+        "foreground blur, natural light from the side, soft focus edges, bokeh in the distance などを加えると効果が出やすくなります"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Touch of Realism",
+      "description": "Adds a subtle, lens-based photographic look.",
+      "summary": "A subtle style LoRA trained on the creator's own photography. It adds smoother lighting, depth separation, sharper subjects and natural lens softness.",
+      "features": [
+        "Natural depth of field and bokeh",
+        "Smooth light and soft highlight flares",
+        "Good for portraits, animals, plants and landscapes"
+      ],
+      "tips": [
+        "Include touch-of-realismV2 in your prompt",
+        "A strength of 0.5 works best",
+        "Try adding foreground blur, natural light from the side, soft focus edges, bokeh in the distance"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "abstract_painting_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1121001?modelVersionId=1558571",
+      "label": "Civitai"
+    },
+    "creator": "obuyb404",
+    "baseModel": "Illustrious",
+    "versionName": "Abstract Painting",
+    "publishedAt": "2025-03-20",
+    "triggerWords": ["abstractionism, brush stroke, traditional media"],
+    "weight": {
+      "recommended": 1.0,
+      "min": 0.8,
+      "max": 1.0
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/abstract_painting_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/abstract_painting_ilxl/1.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "抽象画（Abstract Painting）",
+      "description": "筆のタッチを生かした抽象画風にするLoRAです。",
+      "summary": "合成データで学習した画風LoRAシリーズのうち、抽象画のスタイルです。特定の画家の画風を写したものではありません。",
+      "features": [
+        "抽象画風の表現",
+        "筆のタッチを生かしたアナログ風の質感",
+        "特定の画家を模倣しない合成データで学習"
+      ],
+      "tips": [
+        "プロンプトに abstractionism, brush stroke, traditional media を入れてください",
+        "強さは 0.8〜1 が推奨です"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Abstract Painting",
+      "description": "An abstract painting style with visible brushstrokes.",
+      "summary": "The abstract painting style from a series of style LoRAs trained on synthetic data. It does not copy any specific artist.",
+      "features": [
+        "Abstract painting look",
+        "Traditional-media brush texture",
+        "Trained on synthetic data, not artist styles"
+      ],
+      "tips": [
+        "Add abstractionism, brush stroke, traditional media to your prompt",
+        "Recommended strength is 0.8-1"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "niji_anime_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1261988?modelVersionId=2336579",
+      "label": "Civitai"
+    },
+    "creator": "Zoropaton",
+    "baseModel": "Illustrious",
+    "versionName": "illustrious v3.0",
+    "publishedAt": "2025-10-24",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/niji_anime_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/niji_anime_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/niji_anime_ilxl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "Niji風アニメ（Niji Anime Style）",
+      "description": "Niji風の色鮮やかなアニメ画風にするLoRAです。",
+      "summary": "Niji風の画風とMidjourney風の画風を混ぜて学習したアニメ画風LoRAです。このバージョンでは高品質な画像約347枚を使い、タグで複数のスタイルを切り替えられるようになっています。",
+      "features": [
+        "Niji風のアニメ画風",
+        "通常・レトロ・サイバーパンクなどのスタイルをタグで切り替え",
+        "セミリアル寄りの表現にも対応"
+      ],
+      "tips": [
+        "説明では、通常のスタイルに Nijimixa2nime、レトロに Nijir3tro、サイバーパンクに Nijic6ber、描き込みを増やすには NijiDetl を使うとされています"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Niji Anime Style",
+      "description": "A Niji-inspired anime art style.",
+      "summary": "An anime style LoRA that mixes Niji-style and Midjourney-style images. This version uses about 347 high-quality images and lets you switch between several styles with tags.",
+      "features": [
+        "Niji-inspired anime style",
+        "Switch between normal, retro and cyberpunk styles with tags",
+        "Also handles semi-realistic looks"
+      ],
+      "tips": [
+        "The source lists Nijimixa2nime for the normal style, Nijir3tro for retro, Nijic6ber for cyberpunk, and NijiDetl for more detail"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "flatline_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/1233370?modelVersionId=1805073",
+      "label": "Civitai"
+    },
+    "creator": "MrLoreTaker",
+    "baseModel": "Illustrious",
+    "versionName": "v2.0 Remix",
+    "publishedAt": "2025-05-18",
+    "triggerWords": ["Flatline, Flat vector illustration"],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/flatline_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/flatline_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/flatline_ilxl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "フラットライン（Flatline）",
+      "description": "フラットなベクターイラスト風の画風LoRAです。",
+      "summary": "Niji風の画風をもとにした、フラットなベクターイラスト調のLoRAです。このバージョンはデータを整理して作り直されています。説明は短めです。",
+      "features": [
+        "フラットなベクターイラスト風",
+        "Niji風の画風をベースに調整"
+      ],
+      "tips": [
+        "プロンプトに Flatline, Flat vector illustration を入れてください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Flatline",
+      "description": "A flat vector illustration style.",
+      "summary": "A flat vector illustration style based on a Niji-like look. This version uses a cleaned-up dataset. The source description is short.",
+      "features": [
+        "Flat vector illustration look",
+        "Based on a Niji-like style"
+      ],
+      "tips": ["Add Flatline, Flat vector illustration to your prompt"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "aesthetic_anime_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/295100?modelVersionId=331598",
+      "label": "Civitai"
+    },
+    "creator": "Cybernella",
+    "baseModel": "SDXL 1.0",
+    "versionName": "v1s",
+    "publishedAt": "2024-02-06",
+    "triggerWords": [],
+    "weight": {
+      "recommended": 1.0,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/aesthetic_anime_xl/0.webp",
+      "https://assets.aipictors.com/loras/aesthetic_anime_xl/1.webp",
+      "https://assets.aipictors.com/loras/aesthetic_anime_xl/2.webp",
+      "https://assets.aipictors.com/loras/aesthetic_anime_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "美麗アニメ（Aesthetic Anime）",
+      "description": "見栄えのよいアニメ調の雰囲気を強めるLoRAです。",
+      "summary": "作者が気に入ったAI生成作品で学習し、特定の美しいアニメ調の雰囲気を強めるLoRAです。AAM XLで学習されていますが、リアル系を含むほかのSDXLモデルでも使えます。",
+      "features": [
+        "印象的なアニメ調の雰囲気を強める",
+        "人物・風景どちらにも使える",
+        "リアル系を含むSDXLモデル全般で使える"
+      ],
+      "tips": [
+        "トリガーワードは必要ありません",
+        "強さ 1 前後から試し、よりはっきり効かせたいときは 1.2 以上にしてください",
+        "CFG・サンプラー・ステップ数はベースモデルの推奨設定に合わせてください"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Aesthetic Anime",
+      "description": "Strengthens an appealing anime aesthetic.",
+      "summary": "A LoRA trained on AI artworks the creator liked, to enforce a specific anime aesthetic. Trained on AAM XL but works on other SDXL models, including realistic ones.",
+      "features": [
+        "Enforces an appealing anime look",
+        "Works for characters and landscapes",
+        "Compatible with most SDXL models"
+      ],
+      "tips": [
+        "No trigger word needed",
+        "Start around 1; go to 1.2 or higher for a stronger effect",
+        "Follow your base model's CFG/sampler/step settings"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "enchanting_eyes_ilxl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/974076?modelVersionId=1463317",
+      "label": "Civitai"
+    },
+    "creator": "EmilyMars",
+    "baseModel": "Illustrious",
+    "versionName": "Illustrious",
+    "publishedAt": "2025-02-26",
+    "triggerWords": ["Enchanting Eyes"],
+    "weight": {
+      "recommended": 0.75,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/enchanting_eyes_ilxl/0.webp",
+      "https://assets.aipictors.com/loras/enchanting_eyes_ilxl/1.webp",
+      "https://assets.aipictors.com/loras/enchanting_eyes_ilxl/2.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "魅力的な目（Enchanting Eyes）",
+      "description": "目を細かく美しく描くための目LoRAです。",
+      "summary": "目を細かく、美しく描くためのLoRAです。アニメ調の画像向けで、品質の底上げにも使えます。",
+      "features": ["目を細かく描き込む", "アニメ調の目に向く"],
+      "tips": [
+        "プロンプトに Enchanting Eyes を入れてください",
+        "強さは 0.75 がおすすめです"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Enchanting Eyes",
+      "description": "Detailed, beautiful eyes.",
+      "summary": "A LoRA for detailed, beautiful eyes, aimed at anime-style images.",
+      "features": ["Adds eye detail", "Suited to anime eyes"],
+      "tips": ["Include Enchanting Eyes in your prompt", "Works best at 0.75"],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  },
+  {
+    "name": "skin_realism_xl",
+    "source": {
+      "kind": "civitai",
+      "url": "https://civitai.com/models/248951?modelVersionId=340833",
+      "label": "Civitai"
+    },
+    "creator": "MakeThemComeAliveAIArt",
+    "baseModel": "SDXL 1.0",
+    "versionName": "REWORKED",
+    "publishedAt": "2024-02-12",
+    "triggerWords": [
+      "Detailed natural skin and blemishes without-makeup and acne"
+    ],
+    "weight": {
+      "recommended": 0.5,
+      "min": null,
+      "max": null
+    },
+    "images": [
+      "https://assets.aipictors.com/loras/skin_realism_xl/0.webp",
+      "https://assets.aipictors.com/loras/skin_realism_xl/1.webp",
+      "https://assets.aipictors.com/loras/skin_realism_xl/2.webp",
+      "https://assets.aipictors.com/loras/skin_realism_xl/3.webp"
+    ],
+    "imagesByAipictors": false,
+    "ja": {
+      "displayName": "リアルな肌（Skin Realism）",
+      "description": "ニキビや肌の凹凸など、自然な肌の質感を描くLoRAです。",
+      "summary": "メイクをしていない自然な肌の質感や、ニキビ・シミなどの小さな凹凸を描くLoRAです。修正しすぎたような肌ではなく、本物らしい肌を表現できます。",
+      "features": [
+        "自然な肌のきめを表現",
+        "ニキビやシミなどの細かな凹凸も描ける",
+        "ノーメイクの素肌の表現"
+      ],
+      "tips": [
+        "プロンプトに Detailed natural skin and blemishes without-makeup and acne を入れてください",
+        "強さは 0.5 が推奨です。モデルによって効き方が違うので調整してください",
+        "強さ 1 に近づけると形が崩れやすくなります",
+        "強さを上げると年齢を上に変えにくくなります"
+      ],
+      "license": "配布元の利用条件に従います（生成サービスでの利用可）"
+    },
+    "en": {
+      "displayName": "Skin Realism",
+      "description": "Natural skin texture with blemishes and imperfections.",
+      "summary": "A LoRA for detailed, natural skin texture with small blemishes and imperfections, without makeup, instead of airbrushed skin.",
+      "features": [
+        "Realistic skin texture",
+        "Subtle blemishes and imperfections",
+        "Natural, makeup-free skin"
+      ],
+      "tips": [
+        "Use Detailed natural skin and blemishes without-makeup and acne in your prompt",
+        "Recommended strength is 0.5; adjust per model",
+        "Avoid going near 1, which can cause deformities",
+        "Higher strength makes it harder to make subjects look older"
+      ],
+      "license": "Per the creator's terms on Civitai (use on generation services allowed)"
+    }
+  }
+]

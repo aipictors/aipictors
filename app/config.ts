@@ -1062,6 +1062,14 @@ export const META: { [key: string]: MetaData } = {
     image: "{{url}}",
     isIndex: true,
   },
+  OFFICIAL_LORA: {
+    title: "{{title}}",
+    enTitle: "{{enTitle}}",
+    description: "{{description}}",
+    enDescription: "{{enDescription}}",
+    image: "{{url}}",
+    isIndex: true,
+  },
   USER_MODEL_UPLOAD: {
     title: "モデルをアップロード",
     enTitle: "Upload a model",
