@@ -293,13 +293,12 @@ export function WorkArticle(props: Props) {
             userName={props.work.user?.name}
           />
         )}
-        {props.work.isGeneration && (
-          <Link to={`/generation?work=${props.work.id}`}>
-            <Button variant={"secondary"} className="w-full">
-              {t("参照生成する", "Generate reference")}
-            </Button>
-          </Link>
-        )}
+        {/* どの作品でも参照生成できる（Aipictors 以外で生成した作品はプロンプトかタグを読み込む） */}
+        <Link to={`/generation?work=${props.work.id}`}>
+          <Button variant={"secondary"} className="w-full">
+            {t("参照生成する", "Generate reference")}
+          </Button>
+        </Link>
         <h1 className="break-words font-bold text-xl leading-snug tracking-tight md:text-2xl">
           {displayTitle}
         </h1>

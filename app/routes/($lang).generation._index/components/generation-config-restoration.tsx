@@ -9,6 +9,7 @@ import { GenerationConfigContext } from "~/routes/($lang).generation._index/cont
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationScheduler } from "~/routes/($lang).generation._index/hooks/use-generation-scheduler"
 import { toTaskSizeType } from "~/routes/($lang).generation._index/types/generation-size"
+import { workTagsToPrompt } from "~/routes/($lang).generation._index/utils/work-tags-to-prompt"
 
 type Props = {
   children: React.ReactNode
@@ -108,6 +109,41 @@ export function GenerationConfigRestoration(props: Props) {
         work.work !== undefined
       ) {
         const workData = work.work
+        const workPrompt = workData.prompt?.trim() ?? ""
+        // Aipictors 以外で生成された作品はモデルやサンプラーが生成画面と合わないので、
+        // 今の設定はそのままにプロンプトだけ読み込む
+        if (!workData.isGeneration || !workData.generationModelId) {
+          if (workPrompt.length > 0) {
+            context.updatePromptAndNegativePrompt(
+              workPrompt,
+              workData.negativePrompt?.trim() ||
+                context.config.negativePromptText,
+            )
+            toast("作品のプロンプトを読み込みました。", {
+              position: "top-center",
+            })
+          } else {
+            // プロンプトが非公開・未登録の作品は、タグから下書きを作る
+            const tagPrompt = workTagsToPrompt(
+              workData.tagNames,
+              context.promptCategories.flatMap((category) => category.prompts),
+            )
+            if (tagPrompt.length > 0) {
+              context.updatePrompt(tagPrompt)
+              toast(
+                "この作品はプロンプトが非公開のため、タグからプロンプトを作りました。",
+                { position: "top-center" },
+              )
+            } else {
+              toast(
+                "この作品はプロンプトが非公開のため、読み込める情報がありませんでした。",
+                { position: "top-center" },
+              )
+            }
+          }
+          removeParams(["work"])
+          return
+        }
         if (workData) {
           context.updateSettings(
             workData.generationModelId ?? "",
@@ -202,6 +238,8 @@ const workQuery = graphql(
       prompt
       negativePrompt
       clipSkip
+      isGeneration
+      tagNames
     }
   }`,
 )
