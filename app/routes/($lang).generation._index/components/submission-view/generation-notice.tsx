@@ -25,6 +25,13 @@ import type {
 /** 取り直す間隔（API 側は 30 秒キャッシュ） */
 const REFRESH_INTERVAL_MS = 60_000
 
+/** API のキャッシュより新しい値は来ないので、この間はタブに戻っても・付け直しても取り直さない */
+const MIN_REFETCH_GAP_MS = 30_000
+
+/** 生成画面を出たり入ったりしても、前回の値をすぐ出して取り直しを省く */
+let lastLoaded: GenerationNoticeState | null = null
+let lastRequestedAt = 0
+
 const DISCORD_INVITE_URL = "https://discord.gg/7jA2MmtvtR"
 
 type GenerationNoticeState = {
@@ -61,6 +68,11 @@ export function GenerationNoticeProvider(props: {
     let isCancelled = false
     const load = async () => {
       if (document.visibilityState === "hidden") return
+      if (Date.now() - lastRequestedAt < MIN_REFETCH_GAP_MS) {
+        if (lastLoaded !== null) setState(lastLoaded)
+        return
+      }
+      lastRequestedAt = Date.now()
       try {
         const response = await fetch("/api/generation/notice")
         if (!response.ok) return
@@ -68,11 +80,13 @@ export function GenerationNoticeProvider(props: {
           data: GenerationNotice | null
           maintenance?: PublicMaintenanceFlag | null
         }
+        const next = {
+          notice: body.data,
+          maintenance: body.maintenance ?? MAINTENANCE_DISABLED,
+        }
+        lastLoaded = next
         if (!isCancelled) {
-          setState({
-            notice: body.data,
-            maintenance: body.maintenance ?? MAINTENANCE_DISABLED,
-          })
+          setState(next)
         }
       } catch {
         // 取れなければ前回のまま

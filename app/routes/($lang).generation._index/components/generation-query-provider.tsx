@@ -3,6 +3,7 @@ import { graphql, type ResultOf, readFragment } from "gql.tada"
 import { startTransition, useContext, useEffect, useMemo, useRef } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
+import { useIsWaitingForViewer } from "~/hooks/use-is-waiting-for-viewer"
 import {
   ControlNetCategoryContextFragment,
   CurrentPassContextFragment,
@@ -44,7 +45,11 @@ export function GenerationQueryProvider(props: Props) {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
+  // ログイン中の人はログインの確認を待ってから読む（待たないと未ログインとして 1 回読んだあとに読み直していた）
+  const isWaitingForViewer = useIsWaitingForViewer()
+
   const { data: statusQueryResult, refetch } = useQuery(StatusQuery, {
+    skip: isWaitingForViewer,
     errorPolicy: "all",
     fetchPolicy: "cache-and-network",
   })
@@ -179,10 +184,12 @@ export function GenerationQueryProvider(props: Props) {
   }, [isTimeout, refetch])
 
   useEffect(() => {
+    // refetch は skip 中でも問い合わせるので、ログインの確認待ちの間は呼ばない
+    if (isWaitingForViewer) return
     startTransition(() => {
       refetch()
     })
-  }, [authContext.isLoggedIn])
+  }, [authContext.isLoggedIn, isWaitingForViewer])
 
   useEffect(() => {
     return () => {

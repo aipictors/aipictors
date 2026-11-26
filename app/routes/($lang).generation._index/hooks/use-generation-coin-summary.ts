@@ -9,6 +9,7 @@ import {
   type CoinSummaryResponse,
   normalizeCoinSummary,
 } from "~/routes/($lang).generation._index/utils/generation-submit-coin"
+import { fetchCoinSummaryShared } from "~/utils/fetch-coin-summary-shared"
 
 /**
  * コインの残高を読む（本日の付与があればトーストで伝える）
@@ -25,9 +26,10 @@ export function useGenerationCoinSummary(props: { isLoggedIn: boolean }) {
       return
     }
 
-    const response = await fetch("/api/coins/summary", {
-      headers: await getViewerRequestHeaders(),
-    })
+    // ヘッダーのメニューと同時に開くので、同時に出た分は 1 回の通信にまとめる
+    const response = await fetchCoinSummaryShared(
+      await getViewerRequestHeaders(),
+    )
 
     const json = (await response.json()) as CoinSummaryResponse
     if (!response.ok || json.error || json.data === null) {

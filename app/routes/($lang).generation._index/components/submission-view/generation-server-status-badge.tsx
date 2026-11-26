@@ -18,6 +18,13 @@ type ServerStatus = {
 /** 取り直す間隔（API 側は 20 秒キャッシュ） */
 const REFRESH_INTERVAL_MS = 30_000
 
+/** API のキャッシュより新しい値は来ないので、この間はタブに戻っても・付け直しても取り直さない */
+const MIN_REFETCH_GAP_MS = 20_000
+
+/** 画面の中で置き場所が替わって付け直しても、前回の値をすぐ出して取り直しを省く */
+let lastStatus: ServerStatus | null = null
+let lastRequestedAt = 0
+
 type Level = "stopped" | "partial" | "busy" | "normal" | "free"
 
 /**
@@ -46,16 +53,22 @@ const dotClassNames: Record<Level, string> = {
 export function GenerationServerStatusBadge(props: { className?: string }) {
   const t = useTranslation()
 
-  const [status, setStatus] = useState<ServerStatus | null>(null)
+  const [status, setStatus] = useState<ServerStatus | null>(lastStatus)
 
   useEffect(() => {
     let isCancelled = false
     const load = async () => {
       if (document.visibilityState === "hidden") return
+      if (Date.now() - lastRequestedAt < MIN_REFETCH_GAP_MS) {
+        if (lastStatus !== null) setStatus(lastStatus)
+        return
+      }
+      lastRequestedAt = Date.now()
       try {
         const response = await fetch("/api/generation/status")
         if (!response.ok) return
         const body = (await response.json()) as { data: ServerStatus | null }
+        if (body.data) lastStatus = body.data
         if (!isCancelled && body.data) setStatus(body.data)
       } catch {
         // 取れなければ前回の表示のまま

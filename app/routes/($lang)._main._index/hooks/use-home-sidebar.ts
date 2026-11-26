@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import type { FragmentOf } from "gql.tada"
+import { useIsWaitingForViewer } from "~/hooks/use-is-waiting-for-viewer"
 import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import type { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import {
@@ -25,8 +26,10 @@ export function useHomeSidebar(props: {
   // サーバーは何も出さずブラウザは読み込み中の枠を出すので食い違い（React #418）、ページ全体が作り直しになっていた
   const shouldLoadHomeSidebarQueries = currentTab === "home" && isMounted
 
+  // プランは見ている人で変わるので、ログインの確認を待つ（未ログインとログイン後の 2 回読まない）
+  const isWaitingForViewer = useIsWaitingForViewer()
   const { data: pass } = useQuery(viewerCurrentPassQuery, {
-    skip: !shouldLoadHomeSidebarQueries,
+    skip: !shouldLoadHomeSidebarQueries || isWaitingForViewer,
     fetchPolicy: "cache-first",
   })
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {

@@ -12,6 +12,7 @@ import {
 } from "~/components/requests/request-ui"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
+import { useIsWaitingForViewer } from "~/hooks/use-is-waiting-for-viewer"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import {
@@ -31,8 +32,12 @@ export function UserRequestPlansSection(props: { userId: string }) {
     (CreatorRequestProfile & { users: RequestUsers }) | null
   >(null)
   const isOwner = auth.userId !== null && auth.userId === props.userId
+  // 見ている人が分かってから 1 回だけ読む（ログイン中の人で「未ログインとして → ログイン後にもう一度」と 2 回読んでいた）
+  const isWaitingForViewer = useIsWaitingForViewer()
+  const viewerKey = isWaitingForViewer ? null : (auth.userId ?? "anonymous")
 
   useEffect(() => {
+    if (viewerKey === null) return
     let alive = true
     requestsGet<CreatorRequestProfile & { users: RequestUsers }>({
       op: "creator",
@@ -43,7 +48,7 @@ export function UserRequestPlansSection(props: { userId: string }) {
     return () => {
       alive = false
     }
-  }, [props.userId, auth.userId])
+  }, [props.userId, viewerKey])
 
   if (!profile) return null
   const plans = profile.plans.filter((p) => p.status === "ACTIVE" || isOwner)
