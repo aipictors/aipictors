@@ -1,22 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import {
-  fetchSitemapAiModels,
-  fetchSitemapSensitiveTagNames,
-  fetchSitemapTagNames,
-  fetchSitemapUsers,
-  fetchUserModelsForSitemap,
-  fetchWorksOfDay,
-  isValidSitemapDate,
-  jstDayStartSeconds,
-  SITE_URL,
-  toJstDateString,
-  toUrlSetXml,
-  getSitemapKv,
-  withEdgeCache,
-  xmlResponse,
-} from "~/lib/server/sitemap.server"
+import { findGuideArticle } from "~/lib/guides/guide-articles"
 import { GUIDE_SUMMARIES } from "~/lib/guides/guide-summaries"
-import { isIndexableSensitiveWork } from "~/utils/sensitive-tag-filter"
+import { LEGAL_PAGES } from "~/lib/legal-pages"
 import {
   HUB_MIN_INDEX_WORKS,
   listHubModels,
@@ -24,6 +9,25 @@ import {
   toHubModelPath,
   toHubTagPath,
 } from "~/lib/seo-hubs/seo-hub-catalog.server"
+import {
+  fetchSitemapAiModels,
+  fetchSitemapSensitiveTagNames,
+  fetchSitemapTagNames,
+  fetchSitemapUsers,
+  fetchUserModelsForSitemap,
+  fetchWorksOfDay,
+  getSitemapKv,
+  isValidSitemapDate,
+  jstDayStartSeconds,
+  SITE_URL,
+  toJstDateString,
+  toUrlSetXml,
+  withEdgeCache,
+  xmlResponse,
+} from "~/lib/server/sitemap.server"
+import { HELP_UPDATED_AT } from "~/routes/($lang)._main.help._index/components/help-guide-meta"
+import { HELP_SECTIONS } from "~/routes/($lang)._main.help._index/components/help-sections"
+import { isIndexableSensitiveWork } from "~/utils/sensitive-tag-filter"
 
 /** よく見られる固定ページ */
 const STATIC_PAGES: {
@@ -64,10 +68,41 @@ const STATIC_PAGES: {
   { path: "/r/posts/2d", changefreq: "daily", priority: 0.5 },
   { path: "/r/posts/3d", changefreq: "daily", priority: 0.5 },
   { path: "/help", changefreq: "monthly", priority: 0.4 },
+  { path: "/help/faq", changefreq: "monthly", priority: 0.4 },
+  ...HELP_SECTIONS.map((section) => ({
+    path: `/help/${section.id}`,
+    changefreq: "monthly" as const,
+    priority: 0.3,
+  })),
   { path: "/guideline", changefreq: "monthly", priority: 0.3 },
   { path: "/presskit", changefreq: "monthly", priority: 0.3 },
   { path: "/terms", changefreq: "monthly", priority: 0.2 },
   { path: "/privacy", changefreq: "monthly", priority: 0.2 },
+]
+
+/**
+ * Cloudflare の Search for Agents（AI Search）に読ませるページ（ヘルプ・規約・ガイドだけ。日本語の URL のみ）
+ * lastmod は中身を変えた日（コードの定数）。ビルド日時にすると毎デプロイで全ページが読み直されるので使わない
+ */
+const AGENT_SEARCH_PAGES: { path: string; lastmod: string }[] = [
+  { path: "/help", lastmod: HELP_UPDATED_AT },
+  { path: "/help/faq", lastmod: HELP_UPDATED_AT },
+  ...HELP_SECTIONS.map((section) => ({
+    path: `/help/${section.id}`,
+    lastmod: HELP_UPDATED_AT,
+  })),
+  { path: "/help/withdrawal", lastmod: HELP_UPDATED_AT },
+  ...LEGAL_PAGES.map((page) => ({ path: page.path, lastmod: page.updatedAt })),
+  // 次の 3 ページはそのページの中身を変えたら日付を上げる
+  { path: "/about", lastmod: "2026-11-26" },
+  { path: "/generation/about", lastmod: "2026-11-03" },
+  { path: "/plus", lastmod: "2026-11-26" },
+  { path: "/guides", lastmod: "2026-11-12" },
+  ...GUIDE_SUMMARIES.map((guide) => ({
+    path: `/guides/${guide.slug}`,
+    lastmod:
+      findGuideArticle(guide.slug)?.updatedAt.slice(0, 10) ?? "2026-11-12",
+  })),
 ]
 
 const ONE_HOUR = 60 * 60
@@ -76,6 +111,7 @@ const ONE_DAY = 24 * ONE_HOUR
 /**
  * 個別のサイトマップ
  * - /sitemaps/pages.xml 固定ページ
+ * - /sitemaps/agent-search.xml Search for Agents（AI Search）に読ませるヘルプ・規約・ガイドのページ（日本語のみ）
  * - /sitemaps/tags.xml 人気のタグ
  * - /sitemaps/sensitive-tags.xml R18 の人気のタグ（検索に載せられるものだけ）
  * - /sitemaps/models.xml 公式モデル・みんなのモデル
@@ -97,6 +133,19 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
           loc: `${SITE_URL}${page.path === "/" ? "/" : page.path}`,
           changefreq: page.changefreq,
           priority: page.priority,
+        })),
+      ),
+      ONE_DAY,
+    )
+  }
+
+  if (name === "agent-search.xml") {
+    return xmlResponse(
+      toUrlSetXml(
+        AGENT_SEARCH_PAGES.map((page) => ({
+          loc: `${SITE_URL}${page.path}`,
+          lastmod: page.lastmod,
+          hasEnglish: false,
         })),
       ),
       ONE_DAY,
@@ -217,9 +266,7 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
     })
   }
 
-  const sensitiveWorksMatch = name.match(
-    /^r-works-(\d{4}-\d{2}-\d{2})\.xml$/,
-  )
+  const sensitiveWorksMatch = name.match(/^r-works-(\d{4}-\d{2}-\d{2})\.xml$/)
   if (sensitiveWorksMatch && isValidSitemapDate(sensitiveWorksMatch[1])) {
     const date = sensitiveWorksMatch[1]
     const today = toJstDateString(Math.floor(Date.now() / 1000))

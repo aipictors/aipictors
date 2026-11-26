@@ -149,4 +149,24 @@ Disallow: /albums/
 Disallow: /works/
 Disallow: /generation
 
+# Cloudflare AI Search（Search for Agents）はヘルプ・規約だけ読む（費用対策）
+User-agent: Cloudflare-AI-Search
+Disallow: /
+Allow: /help
+Allow: /guides
+Allow: /terms
+Allow: /privacy
+Allow: /guideline
+Allow: /generation/terms
+Allow: /generation/about
+Allow: /creator-rewards/terms
+Allow: /requests/terms
+Allow: /premium-coins/policy
+Allow: /fan-works-policy
+Allow: /company
+Allow: /about
+Allow: /plus$
+Allow: /sitemaps/agent-search.xml
+Allow: /robots.txt
+
 Sitemap: https://www.aipictors.com/sitemap.xml

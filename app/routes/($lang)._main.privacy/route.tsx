@@ -1,7 +1,8 @@
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import { InfoIcon, ShieldCheckIcon } from "lucide-react"
 import text from "~/assets/privacy-policy.md?raw"
-
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { LegalPageNav, LegalPageSummary } from "~/components/legal-page-nav"
 import { PictorChanSays } from "~/components/pictor-chan-says"
 import {
   Card,
@@ -10,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card"
-import { ShieldCheckIcon, InfoIcon } from "lucide-react"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
@@ -23,7 +23,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneWeek,
 })
 
-export default function Privacy () {
+export default function Privacy() {
   const t = useTranslation()
 
   return (
@@ -43,6 +43,8 @@ export default function Privacy () {
           )}
         </p>
       </div>
+
+      <LegalPageSummary path="/privacy" />
 
       {/* 概要 */}
       <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
@@ -94,6 +96,8 @@ export default function Privacy () {
           {t("最終更新: 2026年11月16日", "Last updated: November 16, 2026")}
         </p>
       </div>
+
+      <LegalPageNav currentPath="/privacy" />
     </div>
   )
 }

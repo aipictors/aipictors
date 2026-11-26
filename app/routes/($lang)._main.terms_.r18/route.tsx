@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -7,6 +6,8 @@ import type {
 import text from "~/assets/r18-terms.md?raw"
 import enText from "~/assets/r18-terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { LegalPageNav, LegalPageSummary } from "~/components/legal-page-nav"
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
@@ -40,6 +41,7 @@ export default function R18TermsPage() {
 
   return (
     <div className="space-y-6">
+      <LegalPageSummary path="/terms/r18" />
       <Card>
         <CardHeader>
           <h1 className="font-semibold text-2xl leading-none tracking-tight">
@@ -56,6 +58,7 @@ export default function R18TermsPage() {
           <AppMarkdown>{t(text, enText)}</AppMarkdown>
         </CardContent>
       </Card>
+      <LegalPageNav currentPath="/terms/r18" />
     </div>
   )
 }

@@ -3,14 +3,12 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { Link } from "~/lib/app/locale-router"
+import { InfoIcon, ScrollTextIcon } from "lucide-react"
 import text from "~/assets/terms.md?raw"
 import enText from "~/assets/terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { LegalPageNav, LegalPageSummary } from "~/components/legal-page-nav"
 import { PictorChanSays } from "~/components/pictor-chan-says"
-import { config, META } from "~/config"
-import { useTranslation } from "~/hooks/use-translation"
-import { createMeta } from "~/utils/create-meta"
 import {
   Card,
   CardContent,
@@ -18,7 +16,10 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card"
-import { ScrollTextIcon, InfoIcon } from "lucide-react"
+import { config, META } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.TERMS, undefined, props.params.lang)
@@ -38,7 +39,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneWeek,
 })
 
-export default function Terms () {
+export default function Terms() {
   const t = useTranslation()
 
   return (
@@ -58,6 +59,8 @@ export default function Terms () {
           )}
         </p>
       </div>
+
+      <LegalPageSummary path="/terms" />
 
       {/* 注意事項 */}
       <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
@@ -134,6 +137,8 @@ export default function Terms () {
           {t("最終更新: 2026年11月16日", "Last updated: November 16, 2026")}
         </p>
       </div>
+
+      <LegalPageNav currentPath="/terms" />
     </div>
   )
 }

@@ -6,16 +6,17 @@ import type {
 import termsMarkdownText from "~/assets/image-generation-terms.md?raw"
 import termsMarkdownEnText from "~/assets/image-generation-terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { LegalPageNav, LegalPageSummary } from "~/components/legal-page-nav"
 import {
   Breadcrumb,
-  BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
+  BreadcrumbList,
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb"
 import { config, META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.GENERATION_TERMS, undefined, props.params.lang)
@@ -38,7 +39,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * 画像生成機能の利用規約
  */
-export default function GenerationTerms () {
+export default function GenerationTerms() {
   const t = useTranslation()
 
   return (
@@ -68,7 +69,9 @@ export default function GenerationTerms () {
         <h1 className="font-bold text-2xl">
           {t("利用規約", "Terms of Service")}
         </h1>
+        <LegalPageSummary path="/generation/terms" />
         <AppMarkdown>{t(termsMarkdownText, termsMarkdownEnText)}</AppMarkdown>
+        <LegalPageNav currentPath="/generation/terms" />
       </div>
     </>
   )

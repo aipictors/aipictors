@@ -1,5 +1,21 @@
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
+import { BuildingIcon, FileTextIcon, InfoIcon, MapPinIcon } from "lucide-react"
 import text from "~/assets/specified-commercial-transaction-act.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { LegalPageNav } from "~/components/legal-page-nav"
+import { Badge } from "~/components/ui/badge"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
 import {
   Table,
   TableBody,
@@ -8,24 +24,9 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card"
-import { Badge } from "~/components/ui/badge"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
-import { useTranslation } from "~/hooks/use-translation"
 import { config, META } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
-import { BuildingIcon, InfoIcon, FileTextIcon, MapPinIcon } from "lucide-react"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(
@@ -54,13 +55,16 @@ export async function loader(_props: LoaderFunctionArgs) {
     },
     {
       title: "住所",
-      content: "〒530-0001 大阪府大阪市北区梅田1丁目2番2号 大阪駅前第2ビル12-12",
-      enContent: "12-12 Osaka Ekimae Daini Building, 1-2-2 Umeda, Kita-ku, Osaka 530-0001, Japan",
+      content:
+        "〒530-0001 大阪府大阪市北区梅田1丁目2番2号 大阪駅前第2ビル12-12",
+      enContent:
+        "12-12 Osaka Ekimae Daini Building, 1-2-2 Umeda, Kita-ku, Osaka 530-0001, Japan",
     },
     {
       title: "電話番号",
       content: "080-4766-8781（平日 10:00〜17:00、土日祝日は休み）",
-      enContent: "+81-80-4766-8781 (Weekdays 10:00-17:00 JST, closed on weekends and holidays)",
+      enContent:
+        "+81-80-4766-8781 (Weekdays 10:00-17:00 JST, closed on weekends and holidays)",
     },
     {
       title: "代表取締役",
@@ -75,7 +79,7 @@ export async function loader(_props: LoaderFunctionArgs) {
   }
 }
 
-export default function SpecifiedCommercialTransactionActPage () {
+export default function SpecifiedCommercialTransactionActPage() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -256,6 +260,8 @@ export default function SpecifiedCommercialTransactionActPage () {
           {t("最終更新: 2026年11月", "Last updated: November 2026")}
         </p>
       </div>
+
+      <LegalPageNav />
     </div>
   )
 }

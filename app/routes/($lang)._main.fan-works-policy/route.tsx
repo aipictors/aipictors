@@ -3,9 +3,10 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import policyMarkdownEnText from "~/assets/fan-works-policy-en.md?raw"
 import policyMarkdownText from "~/assets/fan-works-policy.md?raw"
+import policyMarkdownEnText from "~/assets/fan-works-policy-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { LegalPageNav } from "~/components/legal-page-nav"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
@@ -83,6 +84,8 @@ export default function FanWorksPolicyPage() {
           {t(policyMarkdownText, policyMarkdownEnText)}
         </AppMarkdown>
       </div>
+
+      <LegalPageNav currentPath="/fan-works-policy" />
     </div>
   )
 }

@@ -3,9 +3,10 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import policyMarkdownEnText from "~/assets/premium-coins-policy-en.md?raw"
 import policyMarkdownText from "~/assets/premium-coins-policy.md?raw"
+import policyMarkdownEnText from "~/assets/premium-coins-policy-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { LegalPageNav } from "~/components/legal-page-nav"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -109,6 +110,8 @@ export default function PremiumCoinsPolicyPage() {
           {t(policyMarkdownText, policyMarkdownEnText)}
         </AppMarkdown>
       </div>
+
+      <LegalPageNav currentPath="/premium-coins/policy" />
     </div>
   )
 }

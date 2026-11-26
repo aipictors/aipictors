@@ -16,13 +16,20 @@ export type HelpMangaPanel = {
   bubbles: Array<HelpText & { at: HelpBubblePosition }>
 }
 
-export type HelpFaq = { q: HelpText; a: HelpText }
+export type HelpFaq = {
+  q: HelpText
+  a: HelpText
+  /** 入口のページに出す「よくある質問」の順（Discord で多い質問から。小さいほど上） */
+  top?: number
+}
 
 export type HelpSection = {
   id: string
   group: HelpGroupId
   emoji: string
   title: HelpText
+  /** 入口のページの章カードに出す 1 行の説明 */
+  summary: HelpText
   /** 漫画の題 */
   mangaTitle: HelpText
   lead: HelpText
@@ -54,6 +61,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     group: "start",
     emoji: "🚀",
     title: { ja: "はじめての方へ", en: "Getting started" },
+    summary: {
+      ja: "登録・ログインの方法と、最初にしておく設定",
+      en: "Signing up, logging in and first settings",
+    },
     mangaTitle: { ja: "ようこそ Aipictors へ！", en: "Welcome to Aipictors!" },
     lead: {
       ja: "Aipictors（アイピクターズ）は、AIイラスト・AIフォトを投稿して、見て、AIで生成して、クリエイターを応援できる日本最大級の AI 画像投稿サイトです。見るだけならログインは要りません。",
@@ -119,8 +130,12 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: "Works, rankings and tags can be viewed without an account.",
       },
       {
-        ja: "登録は Google・X・メールアドレスなどから無料でできます。",
-        en: "Sign up for free with Google, X or an email address.",
+        ja: "登録は Google・X・LINE・メールアドレスから無料でできます。ログイン方法ごとに別のアカウントになるので、毎回同じ方法でログインしてください。",
+        en: "Sign up for free with Google, X, LINE or an email address. Each login method creates a separate account, so always log in the same way.",
+      },
+      {
+        ja: "複数のアカウントを持つことは規約で禁止されています（R18 用のサブアカウント 1 つだけは作れます。サブアカウントでは画像生成を使えません）。",
+        en: "Multiple accounts are not allowed, except for one R18 sub-account (which can't use image generation).",
       },
       {
         ja: "アイコン・ヘッダー・自己紹介はプロフィール設定から。公開するメールアドレスは任意で、ログイン用のメールとは別です。",
@@ -141,6 +156,13 @@ export const HELP_SECTIONS: HelpSection[] = [
         to: "/settings/profile",
         label: { ja: "プロフィールを設定", en: "Set up profile" },
       },
+      {
+        to: "/settings/account",
+        label: {
+          ja: "アカウント（ログイン方法・ID）",
+          en: "Account (login methods, ID)",
+        },
+      },
     ],
     faqs: [
       {
@@ -150,6 +172,27 @@ export const HELP_SECTIONS: HelpSection[] = [
           en: "Browsing, posting, likes and comments are free. Image generation is also free with daily free coins. Paid plans are available if you want to generate more.",
         },
       },
+      {
+        top: 7,
+        q: {
+          ja: "ログインしたら作品や履歴がない「新しいアカウント」になりました",
+          en: "I logged in and got a brand-new empty account",
+        },
+        a: {
+          ja: "Google・X・LINE・メールアドレス・ユーザー ID とパスワードは、それぞれ別のログイン方法です。最初に登録したのと違う方法で入ると、別のアカウントとして登録されます。一度ログアウトして、心当たりのある方法を順に試してください。元のアカウントに入れたら、設定 → アカウント で Google・X を紐付けるかメールアドレスを連携しておくと、次からその方法でも同じアカウントに入れます。それでも戻れないときは Discord で相談してください。",
+          en: "Google, X, LINE, email and user ID + password are separate login methods. Logging in with a different method from the one you signed up with creates a new account. Log out and try the methods you might have used. Once you're back in your original account, link Google or X (or add an email) in Settings → Account so you can use that method next time. If you still can't get back, ask us on Discord.",
+        },
+      },
+      {
+        q: {
+          ja: "ユーザー ID は変えられますか？",
+          en: "Can I change my user ID?",
+        },
+        a: {
+          ja: "はい。設定 → アカウント → ユーザー ID から変えられます。半角英字を 1 文字以上含め、英数字と「_」「-」が使えます。ユーザーページの URL（/users/ID）も変わります。",
+          en: 'Yes, in Settings → Account → User ID. Use at least one letter; letters, numbers, "_" and "-" are allowed. Your profile URL (/users/ID) changes too.',
+        },
+      },
     ],
   },
   {
@@ -157,6 +200,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     group: "share",
     emoji: "🖼️",
     title: { ja: "作品を投稿する", en: "Posting your work" },
+    summary: {
+      ja: "画像・小説・動画の投稿、年齢区分、予約投稿、編集とシリーズ",
+      en: "Posting images, novels and videos, ratings, scheduling, editing and series",
+    },
     mangaTitle: { ja: "はじめての投稿", en: "Your first post" },
     lead: {
       ja: "画像のほか、小説・コラム・動画も投稿できます。タグと年齢区分を正しく付けると、見てほしい人に届きやすくなります。",
@@ -230,8 +277,16 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: "You can choose whether to show the prompt and model used to generate an image.",
       },
       {
-        ja: "公開する日時を予約できます。投稿したあとも、作品ページの編集から直せます。",
-        en: "Schedule the publish time. You can edit the work from its page after posting.",
+        ja: "公開する日時を予約できます。投稿したあとも、編集画面で画像を 1 枚ずつ外す・追加する・並べ替えることができます。",
+        en: "Schedule the publish time. After posting, the edit screen lets you remove, add and reorder images one by one.",
+      },
+      {
+        ja: "動画は無料で 1 本 30 秒・1 日合計 60 秒、有料プランで 1 本 60 秒・1 日合計 180 秒まで投稿できます。",
+        en: "Videos: up to 30 seconds each and 60 seconds a day for free, or 60 seconds each and 180 seconds a day on a paid plan.",
+      },
+      {
+        ja: "シリーズには無料 48・ライト 96・スタンダード以上 120 作品まで入れられます（「作品の最大数を超えています」はこの上限です）。シリーズのタイトルは 32 文字、説明は 160 文字までです。",
+        en: 'A series holds up to 48 works (Free), 96 (Lite) or 120 (Standard and up) — that\'s the "maximum number of works" error. Series titles are up to 32 characters, descriptions up to 160.',
       },
       {
         ja: "見てほしい作品は「宣伝枠」でホームに大きく出せます（下の「宣伝枠」を見てください）。",
@@ -261,6 +316,27 @@ export const HELP_SECTIONS: HelpSection[] = [
           en: "Please follow the guidelines and terms. Works with wrong age ratings or that infringe others' rights may be hidden.",
         },
       },
+      {
+        top: 5,
+        q: {
+          ja: "投稿した作品の年齢区分が R18 などに変わっていました",
+          en: "My work's age rating was changed (e.g. to R18)",
+        },
+        a: {
+          ja: "投稿した画像は自動で年齢区分を確かめていて、区分を上げたり、運営が確かめるまで一時的に非公開にしたりすることがあります（結果は投稿完了の画面に出ます）。自動の判定なので間違うことがあります。違うときはマイページの「運営からのお知らせ」の「判定が違う」から知らせてください。運営が規約に合わせて区分を変えることもあり、何をしたかは「運営からのお知らせ」と操作履歴で確かめられます。区分の目安は R18 の規約（/terms/r18）にあります。",
+          en: 'Uploaded images get an automatic rating check, which may raise the rating or hide the work until our team reviews it (the result is shown after posting). Automatic checks can be wrong — if so, use "Not correct" in Notices from the team on your dashboard. The team may also change ratings to follow the rules; see Notices from the team and your activity history for what was done. Rating guidelines are in the R18 terms (/terms/r18).',
+        },
+      },
+      {
+        q: {
+          ja: "運営から修正を頼まれた作品はどう直せばいい？",
+          en: "How do I fix a work the team asked me to change?",
+        },
+        a: {
+          ja: "マイページの「運営からのお知らせ」の「編集して直す」から編集画面を開くと、いちばん上に直す点が出ます。問題のある画像だけを外したり、モザイクをかけたりして「更新」を押すと、運営に完了の報告が届き、一時的な非公開も自動で解除されます。",
+          en: 'Open the edit screen from "Edit to fix" in Notices from the team on your dashboard; what to fix is shown at the top. Remove the problem image or add a mosaic, then press Update — the team is notified and the temporary hide is lifted automatically.',
+        },
+      },
     ],
   },
   {
@@ -270,6 +346,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     title: {
       ja: "いいね・フォロー・コメント",
       en: "Likes, follows & comments",
+    },
+    summary: {
+      ja: "いいね・フォロー・コメント・通知と、閲覧数の数え方",
+      en: "Likes, follows, comments, notifications and how views are counted",
     },
     mangaTitle: { ja: "気持ちを届けよう", en: "Show some love" },
     lead: {
@@ -364,13 +444,39 @@ export const HELP_SECTIONS: HelpSection[] = [
         label: { ja: "宣伝枠について", en: "About promotion" },
       },
     ],
-    faqs: [],
+    faqs: [
+      {
+        top: 6,
+        q: {
+          ja: "閲覧数はどう数えていますか？",
+          en: "How are views counted?",
+        },
+        a: {
+          ja: "作品ページが開かれた回数です。一覧にサムネイルが出ただけでは増えません。投稿した本人が自分の作品を開いた分と、検索エンジンなどの巡回は数えません。",
+          en: "Views are the number of times the work page is opened. Showing up in a list doesn't count. Views by the creator and by crawlers such as search engines are not counted.",
+        },
+      },
+      {
+        q: {
+          ja: "いいねを匿名にできますか？",
+          en: "Can I like anonymously?",
+        },
+        a: {
+          ja: "はい。設定 → 通知・いいね で、全年齢とセンシティブの作品それぞれについて、いいねを匿名にするか選べます。",
+          en: "Yes. In Settings → Notifications & likes, choose whether likes on all-ages and sensitive works are anonymous.",
+        },
+      },
+    ],
   },
   {
     id: "search",
     group: "share",
     emoji: "🔍",
     title: { ja: "作品を探す・ランキング", en: "Search & rankings" },
+    summary: {
+      ja: "検索・タグ・ランキングと、苦手なものを隠すミュート",
+      en: "Search, tags, rankings and muting what you don't want to see",
+    },
     mangaTitle: { ja: "お気に入りを見つけよう", en: "Find your favorites" },
     lead: {
       ja: "キーワード・タグ・ユーザーで検索したり、ランキングや人気のタグから新しい作品に出会えます。",
@@ -454,6 +560,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     group: "create",
     emoji: "🎨",
     title: { ja: "AI で画像を生成する", en: "Generating images with AI" },
+    summary: {
+      ja: "生成の使い方、コインの消費、失敗したとき、履歴の保存期間",
+      en: "How to generate, coin costs, failures and how long history is kept",
+    },
     mangaTitle: { ja: "AI でお絵かき", en: "Drawing with AI" },
     lead: {
       ja: "ブラウザだけで AI 画像を生成できます。毎日もらえるフリーコインで無料で試せて、できた画像はそのまま投稿できます。",
@@ -530,6 +640,18 @@ export const HELP_SECTIONS: HelpSection[] = [
         ja: "毎日のフリーコインはその日の 24 時に消えます。生成ではフリーコインから先に使われます。",
         en: "Daily free coins expire at midnight (JST). Free coins are used first when generating.",
       },
+      {
+        ja: "1 枚あたりのコインは、通常 10・高解像度 20・画像から生成 50・Nano Banana 50・Nano Banana 2 100 です。有料プランは 1 回で 4 枚（高解像度と画像から生成は 1 枚）、無料は 1 枚です。",
+        en: "Coins per image: standard 10, high resolution 20, image-to-image 50, Nano Banana 50, Nano Banana 2 100. Paid plans make 4 per click (1 for high resolution and image-to-image); Free makes 1.",
+      },
+      {
+        ja: "混んでいるときは、スタンダード・プレミアム → ライト → 無料 の順に生成されます（長く待っている依頼が後回しになり続けないよう、一部の生成枠は待ち時間の長い順に処理します）。",
+        en: "When busy, images are generated in this order: Standard and Premium, then Lite, then Free (part of our capacity always serves the longest-waiting requests).",
+      },
+      {
+        ja: "プランに入っていない方は、お試しの生成のあとに本人確認（Google か LINE のどちらか 1 つ）をすると、毎日無料で生成を続けられます。",
+        en: "If you're not on a plan, verify yourself with Google or LINE (either one) after the trial generations to keep generating for free every day.",
+      },
     ],
     links: [
       {
@@ -553,6 +675,47 @@ export const HELP_SECTIONS: HelpSection[] = [
           en: "Yes. Send them from your generation history straight to the post form. Please follow the guidelines and generation terms.",
         },
       },
+      {
+        top: 1,
+        q: {
+          ja: "生成に失敗したとき、コインはどうなりますか？",
+          en: "What happens to my coins if a generation fails?",
+        },
+        a: {
+          ja: "コインは生成できた枚数の分だけ使われます。「生成失敗」の履歴には「0でリトライ」ボタンがあり、コインを使わずに同じ条件で作り直せます（参照画像付きの一部の履歴を除く）。コインの出入りは 設定 → コイン の利用履歴で確かめられます。履歴と合わないときは、チャットサポートか Discord で知らせてください。",
+          en: 'Coins are only used for images that were actually generated. Failed entries in your history have a "Retry for 0" button that regenerates with the same settings for free (except some entries with reference images). Check coin activity in Settings → Coins. If it doesn\'t add up, tell us via chat support or Discord.',
+        },
+      },
+      {
+        q: {
+          ja: "生成が進まない・待ちが長いときは？",
+          en: "Generation is stuck or the wait is long",
+        },
+        a: {
+          ja: "混んでいるときはプランの順に生成されるので、無料では待ちが長くなることがあります。画面を更新しても変わらないときは、障害が起きていないかこのページの「困ったときは」にある稼働状況ページとお知らせを見てください。失敗した分のコインは使われません。",
+          en: "When it's busy, requests are processed by plan, so free users may wait longer. If refreshing doesn't help, check the status page and announcements under \"Need help?\" on the help home. Failed images don't use coins.",
+        },
+      },
+      {
+        q: {
+          ja: "生成した画像はいつまで残りますか？",
+          en: "How long are generated images kept?",
+        },
+        a: {
+          ja: "2027 年 1 月 1 日から、生成画像の保存期間は今のプランで決まります（無料 3 か月・ライト 6 か月・スタンダード 1 年・プレミアム 2 年）。期限を過ぎた画像は 30 日間グレーで残り、そのあいだに上のプランに入ると戻ります。そのあと画像は消えますが、プロンプトなどの生成情報は履歴に残ります。「保護」した画像は消えません。残したい画像は早めにダウンロードか保護をしてください。",
+          en: "From January 1, 2027, how long generated images are kept depends on your current plan (Free 3 months, Lite 6 months, Standard 1 year, Premium 2 years). Expired images stay greyed out for 30 days and come back if you move to a higher plan in that time. After that the image is deleted, but the prompt and settings stay in your history. Protected images are never deleted. Download or protect the ones you want to keep.",
+        },
+      },
+      {
+        q: {
+          ja: "Nano Banana（Gemini）はどのプランで使えますか？",
+          en: "Which plans can use Nano Banana (Gemini)?",
+        },
+        a: {
+          ja: "Nano Banana はライト以上、Nano Banana 2 はスタンダード以上で使えます。毎日のフリーコインで作れるのは週にライト 5 枚・スタンダード 20 枚・プレミアム 40 枚まで（Nano Banana 2 は 1 枚で 2 枚分）で、超えた分はプレミアムコインで作れます。枠は毎週月曜 0 時（日本時間）に戻ります。",
+          en: "Nano Banana is for Lite and up; Nano Banana 2 for Standard and up. On daily free coins you can make up to 5 (Lite), 20 (Standard) or 40 (Premium) a week (one Nano Banana 2 image counts as 2); beyond that, use premium coins. The allowance resets every Monday at 0:00 JST.",
+        },
+      },
     ],
   },
   {
@@ -560,6 +723,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     group: "support",
     emoji: "🪙",
     title: { ja: "コインと推し（応援）", en: "Coins & support" },
+    summary: {
+      ja: "フリー / プレミアムコインの期限・使われる順、推しと pt",
+      en: "Free and premium coins, expiry, spending order, support and pt",
+    },
     mangaTitle: { ja: "コインで推そう", en: "Support with coins" },
     lead: {
       ja: "コインは画像生成と、クリエイターの応援（推し）に使えます。毎日もらえるフリーコインと、購入するプレミアムコインの 2 種類があります。",
@@ -621,8 +788,16 @@ export const HELP_SECTIONS: HelpSection[] = [
     ],
     points: [
       {
-        ja: "購入したプレミアムコインは、購入日から 3 か月で失効します。",
-        en: "Purchased premium coins expire 3 months after purchase.",
+        ja: "購入したプレミアムコインは、購入日から 3 か月で失効します。購入は 100 枚 80 円から、1,000 枚以上は 1 割おまけが付きます。",
+        en: `Purchased premium coins expire 3 months after purchase. They start at 100 for ${usd(80)}, with 10% extra on 1,000 or more.`,
+      },
+      {
+        ja: "作品ページからプレミアムコインで推せるのはオリジナル作品だけです（「オリジナル」などのタグ、または運営の判定で決まります）。プロフィールの「推す」からは、プレミアムコインでも推せます。フリーコインはどの作品にも使えます。",
+        en: 'On work pages, premium coins can only support original works (decided by tags like "Original" or by our team). From a profile\'s Support button, premium coins work too. Free coins work on any work.',
+      },
+      {
+        ja: "推しを受け取りたくないときは「推された累計」の設定で受け取りを断れます。推しや推しランキングを画面に出したくないときは「推しの表示」の設定で隠せます。",
+        en: "Don't want support? Turn it off in the received-support settings. To hide support and support rankings from your screens, use the support display settings.",
       },
       {
         ja: "フリーコインで推されると、推された枚数の 2/3（切り捨て）が受け取った人のフリーコインになります（受け取りから 30 日有効、1 日 300 枚まで。超えた分は pt だけ）。受け取ったフリーコインも推しに使えます。プレミアムコインで推された分は、そのままの枚数のプレミアムコインになります。",
@@ -654,6 +829,17 @@ export const HELP_SECTIONS: HelpSection[] = [
         to: "/premium-coins/policy",
         label: { ja: "プレミアムコイン規約", en: "Premium coin terms" },
       },
+      {
+        to: "/settings/support-received",
+        label: {
+          ja: "推された累計・受け取りの設定",
+          en: "Received support & settings",
+        },
+      },
+      {
+        to: "/settings/oshi-display",
+        label: { ja: "推しの表示", en: "Support display" },
+      },
     ],
     faqs: [
       {
@@ -666,6 +852,28 @@ export const HELP_SECTIONS: HelpSection[] = [
           en: "Free coins are given daily or in campaigns; the daily ones expire the same day (free coins received as support last 30 days). Premium coins are purchased; each counts as 10pt when supporting and becomes creator rewards.",
         },
       },
+      {
+        top: 3,
+        q: {
+          ja: "コインの期限と、使われる順番は？",
+          en: "When do coins expire, and which are used first?",
+        },
+        a: {
+          ja: "毎日のフリーコインはその日の 24 時（日本時間）に失効し、翌日には持ち越せません。推しで受け取ったフリーコインは 30 日、購入したプレミアムコインは購入日から 3 か月です。生成ではフリーコインが先に使われ、足りない分だけプレミアムコインが使われます。同じ種類の中では期限の近いものから使われます。残高・失効予定・利用履歴は 設定 → コイン で確かめられます。",
+          en: "Daily free coins expire at midnight JST and don't carry over. Free coins received as support last 30 days; purchased premium coins last 3 months from purchase. Generation uses free coins first, then premium coins for the rest, soonest-expiring first within each kind. See your balance, upcoming expiries and history in Settings → Coins.",
+        },
+      },
+      {
+        top: 8,
+        q: {
+          ja: "最近、推しの仕組みは何が変わりましたか？",
+          en: "What changed with support recently?",
+        },
+        a: {
+          ja: "作品へのプレミアムコインの推しは、オリジナル作品だけになりました（11/26。二次創作にお金が動かないようにするためです）。プロフィールからの推しは、今までどおりプレミアムコインでもできます。フリーコインで推された分は、推した枚数の 2/3（切り捨て）が受け取った人のフリーコインになり、それもまた推しに使えます。推しを受け取らない設定と、推しを画面に出さない設定もできました。考え方は「二次創作と収益化」（/fan-works-policy）にまとめています。",
+          en: "Premium-coin support on works is now limited to original works (Nov 26), so that no money moves for fan works. Support from a profile can still use premium coins. With free-coin support, 2/3 (rounded down) becomes the recipient's free coins, which can be used for support too. You can now refuse support and hide support from your screens. Our thinking is on the Fan works and earnings page (/fan-works-policy).",
+        },
+      },
     ],
   },
   {
@@ -674,6 +882,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     emoji: "💴",
     isNew: true,
     title: { ja: "クリエイター報酬（換金）", en: "Creator rewards (cash out)" },
+    summary: {
+      ja: "プレミアムコインの推しがお金になる条件と振込の流れ",
+      en: "When premium-coin support becomes cash, and how payouts work",
+    },
     mangaTitle: { ja: "推しが、報酬になる！", en: "Support becomes rewards!" },
     lead: {
       ja: "全年齢のオリジナル作品に、購入したプレミアムコインで推しが届くと、その分がお金の報酬としてたまり、銀行口座に振り込まれます。口座の登録は世界中で使われている Stripe で行うので安心です。",
@@ -808,6 +1020,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     emoji: "✉️",
     isNew: true,
     title: { ja: "有料リクエスト", en: "Paid requests" },
+    summary: {
+      ja: "コインでイラストを依頼する・受ける流れと期限",
+      en: "Commissioning and taking art with coins: the flow and deadlines",
+    },
     mangaTitle: { ja: "描いてほしいを頼もう", en: "Request a piece" },
     lead: {
       ja: "好きなクリエイターに、コインでイラストを依頼できます。コインは取引が終わるまで Aipictors が預かるので、依頼する側も受ける側も安心です。",
@@ -867,16 +1083,20 @@ export const HELP_SECTIONS: HelpSection[] = [
     ],
     points: [
       {
-        ja: "クリエイターは「設定 → リクエスト」で、料金や納期を決めたプランを作れます。",
-        en: "Creators set up plans with prices and delivery times in Settings → Requests.",
+        ja: "クリエイターは「自分のプラン」（/requests/my-plans）で、料金（100〜100,000 コイン）や納期を決めたプランを作れます。",
+        en: "Creators set up plans with prices (100–100,000 coins) and delivery times in My plans (/requests/my-plans).",
+      },
+      {
+        ja: "納品されたら中身を確かめて受け取ります。納品から 7 日たつと自動で完了になります。完了のときに 10% の手数料を引いた分がクリエイターに届きます。",
+        en: "Check and accept the delivery; it completes automatically 7 days after delivery. On completion, a 10% fee is deducted and the rest goes to the creator.",
       },
       {
         ja: "依頼の内容・参考画像・コインの確認は 1 画面で。コインが足りなければその場で購入できます。",
         en: "Enter details, reference images and confirm coins on one screen. Buy coins on the spot if you need more.",
       },
       {
-        ja: "お断り、3 日以内に返事がない、納期を過ぎたときは、預けたコインが全額戻ります。",
-        en: "If declined, unanswered for 3 days, or overdue, the coins are fully refunded.",
+        ja: "お断り、3 日以内に返事がない、納期を 3 日過ぎたときは、預けたコインが全額戻ります。",
+        en: "If declined, unanswered for 3 days, or 3 days past the deadline, the coins are fully refunded.",
       },
       {
         ja: "受けた依頼の報酬は、クリエイター報酬として振込の対象になります。",
@@ -904,8 +1124,8 @@ export const HELP_SECTIONS: HelpSection[] = [
           en: "What if the creator doesn't respond?",
         },
         a: {
-          ja: "3 日以内に返事がない場合や納期を過ぎた場合は、コインが全額戻ります。",
-          en: "If there's no reply within 3 days or the deadline passes, your coins are fully refunded.",
+          ja: "3 日以内に返事がない場合や、納期を 3 日過ぎた場合は、自動でキャンセルされてコインが全額戻ります。",
+          en: "If there's no reply within 3 days or the deadline is 3 days past, the request is cancelled automatically and your coins are fully refunded.",
         },
       },
     ],
@@ -916,6 +1136,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     emoji: "📣",
     isNew: true,
     title: { ja: "宣伝枠", en: "Promotion slots" },
+    summary: {
+      ja: "作品をホームに 7 日間大きく出す方法（プラン特典 / コイン）",
+      en: "Feature your work on the home page for 7 days (plan perk or coins)",
+    },
     mangaTitle: { ja: "作品をホームで宣伝！", en: "Feature your work!" },
     lead: {
       ja: "宣伝枠を使うと、自分の作品をホームの「クリエイターの宣伝」に 7 日間大きく出せます。作品集やショップへのリンクボタンも付きます。",
@@ -939,8 +1163,8 @@ export const HELP_SECTIONS: HelpSection[] = [
       {
         image: "promo-2",
         caption: {
-          ja: "有料プランの特典なら週 1 作品",
-          en: "Paid plans include one work per week",
+          ja: "スタンダード・プレミアムの特典なら週 1 作品",
+          en: "Standard and Premium include one work per week",
         },
         bubbles: [
           {
@@ -1011,8 +1235,18 @@ export const HELP_SECTIONS: HelpSection[] = [
           en: "Where do I use a promotion slot?",
         },
         a: {
-          ja: "プランの特典は投稿画面の「宣伝作品」から、コインの場合は自分の公開中の作品ページの「宣伝する」から使えます。",
-          en: "With a plan, use the “Promoted work” field when posting. With coins, tap “Promote” on your published work's page.",
+          ja: "プランの特典（スタンダード・プレミアム）は投稿画面の「宣伝作品」から、コインの場合は自分の公開中の作品ページの「宣伝する」から使えます。ライトプランには宣伝枠の特典はありませんが、プレミアムコイン 500 枚で使えます。",
+          en: "With Standard or Premium, use the “Promoted work” field when posting. With coins, tap “Promote” on your published work's page. Lite doesn't include promotion slots, but you can use 500 premium coins.",
+        },
+      },
+      {
+        q: {
+          ja: "宣伝枠以外で、作品の説明に有料の商品を書いてもいい？",
+          en: "Can I advertise paid products in my work descriptions?",
+        },
+        a: {
+          ja: "有料の商品やサブスクへの宣伝・勧誘を目的に、その商品の一部や全部を投稿することは利用規約で禁止されています。例外はスタンダード・プレミアムの特典の広告枠（宣伝枠）です。正確な条件は利用規約の本文を見てください。",
+          en: "The terms prohibit posting all or part of a paid product or subscription to advertise or solicit for it. The exception is the promotion slot included with Standard and Premium. See the terms for the exact wording.",
         },
       },
     ],
@@ -1022,6 +1256,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     group: "support",
     emoji: "👑",
     title: { ja: "有料プラン（Aipictors+）", en: "Paid plans (Aipictors+)" },
+    summary: {
+      ja: "プランの違い、解約・カード変更・二重請求のとき",
+      en: "Plan differences, cancelling, changing cards and double charges",
+    },
     mangaTitle: { ja: "もっと生成したいなら", en: "Want to generate more?" },
     lead: {
       ja: "たくさん生成したい方向けの有料プランです。1 日に生成できる枚数が増え、宣伝枠などの特典も付きます。いつでも解約できます。",
@@ -1091,8 +1329,16 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: "First-timers get a free trial (cancel during the trial and you won't be charged).",
       },
       {
-        ja: "カードのほか PayPay でも払えます（自動更新なしのパス）。",
-        en: "Pay by card, or with PayPay as a non-renewing pass.",
+        ja: "支払いは Stripe によるクレジットカード決済です。カード番号は Stripe が管理し、Aipictors は保存しません。年払い（月額の 10 か月分）もあります。",
+        en: "Payment is by credit card via Stripe. Stripe keeps your card number; Aipictors doesn't store it. Yearly billing (10 months' price) is also available.",
+      },
+      {
+        ja: "解約しても次の更新日までは特典を使えます。期間の途中で解約しても日割りの返金はありません。月払いなら「1 か月休止」も選べます。",
+        en: "After cancelling you keep your benefits until the next renewal date; there are no prorated refunds. Monthly plans can also pause for one month.",
+      },
+      {
+        ja: "iPhone / Android アプリで購入したプランは Apple / Google が支払いを管理しているので、解約や変更は各ストアの定期購入の画面で行います。",
+        en: "Plans bought in the iPhone or Android app are billed by Apple or Google; cancel or change them in the store's subscription settings.",
       },
       {
         ja: "料金の請求は円です。英語の画面のドルの額は目安です。",
@@ -1101,14 +1347,45 @@ export const HELP_SECTIONS: HelpSection[] = [
     ],
     links: [
       { to: "/plus", label: { ja: "プランを比べる", en: "Compare plans" } },
+      {
+        to: "/premium-coins/policy",
+        label: { ja: "プレミアムコイン規約", en: "Premium coin terms" },
+      },
     ],
-    faqs: [],
+    faqs: [
+      {
+        top: 2,
+        q: {
+          ja: "プランを解約するには？解約できたかはどこで分かりますか？",
+          en: "How do I cancel my plan, and how do I know it worked?",
+        },
+        a: {
+          ja: "/plus の「ご利用中のプラン」にある「サブスクをキャンセルする」から解約できます。画面に「解約予約中」と解約予定日が出ていれば手続きは終わっています。次の更新日までは特典を使え、そのあとは請求されません。アプリで購入したプランは、App Store / Google Play の定期購入の画面から解約してください。退会すると、ウェブで入ったプランは同時に解約されます。",
+          en: "Use \"Cancel subscription\" under your current plan on /plus. If the page shows the cancellation as scheduled with an end date, you're done. You keep your benefits until the next renewal date and won't be charged after that. Plans bought in the app must be cancelled in App Store or Google Play. Deleting your account also cancels plans bought on the web.",
+        },
+      },
+      {
+        top: 4,
+        q: {
+          ja: "二重に請求された・カードを変えたい・更新の支払いに失敗した",
+          en: "Double charge, changing my card, or a failed renewal payment",
+        },
+        a: {
+          ja: "カードの変更は /plus の「お支払いカードを変更する」から Stripe の画面で行い、次の請求から新しいカードが使われます。更新の支払いに失敗すると /plus に「お支払いを完了する」が出るので、そこから支払うとプランが再開します（新しく申し込み直すと二重の契約になるので、申し込み直さないでください）。二重に請求されているときは、申し込み直したりカード会社に連絡したりする前に、Discord で運営に知らせてください。契約の確認と返金は運営が行います。請求日・金額・プラン名・ユーザー ID を書くと早く確かめられます（カード番号やパスワードは書かないでください）。",
+          en: 'Change your card with "Change payment card" on /plus (it opens Stripe); the new card is used from the next payment. If a renewal payment fails, /plus shows "Complete payment" — pay there and your plan resumes (don\'t subscribe again, which creates a second subscription). If you were charged twice, tell us on Discord before subscribing again or contacting your card company; the team checks the subscription and handles refunds. Include the date, amount, plan and your user ID (never your card number or password).',
+        },
+      },
+    ],
   },
   {
     id: "events",
     group: "more",
     emoji: "🏆",
     title: { ja: "イベント・今日のお題", en: "Events & daily themes" },
+    summary: {
+      ja: "お題・イベントへの参加のしかたと、イベントの作り方",
+      en: "Joining daily themes and events, and hosting your own",
+    },
     mangaTitle: { ja: "お題で腕だめし", en: "Take on a theme" },
     lead: {
       ja: "毎日の「今日のお題」や、公式・ユーザー企画のイベントに作品で参加できます。入賞作品には王冠が付きます。",
@@ -1179,7 +1456,19 @@ export const HELP_SECTIONS: HelpSection[] = [
         label: { ja: "イベントを作る", en: "Create an event" },
       },
     ],
-    faqs: [],
+    faqs: [
+      {
+        top: 10,
+        q: {
+          ja: "イベントに参加するには？予約投稿でも参加できますか？",
+          en: "How do I join an event? Can I join with a scheduled post?",
+        },
+        a: {
+          ja: "イベントのページから投稿すると、参加用のタグが自動で入ります。予約投稿で参加するときは、予約の公開日時をイベントの開催期間の中にしてください（開始の時刻まで合わせます）。開催期間はイベントのページにあります。",
+          en: "Post from the event page and the event tag is filled in for you. For a scheduled post, set the publish time within the event period (including the start time). The period is shown on the event page.",
+        },
+      },
+    ],
   },
   {
     id: "stickers",
@@ -1187,6 +1476,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     emoji: "💬",
     isNew: true,
     title: { ja: "スタンプ", en: "Stickers" },
+    summary: {
+      ja: "自分の絵からスタンプを作る・保存する・固定する",
+      en: "Make, save and pin stickers",
+    },
     mangaTitle: { ja: "スタンプで伝えよう", en: "Say it with stickers" },
     lead: {
       ja: "コメントに送れるスタンプは、自分の絵から作ったり、ほかの人のスタンプを保存したりできます。最初から使えるスタンプも新しくなりました。",
@@ -1262,6 +1555,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     group: "more",
     emoji: "🌈",
     title: { ja: "ぴくたーちゃん", en: "Pictor-chan" },
+    summary: {
+      ja: "公式キャラクターとロビー、ミニゲーム、ライセンス",
+      en: "Our mascot, the lobby, the mini game and the license",
+    },
     mangaTitle: {
       ja: "ぴくたーちゃんと遊ぼう",
       en: "Hang out with Pictor-chan",
@@ -1355,6 +1652,10 @@ export const HELP_SECTIONS: HelpSection[] = [
     group: "more",
     emoji: "🛡️",
     title: { ja: "安心して使うための設定", en: "Safety & privacy settings" },
+    summary: {
+      ja: "ミュート・ブロック・通報、表示する年齢区分、退会",
+      en: "Mute, block, report, which ratings you see, and deleting your account",
+    },
     mangaTitle: { ja: "自分にあった設定で", en: "Make it comfortable" },
     lead: {
       ja: "ブロック・ミュート、センシティブな画像のぼかし、匿名のいいねなど、気持ちよく使うための設定がそろっています。",
@@ -1421,6 +1722,10 @@ export const HELP_SECTIONS: HelpSection[] = [
         ja: "ルールに反する作品やコメントは、作品ページの通報から知らせてください。",
         en: "Report works or comments that break the rules from the work page.",
       },
+      {
+        ja: "R15・R18・R18G を表示するかは、設定 → 表示するコンテンツ で選べます。苦手なタグはタグのミュートで隠せます。",
+        en: "Choose whether to show R15, R18 and R18G in Settings → Content. Mute tags you'd rather not see.",
+      },
     ],
     links: [
       {
@@ -1431,8 +1736,15 @@ export const HELP_SECTIONS: HelpSection[] = [
         to: "/settings/muted/users",
         label: { ja: "ミュート中のユーザー", en: "Muted users" },
       },
+      {
+        to: "/settings/restriction",
+        label: { ja: "表示するコンテンツ", en: "Content settings" },
+      },
       { to: "/guideline", label: { ja: "ガイドライン", en: "Guidelines" } },
-      { to: "/contact", label: { ja: "お問い合わせ", en: "Contact" } },
+      {
+        to: "/help/withdrawal",
+        label: { ja: "退会について", en: "Deleting your account" },
+      },
     ],
     faqs: [
       {
@@ -1441,17 +1753,56 @@ export const HELP_SECTIONS: HelpSection[] = [
           en: "How do I delete my account?",
         },
         a: {
-          ja: "アカウント設定の退会から手続きできます。退会の前に注意点を確認してください。",
-          en: "Use account withdrawal in account settings. Please review the notes before deleting.",
+          ja: "設定 → アカウント → 退会 から手続きできます。元には戻せません。ウェブで入った有料プランは退会と同時に解約されますが、アプリで購入したプランは先に各ストアで解約してください。削除されるデータと手順は「退会について」（/help/withdrawal）にまとめています。",
+          en: 'Go to Settings → Account → Delete account. This can\'t be undone. Plans bought on the web are cancelled automatically, but cancel plans bought in the app in the store first. See "Deleting your account" (/help/withdrawal) for the steps and what data is deleted.',
+        },
+      },
+      {
+        top: 9,
+        q: {
+          ja: "ミュートとブロックの違いは？通報はどうやる？",
+          en: "Mute vs. block, and how do I report?",
+        },
+        a: {
+          ja: "ミュートは自分の画面でだけ相手の作品・コメントを見えにくくし、相手には影響しません。ブロックはお互いの作品が一覧に出なくなり、いいね・コメント・フォローができなくなります。どちらも相手のユーザーページのメニューからでき、設定で解除できます。規約に反する作品は作品ページの「…」→「問題を報告する」、コメントはコメントの「問題を報告」から知らせてください。Discord など公開の場所に違反作品の URL を貼らず、通報機能を使ってください。対応の結果を個別にお知らせすることはできません。",
+          en: "Mute hides someone's works and comments on your screen only; they aren't affected. Block hides each other's works from lists and stops likes, comments and follows. Both are in the menu on their profile and can be undone in settings. Report rule-breaking works from \"…\" → \"Report a problem\" on the work page, and comments from the comment's report button. Please don't post links to violating works in public places like Discord — use the report feature. We can't share the outcome of individual reports.",
         },
       },
     ],
   },
 ]
 
-/** 以前のタブの名前（?tab=）から章へ */
+export const findHelpSection = (id: string) =>
+  HELP_SECTIONS.find((section) => section.id === id)
+
+/** 前後の章（章のページの下のナビ） */
+export const getAdjacentHelpSections = (id: string) => {
+  const index = HELP_SECTIONS.findIndex((section) => section.id === id)
+  return {
+    prev: index > 0 ? HELP_SECTIONS[index - 1] : undefined,
+    next:
+      index >= 0 && index < HELP_SECTIONS.length - 1
+        ? HELP_SECTIONS[index + 1]
+        : undefined,
+  }
+}
+
+/** 入口のページに出す「よくある質問」（top の順）。どの章の質問かも持つ */
+export const TOP_HELP_FAQS = HELP_SECTIONS.flatMap((section) =>
+  section.faqs
+    .filter((faq) => faq.top !== undefined)
+    .map((faq) => ({ ...faq, section })),
+).sort((a, b) => (a.top ?? 0) - (b.top ?? 0))
+
+/**
+ * 以前のタブの名前（/help?tab=）や、以前の 1 ページ版の見出し（/help#coins）から、今のページ（/help/<id>）へ。
+ * 今の章の id はそのままその章へ、faq は /help/faq へ
+ */
 export const LEGACY_TAB_TO_SECTION: Record<string, string> = {
-  quickstart: "quickstart",
+  ...Object.fromEntries(
+    HELP_SECTIONS.map((section) => [section.id, section.id]),
+  ),
+  faq: "faq",
   overview: "quickstart",
   registration: "quickstart",
   posting: "posting",

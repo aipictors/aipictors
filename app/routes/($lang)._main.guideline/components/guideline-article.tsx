@@ -1,10 +1,11 @@
-import { Link } from "~/lib/app/locale-router"
-import { useTranslation } from "~/hooks/use-translation"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { AlertTriangle, CheckCircle, Info, XCircle } from "lucide-react"
+import { LegalPageNav, LegalPageSummary } from "~/components/legal-page-nav"
 import { Alert, AlertDescription } from "~/components/ui/alert"
-import { AlertTriangle, CheckCircle, XCircle, Info } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 export function GuidelineArticle() {
   const t = useTranslation()
@@ -23,6 +24,8 @@ export function GuidelineArticle() {
           )}
         </p>
       </div>
+
+      <LegalPageSummary path="/guideline" />
 
       <Tabs defaultValue="basic" className="w-full">
         <TabsList className="flex h-auto w-full justify-start overflow-x-auto md:grid md:grid-cols-5">
@@ -44,7 +47,11 @@ export function GuidelineArticle() {
         </TabsList>
 
         {/* 基本ルール */}
-        <TabsContent value="basic" className="space-y-6">
+        <TabsContent
+          value="basic"
+          forceMount
+          className="space-y-6 data-[state=inactive]:hidden"
+        >
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -112,7 +119,11 @@ export function GuidelineArticle() {
         </TabsContent>
 
         {/* 投稿ルール */}
-        <TabsContent value="posting" className="space-y-6">
+        <TabsContent
+          value="posting"
+          forceMount
+          className="space-y-6 data-[state=inactive]:hidden"
+        >
           <Card>
             <CardHeader>
               <CardTitle>
@@ -234,7 +245,11 @@ export function GuidelineArticle() {
         </TabsContent>
 
         {/* 交流ルール */}
-        <TabsContent value="interaction" className="space-y-6">
+        <TabsContent
+          value="interaction"
+          forceMount
+          className="space-y-6 data-[state=inactive]:hidden"
+        >
           <Card>
             <CardHeader>
               <CardTitle>
@@ -340,7 +355,11 @@ export function GuidelineArticle() {
         </TabsContent>
 
         {/* 禁止事項 */}
-        <TabsContent value="prohibited" className="space-y-6">
+        <TabsContent
+          value="prohibited"
+          forceMount
+          className="space-y-6 data-[state=inactive]:hidden"
+        >
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
@@ -472,7 +491,11 @@ export function GuidelineArticle() {
         </TabsContent>
 
         {/* 報告・対処 */}
-        <TabsContent value="reporting" className="space-y-6">
+        <TabsContent
+          value="reporting"
+          forceMount
+          className="space-y-6 data-[state=inactive]:hidden"
+        >
           <Card>
             <CardHeader>
               <CardTitle>
@@ -624,6 +647,8 @@ export function GuidelineArticle() {
           </Link>
         </div>
       </div>
+
+      <LegalPageNav currentPath="/guideline" />
     </div>
   )
 }

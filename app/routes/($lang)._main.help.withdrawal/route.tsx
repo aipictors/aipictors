@@ -4,6 +4,7 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
+import { LegalPageNav } from "~/components/legal-page-nav"
 import { META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
@@ -31,10 +32,7 @@ export default function HelpWithdrawalPage() {
     <article className="mx-auto max-w-3xl space-y-8 px-4 py-8 text-sm leading-7">
       <header className="space-y-2">
         <h1 className="font-bold text-2xl">
-          {t(
-            "アカウントの削除（退会）について",
-            "How to delete your account",
-          )}
+          {t("アカウントの削除（退会）について", "How to delete your account")}
         </h1>
         <p className="text-muted-foreground">
           {t(
@@ -182,6 +180,8 @@ export default function HelpWithdrawalPage() {
           )}
         </p>
       </section>
+
+      <LegalPageNav />
     </article>
   )
 }

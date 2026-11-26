@@ -5,6 +5,7 @@ import type {
 } from "@remix-run/cloudflare"
 import termsMarkdownText from "~/assets/request-terms.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
+import { LegalPageNav, LegalPageSummary } from "~/components/legal-page-nav"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
@@ -45,9 +46,11 @@ Effective: November 16, 2026
 export default function RequestTermsPage() {
   const t = useTranslation()
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
+    <div className="mx-auto max-w-4xl space-y-8 px-4 py-8">
+      <LegalPageSummary path="/requests/terms" />
       {t.isEnglish && <AppMarkdown>{termsSummaryEn}</AppMarkdown>}
       <AppMarkdown>{termsMarkdownText}</AppMarkdown>
+      <LegalPageNav currentPath="/requests/terms" />
     </div>
   )
 }

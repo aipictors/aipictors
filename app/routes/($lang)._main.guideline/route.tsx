@@ -14,6 +14,6 @@ export const meta: MetaFunction = (props) => {
 /**
  * ガイドライン
  */
-export default function Guideline () {
+export default function Guideline() {
   return <GuidelineArticle />
 }
