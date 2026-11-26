@@ -6,15 +6,24 @@ import { useApolloClient } from "@apollo/client/index"
 import { Link } from "~/lib/app/locale-router"
 import type { EmblaCarouselType } from "embla-carousel"
 import { graphql } from "gql.tada"
-import { ChevronRightIcon } from "lucide-react"
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  GalleryHorizontalIcon,
+  LayoutGridIcon,
+  Loader2Icon,
+} from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
+import { Button } from "~/components/ui/button"
 import type { CarouselApi } from "~/components/ui/carousel"
 import { Separator } from "~/components/ui/separator"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { usePersistentState } from "~/hooks/use-persistent-state"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { useIsNearViewport } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
@@ -125,19 +134,82 @@ const authorWorksCarouselOptions = {
   watchSlides: keepScrollOnSlidesChange,
 }
 
+type AuthorWorksView = "carousel" | "grid"
+
 /**
- * 作者の他の作品（横スクロール）。端に近づいたら続きを読む
+ * 横スクロールと一覧の切り替え（選んだ方を次の作品ページでも使う）
+ */
+function AuthorWorksViewToggle(props: {
+  view: AuthorWorksView
+  onChange: (view: AuthorWorksView) => void
+}) {
+  const t = useTranslation()
+  const options = [
+    {
+      view: "carousel" as const,
+      label: t("横スクロールで見る", "Scroll view"),
+      icon: GalleryHorizontalIcon,
+    },
+    {
+      view: "grid" as const,
+      label: t("一覧で見る", "Grid view"),
+      icon: LayoutGridIcon,
+    },
+  ]
+  return (
+    <div
+      role="group"
+      aria-label={t("表示の切り替え", "Change view")}
+      className="flex shrink-0 items-center rounded-full bg-muted p-0.5"
+    >
+      {options.map((option) => {
+        const isSelected = props.view === option.view
+        return (
+          <button
+            key={option.view}
+            type="button"
+            aria-pressed={isSelected}
+            aria-label={option.label}
+            title={option.label}
+            onClick={() => props.onChange(option.view)}
+            className={cn(
+              "flex size-7 items-center justify-center rounded-full transition-colors",
+              isSelected
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <option.icon className="size-4" />
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+/**
+ * 作者の他の作品。横スクロールは端に近づいたら続きを読み、一覧は「もっと見る」で続きを読む
  */
 function WorkAuthorWorks(props: {
   works: Props["works"]
   currentWorkId: string
   userId: string
   ratings: AuthorWorksRating[]
-  header: React.ReactNode
+  renderHeader: (viewToggle: React.ReactNode) => React.ReactNode
+  seeAllTo: string
 }) {
   const t = useTranslation()
   const client = useApolloClient()
   const [api, setApi] = useState<CarouselApi>()
+  const [view, setView] = usePersistentState<AuthorWorksView>(
+    "work-author-works-view",
+    "carousel",
+  )
+  const isGrid = view === "grid"
+  const [isLoading, setIsLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(
+    props.works.length >= AUTHOR_WORKS_PAGE_SIZE,
+  )
   // 一覧はサーバーの HTML から出す（検索エンジンが作品同士のリンクをたどれるように）。
   // 続きの読み込みは、画面に近づいてから
   const sectionRef = useRef<HTMLElement>(null)
@@ -169,6 +241,7 @@ function WorkAuthorWorks(props: {
       return
     }
     paging.isLoading = true
+    setIsLoading(true)
     try {
       const result = await client.query({
         query: authorMoreWorksQuery,
@@ -215,11 +288,13 @@ function WorkAuthorWorks(props: {
       paging.hasMore = false
     } finally {
       paging.isLoading = false
+      setIsLoading(false)
+      setHasMore(paging.hasMore)
     }
   }, [client, props.userId, props.ratings])
 
   useEffect(() => {
-    if (!api || !isNearViewport) {
+    if (!api || !isNearViewport || isGrid) {
       return
     }
     const loadMoreIfNearEnd = () => {
@@ -236,49 +311,109 @@ function WorkAuthorWorks(props: {
       api.off("slidesInView", loadMoreIfNearEnd)
       api.off("reInit", loadMoreIfNearEnd)
     }
-  }, [api, loadMore, isNearViewport])
+  }, [api, loadMore, isNearViewport, isGrid])
+
+  const changeView = (next: AuthorWorksView) => {
+    if (next === "grid") {
+      // 横スクロールの部品は消えるので、古い api に続きの読み込みをつながない
+      setApi(undefined)
+    }
+    setView(next)
+  }
 
   if (works.length === 0) {
     return null
   }
 
-  return (
-    <section ref={sectionRef} className="space-y-3">
-      {props.header}
-      <div>
-        <CarouselWithGradation
-          opts={authorWorksCarouselOptions}
-          setApi={setApi}
-          items={works.map((work) => (
-            <div key={work.id} className="relative">
-              <CroppedWorkSquare
-                title={
-                  work.title ? t.workTitle(work.title, work.enTitle) : undefined
-                }
-                workId={work.id}
-                subWorksCount={work.subWorksCount}
-                imageUrl={work.smallThumbnailImageURL}
-                thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                size="md"
-                imageWidth={work.smallThumbnailImageWidth}
-                imageHeight={work.smallThumbnailImageHeight}
-                commentsCount={work.commentsCount}
-              />
-              <div className="absolute right-0 bottom-0">
-                <LikeButton
-                  size={32}
-                  targetWorkId={work.id}
-                  targetWorkOwnerUserId={work.userId}
-                  defaultLiked={work.isLiked}
-                  defaultLikedCount={0}
-                  isBackgroundNone={true}
-                  strokeWidth={2}
-                />
-              </div>
-            </div>
-          ))}
+  const renderWork = (work: Props["works"][number], isAuto: boolean) => (
+    <div key={work.id} className="relative">
+      <CroppedWorkSquare
+        title={work.title ? t.workTitle(work.title, work.enTitle) : undefined}
+        workId={work.id}
+        subWorksCount={work.subWorksCount}
+        imageUrl={work.smallThumbnailImageURL}
+        thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+        size={isAuto ? "auto" : "md"}
+        displayWidth={
+          isAuto
+            ? "(min-width: 1024px) 160px, (min-width: 640px) 25vw, 33vw"
+            : undefined
+        }
+        imageWidth={work.smallThumbnailImageWidth}
+        imageHeight={work.smallThumbnailImageHeight}
+        commentsCount={work.commentsCount}
+      />
+      <div className="absolute right-0 bottom-0">
+        <LikeButton
+          size={32}
+          targetWorkId={work.id}
+          targetWorkOwnerUserId={work.userId}
+          defaultLiked={work.isLiked}
+          defaultLikedCount={0}
+          isBackgroundNone={true}
+          strokeWidth={2}
         />
       </div>
+    </div>
+  )
+
+  return (
+    <section ref={sectionRef} className="space-y-3">
+      {props.renderHeader(
+        <AuthorWorksViewToggle view={view} onChange={changeView} />,
+      )}
+      {isGrid ? (
+        <div className="space-y-3">
+          <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 lg:grid-cols-5">
+            {works.map((work) => renderWork(work, true))}
+          </div>
+          {hasMore ? (
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-full rounded-full"
+              disabled={isLoading}
+              onClick={() => void loadMore()}
+            >
+              {isLoading ? (
+                <Loader2Icon className="size-4 animate-spin" />
+              ) : (
+                <ChevronDownIcon className="size-4" />
+              )}
+              {t("もっと見る", "Show more")}
+            </Button>
+          ) : (
+            <Button
+              asChild
+              variant="ghost"
+              className="w-full rounded-full text-muted-foreground"
+            >
+              <Link to={props.seeAllTo}>
+                {t("ユーザーページですべて見る", "See all on profile")}
+                <ChevronRightIcon className="size-4" />
+              </Link>
+            </Button>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <CarouselWithGradation
+            opts={authorWorksCarouselOptions}
+            setApi={setApi}
+            items={works.map((work) => renderWork(work, false))}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-full rounded-full text-muted-foreground"
+            onClick={() => changeView("grid")}
+          >
+            <ChevronDownIcon className="size-4" />
+            {t("もっと見る", "Show more")}
+          </Button>
+        </div>
+      )}
     </section>
   )
 }
@@ -347,7 +482,8 @@ export function WorkAuthorWorksSection(props: {
         subWorksCount: work.subWorksCount,
         commentsCount: work.commentsCount,
       }))}
-      header={
+      seeAllTo={`/users/${props.user.login}/posts`}
+      renderHeader={(viewToggle) => (
         <div className="flex items-center justify-between gap-3">
           <Link
             to={`/users/${props.user.login}`}
@@ -364,15 +500,18 @@ export function WorkAuthorWorksSection(props: {
               {t(`${props.user.name} の作品`, `More from ${props.user.name}`)}
             </h2>
           </Link>
-          <Link
-            to={`/users/${props.user.login}/posts`}
-            className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
-          >
-            {t("すべて見る", "See all")}
-            <ChevronRightIcon className="size-4" />
-          </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            {viewToggle}
+            <Link
+              to={`/users/${props.user.login}/posts`}
+              className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
+            >
+              {t("すべて見る", "See all")}
+              <ChevronRightIcon className="size-4" />
+            </Link>
+          </div>
         </div>
-      }
+      )}
     />
   )
 }
