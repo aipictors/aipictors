@@ -13,7 +13,8 @@ const ORT_VERSION = "1.21.1"
 const ORT_BASE_URL = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_VERSION}/dist/`
 const MODEL_URL = "/nsfw_model/anime-nsfw-seg-yolo26n-v1.onnx"
 
-const INPUT_SIZE = 640
+/** 長辺をこの大きさにして探す。640 は学習時と同じ、1024 は小さく写った所を拾う（モデルは入力の大きさを変えられる） */
+const INPUT_SIZES = [640, 1024] as const
 const CLASS_COUNT = 7
 const MASK_COEF_COUNT = 32
 
@@ -31,6 +32,13 @@ const LABELS = [
 export type AutoMosaicLabel = (typeof LABELS)[number]
 
 const GENITAL_LABELS: AutoMosaicLabel[] = ["anus", "penis", "vagina"]
+
+const DEFAULT_MIN_SCORE = 0.25
+const MIN_SCORES: Partial<Record<AutoMosaicLabel, number>> = {
+  anus: 0.15,
+  penis: 0.22,
+  vagina: 0.22,
+}
 
 type Detection = {
   label: AutoMosaicLabel
@@ -102,7 +110,30 @@ const iou = (a: Detection["box"], b: Detection["box"]) => {
 }
 
 /**
+ * 分類ごとの確からしさの下限（minScore を渡したときは全部その値）
+ * アヌスは小さく写ることが多く低めに出るので下げる。値は通報された作品と無修正の投稿で漏れと誤検出を数えて決めた
+ */
+export function minScoreForLabel(label: AutoMosaicLabel, override?: number) {
+  if (override !== undefined) return override
+  return MIN_SCORES[label] ?? DEFAULT_MIN_SCORE
+}
+
+/** 重なった検出はスコアの高い方だけ残す（大きさを変えて探した結果をまとめる） */
+export function mergeDetections<
+  T extends { score: number; box: Detection["box"] },
+>(detections: T[]) {
+  const sorted = [...detections].sort((a, b) => b.score - a.score)
+  const kept: T[] = []
+  for (const detection of sorted) {
+    if (kept.some((k) => iou(k.box, detection.box) > 0.5)) continue
+    kept.push(detection)
+  }
+  return kept
+}
+
+/**
  * 画像の範囲を検出してマスクを作る
+ * 長辺 640 と 1024 の 2 回探してマスクを重ねる（1 枚に何人も描いた絵など、小さく写った所を 640 だけだと見落とす）
  * @param image 元の画像（読み込み済み）
  * @param options.includeNipples 乳首も対象にする（規約では不要なので既定はしない）
  */
@@ -123,26 +154,73 @@ export async function detectAutoMosaic(
     options.labels ??
       (options.includeNipples ? [...GENITAL_LABELS, "nipple"] : GENITAL_LABELS),
   )
-  const minScore = options.minScore ?? 0.25
 
-  // 長辺を 640 に縮めて、余りは灰色で埋める（学習時と同じ）
-  const ratio = INPUT_SIZE / Math.max(width, height)
+  const maskCanvas = document.createElement("canvas")
+  maskCanvas.width = width
+  maskCanvas.height = height
+  const maskCtx = maskCanvas.getContext("2d", { willReadFrequently: true })
+  if (maskCtx === null) throw new Error("canvas is not supported")
+
+  const found: AutoMosaicResult["detections"] = []
+  for (const size of INPUT_SIZES) {
+    const detections = await detectAtSize(ort, session, image, size, {
+      targets,
+      minScore: options.minScore,
+      maskCtx,
+    })
+    found.push(...detections)
+  }
+
+  if (found.length > 0) {
+    // 少しでも掛かった所は全部隠す（なめらかに広げた縁・2 回分の重なりをまとめて 0/255 にする）
+    const full = maskCtx.getImageData(0, 0, width, height)
+    for (let i = 3; i < full.data.length; i += 4) {
+      full.data[i] = full.data[i] > 16 ? 255 : 0
+    }
+    maskCtx.putImageData(full, 0, 0)
+  }
+
+  return { mask: maskCanvas, detections: mergeDetections(found) }
+}
+
+/**
+ * 長辺を size にして 1 回探し、見つかった範囲を maskCtx（元の画像の大きさ）に描き足す
+ * @returns 見つかったもの（box は元の画像の座標）
+ */
+async function detectAtSize(
+  ort: typeof Ort,
+  session: Ort.InferenceSession,
+  image: HTMLImageElement | HTMLCanvasElement,
+  size: number,
+  options: {
+    targets: Set<AutoMosaicLabel>
+    minScore?: number
+    maskCtx: CanvasRenderingContext2D
+  },
+): Promise<AutoMosaicResult["detections"]> {
+  const width = image.width
+  const height = image.height
+
+  // 長辺を size に縮めて（広げて）、余りは灰色で埋める（学習時と同じ）
+  const ratio = size / Math.max(width, height)
   const scaledWidth = Math.round(width * ratio)
   const scaledHeight = Math.round(height * ratio)
-  const padX = Math.floor((INPUT_SIZE - scaledWidth) / 2)
-  const padY = Math.floor((INPUT_SIZE - scaledHeight) / 2)
+  const padX = Math.floor((size - scaledWidth) / 2)
+  const padY = Math.floor((size - scaledHeight) / 2)
 
   const inputCanvas = document.createElement("canvas")
-  inputCanvas.width = INPUT_SIZE
-  inputCanvas.height = INPUT_SIZE
+  inputCanvas.width = size
+  inputCanvas.height = size
   const inputCtx = inputCanvas.getContext("2d", { willReadFrequently: true })
   if (inputCtx === null) throw new Error("canvas is not supported")
   inputCtx.fillStyle = "rgb(114, 114, 114)"
-  inputCtx.fillRect(0, 0, INPUT_SIZE, INPUT_SIZE)
+  inputCtx.fillRect(0, 0, size, size)
   inputCtx.drawImage(image, padX, padY, scaledWidth, scaledHeight)
-  const pixels = inputCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data
+  const pixels = inputCtx.getImageData(0, 0, size, size).data
+  inputCanvas.width = 0
+  inputCanvas.height = 0
 
-  const area = INPUT_SIZE * INPUT_SIZE
+  const area = size * size
   const input = new Float32Array(area * 3)
   for (let i = 0; i < area; i++) {
     input[i] = pixels[i * 4] / 255
@@ -154,8 +232,8 @@ export async function detectAutoMosaic(
     [session.inputNames[0]]: new ort.Tensor("float32", input, [
       1,
       3,
-      INPUT_SIZE,
-      INPUT_SIZE,
+      size,
+      size,
     ]),
   })
   const predictions = outputs[session.outputNames[0]]
@@ -184,7 +262,8 @@ export async function detectAutoMosaic(
       }
     }
     const label = LABELS[bestClass]
-    if (best < minScore || !targets.has(label)) continue
+    if (!options.targets.has(label)) continue
+    if (best < minScoreForLabel(label, options.minScore)) continue
     const cx = pred[a]
     const cy = pred[anchors + a]
     const w = pred[2 * anchors + a]
@@ -202,15 +281,11 @@ export async function detectAutoMosaic(
   }
 
   // 重なった候補はスコアの高い方だけ残す
-  candidates.sort((a, b) => b.score - a.score)
-  const detections: Detection[] = []
-  for (const candidate of candidates) {
-    if (detections.some((d) => iou(d.box, candidate.box) > 0.5)) continue
-    detections.push(candidate)
-  }
+  const detections = mergeDetections(candidates)
+  if (detections.length === 0) return []
 
   // マスク（プロトタイプの解像度で作ってから広げる）
-  const cellScale = maskWidth / INPUT_SIZE
+  const cellScale = maskWidth / size
   const binary = new Uint8Array(maskWidth * maskHeight)
   const protoArea = maskWidth * maskHeight
   for (const d of detections) {
@@ -231,60 +306,51 @@ export async function detectAutoMosaic(
     }
   }
 
-  // 縁が残らないよう少し太らせる（約 2 マス = 640 の画像で 8px）
-  const grown = dilate(binary, maskWidth, maskHeight, 2)
+  // 縁が残らないよう少し太らせる（入力 640 で約 8px。1024 でも元の画像に対して同じくらいの幅にする）
+  const grown = dilate(
+    binary,
+    maskWidth,
+    maskHeight,
+    Math.max(2, Math.round((2 * size) / INPUT_SIZES[0])),
+  )
 
-  const maskCanvas = document.createElement("canvas")
-  maskCanvas.width = width
-  maskCanvas.height = height
-  const maskCtx = maskCanvas.getContext("2d", { willReadFrequently: true })
-  if (maskCtx === null) throw new Error("canvas is not supported")
-
-  if (detections.length > 0) {
-    const small = document.createElement("canvas")
-    small.width = maskWidth
-    small.height = maskHeight
-    const smallCtx = small.getContext("2d")
-    if (smallCtx === null) throw new Error("canvas is not supported")
-    const smallData = smallCtx.createImageData(maskWidth, maskHeight)
-    for (let p = 0; p < grown.length; p++) {
-      smallData.data[p * 4 + 3] = grown[p] ? 255 : 0
-    }
-    smallCtx.putImageData(smallData, 0, 0)
-
-    // 余白を除いた範囲を元の画像の大きさに引き伸ばす（なめらかに広げてから、少しでも掛かった所は全部隠す）
-    maskCtx.imageSmoothingEnabled = true
-    maskCtx.drawImage(
-      small,
-      padX * cellScale,
-      padY * cellScale,
-      scaledWidth * cellScale,
-      scaledHeight * cellScale,
-      0,
-      0,
-      width,
-      height,
-    )
-    const full = maskCtx.getImageData(0, 0, width, height)
-    for (let i = 3; i < full.data.length; i += 4) {
-      full.data[i] = full.data[i] > 16 ? 255 : 0
-    }
-    maskCtx.putImageData(full, 0, 0)
+  const small = document.createElement("canvas")
+  small.width = maskWidth
+  small.height = maskHeight
+  const smallCtx = small.getContext("2d")
+  if (smallCtx === null) throw new Error("canvas is not supported")
+  const smallData = smallCtx.createImageData(maskWidth, maskHeight)
+  for (let p = 0; p < grown.length; p++) {
+    smallData.data[p * 4 + 3] = grown[p] ? 255 : 0
   }
+  smallCtx.putImageData(smallData, 0, 0)
 
-  return {
-    mask: maskCanvas,
-    detections: detections.map((d) => ({
-      label: d.label,
-      score: d.score,
-      box: [
-        Math.max(0, (d.box[0] - padX) / ratio),
-        Math.max(0, (d.box[1] - padY) / ratio),
-        Math.min(width, (d.box[2] - padX) / ratio),
-        Math.min(height, (d.box[3] - padY) / ratio),
-      ],
-    })),
-  }
+  // 余白を除いた範囲を元の画像の大きさに引き伸ばして重ねる
+  options.maskCtx.imageSmoothingEnabled = true
+  options.maskCtx.drawImage(
+    small,
+    padX * cellScale,
+    padY * cellScale,
+    scaledWidth * cellScale,
+    scaledHeight * cellScale,
+    0,
+    0,
+    width,
+    height,
+  )
+  small.width = 0
+  small.height = 0
+
+  return detections.map((d) => ({
+    label: d.label,
+    score: d.score,
+    box: [
+      Math.max(0, (d.box[0] - padX) / ratio),
+      Math.max(0, (d.box[1] - padY) / ratio),
+      Math.min(width, (d.box[2] - padX) / ratio),
+      Math.min(height, (d.box[3] - padY) / ratio),
+    ],
+  }))
 }
 
 /** 2 値の画像を r マス太らせる */
@@ -598,6 +664,115 @@ export function measureMaskDetail(
 
 /** これより細い線が多ければ「隠れていない」とみなす（試した画像で決めた値） */
 export const UNHIDDEN_DETAIL_RATIO = 0.035
+
+/** 輪郭がこれより多く（密度）、散らばっていれば（集中度がこれ未満）「隠れていない」とみなす（試した画像で決めた値） */
+const UNHIDDEN_EDGE_DENSITY = 0.33
+const UNHIDDEN_EDGE_CONCENTRATION = 0.6
+
+/**
+ * 範囲の中の輪郭の多さと散らばり方（線画の少ないリアルな絵の「自分でかけ済み」の確認に使う）
+ *
+ * - モザイク: 輪郭はマスの境目の決まった列・行にだけ出る（集中度が高い）
+ * - 黒塗り・白塗り・ぼかし: 輪郭がほとんど無い（密度が低い）
+ * - 隠していない絵: 肌の質感や陰影の輪郭が多く、いろいろな列・行に散らばる
+ * @param luminance 明るさ（width×height）
+ * @param box 調べる範囲（luminance の座標）。縁の影響を避けて真ん中の 7 割だけ見る
+ * @returns density = 隣と明るさが 4 より違う所の割合、concentration = 輪郭の多い 1/4 の列（行）に集まっている割合。狭すぎれば null
+ */
+export function measureEdgeSpread(
+  luminance: ArrayLike<number>,
+  width: number,
+  height: number,
+  box: [number, number, number, number],
+) {
+  const cx = (box[0] + box[2]) / 2
+  const cy = (box[1] + box[3]) / 2
+  const halfWidth = (box[2] - box[0]) * 0.35
+  const halfHeight = (box[3] - box[1]) * 0.35
+  const x1 = Math.max(0, Math.floor(cx - halfWidth))
+  const y1 = Math.max(0, Math.floor(cy - halfHeight))
+  const x2 = Math.min(width, Math.floor(cx + halfWidth))
+  const y2 = Math.min(height, Math.floor(cy + halfHeight))
+  if (x2 - x1 < 6 || y2 - y1 < 6) return null
+
+  const threshold = 4
+  const columns = new Float64Array(x2 - x1 - 1)
+  const rows = new Float64Array(y2 - y1 - 1)
+  for (let y = y1; y < y2; y++) {
+    for (let x = x1; x < x2; x++) {
+      const p = y * width + x
+      if (x + 1 < x2 && Math.abs(luminance[p + 1] - luminance[p]) > threshold) {
+        columns[x - x1]++
+      }
+      if (
+        y + 1 < y2 &&
+        Math.abs(luminance[p + width] - luminance[p]) > threshold
+      ) {
+        rows[y - y1]++
+      }
+    }
+  }
+
+  const sum = (values: Float64Array) => values.reduce((a, b) => a + b, 0)
+  const concentration = (values: Float64Array) => {
+    const total = sum(values)
+    if (total === 0) return 1
+    const top = [...values].sort((a, b) => b - a)
+    const count = Math.max(1, Math.ceil(values.length / 4))
+    return top.slice(0, count).reduce((a, b) => a + b, 0) / total
+  }
+  const pairs = columns.length * (y2 - y1) + rows.length * (x2 - x1)
+  return {
+    density: (sum(columns) + sum(rows)) / pairs,
+    concentration: (concentration(columns) + concentration(rows)) / 2,
+  }
+}
+
+/** 輪郭の多さと散らばり方から見て隠れていないか */
+export function isEdgeSpreadUnhidden(
+  spread: ReturnType<typeof measureEdgeSpread>,
+) {
+  return (
+    spread !== null &&
+    spread.density >= UNHIDDEN_EDGE_DENSITY &&
+    spread.concentration < UNHIDDEN_EDGE_CONCENTRATION
+  )
+}
+
+/**
+ * 検出した範囲が隠れていないように見えるか（「自分でかけ済み」の確認に使う）
+ * 線画の細い線（measureMaskDetail）に加えて、リアルな絵向けに輪郭の散らばり方も見る
+ */
+export function isRegionUnhidden(
+  source: HTMLImageElement | HTMLCanvasElement,
+  mask: HTMLCanvasElement,
+  box: [number, number, number, number],
+) {
+  if (measureMaskDetail(source, mask, box) > UNHIDDEN_DETAIL_RATIO) return true
+  const ratio = Math.min(1, 768 / Math.max(source.width, source.height))
+  const width = Math.max(1, Math.round(source.width * ratio))
+  const height = Math.max(1, Math.round(source.height * ratio))
+  const ctx = downscale(source, width, height).getContext("2d", {
+    willReadFrequently: true,
+  })
+  if (ctx === null) return false
+  const pixels = ctx.getImageData(0, 0, width, height).data
+  const luminance = new Float32Array(width * height)
+  for (let p = 0; p < luminance.length; p++) {
+    luminance[p] =
+      pixels[p * 4] * 0.299 +
+      pixels[p * 4 + 1] * 0.587 +
+      pixels[p * 4 + 2] * 0.114
+  }
+  return isEdgeSpreadUnhidden(
+    measureEdgeSpread(luminance, width, height, [
+      box[0] * ratio,
+      box[1] * ratio,
+      box[2] * ratio,
+      box[3] * ratio,
+    ]),
+  )
+}
 
 /** マスクの不透明な所だけピクセル化した画像を残したレイヤー */
 export function createMaskedMosaicLayer(

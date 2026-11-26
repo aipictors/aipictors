@@ -4,13 +4,12 @@ import {
   detectAutoMosaic,
   isAnimatedImageDataUrl,
   isMosaicStyle,
+  isRegionUnhidden,
   loadMosaicImage,
   MOSAIC_STRENGTH_MAX,
   MOSAIC_STRENGTH_MIN,
   type MosaicStyle,
-  measureMaskDetail,
   renderMosaicCanvas,
-  UNHIDDEN_DETAIL_RATIO,
 } from "~/utils/auto-mosaic"
 
 /**
@@ -98,8 +97,7 @@ export function requestPostMosaicDetection(source: string) {
       const unhiddenCount = result.detections.filter(
         (detection) =>
           detection.score >= WARNING_MIN_SCORE &&
-          measureMaskDetail(image, result.mask, detection.box) >
-            UNHIDDEN_DETAIL_RATIO,
+          isRegionUnhidden(image, result.mask, detection.box),
       ).length
       detections.set(source, {
         status: "done",
