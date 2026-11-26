@@ -41,20 +41,28 @@ export function HomeQuickLinks(props: {
         <Link
           to="/gacha"
           onClick={() => trackGrowthEvent("gacha_nav_click", "home_quick_link")}
-          className="group relative col-span-2 flex h-[64px] items-center overflow-hidden rounded-2xl bg-[#2a0f4f] transition-transform active:scale-[0.98] motion-reduce:transition-none"
+          className="group relative col-span-2 flex h-[88px] items-center overflow-hidden rounded-2xl bg-linear-to-r from-[#3b1670] to-[#2a0f4f] transition-transform active:scale-[0.98] motion-reduce:transition-none md:h-[112px]"
         >
-          <img
-            src="/images/gacha/special-gacha-banner.sm.webp"
-            alt=""
-            loading="lazy"
-            className="absolute inset-0 size-full object-cover object-[0%_35%]"
-          />
-          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-[#2a0f4f]/40 to-[#2a0f4f]/95" />
-          <span className="relative ml-auto flex flex-col items-end pr-3.5 text-right text-white">
-            <span className="font-black text-sm drop-shadow">
+          {/* 絵は切らずに左に置く（横長の絵を細い帯に敷き詰めると顔しか見えなかった）。右の白っぽい部分は外して、帯の色へなじませる */}
+          <span
+            className="relative h-full shrink-0 overflow-hidden"
+            style={{ aspectRatio: "600 / 340" }}
+          >
+            <img
+              src="/images/gacha/special-gacha-banner.sm.webp"
+              alt=""
+              loading="lazy"
+              width={800}
+              height={340}
+              className="h-full w-auto max-w-none"
+            />
+            <span className="absolute inset-y-0 right-0 w-1/4 bg-linear-to-r from-transparent to-[#3b1670]" />
+          </span>
+          <span className="relative ml-auto flex min-w-0 flex-col items-end pr-3.5 pl-2 text-right text-white">
+            <span className="font-black text-sm drop-shadow md:text-base">
               {t("スペシャル枠ガチャ", "Special Frame Gacha")}
             </span>
-            <span className="font-bold text-[11px] text-amber-200">
+            <span className="font-bold text-[11px] text-amber-200 md:text-xs">
               {t(
                 "毎日 1 回目はお得・10 連は SR 以上確定",
                 "Daily first pull deal",
