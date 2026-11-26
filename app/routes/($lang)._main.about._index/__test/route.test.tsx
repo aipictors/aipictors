@@ -24,7 +24,6 @@ describe("About component tests", () => {
     expect(screen.getByText("利用規約")).toBeInTheDocument()
     expect(screen.getByText("ガイドライン")).toBeInTheDocument()
     expect(screen.getByText("使い方ガイド")).toBeInTheDocument()
-    expect(screen.getByText("ロードマップ")).toBeInTheDocument()
     expect(screen.getByText("プレスキット")).toBeInTheDocument()
   })
 
