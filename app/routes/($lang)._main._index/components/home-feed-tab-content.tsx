@@ -17,6 +17,7 @@ import { HomeTagList } from "~/routes/($lang)._main._index/components/home-tag-l
 import {
   HomeTagWorksPlaceholder,
   HomeTagWorksSection,
+  HomeWorksShelf,
 } from "~/routes/($lang)._main._index/components/home-tag-works-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import type { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
@@ -107,6 +108,18 @@ export function HomeFeedTabContent(
             )}
             <HomeQuickLinks />
           </div>
+          {/* デイリーランキング（上位 12 件。最初の HTML に入れる） */}
+          {data.rankingWorks.length > 0 && (
+            <HomeWorksShelf
+              title={t(
+                `デイリーランキング（${data.rankingDateText.slice(5)}）`,
+                `Daily ranking (${data.rankingDateText.slice(5)})`,
+              )}
+              link={`/rankings/${data.rankingDateText}`}
+              works={data.rankingWorks}
+              showRank
+            />
+          )}
           {/* 作品を選んで無料生成（生成への入口。ログインしている人だけ: 未ログインでは中身が取れず、見出しだけ出ていた） */}
           {authContext.isLoggedIn && (
             <div style={offscreenSectionStyle(1000)}>
@@ -133,11 +146,15 @@ export function HomeFeedTabContent(
           )}
           {/* 週替わりのピックアップモデル（みんなのモデルの看板） */}
           <UserModelPickupBanner />
-          {/* タグごとの作品（今日のお題・人気タグ）。画面に近づいてから読む */}
+          {/* タグごとの作品（今日のお題・人気タグ）。loader で取れていれば最初の HTML に入れ、なければ画面に近づいてから読む */}
           <div style={offscreenSectionStyle(900)}>
-            <HomeDeferredSection fallback={<HomeTagWorksPlaceholder />}>
-              <HomeTagWorksSection />
-            </HomeDeferredSection>
+            {data.tagWorkRows.length > 0 ? (
+              <HomeTagWorksSection initialRows={data.tagWorkRows} />
+            ) : (
+              <HomeDeferredSection fallback={<HomeTagWorksPlaceholder />}>
+                <HomeTagWorksSection />
+              </HomeDeferredSection>
+            )}
           </div>
         </div>
         {/* 右カラム（スクロールしても見えるように固定）。PC だけ新しいユーザー・コメント・人気タグも */}

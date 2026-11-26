@@ -18,16 +18,21 @@ const rowClassName =
 /**
  * タグごとの作品（今日のお題と人気タグ 3 つを、タグごとに横に並べる）
  *
- * HomeDeferredSection の中に置き、画面に近づいてから /api/home-tag-works（拠点のキャッシュ）を読む。
- * 最初の HTML には入れない
+ * initialRows があれば（トップの loader で取った分）それを最初の HTML から出す。
+ * なければ HomeDeferredSection の中に置き、画面に近づいてから /api/home-tag-works（拠点のキャッシュ）を読む
  */
 export function HomeTagWorksSection(props: {
   /** R18 のトップ（R18 の作品を出し、リンクを /r に） */
   isSensitive?: boolean
+  initialRows?: HomeTagWorksRow[]
 }) {
-  const [rows, setRows] = useState<HomeTagWorksRow[] | null>(null)
+  const hasInitialRows = (props.initialRows?.length ?? 0) > 0
+  const [rows, setRows] = useState<HomeTagWorksRow[] | null>(
+    hasInitialRows ? (props.initialRows ?? null) : null,
+  )
 
   useEffect(() => {
+    if (hasInitialRows) return
     let isActive = true
     fetch(`/api/home-tag-works${props.isSensitive ? "?sensitive=1" : ""}`)
       .then((response) => (response.ok ? response.json() : { rows: [] }))
@@ -40,7 +45,7 @@ export function HomeTagWorksSection(props: {
     return () => {
       isActive = false
     }
-  }, [props.isSensitive])
+  }, [props.isSensitive, hasInitialRows])
 
   if (rows === null) return <HomeTagWorksPlaceholder />
   if (rows.length === 0) return null
@@ -71,17 +76,34 @@ function HomeTagWorksRowView(props: {
     ? `${prefix}/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`
     : `${prefix}/tags/${encodeURIComponent(row.tag)}`
   return (
+    <HomeWorksShelf
+      title={
+        row.isTheme
+          ? t(`今日のお題「${label}」`, `Today's theme: ${label}`)
+          : `#${label}`
+      }
+      link={link}
+      works={row.works}
+    />
+  )
+}
+
+/**
+ * 見出しと作品の横並び（タグごとの作品・前日ランキングで共通）。showRank で左上に順位を出す
+ */
+export function HomeWorksShelf(props: {
+  title: string
+  link: string
+  works: HomeTagWorksRow["works"]
+  showRank?: boolean
+}) {
+  const t = useTranslation()
+  if (props.works.length === 0) return null
+  return (
     <div className="space-y-2.5">
-      <HomeSectionHeading
-        title={
-          row.isTheme
-            ? t(`今日のお題「${label}」`, `Today's theme: ${label}`)
-            : `#${label}`
-        }
-        link={link}
-      />
+      <HomeSectionHeading title={props.title} link={props.link} />
       <ul className={rowClassName}>
-        {row.works.map((work) => {
+        {props.works.map((work, index) => {
           const title = t.workTitle(work.title, work.enTitle)
           return (
             <li
@@ -104,6 +126,11 @@ function HomeTagWorksRowView(props: {
                       decoding="async"
                       className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none"
                     />
+                    {props.showRank && (
+                      <span className="absolute top-1.5 left-1.5 flex size-6 items-center justify-center rounded-full bg-black/60 font-bold text-white text-xs tabular-nums">
+                        {index + 1}
+                      </span>
+                    )}
                     <span className="absolute right-1.5 bottom-1.5 flex items-center gap-0.5 rounded-full bg-black/55 px-1.5 py-0.5 font-bold text-[11px] text-white tabular-nums">
                       <HeartIcon className="size-3 fill-pink-500 text-pink-500" />
                       {work.likesCount}

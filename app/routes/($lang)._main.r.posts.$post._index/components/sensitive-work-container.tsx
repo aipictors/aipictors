@@ -27,6 +27,8 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate, Link } from "~/lib/app/locale-router"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { DlsiteAffiliateCard } from "~/components/sensitive/dlsite-affiliate-card"
+import { WorkDiscoverySections } from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
+import type { WorkDiscovery } from "~/routes/($lang)._main.posts.$post._index/utils/work-discovery"
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
@@ -40,6 +42,8 @@ const AUTHOR_WORKS_RATINGS: ("G" | "R15" | "R18" | "R18G")[] = ["R18", "R18G"]
 type Props = {
   post: string
   work: FragmentOf<typeof workArticleFragment> | null
+  /** 下の一覧（loader で取った分）。なければ従来どおりブラウザでタグのおすすめを読む */
+  discovery?: WorkDiscovery
 }
 
 /**
@@ -264,6 +268,7 @@ export function SensitiveWorkContainer(props: Props) {
                   user={workForArticle.user}
                   currentWorkId={workForArticle.id}
                   ratings={AUTHOR_WORKS_RATINGS}
+                  layout="grid"
                 />
               </div>
             )}
@@ -386,31 +391,37 @@ export function SensitiveWorkContainer(props: Props) {
           </div>
         </div>
       </div>
-      <section className="m-auto border-t pt-6">
-        {randomTag && (
-          // タグはブラウザで選ぶので、見出しごと画面に近づいてから出す
-          <WorkLazySection minHeightClassName="min-h-[100vh]">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="truncate font-bold text-base">
-                  {t(`#${randomTag} のおすすめ`, `More #${randomTag}`)}
-                </h2>
-                <Link
-                  to={`/r/tags/${encodeURIComponent(randomTag)}`}
-                  className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
-                >
-                  {t("すべて見る", "See all")}
-                  <ChevronRightIcon className="size-4" />
-                </Link>
+      {props.discovery ? (
+        <div className="space-y-6">
+          <WorkDiscoverySections discovery={props.discovery} isSensitive />
+        </div>
+      ) : (
+        <section className="m-auto border-t pt-6">
+          {randomTag && (
+            // タグはブラウザで選ぶので、見出しごと画面に近づいてから出す
+            <WorkLazySection minHeightClassName="min-h-[100vh]">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="truncate font-bold text-base">
+                    {t(`#${randomTag} のおすすめ`, `More #${randomTag}`)}
+                  </h2>
+                  <Link
+                    to={`/r/tags/${encodeURIComponent(randomTag)}`}
+                    className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
+                  >
+                    {t("すべて見る", "See all")}
+                    <ChevronRightIcon className="size-4" />
+                  </Link>
+                </div>
+                <SensitiveWorkTagsWorks
+                  tagName={randomTag}
+                  rating={work.rating ?? "R18"}
+                />
               </div>
-              <SensitiveWorkTagsWorks
-                tagName={randomTag}
-                rating={work.rating ?? "R18"}
-              />
-            </div>
-          </WorkLazySection>
-        )}
-      </section>
+            </WorkLazySection>
+          )}
+        </section>
+      )}
       {/* <div className="flex w-full flex-col space-y-4 md:hidden">
         <AppSideMenu />
       </div> */}

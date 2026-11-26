@@ -26,6 +26,8 @@ import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/component
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
+import { buildWorkMetaDescription } from "~/routes/($lang)._main.posts.$post._index/utils/work-meta-description"
+import { fetchWorkDiscovery } from "~/routes/($lang)._main.posts.$post._index/utils/work-discovery.server"
 import { redirectToWorkRatingPath } from "~/utils/work-rating-redirect"
 import { createMeta } from "~/utils/create-meta"
 import {
@@ -43,6 +45,10 @@ import {
 
 const PUBLIC_POST_CACHE_CONTROL =
   "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
+
+/** 下の一覧（おすすめなど）が取れなかったときは、配信のキャッシュを短くして早めに取り直す */
+const PARTIAL_POST_CACHE_CONTROL =
+  "public, max-age=0, s-maxage=300, stale-while-revalidate=600"
 
 /**
  * 予約投稿などで見つからないときは、持ち主なら下書き表示に移す
@@ -135,9 +141,18 @@ export async function loader(props: LoaderFunctionArgs) {
 
   // 多言語の作品は、見る人の言語の画像・タイトル・説明にする（app/utils/work-localization.ts）。
   // ブラウザの言語で中身が変わるので、配信のキャッシュには置かない
-  const localization = hasWorkLocalization(workResp.data.work)
-    ? await fetchWorkLocalization(workResp.data.work.id)
-    : null
+  // 下の一覧（おすすめ・前日ランキング・同じお題）は多言語の画像の取得と並べて取る
+  const [localization, discoveryResult] = await Promise.all([
+    hasWorkLocalization(workResp.data.work)
+      ? fetchWorkLocalization(workResp.data.work.id)
+      : null,
+    fetchWorkDiscovery({
+      id: workResp.data.work.id,
+      rating: workResp.data.work.rating,
+      tagNames: workResp.data.work.tagNames ?? [],
+      dailyTheme: workResp.data.work.dailyTheme,
+    }),
+  ])
   const work = localization
     ? applyWorkLocalization(
         workResp.data.work,
@@ -154,6 +169,7 @@ export async function loader(props: LoaderFunctionArgs) {
     {
       post: props.params.post,
       work,
+      discovery: discoveryResult.discovery,
     },
     {
       headers: {
@@ -162,7 +178,9 @@ export async function loader(props: LoaderFunctionArgs) {
           ? "no-store"
           : localization
             ? "private, max-age=0"
-            : PUBLIC_POST_CACHE_CONTROL,
+            : discoveryResult.isComplete
+              ? PUBLIC_POST_CACHE_CONTROL
+              : PARTIAL_POST_CACHE_CONTROL,
         // 英語の作品ページは検索に載せない（app/utils/english-work-robots.ts）
         ...(isEnglishLang(props.params.lang) && { "X-Robots-Tag": "noindex" }),
       },
@@ -208,44 +226,32 @@ export const meta: MetaFunction = (props) => {
     work.work.imageURL ||
     config.defaultOgpImageUrl
 
-  // 説明がない・短い作品は、タグ・モデルから説明文を作る（同じ説明文のページが大量にできないように）
-  const tagText = (work.work.tagNames ?? []).slice(0, 6)
-  const styleLabelJa =
-    work.work.style === "REAL"
-      ? "AIフォト"
-      : work.work.type === "VIDEO"
-        ? "AI動画"
-        : work.work.type === "NOVEL" || work.work.type === "COLUMN"
-          ? "AI小説"
-          : "AIイラスト"
-  const generatedDescriptionJa = `${work.work.title}${
-    work.work.user ? `（${work.work.user.name}）` : ""
-  }の${styleLabelJa}です。${
-    tagText.length > 0 ? `タグ: ${tagText.join("、")}。` : ""
-  }${work.work.model ? `モデル: ${work.work.model}。` : ""}${
-    work.work.promptAccessType === "PUBLIC" && work.work.prompt
-      ? "プロンプトも公開されています。"
-      : ""
-  }`
-  const generatedDescriptionEn = `${
-    work.work.enTitle || work.work.title
-  }${work.work.user ? ` by ${work.work.user.name}` : ""} on Aipictors.${
-    tagText.length > 0 ? ` Tags: ${tagText.join(", ")}.` : ""
-  }${work.work.model ? ` Model: ${work.work.model}.` : ""}`
-  const ownDescriptionJa = (work.work.description ?? "").trim()
-  const ownDescriptionEn = (
-    work.work.enDescription ||
-    work.work.description ||
-    ""
-  ).trim()
-  const descriptionJa =
-    ownDescriptionJa.length >= 40
-      ? ownDescriptionJa
-      : `${ownDescriptionJa ? `${ownDescriptionJa} ` : ""}${generatedDescriptionJa}`
-  const descriptionEn =
-    ownDescriptionEn.length >= 60
-      ? ownDescriptionEn
-      : `${ownDescriptionEn ? `${ownDescriptionEn} ` : ""}${generatedDescriptionEn}`
+  // 「この作品は『モデル』で生成された『タグ』タグがついた『作者』さんのAIイラストです。」＋作者の説明
+  const descriptionSource = {
+    userName: work.work.user?.name ?? null,
+    model: work.work.model ?? null,
+    tagNames: work.work.tagNames ?? [],
+    style: work.work.style ?? null,
+    type: work.work.type ?? null,
+    isPromptPublic:
+      work.work.promptAccessType === "PUBLIC" && Boolean(work.work.prompt),
+  }
+  const descriptionJa = buildWorkMetaDescription(
+    {
+      ...descriptionSource,
+      title: work.work.title,
+      description: work.work.description ?? null,
+    },
+    "ja",
+  )
+  const descriptionEn = buildWorkMetaDescription(
+    {
+      ...descriptionSource,
+      title: work.work.enTitle || work.work.title,
+      description: work.work.enDescription || work.work.description || null,
+    },
+    "en",
+  )
 
   const metaTags = createMeta(
     META.POSTS,
@@ -432,7 +438,11 @@ export default function Work() {
     <>
       <AppBreadcrumbScript breadcrumb={breadcrumb} />
       <AppJsonLdScript jsonLd={artwork} />
-      <WorkContainer post={data.post} work={data.work} />
+      <WorkContainer
+        post={data.post}
+        work={data.work}
+        discovery={data.discovery}
+      />
     </>
   )
 }

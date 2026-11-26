@@ -148,6 +148,42 @@ const toDaysAgoIso = (days: number) =>
     Math.floor(Date.now() / DAY_MS) * DAY_MS - days * DAY_MS,
   ).toISOString()
 
+/**
+ * 拠点のキャッシュ（1 時間）から読み、なければ取って置く。トップの loader からも呼ぶ（最初の HTML に入れる）
+ */
+export async function getHomeTagWorks(
+  isSensitive: boolean,
+): Promise<HomeTagWorksResponse> {
+  const now = getJstDate()
+  const hourKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-${now.getHours()}`
+  const cache = typeof caches === "undefined" ? null : caches.default
+  const cacheKey = new Request(
+    `https://www.aipictors.com/__home-tag-works/v3/${isSensitive ? "r18/" : ""}${hourKey}`,
+  )
+  const cached = await cache?.match(cacheKey).catch(() => undefined)
+  if (cached) {
+    const body = (await cached
+      .json()
+      .catch(() => null)) as HomeTagWorksResponse | null
+    if (body && Array.isArray(body.rows)) return body
+  }
+  const body = await loadRows(now, isSensitive)
+  if (cache && body.rows.length > 0) {
+    await cache
+      .put(
+        cacheKey,
+        new Response(JSON.stringify(body), {
+          headers: {
+            "content-type": "application/json",
+            "cache-control": `public, max-age=${EDGE_CACHE_SECONDS}`,
+          },
+        }),
+      )
+      .catch(() => {})
+  }
+  return body
+}
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const isSensitive = new URL(request.url).searchParams.get("sensitive") === "1"
   const now = getJstDate()
@@ -206,7 +242,7 @@ const homeTagWorksTagsQuery = graphql(
   }`,
 )
 
-const HomeTagRowWorkFragment = graphql(
+export const HomeTagRowWorkFragment = graphql(
   `fragment HomeTagRowWork on WorkNode @_unmask {
     id
     title

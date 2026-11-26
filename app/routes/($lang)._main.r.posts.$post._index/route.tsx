@@ -29,6 +29,8 @@ import {
   type workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { SensitiveWorkContainer } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
+import { fetchWorkDiscovery } from "~/routes/($lang)._main.posts.$post._index/utils/work-discovery.server"
+import { buildWorkMetaDescription } from "~/routes/($lang)._main.posts.$post._index/utils/work-meta-description"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import {
   isEnglishLang,
@@ -119,17 +121,29 @@ export async function loader(props: LoaderFunctionArgs) {
     return redirectToWorkRatingPath(props.params.lang, false, props.params.post)
   }
 
+  // 下の一覧（おすすめ・前日ランキング・同じお題）も最初の HTML に入れる（全年齢の作品ページと同じ）
+  const discoveryResult = await fetchWorkDiscovery({
+    id: workResp.data.work.id,
+    rating: workResp.data.work.rating,
+    tagNames: workResp.data.work.tagNames ?? [],
+    dailyTheme: workResp.data.work.dailyTheme,
+  })
+
   return json(
     {
       post: props.params.post,
       work: workResp.data.work,
+      discovery: discoveryResult.discovery,
     },
     {
       headers: {
-        // 一部が欠けた内容はキャッシュしない
-        ...(Boolean(workResp.errors?.length) && {
-          "Cache-Control": "no-store",
-        }),
+        // 一部が欠けた内容はキャッシュしない。下の一覧だけ取れなかったときは短く
+        ...(Boolean(workResp.errors?.length)
+          ? { "Cache-Control": "no-store" }
+          : !discoveryResult.isComplete && {
+              "Cache-Control":
+                "public, max-age=0, s-maxage=300, stale-while-revalidate=600",
+            }),
         // 英語の作品ページは検索に載せない（app/utils/english-work-robots.ts）
         ...(isEnglishLang(props.params.lang) && { "X-Robots-Tag": "noindex" }),
       },
@@ -174,24 +188,31 @@ export const meta: MetaFunction = (props) => {
     tagNames: work.work.tagNames,
   })
 
-  // 説明のない作品は、タイトル・作者・タグから説明を作る（以前は全作品が同じ定型文だった）
-  const describableTags = work.work.tagNames
-    .filter((tagName) => isSuggestableSensitiveTag(tagName))
-    .slice(0, 5)
-  const fallbackDescription = isEn
-    ? `"${workTitle}" is an adult AI illustration${userName ? ` by ${userName}` : ""} on Aipictors, for people aged 18 and over.${
-        describableTags.length > 0
-          ? ` Tags: ${describableTags.map((tag) => `#${tag}`).join(" ")}.`
-          : ""
-      }`
-    : `「${work.work.title}」は${userName ? `${userName}さんが` : ""}Aipictorsに投稿した18歳以上の方向けのAIイラストです。${
-        describableTags.length > 0
-          ? `タグ: ${describableTags.map((tag) => `#${tag}`).join(" ")}。`
-          : ""
-      }プロンプトや関連作品も見られます。`
-  const description = isEn
-    ? work.work.enDescription || work.work.description || fallbackDescription
-    : work.work.description || fallbackDescription
+  // 「この作品は『タグ』タグがついた『作者』さんのAIイラストです。」＋作者の説明（全年齢の作品ページと同じ形）。
+  // タグは一覧に出してよいものだけ
+  const describableTags = work.work.tagNames.filter((tagName) =>
+    isSuggestableSensitiveTag(tagName),
+  )
+  const ownDescription = isEn
+    ? work.work.enDescription || work.work.description || ""
+    : work.work.description || ""
+  const description = buildWorkMetaDescription(
+    {
+      title: workTitle,
+      userName: userName || null,
+      model: null,
+      tagNames: describableTags,
+      style: null,
+      type: work.work.type ?? null,
+      isPromptPublic: work.work.promptAccessType === "PUBLIC",
+      description:
+        ownDescription.trim() ||
+        (isEn
+          ? "For people aged 18 and over."
+          : "18歳以上の方向けの作品です。関連作品も見られます。"),
+    },
+    isEn ? "en" : "ja",
+  )
 
   const metaTags = createSensitiveMeta(
     { ...META.POSTS, isIndex },
@@ -312,6 +333,7 @@ export default function Work() {
       <SensitiveWorkContainer
         post={data.post}
         work={data.work}
+        discovery={data.discovery}
       />
     </>
   )

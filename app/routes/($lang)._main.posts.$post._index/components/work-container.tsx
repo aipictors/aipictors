@@ -24,6 +24,7 @@ import {
   WorkArticle,
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
+import { WorkDiscoverySections } from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 import { WorkPrevNextBar } from "~/routes/($lang)._main.posts.$post._index/components/work-prev-next-bar"
@@ -34,6 +35,7 @@ import {
   newCommentsQuery,
   workCommentsQuery,
 } from "~/routes/($lang)._main.posts.$post._index/route"
+import type { WorkDiscovery } from "~/routes/($lang)._main.posts.$post._index/utils/work-discovery"
 import { mergeWorkViewerState } from "~/routes/($lang)._main.posts.$post._index/utils/merge-work-viewer-state"
 import { getJstDate } from "~/utils/jst-date"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -44,6 +46,8 @@ const AUTHOR_WORKS_RATINGS: ("G" | "R15" | "R18" | "R18G")[] = ["G", "R15"]
 type Props = {
   post: string
   work: FragmentOf<typeof workArticleFragment> | null
+  /** 下の一覧（loader で取った分）。なければ従来どおりブラウザでタグのおすすめを読む */
+  discovery?: WorkDiscovery
 }
 
 /**
@@ -271,7 +275,8 @@ export function WorkContainer(props: Props) {
                 ) : undefined
               }
             />
-            {/* 前後の作品（← → キーでも移れる）→ AI 評価（WorkArticle の中）→ 作者の他の作品（横スクロール）→ アルバム → コメントの順 */}
+            {/* 前後の作品（← → キーでも移れる）→ AI 評価（WorkArticle の中）→ 作者の他の作品（一覧）→ アルバム → コメントの順。
+                その下（左右の列の下）に、おすすめ → 前日ランキング → 同じお題の作品 */}
             <WorkPrevNextBar work={work} />
             {work.user && (
               <div className="border-t pt-6">
@@ -279,6 +284,7 @@ export function WorkContainer(props: Props) {
                   user={work.user}
                   currentWorkId={work.id}
                   ratings={AUTHOR_WORKS_RATINGS}
+                  layout="grid"
                 />
               </div>
             )}
@@ -419,28 +425,37 @@ export function WorkContainer(props: Props) {
           </div>
         </div>
       </div>
-      <section className="m-auto border-t pt-6">
-        {randomTag && (
-          // タグはブラウザで選ぶので、見出しごと画面に近づいてから出す
-          <WorkLazySection minHeightClassName="min-h-[100vh]">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="truncate font-bold text-base">
-                  {t(`#${randomTag} のおすすめ`, `More #${randomTag}`)}
-                </h2>
-                <Link
-                  to={`/tags/${encodeURIComponent(randomTag)}`}
-                  className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
-                >
-                  {t("すべて見る", "See all")}
-                  <ChevronRightIcon className="size-4" />
-                </Link>
+      {props.discovery ? (
+        <div className="space-y-6">
+          <WorkDiscoverySections discovery={props.discovery} />
+        </div>
+      ) : (
+        <section className="m-auto border-t pt-6">
+          {randomTag && (
+            // タグはブラウザで選ぶので、見出しごと画面に近づいてから出す
+            <WorkLazySection minHeightClassName="min-h-[100vh]">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="truncate font-bold text-base">
+                    {t(`#${randomTag} のおすすめ`, `More #${randomTag}`)}
+                  </h2>
+                  <Link
+                    to={`/tags/${encodeURIComponent(randomTag)}`}
+                    className="flex shrink-0 items-center text-muted-foreground text-sm hover:text-foreground"
+                  >
+                    {t("すべて見る", "See all")}
+                    <ChevronRightIcon className="size-4" />
+                  </Link>
+                </div>
+                <WorkTagsWorks
+                  tagName={randomTag}
+                  rating={work.rating ?? "G"}
+                />
               </div>
-              <WorkTagsWorks tagName={randomTag} rating={work.rating ?? "G"} />
-            </div>
-          </WorkLazySection>
-        )}
-      </section>
+            </WorkLazySection>
+          )}
+        </section>
+      )}
       {/* <div className="flex w-full flex-col space-y-4 md:hidden">
         <AppSideMenu />
       </div> */}

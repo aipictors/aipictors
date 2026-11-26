@@ -38,6 +38,12 @@ import type {
   MicroCmsApiRelease,
   MicroCmsApiReleaseResponse,
 } from "~/types/micro-cms-release-response"
+import {
+  getHomeTagWorks,
+  HomeTagRowWorkFragment,
+  type HomeTagWorksResponse,
+  type HomeTagWorksRow,
+} from "~/routes/api.home-tag-works/route"
 import { getJstDate } from "~/utils/jst-date"
 import {
   fetchFeaturedTaggedReleases,
@@ -75,6 +81,9 @@ const createBaseHomeLoaderData = (props: {
   secondTagWorks: [] as FragmentOf<typeof HomeTagWorkFragment>[],
   workAwards: [] as FragmentOf<typeof HomeWorkAwardFragment>[],
   firstTagWorks: [] as FragmentOf<typeof HomeTagWorkFragment>[],
+  tagWorkRows: [] as HomeTagWorksRow[],
+  rankingWorks: [] as HomeTagWorksRow["works"],
+  rankingDateText: props.awardDateText,
 })
 
 const RELEASES_CACHE_MS = 60 * 1000
@@ -172,6 +181,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
   const now = getJstDate()
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
   const awardDateText = getUtcDateString(yesterday)
+  const dayBeforeYesterday = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)
 
   // お知らせ（microCMS）を待たずに、ページのデータも同時に取り始める
   const recommendedWorksRequest = isRecommendedRoute
@@ -209,8 +219,19 @@ export async function homeLoader(props: LoaderFunctionArgs) {
           year: now.getFullYear(),
           // 最初に見える一覧と右カラムはサーバーで取ってHTMLに入れる（以前は表示後にログイン確認を待ってから取得していた）
           promotionLimit: config.query.homeWorkCount.promotion,
+          awardYear: yesterday.getFullYear(),
+          awardMonth: yesterday.getMonth() + 1,
+          awardDay: yesterday.getDate(),
+          // 前日のランキングは昼ごろに集計されるので、まだなければ前々日を出す
+          olderAwardYear: dayBeforeYesterday.getFullYear(),
+          olderAwardMonth: dayBeforeYesterday.getMonth() + 1,
+          olderAwardDay: dayBeforeYesterday.getDate(),
         },
       })
+    : null
+  // タグごとの作品（今日のお題・人気タグ）も最初の HTML に入れる（拠点のキャッシュを /api/home-tag-works と共有）
+  const tagWorksRequest = isHomeRoute
+    ? getHomeTagWorks(false).catch((): HomeTagWorksResponse => ({ rows: [] }))
     : null
   // 先に失敗しても、await するまで未処理の拒否にしない
   for (const request of [
@@ -276,7 +297,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
     )
   }
 
-  const result = await homeRequest
+  const [result, tagWorks] = await Promise.all([homeRequest, tagWorksRequest])
 
   const resultData = result?.data
   const appEvents = Array.isArray(resultData?.appEvents)
@@ -291,6 +312,8 @@ export async function homeLoader(props: LoaderFunctionArgs) {
   const {
     appEvents: _appEvents,
     userEvents: _userEvents,
+    rankingWorks: _rankingWorks,
+    olderRankingWorks: _olderRankingWorks,
     ...homeData
   } = resultData ?? {}
 
@@ -320,6 +343,9 @@ export async function homeLoader(props: LoaderFunctionArgs) {
       recommendedTags: Array.isArray(resultData?.recommendedTags)
         ? resultData.recommendedTags
         : [],
+      tagWorkRows: tagWorks?.rows ?? [],
+      // デイリーランキング（上位 12 件を横に並べる）
+      ...toHomeRanking(resultData, yesterday, dayBeforeYesterday),
     },
     {
       headers: {
@@ -347,6 +373,29 @@ function toPromotionFillWorks<T extends { id: string }>(
   return (feedWorks ?? [])
     .filter((work) => !shownIds.has(work.id))
     .slice(0, room)
+}
+
+/** 前日のランキングがまだ集計されていなければ前々日の分 */
+function toHomeRanking(
+  data:
+    | {
+        rankingWorks?: { work: HomeTagWorksRow["works"][number] | null }[]
+        olderRankingWorks?: { work: HomeTagWorksRow["works"][number] | null }[]
+      }
+    | undefined,
+  yesterday: Date,
+  dayBeforeYesterday: Date,
+) {
+  const latest = data?.rankingWorks ?? []
+  const isLatest = latest.length > 0
+  const date = isLatest ? yesterday : dayBeforeYesterday
+  return {
+    rankingWorks: (isLatest ? latest : (data?.olderRankingWorks ?? [])).flatMap(
+      (award) => (award.work ? [award.work] : []),
+    ),
+    // 問い合わせ（getFullYear など）と同じ日付にする
+    rankingDateText: `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`,
+  }
 }
 
 export type HomeLoaderData = SerializeFrom<typeof homeLoader>
@@ -381,7 +430,33 @@ const query = graphql(
     $month: Int!
     $day: Int!
     $promotionLimit: Int!
+    $awardYear: Int!
+    $awardMonth: Int!
+    $awardDay: Int!
+    $olderAwardYear: Int!
+    $olderAwardMonth: Int!
+    $olderAwardDay: Int!
   ) {
+    rankingWorks: workAwards(
+      offset: 0
+      limit: 12
+      where: { year: $awardYear, month: $awardMonth, day: $awardDay, isSensitive: false }
+    ) {
+      id
+      work {
+        ...HomeTagRowWork
+      }
+    }
+    olderRankingWorks: workAwards(
+      offset: 0
+      limit: 12
+      where: { year: $olderAwardYear, month: $olderAwardMonth, day: $olderAwardDay, isSensitive: false }
+    ) {
+      id
+      work {
+        ...HomeTagRowWork
+      }
+    }
     promotionWorks: works(
       offset: 0
       limit: $promotionLimit
@@ -470,5 +545,6 @@ const query = graphql(
     HomePromotionWorkFragment,
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
+    HomeTagRowWorkFragment,
   ],
 )
