@@ -12,6 +12,10 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { userModelsQueryKeys } from "~/components/user-models/use-user-models"
+import {
+  UserModelAuthorshipFields,
+  isAuthorshipComplete,
+} from "~/components/user-models/user-model-authorship-fields"
 import { UserModelMetadataFields } from "~/components/user-models/user-model-metadata-fields"
 import { updateUserModel } from "~/lib/user-models/client"
 import type {
@@ -37,6 +41,11 @@ const toEditable = (model: UserModel): UserModelEditableFields => ({
   thumbnailUrl: model.thumbnailUrl,
   sampleImageUrls: model.sampleImageUrls,
   recommendedSettings: model.recommendedSettings ?? null,
+  isOriginal: model.sourceEditable
+    ? (model.isOriginal ?? (model.sourceUrl ? false : null))
+    : null,
+  sourceUrl: model.sourceEditable ? (model.sourceUrl ?? "") : null,
+  sourceCreator: model.sourceEditable ? (model.sourceCreator ?? "") : null,
 })
 
 /**
@@ -55,11 +64,19 @@ export function UserModelEditDialog(props: Props) {
       toast("名前を入力してください")
       return
     }
+    if (value.isOriginal === false && !isAuthorshipComplete(value)) {
+      toast("元のモデルの URL と作者名を入力してください")
+      return
+    }
     setIsSaving(true)
     try {
       const updated = await updateUserModel(props.model.id, {
         ...value,
         name: value.name.trim(),
+        sourceUrl: value.isOriginal ? null : value.sourceUrl?.trim() || null,
+        sourceCreator: value.isOriginal
+          ? null
+          : value.sourceCreator?.trim() || null,
       })
       queryClient.setQueryData(
         userModelsQueryKeys.detail(props.model.id),
@@ -92,6 +109,14 @@ export function UserModelEditDialog(props: Props) {
           </DialogDescription>
         </DialogHeader>
         <div className="min-h-0 flex-1 overflow-y-auto p-5">
+          {props.model.sourceEditable && (
+            <div className="mb-6">
+              <UserModelAuthorshipFields
+                value={value}
+                onChange={(authorship) => setValue({ ...value, ...authorship })}
+              />
+            </div>
+          )}
           <UserModelMetadataFields
             kind={props.model.kind}
             value={value}

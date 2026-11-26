@@ -70,6 +70,14 @@ export type UserModel = {
    * 登録者が勧める生成設定（未設定は null）
    */
   recommendedSettings?: UserModelRecommendedSettings | null
+  /**
+   * 登録者が作者か（true = 自分で作った / false = 他の人のモデル。未申告・Civitai から自動で出典を入れたものは null）
+   */
+  isOriginal?: boolean | null
+  /**
+   * 出典を登録者が直せるか（Civitai から自動で入れた出典は直せない）
+   */
+  sourceEditable?: boolean
 }
 
 export type UserModelRecommendedSettings = {
@@ -238,6 +246,15 @@ export type UserModelEditableFields = {
    * おすすめの生成設定（チェックポイントのみ入力）。null で消す
    */
   recommendedSettings?: UserModelRecommendedSettings | null
+  /**
+   * 登録者が作者か（true = 自分で作った / false = 他の人のモデル。未申告は null）
+   */
+  isOriginal?: boolean | null
+  /**
+   * 他の人のモデルの元のページと作者名（isOriginal が false のとき）
+   */
+  sourceUrl?: string | null
+  sourceCreator?: string | null
 }
 
 export type StartUploadInput = UserModelEditableFields & {

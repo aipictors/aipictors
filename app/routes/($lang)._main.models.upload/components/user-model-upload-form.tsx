@@ -20,6 +20,10 @@ import {
 } from "~/components/user-models/use-user-models"
 import { UserModelLimitCard } from "~/components/user-models/user-model-limit-card"
 import { UserModelLimitUpgradeDialog } from "~/components/user-models/user-model-limit-upgrade-dialog"
+import {
+  UserModelAuthorshipFields,
+  isAuthorshipComplete,
+} from "~/components/user-models/user-model-authorship-fields"
 import { UserModelMetadataFields } from "~/components/user-models/user-model-metadata-fields"
 import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "~/lib/app/locale-router"
@@ -90,6 +94,9 @@ const emptyFields: UserModelEditableFields = {
   tags: [],
   thumbnailUrl: null,
   sampleImageUrls: [],
+  isOriginal: null,
+  sourceUrl: "",
+  sourceCreator: "",
 }
 
 function StepTitle(props: {
@@ -287,6 +294,10 @@ export function UserModelUploadForm() {
       return
     }
     if (isTooLarge) return
+    if (!isAuthorshipComplete(fields)) {
+      toast("作者を選んでください（他の人のモデルは元の URL と作者名も）")
+      return
+    }
     setLimitError(null)
 
     const sha256 = hash.sha256
@@ -296,6 +307,10 @@ export function UserModelUploadForm() {
       const started = await startUserModelUpload({
         ...fields,
         name: fields.name.trim(),
+        sourceUrl: fields.isOriginal ? null : fields.sourceUrl?.trim() || null,
+        sourceCreator: fields.isOriginal
+          ? null
+          : fields.sourceCreator?.trim() || null,
         kind,
         filename: file.name,
         sizeBytes: file.size,
@@ -484,6 +499,7 @@ export function UserModelUploadForm() {
     hash.type === "done" &&
     !isTooLarge &&
     fields.name.trim() !== "" &&
+    isAuthorshipComplete(fields) &&
     !isUploadingImage &&
     !isLimitReached &&
     phase.type === "idle"
@@ -495,6 +511,7 @@ export function UserModelUploadForm() {
     if (isTooLarge) return "ファイルが大きすぎます"
     if (hash.type === "hashing") return `ファイルを確認中… ${hashPercent}%`
     if (fields.name.trim() === "") return "名前を入力してください"
+    if (!isAuthorshipComplete(fields)) return "作者を入力してください"
     if (isUploadingImage) return "画像をアップロード中…"
     return "アップロードして公開"
   })()
@@ -635,6 +652,14 @@ export function UserModelUploadForm() {
             title="モデルの情報"
             description="ファイルの確認中に入力できます。あとから編集もできます"
           />
+          <div className="mb-6">
+            <UserModelAuthorshipFields
+              value={fields}
+              onChange={(authorship) =>
+                setFields((current) => ({ ...current, ...authorship }))
+              }
+            />
+          </div>
           <UserModelMetadataFields
             kind={kind}
             value={fields}

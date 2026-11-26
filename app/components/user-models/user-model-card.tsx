@@ -81,11 +81,18 @@ export function UserModelCard(props: Props) {
             {model.name}
           </p>
           <div className="flex items-center justify-between gap-2">
-            <UserModelAuthor
-              userId={model.userId}
-              user={model.user}
-              className="text-white/90"
-            />
+            {/* 他の人のモデルは登録者ではなく作者を出す（登録者が作者に見えないように） */}
+            {model.sourceCreator ? (
+              <span className="min-w-0 truncate text-white/90 text-xs">
+                作者: {model.sourceCreator}
+              </span>
+            ) : (
+              <UserModelAuthor
+                userId={model.userId}
+                user={model.user}
+                className="text-white/90"
+              />
+            )}
             <span
               className="flex shrink-0 items-center gap-0.5 text-white/90 text-xs"
               title="使用回数"

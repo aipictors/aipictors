@@ -99,40 +99,130 @@ const sourceSiteName = (url: string): string => {
   }
 }
 
+const civitaiCreatorUrl = (
+  sourceUrl: string | null | undefined,
+  creator: string,
+) =>
+  sourceUrl && sourceSiteName(sourceUrl) === "Civitai"
+    ? `https://civitai.com/user/${encodeURIComponent(creator)}`
+    : null
+
 /**
- * URL から取り込んだモデルの出典（元のモデル・作者）とライセンス・系統の注意書き
+ * 作者のライセンス（Civitai の許可の設定）の要点
  */
-function UserModelSource(props: { model: UserModel }) {
+const licenseItems = (license: NonNullable<UserModel["sourceLicense"]>) => {
+  const items: Array<{ label: string; ok: boolean | null }> = [
+    {
+      label: "作者名の表記なしで使う",
+      ok: license.allowNoCredit,
+    },
+    {
+      label: "生成した画像の販売",
+      ok: license.allowCommercialUse.includes("Image"),
+    },
+    {
+      label: "マージなどの派生モデル",
+      ok: license.allowDerivatives,
+    },
+  ]
+  return items.filter((item) => item.ok !== null)
+}
+
+/**
+ * 作者・出典・ライセンス。登録者と作者が違うことがわかるように、必ず表示する
+ */
+function UserModelSource(props: { model: UserModel; isOwner: boolean }) {
   const { model } = props
   const licenseNote = licenseNoteText(model.sourceLicenseAllowsOtherServices)
   const baseNote = unsupportedBaseNoteText(
     model.baseModel,
     model.sourceBaseModel,
   )
-  if (!model.sourceUrl && !baseNote) return null
+  const creatorUrl = model.sourceCreator
+    ? civitaiCreatorUrl(model.sourceUrl, model.sourceCreator)
+    : null
+  const hasSource = Boolean(model.sourceUrl || model.sourceCreator)
   return (
     <div className="space-y-2 rounded-xl border bg-muted/30 px-3.5 py-3 text-xs leading-relaxed">
-      {model.sourceUrl && (
-        <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1">
-          <dt className="text-muted-foreground">元のモデル</dt>
-          <dd>
-            <a
-              href={model.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer nofollow ugc"
-              className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
-            >
-              {sourceSiteName(model.sourceUrl)} で見る
-              <ExternalLinkIcon className="size-3" />
-            </a>
-          </dd>
-          {model.sourceCreator && (
-            <>
-              <dt className="text-muted-foreground">作者</dt>
-              <dd className="truncate font-medium">{model.sourceCreator}</dd>
-            </>
+      <dl className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1.5">
+        <dt className="text-muted-foreground">作者</dt>
+        <dd className="min-w-0 font-medium">
+          {model.sourceCreator ? (
+            creatorUrl ? (
+              <a
+                href={creatorUrl}
+                target="_blank"
+                rel="noopener noreferrer nofollow ugc"
+                className="inline-flex max-w-full items-center gap-1 text-primary hover:underline"
+              >
+                <span className="truncate">{model.sourceCreator}</span>
+                <ExternalLinkIcon className="size-3 shrink-0" />
+              </a>
+            ) : (
+              <span className="truncate">{model.sourceCreator}</span>
+            )
+          ) : model.isOriginal ? (
+            <span>登録者本人（自作）</span>
+          ) : (
+            <span className="text-amber-700 dark:text-amber-400">未登録</span>
           )}
-        </dl>
+        </dd>
+        <dt className="text-muted-foreground">登録者</dt>
+        <dd className="min-w-0">
+          <UserModelAuthor userId={model.userId} user={model.user} linked />
+        </dd>
+        {model.sourceUrl && (
+          <>
+            <dt className="text-muted-foreground">元のモデル</dt>
+            <dd>
+              <a
+                href={model.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer nofollow ugc"
+                className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+              >
+                {sourceSiteName(model.sourceUrl)} で見る
+                <ExternalLinkIcon className="size-3" />
+              </a>
+            </dd>
+          </>
+        )}
+      </dl>
+      {hasSource && (
+        <p className="text-muted-foreground">
+          モデルの権利は作者にあります。登録者と作者は別の人の場合があります
+        </p>
+      )}
+      {!hasSource && !model.isOriginal && (
+        <p className="flex gap-1.5 text-amber-700 dark:text-amber-400">
+          <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0" />
+          {props.isOwner
+            ? "作者・出典が登録されていません。「編集」から作者を登録してください"
+            : "作者・出典が登録されていません。登録者がこのモデルの作者とは限りません"}
+        </p>
+      )}
+      {model.sourceLicense && (
+        <div className="space-y-1">
+          <p className="text-muted-foreground">作者のライセンス</p>
+          <ul className="flex flex-wrap gap-1.5">
+            {licenseItems(model.sourceLicense).map((item) => (
+              <li
+                key={item.label}
+                className={cn(
+                  "rounded-full border px-2 py-0.5",
+                  item.ok
+                    ? "border-emerald-500/40 text-emerald-700 dark:text-emerald-400"
+                    : "border-rose-500/40 text-rose-700 dark:text-rose-400",
+                )}
+              >
+                {item.label}: {item.ok ? "可" : "不可"}
+              </li>
+            ))}
+          </ul>
+          <p className="text-muted-foreground">
+            詳しい条件は元のモデルのページで確認してください
+          </p>
+        </div>
       )}
       {licenseNote && (
         <p className="flex gap-1.5 text-amber-700 dark:text-amber-400">
@@ -354,13 +444,7 @@ export function UserModelDetail(props: Props) {
             <h1 className="break-words font-bold text-2xl leading-tight tracking-tight">
               {model.name}
             </h1>
-            <UserModelAuthor
-              userId={model.userId}
-              user={model.user}
-              size="md"
-              linked
-            />
-            <UserModelSource model={model} />
+            <UserModelSource model={model} isOwner={isOwner} />
           </div>
 
           <div className="grid grid-cols-3 gap-2">
@@ -615,6 +699,9 @@ export function UserModelDetail(props: Props) {
             `元のモデルは${sourceSiteName(model.sourceUrl)}で公開されています${
               model.sourceCreator ? `（作者: ${model.sourceCreator}）` : ""
             }。`}
+          {!model.sourceUrl &&
+            model.sourceCreator &&
+            `作者は${model.sourceCreator}です。`}
         </p>
       </section>
 
