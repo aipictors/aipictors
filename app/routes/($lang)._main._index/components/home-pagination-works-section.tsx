@@ -8,10 +8,6 @@ import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { getTimeRangeDates } from "~/routes/($lang)._main._index/utils/works-utils"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
-  originalOnlyWhere,
-  useHomeOriginalOnly,
-} from "~/routes/($lang)._main._index/hooks/use-original-only"
-import {
   HomeNovelsWorkListItemFragment,
   HomeNovelsWorksSection,
 } from "~/routes/($lang)._main._index/components/home-novels-works-section"
@@ -47,7 +43,6 @@ export function HomePaginationWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const viewerRatings = useViewerRatings()
-  const { isOriginalOnly } = useHomeOriginalOnly()
 
   // SSR の初期作品は未ログイン状態で取得し CDN にキャッシュされているため、
   // ミュート・ブロック・R15表示設定が反映されていない。ログイン中は使わない。
@@ -60,7 +55,6 @@ export function HomePaginationWorksSection(props: Props) {
     (props.timeRange === undefined || props.timeRange === "ALL") &&
     !props.style &&
     !props.isOneWorkPerUser &&
-    !isOriginalOnly &&
     (props.initialWorks?.length ?? 0) > 0
 
   // 1ページあたりの件数（映像は少なめに）
@@ -99,8 +93,6 @@ export function HomePaginationWorksSection(props: Props) {
           style: props.style,
         }),
         ...(props.isOneWorkPerUser && { isOneWorkPerUser: true }),
-        // 「オリジナルのみ」（オリジナル系のタグのどれかが付いた作品）
-        ...originalOnlyWhere(isOriginalOnly),
         ...(!createdAtAfter && !createdAtBefore && { isNowCreatedAt: true }),
 
         // ★ 期間指定

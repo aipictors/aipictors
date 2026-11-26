@@ -1,13 +1,10 @@
 import { useSuspenseQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useContext, useEffect, useMemo } from "react"
+import { useContext, useEffect } from "react"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { useTranslation } from "~/hooks/use-translation"
-import { useHomeOriginalOnly } from "~/routes/($lang)._main._index/hooks/use-original-only"
-import { isOriginalWork } from "~/utils/original-work-tags"
 import {
   HomeNovelsWorkListItemFragment,
   HomeNovelsWorksSection,
@@ -37,9 +34,7 @@ type Props = {
  */
 export function HomeNewUsersWorkListSection(props: Props) {
   const appContext = useContext(AuthContext)
-  const t = useTranslation()
   const viewerRatings = useViewerRatings()
-  const { isOriginalOnly } = useHomeOriginalOnly()
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
     skip: appContext.isLoading || !viewerRatings.isReady,
@@ -51,34 +46,20 @@ export function HomeNewUsersWorkListSection(props: Props) {
     },
   })
 
-  // 新規ユーザの一覧はサーバーでタグを絞れないので、「オリジナルのみ」はここで絞る
-  const works = useMemo(() => {
-    const all = worksResp?.newUserWorks ?? []
-    return isOriginalOnly
-      ? all.filter((work) => isOriginalWork(work.tagNames))
-      : all
-  }, [worksResp?.newUserWorks, isOriginalOnly])
-
   useEffect(() => {
     if (props.updateWorks) {
-      props.updateWorks(works as FragmentOf<typeof PhotoAlbumWorkFragment>[])
+      props.updateWorks(
+        worksResp?.newUserWorks as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+      )
     }
-  }, [works, props.updateWorks])
+  }, [worksResp?.newUserWorks, props.updateWorks])
 
   return (
     <div className="space-y-4">
-      {isOriginalOnly && works.length === 0 && (
-        <p className="py-10 text-center text-muted-foreground text-sm">
-          {t(
-            "新規ユーザの作品に、オリジナル系のタグが付いたものはまだありません",
-            "No works from new users with original tags yet",
-          )}
-        </p>
-      )}
       {(props.workType === "WORK" || props.workType === null) && (
         <HomeWorkSection
           title={""}
-          works={works}
+          works={worksResp?.newUserWorks || []}
           isCropped={props.isCropped}
           isShowProfile={true}
           autoPlayVideoPreview={true}
@@ -88,14 +69,14 @@ export function HomeNewUsersWorkListSection(props: Props) {
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
         <HomeNovelsWorksSection
           title={""}
-          works={works}
+          works={worksResp?.newUserWorks || []}
           onSelect={props.onSelect}
         />
       )}
       {props.workType === "VIDEO" && (
         <HomeVideosWorksSection
           title={""}
-          works={works}
+          works={worksResp?.newUserWorks || []}
           isAutoPlay={true}
           onSelect={props.onSelect}
         />
@@ -111,7 +92,6 @@ const WorksQuery = graphql(
       limit: 20,
       where: $where
     ) {
-      tagNames
       ...HomeWork
       ...HomeNovelsWorkListItem
       ...HomeVideosWorkListItem

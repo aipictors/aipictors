@@ -5,8 +5,6 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
-import { useHomeOriginalOnly } from "~/routes/($lang)._main._index/hooks/use-original-only"
-import { isOriginalWork } from "~/utils/original-work-tags"
 
 type Props = {
   onSelect?: (workId: string) => void
@@ -24,17 +22,7 @@ export function HomePromotionStrip(props: Props) {
     },
   })
 
-  // 推薦の一覧はタグで絞れない（isRecommended と tagNames を一緒に指定すると tagNames が効かない）ので、ここで絞る
-  const { isOriginalOnly } = useHomeOriginalOnly()
-  const allWorks = data?.works ?? []
-  const works = isOriginalOnly
-    ? allWorks.filter((work) => isOriginalWork(work.tagNames))
-    : allWorks
-
-  // 「オリジナルのみ」で 1 件も残らなければ、欄ごと出さない
-  if (isOriginalOnly && data !== undefined && works.length === 0) {
-    return null
-  }
+  const works = data?.works ?? []
 
   return (
     // 読み込むまでも高さを取っておく（下のおすすめがずれないように）
