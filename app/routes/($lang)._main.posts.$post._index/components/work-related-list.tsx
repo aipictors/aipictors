@@ -15,7 +15,7 @@ import type { CarouselApi } from "~/components/ui/carousel"
 import { Separator } from "~/components/ui/separator"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { useTranslation } from "~/hooks/use-translation"
-import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
+import { useIsNearViewport } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
@@ -136,6 +136,10 @@ function WorkAuthorWorks(props: {
   const t = useTranslation()
   const client = useApolloClient()
   const [api, setApi] = useState<CarouselApi>()
+  // 一覧はサーバーの HTML から出す（検索エンジンが作品同士のリンクをたどれるように）。
+  // 続きの読み込みは、画面に近づいてから
+  const sectionRef = useRef<HTMLElement>(null)
+  const isNearViewport = useIsNearViewport(sectionRef)
   const [moreWorks, setMoreWorks] = useState<Props["works"]>([])
 
   const seenWorkIds = new Set<string>()
@@ -211,7 +215,7 @@ function WorkAuthorWorks(props: {
   }, [client, props.userId, props.ratings])
 
   useEffect(() => {
-    if (!api) {
+    if (!api || !isNearViewport) {
       return
     }
     const loadMoreIfNearEnd = () => {
@@ -228,16 +232,16 @@ function WorkAuthorWorks(props: {
       api.off("slidesInView", loadMoreIfNearEnd)
       api.off("reInit", loadMoreIfNearEnd)
     }
-  }, [api, loadMore])
+  }, [api, loadMore, isNearViewport])
 
   if (works.length === 0) {
     return null
   }
 
   return (
-    <section className="space-y-3">
+    <section ref={sectionRef} className="space-y-3">
       {props.header}
-      <WorkLazySection minHeightClassName="min-h-32">
+      <div>
         <CarouselWithGradation
           opts={authorWorksCarouselOptions}
           setApi={setApi}
@@ -268,7 +272,7 @@ function WorkAuthorWorks(props: {
             </div>
           ))}
         />
-      </WorkLazySection>
+      </div>
     </section>
   )
 }

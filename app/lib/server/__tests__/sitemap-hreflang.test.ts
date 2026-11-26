@@ -18,3 +18,12 @@ describe("toUrlSetXml", () => {
     expect(xml).not.toContain("hreflang")
   })
 })
+
+describe("作品の詳細ページ", () => {
+  test("英語の URL（noindex）を載せず、hreflang も付けない", () => {
+    const xml = toUrlSetXml([{ loc: `${SITE_URL}/posts/123` }])
+    expect(xml).toContain(`<loc>${SITE_URL}/posts/123</loc>`)
+    expect(xml).not.toContain("/en/posts/")
+    expect(xml).not.toContain("hreflang")
+  })
+})

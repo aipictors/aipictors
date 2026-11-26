@@ -53,3 +53,30 @@ describe("日本語だけのページ（解説記事）", () => {
     expect(urls.canonical).toBe(`${SITE_URL}/en/prompts/tags/猫耳`)
   })
 })
+
+describe("作品の詳細ページ（英語版は noindex）", () => {
+  test("日本語・英語・R18 とも hreflang を出さない", () => {
+    for (const path of [
+      "/posts/123",
+      "/en/posts/123",
+      "/r/posts/123",
+      "/en/r/posts/123",
+    ]) {
+      expect(buildAlternateLocaleUrls(path, SITE_URL).hasLocaleAlternates).toBe(
+        false,
+      )
+    }
+  })
+
+  test("作品の一覧などは今までどおり hreflang を出す", () => {
+    for (const path of ["/posts", "/posts/2d", "/en", "/tags/猫"]) {
+      expect(buildAlternateLocaleUrls(path, SITE_URL).hasLocaleAlternates).toBe(
+        true,
+      )
+    }
+    expect(
+      buildAlternateLocaleUrls("/guides/prompt-basics", SITE_URL)
+        .hasLocaleAlternates,
+    ).toBe(false)
+  })
+})

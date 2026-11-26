@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { type RefObject, useEffect, useRef, useState } from "react"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -9,30 +9,42 @@ type Props = {
 }
 
 /**
- * 画面に近づいてから中身を描画する（作品ページの下の方の読み込みを後回しにする）
+ * 要素が画面に近づいたら true（一度 true になったら戻さない）
  */
-export function WorkLazySection(props: Props) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
+export function useIsNearViewport(
+  ref: RefObject<Element | null>,
+  rootMargin = "600px",
+) {
+  const [isNear, setIsNear] = useState(false)
 
   useEffect(() => {
     const element = ref.current
     if (!element || !("IntersectionObserver" in window)) {
-      setIsVisible(true)
+      setIsNear(true)
       return
     }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true)
+          setIsNear(true)
           observer.disconnect()
         }
       },
-      { rootMargin: props.rootMargin ?? "600px" },
+      { rootMargin },
     )
     observer.observe(element)
     return () => observer.disconnect()
-  }, [props.rootMargin])
+  }, [ref, rootMargin])
+
+  return isNear
+}
+
+/**
+ * 画面に近づいてから中身を描画する（作品ページの下の方の読み込みを後回しにする）
+ */
+export function WorkLazySection(props: Props) {
+  const ref = useRef<HTMLDivElement>(null)
+  const isVisible = useIsNearViewport(ref, props.rootMargin)
 
   return (
     <div ref={ref} className={cn(!isVisible && props.minHeightClassName)}>

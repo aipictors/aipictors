@@ -158,6 +158,16 @@ export const isJaOnlyPath = (pathname: string) => {
   return !isSensitive && JA_ONLY_PATH.test(remainder)
 }
 
+/**
+ * 作品の詳細ページ（/posts/:id、/r/posts/:id）。英語の URL は検索に載せない（noindex）ので、
+ * hreflang・サイトマップで英語版を案内しない
+ */
+const WORK_DETAIL_PATH =
+  /^\/posts\/(?:\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/?$/i
+
+export const isWorkDetailPath = (pathname: string) =>
+  WORK_DETAIL_PATH.test(parseLocalePath(pathname).remainder)
+
 const toCanonicalPath = (pathname: string) => {
   const { locale, isSensitive, remainder } = parseLocalePath(pathname)
   if (isJaOnlyPath(pathname)) {
@@ -182,6 +192,9 @@ export const buildAlternateLocaleUrls = (
   return {
     /** 日本語だけのページ。hreflang を出さない */
     isJaOnly: isJaOnlyPath(pathname),
+    /** 日本語版・英語版を hreflang で互いに案内する（日本語だけのページ・作品の詳細ページは出さない） */
+    hasLocaleAlternates:
+      !isJaOnlyPath(pathname) && !isWorkDetailPath(pathname),
     canonical:
       `${siteUrl}${normalizeLocalePath(pathname)}${normalizedSearch}`,
     ja: `${siteUrl}${jaPath}${normalizedSearch}`,

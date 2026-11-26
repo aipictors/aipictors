@@ -29,6 +29,10 @@ import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._ind
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 import { redirectToWorkRatingPath } from "~/utils/work-rating-redirect"
 import { createMeta } from "~/utils/create-meta"
+import {
+  isEnglishLang,
+  withEnglishWorkRobots,
+} from "~/utils/english-work-robots"
 import { getJstDate } from "~/utils/jst-date"
 import {
   applyWorkLocalization,
@@ -163,6 +167,8 @@ export async function loader(props: LoaderFunctionArgs) {
           : localization
             ? "private, max-age=0"
             : PUBLIC_POST_CACHE_CONTROL,
+        // 英語の作品ページは検索に載せない（app/utils/english-work-robots.ts）
+        ...(isEnglishLang(props.params.lang) && { "X-Robots-Tag": "noindex" }),
       },
     },
   )
@@ -261,11 +267,11 @@ export const meta: MetaFunction = (props) => {
   // メイン画像の先読みは、画面に合う縮小版を選べる Link ヘッダー（app/lib/image-preload-links.ts）で行う。
   // ここで原寸の URL を preload すると、縮小版とは別に原寸も読んでいた
   if (work.work.accessType !== "PUBLIC" && work.work.accessType !== "SILENT") {
-    return metaTags
+    return withEnglishWorkRobots(metaTags, props.params.lang)
   }
   // URL を貼るだけで埋め込みにするサービス向け（app/lib/work-embed.ts）
   return [
-    ...metaTags,
+    ...withEnglishWorkRobots(metaTags, props.params.lang),
     {
       tagName: "link",
       rel: "alternate",
@@ -276,10 +282,14 @@ export const meta: MetaFunction = (props) => {
   ]
 }
 
-export const headers: HeadersFunction = ({ loaderHeaders }) => ({
-  "Cache-Control":
-    loaderHeaders.get("Cache-Control") ?? config.cacheControl.short,
-})
+export const headers: HeadersFunction = ({ loaderHeaders }) => {
+  const robots = loaderHeaders.get("X-Robots-Tag")
+  return {
+    "Cache-Control":
+      loaderHeaders.get("Cache-Control") ?? config.cacheControl.short,
+    ...(robots && { "X-Robots-Tag": robots }),
+  }
+}
 
 export default function Work() {
   const t = useTranslation()

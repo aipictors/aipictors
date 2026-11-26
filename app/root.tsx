@@ -686,7 +686,7 @@ export function Layout(props: Props): React.ReactNode {
             }}
           />
         )}
-        {!alternateLocaleUrls.isJaOnly && !hasNoEnglishVersion && (
+        {alternateLocaleUrls.hasLocaleAlternates && !hasNoEnglishVersion && (
           <>
             <link rel="alternate" hrefLang="ja" href={alternateLocaleUrls.ja} />
             <link rel="alternate" hrefLang="en" href={alternateLocaleUrls.en} />

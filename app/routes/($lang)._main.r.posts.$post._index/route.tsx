@@ -12,6 +12,7 @@ import {
   useRouteError,
 } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
+import { isbot } from "isbot"
 import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
 import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
 import { AppErrorPage } from "~/components/app/app-error-page"
@@ -33,6 +34,10 @@ import {
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { SensitiveWorkContainer } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
+import {
+  isEnglishLang,
+  withEnglishWorkRobots,
+} from "~/utils/english-work-robots"
 import {
   isIndexableSensitiveWork,
   isSuggestableSensitiveTag,
@@ -87,6 +92,8 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
+  const isCrawler = isbot(props.request.headers.get("user-agent"))
+
   // 作品・コメント・新着コメント・受賞作品は互いに依存しないので並行して取る（以前は 1 つずつ待っていた）
   const [workResp, workCommentsResp, newComments, awardWorks] =
     await Promise.all([
@@ -95,6 +102,10 @@ export async function loader(props: LoaderFunctionArgs) {
         variables: {
           id: props.params.post,
         },
+        // クローラーの表示は作品の閲覧数に数えない（全年齢の作品ページと同じ）
+        ...(isCrawler && {
+          context: { headers: { "x-aipictors-no-view": "1" } },
+        }),
       }),
       loaderClient.query({
         query: workCommentsQuery,
@@ -160,17 +171,29 @@ export async function loader(props: LoaderFunctionArgs) {
       newComments: newComments.data.newComments,
       awardWorks: awardWorks.data.workAwards,
     },
-    // 一部が欠けた内容はキャッシュしない
-    workResp.errors?.length || workCommentsResp.errors?.length
-      ? { headers: { "Cache-Control": "no-store" } }
-      : undefined,
+    {
+      headers: {
+        // 一部が欠けた内容はキャッシュしない
+        ...(Boolean(
+          workResp.errors?.length || workCommentsResp.errors?.length,
+        ) && {
+          "Cache-Control": "no-store",
+        }),
+        // 英語の作品ページは検索に載せない（app/utils/english-work-robots.ts）
+        ...(isEnglishLang(props.params.lang) && { "X-Robots-Tag": "noindex" }),
+      },
+    },
   )
 }
 
-export const headers: HeadersFunction = ({ loaderHeaders }) => ({
-  "Cache-Control":
-    loaderHeaders.get("Cache-Control") ?? config.cacheControl.oneDay,
-})
+export const headers: HeadersFunction = ({ loaderHeaders }) => {
+  const robots = loaderHeaders.get("X-Robots-Tag")
+  return {
+    "Cache-Control":
+      loaderHeaders.get("Cache-Control") ?? config.cacheControl.oneDay,
+    ...(robots && { "X-Robots-Tag": robots }),
+  }
+}
 
 export const meta: MetaFunction = (props) => {
   if (!props.data) {
@@ -219,7 +242,7 @@ export const meta: MetaFunction = (props) => {
     ? work.work.enDescription || work.work.description || fallbackDescription
     : work.work.description || fallbackDescription
 
-  return createSensitiveMeta(
+  const metaTags = createSensitiveMeta(
     { ...META.POSTS, isIndex },
     {
       title: `${workTitle}${userPart}`,
@@ -231,6 +254,8 @@ export const meta: MetaFunction = (props) => {
     },
     props.params.lang,
   )
+  // 英語の作品ページは noindex, follow（もともと noindex の作品はそのまま）
+  return withEnglishWorkRobots(metaTags, props.params.lang)
 }
 
 export default function Work() {

@@ -2,6 +2,7 @@ import { config } from "~/config"
 import {
   buildLocalePath,
   isJaOnlyPath,
+  isWorkDetailPath,
   parseLocalePath,
 } from "~/utils/locale-path"
 import { fetchPublicUserModels } from "~/lib/server/user-models.server"
@@ -52,10 +53,11 @@ const escapeXml = (value: string) =>
  */
 const toLocalizedUrls = (url: SitemapUrl) => {
   const path = url.loc.slice(SITE_URL.length) || "/"
-  // R18 のページ・日本語だけのページ（解説記事）は英語の検索に広げない
+  // R18 のページ・日本語だけのページ（解説記事）・作品の詳細ページ（英語版は noindex）は英語の検索に広げない
   if (
     parseLocalePath(path).isSensitive ||
     isJaOnlyPath(path) ||
+    isWorkDetailPath(path) ||
     url.hasEnglish === false
   ) {
     return [{ url, loc: url.loc, alternates: "" }]
