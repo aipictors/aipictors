@@ -318,10 +318,10 @@ function SortHeader(props: {
             isActive && props.sort === "DESC" ? "ASC" : "DESC",
           )
         }
+        // アイコンはどの列も文字の左。右寄せの列でも文字の右端が数字の右端に揃う（右に置くと薄いアイコンの幅だけ文字がずれて見える）
         className={cn(
           "inline-flex items-center gap-0.5 whitespace-nowrap rounded hover:text-foreground",
           isActive && "text-foreground",
-          props.align === "right" && "flex-row-reverse",
         )}
       >
         <Icon

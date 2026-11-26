@@ -13,5 +13,7 @@ describe("自分の作品の表", () => {
     expect(source).toContain(
       'className="whitespace-nowrap px-2 py-2 text-right tabular-nums"',
     )
+    // 並べ替えアイコンを文字の右に置くと、文字の右端が数字の右端からずれる
+    expect(source).not.toContain("flex-row-reverse")
   })
 })
