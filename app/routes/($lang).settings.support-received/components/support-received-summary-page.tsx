@@ -45,6 +45,7 @@ import { PremiumCoinSupportSetting } from "~/routes/($lang).settings/components/
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
+import { isEmptyComment } from "~/utils/empty-comment"
 
 type ReceivedTransferHistoryItem = {
   senderUserId: string
@@ -114,7 +115,10 @@ export function SupportReceivedSummaryPage() {
       fetchPolicy: "cache-and-network",
     })
 
-  const receivedComments = receivedCommentsData?.receivedWorkComments ?? []
+  // 本文もスタンプも推しも無いコメント（オリジナルでない作品のプレミアムの推しだけのもの）は出さない
+  const receivedComments = (
+    receivedCommentsData?.receivedWorkComments ?? []
+  ).filter((comment) => comment.isDeleted || !isEmptyComment(comment))
 
   // 受け取った推しの報酬（円）。参加していない人には参加の案内を出す
   const reward = useCreatorRewardEarnings(

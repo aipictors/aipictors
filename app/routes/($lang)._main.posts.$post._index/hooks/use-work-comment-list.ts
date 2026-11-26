@@ -33,6 +33,7 @@ import {
 import { usePremiumCheckoutConfirmation } from "~/routes/($lang)._main.posts.$post._index/hooks/use-premium-checkout-confirmation"
 import type { CoinSummarySupportTarget } from "~/utils/fetch-coin-summary-shared"
 import { usePremiumSupportOriginalOnlyErrorText } from "~/components/support-super-chat"
+import { isEmptyComment } from "~/utils/empty-comment"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import {
   canSupportWithPremium,
@@ -144,7 +145,9 @@ export function useWorkCommentList(props: WorkCommentListProps) {
   const showComments = props.comments.filter(
     (comment) =>
       !hideCommentIds.includes(comment.id) &&
-      !(isHideCoinSupport && isSupportOnlyComment(comment)),
+      !(isHideCoinSupport && isSupportOnlyComment(comment)) &&
+      // 中身のないコメント（推しだけで、その推しを出さない作品のもの）は出さない。返信が付いていれば残す
+      !(isEmptyComment(comment) && (comment.responses?.length ?? 0) === 0),
   )
 
   const authContext = useContext(AuthContext)

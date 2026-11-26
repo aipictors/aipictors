@@ -48,6 +48,7 @@ test("返信済みのコメントは未返信にしない", () => {
       __typename: "WorkCommentNotificationNode",
       id: "c",
       createdAt: 2,
+      message: "ありがとう",
       myReplies: [{ id: "r" }],
     },
   ])
@@ -60,6 +61,7 @@ test("いいね（👍）したコメントは未返信にしない", () => {
       __typename: "WorkCommentNotificationNode",
       id: "c",
       createdAt: 2,
+      message: "ありがとう",
       myReplies: [],
       isLikedByMe: true,
     },
@@ -80,12 +82,14 @@ test("作品のない入賞はコインのお知らせ、返信だけ返信先�
       __typename: "WorkCommentReplyNotificationNode",
       id: "reply",
       createdAt: 1,
+      message: "返信",
       comment: { text: "親" },
     },
     {
       __typename: "WorkCommentNotificationNode",
       id: "comment",
       createdAt: 0,
+      message: "コメント",
       comment: { text: "無視" },
     },
   ])
@@ -183,4 +187,24 @@ test("いいねの通知は、まとまっているいいねの数を likeCount 
     },
   ])
   expect(items.map((item) => item.likeCount)).toEqual([3, 1])
+})
+
+test("本文もスタンプも推しも無いコメントの通知は出さない", () => {
+  const items = toPanelItems([
+    {
+      __typename: "WorkCommentNotificationNode",
+      id: "empty",
+      createdAt: 2,
+      message: "",
+      support: null,
+    },
+    {
+      __typename: "WorkCommentNotificationNode",
+      id: "support",
+      createdAt: 1,
+      message: "",
+      support: { freeCoinAmount: 10, premiumCoinAmount: 0, totalPt: 10 },
+    },
+  ])
+  expect(items.map((item) => item.id)).toEqual(["support"])
 })

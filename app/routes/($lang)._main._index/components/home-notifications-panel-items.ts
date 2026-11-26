@@ -1,5 +1,6 @@
 import { requestNotificationPath } from "~/lib/open-requests-api"
 import type { NotificationPanelKind } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
+import { isEmptyComment } from "~/utils/empty-comment"
 import { toPopularWorksPathFromNotification } from "~/utils/popular-works-date"
 
 export type PanelSupport = {
@@ -120,6 +121,16 @@ export const toPanelItems = (nodes: unknown): PanelItem[] =>
   ((nodes ?? []) as PanelNode[])
     .map(toPanelItem)
     .filter((item) => item !== null)
+    // 本文もスタンプも推しも無いコメントの通知（オリジナルでない作品のプレミアムの推しだけのもの）は出さない
+    .filter(
+      (item) =>
+        (item.kind !== "comment" && item.kind !== "reply") ||
+        !isEmptyComment({
+          text: item.message,
+          sticker: item.stickerUrl,
+          support: item.support,
+        }),
+    )
     .sort((a, b) => b.createdAt - a.createdAt)
 
 /**

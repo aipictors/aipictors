@@ -13,6 +13,7 @@ import { Loader2, MessageCircleIcon, Sticker, Type } from "lucide-react"
 import { AuthContext } from "~/contexts/auth-context"
 import { toast } from "sonner"
 import { cn } from "~/lib/utils"
+import { isEmptyComment } from "~/utils/empty-comment"
 import {
   NewCommentCard,
   type NewCommentItem,
@@ -59,6 +60,11 @@ export function NewCommentsPageContent(props: Props) {
   const [offset, setOffset] = useState(PAGE_SIZE)
   const [allComments, setAllComments] = useState<Comment[]>(
     props.initialComments || [],
+  )
+  // 本文もスタンプも無い（推しだけの）コメントは出さない（ページ送りの位置は allComments で数える）
+  const visibleComments = allComments.filter(
+    (item) =>
+      !isEmptyComment({ text: item.comment?.text, sticker: item.sticker }),
   )
   /** もっと見るの読み込み中 */
   const [isLoading, setIsLoading] = useState(false)
@@ -332,7 +338,7 @@ export function NewCommentsPageContent(props: Props) {
             </div>
           ))}
         </div>
-      ) : allComments.length === 0 ? (
+      ) : visibleComments.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed px-4 py-12 text-center">
           <MessageCircleIcon className="size-10 text-muted-foreground" />
           <p className="font-semibold">
@@ -351,7 +357,7 @@ export function NewCommentsPageContent(props: Props) {
         </div>
       ) : (
         <ul className="divide-y sm:space-y-3 sm:divide-y-0">
-          {allComments.map((item) => {
+          {visibleComments.map((item) => {
             const commentId = item.comment?.id
             const serverIsLiked = item.comment?.isLiked ?? false
             const isLiked = commentId
@@ -387,7 +393,7 @@ export function NewCommentsPageContent(props: Props) {
       )}
 
       {/* もっと見る */}
-      {!isReplacing && allComments.length > 0 && (
+      {!isReplacing && visibleComments.length > 0 && (
         <div className="flex justify-center py-6">
           {hasMore ? (
             <Button
