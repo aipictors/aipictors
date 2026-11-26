@@ -45,6 +45,10 @@ lock = threading.Lock()
 # 判定に使うタグ（しきい値はここで調整する）
 GENITAL_TAGS = ["pussy", "penis", "sex", "anus", "cum", "testicles", "fellatio"]
 NIPPLE_TAGS = ["nipples"]
+# 男性の上半身裸は規約で R-15（R-18 は女性の胸の露出）。モデルは男性の乳首にも nipples を付けるので、
+# 男性が写っていて女性の胸が見えない絵は、乳首だけでは R-18 にしない（抱き枕の絵などで 1girl が付くことがあるので、人数のタグではなく胸のタグで見る）
+MALE_TAGS = ["1boy", "multiple_boys", "male_focus", "topless_male", "pectorals"]
+FEMALE_CHEST_TAGS = ["breasts", "small_breasts", "medium_breasts", "large_breasts", "flat_chest"]
 # 規約で R-15 にあたるもの（下着・水着）。モデルの「sensitive」は普通の絵にも付くので使わない
 R15_TAGS = ["panties", "underwear", "bikini", "swimsuit", "lingerie"]
 GORE_TAGS = ["guro", "intestines", "decapitation", "severed_head", "disembowelment"]
@@ -87,6 +91,9 @@ def judge(probs):
     rating = {name: float(probs[i]) for name, i in RATING_INDEX.items()}
     genital = score(probs, GENITAL_TAGS)
     nipples = score(probs, NIPPLE_TAGS)
+    male = score(probs, MALE_TAGS)
+    female = score(probs, FEMALE_CHEST_TAGS)
+    male_only = male >= 0.5 and female < 0.3
     r15 = score(probs, R15_TAGS)
     gore = score(probs, GORE_TAGS)
     child = score(probs, CHILD_TAGS)
@@ -97,10 +104,14 @@ def judge(probs):
     reasons = []
     level = "G"
     # 取り違えると投稿者に迷惑なので、はっきりしたものだけにする（実際の投稿で確かめたしきい値）
-    if rating["questionable"] >= 0.6 or r15 >= 0.8:
+    if rating["questionable"] >= 0.6 or r15 >= 0.8 or (male_only and nipples >= 0.7):
         level = "R15"
         reasons.append("SUGGESTIVE")
-    if rating["explicit"] >= 0.6 or genital >= 0.7 or nipples >= 0.7:
+    if (
+        rating["explicit"] >= 0.6
+        or genital >= 0.7
+        or (nipples >= 0.7 and not male_only)
+    ):
         level = "R18"
         reasons.append("NUDITY")
     if gore >= 0.4:
@@ -126,6 +137,8 @@ def judge(probs):
             **{k: round(v, 3) for k, v in rating.items()},
             "genital": round(genital, 3),
             "nipples": round(nipples, 3),
+            "male": round(male, 3),
+            "female": round(female, 3),
             "underwear": round(r15, 3),
             "gore": round(gore, 3),
             "child": round(child, 3),
