@@ -8,7 +8,9 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { useToast } from "~/hooks/use-toast"
 import { Link } from "~/lib/app/locale-router"
+import type { WorkOriginalJudgmentDetail } from "~/lib/work-original-judgment"
 import { AdminWorkExpandedDetails } from "~/routes/($lang)._main.admin.works/components/admin-work-expanded-details"
+import { AdminWorkOriginalJudgmentPanel } from "~/routes/($lang)._main.admin.works/components/admin-work-original-judgment-panel"
 import { AdminWorkPrivatePanel } from "~/routes/($lang)._main.admin.works/components/admin-work-private-panel"
 import {
   adminWorkCommentsQuery,
@@ -35,6 +37,11 @@ import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
 type WorkModerationCardProps = {
   work: WorkItem
   onDone: () => Promise<void>
+  /** 運営のオリジナル判定。undefined は読み込み中、null は未判定 */
+  originalJudgment: WorkOriginalJudgmentDetail | null | undefined
+  onOriginalJudgmentChange: (
+    judgment: WorkOriginalJudgmentDetail | null,
+  ) => void
 }
 
 export function WorkModerationCard(props: WorkModerationCardProps) {
@@ -277,6 +284,11 @@ export function WorkModerationCard(props: WorkModerationCardProps) {
       </CardHeader>
 
       <CardContent className="space-y-4">
+        <AdminWorkOriginalJudgmentPanel
+          workId={props.work.id}
+          judgment={props.originalJudgment}
+          onChange={props.onOriginalJudgmentChange}
+        />
         <div className="grid gap-4 xl:grid-cols-[minmax(320px,560px)_minmax(420px,1fr)]">
           {props.work.type === "WORK" &&
           (props.work.imageURL || props.work.subWorks.length > 0) ? (

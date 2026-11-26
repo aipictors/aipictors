@@ -2,7 +2,9 @@
 
 - Aipictors does not reject fan works (works based on existing titles or characters), and does not ban them across the board.
 - At the same time, **money only moves for original works**. Out of consideration for rights holders and for the creators who make the works, we keep money from changing hands over fan works.
-  - Support with **Premium Coins** (purchased coins), and the **Creator Rewards** based on it, only apply to support for original works (works tagged "オリジナル" (original), "オリキャラ" (original character), "創作" (original creation) and similar).
+  - Support with **Premium Coins** (purchased coins), and the **Creator Rewards** based on it, only apply to support for original works.
+    - Aipictors judges and records whether a work is original, and shows an "Original (verified)" badge on the work page. Works Aipictors judges to be fan works are excluded regardless of their tags.
+    - Works Aipictors has not judged yet are checked by tags such as "オリジナル" (original), "オリキャラ" (original character) and "創作" (original creation).
   - Support with **Free Coins**, and support pt, can still be sent to any work, including fan works.
   - Support from a profile page (support for the creator, not tied to a work) can also use Premium Coins.
 - Whether fan works are allowed is decided by each rights holder (the original author, publisher, game company and so on). **Checking and following the rights holder's guidelines and terms is the poster's responsibility.**
@@ -11,7 +13,7 @@
 ## For creators
 
 - Before posting a fan work, check the fan work guidelines on the original title's official site.
-- Tag your original works with "オリジナル" (original) or a similar tag. Tagged works can receive Premium Coin support (and count toward Creator Rewards). Please do not use these tags on fan works.
+- Please do not tag fan works with "オリジナル" (original) or similar tags. When Aipictors' judgment and a work's tags differ, Aipictors' judgment takes priority.
 - If a title's guidelines forbid tips or donations, you can turn on "Do not accept support" under "Receiving support" in Settings to stop receiving support.
 - These points are set by our terms:
   - Fan fiction (novels) may only be posted when the rights holder has publicly stated their view on fan works ([Terms of Service](/terms)).

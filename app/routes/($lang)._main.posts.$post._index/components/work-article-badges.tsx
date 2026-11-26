@@ -1,7 +1,9 @@
 import type { FragmentOf } from "gql.tada"
+import { BadgeCheck } from "lucide-react"
 import { Badge } from "~/components/ui/badge"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
+import { useWorkOriginalJudgment } from "~/lib/work-original-judgment"
 import type { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article-fragments"
 import {
   toAiRankingPath,
@@ -11,15 +13,32 @@ import { toRatingText } from "~/utils/work/to-rating-text"
 import { toStyleText } from "~/utils/work/to-style-text"
 
 /**
- * モデル、対象年齢、スタイル、入賞のバッジ
+ * オリジナル（運営の判定）、モデル、対象年齢、スタイル、入賞のバッジ
  */
 export function WorkArticleBadges(props: {
   work: FragmentOf<typeof workArticleFragment>
 }) {
   const t = useTranslation()
+  const originalJudgment = useWorkOriginalJudgment(props.work.id)
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {originalJudgment === "ORIGINAL" && (
+        <Link to="/fan-works-policy">
+          <Badge
+            className="flex items-center gap-1"
+            title={t(
+              "運営がオリジナル作品と確認した作品です",
+              "Confirmed as an original work by Aipictors",
+            )}
+          >
+            <BadgeCheck className="size-4" />
+            <span className="text-md">
+              {t("オリジナル（運営確認）", "Original (verified)")}
+            </span>
+          </Badge>
+        </Link>
+      )}
       {props.work.model !== undefined &&
         props.work.model !== null &&
         props.work.model?.length !== 0 && (

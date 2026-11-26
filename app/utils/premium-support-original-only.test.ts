@@ -18,6 +18,30 @@ describe("canSupportWithPremium", () => {
     expect(canSupportWithPremium({ workId: "1", tagNames: null })).toBe(false)
   })
 
+  test("運営の判定があればタグより優先", () => {
+    expect(
+      canSupportWithPremium({
+        workId: "1",
+        tagNames: ["初音ミク"],
+        originalJudgment: "ORIGINAL",
+      }),
+    ).toBe(true)
+    expect(
+      canSupportWithPremium({
+        workId: "1",
+        tagNames: ["オリジナル"],
+        originalJudgment: "FAN_WORK",
+      }),
+    ).toBe(false)
+    expect(
+      canSupportWithPremium({
+        workId: "1",
+        tagNames: ["オリジナル"],
+        originalJudgment: null,
+      }),
+    ).toBe(true)
+  })
+
   test("作品を通さないユーザーへの推し（プロフィール）はどんな作品の人にもプレミアム可", () => {
     expect(canSupportWithPremium({ tagNames: null })).toBe(true)
     expect(canSupportWithPremium({ workId: null, tagNames: ["初音ミク"] })).toBe(
@@ -37,6 +61,11 @@ describe("isPremiumSupportOriginalOnlyError", () => {
       isPremiumSupportOriginalOnlyError({
         message:
           "プレミアムコインでの推しは、オリジナル作品（「オリジナル」などのタグが付いた作品）だけに使えます",
+      }),
+    ).toBe(true)
+    expect(
+      isPremiumSupportOriginalOnlyError({
+        message: "プレミアムコインでの推しは、オリジナル作品だけに使えます",
       }),
     ).toBe(true)
     expect(

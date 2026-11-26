@@ -9,6 +9,7 @@ import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
+import { useWorkOriginalJudgment } from "~/lib/work-original-judgment"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import {
   type CommentListItemFragment,
@@ -105,9 +106,11 @@ export function useWorkCommentList(props: WorkCommentListProps) {
   })
   const [isLoadingCoinSummary, setIsLoadingCoinSummary] = useState(false)
   // プレミアムコインはオリジナル作品への推しだけ（二次創作にお金が動かないように）
+  const originalJudgment = useWorkOriginalJudgment(props.workId)
   const isPremiumAllowedForWork = canSupportWithPremium({
     workId: props.workId,
     tagNames: props.workTagNames,
+    originalJudgment,
   })
   const [supportSuccessState, setSupportSuccessState] = useState<{
     message: string

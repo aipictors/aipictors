@@ -35,6 +35,7 @@ import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { useWorkOriginalJudgment } from "~/lib/work-original-judgment"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import {
   type CoinSummarySupportTarget,
@@ -129,9 +130,11 @@ function SupportButtonContent({
   const t = useTranslation()
   const premiumOriginalOnlyErrorText = usePremiumSupportOriginalOnlyErrorText()
   // 作品からの推しのプレミアムコインはオリジナル作品だけ（プロフィールからの推しはいつもプレミアム可）
+  const originalJudgment = useWorkOriginalJudgment(workId)
   const isPremiumAllowedHere = canSupportWithPremium({
     workId,
     tagNames: workTagNames,
+    originalJudgment,
   })
   const [isOpen, setIsOpen] = useState(false)
   const [isInfoOpen, setIsInfoOpen] = useState(false)

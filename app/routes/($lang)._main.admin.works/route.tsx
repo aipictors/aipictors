@@ -10,6 +10,10 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
 import { AuthContext } from "~/contexts/auth-context"
 import { useToast } from "~/hooks/use-toast"
+import {
+  fetchWorkOriginalJudgmentsForAdmin,
+  type WorkOriginalJudgmentDetail,
+} from "~/lib/work-original-judgment"
 import { WorkModerationCard } from "~/routes/($lang)._main.admin.works/components/admin-work-moderation-card"
 import { AdminWorksFilterCard } from "~/routes/($lang)._main.admin.works/components/admin-works-filter-card"
 import {
@@ -162,6 +166,33 @@ export default function AdminWorksPage() {
   })
 
   const works = (worksData?.works ?? []) as WorkItem[]
+  const workIdsKey = works.map((work) => work.id).join(",")
+
+  // 運営のオリジナル判定（ページの作品をまとめて 1 回で読む）。null は読み込み中
+  const [originalJudgments, setOriginalJudgments] = useState<Record<
+    string,
+    WorkOriginalJudgmentDetail
+  > | null>(null)
+  useEffect(() => {
+    if (!workIdsKey) return
+    let active = true
+    setOriginalJudgments(null)
+    fetchWorkOriginalJudgmentsForAdmin(workIdsKey.split(","))
+      .then((map) => {
+        if (active) setOriginalJudgments(map ?? {})
+      })
+      .catch((error) => {
+        if (!active) return
+        setOriginalJudgments({})
+        toast({
+          title: "オリジナル判定を読めませんでした",
+          description: error instanceof Error ? error.message : undefined,
+        })
+      })
+    return () => {
+      active = false
+    }
+  }, [workIdsKey])
   const worksCount = worksData?.worksCount ?? 0
   const maxPage = Math.max(Math.ceil(worksCount / PAGE_SIZE) - 1, 0)
 
@@ -288,6 +319,19 @@ export default function AdminWorksPage() {
             <WorkModerationCard
               key={work.id}
               work={work}
+              originalJudgment={
+                originalJudgments === null
+                  ? undefined
+                  : (originalJudgments[work.id] ?? null)
+              }
+              onOriginalJudgmentChange={(judgment) => {
+                setOriginalJudgments((prev) => {
+                  const next = { ...(prev ?? {}) }
+                  if (judgment) next[work.id] = judgment
+                  else delete next[work.id]
+                  return next
+                })
+              }}
               onDone={async () => {
                 await refetch()
                 toast({
