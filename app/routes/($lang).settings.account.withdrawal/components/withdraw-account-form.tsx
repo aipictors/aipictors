@@ -23,7 +23,10 @@ import { useTranslation } from "~/hooks/use-translation"
 import { logoutFirebase } from "~/utils/auth-session-backup"
 import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
 
-export function WithdrawAccountForm() {
+export function WithdrawAccountForm(props: {
+  /** 退会の直前に呼ぶ（理由のアンケートを送る。失敗しても退会は続ける） */
+  beforeWithdraw?: () => Promise<void>
+}) {
   const t = useTranslation()
   const { data, loading: isUserLoading } = useQuery(viewerUserQuery)
   const irreversibleConfirmId = useId()
@@ -79,6 +82,7 @@ export function WithdrawAccountForm() {
     }
 
     try {
+      await props.beforeWithdraw?.().catch(() => undefined)
       await mutation()
       resetCookieLoginToken()
 

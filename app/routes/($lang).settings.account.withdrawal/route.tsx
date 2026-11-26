@@ -5,8 +5,8 @@ import type {
 } from "@remix-run/cloudflare"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
-import { WithdrawAccountForm } from "~/routes/($lang).settings.account.withdrawal/components/withdraw-account-form"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
+import { AccountLeaveFlow } from "~/routes/($lang).settings.account.withdrawal/components/account-leave-flow"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -33,7 +33,7 @@ export default function AccountWithdrawal() {
       <div className="block md:hidden">
         <SettingsHeader title={t("退会", "Withdraw Account")} />
       </div>
-      <WithdrawAccountForm />
+      <AccountLeaveFlow />
     </div>
   )
 }

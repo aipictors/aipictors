@@ -81,6 +81,13 @@ const AchievementWatcher = lazy(() =>
   })),
 )
 
+// アカウントを一時停止している人に「再開しますか？」を出す（画面を出してから読み込む）
+const AccountPauseWatcher = lazy(() =>
+  import("~/components/account-pause/account-pause-watcher").then((mod) => ({
+    default: mod.AccountPauseWatcher,
+  })),
+)
+
 // 紹介リンク（?ref=）を覚えて、登録したあとでひも付ける（画面を出してから読み込む）
 const ReferralWatcher = lazy(() =>
   import("~/components/referral/referral-watcher").then((mod) => ({
@@ -851,6 +858,9 @@ export default function App(): React.ReactNode {
           </Suspense>
           <Suspense fallback={null}>
             <ReferralWatcher />
+          </Suspense>
+          <Suspense fallback={null}>
+            <AccountPauseWatcher />
           </Suspense>
         </>
       )}

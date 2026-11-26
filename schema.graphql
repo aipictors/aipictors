@@ -3866,6 +3866,9 @@ type Mutation {
   """ユーザをミュートする"""
   muteUser(input: MuteUserInput!): UserNode!
 
+  """ログイン中のアカウントを一時停止する（プロフィール・作品・コメントなどを他の人から見えなくする。データは消さない）"""
+  pauseAccount(input: PauseAccountInput): Boolean!
+
   """コインでアイコン枠を買う（買った枠の ID を返す）"""
   purchaseUserAvatarFrame(input: PurchaseUserAvatarFrameInput!): ID!
 
@@ -3874,9 +3877,6 @@ type Mutation {
 
   """おすすめ一覧での反応（見た・開いた・興味なし）を記録する。ログインしていなければ何もしない"""
   recordFeedEvents(events: [FeedEventInput!]!): Boolean!
-
-  """作品ページを開いたときの閲覧数を 1 足す（投稿者本人は数えない）"""
-  viewWork(workId: ID!): Boolean!
 
   """キャラクターの表情を再生成する"""
   regenerateCharacterExpression(input: RegenerateCharacterExpressionInput!): CharacterExpressionNode!
@@ -3935,6 +3935,9 @@ type Mutation {
     userId: ID!
   ): Boolean!
 
+  """一時停止中のアカウントを再開する（停止で非公開にした作品を元の公開範囲に戻す）"""
+  resumeAccount: Boolean!
+
   """できなかったAI評価をやり直す（作者のみ）"""
   retryWorkBotGrading(workId: ID!): Boolean!
 
@@ -3961,6 +3964,12 @@ type Mutation {
     """どこから始めたか（計測用）"""
     source: String
   ): LiteDayTrialNode!
+
+  """退会・一時停止の理由を送る"""
+  submitAccountLeaveSurvey(input: SubmitAccountLeaveSurveyInput!): Boolean!
+
+  """プランの解約の理由を送る（解約はしない。アプリのストア課金はストアの画面で解約する）"""
+  submitSubscriptionCancelSurvey(input: SubmitSubscriptionCancelSurveyInput!): Boolean!
 
   """App Store で買ったコインを残高に反映する"""
   syncAppStoreCoinPurchases(input: SyncAppStoreCoinPurchasesInput!): SyncStoreCoinPurchasesResult!
@@ -4099,6 +4108,9 @@ type Mutation {
 
   """Google アカウントで本人確認する"""
   verifyAccountWithGoogle: Boolean!
+
+  """作品ページを開いたときの閲覧数を 1 足す（投稿者本人は数えない）"""
+  viewWork(workId: ID!): Boolean!
 
   """シリーズをお気に入り登録する"""
   watchAlbum(input: WatchAlbumInput!): AlbumNode!
@@ -4677,6 +4689,14 @@ enum PassType {
 
   """2日プラン"""
   TWO_DAYS
+}
+
+"""アカウントの一時停止"""
+input PauseAccountInput {
+  """
+  ウェブ（Stripe）の自動更新のプランがあれば、停止と同時に解約を予約する（期間の終わりで終了）。false で自動更新が続いているときは停止しない
+  """
+  cancelSubscription: Boolean
 }
 
 """決済履歴"""
@@ -5654,6 +5674,35 @@ type SubWorkNode implements Node {
   """サムネイル画像のURL"""
   thumbnailImage: ImageNode! @deprecated(reason: "廃止")
   thumbnailImageId: ID! @deprecated(reason: "廃止")
+}
+
+"""退会・一時停止の前のアンケート"""
+input SubmitAccountLeaveSurveyInput {
+  """
+  追加質問の答えの JSON（{"choices":{"group":["key"]},"text":"","improvement":"","source":"ios"}）
+  """
+  details: String
+
+  """自由記述"""
+  note: String
+
+  """withdraw（退会する）/ pause（一時停止する）"""
+  outcome: String
+
+  """主な理由（aipictors-api の ACCOUNT_LEAVE_REASONS）"""
+  reason: String!
+}
+
+"""プランの解約の理由（アプリのストア課金。ストアの管理画面を開く前に送る）"""
+input SubmitSubscriptionCancelSurveyInput {
+  """追加質問の答えの JSON"""
+  details: String
+
+  """自由記述"""
+  note: String
+
+  """主な理由（aipictors-api の CANCEL_REASONS）"""
+  reason: String!
 }
 
 """App Store で買ったコインを反映する"""
@@ -6982,6 +7031,14 @@ input UsersWhereInput {
 
 """ログイン中のユーザ"""
 type Viewer {
+  """
+  一時停止の前の課金の状態（NONE / STRIPE_ACTIVE / STRIPE_CANCEL_SCHEDULED / STORE / PREPAID）
+  """
+  accountPauseSubscriptionState: String!
+
+  """アカウントを一時停止した日時（UNIX 秒）。停止していなければ null"""
+  accountPausedAt: Int
+
   """シリーズ数"""
   albumCount(where: ViewerAlbumsWhereInput): Int!
 
@@ -7096,6 +7153,9 @@ type Viewer {
 
   """現在の生成中の画像生成のタスク"""
   inProgressImageGenerationTasksCount: Int!
+
+  """アカウントを一時停止しているか"""
+  isAccountPaused: Boolean!
 
   """広告主かどうか"""
   isAdvertiser: Boolean!
@@ -7731,6 +7791,11 @@ type WorkNode implements Node {
 
   """年齢制限"""
   rating: Rating
+
+  """
+  年齢区分を誰が決めたか（だれでも見られる）。AUTO: 運営の自動判定で上げた / MODERATOR: 運営が確認して決めた / null: 投稿者が選んだ区分
+  """
+  ratingDecision: String
 
   """関連するタグ"""
   relatedTags(limit: Int!, offset: Int!): [TagNode!]!
