@@ -58,23 +58,67 @@ export type AutoMosaicResult = {
   }[]
 }
 
-let sessionPromise: Promise<{
+type MosaicSession = {
   ort: typeof Ort
   session: Ort.InferenceSession
-}> | null = null
+  /** WebGPU（GPU）で動いているか。false は wasm（CPU） */
+  isGpu: boolean
+}
+
+let sessionPromise: Promise<MosaicSession> | null = null
+
+/** WebGPU が使えるか（アダプターが取れるか） */
+const canUseWebGpu = async () => {
+  const gpu = (
+    navigator as Navigator & {
+      gpu?: { requestAdapter: () => Promise<unknown | null> }
+    }
+  ).gpu
+  if (!gpu) return false
+  try {
+    return (await gpu.requestAdapter()) !== null
+  } catch {
+    return false
+  }
+}
+
+/**
+ * 検出のセッションを作る。WebGPU が使える端末は GPU で動かす（CPU の 10 倍ほど速い）。
+ * 作れなければ同じ部品の wasm（CPU）で動かす
+ */
+const createSession = async (): Promise<MosaicSession> => {
+  const isGpuAvailable = await canUseWebGpu()
+  const ort: typeof Ort = await import(
+    /* @vite-ignore */ `${ORT_BASE_URL}${isGpuAvailable ? "ort.webgpu.min.mjs" : "ort.wasm.min.mjs"}`
+  )
+  ort.env.wasm.wasmPaths = ORT_BASE_URL
+  ort.env.logLevel = "error"
+  if (isGpuAvailable) {
+    try {
+      const session = await ort.InferenceSession.create(MODEL_URL, {
+        executionProviders: ["webgpu"],
+        // 一部の処理が CPU に回る旨の警告を出さない
+        logSeverityLevel: 3,
+      })
+      // 1 回目は GPU の準備（シェーダーの用意）で遅いので、画像を選ぶ前に両方の大きさで空回しする
+      for (const size of INPUT_SIZES) {
+        await runModel(ort, session, new Float32Array(3 * size * size), size)
+      }
+      return { ort, session, isGpu: true }
+    } catch (error) {
+      console.warn("auto mosaic: WebGPU is not available", error)
+    }
+  }
+  const session = await ort.InferenceSession.create(MODEL_URL, {
+    executionProviders: ["wasm"],
+    logSeverityLevel: 3,
+  })
+  return { ort, session, isGpu: false }
+}
 
 const loadSession = () => {
   if (sessionPromise === null) {
-    sessionPromise = (async () => {
-      const ort: typeof Ort = await import(
-        /* @vite-ignore */ `${ORT_BASE_URL}ort.wasm.min.mjs`
-      )
-      ort.env.wasm.wasmPaths = ORT_BASE_URL
-      const session = await ort.InferenceSession.create(MODEL_URL, {
-        executionProviders: ["wasm"],
-      })
-      return { ort, session }
-    })()
+    sessionPromise = createSession()
     // 失敗したら次の押下で読み直す
     sessionPromise.catch(() => {
       sessionPromise = null
@@ -83,8 +127,43 @@ const loadSession = () => {
   return sessionPromise
 }
 
+/** GPU で失敗したら（端末の GPU の不具合など）以後は CPU で動かす */
+const fallbackToCpu = async (current: MosaicSession) => {
+  const session = await current.ort.InferenceSession.create(MODEL_URL, {
+    executionProviders: ["wasm"],
+    logSeverityLevel: 3,
+  })
+  const next: MosaicSession = { ort: current.ort, session, isGpu: false }
+  sessionPromise = Promise.resolve(next)
+  return next
+}
+
+/** モデルを 1 回動かす。出力に数でない値が混じっていたら失敗として扱う（GPU の不具合対策） */
+async function runModel(
+  ort: typeof Ort,
+  session: Ort.InferenceSession,
+  input: Float32Array,
+  size: number,
+): Promise<{ predictions: Ort.Tensor; protos: Ort.Tensor }> {
+  const outputs = await session.run({
+    [session.inputNames[0]]: new ort.Tensor("float32", input, [
+      1,
+      3,
+      size,
+      size,
+    ]),
+  })
+  const predictions = outputs[session.outputNames[0]]
+  const protos = outputs[session.outputNames[1]]
+  const pred = predictions.data as Float32Array
+  for (let i = 0; i < pred.length; i += 997) {
+    if (!Number.isFinite(pred[i])) throw new Error("invalid model output")
+  }
+  return { predictions, protos }
+}
+
 /**
- * 検出の部品（wasm 約 11MB・モデル 5.9MB）を先に読み始める。押してから読むと 1 回目がとても遅い。
+ * 検出の部品（wasm 約 11MB〜21MB・モデル 5.9MB）を先に読み始める。押してから読むと 1 回目がとても遅い。
  * データ節約モードの端末では読まない
  */
 export function preloadAutoMosaic() {
@@ -146,7 +225,7 @@ export async function detectAutoMosaic(
     labels?: AutoMosaicLabel[]
   } = {},
 ): Promise<AutoMosaicResult> {
-  const { ort, session } = await loadSession()
+  let current = await loadSession()
 
   const width = image.width
   const height = image.height
@@ -163,11 +242,21 @@ export async function detectAutoMosaic(
 
   const found: AutoMosaicResult["detections"] = []
   for (const size of INPUT_SIZES) {
-    const detections = await detectAtSize(ort, session, image, size, {
-      targets,
-      minScore: options.minScore,
-      maskCtx,
-    })
+    const detect = (target: MosaicSession) =>
+      detectAtSize(target, image, size, {
+        targets,
+        minScore: options.minScore,
+        maskCtx,
+      })
+    let detections: AutoMosaicResult["detections"]
+    try {
+      detections = await detect(current)
+    } catch (error) {
+      if (!current.isGpu) throw error
+      console.warn("auto mosaic: WebGPU failed, using CPU", error)
+      current = await fallbackToCpu(current)
+      detections = await detect(current)
+    }
     found.push(...detections)
   }
 
@@ -188,8 +277,7 @@ export async function detectAutoMosaic(
  * @returns 見つかったもの（box は元の画像の座標）
  */
 async function detectAtSize(
-  ort: typeof Ort,
-  session: Ort.InferenceSession,
+  { ort, session }: MosaicSession,
   image: HTMLImageElement | HTMLCanvasElement,
   size: number,
   options: {
@@ -228,16 +316,7 @@ async function detectAtSize(
     input[i + area * 2] = pixels[i * 4 + 2] / 255
   }
 
-  const outputs = await session.run({
-    [session.inputNames[0]]: new ort.Tensor("float32", input, [
-      1,
-      3,
-      size,
-      size,
-    ]),
-  })
-  const predictions = outputs[session.outputNames[0]]
-  const protos = outputs[session.outputNames[1]]
+  const { predictions, protos } = await runModel(ort, session, input, size)
   const pred = predictions.data as Float32Array
   const proto = protos.data as Float32Array
   const channels = predictions.dims[1]
@@ -595,6 +674,26 @@ export function measureMaskDetail(
   /** この範囲（元の画像の座標）だけ数える */
   box?: [number, number, number, number],
 ) {
+  const input = prepareDetailInput(source, mask)
+  return input === null ? 0 : measurePreparedDetail(input, box)
+}
+
+type DetailInput = {
+  /** 元の画像 → 縮めた画像の倍率 */
+  ratio: number
+  width: number
+  height: number
+  sourceWidth: number
+  sourceHeight: number
+  luminance: Float32Array
+  maskPixels: Uint8ClampedArray
+}
+
+/** 長辺 768 に縮めた明るさとマスク（検出ごとに縮め直すと重いので 1 枚に 1 回だけ作る） */
+function prepareDetailInput(
+  source: HTMLImageElement | HTMLCanvasElement,
+  mask: HTMLCanvasElement,
+): DetailInput | null {
   const ratio = Math.min(1, 768 / Math.max(source.width, source.height))
   const width = Math.max(1, Math.round(source.width * ratio))
   const height = Math.max(1, Math.round(source.height * ratio))
@@ -604,7 +703,7 @@ export function measureMaskDetail(
   const maskCtx = downscale(mask, width, height).getContext("2d", {
     willReadFrequently: true,
   })
-  if (imageCtx === null || maskCtx === null) return 0
+  if (imageCtx === null || maskCtx === null) return null
   const pixels = imageCtx.getImageData(0, 0, width, height).data
   const maskPixels = maskCtx.getImageData(0, 0, width, height).data
 
@@ -615,7 +714,29 @@ export function measureMaskDetail(
       pixels[p * 4 + 1] * 0.587 +
       pixels[p * 4 + 2] * 0.114
   }
+  return {
+    ratio,
+    width,
+    height,
+    sourceWidth: source.width,
+    sourceHeight: source.height,
+    luminance,
+    maskPixels,
+  }
+}
 
+function measurePreparedDetail(
+  {
+    ratio,
+    width,
+    height,
+    sourceWidth,
+    sourceHeight,
+    luminance,
+    maskPixels,
+  }: DetailInput,
+  box?: [number, number, number, number],
+) {
   const threshold = 20
   const isLine = (center: number, a: number, b: number) => {
     const da = center - a
@@ -627,11 +748,8 @@ export function measureMaskDetail(
 
   const x1 = Math.max(1, Math.floor((box?.[0] ?? 0) * ratio))
   const y1 = Math.max(1, Math.floor((box?.[1] ?? 0) * ratio))
-  const x2 = Math.min(width - 1, Math.ceil((box?.[2] ?? source.width) * ratio))
-  const y2 = Math.min(
-    height - 1,
-    Math.ceil((box?.[3] ?? source.height) * ratio),
-  )
+  const x2 = Math.min(width - 1, Math.ceil((box?.[2] ?? sourceWidth) * ratio))
+  const y2 = Math.min(height - 1, Math.ceil((box?.[3] ?? sourceHeight) * ratio))
 
   // 範囲の縁（隠した所と隠していない所の境目の輪郭）は数えない。縁から r 点内側だけを見る
   const r = 3
@@ -740,38 +858,37 @@ export function isEdgeSpreadUnhidden(
 }
 
 /**
- * 検出した範囲が隠れていないように見えるか（「自分でかけ済み」の確認に使う）
- * 線画の細い線（measureMaskDetail）に加えて、リアルな絵向けに輪郭の散らばり方も見る
+ * 検出した範囲が隠れていないように見えるかを調べる関数を作る（「自分でかけ済み」の確認に使う）
+ * 線画の細い線（measureMaskDetail）に加えて、リアルな絵向けに輪郭の散らばり方も見る。
+ * 縮めた画像は 1 枚に 1 回だけ作り、検出ごとに使い回す
  */
+export function createUnhiddenChecker(
+  source: HTMLImageElement | HTMLCanvasElement,
+  mask: HTMLCanvasElement,
+) {
+  const input = prepareDetailInput(source, mask)
+  return (box: [number, number, number, number]) => {
+    if (input === null) return false
+    if (measurePreparedDetail(input, box) > UNHIDDEN_DETAIL_RATIO) return true
+    const { ratio, width, height, luminance } = input
+    return isEdgeSpreadUnhidden(
+      measureEdgeSpread(luminance, width, height, [
+        box[0] * ratio,
+        box[1] * ratio,
+        box[2] * ratio,
+        box[3] * ratio,
+      ]),
+    )
+  }
+}
+
+/** 検出した範囲が隠れていないように見えるか（1 か所だけ調べるとき） */
 export function isRegionUnhidden(
   source: HTMLImageElement | HTMLCanvasElement,
   mask: HTMLCanvasElement,
   box: [number, number, number, number],
 ) {
-  if (measureMaskDetail(source, mask, box) > UNHIDDEN_DETAIL_RATIO) return true
-  const ratio = Math.min(1, 768 / Math.max(source.width, source.height))
-  const width = Math.max(1, Math.round(source.width * ratio))
-  const height = Math.max(1, Math.round(source.height * ratio))
-  const ctx = downscale(source, width, height).getContext("2d", {
-    willReadFrequently: true,
-  })
-  if (ctx === null) return false
-  const pixels = ctx.getImageData(0, 0, width, height).data
-  const luminance = new Float32Array(width * height)
-  for (let p = 0; p < luminance.length; p++) {
-    luminance[p] =
-      pixels[p * 4] * 0.299 +
-      pixels[p * 4 + 1] * 0.587 +
-      pixels[p * 4 + 2] * 0.114
-  }
-  return isEdgeSpreadUnhidden(
-    measureEdgeSpread(luminance, width, height, [
-      box[0] * ratio,
-      box[1] * ratio,
-      box[2] * ratio,
-      box[3] * ratio,
-    ]),
-  )
+  return createUnhiddenChecker(source, mask)(box)
 }
 
 /** マスクの不透明な所だけピクセル化した画像を残したレイヤー */

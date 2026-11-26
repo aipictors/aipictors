@@ -1,10 +1,10 @@
 import type { TSortableItem } from "~/components/drag/sortable-item"
 import {
   canvasToWebpDataUrl,
+  createUnhiddenChecker,
   detectAutoMosaic,
   isAnimatedImageDataUrl,
   isMosaicStyle,
-  isRegionUnhidden,
   loadMosaicImage,
   MOSAIC_STRENGTH_MAX,
   MOSAIC_STRENGTH_MIN,
@@ -94,10 +94,13 @@ export function requestPostMosaicDetection(source: string) {
     try {
       const image = await loadMosaicImage(source)
       const result = await detectAutoMosaic(image)
-      const unhiddenCount = result.detections.filter(
-        (detection) =>
-          detection.score >= WARNING_MIN_SCORE &&
-          isRegionUnhidden(image, result.mask, detection.box),
+      const warnable = result.detections.filter(
+        (detection) => detection.score >= WARNING_MIN_SCORE,
+      )
+      const isUnhidden =
+        warnable.length > 0 ? createUnhiddenChecker(image, result.mask) : null
+      const unhiddenCount = warnable.filter((detection) =>
+        isUnhidden?.(detection.box),
       ).length
       detections.set(source, {
         status: "done",
