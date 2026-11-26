@@ -198,6 +198,13 @@ export const isSharedWorkData = (url: URL) =>
   WORK_DATA_PATH.test(url.pathname) &&
   url.searchParams.get("_routes")?.split(",").includes("root") === false
 
+/** 転送・削除の応答か（保存済みのものを消してよい） */
+export const isGoneOrMoved = (response: Response) =>
+  (response.status >= 300 && response.status < 400) ||
+  response.status === 404 ||
+  response.status === 410 ||
+  response.headers.has("X-Remix-Redirect")
+
 export const createEdgePageCache = (version: string) => {
   const isCacheableRequest = (request: Request, url: URL) => {
     if (request.method !== "GET") return false
@@ -341,8 +348,11 @@ export const createEdgePageCache = (version: string) => {
     response: Response,
     ttl: { ttl: number; swr: number },
     storedAt = Date.now(),
+    cacheTag?: string,
   ) => {
     const headers = new Headers(response.headers)
+    // 作品の編集・区分の変更のあとの消去（purge-work の Cache-Tag）で、ここに置いたものも消えるようにする
+    if (cacheTag) headers.set("Cache-Tag", cacheTag)
     headers.set("X-Edge-Stored-At", String(storedAt))
     headers.set("X-Edge-Ttl", String(ttl.ttl))
     headers.set("X-Edge-Swr", String(ttl.swr))
@@ -441,19 +451,40 @@ export const createEdgePageCache = (version: string) => {
       )
     }
 
+    const workId = url.pathname.match(WORK_PAGE_PATH)?.[1]
+    const cacheTag = workId ? `work-${workId}` : undefined
+
     const renderAndStore = async () => {
       const response = await render()
       const ttl = getTtl(url, response)
-      if (ttl === null) return { response, stored: false }
+      if (ttl === null) {
+        // 転送・削除になったページ（区分を変えた作品の /r/posts など）は、保存済みの古いものを消す。
+        // 転送は保存しないので、消さないと古いページを返して裏で作り直すのを繰り返していた
+        if (isGoneOrMoved(response)) {
+          ctx.waitUntil(
+            Promise.all([
+              caches.default.delete(cacheKey),
+              caches.default.delete(toBotFallbackKey(cacheKey)),
+            ]).catch(() => undefined),
+          )
+        }
+        return { response, stored: false }
+      }
       const forShared = kv ? response.clone() : null
       ctx.waitUntil(
-        store(cacheKey, response.clone(), ttl).catch(() => undefined),
+        store(cacheKey, response.clone(), ttl, undefined, cacheTag).catch(
+          () => undefined,
+        ),
       )
       if (isBot) {
         ctx.waitUntil(
-          store(toBotFallbackKey(cacheKey), response.clone(), ttl).catch(
-            () => undefined,
-          ),
+          store(
+            toBotFallbackKey(cacheKey),
+            response.clone(),
+            ttl,
+            undefined,
+            cacheTag,
+          ).catch(() => undefined),
         )
       }
       if (kv && forShared) {

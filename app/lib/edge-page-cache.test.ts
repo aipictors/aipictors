@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test"
 import {
   canServeStaleToBot,
   getSwrSeconds,
+  isGoneOrMoved,
   isSharedPage,
   isSharedWorkData,
 } from "~/lib/edge-page-cache"
@@ -90,5 +91,25 @@ describe("canServeStaleToBot", () => {
     expect(canServeStaleToBot(60 * 60 * 47)).toBe(true)
     expect(canServeStaleToBot(60 * 60 * 24 * 14 + 1)).toBe(false)
     expect(canServeStaleToBot(Number.NaN)).toBe(false)
+  })
+})
+
+describe("isGoneOrMoved", () => {
+  test("転送・削除は保存済みのものを消す対象", () => {
+    expect(isGoneOrMoved(new Response(null, { status: 301 }))).toBe(true)
+    expect(isGoneOrMoved(new Response(null, { status: 404 }))).toBe(true)
+    expect(
+      isGoneOrMoved(
+        new Response(null, {
+          status: 204,
+          headers: { "X-Remix-Redirect": "/posts/1" },
+        }),
+      ),
+    ).toBe(true)
+  })
+
+  test("通常の応答・サーバーエラーは対象外", () => {
+    expect(isGoneOrMoved(new Response("ok", { status: 200 }))).toBe(false)
+    expect(isGoneOrMoved(new Response(null, { status: 503 }))).toBe(false)
   })
 })
