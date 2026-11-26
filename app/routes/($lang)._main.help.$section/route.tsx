@@ -14,9 +14,21 @@ import { createMeta } from "~/utils/create-meta"
  * 中身はコードの中（help-sections.ts）にあり、API は読まない
  */
 export async function loader(props: LoaderFunctionArgs) {
-  const section = findHelpSection(props.params.section ?? "")
+  const section = findHelpSection(
+    props.params.section ?? sectionIdFromUrl(props.request.url),
+  )
   if (!section) throw new Response(null, { status: 404 })
   return { sectionId: section.id }
+}
+
+/**
+ * 章の id が /search・/generation など別のページと同じ名前のときは、/help/search が
+ * ($lang)/search（lang=help）に取られて 404 になるので、静的なルート（($lang)._main.help.search など）を
+ * 置いてこのルートを再利用する。そのときは params に section がないので URL の最後から取る
+ */
+function sectionIdFromUrl(url: string) {
+  const last = new URL(url).pathname.split("/").pop() ?? ""
+  return last.replace(/\.data$/, "")
 }
 
 export const headers: HeadersFunction = () => ({
