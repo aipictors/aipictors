@@ -16,17 +16,13 @@ import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/compo
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { ChevronRightIcon } from "lucide-react"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
-import {
-  type CommentListItemFragment,
-  WorkCommentList,
-} from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import {
   HomeAwardWorksSection,
-  type HomeAwardWorksFragment,
+  homeAwardWorksQuery,
 } from "~/routes/($lang)._main._index/components/home-award-works"
-import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate, Link } from "~/lib/app/locale-router"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
@@ -34,6 +30,8 @@ import { DlsiteAffiliateCard } from "~/components/sensitive/dlsite-affiliate-car
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
+import { getJstDate } from "~/utils/jst-date"
 import { mergeWorkViewerState } from "~/routes/($lang)._main.posts.$post._index/utils/merge-work-viewer-state"
 
 /** 作者の他の作品に出す年齢種別（作品ページと一緒に読む分と同じ） */
@@ -42,11 +40,6 @@ const AUTHOR_WORKS_RATINGS: ("G" | "R15" | "R18" | "R18G")[] = ["R18", "R18G"]
 type Props = {
   post: string
   work: FragmentOf<typeof workArticleFragment> | null
-  comments: FragmentOf<typeof CommentListItemFragment>[]
-  newComments: FragmentOf<typeof HomeNewCommentsFragment>[]
-  awardWorks: FragmentOf<
-    typeof HomeAwardWorksFragment | typeof HomeWorkAwardFragment
-  >[]
 }
 
 /**
@@ -101,14 +94,53 @@ export function SensitiveWorkContainer(props: Props) {
     likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
   const work = workBase ? { ...workBase, likedUsers } : workBase
 
-  const { data: workCommentsRet } = useQuery(workCommentsQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  // 右の列（広告・新着コメント・受賞作品）は PC でしか出ないので、スマホでは取得しない
+  const { showDesktop } = useLayoutVariant()
+
+  // コメントはブラウザで取る（全年齢の作品ページと同じ。ページの描画では取らない）。
+  // ログイン状態が分かる前に取ると未ログインとして返り、ミュート・ブロックした人のコメントがそのまま出る
+  const { data: workCommentsRet, loading: isFetchingComments } = useQuery(
+    workCommentsQuery,
+    {
+      skip: authContext.isLoading,
+      fetchPolicy: "network-only",
+      ssr: false,
+      variables: {
+        workId: props.post,
+      },
+    },
+  )
+  const isLoadingComments = isFetchingComments || authContext.isLoading
+
+  const comments = workCommentsRet?.work?.comments ?? []
+
+  const { data: newCommentsData } = useQuery(sensitiveNewCommentsQuery, {
+    skip: !showDesktop,
+    fetchPolicy: "cache-first",
+    ssr: false,
+  })
+
+  const now = getJstDate(new Date())
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+  const { data: awardWorksData } = useQuery(homeAwardWorksQuery, {
+    skip: !showDesktop,
+    fetchPolicy: "cache-first",
+    ssr: false,
     variables: {
-      workId: props.post,
+      offset: 0,
+      limit: 4,
+      where: {
+        isSensitive: true,
+        year: yesterday.getFullYear(),
+        month: yesterday.getMonth() + 1,
+        day: yesterday.getDate(),
+      },
     },
   })
 
-  const comments = workCommentsRet?.work?.comments ?? props.comments
+  const newComments = newCommentsData?.newComments ?? []
+  const awardWorks = awardWorksData?.workAwards ?? []
 
   const { data: userSetting } = useQuery(userSensitiveSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -127,9 +159,14 @@ export function SensitiveWorkContainer(props: Props) {
 
   const _navigate = useNavigate()
 
-  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+  // 未ログインの人にはプランがないので問い合わせない
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  })
 
+  // 広告は PC の右の列にしか出ないので、スマホでは取得しない
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
+    skip: !showDesktop,
     variables: {
       where: {
         isSensitive: true,
@@ -244,6 +281,7 @@ export function SensitiveWorkContainer(props: Props) {
                   workTagNames={workForArticle.tagNames}
                   workId={workForArticle.id}
                   comments={comments}
+                  isLoadingComments={isLoadingComments}
                   workOwnerId={workForArticle.user?.id}
                   workOwnerIconImageURL={workForArticle.user?.iconUrl}
                   workOwnerName={workForArticle.user?.name}
@@ -318,11 +356,14 @@ export function SensitiveWorkContainer(props: Props) {
                 {!isSubscriptionUser && (
                   <DlsiteAffiliateCard tags={tags} source="r_post_side" />
                 )}
-                {props.newComments && props.newComments.length > 0 && (
-                  <HomeNewCommentsSection
-                    comments={props.newComments}
-                    isSensitive
-                  />
+                {newComments.length > 0 ? (
+                  <HomeNewCommentsSection comments={newComments} isSensitive />
+                ) : (
+                  // 届くまで場所を取っておく（下の告知が押し下げられないように）
+                  showDesktop &&
+                  newCommentsData === undefined && (
+                    <div className="min-h-[560px]" />
+                  )
                 )}
                 {!isSubscriptionUser && (
                   <Link to="/generation">
@@ -337,8 +378,8 @@ export function SensitiveWorkContainer(props: Props) {
                     />
                   </Link>
                 )}
-                {props.awardWorks && (
-                  <HomeAwardWorksSection works={props.awardWorks} />
+                {awardWorks.length > 0 && (
+                  <HomeAwardWorksSection works={awardWorks} />
                 )}
               </div>
             </div>
@@ -479,4 +520,21 @@ const userSensitiveSettingQuery = graphql(
     }
   }`,
   [userSettingFragment],
+)
+
+const sensitiveNewCommentsQuery = graphql(
+  `query NewComments {
+    newComments: newComments(
+      offset: 0,
+      limit: 8,
+      where: {
+        isSensitive: true,
+        isTextOnly: true,
+        ratings: [R18, R18G],
+      }
+    ) {
+      ...HomeNewComments
+    }
+  }`,
+  [HomeNewCommentsFragment],
 )

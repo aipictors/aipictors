@@ -69,6 +69,14 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const op = url.searchParams.get("op") ?? ""
   const q = (key: string) => url.searchParams.get(key) ?? ""
+  // 実績は見る人によらないので、ログインの確認（API への問い合わせ）をしない
+  if (op === "showcase") {
+    const params = new URLSearchParams()
+    for (const key of ["userId", "r18", "limit", "offset"]) {
+      if (q(key)) params.set(key, q(key))
+    }
+    return call(context, `/showcase?${params.toString()}`)
+  }
   const viewer = request.headers.get("authorization")
     ? await verify(request, context)
     : null
@@ -97,13 +105,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       context,
       `/${encodeURIComponent(q("id"))}?viewerUserId=${encodeURIComponent(me)}`,
     )
-  }
-  if (op === "showcase") {
-    const params = new URLSearchParams()
-    for (const key of ["userId", "r18", "limit", "offset"]) {
-      if (q(key)) params.set(key, q(key))
-    }
-    return call(context, `/showcase?${params.toString()}`)
   }
   if (op === "admin-list" || op === "admin-detail") {
     if (!viewer) return toJson({ error: "Unauthorized", data: null }, 401)

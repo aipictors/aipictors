@@ -24,13 +24,10 @@ import { config, META } from "~/config"
 import { ParamsError } from "~/errors/params-error"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
-import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
-import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import {
   sensitiveWorkArticleFragment,
   type workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
-import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { SensitiveWorkContainer } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import {
@@ -41,7 +38,6 @@ import {
   isIndexableSensitiveWork,
   isSuggestableSensitiveTag,
 } from "~/utils/sensitive-tag-filter"
-import { getJstDate } from "~/utils/jst-date"
 
 /**
  * 予約投稿などで見つからないときは、持ち主なら下書き表示に移す
@@ -87,47 +83,16 @@ export async function loader(props: LoaderFunctionArgs) {
   //   return redirectResponse
   // }
 
-  const now = getJstDate(new Date())
-
-  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-
-  // 作品・コメント・新着コメント・受賞作品は互いに依存しないので並行して取る（以前は 1 つずつ待っていた）
-  const [workResp, workCommentsResp, newComments, awardWorks] =
-    await Promise.all([
-      loaderClient.query({
-        query: workQuery,
-        variables: {
-          id: props.params.post,
-        },
-        // ページの読み込みでは閲覧数を数えない（全年齢の作品ページと同じ。hooks/use-count-work-view.ts）
-        context: { headers: { "x-aipictors-no-view": "1" } },
-      }),
-      loaderClient.query({
-        query: workCommentsQuery,
-        variables: {
-          workId: props.params.post,
-        },
-      }),
-      loaderClient.query({
-        query: newCommentsQuery,
-        variables: {
-          workId: props.params.post,
-        },
-      }),
-      loaderClient.query({
-        query: homeAwardWorksQuery,
-        variables: {
-          offset: 0,
-          limit: 4,
-          where: {
-            isSensitive: true,
-            year: yesterday.getFullYear(),
-            month: yesterday.getMonth() + 1,
-            day: yesterday.getDate(),
-          },
-        },
-      }),
-    ])
+  // コメント・新着コメント・受賞作品はブラウザで取る（全年齢の作品ページと同じ。
+  // 以前はクローラーを含む毎回の描画で問い合わせを 4 本投げていて、WorkComments だけで API の CPU の 1 割近くを使っていた）
+  const workResp = await loaderClient.query({
+    query: workQuery,
+    variables: {
+      id: props.params.post,
+    },
+    // ページの読み込みでは閲覧数を数えない（全年齢の作品ページと同じ。hooks/use-count-work-view.ts）
+    context: { headers: { "x-aipictors-no-view": "1" } },
+  })
 
   if (workResp.data.work === null) {
     throw new Response(null, { status: 404 })
@@ -154,24 +119,15 @@ export async function loader(props: LoaderFunctionArgs) {
     return redirectToWorkRatingPath(props.params.lang, false, props.params.post)
   }
 
-  if (workCommentsResp.data.work === null) {
-    throw new Response(null, { status: 404 })
-  }
-
   return json(
     {
       post: props.params.post,
       work: workResp.data.work,
-      workComments: workCommentsResp.data.work.comments,
-      newComments: newComments.data.newComments,
-      awardWorks: awardWorks.data.workAwards,
     },
     {
       headers: {
         // 一部が欠けた内容はキャッシュしない
-        ...(Boolean(
-          workResp.errors?.length || workCommentsResp.errors?.length,
-        ) && {
+        ...(Boolean(workResp.errors?.length) && {
           "Cache-Control": "no-store",
         }),
         // 英語の作品ページは検索に載せない（app/utils/english-work-robots.ts）
@@ -356,25 +312,10 @@ export default function Work() {
       <SensitiveWorkContainer
         post={data.post}
         work={data.work}
-        comments={data.workComments}
-        newComments={data.newComments}
-        awardWorks={data.awardWorks}
       />
     </>
   )
 }
-
-const workCommentsQuery = graphql(
-  `query WorkComments($workId: ID!) {
-    work(id: $workId) {
-      id
-      comments(offset: 0, limit: 128) {
-        ...Comment
-      }
-    }
-  }`,
-  [CommentListItemFragment],
-)
 
 const workQuery = graphql(
   `query Work($id: ID!) {
@@ -383,21 +324,4 @@ const workQuery = graphql(
     }
   }`,
   [sensitiveWorkArticleFragment],
-)
-
-const newCommentsQuery = graphql(
-  `query NewComments {
-    newComments: newComments(
-      offset: 0,
-      limit: 8,
-      where: {
-        isSensitive: true,
-        isTextOnly: true,
-        ratings: [R18, R18G],
-      }
-    ) {
-      ...HomeNewComments
-    }
-  }`,
-  [HomeNewCommentsFragment],
 )
