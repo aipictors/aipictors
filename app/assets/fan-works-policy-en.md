@@ -4,7 +4,7 @@
 - At the same time, **money only moves for original works**. Out of consideration for rights holders and for the creators who make the works, we keep money from changing hands over fan works.
   - Support with **Premium Coins** (purchased coins), and the **Creator Rewards** based on it, only apply to support for original works (works tagged "オリジナル" (original), "オリキャラ" (original character), "創作" (original creation) and similar).
   - Support with **Free Coins**, and support pt, can still be sent to any work, including fan works.
-  - Support from a profile page is Free Coins only, because it is not tied to a particular work.
+  - Support from a profile page (support for the creator, not tied to a work) can also use Premium Coins.
 - Whether fan works are allowed is decided by each rights holder (the original author, publisher, game company and so on). **Checking and following the rights holder's guidelines and terms is the poster's responsibility.**
 - Aipictors does not decide or guarantee whether fan works are allowed for any particular title.
 

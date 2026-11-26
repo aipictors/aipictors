@@ -18,8 +18,11 @@ describe("canSupportWithPremium", () => {
     expect(canSupportWithPremium({ workId: "1", tagNames: null })).toBe(false)
   })
 
-  test("作品を通さない推し（プロフィール）はプレミアム不可", () => {
-    expect(canSupportWithPremium({ tagNames: ["オリジナル"] })).toBe(false)
+  test("作品を通さないユーザーへの推し（プロフィール）はどんな作品の人にもプレミアム可", () => {
+    expect(canSupportWithPremium({ tagNames: null })).toBe(true)
+    expect(canSupportWithPremium({ workId: null, tagNames: ["初音ミク"] })).toBe(
+      true,
+    )
   })
 })
 

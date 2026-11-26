@@ -59,7 +59,7 @@ type Props = {
   variant?: "default" | "profile"
   /** 「クリエイターの報酬につながります」の一言。R18 の作品のページでは false */
   showRewardNote?: boolean
-  /** 作品のページから推すときの作品。プレミアムコインはオリジナル系のタグが付いた作品だけ（無ければフリーコインだけ） */
+  /** 作品のページから推すときの作品。プレミアムコインはオリジナル系のタグが付いた作品だけ（作品が無いプロフィールの推しはプレミアム可） */
   workId?: string | null
   workTagNames?: readonly string[] | null
 }
@@ -128,7 +128,7 @@ function SupportButtonContent({
 }: Props) {
   const t = useTranslation()
   const premiumOriginalOnlyErrorText = usePremiumSupportOriginalOnlyErrorText()
-  // プレミアムコインはオリジナル作品への推しだけ（プロフィールからの推しはフリーコインだけ）
+  // 作品からの推しのプレミアムコインはオリジナル作品だけ（プロフィールからの推しはいつもプレミアム可）
   const isPremiumAllowedHere = canSupportWithPremium({
     workId,
     tagNames: workTagNames,
