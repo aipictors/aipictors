@@ -131,7 +131,7 @@ export function PostImageFormUploader(props: Props) {
         return (
           <div className={cn(base, "bg-amber-500 font-bold text-black")}>
             <AlertTriangleIcon className="size-3" />
-            {t("隠れていないかも", "May be uncensored")}
+            {t("モザイク不足かも", "May need more mosaic")}
           </div>
         )
       }

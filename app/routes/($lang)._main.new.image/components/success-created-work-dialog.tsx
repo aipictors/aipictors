@@ -194,7 +194,7 @@ export function SuccessCreatedWorkDialog(props: Props) {
                 <p>
                   {props.isRatingChangedToR18 &&
                     t(
-                      "性器などが写っていたため、年齢種別を「R-18」にして投稿しました。",
+                      "モザイクが必要な部分が写っていたため、年齢種別を「R-18」にして投稿しました。",
                       "Genitals were detected, so the work was posted as R-18. ",
                     )}
                   {props.mosaicImageCount > 0

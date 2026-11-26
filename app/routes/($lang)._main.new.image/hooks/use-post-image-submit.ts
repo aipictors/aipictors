@@ -453,8 +453,8 @@ export function usePostImageSubmit(props: Props) {
         if (
           window.confirm(
             t(
-              `${sensitiveCount}枚に性器などが写っているようです。年齢種別を「R-18」に変えて、自動でモザイクをかけて投稿しますか？\n（キャンセルすると、全年齢のまま投稿するか選べます）`,
-              `${sensitiveCount} image(s) seem to show genitals. Change the age rating to R-18 and post with an automatic mosaic?\n(Cancel to choose whether to post with the current rating)`,
+              `${sensitiveCount}枚にモザイクが必要な部分が写っているようです。年齢種別を「R-18」に変えて、自動でモザイクをかけて投稿しますか？\n（キャンセルすると、全年齢のまま投稿するか選べます）`,
+              `${sensitiveCount} image(s) seem to need a mosaic. Change the age rating to R-18 and post with an automatic mosaic?\n(Cancel to choose whether to post with the current rating)`,
             ),
           )
         ) {
@@ -464,8 +464,8 @@ export function usePostImageSubmit(props: Props) {
         } else if (
           !window.confirm(
             t(
-              "今の年齢種別のまま、モザイクなしで投稿しますか？\n（性器が写っている作品を全年齢で投稿すると、非公開になることがあります）",
-              "Post with the current age rating and no mosaic?\n(Works showing genitals posted as all ages may be hidden)",
+              "今の年齢種別のまま、モザイクなしで投稿しますか？\n（モザイクが必要な部分が写っている作品を全年齢で投稿すると、非公開になることがあります）",
+              "Post with the current age rating and no mosaic?\n(Works that need a mosaic posted as all ages may be hidden)",
             ),
           )
         ) {
@@ -524,8 +524,8 @@ export function usePostImageSubmit(props: Props) {
         mosaicked.warningCount > 0 &&
         !window.confirm(
           t(
-            `${mosaicked.warningCount}枚で、性器などが隠れていないように見える所が見つかりました。このまま投稿しますか？\n（キャンセルして、⚠の画像を鉛筆ボタンで直すか、「⚠の画像に自動でかける」を押してください。修正が足りない作品は非公開になることがあります）`,
-            `${mosaicked.warningCount} image(s) may have uncensored areas. Post anyway?\n(Cancel to fix the images marked ⚠. Works without sufficient censoring may be hidden)`,
+            `${mosaicked.warningCount}枚で、モザイクが足りないように見える所が見つかりました。このまま投稿しますか？\n（キャンセルして、⚠の画像を鉛筆ボタンで直すか、「⚠の画像に自動でかける」を押してください。修正が足りない作品は非公開になることがあります）`,
+            `${mosaicked.warningCount} image(s) may need more mosaic. Post anyway?\n(Cancel to fix the images marked ⚠. Works without sufficient censoring may be hidden)`,
           ),
         )
       ) {

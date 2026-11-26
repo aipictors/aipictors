@@ -56,12 +56,12 @@ export function PostFormAutoMosaicBar(props: Props) {
     if (isSelfApplied) {
       return hasWarning
         ? t(
-            `${summary.warning}枚で、性器などが隠れていないように見える所があります。⚠の画像を確かめてください`,
-            `${summary.warning} image(s) may have uncensored areas. Please check the images marked ⚠`,
+            `${summary.warning}枚で、モザイクが足りないように見える所があります。⚠の画像を確かめてください`,
+            `${summary.warning} image(s) may need more mosaic. Please check the images marked ⚠`,
           )
         : t(
-            "隠れていない所は見つかりませんでした",
-            "No uncensored areas were found",
+            "モザイクが足りない所は見つかりませんでした",
+            "No areas needing more mosaic were found",
           )
     }
     return summary.applied > 0
@@ -111,8 +111,8 @@ export function PostFormAutoMosaicBar(props: Props) {
           {!isSelfApplied && (
             <p className="text-zinc-400">
               {t(
-                "性器・肛門を見つけて形に沿ってかけます（乳首は対象外・アニメーション画像は対象外）。自動でかけた作品を、モザイクの不足を理由に運営が非公開にすることは基本的にありません。",
-                "Genitals and anus are detected and covered along their shape (not nipples or animated images). Works mosaicked automatically are generally not hidden for insufficient mosaic.",
+                "規約でモザイクが必要な部分を見つけて、形に沿ってかけます（アニメーション画像は対象外）。自動でかけた作品を、モザイクの不足を理由に運営が非公開にすることは基本的にありません。",
+                "Areas that require a mosaic under the rules are detected and covered along their shape (not animated images). Works mosaicked automatically are generally not hidden for insufficient mosaic.",
               )}
             </p>
           )}
@@ -210,8 +210,8 @@ export function PostFormAutoMosaicBar(props: Props) {
       {isSelfApplied && !hasWarning && (
         <p className="mt-1 text-[11px] text-zinc-400 leading-4">
           {t(
-            "自動ではかけませんが、念のため画像を確認し、隠れていない所が見つかったらお知らせします。",
-            "No automatic mosaic, but images are still checked and you'll be warned about uncensored areas.",
+            "自動ではかけませんが、念のため画像を確認し、モザイクが足りない所が見つかったらお知らせします。",
+            "No automatic mosaic, but images are still checked and you'll be warned about areas needing more mosaic.",
           )}
         </p>
       )}
