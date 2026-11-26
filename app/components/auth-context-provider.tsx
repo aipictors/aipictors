@@ -22,6 +22,7 @@ import {
 import { debugLog } from "~/utils/debug-logger"
 import { clearHeaderUserSnapshot } from "~/utils/header-user-snapshot"
 import { withFirebaseAnalytics } from "~/utils/run-after-load-idle"
+import { trackFunnelEventOnce } from "~/utils/track-funnel-event"
 
 type Props = {
   children: React.ReactNode
@@ -254,6 +255,17 @@ export function AuthContextProvider(props: Props): React.ReactNode {
           method: user.providerId,
         })
       })
+
+      // アカウントを作って 10 分以内のログインを新規登録として数える（登録から生成・課金までの離脱を見るため）
+      const createdAt = Date.parse(user.metadata.creationTime ?? "")
+      if (
+        Number.isFinite(createdAt) &&
+        Date.now() - createdAt < 10 * 60 * 1000
+      ) {
+        trackFunnelEventOnce("sign_up", user.uid, {
+          method: user.providerData[0]?.providerId ?? "unknown",
+        })
+      }
 
       // Firebase user だけでは API 認証に必要な ID token の有効性を保証できない。
       // logged-in 状態は getIdTokenResult が成功した後にだけ公開する。

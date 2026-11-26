@@ -28,6 +28,7 @@ import {
 import { lazy, Suspense, useEffect, useRef, useState } from "react"
 import { PhotoProvider } from "react-photo-view"
 import { AppAnalytics } from "~/components/app/app-analytics"
+import { AppClarity } from "~/components/app/app-clarity"
 import { AppErrorPage } from "~/components/app/app-error-page"
 import { AppNotFoundPage } from "~/components/app/app-not-found-page"
 import { Toaster } from "~/components/app/app-sonner"
@@ -838,6 +839,9 @@ export default function App(): React.ReactNode {
         <>
           <Suspense fallback={null}>
             <AppAnalytics />
+          </Suspense>
+          <Suspense fallback={null}>
+            <AppClarity />
           </Suspense>
           <Suspense fallback={null}>
             <PerformanceMonitor />

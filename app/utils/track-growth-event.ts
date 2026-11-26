@@ -1,10 +1,14 @@
+import { trackFunnelEvent } from "~/utils/track-funnel-event"
+
 /**
  * 課金の案内の表示・クリックを数える（/api/growth-event へのアクセスを Cloudflare の集計で数える。
  * public/api/growth-event の空の静的ファイルなので Worker を起動しない）
+ * 離脱の分析のため、同じイベントを GA4 と Clarity にも送る
  * 失敗しても画面の操作には影響させない
  */
 export function trackGrowthEvent(event: string, source: string) {
   if (typeof window === "undefined") return
+  trackFunnelEvent(event, { source })
   const url = `/api/growth-event?ev=${encodeURIComponent(event)}&src=${encodeURIComponent(source)}`
   fetch(url, { method: "GET", keepalive: true, cache: "no-store" }).catch(
     () => {},

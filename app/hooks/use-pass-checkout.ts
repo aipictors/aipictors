@@ -3,17 +3,18 @@ import { graphql } from "gql.tada"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
+import { createTrialCheckout } from "~/lib/trial-api"
 import {
   hasViewerRequestSession,
   postAsViewer,
 } from "~/lib/viewer-request-headers"
-import { createTrialCheckout } from "~/lib/trial-api"
+import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import {
   getCheckoutLocale,
   rememberCheckoutLocale,
 } from "~/utils/checkout-locale"
+import { trackFunnelEvent } from "~/utils/track-funnel-event"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
-import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 
 export type CheckoutPassType = "LITE" | "STANDARD" | "PREMIUM"
 
@@ -66,6 +67,7 @@ export function usePassCheckout() {
         )
         return
       }
+      trackFunnelEvent("begin_checkout", { item: passType, interval })
       rememberCheckoutLocale()
       window.location.assign(url)
     } catch (error) {
@@ -112,6 +114,10 @@ export function usePassCheckout() {
         )
         return
       }
+      trackFunnelEvent("begin_checkout", {
+        item: "LITE_trial",
+        interval: "month",
+      })
       rememberCheckoutLocale()
       window.location.assign(result.url)
     } catch (_error) {

@@ -1,5 +1,6 @@
 import { PREMIUM_COIN_PACKAGES } from "~/lib/premium-coins"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { trackFunnelEvent } from "~/utils/track-funnel-event"
 
 /**
  * プレミアムコインの決済画面（Stripe）の URL を作る。
@@ -36,5 +37,6 @@ export const createPremiumCoinCheckoutUrl = async (props: {
   if (!response.ok || json.error || !json.data?.checkoutUrl) {
     throw new Error(json.error ?? "購入セッションの作成に失敗しました")
   }
+  trackFunnelEvent("begin_checkout", { item: "coins", coins: props.coins })
   return json.data.checkoutUrl
 }
