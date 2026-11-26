@@ -20,6 +20,15 @@ describe("toR18Path", () => {
     expect(toR18Path("/en/themes")).toBe("/en/r/themes")
   })
 
+  test("イベント作成は /r に置き換えない", () => {
+    expect(toR18Path("/events/new")).toBeNull()
+    expect(toR18Path("/en/events/new")).toBeNull()
+    expect(toR18Path("/events/foo")).toBe("/r/events/foo")
+    expect(toR18Path("/events/foo/award")).toBe("/r/events/foo/award")
+    expect(toR18Path("/events")).toBe("/r/events")
+    expect(toR18FallbackPath("/r/events/new")).toBe("/events/new")
+  })
+
   test("トップ系は /r のタブへ", () => {
     expect(toR18Path("/")).toBe("/r?tab=new")
     expect(toR18Path("/home")).toBe("/r/home")

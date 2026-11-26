@@ -86,7 +86,8 @@ const R18_TWIN_PATHS: RegExp[] = [
   /^\/home\/?$/,
   /^\/collections(?:\/|$)/,
   /^\/comments\/new\/?$/,
-  /^\/events(?:\/[^/]+(?:\/award)?)?\/?$/,
+  // /events/new（イベント作成）は /r のページがない
+  /^\/events(?:\/(?!new\/?$)[^/]+(?:\/award)?)?\/?$/,
   /^\/followers\/?$/,
   /^\/following\/?$/,
   /^\/models\/[^/]+\/?$/,
