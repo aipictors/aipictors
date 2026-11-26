@@ -205,9 +205,6 @@ export function HomeFooter(): React.ReactNode {
               <Link className="hover:text-foreground" to="/about">
                 {t("Aipictorsとは", "About Aipictors")}
               </Link>
-              <Link className="hover:text-foreground" to="/roadmap">
-                {t("ロードマップ", "Roadmap")}
-              </Link>
             </div>
           </div>
         </div>

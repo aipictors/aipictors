@@ -52,45 +52,6 @@ function usePlusEntryTarget() {
 }
 
 /**
- * PC のヘッダーに置く Aipictors+ の入口（プランに入っていない人と未ログインの人だけ）
- */
-export function PlusHeaderLink() {
-  const t = useTranslation()
-  const isTarget = usePlusEntryTarget()
-  const { offer: liteOffer, isGuest } = useLiteOffer()
-
-  useEffect(() => {
-    if (!isTarget) return
-    // lg 未満では隠しているので数えない
-    if (!window.matchMedia("(min-width: 1024px)").matches) return
-    trackGrowthEventOnce("plus_nav_view", "header")
-  }, [isTarget])
-
-  if (!isTarget) return null
-
-  return (
-    <Link
-      to="/plus"
-      onClick={() => trackGrowthEvent("plus_nav_click", "header")}
-      className="hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-full border border-violet-500/30 bg-violet-500/5 px-3 font-semibold text-sm text-violet-700 transition-colors hover:border-violet-500/50 hover:bg-violet-500/10 motion-reduce:transition-none lg:inline-flex dark:text-violet-300"
-    >
-      <SparklesIcon className="size-4" />
-      {"Aipictors+"}
-      {/* 確認中は印を出さない（お試しか初月半額かが分かってから出す） */}
-      {liteOffer !== "unknown" && liteOffer !== "none" && (
-        <span className="rounded-full bg-fuchsia-600 px-1.5 py-0.5 font-bold text-[10px] text-white leading-none">
-          {liteOffer === "trial"
-            ? isGuest
-              ? t(`初回${TRIAL_DAYS}日間無料`, `New? ${TRIAL_DAYS} days free`)
-              : t(`${TRIAL_DAYS}日間無料`, "Free trial")
-            : t("初月半額", "50% off")}
-        </span>
-      )}
-    </Link>
-  )
-}
-
-/**
  * スマホの画面下に出す Aipictors+ の小さな案内（プランに入っていない人と未ログインの人だけ）
  * 少しスクロールしてから出し、閉じたら 30 日は出さない。
  * 画面に重ねて出すので、出てもページの中身はずれない

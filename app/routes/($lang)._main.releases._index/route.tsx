@@ -12,7 +12,7 @@ import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { toReleaseCard } from "~/utils/release-card"
 import { useTranslation } from "~/hooks/use-translation"
-import { ArrowRight, SearchIcon } from "lucide-react"
+import { SearchIcon } from "lucide-react"
 import { ReleaseCardView } from "~/components/release/release-card-view"
 import { PictorChanSays } from "~/components/pictor-chan-says"
 import {
@@ -266,13 +266,6 @@ export default function Milestone() {
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-4 border-t pt-6">
-        <Link
-          to="/roadmap"
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border px-5 py-2 font-medium text-sm transition-colors hover:bg-accent"
-        >
-          {t("ロードマップを見る", "View Roadmap")}
-          <ArrowRight className="size-4" />
-        </Link>
         <Link
           target="_blank"
           rel="noreferrer"

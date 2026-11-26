@@ -16,7 +16,6 @@ import {
   LibraryBigIcon,
   LightbulbIcon,
   type LucideIcon,
-  MapIcon,
   NewspaperIcon,
   RocketIcon,
   SearchIcon,
@@ -257,12 +256,6 @@ export function getHomeNavigationSections(
           href: "/help",
           label: ["使い方ガイド", "User Guide"],
           icon: HelpCircleIcon,
-        },
-        {
-          key: "roadmap",
-          href: "/roadmap",
-          label: ["ロードマップ", "Roadmap"],
-          icon: MapIcon,
         },
         {
           key: "about",

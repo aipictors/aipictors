@@ -14,7 +14,6 @@ import {
   FileTextIcon,
   BookOpenIcon,
   HelpCircleIcon,
-  MapIcon,
   PaletteIcon,
   ExternalLinkIcon,
 } from "lucide-react"
@@ -106,16 +105,6 @@ export default function About () {
       description: t(
         "Aipictorsの使い方について詳しく",
         "Detailed information on how to use Aipictors",
-      ),
-    },
-    {
-      icon: MapIcon,
-      title: t("ロードマップ", "Roadmap"),
-      href: "/roadmap",
-      linkText: t("こちら", "here"),
-      description: t(
-        "今後の機能開発計画や新機能について",
-        "Future feature development plans and new features",
       ),
     },
     {
@@ -223,13 +212,6 @@ export default function About () {
           >
             <HelpCircleIcon className="h-5 w-5" />
             {t("使い方を見る", "View Usage Guide")}
-          </Link>
-          <Link
-            to="/roadmap"
-            className="inline-flex items-center gap-2 rounded-lg border border-blue-600 px-6 py-3 font-medium text-blue-600 transition-colors hover:bg-blue-50 dark:hover:bg-blue-950/20"
-          >
-            <MapIcon className="h-5 w-5" />
-            {t("ロードマップを見る", "View Roadmap")}
           </Link>
         </div>
       </div>
