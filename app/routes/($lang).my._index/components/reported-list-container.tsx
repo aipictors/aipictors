@@ -17,6 +17,10 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import {
+  initialModerationReportTab,
+  type ModerationReportTab,
+} from "~/lib/moderation/initial-moderation-report-tab"
 import { getModerationReportGuide } from "~/lib/moderation/moderation-report-guide"
 import { cn } from "~/lib/utils"
 
@@ -26,7 +30,7 @@ type Props = {
   setPage: (page: number) => void
 }
 
-type Tab = "ACTION" | "INFO" | "DONE"
+type Tab = ModerationReportTab
 
 const editUrl = (id: string, workType: string) => {
   if (workType === "VIDEO") return `/posts/${id}/animation/edit`
@@ -50,7 +54,8 @@ const formatDate = (epoch: number) =>
 export function ModerationReportsContainer(_props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
-  const [tab, setTab] = useState<Tab>("ACTION")
+  // 利用者が選ぶまでは、お知らせのあるタブを開く
+  const [selectedTab, setTab] = useState<Tab | null>(null)
 
   const { data, loading, refetch } = useQuery(moderationReportsQuery, {
     skip: authContext.isLoading || !authContext.userId,
@@ -79,6 +84,8 @@ export function ModerationReportsContainer(_props: Props) {
     INFO: reports.filter((report) => groupOf(report) === "INFO").length,
     DONE: reports.filter((report) => groupOf(report) === "DONE").length,
   }
+
+  const tab = selectedTab ?? initialModerationReportTab(counts)
 
   const visible = reports.filter((report) => groupOf(report) === tab)
 
