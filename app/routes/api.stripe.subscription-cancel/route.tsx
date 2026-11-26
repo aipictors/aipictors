@@ -13,7 +13,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
     return toJsonResponse({ error: "Unauthorized", data: null }, 401)
   }
 
-  const graphqlEndpoint = getServerEnvValue(context, "VITE_GRAPHQL_ENDPOINT_REMIX")
+  const graphqlEndpoint = getServerEnvValue(
+    context,
+    "VITE_GRAPHQL_ENDPOINT_REMIX",
+  )
   if (!graphqlEndpoint) {
     return toJsonResponse(
       { error: "VITE_GRAPHQL_ENDPOINT_REMIX is not configured", data: null },
@@ -33,7 +36,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const apiBaseUrl =
     getServerEnvValue(context, "AIPICTORS_API_BASE_URL") ??
     "https://backend.aipictors.com"
-  const internalToken = getServerEnvValue(context, "AIPICTORS_API_INTERNAL_TOKEN")
+  const internalToken = getServerEnvValue(
+    context,
+    "AIPICTORS_API_INTERNAL_TOKEN",
+  )
   const cfAccessClientId = getServerEnvValue(
     context,
     "AIPICTORS_API_CF_ACCESS_CLIENT_ID",
@@ -47,6 +53,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const input = (await request.json().catch(() => ({}))) as {
     reason?: unknown
     reasonNote?: unknown
+    // 理由ごとの追加質問の答え（app/utils/leave-survey.ts の toLeaveSurveyDetails）
+    reasonDetails?: unknown
   }
 
   if (!internalToken) {
@@ -78,6 +86,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
           reasonNote:
             typeof input.reasonNote === "string"
               ? input.reasonNote.slice(0, 500)
+              : null,
+          reasonDetails:
+            input.reasonDetails &&
+            typeof input.reasonDetails === "object" &&
+            JSON.stringify(input.reasonDetails).length <= 4000
+              ? input.reasonDetails
               : null,
         }),
       },
@@ -138,7 +152,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
   } catch (error) {
     return toJsonResponse(
       {
-        error: error instanceof Error ? error.message : "Failed to cancel subscription",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to cancel subscription",
         data: null,
       },
       502,

@@ -1,3 +1,4 @@
+import type { LeaveReasonsResponse } from "./leave-reasons-section"
 /**
  * 分析ページの日別の数字（aipictors-api の analytics_daily と同じ形）と、表示用の集計
  */
@@ -143,6 +144,8 @@ export type AnalyticsResponse = {
   pnl?: ProfitAndLoss | null
   /** 利用者の月別（サービス開始から） */
   months?: UsersMonth[] | null
+  /** 解約・退会の理由（leave-reasons-section.tsx） */
+  leaveReasons?: LeaveReasonsResponse | null
 }
 
 /** Web（Stripe）の月額。App Store は別料金だが件数が少ないので同じ額で見積もる */

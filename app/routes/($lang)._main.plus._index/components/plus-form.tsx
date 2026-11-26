@@ -3,6 +3,7 @@ import { getAuth, getIdToken } from "firebase/auth"
 import { graphql } from "gql.tada"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { LeaveSurveyFields } from "~/components/leave-survey-fields"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +31,12 @@ import { PrepaidPassPanel } from "~/routes/($lang)._main.plus._index/components/
 import { TrialStatusBanner } from "~/routes/($lang)._main.plus._index/components/trial-status-banner"
 import { toPassName } from "~/routes/($lang)._main.plus._index/utils/to-pass-name"
 import type { SubscriptionPause } from "~/routes/api.stripe.subscription-pause/route"
+import {
+  emptyLeaveSurveyAnswer,
+  isLeaveSurveyComplete,
+  type LeaveSurveyAnswer,
+  toLeaveSurveyDetails,
+} from "~/utils/leave-survey"
 import { toDateText } from "~/utils/to-date-text"
 import { toTrialDateText } from "~/utils/to-trial-date-text"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
@@ -96,8 +103,15 @@ export function PlusForm() {
   const [isPlanChangeDialogOpen, setIsPlanChangeDialogOpen] = useState(false)
   // 解約の前に、安いプランへの変更を案内する（解約は加入 1 か月以内がいちばん多い）
   const [isRetentionOpen, setIsRetentionOpen] = useState(false)
-  const [cancelReason, setCancelReason] = useState<CancelReason | null>(null)
-  const [cancelReasonNote, setCancelReasonNote] = useState("")
+  // 解約の理由と、理由ごとの追加質問の答え（app/utils/leave-survey.ts）
+  const [cancelAnswer, setCancelAnswer] = useState<LeaveSurveyAnswer>(
+    emptyLeaveSurveyAnswer,
+  )
+  const cancelReason = cancelAnswer.reason as CancelReason | null
+  const isCancelAnswerComplete = isLeaveSurveyComplete(
+    "subscription",
+    cancelAnswer,
+  )
   // 1 か月休止の予約・休止中（解約の代わり）
   const [pause, setPause] = useState<SubscriptionPause>(null)
   // 未払い・休止がないと確かめられたか（ログイン前に選んだプランの決済を自動で続けてよいかの判定に使う）
@@ -223,7 +237,11 @@ export function PlusForm() {
         headers,
         body: JSON.stringify({
           reason: reason ?? null,
-          reasonNote: reason === "other" ? cancelReasonNote : null,
+          reasonNote:
+            reason === "other" ? cancelAnswer.text.trim().slice(0, 500) : null,
+          reasonDetails: reason
+            ? toLeaveSurveyDetails("subscription", cancelAnswer)
+            : null,
         }),
       })
 
@@ -766,44 +784,14 @@ export function PlusForm() {
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="grid gap-1.5">
-            {CANCEL_REASON_OPTIONS.map((option) => (
-              <label
-                key={option.value}
-                className={cn(
-                  "flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition",
-                  cancelReason === option.value
-                    ? "border-sky-500 bg-sky-500/10"
-                    : "hover:bg-muted",
-                )}
-              >
-                <input
-                  type="radio"
-                  name="cancel-reason"
-                  value={option.value}
-                  checked={cancelReason === option.value}
-                  onChange={() => {
-                    setCancelReason(option.value)
-                    trackGrowthEvent("cancel_reason", option.value)
-                  }}
-                />
-                {t(option.label, option.enLabel)}
-              </label>
-            ))}
-            {cancelReason === "other" && (
-              <textarea
-                value={cancelReasonNote}
-                onChange={(event) => setCancelReasonNote(event.target.value)}
-                maxLength={500}
-                rows={3}
-                placeholder={t(
-                  "よければ詳しく教えてください（任意）",
-                  "Tell us more if you like (optional)",
-                )}
-                className="mt-1 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-              />
-            )}
-          </div>
+          <LeaveSurveyFields
+            kind="subscription"
+            value={cancelAnswer}
+            onChange={setCancelAnswer}
+            onReasonSelect={(reason) =>
+              trackGrowthEvent("cancel_reason", reason)
+            }
+          />
           {cancelReason && currentPass && (
             <RetentionSuggestion
               reason={cancelReason}
@@ -830,9 +818,11 @@ export function PlusForm() {
               {t("続ける", "Keep my plan")}
             </AlertDialogAction>
             <AlertDialogCancel
-              disabled={cancelReason === null || isSubmitting}
+              disabled={
+                cancelReason === null || !isCancelAnswerComplete || isSubmitting
+              }
               onClick={() => {
-                if (!cancelReason) return
+                if (!cancelReason || !isCancelAnswerComplete) return
                 trackGrowthEvent("retention_cancel", currentPass?.type ?? "")
                 onCancelCurrentSubscription(cancelReason)
               }}
@@ -1151,8 +1141,7 @@ export function PlusForm() {
                       className="w-full scroll-mt-24 border-black text-black hover:bg-black/5 dark:border-white dark:bg-transparent dark:text-white dark:hover:bg-white/10"
                       onClick={() => {
                         trackGrowthEvent("retention_view", currentPass.type)
-                        setCancelReason(null)
-                        setCancelReasonNote("")
+                        setCancelAnswer(emptyLeaveSurveyAnswer())
                         setIsRetentionOpen(true)
                       }}
                       disabled={isSubmitting}
@@ -1379,46 +1368,6 @@ const PASS_EN_NAME: Record<string, string> = {
   PREMIUM: "Premium",
   TWO_DAYS: "2-day pass",
 }
-
-/** aipictors-api の lib/retention.ts の CANCEL_REASONS と同じ */
-const CANCEL_REASON_OPTIONS: {
-  value: CancelReason
-  label: string
-  enLabel: string
-}[] = [
-  {
-    value: "not_using",
-    label: "あまり使わなかった",
-    enLabel: "I didn't use it much",
-  },
-  {
-    value: "coins",
-    label: "コインが足りなかった",
-    enLabel: "I ran out of coins",
-  },
-  { value: "price", label: "料金が高い", enLabel: "It's too expensive" },
-  {
-    value: "quality",
-    label: "生成の品質・不具合が気になった",
-    enLabel: "Quality problems or bugs",
-  },
-  {
-    value: "slow",
-    label: "生成が遅い・待ち時間が長い",
-    enLabel: "Generation is slow or the wait is long",
-  },
-  {
-    value: "one_month",
-    label: "1か月だけ使うつもりだった",
-    enLabel: "I only planned to use it for a month",
-  },
-  {
-    value: "other_service",
-    label: "ほかのサービスに移る",
-    enLabel: "I'm moving to another service",
-  },
-  { value: "other", label: "その他", enLabel: "Something else" },
-]
 
 /**
  * 解約の理由に合わせた提案

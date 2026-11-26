@@ -36,6 +36,7 @@ import {
   sumBy,
   type UsersMonth,
 } from "./analytics-data"
+import { LeaveReasonsSection } from "./leave-reasons-section"
 
 const TITLE = "分析"
 const DESCRIPTION =
@@ -54,6 +55,7 @@ const SECTIONS = [
   { id: "sales", label: "売上" },
   { id: "generations", label: "生成" },
   { id: "traffic", label: "アクセス" },
+  { id: "leave", label: "解約・退会の理由" },
   { id: "daily", label: "日別" },
 ] as const
 
@@ -542,6 +544,10 @@ function AnalyticsBody(props: { data: AnalyticsResponse; range: number }) {
             items={mergeCounts(days, (d) => d.cloudflare?.countries)}
           />
         </ChartGrid>
+      </Section>
+
+      <Section id="leave">
+        <LeaveReasonsSection data={props.data.leaveReasons} />
       </Section>
 
       <Section id="daily">

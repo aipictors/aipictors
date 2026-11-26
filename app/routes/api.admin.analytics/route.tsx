@@ -10,7 +10,7 @@ import { toJsonResponse } from "~/lib/server/json-response.server"
 /**
  * 分析ページ（/admin/analytics）の日別の数字。モデレーターだけ
  * 中身は aipictors-api の /internal/analytics/daily（毎日 00:30 JST に前日分を保存している）と /internal/analytics/pnl（収支）、
- * /internal/analytics/users/monthly（利用者の月別）
+ * /internal/analytics/users/monthly（利用者の月別）、/internal/analytics/leave-reasons（解約・退会の理由）
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const authorization = request.headers.get("authorization")
@@ -43,7 +43,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const headers = getInternalHeaders(context)
     const baseUrl = getApiBaseUrl(context)
     // 収支（今日のここまで・今月）は外部の請求 API を呼ぶので、失敗しても日別の数字は返す
-    const [response, pnl, monthly] = await Promise.all([
+    // 解約・退会の理由は表示する期間の分（days は前の期間との比較で 2 倍になっている）
+    const leaveDays = Math.max(1, Math.ceil(Number(days) / 2) || 90)
+    const [response, pnl, monthly, leaveReasons] = await Promise.all([
       fetch(
         `${baseUrl}/internal/analytics/daily?days=${encodeURIComponent(days)}`,
         { headers },
@@ -56,6 +58,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
           res.ok ? (res.json() as Promise<{ months?: unknown[] }>) : null,
         )
         .catch(() => null),
+      fetch(`${baseUrl}/internal/analytics/leave-reasons?days=${leaveDays}`, {
+        headers,
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .catch(() => null),
     ])
     const body = await response.json()
     if (!response.ok) {
@@ -65,7 +72,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       )
     }
     return toJsonResponse(
-      { error: null, data: { ...body, pnl, months: monthly?.months ?? null } },
+      {
+        error: null,
+        data: { ...body, pnl, months: monthly?.months ?? null, leaveReasons },
+      },
       200,
     )
   } catch (error) {
