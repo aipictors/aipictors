@@ -53,17 +53,6 @@ export const extractDroppedUrl = (data: {
 }
 
 /**
- * 他サービスでの利用が許可されていないときの注意書き
- */
-export const licenseNoteText = (
-  allowsOtherServices: boolean | null | undefined,
-): string | null => {
-  return allowsOtherServices === false
-    ? "作者のライセンスでは他サービスでの利用が許可されていません"
-    : null
-}
-
-/**
  * 今の生成サーバーで使えない可能性がある系統の注意書き
  */
 export const unsupportedBaseNoteText = (

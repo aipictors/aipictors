@@ -4,7 +4,6 @@ import {
   importPercent,
   importPollDelayMs,
   isImportableModelUrl,
-  licenseNoteText,
   parseStoredImportJobs,
   unsupportedBaseNoteText,
 } from "~/lib/user-models/import-utils"
@@ -62,15 +61,6 @@ describe("extractDroppedUrl", () => {
 })
 
 describe("注意書き", () => {
-  test("他サービスでの利用が許可されていないときだけライセンスの注意を出す", () => {
-    expect(licenseNoteText(false)).toBe(
-      "作者のライセンスでは他サービスでの利用が許可されていません",
-    )
-    expect(licenseNoteText(true)).toBeNull()
-    expect(licenseNoteText(null)).toBeNull()
-    expect(licenseNoteText(undefined)).toBeNull()
-  })
-
   test("OTHER の系統は元の系統名を入れて注意を出す", () => {
     expect(unsupportedBaseNoteText("OTHER", "Anima")).toBe(
       "この系統（Anima）は今の生成サーバーでは生成できない場合があります",

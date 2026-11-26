@@ -1,9 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query"
 import {
-  toResizedImageSrcSet,
-  toResizedImageUrl,
-} from "~/utils/resized-image-url"
-import {
   AlertTriangleIcon,
   CalendarIcon,
   ChevronRightIcon,
@@ -55,14 +51,15 @@ import {
   splitTriggerWords,
   toUserLoraName,
 } from "~/lib/user-models/generation"
-import {
-  licenseNoteText,
-  unsupportedBaseNoteText,
-} from "~/lib/user-models/import-utils"
+import { unsupportedBaseNoteText } from "~/lib/user-models/import-utils"
 import type { UserModel } from "~/lib/user-models/types"
 import { cn } from "~/lib/utils"
 import { UserModelWorksSection } from "~/routes/($lang)._main.models.u.$id/components/user-model-works-section"
 import { dedupeModelImages } from "~/utils/dedupe-model-images"
+import {
+  toResizedImageSrcSet,
+  toResizedImageUrl,
+} from "~/utils/resized-image-url"
 
 type Props = {
   id: string
@@ -133,7 +130,6 @@ const licenseItems = (license: NonNullable<UserModel["sourceLicense"]>) => {
  */
 function UserModelSource(props: { model: UserModel; isOwner: boolean }) {
   const { model } = props
-  const licenseNote = licenseNoteText(model.sourceLicenseAllowsOtherServices)
   const baseNote = unsupportedBaseNoteText(
     model.baseModel,
     model.sourceBaseModel,
@@ -223,12 +219,6 @@ function UserModelSource(props: { model: UserModel; isOwner: boolean }) {
             詳しい条件は元のモデルのページで確認してください
           </p>
         </div>
-      )}
-      {licenseNote && (
-        <p className="flex gap-1.5 text-amber-700 dark:text-amber-400">
-          <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0" />
-          {licenseNote}
-        </p>
       )}
       {baseNote && (
         <p className="flex gap-1.5 text-amber-700 dark:text-amber-400">

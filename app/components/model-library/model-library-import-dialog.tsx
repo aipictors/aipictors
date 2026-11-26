@@ -39,7 +39,6 @@ import {
 import { formatBytes } from "~/lib/user-models/generation"
 import {
   isImportableModelUrl,
-  licenseNoteText,
   unsupportedBaseNoteText,
 } from "~/lib/user-models/import-utils"
 import type {
@@ -197,9 +196,6 @@ export function ModelLibraryImportDialog(props: Props) {
   const isThumbnailMissing =
     preview !== null && !preview.thumbnailUrl && !thumbnailUrl
 
-  const licenseNote = preview
-    ? licenseNoteText(preview.licenseAllowsOtherServices)
-    : null
   const baseNote = preview
     ? unsupportedBaseNoteText(preview.baseModel, preview.sourceBaseModel)
     : null
@@ -389,20 +385,12 @@ export function ModelLibraryImportDialog(props: Props) {
                 同じファイルが保存済みなので、すぐに使えます
               </p>
             )}
-            {(licenseNote || baseNote) && (
+            {baseNote && (
               <div className="space-y-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-amber-800 text-xs leading-relaxed dark:text-amber-300">
-                {licenseNote && (
-                  <p className="flex gap-1.5">
-                    <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0" />
-                    {licenseNote}
-                  </p>
-                )}
-                {baseNote && (
-                  <p className="flex gap-1.5">
-                    <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0" />
-                    {baseNote}
-                  </p>
-                )}
+                <p className="flex gap-1.5">
+                  <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0" />
+                  {baseNote}
+                </p>
               </div>
             )}
 
