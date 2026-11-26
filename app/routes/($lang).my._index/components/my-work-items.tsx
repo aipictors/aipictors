@@ -303,7 +303,11 @@ function SortHeader(props: {
       aria-sort={
         isActive ? (props.sort === "ASC" ? "ascending" : "descending") : "none"
       }
-      className="px-2 py-2 font-medium"
+      // 数字の列は値と同じく右に寄せる（thead の text-left のままだと見出しと数字がずれる）
+      className={cn(
+        "px-2 py-2 font-medium",
+        props.align === "right" && "text-right",
+      )}
     >
       <button
         type="button"
