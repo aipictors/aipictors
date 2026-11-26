@@ -36,6 +36,8 @@ type Props = {
   ) => void
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
+  /** 投稿の画像一覧にもう入っている生成画像の nanoid（「追加済み」にして選べなくする） */
+  addedNanoids?: string[]
 }
 
 type GenerationResult = NonNullable<
@@ -59,6 +61,7 @@ const getSourceUrl = (result: GenerationResult) =>
  * - 虫めがねで大きく見て、そのまま選べる（左右で前後の画像）
  * - 選んだ画像はすぐに裏で読み始めるので、追加を押してから待たない
  * - 1 枚読めなくても、読めた画像は追加する
+ * - もう追加した画像は「追加済み」にして選べなくする（同じ画像を二重に足さない）
  */
 export function ImageGenerationSelectorDialog(props: Props) {
   const t = useTranslation()
@@ -94,6 +97,9 @@ export function ImageGenerationSelectorDialog(props: Props) {
   }
 
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const addedNanoids = new Set(props.addedNanoids ?? [])
+  const isAdded = (result: GenerationResult) =>
+    result.nanoid !== null && addedNanoids.has(result.nanoid)
   const [sizeIndex, setSizeIndex] = useState(DEFAULT_SIZE_INDEX)
   const [isContain, setIsContain] = useState(false)
   const [previewId, setPreviewId] = useState<string | null>(null)
@@ -174,7 +180,9 @@ export function ImageGenerationSelectorDialog(props: Props) {
   }
 
   const toggleSelect = (result: GenerationResult) => {
-    if (isSubmitting || getSourceUrl(result) === null) return
+    if (isSubmitting || getSourceUrl(result) === null || isAdded(result)) {
+      return
+    }
     if (selectedIds.includes(result.id)) {
       setSelectedIds((prev) => prev.filter((id) => id !== result.id))
       return
@@ -222,7 +230,7 @@ export function ImageGenerationSelectorDialog(props: Props) {
 
     const selected = selectedIds.flatMap((id) => {
       const result = results.find((r) => r.id === id)
-      return result ? [result] : []
+      return result && !isAdded(result) ? [result] : []
     })
 
     setProgress({ done: 0, total: selected.length })
@@ -399,6 +407,7 @@ export function ImageGenerationSelectorDialog(props: Props) {
             {results.map((result) => {
               const order = selectedIds.indexOf(result.id)
               const isSelected = order !== -1
+              const isAlreadyAdded = isAdded(result)
               const thumbnail = result.thumbnailUrl || result.imageUrl
               return (
                 <div
@@ -412,8 +421,13 @@ export function ImageGenerationSelectorDialog(props: Props) {
                     type="button"
                     className="absolute inset-0 size-full"
                     onClick={() => toggleSelect(result)}
+                    disabled={isAlreadyAdded}
                     aria-pressed={isSelected}
-                    aria-label={t("この画像を選ぶ", "Select this image")}
+                    aria-label={
+                      isAlreadyAdded
+                        ? t("追加済みの画像", "Already added")
+                        : t("この画像を選ぶ", "Select this image")
+                    }
                   >
                     {thumbnail && (
                       <img
@@ -421,6 +435,7 @@ export function ImageGenerationSelectorDialog(props: Props) {
                           "size-full transition-transform",
                           isContain ? "object-contain" : "object-cover",
                           isSelected && "scale-[0.92] rounded-md",
+                          isAlreadyAdded && "opacity-40",
                         )}
                         src={thumbnail}
                         alt=""
@@ -430,17 +445,24 @@ export function ImageGenerationSelectorDialog(props: Props) {
                       />
                     )}
                   </button>
-                  {/* 選んだ順番 */}
-                  <span
-                    className={cn(
-                      "pointer-events-none absolute top-1.5 left-1.5 flex size-6 items-center justify-center rounded-full border-2 font-bold text-xs shadow",
-                      isSelected
-                        ? "border-blue-500 bg-blue-500 text-white"
-                        : "border-white/80 bg-black/20",
-                    )}
-                  >
-                    {isSelected ? order + 1 : null}
-                  </span>
+                  {/* 選んだ順番（追加済みの画像は「追加済み」） */}
+                  {isAlreadyAdded ? (
+                    <span className="pointer-events-none absolute top-1.5 left-1.5 flex h-6 items-center gap-0.5 rounded-full bg-black/70 px-2 font-bold text-[11px] text-white shadow">
+                      <CheckIcon className="size-3" />
+                      {t("追加済み", "Added")}
+                    </span>
+                  ) : (
+                    <span
+                      className={cn(
+                        "pointer-events-none absolute top-1.5 left-1.5 flex size-6 items-center justify-center rounded-full border-2 font-bold text-xs shadow",
+                        isSelected
+                          ? "border-blue-500 bg-blue-500 text-white"
+                          : "border-white/80 bg-black/20",
+                      )}
+                    >
+                      {isSelected ? order + 1 : null}
+                    </span>
+                  )}
                   {/* 大きく表示 */}
                   <button
                     type="button"
@@ -575,9 +597,14 @@ export function ImageGenerationSelectorDialog(props: Props) {
                   selectedIds.includes(preview.id) ? "default" : "secondary"
                 }
                 onClick={() => toggleSelect(preview)}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isAdded(preview)}
               >
-                {selectedIds.includes(preview.id) ? (
+                {isAdded(preview) ? (
+                  <>
+                    <CheckIcon className="mr-2 size-5" />
+                    {t("追加済み", "Already added")}
+                  </>
+                ) : selectedIds.includes(preview.id) ? (
                   <>
                     <CheckIcon className="mr-2 size-5" />
                     {t(

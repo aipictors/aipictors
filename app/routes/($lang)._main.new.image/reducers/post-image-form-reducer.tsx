@@ -1,5 +1,6 @@
 import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
+import { appendGenerationItems } from "~/routes/($lang)._main.new.image/utils/append-generation-items"
 
 export const postImageFormReducer = (
   state: PostImageFormState,
@@ -171,26 +172,15 @@ export const postImageFormReducer = (
       }
     }
     case "SUBMIT_IMAGE_GENERATION_DIALOG": {
-      const newItems = action.payload.selectedImageGenerationUrls.flatMap(
-        (url: string, index: number) =>
-          state.items.some((item) => item.content === url)
-            ? []
-            : [
-                {
-                  id: Math.floor(Math.random() * 10000),
-                  content: url,
-                  // 生成履歴に「投稿済み」の印を付けるために持っておく
-                  generationNanoid:
-                    action.payload.selectedImageGenerationNanoids?.[index] ||
-                    null,
-                },
-              ],
-      )
-
       return {
         ...state,
         isOpenImageGenerationDialog: false,
-        items: [...state.items, ...newItems],
+        // nanoid は生成履歴に「投稿済み」の印を付けるのと、同じ画像を二重に足さないために持っておく
+        items: appendGenerationItems(
+          state.items,
+          action.payload.selectedImageGenerationUrls,
+          action.payload.selectedImageGenerationNanoids,
+        ),
       }
     }
     case "MARK_AS_DONE":

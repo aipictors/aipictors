@@ -168,16 +168,22 @@ export function EditImageFormUploader(props: Props) {
         setIsOpen={() => {
           props.dispatch({ type: "CLOSE_IMAGE_GENERATION_DIALOG" })
         }}
+        addedNanoids={props.state.items.flatMap((item) =>
+          item.generationNanoid ? [item.generationNanoid] : [],
+        )}
         onSubmit={async (
           selectedImage: string[],
           selectedIds: string[],
           lastSelectedOriginalImage: string,
+          _lastSelectedResult,
+          selectedNanoids: string[],
         ) => {
           props.dispatch({
             type: "SUBMIT_IMAGE_GENERATION_DIALOG",
             payload: {
               selectedImageGenerationUrls: selectedImage,
               selectedImageGenerationIds: selectedIds,
+              selectedImageGenerationNanoids: selectedNanoids,
             },
           })
           if (selectedImage.length === 0) {

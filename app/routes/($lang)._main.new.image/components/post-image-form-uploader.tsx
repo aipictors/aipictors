@@ -757,6 +757,9 @@ export function PostImageFormUploader(props: Props) {
           setIsOpen={() => {
             props.dispatch({ type: "CLOSE_IMAGE_GENERATION_DIALOG" })
           }}
+          addedNanoids={props.state.items.flatMap((item) =>
+            item.generationNanoid ? [item.generationNanoid] : [],
+          )}
           onSubmit={async (
             selectedImage: string[],
             selectedIds: string[],
