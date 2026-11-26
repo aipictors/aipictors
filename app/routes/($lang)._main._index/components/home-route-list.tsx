@@ -8,6 +8,7 @@ import {
   MenuIcon,
 } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
+import { PlanLogoBadge } from "~/components/plan-logo-badge"
 import {
   SidebarNavigationButton,
   sidebarItemClassName,
@@ -113,6 +114,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
           />
         )}
         <span className="whitespace-nowrap font-bold text-xl">{title}</span>
+        <PlanLogoBadge />
       </Link>
     </div>
   )

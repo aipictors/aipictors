@@ -16,6 +16,7 @@ import { useBoolean } from "usehooks-ts"
 import { AppHeader } from "~/components/app/app-header"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
+import { PlanLogoBadge } from "~/components/plan-logo-badge"
 import { PlusHeaderLink } from "~/components/plus-entry-notice"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
 import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
@@ -519,6 +520,7 @@ function HomeHeader(props: Props) {
             <span className="hidden whitespace-nowrap font-bold text-xl lg:inline">
               {title}
             </span>
+            <PlanLogoBadge className="hidden lg:inline" />
           </Link>
         )}
         <div
@@ -554,6 +556,7 @@ function HomeHeader(props: Props) {
                 <span className="whitespace-nowrap font-bold text-xl">
                   {title}
                 </span>
+                <PlanLogoBadge className="ml-1" />
               </div>
             </Button>
           )}

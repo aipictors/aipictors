@@ -26,7 +26,7 @@ export function usePlusStatus(): PlusStatus {
 }
 
 // 広告の出し分け（ad-slot.tsx の ViewerAdFreePass）と同じ項目。先に読まれていればキャッシュで返る
-const viewerPlusStatusQuery = graphql(
+export const viewerPlusStatusQuery = graphql(
   `query ViewerPlusStatus {
     viewer {
       id
