@@ -4,6 +4,7 @@ import { LikeButton } from "~/components/like-button"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
+import { cn } from "~/lib/utils"
 import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import type {
   HomeTagWorksResponse,
@@ -12,11 +13,12 @@ import type {
 import { getJstDate } from "~/utils/jst-date"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 
-const rowClassName =
-  "-mx-4 flex snap-x gap-2.5 overflow-x-auto overscroll-x-contain px-4 pb-1 [scrollbar-width:none] md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden"
+/** 作品を折り返して並べる（ちちぷいのトップと同じく、横にスクロールさせず何段も見せる。PC は 6 列） */
+const gridClassName =
+  "grid grid-cols-3 gap-x-2 gap-y-3 sm:grid-cols-4 lg:grid-cols-6 md:gap-x-2.5"
 
 /**
- * タグごとの作品（今日のお題と人気タグ 3 つを、タグごとに横に並べる）
+ * タグごとの作品（今日のお題と人気タグを、タグごとに 2 段の一覧で並べる）
  *
  * initialRows があれば（トップの loader で取った分）それを最初の HTML から出す。
  * なければ HomeDeferredSection の中に置き、画面に近づいてから /api/home-tag-works（拠点のキャッシュ）を読む
@@ -89,27 +91,33 @@ function HomeTagWorksRowView(props: {
 }
 
 /**
- * 見出しと作品の横並び（タグごとの作品・前日ランキングで共通）。showRank で左上に順位を出す
+ * 見出しと作品の一覧（いま人気・タグごとの作品・デイリーランキングで共通）。showRank で左上に順位を出す
  */
 export function HomeWorksShelf(props: {
   title: string
   link: string
   works: HomeTagWorksRow["works"]
   showRank?: boolean
+  /** 見出しの下の短い説明 */
+  description?: string
+  /** 画像を読む幅（大きく見せる欄は広めに） */
+  imageWidth?: number
 }) {
   const t = useTranslation()
   if (props.works.length === 0) return null
   return (
     <div className="space-y-2.5">
-      <HomeSectionHeading title={props.title} link={props.link} />
-      <ul className={rowClassName}>
+      <HomeSectionHeading
+        title={props.title}
+        description={props.description}
+        link={props.link}
+        linkLabel={t("すべて見る", "See all")}
+      />
+      <ul className={gridClassName}>
         {props.works.map((work, index) => {
           const title = t.workTitle(work.title, work.enTitle)
           return (
-            <li
-              key={work.id}
-              className="w-[38%] shrink-0 snap-start sm:w-[26%] md:w-[19%] xl:w-[15.5%]"
-            >
+            <li key={work.id} className="min-w-0">
               <div className="relative">
                 <Link
                   to={`/posts/${work.id}`}
@@ -118,8 +126,10 @@ export function HomeWorksShelf(props: {
                   <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
                     <img
                       src={
-                        toResizedImageUrl(work.smallThumbnailImageURL, 240) ??
-                        work.smallThumbnailImageURL
+                        toResizedImageUrl(
+                          work.smallThumbnailImageURL,
+                          props.imageWidth ?? 240,
+                        ) ?? work.smallThumbnailImageURL
                       }
                       alt={title}
                       loading="lazy"
@@ -127,7 +137,18 @@ export function HomeWorksShelf(props: {
                       className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none"
                     />
                     {props.showRank && (
-                      <span className="absolute top-1.5 left-1.5 flex size-6 items-center justify-center rounded-full bg-black/60 font-bold text-white text-xs tabular-nums">
+                      <span
+                        className={cn(
+                          "absolute top-1.5 left-1.5 flex size-6 items-center justify-center rounded-full font-bold text-white text-xs tabular-nums",
+                          index === 0
+                            ? "bg-amber-500"
+                            : index === 1
+                              ? "bg-slate-400"
+                              : index === 2
+                                ? "bg-orange-700"
+                                : "bg-black/60",
+                        )}
+                      >
                         {index + 1}
                       </span>
                     )}
@@ -166,11 +187,11 @@ export function HomeTagWorksPlaceholder() {
         <LightbulbIcon className="size-5 text-muted-foreground" />
         {t("タグごとの作品", "Works by tag")}
       </p>
-      <div className={rowClassName}>
-        {Array.from({ length: 6 }, (_, index) => (
+      <div className={gridClassName}>
+        {Array.from({ length: 12 }, (_, index) => (
           <Skeleton
             key={index.toString()}
-            className="aspect-square w-[38%] shrink-0 rounded-xl sm:w-[26%] md:w-[19%] xl:w-[15.5%]"
+            className="aspect-square rounded-xl"
           />
         ))}
       </div>

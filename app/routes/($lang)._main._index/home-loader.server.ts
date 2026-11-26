@@ -7,10 +7,7 @@ import { config } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
-import {
-  HOME_HOT_WORKS_COUNT,
-  HomeHotWorkFragment,
-} from "~/routes/($lang)._main._index/components/home-hot-carousel"
+import { HomeHotWorkFragment } from "~/routes/($lang)._main._index/components/home-hot-carousel"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
@@ -34,16 +31,16 @@ import {
 } from "~/routes/($lang)._main._index/utils/home-loader-data"
 import { HOME_TAB_PATHS } from "~/routes/($lang)._main._index/utils/home-tabs"
 import { PER_IMG } from "~/routes/($lang)._main._index/utils/works-utils"
-import type {
-  MicroCmsApiRelease,
-  MicroCmsApiReleaseResponse,
-} from "~/types/micro-cms-release-response"
 import {
   getHomeTagWorks,
   HomeTagRowWorkFragment,
   type HomeTagWorksResponse,
   type HomeTagWorksRow,
 } from "~/routes/api.home-tag-works/route"
+import type {
+  MicroCmsApiRelease,
+  MicroCmsApiReleaseResponse,
+} from "~/types/micro-cms-release-response"
 import { getJstDate } from "~/utils/jst-date"
 import {
   fetchFeaturedTaggedReleases,
@@ -83,6 +80,7 @@ const createBaseHomeLoaderData = (props: {
   firstTagWorks: [] as FragmentOf<typeof HomeTagWorkFragment>[],
   tagWorkRows: [] as HomeTagWorksRow[],
   rankingWorks: [] as HomeTagWorksRow["works"],
+  trendWorks: [] as HomeTagWorksRow["works"],
   rankingDateText: props.awardDateText,
 })
 
@@ -314,6 +312,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
     userEvents: _userEvents,
     rankingWorks: _rankingWorks,
     olderRankingWorks: _olderRankingWorks,
+    hotWorks: _hotWorks,
     ...homeData
   } = resultData ?? {}
 
@@ -328,14 +327,12 @@ export async function homeLoader(props: LoaderFunctionArgs) {
         toPromotionFillWorks(
           resultData?.promotionFillWorks,
           resultData?.promotionWorks,
-          resultData?.hotWorks?.slice(0, HOME_HOT_WORKS_COUNT),
+          resultData?.hotWorks?.slice(0, HOME_TREND_WORKS_COUNT),
         ),
       ),
       eventPreviews,
-      // いま人気のカルーセル（アプリと同じ 10 件）
-      hotWorks: Array.isArray(resultData?.hotWorks)
-        ? resultData.hotWorks.slice(0, HOME_HOT_WORKS_COUNT)
-        : [],
+      // いま人気（ちちぷいのトレンドと同じく、大きな一覧で 4 段分）。一覧に要る項目だけを HTML に入れる
+      trendWorks: toTrendWorks(resultData?.hotWorks),
       // 上のタグの横並び（今日のお題の後ろに並べる）
       hotTags: Array.isArray(resultData?.hotTags)
         ? resultData.hotTags.slice(0, HOME_HOT_TAGS_COUNT)
@@ -373,6 +370,25 @@ function toPromotionFillWorks<T extends { id: string }>(
   return (feedWorks ?? [])
     .filter((work) => !shownIds.has(work.id))
     .slice(0, room)
+}
+
+/** いま人気の一覧に出す数（PC の 6 列で 4 段） */
+const HOME_TREND_WORKS_COUNT = 24
+
+function toTrendWorks(
+  works: FragmentOf<typeof HomeHotWorkFragment>[] | undefined,
+): HomeTagWorksRow["works"] {
+  if (!Array.isArray(works)) return []
+  return works.slice(0, HOME_TREND_WORKS_COUNT).map((work) => ({
+    id: work.id,
+    title: work.title,
+    enTitle: work.enTitle ?? null,
+    likesCount: work.likesCount,
+    smallThumbnailImageURL: work.smallThumbnailImageURL,
+    smallThumbnailImageWidth: work.smallThumbnailImageWidth,
+    smallThumbnailImageHeight: work.smallThumbnailImageHeight,
+    user: work.user ? { id: work.user.id } : null,
+  }))
 }
 
 /** 前日のランキングがまだ集計されていなければ前々日の分 */

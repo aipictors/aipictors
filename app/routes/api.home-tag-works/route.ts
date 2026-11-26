@@ -2,7 +2,7 @@
  * トップの下の方の「タグごとの作品」
  * GET /api/home-tag-works（?sensitive=1 で R18 のトップ用）
  *
- * 今日のお題と人気タグ 3 つについて、いいねの多い作品を横に並べる分だけ返す。
+ * 今日のお題と人気タグ 5 つについて、いいねの多い作品を横に並べる分だけ返す。
  * 全員同じ内容（全年齢か R18 のどちらか）なので拠点のキャッシュに 1 時間置き、見た人ごとに system へ問い合わせない
  */
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -17,8 +17,8 @@ import {
 /** 1 つのタグに並べる作品の数 */
 const WORKS_PER_TAG = 12
 
-/** 人気タグから出す数（今日のお題とあわせて最大 4 段） */
-const POPULAR_TAG_COUNT = 3
+/** 人気タグから出す数（今日のお題とあわせて最大 6 段。ちちぷいのトップと同じくタグの棚を何段も並べる） */
+const POPULAR_TAG_COUNT = 5
 
 const EDGE_CACHE_SECONDS = 60 * 60
 
@@ -100,8 +100,10 @@ const loadRows = async (
     where1: where(tags[1]),
     where2: where(tags[2]),
     where3: where(tags[3]),
+    where4: where(tags[4]),
+    where5: where(tags[5]),
   }
-  // 4 つのタグを 1 回の問い合わせで取る
+  // 6 つのタグを 1 回の問い合わせで取る
   const lists: HomeTagWorksRow["works"][] = []
   if (isSensitive) {
     const data = (
@@ -112,6 +114,8 @@ const loadRows = async (
       data?.works1,
       data?.works2,
       data?.works3,
+      data?.works4,
+      data?.works5,
     ]) {
       // R18G は混ぜない（ratings を R18 にしても検索では R18G が返ることがある）。タグ名と評価は選ぶのに使うだけで返さない
       lists.push(
@@ -131,6 +135,8 @@ const loadRows = async (
       data?.works1 ?? [],
       data?.works2 ?? [],
       data?.works3 ?? [],
+      data?.works4 ?? [],
+      data?.works5 ?? [],
     )
   }
   return {
@@ -158,7 +164,7 @@ export async function getHomeTagWorks(
   const hourKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-${now.getHours()}`
   const cache = typeof caches === "undefined" ? null : caches.default
   const cacheKey = new Request(
-    `https://www.aipictors.com/__home-tag-works/v3/${isSensitive ? "r18/" : ""}${hourKey}`,
+    `https://www.aipictors.com/__home-tag-works/v4/${isSensitive ? "r18/" : ""}${hourKey}`,
   )
   const cached = await cache?.match(cacheKey).catch(() => undefined)
   if (cached) {
@@ -191,7 +197,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const cache = typeof caches === "undefined" ? null : caches.default
   const cacheKey = new Request(
-    `https://www.aipictors.com/__home-tag-works/v3/${isSensitive ? "r18/" : ""}${hourKey}`,
+    `https://www.aipictors.com/__home-tag-works/v4/${isSensitive ? "r18/" : ""}${hourKey}`,
   )
   const cached = await cache?.match(cacheKey).catch(() => undefined)
   if (cached) {
@@ -235,7 +241,7 @@ const homeTagWorksTagsQuery = graphql(
       title
       enTitle
     }
-    recommendedTags(limit: 6, where: { isSensitive: false }) {
+    recommendedTags(limit: 10, where: { isSensitive: false }) {
       tagName
       enTagName
     }
@@ -264,6 +270,8 @@ const homeTagWorksQuery = graphql(
     $where1: WorksWhereInput
     $where2: WorksWhereInput
     $where3: WorksWhereInput
+    $where4: WorksWhereInput
+    $where5: WorksWhereInput
   ) {
     works0: works(offset: 0, limit: $limit, where: $where0) {
       ...HomeTagRowWork
@@ -275,6 +283,12 @@ const homeTagWorksQuery = graphql(
       ...HomeTagRowWork
     }
     works3: works(offset: 0, limit: $limit, where: $where3) {
+      ...HomeTagRowWork
+    }
+    works4: works(offset: 0, limit: $limit, where: $where4) {
+      ...HomeTagRowWork
+    }
+    works5: works(offset: 0, limit: $limit, where: $where5) {
       ...HomeTagRowWork
     }
   }`,
@@ -288,7 +302,7 @@ const homeTagWorksSensitiveTagsQuery = graphql(
       title
       enTitle
     }
-    recommendedTags(limit: 12, where: { isSensitive: true }) {
+    recommendedTags(limit: 20, where: { isSensitive: true }) {
       tagName
       enTagName
     }
@@ -302,6 +316,8 @@ const homeTagWorksSensitiveQuery = graphql(
     $where1: WorksWhereInput
     $where2: WorksWhereInput
     $where3: WorksWhereInput
+    $where4: WorksWhereInput
+    $where5: WorksWhereInput
   ) {
     works0: works(offset: 0, limit: $limit, where: $where0) {
       ...HomeTagRowWork
@@ -319,6 +335,16 @@ const homeTagWorksSensitiveQuery = graphql(
       tagNames
     }
     works3: works(offset: 0, limit: $limit, where: $where3) {
+      ...HomeTagRowWork
+      rating
+      tagNames
+    }
+    works4: works(offset: 0, limit: $limit, where: $where4) {
+      ...HomeTagRowWork
+      rating
+      tagNames
+    }
+    works5: works(offset: 0, limit: $limit, where: $where5) {
       ...HomeTagRowWork
       rating
       tagNames

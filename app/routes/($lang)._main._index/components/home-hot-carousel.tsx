@@ -29,6 +29,9 @@ export const HomeHotWorkFragment = graphql(
     largeThumbnailImageURL
     largeThumbnailImageWidth
     largeThumbnailImageHeight
+    smallThumbnailImageURL
+    smallThumbnailImageWidth
+    smallThumbnailImageHeight
     user {
       id
       name

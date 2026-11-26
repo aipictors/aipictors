@@ -9,7 +9,6 @@ import {
   HomeDeferredSection,
   HomeWorkSectionPlaceholder,
 } from "~/routes/($lang)._main._index/components/home-deferred-section"
-import { HomeHotCarousel } from "~/routes/($lang)._main._index/components/home-hot-carousel"
 import { HomeQuickLinks } from "~/routes/($lang)._main._index/components/home-quick-links"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import { HomeSidebar } from "~/routes/($lang)._main._index/components/home-sidebar"
@@ -95,20 +94,19 @@ export function HomeFeedTabContent(
               updateHomeSectionWorks("recommended", works)
             }
           />
-          {/* いま人気 → 今日のお題 → ランキング・プラン */}
-          <HomeHotCarousel works={data.hotWorks} />
-          <div className="space-y-3">
-            {data.dailyTheme && (
-              <HomeDailyThemeCard
-                theme={{
-                  ...data.dailyTheme,
-                  firstWork: data.dailyTheme.firstWork ?? null,
-                }}
-              />
+          {/* ここから下はちちぷいのトップと同じく、作品の一覧を何段も続ける（いま人気 → ランキング → タグごと）。
+              お題やプランの案内・バナーは作品の一覧の後ろに置く */}
+          <HomeWorksShelf
+            title={t("いま人気", "Trending now")}
+            description={t(
+              "いま反応が集まっている作品",
+              "Works getting reactions right now",
             )}
-            <HomeQuickLinks />
-          </div>
-          {/* デイリーランキング（上位 12 件。最初の HTML に入れる） */}
+            link="/new-works?view=popular"
+            works={data.trendWorks}
+            imageWidth={320}
+          />
+          {/* デイリーランキング（上位 12 件） */}
           {data.rankingWorks.length > 0 && (
             <HomeWorksShelf
               title={t(
@@ -120,6 +118,30 @@ export function HomeFeedTabContent(
               showRank
             />
           )}
+          {/* タグごとの作品（今日のお題・人気タグ 5 つ）。loader で取れていれば最初の HTML に入れ、なければ画面に近づいてから読む */}
+          <div style={offscreenSectionStyle(2400)}>
+            {data.tagWorkRows.length > 0 ? (
+              <HomeTagWorksSection initialRows={data.tagWorkRows} />
+            ) : (
+              <HomeDeferredSection fallback={<HomeTagWorksPlaceholder />}>
+                <HomeTagWorksSection />
+              </HomeDeferredSection>
+            )}
+          </div>
+          {/* 今日のお題への参加・ランキング・プランの案内 */}
+          <div className="space-y-3">
+            {data.dailyTheme && (
+              <HomeDailyThemeCard
+                theme={{
+                  ...data.dailyTheme,
+                  firstWork: data.dailyTheme.firstWork ?? null,
+                }}
+              />
+            )}
+            <HomeQuickLinks />
+          </div>
+          {/* 週替わりのピックアップモデル（みんなのモデルの看板） */}
+          <UserModelPickupBanner />
           {/* 作品を選んで無料生成（生成への入口。ログインしている人だけ: 未ログインでは中身が取れず、見出しだけ出ていた） */}
           {authContext.isLoggedIn && (
             <div style={offscreenSectionStyle(1000)}>
@@ -144,18 +166,6 @@ export function HomeFeedTabContent(
               </HomeDeferredSection>
             </div>
           )}
-          {/* 週替わりのピックアップモデル（みんなのモデルの看板） */}
-          <UserModelPickupBanner />
-          {/* タグごとの作品（今日のお題・人気タグ）。loader で取れていれば最初の HTML に入れ、なければ画面に近づいてから読む */}
-          <div style={offscreenSectionStyle(900)}>
-            {data.tagWorkRows.length > 0 ? (
-              <HomeTagWorksSection initialRows={data.tagWorkRows} />
-            ) : (
-              <HomeDeferredSection fallback={<HomeTagWorksPlaceholder />}>
-                <HomeTagWorksSection />
-              </HomeDeferredSection>
-            )}
-          </div>
         </div>
         {/* 右カラム（スクロールしても見えるように固定）。PC だけ新しいユーザー・コメント・人気タグも */}
         <HomeSidebar {...sidebar} recommendedTags={data.recommendedTags} />
