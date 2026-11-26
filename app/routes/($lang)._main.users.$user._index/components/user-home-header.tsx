@@ -34,29 +34,35 @@ export function UserHomeHeader(props: Props) {
     Boolean(headerImageUrl) && brokenUrl !== headerImageUrl
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-0 md:px-8 md:pt-4">
-      <div className="relative aspect-[5/2] w-full overflow-hidden bg-muted md:aspect-[3/1] md:rounded-3xl">
-        {showHeaderImage && headerImageUrl ? (
-          <img
-            ref={headerRef}
-            onError={() => setBrokenUrl(headerImageUrl)}
-            src={headerImageUrl}
-            alt=""
-            className="absolute inset-0 size-full object-cover"
-            width={1200}
-            height={400}
-            fetchPriority="high"
-            decoding="async"
-          />
-        ) : (
-          // ヘッダー画像がない・読めない人は、アイコンの色を広げて背景にする
-          <img
-            src={toResizedImageUrl(withIconUrlFallback(user.iconUrl), 96)}
-            alt=""
-            className="absolute inset-0 size-full scale-125 object-cover opacity-80 blur-3xl saturate-150"
-            decoding="async"
-          />
-        )}
+    <div
+      className="group/user-header mx-auto w-full max-w-6xl px-0 md:px-8 md:pt-4"
+      data-header-frame={user.headerFrame ? "" : undefined}
+    >
+      {/* ヘッダー枠は角の飾りまで画像いっぱいに描いてあるので、角丸で切り抜く画像の箱の外に重ねる */}
+      <div className="relative">
+        <div className="relative aspect-[5/2] w-full overflow-hidden bg-muted md:aspect-[3/1] md:rounded-3xl">
+          {showHeaderImage && headerImageUrl ? (
+            <img
+              ref={headerRef}
+              onError={() => setBrokenUrl(headerImageUrl)}
+              src={headerImageUrl}
+              alt=""
+              className="absolute inset-0 size-full object-cover"
+              width={1200}
+              height={400}
+              fetchPriority="high"
+              decoding="async"
+            />
+          ) : (
+            // ヘッダー画像がない・読めない人は、アイコンの色を広げて背景にする
+            <img
+              src={toResizedImageUrl(withIconUrlFallback(user.iconUrl), 96)}
+              alt=""
+              className="absolute inset-0 size-full scale-125 object-cover opacity-80 blur-3xl saturate-150"
+              decoding="async"
+            />
+          )}
+        </div>
         {user.headerFrame && (
           <GachaHeaderFrameOverlay slug={user.headerFrame.slug} />
         )}

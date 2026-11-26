@@ -19,6 +19,16 @@ type Props = {
   fileExtension?: string
   onCrop: (croppedImage: string) => void
   onClose: () => void
+  /** 見出し（未指定は「画像を切り抜く」） */
+  title?: string
+  /**
+   * 指定すると切り抜く比率を選べる（先頭が最初の比率）。cropWidth / cropHeight の比率の代わりに使う
+   */
+  aspectOptions?: { label: string; aspect: number }[]
+  /**
+   * 切り抜いた範囲の大きさのまま返す（cropWidth × cropHeight に縮めない）。比率を選べるときに使う
+   */
+  isKeepCroppedSize?: boolean
 }
 
 /**
@@ -36,7 +46,24 @@ export function ImageCropperModal(props: Props): React.ReactNode {
     height: 0,
   })
 
-  const aspectRatio = props.cropWidth / props.cropHeight
+  const [aspectIndex, setAspectIndex] = useState(0)
+
+  const aspectRatio =
+    props.aspectOptions?.[aspectIndex]?.aspect ??
+    props.cropWidth / props.cropHeight
+
+  /**
+   * 切り抜いた画像を返す大きさに直す
+   */
+  const toOutputImage = (croppedImage: string) =>
+    props.isKeepCroppedSize
+      ? croppedImage
+      : getResizedImg(
+          croppedImage,
+          props.cropWidth,
+          props.cropHeight,
+          props.fileExtension,
+        )
 
   /**
    * 切り抜きエリア変更時の処理
@@ -51,39 +78,17 @@ export function ImageCropperModal(props: Props): React.ReactNode {
    * 切り抜き処理
    */
   const onSubmit = async () => {
-    if (props.src.startsWith("https://")) {
-      const base64 = await getBase64FromImageUrl(props.src)
+    const source = props.src.startsWith("https://")
+      ? await getBase64FromImageUrl(props.src)
+      : props.src
 
-      const croppedImage = await getCroppedImage(
-        base64,
-        croppedAreaPixels,
-        props.fileExtension,
-      )
+    const croppedImage = await getCroppedImage(
+      source,
+      croppedAreaPixels,
+      props.fileExtension,
+    )
 
-      const resizedImage = await getResizedImg(
-        croppedImage,
-        props.cropWidth,
-        props.cropHeight,
-        props.fileExtension,
-      )
-
-      props.onCrop(resizedImage)
-    } else {
-      const croppedImage = await getCroppedImage(
-        props.src,
-        croppedAreaPixels,
-        props.fileExtension,
-      )
-
-      const resizedImage = await getResizedImg(
-        croppedImage,
-        props.cropWidth,
-        props.cropHeight,
-        props.fileExtension,
-      )
-
-      props.onCrop(resizedImage)
-    }
+    props.onCrop(await toOutputImage(croppedImage))
 
     props.onClose()
   }
@@ -100,7 +105,7 @@ export function ImageCropperModal(props: Props): React.ReactNode {
     >
       <DialogContent className="flex w-[calc(100%-1.5rem)] max-w-3xl flex-col gap-3 p-4 sm:p-5">
         <DialogTitle className="pr-10 text-base">
-          {"画像を切り抜く"}
+          {props.title ?? "画像を切り抜く"}
         </DialogTitle>
         <div className="relative h-[min(60dvh,560px)] w-full overflow-hidden rounded-lg bg-muted">
           <Suspense fallback={null}>
@@ -120,6 +125,23 @@ export function ImageCropperModal(props: Props): React.ReactNode {
             />
           </Suspense>
         </div>
+        {props.aspectOptions && props.aspectOptions.length > 1 && (
+          <div className="flex flex-wrap gap-1.5">
+            {props.aspectOptions.map((option, index) => (
+              <Button
+                key={option.label}
+                type="button"
+                size="sm"
+                variant={index === aspectIndex ? "default" : "secondary"}
+                aria-pressed={index === aspectIndex}
+                className="h-8 rounded-full px-3 text-xs"
+                onClick={() => setAspectIndex(index)}
+              >
+                {option.label}
+              </Button>
+            ))}
+          </div>
+        )}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <label className="flex flex-1 items-center gap-2 text-muted-foreground text-xs">
             <ZoomOutIcon className="size-4 shrink-0" />

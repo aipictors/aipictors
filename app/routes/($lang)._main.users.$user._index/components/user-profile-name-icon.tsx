@@ -146,8 +146,9 @@ export function UserProfileNameIcon(props: Props) {
   return (
     <div className="space-y-4">
       <div className="grid gap-x-4 gap-y-3 md:grid-cols-[minmax(0,1fr)_auto]">
-        {/* flex にする（枠付きのアイコンは inline-flex なので、ブロックの中だと文字の行の下の余白が付いて下だけ白く空いていた） */}
-        <div className="-mt-14 md:-mt-20 relative flex w-fit rounded-full bg-background p-1 shadow-lg">
+        {/* flex にする（枠付きのアイコンは inline-flex なので、ブロックの中だと文字の行の下の余白が付いて下だけ白く空いていた）。
+            ヘッダー枠を着けている人はアイコンを重ねず下に出す（枠の左下の飾りが隠れていた） */}
+        <div className="-mt-14 md:-mt-20 relative flex w-fit rounded-full bg-background p-1 shadow-lg group-data-[header-frame]/user-header:mt-0">
           <UserProfileAvatar
             alt={user.name}
             frame={user.avatarFrame}

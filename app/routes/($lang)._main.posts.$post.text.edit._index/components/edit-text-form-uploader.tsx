@@ -6,6 +6,7 @@ import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
 import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
+import { PostTextCoverCropButton } from "~/routes/($lang)._main.new.image/components/post-text-cover-crop-button"
 import type { PostTextFormAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
 import type { PostTextFormState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-state"
 import { getExtractInfoFromBase64 } from "~/utils/get-extract-info-from-png"
@@ -111,6 +112,21 @@ export function EditTextFormUploader(props: Props) {
             />
           )}
       </div>
+      {props.state.items[0]?.content && (
+        <div className="flex justify-end">
+          <PostTextCoverCropButton
+            imageSrc={props.state.items[0].content}
+            onCrop={(croppedImage) => {
+              props.dispatch({
+                type: "SET_ITEMS",
+                payload: props.state.items.map((item, index) =>
+                  index === 0 ? { ...item, content: croppedImage } : item,
+                ),
+              })
+            }}
+          />
+        </div>
+      )}
       <ImageGenerationSelectorDialog
         isOpen={props.state.isOpenImageGenerationDialog}
         setIsOpen={() => {
