@@ -11,7 +11,6 @@ import {
   useRouteError,
 } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { isbot } from "isbot"
 import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
 import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
 import { AppErrorPage } from "~/components/app/app-error-page"
@@ -94,22 +93,19 @@ export async function loader(props: LoaderFunctionArgs) {
     props.request.headers.get("cookie") ?? "",
   )
 
-  const isCrawler = isbot(props.request.headers.get("user-agent"))
-
   const workResp = await loaderClient.query({
     query: workQuery,
     variables: {
       id: props.params.post,
     },
-    ...((isFreshRead || isCrawler) && {
-      context: {
-        headers: {
-          ...(isFreshRead && { "x-aipictors-fresh": "1" }),
-          // クローラーの表示は作品の閲覧数に数えない
-          ...(isCrawler && { "x-aipictors-no-view": "1" }),
-        },
+    context: {
+      headers: {
+        ...(isFreshRead && { "x-aipictors-fresh": "1" }),
+        // ページの読み込みでは閲覧数を数えない（ログイン状態がわからず投稿者本人でも数えてしまうため。
+        // 閲覧数はブラウザで投稿者以外のときだけ数える: hooks/use-count-work-view.ts）
+        "x-aipictors-no-view": "1",
       },
-    }),
+    },
   })
 
   if (workResp.data.work === null) {

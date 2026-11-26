@@ -91,10 +91,7 @@ export function WorkImageAnalysisRequestCard(props: Props) {
       }
 
       toast.error(
-        t(
-          "AI判定の再依頼に失敗しました。",
-          "Failed to request AI analysis.",
-        ),
+        t("AI判定の再依頼に失敗しました。", "Failed to request AI analysis."),
       )
     }
   }
@@ -136,7 +133,8 @@ export function WorkImageAnalysisRequestCard(props: Props) {
   )
 }
 
-const requestWorkImageAnalysisMutation = graphql(`mutation RequestWorkImageAnalysis($input: RequestWorkImageAnalysisInput!) {
+const requestWorkImageAnalysisMutation =
+  graphql(`mutation RequestWorkImageAnalysis($input: RequestWorkImageAnalysisInput!) {
   requestWorkImageAnalysis(input: $input) {
     id
   }

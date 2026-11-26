@@ -64,7 +64,9 @@ export function CommentAppealDialog(props: Props) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("コメント審査に異議申し立て", "Appeal moderation")}</DialogTitle>
+          <DialogTitle>
+            {t("コメント審査に異議申し立て", "Appeal moderation")}
+          </DialogTitle>
         </DialogHeader>
         <Textarea
           value={text}

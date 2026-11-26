@@ -13,7 +13,7 @@ type Props = ComponentProps<typeof WorkMarkdownViewImpl>
  * 親の再描画（Apollo のクエリの結果など）が、エディタの読み込みを待っている Suspense まで届かないように memo にする。
  * hydration が終わる前に届くと、React が中身を作り直してしまう（React error #421）
  */
-export const WorkMarkdownView = memo(function WorkMarkdownView (
+export const WorkMarkdownView = memo(function WorkMarkdownView(
   props: Props,
 ): React.ReactNode {
   return (

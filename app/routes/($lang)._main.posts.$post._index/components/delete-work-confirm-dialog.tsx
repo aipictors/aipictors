@@ -23,7 +23,7 @@ type Props = {
   postId: string
 }
 
-export function DeleteWorkConfirmDialog (props: Props) {
+export function DeleteWorkConfirmDialog(props: Props) {
   const t = useTranslation()
 
   const [deleteWork, { loading: isDeletingWork }] =
@@ -59,7 +59,11 @@ export function DeleteWorkConfirmDialog (props: Props) {
           disabled={isDeleted || isDeletingWork}
           onClick={() => setIsOpen(true)}
         >
-          {isDeletingWork ? <Loader2Icon className="animate-spin" /> : <Trash />}
+          {isDeletingWork ? (
+            <Loader2Icon className="animate-spin" />
+          ) : (
+            <Trash />
+          )}
           {isDeleted ? t("削除済み", "Deleted") : t("削除", "Delete")}
         </Button>
       </AlertDialogTrigger>

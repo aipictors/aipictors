@@ -9,6 +9,7 @@ import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/w
 import { useContext, useMemo } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
+import { NO_VIEW_CONTEXT, useCountWorkView } from "~/hooks/use-count-work-view"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { WorkAuthorWorksSection } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
 import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
@@ -65,8 +66,12 @@ export function SensitiveWorkContainer(props: Props) {
   // 全体を取り直すのは、ローダーで取れない作品と自分の作品（非公開のプロンプトなど）だけ
   const needsFullWork = props.work === null || isWorkOwner
 
+  useCountWorkView({ workId: props.post, isWorkOwner })
+
   const { data } = useQuery(sensitiveWorkQuery, {
     skip: !needsFullWork || (props.work === null && authContext.isLoading),
+    // 閲覧数はここでは数えない（useCountWorkView で 1 回だけ）
+    context: NO_VIEW_CONTEXT,
     variables: {
       id: props.post,
     },
@@ -75,6 +80,8 @@ export function SensitiveWorkContainer(props: Props) {
   // 他の人の作品で閲覧者によって変わるのはここだけ
   const { data: viewerStateRet } = useQuery(sensitiveWorkViewerStateQuery, {
     skip: needsFullWork || authContext.isLoading || authContext.isNotLoggedIn,
+    // 閲覧数はここでは数えない（useCountWorkView で 1 回だけ）
+    context: NO_VIEW_CONTEXT,
     variables: {
       id: props.post,
     },
@@ -194,7 +201,7 @@ export function SensitiveWorkContainer(props: Props) {
                 workForArticle.user ? (
                   <div className="md:hidden">
                     <WorkUser
-                showSupportRewardNote={false}
+                      showSupportRewardNote={false}
                       userId={workForArticle.user.id}
                       userLogin={workForArticle.user.login}
                       userName={workForArticle.user.name}

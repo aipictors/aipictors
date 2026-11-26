@@ -16,7 +16,16 @@ interface XIntentProps extends HTMLProps<HTMLAnchorElement> {
 
 export const XIntent = forwardRef<HTMLAnchorElement, XIntentProps>(
   (
-    { text, url, hashtags, via, related, in_reply_to, label, ...intrinsicProps },
+    {
+      text,
+      url,
+      hashtags,
+      via,
+      related,
+      in_reply_to,
+      label,
+      ...intrinsicProps
+    },
     forwardedRef,
   ) => {
     const t = useTranslation()

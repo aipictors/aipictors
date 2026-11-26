@@ -3875,6 +3875,9 @@ type Mutation {
   """おすすめ一覧での反応（見た・開いた・興味なし）を記録する。ログインしていなければ何もしない"""
   recordFeedEvents(events: [FeedEventInput!]!): Boolean!
 
+  """作品ページを開いたときの閲覧数を 1 足す（投稿者本人は数えない）"""
+  viewWork(workId: ID!): Boolean!
+
   """キャラクターの表情を再生成する"""
   regenerateCharacterExpression(input: RegenerateCharacterExpressionInput!): CharacterExpressionNode!
 

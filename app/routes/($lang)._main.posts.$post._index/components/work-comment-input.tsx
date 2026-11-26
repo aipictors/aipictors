@@ -27,7 +27,7 @@ type Props = {
 /**
  * 返信コメント入力欄
  */
-export function ReplyCommentInput (props: Props) {
+export function ReplyCommentInput(props: Props) {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
   const rootRef = useRef<HTMLDivElement | null>(null)
 

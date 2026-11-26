@@ -9,6 +9,7 @@ import { PlusUpsellCard } from "~/components/plus-upsell-card"
 import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { NO_VIEW_CONTEXT, useCountWorkView } from "~/hooks/use-count-work-view"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -64,10 +65,14 @@ export function WorkContainer(props: Props) {
   // 全体を取り直すのは、ローダーで取れない作品と自分の作品（非公開のプロンプトなど）だけ
   const needsFullWork = props.work === null || isWorkOwner
 
+  useCountWorkView({ workId: props.post, isWorkOwner })
+
   // 前に開いた作品に戻ったときも、いいね数などを取り直す（キャッシュの分を先に出す）
   const { data: workRet, refetch: refetchWork } = useQuery(workQuery, {
     skip: !needsFullWork || (props.work === null && authContext.isLoading),
     fetchPolicy: "cache-and-network",
+    // 閲覧数はここでは数えない（useCountWorkView で 1 回だけ）
+    context: NO_VIEW_CONTEXT,
     variables: {
       id: props.post,
     },
@@ -80,6 +85,8 @@ export function WorkContainer(props: Props) {
     {
       skip: needsFullWork || authContext.isLoading || authContext.isNotLoggedIn,
       fetchPolicy: "cache-and-network",
+      // 閲覧数はここでは数えない（useCountWorkView で 1 回だけ）
+      context: NO_VIEW_CONTEXT,
       variables: {
         id: props.post,
       },

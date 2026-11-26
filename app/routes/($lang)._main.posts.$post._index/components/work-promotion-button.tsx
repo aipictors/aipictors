@@ -40,7 +40,7 @@ const toDateTimeText = (unixSeconds: number) =>
  * 自分の作品をプレミアムコインで宣伝枠に出すボタン（プランがなくても使える）。
  * 今から 7 日間ホームの「クリエイターの宣伝」に出る。枠は全年齢と R18 で 1 作品ずつ
  */
-export function WorkPromotionButton (props: Props) {
+export function WorkPromotionButton(props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const [isOpen, setIsOpen] = useState(false)
@@ -198,7 +198,7 @@ export function WorkPromotionButton (props: Props) {
 }
 
 /** ダイアログを開いたときだけ残高を読む */
-function WorkPromotionBalance () {
+function WorkPromotionBalance() {
   const t = useTranslation()
   const { balance } = useCoinBalance()
   if (balance === null) return null
@@ -214,7 +214,7 @@ function WorkPromotionBalance () {
 }
 
 /** 足りないときのコイン購入（開くときだけ残高を読む） */
-function WorkPromotionCoinPurchase (props: { onClose: () => void }) {
+function WorkPromotionCoinPurchase(props: { onClose: () => void }) {
   const { balance } = useCoinBalance()
   return (
     <PurchasePremiumCoinsDialog

@@ -8,7 +8,12 @@ import {
 import { ReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/report-dialog"
 import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { DownloadIcon, MoreHorizontal, SendIcon, ShieldAlert } from "lucide-react"
+import {
+  DownloadIcon,
+  MoreHorizontal,
+  SendIcon,
+  ShieldAlert,
+} from "lucide-react"
 import { useContext, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { toast } from "sonner"
@@ -29,7 +34,7 @@ type Props = {
 /**
  * 作品のポップオーバーメニュー
  */
-export function WorkActionMenu (props: Props) {
+export function WorkActionMenu(props: Props) {
   const [changeWorkSettingsWithAdmin, { loading: isUpdatingWork }] =
     useMutation(ChangeWorkSettingsWithAdminMutation)
   const [createMessage, { loading: isSendingMessage }] = useMutation(

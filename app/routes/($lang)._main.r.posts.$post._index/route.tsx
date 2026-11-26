@@ -12,7 +12,6 @@ import {
   useRouteError,
 } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { isbot } from "isbot"
 import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
 import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
 import { AppErrorPage } from "~/components/app/app-error-page"
@@ -92,8 +91,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
-  const isCrawler = isbot(props.request.headers.get("user-agent"))
-
   // 作品・コメント・新着コメント・受賞作品は互いに依存しないので並行して取る（以前は 1 つずつ待っていた）
   const [workResp, workCommentsResp, newComments, awardWorks] =
     await Promise.all([
@@ -102,10 +99,8 @@ export async function loader(props: LoaderFunctionArgs) {
         variables: {
           id: props.params.post,
         },
-        // クローラーの表示は作品の閲覧数に数えない（全年齢の作品ページと同じ）
-        ...(isCrawler && {
-          context: { headers: { "x-aipictors-no-view": "1" } },
-        }),
+        // ページの読み込みでは閲覧数を数えない（全年齢の作品ページと同じ。hooks/use-count-work-view.ts）
+        context: { headers: { "x-aipictors-no-view": "1" } },
       }),
       loaderClient.query({
         query: workCommentsQuery,
