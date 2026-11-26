@@ -271,9 +271,10 @@ export function UserModelDetail(props: Props) {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">
+      {/* 列数を省くと列幅がサムネイル列の全幅まで広がり、スマホで画像が右にはみ出す */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">
         {/* 画像 */}
-        <div className="flex flex-col gap-3">
+        <div className="flex min-w-0 flex-col gap-3">
           <div className="relative flex aspect-[4/5] max-h-[78vh] w-full items-center justify-center overflow-hidden rounded-2xl border bg-muted md:aspect-[4/3]">
             {mainImage ? (
               <>
@@ -334,7 +335,7 @@ export function UserModelDetail(props: Props) {
         </div>
 
         {/* 情報 */}
-        <aside className="flex flex-col gap-5 lg:sticky lg:top-20 lg:self-start">
+        <aside className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-20 lg:self-start">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-1.5">
               <UserModelKindBadge kind={model.kind} />
