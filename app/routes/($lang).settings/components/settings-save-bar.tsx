@@ -6,6 +6,8 @@ type Props = {
   isSaving: boolean
   onSave: () => void
   label?: string
+  /** ダイアログで使うとき、保存の横に「閉じる」を出す */
+  onCancel?: () => void
 }
 
 /**
@@ -23,8 +25,18 @@ export function SettingsSaveBar(props: Props) {
             "Changes apply when you press Save",
           )}
         </p>
+        {props.onCancel && (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 shrink-0 rounded-xl px-4"
+            onClick={props.onCancel}
+          >
+            {t("閉じる", "Close")}
+          </Button>
+        )}
         <Button
-          className="h-11 w-full rounded-xl font-semibold md:w-44"
+          className="h-11 min-w-0 flex-1 rounded-xl font-semibold md:w-44 md:flex-none"
           disabled={props.isSaving}
           onClick={props.onSave}
         >

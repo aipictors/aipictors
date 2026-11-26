@@ -71,7 +71,12 @@ const isHttpUrl = (value: string) => /^https?:\/\/\S+$/i.test(value.trim())
 const toSensitiveLinksInput = (links: string[]) =>
   links.map((link) => link.trim()).filter((link) => link.length > 0)
 
-export function SettingProfileForm() {
+type Props = {
+  /** ダイアログで開いたとき、保存ボタンの横に「閉じる」を出す */
+  onCancel?: () => void
+}
+
+export function SettingProfileForm(props: Props) {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
   const navigate = useNavigate()
@@ -405,7 +410,7 @@ export function SettingProfileForm() {
           >
             <Button
               aria-label={t("ヘッダー画像を変更", "Change header image")}
-              className="absolute top-3 right-3 z-10 h-9 gap-1.5 rounded-full bg-background/85 px-3 shadow-sm backdrop-blur-sm hover:bg-background"
+              className="absolute top-2 right-2 z-10 h-11 gap-1.5 rounded-full bg-background/85 px-3 shadow-sm backdrop-blur-sm hover:bg-background md:top-3 md:right-3 md:h-9"
               variant={"secondary"}
             >
               <ImageIcon className="size-4" />
@@ -450,7 +455,7 @@ export function SettingProfileForm() {
             >
               <Button
                 aria-label={t("プロフィール画像を変更", "Change profile image")}
-                className="absolute right-0 bottom-0 z-10 size-9 rounded-full border-2 border-card p-0 shadow-sm"
+                className="absolute right-0 bottom-0 z-10 size-11 rounded-full border-2 border-card p-0 shadow-sm md:size-9"
                 variant={"secondary"}
               >
                 <Pencil className="size-4" />
@@ -469,7 +474,7 @@ export function SettingProfileForm() {
             asChild
             variant="outline"
             size="sm"
-            className="mb-1 rounded-full"
+            className="mb-1 h-11 rounded-full md:h-9"
           >
             <Link
               to={`/users/${userInfo.login}`}
@@ -523,7 +528,7 @@ export function SettingProfileForm() {
                 .getElementById(item.id)
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }}
-            className="shrink-0 rounded-full border bg-card px-3.5 py-1.5 font-medium text-xs shadow-xs transition-colors hover:bg-muted"
+            className="flex min-h-11 shrink-0 items-center rounded-full border bg-card px-3.5 py-1.5 font-medium text-xs shadow-xs transition-colors hover:bg-muted md:min-h-0"
           >
             {t(item.ja, item.en)}
           </a>
@@ -857,7 +862,7 @@ export function SettingProfileForm() {
                     "R18 用のヘッダー画像を変更",
                     "Change R18 header image",
                   )}
-                  className="absolute top-2 right-2 size-10 rounded-full p-0"
+                  className="absolute top-2 right-2 size-11 rounded-full p-0 md:size-10"
                   variant={"secondary"}
                 >
                   <Pencil className="size-4" />
@@ -869,7 +874,7 @@ export function SettingProfileForm() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2 text-muted-foreground text-xs"
+                className="h-11 px-2 text-muted-foreground text-xs md:h-8"
                 onClick={() => {
                   setSensitiveHeaderImage("")
                   setIsSensitiveHeaderCleared(true)
@@ -965,7 +970,7 @@ export function SettingProfileForm() {
                   type="button"
                   variant="secondary"
                   size="sm"
-                  className="gap-1"
+                  className="h-11 gap-1 md:h-9"
                   onClick={() => setSensitiveLinks((links) => [...links, ""])}
                 >
                   <PlusIcon className="size-4" />
@@ -1008,7 +1013,11 @@ export function SettingProfileForm() {
         {t("ログイン情報を変更する", "Change Login Information")}
       </Link>
 
-      <SettingsSaveBar isSaving={isUpdating} onSave={() => void onSubmit()} />
+      <SettingsSaveBar
+        isSaving={isUpdating}
+        onSave={() => void onSubmit()}
+        onCancel={props.onCancel}
+      />
     </div>
   )
 }
