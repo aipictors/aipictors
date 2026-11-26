@@ -128,8 +128,9 @@ function HomeIndexPageContent(props: HomeIndexPageProps) {
         {currentTab === "home" && !isRankingOpen && <HomeGuestHero />}
         {/* ヘッダー部分: タブ */}
         <div className="-mx-4 bg-background/98 px-4 py-1">
-          <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
-            <div className="min-w-0 flex-1">
+          {/* スマホは「オリジナルのみ」をタブの下の行に回す（同じ行だとタブの幅が狭くなり、新着などが隠れて押しにくい） */}
+          <div className="flex flex-col gap-y-1 sm:flex-row sm:items-center sm:justify-between sm:gap-x-3 md:gap-x-6">
+            <div className="min-w-0 sm:flex-1">
               <AppAnimatedTabs
                 tabs={[
                   {
@@ -196,7 +197,9 @@ function HomeIndexPageContent(props: HomeIndexPageProps) {
                 variant="pill"
               />
             </div>
-            <HomeOriginalOnlyToggle />
+            <div className="flex justify-end sm:block">
+              <HomeOriginalOnlyToggle />
+            </div>
           </div>
           {/* 「オリジナルのみ」が効かないタブでは、そう書いておく */}
           {(isRankingOpen ||

@@ -24,11 +24,7 @@ export function HomeOriginalOnlyToggle() {
         htmlFor={id}
         className="cursor-pointer whitespace-nowrap font-medium text-xs"
       >
-        {/* スマホはタブの幅を残すため短く */}
-        <span className="sm:hidden">{t("オリジナル", "Originals")}</span>
-        <span className="hidden sm:inline">
-          {t("オリジナルのみ", "Originals only")}
-        </span>
+        {t("オリジナルのみ", "Originals only")}
       </label>
       <CrossPlatformTooltip
         text={t(
