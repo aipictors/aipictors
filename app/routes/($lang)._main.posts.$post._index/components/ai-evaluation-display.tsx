@@ -288,13 +288,31 @@ export function AiEvaluationDisplay(props: Props) {
     props.evaluation === null &&
     props.status !== "FAILED" &&
     props.status !== "REFUSED"
-  const { data: latest, refetch } = useQuery(aiEvaluationStatusQuery, {
+  const {
+    data: latest,
+    refetch,
+    startPolling,
+    stopPolling,
+  } = useQuery(aiEvaluationStatusQuery, {
     skip: !isPending || typeof window === "undefined",
     pollInterval: POLL_INTERVAL_MS,
+    // 見ていないタブでは取りに行かない
+    skipPollAttempt: () => document.visibilityState === "hidden",
     fetchPolicy: "network-only",
     errorPolicy: "ignore",
     variables: { id: props.workId },
   })
+
+  // 結果が出た（または評価しないと決まった）ら止める。
+  // skip は最初の props だけで決まるので、止めないと結果が出たあともページを開いている間ずっと取りに行っていた
+  const latestStatus = latest?.work?.botEvaluationStatus
+  const isLatestSettled =
+    (latest?.work?.botEvaluation ?? null) !== null ||
+    latestStatus === "FAILED" ||
+    latestStatus === "REFUSED"
+  useEffect(() => {
+    if (isLatestSettled) stopPolling()
+  }, [isLatestSettled, stopPolling])
 
   const [isRetried, setIsRetried] = useState(false)
 
@@ -361,6 +379,7 @@ export function AiEvaluationDisplay(props: Props) {
             onRetried={() => {
               setIsRetried(true)
               void refetch()
+              startPolling(POLL_INTERVAL_MS)
             }}
           />
         </div>

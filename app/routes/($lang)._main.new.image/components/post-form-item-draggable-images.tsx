@@ -170,65 +170,87 @@ export function PostFormItemDraggableImages(props: Props) {
 
   /**
    * クリップボードから画像貼り付けできるようにする
+   * 選んだときと同じ変換（toItemDataUrl）を使う。前は元の解像度のまま canvas.toDataURL で
+   * 書き出していて、画面が止まり iPhone の Safari では巨大な PNG になっていた。
+   * 登録は 1 回だけなので、最新の props は handlePasteRef から読む（古い一覧に足さないように）
    */
-  useEffect(() => {
-    const handlePaste = async (event: ClipboardEvent) => {
-      const activeElement = document.activeElement
-      if (
-        activeElement &&
-        (activeElement.tagName === "INPUT" ||
-          activeElement.tagName === "TEXTAREA")
-      ) {
-        return
-      }
-
-      if (props.isOnlyMove) return
-
-      const items = event.clipboardData?.items
-      if (!items) return
-
-      for (const item of items) {
-        if (item.type.startsWith("image")) {
-          const file = item.getAsFile()
-          if (file && file.size <= maxSize) {
-            const reader = new FileReader()
-            reader.onload = (e) => {
-              const img = new Image()
-              img.onload = () => {
-                const canvas = document.createElement("canvas")
-                canvas.width = img.width
-                canvas.height = img.height
-                const ctx = canvas.getContext("2d")
-                ctx?.drawImage(img, 0, 0)
-                const webpDataURL = canvas.toDataURL("image/webp")
-                props.items.push({
-                  id: props.items.length,
-                  content: webpDataURL,
-                })
-                props.onChangeItems([...props.items])
-                updateThumbnail()
-              }
-              img.src = e.target?.result as string
-            }
-            reader.readAsDataURL(file)
-            toast("画像をクリップボードから貼り付けました")
-          } else {
-            toast(
-              t(
-                `${maxSizeLabel}以内の画像を貼り付けてください`,
-                `Please paste an image under ${maxSizeLabel}`,
-              ),
-            )
-          }
-        }
-      }
+  const handlePaste = async (event: ClipboardEvent) => {
+    const activeElement = document.activeElement
+    if (
+      activeElement &&
+      (activeElement.tagName === "INPUT" ||
+        activeElement.tagName === "TEXTAREA")
+    ) {
+      return
     }
 
-    document.addEventListener("paste", handlePaste)
+    if (props.isOnlyMove) return
+
+    const items = event.clipboardData?.items
+    if (!items) return
+
+    const files: File[] = []
+    for (const item of items) {
+      if (!item.type.startsWith("image")) continue
+      const file = item.getAsFile()
+      if (file) files.push(file)
+    }
+
+    for (const file of files) {
+      if (file.size > maxSize) {
+        toast(
+          t(
+            `${maxSizeLabel}以内の画像を貼り付けてください`,
+            `Please paste an image under ${maxSizeLabel}`,
+          ),
+        )
+        continue
+      }
+      if (props.maxItemsCount && props.maxItemsCount < props.items.length + 1) {
+        toast(
+          t(
+            `最大${props.maxItemsCount}までです`,
+            `Maximum ${props.maxItemsCount} items allowed`,
+          ),
+        )
+        break
+      }
+      try {
+        const webpDataUrl = await toItemDataUrl(file)
+        props.items.push({
+          id: props.items.length,
+          content: webpDataUrl,
+        })
+        props.onChangeItems([...props.items])
+        updateThumbnail()
+        toast("画像をクリップボードから貼り付けました")
+        await nextFrame()
+      } catch (error) {
+        console.error(error)
+        toast(
+          t(
+            "一部の画像の読み込みに失敗しました。別の画像でお試しください",
+            "Failed to load one of the images. Please try a different file.",
+          ),
+        )
+      }
+    }
+  }
+
+  const handlePasteRef = useRef(handlePaste)
+  handlePasteRef.current = handlePaste
+
+  useEffect(() => {
+    const listener = (event: ClipboardEvent) => {
+      void handlePasteRef.current(event)
+    }
+    document.addEventListener("paste", listener)
     return () => {
-      document.removeEventListener("paste", handlePaste)
+      document.removeEventListener("paste", listener)
     }
   }, [])
+
+  const landscapeCheckedRef = useRef({ content: "", isLandscape: false })
 
   /**
    * 作品サムネイルを更新する
@@ -254,9 +276,18 @@ export function PostFormItemDraggableImages(props: Props) {
     if (props.setIsThumbnailLandscape) {
       if ((props.items && props.items.length > 0) || webpDataURL) {
         const base64 = webpDataURL ? webpDataURL : props.items[0].content
+        // 画像を足すたびに先頭の画像（元の解像度）をデコードし直さないよう、同じ画像なら前の結果を使う
+        if (base64 && base64 === landscapeCheckedRef.current.content) {
+          props.setIsThumbnailLandscape(landscapeCheckedRef.current.isLandscape)
+          return
+        }
         const img = new Image()
         img.src = base64 ?? ""
         img.onload = () => {
+          landscapeCheckedRef.current = {
+            content: base64 ?? "",
+            isLandscape: img.width > img.height,
+          }
           if (props.setIsThumbnailLandscape) {
             props.setIsThumbnailLandscape(img.width > img.height)
           }

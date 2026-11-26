@@ -61,6 +61,8 @@ export function useFollowFeedNewCount() {
       ratings: viewerRatings.normalRatings,
     },
     pollInterval: POLL_INTERVAL_MS,
+    // 見ていないタブでは取りに行かない（開きっぱなしのタブが 5 分ごとに問い合わせ続けないように）
+    skipPollAttempt: () => document.visibilityState === "hidden",
     fetchPolicy: "cache-and-network",
     errorPolicy: "ignore",
   })

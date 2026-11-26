@@ -7,7 +7,6 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -66,8 +65,6 @@ export function GenerationTaskList(props: Props) {
   const queryData = useGenerationQuery()
 
   const t = useTranslation()
-
-  const _isTimeout = useFocusTimeout()
 
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value

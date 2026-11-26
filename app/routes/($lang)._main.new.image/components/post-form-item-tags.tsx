@@ -14,7 +14,7 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { MAX_POST_TAGS } from "~/routes/($lang)._main.new.image/utils/post-form-generated-content"
 import { isOriginalWork } from "~/utils/original-work-tags"
-import { sha256 } from "~/utils/sha256"
+import { getAiAnalysisImageUrl } from "~/utils/to-ai-analysis-image"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import {
   canUseAiGeneration,
@@ -44,9 +44,6 @@ type Props = {
     tagsEn?: string[]
   }) => void
 }
-
-// 画像URLのキャッシュ（メモリ内）
-const imageUrlCache = new Map<string, string>()
 
 // GraphQL mutation - バックエンドのスキーマ定義後に修正予定
 const GenerateImageContentMutation = graphql(
@@ -78,73 +75,12 @@ export function PostFormItemTags(props: Props) {
   const [generateContent] = useMutation(GenerateImageContentMutation)
 
   /**
-   * Base64画像をJPEGに変換する
+   * 画像URLを取得（縮小 JPEG にしてアップロード。同じ画像はタイトル生成と共通で 1 回だけ）
    */
-  const convertToJpeg = (base64: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => {
-        const canvas = document.createElement("canvas")
-        const ctx = canvas.getContext("2d")
-        if (!ctx) {
-          reject(new Error("Canvas context not available"))
-          return
-        }
-
-        canvas.width = img.width
-        canvas.height = img.height
-        ctx.drawImage(img, 0, 0)
-
-        // JPEG形式でエクスポート（圧縮率0.8）
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error("Failed to convert image"))
-              return
-            }
-
-            const reader = new FileReader()
-            reader.onload = () => {
-              const result = reader.result as string
-              resolve(result.split(",")[1]) // "data:image/jpeg;base64,"の部分を除去
-            }
-            reader.onerror = reject
-            reader.readAsDataURL(blob)
-          },
-          "image/jpeg",
-          0.8,
-        )
-      }
-      img.onerror = reject
-      img.src = base64
-    })
-  }
-
-  /**
-   * 画像URLを取得（キャッシュ機能付き）
-   */
-  const getImageUrl = async (base64: string): Promise<string> => {
-    // ハッシュを計算してキャッシュキーとして使用
-    const hash = await sha256(base64)
-
-    // キャッシュから取得を試みる
-    const cachedUrl = imageUrlCache.get(hash)
-    if (cachedUrl) {
-      return cachedUrl
-    }
-
-    // JPEG形式に変換
-    const jpegBase64 = await convertToJpeg(base64)
-
-    // 画像をアップロード
-    const jpegDataUrl = `data:image/jpeg;base64,${jpegBase64}`
-    const response = await uploadPublicImage(jpegDataUrl, props.token)
-
-    // キャッシュに保存
-    imageUrlCache.set(hash, response)
-
-    return response
-  }
+  const getImageUrl = (base64: string): Promise<string> =>
+    getAiAnalysisImageUrl(base64, (jpegDataUrl) =>
+      uploadPublicImage(jpegDataUrl, props.token),
+    )
 
   const getRandomId = useCallback(() => {
     return Math.floor(Math.random() * 10000)

@@ -9,6 +9,7 @@ import { GenerationTaskListItemFragment } from "~/routes/($lang).generation._ind
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 const RecentGenerationResultsQuery = graphql(
   `query GenerationSidebarRecentHistory {
@@ -78,7 +79,14 @@ export function GenerationSidebarRecentHistory(props: Props) {
             className="aspect-square min-w-0 overflow-hidden rounded-md bg-muted transition-opacity hover:opacity-80"
           >
             <img
-              src={normalizeGenerativeFileUrl(result.imageUrl ?? "")}
+              // 小さい枠なので元画像ではなく、履歴一覧（軽量表示）と同じ縮小版を使う。
+              // 縮小版が無ければ RESIZED_IMAGE_FALLBACK_SCRIPT が元画像へ切り替える
+              src={toResizedImageUrl(
+                normalizeGenerativeFileUrl(
+                  result.thumbnailUrl || result.imageUrl || "",
+                ),
+                480,
+              )}
               alt=""
               loading="lazy"
               className="size-full object-cover"

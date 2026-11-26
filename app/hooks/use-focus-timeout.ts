@@ -1,34 +1,32 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+
+/** フォーカスが無いままこの時間が過ぎたらタイムアウト */
+const FOCUS_TIMEOUT_MS = 10 * 60 * 1000
 
 /**
  * 10分間フォーカスがなかったらタイムアウトとする
+ *
+ * 最後にフォーカスがあった時刻は ref に持ち、タイムアウトの有無が変わったときだけ state を変える。
+ * 前は 1 秒ごとに時刻の state を更新していて、使っている画面（生成画面の全体・履歴一覧）が
+ * フォーカス中ずっと毎秒描き直されていた
  */
 export function useFocusTimeout() {
-  const [lastFocusTime, setLastFocusTime] = useState(Date.now())
+  const lastFocusTimeRef = useRef(Date.now())
   const [isTimeout, setIsTimeout] = useState(false)
 
   useEffect(() => {
-    // フォーカスイベントハンドラ
-    const handleFocus = () => {
-      setLastFocusTime(Date.now())
-      setIsTimeout(false) // フォーカスされた時点でタイムアウトをリセット
-    }
-
-    // 1秒ごとにチェック
     const time = setInterval(() => {
       if (document.hasFocus()) {
-        handleFocus()
+        lastFocusTimeRef.current = Date.now()
       }
-      // 10分を経過したらタイムアウト
-      const isTimeout = 10 * 60 * 1000 < Date.now() - lastFocusTime
-      setIsTimeout(isTimeout)
+      const next = FOCUS_TIMEOUT_MS < Date.now() - lastFocusTimeRef.current
+      setIsTimeout((prev) => (prev === next ? prev : next))
     }, 1000)
 
-    // クリーンアップ関数
     return () => {
       clearInterval(time)
     }
-  }, [lastFocusTime])
+  }, [])
 
   return isTimeout
 }

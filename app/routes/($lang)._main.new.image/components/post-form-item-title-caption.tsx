@@ -15,16 +15,13 @@ import { Input } from "~/components/ui/input"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { PostFormCharCount } from "~/routes/($lang)._main.new.image/components/post-form-char-count"
-import { sha256 } from "~/utils/sha256"
+import { getAiAnalysisImageUrl } from "~/utils/to-ai-analysis-image"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import {
   canUseAiGeneration,
   consumeAiGenerationUsage,
 } from "../utils/ai-generation-usage"
 import { ContentTypeSelector } from "./content-type-selector"
-
-// 画像URLのキャッシュ（メモリ内）
-const imageUrlCache = new Map<string, string>()
 
 // GraphQL mutation - バックエンドのスキーマ定義後に修正予定
 const GenerateImageContentMutation = graphql(
@@ -82,66 +79,16 @@ export function PostFormItemTitleCaption(props: Props) {
   const isCaptionFilled = localCaption.trim() !== ""
 
   /**
-   * JPEGに変換する関数
-   */
-  const convertToJpeg = async (base64: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => {
-        const canvas = document.createElement("canvas")
-        const ctx = canvas.getContext("2d")
-        if (!ctx) {
-          reject(new Error("Failed to get canvas context"))
-          return
-        }
-
-        canvas.width = img.width
-        canvas.height = img.height
-        ctx.drawImage(img, 0, 0)
-
-        // JPEGとして出力（圧縮率0.8）
-        const jpegBase64 = canvas.toDataURL("image/jpeg", 0.8)
-        resolve(jpegBase64)
-      }
-      img.onerror = () => reject(new Error("Failed to load image"))
-      img.src = base64
-    })
-  }
-
-  /**
-   * 画像のアップロードとキャッシュ管理
+   * 画像URLを取得（縮小 JPEG にしてアップロード。同じ画像はタグ生成と共通で 1 回だけ）
    */
   const getImageUrl = async (imageBase64: string): Promise<string> => {
-    try {
-      // JPEGに変換
-      const jpegBase64 = await convertToJpeg(imageBase64)
-
-      // ハッシュを計算
-      const hash = await sha256(jpegBase64)
-
-      // キャッシュから取得を試行
-      if (imageUrlCache.has(hash)) {
-        const cachedUrl = imageUrlCache.get(hash)
-        if (cachedUrl) {
-          console.log("Using cached image URL:", cachedUrl)
-          return cachedUrl
-        }
-      }
-
-      // 新しい画像をアップロード
-      console.log("Uploading new image...")
-      const imageUrl = await uploadPublicImage(jpegBase64, props.token)
-      if (!imageUrl) {
-        throw new Error("Failed to upload image")
-      }
-
-      // キャッシュに保存
-      imageUrlCache.set(hash, imageUrl)
-      return imageUrl
-    } catch (error) {
-      console.error("Failed to upload image:", error)
-      throw error
+    const imageUrl = await getAiAnalysisImageUrl(imageBase64, (jpegDataUrl) =>
+      uploadPublicImage(jpegDataUrl, props.token),
+    )
+    if (!imageUrl) {
+      throw new Error("Failed to upload image")
     }
+    return imageUrl
   }
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

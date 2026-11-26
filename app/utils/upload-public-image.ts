@@ -45,13 +45,23 @@ export const uploadPublicImage = async (
   image: string,
   token: string | undefined | null,
 ): Promise<string> => {
-  const base64data = image.split(",")[1]
   const type = toUploadImageType(image)
-  const blob = new Blob(
-    [Uint8Array.from(atob(base64data), (c) => c.charCodeAt(0))],
-    { type },
-  )
+  const blob = new Blob([dataUrlToBytes(image)], { type })
   return uploadPublicFile(blob, token)
+}
+
+/**
+ * data URL（base64）をバイト列にする。
+ * Uint8Array.from(文字列, 関数) は 1 バイトごとに関数を呼ぶので、数十 MB の画像では
+ * 投稿のたびに数秒止まっていた。普通のループで詰める
+ */
+export const dataUrlToBytes = (dataUrl: string) => {
+  const binary = atob(dataUrl.slice(dataUrl.indexOf(",") + 1))
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes
 }
 
 /** 画像の置き場に送れるファイルの大きさの上限（置き場の Worker と同じ 32MB） */

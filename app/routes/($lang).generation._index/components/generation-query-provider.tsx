@@ -1,6 +1,6 @@
 import { useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { graphql, type ResultOf, readFragment } from "gql.tada"
-import { startTransition, useContext, useEffect, useRef } from "react"
+import { startTransition, useContext, useEffect, useMemo, useRef } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import {
@@ -193,17 +193,28 @@ export function GenerationQueryProvider(props: Props) {
     }
   }, [])
 
+  // 値を毎回作り直すと、使っている部品が親の描き直しのたびに全部描き直される
+  const value = useMemo(
+    () => ({
+      ...props.generationQueryContext,
+      engineStatus: engineStatus ?? null,
+      userStatus: userStatus ?? null,
+      currentPass: currentPass ?? null,
+      user: user ?? null,
+      liteDayTrial: liteDayTrial ?? null,
+    }),
+    [
+      props.generationQueryContext,
+      engineStatus,
+      userStatus,
+      currentPass,
+      user,
+      liteDayTrial,
+    ],
+  )
+
   return (
-    <GenerationQueryContext.Provider
-      value={{
-        ...props.generationQueryContext,
-        engineStatus: engineStatus ?? null,
-        userStatus: userStatus ?? null,
-        currentPass: currentPass ?? null,
-        user: user ?? null,
-        liteDayTrial: liteDayTrial ?? null,
-      }}
-    >
+    <GenerationQueryContext.Provider value={value}>
       {props.children}
     </GenerationQueryContext.Provider>
   )
