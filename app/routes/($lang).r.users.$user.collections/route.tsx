@@ -40,6 +40,7 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 
   return {
+    userId: userIdResp.data.user.id,
     folders: foldersResp.data.user.folders,
   }
 }
@@ -48,7 +49,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function UserAlbums () {
+export default function UserAlbums() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -59,7 +60,11 @@ export default function UserAlbums () {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserCollectionList folders={data.folders} />
+      <UserCollectionList
+        folders={data.folders}
+        userId={data.userId}
+        pageSize={32}
+      />
     </div>
   )
 }
