@@ -84,6 +84,11 @@ export function HomeFeedTabContent(
                 typeof HomePromotionWorkFragment
               >[]
             }
+            fillWorks={
+              (data.promotionFillWorks ?? []) as FragmentOf<
+                typeof HomePromotionWorkFragment
+              >[]
+            }
             onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
             onWorksLoaded={(works) =>
               updateHomeSectionWorks("recommended", works)

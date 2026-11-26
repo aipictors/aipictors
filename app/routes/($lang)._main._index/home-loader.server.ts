@@ -68,6 +68,7 @@ const createBaseHomeLoaderData = (props: {
   newPostedUsers: [] as FragmentOf<typeof HomeNewPostedUsersFragment>[],
   newUserWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
   promotionWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  promotionFillWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
   recommendedTags: [] as FragmentOf<typeof HomeTagFragment>[],
   releaseList: props.releaseList,
   secondTag: props.secondTag,
@@ -299,6 +300,14 @@ export async function homeLoader(props: LoaderFunctionArgs) {
       ...homeData,
       // 一覧に出すだけなので、詳細画面用の項目は HTML に入れない（作品のダイアログは開くときに取り直す）
       promotionWorks: toHomeListWorks(resultData?.promotionWorks),
+      // 推薦が少ない日は、すぐ下の「ほかのおすすめ」で 4 段ぶんまで埋める（推薦・いま人気と重ならないように）
+      promotionFillWorks: toHomeListWorks(
+        toPromotionFillWorks(
+          resultData?.promotionFillWorks,
+          resultData?.promotionWorks,
+          resultData?.hotWorks?.slice(0, HOME_HOT_WORKS_COUNT),
+        ),
+      ),
       eventPreviews,
       // いま人気のカルーセル（アプリと同じ 10 件）
       hotWorks: Array.isArray(resultData?.hotWorks)
@@ -318,6 +327,26 @@ export async function homeLoader(props: LoaderFunctionArgs) {
       },
     },
   )
+}
+
+/**
+ * 推薦の後ろに足すおすすめ作品（推薦と合わせて推薦欄の件数まで。推薦・いま人気に出る作品は除く）
+ */
+function toPromotionFillWorks<T extends { id: string }>(
+  feedWorks: T[] | null | undefined,
+  promotionWorks: { id: string }[] | null | undefined,
+  hotWorks: { id: string }[] | null | undefined,
+): T[] {
+  const shownIds = new Set(
+    [...(promotionWorks ?? []), ...(hotWorks ?? [])].map((work) => work.id),
+  )
+  const room = Math.max(
+    0,
+    config.query.homeWorkCount.promotion - (promotionWorks?.length ?? 0),
+  )
+  return (feedWorks ?? [])
+    .filter((work) => !shownIds.has(work.id))
+    .slice(0, room)
 }
 
 export type HomeLoaderData = SerializeFrom<typeof homeLoader>
@@ -357,6 +386,13 @@ const query = graphql(
       offset: 0
       limit: $promotionLimit
       where: { isRecommended: true, sort: DESC, ratings: [G, R15] }
+    ) {
+      ...HomePromotionWork
+    }
+    promotionFillWorks: recommendedFeedWorks(
+      offset: 0
+      limit: $promotionLimit
+      ratings: [G, R15]
     ) {
       ...HomePromotionWork
     }

@@ -128,9 +128,10 @@ export function useHomePageState(props: {
     newUsers: (data?.newUserWorks ?? []) as FragmentOf<
       typeof PhotoAlbumWorkFragment
     >[],
-    recommended: (data?.promotionWorks ?? []) as FragmentOf<
-      typeof PhotoAlbumWorkFragment
-    >[],
+    recommended: [
+      ...(data?.promotionWorks ?? []),
+      ...(data?.promotionFillWorks ?? []),
+    ] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
     tags: [
       ...(data?.firstTagWorks ?? []),
       ...(data?.secondTagWorks ?? []),

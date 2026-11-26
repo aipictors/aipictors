@@ -10,6 +10,8 @@ import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-
 
 type Props = {
   works: FragmentOf<typeof HomePromotionWorkFragment>[]
+  /** 推薦が少ないときに後ろへ続けるおすすめ作品（推薦とは分けて「ほかのおすすめ」として出す） */
+  fillWorks?: FragmentOf<typeof HomePromotionWorkFragment>[]
   style?: IntrospectionEnum<"ImageStyle">
   onSelect?: (index: string) => void
   onWorksLoaded?: (
@@ -42,10 +44,13 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
   })
 
   const workDisplayed = recommendedWorksResp?.works ?? props.works
+  // ブラウザで取り直したとき（サーバーの一覧が無いとき）は埋める分も無い
+  const fillWorks = recommendedWorksResp ? [] : (props.fillWorks ?? [])
 
   useEffect(() => {
-    props.onWorksLoaded?.(workDisplayed)
-  }, [workDisplayed])
+    // 作品のダイアログで前後に移れるように、埋めた分も続けて渡す
+    props.onWorksLoaded?.([...workDisplayed, ...fillWorks])
+  }, [workDisplayed, props.fillWorks])
 
   const t = useTranslation()
 
@@ -68,6 +73,23 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
           autoPlayVideoPreview={true}
           // ホームで最初に見える画像（スマホの LCP）。lazy のままだと読み込みが後回しになっていた
           priorityCount={2}
+          onSelect={props.onSelect}
+        />
+      )}
+      {fillWorks.length > 0 && (
+        <HomeRecommendedWorkList
+          title={t("ほかのおすすめ", "More picks")}
+          description={t(
+            "直近 3 日の作品から、反応の多い作品やあなたの好みに近い作品",
+            "Popular recent works picked for you",
+          )}
+          works={fillWorks}
+          link="/recommended"
+          linkLabel={t("おすすめをもっと見る", "More recommended")}
+          isCropped={false}
+          isShowProfile={true}
+          fillRows={true}
+          autoPlayVideoPreview={true}
           onSelect={props.onSelect}
         />
       )}
