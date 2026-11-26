@@ -24,6 +24,10 @@ const NEW_RELEASE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
 
 const EXCERPT_LENGTH = 90
 
+/** メンテナンスのお知らせに画像がないときの共通の表紙 */
+const MAINTENANCE_COVER_URL =
+  "https://assets.aipictors.com/releases/common/maintenance.jpg"
+
 /**
  * 本文の最初の画像（Markdown の ![](url) か <img src>）
  * お知らせはサムネイルを入れずに本文の先頭に画像を置くものが多い
@@ -88,7 +92,9 @@ export const toReleaseCard = (
     tag: release.tag ?? null,
     dateText: toReleaseDateText(release.createdAt),
     coverUrl:
-      release.thumbnail_url?.url || findFirstReleaseImage(release.description),
+      release.thumbnail_url?.url ||
+      findFirstReleaseImage(release.description) ||
+      (release.tag === "メンテナンス" ? MAINTENANCE_COVER_URL : null),
     excerpt: toReleaseExcerpt(release.description),
     isNew:
       publishedAt !== null &&
