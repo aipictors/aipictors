@@ -39,6 +39,8 @@ type Props = {
   sortKey: string
   /** 1 辺の大きさの目安（px。実際は列の幅いっぱい）。ボタンの大きさを決める */
   size: number
+  /** 切り抜かずに画像全体を見せる */
+  isOriginalRatio?: boolean
   /** 何枚目か（1 枚だけのときは出さない） */
   position?: number
   /** 並べ替えモード（どこを触ってもすぐ動かせる。◀ ▶ を出し、ほかのボタンは隠す） */
@@ -116,6 +118,7 @@ export const SortableItem = memo(function SortableItem({
   item,
   sortKey,
   size,
+  isOriginalRatio,
   position,
   isReorderMode = false,
   isFirst,
@@ -185,7 +188,11 @@ export const SortableItem = memo(function SortableItem({
           {...listeners}
           {...props}
         >
-          <ImageItem item={item} size={size} />
+          <ImageItem
+            item={item}
+            size={size}
+            isOriginalRatio={isOriginalRatio}
+          />
         </div>
         {/* 動かしている間は番号が実際の並びとずれるので隠す */}
         {position !== undefined && !isSorting && (

@@ -47,6 +47,8 @@ type Props = {
   renderItemFooter?: (item: TSortableItem) => React.ReactNode
   /** 1 枚の大きさ（px） */
   itemSize?: number
+  /** サムネを切り抜かずに画像全体を見せる（元の比率） */
+  isOriginalRatio?: boolean
   /**
    * 並べ替えモード。画像のどこを触ってもすぐ動かせ、◀ ▶ で 1 つずつ動かせる
    * （外す・直す・差し替えのボタンは隠す）
@@ -220,6 +222,7 @@ export function SortableItems(props: Props): React.ReactNode {
               item={item}
               sortKey={sortableKeys[index]}
               size={itemSize}
+              isOriginalRatio={props.isOriginalRatio}
               position={props.items.length > 1 ? index + 1 : undefined}
               isReorderMode={isReorderMode}
               isFirst={index === 0}
@@ -243,7 +246,12 @@ export function SortableItems(props: Props): React.ReactNode {
 
       <DragOverlay dropAnimation={dropAnimation}>
         {activeItem ? (
-          <ImageItem item={activeItem} size={itemSize} isDragging />
+          <ImageItem
+            item={activeItem}
+            size={itemSize}
+            isOriginalRatio={props.isOriginalRatio}
+            isDragging
+          />
         ) : null}
       </DragOverlay>
     </DndContext>

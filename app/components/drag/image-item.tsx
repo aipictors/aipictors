@@ -8,14 +8,25 @@ type Props = {
   isDragging?: boolean
   /** 並べた枠の幅いっぱいの正方形にする（なければ 112px、PC は 128px） */
   size?: number
+  /** 切り抜かずに画像全体を枠の中に収める（サムネを「元の比率」で見る） */
+  isOriginalRatio?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 /**
- * 画像アイテム（正方形に切り抜いて表示）
+ * 画像アイテム（正方形に切り抜いて表示。isOriginalRatio なら全体を収める）
  */
 export const ImageItem = forwardRef<HTMLDivElement, Props>(
   (
-    { item, isOpacityEnabled, isDragging, size, style, className, ...props },
+    {
+      item,
+      isOpacityEnabled,
+      isDragging,
+      size,
+      isOriginalRatio,
+      style,
+      className,
+      ...props
+    },
     ref,
   ) => {
     if (!item.content) {
@@ -45,7 +56,10 @@ export const ImageItem = forwardRef<HTMLDivElement, Props>(
           src={item.content}
           alt=""
           decoding="async"
-          className="size-full select-none object-cover [-webkit-touch-callout:none]"
+          className={cn(
+            "size-full select-none [-webkit-touch-callout:none]",
+            isOriginalRatio ? "object-contain" : "object-cover",
+          )}
         />
       </div>
     )

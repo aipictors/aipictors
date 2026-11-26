@@ -2,6 +2,8 @@ import {
   ArrowDownAZIcon,
   ArrowLeftRightIcon,
   CheckIcon,
+  LayoutGrid,
+  LayoutPanelTop,
   PencilLineIcon,
   PlusIcon,
   Repeat2Icon,
@@ -63,6 +65,9 @@ export const POST_IMAGE_ITEM_SIZES = [60, 76, 112, 150] as const
 
 const ITEM_SIZE_KEY = "post-image-item-size"
 
+/** サムネを「元の比率」（切り抜かずに全体）で見るか。端末に覚えておく */
+const ORIGINAL_RATIO_KEY = "post-image-original-ratio"
+
 /** スマートフォンは 1 行に 4 枚並ぶ大きさ、PC は今まで通りの大きさから始める */
 const toDefaultItemSizeIndex = () =>
   typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 2
@@ -102,6 +107,23 @@ export function PostFormItemDraggableImages(props: Props) {
     localStorage.setItem(ITEM_SIZE_KEY, String(next))
   }
   const itemSize = POST_IMAGE_ITEM_SIZES[itemSizeIndex]
+
+  // サムネの見せ方（正方形に切り抜く／元の比率で全体を見せる）
+  const [isOriginalRatio, setIsOriginalRatio] = useState(false)
+  useEffect(() => {
+    setIsOriginalRatio(localStorage.getItem(ORIGINAL_RATIO_KEY) === "1")
+  }, [])
+  const changeOriginalRatio = (value: boolean) => {
+    setIsOriginalRatio(value)
+    localStorage.setItem(ORIGINAL_RATIO_KEY, value ? "1" : "0")
+  }
+  const ratioButtonClassName = (isActive: boolean) =>
+    cn(
+      "flex h-8 items-center gap-1 rounded-full px-2.5 font-medium text-xs transition-colors",
+      isActive
+        ? "bg-background text-foreground shadow-sm"
+        : "text-muted-foreground hover:text-foreground",
+    )
 
   // 並べ替えモード（触ってすぐ動かせる・◀ ▶ で 1 つずつ動かせる）
   const [isReorderMode, setIsReorderMode] = useState(false)
@@ -506,7 +528,35 @@ export function PostFormItemDraggableImages(props: Props) {
                 {t("逆の順にする", "Reverse")}
               </Button>
             )}
-            <div className="ml-auto flex items-center gap-1">
+            <div className="ml-auto flex flex-wrap items-center justify-end gap-1">
+              <fieldset className="relative mr-1 inline-flex rounded-full border bg-muted/40 p-0.5">
+                <legend className="sr-only">
+                  {t("サムネイルの見せ方", "Thumbnail view")}
+                </legend>
+                <button
+                  type="button"
+                  aria-pressed={!isOriginalRatio}
+                  title={t("正方形に切り抜いて表示", "Square thumbnails")}
+                  onClick={() => changeOriginalRatio(false)}
+                  className={ratioButtonClassName(!isOriginalRatio)}
+                >
+                  <LayoutGrid className="size-3.5" />
+                  {t("正方形", "Square")}
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={isOriginalRatio}
+                  title={t(
+                    "切り抜かずに画像全体を表示",
+                    "Show the whole image",
+                  )}
+                  onClick={() => changeOriginalRatio(true)}
+                  className={ratioButtonClassName(isOriginalRatio)}
+                >
+                  <LayoutPanelTop className="size-3.5" />
+                  {t("元の比率", "Original")}
+                </button>
+              </fieldset>
               <Button
                 type="button"
                 variant="ghost"
@@ -555,6 +605,7 @@ export function PostFormItemDraggableImages(props: Props) {
         <SortableItems
           items={props.items}
           itemSize={itemSize}
+          isOriginalRatio={isOriginalRatio}
           isReorderMode={isReorderMode}
           isDeletable={!props.isOnlyMove}
           isFileNameEditable={true}
