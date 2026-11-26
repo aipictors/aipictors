@@ -51,6 +51,7 @@ import {
   restoreBlankLines,
 } from "~/utils/markdown-blank-lines"
 import { repairMarkdownHardBreaks } from "~/utils/repair-markdown-hard-breaks"
+import { toImageParagraphs } from "~/utils/text-editor-images"
 
 /** 保存済みの本文を入力欄に読み込む形にする */
 const toEditorContent = (md: string) =>
@@ -84,6 +85,8 @@ const TextEditor = ({
         class: cn(
           "prose dark:prose-invert w-full max-w-full bg-transparent px-4 py-4 text-base leading-loose focus-visible:outline-hidden md:px-6",
           "prose-p:my-0 [&_p]:min-h-[1.75em]",
+          // 書いている間は挿絵を小さめに出して、前後の文章を見渡しやすくする（作品ページでは大きく出る）
+          "[&_img]:my-2 [&_img]:inline-block [&_img]:h-auto [&_img]:max-h-60 [&_img]:w-auto [&_img]:max-w-full",
         ),
         "aria-label": t("本文", "Body"),
       },
@@ -290,6 +293,15 @@ const RichTextEditorToolbar = ({
     [editor],
   )
 
+  const addImages = useCallback(
+    (urls: string[]) => {
+      if (urls.length > 0) {
+        editor?.chain().focus().insertContent(toImageParagraphs(urls)).run()
+      }
+    },
+    [editor],
+  )
+
   /** 選んだ文字を囲む。何も選んでいなければ囲みだけ入れて、間にカーソルを置く */
   const wrapSelection = (before: string, after: string, caretInAfter = 0) => {
     const { from, to } = editor.state.selection
@@ -386,6 +398,7 @@ const RichTextEditorToolbar = ({
           <TextEditorUploaderDialog
             token={token.viewer.token}
             onSelectImage={addImage}
+            onSelectImages={addImages}
           >
             <Button
               type="button"

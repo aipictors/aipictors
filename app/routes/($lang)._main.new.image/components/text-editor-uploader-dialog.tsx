@@ -1,4 +1,4 @@
-import { Loader2Icon, XIcon } from "lucide-react"
+import { ImagePlusIcon, Loader2Icon, XIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
@@ -6,11 +6,18 @@ import { Card, CardContent } from "~/components/ui/card"
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import {
+  pickTextEditorImageFiles,
+  TEXT_EDITOR_IMAGE_UPLOAD_LIMIT,
+} from "~/utils/text-editor-images"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 
 type Props = {
   token: string
   onSelectImage: (url: string) => void
+  /** アップロードした画像を順番にまとめて入れる */
+  onSelectImages: (urls: string[]) => void
   children: React.ReactNode
 }
 
@@ -18,8 +25,6 @@ type Props = {
  * テキスト入力時の画像アップローダー
  */
 export function TextEditorUploaderDialog(props: Props) {
-  const [imageBase64, setImageBase64] = useState<string | null>(null)
-
   const [isOpen, setIsOpen] = useState(false)
 
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([])
@@ -27,6 +32,13 @@ export function TextEditorUploaderDialog(props: Props) {
   const [count, setCount] = useState(0)
 
   const [isUploading, setIsUploading] = useState(false)
+
+  const [progress, setProgress] = useState<{
+    done: number
+    total: number
+  } | null>(null)
+
+  const [isDragging, setIsDragging] = useState(false)
 
   const t = useTranslation()
 
@@ -79,58 +91,72 @@ export function TextEditorUploaderDialog(props: Props) {
     })
   }
 
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0]
-    if (!file) {
+  /** 選んだ・ドロップした画像を 1 枚ずつ縮めて上げる */
+  const uploadFiles = async (fileList: FileList | null) => {
+    const files = Array.from(fileList ?? [])
+    if (files.length === 0) {
       toast(t("画像を選択してください", "Please select an image"))
       return
     }
 
-    // 挿絵はクリックで原寸表示できるので、大きめ（長辺 1600px）で保存する
-    // ブラウザが読めない形式（HEIC など）だと失敗するので、何も起きないままにせず知らせる
-    const resizedImage = await resizeImage(file, 1600).catch(() => null)
-    if (resizedImage) {
-      setImageBase64(resizedImage)
-    } else {
-      toast(t("画像のリサイズに失敗しました", "Failed to resize the image"))
-    }
-  }
-
-  const onUpload = async () => {
-    if (!imageBase64) {
-      toast(t("画像を選択してください", "Please select an image"))
-      return
-    }
-
-    if (count >= 20) {
+    const { picked, skipped } = pickTextEditorImageFiles(
+      files,
+      TEXT_EDITOR_IMAGE_UPLOAD_LIMIT - count,
+    )
+    if (skipped > 0) {
       toast(
         t(
           "画像アップロード上限です、下書きで一時投稿ののち、時間を置いて画面更新してください",
           "You have reached the image upload limit. Please save as a draft and refresh the page after some time.",
         ),
       )
+    }
+    if (picked.length === 0) {
       return
     }
 
     setIsUploading(true)
-
-    const url = await uploadPublicImage(imageBase64, props.token)
-
-    setIsUploading(false)
-
-    if (url) {
-      setUploadedImageUrls([...uploadedImageUrls, url])
-      setImageBase64(null)
-      setCount(count + 1)
-    } else {
-      toast(t("画像のアップロードに失敗しました", "Failed to upload the image"))
+    const urls: string[] = []
+    for (const [index, file] of picked.entries()) {
+      setProgress({ done: index, total: picked.length })
+      // 挿絵はクリックで原寸表示できるので、大きめ（長辺 1600px）で保存する
+      // ブラウザが読めない形式（HEIC など）だと失敗するので、何も起きないままにせず知らせる
+      const resizedImage = await resizeImage(file, 1600).catch(() => null)
+      if (!resizedImage) {
+        toast(
+          t(
+            `画像のリサイズに失敗しました（${file.name}）`,
+            `Failed to resize the image (${file.name})`,
+          ),
+        )
+        continue
+      }
+      const url = await uploadPublicImage(resizedImage, props.token)
+      if (url) {
+        urls.push(url)
+        setUploadedImageUrls((prev) => [...prev, url])
+        setCount((prev) => prev + 1)
+      } else {
+        toast(
+          t(
+            `画像のアップロードに失敗しました（${file.name}）`,
+            `Failed to upload the image (${file.name})`,
+          ),
+        )
+      }
     }
+    setProgress(null)
+    setIsUploading(false)
   }
 
   const onSelectImage = (url: string) => {
     props.onSelectImage(url)
+    setIsOpen(false)
+  }
+
+  const onSelectAllImages = () => {
+    props.onSelectImages(uploadedImageUrls)
+    setUploadedImageUrls([])
     setIsOpen(false)
   }
 
@@ -147,35 +173,86 @@ export function TextEditorUploaderDialog(props: Props) {
             <p className="font-bold text-sm">
               {t("本文に差し込む画像", "Image to insert in text")}
             </p>
-            {/* 「ファイルを選択」がただの文字に見えて押せると分からないので、ボタンの見た目にする */}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="w-full cursor-pointer text-sm file:mr-3 file:cursor-pointer file:rounded-md file:border file:border-input file:bg-primary file:px-3 file:py-1.5 file:font-medium file:text-primary-foreground file:text-sm"
-            />
-            <p className="text-muted-foreground text-xs">
-              {t(
-                "①「ファイルを選択」で画像を選ぶ ②「画像をアップロード」を押す ③ 下に出た画像を押すと、カーソルの位置に入ります",
-                "1. Choose a file  2. Press Upload Image  3. Click the uploaded image to insert it at the cursor",
+            {/* 何枚かまとめて選べて、画像をここに落としても上げられる */}
+            <label
+              className={cn(
+                "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-md border-2 border-dashed p-6 text-center text-sm",
+                isDragging ? "border-primary bg-primary/10" : "border-input",
+                isUploading && "pointer-events-none opacity-60",
               )}
-            </p>
-            <Button
-              className="w-full items-center"
-              variant={"secondary"}
-              onClick={onUpload}
-              disabled={!imageBase64 || isUploading}
+              onDragOver={(event) => {
+                event.preventDefault()
+                setIsDragging(true)
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(event) => {
+                event.preventDefault()
+                setIsDragging(false)
+                uploadFiles(event.dataTransfer.files)
+              }}
             >
               {isUploading ? (
-                <Loader2Icon className="size-4 animate-spin" />
+                <span className="flex items-center gap-2">
+                  <Loader2Icon className="size-4 animate-spin" />
+                  {progress &&
+                    t(
+                      `アップロード中（${progress.done + 1}/${progress.total}）`,
+                      `Uploading (${progress.done + 1}/${progress.total})`,
+                    )}
+                </span>
               ) : (
-                <p>{t("画像をアップロード", "Upload Image")}</p>
+                <>
+                  <ImagePlusIcon className="size-6 text-muted-foreground" />
+                  <span className="font-medium">
+                    {t(
+                      "画像をここにドラッグ＆ドロップ、または押して選ぶ",
+                      "Drag & drop images here, or click to choose",
+                    )}
+                  </span>
+                  <span className="text-muted-foreground text-xs">
+                    {t(
+                      `何枚かまとめて選べます（1回の編集で${TEXT_EDITOR_IMAGE_UPLOAD_LIMIT}枚まで）`,
+                      `You can choose several at once (up to ${TEXT_EDITOR_IMAGE_UPLOAD_LIMIT} per edit)`,
+                    )}
+                  </span>
+                </>
               )}
-            </Button>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="sr-only"
+                disabled={isUploading}
+                onChange={(event) => {
+                  uploadFiles(event.target.files)
+                  event.target.value = ""
+                }}
+              />
+            </label>
+            <p className="text-muted-foreground text-xs">
+              {t(
+                "下に出た画像を押すと、カーソルの位置に入ります。「まとめて本文に入れる」で上げた順に全部入ります",
+                "Click an uploaded image to insert it at the cursor, or insert all of them in order",
+              )}
+            </p>
+            {uploadedImageUrls.length > 1 && (
+              <Button
+                type="button"
+                className="w-full"
+                onClick={onSelectAllImages}
+                disabled={isUploading}
+              >
+                {t(
+                  `まとめて本文に入れる（${uploadedImageUrls.length}枚）`,
+                  `Insert all (${uploadedImageUrls.length})`,
+                )}
+              </Button>
+            )}
             <ScrollArea className="max-h-80 overflow-auto p-4">
               {uploadedImageUrls.map((url) => (
                 <div className="flex items-center space-x-2 border-b" key={url}>
                   <Button
+                    type="button"
                     variant={"ghost"}
                     onClick={() => onSelectImage(url)}
                     className="flex h-18 w-full items-center space-x-2"
@@ -189,6 +266,7 @@ export function TextEditorUploaderDialog(props: Props) {
                     </div>
                   </Button>
                   <Button
+                    type="button"
                     onClick={() => onDeleteImage(url)}
                     className="size-12"
                     variant={"destructive"}
