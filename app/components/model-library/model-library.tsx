@@ -64,6 +64,7 @@ import {
 } from "~/components/ui/select"
 import {
   useMyUserModels,
+  useUserModelsCount,
   useUserModelsInfinite,
 } from "~/components/user-models/use-user-models"
 import { UserModelDeleteDialog } from "~/components/user-models/user-model-delete-dialog"
@@ -323,6 +324,9 @@ export function ModelLibrary(props: ModelLibraryProps) {
     },
     { enabled: section === "community" },
   )
+  const communityCount = useUserModelsCount({
+    ratings: filters.includeR18 ? ["G", "R15", "R18", "R18G"] : ["G", "R15"],
+  })
 
   const favoriteIds = props.favoriteOfficialIds ?? []
   const viewerUserId = authContext.isLoggedIn ? authContext.userId : null
@@ -588,6 +592,9 @@ export function ModelLibrary(props: ModelLibraryProps) {
 
   const sectionCount = (value: ModelLibrarySection): string | null => {
     if (value === "official") return String(officialItems.length)
+    if (value === "community" && typeof communityCount.data === "number") {
+      return communityCount.data.toLocaleString()
+    }
     if (value === "mine" && mine.data) return String(mine.data.used)
     if (value === "favorites") {
       // 消えたモデルの id も残っていることがあるので、一覧にあるものだけ数える

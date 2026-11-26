@@ -186,6 +186,8 @@ export type UserModelListParams = {
 export type UserModelListResult = {
   models: UserModel[]
   hasMore: boolean
+  /** 条件に合う件数（古い API では返らないので null） */
+  totalCount: number | null
 }
 
 export type MyUserModelsResult = {

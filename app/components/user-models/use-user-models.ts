@@ -42,6 +42,24 @@ export function useUserModelsInfinite(
   })
 }
 
+/**
+ * みんなのモデルの件数（モデルライブラリのメニューに出す）
+ */
+export function useUserModelsCount(
+  params: Pick<UserModelListParams, "ratings">,
+) {
+  const authContext = useContext(AuthContext)
+  return useQuery({
+    queryKey: [...userModelsQueryKeys.list(params), "count"],
+    enabled: !authContext.isLoading,
+    queryFn: async () => {
+      const result = await fetchUserModels({ ...params, offset: 0, limit: 1 })
+      return result.totalCount
+    },
+    staleTime: 60_000,
+  })
+}
+
 export function useUserModel(id: string | null | undefined) {
   const authContext = useContext(AuthContext)
   return useQuery({

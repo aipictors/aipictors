@@ -177,6 +177,7 @@ export const fetchUserModels = async (
       typeof data?.hasMore === "boolean"
         ? data.hasMore
         : models.length >= (params.limit ?? 24),
+    totalCount: typeof data?.totalCount === "number" ? data.totalCount : null,
   }
 }
 
