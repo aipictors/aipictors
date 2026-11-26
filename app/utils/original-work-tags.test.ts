@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import {
   isOriginalWork,
   ORIGINAL_WORK_TAG_NAMES,
-} from "~/routes/($lang)._main._index/utils/original-work-tags"
+} from "~/utils/original-work-tags"
 
 describe("isOriginalWork", () => {
   test("オリジナル系のタグが付いていれば true", () => {

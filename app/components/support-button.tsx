@@ -15,10 +15,12 @@ import {
 } from "~/components/support-coin-icons"
 import { SupportSuccessDialog } from "~/components/support-success-dialog"
 import {
+  PremiumSupportOriginalOnlyNote,
   SupportRewardJoinedBadge,
   SupportRewardNote,
   SupportTierChip,
   supportAmountButtonClassName,
+  usePremiumSupportOriginalOnlyErrorText,
 } from "~/components/support-super-chat"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
@@ -38,6 +40,10 @@ import {
   type CoinSummarySupportTarget,
   fetchCoinSummaryShared,
 } from "~/utils/fetch-coin-summary-shared"
+import {
+  canSupportWithPremium,
+  isPremiumSupportOriginalOnlyError,
+} from "~/utils/premium-support-original-only"
 import { getSupportTier } from "~/utils/support-tier"
 
 type Props = {
@@ -53,6 +59,9 @@ type Props = {
   variant?: "default" | "profile"
   /** 「クリエイターの報酬につながります」の一言。R18 の作品のページでは false */
   showRewardNote?: boolean
+  /** 作品のページから推すときの作品。プレミアムコインはオリジナル系のタグが付いた作品だけ（無ければフリーコインだけ） */
+  workId?: string | null
+  workTagNames?: readonly string[] | null
 }
 
 type CoinBreakdown = {
@@ -114,8 +123,16 @@ function SupportButtonContent({
   triggerClassName,
   variant = "default",
   showRewardNote = true,
+  workId = null,
+  workTagNames = null,
 }: Props) {
   const t = useTranslation()
+  const premiumOriginalOnlyErrorText = usePremiumSupportOriginalOnlyErrorText()
+  // プレミアムコインはオリジナル作品への推しだけ（プロフィールからの推しはフリーコインだけ）
+  const isPremiumAllowedHere = canSupportWithPremium({
+    workId,
+    tagNames: workTagNames,
+  })
   const [isOpen, setIsOpen] = useState(false)
   const [isInfoOpen, setIsInfoOpen] = useState(false)
   const [coinType, setCoinType] = useState<SupportCoinType>("FREE")
@@ -143,10 +160,11 @@ function SupportButtonContent({
   // 作者が「推しを受け付けない」設定のとき（古い API では supportAccepted が無いので受け付ける扱い）
   const isSupportRejected = supportTarget?.supportAccepted === false
   const isPremiumAccepted = supportTarget?.premiumAccepted !== false
+  const canSelectPremium = isPremiumAccepted && isPremiumAllowedHere
   const isFreeReceiveAccepted = supportTarget?.freeReceiveAccepted !== false
   // 報酬の印と一言は、作者が報酬に参加していてプレミアムコインを受け取るときだけ（R18 の作品のページでは出さない）
   const isRewardTarget =
-    showRewardNote && supportTarget?.rewardJoined === true && isPremiumAccepted
+    showRewardNote && supportTarget?.rewardJoined === true && canSelectPremium
 
   // 推す相手の名前・お礼の文は、ダイアログを開いてから読む（作品ページを開くたびに問い合わせない）
   const { data: targetUserData } = useQuery(targetSupportUserQuery, {
@@ -252,7 +270,7 @@ function SupportButtonContent({
     selectCoinType(
       currentFreeCoinBalance === 0 &&
         currentPremiumCoinBalance > 0 &&
-        isPremiumAccepted
+        canSelectPremium
         ? "PREMIUM"
         : "FREE",
     )
@@ -261,13 +279,13 @@ function SupportButtonContent({
     isOpen,
     currentFreeCoinBalance,
     currentPremiumCoinBalance,
-    isPremiumAccepted,
+    canSelectPremium,
   ])
 
-  // 作者がプレミアムコインでの推しを受け取らないときは、選んでいてもフリーコインに戻す
+  // 作者がプレミアムコインでの推しを受け取らないとき・オリジナル作品でないときは、選んでいてもフリーコインに戻す
   useEffect(() => {
-    if (!isPremiumAccepted && coinType === "PREMIUM") selectCoinType("FREE")
-  }, [isPremiumAccepted, coinType])
+    if (!canSelectPremium && coinType === "PREMIUM") selectCoinType("FREE")
+  }, [canSelectPremium, coinType])
 
   const handleSupport = async () => {
     if (!canSupport || !breakdown) return
@@ -294,6 +312,7 @@ function SupportButtonContent({
               coinType: "FREE",
               amount: breakdown.freeCoinsUsed,
               isAnonymous,
+              workId,
               source: `profile-support:${requestId}:FREE`,
             }),
           }),
@@ -310,6 +329,7 @@ function SupportButtonContent({
               coinType: "PREMIUM",
               amount: breakdown.premiumCoinsUsed,
               isAnonymous,
+              workId,
               source: `profile-support:${requestId}:PREMIUM`,
             }),
           }),
@@ -322,6 +342,7 @@ function SupportButtonContent({
           (res) =>
             res.json() as Promise<{
               error?: string
+              code?: string
               data?: { success: boolean }
             }>,
         ),
@@ -332,11 +353,20 @@ function SupportButtonContent({
         jsonResponses.some((json) => json.error)
 
       if (hasError) {
-        const errorMsg = jsonResponses.find((j) => j.error)?.error
+        const errorJson = jsonResponses.find((j) => j.error)
+        const errorMsg = errorJson?.error
         if (errorMsg === "Insufficient coins") {
           setShowCoinPurchase(true)
         }
-        toast.error(errorMsg ?? t("推しに失敗しました", "Support failed"))
+        toast.error(
+          errorJson &&
+            isPremiumSupportOriginalOnlyError({
+              code: errorJson.code,
+              message: errorMsg,
+            })
+            ? premiumOriginalOnlyErrorText
+            : (errorMsg ?? t("推しに失敗しました", "Support failed")),
+        )
         return
       }
 
@@ -524,7 +554,7 @@ function SupportButtonContent({
                     aria-pressed={coinType === item.type}
                     disabled={
                       isLoading ||
-                      (item.type === "PREMIUM" && !isPremiumAccepted)
+                      (item.type === "PREMIUM" && !canSelectPremium)
                     }
                     onClick={() => {
                       hasTouchedAmountRef.current = true
@@ -550,13 +580,20 @@ function SupportButtonContent({
                   </button>
                 ))}
               </div>
-              {!isPremiumAccepted && (
-                <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">
-                  {t(
-                    "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
-                    "This creator does not accept support with premium coins. You can support with free coins",
-                  )}
-                </p>
+              {!isPremiumAllowedHere ? (
+                <PremiumSupportOriginalOnlyNote
+                  variant={workId ? "work" : "profile"}
+                  className="rounded-xl bg-muted p-3"
+                />
+              ) : (
+                !isPremiumAccepted && (
+                  <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">
+                    {t(
+                      "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
+                      "This creator does not accept support with premium coins. You can support with free coins",
+                    )}
+                  </p>
+                )
               )}
               {!isFreeReceiveAccepted && coinType === "FREE" && (
                 <p className="rounded-xl bg-muted p-3 text-muted-foreground text-xs">

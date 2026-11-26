@@ -7,7 +7,7 @@ import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
 import { useHomeOriginalOnly } from "~/routes/($lang)._main._index/hooks/use-original-only"
-import { isOriginalWork } from "~/routes/($lang)._main._index/utils/original-work-tags"
+import { isOriginalWork } from "~/utils/original-work-tags"
 import {
   HomeNovelsWorkListItemFragment,
   HomeNovelsWorksSection,

@@ -118,8 +118,8 @@ export function PlusCoinUses() {
       tone: "text-pink-500 bg-pink-500/10",
       title: { ja: "推し（応援）", en: "Support creators" },
       body: {
-        ja: "作品やプロフィールからコインで応援。メッセージ付きでコメント欄に目立って表示され、推しランキングにも載ります。",
-        en: "Send coins from a work or profile, with a message that stands out in comments and counts toward the rankings.",
+        ja: "作品やプロフィールからコインで応援。メッセージ付きでコメント欄に目立って表示され、推しランキングにも載ります。プレミアムコインで推せるのはオリジナル作品だけです。",
+        en: "Send coins from a work or profile, with a message that stands out in comments and counts toward the rankings. Premium Coins can only be used on original works.",
       },
       coins: "both",
       to: "/coin-rankings?kind=received",
@@ -183,8 +183,8 @@ export function PlusCoinUses() {
       tone: "text-teal-600 bg-teal-500/10",
       title: { ja: "受け取って報酬に", en: "Earn rewards" },
       body: {
-        ja: "全年齢の作品に購入したプレミアムコインで推されると、1,000コインにつき500円の報酬として振り込まれます（クリエイター報酬に参加した方）。",
-        en: "When your all-ages work receives purchased premium coins, every 1,000 coins pays out ¥500 (Creator Rewards members).",
+        ja: "全年齢のオリジナル作品に購入したプレミアムコインで推されると、1,000コインにつき500円の報酬として振り込まれます（クリエイター報酬に参加した方）。",
+        en: "When your all-ages original work receives purchased premium coins, every 1,000 coins pays out ¥500 (Creator Rewards members).",
       },
       coins: "premium",
       to: "/settings/creator-rewards",

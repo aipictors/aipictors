@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/collapsible"
 import { useTranslation } from "~/hooks/use-translation"
 import { MAX_POST_TAGS } from "~/routes/($lang)._main.new.image/utils/post-form-generated-content"
+import { isOriginalWork } from "~/utils/original-work-tags"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import {
@@ -348,6 +349,15 @@ export function PostFormItemTags(props: Props) {
             `Up to ${MAX_POST_TAGS} tags allowed`,
           )}
         />
+        {/* プレミアムコインの推しはオリジナル系のタグが付いた作品だけなので、付いていないときに一言だけ */}
+        {!isOriginalWork(props.tags.map((tag) => tag.text)) && (
+          <p className="text-muted-foreground text-xs">
+            {t(
+              "オリジナル作品には「オリジナル」タグを付けると、プレミアムコインで推してもらえます",
+              'Tag your original works "オリジナル" (original) so they can receive Premium Coin support',
+            )}
+          </p>
+        )}
         {suggestions.recentlyUsedTags.length !== 0 && (
           <div className="space-y-2 pt-2">
             <p className="font-bold text-muted-foreground text-xs">

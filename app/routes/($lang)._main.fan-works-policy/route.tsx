@@ -24,7 +24,7 @@ export const headers: HeadersFunction = () => ({
 })
 
 /**
- * 二次創作と収益化についての運営の考え方（禁止はしない・権利者のガイドラインの確認は投稿者の責任）
+ * 二次創作と収益化についての運営の考え方（否定・禁止はしない・お金が動くのはオリジナル作品だけ・権利者のガイドラインの確認は投稿者の責任）
  */
 export default function FanWorksPolicyPage() {
   const t = useTranslation()
@@ -53,14 +53,20 @@ export default function FanWorksPolicyPage() {
         <CardContent className="space-y-2 text-sm leading-7">
           <p>
             {t(
-              "・二次創作の投稿や、推しなどで収益を得ることを、運営は一律には禁止しません。",
-              "- We do not ban fan works, or earning from them through support, across the board.",
+              "・二次創作を否定しません。投稿を一律に禁止することもありません。",
+              "- We do not reject fan works, and do not ban them across the board.",
             )}
           </p>
           <p>
             {t(
-              "・二次創作や収益化をしてよいかは権利者が決めます。ガイドラインを確認して従うのは投稿者の責任です。",
-              "- Rights holders decide whether fan works and earnings are allowed. Checking and following their guidelines is the poster's responsibility.",
+              "・権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけです。プレミアムコインでの推しとクリエイター報酬は、「オリジナル」などのタグが付いた作品が対象です。フリーコインの推しは、どの作品にも送れます。",
+              '- Out of consideration for rights holders and creators, money only moves for original works. Premium Coin support and Creator Rewards apply to works tagged "Original" or similar. Free Coin support can go to any work.',
+            )}
+          </p>
+          <p>
+            {t(
+              "・二次創作をしてよいかは権利者が決めます。ガイドラインを確認して従うのは投稿者の責任です。",
+              "- Rights holders decide whether fan works are allowed. Checking and following their guidelines is the poster's responsibility.",
             )}
           </p>
           <p>

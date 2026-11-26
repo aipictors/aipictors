@@ -206,8 +206,8 @@ export function CreatorRewardsPage() {
         </div>
         <p className="mt-3 text-muted-foreground text-xs leading-5">
           {t(
-            "対象は全年齢（一般・R15）の作品への推しで、ファンがお金を払って買ったコインの分です。無料でもらったコインやR18の作品への推しは、今までどおりコインで受け取ります。",
-            "Covers supports on all-ages (G / R15) works paid with coins fans bought. Free coins and supports on R18 works are received as coins as before.",
+            "対象は全年齢（一般・R15）のオリジナル作品（「オリジナル」などのタグ付き）への推しで、ファンがお金を払って買ったコインの分です。プレミアムコインの推しはオリジナル作品にだけ届きます。無料でもらったコインやR18の作品への推しは、今までどおりコインで受け取ります。",
+            'Covers supports on all-ages (G / R15) original works (tagged "Original" or similar) paid with coins fans bought. Premium Coin support can only be sent to original works. Free coins and supports on R18 works are received as coins as before.',
           )}
         </p>
       </section>

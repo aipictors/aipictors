@@ -26,7 +26,7 @@ import { RecommendedFeedShelf } from "~/routes/($lang)._main._index/components/r
 import { useFeedEvents } from "~/routes/($lang)._main._index/hooks/use-feed-events"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { useHomeOriginalOnly } from "~/routes/($lang)._main._index/hooks/use-original-only"
-import { isOriginalWork } from "~/routes/($lang)._main._index/utils/original-work-tags"
+import { isOriginalWork } from "~/utils/original-work-tags"
 import {
   pickRecommendedFeedSnapshot,
   readRecommendedFeedSnapshot,

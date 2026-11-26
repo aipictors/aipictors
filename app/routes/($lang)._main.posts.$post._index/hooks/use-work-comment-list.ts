@@ -32,7 +32,12 @@ import {
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import { usePremiumCheckoutConfirmation } from "~/routes/($lang)._main.posts.$post._index/hooks/use-premium-checkout-confirmation"
 import type { CoinSummarySupportTarget } from "~/utils/fetch-coin-summary-shared"
+import { usePremiumSupportOriginalOnlyErrorText } from "~/components/support-super-chat"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
+import {
+  canSupportWithPremium,
+  isPremiumSupportOriginalOnlyError,
+} from "~/utils/premium-support-original-only"
 import {
   readRecentStickerIds,
   sortStickersByRecent,
@@ -50,6 +55,8 @@ export type WorkCommentListProps = {
   isLoadingComments?: boolean
   /** 作品の年齢区分。全年齢（G / R15）のときだけ推しの欄に報酬の一言を出す */
   workRating?: string | null
+  /** 作品のタグ。プレミアムコインの推しはオリジナル系のタグが付いた作品だけ（渡さないときはフリーコインだけ） */
+  workTagNames?: readonly string[] | null
 }
 
 /**
@@ -64,6 +71,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
   const checkoutSessionId = searchParams.get("session_id")
 
   const t = useTranslation()
+  const premiumOriginalOnlyErrorText = usePremiumSupportOriginalOnlyErrorText()
 
   const appContext = useContext(AuthContext)
 
@@ -95,6 +103,11 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     premiumBalance: 0,
   })
   const [isLoadingCoinSummary, setIsLoadingCoinSummary] = useState(false)
+  // プレミアムコインはオリジナル作品への推しだけ（二次創作にお金が動かないように）
+  const isPremiumAllowedForWork = canSupportWithPremium({
+    workId: props.workId,
+    tagNames: props.workTagNames,
+  })
   const [supportSuccessState, setSupportSuccessState] = useState<{
     message: string
     totalPt: number
@@ -286,7 +299,10 @@ export function useWorkCommentList(props: WorkCommentListProps) {
         setSupportPremiumCoinAmount("0")
       }
       // 作者がプレミアムコインでの推しを受け取らないなら、プレミアムを選べないようにフリーへ戻す
-      if (summary.supportTarget?.premiumAccepted === false) {
+      if (
+        summary.supportTarget?.premiumAccepted === false ||
+        !isPremiumAllowedForWork
+      ) {
         setSupportCoinType("FREE")
         setSupportPremiumCoinAmount("0")
       }
@@ -471,8 +487,13 @@ export function useWorkCommentList(props: WorkCommentListProps) {
         ])
       }
     } catch (_e) {
+      const errorMessage = getApolloErrorMessage(_e)
+      if (isPremiumSupportOriginalOnlyError({ message: errorMessage })) {
+        toast(premiumOriginalOnlyErrorText)
+        return
+      }
       toast(
-        getApolloErrorMessage(_e) ??
+        errorMessage ??
           t(
             "送信に失敗しました。しばらくしてから再度お試しください。",
             "Failed to send. Please try again later.",
@@ -589,6 +610,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     isLoadingCoinSummary,
     isOpen,
     isOwnWork,
+    isPremiumAllowedForWork,
     isPremiumPurchaseDialogOpen,
     isPremiumPurchaseResultDialogOpen,
     isSensitive,

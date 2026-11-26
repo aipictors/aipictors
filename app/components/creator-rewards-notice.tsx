@@ -18,8 +18,8 @@ export function CreatorRewardsNotice(props: { className?: string }) {
       </div>
       <p className="text-muted-foreground leading-6">
         {t(
-          "Amazon ギフト券への交換は 2026年11月16日で終了しました。代わりに、全年齢の作品が有料のプレミアムコインで推されると、1,000 コインにつき 500 円の報酬を銀行口座へ振り込む「クリエイター報酬」が始まりました（参加が必要です）。",
-          "Amazon gift card exchange ended on November 16, 2026. Instead, with Creator Rewards you earn ¥500 per 1,000 purchased Premium Coins supported on your all-ages works, paid to your bank account (joining required).",
+          "Amazon ギフト券への交換は 2026年11月16日で終了しました。代わりに、全年齢のオリジナル作品が有料のプレミアムコインで推されると、1,000 コインにつき 500 円の報酬を銀行口座へ振り込む「クリエイター報酬」が始まりました（参加が必要です）。",
+          "Amazon gift card exchange ended on November 16, 2026. Instead, with Creator Rewards you earn ¥500 per 1,000 purchased Premium Coins supported on your all-ages original works, paid to your bank account (joining required).",
         )}
       </p>
       <div className="flex flex-wrap gap-2">

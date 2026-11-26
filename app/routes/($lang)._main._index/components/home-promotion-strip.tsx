@@ -6,7 +6,7 @@ import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-albu
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { useHomeOriginalOnly } from "~/routes/($lang)._main._index/hooks/use-original-only"
-import { isOriginalWork } from "~/routes/($lang)._main._index/utils/original-work-tags"
+import { isOriginalWork } from "~/utils/original-work-tags"
 
 type Props = {
   onSelect?: (workId: string) => void

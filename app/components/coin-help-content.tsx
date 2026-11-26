@@ -57,8 +57,8 @@ export function CoinHelpContent(props: Props) {
         </p>
         <p className="text-sm leading-6">
           {t(
-            "プレミアムコインは購入して増やせるコインです。画像生成や応援に使えます。生成時はフリーコインを先に消費し、足りない分だけプレミアムコインが使われます。",
-            "Premium coins are coins you can increase by purchasing. They can be used for image generation and support. During generation, free coins are consumed first and premium coins are used only for the remaining amount.",
+            "プレミアムコインは購入して増やせるコインです。画像生成や応援に使えます（推しに使えるのはオリジナル作品だけです）。生成時はフリーコインを先に消費し、足りない分だけプレミアムコインが使われます。",
+            "Premium coins are coins you can increase by purchasing. They can be used for image generation and support (support only on original works). During generation, free coins are consumed first and premium coins are used only for the remaining amount.",
           )}
         </p>
         <p className="text-muted-foreground text-sm leading-6">
@@ -124,14 +124,14 @@ export function CoinHelpContent(props: Props) {
           </li>
           <li>
             {t(
-              "推し・応援: ユーザーを応援すると、pt としてランキングに反映されます。",
-              "Support: when you support a user, the action is reflected in rankings as pt.",
+              "推し・応援: ユーザーを応援すると、pt としてランキングに反映されます。フリーコインはどの作品・プロフィールにも、プレミアムコインはオリジナル作品（「オリジナル」などのタグ付き）にだけ使えます。権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけにしています。",
+              'Support: when you support a user, the action is reflected in rankings as pt. Free Coins can go to any work or profile; Premium Coins only to original works (tagged "Original" or similar). Out of consideration for rights holders and creators, money only moves for original works.',
             )}
           </li>
           <li>
             {t(
-              "報酬: クリエイター報酬に参加すると、全年齢の作品が有料のプレミアムコインで推された分が報酬として銀行口座へ振り込まれます（1,000 コインにつき 500 円）。Amazon ギフト券への交換は終了しました。",
-              "Rewards: join Creator Rewards to receive bank payouts for purchased Premium Coins supported on your all-ages works (¥500 per 1,000 coins). Amazon gift card exchange has ended.",
+              "報酬: クリエイター報酬に参加すると、全年齢のオリジナル作品が有料のプレミアムコインで推された分が報酬として銀行口座へ振り込まれます（1,000 コインにつき 500 円）。Amazon ギフト券への交換は終了しました。",
+              "Rewards: join Creator Rewards to receive bank payouts for purchased Premium Coins supported on your all-ages original works (¥500 per 1,000 coins). Amazon gift card exchange has ended.",
             )}
           </li>
         </ul>

@@ -676,15 +676,15 @@ export const HELP_SECTIONS: HelpSection[] = [
     title: { ja: "クリエイター報酬（換金）", en: "Creator rewards (cash out)" },
     mangaTitle: { ja: "推しが、報酬になる！", en: "Support becomes rewards!" },
     lead: {
-      ja: "全年齢の作品に、購入したプレミアムコインで推しが届くと、その分がお金の報酬としてたまり、銀行口座に振り込まれます。口座の登録は世界中で使われている Stripe で行うので安心です。",
-      en: "When people support your all-ages works with purchased premium coins, it builds up as cash rewards paid to your bank account. Bank details are handled securely by Stripe.",
+      ja: "全年齢のオリジナル作品に、購入したプレミアムコインで推しが届くと、その分がお金の報酬としてたまり、銀行口座に振り込まれます。口座の登録は世界中で使われている Stripe で行うので安心です。",
+      en: "When people support your all-ages original works with purchased premium coins, it builds up as cash rewards paid to your bank account. Bank details are handled securely by Stripe.",
     },
     panels: [
       {
         image: "rewards-1",
         caption: {
-          ja: "全年齢の作品に、プレミアムコインの推しが届くと…",
-          en: "When premium-coin support reaches your all-ages work…",
+          ja: "全年齢のオリジナル作品に、プレミアムコインの推しが届くと…",
+          en: "When premium-coin support reaches your all-ages original work…",
         },
         bubbles: [{ ja: "推しが届いたよ〜！", en: "I got support!", at: "tr" }],
       },
@@ -739,8 +739,8 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: "Join from Settings → Creator rewards. You must be 18+ and have a bank account and address in Japan (payouts are in JPY).",
       },
       {
-        ja: "対象は全年齢（G / R15）の作品と、プロフィールへの推し・有料リクエストの報酬です。フリーコインの推しは対象外です。",
-        en: "Covers support on all-ages (G / R15) works, profile support and paid request earnings. Free-coin support is not included.",
+        ja: "対象は全年齢（G / R15）のオリジナル作品（「オリジナル」などのタグ付き）への推しと、有料リクエストの報酬です。権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけにしています。フリーコインの推しは対象外です。",
+        en: 'Covers support on all-ages (G / R15) original works (tagged "Original" or similar) and paid request earnings. Out of consideration for rights holders and creators, money only moves for original works. Free-coin support is not included.',
       },
       {
         ja: "推されてから 7 日の確認期間のあと、毎月 10 日と 25 日の締めでまとめて振り込みます。",

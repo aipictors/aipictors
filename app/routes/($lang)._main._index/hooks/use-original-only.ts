@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react"
-import { ORIGINAL_WORK_TAG_NAMES } from "~/routes/($lang)._main._index/utils/original-work-tags"
+import { ORIGINAL_WORK_TAG_NAMES } from "~/utils/original-work-tags"
 
 const STORAGE_KEY = "aipictors-home-original-only"
 

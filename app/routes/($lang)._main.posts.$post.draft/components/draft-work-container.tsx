@@ -43,7 +43,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function DraftWorkContainer (props: Props) {
+export function DraftWorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data, refetch } = useQuery(workQuery, {
@@ -166,6 +166,7 @@ export function DraftWorkContainer (props: Props) {
             )}
             {workForArticle.isCommentsEditable && (
               <WorkCommentList
+                workTagNames={workForArticle.tagNames}
                 workId={workForArticle.id}
                 comments={comments}
                 workOwnerId={workForArticle.user?.id}
@@ -177,6 +178,8 @@ export function DraftWorkContainer (props: Props) {
             {workForArticle.user && (
               <div className="block md:mt-0 lg:hidden">
                 <WorkUser
+                  workId={workForArticle.id}
+                  workTagNames={workForArticle.tagNames}
                   userId={workForArticle.user.id}
                   userLogin={workForArticle.user.login}
                   userName={workForArticle.user.name}
@@ -196,6 +199,8 @@ export function DraftWorkContainer (props: Props) {
           {workForArticle.user && (
             <div className="w-full">
               <WorkUser
+                workId={workForArticle.id}
+                workTagNames={workForArticle.tagNames}
                 userId={workForArticle.user.id}
                 userName={workForArticle.user.name}
                 userLogin={workForArticle.user.login}

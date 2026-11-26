@@ -1,5 +1,13 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare"
-import { boolean, nullable, number, object, optional, safeParse, string } from "valibot"
+import {
+  boolean,
+  nullable,
+  number,
+  object,
+  optional,
+  safeParse,
+  string,
+} from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 import { toJsonResponse } from "~/lib/server/json-response.server"
@@ -8,7 +16,10 @@ import { toJsonResponse } from "~/lib/server/json-response.server"
  * コインで推しを送るAPI
  * POST /api/coins/support
  *
- * body: { recipientUserId: string, coinType: "FREE" | "PREMIUM", amount: number }
+ * body: { recipientUserId: string, coinType: "FREE" | "PREMIUM", amount: number, workId?: string }
+ *
+ * - プレミアムコインはオリジナル作品（workId の作品にオリジナル系のタグ）への推しだけ。
+ *   workId が無い推し（プロフィール）でプレミアムを送ると API が 403 { code: "PREMIUM_SUPPORT_ORIGINAL_ONLY" } を返す
  *
  * - フリーコイン: 1pt / 枚
  * - プレミアムコイン: 10pt / 枚（PREMIUM_COIN_PT_MULTIPLIER）
@@ -23,6 +34,7 @@ const bodySchema = object({
   amount: number(),
   isAnonymous: optional(boolean()),
   source: optional(nullable(string())),
+  workId: optional(nullable(string())),
 })
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -62,7 +74,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     return toJsonResponse({ error: "Invalid request body", data: null }, 400)
   }
 
-  const { recipientUserId, coinType, amount, isAnonymous, source } =
+  const { recipientUserId, coinType, amount, isAnonymous, source, workId } =
     parsedBody.output
 
   if (coinType !== "FREE" && coinType !== "PREMIUM") {
@@ -111,11 +123,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
       isAnonymous: isAnonymous ?? false,
       planType: viewer.currentPassType ?? "FREE",
       source: source ?? null,
+      workId: workId ?? null,
     }),
   })
 
   const apiJson = (await apiResponse.json()) as {
     error: string | null
+    code?: string
     data?: {
       transferredAmount: number
       senderPtAdded: number
@@ -124,12 +138,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
 
   if (!apiResponse.ok || apiJson.error || !apiJson.data) {
+    // 受け付けない推し（403）はコードごと返して、画面で理由を出す
     return toJsonResponse(
       {
         error: apiJson.error ?? "Failed to process support transaction",
+        code: apiJson.code ?? null,
         data: null,
       },
-      502,
+      apiResponse.status === 403 ? 403 : 502,
     )
   }
 

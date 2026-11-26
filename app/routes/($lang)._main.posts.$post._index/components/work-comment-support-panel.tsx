@@ -7,6 +7,7 @@ import {
   PremiumSupportCoinIcon,
 } from "~/components/support-coin-icons"
 import {
+  PremiumSupportOriginalOnlyNote,
   SupportRewardJoinedBadge,
   SupportRewardNote,
   SupportSuperChatCard,
@@ -42,6 +43,7 @@ export function WorkCommentSupportPanel(
     | "currentFreeSupportCoinAmount"
     | "currentPremiumSupportCoinAmount"
     | "isLoadingCoinSummary"
+    | "isPremiumAllowedForWork"
     | "setIsPremiumPurchaseDialogOpen"
     | "setSupportCoinAmount"
     | "setSupportCoinType"
@@ -62,6 +64,7 @@ export function WorkCommentSupportPanel(
     currentFreeSupportCoinAmount,
     currentPremiumSupportCoinAmount,
     isLoadingCoinSummary,
+    isPremiumAllowedForWork,
     setIsPremiumPurchaseDialogOpen,
     setSupportCoinAmount,
     setSupportCoinType,
@@ -73,12 +76,13 @@ export function WorkCommentSupportPanel(
     supportTarget,
   } = props
   const isPremiumAccepted = supportTarget?.premiumAccepted !== false
+  const canSelectPremium = isPremiumAccepted && isPremiumAllowedForWork
   const isFreeReceiveAccepted = supportTarget?.freeReceiveAccepted !== false
-  // 報酬の印と一言は、全年齢の作品で、作者が報酬に参加していてプレミアムコインを受け取るときだけ
+  // 報酬の印と一言は、全年齢のオリジナル作品で、作者が報酬に参加していてプレミアムコインを受け取るときだけ
   const isRewardTarget =
     isCreatorRewardRating(workRating) &&
     supportTarget?.rewardJoined === true &&
-    isPremiumAccepted
+    canSelectPremium
 
   const header = (
     <div className="flex items-center justify-between gap-2">
@@ -144,11 +148,13 @@ export function WorkCommentSupportPanel(
       type: "PREMIUM",
       icon: <PremiumSupportCoinIcon className="size-5" />,
       label: t("プレミアム", "Premium"),
-      rate: isPremiumAccepted
-        ? t("1枚 = 10pt", "1 coin = 10pt")
-        : t("受け付けていません", "Not accepted"),
+      rate: !isPremiumAllowedForWork
+        ? t("オリジナル作品だけ", "Original works only")
+        : isPremiumAccepted
+          ? t("1枚 = 10pt", "1 coin = 10pt")
+          : t("受け付けていません", "Not accepted"),
       balance: coinBalances.premiumBalance,
-      isDisabled: !isPremiumAccepted,
+      isDisabled: !canSelectPremium,
     },
   ] as const
 
@@ -198,13 +204,20 @@ export function WorkCommentSupportPanel(
           )
         })}
       </div>
-      {!isPremiumAccepted && (
-        <p className="text-[11px] text-muted-foreground">
-          {t(
-            "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
-            "This creator does not accept support with premium coins. You can support with free coins",
-          )}
-        </p>
+      {!isPremiumAllowedForWork ? (
+        <PremiumSupportOriginalOnlyNote
+          variant="work"
+          className="text-[11px]"
+        />
+      ) : (
+        !isPremiumAccepted && (
+          <p className="text-[11px] text-muted-foreground">
+            {t(
+              "この作者はプレミアムコインでの応援を受け付けていません。フリーコインで推せます",
+              "This creator does not accept support with premium coins. You can support with free coins",
+            )}
+          </p>
+        )
       )}
       {!isFreeReceiveAccepted && isFree && (
         <p className="text-[11px] text-muted-foreground">

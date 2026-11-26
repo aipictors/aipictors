@@ -53,8 +53,8 @@ export function CreatorRewardsJoinHint(props: { className?: string }) {
       <BanknoteIcon className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
       <span className="min-w-0 flex-1">
         {t(
-          "全年齢の作品への推し（購入したプレミアムコイン）は、クリエイター報酬に参加すると銀行振込の報酬になります。",
-          "Join Creator Rewards to turn purchased Premium Coin support on your all-ages works into bank-paid rewards.",
+          "全年齢のオリジナル作品への推し（購入したプレミアムコイン）は、クリエイター報酬に参加すると銀行振込の報酬になります。",
+          "Join Creator Rewards to turn purchased Premium Coin support on your all-ages original works into bank-paid rewards.",
         )}
       </span>
       <Link

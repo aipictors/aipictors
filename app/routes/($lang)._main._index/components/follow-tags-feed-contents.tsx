@@ -862,6 +862,7 @@ function TimelineView({
                   {work.isCommentsEditable && work.comments && (
                     <WorkCommentList
                       workId={work.id}
+                      workTagNames={work.tagNames}
                       comments={work.comments}
                       defaultShowCommentCount={3}
                       workOwnerIconImageURL={work.user?.iconUrl}

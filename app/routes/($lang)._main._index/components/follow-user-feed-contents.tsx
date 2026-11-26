@@ -35,7 +35,7 @@ import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-
 import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
 import { useHomeOriginalOnly } from "~/routes/($lang)._main._index/hooks/use-original-only"
 import { saveFollowFeedSnapshot } from "~/routes/($lang)._main._index/utils/follow-feed-snapshot"
-import { isOriginalWork } from "~/routes/($lang)._main._index/utils/original-work-tags"
+import { isOriginalWork } from "~/utils/original-work-tags"
 import {
   CommentListItemFragment,
   WorkCommentList,
@@ -827,6 +827,7 @@ function FeedContent({
                       {work.isCommentsEditable && work.comments && (
                         <WorkCommentList
                           workId={work.id}
+                          workTagNames={work.tagNames}
                           comments={work.comments}
                           defaultShowCommentCount={3}
                           workOwnerIconImageURL={work.user?.iconUrl}

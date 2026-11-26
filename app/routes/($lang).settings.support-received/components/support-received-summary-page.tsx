@@ -207,8 +207,8 @@ export function SupportReceivedSummaryPage() {
           </p>
           <p className="text-muted-foreground text-sm leading-6">
             {t(
-              "受け取った応援コインの累計 pt と、フリー / プレミアムの内訳を確認できます。全年齢の作品で受け取った有料のプレミアムコインは、クリエイター報酬（銀行振込）の対象になります。",
-              "Review cumulative received support points with free/premium breakdowns. Purchased Premium Coins received on all-ages works are eligible for Creator Rewards (bank payout).",
+              "受け取った応援コインの累計 pt と、フリー / プレミアムの内訳を確認できます。全年齢のオリジナル作品で受け取った有料のプレミアムコインは、クリエイター報酬（銀行振込）の対象になります。",
+              "Review cumulative received support points with free/premium breakdowns. Purchased Premium Coins received on all-ages original works are eligible for Creator Rewards (bank payout).",
             )}
           </p>
         </div>

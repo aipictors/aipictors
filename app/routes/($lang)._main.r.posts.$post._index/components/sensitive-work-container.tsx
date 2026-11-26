@@ -200,6 +200,8 @@ export function SensitiveWorkContainer(props: Props) {
                 workForArticle.user ? (
                   <div className="md:hidden">
                     <WorkUser
+                      workId={workForArticle.id}
+                      workTagNames={workForArticle.tagNames}
                       showSupportRewardNote={false}
                       userId={workForArticle.user.id}
                       userLogin={workForArticle.user.login}
@@ -239,6 +241,7 @@ export function SensitiveWorkContainer(props: Props) {
             {workForArticle.isCommentsEditable && (
               <div className="border-t pt-6">
                 <WorkCommentList
+                  workTagNames={workForArticle.tagNames}
                   workId={workForArticle.id}
                   comments={comments}
                   workOwnerId={workForArticle.user?.id}
@@ -263,6 +266,8 @@ export function SensitiveWorkContainer(props: Props) {
           {workForArticle.user !== null && (
             <div className="w-full">
               <WorkUser
+                workId={workForArticle.id}
+                workTagNames={workForArticle.tagNames}
                 showSupportRewardNote={false}
                 userId={workForArticle.user.id}
                 userName={workForArticle.user.name}
