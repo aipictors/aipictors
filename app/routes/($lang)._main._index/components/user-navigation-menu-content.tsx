@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
   BanknoteIcon,
+  BellIcon,
   DicesIcon,
   GemIcon,
   GiftIcon,
@@ -341,6 +342,11 @@ function UserNavigationMenuContent(props: Props) {
           href="/my"
           icon={<SquareKanbanIcon className={userNavigationStyles.menuIcon} />}
           label={t("ダッシュボード", "Dashboard")}
+        />
+        <MenuItemLink
+          href="/my/reports"
+          icon={<BellIcon className={userNavigationStyles.menuIcon} />}
+          label={t("運営からのお知らせ", "Notices from the team")}
         />
         <MenuItemLink
           href="/achievements"

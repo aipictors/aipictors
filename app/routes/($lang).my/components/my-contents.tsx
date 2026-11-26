@@ -33,6 +33,13 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { to: "/my", ja: "ホーム", en: "Home", icon: HomeIcon },
+  // 運営からのお知らせは見落とすと困るので、横スクロールしなくても見える前のほうに置く
+  {
+    to: "/my/reports",
+    ja: "運営からのお知らせ",
+    en: "Notices",
+    icon: BellIcon,
+  },
   { to: "/my/posts", ja: "作品", en: "Posts", icon: ImageIcon },
   { to: "/my/albums", ja: "シリーズ", en: "Albums", icon: LibraryIcon },
   { to: "/my/folders", ja: "コレクション", en: "Folders", icon: FolderIcon },
@@ -54,12 +61,6 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/my/views", ja: "閲覧履歴", en: "Views", icon: EyeIcon },
   { to: "/my/events", ja: "イベント", en: "Events", icon: CalendarDaysIcon },
   { to: "/my/histories", ja: "操作履歴", en: "History", icon: HistoryIcon },
-  {
-    to: "/my/reports",
-    ja: "運営からのお知らせ",
-    en: "Reports",
-    icon: BellIcon,
-  },
 ]
 
 /**

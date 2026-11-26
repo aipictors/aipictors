@@ -2,8 +2,8 @@
  * POST /api/support/:op
  *
  * お問い合わせ（サポートチャット）。ログイン中の本人を確かめてから aipictors-api の /internal/support を呼ぶ
- * op: thread（今のお問い合わせ）・messages（送る・AI が答える）・escalate（Discord の案内）・feedback・resolve・unread・report-generation（アプリの生成画像の報告）
- * 有人の窓口はないので、AI で解決できないものは Discord を案内する
+ * op: thread（今のお問い合わせ）・messages（送る・AI が答える）・escalate（運営に引き継ぐ）・feedback・resolve・unread・report-generation（アプリの生成画像の報告）
+ * AI で解決できないものは運営に引き継ぎ、運営が調べてこのチャットで返事する
  */
 import type {
   ActionFunctionArgs,

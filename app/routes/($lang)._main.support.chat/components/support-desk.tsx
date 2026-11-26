@@ -59,13 +59,10 @@ const QUICK_TOPICS = [
 
 const MAX_LENGTH = 4000
 
-/** AI で解決できないときの相談先（有人の窓口はないため） */
-const DISCORD_INVITE_URL = "https://discord.gg/7jA2MmtvtR"
-
 const STATUS_LABEL: Record<SupportTicket["status"], string> = {
   ai: "AI が回答します",
-  waiting_staff: "AI が回答します",
-  staff_replied: "AI が回答します",
+  waiting_staff: "運営が確認中です（このチャットでお返事します）",
+  staff_replied: "運営からお返事しました",
   resolved: "解決済み",
 }
 
@@ -116,7 +113,7 @@ const formatTime = (epoch: number): string => {
 }
 
 /**
- * お問い合わせ（AI が答える。有人の窓口はないので、AI で解決できないものは Discord を案内する）
+ * お問い合わせ（まず AI が答える。AI で解決できないものは運営に引き継ぎ、運営が調べてこのチャットで返事する）
  * 運営からのメッセージ（規約違反の連絡など）もここに出し、そのまま AI に質問できる
  */
 export function SupportDesk() {
@@ -135,6 +132,8 @@ export function SupportDesk() {
   const isOpenTicket = ticket !== null && ticket.status !== "resolved"
   // 以前の「スタッフ対応中」のお問い合わせも、今は AI が答える
   const isStaffHandling = false
+  // 運営に引き継いだお問い合わせは、返事が来ていないかときどき確かめる
+  const isWaitingStaff = ticket?.status === "waiting_staff"
 
   const [searchParams] = useSearchParams()
   const focusedLetterId = searchParams.get("letter")
@@ -171,14 +170,14 @@ export function SupportDesk() {
     void load()
   }, [authContext.isLoading, authContext.isNotLoggedIn, load])
 
-  // スタッフ対応中は返事が来ていないかときどき確かめる
+  // 運営が確認中は、返事が来ていないかときどき確かめる（開いているときだけ・1 分ごと）
   useEffect(() => {
-    if (!isStaffHandling || !ticket) return
+    if (!isWaitingStaff || !ticket) return
     const timer = window.setInterval(() => {
       if (document.visibilityState === "visible") void load(ticket.id)
-    }, 20000)
+    }, 60000)
     return () => window.clearInterval(timer)
-  }, [isStaffHandling, ticket, load])
+  }, [isWaitingStaff, ticket, load])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
@@ -240,6 +239,28 @@ export function SupportDesk() {
       })
       setThread((prev) => (prev ? { ...prev, ticket: data.ticket } : prev))
       toast.success("解決済みにしました。ご利用ありがとうございました")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "失敗しました")
+    }
+  }
+
+  // AI で解決しないときは運営に引き継ぐ（運営が調べて、このチャットで返事する）
+  const escalate = async () => {
+    if (!ticket) return
+    try {
+      const data = await callSupportApi<{
+        ticket: SupportTicket
+        messages: SupportMessage[]
+      }>("escalate", { ticketId: ticket.id })
+      setThread((prev) =>
+        prev
+          ? {
+              ...prev,
+              ticket: data.ticket,
+              messages: [...prev.messages, ...data.messages],
+            }
+          : prev,
+      )
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "失敗しました")
     }
@@ -329,16 +350,7 @@ export function SupportDesk() {
               <p className="mt-1 text-muted-foreground">
                 あなたのプランやコイン、最近の生成の記録、運営からのメッセージを確認しながら
                 AI がお答えします。返金や不具合の調査など AI
-                で解決できないものは、
-                <a
-                  href={DISCORD_INVITE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mx-1 underline"
-                >
-                  Discord サーバー
-                </a>
-                でご相談ください。
+                で解決できないものは、運営が調べてこのチャットでお返事します。
               </p>
             </div>
             <div>
@@ -412,16 +424,17 @@ export function SupportDesk() {
       <div className="border-t bg-background px-3 pt-2 pb-3 md:px-4">
         {isOpenTicket && messages.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
-            <Button variant="secondary" size="sm" asChild>
-              <a
-                href={DISCORD_INVITE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+            {ticket?.status !== "waiting_staff" && (
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={isSending}
+                onClick={() => void escalate()}
               >
                 <MessagesSquareIcon className="mr-1 size-4" />
-                Discord で相談する
-              </a>
-            </Button>
+                運営に確認してもらう
+              </Button>
+            )}
             <Button variant="ghost" size="sm" onClick={() => void resolve()}>
               <CheckCircle2Icon className="mr-1 size-4" />
               解決した
@@ -571,16 +584,7 @@ function MessageBubble(props: {
             ) : (
               <span>
                 ごめんなさい。詳しい状況（作品の
-                URL・日時・画面のメッセージ）を書くか、
-                <a
-                  href={DISCORD_INVITE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  Discord で相談
-                </a>
-                してください
+                URL・日時・画面のメッセージ）を書いて送るか、下の「運営に確認してもらう」を押してください
               </span>
             )}
           </div>
