@@ -57,8 +57,8 @@ export function CoinHelpContent(props: Props) {
         </p>
         <p className="text-sm leading-6">
           {t(
-            "プレミアムコインは購入して増やせるコインです。画像生成や応援に使えます（推しに使えるのはオリジナル作品だけです）。生成時はフリーコインを先に消費し、足りない分だけプレミアムコインが使われます。",
-            "Premium coins are coins you can increase by purchasing. They can be used for image generation and support (support only on original works). During generation, free coins are consumed first and premium coins are used only for the remaining amount.",
+            "プレミアムコインは購入して増やせるコインです。画像生成や応援に使えます（作品ページからの推しはオリジナル作品だけ、プロフィールからの推しはいつでも使えます）。生成時はフリーコインを先に消費し、足りない分だけプレミアムコインが使われます。",
+            "Premium coins are coins you can increase by purchasing. They can be used for image generation and support (on work pages only for original works; from a profile, any time). During generation, free coins are consumed first and premium coins are used only for the remaining amount.",
           )}
         </p>
         <p className="text-muted-foreground text-sm leading-6">
@@ -124,8 +124,8 @@ export function CoinHelpContent(props: Props) {
           </li>
           <li>
             {t(
-              "推し・応援: ユーザーを応援すると、pt としてランキングに反映されます。フリーコインはどの作品・プロフィールにも、プレミアムコインはオリジナル作品（「オリジナル」などのタグ付き）にだけ使えます。権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけにしています。",
-              'Support: when you support a user, the action is reflected in rankings as pt. Free Coins can go to any work or profile; Premium Coins only to original works (tagged "Original" or similar). Out of consideration for rights holders and creators, money only moves for original works.',
+              "推し・応援: ユーザーを応援すると、pt としてランキングに反映されます。フリーコインはどの作品・プロフィールにも、プレミアムコインは作品ページではオリジナル作品（「オリジナル」などのタグ付き）にだけ、プロフィールからはいつでも使えます。権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけにしています。",
+              'Support: when you support a user, the action is reflected in rankings as pt. Free Coins can go to any work or profile; Premium Coins only to original works (tagged "Original" or similar) on work pages, and always from a profile. Out of consideration for rights holders and creators, money only moves for original works.',
             )}
           </li>
           <li>

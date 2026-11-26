@@ -21,22 +21,42 @@ const groups: { plan: Exclude<PlanKey, "FREE">; frames: Frame[] }[] = [
     plan: "LITE",
     frames: [
       { file: "plan-lite-silver", ja: "銀細工の輪", en: "Silver filigree" },
-      { file: "plan-lite-rose", ja: "ローズゴールドの小枝", en: "Rose gold sprig" },
+      {
+        file: "plan-lite-rose",
+        ja: "ローズゴールドの小枝",
+        en: "Rose gold sprig",
+      },
     ],
   },
   {
     plan: "STANDARD",
     frames: [
       { file: "plan-standard-laurel", ja: "黄金の月桂冠", en: "Golden laurel" },
-      { file: "plan-standard-sapphire", ja: "蒼玉の金環", en: "Sapphire gold ring" },
+      {
+        file: "plan-standard-sapphire",
+        ja: "蒼玉の金環",
+        en: "Sapphire gold ring",
+      },
     ],
   },
   {
     plan: "PREMIUM",
     frames: [
-      { file: "plan-premium-crown", ja: "白金とダイヤの王冠", en: "Platinum diamond crown" },
-      { file: "plan-premium-aurora", ja: "極光の星冠", en: "Aurora star diadem" },
-      { file: "plan-premium-noir", ja: "漆黒と黄金の王冠", en: "Onyx and gold crown" },
+      {
+        file: "plan-premium-crown",
+        ja: "白金とダイヤの王冠",
+        en: "Platinum diamond crown",
+      },
+      {
+        file: "plan-premium-aurora",
+        ja: "極光の星冠",
+        en: "Aurora star diadem",
+      },
+      {
+        file: "plan-premium-noir",
+        ja: "漆黒と黄金の王冠",
+        en: "Onyx and gold crown",
+      },
     ],
   },
 ]

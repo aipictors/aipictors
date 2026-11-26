@@ -40,8 +40,14 @@ export function PrepaidPassPanel(props: Props) {
                 `Extend your pass (ends ${toDateText(activePass.periodEnd)})`,
               )
             : paypay
-              ? t("PayPayでも払えます（自動更新なしのパス）", "Prefer not to subscribe? Buy a one-time pass")
-              : t("自動更新なしで買う（1か月・1年のパス）", "Prefer not to subscribe? Buy a one-time pass")}
+              ? t(
+                  "PayPayでも払えます（自動更新なしのパス）",
+                  "Prefer not to subscribe? Buy a one-time pass",
+                )
+              : t(
+                  "自動更新なしで買う（1か月・1年のパス）",
+                  "Prefer not to subscribe? Buy a one-time pass",
+                )}
         </p>
         <p className="text-muted-foreground text-xs leading-5">
           {paypay
@@ -59,7 +65,10 @@ export function PrepaidPassPanel(props: Props) {
         {types.map((type) => {
           const spec = getPlanSpec(type)
           return (
-            <div key={type} className="space-y-1.5 rounded-xl border bg-background p-3">
+            <div
+              key={type}
+              className="space-y-1.5 rounded-xl border bg-background p-3"
+            >
               <p className="font-bold text-sm">{t(spec.name, spec.enName)}</p>
               {(["month", "year"] as const).map((interval) => (
                 <Button
@@ -73,7 +82,11 @@ export function PrepaidPassPanel(props: Props) {
                     void prepaid.startCheckout(type, interval)
                   }}
                 >
-                  <span>{interval === "year" ? t("1年", "1 year") : t("1か月", "1 month")}</span>
+                  <span>
+                    {interval === "year"
+                      ? t("1年", "1 year")
+                      : t("1か月", "1 month")}
+                  </span>
                   {prepaid.isLoadingFor(type, interval) ? (
                     <Loader2 className="size-3 animate-spin" />
                   ) : (

@@ -60,7 +60,7 @@ const QUICK_TOPICS = [
 const MAX_LENGTH = 4000
 
 /** AI で解決できないときの相談先（有人の窓口はないため） */
-const DISCORD_INVITE_URL = "https://discord.gg/hcQggQEYfn"
+const DISCORD_INVITE_URL = "https://discord.gg/7jA2MmtvtR"
 
 const STATUS_LABEL: Record<SupportTicket["status"], string> = {
   ai: "AI が回答します",

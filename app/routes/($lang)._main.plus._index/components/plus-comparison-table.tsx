@@ -1,4 +1,3 @@
-import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { CheckIcon, ChevronDownIcon, MinusIcon } from "lucide-react"
 import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
@@ -10,6 +9,7 @@ import {
   type PlanKey,
   type PlanSpec,
 } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
+import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
 
 type Row = {

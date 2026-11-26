@@ -1,5 +1,3 @@
-import { toApproxUsdText } from "~/utils/to-approx-usd-text"
-import { Link } from "~/lib/app/locale-router"
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -8,8 +6,15 @@ import {
 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { LoginDialogButton } from "~/components/login-dialog-button"
+import { TrialTerms } from "~/components/trial-terms"
 import { Button } from "~/components/ui/button"
+import {
+  toFirstMonthPrice,
+  useFirstMonthOffer,
+} from "~/hooks/use-first-month-offer"
+import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import {
   type BillingInterval,
@@ -17,13 +22,8 @@ import {
   type PlanKey,
 } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import { toPassFeatures } from "~/routes/($lang)._main.plus._index/utils/to-pass-features"
+import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
-import { TrialTerms } from "~/components/trial-terms"
-import {
-  toFirstMonthPrice,
-  useFirstMonthOffer,
-} from "~/hooks/use-first-month-offer"
-import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 
 type Props = {
   plan: PlanKey

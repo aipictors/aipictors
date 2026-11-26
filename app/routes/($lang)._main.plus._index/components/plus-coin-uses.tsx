@@ -118,8 +118,8 @@ export function PlusCoinUses() {
       tone: "text-pink-500 bg-pink-500/10",
       title: { ja: "推し（応援）", en: "Support creators" },
       body: {
-        ja: "作品やプロフィールからコインで応援。メッセージ付きでコメント欄に目立って表示され、推しランキングにも載ります。プレミアムコインで推せるのはオリジナル作品だけです。",
-        en: "Send coins from a work or profile, with a message that stands out in comments and counts toward the rankings. Premium Coins can only be used on original works.",
+        ja: "作品やプロフィールからコインで応援。メッセージ付きでコメント欄に目立って表示され、推しランキングにも載ります。作品ページからプレミアムコインで推せるのはオリジナル作品だけです（プロフィールからはいつでも推せます）。",
+        en: "Send coins from a work or profile, with a message that stands out in comments and counts toward the rankings. On work pages, Premium Coins can only be used on original works (from a profile, any time).",
       },
       coins: "both",
       to: "/coin-rankings?kind=received",

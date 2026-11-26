@@ -1,12 +1,12 @@
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { getVideoUploadLimits } from "~/utils/video-upload-limit"
 
 type Props = {
   passType: IntrospectionEnum<"PassType">
 }
 
-export function PassBenefitList (props: Props) {
+export function PassBenefitList(props: Props) {
   const t = useTranslation()
   const videoUploadLimits = getVideoUploadLimits(props.passType)
 

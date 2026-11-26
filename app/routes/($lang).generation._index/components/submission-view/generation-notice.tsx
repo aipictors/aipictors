@@ -25,7 +25,7 @@ import type {
 /** 取り直す間隔（API 側は 30 秒キャッシュ） */
 const REFRESH_INTERVAL_MS = 60_000
 
-const DISCORD_INVITE_URL = "https://discord.gg/hcQggQEYfn"
+const DISCORD_INVITE_URL = "https://discord.gg/7jA2MmtvtR"
 
 type GenerationNoticeState = {
   notice: GenerationNotice | null

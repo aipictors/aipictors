@@ -1,10 +1,10 @@
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
-import { PassPlanDescription } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
-import { useQuery } from "@apollo/client/index"
 import { BillingIntervalToggle } from "~/routes/($lang)._main.plus._index/components/billing-interval-toggle"
+import { PassPlanDescription } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import type { BillingInterval } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
-import { graphql } from "gql.tada"
 
 type Props = {
   isLoading: boolean

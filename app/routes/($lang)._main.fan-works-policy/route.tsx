@@ -60,8 +60,8 @@ export default function FanWorksPolicyPage() {
           </p>
           <p>
             {t(
-              "・権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけです。プレミアムコインでの推しとクリエイター報酬は、「オリジナル」などのタグが付いた作品が対象です。フリーコインの推しは、どの作品にも送れます。",
-              '- Out of consideration for rights holders and creators, money only moves for original works. Premium Coin support and Creator Rewards apply to works tagged "Original" or similar. Free Coin support can go to any work.',
+              "・権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけです。作品ページからのプレミアムコインでの推しとクリエイター報酬は、「オリジナル」などのタグが付いた作品が対象です。プロフィールからの推し（作者への推し）はプレミアムコインでもできます。フリーコインの推しは、どの作品にも送れます。",
+              '- Out of consideration for rights holders and creators, money only moves for original works. Premium Coin support from work pages and Creator Rewards apply to works tagged "Original" or similar. Support from a profile (to the creator) can also use Premium Coins. Free Coin support can go to any work.',
             )}
           </p>
           <p>

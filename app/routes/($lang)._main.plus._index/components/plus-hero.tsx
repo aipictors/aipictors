@@ -1,13 +1,16 @@
-import { Link } from "~/lib/app/locale-router"
 import { ImagesIcon, SparklesIcon, WalletIcon, ZapIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
+import {
+  toFirstMonthPrice,
+  useFirstMonthOffer,
+} from "~/hooks/use-first-month-offer"
+import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { planCtaClassName } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import { getPlanSpec } from "~/routes/($lang)._main.plus._index/utils/plan-specs"
 import { toApproxUsdText } from "~/utils/to-approx-usd-text"
 import { toMoneyNumberText } from "~/utils/to-money-number-text"
-import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
-import { TRIAL_DAYS, useLiteOffer } from "~/hooks/use-lite-offer"
 
 const sampleImages = [
   "https://assets.aipictors.com/ff478cc0-35ad-12f8-d945-2511b5a49bd8_11zon.webp",
@@ -123,11 +126,11 @@ export function PlusHero() {
                       `See plans — Lite is free for ${TRIAL_DAYS} days`,
                     )
                   : isFirstMonthOffer
-                  ? t(
-                      `プランを選ぶ（初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}〜）`,
-                      `See plans, from ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} for month one`,
-                    )
-                  : t("プランを選ぶ", "Choose a plan")}
+                    ? t(
+                        `プランを選ぶ（初月¥${toMoneyNumberText(toFirstMonthPrice(lite.price))}〜）`,
+                        `See plans, from ¥${toMoneyNumberText(toFirstMonthPrice(lite.price))} for month one`,
+                      )
+                    : t("プランを選ぶ", "Choose a plan")}
               </a>
             </Button>
             <Button
@@ -153,7 +156,10 @@ export function PlusHero() {
               t("広告なし", "No ads"),
               t("認証マーク", "Verified badge"),
               t("限定アイコン枠", "Exclusive frames"),
-              t("毎日のコインで推し・ガチャ", "Daily coins for support & gacha"),
+              t(
+                "毎日のコインで推し・ガチャ",
+                "Daily coins for support & gacha",
+              ),
             ].map((label) => (
               <span
                 key={label}

@@ -1,9 +1,12 @@
 import { Loader2Icon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { LoginDialogButton } from "~/components/login-dialog-button"
-import { Button } from "~/components/ui/button"
 import { TrialTerms } from "~/components/trial-terms"
-import { toFirstMonthPrice, useFirstMonthOffer } from "~/hooks/use-first-month-offer"
+import { Button } from "~/components/ui/button"
+import {
+  toFirstMonthPrice,
+  useFirstMonthOffer,
+} from "~/hooks/use-first-month-offer"
 import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -61,7 +64,10 @@ export function PlusStickyCta(props: Props) {
   useEffect(() => {
     if (!isScrolled) return
     if (!window.matchMedia("(max-width: 767px)").matches) return
-    trackGrowthEventOnce("plus_sticky_view", props.isLoggedOut ? "guest" : "free")
+    trackGrowthEventOnce(
+      "plus_sticky_view",
+      props.isLoggedOut ? "guest" : "free",
+    )
   }, [isScrolled, props.isLoggedOut])
 
   const priceText = isYearly

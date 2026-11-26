@@ -1,7 +1,7 @@
-import { Link } from "~/lib/app/locale-router"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
-export function PlusNoteList () {
+export function PlusNoteList() {
   const t = useTranslation()
 
   return (

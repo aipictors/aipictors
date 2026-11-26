@@ -1,13 +1,13 @@
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { config } from "~/config"
-import { PassPlanList } from "~/routes/($lang)._main.plus._index/components/pass-plan-list"
-import { PlusStickyCta } from "~/routes/($lang)._main.plus._index/components/plus-sticky-cta"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
+import { config } from "~/config"
 import { useLiteOffer } from "~/hooks/use-lite-offer"
 import { usePassCheckout } from "~/hooks/use-pass-checkout"
 import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { PassPlanList } from "~/routes/($lang)._main.plus._index/components/pass-plan-list"
+import { PlusStickyCta } from "~/routes/($lang)._main.plus._index/components/plus-sticky-cta"
 import {
   savePendingCheckout,
   takePendingCheckout,
@@ -45,7 +45,7 @@ type Props = {
   canResumeCheckout?: boolean
 }
 
-export function PlusAbout (props: Props) {
+export function PlusAbout(props: Props) {
   const t = useTranslation()
 
   const checkout = usePassCheckout()
@@ -62,7 +62,10 @@ export function PlusAbout (props: Props) {
   useEffect(() => {
     if (!isPlanListForNewMember) return
     if (liteOffer.offer === "trial") {
-      trackGrowthEventOnce("trial_view", liteOffer.isGuest ? "plus_guest" : "plus")
+      trackGrowthEventOnce(
+        "trial_view",
+        liteOffer.isGuest ? "plus_guest" : "plus",
+      )
     }
     if (liteOffer.offer === "half") {
       trackGrowthEventOnce("trial_ineligible", "plus")
@@ -104,13 +107,25 @@ export function PlusAbout (props: Props) {
   }
 
   const onSelect = async (passType: IntrospectionEnum<"PassType">) => {
-    if (passType !== "LITE" && passType !== "STANDARD" && passType !== "PREMIUM") return
+    if (
+      passType !== "LITE" &&
+      passType !== "STANDARD" &&
+      passType !== "PREMIUM"
+    )
+      return
     await startCheckout(passType, interval, "plus_checkout")
   }
 
-  const onLoginClick = (passType: "LITE" | "STANDARD" | "PREMIUM", source: string) => {
+  const onLoginClick = (
+    passType: "LITE" | "STANDARD" | "PREMIUM",
+    source: string,
+  ) => {
     savePendingCheckout({ passType, interval })
-    if (passType === "LITE" && interval === "month" && liteOffer.offer === "trial") {
+    if (
+      passType === "LITE" &&
+      interval === "month" &&
+      liteOffer.offer === "trial"
+    ) {
       trackGrowthEvent("trial_click", `plus_${source}_guest`)
     }
     trackGrowthEvent(`plus_login_${passType.toLowerCase()}`, source)
@@ -134,7 +149,11 @@ export function PlusAbout (props: Props) {
         `Taking you to checkout for ${spec.enName}…`,
       ),
     )
-    void startCheckout(pending.passType, pending.interval, "plus_resume_checkout")
+    void startCheckout(
+      pending.passType,
+      pending.interval,
+      "plus_resume_checkout",
+    )
   }, [props.canResumeCheckout, liteOffer.offer])
 
   return (
@@ -159,7 +178,9 @@ export function PlusAbout (props: Props) {
           interval={interval}
           isLoggedOut={props.isLoggedOut === true}
           isLoading={checkout.isLoading}
-          onSelect={(passType) => startCheckout(passType, interval, "plus_sticky_checkout")}
+          onSelect={(passType) =>
+            startCheckout(passType, interval, "plus_sticky_checkout")
+          }
           onLoginClick={(passType) => onLoginClick(passType, "sticky")}
         />
       )}

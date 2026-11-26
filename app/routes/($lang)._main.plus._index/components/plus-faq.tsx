@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import {
   Accordion,
   AccordionContent,
@@ -6,6 +5,7 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import {
   GENERATION_COIN_COST,
   getPlanSpec,
@@ -15,7 +15,7 @@ import { toApproxUsdText, USD_PER_JPY } from "~/utils/to-approx-usd-text"
 /**
  * プランのよくある質問
  */
-export function PlusFaq () {
+export function PlusFaq() {
   const t = useTranslation()
   const free = getPlanSpec("FREE")
   const lite = getPlanSpec("LITE")
@@ -71,7 +71,10 @@ export function PlusFaq () {
     },
     {
       id: "konbini",
-      question: t("コンビニで払えますか？", "Can I pay at a convenience store?"),
+      question: t(
+        "コンビニで払えますか？",
+        "Can I pay at a convenience store?",
+      ),
       answer: t(
         "自動更新なしの1か月・1年のパスとプレミアムコインは、コンビニ払いで購入できるようにしています（現在、決済会社の審査中で、審査が終わりしだい決済画面にコンビニ払いが出ます）。決済画面とメールでお知らせするお支払い番号で、3日以内にコンビニでお支払いください。お支払いが確認されると、プランやコインが使えるようになります。",
         "Non-renewing passes and premium coins can be paid at convenience stores in Japan (pending approval). Pay within 3 days using the number shown at checkout; your plan or coins are added once payment is confirmed.",
@@ -100,13 +103,16 @@ export function PlusFaq () {
         "I don't generate. What else can I use coins for?",
       ),
       answer: t(
-        "あります。フリーコインは推し（応援）・スペシャル枠ガチャ・アイコン枠の購入・リクエスト（依頼。クリエイターが「プレミアムコインのみ」にしているものを除く）に使えます。プレミアムコインはこれに加えて、作品の宣伝枠やスペシャル枠にも使え、全年齢のオリジナル作品への推しはクリエイターの報酬になります（プレミアムコインで推せるのはオリジナル作品だけです）。プランなら広告の非表示・認証マーク・限定アイコン枠・宣伝枠（スタンダード以上）など、生成以外の特典もつきます。",
-        "Yes. Free coins work for supporting creators, the frame gacha, avatar frames and paid requests (except ones the creator set to premium coins only). Premium coins also cover work promotions and special frames, and premium support on all-ages original works becomes creator rewards (Premium Coins can only be used to support original works). Plans also come with perks beyond generation: no ads, a verified badge, exclusive avatar frames and weekly promotions (Standard and up).",
+        "あります。フリーコインは推し（応援）・スペシャル枠ガチャ・アイコン枠の購入・リクエスト（依頼。クリエイターが「プレミアムコインのみ」にしているものを除く）に使えます。プレミアムコインはこれに加えて、作品の宣伝枠やスペシャル枠にも使え、全年齢のオリジナル作品への推しはクリエイターの報酬になります（作品ページからプレミアムコインで推せるのはオリジナル作品だけ、プロフィールからはいつでも推せます）。プランなら広告の非表示・認証マーク・限定アイコン枠・宣伝枠（スタンダード以上）など、生成以外の特典もつきます。",
+        "Yes. Free coins work for supporting creators, the frame gacha, avatar frames and paid requests (except ones the creator set to premium coins only). Premium coins also cover work promotions and special frames, and premium support on all-ages original works becomes creator rewards (on work pages, Premium Coins can only support original works; from a profile, any time). Plans also come with perks beyond generation: no ads, a verified badge, exclusive avatar frames and weekly promotions (Standard and up).",
       ),
     },
     {
       id: "four",
-      question: t("「1回で4枚」とはどういうことですか？", "What does \"4 images per click\" mean?"),
+      question: t(
+        "「1回で4枚」とはどういうことですか？",
+        'What does "4 images per click" mean?',
+      ),
       answer: t(
         `プランに加入すると、生成ボタンを1回押すだけで${lite.imagesPerRequest}枚まとめて生成されます（無料は${free.imagesPerRequest}枚）。高解像度と画像から生成は、プランに関係なく1回1枚です。`,
         `On a plan, pressing Generate once makes ${lite.imagesPerRequest} images from your prompt, so you can pick the best one (Free makes ${free.imagesPerRequest}). High resolution and image-to-image always make 1 image per click.`,
@@ -114,7 +120,10 @@ export function PlusFaq () {
     },
     {
       id: "queue-order",
-      question: t("生成の順番はプランで変わりますか？", "Does my plan change my place in the queue?"),
+      question: t(
+        "生成の順番はプランで変わりますか？",
+        "Does my plan change my place in the queue?",
+      ),
       answer: t(
         "はい。混んでいるときは、スタンダード・プレミアム → ライト → 無料 の順に生成されます。ライトは無料の方より先に、スタンダード以上は最優先で生成されます。長く待っている無料の方の依頼が後回しになり続けないよう、一部の生成枠は待ち時間の長い順に処理しています。",
         "Yes. When it's busy, images are generated in this order: Standard and Premium, then Lite, then Free. Lite goes ahead of free users, and Standard and above go first. So that free users are never left waiting indefinitely, part of our capacity always serves the longest-waiting requests.",
@@ -138,7 +147,10 @@ export function PlusFaq () {
     },
     {
       id: "card-update",
-      question: t("クレジットカードを変更・更新するには？", "How do I change my card?"),
+      question: t(
+        "クレジットカードを変更・更新するには？",
+        "How do I change my card?",
+      ),
       answer: t(
         "このページの「ご利用中のプラン」にある「お支払いカードを変更する」から、Stripe の画面で新しいカードを登録できます。次回の請求から新しいカードが使われます。",
         "Once you're subscribed, this page shows a button to change your payment card. It opens Stripe, where you can add a new card; it's used from your next payment.",
