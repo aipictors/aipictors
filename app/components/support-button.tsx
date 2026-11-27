@@ -40,6 +40,11 @@ import {
   type CoinSummarySupportTarget,
   fetchCoinSummaryShared,
 } from "~/utils/fetch-coin-summary-shared"
+import {
+  SUPPORT_COIN_OPTIONS,
+  type SupportCoinType,
+  toInitialSupportCoinAmount,
+} from "~/utils/support-coin-options"
 import { getSupportTier } from "~/utils/support-tier"
 import { isSupportUserOnlyError } from "~/utils/support-user-only"
 
@@ -67,8 +72,6 @@ type CoinBreakdown = {
   totalPt: number
 }
 
-type SupportCoinType = "FREE" | "PREMIUM"
-
 const calculateCustomCoinBreakdown = (
   freeCoinAmount: number,
   premiumCoinAmount: number,
@@ -94,12 +97,6 @@ const calculateCustomCoinBreakdown = (
     premiumCoinsUsed: premiumCoinAmount,
     totalPt: freeCoinAmount + premiumCoinAmount * 10,
   }
-}
-
-/** よく使う枚数。プレミアムは少額の 1・2 枚と、100 枚・色の区切り 500・1,000 枚（3,000 枚などは −/＋ と入力で選べる） */
-const COIN_OPTIONS: Record<SupportCoinType, readonly number[]> = {
-  FREE: [10, 20, 30, 100, 300],
-  PREMIUM: [1, 2, 100, 500, 1000],
 }
 
 export function SupportButton(props: Props) {
@@ -244,8 +241,8 @@ function SupportButtonContent({
     setCoinType(nextType)
     const balance =
       nextType === "FREE" ? currentFreeCoinBalance : currentPremiumCoinBalance
-    const first = COIN_OPTIONS[nextType][0]
-    setCoinAmount(String(Math.min(first, balance)))
+    const initial = toInitialSupportCoinAmount(nextType, balance)
+    setCoinAmount(initial === 0 ? "" : String(initial))
   }
 
   // 開いたときに、持っているコインで初期値を決める（残高が届いたら合わせ直す）
@@ -587,8 +584,15 @@ function SupportButtonContent({
 
               {/* 枚数 */}
               <div className="space-y-2">
-                <div className="grid grid-cols-5 gap-2">
-                  {COIN_OPTIONS[coinType].map((option) => (
+                <div
+                  className={cn(
+                    "grid gap-2",
+                    SUPPORT_COIN_OPTIONS[coinType].length > 5
+                      ? "grid-cols-6"
+                      : "grid-cols-5",
+                  )}
+                >
+                  {SUPPORT_COIN_OPTIONS[coinType].map((option) => (
                     <button
                       key={option}
                       type="button"
