@@ -71,8 +71,6 @@ type Props = {
   token?: string | undefined | null
   /** 年齢種別が R18 / R18G。おすすめのモザイクはこのときだけ */
   isSensitiveHint?: boolean
-  /** おすすめの年齢種別を反映する（全年齢・R15 で、はっきり写っていそうな画像があるとき） */
-  onSuggestRating?: (rating: "R18") => void
   /** タグ・プロンプトに触手がある（自動モザイクの「触手を含む作品」を自動でオン） */
   isTentacleHint?: boolean
   onContentGenerated?: (data: {
@@ -136,14 +134,6 @@ export function PostImageFormUploader(props: Props) {
           <div className={cn(base, "bg-sky-600/80 text-white")}>
             <SparklesIcon className="size-3" />
             {t("おすすめあり", "Suggested")}
-          </div>
-        )
-      }
-      if (badge.kind === "sensitive") {
-        return (
-          <div className={cn(base, "bg-sky-600/80 text-white")}>
-            <SparklesIcon className="size-3" />
-            {t("R-18 がおすすめ", "R-18 suggested")}
           </div>
         )
       }
@@ -633,7 +623,6 @@ export function PostImageFormUploader(props: Props) {
               <PostFormAutoMosaicBar
                 mosaic={mosaic}
                 isR18={props.isSensitiveHint === true}
-                onSuggestRating={props.onSuggestRating}
               />
             )}
             {props.mediaType === "image" ? (

@@ -557,9 +557,6 @@ export default function NewImage() {
               inputState.ratingRestriction === "R18" ||
               inputState.ratingRestriction === "R18G"
             }
-            onSuggestRating={(rating) => {
-              dispatchInput({ type: "SET_RATING_RESTRICTION", payload: rating })
-            }}
             isTentacleHint={isTentaclePost({
               tags: inputState.tags,
               prompt: inputState.imageInformation?.params?.prompt,

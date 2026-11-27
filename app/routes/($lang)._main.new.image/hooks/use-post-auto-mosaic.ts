@@ -8,10 +8,6 @@ import {
 import type { TSortableItem } from "~/components/drag/sortable-item"
 import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import {
-  countSensitivePostImages,
-  SENSITIVE_RATING_MIN_SCORE,
-} from "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
-import {
   canPostMosaic,
   createAutoMosaicItem,
   getItemMosaicSource,
@@ -35,15 +31,14 @@ export type PostMosaicBadge =
   | { kind: "applied" }
   | { kind: "none" }
   | { kind: "suggested" }
-  | { kind: "sensitive" }
   | { kind: "failed" }
   | null
 
 /**
  * 投稿画面の自動モザイク（おすすめ）
- * - 画像を選んだら裏で検出する（投稿者のブラウザの中だけ）。自動ではかけず、年齢種別も変えない
- * - R18 / R18G: モザイクが必要そうな画像を「おすすめ」として出し、押したときだけかける
- * - 全年齢・R15: はっきり写っていそうな画像があれば「R-18 がおすすめ」と出す（変えるのは投稿者）
+ * - R18 / R18G のときだけ、画像を裏で検出する（投稿者のブラウザの中だけ）。自動ではかけず、年齢種別も変えない
+ * - モザイクが必要そうな画像を「おすすめ」として出し、押したときだけかける
+ * - 全年齢・R15 では検出せず、何も出さない（見間違いの「R-18 がおすすめ」が不安や混乱のもとになったため）
  */
 export function usePostAutoMosaic(props: {
   items: TSortableItem[]
@@ -60,9 +55,6 @@ export function usePostAutoMosaic(props: {
     strength: 1,
   })
   const [isRendering, setIsRendering] = useState(false)
-  /** 「R-18 がおすすめ」を閉じた（この投稿の間は出さない） */
-  const [isRatingSuggestionDismissed, setIsRatingSuggestionDismissed] =
-    useState(false)
 
   // 端末に保存した設定はマウント後に読む（サーバーの描画と合わせる）
   useEffect(() => {
@@ -79,14 +71,14 @@ export function usePostAutoMosaic(props: {
   // 自分で切り替えたら、タグ・プロンプトでは変えない
   const isTentacleTouchedRef = useRef(false)
 
-  // 検出（かけはしない）
+  // 検出（かけはしない）。全年齢・R15 では検出しない
   useEffect(() => {
-    if (!props.isImagePost) return
+    if (!props.isImagePost || !props.isR18) return
     for (const item of props.items) {
       const source = getItemMosaicSource(item)
       if (source && canPostMosaic(source)) requestPostMosaicDetection(source)
     }
-  }, [props.isImagePost, props.items, isTentacle])
+  }, [props.isImagePost, props.isR18, props.items, isTentacle])
 
   /** 自動でかけたままの画像を元に戻す（手で直した分は残す） */
   const removeAutoMosaic = () => {
@@ -194,14 +186,9 @@ export function usePostAutoMosaic(props: {
     const source = getItemMosaicSource(item)
     if (!source || !canPostMosaic(source)) return null
     if (hasItemMosaic(item)) return { kind: "applied" }
+    // 全年齢・R15 は印を付けない（自分でかけたモザイクだけ上で「モザイク済み」）
+    if (!props.isR18) return null
     const detection = getPostMosaicDetection(source)
-    if (!props.isR18) {
-      // 全年齢・R15 は、R-18 がおすすめの画像だけ印を付ける
-      return detection?.status === "done" &&
-        detection.maxScore >= SENSITIVE_RATING_MIN_SCORE
-        ? { kind: "sensitive" }
-        : null
-    }
     if (!detection || detection.status === "pending") return { kind: "pending" }
     if (detection.status === "failed") return { kind: "failed" }
     return isItemMosaicSuggested(item)
@@ -228,7 +215,6 @@ export function usePostAutoMosaic(props: {
       (item) => hasItemMosaic(item) && item.mosaic?.isAuto,
     ).length,
     suggested: props.items.filter(isItemMosaicSuggested).length,
-    sensitive: countSensitivePostImages(props.items),
   }
 
   return {
@@ -241,7 +227,5 @@ export function usePostAutoMosaic(props: {
     isRendering,
     getBadge,
     summary,
-    isRatingSuggestionDismissed,
-    dismissRatingSuggestion: () => setIsRatingSuggestionDismissed(true),
   }
 }

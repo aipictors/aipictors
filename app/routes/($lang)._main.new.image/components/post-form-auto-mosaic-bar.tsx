@@ -21,69 +21,21 @@ type Props = {
   mosaic: ReturnType<typeof usePostAutoMosaic>
   /** 年齢種別が R18 / R18G */
   isR18: boolean
-  /** おすすめの年齢種別を反映する */
-  onSuggestRating?: (rating: "R18") => void
 }
 
 const buttonClassName =
   "h-8 rounded-full border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
 
 /**
- * 投稿画面: 自動モザイク・年齢種別の「おすすめ」
+ * 投稿画面: 自動モザイクの「おすすめ」（R18 / R18G のときだけ。全年齢・R15 では何も出さない）
  * 自動ではかけず、年齢種別も変えない。押したときだけ反映する（検出は投稿者のブラウザの中で動く）
- * - 全年齢・R15: はっきり写っていそうな画像があれば「R-18 がおすすめ」
- * - R18 / R18G: モザイクが必要そうな画像があれば「おすすめのモザイクをかける」。かけた後は種類・濃さ・外す
+ * モザイクが必要そうな画像があれば「おすすめのモザイクをかける」。かけた後は種類・濃さ・外す
  */
 export function PostFormAutoMosaicBar(props: Props) {
   const t = useTranslation()
   const { summary, settings } = props.mosaic
 
-  if (!props.isR18) {
-    if (summary.sensitive === 0 || props.mosaic.isRatingSuggestionDismissed) {
-      return null
-    }
-    return (
-      <div className="mx-2 mb-3 rounded-xl border border-sky-500/50 bg-sky-500/10 px-3 py-2.5 text-white">
-        <div className="flex items-start gap-2.5">
-          <SparklesIcon className="mt-0.5 size-5 shrink-0 text-sky-300" />
-          <div className="min-w-0 flex-1 text-xs leading-5">
-            <p className="font-bold text-sm">
-              {t("おすすめ: 年齢種別「R-18」", "Suggestion: age rating “R-18”")}
-            </p>
-            <p className="text-zinc-200">
-              {t(
-                `${summary.sensitive}枚に、モザイクが必要な部分が写っているかもしれません。`,
-                `${summary.sensitive} image(s) may show areas that need a mosaic.`,
-              )}
-            </p>
-            <p className="text-zinc-400">
-              {t(
-                "自動の判定なので、見間違えることがあります。問題なければこのまま投稿できます。",
-                "This is an automatic check and can be wrong. If everything is fine, you can post as is.",
-              )}
-            </p>
-          </div>
-        </div>
-        <div className="mt-2 flex flex-wrap justify-end gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className={buttonClassName}
-            onClick={props.mosaic.dismissRatingSuggestion}
-          >
-            {t("このままにする", "Keep current rating")}
-          </Button>
-          <Button
-            size="sm"
-            className="h-8 rounded-full"
-            onClick={() => props.onSuggestRating?.("R18")}
-          >
-            {t("R-18 にする", "Change to R-18")}
-          </Button>
-        </div>
-      </div>
-    )
-  }
+  if (!props.isR18) return null
 
   const styles: { value: MosaicStyle; label: string }[] = [
     { value: "mosaic", label: t("モザイク", "Mosaic") },
