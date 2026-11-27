@@ -1,20 +1,23 @@
 # Aipictors Web
 
 Remix（Vite）+ Cloudflare Workers + GraphQL（gql.tada / Apollo）。パッケージ管理は bun。
+人間向けの入口は README.md・CONTRIBUTING.md、Claude Code 向けの進め方は CLAUDE.md（このファイルを読み込んだうえで追記している）。
 
 ## コマンド
 
 | 目的 | コマンド | 備考 |
 | --- | --- | --- |
 | 依存 | `bun i` | |
-| 開発 | `bun run dev` | |
-| 型チェック | `bun run check` | 全体を見る。約 1 分、メモリ約 5 GB |
+| 開発 | `bun run dev` | `../aipictors-system/.env` があれば読む |
+| 型チェック | `bun run check` | `tsc --incremental`。初回 約 1.5 分、2 回目以降は変えたファイルだけで数秒 |
+| 型チェック（全部） | `bun run check:full` | キャッシュを使わない |
+| まとめて確認 | `bun run verify` | oxlint → `bun test` → `bun run check` |
 | テスト | `bun test` | happy-dom。`*.test.ts(x)` は対象の隣か `__tests__/` |
 | ビルド | `bun run build` | `remix vite:build` の後に `wrangler pages functions build` |
 | GraphQL のスキーマ更新 | `bun run gql:generate` | 下記 |
-| リント | `bun run lint`（Biome）| CI は oxlint |
+| リント | `bun run lint`（Biome）| CI は oxlint（`bun run verify` と同じ設定） |
 
-コミット前に `bun run check` と `bun test` を通す。
+push の前に `bun run verify` を通す（最低限 `bun run check` と `bun test`）。
 
 ## ルート
 
@@ -41,9 +44,13 @@ Remix（Vite）+ Cloudflare Workers + GraphQL（gql.tada / Apollo）。パッケ
 - `any`、`as any`、`@ts-ignore` で型エラーを隠さない。API の値は nullable のことが多いので null を処理する。
 - API ルートの JSON は `~/lib/server/json-response.server` の `toJsonResponse`。
 - サーバー専用のコードは `*.server.ts`。
+- テストで外の API に取りに行かない（`fetch` を差し替える）。
 
 ## デプロイ
 
-- `main` への push がそのまま本番デプロイになる（`.github/workflows/deploy.yml`。`test.yml` のリント・テスト・型チェックが通った後にビルドして `wrangler deploy`）。
+- `main` への push がそのまま本番デプロイになる（`.github/workflows/deploy.yml`、約 1 分）。ビルドとリント・単体テストを同時に走らせ、テストが通ったら `wrangler deploy`。
+- 型チェックは `test.yml` で並行して走り、**デプロイを止めない**。だから push の前に手元で `bun run check` を通す。
+- `*.md`・`docs/**` だけの変更ではデプロイしない。続けて push すると古いデプロイは止まる。
 - ビルドの環境変数はリポジトリの `.env` と CI の `VITE_MICRO_CMS_API_KEY`。Worker の実行時の変数は `wrangler.toml` と Cloudflare の設定。
 - デプロイの確認は HTTP 200 で判定しない。ページの中身（変更した箇所の HTML やデータ）で確かめる。
+- 詳細と戻し方は `docs/deploy.md`。

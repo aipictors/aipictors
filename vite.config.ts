@@ -126,6 +126,7 @@ export default defineConfig({
     "globalThis.__DEV__": JSON.stringify(process.env.NODE_ENV !== "production"),
   },
   build: {
+    reportCompressedSize: false,
     rollupOptions: {
       output: {
         // ハッシュ付きのファイル名にして、/assets/* を長期キャッシュ（immutable）できるようにする。

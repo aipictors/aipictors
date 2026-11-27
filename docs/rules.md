@@ -1,53 +1,43 @@
 # ルール
 
-いくつか開発時のルールのメモを残します。
+コードを書くときの決まりごとです。迷ったら近くの既存コードに合わせてください。
 
 ## コンポーネント
 
-基本的に以下のようなコードを書いてます。
-
-- 分割代入引数を使用しない
-- export defaultを使用しない
-- Propsの型を定義する
-
-これはサンプルのコードです。
+- props は分割代入せず `props: Props` で受ける
+- `export default` は使わない（Remix のルートモジュール `route.tsx` だけは default export が必要）
+- props の型は `type Props = {...}` で定義する（`interface` より `type`）
 
 ```tsx
 type Props = {
   onClick(): void
 }
 
-export function MyButton (props: Props) {
-  const onClick = () => {
-    props.onClick()
-  }
-
-  return (
-    <Box>
-      <Button onClick={onClick}>{"Click"}</button>
-    </Box>
-  )
+export function MyButton(props: Props) {
+  return <Button onClick={props.onClick}>{"Click"}</Button>
 }
 ```
 
-## Appディレクトリ
+## ディレクトリ
 
-パスにならないディレクトリはアンダースコアを使用します。
+ルーティングは `flatRoutes()`（`app/routes.ts`）。ルートになるのは `app/routes/<名前>/route.tsx` だけで、同じディレクトリの他のファイルはルートになりません。
 
-- _components
-- _hooks
-
-ファイル名は小文字とハイフンを使用します。
-
-- my-component.tsx
-- my-component.test.tsx
-
-pageやlayoutのようなルールのあるファイル以外は_utilsなどのディレクトリにまとめます。
-
+```text
+app/routes/($lang)._main.posts.$post._index/
+├── route.tsx          ← ページ（loader / meta / default export）
+├── components/        ← このページだけで使うコンポーネント
+├── hooks/
+├── utils/
+└── types/
 ```
-├── page.tsx
-├── _utils
-│   └── my-util.ts
-└── _hooks
-    └── use-my-hook.ts
-```
+
+- 複数のページで使うものは `app/components/`・`app/hooks/`・`app/lib/`・`app/utils/`。
+- ファイル名は小文字とハイフン（`my-component.tsx`、`my-component.test.tsx`）。
+- サーバー専用のコードは `*.server.ts`、ブラウザ専用は `*.client.ts`。
+
+## GraphQL
+
+- `import { graphql } from "gql.tada"`。結果の型を手で書かない。
+- 共通部分はフラグメントにして `graphql(query, [Fragment])` に渡し、`readFragment` で読む（`@_unmask` 付きはそのまま読める）。
+
+詳しくは [AGENTS.md](../AGENTS.md)。
