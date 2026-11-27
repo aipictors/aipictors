@@ -39,8 +39,9 @@ export const pickWorkImageSizeHint = <T>(
  * 作品ページのメイン画像（1 枚の作品）の大きさのクラス。
  * 高さを h-full（親の高さの %）にすると、Safari では読み込み前（枠の高さだけ確保していたとき）の
  * 大きさのまま描き直されず、画像が帯のように小さく出たり幅 0 で消えたりした（更新すると戻る）。
- * 幅・高さは auto にして、上限（max-w・max-h）の中で縦横比のまま出す。上限の 64vh・72vh は
- * toWorkImageSizes の見込みと合わせている
+ * 幅・高さは auto にして、上限（max-w・max-h）の中で縦横比のまま出す。
+ * 高さの上限は外の枠（max-h-[64vh]・overflow-hidden）と同じ 64vh にする。パソコンで 72vh にすると
+ * 枠からはみ出した下の部分が切れる
  */
 export const WORK_MAIN_IMAGE_SIZE_CLASS_NAME =
-  "h-auto w-auto max-w-full max-h-[64vh] md:max-h-[72vh]"
+  "h-auto w-auto max-w-full max-h-[64vh]"

@@ -47,6 +47,8 @@ describe("WORK_MAIN_IMAGE_SIZE_CLASS_NAME", () => {
   test("幅と高さの上限で縦横比のまま収める", () => {
     expect(classes).toContain("max-w-full")
     expect(classes).toContain("max-h-[64vh]")
-    expect(classes).toContain("md:max-h-[72vh]")
+  })
+  test("高さの上限を外の枠（64vh）より大きくしない（パソコンで下が切れる）", () => {
+    expect(classes.some((c) => c.includes("72vh"))).toBe(false)
   })
 })
