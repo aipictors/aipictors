@@ -1,38 +1,47 @@
-import type { CommentAchievementBadge } from "~/components/achievements/comment-achievement-chip"
-import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { useTranslation } from "~/hooks/use-translation"
-import { useLocalizedWork } from "~/hooks/use-localized-work"
+import { useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react"
 import {
   type ComponentProps,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
-  useMemo,
 } from "react"
-import { graphql, type FragmentOf } from "gql.tada"
+import type { CommentAchievementBadge } from "~/components/achievements/comment-achievement-chip"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { useQuery } from "@apollo/client/index"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { Button } from "~/components/ui/button"
-import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react"
-import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentSectionEnhanced } from "~/components/work/work-comment-section-final"
+import { useLocalizedWork } from "~/hooks/use-localized-work"
+import { useTranslation } from "~/hooks/use-translation"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
-import { toIconImageUrl, withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
+import {
+  toIconImageUrl,
+  withIconUrlFallback,
+} from "~/utils/with-icon-url-fallback"
+
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 
 // ───────────────── Types ─────────────────
 
 /** 一覧のデータには無く、作品を取り直すと入る項目 */
 type WorkDetailFields = {
-  likedUsers?: { id: string; name: string; iconUrl: string | null; login: string }[]
+  likedUsers?: {
+    id: string
+    name: string
+    iconUrl: string | null
+    login: string
+  }[]
   isBookmarked?: boolean
   isMyRecommended?: boolean
   user?: { isBlocked?: boolean } | null
@@ -367,99 +376,86 @@ export function WorkViewerDialog({
   // 作品を切り替えたら本文のスクロールを先頭に戻す
   const commentsOf = (target: typeof currentWork) => {
     const currentWork = target
-    return (
-                          Array.isArray(
-                            (currentWork as unknown as { comments?: unknown[] })
-                              .comments,
-                          )
-                            ? (
-                                currentWork as unknown as {
-                                  comments: unknown[]
-                                }
-                              ).comments.map((c: unknown) => ({
-                                id: (c as { id: string }).id,
-                                text: (c as { text?: string | null }).text,
-                                createdAt: (c as { createdAt: number })
-                                  .createdAt,
-                                likesCount: (c as { likesCount: number })
-                                  .likesCount,
-                                isLiked: (c as { isLiked: boolean }).isLiked,
-                                isWorkOwnerLiked: (
-                                  c as { isWorkOwnerLiked: boolean }
-                                ).isWorkOwnerLiked,
-                                isMuted: (c as { isMuted?: boolean }).isMuted,
-                                isSensitive: (c as { isSensitive?: boolean })
-                                  .isSensitive,
-                                user: (
-                                  c as {
-                                    user?: {
-                                      id: string
-                                      name: string
-                                      iconUrl?: string | null
-                                    }
-                                  }
-                                ).user
-                                  ? {
-                                      id: (c as { user: { id: string } }).user
-                                        .id,
-                                      name:
-                                        (c as { user: { name: string } }).user
-                                          .name || "",
-                                      iconUrl: (
-                                        c as {
-                                          user: { iconUrl?: string | null }
-                                        }
-                                      ).user.iconUrl,
-                                      commentBadge:
-                                        (
-                                          c as {
-                                            user: {
-                                              commentBadge?: CommentAchievementBadge | null
-                                            }
-                                          }
-                                        ).user.commentBadge ?? null,
-                                    }
-                                  : undefined,
-                                sticker: (
-                                  c as {
-                                    sticker?: {
-                                      id: string
-                                      title: string
-                                      imageUrl?: string | null
-                                      accessType: string
-                                      isDownloaded?: boolean
-                                    }
-                                  }
-                                ).sticker
-                                  ? {
-                                      id:
-                                        (c as { sticker: { id: string } })
-                                          .sticker.id || "",
-                                      title:
-                                        (c as { sticker: { title: string } })
-                                          .sticker.title || "",
-                                      imageUrl: (
-                                        c as {
-                                          sticker: { imageUrl?: string | null }
-                                        }
-                                      ).sticker.imageUrl,
-                                      accessType:
-                                        (
-                                          c as {
-                                            sticker: { accessType: string }
-                                          }
-                                        ).sticker.accessType || "PUBLIC",
-                                      isDownloaded: (
-                                        c as {
-                                          sticker: { isDownloaded?: boolean }
-                                        }
-                                      ).sticker.isDownloaded,
-                                    }
-                                  : undefined,
-                                responses: [],
-                              }))
-                            : []
+    return Array.isArray(
+      (currentWork as unknown as { comments?: unknown[] }).comments,
     )
+      ? (
+          currentWork as unknown as {
+            comments: unknown[]
+          }
+        ).comments.map((c: unknown) => ({
+          id: (c as { id: string }).id,
+          text: (c as { text?: string | null }).text,
+          createdAt: (c as { createdAt: number }).createdAt,
+          likesCount: (c as { likesCount: number }).likesCount,
+          isLiked: (c as { isLiked: boolean }).isLiked,
+          isWorkOwnerLiked: (c as { isWorkOwnerLiked: boolean })
+            .isWorkOwnerLiked,
+          isMuted: (c as { isMuted?: boolean }).isMuted,
+          isSensitive: (c as { isSensitive?: boolean }).isSensitive,
+          user: (
+            c as {
+              user?: {
+                id: string
+                name: string
+                iconUrl?: string | null
+              }
+            }
+          ).user
+            ? {
+                id: (c as { user: { id: string } }).user.id,
+                name: (c as { user: { name: string } }).user.name || "",
+                iconUrl: (
+                  c as {
+                    user: { iconUrl?: string | null }
+                  }
+                ).user.iconUrl,
+                commentBadge:
+                  (
+                    c as {
+                      user: {
+                        commentBadge?: CommentAchievementBadge | null
+                      }
+                    }
+                  ).user.commentBadge ?? null,
+              }
+            : undefined,
+          sticker: (
+            c as {
+              sticker?: {
+                id: string
+                title: string
+                imageUrl?: string | null
+                accessType: string
+                isDownloaded?: boolean
+              }
+            }
+          ).sticker
+            ? {
+                id: (c as { sticker: { id: string } }).sticker.id || "",
+                title:
+                  (c as { sticker: { title: string } }).sticker.title || "",
+                imageUrl: (
+                  c as {
+                    sticker: { imageUrl?: string | null }
+                  }
+                ).sticker.imageUrl,
+                accessType:
+                  (
+                    c as {
+                      sticker: { accessType: string }
+                    }
+                  ).sticker.accessType || "PUBLIC",
+                isDownloaded: (
+                  c as {
+                    sticker: { isDownloaded?: boolean }
+                  }
+                ).sticker.isDownloaded,
+              }
+            : undefined,
+          responses: [],
+        }))
+      : []
   }
 
   const hasPrev = index > 0
@@ -493,9 +489,7 @@ export function WorkViewerDialog({
             className="flex min-w-0 shrink-0 items-center gap-2 rounded-full bg-transparent py-1 pr-2 text-left transition-colors hover:bg-muted"
           >
             <Avatar className="size-8">
-              <AvatarImage
-                src={toIconImageUrl(currentWork.user?.iconUrl)}
-              />
+              <AvatarImage src={toIconImageUrl(currentWork.user?.iconUrl)} />
               <AvatarFallback />
             </Avatar>
             <span className="hidden max-w-40 truncate font-medium text-sm sm:inline">
@@ -546,65 +540,69 @@ export function WorkViewerDialog({
             ) : (
               <div className="mx-auto w-full max-w-5xl p-3 pb-24 md:px-16 md:py-6">
                 <WorkArticle
-                  work={{
-                    // 一覧のデータで先に表示する間は、詳細の項目がない
-                    uuid: null,
-                    album: null,
-                    seed: 0,
-                    aiDailyRanking: null,
-                    aiWeeklyRanking: null,
-                    aiMonthlyRanking: null,
-                    botEvaluationStatus: null,
-                    dailyTheme: null,
-                    isBookmarked: false,
-                    isInCollection: false,
-                    isMyRecommended: false,
-                    ...(localizedWork ?? currentWork),
-                    likedUsers: (detailFields.likedUsers ?? []).map((user) => ({
-                      avatarFrame: null,
-                      ...user,
-                    })),
-                    isBotGradingEnabled:
-                      (
-                        currentWork as unknown as {
-                          isBotGradingEnabled?: boolean
-                        }
-                      ).isBotGradingEnabled ?? false,
-                    isBotGradingPublic:
-                      (
-                        currentWork as unknown as {
-                          isBotGradingPublic?: boolean
-                        }
-                      ).isBotGradingPublic ?? false,
-                    botEvaluation: ((currentWork as any).botEvaluation ??
-                      null) as any,
-                    user: currentWork.user
-                      ? {
-                          isOfficial: false,
-                          isModerator: false,
-                          biography: null,
-                          enBiography: null,
-                          receivedLikesCount: 0,
-                          receivedViewsCount: 0,
-                          awardsCount: 0,
-                          followersCount: 0,
-                          worksCount: 0,
-                          headerImageUrl: null,
-                          webFcmToken: null,
-                          isFollower: false,
-                          isFollowee: false,
-                          createdLikesCount: 0,
-                          createdBookmarksCount: 0,
-                          isMuted: false,
-                          isBlocked: false,
-                          promptonUser: null,
-                          ...currentWork.user,
-                          works: [],
-                        }
-                      : null,
-                    nextWork: null,
-                    previousWork: null,
-                  } as unknown as ComponentProps<typeof WorkArticle>["work"]}
+                  work={
+                    {
+                      // 一覧のデータで先に表示する間は、詳細の項目がない
+                      uuid: null,
+                      album: null,
+                      seed: 0,
+                      aiDailyRanking: null,
+                      aiWeeklyRanking: null,
+                      aiMonthlyRanking: null,
+                      botEvaluationStatus: null,
+                      dailyTheme: null,
+                      isBookmarked: false,
+                      isInCollection: false,
+                      isMyRecommended: false,
+                      ...(localizedWork ?? currentWork),
+                      likedUsers: (detailFields.likedUsers ?? []).map(
+                        (user) => ({
+                          avatarFrame: null,
+                          ...user,
+                        }),
+                      ),
+                      isBotGradingEnabled:
+                        (
+                          currentWork as unknown as {
+                            isBotGradingEnabled?: boolean
+                          }
+                        ).isBotGradingEnabled ?? false,
+                      isBotGradingPublic:
+                        (
+                          currentWork as unknown as {
+                            isBotGradingPublic?: boolean
+                          }
+                        ).isBotGradingPublic ?? false,
+                      botEvaluation: ((currentWork as any).botEvaluation ??
+                        null) as any,
+                      user: currentWork.user
+                        ? {
+                            isOfficial: false,
+                            isModerator: false,
+                            biography: null,
+                            enBiography: null,
+                            receivedLikesCount: 0,
+                            receivedViewsCount: 0,
+                            awardsCount: 0,
+                            followersCount: 0,
+                            worksCount: 0,
+                            headerImageUrl: null,
+                            webFcmToken: null,
+                            isFollower: false,
+                            isFollowee: false,
+                            createdLikesCount: 0,
+                            createdBookmarksCount: 0,
+                            isMuted: false,
+                            isBlocked: false,
+                            promptonUser: null,
+                            ...currentWork.user,
+                            works: [],
+                          }
+                        : null,
+                      nextWork: null,
+                      previousWork: null,
+                    } as unknown as ComponentProps<typeof WorkArticle>["work"]
+                  }
                   userSetting={undefined}
                   mode={"dialog"}
                 />
@@ -618,8 +616,8 @@ export function WorkViewerDialog({
                         currentWork.user?.iconUrl,
                       )}
                       isWorkOwnerBlocked={
-                        (currentWork as { user?: { isBlocked?: boolean } })
-                          .user?.isBlocked ?? false
+                        (currentWork as { user?: { isBlocked?: boolean } }).user
+                          ?.isBlocked ?? false
                       }
                       isFixedInput={false}
                       comments={commentsOf(currentWork)}
@@ -701,8 +699,7 @@ export function WorkViewerDialog({
             className="h-11 shrink-0 gap-1 px-3"
             aria-label="前の作品"
           >
-            <ChevronLeft className="size-5" />
-            前
+            <ChevronLeft className="size-5" />前
           </Button>
           <div className="min-w-0 flex-1">
             <WorkActionContainer
@@ -743,8 +740,7 @@ export function WorkViewerDialog({
 }
 
 // GraphQL部分は変更なし
-const workArticleFragment =
-  graphql(`fragment WorkArticle on WorkNode @_unmask {
+const workArticleFragment = graphql(`fragment WorkArticle on WorkNode @_unmask {
   id
   isMyRecommended
   title

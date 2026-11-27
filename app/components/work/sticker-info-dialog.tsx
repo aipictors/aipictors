@@ -1,3 +1,7 @@
+import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Loader2Icon } from "lucide-react"
+import React, { useEffect } from "react"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -7,12 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
-import { useMutation } from "@apollo/client/index"
-import { Link } from "~/lib/app/locale-router"
-import { graphql } from "gql.tada"
-import { Loader2Icon } from "lucide-react"
-import React, { useEffect } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 
 type Props = {
   title: string
@@ -25,7 +25,7 @@ type Props = {
 /**
  * スタンプ情報ダイアログ（作品ダイアログ用）
  */
-export function StickerInfoDialog (props: Props): React.ReactNode {
+export function StickerInfoDialog(props: Props): React.ReactNode {
   const [createUserSticker, { loading: isCreatingUserSticker }] = useMutation(
     createUserStickerMutation,
   )

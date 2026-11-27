@@ -1,20 +1,19 @@
+import { useMutation, useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Loader2Icon, StampIcon } from "lucide-react"
+import { useContext, useState } from "react"
+import { toast } from "sonner"
+import { useBoolean } from "usehooks-ts"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
-import { AuthContext } from "~/contexts/auth-context"
-import { useMutation, useQuery } from "@apollo/client/index"
-import { Loader2Icon } from "lucide-react"
-import { useState, useContext } from "react"
-import { StampIcon } from "lucide-react"
-import { graphql } from "gql.tada"
-import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
-import { useTranslation } from "~/hooks/use-translation"
-import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
-import { toast } from "sonner"
-import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { useBoolean } from "usehooks-ts"
 import { StickerDialog } from "~/components/work/sticker-dialog"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   targetCommentId: string
@@ -30,7 +29,7 @@ type Props = {
 /**
  * 返信コメント入力欄（作品ダイアログ用）
  */
-export function WorkCommentInput (props: Props): React.ReactNode {
+export function WorkCommentInput(props: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
   const t = useTranslation()

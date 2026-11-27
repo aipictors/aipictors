@@ -1,10 +1,10 @@
 import { useQuery } from "@apollo/client/index"
-import { useNavigate } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AppNotFoundPage } from "~/components/app/app-not-found-page"
 import { AuthContext } from "~/contexts/auth-context"
+import { useNavigate } from "~/lib/app/locale-router"
 
 type Props = {
   workId: string | undefined
@@ -15,7 +15,7 @@ type Props = {
  * 予約投稿・非公開・下書きの作品はサーバーでは見えない（ログインなしで取得している）ので、
  * 持ち主がログイン中なら下書き表示（/posts/:id/draft）に移す
  */
-export function OwnWorkNotFoundPage (props: Props) {
+export function OwnWorkNotFoundPage(props: Props) {
   const authContext = useContext(AuthContext)
 
   const navigate = useNavigate()

@@ -73,8 +73,8 @@ export function PromotionGuidePage() {
         <ul className="space-y-2 text-sm">
           <Point icon={<CalendarClockIcon className="size-4" />}>
             {t(
-              "7日間、トップの「おすすめ作品」の一覧の先頭に、PR の印付きで表示されます",
-              "Shown first in Recommended works, with a PR mark, for 7 days",
+              "7日間、トップの「おすすめ作品」の一覧の先頭に、PR の印付きで表示されます（PC では 1 件を大きく表示。宣伝が複数のときは読み込みごとに交代）",
+              "Shown first in Recommended works, with a PR mark, for 7 days (on PC one is shown large, rotating on each visit when there are several)",
             )}
           </Point>
           <Point icon={<ExternalLinkIcon className="size-4" />}>

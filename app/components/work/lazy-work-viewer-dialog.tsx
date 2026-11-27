@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ComponentProps } from "react"
+import { type ComponentProps, lazy, Suspense } from "react"
 
 // 作品ダイアログは作品記事やコメント入力など大きなモジュールに依存するため、
 // 開いたときにだけ読み込む

@@ -56,36 +56,47 @@ const visibleCounts = (promotionCount: number, fillCount: number) => {
   )
 }
 
-test("おすすめ作品は宣伝の件数によらず、どの幅でも 2 段ぴったり（空きマスなし）", () => {
+test("おすすめ作品はどの幅でも 2 段ぴったり（PC は大きく出す 1 件が 4 マス）", () => {
+  // 宣伝なし: 2 列 4 件・3 列 6 件・4 列 8 件
   expect(visibleCounts(0, 10)).toEqual([4, 6, 8])
-  expect(visibleCounts(1, 10)).toEqual([4, 6, 8])
-  expect(visibleCounts(3, 10)).toEqual([4, 6, 8])
+  // 宣伝 1 件: スマホは普通の大きさで 4 件、PC は 2×2 の 1 件＋残りのマス
+  expect(visibleCounts(1, 10)).toEqual([4, 3, 5])
+  expect(visibleCounts(3, 10)).toEqual([4, 3, 5])
 })
 
 test("宣伝が多いときは宣伝を隠さず、段を増やして埋める", () => {
-  // 2 列で 5 件の宣伝 → 3 段（6 件）、3 列・4 列はそのまま 2 段
-  expect(visibleCounts(5, 10)).toEqual([6, 6, 8])
-  expect(visibleCounts(6, 10)).toEqual([6, 6, 8])
+  // 宣伝 5 件: 2 列は 3 段（6 件）、3 列は 3 段（9 マス = 6 件）、4 列は 2 段（8 マス = 5 件）
+  expect(visibleCounts(5, 10)).toEqual([6, 6, 5])
+  // 宣伝 6 件: 4 列は 3 段（12 マス = 9 件）
+  expect(visibleCounts(6, 10)).toEqual([6, 6, 9])
 })
 
 test("おすすめが足りない幅は段を減らし、宣伝の段だけは案内で埋める", () => {
-  // 宣伝 1・おすすめ 2 → どの幅でも 1 段（宣伝の段が 3 / 4 列で埋まらない分は案内）
-  expect(visibleCounts(1, 2)).toEqual([2, 3, 4])
-  expect(toHomePicksLayout(1, 2).inviteCount).toBe(1)
+  // 宣伝 1・おすすめ 0 → スマホは 1 段（案内 1）、PC は 2×2 の 2 段ぶん（3 列で案内 2、4 列で案内 4）
+  expect(visibleCounts(1, 0)).toEqual([2, 3, 5])
+  expect(toHomePicksLayout(1, 0).inviteCount).toBe(4)
   expect(toHomePicksLayout(0, 0).isEmpty).toBe(true)
 })
 
 // 一覧のリンクはルーターが要るので、リンクの無い見本の形で見た目だけ確かめる
 test("宣伝の作品には PR の印、宣伝ではないおすすめには印も宣伝の枠も付けない", () => {
   const promoted = renderToStaticMarkup(
-    <Card title="宣伝" imageUrl="https://img.test/a" />,
+    <Card title="宣伝" userName="作者" imageUrl="https://img.test/a" />,
   )
   const plain = renderToStaticMarkup(
-    <Card title="おすすめ" imageUrl="https://img.test/b" isPlain />,
+    <Card
+      title="おすすめ"
+      userName="作者"
+      imageUrl="https://img.test/b"
+      isPlain
+    />,
   )
 
   expect(promoted).toContain(">PR<")
   expect(promoted).toContain("from-amber-400")
   expect(plain).not.toContain(">PR<")
+  // 作者のアイコンは宣伝のカードだけ少し大きい
+  expect(promoted).toContain("size-6")
+  expect(plain).not.toContain("size-6")
   expect(plain).not.toContain("from-amber-400")
 })

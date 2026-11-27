@@ -1,39 +1,39 @@
+import { useMutation, useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import {
+  ArrowDownToLine,
+  Eye,
+  EyeOff,
+  Heart,
+  Loader2Icon,
+  MessageCircle,
+  Reply,
+  StampIcon,
+  ThumbsUp,
+} from "lucide-react"
+import { useContext, useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
+import { useBoolean } from "usehooks-ts"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { WorkCommentInput } from "~/components/work/work-comment-input"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { StickerDialog } from "~/components/work/sticker-dialog"
 import { StickerInfoDialog } from "~/components/work/sticker-info-dialog"
+import { WorkCommentInput } from "~/components/work/work-comment-input"
 import { AuthContext } from "~/contexts/auth-context"
-import { useMutation, useQuery } from "@apollo/client/index"
-import {
-  MessageCircle,
-  Heart,
-  ThumbsUp,
-  Reply,
-  Loader2Icon,
-  Eye,
-  EyeOff,
-  ArrowDownToLine,
-  StampIcon,
-} from "lucide-react"
-import { useState, useContext, useRef, useEffect } from "react"
-import { Link } from "~/lib/app/locale-router"
-import { graphql } from "gql.tada"
-import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { useTranslation } from "~/hooks/use-translation"
-import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { toast } from "sonner"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
-import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { useBoolean } from "usehooks-ts"
-import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { logEvent } from "~/utils/event-log"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
-import { logEvent } from "~/utils/event-log"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
 type Comment = {
   id: string
