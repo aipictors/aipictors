@@ -9,7 +9,7 @@ import { toJsonResponse } from "~/lib/server/json-response.server"
 
 /**
  * 維持費の内訳ページ（/admin/costs）の数字。モデレーターだけ
- * 中身は aipictors-api の /internal/analytics/costs/breakdown（今の RunPod の構成と、ほかのサービスの直近 7 日の平均）
+ * 中身は aipictors-api の /internal/analytics/costs/breakdown（今の RunPod の構成と、ほかのサービスの直近 5 日の中央値）
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const authorization = request.headers.get("authorization")

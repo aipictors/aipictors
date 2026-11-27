@@ -25,7 +25,7 @@ import { createMeta } from "~/utils/create-meta"
 
 const TITLE = "維持費の内訳"
 const DESCRIPTION =
-  "今の構成で 1 か月動かしたときの維持費。RunPod は今ある GPU サーバーの時間単価 × 1 日の稼働時間、ほかのサービスは直近 7 日の実額の平均 × 30 日です。"
+  "今の構成で 1 か月動かしたときの維持費。RunPod は今ある GPU サーバーの時間単価 × 1 日の稼働時間、ほかのサービスは直近 5 日の実額の中央値 × 30 日です（1 日だけの急な増減に引っ張られません）。開くたびに最新の数字を取り直します。"
 
 const CARD =
   "rounded-2xl border-white/10 bg-white/5 text-slate-100 shadow-none sm:rounded-[28px]"
@@ -170,7 +170,8 @@ export default function AdminCostsPage() {
   useEffect(() => {
     if (authContext.isLoading || authContext.isNotLoggedIn || !hasPermission)
       return
-    load(false)
+    // 開いたときも最新を取りに行く（API 側のキャッシュを使わない）
+    load(true)
   }, [authContext.isLoading, authContext.isNotLoggedIn, hasPermission, load])
 
   if (authContext.isLoading || viewerLoading) {
@@ -283,7 +284,7 @@ function CostsBody(props: { data: CostBreakdown }) {
           value={formatYen(total - monthlyJpy.runpod)}
           detail={
             recent.from && recent.to
-              ? `${shortDay(recent.from)}〜${shortDay(recent.to)} の ${recent.days} 日の平均 × 30`
+              ? `${shortDay(recent.from)}〜${shortDay(recent.to)} の ${recent.days} 日の中央値 × 30`
               : "日別の費用がまだありません"
           }
         />
