@@ -73,8 +73,8 @@ export function PlusPersonaBenefits() {
       },
       points: [
         {
-          ja: "スタンダード以上は毎週1作品、ホームのいちばん目立つ「クリエイターの宣伝」に7日間",
-          en: "Standard and up: one work a week in “From our creators” at the top of the home page for 7 days",
+          ja: "スタンダード以上は毎週1作品、トップの「おすすめ作品」の先頭に PR の印付きで7日間",
+          en: "Standard and up: one work a week shown first in Recommended works on the home page, with a PR mark, for 7 days",
         },
         {
           ja: "名前の横に認証マーク",

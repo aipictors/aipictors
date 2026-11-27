@@ -20,7 +20,7 @@ type Props = {
 }
 
 /**
- * 宣伝作品かどうか入力。ホームの「クリエイターの宣伝」でどう見えるかを入力中の内容でプレビューする
+ * 宣伝作品かどうか入力。トップの「おすすめ作品」の先頭でどう見えるかを入力中の内容でプレビューする
  */
 export function PostFormItemAdvertising(props: Props) {
   const t = useTranslation()
@@ -45,14 +45,17 @@ export function PostFormItemAdvertising(props: Props) {
         </div>
         <p className="text-sm leading-relaxed">
           {t(
-            "チェックすると、公開から7日間ホームの「クリエイターの宣伝」に大きく表示されます。作品ページには宣伝の帯と関連リンクへのボタン、一覧のサムネイルには PR のしるしが付きます。",
-            "When checked, your work is featured in “From our creators” on the home page for 7 days after publishing. Your work page gets a promotion banner and a button to your related link, and thumbnails get a PR mark.",
+            "チェックすると、公開から7日間、トップの「おすすめ作品」の一覧の先頭に、PR の印付きで表示されます。作品ページには宣伝の帯と関連リンクへのボタン、一覧のサムネイルには PR のしるしが付きます。",
+            "When checked, your work is shown first in Recommended works on the home page, with a PR mark, for 7 days after publishing. Your work page gets a promotion banner and a button to your related link, and thumbnails get a PR mark.",
           )}
         </p>
         <div className="grid items-start gap-3 sm:grid-cols-[180px_1fr]">
           <div className="space-y-1">
             <p className="text-muted-foreground text-xs">
-              {t("ホームでの見え方（プレビュー）", "Preview on the home page")}
+              {t(
+                "トップの「おすすめ作品」での見え方（プレビュー）",
+                "Preview in Recommended works on the home page",
+              )}
             </p>
             <PromotionWorkCard
               title={title || t("作品のタイトル", "Your title")}

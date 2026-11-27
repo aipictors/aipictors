@@ -24,8 +24,8 @@ import { Button } from "~/components/ui/button"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
 import {
+  HOME_PICKS_FILL_COUNT,
   HomePromotionWorksSection,
-  PROMOTION_FILL_COUNT,
 } from "~/components/work/work-promotion"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
@@ -236,7 +236,7 @@ export async function loader(props: LoaderFunctionArgs) {
     eventPreviews: buildHomeEventPreviews(appEvents ?? [], userEvents ?? []),
     // 選んで見せる枠には、ガイドラインに触れそうなタグの作品を出さない
     promotionWorks,
-    // 推薦の最後の行の穴埋めと「ほかのおすすめ」（全年齢のトップと同じ）
+    // トップの「おすすめ作品」（宣伝の後ろ）、推薦の最後の行の穴埋めと「ほかのおすすめ」（全年齢のトップと同じ）
     fillWorks: fillWorks
       .filter(
         (work) =>
@@ -246,10 +246,12 @@ export async function loader(props: LoaderFunctionArgs) {
       )
       .slice(
         0,
-        Math.max(
-          0,
-          config.query.homeWorkCount.promotion - promotionWorks.length,
-        ) + RECOMMENDED_PAD_COUNT,
+        HOME_PICKS_FILL_COUNT +
+          Math.max(
+            0,
+            config.query.homeWorkCount.promotion - promotionWorks.length,
+          ) +
+          RECOMMENDED_PAD_COUNT,
       ),
     // いま人気（R18 の作品だけ。ratings を R18 にしても R18G が返ることがあるので評価でも確かめる）
     trendWorks: toSensitiveShelfWorks(hotWorks, SHELF_WORKS_COUNT),
@@ -655,15 +657,15 @@ export default function SensitiveHomeIndexPage() {
                     featuredReleases={data.featuredReleaseList}
                     releaseList={data.releaseList}
                   />
-                  {/* クリエイターの宣伝（PR）とユーザからの推薦 */}
-                  {/* 宣伝枠の空いたマスは、おすすめの末尾の作品で埋める（その作品は下の推薦・ほかのおすすめには出さない） */}
+                  {/* おすすめ作品（先頭に宣伝中の作品を PR の印付きで、残りをおすすめで埋める）とユーザからの推薦。
+                      おすすめの先頭の作品をここに使う（その作品は下の推薦・ほかのおすすめには出さない） */}
                   <HomePromotionWorksSection
                     isSensitive
-                    fillWorks={data.fillWorks.slice(-PROMOTION_FILL_COUNT)}
+                    fillWorks={data.fillWorks.slice(0, HOME_PICKS_FILL_COUNT)}
                   />
                   <HomeSensitiveWorksUsersRecommendedSection
                     works={data.promotionWorks}
-                    fillWorks={data.fillWorks.slice(0, -PROMOTION_FILL_COUNT)}
+                    fillWorks={data.fillWorks.slice(HOME_PICKS_FILL_COUNT)}
                   />
                   {/* ここから下は全年齢のトップと同じく、作品の一覧を何段も続ける（いま人気 → ランキング → タグごと → 新着） */}
                   <HomeWorksShelf

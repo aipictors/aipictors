@@ -15,8 +15,8 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
-import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { toWorkPromotionSlotState } from "~/routes/($lang)._main.posts.$post._index/utils/work-promotion-slot"
+import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 
 type Props = {
   workId: string
@@ -38,7 +38,7 @@ const toDateTimeText = (unixSeconds: number) =>
 
 /**
  * 自分の作品をプレミアムコインで宣伝枠に出すボタン（プランがなくても使える）。
- * 今から 7 日間ホームの「クリエイターの宣伝」に出る。枠は全年齢と R18 で 1 作品ずつ
+ * 今から 7 日間トップの「おすすめ作品」の先頭に PR の印付きで出る。枠は全年齢と R18 で 1 作品ずつ
  */
 export function WorkPromotionButton(props: Props) {
   const t = useTranslation()
@@ -125,8 +125,8 @@ export function WorkPromotionButton(props: Props) {
           <ul className="list-disc space-y-1 pl-5 text-sm">
             <li>
               {t(
-                "ホームの「クリエイターの宣伝」に大きく表示されます",
-                "Featured in “From our creators” on the home page",
+                "トップの「おすすめ作品」の一覧の先頭に、PR の印付きで表示されます",
+                "Shown first in Recommended works on the home page, with a PR mark",
               )}
             </li>
             <li>

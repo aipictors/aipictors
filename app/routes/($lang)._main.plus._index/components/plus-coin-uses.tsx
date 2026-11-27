@@ -157,8 +157,8 @@ export function PlusCoinUses() {
       tone: "text-orange-500 bg-orange-500/10",
       title: { ja: "作品の宣伝枠", en: "Promote your work" },
       body: {
-        ja: "プレミアムコイン500枚で、作品を7日間ホームの「クリエイターの宣伝」に。スタンダード以上なら週1作品が無料です。",
-        en: "500 premium coins puts your work in “From our creators” on the home page for 7 days. Free once a week on Standard and up.",
+        ja: "プレミアムコイン500枚で、作品を7日間トップの「おすすめ作品」の先頭に PR の印付きで。スタンダード以上なら週1作品が無料です。",
+        en: "500 premium coins shows your work first in Recommended works on the home page, with a PR mark, for 7 days. Free once a week on Standard and up.",
       },
       coins: "premium",
       to: "/promotion",

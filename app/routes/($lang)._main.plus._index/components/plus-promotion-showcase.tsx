@@ -24,8 +24,8 @@ export function PlusPromotionShowcase() {
         </h2>
         <p className="text-muted-foreground text-sm leading-relaxed">
           {t(
-            "投稿のときに「宣伝作品に設定する」にチェックすると、7日間ホームの「クリエイターの宣伝」に大きく表示され、関連リンクへのボタンも付きます。プランがなくても、プレミアムコイン500枚で出せます。",
-            "Check “Set as Advertising Work” when posting to feature it in “From our creators” for 7 days, with a button to your link. No plan? Use 500 premium coins instead.",
+            "投稿のときに「宣伝作品に設定する」にチェックすると、7日間トップの「おすすめ作品」の一覧の先頭に PR の印付きで表示され、関連リンクへのボタンも付きます。プランがなくても、プレミアムコイン500枚で出せます。",
+            "Check “Set as Advertising Work” when posting to show it first in Recommended works on the home page, with a PR mark, for 7 days, with a button to your link. No plan? Use 500 premium coins instead.",
           )}
         </p>
         <Button asChild variant="secondary">

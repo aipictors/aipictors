@@ -3,6 +3,7 @@ import { json, redirect } from "@remix-run/cloudflare"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { HOME_PICKS_FILL_COUNT } from "~/components/work/work-promotion"
 import { config } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
@@ -392,7 +393,7 @@ export async function homeLoader(props: LoaderFunctionArgs) {
 }
 
 /**
- * 推薦の後ろに足すおすすめ作品（推薦と合わせて推薦欄の件数まで。推薦・いま人気に出る作品は除く）
+ * トップの「おすすめ作品」と推薦の後ろに足すおすすめ作品（推薦と合わせて推薦欄の件数まで。推薦・いま人気に出る作品は除く）
  */
 function toPromotionFillWorks<T extends { id: string }>(
   feedWorks: T[] | null | undefined,
@@ -402,12 +403,15 @@ function toPromotionFillWorks<T extends { id: string }>(
   const shownIds = new Set(
     [...(promotionWorks ?? []), ...(hotWorks ?? [])].map((work) => work.id),
   )
-  // 先頭の 5 件は推薦の最後の行を埋めるのに使う（home-works-users-recommended-section.tsx）
+  // 先頭の HOME_PICKS_FILL_COUNT 件はトップの「おすすめ作品」（宣伝の後ろ、work-promotion.tsx）に、
+  // 次の 5 件は推薦の最後の行を埋めるのに使う（home-works-users-recommended-section.tsx）
   const room =
+    HOME_PICKS_FILL_COUNT +
     Math.max(
       0,
       config.query.homeWorkCount.promotion - (promotionWorks?.length ?? 0),
-    ) + RECOMMENDED_PAD_COUNT
+    ) +
+    RECOMMENDED_PAD_COUNT
   return (feedWorks ?? [])
     .filter((work) => !shownIds.has(work.id))
     .slice(0, room)

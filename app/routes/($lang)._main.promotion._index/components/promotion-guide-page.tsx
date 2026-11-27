@@ -39,8 +39,8 @@ export function PromotionGuidePage() {
         </h1>
         <p className="text-muted-foreground leading-relaxed">
           {t(
-            "宣伝枠に出した作品は7日間、ホームの「クリエイターの宣伝」に大きく表示されます。作品集や自分のサービス、依頼の受付などを、より多くの人に見てもらえます。",
-            "Promoted works appear in “From our creators” at the top of the home page for 7 days. Use it to show your portfolio, your service, or that you're open for requests.",
+            "宣伝枠に出した作品は7日間、トップの「おすすめ作品」の一覧の先頭に、PR の印付きで表示されます。作品集や自分のサービス、依頼の受付などを、より多くの人に見てもらえます。",
+            "Promoted works are shown first in Recommended works on the home page, with a PR mark, for 7 days. Use it to show your portfolio, your service, or that you're open for requests.",
           )}
         </p>
       </header>
@@ -50,16 +50,14 @@ export function PromotionGuidePage() {
           {t("こんなふうに表示されます", "How it looks")}
         </SectionTitle>
         <div className="space-y-2 rounded-2xl border bg-muted/30 p-4">
-          <p className="flex items-center gap-2 font-bold">
-            <MegaphoneIcon className="size-5 text-pink-500" />
-            {t("クリエイターの宣伝", "From our creators")}
-            <WorkPromotionMark />
-          </p>
-          <p className="text-muted-foreground text-xs">
+          <p className="font-bold">{t("おすすめ作品", "Recommended works")}</p>
+          <p className="flex flex-wrap items-center gap-1.5 text-muted-foreground text-xs">
             {t(
-              "ホームのお知らせのすぐ下（見本）",
-              "Right below the announcements on the home page (example)",
+              "トップのお知らせのすぐ下（見本）。宣伝の作品は先頭に",
+              "Right below the announcements on the home page (example). Promoted works come first with",
             )}
+            <WorkPromotionMark />
+            {t("の印付きで並びます", "")}
           </p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <PromotionWorkCard
@@ -67,15 +65,16 @@ export function PromotionGuidePage() {
               userName={t("あなた", "You")}
               relatedUrl="https://example.com"
             />
-            <div className="hidden rounded-xl border border-dashed sm:block" />
-            <div className="rounded-xl border border-dashed" />
+            {/* 宣伝の後ろには、宣伝ではないおすすめ作品が PR の印なしで並ぶ */}
+            <ExamplePickCard />
+            <ExamplePickCard className="hidden sm:block" />
           </div>
         </div>
         <ul className="space-y-2 text-sm">
           <Point icon={<CalendarClockIcon className="size-4" />}>
             {t(
-              "7日間、ホームの「クリエイターの宣伝」に大きく表示されます",
-              "Shown big in “From our creators” for 7 days",
+              "7日間、トップの「おすすめ作品」の一覧の先頭に、PR の印付きで表示されます",
+              "Shown first in Recommended works, with a PR mark, for 7 days",
             )}
           </Point>
           <Point icon={<ExternalLinkIcon className="size-4" />}>
@@ -245,6 +244,20 @@ function WayCard(props: {
         ))}
       </ol>
       <div className="mt-auto">{props.action}</div>
+    </div>
+  )
+}
+
+/**
+ * 見本の「おすすめ作品」で、宣伝の後ろに並ぶ宣伝ではない作品（PR の印なし）
+ */
+function ExamplePickCard(props: { className?: string }) {
+  const t = useTranslation()
+  return (
+    <div className={props.className}>
+      <div className="flex aspect-[4/3] w-full items-center justify-center rounded-xl bg-muted p-2 text-center text-muted-foreground text-xs">
+        {t("ほかのおすすめ作品（PR なし）", "Other recommended works (no PR)")}
+      </div>
     </div>
   )
 }

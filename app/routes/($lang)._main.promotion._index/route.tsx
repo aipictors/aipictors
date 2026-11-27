@@ -20,7 +20,7 @@ export const headers: HeadersFunction = () => ({
 })
 
 /**
- * 宣伝枠のご案内（ホームの「宣伝枠について」・プランの比較表・投稿画面から来る）
+ * 宣伝枠のご案内（トップの「おすすめ作品」の「あなたの作品も宣伝できます」・プランの比較表・投稿画面から来る）
  */
 export default function PromotionGuide() {
   return <PromotionGuidePage />

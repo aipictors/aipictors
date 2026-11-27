@@ -1373,9 +1373,9 @@ export const META: { [key: string]: MetaData } = {
     title: "宣伝枠のご案内",
     enTitle: "Promotions",
     description:
-      "作品を 7 日間ホームの「クリエイターの宣伝」に大きく出せる宣伝枠の見え方・出し方（プランの特典・プレミアムコイン）・ルール",
+      "作品を 7 日間トップの「おすすめ作品」の先頭に PR の印付きで出せる宣伝枠の見え方・出し方（プランの特典・プレミアムコイン）・ルール",
     enDescription:
-      "Feature your work at the top of the Aipictors home page for 7 days with a plan or premium coins",
+      "Feature your work first in Recommended works, with a PR mark, on the Aipictors home page for 7 days with a plan or premium coins",
     isIndex: true,
   },
   CREATOR_REWARDS_TERMS: {

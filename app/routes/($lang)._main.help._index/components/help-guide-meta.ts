@@ -4,7 +4,7 @@ import type { HelpText } from "~/routes/($lang)._main.help._index/components/hel
  * ヘルプの中身を最後に変えた日。サイトマップの lastmod に使う
  * （ビルド日時にすると毎デプロイで変わり、検索や AI Search が全ページを読み直すので、文を変えたときだけ手で上げる）
  */
-export const HELP_UPDATED_AT = "2026-11-27"
+export const HELP_UPDATED_AT = "2026-11-28"
 
 /** Discord（ヘルプ・お問い合わせで案内している招待） */
 export const HELP_DISCORD_URL = "https://discord.gg/7jA2MmtvtR"
@@ -28,6 +28,14 @@ export const HELP_RECENT_CHANGES: Array<{
   text: HelpText
   to?: string
 }> = [
+  {
+    date: "2026-11-28",
+    text: {
+      ja: "トップの「クリエイターの宣伝」を「おすすめ作品」の一覧に。宣伝した作品は一覧の先頭に PR の印付きで表示し、残りは宣伝ではないおすすめ作品（PR の印なし）で埋めて空きマスを出さない",
+      en: 'The home page\'s "From our creators" is now a "Recommended works" list: promoted works come first with a PR mark, and the rest is filled with regular recommended works (no PR mark) so there are no empty spots',
+    },
+    to: "/promotion",
+  },
   {
     date: "2026-11-27",
     text: {

@@ -289,8 +289,8 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: 'A series holds up to 48 works (Free), 96 (Lite) or 120 (Standard and up) — that\'s the "maximum number of works" error. Series titles are up to 32 characters, descriptions up to 160.',
       },
       {
-        ja: "見てほしい作品は「宣伝枠」でホームに大きく出せます（下の「宣伝枠」を見てください）。",
-        en: "Want more eyes on a work? Use a promotion slot to feature it on the home page (see Promotion below).",
+        ja: "見てほしい作品は「宣伝枠」でトップの「おすすめ作品」の先頭に出せます（下の「宣伝枠」を見てください）。",
+        en: "Want more eyes on a work? Use a promotion slot to show it first in Recommended works on the home page (see Promotion below).",
       },
     ],
     links: [
@@ -1142,15 +1142,15 @@ export const HELP_SECTIONS: HelpSection[] = [
     },
     mangaTitle: { ja: "作品をホームで宣伝！", en: "Feature your work!" },
     lead: {
-      ja: "宣伝枠を使うと、自分の作品をホームの「クリエイターの宣伝」に 7 日間大きく出せます。作品集やショップへのリンクボタンも付きます。",
-      en: "A promotion slot features your work in “From our creators” on the home page for 7 days, with a button to your portfolio or shop.",
+      ja: "宣伝枠を使うと、自分の作品が 7 日間、トップの「おすすめ作品」の一覧の先頭に、PR の印付きで表示されます。作品集やショップへのリンクボタンも付きます。",
+      en: "A promotion slot shows your work first in Recommended works on the home page, with a PR mark, for 7 days, with a button to your portfolio or shop.",
     },
     panels: [
       {
         image: "promo-1",
         caption: {
-          ja: "ホームの「クリエイターの宣伝」に作品を出せる",
-          en: "Show your work in “From our creators” on the home page",
+          ja: "トップの「おすすめ作品」の先頭に PR 付きで出せる",
+          en: "Show your work first in Recommended works, with a PR mark",
         },
         bubbles: [
           {
@@ -1209,8 +1209,8 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: "Each person can promote one all-ages and one R18 work at a time.",
       },
       {
-        ja: "作品ページに宣伝の帯、一覧のサムネイルに PR のしるしが付きます。",
-        en: "Your work page gets a promotion banner and thumbnails get a PR mark.",
+        ja: "トップの「おすすめ作品」では一覧の先頭に PR の印付きで並びます（宣伝が少ないときは、残りのマスに宣伝ではないおすすめ作品が PR の印なしで並びます）。作品ページに宣伝の帯、一覧のサムネイルに PR のしるしが付きます。",
+        en: "In Recommended works on the home page, promoted works come first with a PR mark (the remaining spots are filled with regular recommended works without the mark). Your work page gets a promotion banner and thumbnails get a PR mark.",
       },
       {
         ja: "投稿画面の「宣伝作品」の欄で、ホームでの見え方をプレビューできます。",
