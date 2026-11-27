@@ -4,6 +4,7 @@ import { ChevronRightIcon, HeartIcon } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
 
 type Props = {
@@ -15,10 +16,16 @@ type Props = {
  */
 export function HomePromotionStrip(props: Props) {
   const t = useTranslation()
+  const viewerRatings = useViewerRatings()
 
   const { data } = useQuery(promotionStripQuery, {
+    skip: !viewerRatings.isReady,
     variables: {
-      where: { isRecommended: true, sort: "DESC", ratings: ["G", "R15"] },
+      where: {
+        isRecommended: true,
+        sort: "DESC",
+        ratings: viewerRatings.normalRatings,
+      },
     },
   })
 

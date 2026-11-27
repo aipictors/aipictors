@@ -6,6 +6,7 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
 
 type Props = {
@@ -21,12 +22,14 @@ type Props = {
 export function RecommendedFeedShelf(props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   const { data } = useQuery(feedShelfQuery, {
-    skip: !authContext.isLoggedIn || !authContext.userId,
+    skip:
+      !authContext.isLoggedIn || !authContext.userId || !viewerRatings.isReady,
     variables: {
       feedWhere: { userId: authContext.userId ?? "", type: props.type },
-      postsWhere: { ratings: ["G", "R15"] },
+      postsWhere: { ratings: viewerRatings.normalRatings },
     },
   })
 

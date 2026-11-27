@@ -7,17 +7,17 @@ import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
-import {
-  type GridColumnBreakpoint,
-  incompleteRowHiddenClassName,
-} from "~/utils/grid-layout"
 import type {
   HomeTagWorksResponse,
   HomeTagWorksRow,
 } from "~/routes/api.home-tag-works/route"
+import {
+  type GridColumnBreakpoint,
+  incompleteRowHiddenClassName,
+} from "~/utils/grid-layout"
 import { getJstDate } from "~/utils/jst-date"
-import { filterWorksByRatings } from "~/utils/viewer-ratings"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
+import { filterWorksByRatings } from "~/utils/viewer-ratings"
 
 /** 作品を折り返して並べる（ちちぷいのトップと同じく、横にスクロールさせず何段も見せる。PC は 6 列） */
 const gridClassName =

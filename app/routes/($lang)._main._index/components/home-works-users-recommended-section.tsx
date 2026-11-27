@@ -1,12 +1,14 @@
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useMemo } from "react"
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/components/home-recommended-work-list"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
+import { filterWorksByRatings } from "~/utils/viewer-ratings"
 
 type Props = {
   works: FragmentOf<typeof HomePromotionWorkFragment>[]
@@ -27,18 +29,20 @@ export const RECOMMENDED_PAD_COUNT = 5
  */
 export function HomeWorksUsersRecommendedSection(props: Props) {
   const appContext = useContext(AuthContext)
+  const viewerRatings = useViewerRatings()
 
   // 推薦作品。サーバーで取った一覧があればそれを使い、ブラウザでは取り直さない（同じ問い合わせが 2 回になっていた）。
   // ログイン中の人のいいね済みは LikeButton が自分で確かめる
   const { data: recommendedWorksResp } = useQuery(WorksQuery, {
-    skip: appContext.isLoading || props.works.length > 0,
+    skip:
+      appContext.isLoading || props.works.length > 0 || !viewerRatings.isReady,
     variables: {
       offset: 0,
       limit: config.query.homeWorkCount.promotion,
       where: {
         isRecommended: true,
         sort: "DESC",
-        ratings: ["G", "R15"],
+        ratings: viewerRatings.normalRatings,
         ...(props.style && {
           style: props.style,
         }),
@@ -46,9 +50,27 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
     },
   })
 
-  const workDisplayed = recommendedWorksResp?.works ?? props.works
+  // サーバーの一覧は「全年齢と R15」で取ってキャッシュしているので、R15 を出さない設定の人には R15 を外す
+  // （新しい配列を毎回作ると下の onWorksLoaded が描画のたびに呼ばれるので、メモにする）
+  const workDisplayed = useMemo(
+    () =>
+      filterWorksByRatings(
+        recommendedWorksResp?.works ?? props.works,
+        viewerRatings.normalRatings,
+      ),
+    [recommendedWorksResp?.works, props.works, viewerRatings.normalRatings],
+  )
   // ブラウザで取り直したとき（サーバーの一覧が無いとき）は埋める分も無い
-  const fillWorks = recommendedWorksResp ? [] : (props.fillWorks ?? [])
+  const fillWorks = useMemo(
+    () =>
+      recommendedWorksResp
+        ? []
+        : filterWorksByRatings(
+            props.fillWorks ?? [],
+            viewerRatings.normalRatings,
+          ),
+    [recommendedWorksResp, props.fillWorks, viewerRatings.normalRatings],
+  )
   // 推薦の最後の行の穴は、おすすめの先頭で埋める（6 列で 5 件だけのときなど。最大で 1 行に足りない 5 枚）。
   // 埋めに使った作品は「ほかのおすすめ」には出さない
   const padWorks = fillWorks.slice(0, RECOMMENDED_PAD_COUNT)
