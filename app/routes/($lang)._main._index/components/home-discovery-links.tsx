@@ -129,26 +129,44 @@ const CREATOR_BREAKPOINTS: GridColumnBreakpoint[] = [
 ]
 
 /**
- * 新規クリエイター（はじめて作品を投稿した人。以前は PC の右カラムだけに出していた）
+ * 新規クリエイター（はじめて作品を投稿した人）。PC は右カラムの新規コメントの上（variant="sidebar"）、
+ * 右カラムのないスマホは作品の一覧の後ろに出す
  */
 export function HomeNewCreators(props: {
   users: { id: string; login: string; name: string; iconUrl: string | null }[]
   isSensitive?: boolean
+  /** 右カラム用（4 列・小さめの見出しとアイコン） */
+  variant?: "main" | "sidebar"
+  className?: string
 }) {
   const t = useTranslation()
   const prefix = props.isSensitive ? "/r" : ""
-  // スマホの 1 段（4 人）に満たないときは出さない
+  const isSidebar = props.variant === "sidebar"
+  // 1 段（4 人）に満たないときは出さない
   if (props.users.length < 4) return null
+  // 右カラムは 4 列。最後の段が埋まらない人は隠す
+  const sidebarVisibleCount = props.users.length - (props.users.length % 4)
   return (
-    <section className="space-y-2.5">
-      <HomeSectionHeading
-        title={t("新規クリエイター", "New creators")}
-        description={t(
-          "はじめて作品を投稿した人たち",
-          "People who just posted their first work",
+    <section className={cn("space-y-2.5", props.className)}>
+      {isSidebar ? (
+        <h2 className="font-bold text-sm">
+          {t("新規クリエイター", "New creators")}
+        </h2>
+      ) : (
+        <HomeSectionHeading
+          title={t("新規クリエイター", "New creators")}
+          description={t(
+            "はじめて作品を投稿した人たち",
+            "People who just posted their first work",
+          )}
+        />
+      )}
+      <ul
+        className={cn(
+          "grid grid-cols-4 gap-x-2 gap-y-3",
+          !isSidebar && "sm:grid-cols-6 lg:grid-cols-12",
         )}
-      />
-      <ul className="grid grid-cols-4 gap-x-2 gap-y-3 sm:grid-cols-6 lg:grid-cols-12">
+      >
         {props.users.map((user, index) => {
           const name = user.name?.length ? user.name : "名無し"
           return (
@@ -156,11 +174,13 @@ export function HomeNewCreators(props: {
               key={user.id}
               className={cn(
                 "min-w-0",
-                incompleteRowHiddenClassName(
-                  index,
-                  props.users.length,
-                  CREATOR_BREAKPOINTS,
-                ),
+                isSidebar
+                  ? index >= sidebarVisibleCount && "hidden"
+                  : incompleteRowHiddenClassName(
+                      index,
+                      props.users.length,
+                      CREATOR_BREAKPOINTS,
+                    ),
               )}
             >
               <Link
@@ -173,10 +193,18 @@ export function HomeNewCreators(props: {
                     alt={name}
                     loading="lazy"
                     decoding="async"
-                    className="size-14 rounded-full bg-muted object-cover"
+                    className={cn(
+                      "rounded-full bg-muted object-cover",
+                      isSidebar ? "size-12" : "size-14",
+                    )}
                   />
                 ) : (
-                  <span className="flex size-14 items-center justify-center rounded-full bg-muted font-bold text-lg text-muted-foreground">
+                  <span
+                    className={cn(
+                      "flex items-center justify-center rounded-full bg-muted font-bold text-lg text-muted-foreground",
+                      isSidebar ? "size-12" : "size-14",
+                    )}
+                  >
                     {name.slice(0, 1)}
                   </span>
                 )}

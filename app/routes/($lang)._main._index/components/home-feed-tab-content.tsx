@@ -151,8 +151,11 @@ export function HomeFeedTabContent(
           {/* 作品以外の入口（ちちぷいのトップの「モデルから作品をさがす」「おすすめのユーザー」） */}
           <HomeModelLinks />
           <HomeTopCreators creators={data.topCreators ?? []} />
-          {/* 新規クリエイターとその初投稿作品（スマホでも見えるように右カラムではなくここに） */}
-          <HomeNewCreators users={sidebar.sidebarNewPostedUsers} />
+          {/* 新規クリエイターとその初投稿作品。新規クリエイターは PC では右カラムの新規コメントの上に出すので、ここはスマホだけ */}
+          <HomeNewCreators
+            className="md:hidden"
+            users={sidebar.sidebarNewPostedUsers}
+          />
           <HomeWorksShelf
             title={t(
               "新規クリエイターの初投稿作品",

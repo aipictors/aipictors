@@ -3,6 +3,7 @@ import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
+import { HomeNewCreators } from "~/routes/($lang)._main._index/components/home-discovery-links"
 import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
 import type { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import type { HomePageState } from "~/routes/($lang)._main._index/hooks/use-home-page-state"
@@ -24,6 +25,7 @@ export function HomeSidebar(
     onClickAdvertisement,
     isSubscriptionUser,
     isHomeSidebarLoading,
+    sidebarNewPostedUsers,
     sidebarNewComments,
   } = props
 
@@ -72,7 +74,7 @@ export function HomeSidebar(
             />
           </Link>
         )}
-        {/* ここから下は PC だけ（スマホはアプリと同じく作品の一覧で終える）。新規クリエイターは左の作品の一覧の後ろ（スマホでも見える） */}
+        {/* ここから下は PC だけ（スマホはアプリと同じく作品の一覧で終える）。新規クリエイターはスマホでは左の作品の一覧の後ろに出す */}
         {isHomeSidebarLoading && sidebarNewComments.length === 0 && (
           <div className="hidden space-y-3 md:block">
             <Skeleton className="h-6 w-40" />
@@ -104,6 +106,12 @@ export function HomeSidebar(
             </div>
           </section>
         )}
+        <HomeNewCreators
+          className="hidden md:block"
+          users={sidebarNewPostedUsers}
+          isSensitive={props.isSensitive}
+          variant="sidebar"
+        />
         {sidebarNewComments.length > 0 && (
           <div className="hidden md:block">
             <HomeNewCommentsSection

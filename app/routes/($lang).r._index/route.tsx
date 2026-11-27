@@ -712,8 +712,12 @@ export default function SensitiveHomeIndexPage() {
                   {/* 作品以外の入口（モデル・人気のクリエイター） */}
                   <HomeModelLinks isSensitive />
                   <HomeTopCreators creators={data.topCreators} isSensitive />
-                  {/* 新規クリエイターとその初投稿作品（スマホでも見えるように右カラムではなくここに） */}
-                  <HomeNewCreators users={data.newPostedUsers} isSensitive />
+                  {/* 新規クリエイターとその初投稿作品。新規クリエイターは PC では右カラムの新規コメントの上に出すので、ここはスマホだけ */}
+                  <HomeNewCreators
+                    className="md:hidden"
+                    users={data.newPostedUsers}
+                    isSensitive
+                  />
                   <HomeWorksShelf
                     title={t(
                       "新規クリエイターの初投稿作品",
