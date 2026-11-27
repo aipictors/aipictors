@@ -1356,7 +1356,8 @@ type CancelReason =
   | "not_using"
   | "coins"
   | "price"
-  | "quality"
+  | "image_quality"
+  | "bugs"
   | "slow"
   | "one_month"
   | "other_service"
@@ -1462,7 +1463,11 @@ function RetentionSuggestion(props: {
     )
   }
 
-  if (props.reason === "quality" || props.reason === "slow") {
+  if (
+    props.reason === "image_quality" ||
+    props.reason === "bugs" ||
+    props.reason === "slow"
+  ) {
     return (
       <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-3 text-sm">
         <p className="font-bold">

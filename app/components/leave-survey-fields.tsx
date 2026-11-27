@@ -4,12 +4,13 @@ import {
   LEAVE_SURVEY_MIN_TEXT,
   type LeaveSurveyAnswer,
   type LeaveSurveyKind,
+  leaveSurveyMissing,
   leaveSurveyReasons,
   visibleLeaveSurveyGroups,
 } from "~/utils/leave-survey"
 
 /**
- * 解約・退会の理由のアンケート（主な理由 → 理由ごとの追加質問（複数選択） → 自由記述 → 改善してほしいこと）
+ * 解約・退会の理由のアンケート（主な理由 → 理由ごとの追加質問（複数選択・必須） → 詳しい説明（必須） → 改善してほしいこと（任意））
  * 質問の中身は app/utils/leave-survey.ts
  */
 export function LeaveSurveyFields(props: {
@@ -23,6 +24,7 @@ export function LeaveSurveyFields(props: {
   const reason = reasons.find((item) => item.value === props.value.reason)
   const groups = visibleLeaveSurveyGroups(reason, props.value.choices)
   const textLength = props.value.text.trim().length
+  const missing = leaveSurveyMissing(props.kind, props.value)
 
   const toggle = (groupId: string, optionValue: string) => {
     const current = props.value.choices[groupId] ?? []
@@ -75,6 +77,9 @@ export function LeaveSurveyFields(props: {
             <div key={group.id} className="grid gap-1.5">
               <p className="font-medium text-sm">
                 {t(group.question[0], group.question[1])}
+                <span className="ml-1 text-red-500 text-xs">
+                  {t("必須", "Required")}
+                </span>
                 <span className="ml-1 font-normal text-muted-foreground text-xs">
                   {t("（いくつでも）", "(choose any)")}
                 </span>
@@ -136,6 +141,21 @@ export function LeaveSurveyFields(props: {
                 </p>
               )}
             </div>
+          )}
+          {(missing.groups.length > 0 || missing.text) && (
+            <p className="text-red-500 text-xs">
+              {missing.groups.length > 0 && missing.text
+                ? t(
+                    "必須の質問にすべて答えて、詳しい内容を書いてください",
+                    "Please answer every required question and add the details",
+                  )
+                : missing.groups.length > 0
+                  ? t(
+                      "必須の質問それぞれで 1 つ以上選んでください",
+                      "Please choose at least one option for each required question",
+                    )
+                  : t("詳しい内容を書いてください", "Please add the details")}
+            </p>
           )}
           <div className="grid gap-1.5">
             <p className="font-medium text-sm">

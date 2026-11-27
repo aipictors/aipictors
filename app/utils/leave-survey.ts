@@ -1,7 +1,8 @@
 /**
- * 解約・退会の理由のアンケート（主な理由 + 理由ごとの追加質問 + 自由記述）
+ * 解約・退会の理由のアンケート（主な理由 + 理由ごとの追加質問 + 詳しい説明。追加質問と詳しい説明はどの理由でも必須）
  * - 保存は aipictors-api（解約: subscription_cancel_reasons.details、退会: account_leave_reasons）。形は lib/leave-survey.ts の sanitizeLeaveDetails
  * - アプリ（aipictors/app の lib/v2/settings/leave_survey.dart）も同じ値を使う。値（value）は集計に使うので変えない。文言は変えてよい
+ * - 理由を分けるときは新しい値を作り、古い値は LEGACY_QUALITY_REASON のように集計の表示用に残す（品質と不具合は 11/27 に quality → image_quality / bugs に分けた）
  */
 
 type Text = readonly [ja: string, en: string]
@@ -33,8 +34,8 @@ export type LeaveSurveyAnswer = {
   improvement: string
 }
 
-/** 「その他」の自由記述の最低文字数 */
-export const LEAVE_SURVEY_MIN_TEXT = 5
+/** 理由の詳しい説明（必須）の最低文字数 */
+export const LEAVE_SURVEY_MIN_TEXT = 10
 
 export const emptyLeaveSurveyAnswer = (): LeaveSurveyAnswer => ({
   reason: null,
@@ -43,70 +44,263 @@ export const emptyLeaveSurveyAnswer = (): LeaveSurveyAnswer => ({
   improvement: "",
 })
 
-const QUALITY_GROUPS: LeaveSurveyGroup[] = [
+/** 機能の選択肢（品質・不具合の「どの機能で」） */
+const FEATURE_OPTIONS: LeaveSurveyOption[] = [
+  { value: "txt2img", label: ["ふつうの生成", "Regular generation"] },
+  { value: "img2img", label: ["画像から生成（i2i）", "Image to image"] },
+  { value: "inpaint", label: ["部分修正（インペイント）", "Inpainting"] },
+  {
+    value: "upscale",
+    label: ["高画質化・高解像度", "Upscale / high resolution"],
+  },
+  {
+    value: "controlnet",
+    label: ["ポーズ指定（ControlNet）", "Pose control (ControlNet)"],
+  },
+  { value: "lora", label: ["LoRA・みんなのモデル", "LoRA / community models"] },
+  {
+    value: "special_model",
+    label: [
+      "Flux・Gemini などの特別なモデル",
+      "Special models (Flux, Gemini, etc.)",
+    ],
+  },
+  { value: "mosaic", label: ["自動モザイク", "Auto mosaic"] },
+  { value: "post", label: ["投稿・作品ページ", "Posting / work pages"] },
+]
+
+/** 絵の仕上がり（品質）。不具合（BUG_GROUPS）とは別に聞く */
+const IMAGE_QUALITY_GROUPS: LeaveSurveyGroup[] = [
   {
     id: "problem",
     question: ["どんなところが気になりましたか？", "What bothered you?"],
     options: [
       {
         value: "face_hand",
-        label: ["顔や手が崩れる", "Faces or hands look broken"],
-      },
-      {
-        value: "errors",
-        label: ["エラーで失敗した", "Generations failed with errors"],
+        label: ["顔・手・体が崩れる", "Faces, hands or bodies look broken"],
       },
       {
         value: "style",
-        label: ["画風が合わない", "The art style didn't suit me"],
+        label: ["画風・絵柄が好みと違う", "The art style isn't what I like"],
       },
       {
         value: "prompt",
         label: ["プロンプト通りにならない", "Results didn't follow my prompt"],
       },
-      { value: "wait", label: ["待ち時間が長い", "Long waits"] },
       {
-        value: "feature",
+        value: "low_res",
+        label: ["画質が粗い・ぼやける", "Images look rough or blurry"],
+      },
+      {
+        value: "same",
+        label: ["似た絵ばかり出る", "Results all look the same"],
+      },
+      {
+        value: "worse_than",
+        label: ["ほかのサービスより見劣りする", "Worse than other services"],
+      },
+      {
+        value: "no_model",
         label: [
-          "特定の機能がうまく動かない",
-          "A specific feature didn't work well",
+          "欲しいモデル・LoRA がない",
+          "The model or LoRA I wanted isn't there",
         ],
       },
     ],
   },
   {
-    id: "feature",
-    question: ["どの機能ですか？", "Which feature?"],
-    showIf: { group: "problem", value: "feature" },
+    id: "genre",
+    question: [
+      "どんな絵を作りたかったですか？",
+      "What kind of images did you want?",
+    ],
     options: [
-      { value: "txt2img", label: ["ふつうの生成", "Regular generation"] },
-      { value: "img2img", label: ["画像から生成（i2i）", "Image to image"] },
-      { value: "inpaint", label: ["部分修正（インペイント）", "Inpainting"] },
+      { value: "anime", label: ["アニメ・イラスト調", "Anime / illustration"] },
+      { value: "real", label: ["リアル・写真風", "Realistic / photo"] },
       {
-        value: "upscale",
-        label: ["高画質化・高解像度", "Upscale / high resolution"],
+        value: "character",
+        label: ["特定のキャラクター", "A specific character"],
       },
+      { value: "scenery", label: ["背景・風景", "Backgrounds / scenery"] },
+      { value: "r18", label: ["R-18", "R-18"] },
+      { value: "other_genre", label: ["その他", "Other"] },
+    ],
+  },
+  {
+    id: "feature",
+    question: [
+      "どの機能・モデルで気になりましたか？",
+      "With which feature or model?",
+    ],
+    options: [
+      ...FEATURE_OPTIONS.filter((option) => option.value !== "post"),
       {
-        value: "controlnet",
-        label: ["ポーズ指定（ControlNet）", "Pose control (ControlNet)"],
+        value: "unknown",
+        label: ["分からない・全体的に", "Not sure / overall"],
       },
-      {
-        value: "lora",
-        label: ["LoRA・みんなのモデル", "LoRA / community models"],
-      },
-      {
-        value: "special_model",
-        label: [
-          "Flux・Gemini などの特別なモデル",
-          "Special models (Flux, Gemini, etc.)",
-        ],
-      },
-      { value: "mosaic", label: ["自動モザイク", "Auto mosaic"] },
-      { value: "post", label: ["投稿・作品ページ", "Posting / work pages"] },
-      { value: "other_feature", label: ["その他", "Other"] },
     ],
   },
 ]
+
+/** 不具合（エラー・動かない）。どこで・どの端末で・どれくらいの頻度かまで聞く */
+const BUG_GROUPS: LeaveSurveyGroup[] = [
+  {
+    id: "symptom",
+    question: ["どんな不具合でしたか？", "What went wrong?"],
+    options: [
+      {
+        value: "gen_error",
+        label: ["エラーで生成が失敗する", "Generations fail with an error"],
+      },
+      {
+        value: "stuck",
+        label: [
+          "生成が終わらない・途中で止まる",
+          "Generations never finish or get stuck",
+        ],
+      },
+      {
+        value: "coin_lost",
+        label: [
+          "コインが減ったのに画像が出ない",
+          "Coins were spent but no image appeared",
+        ],
+      },
+      {
+        value: "no_image",
+        label: [
+          "画像が表示されない・保存できない",
+          "Images don't show or can't be saved",
+        ],
+      },
+      {
+        value: "ui_broken",
+        label: [
+          "画面が崩れる・ボタンが反応しない",
+          "The page breaks or buttons don't respond",
+        ],
+      },
+      {
+        value: "app_crash",
+        label: ["アプリが落ちる・固まる", "The app crashes or freezes"],
+      },
+      {
+        value: "login_pay",
+        label: [
+          "ログイン・支払いがうまくいかない",
+          "Problems with login or payment",
+        ],
+      },
+      {
+        value: "post_fail",
+        label: ["投稿・編集ができない", "Can't post or edit works"],
+      },
+    ],
+  },
+  {
+    id: "feature",
+    question: ["どの機能で起きましたか？", "Which feature?"],
+    options: [
+      ...FEATURE_OPTIONS,
+      { value: "payment", label: ["支払い・プラン", "Payment / plans"] },
+      { value: "other_feature", label: ["その他", "Other"] },
+    ],
+  },
+  {
+    id: "device",
+    question: ["どの端末で使っていましたか？", "Which device?"],
+    options: [
+      {
+        value: "pc_browser",
+        label: ["パソコンのブラウザ", "Computer browser"],
+      },
+      {
+        value: "phone_browser",
+        label: ["スマホのブラウザ", "Phone browser"],
+      },
+      { value: "ios_app", label: ["iPhone アプリ", "iPhone app"] },
+      { value: "android_app", label: ["Android アプリ", "Android app"] },
+    ],
+  },
+  {
+    id: "frequency",
+    question: ["どれくらい起きましたか？", "How often did it happen?"],
+    options: [
+      { value: "every_time", label: ["毎回", "Every time"] },
+      { value: "often", label: ["よく起きる", "Often"] },
+      { value: "sometimes", label: ["ときどき", "Sometimes"] },
+      { value: "once", label: ["1〜2回だけ", "Once or twice"] },
+    ],
+  },
+]
+
+const IMAGE_QUALITY_REASON: LeaveSurveyReason = {
+  value: "image_quality",
+  label: [
+    "生成した絵の品質が合わなかった",
+    "The generated images weren't good enough",
+  ],
+  groups: IMAGE_QUALITY_GROUPS,
+  text: {
+    label: [
+      "作りたかった絵と、実際の仕上がりの違いを教えてください",
+      "How did the results differ from what you wanted?",
+    ],
+    placeholder: [
+      "例: アニメ調の全身絵で、指が6本になることが多い",
+      "e.g. Full-body anime images often had six fingers",
+    ],
+    required: true,
+  },
+}
+
+const BUG_REASON: LeaveSurveyReason = {
+  value: "bugs",
+  label: ["不具合・エラーで使えなかった", "Bugs or errors got in the way"],
+  groups: BUG_GROUPS,
+  text: {
+    label: [
+      "どの画面で何をしたら、どうなりましたか（エラーの文があれば）",
+      "What did you do, and what happened? (include any error message)",
+    ],
+    placeholder: [
+      "例: スマホで高画質化を押すと「生成に失敗しました」と出て、コインだけ減った",
+      'e.g. On my phone, upscaling showed "Generation failed" and still used coins',
+    ],
+    required: true,
+  },
+}
+
+/** 11/27 までの「生成の品質・不具合が気になった」（品質と不具合を分ける前）。集計の表示だけに使う */
+const LEGACY_QUALITY_REASON: LeaveSurveyReason = {
+  value: "quality",
+  label: [
+    "品質・不具合（分ける前の回答）",
+    "Quality problems or bugs (old answers)",
+  ],
+  groups: [
+    {
+      id: "problem",
+      question: ["どんなところが気になりましたか？", "What bothered you?"],
+      options: [
+        { value: "face_hand", label: ["顔や手が崩れる", "Faces or hands"] },
+        { value: "errors", label: ["エラーで失敗した", "Errors"] },
+        { value: "style", label: ["画風が合わない", "Art style"] },
+        { value: "prompt", label: ["プロンプト通りにならない", "Prompt"] },
+        { value: "wait", label: ["待ち時間が長い", "Long waits"] },
+        { value: "feature", label: ["特定の機能がうまく動かない", "Feature"] },
+      ],
+    },
+    {
+      id: "feature",
+      question: ["どの機能ですか？", "Which feature?"],
+      options: [
+        ...FEATURE_OPTIONS,
+        { value: "other_feature", label: ["その他", "Other"] },
+      ],
+    },
+  ],
+}
 
 const SERVICE_GROUPS: LeaveSurveyGroup[] = [
   {
@@ -158,12 +352,22 @@ const SERVICE_GROUPS: LeaveSurveyGroup[] = [
 ]
 
 const SERVICE_TEXT: LeaveSurveyReason["text"] = {
-  label: ["サービス名・理由など（任意）", "Service name or details (optional)"],
-  placeholder: [
-    "例: ○○の新しいモデルが使いたい",
-    "e.g. I want to try a new model on ...",
+  label: [
+    "移る先のサービス名と、そちらを選んだ理由を教えてください",
+    "Which service, and why did you choose it?",
   ],
+  placeholder: [
+    "例: ○○。同じ値段で新しいモデルが使える",
+    "e.g. ... — it has newer models for the same price",
+  ],
+  required: true,
 }
+
+/** 理由の詳しい説明（すべての理由で必須） */
+const detailText = (
+  label: Text,
+  placeholder: Text,
+): LeaveSurveyReason["text"] => ({ label, placeholder, required: true })
 
 const PRICE_OK_GROUP: LeaveSurveyGroup = {
   id: "price_ok",
@@ -188,6 +392,16 @@ export const SUBSCRIPTION_LEAVE_REASONS: LeaveSurveyReason[] = [
   {
     value: "not_using",
     label: ["あまり使わなかった", "I didn't use it much"],
+    text: detailText(
+      [
+        "使わなくなった理由を具体的に教えてください",
+        "Tell us more about why you didn't use it",
+      ],
+      [
+        "例: 仕事が忙しく、週末に少し触っただけだった",
+        "e.g. Work got busy and I only tried it on weekends",
+      ],
+    ),
     groups: [
       {
         id: "why",
@@ -230,6 +444,16 @@ export const SUBSCRIPTION_LEAVE_REASONS: LeaveSurveyReason[] = [
   {
     value: "coins",
     label: ["コインが足りなかった", "I ran out of coins"],
+    text: detailText(
+      [
+        "どの機能を、どれくらい使うと足りなくなりましたか",
+        "Which features, and how much, before you ran out?",
+      ],
+      [
+        "例: 高画質化を1日20回ほど使うと昼にはなくなる",
+        "e.g. About 20 upscales a day and I'm out by noon",
+      ],
+    ),
     groups: [
       {
         id: "why",
@@ -274,6 +498,16 @@ export const SUBSCRIPTION_LEAVE_REASONS: LeaveSurveyReason[] = [
   {
     value: "price",
     label: ["料金が高い", "It's too expensive"],
+    text: detailText(
+      [
+        "具体的に教えてください（比べたサービスや、続けられる金額など）",
+        "Tell us more (services you compared, a price you'd pay, etc.)",
+      ],
+      [
+        "例: 他社は同じ値段で生成し放題。月500円なら続けたい",
+        "e.g. Others offer unlimited generation for the same price",
+      ],
+    ),
     groups: [
       {
         id: "why",
@@ -306,24 +540,24 @@ export const SUBSCRIPTION_LEAVE_REASONS: LeaveSurveyReason[] = [
       PRICE_OK_GROUP,
     ],
   },
-  {
-    value: "quality",
-    label: ["生成の品質・不具合が気になった", "Quality problems or bugs"],
-    groups: QUALITY_GROUPS,
-    text: {
-      label: ["どんな状況でしたか（任意）", "What happened? (optional)"],
-      placeholder: [
-        "例: 高画質化すると毎回エラーになる",
-        "e.g. Upscaling always fails",
-      ],
-    },
-  },
+  IMAGE_QUALITY_REASON,
+  BUG_REASON,
   {
     value: "slow",
     label: [
       "生成が遅い・待ち時間が長い",
       "Generation is slow or the wait is long",
     ],
+    text: detailText(
+      [
+        "いつ・どのモデルで・どれくらい待ちましたか",
+        "When, with which model, and how long did you wait?",
+      ],
+      [
+        "例: 夜21時ごろ、SDXL で1枚に5分以上かかった",
+        "e.g. Around 9pm, over 5 minutes per image with SDXL",
+      ],
+    ),
     groups: [
       {
         id: "when",
@@ -370,6 +604,16 @@ export const SUBSCRIPTION_LEAVE_REASONS: LeaveSurveyReason[] = [
       "1か月だけ使うつもりだった",
       "I only planned to use it for a month",
     ],
+    text: detailText(
+      [
+        "この1か月で何を作りましたか・また使うとしたらどんなときですか",
+        "What did you make this month, and when would you come back?",
+      ],
+      [
+        "例: イベント用に10枚作った。新しいモデルが来たらまた入りたい",
+        "e.g. Made 10 images for an event; I'd come back for new models",
+      ],
+    ),
     groups: [
       {
         id: "purpose",
@@ -461,6 +705,16 @@ export const ACCOUNT_LEAVE_REASONS: LeaveSurveyReason[] = [
   {
     value: "not_using",
     label: ["あまり使わなくなった", "I don't use it much anymore"],
+    text: detailText(
+      [
+        "使わなくなった理由を具体的に教えてください",
+        "Tell us more about why you stopped using it",
+      ],
+      [
+        "例: 仕事が忙しく、しばらく創作できない",
+        "e.g. I'm too busy to create for a while",
+      ],
+    ),
     groups: [
       {
         id: "why",
@@ -486,6 +740,16 @@ export const ACCOUNT_LEAVE_REASONS: LeaveSurveyReason[] = [
   {
     value: "privacy",
     label: ["身バレ・個人情報が心配", "I'm worried about privacy"],
+    text: detailText(
+      [
+        "差し支えない範囲で、心配なことを具体的に教えてください",
+        "Tell us what worries you, as far as you're comfortable",
+      ],
+      [
+        "例: 職場の人にアカウントを見つけられた",
+        "e.g. Someone from work found my account",
+      ],
+    ),
     groups: [
       {
         id: "what",
@@ -551,13 +815,16 @@ export const ACCOUNT_LEAVE_REASONS: LeaveSurveyReason[] = [
         ],
       },
     ],
-    text: {
-      label: [
-        "よければ状況を教えてください（任意）",
-        "Tell us what happened if you like (optional)",
+    text: detailText(
+      [
+        "差し支えない範囲で、状況を教えてください（運営で確認して対応します）",
+        "Tell us what happened, as far as you're comfortable (we'll look into it)",
       ],
-      placeholder: ["運営で確認して対応します", "We'll look into it"],
-    },
+      [
+        "例: 投稿のたびに同じ人から嫌なコメントが来る",
+        "e.g. The same person leaves rude comments on every post",
+      ],
+    ),
   },
   {
     value: "community",
@@ -565,6 +832,16 @@ export const ACCOUNT_LEAVE_REASONS: LeaveSurveyReason[] = [
       "サイトの雰囲気・ルールが合わない",
       "The atmosphere or rules don't suit me",
     ],
+    text: detailText(
+      [
+        "どんなところが合わなかったか、具体的に教えてください",
+        "Tell us more about what didn't suit you",
+      ],
+      [
+        "例: ランキングが同じ人ばかりで見る気がしない",
+        "e.g. The rankings are always the same people",
+      ],
+    ),
     groups: [
       {
         id: "what",
@@ -603,6 +880,16 @@ export const ACCOUNT_LEAVE_REASONS: LeaveSurveyReason[] = [
       "作品を見てもらえない・反応が少ない",
       "My works don't get seen or get little response",
     ],
+    text: detailText(
+      [
+        "どんな作品を、どれくらい投稿していましたか",
+        "What kind of works did you post, and how often?",
+      ],
+      [
+        "例: 週3枚ほどアニメ調を投稿して、いいねは毎回1〜2",
+        "e.g. About 3 anime works a week, 1–2 likes each",
+      ],
+    ),
     groups: [
       {
         id: "why",
@@ -628,14 +915,21 @@ export const ACCOUNT_LEAVE_REASONS: LeaveSurveyReason[] = [
       },
     ],
   },
-  {
-    value: "quality",
-    label: ["生成の品質・不具合が気になった", "Quality problems or bugs"],
-    groups: QUALITY_GROUPS,
-  },
+  IMAGE_QUALITY_REASON,
+  BUG_REASON,
   {
     value: "cost",
     label: ["料金・コインが合わない", "Pricing or coins don't work for me"],
+    text: detailText(
+      [
+        "具体的に教えてください（足りない機能や、払える金額など）",
+        "Tell us more (what you'd need, what you'd pay, etc.)",
+      ],
+      [
+        "例: 無料のコインでは1日5枚しか作れない",
+        "e.g. Free coins only cover about 5 images a day",
+      ],
+    ),
     groups: [
       {
         id: "what",
@@ -666,6 +960,16 @@ export const ACCOUNT_LEAVE_REASONS: LeaveSurveyReason[] = [
   {
     value: "new_account",
     label: ["アカウントを作り直したい", "I want to start a new account"],
+    text: detailText(
+      [
+        "作り直したい理由を具体的に教えてください",
+        "Tell us more about why you want a new account",
+      ],
+      [
+        "例: 名前を変えたいが、ID を変える方法が分からない",
+        "e.g. I want a new name but couldn't find how to change my ID",
+      ],
+    ),
     groups: [
       {
         id: "why",
@@ -719,19 +1023,33 @@ export const visibleLeaveSurveyGroups = (
       (choices[group.showIf.group] ?? []).includes(group.showIf.value),
   )
 
-/** 送れる状態か（理由を選び、「その他」は自由記述を LEAVE_SURVEY_MIN_TEXT 文字以上） */
-export const isLeaveSurveyComplete = (
+/** まだ答えていないもの（追加質問はどれも 1 つ以上、詳しい説明は LEAVE_SURVEY_MIN_TEXT 文字以上が必須） */
+export const leaveSurveyMissing = (
   kind: LeaveSurveyKind,
   answer: LeaveSurveyAnswer,
 ) => {
   const reason = leaveSurveyReasons(kind).find(
     (item) => item.value === answer.reason,
   )
-  if (!reason) return false
-  if (reason.text?.required) {
-    return answer.text.trim().length >= LEAVE_SURVEY_MIN_TEXT
+  if (!reason) return { reason: true, groups: [] as string[], text: false }
+  return {
+    reason: false,
+    groups: visibleLeaveSurveyGroups(reason, answer.choices)
+      .filter((group) => (answer.choices[group.id] ?? []).length === 0)
+      .map((group) => group.id),
+    text:
+      reason.text?.required === true &&
+      answer.text.trim().length < LEAVE_SURVEY_MIN_TEXT,
   }
-  return true
+}
+
+/** 送れる状態か（理由を選び、追加質問にすべて答え、詳しい説明を書いた） */
+export const isLeaveSurveyComplete = (
+  kind: LeaveSurveyKind,
+  answer: LeaveSurveyAnswer,
+) => {
+  const missing = leaveSurveyMissing(kind, answer)
+  return !missing.reason && missing.groups.length === 0 && !missing.text
 }
 
 /** aipictors-api に送る details（見えていない質問の答えは送らない） */
@@ -755,6 +1073,18 @@ export const toLeaveSurveyDetails = (
   }
 }
 
+/** 集計の表示用: 今の理由に加えて、選択肢から外した古い理由も探す */
+const findReasonForLabel = (kind: LeaveSurveyKind, reasonValue: string) =>
+  [...leaveSurveyReasons(kind), LEGACY_QUALITY_REASON].find(
+    (item) => item.value === reasonValue,
+  )
+
+/** 集計の表示用: 理由の追加質問（古い理由も含む） */
+export const leaveSurveyGroupsForLabel = (
+  kind: LeaveSurveyKind,
+  reasonValue: string,
+) => findReasonForLabel(kind, reasonValue)?.groups ?? []
+
 /** 集計の表示用: 理由・質問・選択肢の値から日本語の文言 */
 export const leaveSurveyLabel = (
   kind: LeaveSurveyKind,
@@ -762,9 +1092,7 @@ export const leaveSurveyLabel = (
   groupId?: string,
   optionValue?: string,
 ) => {
-  const reason = leaveSurveyReasons(kind).find(
-    (item) => item.value === reasonValue,
-  )
+  const reason = findReasonForLabel(kind, reasonValue)
   if (!groupId) return reason?.label[0] ?? reasonValue
   const group = reason?.groups.find((item) => item.id === groupId)
   if (!optionValue) return group?.question[0] ?? groupId

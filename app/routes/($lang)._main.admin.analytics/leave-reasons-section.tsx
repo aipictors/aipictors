@@ -8,8 +8,8 @@ import {
 } from "~/components/ui/card"
 import {
   type LeaveSurveyKind,
+  leaveSurveyGroupsForLabel,
   leaveSurveyLabel,
-  leaveSurveyReasons,
 } from "~/utils/leave-survey"
 
 const CARD =
@@ -83,7 +83,7 @@ export function LeaveReasonsSection(props: {
       <LeaveStatsCard
         kind="subscription"
         title="サブスクの解約理由"
-        description={`直近 ${props.data.days} 日。追加質問は 11/27 から（それまでの回答は理由だけ）`}
+        description={`直近 ${props.data.days} 日。追加質問は 11/27 から。11/28 から追加質問と詳しい内容は必須で、品質と不具合を分けた（それより前は「品質・不具合（分ける前の回答）」）`}
         stats={props.data.subscription}
       />
       <LeaveStatsCard
@@ -131,9 +131,11 @@ function LeaveStatsCard(props: {
               const choices = stats.choices.filter(
                 (choice) => choice.reason === item.reason,
               )
-              const groups = leaveSurveyReasons(props.kind).find(
-                (reason) => reason.value === item.reason,
-              )?.groups
+              const groups = leaveSurveyGroupsForLabel(props.kind, item.reason)
+              const reasonTexts = stats.texts.filter(
+                (text) =>
+                  text.reason === item.reason && (text.text || text.note),
+              )
               return (
                 <div key={item.reason} className="space-y-1">
                   <button
@@ -174,7 +176,7 @@ function LeaveStatsCard(props: {
                   </div>
                   {isOpen && (
                     <div className="space-y-2 rounded-xl bg-white/5 p-3">
-                      {choices.length === 0 && (
+                      {choices.length === 0 && reasonTexts.length === 0 && (
                         <p className="text-slate-400 text-xs">
                           追加質問の回答はまだありません。
                         </p>
@@ -210,6 +212,24 @@ function LeaveStatsCard(props: {
                           </div>
                         )
                       })}
+                      {reasonTexts.length > 0 && (
+                        <div className="space-y-1">
+                          <p className="text-slate-400 text-xs">
+                            詳しい内容（新しい順）
+                          </p>
+                          {reasonTexts.slice(0, 20).map((text, index) => (
+                            <p
+                              key={`${text.created_at}-${index}`}
+                              className="whitespace-pre-wrap border-white/10 border-l-2 pl-2 text-xs"
+                            >
+                              <span className="mr-1 text-slate-400">
+                                {dateText(text.created_at)}
+                              </span>
+                              {text.text ?? text.note}
+                            </p>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
