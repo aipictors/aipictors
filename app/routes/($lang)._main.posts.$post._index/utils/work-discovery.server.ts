@@ -12,37 +12,22 @@ import { isSuggestableSensitiveTag } from "~/utils/sensitive-tag-filter"
 
 /**
  * 作品ページの下の一覧を、作品ページと一緒にサーバーで取る
- * （件数: おすすめ 32・前日ランキング 20・同じお題 16・同じモデル 24・新着 24・人気のタグ 20）
+ * （件数: おすすめ 32・前日ランキング 20・同じお題 16・同じモデル 24・新着 24・人気のタグ 20）。
+ *
+ * 新着・前日ランキング・人気のタグはどの作品ページでも同じ（年齢区分ごと）、
+ * おすすめ・同じお題・同じモデルも同じタグ・お題・モデルの作品ページで同じなので、
+ * 一覧ごとに分けて拠点のキャッシュに置き、作品ページごとに system へ問い合わせ直さない
+ * （1 回の問い合わせで最大 約 150 作品を組み立てていて、system の CPU で一番重い問い合わせだった）
  */
-const workDiscoveryQuery = graphql(
-  `query WorkDiscovery(
-    $tagWhere: WorksWhereInput!
-    $withTag: Boolean!
+const workDiscoverySharedQuery = graphql(
+  `query WorkDiscoveryShared(
     $newWhere: WorksWhereInput!
-    $withNew: Boolean!
-    $themeWhere: WorksWhereInput!
-    $withTheme: Boolean!
-    $modelName: String!
-    $modelWhere: WorksWhereInput!
-    $withModel: Boolean!
     $isSensitive: Boolean!
     $awardsWhere: WorkAwardsWhereInput!
     $olderAwardsWhere: WorkAwardsWhereInput!
   ) {
-    tagWorks(offset: 0, limit: 32, where: $tagWhere) @include(if: $withTag) {
+    newWorks: works(offset: 0, limit: 24, where: $newWhere) {
       ...PhotoAlbumWork
-    }
-    newWorks: works(offset: 0, limit: 24, where: $newWhere) @include(if: $withNew) {
-      ...PhotoAlbumWork
-    }
-    themeWorks: works(offset: 0, limit: 16, where: $themeWhere) @include(if: $withTheme) {
-      ...PhotoAlbumWork
-    }
-    # works の modelNames は並び順を付けると効かないので、モデルのページと同じ aiModel.works で取る
-    aiModel(where: { search: $modelName }) @include(if: $withModel) {
-      works(offset: 0, limit: 24, where: $modelWhere) {
-        ...PhotoAlbumWork
-      }
     }
     hotTags @skip(if: $isSensitive) {
       name
@@ -66,6 +51,36 @@ const workDiscoveryQuery = graphql(
   [PhotoAlbumWorkFragment],
 )
 
+const workDiscoveryTagQuery = graphql(
+  `query WorkDiscoveryTag($where: WorksWhereInput!) {
+    tagWorks(offset: 0, limit: 32, where: $where) {
+      ...PhotoAlbumWork
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+const workDiscoveryThemeQuery = graphql(
+  `query WorkDiscoveryTheme($where: WorksWhereInput!) {
+    works(offset: 0, limit: 16, where: $where) {
+      ...PhotoAlbumWork
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+const workDiscoveryModelQuery = graphql(
+  `query WorkDiscoveryModel($modelName: String!, $where: WorksWhereInput!) {
+    # works の modelNames は並び順を付けると効かないので、モデルのページと同じ aiModel.works で取る
+    aiModel(where: { search: $modelName }) {
+      works(offset: 0, limit: 24, where: $where) {
+        ...PhotoAlbumWork
+      }
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
 type DiscoveryWork = FragmentOf<typeof PhotoAlbumWorkFragment>
 
 type DiscoveryTarget = {
@@ -75,6 +90,16 @@ type DiscoveryTarget = {
   dailyTheme: { id: string; title: string; dateText: string } | null
   model: string | null
 }
+
+type SharedSection = {
+  newWorks: DiscoveryWork[]
+  hotTagNames: string[]
+  awardWorks: DiscoveryWork[]
+  olderAwardWorks: DiscoveryWork[]
+}
+
+/** 一覧ごとの取得結果（ok=false は取れなかった・一部欠けた。キャッシュに置かない） */
+type Section<T> = { data: T; ok: boolean }
 
 /** モデル名が入っていても、どのモデルか分からないもの（同じモデルの一覧を出さない） */
 const UNKNOWN_MODEL_NAMES = new Set([
@@ -86,14 +111,58 @@ const UNKNOWN_MODEL_NAMES = new Set([
 /** 人気のタグの数 */
 const HOT_TAGS_COUNT = 20
 
+/** 一覧を拠点のキャッシュに置く時間（秒）。作品ページの HTML は 1 時間キャッシュするので、それより短く */
+const SECTION_CACHE_SECONDS = 10 * 60
+
+const SECTION_CACHE_ORIGIN = "https://www.aipictors.com/__work-discovery/v1"
+
 /**
- * 失敗しても作品ページは出す（空の一覧で返し、isComplete=false。呼び出し側でキャッシュを短くする）
+ * 拠点のキャッシュから一覧を読み、なければ取って置く（取れなかったときは置かない）
+ */
+async function withSectionCache<T>(
+  path: string,
+  load: () => Promise<Section<T>>,
+): Promise<Section<T>> {
+  const cache = typeof caches === "undefined" ? null : caches.default
+  const cacheKey = new Request(`${SECTION_CACHE_ORIGIN}/${path}`)
+  const cached = await cache?.match(cacheKey).catch(() => undefined)
+  if (cached) {
+    const data = (await cached.json().catch(() => null)) as T | null
+    if (data !== null) return { data, ok: true }
+  }
+  const section = await load()
+  if (cache && section.ok) {
+    await cache
+      .put(
+        cacheKey,
+        new Response(JSON.stringify(section.data), {
+          headers: {
+            "content-type": "application/json",
+            "cache-control": `public, max-age=${SECTION_CACHE_SECONDS}`,
+          },
+        }),
+      )
+      .catch(() => {})
+  }
+  return section
+}
+
+const toWorks = (
+  works: (DiscoveryWork | null | undefined)[] | null | undefined,
+) =>
+  (works ?? []).filter(
+    (item): item is DiscoveryWork => item !== null && item !== undefined,
+  )
+
+/**
+ * 失敗しても作品ページは出す（取れなかった一覧は空で返し、isComplete=false。呼び出し側でキャッシュを短くする）
  */
 export async function fetchWorkDiscovery(
   work: DiscoveryTarget,
 ): Promise<{ discovery: WorkDiscovery; isComplete: boolean }> {
   const ratings = toDiscoveryRatings(work.rating)
   const isSensitive = ratings.includes("R18")
+  const ratingsKey = ratings.join(",")
   // R18 は一覧に出してよいタグだけから選ぶ（未成年を連想させるタグなどへのリンクを作らない）
   const tagName = pickDiscoveryTag(
     work.id,
@@ -134,94 +203,164 @@ export async function fetchWorkDiscovery(
     hotTags: [],
   }
 
-  try {
-    const resp = await loaderClient.query({
-      query: workDiscoveryQuery,
-      variables: {
-        tagWhere: {
-          tagNames: tagName ? [tagName] : [],
-          ratings,
-          isNowCreatedAt: true,
-          ...(isSensitive && { isSensitive: true }),
-        },
-        withTag: tagName !== null,
-        newWhere: {
-          ratings,
-          orderBy: "DATE_CREATED",
-          isNowCreatedAt: true,
-          // 「公開（新着無）」の作品は新着に出さない（トップの新着と同じ）
-          accessTypes: ["PUBLIC"],
-          ...(isSensitive && { isSensitive: true }),
-        },
-        withNew: true,
-        themeWhere: {
-          subjectId: hasTheme ? themeId : 0,
-          ratings,
-          orderBy: "DATE_CREATED",
-          isNowCreatedAt: true,
-          ...(isSensitive && { isSensitive: true }),
-        },
-        withTheme: hasTheme,
-        modelName: modelName ?? "",
-        modelWhere: {
-          ratings,
-          orderBy: "DATE_CREATED",
-          isSensitive,
-        },
-        withModel: hasModel,
-        isSensitive,
-        awardsWhere: { ...awardDate, isSensitive },
-        olderAwardsWhere: { ...olderAwardDate, isSensitive },
-      },
-    })
-    const withoutSelf = (works: (DiscoveryWork | null | undefined)[]) =>
-      works.filter(
-        (item): item is DiscoveryWork =>
-          item !== null && item !== undefined && item.id !== work.id,
-      )
-    const hasLatestAwards = (resp.data.workAwards ?? []).length > 0
-    const tagWorks = withoutSelf(resp.data.tagWorks ?? [])
-    const awardWorks = withoutSelf(
-      (hasLatestAwards
-        ? resp.data.workAwards
-        : (resp.data.olderWorkAwards ?? [])
-      ).map((award) => award.work),
-    )
-    const themeWorks = withoutSelf(resp.data.themeWorks ?? [])
-    // 同じモデル・新着は、上の一覧に出た作品を除く（同じ作品へのリンクを何度も並べない）
-    const shownIds = new Set(
-      [...tagWorks, ...awardWorks, ...themeWorks].map((item) => item.id),
-    )
-    const withoutShown = (works: DiscoveryWork[]) => {
-      const result = works.filter((item) => !shownIds.has(item.id))
-      for (const item of result) shownIds.add(item.id)
-      return result
-    }
-    const modelWorks = withoutShown(withoutSelf(resp.data.aiModel?.works ?? []))
-    const newWorks = withoutShown(withoutSelf(resp.data.newWorks ?? []))
-    const hotTagNames = (
-      isSensitive
-        ? (resp.data.hotSensitiveTags ?? [])
-        : (resp.data.hotTags ?? [])
-    )
-      .map((tag) => tag.name)
-      // R18 は一覧に出してよいタグだけ（おすすめのタグと同じ）
-      .filter((name) => !isSensitive || isSuggestableSensitiveTag(name))
-      .slice(0, HOT_TAGS_COUNT)
-    return {
-      discovery: {
-        ...empty,
-        awardDate: hasLatestAwards ? awardDate : olderAwardDate,
-        tagWorks,
-        awardWorks,
-        themeWorks,
-        modelWorks,
-        newWorks,
-        hotTags: hotTagNames,
-      },
-      isComplete: !resp.errors?.length,
-    }
-  } catch {
-    return { discovery: empty, isComplete: false }
+  const emptyShared: SharedSection = {
+    newWorks: [],
+    hotTagNames: [],
+    awardWorks: [],
+    olderAwardWorks: [],
+  }
+  const skipped = <T>(data: T): Promise<Section<T>> =>
+    Promise.resolve({ data, ok: true })
+  // 問い合わせが例外になっても（何も取れなかったなど）他の一覧は出す
+  const guarded = <T>(
+    empty: T,
+    load: () => Promise<Section<T>>,
+  ): Promise<Section<T>> => load().catch(() => ({ data: empty, ok: false }))
+
+  const awardDateKey = `${awardDate.year}-${awardDate.month}-${awardDate.day}`
+
+  const [shared, tagSection, themeSection, modelSection] = await Promise.all([
+    guarded(emptyShared, () =>
+      withSectionCache(`shared/${ratingsKey}/${awardDateKey}`, async () => {
+        const resp = await loaderClient.query({
+          query: workDiscoverySharedQuery,
+          variables: {
+            newWhere: {
+              ratings,
+              orderBy: "DATE_CREATED",
+              isNowCreatedAt: true,
+              // 「公開（新着無）」の作品は新着に出さない（トップの新着と同じ）
+              accessTypes: ["PUBLIC"],
+              ...(isSensitive && { isSensitive: true }),
+            },
+            isSensitive,
+            awardsWhere: { ...awardDate, isSensitive },
+            olderAwardsWhere: { ...olderAwardDate, isSensitive },
+          },
+        })
+        return {
+          data: {
+            newWorks: toWorks(resp.data.newWorks),
+            hotTagNames: (isSensitive
+              ? (resp.data.hotSensitiveTags ?? [])
+              : (resp.data.hotTags ?? [])
+            ).map((tag) => tag.name),
+            awardWorks: toWorks(
+              (resp.data.workAwards ?? []).map((award) => award.work),
+            ),
+            olderAwardWorks: toWorks(
+              (resp.data.olderWorkAwards ?? []).map((award) => award.work),
+            ),
+          },
+          ok: !resp.errors?.length,
+        }
+      }),
+    ),
+    tagName === null
+      ? skipped<DiscoveryWork[]>([])
+      : guarded<DiscoveryWork[]>([], () =>
+          withSectionCache(
+            `tag/${ratingsKey}/${encodeURIComponent(tagName)}`,
+            async () => {
+              const resp = await loaderClient.query({
+                query: workDiscoveryTagQuery,
+                variables: {
+                  where: {
+                    tagNames: [tagName],
+                    ratings,
+                    isNowCreatedAt: true,
+                    ...(isSensitive && { isSensitive: true }),
+                  },
+                },
+              })
+              return {
+                data: toWorks(resp.data.tagWorks),
+                ok: !resp.errors?.length,
+              }
+            },
+          ),
+        ),
+    !hasTheme
+      ? skipped<DiscoveryWork[]>([])
+      : guarded<DiscoveryWork[]>([], () =>
+          withSectionCache(`theme/${ratingsKey}/${themeId}`, async () => {
+            const resp = await loaderClient.query({
+              query: workDiscoveryThemeQuery,
+              variables: {
+                where: {
+                  subjectId: themeId,
+                  ratings,
+                  orderBy: "DATE_CREATED",
+                  isNowCreatedAt: true,
+                  ...(isSensitive && { isSensitive: true }),
+                },
+              },
+            })
+            return { data: toWorks(resp.data.works), ok: !resp.errors?.length }
+          }),
+        ),
+    !hasModel
+      ? skipped<DiscoveryWork[]>([])
+      : guarded<DiscoveryWork[]>([], () =>
+          withSectionCache(
+            `model/${ratingsKey}/${encodeURIComponent(modelName)}`,
+            async () => {
+              const resp = await loaderClient.query({
+                query: workDiscoveryModelQuery,
+                variables: {
+                  modelName,
+                  where: {
+                    ratings,
+                    orderBy: "DATE_CREATED",
+                    isSensitive,
+                  },
+                },
+              })
+              return {
+                data: toWorks(resp.data.aiModel?.works),
+                ok: !resp.errors?.length,
+              }
+            },
+          ),
+        ),
+  ])
+
+  const withoutSelf = (works: DiscoveryWork[]) =>
+    works.filter((item) => item.id !== work.id)
+  const hasLatestAwards = shared.data.awardWorks.length > 0
+  const tagWorks = withoutSelf(tagSection.data)
+  const awardWorks = withoutSelf(
+    hasLatestAwards ? shared.data.awardWorks : shared.data.olderAwardWorks,
+  )
+  const themeWorks = withoutSelf(themeSection.data)
+  // 同じモデル・新着は、上の一覧に出た作品を除く（同じ作品へのリンクを何度も並べない）
+  const shownIds = new Set(
+    [...tagWorks, ...awardWorks, ...themeWorks].map((item) => item.id),
+  )
+  const withoutShown = (works: DiscoveryWork[]) => {
+    const result = works.filter((item) => !shownIds.has(item.id))
+    for (const item of result) shownIds.add(item.id)
+    return result
+  }
+  const modelWorks = withoutShown(withoutSelf(modelSection.data))
+  const newWorks = withoutShown(withoutSelf(shared.data.newWorks))
+  const hotTagNames = shared.data.hotTagNames
+    // R18 は一覧に出してよいタグだけ（おすすめのタグと同じ）
+    .filter((name) => !isSensitive || isSuggestableSensitiveTag(name))
+    .slice(0, HOT_TAGS_COUNT)
+
+  return {
+    discovery: {
+      ...empty,
+      awardDate: hasLatestAwards ? awardDate : olderAwardDate,
+      tagWorks,
+      awardWorks,
+      themeWorks,
+      modelWorks,
+      newWorks,
+      hotTags: hotTagNames,
+    },
+    isComplete:
+      shared.ok && tagSection.ok && themeSection.ok && modelSection.ok,
   }
 }
