@@ -1,7 +1,5 @@
 import { toast } from "sonner"
 import { ExpansionTransition } from "~/components/expansion-transition"
-import { SupportSuccessDialog } from "~/components/support-success-dialog"
-import { HideCoinSupportButton } from "~/components/hide-coin-support-button"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { CommentReactionsProvider } from "~/routes/($lang)._main.posts.$post._index/components/comment-reactions"
@@ -18,7 +16,6 @@ import {
 } from "~/routes/($lang)._main.posts.$post._index/hooks/use-work-comment-list"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
-import { pickPinnedSupports } from "~/utils/support-tier"
 import { recordRecentStickerId } from "~/utils/sticker-recent"
 
 export { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-queries"
@@ -32,7 +29,6 @@ export function WorkCommentList(props: WorkCommentListProps) {
   const {
     coinBalances,
     comment,
-    currentSupportDraft,
     isOpen,
     isPremiumPurchaseDialogOpen,
     location,
@@ -40,20 +36,18 @@ export function WorkCommentList(props: WorkCommentListProps) {
     sendComment,
     setIsPremiumPurchaseDialogOpen,
     setRecentStickerIds,
-    setSupportSuccessState,
     showComments,
     showCommentsAfterMore,
     showCommentsBeforeMore,
     showNewComments,
     stickers,
     pinnedStickers,
-    supportSuccessState,
   } = state
 
   const onSendQuickSticker = async (stickerId: string) => {
     try {
       setRecentStickerIds(recordRecentStickerId(stickerId))
-      await sendComment(comment, stickerId, props.workId, currentSupportDraft)
+      await sendComment(comment, stickerId, props.workId)
     } catch (error) {
       toast(
         getApolloErrorMessage(error) ??
@@ -71,12 +65,6 @@ export function WorkCommentList(props: WorkCommentListProps) {
     ...(item.responses?.map((reply) => reply.id) ?? []),
   ])
 
-  const supportStripComments = [
-    ...(showNewComments ?? []),
-    ...showComments,
-  ].filter((item) => !item.isMuted && !item.isSensitive)
-  const hasSupportStrip = pickPinnedSupports(supportStripComments).length > 0
-
   return (
     <CommentReactionsProvider commentIds={reactionCommentIds}>
       <div className="space-y-4">
@@ -91,8 +79,6 @@ export function WorkCommentList(props: WorkCommentListProps) {
                 : showComments.length + (showNewComments?.length ?? 0)}
             </span>
           </h2>
-          {/* 推し付きコメントがあるときだけ、見出しの右に「推しを非表示」（その場で推しを表示しない設定にする）。推した人の一覧（応援の帯）は出さない（オーナー依頼） */}
-          {hasSupportStrip && <HideCoinSupportButton />}
         </div>
         {props.isWorkOwnerBlocked && (
           <div className="rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
@@ -183,28 +169,9 @@ export function WorkCommentList(props: WorkCommentListProps) {
         onClose={onClose}
         onSend={async (stickerId: string) => {
           setRecentStickerIds(recordRecentStickerId(stickerId))
-          await sendComment(
-            comment,
-            stickerId,
-            props.workId,
-            currentSupportDraft,
-          )
+          await sendComment(comment, stickerId, props.workId)
         }}
         isTargetUserBlocked={props.isWorkOwnerBlocked}
-      />
-      <SupportSuccessDialog
-        open={supportSuccessState !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSupportSuccessState(null)
-          }
-        }}
-        targetUserIconUrl={props.workOwnerIconImageURL}
-        targetUserName={props.workOwnerName ?? t("クリエイター", "Creator")}
-        thankYouMessage={supportSuccessState?.message ?? ""}
-        totalPt={supportSuccessState?.totalPt}
-        freeCoinAmount={supportSuccessState?.freeCoinAmount}
-        premiumCoinAmount={supportSuccessState?.premiumCoinAmount}
       />
 
       <PurchasePremiumCoinsDialog

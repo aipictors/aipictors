@@ -6,12 +6,6 @@ export const WorkCommentFragment = graphql(
     id
     createdAt
     text
-    supportThankYouMessage
-    support {
-      freeCoinAmount
-      premiumCoinAmount
-      totalPt
-    }
     likesCount
     isWorkOwnerLiked
     isLiked

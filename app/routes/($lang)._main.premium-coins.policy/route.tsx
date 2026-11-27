@@ -92,8 +92,8 @@ export default function PremiumCoinsPolicyPage() {
           </p>
           <p>
             {t(
-              "・コインを現金やギフト券に換えることはできません（Amazon ギフトカード交換は 2026年11月16日に終了）。クリエイター報酬に参加しているユーザーがプロフィールから有料のコインで推されると、運営からそのユーザーへクリエイター報酬が支払われます（プレミアムコインで推せるのはユーザーへの推し（プロフィールから）だけです。作品ページからの推しはフリーコインです）。",
-              "- Coins cannot be exchanged for cash or gift cards (Amazon gift card exchange ended on Nov 16, 2026). When a user in Creator Rewards is supported from their profile with purchased coins, Aipictors pays that user a Creator Reward (Premium Coins can only be used to support a user from their profile; support on work pages uses Free Coins).",
+              "・コインを現金やギフト券に換えることはできません（Amazon ギフトカード交換は 2026年11月16日に終了）。クリエイター報酬に参加しているユーザーが有料のコインで推されると、運営からそのユーザーへクリエイター報酬が支払われます（推しはユーザーへの推しだけです。作品への推しは終了しました）。",
+              "- Coins cannot be exchanged for cash or gift cards (Amazon gift card exchange ended on Nov 16, 2026). When a user in Creator Rewards is supported with purchased coins, Aipictors pays that user a Creator Reward (support goes to users only; support on works has ended).",
             )}
           </p>
           <p>

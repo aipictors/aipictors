@@ -25,7 +25,7 @@ const toTimeText = (seconds: number) =>
 /**
  * 作品がオリジナルか二次創作かの運営の判定（作品のタグとは別）。
  * オリジナルにすると作品ページに「オリジナル（運営確認）」のバッジが出る。
- * 推しには使わない（作品からの推しはオリジナル作品でもフリーコインだけ。プレミアムコインはプロフィールからの推しだけ）
+ * 推しには使わない（作品への推しは終了し、推しはユーザーへの推しだけ）
  */
 export function AdminWorkOriginalJudgmentPanel(props: {
   workId: string

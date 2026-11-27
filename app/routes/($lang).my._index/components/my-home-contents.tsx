@@ -586,8 +586,8 @@ function CreatorRewardsCard(props: ReturnType<typeof useCreatorRewardSummary>) {
     ? {
         title: t("推しの応援を、円で受け取れます", "Receive support as cash"),
         body: t(
-          "ファンが買ったコインでプロフィールから推してもらうと、1,000 コインにつき 500 円があなたの口座に振り込まれます。参加は無料です。",
-          "Get ¥500 per 1,000 purchased Premium Coins sent to you from your profile, paid to your bank. Joining is free.",
+          "ファンが買ったコインであなたを推してもらうと、1,000 コインにつき 500 円があなたの口座に振り込まれます。参加は無料です。",
+          "Get ¥500 per 1,000 purchased Premium Coins sent to you as support, paid to your bank. Joining is free.",
         ),
         action: t("参加する", "Join"),
       }

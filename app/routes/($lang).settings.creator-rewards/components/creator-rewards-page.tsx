@@ -206,8 +206,8 @@ export function CreatorRewardsPage() {
         </div>
         <p className="mt-3 text-muted-foreground text-xs leading-5">
           {t(
-            "対象は、プロフィールから受けた推しのうち、ファンがお金を払って買ったプレミアムコインの分です（プレミアムコインの推しはプロフィールからだけで、作品ページからの推しはフリーコインです）。R18・R18G の作品を公開している方は対象外で、今までどおりコインで受け取ります。すでに記録された報酬・保留中の報酬はそのままです。",
-            "Covers Premium Coins that fans bought and sent to you from your profile (Premium Coin support can only be sent from a profile; support on work pages uses Free Coins). Creators who publish R18 / R18G works are not eligible and receive coins as before. Rewards already recorded or on hold stay as they are.",
+            "対象は、あなた（ユーザー）への推しのうち、ファンがお金を払って買ったプレミアムコインの分です（推しはユーザーへの推しだけで、作品への推しはありません）。R18・R18G の作品を公開している方は対象外で、今までどおりコインで受け取ります。すでに記録された報酬・保留中の報酬はそのままです。",
+            "Covers Premium Coins that fans bought and sent to you as support (support goes to users only; there is no support on works). Creators who publish R18 / R18G works are not eligible and receive coins as before. Rewards already recorded or on hold stay as they are.",
           )}
         </p>
       </section>
@@ -568,7 +568,7 @@ export function CreatorRewardsPage() {
 
 /**
  * 振込は日本の銀行口座（円）だけ。日本の Stripe からは海外の口座へ送れない（cross-border payouts は米・英・EEA・加・瑞のプラットフォームだけ）。
- * 海外の方は参加しなければ、推しは今までどおりコインで届く（参加するとプロフィールからの有料コインの推しが円の報酬になり、口座がないと受け取れない）
+ * 海外の方は参加しなければ、推しは今までどおりコインで届く（参加するとユーザーへの有料コインの推しが円の報酬になり、口座がないと受け取れない）
  */
 export function JapanBankOnlyNotice() {
   const t = useTranslation()
@@ -758,20 +758,12 @@ function EarningList(props: { earnings: CreatorRewardEarning[] }) {
               <div key={e.id} className="flex items-center gap-2 py-2">
                 <div className="min-w-0 flex-1">
                   <div>
-                    {e.kind === "CLAWBACK" ? (
-                      t("返金による差し引き", "Refund deduction")
-                    ) : e.kind === "REQUEST" ? (
-                      t("有料リクエスト", "Paid request")
-                    ) : e.workId ? (
-                      <Link
-                        to={`/posts/${e.workId}`}
-                        className="underline-offset-2 hover:underline"
-                      >
-                        {t("作品への推し", "Support on work")}
-                      </Link>
-                    ) : (
-                      t("プロフィールへの推し", "Profile support")
-                    )}
+                    {e.kind === "CLAWBACK"
+                      ? t("返金による差し引き", "Refund deduction")
+                      : e.kind === "REQUEST"
+                        ? t("有料リクエスト", "Paid request")
+                        : // 過去に作品から送られた推しも、あなた（ユーザー）への推しとして出す
+                          t("推し", "Support")}
                     <span className="ml-2 text-muted-foreground text-xs">
                       {e.coins.toLocaleString()} {t("コイン", "coins")}
                     </span>

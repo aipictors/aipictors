@@ -628,8 +628,8 @@ export function SettingProfileForm(props: Props) {
             label={t("推されたときの感謝コメント", "Support thank-you message")}
             count={{ value: supportThankYouMessage.length, max: 120 }}
             hint={t(
-              "推しの完了画面と、推し付きコメントを送ったあとに表示します。",
-              "Shown after someone supports you, including support comments.",
+              "あなたを推してくれた人に、推しの完了画面で表示します。",
+              "Shown on the completion screen after someone supports you.",
             )}
           >
             <AutoResizeTextarea

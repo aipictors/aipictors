@@ -3,7 +3,7 @@ import { getUserModelsAuthHeaders } from "~/lib/user-models/client"
 
 /**
  * 作品がオリジナルか二次創作かの運営の判定（作品のタグとは別に、モデレーターが管理画面で付ける）
- * ORIGINAL = オリジナル（作品ページにバッジ）、FAN_WORK = 二次創作、null = 未判定（推しには使わない。作品からの推しはいつもフリーコインだけ）
+ * ORIGINAL = オリジナル（作品ページにバッジ）、FAN_WORK = 二次創作、null = 未判定（推しには使わない。作品への推しは終了し、推しはユーザーへの推しだけ）
  */
 export type WorkOriginalJudgment = "ORIGINAL" | "FAN_WORK"
 

@@ -31,8 +31,8 @@ export const HELP_RECENT_CHANGES: Array<{
   {
     date: "2026-11-27",
     text: {
-      ja: "プレミアムコインの推しはユーザーへの推し（プロフィールから）だけに。作品ページからの推しは、オリジナル作品でも二次創作でもフリーコインです",
-      en: "Premium-coin support is now only for supporting a user (from their profile). Support from work pages uses free coins, for original works and fan works alike",
+      ja: "作品への推しを終了し、推しはユーザーへの推しだけに（フリー・プレミアムとも。作品ページでは作者の欄の「作者を推す」から）。これまでの作品経由の推しも作者への推しとして数え、過去の推し付きコメントは本文だけで表示",
+      en: 'Support on works has ended; support now goes to users only (free or premium; on work pages use "Support creator" in the creator box). Past support through works counts toward the creator, and past support comments show only their text',
     },
     to: "/fan-works-policy",
   },

@@ -108,9 +108,9 @@ export const ACHIEVEMENT_SERIES_LABELS: Record<
   "post-streak": { ja: "毎日投稿を続ける", en: "Daily posting streak" },
   "achievements-unlocked": { ja: "実績を集める", en: "Collect achievements" },
   "achievement-level": { ja: "実績レベルを上げる", en: "Raise your level" },
-  "supports-sent": { ja: "推し付きコメントを送る", en: "Send support" },
+  "supports-sent": { ja: "推しを送る", en: "Send support" },
   "supports-received": {
-    ja: "推し付きコメントをもらう",
+    ja: "推しをもらう",
     en: "Receive support",
   },
   "bookmarks-given": { ja: "ブックマークする", en: "Bookmark works" },

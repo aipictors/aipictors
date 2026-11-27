@@ -60,7 +60,6 @@ export function WorkCommentThread(
         userId={comment.user?.id ?? ""}
         isMine={comment.user?.id === appContext.userId}
         createdAt={comment.createdAt}
-        support={comment.support ?? null}
         stickerImageURL={comment.sticker?.imageUrl ?? ""}
         stickerTitle={comment.sticker?.title}
         stickerId={comment.sticker?.id}

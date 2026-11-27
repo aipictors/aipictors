@@ -49,8 +49,8 @@ const PANELS: [HelpMangaPanel, HelpMangaPanel, HelpMangaPanel, HelpMangaPanel] =
     {
       image: "coinuse-2",
       caption: {
-        ja: "好きな作品を「推し」て応援。購入コインならクリエイターの報酬に",
-        en: "Support works you love. Bought coins become creator rewards",
+        ja: "好きなクリエイターを「推し」て応援。購入コインならクリエイターの報酬に",
+        en: "Support creators you love. Bought coins become creator rewards",
       },
       bubbles: [{ ja: "推しにエール！", en: "Go, fave!", at: "tr" }],
     },
@@ -118,8 +118,8 @@ export function PlusCoinUses() {
       tone: "text-pink-500 bg-pink-500/10",
       title: { ja: "推し（応援）", en: "Support creators" },
       body: {
-        ja: "作品やプロフィールからコインで応援。メッセージ付きでコメント欄に目立って表示され、推しランキングにも載ります。プレミアムコインで推せるのはユーザーへの推し（プロフィールから）だけで、作品ページからはフリーコインで推せます。",
-        en: "Send coins from a work or profile, with a message that stands out in comments and counts toward the rankings. Premium Coins can only be used to support a user from their profile; on work pages, support uses Free Coins.",
+        ja: "プロフィールの「推す」や作品ページの「作者を推す」から、クリエイターをコインで応援。フリーコインもプレミアムコインも使え、推しランキングにも載ります（推しはユーザーへの推しだけで、作品への推しは終了しました）。",
+        en: 'Support creators with coins from Support on their profile or "Support creator" on a work page. Free and Premium Coins both work, and support counts toward the rankings (support goes to users only; support on works has ended).',
       },
       coins: "both",
       to: "/coin-rankings?kind=received",
@@ -183,8 +183,8 @@ export function PlusCoinUses() {
       tone: "text-teal-600 bg-teal-500/10",
       title: { ja: "受け取って報酬に", en: "Earn rewards" },
       body: {
-        ja: "プロフィールから購入したプレミアムコインで推されると、1,000コインにつき500円の報酬として振り込まれます（クリエイター報酬に参加した方。R18・R18G の作品を公開している方は対象外）。",
-        en: "When you receive purchased premium coins from your profile, every 1,000 coins pays out ¥500 (Creator Rewards members who don't publish R18 / R18G works).",
+        ja: "あなたへの推しが購入したプレミアムコインで届くと、1,000コインにつき500円の報酬として振り込まれます（クリエイター報酬に参加した方。R18・R18G の作品を公開している方は対象外）。",
+        en: "When you receive support with purchased premium coins, every 1,000 coins pays out ¥500 (Creator Rewards members who don't publish R18 / R18G works).",
       },
       coins: "premium",
       to: "/settings/creator-rewards",

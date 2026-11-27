@@ -57,8 +57,8 @@ export function CoinHelpContent(props: Props) {
         </p>
         <p className="text-sm leading-6">
           {t(
-            "プレミアムコインは購入して増やせるコインです。画像生成や応援に使えます（推しに使えるのはユーザーへの推し（プロフィールから）だけで、作品ページからの推しはフリーコインです）。生成時はフリーコインを先に消費し、足りない分だけプレミアムコインが使われます。",
-            "Premium coins are coins you can increase by purchasing. They can be used for image generation and support (only to support a user from their profile; support on work pages uses free coins). During generation, free coins are consumed first and premium coins are used only for the remaining amount.",
+            "プレミアムコインは購入して増やせるコインです。画像生成や応援に使えます（推しはフリーコインと同じく、ユーザーへの推しに使えます）。生成時はフリーコインを先に消費し、足りない分だけプレミアムコインが使われます。",
+            "Premium coins are coins you can increase by purchasing. They can be used for image generation and support (support, like free coins, goes to users). During generation, free coins are consumed first and premium coins are used only for the remaining amount.",
           )}
         </p>
         <p className="text-muted-foreground text-sm leading-6">
@@ -124,14 +124,14 @@ export function CoinHelpContent(props: Props) {
           </li>
           <li>
             {t(
-              "推し・応援: ユーザーを応援すると、pt としてランキングに反映されます。フリーコインはどの作品・プロフィールにも使えます。プレミアムコインはユーザーへの推し（プロフィールから）だけに使え、作品ページからの推しはオリジナル作品でも二次創作でもフリーコインです。権利者さんと作者さんへの配慮として、作品にお金がひもづかないようにしています。",
-              "Support: when you support a user, the action is reflected in rankings as pt. Free Coins can go to any work or profile. Premium Coins can only be used to support a user from their profile; support on work pages uses Free Coins, for original works and fan works alike. Out of consideration for rights holders and creators, we keep money from being tied to works.",
+              "推し・応援: ユーザーを応援すると、pt としてランキングに反映されます。推しはフリーコイン・プレミアムコインともユーザーへの推しだけで、プロフィールの「推す」か作品ページの作者の欄の「作者を推す」から送れます（作品への推しは終了しました）。権利者さんと作者さんへの配慮として、作品にお金がひもづかないようにしています。",
+              'Support: when you support a user, the action is reflected in rankings as pt. Support, with Free or Premium Coins, goes to users only: use Support on a profile or "Support creator" in the creator box on a work page (support on works has ended). Out of consideration for rights holders and creators, we keep money from being tied to works.',
             )}
           </li>
           <li>
             {t(
-              "報酬: クリエイター報酬に参加すると、プロフィールから有料のプレミアムコインで推された分が報酬として銀行口座へ振り込まれます（1,000 コインにつき 500 円。R18・R18G の作品を公開している人は対象外）。Amazon ギフト券への交換は終了しました。",
-              "Rewards: join Creator Rewards to receive bank payouts for purchased Premium Coins sent to you from your profile (¥500 per 1,000 coins; creators who publish R18 / R18G works are not eligible). Amazon gift card exchange has ended.",
+              "報酬: クリエイター報酬に参加すると、あなたへの推しのうち有料のプレミアムコインの分が報酬として銀行口座へ振り込まれます（1,000 コインにつき 500 円。R18・R18G の作品を公開している人は対象外）。Amazon ギフト券への交換は終了しました。",
+              "Rewards: join Creator Rewards to receive bank payouts for purchased Premium Coins sent to you as support (¥500 per 1,000 coins; creators who publish R18 / R18G works are not eligible). Amazon gift card exchange has ended.",
             )}
           </li>
         </ul>

@@ -2,9 +2,8 @@
 
 - Aipictors does not reject fan works (works based on existing titles or characters), and does not ban them across the board.
 - At the same time, **we keep money from being tied to works**. Out of consideration for rights holders and for the creators who make the works, we keep money from changing hands over fan works.
-  - Support with **Premium Coins** (purchased coins) can **only be sent to a user (from their profile)**. Support from a work page (the Support button and support in comments) uses Free Coins only, for original works and fan works alike.
-  - **Creator Rewards** cover Premium Coin support that participating creators receive from their profile (creators who publish R18 / R18G works are not eligible).
-  - Support with **Free Coins**, and support pt, can still be sent to any work, including fan works.
+  - Support, with Free or Premium Coins, goes **to users only** (Support on a profile, or "Support creator" in the creator box on a work page). **Support on works** (the work's Support button and support in comments) has ended. Past support sent through works counts as support for that creator.
+  - **Creator Rewards** cover the purchased Premium Coin part of the support that participating creators receive (creators who publish R18 / R18G works are not eligible).
   - The "Original (verified)" badge on a work page marks works Aipictors has confirmed as original.
 - Whether fan works are allowed is decided by each rights holder (the original author, publisher, game company and so on). **Checking and following the rights holder's guidelines and terms is the poster's responsibility.**
 - Aipictors does not decide or guarantee whether fan works are allowed for any particular title.

@@ -81,8 +81,8 @@ export function HideCoinSupportSetting(props: {
           "Hide Oshi and Oshi rankings",
         )}
         description={t(
-          "推しに関する表示（推すボタン、コメントの推し、推しの帯、推しの数、推しランキング、推しの通知など）をすべてあなたの画面から消します。推しだけのコメントは出さず、本文のある推し付きコメントは普通のコメントとして本文だけ出します。ほかの人の画面は変わりません。推しを受け付けるかどうか（応援コイン受け取りの設定）はそのままで、これまでに受け取った推しの記録や報酬も消えません。",
-          "Removes everything about Oshi from your screens (Oshi buttons, Oshi on comments, the Oshi strip, Oshi counts, Oshi rankings, Oshi notifications and more). Oshi-only comments are hidden, and comments with text show just the text like a normal comment. Other people's screens do not change. Whether you accept Oshi (Received Support Coins settings) stays as is, and Oshi you already received and its rewards stay as is.",
+          "推しに関する表示（推すボタン、推しの数、推しランキング、推しの通知など）をすべてあなたの画面から消します。ほかの人の画面は変わりません。推しを受け付けるかどうか（応援コイン受け取りの設定）はそのままで、これまでに受け取った推しの記録や報酬も消えません。",
+          "Removes everything about Oshi from your screens (Oshi buttons, Oshi counts, Oshi rankings, Oshi notifications and more). Other people's screens do not change. Whether you accept Oshi (Received Support Coins settings) stays as is, and Oshi you already received and its rewards stay as is.",
         )}
       >
         <Switch

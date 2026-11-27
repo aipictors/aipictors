@@ -1,7 +1,6 @@
 import { useApolloClient } from "@apollo/client/index"
 import {
   EyeOffIcon,
-  Heart,
   Loader2Icon,
   SendHorizontalIcon,
   StampIcon,
@@ -9,22 +8,20 @@ import {
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
-import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { prefetchViewerStickers } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
-import { WorkCommentSupportPanel } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-support-panel"
 import type { WorkCommentListState } from "~/routes/($lang)._main.posts.$post._index/hooks/use-work-comment-list"
 import { isUserAvatarDecoration } from "~/utils/user-avatar-frame"
 import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
-/** 入力欄の下に並ぶ小さな切り替えボタン（スタンプ・推す・隠し付き） */
+/** 入力欄の下に並ぶ小さな切り替えボタン（スタンプ・隠し付き） */
 const toolButtonClassName =
   "inline-flex h-8 shrink-0 items-center gap-1 rounded-full px-2.5 font-medium text-muted-foreground text-xs transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
 
 /**
- * コメントの入力欄。入力・スタンプ・推し・隠し付き・送信を 1 つの枠にまとめ、
- * 推しを開いたときは同じ枠の中に金額の欄を出す（送信ボタンは右下の 1 つだけ）
+ * コメントの入力欄。入力・スタンプ・隠し付き・送信を 1 つの枠にまとめる（送信ボタンは右下の 1 つだけ）。
+ * 作品への推し（推し付きコメント）は終了したので、推しの欄は出さない。推しは作者の欄の「作者を推す」から
  */
 export function WorkCommentForm(
   props: WorkCommentListState & { isWorkOwnerBlocked?: boolean },
@@ -35,39 +32,18 @@ export function WorkCommentForm(
     appContext,
     authContext,
     comment,
-    currentSupportDraft,
     isCreatingWorkComment,
-    isOwnWork,
     isSensitive,
-    isSupportOpen,
     onOpen,
     onWorkComment,
-    reloadCoinSummary,
     setComment,
     setIsSensitive,
-    setIsSupportOpen,
-    setSupportCoinAmount,
     userAvatarFrame,
     userIcon,
   } = props
 
   const isDisabled = !authContext.isLoggedIn || props.isWorkOwnerBlocked
-  // 推しを表示しない設定の人には「推す」と推しの欄を出さない
-  const isHideCoinSupport = useHideCoinSupport()
-  const canSupport = !isOwnWork && !isHideCoinSupport
-  const isSupportVisible =
-    isSupportOpen && !props.isWorkOwnerBlocked && canSupport
-  const canSend = comment.trim().length > 0 || currentSupportDraft !== null
-
-  const toggleSupport = () => {
-    if (isSupportOpen) {
-      // 閉じたら推しは付けない
-      setSupportCoinAmount("FREE", "0")
-    } else {
-      void reloadCoinSummary()
-    }
-    setIsSupportOpen((value) => !value)
-  }
+  const canSend = comment.trim().length > 0
 
   return (
     <div className="flex w-full items-start gap-3">
@@ -86,8 +62,6 @@ export function WorkCommentForm(
         className={cn(
           "min-w-0 flex-1 overflow-hidden rounded-2xl border border-border/70 bg-background transition-[border-color,box-shadow]",
           "focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10",
-          isSupportVisible &&
-            "border-rose-500/40 focus-within:border-rose-500/60 focus-within:ring-rose-500/10",
           isDisabled && "bg-muted/40",
         )}
       >
@@ -102,9 +76,7 @@ export function WorkCommentForm(
           placeholder={
             authContext.isNotLoggedIn
               ? t("ログインするとコメントできます", "Log in to comment")
-              : isSupportVisible
-                ? t("応援メッセージ（なくても推せます）", "Message (optional)")
-                : t("コメントする", "Add a comment")
+              : t("コメントする", "Add a comment")
           }
           disabled={isDisabled}
           onKeyDown={(event) => {
@@ -124,11 +96,6 @@ export function WorkCommentForm(
             )}
           </p>
         )}
-        {isSupportVisible && (
-          <div className="border-rose-500/20 border-t bg-rose-500/[0.03] px-3 py-3">
-            <WorkCommentSupportPanel {...props} onClose={toggleSupport} />
-          </div>
-        )}
         <div className="flex items-center gap-1 px-2 py-1.5">
           <div className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto [scrollbar-width:none]">
             <button
@@ -146,27 +113,6 @@ export function WorkCommentForm(
                 {t("スタンプ", "Sticker")}
               </span>
             </button>
-            {canSupport && (
-              <button
-                type="button"
-                disabled={isDisabled}
-                aria-pressed={isSupportOpen}
-                aria-label={t("推しを付ける", "Add support")}
-                className={cn(
-                  toolButtonClassName,
-                  isSupportOpen &&
-                    "bg-rose-500/10 text-rose-600 hover:bg-rose-500/15 hover:text-rose-600 dark:text-rose-300",
-                )}
-                onClick={toggleSupport}
-              >
-                <Heart
-                  className={cn("size-4", isSupportOpen && "fill-current")}
-                />
-                {currentSupportDraft
-                  ? `${currentSupportDraft.totalPt.toLocaleString()}pt`
-                  : t("推す", "Support")}
-              </button>
-            )}
             <button
               type="button"
               disabled={isDisabled}
@@ -192,30 +138,11 @@ export function WorkCommentForm(
           <Button
             disabled={isDisabled || isCreatingWorkComment || !canSend}
             onClick={() => void onWorkComment()}
-            aria-label={
-              currentSupportDraft
-                ? t(
-                    `${currentSupportDraft.totalPt}pt 推して送信`,
-                    `Send with ${currentSupportDraft.totalPt}pt`,
-                  )
-                : t("送信", "Send")
-            }
-            className={cn(
-              "h-9 shrink-0 gap-1.5 whitespace-nowrap rounded-full px-4 text-sm",
-              currentSupportDraft &&
-                "border-0 bg-gradient-to-r from-pink-500 to-rose-500 font-bold text-white hover:opacity-90",
-            )}
+            aria-label={t("送信", "Send")}
+            className="h-9 shrink-0 gap-1.5 whitespace-nowrap rounded-full px-4 text-sm"
           >
             {isCreatingWorkComment ? (
               <Loader2Icon className="size-4 animate-spin" />
-            ) : currentSupportDraft ? (
-              <>
-                <Heart className="size-4 fill-current" />
-                {t(
-                  `${currentSupportDraft.totalPt.toLocaleString()}pt 推す`,
-                  `Send ${currentSupportDraft.totalPt.toLocaleString()}pt`,
-                )}
-              </>
             ) : (
               <>
                 <SendHorizontalIcon className="size-4" />

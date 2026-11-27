@@ -227,47 +227,12 @@ export function SupportRewardNote(props: { className?: string }) {
   )
 }
 
-/**
- * 作品から推すときにプレミアムコインを選べない理由の一言。
- * プレミアムコインはユーザーへの推し（プロフィールから）だけ。userLogin があれば作者のプロフィールへのリンクを添える
- */
-export function PremiumSupportUserOnlyNote(props: {
-  userLogin?: string | null
-  className?: string
-}) {
-  const t = useTranslation()
-  return (
-    <p
-      className={cn(
-        "text-muted-foreground text-xs leading-relaxed",
-        props.className,
-      )}
-    >
-      {t(
-        "プレミアムコインはユーザーへの推し（プロフィールから）だけに使えます。作品への推しはフリーコインです",
-        "Premium Coins can only be used to support a user (from their profile). Support on works uses Free Coins",
-      )}
-      {props.userLogin && (
-        <>
-          {" "}
-          <Link
-            to={`/users/${props.userLogin}`}
-            className="whitespace-nowrap text-foreground underline underline-offset-2"
-          >
-            {t("作者のプロフィールへ", "Go to the creator's profile")}
-          </Link>
-        </>
-      )}
-    </p>
-  )
-}
-
-/** API が「プレミアムはユーザーへの推しだけ」で断ったときの文 */
-export const usePremiumSupportUserOnlyErrorText = () => {
+/** API が「作品への推しは終了（推しはユーザーへの推しだけ）」で断ったときの文 */
+export const useSupportUserOnlyErrorText = () => {
   const t = useTranslation()
   return t(
-    "プレミアムコインはユーザーへの推し（プロフィールから）だけに使えます。作品への推しはフリーコインです",
-    "Premium Coins can only be used to support a user (from their profile). Support on works uses Free Coins",
+    "作品への推しは終了しました。推しはユーザー（プロフィール）への推しだけになりました",
+    "Support on works has ended. You can now only support users (from their profile)",
   )
 }
 

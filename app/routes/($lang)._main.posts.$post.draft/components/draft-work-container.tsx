@@ -166,7 +166,6 @@ export function DraftWorkContainer(props: Props) {
             )}
             {workForArticle.isCommentsEditable && (
               <WorkCommentList
-                workOwnerLogin={workForArticle.user?.login}
                 workId={workForArticle.id}
                 comments={comments}
                 workOwnerId={workForArticle.user?.id}
@@ -178,7 +177,6 @@ export function DraftWorkContainer(props: Props) {
             {workForArticle.user && (
               <div className="block md:mt-0 lg:hidden">
                 <WorkUser
-                  workId={workForArticle.id}
                   userId={workForArticle.user.id}
                   userLogin={workForArticle.user.login}
                   userName={workForArticle.user.name}
@@ -198,7 +196,6 @@ export function DraftWorkContainer(props: Props) {
           {workForArticle.user && (
             <div className="w-full">
               <WorkUser
-                workId={workForArticle.id}
                 userId={workForArticle.user.id}
                 userName={workForArticle.user.name}
                 userLogin={workForArticle.user.login}

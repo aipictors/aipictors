@@ -17,7 +17,6 @@ import {
   CommentAchievementChip,
 } from "~/components/achievements/comment-achievement-chip"
 import { OfficialBadge } from "~/components/official-badge"
-import { SupportSuperChatCard } from "~/components/support-super-chat"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
@@ -78,11 +77,6 @@ type Props = {
   isStickerDownloadable?: boolean
   isMuted: boolean
   isSensitive?: boolean
-  support?: {
-    freeCoinAmount: number
-    premiumCoinAmount: number
-    totalPt: number
-  } | null
   moderationSummary?: CommentModerationSummaryState | null
   onDeleteComment: () => void
   onReplyCompleted?: (reply: Comment) => void
@@ -221,8 +215,6 @@ export function WorkComment(props: Props) {
       )
     }
   }
-
-  const hasSupport = Boolean(props.support && props.support.totalPt > 0)
 
   const textBlock = props.text ? (
     <div className="space-y-2">
@@ -438,20 +430,9 @@ export function WorkComment(props: Props) {
               </div>
             )}
           </div>
-          {hasSupport && props.support ? (
-            // 推し付きは段階の色の帯＋本文の囲み（スーパーチャットのように通常のコメントより目立たせる）。スタンプも枠の中に入れる
-            <SupportSuperChatCard support={props.support}>
-              <div className="space-y-2">
-                {textBlock}
-                {stickerBlock}
-              </div>
-            </SupportSuperChatCard>
-          ) : (
-            <>
-              {textBlock}
-              {stickerBlock}
-            </>
-          )}
+          {/* 作品への推しは終了した。過去の推し付きコメントも帯・金額を出さず、本文だけのコメントとして出す */}
+          {textBlock}
+          {stickerBlock}
           <div className="-ml-2 flex flex-wrap items-center gap-x-1 text-muted-foreground">
             {props.isWorkOwnerLiked && (
               <div className="relative">

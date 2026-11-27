@@ -16,8 +16,6 @@ import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 type Props = {
   /** R18 の作品のページでは推しの欄に報酬の一言を出さない */
   showSupportRewardNote?: boolean
-  /** 推す作品。作品からの推しはフリーコインだけ（プレミアムコインはプロフィールから） */
-  workId?: string
   userId: string
   userLogin: string
   userName: string
@@ -117,6 +115,7 @@ export function WorkUser(props: Props) {
           onFollowChange={onFollowChange}
           className="h-10"
         />
+        {/* 作品への推しは終了したので、作品ではなく作者（ユーザー）を推す。workId を付けずプロフィールと同じ推し（フリー・プレミアムとも） */}
         {canShowSupportButton && (
           <SupportButton
             targetUserId={props.userId}
@@ -124,8 +123,7 @@ export function WorkUser(props: Props) {
             targetUserIconUrl={props.userIconImageURL}
             variant="profile"
             showRewardNote={props.showSupportRewardNote ?? true}
-            workId={props.workId}
-            targetUserLogin={props.userLogin}
+            triggerLabel={t("作者を推す", "Support creator")}
             triggerClassName="h-10 w-full px-3 text-sm"
           />
         )}
