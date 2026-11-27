@@ -1,10 +1,9 @@
 import {
-  AlertTriangleIcon,
   Loader2Icon,
   ShieldCheckIcon,
   SparklesIcon,
+  Undo2Icon,
 } from "lucide-react"
-import { useEffect } from "react"
 import { Button } from "~/components/ui/button"
 import { Slider } from "~/components/ui/slider"
 import { Switch } from "~/components/ui/switch"
@@ -16,25 +15,75 @@ import {
   MOSAIC_STRENGTH_MAX,
   MOSAIC_STRENGTH_MIN,
   type MosaicStyle,
-  preloadAutoMosaic,
 } from "~/utils/auto-mosaic"
 
 type Props = {
   mosaic: ReturnType<typeof usePostAutoMosaic>
+  /** 年齢種別が R18 / R18G */
+  isR18: boolean
+  /** おすすめの年齢種別を反映する */
+  onSuggestRating?: (rating: "R18") => void
 }
 
+const buttonClassName =
+  "h-8 rounded-full border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+
 /**
- * 投稿画面（R18 / R18G）: 自動モザイクの状態と、まとめての種類・濃さ、「自分でかけ済み」の切り替え
- * 検出は投稿者のブラウザの中で動く（サーバーは使わない）
+ * 投稿画面: 自動モザイク・年齢種別の「おすすめ」
+ * 自動ではかけず、年齢種別も変えない。押したときだけ反映する（検出は投稿者のブラウザの中で動く）
+ * - 全年齢・R15: はっきり写っていそうな画像があれば「R-18 がおすすめ」
+ * - R18 / R18G: モザイクが必要そうな画像があれば「おすすめのモザイクをかける」。かけた後は種類・濃さ・外す
  */
 export function PostFormAutoMosaicBar(props: Props) {
   const t = useTranslation()
-  const { summary, settings, isSelfApplied } = props.mosaic
+  const { summary, settings } = props.mosaic
 
-  // 帯が出たら（R18 の投稿）検出の部品を先に読んでおく
-  useEffect(() => {
-    preloadAutoMosaic()
-  }, [])
+  if (!props.isR18) {
+    if (summary.sensitive === 0 || props.mosaic.isRatingSuggestionDismissed) {
+      return null
+    }
+    return (
+      <div className="mx-2 mb-3 rounded-xl border border-sky-500/50 bg-sky-500/10 px-3 py-2.5 text-white">
+        <div className="flex items-start gap-2.5">
+          <SparklesIcon className="mt-0.5 size-5 shrink-0 text-sky-300" />
+          <div className="min-w-0 flex-1 text-xs leading-5">
+            <p className="font-bold text-sm">
+              {t("おすすめ: 年齢種別「R-18」", "Suggestion: age rating “R-18”")}
+            </p>
+            <p className="text-zinc-200">
+              {t(
+                `${summary.sensitive}枚に、モザイクが必要な部分が写っているかもしれません。`,
+                `${summary.sensitive} image(s) may show areas that need a mosaic.`,
+              )}
+            </p>
+            <p className="text-zinc-400">
+              {t(
+                "自動の判定なので、見間違えることがあります。問題なければこのまま投稿できます。",
+                "This is an automatic check and can be wrong. If everything is fine, you can post as is.",
+              )}
+            </p>
+          </div>
+        </div>
+        <div className="mt-2 flex flex-wrap justify-end gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className={buttonClassName}
+            onClick={props.mosaic.dismissRatingSuggestion}
+          >
+            {t("このままにする", "Keep current rating")}
+          </Button>
+          <Button
+            size="sm"
+            className="h-8 rounded-full"
+            onClick={() => props.onSuggestRating?.("R18")}
+          >
+            {t("R-18 にする", "Change to R-18")}
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   const styles: { value: MosaicStyle; label: string }[] = [
     { value: "mosaic", label: t("モザイク", "Mosaic") },
@@ -44,7 +93,24 @@ export function PostFormAutoMosaicBar(props: Props) {
   ]
 
   const isBusy = summary.pending > 0 || props.mosaic.isRendering
-  const hasWarning = isSelfApplied && summary.warning > 0
+  const hasSuggestion = summary.suggested > 0
+  const hasApplied = summary.applied > 0
+
+  const title = () => {
+    if (hasSuggestion) {
+      return t(
+        `おすすめ: ${summary.suggested}枚にモザイク`,
+        `Suggestion: mosaic on ${summary.suggested} image(s)`,
+      )
+    }
+    if (hasApplied) {
+      return t(
+        `${summary.applied}枚にモザイクをかけています`,
+        `Mosaic on ${summary.applied} image(s)`,
+      )
+    }
+    return t("モザイクのおすすめ", "Mosaic suggestions")
+  }
 
   const status = () => {
     if (summary.pending > 0) {
@@ -53,73 +119,87 @@ export function PostFormAutoMosaicBar(props: Props) {
         `Checking images (${summary.pending} left)`,
       )
     }
-    if (isSelfApplied) {
-      return hasWarning
-        ? t(
-            `${summary.warning}枚で、モザイクが足りないように見える所があります。⚠の画像を確かめてください`,
-            `${summary.warning} image(s) may need more mosaic. Please check the images marked ⚠`,
-          )
-        : t(
-            "モザイクが足りない所は見つかりませんでした",
-            "No areas needing more mosaic were found",
-          )
+    if (hasSuggestion) {
+      return t(
+        "モザイクが必要そうな所が見つかりました。押すとかかり、下のプレビューで確かめて鉛筆ボタンから直せます（範囲の追加・削除、種類、濃さ）。",
+        "Areas that may need a mosaic were found. Press to apply, then check the preview and adjust with the pencil button.",
+      )
     }
-    return summary.applied > 0
-      ? t(
-          `${summary.total}枚中${summary.applied}枚にモザイクをかけました。下のプレビューで確かめて、直したい画像は鉛筆ボタンから（範囲の追加・削除、種類、濃さ）`,
-          `Mosaic applied to ${summary.applied} of ${summary.total} image(s). Check the preview below and use the pencil button to adjust`,
-        )
-      : t(
-          "モザイクが必要な所は見つかりませんでした。必要なら鉛筆ボタンから手でかけてください",
-          "Nothing to mosaic was found. Use the pencil button if needed",
-        )
+    if (hasApplied) {
+      return t(
+        "下のプレビューで確かめて、直したい画像は鉛筆ボタンから（範囲の追加・削除、種類、濃さ）。",
+        "Check the preview below and use the pencil button to adjust.",
+      )
+    }
+    return t(
+      "モザイクが必要そうな所は見つかりませんでした。必要なら鉛筆ボタンから自分でかけてください。",
+      "Nothing that seems to need a mosaic was found. Use the pencil button if needed.",
+    )
   }
 
   return (
     <div
       className={cn(
         "mx-2 mb-3 rounded-xl border px-3 py-2.5 text-white",
-        hasWarning
-          ? "border-amber-500/60 bg-amber-500/15"
-          : "border-emerald-500/40 bg-emerald-500/10",
+        hasSuggestion
+          ? "border-sky-500/50 bg-sky-500/10"
+          : "border-white/15 bg-white/5",
       )}
     >
       <div className="flex items-start gap-2.5">
-        {hasWarning ? (
-          <AlertTriangleIcon className="mt-0.5 size-5 shrink-0 text-amber-400" />
+        {hasSuggestion ? (
+          <SparklesIcon className="mt-0.5 size-5 shrink-0 text-sky-300" />
         ) : (
           <ShieldCheckIcon className="mt-0.5 size-5 shrink-0 text-emerald-400" />
         )}
         <div className="min-w-0 flex-1 text-xs leading-5">
-          <p className="font-bold text-sm">
-            {isSelfApplied
-              ? t(
-                  "自分でかけたモザイクのまま投稿します",
-                  "Posting with your own mosaic",
-                )
-              : t(
-                  "R18 作品は自動でモザイクがかかります",
-                  "R18 works are mosaicked automatically",
-                )}
-          </p>
+          <p className="font-bold text-sm">{title()}</p>
           <p className="flex items-center gap-1 text-zinc-200">
             {isBusy && (
               <Loader2Icon className="size-3.5 shrink-0 animate-spin" />
             )}
             {status()}
           </p>
-          {!isSelfApplied && (
+          {hasSuggestion && (
             <p className="text-zinc-400">
               {t(
-                "規約でモザイクが必要な部分を見つけて、形に沿ってかけます（アニメーション画像は対象外）。自動でかけた作品を、モザイクの不足を理由に運営が非公開にすることは基本的にありません。",
-                "Areas that require a mosaic under the rules are detected and covered along their shape (not animated images). Works mosaicked automatically are generally not hidden for insufficient mosaic.",
+                "自動の判定なので、見間違えることがあります。自分でかけ済みなら、そのままで大丈夫です。",
+                "This is an automatic check and can be wrong. If you already added your own mosaic, you can leave it.",
               )}
             </p>
           )}
         </div>
       </div>
 
-      {!isSelfApplied && (
+      {(hasSuggestion || summary.autoApplied > 0) && (
+        <div className="mt-2 flex flex-wrap justify-end gap-2">
+          {summary.autoApplied > 0 && (
+            <Button
+              size="sm"
+              variant="outline"
+              className={buttonClassName}
+              disabled={props.mosaic.isRendering}
+              onClick={props.mosaic.removeAutoMosaic}
+            >
+              <Undo2Icon className="mr-1 size-4" />
+              {t("おすすめのモザイクを外す", "Remove suggested mosaic")}
+            </Button>
+          )}
+          {hasSuggestion && (
+            <Button
+              size="sm"
+              className="h-8 rounded-full"
+              disabled={isBusy}
+              onClick={() => void props.mosaic.applySuggestions()}
+            >
+              <SparklesIcon className="mr-1 size-4" />
+              {t("おすすめのモザイクをかける", "Apply suggested mosaic")}
+            </Button>
+          )}
+        </div>
+      )}
+
+      {hasApplied && (
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
           <div
             className="flex shrink-0 rounded-full bg-black/30 p-0.5"
@@ -176,7 +256,7 @@ export function PostFormAutoMosaicBar(props: Props) {
         </div>
       )}
 
-      {!isSelfApplied && (
+      {(hasSuggestion || hasApplied || props.mosaic.isTentacle) && (
         <div className="mt-2 flex items-start gap-2 text-xs">
           <Switch
             id="post-mosaic-tentacle"
@@ -192,52 +272,12 @@ export function PostFormAutoMosaicBar(props: Props) {
             {t("触手を含む作品", "Includes tentacles")}
             <span className="block text-[11px] text-zinc-400 leading-4">
               {t(
-                "触手を性器と見間違えて広くかかるのを防ぎます（タグ・プロンプトに触手があると自動でオン）",
+                "触手を性器と見間違えないようにします（タグ・プロンプトに触手があると自動でオン）",
                 "Keeps tentacles from being mistaken for genitals (turns on automatically when tags or the prompt mention tentacles)",
               )}
             </span>
           </label>
         </div>
-      )}
-
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-white/10 border-t pt-2">
-        <div className="flex items-center gap-2 text-xs">
-          <Switch
-            id="post-mosaic-self-applied"
-            checked={isSelfApplied}
-            onCheckedChange={props.mosaic.setIsSelfApplied}
-            aria-label={t(
-              "自分でモザイクをかけ済み",
-              "I already added my own mosaic",
-            )}
-          />
-          <label htmlFor="post-mosaic-self-applied" className="cursor-pointer">
-            {t(
-              "自分でモザイクをかけ済み（自動でかけない）",
-              "I already added my own mosaic (don't apply automatically)",
-            )}
-          </label>
-        </div>
-        {hasWarning && (
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 rounded-full border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
-            disabled={isBusy}
-            onClick={() => void props.mosaic.applyToWarnings()}
-          >
-            <SparklesIcon className="mr-1 size-4" />
-            {t("⚠の画像に自動でかける", "Apply to images marked ⚠")}
-          </Button>
-        )}
-      </div>
-      {isSelfApplied && !hasWarning && (
-        <p className="mt-1 text-[11px] text-zinc-400 leading-4">
-          {t(
-            "自動ではかけませんが、念のため画像を確認し、モザイクが足りない所が見つかったらお知らせします。",
-            "No automatic mosaic, but images are still checked and you'll be warned about areas needing more mosaic.",
-          )}
-        </p>
       )}
     </div>
   )

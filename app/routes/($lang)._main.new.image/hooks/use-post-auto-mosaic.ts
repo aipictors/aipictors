@@ -8,6 +8,10 @@ import {
 import type { TSortableItem } from "~/components/drag/sortable-item"
 import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import {
+  countSensitivePostImages,
+  SENSITIVE_RATING_MIN_SCORE,
+} from "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
+import {
   canPostMosaic,
   createAutoMosaicItem,
   getItemMosaicSource,
@@ -15,13 +19,11 @@ import {
   getPostMosaicTentacle,
   getPostMosaicVersion,
   hasItemMosaic,
-  isItemMosaicWarning,
+  isItemMosaicSuggested,
   type PostMosaicSettings,
-  readPostMosaicSelfApplied,
   readPostMosaicSettings,
   renderPostMosaic,
   requestPostMosaicDetection,
-  savePostMosaicSelfApplied,
   savePostMosaicSettings,
   setPostMosaicTentacle,
   subscribePostMosaic,
@@ -30,43 +32,45 @@ import {
 /** 一覧の画像の下に出す状態 */
 export type PostMosaicBadge =
   | { kind: "pending" }
-  | { kind: "applied"; isAuto: boolean }
+  | { kind: "applied" }
   | { kind: "none" }
-  | { kind: "warning" }
+  | { kind: "suggested" }
+  | { kind: "sensitive" }
   | { kind: "failed" }
   | null
 
 /**
- * 投稿画面の自動モザイク（R18 / R18G）
- * - 画像を選んだら裏で検出して、見つかったらかけた画像に差し替える（一覧がそのままプレビューになる）
- * - 「自分でかけ済み」のときはかけないが、検出は回して、隠れていないように見える画像に印を付ける
+ * 投稿画面の自動モザイク（おすすめ）
+ * - 画像を選んだら裏で検出する（投稿者のブラウザの中だけ）。自動ではかけず、年齢種別も変えない
+ * - R18 / R18G: モザイクが必要そうな画像を「おすすめ」として出し、押したときだけかける
+ * - 全年齢・R15: はっきり写っていそうな画像があれば「R-18 がおすすめ」と出す（変えるのは投稿者）
  */
 export function usePostAutoMosaic(props: {
   items: TSortableItem[]
-  /** 年齢種別が R18 / R18G の画像投稿 */
-  isEnabled: boolean
+  /** 画像の投稿（検出はこのときだけ） */
+  isImagePost: boolean
+  /** 年齢種別が R18 / R18G */
+  isR18: boolean
   /** タグ・プロンプトに触手がある（触手を含む作品を自動でオンにする） */
   isTentacleHint?: boolean
   dispatch: Dispatch<PostImageFormAction>
 }) {
-  const [isSelfApplied, setIsSelfAppliedState] = useState(false)
   const [settings, setSettingsState] = useState<PostMosaicSettings>({
     style: "mosaic",
     strength: 1,
   })
   const [isRendering, setIsRendering] = useState(false)
+  /** 「R-18 がおすすめ」を閉じた（この投稿の間は出さない） */
+  const [isRatingSuggestionDismissed, setIsRatingSuggestionDismissed] =
+    useState(false)
 
   // 端末に保存した設定はマウント後に読む（サーバーの描画と合わせる）
   useEffect(() => {
-    setIsSelfAppliedState(readPostMosaicSelfApplied())
     setSettingsState(readPostMosaicSettings())
   }, [])
 
-  const version = useSyncExternalStore(
-    subscribePostMosaic,
-    getPostMosaicVersion,
-    () => 0,
-  )
+  // 検出が進んだら描き直す
+  useSyncExternalStore(subscribePostMosaic, getPostMosaicVersion, () => 0)
   const isTentacle = useSyncExternalStore(
     subscribePostMosaic,
     getPostMosaicTentacle,
@@ -75,66 +79,17 @@ export function usePostAutoMosaic(props: {
   // 自分で切り替えたら、タグ・プロンプトでは変えない
   const isTentacleTouchedRef = useRef(false)
 
-  // 差し替え中の元の画像（同じ画像を 2 回処理しない）
-  const busyRef = useRef(new Set<string>())
-
-  // 検出（自分でかけ済みでも、警告のために回す）
+  // 検出（かけはしない）
   useEffect(() => {
-    if (!props.isEnabled) return
+    if (!props.isImagePost) return
     for (const item of props.items) {
       const source = getItemMosaicSource(item)
       if (source && canPostMosaic(source)) requestPostMosaicDetection(source)
     }
-  }, [props.isEnabled, props.items, isTentacle])
+  }, [props.isImagePost, props.items, isTentacle])
 
-  // かける・外す
-  useEffect(() => {
-    const isAuto = props.isEnabled && !isSelfApplied
-    for (const item of props.items) {
-      const source = getItemMosaicSource(item)
-      if (!source || item.content === null || !canPostMosaic(source)) continue
-      if (busyRef.current.has(source)) continue
-
-      if (!isAuto) {
-        // 自動でかけたままの分は外す（手で直した分は残す）
-        if (item.mosaic?.isAuto) {
-          props.dispatch({
-            type: "REPLACE_ITEM",
-            payload: {
-              from: item.content,
-              item: { ...item, content: source, mosaic: null },
-            },
-          })
-        }
-        continue
-      }
-
-      // 手で直した・外した画像、まだ検出中の画像は触らない
-      if (item.mosaic || item.content !== source) continue
-      const detection = getPostMosaicDetection(source)
-      if (detection?.status !== "done" || detection.mask === null) continue
-
-      busyRef.current.add(source)
-      createAutoMosaicItem(item, settings)
-        .then((next) => {
-          if (next) {
-            props.dispatch({
-              type: "REPLACE_ITEM",
-              payload: { from: source, item: next },
-            })
-          }
-        })
-        .catch((error) => console.error(error))
-        .finally(() => busyRef.current.delete(source))
-    }
-  }, [props.items, props.isEnabled, isSelfApplied, settings, version])
-
-  /**
-   * 触手を含む作品か（触手を性器と見間違えて広くかけないようにする）
-   * 自動でかけたままの画像は元に戻し、検出し直してからかけ直す
-   */
-  const changeTentacle = (value: boolean) => {
-    if (value === getPostMosaicTentacle()) return
+  /** 自動でかけたままの画像を元に戻す（手で直した分は残す） */
+  const removeAutoMosaic = () => {
     for (const item of props.items) {
       if (item.mosaic?.isAuto && item.content !== null) {
         props.dispatch({
@@ -146,6 +101,41 @@ export function usePostAutoMosaic(props: {
         })
       }
     }
+  }
+
+  /** おすすめのモザイクを、まだかけていない画像すべてにかける */
+  const applySuggestions = async () => {
+    const targets = props.items.filter(isItemMosaicSuggested)
+    if (targets.length === 0) return
+    setIsRendering(true)
+    try {
+      for (const item of targets) {
+        if (item.content === null) continue
+        const next = await createAutoMosaicItem(item, settings).catch(
+          (error) => {
+            console.error(error)
+            return null
+          },
+        )
+        if (next) {
+          props.dispatch({
+            type: "REPLACE_ITEM",
+            payload: { from: item.content, item: next },
+          })
+        }
+      }
+    } finally {
+      setIsRendering(false)
+    }
+  }
+
+  /**
+   * 触手を含む作品か（触手を性器と見間違えないようにする）
+   * 自動でかけたままの画像は元に戻し、検出し直す（かけ直すかは投稿者が選ぶ）
+   */
+  const changeTentacle = (value: boolean) => {
+    if (value === getPostMosaicTentacle()) return
+    removeAutoMosaic()
     setPostMosaicTentacle(value)
   }
 
@@ -164,11 +154,6 @@ export function usePostAutoMosaic(props: {
   // 次の投稿に持ち越さない
   useEffect(() => () => setPostMosaicTentacle(false), [])
 
-  const setIsSelfApplied = (value: boolean) => {
-    savePostMosaicSelfApplied(value)
-    setIsSelfAppliedState(value)
-  }
-
   /** 種類・濃さをまとめて変える（モザイクがかかっている画像すべてを描き直す） */
   const changeSettings = async (next: PostMosaicSettings) => {
     savePostMosaicSettings(next)
@@ -182,7 +167,6 @@ export function usePostAutoMosaic(props: {
       for (const item of targets) {
         const mosaic = item.mosaic
         if (!mosaic || item.content === null) continue
-        busyRef.current.add(mosaic.source)
         try {
           const content = await renderPostMosaic(
             mosaic.source,
@@ -198,35 +182,6 @@ export function usePostAutoMosaic(props: {
           })
         } catch (error) {
           console.error(error)
-        } finally {
-          busyRef.current.delete(mosaic.source)
-        }
-      }
-    } finally {
-      setIsRendering(false)
-    }
-  }
-
-  /** 警告が出ている画像に自動でかける（自分でかけ済みのまま。手で直したのと同じ扱い） */
-  const applyToWarnings = async () => {
-    const targets = props.items.filter(isItemMosaicWarning)
-    setIsRendering(true)
-    try {
-      for (const item of targets) {
-        const next = await createAutoMosaicItem(item, settings).catch(
-          (error) => {
-            console.error(error)
-            return null
-          },
-        )
-        if (next?.mosaic && item.content !== null) {
-          props.dispatch({
-            type: "REPLACE_ITEM",
-            payload: {
-              from: item.content,
-              item: { ...next, mosaic: { ...next.mosaic, isAuto: false } },
-            },
-          })
         }
       }
     } finally {
@@ -235,42 +190,58 @@ export function usePostAutoMosaic(props: {
   }
 
   const getBadge = (item: TSortableItem): PostMosaicBadge => {
-    if (!props.isEnabled) return null
+    if (!props.isImagePost) return null
     const source = getItemMosaicSource(item)
     if (!source || !canPostMosaic(source)) return null
-    if (hasItemMosaic(item)) {
-      return { kind: "applied", isAuto: item.mosaic?.isAuto === true }
-    }
+    if (hasItemMosaic(item)) return { kind: "applied" }
     const detection = getPostMosaicDetection(source)
+    if (!props.isR18) {
+      // 全年齢・R15 は、R-18 がおすすめの画像だけ印を付ける
+      return detection?.status === "done" &&
+        detection.maxScore >= SENSITIVE_RATING_MIN_SCORE
+        ? { kind: "sensitive" }
+        : null
+    }
     if (!detection || detection.status === "pending") return { kind: "pending" }
     if (detection.status === "failed") return { kind: "failed" }
-    if (isSelfApplied) {
-      return isItemMosaicWarning(item) ? { kind: "warning" } : { kind: "none" }
-    }
-    // 検出済みで見つかったが、差し替え待ち
-    if (detection.mask !== null && !item.mosaic) return { kind: "pending" }
-    return { kind: "none" }
+    return isItemMosaicSuggested(item)
+      ? { kind: "suggested" }
+      : { kind: "none" }
   }
 
   const badges = props.items.map(getBadge)
   const summary = {
-    total: badges.filter((badge) => badge !== null).length,
-    pending: badges.filter((badge) => badge?.kind === "pending").length,
+    total: props.items.filter((item) => {
+      const source = getItemMosaicSource(item)
+      return Boolean(source) && canPostMosaic(source)
+    }).length,
+    pending: props.items.filter((item) => {
+      const source = getItemMosaicSource(item)
+      return (
+        source !== null &&
+        canPostMosaic(source) &&
+        getPostMosaicDetection(source)?.status === "pending"
+      )
+    }).length,
     applied: badges.filter((badge) => badge?.kind === "applied").length,
-    warning: badges.filter((badge) => badge?.kind === "warning").length,
-    failed: badges.filter((badge) => badge?.kind === "failed").length,
+    autoApplied: props.items.filter(
+      (item) => hasItemMosaic(item) && item.mosaic?.isAuto,
+    ).length,
+    suggested: props.items.filter(isItemMosaicSuggested).length,
+    sensitive: countSensitivePostImages(props.items),
   }
 
   return {
-    isSelfApplied,
-    setIsSelfApplied,
     isTentacle,
     setIsTentacle,
     settings,
     changeSettings,
-    applyToWarnings,
+    applySuggestions,
+    removeAutoMosaic,
     isRendering,
     getBadge,
     summary,
+    isRatingSuggestionDismissed,
+    dismissRatingSuggestion: () => setIsRatingSuggestionDismissed(true),
   }
 }

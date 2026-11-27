@@ -13,8 +13,8 @@ import {
 } from "~/utils/auto-mosaic"
 
 /**
- * 投稿画面の自動モザイク
- * - 画像を選んだら（R18 / R18G）裏で検出し、見つかったらモザイクをかけた画像をプレビュー（一覧）に出す
+ * 投稿画面の自動モザイク（おすすめ）
+ * - 画像を選んだら裏で検出する。かけるのは投稿者が「おすすめのモザイクをかける」を押したときだけ
  * - 投稿する画像（item.content）はかけた後の画像。元の画像・範囲・種類・濃さは item.mosaic に持つので、後から何度でも直せる
  * - 検出の結果は元の画像ごとにこのファイルの中だけに覚えておく（ページを開き直したら検出し直す）
  */
@@ -25,7 +25,11 @@ export type PostMosaicDetection = {
   mask: HTMLCanvasElement | null
   /** 見つかった数 */
   count: number
-  /** 見つかった範囲のうち、隠れていないように見える数（「自分でかけ済み」の確認に使う） */
+  /**
+   * おすすめする範囲の数（隠れていないように見えるもの。自分でかけ済みの所はおすすめしない）。
+   * 隠れているかの判定は肌の写真や大きく写った本物でも「隠れている」と出ることがあるので、
+   * 確からしさがとても高いものは隠れていても数える
+   */
   unhiddenCount: number
   /** 見つかった範囲のうち一番高い確からしさ（0〜1。見つからなければ 0） */
   maxScore: number
@@ -35,10 +39,9 @@ export type PostMosaicSettings = { style: MosaicStyle; strength: number }
 
 const STYLE_KEY = "post-mosaic-style"
 const STRENGTH_KEY = "post-mosaic-strength"
-const SELF_APPLIED_KEY = "post-mosaic-self-applied"
 
-/** 隠れていないかの警告は、ある程度はっきり見つかったものだけにする */
-const WARNING_MIN_SCORE = 0.35
+/** 隠れているように見えても、おすすめに数える確からしさ（無修正の本物で「隠れている」と出たものは 0.85 以上） */
+const SURE_SCORE = 0.8
 
 const detections = new Map<string, PostMosaicDetection>()
 /** 触手を含む作品（触手らしい検出を外す）。切り替えたら検出し直すので、結果は別に覚える */
@@ -109,13 +112,13 @@ export function requestPostMosaicDetection(source: string) {
     try {
       const image = await loadMosaicImage(source)
       const result = await detectAutoMosaic(image, { tentacle: isTentacle })
-      const warnable = result.detections.filter(
-        (detection) => detection.score >= WARNING_MIN_SCORE,
-      )
       const isUnhidden =
-        warnable.length > 0 ? createUnhiddenChecker(image, result.mask) : null
-      const unhiddenCount = warnable.filter((detection) =>
-        isUnhidden?.(detection.box),
+        result.detections.length > 0
+          ? createUnhiddenChecker(image, result.mask)
+          : null
+      const unhiddenCount = result.detections.filter(
+        (detection) =>
+          detection.score >= SURE_SCORE || isUnhidden?.(detection.box),
       ).length
       detections.set(key, {
         status: "done",
@@ -265,23 +268,12 @@ export function savePostMosaicSettings(settings: PostMosaicSettings) {
   localStorage.setItem(STRENGTH_KEY, String(settings.strength))
 }
 
-/** 「自分でかけ済み（自動でかけない）」（端末に保存） */
-export function readPostMosaicSelfApplied() {
-  if (typeof window === "undefined") return false
-  return localStorage.getItem(SELF_APPLIED_KEY) === "1"
-}
-
-export function savePostMosaicSelfApplied(value: boolean) {
-  if (value) localStorage.setItem(SELF_APPLIED_KEY, "1")
-  else localStorage.removeItem(SELF_APPLIED_KEY)
-}
-
 /**
- * 「自分でかけ済み」のときに警告する画像か
- * （隠れていないように見える所が見つかり、この画面でもモザイクをかけていない）
+ * おすすめのモザイクがある画像か
+ * （隠れていないように見える所が見つかり、この画面でまだモザイクをかけていない・外していない）
  */
-export function isItemMosaicWarning(item: TSortableItem) {
-  if (hasItemMosaic(item)) return false
+export function isItemMosaicSuggested(item: TSortableItem) {
+  if (item.mosaic) return false
   const source = getItemMosaicSource(item)
   if (!source || !canPostMosaic(source)) return false
   return (detections.get(keyOf(source))?.unhiddenCount ?? 0) > 0

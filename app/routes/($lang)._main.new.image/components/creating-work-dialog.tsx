@@ -48,13 +48,11 @@ export function CreatingWorkDialog(props: Props) {
 
   const title =
     props.text ??
-    (mosaic?.isChecking
-      ? t("画像を確認中", "Checking images")
-      : mosaic !== null
-        ? t("モザイク処理中", "Applying mosaic")
-        : currentKey === "create"
-          ? t("作品を作成中", "Creating your work")
-          : t("アップロード中", "Uploading"))
+    (mosaic !== null
+      ? t("モザイク処理中", "Applying mosaic")
+      : currentKey === "create"
+        ? t("作品を作成中", "Creating your work")
+        : t("アップロード中", "Uploading"))
 
   return (
     <Dialog open={props.isOpen}>

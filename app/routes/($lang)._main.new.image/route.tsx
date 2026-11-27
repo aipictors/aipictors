@@ -35,7 +35,6 @@ import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
-import { AutoMosaicConfirmDialog } from "~/routes/($lang)._main.new.image/components/auto-mosaic-confirm-dialog"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
 import { PostFormSubmitBar } from "~/routes/($lang)._main.new.image/components/post-form-submit-bar"
@@ -289,30 +288,8 @@ export default function NewImage() {
     if (isAutoMosaicPost) preloadAutoMosaic()
   }, [isAutoMosaicPost])
 
-  // 自動モザイクの確認（開いている間だけ画像を持つ。答えは 1 回だけ返す）
-  const [mosaicConfirmPreviews, setMosaicConfirmPreviews] = useState<
-    string[] | null
-  >(null)
-  const mosaicConfirmResolveRef = useRef<((value: boolean) => void) | null>(
-    null,
-  )
-  const confirmAutoMosaic = (previews: string[]) =>
-    new Promise<boolean>((resolve) => {
-      mosaicConfirmResolveRef.current = resolve
-      setMosaicConfirmPreviews(previews)
-    })
-  const closeMosaicConfirm = (isConfirmed: boolean) => {
-    mosaicConfirmResolveRef.current?.(isConfirmed)
-    mosaicConfirmResolveRef.current = null
-    setMosaicConfirmPreviews(null)
-  }
-
   const onPost = usePostImageSubmit({
     onStageChange: setPostStage,
-    confirmAutoMosaic,
-    onRatingChangeToR18: () => {
-      dispatchInput({ type: "SET_RATING_RESTRICTION", payload: "R18" })
-    },
     state,
     inputState,
     dispatch,
@@ -580,6 +557,9 @@ export default function NewImage() {
               inputState.ratingRestriction === "R18" ||
               inputState.ratingRestriction === "R18G"
             }
+            onSuggestRating={(rating) => {
+              dispatchInput({ type: "SET_RATING_RESTRICTION", payload: rating })
+            }}
             isTentacleHint={isTentaclePost({
               tags: inputState.tags,
               prompt: inputState.imageInformation?.params?.prompt,
@@ -680,24 +660,17 @@ export default function NewImage() {
         mosaicImageCount={
           postStage.kind === "done" ? postStage.mosaicImageCount : null
         }
-        isRatingChangedToR18={
-          postStage.kind === "done" && postStage.isRatingChangedToR18 === true
-        }
         workId={state.uploadedWorkId}
         uuid={state.uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
         createdAt={createdAt.getTime()}
         accessType={inputState.accessType}
       />
-      <AutoMosaicConfirmDialog
-        previews={mosaicConfirmPreviews}
-        onClose={closeMosaicConfirm}
-      />
       <CreatingWorkDialog
         progress={state.progress}
         isOpen={state.progress !== 0 && state.progress !== 100}
         stage={postStage}
-        isAutoMosaic={isAutoMosaicPost || postStage.kind === "mosaic"}
+        isAutoMosaic={postStage.kind === "mosaic"}
       />
     </div>
   )

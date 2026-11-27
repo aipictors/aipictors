@@ -1,8 +1,8 @@
 import {
-  AlertTriangleIcon,
   ImageIcon,
   Loader2Icon,
   ShieldCheckIcon,
+  SparklesIcon,
   VideoIcon,
 } from "lucide-react"
 import { type Dispatch, useCallback, useEffect } from "react"
@@ -69,8 +69,10 @@ type Props = {
   ) => void
   onInputFiles?: (files: FileList) => void
   token?: string | undefined | null
-  /** 年齢種別が R18 / R18G。自動モザイクはこのときだけ */
+  /** 年齢種別が R18 / R18G。おすすめのモザイクはこのときだけ */
   isSensitiveHint?: boolean
+  /** おすすめの年齢種別を反映する（全年齢・R15 で、はっきり写っていそうな画像があるとき） */
+  onSuggestRating?: (rating: "R18") => void
   /** タグ・プロンプトに触手がある（自動モザイクの「触手を含む作品」を自動でオン） */
   isTentacleHint?: boolean
   onContentGenerated?: (data: {
@@ -95,7 +97,8 @@ export function PostImageFormUploader(props: Props) {
 
   const mosaic = usePostAutoMosaic({
     items: props.state.items,
-    isEnabled: props.mediaType === "image" && props.isSensitiveHint === true,
+    isImagePost: props.mediaType === "image",
+    isR18: props.isSensitiveHint === true,
     isTentacleHint: props.isTentacleHint,
     dispatch: props.dispatch,
   })
@@ -124,17 +127,23 @@ export function PostImageFormUploader(props: Props) {
         return (
           <div className={cn(base, "bg-emerald-600/80 text-white")}>
             <ShieldCheckIcon className="size-3" />
-            {badge.isAuto
-              ? t("自動モザイク", "Auto mosaic")
-              : t("モザイク済み", "Mosaicked")}
+            {t("モザイク済み", "Mosaicked")}
           </div>
         )
       }
-      if (badge.kind === "warning") {
+      if (badge.kind === "suggested") {
         return (
-          <div className={cn(base, "bg-amber-500 font-bold text-black")}>
-            <AlertTriangleIcon className="size-3" />
-            {t("モザイク不足かも", "May need more mosaic")}
+          <div className={cn(base, "bg-sky-600/80 text-white")}>
+            <SparklesIcon className="size-3" />
+            {t("おすすめあり", "Suggested")}
+          </div>
+        )
+      }
+      if (badge.kind === "sensitive") {
+        return (
+          <div className={cn(base, "bg-sky-600/80 text-white")}>
+            <SparklesIcon className="size-3" />
+            {t("R-18 がおすすめ", "R-18 suggested")}
           </div>
         )
       }
@@ -147,7 +156,7 @@ export function PostImageFormUploader(props: Props) {
       }
       return (
         <div className={cn(base, "bg-white/10 text-zinc-400")}>
-          {t("モザイク不要", "No mosaic needed")}
+          {t("おすすめなし", "No suggestion")}
         </div>
       )
     },
@@ -620,11 +629,13 @@ export function PostImageFormUploader(props: Props) {
                 </button>
               </div>
             )}
-            {props.mediaType === "image" &&
-              props.state.items.length !== 0 &&
-              props.isSensitiveHint && (
-                <PostFormAutoMosaicBar mosaic={mosaic} />
-              )}
+            {props.mediaType === "image" && props.state.items.length !== 0 && (
+              <PostFormAutoMosaicBar
+                mosaic={mosaic}
+                isR18={props.isSensitiveHint === true}
+                onSuggestRating={props.onSuggestRating}
+              />
+            )}
             {props.mediaType === "image" ? (
               <PostFormItemDraggableImages
                 indexList={props.state.indexList}

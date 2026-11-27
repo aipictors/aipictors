@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import {
   isEdgeSpreadUnhidden,
+  isLegLike,
   isTentacleLike,
   measureEdgeSpread,
   mergeDetections,
@@ -45,6 +46,22 @@ describe("isTentacleLike", () => {
     expect(isTentacleLike(0.8, true)).toBe(true)
     expect(isTentacleLike(0.8, false)).toBe(false)
     expect(isTentacleLike(0.92, true)).toBe(false)
+  })
+})
+
+describe("isLegLike", () => {
+  test("細長くて確からしさが低いペニスの検出（脚）を外す", () => {
+    // ドレスのスリットから出た脚（実際の誤検出: 63×272 0.49、94×260 0.53）
+    expect(isLegLike("penis", 0.49, 63, 272)).toBe(true)
+    expect(isLegLike("penis", 0.53, 94, 260)).toBe(true)
+    // 横向きでも同じ
+    expect(isLegLike("penis", 0.4, 300, 100)).toBe(true)
+  })
+
+  test("確からしさが高いもの・ずんぐりしたもの・ペニス以外は残す", () => {
+    expect(isLegLike("penis", 0.79, 63, 272)).toBe(false)
+    expect(isLegLike("penis", 0.5, 100, 230)).toBe(false)
+    expect(isLegLike("vagina", 0.3, 20, 80)).toBe(false)
   })
 })
 

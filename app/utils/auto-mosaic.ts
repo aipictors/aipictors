@@ -222,6 +222,24 @@ export function isTentacleLike(score: number, touchesEdge: boolean) {
   return score < 0.7 || (touchesEdge && score < 0.9)
 }
 
+/**
+ * 脚を性器（ペニス）と見間違えた検出か
+ * 太もも〜すねのような細長い肌色の形を 0.5 前後でペニスと見間違える（ドレスのスリットから出た脚など）。
+ * 本物は細長く写っていても確からしさが高い（通報作品と無修正の投稿で縦横比 2.5 以上の本物は無し）ので、
+ * 縦横比 2.5 以上で確からしさが 0.6 未満のものは外す。全年齢・R15 の公開作品 256 枚で外れるのは脚と人物だけ
+ */
+export function isLegLike(
+  label: AutoMosaicLabel,
+  score: number,
+  width: number,
+  height: number,
+) {
+  if (label !== "penis" || score >= 0.6) return false
+  const long = Math.max(width, height)
+  const short = Math.max(1e-6, Math.min(width, height))
+  return long / short >= 2.5
+}
+
 /** 重なった検出はスコアの高い方だけ残す（大きさを変えて探した結果をまとめる） */
 export function mergeDetections<
   T extends { score: number; box: Detection["box"] },
@@ -381,6 +399,9 @@ async function detectAtSize(
       options.minScore === undefined &&
       best < minScoreForArea((w * h) / (scaledWidth * scaledHeight))
     ) {
+      continue
+    }
+    if (options.minScore === undefined && isLegLike(label, best, w, h)) {
       continue
     }
     if (options.tentacle && label === "penis") {

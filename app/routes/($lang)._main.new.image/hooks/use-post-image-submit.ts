@@ -12,16 +12,15 @@ import type { UserModelPickup } from "~/lib/user-models/types"
 import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
-import { getAutoMosaicConfirmPreviews } from "~/routes/($lang)._main.new.image/utils/auto-mosaic-confirm"
 import {
   CreateWorkMutation,
   LinkWorkToGenerationsMutation,
   WorkByImageHashQuery,
 } from "~/routes/($lang)._main.new.image/utils/new-image-queries"
 import {
-  countSensitivePostImages,
-  finalizePostMosaic,
+  countSuggestedMosaicImages,
   isAutoMosaicRating,
+  resolvePostMosaicImages,
 } from "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
 import {
   type EventOption,
@@ -33,10 +32,6 @@ import {
   toImageWorkInput,
   toVideoWorkInput,
 } from "~/routes/($lang)._main.new.image/utils/post-image-work-input"
-import {
-  readPostMosaicSelfApplied,
-  readPostMosaicSettings,
-} from "~/routes/($lang)._main.new.image/utils/post-mosaic-store"
 import type { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
@@ -63,13 +58,6 @@ type Props = {
   generationUsesPickup?: boolean
   /** 投稿の段階が変わったとき（処理中・完了の表示に使う） */
   onStageChange?: (stage: PostStage) => void
-  /** 全年齢・R15 の画像に性器が写っていて、R18 に変えて投稿するとき */
-  onRatingChangeToR18?: () => void
-  /**
-   * 自動でモザイクをかけた画像を投稿の前に見せて、このまま投稿するか聞く（true で投稿する）。
-   * 自動の検出は誤ることがあるので、かけすぎ・足りない所を直してから投稿できるようにする
-   */
-  confirmAutoMosaic?: (previews: string[]) => Promise<boolean>
 }
 
 /** 投稿の段階（処理中・完了の画面に出す） */
@@ -80,19 +68,15 @@ export type PostStage =
       done: number
       total: number
       preview: string | null
-      /** 全年齢・R15 の投稿で、性器が写っていないか確かめている */
-      isChecking?: boolean
     }
   | { kind: "upload" }
   | { kind: "create" }
   | {
       kind: "done"
-      /** 自動でモザイクをかけた画像の枚数（R18 のみ） */
+      /** 自動でモザイクをかけた画像の枚数（今は出さないので null） */
       mosaicImageCount: number | null
       /** 投稿した作品のサムネイル（モザイク後） */
       thumbnail: string | null
-      /** 性器が写っていたので、全年齢・R15 から R18 に変えて投稿した */
-      isRatingChangedToR18?: boolean
     }
 
 /**
@@ -150,8 +134,6 @@ export function usePostImageSubmit(props: Props) {
     pickup,
     generationUsesPickup,
     onStageChange,
-    onRatingChangeToR18,
-    confirmAutoMosaic,
   } = props
 
   const setStage = (stage: PostStage) => onStageChange?.(stage)
@@ -439,138 +421,34 @@ export function usePostImageSubmit(props: Props) {
 
     dispatch({ type: "SET_PROGRESS", payload: 5 })
 
-    // 全年齢・R15: 性器・肛門が写っていたら、R18 に変えて自動でモザイクをかけるか聞く
-    // （年齢種別を選び忘れて、モザイクなしで投稿されてしまうのを防ぐ）
-    let postInputState = inputState
-    let isRatingChangedToR18 = false
-    if (!isAutoMosaicRating(inputState.ratingRestriction)) {
-      setStage({
-        kind: "mosaic",
-        done: 0,
-        total: 0,
-        preview: null,
-        isChecking: true,
-      })
-      const sensitiveCount = await countSensitivePostImages(
-        state.items,
-        (progress) =>
-          setStage({ kind: "mosaic", ...progress, isChecking: true }),
-      )
-      if (sensitiveCount > 0) {
-        if (
-          window.confirm(
-            t(
-              `${sensitiveCount}枚にモザイクが必要な部分が写っているようです。年齢種別を「R-18」に変えて、自動でモザイクをかけて投稿しますか？\n（キャンセルすると、全年齢のまま投稿するか選べます）`,
-              `${sensitiveCount} image(s) seem to need a mosaic. Change the age rating to R-18 and post with an automatic mosaic?\n(Cancel to choose whether to post with the current rating)`,
-            ),
-          )
-        ) {
-          postInputState = { ...inputState, ratingRestriction: "R18" }
-          isRatingChangedToR18 = true
-          onRatingChangeToR18?.()
-        } else if (
-          !window.confirm(
-            t(
-              "今の年齢種別のまま、モザイクなしで投稿しますか？\n（モザイクが必要な部分が写っている作品を全年齢で投稿すると、非公開になることがあります）",
-              "Post with the current age rating and no mosaic?\n(Works that need a mosaic posted as all ages may be hidden)",
-            ),
-          )
-        ) {
-          setStage({ kind: "idle" })
-          dispatch({ type: "SET_PROGRESS", payload: 0 })
-          finishPosting()
-          return
-        }
-      }
-    }
-
-    // R18 / R18G: プレビューでかけたモザイクを確かめて仕上げる（性器・肛門。乳首は対象外）
-    let imageContents = state.items.map((item) => item.content)
-    let thumbnailBase64 = formResult.output.thumbnailBase64
-    let ogpBase64 = state.ogpBase64
-    let mosaicImageCount: number | null = null
-
-    if (isAutoMosaicRating(postInputState.ratingRestriction)) {
-      setStage({ kind: "mosaic", done: 0, total: 0, preview: null })
-      // R18 に変えたばかりの投稿は「自分でかけ済み」の設定を使わず、自動でかける
-      const isSelfApplied = isRatingChangedToR18
-        ? false
-        : readPostMosaicSelfApplied()
-      const mosaicked = await finalizePostMosaic({
-        items: state.items,
-        thumbnailBase64,
-        ogpBase64,
-        isSelfApplied,
-        settings: readPostMosaicSettings(),
-        onProgress: (progress) => {
-          setStage({ kind: "mosaic", ...progress })
-          // 5〜25% をモザイクの進み具合に使う
-          const ratio = progress.total > 0 ? progress.done / progress.total : 1
-          dispatch({
-            type: "SET_PROGRESS",
-            payload: Math.max(5, Math.round(5 + ratio * 20)),
-          })
-        },
-      })
+    // 自動ではモザイクをかけず、年齢種別も変えない（おすすめは投稿画面に出し、押したときだけ反映する）
+    // R18 / R18G で、おすすめのモザイクをまだかけていない画像があるときだけ確かめる
+    if (isAutoMosaicRating(inputState.ratingRestriction)) {
+      const suggestedCount = countSuggestedMosaicImages(state.items)
       if (
-        mosaicked.failedCount > 0 &&
+        suggestedCount > 0 &&
         !window.confirm(
           t(
-            `${mosaicked.failedCount}枚に自動モザイクをかけられませんでした。このまま投稿しますか？\n（キャンセルして、各画像の鉛筆ボタンから手でかけることもできます）`,
-            `Auto mosaic failed on ${mosaicked.failedCount} image(s). Post anyway?\n(Cancel to add mosaics by hand with the pencil button)`,
+            `${suggestedCount}枚に、モザイクが必要そうな所が見つかっています（おすすめのモザイクはまだかけていません）。このまま投稿しますか？\n（自動の判定なので見間違えることもあります。キャンセルすると投稿画面に戻ります）`,
+            `${suggestedCount} image(s) may have areas that need a mosaic (the suggested mosaic is not applied). Post anyway?\n(The check is automatic and can be wrong. Cancel to go back)`,
           ),
         )
       ) {
-        setStage({ kind: "idle" })
         dispatch({ type: "SET_PROGRESS", payload: 0 })
         finishPosting()
         return
       }
-      // 自分でかけ済み: 検出は回していて、隠れていないように見える所があれば確かめる
-      if (
-        mosaicked.warningCount > 0 &&
-        !window.confirm(
-          t(
-            `${mosaicked.warningCount}枚で、モザイクが足りないように見える所が見つかりました。このまま投稿しますか？\n（キャンセルして、⚠の画像を鉛筆ボタンで直すか、「⚠の画像に自動でかける」を押してください。修正が足りない作品は非公開になることがあります）`,
-            `${mosaicked.warningCount} image(s) may need more mosaic. Post anyway?\n(Cancel to fix the images marked ⚠. Works without sufficient censoring may be hidden)`,
-          ),
-        )
-      ) {
-        setStage({ kind: "idle" })
-        dispatch({ type: "SET_PROGRESS", payload: 0 })
-        finishPosting()
-        return
-      }
-      // 自動でかけた画像を見せて、誤りがあれば直してもらう
-      const previews = isSelfApplied
-        ? []
-        : getAutoMosaicConfirmPreviews(mosaicked.items)
-      if (previews.length > 0 && confirmAutoMosaic) {
-        // 処理中の表示を閉じてから聞く
-        dispatch({ type: "SET_PROGRESS", payload: 0 })
-        setStage({ kind: "idle" })
-        const isConfirmed = await confirmAutoMosaic(previews)
-        if (!isConfirmed) {
-          // 投稿の直前にかけた分も一覧に入れて、鉛筆ボタンから直せるようにする
-          state.items.forEach((item, index) => {
-            const next = mosaicked.items[index]
-            if (next && next !== item && item.content !== null) {
-              dispatch({
-                type: "REPLACE_ITEM",
-                payload: { from: item.content, item: next },
-              })
-            }
-          })
-          finishPosting()
-          return
-        }
-        dispatch({ type: "SET_PROGRESS", payload: 25 })
-      }
-      imageContents = mosaicked.contents
-      thumbnailBase64 = mosaicked.thumbnailBase64
-      ogpBase64 = mosaicked.ogpBase64
-      mosaicImageCount = mosaicked.mosaicImageCount
     }
+
+    const resolved = resolvePostMosaicImages({
+      items: state.items,
+      thumbnailBase64: formResult.output.thumbnailBase64,
+      ogpBase64: state.ogpBase64,
+    })
+    const imageContents = resolved.contents
+    const thumbnailBase64 = resolved.thumbnailBase64
+    const ogpBase64 = resolved.ogpBase64
+    const postInputState = inputState
 
     setStage({ kind: "upload" })
 
@@ -595,9 +473,8 @@ export function usePostImageSubmit(props: Props) {
     ) => {
       setStage({
         kind: "done",
-        mosaicImageCount,
+        mosaicImageCount: null,
         thumbnail: thumbnailBase64,
-        isRatingChangedToR18,
       })
       dispatch({
         type: "MARK_AS_DONE",

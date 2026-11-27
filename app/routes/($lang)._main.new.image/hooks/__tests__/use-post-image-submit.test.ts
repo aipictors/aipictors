@@ -55,30 +55,13 @@ mock.module("~/routes/($lang)._main.new.image/utils/post-image-draft", () => ({
   clearPersistedPostDrafts: async () => {},
 }))
 
-let sensitiveCount = 0
-/** 仕上げた後の items（null なら渡したまま） */
-let finalizedItems: unknown[] | null = null
+let suggestedCount = 0
 const autoMosaicModule = await import(
   "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
 )
 mock.module("~/routes/($lang)._main.new.image/utils/post-auto-mosaic", () => ({
   ...autoMosaicModule,
-  countSensitivePostImages: async () => sensitiveCount,
-  finalizePostMosaic: async (input: {
-    items: { content: string | null }[]
-    thumbnailBase64: string
-    ogpBase64: string | null
-  }) => ({
-    contents: (finalizedItems ?? input.items).map(
-      (item) => (item as { content: string | null }).content,
-    ),
-    items: finalizedItems ?? input.items,
-    thumbnailBase64: input.thumbnailBase64,
-    ogpBase64: input.ogpBase64,
-    mosaicImageCount: 1,
-    failedCount: 0,
-    warningCount: 0,
-  }),
+  countSuggestedMosaicImages: () => suggestedCount,
 }))
 let confirmAnswers: boolean[] = []
 const confirmMessages: string[] = []
@@ -91,7 +74,6 @@ const realWindow = Reflect.get(globalThis, "window") as
   | (Window & typeof globalThis)
   | undefined
 const realConfirm = realWindow?.confirm
-let ratingChangeCount = 0
 
 const { usePostImageSubmit } = await import(
   "~/routes/($lang)._main.new.image/hooks/use-post-image-submit"
@@ -114,15 +96,11 @@ const flushRetries = async () => {
   }
 }
 
-const post = async (
-  options: {
-    confirmAutoMosaic?: (previews: string[]) => Promise<boolean>
-  } = {},
-) => {
+const post = async (options: { rating?: string; items?: unknown[] } = {}) => {
   const isPostingRef = { current: false }
   const onPost = usePostImageSubmit({
     state: {
-      items: [{ content: "data:image/png;base64,AAAA" }],
+      items: options.items ?? [{ content: "data:image/png;base64,AAAA" }],
       ogpBase64: null,
       pngInfo: null,
       videoFile: null,
@@ -131,7 +109,7 @@ const post = async (
       tags: [],
       reservationDate: null,
       reservationTime: null,
-      ratingRestriction: "G",
+      ratingRestriction: options.rating ?? "G",
     },
     dispatch: (action: Action) => actions.push(action),
     mediaType: "image",
@@ -151,10 +129,6 @@ const post = async (
     isNotLoggedIn: false,
     isPostingRef,
     t: (ja: string) => ja,
-    onRatingChangeToR18: () => {
-      ratingChangeCount += 1
-    },
-    confirmAutoMosaic: options.confirmAutoMosaic,
   } as unknown as Props)
   await onPost()
   await flushRetries()
@@ -166,11 +140,9 @@ const doneActions = () =>
 
 beforeEach(() => {
   actions = []
-  sensitiveCount = 0
-  finalizedItems = null
+  suggestedCount = 0
   confirmAnswers = []
   confirmMessages.length = 0
-  ratingChangeCount = 0
   if (realWindow) realWindow.confirm = fakeConfirm
   else
     globalThis.window = { confirm: fakeConfirm } as unknown as Window &
@@ -320,85 +292,39 @@ test("同じハッシュが他人の作品なら投稿済みにせず、断ら�
   expect(toastMock).toHaveBeenCalledWith("同じ画像が既に投稿されています")
 })
 
-test("全年齢で性器が写っていて「R18 にする」を選ぶと、R18 にして投稿する", async () => {
-  sensitiveCount = 1
-  confirmAnswers = [true]
-  await post()
-
-  expect(confirmMessages).toHaveLength(1)
-  expect(ratingChangeCount).toBe(1)
-  expect(createWork).toHaveBeenCalledTimes(1)
-  expect(createWork.mock.calls[0][0].variables.input.rating).toBe("R18")
-})
-
-test("全年齢で性器が写っていて、R18 にせず全年齢のままも選ばなければ投稿しない", async () => {
-  sensitiveCount = 1
-  confirmAnswers = [false, false]
-  const isPostingRef = await post()
-
-  expect(confirmMessages).toHaveLength(2)
-  expect(createWork).not.toHaveBeenCalled()
-  expect(isPostingRef.current).toBe(false)
-})
-
-test("全年齢のまま投稿するを選ぶと、全年齢で投稿する", async () => {
-  sensitiveCount = 1
-  confirmAnswers = [false, true]
-  await post()
-
-  expect(ratingChangeCount).toBe(0)
-  expect(createWork.mock.calls[0][0].variables.input.rating).toBe("G")
-})
-
-test("性器が写っていなければ聞かずに全年齢で投稿する", async () => {
+test("全年齢の投稿は画像を確かめず、聞かずに全年齢のまま投稿する（年齢種別を勝手に変えない）", async () => {
+  suggestedCount = 1
   await post()
 
   expect(confirmMessages).toHaveLength(0)
+  expect(createWork).toHaveBeenCalledTimes(1)
   expect(createWork.mock.calls[0][0].variables.input.rating).toBe("G")
 })
 
-const autoMosaicItem = {
-  content: "data:image/webp;base64,MOSAIC",
-  mosaic: {
-    source: "data:image/png;base64,AAAA",
-    mask: "data:image/png;base64,MASK",
-    style: "mosaic",
-    strength: 1,
-    isAuto: true,
-  },
-}
+test("R18 でおすすめのモザイクが無ければ、聞かずにそのまま投稿する", async () => {
+  await post({ rating: "R18" })
 
-test("自動でモザイクをかけた画像は投稿の前に見せ、「このまま投稿」でそのまま投稿する", async () => {
-  sensitiveCount = 1
-  confirmAnswers = [true]
-  finalizedItems = [autoMosaicItem]
-  const previews: string[][] = []
-  await post({
-    confirmAutoMosaic: async (images) => {
-      previews.push(images)
-      return true
-    },
-  })
-
-  expect(previews).toEqual([["data:image/webp;base64,MOSAIC"]])
-  expect(createWork).toHaveBeenCalledTimes(1)
-  expect(doneActions()).toHaveLength(1)
+  expect(confirmMessages).toHaveLength(0)
+  expect(createWork.mock.calls[0][0].variables.input.rating).toBe("R18")
 })
 
-test("自動モザイクの確認で「修正する」を選ぶと投稿せず、かけた画像を一覧に戻す", async () => {
-  sensitiveCount = 1
-  confirmAnswers = [true]
-  finalizedItems = [autoMosaicItem]
-  const isPostingRef = await post({ confirmAutoMosaic: async () => false })
+test("R18 でおすすめのモザイクをかけていない画像があれば聞き、キャンセルなら投稿しない", async () => {
+  suggestedCount = 2
+  confirmAnswers = [false]
+  const isPostingRef = await post({ rating: "R18" })
 
-  expect(createWork).toHaveBeenCalledTimes(0)
+  expect(confirmMessages).toHaveLength(1)
+  expect(confirmMessages[0]).toContain("2枚")
+  expect(createWork).not.toHaveBeenCalled()
   expect(uploadCount).toBe(0)
-  expect(doneActions()).toHaveLength(0)
   expect(isPostingRef.current).toBe(false)
-  expect(actions.filter((action) => action.type === "REPLACE_ITEM")).toEqual([
-    {
-      type: "REPLACE_ITEM",
-      payload: { from: "data:image/png;base64,AAAA", item: autoMosaicItem },
-    },
-  ])
+})
+
+test("R18 でおすすめのモザイクをかけずに「このまま投稿」を選ぶと、画像を変えずに投稿する", async () => {
+  suggestedCount = 1
+  confirmAnswers = [true]
+  await post({ rating: "R18" })
+
+  expect(createWork).toHaveBeenCalledTimes(1)
+  expect(actions.filter((action) => action.type === "REPLACE_ITEM")).toEqual([])
 })
