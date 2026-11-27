@@ -45,6 +45,7 @@ import {
 } from "~/lib/maintenance-mode"
 import { replayPendingClick } from "~/lib/replay-pending-click"
 import { cn } from "~/lib/utils"
+import { GENERATION_ENTRY_REDIRECT_SCRIPT } from "~/routes/($lang).generation._index/utils/generation-simple-entry"
 import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
@@ -660,6 +661,16 @@ export function Layout(props: Props): React.ReactNode {
           // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
           dangerouslySetInnerHTML={{ __html: HEADER_USER_INLINE_SCRIPT }}
         />
+        {/^(?:\/(?:ja|en))?\/generation\/?$/.test(location.pathname) && (
+          <script
+            // はじめての人は /generation/home へ（HEADER_USER_INLINE_SCRIPT の data-aip-auth を見るのでその後に置く）。
+            // 本文に置くと、移るまでに <head> の埋め込み CSS（約 70KB）を読み終える必要があった
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト
+            dangerouslySetInnerHTML={{
+              __html: GENERATION_ENTRY_REDIRECT_SCRIPT,
+            }}
+          />
+        )}
         <script
           // ヘッダーの「全年齢 / R18」の選択を描画前に決める（app/utils/content-mode.ts）
           // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の短いスクリプト

@@ -2,7 +2,6 @@ import type { HeadersFunction } from "@remix-run/cloudflare"
 import { config } from "~/config"
 import { GenerationPage } from "~/routes/($lang).generation._index/components/generation-page"
 import { GenerationSeoSection } from "~/routes/($lang).generation._index/components/generation-seo-section"
-import { GENERATION_ENTRY_REDIRECT_SCRIPT } from "~/routes/($lang).generation._index/utils/generation-simple-entry"
 
 /**
  * 画像生成
@@ -10,11 +9,7 @@ import { GENERATION_ENTRY_REDIRECT_SCRIPT } from "~/routes/($lang).generation._i
 export default function GenerationIndexPage() {
   return (
     <>
-      {/* はじめての人は JS を待たずに /generation/home へ（画面内の移動で来たときは動かず、useGenerationEntryMode が移す） */}
-      <script
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: 固定の文字列
-        dangerouslySetInnerHTML={{ __html: GENERATION_ENTRY_REDIRECT_SCRIPT }}
-      />
+      {/* はじめての人は JS を待たずに /generation/home へ移す（root.tsx の <head> の GENERATION_ENTRY_REDIRECT_SCRIPT。画面内の移動で来たときは動かず、useGenerationEntryMode が移す） */}
       <GenerationPage layout="classic" withEntry />
       <GenerationSeoSection />
     </>

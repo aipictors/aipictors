@@ -618,9 +618,16 @@ export function ImagesPreview(props: Props): React.ReactNode {
     !isMainImageLoaded && props.thumbnailUrl !== serverRenderedUrl
 
   // 今の画像のほか、次の画像を先に読む（押したときにすぐ出せるように）。
-  // 開いただけで全部読むと、モバイルで最初の表示より先に何 MB も通信する
+  // 開いただけで全部読むと、モバイルで最初の表示より先に何 MB も通信する。
+  // 次の画像は hydration の後に足す（サーバーの HTML に入れると、見えない 2 枚目が 1 枚目と同じ大きさで
+  // 同時に読まれ、一番大きい画像（LCP）と回線を取り合う。閉覧ページの hydration は最初の操作で始まる）
   const stageUrls = [...stageVisitedUrls]
-  for (const offset of stageVisitedUrls.size > 1 ? [1, -1, 2] : [1]) {
+  const neighborOffsets = !isHydrated
+    ? []
+    : stageVisitedUrls.size > 1
+      ? [1, -1, 2]
+      : [1]
+  for (const offset of neighborOffsets) {
     const url =
       props.imageURLs[
         (props.currentIndex + offset + props.imageURLs.length * 2) %

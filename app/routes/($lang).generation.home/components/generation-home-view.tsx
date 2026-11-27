@@ -9,6 +9,7 @@ import {
   SparklesIcon,
 } from "lucide-react"
 import { useContext, useEffect, useRef, useState } from "react"
+import { useHydrated } from "remix-utils/use-hydrated"
 import { LazyLoginDialogContent } from "~/components/lazy-login-dialog-content"
 import {
   Dialog,
@@ -114,6 +115,9 @@ export function GenerationHomeView(props: Props) {
   const apolloClient = useApolloClient()
 
   const applyPrompt = useApplyGenerationEntryPrompt()
+
+  // 作例の作者アイコンは hydration の後に読む（下の img の src）
+  const isHydrated = useHydrated()
 
   // ログインを途中でやめて戻ってきたときも、書いた内容を残す
   const [prompt, setPrompt] = useState(
@@ -427,7 +431,14 @@ export function GenerationHomeView(props: Props) {
                       ? "eager"
                       : "lazy"
                   }
-                  fetchPriority={index === 0 ? "high" : undefined}
+                  // スマホで最初に見える左右の列の先頭を優先して読む。右の列の先頭（半分あたり）が
+                  // 一番大きい絵（LCP）になることが多く、JS の読み込みも fetchpriority="high" の画像を待つ（defer-hydration.ts）
+                  fetchPriority={
+                    index === 0 ||
+                    Math.abs(index - Math.floor(works.length / 2)) <= 1
+                      ? "high"
+                      : undefined
+                  }
                   decoding="async"
                   className="block h-auto w-full transition-transform duration-300 group-hover:scale-[1.03]"
                 />
@@ -440,11 +451,19 @@ export function GenerationHomeView(props: Props) {
                 {work.user ? (
                   <>
                     <img
-                      src={toIconImageUrl(work.user.iconUrl)}
+                      // 動くアイコンは縮小されず元の画像（数百 KB〜1.5MB）が届くので、最初の HTML には入れず
+                      // hydration の後（JS は優先して読む作例の画像を待ってから動く。defer-hydration.ts）に読む。
+                      // 入れておくと 20px のアイコンが一番大きい絵（LCP）と回線を取り合う。読むまでは bg-muted の丸
+                      src={
+                        isHydrated
+                          ? toIconImageUrl(work.user.iconUrl)
+                          : undefined
+                      }
                       alt=""
                       width={20}
                       height={20}
                       loading="lazy"
+                      fetchPriority="low"
                       className="size-5 shrink-0 rounded-full bg-muted object-cover"
                     />
                     <span className="min-w-0 flex-1 truncate text-muted-foreground text-xs">

@@ -82,8 +82,10 @@ export function ThemeHero(props: Props) {
     >
       {backgroundUrl && (
         <img
-          // ぼかして薄く敷くだけなので小さい縮小版で足りる（元画像だと 40KB 前後を待つ）
-          src={toResizedImageUrl(backgroundUrl, 240)}
+          // 強くぼかして薄く敷くだけなので、タグのページと同じく一番小さい縮小版（96px）で足りる
+          // （240px だと飾りの背景が一番大きい画像＝LCP になり、作品の画像より後回しの優先度のまま待たされていた。
+          // 情報量の少ない画像はブラウザが LCP の対象から外す）
+          src={toResizedImageUrl(backgroundUrl, 48)}
           alt=""
           aria-hidden="true"
           decoding="async"
