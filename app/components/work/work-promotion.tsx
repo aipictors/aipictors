@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { ExternalLinkIcon, MegaphoneIcon } from "lucide-react"
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 import { FollowButton } from "~/components/button/follow-button"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
@@ -102,8 +102,6 @@ export function PromotionWorkCard(props: {
   isPlain?: boolean
   /** トップの最初に見える画像（先に読み込む） */
   isPriority?: boolean
-  /** 宣伝の作品のうち PC（3 列以上）で 2×2 マスに大きく出す 1 件。画像は残りの高さいっぱいに広げる */
-  isFeatured?: boolean
   /** 作者をフォローしているか（宣伝の作品だけ、作者の横にフォローボタンを出す） */
   isFollowee?: boolean
   className?: string
@@ -120,8 +118,6 @@ export function PromotionWorkCard(props: {
       className={cn(
         "aspect-[4/3] w-full object-cover",
         props.isPlain && "rounded-xl",
-        // 大きく出す 1 件は、右の 2 段ぶんの高さに合わせて画像を広げる（画像の高さで行を伸ばさない）
-        props.isFeatured && "lg:absolute lg:inset-0 lg:aspect-auto lg:h-full",
       )}
     />
   ) : (
@@ -163,19 +159,8 @@ export function PromotionWorkCard(props: {
         )}
       >
         {href ? (
-          <div
-            className={cn(
-              "relative",
-              props.isFeatured && "lg:min-h-48 lg:flex-1",
-            )}
-          >
-            <Link
-              to={href}
-              className={cn(
-                "block",
-                props.isFeatured && "lg:absolute lg:inset-0",
-              )}
-            >
+          <div className="relative">
+            <Link to={href} className="block">
               {image}
             </Link>
             {!props.isPlain && (
@@ -206,8 +191,6 @@ export function PromotionWorkCard(props: {
           className={cn(
             "flex flex-1 flex-col gap-2",
             props.isPlain ? "pt-2" : "p-3",
-            // 大きく出す 1 件は、余った高さを画像に回す（文字の欄は中身の高さだけ）
-            props.isFeatured && "lg:flex-none",
           )}
         >
           {href ? (
@@ -229,7 +212,7 @@ export function PromotionWorkCard(props: {
                     "flex min-w-0 flex-1 items-center gap-1.5 text-muted-foreground hover:text-foreground",
                     props.isPlain
                       ? "text-xs"
-                      : "font-medium text-foreground text-sm",
+                      : "font-medium text-foreground text-xs sm:text-sm",
                   )}
                 >
                   {user}
@@ -240,7 +223,7 @@ export function PromotionWorkCard(props: {
                     "flex min-w-0 flex-1 items-center gap-1.5 text-muted-foreground",
                     props.isPlain
                       ? "text-xs"
-                      : "font-medium text-foreground text-sm",
+                      : "font-medium text-foreground text-xs sm:text-sm",
                   )}
                 >
                   {user}
@@ -303,13 +286,12 @@ export type PromotionFillWork = {
 
 /**
  * トップの「おすすめ作品」の画面幅ごとの列数と、その幅の間だけ隠す class
- * （スマホ〜 2 列・lg 3 列・xl 4 列。Tailwind が見つけられるよう class 名はそのまま書く）。
- * featured の幅（3 列以上）では、宣伝の作品の 1 件を 2×2 マスに大きく出す
+ * （スマホ〜 2 列・lg 3 列・xl 4 列。Tailwind が見つけられるよう class 名はそのまま書く）
  */
 export const HOME_PICKS_BREAKPOINTS = [
-  { columns: 2, hiddenClassName: "max-lg:hidden", featured: false },
-  { columns: 3, hiddenClassName: "lg:max-xl:hidden", featured: true },
-  { columns: 4, hiddenClassName: "xl:hidden", featured: true },
+  { columns: 2, hiddenClassName: "max-lg:hidden" },
+  { columns: 3, hiddenClassName: "lg:max-xl:hidden" },
+  { columns: 4, hiddenClassName: "xl:hidden" },
 ] as const
 
 /** トップの「おすすめ作品」の段の数（宣伝が多くて入りきらないときだけ段を増やす） */
@@ -323,7 +305,7 @@ export const HOME_PICKS_FILL_COUNT = 10
 
 /**
  * 宣伝 promotionCount 件の後ろにおすすめ fillCount 件を並べるとき、画面幅ごとに何件まで見せれば
- * 「段の数 × 列数」のマスがぴったり埋まるか（大きく出す 1 件は 4 マス）。宣伝は隠さない（宣伝が入りきらないときは段を増やす）。
+ * 「段の数 × 列数」ぴったりになるか。宣伝は隠さない（宣伝が入りきらないときは段を増やす）。
  * おすすめが足りない幅は段を減らし、それでも宣伝の段が埋まらないときだけ案内（inviteCount）で埋める
  */
 export function toHomePicksLayout(
@@ -332,22 +314,18 @@ export function toHomePicksLayout(
   breakpoints: readonly {
     columns: number
     hiddenClassName: string
-    featured?: boolean
   }[] = HOME_PICKS_BREAKPOINTS,
 ) {
   const available = promotionCount + fillCount
-  const totals = breakpoints.map(({ columns, featured }) => {
-    // 大きく出す 1 件は 1 件で 4 マス（ほかより 3 マス多い）
-    const extra = featured && promotionCount > 0 ? 3 : 0
-    const promotionRows = Math.max(
-      Math.ceil((promotionCount + extra) / columns),
-      extra > 0 ? 2 : 0,
-    )
-    const rows = Math.max(HOME_PICKS_ROWS, promotionRows)
-    if (rows * columns - extra <= available) return rows * columns - extra
+  const totals = breakpoints.map(({ columns }) => {
+    const promotionRows = Math.ceil(promotionCount / columns)
+    const total = Math.max(HOME_PICKS_ROWS, promotionRows) * columns
+    if (total <= available) return total
     // おすすめが足りないときは、埋まる段まで減らす（宣伝の段は残す）
-    const filledRows = Math.floor((available + extra) / columns)
-    return Math.max(promotionRows, filledRows) * columns - extra
+    return Math.max(
+      promotionRows * columns,
+      Math.floor(available / columns) * columns,
+    )
   })
   const hiddenClassName = (index: number) =>
     breakpoints
@@ -365,7 +343,7 @@ export function toHomePicksLayout(
     /** おすすめが足りず、宣伝の段に空いたマスを埋める案内の数 */
     inviteCount: Math.max(0, Math.max(...totals) - available),
     /** どの幅でも何も並ばない */
-    isEmpty: totals.every((total) => total <= 0),
+    isEmpty: totals.every((total) => total === 0),
   }
 }
 
@@ -385,20 +363,8 @@ export function HomePromotionWorksSection(props: {
     skip: authContext.isLoading,
     variables: { limit: 6, isSensitive: props.isSensitive === true },
   })
-  const promotionWorks = data?.promotionWorks ?? []
-  // PC で大きく出す 1 件は、読み込みごとに入れ替える（宣伝した人どうしで不公平にならないように）。
-  // サーバーとブラウザで並びがずれないよう、表示したあとに選ぶ
-  const promotionKey = promotionWorks.map((work) => work.id).join(",")
-  const [featuredIndex, setFeaturedIndex] = useState(0)
-  useEffect(() => {
-    const count = promotionKey === "" ? 0 : promotionKey.split(",").length
-    setFeaturedIndex(count > 1 ? Math.floor(Math.random() * count) : 0)
-  }, [promotionKey])
-  const featured = promotionWorks[featuredIndex] ?? promotionWorks[0]
-  // 大きく出す 1 件を先頭に、ほかの宣伝はそのすぐ後ろ（普通の大きさ）に並べる
-  const works = featured
-    ? [featured, ...promotionWorks.filter((work) => work.id !== featured.id)]
-    : []
+  // 宣伝の作品はすべて普通の大きさで先頭に並べる（表示したあとの入れ替わりが見えないよう、並びは届いた順のまま）
+  const works = data?.promotionWorks ?? []
 
   // おすすめは既存のおすすめの一覧と同じく、閲覧者の年齢区分・R15/R18 の表示設定で絞る。宣伝と同じ作品は出さない
   const promotionIds = new Set(works.map((work) => work.id))
@@ -443,18 +409,10 @@ export function HomePromotionWorksSection(props: {
         {works.map((work, index) => (
           <PromotionWorkCard
             key={work.id}
-            // 先頭の 1 件は PC（3 列以上）で 2×2 マス。スマホは普通の大きさのまま
-            isFeatured={index === 0}
-            className={cn(
-              layout.hiddenClassName(index),
-              index === 0 && "lg:col-span-2 lg:row-span-2",
-            )}
+            className={layout.hiddenClassName(index)}
             isFollowee={work.user?.isFollowee}
             workId={work.id}
-            imageUrl={toResizedImageUrl(
-              work.largeThumbnailImageURL,
-              index === 0 ? 960 : 640,
-            )}
+            imageUrl={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
             title={t.workTitle(work.title, work.enTitle)}
             userLogin={work.user?.login}
             userName={work.user?.name}
