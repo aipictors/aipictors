@@ -203,7 +203,7 @@ function WorkAuthorWorks(props: {
   const [api, setApi] = useState<CarouselApi>()
   const [view, setView] = usePersistentState<AuthorWorksView>(
     "work-author-works-view",
-    "carousel",
+    "grid",
   )
   const isGrid = view === "grid"
   const [isLoading, setIsLoading] = useState(false)

@@ -268,7 +268,6 @@ export function SensitiveWorkContainer(props: Props) {
                   user={workForArticle.user}
                   currentWorkId={workForArticle.id}
                   ratings={AUTHOR_WORKS_RATINGS}
-                  layout="grid"
                 />
               </div>
             )}

@@ -24,8 +24,8 @@ import {
   WorkArticle,
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
-import { WorkDiscoverySections } from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { WorkDiscoverySections } from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
 import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 import { WorkPrevNextBar } from "~/routes/($lang)._main.posts.$post._index/components/work-prev-next-bar"
 import { WorkAuthorWorksSection } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
@@ -35,8 +35,8 @@ import {
   newCommentsQuery,
   workCommentsQuery,
 } from "~/routes/($lang)._main.posts.$post._index/route"
-import type { WorkDiscovery } from "~/routes/($lang)._main.posts.$post._index/utils/work-discovery"
 import { mergeWorkViewerState } from "~/routes/($lang)._main.posts.$post._index/utils/merge-work-viewer-state"
+import type { WorkDiscovery } from "~/routes/($lang)._main.posts.$post._index/utils/work-discovery"
 import { getJstDate } from "~/utils/jst-date"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -284,7 +284,6 @@ export function WorkContainer(props: Props) {
                   user={work.user}
                   currentWorkId={work.id}
                   ratings={AUTHOR_WORKS_RATINGS}
-                  layout="grid"
                 />
               </div>
             )}
