@@ -4,7 +4,7 @@ These terms set out the conditions of the "Creator Rewards" program (the "Progra
 
 ## 1. Nature of the Program
 
-1. Under the Program we pay rewards from our own revenue to participants according to the support their works receive.
+1. Under the Program we pay rewards from our own revenue to participants according to the supports they receive.
 2. Rewards are not a refund of coins to supporters, nor a transfer of money from supporters to participants. Supporters have no rights regarding rewards.
 3. Rewards are recorded in Japanese yen and cannot be used for payments on the Service, transferred to others, or converted back into coins. Rewards are not part of your coin balance.
 
@@ -16,9 +16,9 @@ These terms set out the conditions of the "Creator Rewards" program (the "Progra
 
 ## 3. Eligible supports and amounts
 
-1. While you participate, when you receive support through an all-ages (G / R15) work, a reward is recorded for the Premium Coins used that were purchased for money (excluding purchase bonuses, free coins, coins distributed by us, and coins received from supports).
+1. While you participate, when another user supports you (a support to you that does not go through a work, such as from your profile or "Support the creator" on a work page), a reward is recorded for the Premium Coins used that were purchased for money (excluding purchase bonuses, free coins, coins distributed by us, and coins received from supports). You cannot attach coins to a work or comment to support it.
 2. The reward is ¥0.5 per eligible coin (¥500 per 1,000 coins).
-3. The following are not eligible and are received as coins as before: supports through R18 / R18G works; profile supports to participants who publish R18 / R18G works; supports received before joining or after leaving.
+3. The following are not eligible and are received as coins as before: supports received by participants who publish R18 / R18G works; supports received before joining or after leaving.
 4. Coins counted as rewards are not added to your coin balance.
 5. We may change the amount, scope or conditions, or end the Program, after prior notice on the Service. Rewards recorded before a change are paid under the previous conditions.
 
@@ -35,7 +35,7 @@ These terms set out the conditions of the "Creator Rewards" program (the "Progra
 ## 5. Reversal and deduction
 
 1. If a coin purchase used for support is refunded, canceled or charged back, we reverse rewards based on supports made by that purchaser after the purchase. Rewards already paid are deducted from future rewards.
-2. If we determine that you obtained rewards by fraud (such as supporting your own works through multiple accounts or with help from others, or supports made with coins bought with stolen payment methods), we may reverse rewards, suspend payment, claim repayment, suspend your account, or take other necessary measures.
+2. If we determine that you obtained rewards by fraud (such as supporting yourself through multiple accounts or with help from others, or supports made with coins bought with stolen payment methods), we may reverse rewards, suspend payment, claim repayment, suspend your account, or take other necessary measures.
 
 ## 6. Leaving
 
@@ -58,3 +58,5 @@ We are not liable for delays or failures of payment caused by system failures of
 We may change these terms in accordance with the Civil Code provisions on standard terms, with notice on the Service a reasonable period before the change takes effect.
 
 Established: November 16, 2026 (amended the same day: 7-day holding, closings on the 10th and 25th, and a per-payout limit for the first 30 days)
+
+Amended: November 27, 2026 (effective December 11, 2026). As supports are now limited to supports to users, eligible supports changed from "supports through all-ages works" to "supports to the participant (excluding participants who publish R18 / R18G works)". Rewards recorded before the effective date, including those on hold, are paid under the previous conditions.

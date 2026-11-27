@@ -1,6 +1,6 @@
 # Premium Coin Policy and Prepaid Payment Instrument Notice
 
-Last updated: November 16, 2026
+Last updated: November 27, 2026 (revised section 4, Supports and Creator Rewards; effective December 11, 2026)
 
 This page summarizes the usage rules, expiration, refund handling, the relationship to Creator Rewards, and prepaid payment instrument disclosures related to Premium Coins on Aipictors.
 
@@ -25,9 +25,9 @@ This page summarizes the usage rules, expiration, refund handling, the relations
 
 ## 4. Supports and Creator Rewards
 
-- When you support another user's work with Premium Coins, those coins are consumed. Coins and purchase payments are never refunded to supporters.
-- When all-ages (G / R15) works are supported with purchased Premium Coins, Aipictors pays the creator a reward (Creator Rewards) from its own revenue. Rewards are not an exchange or refund of coins. See the [Creator Rewards Terms](/creator-rewards/terms).
-- Creators who join Creator Rewards receive eligible supports as rewards instead of coins. Other supports (free coins, bonus coins, coins given by Aipictors, supports on R18 / R18G works, etc.) are received as coins or support points as before.
+- When you support another user with Premium Coins, those coins are consumed. Supports are made to users (creators), for example from their profile or "Support the creator" on a work page; you cannot attach coins to a work or comment to support it. Past supports made on works are treated as supports to the creator of that work. Coins and purchase payments are never refunded to supporters.
+- When a user who has joined Creator Rewards is supported with purchased Premium Coins, Aipictors pays that user a reward (Creator Rewards) from its own revenue (users who publish R18 / R18G works are not eligible). Rewards are not an exchange or refund of coins. See the [Creator Rewards Terms](/creator-rewards/terms).
+- Creators who join Creator Rewards receive eligible supports as rewards instead of coins. Other supports (free coins, bonus coins, coins given by Aipictors, supports to users who publish R18 / R18G works, etc.) are received as coins or support points as before.
 - Premium Coins (purchased or received) cannot be exchanged for cash, Amazon gift cards or other property. Amazon gift card exchange ended on November 16, 2026.
 
 ## 5. Pricing and Contract Formation

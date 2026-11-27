@@ -100,10 +100,13 @@ Posting of copyrighted material by others without permission or altering it thro
 # Paid coins and creator rewards
 
 - Terms for Premium Coins (paid coins), including expiration and refunds, are set out in the [Premium Coin Policy](/premium-coins/policy). Coins cannot be exchanged for cash or other property.
-- Aipictors offers "Creator Rewards": when all-ages (G / R15) works are supported with purchased Premium Coins, Aipictors pays the creator a reward from its own revenue. Rewards are not refunds to supporters. Conditions, amounts and payment methods are set out in the [Creator Rewards Terms](/creator-rewards/terms).
-- R18 / R18G works and supports made through them are not eligible for Creator Rewards.
-- Supporting your own works with multiple accounts or other people's help, buying coins with stolen payment methods, or obtaining rewards by any other fraudulent means is prohibited. Aipictors may cancel rewards, stop payouts, suspend accounts or take other necessary measures.
+- Supports with coins (Free Coins and Premium Coins) are made to users (creators), for example from their profile or "Support the creator" on a work page. You cannot attach coins to a work or comment to support it. Past supports made on works are treated as supports to the creator of that work.
+- Aipictors offers "Creator Rewards": when a user who has joined Creator Rewards is supported with purchased Premium Coins, Aipictors pays that user a reward from its own revenue. Rewards are not refunds to supporters. Conditions, amounts and payment methods are set out in the [Creator Rewards Terms](/creator-rewards/terms).
+- Supports received by users who publish R18 / R18G works are not eligible for Creator Rewards.
+- Supporting yourself with multiple accounts or other people's help, buying coins with stolen payment methods, or obtaining rewards by any other fraudulent means is prohibited. Aipictors may cancel rewards, stop payouts, suspend accounts or take other necessary measures.
 
 # Last updated
+
+November 27, 2026 (supports are limited to supports to users, and Creator Rewards eligibility is revised; effective December 11, 2026)
 
 November 16, 2026 (added "Paid coins and creator rewards")

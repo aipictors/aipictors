@@ -126,16 +126,16 @@ export const LEGAL_PAGES: LegalPage[] = [
     title: { ja: "クリエイター報酬規約", en: "Creator reward terms" },
     points: [
       {
-        ja: "作品の人気・支持に応じて、運営が売上から参加者に報酬を支払うプログラムの条件です。",
-        en: "Conditions of the program in which we pay participants rewards from our revenue based on their works' support.",
+        ja: "参加者が受けた推しに応じて、運営が売上から参加者に報酬を支払うプログラムの条件です。",
+        en: "Conditions of the program in which we pay participants rewards from our revenue based on the supports they receive.",
       },
       {
         ja: "参加できるのは 18 歳以上で、日本国内の銀行口座を持ち、Stripe で本人確認と口座登録をした方です。",
         en: "Participants must be 18+, have a bank account in Japan, and complete ID verification and bank registration with Stripe.",
       },
       {
-        ja: "対象は全年齢（一般・R15）の作品を通じた、有料で購入されたプレミアムコインでの推しなどで、コイン 1,000 枚につき 500 円です。",
-        en: "Rewards cover support with purchased premium coins on all-ages (General / R15) works and similar, at ¥500 per 1,000 coins.",
+        ja: "対象は参加者への推し（作品を通さない推し）に使われた、有料で購入されたプレミアムコインなどで、コイン 1,000 枚につき 500 円です。R18・R18G の作品を公開している方は対象外です。",
+        en: "Rewards cover purchased premium coins used to support the participant (not through a work) and similar, at ¥500 per 1,000 coins. Participants who publish R18 / R18G works are not eligible.",
       },
       {
         ja: "保留・締め・支払い、税金、取消しについては本文を確認してください。",
