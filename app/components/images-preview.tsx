@@ -30,6 +30,7 @@ import {
 import {
   pickWorkImageSizeHint,
   toWorkImageSizes,
+  WORK_MAIN_IMAGE_SIZE_CLASS_NAME,
 } from "~/utils/work-image-sizes"
 
 type Props = {
@@ -1001,11 +1002,13 @@ export function ImagesPreview(props: Props): React.ReactNode {
             style={isMainImageLoaded ? undefined : { minHeight: "64vh" }}
           >
             {!isMainImageLoaded && previewImage}
-            <div className="relative inline-block overflow-hidden text-center">
+            <div className="relative inline-block max-w-full overflow-hidden text-center">
               <img
                 ref={mainImgRef}
                 className={cn(
-                  "m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain md:max-h-[72vh] dark:bg-zinc-900",
+                  // 高さを親の % にすると Safari で帯のように小さく出たり消えたりした
+                  WORK_MAIN_IMAGE_SIZE_CLASS_NAME,
+                  "m-auto cursor-pointer bg-zinc-100 object-contain dark:bg-zinc-900",
                   isMainImageHidden && "invisible",
                 )}
                 draggable={false}

@@ -1,4 +1,8 @@
-import { pickWorkImageSizeHint, toWorkImageSizes } from "./work-image-sizes"
+import {
+  pickWorkImageSizeHint,
+  toWorkImageSizes,
+  WORK_MAIN_IMAGE_SIZE_CLASS_NAME,
+} from "./work-image-sizes"
 
 test("パソコンでは左のメニューを除いた幅と、高さから決まる幅の小さい方にする", () => {
   expect(toWorkImageSizes(1.5)).toBe(
@@ -31,4 +35,18 @@ test("メイン画像の大きさの手がかりは 1 枚目にだけ使う", ()
   expect(pickWorkImageSizeHint(urls[0], urls, hint)).toBe(hint)
   expect(pickWorkImageSizeHint(urls[1], urls, hint)).toBeUndefined()
   expect(pickWorkImageSizeHint(urls[1], urls, undefined)).toBeUndefined()
+})
+
+describe("WORK_MAIN_IMAGE_SIZE_CLASS_NAME", () => {
+  const classes = WORK_MAIN_IMAGE_SIZE_CLASS_NAME.split(" ")
+  test("高さを親の %（h-full）にしない（Safari で読み込み前の大きさのまま潰れる）", () => {
+    expect(classes).not.toContain("h-full")
+    expect(classes).toContain("h-auto")
+    expect(classes).toContain("w-auto")
+  })
+  test("幅と高さの上限で縦横比のまま収める", () => {
+    expect(classes).toContain("max-w-full")
+    expect(classes).toContain("max-h-[64vh]")
+    expect(classes).toContain("md:max-h-[72vh]")
+  })
 })
