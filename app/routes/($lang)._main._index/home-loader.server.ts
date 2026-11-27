@@ -423,6 +423,7 @@ function toTrendWorks(
     smallThumbnailImageURL: work.smallThumbnailImageURL,
     smallThumbnailImageWidth: work.smallThumbnailImageWidth,
     smallThumbnailImageHeight: work.smallThumbnailImageHeight,
+    rating: work.rating ?? null,
     user: work.user ? { id: work.user.id } : null,
   }))
 }

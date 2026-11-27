@@ -41,3 +41,18 @@ export function toSensitiveModeRatings(props: {
 
   return ["R18"]
 }
+
+/**
+ * 決まった区分で取った一覧（サーバーで未ログインとして取りキャッシュした分など）から、
+ * 閲覧者の設定で出さない区分の作品を外す。区分が分からない作品はそのまま残す
+ * @param works
+ * @param ratings
+ */
+export function filterWorksByRatings<T extends { rating?: string | null }>(
+  works: T[],
+  ratings: ViewerRating[],
+): T[] {
+  return works.filter(
+    (work) => !work.rating || (ratings as string[]).includes(work.rating),
+  )
+}

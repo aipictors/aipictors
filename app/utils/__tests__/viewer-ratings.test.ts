@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import {
+  filterWorksByRatings,
   toNormalModeRatings,
   toSensitiveModeRatings,
 } from "~/utils/viewer-ratings"
@@ -55,5 +56,26 @@ describe("toSensitiveModeRatings", () => {
     expect(
       toSensitiveModeRatings({ isLoggedIn: true, preferenceRating: "R18G" }),
     ).toEqual(["R18", "R18G"])
+  })
+})
+
+describe("filterWorksByRatings", () => {
+  const works = [
+    { id: "1", rating: "G" },
+    { id: "2", rating: "R15" },
+    { id: "3", rating: null },
+  ]
+
+  test("R15表示OFF（G のみ）なら R15 の作品を外す", () => {
+    expect(filterWorksByRatings(works, ["G"]).map((w) => w.id)).toEqual([
+      "1",
+      "3",
+    ])
+  })
+
+  test("G と R15 ならすべて残す", () => {
+    expect(
+      filterWorksByRatings(works, ["G", "R15"]).map((w) => w.id),
+    ).toEqual(["1", "2", "3"])
   })
 })

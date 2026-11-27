@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { LikeButton } from "~/components/like-button"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
@@ -15,6 +16,7 @@ import type {
   HomeTagWorksRow,
 } from "~/routes/api.home-tag-works/route"
 import { getJstDate } from "~/utils/jst-date"
+import { filterWorksByRatings } from "~/utils/viewer-ratings"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 /** 作品を折り返して並べる（ちちぷいのトップと同じく、横にスクロールさせず何段も見せる。PC は 6 列） */
@@ -121,8 +123,13 @@ export function HomeWorksShelf(props: {
   isSensitive?: boolean
 }) {
   const t = useTranslation()
+  const viewerRatings = useViewerRatings()
+  // 一覧はサーバーで「全年齢と R15」で取ってキャッシュしているので、R15 を出さない設定の人には R15 を外す
+  const works = props.isSensitive
+    ? props.works
+    : filterWorksByRatings(props.works, viewerRatings.normalRatings)
   // PC の 1 段（6 列）に満たない一覧は、右に穴が空くので出さない
-  if (props.works.length < SHELF_MIN_WORKS) return null
+  if (works.length < SHELF_MIN_WORKS) return null
   return (
     <div className="space-y-2.5">
       <HomeSectionHeading
@@ -132,7 +139,7 @@ export function HomeWorksShelf(props: {
         linkLabel={t("すべて見る", "See all")}
       />
       <ul className={gridClassName}>
-        {props.works.map((work, index) => {
+        {works.map((work, index) => {
           const title = t.workTitle(work.title, work.enTitle)
           return (
             // どの画面幅でも最後の段に穴を空けない（埋まらない分はその幅でだけ隠す）
@@ -142,7 +149,7 @@ export function HomeWorksShelf(props: {
                 "min-w-0",
                 incompleteRowHiddenClassName(
                   index,
-                  props.works.length,
+                  works.length,
                   SHELF_BREAKPOINTS,
                 ),
               )}

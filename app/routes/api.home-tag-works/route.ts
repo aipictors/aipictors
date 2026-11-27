@@ -36,6 +36,8 @@ export type HomeTagWorksRow = {
     smallThumbnailImageURL: string
     smallThumbnailImageWidth: number
     smallThumbnailImageHeight: number
+    /** 年齢制限の区分（R15 を出さない設定の人の一覧から外すのに使う） */
+    rating?: string | null
     /** 一覧からいいねするときの作者（自分の作品にはいいねボタンを出さない判定に使う） */
     user: { id: string } | null
   }[]
@@ -259,6 +261,7 @@ export const HomeTagRowWorkFragment = graphql(
     smallThumbnailImageURL
     smallThumbnailImageWidth
     smallThumbnailImageHeight
+    rating
     user {
       id
     }
