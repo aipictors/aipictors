@@ -36,10 +36,10 @@ import { FollowSensitiveUserFeedContents } from "~/routes/($lang)._main._index/c
 import { HomeDailyThemeCard } from "~/routes/($lang)._main._index/components/home-daily-theme-card"
 import { HomeDeferredSection } from "~/routes/($lang)._main._index/components/home-deferred-section"
 import {
-  HOME_HOT_WORKS_COUNT,
-  HomeHotCarousel,
-  HomeHotWorkFragment,
-} from "~/routes/($lang)._main._index/components/home-hot-carousel"
+  HomeModelLinks,
+  HomeTopCreators,
+} from "~/routes/($lang)._main._index/components/home-discovery-links"
+import { HomeHotWorkFragment } from "~/routes/($lang)._main._index/components/home-hot-carousel"
 import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
@@ -62,12 +62,23 @@ import {
 import {
   HomeTagWorksPlaceholder,
   HomeTagWorksSection,
+  HomeWorksShelf,
 } from "~/routes/($lang)._main._index/components/home-tag-works-section"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { RecommendedFeedContents } from "~/routes/($lang)._main._index/components/recommended-feed-contents"
-import { loadHomeReleases } from "~/routes/($lang)._main._index/home-loader.server"
+import {
+  type HomeTopCreator,
+  loadHomeReleases,
+} from "~/routes/($lang)._main._index/home-loader.server"
+import {
+  getHomeTagWorks,
+  HomeTagRowWorkFragment,
+  type HomeTagWorksResponse,
+  type HomeTagWorksRow,
+} from "~/routes/api.home-tag-works/route"
+import { RECOMMENDED_PAD_COUNT } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { buildHomeEventPreviews } from "~/routes/($lang)._main._index/utils/home-event-previews"
 import { HomeNewUsersSensitiveWorkListSection } from "~/routes/($lang).r._index/components/home-new-user-sensitive-work-list-section"
 import {
@@ -97,6 +108,45 @@ const HOT_WORKS_DAYS = 2
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
+/** 作品の一覧（いま人気・新着）の数。PC の 6 列で 4 段 */
+const SHELF_WORKS_COUNT = 24
+
+/** ランキング・人気のクリエイターの数 */
+const RANKING_COUNT = 12
+
+const toDateText = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+
+type ShelfSourceWork = HomeTagWorksRow["works"][number] & {
+  rating?: string | null
+  tagNames?: string[] | null
+}
+
+/** ガイドラインに触れそうなタグの作品と R18G を除いて、一覧に要る項目だけにする */
+const toSensitiveShelfWorks = (
+  works: (ShelfSourceWork | null | undefined)[] | null | undefined,
+  limit: number,
+): HomeTagWorksRow["works"] =>
+  (works ?? [])
+    .filter(
+      (work): work is ShelfSourceWork =>
+        work !== null &&
+        work !== undefined &&
+        work.rating === "R18" &&
+        isFeaturableSensitiveWork({ tagNames: work.tagNames ?? [] }),
+    )
+    .slice(0, limit)
+    .map((work) => ({
+      id: work.id,
+      title: work.title,
+      enTitle: work.enTitle ?? null,
+      likesCount: work.likesCount,
+      smallThumbnailImageURL: work.smallThumbnailImageURL,
+      smallThumbnailImageWidth: work.smallThumbnailImageWidth,
+      smallThumbnailImageHeight: work.smallThumbnailImageHeight,
+      user: work.user ? { id: work.user.id } : null,
+    }))
+
 /** 日付の切れ目にそろえた N 日前（同じ日のあいだは同じ問い合わせになるように） */
 const toDaysAgoIso = (days: number) =>
   new Date(
@@ -110,7 +160,10 @@ export async function loader(props: LoaderFunctionArgs) {
   // 新着タブで開いたときは、ファーストビューの作品もサーバーの HTML に入れる
   const isNewTab = url.searchParams.get("tab") === "new"
 
-  const [{ data }, newWorksResp, releases] = await Promise.all([
+  const yesterday = new Date(now.getTime() - DAY_MS)
+  const dayBeforeYesterday = new Date(now.getTime() - 2 * DAY_MS)
+
+  const [{ data }, newWorksResp, releases, tagWorks] = await Promise.all([
     loaderClient.query({
       query,
       variables: {
@@ -119,6 +172,14 @@ export async function loader(props: LoaderFunctionArgs) {
         year: now.getFullYear(),
         promotionWorksLimit: config.query.homeWorkCount.promotion,
         hotWorksAfter: toDaysAgoIso(HOT_WORKS_DAYS),
+        awardYear: yesterday.getFullYear(),
+        awardMonth: yesterday.getMonth() + 1,
+        awardDay: yesterday.getDate(),
+        olderAwardYear: dayBeforeYesterday.getFullYear(),
+        olderAwardMonth: dayBeforeYesterday.getMonth() + 1,
+        olderAwardDay: dayBeforeYesterday.getDate(),
+        userRankingDate: toDateText(yesterday),
+        olderUserRankingDate: toDateText(dayBeforeYesterday),
       },
     }),
     isNewTab
@@ -138,24 +199,78 @@ export async function loader(props: LoaderFunctionArgs) {
       : null,
     // お知らせは全年齢のトップと同じ（作品ではないので年齢区分は関係ない）
     loadHomeReleases(now.getTime()),
+    // タグごとの作品も最初の HTML に入れる（拠点のキャッシュを /api/home-tag-works と共有）
+    getHomeTagWorks(true).catch((): HomeTagWorksResponse => ({ rows: [] })),
   ])
 
   const theme = data.dailyTheme
-  const { appEvents, userEvents, hotWorks, ...homeData } = data
+  const {
+    appEvents,
+    userEvents,
+    hotWorks,
+    rankingWorks,
+    olderRankingWorks,
+    newWorksShelf,
+    fillWorks,
+    userRankings,
+    olderUserRankings,
+    ...homeData
+  } = data
+  const promotionWorks = data.promotionWorks.filter(isFeaturableSensitiveWork)
+  const isLatestRanking = rankingWorks.length > 0
+  const rankingDate = isLatestRanking ? yesterday : dayBeforeYesterday
+  const creatorRankings =
+    userRankings.length > 0 ? userRankings : olderUserRankings
+  const promotionIds = new Set(promotionWorks.map((work) => work.id))
 
   return {
     ...homeData,
     ...releases,
     eventPreviews: buildHomeEventPreviews(appEvents ?? [], userEvents ?? []),
     // 選んで見せる枠には、ガイドラインに触れそうなタグの作品を出さない
-    promotionWorks: data.promotionWorks.filter(isFeaturableSensitiveWork),
-    // いま人気（R18 の作品だけ。ratings を R18 にしても R18G が返ることがあるので評価でも確かめる）
-    hotWorks: hotWorks
+    promotionWorks,
+    // 推薦の最後の行の穴埋めと「ほかのおすすめ」（全年齢のトップと同じ）
+    fillWorks: fillWorks
       .filter(
-        (work) => work.rating === "R18" && isFeaturableSensitiveWork(work),
+        (work) =>
+          work.rating === "R18" &&
+          isFeaturableSensitiveWork(work) &&
+          !promotionIds.has(work.id),
       )
-      .slice(0, HOME_HOT_WORKS_COUNT)
-      .map(({ tagNames: _tagNames, ...work }) => work),
+      .slice(
+        0,
+        Math.max(
+          0,
+          config.query.homeWorkCount.promotion - promotionWorks.length,
+        ) + RECOMMENDED_PAD_COUNT,
+      ),
+    // いま人気（R18 の作品だけ。ratings を R18 にしても R18G が返ることがあるので評価でも確かめる）
+    trendWorks: toSensitiveShelfWorks(hotWorks, SHELF_WORKS_COUNT),
+    rankingWorks: toSensitiveShelfWorks(
+      (isLatestRanking ? rankingWorks : olderRankingWorks).map(
+        (award) => award.work,
+      ),
+      RANKING_COUNT,
+    ),
+    rankingDateText: `${rankingDate.getFullYear()}/${rankingDate.getMonth() + 1}/${rankingDate.getDate()}`,
+    newWorksShelf: toSensitiveShelfWorks(newWorksShelf, SHELF_WORKS_COUNT),
+    tagWorkRows: tagWorks.rows,
+    topCreators: creatorRankings
+      .flatMap((ranking): HomeTopCreator[] =>
+        ranking.user
+          ? [
+              {
+                id: ranking.user.id,
+                login: ranking.user.login,
+                name: ranking.user.name,
+                iconUrl: ranking.user.iconUrl || null,
+                rank: ranking.rank,
+              },
+            ]
+          : [],
+      )
+      .sort((a, b) => a.rank - b.rank)
+      .slice(0, RANKING_COUNT),
     // タグはガイドラインに触れそうなものを除いてから HTML に入れる
     hotSensitiveTags: data.hotSensitiveTags
       .filter((tag) => isFeaturableSensitiveTag(tag.name))
@@ -533,9 +648,55 @@ export default function SensitiveHomeIndexPage() {
                   <HomePromotionWorksSection isSensitive />
                   <HomeSensitiveWorksUsersRecommendedSection
                     works={data.promotionWorks}
+                    fillWorks={data.fillWorks}
                   />
-                  {/* いま人気 → 今日のお題 → ランキング・プラン */}
-                  <HomeHotCarousel works={data.hotWorks} />
+                  {/* ここから下は全年齢のトップと同じく、作品の一覧を何段も続ける（いま人気 → ランキング → タグごと → 新着） */}
+                  <HomeWorksShelf
+                    title={t("いま人気", "Trending now")}
+                    description={t(
+                      "いま反応が集まっている作品",
+                      "Works getting reactions right now",
+                    )}
+                    link="/r/popular"
+                    works={data.trendWorks}
+                    imageWidth={320}
+                    isSensitive
+                  />
+                  {data.rankingWorks.length > 0 && (
+                    <HomeWorksShelf
+                      title={t(
+                        `デイリーランキング（${data.rankingDateText.slice(5)}）`,
+                        `Daily ranking (${data.rankingDateText.slice(5)})`,
+                      )}
+                      link={`/r/rankings/${data.rankingDateText}`}
+                      works={data.rankingWorks}
+                      showRank
+                      isSensitive
+                    />
+                  )}
+                  <div style={offscreenSectionStyle(2400)}>
+                    {data.tagWorkRows.length > 0 ? (
+                      <HomeTagWorksSection
+                        isSensitive
+                        initialRows={data.tagWorkRows}
+                      />
+                    ) : (
+                      <HomeDeferredSection
+                        fallback={<HomeTagWorksPlaceholder />}
+                      >
+                        <HomeTagWorksSection isSensitive />
+                      </HomeDeferredSection>
+                    )}
+                  </div>
+                  <HomeWorksShelf
+                    title={t("新着作品", "New works")}
+                    link="/r?tab=new"
+                    works={data.newWorksShelf}
+                    isSensitive
+                  />
+                  {/* 作品以外の入口（モデル・人気のクリエイター） */}
+                  <HomeModelLinks isSensitive />
+                  <HomeTopCreators creators={data.topCreators} isSensitive />
                   <div className="space-y-3">
                     {data.dailyTheme && (
                       // 参加数と先頭の作品は全年齢を含むので出さない
@@ -549,12 +710,6 @@ export default function SensitiveHomeIndexPage() {
                       />
                     )}
                     <HomeQuickLinks isSensitive />
-                  </div>
-                  {/* タグごとの作品（今日のお題・人気タグ）。画面に近づいてから読む */}
-                  <div style={offscreenSectionStyle(900)}>
-                    <HomeDeferredSection fallback={<HomeTagWorksPlaceholder />}>
-                      <HomeTagWorksSection isSensitive />
-                    </HomeDeferredSection>
                   </div>
                 </div>
                 {/* 右カラム（スクロールしても見えるように固定）。PC だけ新しいユーザー・コメント・人気タグも */}
@@ -774,7 +929,85 @@ const query = graphql(
     $day: Int!
     $promotionWorksLimit: Int!
     $hotWorksAfter: String!
+    $awardYear: Int!
+    $awardMonth: Int!
+    $awardDay: Int!
+    $olderAwardYear: Int!
+    $olderAwardMonth: Int!
+    $olderAwardDay: Int!
+    $userRankingDate: String!
+    $olderUserRankingDate: String!
   ) {
+    rankingWorks: workAwards(
+      offset: 0
+      limit: 20
+      where: { year: $awardYear, month: $awardMonth, day: $awardDay, isSensitive: true }
+    ) {
+      id
+      work {
+        ...HomeTagRowWork
+        rating
+        tagNames
+      }
+    }
+    olderRankingWorks: workAwards(
+      offset: 0
+      limit: 20
+      where: { year: $olderAwardYear, month: $olderAwardMonth, day: $olderAwardDay, isSensitive: true }
+    ) {
+      id
+      work {
+        ...HomeTagRowWork
+        rating
+        tagNames
+      }
+    }
+    newWorksShelf: works(
+      offset: 0
+      limit: 40
+      where: {
+        ratings: [R18]
+        isSensitive: true
+        isNowCreatedAt: true
+        orderBy: DATE_CREATED
+        accessTypes: [PUBLIC]
+      }
+    ) {
+      ...HomeTagRowWork
+      rating
+      tagNames
+    }
+    fillWorks: recommendedFeedWorks(offset: 0, limit: 32, ratings: [R18]) {
+      ...HomePromotionWork
+      rating
+      tagNames
+    }
+    userRankings: sensitiveUserRankings(
+      offset: 0
+      limit: 12
+      where: { date: $userRankingDate, orderBy: RANK, sort: ASC }
+    ) {
+      rank
+      user {
+        id
+        login
+        name
+        iconUrl
+      }
+    }
+    olderUserRankings: sensitiveUserRankings(
+      offset: 0
+      limit: 12
+      where: { date: $olderUserRankingDate, orderBy: RANK, sort: ASC }
+    ) {
+      rank
+      user {
+        id
+        login
+        name
+        iconUrl
+      }
+    }
     dailyTheme(year: $year, month: $month, day: $day) {
       id
       title
@@ -788,7 +1021,7 @@ const query = graphql(
     }
     hotWorks: works(
       offset: 0
-      limit: 20
+      limit: 40
       where: {
         ratings: [R18]
         isSensitive: true
@@ -877,5 +1110,6 @@ const query = graphql(
     HomeTagFragment,
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
+    HomeTagRowWorkFragment,
   ],
 )

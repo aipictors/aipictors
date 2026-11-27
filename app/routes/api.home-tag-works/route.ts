@@ -95,7 +95,8 @@ const loadRows = async (
     }
   }
   const variables = {
-    limit: WORKS_PER_TAG,
+    // R18 はガイドラインに触れそうな作品を除くと足りなくなるので多めに取ってから 12 件にする
+    limit: isSensitive ? WORKS_PER_TAG * 3 : WORKS_PER_TAG,
     where0: where(tags[0]),
     where1: where(tags[1]),
     where2: where(tags[2]),
@@ -123,7 +124,8 @@ const loadRows = async (
           .filter(
             (work) => work.rating === "R18" && isFeaturableSensitiveWork(work),
           )
-          .map(({ tagNames: _tagNames, rating: _rating, ...work }) => work),
+          .map(({ tagNames: _tagNames, rating: _rating, ...work }) => work)
+          .slice(0, WORKS_PER_TAG),
       )
     }
   } else {
@@ -164,7 +166,7 @@ export async function getHomeTagWorks(
   const hourKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-${now.getHours()}`
   const cache = typeof caches === "undefined" ? null : caches.default
   const cacheKey = new Request(
-    `https://www.aipictors.com/__home-tag-works/v4/${isSensitive ? "r18/" : ""}${hourKey}`,
+    `https://www.aipictors.com/__home-tag-works/v5/${isSensitive ? "r18/" : ""}${hourKey}`,
   )
   const cached = await cache?.match(cacheKey).catch(() => undefined)
   if (cached) {
@@ -197,7 +199,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const cache = typeof caches === "undefined" ? null : caches.default
   const cacheKey = new Request(
-    `https://www.aipictors.com/__home-tag-works/v4/${isSensitive ? "r18/" : ""}${hourKey}`,
+    `https://www.aipictors.com/__home-tag-works/v5/${isSensitive ? "r18/" : ""}${hourKey}`,
   )
   const cached = await cache?.match(cacheKey).catch(() => undefined)
   if (cached) {

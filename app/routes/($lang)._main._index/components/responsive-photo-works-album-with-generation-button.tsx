@@ -29,6 +29,12 @@ const DESKTOP_SQUARE_BREAKPOINTS: GridColumnBreakpoint[] = [
   { columns: 6, hiddenClassName: "2xl:hidden" },
 ]
 
+/** スマホの一覧の列数: 2 / sm:3（md からは PC の一覧） */
+const MOBILE_BREAKPOINTS: GridColumnBreakpoint[] = [
+  { columns: 2, hiddenClassName: "max-sm:hidden" },
+  { columns: 3, hiddenClassName: "sm:hidden" },
+]
+
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   targetRowHeight?: number
@@ -425,8 +431,19 @@ function HomeCroppedWorksWithGenerationButton(props: {
   // 以前は正方形が固定 160px（size="lg"）で、2 列のマスより小さく右と下に余白が出ていた
   return (
     <div className="safari-work-grid grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3">
-      {props.works.map((work) => (
-        <div key={work.id} className="relative flex w-full min-w-0 flex-col">
+      {props.works.map((work, index) => (
+        // 最後の段に 1 枚だけ残って穴が空かないように、埋まらない分はその幅でだけ隠す
+        <div
+          key={work.id}
+          className={cn(
+            "relative flex w-full min-w-0 flex-col",
+            incompleteRowHiddenClassName(
+              index,
+              props.works.length,
+              MOBILE_BREAKPOINTS,
+            ),
+          )}
+        >
           <div className="relative">
             <CroppedWorkSquare
               title={t.workTitle(work.title, work.enTitle)}

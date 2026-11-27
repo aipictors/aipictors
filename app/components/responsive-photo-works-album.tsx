@@ -17,7 +17,7 @@ import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
 import {
   type GridLayout,
-  incompleteRowHiddenClassName,
+  paddedRowClassNames,
   SQUARE_GRID_BREAKPOINTS,
 } from "~/utils/grid-layout"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
@@ -43,6 +43,11 @@ type Props = {
   layout?: GridLayout
   /** 正方形のとき、最後の行の半端な作品を隠して行をぴったり埋める（ホームの一覧など、続きを読まない一覧で使う） */
   fillRows?: boolean
+  /**
+   * fillRows のとき、最後の行の穴を埋めるのに使う作品（推薦が少ないときのおすすめなど）。
+   * 画面幅ごとに足りない分だけ後ろに出す
+   */
+  padWorks?: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   /** 作品の画像の上に重ねるもの（おすすめの「興味なし」など） */
   renderItemOverlay?: (workId: string) => React.ReactNode
   /**
@@ -73,8 +78,19 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
-  const isFew = props.compactWhenFew === true && props.works.length <= 4
   const isSquare = (props.layout ?? gridLayout) === "square"
+  const workIds = new Set(props.works.map((work) => work.id))
+  const padWorks =
+    props.fillRows && isSquare
+      ? (props.padWorks ?? []).filter((work) => !workIds.has(work.id))
+      : []
+  const isFew =
+    props.compactWhenFew === true && props.works.length + padWorks.length <= 4
+  const rowClassNames = paddedRowClassNames(
+    props.works.length,
+    padWorks.length,
+    SQUARE_GRID_BREAKPOINTS,
+  )
 
   if (isFew || isSquare) {
     return (
@@ -87,7 +103,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
           props.renderAfterItem && "grid-flow-row-dense",
         )}
       >
-        {props.works.map((workItem, index) => {
+        {[...props.works, ...padWorks].map((workItem, index) => {
           const after = props.renderAfterItem?.(index)
           return (
             <Fragment key={workItem.id.toString()}>
@@ -97,11 +113,9 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   "group/item relative flex min-w-0 flex-col gap-1.5",
                   props.fillRows &&
                     !isFew &&
-                    incompleteRowHiddenClassName(
-                      index,
-                      props.works.length,
-                      SQUARE_GRID_BREAKPOINTS,
-                    ),
+                    (index < props.works.length
+                      ? rowClassNames.item(index)
+                      : rowClassNames.pad(index - props.works.length)),
                 )}
               >
                 <div className="relative">

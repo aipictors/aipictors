@@ -25,7 +25,18 @@ import { usePersistentState } from "~/hooks/use-persistent-state"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { useIsNearViewport } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
+import {
+  type GridColumnBreakpoint,
+  incompleteRowHiddenClassName,
+} from "~/utils/grid-layout"
 import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
+
+/** 作者の他の作品の一覧の列数: 3 / sm:4 / lg:5 */
+const AUTHOR_GRID_BREAKPOINTS: GridColumnBreakpoint[] = [
+  { columns: 3, hiddenClassName: "max-sm:hidden" },
+  { columns: 4, hiddenClassName: "sm:max-lg:hidden" },
+  { columns: 5, hiddenClassName: "lg:hidden" },
+]
 
 type Props = {
   works: {
@@ -365,7 +376,22 @@ function WorkAuthorWorks(props: {
       {isGrid ? (
         <div className="space-y-3">
           <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 lg:grid-cols-5">
-            {works.map((work) => renderWork(work, true))}
+            {/* 最後の段に穴を空けない（埋まらない分はその幅でだけ隠す。残りは「もっと見る」・ユーザーページで見られる） */}
+            {works.map((work, index) => (
+              <div
+                key={work.id}
+                className={cn(
+                  "min-w-0",
+                  incompleteRowHiddenClassName(
+                    index,
+                    works.length,
+                    AUTHOR_GRID_BREAKPOINTS,
+                  ),
+                )}
+              >
+                {renderWork(work, true)}
+              </div>
+            ))}
           </div>
           {hasMore ? (
             <Button

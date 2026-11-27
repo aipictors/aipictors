@@ -19,7 +19,10 @@ import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-t
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import type { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
-import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import {
+  HomePromotionWorkFragment,
+  RECOMMENDED_PAD_COUNT,
+} from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { RECOMMENDED_PER_PAGE } from "~/routes/($lang)._main._index/components/recommended-feed-contents"
 import { buildHomeEventPreviews } from "~/routes/($lang)._main._index/utils/home-event-previews"
 import {
@@ -394,10 +397,12 @@ function toPromotionFillWorks<T extends { id: string }>(
   const shownIds = new Set(
     [...(promotionWorks ?? []), ...(hotWorks ?? [])].map((work) => work.id),
   )
-  const room = Math.max(
-    0,
-    config.query.homeWorkCount.promotion - (promotionWorks?.length ?? 0),
-  )
+  // 先頭の 5 件は推薦の最後の行を埋めるのに使う（home-works-users-recommended-section.tsx）
+  const room =
+    Math.max(
+      0,
+      config.query.homeWorkCount.promotion - (promotionWorks?.length ?? 0),
+    ) + RECOMMENDED_PAD_COUNT
   return (feedWorks ?? [])
     .filter((work) => !shownIds.has(work.id))
     .slice(0, room)
@@ -582,9 +587,10 @@ const query = graphql(
     ) {
       ...HomePromotionWork
     }
+    # 推薦・いま人気と重なる分を除いても、推薦の穴埋め＋「ほかのおすすめ」に足りるように多めに
     promotionFillWorks: recommendedFeedWorks(
       offset: 0
-      limit: $promotionLimit
+      limit: 32
       ratings: [G, R15]
     ) {
       ...HomePromotionWork

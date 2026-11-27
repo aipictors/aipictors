@@ -6,6 +6,10 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
+import {
+  type GridColumnBreakpoint,
+  incompleteRowHiddenClassName,
+} from "~/utils/grid-layout"
 import type {
   HomeTagWorksResponse,
   HomeTagWorksRow,
@@ -16,6 +20,16 @@ import { toResizedImageUrl } from "~/utils/resized-image-url"
 /** 作品を折り返して並べる（ちちぷいのトップと同じく、横にスクロールさせず何段も見せる。PC は 6 列） */
 const gridClassName =
   "grid grid-cols-3 gap-x-2 gap-y-3 sm:grid-cols-4 lg:grid-cols-6 md:gap-x-2.5"
+
+/** 上の列数（3 / sm:4 / lg:6）。最後の段が埋まらない作品をその幅でだけ隠す */
+/** 一覧を出す最少の作品数（PC の 1 段） */
+const SHELF_MIN_WORKS = 6
+
+const SHELF_BREAKPOINTS: GridColumnBreakpoint[] = [
+  { columns: 3, hiddenClassName: "max-sm:hidden" },
+  { columns: 4, hiddenClassName: "sm:max-lg:hidden" },
+  { columns: 6, hiddenClassName: "lg:hidden" },
+]
 
 /**
  * タグごとの作品（今日のお題と人気タグを、タグごとに 2 段の一覧で並べる）
@@ -86,6 +100,7 @@ function HomeTagWorksRowView(props: {
       }
       link={link}
       works={row.works}
+      isSensitive={props.isSensitive}
     />
   )
 }
@@ -102,9 +117,12 @@ export function HomeWorksShelf(props: {
   description?: string
   /** 画像を読む幅（大きく見せる欄は広めに） */
   imageWidth?: number
+  /** R18 の作品（作品ページを /r に） */
+  isSensitive?: boolean
 }) {
   const t = useTranslation()
-  if (props.works.length === 0) return null
+  // PC の 1 段（6 列）に満たない一覧は、右に穴が空くので出さない
+  if (props.works.length < SHELF_MIN_WORKS) return null
   return (
     <div className="space-y-2.5">
       <HomeSectionHeading
@@ -117,10 +135,21 @@ export function HomeWorksShelf(props: {
         {props.works.map((work, index) => {
           const title = t.workTitle(work.title, work.enTitle)
           return (
-            <li key={work.id} className="min-w-0">
+            // どの画面幅でも最後の段に穴を空けない（埋まらない分はその幅でだけ隠す）
+            <li
+              key={work.id}
+              className={cn(
+                "min-w-0",
+                incompleteRowHiddenClassName(
+                  index,
+                  props.works.length,
+                  SHELF_BREAKPOINTS,
+                ),
+              )}
+            >
               <div className="relative">
                 <Link
-                  to={`/posts/${work.id}`}
+                  to={`${props.isSensitive ? "/r" : ""}/posts/${work.id}`}
                   className="group block space-y-1.5"
                 >
                   <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">

@@ -228,6 +228,7 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        {/* 宣伝が 2 列（スマホ〜）・3 列（lg〜）で割り切れないときは、空いたマスに宣伝枠の案内を置いて穴を空けない */}
         {works.map((work) => (
           <PromotionWorkCard
             key={work.id}
@@ -241,8 +242,48 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
             relatedUrl={work.relatedUrl}
           />
         ))}
+        {[0, 1].map((slot) => {
+          const needTwo = (2 - (works.length % 2)) % 2
+          const needThree = (3 - (works.length % 3)) % 3
+          if (slot >= needTwo && slot >= needThree) return null
+          return (
+            <PromotionInviteCard
+              key={`invite-${slot}`}
+              className={cn(
+                slot >= needTwo && "max-lg:hidden",
+                slot >= needThree && "lg:hidden",
+              )}
+            />
+          )
+        })}
       </div>
     </section>
+  )
+}
+
+/**
+ * 宣伝枠の空いたマスに出す案内（自分の作品も宣伝できることを知らせる）
+ */
+function PromotionInviteCard(props: { className?: string }) {
+  const t = useTranslation()
+  return (
+    <div className={cn(PROMOTION_FRAME_CLASS, props.className)}>
+      <Link
+        to="/promotion"
+        className="flex h-full min-h-40 flex-col items-center justify-center gap-2 rounded-[11px] bg-card p-4 text-center hover:bg-muted/60"
+      >
+        <MegaphoneIcon className="size-7 text-pink-500" />
+        <span className="font-bold text-sm">
+          {t("ここにあなたの作品を宣伝", "Promote your work here")}
+        </span>
+        <span className="text-muted-foreground text-xs">
+          {t(
+            "トップの宣伝枠に 7 日間表示されます",
+            "Shown on the top page for 7 days",
+          )}
+        </span>
+      </Link>
+    </div>
   )
 }
 

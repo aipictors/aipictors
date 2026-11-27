@@ -27,6 +27,8 @@ type Props = {
   onSelect?: (index: string) => void
   /** 最後の行の半端な作品を隠して行をぴったり埋める（正方形のとき） */
   fillRows?: boolean
+  /** fillRows のとき、最後の行の穴を埋める作品 */
+  padWorks?: FragmentOf<typeof HomePromotionWorkFragment>[]
 }
 
 export function HomeRecommendedWorkList(props: Props) {
@@ -63,6 +65,7 @@ export function HomeRecommendedWorkList(props: Props) {
           priorityCount={props.priorityCount}
           onSelect={props.onSelect}
           fillRows={props.fillRows}
+          padWorks={props.padWorks}
         />
       )}
     </section>

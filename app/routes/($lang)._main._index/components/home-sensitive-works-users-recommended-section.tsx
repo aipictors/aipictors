@@ -8,10 +8,13 @@ import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/components/home-recommended-work-list"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
+import { RECOMMENDED_PAD_COUNT } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { isFeaturableSensitiveWork } from "~/utils/sensitive-tag-filter"
 
 type Props = {
   works: FragmentOf<typeof HomePromotionWorkFragment>[]
+  /** 推薦の最後の行の穴埋めと「ほかのおすすめ」に使う作品（全年齢のトップと同じ） */
+  fillWorks?: FragmentOf<typeof HomePromotionWorkFragment>[]
   style?: IntrospectionEnum<"ImageStyle">
 }
 
@@ -42,6 +45,13 @@ export function HomeSensitiveWorksUsersRecommendedSection(props: Props) {
     recommendedWorksResp?.works.filter(isFeaturableSensitiveWork) ?? props.works
 
   const t = useTranslation()
+  // ブラウザで取り直したとき（ログイン中の人の年齢区分で）は埋める分を使わない。全年齢のトップと同じ
+  const fillWorks = recommendedWorksResp ? [] : (props.fillWorks ?? [])
+  const padWorks = fillWorks.slice(0, RECOMMENDED_PAD_COUNT)
+  const restFillWorks =
+    workDisplayed.length > 0
+      ? fillWorks.slice(RECOMMENDED_PAD_COUNT)
+      : fillWorks
 
   return (
     <>
@@ -52,8 +62,24 @@ export function HomeSensitiveWorksUsersRecommendedSection(props: Props) {
           isCropped={false}
           isShowProfile={true}
           fillRows={true}
+          padWorks={padWorks}
           autoPlayVideoPreview={true}
           priorityCount={2}
+        />
+      )}
+      {restFillWorks.length > 0 && (
+        <HomeRecommendedWorkList
+          title={t("ほかのおすすめ", "More picks")}
+          description={t(
+            "直近の作品から、反応の多い作品やあなたの好みに近い作品",
+            "Popular recent works picked for you",
+          )}
+          works={restFillWorks}
+          isCropped={false}
+          isShowProfile={true}
+          fillRows={true}
+          autoPlayVideoPreview={true}
+          priorityCount={workDisplayed.length > 0 ? undefined : 2}
         />
       )}
     </>

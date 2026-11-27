@@ -19,6 +19,9 @@ type Props = {
   ) => void
 }
 
+/** 推薦の最後の行を埋めるのに使うおすすめの数（6 列で 1 枚だけのときに 5 枚） */
+export const RECOMMENDED_PAD_COUNT = 5
+
 /**
  * ユーザからの推薦作品
  */
@@ -46,6 +49,10 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
   const workDisplayed = recommendedWorksResp?.works ?? props.works
   // ブラウザで取り直したとき（サーバーの一覧が無いとき）は埋める分も無い
   const fillWorks = recommendedWorksResp ? [] : (props.fillWorks ?? [])
+  // 推薦の最後の行の穴は、おすすめの先頭で埋める（6 列で 5 件だけのときなど。最大で 1 行に足りない 5 枚）。
+  // 埋めに使った作品は「ほかのおすすめ」には出さない
+  const padWorks = fillWorks.slice(0, RECOMMENDED_PAD_COUNT)
+  const restFillWorks = fillWorks.slice(RECOMMENDED_PAD_COUNT)
 
   useEffect(() => {
     // 作品のダイアログで前後に移れるように、埋めた分も続けて渡す
@@ -70,20 +77,21 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
           isCropped={false}
           isShowProfile={true}
           fillRows={true}
+          padWorks={padWorks}
           autoPlayVideoPreview={true}
           // ホームで最初に見える画像（スマホの LCP）。lazy のままだと読み込みが後回しになっていた
           priorityCount={2}
           onSelect={props.onSelect}
         />
       )}
-      {fillWorks.length > 0 && (
+      {restFillWorks.length > 0 && (
         <HomeRecommendedWorkList
           title={t("ほかのおすすめ", "More picks")}
           description={t(
             "直近 3 日の作品から、反応の多い作品やあなたの好みに近い作品",
             "Popular recent works picked for you",
           )}
-          works={fillWorks}
+          works={restFillWorks}
           link="/recommended"
           linkLabel={t("おすすめをもっと見る", "More recommended")}
           isCropped={false}

@@ -25,8 +25,9 @@ const HOME_MODEL_NAMES = [
   "4o Image Generation",
 ]
 
-export function HomeModelLinks() {
+export function HomeModelLinks(props: { isSensitive?: boolean }) {
   const t = useTranslation()
+  const prefix = props.isSensitive ? "/r" : ""
   return (
     <section className="space-y-2.5">
       <HomeSectionHeading
@@ -38,7 +39,7 @@ export function HomeModelLinks() {
         {HOME_MODEL_NAMES.map((name) => (
           <li key={name}>
             <Link
-              to={`/models/${encodeURIComponent(name)}`}
+              to={`${prefix}/models/${encodeURIComponent(name)}`}
               className="block rounded-full border px-3.5 py-1.5 font-medium text-sm transition-colors hover:bg-muted"
             >
               {name}
@@ -53,21 +54,25 @@ export function HomeModelLinks() {
 /**
  * 人気のクリエイター（前日のユーザーランキングの上位）
  */
-export function HomeTopCreators(props: { creators: HomeTopCreator[] }) {
+export function HomeTopCreators(props: {
+  creators: HomeTopCreator[]
+  isSensitive?: boolean
+}) {
   const t = useTranslation()
+  const prefix = props.isSensitive ? "/r" : ""
   if (props.creators.length === 0) return null
   return (
     <section className="space-y-2.5">
       <HomeSectionHeading
         title={t("人気のクリエイター", "Popular creators")}
-        link="/rankings?type=users"
+        link={`${prefix}/rankings?type=users`}
         linkLabel={t("すべて見る", "See all")}
       />
       <ul className="grid grid-cols-4 gap-x-2 gap-y-3 sm:grid-cols-6 lg:grid-cols-12">
         {props.creators.map((creator, index) => (
           <li key={creator.id} className="min-w-0">
             <Link
-              to={`/users/${encodeURIComponent(creator.login)}`}
+              to={`${prefix}/users/${encodeURIComponent(creator.login)}`}
               className="group flex flex-col items-center gap-1.5"
             >
               <span className="relative">

@@ -67,3 +67,37 @@ export const incompleteRowHiddenClassName = (
     })
     .map(({ hiddenClassName }) => hiddenClassName)
     .join(" ")
+
+/**
+ * 作品の後ろに「埋め草」の作品を足して、最後の行を埋める（推薦のように件数が少ない一覧で、行の右に穴を空けない）。
+ * 画面幅ごとに、足りない分だけ埋め草を見せる。埋め草が足りない幅では、従来どおり最後の行の半端な作品を隠す。
+ * 返すのは、作品 index ごとの class と、埋め草 index ごとの class
+ */
+export const paddedRowClassNames = (
+  count: number,
+  padCount: number,
+  breakpoints: GridColumnBreakpoint[],
+) => {
+  const needs = breakpoints.map(
+    ({ columns }) => (columns - (count % columns)) % columns,
+  )
+  return {
+    item: (index: number) =>
+      breakpoints
+        .filter(({ columns }, i) => {
+          if ((needs[i] ?? 0) <= padCount) return false
+          const filled = Math.floor(count / columns) * columns
+          return filled > 0 && index >= filled
+        })
+        .map(({ hiddenClassName }) => hiddenClassName)
+        .join(" "),
+    pad: (padIndex: number) =>
+      breakpoints
+        .filter((_, i) => {
+          const need = needs[i] ?? 0
+          return need > padCount || padIndex >= need
+        })
+        .map(({ hiddenClassName }) => hiddenClassName)
+        .join(" "),
+  }
+}
