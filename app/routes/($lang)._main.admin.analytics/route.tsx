@@ -38,6 +38,7 @@ import {
 } from "./analytics-data"
 import { EventFunnelSection } from "./event-funnel-section"
 import { LeaveReasonsSection } from "./leave-reasons-section"
+import { SourceFunnelSection } from "./source-funnel-section"
 
 const TITLE = "分析"
 const DESCRIPTION =
@@ -56,6 +57,7 @@ const SECTIONS = [
   { id: "sales", label: "売上" },
   { id: "generations", label: "生成" },
   { id: "traffic", label: "アクセス" },
+  { id: "source-funnel", label: "流入 → サブスク" },
   { id: "funnel", label: "操作の流れ" },
   { id: "leave", label: "解約・退会の理由" },
   { id: "daily", label: "日別" },
@@ -546,6 +548,10 @@ function AnalyticsBody(props: { data: AnalyticsResponse; range: number }) {
             items={mergeCounts(days, (d) => d.cloudflare?.countries)}
           />
         </ChartGrid>
+      </Section>
+
+      <Section id="source-funnel">
+        <SourceFunnelSection rows={props.data.events?.sources} />
       </Section>
 
       <Section id="funnel">

@@ -11,7 +11,7 @@ import { toJsonResponse } from "~/lib/server/json-response.server"
  * 分析ページ（/admin/analytics）の日別の数字。モデレーターだけ
  * 中身は aipictors-api の /internal/analytics/daily（毎日 00:30 JST に前日分を保存している）と /internal/analytics/pnl（収支）、
  * /internal/analytics/users/monthly（利用者の月別）、/internal/analytics/leave-reasons（解約・退会の理由）、
- * /internal/analytics/events（操作の記録のファネル・ページごとの離脱）
+ * /internal/analytics/events（操作の記録のファネル・ページごとの離脱・流入元ごとのサブスクまでの到達）
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const authorization = request.headers.get("authorization")
@@ -51,9 +51,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     )
       .toISOString()
       .slice(0, 10)
-    const loadEvents = (kind: string) =>
+    // 流入元ごとのサブスクまでの到達は、手で作り直した今日の分（速報）も含める
+    const today = new Date(Date.now() + 9 * 3600_000).toISOString().slice(0, 10)
+    const loadEvents = (kind: string, to?: string) =>
       fetch(
-        `${baseUrl}/internal/analytics/events?kind=${kind}&from=${eventFrom}`,
+        `${baseUrl}/internal/analytics/events?kind=${kind}&from=${eventFrom}${to ? `&to=${to}` : ""}`,
         { headers },
       )
         .then((res) =>
@@ -61,7 +63,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         )
         .then((body) => body?.rows ?? null)
         .catch(() => null)
-    const [response, pnl, monthly, leaveReasons, funnels, pages] =
+    const [response, pnl, monthly, leaveReasons, funnels, pages, sources] =
       await Promise.all([
         fetch(
           `${baseUrl}/internal/analytics/daily?days=${encodeURIComponent(days)}`,
@@ -82,6 +84,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
           .catch(() => null),
         loadEvents("funnels"),
         loadEvents("pages"),
+        loadEvents("sources", today),
       ])
     const body = await response.json()
     if (!response.ok) {
@@ -98,7 +101,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
           pnl,
           months: monthly?.months ?? null,
           leaveReasons,
-          events: { funnels, pages },
+          events: { funnels, pages, sources },
         },
       },
       200,

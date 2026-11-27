@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card"
+import type { SourceFunnelRow } from "./source-funnel-section"
 
 const CARD =
   "rounded-2xl border-white/10 bg-white/5 text-slate-100 shadow-none sm:rounded-[28px]"
@@ -31,6 +32,7 @@ type PageRow = {
 export type EventSummaryResponse = {
   funnels: FunnelRow[] | null
   pages: PageRow[] | null
+  sources?: SourceFunnelRow[] | null
 }
 
 const FUNNEL_LABELS: Record<string, string> = {
