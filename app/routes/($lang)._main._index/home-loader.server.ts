@@ -82,7 +82,24 @@ const createBaseHomeLoaderData = (props: {
   rankingWorks: [] as HomeTagWorksRow["works"],
   trendWorks: [] as HomeTagWorksRow["works"],
   rankingDateText: props.awardDateText,
+  newWorksShelf: [] as HomeTagWorksRow["works"],
+  topCreators: [] as HomeTopCreator[],
 })
+
+/** トップの「人気のクリエイター」（前日のユーザーランキングの上位） */
+export type HomeTopCreator = {
+  id: string
+  login: string
+  name: string
+  iconUrl: string | null
+  rank: number
+}
+
+/** 人気のクリエイターに出す人数 */
+const HOME_TOP_CREATORS_COUNT = 12
+
+const toDateText = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
 
 const RELEASES_CACHE_MS = 60 * 1000
 const releasesCache = new Map<string, { expiresAt: number; value: unknown }>()
@@ -224,6 +241,9 @@ export async function homeLoader(props: LoaderFunctionArgs) {
           olderAwardYear: dayBeforeYesterday.getFullYear(),
           olderAwardMonth: dayBeforeYesterday.getMonth() + 1,
           olderAwardDay: dayBeforeYesterday.getDate(),
+          userRankingDate: toDateText(yesterday),
+          olderUserRankingDate: toDateText(dayBeforeYesterday),
+          topCreatorsLimit: HOME_TOP_CREATORS_COUNT,
         },
       })
     : null
@@ -313,6 +333,9 @@ export async function homeLoader(props: LoaderFunctionArgs) {
     rankingWorks: _rankingWorks,
     olderRankingWorks: _olderRankingWorks,
     hotWorks: _hotWorks,
+    newWorksShelf: _newWorksShelf,
+    userRankings: _userRankings,
+    olderUserRankings: _olderUserRankings,
     ...homeData
   } = resultData ?? {}
 
@@ -343,6 +366,14 @@ export async function homeLoader(props: LoaderFunctionArgs) {
       tagWorkRows: tagWorks?.rows ?? [],
       // デイリーランキング（上位 12 件を横に並べる）
       ...toHomeRanking(resultData, yesterday, dayBeforeYesterday),
+      // 新着作品（ちちぷいのトップの新着と同じく、作品の一覧の最後に 4 段）
+      newWorksShelf: Array.isArray(resultData?.newWorksShelf)
+        ? resultData.newWorksShelf
+        : [],
+      topCreators: toTopCreators(
+        resultData?.userRankings,
+        resultData?.olderUserRankings,
+      ),
     },
     {
       headers: {
@@ -414,6 +445,36 @@ function toHomeRanking(
   }
 }
 
+/** 前日のユーザーランキングがまだ集計されていなければ前々日の分（順位の昇順） */
+function toTopCreators(
+  latest:
+    | { rank: number; user: Omit<HomeTopCreator, "rank"> | null }[]
+    | null
+    | undefined,
+  older:
+    | { rank: number; user: Omit<HomeTopCreator, "rank"> | null }[]
+    | null
+    | undefined,
+): HomeTopCreator[] {
+  const rankings = (latest ?? []).length > 0 ? (latest ?? []) : (older ?? [])
+  return rankings
+    .flatMap((ranking) =>
+      ranking.user
+        ? [
+            {
+              id: ranking.user.id,
+              login: ranking.user.login,
+              name: ranking.user.name,
+              iconUrl: ranking.user.iconUrl || null,
+              rank: ranking.rank,
+            },
+          ]
+        : [],
+    )
+    .sort((a, b) => a.rank - b.rank)
+    .slice(0, HOME_TOP_CREATORS_COUNT)
+}
+
 export type HomeLoaderData = SerializeFrom<typeof homeLoader>
 
 const initialRecommendedWorksQuery = graphql(
@@ -452,7 +513,48 @@ const query = graphql(
     $olderAwardYear: Int!
     $olderAwardMonth: Int!
     $olderAwardDay: Int!
+    $userRankingDate: String!
+    $olderUserRankingDate: String!
+    $topCreatorsLimit: Int!
   ) {
+    newWorksShelf: works(
+      offset: 0
+      limit: 24
+      where: {
+        ratings: [G, R15]
+        isNowCreatedAt: true
+        orderBy: DATE_CREATED
+        accessTypes: [PUBLIC]
+      }
+    ) {
+      ...HomeTagRowWork
+    }
+    userRankings(
+      offset: 0
+      limit: $topCreatorsLimit
+      where: { date: $userRankingDate, orderBy: RANK, sort: ASC }
+    ) {
+      rank
+      user {
+        id
+        login
+        name
+        iconUrl
+      }
+    }
+    olderUserRankings: userRankings(
+      offset: 0
+      limit: $topCreatorsLimit
+      where: { date: $olderUserRankingDate, orderBy: RANK, sort: ASC }
+    ) {
+      rank
+      user {
+        id
+        login
+        name
+        iconUrl
+      }
+    }
     rankingWorks: workAwards(
       offset: 0
       limit: 12

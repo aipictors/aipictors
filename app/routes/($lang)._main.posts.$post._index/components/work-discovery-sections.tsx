@@ -29,7 +29,8 @@ function SectionHeader(props: { title: string; to?: string }) {
 }
 
 /**
- * おすすめ → 前日ランキング → 同じお題の作品（ちちぷいの作品ページの下と同じく、作品を一覧で並べる）
+ * おすすめ → 前日ランキング → 同じお題の作品 → 同じモデルの作品 → 新着 → 人気のタグ
+ * （ちちぷいの作品ページの下と同じく、作品を一覧で何段も並べ、最後にタグへの入口を置く）
  */
 export function WorkDiscoverySections(props: {
   discovery: WorkDiscovery
@@ -38,6 +39,10 @@ export function WorkDiscoverySections(props: {
   const t = useTranslation()
   const { discovery } = props
   const pathPrefix = props.isSensitive ? "/r" : ""
+  // 項目を足す前にキャッシュされた HTML（loader の値に新しい項目がない）でも落ちないように
+  const modelWorks = discovery.modelWorks ?? []
+  const newWorks = discovery.newWorks ?? []
+  const hotTags = discovery.hotTags ?? []
   const awardRanks = new Map(
     discovery.awardWorks.map((work, index) => [work.id.toString(), index + 1]),
   )
@@ -114,6 +119,58 @@ export function WorkDiscoverySections(props: {
             isShowProfile
             fillRows
           />
+        </section>
+      )}
+      {discovery.modelName && modelWorks.length > 0 && (
+        <section className="space-y-3 border-t pt-6">
+          <SectionHeader
+            title={t(
+              `${discovery.modelName}のイラスト`,
+              `Made with ${discovery.modelName}`,
+            )}
+            to={`${pathPrefix}/models/${encodeURIComponent(discovery.modelName)}`}
+          />
+          <ResponsivePhotoWorksAlbum
+            works={modelWorks}
+            layout="square"
+            isShowProfile
+            fillRows
+          />
+        </section>
+      )}
+      {newWorks.length > 0 && (
+        <section className="space-y-3 border-t pt-6">
+          <SectionHeader
+            title={t("新着イラスト", "New works")}
+            // R18 の新着だけの一覧はないので、R18 は R18 のトップへ
+            to={props.isSensitive ? "/r" : "/new-works"}
+          />
+          <ResponsivePhotoWorksAlbum
+            works={newWorks}
+            layout="square"
+            isShowProfile
+            fillRows
+          />
+        </section>
+      )}
+      {hotTags.length > 0 && (
+        <section className="space-y-3 border-t pt-6">
+          <SectionHeader
+            title={t("人気のタグ", "Popular tags")}
+            to={`${pathPrefix}/tags`}
+          />
+          <ul className="flex flex-wrap gap-2">
+            {hotTags.map((tag) => (
+              <li key={tag}>
+                <Link
+                  to={`${pathPrefix}/tags/${encodeURIComponent(tag)}`}
+                  className="block rounded-full bg-muted px-3 py-1 text-sm hover:bg-muted/70"
+                >
+                  #{t.tag(tag, null) ?? tag}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </>

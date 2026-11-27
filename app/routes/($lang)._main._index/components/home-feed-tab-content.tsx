@@ -9,6 +9,10 @@ import {
   HomeDeferredSection,
   HomeWorkSectionPlaceholder,
 } from "~/routes/($lang)._main._index/components/home-deferred-section"
+import {
+  HomeModelLinks,
+  HomeTopCreators,
+} from "~/routes/($lang)._main._index/components/home-discovery-links"
 import { HomeQuickLinks } from "~/routes/($lang)._main._index/components/home-quick-links"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import { HomeSidebar } from "~/routes/($lang)._main._index/components/home-sidebar"
@@ -128,6 +132,15 @@ export function HomeFeedTabContent(
               </HomeDeferredSection>
             )}
           </div>
+          {/* 新着作品（4 段） */}
+          <HomeWorksShelf
+            title={t("新着作品", "New works")}
+            link="/new-works"
+            works={data.newWorksShelf ?? []}
+          />
+          {/* 作品以外の入口（ちちぷいのトップの「モデルから作品をさがす」「おすすめのユーザー」） */}
+          <HomeModelLinks />
+          <HomeTopCreators creators={data.topCreators ?? []} />
           {/* 今日のお題への参加・ランキング・プランの案内 */}
           <div className="space-y-3">
             {data.dailyTheme && (

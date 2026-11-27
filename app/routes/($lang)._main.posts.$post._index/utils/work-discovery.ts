@@ -2,7 +2,7 @@ import type { FragmentOf } from "gql.tada"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 /**
- * 作品ページの下の一覧（おすすめ・前日ランキング・同じお題）。取得は work-discovery.server.ts
+ * 作品ページの下の一覧（おすすめ・前日ランキング・同じお題・同じモデル・新着・人気のタグ）。取得は work-discovery.server.ts
  */
 
 export type DiscoveryRating = "G" | "R15" | "R18" | "R18G"
@@ -16,6 +16,11 @@ export type WorkDiscovery = {
   awardWorks: DiscoveryWork[]
   theme: { title: string; dateText: string } | null
   themeWorks: DiscoveryWork[]
+  /** 同じモデルの作品（モデルが分からない作品は null） */
+  modelName: string | null
+  modelWorks: DiscoveryWork[]
+  newWorks: DiscoveryWork[]
+  hotTags: string[]
 }
 
 /**

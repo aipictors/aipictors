@@ -127,6 +127,7 @@ export async function loader(props: LoaderFunctionArgs) {
     rating: workResp.data.work.rating,
     tagNames: workResp.data.work.tagNames ?? [],
     dailyTheme: workResp.data.work.dailyTheme,
+    model: workResp.data.work.model ?? null,
   })
 
   return json(
