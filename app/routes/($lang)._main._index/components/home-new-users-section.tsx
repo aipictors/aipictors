@@ -1,50 +1,8 @@
-import { type FragmentOf, graphql } from "gql.tada"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "~/lib/app/locale-router"
-import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
-
-type Props = {
-  users: FragmentOf<typeof HomeNewPostedUsersFragment>[]
-  /** R18 のページ（リンクを /r に） */
-  isSensitive?: boolean
-}
+import { graphql } from "gql.tada"
 
 /**
- * 新規ユーザ一覧
+ * 新規クリエイター（トップの HomeNewCreators・右カラムの取り直し）で使うユーザーの項目
  */
-export function HomeNewUsersSection(props: Props) {
-  const t = useTranslation()
-
-  return (
-    <div className="flex flex-col space-y-4">
-      <h2 className="font-semibold">{t("新規クリエイター", "New Creators")}</h2>
-      {props.users.map((user) => {
-        const displayName = user.name?.length ? user.name : "名無し"
-
-        return (
-          <div key={user.id} className="flex items-center space-x-2">
-            <Link
-              to={`${props.isSensitive ? "/r" : ""}/users/${user.login}`}
-              className="flex items-center space-x-2"
-            >
-              <Avatar>
-                <AvatarImage
-                  className="rounded-full"
-                  src={toIconImageUrl(user.iconUrl)}
-                  alt=""
-                />
-                <AvatarFallback />
-              </Avatar>
-              <div className="font-semibold text-md">{displayName}</div>
-            </Link>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
 export const HomeNewPostedUsersFragment = graphql(
   `fragment HomeNewPostedUsers on UserNode @_unmask {
     id

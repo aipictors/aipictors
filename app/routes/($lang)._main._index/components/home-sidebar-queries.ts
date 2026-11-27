@@ -6,7 +6,7 @@ export const homeSidebarQuery = graphql(
   `query HomeSidebarQuery {
     newPostedUsers: newPostedUsers(
       offset: 0
-      limit: 8
+      limit: 12
     ) {
       ...HomeNewPostedUsers
     }

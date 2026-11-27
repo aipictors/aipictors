@@ -86,6 +86,7 @@ const createBaseHomeLoaderData = (props: {
   trendWorks: [] as HomeTagWorksRow["works"],
   rankingDateText: props.awardDateText,
   newWorksShelf: [] as HomeTagWorksRow["works"],
+  newUserWorksShelf: [] as HomeTagWorksRow["works"],
   topCreators: [] as HomeTopCreator[],
 })
 
@@ -373,6 +374,10 @@ export async function homeLoader(props: LoaderFunctionArgs) {
       newWorksShelf: Array.isArray(resultData?.newWorksShelf)
         ? resultData.newWorksShelf
         : [],
+      // 新規クリエイターの初投稿作品（新規クリエイターのアイコンの下に 4 段）
+      newUserWorksShelf: Array.isArray(resultData?.newUserWorksShelf)
+        ? resultData.newUserWorksShelf
+        : [],
       topCreators: toTopCreators(
         resultData?.userRankings,
         resultData?.olderUserRankings,
@@ -535,6 +540,13 @@ const query = graphql(
     ) {
       ...HomeTagRowWork
     }
+    newUserWorksShelf: newUserWorks(
+      offset: 0
+      limit: 24
+      where: { ratings: [G, R15], isNowCreatedAt: true }
+    ) {
+      ...HomeTagRowWork
+    }
     userRankings(
       offset: 0
       limit: $topCreatorsLimit
@@ -596,7 +608,8 @@ const query = graphql(
     ) {
       ...HomePromotionWork
     }
-    newPostedUsers(offset: 0, limit: 8) {
+    # 新規クリエイターのアイコン（4 / 6 / 12 列で割り切れる人数）
+    newPostedUsers(offset: 0, limit: 12) {
       ...HomeNewPostedUsers
     }
     newComments(

@@ -3,6 +3,10 @@ import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { HomeSectionHeading } from "~/routes/($lang)._main._index/components/home-section-heading"
 import type { HomeTopCreator } from "~/routes/($lang)._main._index/home-loader.server"
+import {
+  type GridColumnBreakpoint,
+  incompleteRowHiddenClassName,
+} from "~/utils/grid-layout"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 
 /**
@@ -112,6 +116,77 @@ export function HomeTopCreators(props: {
             </Link>
           </li>
         ))}
+      </ul>
+    </section>
+  )
+}
+
+/** クリエイターのアイコンの列数（4 / sm:6 / lg:12）。最後の段が埋まらない人はその幅でだけ隠す */
+const CREATOR_BREAKPOINTS: GridColumnBreakpoint[] = [
+  { columns: 4, hiddenClassName: "max-sm:hidden" },
+  { columns: 6, hiddenClassName: "sm:max-lg:hidden" },
+  { columns: 12, hiddenClassName: "lg:hidden" },
+]
+
+/**
+ * 新規クリエイター（はじめて作品を投稿した人。以前は PC の右カラムだけに出していた）
+ */
+export function HomeNewCreators(props: {
+  users: { id: string; login: string; name: string; iconUrl: string | null }[]
+  isSensitive?: boolean
+}) {
+  const t = useTranslation()
+  const prefix = props.isSensitive ? "/r" : ""
+  // スマホの 1 段（4 人）に満たないときは出さない
+  if (props.users.length < 4) return null
+  return (
+    <section className="space-y-2.5">
+      <HomeSectionHeading
+        title={t("新規クリエイター", "New creators")}
+        description={t(
+          "はじめて作品を投稿した人たち",
+          "People who just posted their first work",
+        )}
+      />
+      <ul className="grid grid-cols-4 gap-x-2 gap-y-3 sm:grid-cols-6 lg:grid-cols-12">
+        {props.users.map((user, index) => {
+          const name = user.name?.length ? user.name : "名無し"
+          return (
+            <li
+              key={user.id}
+              className={cn(
+                "min-w-0",
+                incompleteRowHiddenClassName(
+                  index,
+                  props.users.length,
+                  CREATOR_BREAKPOINTS,
+                ),
+              )}
+            >
+              <Link
+                to={`${prefix}/users/${encodeURIComponent(user.login)}`}
+                className="group flex flex-col items-center gap-1.5"
+              >
+                {user.iconUrl ? (
+                  <img
+                    src={toResizedImageUrl(user.iconUrl, 128) ?? user.iconUrl}
+                    alt={name}
+                    loading="lazy"
+                    decoding="async"
+                    className="size-14 rounded-full bg-muted object-cover"
+                  />
+                ) : (
+                  <span className="flex size-14 items-center justify-center rounded-full bg-muted font-bold text-lg text-muted-foreground">
+                    {name.slice(0, 1)}
+                  </span>
+                )}
+                <span className="w-full truncate text-center text-xs group-hover:underline">
+                  {name}
+                </span>
+              </Link>
+            </li>
+          )
+        })}
       </ul>
     </section>
   )

@@ -40,6 +40,7 @@ import { HomeDailyThemeCard } from "~/routes/($lang)._main._index/components/hom
 import { HomeDeferredSection } from "~/routes/($lang)._main._index/components/home-deferred-section"
 import {
   HomeModelLinks,
+  HomeNewCreators,
   HomeTopCreators,
 } from "~/routes/($lang)._main._index/components/home-discovery-links"
 import { HomeHotWorkFragment } from "~/routes/($lang)._main._index/components/home-hot-carousel"
@@ -216,6 +217,7 @@ export async function loader(props: LoaderFunctionArgs) {
     rankingWorks,
     olderRankingWorks,
     newWorksShelf,
+    newUserWorksShelf,
     fillWorks,
     userRankings,
     olderUserRankings,
@@ -259,6 +261,10 @@ export async function loader(props: LoaderFunctionArgs) {
     ),
     rankingDateText: `${rankingDate.getFullYear()}/${rankingDate.getMonth() + 1}/${rankingDate.getDate()}`,
     newWorksShelf: toSensitiveShelfWorks(newWorksShelf, SHELF_WORKS_COUNT),
+    newUserWorksShelf: toSensitiveShelfWorks(
+      newUserWorksShelf,
+      SHELF_WORKS_COUNT,
+    ),
     tagWorkRows: tagWorks.rows,
     topCreators: creatorRankings
       .flatMap((ranking): HomeTopCreator[] =>
@@ -706,6 +712,21 @@ export default function SensitiveHomeIndexPage() {
                   {/* 作品以外の入口（モデル・人気のクリエイター） */}
                   <HomeModelLinks isSensitive />
                   <HomeTopCreators creators={data.topCreators} isSensitive />
+                  {/* 新規クリエイターとその初投稿作品（スマホでも見えるように右カラムではなくここに） */}
+                  <HomeNewCreators users={data.newPostedUsers} isSensitive />
+                  <HomeWorksShelf
+                    title={t(
+                      "新規クリエイターの初投稿作品",
+                      "New creators' first works",
+                    )}
+                    description={t(
+                      "はじめて投稿した人の作品です。いいねで応援しよう",
+                      "First posts from new creators. Cheer them on with a like",
+                    )}
+                    link="/r?tab=new&view=new-user"
+                    works={data.newUserWorksShelf}
+                    isSensitive
+                  />
                   <div className="space-y-3">
                     {data.dailyTheme && (
                       // 参加数と先頭の作品は全年齢を含むので出さない
@@ -986,6 +1007,15 @@ const query = graphql(
       rating
       tagNames
     }
+    newUserWorksShelf: newUserWorks(
+      offset: 0
+      limit: 40
+      where: { ratings: [R18], isSensitive: true, isNowCreatedAt: true }
+    ) {
+      ...HomeTagRowWork
+      rating
+      tagNames
+    }
     fillWorks: recommendedFeedWorks(offset: 0, limit: 32, ratings: [R18]) {
       ...HomePromotionWork
       rating
@@ -1052,7 +1082,7 @@ const query = graphql(
     }
     newPostedUsers: newPostedUsers(
       offset: 0,
-      limit: 8,
+      limit: 12,
       where: {
         isSensitive: true,
       }

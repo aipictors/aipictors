@@ -14,6 +14,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-deferred-section"
 import {
   HomeModelLinks,
+  HomeNewCreators,
   HomeTopCreators,
 } from "~/routes/($lang)._main._index/components/home-discovery-links"
 import { HomeQuickLinks } from "~/routes/($lang)._main._index/components/home-quick-links"
@@ -150,6 +151,20 @@ export function HomeFeedTabContent(
           {/* 作品以外の入口（ちちぷいのトップの「モデルから作品をさがす」「おすすめのユーザー」） */}
           <HomeModelLinks />
           <HomeTopCreators creators={data.topCreators ?? []} />
+          {/* 新規クリエイターとその初投稿作品（スマホでも見えるように右カラムではなくここに） */}
+          <HomeNewCreators users={sidebar.sidebarNewPostedUsers} />
+          <HomeWorksShelf
+            title={t(
+              "新規クリエイターの初投稿作品",
+              "New creators' first works",
+            )}
+            description={t(
+              "はじめて投稿した人の作品です。いいねで応援しよう",
+              "First posts from new creators. Cheer them on with a like",
+            )}
+            link="/new-works?view=new-user"
+            works={data.newUserWorksShelf ?? []}
+          />
           {/* 今日のお題への参加・ランキング・プランの案内 */}
           <div className="space-y-3">
             {data.dailyTheme && (
@@ -189,7 +204,7 @@ export function HomeFeedTabContent(
             </div>
           )}
         </div>
-        {/* 右カラム（スクロールしても見えるように固定）。PC だけ新しいユーザー・コメント・人気タグも */}
+        {/* 右カラム（スクロールしても見えるように固定）。PC だけ新しいコメント・人気タグも */}
         <HomeSidebar {...sidebar} recommendedTags={data.recommendedTags} />
       </div>
     </TabsContent>
