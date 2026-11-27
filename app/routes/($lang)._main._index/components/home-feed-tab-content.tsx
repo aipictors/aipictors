@@ -2,7 +2,10 @@ import type { FragmentOf } from "gql.tada"
 import type { CSSProperties } from "react"
 import { TabsContent } from "~/components/ui/tabs"
 import { UserModelPickupBanner } from "~/components/user-models/user-model-pickup-banner"
-import { HomePromotionWorksSection } from "~/components/work/work-promotion"
+import {
+  HomePromotionWorksSection,
+  PROMOTION_FILL_COUNT,
+} from "~/components/work/work-promotion"
 import { useTranslation } from "~/hooks/use-translation"
 import { HomeDailyThemeCard } from "~/routes/($lang)._main._index/components/home-daily-theme-card"
 import {
@@ -80,7 +83,12 @@ export function HomeFeedTabContent(
             releaseList={data.releaseList}
           />
           {/* クリエイターの宣伝（PR、有料会員の特典）とユーザからの推薦は、お知らせのすぐ下で一番目立つ位置に */}
-          <HomePromotionWorksSection />
+          {/* 宣伝枠の空いたマスは、おすすめの末尾の作品で埋める（その作品は下の推薦・ほかのおすすめには出さない） */}
+          <HomePromotionWorksSection
+            fillWorks={(data.promotionFillWorks ?? []).slice(
+              -PROMOTION_FILL_COUNT,
+            )}
+          />
           {/* おすすめ作品（ユーザからの推薦）。サーバーで取った一覧をすぐ出す（スクロールやログイン確認を待たない） */}
           <HomeWorksUsersRecommendedSection
             works={
@@ -89,9 +97,10 @@ export function HomeFeedTabContent(
               >[]
             }
             fillWorks={
-              (data.promotionFillWorks ?? []) as FragmentOf<
-                typeof HomePromotionWorkFragment
-              >[]
+              (data.promotionFillWorks ?? []).slice(
+                0,
+                -PROMOTION_FILL_COUNT,
+              ) as FragmentOf<typeof HomePromotionWorkFragment>[]
             }
             onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
             onWorksLoaded={(works) =>

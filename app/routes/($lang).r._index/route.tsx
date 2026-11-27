@@ -23,7 +23,10 @@ import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works
 import { Button } from "~/components/ui/button"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
-import { HomePromotionWorksSection } from "~/components/work/work-promotion"
+import {
+  HomePromotionWorksSection,
+  PROMOTION_FILL_COUNT,
+} from "~/components/work/work-promotion"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -66,19 +69,15 @@ import {
 } from "~/routes/($lang)._main._index/components/home-tag-works-section"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomeViewModeToggles } from "~/routes/($lang)._main._index/components/home-view-mode-toggles"
-import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import {
+  HomePromotionWorkFragment,
+  RECOMMENDED_PAD_COUNT,
+} from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { RecommendedFeedContents } from "~/routes/($lang)._main._index/components/recommended-feed-contents"
 import {
   type HomeTopCreator,
   loadHomeReleases,
 } from "~/routes/($lang)._main._index/home-loader.server"
-import {
-  getHomeTagWorks,
-  HomeTagRowWorkFragment,
-  type HomeTagWorksResponse,
-  type HomeTagWorksRow,
-} from "~/routes/api.home-tag-works/route"
-import { RECOMMENDED_PAD_COUNT } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { buildHomeEventPreviews } from "~/routes/($lang)._main._index/utils/home-event-previews"
 import { HomeNewUsersSensitiveWorkListSection } from "~/routes/($lang).r._index/components/home-new-user-sensitive-work-list-section"
 import {
@@ -89,6 +88,12 @@ import { SensitiveContinueBanner } from "~/routes/($lang).r._index/components/se
 import { SensitiveDisplaySettings } from "~/routes/($lang).r._index/components/sensitive-display-settings"
 import { SensitiveHomeAbout } from "~/routes/($lang).r._index/components/sensitive-home-about"
 import { SensitiveWorksFilterBar } from "~/routes/($lang).r._index/components/sensitive-works-filter-bar"
+import {
+  getHomeTagWorks,
+  HomeTagRowWorkFragment,
+  type HomeTagWorksResponse,
+  type HomeTagWorksRow,
+} from "~/routes/api.home-tag-works/route"
 import { createSensitiveMeta } from "~/utils/create-sensitive-meta"
 import { getJstDate } from "~/utils/jst-date"
 import {
@@ -645,10 +650,14 @@ export default function SensitiveHomeIndexPage() {
                     releaseList={data.releaseList}
                   />
                   {/* クリエイターの宣伝（PR）とユーザからの推薦 */}
-                  <HomePromotionWorksSection isSensitive />
+                  {/* 宣伝枠の空いたマスは、おすすめの末尾の作品で埋める（その作品は下の推薦・ほかのおすすめには出さない） */}
+                  <HomePromotionWorksSection
+                    isSensitive
+                    fillWorks={data.fillWorks.slice(-PROMOTION_FILL_COUNT)}
+                  />
                   <HomeSensitiveWorksUsersRecommendedSection
                     works={data.promotionWorks}
-                    fillWorks={data.fillWorks}
+                    fillWorks={data.fillWorks.slice(0, -PROMOTION_FILL_COUNT)}
                   />
                   {/* ここから下は全年齢のトップと同じく、作品の一覧を何段も続ける（いま人気 → ランキング → タグごと → 新着） */}
                   <HomeWorksShelf

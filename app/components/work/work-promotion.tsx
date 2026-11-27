@@ -1,4 +1,3 @@
-import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { ExternalLinkIcon, MegaphoneIcon } from "lucide-react"
@@ -9,11 +8,15 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
+import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 /** 宣伝作品の枠の色（ほかの一覧と見分けられるように） */
 const PROMOTION_FRAME_CLASS =
   "rounded-xl bg-linear-to-r from-amber-400 via-pink-500 to-violet-500 p-px"
+
+/** 宣伝枠の空いたマスに出す、宣伝ではない作品の枠（宣伝の枠と同じ大きさで色だけ変える） */
+const PLAIN_FRAME_CLASS = "rounded-xl bg-border p-px"
 
 const isValidUrl = (url: string | null | undefined): url is string =>
   typeof url === "string" && /^https?:\/\//.test(url)
@@ -94,6 +97,9 @@ export function PromotionWorkCard(props: {
   relatedUrl?: string | null
   /** 作者の ID。workId と一緒に渡すと、一覧からそのままいいねできる */
   userId?: string | null
+  /** 宣伝ではない作品（宣伝枠の空いたマスの埋め草）。PR の色の枠にしない */
+  isPlain?: boolean
+  className?: string
 }) {
   const t = useTranslation()
   const href = props.workId ? `/posts/${props.workId}` : null
@@ -130,7 +136,12 @@ export function PromotionWorkCard(props: {
   const learnMoreClassName =
     "mt-auto flex items-center gap-1 font-medium text-pink-600 text-xs dark:text-pink-400"
   return (
-    <div className={PROMOTION_FRAME_CLASS}>
+    <div
+      className={cn(
+        props.isPlain ? PLAIN_FRAME_CLASS : PROMOTION_FRAME_CLASS,
+        props.className,
+      )}
+    >
       <div className="flex h-full flex-col overflow-hidden rounded-[11px] bg-card">
         {href ? (
           <div className="relative">
@@ -196,10 +207,34 @@ export function PromotionWorkCard(props: {
   )
 }
 
+/** 宣伝枠の空いたマスを埋める作品（宣伝ではない、おすすめの作品など） */
+export type PromotionFillWork = {
+  id: string
+  title: string
+  enTitle?: string | null
+  largeThumbnailImageURL: string
+  user?: {
+    id: string
+    login: string
+    name: string
+    iconUrl?: string | null
+  } | null
+}
+
+/** 宣伝枠の空いたマスの最大数（2 列で 1、3 列で 2） */
+export const PROMOTION_FILL_COUNT = 2
+
+const PROMOTION_FILL_SLOTS = [0, 1] as const
+
 /**
- * ホームの宣伝枠（公開から 7 日間の宣伝作品）。なければ何も出さない
+ * ホームの宣伝枠（公開から 7 日間の宣伝作品）。なければ何も出さない。
+ * 宣伝が 2 列（スマホ〜）・3 列（lg〜）で割り切れないときは、空いたマスを fillWorks の作品で埋めて穴を空けない
+ * （宣伝の作品は隠さない。埋める作品がないときだけ宣伝枠の案内を置く）
  */
-export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
+export function HomePromotionWorksSection(props: {
+  isSensitive?: boolean
+  fillWorks?: PromotionFillWork[]
+}) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const { data } = useQuery(PromotionWorksQuery, {
@@ -211,6 +246,15 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
   if (works.length === 0) {
     return null
   }
+
+  const promotionIds = new Set(works.map((work) => work.id))
+  const fillWorks = (props.fillWorks ?? []).filter(
+    (work) => !promotionIds.has(work.id),
+  )
+  const needTwo = (2 - (works.length % 2)) % 2
+  const needThree = (3 - (works.length % 3)) % 3
+  const slotClassName = (slot: number) =>
+    cn(slot >= needTwo && "max-lg:hidden", slot >= needThree && "lg:hidden")
 
   return (
     <section className="space-y-3">
@@ -228,7 +272,6 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        {/* 宣伝が 2 列（スマホ〜）・3 列（lg〜）で割り切れないときは、空いたマスに宣伝枠の案内を置いて穴を空けない */}
         {works.map((work) => (
           <PromotionWorkCard
             key={work.id}
@@ -242,17 +285,29 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
             relatedUrl={work.relatedUrl}
           />
         ))}
-        {[0, 1].map((slot) => {
-          const needTwo = (2 - (works.length % 2)) % 2
-          const needThree = (3 - (works.length % 3)) % 3
+        {PROMOTION_FILL_SLOTS.map((slot) => {
           if (slot >= needTwo && slot >= needThree) return null
+          const work = fillWorks[slot]
+          if (!work) {
+            return (
+              <PromotionInviteCard
+                key={`invite-${slot}`}
+                className={slotClassName(slot)}
+              />
+            )
+          }
           return (
-            <PromotionInviteCard
-              key={`invite-${slot}`}
-              className={cn(
-                slot >= needTwo && "max-lg:hidden",
-                slot >= needThree && "lg:hidden",
-              )}
+            <PromotionWorkCard
+              key={`fill-${work.id}`}
+              isPlain
+              className={slotClassName(slot)}
+              workId={work.id}
+              imageUrl={toResizedImageUrl(work.largeThumbnailImageURL, 640)}
+              title={t.workTitle(work.title, work.enTitle)}
+              userLogin={work.user?.login}
+              userName={work.user?.name}
+              userIconUrl={work.user?.iconUrl}
+              userId={work.user?.id}
             />
           )
         })}
@@ -262,7 +317,7 @@ export function HomePromotionWorksSection(props: { isSensitive?: boolean }) {
 }
 
 /**
- * 宣伝枠の空いたマスに出す案内（自分の作品も宣伝できることを知らせる）
+ * 宣伝枠の空いたマスを埋める作品がないときの案内（自分の作品も宣伝できることを知らせる）
  */
 function PromotionInviteCard(props: { className?: string }) {
   const t = useTranslation()
