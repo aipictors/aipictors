@@ -206,6 +206,8 @@ export function PromotionWorkCard(props: {
           className={cn(
             "flex flex-1 flex-col gap-2",
             props.isPlain ? "pt-2" : "p-3",
+            // 大きく出す 1 件は、余った高さを画像に回す（文字の欄は中身の高さだけ）
+            props.isFeatured && "lg:flex-none",
           )}
         >
           {href ? (
