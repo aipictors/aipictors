@@ -21,6 +21,8 @@ export type PostAutoMosaicProgress = {
 export type PostAutoMosaicResult = {
   /** 投稿する画像（items と同じ並び） */
   contents: (string | null)[]
+  /** 仕上げた後の items（同じ並び。確認で投稿をやめたとき、一覧に戻すのに使う） */
+  items: TSortableItem[]
   thumbnailBase64: string
   ogpBase64: string | null
   /** モザイクがかかっている画像の枚数（サムネイル・OGP は数えない） */
@@ -113,6 +115,7 @@ export async function finalizePostMosaic(input: {
   if (input.isSelfApplied) {
     return {
       contents: input.items.map((item) => item.content),
+      items: input.items,
       thumbnailBase64: input.thumbnailBase64,
       ogpBase64: input.ogpBase64,
       mosaicImageCount: input.items.filter(hasItemMosaic).length,
@@ -164,6 +167,7 @@ export async function finalizePostMosaic(input: {
 
   return {
     contents: finalItems.map((item) => item.content),
+    items: finalItems,
     thumbnailBase64:
       (await finalize(input.thumbnailBase64)) ?? input.thumbnailBase64,
     ogpBase64: await finalize(input.ogpBase64),

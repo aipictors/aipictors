@@ -56,6 +56,8 @@ mock.module("~/routes/($lang)._main.new.image/utils/post-image-draft", () => ({
 }))
 
 let sensitiveCount = 0
+/** 仕上げた後の items（null なら渡したまま） */
+let finalizedItems: unknown[] | null = null
 const autoMosaicModule = await import(
   "~/routes/($lang)._main.new.image/utils/post-auto-mosaic"
 )
@@ -67,7 +69,10 @@ mock.module("~/routes/($lang)._main.new.image/utils/post-auto-mosaic", () => ({
     thumbnailBase64: string
     ogpBase64: string | null
   }) => ({
-    contents: input.items.map((item) => item.content),
+    contents: (finalizedItems ?? input.items).map(
+      (item) => (item as { content: string | null }).content,
+    ),
+    items: finalizedItems ?? input.items,
     thumbnailBase64: input.thumbnailBase64,
     ogpBase64: input.ogpBase64,
     mosaicImageCount: 1,
@@ -109,7 +114,11 @@ const flushRetries = async () => {
   }
 }
 
-const post = async () => {
+const post = async (
+  options: {
+    confirmAutoMosaic?: (previews: string[]) => Promise<boolean>
+  } = {},
+) => {
   const isPostingRef = { current: false }
   const onPost = usePostImageSubmit({
     state: {
@@ -145,6 +154,7 @@ const post = async () => {
     onRatingChangeToR18: () => {
       ratingChangeCount += 1
     },
+    confirmAutoMosaic: options.confirmAutoMosaic,
   } as unknown as Props)
   await onPost()
   await flushRetries()
@@ -157,6 +167,7 @@ const doneActions = () =>
 beforeEach(() => {
   actions = []
   sensitiveCount = 0
+  finalizedItems = null
   confirmAnswers = []
   confirmMessages.length = 0
   ratingChangeCount = 0
@@ -344,4 +355,50 @@ test("性器が写っていなければ聞かずに全年齢で投稿する", as
 
   expect(confirmMessages).toHaveLength(0)
   expect(createWork.mock.calls[0][0].variables.input.rating).toBe("G")
+})
+
+const autoMosaicItem = {
+  content: "data:image/webp;base64,MOSAIC",
+  mosaic: {
+    source: "data:image/png;base64,AAAA",
+    mask: "data:image/png;base64,MASK",
+    style: "mosaic",
+    strength: 1,
+    isAuto: true,
+  },
+}
+
+test("自動でモザイクをかけた画像は投稿の前に見せ、「このまま投稿」でそのまま投稿する", async () => {
+  sensitiveCount = 1
+  confirmAnswers = [true]
+  finalizedItems = [autoMosaicItem]
+  const previews: string[][] = []
+  await post({
+    confirmAutoMosaic: async (images) => {
+      previews.push(images)
+      return true
+    },
+  })
+
+  expect(previews).toEqual([["data:image/webp;base64,MOSAIC"]])
+  expect(createWork).toHaveBeenCalledTimes(1)
+  expect(doneActions()).toHaveLength(1)
+})
+
+test("自動モザイクの確認で「修正する」を選ぶと投稿せず、かけた画像を一覧に戻す", async () => {
+  sensitiveCount = 1
+  confirmAnswers = [true]
+  finalizedItems = [autoMosaicItem]
+  const isPostingRef = await post({ confirmAutoMosaic: async () => false })
+
+  expect(createWork).toHaveBeenCalledTimes(0)
+  expect(uploadCount).toBe(0)
+  expect(doneActions()).toHaveLength(0)
+  expect(isPostingRef.current).toBe(false)
+  expect(actions.filter((action) => action.type === "REPLACE_ITEM")).toEqual([
+    {
+      type: "REPLACE_ITEM",
+      payload: { from: "data:image/png;base64,AAAA", item: autoMosaicItem },
+    },
+  ])
 })

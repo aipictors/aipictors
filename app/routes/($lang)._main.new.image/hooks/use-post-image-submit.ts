@@ -12,6 +12,7 @@ import type { UserModelPickup } from "~/lib/user-models/types"
 import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
+import { getAutoMosaicConfirmPreviews } from "~/routes/($lang)._main.new.image/utils/auto-mosaic-confirm"
 import {
   CreateWorkMutation,
   LinkWorkToGenerationsMutation,
@@ -64,6 +65,11 @@ type Props = {
   onStageChange?: (stage: PostStage) => void
   /** 全年齢・R15 の画像に性器が写っていて、R18 に変えて投稿するとき */
   onRatingChangeToR18?: () => void
+  /**
+   * 自動でモザイクをかけた画像を投稿の前に見せて、このまま投稿するか聞く（true で投稿する）。
+   * 自動の検出は誤ることがあるので、かけすぎ・足りない所を直してから投稿できるようにする
+   */
+  confirmAutoMosaic?: (previews: string[]) => Promise<boolean>
 }
 
 /** 投稿の段階（処理中・完了の画面に出す） */
@@ -145,6 +151,7 @@ export function usePostImageSubmit(props: Props) {
     generationUsesPickup,
     onStageChange,
     onRatingChangeToR18,
+    confirmAutoMosaic,
   } = props
 
   const setStage = (stage: PostStage) => onStageChange?.(stage)
@@ -533,6 +540,31 @@ export function usePostImageSubmit(props: Props) {
         dispatch({ type: "SET_PROGRESS", payload: 0 })
         finishPosting()
         return
+      }
+      // 自動でかけた画像を見せて、誤りがあれば直してもらう
+      const previews = isSelfApplied
+        ? []
+        : getAutoMosaicConfirmPreviews(mosaicked.items)
+      if (previews.length > 0 && confirmAutoMosaic) {
+        // 処理中の表示を閉じてから聞く
+        dispatch({ type: "SET_PROGRESS", payload: 0 })
+        setStage({ kind: "idle" })
+        const isConfirmed = await confirmAutoMosaic(previews)
+        if (!isConfirmed) {
+          // 投稿の直前にかけた分も一覧に入れて、鉛筆ボタンから直せるようにする
+          state.items.forEach((item, index) => {
+            const next = mosaicked.items[index]
+            if (next && next !== item && item.content !== null) {
+              dispatch({
+                type: "REPLACE_ITEM",
+                payload: { from: item.content, item: next },
+              })
+            }
+          })
+          finishPosting()
+          return
+        }
+        dispatch({ type: "SET_PROGRESS", payload: 25 })
       }
       imageContents = mosaicked.contents
       thumbnailBase64 = mosaicked.thumbnailBase64
