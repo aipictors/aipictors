@@ -1,19 +1,18 @@
 ## Our position
 
 - Aipictors does not reject fan works (works based on existing titles or characters), and does not ban them across the board.
-- At the same time, **money only moves for original works**. Out of consideration for rights holders and for the creators who make the works, we keep money from changing hands over fan works.
-  - Support with **Premium Coins** (purchased coins), and the **Creator Rewards** based on it, only apply to support for original works.
-    - Aipictors judges and records whether a work is original, and shows an "Original (verified)" badge on the work page. Works Aipictors judges to be fan works are excluded regardless of their tags.
-    - Works Aipictors has not judged yet are checked by tags such as "オリジナル" (original), "オリキャラ" (original character) and "創作" (original creation).
+- At the same time, **we keep money from being tied to works**. Out of consideration for rights holders and for the creators who make the works, we keep money from changing hands over fan works.
+  - Support with **Premium Coins** (purchased coins) can **only be sent to a user (from their profile)**. Support from a work page (the Support button and support in comments) uses Free Coins only, for original works and fan works alike.
+  - **Creator Rewards** cover Premium Coin support that participating creators receive from their profile (creators who publish R18 / R18G works are not eligible).
   - Support with **Free Coins**, and support pt, can still be sent to any work, including fan works.
-  - Support from a profile page (support for the creator, not tied to a work) can also use Premium Coins.
+  - The "Original (verified)" badge on a work page marks works Aipictors has confirmed as original.
 - Whether fan works are allowed is decided by each rights holder (the original author, publisher, game company and so on). **Checking and following the rights holder's guidelines and terms is the poster's responsibility.**
 - Aipictors does not decide or guarantee whether fan works are allowed for any particular title.
 
 ## For creators
 
 - Before posting a fan work, check the fan work guidelines on the original title's official site.
-- Please do not tag fan works with "オリジナル" (original) or similar tags. When Aipictors' judgment and a work's tags differ, Aipictors' judgment takes priority.
+- Please do not tag fan works with "オリジナル" (original) or similar tags.
 - If a title's guidelines forbid tips or donations, you can turn on "Do not accept support" under "Receiving support" in Settings to stop receiving support.
 - These points are set by our terms:
   - Fan fiction (novels) may only be posted when the rights holder has publicly stated their view on fan works ([Terms of Service](/terms)).
@@ -28,7 +27,6 @@
 - You can keep things you don't want to see off your screen:
   - **Muted tags** ([Settings → Mute → Tags](/settings/muted/tags)): hides works with a title, character or genre tag.
   - **Hide support and support rankings** (Settings → Receiving support): hides support buttons, support counts, support rankings and support notifications on your screen.
-  - **"Originals only" on Home**: shows only works tagged "オリジナル" (original), "オリキャラ" (original character), "創作" (original creation) and similar in Home lists.
 
 ## About this page
 

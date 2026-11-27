@@ -792,8 +792,8 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: `Purchased premium coins expire 3 months after purchase. They start at 100 for ${usd(80)}, with 10% extra on 1,000 or more.`,
       },
       {
-        ja: "作品ページからプレミアムコインで推せるのはオリジナル作品だけです（「オリジナル」などのタグ、または運営の判定で決まります）。プロフィールの「推す」からは、プレミアムコインでも推せます。フリーコインはどの作品にも使えます。",
-        en: 'On work pages, premium coins can only support original works (decided by tags like "Original" or by our team). From a profile\'s Support button, premium coins work too. Free coins work on any work.',
+        ja: "プレミアムコインで推せるのは、ユーザーへの推し（プロフィールの「推す」から）だけです。作品ページからの推し（推すボタン・コメントの推し）は、オリジナル作品でも二次創作でもフリーコインです。",
+        en: "Premium coins can only be used to support a user (from the Support button on their profile). Support from work pages (the Support button and support in comments) uses free coins, for original works and fan works alike.",
       },
       {
         ja: "推しを受け取りたくないときは「推された累計」の設定で受け取りを断れます。推しや推しランキングを画面に出したくないときは「推しの表示」の設定で隠せます。",
@@ -870,8 +870,8 @@ export const HELP_SECTIONS: HelpSection[] = [
           en: "What changed with support recently?",
         },
         a: {
-          ja: "作品へのプレミアムコインの推しは、オリジナル作品だけになりました（11/26。二次創作にお金が動かないようにするためです）。プロフィールからの推しは、今までどおりプレミアムコインでもできます。フリーコインで推された分は、推した枚数の 2/3（切り捨て）が受け取った人のフリーコインになり、それもまた推しに使えます。推しを受け取らない設定と、推しを画面に出さない設定もできました。考え方は「二次創作と収益化」（/fan-works-policy）にまとめています。",
-          en: "Premium-coin support on works is now limited to original works (Nov 26), so that no money moves for fan works. Support from a profile can still use premium coins. With free-coin support, 2/3 (rounded down) becomes the recipient's free coins, which can be used for support too. You can now refuse support and hide support from your screens. Our thinking is on the Fan works and earnings page (/fan-works-policy).",
+          ja: "プレミアムコインの推しは、ユーザーへの推し（プロフィールから）だけになりました（11/27）。作品ページからの推しは、オリジナル作品でも二次創作でもフリーコインです（作品にお金がひもづかないようにするためです）。フリーコインで推された分は、推した枚数の 2/3（切り捨て）が受け取った人のフリーコインになり、それもまた推しに使えます。推しを受け取らない設定と、推しを画面に出さない設定もできました。考え方は「二次創作と収益化」（/fan-works-policy）にまとめています。",
+          en: "Premium-coin support is now only for supporting a user from their profile (Nov 27). Support from work pages uses free coins, for original works and fan works alike, so that money is not tied to works. With free-coin support, 2/3 (rounded down) becomes the recipient's free coins, which can be used for support too. You can now refuse support and hide support from your screens. Our thinking is on the Fan works and earnings page (/fan-works-policy).",
         },
       },
     ],
@@ -888,15 +888,15 @@ export const HELP_SECTIONS: HelpSection[] = [
     },
     mangaTitle: { ja: "推しが、報酬になる！", en: "Support becomes rewards!" },
     lead: {
-      ja: "全年齢のオリジナル作品に、購入したプレミアムコインで推しが届くと、その分がお金の報酬としてたまり、銀行口座に振り込まれます。口座の登録は世界中で使われている Stripe で行うので安心です。",
-      en: "When people support your all-ages original works with purchased premium coins, it builds up as cash rewards paid to your bank account. Bank details are handled securely by Stripe.",
+      ja: "プロフィールから、購入したプレミアムコインで推しが届くと、その分がお金の報酬としてたまり、銀行口座に振り込まれます。口座の登録は世界中で使われている Stripe で行うので安心です。",
+      en: "When people support you from your profile with purchased premium coins, it builds up as cash rewards paid to your bank account. Bank details are handled securely by Stripe.",
     },
     panels: [
       {
         image: "rewards-1",
         caption: {
-          ja: "全年齢のオリジナル作品に、プレミアムコインの推しが届くと…",
-          en: "When premium-coin support reaches your all-ages original work…",
+          ja: "プロフィールに、プレミアムコインの推しが届くと…",
+          en: "When premium-coin support reaches your profile…",
         },
         bubbles: [{ ja: "推しが届いたよ〜！", en: "I got support!", at: "tr" }],
       },
@@ -951,8 +951,8 @@ export const HELP_SECTIONS: HelpSection[] = [
         en: "Join from Settings → Creator rewards. You must be 18+ and have a bank account and address in Japan (payouts are in JPY).",
       },
       {
-        ja: "対象は全年齢（G / R15）のオリジナル作品（「オリジナル」などのタグ付き）への推しと、有料リクエストの報酬です。権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけにしています。フリーコインの推しは対象外です。",
-        en: 'Covers support on all-ages (G / R15) original works (tagged "Original" or similar) and paid request earnings. Out of consideration for rights holders and creators, money only moves for original works. Free-coin support is not included.',
+        ja: "対象は、プロフィールから購入したプレミアムコインで推された分（R18・R18G の作品を公開している人は対象外）と、有料リクエストの報酬です。権利者さんと作者さんへの配慮として、作品にお金がひもづかないようにしています（作品ページからの推しはフリーコインだけ）。フリーコインの推しは対象外です。",
+        en: "Covers purchased premium-coin support you receive from your profile (not available if you publish R18 / R18G works) and paid request earnings. Out of consideration for rights holders and creators, we keep money from being tied to works (support from work pages uses free coins only). Free-coin support is not included.",
       },
       {
         ja: "推されてから 7 日の確認期間のあと、毎月 10 日と 25 日の締めでまとめて振り込みます。",

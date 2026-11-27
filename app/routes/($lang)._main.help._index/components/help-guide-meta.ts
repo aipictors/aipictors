@@ -29,6 +29,14 @@ export const HELP_RECENT_CHANGES: Array<{
   to?: string
 }> = [
   {
+    date: "2026-11-27",
+    text: {
+      ja: "プレミアムコインの推しはユーザーへの推し（プロフィールから）だけに。作品ページからの推しは、オリジナル作品でも二次創作でもフリーコインです",
+      en: "Premium-coin support is now only for supporting a user (from their profile). Support from work pages uses free coins, for original works and fan works alike",
+    },
+    to: "/fan-works-policy",
+  },
+  {
     date: "2026-11-26",
     text: {
       ja: "作品ページからのプレミアムコインの推しはオリジナル作品だけに（プロフィールからの推しはプレミアムコインも可）",

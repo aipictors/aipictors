@@ -25,7 +25,7 @@ export const headers: HeadersFunction = () => ({
 })
 
 /**
- * 二次創作と収益化についての運営の考え方（否定・禁止はしない・お金が動くのはオリジナル作品だけ・権利者のガイドラインの確認は投稿者の責任）
+ * 二次創作と収益化についての運営の考え方（否定・禁止はしない・作品にお金をひもづけない（プレミアムコインの推しはプロフィールからだけ）・権利者のガイドラインの確認は投稿者の責任）
  */
 export default function FanWorksPolicyPage() {
   const t = useTranslation()
@@ -60,8 +60,8 @@ export default function FanWorksPolicyPage() {
           </p>
           <p>
             {t(
-              "・権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけです。作品ページからのプレミアムコインでの推しとクリエイター報酬は、「オリジナル」などのタグが付いた作品が対象です。プロフィールからの推し（作者への推し）はプレミアムコインでもできます。フリーコインの推しは、どの作品にも送れます。",
-              '- Out of consideration for rights holders and creators, money only moves for original works. Premium Coin support from work pages and Creator Rewards apply to works tagged "Original" or similar. Support from a profile (to the creator) can also use Premium Coins. Free Coin support can go to any work.',
+              "・権利者さんと作者さんへの配慮として、作品にお金がひもづかないようにしています。プレミアムコインでの推しは、ユーザーへの推し（プロフィールから）だけに使えます。作品ページからの推しは、オリジナル作品でも二次創作でもフリーコインです。クリエイター報酬は、プロフィールからプレミアムコインで推された分が対象です。",
+              "- Out of consideration for rights holders and creators, we keep money from being tied to works. Premium Coins can only be used to support a user (from their profile). Support from a work page uses Free Coins, for original works and fan works alike. Creator Rewards cover Premium Coin support received from your profile.",
             )}
           </p>
           <p>

@@ -7,7 +7,7 @@ import {
   PremiumSupportCoinIcon,
 } from "~/components/support-coin-icons"
 import {
-  PremiumSupportOriginalOnlyNote,
+  PremiumSupportUserOnlyNote,
   SupportRewardJoinedBadge,
   SupportRewardNote,
   SupportSuperChatCard,
@@ -53,6 +53,7 @@ export function WorkCommentSupportPanel(
     | "supportIsAnonymous"
     | "supportPremiumCoinAmount"
     | "supportTarget"
+    | "workOwnerLogin"
   > & { onClose: () => void },
 ) {
   const t = useTranslation()
@@ -74,11 +75,12 @@ export function WorkCommentSupportPanel(
     supportIsAnonymous,
     supportPremiumCoinAmount,
     supportTarget,
+    workOwnerLogin,
   } = props
   const isPremiumAccepted = supportTarget?.premiumAccepted !== false
   const canSelectPremium = isPremiumAccepted && isPremiumAllowedForWork
   const isFreeReceiveAccepted = supportTarget?.freeReceiveAccepted !== false
-  // 報酬の印と一言は、全年齢のオリジナル作品で、作者が報酬に参加していてプレミアムコインを受け取るときだけ
+  // 報酬の印と一言は、全年齢の作品で、作者が報酬に参加していてプレミアムコインを選べるときだけ（作品からの推しはフリーコインだけなので今は出ない）
   const isRewardTarget =
     isCreatorRewardRating(workRating) &&
     supportTarget?.rewardJoined === true &&
@@ -149,7 +151,7 @@ export function WorkCommentSupportPanel(
       icon: <PremiumSupportCoinIcon className="size-5" />,
       label: t("プレミアム", "Premium"),
       rate: !isPremiumAllowedForWork
-        ? t("オリジナル作品だけ", "Original works only")
+        ? t("プロフィールから", "From profile")
         : isPremiumAccepted
           ? t("1枚 = 10pt", "1 coin = 10pt")
           : t("受け付けていません", "Not accepted"),
@@ -205,8 +207,8 @@ export function WorkCommentSupportPanel(
         })}
       </div>
       {!isPremiumAllowedForWork ? (
-        <PremiumSupportOriginalOnlyNote
-          variant="work"
+        <PremiumSupportUserOnlyNote
+          userLogin={workOwnerLogin}
           className="text-[11px]"
         />
       ) : (

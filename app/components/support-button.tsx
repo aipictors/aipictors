@@ -15,12 +15,12 @@ import {
 } from "~/components/support-coin-icons"
 import { SupportSuccessDialog } from "~/components/support-success-dialog"
 import {
-  PremiumSupportOriginalOnlyNote,
+  PremiumSupportUserOnlyNote,
   SupportRewardJoinedBadge,
   SupportRewardNote,
   SupportTierChip,
   supportAmountButtonClassName,
-  usePremiumSupportOriginalOnlyErrorText,
+  usePremiumSupportUserOnlyErrorText,
 } from "~/components/support-super-chat"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
@@ -35,7 +35,6 @@ import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
-import { useWorkOriginalJudgment } from "~/lib/work-original-judgment"
 import { LazyPurchasePremiumCoinsDialog as PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/lazy-purchase-premium-coins-dialog"
 import {
   type CoinSummarySupportTarget,
@@ -43,8 +42,8 @@ import {
 } from "~/utils/fetch-coin-summary-shared"
 import {
   canSupportWithPremium,
-  isPremiumSupportOriginalOnlyError,
-} from "~/utils/premium-support-original-only"
+  isPremiumSupportUserOnlyError,
+} from "~/utils/premium-support-user-only"
 import { getSupportTier } from "~/utils/support-tier"
 
 type Props = {
@@ -60,9 +59,10 @@ type Props = {
   variant?: "default" | "profile"
   /** 「クリエイターの報酬につながります」の一言。R18 の作品のページでは false */
   showRewardNote?: boolean
-  /** 作品のページから推すときの作品。プレミアムコインはオリジナル系のタグが付いた作品だけ（作品が無いプロフィールの推しはプレミアム可） */
+  /** 作品のページから推すときの作品。作品からの推しはフリーコインだけ（作品が無いプロフィールの推しはプレミアム可） */
   workId?: string | null
-  workTagNames?: readonly string[] | null
+  /** 推す相手の login。作品から推すときに、プレミアムコインで推せるプロフィールへのリンクに使う */
+  targetUserLogin?: string | null
 }
 
 type CoinBreakdown = {
@@ -125,17 +125,12 @@ function SupportButtonContent({
   variant = "default",
   showRewardNote = true,
   workId = null,
-  workTagNames = null,
+  targetUserLogin = null,
 }: Props) {
   const t = useTranslation()
-  const premiumOriginalOnlyErrorText = usePremiumSupportOriginalOnlyErrorText()
-  // 作品からの推しのプレミアムコインはオリジナル作品だけ（プロフィールからの推しはいつもプレミアム可）
-  const originalJudgment = useWorkOriginalJudgment(workId)
-  const isPremiumAllowedHere = canSupportWithPremium({
-    workId,
-    tagNames: workTagNames,
-    originalJudgment,
-  })
+  const premiumUserOnlyErrorText = usePremiumSupportUserOnlyErrorText()
+  // プレミアムコインはユーザーへの推し（プロフィールから）だけ。作品からの推しはオリジナル作品でもフリーコインだけ
+  const isPremiumAllowedHere = canSupportWithPremium({ workId })
   const [isOpen, setIsOpen] = useState(false)
   const [isInfoOpen, setIsInfoOpen] = useState(false)
   const [coinType, setCoinType] = useState<SupportCoinType>("FREE")
@@ -285,7 +280,7 @@ function SupportButtonContent({
     canSelectPremium,
   ])
 
-  // 作者がプレミアムコインでの推しを受け取らないとき・オリジナル作品でないときは、選んでいてもフリーコインに戻す
+  // 作者がプレミアムコインでの推しを受け取らないとき・作品から推すときは、選んでいてもフリーコインに戻す
   useEffect(() => {
     if (!canSelectPremium && coinType === "PREMIUM") selectCoinType("FREE")
   }, [canSelectPremium, coinType])
@@ -363,11 +358,11 @@ function SupportButtonContent({
         }
         toast.error(
           errorJson &&
-            isPremiumSupportOriginalOnlyError({
+            isPremiumSupportUserOnlyError({
               code: errorJson.code,
               message: errorMsg,
             })
-            ? premiumOriginalOnlyErrorText
+            ? premiumUserOnlyErrorText
             : (errorMsg ?? t("推しに失敗しました", "Support failed")),
         )
         return
@@ -584,8 +579,8 @@ function SupportButtonContent({
                 ))}
               </div>
               {!isPremiumAllowedHere ? (
-                <PremiumSupportOriginalOnlyNote
-                  variant={workId ? "work" : "profile"}
+                <PremiumSupportUserOnlyNote
+                  userLogin={targetUserLogin}
                   className="rounded-xl bg-muted p-3"
                 />
               ) : (

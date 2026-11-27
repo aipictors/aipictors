@@ -206,8 +206,8 @@ export function CreatorRewardsPage() {
         </div>
         <p className="mt-3 text-muted-foreground text-xs leading-5">
           {t(
-            "対象は全年齢（一般・R15）のオリジナル作品（「オリジナル」などのタグ付き）への推しで、ファンがお金を払って買ったコインの分です。プレミアムコインの推しはオリジナル作品にだけ届きます。無料でもらったコインやR18の作品への推しは、今までどおりコインで受け取ります。",
-            'Covers supports on all-ages (G / R15) original works (tagged "Original" or similar) paid with coins fans bought. Premium Coin support can only be sent to original works. Free coins and supports on R18 works are received as coins as before.',
+            "対象は、プロフィールから受けた推しのうち、ファンがお金を払って買ったプレミアムコインの分です（プレミアムコインの推しはプロフィールからだけで、作品ページからの推しはフリーコインです）。R18・R18G の作品を公開している方は対象外で、今までどおりコインで受け取ります。すでに記録された報酬・保留中の報酬はそのままです。",
+            "Covers Premium Coins that fans bought and sent to you from your profile (Premium Coin support can only be sent from a profile; support on work pages uses Free Coins). Creators who publish R18 / R18G works are not eligible and receive coins as before. Rewards already recorded or on hold stay as they are.",
           )}
         </p>
       </section>
@@ -568,7 +568,7 @@ export function CreatorRewardsPage() {
 
 /**
  * 振込は日本の銀行口座（円）だけ。日本の Stripe からは海外の口座へ送れない（cross-border payouts は米・英・EEA・加・瑞のプラットフォームだけ）。
- * 海外の方は参加しなければ、推しは今までどおりコインで届く（参加すると全年齢の有料コインの推しが円の報酬になり、口座がないと受け取れない）
+ * 海外の方は参加しなければ、推しは今までどおりコインで届く（参加するとプロフィールからの有料コインの推しが円の報酬になり、口座がないと受け取れない）
  */
 export function JapanBankOnlyNotice() {
   const t = useTranslation()

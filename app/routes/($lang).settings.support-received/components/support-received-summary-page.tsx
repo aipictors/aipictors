@@ -115,7 +115,7 @@ export function SupportReceivedSummaryPage() {
       fetchPolicy: "cache-and-network",
     })
 
-  // 本文もスタンプも推しも無いコメント（オリジナルでない作品のプレミアムの推しだけのもの）は出さない
+  // 本文もスタンプも推しも無いコメント（作品へのプレミアムの推しだけのもの。作品からのプレミアムの推しはできない）は出さない
   const receivedComments = (
     receivedCommentsData?.receivedWorkComments ?? []
   ).filter((comment) => comment.isDeleted || !isEmptyComment(comment))
@@ -211,8 +211,8 @@ export function SupportReceivedSummaryPage() {
           </p>
           <p className="text-muted-foreground text-sm leading-6">
             {t(
-              "受け取った応援コインの累計 pt と、フリー / プレミアムの内訳を確認できます。全年齢のオリジナル作品で受け取った有料のプレミアムコインは、クリエイター報酬（銀行振込）の対象になります。",
-              "Review cumulative received support points with free/premium breakdowns. Purchased Premium Coins received on all-ages original works are eligible for Creator Rewards (bank payout).",
+              "受け取った応援コインの累計 pt と、フリー / プレミアムの内訳を確認できます。プロフィールから受け取った有料のプレミアムコインは、クリエイター報酬（銀行振込）の対象になります（R18・R18G の作品を公開している方は対象外）。",
+              "Review cumulative received support points with free/premium breakdowns. Purchased Premium Coins received from your profile are eligible for Creator Rewards (bank payout; creators who publish R18 / R18G works are not eligible).",
             )}
           </p>
         </div>

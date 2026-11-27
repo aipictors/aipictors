@@ -16,9 +16,8 @@ import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 type Props = {
   /** R18 の作品のページでは推しの欄に報酬の一言を出さない */
   showSupportRewardNote?: boolean
-  /** 推す作品。プレミアムコインはオリジナル系のタグが付いた作品だけ */
+  /** 推す作品。作品からの推しはフリーコインだけ（プレミアムコインはプロフィールから） */
   workId?: string
-  workTagNames?: readonly string[] | null
   userId: string
   userLogin: string
   userName: string
@@ -126,7 +125,7 @@ export function WorkUser(props: Props) {
             variant="profile"
             showRewardNote={props.showSupportRewardNote ?? true}
             workId={props.workId}
-            workTagNames={props.workTagNames}
+            targetUserLogin={props.userLogin}
             triggerClassName="h-10 w-full px-3 text-sm"
           />
         )}

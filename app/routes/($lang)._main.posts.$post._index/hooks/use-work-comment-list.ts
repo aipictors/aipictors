@@ -4,13 +4,12 @@ import type { FragmentOf } from "gql.tada"
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
-import { usePremiumSupportOriginalOnlyErrorText } from "~/components/support-super-chat"
+import { usePremiumSupportUserOnlyErrorText } from "~/components/support-super-chat"
 import { AuthContext } from "~/contexts/auth-context"
 import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate } from "~/lib/app/locale-router"
-import { useWorkOriginalJudgment } from "~/lib/work-original-judgment"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import {
   type CommentListItemFragment,
@@ -39,8 +38,8 @@ import type { CoinSummarySupportTarget } from "~/utils/fetch-coin-summary-shared
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import {
   canSupportWithPremium,
-  isPremiumSupportOriginalOnlyError,
-} from "~/utils/premium-support-original-only"
+  isPremiumSupportUserOnlyError,
+} from "~/utils/premium-support-user-only"
 import {
   readRecentStickerIds,
   sortStickersByRecent,
@@ -58,8 +57,8 @@ export type WorkCommentListProps = {
   isLoadingComments?: boolean
   /** 作品の年齢区分。全年齢（G / R15）のときだけ推しの欄に報酬の一言を出す */
   workRating?: string | null
-  /** 作品のタグ。プレミアムコインの推しはオリジナル系のタグが付いた作品だけ（渡さないときはフリーコインだけ） */
-  workTagNames?: readonly string[] | null
+  /** 作者の login。コメントの推しはフリーコインだけなので、プレミアムコインで推せるプロフィールへのリンクに使う */
+  workOwnerLogin?: string | null
 }
 
 /**
@@ -74,7 +73,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
   const checkoutSessionId = searchParams.get("session_id")
 
   const t = useTranslation()
-  const premiumOriginalOnlyErrorText = usePremiumSupportOriginalOnlyErrorText()
+  const premiumUserOnlyErrorText = usePremiumSupportUserOnlyErrorText()
 
   const appContext = useContext(AuthContext)
 
@@ -106,12 +105,9 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     premiumBalance: 0,
   })
   const [isLoadingCoinSummary, setIsLoadingCoinSummary] = useState(false)
-  // プレミアムコインはオリジナル作品への推しだけ（二次創作にお金が動かないように）
-  const originalJudgment = useWorkOriginalJudgment(props.workId)
+  // プレミアムコインはユーザーへの推し（プロフィールから）だけ。作品のコメントの推しはオリジナル作品でもフリーコインだけ
   const isPremiumAllowedForWork = canSupportWithPremium({
     workId: props.workId,
-    tagNames: props.workTagNames,
-    originalJudgment,
   })
   const [supportSuccessState, setSupportSuccessState] = useState<{
     message: string
@@ -305,7 +301,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
         setSupportFreeCoinAmount("0")
         setSupportPremiumCoinAmount("0")
       }
-      // 作者がプレミアムコインでの推しを受け取らないなら、プレミアムを選べないようにフリーへ戻す
+      // 作者がプレミアムコインでの推しを受け取らないとき・作品からの推し（いつも）は、プレミアムを選べないようにフリーへ戻す
       if (
         summary.supportTarget?.premiumAccepted === false ||
         !isPremiumAllowedForWork
@@ -505,8 +501,8 @@ export function useWorkCommentList(props: WorkCommentListProps) {
       }
     } catch (_e) {
       const errorMessage = getApolloErrorMessage(_e)
-      if (isPremiumSupportOriginalOnlyError({ message: errorMessage })) {
-        toast(premiumOriginalOnlyErrorText)
+      if (isPremiumSupportUserOnlyError({ message: errorMessage })) {
+        toast(premiumUserOnlyErrorText)
         return
       }
       toast(
@@ -673,6 +669,7 @@ export function useWorkCommentList(props: WorkCommentListProps) {
     supportTarget,
     userAvatarFrame,
     userIcon,
+    workOwnerLogin: props.workOwnerLogin,
     workRating: props.workRating,
   }
 }

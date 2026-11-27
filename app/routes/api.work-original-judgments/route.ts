@@ -13,7 +13,7 @@ import type {
 /**
  * 作品がオリジナルか二次創作かの運営の判定（aipictors-api の /internal/work-original-judgments）
  *
- * POST { op: "list", workIds } … ログインなしで読める（判定だけ。作品ページのバッジ・推しの画面）
+ * POST { op: "list", workIds } … ログインなしで読める（判定だけ。作品ページのバッジ）
  * POST { op: "adminList", workIds } … モデレーターだけ。メモ・判定した人・日時も返す
  * POST { op: "logs", workId } … モデレーターだけ。判定の記録（新しい順）
  * POST { op: "set", workId, judgment, note } … モデレーターだけ。judgment: "ORIGINAL" | "FAN_WORK" | null（外す）

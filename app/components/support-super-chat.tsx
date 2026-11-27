@@ -228,11 +228,11 @@ export function SupportRewardNote(props: { className?: string }) {
 }
 
 /**
- * プレミアムコインを選べないときの一言。work: オリジナルのタグが無い作品、profile: 作品を通さない推し
- * （二次創作を否定しない。権利者さんと作者さんへの配慮として、お金が動くのはオリジナル作品だけ）
+ * 作品から推すときにプレミアムコインを選べない理由の一言。
+ * プレミアムコインはユーザーへの推し（プロフィールから）だけ。userLogin があれば作者のプロフィールへのリンクを添える
  */
-export function PremiumSupportOriginalOnlyNote(props: {
-  variant: "work" | "profile"
+export function PremiumSupportUserOnlyNote(props: {
+  userLogin?: string | null
   className?: string
 }) {
   const t = useTranslation()
@@ -243,31 +243,31 @@ export function PremiumSupportOriginalOnlyNote(props: {
         props.className,
       )}
     >
-      {props.variant === "work"
-        ? t(
-            "プレミアムコインはオリジナル作品だけに使えます。二次創作にお金が動かないようにするためです。",
-            "Premium Coins can only be used on original works, so that no money changes hands over fan works.",
-          )
-        : t(
-            "プロフィールからはフリーコインで推せます。プレミアムコインはオリジナル作品のページから推せます。",
-            "From a profile you can support with Free Coins. Premium Coins can be used from the page of an original work.",
-          )}{" "}
-      <Link
-        to="/fan-works-policy"
-        className="whitespace-nowrap text-foreground underline underline-offset-2"
-      >
-        {t("くわしく", "Learn more")}
-      </Link>
+      {t(
+        "プレミアムコインはユーザーへの推し（プロフィールから）だけに使えます。作品への推しはフリーコインです",
+        "Premium Coins can only be used to support a user (from their profile). Support on works uses Free Coins",
+      )}
+      {props.userLogin && (
+        <>
+          {" "}
+          <Link
+            to={`/users/${props.userLogin}`}
+            className="whitespace-nowrap text-foreground underline underline-offset-2"
+          >
+            {t("作者のプロフィールへ", "Go to the creator's profile")}
+          </Link>
+        </>
+      )}
     </p>
   )
 }
 
-/** API が「プレミアムはオリジナル作品だけ」で断ったときの文 */
-export const usePremiumSupportOriginalOnlyErrorText = () => {
+/** API が「プレミアムはユーザーへの推しだけ」で断ったときの文 */
+export const usePremiumSupportUserOnlyErrorText = () => {
   const t = useTranslation()
   return t(
-    "プレミアムコインでの推しは、オリジナル作品（「オリジナル」などのタグが付いた作品）だけに使えます",
-    'Premium Coin support can only be used on original works (works tagged "Original" or similar)',
+    "プレミアムコインはユーザーへの推し（プロフィールから）だけに使えます。作品への推しはフリーコインです",
+    "Premium Coins can only be used to support a user (from their profile). Support on works uses Free Coins",
   )
 }
 

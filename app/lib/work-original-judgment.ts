@@ -3,7 +3,7 @@ import { getUserModelsAuthHeaders } from "~/lib/user-models/client"
 
 /**
  * 作品がオリジナルか二次創作かの運営の判定（作品のタグとは別に、モデレーターが管理画面で付ける）
- * ORIGINAL = オリジナル（作品ページにバッジ）、FAN_WORK = 二次創作、null = 未判定（推しは今までどおりタグで見る）
+ * ORIGINAL = オリジナル（作品ページにバッジ）、FAN_WORK = 二次創作、null = 未判定（推しには使わない。作品からの推しはいつもフリーコインだけ）
  */
 export type WorkOriginalJudgment = "ORIGINAL" | "FAN_WORK"
 
@@ -45,7 +45,7 @@ const post = async <T>(body: unknown, auth: boolean): Promise<T> => {
   return json.data as T
 }
 
-/** 同じ作品の判定を作品ページの複数の場所（バッジ・推すボタン・コメント欄）から読んでも 1 回にする */
+/** 同じ作品の判定を作品ページの複数の場所から読んでも 1 回にする */
 const cache = new Map<string, Promise<WorkOriginalJudgment | null>>()
 
 export const fetchWorkOriginalJudgment = (

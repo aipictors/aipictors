@@ -258,7 +258,6 @@ export function WorkContainer(props: Props) {
                   <div className="md:hidden">
                     <WorkUser
                       workId={work.id}
-                      workTagNames={work.tagNames}
                       userId={work.user.id}
                       userLogin={work.user.login}
                       userName={work.user.name}
@@ -291,7 +290,7 @@ export function WorkContainer(props: Props) {
             {work.isCommentsEditable && (
               <div className="border-t pt-6">
                 <WorkCommentList
-                  workTagNames={work.tagNames}
+                  workOwnerLogin={work.user?.login}
                   workId={work.id}
                   comments={comments}
                   isLoadingComments={isLoadingComments}
@@ -326,7 +325,6 @@ export function WorkContainer(props: Props) {
             <div className="w-full">
               <WorkUser
                 workId={work.id}
-                workTagNames={work.tagNames}
                 userId={work.user.id}
                 userName={work.user.name}
                 userIsOfficial={work.user.isOfficial}

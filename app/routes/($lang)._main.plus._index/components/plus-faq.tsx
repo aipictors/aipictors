@@ -103,8 +103,8 @@ export function PlusFaq() {
         "I don't generate. What else can I use coins for?",
       ),
       answer: t(
-        "あります。フリーコインは推し（応援）・スペシャル枠ガチャ・アイコン枠の購入・リクエスト（依頼。クリエイターが「プレミアムコインのみ」にしているものを除く）に使えます。プレミアムコインはこれに加えて、作品の宣伝枠やスペシャル枠にも使え、全年齢のオリジナル作品への推しはクリエイターの報酬になります（作品ページからプレミアムコインで推せるのはオリジナル作品だけ、プロフィールからはいつでも推せます）。プランなら広告の非表示・認証マーク・限定アイコン枠・宣伝枠（スタンダード以上）など、生成以外の特典もつきます。",
-        "Yes. Free coins work for supporting creators, the frame gacha, avatar frames and paid requests (except ones the creator set to premium coins only). Premium coins also cover work promotions and special frames, and premium support on all-ages original works becomes creator rewards (on work pages, Premium Coins can only support original works; from a profile, any time). Plans also come with perks beyond generation: no ads, a verified badge, exclusive avatar frames and weekly promotions (Standard and up).",
+        "あります。フリーコインは推し（応援）・スペシャル枠ガチャ・アイコン枠の購入・リクエスト（依頼。クリエイターが「プレミアムコインのみ」にしているものを除く）に使えます。プレミアムコインはこれに加えて、作品の宣伝枠やスペシャル枠にも使え、プロフィールからの推しはクリエイターの報酬になります（プレミアムコインで推せるのはユーザーへの推し（プロフィールから）だけで、作品ページからはフリーコインです）。プランなら広告の非表示・認証マーク・限定アイコン枠・宣伝枠（スタンダード以上）など、生成以外の特典もつきます。",
+        "Yes. Free coins work for supporting creators, the frame gacha, avatar frames and paid requests (except ones the creator set to premium coins only). Premium coins also cover work promotions and special frames, and premium support sent from a profile becomes creator rewards (Premium Coins can only be used to support a user from their profile; on work pages, support uses Free Coins). Plans also come with perks beyond generation: no ads, a verified badge, exclusive avatar frames and weekly promotions (Standard and up).",
       ),
     },
     {

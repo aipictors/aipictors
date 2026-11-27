@@ -18,8 +18,8 @@ import { toJsonResponse } from "~/lib/server/json-response.server"
  *
  * body: { recipientUserId: string, coinType: "FREE" | "PREMIUM", amount: number, workId?: string }
  *
- * - プレミアムコインはオリジナル作品（workId の作品にオリジナル系のタグ）への推しだけ。
- *   workId が無い推し（プロフィール）でプレミアムを送ると API が 403 { code: "PREMIUM_SUPPORT_ORIGINAL_ONLY" } を返す
+ * - プレミアムコインはユーザーへの推し（workId が無い、プロフィールからの推し）だけ。
+ *   workId 付き（作品からの推し）でプレミアムを送ると API が 403 { code: "PREMIUM_SUPPORT_USER_ONLY" } を返す
  *
  * - フリーコイン: 1pt / 枚
  * - プレミアムコイン: 10pt / 枚（PREMIUM_COIN_PT_MULTIPLIER）
