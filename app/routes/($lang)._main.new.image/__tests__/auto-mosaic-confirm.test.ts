@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test"
 import type { TSortableItem } from "~/components/drag/sortable-item"
-import { getAutoMosaicConfirmPreviews } from "~/routes/($lang)._main.new.image/utils/auto-mosaic-confirm"
+import {
+  getAutoMosaicConfirmPreviews,
+  isTentaclePost,
+} from "~/routes/($lang)._main.new.image/utils/auto-mosaic-confirm"
 
 const mosaic = (isAuto: boolean, mask = "data:mask") => ({
   source: "data:source",
@@ -28,5 +31,17 @@ describe("getAutoMosaicConfirmPreviews", () => {
       { id: 3, content: null, mosaic: mosaic(true) },
     ]
     expect(getAutoMosaicConfirmPreviews(items)).toEqual([])
+  })
+})
+
+describe("isTentaclePost", () => {
+  test("タグかプロンプトに触手があれば true", () => {
+    expect(isTentaclePost({ tags: [{ text: "触手" }] })).toBe(true)
+    expect(isTentaclePost({ tags: [], prompt: "1girl, Tentacles, " })).toBe(
+      true,
+    )
+    expect(
+      isTentaclePost({ tags: [{ text: "オリジナル" }], prompt: null }),
+    ).toBe(false)
   })
 })

@@ -71,6 +71,8 @@ type Props = {
   token?: string | undefined | null
   /** 年齢種別が R18 / R18G。自動モザイクはこのときだけ */
   isSensitiveHint?: boolean
+  /** タグ・プロンプトに触手がある（自動モザイクの「触手を含む作品」を自動でオン） */
+  isTentacleHint?: boolean
   onContentGenerated?: (data: {
     title?: string
     description?: string
@@ -94,6 +96,7 @@ export function PostImageFormUploader(props: Props) {
   const mosaic = usePostAutoMosaic({
     items: props.state.items,
     isEnabled: props.mediaType === "image" && props.isSensitiveHint === true,
+    isTentacleHint: props.isTentacleHint,
     dispatch: props.dispatch,
   })
 

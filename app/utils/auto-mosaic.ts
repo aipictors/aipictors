@@ -197,6 +197,31 @@ export function minScoreForLabel(label: AutoMosaicLabel, override?: number) {
   return MIN_SCORES[label] ?? DEFAULT_MIN_SCORE
 }
 
+/**
+ * 画像に対して大きい範囲の検出に求める確からしさ（[画像に対する面積の割合, 下限]、大きい順）
+ * 触手など性器に似た大きな形を低い確からしさで拾うと、画面の半分にモザイクがかかる。
+ * 本物は大きく写っていても確からしさが高い（通報作品と無修正の投稿 93 枚で 13% で 0.60、24% で 0.83 が最小）ので、大きいほど下限を上げる
+ */
+const LARGE_AREA_MIN_SCORES: [number, number][] = [
+  [0.35, 0.85],
+  [0.2, 0.7],
+  [0.1, 0.5],
+]
+
+/** 範囲の大きさ（画像に対する面積の割合 0〜1）で求める確からしさの下限（決まりがなければ 0） */
+export function minScoreForArea(areaRatio: number) {
+  return LARGE_AREA_MIN_SCORES.find(([ratio]) => areaRatio >= ratio)?.[1] ?? 0
+}
+
+/**
+ * 触手を含む作品で、性器（ペニス）としては扱わない検出か
+ * モデルは触手をペニスと見間違えやすい（公開済みの触手の R18 作品 150 枚で 175 件、多くは 0.3〜0.88）。
+ * 確からしさが低いものと、画像の端から伸びているもの（触手は画面の外から入ってくる）を外すと、かかる面積が約 1/4 になる
+ */
+export function isTentacleLike(score: number, touchesEdge: boolean) {
+  return score < 0.7 || (touchesEdge && score < 0.9)
+}
+
 /** 重なった検出はスコアの高い方だけ残す（大きさを変えて探した結果をまとめる） */
 export function mergeDetections<
   T extends { score: number; box: Detection["box"] },
@@ -223,6 +248,8 @@ export async function detectAutoMosaic(
     minScore?: number
     /** 対象の分類を直接指定する（includeNipples より優先） */
     labels?: AutoMosaicLabel[]
+    /** 触手を含む作品（触手らしいペニスの検出を外す） */
+    tentacle?: boolean
   } = {},
 ): Promise<AutoMosaicResult> {
   let current = await loadSession()
@@ -246,6 +273,7 @@ export async function detectAutoMosaic(
       detectAtSize(target, image, size, {
         targets,
         minScore: options.minScore,
+        tentacle: options.tentacle,
         maskCtx,
       })
     let detections: AutoMosaicResult["detections"]
@@ -283,6 +311,7 @@ async function detectAtSize(
   options: {
     targets: Set<AutoMosaicLabel>
     minScore?: number
+    tentacle?: boolean
     maskCtx: CanvasRenderingContext2D
   },
 ): Promise<AutoMosaicResult["detections"]> {
@@ -347,6 +376,23 @@ async function detectAtSize(
     const cy = pred[anchors + a]
     const w = pred[2 * anchors + a]
     const h = pred[3 * anchors + a]
+    // 大きい範囲は、確からしさが高いときだけ（指定の下限を渡したときはその値だけ）
+    if (
+      options.minScore === undefined &&
+      best < minScoreForArea((w * h) / (scaledWidth * scaledHeight))
+    ) {
+      continue
+    }
+    if (options.tentacle && label === "penis") {
+      // 余白を除いた画像の端（入力の 1% 以内）に接しているか
+      const margin = size * 0.01
+      const touchesEdge =
+        cx - w / 2 <= padX + margin ||
+        cy - h / 2 <= padY + margin ||
+        cx + w / 2 >= padX + scaledWidth - margin ||
+        cy + h / 2 >= padY + scaledHeight - margin
+      if (isTentacleLike(best, touchesEdge)) continue
+    }
     const coefs = new Float32Array(MASK_COEF_COUNT)
     for (let k = 0; k < MASK_COEF_COUNT; k++) {
       coefs[k] = pred[(4 + CLASS_COUNT + k) * anchors + a]

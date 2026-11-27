@@ -14,3 +14,11 @@ export const getAutoMosaicConfirmPreviews = (items: TSortableItem[]) =>
       ? [item.content]
       : [],
   )
+
+/** タグ・プロンプトに触手がある（自動モザイクで触手を性器と見間違えないようにする） */
+export const isTentaclePost = (props: {
+  tags: { text: string }[]
+  prompt?: string | null
+}) =>
+  props.tags.some((tag) => /触手|tentacle/i.test(tag.text)) ||
+  /触手|tentacle/i.test(props.prompt ?? "")

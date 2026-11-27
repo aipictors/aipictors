@@ -41,6 +41,10 @@ const SELF_APPLIED_KEY = "post-mosaic-self-applied"
 const WARNING_MIN_SCORE = 0.35
 
 const detections = new Map<string, PostMosaicDetection>()
+/** 触手を含む作品（触手らしい検出を外す）。切り替えたら検出し直すので、結果は別に覚える */
+let isTentacleMode = false
+const keyOf = (source: string, isTentacle = isTentacleMode) =>
+  isTentacle ? `tentacle:${source}` : source
 const listeners = new Set<() => void>()
 let version = 0
 let queue: Promise<void> = Promise.resolve()
@@ -60,7 +64,16 @@ export const subscribePostMosaic = (listener: () => void) => {
 export const getPostMosaicVersion = () => version
 
 export const getPostMosaicDetection = (source: string) =>
-  detections.get(source) ?? null
+  detections.get(keyOf(source)) ?? null
+
+export const getPostMosaicTentacle = () => isTentacleMode
+
+/** 触手を含む作品か（切り替えると、今の画像を検出し直す） */
+export function setPostMosaicTentacle(value: boolean) {
+  if (isTentacleMode === value) return
+  isTentacleMode = value
+  notify()
+}
 
 /** モザイクをかけられる画像か（GIF・アニメーション WebP は動きが消えるので対象外） */
 export const canPostMosaic = (content: string | null | undefined) =>
@@ -79,9 +92,11 @@ export const hasItemMosaic = (item: TSortableItem) =>
  * すでに検出済み・検出中なら何もしない
  */
 export function requestPostMosaicDetection(source: string) {
-  const current = detections.get(source)
+  const isTentacle = isTentacleMode
+  const key = keyOf(source, isTentacle)
+  const current = detections.get(key)
   if (current && current.status !== "failed") return
-  detections.set(source, {
+  detections.set(key, {
     status: "pending",
     mask: null,
     count: 0,
@@ -93,7 +108,7 @@ export function requestPostMosaicDetection(source: string) {
     // 待っている間に一覧から外れても、検出は軽いのでそのまま進める
     try {
       const image = await loadMosaicImage(source)
-      const result = await detectAutoMosaic(image)
+      const result = await detectAutoMosaic(image, { tentacle: isTentacle })
       const warnable = result.detections.filter(
         (detection) => detection.score >= WARNING_MIN_SCORE,
       )
@@ -102,7 +117,7 @@ export function requestPostMosaicDetection(source: string) {
       const unhiddenCount = warnable.filter((detection) =>
         isUnhidden?.(detection.box),
       ).length
-      detections.set(source, {
+      detections.set(key, {
         status: "done",
         mask: result.detections.length > 0 ? result.mask : null,
         count: result.detections.length,
@@ -114,7 +129,7 @@ export function requestPostMosaicDetection(source: string) {
       })
     } catch (error) {
       console.error(error)
-      detections.set(source, {
+      detections.set(key, {
         status: "failed",
         mask: null,
         count: 0,
@@ -133,7 +148,7 @@ export async function waitPostMosaicDetections(
 ) {
   for (const source of sources) requestPostMosaicDetection(source)
   const isDone = (source: string) =>
-    detections.get(source)?.status !== "pending"
+    detections.get(keyOf(source))?.status !== "pending"
   const report = () =>
     onProgress?.(sources.filter(isDone).length, sources.length)
   report()
@@ -215,7 +230,7 @@ export async function createAutoMosaicItem(
 ): Promise<TSortableItem | null> {
   const source = getItemMosaicSource(item)
   if (!source) return null
-  const detection = detections.get(source)
+  const detection = detections.get(keyOf(source))
   if (detection?.status !== "done" || detection.mask === null) return null
   const [content, mask] = await Promise.all([
     renderPostMosaic(source, detection.mask, settings),
@@ -269,5 +284,5 @@ export function isItemMosaicWarning(item: TSortableItem) {
   if (hasItemMosaic(item)) return false
   const source = getItemMosaicSource(item)
   if (!source || !canPostMosaic(source)) return false
-  return (detections.get(source)?.unhiddenCount ?? 0) > 0
+  return (detections.get(keyOf(source))?.unhiddenCount ?? 0) > 0
 }

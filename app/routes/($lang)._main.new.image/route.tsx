@@ -53,6 +53,7 @@ import type { PostStage } from "~/routes/($lang)._main.new.image/hooks/use-post-
 import { usePostImageSubmit } from "~/routes/($lang)._main.new.image/hooks/use-post-image-submit"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
+import { isTentaclePost } from "~/routes/($lang)._main.new.image/utils/auto-mosaic-confirm"
 import {
   SelectedUserEventQuery,
   UserEventsQuery,
@@ -579,6 +580,10 @@ export default function NewImage() {
               inputState.ratingRestriction === "R18" ||
               inputState.ratingRestriction === "R18G"
             }
+            isTentacleHint={isTentaclePost({
+              tags: inputState.tags,
+              prompt: inputState.imageInformation?.params?.prompt,
+            })}
           />
         </div>
         <PostImageFormInput

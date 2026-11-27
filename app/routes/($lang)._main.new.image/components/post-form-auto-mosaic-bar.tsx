@@ -176,6 +176,30 @@ export function PostFormAutoMosaicBar(props: Props) {
         </div>
       )}
 
+      {!isSelfApplied && (
+        <div className="mt-2 flex items-start gap-2 text-xs">
+          <Switch
+            id="post-mosaic-tentacle"
+            checked={props.mosaic.isTentacle}
+            onCheckedChange={props.mosaic.setIsTentacle}
+            disabled={props.mosaic.isRendering}
+            aria-label={t("触手を含む作品", "Includes tentacles")}
+          />
+          <label
+            htmlFor="post-mosaic-tentacle"
+            className="cursor-pointer leading-5"
+          >
+            {t("触手を含む作品", "Includes tentacles")}
+            <span className="block text-[11px] text-zinc-400 leading-4">
+              {t(
+                "触手を性器と見間違えて広くかかるのを防ぎます（タグ・プロンプトに触手があると自動でオン）",
+                "Keeps tentacles from being mistaken for genitals (turns on automatically when tags or the prompt mention tentacles)",
+              )}
+            </span>
+          </label>
+        </div>
+      )}
+
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-white/10 border-t pt-2">
         <div className="flex items-center gap-2 text-xs">
           <Switch

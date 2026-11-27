@@ -1,8 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import {
   isEdgeSpreadUnhidden,
+  isTentacleLike,
   measureEdgeSpread,
   mergeDetections,
+  minScoreForArea,
   minScoreForLabel,
 } from "~/utils/auto-mosaic"
 
@@ -17,6 +19,32 @@ describe("minScoreForLabel", () => {
   test("minScore を渡したら全部その値", () => {
     expect(minScoreForLabel("anus", 0.5)).toBe(0.5)
     expect(minScoreForLabel("nipple", 0.1)).toBe(0.1)
+  })
+})
+
+describe("minScoreForArea", () => {
+  test("小さい範囲は分類ごとの下限だけ", () => {
+    expect(minScoreForArea(0.05)).toBe(0)
+  })
+
+  test("大きい範囲ほど高い確からしさを求める（触手を拾って画面の半分にかけない）", () => {
+    expect(minScoreForArea(0.1)).toBe(0.5)
+    expect(minScoreForArea(0.2)).toBe(0.7)
+    expect(minScoreForArea(0.5)).toBe(0.85)
+  })
+
+  test("通報作品で大きく写った本物（13% で 0.60、24% で 0.83）は残る", () => {
+    expect(0.596).toBeGreaterThanOrEqual(minScoreForArea(0.1335))
+    expect(0.829).toBeGreaterThanOrEqual(minScoreForArea(0.2444))
+  })
+})
+
+describe("isTentacleLike", () => {
+  test("触手を含む作品では、確からしさが低いもの・端から伸びているものを外す", () => {
+    expect(isTentacleLike(0.6, false)).toBe(true)
+    expect(isTentacleLike(0.8, true)).toBe(true)
+    expect(isTentacleLike(0.8, false)).toBe(false)
+    expect(isTentacleLike(0.92, true)).toBe(false)
   })
 })
 

@@ -12,6 +12,7 @@ import {
   createAutoMosaicItem,
   getItemMosaicSource,
   getPostMosaicDetection,
+  getPostMosaicTentacle,
   getPostMosaicVersion,
   hasItemMosaic,
   isItemMosaicWarning,
@@ -22,6 +23,7 @@ import {
   requestPostMosaicDetection,
   savePostMosaicSelfApplied,
   savePostMosaicSettings,
+  setPostMosaicTentacle,
   subscribePostMosaic,
 } from "~/routes/($lang)._main.new.image/utils/post-mosaic-store"
 
@@ -43,6 +45,8 @@ export function usePostAutoMosaic(props: {
   items: TSortableItem[]
   /** 年齢種別が R18 / R18G の画像投稿 */
   isEnabled: boolean
+  /** タグ・プロンプトに触手がある（触手を含む作品を自動でオンにする） */
+  isTentacleHint?: boolean
   dispatch: Dispatch<PostImageFormAction>
 }) {
   const [isSelfApplied, setIsSelfAppliedState] = useState(false)
@@ -63,6 +67,13 @@ export function usePostAutoMosaic(props: {
     getPostMosaicVersion,
     () => 0,
   )
+  const isTentacle = useSyncExternalStore(
+    subscribePostMosaic,
+    getPostMosaicTentacle,
+    () => false,
+  )
+  // 自分で切り替えたら、タグ・プロンプトでは変えない
+  const isTentacleTouchedRef = useRef(false)
 
   // 差し替え中の元の画像（同じ画像を 2 回処理しない）
   const busyRef = useRef(new Set<string>())
@@ -74,7 +85,7 @@ export function usePostAutoMosaic(props: {
       const source = getItemMosaicSource(item)
       if (source && canPostMosaic(source)) requestPostMosaicDetection(source)
     }
-  }, [props.isEnabled, props.items])
+  }, [props.isEnabled, props.items, isTentacle])
 
   // かける・外す
   useEffect(() => {
@@ -117,6 +128,41 @@ export function usePostAutoMosaic(props: {
         .finally(() => busyRef.current.delete(source))
     }
   }, [props.items, props.isEnabled, isSelfApplied, settings, version])
+
+  /**
+   * 触手を含む作品か（触手を性器と見間違えて広くかけないようにする）
+   * 自動でかけたままの画像は元に戻し、検出し直してからかけ直す
+   */
+  const changeTentacle = (value: boolean) => {
+    if (value === getPostMosaicTentacle()) return
+    for (const item of props.items) {
+      if (item.mosaic?.isAuto && item.content !== null) {
+        props.dispatch({
+          type: "REPLACE_ITEM",
+          payload: {
+            from: item.content,
+            item: { ...item, content: item.mosaic.source, mosaic: null },
+          },
+        })
+      }
+    }
+    setPostMosaicTentacle(value)
+  }
+
+  const setIsTentacle = (value: boolean) => {
+    isTentacleTouchedRef.current = true
+    changeTentacle(value)
+  }
+
+  // タグ・プロンプトに触手が入ったら自動でオンにする
+  useEffect(() => {
+    if (props.isTentacleHint && !isTentacleTouchedRef.current) {
+      changeTentacle(true)
+    }
+  }, [props.isTentacleHint])
+
+  // 次の投稿に持ち越さない
+  useEffect(() => () => setPostMosaicTentacle(false), [])
 
   const setIsSelfApplied = (value: boolean) => {
     savePostMosaicSelfApplied(value)
@@ -218,6 +264,8 @@ export function usePostAutoMosaic(props: {
   return {
     isSelfApplied,
     setIsSelfApplied,
+    isTentacle,
+    setIsTentacle,
     settings,
     changeSettings,
     applyToWarnings,
