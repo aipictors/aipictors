@@ -2,9 +2,10 @@
 import pages from "./build/worker/index.js"
 import { missingFileCacheControl } from "./app/utils/missing-file-cache-control"
 import { handleEmbedRequest } from "./app/lib/work-embed"
+import { type EventLogEnv, handleEventLog } from "./app/lib/event-log-server"
 import { submitRecentWorksToIndexNow } from "./app/lib/indexnow"
 
-type Env = {
+type Env = EventLogEnv & {
   INTERNAL_PURGE_TOKEN?: string
   VITE_GRAPHQL_ENDPOINT_REMIX?: string
   VITE_GRAPHQL_ENDPOINT?: string
@@ -125,6 +126,10 @@ export default {
         status: 204,
         headers: { "Cache-Control": "no-store" },
       })
+    }
+    // 操作の記録（app/utils/event-log.ts がまとめて送る）を Analytics Engine に書く（app/lib/event-log-server.ts）
+    if (new URL(request.url).pathname === "/api/ev") {
+      return handleEventLog(request, env)
     }
     // 作品の埋め込みと oEmbed は、アプリ本体を読み込まずに返す（app/lib/work-embed.ts）
     const embed = await handleEmbedRequest(request, env)

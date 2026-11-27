@@ -4,6 +4,7 @@ import type { FragmentOf } from "gql.tada"
 import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
+import { usePremiumSupportOriginalOnlyErrorText } from "~/components/support-super-chat"
 import { AuthContext } from "~/contexts/auth-context"
 import { useHideCoinSupport } from "~/hooks/use-hide-coin-support"
 import { usePinnedStickers } from "~/hooks/use-pinned-stickers"
@@ -32,9 +33,9 @@ import {
   type ReplyComment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list-utils"
 import { usePremiumCheckoutConfirmation } from "~/routes/($lang)._main.posts.$post._index/hooks/use-premium-checkout-confirmation"
-import type { CoinSummarySupportTarget } from "~/utils/fetch-coin-summary-shared"
-import { usePremiumSupportOriginalOnlyErrorText } from "~/components/support-super-chat"
 import { isEmptyComment } from "~/utils/empty-comment"
+import { logEvent } from "~/utils/event-log"
+import type { CoinSummarySupportTarget } from "~/utils/fetch-coin-summary-shared"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import {
   canSupportWithPremium,
@@ -459,6 +460,16 @@ export function useWorkCommentList(props: WorkCommentListProps) {
           )
         }
 
+        logEvent("comment", {
+          source: confirmedSupportDraft
+            ? "support"
+            : stickerId
+              ? "sticker"
+              : "text",
+          coins:
+            (confirmedSupportDraft?.freeCoinAmount ?? 0) +
+            (confirmedSupportDraft?.premiumCoinAmount ?? 0),
+        })
         clearCommentDraft()
         setComment("")
         setIsSensitive(false)

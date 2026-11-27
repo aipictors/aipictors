@@ -8,11 +8,12 @@ import { useFollowNudge } from "~/hooks/use-follow-nudge"
 import { useTranslation } from "~/hooks/use-translation"
 import { requestAchievementCheck } from "~/lib/achievements/achievement-ui"
 import { isLikeShortcutKeyEvent } from "~/lib/is-like-shortcut-key-event"
+import { cn } from "~/lib/utils"
 import {
   fetchViewerWorkLike,
   rememberViewerWorkLike,
 } from "~/lib/viewer-work-like"
-import { cn } from "~/lib/utils"
+import { logEvent } from "~/utils/event-log"
 
 type Props = {
   size?: number
@@ -189,6 +190,7 @@ export function LikeButton(props: Props): React.ReactNode {
 
     try {
       if (!isLiked) {
+        logEvent("like", { source: "work" })
         await createWorkLike({
           variables: {
             input: {

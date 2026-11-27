@@ -60,6 +60,13 @@ service = "aipictors-system"
 binding = "AIPICTORS_API"
 service = "aipictors-api"
 
+# 操作の記録（POST /api/ev → app/lib/event-log-server.ts）。1 イベント 1 行、生のデータは 90 日残る。
+# 毎日 aipictors-api が前日分をまとめて D1（event_daily など）に、生のイベントを R2（aipictors-analytics）に保存する
+# ユーザー ID は secret EVENT_UID_SALT の鍵でハッシュにしてから書く
+[[analytics_engine_datasets]]
+binding = "EVENTS"
+dataset = "aipictors_events"
+
 # 一覧ページの HTML を全拠点で共有するキャッシュ（app/lib/edge-page-cache.ts）
 [[kv_namespaces]]
 binding = "PAGE_CACHE"

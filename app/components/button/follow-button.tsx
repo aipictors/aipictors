@@ -28,6 +28,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { requestAchievementCheck } from "~/lib/achievements/achievement-ui"
 import { cn } from "~/lib/utils"
+import { logEvent } from "~/utils/event-log"
 
 type Props = {
   targetUserId: string
@@ -159,7 +160,10 @@ function useOptimisticFollow(props: {
         const serverIsFollow = result?.isFollowee ?? nextIsFollow
         if (serverIsFollow !== confirmedRef.current) {
           updateCache(serverIsFollow)
-          if (serverIsFollow) requestAchievementCheck()
+          if (serverIsFollow) {
+            requestAchievementCheck()
+            logEvent("follow", { source: "user" })
+          }
         }
         confirmedRef.current = serverIsFollow
         if (serverIsFollow !== nextIsFollow) {

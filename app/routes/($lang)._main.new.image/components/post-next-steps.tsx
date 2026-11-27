@@ -4,6 +4,7 @@ import { Heart, Sparkles, Trophy } from "lucide-react"
 import { useEffect } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
+import { logEvent } from "~/utils/event-log"
 import { trackGrowthEvent } from "~/utils/track-growth-event"
 
 type Props = {
@@ -38,6 +39,11 @@ export function PostNextSteps(props: Props) {
   useEffect(() => {
     if (isFirstPost) trackGrowthEvent("first_post_complete", "post_dialog")
   }, [isFirstPost])
+
+  // 投稿のたびに数える（はじめての投稿は上の first_post_complete も）
+  useEffect(() => {
+    logEvent("post_complete", { source: "post_dialog" })
+  }, [props.workId])
 
   const onClick = (step: string) => {
     trackGrowthEvent("post_next_step", step)

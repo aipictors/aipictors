@@ -1,4 +1,5 @@
 import { getApps } from "firebase/app"
+import { logEvent as logOwnEvent } from "~/utils/event-log"
 import { withFirebaseAnalytics } from "~/utils/run-after-load-idle"
 
 declare global {
@@ -17,7 +18,8 @@ function toEventName(name: string): string {
 
 /**
  * 登録・生成・決済までのどこで離脱しているかを見るためのイベントを GA4 と Microsoft Clarity に送る
- * （GA4 は「探索 → ファネル」、Clarity はイベントで録画やファネルを絞り込む）
+ * （GA4 は「探索 → ファネル」、Clarity はイベントで録画やファネルを絞り込む）。
+ * 同じイベントを自前の記録（app/utils/event-log.ts）にも残す
  * 失敗しても画面の操作には影響させない
  */
 export function trackFunnelEvent(
@@ -26,6 +28,7 @@ export function trackFunnelEvent(
 ) {
   if (typeof window === "undefined") return
   if (import.meta.env.NODE_ENV === "development") return
+  logOwnEvent(name, params)
   const eventName = toEventName(name)
   try {
     window.clarity?.("event", eventName)

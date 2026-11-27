@@ -36,6 +36,7 @@ import {
   sumBy,
   type UsersMonth,
 } from "./analytics-data"
+import { EventFunnelSection } from "./event-funnel-section"
 import { LeaveReasonsSection } from "./leave-reasons-section"
 
 const TITLE = "分析"
@@ -55,6 +56,7 @@ const SECTIONS = [
   { id: "sales", label: "売上" },
   { id: "generations", label: "生成" },
   { id: "traffic", label: "アクセス" },
+  { id: "funnel", label: "操作の流れ" },
   { id: "leave", label: "解約・退会の理由" },
   { id: "daily", label: "日別" },
 ] as const
@@ -544,6 +546,10 @@ function AnalyticsBody(props: { data: AnalyticsResponse; range: number }) {
             items={mergeCounts(days, (d) => d.cloudflare?.countries)}
           />
         </ChartGrid>
+      </Section>
+
+      <Section id="funnel">
+        <EventFunnelSection data={props.data.events} />
       </Section>
 
       <Section id="leave">

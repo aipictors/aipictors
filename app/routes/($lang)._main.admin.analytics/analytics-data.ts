@@ -1,3 +1,4 @@
+import type { EventSummaryResponse } from "./event-funnel-section"
 import type { LeaveReasonsResponse } from "./leave-reasons-section"
 /**
  * 分析ページの日別の数字（aipictors-api の analytics_daily と同じ形）と、表示用の集計
@@ -146,6 +147,8 @@ export type AnalyticsResponse = {
   months?: UsersMonth[] | null
   /** 解約・退会の理由（leave-reasons-section.tsx） */
   leaveReasons?: LeaveReasonsResponse | null
+  /** 操作の記録のファネル・ページごとの離脱（表示する期間の分） */
+  events?: EventSummaryResponse
 }
 
 /** Web（Stripe）の月額。App Store は別料金だが件数が少ないので同じ額で見積もる */

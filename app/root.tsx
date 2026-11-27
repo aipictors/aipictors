@@ -49,6 +49,7 @@ import { GENERATION_ENTRY_REDIRECT_SCRIPT } from "~/routes/($lang).generation._i
 import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
+import { logPageView, startEventLog } from "~/utils/event-log"
 import { isInsideFileDropZone } from "~/utils/file-drop-zone"
 import { type GridLayout, getGridLayout } from "~/utils/grid-layout"
 import {
@@ -59,7 +60,11 @@ import { isPostEditPath } from "~/utils/is-post-edit-path"
 import { getLayoutHint, type LayoutHint } from "~/utils/layout-hint"
 import { LIST_LIKE_COUNT_INLINE_SCRIPT } from "~/utils/list-like-count-preference"
 import { buildAlternateLocaleUrls, getPathLocale } from "~/utils/locale-path"
-import { PAGE_VIEW_INLINE_SCRIPT, trackPageView } from "~/utils/page-view"
+import {
+  classifyPath,
+  PAGE_VIEW_INLINE_SCRIPT,
+  trackPageView,
+} from "~/utils/page-view"
 import { setRenderNow } from "~/utils/render-now"
 import {
   RESIZED_IMAGE_FALLBACK_SCRIPT,
@@ -881,11 +886,15 @@ export default function App(): React.ReactNode {
 }
 
 /**
- * サイト内の移動でのページ表示を数える（最初の表示は HTML のスクリプトが数えている）
+ * サイト内の移動でのページ表示を数える（最初の表示は HTML のスクリプトが数えている）。操作の記録にも前のページの種類つきで残す
  */
 function PageViewTracker(): null {
   const { pathname } = useLocation()
   const previousPathRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    startEventLog()
+  }, [])
 
   useEffect(() => {
     if (
@@ -893,6 +902,7 @@ function PageViewTracker(): null {
       previousPathRef.current !== pathname
     ) {
       trackPageView("internal", pathname)
+      logPageView(classifyPath(previousPathRef.current))
     }
     previousPathRef.current = pathname
   }, [pathname])

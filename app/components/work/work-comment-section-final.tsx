@@ -33,6 +33,7 @@ import { useBoolean } from "usehooks-ts"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
+import { logEvent } from "~/utils/event-log"
 
 type Comment = {
   id: string
@@ -175,6 +176,7 @@ export function WorkCommentSectionEnhanced(props: Props): React.ReactNode {
         )
       }
 
+      logEvent("comment", { source: stickerId ? "sticker" : "text" })
       setComment("")
       setIsSensitive(false)
 

@@ -8,6 +8,7 @@ import {
 } from "firebase/auth"
 import { AuthContextProvider } from "~/components/auth-context-provider"
 import { AutoLoginProvider } from "~/components/auto-login-provider"
+import { EventLogUserSync } from "~/components/event-log-user-sync"
 import { config } from "~/config"
 import { apolloClient } from "~/lib/client"
 import {
@@ -86,6 +87,7 @@ export function ContextProviders(props: Props): React.ReactNode {
     <QueryClientProvider client={queryClient}>
       <ApolloProvider client={apolloClient}>
         <AuthContextProvider>
+          <EventLogUserSync />
           <AutoLoginProvider>{props.children}</AutoLoginProvider>
         </AuthContextProvider>
       </ApolloProvider>

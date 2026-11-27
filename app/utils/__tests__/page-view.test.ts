@@ -116,3 +116,73 @@ describe("page-view", () => {
     }
   })
 })
+
+describe("page-view の埋め込みスクリプトと操作の記録", () => {
+  test("最初の page_view を積み、hydration の前に隠れた・離れたら送る", () => {
+    const win: Record<string, unknown> = {}
+    const store = new Map<string, string>()
+    const storage = {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => store.set(key, value),
+    }
+    const sent: { url: string; body: string }[] = []
+    let onHide: (() => void) | null = null
+    let onHidden: (() => void) | null = null
+    const run = new Function(
+      "window",
+      "navigator",
+      "fetch",
+      "document",
+      "location",
+      "sessionStorage",
+      "localStorage",
+      "addEventListener",
+      PAGE_VIEW_INLINE_SCRIPT,
+    )
+    run(
+      win,
+      {
+        webdriver: false,
+        language: "ja-JP",
+        sendBeacon: (url: string, body: string) => sent.push({ url, body }),
+      },
+      () => Promise.resolve(),
+      {
+        referrer: "https://www.google.com/",
+        documentElement: { dataset: { aipAuth: "in" } },
+        visibilityState: "hidden",
+        addEventListener: (name: string, listener: () => void) => {
+          if (name === "visibilitychange") onHidden = listener
+        },
+      },
+      { pathname: "/posts/1" },
+      storage,
+      storage,
+      (name: string, listener: () => void) => {
+        if (name === "pagehide") onHide = listener
+      },
+    )
+    const queue = win.__aipEv as {
+      sid: string
+      q: { e: string; p: string; r: string; v: string }[]
+    }
+    expect(queue.sid).toMatch(/^[a-z0-9]{6,16}$/)
+    expect(store.get("aip.sid")?.startsWith(`${queue.sid}.`)).toBe(true)
+    expect(queue.q[0]).toMatchObject({
+      e: "page_view",
+      p: "/posts/1",
+      r: "google",
+      v: "dn",
+    })
+    ;(onHidden as unknown as () => void)()
+    expect(sent.length).toBe(1)
+    expect(sent[0]?.url).toBe("/api/ev")
+    const body = JSON.parse(sent[0]?.body ?? "{}")
+    expect(body).toMatchObject({ v: 1, sid: queue.sid, a: 1, l: "ja-JP" })
+    expect(body.ev[0].e).toBe("page_view")
+    // 送ったあとは二重に送らない（隠れたときも同じ送信）
+    ;(onHide as unknown as () => void)()
+    ;(onHidden as unknown as () => void)()
+    expect(sent.length).toBe(1)
+  })
+})
