@@ -5226,6 +5226,9 @@ type Query {
   """全てのタグ"""
   tags(limit: Int!, offset: Int!, where: TagsWhereInput): [TagNode!]!
 
+  """名前が語を含むタグの数（最大 1001。1001 なら 1,000 件より多い）。数えられない語は null"""
+  tagsSearchCount(search: String!): Int
+
   """お題提案の重複候補"""
   themeProposalDuplicateThemes(theme: String!): [DailyThemeNode!]!
 
@@ -5261,6 +5264,9 @@ type Query {
 
   """ユーザ"""
   users(limit: Int!, offset: Int!, where: UsersWhereInput): [UserNode!]!
+
+  """名前・ユーザー ID が語を含むユーザーの数（最大 300。300 なら 300 人以上）。まだ数えていない語は null"""
+  usersSearchCount(search: String!): Int
 
   """ログイン中のユーザ"""
   viewer: Viewer

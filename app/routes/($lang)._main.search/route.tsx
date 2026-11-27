@@ -16,6 +16,7 @@ import { config } from "~/config"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link, useNavigate } from "~/lib/app/locale-router"
+import { TEXT_SEARCH_COUNT_LIMIT } from "~/lib/work-text-search-constants"
 import { HomeHeaderContentToggle } from "~/routes/($lang)._main._index/components/home-header-content-toggle"
 import { SearchBox } from "~/routes/($lang)._main.search/components/search-box"
 import { SearchExplore } from "~/routes/($lang)._main.search/components/search-explore"
@@ -165,7 +166,17 @@ export default function SearchRoute() {
               <SearchExplore data={data} pagePrefix={pagePrefix} />
             )}
 
-            {data.searchQuery && <SearchTypeTabs type={searchType} />}
+            {data.searchQuery && (
+              <SearchTypeTabs
+                type={searchType}
+                query={data.searchQuery}
+                worksCount={data.worksCount}
+                isWorksCountAtLeast={
+                  data.mode === "text" &&
+                  data.worksCount >= TEXT_SEARCH_COUNT_LIMIT
+                }
+              />
+            )}
 
             {searchType === "users" && data.searchQuery && (
               <SearchUsersPanel
