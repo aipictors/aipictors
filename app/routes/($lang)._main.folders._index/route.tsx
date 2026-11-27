@@ -1,39 +1,10 @@
-import { graphql } from "gql.tada"
+import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare"
+import { buildLocalePath, getPathLocale } from "~/utils/locale-path"
 
-export default function Route () {
-  return null
+/**
+ * /folders は中身のない空のページだったので、自分のコレクションの管理へ案内する
+ */
+export async function loader(props: LoaderFunctionArgs) {
+  const locale = getPathLocale(new URL(props.request.url).pathname)
+  return redirect(buildLocalePath(locale, "/my/folders"), { status: 302 })
 }
-
-export const FolderQuery = graphql(
-  `query Folder($id: ID!) {
-    folder(id: $id) {
-      id
-      nanoid
-      title
-      isPrivate
-      description
-      user {
-        id
-        isFollowee
-        isFollowee
-        isMuted
-      }
-      createdAt
-      rating
-      thumbnailImageURL
-    }
-  }`,
-  [],
-)
-
-export const FolderWorksQuery = graphql(
-  `query FolderWorks($folderId: ID!, $offset: Int!, $limit: Int!) {
-    folder(id: $folderId) {
-      id
-      works(offset: $offset, limit: $limit) {
-        id
-      }
-    }
-  }`,
-  [],
-)

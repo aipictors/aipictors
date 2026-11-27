@@ -1,4 +1,8 @@
+import { skipToken, useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { FolderIcon } from "lucide-react"
+import { useContext, useEffect } from "react"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   Select,
   SelectContent,
@@ -6,22 +10,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import { useTranslation } from "~/hooks/use-translation"
 import { AuthContext } from "~/contexts/auth-context"
-import { useContext } from "react"
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import type { SortType } from "~/types/sort-type"
 import {
   FolderListItemFragment,
   FoldersList,
 } from "~/routes/($lang).my._index/components/folders-list"
+import type { SortType } from "~/types/sort-type"
+
+const PER_PAGE = 16
 
 type Props = {
   page: number
-  foldersMaxCount: number
   sort: SortType
   orderBy: IntrospectionEnum<"FolderOrderBy">
   setFolderPage: (page: number) => void
@@ -30,42 +31,58 @@ type Props = {
 
 /**
  * フォルダ一覧コンテナ
+ * 件数は一覧と同じ viewer から取る（以前は foldersCount を別に数えていて、年齢制限の絞り込みの違いで一覧と数が合わず、削除しても減らなかった）
  */
 export function FoldersListContainer(props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 
-  if (
-    authContext.isLoading ||
-    authContext.isNotLoggedIn ||
-    authContext.userId === undefined ||
-    !authContext.userId
-  ) {
+  const isReady =
+    !authContext.isLoading &&
+    !authContext.isNotLoggedIn &&
+    Boolean(authContext.userId)
+
+  // ログインの確認が終わる前に早く return するとフックの数が変わってしまうので、skipToken で待つ
+  const { data, refetch } = useSuspenseQuery(
+    viewerFoldersQuery,
+    isReady
+      ? {
+          variables: {
+            offset: PER_PAGE * props.page,
+            limit: PER_PAGE,
+            where: {
+              orderBy: props.orderBy,
+              sort: props.sort,
+            },
+          },
+          fetchPolicy: "cache-and-network",
+        }
+      : skipToken,
+  )
+
+  const folders = data?.viewer?.folders ?? []
+  const maxCount = data?.viewer?.folderCount ?? 0
+  const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
+  const { page, setFolderPage } = props
+
+  // 最後のページの最後の 1 件を消したときは、1 つ前のページへ
+  useEffect(() => {
+    if (data && folders.length === 0 && page > 0 && maxCount > 0) {
+      setFolderPage(Math.max(0, Math.ceil(maxCount / PER_PAGE) - 1))
+    }
+  }, [data, folders.length, page, maxCount, setFolderPage])
+
+  if (!isReady) {
     return null
   }
-
-  const { data: FoldersResp, refetch } = useSuspenseQuery(viewerFoldersQuery, {
-    skip:
-      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
-    variables: {
-      offset: 16 * props.page,
-      limit: 16,
-      where: {
-        orderBy: props.orderBy,
-        sort: props.sort,
-      },
-    },
-  })
-
-  const Folders = FoldersResp?.viewer?.folders ?? []
 
   return (
     <>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <p className="text-muted-foreground text-sm tabular-nums">
           {t(
-            `${props.foldersMaxCount.toLocaleString()}件のコレクション`,
-            `${props.foldersMaxCount.toLocaleString()} collections`,
+            `${maxCount.toLocaleString()}件のコレクション`,
+            `${maxCount.toLocaleString()} collections`,
           )}
         </p>
         <Select
@@ -95,7 +112,7 @@ export function FoldersListContainer(props: Props) {
           </SelectContent>
         </Select>
       </div>
-      {Folders.length === 0 ? (
+      {folders.length === 0 ? (
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-14 text-center">
           <FolderIcon className="size-8 text-muted-foreground" />
           <p className="font-semibold">
@@ -109,13 +126,17 @@ export function FoldersListContainer(props: Props) {
           </p>
         </div>
       ) : (
-        <FoldersList folders={Folders} refetch={() => void refetch()} />
+        <FoldersList
+          folders={folders}
+          bookmarkFolderId={bookmarkFolderId}
+          refetch={() => void refetch()}
+        />
       )}
-      {props.foldersMaxCount > 16 && (
+      {maxCount > PER_PAGE && (
         <div className="sticky bottom-0 z-10 mt-3 flex justify-center border-t bg-background/95 py-2 backdrop-blur">
           <ResponsivePagination
-            perPage={16}
-            maxCount={props.foldersMaxCount}
+            perPage={PER_PAGE}
+            maxCount={maxCount}
             currentPage={props.page}
             onPageChange={(page: number) => {
               props.setFolderPage(page)
@@ -131,6 +152,9 @@ export function FoldersListContainer(props: Props) {
 const viewerFoldersQuery = graphql(
   `query ViewerFolders($offset: Int!, $limit: Int!, $where: ViewerFoldersWhereInput) {
     viewer {
+      id
+      bookmarkFolderId
+      folderCount
       folders(offset: $offset, limit: $limit, where: $where) {
         ...FolderListItem
       }

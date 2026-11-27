@@ -1,48 +1,15 @@
-import { loaderClient } from "~/lib/loader-client"
-import {
-  WorkList,
-  WorkListItemFragment,
-} from "~/routes/($lang)._main.posts._index/components/work-list"
-import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import type { HeadersFunction } from "@remix-run/cloudflare"
-import { config } from "~/config"
+export {
+  headers,
+  loader,
+  meta,
+} from "~/routes/($lang)._main.collections.$collection/route"
 
-export async function loader() {
-  const worksResp = await loaderClient.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {},
-    },
-  })
+import Collection from "~/routes/($lang)._main.collections.$collection/route"
 
-  return {
-    works: worksResp.data.works,
-  }
+/**
+ * R18 のコレクションの詳細（/r/collections/:id）
+ * 以前はコレクションと関係のない新着作品の一覧を出していたので、通常のコレクションの詳細と同じものを出す
+ */
+export default function SensitiveCollection() {
+  return <Collection />
 }
-
-export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
-})
-
-export default function SensitiveCollection () {
-  const data = useLoaderData<typeof loader>()
-
-  return (
-    <>
-      {/* <CollectionArticle /> */}
-      <WorkList works={data.works} />
-    </>
-  )
-}
-
-const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...WorkListItem
-    }
-  }`,
-  [WorkListItemFragment],
-)

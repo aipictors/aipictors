@@ -10,28 +10,20 @@ import {
   UserUserFoldersItemFragment,
 } from "~/routes/($lang)._main.users.$user.collections/components/user-collection-list"
 
+const USER_FOLDERS_PAGE_SIZE = 32
+
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  const userIdResp = await loaderClient.query({
-    query: userIdQuery,
-    variables: {
-      userId: decodeURIComponent(props.params.user),
-    },
-  })
-
-  if (userIdResp.data.user === null) {
-    throw new Response(null, { status: 404 })
-  }
-
+  // ユーザーの ID とコレクションを 1 回で取る（以前は ID を取ってから一覧を取り直していた）
   const foldersResp = await loaderClient.query({
     query: userFoldersQuery,
     variables: {
       offset: 0,
-      limit: 32,
-      userId: userIdResp.data.user.id,
+      limit: USER_FOLDERS_PAGE_SIZE,
+      userId: decodeURIComponent(props.params.user),
     },
   })
 
@@ -40,7 +32,7 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 
   return {
-    userId: userIdResp.data.user.id,
+    userId: foldersResp.data.user.id,
     folders: foldersResp.data.user.folders,
   }
 }
@@ -49,7 +41,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function UserAlbums() {
+export default function UserCollections() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -63,23 +55,16 @@ export default function UserAlbums() {
       <UserCollectionList
         folders={data.folders}
         userId={data.userId}
-        pageSize={32}
+        pageSize={USER_FOLDERS_PAGE_SIZE}
       />
     </div>
   )
 }
 
-const userIdQuery = graphql(
-  `query UserId($userId: ID!) {
-    user(id: $userId) {
-      id
-    }
-  }`,
-)
-
 export const userFoldersQuery = graphql(
   `query Folders($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
+      id
       folders(offset: $offset, limit: $limit) {
         ...UserUserFoldersItem
       }

@@ -1,5 +1,6 @@
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
+import { BookmarkIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import {
@@ -29,6 +30,8 @@ type Folder = {
 
 type Props = {
   folders: Folder[]
+  /** ブックマークのフォルダ（消すとブックマークがすべて消えるので、削除を出さない） */
+  bookmarkFolderId: string | null
   refetch: () => void
 }
 
@@ -58,20 +61,38 @@ export function FoldersList(props: Props) {
     setDeletingFolder(null)
   }
 
+  const toTitle = (folder: Folder) => {
+    if (folder.id === props.bookmarkFolderId && folder.title.trim() === "") {
+      return t("ブックマーク", "Bookmarks")
+    }
+    return folder.title.trim() || t("無題のコレクション", "Untitled")
+  }
+
   return (
     <>
       <ul className={MY_COLLECTION_GRID_CLASS}>
-        {props.folders.map((folder) => (
-          <MyCollectionCard
-            key={folder.id}
-            to={`/collections/${folder.nanoid}`}
-            title={folder.title}
-            thumbnailUrl={folder.thumbnailImageURL}
-            worksCount={folder.worksCount}
-            createdAt={folder.createdAt}
-            onDelete={() => setDeletingFolder(folder)}
-          />
-        ))}
+        {props.folders.map((folder) => {
+          const isBookmark = folder.id === props.bookmarkFolderId
+          return (
+            <MyCollectionCard
+              key={folder.id}
+              to={`/collections/${folder.nanoid}`}
+              title={toTitle(folder)}
+              thumbnailUrl={folder.thumbnailImageURL}
+              worksCount={folder.worksCount}
+              createdAt={folder.createdAt}
+              badge={
+                isBookmark ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 font-medium text-[11px]">
+                    <BookmarkIcon className="size-3" aria-hidden="true" />
+                    {t("ブックマーク", "Bookmarks")}
+                  </span>
+                ) : undefined
+              }
+              onDelete={isBookmark ? undefined : () => setDeletingFolder(folder)}
+            />
+          )
+        })}
       </ul>
       <AlertDialog
         open={deletingFolder !== null}
@@ -83,8 +104,8 @@ export function FoldersList(props: Props) {
           <AlertDialogHeader>
             <AlertDialogTitle>
               {t(
-                `「${deletingFolder?.title}」を削除しますか？`,
-                `Delete "${deletingFolder?.title}"?`,
+                `「${deletingFolder ? toTitle(deletingFolder) : ""}」を削除しますか？`,
+                `Delete "${deletingFolder ? toTitle(deletingFolder) : ""}"?`,
               )}
             </AlertDialogTitle>
             <AlertDialogDescription>

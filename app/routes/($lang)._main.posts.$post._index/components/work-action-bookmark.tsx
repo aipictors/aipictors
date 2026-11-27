@@ -2,9 +2,11 @@ import { Button } from "~/components/ui/button"
 import { FolderIcon, Loader2Icon } from "lucide-react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
+import { AuthContext } from "~/contexts/auth-context"
+import { LoginDialogButton } from "~/components/login-dialog-button"
 
 type Props = {
   targetWorkId: string
@@ -13,11 +15,13 @@ type Props = {
 }
 
 /**
- * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
+ * 作品をブックマーク（ブックマークのコレクション）に追加・削除するボタン
+ * 以前は未ログインだと押しても何も起きず、失敗しても印だけ切り替わったままになっていた
  */
 export function WorkActionBookmark(props: Props) {
   const [isBookmarked, setIsBookmarked] = useState(props.defaultBookmarked)
   const t = useTranslation()
+  const authContext = useContext(AuthContext)
 
   const [createFolderWork, { loading: isCreatingFolderWork }] = useMutation(
     createFolderWorkMutation,
@@ -27,37 +31,33 @@ export function WorkActionBookmark(props: Props) {
     deleteFolderWorkMutation,
   )
 
-  const onCreateWorkBookmark = async () => {
-    if (props.bookmarkFolderId) {
-      setIsBookmarked(!isBookmarked)
-      try {
-        if (!isBookmarked) {
-          await createFolderWork({
-            variables: {
-              input: {
-                folderId: props.bookmarkFolderId,
-                workId: props.targetWorkId,
-              },
-            },
-          })
-          toast(t("ブックマークに追加しました。", "Added to bookmarks."))
-        } else {
-          await deleteFolderWork({
-            variables: {
-              input: {
-                folderId: props.bookmarkFolderId,
-                workId: props.targetWorkId,
-              },
-            },
-          })
+  const isLoading = isCreatingFolderWork || isDeletingFolderWork
 
-          toast(t("ブックマークから削除しました。", "Removed from bookmarks."))
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          toast(error.message)
-        }
+  const onToggleBookmark = async () => {
+    if (!props.bookmarkFolderId || isLoading) {
+      return
+    }
+    const next = !isBookmarked
+    setIsBookmarked(next)
+    const input = {
+      folderId: props.bookmarkFolderId,
+      workId: props.targetWorkId,
+    }
+    try {
+      if (next) {
+        await createFolderWork({ variables: { input } })
+        toast(t("ブックマークに追加しました。", "Added to bookmarks."))
+      } else {
+        await deleteFolderWork({ variables: { input } })
+        toast(t("ブックマークから削除しました。", "Removed from bookmarks."))
       }
+    } catch (error) {
+      setIsBookmarked(!next)
+      toast(
+        error instanceof Error
+          ? error.message
+          : t("ブックマークを変更できませんでした", "Could not update bookmarks"),
+      )
     }
   }
 
@@ -65,14 +65,44 @@ export function WorkActionBookmark(props: Props) {
     setIsBookmarked(props.defaultBookmarked)
   }, [props.defaultBookmarked])
 
+  const label = isBookmarked
+    ? t("ブックマークから削除", "Remove from bookmarks")
+    : t("ブックマークに追加", "Add to bookmarks")
+
+  if (authContext.isLoading || authContext.isNotLoggedIn) {
+    return (
+      <LoginDialogButton
+        label={t("ブックマーク", "Bookmark")}
+        isLoading={authContext.isLoading}
+        description={t(
+          "ログインして、好きな作品をブックマークしましょう！",
+          "Log in to bookmark your favorite works!",
+        )}
+        triggerChildren={
+          <div
+            role="button"
+            aria-label={label}
+            title={label}
+            className="inline-flex size-10 cursor-pointer items-center justify-center rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80"
+          >
+            <FolderIcon className="size-4" />
+          </div>
+        }
+      />
+    )
+  }
+
   return (
     <Button
-      aria-label={t("ブックマークに追加", "Add to bookmarks")}
+      aria-label={label}
+      aria-pressed={isBookmarked}
+      title={label}
       size={"icon"}
       variant="secondary"
-      onClick={onCreateWorkBookmark}
+      disabled={isLoading || !props.bookmarkFolderId}
+      onClick={onToggleBookmark}
     >
-      {isCreatingFolderWork || isDeletingFolderWork ? (
+      {isLoading ? (
         <Loader2Icon className="size-4 animate-spin" />
       ) : (
         <FolderIcon

@@ -24,7 +24,10 @@ type Props = {
   thumbnailUrl?: string | null
   worksCount?: number | null
   createdAt: number
-  onDelete: () => void
+  /** 題名の前に出す小さな印（「ブックマーク」など） */
+  badge?: React.ReactNode
+  /** ないときは「削除する」を出さない（ブックマークのように消せないもの） */
+  onDelete?: () => void
 }
 
 /**
@@ -58,6 +61,7 @@ export function MyCollectionCard(props: Props): React.ReactNode {
       </div>
       <div className="flex items-start gap-1 p-2.5">
         <div className="min-w-0 flex-1 space-y-0.5">
+          {props.badge}
           <Link
             to={props.to}
             className="line-clamp-2 break-all font-semibold text-sm leading-snug hover:underline"
@@ -97,14 +101,18 @@ export function MyCollectionCard(props: Props): React.ReactNode {
               <CopyIcon className="mr-2 size-4" />
               {t("URLをコピー", "Copy URL")}
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onSelect={props.onDelete}
-            >
-              <Trash2Icon className="mr-2 size-4" />
-              {t("削除する", "Delete")}
-            </DropdownMenuItem>
+            {props.onDelete && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onSelect={props.onDelete}
+                >
+                  <Trash2Icon className="mr-2 size-4" />
+                  {t("削除する", "Delete")}
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

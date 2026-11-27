@@ -1,13 +1,10 @@
 import { MyCollectionGridSkeleton } from "~/routes/($lang).my._index/components/my-collection-card"
-import { AuthContext } from "~/contexts/auth-context"
-import { useQuery } from "@apollo/client/index"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { graphql } from "gql.tada"
-import React, { useContext } from "react"
+import React from "react"
 import { Suspense } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
@@ -35,20 +32,7 @@ export const headers: HeadersFunction = () => ({
 })
 
 export default function MyFolders() {
-  const authContext = useContext(AuthContext)
-
   const [folderPage, setFolderPage] = React.useState(0)
-
-  const { data: foldersCountResp } = useQuery(foldersCountQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-    variables: {
-      where: {
-        userId: authContext.userId,
-      },
-    },
-  })
-
-  const foldersMaxCount = foldersCountResp?.foldersCount ?? 0
 
   const [folderOrderDeskAsc, setFolderOrderDeskAsc] =
     React.useState<SortType>("DESC")
@@ -62,7 +46,6 @@ export default function MyFolders() {
         page={folderPage}
         sort={folderOrderDeskAsc}
         orderBy={FolderOrderby}
-        foldersMaxCount={foldersMaxCount}
         setFolderPage={setFolderPage}
         onSort={(orderBy, sort) => {
           setFolderPage(0)
@@ -73,9 +56,3 @@ export default function MyFolders() {
     </Suspense>
   )
 }
-
-const foldersCountQuery = graphql(
-  `query Folder($where: FoldersWhereInput) {
-    foldersCount(where: $where)
-  }`,
-)
