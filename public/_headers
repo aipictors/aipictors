@@ -5,8 +5,11 @@
 # そのため全体向けの「/*」ルールは置かず、ファイルごとに指定する。
 
 # ハッシュ付きアセットファイル（Viteが生成）- 長期キャッシュ
+# Access-Control-Allow-Origin: Microsoft Clarity のヒートマップ・録画が clarity.microsoft.com から
+# CSS・フォントを読むのに必要（無いと CSS なしで表示される）。公開の静的ファイルなので * で問題ない。
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
 
 # 画像などの静的ファイル - 1日キャッシュ（内容を差し替えるときはファイル名を変える）
 /images/*
