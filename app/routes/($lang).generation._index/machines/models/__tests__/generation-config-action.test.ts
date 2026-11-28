@@ -323,4 +323,22 @@ describe("getNegativePromptTextFromSd", () => {
     )
     expect(result).toBe("EasyNegative")
   })
+
+  describe("resetForInit", () => {
+    test("参照画像は残し、ControlNet の画像と設定は外す", () => {
+      const action = new GenerationConfigAction(
+        new GenerationConfigState({
+          ...config,
+          i2iImageBase64: "data:image/webp;base64,AAAA",
+          controlNetImageBase64: "data:image/png;base64,BBBB",
+          controlNetEnabled: true,
+        }),
+        { maxTasksCount: 0, availableLoraModelsCount: 0 },
+      )
+      const state = action.resetForInit().getState()
+      expect(state.i2iImageBase64).toBe("data:image/webp;base64,AAAA")
+      expect(state.controlNetImageBase64).toBeNull()
+      expect(state.controlNetEnabled).toBeNull()
+    })
+  })
 })

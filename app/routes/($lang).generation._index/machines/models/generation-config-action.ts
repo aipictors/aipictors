@@ -60,11 +60,15 @@ export class GenerationConfigAction {
     )
   }
 
+  /**
+   * 生成画面の設定欄を開いたときの初期化（ControlNet の設定を外す）。
+   * 参照画像は保存から戻す（IndexedDB から後で読み込む）ので消さない。
+   * 消すと PC で設定欄が出るたび（読み込み直し・画面幅の切り替え）に参照画像が外れていた
+   */
   resetForInit() {
     return new GenerationConfigAction(
       new GenerationConfigState({
         ...this.state,
-        i2iImageBase64: "",
         controlNetImageBase64: null,
         controlNetMaskImageBase64: null,
         controlNetControlMode: null,
