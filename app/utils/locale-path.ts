@@ -173,6 +173,10 @@ const toCanonicalPath = (pathname: string) => {
   if (isJaOnlyPath(pathname)) {
     return buildLocalePath("ja", remainder)
   }
+  // 古い形の検索 /search/:q は転送せずに描画するので、?tag= の検索と同じ /search にまとめる
+  if (/^\/search\/[^/]+$/.test(remainder)) {
+    return buildLocalePath(locale, isSensitive ? "/r/search" : "/search")
+  }
   if (isSensitive && SENSITIVE_ALIAS_PATHS.has(remainder)) {
     return buildLocalePath(locale, remainder === "/" ? "/" : remainder)
   }
