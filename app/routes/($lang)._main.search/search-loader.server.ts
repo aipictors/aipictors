@@ -56,14 +56,9 @@ export async function searchLoader(props: LoaderFunctionArgs) {
     rating === "R18" ? "R18" : "all",
   )
 
-  if (
-    !isOnRatingPage ||
-    pathSearchQuery !== null ||
-    url.searchParams.has("q") ||
-    url.searchParams.has("rating") ||
-    (searchQuery !== null && !url.searchParams.has("age_limit")) ||
-    url.searchParams.get("page") === "0"
-  ) {
+  // 古い形（?q=、?rating=、/search/:q、age_limit なし）はそのまま同じ結果を描画する。
+  // 外から入った人に 302 の往復を 1 回させないため。canonical は root でクエリを外した URL になるので 1 つにまとまる
+  if (!isOnRatingPage) {
     const nextSearchParams = new URLSearchParams(url.searchParams)
 
     nextSearchParams.delete("q")

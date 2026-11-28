@@ -40,6 +40,26 @@ describe("buildAlternateLocaleUrls", () => {
   })
 })
 
+describe("検索（古い形も転送せずに描画する）", () => {
+  test("?q= も ?tag= も /search/:q も canonical は同じ", () => {
+    for (const [path, search] of [
+      ["/r/search", "?q=猫"],
+      ["/r/search", "?age_limit=&tag=猫"],
+      ["/r/search/猫", ""],
+    ]) {
+      expect(buildAlternateLocaleUrls(path, SITE_URL, search).canonical).toBe(
+        `${SITE_URL}/r/search`,
+      )
+    }
+    expect(
+      buildAlternateLocaleUrls("/en/search/cat", SITE_URL, "").canonical,
+    ).toBe(`${SITE_URL}/en/search`)
+    expect(
+      buildAlternateLocaleUrls("/search", SITE_URL, "?q=猫").canonical,
+    ).toBe(`${SITE_URL}/search`)
+  })
+})
+
 describe("日本語だけのページ（解説記事）", () => {
   test("英語の URL でも canonical は日本語にし、hreflang を出さない", () => {
     const urls = buildAlternateLocaleUrls("/en/guides/prompt-basics", SITE_URL)

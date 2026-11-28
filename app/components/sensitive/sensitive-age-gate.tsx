@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
-import { useNavigate } from "~/lib/app/locale-router"
+import { Link } from "~/lib/app/locale-router"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import {
@@ -61,7 +61,6 @@ const gateScript = `(function(){var g=document.getElementById("${GATE_ID}");if(!
 export function SensitiveAgeGate(): React.ReactNode {
   const authContext = useContext(AuthContext)
   const location = useLocation()
-  const navigate = useNavigate()
   const t = useTranslation()
   const rememberId = useId()
   const [remember, setRemember] = useState(true)
@@ -142,7 +141,6 @@ export function SensitiveAgeGate(): React.ReactNode {
   const onDecline = () => {
     // /r を開いた時点で R18 を覚えているので、戻さないと全年齢のページから /r へ引き戻される
     writeContentMode("all")
-    navigate(buildAllAgesPath(location.pathname, ""))
   }
 
   return (
@@ -152,6 +150,7 @@ export function SensitiveAgeGate(): React.ReactNode {
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${GATE_ID}-title`}
+        aria-describedby={`${GATE_ID}-desc`}
         className="fixed inset-0 z-[100] flex items-center justify-center bg-background p-4"
         suppressHydrationWarning
       >
@@ -159,12 +158,21 @@ export function SensitiveAgeGate(): React.ReactNode {
           <p id={`${GATE_ID}-title`} className="font-bold text-lg">
             {t("年齢の確認", "Age confirmation")}
           </p>
-          <p className="text-sm">
-            {t(
-              "このページには成人向けのAIイラストが含まれ、18歳以上の方のみご覧いただけます。あなたは18歳以上ですか？",
-              "This page contains adult AI illustrations and is only for people aged 18 or older. Are you 18 or older?",
-            )}
-          </p>
+          <div id={`${GATE_ID}-desc`} className="space-y-2 text-sm">
+            {/* 外から直接来た人は何のサイトか分からないまま確認を求められるので、一言添える */}
+            <p className="text-muted-foreground">
+              {t(
+                "Aipictors は AI で作ったイラストの投稿・生成サイトです。",
+                "Aipictors is a site for sharing and generating AI illustrations.",
+              )}
+            </p>
+            <p>
+              {t(
+                "このページは18歳以上向けの作品を含みます。あなたは18歳以上ですか？",
+                "This page contains works for adults (18+). Are you 18 or older?",
+              )}
+            </p>
+          </div>
           {authContext.isLoggedIn && !allowsR18 ? (
             <p className="text-muted-foreground text-xs">
               {t(
@@ -188,11 +196,11 @@ export function SensitiveAgeGate(): React.ReactNode {
               {t("次回から確認しない", "Don't ask again")}
             </label>
           )}
-          <div className="flex flex-col gap-2 sm:flex-row-reverse">
+          <div className="flex flex-col items-center gap-3">
             <Button
               type="button"
               data-age-yes=""
-              className="w-full sm:flex-1"
+              className="h-12 w-full font-bold text-base"
               onClick={onConfirm}
               disabled={isUpdating}
             >
@@ -201,14 +209,14 @@ export function SensitiveAgeGate(): React.ReactNode {
               )}
               {t("はい（18歳以上）", "Yes, I'm 18+")}
             </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              className="w-full sm:flex-1"
+            {/* リンクなので JavaScript の読み込み前でも全年齢のページへ移れる */}
+            <Link
+              to={buildAllAgesPath(location.pathname, "")}
               onClick={onDecline}
+              className="inline-flex min-h-11 items-center px-3 text-muted-foreground text-sm underline-offset-4 hover:underline"
             >
-              {t("いいえ（全年齢へ）", "No, go to all ages")}
-            </Button>
+              {t("いいえ（全年齢のページへ）", "No, go to all-ages pages")}
+            </Link>
           </div>
         </div>
       </div>
