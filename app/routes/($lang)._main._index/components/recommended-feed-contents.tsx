@@ -18,6 +18,7 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 import { useGridLayout } from "~/hooks/use-grid-layout"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerHiddenUserIds } from "~/hooks/use-viewer-hidden-user-ids"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
 import { HomeGuestJoinCard } from "~/routes/($lang)._main._index/components/home-guest-join-card"
@@ -156,15 +157,19 @@ export function RecommendedFeedContents(props: Props) {
   }, [isUsingInitial])
 
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set())
+  // ブロック・ミュートした人の作品は出さない（おすすめの API とサーバーで取った一覧は絞っていない）
+  const hiddenUserIds = useViewerHiddenUserIds()
 
   const works = useMemo(() => {
     const seen = new Set<string>()
     return [...baseWorks, ...extraWorks].filter((work) => {
       if (seen.has(work.id) || hiddenIds.has(work.id)) return false
+      const userId = (work as { user?: { id?: string } | null }).user?.id
+      if (userId && hiddenUserIds.has(userId)) return false
       seen.add(work.id)
       return true
     })
-  }, [baseWorks, extraWorks, hiddenIds])
+  }, [baseWorks, extraWorks, hiddenIds, hiddenUserIds])
 
   // 見た・開いた・興味なしを記録して、おすすめの並べ替えと学習に使う
   const feedEvents = useFeedEvents()

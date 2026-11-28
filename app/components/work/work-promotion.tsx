@@ -7,9 +7,11 @@ import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerHiddenUserIds } from "~/hooks/use-viewer-hidden-user-ids"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
+import { filterWorksByHiddenUsers } from "~/utils/hidden-user-works"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { filterWorksByRatings } from "~/utils/viewer-ratings"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -359,17 +361,22 @@ export function HomePromotionWorksSection(props: {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const viewerRatings = useViewerRatings()
+  const hiddenUserIds = useViewerHiddenUserIds()
   const { data } = useQuery(PromotionWorksQuery, {
     skip: authContext.isLoading,
     variables: { limit: 6, isSensitive: props.isSensitive === true },
   })
   // 宣伝の作品はすべて普通の大きさで先頭に並べる（表示したあとの入れ替わりが見えないよう、並びは届いた順のまま）
-  const works = data?.promotionWorks ?? []
+  // ブロック・ミュートした人の作品は、宣伝もおすすめも出さない（おすすめはサーバーで未ログインとして取っている）
+  const works = filterWorksByHiddenUsers(
+    data?.promotionWorks ?? [],
+    hiddenUserIds,
+  )
 
   // おすすめは既存のおすすめの一覧と同じく、閲覧者の年齢区分・R15/R18 の表示設定で絞る。宣伝と同じ作品は出さない
   const promotionIds = new Set(works.map((work) => work.id))
   const fillWorks = filterWorksByRatings(
-    props.fillWorks ?? [],
+    filterWorksByHiddenUsers(props.fillWorks ?? [], hiddenUserIds),
     props.isSensitive
       ? viewerRatings.sensitiveRatings
       : viewerRatings.normalRatings,

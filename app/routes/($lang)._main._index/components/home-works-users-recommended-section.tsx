@@ -4,10 +4,12 @@ import { useContext, useEffect, useMemo } from "react"
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerHiddenUserIds } from "~/hooks/use-viewer-hidden-user-ids"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/components/home-recommended-work-list"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
+import { filterWorksByHiddenUsers } from "~/utils/hidden-user-works"
 import { filterWorksByRatings } from "~/utils/viewer-ratings"
 
 type Props = {
@@ -30,6 +32,8 @@ export const RECOMMENDED_PAD_COUNT = 5
 export function HomeWorksUsersRecommendedSection(props: Props) {
   const appContext = useContext(AuthContext)
   const viewerRatings = useViewerRatings()
+  // サーバーの一覧は未ログインとして取っているので、ブロック・ミュートした人の作品をここで外す
+  const hiddenUserIds = useViewerHiddenUserIds()
 
   // 推薦作品。サーバーで取った一覧があればそれを使い、ブラウザでは取り直さない（同じ問い合わせが 2 回になっていた）。
   // ログイン中の人のいいね済みは LikeButton が自分で確かめる
@@ -54,22 +58,38 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
   // （新しい配列を毎回作ると下の onWorksLoaded が描画のたびに呼ばれるので、メモにする）
   const workDisplayed = useMemo(
     () =>
-      filterWorksByRatings(
-        recommendedWorksResp?.works ?? props.works,
-        viewerRatings.normalRatings,
+      filterWorksByHiddenUsers(
+        filterWorksByRatings(
+          recommendedWorksResp?.works ?? props.works,
+          viewerRatings.normalRatings,
+        ),
+        hiddenUserIds,
       ),
-    [recommendedWorksResp?.works, props.works, viewerRatings.normalRatings],
+    [
+      recommendedWorksResp?.works,
+      props.works,
+      viewerRatings.normalRatings,
+      hiddenUserIds,
+    ],
   )
   // ブラウザで取り直したとき（サーバーの一覧が無いとき）は埋める分も無い
   const fillWorks = useMemo(
     () =>
       recommendedWorksResp
         ? []
-        : filterWorksByRatings(
-            props.fillWorks ?? [],
-            viewerRatings.normalRatings,
+        : filterWorksByHiddenUsers(
+            filterWorksByRatings(
+              props.fillWorks ?? [],
+              viewerRatings.normalRatings,
+            ),
+            hiddenUserIds,
           ),
-    [recommendedWorksResp, props.fillWorks, viewerRatings.normalRatings],
+    [
+      recommendedWorksResp,
+      props.fillWorks,
+      viewerRatings.normalRatings,
+      hiddenUserIds,
+    ],
   )
   // 推薦の最後の行の穴は、おすすめの先頭で埋める（6 列で 5 件だけのときなど。最大で 1 行に足りない 5 枚）。
   // 埋めに使った作品は「ほかのおすすめ」には出さない

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { LikeButton } from "~/components/like-button"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerHiddenUserIds } from "~/hooks/use-viewer-hidden-user-ids"
 import { useViewerRatings } from "~/hooks/use-viewer-ratings"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
@@ -15,6 +16,7 @@ import {
   type GridColumnBreakpoint,
   incompleteRowHiddenClassName,
 } from "~/utils/grid-layout"
+import { filterWorksByHiddenUsers } from "~/utils/hidden-user-works"
 import { getJstDate } from "~/utils/jst-date"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import { filterWorksByRatings } from "~/utils/viewer-ratings"
@@ -124,10 +126,15 @@ export function HomeWorksShelf(props: {
 }) {
   const t = useTranslation()
   const viewerRatings = useViewerRatings()
+  const hiddenUserIds = useViewerHiddenUserIds()
   // 一覧はサーバーで「全年齢と R15」で取ってキャッシュしているので、R15 を出さない設定の人には R15 を外す
-  const works = props.isSensitive
+  const ratedWorks = props.isSensitive
     ? props.works
     : filterWorksByRatings(props.works, viewerRatings.normalRatings)
+  // 未ログインとして取った一覧なので、ブロック・ミュートした人の作品もここで外す（ランキングは順位がずれるので外さない）
+  const works = props.showRank
+    ? ratedWorks
+    : filterWorksByHiddenUsers(ratedWorks, hiddenUserIds)
   // PC の 1 段（6 列）に満たない一覧は、右に穴が空くので出さない
   if (works.length < SHELF_MIN_WORKS) return null
   return (
