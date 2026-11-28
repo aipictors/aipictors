@@ -1,13 +1,13 @@
-import { graphql } from "gql.tada"
-import { MasonryWorkGrid } from "~/components/masonry-work-grid"
-import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
-import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
-import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
 import { useQuery } from "@apollo/client/index"
-import { useTranslation } from "~/hooks/use-translation"
-import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { useCallback, useState, useMemo, useEffect } from "react"
 import { useSearchParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { MasonryWorkGrid } from "~/components/masonry-work-grid"
+import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { useTranslation } from "~/hooks/use-translation"
+import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
+import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
+import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
 
 // ユーザー作品取得クエリ
 const UserWorksQuery = graphql(
@@ -36,7 +36,7 @@ type Props = {
 /**
  * ギャラリー内のユーザー専用ビュー（ピンタレスト風）
  */
-export function UserGalleryView (props: Props) {
+export function UserGalleryView(props: Props) {
   const t = useTranslation()
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [searchParams] = useSearchParams()
@@ -233,7 +233,11 @@ export function UserGalleryView (props: Props) {
   return (
     <div className="space-y-6">
       {/* 作品グリッド */}
-      <MasonryWorkGrid works={works} isLoadingMore={isLoadingMore} />
+      <MasonryWorkGrid
+        works={works}
+        isLoadingMore={isLoadingMore}
+        isShowingHiddenUsersWorks
+      />
 
       {/* 無限スクロール用のセンチネル */}
       {hasNext && (

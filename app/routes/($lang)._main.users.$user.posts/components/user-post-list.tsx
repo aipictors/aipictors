@@ -63,6 +63,7 @@ export function UserPostList(props: Props) {
       <ResponsivePhotoWorksAlbum
         works={works as unknown as FragmentOf<typeof PhotoAlbumWorkFragment>[]}
         isShowProfile={false}
+        isShowingHiddenUsersWorks
       />
     </UserWorksTabLayout>
   )

@@ -56,7 +56,11 @@ export function UserVideoList(props: Props) {
       perPage={32}
       sort={props.sort}
     >
-      <ResponsivePhotoVideoWorksAlbum isAutoPlay={true} works={works} />
+      <ResponsivePhotoVideoWorksAlbum
+        isAutoPlay={true}
+        works={works}
+        isShowingHiddenUsersWorks
+      />
     </UserWorksTabLayout>
   )
 }

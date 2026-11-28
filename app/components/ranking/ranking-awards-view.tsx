@@ -7,6 +7,7 @@ import {
   RankMedalBadge,
 } from "~/components/ranking/ranking-medal"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerHiddenUserIds } from "~/hooks/use-viewer-hidden-user-ids"
 import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
@@ -89,11 +90,75 @@ const PODIUM_ASPECT = {
   3: "aspect-square",
 } as const
 
-function PodiumCard(props: { item: RankingAwardItem; rank: 1 | 2 | 3 }) {
+/** ブロックした人・ミュートした人の作品の枠（順位の数字がずれないよう、枠は残して中身だけ伏せる） */
+function HiddenWorkLabel() {
+  const t = useTranslation()
+  return (
+    <p className="px-2 text-center text-muted-foreground text-xs">
+      {t(
+        "ミュート・ブロック中のユーザーの作品",
+        "Work by a muted or blocked user",
+      )}
+    </p>
+  )
+}
+
+/** ブロックした人と（作品を表示しない設定の）ミュートした人の作品か。ランキングはサーバーで未ログインとして取ってキャッシュしているので、ブラウザで見分ける */
+function useIsHiddenItem() {
+  const hiddenUserIds = useViewerHiddenUserIds()
+  return (item: RankingAwardItem) => {
+    const userId = item.work?.user?.id
+    return userId !== undefined && hiddenUserIds.has(userId)
+  }
+}
+
+function PodiumCard(props: {
+  item: RankingAwardItem
+  rank: 1 | 2 | 3
+  isHidden?: boolean
+}) {
   const t = useTranslation()
   const work = props.item.work
   if (!work) return <div />
   const style = RANK_MEDAL_STYLES[props.rank]
+  if (props.isHidden) {
+    return (
+      <div
+        className={cn(
+          "relative flex min-w-0 flex-col items-center text-center",
+          props.rank === 1
+            ? "order-2"
+            : props.rank === 2
+              ? "order-1"
+              : "order-3",
+        )}
+      >
+        <RankCrown
+          rank={props.rank}
+          className={cn(
+            "mb-1",
+            props.rank === 1 ? "size-9 md:size-11" : "size-7 md:size-9",
+          )}
+        />
+        <div
+          className={cn(
+            "relative flex w-full items-center justify-center rounded-2xl bg-muted ring-2 ring-offset-2 ring-offset-background md:rounded-3xl",
+            style.ring,
+            PODIUM_ASPECT[props.rank],
+          )}
+        >
+          <HiddenWorkLabel />
+          <RankMedalBadge
+            rank={props.rank}
+            className={cn(
+              "-bottom-4 -translate-x-1/2 absolute left-1/2",
+              props.rank === 1 && "size-11 text-lg",
+            )}
+          />
+        </div>
+      </div>
+    )
+  }
   const title = t.workTitle(work.title, work.enTitle)
   const imageUrl = work.largeThumbnailImageURL || work.smallThumbnailImageURL
   return (
@@ -190,12 +255,13 @@ export function RankingPodium(props: {
   items: RankingAwardItem[]
   className?: string
 }) {
+  const isHiddenItem = useIsHiddenItem()
   const top = props.items.slice(0, 3)
   if (top.length === 0) return null
   return (
     <div
       className={cn(
-        "rounded-3xl bg-gradient-to-b from-amber-100/70 via-amber-50/40 to-transparent px-3 pt-4 pb-3 dark:from-amber-500/15 dark:via-amber-500/5 md:px-8 md:pt-6",
+        "rounded-3xl bg-gradient-to-b from-amber-100/70 via-amber-50/40 to-transparent px-3 pt-4 pb-3 md:px-8 md:pt-6 dark:from-amber-500/15 dark:via-amber-500/5",
         props.className,
       )}
     >
@@ -205,6 +271,7 @@ export function RankingPodium(props: {
             key={item.work?.id ?? index}
             item={item}
             rank={(index + 1) as 1 | 2 | 3}
+            isHidden={isHiddenItem(item)}
           />
         ))}
       </div>
@@ -215,12 +282,31 @@ export function RankingPodium(props: {
 /**
  * 4 位以下の 1 件。スマホは番号・画像・情報の横並びの行、PC（lg 以上）は画像の大きいカード
  */
-function RankingListItem(props: { item: RankingAwardItem; rank: number }) {
+function RankingListItem(props: {
+  item: RankingAwardItem
+  rank: number
+  isHidden?: boolean
+}) {
   const t = useTranslation()
   const work = props.item.work
   if (!work) return null
   const title = t.workTitle(work.title, work.enTitle)
   const rankDigits = String(props.rank).length
+  if (props.isHidden) {
+    return (
+      <li className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card p-2 lg:flex-col lg:items-stretch lg:gap-0 lg:overflow-hidden lg:p-0">
+        <span className="w-11 shrink-0 text-center font-black text-foreground/60 text-lg italic tabular-nums lg:hidden">
+          {props.rank}
+        </span>
+        <div className="relative flex h-20 min-w-0 flex-1 items-center justify-center rounded-xl bg-muted lg:aspect-square lg:h-auto lg:w-full lg:rounded-none">
+          <span className="absolute top-2 left-2 hidden h-8 min-w-8 items-center justify-center rounded-full bg-black/65 px-2 font-black text-base text-white italic tabular-nums lg:inline-flex">
+            {props.rank}
+          </span>
+          <HiddenWorkLabel />
+        </div>
+      </li>
+    )
+  }
   return (
     <li className="relative flex items-center gap-3 rounded-2xl border border-border/60 bg-card p-2 transition-shadow hover:shadow-md lg:flex-col lg:items-stretch lg:gap-0 lg:overflow-hidden lg:p-0">
       <Link
@@ -304,6 +390,7 @@ export function RankingList(props: {
   startRank: number
   className?: string
 }) {
+  const isHiddenItem = useIsHiddenItem()
   if (props.items.length === 0) return null
   return (
     <ol
@@ -317,6 +404,7 @@ export function RankingList(props: {
           key={item.work?.id ?? index}
           item={item}
           rank={props.startRank + index}
+          isHidden={isHiddenItem(item)}
         />
       ))}
     </ol>

@@ -11,6 +11,7 @@ import { WorkMediaBadge } from "~/components/work-media-badge"
 import { useGridLayout } from "~/hooks/use-grid-layout"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerHiddenUserIds } from "~/hooks/use-viewer-hidden-user-ids"
 import { Link } from "~/lib/app/locale-router"
 import { isR18Work } from "~/lib/is-r18-work"
 import { cn } from "~/lib/utils"
@@ -20,6 +21,7 @@ import {
   paddedRowClassNames,
   SQUARE_GRID_BREAKPOINTS,
 } from "~/utils/grid-layout"
+import { filterWorksByHiddenUsers } from "~/utils/hidden-user-works"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 import { toIconImageUrl } from "~/utils/with-icon-url-fallback"
 
@@ -55,6 +57,11 @@ type Props = {
    * 差し込んだ欄の手前の行が埋まらないときは、後ろの作品を詰めて穴を空けない
    */
   renderAfterItem?: (index: number) => React.ReactNode
+  /**
+   * ブロックした人・ミュートした人の作品も出す（その人のプロフィールの一覧など、作者を決めて見る一覧）。
+   * 省略時はログイン中の人の設定で外す。一覧の多くはサーバーで未ログインとして取ってキャッシュしているので、API の絞り込みが効かない
+   */
+  isShowingHiddenUsersWorks?: boolean
 }
 
 /** 正方形で並べるときの列数（スマホ 2・PC は画面幅に合わせて 4〜6） */
@@ -72,6 +79,14 @@ const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) =>
  * レスポンシブ対応の作品一覧
  */
 export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
+  const hiddenUserIds = useViewerHiddenUserIds()
+  const works = props.isShowingHiddenUsersWorks
+    ? props.works
+    : filterWorksByHiddenUsers(props.works, hiddenUserIds)
+  const padWorksSource =
+    props.isShowingHiddenUsersWorks || props.padWorks === undefined
+      ? props.padWorks
+      : filterWorksByHiddenUsers(props.padWorks, hiddenUserIds)
   const t = useTranslation()
   const { showDesktop, showMobile } = useLayoutVariant()
   const { gridLayout } = useGridLayout()
@@ -79,15 +94,15 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
   const isSquare = (props.layout ?? gridLayout) === "square"
-  const workIds = new Set(props.works.map((work) => work.id))
+  const workIds = new Set(works.map((work) => work.id))
   const padWorks =
     props.fillRows && isSquare
-      ? (props.padWorks ?? []).filter((work) => !workIds.has(work.id))
+      ? (padWorksSource ?? []).filter((work) => !workIds.has(work.id))
       : []
   const isFew =
-    props.compactWhenFew === true && props.works.length + padWorks.length <= 4
+    props.compactWhenFew === true && works.length + padWorks.length <= 4
   const rowClassNames = paddedRowClassNames(
-    props.works.length,
+    works.length,
     padWorks.length,
     SQUARE_GRID_BREAKPOINTS,
   )
@@ -103,7 +118,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
           props.renderAfterItem && "grid-flow-row-dense",
         )}
       >
-        {[...props.works, ...padWorks].map((workItem, index) => {
+        {[...works, ...padWorks].map((workItem, index) => {
           const after = props.renderAfterItem?.(index)
           return (
             <Fragment key={workItem.id.toString()}>
@@ -113,9 +128,9 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   "group/item relative flex min-w-0 flex-col gap-1.5",
                   props.fillRows &&
                     !isFew &&
-                    (index < props.works.length
+                    (index < works.length
                       ? rowClassNames.item(index)
-                      : rowClassNames.pad(index - props.works.length)),
+                      : rowClassNames.pad(index - works.length)),
                 )}
               >
                 <div className="relative">
@@ -254,7 +269,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
           HTML が大きく（タグページで約 1MB）、ハイドレーションも重くなっていた。
         */}
           <div className="flex flex-wrap gap-x-2 gap-y-4 after:block after:grow-[1000000] after:content-['']">
-            {props.works.map((work, index) => {
+            {works.map((work, index) => {
               const isLarge = props.size === "large"
               const imageUrl = isLarge
                 ? work.largeThumbnailImageURL
@@ -486,7 +501,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
       {showMobile && (
         <div className="block md:hidden">
           <HomeCroppedWorks
-            works={props.works}
+            works={works}
             priorityCount={props.priorityCount}
             isMobileOnly={true}
             isMasonry={true}

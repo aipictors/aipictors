@@ -1,5 +1,4 @@
 import { useNavigation, useSearchParams } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import type React from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
@@ -16,6 +15,7 @@ import {
 } from "~/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 import {
   ALBUM_WORKS_PER_PAGE,
@@ -225,6 +225,7 @@ export function AlbumWorkList(props: Props) {
           />
         ) : (
           <MasonryWorkGrid
+            isShowingHiddenUsersWorks
             works={
               props.isAdultSeries
                 ? props.works
@@ -320,7 +321,9 @@ function SquareAlbumWorkGrid(props: {
                 {props.firstNumber + index}
               </span>
             )}
-            <span className="truncate">{t.workTitle(work.title, work.enTitle)}</span>
+            <span className="truncate">
+              {t.workTitle(work.title, work.enTitle)}
+            </span>
           </Link>
         </li>
       ))}

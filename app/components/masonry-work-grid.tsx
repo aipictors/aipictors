@@ -6,13 +6,20 @@ import { OptimizedImage } from "~/components/optimized-image"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerHiddenUserIds } from "~/hooks/use-viewer-hidden-user-ids"
 import { Link } from "~/lib/app/locale-router"
+import { filterWorksByHiddenUsers } from "~/utils/hidden-user-works"
 import { splitMasonryBlocks } from "~/utils/split-masonry-columns"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   isLoadingMore?: boolean
   baseUrl?: string // "posts/gallery" or "gallery" など
+  /**
+   * ブロックした人・ミュートした人の作品も出す（その人のプロフィールの一覧など、作者を決めて見る一覧）。
+   * 省略時はログイン中の人の設定で外す
+   */
+  isShowingHiddenUsersWorks?: boolean
 }
 
 type WorkItemProps = {
@@ -84,7 +91,11 @@ const MasonryGridSkeleton = ({
  * 共通のマソンリーグリッド
  */
 export function MasonryWorkGrid(props: Props): React.ReactNode {
-  const { works, isLoadingMore, baseUrl = "posts/gallery" } = props
+  const { isLoadingMore, baseUrl = "posts/gallery" } = props
+  const hiddenUserIds = useViewerHiddenUserIds()
+  const works = props.isShowingHiddenUsersWorks
+    ? props.works
+    : filterWorksByHiddenUsers(props.works, hiddenUserIds)
   const [columnCount, setColumnCount] = useState(6)
 
   // レスポンシブなカラム数を設定

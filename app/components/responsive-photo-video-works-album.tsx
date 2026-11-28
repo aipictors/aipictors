@@ -2,6 +2,8 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import SSR from "react-photo-album/ssr"
 import { useTranslation } from "~/hooks/use-translation"
+import { useViewerHiddenUserIds } from "~/hooks/use-viewer-hidden-user-ids"
+import { filterWorksByHiddenUsers } from "~/utils/hidden-user-works"
 import { toResizedImageUrl } from "~/utils/resized-image-url"
 import "react-photo-album/rows.css"
 import { Heart } from "lucide-react"
@@ -15,27 +17,33 @@ type Props = {
   works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
   targetRowHeight?: number
   isAutoPlay?: boolean
+  /**
+   * ブロックした人・ミュートした人の作品も出す（その人のプロフィールの一覧など、作者を決めて見る一覧）。
+   * 省略時はログイン中の人の設定で外す
+   */
+  isShowingHiddenUsersWorks?: boolean
 }
 
 /**
  * レスポンシブ対応の作品一覧
  */
 export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
+  const hiddenUserIds = useViewerHiddenUserIds()
+  const works = props.isShowingHiddenUsersWorks
+    ? props.works
+    : filterWorksByHiddenUsers(props.works, hiddenUserIds)
   const t = useTranslation()
-  if (props.works.length === 1) {
+  if (works.length === 1) {
     return (
       <div className="relative transition-all" style={{ position: "relative" }}>
         <div className="relative inline-block h-full w-full">
           <Link
-            to={`/posts/${props.works[0].id}`}
+            to={`/posts/${works[0].id}`}
             className="max-h-32 overflow-hidden rounded"
           >
             <img
-              src={toResizedImageUrl(
-                props.works[0].smallThumbnailImageURL,
-                240,
-              )}
-              alt={props.works[0].title}
+              src={toResizedImageUrl(works[0].smallThumbnailImageURL, 240)}
+              alt={works[0].title}
               className="max-h-72 w-full overflow-hidden rounded object-contain"
             />
 
@@ -53,7 +61,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
   return (
     <SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum
-        photos={props.works.map((work, _index) => ({
+        photos={works.map((work, _index) => ({
           key: work.id,
           src: work.smallThumbnailImageURL,
           alt: t.workTitle(work.title, work.enTitle),
