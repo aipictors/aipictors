@@ -367,7 +367,7 @@ type AlbumNode implements Node {
   """閲覧数"""
   viewsCount: Int!
 
-  """作品ID一覧"""
+  """作品ID一覧（削除した作品は除く）"""
   workIds: [Int!]!
 
   """
@@ -7137,6 +7137,11 @@ type Viewer {
 
   """新しい通知がある"""
   hasUnreadNotifications(limit: Int!, offset: Int!, where: NotificationsWhereInput): Boolean!
+
+  """
+  作品の一覧から外すユーザーの ID（ブロックした人と、「ミュートしたユーザの作品を表示する」がオンでないときのミュートした人。全員分）。サーバーで未ログインとして取ってキャッシュした一覧を、ブラウザで絞るのに使う
+  """
+  hiddenWorkUserIds: [ID!]!
   id: ID!
 
   """画像生成ジョブ"""

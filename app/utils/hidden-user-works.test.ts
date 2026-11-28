@@ -1,24 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import {
-  filterWorksByHiddenUsers,
-  toHiddenUserIds,
-} from "~/utils/hidden-user-works"
-
-describe("toHiddenUserIds", () => {
-  test("ブロックした人はいつも外し、ミュートした人は作品を表示しない設定のときだけ外す", () => {
-    const base = { mutedUserIds: ["m1"], blockedUserIds: ["b1"] }
-    expect([
-      ...toHiddenUserIds({ ...base, isShowingMutedUsersWorks: false }),
-    ]).toEqual(["b1", "m1"])
-    expect([
-      ...toHiddenUserIds({ ...base, isShowingMutedUsersWorks: true }),
-    ]).toEqual(["b1"])
-    // 設定を保存していない人は API と同じく表示する
-    expect([
-      ...toHiddenUserIds({ ...base, isShowingMutedUsersWorks: null }),
-    ]).toEqual(["b1"])
-  })
-})
+import { filterWorksByHiddenUsers } from "~/utils/hidden-user-works"
 
 describe("filterWorksByHiddenUsers", () => {
   const works = [
