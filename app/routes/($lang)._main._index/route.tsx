@@ -96,7 +96,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             )}
       </h1>
       {data.importantRelease && (
-        <HomeImportantReleaseBanner release={data.importantRelease} />
+        // スマホのホームのタブでは、下のお知らせの帯（HomeNoticeStrip）にまとめて出す
+        <div className={currentTab === "home" ? "hidden md:block" : undefined}>
+          <HomeImportantReleaseBanner release={data.importantRelease} />
+        </div>
       )}
       {isLoggedIn && <HomeNewcomerReactionsCard />}
 

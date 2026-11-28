@@ -17,6 +17,7 @@ import {
   HomeNewCreators,
   HomeTopCreators,
 } from "~/routes/($lang)._main._index/components/home-discovery-links"
+import { HomeNoticeStrip } from "~/routes/($lang)._main._index/components/home-notice-strip"
 import { HomeQuickLinks } from "~/routes/($lang)._main._index/components/home-quick-links"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import { HomeSidebar } from "~/routes/($lang)._main._index/components/home-sidebar"
@@ -78,11 +79,21 @@ export function HomeFeedTabContent(
       <div className="block space-y-4 md:flex md:space-x-6 md:space-y-0">
         <div className="flex w-full min-w-0 flex-col space-y-6 md:max-w-[calc(100%_-_286px)] md:space-y-8">
           {/* お知らせ（開催中のイベント・サイトのお知らせ）は一番上 */}
-          <HomeQuickPreviewBar
+          {/* スマホは重要なお知らせ・イベント・お知らせを 1 行の帯にまとめ、おすすめ作品を 1 画面目に入れる */}
+          <HomeNoticeStrip
+            className="md:hidden"
+            importantRelease={data.importantRelease}
             events={data.eventPreviews}
             featuredReleases={data.featuredReleaseList}
             releaseList={data.releaseList}
           />
+          <div className="hidden md:block">
+            <HomeQuickPreviewBar
+              events={data.eventPreviews}
+              featuredReleases={data.featuredReleaseList}
+              releaseList={data.releaseList}
+            />
+          </div>
           {/* おすすめ作品（先頭に宣伝中の作品を PR の印付きで、残りをおすすめで埋める）とユーザからの推薦は、お知らせのすぐ下で一番目立つ位置に。
               おすすめの先頭の作品をここに使う（その作品は下の推薦・ほかのおすすめには出さない） */}
           <HomePromotionWorksSection
