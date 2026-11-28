@@ -55,6 +55,9 @@ export const shouldRevalidate: ShouldRevalidateFunction = (props) => {
   const next = new URLSearchParams(props.nextUrl.search)
   current.delete("type")
   next.delete("type")
+  // 作品のダイアログ（?work=）の開け閉めでは検索をやり直さない
+  current.delete("work")
+  next.delete("work")
   if (
     props.currentUrl.pathname === props.nextUrl.pathname &&
     current.toString() === next.toString()

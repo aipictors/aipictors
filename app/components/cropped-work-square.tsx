@@ -4,6 +4,7 @@ import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thum
 import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
 import { Link } from "~/lib/app/locale-router"
+import { isPlainLeftClick } from "~/lib/is-plain-left-click"
 import { cn } from "~/lib/utils"
 import { toResizedImageSrcSet } from "~/utils/resized-image-url"
 import { toThumbnailObjectPosition } from "~/utils/thumbnail-object-position"
@@ -26,6 +27,11 @@ type Props = {
   isGeneration?: boolean
   hasReferenceButton?: boolean
   onSelect?: (workId: string) => void
+  /**
+   * リンク（<a href>）のまま、普通のクリックだけを横取りする（ダイアログで開くなど）。
+   * 新しいタブで開く・直リンク・検索エンジン向けのリンクはそのまま残る
+   */
+  onLinkClick?: (workId: string) => void
   shouldMaskSensitive?: boolean
   /** 最初に表示される画像（LCP 候補）なら true */
   isPriority?: boolean
@@ -96,6 +102,14 @@ function toSizes(props: Props): string {
 export function CroppedWorkSquare(props: Props): React.ReactNode {
   // 仕様: 常に表示領域は正方形。auto は親グリッドセル幅にフィットして aspect-square。固定サイズは size-* で正方形。
   // 仕様: 短辺フィット (object-cover) + 長辺方向のみ object-position で位置を合わせる。オーバーレイのズレ防止のためラッパーを正方形サイズそのものにする。
+
+  const onClickLink = props.onLinkClick
+    ? (event: React.MouseEvent<HTMLAnchorElement>) => {
+        if (!isPlainLeftClick(event)) return
+        event.preventDefault()
+        props.onLinkClick?.(props.workId)
+      }
+    : undefined
 
   // 「サムネイルを調整」の位置で切り抜く（石垣状の枠でも同じ割合の位置にする）
   const cropStyle = {
@@ -196,6 +210,7 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
                 to={`/posts/${props.workId}`}
                 aria-label={props.title ? undefined : "作品を見る"}
                 className="block h-full w-full transition-all duration-300 ease-in-out"
+                onClick={onClickLink}
               >
                 {mediaContent}
               </Link>
@@ -279,6 +294,7 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
           to={`/posts/${props.workId}`}
           aria-label={props.title ? undefined : "作品を見る"}
           className="block h-full w-full transition-all duration-300 ease-in-out"
+          onClick={onClickLink}
         >
           {mediaContent}
         </Link>

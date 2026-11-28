@@ -52,6 +52,11 @@ type Props = {
   isFixedHeight?: boolean
   /** 拡大表示で画像の横（スマホは下）に並べて読めるキャプション。なければ切り替えも出さない */
   caption?: React.ReactNode
+  /**
+   * 複数枚の作品で、最後の画像の「次」に出すカード（次の作品・作者のほかの作品など）。
+   * 渡すと最後の画像のあとに 1 枚目へ戻さず、これを出す
+   */
+  endCard?: React.ReactNode
 }
 
 type ZoomView = { scale: number; x: number; y: number }
@@ -85,6 +90,14 @@ const STAGE_IMAGE_DECODE_TIMEOUT_MS = 500
 export function ImagesPreview(props: Props): React.ReactNode {
   const { mode = "page" } = props
   const t = useTranslation()
+  // 最後の画像の次に出すカード（作品ページで画像送りが全クリックの約 3 割。最後まで見た人を 1 枚目に戻さず次の作品へ案内する）
+  const hasEndCard = props.endCard !== undefined && props.imageURLs.length > 1
+  const [isEndCardShown, setIsEndCardShown] = useState(false)
+  const isLastImage = props.currentIndex >= props.imageURLs.length - 1
+  // 画像を選び直したら（サムネイルを押した・別の作品へ移った）カードを閉じる
+  useEffect(() => {
+    setIsEndCardShown(false)
+  }, [props.thumbnailUrl])
   // 拡大表示でキャプションを並べるか（端末に覚える。Discord の要望: 作品を見ながらキャプションを読みたい）
   const [isCaptionShown, setIsCaptionShown] = useState(false)
   const captionPanelRef = useRef<HTMLDivElement>(null)
@@ -232,8 +245,11 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const nextImage = () => {
     setShowKeyboardHint(false)
     setView(INITIAL_VIEW)
+    if (isEndCardShown) return
     if (props.currentIndex < props.imageURLs.length - 1) {
       props.setCurrentIndex(props.currentIndex + 1)
+    } else if (hasEndCard) {
+      setIsEndCardShown(true)
     } else {
       // Loop back to the first image
       props.setCurrentIndex(0)
@@ -243,6 +259,10 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const prevImage = () => {
     setShowKeyboardHint(false)
     setView(INITIAL_VIEW)
+    if (isEndCardShown) {
+      setIsEndCardShown(false)
+      return
+    }
     if (props.currentIndex > 0) {
       props.setCurrentIndex(props.currentIndex - 1)
     } else {
@@ -682,7 +702,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
     return () => {
       document.removeEventListener("keydown", handleKeyDown)
     }
-  }, [props.currentIndex, isOpen])
+  }, [props.currentIndex, isOpen, isEndCardShown, hasEndCard])
 
   useEffect(() => {
     if (isOpen) {
@@ -758,6 +778,41 @@ export function ImagesPreview(props: Props): React.ReactNode {
     }
   }
 
+  // カードの中のリンクを押したら拡大表示を閉じる（移った先の作品で拡大表示が開いたままにならないように）
+  const endCardView = hasEndCard ? (
+    <div
+      className="w-[min(92vw,28rem)] max-w-full touch-auto space-y-3 rounded-2xl bg-background p-4 text-foreground shadow-lg"
+      onPointerDown={(event) => event.stopPropagation()}
+      onPointerMove={(event) => event.stopPropagation()}
+      onPointerUp={(event) => event.stopPropagation()}
+      onMouseUp={(event) => event.stopPropagation()}
+      onTouchEnd={(event) => event.stopPropagation()}
+      onClickCapture={(event) => {
+        if (
+          event.target instanceof Element &&
+          event.target.closest("a") !== null
+        ) {
+          closePreview()
+          setIsEndCardShown(false)
+        }
+      }}
+    >
+      {props.endCard}
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="w-full rounded-full text-muted-foreground"
+        onClick={() => {
+          setIsEndCardShown(false)
+          props.setCurrentIndex(0)
+        }}
+      >
+        {t("1 枚目から見る", "Back to the first image")}
+      </Button>
+    </div>
+  ) : null
+
   const previewOverlay = isOpen ? (
     <div
       role="dialog"
@@ -817,12 +872,14 @@ export function ImagesPreview(props: Props): React.ReactNode {
           {props.caption}
         </div>
       )}
+      {isEndCardShown && endCardView}
       <img
         ref={imgRef}
         src={props.imageURLs[props.currentIndex]}
         alt={`image-${props.currentIndex}`}
         className={cn(
           "max-h-[92vh] max-w-[92vw] object-contain",
+          isEndCardShown && "hidden",
           view.scale > 1 ? "cursor-grab" : "cursor-zoom-in",
           isGesturing && view.scale > 1 && "cursor-grabbing",
           // キャプションと重ならないよう、スマホは上に、パソコンは左に寄せる
@@ -882,7 +939,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
               className="mr-4 transform rounded-full"
               size={"icon"}
               onClick={prevImage}
-              disabled={!(props.currentIndex > 0)}
+              disabled={!(props.currentIndex > 0) && !isEndCardShown}
             >
               <ChevronLeft />
             </Button>
@@ -890,7 +947,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
               className="ml-4 transform rounded-full"
               size={"icon"}
               onClick={nextImage}
-              disabled={!(props.currentIndex < props.imageURLs.length - 1)}
+              disabled={isEndCardShown || (isLastImage && !hasEndCard)}
             >
               <ChevronRight />
             </Button>
@@ -902,7 +959,9 @@ export function ImagesPreview(props: Props): React.ReactNode {
               isCaptionPanelOpen && "md:right-[21.5rem]",
             )}
           >
-            {props.currentIndex + 1}/{props.imageURLs.length}
+            {isEndCardShown
+              ? t("おわり", "End")
+              : `${props.currentIndex + 1}/${props.imageURLs.length}`}
           </div>
         </>
       )}
@@ -963,12 +1022,21 @@ export function ImagesPreview(props: Props): React.ReactNode {
               />
             )
           })}
+          {isEndCardShown && (
+            <div className="absolute inset-0 z-[1] flex items-center justify-center overflow-y-auto bg-muted p-3">
+              {endCardView}
+            </div>
+          )}
           <button
             type="button"
             aria-label="前の画像"
             title="前の画像（A / ←）"
             onClick={prevImage}
-            className="absolute left-2 flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:group-hover/stage:opacity-100 md:focus-visible:opacity-100"
+            className={cn(
+              "absolute left-2 z-[2] flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:group-hover/stage:opacity-100 md:focus-visible:opacity-100",
+              // カードに重ならないよう左上に寄せ、PC でも常に出す
+              isEndCardShown && "top-2 md:opacity-100",
+            )}
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -977,13 +1045,20 @@ export function ImagesPreview(props: Props): React.ReactNode {
             aria-label="次の画像"
             title="次の画像（D / →）"
             onClick={nextImage}
-            className="absolute right-2 flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:group-hover/stage:opacity-100 md:focus-visible:opacity-100"
+            className={cn(
+              "absolute right-2 z-[2] flex size-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 md:opacity-0 md:group-hover/stage:opacity-100 md:focus-visible:opacity-100",
+              isEndCardShown && "hidden",
+            )}
           >
             <ChevronRight className="size-5" />
           </button>
-          <span className="pointer-events-none absolute top-2 right-2 flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 font-medium text-white text-xs tabular-nums backdrop-blur-sm">
-            {isStageImagePending && <Loader2 className="size-3 animate-spin" />}
-            {props.currentIndex + 1} / {props.imageURLs.length}
+          <span className="pointer-events-none absolute top-2 right-2 z-[2] flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 font-medium text-white text-xs tabular-nums backdrop-blur-sm">
+            {isStageImagePending && !isEndCardShown && (
+              <Loader2 className="size-3 animate-spin" />
+            )}
+            {isEndCardShown
+              ? t("おわり", "End")
+              : `${props.currentIndex + 1} / ${props.imageURLs.length}`}
           </span>
         </div>
         {typeof document !== "undefined" && previewOverlay

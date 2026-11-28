@@ -15,6 +15,7 @@ import {
 import { WorkAutoModerationPostNotice } from "~/components/work/work-auto-moderation"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { isPlainLeftClick } from "~/lib/is-plain-left-click"
 import { cn } from "~/lib/utils"
 import { PostNextSteps } from "~/routes/($lang)._main.new.image/components/post-next-steps"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
@@ -171,14 +172,7 @@ export function SuccessCreatedWorkDialog(props: Props) {
                 className="block rounded-2xl"
                 onClick={(event) => {
                   // 新しいタブで開く操作はブラウザに任せる
-                  if (
-                    event.metaKey ||
-                    event.ctrlKey ||
-                    event.shiftKey ||
-                    event.button !== 0
-                  ) {
-                    return
-                  }
+                  if (!isPlainLeftClick(event)) return
                   event.preventDefault()
                   openWork()
                 }}

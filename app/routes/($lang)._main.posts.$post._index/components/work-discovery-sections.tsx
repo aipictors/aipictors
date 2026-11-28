@@ -1,4 +1,6 @@
 import { ChevronRightIcon } from "lucide-react"
+import { CarouselWithGradation } from "~/components/carousel-with-gradation"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
@@ -32,9 +34,60 @@ function SectionHeader(props: { title: string; to?: string }) {
  * おすすめ → 前日ランキング → 同じお題の作品 → 同じモデルの作品 → 新着 → 人気のタグ
  * （ちちぷいの作品ページの下と同じく、作品を一覧で何段も並べ、最後にタグへの入口を置く）
  */
+/**
+ * 説明の上に出す「#タグ のおすすめ」の横スクロールの棚（作品ページの上の方で次の作品を見つけられるように）。
+ * 出したときは下の一覧（WorkDiscoverySections の isTagWorksHidden）からは外す
+ */
+export function WorkDiscoveryTagShelf(props: {
+  discovery: WorkDiscovery
+  isSensitive?: boolean
+}) {
+  const t = useTranslation()
+  const { discovery } = props
+  const pathPrefix = props.isSensitive ? "/r" : ""
+  if (discovery.tagWorks.length === 0) return null
+  return (
+    <section className="space-y-3">
+      <SectionHeader
+        title={
+          discovery.tagName
+            ? t(
+                `#${discovery.tagName} のおすすめ`,
+                `More #${discovery.tagName}`,
+              )
+            : t("新着作品", "New works")
+        }
+        to={
+          discovery.tagName
+            ? `${pathPrefix}/tags/${encodeURIComponent(discovery.tagName)}`
+            : `${pathPrefix}/posts`
+        }
+      />
+      <CarouselWithGradation
+        items={discovery.tagWorks.map((work) => (
+          <CroppedWorkSquare
+            key={work.id}
+            title={t.workTitle(work.title, work.enTitle)}
+            workId={work.id}
+            imageUrl={work.smallThumbnailImageURL}
+            thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+            size="md"
+            imageWidth={work.smallThumbnailImageWidth}
+            imageHeight={work.smallThumbnailImageHeight}
+            subWorksCount={work.subWorksCount}
+            commentsCount={work.commentsCount}
+          />
+        ))}
+      />
+    </section>
+  )
+}
+
 export function WorkDiscoverySections(props: {
   discovery: WorkDiscovery
   isSensitive?: boolean
+  /** 「#タグ のおすすめ」を上（WorkDiscoveryTagShelf）に出したので、ここでは出さない */
+  isTagWorksHidden?: boolean
 }) {
   const t = useTranslation()
   const { discovery } = props
@@ -49,7 +102,7 @@ export function WorkDiscoverySections(props: {
 
   return (
     <>
-      {discovery.tagWorks.length > 0 && (
+      {discovery.tagWorks.length > 0 && !props.isTagWorksHidden && (
         <section className="space-y-3 border-t pt-6">
           <SectionHeader
             title={

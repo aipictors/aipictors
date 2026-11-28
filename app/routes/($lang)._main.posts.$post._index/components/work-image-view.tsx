@@ -15,6 +15,8 @@ type Props = {
   placeholderUrl?: string
   /** 拡大表示で並べて読めるキャプション */
   caption?: ReactNode
+  /** 複数枚の作品で、最後の画像の次に出すカード */
+  endCard?: ReactNode
 }
 
 export function WorkImageView(props: Props) {
@@ -57,6 +59,7 @@ export function WorkImageView(props: Props) {
           placeholderUrl={currentIndex === 0 ? props.placeholderUrl : undefined}
           imageSizeHint={imageSizeHint}
           caption={props.caption}
+          endCard={props.endCard}
           aspectRatio={
             allImageURLs[currentIndex] === props.workImageURL
               ? props.workImageAspectRatio

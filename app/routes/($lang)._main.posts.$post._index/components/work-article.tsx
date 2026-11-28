@@ -33,6 +33,7 @@ import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/compo
 import { detectLanguage } from "~/routes/($lang)._main.posts.$post._index/components/work-article-utils"
 import { WorkAuthorFollowButton } from "~/routes/($lang)._main.posts.$post._index/components/work-author-follow-button"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
+import { WorkImagesEndCard } from "~/routes/($lang)._main.posts.$post._index/components/work-images-end-card"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
 import { fetchMarkdownText } from "~/utils/fetch-markdown-text"
@@ -57,6 +58,11 @@ type Props = {
   isSensitive?: boolean
   /** アルバムを親が別の場所に出す（作品ページは「XXさんの作品」の下） */
   isAlbumHidden?: boolean
+  /**
+   * タグの下・説明の上に出すもの（作品ページは前後の作品・作者のほかの作品・おすすめ）。
+   * 作品ページの深さ 50% まで届くのはスマホで 3 割ほどで、説明とコメントの下の棚はほとんど見られていなかった
+   */
+  beforeDescriptionSlot?: React.ReactNode
 }
 
 /**
@@ -253,6 +259,15 @@ export function WorkArticle(props: Props) {
           )}
           mode={props.mode}
           caption={captionForViewer}
+          endCard={
+            // ダイアログの中では作品ページへ移らない
+            props.mode === "dialog" ? undefined : (
+              <WorkImagesEndCard
+                work={props.work}
+                isSensitive={props.isSensitive}
+              />
+            )
+          }
         />
       )}
       {props.work.type === "VIDEO" && (
@@ -397,6 +412,7 @@ export function WorkArticle(props: Props) {
             isEditable={props.work.isTagEditable}
           />
         </div>
+        {props.beforeDescriptionSlot}
         {!isCaptionBeforeBody && descriptionView}
         {props.work.relatedUrl !== null &&
           props.work.relatedUrl !== "undefined" &&

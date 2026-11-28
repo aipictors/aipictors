@@ -1,40 +1,45 @@
-import {
-  WorkArticle,
-  userSettingFragment,
-  workArticleFragment,
-  sensitiveWorkArticleFragment,
-} from "~/routes/($lang)._main.posts.$post._index/components/work-article"
-import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
+import { useMutation, useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { ChevronRightIcon } from "lucide-react"
 import { useContext, useMemo } from "react"
-import { graphql, type FragmentOf } from "gql.tada"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { DlsiteAffiliateCard } from "~/components/sensitive/dlsite-affiliate-card"
+import { FollowSuggestions } from "~/components/user/follow-suggestions"
 import { AuthContext } from "~/contexts/auth-context"
 import { NO_VIEW_CONTEXT, useCountWorkView } from "~/hooks/use-count-work-view"
-import { useMutation, useQuery } from "@apollo/client/index"
-import { WorkAuthorWorksSection } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
-import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
-import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
-import { FollowSuggestions } from "~/components/user/follow-suggestions"
-import { ChevronRightIcon } from "lucide-react"
-import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
-import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { useLayoutVariant } from "~/hooks/use-layout-variant"
+import { useTranslation } from "~/hooks/use-translation"
+import { Link, useNavigate } from "~/lib/app/locale-router"
 import {
   HomeAwardWorksSection,
   homeAwardWorksQuery,
 } from "~/routes/($lang)._main._index/components/home-award-works"
-import { useTranslation } from "~/hooks/use-translation"
-import { useNavigate, Link } from "~/lib/app/locale-router"
-import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
-import { DlsiteAffiliateCard } from "~/components/sensitive/dlsite-affiliate-card"
-import { WorkDiscoverySections } from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
+import {
+  HomeNewCommentsFragment,
+  HomeNewCommentsSection,
+} from "~/routes/($lang)._main._index/components/home-new-comments"
+import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
+import {
+  sensitiveWorkArticleFragment,
+  userSettingFragment,
+  WorkArticle,
+  type workArticleFragment,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-article"
+import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import {
+  WorkDiscoverySections,
+  WorkDiscoveryTagShelf,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
+import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
+import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
+import { WorkAuthorWorksSection } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
+import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
+import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
+import { mergeWorkViewerState } from "~/routes/($lang)._main.posts.$post._index/utils/merge-work-viewer-state"
 import type { WorkDiscovery } from "~/routes/($lang)._main.posts.$post._index/utils/work-discovery"
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
-import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
-import { HomeNewCommentsSection } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { getJstDate } from "~/utils/jst-date"
-import { mergeWorkViewerState } from "~/routes/($lang)._main.posts.$post._index/utils/merge-work-viewer-state"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 /** 作者の他の作品に出す年齢種別（作品ページと一緒に読む分と同じ） */
 const AUTHOR_WORKS_RATINGS: ("G" | "R15" | "R18" | "R18G")[] = ["R18", "R18G"]
@@ -237,6 +242,29 @@ export function SensitiveWorkContainer(props: Props) {
               userSetting={userSetting?.userSetting ?? undefined}
               isSensitive
               isAlbumHidden
+              // 作者の他の作品・#タグ のおすすめは説明とコメントより上に出す（スマホで作品ページの半分まで届くのは 3 割）
+              beforeDescriptionSlot={
+                <>
+                  {workForArticle.user && (
+                    <div className="border-t pt-6">
+                      <WorkAuthorWorksSection
+                        user={workForArticle.user}
+                        currentWorkId={workForArticle.id}
+                        ratings={AUTHOR_WORKS_RATINGS}
+                        isCollapsed
+                      />
+                    </div>
+                  )}
+                  {props.discovery && (
+                    <div className="border-t pt-6">
+                      <WorkDiscoveryTagShelf
+                        discovery={props.discovery}
+                        isSensitive
+                      />
+                    </div>
+                  )}
+                </>
+              }
               authorSlot={
                 workForArticle.user ? (
                   <div className="md:hidden">
@@ -260,15 +288,6 @@ export function SensitiveWorkContainer(props: Props) {
                 ) : undefined
               }
             />
-            {workForArticle.user && (
-              <div className="border-t pt-6">
-                <WorkAuthorWorksSection
-                  user={workForArticle.user}
-                  currentWorkId={workForArticle.id}
-                  ratings={AUTHOR_WORKS_RATINGS}
-                />
-              </div>
-            )}
             {workForArticle.album && (
               <WorkAlbumCard album={workForArticle.album} />
             )}
@@ -387,7 +406,11 @@ export function SensitiveWorkContainer(props: Props) {
       </div>
       {props.discovery ? (
         <div className="space-y-6">
-          <WorkDiscoverySections discovery={props.discovery} isSensitive />
+          <WorkDiscoverySections
+            discovery={props.discovery}
+            isSensitive
+            isTagWorksHidden
+          />
         </div>
       ) : (
         <section className="m-auto border-t pt-6">

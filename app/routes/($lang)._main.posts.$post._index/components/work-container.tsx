@@ -25,7 +25,10 @@ import {
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { WorkDiscoverySections } from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
+import {
+  WorkDiscoverySections,
+  WorkDiscoveryTagShelf,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
 import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 import { WorkPrevNextBar } from "~/routes/($lang)._main.posts.$post._index/components/work-prev-next-bar"
 import { WorkAuthorWorksSection } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
@@ -253,6 +256,26 @@ export function WorkContainer(props: Props) {
               work={work}
               userSetting={userSetting?.userSetting ?? undefined}
               isAlbumHidden
+              beforeDescriptionSlot={
+                <>
+                  <WorkPrevNextBar work={work} />
+                  {work.user && (
+                    <div className="border-t pt-6">
+                      <WorkAuthorWorksSection
+                        user={work.user}
+                        currentWorkId={work.id}
+                        ratings={AUTHOR_WORKS_RATINGS}
+                        isCollapsed
+                      />
+                    </div>
+                  )}
+                  {props.discovery && (
+                    <div className="border-t pt-6">
+                      <WorkDiscoveryTagShelf discovery={props.discovery} />
+                    </div>
+                  )}
+                </>
+              }
               authorSlot={
                 work.user ? (
                   <div className="md:hidden">
@@ -273,18 +296,8 @@ export function WorkContainer(props: Props) {
                 ) : undefined
               }
             />
-            {/* 前後の作品（← → キーでも移れる）→ AI 評価（WorkArticle の中）→ 作者の他の作品（一覧）→ アルバム → コメントの順。
-                その下（左右の列の下）に、おすすめ → 前日ランキング → 同じお題の作品 */}
-            <WorkPrevNextBar work={work} />
-            {work.user && (
-              <div className="border-t pt-6">
-                <WorkAuthorWorksSection
-                  user={work.user}
-                  currentWorkId={work.id}
-                  ratings={AUTHOR_WORKS_RATINGS}
-                />
-              </div>
-            )}
+            {/* タイトル・タグの下（説明の上）に、前後の作品 → 作者の他の作品 → #タグ のおすすめ（WorkArticle の beforeDescriptionSlot）。
+                説明・生成情報・AI 評価のあと、アルバム → コメント。その下（左右の列の下）に前日ランキング → 同じお題の作品 */}
             {work.album && <WorkAlbumCard album={work.album} />}
             {work.isCommentsEditable && (
               <div className="border-t pt-6">
@@ -420,7 +433,7 @@ export function WorkContainer(props: Props) {
       </div>
       {props.discovery ? (
         <div className="space-y-6">
-          <WorkDiscoverySections discovery={props.discovery} />
+          <WorkDiscoverySections discovery={props.discovery} isTagWorksHidden />
         </div>
       ) : (
         <section className="m-auto border-t pt-6">

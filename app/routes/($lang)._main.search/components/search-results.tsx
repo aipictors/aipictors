@@ -3,10 +3,13 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
 import { useGridLayout } from "~/hooks/use-grid-layout"
 import { useLayoutVariant } from "~/hooks/use-layout-variant"
 import { useTranslation } from "~/hooks/use-translation"
+import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
 import { Link } from "~/lib/app/locale-router"
+import { isPlainLeftClick } from "~/lib/is-plain-left-click"
 import { cn } from "~/lib/utils"
 import type { SearchLoaderData } from "~/routes/($lang)._main.search/search-loader.server"
 import type { SearchFilterChange } from "~/routes/($lang)._main.search/utils/search-filters"
@@ -35,6 +38,18 @@ export function SearchResults(props: {
   const { showDesktop, showMobile } = useLayoutVariant()
   // スマホは並べ方の設定が「元の比率」（スマホの既定）ならアプリと同じ石垣状
   const isMobileMasonry = gridLayout === "justified"
+  // 作品は /r トップと同じダイアログで開く（URL に ?work= が付き、戻るで閉じる）。
+  // 検索結果から作品ページへ移ると、戻ったときに検索をやり直して離脱が多かった（/r/search の quick back 64%）。
+  // リンクは残すので、新しいタブで開く・直リンク・検索エンジンはこれまでどおり作品ページへ行く
+  const workDialog = useWorkDialogUrl()
+  const onClickWorkLink = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    workId: string,
+  ) => {
+    if (!isPlainLeftClick(event)) return
+    event.preventDefault()
+    workDialog.openDialog(workId)
+  }
 
   const renderCard = (
     work: SearchLoaderData["works"][number],
@@ -58,6 +73,7 @@ export function SearchResults(props: {
           }
           hasVideoUrl={Boolean(work.url)}
           isGeneration={work.isGeneration}
+          onLinkClick={workDialog.openDialog}
         />
 
         <div className="absolute right-2 bottom-2 z-10">
@@ -78,6 +94,7 @@ export function SearchResults(props: {
         <Link
           to={`${pagePrefix}/posts/${work.id}`}
           className="line-clamp-2 flex-1 font-semibold text-sm leading-snug hover:underline"
+          onClick={(event) => onClickWorkLink(event, work.id)}
         >
           {t.workTitle(work.title, work.enTitle)}
         </Link>
@@ -174,6 +191,16 @@ export function SearchResults(props: {
               isActiveButtonStyle
             />
           </div>
+        )}
+
+        {workDialog.isOpen && workDialog.workId && (
+          <WorkViewerDialog
+            works={data.works}
+            startWorkId={workDialog.workId}
+            onClose={workDialog.closeDialog}
+            hasNextPage={false}
+            isLoadingMore={false}
+          />
         )}
       </>
     ) : (
