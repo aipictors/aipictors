@@ -90,7 +90,10 @@ export function GenerationConfigI2i() {
           </div>
         </div>
       )}
+      {/* 保存から戻した画像（IndexedDB から後で読み込む）も見えるように、画像の有無が変わったら作り直して初期表示に渡す */}
       <CropImageField
+        key={context.config.i2iImageBase64 === "" ? "empty" : "image"}
+        defaultCroppedImage={context.config.i2iImageBase64}
         isHidePreviewImage={context.config.i2iImageBase64 === ""}
         cropWidth={size.width}
         cropHeight={size.height}

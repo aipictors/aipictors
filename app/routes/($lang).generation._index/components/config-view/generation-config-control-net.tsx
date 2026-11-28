@@ -84,7 +84,10 @@ export function GenerationConfigControlNet() {
           )}
         />
       </div>
+      {/* 保存から戻した画像（IndexedDB から後で読み込む）も見えるように、画像の有無が変わったら作り直して初期表示に渡す */}
       <CropImageField
+        key={context.config.controlNetImageBase64 ? "image" : "empty"}
+        defaultCroppedImage={context.config.controlNetImageBase64 ?? ""}
         isHidePreviewImage={
           context.config.controlNetImageBase64 === "" ||
           context.config.controlNetImageBase64 === null
