@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { WorkCommentSectionEnhanced } from "~/components/work/work-comment-section-final"
+import { logWorkView } from "~/hooks/use-count-work-view"
 import { useLocalizedWork } from "~/hooks/use-localized-work"
 import { useTranslation } from "~/hooks/use-translation"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
@@ -198,6 +199,17 @@ export function WorkViewerDialog({
       }
     }
   }, [index, works, workDataCache])
+
+  // 作品を見たことを操作の記録に残す（素早く送った作品はデバウンスで activeWorkId にならないので数えない。
+  // 先読みも activeWorkId を前後の作品に切り替えるので、表示中の作品と一致したときだけ数える）
+  const loggedWorkIdRef = useRef<string | null>(null)
+  const currentWorkId = work?.id ?? null
+  useEffect(() => {
+    if (currentWorkId === null || activeWorkId !== currentWorkId) return
+    if (loggedWorkIdRef.current === currentWorkId) return
+    loggedWorkIdRef.current = currentWorkId
+    logWorkView(currentWorkId, "dialog")
+  }, [activeWorkId, currentWorkId])
 
   // ────────── GraphQL Query with conditional execution ──────────
   const { data, loading, refetch } = useQuery(workDialogQuery, {
