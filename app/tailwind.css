@@ -232,3 +232,13 @@ html[data-aip-hide-list-likes] [data-list-like-count] {
     opacity: 0.8;
   }
 }
+
+/* スマホのトップのお知らせで、閉じた枠を最初の描画から隠す（<html> の属性は home-quick-preview-bar のスクリプトが付ける）。PC はいつも出す */
+@media (width < 48rem) {
+  html[data-home-notice-hidden~="events"] [data-home-notice-card="events"],
+  html[data-home-notice-hidden~="releases"] [data-home-notice-card="releases"],
+  html[data-home-notice-hidden~="events"][data-home-notice-hidden~="releases"]
+    [data-home-notice-bar] {
+    display: none;
+  }
+}
