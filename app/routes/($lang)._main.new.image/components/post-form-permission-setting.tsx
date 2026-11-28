@@ -39,7 +39,7 @@ export function PostFormPermissionSetting(props: Props) {
           <Checkbox
             onCheckedChange={(_value: boolean) => {
               setIsTagEditableChecked(!isTagEditableChecked)
-              props.onTagEditableChange(!isCommentsEditableChecked)
+              props.onTagEditableChange(!isTagEditableChecked)
             }}
             id="tag-editable"
             checked={!isTagEditableChecked}
