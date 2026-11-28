@@ -38,17 +38,6 @@ const AUTHOR_GRID_BREAKPOINTS: GridColumnBreakpoint[] = [
   { columns: 5, hiddenClassName: "lg:hidden" },
 ]
 
-/**
- * 2 段に収まらない作品を隠す（3 / sm:4 / lg:5 列）。作品ページで説明の上に置くので、
- * 最初は 2 段だけにして説明を押し下げすぎないようにする（HTML には全部入るのでリンクは残る）
- */
-function beyondTwoRowsClassName(index: number): string | undefined {
-  if (index >= 10) return "hidden"
-  if (index >= 8) return "max-lg:hidden"
-  if (index >= 6) return "max-sm:hidden"
-  return undefined
-}
-
 type Props = {
   works: {
     smallThumbnailImageURL: string
@@ -219,13 +208,9 @@ function WorkAuthorWorks(props: {
   ratings: AuthorWorksRating[]
   renderHeader: (viewToggle: React.ReactNode) => React.ReactNode
   seeAllTo: string
-  /** 一覧を最初は 2 段だけ出す（「もっと見る」で残りを出す） */
-  isCollapsed?: boolean
 }) {
   const t = useTranslation()
   const client = useApolloClient()
-  const [isExpanded, setIsExpanded] = useState(false)
-  const isClamped = props.isCollapsed === true && !isExpanded
   const [api, setApi] = useState<CarouselApi>()
   const [view, setView] = usePersistentState<AuthorWorksView>(
     "work-author-works-view",
@@ -402,24 +387,13 @@ function WorkAuthorWorks(props: {
                     works.length,
                     AUTHOR_GRID_BREAKPOINTS,
                   ),
-                  isClamped && beyondTwoRowsClassName(index),
                 )}
               >
                 {renderWork(work, true)}
               </div>
             ))}
           </div>
-          {isClamped && works.length > 6 ? (
-            <Button
-              type="button"
-              variant="secondary"
-              className="w-full rounded-full"
-              onClick={() => setIsExpanded(true)}
-            >
-              <ChevronDownIcon className="size-4" />
-              {t("もっと見る", "Show more")}
-            </Button>
-          ) : hasMore ? (
+          {hasMore ? (
             <Button
               type="button"
               variant="secondary"
@@ -513,8 +487,6 @@ export function WorkAuthorWorksSection(props: {
   user: AuthorWorksUser
   currentWorkId: string
   ratings: AuthorWorksRating[]
-  /** 一覧を最初は 2 段だけ出す（説明の上に置くとき） */
-  isCollapsed?: boolean
 }) {
   const t = useTranslation()
   return (
@@ -524,7 +496,6 @@ export function WorkAuthorWorksSection(props: {
       currentWorkId={props.currentWorkId}
       userId={props.user.id}
       ratings={props.ratings}
-      isCollapsed={props.isCollapsed}
       works={props.user.works.map((work) => ({
         smallThumbnailImageURL: work.smallThumbnailImageURL,
         thumbnailImagePosition: work.thumbnailImagePosition ?? 0,

@@ -38,15 +38,17 @@ export function SearchResults(props: {
   const { showDesktop, showMobile } = useLayoutVariant()
   // スマホは並べ方の設定が「元の比率」（スマホの既定）ならアプリと同じ石垣状
   const isMobileMasonry = gridLayout === "justified"
-  // 作品は /r トップと同じダイアログで開く（URL に ?work= が付き、戻るで閉じる）。
+  // R18 の検索（/r/search）だけ、作品を /r トップと同じダイアログで開く（URL に ?work= が付き、戻るで閉じる）。
   // 検索結果から作品ページへ移ると、戻ったときに検索をやり直して離脱が多かった（/r/search の quick back 64%）。
+  // 全年齢の /search は R18 で 1 週間様子を見てから広げるので、これまでどおり作品ページへ移る。
   // リンクは残すので、新しいタブで開く・直リンク・検索エンジンはこれまでどおり作品ページへ行く
+  const isWorkDialogEnabled = pagePrefix === "/r"
   const workDialog = useWorkDialogUrl()
   const onClickWorkLink = (
     event: React.MouseEvent<HTMLAnchorElement>,
     workId: string,
   ) => {
-    if (!isPlainLeftClick(event)) return
+    if (!isWorkDialogEnabled || !isPlainLeftClick(event)) return
     event.preventDefault()
     workDialog.openDialog(workId)
   }
@@ -73,7 +75,7 @@ export function SearchResults(props: {
           }
           hasVideoUrl={Boolean(work.url)}
           isGeneration={work.isGeneration}
-          onLinkClick={workDialog.openDialog}
+          onLinkClick={isWorkDialogEnabled ? workDialog.openDialog : undefined}
         />
 
         <div className="absolute right-2 bottom-2 z-10">
@@ -193,7 +195,7 @@ export function SearchResults(props: {
           </div>
         )}
 
-        {workDialog.isOpen && workDialog.workId && (
+        {isWorkDialogEnabled && workDialog.isOpen && workDialog.workId && (
           <WorkViewerDialog
             works={data.works}
             startWorkId={workDialog.workId}

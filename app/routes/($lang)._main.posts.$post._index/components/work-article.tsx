@@ -58,11 +58,6 @@ type Props = {
   isSensitive?: boolean
   /** アルバムを親が別の場所に出す（作品ページは「XXさんの作品」の下） */
   isAlbumHidden?: boolean
-  /**
-   * タグの下・説明の上に出すもの（作品ページは前後の作品・作者のほかの作品・おすすめ）。
-   * 作品ページの深さ 50% まで届くのはスマホで 3 割ほどで、説明とコメントの下の棚はほとんど見られていなかった
-   */
-  beforeDescriptionSlot?: React.ReactNode
 }
 
 /**
@@ -412,7 +407,6 @@ export function WorkArticle(props: Props) {
             isEditable={props.work.isTagEditable}
           />
         </div>
-        {props.beforeDescriptionSlot}
         {!isCaptionBeforeBody && descriptionView}
         {props.work.relatedUrl !== null &&
           props.work.relatedUrl !== "undefined" &&

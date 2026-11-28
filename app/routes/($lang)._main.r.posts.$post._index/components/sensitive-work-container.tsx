@@ -26,10 +26,7 @@ import {
   type workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import {
-  WorkDiscoverySections,
-  WorkDiscoveryTagShelf,
-} from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
+import { WorkDiscoverySections } from "~/routes/($lang)._main.posts.$post._index/components/work-discovery-sections"
 import { WorkLazySection } from "~/routes/($lang)._main.posts.$post._index/components/work-lazy-section"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
 import { WorkAuthorWorksSection } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
@@ -242,29 +239,6 @@ export function SensitiveWorkContainer(props: Props) {
               userSetting={userSetting?.userSetting ?? undefined}
               isSensitive
               isAlbumHidden
-              // 作者の他の作品・#タグ のおすすめは説明とコメントより上に出す（スマホで作品ページの半分まで届くのは 3 割）
-              beforeDescriptionSlot={
-                <>
-                  {workForArticle.user && (
-                    <div className="border-t pt-6">
-                      <WorkAuthorWorksSection
-                        user={workForArticle.user}
-                        currentWorkId={workForArticle.id}
-                        ratings={AUTHOR_WORKS_RATINGS}
-                        isCollapsed
-                      />
-                    </div>
-                  )}
-                  {props.discovery && (
-                    <div className="border-t pt-6">
-                      <WorkDiscoveryTagShelf
-                        discovery={props.discovery}
-                        isSensitive
-                      />
-                    </div>
-                  )}
-                </>
-              }
               authorSlot={
                 workForArticle.user ? (
                   <div className="md:hidden">
@@ -288,6 +262,15 @@ export function SensitiveWorkContainer(props: Props) {
                 ) : undefined
               }
             />
+            {workForArticle.user && (
+              <div className="border-t pt-6">
+                <WorkAuthorWorksSection
+                  user={workForArticle.user}
+                  currentWorkId={workForArticle.id}
+                  ratings={AUTHOR_WORKS_RATINGS}
+                />
+              </div>
+            )}
             {workForArticle.album && (
               <WorkAlbumCard album={workForArticle.album} />
             )}
@@ -406,11 +389,7 @@ export function SensitiveWorkContainer(props: Props) {
       </div>
       {props.discovery ? (
         <div className="space-y-6">
-          <WorkDiscoverySections
-            discovery={props.discovery}
-            isSensitive
-            isTagWorksHidden
-          />
+          <WorkDiscoverySections discovery={props.discovery} isSensitive />
         </div>
       ) : (
         <section className="m-auto border-t pt-6">
