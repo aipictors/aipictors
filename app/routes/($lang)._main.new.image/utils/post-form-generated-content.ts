@@ -12,6 +12,16 @@ export type PostFormGeneratedContent = {
   tagsEn?: string[]
 }
 
+/**
+ * タグ自動生成の結果からタグだけを取り出す（タイトル・キャプションは書き換えない）
+ */
+export const pickGeneratedTagsOnly = (
+  data: PostFormGeneratedContent,
+): PostFormGeneratedContent => ({
+  tags: data.tags ?? undefined,
+  tagsEn: data.tagsEn ?? undefined,
+})
+
 /** 1 作品に付けられるタグの数 */
 export const MAX_POST_TAGS = 20
 

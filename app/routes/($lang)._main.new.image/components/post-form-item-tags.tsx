@@ -12,7 +12,10 @@ import {
   CollapsibleTrigger,
 } from "~/components/ui/collapsible"
 import { useTranslation } from "~/hooks/use-translation"
-import { MAX_POST_TAGS } from "~/routes/($lang)._main.new.image/utils/post-form-generated-content"
+import {
+  MAX_POST_TAGS,
+  pickGeneratedTagsOnly,
+} from "~/routes/($lang)._main.new.image/utils/post-form-generated-content"
 import { getAiAnalysisImageUrl } from "~/utils/to-ai-analysis-image"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import {
@@ -205,7 +208,8 @@ export function PostFormItemTags(props: Props) {
 
       const data = result.data?.generateImageContent
       if (data && props.onTagsGenerated) {
-        props.onTagsGenerated(data)
+        // タグ横のボタンではタグだけを反映する
+        props.onTagsGenerated(pickGeneratedTagsOnly(data))
         toast(t("タグを自動生成しました", "Tags generated successfully"))
       } else {
         throw new Error("No data returned from generation")

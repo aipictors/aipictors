@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test"
 import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
 import {
   applyGeneratedContentToPostForm,
+  pickGeneratedTagsOnly,
   pickGeneratedTagsToAdd,
 } from "~/routes/($lang)._main.new.image/utils/post-form-generated-content"
 
@@ -56,5 +57,20 @@ describe("applyGeneratedContentToPostForm", () => {
       "ADD_TAG",
       "ADD_TAG",
     ])
+  })
+})
+
+describe("pickGeneratedTagsOnly", () => {
+  test("タイトル・キャプションを落としてタグだけを残す", () => {
+    expect(
+      pickGeneratedTagsOnly({
+        title: "タイトル",
+        description: "キャプション",
+        titleEn: "Title",
+        descriptionEn: "Caption",
+        tags: ["a"],
+        tagsEn: ["b"],
+      }),
+    ).toEqual({ tags: ["a"], tagsEn: ["b"] })
   })
 })
