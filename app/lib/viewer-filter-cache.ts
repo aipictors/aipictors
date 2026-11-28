@@ -65,6 +65,10 @@ export function evictViewerFilteredLists(cache: ApolloCache<unknown>) {
     if (id.startsWith("FeedNode:")) {
       cache.evict({ id, fieldName: "posts" })
     }
+    // 一覧から外す作者（useViewerHiddenUserIds）。表示中の一覧があればその 1 回だけ取り直し、ページを読み直さなくても外れる
+    if (id.startsWith("Viewer:")) {
+      cache.evict({ id, fieldName: "hiddenWorkUserIds" })
+    }
   }
 
   cache.gc()

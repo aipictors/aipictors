@@ -43,7 +43,11 @@ describe("evictViewerFilteredLists", () => {
         hotWorks: [],
         viewer: { __ref: "Viewer:1" },
       },
-      "Viewer:1": { __typename: "Viewer", id: "1" },
+      "Viewer:1": {
+        __typename: "Viewer",
+        id: "1",
+        hiddenWorkUserIds: ["2"],
+      },
       "FeedNode:1": {
         __typename: "FeedNode",
         id: "1",
@@ -60,6 +64,8 @@ describe("evictViewerFilteredLists", () => {
     ).toBe(false)
     expect(snapshot.ROOT_QUERY.hotWorks).toBeUndefined()
     expect(snapshot.ROOT_QUERY.viewer).toEqual({ __ref: "Viewer:1" })
+    expect(snapshot["Viewer:1"]?.id).toBe("1")
+    expect(snapshot["Viewer:1"]?.hiddenWorkUserIds).toBeUndefined()
     expect(
       Object.keys(snapshot["FeedNode:1"] ?? {}).some((key) =>
         key.startsWith("posts"),
