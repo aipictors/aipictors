@@ -1,4 +1,5 @@
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, X } from "lucide-react"
+import { useEffect, useLayoutEffect, useMemo } from "react"
 import { ReleaseTagBadge } from "~/components/release-tag-badge"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
@@ -7,6 +8,17 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "~/lib/app/locale-router"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { useRotatingHomeEvents } from "~/routes/($lang)._main._index/components/use-rotating-home-events"
+import {
+  applyHiddenNoticeCards,
+  buildHomeNoticeInlineScript,
+  HOME_NOTICE_HIDDEN_ATTRIBUTE,
+  type HomeNoticeCard,
+  type HomeNoticeKeys,
+  isPinnedRelease,
+  saveDismissedNoticeCard,
+  toEventNoticeKeys,
+  toReleaseNoticeKeys,
+} from "~/routes/($lang)._main._index/utils/home-notice-dismiss"
 import type {
   MicroCmsApiRelease,
   MicroCmsApiReleaseResponse,
@@ -36,6 +48,27 @@ const formatReleaseDate = (timestamp: number) => {
   return `${month}.${day}`
 }
 
+const useIsomorphicLayoutEffect =
+  typeof document === "undefined" ? useEffect : useLayoutEffect
+
+/** スマホだけに出す閉じるボタン（PC はこれまでどおり） */
+function DismissButton(props: { card: HomeNoticeCard; keys: HomeNoticeKeys }) {
+  const t = useTranslation()
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="size-6 shrink-0 rounded-full md:hidden"
+      aria-label={t("このお知らせを閉じる", "Dismiss")}
+      title={t("閉じる（新しいお知らせが来たらまた出ます）", "Dismiss")}
+      onClick={() => saveDismissedNoticeCard(props.keys, props.card)}
+    >
+      <X className="h-3.5 w-3.5" />
+    </Button>
+  )
+}
+
 export function HomeQuickPreviewBar(props: Props) {
   const t = useTranslation()
   const { currentIndex } = useRotatingHomeEvents(props.events, {
@@ -53,9 +86,49 @@ export function HomeQuickPreviewBar(props: Props) {
     props.featuredReleases[rotatingReleases.currentIndex] ??
     props.releaseList.contents[0]
 
+  // スマホでは閉じたら次から出さない（中身が新しくなるとまた出る）。
+  // メンテナンスなど大事なお知らせが入っているあいだは、サイトのお知らせの枠は閉じられない
+  const releaseCandidates =
+    props.featuredReleases.length > 0
+      ? props.featuredReleases
+      : props.releaseList.contents.slice(0, 1)
+  const isReleasePinned = releaseCandidates.some((release) =>
+    isPinnedRelease(release),
+  )
+  const eventKeysText = JSON.stringify(toEventNoticeKeys(props.events))
+  const releaseKeysText = isReleasePinned
+    ? null
+    : JSON.stringify(toReleaseNoticeKeys(releaseCandidates))
+  const noticeKeys = useMemo<HomeNoticeKeys>(
+    () => ({
+      events: JSON.parse(eventKeysText),
+      ...(releaseKeysText === null
+        ? {}
+        : { releases: JSON.parse(releaseKeysText) }),
+    }),
+    [eventKeysText, releaseKeysText],
+  )
+
+  // クライアントでの画面の切り替えでは下のスクリプトが動かないので、描画の前に記録を当てる
+  useIsomorphicLayoutEffect(() => {
+    applyHiddenNoticeCards(noticeKeys)
+    return () => {
+      document.documentElement.removeAttribute(HOME_NOTICE_HIDDEN_ATTRIBUTE)
+    }
+  }, [noticeKeys])
+
   return (
-    <div className="grid gap-2 md:grid-cols-2">
-      <div className="rounded-xl border bg-card px-3 py-2 shadow-sm">
+    <div data-home-notice-bar="" className="grid gap-2 md:grid-cols-2">
+      <script
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: 閉じた記録で最初の描画から隠す（中身はこちらで作った鍵だけ）
+        dangerouslySetInnerHTML={{
+          __html: buildHomeNoticeInlineScript(noticeKeys),
+        }}
+      />
+      <div
+        data-home-notice-card="events"
+        className="rounded-xl border bg-card px-3 py-2 shadow-sm"
+      >
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
             <h2 className="font-semibold text-xs">
@@ -76,6 +149,7 @@ export function HomeQuickPreviewBar(props: Props) {
               <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
+          <DismissButton card="events" keys={noticeKeys} />
         </div>
 
         {firstEvent ? (
@@ -131,7 +205,10 @@ export function HomeQuickPreviewBar(props: Props) {
         )}
       </div>
 
-      <div className="rounded-xl border bg-card px-3 py-2 shadow-sm">
+      <div
+        data-home-notice-card={isReleasePinned ? undefined : "releases"}
+        className="rounded-xl border bg-card px-3 py-2 shadow-sm"
+      >
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
             <h2 className="font-semibold text-xs">
@@ -152,6 +229,9 @@ export function HomeQuickPreviewBar(props: Props) {
               <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
+          {!isReleasePinned && (
+            <DismissButton card="releases" keys={noticeKeys} />
+          )}
         </div>
 
         {firstRelease ? (
