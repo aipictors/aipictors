@@ -619,6 +619,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
       ? { minWidth: 400, maxWidth: hint.width, large: true }
       : { minWidth: 400 }
   const mainImageSrcSetOptions = toSrcSetOptions(props.imageSizeHint)
+  const mainAspectRatio = props.aspectRatio ?? props.imageSizeHint?.aspectRatio
 
   // 大きい画像が届くまで枠いっぱいに出す小さい版。一覧で押したサムネイルが無ければ、
   // 下のサムネイルの列と同じ縮小版（すぐ届く・同じ URL なので 1 回の通信で済む）。
@@ -1074,7 +1075,15 @@ export function ImagesPreview(props: Props): React.ReactNode {
         <div className="relative">
           <div
             className="relative m-auto flex h-full max-h-[64vh] w-full cursor-pointer justify-center overflow-hidden rounded-2xl bg-zinc-100 object-contain dark:bg-zinc-900"
-            style={isMainImageLoaded ? undefined : { minHeight: "64vh" }}
+            // 縦横比が分かれば、表示する大きさ（幅いっぱい・高さは 64vh まで）を最初から取っておく。
+            // 以前は読み込むまで 64vh を取り、読み込んだら外していたので、横長の画像ではその分だけ下が詰まってずれていた（CLS）
+            style={
+              mainAspectRatio !== undefined
+                ? { aspectRatio: `${mainAspectRatio}` }
+                : isMainImageLoaded
+                  ? undefined
+                  : { minHeight: "64vh" }
+            }
           >
             {!isMainImageLoaded && previewImage}
             <div className="relative inline-block max-w-full overflow-hidden text-center">

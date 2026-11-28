@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { ExternalLinkIcon, MegaphoneIcon } from "lucide-react"
 import { useContext } from "react"
 import { FollowButton } from "~/components/button/follow-button"
@@ -357,6 +357,11 @@ export function toHomePicksLayout(
 export function HomePromotionWorksSection(props: {
   isSensitive?: boolean
   fillWorks?: PromotionFillWork[]
+  /**
+   * サーバーで取った宣伝の作品（未ログインとして）。ログインの確認のあとで取り直すまでこれを出す。
+   * 以前は宣伝のカード（おすすめより背が高い）があとから差し込まれ、下の一覧が押し下げられていた（CLS）
+   */
+  initialWorks?: FragmentOf<typeof PromotionPickWorkFragment>[]
 }) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
@@ -364,12 +369,15 @@ export function HomePromotionWorksSection(props: {
   const hiddenUserIds = useViewerHiddenUserIds()
   const { data } = useQuery(PromotionWorksQuery, {
     skip: authContext.isLoading,
-    variables: { limit: 6, isSensitive: props.isSensitive === true },
+    variables: {
+      limit: PROMOTION_PICK_WORKS_LIMIT,
+      isSensitive: props.isSensitive === true,
+    },
   })
   // 宣伝の作品はすべて普通の大きさで先頭に並べる（表示したあとの入れ替わりが見えないよう、並びは届いた順のまま）
   // ブロック・ミュートした人の作品は、宣伝もおすすめも出さない（おすすめはサーバーで未ログインとして取っている）
   const works = filterWorksByHiddenUsers(
-    data?.promotionWorks ?? [],
+    data?.promotionWorks ?? props.initialWorks ?? [],
     hiddenUserIds,
   )
 
@@ -485,21 +493,32 @@ function PromotionInviteCard(props: { className?: string }) {
   )
 }
 
+/** トップの「おすすめ作品」に出す宣伝の作品の数（トップの loader でも同じ数を取る） */
+export const PROMOTION_PICK_WORKS_LIMIT = 6
+
+/** トップの「おすすめ作品」の宣伝の作品（トップの loader とブラウザで同じ項目を取る） */
+export const PromotionPickWorkFragment = graphql(
+  `fragment PromotionPickWork on WorkNode @_unmask {
+    id
+    title
+    enTitle
+    largeThumbnailImageURL
+    relatedUrl
+    user {
+      id
+      login
+      name
+      iconUrl
+      isFollowee
+    }
+  }`,
+)
+
 const PromotionWorksQuery = graphql(
   `query PromotionWorks($limit: Int!, $isSensitive: Boolean) {
     promotionWorks(limit: $limit, isSensitive: $isSensitive) {
-      id
-      title
-      enTitle
-      largeThumbnailImageURL
-      relatedUrl
-      user {
-        id
-        login
-        name
-        iconUrl
-        isFollowee
-      }
+      ...PromotionPickWork
     }
   }`,
+  [PromotionPickWorkFragment],
 )

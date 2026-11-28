@@ -26,6 +26,7 @@ import { WorkViewerDialog } from "~/components/work/lazy-work-viewer-dialog"
 import {
   HOME_PICKS_FILL_COUNT,
   HomePromotionWorksSection,
+  PromotionPickWorkFragment,
 } from "~/components/work/work-promotion"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
@@ -661,6 +662,7 @@ export default function SensitiveHomeIndexPage() {
                       おすすめの先頭の作品をここに使う（その作品は下の推薦・ほかのおすすめには出さない） */}
                   <HomePromotionWorksSection
                     isSensitive
+                    initialWorks={data.promotionPickWorks}
                     fillWorks={data.fillWorks.slice(0, HOME_PICKS_FILL_COUNT)}
                   />
                   <HomeSensitiveWorksUsersRecommendedSection
@@ -1022,6 +1024,10 @@ const query = graphql(
       rating
       tagNames
     }
+    # 「おすすめ作品」の先頭の宣伝（ブラウザで取り直すまで出す。あとから差し込むと下がずれる）
+    promotionPickWorks: promotionWorks(limit: 6, isSensitive: true) {
+      ...PromotionPickWork
+    }
     fillWorks: recommendedFeedWorks(offset: 0, limit: 32, ratings: [R18]) {
       ...HomePromotionWork
       rating
@@ -1156,5 +1162,6 @@ const query = graphql(
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
     HomeTagRowWorkFragment,
+    PromotionPickWorkFragment,
   ],
 )

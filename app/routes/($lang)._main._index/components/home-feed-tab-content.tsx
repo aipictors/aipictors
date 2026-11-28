@@ -86,6 +86,7 @@ export function HomeFeedTabContent(
           {/* おすすめ作品（先頭に宣伝中の作品を PR の印付きで、残りをおすすめで埋める）とユーザからの推薦は、お知らせのすぐ下で一番目立つ位置に。
               おすすめの先頭の作品をここに使う（その作品は下の推薦・ほかのおすすめには出さない） */}
           <HomePromotionWorksSection
+            initialWorks={data.promotionPickWorks}
             fillWorks={(data.promotionFillWorks ?? []).slice(
               0,
               HOME_PICKS_FILL_COUNT,

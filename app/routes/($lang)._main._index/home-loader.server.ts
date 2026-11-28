@@ -3,7 +3,10 @@ import { json, redirect } from "@remix-run/cloudflare"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { HOME_PICKS_FILL_COUNT } from "~/components/work/work-promotion"
+import {
+  HOME_PICKS_FILL_COUNT,
+  PromotionPickWorkFragment,
+} from "~/components/work/work-promotion"
 import { config } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
@@ -76,6 +79,7 @@ const createBaseHomeLoaderData = (props: {
   newUserWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
   promotionWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
   promotionFillWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  promotionPickWorks: [] as FragmentOf<typeof PromotionPickWorkFragment>[],
   recommendedTags: [] as FragmentOf<typeof HomeTagFragment>[],
   releaseList: props.releaseList,
   secondTag: props.secondTag,
@@ -604,6 +608,10 @@ const query = graphql(
     ) {
       ...HomePromotionWork
     }
+    # 「おすすめ作品」の先頭の宣伝（ブラウザで取り直すまで出す。あとから差し込むと下がずれる）
+    promotionPickWorks: promotionWorks(limit: 6, isSensitive: false) {
+      ...PromotionPickWork
+    }
     # 推薦・いま人気と重なる分を除いても、推薦の穴埋め＋「ほかのおすすめ」に足りるように多めに
     promotionFillWorks: recommendedFeedWorks(
       offset: 0
@@ -688,5 +696,6 @@ const query = graphql(
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
     HomeTagRowWorkFragment,
+    PromotionPickWorkFragment,
   ],
 )
