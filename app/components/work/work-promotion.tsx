@@ -434,6 +434,8 @@ export function HomePromotionWorksSection(props: {
             userIconUrl={work.user?.iconUrl}
             userId={work.user?.id}
             relatedUrl={work.relatedUrl}
+            // 宣伝の作品はサーバーの HTML から出るので、先頭がトップの最初に見える画像になる
+            isPriority={index < 2}
           />
         ))}
         {fillWorks.slice(0, layout.fillCount).map((work, index) => (
