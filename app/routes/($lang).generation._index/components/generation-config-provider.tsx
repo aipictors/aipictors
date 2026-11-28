@@ -1,9 +1,14 @@
+import { useState } from "react"
 import { config } from "~/config"
 import { GenerationConfigPersistent } from "~/routes/($lang).generation._index/components/generation-config-persistent"
 import { GenerationConfigRestoration } from "~/routes/($lang).generation._index/components/generation-config-restoration"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { generationConfigMachine } from "~/routes/($lang).generation._index/machines/generation-config-machine"
 import { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
+import {
+  type LargeFieldRefs,
+  takeLargeFieldRefs,
+} from "~/routes/($lang).generation._index/utils/generation-state-persister"
 import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
 import {
   GENERATION_STATE_STORAGE_KEY,
@@ -12,23 +17,39 @@ import {
 } from "~/routes/($lang).generation._index/utils/persist-generation-snapshot"
 import { restoreGenerationSnapshot } from "~/routes/($lang).generation._index/utils/restore-generation-snapshot"
 
+type PersistedState = {
+  snapshot: ReturnType<typeof restoreGenerationSnapshot>
+  /** IndexedDB に置いた画像のキー（画像は後から読み込む） */
+  largeFieldRefs: LargeFieldRefs
+}
+
 /**
  * 保存済みの画面状態を読み込む
  */
-function readPersistedSnapshot() {
-  if (typeof document === "undefined") return undefined
+function readPersistedSnapshot(): PersistedState {
+  if (typeof document === "undefined") {
+    return { snapshot: undefined, largeFieldRefs: {} }
+  }
   let stateText: string | null = null
   try {
     stateText = localStorage.getItem(GENERATION_STATE_STORAGE_KEY)
   } catch (_error) {
-    return undefined
+    return { snapshot: undefined, largeFieldRefs: {} }
   }
+  // IndexedDB に移せるなら、大きすぎる古い保存データの画像も捨てずに読み、あとで移す
+  const canUseIndexedDb = "indexedDB" in window
   const snapshot = restoreGenerationSnapshot(
     stateText,
     Object.keys(generationConfigMachine.config.states ?? {}),
+    { keepLargeFields: canUseIndexedDb },
   )
+  const largeFieldRefs = takeLargeFieldRefs(snapshot)
   // 大きすぎる保存データは小さくして書き直し、ほかの保存に使える容量を空ける
-  if (stateText !== null && stateText.length > MAX_GENERATION_STATE_LENGTH) {
+  if (
+    !canUseIndexedDb &&
+    stateText !== null &&
+    stateText.length > MAX_GENERATION_STATE_LENGTH
+  ) {
     if (snapshot === undefined) {
       try {
         localStorage.removeItem(GENERATION_STATE_STORAGE_KEY)
@@ -37,7 +58,7 @@ function readPersistedSnapshot() {
       persistGenerationSnapshot(localStorage, snapshot)
     }
   }
-  return snapshot
+  return { snapshot, largeFieldRefs }
 }
 
 type Props = {
@@ -51,7 +72,8 @@ type Props = {
 export function GenerationConfigProvider(props: Props) {
   const modelType = config.generationFeature.defaultImageModelType
 
-  const snapshot = readPersistedSnapshot()
+  // 読み込みは最初の描画で 1 回だけ（状態機械は最初の値しか使わない）
+  const [{ snapshot, largeFieldRefs }] = useState(readPersistedSnapshot)
 
   return (
     <GenerationConfigContext.Provider
@@ -111,7 +133,7 @@ export function GenerationConfigProvider(props: Props) {
         }),
       }}
     >
-      <GenerationConfigPersistent>
+      <GenerationConfigPersistent largeFieldRefs={largeFieldRefs}>
         <GenerationConfigRestoration>
           {props.children}
         </GenerationConfigRestoration>

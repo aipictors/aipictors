@@ -10,17 +10,20 @@ import {
  * 大きすぎる保存データ（以前の画像の data URL など）は大きい項目を捨てて読む
  * @param stateText localStorage に保存された状態
  * @param stateNames 現在の状態名の一覧
+ * @param options.keepLargeFields 大きすぎても画像を捨てない（IndexedDB に移せるとき）
  */
 export function restoreGenerationSnapshot(
   stateText: string | null,
   stateNames: string[],
+  options?: { keepLargeFields?: boolean },
 ) {
   if (!stateText) return undefined
   try {
     const parsed = JSON.parse(stateText)
     if (typeof parsed !== "object" || parsed === null) return undefined
     const snapshot =
-      stateText.length > MAX_GENERATION_STATE_LENGTH
+      stateText.length > MAX_GENERATION_STATE_LENGTH &&
+      options?.keepLargeFields !== true
         ? slimGenerationSnapshot(parsed)
         : parsed
     if (

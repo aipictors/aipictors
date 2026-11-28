@@ -10,6 +10,29 @@ import type { GenerationConfigState } from "~/routes/($lang).generation._index/m
  */
 const latestConfigByActor = new WeakMap<object, GenerationConfigState>()
 
+type GenerationConfigActor = ReturnType<
+  typeof GenerationConfigContext.useActorRef
+>
+
+/**
+ * 最後に送った設定（まだ送っていなければ今の設定）
+ */
+export function getLatestGenerationConfig(actor: GenerationConfigActor) {
+  return latestConfigByActor.get(actor) ?? actor.getSnapshot().context
+}
+
+/**
+ * 設定を送る。画面を開いた直後は状態機械がまだ動いておらず、送った設定は順番待ちになる。
+ * その間に別の変更を作るときも、最後に送った設定を元にする
+ */
+export function sendGenerationConfig(
+  actor: GenerationConfigActor,
+  value: GenerationConfigState,
+) {
+  latestConfigByActor.set(actor, value)
+  actor.send({ type: "UPDATE_CONFIG", value })
+}
+
 export function useGenerationContext() {
   const dataContext = useContext(GenerationQueryContext)
 
@@ -54,20 +77,15 @@ export function useGenerationContext() {
    * 例: 「このモデルで生成」でモデルを選んだ直後に、初期化が元のモデルに戻していた）
    */
   const getConfigAction = () => {
-    const latest = latestConfigByActor.get(actor) ?? actor.getSnapshot().context
+    const latest = getLatestGenerationConfig(actor)
     return new GenerationConfigAction(latest, {
       maxTasksCount: maxTasksCount(),
       availableLoraModelsCount: availableLoraModelsCount(),
     })
   }
 
-  /**
-   * 設定を送る。画面を開いた直後は状態機械がまだ動いておらず、送った設定は順番待ちになる。
-   * その間に別の変更を作るときも、最後に送った設定を元にする
-   */
   const sendConfig = (value: GenerationConfigState) => {
-    latestConfigByActor.set(actor, value)
-    actor.send({ type: "UPDATE_CONFIG", value })
+    sendGenerationConfig(actor, value)
   }
 
   const updateSettings = (
