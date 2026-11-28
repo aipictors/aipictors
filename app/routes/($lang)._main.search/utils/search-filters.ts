@@ -128,6 +128,24 @@ export type SearchFilters = {
   userId: string | null
 }
 
+/**
+ * 使っている絞り込みの数（年齢区分が既定でない・画風・プロンプト・自分の作品。画風とプロンプトはタグで探すときだけ）
+ */
+export const countActiveFilters = (props: {
+  filters: SearchFilters
+  isSensitiveMode: boolean
+  mode: string | null
+}) => {
+  const isTagMode = props.mode !== "text"
+  const defaultRating: SearchRatingFilter = props.isSensitiveMode ? "R18" : "G"
+  return (
+    (props.filters.rating !== defaultRating ? 1 : 0) +
+    (isTagMode && props.filters.style !== "all" ? 1 : 0) +
+    (isTagMode && props.filters.prompt !== "all" ? 1 : 0) +
+    (props.filters.userId !== null ? 1 : 0)
+  )
+}
+
 /** 絞り込みの変更（mode の null は「自動で決める」） */
 export type SearchFilterChange = Partial<SearchFilters> & {
   page?: number

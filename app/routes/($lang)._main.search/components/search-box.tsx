@@ -31,6 +31,11 @@ type Props = {
   isSensitiveMode: boolean
   /** 欄の右に並べるもの（全年齢 / R18 の切り替え） */
   trailing?: React.ReactNode
+  /** ヘッダー用の低い欄（高さ 40px、「キャンセル」なし。外を押すか Esc で閉じる） */
+  isCompact?: boolean
+  /** 出したらすぐ入力できるようにする（スマホのヘッダーで検索を開いたとき） */
+  autoFocus?: boolean
+  placeholder?: string
 }
 
 /** 打つのを止めてから候補を取りに行くまで（打つたびに問い合わせない） */
@@ -125,14 +130,16 @@ export function SearchBox(props: Props) {
         <form
           onSubmit={handleSubmit}
           className={cn(
-            "flex h-12 min-w-0 flex-1 items-center gap-2 rounded-full border-[1.5px] bg-muted pr-1 pl-4 transition-colors",
+            "flex min-w-0 flex-1 items-center gap-2 rounded-full border-[1.5px] bg-muted pr-1 transition-colors",
+            props.isCompact ? "h-10 pl-3.5" : "h-12 pl-4",
             isOpen ? "border-[#0170C8]/60 bg-background" : "border-transparent",
           )}
         >
           <SearchIcon
             aria-hidden
             className={cn(
-              "size-5 shrink-0",
+              "shrink-0",
+              props.isCompact ? "size-4" : "size-5",
               isOpen
                 ? "text-[#0170C8] dark:text-sky-400"
                 : "text-muted-foreground",
@@ -149,6 +156,8 @@ export function SearchBox(props: Props) {
               setIsOpen(true)
             }}
             onFocus={() => setIsOpen(true)}
+            // biome-ignore lint/a11y/noAutofocus: スマホのヘッダーで検索を開いたときだけ（押したらすぐ打てるように）
+            autoFocus={props.autoFocus}
             onKeyDown={(event) => {
               if (event.key === "Escape") {
                 setIsOpen(false)
@@ -159,12 +168,18 @@ export function SearchBox(props: Props) {
             aria-expanded={isOpen}
             aria-controls={listId}
             aria-label={t("検索する言葉", "Search")}
-            placeholder={t(
-              "タグ・キーワード・ユーザーを検索",
-              "Search tags, keywords and users",
-            )}
+            placeholder={
+              props.placeholder ??
+              t(
+                "タグ・キーワード・ユーザーを検索",
+                "Search tags, keywords and users",
+              )
+            }
             // 16px（iOS Safari がフォーカスで拡大しない大きさ）
-            className="h-full min-w-0 flex-1 bg-transparent font-semibold text-base outline-hidden placeholder:font-normal placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
+            className={cn(
+              "h-full min-w-0 flex-1 bg-transparent font-semibold text-base outline-hidden placeholder:font-normal placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden",
+              props.isCompact && "md:text-sm",
+            )}
           />
           {props.value !== "" && (
             <button
@@ -175,13 +190,16 @@ export function SearchBox(props: Props) {
                 setIsOpen(true)
                 inputRef.current?.focus()
               }}
-              className="flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+              className={cn(
+                "flex shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground",
+                props.isCompact ? "size-8" : "size-10",
+              )}
             >
-              <XIcon className="size-5" />
+              <XIcon className={props.isCompact ? "size-4" : "size-5"} />
             </button>
           )}
         </form>
-        {isOpen ? (
+        {isOpen && props.isCompact ? null : isOpen ? (
           <button
             type="button"
             onClick={() => {

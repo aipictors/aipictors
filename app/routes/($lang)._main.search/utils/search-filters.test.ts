@@ -4,6 +4,7 @@ import {
   buildWorksWhere,
   chooseSearchMode,
   collectRelatedTags,
+  countActiveFilters,
   getCurrentPage,
   getOrderFilter,
   getPromptFilter,
@@ -152,4 +153,33 @@ test("関連タグは 16 件まで、英字は大文字小文字を区別せず�
   expect(collectRelatedTags([{ tagNames: ["CAT", "dog"] }], "cat")).toEqual([
     "dog",
   ])
+})
+
+test("使っている絞り込みの数（年齢区分はページの既定と違うときだけ、画風・プロンプトはタグで探すときだけ）", () => {
+  const filters = {
+    order: "popular" as const,
+    prompt: "all" as const,
+    rating: "G" as const,
+    style: "all" as const,
+    userId: null,
+  }
+  expect(
+    countActiveFilters({ filters, isSensitiveMode: false, mode: "tag" }),
+  ).toBe(0)
+  expect(
+    countActiveFilters({ filters, isSensitiveMode: true, mode: "tag" }),
+  ).toBe(1)
+  const all = {
+    ...filters,
+    rating: "R15" as const,
+    style: "REAL" as const,
+    prompt: "with" as const,
+    userId: "1",
+  }
+  expect(
+    countActiveFilters({ filters: all, isSensitiveMode: false, mode: "tag" }),
+  ).toBe(4)
+  expect(
+    countActiveFilters({ filters: all, isSensitiveMode: false, mode: "text" }),
+  ).toBe(2)
 })

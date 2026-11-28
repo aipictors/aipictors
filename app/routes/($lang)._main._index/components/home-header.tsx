@@ -8,7 +8,6 @@ import {
   MoveLeft,
   Search,
   WandSparklesIcon,
-  X,
 } from "lucide-react"
 import { lazy, Suspense, useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -20,7 +19,6 @@ import { PlanLogoBadge } from "~/components/plan-logo-badge"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
 import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
 import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
@@ -32,6 +30,7 @@ import { cn } from "~/lib/utils"
 import { HomeHeaderContentToggle } from "~/routes/($lang)._main._index/components/home-header-content-toggle"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { EMPTY_UNREAD_COUNTS } from "~/routes/($lang)._main._index/components/home-notifications-panel-utils"
+import { SearchBox } from "~/routes/($lang)._main.search/components/search-box"
 import { closeMenuOnNavigate } from "~/utils/close-menu-on-navigate"
 import { debugLog } from "~/utils/debug-logger"
 import { PUSH_RECEIVED_EVENT } from "~/utils/foreground-push-notification"
@@ -186,8 +185,8 @@ function HomeHeader(props: Props) {
     })
   }
 
-  const onSearch = () => {
-    const trimmedText = searchText.trim()
+  const onSearch = (text: string = searchText) => {
+    const trimmedText = text.trim()
 
     if (trimmedText === "") {
       navigate(getSensitiveLink("/search", isR18Mode))
@@ -310,27 +309,7 @@ function HomeHeader(props: Props) {
     unreadNotificationData.refetch,
   ])
 
-  const _handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      onSearch()
-    }
-  }
   const onToggleSearchForm = () => setIsSearchFormOpen((prev) => !prev)
-  const onChangeSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newText = event.target.value
-    setSearchText(newText)
-
-    // debounce 処理でパフォーマンス最適化
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-
-    // 500ms 後に実行予約（現在は手動検索のみなので実際の処理は不要）
-    timeoutRef.current = setTimeout(() => {
-      // 自動検索をしたい場合は、ここに処理を追加
-    }, 500)
-  }
-
   // クリーンアップ
   useEffect(() => {
     return () => {
@@ -407,32 +386,6 @@ function HomeHeader(props: Props) {
     },
     timestamp: new Date().toISOString(),
   })
-
-  // コンポーネント内
-  const composingRef = useRef(false)
-
-  const onCompStart = () => {
-    composingRef.current = true
-  }
-  const onCompEnd = () => {
-    composingRef.current = false
-  }
-
-  const onEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // 変換中は無視（isComposing or keyCode 229 で保険）
-    // Safari/Android 向けに ref と nativeEvent の両方で判定
-    if (
-      composingRef.current ||
-      e.nativeEvent.isComposing ||
-      e.nativeEvent.keyCode === 229
-    )
-      return
-
-    if (e.key === "Enter") {
-      e.preventDefault()
-      onSearch()
-    }
-  }
 
   return (
     <AppHeader isSmallLeftPadding={isSpecialPage} isBrandAligned={hasOwnBrand}>
@@ -565,34 +518,20 @@ function HomeHeader(props: Props) {
         {/* 検索バーは YouTube のように空いている幅の真ん中に置く */}
         <div className="hidden min-w-0 flex-1 items-center justify-center px-2 md:flex lg:px-6">
           <div className="flex w-full min-w-0 max-w-[640px] items-center">
-            <div className="relative flex w-full min-w-0 flex-col">
-              <Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3.5 size-4 text-muted-foreground" />
-              <Input
+            {/* 検索ページの欄と同じ候補（タグ・最近の検索）を出す。検索ページの中は小さい表示だけにして、検索欄を 1 つにする */}
+            <div className="w-full min-w-0" data-header-search="pc">
+              <SearchBox
+                isCompact
                 value={searchText}
-                onChange={onChangeSearchText}
-                onKeyDown={onEnterKey}
-                onCompositionStart={onCompStart}
-                onCompositionEnd={onCompEnd}
+                onValueChange={setSearchText}
+                onSubmit={(text) => onSearch(text)}
+                popularTags={[]}
+                isSensitiveMode={isR18Mode}
                 placeholder={t(
                   "キーワード・タグで作品を検索",
                   "Search works by keyword or tag",
                 )}
-                aria-label={t("作品を検索", "Search works")}
-                className="h-10 rounded-full border-transparent bg-muted pr-10 pl-10 shadow-none transition-colors focus-visible:border-border focus-visible:bg-background"
               />
-              <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">
-                {searchText && (
-                  <Button
-                    onClick={() => setSearchText("")}
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    aria-label={t("検索をクリア", "Clear search")}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
         </div>
@@ -607,30 +546,17 @@ function HomeHeader(props: Props) {
             >
               <MoveLeft className="w-8" />
             </Button>
-            <div className="relative flex-1">
-              <Input
+            <div className="min-w-0 flex-1" data-header-search="sp">
+              <SearchBox
+                isCompact
+                autoFocus
                 value={searchText}
-                onChange={onChangeSearchText}
-                onKeyDown={onEnterKey}
-                onCompositionStart={onCompStart}
-                onCompositionEnd={onCompEnd}
+                onValueChange={setSearchText}
+                onSubmit={(text) => onSearch(text)}
+                popularTags={[]}
+                isSensitiveMode={isR18Mode}
                 placeholder={t("キーワード・タグで検索", "Search")}
-                aria-label={t("作品を検索", "Search works")}
-                className="h-10 w-full rounded-full border-transparent bg-muted pr-10 pl-4 shadow-none"
               />
-              <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">
-                {searchText && (
-                  <Button
-                    onClick={() => setSearchText("")}
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    aria-label={t("検索をクリア", "Clear search")}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
         ) : (
@@ -729,7 +655,7 @@ function HomeHeader(props: Props) {
         {isSearchFormOpen && (
           <Button
             className="md:hidden"
-            onClick={onSearch}
+            onClick={() => onSearch()}
             variant="ghost"
             size="icon"
             aria-label={t("検索", "Search")}

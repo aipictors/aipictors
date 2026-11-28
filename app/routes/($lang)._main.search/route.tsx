@@ -23,6 +23,7 @@ import { SearchExplore } from "~/routes/($lang)._main.search/components/search-e
 import { SearchFilterBar } from "~/routes/($lang)._main.search/components/search-filter-bar"
 import { SearchModeTabs } from "~/routes/($lang)._main.search/components/search-mode-tabs"
 import { SearchPageHeader } from "~/routes/($lang)._main.search/components/search-page-header"
+import { SearchQuerySummary } from "~/routes/($lang)._main.search/components/search-query-summary"
 import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
 import { SearchSidebar } from "~/routes/($lang)._main.search/components/search-sidebar"
 import { SearchTagsPanel } from "~/routes/($lang)._main.search/components/search-tags-panel"
@@ -31,6 +32,7 @@ import { SearchUsersPanel } from "~/routes/($lang)._main.search/components/searc
 import { searchLoader } from "~/routes/($lang)._main.search/search-loader.server"
 import {
   buildSearchFilterParams,
+  countActiveFilters,
   getSearchBasePath,
   getSearchType,
   normalizeTagQuery,
@@ -130,6 +132,11 @@ export default function SearchRoute() {
     })
   }
 
+  // ヘッダーと同じ切り替え（R18 にするときの年齢の確認も同じ）。検索の中では大きく押しやすく
+  const contentToggle = (
+    <HomeHeaderContentToggle className="[&>button]:h-10 [&>button]:min-w-12 [&>button]:px-3.5 [&>button]:font-bold [&>button]:text-sm md:[&>button]:h-10 md:[&>button]:font-bold md:[&>button]:text-sm" />
+  )
+
   return (
     <>
       <div className="mx-auto max-w-[1480px] px-3 pt-3 pb-5 md:px-6 md:py-6 lg:px-8">
@@ -143,19 +150,29 @@ export default function SearchRoute() {
           </h1>
         )}
 
-        <div className="mb-4 md:mb-6 md:max-w-3xl">
-          <SearchBox
-            value={searchText}
-            onValueChange={setSearchText}
-            onSubmit={(text) => navigateToSearch(text)}
-            popularTags={data.popularTags}
-            isSensitiveMode={data.isSensitiveMode}
-            trailing={
-              // ヘッダーと同じ切り替え（R18 にするときの年齢の確認も同じ）。検索の中では大きく押しやすく
-              <HomeHeaderContentToggle className="[&>button]:h-10 [&>button]:min-w-12 [&>button]:px-3.5 [&>button]:font-bold [&>button]:text-sm md:[&>button]:h-10 md:[&>button]:font-bold md:[&>button]:text-sm" />
-            }
-          />
-        </div>
+        {data.searchQuery ? (
+          // 検索語があるときは小さい表示だけ（タグの候補・最近の検索はヘッダーの検索欄。検索欄を 1 つにする）
+          <div className="mb-4 md:mb-6">
+            <SearchQuerySummary
+              query={data.searchQuery}
+              onSubmit={(text) => navigateToSearch(text)}
+              onClear={() => navigateToSearch(null)}
+              activeFilterCount={countActiveFilters(data)}
+              trailing={contentToggle}
+            />
+          </div>
+        ) : (
+          <div className="mb-4 md:mb-6 md:max-w-3xl">
+            <SearchBox
+              value={searchText}
+              onValueChange={setSearchText}
+              onSubmit={(text) => navigateToSearch(text)}
+              popularTags={data.popularTags}
+              isSensitiveMode={data.isSensitiveMode}
+              trailing={contentToggle}
+            />
+          </div>
+        )}
 
         <div
           className={

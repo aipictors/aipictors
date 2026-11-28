@@ -16,12 +16,13 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import type { SearchLoaderData } from "~/routes/($lang)._main.search/search-loader.server"
-import type {
-  SearchFilterChange,
-  SearchOrderFilter,
-  SearchPromptFilter,
-  SearchRatingFilter,
-  SearchStyleFilter,
+import {
+  countActiveFilters,
+  type SearchFilterChange,
+  type SearchOrderFilter,
+  type SearchPromptFilter,
+  type SearchRatingFilter,
+  type SearchStyleFilter,
 } from "~/routes/($lang)._main.search/utils/search-filters"
 
 type Draft = {
@@ -55,11 +56,7 @@ export function SearchFilterBar(props: {
   // 画風・プロンプトはタグの一致で探すときだけ使える
   const isTagMode = data.mode !== "text"
   const defaultRating: SearchRatingFilter = data.isSensitiveMode ? "R18" : "G"
-  const activeCount =
-    (current.rating !== defaultRating ? 1 : 0) +
-    (isTagMode && current.style !== "all" ? 1 : 0) +
-    (isTagMode && current.prompt !== "all" ? 1 : 0) +
-    (current.isMine ? 1 : 0)
+  const activeCount = countActiveFilters(data)
 
   const orders: [SearchOrderFilter, string][] = [
     ["popular", t("人気順", "Popular")],
