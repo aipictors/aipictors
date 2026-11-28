@@ -30,7 +30,11 @@ export function HomeSidebar(
   } = props
 
   return (
-    <aside className="flex w-full flex-col space-y-4 max-md:[contain-intrinsic-height:auto_900px] max-md:[content-visibility:auto] md:sticky md:top-20 md:w-[262px] md:max-w-[262px] md:shrink-0 md:self-start">
+    <aside
+      className="flex w-full flex-col space-y-4 md:sticky md:top-20 md:w-[262px] md:max-w-[262px] md:shrink-0 md:self-start max-md:[contain-intrinsic-height:auto_900px] max-md:[content-visibility:auto]"
+      // 見積もりの高さ（スマホだけ。PC は content-visibility なし）。cls_shift の記録で実際の高さと比べる
+      data-cih="900"
+    >
       <div className="flex w-full flex-col space-y-4">
         {!isSubscriptionUser &&
           advertisements &&

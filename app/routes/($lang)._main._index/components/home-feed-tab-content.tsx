@@ -37,9 +37,13 @@ import type { HomePageState } from "~/routes/($lang)._main._index/hooks/use-home
  * スマホではトップの要素の 4 割が最初の画面の外にあり、表示直後のレイアウトが長いタスクになっていた。
  * 高さは描画するまでの仮の値（スマホでの実際の高さ。一度描画すると実際の高さを覚える）
  */
-const offscreenSectionStyle = (estimatedHeight: number): CSSProperties => ({
-  contentVisibility: "auto",
-  containIntrinsicHeight: `auto ${estimatedHeight}px`,
+const offscreenSectionProps = (estimatedHeight: number) => ({
+  style: {
+    contentVisibility: "auto",
+    containIntrinsicHeight: `auto ${estimatedHeight}px`,
+  } satisfies CSSProperties,
+  // 見積もりの高さ。表示のずれ（cls_shift）の記録で実際の高さと比べる（app/utils/cls-attribution.ts）
+  "data-cih": String(estimatedHeight),
 })
 
 /**
@@ -134,7 +138,7 @@ export function HomeFeedTabContent(
             />
           )}
           {/* タグごとの作品（今日のお題・人気タグ 5 つ）。loader で取れていれば最初の HTML に入れ、なければ画面に近づいてから読む */}
-          <div style={offscreenSectionStyle(2400)}>
+          <div {...offscreenSectionProps(2400)}>
             {data.tagWorkRows.length > 0 ? (
               <HomeTagWorksSection initialRows={data.tagWorkRows} />
             ) : (
@@ -185,7 +189,7 @@ export function HomeFeedTabContent(
           <UserModelPickupBanner />
           {/* 作品を選んで無料生成（生成への入口。ログインしている人だけ: 未ログインでは中身が取れず、見出しだけ出ていた） */}
           {authContext.isLoggedIn && (
-            <div style={offscreenSectionStyle(1000)}>
+            <div {...offscreenSectionProps(1000)}>
               <HomeDeferredSection
                 fallback={
                   <HomeWorkSectionPlaceholder

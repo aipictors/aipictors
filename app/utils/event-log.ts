@@ -210,6 +210,21 @@ export function logPageView(fromPageType: string) {
   push({ e: "page_view", p: toPath(), r: `nav:${fromPageType}`, t: Date.now() })
 }
 
+/**
+ * 形を決めたイベントをそのまま 1 件記録する（cls_shift のように x が長い・パスがそのときと違うもの）。
+ * 長さはサーバーでも切る（x は 300 文字）
+ */
+export function logEventItem(item: Omit<EventLogItem, "t"> & { t?: number }) {
+  if (typeof window === "undefined") return
+  push({ ...item, e: item.e.slice(0, 64), t: item.t ?? Date.now() })
+}
+
+/** たまっている分をすぐ送る（画面が隠れたあとに積んだものなど） */
+export function flushEventLog() {
+  if (typeof window === "undefined" || isDisabled) return
+  flush()
+}
+
 /** ログイン中のユーザー（ログアウトで null）。送るときにまとめて付ける */
 export function setEventLogUser(id: string | null) {
   if (userId === id) return

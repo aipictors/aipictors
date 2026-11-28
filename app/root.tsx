@@ -48,8 +48,9 @@ import { cn } from "~/lib/utils"
 import { GENERATION_ENTRY_REDIRECT_SCRIPT } from "~/routes/($lang).generation._index/utils/generation-simple-entry"
 import styles from "~/tailwind.css?url"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { isSampledSession, noteClsRoute } from "~/utils/cls-attribution"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
-import { logPageView, startEventLog } from "~/utils/event-log"
+import { currentSessionId, logPageView, startEventLog } from "~/utils/event-log"
 import { isInsideFileDropZone } from "~/utils/file-drop-zone"
 import { type GridLayout, getGridLayout } from "~/utils/grid-layout"
 import {
@@ -70,6 +71,7 @@ import {
   RESIZED_IMAGE_FALLBACK_SCRIPT,
   RESIZED_IMAGE_ORIGIN,
 } from "~/utils/resized-image-url"
+import { runAfterLoadIdle } from "~/utils/run-after-load-idle"
 import { serializeJsonLd } from "~/utils/serialize-json-ld"
 import { createSiteJsonLd } from "~/utils/site-json-ld"
 
@@ -894,9 +896,19 @@ function PageViewTracker(): null {
 
   useEffect(() => {
     startEventLog()
+    // 表示のずれ（CLS）の原因の記録。間引きで選ばれたセッションだけ、読み込みが落ち着いてから web-vitals を読む
+    // （layout-shift は buffered で拾うので、遅く始めても読み込み中のずれも入る）
+    if (navigator.webdriver !== true && isSampledSession(currentSessionId())) {
+      runAfterLoadIdle(() => {
+        import("~/utils/cls-observer")
+          .then((mod) => mod.startClsObserver())
+          .catch(() => {})
+      })
+    }
   }, [])
 
   useEffect(() => {
+    noteClsRoute(pathname)
     if (
       previousPathRef.current !== null &&
       previousPathRef.current !== pathname

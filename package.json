@@ -113,6 +113,7 @@
     "vaul": "^1.1.1",
     "vite-bundle-analyzer": "^0.23.0",
     "wasm-webp": "0.1.0",
+    "web-vitals": "^6.2.3",
     "xstate": "^5.17.4",
     "zenn-content-css": "^0.3.1"
   },

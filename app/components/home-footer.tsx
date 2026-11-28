@@ -1,7 +1,7 @@
 import { useLocation } from "@remix-run/react"
-import { Link } from "~/lib/app/locale-router"
 import { SnsIconLink } from "~/components/sns-icon"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 
 /**
@@ -45,6 +45,8 @@ export function HomeFooter(): React.ReactNode {
         // 画面の外にある間はレイアウト・描画を省く（高さは描画するまでの仮の値）
         "[contain-intrinsic-height:auto_1000px] [content-visibility:auto]",
       )}
+      // 見積もりの高さ。表示のずれ（cls_shift）の記録で実際の高さと比べる（app/utils/cls-attribution.ts）
+      data-cih="1000"
     >
       <div className="container max-w-none">
         <div className="grid grid-cols-2 gap-x-10 gap-y-10 md:grid-cols-6">
@@ -67,9 +69,9 @@ export function HomeFooter(): React.ReactNode {
               </Link>
               <p className="text-muted-foreground text-sm">
                 {t(
-                    "AipictorsはAIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。",
-                    "Aipictors is a community for posting and discovering AI illustrations, AI photos and AI novels.",
-                  )}
+                  "AipictorsはAIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。",
+                  "Aipictors is a community for posting and discovering AI illustrations, AI photos and AI novels.",
+                )}
               </p>
             </div>
           </div>
@@ -119,7 +121,9 @@ export function HomeFooter(): React.ReactNode {
           </div>
 
           <div className="space-y-3">
-            <p className="whitespace-nowrap font-medium text-sm">{t("検索", "Search")}</p>
+            <p className="whitespace-nowrap font-medium text-sm">
+              {t("検索", "Search")}
+            </p>
             <div className="flex flex-col gap-y-2 text-muted-foreground text-sm">
               <Link className="hover:text-foreground" to="/search">
                 {t("作品を検索", "Search works")}
@@ -127,7 +131,10 @@ export function HomeFooter(): React.ReactNode {
               <Link className="hover:text-foreground" to={createLink("/tags")}>
                 {t("タグをさがす", "Browse tags")}
               </Link>
-              <Link className="hover:text-foreground" to={createLink("/prompts")}>
+              <Link
+                className="hover:text-foreground"
+                to={createLink("/prompts")}
+              >
                 {t("呪文（プロンプト）まとめ", "Prompt collections")}
               </Link>
               <Link

@@ -323,9 +323,13 @@ const syncQueryParam = (key: string, value: string | null) => {
 /**
  * 画面の外にある一覧は、近づくまでレイアウト・描画を省く（全年齢のトップと同じ）
  */
-const offscreenSectionStyle = (estimatedHeight: number): CSSProperties => ({
-  contentVisibility: "auto",
-  containIntrinsicHeight: `auto ${estimatedHeight}px`,
+const offscreenSectionProps = (estimatedHeight: number) => ({
+  style: {
+    contentVisibility: "auto",
+    containIntrinsicHeight: `auto ${estimatedHeight}px`,
+  } satisfies CSSProperties,
+  // 見積もりの高さ。表示のずれ（cls_shift）の記録で実際の高さと比べる（app/utils/cls-attribution.ts）
+  "data-cih": String(estimatedHeight),
 })
 
 /** 新着タブの中の切り替え（全年齢のトップと同じ見た目） */
@@ -693,7 +697,7 @@ export default function SensitiveHomeIndexPage() {
                       isSensitive
                     />
                   )}
-                  <div style={offscreenSectionStyle(2400)}>
+                  <div {...offscreenSectionProps(2400)}>
                     {data.tagWorkRows.length > 0 ? (
                       <HomeTagWorksSection
                         isSensitive
